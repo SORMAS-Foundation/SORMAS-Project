@@ -29,7 +29,7 @@ public class DrugSusceptibilityMapper {
 	public static DrugSusceptibilityDto toDto(DrugSusceptibility source) {
 
 		if (source == null) {
-			return null;
+			return DrugSusceptibilityDto.build();
 		}
 
 		DrugSusceptibilityDto target = new DrugSusceptibilityDto();
@@ -104,5 +104,40 @@ public class DrugSusceptibilityMapper {
 		target.setStreptomycinSusceptibility(source.getStreptomycinSusceptibility());
 
 		return target;
+	}
+
+	public static boolean hasData(DrugSusceptibilityDto dto) {
+		if (dto == null) {
+			return false;
+		}
+
+		return dto.getAmikacinMic() != null
+			|| dto.getAmikacinSusceptibility() != null
+			|| dto.getBedaquilineMic() != null
+			|| dto.getBedaquilineSusceptibility() != null
+			|| dto.getCapreomycinMic() != null
+			|| dto.getCapreomycinSusceptibility() != null
+			|| dto.getCiprofloxacinMic() != null
+			|| dto.getCiprofloxacinSusceptibility() != null
+			|| dto.getDelamanidMic() != null
+			|| dto.getDelamanidSusceptibility() != null
+			|| dto.getEthambutolMic() != null
+			|| dto.getEthambutolSusceptibility() != null
+			|| dto.getGatifloxacinMic() != null
+			|| dto.getGatifloxacinSusceptibility() != null
+			|| dto.getIsoniazidMic() != null
+			|| dto.getIsoniazidSusceptibility() != null
+			|| dto.getKanamycinMic() != null
+			|| dto.getKanamycinSusceptibility() != null
+			|| dto.getLevofloxacinMic() != null
+			|| dto.getLevofloxacinSusceptibility() != null
+			|| dto.getMoxifloxacinMic() != null
+			|| dto.getMoxifloxacinSusceptibility() != null
+			|| dto.getOfloxacinMic() != null
+			|| dto.getOfloxacinSusceptibility() != null
+			|| dto.getRifampicinMic() != null
+			|| dto.getRifampicinSusceptibility() != null
+			|| dto.getStreptomycinMic() != null
+			|| dto.getStreptomycinSusceptibility() != null;
 	}
 }

@@ -320,9 +320,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setPatternProfile(source.getPatternProfile());
 		target.setStrainCallStatus(source.getStrainCallStatus());
 		target.setTestScale(source.getTestScale());
-		if (source.getTestType() == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY) {
-			target.setDrugSusceptibility(DrugSusceptibilityMapper.toDto(source.getDrugSusceptibility()));
-		}
+		target.setDrugSusceptibility(DrugSusceptibilityMapper.toDto(source.getDrugSusceptibility()));
 
 		target.setSeroTypingMethod(source.getSeroTypingMethod());
 		target.setSeroTypingMethodText(source.getSeroTypingMethodText());
@@ -470,6 +468,10 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 				I18nProperties.getValidationError(
 					Validations.required,
 					I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_RESULT_VERIFIED)));
+		}
+		if (pathogenTest.getTestType() == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY
+			&& !DrugSusceptibilityMapper.hasData(pathogenTest.getDrugSusceptibility())) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.pathogenTestValidDrugSusceptibility));
 		}
 	}
 

@@ -565,6 +565,7 @@ public class PathogenTest extends DeletableAdo {
 		return new PathogenTestReferenceDto(getUuid());
 	}
 
+	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getRifampicinResistant() {
 		return rifampicinResistant;
 	}
@@ -573,6 +574,7 @@ public class PathogenTest extends DeletableAdo {
 		this.rifampicinResistant = rifampicinResistant;
 	}
 
+	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getIsoniazidResistant() {
 		return isoniazidResistant;
 	}
@@ -581,6 +583,7 @@ public class PathogenTest extends DeletableAdo {
 		this.isoniazidResistant = isoniazidResistant;
 	}
 
+	@Enumerated(EnumType.STRING)
 	public PathogenSpecie getSpecie() {
 		return specie;
 	}
@@ -597,6 +600,7 @@ public class PathogenTest extends DeletableAdo {
 		this.patternProfile = patternProfile;
 	}
 
+	@Enumerated(EnumType.STRING)
 	public PathogenStrainCallStatus getStrainCallStatus() {
 		return strainCallStatus;
 	}
@@ -605,6 +609,7 @@ public class PathogenTest extends DeletableAdo {
 		this.strainCallStatus = strainCallStatus;
 	}
 
+	@Enumerated(EnumType.STRING)
 	public PathogenTestScale getTestScale() {
 		return testScale;
 	}

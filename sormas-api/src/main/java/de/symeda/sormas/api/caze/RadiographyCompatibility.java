@@ -13,34 +13,23 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.therapy;
+package de.symeda.sormas.api.caze;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.Diseases;
 
-public enum DrugSusceptibilityType {
+public enum RadiographyCompatibility {
 
-	NOT_APPLICABLE,
-	RESISTANT,
-	SUSCEPTIBLE,
-	UNKNOWN;
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	COMPATIBLE_WITH_TB,
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	NOT_COMPATIBLE_WITH_TB;
 
 	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
-	}
-
-	public YesNoUnknown toYesNoUnknown() {
-		switch (this) {
-		case RESISTANT:
-			return YesNoUnknown.YES;
-		case SUSCEPTIBLE:
-			return YesNoUnknown.YES;
-		case UNKNOWN:
-			return YesNoUnknown.UNKNOWN;
-		case NOT_APPLICABLE:
-		default:
-			return null;
-		}
 	}
 }

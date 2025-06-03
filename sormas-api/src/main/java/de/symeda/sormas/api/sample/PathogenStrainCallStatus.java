@@ -30,22 +30,22 @@ public enum PathogenStrainCallStatus {
 	@Diseases(value = {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
-		PathogenTestType.BEJINGGENOTYPING })
+		PathogenTestType.BEIJINGGENOTYPING })
 	BEIJING,
 	@Diseases(value = {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
-		PathogenTestType.BEJINGGENOTYPING })
+		PathogenTestType.BEIJINGGENOTYPING })
 	NOBEIJING,
 	@Diseases(value = {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
-		PathogenTestType.BEJINGGENOTYPING })
+		PathogenTestType.BEIJINGGENOTYPING })
 	POSSBEIJING,
 	@Diseases(value = {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
-		PathogenTestType.BEJINGGENOTYPING })
+		PathogenTestType.BEIJINGGENOTYPING })
 	UNKNOWN;
 
 	@Override

@@ -153,10 +153,12 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 
 				CustomLayout infectionYearLayout = new CustomLayout();
 				infectionYearLayout.setTemplateContents(TB_INFECTION_YEAR_LAYOUT);
+
 				// infection year label
 				Label lblInfectionYear = new Label(I18nProperties.getCaption(Captions.HealthConditions_tuberculosisInfectionYear));
 				infectionYearLayout.addComponent(lblInfectionYear, "LBL_TUBERCULOSIS_INFECTION_YEAR");
 				getContent().addComponent(infectionYearLayout, "TUBERCULOSIS_INFECTION_YEAR_LAYOUT");
+
 				// infection year combobox
 				ComboBox tempInfectionYearCB = addField(infectionYearLayout, TUBERCULOSIS_INFECTION_YEAR, ComboBox.class);
 				tempInfectionYearCB.addItems(DateHelper.getYearsToNow());
@@ -165,16 +167,20 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 				tempInfectionYearCB.setInputPrompt(I18nProperties.getString(Strings.year));
 				tempInfectionYearCB.setCaption(null);
 				infectionYearLayout.addComponent(tempInfectionYearCB, TUBERCULOSIS_INFECTION_YEAR);
+
 				// validation for visibility
 				fieldVisibilityCheck(getField(TUBERCULOSIS), tempInfectionYearCB, lblInfectionYear);
+
 				// compliance with treatment layout
 				CustomLayout complianceTreatmentLayout = new CustomLayout();
 				complianceTreatmentLayout.setTemplateContents(TBA_LAYOUT);
 				complianceTreatmentLayout.setStyleName("compliance-padding");
 				complianceTreatmentLayout.setVisible(true);
+
 				// compliance with treatment label
 				Label lblComplianceWithTreatment = new Label(I18nProperties.getCaption(Captions.HealthConditions_complianceWithTreatment));
 				complianceTreatmentLayout.addComponent(lblComplianceWithTreatment, "LBL_COMPLIANCE_WITH_TREATMENT");
+
 				// compliance with treatment combobox
 				ComboBox complianceWithTreatmentCB = addField(complianceTreatmentLayout, COMPLIANCE_WITH_TREATMENT, ComboBox.class);
 				complianceWithTreatmentCB.setId(COMPLIANCE_WITH_TREATMENT);

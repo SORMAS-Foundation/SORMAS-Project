@@ -29,6 +29,14 @@ public class TherapyDto extends EntityDto {
 
 	public static final String I18N_PREFIX = "Therapy";
 
+	public static final String DIRECTLY_OBSERVED_TREATMENT = "directlyObservedTreatment";
+	public static final String MDR_XDR_TUBERCULOSIS = "mdrXdrTuberculosis";
+	public static final String BEIJING_LINEAGE = "beijingLineage";
+
+	private boolean directlyObservedTreatment;
+	private boolean mdrXdrTuberculosis;
+	private boolean beijingLineage;
+
 	public static TherapyDto build() {
 
 		TherapyDto therapy = new TherapyDto();
@@ -38,5 +46,29 @@ public class TherapyDto extends EntityDto {
 
 	public TherapyReferenceDto toReference() {
 		return new TherapyReferenceDto(getUuid());
+	}
+
+	public boolean isDirectlyObservedTreatment() {
+		return directlyObservedTreatment;
+	}
+
+	public void setDirectlyObservedTreatment(boolean directlyObservedTreatment) {
+		this.directlyObservedTreatment = directlyObservedTreatment;
+	}
+
+	public boolean isMdrXdrTuberculosis() {
+		return mdrXdrTuberculosis;
+	}
+
+	public void setMdrXdrTuberculosis(boolean mdrXdrTuberculosis) {
+		this.mdrXdrTuberculosis = mdrXdrTuberculosis;
+	}
+
+	public boolean isBeijingLineage() {
+		return beijingLineage;
+	}
+
+	public void setBeijingLineage(boolean beijingLineage) {
+		this.beijingLineage = beijingLineage;
 	}
 }

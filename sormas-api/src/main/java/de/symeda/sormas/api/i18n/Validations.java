@@ -202,6 +202,7 @@ public interface Validations {
 	String patchUnsupportedCollectionFieldType = "patchUnsupportedCollectionFieldType";
 	String patchWrongUuid = "patchWrongUuid";
 	String pathogenTestValidDisease = "pathogenTestValidDisease";
+	String pathogenTestValidDrugSusceptibility = "pathogenTestValidDrugSusceptibility";
 	String pathogenTestValidPathogen = "pathogenTestValidPathogen";
 	String pathogenTestValidSampleOrEnvironment = "pathogenTestValidSampleOrEnvironment";
 	String patternNotMatching = "patternNotMatching";

@@ -13,34 +13,53 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.therapy;
+package de.symeda.sormas.api.symptoms;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.Diseases;
 
-public enum DrugSusceptibilityType {
+public enum MinorInfectionSite {
 
 	NOT_APPLICABLE,
-	RESISTANT,
-	SUSCEPTIBLE,
-	UNKNOWN;
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	BONES_JOINTS_OTHER_THAN_VERTEBRAE,
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	CNS_EXCEPT_MENINGES,
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	DISSEMINATED_FORM,
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	EXTRAPULMONARY_SITE_UNKNOWN,
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	EXTRA_THORACIC_LYMPH_NODES,
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	INTRATHORACIC_LYMPH_NODES,
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	MENINGES,
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	PERITONEUM_DIGESTIVE_TRACT,
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	PLEURA,
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	UROGENITAL_SYSTEM,
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	VERTEBRAE,
+	UNKNOWN,
+	OTHER;
 
 	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
-	}
-
-	public YesNoUnknown toYesNoUnknown() {
-		switch (this) {
-		case RESISTANT:
-			return YesNoUnknown.YES;
-		case SUSCEPTIBLE:
-			return YesNoUnknown.YES;
-		case UNKNOWN:
-			return YesNoUnknown.UNKNOWN;
-		case NOT_APPLICABLE:
-		default:
-			return null;
-		}
 	}
 }

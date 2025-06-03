@@ -136,6 +136,7 @@ import de.symeda.sormas.ui.hospitalization.HospitalizationForm;
 import de.symeda.sormas.ui.hospitalization.HospitalizationView;
 import de.symeda.sormas.ui.person.PersonSelectionGrid;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
+import de.symeda.sormas.ui.therapy.TherapyForm;
 import de.symeda.sormas.ui.therapy.TherapyView;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ArchiveHandlers;
@@ -1410,6 +1411,26 @@ public class CaseController {
 				epiDataForm.disableContactWithSourceCaseKnownField();
 			}
 		}
+
+		return editView;
+	}
+
+	public CommitDiscardWrapperComponent<TherapyForm> getTherapyEditComponent(final String caseUuid, boolean isEditAllowed) {
+
+		CaseDataDto caseDataDto = findCase(caseUuid);
+
+		TherapyForm therapyForm =
+			new TherapyForm(caseDataDto, caseDataDto.getDisease(), caseDataDto.isPseudonymized(), caseDataDto.isInJurisdiction(), isEditAllowed);
+		therapyForm.setValue(caseDataDto.getTherapy());
+
+		CommitDiscardWrapperComponent<TherapyForm> editView =
+			new CommitDiscardWrapperComponent<TherapyForm>(therapyForm, UiUtil.permitted(UserRight.CASE_EDIT), therapyForm.getFieldGroup());
+
+		editView.addCommitListener(() -> {
+			CaseDataDto cazeDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
+			cazeDto.setTherapy(therapyForm.getValue());
+			saveCase(cazeDto);
+		});
 
 		return editView;
 	}

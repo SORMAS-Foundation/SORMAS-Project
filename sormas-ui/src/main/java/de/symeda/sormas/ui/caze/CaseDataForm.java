@@ -37,6 +37,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -110,6 +111,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
@@ -177,6 +179,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private static final String REINFECTION_DETAILS_COL_1_LOC = "reinfectionDetailsCol1Loc";
 	private static final String REINFECTION_DETAILS_COL_2_LOC = "reinfectionDetailsCol2Loc";
 	public static final String CASE_REFER_POINT_OF_ENTRY_BTN_LOC = "caseReferFromPointOfEntryBtnLoc";
+	public static final String DIAGNOSIS_CRITERIA_HEADING_LOC = "diagnosisCriteriaHeadingLoc";
+	public static final String DIAGNOSIS_CRITERIA_LAB_TEST_PANEL_LOC = "diagnosisCriteriaLoc";
 
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT =
@@ -249,6 +253,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(CaseDataDto.END_OF_ISOLATION_REASON, CaseDataDto.END_OF_ISOLATION_REASON_DETAILS) +
 					fluidRowLocs(CaseDataDto.REPORT_LAT, CaseDataDto.REPORT_LON, CaseDataDto.REPORT_LAT_LON_ACCURACY) +
 					fluidRowLocs(CaseDataDto.HEALTH_CONDITIONS) +
+					loc(DIAGNOSIS_CRITERIA_HEADING_LOC) +
+					fluidRowLocs(DIAGNOSIS_CRITERIA_LAB_TEST_PANEL_LOC) +
+					fluidRowLocs(8, CaseDataDto.RADIOGRAPHY_COMPATIBILITY) +
+					fluidRowLocs(CaseDataDto.OTHER_DIAGNOSTIC_CRITERIA) +
 					loc(MEDICAL_INFORMATION_LOC) +
 					fluidRowLocs(CaseDataDto.BLOOD_ORGAN_OR_TISSUE_DONATED) +
 					fluidRowLocs(CaseDataDto.PREGNANT, CaseDataDto.POSTPARTUM) + fluidRowLocs(CaseDataDto.TRIMESTER, "") +
@@ -1029,6 +1037,28 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
 				UiFieldAccessCheckers.getDefault(true, FacadeProvider.getConfigFacade().getCountryLocale())))
 			.setCaption(null);
+
+		//diagnosis criteria
+		if ((FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) && disease == Disease.TUBERCULOSIS) {
+			Label diagnosisCriteriaHeadingLabel = new Label(I18nProperties.getString(Strings.headingDiagnosisCriteria));
+			diagnosisCriteriaHeadingLabel.addStyleName(H3);
+			getContent().addComponent(diagnosisCriteriaHeadingLabel, DIAGNOSIS_CRITERIA_HEADING_LOC);
+
+			if (UiUtil.permitted(UserRight.SAMPLE_VIEW)) {
+				List<SampleDto> samples = FacadeProvider.getSampleFacade().getByCaseUuids(Collections.singletonList(caseUuid));
+				List<String> sampleUuids = Collections.emptyList();
+				if (samples != null && !samples.isEmpty()) {
+					sampleUuids = samples.stream().map(SampleDto::getUuid).collect(Collectors.toList());
+				}
+
+				List<PathogenTestDto> pathogenTests = FacadeProvider.getPathogenTestFacade().getBySampleUuids(sampleUuids);
+				DiagnosisCriteriaLabTestPanel diagnosisCriteriaLabTestPanel = new DiagnosisCriteriaLabTestPanel(disease, pathogenTests);
+				getContent().addComponent(diagnosisCriteriaLabTestPanel, DIAGNOSIS_CRITERIA_LAB_TEST_PANEL_LOC);
+			}
+
+			addField(CaseDataDto.RADIOGRAPHY_COMPATIBILITY, ComboBox.class);
+			addField(CaseDataDto.OTHER_DIAGNOSTIC_CRITERIA, TextField.class);
+		}
 
 		// Set initial visibilities & accesses
 		initializeVisibilitiesAndAllowedVisibilities();

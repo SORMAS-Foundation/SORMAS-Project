@@ -15,9 +15,13 @@
 
 package de.symeda.sormas.api.therapy;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.utils.ApplicableToPathogenTests;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
+import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 @DependingOnFeatureType(featureType = {
@@ -44,7 +48,7 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 	public static final String GATIFLOXACIN_MIC = "gatifloxacinMic";
 	public static final String GATIFLOXACIN_SUSCEPTIBILITY = "gatifloxacinSusceptibility";
 	public static final String ISONIAZID_MIC = "isoniazidMic";
-	public static final String isoniazid_Susceptibility = "isoniazidSusceptibility";
+	public static final String ISONIAZID_SUSCEPTIBILITY = "isoniazidSusceptibility";
 	public static final String KANAMYCIN_MIC = "kanamycinMic";
 	public static final String KANAMYCIN_SUSCEPTIBILITY = "kanamycinSusceptibility";
 	public static final String LEVOFLOXACIN_MIC = "levofloxacinMic";
@@ -58,33 +62,149 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 	public static final String STREPTOMYCIN_MIC = "streptomycinMic";
 	public static final String STREPTOMYCIN_SUSCEPTIBILITY = "streptomycinSusceptibility";
 
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private Float amikacinMic;
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private DrugSusceptibilityType amikacinSusceptibility;
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private Float bedaquilineMic;
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private DrugSusceptibilityType bedaquilineSusceptibility;
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private Float capreomycinMic;
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private DrugSusceptibilityType capreomycinSusceptibility;
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private Float ciprofloxacinMic;
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private DrugSusceptibilityType ciprofloxacinSusceptibility;
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private Float delamanidMic;
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private DrugSusceptibilityType delamanidSusceptibility;
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private Float ethambutolMic;
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private DrugSusceptibilityType ethambutolSusceptibility;
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private Float gatifloxacinMic;
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private DrugSusceptibilityType gatifloxacinSusceptibility;
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY,
+		PathogenTestType.PCR_RT_PCR })
 	private Float isoniazidMic;
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY,
+		PathogenTestType.PCR_RT_PCR })
 	private DrugSusceptibilityType isoniazidSusceptibility;
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private Float kanamycinMic;
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private DrugSusceptibilityType kanamycinSusceptibility;
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private Float levofloxacinMic;
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private DrugSusceptibilityType levofloxacinSusceptibility;
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private Float moxifloxacinMic;
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private DrugSusceptibilityType moxifloxacinSusceptibility;
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private Float ofloxacinMic;
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private DrugSusceptibilityType ofloxacinSusceptibility;
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY,
+		PathogenTestType.PCR_RT_PCR })
 	private Float rifampicinMic;
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY,
+		PathogenTestType.PCR_RT_PCR })
 	private DrugSusceptibilityType rifampicinSusceptibility;
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private Float streptomycinMic;
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private DrugSusceptibilityType streptomycinSusceptibility;
 
 	public static DrugSusceptibilityDto build() {

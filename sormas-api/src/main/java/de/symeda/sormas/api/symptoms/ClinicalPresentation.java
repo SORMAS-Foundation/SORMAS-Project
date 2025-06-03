@@ -13,34 +13,18 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.therapy;
+package de.symeda.sormas.api.symptoms;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.utils.YesNoUnknown;
 
-public enum DrugSusceptibilityType {
+public enum ClinicalPresentation {
 
-	NOT_APPLICABLE,
-	RESISTANT,
-	SUSCEPTIBLE,
+	ASYMPTOMATIC,
+	COMPATIBLE,
 	UNKNOWN;
 
 	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
-	}
-
-	public YesNoUnknown toYesNoUnknown() {
-		switch (this) {
-		case RESISTANT:
-			return YesNoUnknown.YES;
-		case SUSCEPTIBLE:
-			return YesNoUnknown.YES;
-		case UNKNOWN:
-			return YesNoUnknown.UNKNOWN;
-		case NOT_APPLICABLE:
-		default:
-			return null;
-		}
 	}
 }

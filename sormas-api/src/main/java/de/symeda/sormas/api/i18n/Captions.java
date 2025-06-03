@@ -730,6 +730,7 @@ public interface Captions {
 	String CaseData_notifyingClinicDetails = "CaseData.notifyingClinicDetails";
 	String CaseData_numberOfVisits = "CaseData.numberOfVisits";
 	String CaseData_otherDeletionReason = "CaseData.otherDeletionReason";
+	String CaseData_otherDiagnosticCriteria = "CaseData.otherDiagnosticCriteria";
 	String CaseData_outcome = "CaseData.outcome";
 	String CaseData_outcomeDate = "CaseData.outcomeDate";
 	String CaseData_overwriteFollowUpUntil = "CaseData.overwriteFollowUpUntil";
@@ -773,6 +774,7 @@ public interface Captions {
 	String CaseData_quarantineTo = "CaseData.quarantineTo";
 	String CaseData_quarantineTypeDetails = "CaseData.quarantineTypeDetails";
 	String CaseData_rabiesType = "CaseData.rabiesType";
+	String CaseData_radiographyCompatibility = "CaseData.radiographyCompatibility";
 	String CaseData_region = "CaseData.region";
 	String CaseData_regionLevelDate = "CaseData.regionLevelDate";
 	String CaseData_reInfection = "CaseData.reInfection";
@@ -1381,6 +1383,14 @@ public interface Captions {
 	String devModeSampleSendDispatch = "devModeSampleSendDispatch";
 	String devModeSampleStartDate = "devModeSampleStartDate";
 	String devModeUseSeed = "devModeUseSeed";
+	String diagnosisCriteriaDetailTestResult = "diagnosisCriteriaDetailTestResult";
+	String diagnosisCriteriaDetailTestResultDate = "diagnosisCriteriaDetailTestResultDate";
+	String diagnosisCriteriaDetailTestResultNeg = "diagnosisCriteriaDetailTestResultNeg";
+	String diagnosisCriteriaDetailTestResultOngoing = "diagnosisCriteriaDetailTestResultOngoing";
+	String diagnosisCriteriaDetailTestResultPos = "diagnosisCriteriaDetailTestResultPos";
+	String diagnosisCriteriaDetailTestTypeNo = "diagnosisCriteriaDetailTestTypeNo";
+	String diagnosisCriteriaDetailTestTypeNotApplicable = "diagnosisCriteriaDetailTestTypeNotApplicable";
+	String diagnosisCriteriaDetailTestTypeYes = "diagnosisCriteriaDetailTestTypeYes";
 	String disease = "disease";
 	String DiseaseBurden_caseCount = "DiseaseBurden.caseCount";
 	String DiseaseBurden_caseDeathCount = "DiseaseBurden.caseDeathCount";
@@ -2190,12 +2200,15 @@ public interface Captions {
 	String PathogenTest_ctValueRdrpS = "PathogenTest.ctValueRdrpS";
 	String PathogenTest_ctValueS = "PathogenTest.ctValueS";
 	String PathogenTest_deletionReason = "PathogenTest.deletionReason";
+	String PathogenTest_drugSusceptibility = "PathogenTest.drugSusceptibility";
 	String PathogenTest_externalId = "PathogenTest.externalId";
 	String PathogenTest_externalOrderId = "PathogenTest.externalOrderId";
 	String PathogenTest_fourFoldIncreaseAntibodyTiter = "PathogenTest.fourFoldIncreaseAntibodyTiter";
+	String PathogenTest_isoniazidResistant = "PathogenTest.isoniazidResistant";
 	String PathogenTest_lab = "PathogenTest.lab";
 	String PathogenTest_labDetails = "PathogenTest.labDetails";
 	String PathogenTest_otherDeletionReason = "PathogenTest.otherDeletionReason";
+	String PathogenTest_patternProfile = "PathogenTest.patternProfile";
 	String PathogenTest_pcrTestSpecification = "PathogenTest.pcrTestSpecification";
 	String PathogenTest_preliminary = "PathogenTest.preliminary";
 	String PathogenTest_prescriber = "PathogenTest.prescriber";
@@ -2208,9 +2221,12 @@ public interface Captions {
 	String PathogenTest_prescriberPhysicianCode = "PathogenTest.prescriberPhysicianCode";
 	String PathogenTest_prescriberPostalCode = "PathogenTest.prescriberPostalCode";
 	String PathogenTest_reportDate = "PathogenTest.reportDate";
+	String PathogenTest_rifampicinResistant = "PathogenTest.rifampicinResistant";
 	String PathogenTest_seroGroupSpecification = "PathogenTest.seroGroupSpecification";
 	String PathogenTest_seroGroupSpecificationText = "PathogenTest.seroGroupSpecificationText";
 	String PathogenTest_serotype = "PathogenTest.serotype";
+	String PathogenTest_specie = "PathogenTest.specie";
+	String PathogenTest_strainCallStatus = "PathogenTest.strainCallStatus";
 	String PathogenTest_seroTypingMethod = "PathogenTest.seroTypingMethod";
 	String PathogenTest_seroTypingMethodText = "PathogenTest.seroTypingMethodText";
 	String PathogenTest_testDateTime = "PathogenTest.testDateTime";
@@ -2223,6 +2239,7 @@ public interface Captions {
 	String PathogenTest_testResult = "PathogenTest.testResult";
 	String PathogenTest_testResultText = "PathogenTest.testResultText";
 	String PathogenTest_testResultVerified = "PathogenTest.testResultVerified";
+	String PathogenTest_testScale = "PathogenTest.testScale";
 	String PathogenTest_testType = "PathogenTest.testType";
 	String PathogenTest_testTypeText = "PathogenTest.testTypeText";
 	String PathogenTest_typingId = "PathogenTest.typingId";
@@ -3052,6 +3069,9 @@ public interface Captions {
 	String TestReport_testLabPostalCode = "TestReport.testLabPostalCode";
 	String TestReport_testResult = "TestReport.testResult";
 	String TestReport_testType = "TestReport.testType";
+	String Therapy_beijingLineage = "Therapy.beijingLineage";
+	String Therapy_directlyObservedTreatment = "Therapy.directlyObservedTreatment";
+	String Therapy_mdrXdrTuberculosis = "Therapy.mdrXdrTuberculosis";
 	String titleAefiInvestigationBasicDetails = "titleAefiInvestigationBasicDetails";
 	String titleAefiInvestigationColdChainAndTransport = "titleAefiInvestigationColdChainAndTransport";
 	String titleAefiInvestigationColdChainAndTransportLastVaccineStoragePoint = "titleAefiInvestigationColdChainAndTransportLastVaccineStoragePoint";
