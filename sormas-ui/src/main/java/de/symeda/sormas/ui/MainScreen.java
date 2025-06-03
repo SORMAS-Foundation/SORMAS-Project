@@ -73,6 +73,7 @@ import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
 import de.symeda.sormas.ui.dashboard.adverseeventsfollowingimmunization.AefiDashboardView;
 import de.symeda.sormas.ui.dashboard.campaigns.CampaignDashboardView;
 import de.symeda.sormas.ui.dashboard.contacts.ContactsDashboardView;
+import de.symeda.sormas.ui.dashboard.gis.GisDashboardView;
 import de.symeda.sormas.ui.dashboard.sample.SampleDashboardView;
 import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
 import de.symeda.sormas.ui.environment.EnvironmentsView;
@@ -237,6 +238,12 @@ public class MainScreen extends HorizontalLayout {
 		} else if (aefiDashboardPermitted()) {
 			menu.addView(
 				AefiDashboardView.class,
+				AbstractDashboardView.ROOT_VIEW_NAME,
+				I18nProperties.getCaption(Captions.mainMenuDashboard),
+				VaadinIcons.DASHBOARD);
+		} else if (gisDashboardPermitted()) {
+			menu.addView(
+				GisDashboardView.class,
 				AbstractDashboardView.ROOT_VIEW_NAME,
 				I18nProperties.getCaption(Captions.mainMenuDashboard),
 				VaadinIcons.DASHBOARD);
@@ -467,6 +474,20 @@ public class MainScreen extends HorizontalLayout {
 		return permitted(
 			EnumSet.of(FeatureType.ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_MANAGEMENT),
 			UserRight.DASHBOARD_ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW);
+	}
+
+	private static boolean gisDashboardPermitted() {
+		return permitted(
+			EnumSet.of(
+				FeatureType.CASE_SURVEILANCE,
+				FeatureType.CONTACT_TRACING,
+				FeatureType.SAMPLES_LAB,
+				FeatureType.ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_MANAGEMENT),
+			new UserRight[] {
+				UserRight.DASHBOARD_SURVEILLANCE_VIEW,
+				UserRight.DASHBOARD_CONTACT_VIEW,
+				UserRight.DASHBOARD_SAMPLES_VIEW,
+				UserRight.DASHBOARD_ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW });
 	}
 
 	private static Set<String> initKnownViews() {

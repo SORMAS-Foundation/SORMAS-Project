@@ -336,7 +336,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public Long countCasesForMap(Region region, District district, Disease disease, Date from, Date to, NewCaseDateType dateType) {
+	public Long countCasesForMap(Region region, District district, Disease disease, Date from, Date to, NewCaseDateType dateType, Sex sex) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
@@ -344,7 +344,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
 
-		Predicate filter = createMapCasesFilter(caseQueryContext, region, district, disease, from, to, dateType);
+		Predicate filter = createMapCasesFilter(caseQueryContext, region, district, disease, from, to, dateType, sex);
 
 		if (filter != null) {
 			cq.where(filter);
@@ -356,7 +356,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		return 0L;
 	}
 
-	public List<MapCaseDto> getCasesForMap(Region region, District district, Disease disease, Date from, Date to, NewCaseDateType dateType) {
+	public List<MapCaseDto> getCasesForMap(Region region, District district, Disease disease, Date from, Date to, NewCaseDateType dateType, Sex sex) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<MapCaseDto> cq = cb.createQuery(MapCaseDto.class);
@@ -365,7 +365,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
 		CaseJoins joins = caseQueryContext.getJoins();
 
-		Predicate filter = createMapCasesFilter(caseQueryContext, region, district, disease, from, to, dateType);
+		Predicate filter = createMapCasesFilter(caseQueryContext, region, district, disease, from, to, dateType, sex);
 
 		List<MapCaseDto> result;
 		if (filter != null) {
@@ -402,7 +402,8 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		Disease disease,
 		Date from,
 		Date to,
-		NewCaseDateType dateType) {
+		NewCaseDateType dateType,
+		Sex sex) {
 
 		final CriteriaBuilder cb = caseQueryContext.getCriteriaBuilder();
 		final From<?, Case> root = caseQueryContext.getRoot();
@@ -456,6 +457,15 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 				filter = cb.and(filter, diseaseFilter);
 			} else {
 				filter = diseaseFilter;
+			}
+		}
+
+		if (sex != null) {
+			Predicate sexFilter = cb.equal(joins.getPerson().get(Person.SEX), sex);
+			if (filter != null) {
+				filter = cb.and(filter, sexFilter);
+			} else {
+				filter = sexFilter;
 			}
 		}
 

@@ -175,6 +175,7 @@ import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -1335,11 +1336,12 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		Disease disease,
 		Date from,
 		Date to,
-		NewCaseDateType dateType) {
+		NewCaseDateType dateType,
+		Sex sex) {
 		Region region = regionService.getByReferenceDto(regionRef);
 		District district = districtService.getByReferenceDto(districtRef);
 
-		return service.countCasesForMap(region, district, disease, from, to, dateType);
+		return service.countCasesForMap(region, district, disease, from, to, dateType, sex);
 	}
 
 	@Override
@@ -1351,12 +1353,13 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		Disease disease,
 		Date from,
 		Date to,
-		NewCaseDateType dateType) {
+		NewCaseDateType dateType,
+		Sex sex) {
 
 		Region region = regionService.getByReferenceDto(regionRef);
 		District district = districtService.getByReferenceDto(districtRef);
 
-		List<MapCaseDto> cases = service.getCasesForMap(region, district, disease, from, to, dateType);
+		List<MapCaseDto> cases = service.getCasesForMap(region, district, disease, from, to, dateType, sex);
 
 		Pseudonymizer<MapCaseDto> pseudonymizer = createSimplePlaceholderPseudonymizer(cases);
 		pseudonymizer.pseudonymizeDtoCollection(MapCaseDto.class, cases, MapCaseDto::getInJurisdiction, null);

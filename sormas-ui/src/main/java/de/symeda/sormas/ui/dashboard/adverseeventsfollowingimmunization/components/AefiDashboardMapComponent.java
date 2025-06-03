@@ -78,13 +78,14 @@ public class AefiDashboardMapComponent extends BaseDashboardMapComponent<AefiDas
 			LeafletMarker marker = new LeafletMarker();
 			switch (mapAefiDto.getAefiType()) {
 			case SERIOUS:
-				marker.setIcon(MarkerIcon.SAMPLE_CASE);
+				marker.setIcon(MarkerIcon.AEFI_SERIOUS);
 				break;
 			case NON_SERIOUS:
-				marker.setIcon(MarkerIcon.SAMPLE_CONTACT);
+				marker.setIcon(MarkerIcon.AEFI_NON_SERIOUS);
 				break;
 			default:
-				marker.setIcon(MarkerIcon.SAMPLE_EVENT_PARTICIPANT);
+				marker.setIcon(MarkerIcon.AEFI_UNCLASSIFIED);
+				break;
 			}
 			marker.setLatLon(mapAefiDto.getLatitude(), mapAefiDto.getLongitude());
 
@@ -102,7 +103,11 @@ public class AefiDashboardMapComponent extends BaseDashboardMapComponent<AefiDas
 		showSeriousAefiCheckBox.setCaption(I18nProperties.getCaption(Captions.aefiDashboardShowSeriousAefi));
 		showSeriousAefiCheckBox.setValue(shouldShowSeriousAefi());
 		showSeriousAefiCheckBox.addValueChangeListener(e -> {
-			dashboardDataProvider.buildDashboardCriteriaWithDates().aefiType(AefiType.SERIOUS);
+			if ((boolean) e.getProperty().getValue()) {
+				dashboardDataProvider.buildDashboardCriteriaWithDates().aefiType(AefiType.SERIOUS);
+			} else {
+				dashboardDataProvider.buildDashboardCriteriaWithDates().aefiType(null);
+			}
 
 			refreshMap(true);
 		});
@@ -114,7 +119,11 @@ public class AefiDashboardMapComponent extends BaseDashboardMapComponent<AefiDas
 		showNonSeriousAefiCheckBox.setCaption(I18nProperties.getCaption(Captions.aefiDashboardShowNonSeriousAefi));
 		showNonSeriousAefiCheckBox.setValue(shouldShowNonSeriousAefi());
 		showNonSeriousAefiCheckBox.addValueChangeListener(e -> {
-			dashboardDataProvider.buildDashboardCriteriaWithDates().aefiType(AefiType.NON_SERIOUS);
+			if ((boolean) e.getProperty().getValue()) {
+				dashboardDataProvider.buildDashboardCriteriaWithDates().aefiType(AefiType.NON_SERIOUS);
+			} else {
+				dashboardDataProvider.buildDashboardCriteriaWithDates().aefiType(null);
+			}
 
 			refreshMap(true);
 		});
@@ -129,19 +138,15 @@ public class AefiDashboardMapComponent extends BaseDashboardMapComponent<AefiDas
 		samplesLegendLayout.setSpacing(false);
 		samplesLegendLayout.setMargin(false);
 
-		//if (shouldShowSeriousAefi()) {
 		HorizontalLayout seriousLegendEntry =
-			buildMarkerLegendEntry(MarkerIcon.SAMPLE_CASE, I18nProperties.getCaption(Captions.aefiDashboardSeriousAefi));
+			buildMarkerLegendEntry(MarkerIcon.AEFI_SERIOUS, I18nProperties.getCaption(Captions.aefiDashboardSeriousAefi));
 		CssStyles.style(seriousLegendEntry, CssStyles.HSPACE_RIGHT_3);
 		samplesLegendLayout.addComponent(seriousLegendEntry);
-		//}
 
-		//if (shouldShowNonSeriousAefi()) {
 		HorizontalLayout nonSeriousLegendEntry =
-			buildMarkerLegendEntry(MarkerIcon.SAMPLE_CONTACT, I18nProperties.getCaption(Captions.aefiDashboardNonSeriousAefi));
+			buildMarkerLegendEntry(MarkerIcon.AEFI_NON_SERIOUS, I18nProperties.getCaption(Captions.aefiDashboardNonSeriousAefi));
 		CssStyles.style(nonSeriousLegendEntry, CssStyles.HSPACE_RIGHT_3);
 		samplesLegendLayout.addComponent(nonSeriousLegendEntry);
-		//}
 
 		return Collections.singletonList(samplesLegendLayout);
 	}

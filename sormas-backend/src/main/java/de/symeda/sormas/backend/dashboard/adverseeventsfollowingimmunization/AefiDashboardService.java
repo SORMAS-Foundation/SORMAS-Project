@@ -607,7 +607,9 @@ public class AefiDashboardService {
 				new AefiCriteria().disease(criteria.getDisease())
 					.region(criteria.getRegion())
 					.district(criteria.getDistrict())
-					.aefiType(criteria.getAefiType()),
+					.aefiType(criteria.getAefiType())
+					.showSeriousAefiForMap(criteria.isShowSeriousAefiForMap())
+					.showNonSeriousAefiForMap(criteria.isShowNonSeriousAefiForMap()),
 				queryContext));
 
 		if (criteria.getDateFrom() != null && criteria.getDateTo() != null) {

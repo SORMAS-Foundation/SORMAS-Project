@@ -103,6 +103,10 @@ public class UiUtil {
 		return enabled(feature) && permitted(userRights);
 	}
 
+	public static boolean permitted(Set<FeatureType> features, UserRight... userRights) {
+		return enabled(features) && permitted(userRights);
+	}
+
 	public static boolean permitted(UserRight userRight) {
 		return Objects.nonNull(getCurrentUserProvider()) && getCurrentUserProvider().hasUserRight(userRight);
 	}
