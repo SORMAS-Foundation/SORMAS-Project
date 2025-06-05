@@ -14373,4 +14373,9 @@ alter table therapy_history add beijinglineage boolean default false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (574, 'Tuberculosis disease updates - sample/testing, case, person, therapy, hospitalization  #13324');
 
+-- 2025-06-05 Pertussis missed symptom, #13373
+alter table symptoms add column IF NOT EXISTS nocturnalcough varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (575, 'Pertussis missed symptom, #13373');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

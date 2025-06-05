@@ -223,7 +223,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setMeningitis(source.getMeningitis());
 		target.setOtherClinicalPresentation(source.getOtherClinicalPresentation());
 		target.setOtherClinicalPresentationText(source.getOtherClinicalPresentationText());
-
+		target.setNocturnalCough(source.getNocturnalCough());
 		return target;
 	}
 
@@ -429,7 +429,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setMeningitis(source.getMeningitis());
 		target.setOtherClinicalPresentation(source.getOtherClinicalPresentation());
 		target.setOtherClinicalPresentationText(source.getOtherClinicalPresentationText());
-
+		target.setNocturnalCough(source.getNocturnalCough());
 		return target;
 	}
 

@@ -666,6 +666,7 @@ public interface Captions {
 	String CaseData_classificationUser = "CaseData.classificationUser";
 	String CaseData_classifiedBy = "CaseData.classifiedBy";
 	String CaseData_clinicalConfirmation = "CaseData.clinicalConfirmation";
+	String CaseData_clinicalConfirmation_PERTUSSIS = "CaseData.clinicalConfirmation.PERTUSSIS";
 	String CaseData_clinicalCourse = "CaseData.clinicalCourse";
 	String CaseData_clinicianEmail = "CaseData.clinicianEmail";
 	String CaseData_clinicianName = "CaseData.clinicianName";
@@ -2822,6 +2823,7 @@ public interface Captions {
 	String Symptoms_cough = "Symptoms.cough";
 	String Symptoms_coughingBlood = "Symptoms.coughingBlood";
 	String Symptoms_coughingBouts = "Symptoms.coughingBouts";
+	String Symptoms_coughingBouts_PERTUSSIS = "Symptoms.coughingBouts.PERTUSSIS";
 	String Symptoms_coughsProvokeVomiting = "Symptoms.coughsProvokeVomiting";
 	String Symptoms_coughWithHeamoptysis = "Symptoms.coughWithHeamoptysis";
 	String Symptoms_coughWithoutSputum = "Symptoms.coughWithoutSputum";
@@ -2910,6 +2912,7 @@ public interface Captions {
 	String Symptoms_musclePain = "Symptoms.musclePain";
 	String Symptoms_nausea = "Symptoms.nausea";
 	String Symptoms_neckStiffness = "Symptoms.neckStiffness";
+	String Symptoms_nocturnalCough = "Symptoms.nocturnalCough";
 	String Symptoms_noseBleeding = "Symptoms.noseBleeding";
 	String Symptoms_oedemaFaceNeck = "Symptoms.oedemaFaceNeck";
 	String Symptoms_oedemaLowerExtremity = "Symptoms.oedemaLowerExtremity";
