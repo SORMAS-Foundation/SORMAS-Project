@@ -233,6 +233,8 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	public static final String DEPARTMENT = "department";
 
 	public static final String NOTIFIER = "notifier";
+	public static final String RADIOGRAPHY_COMPATIBILITY = "radiographyCompatibility";
+	public static final String OTHER_DIAGNOSTIC_CRITERIA = "otherDiagnosticCriteria";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -639,6 +641,8 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	private String department;
 
 	private NotifierReferenceDto notifier;
+	private RadiographyCompatibility radiographyCompatibility;
+	private String otherDiagnosticCriteria;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		return build(person, disease, HealthConditionsDto.build());
@@ -1818,6 +1822,22 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 
 	public void setDepartment(String department) {
 		this.department = department;
+	}
+
+	public RadiographyCompatibility getRadiographyCompatibility() {
+		return radiographyCompatibility;
+	}
+
+	public void setRadiographyCompatibility(RadiographyCompatibility radiographyCompatibility) {
+		this.radiographyCompatibility = radiographyCompatibility;
+	}
+
+	public String getOtherDiagnosticCriteria() {
+		return otherDiagnosticCriteria;
+	}
+
+	public void setOtherDiagnosticCriteria(String otherDiagnosticCriteria) {
+		this.otherDiagnosticCriteria = otherDiagnosticCriteria;
 	}
 
 	/**

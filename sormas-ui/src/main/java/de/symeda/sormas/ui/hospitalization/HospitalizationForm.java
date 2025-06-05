@@ -24,6 +24,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.UserError;
 import com.vaadin.shared.ui.ErrorLevel;
@@ -68,12 +70,13 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 	private static final String HOSPITALIZATION_HEADING_LOC = "hospitalizationHeadingLoc";
 	private static final String PREVIOUS_HOSPITALIZATIONS_HEADING_LOC = "previousHospitalizationsHeadingLoc";
 	private static final String HEALTH_FACILITY = Captions.CaseHospitalization_healthFacility;
+	private static final String HEALTH_FACILITY_DEPARTMENT = Captions.CaseData_department;
 	private static final String HOSPITAL_NAME_DETAIL = " ( %s )";
 	//@formatter:off
 	private static final String HTML_LAYOUT =
 			loc(HOSPITALIZATION_HEADING_LOC) +
 			fluidRowLocs(HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY) +
-			fluidRowLocs(HEALTH_FACILITY) +
+			fluidRowLocs(HEALTH_FACILITY, HEALTH_FACILITY_DEPARTMENT) +
 			fluidRowLocs(HospitalizationDto.ADMISSION_DATE, HospitalizationDto.DISCHARGE_DATE, HospitalizationDto.LEFT_AGAINST_ADVICE, "") +
 			fluidRowLocs(HospitalizationDto.HOSPITALIZATION_REASON, HospitalizationDto.OTHER_HOSPITALIZATION_REASON) +
 					fluidRowLocs(3, HospitalizationDto.INTENSIVE_CARE_UNIT, 3,
@@ -127,6 +130,13 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		FacilityReferenceDto healthFacility = caze.getHealthFacility();
 		facilityField.setValue(getHospitalName(healthFacility, caze));
 		facilityField.setReadOnly(true);
+
+		if (!StringUtils.isEmpty(caze.getDepartment())) {
+			TextField facilityDepartmentField = addCustomField(HEALTH_FACILITY_DEPARTMENT, String.class, TextField.class);
+			String healthFacilityDepartment = caze.getDepartment();
+			facilityDepartmentField.setValue(healthFacilityDepartment);
+			facilityDepartmentField.setReadOnly(true);
+		}
 
 		final NullableOptionGroup admittedToHealthFacilityField = addField(HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY, NullableOptionGroup.class);
 		final DateField admissionDateField = addField(HospitalizationDto.ADMISSION_DATE, DateField.class);

@@ -25,7 +25,7 @@ import de.symeda.sormas.api.utils.Diseases;
 public enum SampleMaterial {
 
 	@Diseases(value = {
-			Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	BLOOD,
 	@Diseases(value = {
 			Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION }, hide = true)
@@ -46,7 +46,7 @@ public enum SampleMaterial {
 		Disease.CORONAVIRUS, Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION }, hide = true)
 	RECTAL_SWAB,
 	@Diseases(value = {
-			Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	CEREBROSPINAL_FLUID,
 	@Diseases(value = {
 		Disease.CORONAVIRUS, Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION }, hide = true)
@@ -93,6 +93,7 @@ public enum SampleMaterial {
 	@Diseases(value = {
 			Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
 	PLEURAL_FLUID,
+	CLINICAL_SAMPLE,
 	@Diseases(value = {
 			Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
 	PERITONEAL_FLUID,

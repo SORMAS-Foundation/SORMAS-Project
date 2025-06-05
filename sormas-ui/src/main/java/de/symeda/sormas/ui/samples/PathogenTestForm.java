@@ -55,12 +55,15 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.sample.PathogenStrainCallStatus;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SamplePurpose;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.therapy.DrugSusceptibilityForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
@@ -93,6 +96,14 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			fluidRowLocs(PathogenTestDto.TYPING_ID, "") +
 			fluidRowLocs(PathogenTestDto.TEST_DATE_TIME, PathogenTestDto.LAB) +
 			fluidRowLocs("", PathogenTestDto.LAB_DETAILS) +
+			fluidRowLocs(PathogenTestDto.TEST_RESULT, PathogenTestDto.TEST_RESULT_VERIFIED) +
+			fluidRowLocs(PathogenTestDto.RIFAMPICIN_RESISTANT, PathogenTestDto.ISONIAZID_RESISTANT) +
+			fluidRowLocs(PathogenTestDto.TEST_SCALE, "") +
+			fluidRowLocs(PathogenTestDto.STRAIN_CALL_STATUS, "") +
+			fluidRowLocs(PathogenTestDto.SPECIE, "") +
+			fluidRowLocs(PathogenTestDto.PATTERN_PROFILE, "") +
+			fluidRowLocs(PathogenTestDto.DRUG_SUSCEPTIBILITY) +
+			fluidRowLocs(PathogenTestDto.PRELIMINARY, "") +
 			fluidRowLocs(5,PathogenTestDto.TEST_RESULT, 4, PathogenTestDto.TEST_RESULT_VERIFIED, 3,PathogenTestDto.PRELIMINARY) +
 			fluidRowLocs(4,PathogenTestDto.SEROTYPE, 4,PathogenTestDto.SEROTYPING_METHOD, 4,PathogenTestDto.SERO_TYPING_METHOD_TEXT) +
 			fluidRowLocs(6,PathogenTestDto.SERO_GROUP_SPECIFICATION , 6, PathogenTestDto.SERO_GROUP_SPECIFICATION_TEXT) +
@@ -120,6 +131,10 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 	private Label pathogenTestHeadingLabel;
 
+	private ComboBox testTypeField;
+	private ComboBox diseaseField;
+	private ComboBox testResultField;
+	private DrugSusceptibilityForm drugSusceptibilityField;
 	private TextField testTypeTextField;
 	private ComboBox pcrTestSpecification;
 	private Disease disease;
@@ -181,6 +196,43 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		}
 	}
 
+	private void updateTuberculosisFieldSpecifications(PathogenTestType testType, Disease disease) {
+		if ((FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG))) {
+			boolean wasReadOnly = testResultField.isReadOnly();
+
+			if (disease == Disease.TUBERCULOSIS && testType != null) {
+				if (Arrays.asList(PathogenTestType.BEIJINGGENOTYPING, PathogenTestType.MIRU_PATTERN_CODE, PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)
+					.contains(testType)) {
+					if (wasReadOnly) {
+						testResultField.setReadOnly(false);
+					}
+					testResultField.setValue(PathogenTestResultType.NOT_APPLICABLE);
+					if (wasReadOnly) {
+						testResultField.setReadOnly(true);
+					}
+				} else if (testType == PathogenTestType.SPOLIGOTYPING) {
+					if (wasReadOnly) {
+						testResultField.setReadOnly(false);
+					}
+					testResultField.setValue(PathogenTestResultType.POSITIVE);
+					if (wasReadOnly) {
+						testResultField.setReadOnly(true);
+					}
+				} else if (wasReadOnly) {
+					// Field was read-only but no longer meets conditions for auto-set values
+					testResultField.setReadOnly(false);
+					testResultField.setValue(null);
+				}
+			} else if (wasReadOnly) {
+				// Disease is not TB or testType is null, but field was read-only
+				testResultField.setReadOnly(false);
+				testResultField.setValue(null);
+			}
+
+			drugSusceptibilityField.updateFieldsVisibility(disease, testType);
+		}
+	}
+
 	private Date getSampleDate() {
 		if (sample != null) {
 			return sample.getSampleDateTime();
@@ -233,6 +285,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		addField(PathogenTestDto.VIA_LIMS);
 		addField(PathogenTestDto.EXTERNAL_ID);
 		addField(PathogenTestDto.EXTERNAL_ORDER_ID);
+		testTypeField = addField(PathogenTestDto.TEST_TYPE, ComboBox.class);
 		TextField seroTypingMethodText = addField(PathogenTestDto.SERO_TYPING_METHOD_TEXT);
 		seroTypingMethodText.setVisible(false);
 		ComboBox testTypeField = addField(PathogenTestDto.TEST_TYPE, ComboBox.class);
@@ -260,8 +313,8 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		typingIdField = addField(PathogenTestDto.TYPING_ID, TextField.class);
 		typingIdField.setVisible(false);
 
-		// Tested Disease or Tested Pathogen, depending on sample type
-		ComboBox diseaseField = addDiseaseField(PathogenTestDto.TESTED_DISEASE, true, create, false);
+		// Tested Desease or Tested Pathogen, depending on sample type
+		diseaseField = addDiseaseField(PathogenTestDto.TESTED_DISEASE, true, create, false);
 		addField(PathogenTestDto.TESTED_DISEASE_DETAILS, TextField.class);
 		ComboBox diseaseVariantField = addCustomizableEnumField(PathogenTestDto.TESTED_DISEASE_VARIANT);
 		diseaseVariantField.setNullSelectionAllowed(true);
@@ -296,8 +349,128 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			testedPathogenField.setRequired(true);
 		}
 
-		ComboBox testResultField = addField(PathogenTestDto.TEST_RESULT, ComboBox.class);
+		testResultField = addField(PathogenTestDto.TEST_RESULT, ComboBox.class);
 		testResultField.removeItem(PathogenTestResultType.NOT_DONE);
+
+		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+			testResultField.removeItem(PathogenTestResultType.NOT_APPLICABLE);
+		}
+		addField(PathogenTestDto.SEROTYPE, TextField.class);
+
+		NullableOptionGroup rifampicinResistantField = addField(PathogenTestDto.RIFAMPICIN_RESISTANT, NullableOptionGroup.class);
+		rifampicinResistantField.setVisible(false);
+
+		NullableOptionGroup isoniazidResistantField = addField(PathogenTestDto.ISONIAZID_RESISTANT, NullableOptionGroup.class);
+		isoniazidResistantField.setVisible(false);
+
+		ComboBox testScaleField = addField(PathogenTestDto.TEST_SCALE, ComboBox.class);
+		testScaleField.setVisible(false);
+
+		ComboBox strainCallStatusField = addField(PathogenTestDto.STRAIN_CALL_STATUS, ComboBox.class);
+		strainCallStatusField.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
+		strainCallStatusField.setVisible(false);
+
+		ComboBox specieField = addField(PathogenTestDto.SPECIE, ComboBox.class);
+		specieField.setVisible(false);
+
+		TextField patternProfileField = addField(PathogenTestDto.PATTERN_PROFILE, TextField.class);
+		patternProfileField.setVisible(false);
+
+		drugSusceptibilityField = (DrugSusceptibilityForm) addField(
+			PathogenTestDto.DRUG_SUSCEPTIBILITY,
+			new DrugSusceptibilityForm(
+				FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
+				UiFieldAccessCheckers.getDefault(true, FacadeProvider.getConfigFacade().getCountryLocale())));
+		drugSusceptibilityField.setCaption(null);
+		drugSusceptibilityField.setVisible(false);
+
+		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+			//tuberculosis-pcr test specification
+			Map<Object, List<Object>> tuberculosisPcrDependencies = new HashMap<>() {
+
+				{
+					put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.TUBERCULOSIS));
+					put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.PCR_RT_PCR));
+					put(PathogenTestDto.TEST_RESULT, Arrays.asList(PathogenTestResultType.POSITIVE));
+				}
+			};
+			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.RIFAMPICIN_RESISTANT, tuberculosisPcrDependencies, true);
+			//FieldHelper.setRequiredWhen(getFieldGroup(), PathogenTestDto.RIFAMPICIN_RESISTANT, tuberculosisPcrDependencies);
+			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.ISONIAZID_RESISTANT, tuberculosisPcrDependencies, true);
+			//FieldHelper.setRequiredWhen(getFieldGroup(), PathogenTestDto.ISONIAZID_RESISTANT, tuberculosisPcrDependencies);
+
+			//tuberculosis-microscopy test specification
+			Map<Object, List<Object>> tuberculosisMicroscopyDependencies = new HashMap<>() {
+
+				{
+					put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.TUBERCULOSIS));
+					put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.MICROSCOPY));
+				}
+			};
+			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.TEST_SCALE, tuberculosisMicroscopyDependencies, true);
+			//FieldHelper.setRequiredWhen(getFieldGroup(), PathogenTestDto.TEST_SCALE, tuberculosisMicroscopyDependencies);
+
+			//tuberculosis-beijinggenotyping test specification
+			Map<Object, List<Object>> tuberculosisBeijingDependencies = new HashMap<>() {
+
+				{
+					put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.TUBERCULOSIS));
+					put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.BEIJINGGENOTYPING));
+				}
+			};
+			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.STRAIN_CALL_STATUS, tuberculosisBeijingDependencies, true);
+			//FieldHelper.setRequiredWhen(getFieldGroup(), PathogenTestDto.STRAIN_CALL_STATUS, tuberculosisBeijingDependencies);
+
+			//tuberculosis-spoligotyping test specification
+			Map<Object, List<Object>> tuberculosisSpoligotypingDependencies = new HashMap<>() {
+
+				{
+					put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.TUBERCULOSIS));
+					put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.SPOLIGOTYPING));
+					put(PathogenTestDto.TEST_RESULT, Arrays.asList(PathogenTestResultType.POSITIVE));
+				}
+			};
+			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.SPECIE, tuberculosisSpoligotypingDependencies, true);
+			//FieldHelper.setRequiredWhen(getFieldGroup(), PathogenTestDto.SPECIE, tuberculosisSpoligotypingDependencies);
+
+			//tuberculosis-miru-code test specification
+			Map<Object, List<Object>> tuberculosisMiruCodeDependencies = new HashMap<>() {
+
+				{
+					put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.TUBERCULOSIS));
+					put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.MIRU_PATTERN_CODE));
+				}
+			};
+			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.PATTERN_PROFILE, tuberculosisMiruCodeDependencies, true);
+			//FieldHelper.setRequiredWhen(getFieldGroup(), PathogenTestDto.PATTERN_PROFILE, tuberculosisMiruCodeDependencies);
+
+			//tuberculosis-antibiotic test specification
+			Map<Object, List<Object>> tuberculosisAntibioticDependencies = new HashMap<>() {
+
+				{
+					put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.TUBERCULOSIS));
+					put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY));
+				}
+			};
+			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.DRUG_SUSCEPTIBILITY, tuberculosisAntibioticDependencies, true);
+
+			//test result - read only
+			Map<Object, List<Object>> tuberculosisTestResultReadOnlyDependencies = new HashMap<>() {
+
+				{
+					put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.TUBERCULOSIS));
+					put(
+						PathogenTestDto.TEST_TYPE,
+						Arrays.asList(
+							PathogenTestType.BEIJINGGENOTYPING,
+							PathogenTestType.SPOLIGOTYPING,
+							PathogenTestType.MIRU_PATTERN_CODE,
+							PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY));
+				}
+			};
+			FieldHelper.setReadOnlyWhen(getFieldGroup(), PathogenTestDto.TEST_RESULT, tuberculosisTestResultReadOnlyDependencies, false, false);
+		}
+
 		TextField seroTypeTF = addField(PathogenTestDto.SEROTYPE, TextField.class);
 		seroTypeTF.setVisible(false);
 		ComboBox seroTypeMetCB = addField(PathogenTestDto.SEROTYPING_METHOD, ComboBox.class);
@@ -418,6 +591,16 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				Arrays.asList(PathogenTestType.values()),
 				FieldVisibilityCheckers.withDisease(disease),
 				PathogenTestType.class);
+
+			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+				FieldHelper.updateItems(
+					strainCallStatusField,
+					Arrays.asList(PathogenStrainCallStatus.values()),
+					FieldVisibilityCheckers.withDisease(disease),
+					PathogenStrainCallStatus.class);
+
+				updateTuberculosisFieldSpecifications((PathogenTestType) testTypeField.getValue(), disease);
+			}
 		});
 		diseaseVariantField.addValueChangeListener(e -> {
 			DiseaseVariant diseaseVariant = (DiseaseVariant) e.getProperty().getValue();
@@ -450,6 +633,10 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				setVisibleClear(testTypeField.getValue() != null, PathogenTestDto.SEROTYPE, PathogenTestDto.SEROTYPING_METHOD, PathogenTestDto.SERO_GROUP_SPECIFICATION);
 				testResultField.clear();
 				testResultField.setEnabled(true);
+			}
+
+			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+				updateTuberculosisFieldSpecifications(testType, (Disease) diseaseField.getValue());
 			}
 		});
 		lab.addValueChangeListener(event -> {

@@ -848,4 +848,385 @@ public final class FieldHelper {
 		combo.setPlaceholder(I18nProperties.getCaption(Captions.inaccessibleValue));
 
 	}
+
+	@SuppressWarnings("rawtypes")
+	public static void hideFields(FieldGroup fieldGroup, List<String> fieldIds, boolean clearOnHidden) {
+		if (fieldIds == null || fieldIds.isEmpty()) {
+			return;
+		}
+
+		for (String fieldId : fieldIds) {
+			Field field = fieldGroup.getField(fieldId);
+			if (field != null) {
+				field.setVisible(false);
+				if (clearOnHidden && field.getValue() != null) {
+					field.clear();
+				}
+			}
+		}
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static void hideField(FieldGroup fieldGroup, String fieldId, boolean clearOnHidden) {
+		hideFields(fieldGroup, Arrays.asList(fieldId), clearOnHidden);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static void hideFieldsNotInList(FieldGroup fieldGroup, List<String> visibleFieldIds, boolean clearOnHidden) {
+		if (fieldGroup == null) {
+			return;
+		}
+
+		Collection<?> allPropertyIds = fieldGroup.getBoundPropertyIds();
+		List<String> fieldsToHide = new ArrayList<>();
+
+		for (Object propertyId : allPropertyIds) {
+			String fieldId = propertyId.toString();
+			if (visibleFieldIds == null || !visibleFieldIds.contains(fieldId)) {
+				fieldsToHide.add(fieldId);
+			}
+		}
+
+		// Hide the fields that are not in the visible list
+		for (String fieldId : fieldsToHide) {
+			Field field = fieldGroup.getField(fieldId);
+			if (field != null) {
+				field.setVisible(false);
+				if (clearOnHidden && field.getValue() != null) {
+					field.clear();
+				}
+			}
+		}
+
+		// Make sure the fields in the visible list are actually visible
+		if (visibleFieldIds != null) {
+			for (String fieldId : visibleFieldIds) {
+				Field field = fieldGroup.getField(fieldId);
+				if (field != null) {
+					field.setVisible(true);
+				}
+			}
+		}
+	}
+
+	public static void showOnlyFields(FieldGroup fieldGroup, List<String> visibleFieldIds, boolean clearOnHidden) {
+		hideFieldsNotInList(fieldGroup, visibleFieldIds, clearOnHidden);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static void setRequiredWhen(
+		final FieldGroup fieldGroup,
+		List<String> targetPropertyIds,
+		Map<?, ? extends List<?>> sourcePropertyIdsAndValues) {
+
+		onValueChangedSetRequired(fieldGroup, targetPropertyIds, sourcePropertyIdsAndValues);
+
+		sourcePropertyIdsAndValues.forEach((sourcePropertyId, sourceValues) -> {
+			fieldGroup.getField(sourcePropertyId)
+				.addValueChangeListener(event -> onValueChangedSetRequired(fieldGroup, targetPropertyIds, sourcePropertyIdsAndValues));
+		});
+	}
+
+	public static void setRequiredWhen(final FieldGroup fieldGroup, String targetPropertyId, Map<?, ? extends List<?>> sourcePropertyIdsAndValues) {
+
+		setRequiredWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyIdsAndValues);
+	}
+
+	public static void setRequiredWhen(final List<Field<?>> targetFields, Map<Field<?>, ? extends List<?>> sourceFieldsAndValues) {
+
+		onValueChangedSetRequired(targetFields, sourceFieldsAndValues);
+		sourceFieldsAndValues.forEach(
+			(sourceField, sourceValues) -> sourceField
+				.addValueChangeListener(event -> onValueChangedSetRequired(targetFields, sourceFieldsAndValues)));
+	}
+
+	@SuppressWarnings("rawtypes")
+	private static void onValueChangedSetRequired(
+		final FieldGroup fieldGroup,
+		List<String> targetPropertyIds,
+		Map<?, ? extends List<?>> sourcePropertyIdsAndValues) {
+
+		// A workaround variable to be modified in the forEach lambda
+		boolean[] requiredArray = {
+			true };
+
+		sourcePropertyIdsAndValues.forEach((sourcePropertyId, sourceValues) -> {
+			if (!sourceValues.contains(fieldGroup.getField(sourcePropertyId).getValue()))
+				requiredArray[0] = false;
+		});
+
+		boolean required = requiredArray[0];
+
+		for (String targetPropertyId : targetPropertyIds) {
+			Field targetField = fieldGroup.getField(targetPropertyId);
+			if (!targetField.isVisible()) {
+				targetField.setRequired(false);
+				continue;
+			}
+			targetField.setRequired(required);
+		}
+	}
+
+	private static void onValueChangedSetRequired(List<Field<?>> targetFields, Map<Field<?>, ? extends List<?>> sourceFieldsAndValues) {
+
+		// A workaround variable to be modified in the forEach lambda
+		boolean[] requiredArray = {
+			true };
+
+		sourceFieldsAndValues.forEach((sourceField, sourceValues) -> {
+			if (!sourceValues.contains(sourceField.getValue()))
+				requiredArray[0] = false;
+		});
+
+		boolean required = requiredArray[0];
+
+		for (Field<?> targetField : targetFields) {
+			if (!targetField.isVisible()) {
+				targetField.setRequired(false);
+				continue;
+			}
+			targetField.setRequired(required);
+		}
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static <T> void setValueWhen(
+		final FieldGroup fieldGroup,
+		List<String> targetPropertyIds,
+		Map<?, ? extends List<?>> sourcePropertyIdsAndValues,
+		final T targetValue) {
+
+		onValueChangedSetValue(fieldGroup, targetPropertyIds, sourcePropertyIdsAndValues, targetValue);
+
+		sourcePropertyIdsAndValues.forEach((sourcePropertyId, sourceValues) -> {
+			fieldGroup.getField(sourcePropertyId)
+				.addValueChangeListener(event -> onValueChangedSetValue(fieldGroup, targetPropertyIds, sourcePropertyIdsAndValues, targetValue));
+		});
+	}
+
+	public static <T> void setValueWhen(
+		final FieldGroup fieldGroup,
+		String targetPropertyId,
+		Map<?, ? extends List<?>> sourcePropertyIdsAndValues,
+		final T targetValue) {
+
+		setValueWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyIdsAndValues, targetValue);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static <T> void setValueWhen(
+		final List<Field<T>> targetFields,
+		Map<Field<?>, ? extends List<?>> sourceFieldsAndValues,
+		final T targetValue) {
+
+		onValueChangedSetValue(targetFields, sourceFieldsAndValues, targetValue);
+		sourceFieldsAndValues.forEach(
+			(sourceField, sourceValues) -> sourceField
+				.addValueChangeListener(event -> onValueChangedSetValue(targetFields, sourceFieldsAndValues, targetValue)));
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static void setReadOnlyWhen(
+		final FieldGroup fieldGroup,
+		List<String> targetPropertyIds,
+		Map<?, ? extends List<?>> sourcePropertyIdsAndValues,
+		final boolean clearOnReadOnly,
+		boolean readOnlyWhenNull) {
+
+		onValueChangedSetReadOnly(fieldGroup, targetPropertyIds, sourcePropertyIdsAndValues, clearOnReadOnly, readOnlyWhenNull);
+
+		sourcePropertyIdsAndValues.forEach((sourcePropertyId, sourceValues) -> {
+			Field sourceField = fieldGroup.getField(sourcePropertyId);
+			if (sourceField instanceof AbstractField<?>) {
+				((AbstractField) sourceField).setImmediate(true);
+			}
+			sourceField.addValueChangeListener(
+				event -> onValueChangedSetReadOnly(fieldGroup, targetPropertyIds, sourcePropertyIdsAndValues, clearOnReadOnly, readOnlyWhenNull));
+		});
+	}
+
+	public static void setReadOnlyWhen(
+		final FieldGroup fieldGroup,
+		String targetPropertyId,
+		Map<?, ? extends List<?>> sourcePropertyIdsAndValues,
+		final boolean clearOnReadOnly,
+		boolean readOnlyWhenNull) {
+
+		setReadOnlyWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyIdsAndValues, clearOnReadOnly, readOnlyWhenNull);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static void setReadOnlyWhen(
+		final List<Field<?>> targetFields,
+		Map<Field<?>, ? extends List<?>> sourceFieldsAndValues,
+		final boolean clearOnReadOnly,
+		boolean readOnlyWhenNull) {
+
+		onValueChangedSetReadOnly(targetFields, sourceFieldsAndValues, clearOnReadOnly, readOnlyWhenNull);
+		sourceFieldsAndValues.forEach((sourceField, sourceValues) -> {
+			if (sourceField instanceof AbstractField<?>) {
+				((AbstractField) sourceField).setImmediate(true);
+			}
+			sourceField
+				.addValueChangeListener(event -> onValueChangedSetReadOnly(targetFields, sourceFieldsAndValues, clearOnReadOnly, readOnlyWhenNull));
+		});
+	}
+
+	@SuppressWarnings("rawtypes")
+	private static <T> void onValueChangedSetValue(
+		final FieldGroup fieldGroup,
+		List<String> targetPropertyIds,
+		Map<?, ? extends List<?>> sourcePropertyIdsAndValues,
+		final T targetValue) {
+
+		boolean[] shouldSetValueArray = {
+			true };
+
+		sourcePropertyIdsAndValues.forEach((sourcePropertyId, sourceValues) -> {
+			if (!sourceValues.contains(fieldGroup.getField(sourcePropertyId).getValue()))
+				shouldSetValueArray[0] = false;
+		});
+
+		boolean shouldSetValue = shouldSetValueArray[0];
+
+		for (String targetPropertyId : targetPropertyIds) {
+			Field<T> targetField = (Field<T>) fieldGroup.getField(targetPropertyId);
+			boolean wasReadOnly = targetField.isReadOnly();
+
+			if (shouldSetValue) {
+				if (wasReadOnly) {
+					targetField.setReadOnly(false);
+				}
+				targetField.setValue(targetValue);
+				if (wasReadOnly) {
+					targetField.setReadOnly(true);
+				}
+			} else if (wasReadOnly && targetField.getValue() != null && targetValue.equals(targetField.getValue())) {
+				targetField.setReadOnly(false);
+				targetField.clear();
+			}
+		}
+	}
+
+	private static <T> void onValueChangedSetValue(
+		List<Field<T>> targetFields,
+		Map<Field<?>, ? extends List<?>> sourceFieldsAndValues,
+		final T targetValue) {
+
+		boolean[] shouldSetValueArray = {
+			true };
+
+		sourceFieldsAndValues.forEach((sourceField, sourceValues) -> {
+			if (!sourceValues.contains(sourceField.getValue()))
+				shouldSetValueArray[0] = false;
+		});
+
+		boolean shouldSetValue = shouldSetValueArray[0];
+
+		for (Field<T> targetField : targetFields) {
+			boolean wasReadOnly = targetField.isReadOnly();
+
+			if (shouldSetValue) {
+				if (wasReadOnly) {
+					targetField.setReadOnly(false);
+				}
+				targetField.setValue(targetValue);
+				if (wasReadOnly) {
+					targetField.setReadOnly(true);
+				}
+			} else if (wasReadOnly && targetField.getValue() != null && targetValue.equals(targetField.getValue())) {
+				targetField.setReadOnly(false);
+				targetField.clear();
+			}
+		}
+	}
+
+	@SuppressWarnings("rawtypes")
+	private static void onValueChangedSetReadOnly(
+		final FieldGroup fieldGroup,
+		List<String> targetPropertyIds,
+		Map<?, ? extends List<?>> sourcePropertyIdsAndValues,
+		final boolean clearOnReadOnly,
+		boolean readOnlyWhenNull) {
+
+		boolean[] readOnlyArray = {
+			true };
+
+		sourcePropertyIdsAndValues.forEach((sourcePropertyId, sourceValues) -> {
+			Field sourceField = fieldGroup.getField(sourcePropertyId);
+			Object sourceValue = getNullableSourceFieldValue(sourceField);
+
+			boolean matches;
+			if (sourceValue == null) {
+				matches = readOnlyWhenNull;
+			} else {
+				matches = sourceValues.contains(sourceValue);
+			}
+
+			if (!matches) {
+				readOnlyArray[0] = false;
+			}
+		});
+
+		boolean readOnly = readOnlyArray[0];
+
+		for (String targetPropertyId : targetPropertyIds) {
+			Field targetField = fieldGroup.getField(targetPropertyId);
+			boolean wasReadOnly = targetField.isReadOnly();
+
+			if (readOnly && clearOnReadOnly && targetField.getValue() != null) {
+				targetField.setReadOnly(false);
+				targetField.clear();
+			}
+			targetField.setReadOnly(readOnly);
+			if (readOnly) {
+				targetField.addStyleName("v-readonly");
+			} else {
+				targetField.removeStyleName("v-readonly");
+			}
+		}
+	}
+
+	@SuppressWarnings("rawtypes")
+	private static void onValueChangedSetReadOnly(
+		List<Field<?>> targetFields,
+		Map<Field<?>, ? extends List<?>> sourceFieldsAndValues,
+		final boolean clearOnReadOnly,
+		boolean readOnlyWhenNull) {
+
+		boolean[] readOnlyArray = {
+			true };
+
+		sourceFieldsAndValues.forEach((sourceField, sourceValues) -> {
+			Object sourceValue = getNullableSourceFieldValue(sourceField);
+
+			boolean matches;
+			if (sourceValue == null) {
+				matches = readOnlyWhenNull;
+			} else {
+				matches = sourceValues.contains(sourceValue);
+			}
+
+			if (!matches) {
+				readOnlyArray[0] = false;
+			}
+		});
+
+		boolean readOnly = readOnlyArray[0];
+
+		for (Field<?> targetField : targetFields) {
+			boolean wasReadOnly = targetField.isReadOnly();
+
+			if (readOnly && clearOnReadOnly && targetField.getValue() != null) {
+				targetField.setReadOnly(false);
+				targetField.clear();
+			}
+			targetField.setReadOnly(readOnly);
+			if (readOnly) {
+				targetField.addStyleName("v-readonly");
+			} else {
+				targetField.removeStyleName("v-readonly");
+			}
+		}
+	}
 }

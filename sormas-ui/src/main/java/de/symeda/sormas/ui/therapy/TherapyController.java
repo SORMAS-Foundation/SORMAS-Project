@@ -1,11 +1,14 @@
 package de.symeda.sormas.ui.therapy;
 
+import static de.symeda.sormas.ui.utils.AbstractView.buildNavigationState;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -25,6 +28,7 @@ import de.symeda.sormas.api.therapy.TherapyReferenceDto;
 import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.therapy.TreatmentIndexDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -37,6 +41,28 @@ public class TherapyController {
 
 	public TherapyController() {
 
+	}
+
+	public boolean navigateTo(boolean applyingCriteria, boolean force, BaseCriteria... criteriaList) {
+		if (applyingCriteria) {
+			return false;
+		}
+		applyingCriteria = true;
+
+		Navigator navigator = SormasUI.get().getNavigator();
+
+		String state = navigator.getState();
+		String newState = buildNavigationState(state, criteriaList);
+
+		boolean didNavigate = false;
+		if (!newState.equals(state) || force) {
+			navigator.navigateTo(newState);
+
+			didNavigate = true;
+		}
+		applyingCriteria = false;
+
+		return didNavigate;
 	}
 
 	public void openPrescriptionCreateForm(TherapyReferenceDto therapy, Runnable callback) {

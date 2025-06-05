@@ -14285,4 +14285,92 @@ ALTER TABLE externalmessage_history ADD COLUMN exposures jsonb;
 
 INSERT INTO schema_version (version_number, comment) VALUES (573, 'Updated doctor declaration for Pertussis #13375');
 
+-- 2025-05-22 Tuberculosis specific updates - sample/testing, case, person, therapy, hospitalization  #13324
+create table drugsusceptibility
+(
+    id                          bigint       not null,
+    uuid                        varchar(36)  not null,
+    changedate                  timestamp(3) not null,
+    creationdate                timestamp(3) not null,
+    amikacinmic                 numeric,
+    amikacinsusceptibility      varchar(255),
+    bedaquilinemic              numeric,
+    bedaquilinesusceptibility   varchar(255),
+    capreomycinmic              numeric,
+    capreomycinsusceptibility   varchar(255),
+    ciprofloxacinmic            numeric,
+    ciprofloxacinsusceptibility varchar(255),
+    delamanidmic                numeric,
+    delamanidsusceptibility     varchar(255),
+    ethambutolmic               numeric,
+    ethambutolsusceptibility    varchar(255),
+    gatifloxacinmic             numeric,
+    gatifloxacinsusceptibility  varchar(255),
+    isoniazidmic                numeric,
+    isoniazidsusceptibility     varchar(255),
+    kanamycinmic                numeric,
+    kanamycinsusceptibility     varchar(255),
+    levofloxacinmic             numeric,
+    levofloxacinsusceptibility  varchar(255),
+    moxifloxacinmic             numeric,
+    moxifloxacinsusceptibility  varchar(255),
+    ofloxacinmic                numeric,
+    ofloxacinsusceptibility     varchar(255),
+    rifampicinmic               numeric,
+    rifampicinsusceptibility    varchar(255),
+    streptomycinmic             numeric,
+    streptomycinsusceptibility  varchar(255),
+    sys_period                  tstzrange    not null,
+    change_user_id              bigint
+);
+
+alter table drugsusceptibility owner to sormas_user;
+
+alter table drugsusceptibility add primary key (id);
+alter table drugsusceptibility add unique (uuid);
+alter table drugsusceptibility add constraint fk_drugsusceptibility_change_user_id foreign key (change_user_id) references users;
+
+CREATE TABLE drugsusceptibility_history (LIKE drugsusceptibility);
+DROP TRIGGER IF EXISTS versioning_trigger ON drugsusceptibility;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON drugsusceptibility
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'drugsusceptibility_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON drugsusceptibility;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON drugsusceptibility
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('drugsusceptibility_history', 'id');
+ALTER TABLE drugsusceptibility_history OWNER TO sormas_user;
+
+alter table pathogentest add rifampicinresistant varchar(255);
+alter table pathogentest add isoniazidresistant varchar(255);
+alter table pathogentest add specie varchar(255);
+alter table pathogentest add patternprofile varchar(255);
+alter table pathogentest add straincallstatus varchar(255);
+alter table pathogentest add testscale varchar(255);
+alter table pathogentest add drugsusceptibility_id bigint constraint pathogentest_drugsusceptibility_id_fk references drugsusceptibility;
+
+alter table pathogentest_history add rifampicinresistant varchar(255);
+alter table pathogentest_history add isoniazidresistant varchar(255);
+alter table pathogentest_history add specie varchar(255);
+alter table pathogentest_history add patternprofile varchar(255);
+alter table pathogentest_history add straincallstatus varchar(255);
+alter table pathogentest_history add testscale varchar(255);
+alter table pathogentest_history add drugsusceptibility_id bigint;
+
+alter table cases add radiographycompatibility varchar(255);
+alter table cases add otherdiagnosticcriteria text;
+
+alter table cases_history add radiographycompatibility varchar(255);
+alter table cases_history add otherdiagnosticcriteria text;
+
+alter table therapy add directlyobservedtreatment boolean default false;
+alter table therapy add mdrxdrtuberculosis boolean default false;
+alter table therapy add beijinglineage boolean default false;
+
+alter table therapy_history add directlyobservedtreatment boolean default false;
+alter table therapy_history add mdrxdrtuberculosis boolean default false;
+alter table therapy_history add beijinglineage boolean default false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (574, 'Tuberculosis disease updates - sample/testing, case, person, therapy, hospitalization  #13324');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

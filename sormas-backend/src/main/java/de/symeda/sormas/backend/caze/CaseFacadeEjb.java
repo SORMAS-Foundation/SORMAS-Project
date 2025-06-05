@@ -305,9 +305,9 @@ import de.symeda.sormas.backend.outbreak.OutbreakService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
+import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.person.notifier.NotifierDtoHelper;
 import de.symeda.sormas.backend.person.notifier.NotifierService;
-import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.sample.AdditionalTest;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTest;
@@ -3203,8 +3203,10 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		if (source.getNotifier() != null) {
 			target.setNotifier(NotifierDtoHelper.toVersionReferenceDto(source.getNotifier(), source.getNotifierDate()));
-
 		}
+
+		target.setRadiographyCompatibility(source.getRadiographyCompatibility());
+		target.setOtherDiagnosticCriteria(source.getOtherDiagnosticCriteria());
 
 		return target;
 	}
@@ -3413,6 +3415,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			target.setNotifier(notifierService.getVersionByReferenceDto(source.getNotifier()));
 			target.setNotifierDate(notifierService.getVersionDateByReferenceDto(source.getNotifier()));
 		}
+
+		target.setRadiographyCompatibility(source.getRadiographyCompatibility());
+		target.setOtherDiagnosticCriteria(source.getOtherDiagnosticCriteria());
 
 		return target;
 	}

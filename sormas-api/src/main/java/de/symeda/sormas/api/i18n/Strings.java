@@ -589,6 +589,7 @@ public interface Strings {
 	String headingDeleteContacts = "headingDeleteContacts";
 	String headingDeleteUserRoleNotPossible = "headingDeleteUserRoleNotPossible";
 	String headingDeleteVaccinations = "headingDeleteVaccinations";
+	String headingDiagnosisCriteria = "headingDiagnosisCriteria";
 	String headingDisableLineListing = "headingDisableLineListing";
 	String headingDiscardUnsavedChanges = "headingDiscardUnsavedChanges";
 	String headingDocumentCreated = "headingDocumentCreated";
@@ -597,6 +598,7 @@ public interface Strings {
 	String headingDownloadErrorReport = "headingDownloadErrorReport";
 	String headingDownloadImportGuide = "headingDownloadImportGuide";
 	String headingDownloadImportTemplate = "headingDownloadImportTemplate";
+	String headingDrugSusceptibility = "headingDrugSusceptibility";
 	String headingEditAction = "headingEditAction";
 	String headingEditAdditionalTest = "headingEditAdditionalTest";
 	String headingEditAggregateReport = "headingEditAggregateReport";
@@ -1818,6 +1820,7 @@ public interface Strings {
 	String promptImmunizationRecoveryDateFrom = "promptImmunizationRecoveryDateFrom";
 	String promptImmunizationStartDateFrom = "promptImmunizationStartDateFrom";
 	String promptImmunizationValidFrom = "promptImmunizationValidFrom";
+	String promptMicValue = "promptMicValue";
 	String promptNamePhoneEmail = "promptNamePhoneEmail";
 	String promptNewCaseDateType = "promptNewCaseDateType";
 	String promptPersonDuplicateSearchIdExternalId = "promptPersonDuplicateSearchIdExternalId";
@@ -1826,6 +1829,7 @@ public interface Strings {
 	String promptRegion = "promptRegion";
 	String promptRelatedPersonLikeField = "promptRelatedPersonLikeField";
 	String promptRemarks = "promptRemarks";
+	String promptResistanceResult = "promptResistanceResult";
 	String promptSampleDashboardFilterDateType = "promptSampleDashboardFilterDateType";
 	String promptSampleDateFrom = "promptSampleDateFrom";
 	String promptSampleDateTo = "promptSampleDateTo";

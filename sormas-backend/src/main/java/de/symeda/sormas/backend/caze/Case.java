@@ -60,6 +60,7 @@ import de.symeda.sormas.api.caze.IsCase;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.QuarantineReason;
 import de.symeda.sormas.api.caze.RabiesType;
+import de.symeda.sormas.api.caze.RadiographyCompatibility;
 import de.symeda.sormas.api.caze.ReinfectionDetail;
 import de.symeda.sormas.api.caze.ReinfectionStatus;
 import de.symeda.sormas.api.caze.ScreeningType;
@@ -249,8 +250,10 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	public static final String SELF_REPORT = "selfReport";
 	public static final String SURVEY_TOKENS = "surveyTokens";
 
-	public static final String NOTIFIER="notifier";
-	public static final String NOTIFIER_DATE="notifierDate";
+	public static final String NOTIFIER = "notifier";
+	public static final String NOTIFIER_DATE = "notifierDate";
+	public static final String RADIOGRAPHY_COMPATIBILITY = "radiographyCompatibility";
+	public static final String OTHER_DIAGNOSTIC_CRITERIA = "otherDiagnosticCriteria";
 
 	private Person person;
 	private String description;
@@ -444,6 +447,8 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	private boolean postMortem;
 
 	private String healthFacilityDepartment;
+	private RadiographyCompatibility radiographyCompatibility;
+	private String otherDiagnosticCriteria;
 
 	public static Case build() {
 		Case caze = new Case();
@@ -1845,5 +1850,22 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 
 	public void setHealthFacilityDepartment(String healthFacilityDepartment) {
 		this.healthFacilityDepartment = healthFacilityDepartment;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public RadiographyCompatibility getRadiographyCompatibility() {
+		return radiographyCompatibility;
+	}
+
+	public void setRadiographyCompatibility(RadiographyCompatibility radiographyCompatibility) {
+		this.radiographyCompatibility = radiographyCompatibility;
+	}
+
+	public String getOtherDiagnosticCriteria() {
+		return otherDiagnosticCriteria;
+	}
+
+	public void setOtherDiagnosticCriteria(String otherDiagnosticCriteria) {
+		this.otherDiagnosticCriteria = otherDiagnosticCriteria;
 	}
 }

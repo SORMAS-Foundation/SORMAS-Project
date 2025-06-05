@@ -36,6 +36,7 @@ import de.symeda.sormas.ui.hospitalization.PreviousHospitalizationsField;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.person.LocationsField;
 import de.symeda.sormas.ui.person.PersonContactDetailsField;
+import de.symeda.sormas.ui.therapy.DrugSusceptibilityForm;
 import de.symeda.sormas.ui.user.UserRoleNotificationCheckboxSet;
 import de.symeda.sormas.ui.utils.components.CheckboxSet;
 import de.symeda.sormas.ui.utils.components.CustomizableEnumPropertiesComponent;
@@ -191,6 +192,8 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			return (T) new AefiVaccinationsField(fieldAccessCheckers);
 		} else if (AdverseEventsForm.class.isAssignableFrom(fieldType)) {
 			return (T) new AdverseEventsForm(fieldVisibilityCheckers, fieldAccessCheckers);
+		} else if (DrugSusceptibilityForm.class.isAssignableFrom(fieldType)) {
+			return (T) new DrugSusceptibilityForm(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (CheckBoxTree.class.isAssignableFrom(fieldType)) {
 			return (T) new CheckBoxTree<>();
 		} else if (RichTextArea.class.isAssignableFrom(fieldType)) {

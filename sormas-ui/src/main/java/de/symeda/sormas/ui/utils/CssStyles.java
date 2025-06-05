@@ -327,6 +327,7 @@ public final class CssStyles {
 	public static final String OPTIONGROUP_CAPTION_FLEX = "optiongroup-caption-flex";
 	public static final String VIEW_SECTION_MARGIN_X_4 = VIEW_SECTION + " " + MARGIN_X_4;
 	public static final String VIEW_SECTION_MARGIN_TOP_4_MARGIN_X_4 = VIEW_SECTION + " " + MARGIN_X_4 + " " + MARGIN_TOP_4;
+	public static final String GRID_ROW_GAP_1 = "grid-row-gap-1";
 	public static final String GIS_DASHBOARD_MAP_HEADER = "gis-dashboard-map-header";
 	public static final String GIS_DASHBOARD_MAP_FOOTER = "gis-dashboard-map-footer";
 
