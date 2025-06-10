@@ -30,8 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import de.symeda.sormas.api.sample.SeroGroupSpecification;
-import de.symeda.sormas.api.sample.SerotypingMethod;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.vaadin.ui.Label;
@@ -61,6 +59,8 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SamplePurpose;
+import de.symeda.sormas.api.sample.SeroGroupSpecification;
+import de.symeda.sormas.api.sample.SerotypingMethod;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.therapy.DrugSusceptibilityForm;
@@ -96,15 +96,13 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			fluidRowLocs(PathogenTestDto.TYPING_ID, "") +
 			fluidRowLocs(PathogenTestDto.TEST_DATE_TIME, PathogenTestDto.LAB) +
 			fluidRowLocs("", PathogenTestDto.LAB_DETAILS) +
-			fluidRowLocs(PathogenTestDto.TEST_RESULT, PathogenTestDto.TEST_RESULT_VERIFIED) +
-			fluidRowLocs(PathogenTestDto.RIFAMPICIN_RESISTANT, PathogenTestDto.ISONIAZID_RESISTANT) +
+			fluidRowLocs(6,PathogenTestDto.TEST_RESULT, 4, PathogenTestDto.TEST_RESULT_VERIFIED, 2,PathogenTestDto.PRELIMINARY) +
+			fluidRowLocs(PathogenTestDto.RIFAMPICIN_RESISTANT, PathogenTestDto.ISONIAZID_RESISTANT, "", "") +
 			fluidRowLocs(PathogenTestDto.TEST_SCALE, "") +
 			fluidRowLocs(PathogenTestDto.STRAIN_CALL_STATUS, "") +
 			fluidRowLocs(PathogenTestDto.SPECIE, "") +
 			fluidRowLocs(PathogenTestDto.PATTERN_PROFILE, "") +
 			fluidRowLocs(PathogenTestDto.DRUG_SUSCEPTIBILITY) +
-			fluidRowLocs(PathogenTestDto.PRELIMINARY, "") +
-			fluidRowLocs(5,PathogenTestDto.TEST_RESULT, 4, PathogenTestDto.TEST_RESULT_VERIFIED, 3,PathogenTestDto.PRELIMINARY) +
 			fluidRowLocs(4,PathogenTestDto.SEROTYPE, 4,PathogenTestDto.SEROTYPING_METHOD, 4,PathogenTestDto.SERO_TYPING_METHOD_TEXT) +
 			fluidRowLocs(6,PathogenTestDto.SERO_GROUP_SPECIFICATION , 6, PathogenTestDto.SERO_GROUP_SPECIFICATION_TEXT) +
 			fluidRowLocs(PathogenTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, "") +
@@ -140,12 +138,23 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 	private Disease disease;
 	private TextField typingIdField;
 	// List of tests that are used for serogrouping
-	List<PathogenTestType> seroGrpTests = Arrays.asList(PathogenTestType.SEROGROUPING, PathogenTestType.MULTILOCUS_SEQUENCE_TYPING, PathogenTestType.SLIDE_AGGLUTINATION, PathogenTestType.WHOLE_GENOME_SEQUENCING, PathogenTestType.SEQUENCING);
+	List<PathogenTestType> seroGrpTests = Arrays.asList(
+		PathogenTestType.SEROGROUPING,
+		PathogenTestType.MULTILOCUS_SEQUENCE_TYPING,
+		PathogenTestType.SLIDE_AGGLUTINATION,
+		PathogenTestType.WHOLE_GENOME_SEQUENCING,
+		PathogenTestType.SEQUENCING);
 
-	public PathogenTestForm(AbstractSampleForm sampleForm, boolean create, int caseSampleCount, boolean isPseudonymized, boolean inJurisdiction, Disease disease) {
+	public PathogenTestForm(
+		AbstractSampleForm sampleForm,
+		boolean create,
+		int caseSampleCount,
+		boolean isPseudonymized,
+		boolean inJurisdiction,
+		Disease disease) {
 		this(create, caseSampleCount, isPseudonymized, inJurisdiction, disease);
 		this.sampleForm = sampleForm;
-        this.disease = disease;
+		this.disease = disease;
 		addFields();
 		if (create) {
 			hideValidationUntilNextCommit();
@@ -286,11 +295,10 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		addField(PathogenTestDto.EXTERNAL_ID);
 		addField(PathogenTestDto.EXTERNAL_ORDER_ID);
 		testTypeField = addField(PathogenTestDto.TEST_TYPE, ComboBox.class);
-		TextField seroTypingMethodText = addField(PathogenTestDto.SERO_TYPING_METHOD_TEXT);
-		seroTypingMethodText.setVisible(false);
-		ComboBox testTypeField = addField(PathogenTestDto.TEST_TYPE, ComboBox.class);
 		testTypeField.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
 		testTypeField.setImmediate(true);
+		TextField seroTypingMethodText = addField(PathogenTestDto.SERO_TYPING_METHOD_TEXT);
+		seroTypingMethodText.setVisible(false);
 		pcrTestSpecification = addField(PathogenTestDto.PCR_TEST_SPECIFICATION, ComboBox.class);
 		testTypeTextField = addField(PathogenTestDto.TEST_TYPE_TEXT, TextField.class);
 		FieldHelper.addSoftRequiredStyle(testTypeTextField);
@@ -355,7 +363,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 			testResultField.removeItem(PathogenTestResultType.NOT_APPLICABLE);
 		}
-		addField(PathogenTestDto.SEROTYPE, TextField.class);
+		TextField seroTypeTF = addField(PathogenTestDto.SEROTYPE, TextField.class);
 
 		NullableOptionGroup rifampicinResistantField = addField(PathogenTestDto.RIFAMPICIN_RESISTANT, NullableOptionGroup.class);
 		rifampicinResistantField.setVisible(false);
@@ -471,7 +479,6 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			FieldHelper.setReadOnlyWhen(getFieldGroup(), PathogenTestDto.TEST_RESULT, tuberculosisTestResultReadOnlyDependencies, false, false);
 		}
 
-		TextField seroTypeTF = addField(PathogenTestDto.SEROTYPE, TextField.class);
 		seroTypeTF.setVisible(false);
 		ComboBox seroTypeMetCB = addField(PathogenTestDto.SEROTYPING_METHOD, ComboBox.class);
 		seroTypeMetCB.setVisible(false);
@@ -491,8 +498,15 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			FieldConfiguration.withConversionError(PathogenTestDto.CT_VALUE_ORF_1, Validations.onlyNumbersAllowed),
 			FieldConfiguration.withConversionError(PathogenTestDto.CT_VALUE_RDRP_S, Validations.onlyNumbersAllowed));
 
-		setVisibleClear(false, PathogenTestDto.CQ_VALUE, PathogenTestDto.CT_VALUE_E, PathogenTestDto.CT_VALUE_N, PathogenTestDto.CT_VALUE_RDRP
-				, PathogenTestDto.CT_VALUE_S, PathogenTestDto.CT_VALUE_ORF_1, PathogenTestDto.CT_VALUE_RDRP_S);
+		setVisibleClear(
+			false,
+			PathogenTestDto.CQ_VALUE,
+			PathogenTestDto.CT_VALUE_E,
+			PathogenTestDto.CT_VALUE_N,
+			PathogenTestDto.CT_VALUE_RDRP,
+			PathogenTestDto.CT_VALUE_S,
+			PathogenTestDto.CT_VALUE_ORF_1,
+			PathogenTestDto.CT_VALUE_RDRP_S);
 		NullableOptionGroup testResultVerifiedField = addField(PathogenTestDto.TEST_RESULT_VERIFIED, NullableOptionGroup.class);
 		testResultVerifiedField.setRequired(true);
 		addField(PathogenTestDto.PRELIMINARY).addStyleName(CssStyles.VSPACE_4);
@@ -564,8 +578,18 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			}
 		};
 		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.SEROTYPE, serotypeVisibilityDependencies, true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.SERO_TYPING_METHOD_TEXT, PathogenTestDto.SEROTYPING_METHOD, SerotypingMethod.OTHER, true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.SERO_GROUP_SPECIFICATION_TEXT, PathogenTestDto.SERO_GROUP_SPECIFICATION, SeroGroupSpecification.OTHER, true);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			PathogenTestDto.SERO_TYPING_METHOD_TEXT,
+			PathogenTestDto.SEROTYPING_METHOD,
+			SerotypingMethod.OTHER,
+			true);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			PathogenTestDto.SERO_GROUP_SPECIFICATION_TEXT,
+			PathogenTestDto.SERO_GROUP_SPECIFICATION,
+			SeroGroupSpecification.OTHER,
+			true);
 
 		Consumer<Disease> updateDiseaseVariantField = disease -> {
 			List<DiseaseVariant> diseaseVariants =
@@ -580,7 +604,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		diseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> {
 			Disease latestDisease = (Disease) valueChangeEvent.getProperty().getValue();
 			// If the disease changed, test type field should be updated with its respective test types
-			if(latestDisease != disease) {
+			if (latestDisease != disease) {
 				testTypeField.clear();
 			}
 			disease = latestDisease;
@@ -609,7 +633,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 		testTypeField.addValueChangeListener(e -> {
 			PathogenTestType testType = (PathogenTestType) e.getProperty().getValue();
-			if(testType !=null) {
+			if (testType != null) {
 				if (testType == PathogenTestType.IGM_SERUM_ANTIBODY || testType == PathogenTestType.IGG_SERUM_ANTIBODY) {
 					fourFoldIncrease.setVisible(true);
 					fourFoldIncrease.setEnabled(caseSampleCount >= 2);
@@ -627,10 +651,21 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				seroTypeTF.setVisible(disease == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION && seroGrpTests.contains(testType));
 				seroGrpSepcCB.setVisible(disease == Disease.INVASIVE_MENINGOCOCCAL_INFECTION && seroGrpTests.contains(testType));
 				testResultField.setEnabled(!seroGrpTests.contains(testType));
-				setVisibleClear(PathogenTestType.PCR_RT_PCR == testType, PathogenTestDto.CQ_VALUE, PathogenTestDto.CT_VALUE_E, PathogenTestDto.CT_VALUE_N, PathogenTestDto.CT_VALUE_RDRP
-						, PathogenTestDto.CT_VALUE_S, PathogenTestDto.CT_VALUE_ORF_1, PathogenTestDto.CT_VALUE_RDRP_S);
-			}else{
-				setVisibleClear(testTypeField.getValue() != null, PathogenTestDto.SEROTYPE, PathogenTestDto.SEROTYPING_METHOD, PathogenTestDto.SERO_GROUP_SPECIFICATION);
+				setVisibleClear(
+					PathogenTestType.PCR_RT_PCR == testType,
+					PathogenTestDto.CQ_VALUE,
+					PathogenTestDto.CT_VALUE_E,
+					PathogenTestDto.CT_VALUE_N,
+					PathogenTestDto.CT_VALUE_RDRP,
+					PathogenTestDto.CT_VALUE_S,
+					PathogenTestDto.CT_VALUE_ORF_1,
+					PathogenTestDto.CT_VALUE_RDRP_S);
+			} else {
+				setVisibleClear(
+					testTypeField.getValue() != null,
+					PathogenTestDto.SEROTYPE,
+					PathogenTestDto.SEROTYPING_METHOD,
+					PathogenTestDto.SERO_GROUP_SPECIFICATION);
 				testResultField.clear();
 				testResultField.setEnabled(true);
 			}
