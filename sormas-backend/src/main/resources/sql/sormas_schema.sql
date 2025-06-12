@@ -14373,6 +14373,17 @@ alter table therapy_history add beijinglineage boolean default false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (574, 'Tuberculosis disease updates - sample/testing, case, person, therapy, hospitalization  #13324');
 
+-- 2025-06-12 Therapy changes for IMI & IPI, #13319, #13342
+
+alter table drugsusceptibility add column IF NOT EXISTS ceftriaxonemic numeric;
+alter table drugsusceptibility add column IF NOT EXISTS ceftriaxoneSusceptibility varchar(255);
+alter table drugsusceptibility add column IF NOT EXISTS penicillinmic numeric;
+alter table drugsusceptibility add column IF NOT EXISTS penicillinSusceptibility varchar(255);
+alter table drugsusceptibility add column IF NOT EXISTS erythromycinmic numeric;
+alter table drugsusceptibility add column IF NOT EXISTS erythromycinSusceptibility varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (575, 'Therapy changes for IMI & IPI, #13319, #13342');
+
 -- 2025-06-05 Pertussis missed symptom, #13373
 alter table symptoms add column IF NOT EXISTS nocturnalcough varchar(255);
 

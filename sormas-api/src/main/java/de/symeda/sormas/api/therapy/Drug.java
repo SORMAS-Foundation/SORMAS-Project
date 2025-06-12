@@ -66,7 +66,19 @@ public enum Drug {
 	RIFAMPICIN,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
-	STREPTOMYCIN;
+	STREPTOMYCIN,
+	@DrugTypes(value = {
+		TypeOfDrug.ANTIBIOTIC })
+	CEFTRIAXONE,
+	@DrugTypes(value = {
+		TypeOfDrug.ANTIBIOTIC })
+	PENICILLIN,
+	@DrugTypes(value = {
+		TypeOfDrug.ANTIBIOTIC })
+	ERYTHROMYCIN,
+	@DrugTypes(value = {
+			TypeOfDrug.ANTIBIOTIC })
+	OTHER;
 
 	@Override
 	public String toString() {

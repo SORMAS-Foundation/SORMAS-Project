@@ -456,7 +456,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			Map<Object, List<Object>> tuberculosisAntibioticDependencies = new HashMap<>() {
 
 				{
-					put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.TUBERCULOSIS));
+					put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.TUBERCULOSIS, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
 					put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY));
 				}
 			};
@@ -466,7 +466,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			Map<Object, List<Object>> tuberculosisTestResultReadOnlyDependencies = new HashMap<>() {
 
 				{
-					put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.TUBERCULOSIS));
+					put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.TUBERCULOSIS, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
 					put(
 						PathogenTestDto.TEST_TYPE,
 						Arrays.asList(
@@ -476,7 +476,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 							PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY));
 				}
 			};
-			FieldHelper.setReadOnlyWhen(getFieldGroup(), PathogenTestDto.TEST_RESULT, tuberculosisTestResultReadOnlyDependencies, false, false);
+			FieldHelper.setReadOnlyWhen(getFieldGroup(), PathogenTestDto.TEST_RESULT, tuberculosisTestResultReadOnlyDependencies, true, false);
 		}
 
 		seroTypeTF.setVisible(false);
@@ -650,7 +650,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				seroTypeMetCB.setVisible(disease == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION && PathogenTestType.SEROGROUPING.equals(testType));
 				seroTypeTF.setVisible(disease == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION && seroGrpTests.contains(testType));
 				seroGrpSepcCB.setVisible(disease == Disease.INVASIVE_MENINGOCOCCAL_INFECTION && seroGrpTests.contains(testType));
-				testResultField.setEnabled(!seroGrpTests.contains(testType));
+				testResultField.setEnabled(!seroGrpTests.contains(testType) && !PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY.equals(testType));
 				setVisibleClear(
 					PathogenTestType.PCR_RT_PCR == testType,
 					PathogenTestDto.CQ_VALUE,
@@ -672,6 +672,11 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 				updateTuberculosisFieldSpecifications(testType, (Disease) diseaseField.getValue());
+				// If disease is IMI or IPI and test type is antibiotic susceptibility, then test result is set to positive
+				if ((diseaseField.getValue() == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION || diseaseField.getValue() == Disease.INVASIVE_MENINGOCOCCAL_INFECTION)
+				&& testType == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY) {
+					testResultField.setValue(PathogenTestResultType.POSITIVE);
+				}
 			}
 		});
 		lab.addValueChangeListener(event -> {

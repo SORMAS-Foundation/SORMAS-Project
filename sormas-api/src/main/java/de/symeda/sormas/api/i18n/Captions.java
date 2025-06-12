@@ -2226,10 +2226,10 @@ public interface Captions {
 	String PathogenTest_seroGroupSpecification = "PathogenTest.seroGroupSpecification";
 	String PathogenTest_seroGroupSpecificationText = "PathogenTest.seroGroupSpecificationText";
 	String PathogenTest_serotype = "PathogenTest.serotype";
-	String PathogenTest_specie = "PathogenTest.specie";
-	String PathogenTest_strainCallStatus = "PathogenTest.strainCallStatus";
 	String PathogenTest_seroTypingMethod = "PathogenTest.seroTypingMethod";
 	String PathogenTest_seroTypingMethodText = "PathogenTest.seroTypingMethodText";
+	String PathogenTest_specie = "PathogenTest.specie";
+	String PathogenTest_strainCallStatus = "PathogenTest.strainCallStatus";
 	String PathogenTest_testDateTime = "PathogenTest.testDateTime";
 	String PathogenTest_testedDisease = "PathogenTest.testedDisease";
 	String PathogenTest_testedDiseaseDetails = "PathogenTest.testedDiseaseDetails";
@@ -2790,6 +2790,7 @@ public interface Captions {
 	String Symptoms_anorexiaAppetiteLoss = "Symptoms.anorexiaAppetiteLoss";
 	String Symptoms_anxietyStates = "Symptoms.anxietyStates";
 	String Symptoms_apnoea = "Symptoms.apnoea";
+	String Symptoms_apnoea_PERTUSSIS = "Symptoms.apnoea.PERTUSSIS";
 	String Symptoms_arthritis = "Symptoms.arthritis";
 	String Symptoms_ascendingFlaccidParalysis = "Symptoms.ascendingFlaccidParalysis";
 	String Symptoms_asymptomatic = "Symptoms.asymptomatic";
