@@ -23,6 +23,7 @@ public enum DrugSusceptibilityType {
 	NOT_APPLICABLE,
 	RESISTANT,
 	SUSCEPTIBLE,
+	INTERMEDIATE,
 	UNKNOWN;
 
 	@Override

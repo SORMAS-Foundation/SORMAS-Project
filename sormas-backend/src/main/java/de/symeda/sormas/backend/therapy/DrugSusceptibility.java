@@ -59,6 +59,12 @@ public class DrugSusceptibility extends AbstractDomainObject {
 	public static final String RIFAMPICIN_SUSCEPTIBILITY = "rifampicinSusceptibility";
 	public static final String STREPTOMYCIN_MIC = "streptomycinMic";
 	public static final String STREPTOMYCIN_SUSCEPTIBILITY = "streptomycinSusceptibility";
+	public static final String CEFTRIAXONE_MIC = "ceftriaxoneMic";
+	public static final String CEFTRIAXONE_SUSCEPTIBILITY = "ceftriaxoneSusceptibility";
+	public static final String PENICILLIN_MIC = "penicillinMic";
+	public static final String PENICILLIN_SUSCEPTIBILITY = "penicillinSusceptibility";
+	public static final String ERYTHROMYCIN_MIC = "erythromycinMic";
+	public static final String ERYTHROMYCIN_SUSCEPTIBILITY = "erythromycinSusceptibility";
 
 	private Float amikacinMic;
 	private DrugSusceptibilityType amikacinSusceptibility;
@@ -88,6 +94,12 @@ public class DrugSusceptibility extends AbstractDomainObject {
 	private DrugSusceptibilityType rifampicinSusceptibility;
 	private Float streptomycinMic;
 	private DrugSusceptibilityType streptomycinSusceptibility;
+	private Float ceftriaxoneMic;
+	private DrugSusceptibilityType ceftriaxoneSusceptibility;
+	private Float penicillinMic;
+	private DrugSusceptibilityType penicillinSusceptibility;
+	private Float erythromycinMic;
+	private DrugSusceptibilityType erythromycinSusceptibility;
 
 	public Float getAmikacinMic() {
 		return amikacinMic;
@@ -325,5 +337,56 @@ public class DrugSusceptibility extends AbstractDomainObject {
 
 	public void setStreptomycinSusceptibility(DrugSusceptibilityType streptomycinSusceptibility) {
 		this.streptomycinSusceptibility = streptomycinSusceptibility;
+	}
+
+	public Float getCeftriaxoneMic() {
+		return ceftriaxoneMic;
+	}
+
+	public void setCeftriaxoneMic(Float ceftriaxoneMic) {
+		this.ceftriaxoneMic = ceftriaxoneMic;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getCeftriaxoneSusceptibility() {
+		return ceftriaxoneSusceptibility;
+	}
+
+	public void setCeftriaxoneSusceptibility(DrugSusceptibilityType ceftriaxoneSusceptibility) {
+		this.ceftriaxoneSusceptibility = ceftriaxoneSusceptibility;
+	}
+
+	public Float getPenicillinMic() {
+		return penicillinMic;
+	}
+
+	public void setPenicillinMic(Float penicillinMic) {
+		this.penicillinMic = penicillinMic;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getPenicillinSusceptibility() {
+		return penicillinSusceptibility;
+	}
+
+	public void setPenicillinSusceptibility(DrugSusceptibilityType penicillinSusceptibility) {
+		this.penicillinSusceptibility = penicillinSusceptibility;
+	}
+
+	public Float getErythromycinMic() {
+		return erythromycinMic;
+	}
+
+	public void setErythromycinMic(Float erythromycinMic) {
+		this.erythromycinMic = erythromycinMic;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getErythromycinSusceptibility() {
+		return erythromycinSusceptibility;
+	}
+
+	public void setErythromycinSusceptibility(DrugSusceptibilityType erythromycinSusceptibility) {
+		this.erythromycinSusceptibility = erythromycinSusceptibility;
 	}
 }

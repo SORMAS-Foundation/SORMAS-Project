@@ -55,7 +55,7 @@ public final class AnnotationFieldHelper {
 			}
 
 			// Check @ApplicableToPathogenTests annotation
-			if (!matches && pathogenTestTypes != null && !pathogenTestTypes.isEmpty()) {
+			if (matches && pathogenTestTypes != null && !pathogenTestTypes.isEmpty()) {
 				ApplicableToPathogenTests pathogenTestsAnnotation = field.getAnnotation(ApplicableToPathogenTests.class);
 				if (pathogenTestsAnnotation != null) {
 					List<PathogenTestType> fieldTestTypes = Arrays.asList(pathogenTestsAnnotation.value());

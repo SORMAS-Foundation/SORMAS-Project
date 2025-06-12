@@ -63,7 +63,12 @@ public class DrugSusceptibilityMapper {
 		target.setRifampicinSusceptibility(source.getRifampicinSusceptibility());
 		target.setStreptomycinMic(source.getStreptomycinMic());
 		target.setStreptomycinSusceptibility(source.getStreptomycinSusceptibility());
-
+		target.setCeftriaxoneMic(source.getCeftriaxoneMic());
+		target.setCeftriaxoneSusceptibility(source.getCeftriaxoneSusceptibility());
+		target.setPenicillinMic(source.getPenicillinMic());
+		target.setPenicillinSusceptibility(source.getPenicillinSusceptibility());
+		target.setErythromycinMic(source.getErythromycinMic());
+		target.setErythromycinSusceptibility(source.getErythromycinSusceptibility());
 		return target;
 	}
 
@@ -102,6 +107,12 @@ public class DrugSusceptibilityMapper {
 		target.setRifampicinSusceptibility(source.getRifampicinSusceptibility());
 		target.setStreptomycinMic(source.getStreptomycinMic());
 		target.setStreptomycinSusceptibility(source.getStreptomycinSusceptibility());
+		target.setCeftriaxoneMic(source.getCeftriaxoneMic());
+		target.setCeftriaxoneSusceptibility(source.getCeftriaxoneSusceptibility());
+		target.setPenicillinMic(source.getPenicillinMic());
+		target.setPenicillinSusceptibility(source.getPenicillinSusceptibility());
+		target.setErythromycinMic(source.getErythromycinMic());
+		target.setErythromycinSusceptibility(source.getErythromycinSusceptibility());
 
 		return target;
 	}
@@ -138,6 +149,12 @@ public class DrugSusceptibilityMapper {
 			|| dto.getRifampicinMic() != null
 			|| dto.getRifampicinSusceptibility() != null
 			|| dto.getStreptomycinMic() != null
-			|| dto.getStreptomycinSusceptibility() != null;
+			|| dto.getStreptomycinSusceptibility() != null
+			|| dto.getCeftriaxoneMic() != null
+			|| dto.getCeftriaxoneSusceptibility() != null
+			|| dto.getPenicillinMic() != null
+			|| dto.getPenicillinSusceptibility() != null
+			|| dto.getErythromycinMic() != null
+			|| dto.getErythromycinSusceptibility() != null;
 	}
 }
