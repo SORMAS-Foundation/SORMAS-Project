@@ -58,7 +58,9 @@ public class DrugSusceptibilityForm extends AbstractEditForm<DrugSusceptibilityD
 					+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, DrugSusceptibilityDto.CIPROFLOXACIN_MIC, DrugSusceptibilityDto.CIPROFLOXACIN_SUSCEPTIBILITY)
 					+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, DrugSusceptibilityDto.DELAMANID_MIC, DrugSusceptibilityDto.DELAMANID_SUSCEPTIBILITY)
 					+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, DrugSusceptibilityDto.ETHAMBUTOL_MIC, DrugSusceptibilityDto.ETHAMBUTOL_SUSCEPTIBILITY)
-					+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, DrugSusceptibilityDto.GATIFLOXACIN_MIC, DrugSusceptibilityDto.GATIFLOXACIN_SUSCEPTIBILITY)),
+					+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, DrugSusceptibilityDto.GATIFLOXACIN_MIC, DrugSusceptibilityDto.GATIFLOXACIN_SUSCEPTIBILITY)
+					+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, DrugSusceptibilityDto.CEFTRIAXONE_MIC, DrugSusceptibilityDto.CEFTRIAXONE_SUSCEPTIBILITY)
+					+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, DrugSusceptibilityDto.ERYTHROMYCIN_MIC, DrugSusceptibilityDto.ERYTHROMYCIN_SUSCEPTIBILITY)),
 				fluidColumn(6, 0,
 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, DrugSusceptibilityDto.ISONIAZID_MIC, DrugSusceptibilityDto.ISONIAZID_SUSCEPTIBILITY)
 					+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, DrugSusceptibilityDto.KANAMYCIN_MIC, DrugSusceptibilityDto.KANAMYCIN_SUSCEPTIBILITY)
@@ -66,7 +68,8 @@ public class DrugSusceptibilityForm extends AbstractEditForm<DrugSusceptibilityD
 					+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, DrugSusceptibilityDto.MOXIFLOXACIN_MIC, DrugSusceptibilityDto.MOXIFLOXACIN_SUSCEPTIBILITY)
 					+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, DrugSusceptibilityDto.OFLOXACIN_MIC, DrugSusceptibilityDto.OFLOXACIN_SUSCEPTIBILITY)
 					+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, DrugSusceptibilityDto.RIFAMPICIN_MIC, DrugSusceptibilityDto.RIFAMPICIN_SUSCEPTIBILITY)
-					+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, DrugSusceptibilityDto.STREPTOMYCIN_MIC, DrugSusceptibilityDto.STREPTOMYCIN_SUSCEPTIBILITY))
+					+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, DrugSusceptibilityDto.STREPTOMYCIN_MIC, DrugSusceptibilityDto.STREPTOMYCIN_SUSCEPTIBILITY)
+					+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, DrugSusceptibilityDto.PENICILLIN_MIC, DrugSusceptibilityDto.PENICILLIN_SUSCEPTIBILITY))
 			);
     //@formatter:on
 
@@ -141,6 +144,17 @@ public class DrugSusceptibilityForm extends AbstractEditForm<DrugSusceptibilityD
 		addMicField(DrugSusceptibilityDto.STREPTOMYCIN_MIC, Drug.STREPTOMYCIN).setInputPrompt(I18nProperties.getString(Strings.promptMicValue));
 		addResistanceResultField(DrugSusceptibilityDto.STREPTOMYCIN_SUSCEPTIBILITY)
 			.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
+
+		addMicField(DrugSusceptibilityDto.CEFTRIAXONE_MIC, Drug.CEFTRIAXONE).setInputPrompt(I18nProperties.getString(Strings.promptMicValue));
+		addResistanceResultField(DrugSusceptibilityDto.CEFTRIAXONE_SUSCEPTIBILITY)
+				.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
+		addMicField(DrugSusceptibilityDto.PENICILLIN_MIC, Drug.PENICILLIN).setInputPrompt(I18nProperties.getString(Strings.promptMicValue));
+		addResistanceResultField(DrugSusceptibilityDto.PENICILLIN_SUSCEPTIBILITY)
+				.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
+
+		addMicField(DrugSusceptibilityDto.ERYTHROMYCIN_MIC, Drug.ERYTHROMYCIN).setInputPrompt(I18nProperties.getString(Strings.promptMicValue));
+		addResistanceResultField(DrugSusceptibilityDto.ERYTHROMYCIN_SUSCEPTIBILITY)
+				.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
 
 		FieldHelper.hideFieldsNotInList(getFieldGroup(), List.of(), true);
 	}

@@ -666,6 +666,7 @@ public interface Captions {
 	String CaseData_classificationUser = "CaseData.classificationUser";
 	String CaseData_classifiedBy = "CaseData.classifiedBy";
 	String CaseData_clinicalConfirmation = "CaseData.clinicalConfirmation";
+	String CaseData_clinicalConfirmation_PERTUSSIS = "CaseData.clinicalConfirmation.PERTUSSIS";
 	String CaseData_clinicalCourse = "CaseData.clinicalCourse";
 	String CaseData_clinicianEmail = "CaseData.clinicianEmail";
 	String CaseData_clinicianName = "CaseData.clinicianName";
@@ -2225,10 +2226,10 @@ public interface Captions {
 	String PathogenTest_seroGroupSpecification = "PathogenTest.seroGroupSpecification";
 	String PathogenTest_seroGroupSpecificationText = "PathogenTest.seroGroupSpecificationText";
 	String PathogenTest_serotype = "PathogenTest.serotype";
-	String PathogenTest_specie = "PathogenTest.specie";
-	String PathogenTest_strainCallStatus = "PathogenTest.strainCallStatus";
 	String PathogenTest_seroTypingMethod = "PathogenTest.seroTypingMethod";
 	String PathogenTest_seroTypingMethodText = "PathogenTest.seroTypingMethodText";
+	String PathogenTest_specie = "PathogenTest.specie";
+	String PathogenTest_strainCallStatus = "PathogenTest.strainCallStatus";
 	String PathogenTest_testDateTime = "PathogenTest.testDateTime";
 	String PathogenTest_testedDisease = "PathogenTest.testedDisease";
 	String PathogenTest_testedDiseaseDetails = "PathogenTest.testedDiseaseDetails";
@@ -2789,6 +2790,7 @@ public interface Captions {
 	String Symptoms_anorexiaAppetiteLoss = "Symptoms.anorexiaAppetiteLoss";
 	String Symptoms_anxietyStates = "Symptoms.anxietyStates";
 	String Symptoms_apnoea = "Symptoms.apnoea";
+	String Symptoms_apnoea_PERTUSSIS = "Symptoms.apnoea.PERTUSSIS";
 	String Symptoms_arthritis = "Symptoms.arthritis";
 	String Symptoms_ascendingFlaccidParalysis = "Symptoms.ascendingFlaccidParalysis";
 	String Symptoms_asymptomatic = "Symptoms.asymptomatic";
@@ -2822,6 +2824,7 @@ public interface Captions {
 	String Symptoms_cough = "Symptoms.cough";
 	String Symptoms_coughingBlood = "Symptoms.coughingBlood";
 	String Symptoms_coughingBouts = "Symptoms.coughingBouts";
+	String Symptoms_coughingBouts_PERTUSSIS = "Symptoms.coughingBouts.PERTUSSIS";
 	String Symptoms_coughsProvokeVomiting = "Symptoms.coughsProvokeVomiting";
 	String Symptoms_coughWithHeamoptysis = "Symptoms.coughWithHeamoptysis";
 	String Symptoms_coughWithoutSputum = "Symptoms.coughWithoutSputum";
@@ -2910,6 +2913,7 @@ public interface Captions {
 	String Symptoms_musclePain = "Symptoms.musclePain";
 	String Symptoms_nausea = "Symptoms.nausea";
 	String Symptoms_neckStiffness = "Symptoms.neckStiffness";
+	String Symptoms_nocturnalCough = "Symptoms.nocturnalCough";
 	String Symptoms_noseBleeding = "Symptoms.noseBleeding";
 	String Symptoms_oedemaFaceNeck = "Symptoms.oedemaFaceNeck";
 	String Symptoms_oedemaLowerExtremity = "Symptoms.oedemaLowerExtremity";
