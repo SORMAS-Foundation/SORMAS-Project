@@ -63,6 +63,7 @@ import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -931,7 +932,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			getField(PNEUMONIA_CLINICAL_OR_RADIOLOGIC).setCaption(I18nProperties.getCaption(Captions.Symptoms_ipi_pneumoniaClinicalOrRadiologic));
 		}
 
-		if (disease == Disease.TUBERCULOSIS) {
+		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && disease == Disease.TUBERCULOSIS) {
 			Label localisationHeadingLabel = createLabel(I18nProperties.getString(Strings.headingLocalisation), H3, LOCALISATION_HEADING_LOC);
 
 			clinicalPresentationHeadingLabel.setVisible(true);
@@ -1022,7 +1023,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		String FINAL_HTML_LAYOUT = HTML_LAYOUT;
 
-		if (disease == Disease.TUBERCULOSIS) {
+		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && disease == Disease.TUBERCULOSIS) {
 			FINAL_HTML_LAYOUT = FINAL_HTML_LAYOUT.replace(onsetDateLoc, emptyLoc)
 				.replace(tbOnsetDateLoc, onsetDateLoc)
 				.replace(clinicalPresentationDetailsLoc, emptyLoc)
