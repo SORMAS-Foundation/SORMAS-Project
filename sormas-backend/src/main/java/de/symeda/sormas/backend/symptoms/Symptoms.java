@@ -209,6 +209,7 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState shivering;
 	private SymptomState fastHeartRate;
 	private SymptomState oxygenSaturationLower94;
+	private SymptomState nocturnalCough;
 
 	private SymptomState feverishFeeling;
 	private SymptomState weakness;

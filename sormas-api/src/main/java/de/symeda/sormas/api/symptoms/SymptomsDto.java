@@ -83,15 +83,12 @@ import static de.symeda.sormas.api.Disease.UNSPECIFIED_VHF;
 import static de.symeda.sormas.api.Disease.WEST_NILE_FEVER;
 import static de.symeda.sormas.api.Disease.YAWS_ENDEMIC_SYPHILIS;
 import static de.symeda.sormas.api.Disease.YELLOW_FEVER;
-import static de.symeda.sormas.api.Disease.UNDEFINED;
-import static de.symeda.sormas.api.Disease.OTHER;
 
 import java.util.Date;
 
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.CountryHelper;
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
@@ -318,6 +315,14 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String SEPTICAEMIA = "septicaemia";
 	public static final String OTHER_CLINICAL_PRESENTATION = "otherClinicalPresentation";
 	public static final String OTHER_CLINICAL_PRESENTATION_TEXT = "otherClinicalPresentationText";
+
+	public static final String DIAGNOSIS = "diagnosis";
+	public static final String MAJOR_SITE = "majorSite";
+	public static final String OTHER_MAJOR_SITE_DETAILS = "otherMajorSiteDetails";
+	public static final String MINOR_SITE = "minorSite";
+	public static final String OTHER_MINOR_SITE_DETAILS = "otherMinorSiteDetails";
+	public static final String DATE_OF_ONSET_KNOWN = "dateOfOnsetKnown";
+	public static final String CLINICAL_PRESENTATION_STATUS = "clinicalPresentationStatus";
 
 	// Fields are declared in the order they should appear in the import template
 

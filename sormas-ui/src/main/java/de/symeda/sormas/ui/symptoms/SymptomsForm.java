@@ -470,6 +470,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			LOSS_OF_SMELL,
 			WHEEZING,
 			WHOOP_SOUND,
+			NOCTURNAL_COUGH,
 			SKIN_ULCERS,
 			INABILITY_TO_WALK,
 			IN_DRAWING_OF_CHEST_WALL,
@@ -762,7 +763,15 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			Arrays.asList(CongenitalHeartDiseaseType.OTHER),
 			true);
 
-		FieldHelper.setVisibleWhen(getFieldGroup(), OTHER_CLINICAL_PRESENTATION_TEXT, OTHER_CLINICAL_PRESENTATION, Arrays.asList(SymptomState.YES), true);
+		if (disease != Disease.TUBERCULOSIS) {
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				OTHER_CLINICAL_PRESENTATION_TEXT,
+				OTHER_CLINICAL_PRESENTATION,
+				Arrays.asList(SymptomState.YES),
+				true);
+		}
+
 		if (isVisibleAllowed(getFieldGroup().getField(JAUNDICE_WITHIN_24_HOURS_OF_BIRTH))) {
 			FieldHelper.setVisibleWhen(getFieldGroup(), JAUNDICE_WITHIN_24_HOURS_OF_BIRTH, JAUNDICE, Arrays.asList(SymptomState.YES), true);
 		}
@@ -835,13 +844,16 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				Arrays.asList(SymptomState.YES),
 				disease);
 		}
-		if (isEditableAllowed(OTHER_CLINICAL_PRESENTATION)) {
-			FieldHelper.setRequiredWhen(
+
+		if (disease != Disease.TUBERCULOSIS) {
+			if (isEditableAllowed(OTHER_CLINICAL_PRESENTATION)) {
+				FieldHelper.setRequiredWhen(
 					getFieldGroup(),
 					getFieldGroup().getField(OTHER_CLINICAL_PRESENTATION),
 					Arrays.asList(OTHER_CLINICAL_PRESENTATION_TEXT),
 					Arrays.asList(SymptomState.YES),
 					disease);
+			}
 		}
 
 		FieldHelper.setRequiredWhen(getFieldGroup(), getFieldGroup().getField(LESIONS), lesionsFieldIds, Arrays.asList(SymptomState.YES), disease);
