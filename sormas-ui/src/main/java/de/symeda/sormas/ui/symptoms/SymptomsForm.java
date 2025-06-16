@@ -470,6 +470,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			LOSS_OF_SMELL,
 			WHEEZING,
 			WHOOP_SOUND,
+			NOCTURNAL_COUGH,
 			SKIN_ULCERS,
 			INABILITY_TO_WALK,
 			IN_DRAWING_OF_CHEST_WALL,
@@ -688,6 +689,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			LOSS_OF_SMELL,
 			WHEEZING,
 			WHOOP_SOUND,
+			NOCTURNAL_COUGH,
 			SKIN_ULCERS,
 			INABILITY_TO_WALK,
 			IN_DRAWING_OF_CHEST_WALL,
@@ -913,17 +915,17 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		complicationsHeading.setVisible(isComplicationsHeadingVisible);
 
 		// checking the disease is invasive bacterial disease(IMI/IPI)
-		boolean invasiveDisease = false;
+		boolean lablesVisible = false;
 
-		if (caze != null) {
-			invasiveDisease = caze.checkDiseaseIsInvasiveBacterialDiseases();
+		if(caze!=null) {
+			lablesVisible = caze.checkDiseaseIsInvasiveBacterialDiseases() || disease == Disease.PERTUSSIS;
 		}
-
-		clinicalMeasurementsHeadingLabel.setVisible(!invasiveDisease);
-		signsAndSymptomsHeadingLabel.setVisible(!invasiveDisease);
-		respiratorySymptomsHeadingLabel.setVisible(!invasiveDisease);
-		complicationsHeading.setVisible(!invasiveDisease && isComplicationsHeadingVisible);
-		clinicalPresentationHeadingLabel.setVisible(invasiveDisease);
+		
+		clinicalMeasurementsHeadingLabel.setVisible(!lablesVisible);
+		signsAndSymptomsHeadingLabel.setVisible(!lablesVisible);
+		respiratorySymptomsHeadingLabel.setVisible(!lablesVisible);
+		complicationsHeading.setVisible(!lablesVisible && isComplicationsHeadingVisible);
+		clinicalPresentationHeadingLabel.setVisible(lablesVisible);
 
 		if (Disease.INVASIVE_MENINGOCOCCAL_INFECTION == disease) {
 			getField(SHOCK).setCaption(I18nProperties.getCaption(Captions.Symptoms_imi_shock));

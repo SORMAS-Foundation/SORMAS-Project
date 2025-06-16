@@ -500,6 +500,29 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 				confirmed,
 				null);
 
+		// Pertusis
+		suspect = xOf(1,allOfTogether(symptom(SymptomsDto.COUGHING_BOUTS, Disease.PERTUSSIS.name()),xOfSub(1, false,
+								symptom(SymptomsDto.WHOOP_SOUND), symptom(SymptomsDto.COUGHS_PROVOKE_VOMITING), symptom(SymptomsDto.NOCTURNAL_COUGH))),
+				symptom(SymptomsDto.APNOEA, Disease.PERTUSSIS.name()),
+				caseData(CaseDataDto.CLINICAL_CONFIRMATION, Disease.PERTUSSIS.name(), YesNoUnknown.YES));
+
+		probable = allOf(suspect, caseData(CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, YesNoUnknown.YES));
+
+		confirmed = allOf(
+				suspect,
+				xOf(1,(positiveTestResult(
+						Disease.PERTUSSIS,
+						PathogenTestType.MICROSCOPY,
+						PathogenTestType.PCR_RT_PCR,
+						PathogenTestType.CULTURE))));
+		addCriteria(
+				Disease.PERTUSSIS,
+				DateHelper.getDateZero(2020, 11, 6),
+				suspect,
+				probable,
+				confirmed,
+				null);
+
 
 		// CORONAVIRUS
 		suspect = xOf(
@@ -638,9 +661,15 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 	private ClassificationCaseCriteriaDto caseData(String propertyId, Object... propertyValues) {
 		return new ClassificationCaseCriteriaDto(propertyId, propertyValues);
 	}
+	private ClassificationCaseCriteriaDto caseData(String propertyId, String addition, Object... propertyValues) {
+		return new ClassificationCaseCriteriaDto(propertyId,addition, propertyValues);
+	}
 
 	private ClassificationSymptomsCriteriaDto symptom(String propertyId) {
 		return new ClassificationSymptomsCriteriaDto(propertyId);
+	}
+	private ClassificationSymptomsCriteriaDto symptom(String propertyId, String addition) {
+		return new ClassificationSymptomsCriteriaDto(propertyId, addition);
 	}
 
 	private ClassificationEpiDataCriteriaDto epiData(String propertyId) {

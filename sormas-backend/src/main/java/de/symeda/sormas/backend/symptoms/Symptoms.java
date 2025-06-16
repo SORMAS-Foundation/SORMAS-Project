@@ -209,6 +209,7 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState shivering;
 	private SymptomState fastHeartRate;
 	private SymptomState oxygenSaturationLower94;
+	private SymptomState nocturnalCough;
 
 	private SymptomState feverishFeeling;
 	private SymptomState weakness;
@@ -2015,5 +2016,14 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setClinicalPresentationStatus(ClinicalPresentationStatus clinicalPresentationStatus) {
 		this.clinicalPresentationStatus = clinicalPresentationStatus;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getNocturnalCough() {
+		return nocturnalCough;
+	}
+
+	public void setNocturnalCough(SymptomState nocturnalCough) {
+		this.nocturnalCough = nocturnalCough;
 	}
 }

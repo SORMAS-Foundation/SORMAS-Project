@@ -231,6 +231,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setDateOfOnsetKnown(source.getDateOfOnsetKnown());
 		target.setClinicalPresentationStatus(source.getClinicalPresentationStatus());
 
+		target.setNocturnalCough(source.getNocturnalCough());
 		return target;
 	}
 
@@ -444,6 +445,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setDateOfOnsetKnown(source.getDateOfOnsetKnown());
 		target.setClinicalPresentationStatus(source.getClinicalPresentationStatus());
 
+		target.setNocturnalCough(source.getNocturnalCough());
 		return target;
 	}
 

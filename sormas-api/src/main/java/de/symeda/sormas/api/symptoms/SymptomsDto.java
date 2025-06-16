@@ -273,6 +273,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String VOMITING = "vomiting";
 	public static final String WHEEZING = "wheezing";
 	public static final String WHOOP_SOUND = "whoopSound";
+	public static final String NOCTURNAL_COUGH = "nocturnalCough";
 	public static final String RESPIRATORY_DISEASE_VENTILATION = "respiratoryDiseaseVentilation";
 	public static final String FEELING_ILL = "feelingIll";
 	public static final String SHIVERING = "shivering";
@@ -307,7 +308,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String SEPSIS = "sepsis";
 	public static final String SHOCK = "shock";
 	// clinical
-	public static final String ASYMPTOMATIC = "asymptomatic";
+    public static final String ASYMPTOMATIC = "asymptomatic";
 	public static final String HEMORRHAGIC_RASH = "hemorrhagicRash";
 	public static final String ARTHRITIS = "arthritis";
 	public static final String MENINGITIS = "meningitis";
@@ -739,6 +740,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		ANTHRAX,
 		CORONAVIRUS,
 		UNDEFINED,
+		PERTUSSIS,
 		OTHER })
 	@Outbreaks
 	@SymptomGrouping(SymptomGroup.GENERAL)
@@ -1315,8 +1317,9 @@ public class SymptomsDto extends PseudonymizableDto {
 		POST_IMMUNIZATION_ADVERSE_EVENTS_MILD,
 		POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE,
 		FHA,
-		INVASIVE_MENINGOCOCCAL_INFECTION,
-		INVASIVE_PNEUMOCOCCAL_INFECTION })
+        INVASIVE_MENINGOCOCCAL_INFECTION,
+        INVASIVE_PNEUMOCOCCAL_INFECTION,
+		PERTUSSIS})
 	@HideForCountries
 	@Outbreaks
 	private Date onsetDate;
@@ -1383,7 +1386,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE,
 		INVASIVE_MENINGOCOCCAL_INFECTION,
 		INVASIVE_PNEUMOCOCCAL_INFECTION,
-		FHA })
+		FHA,
+		PERTUSSIS})
 	@HideForCountries
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String onsetSymptom;
@@ -2138,6 +2142,12 @@ public class SymptomsDto extends PseudonymizableDto {
 	private SymptomState whoopSound;
 
 	@Diseases({
+			PERTUSSIS })
+	@HideForCountries
+	@SymptomGrouping(SymptomGroup.RESPIRATORY)
+	private SymptomState nocturnalCough;
+
+	@Diseases({
 		CORONAVIRUS,
 		UNDEFINED,
 		OTHER })
@@ -2538,9 +2548,9 @@ public class SymptomsDto extends PseudonymizableDto {
 	@SymptomGrouping(SymptomGroup.GENERAL)
 	private SymptomState shivering;
 
-	@Diseases({
-		INVASIVE_MENINGOCOCCAL_INFECTION,
-		INVASIVE_PNEUMOCOCCAL_INFECTION })
+	@Diseases({INVASIVE_MENINGOCOCCAL_INFECTION,
+			INVASIVE_PNEUMOCOCCAL_INFECTION,
+			PERTUSSIS})
 	private SymptomState asymptomatic;
 	@Diseases({
 		INVASIVE_MENINGOCOCCAL_INFECTION })
@@ -4333,5 +4343,13 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	public void setClinicalPresentationStatus(ClinicalPresentationStatus clinicalPresentationStatus) {
 		this.clinicalPresentationStatus = clinicalPresentationStatus;
+	}
+
+	public SymptomState getNocturnalCough() {
+		return nocturnalCough;
+	}
+
+	public void setNocturnalCough(SymptomState nocturnalCough) {
+		this.nocturnalCough = nocturnalCough;
 	}
 }

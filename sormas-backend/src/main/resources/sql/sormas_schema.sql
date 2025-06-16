@@ -14403,4 +14403,9 @@ alter table symptoms_history add clinicalpresentationstatus varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (576, 'Tuberculosis specific updates - symptoms changes #13324');
 
+-- 2025-06-16 Pertussis missed symptom, #13373
+alter table symptoms add column IF NOT EXISTS nocturnalcough varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (577, 'Pertussis missed symptom, #13373');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
