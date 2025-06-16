@@ -58,6 +58,7 @@ import static de.symeda.sormas.api.Disease.NEONATAL_TETANUS;
 import static de.symeda.sormas.api.Disease.NEW_INFLUENZA;
 import static de.symeda.sormas.api.Disease.NON_NEONATAL_TETANUS;
 import static de.symeda.sormas.api.Disease.ONCHOCERCIASIS;
+import static de.symeda.sormas.api.Disease.OTHER;
 import static de.symeda.sormas.api.Disease.PARAINFLUENZA_1_4;
 import static de.symeda.sormas.api.Disease.PERINATAL_DEATHS;
 import static de.symeda.sormas.api.Disease.PERTUSSIS;
@@ -77,19 +78,17 @@ import static de.symeda.sormas.api.Disease.TRACHOMA;
 import static de.symeda.sormas.api.Disease.TRYPANOSOMIASIS;
 import static de.symeda.sormas.api.Disease.TUBERCULOSIS;
 import static de.symeda.sormas.api.Disease.TYPHOID_FEVER;
+import static de.symeda.sormas.api.Disease.UNDEFINED;
 import static de.symeda.sormas.api.Disease.UNSPECIFIED_VHF;
 import static de.symeda.sormas.api.Disease.WEST_NILE_FEVER;
 import static de.symeda.sormas.api.Disease.YAWS_ENDEMIC_SYPHILIS;
 import static de.symeda.sormas.api.Disease.YELLOW_FEVER;
-import static de.symeda.sormas.api.Disease.UNDEFINED;
-import static de.symeda.sormas.api.Disease.OTHER;
 
 import java.util.Date;
 
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.CountryHelper;
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
@@ -308,13 +307,21 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String SEPSIS = "sepsis";
 	public static final String SHOCK = "shock";
 	// clinical
-    public static final String ASYMPTOMATIC = "asymptomatic";
+	public static final String ASYMPTOMATIC = "asymptomatic";
 	public static final String HEMORRHAGIC_RASH = "hemorrhagicRash";
 	public static final String ARTHRITIS = "arthritis";
 	public static final String MENINGITIS = "meningitis";
 	public static final String SEPTICAEMIA = "septicaemia";
 	public static final String OTHER_CLINICAL_PRESENTATION = "otherClinicalPresentation";
 	public static final String OTHER_CLINICAL_PRESENTATION_TEXT = "otherClinicalPresentationText";
+
+	public static final String DIAGNOSIS = "diagnosis";
+	public static final String MAJOR_SITE = "majorSite";
+	public static final String OTHER_MAJOR_SITE_DETAILS = "otherMajorSiteDetails";
+	public static final String MINOR_SITE = "minorSite";
+	public static final String OTHER_MINOR_SITE_DETAILS = "otherMinorSiteDetails";
+	public static final String DATE_OF_ONSET_KNOWN = "dateOfOnsetKnown";
+	public static final String CLINICAL_PRESENTATION_STATUS = "clinicalPresentationStatus";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -1308,8 +1315,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		POST_IMMUNIZATION_ADVERSE_EVENTS_MILD,
 		POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE,
 		FHA,
-        INVASIVE_MENINGOCOCCAL_INFECTION,
-        INVASIVE_PNEUMOCOCCAL_INFECTION })
+		INVASIVE_MENINGOCOCCAL_INFECTION,
+		INVASIVE_PNEUMOCOCCAL_INFECTION })
 	@HideForCountries
 	@Outbreaks
 	private Date onsetDate;
@@ -1374,8 +1381,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		CHIKUNGUNYA,
 		POST_IMMUNIZATION_ADVERSE_EVENTS_MILD,
 		POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE,
-			INVASIVE_MENINGOCOCCAL_INFECTION,
-			INVASIVE_PNEUMOCOCCAL_INFECTION,
+		INVASIVE_MENINGOCOCCAL_INFECTION,
+		INVASIVE_PNEUMOCOCCAL_INFECTION,
 		FHA })
 	@HideForCountries
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
@@ -2531,26 +2538,43 @@ public class SymptomsDto extends PseudonymizableDto {
 	@SymptomGrouping(SymptomGroup.GENERAL)
 	private SymptomState shivering;
 
-	@Diseases({INVASIVE_MENINGOCOCCAL_INFECTION,
-			INVASIVE_PNEUMOCOCCAL_INFECTION})
+	@Diseases({
+		INVASIVE_MENINGOCOCCAL_INFECTION,
+		INVASIVE_PNEUMOCOCCAL_INFECTION })
 	private SymptomState asymptomatic;
-	@Diseases({INVASIVE_MENINGOCOCCAL_INFECTION})
+	@Diseases({
+		INVASIVE_MENINGOCOCCAL_INFECTION })
 	private SymptomState hemorrhagicRash;
 
-	@Diseases({INVASIVE_MENINGOCOCCAL_INFECTION})
+	@Diseases({
+		INVASIVE_MENINGOCOCCAL_INFECTION })
 	private SymptomState arthritis;
 
-	@Diseases({INVASIVE_PNEUMOCOCCAL_INFECTION})
+	@Diseases({
+		INVASIVE_PNEUMOCOCCAL_INFECTION })
 	private SymptomState meningitis;
 
-	@Diseases({INVASIVE_PNEUMOCOCCAL_INFECTION})
+	@Diseases({
+		INVASIVE_PNEUMOCOCCAL_INFECTION })
 	private SymptomState septicaemia;
 
-	@Diseases({INVASIVE_PNEUMOCOCCAL_INFECTION, INVASIVE_MENINGOCOCCAL_INFECTION})
+	@Diseases({
+		INVASIVE_PNEUMOCOCCAL_INFECTION,
+		INVASIVE_MENINGOCOCCAL_INFECTION })
 	private SymptomState otherClinicalPresentation;
 
-	@Diseases({INVASIVE_PNEUMOCOCCAL_INFECTION, INVASIVE_MENINGOCOCCAL_INFECTION})
+	@Diseases({
+		INVASIVE_PNEUMOCOCCAL_INFECTION,
+		INVASIVE_MENINGOCOCCAL_INFECTION })
 	private String otherClinicalPresentationText;
+
+	private DiagnosisType diagnosis;
+	private InfectionSite majorSite;
+	private String otherMajorSiteDetails;
+	private InfectionSite minorSite;
+	private String otherMinorSiteDetails;
+	private YesNoUnknown dateOfOnsetKnown;
+	private ClinicalPresentationStatus clinicalPresentationStatus;
 
 	@Order(0)
 	public Float getTemperature() {
@@ -4198,6 +4222,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	public void setCoughsProvokeVomiting(SymptomState coughsProvokeVomiting) {
 		this.coughsProvokeVomiting = coughsProvokeVomiting;
 	}
+
 	public SymptomState getAsymptomatic() {
 		return asymptomatic;
 	}
@@ -4252,5 +4277,61 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	public void setSepticaemia(SymptomState septicaemia) {
 		this.septicaemia = septicaemia;
+	}
+
+	public DiagnosisType getDiagnosis() {
+		return diagnosis;
+	}
+
+	public void setDiagnosis(DiagnosisType diagnosis) {
+		this.diagnosis = diagnosis;
+	}
+
+	public InfectionSite getMajorSite() {
+		return majorSite;
+	}
+
+	public void setMajorSite(InfectionSite majorSite) {
+		this.majorSite = majorSite;
+	}
+
+	public String getOtherMajorSiteDetails() {
+		return otherMajorSiteDetails;
+	}
+
+	public void setOtherMajorSiteDetails(String otherMajorSiteDetails) {
+		this.otherMajorSiteDetails = otherMajorSiteDetails;
+	}
+
+	public InfectionSite getMinorSite() {
+		return minorSite;
+	}
+
+	public void setMinorSite(InfectionSite minorSite) {
+		this.minorSite = minorSite;
+	}
+
+	public String getOtherMinorSiteDetails() {
+		return otherMinorSiteDetails;
+	}
+
+	public void setOtherMinorSiteDetails(String otherMinorSiteDetails) {
+		this.otherMinorSiteDetails = otherMinorSiteDetails;
+	}
+
+	public YesNoUnknown getDateOfOnsetKnown() {
+		return dateOfOnsetKnown;
+	}
+
+	public void setDateOfOnsetKnown(YesNoUnknown dateOfOnsetKnown) {
+		this.dateOfOnsetKnown = dateOfOnsetKnown;
+	}
+
+	public ClinicalPresentationStatus getClinicalPresentationStatus() {
+		return clinicalPresentationStatus;
+	}
+
+	public void setClinicalPresentationStatus(ClinicalPresentationStatus clinicalPresentationStatus) {
+		this.clinicalPresentationStatus = clinicalPresentationStatus;
 	}
 }

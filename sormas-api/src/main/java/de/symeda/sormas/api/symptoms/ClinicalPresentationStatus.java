@@ -17,7 +17,7 @@ package de.symeda.sormas.api.symptoms;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 
-public enum ClinicalPresentation {
+public enum ClinicalPresentationStatus {
 
 	ASYMPTOMATIC,
 	COMPATIBLE,
@@ -26,5 +26,15 @@ public enum ClinicalPresentation {
 	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
+	}
+
+	public String buildCaption(String diseaseShort) {
+		String caption = null;
+		if (this == ClinicalPresentationStatus.COMPATIBLE) {
+			caption = String.format(this.toString(), diseaseShort);
+		} else {
+			caption = I18nProperties.getEnumCaption(this);
+		}
+		return caption;
 	}
 }
