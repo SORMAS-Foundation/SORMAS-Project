@@ -2812,6 +2812,7 @@ public interface Captions {
 	String Symptoms_chestPain = "Symptoms.chestPain";
 	String Symptoms_chestPressure = "Symptoms.chestPressure";
 	String Symptoms_chillsSweats = "Symptoms.chillsSweats";
+	String Symptoms_clinicalPresentationStatus = "Symptoms.clinicalPresentationStatus";
 	String Symptoms_coma = "Symptoms.coma";
 	String Symptoms_confusedDisoriented = "Symptoms.confusedDisoriented";
 	String Symptoms_congenitalGlaucoma = "Symptoms.congenitalGlaucoma";
@@ -2833,6 +2834,7 @@ public interface Captions {
 	String Symptoms_dehydration = "Symptoms.dehydration";
 	String Symptoms_delirium = "Symptoms.delirium";
 	String Symptoms_developmentalDelay = "Symptoms.developmentalDelay";
+	String Symptoms_diagnosis = "Symptoms.diagnosis";
 	String Symptoms_diarrhea = "Symptoms.diarrhea";
 	String Symptoms_difficultyBreathing = "Symptoms.difficultyBreathing";
 	String Symptoms_digestedBloodVomit = "Symptoms.digestedBloodVomit";
@@ -2904,12 +2906,14 @@ public interface Captions {
 	String Symptoms_lymphadenopathyAxillary = "Symptoms.lymphadenopathyAxillary";
 	String Symptoms_lymphadenopathyCervical = "Symptoms.lymphadenopathyCervical";
 	String Symptoms_lymphadenopathyInguinal = "Symptoms.lymphadenopathyInguinal";
+	String Symptoms_majorSite = "Symptoms.majorSite";
 	String Symptoms_malaise = "Symptoms.malaise";
 	String Symptoms_meningealSigns = "Symptoms.meningealSigns";
 	String Symptoms_meningitis = "Symptoms.meningitis";
 	String Symptoms_meningoencephalitis = "Symptoms.meningoencephalitis";
 	String Symptoms_microcephaly = "Symptoms.microcephaly";
 	String Symptoms_midUpperArmCircumference = "Symptoms.midUpperArmCircumference";
+	String Symptoms_minorSite = "Symptoms.minorSite";
 	String Symptoms_musclePain = "Symptoms.musclePain";
 	String Symptoms_nausea = "Symptoms.nausea";
 	String Symptoms_neckStiffness = "Symptoms.neckStiffness";
@@ -2927,6 +2931,8 @@ public interface Captions {
 	String Symptoms_otherComplicationsText = "Symptoms.otherComplicationsText";
 	String Symptoms_otherHemorrhagicSymptoms = "Symptoms.otherHemorrhagicSymptoms";
 	String Symptoms_otherHemorrhagicSymptomsText = "Symptoms.otherHemorrhagicSymptomsText";
+	String Symptoms_otherMajorSiteDetails = "Symptoms.otherMajorSiteDetails";
+	String Symptoms_otherMinorSiteDetails = "Symptoms.otherMinorSiteDetails";
 	String Symptoms_otherNonHemorrhagicSymptoms = "Symptoms.otherNonHemorrhagicSymptoms";
 	String Symptoms_otherNonHemorrhagicSymptomsText = "Symptoms.otherNonHemorrhagicSymptomsText";
 	String Symptoms_otitisMedia = "Symptoms.otitisMedia";

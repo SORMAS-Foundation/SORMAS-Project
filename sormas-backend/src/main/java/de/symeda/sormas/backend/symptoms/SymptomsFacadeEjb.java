@@ -223,6 +223,13 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setMeningitis(source.getMeningitis());
 		target.setOtherClinicalPresentation(source.getOtherClinicalPresentation());
 		target.setOtherClinicalPresentationText(source.getOtherClinicalPresentationText());
+		target.setDiagnosis(source.getDiagnosis());
+		target.setMajorSite(source.getMajorSite());
+		target.setOtherMajorSiteDetails(source.getOtherMajorSiteDetails());
+		target.setMinorSite(source.getMinorSite());
+		target.setOtherMinorSiteDetails(source.getOtherMinorSiteDetails());
+		target.setDateOfOnsetKnown(source.getDateOfOnsetKnown());
+		target.setClinicalPresentationStatus(source.getClinicalPresentationStatus());
 
 		return target;
 	}
@@ -429,6 +436,13 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setMeningitis(source.getMeningitis());
 		target.setOtherClinicalPresentation(source.getOtherClinicalPresentation());
 		target.setOtherClinicalPresentationText(source.getOtherClinicalPresentationText());
+		target.setDiagnosis(source.getDiagnosis());
+		target.setMajorSite(source.getMajorSite());
+		target.setOtherMajorSiteDetails(source.getOtherMajorSiteDetails());
+		target.setMinorSite(source.getMinorSite());
+		target.setOtherMinorSiteDetails(source.getOtherMinorSiteDetails());
+		target.setDateOfOnsetKnown(source.getDateOfOnsetKnown());
+		target.setClinicalPresentationStatus(source.getClinicalPresentationStatus());
 
 		return target;
 	}
