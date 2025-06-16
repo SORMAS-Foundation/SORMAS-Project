@@ -14384,9 +14384,9 @@ alter table drugsusceptibility add column IF NOT EXISTS erythromycinSusceptibili
 
 INSERT INTO schema_version (version_number, comment) VALUES (575, 'Therapy changes for IMI & IPI, #13319, #13342');
 
--- 2025-06-05 Pertussis missed symptom, #13373
+-- 2025-06-16 Pertussis missed symptom, #13373
 alter table symptoms add column IF NOT EXISTS nocturnalcough varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (575, 'Pertussis missed symptom, #13373');
+INSERT INTO schema_version (version_number, comment) VALUES (576, 'Pertussis missed symptom, #13373');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

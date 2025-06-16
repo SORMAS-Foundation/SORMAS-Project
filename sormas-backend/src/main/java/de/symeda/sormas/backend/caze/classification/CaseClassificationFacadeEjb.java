@@ -501,9 +501,9 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 				null);
 
 		// Pertusis
-		suspect = allOf(symptom(SymptomsDto.COUGHING_BOUTS, Disease.PERTUSSIS.name()),
-//				xOf(1,oneOfCompact(symptom(SymptomsDto.WHOOP_SOUND), symptom(SymptomsDto.COUGHS_PROVOKE_VOMITING), symptom(SymptomsDto.NOCTURNAL_COUGH))),
-				symptom(SymptomsDto.APNOEA),
+		suspect = xOf(1,allOfTogether(symptom(SymptomsDto.COUGHING_BOUTS, Disease.PERTUSSIS.name()),xOfSub(1, false,
+								symptom(SymptomsDto.WHOOP_SOUND), symptom(SymptomsDto.COUGHS_PROVOKE_VOMITING), symptom(SymptomsDto.NOCTURNAL_COUGH))),
+				symptom(SymptomsDto.APNOEA, Disease.PERTUSSIS.name()),
 				caseData(CaseDataDto.CLINICAL_CONFIRMATION, Disease.PERTUSSIS.name(), YesNoUnknown.YES));
 
 		probable = allOf(suspect, caseData(CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, YesNoUnknown.YES));
@@ -661,8 +661,8 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 	private ClassificationCaseCriteriaDto caseData(String propertyId, Object... propertyValues) {
 		return new ClassificationCaseCriteriaDto(propertyId, propertyValues);
 	}
-	private ClassificationCaseCriteriaDto caseData(String propertyId, String adition, Object... propertyValues) {
-		return new ClassificationCaseCriteriaDto(propertyId,adition, propertyValues);
+	private ClassificationCaseCriteriaDto caseData(String propertyId, String addition, Object... propertyValues) {
+		return new ClassificationCaseCriteriaDto(propertyId,addition, propertyValues);
 	}
 
 	private ClassificationSymptomsCriteriaDto symptom(String propertyId) {
