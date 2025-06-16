@@ -732,6 +732,7 @@ public interface Strings {
 	String headingLimitedDiseases = "headingLimitedDiseases";
 	String headingLineListing = "headingLineListing";
 	String headingLineListingImport = "headingLineListingImport";
+	String headingLocalisation = "headingLocalisation";
 	String headingLocation = "headingLocation";
 	String headingLoginFailed = "headingLoginFailed";
 	String headingMaternalHistory = "headingMaternalHistory";

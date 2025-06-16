@@ -14384,9 +14384,28 @@ alter table drugsusceptibility add column IF NOT EXISTS erythromycinSusceptibili
 
 INSERT INTO schema_version (version_number, comment) VALUES (575, 'Therapy changes for IMI & IPI, #13319, #13342');
 
+-- 2025-06-16 Tuberculosis specific updates - symptoms changes #13324
+alter table symptoms add diagnosis varchar(255);
+alter table symptoms add majorsite varchar(255);
+alter table symptoms add othermajorsitedetails varchar(512);
+alter table symptoms add minorsite varchar(255);
+alter table symptoms add otherminorsitedetails varchar(512);
+alter table symptoms add dateofonsetknown varchar(255);
+alter table symptoms add clinicalpresentationstatus varchar(255);
+
+alter table symptoms_history add diagnosis varchar(255);
+alter table symptoms_history add majorsite varchar(255);
+alter table symptoms_history add othermajorsitedetails varchar(512);
+alter table symptoms_history add minorsite varchar(255);
+alter table symptoms_history add otherminorsitedetails varchar(512);
+alter table symptoms_history add dateofonsetknown varchar(255);
+alter table symptoms_history add clinicalpresentationstatus varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (576, 'Tuberculosis specific updates - symptoms changes #13324');
+
 -- 2025-06-16 Pertussis missed symptom, #13373
 alter table symptoms add column IF NOT EXISTS nocturnalcough varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (576, 'Pertussis missed symptom, #13373');
+INSERT INTO schema_version (version_number, comment) VALUES (577, 'Pertussis missed symptom, #13373');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

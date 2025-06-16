@@ -58,6 +58,7 @@ import static de.symeda.sormas.api.Disease.NEONATAL_TETANUS;
 import static de.symeda.sormas.api.Disease.NEW_INFLUENZA;
 import static de.symeda.sormas.api.Disease.NON_NEONATAL_TETANUS;
 import static de.symeda.sormas.api.Disease.ONCHOCERCIASIS;
+import static de.symeda.sormas.api.Disease.OTHER;
 import static de.symeda.sormas.api.Disease.PARAINFLUENZA_1_4;
 import static de.symeda.sormas.api.Disease.PERINATAL_DEATHS;
 import static de.symeda.sormas.api.Disease.PERTUSSIS;
@@ -77,6 +78,7 @@ import static de.symeda.sormas.api.Disease.TRACHOMA;
 import static de.symeda.sormas.api.Disease.TRYPANOSOMIASIS;
 import static de.symeda.sormas.api.Disease.TUBERCULOSIS;
 import static de.symeda.sormas.api.Disease.TYPHOID_FEVER;
+import static de.symeda.sormas.api.Disease.UNDEFINED;
 import static de.symeda.sormas.api.Disease.UNSPECIFIED_VHF;
 import static de.symeda.sormas.api.Disease.WEST_NILE_FEVER;
 import static de.symeda.sormas.api.Disease.YAWS_ENDEMIC_SYPHILIS;
@@ -2545,23 +2547,39 @@ public class SymptomsDto extends PseudonymizableDto {
 			INVASIVE_PNEUMOCOCCAL_INFECTION,
 			PERTUSSIS})
 	private SymptomState asymptomatic;
-	@Diseases({INVASIVE_MENINGOCOCCAL_INFECTION})
+	@Diseases({
+		INVASIVE_MENINGOCOCCAL_INFECTION })
 	private SymptomState hemorrhagicRash;
 
-	@Diseases({INVASIVE_MENINGOCOCCAL_INFECTION})
+	@Diseases({
+		INVASIVE_MENINGOCOCCAL_INFECTION })
 	private SymptomState arthritis;
 
-	@Diseases({INVASIVE_PNEUMOCOCCAL_INFECTION})
+	@Diseases({
+		INVASIVE_PNEUMOCOCCAL_INFECTION })
 	private SymptomState meningitis;
 
-	@Diseases({INVASIVE_PNEUMOCOCCAL_INFECTION})
+	@Diseases({
+		INVASIVE_PNEUMOCOCCAL_INFECTION })
 	private SymptomState septicaemia;
 
-	@Diseases({INVASIVE_PNEUMOCOCCAL_INFECTION, INVASIVE_MENINGOCOCCAL_INFECTION})
+	@Diseases({
+		INVASIVE_PNEUMOCOCCAL_INFECTION,
+		INVASIVE_MENINGOCOCCAL_INFECTION })
 	private SymptomState otherClinicalPresentation;
 
-	@Diseases({INVASIVE_PNEUMOCOCCAL_INFECTION, INVASIVE_MENINGOCOCCAL_INFECTION})
+	@Diseases({
+		INVASIVE_PNEUMOCOCCAL_INFECTION,
+		INVASIVE_MENINGOCOCCAL_INFECTION })
 	private String otherClinicalPresentationText;
+
+	private DiagnosisType diagnosis;
+	private InfectionSite majorSite;
+	private String otherMajorSiteDetails;
+	private InfectionSite minorSite;
+	private String otherMinorSiteDetails;
+	private YesNoUnknown dateOfOnsetKnown;
+	private ClinicalPresentationStatus clinicalPresentationStatus;
 
 	@Order(0)
 	public Float getTemperature() {
@@ -4209,6 +4227,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	public void setCoughsProvokeVomiting(SymptomState coughsProvokeVomiting) {
 		this.coughsProvokeVomiting = coughsProvokeVomiting;
 	}
+
 	public SymptomState getAsymptomatic() {
 		return asymptomatic;
 	}
@@ -4263,6 +4282,62 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	public void setSepticaemia(SymptomState septicaemia) {
 		this.septicaemia = septicaemia;
+	}
+
+	public DiagnosisType getDiagnosis() {
+		return diagnosis;
+	}
+
+	public void setDiagnosis(DiagnosisType diagnosis) {
+		this.diagnosis = diagnosis;
+	}
+
+	public InfectionSite getMajorSite() {
+		return majorSite;
+	}
+
+	public void setMajorSite(InfectionSite majorSite) {
+		this.majorSite = majorSite;
+	}
+
+	public String getOtherMajorSiteDetails() {
+		return otherMajorSiteDetails;
+	}
+
+	public void setOtherMajorSiteDetails(String otherMajorSiteDetails) {
+		this.otherMajorSiteDetails = otherMajorSiteDetails;
+	}
+
+	public InfectionSite getMinorSite() {
+		return minorSite;
+	}
+
+	public void setMinorSite(InfectionSite minorSite) {
+		this.minorSite = minorSite;
+	}
+
+	public String getOtherMinorSiteDetails() {
+		return otherMinorSiteDetails;
+	}
+
+	public void setOtherMinorSiteDetails(String otherMinorSiteDetails) {
+		this.otherMinorSiteDetails = otherMinorSiteDetails;
+	}
+
+	public YesNoUnknown getDateOfOnsetKnown() {
+		return dateOfOnsetKnown;
+	}
+
+	public void setDateOfOnsetKnown(YesNoUnknown dateOfOnsetKnown) {
+		this.dateOfOnsetKnown = dateOfOnsetKnown;
+	}
+
+	public ClinicalPresentationStatus getClinicalPresentationStatus() {
+		return clinicalPresentationStatus;
+	}
+
+	public void setClinicalPresentationStatus(ClinicalPresentationStatus clinicalPresentationStatus) {
+		this.clinicalPresentationStatus = clinicalPresentationStatus;
 	}
 
 	public SymptomState getNocturnalCough() {
