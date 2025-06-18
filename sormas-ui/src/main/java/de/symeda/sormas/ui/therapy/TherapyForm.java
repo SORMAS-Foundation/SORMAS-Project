@@ -112,7 +112,9 @@ public class TherapyForm extends AbstractEditForm<TherapyDto> {
 	private TextField prescriptionTextFilter;
 	private ComboBox treatmentTypeFilter;
 	private TextField treatmentTextFilter;
-	protected boolean applyingCriteria;
+	// To avoid form going infinite loop, need two different flags to track whether the criteria are being applied or not
+	protected boolean prescriptionApplyingCriteria;
+	protected boolean treatmentApplyingCriteria;
 
 	public TherapyForm(CaseDataDto caze, Disease disease, boolean isPseudonymized, boolean inJurisdiction, boolean isEditAllowed) {
 
@@ -285,9 +287,9 @@ public class TherapyForm extends AbstractEditForm<TherapyDto> {
 			prescriptionTypeFilter.addItems((Object[]) TreatmentType.values());
 			prescriptionTypeFilter.addValueChangeListener(e -> {
 				prescriptionCriteria.prescriptionType(((TreatmentType) e.getProperty().getValue()));
-				ControllerProvider.getTherapyController().navigateTo(applyingCriteria, true, prescriptionCriteria);
+				ControllerProvider.getTherapyController().navigateTo(prescriptionApplyingCriteria, true, prescriptionCriteria);
 
-				applyingCriteria = false;
+				prescriptionApplyingCriteria = false;
 			});
 			filterRow.addComponent(prescriptionTypeFilter);
 
@@ -363,8 +365,9 @@ public class TherapyForm extends AbstractEditForm<TherapyDto> {
 			treatmentTypeFilter.addItems((Object[]) TreatmentType.values());
 			treatmentTypeFilter.addValueChangeListener(e -> {
 				treatmentCriteria.treatmentType(((TreatmentType) e.getProperty().getValue()));
-				ControllerProvider.getTherapyController().navigateTo(applyingCriteria, true, treatmentCriteria);
-				applyingCriteria = false;
+				ControllerProvider.getTherapyController().navigateTo(treatmentApplyingCriteria, true, treatmentCriteria);
+
+				treatmentApplyingCriteria = false;
 			});
 			filterRow.addComponent(treatmentTypeFilter);
 
@@ -394,14 +397,16 @@ public class TherapyForm extends AbstractEditForm<TherapyDto> {
 		prescriptionCriteria.therapy(caze.getTherapy().toReference());
 		treatmentCriteria.therapy(caze.getTherapy().toReference());
 
-		applyingCriteria = true;
+		prescriptionApplyingCriteria = true;
 
 		prescriptionTypeFilter.setValue(prescriptionCriteria.getPrescriptionType());
 		prescriptionTextFilter.setValue(prescriptionCriteria.getTextFilter());
+		treatmentApplyingCriteria = true;
 		treatmentTypeFilter.setValue(treatmentCriteria.getTreatmentType());
 		treatmentTextFilter.setValue(treatmentCriteria.getTextFilter());
 
-		applyingCriteria = false;
+		prescriptionApplyingCriteria = false;
+		treatmentApplyingCriteria = false;
 	}
 
 	public void reloadPrescriptionGrid() {
