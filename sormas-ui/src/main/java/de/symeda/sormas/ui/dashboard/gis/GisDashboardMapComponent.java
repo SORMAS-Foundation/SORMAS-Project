@@ -182,14 +182,31 @@ public class GisDashboardMapComponent extends BaseDashboardMapComponent<GisDashb
 	}
 
 	protected void updateEntityLoadingStatus() {
-		loadCases = showCasesCheckBox.getValue();
-		loadContacts = showContactsCheckBox.getValue();
-		loadSamples = showCaseSamplesCheckBox.getValue()
-			|| showContactSamplesCheckBox.getValue()
-			|| showEventParticipantSamplesCheckBox.getValue()
-			|| showEnvironmentSamplesCheckBox.getValue();
-		loadAefi = showSeriousAefiCheckBox.getValue() || showNonSeriousAefiCheckBox.getValue();
-		loadEvents = showEventsCheckBox.getValue();
+		if (showCasesCheckBox != null) {
+			loadCases = showCasesCheckBox.getValue();
+		}
+
+		if (showContactsCheckBox != null) {
+			loadContacts = showContactsCheckBox.getValue();
+		}
+
+		if (showCaseSamplesCheckBox != null
+			&& showContactSamplesCheckBox != null
+			&& showEventParticipantSamplesCheckBox != null
+			&& showEnvironmentSamplesCheckBox != null) {
+			loadSamples = showCaseSamplesCheckBox.getValue()
+				|| showContactSamplesCheckBox.getValue()
+				|| showEventParticipantSamplesCheckBox.getValue()
+				|| showEnvironmentSamplesCheckBox.getValue();
+		}
+
+		if (showSeriousAefiCheckBox != null && showNonSeriousAefiCheckBox != null) {
+			loadAefi = showSeriousAefiCheckBox.getValue() || showNonSeriousAefiCheckBox.getValue();
+		}
+
+		if (showEventsCheckBox != null) {
+			loadEvents = showEventsCheckBox.getValue();
+		}
 	}
 
 	@Override
