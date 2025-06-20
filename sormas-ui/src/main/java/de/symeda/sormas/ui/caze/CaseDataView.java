@@ -254,11 +254,12 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 			layout.addSidePanelComponent(new SideComponentLayout(specialAccessListComponent), SPECIAL_ACCESSES_LOC);
 		}
 
-		SelfReportListComponent selfReportListComponent =
-			new SelfReportListComponent(SelfReportType.CASE, new SelfReportCriteria().setCaze(new CaseReferenceDto(caze.getUuid())));
-		SelfReportListComponentLayout selfReportListComponentLayout = new SelfReportListComponentLayout(selfReportListComponent);
-		layout.addSidePanelComponent(selfReportListComponentLayout, SELF_REPORT_LOC);
-
+		if (UiUtil.permitted(FeatureType.SELF_REPORTING)) {
+			SelfReportListComponent selfReportListComponent =
+					new SelfReportListComponent(SelfReportType.CASE, new SelfReportCriteria().setCaze(new CaseReferenceDto(caze.getUuid())));
+			SelfReportListComponentLayout selfReportListComponentLayout = new SelfReportListComponentLayout(selfReportListComponent);
+			layout.addSidePanelComponent(selfReportListComponentLayout, SELF_REPORT_LOC);
+		}
 		if (UiUtil.permitted(FeatureType.SURVEYS)) {
 			SurveyListComponentLayout surveyList = new SurveyListComponentLayout(
 				caze.toReference(),
