@@ -280,6 +280,23 @@ public final class FieldHelper {
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
+	public static void setMultipleVisible(
+		final FieldGroup fieldGroup,
+		List<String> targetPropertyIds,
+		Function<Field, Boolean> isVisibleFunction,
+		Function<Field, Boolean> isClearedOnHidden) {
+		final List<? extends Field<?>> targetFields = targetPropertyIds.stream().map(id -> fieldGroup.getField(id)).collect(Collectors.toList());
+		targetFields.forEach(targetField -> {
+			final boolean visible = isVisibleFunction.apply(targetField);
+			final boolean clearOnHidden = isClearedOnHidden.apply(targetField);
+			targetField.setVisible(visible);
+			if (!visible && clearOnHidden && targetField.getValue() != null) {
+				targetField.clear();
+			}
+		});
+	}
+
 	public static void setCaptionWhen(Field<?> sourceField, Field<?> targetField, Object sourceValue, String matchCaption, String noMatchCaption) {
 		if (sourceField != null) {
 			// initialize

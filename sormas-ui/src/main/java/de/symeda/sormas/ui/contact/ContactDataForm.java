@@ -173,6 +173,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 	private final ViewMode viewMode;
 	private final Disease disease;
+	private final boolean diseaseHasFollowUp;
 	private NullableOptionGroup contactProximity;
 	private ComboBox region;
 	private ComboBox district;
@@ -212,6 +213,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		this.viewMode = viewMode;
 		this.disease = disease;
+		this.diseaseHasFollowUp = FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(disease);
 		addFields();
 	}
 
@@ -234,12 +236,12 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		Label followUpStausHeadingLabel = new Label(I18nProperties.getString(Strings.headingFollowUpStatus));
 		followUpStausHeadingLabel.addStyleName(H3);
 		getContent().addComponent(followUpStausHeadingLabel, FOLLOW_UP_STATUS_HEADING_LOC);
-		followUpStausHeadingLabel.setVisible(Disease.INVASIVE_MENINGOCOCCAL_INFECTION !=disease);
+		followUpStausHeadingLabel.setVisible(diseaseHasFollowUp);
 
 		Label prophylaxisLabel = new Label(I18nProperties.getString(Strings.headingProphylaxisLoc));
 		prophylaxisLabel.addStyleName(H3);
 		getContent().addComponent(prophylaxisLabel, PROPHYLAXIS_LOC);
-		prophylaxisLabel.setVisible(Disease.INVASIVE_MENINGOCOCCAL_INFECTION ==disease);
+		prophylaxisLabel.setVisible(Disease.INVASIVE_MENINGOCOCCAL_INFECTION == disease);
 
 		addField(ContactDto.CONTACT_CLASSIFICATION, NullableOptionGroup.class);
 		addField(ContactDto.CONTACT_STATUS, NullableOptionGroup.class);
@@ -272,12 +274,12 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		addField(ContactDto.CONTACT_IDENTIFICATION_SOURCE, ComboBox.class);
 		TextField contactIdentificationSourceDetails = addField(ContactDto.CONTACT_IDENTIFICATION_SOURCE_DETAILS, TextField.class);
 		contactIdentificationSourceDetails.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
-//		contactIdentificationSourceDetails.setVisible(false);
+		//		contactIdentificationSourceDetails.setVisible(false);
 		ComboBox tracingApp = addField(ContactDto.TRACING_APP, ComboBox.class);
 		TextField tracingAppDetails = addField(ContactDto.TRACING_APP_DETAILS, TextField.class);
 		tracingAppDetails.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
-//		tracingApp.setVisible(false);
-//		tracingAppDetails.setVisible(false);
+		//		tracingApp.setVisible(false);
+		//		tracingAppDetails.setVisible(false);
 		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),
@@ -468,6 +470,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		cbOverwriteFollowUpUntil.addValueChangeListener(e -> {
 			updateOverwriteFollowUpUntil();
 		});
+
 		dfQuarantineTo.addValueChangeListener(e -> onQuarantineEndChange());
 		addValueChangeListener(e -> {
 			ValidationUtils.initComponentErrorValidator(
@@ -711,13 +714,27 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		// Prophylaxis details for IMI
 		CheckBox prophylaxisPrescribed = addField(ContactDto.PROPHYLAXIS_PRESCRIBED, CheckBox.class);
 		prophylaxisPrescribed.setCaption(I18nProperties.getCaption(Captions.Contact_prophylaxisPrescribed));
-//		prophylaxisPrescribed.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
+		//		prophylaxisPrescribed.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
 		addField(ContactDto.PRESCRIBED_DRUG, ComboBox.class);
 		addField(ContactDto.PRESCRIBED_DRUG_TEXT, TextField.class);
-		FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.PRESCRIBED_DRUG, ContactDto.PROPHYLAXIS_PRESCRIBED, Collections.singletonList(Boolean.TRUE), true);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			ContactDto.PRESCRIBED_DRUG,
+			ContactDto.PROPHYLAXIS_PRESCRIBED,
+			Collections.singletonList(Boolean.TRUE),
+			true);
 		FieldHelper.setRequiredWhenNotNull(getFieldGroup(), ContactDto.PROPHYLAXIS_PRESCRIBED, ContactDto.PRESCRIBED_DRUG);
-		FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.PRESCRIBED_DRUG_TEXT, ContactDto.PRESCRIBED_DRUG, Collections.singletonList(PrescribedDrug.OTHER), true);
-		FieldHelper.setRequiredWhen(getFieldGroup(), ContactDto.PRESCRIBED_DRUG, Arrays.asList(ContactDto.PRESCRIBED_DRUG_TEXT), Arrays.asList(PrescribedDrug.OTHER));
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			ContactDto.PRESCRIBED_DRUG_TEXT,
+			ContactDto.PRESCRIBED_DRUG,
+			Collections.singletonList(PrescribedDrug.OTHER),
+			true);
+		FieldHelper.setRequiredWhen(
+			getFieldGroup(),
+			ContactDto.PRESCRIBED_DRUG,
+			Arrays.asList(ContactDto.PRESCRIBED_DRUG_TEXT),
+			Arrays.asList(PrescribedDrug.OTHER));
 	}
 
 	private void updateContactOfficers() {
@@ -845,6 +862,21 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 						&& (getFieldGroup().getField(propertyId).isVisible()
 							|| (propertyId.equals(ContactDto.CONTACT_CATEGORY) && isVisibleAllowed((String) propertyId))));
 		}
+
+		final boolean diseaseHasFollowUp = FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(disease);
+		// Hide follow-up if disease does not have it enabled
+		//followUpStausHeadingLabel.setVisible(this.diseaseHasFollowUp);
+		FieldHelper.setMultipleVisible(
+			getFieldGroup(),
+			Arrays.asList(
+				ContactDto.FOLLOW_UP_STATUS,
+				ContactDto.FOLLOW_UP_STATUS_CHANGE_DATE,
+				ContactDto.FOLLOW_UP_STATUS_CHANGE_USER,
+				ContactDto.FOLLOW_UP_COMMENT,
+				ContactDto.FOLLOW_UP_UNTIL,
+				ContactDto.OVERWRITE_FOLLOW_UP_UNTIL),
+			field -> diseaseHasFollowUp,
+			field -> false);
 
 		FieldHelper.updateEnumData(
 			contactProximity,
