@@ -1182,6 +1182,10 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		return false;
 	}
 
+	public boolean isAnySymptomVisible(FieldGroup fieldGroup, List<String> sourcePropertyIds, List<Object> sourceValues) {
+		return true;
+	}
+
 	@SuppressWarnings("rawtypes")
 	private void addListenerForOnsetFields(ComboBox onsetSymptom, DateField onsetDateField) {
 		List<String> allPropertyIds =
@@ -1196,9 +1200,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 					onsetDateField.setEnabled(true);
 				} else {
 					onsetSymptom.removeItem(sourceField.getCaption());
+					final Date onsetDate = getValue().getOnsetDate();
 					boolean isOnsetDateFieldEnabled = isAnySymptomSetToYes(getFieldGroup(), allPropertyIds, Arrays.asList(SymptomState.YES));
-					onsetDateField.setEnabled(isOnsetDateFieldEnabled);
-					Date onsetDate = getValue().getOnsetDate();
+					onsetDateField.setEnabled(isOnsetDateFieldEnabled || !onsetSymptom.isVisible());
 					if (onsetDate != null) {
 						onsetDateField.setValue(onsetDate);
 					} else if (!isOnsetDateFieldEnabled) {
@@ -1209,7 +1213,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			});
 		}
 		onsetSymptom.setEnabled(false); // will be updated by listener if needed
-		onsetDateField.setEnabled(false); // will be updated by listener if needed
+
+		// make onsetDate editable for diseases that have no symptoms (a.k. no first symptom)
+		onsetDateField.setEnabled(!onsetSymptom.isVisible());
 	}
 
 	private void setUpMonkeypoxVisibilities() {
