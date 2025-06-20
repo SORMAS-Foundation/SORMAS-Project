@@ -277,7 +277,8 @@ public class CustomizableEnumFacadeEjb
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T extends CustomizableEnum> T getEnumValue(CustomizableEnumType type, Disease disease, String value) {
-		if (!enumValues.get(type).getOrDefault(disease, Collections.emptyList()).contains(value)) {
+		//As of today diseases are not applicable for environment.
+		if (disease!=null && !enumValues.get(type).getOrDefault(disease, Collections.emptyList()).contains(value)) {
 			throw new IllegalArgumentException(String.format("Invalid enum value %s for customizable enum type %s", value, type.toString()));
 		}
 
@@ -360,7 +361,8 @@ public class CustomizableEnumFacadeEjb
 			T enumValue = enumClass.getDeclaredConstructor().newInstance();
 			enumValue.setValue(value);
 			enumValue.setCaption(enumValuesByLanguage.get(enumClass).get(language).get(value));
-			enumValue.setProperties(getEnumInfo(type, disease, value).getProperties());
+			// set the properties if the disease is not null, this disease check is happening in the getEnumInfo method
+			enumValue.setProperties(getEnumInfo(type, disease, value)!=null?getEnumInfo(type, disease, value).getProperties():null);
 			return enumValue;
 		} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
 			throw new RuntimeException(e);
