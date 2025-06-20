@@ -722,6 +722,7 @@ public class ContactFacadeEjb
 			joins.getPerson().get(Person.UUID),
 			joins.getPerson().get(Person.FIRST_NAME),
 			joins.getPerson().get(Person.LAST_NAME),
+			joins.getPerson().get(Person.NATIONAL_HEALTH_ID),
 			joins.getPerson().get(Person.SALUTATION),
 			joins.getPerson().get(Person.OTHER_SALUTATION),
 			joins.getPerson().get(Person.SEX),
