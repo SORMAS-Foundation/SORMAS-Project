@@ -13862,11 +13862,7 @@ DROP TRIGGER IF EXISTS versioning_trigger ON events_environments;
 CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON events_environments
     FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'events_environments_history','true');
 
-INSERT INTO userroles_userrights
-(userright, sys_period, userrole_id)
-VALUES('ENVIRONMENT_LINK', tstzrange(
-                CURRENT_TIMESTAMP, CURRENT_TIMESTAMP + INTERVAL '1 hour', '[)'
-                           ), 1);
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'ENVIRONMENT_LINK' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN','NATIONAL_USER');
 
 INSERT INTO schema_version (version_number, comment) VALUES (563, 'Events and environment linkage #13266');
 
