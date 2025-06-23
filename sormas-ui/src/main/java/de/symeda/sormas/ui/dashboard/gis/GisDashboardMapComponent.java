@@ -585,6 +585,7 @@ public class GisDashboardMapComponent extends BaseDashboardMapComponent<GisDashb
 					refreshMap(true);
 				});
 				samplesLayers.addComponent(showEventsCheckBox);
+				showEventsCheckBox.setVisible(false);
 			}
 
 			if (UiUtil.hasNationJurisdictionLevel() && UiUtil.permitted(UserRight.CASE_VIEW)) {
