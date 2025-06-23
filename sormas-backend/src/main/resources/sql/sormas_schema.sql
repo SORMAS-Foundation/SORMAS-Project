@@ -14404,4 +14404,9 @@ alter table symptoms add column IF NOT EXISTS nocturnalcough varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (577, 'Pertussis missed symptom, #13373');
 
+-- 2025-06-23 Code refactoring to use Drug enum, #13480
+alter table contact RENAME   prescribedDrug  to drug;
+alter table contact RENAME  prescribedDrugText to drugText ;
+
+INSERT INTO schema_version (version_number, comment) VALUES (578, 'Code refactoring to use Drug enum, #13480');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

@@ -54,9 +54,9 @@ import de.symeda.sormas.api.contact.EndOfQuarantineReason;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.IsContact;
 import de.symeda.sormas.api.contact.QuarantineType;
-import de.symeda.sormas.api.contact.PrescribedDrug;
 import de.symeda.sormas.api.contact.TracingApp;
 import de.symeda.sormas.api.externaldata.HasExternalData;
+import de.symeda.sormas.api.therapy.Drug;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -170,8 +170,8 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 	public static final String DUPLICATE_OF = "duplicateOf";
 	public static final String SELF_REPORT ="selfReport";
 	public static final String PROPHYLAXIS_PRESCRIBED ="prophylaxisPrescribed";
-	public static final String PRESCRIBED_DRUG ="prescribedDrug";
-	public static final String PRESCRIBED_DRUG_TEXT ="prescribedDrugText";
+	public static final String DRUG ="drug";
+	public static final String DRUG_TEXT ="drugText";
 
 	private Date reportDateTime;
 	private User reportingUser;
@@ -274,8 +274,8 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 
 	private List<SelfReport> selfReport;
 
-	private PrescribedDrug prescribedDrug;
-	private String prescribedDrugText;
+	private Drug drug;
+	private String drugText;
 	private Boolean prophylaxisPrescribed;
 
 	@Diseases({
@@ -1120,19 +1120,19 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 		this.prophylaxisPrescribed = prophylaxisPrescribed;
 	}
 
-	public PrescribedDrug getPrescribedDrug() {
-		return prescribedDrug;
+	public Drug getDrug() {
+		return drug;
 	}
 
-	public void setPrescribedDrug(PrescribedDrug prescribedDrug) {
-		this.prescribedDrug = prescribedDrug;
+	public void setDrug(Drug drug) {
+		this.drug = drug;
 	}
 
-	public String getPrescribedDrugText() {
-		return prescribedDrugText;
+	public String getDrugText() {
+		return drugText;
 	}
 
-	public void setPrescribedDrugText(String prescribedDrugText) {
-		this.prescribedDrugText = prescribedDrugText;
+	public void setDrugText(String drugText) {
+		this.drugText = drugText;
 	}
 }

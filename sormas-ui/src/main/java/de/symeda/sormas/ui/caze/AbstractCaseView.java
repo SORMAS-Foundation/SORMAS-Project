@@ -25,6 +25,7 @@ import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
@@ -199,7 +200,7 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 		if (showExtraMenuEntries) {
 			if (UiUtil.permitted(
 				EnumSet.of(FeatureType.VIEW_TAB_CASES_FOLLOW_UP, FeatureType.VIEW_TAB_CASES_CLINICAL_COURSE, FeatureType.CLINICAL_MANAGEMENT),
-				UserRight.CLINICAL_COURSE_VIEW) && !caze.checkIsUnreferredPortHealthCase() && !caze.checkDiseaseIsInvasiveBacterialDiseases()) {
+				UserRight.CLINICAL_COURSE_VIEW) && !caze.checkIsUnreferredPortHealthCase() && !DiseaseHelper.checkDiseaseIsInvasiveBacterialDiseases(caze.getDisease())) {
 				menu.addView(
 					ClinicalCourseView.VIEW_NAME,
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CLINICAL_COURSE),

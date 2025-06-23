@@ -68,7 +68,6 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.CountryHelper;
-import de.symeda.sormas.api.contact.PrescribedDrug;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1628,8 +1627,8 @@ public class ContactFacadeEjb
 		target.setDeletionReason(source.getDeletionReason());
 		target.setOtherDeletionReason(source.getOtherDeletionReason());
 		target.setProphylaxisPrescribed(source.getProphylaxisPrescribed());
-		target.setPrescribedDrug(source.getPrescribedDrug());
-		target.setPrescribedDrugText(source.getPrescribedDrugText());
+		target.setDrug(source.getDrug());
+		target.setDrugText(source.getDrugText());
 
 		return target;
 	}
@@ -1976,8 +1975,8 @@ public class ContactFacadeEjb
 		target.setOtherDeletionReason(source.getOtherDeletionReason());
 
 		target.setProphylaxisPrescribed(source.getProphylaxisPrescribed());
-		target.setPrescribedDrug(source.getPrescribedDrug());
-		target.setPrescribedDrugText(source.getPrescribedDrugText());
+		target.setDrug(source.getDrug());
+		target.setDrugText(source.getDrugText());
 		return target;
 	}
 

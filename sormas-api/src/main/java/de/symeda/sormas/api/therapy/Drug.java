@@ -20,61 +20,77 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.DrugTypes;
 
 public enum Drug {
 
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
+			@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
 	AMIKACIN,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
+	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
 	BEDAQUILINE,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
+	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
 	CAPREOMYCIN,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
 	CIPROFLOXACIN,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
+	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
 	DELAMANID,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
+	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
 	ETHAMBUTOL,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
+	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
 	GATIFLOXACIN,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
+	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
 	ISONIAZID,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
+	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
 	KANAMYCIN,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
+	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
 	LEVOFLOXACIN,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
+	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
 	MOXIFLOXACIN,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
+	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
 	OFLOXACIN,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
 	RIFAMPICIN,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
+	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
 	STREPTOMYCIN,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
 	CEFTRIAXONE,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
+	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
 	PENICILLIN,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
+	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
 	ERYTHROMYCIN,
 	@DrugTypes(value = {
 			TypeOfDrug.ANTIBIOTIC })

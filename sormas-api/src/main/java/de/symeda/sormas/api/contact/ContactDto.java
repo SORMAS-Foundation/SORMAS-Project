@@ -47,6 +47,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
+import de.symeda.sormas.api.therapy.Drug;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
@@ -151,8 +152,8 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 	public static final String DELETION_REASON = "deletionReason";
 	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
 	public static final String PROPHYLAXIS_PRESCRIBED = "prophylaxisPrescribed";
-	public static final String PRESCRIBED_DRUG = "prescribedDrug";
-	public static final String PRESCRIBED_DRUG_TEXT = "prescribedDrugText";
+	public static final String DRUG = "drug";
+	public static final String DRUG_TEXT = "drugText";
 
 	@EmbeddedPersonalData
 	private CaseReferenceDto caze;
@@ -379,11 +380,11 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 	@HideForCountriesExcept(countries = {COUNTRY_CODE_LUXEMBOURG})
 	@SensitiveData
 	@Diseases(Disease.INVASIVE_MENINGOCOCCAL_INFECTION)
-	private PrescribedDrug prescribedDrug;
+	private Drug drug;
 	@HideForCountriesExcept(countries = {COUNTRY_CODE_LUXEMBOURG})
 	@SensitiveData
 	@Diseases(Disease.INVASIVE_MENINGOCOCCAL_INFECTION)
-	private String prescribedDrugText;
+	private String drugText;
 
 	public static ContactDto build() {
 		final ContactDto contact = new ContactDto();
@@ -1092,20 +1093,20 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 		this.prophylaxisPrescribed = prophylaxisPrescribed;
 	}
 
-	public PrescribedDrug getPrescribedDrug() {
-		return prescribedDrug;
+	public Drug getDrug() {
+		return drug;
 	}
 
-	public void setPrescribedDrug(PrescribedDrug prescribedDrug) {
-		this.prescribedDrug = prescribedDrug;
+	public void setDrug(Drug drug) {
+		this.drug = drug;
 	}
 
-	public String getPrescribedDrugText() {
-		return prescribedDrugText;
+	public String getDrugText() {
+		return drugText;
 	}
 
-	public void setPrescribedDrugText(String prescribedDrugText) {
-		this.prescribedDrugText = prescribedDrugText;
+	public void setDrugText(String drugText) {
+		this.drugText = drugText;
 	}
 
 }
