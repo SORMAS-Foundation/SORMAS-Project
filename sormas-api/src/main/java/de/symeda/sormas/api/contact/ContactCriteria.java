@@ -34,6 +34,7 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
+import de.symeda.sormas.api.therapy.Drug;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.DateFilterOption;
@@ -153,7 +154,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private String caseReferenceNumber;
 	private Boolean withCase;
 	private Boolean prophylaxisPrescribed;
-	private PrescribedDrug prescribedDrug;
+	private Drug prescribedDrug;
 	private String prescribedDrugText;
 
 	public UserRoleReferenceDto getReportingUserRole() {
@@ -814,19 +815,19 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		this.prophylaxisPrescribed = prophylaxisPrescribed;
 	}
 
-	public PrescribedDrug getPrescribedDrug() {
-		return prescribedDrug;
-	}
-
-	public void setPrescribedDrug(PrescribedDrug prescribedDrug) {
-		this.prescribedDrug = prescribedDrug;
-	}
-
 	public String getPrescribedDrugText() {
 		return prescribedDrugText;
 	}
 
 	public void setPrescribedDrugText(String prescribedDrugText) {
 		this.prescribedDrugText = prescribedDrugText;
+	}
+
+	public Drug getPrescribedDrug() {
+		return prescribedDrug;
+	}
+
+	public void setPrescribedDrug(Drug prescribedDrug) {
+		this.prescribedDrug = prescribedDrug;
 	}
 }

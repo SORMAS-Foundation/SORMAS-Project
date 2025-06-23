@@ -64,7 +64,6 @@ import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.EndOfQuarantineReason;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
-import de.symeda.sormas.api.contact.PrescribedDrug;
 import de.symeda.sormas.api.contact.TracingApp;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
@@ -77,6 +76,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.therapy.Drug;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
@@ -139,9 +139,9 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
                     fluidRowLocs(ContactDto.CONTACT_CATEGORY) +
                     fluidRowLocs(ContactDto.RELATION_TO_CASE) +
                     fluidRowLocs(ContactDto.RELATION_DESCRIPTION) +
+					fluidRowLocs(ContactDto.DESCRIPTION) +
 					loc(PROPHYLAXIS_LOC)+
 					fluidRowLocs(4,ContactDto.PROPHYLAXIS_PRESCRIBED, 4, ContactDto.PRESCRIBED_DRUG, 4, ContactDto.PRESCRIBED_DRUG_TEXT) +
-                    fluidRowLocs(ContactDto.DESCRIPTION) +
 					fluidRowLocs(6, ContactDto.PROHIBITION_TO_WORK, 3, ContactDto.PROHIBITION_TO_WORK_FROM, 3, ContactDto.PROHIBITION_TO_WORK_UNTIL) +
                     fluidRowLocs(4, ContactDto.QUARANTINE_HOME_POSSIBLE, 8, ContactDto.QUARANTINE_HOME_POSSIBLE_COMMENT) +
                     fluidRowLocs(4, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED, 8, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT) +
@@ -487,6 +487,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		contactOfficerField.setEnabled(true);
 		contactOfficerField.setParentPseudonymizedSupplier(() -> getValue().isPseudonymized());
 
+		addField(ContactDto.PRESCRIBED_DRUG, ComboBox.class);
 		region = addInfrastructureField(ContactDto.REGION);
 		region.setDescription(I18nProperties.getPrefixDescription(ContactDto.I18N_PREFIX, ContactDto.REGION));
 		district = addInfrastructureField(ContactDto.DISTRICT);
@@ -714,8 +715,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		// Prophylaxis details for IMI
 		CheckBox prophylaxisPrescribed = addField(ContactDto.PROPHYLAXIS_PRESCRIBED, CheckBox.class);
 		prophylaxisPrescribed.setCaption(I18nProperties.getCaption(Captions.Contact_prophylaxisPrescribed));
-		//		prophylaxisPrescribed.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
-		addField(ContactDto.PRESCRIBED_DRUG, ComboBox.class);
+
 		addField(ContactDto.PRESCRIBED_DRUG_TEXT, TextField.class);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
@@ -728,13 +728,13 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			getFieldGroup(),
 			ContactDto.PRESCRIBED_DRUG_TEXT,
 			ContactDto.PRESCRIBED_DRUG,
-			Collections.singletonList(PrescribedDrug.OTHER),
+			Collections.singletonList(Drug.OTHER),
 			true);
 		FieldHelper.setRequiredWhen(
 			getFieldGroup(),
 			ContactDto.PRESCRIBED_DRUG,
 			Arrays.asList(ContactDto.PRESCRIBED_DRUG_TEXT),
-			Arrays.asList(PrescribedDrug.OTHER));
+			Arrays.asList(Drug.OTHER));
 	}
 
 	private void updateContactOfficers() {

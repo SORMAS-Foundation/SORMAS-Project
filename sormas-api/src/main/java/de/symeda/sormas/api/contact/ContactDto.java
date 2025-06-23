@@ -47,6 +47,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
+import de.symeda.sormas.api.therapy.Drug;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
@@ -379,7 +380,7 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 	@HideForCountriesExcept(countries = {COUNTRY_CODE_LUXEMBOURG})
 	@SensitiveData
 	@Diseases(Disease.INVASIVE_MENINGOCOCCAL_INFECTION)
-	private PrescribedDrug prescribedDrug;
+	private Drug prescribedDrug;
 	@HideForCountriesExcept(countries = {COUNTRY_CODE_LUXEMBOURG})
 	@SensitiveData
 	@Diseases(Disease.INVASIVE_MENINGOCOCCAL_INFECTION)
@@ -1092,11 +1093,11 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 		this.prophylaxisPrescribed = prophylaxisPrescribed;
 	}
 
-	public PrescribedDrug getPrescribedDrug() {
+	public Drug getPrescribedDrug() {
 		return prescribedDrug;
 	}
 
-	public void setPrescribedDrug(PrescribedDrug prescribedDrug) {
+	public void setPrescribedDrug(Drug prescribedDrug) {
 		this.prescribedDrug = prescribedDrug;
 	}
 

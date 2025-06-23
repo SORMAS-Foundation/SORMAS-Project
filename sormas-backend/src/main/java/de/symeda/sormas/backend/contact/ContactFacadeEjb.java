@@ -68,7 +68,6 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.CountryHelper;
-import de.symeda.sormas.api.contact.PrescribedDrug;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

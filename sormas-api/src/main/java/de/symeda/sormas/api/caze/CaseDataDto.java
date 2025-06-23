@@ -1840,14 +1840,7 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 		this.otherDiagnosticCriteria = otherDiagnosticCriteria;
 	}
 
-	/**
-	 * Checks if the case is an invasive bacterial disease (meningococcal or pneumococcal)
-	 * @return boolean
-	 */
-	public boolean checkDiseaseIsInvasiveBacterialDiseases(){
-		return disease != null && (disease == Disease.INVASIVE_MENINGOCOCCAL_INFECTION ||
-				disease == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION);
-	}
+
 
 	@JsonIgnore
 	public String i18nPrefix() {

@@ -9,6 +9,7 @@ import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
+import de.symeda.sormas.api.therapy.Drug;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
@@ -74,7 +75,7 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 								   Sex sex, Integer approximateAge, ApproximateAgeType approximateAgeType,
 								   String city, String street, String houseNumber, String additionalInformation, String postalCode, String phone,
 								   String reportingUserFirstName, String reportingUserLastName, ContactRelation relationToCase, int visitCount,
-								   Boolean prophylaxisPrescribed, PrescribedDrug prescribedDrug, String prescribedDrugText
+								   Boolean prophylaxisPrescribed, Drug prescribedDrug, String prescribedDrugText
 	) {
 	//@formatter:on
 

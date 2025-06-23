@@ -2831,6 +2831,7 @@ public interface Captions {
 	String Symptoms_coughWithoutSputum = "Symptoms.coughWithoutSputum";
 	String Symptoms_coughWithSputum = "Symptoms.coughWithSputum";
 	String Symptoms_darkUrine = "Symptoms.darkUrine";
+	String Symptoms_dateOfOnsetKnown = "Symptoms.dateOfOnsetKnown";
 	String Symptoms_dehydration = "Symptoms.dehydration";
 	String Symptoms_delirium = "Symptoms.delirium";
 	String Symptoms_developmentalDelay = "Symptoms.developmentalDelay";

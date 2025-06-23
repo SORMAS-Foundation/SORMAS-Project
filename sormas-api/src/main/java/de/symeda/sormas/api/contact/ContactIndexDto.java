@@ -26,6 +26,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
+import de.symeda.sormas.api.therapy.Drug;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.api.uuid.HasUuid;
@@ -102,7 +103,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 	private DeletionReason deletionReason;
 	private String otherDeletionReason;
 	private Boolean prophylaxisPrescribed;
-	private PrescribedDrug prescribedDrug;
+	private Drug prescribedDrug;
 	private String prescribedDrugText;
 
 	private ContactJurisdictionFlagsDto contactJurisdictionFlagsDto;
@@ -117,7 +118,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 						   CaseClassification caseClassification, String caseRegionName, String caseDistrictName,
 						   Date changeDate, // XXX: unused, only here for TypedQuery mapping
 						   String externalID, String externalToken, String internalToken,String caseReferenceNumber, DeletionReason deletionReason, String otherDeletionReason, boolean isInJurisdiction, boolean isCaseInJurisdiction,
-						   int visitCount, Boolean prophylaxisPrescribed, PrescribedDrug prescribedDrug, String prescribedDrugText
+						   int visitCount, Boolean prophylaxisPrescribed, Drug prescribedDrug, String prescribedDrugText
 	) {
 	//@formatter:on
 
@@ -436,11 +437,11 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 		this.prophylaxisPrescribed = prophylaxisPrescribed;
 	}
 
-	public PrescribedDrug getPrescribedDrug() {
+	public Drug getPrescribedDrug() {
 		return prescribedDrug;
 	}
 
-	public void setPrescribedDrug(PrescribedDrug prescribedDrug) {
+	public void setPrescribedDrug(Drug prescribedDrug) {
 		this.prescribedDrug = prescribedDrug;
 	}
 

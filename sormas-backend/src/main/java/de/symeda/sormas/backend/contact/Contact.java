@@ -54,9 +54,9 @@ import de.symeda.sormas.api.contact.EndOfQuarantineReason;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.IsContact;
 import de.symeda.sormas.api.contact.QuarantineType;
-import de.symeda.sormas.api.contact.PrescribedDrug;
 import de.symeda.sormas.api.contact.TracingApp;
 import de.symeda.sormas.api.externaldata.HasExternalData;
+import de.symeda.sormas.api.therapy.Drug;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -274,7 +274,7 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 
 	private List<SelfReport> selfReport;
 
-	private PrescribedDrug prescribedDrug;
+	private Drug prescribedDrug;
 	private String prescribedDrugText;
 	private Boolean prophylaxisPrescribed;
 
@@ -1120,11 +1120,11 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 		this.prophylaxisPrescribed = prophylaxisPrescribed;
 	}
 
-	public PrescribedDrug getPrescribedDrug() {
+	public Drug getPrescribedDrug() {
 		return prescribedDrug;
 	}
 
-	public void setPrescribedDrug(PrescribedDrug prescribedDrug) {
+	public void setPrescribedDrug(Drug prescribedDrug) {
 		this.prescribedDrug = prescribedDrug;
 	}
 

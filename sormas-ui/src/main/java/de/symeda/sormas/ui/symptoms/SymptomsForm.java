@@ -65,6 +65,7 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
@@ -918,7 +919,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		boolean lablesVisible = false;
 
 		if(caze!=null) {
-			lablesVisible = caze.checkDiseaseIsInvasiveBacterialDiseases() || disease == Disease.PERTUSSIS;
+			lablesVisible = DiseaseHelper.checkDiseaseIsInvasiveBacterialDiseases(caze.getDisease()) || disease == Disease.PERTUSSIS;
 		}
 		
 		clinicalMeasurementsHeadingLabel.setVisible(!lablesVisible);
