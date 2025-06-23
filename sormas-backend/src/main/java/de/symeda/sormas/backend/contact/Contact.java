@@ -170,8 +170,8 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 	public static final String DUPLICATE_OF = "duplicateOf";
 	public static final String SELF_REPORT ="selfReport";
 	public static final String PROPHYLAXIS_PRESCRIBED ="prophylaxisPrescribed";
-	public static final String DRUG ="drug";
-	public static final String DRUG_TEXT ="drugText";
+	public static final String DRUG ="prescribedDrug";
+	public static final String DRUG_TEXT ="prescribedDrugText";
 
 	private Date reportDateTime;
 	private User reportingUser;
@@ -274,8 +274,8 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 
 	private List<SelfReport> selfReport;
 
-	private Drug drug;
-	private String drugText;
+	private Drug prescribedDrug;
+	private String prescribedDrugText;
 	private Boolean prophylaxisPrescribed;
 
 	@Diseases({
@@ -1120,19 +1120,19 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 		this.prophylaxisPrescribed = prophylaxisPrescribed;
 	}
 
-	public Drug getDrug() {
-		return drug;
+	public Drug getPrescribedDrug() {
+		return prescribedDrug;
 	}
 
-	public void setDrug(Drug drug) {
-		this.drug = drug;
+	public void setPrescribedDrug(Drug prescribedDrug) {
+		this.prescribedDrug = prescribedDrug;
 	}
 
-	public String getDrugText() {
-		return drugText;
+	public String getPrescribedDrugText() {
+		return prescribedDrugText;
 	}
 
-	public void setDrugText(String drugText) {
-		this.drugText = drugText;
+	public void setPrescribedDrugText(String prescribedDrugText) {
+		this.prescribedDrugText = prescribedDrugText;
 	}
 }

@@ -64,8 +64,8 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 	public static final String DISTRICT_UUID = "districtUuid";
 	public static final String COMMUNITY_UUID = "communityUuid";
 	public static final String PROPHYLAXIS_PRESCRIBED = "prophylaxisPrescribed";
-	public static final String DRUG = "drug";
-	public static final String DRUG_TEXT = "drugText";
+	public static final String DRUG = "prescribedDrug";
+	public static final String DRUG_TEXT = "prescribedDrugText";
 
 	private String personUuid;
 	@PersonalData
@@ -103,8 +103,8 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 	private DeletionReason deletionReason;
 	private String otherDeletionReason;
 	private Boolean prophylaxisPrescribed;
-	private Drug drug;
-	private String drugText;
+	private Drug prescribedDrug;
+	private String prescribedDrugText;
 
 	private ContactJurisdictionFlagsDto contactJurisdictionFlagsDto;
 
@@ -118,7 +118,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 						   CaseClassification caseClassification, String caseRegionName, String caseDistrictName,
 						   Date changeDate, // XXX: unused, only here for TypedQuery mapping
 						   String externalID, String externalToken, String internalToken,String caseReferenceNumber, DeletionReason deletionReason, String otherDeletionReason, boolean isInJurisdiction, boolean isCaseInJurisdiction,
-						   int visitCount, Boolean prophylaxisPrescribed, Drug drug, String drugText
+						   int visitCount, Boolean prophylaxisPrescribed, Drug prescribedDrug, String prescribedDrugText
 	) {
 	//@formatter:on
 
@@ -161,8 +161,8 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 
 		this.contactJurisdictionFlagsDto = new ContactJurisdictionFlagsDto(isInJurisdiction, isCaseInJurisdiction);
 		this.prophylaxisPrescribed = prophylaxisPrescribed;
-		this.drug = drug;
-		this.drugText = drugText;
+		this.prescribedDrug = prescribedDrug;
+		this.prescribedDrugText = prescribedDrugText;
 	}
 
 	public String getPersonUuid() {
@@ -437,20 +437,20 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 		this.prophylaxisPrescribed = prophylaxisPrescribed;
 	}
 
-	public Drug getDrug() {
-		return drug;
+	public Drug getPrescribedDrug() {
+		return prescribedDrug;
 	}
 
-	public void setDrug(Drug drug) {
-		this.drug = drug;
+	public void setPrescribedDrug(Drug prescribedDrug) {
+		this.prescribedDrug = prescribedDrug;
 	}
 
-	public String getDrugText() {
-		return drugText;
+	public String getPrescribedDrugText() {
+		return prescribedDrugText;
 	}
 
-	public void setDrugText(String drugText) {
-		this.drugText = drugText;
+	public void setPrescribedDrugText(String prescribedDrugText) {
+		this.prescribedDrugText = prescribedDrugText;
 	}
 
 	@Override

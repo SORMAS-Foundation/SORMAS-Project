@@ -75,7 +75,7 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 								   Sex sex, Integer approximateAge, ApproximateAgeType approximateAgeType,
 								   String city, String street, String houseNumber, String additionalInformation, String postalCode, String phone,
 								   String reportingUserFirstName, String reportingUserLastName, ContactRelation relationToCase, int visitCount,
-								   Boolean prophylaxisPrescribed, Drug drug, String drugText
+								   Boolean prophylaxisPrescribed, Drug prescribedDrug, String prescribedDrugText
 	) {
 	//@formatter:on
 
@@ -84,7 +84,7 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 			regionName, districtName, lastContactDate, contactCategory, contactProximity, contactClassification, contactStatus,
 				completeness, followUpStatus, followUpUntil, symptomJournalStatus, vaccinationStatus, contactOfficerUuid, reportingUserUuid, reportDateTime, caseClassification,
 			caseRegionName, caseDistrictName, changeDate, externalID, externalToken, internalToken, caseReferenceNumber, deletionReason, otherDeleteReason,isInJurisdiction, isCaseInJurisdiction , visitCount,
-				prophylaxisPrescribed, drug, drugText);
+				prophylaxisPrescribed, prescribedDrug, prescribedDrugText);
 
 		//@formatter:on
 

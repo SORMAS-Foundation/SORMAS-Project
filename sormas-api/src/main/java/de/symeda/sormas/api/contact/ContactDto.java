@@ -152,8 +152,8 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 	public static final String DELETION_REASON = "deletionReason";
 	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
 	public static final String PROPHYLAXIS_PRESCRIBED = "prophylaxisPrescribed";
-	public static final String DRUG = "drug";
-	public static final String DRUG_TEXT = "drugText";
+	public static final String DRUG = "prescribedDrug";
+	public static final String DRUG_TEXT = "prescribedDrugText";
 
 	@EmbeddedPersonalData
 	private CaseReferenceDto caze;
@@ -380,11 +380,11 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 	@HideForCountriesExcept(countries = {COUNTRY_CODE_LUXEMBOURG})
 	@SensitiveData
 	@Diseases(Disease.INVASIVE_MENINGOCOCCAL_INFECTION)
-	private Drug drug;
+	private Drug prescribedDrug;
 	@HideForCountriesExcept(countries = {COUNTRY_CODE_LUXEMBOURG})
 	@SensitiveData
 	@Diseases(Disease.INVASIVE_MENINGOCOCCAL_INFECTION)
-	private String drugText;
+	private String prescribedDrugText;
 
 	public static ContactDto build() {
 		final ContactDto contact = new ContactDto();
@@ -1093,20 +1093,20 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 		this.prophylaxisPrescribed = prophylaxisPrescribed;
 	}
 
-	public Drug getDrug() {
-		return drug;
+	public Drug getPrescribedDrug() {
+		return prescribedDrug;
 	}
 
-	public void setDrug(Drug drug) {
-		this.drug = drug;
+	public void setPrescribedDrug(Drug prescribedDrug) {
+		this.prescribedDrug = prescribedDrug;
 	}
 
-	public String getDrugText() {
-		return drugText;
+	public String getPrescribedDrugText() {
+		return prescribedDrugText;
 	}
 
-	public void setDrugText(String drugText) {
-		this.drugText = drugText;
+	public void setPrescribedDrugText(String prescribedDrugText) {
+		this.prescribedDrugText = prescribedDrugText;
 	}
 
 }

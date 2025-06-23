@@ -154,8 +154,8 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private String caseReferenceNumber;
 	private Boolean withCase;
 	private Boolean prophylaxisPrescribed;
-	private Drug drug;
-	private String drugText;
+	private Drug prescribedDrug;
+	private String prescribedDrugText;
 
 	public UserRoleReferenceDto getReportingUserRole() {
 		return reportingUserRole;
@@ -815,19 +815,19 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		this.prophylaxisPrescribed = prophylaxisPrescribed;
 	}
 
-	public String getDrugText() {
-		return drugText;
+	public String getPrescribedDrugText() {
+		return prescribedDrugText;
 	}
 
-	public void setDrugText(String drugText) {
-		this.drugText = drugText;
+	public void setPrescribedDrugText(String prescribedDrugText) {
+		this.prescribedDrugText = prescribedDrugText;
 	}
 
-	public Drug getDrug() {
-		return drug;
+	public Drug getPrescribedDrug() {
+		return prescribedDrug;
 	}
 
-	public void setDrug(Drug drug) {
-		this.drug = drug;
+	public void setPrescribedDrug(Drug prescribedDrug) {
+		this.prescribedDrug = prescribedDrug;
 	}
 }

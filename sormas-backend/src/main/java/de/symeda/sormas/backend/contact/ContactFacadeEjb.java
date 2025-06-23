@@ -1627,8 +1627,8 @@ public class ContactFacadeEjb
 		target.setDeletionReason(source.getDeletionReason());
 		target.setOtherDeletionReason(source.getOtherDeletionReason());
 		target.setProphylaxisPrescribed(source.getProphylaxisPrescribed());
-		target.setDrug(source.getDrug());
-		target.setDrugText(source.getDrugText());
+		target.setPrescribedDrug(source.getPrescribedDrug());
+		target.setPrescribedDrugText(source.getPrescribedDrugText());
 
 		return target;
 	}
@@ -1975,8 +1975,8 @@ public class ContactFacadeEjb
 		target.setOtherDeletionReason(source.getOtherDeletionReason());
 
 		target.setProphylaxisPrescribed(source.getProphylaxisPrescribed());
-		target.setDrug(source.getDrug());
-		target.setDrugText(source.getDrugText());
+		target.setPrescribedDrug(source.getPrescribedDrug());
+		target.setPrescribedDrugText(source.getPrescribedDrugText());
 		return target;
 	}
 
