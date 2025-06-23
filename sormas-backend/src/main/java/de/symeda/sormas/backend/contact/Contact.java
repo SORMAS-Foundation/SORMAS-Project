@@ -170,8 +170,8 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 	public static final String DUPLICATE_OF = "duplicateOf";
 	public static final String SELF_REPORT ="selfReport";
 	public static final String PROPHYLAXIS_PRESCRIBED ="prophylaxisPrescribed";
-	public static final String DRUG ="prescribedDrug";
-	public static final String DRUG_TEXT ="prescribedDrugText";
+	public static final String PRESCRIBED_DRUG ="prescribedDrug";
+	public static final String PRESCRIBED_DRUG_TEXT ="prescribedDrugText";
 
 	private Date reportDateTime;
 	private User reportingUser;

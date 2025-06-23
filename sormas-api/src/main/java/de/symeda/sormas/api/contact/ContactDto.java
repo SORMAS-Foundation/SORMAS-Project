@@ -152,8 +152,8 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 	public static final String DELETION_REASON = "deletionReason";
 	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
 	public static final String PROPHYLAXIS_PRESCRIBED = "prophylaxisPrescribed";
-	public static final String DRUG = "prescribedDrug";
-	public static final String DRUG_TEXT = "prescribedDrugText";
+	public static final String PRESCRIBED_DRUG = "prescribedDrug";
+	public static final String PRESCRIBED_DRUG_TEXT = "prescribedDrugText";
 
 	@EmbeddedPersonalData
 	private CaseReferenceDto caze;

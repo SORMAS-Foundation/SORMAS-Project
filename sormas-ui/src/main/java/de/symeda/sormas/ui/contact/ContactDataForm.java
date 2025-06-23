@@ -141,7 +141,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
                     fluidRowLocs(ContactDto.RELATION_DESCRIPTION) +
 					fluidRowLocs(ContactDto.DESCRIPTION) +
 					loc(PROPHYLAXIS_LOC)+
-					fluidRowLocs(4,ContactDto.PROPHYLAXIS_PRESCRIBED, 4, ContactDto.DRUG, 4, ContactDto.DRUG_TEXT) +
+					fluidRowLocs(4,ContactDto.PROPHYLAXIS_PRESCRIBED, 4, ContactDto.PRESCRIBED_DRUG, 4, ContactDto.PRESCRIBED_DRUG_TEXT) +
 					fluidRowLocs(6, ContactDto.PROHIBITION_TO_WORK, 3, ContactDto.PROHIBITION_TO_WORK_FROM, 3, ContactDto.PROHIBITION_TO_WORK_UNTIL) +
                     fluidRowLocs(4, ContactDto.QUARANTINE_HOME_POSSIBLE, 8, ContactDto.QUARANTINE_HOME_POSSIBLE_COMMENT) +
                     fluidRowLocs(4, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED, 8, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT) +
@@ -487,7 +487,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		contactOfficerField.setEnabled(true);
 		contactOfficerField.setParentPseudonymizedSupplier(() -> getValue().isPseudonymized());
 
-		addField(ContactDto.DRUG, ComboBox.class);
+		addField(ContactDto.PRESCRIBED_DRUG, ComboBox.class);
 		region = addInfrastructureField(ContactDto.REGION);
 		region.setDescription(I18nProperties.getPrefixDescription(ContactDto.I18N_PREFIX, ContactDto.REGION));
 		district = addInfrastructureField(ContactDto.DISTRICT);
@@ -716,24 +716,24 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		CheckBox prophylaxisPrescribed = addField(ContactDto.PROPHYLAXIS_PRESCRIBED, CheckBox.class);
 		prophylaxisPrescribed.setCaption(I18nProperties.getCaption(Captions.Contact_prophylaxisPrescribed));
 
-		addField(ContactDto.DRUG_TEXT, TextField.class);
+		addField(ContactDto.PRESCRIBED_DRUG_TEXT, TextField.class);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
-			ContactDto.DRUG,
+			ContactDto.PRESCRIBED_DRUG,
 			ContactDto.PROPHYLAXIS_PRESCRIBED,
 			Collections.singletonList(Boolean.TRUE),
 			true);
-		FieldHelper.setRequiredWhenNotNull(getFieldGroup(), ContactDto.PROPHYLAXIS_PRESCRIBED, ContactDto.DRUG);
+		FieldHelper.setRequiredWhenNotNull(getFieldGroup(), ContactDto.PROPHYLAXIS_PRESCRIBED, ContactDto.PRESCRIBED_DRUG);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
-			ContactDto.DRUG_TEXT,
-			ContactDto.DRUG,
+			ContactDto.PRESCRIBED_DRUG_TEXT,
+			ContactDto.PRESCRIBED_DRUG,
 			Collections.singletonList(Drug.OTHER),
 			true);
 		FieldHelper.setRequiredWhen(
 			getFieldGroup(),
-			ContactDto.DRUG,
-			Arrays.asList(ContactDto.DRUG_TEXT),
+			ContactDto.PRESCRIBED_DRUG,
+			Arrays.asList(ContactDto.PRESCRIBED_DRUG_TEXT),
 			Arrays.asList(Drug.OTHER));
 	}
 

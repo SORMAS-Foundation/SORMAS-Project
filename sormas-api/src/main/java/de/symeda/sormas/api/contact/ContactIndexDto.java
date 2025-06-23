@@ -64,8 +64,8 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 	public static final String DISTRICT_UUID = "districtUuid";
 	public static final String COMMUNITY_UUID = "communityUuid";
 	public static final String PROPHYLAXIS_PRESCRIBED = "prophylaxisPrescribed";
-	public static final String DRUG = "prescribedDrug";
-	public static final String DRUG_TEXT = "prescribedDrugText";
+	public static final String PRESCRIBED_DRUG = "prescribedDrug";
+	public static final String PRESCRIBED_DRUG_TEXT = "prescribedDrugText";
 
 	private String personUuid;
 	@PersonalData
