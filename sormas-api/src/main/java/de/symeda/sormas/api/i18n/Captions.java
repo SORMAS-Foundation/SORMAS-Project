@@ -1019,7 +1019,6 @@ public interface Captions {
 	String Contact_diseaseDetails = "Contact.diseaseDetails";
 	String Contact_district = "Contact.district";
 	String Contact_districtUuid = "Contact.districtUuid";
-	String Contact_DrugText_IMI = "Contact.DrugText.IMI";
 	String Contact_endOfQuarantineReason = "Contact.endOfQuarantineReason";
 	String Contact_endOfQuarantineReasonDetails = "Contact.endOfQuarantineReasonDetails";
 	String Contact_epiData = "Contact.epiData";
@@ -1048,6 +1047,7 @@ public interface Captions {
 	String Contact_person = "Contact.person";
 	String Contact_personUuid = "Contact.personUuid";
 	String Contact_prescribedDrug = "Contact.prescribedDrug";
+	String Contact_prescribedDrugText = "Contact.prescribedDrugText";
 	String Contact_previousQuarantineTo = "Contact.previousQuarantineTo";
 	String Contact_prohibitionToWork = "Contact.prohibitionToWork";
 	String Contact_prohibitionToWorkFrom = "Contact.prohibitionToWorkFrom";
