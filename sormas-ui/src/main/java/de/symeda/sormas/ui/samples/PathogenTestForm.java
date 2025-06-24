@@ -144,7 +144,6 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		PathogenTestType.MULTILOCUS_SEQUENCE_TYPING,
 		PathogenTestType.SLIDE_AGGLUTINATION,
 		PathogenTestType.WHOLE_GENOME_SEQUENCING,
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY,
 		PathogenTestType.SEQUENCING);
 
 	public PathogenTestForm(
@@ -208,7 +207,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 	}
 
 	private void updateTuberculosisFieldSpecifications(PathogenTestType testType, Disease disease) {
-		if ((FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG))|| DiseaseHelper.checkDiseaseIsInvasiveBacterialDiseases((Disease)diseaseField.getValue())) {
+		if ((FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG))) {
 			boolean wasReadOnly = testResultField.isReadOnly();
 
 			if (disease == Disease.TUBERCULOSIS && testType != null) {
@@ -241,6 +240,12 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			}
 
 			drugSusceptibilityField.updateFieldsVisibility(disease, testType);
+		}else if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && DiseaseHelper.checkDiseaseIsInvasiveBacterialDiseases(disease)){
+			drugSusceptibilityField.updateFieldsVisibility(disease, testType);
+		}else{
+			testResultField.setReadOnly(false);
+			testResultField.setValue(null);
+			testResultField.setEnabled(true);
 		}
 	}
 
@@ -458,7 +463,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			Map<Object, List<Object>> tuberculosisAntibioticDependencies = new HashMap<>() {
 
 				{
-					put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.TUBERCULOSIS));
+					put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.TUBERCULOSIS, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
 					put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY));
 				}
 			};
@@ -479,16 +484,17 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				}
 			};
 			FieldHelper.setReadOnlyWhen(getFieldGroup(), PathogenTestDto.TEST_RESULT, tuberculosisTestResultReadOnlyDependencies, true, false);
+		} else if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+		&& DiseaseHelper.checkDiseaseIsInvasiveBacterialDiseases(disease)) {
+			//invasive-antibiotic test specification
+			Map<Object, List<Object>> tuberculosisAntibioticDependencies = new HashMap<>() {
+				{
+					put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
+					put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY));
+				}
+			};
+			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.DRUG_SUSCEPTIBILITY, tuberculosisAntibioticDependencies, true);
 		}
-
-		// Invasive diseases susceptibility applies for all the countries.
-		Map<Object, List<Object>> invasiveAntibioticDependencies = new HashMap<>() {
-			{
-				put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
-				put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY));
-			}
-		};
-		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.DRUG_SUSCEPTIBILITY, invasiveAntibioticDependencies, true);
 
 		seroTypeTF.setVisible(false);
 		ComboBox seroTypeMetCB = addField(PathogenTestDto.SEROTYPING_METHOD, ComboBox.class);
@@ -653,7 +659,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 					fourFoldIncrease.setEnabled(false);
 				}
 				// If disease is IMI or IPI and test type is serogrouping, then test result is set to positive and not editable
-				if (seroGrpTests.contains(testType) && DiseaseHelper.checkDiseaseIsInvasiveBacterialDiseases(disease)) {
+				if (seroGrpTests.contains(testType)) {
 					testResultField.setValue(PathogenTestResultType.POSITIVE);
 				} else {
 					testResultField.clear();
@@ -661,7 +667,14 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				seroTypeMetCB.setVisible(disease == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION && PathogenTestType.SEROGROUPING.equals(testType));
 				seroTypeTF.setVisible(disease == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION && seroGrpTests.contains(testType));
 				seroGrpSepcCB.setVisible(disease == Disease.INVASIVE_MENINGOCOCCAL_INFECTION && seroGrpTests.contains(testType));
-				testResultField.setEnabled(!(seroGrpTests.contains(testType) && DiseaseHelper.checkDiseaseIsInvasiveBacterialDiseases(disease)));
+				// for enabling the test result, finding configured country and disease
+				boolean isNotLuxTbAntiSus = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+						&& Disease.TUBERCULOSIS.equals((Disease) diseaseField.getValue()) && PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY.equals(testType);
+				if(isNotLuxTbAntiSus){
+					testResultField.setEnabled(true);
+				}else {
+					testResultField.setEnabled(!seroGrpTests.contains(testType) && !PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY.equals(testType));
+				}
 				setVisibleClear(
 					PathogenTestType.PCR_RT_PCR == testType,
 					PathogenTestDto.CQ_VALUE,
@@ -681,14 +694,14 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				testResultField.setEnabled(true);
 			}
 
-			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG) || DiseaseHelper.checkDiseaseIsInvasiveBacterialDiseases((Disease)diseaseField.getValue())) {
+//			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 				updateTuberculosisFieldSpecifications(testType, (Disease) diseaseField.getValue());
 				// If disease is IMI or IPI and test type is antibiotic susceptibility, then test result is set to positive
 				if ((diseaseField.getValue() == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION || diseaseField.getValue() == Disease.INVASIVE_MENINGOCOCCAL_INFECTION)
 				&& testType == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY) {
 					testResultField.setValue(PathogenTestResultType.POSITIVE);
 				}
-			}
+//			}
 		});
 		lab.addValueChangeListener(event -> {
 			if (event.getProperty().getValue() != null
