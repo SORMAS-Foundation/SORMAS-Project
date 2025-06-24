@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import de.symeda.sormas.api.DiseaseHelper;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.vaadin.ui.Label;
@@ -206,7 +207,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 	}
 
 	private void updateTuberculosisFieldSpecifications(PathogenTestType testType, Disease disease) {
-		if ((FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG))) {
+		if ((FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG))|| DiseaseHelper.checkDiseaseIsInvasiveBacterialDiseases((Disease)diseaseField.getValue())) {
 			boolean wasReadOnly = testResultField.isReadOnly();
 
 			if (disease == Disease.TUBERCULOSIS && testType != null) {
@@ -452,15 +453,6 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.PATTERN_PROFILE, tuberculosisMiruCodeDependencies, true);
 			//FieldHelper.setRequiredWhen(getFieldGroup(), PathogenTestDto.PATTERN_PROFILE, tuberculosisMiruCodeDependencies);
 
-			//tuberculosis-antibiotic test specification
-			Map<Object, List<Object>> tuberculosisAntibioticDependencies = new HashMap<>() {
-
-				{
-					put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.TUBERCULOSIS, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
-					put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY));
-				}
-			};
-			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.DRUG_SUSCEPTIBILITY, tuberculosisAntibioticDependencies, true);
 
 			//test result - read only
 			Map<Object, List<Object>> tuberculosisTestResultReadOnlyDependencies = new HashMap<>() {
@@ -478,6 +470,17 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			};
 			FieldHelper.setReadOnlyWhen(getFieldGroup(), PathogenTestDto.TEST_RESULT, tuberculosisTestResultReadOnlyDependencies, true, false);
 		}
+
+		//tuberculosis-antibiotic test specification
+		// Same applies for Invasive diseases as well, for all the countries.
+		Map<Object, List<Object>> tuberculosisAntibioticDependencies = new HashMap<>() {
+
+			{
+				put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.TUBERCULOSIS, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
+				put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY));
+			}
+		};
+		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.DRUG_SUSCEPTIBILITY, tuberculosisAntibioticDependencies, true);
 
 		seroTypeTF.setVisible(false);
 		ComboBox seroTypeMetCB = addField(PathogenTestDto.SEROTYPING_METHOD, ComboBox.class);
@@ -670,7 +673,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				testResultField.setEnabled(true);
 			}
 
-			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG) || DiseaseHelper.checkDiseaseIsInvasiveBacterialDiseases((Disease)diseaseField.getValue())) {
 				updateTuberculosisFieldSpecifications(testType, (Disease) diseaseField.getValue());
 				// If disease is IMI or IPI and test type is antibiotic susceptibility, then test result is set to positive
 				if ((diseaseField.getValue() == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION || diseaseField.getValue() == Disease.INVASIVE_MENINGOCOCCAL_INFECTION)
