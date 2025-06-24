@@ -487,13 +487,13 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		} else if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 		&& DiseaseHelper.checkDiseaseIsInvasiveBacterialDiseases(disease)) {
 			//invasive-antibiotic test specification
-			Map<Object, List<Object>> tuberculosisAntibioticDependencies = new HashMap<>() {
+			Map<Object, List<Object>> invasiveAntibioticDependencies = new HashMap<>() {
 				{
 					put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
 					put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY));
 				}
 			};
-			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.DRUG_SUSCEPTIBILITY, tuberculosisAntibioticDependencies, true);
+			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.DRUG_SUSCEPTIBILITY, invasiveAntibioticDependencies, true);
 		}
 
 		seroTypeTF.setVisible(false);
