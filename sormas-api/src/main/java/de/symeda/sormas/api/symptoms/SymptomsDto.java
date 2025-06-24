@@ -501,6 +501,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@Outbreaks
 	@HideForCountries
+	@SymptomGrouping(SymptomGroup.RESPIRATORY)
 	private SymptomState chestPain;
 
 	@Diseases({
