@@ -144,6 +144,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		PathogenTestType.MULTILOCUS_SEQUENCE_TYPING,
 		PathogenTestType.SLIDE_AGGLUTINATION,
 		PathogenTestType.WHOLE_GENOME_SEQUENCING,
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY,
 		PathogenTestType.SEQUENCING);
 
 	public PathogenTestForm(
@@ -453,6 +454,15 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.PATTERN_PROFILE, tuberculosisMiruCodeDependencies, true);
 			//FieldHelper.setRequiredWhen(getFieldGroup(), PathogenTestDto.PATTERN_PROFILE, tuberculosisMiruCodeDependencies);
 
+			//tuberculosis-antibiotic test specification
+			Map<Object, List<Object>> tuberculosisAntibioticDependencies = new HashMap<>() {
+
+				{
+					put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.TUBERCULOSIS));
+					put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY));
+				}
+			};
+			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.DRUG_SUSCEPTIBILITY, tuberculosisAntibioticDependencies, true);
 
 			//test result - read only
 			Map<Object, List<Object>> tuberculosisTestResultReadOnlyDependencies = new HashMap<>() {
@@ -471,16 +481,14 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			FieldHelper.setReadOnlyWhen(getFieldGroup(), PathogenTestDto.TEST_RESULT, tuberculosisTestResultReadOnlyDependencies, true, false);
 		}
 
-		//tuberculosis-antibiotic test specification
-		// Same applies for Invasive diseases as well, for all the countries.
-		Map<Object, List<Object>> tuberculosisAntibioticDependencies = new HashMap<>() {
-
+		// Invasive diseases susceptibility applies for all the countries.
+		Map<Object, List<Object>> invasiveAntibioticDependencies = new HashMap<>() {
 			{
-				put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.TUBERCULOSIS, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
+				put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
 				put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY));
 			}
 		};
-		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.DRUG_SUSCEPTIBILITY, tuberculosisAntibioticDependencies, true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.DRUG_SUSCEPTIBILITY, invasiveAntibioticDependencies, true);
 
 		seroTypeTF.setVisible(false);
 		ComboBox seroTypeMetCB = addField(PathogenTestDto.SEROTYPING_METHOD, ComboBox.class);
@@ -645,7 +653,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 					fourFoldIncrease.setEnabled(false);
 				}
 				// If disease is IMI or IPI and test type is serogrouping, then test result is set to positive and not editable
-				if (seroGrpTests.contains(testType)) {
+				if (seroGrpTests.contains(testType) && DiseaseHelper.checkDiseaseIsInvasiveBacterialDiseases(disease)) {
 					testResultField.setValue(PathogenTestResultType.POSITIVE);
 				} else {
 					testResultField.clear();
@@ -653,7 +661,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				seroTypeMetCB.setVisible(disease == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION && PathogenTestType.SEROGROUPING.equals(testType));
 				seroTypeTF.setVisible(disease == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION && seroGrpTests.contains(testType));
 				seroGrpSepcCB.setVisible(disease == Disease.INVASIVE_MENINGOCOCCAL_INFECTION && seroGrpTests.contains(testType));
-				testResultField.setEnabled(!seroGrpTests.contains(testType) && !PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY.equals(testType));
+				testResultField.setEnabled(!(seroGrpTests.contains(testType) && DiseaseHelper.checkDiseaseIsInvasiveBacterialDiseases(disease)));
 				setVisibleClear(
 					PathogenTestType.PCR_RT_PCR == testType,
 					PathogenTestDto.CQ_VALUE,
