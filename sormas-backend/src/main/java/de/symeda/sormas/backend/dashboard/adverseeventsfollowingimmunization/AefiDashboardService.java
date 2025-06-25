@@ -608,6 +608,7 @@ public class AefiDashboardService {
 					.region(criteria.getRegion())
 					.district(criteria.getDistrict())
 					.aefiType(criteria.getAefiType())
+					.gisMapCriteria(criteria.isGisMapCriteria())
 					.showSeriousAefiForMap(criteria.isShowSeriousAefiForMap())
 					.showNonSeriousAefiForMap(criteria.isShowNonSeriousAefiForMap()),
 				queryContext));

@@ -1299,6 +1299,7 @@ public class GisDashboardMapComponent extends BaseDashboardMapComponent<GisDashb
 
 	private void showAefiMarkers() {
 		AefiDashboardCriteria criteria = dashboardDataProvider.buildAefiDashboardCriteria()
+			.gisMapCriteria(true)
 			.showSeriousAefiForMap(showSeriousAefiCheckBox.getValue())
 			.showNonSeriousAefiForMap(showNonSeriousAefiCheckBox.getValue());
 		List<MapAefiDto> aefiMapData = FacadeProvider.getAefiDashboardFacade().getAefiForMap(criteria);

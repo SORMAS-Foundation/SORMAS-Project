@@ -561,14 +561,16 @@ public class AefiService extends AbstractCoreAdoService<Aefi, AefiJoins> {
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.notEqual(from.get(Aefi.SERIOUS), YesNoUnknown.YES));
 			}
 		} else {
-			if (criteria.isShowSeriousAefiForMap() && !criteria.isShowNonSeriousAefiForMap()) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Aefi.SERIOUS), YesNoUnknown.YES));
-			} else if (criteria.isShowNonSeriousAefiForMap() && !criteria.isShowSeriousAefiForMap()) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.notEqual(from.get(Aefi.SERIOUS), YesNoUnknown.YES));
-			} else if (criteria.isShowSeriousAefiForMap() && criteria.isShowNonSeriousAefiForMap()) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.isNotNull(from.get(Aefi.SERIOUS)));
-			} else if (!criteria.isShowSeriousAefiForMap() && !criteria.isShowNonSeriousAefiForMap()) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.isNull(from.get(Aefi.SERIOUS)));
+			if (criteria.isGisMapCriteria()) {
+				if (criteria.isShowSeriousAefiForMap() && !criteria.isShowNonSeriousAefiForMap()) {
+					filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Aefi.SERIOUS), YesNoUnknown.YES));
+				} else if (criteria.isShowNonSeriousAefiForMap() && !criteria.isShowSeriousAefiForMap()) {
+					filter = CriteriaBuilderHelper.and(cb, filter, cb.notEqual(from.get(Aefi.SERIOUS), YesNoUnknown.YES));
+				} else if (criteria.isShowSeriousAefiForMap() && criteria.isShowNonSeriousAefiForMap()) {
+					filter = CriteriaBuilderHelper.and(cb, filter, cb.isNotNull(from.get(Aefi.SERIOUS)));
+				} else if (!criteria.isShowSeriousAefiForMap() && !criteria.isShowNonSeriousAefiForMap()) {
+					filter = CriteriaBuilderHelper.and(cb, filter, cb.isNull(from.get(Aefi.SERIOUS)));
+				}
 			}
 		}
 		if (criteria.getOutcome() != null) {
