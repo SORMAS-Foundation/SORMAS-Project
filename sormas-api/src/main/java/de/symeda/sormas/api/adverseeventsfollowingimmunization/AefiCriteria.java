@@ -71,6 +71,7 @@ public class AefiCriteria extends BaseCriteria implements Serializable {
 	private Date toDate;
 	private EntityRelevanceStatus relevanceStatus;
 
+	private Boolean gisMapCriteria = false;
 	private Boolean showSeriousAefiForMap = false;
 	private Boolean showNonSeriousAefiForMap = false;
 
@@ -230,6 +231,11 @@ public class AefiCriteria extends BaseCriteria implements Serializable {
 		return this;
 	}
 
+	public AefiCriteria gisMapCriteria(Boolean gisMapCriteria) {
+		this.gisMapCriteria = gisMapCriteria;
+		return this;
+	}
+
 	public AefiCriteria showSeriousAefiForMap(Boolean showSeriousAefi) {
 		this.showSeriousAefiForMap = showSeriousAefi;
 		return this;
@@ -238,6 +244,10 @@ public class AefiCriteria extends BaseCriteria implements Serializable {
 	public AefiCriteria showNonSeriousAefiForMap(Boolean showNonSeriousAefi) {
 		this.showNonSeriousAefiForMap = showNonSeriousAefi;
 		return this;
+	}
+
+	public Boolean isGisMapCriteria() {
+		return gisMapCriteria;
 	}
 
 	public Boolean isShowSeriousAefiForMap() {
