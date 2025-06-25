@@ -104,6 +104,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	private Disease disease;
 	private final Boolean hasCaseRelation;
 	private final boolean asSourceContact;
+	private final boolean isPersonReadOnly;
 	private NullableOptionGroup contactCategory;
 	private TextField contactProximityDetails;
 
@@ -123,10 +124,19 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	private final boolean showPersonSearchButton;
 	private Window warningSimilarPersons;
 
+	public ContactCreateForm(Disease disease, boolean hasCaseRelation, boolean asSourceContact, boolean showPersonSearchButton) {
+		this(disease, hasCaseRelation, asSourceContact, showPersonSearchButton, false);
+	}
+
 	/**
 	 * TODO use disease and case relation information given in ContactDto
 	 */
-	public ContactCreateForm(Disease disease, boolean hasCaseRelation, boolean asSourceContact, boolean showPersonSearchButton) {
+	public ContactCreateForm(
+		Disease disease,
+		boolean hasCaseRelation,
+		boolean asSourceContact,
+		boolean showPersonSearchButton,
+		boolean isPersonReadOnly) {
 		super(
 			ContactDto.class,
 			ContactDto.I18N_PREFIX,
@@ -137,6 +147,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		this.disease = disease;
 		this.hasCaseRelation = hasCaseRelation;
 		this.asSourceContact = asSourceContact;
+		this.isPersonReadOnly = isPersonReadOnly;
 		this.showPersonSearchButton = showPersonSearchButton;
 
 		addFields();
@@ -158,11 +169,18 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		addField(ContactDto.DISEASE_DETAILS, TextField.class);
 
 		personCreateForm = new PersonCreateForm(false, false, false, showPersonSearchButton);
+		if (isPersonReadOnly) {
+			personCreateForm.setPersonDetailsReadOnly();
+		}
 		personCreateForm.setWidth(100, Unit.PERCENTAGE);
 		personCreateForm.setValue(new PersonDto());
 		getContent().addComponent(personCreateForm, ContactDto.PERSON);
 
 		personCreateForm.getNationalHealthIdField().addTextFieldValueChangeListener(e -> {
+			// Only check if the health ID can be edited
+			if (!personCreateForm.getNationalHealthIdField().isEnabled()) {
+				return;
+			}
 			warningSimilarPersons = PersonFormHelper
 				.warningSimilarPersons(personCreateForm.getNationalHealthIdField().getValue(), null, () -> warningSimilarPersons = null);
 		});
@@ -404,10 +422,6 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 
 	public void setPerson(PersonDto person, boolean isNewPerson) {
 		personCreateForm.setPerson(person, isNewPerson);
-	}
-
-	public void setPersonDetailsReadOnly() {
-		personCreateForm.setPersonDetailsReadOnly();
 	}
 
 	public void setDiseaseReadOnly() {
