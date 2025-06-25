@@ -23,6 +23,7 @@ public class AefiDashboardCriteria extends BaseDashboardCriteria<AefiDashboardCr
 	private AefiDashboardFilterDateType aefiDashboardFilterDateType;
 	private AefiType aefiType;
 
+	private boolean gisMapCriteria;
 	private boolean showSeriousAefiForMap;
 	private boolean showNonSeriousAefiForMap;
 
@@ -36,6 +37,10 @@ public class AefiDashboardCriteria extends BaseDashboardCriteria<AefiDashboardCr
 
 	public AefiType getAefiType() {
 		return aefiType;
+	}
+
+	public boolean isGisMapCriteria() {
+		return gisMapCriteria;
 	}
 
 	public boolean isShowSeriousAefiForMap() {
@@ -53,6 +58,11 @@ public class AefiDashboardCriteria extends BaseDashboardCriteria<AefiDashboardCr
 
 	public AefiDashboardCriteria aefiType(AefiType aefiType) {
 		this.aefiType = aefiType;
+		return self;
+	}
+
+	public AefiDashboardCriteria gisMapCriteria(boolean gisMapCriteria) {
+		this.gisMapCriteria = gisMapCriteria;
 		return self;
 	}
 
