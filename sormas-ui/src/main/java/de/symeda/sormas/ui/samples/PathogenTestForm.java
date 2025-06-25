@@ -668,13 +668,14 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				seroTypeTF.setVisible(disease == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION && seroGrpTests.contains(testType));
 				seroGrpSepcCB.setVisible(disease == Disease.INVASIVE_MENINGOCOCCAL_INFECTION && seroGrpTests.contains(testType));
 				// for enabling the test result, finding configured country and disease
-				boolean isNotLuxTbAntiSus = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+				boolean isLuxTbAntiSus = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 						&& Disease.TUBERCULOSIS.equals((Disease) diseaseField.getValue()) && PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY.equals(testType);
-				if(isNotLuxTbAntiSus){
+				if(isLuxTbAntiSus){
 					testResultField.setEnabled(true);
 				}else {
 					testResultField.setEnabled(!seroGrpTests.contains(testType) && !PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY.equals(testType));
 				}
+				drugSusceptibilityField.setVisible(isLuxTbAntiSus || DiseaseHelper.checkDiseaseIsInvasiveBacterialDiseases((Disease)diseaseField.getValue()) && PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY.equals(testType));
 				setVisibleClear(
 					PathogenTestType.PCR_RT_PCR == testType,
 					PathogenTestDto.CQ_VALUE,
