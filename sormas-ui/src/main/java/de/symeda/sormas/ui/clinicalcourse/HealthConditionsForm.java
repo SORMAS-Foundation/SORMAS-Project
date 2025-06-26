@@ -245,7 +245,11 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 
 	@Override
 	protected <F extends Field> F addFieldToLayout(CustomLayout layout, String propertyId, F field) {
-		field.addValueChangeListener(e -> fireValueChange(false));
+		field.addValueChangeListener(e -> {
+			if (this.isModified()) {
+				fireValueChange(false);
+			}
+		});
 
 		return super.addFieldToLayout(layout, propertyId, field);
 	}
