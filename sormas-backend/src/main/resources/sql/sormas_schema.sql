@@ -14404,4 +14404,16 @@ alter table symptoms add column IF NOT EXISTS nocturnalcough varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (577, 'Pertussis missed symptom, #13373');
 
+-- 2025-06-27 Fix failing tests #13516
+alter table symptoms_history add nocturnalcough varchar(255);
+
+alter table drugsusceptibility_history add column IF NOT EXISTS ceftriaxonemic numeric;
+alter table drugsusceptibility_history add column IF NOT EXISTS ceftriaxoneSusceptibility varchar(255);
+alter table drugsusceptibility_history add column IF NOT EXISTS penicillinmic numeric;
+alter table drugsusceptibility_history add column IF NOT EXISTS penicillinSusceptibility varchar(255);
+alter table drugsusceptibility_history add column IF NOT EXISTS erythromycinmic numeric;
+alter table drugsusceptibility_history add column IF NOT EXISTS erythromycinSusceptibility varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (578, 'Update history tables #13516');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
