@@ -158,7 +158,9 @@ public enum DatabaseTable {
 	SYSTEM_CONFIGURATION_VALUES(DatabaseTableType.CONFIGURATION, "system_configuration_values", null),
 	SYSTEM_CONFIGURATION_CATEGORIES(DatabaseTableType.CONFIGURATION, "system_configuration_categories", null),
 
-	NOTIFIER(DatabaseTableType.SORMAS, "notifier", null);
+	NOTIFIER(DatabaseTableType.SORMAS, "notifier", null),
+
+	DRUG_SUSCEPTIBILITY(DatabaseTableType.SORMAS, "drug_susceptibility", null);
 
 	private static BiFunction<List<FeatureConfigurationDto>, ConfigFacade, Boolean> dependingOnFeature(FeatureType... featureTypes) {
 		return (featureConfigurations, configFacade) -> featureConfigurations.stream()
