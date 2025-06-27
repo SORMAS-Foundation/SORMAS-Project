@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import de.symeda.sormas.api.DiseaseHelper;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.vaadin.ui.Label;
@@ -239,6 +240,12 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			}
 
 			drugSusceptibilityField.updateFieldsVisibility(disease, testType);
+		}else if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && DiseaseHelper.checkDiseaseIsInvasiveBacterialDiseases(disease)){
+			drugSusceptibilityField.updateFieldsVisibility(disease, testType);
+		}else{
+			testResultField.setReadOnly(false);
+			testResultField.setValue(null);
+			testResultField.setEnabled(true);
 		}
 	}
 
@@ -477,6 +484,16 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				}
 			};
 			FieldHelper.setReadOnlyWhen(getFieldGroup(), PathogenTestDto.TEST_RESULT, tuberculosisTestResultReadOnlyDependencies, true, false);
+		} else if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+		&& DiseaseHelper.checkDiseaseIsInvasiveBacterialDiseases(disease)) {
+			//invasive-antibiotic test specification
+			Map<Object, List<Object>> invasiveAntibioticDependencies = new HashMap<>() {
+				{
+					put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
+					put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY));
+				}
+			};
+			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.DRUG_SUSCEPTIBILITY, invasiveAntibioticDependencies, true);
 		}
 
 		seroTypeTF.setVisible(false);
@@ -650,7 +667,15 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				seroTypeMetCB.setVisible(disease == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION && PathogenTestType.SEROGROUPING.equals(testType));
 				seroTypeTF.setVisible(disease == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION && seroGrpTests.contains(testType));
 				seroGrpSepcCB.setVisible(disease == Disease.INVASIVE_MENINGOCOCCAL_INFECTION && seroGrpTests.contains(testType));
-				testResultField.setEnabled(!seroGrpTests.contains(testType) && !PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY.equals(testType));
+				// for enabling the test result, finding configured country and disease
+				boolean isLuxTbAntiSus = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+						&& Disease.TUBERCULOSIS.equals((Disease) diseaseField.getValue()) && PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY.equals(testType);
+				if(isLuxTbAntiSus){
+					testResultField.setEnabled(true);
+				}else {
+					testResultField.setEnabled(!seroGrpTests.contains(testType) && !PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY.equals(testType));
+				}
+				drugSusceptibilityField.setVisible(isLuxTbAntiSus || DiseaseHelper.checkDiseaseIsInvasiveBacterialDiseases((Disease)diseaseField.getValue()) && PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY.equals(testType));
 				setVisibleClear(
 					PathogenTestType.PCR_RT_PCR == testType,
 					PathogenTestDto.CQ_VALUE,
@@ -670,14 +695,14 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				testResultField.setEnabled(true);
 			}
 
-			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+//			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 				updateTuberculosisFieldSpecifications(testType, (Disease) diseaseField.getValue());
 				// If disease is IMI or IPI and test type is antibiotic susceptibility, then test result is set to positive
 				if ((diseaseField.getValue() == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION || diseaseField.getValue() == Disease.INVASIVE_MENINGOCOCCAL_INFECTION)
 				&& testType == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY) {
 					testResultField.setValue(PathogenTestResultType.POSITIVE);
 				}
-			}
+//			}
 		});
 		lab.addValueChangeListener(event -> {
 			if (event.getProperty().getValue() != null

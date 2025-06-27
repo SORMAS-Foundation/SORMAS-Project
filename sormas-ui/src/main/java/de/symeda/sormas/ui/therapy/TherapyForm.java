@@ -143,14 +143,14 @@ public class TherapyForm extends AbstractEditForm<TherapyDto> {
 
 	@Override
 	protected void addFields() {
-		if ((FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG))) {
+		boolean isLUXConfigured = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 			CheckBox dotField = addField(TherapyDto.DIRECTLY_OBSERVED_TREATMENT, CheckBox.class);
 			dotField.addStyleName(VSPACE_3);
-            dotField.setVisible(disease == Disease.TUBERCULOSIS);
+            dotField.setVisible(isLUXConfigured && disease == Disease.TUBERCULOSIS);
 
 			CheckBox mdrXdrTuberculosisField = addField(TherapyDto.MDR_XDR_TUBERCULOSIS, CheckBox.class);
 			mdrXdrTuberculosisField.addStyleName(VSPACE_3);
-            mdrXdrTuberculosisField.setVisible(disease == Disease.TUBERCULOSIS);
+            mdrXdrTuberculosisField.setVisible(isLUXConfigured && disease == Disease.TUBERCULOSIS);
 			mdrXdrTuberculosisField.addValueChangeListener(e -> {
 				if (drugSusceptibilityResultPanel != null) {
 					drugSusceptibilityResultPanel.setVisible((Boolean) e.getProperty().getValue());
@@ -159,7 +159,7 @@ public class TherapyForm extends AbstractEditForm<TherapyDto> {
 
 			CheckBox beijingLineageField = addField(TherapyDto.BEIJING_LINEAGE, CheckBox.class);
 			beijingLineageField.addStyleName(VSPACE_3);
-            beijingLineageField.setVisible(disease == Disease.TUBERCULOSIS);
+            beijingLineageField.setVisible(isLUXConfigured && disease == Disease.TUBERCULOSIS);
 
 			List<SampleDto> samples = FacadeProvider.getSampleFacade().getByCaseUuids(Collections.singletonList(caze.getUuid()));
 			List<String> sampleUuids = Collections.emptyList();
@@ -182,7 +182,6 @@ public class TherapyForm extends AbstractEditForm<TherapyDto> {
 			drugSusceptibilityResultPanel.setVisible(disease != Disease.TUBERCULOSIS);
 			getContent().addComponent(drugSusceptibilityResultPanel, DRUD_SUSCEPTIBILITY_LOC);
 			drugSusceptibilityResultPanel.addStyleNames(VSPACE_TOP_4, VSPACE_3);
-		}
 
 		//prescription
 		CustomLayout prescriptionsLayout = new CustomLayout();
