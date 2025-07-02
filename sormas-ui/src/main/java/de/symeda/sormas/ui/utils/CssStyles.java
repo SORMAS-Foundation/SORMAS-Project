@@ -330,6 +330,7 @@ public final class CssStyles {
 	public static final String GRID_ROW_GAP_1 = "grid-row-gap-1";
 	public static final String GIS_DASHBOARD_MAP_HEADER = "gis-dashboard-map-header";
 	public static final String GIS_DASHBOARD_MAP_FOOTER = "gis-dashboard-map-footer";
+	public static final String VIEW_SECTION_WIDTH_AUTO = "view-section-width-auto";
 
 	public static String buildVaadinStyle(String primaryStyle, String... styles) {
 		StringBuilder styleBuilder = new StringBuilder();
