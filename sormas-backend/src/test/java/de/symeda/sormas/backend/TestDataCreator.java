@@ -1527,7 +1527,7 @@ public class TestDataCreator {
 		sampleTest.setTestResult(testResult);
 		sampleTest.setTestResultText(testResultText);
 		sampleTest.setTestResultVerified(verified);
-		sampleTest.setDrugSusceptibility(DrugSusceptibilityDto.build());
+//		sampleTest.setDrugSusceptibility(DrugSusceptibilityDto.build());
 
 		if (extraConfig != null) {
 			extraConfig.accept(sampleTest);
@@ -1553,7 +1553,7 @@ public class TestDataCreator {
 		sampleTest.setTestResult(testResult);
 		sampleTest.setTestResultVerified(true);
 		sampleTest.setTestDateTime(new Date());
-		sampleTest.setDrugSusceptibility(DrugSusceptibilityDto.build());
+//		sampleTest.setDrugSusceptibility(DrugSusceptibilityDto.build());
 
 		if (extraConfig != null) {
 			extraConfig.accept(sampleTest);
@@ -1583,7 +1583,7 @@ public class TestDataCreator {
 		sampleTest.setTestResult(testResult);
 		sampleTest.setTestResultText(testResultText);
 		sampleTest.setTestResultVerified(verified);
-		sampleTest.setDrugSusceptibility(DrugSusceptibilityDto.build());
+//		sampleTest.setDrugSusceptibility(DrugSusceptibilityDto.build());
 
 		if (extraConfig != null) {
 			extraConfig.accept(sampleTest);

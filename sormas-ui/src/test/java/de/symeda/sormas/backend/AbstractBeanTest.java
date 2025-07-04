@@ -33,7 +33,6 @@ import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import de.symeda.sormas.backend.therapy.DrugSusceptibilityMapper;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -456,9 +455,6 @@ public abstract class AbstractBeanTest {
 		return getBean(VaccinationService.class);
 	}
 
-	public DrugSusceptibilityMapper getDrugSusceptibilityMapper() {
-		return getBean(DrugSusceptibilityMapper.class);
-	}
 
 	public TravelEntryFacade getTravelEntryFacade() {
 		return getBean(TravelEntryFacadeEjb.TravelEntryFacadeEjbLocal.class);
