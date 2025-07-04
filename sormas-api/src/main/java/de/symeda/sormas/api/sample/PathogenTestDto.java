@@ -267,7 +267,8 @@ public class PathogenTestDto extends PseudonymizableDto {
 		PathogenTestDto pathogenTest = new PathogenTestDto();
 		pathogenTest.setUuid(DataHelper.createUuid());
 		pathogenTest.setEnvironmentSample(environmentSample.toReference());
-
+		// Initialize with an empty drug susceptibility to avoid multiple unnecessary conditional addFields ana checks of the drug susceptibility field in the form
+		pathogenTest.setDrugSusceptibility(DrugSusceptibilityDto.build());
 		pathogenTest.setLab(currentUser.getLaboratory());
 		if (pathogenTest.getLab() == null) {
 			pathogenTest.setLab(environmentSample.getLaboratory());

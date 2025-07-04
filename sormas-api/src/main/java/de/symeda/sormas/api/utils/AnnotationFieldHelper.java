@@ -41,7 +41,8 @@ public final class AnnotationFieldHelper {
 		Field[] fields = clazz.getDeclaredFields();
 
 		for (Field field : fields) {
-			boolean matches = false;
+			boolean diseaseMatches = false;
+			boolean pathogenTestMatches = false;
 
 			// Check @Diseases annotation
 			if (diseases != null && !diseases.isEmpty()) {
@@ -49,23 +50,23 @@ public final class AnnotationFieldHelper {
 				if (diseasesAnnotation != null) {
 					List<Disease> fieldDiseases = Arrays.asList(diseasesAnnotation.value());
 					if (fieldDiseases.stream().anyMatch(diseases::contains)) {
-						matches = true;
+						diseaseMatches = true;
 					}
 				}
 			}
 
 			// Check @ApplicableToPathogenTests annotation
-			if (matches && pathogenTestTypes != null && !pathogenTestTypes.isEmpty()) {
+			if (diseaseMatches && pathogenTestTypes != null && !pathogenTestTypes.isEmpty()) {
 				ApplicableToPathogenTests pathogenTestsAnnotation = field.getAnnotation(ApplicableToPathogenTests.class);
 				if (pathogenTestsAnnotation != null) {
 					List<PathogenTestType> fieldTestTypes = Arrays.asList(pathogenTestsAnnotation.value());
 					if (fieldTestTypes.stream().anyMatch(pathogenTestTypes::contains)) {
-						matches = true;
+						pathogenTestMatches = true;
 					}
 				}
 			}
 
-			if (matches) {
+			if (diseaseMatches && pathogenTestMatches) {
 				matchingFieldNames.add(field.getName());
 			}
 		}

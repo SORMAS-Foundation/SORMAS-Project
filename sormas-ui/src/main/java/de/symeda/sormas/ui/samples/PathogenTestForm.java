@@ -23,6 +23,7 @@ import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_4;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -206,46 +207,51 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		}
 	}
 
-	private void updateTuberculosisFieldSpecifications(PathogenTestType testType, Disease disease) {
-		if ((FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG))) {
-			boolean wasReadOnly = testResultField.isReadOnly();
+	private void updateDrugSusceptibilityFieldSpecifications(PathogenTestType testType, Disease disease) {
+		if (disease != null) { // Drug susceptibility is applicable only diseass not for environment
+			if ((FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG))) {
+				boolean wasReadOnly = testResultField.isReadOnly();
 
-			if (disease == Disease.TUBERCULOSIS && testType != null) {
-				if (Arrays.asList(PathogenTestType.BEIJINGGENOTYPING, PathogenTestType.MIRU_PATTERN_CODE, PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)
-					.contains(testType)) {
-					if (wasReadOnly) {
+				if (disease == Disease.TUBERCULOSIS && testType != null) {
+					if (Arrays.asList(PathogenTestType.BEIJINGGENOTYPING, PathogenTestType.MIRU_PATTERN_CODE, PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY).contains(testType)) {
+						if (wasReadOnly) {
+							testResultField.setReadOnly(false);
+						}
+						testResultField.setValue(PathogenTestResultType.NOT_APPLICABLE);
+						if (wasReadOnly) {
+							testResultField.setReadOnly(true);
+						}
+					} else if (testType == PathogenTestType.SPOLIGOTYPING) {
+						if (wasReadOnly) {
+							testResultField.setReadOnly(false);
+						}
+						testResultField.setValue(PathogenTestResultType.POSITIVE);
+						if (wasReadOnly) {
+							testResultField.setReadOnly(true);
+						}
+					} else if (wasReadOnly) {
+						// Field was read-only but no longer meets conditions for auto-set values
 						testResultField.setReadOnly(false);
-					}
-					testResultField.setValue(PathogenTestResultType.NOT_APPLICABLE);
-					if (wasReadOnly) {
-						testResultField.setReadOnly(true);
-					}
-				} else if (testType == PathogenTestType.SPOLIGOTYPING) {
-					if (wasReadOnly) {
-						testResultField.setReadOnly(false);
-					}
-					testResultField.setValue(PathogenTestResultType.POSITIVE);
-					if (wasReadOnly) {
-						testResultField.setReadOnly(true);
+						testResultField.setValue(null);
 					}
 				} else if (wasReadOnly) {
-					// Field was read-only but no longer meets conditions for auto-set values
+					// Disease is not TB or testType is null, but field was read-only
 					testResultField.setReadOnly(false);
 					testResultField.setValue(null);
 				}
-			} else if (wasReadOnly) {
-				// Disease is not TB or testType is null, but field was read-only
-				testResultField.setReadOnly(false);
-				testResultField.setValue(null);
-			}
 
-			drugSusceptibilityField.updateFieldsVisibility(disease, testType);
-		}else if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && DiseaseHelper.checkDiseaseIsInvasiveBacterialDiseases(disease)){
-			drugSusceptibilityField.updateFieldsVisibility(disease, testType);
-		}else{
-			testResultField.setReadOnly(false);
-			testResultField.setValue(null);
-			testResultField.setEnabled(true);
+				drugSusceptibilityField.updateFieldsVisibility(disease, testType);
+			} else {
+				if (disease != Disease.TUBERCULOSIS && (DiseaseHelper.checkDiseaseIsInvasiveBacterialDiseases(disease) && testType == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)) { // for non lux tb no drug susceptibility
+					drugSusceptibilityField.updateFieldsVisibility(disease, testType);
+					drugSusceptibilityField.setVisible(true);
+				} else {
+					if (drugSusceptibilityField != null) {
+						drugSusceptibilityField.setVisible(false);
+						drugSusceptibilityField.updateFieldsVisibility(disease, testType);
+					}
+				}
+			}
 		}
 	}
 
@@ -391,13 +397,13 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		TextField patternProfileField = addField(PathogenTestDto.PATTERN_PROFILE, TextField.class);
 		patternProfileField.setVisible(false);
 
-		drugSusceptibilityField = (DrugSusceptibilityForm) addField(
-			PathogenTestDto.DRUG_SUSCEPTIBILITY,
-			new DrugSusceptibilityForm(
-				FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
-				UiFieldAccessCheckers.getDefault(true, FacadeProvider.getConfigFacade().getCountryLocale())));
-		drugSusceptibilityField.setCaption(null);
-		drugSusceptibilityField.setVisible(false);
+			drugSusceptibilityField = (DrugSusceptibilityForm) addField(
+					PathogenTestDto.DRUG_SUSCEPTIBILITY,
+					new DrugSusceptibilityForm(
+							FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
+							UiFieldAccessCheckers.getDefault(true, FacadeProvider.getConfigFacade().getCountryLocale())));
+			drugSusceptibilityField.setCaption(null);
+			drugSusceptibilityField.setVisible(false);
 
 		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 			//tuberculosis-pcr test specification
@@ -640,7 +646,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 					FieldVisibilityCheckers.withDisease(disease),
 					PathogenStrainCallStatus.class);
 
-				updateTuberculosisFieldSpecifications((PathogenTestType) testTypeField.getValue(), disease);
+				updateDrugSusceptibilityFieldSpecifications((PathogenTestType) testTypeField.getValue(), disease);
 			}
 		});
 		diseaseVariantField.addValueChangeListener(e -> {
@@ -664,6 +670,9 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				} else {
 					testResultField.clear();
 				}
+
+				updateDrugSusceptibilityFieldSpecifications(testType, (Disease) diseaseField.getValue());
+
 				seroTypeMetCB.setVisible(disease == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION && PathogenTestType.SEROGROUPING.equals(testType));
 				seroTypeTF.setVisible(disease == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION && seroGrpTests.contains(testType));
 				seroGrpSepcCB.setVisible(disease == Disease.INVASIVE_MENINGOCOCCAL_INFECTION && seroGrpTests.contains(testType));
@@ -671,11 +680,11 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				boolean isLuxTbAntiSus = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 						&& Disease.TUBERCULOSIS.equals((Disease) diseaseField.getValue()) && PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY.equals(testType);
 				if(isLuxTbAntiSus){
-					testResultField.setEnabled(true);
-				}else {
-					testResultField.setEnabled(!seroGrpTests.contains(testType) && !PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY.equals(testType));
+					seroGrpTests = new ArrayList<>(seroGrpTests);
+					seroGrpTests.add(testType);
 				}
-				drugSusceptibilityField.setVisible(isLuxTbAntiSus || DiseaseHelper.checkDiseaseIsInvasiveBacterialDiseases((Disease)diseaseField.getValue()) && PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY.equals(testType));
+				// for all serogrouping tests and isLuxTbAntiSus the test result field should be disabled
+				testResultField.setEnabled(!seroGrpTests.contains(testType));
 				setVisibleClear(
 					PathogenTestType.PCR_RT_PCR == testType,
 					PathogenTestDto.CQ_VALUE,
@@ -685,6 +694,13 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 					PathogenTestDto.CT_VALUE_S,
 					PathogenTestDto.CT_VALUE_ORF_1,
 					PathogenTestDto.CT_VALUE_RDRP_S);
+				// If the disease is IMI or IPI and the test type is antibiotic susceptibility,
+				// then a test result is set to positive and disabled
+				if (DiseaseHelper.checkDiseaseIsInvasiveBacterialDiseases((Disease) diseaseField.getValue()) && testType == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY) {
+					testResultField.setValue(PathogenTestResultType.POSITIVE);
+					testResultField.setEnabled(false);
+				}
+
 			} else {
 				setVisibleClear(
 					testTypeField.getValue() != null,
@@ -695,14 +711,11 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				testResultField.setEnabled(true);
 			}
 
-//			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
-				updateTuberculosisFieldSpecifications(testType, (Disease) diseaseField.getValue());
 				// If disease is IMI or IPI and test type is antibiotic susceptibility, then test result is set to positive
 				if ((diseaseField.getValue() == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION || diseaseField.getValue() == Disease.INVASIVE_MENINGOCOCCAL_INFECTION)
 				&& testType == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY) {
 					testResultField.setValue(PathogenTestResultType.POSITIVE);
 				}
-//			}
 		});
 		lab.addValueChangeListener(event -> {
 			if (event.getProperty().getValue() != null
