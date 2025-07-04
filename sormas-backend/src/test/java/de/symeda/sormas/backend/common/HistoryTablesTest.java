@@ -21,6 +21,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+import de.symeda.sormas.backend.therapy.DrugSusceptibility;
 import org.apache.commons.collections4.CollectionUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,7 +39,7 @@ import de.symeda.sormas.backend.adverseeventsfollowingimmunization.entity.AefiIn
 public class HistoryTablesTest {
 
 	private static final List<String> NO_HISTORY_REQUIRED_TABLES =
-		Arrays.asList(Aefi.AEFI_VACCINATIONS_TABLE_NAME, AefiInvestigation.AEFI_INVESTIGATION_VACCINATIONS_TABLE_NAME);
+		Arrays.asList(Aefi.AEFI_VACCINATIONS_TABLE_NAME, AefiInvestigation.AEFI_INVESTIGATION_VACCINATIONS_TABLE_NAME, DrugSusceptibility.TABLE_NAME);
 
 	/**
 	 * Test that the *_history tables have the same columns as the corresponding production tables

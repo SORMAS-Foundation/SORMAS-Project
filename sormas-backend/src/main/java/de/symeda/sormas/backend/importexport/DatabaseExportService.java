@@ -34,6 +34,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import de.symeda.sormas.backend.therapy.DrugSusceptibility;
 import org.hibernate.Session;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.CopyManager;
@@ -212,6 +213,7 @@ public class DatabaseExportService {
 		EXPORT_CONFIGS.put(DatabaseTable.SYSTEM_CONFIGURATION_VALUES, SystemConfigurationValue.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.SYSTEM_CONFIGURATION_CATEGORIES, SystemConfigurationCategory.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.NOTIFIER, Notifier.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.DRUG_SUSCEPTIBILITY, DrugSusceptibility.TABLE_NAME);
 	}
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());

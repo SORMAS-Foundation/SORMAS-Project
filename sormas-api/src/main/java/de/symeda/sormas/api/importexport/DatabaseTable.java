@@ -81,6 +81,7 @@ public enum DatabaseTable {
 
 	SAMPLES(DatabaseTableType.SORMAS, "samples", dependingOnFeature(FeatureType.SAMPLES_LAB)),
 	PATHOGEN_TESTS(DatabaseTableType.SORMAS, SAMPLES, "pathogen_tests"),
+	DRUG_SUSCEPTIBILITY(DatabaseTableType.SORMAS, PATHOGEN_TESTS, "drug_susceptibilities"),
 	ADDITIONAL_TESTS(DatabaseTableType.SORMAS, SAMPLES, "additional_tests", dependingOnFeature(FeatureType.ADDITIONAL_TESTS)),
 
 	TASKS(DatabaseTableType.SORMAS, "tasks", dependingOnFeature(FeatureType.TASK_MANAGEMENT)),

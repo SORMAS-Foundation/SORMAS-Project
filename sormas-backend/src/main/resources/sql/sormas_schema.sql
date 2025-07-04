@@ -14401,6 +14401,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (576, 'Tuberculosis 
 
 -- 2025-06-16 Pertussis missed symptom, #13373
 alter table symptoms add column IF NOT EXISTS nocturnalcough varchar(255);
+alter table symptoms_history add IF NOT EXISTS nocturnalcough varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (577, 'Pertussis missed symptom, #13373');
 
