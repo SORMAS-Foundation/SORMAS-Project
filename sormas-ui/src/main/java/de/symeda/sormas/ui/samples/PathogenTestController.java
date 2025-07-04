@@ -28,6 +28,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.DiseaseHelper;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.vaadin.ui.Label;
@@ -299,6 +301,12 @@ public class PathogenTestController {
 
 		pathogenTests.forEach(p -> {
 			p.setSample(sampleRef);
+			boolean luxTB = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && Disease.TUBERCULOSIS == p.getTestedDisease();
+			boolean invasiveDisease = DiseaseHelper.checkDiseaseIsInvasiveBacterialDiseases(p.getTestedDisease());
+			//the susceptibility test is applicable only for LUX TB and all-countries invasive disease
+			if(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY  == p.getTestType() && !luxTB && !invasiveDisease) {
+				p.setDrugSusceptibility(null);
+			}
 			facade.savePathogenTest(p);
 		});
 		if (associatedContact != null) {
