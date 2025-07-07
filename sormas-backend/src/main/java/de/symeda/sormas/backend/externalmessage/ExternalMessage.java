@@ -702,7 +702,7 @@ public class ExternalMessage extends AbstractDomainObject {
 		this.diagnosticDate = diagnosticDate;
 	}
 
-	@Column(name = "activitiesascase", columnDefinition = "jsonb")
+	@Column(columnDefinition = "jsonb")
 	@Type(type = "jsonb")
 	public String getActivitiesAsCase() {
 		return activitiesAsCase;
@@ -712,7 +712,7 @@ public class ExternalMessage extends AbstractDomainObject {
 		this.activitiesAsCase = activitiesAsCase;
 	}
 
-	@Column(name = "exposures", columnDefinition = "jsonb")
+	@Column(columnDefinition = "jsonb")
 	@Type(type = "jsonb")
 	public String getExposures() {
 		return exposures;
