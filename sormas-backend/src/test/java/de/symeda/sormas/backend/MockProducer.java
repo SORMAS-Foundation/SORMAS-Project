@@ -29,11 +29,16 @@ import java.security.Principal;
 import java.util.Hashtable;
 import java.util.Properties;
 
+import javax.annotation.Priority;
 import javax.ejb.SessionContext;
 import javax.ejb.TimerService;
 import javax.enterprise.concurrent.ManagedScheduledExecutorService;
+import javax.enterprise.inject.Alternative;
+import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Specializes;
+import javax.enterprise.inject.spi.CDI;
+import javax.interceptor.Interceptor;
 import javax.jms.ConnectionFactory;
 import javax.jms.Topic;
 import javax.mail.Session;
@@ -41,6 +46,8 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.naming.spi.InitialContextFactory;
+import javax.security.enterprise.SecurityContext;
+import javax.transaction.TransactionSynchronizationRegistry;
 import javax.transaction.UserTransaction;
 
 import de.symeda.sormas.api.RequestContextHolder;
@@ -56,6 +63,7 @@ import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoverySer
 import de.symeda.sormas.backend.sormastosormas.crypto.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClient;
 import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClientProducer;
+import de.symeda.sormas.backend.user.CurrentUserContext;
 
 /**
  * Creates mocks for resources needed in bean test / external services.
@@ -68,6 +76,7 @@ public class MockProducer implements InitialContextFactory {
 
 	private static InitialContext initialContext = mock(InitialContext.class);
 	private static SessionContext sessionContext = mock(SessionContext.class, withSettings().lenient());
+	private static SecurityContext securityContext = mock(SecurityContext.class);
 	private static Principal principal = mock(Principal.class, withSettings().lenient());
 	private static Topic topic = mock(Topic.class);
 	private static ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
@@ -78,6 +87,7 @@ public class MockProducer implements InitialContextFactory {
 	private static SormasToSormasRestClient s2sRestClient = mock(SormasToSormasRestClient.class);
 	private static final EtcdCentralClient etcdCentralClient = mock(EtcdCentralClient.class);
 	private static CustomizableEnumFacade customizableEnumFacadeForConverter = mock(CustomizableEnumFacade.class);
+	private static TransactionSynchronizationRegistry transactionSynchronizationRegistry = mock(TransactionSynchronizationRegistry.class);
 
 	private static ManagedScheduledExecutorService managedScheduledExecutorService = mock(ManagedScheduledExecutorService.class);
 
@@ -117,13 +127,15 @@ public class MockProducer implements InitialContextFactory {
 		reset(
 			initialContext,
 			sessionContext,
+			securityContext,
 			principal,
 			topic,
 			connectionFactory,
 			timerService,
 			userTransaction,
 			s2sRestClient,
-			managedScheduledExecutorService);
+			managedScheduledExecutorService,
+			transactionSynchronizationRegistry);
 		wireMocks();
 		resetProperties();
 		requestContextTO.setMobileSync(false);
@@ -141,6 +153,7 @@ public class MockProducer implements InitialContextFactory {
 	public static void wireMocks() {
 
 		when(sessionContext.getCallerPrincipal()).thenReturn(getPrincipal());
+		when(securityContext.getCallerPrincipal()).thenReturn(getPrincipal());
 		RequestContextHolder.setRequestContext(requestContextTO);
 	}
 
@@ -151,6 +164,11 @@ public class MockProducer implements InitialContextFactory {
 	@Produces
 	public static SessionContext getSessionContext() {
 		return sessionContext;
+	}
+
+	@Produces
+	public static SecurityContext getSecurityContext() {
+		return securityContext;
 	}
 
 	@Produces
@@ -186,6 +204,11 @@ public class MockProducer implements InitialContextFactory {
 	@Produces
 	public static Principal getPrincipal() {
 		return principal;
+	}
+
+	@Produces
+	public static TransactionSynchronizationRegistry getTransactionSynchronizationRegistry() {
+		return transactionSynchronizationRegistry;
 	}
 
 	public static SormasToSormasRestClient getSormasToSormasClient() {
@@ -257,4 +280,25 @@ public class MockProducer implements InitialContextFactory {
 	public static void setMobileSync(boolean mobileSync) {
 		requestContextTO.setMobileSync(mobileSync);
 	}
+
+	@Specializes
+	@Alternative
+	@Priority(Interceptor.Priority.APPLICATION + 5000)
+	public static class MockCurrentUserContext extends CurrentUserContext {
+
+		public void resyncPrincipal() {
+			// kind of hacky cause we do not respect the CDI lifecycle
+			init();
+		}
+	}
+
+	public static void resyncPrincipal() {
+		final Instance<CurrentUserContext> instance = CDI.current().select(CurrentUserContext.class);
+		if (instance.isResolvable()) {
+			final MockCurrentUserContext currentUserContext = (MockCurrentUserContext) instance.get();
+			currentUserContext.resyncPrincipal();
+			return;
+		}
+	}
+
 }

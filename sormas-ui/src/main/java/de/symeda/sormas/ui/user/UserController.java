@@ -327,9 +327,8 @@ public class UserController {
 		component.addCommitListener(() -> {
 			if (!form.getFieldGroup().isModified()) {
 				UserDto changedUser = form.getValue();
+				SormasUI.get().updateUserLanguage(changedUser.getLanguage());
 				FacadeProvider.getUserFacade().saveUser(changedUser, true);
-				I18nProperties.setUserLanguage(changedUser.getLanguage());
-				FacadeProvider.getI18nFacade().setUserLanguage(changedUser.getLanguage());
 				Page.getCurrent().reload();
 				commitOrDiscardCallback.run();
 			}

@@ -28,7 +28,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
@@ -36,8 +35,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.PostPersist;
-import javax.persistence.PostUpdate;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Transient;
@@ -64,7 +61,6 @@ import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 
 @Entity(name = User.TABLE_NAME)
-@EntityListeners(User.UserListener.class)
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class User extends AbstractDomainObject {
@@ -395,14 +391,5 @@ public class User extends AbstractDomainObject {
 			caption += " (" + user.getUserEmail() + ")";
 		}
 		return caption;
-	}
-
-	static class UserListener {
-
-		@PostPersist
-		@PostUpdate
-		private void afterAnyUpdate(User user) {
-			UserCache.getInstance().remove(user.getUserName());
-		}
 	}
 }

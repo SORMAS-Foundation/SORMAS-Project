@@ -30,13 +30,10 @@ import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.Cache;
@@ -49,7 +46,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 @Entity(name = UserRole.TABLE_NAME)
-@EntityListeners(UserRole.UserRoleListener.class)
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class UserRole extends AbstractDomainObject {
@@ -235,14 +231,5 @@ public class UserRole extends AbstractDomainObject {
 	public static Set<UserRight> getUserRights(Collection<UserRole> userRoles) {
 
 		return userRoles.stream().flatMap(role -> role.getUserRights().stream()).collect(Collectors.toSet());
-	}
-
-	static class UserRoleListener {
-
-		@PrePersist
-		@PreUpdate
-		private void beforeAnyUpdate(UserRole userRole) {
-			UserCache.getInstance().flush();
-		}
 	}
 }

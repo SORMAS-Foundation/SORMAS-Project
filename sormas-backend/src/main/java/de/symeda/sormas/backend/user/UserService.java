@@ -29,6 +29,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.persistence.EntityExistsException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -106,6 +107,16 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 		// dummy password to make sure no one can login with this user
 		setNewPassword(user);
 		return user;
+	}
+
+	@Override
+	public void ensurePersisted(User ado) throws EntityExistsException {
+		if (ado.getId() != null) {
+			final User user = em.contains(ado) ? ado : em.merge(ado);
+			super.ensurePersisted(user);
+			return;
+		}
+		super.ensurePersisted(ado);
 	}
 
 	/**

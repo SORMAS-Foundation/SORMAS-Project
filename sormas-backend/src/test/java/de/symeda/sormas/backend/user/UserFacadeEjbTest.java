@@ -211,7 +211,8 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetExistentDefaultUsers() {
-		Set<User> defaultUsers = UserTestHelper.generateDefaultUsers(true, creator);
+		// We don't need to generate an admin user because it should already be created in the AbstractBeanTest setup.
+		Set<User> defaultUsers = UserTestHelper.generateDefaultUsers(false, creator);
 		Set<User> randomUsers = UserTestHelper.generateRandomUsers(3, creator);
 
 		List<User> testUsers = new ArrayList<>();
