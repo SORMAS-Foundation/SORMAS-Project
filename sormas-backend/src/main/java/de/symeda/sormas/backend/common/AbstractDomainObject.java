@@ -24,7 +24,6 @@ import java.time.Instant;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -45,7 +44,6 @@ import com.vladmihalcea.hibernate.type.json.JsonType;
 
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.uuid.HasUuid;
-import de.symeda.sormas.backend.audit.AdoAuditUpdateListener;
 import de.symeda.sormas.backend.user.User;
 
 /**
@@ -56,7 +54,6 @@ import de.symeda.sormas.backend.user.User;
 @TypeDef(name = "json", typeClass = JsonType.class)
 @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 @MappedSuperclass
-@EntityListeners(AdoAuditUpdateListener.class)
 public abstract class AbstractDomainObject implements Serializable, Cloneable, HasUuid {
 
 	private static final long serialVersionUID = 3957437214306161226L;

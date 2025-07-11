@@ -24,11 +24,15 @@ import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
+import javax.persistence.CacheRetrieveMode;
+import javax.persistence.CacheStoreMode;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.security.enterprise.SecurityContext;
+
+import org.hibernate.jpa.QueryHints;
 
 import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -163,9 +167,9 @@ public class CurrentUserContext {
         }
 
         TypedQuery<User> query = em.createQuery("SELECT u FROM users u WHERE u.userName = :userName", User.class);
-        // query.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.USE);
-        // query.setHint("javax.persistence.cache.storeMode", CacheStoreMode.USE);
-        // query.setHint(QueryHints.HINT_CACHEABLE, true);
+        query.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.USE);
+        query.setHint("javax.persistence.cache.storeMode", CacheStoreMode.USE);
+        query.setHint(QueryHints.HINT_CACHEABLE, true);
         query.setParameter("userName", principalName);
 
         try {

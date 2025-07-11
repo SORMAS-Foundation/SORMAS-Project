@@ -19,12 +19,14 @@ import javax.ejb.Stateless;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.user.CurrentUserContext;
-import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 /**
  * Stateless JPA entity listener for auditing AbstractDomainObject lifecycle events.
@@ -49,7 +51,18 @@ import de.symeda.sormas.backend.user.User;
 @Stateless
 public class AdoAuditUpdateListener {
 
+    //@formatter:off
+    private static final String JPQL_UPDATE_AUDIT_RECORD = "UPDATE %s e " 
+                                                            + "SET e." + AbstractDomainObject.CHANGE_USER + ".id = :changeUserId, " 
+                                                            + "WHERE e.id = :entityId";
+    //@formatter:on
+
+    @PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+    private EntityManager em;
+
     private CurrentUserContext currentUserContext;
+
+    private AuditTransactionSchedulerService auditService;
 
     /**
      * Sets the current user context for audit operations.
@@ -79,6 +92,33 @@ public class AdoAuditUpdateListener {
     }
 
     /**
+     * Sets the audit entity service for performing audit operations.
+     * This method is called by the CDI container to inject the audit service.
+     *
+     * @param auditService
+     *            the audit entity service to set
+     */
+    @Inject
+    public void setAuditService(AuditTransactionSchedulerService auditService) {
+        this.auditService = auditService;
+    }
+
+    /**
+     * Retrieves the audit entity service, with fallback to CDI lookup if not injected.
+     * This method provides a defensive mechanism to obtain the audit service
+     * even if dependency injection fails or is unavailable.
+     *
+     * @return the audit entity service, or null if unavailable
+     */
+    public AuditTransactionSchedulerService getAuditService() {
+        if (auditService != null) {
+            return auditService;
+        }
+        final Instance<AuditTransactionSchedulerService> instance = CDI.current().select(AuditTransactionSchedulerService.class);
+        return instance.isUnsatisfied() ? null : instance.get();
+    }
+
+    /**
      * JPA lifecycle callback that updates audit information before entity persistence.
      * 
      * This method is automatically invoked by the JPA provider when an AbstractDomainObject
@@ -103,10 +143,18 @@ public class AdoAuditUpdateListener {
         if (!(entity instanceof AbstractDomainObject)) {
             return;
         }
-        final AbstractDomainObject ado = (AbstractDomainObject) entity;
-        final User changeUser = getCurrentUserContext().getUserEntityReference();
-        if (changeUser != null) {
-            ado.setChangeUser(changeUser);
+
+        final Long changeUserId = getCurrentUserContext() != null ? getCurrentUserContext().getUserId() : null;
+
+        if (changeUserId == null) {
+            // No current user available, skip update
+            return;
         }
+
+        final AbstractDomainObject ado = (AbstractDomainObject) entity;
+
+        getAuditService().schedulePostCommitAuditRecordUpdate(ado.getClass(), ado.getId(), changeUserId);
+
     }
+
 }

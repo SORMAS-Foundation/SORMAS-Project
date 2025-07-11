@@ -65,6 +65,7 @@ import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.backend.audit.AuditRecordUpdate;
 import de.symeda.sormas.backend.user.CurrentUserService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.IterableHelper;
@@ -501,6 +502,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 	}
 
 	@Override
+	@AuditRecordUpdate
 	public void ensurePersisted(ADO ado) throws EntityExistsException {
 
 		if (ado.getId() == null) {
