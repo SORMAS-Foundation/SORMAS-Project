@@ -122,17 +122,17 @@ public class PathogenTestController {
 		boolean suppressNavigateToCase) {
 		// Pathogen tests can be created for a sample that is associated with a case, event participant or contact.
 		Disease associatedEventOrCaseOrContactDisease = null;
-		if(sampleDto.getAssociatedCase() != null){
+		if (sampleDto.getAssociatedCase() != null) {
 			CaseDataDto caseDataDto = FacadeProvider.getCaseFacade().getByUuid(sampleDto.getAssociatedCase().getUuid());
 			associatedEventOrCaseOrContactDisease = caseDataDto.getDisease();
 		}
-		if(associatedEventOrCaseOrContactDisease == null && sampleDto.getAssociatedEventParticipant() != null){
+		if (associatedEventOrCaseOrContactDisease == null && sampleDto.getAssociatedEventParticipant() != null) {
 			EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(sampleDto.getAssociatedEventParticipant().getUuid());
 			EventReferenceDto eventDto = eventParticipant.getEvent();
 			EventDto participantEvent = FacadeProvider.getEventFacade().getEventByUuid(eventDto.getUuid(), false);
 			associatedEventOrCaseOrContactDisease = participantEvent.getDisease();
 		}
-		if(associatedEventOrCaseOrContactDisease == null && sampleDto.getAssociatedContact() != null) {
+		if (associatedEventOrCaseOrContactDisease == null && sampleDto.getAssociatedContact() != null) {
 			ContactDto contact = FacadeProvider.getContactFacade().getByUuid(sampleDto.getAssociatedContact().getUuid());
 			associatedEventOrCaseOrContactDisease = contact.getDisease();
 		}
