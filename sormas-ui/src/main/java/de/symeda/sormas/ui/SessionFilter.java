@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 import javax.ejb.EJB;
+import javax.inject.Inject;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -35,8 +36,6 @@ import javax.servlet.http.HttpSession;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.ui.utils.BaseControllerProvider;
 
 @WebFilter(asyncSupported = true, urlPatterns = "/*")
@@ -44,6 +43,9 @@ public class SessionFilter implements Filter {
 
 	@EJB
 	private SessionFilterBean sessionFilterBean;
+
+	@Inject
+	private UserSession userSession;
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -64,8 +66,11 @@ public class SessionFilter implements Filter {
 
 		try {
 			sessionFilterBean.doFilter((req, resp) -> {
-				Language userLanguage =
-					Optional.of(FacadeProvider.getUserFacade()).map(UserFacade::getCurrentUser).map(UserDto::getLanguage).orElse(null);
+				Language userLanguage = userSession.getLanguage();
+				if (userLanguage == null) {
+					userLanguage = userSession.initUserLanguage();
+				}
+
 				I18nProperties.setUserLanguage(userLanguage);
 				FacadeProvider.getI18nFacade().setUserLanguage(userLanguage);
 

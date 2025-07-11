@@ -1,28 +1,31 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 package de.symeda.sormas.backend.user;
 
 import static de.symeda.sormas.backend.user.UserHelper.isRestrictedToAssignEntities;
 
 import java.util.Set;
 
-import javax.annotation.Resource;
 import javax.ejb.LocalBean;
-import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.spi.CDI;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Fetch;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.transaction.Transactional;
-
-import org.hibernate.Hibernate;
-import org.hibernate.proxy.HibernateProxy;
 
 import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.api.user.UserRight;
@@ -33,16 +36,26 @@ import de.symeda.sormas.backend.util.ModelConstants;
 @AuditIgnore
 public class CurrentUserService {
 
-	@Resource
-	private SessionContext context;
+	private CurrentUserContext currentUserContext;
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
 
-	private final UserCache userCache;
-
 	public CurrentUserService() {
-		this.userCache = UserCache.getInstance();
+	}
+
+	@Inject
+	public void setCurrentUserContext(CurrentUserContext currentUserContext) {
+		this.currentUserContext = currentUserContext;
+	}
+
+	public CurrentUserContext getCurrentUserContext() {
+		if (currentUserContext != null) {
+			return currentUserContext;
+		}
+
+		final Instance<CurrentUserContext> currentUserContextInstance = CDI.current().select(CurrentUserContext.class);
+		return currentUserContextInstance.isUnsatisfied() ? null : currentUserContextInstance.get();
 	}
 
 	/**
@@ -52,30 +65,13 @@ public class CurrentUserService {
 	 */
 	@RequestScoped
 	public User getCurrentUser() {
-		final String currentUsername = context.getCallerPrincipal().getName();
-
-		if (currentUsername == null) {
-			return null;
-		}
-
-		User cachedUser = userCache.get(currentUsername);
-		if (cachedUser != null) {
-			return cachedUser;
-		}
-
-		// todo prohibit these names
-		if (currentUsername.equals("ANONYMOUS") || currentUsername.equals("SYSTEM")) {
-			return null;
-		}
-
-		final User currentUser = fetchUser(currentUsername);
+		final User currentUser = getCurrentUserContext() != null ? getCurrentUserContext().getUserEntity() : null;
 
 		if (currentUser == null) {
 			return null;
-		} else {
-			userCache.put(currentUsername, currentUser);
-			return currentUser;
 		}
+
+		return em.contains(currentUser) ? currentUser : em.merge(currentUser);
 	}
 
 	public boolean hasUserRight(UserRight userRight) {
@@ -102,51 +98,5 @@ public class CurrentUserService {
 
 	public boolean isRestrictedToAssignedEntities() {
 		return isRestrictedToAssignEntities(getCurrentUser());
-	}
-
-	// We need a clean transaction as we do not want call potential entity listeners which would lead to recursion
-	@Transactional(Transactional.TxType.REQUIRES_NEW)
-	User fetchUser(String userName) {
-		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final ParameterExpression<String> userNameParam = cb.parameter(String.class, User.USER_NAME);
-		final CriteriaQuery<User> cq = cb.createQuery(User.class);
-
-		// avoid "Hibernate could not initialize proxy – no Session" Exception
-		// do eager loading in this case
-		final Root<User> user = cq.from(User.class);
-		user.fetch(User.ADDRESS);
-		Fetch<Object, Object> fetch = user.fetch(User.USER_ROLES);
-		fetch.fetch(UserRole.EMAIL_NOTIFICATIONS, JoinType.LEFT);
-		fetch.fetch(UserRole.SMS_NOTIFICATIONS, JoinType.LEFT);
-
-		final Predicate equal = cb.equal(cb.lower(user.get(User.USER_NAME)), userNameParam);
-		cq.select(user).distinct(true);
-		cq.where(equal);
-
-		final TypedQuery<User> q = em.createQuery(cq).setParameter(userNameParam, userName.toLowerCase());
-
-		User currentUser = q.getResultList().stream().findFirst().orElse(null);
-		if (currentUser != null) {
-			unproxy(currentUser.getRegion());
-			unproxy(currentUser.getDistrict());
-			unproxy(currentUser.getCommunity());
-			unproxy(currentUser.getHealthFacility());
-			unproxy(currentUser.getPointOfEntry());
-			unproxy(currentUser.getLaboratory());
-			unproxy(currentUser.getAssociatedOfficer());
-		}
-
-		return currentUser;
-	}
-
-	public static <T> T unproxy(T proxied) {
-		if (proxied instanceof HibernateProxy) {
-			Hibernate.initialize(proxied);
-			@SuppressWarnings("unchecked")
-			T obj = (T) ((HibernateProxy) proxied).getHibernateLazyInitializer().getImplementation();
-			return obj;
-		} else {
-			return proxied;
-		}
 	}
 }

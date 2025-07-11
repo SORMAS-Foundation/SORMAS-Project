@@ -153,45 +153,62 @@ import de.symeda.sormas.backend.user.UserRole;
 public class TestDataCreator {
 
 	private final AbstractBeanTest beanTest;
-	public final Map<DefaultUserRole, UserRoleReferenceDto> userRoleDtoMap = new HashMap<>();
-	public final Map<DefaultUserRole, UserRole> userRoleMap = new HashMap<>();
+	private final Map<DefaultUserRole, UserRoleReferenceDto> userRoleDtoMap = new HashMap<>();
+	private final Map<DefaultUserRole, UserRole> userRoleMap = new HashMap<>();
 
 	public TestDataCreator(AbstractBeanTest beanTest) {
 		this.beanTest = beanTest;
 	}
 
+	public Map<DefaultUserRole, UserRoleReferenceDto> getUserRoleDtoMap() {
+		if (userRoleDtoMap.isEmpty()) {
+			createUserRoles();
+		}
+		return Collections.unmodifiableMap(userRoleDtoMap);
+	}
+
+	public Map<DefaultUserRole, UserRole> getUserRoleMap() {
+		if (userRoleMap.isEmpty()) {
+			createUserRoles();
+		}
+		return Collections.unmodifiableMap(userRoleMap);
+	}
+
 	private void createUserRoles() {
+		final List<UserRoleDto> userRoleDtos = beanTest.getUserRoleFacade().getAll();
 		Arrays.stream(DefaultUserRole.values()).forEach(defaultUserRole -> {
-			UserRoleDto userRoleDto =
-				UserRoleDto.build(defaultUserRole.getDefaultUserRights().toArray(new UserRight[defaultUserRole.getDefaultUserRights().size()]));
-			userRoleDto.setCaption(defaultUserRole.toString());
-			userRoleDto.setEnabled(true);
-			userRoleDto.setPortHealthUser(defaultUserRole.isPortHealthUser());
-			userRoleDto.setLinkedDefaultUserRole(defaultUserRole);
-			userRoleDto.setHasAssociatedDistrictUser(defaultUserRole.hasAssociatedDistrictUser());
-			userRoleDto.setHasOptionalHealthFacility(defaultUserRole.hasOptionalHealthFacility());
-			userRoleDto.setEmailNotificationTypes(defaultUserRole.getEmailNotificationTypes());
-			userRoleDto.setSmsNotificationTypes(defaultUserRole.getSmsNotificationTypes());
-			userRoleDto.setJurisdictionLevel(defaultUserRole.getJurisdictionLevel());
-			userRoleDto = beanTest.getUserRoleFacade().saveUserRole(userRoleDto);
-			userRoleDtoMap.put(defaultUserRole, userRoleDto.toReference());
-			UserRole userRole = beanTest.getEagerUserRole(userRoleDto.getUuid());
-			userRoleMap.put(defaultUserRole, userRole);
+			userRoleDtos.stream()
+				.filter(userRoleDto -> userRoleDto.getCaption().equals(defaultUserRole.toString()))
+				.findFirst()
+				.ifPresentOrElse(userRoleDto -> {
+					userRoleDtoMap.put(defaultUserRole, userRoleDto.toReference());
+					userRoleMap.put(defaultUserRole, beanTest.getEagerUserRole(userRoleDto.getUuid()));
+				}, () -> {
+					UserRoleDto userRoleDto = UserRoleDto
+						.build(defaultUserRole.getDefaultUserRights().toArray(new UserRight[defaultUserRole.getDefaultUserRights().size()]));
+					userRoleDto.setCaption(defaultUserRole.toString());
+					userRoleDto.setEnabled(true);
+					userRoleDto.setPortHealthUser(defaultUserRole.isPortHealthUser());
+					userRoleDto.setLinkedDefaultUserRole(defaultUserRole);
+					userRoleDto.setHasAssociatedDistrictUser(defaultUserRole.hasAssociatedDistrictUser());
+					userRoleDto.setHasOptionalHealthFacility(defaultUserRole.hasOptionalHealthFacility());
+					userRoleDto.setEmailNotificationTypes(defaultUserRole.getEmailNotificationTypes());
+					userRoleDto.setSmsNotificationTypes(defaultUserRole.getSmsNotificationTypes());
+					userRoleDto.setJurisdictionLevel(defaultUserRole.getJurisdictionLevel());
+					userRoleDto = beanTest.getUserRoleFacade().saveUserRole(userRoleDto);
+					userRoleDtoMap.put(defaultUserRole, userRoleDto.toReference());
+					UserRole userRole = beanTest.getEagerUserRole(userRoleDto.getUuid());
+					userRoleMap.put(defaultUserRole, userRole);
+				});
 		});
 	}
 
 	public UserRoleReferenceDto getUserRoleReference(DefaultUserRole userRole) {
-		if (userRoleDtoMap.isEmpty()) {
-			createUserRoles();
-		}
-		return userRoleDtoMap.get(userRole);
+		return getUserRoleDtoMap().get(userRole);
 	}
 
 	public UserRole getUserRole(DefaultUserRole userRole) {
-		if (userRoleMap.isEmpty()) {
-			createUserRoles();
-		}
-		return userRoleMap.get(userRole);
+		return getUserRoleMap().get(userRole);
 	}
 
 	public UserDto createNationalUser() {
@@ -333,7 +350,7 @@ public class TestDataCreator {
 	public UserDto createPointOfEntryUser(RDP rdp) {
 		return createUser(
 			new RDCF(rdp.region, rdp.district, null, null),
-			userRoleDtoMap.get(DefaultUserRole.POE_INFORMANT),
+			getUserRoleDtoMap().get(DefaultUserRole.POE_INFORMANT),
 			user -> user.setPointOfEntry(rdp.pointOfEntry));
 	}
 
@@ -2081,17 +2098,17 @@ public class TestDataCreator {
 		return testReport;
 	}
 
-//	public DiseaseVariant createDiseaseVariant(String name, Disease disease) {
-//
-//		DiseaseVariant diseaseVariant = new DiseaseVariant();
-//		diseaseVariant.setUuid(DataHelper.createUuid());
-//		diseaseVariant.setName(name);
-//		diseaseVariant.setDisease(disease);
-//
-//		beanTest.getDiseaseVariantService().persist(diseaseVariant);
-//
-//		return diseaseVariant;
-//	}
+	//	public DiseaseVariant createDiseaseVariant(String name, Disease disease) {
+	//
+	//		DiseaseVariant diseaseVariant = new DiseaseVariant();
+	//		diseaseVariant.setUuid(DataHelper.createUuid());
+	//		diseaseVariant.setName(name);
+	//		diseaseVariant.setDisease(disease);
+	//
+	//		beanTest.getDiseaseVariantService().persist(diseaseVariant);
+	//
+	//		return diseaseVariant;
+	//	}
 
 	public ExternalShareInfo createExternalShareInfo(
 		CaseReferenceDto caze,

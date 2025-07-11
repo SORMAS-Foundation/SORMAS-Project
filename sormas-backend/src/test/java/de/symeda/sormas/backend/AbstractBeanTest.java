@@ -21,16 +21,16 @@ import static org.mockito.Mockito.when;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
+import javax.naming.Context;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
@@ -326,15 +326,7 @@ public abstract class AbstractBeanTest {
 
 		MockProducer.resetMocks();
 
-		// this is used to provide the current user to the ADO Listener taking care of updating the last change user
-		System.setProperty("java.naming.factory.initial", MockProducer.class.getCanonicalName());
-		try {
-			when(InitialContext.doLookup("java:global/sormas-ear/sormas-backend/CurrentUserService")).thenReturn(getCurrentUserService());
-		} catch (NamingException e) {
-			e.printStackTrace();
-		}
-
-		useNationalAdminLogin();
+		System.setProperty(Context.INITIAL_CONTEXT_FACTORY, MockProducer.class.getName());
 
 		when(MockProducer.getSessionContext().isCallerInRole(any(String.class))).thenAnswer(invocationOnMock -> {
 			String role = invocationOnMock.getArgument(0);
@@ -345,6 +337,16 @@ public abstract class AbstractBeanTest {
 				.anyMatch(userRole -> userRole.getUserRights().contains(userRight));
 		});
 
+		when(MockProducer.getSecurityContext().isCallerInRole(any(String.class))).thenAnswer(invocationOnMock -> {
+			String role = invocationOnMock.getArgument(0);
+			UserRight userRight = UserRight.valueOf(role);
+			return getCurrentUserService().getCurrentUser()
+				.getUserRoles()
+				.stream()
+				.anyMatch(userRole -> userRole.getUserRights().contains(userRight));
+		});
+
+		useNationalAdminLogin();
 		I18nProperties.setUserLanguage(Language.EN);
 
 		createDiseaseConfigurations();
@@ -866,8 +868,7 @@ public abstract class AbstractBeanTest {
 
 	protected UserDto loginWith(UserDto user) {
 		when(MockProducer.getPrincipal().getName()).thenReturn(user.getUserName());
-		// load into cache, to work-around CurrentUserService.fetchUser @Transactional annotation not working in tests
-		getCurrentUserService().getCurrentUser();
+		MockProducer.resyncPrincipal();
 		return user;
 	}
 
@@ -875,9 +876,30 @@ public abstract class AbstractBeanTest {
 		return loginWith(creator.createNationalUser());
 	}
 
-	protected UserDto useNationalAdminLogin() {
-		if (nationalAdmin == null) {
-			// we don't use TestDataCreator.createUser here, because we first need any user to have the user right to access backend facades
+	protected void createNationalAdminUser() {
+		// we don't use TestDataCreator.createUser here, because we first need any user to have the user right to access backend facades
+
+		// we actually need to use entity manager to avoid interceptors
+		// alternativelly we could just insert the user directly into the database
+		executeInTransaction(em -> {
+			// before we create the user, we need to create the roles
+			final Set<UserRole> userRoles = Stream.of(DefaultUserRole.values()).map(defaultUserRole -> {
+				final UserRole userRole = new UserRole();
+				userRole.setUuid(DataHelper.createUuid());
+				userRole.setUserRights(defaultUserRole.getDefaultUserRights());
+				userRole.setCaption(defaultUserRole.toString());
+				userRole.setEnabled(true);
+				userRole.setPortHealthUser(defaultUserRole.isPortHealthUser());
+				userRole.setLinkedDefaultUserRole(defaultUserRole);
+				userRole.setHasAssociatedDistrictUser(defaultUserRole.hasAssociatedDistrictUser());
+				userRole.setHasOptionalHealthFacility(defaultUserRole.hasOptionalHealthFacility());
+				userRole.setEmailNotificationTypes(defaultUserRole.getEmailNotificationTypes());
+				userRole.setSmsNotificationTypes(defaultUserRole.getSmsNotificationTypes());
+				userRole.setJurisdictionLevel(defaultUserRole.getJurisdictionLevel());
+				em.persist(userRole);
+				return userRole;
+			}).collect(Collectors.toSet());
+
 			User user = new User();
 			user.setUuid(DataHelper.createUuid());
 			user.setFirstName("ad");
@@ -887,10 +909,22 @@ public abstract class AbstractBeanTest {
 			user.setSeed(PasswordHelper.createPass(16));
 			user.setPassword(PasswordHelper.encodePassword(password, user.getSeed()));
 			user.setUserRoles(
-				new HashSet<>(Arrays.asList(creator.getUserRole(DefaultUserRole.ADMIN), creator.getUserRole(DefaultUserRole.NATIONAL_USER))));
+				userRoles.stream()
+					.filter(
+						ur -> ur.getCaption().equals(DefaultUserRole.ADMIN.toString())
+							|| ur.getCaption().equals(DefaultUserRole.NATIONAL_USER.toString()))
+					.collect(Collectors.toSet()));
 
-			getUserService().persist(user);
+			em.persist(user);
+			em.flush();
+
 			nationalAdmin = getUserFacade().getByUuid(user.getUuid());
+		});
+	}
+
+	protected UserDto useNationalAdminLogin() {
+		if (nationalAdmin == null) {
+			createNationalAdminUser();
 		}
 		return loginWith(nationalAdmin);
 	}

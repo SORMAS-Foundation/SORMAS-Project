@@ -21,8 +21,6 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.time.Instant;
 
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -34,8 +32,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
 import javax.validation.constraints.Size;
@@ -49,7 +45,7 @@ import com.vladmihalcea.hibernate.type.json.JsonType;
 
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.uuid.HasUuid;
-import de.symeda.sormas.backend.user.CurrentUserService;
+import de.symeda.sormas.backend.audit.AdoAuditUpdateListener;
 import de.symeda.sormas.backend.user.User;
 
 /**
@@ -60,7 +56,7 @@ import de.symeda.sormas.backend.user.User;
 @TypeDef(name = "json", typeClass = JsonType.class)
 @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 @MappedSuperclass
-@EntityListeners(AbstractDomainObject.AdoListener.class)
+@EntityListeners(AdoAuditUpdateListener.class)
 public abstract class AbstractDomainObject implements Serializable, Cloneable, HasUuid {
 
 	private static final long serialVersionUID = 3957437214306161226L;
@@ -74,6 +70,7 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, H
 	public static final String UUID = "uuid";
 	public static final String CREATION_DATE = "creationDate";
 	public static final String CHANGE_DATE = "changeDate";
+	public static final String CHANGE_USER = "changeUser";
 
 	@NotExposedToApi
 	private Long id;
@@ -188,25 +185,5 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, H
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() + StringUtils.SPACE + getUuid();
-	}
-
-	static class AdoListener {
-
-		private User getCurrentUser() {
-			try {
-				CurrentUserService currentUserService =
-					(CurrentUserService) new InitialContext().lookup("java:global/sormas-ear/sormas-backend/CurrentUserService");
-				return currentUserService.getCurrentUser();
-			} catch (NamingException e) {
-				throw new RuntimeException(e);
-			}
-		}
-
-		@PrePersist
-		@PreUpdate
-		private void beforeAnyUpdate(AbstractDomainObject ado) {
-			User currentUser = getCurrentUser();
-			ado.setChangeUser(currentUser);
-		}
 	}
 }
