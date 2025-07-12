@@ -24,11 +24,15 @@ import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
+import javax.persistence.CacheRetrieveMode;
+import javax.persistence.CacheStoreMode;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.security.enterprise.SecurityContext;
+
+import org.hibernate.jpa.QueryHints;
 
 import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -60,7 +64,6 @@ public class CurrentUserContext {
 
     private Long userId;
     private String username;
-    private User userEntity;
 
     private SessionContext sessionContext;
 
@@ -158,25 +161,21 @@ public class CurrentUserContext {
         if (principalName == null || isProhibitedPrincipal(principalName)) {
             userId = null;
             username = null;
-            userEntity = null;
             return;
         }
 
-        TypedQuery<User> query = em.createQuery("SELECT u FROM users u WHERE u.userName = :userName", User.class);
-        // query.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.USE);
-        // query.setHint("javax.persistence.cache.storeMode", CacheStoreMode.USE);
-        // query.setHint(QueryHints.HINT_CACHEABLE, true);
+        TypedQuery<Long> query = em.createQuery("SELECT u.id FROM users u WHERE u.userName = :userName", Long.class);
+        query.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.USE);
+        query.setHint("javax.persistence.cache.storeMode", CacheStoreMode.USE);
+        query.setHint(QueryHints.HINT_CACHEABLE, true);
         query.setParameter("userName", principalName);
 
         try {
-            final User user = query.getSingleResult();
-            userId = user.getId();
-            username = user.getUserName();
-            userEntity = user;
+            userId = query.getSingleResult();
+            username = principalName;
         } catch (NoResultException e) {
             userId = null;
             username = null;
-            userEntity = null;
         }
     }
 
@@ -200,11 +199,16 @@ public class CurrentUserContext {
 
     /**
      * Returns the full user entity of the current authenticated user.
+     * This method retrieves the user entity from the database using the user ID.
+     * It uses the EntityManager to find the user by ID, allowing for lazy loading.
      *
      * @return the user entity, or null if no user is authenticated
      */
     public User getUserEntity() {
-        return userEntity;
+        if (userId == null) {
+            return null;
+        }
+        return em.find(User.class, userId);
     }
 
     /**
