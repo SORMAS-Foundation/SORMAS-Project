@@ -98,6 +98,8 @@ public class AefiService extends AbstractCoreAdoService<Aefi, AefiJoins> {
 	@EJB
 	private FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
+	private static final String PRIMARY_VACCINE_COLUMN = "primaryVaccineColumn";
+
 	public AefiService() {
 		super(Aefi.class, DeletableEntityType.ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION);
 	}
@@ -450,7 +452,7 @@ public class AefiService extends AbstractCoreAdoService<Aefi, AefiJoins> {
 					expression = cb.lower(
 						aefiQueryContext.getJoins().getImmunizationJoins().getPersonJoins().getAddressJoins().getDistrict().get(District.NAME));
 					break;
-				case "primaryVaccineColumn":
+				case PRIMARY_VACCINE_COLUMN:
 					expression = aefiQueryContext.getJoins().getPrimarySuspectVaccination().get(Vaccination.VACCINE_NAME);
 					break;
 				case AefiIndexDto.VACCINATION_DATE:
