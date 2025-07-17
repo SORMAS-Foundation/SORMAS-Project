@@ -261,7 +261,7 @@ public class Symptoms extends AbstractDomainObject {
 	private YesNoUnknown dateOfOnsetKnown;
 	private ClinicalPresentationStatus clinicalPresentationStatus;
 	// Added in case, enrolling person is not known about the symptoms, but sure of the case.
-	private SymptomState unknown;
+	private SymptomState unknownSymptom;
 
 	// when adding new fields make sure to extend toHumanString
 
@@ -2029,11 +2029,11 @@ public class Symptoms extends AbstractDomainObject {
 		this.nocturnalCough = nocturnalCough;
 	}
 
-	public SymptomState getUnknown() {
-		return unknown;
+	public SymptomState getUnknownSymptom() {
+		return unknownSymptom;
 	}
 
-	public void setUnknown(SymptomState unknown) {
-		this.unknown = unknown;
+	public void setUnknownSymptom(SymptomState unknownSymptom) {
+		this.unknownSymptom = unknownSymptom;
 	}
 }

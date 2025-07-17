@@ -14419,8 +14419,8 @@ INSERT INTO schema_version (version_number, comment) VALUES (578, 'Update histor
 -- 2025-07-14 Implemented Doctors declaration for IPI #13344
 alter table externalmessage add column if not exists deceasedDate TIMESTAMP;
 alter table externalmessage_history add column if not exists deceasedDate TIMESTAMP;
-alter table symptoms add column if not exists unknown varchar(255);
-alter table symptoms_history add column if not exists unknown varchar(255);
+alter table symptoms add column if not exists unknownSymptom varchar(255);
+alter table symptoms_history add column if not exists unknownSymptom varchar(255);
 alter table notifier add column if not exists agentfirstname varchar(255);
 alter table notifier add column if not exists agentlastname varchar(255);
 alter table notifier_history add column if not exists agentfirstname varchar(255);
