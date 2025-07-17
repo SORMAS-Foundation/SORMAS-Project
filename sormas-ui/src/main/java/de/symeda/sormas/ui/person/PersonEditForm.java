@@ -405,7 +405,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		entryDateDF.setVisible(false);
 		// Entry date is only required for foreigners in Luxembourg with the TB+IMI+IPI diseases only.
 		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
-			boolean isEntryDateAllowedDisese = Arrays.asList(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.TUBERCULOSIS).contains(disease);
+			boolean isEntryDateAllowedDisease = Arrays.asList(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.TUBERCULOSIS).contains(disease);
 			birthCountryCB.addValueChangeListener(e -> {
 				CountryReferenceDto countryRef = (CountryReferenceDto) e.getProperty().getValue();
 				boolean isForeigner = false;
@@ -415,8 +415,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 							.stream().filter(Objects::nonNull)
 							.noneMatch(country -> StringUtils.equalsIgnoreCase(country, countryRef.getIsoCode()));
 				}
-				setVisibleClear(isEntryDateAllowedDisese && isForeigner, PersonDto.ENTRY_DATE);
-				setRequired(isEntryDateAllowedDisese && isForeigner, PersonDto.ENTRY_DATE);
+				setVisibleClear(isEntryDateAllowedDisease && isForeigner, PersonDto.ENTRY_DATE);
+				setRequired(isEntryDateAllowedDisease && isForeigner, PersonDto.ENTRY_DATE);
 			});
 		}
 		nationalHealthIdField = addField(PersonDto.NATIONAL_HEALTH_ID, SormasTextField.class);
