@@ -313,6 +313,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String ARTHRITIS = "arthritis";
 	public static final String MENINGITIS = "meningitis";
 	public static final String SEPTICAEMIA = "septicaemia";
+	public static final String UNKNOWN = "unknown";
 	public static final String OTHER_CLINICAL_PRESENTATION = "otherClinicalPresentation";
 	public static final String OTHER_CLINICAL_PRESENTATION_TEXT = "otherClinicalPresentationText";
 
@@ -2575,6 +2576,11 @@ public class SymptomsDto extends PseudonymizableDto {
 		INVASIVE_MENINGOCOCCAL_INFECTION })
 	private String otherClinicalPresentationText;
 
+	@Diseases({
+			INVASIVE_PNEUMOCOCCAL_INFECTION,
+			INVASIVE_MENINGOCOCCAL_INFECTION })
+	private SymptomState unknown;
+
 	private DiagnosisType diagnosis;
 	private InfectionSite majorSite;
 	private String otherMajorSiteDetails;
@@ -4348,5 +4354,13 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	public void setNocturnalCough(SymptomState nocturnalCough) {
 		this.nocturnalCough = nocturnalCough;
+	}
+
+	public SymptomState getUnknown() {
+		return unknown;
+	}
+
+	public void setUnknown(SymptomState unknown) {
+		this.unknown = unknown;
 	}
 }

@@ -14416,4 +14416,15 @@ alter table drugsusceptibility_history add column IF NOT EXISTS erythromycinSusc
 
 INSERT INTO schema_version (version_number, comment) VALUES (578, 'Update history tables #13516');
 
+-- 2025-07-14 Implemented Doctors declaration for IPI #13344
+alter table externalmessage add column if not exists deceasedDate TIMESTAMP;
+alter table externalmessage_history add column if not exists deceasedDate TIMESTAMP;
+alter table symptoms add column if not exists unknown varchar(255);
+alter table symptoms_history add column if not exists unknown varchar(255);
+alter table notifier add column if not exists agentfirstname varchar(255);
+alter table notifier add column if not exists agentlastname varchar(255);
+alter table notifier_history add column if not exists agentfirstname varchar(255);
+alter table notifier_history add column if not exists agentlastname varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (579, 'Implemented Doctors declaration for IPI #13344');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

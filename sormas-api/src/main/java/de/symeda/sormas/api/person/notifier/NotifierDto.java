@@ -60,6 +60,14 @@ public class NotifierDto extends PseudonymizableDto implements IsPerson {
     @PersonalData
     private String email;
 
+    @Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+    @PersonalData
+    private String agentFirstName;
+
+    @Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+    @PersonalData
+    private String agentLastName;
+
     // Getters and setters
     public String getRegistrationNumber() {
         return registrationNumber;
@@ -107,5 +115,21 @@ public class NotifierDto extends PseudonymizableDto implements IsPerson {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getAgentFirstName() {
+        return agentFirstName;
+    }
+
+    public void setAgentFirstName(String agentFirstName) {
+        this.agentFirstName = agentFirstName;
+    }
+
+    public String getAgentLastName() {
+        return agentLastName;
+    }
+
+    public void setAgentLastName(String agentLastName) {
+        this.agentLastName = agentLastName;
     }
 }

@@ -260,6 +260,8 @@ public class Symptoms extends AbstractDomainObject {
 	private String otherMinorSiteDetails;
 	private YesNoUnknown dateOfOnsetKnown;
 	private ClinicalPresentationStatus clinicalPresentationStatus;
+	// Added in case, enrolling person is not known about the symptoms, but sure of the case.
+	private SymptomState unknown;
 
 	// when adding new fields make sure to extend toHumanString
 
@@ -2025,5 +2027,13 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setNocturnalCough(SymptomState nocturnalCough) {
 		this.nocturnalCough = nocturnalCough;
+	}
+
+	public SymptomState getUnknown() {
+		return unknown;
+	}
+
+	public void setUnknown(SymptomState unknown) {
+		this.unknown = unknown;
 	}
 }
