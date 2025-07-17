@@ -403,19 +403,22 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addField(PersonDto.LIVING_STATUS, ComboBox.class);
 		DateField entryDateDF = addField(PersonDto.ENTRY_DATE, DateField.class);
 		entryDateDF.setVisible(false);
-		birthCountryCB.addValueChangeListener(e -> {
-			CountryReferenceDto countryRef = (CountryReferenceDto) e.getProperty().getValue();
-			boolean isForeigner = false;
-			if(countryRef!=null) {
-				isForeigner = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
-						&& Arrays.asList(CountryHelper.COUNTRY_CODE_LUXEMBOURG, "LUX")
-						.stream().filter(Objects::nonNull)
-						.noneMatch(country -> StringUtils.equalsIgnoreCase(country,countryRef.getIsoCode()));
-			}
-			setVisibleClear(isForeigner, PersonDto.ENTRY_DATE);
-			setRequired(isForeigner, PersonDto.ENTRY_DATE);
-		});
-
+		// Entry date is only required for foreigners in Luxembourg with the TB+IMI+IPI diseases only.
+		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+			boolean isEntryDateAllowedDisese = Arrays.asList(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.TUBERCULOSIS).contains(disease);
+			birthCountryCB.addValueChangeListener(e -> {
+				CountryReferenceDto countryRef = (CountryReferenceDto) e.getProperty().getValue();
+				boolean isForeigner = false;
+				if (countryRef != null) {
+					isForeigner = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+							&& Arrays.asList(CountryHelper.COUNTRY_CODE_LUXEMBOURG, "LUX")
+							.stream().filter(Objects::nonNull)
+							.noneMatch(country -> StringUtils.equalsIgnoreCase(country, countryRef.getIsoCode()));
+				}
+				setVisibleClear(isEntryDateAllowedDisese && isForeigner, PersonDto.ENTRY_DATE);
+				setRequired(isEntryDateAllowedDisese && isForeigner, PersonDto.ENTRY_DATE);
+			});
+		}
 		nationalHealthIdField = addField(PersonDto.NATIONAL_HEALTH_ID, SormasTextField.class);
 		nationalHealthIdField.setNullRepresentation("");
 		Label nationalHealthIdWarningLabel = new Label(I18nProperties.getString(Strings.messagePersonNationalHealthIdInvalid));
