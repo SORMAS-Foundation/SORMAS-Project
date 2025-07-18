@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,6 +56,7 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.notifier.NotifierDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -98,6 +100,63 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 		ExternalMessageProcessingFacade processingFacade) {
 		super(externalMessage, UiUtil.getUser(), mapper, processingFacade);
 		LOGGER.debug("Initialized DoctorDeclarationMessageProcessingFlow with externalMessage: {}", externalMessage);
+	}
+
+	/**
+	 * Handles the infrastructure data checks for the external message.
+	 *
+	 * @return A {@link CompletionStage} that resolves to a boolean indicating whether the infrastructure data checks were handled
+	 *         successfully.
+	 */
+	protected CompletionStage<Boolean> handleInfraDataChecks() {
+		final FacilityReferenceDto hospitalFacilityReference = getHospitalFacilityReference(getExternalMessage());
+
+		final CompletableFuture<Boolean> ret = new CompletableFuture<>();
+
+		if (hospitalFacilityReference == null) {
+			LOGGER.warn("Hospital facility reference is null for externalMessage: {}", getExternalMessage());
+
+			final String hospitalNameWithCode = StringUtils.isNotBlank(getExternalMessage().getHospitalizationFacilityName())
+				? getExternalMessage().getHospitalizationFacilityName()
+					+ (StringUtils.isNotBlank(getExternalMessage().getHospitalizationFacilityExternalId())
+						&& !getExternalMessage().getHospitalizationFacilityExternalId().equals(getExternalMessage().getHospitalizationFacilityName())
+							? "(" + getExternalMessage().getHospitalizationFacilityExternalId() + ")"
+							: "")
+				: getExternalMessage().getHospitalizationFacilityExternalId();
+
+			if (StringUtils.isBlank(hospitalNameWithCode)) {
+				LOGGER.warn("Hospital facility name and external ID are both blank for externalMessage: {}", getExternalMessage());
+
+				final String hospitalDataMissing =
+					"The external message contains a hospitalization entry without a hospital name. The processing can continue but the hospitalization will be skipped.";
+
+				CommitDiscardWrapperComponent<VerticalLayout> commitDiscardWrapperComponent =
+					new CommitDiscardWrapperComponent<>(new VerticalLayout(new Label(hospitalDataMissing)));
+				commitDiscardWrapperComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionContinue)); // Continue button
+				commitDiscardWrapperComponent.getDiscardButton().setCaption(I18nProperties.getCaption(Captions.actionDone)); // Back button
+
+				commitDiscardWrapperComponent.addCommitListener(() -> ret.complete(true));
+				commitDiscardWrapperComponent.addDiscardListener(() -> ret.complete(false));
+
+				VaadinUiUtil.showModalPopupWindow(commitDiscardWrapperComponent, I18nProperties.getCaption(Captions.info), true);
+			} else {
+				final String hospitalNotFound = "Hospital facility missing for hospital '" + hospitalNameWithCode
+					+ "' contact your system administrator to configure the hospital facility.";
+				CommitDiscardWrapperComponent<VerticalLayout> commitDiscardWrapperComponent =
+					new CommitDiscardWrapperComponent<>(new VerticalLayout(new Label(hospitalNotFound)));
+				commitDiscardWrapperComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionDone));
+				commitDiscardWrapperComponent.getDiscardButton().setVisible(false); // No discard button
+
+				//commitDiscardWrapperComponent.addCommitListener(() -> ret.complete(true));
+				commitDiscardWrapperComponent.addDiscardListener(() -> ret.complete(false));
+
+				VaadinUiUtil.showModalPopupWindow(commitDiscardWrapperComponent, I18nProperties.getCaption(Captions.info), true);
+			}
+		} else {
+			ret.complete(true);
+		}
+
+		return ret;
 	}
 
 	/**

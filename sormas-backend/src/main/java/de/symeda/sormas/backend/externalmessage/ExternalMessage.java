@@ -1,3 +1,18 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.backend.externalmessage;
 
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
@@ -150,11 +165,12 @@ public class ExternalMessage extends AbstractDomainObject {
 	private String personGuardianRelationship;
 	private String personGuardianPhone;
 	private String personGuardianEmail;
-	private String treatmentStarted;
+	private YesNoUnknown treatmentStarted;
 	private Date treatmentStartedDate;
 	private Date diagnosticDate;
 
 	private String externalMessageDetails;
+	private String caseComments;
 	//External messages related to each other should have the same reportId
 	private String reportId;
 	private String reportMessageId;
@@ -168,7 +184,18 @@ public class ExternalMessage extends AbstractDomainObject {
 	private String personAdditionalDetails;
 
 	private VaccinationStatus vaccinationStatus;
+
 	private YesNoUnknown admittedToHealthFacility;
+
+	private String hospitalizationFacilityName;
+
+	private String hospitalizationFacilityExternalId;
+
+	private String hospitalizationFacilityDepartment;
+
+	private Date hospitalizationAdmissionDate;
+
+	private Date hospitalizationDischargeDate;
 
 	@Column(length = CHARACTER_LIMIT_SMALL)
 	private String notifierFirstName;
@@ -527,6 +554,15 @@ public class ExternalMessage extends AbstractDomainObject {
 		this.externalMessageDetails = labMessageDetails;
 	}
 
+	@Column(length = CHARACTER_LIMIT_TEXT)
+	public String getCaseComments() {
+		return caseComments;
+	}
+
+	public void setCaseComments(String caseComments) {
+		this.caseComments = caseComments;
+	}
+
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	public ExternalMessageStatus getStatus() {
@@ -619,6 +655,51 @@ public class ExternalMessage extends AbstractDomainObject {
 		this.admittedToHealthFacility = admittedToHealthFacility;
 	}
 
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getHospitalizationFacilityName() {
+		return hospitalizationFacilityName;
+	}
+
+	public void setHospitalizationFacilityName(String hospitalizationFacilityName) {
+		this.hospitalizationFacilityName = hospitalizationFacilityName;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getHospitalizationFacilityExternalId() {
+		return hospitalizationFacilityExternalId;
+	}
+
+	public void setHospitalizationFacilityExternalId(String hospitalizationFacilityExternalId) {
+		this.hospitalizationFacilityExternalId = hospitalizationFacilityExternalId;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getHospitalizationFacilityDepartment() {
+		return hospitalizationFacilityDepartment;
+	}
+
+	public void setHospitalizationFacilityDepartment(String hospitalizationFacilityDepartment) {
+		this.hospitalizationFacilityDepartment = hospitalizationFacilityDepartment;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getHospitalizationAdmissionDate() {
+		return hospitalizationAdmissionDate;
+	}
+
+	public void setHospitalizationAdmissionDate(Date hospitalizationAdmissionDate) {
+		this.hospitalizationAdmissionDate = hospitalizationAdmissionDate;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getHospitalizationDischargeDate() {
+		return hospitalizationDischargeDate;
+	}
+
+	public void setHospitalizationDischargeDate(Date hospitalizationDischargeDate) {
+		this.hospitalizationDischargeDate = hospitalizationDischargeDate;
+	}
+
 	@Column(length = CHARACTER_LIMIT_SMALL)
 	public String getNotifierFirstName() {
 		return notifierFirstName;
@@ -673,12 +754,12 @@ public class ExternalMessage extends AbstractDomainObject {
 		this.notifierPhone = notifierPhone;
 	}
 
-	@Column(length = CHARACTER_LIMIT_SMALL)
-	public String getTreatmentStarted() {
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getTreatmentStarted() {
 		return treatmentStarted;
 	}
 
-	public void setTreatmentStarted(String treatmentStarted) {
+	public void setTreatmentStarted(YesNoUnknown treatmentStarted) {
 		this.treatmentStarted = treatmentStarted;
 	}
 
