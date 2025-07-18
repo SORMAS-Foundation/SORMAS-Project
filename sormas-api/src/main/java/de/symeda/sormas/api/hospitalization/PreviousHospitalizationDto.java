@@ -17,20 +17,20 @@
  *******************************************************************************/
 package de.symeda.sormas.api.hospitalization;
 
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import java.util.Date;
 
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseLogic;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -51,6 +51,7 @@ public class PreviousHospitalizationDto extends PseudonymizableDto {
 	public static final String COMMUNITY = "community";
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
+	public static final String HEALTH_FACILITY_DEPARTMENT = "healthFacilityDepartment";
 	public static final String ISOLATED = "isolated";
 	public static final String ISOLATION_DATE = "isolationDate";
 	public static final String DESCRIPTION = "description";
@@ -72,6 +73,9 @@ public class PreviousHospitalizationDto extends PseudonymizableDto {
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String healthFacilityDetails;
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String healthFacilityDepartment;
 	private YesNoUnknown isolated;
 	private Date isolationDate;
 	@SensitiveData
@@ -110,6 +114,7 @@ public class PreviousHospitalizationDto extends PseudonymizableDto {
 		previousHospitalization.setCommunity(CaseLogic.getCommunityWithFallback(caze));
 		previousHospitalization.setHealthFacility(caze.getHealthFacility());
 		previousHospitalization.setHealthFacilityDetails(caze.getHealthFacilityDetails());
+		previousHospitalization.setHealthFacilityDepartment(caze.getDepartment());
 		previousHospitalization.setIsolated(hospitalization.getIsolated());
 		previousHospitalization.setIsolationDate(hospitalization.getIsolationDate());
 		previousHospitalization.setHospitalizationReason(hospitalization.getHospitalizationReason());
@@ -208,6 +213,14 @@ public class PreviousHospitalizationDto extends PseudonymizableDto {
 
 	public void setHealthFacilityDetails(String healthFacilityDetails) {
 		this.healthFacilityDetails = healthFacilityDetails;
+	}
+
+	public String getHealthFacilityDepartment() {
+		return healthFacilityDepartment;
+	}
+
+	public void setHealthFacilityDepartment(String healthFacilityDepartment) {
+		this.healthFacilityDepartment = healthFacilityDepartment;
 	}
 
 	public HospitalizationReasonType getHospitalizationReason() {

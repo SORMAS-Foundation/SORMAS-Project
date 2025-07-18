@@ -18,7 +18,9 @@ package de.symeda.sormas.api.externalmessage.processing.doctordeclaration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,12 +50,18 @@ import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult;
 import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEventResult;
+import de.symeda.sormas.api.hospitalization.HospitalizationDto;
+import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.therapy.TherapyReferenceDto;
 import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DtoCopyHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResult;
@@ -244,6 +252,7 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 		postBuildCaseTherapy(caseDto, externalMessageDto);
 		postBuildActivitiesAsCase(caseDto, externalMessageDto);
 		postBuildExposure(caseDto, externalMessageDto);
+		postBuildHospitalization(caseDto, externalMessageDto);
 
 		caseDto.setInvestigationStatus(InvestigationStatus.PENDING);
 		caseDto.setOutcome(CaseOutcome.NO_OUTCOME);
@@ -394,6 +403,80 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 	}
 
 	/**
+	 * Sets the hospitalization information for the case from the external message, if present.
+	 *
+	 * @param caseDto
+	 *            The case data transfer object to update.
+	 * @param externalMessageDto
+	 *            The external message containing hospitalization data.
+	 */
+	protected void postBuildHospitalization(CaseDataDto caseDto, ExternalMessageDto externalMessageDto) {
+
+		final FacilityReferenceDto hospitalFacilityReference = getHospitalFacilityReference(externalMessageDto);
+
+		// If we do not have a hospital facility reference, we quit early
+		if (hospitalFacilityReference == null) {
+			logger.warn(
+				"[POST BUILD HOSPITALIZATION] No hospital facility found for case with UUID: {}. Hospitalization details will not be set.",
+				caseDto.getUuid());
+			return;
+		}
+
+		HospitalizationDto hospitalizationDto = caseDto.getHospitalization();
+		if (hospitalizationDto == null) {
+			hospitalizationDto = HospitalizationDto.build();
+			caseDto.setHospitalization(hospitalizationDto);
+			logger.debug("[POST BUILD HOSPITALIZATION] Hospitalization initialized for case with UUID: {}", caseDto.getUuid());
+		}
+
+		final FacilityDto hospitalFacility = getExternalMessageProcessingFacade().getFacilityByUuid(hospitalFacilityReference.getUuid());
+
+		// if for whatever reason the hospital facility is not found, we quit early
+		if (hospitalFacility == null) {
+			logger.warn(
+				"[POST BUILD HOSPITALIZATION] Hospital facility with UUID: {} not found for case with UUID: {}. Hospitalization details will not be set.",
+				hospitalFacilityReference.getUuid(),
+				caseDto.getUuid());
+			return;
+		}
+
+		// In case the patient is admitted to a health facility, we need to set the case hospitalization details and quit early
+		if (YesNoUnknown.YES.equals(externalMessageDto.getAdmittedToHealthFacility())) {
+			hospitalizationDto.setAdmissionDate(externalMessageDto.getHospitalizationAdmissionDate());
+			hospitalizationDto.setDischargeDate(externalMessageDto.getHospitalizationDischargeDate());
+			hospitalizationDto.setAdmittedToHealthFacility(externalMessageDto.getAdmittedToHealthFacility());
+
+			caseDto.setResponsibleRegion(hospitalFacility.getRegion());
+			caseDto.setResponsibleDistrict(hospitalFacility.getDistrict());
+			caseDto.setResponsibleCommunity(hospitalFacility.getCommunity());
+			caseDto.setHealthFacility(hospitalFacilityReference);
+			caseDto.setDepartment(externalMessageDto.getHospitalizationFacilityDepartment());
+			caseDto.setFacilityType(FacilityType.HOSPITAL);
+			return;
+		}
+
+		// the patient is not admitted to a health facility, so we create a previous hospitalization entry
+		final PreviousHospitalizationDto previousHospitalization = new PreviousHospitalizationDto();
+		previousHospitalization.setUuid(DataHelper.createUuid());
+
+		previousHospitalization.setAdmittedToHealthFacility(externalMessageDto.getAdmittedToHealthFacility());
+		previousHospitalization.setAdmissionDate(externalMessageDto.getHospitalizationAdmissionDate());
+		previousHospitalization.setDischargeDate(externalMessageDto.getHospitalizationDischargeDate());
+
+		previousHospitalization.setRegion(hospitalFacility.getRegion());
+		previousHospitalization.setDistrict(hospitalFacility.getDistrict());
+		previousHospitalization.setCommunity(hospitalFacility.getCommunity());
+		previousHospitalization.setHealthFacility(hospitalFacilityReference);
+		previousHospitalization.setHealthFacilityDepartment(externalMessageDto.getHospitalizationFacilityDepartment());
+
+		if (hospitalizationDto.getPreviousHospitalizations() == null) {
+			hospitalizationDto.setPreviousHospitalizations(List.of(previousHospitalization));
+			return;
+		}
+		hospitalizationDto.getPreviousHospitalizations().add(previousHospitalization);
+	}
+
+	/**
 	 * Custom logic to execute after building a person.
 	 *
 	 * @param personDto
@@ -415,6 +498,47 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 				externalMessageDto.getPersonGuardianFirstName(),
 				externalMessageDto.getPersonGuardianLastName());
 		}
+	}
+
+	/**
+	 * Retrieves the hospital facility reference based on the external message data.
+	 * It first tries to find the facility by external ID and then by name containing external ID.
+	 *
+	 * @param externalMessageDto
+	 *            The external message containing hospitalization facility information.
+	 * @return The facility reference DTO for the hospital, or null if not found.
+	 */
+	protected FacilityReferenceDto getHospitalFacilityReference(ExternalMessageDto externalMessageDto) {
+		final String hospitalName =
+			StringUtils.isNotBlank(externalMessageDto.getHospitalizationFacilityName()) ? externalMessageDto.getHospitalizationFacilityName() : "";
+
+		final String hospitalExternalId = StringUtils.isNotBlank(externalMessageDto.getHospitalizationFacilityExternalId())
+			? externalMessageDto.getHospitalizationFacilityExternalId()
+			: "";
+
+		FacilityReferenceDto hospitalFacilityReference = StringUtils.isNotBlank(hospitalExternalId)
+			? getExternalMessageProcessingFacade().getHospitalFacilityReferenceByExternalId(hospitalExternalId)
+			: null;
+
+		// Search for a hospital facility containing the external ID in name if not found by external ID
+		if (hospitalFacilityReference == null && StringUtils.isNotBlank(hospitalExternalId)) {
+			final Pattern hospitalIdInNamePattern = Pattern.compile(
+				"^(\\b" + Pattern.quote(hospitalExternalId) + "\\b)?.*?(\\b" + Pattern.quote(hospitalExternalId) + "\\b).*?$",
+				Pattern.CASE_INSENSITIVE);
+			hospitalFacilityReference = getExternalMessageProcessingFacade().getHospitalFacilityReferenceNameMatching(hospitalIdInNamePattern)
+				.stream()
+				.findFirst()
+				.orElse(null);
+		}
+
+		// Search for a hospital facility containing the given name if not found by external ID
+		if (hospitalFacilityReference == null && StringUtils.isNotBlank(hospitalName)) {
+			final Pattern hospitalNamePattern = Pattern.compile(Pattern.quote(hospitalName), Pattern.CASE_INSENSITIVE);
+			hospitalFacilityReference =
+				getExternalMessageProcessingFacade().getHospitalFacilityReferenceNameMatching(hospitalNamePattern).stream().findFirst().orElse(null);
+		}
+
+		return hospitalFacilityReference;
 	}
 
 }

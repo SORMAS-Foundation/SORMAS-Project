@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -170,7 +170,7 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private String personGuardianPhone;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String personGuardianEmail;
-	private String treatmentStarted;
+	private YesNoUnknown treatmentStarted;
 	private Date treatmentStartedDate;
 	private Date diagnosticDate;
 
@@ -181,6 +181,8 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String externalMessageDetails;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String caseComments;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String reportId;
 
@@ -203,6 +205,19 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private VaccinationStatus vaccinationStatus;
 
 	private YesNoUnknown admittedToHealthFacility;
+
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String hospitalizationFacilityName;
+
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String hospitalizationFacilityExternalId;
+
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String hospitalizationFacilityDepartment;
+
+	private Date hospitalizationAdmissionDate;
+
+	private Date hospitalizationDischargeDate;
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String notifierFirstName;
@@ -513,6 +528,14 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 		this.externalMessageDetails = externalMessageDetails;
 	}
 
+	public String getCaseComments() {
+		return caseComments;
+	}
+
+	public void setCaseComments(String caseComments) {
+		this.caseComments = caseComments;
+	}
+
 	public ExternalMessageStatus getStatus() {
 		return status;
 	}
@@ -569,6 +592,46 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 		this.admittedToHealthFacility = admittedToHealthFacility;
 	}
 
+	public String getHospitalizationFacilityName() {
+		return hospitalizationFacilityName;
+	}
+
+	public void setHospitalizationFacilityName(String hospitalizationFacilityName) {
+		this.hospitalizationFacilityName = hospitalizationFacilityName;
+	}
+
+	public String getHospitalizationFacilityExternalId() {
+		return hospitalizationFacilityExternalId;
+	}
+
+	public void setHospitalizationFacilityExternalId(String hospitalizationFacilityExternalId) {
+		this.hospitalizationFacilityExternalId = hospitalizationFacilityExternalId;
+	}
+
+	public String getHospitalizationFacilityDepartment() {
+		return hospitalizationFacilityDepartment;
+	}
+
+	public void setHospitalizationFacilityDepartment(String hospitalizationFacilityDepartment) {
+		this.hospitalizationFacilityDepartment = hospitalizationFacilityDepartment;
+	}
+
+	public Date getHospitalizationAdmissionDate() {
+		return hospitalizationAdmissionDate;
+	}
+
+	public void setHospitalizationAdmissionDate(Date hospitalizationAdmissionDate) {
+		this.hospitalizationAdmissionDate = hospitalizationAdmissionDate;
+	}
+
+	public Date getHospitalizationDischargeDate() {
+		return hospitalizationDischargeDate;
+	}
+
+	public void setHospitalizationDischargeDate(Date hospitalizationDischargeDate) {
+		this.hospitalizationDischargeDate = hospitalizationDischargeDate;
+	}
+
 	public String getNotifierFirstName() {
 		return notifierFirstName;
 	}
@@ -617,11 +680,11 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 		this.notifierPhone = notifierPhone;
 	}
 
-	public String getTreatmentStarted() {
+	public YesNoUnknown getTreatmentStarted() {
 		return treatmentStarted;
 	}
 
-	public void setTreatmentStarted(String treatmentStarted) {
+	public void setTreatmentStarted(YesNoUnknown treatmentStarted) {
 		this.treatmentStarted = treatmentStarted;
 	}
 

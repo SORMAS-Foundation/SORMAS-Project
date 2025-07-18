@@ -204,6 +204,7 @@ public interface Captions {
 	String Aefi_deletionReason = "Aefi.deletionReason";
 	String Aefi_externalId = "Aefi.externalId";
 	String Aefi_healthFacility = "Aefi.healthFacility";
+	String Aefi_healthFacilityDepartment = "Aefi.healthFacilityDepartment";
 	String Aefi_healthFacilityDetails = "Aefi.healthFacilityDetails";
 	String Aefi_investigationNeeded = "Aefi.investigationNeeded";
 	String Aefi_investigationPlannedDate = "Aefi.investigationPlannedDate";
@@ -706,6 +707,7 @@ public interface Captions {
 	String CaseData_followUpUntil = "CaseData.followUpUntil";
 	String CaseData_healthConditions = "CaseData.healthConditions";
 	String CaseData_healthFacility = "CaseData.healthFacility";
+	String CaseData_healthFacilityDepartment = "CaseData.healthFacilityDepartment";
 	String CaseData_healthFacilityDetails = "CaseData.healthFacilityDetails";
 	String CaseData_healthFacilityName = "CaseData.healthFacilityName";
 	String CaseData_hospitalization = "CaseData.hospitalization";
@@ -930,6 +932,7 @@ public interface Captions {
 	String CasePreviousHospitalization_district = "CasePreviousHospitalization.district";
 	String CasePreviousHospitalization_editColumn = "CasePreviousHospitalization.editColumn";
 	String CasePreviousHospitalization_healthFacility = "CasePreviousHospitalization.healthFacility";
+	String CasePreviousHospitalization_healthFacilityDepartment = "CasePreviousHospitalization.healthFacilityDepartment";
 	String CasePreviousHospitalization_healthFacilityDetails = "CasePreviousHospitalization.healthFacilityDetails";
 	String CasePreviousHospitalization_hospitalizationReason = "CasePreviousHospitalization.hospitalizationReason";
 	String CasePreviousHospitalization_intensiveCareUnit = "CasePreviousHospitalization.intensiveCareUnit";
@@ -1990,6 +1993,7 @@ public interface Captions {
 	String Immunization_externalId = "Immunization.externalId";
 	String Immunization_firstVaccinationDate = "Immunization.firstVaccinationDate";
 	String Immunization_healthFacility = "Immunization.healthFacility";
+	String Immunization_healthFacilityDepartment = "Immunization.healthFacilityDepartment";
 	String Immunization_healthFacilityDetails = "Immunization.healthFacilityDetails";
 	String Immunization_immunizationManagementStatus = "Immunization.immunizationManagementStatus";
 	String Immunization_immunizationPeriod = "Immunization.immunizationPeriod";
