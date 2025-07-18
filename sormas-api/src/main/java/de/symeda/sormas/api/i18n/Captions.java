@@ -2985,7 +2985,7 @@ public interface Captions {
 	String Symptoms_tremor = "Symptoms.tremor";
 	String Symptoms_unexplainedBleeding = "Symptoms.unexplainedBleeding";
 	String Symptoms_unilateralCataracts = "Symptoms.unilateralCataracts";
-	String Symptoms_unknown = "Symptoms.unknown";
+	String Symptoms_unknownSymptom = "Symptoms.unknownSymptom";
 	String Symptoms_uproariousness = "Symptoms.uproariousness";
 	String Symptoms_urinaryRetention = "Symptoms.urinaryRetention";
 	String Symptoms_vomiting = "Symptoms.vomiting";
