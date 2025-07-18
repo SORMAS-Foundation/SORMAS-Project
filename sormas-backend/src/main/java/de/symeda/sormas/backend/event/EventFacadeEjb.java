@@ -764,13 +764,15 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 				case EventIndexDto.EVENT_INVESTIGATION_STATUS:
 				case EventIndexDto.EVENT_MANAGEMENT_STATUS:
 				case EventIndexDto.DISEASE:
-				case EventIndexDto.DISEASE_VARIANT:
 				case EventIndexDto.START_DATE:
 				case EventIndexDto.EVOLUTION_DATE:
 				case EventIndexDto.SRC_TYPE:
 				case EventIndexDto.REPORT_DATE_TIME:
 				case EventIndexDto.EVENT_IDENTIFICATION_SOURCE:
 					orderList = orderBuilder.build(eventQueryContext.getRoot().get(sortProperty.propertyName));
+					break;
+				case EventIndexDto.DISEASE_VARIANT:
+					orderList = orderBuilder.build(eventQueryContext.getRoot().get(Event.DISEASE_VARIANT_VALUE));
 					break;
 				case EventIndexDto.EXTERNAL_ID:
 				case EventIndexDto.EXTERNAL_TOKEN:
