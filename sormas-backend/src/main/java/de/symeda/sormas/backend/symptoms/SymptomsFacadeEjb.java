@@ -230,7 +230,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setOtherMinorSiteDetails(source.getOtherMinorSiteDetails());
 		target.setDateOfOnsetKnown(source.getDateOfOnsetKnown());
 		target.setClinicalPresentationStatus(source.getClinicalPresentationStatus());
-
+		target.setUnknownSymptom(source.getUnknownSymptom());
 		target.setNocturnalCough(source.getNocturnalCough());
 		return target;
 	}
@@ -444,6 +444,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setOtherMinorSiteDetails(source.getOtherMinorSiteDetails());
 		target.setDateOfOnsetKnown(source.getDateOfOnsetKnown());
 		target.setClinicalPresentationStatus(source.getClinicalPresentationStatus());
+		target.setUnknownSymptom(source.getUnknownSymptom());
 
 		target.setNocturnalCough(source.getNocturnalCough());
 		return target;

@@ -2178,6 +2178,7 @@ public interface Captions {
 	String notAvailableShort = "notAvailableShort";
 	String Notification_dateOfNotification = "Notification.dateOfNotification";
 	String Notification_noNotification = "Notification.noNotification";
+	String Notification_reportingAgent = "Notification.reportingAgent";
 	String notificationType = "notificationType";
 	String notificationType_caption = "notificationType.caption";
 	String notificationType_description = "notificationType.description";
@@ -2989,6 +2990,7 @@ public interface Captions {
 	String Symptoms_tremor = "Symptoms.tremor";
 	String Symptoms_unexplainedBleeding = "Symptoms.unexplainedBleeding";
 	String Symptoms_unilateralCataracts = "Symptoms.unilateralCataracts";
+	String Symptoms_unknownSymptom = "Symptoms.unknownSymptom";
 	String Symptoms_uproariousness = "Symptoms.uproariousness";
 	String Symptoms_urinaryRetention = "Symptoms.urinaryRetention";
 	String Symptoms_vomiting = "Symptoms.vomiting";

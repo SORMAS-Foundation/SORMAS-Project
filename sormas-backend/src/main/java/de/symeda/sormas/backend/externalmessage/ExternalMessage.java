@@ -168,6 +168,7 @@ public class ExternalMessage extends AbstractDomainObject {
 	private YesNoUnknown treatmentStarted;
 	private Date treatmentStartedDate;
 	private Date diagnosticDate;
+	private Date deceasedDate;
 
 	private String externalMessageDetails;
 	private String caseComments;
@@ -801,5 +802,13 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public void setExposures(String exposures) {
 		this.exposures = exposures;
+	}
+
+	public Date getDeceasedDate() {
+		return  deceasedDate;
+	}
+
+	public void setDeceasedDate(Date deceasedDate) {
+		this.deceasedDate = deceasedDate;
 	}
 }
