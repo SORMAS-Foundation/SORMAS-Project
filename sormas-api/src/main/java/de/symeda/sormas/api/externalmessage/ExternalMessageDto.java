@@ -173,6 +173,7 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private YesNoUnknown treatmentStarted;
 	private Date treatmentStartedDate;
 	private Date diagnosticDate;
+	private Date deceasedDate;
 
 	@AuditIncludeProperty
 	private List<SampleReportDto> sampleReports;
@@ -806,4 +807,11 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 		this.exposures = exposures;
 	}
 
+	public Date getDeceasedDate() {
+		return deceasedDate;
+	}
+
+	public void setDeceasedDate(Date deceasedDate) {
+		this.deceasedDate = deceasedDate;
+	}
 }

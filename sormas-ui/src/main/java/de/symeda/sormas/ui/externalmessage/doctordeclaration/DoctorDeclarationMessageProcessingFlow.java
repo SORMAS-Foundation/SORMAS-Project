@@ -278,7 +278,11 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 					notifierDto.setAddress(externalMessage.getNotifierAddress());
 					notifierDto.setPhone(externalMessage.getNotifierPhone());
 					notifierDto.setEmail(externalMessage.getNotifierEmail());
-
+					if( externalMessage.getReporterName() != null && externalMessage.getReporterName().contains("-")) {
+						// Split the reporter name into first and last names if it contains a hyphen
+						notifierDto.setAgentFirstName(externalMessage.getReporterName().split("-")[0]);
+						notifierDto.setAgentLastName(externalMessage.getReporterName().split("-")[1]);
+					}
 					// Update the case with notifier details and complete the callback
 					callback.done(getExternalMessageProcessingFacade().updateAndSetCaseNotifier(result.getUuid(), notifierDto));
 					return;

@@ -70,6 +70,7 @@ public final class ExternalMessageMapper {
 					person.getPresentCondition(),
 					externalMessage.getPersonPresentCondition(),
 					PersonDto.PRESENT_CONDITION),
+				Mapping.of(person::setDeathDate, person.getDeathDate(), externalMessage.getDeceasedDate(), PersonDto.DEATH_DATE),
 				Mapping.of(person::setPhone, person.getPhone(), externalMessage.getPersonPhone(), PersonDto.PERSON_CONTACT_DETAILS),
 				Mapping.of(
 					person::setPhoneNumberType,

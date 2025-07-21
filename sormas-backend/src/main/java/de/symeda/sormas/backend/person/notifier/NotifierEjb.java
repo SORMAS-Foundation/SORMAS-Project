@@ -259,6 +259,8 @@ public class NotifierEjb extends AbstractBaseEjb<Notifier, NotifierDto, Notifier
         existingNotifier.setAddress(notifierDto.getAddress());
         existingNotifier.setPhone(notifierDto.getPhone());
         existingNotifier.setEmail(notifierDto.getEmail());
+        existingNotifier.setAgentLastName(notifierDto.getAgentLastName());
+        existingNotifier.setAgentFirstName(notifierDto.getAgentFirstName());
         return save(existingNotifier);
     }
 
@@ -267,7 +269,9 @@ public class NotifierEjb extends AbstractBaseEjb<Notifier, NotifierDto, Notifier
             && (notifierDto.getLastName() == null || notifierDto.getLastName().equals(existingNotifier.getLastName()))
             && (notifierDto.getAddress() == null || notifierDto.getAddress().equals(existingNotifier.getAddress()))
             && (notifierDto.getPhone() == null || notifierDto.getPhone().equals(existingNotifier.getPhone()))
-            && (notifierDto.getEmail() == null || notifierDto.getEmail().equals(existingNotifier.getEmail()));
+            && (notifierDto.getEmail() == null || notifierDto.getEmail().equals(existingNotifier.getEmail()))
+            && (notifierDto.getAgentFirstName() == null || notifierDto.getAgentFirstName().equals(existingNotifier.getAgentFirstName()))
+            && (notifierDto.getAgentLastName() == null || notifierDto.getAgentLastName().equals(existingNotifier.getAgentLastName()));
     }
 
     /**
@@ -310,6 +314,8 @@ public class NotifierEjb extends AbstractBaseEjb<Notifier, NotifierDto, Notifier
         target.setAddress(source.getAddress());
         target.setPhone(source.getPhone());
         target.setEmail(source.getEmail());
+        target.setAgentFirstName(source.getAgentFirstName());
+        target.setAgentLastName(source.getAgentLastName());
         return target;
     }
 
@@ -334,6 +340,8 @@ public class NotifierEjb extends AbstractBaseEjb<Notifier, NotifierDto, Notifier
             target.setAddress(source.getAddress());
             target.setPhone(source.getPhone());
             target.setEmail(source.getEmail());
+            target.setAgentFirstName(source.getAgentFirstName());
+            target.setAgentLastName(source.getAgentLastName());
         });
     }
 
