@@ -474,8 +474,8 @@ public class SampleDashboardService {
 			filter = CriteriaBuilderHelper.and(cb, filter, dateFilter);
 		}
 
-		if (criteria.getSampleMaterial() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(sampleRoot.get(EnvironmentSample.SAMPLE_MATERIAL), criteria.getSampleMaterial()));
+		if (criteria.getEnvironmentSampleMaterial() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(sampleRoot.get(EnvironmentSample.SAMPLE_MATERIAL), criteria.getEnvironmentSampleMaterial()));
 		}
 
 		return CriteriaBuilderHelper.and(
