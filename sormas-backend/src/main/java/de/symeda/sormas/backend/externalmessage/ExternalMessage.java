@@ -153,6 +153,7 @@ public class ExternalMessage extends AbstractDomainObject {
 	private String treatmentStarted;
 	private Date treatmentStartedDate;
 	private Date diagnosticDate;
+	private Date deceasedDate;
 
 	private String externalMessageDetails;
 	//External messages related to each other should have the same reportId
@@ -720,5 +721,13 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public void setExposures(String exposures) {
 		this.exposures = exposures;
+	}
+
+	public Date getDeceasedDate() {
+		return  deceasedDate;
+	}
+
+	public void setDeceasedDate(Date deceasedDate) {
+		this.deceasedDate = deceasedDate;
 	}
 }

@@ -168,7 +168,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 					fluidRow(
 							fluidColumn(6, 0,
 									locsCss(VSPACE_3,
-											ASYMPTOMATIC, HEMORRHAGIC_RASH, ARTHRITIS, MENINGITIS, MENINGEAL_SIGNS, SEPTICAEMIA)),
+											ASYMPTOMATIC, HEMORRHAGIC_RASH, ARTHRITIS, MENINGITIS, MENINGEAL_SIGNS, SEPTICAEMIA, UNKNOWN_SYMPTOM)),
 							fluidColumn(6, 0,
 									locsCss(VSPACE_3, SHOCK,PNEUMONIA_CLINICAL_OR_RADIOLOGIC,OTHER_CLINICAL_PRESENTATION, OTHER_CLINICAL_PRESENTATION_TEXT))
 					);
@@ -522,6 +522,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			ARTHRITIS,
 			MENINGITIS,
 			SEPTICAEMIA,
+			UNKNOWN_SYMPTOM,
 			OTHER_CLINICAL_PRESENTATION,
 			OTHER_CLINICAL_PRESENTATION_TEXT };
 		addFields(clinicalPresentationFieldIds);
@@ -729,6 +730,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			ARTHRITIS,
 			MENINGITIS,
 			SEPTICAEMIA,
+			UNKNOWN_SYMPTOM,
 			OTHER_CLINICAL_PRESENTATION);
 
 		// Set visibilities

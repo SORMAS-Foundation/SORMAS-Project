@@ -18,6 +18,7 @@ package de.symeda.sormas.ui.caze.notifier;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Locale;
 
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.ui.Alignment;
@@ -164,6 +165,18 @@ public class CaseNotifierSideViewContent extends VerticalLayout {
         RadioButtonGroup<TreatmentOption> treatmentGroup = buildTreatmentOptions();
         addComponent(treatmentGroup);
 
+        if(notifier.getAgentFirstName() !=null || notifier.getAgentLastName() != null) {
+            // Spacer before Reporting Agent label
+            Label spacerAgent = new Label();
+            spacerAgent.setHeight("0.1rem");
+            addComponent(spacerAgent);
+            Label reportingAgent = new Label(I18nProperties.getCaption(Captions.Notification_reportingAgent));
+            CssStyles.style(reportingAgent, CssStyles.LABEL_BOLD,CssStyles.LABEL_BOTTOM_LINE);
+            addComponent(reportingAgent);
+            Label agentNameLabel = new Label(notifier.getAgentFirstName() + " " + notifier.getAgentLastName().toUpperCase(Locale.ROOT));
+            CssStyles.style(agentNameLabel, CssStyles.LABEL_RELEVANT);
+            addComponent(agentNameLabel);
+        }
     }
 
     /**
