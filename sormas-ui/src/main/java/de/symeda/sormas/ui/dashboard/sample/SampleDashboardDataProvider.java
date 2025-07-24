@@ -20,6 +20,7 @@ import java.util.Map;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
 import de.symeda.sormas.api.dashboard.sample.SampleShipmentStatus;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleMaterial;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDashboardFilterDateType;
 import de.symeda.sormas.api.sample.SampleMaterial;
@@ -32,6 +33,8 @@ public class SampleDashboardDataProvider extends AbstractDashboardDataProvider<S
 	private SampleDashboardFilterDateType dateType = SampleDashboardFilterDateType.MOST_RELEVANT;
 
 	private SampleMaterial sampleMaterial;
+
+	private EnvironmentSampleMaterial environmentSampleMaterial;
 
 	private Boolean withNoDisease;
 
@@ -58,7 +61,7 @@ public class SampleDashboardDataProvider extends AbstractDashboardDataProvider<S
 
 	@Override
 	protected SampleDashboardCriteria buildDashboardCriteria() {
-		return super.buildDashboardCriteria().sampleDateType(dateType).sampleMaterial(sampleMaterial).withNoDisease(withNoDisease);
+		return super.buildDashboardCriteria().sampleDateType(dateType).sampleMaterial(sampleMaterial).environmentSampleMaterial(environmentSampleMaterial).withNoDisease(withNoDisease);
 	}
 
 	public SampleDashboardFilterDateType getDateType() {
@@ -83,6 +86,14 @@ public class SampleDashboardDataProvider extends AbstractDashboardDataProvider<S
 
 	public void setWithNoDisease(Boolean withNoDisease) {
 		this.withNoDisease = withNoDisease;
+	}
+
+	public EnvironmentSampleMaterial getEnvironmentSampleMaterial() {
+		return environmentSampleMaterial;
+	}
+
+	public void setEnvironmentSampleMaterial(EnvironmentSampleMaterial environmentSampleMaterial) {
+		this.environmentSampleMaterial = environmentSampleMaterial;
 	}
 
 	public Map<PathogenTestResultType, Long> getSampleCountsByResultType() {

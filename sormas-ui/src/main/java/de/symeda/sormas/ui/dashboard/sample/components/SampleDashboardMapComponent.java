@@ -78,15 +78,52 @@ public class SampleDashboardMapComponent extends BaseDashboardMapComponent<Sampl
 				: 0);
 	}
 
+	/**
+	 * Checks if the sample criteria is null, meaning that no human sample material or environment sample material is selected.
+	 * @param criteria
+	 * @return boolean
+	 */
+	private boolean isSampleCriteriaNull(SampleDashboardCriteria criteria) {
+		return criteria.getSampleMaterial() == null && criteria.getEnvironmentSampleMaterial() == null;
+	}
+
+	/**
+	 * Checks if the sample criteria is only for environment samples, meaning that no human sample material is selected.
+	 * @param criteria
+	 * @return boolean
+	 */
+	private boolean isOnlyEnvironmentSampleCriteria(SampleDashboardCriteria criteria) {
+		return criteria.getEnvironmentSampleMaterial() != null && criteria.getSampleMaterial() == null;
+	}
+
+	/**
+	 * Checks if the sample criteria is only for Human samples, meaning that no environment sample material is selected.
+	 * @param criteria
+	 * @return
+	 */
+	private boolean isOnlyHumanSampleCriteria(SampleDashboardCriteria criteria) {
+		return criteria.getSampleMaterial() != null && criteria.getEnvironmentSampleMaterial() == null;
+	}
+
 	@Override
 	protected void loadMapData(Date fromDate, Date toDate) {
 		String markerGroup = "samples";
 		map.removeGroup(markerGroup);
 
 		SampleDashboardCriteria criteria = dashboardDataProvider.buildDashboardCriteriaWithDates();
-		List<MapSampleDto> humanSamples = FacadeProvider.getSampleDashboardFacade().getSamplesForMap(criteria, displayedHumanSamples);
-		List<MapSampleDto> environmentSamples =
-			showEnvironmentalSamples ? FacadeProvider.getSampleDashboardFacade().getEnvironmentalSamplesForMap(criteria) : Collections.emptyList();
+		List<MapSampleDto> humanSamples = List.of();
+		List<MapSampleDto> environmentSamples = List.of();
+		if (isSampleCriteriaNull(criteria)) {
+			// If no sample material is selected, we want to show all samples
+			humanSamples = FacadeProvider.getSampleDashboardFacade().getSamplesForMap(criteria, displayedHumanSamples);
+			environmentSamples =
+					showEnvironmentalSamples ? FacadeProvider.getSampleDashboardFacade().getEnvironmentalSamplesForMap(criteria) : Collections.emptyList();
+		} else if (isOnlyEnvironmentSampleCriteria(criteria)) {
+			environmentSamples =
+					showEnvironmentalSamples ? FacadeProvider.getSampleDashboardFacade().getEnvironmentalSamplesForMap(criteria) : Collections.emptyList();
+		} else if (isOnlyHumanSampleCriteria(criteria)) {
+			humanSamples = FacadeProvider.getSampleDashboardFacade().getSamplesForMap(criteria, displayedHumanSamples);
+		}
 
 		List<LeafletMarker> markers = new ArrayList<>(environmentSamples.size() + environmentSamples.size());
 

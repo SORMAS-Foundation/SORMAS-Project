@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.api.dashboard;
 
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleMaterial;
 import de.symeda.sormas.api.sample.SampleDashboardFilterDateType;
 import de.symeda.sormas.api.sample.SampleMaterial;
 
@@ -22,6 +23,7 @@ public class SampleDashboardCriteria extends BaseDashboardCriteria<SampleDashboa
 
 	private SampleDashboardFilterDateType sampleDateType;
 	private SampleMaterial sampleMaterial;
+	private EnvironmentSampleMaterial environmentSampleMaterial;
 
 	private Boolean withNoDisease;
 
@@ -55,6 +57,14 @@ public class SampleDashboardCriteria extends BaseDashboardCriteria<SampleDashboa
 
 	public SampleDashboardCriteria withNoDisease(Boolean withNoDisease) {
 		this.withNoDisease = withNoDisease;
+
+		return self;
+	}
+	public EnvironmentSampleMaterial getEnvironmentSampleMaterial() {
+		return environmentSampleMaterial;
+	}
+	public SampleDashboardCriteria environmentSampleMaterial(EnvironmentSampleMaterial environmentSampleMaterial) {
+		this.environmentSampleMaterial = environmentSampleMaterial;
 
 		return self;
 	}

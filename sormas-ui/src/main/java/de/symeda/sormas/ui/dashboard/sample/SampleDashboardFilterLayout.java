@@ -24,6 +24,7 @@ import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleMaterial;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -112,10 +113,21 @@ public class SampleDashboardFilterLayout extends DashboardFilterLayout<SampleDas
 		sampleMaterialFilter.setInputPrompt(I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_MATERIAL));
 		sampleMaterialFilter
 			.addItems(Stream.of(SampleMaterial.values()).sorted(Comparator.comparing(SampleMaterial::toString)).collect(Collectors.toList()));
+		// environmental samples
+		sampleMaterialFilter.addItems(Stream.of(EnvironmentSampleMaterial.values()).sorted(Comparator.comparing(EnvironmentSampleMaterial::toString)).collect(Collectors.toList()));
 		sampleMaterialFilter.setValue(dashboardDataProvider.getSampleMaterial());
 
 		sampleMaterialFilter.addValueChangeListener(e -> {
-			dashboardDataProvider.setSampleMaterial((SampleMaterial) sampleMaterialFilter.getValue());
+			if (e.getProperty().getValue() instanceof EnvironmentSampleMaterial) {
+				dashboardDataProvider.setEnvironmentSampleMaterial((EnvironmentSampleMaterial) e.getProperty().getValue());
+				dashboardDataProvider.setSampleMaterial(null);
+			} else if (e.getProperty().getValue() instanceof SampleMaterial) {
+				dashboardDataProvider.setEnvironmentSampleMaterial(null);
+				dashboardDataProvider.setSampleMaterial((SampleMaterial) e.getProperty().getValue());
+			} else {
+				dashboardDataProvider.setEnvironmentSampleMaterial(null);
+				dashboardDataProvider.setSampleMaterial(null);
+			}
 		});
 
 		addCustomComponent(sampleMaterialFilter, SAMPLE_MATERIAL_FILTER);
