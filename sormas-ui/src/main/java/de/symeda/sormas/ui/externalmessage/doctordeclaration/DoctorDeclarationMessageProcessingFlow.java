@@ -23,6 +23,7 @@ import static de.symeda.sormas.ui.utils.processing.ProcessingUiHelper.showPickOr
 import static de.symeda.sormas.ui.utils.processing.ProcessingUiHelper.showPickOrCreatePersonWindow;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
@@ -193,6 +194,33 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 	@Override
 	protected void handlePickOrCreatePerson(PersonDto person, HandlerCallback<EntitySelection<PersonDto>> callback) {
 		LOGGER.debug("Handling pick or create person for person: {}", person);
+
+		// if any of the person name fields are empty or match the national health ID, try to find a matching person by national health ID
+		final String patientHealthId =
+			getExternalMessage().getPersonNationalHealthId() == null ? null : getExternalMessage().getPersonNationalHealthId().trim();
+		final String patientFirstName = getExternalMessage().getPersonFirstName() == null ? null : getExternalMessage().getPersonFirstName().trim();
+		final String patientLastName = getExternalMessage().getPersonLastName() == null ? null : getExternalMessage().getPersonLastName().trim();
+		if (patientFirstName == null
+			|| patientFirstName.isEmpty()
+			|| patientFirstName.equalsIgnoreCase(patientHealthId)
+			|| patientLastName == null
+			|| patientLastName.isEmpty()
+			|| patientLastName.equalsIgnoreCase(patientHealthId)) {
+			final List<PersonDto> matchingPersons = FacadeProvider.getPersonFacade().getByNationalHealthId(patientHealthId);
+			final PersonDto matchingPerson = matchingPersons == null || matchingPersons.isEmpty()
+				? null
+				: matchingPersons.stream()
+					.filter(Objects::nonNull)
+					.filter(p -> p.getFirstName() != null && p.getLastName() != null)
+					.findFirst()
+					.orElse(null);
+			if (matchingPerson != null) {
+				showPickOrCreatePersonWindow(matchingPerson, callback);
+				return;
+			}
+		}
+
+		// If no matching person is found by national health ID, proceed with the regular pick or create person flow
 		showPickOrCreatePersonWindow(person, callback);
 	}
 
@@ -278,7 +306,7 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 					notifierDto.setAddress(externalMessage.getNotifierAddress());
 					notifierDto.setPhone(externalMessage.getNotifierPhone());
 					notifierDto.setEmail(externalMessage.getNotifierEmail());
-					if( externalMessage.getReporterName() != null && externalMessage.getReporterName().contains("-")) {
+					if (externalMessage.getReporterName() != null && externalMessage.getReporterName().contains("-")) {
 						// Split the reporter name into first and last names if it contains a hyphen
 						notifierDto.setAgentFirstName(externalMessage.getReporterName().split("-")[0]);
 						notifierDto.setAgentLastName(externalMessage.getReporterName().split("-")[1]);
