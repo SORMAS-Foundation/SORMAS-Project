@@ -98,6 +98,8 @@ public class AefiService extends AbstractCoreAdoService<Aefi, AefiJoins> {
 	@EJB
 	private FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
+	private static final String PRIMARY_VACCINE_COLUMN = "primaryVaccineColumn";
+
 	public AefiService() {
 		super(Aefi.class, DeletableEntityType.ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION);
 	}
@@ -416,9 +418,16 @@ public class AefiService extends AbstractCoreAdoService<Aefi, AefiJoins> {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
 				case AefiIndexDto.UUID:
-				case AefiIndexDto.DISEASE:
+				case AefiIndexDto.REPORT_DATE:
+				case AefiIndexDto.ADVERSE_EVENTS:
 				case AefiIndexDto.START_DATE_TIME:
 					expression = aefiQueryContext.getRoot().get(sortProperty.propertyName);
+					break;
+				case AefiIndexDto.IMMUNIZATION_UUID:
+					expression = aefiQueryContext.getJoins().getImmunization().get(Immunization.UUID);
+					break;
+				case AefiIndexDto.DISEASE:
+					expression = aefiQueryContext.getJoins().getImmunization().get(Immunization.DISEASE);
 					break;
 				case AefiIndexDto.PERSON_UUID:
 					expression = aefiQueryContext.getJoins().getImmunizationJoins().getPerson().get(Person.UUID);
@@ -443,7 +452,7 @@ public class AefiService extends AbstractCoreAdoService<Aefi, AefiJoins> {
 					expression = cb.lower(
 						aefiQueryContext.getJoins().getImmunizationJoins().getPersonJoins().getAddressJoins().getDistrict().get(District.NAME));
 					break;
-				case AefiIndexDto.PRIMARY_VACCINE_NAME:
+				case PRIMARY_VACCINE_COLUMN:
 					expression = aefiQueryContext.getJoins().getPrimarySuspectVaccination().get(Vaccination.VACCINE_NAME);
 					break;
 				case AefiIndexDto.VACCINATION_DATE:
@@ -559,6 +568,18 @@ public class AefiService extends AbstractCoreAdoService<Aefi, AefiJoins> {
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Aefi.SERIOUS), YesNoUnknown.YES));
 			} else {
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.notEqual(from.get(Aefi.SERIOUS), YesNoUnknown.YES));
+			}
+		} else {
+			if (criteria.isGisMapCriteria()) {
+				if (criteria.isShowSeriousAefiForMap() && !criteria.isShowNonSeriousAefiForMap()) {
+					filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Aefi.SERIOUS), YesNoUnknown.YES));
+				} else if (criteria.isShowNonSeriousAefiForMap() && !criteria.isShowSeriousAefiForMap()) {
+					filter = CriteriaBuilderHelper.and(cb, filter, cb.notEqual(from.get(Aefi.SERIOUS), YesNoUnknown.YES));
+				} else if (criteria.isShowSeriousAefiForMap() && criteria.isShowNonSeriousAefiForMap()) {
+					filter = CriteriaBuilderHelper.and(cb, filter, cb.isNotNull(from.get(Aefi.SERIOUS)));
+				} else if (!criteria.isShowSeriousAefiForMap() && !criteria.isShowNonSeriousAefiForMap()) {
+					filter = CriteriaBuilderHelper.and(cb, filter, cb.isNull(from.get(Aefi.SERIOUS)));
+				}
 			}
 		}
 		if (criteria.getOutcome() != null) {

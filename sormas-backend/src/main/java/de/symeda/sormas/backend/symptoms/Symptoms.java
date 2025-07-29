@@ -28,7 +28,10 @@ import javax.persistence.Enumerated;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import de.symeda.sormas.api.symptoms.ClinicalPresentationStatus;
 import de.symeda.sormas.api.symptoms.CongenitalHeartDiseaseType;
+import de.symeda.sormas.api.symptoms.DiagnosisType;
+import de.symeda.sormas.api.symptoms.InfectionSite;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -90,9 +93,12 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState skinRash;
 	private SymptomState neckStiffness;
 	private SymptomState soreThroat;
+	private SymptomState apnoea;
 	private SymptomState cough;
 	private SymptomState coughWithSputum;
 	private SymptomState coughWithHeamoptysis;
+	private SymptomState coughingBouts;
+	private SymptomState coughsProvokeVomiting;
 	private SymptomState runnyNose;
 	private SymptomState difficultyBreathing;
 	private SymptomState chestPain;
@@ -194,6 +200,7 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState lossOfTaste;
 	private SymptomState lossOfSmell;
 	private SymptomState wheezing;
+	private SymptomState whoopSound;
 	private SymptomState skinUlcers;
 	private SymptomState inabilityToWalk;
 	private SymptomState inDrawingOfChestWall;
@@ -202,6 +209,7 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState shivering;
 	private SymptomState fastHeartRate;
 	private SymptomState oxygenSaturationLower94;
+	private SymptomState nocturnalCough;
 
 	private SymptomState feverishFeeling;
 	private SymptomState weakness;
@@ -235,6 +243,23 @@ public class Symptoms extends AbstractDomainObject {
 
 	private SymptomState otherComplications;
 	private String otherComplicationsText;
+
+	// Clinical Presentation
+	private SymptomState asymptomatic;
+	private SymptomState hemorrhagicRash;
+	private SymptomState arthritis;
+	private SymptomState meningitis;
+	private SymptomState septicaemia;
+	private SymptomState otherClinicalPresentation;
+	private String otherClinicalPresentationText;
+
+	private DiagnosisType diagnosis;
+	private InfectionSite majorSite;
+	private String otherMajorSiteDetails;
+	private InfectionSite minorSite;
+	private String otherMinorSiteDetails;
+	private YesNoUnknown dateOfOnsetKnown;
+	private ClinicalPresentationStatus clinicalPresentationStatus;
 
 	// when adding new fields make sure to extend toHumanString
 
@@ -1838,5 +1863,167 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setOtherComplicationsText(String otherComplicationsText) {
 		this.otherComplicationsText = otherComplicationsText;
+	}
+
+	public SymptomState getAsymptomatic() {
+		return asymptomatic;
+	}
+
+	public void setAsymptomatic(SymptomState asymptomatic) {
+		this.asymptomatic = asymptomatic;
+	}
+
+	public SymptomState getHemorrhagicRash() {
+		return hemorrhagicRash;
+	}
+
+	public void setHemorrhagicRash(SymptomState hemorrhagicRash) {
+		this.hemorrhagicRash = hemorrhagicRash;
+	}
+
+	public SymptomState getArthritis() {
+		return arthritis;
+	}
+
+	public void setArthritis(SymptomState arthritis) {
+		this.arthritis = arthritis;
+	}
+
+	public SymptomState getMeningitis() {
+		return meningitis;
+	}
+
+	public void setMeningitis(SymptomState meningitis) {
+		this.meningitis = meningitis;
+	}
+
+	public SymptomState getOtherClinicalPresentation() {
+		return otherClinicalPresentation;
+	}
+
+	public void setOtherClinicalPresentation(SymptomState otherClinicalPresentation) {
+		this.otherClinicalPresentation = otherClinicalPresentation;
+	}
+
+	public String getOtherClinicalPresentationText() {
+		return otherClinicalPresentationText;
+	}
+
+	public void setOtherClinicalPresentationText(String otherClinicalPresentationText) {
+		this.otherClinicalPresentationText = otherClinicalPresentationText;
+	}
+
+	public SymptomState getSepticaemia() {
+		return septicaemia;
+	}
+
+	public void setSepticaemia(SymptomState septicaemia) {
+		this.septicaemia = septicaemia;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getApnoea() {
+		return apnoea;
+	}
+
+	public void setApnoea(SymptomState apnoea) {
+		this.apnoea = apnoea;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getWhoopSound() {
+		return whoopSound;
+	}
+
+	public void setWhoopSound(SymptomState whoopSound) {
+		this.whoopSound = whoopSound;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getCoughingBouts() {
+		return coughingBouts;
+	}
+
+	public void setCoughingBouts(SymptomState coughingBouts) {
+		this.coughingBouts = coughingBouts;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getCoughsProvokeVomiting() {
+		return coughsProvokeVomiting;
+	}
+
+	public void setCoughsProvokeVomiting(SymptomState coughsProvokeVomiting) {
+		this.coughsProvokeVomiting = coughsProvokeVomiting;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DiagnosisType getDiagnosis() {
+		return diagnosis;
+	}
+
+	public void setDiagnosis(DiagnosisType diagnosis) {
+		this.diagnosis = diagnosis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public InfectionSite getMajorSite() {
+		return majorSite;
+	}
+
+	public void setMajorSite(InfectionSite majorSite) {
+		this.majorSite = majorSite;
+	}
+
+	public String getOtherMajorSiteDetails() {
+		return otherMajorSiteDetails;
+	}
+
+	public void setOtherMajorSiteDetails(String otherMajorSiteDetails) {
+		this.otherMajorSiteDetails = otherMajorSiteDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public InfectionSite getMinorSite() {
+		return minorSite;
+	}
+
+	public void setMinorSite(InfectionSite minorSite) {
+		this.minorSite = minorSite;
+	}
+
+	public String getOtherMinorSiteDetails() {
+		return otherMinorSiteDetails;
+	}
+
+	public void setOtherMinorSiteDetails(String otherMinorSiteDetails) {
+		this.otherMinorSiteDetails = otherMinorSiteDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getDateOfOnsetKnown() {
+		return dateOfOnsetKnown;
+	}
+
+	public void setDateOfOnsetKnown(YesNoUnknown dateOfOnsetKnown) {
+		this.dateOfOnsetKnown = dateOfOnsetKnown;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ClinicalPresentationStatus getClinicalPresentationStatus() {
+		return clinicalPresentationStatus;
+	}
+
+	public void setClinicalPresentationStatus(ClinicalPresentationStatus clinicalPresentationStatus) {
+		this.clinicalPresentationStatus = clinicalPresentationStatus;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getNocturnalCough() {
+		return nocturnalCough;
+	}
+
+	public void setNocturnalCough(SymptomState nocturnalCough) {
+		this.nocturnalCough = nocturnalCough;
 	}
 }

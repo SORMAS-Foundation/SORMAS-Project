@@ -56,6 +56,7 @@ import de.symeda.sormas.api.contact.IsContact;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.contact.TracingApp;
 import de.symeda.sormas.api.externaldata.HasExternalData;
+import de.symeda.sormas.api.therapy.Drug;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -72,7 +73,6 @@ import de.symeda.sormas.backend.selfreport.SelfReport;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
-import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccess;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.visit.Visit;
@@ -169,6 +169,9 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 	public static final String VISITS = "visits";
 	public static final String DUPLICATE_OF = "duplicateOf";
 	public static final String SELF_REPORT ="selfReport";
+	public static final String PROPHYLAXIS_PRESCRIBED ="prophylaxisPrescribed";
+	public static final String PRESCRIBED_DRUG ="prescribedDrug";
+	public static final String PRESCRIBED_DRUG_TEXT ="prescribedDrugText";
 
 	private Date reportDateTime;
 	private User reportingUser;
@@ -270,6 +273,10 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 	private String quarantineChangeComment;
 
 	private List<SelfReport> selfReport;
+
+	private Drug prescribedDrug;
+	private String prescribedDrugText;
+	private Boolean prophylaxisPrescribed;
 
 	@Diseases({
 		Disease.AFP,
@@ -1103,5 +1110,29 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 
 	public void setSelfReport(List<SelfReport> selfReport) {
 		this.selfReport = selfReport;
+	}
+
+	public Boolean getProphylaxisPrescribed() {
+		return prophylaxisPrescribed;
+	}
+
+	public void setProphylaxisPrescribed(Boolean prophylaxisPrescribed) {
+		this.prophylaxisPrescribed = prophylaxisPrescribed;
+	}
+
+	public Drug getPrescribedDrug() {
+		return prescribedDrug;
+	}
+
+	public void setPrescribedDrug(Drug prescribedDrug) {
+		this.prescribedDrug = prescribedDrug;
+	}
+
+	public String getPrescribedDrugText() {
+		return prescribedDrugText;
+	}
+
+	public void setPrescribedDrugText(String prescribedDrugText) {
+		this.prescribedDrugText = prescribedDrugText;
 	}
 }

@@ -37,6 +37,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -110,6 +111,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
@@ -118,6 +120,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ExtendedReduced;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.FeatureTypeFieldVisibilityChecker;
@@ -176,6 +179,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private static final String REINFECTION_DETAILS_COL_1_LOC = "reinfectionDetailsCol1Loc";
 	private static final String REINFECTION_DETAILS_COL_2_LOC = "reinfectionDetailsCol2Loc";
 	public static final String CASE_REFER_POINT_OF_ENTRY_BTN_LOC = "caseReferFromPointOfEntryBtnLoc";
+	public static final String DIAGNOSIS_CRITERIA_HEADING_LOC = "diagnosisCriteriaHeadingLoc";
+	public static final String DIAGNOSIS_CRITERIA_LAB_TEST_PANEL_LOC = "diagnosisCriteriaLoc";
 
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT =
@@ -213,7 +218,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 							fluidColumnLoc(4, 0, CaseDataDto.PREVIOUS_INFECTION_DATE)
 					) +
 					fluidRowLocs(CaseDataDto.REINFECTION_DETAILS) +
-					fluidRowLocs(9, CaseDataDto.OUTCOME, 3, CaseDataDto.OUTCOME_DATE) +
+					fluidRowLocs(6, CaseDataDto.OUTCOME, 3, CaseDataDto.OUTCOME_DATE, 3, CaseDataDto.POST_MORTEM) +
 					fluidRowLocs(3, CaseDataDto.SEQUELAE, 9, CaseDataDto.SEQUELAE_DETAILS) +
 					fluidRowLocs(CaseDataDto.CASE_IDENTIFICATION_SOURCE, CaseDataDto.SCREENING_TYPE) +
 					fluidRowLocs(CaseDataDto.CASE_ORIGIN, "") +
@@ -227,6 +232,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY) +
 					fluidRowLocs(TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE) +
 					fluidRowLocs(CaseDataDto.HEALTH_FACILITY, CaseDataDto.HEALTH_FACILITY_DETAILS) +
+					fluidRow(fluidColumnLoc(6, 0,CaseDataDto.DEPARTMENT)) +
 					inlineLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS, CASE_REFER_POINT_OF_ENTRY_BTN_LOC) +
 					fluidRowLocs(CaseDataDto.NOSOCOMIAL_OUTBREAK, CaseDataDto.INFECTION_SETTING) +
 					locCss(VSPACE_3, CaseDataDto.SHARED_TO_COUNTRY) +
@@ -247,6 +253,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(CaseDataDto.END_OF_ISOLATION_REASON, CaseDataDto.END_OF_ISOLATION_REASON_DETAILS) +
 					fluidRowLocs(CaseDataDto.REPORT_LAT, CaseDataDto.REPORT_LON, CaseDataDto.REPORT_LAT_LON_ACCURACY) +
 					fluidRowLocs(CaseDataDto.HEALTH_CONDITIONS) +
+					loc(DIAGNOSIS_CRITERIA_HEADING_LOC) +
+					fluidRowLocs(DIAGNOSIS_CRITERIA_LAB_TEST_PANEL_LOC) +
+					fluidRowLocs(8, CaseDataDto.RADIOGRAPHY_COMPATIBILITY) +
+					fluidRowLocs(CaseDataDto.OTHER_DIAGNOSTIC_CRITERIA) +
 					loc(MEDICAL_INFORMATION_LOC) +
 					fluidRowLocs(CaseDataDto.BLOOD_ORGAN_OR_TISSUE_DONATED) +
 					fluidRowLocs(CaseDataDto.PREGNANT, CaseDataDto.POSTPARTUM) + fluidRowLocs(CaseDataDto.TRIMESTER, "") +
@@ -304,10 +314,12 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private ComboBoxWithPlaceholder facilityTypeCombo;
 	private ComboBox facilityCombo;
 	private TextField facilityDetails;
+	private TextField tfDepartment;
 	private boolean quarantineChangedByFollowUpUntilChange = false;
 	private TextField tfExpectedFollowUpUntilDate;
 	private FollowUpPeriodDto expectedFollowUpPeriodDto;
 	private boolean ignoreDifferentPlaceOfStayJurisdiction = false;
+	private CheckBox postMortemCB;
 
 	public CaseDataForm(
 		String caseUuid,
@@ -433,6 +445,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		externalTokenWarningLabel.addStyleNames(VSPACE_3, LABEL_WHITE_SPACE_NORMAL);
 		getContent().addComponent(externalTokenWarningLabel, EXTERNAL_TOKEN_WARNING_LOC);
 
+		tfDepartment = addField(CaseDataDto.DEPARTMENT, TextField.class);
+		tfDepartment.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DEPARTMENT));
 		addField(CaseDataDto.INTERNAL_TOKEN, TextField.class);
 		addField(CaseDataDto.CASE_REFERENCE_NUMBER, TextField.class);
 
@@ -442,7 +456,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.SEQUELAE, NullableOptionGroup.class);
 
 		addFields(CaseDataDto.INVESTIGATED_DATE, CaseDataDto.OUTCOME_DATE, CaseDataDto.SEQUELAE_DETAILS);
-
+		postMortemCB = addField(CaseDataDto.POST_MORTEM, CheckBox.class);
+		postMortemCB.setValue(false);
 		addField(CaseDataDto.CASE_IDENTIFICATION_SOURCE);
 		addField(CaseDataDto.SCREENING_TYPE);
 
@@ -815,6 +830,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					facilityCombo.setRequired(true);
 				}
 				updateFacilityDetails(facilityCombo, facilityDetails);
+				tfDepartment.setVisible(true);
 			} else {
 				// switched from facility to home
 				if (!facilityCombo.isReadOnly()) {
@@ -824,6 +840,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				}
 				facilityTypeGroup.clear();
 				facilityTypeCombo.clear();
+				tfDepartment.setVisible(false);
+				tfDepartment.clear();
 			}
 		});
 		facilityTypeGroup.addValueChangeListener(
@@ -927,6 +945,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		Label generalCommentLabel = new Label(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.ADDITIONAL_DETAILS));
 		generalCommentLabel.addStyleName(H3);
 		getContent().addComponent(generalCommentLabel, GENERAL_COMMENT_LOC);
+		generalCommentLabel.setVisible(disease!=Disease.TUBERCULOSIS);
 
 		TextArea additionalDetails = addField(CaseDataDto.ADDITIONAL_DETAILS, TextArea.class);
 		additionalDetails.setRows(6);
@@ -941,7 +960,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.TRIMESTER, NullableOptionGroup.class);
 		FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.TRIMESTER, CaseDataDto.PREGNANT, Arrays.asList(YesNoUnknown.YES), true);
 
-	addField(CaseDataDto.VACCINATION_STATUS, TextField.class);
+		addField(CaseDataDto.VACCINATION_STATUS, TextField.class);
 //		getContent().addComponent(new Label("Debug vaccination"), CaseDataDto.VACCINATION_STATUS);
 		addFields(CaseDataDto.SMALLPOX_VACCINATION_SCAR, CaseDataDto.SMALLPOX_VACCINATION_RECEIVED);
 		addDateField(CaseDataDto.SMALLPOX_LAST_VACCINATION_DATE, DateField.class, 0);
@@ -1010,7 +1029,36 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			}
 		});
 
-		addField(CaseDataDto.HEALTH_CONDITIONS, HealthConditionsForm.class).setCaption(null);
+		addField(
+			CaseDataDto.HEALTH_CONDITIONS,
+			new HealthConditionsForm(
+				disease,
+				FieldVisibilityCheckers.withDisease(disease)
+					.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
+				UiFieldAccessCheckers.getDefault(true, FacadeProvider.getConfigFacade().getCountryLocale())))
+			.setCaption(null);
+
+		//diagnosis criteria
+		if ((FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) && disease == Disease.TUBERCULOSIS) {
+			Label diagnosisCriteriaHeadingLabel = new Label(I18nProperties.getString(Strings.headingDiagnosisCriteria));
+			diagnosisCriteriaHeadingLabel.addStyleName(H3);
+			getContent().addComponent(diagnosisCriteriaHeadingLabel, DIAGNOSIS_CRITERIA_HEADING_LOC);
+
+			if (UiUtil.permitted(UserRight.SAMPLE_VIEW)) {
+				List<SampleDto> samples = FacadeProvider.getSampleFacade().getByCaseUuids(Collections.singletonList(caseUuid));
+				List<String> sampleUuids = Collections.emptyList();
+				if (samples != null && !samples.isEmpty()) {
+					sampleUuids = samples.stream().map(SampleDto::getUuid).collect(Collectors.toList());
+				}
+
+				List<PathogenTestDto> pathogenTests = FacadeProvider.getPathogenTestFacade().getBySampleUuids(sampleUuids);
+				DiagnosisCriteriaLabTestPanel diagnosisCriteriaLabTestPanel = new DiagnosisCriteriaLabTestPanel(disease, pathogenTests);
+				getContent().addComponent(diagnosisCriteriaLabTestPanel, DIAGNOSIS_CRITERIA_LAB_TEST_PANEL_LOC);
+			}
+
+			addField(CaseDataDto.RADIOGRAPHY_COMPATIBILITY, ComboBox.class);
+			addField(CaseDataDto.OTHER_DIAGNOSTIC_CRITERIA, TextField.class);
+		}
 
 		// Set initial visibilities & accesses
 		initializeVisibilitiesAndAllowedVisibilities();
@@ -1184,7 +1232,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			null);
 
 		/// CLINICIAN FIELDS
-		if (isVisibleAllowed(CaseDataDto.CLINICIAN_NAME)) {
+		if (!isLuxTuberculosisDisease() && isVisibleAllowed(CaseDataDto.CLINICIAN_NAME)) {
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),
 				Arrays.asList(CaseDataDto.CLINICIAN_NAME, CaseDataDto.CLINICIAN_PHONE, CaseDataDto.CLINICIAN_EMAIL),
@@ -1213,7 +1261,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			Arrays.asList(CaseDataDto.PREGNANT, CaseDataDto.VACCINATION_STATUS, CaseDataDto.SMALLPOX_VACCINATION_RECEIVED);
 
 		for (String medicalInformationField : medicalInformationFields) {
-			if (getFieldGroup().getField(medicalInformationField).isVisible()) {
+			if (!isLuxTuberculosisDisease() && getFieldGroup().getField(medicalInformationField).isVisible()) {
 				Label medicalInformationCaptionLabel = new Label(I18nProperties.getString(Strings.headingMedicalInformation));
 				medicalInformationCaptionLabel.addStyleName(H3);
 				getContent().addComponent(medicalInformationCaptionLabel, MEDICAL_INFORMATION_LOC);
@@ -1221,7 +1269,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			}
 		}
 
-		if (!shouldHidePaperFormDates()) {
+		if (!isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && !shouldHidePaperFormDates()) {
 			Label paperFormDatesLabel = new Label(I18nProperties.getString(Strings.headingPaperFormDates));
 			paperFormDatesLabel.addStyleName(H3);
 			getContent().addComponent(paperFormDatesLabel, PAPER_FORM_DATES_LOC);
@@ -1245,7 +1293,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		setVisible(false, CaseDataDto.DELETION_REASON, CaseDataDto.OTHER_DELETION_REASON);
 
 		addValueChangeListener(e -> {
-			diseaseField.addValueChangeListener(new DiseaseChangeListener(diseaseField, getValue().getDisease()));
+			diseaseField.addValueChangeListener(new DiseaseChangeListener(diseaseField, getValue().getDisease(), postMortemCB));
 
 			FieldHelper.updateOfficersField(surveillanceOfficerField, getValue(), UserRight.CASE_RESPONSIBLE);
 
@@ -1280,6 +1328,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			// Set health facility/point of entry visibility based on case origin
 			if (getValue().getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY) {
 				setVisible(true, CaseDataDto.POINT_OF_ENTRY);
+				setVisibleClear(TypeOfPlace.FACILITY == facilityOrHome.getValue(), CaseDataDto.DEPARTMENT);
 				if (getValue().getPointOfEntry() != null) {
 					setVisible(getValue().getPointOfEntry().isOtherPointOfEntry(), CaseDataDto.POINT_OF_ENTRY_DETAILS);
 					btnReferFromPointOfEntry.setVisible(UiUtil.permitted(UserRight.CASE_REFER_FROM_POE) && getValue().getHealthFacility() == null);
@@ -1380,6 +1429,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			}
 
 		});
+		setVisible(!isLuxTuberculosisDisease(), CaseDataDto.POSTPARTUM, CaseDataDto.PREGNANT, CaseDataDto.SURVEILLANCE_OFFICER,
+				CaseDataDto.CLINICIAN_NAME, CaseDataDto.CLINICIAN_PHONE, CaseDataDto.CLINICIAN_EMAIL, CaseDataDto.ADDITIONAL_DETAILS);
 	}
 
 	private void hideJurisdictionFields() {
@@ -1397,6 +1448,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		communityCombo.setVisible(false);
 	}
 
+	// This method is used to hide the not relevant fields of LUX+TB
+	private boolean isLuxTuberculosisDisease() {
+		return isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && disease == Disease.TUBERCULOSIS;
+	}
 	private void updateFacilityOrHome() {
 		if (getValue().getHealthFacility() != null) {
 			boolean facilityOrHomeReadOnly = facilityOrHome.isReadOnly();
@@ -1673,6 +1728,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		facilityDetails.setValue(healthFacilityDetails);
 		facilityCombo.setReadOnly(readOnlyFacility);
 		facilityDetails.setReadOnly(readOnlyFacilityDetails);
+		boolean postmortemVisibility = isLuxTuberculosisDisease();
+		postMortemCB.setVisible(postmortemVisibility);
 	}
 
 	private void updateVisibilityDifferentPlaceOfStayJurisdiction(CaseDataDto newFieldValue) {
@@ -1769,10 +1826,12 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		private final AbstractSelect diseaseField;
 
 		private final Disease currentDisease;
+		private final List<Field> fields;
 
-		DiseaseChangeListener(AbstractSelect diseaseField, Disease currentDisease) {
+		DiseaseChangeListener(AbstractSelect diseaseField, Disease currentDisease, Field... fields) {
 			this.diseaseField = diseaseField;
 			this.currentDisease = currentDisease;
+			this.fields = Arrays.asList(fields);
 		}
 
 		@Override
@@ -1786,6 +1845,15 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					@Override
 					protected void onConfirm() {
 						diseaseField.removeValueChangeListener(DiseaseChangeListener.this);
+						fields.stream().forEach(field -> {
+							if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+								if (diseaseField.getValue().equals(Disease.TUBERCULOSIS) && field.getId().equals(CaseDataDto.POST_MORTEM)) {
+									field.setVisible(true);
+								} else {
+									field.setVisible(false);
+								}
+							}
+						});
 					}
 
 					@Override

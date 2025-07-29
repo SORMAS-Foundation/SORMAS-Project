@@ -17,6 +17,7 @@ package de.symeda.sormas.api.caze;
 
 import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_FRANCE;
 import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_GERMANY;
+import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_LUXEMBOURG;
 import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_SWITZERLAND;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 
@@ -60,6 +61,7 @@ import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.person.notifier.NotifierReferenceDto;
 import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
@@ -227,6 +229,12 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	public static final String EXTERNAL_DATA = "externalData";
 	public static final String DELETION_REASON = "deletionReason";
 	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
+	public static final String POST_MORTEM = "postMortem";
+	public static final String DEPARTMENT = "department";
+
+	public static final String NOTIFIER = "notifier";
+	public static final String RADIOGRAPHY_COMPATIBILITY = "radiographyCompatibility";
+	public static final String OTHER_DIAGNOSTIC_CRITERIA = "otherDiagnosticCriteria";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -269,18 +277,21 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	@HideForCountries(countries = {
 		COUNTRY_CODE_FRANCE,
 		COUNTRY_CODE_GERMANY,
-		COUNTRY_CODE_SWITZERLAND })
+		COUNTRY_CODE_SWITZERLAND,
+		COUNTRY_CODE_LUXEMBOURG })
 	private Date regionLevelDate;
 	@HideForCountries(countries = {
 		COUNTRY_CODE_FRANCE,
 		COUNTRY_CODE_GERMANY,
-		COUNTRY_CODE_SWITZERLAND })
+		COUNTRY_CODE_SWITZERLAND,
+		COUNTRY_CODE_LUXEMBOURG })
 	private Date nationalLevelDate;
 	@Outbreaks
 	@HideForCountries(countries = {
 		COUNTRY_CODE_FRANCE,
 		COUNTRY_CODE_GERMANY,
-		COUNTRY_CODE_SWITZERLAND })
+		COUNTRY_CODE_SWITZERLAND,
+		COUNTRY_CODE_LUXEMBOURG })
 	private Date districtLevelDate;
 	@Outbreaks
 	@Diseases(value = Disease.RESPIRATORY_SYNCYTIAL_VIRUS, hide = true)
@@ -351,8 +362,10 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	@EmbeddedPersonalData
 	@EmbeddedSensitiveData
 	@SensitiveData
+	@Diseases(value = {
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION}, hide = true)
 	private HealthConditionsDto healthConditions;
-
 	private YesNoUnknown pregnant;
 	@Diseases({
 		Disease.AFP,
@@ -620,6 +633,16 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherDeletionReason;
+	@HideForCountriesExcept(countries = COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	private boolean postMortem;
+	@HideForCountriesExcept(countries = COUNTRY_CODE_LUXEMBOURG)
+	private String department;
+
+	private NotifierReferenceDto notifier;
+	private RadiographyCompatibility radiographyCompatibility;
+	private String otherDiagnosticCriteria;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		return build(person, disease, HealthConditionsDto.build());
@@ -1776,6 +1799,48 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	public void setHealthConditions(HealthConditionsDto healthConditions) {
 		this.healthConditions = healthConditions;
 	}
+
+	public NotifierReferenceDto getNotifier() {
+		return notifier;
+	}
+
+	public void setNotifier(NotifierReferenceDto notifier) {
+		this.notifier = notifier;
+	}
+
+	public boolean isPostMortem() {
+		return postMortem;
+	}
+
+	public void setPostMortem(boolean postMortem) {
+		this.postMortem = postMortem;
+	}
+
+	public String getDepartment() {
+		return department;
+	}
+
+	public void setDepartment(String department) {
+		this.department = department;
+	}
+
+	public RadiographyCompatibility getRadiographyCompatibility() {
+		return radiographyCompatibility;
+	}
+
+	public void setRadiographyCompatibility(RadiographyCompatibility radiographyCompatibility) {
+		this.radiographyCompatibility = radiographyCompatibility;
+	}
+
+	public String getOtherDiagnosticCriteria() {
+		return otherDiagnosticCriteria;
+	}
+
+	public void setOtherDiagnosticCriteria(String otherDiagnosticCriteria) {
+		this.otherDiagnosticCriteria = otherDiagnosticCriteria;
+	}
+
+
 
 	@JsonIgnore
 	public String i18nPrefix() {

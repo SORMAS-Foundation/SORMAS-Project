@@ -34,6 +34,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -128,21 +129,24 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
                     fluidRowLocs(PersonDto.PLACE_OF_BIRTH_FACILITY_TYPE, PersonDto.PLACE_OF_BIRTH_FACILITY, PersonDto.PLACE_OF_BIRTH_FACILITY_DETAILS) +
                     fluidRowLocs(PersonDto.GESTATION_AGE_AT_BIRTH, PersonDto.BIRTH_WEIGHT) +
                     fluidRowLocs(PersonDto.SEX, PersonDto.PRESENT_CONDITION) +
-                    fluidRow(
-                            oneOfFourCol(PersonDto.DEATH_DATE),
-                            oneOfFourCol(PersonDto.CAUSE_OF_DEATH),
-                            fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 3, 0, PersonDto.CAUSE_OF_DEATH_DISEASE),
-                            oneOfFourCol(PersonDto.CAUSE_OF_DEATH_DETAILS)
-                    ) +
-                    fluidRow(
-                            oneOfFourCol(PersonDto.DEATH_PLACE_TYPE),
-                            oneOfFourCol(PersonDto.DEATH_PLACE_DESCRIPTION)
-                    ) +
-                    fluidRow(
-                            oneOfFourCol(PersonDto.BURIAL_DATE),
-                            oneOfFourCol(PersonDto.BURIAL_CONDUCTOR),
-                            oneOfTwoCol(PersonDto.BURIAL_PLACE_DESCRIPTION)
-                    ) +
+					fluidRow(
+							oneOfFourCol(PersonDto.DEATH_DATE),
+							oneOfFourCol(PersonDto.CAUSE_OF_DEATH),
+							fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 3, 0, PersonDto.CAUSE_OF_DEATH_DISEASE),
+							oneOfFourCol(PersonDto.CAUSE_OF_DEATH_DETAILS)
+					) +
+					fluidRow(
+							oneOfFourCol(PersonDto.DEATH_PLACE_TYPE),
+							oneOfFourCol(PersonDto.DEATH_PLACE_DESCRIPTION)
+					) +
+					fluidRow(
+							oneOfFourCol(PersonDto.BURIAL_DATE),
+							oneOfFourCol(PersonDto.BURIAL_CONDUCTOR),
+							oneOfTwoCol(PersonDto.BURIAL_PLACE_DESCRIPTION)
+					) +
+					fluidRowLocs(PersonDto.BIRTH_COUNTRY, PersonDto.CITIZENSHIP) +
+					fluidRowLocs(PersonDto.LIVING_STATUS, PersonDto.ENTRY_DATE) +
+
                     fluidRowLocs(PersonDto.PASSPORT_NUMBER, PersonDto.NATIONAL_HEALTH_ID) +
                     fluidRowLocs("", NATIONAL_HEALTH_ID_WARNING_LABEL) +
 					fluidRowLocs(PersonDto.EXTERNAL_ID, PersonDto.EXTERNAL_TOKEN) +
@@ -175,7 +179,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 									LayoutUtil.fluidRow(
 											LayoutUtil.fluidColumnLocCss(LAYOUT_COL_HIDE_INVSIBLE, 6, 0, PersonDto.NAMES_OF_GUARDIANS)) +
 									fluidRowLocs(PersonDto.NAMES_OF_GUARDIANS) +
-                                    fluidRowLocs(PersonDto.BIRTH_COUNTRY, PersonDto.CITIZENSHIP) +
 					fluidRowLocs(PersonDto.PERSON_CONTACT_DETAILS)) +
 					loc(GENERAL_COMMENT_LOC) + fluidRowLocs(CaseDataDto.ADDITIONAL_DETAILS);
 	private final Label occupationHeader = new Label(I18nProperties.getString(Strings.headingPersonOccupation));
@@ -392,11 +395,30 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addFields(PersonDto.ARMED_FORCES_RELATION_TYPE, PersonDto.EDUCATION_TYPE, PersonDto.EDUCATION_DETAILS);
 
 		List<CountryReferenceDto> countries = FacadeProvider.getCountryFacade().getAllActiveAsReference();
-		addInfrastructureField(PersonDto.BIRTH_COUNTRY).addItems(countries);
+		ComboBox birthCountryCB = addInfrastructureField(PersonDto.BIRTH_COUNTRY);
 		addInfrastructureField(PersonDto.CITIZENSHIP).addItems(countries);
-
 		addField(PersonDto.PASSPORT_NUMBER);
+		birthCountryCB.addItems(countries);
 
+		addField(PersonDto.LIVING_STATUS, ComboBox.class);
+		DateField entryDateDF = addField(PersonDto.ENTRY_DATE, DateField.class);
+		entryDateDF.setVisible(false);
+		// Entry date is only required for foreigners in Luxembourg with the TB+IMI+IPI diseases only.
+		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+			boolean isEntryDateAllowedDisease = Arrays.asList(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.TUBERCULOSIS).contains(disease);
+			birthCountryCB.addValueChangeListener(e -> {
+				CountryReferenceDto countryRef = (CountryReferenceDto) e.getProperty().getValue();
+				boolean isForeigner = false;
+				if (countryRef != null) {
+					isForeigner = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+							&& Arrays.asList(CountryHelper.COUNTRY_CODE_LUXEMBOURG, "LUX")
+							.stream().filter(Objects::nonNull)
+							.noneMatch(country -> StringUtils.equalsIgnoreCase(country, countryRef.getIsoCode()));
+				}
+				setVisibleClear(isEntryDateAllowedDisease && isForeigner, PersonDto.ENTRY_DATE);
+				setRequired(isEntryDateAllowedDisease && isForeigner, PersonDto.ENTRY_DATE);
+			});
+		}
 		nationalHealthIdField = addField(PersonDto.NATIONAL_HEALTH_ID, SormasTextField.class);
 		nationalHealthIdField.setNullRepresentation("");
 		Label nationalHealthIdWarningLabel = new Label(I18nProperties.getString(Strings.messagePersonNationalHealthIdInvalid));

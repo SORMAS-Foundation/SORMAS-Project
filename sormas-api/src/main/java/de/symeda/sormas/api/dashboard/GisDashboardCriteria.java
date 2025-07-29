@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2024 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,33 +13,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.externalmessage.processing.labmessage;
+package de.symeda.sormas.api.dashboard;
 
-import de.symeda.sormas.api.event.EventIndexDto;
+public class GisDashboardCriteria extends BaseDashboardCriteria<GisDashboardCriteria> {
 
-public class PickOrCreateEventResult {
-
-	private EventIndexDto event;
-
-	private boolean newEvent;
-
-	public EventIndexDto getEvent() {
-		return event;
-	}
-
-	public void setEvent(EventIndexDto event) {
-		this.event = event;
-	}
-
-	public boolean isEventSelected() {
-		return event != null;
-	}
-
-	public boolean isNewEvent() {
-		return newEvent;
-	}
-
-	public void setNewEvent(boolean newEvent) {
-		this.newEvent = newEvent;
+	public GisDashboardCriteria() {
+		super(GisDashboardCriteria.class);
 	}
 }

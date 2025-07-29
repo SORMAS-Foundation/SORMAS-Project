@@ -234,6 +234,7 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 					CriteriaBuilderHelper.ilike(cb, from.get(Environment.UUID), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Environment.EXTERNAL_ID), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Environment.ENVIRONMENT_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Environment.ENVIRONMENT_MEDIA), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Environment.DESCRIPTION), textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}

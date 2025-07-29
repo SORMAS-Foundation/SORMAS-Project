@@ -73,6 +73,7 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UiUtil;
+import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
 import de.symeda.sormas.ui.events.EventDataForm;
 import de.symeda.sormas.ui.location.AccessibleTextField;
 import de.symeda.sormas.ui.location.LocationEditForm;
@@ -298,6 +299,11 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 						.stream()
 						.filter(lf -> !(lf instanceof AccessibleTextField))
 						.anyMatch(Buffered::isModified)) {
+						dirty = true;
+					}
+				} else if (source instanceof HealthConditionsForm) {
+					final HealthConditionsForm healthConditionsForm = (HealthConditionsForm) source;
+					if (healthConditionsForm.isModified()) {
 						dirty = true;
 					}
 				} else if (source instanceof AccessibleTextField) {

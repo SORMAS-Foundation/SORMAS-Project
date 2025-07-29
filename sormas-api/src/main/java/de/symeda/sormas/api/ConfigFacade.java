@@ -40,16 +40,6 @@ public interface ConfigFacade {
 
 	String getSormasStatsUrl();
 
-	String getEmailSenderAddress();
-
-	String getEmailSenderName();
-
-	String getSmsSenderName();
-
-	String getSmsAuthKey();
-
-	String getSmsAuthSecret();
-
 	String getDocumentFilesPath();
 
 	String getTempFilesPath();

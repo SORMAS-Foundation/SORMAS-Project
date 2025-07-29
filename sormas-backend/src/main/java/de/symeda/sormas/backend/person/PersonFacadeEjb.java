@@ -1032,7 +1032,8 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		target.setAdditionalDetails(source.getAdditionalDetails());
 		target.setIncapacitated(source.isIncapacitated());
 		target.setEmancipated(source.isEmancipated());
-
+		target.setEntryDate(source.getEntryDate());
+		target.setLivingStatus(source.getLivingStatus());
 		return target;
 	}
 
@@ -1803,6 +1804,8 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		target.setAdditionalDetails(source.getAdditionalDetails());
 		target.setIncapacitated(source.isIncapacitated());
 		target.setEmancipated(source.isEmancipated());
+		target.setEntryDate(source.getEntryDate());
+		target.setLivingStatus(source.getLivingStatus());
 
 		return target;
 	}

@@ -51,6 +51,7 @@ import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.DeathPlaceType;
 import de.symeda.sormas.api.person.EducationType;
 import de.symeda.sormas.api.person.IsPerson;
+import de.symeda.sormas.api.person.LivingStatus;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.OccupationTypeConverter;
 import de.symeda.sormas.api.person.PersonContactDetailType;
@@ -215,6 +216,10 @@ public class Person extends AbstractDomainObject implements IsPerson, HasExterna
 
 	private boolean isIncapacitated;
 	private boolean emancipated;
+
+	private Date entryDate;
+
+	private LivingStatus livingStatus;
 
 	private List<Case> cases = new ArrayList<>();
 	private List<Contact> contacts = new ArrayList<>();
@@ -822,6 +827,23 @@ public class Person extends AbstractDomainObject implements IsPerson, HasExterna
 		final PersonContactDetail pcd =
 			new PersonContactDetail(this, true, personContactDetailType, null, null, contactInfo, null, false, null, null);
 		getPersonContactDetails().add(pcd);
+	}
+
+	public Date getEntryDate() {
+		return entryDate;
+	}
+
+	public void setEntryDate(Date entryDate) {
+		this.entryDate = entryDate;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public LivingStatus getLivingStatus() {
+		return livingStatus;
+	}
+
+	public void setLivingStatus(LivingStatus livingStatus) {
+		this.livingStatus = livingStatus;
 	}
 
 	@Transient

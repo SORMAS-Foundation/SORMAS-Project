@@ -1,6 +1,6 @@
 # SORMAS Backend
 
-The SORMAS backend layer is the implementation of the `sormas-api` and gives access to the data and logic of SORMAS. It contains a big set of facades and services that are origanized based on the different entities and their domains, like case surveillance and contact tracing.
+The SORMAS backend layer is the implementation of the `sormas-api` and gives access to the data and logic of SORMAS. It contains a big set of facades and services that are organized based on the different entities and their domains, like case surveillance and contact tracing.
 
 ## Unit Testing
 
@@ -23,7 +23,7 @@ Most important:
 This means you can make full use of cdi annotations like `@Inject`.
 
 #### Enterprise Beans (EJB)
-cdi-test imitates this by adding cdi annotations to classes annotated with bean annotiations like `@Stateless`.\
+cdi-test imitates this by adding cdi annotations to classes annotated with bean annotations like `@Stateless`.\
 This means all EJB classes can be used in test classes by injecting them.
 
 You can **mock beans** as explained here: [Mocking Beans](https://cdi-test.hilling.de/#mocking-beans)\

@@ -195,6 +195,7 @@ import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentService;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb.OutbreakFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
+import de.symeda.sormas.backend.person.notifier.NotifierEjb;
 import de.symeda.sormas.backend.report.AggregateReportFacadeEjb;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb.WeeklyReportFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
@@ -997,6 +998,10 @@ public abstract class AbstractBeanTest {
 		return getBean(SampleReportService.class);
 	}
 
+	public NotifierEjb.NotifierEjbLocal getNotifierFacade() {
+		return getBean(NotifierEjb.NotifierEjbLocal.class);
+	}
+
 	public <T extends Throwable> void assertThrowsWithMessage(Class<T> expectedType, String expectedMessage, Executable executable) {
 		T throwable = assertThrows(expectedType, executable);
 		assertEquals(expectedMessage, throwable.getMessage());
@@ -1015,13 +1020,14 @@ public abstract class AbstractBeanTest {
 			getEventParticipantFacade(),
 			getSampleFacade(),
 			getPathogenTestFacade(),
-				getRegionFacade(),
-				getDistrictFacade(),
-				getCommunityFacade(),
+			getRegionFacade(),
+			getDistrictFacade(),
+			getCommunityFacade(),
 			getFacilityFacade(),
 			getCustomizableEnumFacade(),
 			getCountryFacade(),
-			getSurveillanceReportFacade()) {
+			getSurveillanceReportFacade(),
+			getNotifierFacade()) {
 
 			@Override
 			public boolean hasAllUserRights(UserRight... userRights) {

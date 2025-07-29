@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2023 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,33 +13,21 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.externalmessage.processing.labmessage;
+package de.symeda.sormas.api.clinicalcourse;
 
-import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
 
-public class PickOrCreateSampleResult {
+public enum ComplianceWithTreatment {
 
-	private SampleDto sample;
+	NO_COMPLIANCE,
+	TREATMENT_COMPLETED,
+	TREATMENT_FAILED,
+	TREATMENT_NOT_COMPLETED,
+	UNKNOWN,
+	NOT_APPLICABLE;
 
-	private boolean newSample;
-
-	public SampleDto getSample() {
-		return sample;
-	}
-
-	public void setSample(SampleDto sample) {
-		this.sample = sample;
-	}
-
-	public boolean isSelectedSample() {
-		return sample != null;
-	}
-
-	public boolean isNewSample() {
-		return newSample;
-	}
-
-	public void setNewSample(boolean newSample) {
-		this.newSample = newSample;
+	@Override
+	public String toString() {
+		return I18nProperties.getEnumCaption(this);
 	}
 }

@@ -22,6 +22,7 @@ import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAUL
 
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -29,23 +30,31 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.disease.DiseaseVariant;
-import de.symeda.sormas.api.environment.environmentsample.Pathogen;
-import de.symeda.sormas.api.sample.PCRTestSpecification;
-import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.sample.PathogenTestType;
-import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.api.disease.DiseaseVariantConverter;
 import de.symeda.sormas.api.disease.PathogenConverter;
+import de.symeda.sormas.api.environment.environmentsample.Pathogen;
+import de.symeda.sormas.api.sample.PCRTestSpecification;
+import de.symeda.sormas.api.sample.PathogenSpecie;
+import de.symeda.sormas.api.sample.PathogenStrainCallStatus;
+import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestScale;
+import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.sample.SeroGroupSpecification;
+import de.symeda.sormas.api.sample.SerotypingMethod;
+import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSample;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.therapy.DrugSusceptibility;
 import de.symeda.sormas.backend.user.User;
 
 @Entity
@@ -91,6 +100,13 @@ public class PathogenTest extends DeletableAdo {
 	public static final String PRESCRIBER_POSTAL_CODE = "prescriberPostalCode";
 	public static final String PRESCRIBER_CITY = "prescriberCity";
 	public static final String PRESCRIBER_COUNTRY = "prescriberCountry";
+	public static final String RIFAMPICIN_RESISTANT = "rifampicinResistant";
+	public static final String ISONIAZID_RESISTANT = "isoniazidResistant";
+	public static final String SPECIE = "specie";
+	public static final String PATTERN_PROFILE = "patternProfile";
+	public static final String STRAIN_CALL_STATUS = "strainCallStatus";
+	public static final String TEST_SCALE = "testScale";
+	public static final String DRUG_SUSCEPTIBILITY = "drugSusceptibility";
 
 	private Sample sample;
 	private EnvironmentSample environmentSample;
@@ -135,6 +151,18 @@ public class PathogenTest extends DeletableAdo {
 	private String prescriberPostalCode;
 	private String prescriberCity;
 	private Country prescriberCountry;
+	private YesNoUnknown rifampicinResistant;
+	private YesNoUnknown isoniazidResistant;
+	private PathogenSpecie specie;
+	private String patternProfile;
+	private PathogenStrainCallStatus strainCallStatus;
+	private PathogenTestScale testScale;
+	private DrugSusceptibility drugSusceptibility;
+	private String miruPatternProfile;
+	private SerotypingMethod seroTypingMethod;
+	private String seroTypingMethodText;
+	private SeroGroupSpecification seroGroupSpecification;
+	private String seroGroupSpecificationText;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	public Sample getSample() {
@@ -533,5 +561,101 @@ public class PathogenTest extends DeletableAdo {
 
 	public PathogenTestReferenceDto toReference() {
 		return new PathogenTestReferenceDto(getUuid());
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getRifampicinResistant() {
+		return rifampicinResistant;
+	}
+
+	public void setRifampicinResistant(YesNoUnknown rifampicinResistant) {
+		this.rifampicinResistant = rifampicinResistant;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getIsoniazidResistant() {
+		return isoniazidResistant;
+	}
+
+	public void setIsoniazidResistant(YesNoUnknown isoniazidResistant) {
+		this.isoniazidResistant = isoniazidResistant;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public PathogenSpecie getSpecie() {
+		return specie;
+	}
+
+	public void setSpecie(PathogenSpecie specie) {
+		this.specie = specie;
+	}
+
+	public String getPatternProfile() {
+		return patternProfile;
+	}
+
+	public void setPatternProfile(String patternProfile) {
+		this.patternProfile = patternProfile;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public PathogenStrainCallStatus getStrainCallStatus() {
+		return strainCallStatus;
+	}
+
+	public void setStrainCallStatus(PathogenStrainCallStatus strainCallStatus) {
+		this.strainCallStatus = strainCallStatus;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public PathogenTestScale getTestScale() {
+		return testScale;
+	}
+
+	public void setTestScale(PathogenTestScale testScale) {
+		this.testScale = testScale;
+	}
+
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	public DrugSusceptibility getDrugSusceptibility() {
+		return drugSusceptibility;
+	}
+
+	public void setDrugSusceptibility(DrugSusceptibility drugSusceptibility) {
+		this.drugSusceptibility = drugSusceptibility;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SerotypingMethod getSeroTypingMethod() {
+		return seroTypingMethod;
+	}
+
+	public void setSeroTypingMethod(SerotypingMethod seroTypingMethod) {
+		this.seroTypingMethod = seroTypingMethod;
+	}
+
+	public String getSeroTypingMethodText() {
+		return seroTypingMethodText;
+	}
+
+	public void setSeroTypingMethodText(String seroTypingMethodText) {
+		this.seroTypingMethodText = seroTypingMethodText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SeroGroupSpecification getSeroGroupSpecification() {
+		return seroGroupSpecification;
+	}
+
+	public void setSeroGroupSpecification(SeroGroupSpecification seroGroupSpecification) {
+		this.seroGroupSpecification = seroGroupSpecification;
+	}
+
+	public String getSeroGroupSpecificationText() {
+		return seroGroupSpecificationText;
+	}
+
+	public void setSeroGroupSpecificationText(String seroGroupSpecificationText) {
+		this.seroGroupSpecificationText = seroGroupSpecificationText;
 	}
 }

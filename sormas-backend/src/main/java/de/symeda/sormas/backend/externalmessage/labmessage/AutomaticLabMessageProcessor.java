@@ -37,6 +37,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
@@ -50,9 +51,9 @@ import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult;
+import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEventResult;
+import de.symeda.sormas.api.externalmessage.processing.PickOrCreateSampleResult;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractLabMessageProcessingFlow;
-import de.symeda.sormas.api.externalmessage.processing.labmessage.PickOrCreateEventResult;
-import de.symeda.sormas.api.externalmessage.processing.labmessage.PickOrCreateSampleResult;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.SampleAndPathogenTests;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
@@ -64,8 +65,10 @@ import de.symeda.sormas.api.utils.dataprocessing.EntitySelection;
 import de.symeda.sormas.api.utils.dataprocessing.HandlerCallback;
 import de.symeda.sormas.api.utils.dataprocessing.PickOrCreateEntryResult;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResult;
-import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.api.utils.luxembourg.LuxembourgNationalHealthIdValidator;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
@@ -82,6 +85,8 @@ public class AutomaticLabMessageProcessor {
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
 
+	@EJB
+	private ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private UserFacadeEjbLocal userFacade;
 	@EJB
@@ -138,8 +143,74 @@ public class AutomaticLabMessageProcessor {
 			throw new UnsupportedOperationException("Related forwarded messages not supported yet");
 		}
 
-		@Override
-		protected void handlePickOrCreatePerson(PersonDto person, HandlerCallback<EntitySelection<PersonDto>> callback) {
+		/**
+		 * Handles person picking/creation with localized logic.
+		 * In case of Luxembourg, this method checks for a valid national health ID
+		 * and attempts to find an exact matching person.
+		 * Other country specific handling could be added to this method in the future.
+		 *
+		 * @param person
+		 *            The {@link PersonDto} to process.
+		 * @param callback
+		 *            The {@link HandlerCallback} to deliver the result of the
+		 *            operation.
+		 * @return {@code true} if the person was handled by this method (either found
+		 *         or created),
+		 *         {@code false} otherwise.
+		 */
+		protected boolean localizedHandlePickOrCreatePerson(PersonDto person, HandlerCallback<EntitySelection<PersonDto>> callback) {
+
+			if (configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+				String nationalHealthId = person.getNationalHealthId();
+				if (StringUtils.isBlank(nationalHealthId)) {
+					logger.debug("[MESSAGE PROCESSING] Incoming person's national health ID is blank. Canceling processing.");
+					callback.cancel();
+					return true;
+				}
+
+				if (!LuxembourgNationalHealthIdValidator.isValid(nationalHealthId, null, null, null)) {
+					logger.debug("[MESSAGE PROCESSING] Incoming person's national health ID is not valid. Canceling processing.");
+					callback.cancel();
+					return true;
+				}
+
+				final List<PersonDto> matchingPersons = personFacade.getByNationalHealthId(nationalHealthId);
+
+				// Multiple persons matched
+				if (matchingPersons.size() > 1) {
+					logger
+						.debug("[MESSAGE PROCESSING] Multiple persons with the same national health id found in the database. Canceling processing.");
+					callback.cancel();
+					return true;
+				}
+
+				// No persons matched
+				if (matchingPersons.isEmpty()) {
+					callback.done(new EntitySelection<>(personFacade.save(person), true));
+					return true;
+				}
+
+				// Exactly one person matched
+				callback.done(new EntitySelection<>(matchingPersons.get(0), false));
+				return true;
+			}
+
+			return false;
+		}
+
+		/**
+		 * Handles person picking/creation with default logic. This method checks for a
+		 * national health ID. If present, it searches for matching persons. If no ID is
+		 * found, it checks for similar persons based on name.
+		 *
+		 * @param person
+		 *            The {@link PersonDto} to process.
+		 * @param callback
+		 *            The {@link HandlerCallback} to deliver the result of the
+		 *            operation.
+		 */
+		protected void defaultHandlePickOrCreatePerson(PersonDto person, HandlerCallback<EntitySelection<PersonDto>> callback) {
+
 			String nationalHealthId = person.getNationalHealthId();
 			if (StringUtils.isNotBlank(nationalHealthId)) {
 				List<PersonDto> matchingPersons = personFacade.getByNationalHealthId(nationalHealthId);
@@ -154,13 +225,36 @@ public class AutomaticLabMessageProcessor {
 				}
 			} else {
 				PersonSimilarityCriteria similarityCriteria = PersonSimilarityCriteria.forPerson(person, true, false);
-				if (personFacade.checkMatchingNameInDatabase(user.toReference(), similarityCriteria)) {
+				if (personFacade.checkMatchingNameInDatabase(getUser().toReference(), similarityCriteria)) {
 					logger.debug("[MESSAGE PROCESSING] Similar persons found in the database. Canceling processing.");
 					callback.cancel();
 				} else {
 					callback.done(new EntitySelection<>(personFacade.save(person), true));
 				}
 			}
+		}
+
+		/**
+		 * Handles the process of picking an existing person or creating a new one.
+		 * This method first attempts to use localized handling. If that fails, it
+		 * defaults to the general handling logic.
+		 *
+		 * @param person
+		 *            The {@link PersonDto} to process.
+		 * @param callback
+		 *            The {@link HandlerCallback} to deliver the result of the
+		 *            operation.
+		 */
+		@Override
+		protected void handlePickOrCreatePerson(PersonDto person, HandlerCallback<EntitySelection<PersonDto>> callback) {
+
+			// try to see if any localized handling is processing it
+			if (localizedHandlePickOrCreatePerson(person, callback)) {
+				return;
+			}
+
+			// no localized handling was do so go with default
+			defaultHandlePickOrCreatePerson(person, callback);
 		}
 
 		@Override

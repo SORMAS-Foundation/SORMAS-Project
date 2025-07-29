@@ -1,6 +1,8 @@
 package de.symeda.sormas.api.environment;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import javax.validation.Valid;
@@ -10,6 +12,7 @@ import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
@@ -46,6 +49,8 @@ public class EnvironmentDto extends PseudonymizableDto {
 	public static final String LOCATION = "location";
 	public static final String DELETION_REASON = "deletionReason";
 	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
+	public static final String VECTOR_TYPE = "vectorType";
+	public static final String EVENTS = "events";
 
 	@NotNull(message = Validations.validReportDateTime)
 	private Date reportDate;
@@ -81,6 +86,9 @@ public class EnvironmentDto extends PseudonymizableDto {
 	private DeletionReason deletionReason;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherDeletionReason;
+	private VectorType vectorType;
+
+	private List<EventReferenceDto> eventReferenceDtos = new ArrayList<>();
 
 	public static EnvironmentDto build() {
 		final EnvironmentDto environment = new EnvironmentDto();
@@ -247,5 +255,31 @@ public class EnvironmentDto extends PseudonymizableDto {
 
 	public EnvironmentReferenceDto toReference() {
 		return new EnvironmentReferenceDto(getUuid(), getEnvironmentName());
+	}
+
+	public VectorType getVectorType() {
+		return vectorType;
+	}
+
+	public void setVectorType(VectorType vectorType) {
+		this.vectorType = vectorType;
+	}
+
+	public void addEventReference(EventReferenceDto eventReferenceDto) {
+		if (eventReferenceDto == null) {
+			throw new IllegalArgumentException("eventReferenceDto must not be null");
+		}
+		if (eventReferenceDtos.contains(eventReferenceDto)) {
+			throw new IllegalArgumentException("eventReference " + eventReferenceDto.getUuid() + " already exists.");
+		}
+		this.eventReferenceDtos.add(eventReferenceDto);
+	}
+
+	public List<EventReferenceDto> getEventReferenceDtos() {
+		return eventReferenceDtos;
+	}
+
+	public void setEventReferenceDtos(List<EventReferenceDto> eventReferenceDtos) {
+		this.eventReferenceDtos = eventReferenceDtos;
 	}
 }

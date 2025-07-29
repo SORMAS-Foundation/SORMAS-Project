@@ -25,6 +25,7 @@ import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
 import de.symeda.sormas.api.disease.DiseaseVariant;
@@ -37,6 +38,7 @@ import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
@@ -55,7 +57,9 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	public static final String DISEASE_VARIANT = "diseaseVariant";
 	public static final String DISEASE_VARIANT_DETAILS = "diseaseVariantDetails";
 	public static final String MESSAGE_DATE_TIME = "messageDateTime";
+	public static final String CASE_CLASSIFICATION = "caseClassification";
 	public static final String CASE_REPORT_DATE = "caseReportDate";
+	public static final String CASE_SYMPTOMS = "caseSymptoms";
 	public static final String REPORTER_NAME = "reporterName";
 	public static final String REPORTER_EXTERNAL_ID = "reporterExternalId";
 	public static final String REPORTER_POSTAL_CODE = "reporterPostalCode";
@@ -77,6 +81,11 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	public static final String PERSON_HOUSE_NUMBER = "personHouseNumber";
 	public static final String PERSON_COUNTRY = "personCountry";
 	public static final String PERSON_FACILITY = "personFacility";
+	public static final String PERSON_GUARDIAN_FIRST_NAME = "personGuardianFirstName";
+	public static final String PERSON_GUARDIAN_LAST_NAME = "personGuardianLastName";
+	public static final String PERSON_GUARDIAN_RELATIONSHIP = "personGuardianRelationship";
+	public static final String PERSON_GUARDIAN_PHONE = "personGuardianPhone";
+	public static final String PERSON_GUARDIAN_EMAIL = "personGuardianEmail";
 	public static final String EXTERNAL_MESSAGE_DETAILS = "externalMessageDetails";
 	public static final String PROCESSED = "processed";
 	public static final String REPORT_ID = "reportId";
@@ -85,6 +94,17 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	public static final String ASSIGNEE = "assignee";
 	public static final String SURVEILLANCE_REPORT = "surveillanceReport";
 	public static final String AUTOMATIC_PROCESSING_POSSIBLE = "automaticProcessingPossible";
+	public static final String NOTIFIER_FIRST_NAME = "notifierFirstName";
+	public static final String NOTIFIER_LAST_NAME = "notifierLastName";
+	public static final String NOTIFIER_REGISTRATION_NUMBER = "notifierRegistrationNumber";
+	public static final String NOTIFIER_ADDRESS = "notifierAddress";
+	public static final String NOTIFIER_EMAIL = "notifierEmail";
+	public static final String NOTIFIER_PHONE = "notifierPhone";
+	public static final String TREATMENT_STARTED = "treatmentStarted";
+	public static final String TREATMENT_STARTED_DATE = "treatmentStartedDate";
+	public static final String DIAGNOSTIC_DATE = "diagnosticDate";
+	public static final String ACTIVITIES_AS_CASE = "activitiesAsCase";
+	public static final String EXPOSURES = "exposures";
 
 	@AuditIncludeProperty
 	private ExternalMessageType type;
@@ -94,7 +114,10 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private String diseaseVariantDetails;
 	@AuditIncludeProperty
 	private Date messageDateTime;
+
+	private CaseClassification caseClassification;
 	private Date caseReportDate;
+	private SymptomsDto caseSymptoms;
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String reporterName;
@@ -137,6 +160,20 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private PhoneNumberType personPhoneNumberType;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String personEmail;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	private String personGuardianFirstName;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	private String personGuardianLastName;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	private String personGuardianRelationship;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	private String personGuardianPhone;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	private String personGuardianEmail;
+	private String treatmentStarted;
+	private Date treatmentStartedDate;
+	private Date diagnosticDate;
+
 	@AuditIncludeProperty
 	private List<SampleReportDto> sampleReports;
 	@AuditIncludeProperty
@@ -166,6 +203,27 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private VaccinationStatus vaccinationStatus;
 
 	private YesNoUnknown admittedToHealthFacility;
+
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	private String notifierFirstName;
+
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	private String notifierLastName;
+
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	private String notifierRegistrationNumber;
+
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String notifierAddress;
+
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	private String notifierEmail;
+
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	private String notifierPhone;
+
+	private String activitiesAsCase;
+	private String exposures;
 
 	public ExternalMessageType getType() {
 		return type;
@@ -207,12 +265,28 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 		this.messageDateTime = messageDateTime;
 	}
 
+	public CaseClassification getCaseClassification() {
+		return caseClassification;
+	}
+
+	public void setCaseClassification(CaseClassification caseClassification) {
+		this.caseClassification = caseClassification;
+	}
+
 	public Date getCaseReportDate() {
 		return caseReportDate;
 	}
 
 	public void setCaseReportDate(Date caseReportDate) {
 		this.caseReportDate = caseReportDate;
+	}
+
+	public void setCaseSymptoms(SymptomsDto caseSymptoms) {
+		this.caseSymptoms = caseSymptoms;
+	}
+
+	public SymptomsDto getCaseSymptoms() {
+		return caseSymptoms;
 	}
 
 	public String getReporterName() {
@@ -391,6 +465,46 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 		this.personEmail = personEmail;
 	}
 
+	public String getPersonGuardianFirstName() {
+		return personGuardianFirstName;
+	}
+
+	public void setPersonGuardianFirstName(String personGuardianFirstName) {
+		this.personGuardianFirstName = personGuardianFirstName;
+	}
+
+	public String getPersonGuardianLastName() {
+		return personGuardianLastName;
+	}
+
+	public void setPersonGuardianLastName(String personGuardianLastName) {
+		this.personGuardianLastName = personGuardianLastName;
+	}
+
+	public String getPersonGuardianRelationship() {
+		return personGuardianRelationship;
+	}
+
+	public void setPersonGuardianRelationship(String personGuardianRelationship) {
+		this.personGuardianRelationship = personGuardianRelationship;
+	}
+
+	public String getPersonGuardianPhone() {
+		return personGuardianPhone;
+	}
+
+	public void setPersonGuardianPhone(String personGuardianPhone) {
+		this.personGuardianPhone = personGuardianPhone;
+	}
+
+	public String getPersonGuardianEmail() {
+		return personGuardianEmail;
+	}
+
+	public void setPersonGuardianEmail(String personGuardianEmail) {
+		this.personGuardianEmail = personGuardianEmail;
+	}
+
 	public String getExternalMessageDetails() {
 		return externalMessageDetails;
 	}
@@ -453,6 +567,78 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	public void setAdmittedToHealthFacility(YesNoUnknown admittedToHealthFacility) {
 		this.admittedToHealthFacility = admittedToHealthFacility;
+	}
+
+	public String getNotifierFirstName() {
+		return notifierFirstName;
+	}
+
+	public void setNotifierFirstName(String notifierFirstName) {
+		this.notifierFirstName = notifierFirstName;
+	}
+
+	public String getNotifierLastName() {
+		return notifierLastName;
+	}
+
+	public void setNotifierLastName(String notifierLastName) {
+		this.notifierLastName = notifierLastName;
+	}
+
+	public String getNotifierRegistrationNumber() {
+		return notifierRegistrationNumber;
+	}
+
+	public void setNotifierRegistrationNumber(String notifierRegistrationNumber) {
+		this.notifierRegistrationNumber = notifierRegistrationNumber;
+	}
+
+	public String getNotifierAddress() {
+		return notifierAddress;
+	}
+
+	public void setNotifierAddress(String notifierAddress) {
+		this.notifierAddress = notifierAddress;
+	}
+
+	public String getNotifierEmail() {
+		return notifierEmail;
+	}
+
+	public void setNotifierEmail(String notifierEmail) {
+		this.notifierEmail = notifierEmail;
+	}
+
+	public String getNotifierPhone() {
+		return notifierPhone;
+	}
+
+	public void setNotifierPhone(String notifierPhone) {
+		this.notifierPhone = notifierPhone;
+	}
+
+	public String getTreatmentStarted() {
+		return treatmentStarted;
+	}
+
+	public void setTreatmentStarted(String treatmentStarted) {
+		this.treatmentStarted = treatmentStarted;
+	}
+
+	public Date getTreatmentStartedDate() {
+		return treatmentStartedDate;
+	}
+
+	public void setTreatmentStartedDate(Date treatmentStartedDate) {
+		this.treatmentStartedDate = treatmentStartedDate;
+	}
+
+	public Date getDiagnosticDate() {
+		return diagnosticDate;
+	}
+
+	public void setDiagnosticDate(Date diagnosticDate) {
+		this.diagnosticDate = diagnosticDate;
 	}
 
 	public static ExternalMessageDto build() {
@@ -540,4 +726,21 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	public void setPersonAdditionalDetails(String personAdditionalDetails) {
 		this.personAdditionalDetails = personAdditionalDetails;
 	}
+
+	public String getActivitiesAsCase() {
+		return activitiesAsCase;
+	}
+
+	public void setActivitiesAsCase(String activitiesAsCase) {
+		this.activitiesAsCase = activitiesAsCase;
+	}
+
+	public String getExposures() {
+		return exposures;
+	}
+
+	public void setExposures(String exposures) {
+		this.exposures = exposures;
+	}
+
 }

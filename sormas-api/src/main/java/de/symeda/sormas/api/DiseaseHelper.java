@@ -70,4 +70,13 @@ public final class DiseaseHelper {
 	public static String variantInBrackets(DiseaseVariant diseaseVariant) {
 		return diseaseVariant == null ? StringUtils.EMPTY : String.format("(%s)", diseaseVariant.getCaption());
 	}
+
+	/**
+	 * Checks if the case is an invasive bacterial disease (meningococcal or pneumococcal)
+	 * @return boolean
+	 */
+	public static boolean checkDiseaseIsInvasiveBacterialDiseases(Disease disease){
+		return disease != null && (disease == Disease.INVASIVE_MENINGOCOCCAL_INFECTION ||
+				disease == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION);
+	}
 }

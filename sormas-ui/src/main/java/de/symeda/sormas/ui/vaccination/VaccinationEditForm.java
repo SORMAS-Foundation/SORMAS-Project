@@ -35,6 +35,7 @@ import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.UserField;
+import org.apache.commons.lang3.StringUtils;
 
 public class VaccinationEditForm extends AbstractEditForm<VaccinationDto> {
 
@@ -85,14 +86,18 @@ public class VaccinationEditForm extends AbstractEditForm<VaccinationDto> {
 		Field vaccineName = addField(VaccinationDto.VACCINE_NAME);
 		addField(VaccinationDto.OTHER_VACCINE_NAME);
 		Field vaccineManufacturer = addField(VaccinationDto.VACCINE_MANUFACTURER);
+		Field vaccineType = addField(VaccinationDto.VACCINE_TYPE);
 		addField(VaccinationDto.OTHER_VACCINE_MANUFACTURER);
+		// Disable the manufacturer and type fields if the vaccine has its values.
 		vaccineName.addValueChangeListener(e -> {
 			Vaccine vaccine = (Vaccine) e.getProperty().getValue();
 			if (vaccine != null) {
 				vaccineManufacturer.setValue(vaccine.getManufacturer());
+				vaccineType.setValue(vaccine.getVaccineType());
+				vaccineType.setEnabled(StringUtils.isBlank(vaccine.getVaccineType()));
+
 			}
 		});
-		addField(VaccinationDto.VACCINE_TYPE);
 		addField(VaccinationDto.VACCINATION_INFO_SOURCE);
 		addField(VaccinationDto.VACCINE_DOSE);
 		addField(VaccinationDto.VACCINE_INN);

@@ -60,9 +60,12 @@ import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
@@ -73,7 +76,9 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.symptoms.ClinicalPresentationStatus;
 import de.symeda.sormas.api.symptoms.CongenitalHeartDiseaseType;
+import de.symeda.sormas.api.symptoms.InfectionSite;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
@@ -81,6 +86,7 @@ import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.utils.DateComparator;
 import de.symeda.sormas.api.utils.SymptomGroup;
 import de.symeda.sormas.api.utils.SymptomGrouping;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.visit.VisitStatus;
@@ -96,6 +102,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 	private static final long serialVersionUID = 1L;
 
+	private static final String LOCALISATION_HEADING_LOC = "localisationHeadingLoc";
 	private static final String CLINICAL_MEASUREMENTS_HEADING_LOC = "clinicalMeasurementsHeadingLoc";
 	private static final String SIGNS_AND_SYMPTOMS_HEADING_LOC = "signsAndSymptomsHeadingLoc";
 	private static final String GENERAL_SIGNS_AND_SYMPTOMS_HEADING_LOC = "generalSignsAndSymptomsHeadingLoc";
@@ -114,12 +121,18 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	private static final String MONKEYPOX_LESIONS_IMG4 = "monkeypoxLesionsImg4";
 	private static final String SYMPTOMS_HINT_LOC = "symptomsHintLoc";
 	private static final String COMPLICATIONS_HEADING = "complicationsHeading";
+	private static final String CLINICAL_PRESENTATION_HEADING = "clinicalPresentationHeading";
+	private static final String TUBERCULOSIS_ONSET_DATE_LOC = "tuberculosisOnsetDateLoc";
+	private static final String TUBERCULOSIS_CLINICAL_PRESENTATION_DETAILS_LOC = "tuberculosisClinicalPresentationDetailsLoc";
 
 	private static Map<String, List<String>> symptomGroupMap = new HashMap();
 
 	//@formatter:off
 	private static final String HTML_LAYOUT =
-			loc(CLINICAL_MEASUREMENTS_HEADING_LOC) +
+			loc(LOCALISATION_HEADING_LOC) +
+					fluidRowLocs(DIAGNOSIS, MAJOR_SITE, MINOR_SITE) +
+					fluidRowLocs("", OTHER_MAJOR_SITE_DETAILS, OTHER_MINOR_SITE_DETAILS) +
+					loc(CLINICAL_MEASUREMENTS_HEADING_LOC) +
 					fluidRowLocs(TEMPERATURE, TEMPERATURE_SOURCE) +
 					fluidRowLocs(BLOOD_PRESSURE_SYSTOLIC, BLOOD_PRESSURE_DIASTOLIC, HEART_RATE, RESPIRATORY_RATE) +
 					fluidRowLocs(GLASGOW_COMA_SCALE, WEIGHT, HEIGHT, MID_UPPER_ARM_CIRCUMFERENCE) +
@@ -148,6 +161,16 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 							fluidColumn(6, 0,
 									locsCss(VSPACE_3,
 											MENINGEAL_SIGNS, SEIZURES, SEPSIS, SHOCK))
+					)+
+					loc(CLINICAL_PRESENTATION_HEADING)+
+					fluidRowLocs(DATE_OF_ONSET_KNOWN, TUBERCULOSIS_ONSET_DATE_LOC, "") +
+					fluidRowLocs(CLINICAL_PRESENTATION_STATUS, TUBERCULOSIS_CLINICAL_PRESENTATION_DETAILS_LOC) +
+					fluidRow(
+							fluidColumn(6, 0,
+									locsCss(VSPACE_3,
+											ASYMPTOMATIC, HEMORRHAGIC_RASH, ARTHRITIS, MENINGITIS, MENINGEAL_SIGNS, SEPTICAEMIA)),
+							fluidColumn(6, 0,
+									locsCss(VSPACE_3, SHOCK,PNEUMONIA_CLINICAL_OR_RADIOLOGIC,OTHER_CLINICAL_PRESENTATION, OTHER_CLINICAL_PRESENTATION_TEXT))
 					);
 	//@formatter:on
 
@@ -249,6 +272,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			createLabel(SymptomGroup.NERVOUS_SYSTEM.toString(), H4, NERVOUS_SYSTEM_SIGNS_AND_SYMPTOMS_HEADING_LOC);
 		final Label skinSymptomsHeadingLabel = createLabel(SymptomGroup.SKIN.toString(), H4, SKIN_SIGNS_AND_SYMPTOMS_HEADING_LOC);
 		final Label otherSymptomsHeadingLabel = createLabel(SymptomGroup.OTHER.toString(), H4, OTHER_SIGNS_AND_SYMPTOMS_HEADING_LOC);
+		Label clinicalPresentationHeadingLabel =
+			createLabel(I18nProperties.getString(Strings.headingClinicalPresentation), H3, CLINICAL_PRESENTATION_HEADING);
 
 		DateField onsetDateField = addField(ONSET_DATE, DateField.class);
 		ComboBox onsetSymptom = addField(ONSET_SYMPTOM, ComboBox.class);
@@ -356,6 +381,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			RED_BLOOD_VOMIT,
 			DIGESTED_BLOOD_VOMIT,
 			COUGHING_BLOOD,
+			COUGHING_BOUTS,
+			COUGHS_PROVOKE_VOMITING,
 			BLEEDING_VAGINA,
 			SKIN_BRUISING,
 			BLOOD_URINE,
@@ -417,6 +444,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			HYDROPHOBIA,
 			OPISTHOTONUS,
 			ANXIETY_STATES,
+			APNOEA,
 			DELIRIUM,
 			UPROARIOUSNESS,
 			PARASTHESIA_AROUND_WOUND,
@@ -442,6 +470,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			LOSS_OF_TASTE,
 			LOSS_OF_SMELL,
 			WHEEZING,
+			WHOOP_SOUND,
+			NOCTURNAL_COUGH,
 			SKIN_ULCERS,
 			INABILITY_TO_WALK,
 			IN_DRAWING_OF_CHEST_WALL,
@@ -485,6 +515,17 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		addFields(complicationsFieldIds);
 
+		// Clinical presentation
+		String[] clinicalPresentationFieldIds = {
+			ASYMPTOMATIC,
+			HEMORRHAGIC_RASH,
+			ARTHRITIS,
+			MENINGITIS,
+			SEPTICAEMIA,
+			OTHER_CLINICAL_PRESENTATION,
+			OTHER_CLINICAL_PRESENTATION_TEXT };
+		addFields(clinicalPresentationFieldIds);
+
 		monkeypoxImageFieldIds = Arrays.asList(LESIONS_RESEMBLE_IMG1, LESIONS_RESEMBLE_IMG2, LESIONS_RESEMBLE_IMG3, LESIONS_RESEMBLE_IMG4);
 		for (String propertyId : monkeypoxImageFieldIds) {
 			@SuppressWarnings("rawtypes")
@@ -511,6 +552,12 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		} else {
 			setVisible(false, ONSET_SYMPTOM, ONSET_DATE);
 		}
+
+		// Hide clinical measurements heading if no clinical measurements are visible
+		clinicalMeasurementsHeadingLabel.setVisible(
+			Set.of(TEMPERATURE_SOURCE, BLOOD_PRESSURE_SYSTOLIC, BLOOD_PRESSURE_DIASTOLIC, HEART_RATE, RESPIRATORY_RATE, WEIGHT, GLASGOW_COMA_SCALE)
+				.stream()
+				.anyMatch(e -> getFieldGroup().getField(e).isVisible()));
 
 		// Initialize lists
 
@@ -623,6 +670,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			AEROPHOBIA,
 			AGITATION,
 			ANXIETY_STATES,
+			APNOEA,
 			ASCENDING_FLACCID_PARALYSIS,
 			COMA,
 			DELIRIUM,
@@ -641,6 +689,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			LOSS_OF_TASTE,
 			LOSS_OF_SMELL,
 			WHEEZING,
+			WHOOP_SOUND,
+			NOCTURNAL_COUGH,
 			SKIN_ULCERS,
 			INABILITY_TO_WALK,
 			IN_DRAWING_OF_CHEST_WALL,
@@ -653,6 +703,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			FEVERISHFEELING,
 			WEAKNESS,
 			FATIGUE,
+			COUGHING_BOUTS,
+			COUGHS_PROVOKE_VOMITING,
 			COUGH_WITHOUT_SPUTUM,
 			BREATHLESSNESS,
 			CHEST_PRESSURE,
@@ -671,7 +723,13 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			MENINGEAL_SIGNS,
 			SEIZURES,
 			SEPSIS,
-			SHOCK);
+			SHOCK,
+			ASYMPTOMATIC,
+			HEMORRHAGIC_RASH,
+			ARTHRITIS,
+			MENINGITIS,
+			SEPTICAEMIA,
+			OTHER_CLINICAL_PRESENTATION);
 
 		// Set visibilities
 
@@ -705,6 +763,16 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			CONGENITAL_HEART_DISEASE_TYPE,
 			Arrays.asList(CongenitalHeartDiseaseType.OTHER),
 			true);
+
+		if (disease != Disease.TUBERCULOSIS) {
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				OTHER_CLINICAL_PRESENTATION_TEXT,
+				OTHER_CLINICAL_PRESENTATION,
+				Arrays.asList(SymptomState.YES),
+				true);
+		}
+
 		if (isVisibleAllowed(getFieldGroup().getField(JAUNDICE_WITHIN_24_HOURS_OF_BIRTH))) {
 			FieldHelper.setVisibleWhen(getFieldGroup(), JAUNDICE_WITHIN_24_HOURS_OF_BIRTH, JAUNDICE, Arrays.asList(SymptomState.YES), true);
 		}
@@ -778,6 +846,17 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				disease);
 		}
 
+		if (disease != Disease.TUBERCULOSIS) {
+			if (isEditableAllowed(OTHER_CLINICAL_PRESENTATION)) {
+				FieldHelper.setRequiredWhen(
+					getFieldGroup(),
+					getFieldGroup().getField(OTHER_CLINICAL_PRESENTATION),
+					Arrays.asList(OTHER_CLINICAL_PRESENTATION_TEXT),
+					Arrays.asList(SymptomState.YES),
+					disease);
+			}
+		}
+
 		FieldHelper.setRequiredWhen(getFieldGroup(), getFieldGroup().getField(LESIONS), lesionsFieldIds, Arrays.asList(SymptomState.YES), disease);
 		FieldHelper
 			.setRequiredWhen(getFieldGroup(), getFieldGroup().getField(LESIONS), monkeypoxImageFieldIds, Arrays.asList(SymptomState.YES), disease);
@@ -835,6 +914,67 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			}
 		}
 		complicationsHeading.setVisible(isComplicationsHeadingVisible);
+
+		// checking the disease is invasive bacterial disease(IMI/IPI)
+		boolean lablesVisible = false;
+
+		if(caze!=null) {
+			lablesVisible = DiseaseHelper.checkDiseaseIsInvasiveBacterialDiseases(caze.getDisease()) || disease == Disease.PERTUSSIS;
+		}
+		
+		clinicalMeasurementsHeadingLabel.setVisible(!lablesVisible);
+		signsAndSymptomsHeadingLabel.setVisible(!lablesVisible);
+		respiratorySymptomsHeadingLabel.setVisible(!lablesVisible);
+		complicationsHeading.setVisible(!lablesVisible && isComplicationsHeadingVisible);
+		clinicalPresentationHeadingLabel.setVisible(lablesVisible);
+
+		if (Disease.INVASIVE_MENINGOCOCCAL_INFECTION == disease) {
+			getField(SHOCK).setCaption(I18nProperties.getCaption(Captions.Symptoms_imi_shock));
+			getField(PNEUMONIA_CLINICAL_OR_RADIOLOGIC).setCaption(I18nProperties.getCaption(Captions.Symptoms_imi_pneumoniaClinicalOrRadiologic));
+		} else if (Disease.INVASIVE_PNEUMOCOCCAL_INFECTION == disease) {
+			getField(PNEUMONIA_CLINICAL_OR_RADIOLOGIC).setCaption(I18nProperties.getCaption(Captions.Symptoms_ipi_pneumoniaClinicalOrRadiologic));
+		}
+
+		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && disease == Disease.TUBERCULOSIS) {
+			Label localisationHeadingLabel = createLabel(I18nProperties.getString(Strings.headingLocalisation), H3, LOCALISATION_HEADING_LOC);
+
+			clinicalPresentationHeadingLabel.setVisible(true);
+			clinicalMeasurementsHeadingLabel.setVisible(false);
+			signsAndSymptomsHeadingLabel.setVisible(false);
+			respiratorySymptomsHeadingLabel.setVisible(false);
+			symptomsHint.setVisible(false);
+			clearAllButton.setVisible(false);
+			setEmptyToNoButton.setVisible(false);
+			setEmptyToUnknownButton.setVisible(false);
+			onsetSymptom.setVisible(false);
+
+			addField(DIAGNOSIS, ComboBox.class);
+
+			ComboBox majorSiteField = new ComboBox();
+			majorSiteField.addItems(InfectionSite.filter(disease, true, false));
+			majorSiteField.setCaption(I18nProperties.getCaption(Captions.Symptoms_majorSite));
+			addField(MAJOR_SITE, majorSiteField);
+
+			ComboBox minorSiteField = new ComboBox();
+			minorSiteField.addItems(InfectionSite.filter(disease, false, true));
+			minorSiteField.setCaption(I18nProperties.getCaption(Captions.Symptoms_minorSite));
+			addField(MINOR_SITE, minorSiteField);
+
+			addField(OTHER_MAJOR_SITE_DETAILS, TextField.class);
+			addField(OTHER_MINOR_SITE_DETAILS, TextField.class);
+
+			FieldHelper.setVisibleWhen(getFieldGroup(), OTHER_MAJOR_SITE_DETAILS, MAJOR_SITE, Arrays.asList(InfectionSite.OTHER), true);
+			FieldHelper.setVisibleWhen(getFieldGroup(), OTHER_MINOR_SITE_DETAILS, MINOR_SITE, Arrays.asList(InfectionSite.OTHER), true);
+
+			addField(DATE_OF_ONSET_KNOWN, OptionGroup.class);
+
+			FieldHelper.setEnabledWhen(getFieldGroup(), DATE_OF_ONSET_KNOWN, YesNoUnknown.YES, ONSET_DATE, true);
+
+			ComboBox clinicalPresentationStatusField = addField(CLINICAL_PRESENTATION_STATUS, ComboBox.class);
+			clinicalPresentationStatusField
+				.setItemCaption(ClinicalPresentationStatus.COMPATIBLE, ClinicalPresentationStatus.COMPATIBLE.buildCaption(disease.toShortString()));
+			getFieldGroup().getField(OTHER_CLINICAL_PRESENTATION_TEXT).setVisible(true);
+		}
 	}
 
 	private void toggleFeverComponentError(NullableOptionGroup feverField, ComboBox temperatureField) {
@@ -877,7 +1017,24 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 	@Override
 	protected String createHtmlLayout() {
-		return HTML_LAYOUT;
+		String emptyLoc = "location=''";
+		String onsetDateLoc = "location='" + ONSET_DATE + "'";
+		String tbOnsetDateLoc = "location='" + TUBERCULOSIS_ONSET_DATE_LOC + "'";
+		String clinicalPresentationDetailsLoc = "location='" + OTHER_CLINICAL_PRESENTATION_TEXT + "'";
+		String tbClinicalPresentationDetailsLoc = "location='" + TUBERCULOSIS_CLINICAL_PRESENTATION_DETAILS_LOC + "'";
+		String vspace3Class = "class='vspace-3'";
+
+		String FINAL_HTML_LAYOUT = HTML_LAYOUT;
+
+		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && disease == Disease.TUBERCULOSIS) {
+			FINAL_HTML_LAYOUT = FINAL_HTML_LAYOUT.replace(onsetDateLoc, emptyLoc)
+				.replace(tbOnsetDateLoc, onsetDateLoc)
+				.replace(clinicalPresentationDetailsLoc, emptyLoc)
+				.replace(tbClinicalPresentationDetailsLoc, clinicalPresentationDetailsLoc)
+				.replace(vspace3Class, "");
+		}
+
+		return FINAL_HTML_LAYOUT;
 	}
 
 	public void initializeSymptomRequirementsForVisit(NullableOptionGroup visitStatus) {
@@ -1026,6 +1183,10 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		return false;
 	}
 
+	public boolean isAnySymptomVisible(FieldGroup fieldGroup, List<String> sourcePropertyIds, List<Object> sourceValues) {
+		return true;
+	}
+
 	@SuppressWarnings("rawtypes")
 	private void addListenerForOnsetFields(ComboBox onsetSymptom, DateField onsetDateField) {
 		List<String> allPropertyIds =
@@ -1040,9 +1201,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 					onsetDateField.setEnabled(true);
 				} else {
 					onsetSymptom.removeItem(sourceField.getCaption());
+					final Date onsetDate = getValue().getOnsetDate();
 					boolean isOnsetDateFieldEnabled = isAnySymptomSetToYes(getFieldGroup(), allPropertyIds, Arrays.asList(SymptomState.YES));
-					onsetDateField.setEnabled(isOnsetDateFieldEnabled);
-					Date onsetDate = getValue().getOnsetDate();
+					onsetDateField.setEnabled(isOnsetDateFieldEnabled || !onsetSymptom.isVisible());
 					if (onsetDate != null) {
 						onsetDateField.setValue(onsetDate);
 					} else if (!isOnsetDateFieldEnabled) {
@@ -1053,7 +1214,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			});
 		}
 		onsetSymptom.setEnabled(false); // will be updated by listener if needed
-		onsetDateField.setEnabled(false); // will be updated by listener if needed
+
+		// make onsetDate editable for diseases that have no symptoms (a.k. no first symptom)
+		onsetDateField.setEnabled(!onsetSymptom.isVisible());
 	}
 
 	private void setUpMonkeypoxVisibilities() {

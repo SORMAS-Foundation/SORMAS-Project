@@ -122,6 +122,7 @@ public class DatabaseExportServiceTest {
 		//remove aefi join tables
 		missingJoinTables.remove(Aefi.AEFI_VACCINATIONS_TABLE_NAME);
 		missingJoinTables.remove(AefiInvestigation.AEFI_INVESTIGATION_VACCINATIONS_TABLE_NAME);
+		missingJoinTables.remove(Environment.EVENTS_ENVIRONMENTS_TABLE_NAME);
 
 		assertThat("Missing export configuration for entities [" + String.join(", ", missingEntities) + "]", missingEntities, hasSize(0));
 		assertThat(

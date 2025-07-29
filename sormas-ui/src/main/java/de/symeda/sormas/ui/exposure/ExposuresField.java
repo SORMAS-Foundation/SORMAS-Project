@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import de.symeda.sormas.api.Disease;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -78,12 +79,14 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 	private Class<? extends EntityDto> epiDataParentClass;
 	private boolean isPseudonymized;
 	private boolean isEditAllowed;
+	private Disease disease;
 
-	public ExposuresField(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers, boolean isEditAllowed) {
+	public ExposuresField(Disease disease, FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers, boolean isEditAllowed) {
 
 		super(fieldAccessCheckers, isEditAllowed);
 		this.fieldVisibilityCheckers = fieldVisibilityCheckers;
 		this.isEditAllowed = isEditAllowed;
+		this.disease = disease;
 	}
 
 	@Override
@@ -277,7 +280,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 			epiDataParentClass,
 			getSourceContactsCallback != null ? getSourceContactsCallback.get() : null,
 			fieldVisibilityCheckers,
-			fieldAccessCheckers);
+			fieldAccessCheckers, disease);
 		exposureForm.setValue(entry);
 
 		final CommitDiscardWrapperComponent<ExposureForm> component =

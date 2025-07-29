@@ -7,6 +7,7 @@ import javax.persistence.criteria.JoinType;
 import de.symeda.sormas.backend.common.QueryJoins;
 import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSample;
 import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSampleJoins;
+import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -23,6 +24,7 @@ public class EnvironmentJoins extends QueryJoins<Environment> {
 	private From<?, EnvironmentSample> environmentSamples;
 	private LocationJoins locationJoins;
 	private EnvironmentSampleJoins environmentSampleJoins;
+	private Join<Environment, Event> events;
 
 	public EnvironmentJoins(From<?, Environment> root) {
 		super(root);
@@ -93,5 +95,13 @@ public class EnvironmentJoins extends QueryJoins<Environment> {
 
 	private void setEnvironmentSamples(From<?, EnvironmentSample> environmentSamples) {
 		this.environmentSamples = environmentSamples;
+	}
+
+	public Join<Environment, Event> getEvents() {
+		return getOrCreate(events, Environment.EVENTS, JoinType.LEFT, this::setEvents);
+	}
+
+	public void setEvents(Join<Environment, Event> events) {
+		this.events = events;
 	}
 }

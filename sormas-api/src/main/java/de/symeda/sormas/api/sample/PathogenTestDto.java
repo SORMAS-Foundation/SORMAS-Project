@@ -14,7 +14,9 @@
  */
 package de.symeda.sormas.api.sample;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -35,14 +37,17 @@ import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
+import de.symeda.sormas.api.therapy.DrugSusceptibilityDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
+import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 @DependingOnFeatureType(featureType = FeatureType.SAMPLES_LAB)
@@ -97,6 +102,17 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String PRESCRIBER_CITY = "prescriberCity";
 	public static final String PRESCRIBER_COUNTRY = "prescriberCountry";
 	public static final String ENVIRONMENT_SAMPLE = "environmentSample";
+	public static final String RIFAMPICIN_RESISTANT = "rifampicinResistant";
+	public static final String ISONIAZID_RESISTANT = "isoniazidResistant";
+	public static final String SPECIE = "specie";
+	public static final String PATTERN_PROFILE = "patternProfile";
+	public static final String STRAIN_CALL_STATUS = "strainCallStatus";
+	public static final String TEST_SCALE = "testScale";
+	public static final String DRUG_SUSCEPTIBILITY = "drugSusceptibility";
+	public static final String SEROTYPING_METHOD = "seroTypingMethod";
+	public static final String SERO_TYPING_METHOD_TEXT = "seroTypingMethodText";
+	public static final String SERO_GROUP_SPECIFICATION = "seroGroupSpecification";
+	public static final String SERO_GROUP_SPECIFICATION_TEXT = "seroGroupSpecificationText";
 
 	private SampleReferenceDto sample;
 	private EnvironmentSampleReferenceDto environmentSample;
@@ -195,6 +211,29 @@ public class PathogenTestDto extends PseudonymizableDto {
 	private String prescriberCity;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	private CountryReferenceDto prescriberCountry;
+	private YesNoUnknown rifampicinResistant;
+	private YesNoUnknown isoniazidResistant;
+	private PathogenSpecie specie;
+	private String patternProfile;
+	private PathogenStrainCallStatus strainCallStatus;
+	private PathogenTestScale testScale;
+	private DrugSusceptibilityDto drugSusceptibility;
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {Disease.INVASIVE_PNEUMOCOCCAL_INFECTION})
+	private String seroTypingMethodText;
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {Disease.INVASIVE_PNEUMOCOCCAL_INFECTION})
+	private SerotypingMethod seroTypingMethod;
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION})
+	private SeroGroupSpecification seroGroupSpecification;
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION})
+	private String seroGroupSpecificationText;
 
 	public static PathogenTestDto build(SampleDto sample, UserDto currentUser) {
 
@@ -210,6 +249,7 @@ public class PathogenTestDto extends PseudonymizableDto {
 			pathogenTest.setLabDetails(sample.getLabDetails());
 		}
 		pathogenTest.setLabUser(currentUser.toReference());
+		pathogenTest.setDrugSusceptibility(DrugSusceptibilityDto.build());
 		return pathogenTest;
 	}
 
@@ -219,6 +259,7 @@ public class PathogenTestDto extends PseudonymizableDto {
 		pathogenTest.setUuid(DataHelper.createUuid());
 		pathogenTest.setSample(sample);
 		pathogenTest.setLabUser(currentUser);
+		pathogenTest.setDrugSusceptibility(DrugSusceptibilityDto.build());
 		return pathogenTest;
 	}
 
@@ -226,7 +267,8 @@ public class PathogenTestDto extends PseudonymizableDto {
 		PathogenTestDto pathogenTest = new PathogenTestDto();
 		pathogenTest.setUuid(DataHelper.createUuid());
 		pathogenTest.setEnvironmentSample(environmentSample.toReference());
-
+		// Initialize with an empty drug susceptibility to avoid multiple unnecessary conditional addFields ana checks of the drug susceptibility field in the form
+		pathogenTest.setDrugSusceptibility(DrugSusceptibilityDto.build());
 		pathogenTest.setLab(currentUser.getLaboratory());
 		if (pathogenTest.getLab() == null) {
 			pathogenTest.setLab(environmentSample.getLaboratory());
@@ -610,6 +652,94 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	public void setPrescriberCountry(CountryReferenceDto prescriberCountry) {
 		this.prescriberCountry = prescriberCountry;
+	}
+
+	public YesNoUnknown getRifampicinResistant() {
+		return rifampicinResistant;
+	}
+
+	public void setRifampicinResistant(YesNoUnknown rifampicinResistant) {
+		this.rifampicinResistant = rifampicinResistant;
+	}
+
+	public YesNoUnknown getIsoniazidResistant() {
+		return isoniazidResistant;
+	}
+
+	public void setIsoniazidResistant(YesNoUnknown isoniazidResistant) {
+		this.isoniazidResistant = isoniazidResistant;
+	}
+
+	public PathogenSpecie getSpecie() {
+		return specie;
+	}
+
+	public void setSpecie(PathogenSpecie specie) {
+		this.specie = specie;
+	}
+
+	public String getPatternProfile() {
+		return patternProfile;
+	}
+
+	public void setPatternProfile(String patternProfile) {
+		this.patternProfile = patternProfile;
+	}
+
+	public PathogenStrainCallStatus getStrainCallStatus() {
+		return strainCallStatus;
+	}
+
+	public void setStrainCallStatus(PathogenStrainCallStatus strainCallStatus) {
+		this.strainCallStatus = strainCallStatus;
+	}
+
+	public PathogenTestScale getTestScale() {
+		return testScale;
+	}
+
+	public void setTestScale(PathogenTestScale testScale) {
+		this.testScale = testScale;
+	}
+
+	public DrugSusceptibilityDto getDrugSusceptibility() {
+		return drugSusceptibility;
+	}
+
+	public void setDrugSusceptibility(DrugSusceptibilityDto drugSusceptibility) {
+		this.drugSusceptibility = drugSusceptibility;
+	}
+
+	public SerotypingMethod getSeroTypingMethod() {
+		return seroTypingMethod;
+	}
+
+	public void setSeroTypingMethod(SerotypingMethod seroTypingMethod) {
+		this.seroTypingMethod = seroTypingMethod;
+	}
+
+	public String getSeroTypingMethodText() {
+		return seroTypingMethodText;
+	}
+
+	public void setSeroTypingMethodText(String seroTypingMethodText) {
+		this.seroTypingMethodText = seroTypingMethodText;
+	}
+
+	public SeroGroupSpecification getSeroGroupSpecification() {
+		return seroGroupSpecification;
+	}
+
+	public void setSeroGroupSpecification(SeroGroupSpecification seroGroupSpecification) {
+		this.seroGroupSpecification = seroGroupSpecification;
+	}
+
+	public String getSeroGroupSpecificationText() {
+		return seroGroupSpecificationText;
+	}
+
+	public void setSeroGroupSpecificationText(String seroGroupSpecificationText) {
+		this.seroGroupSpecificationText = seroGroupSpecificationText;
 	}
 
 	@Override

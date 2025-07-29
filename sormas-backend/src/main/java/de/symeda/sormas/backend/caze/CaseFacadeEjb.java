@@ -175,6 +175,7 @@ import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -305,6 +306,8 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
+import de.symeda.sormas.backend.person.notifier.NotifierDtoHelper;
+import de.symeda.sormas.backend.person.notifier.NotifierService;
 import de.symeda.sormas.backend.sample.AdditionalTest;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTest;
@@ -506,6 +509,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	private CustomizableEnumFacadeEjbLocal customizableEnumFacade;
 	@EJB
 	private SpecialCaseAccessService specialCaseAccessService;
+	@EJB
+	private NotifierService notifierService;
 
 	@Resource
 	private ManagedScheduledExecutorService executorService;
@@ -802,8 +807,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				joins.getRoot().get(Case.HEALTH_CONDITIONS).get(HealthConditions.ID),
 				caseRoot.get(Case.UUID),
 				caseRoot.get(Case.EPID_NUMBER), caseRoot.get(Case.DISEASE), caseRoot.get(Case.DISEASE_VARIANT_VALUE), caseRoot.get(Case.DISEASE_DETAILS),
-				caseRoot.get(Case.DISEASE_VARIANT_DETAILS), joins.getPerson().get(Person.UUID), joins.getPerson().get(Person.FIRST_NAME), joins.getPerson().get(Person.LAST_NAME),
-				joins.getPerson().get(Person.SALUTATION), joins.getPerson().get(Person.OTHER_SALUTATION), joins.getPerson().get(Person.SEX),
+				caseRoot.get(Case.DISEASE_VARIANT_DETAILS), joins.getPerson().get(Person.UUID), joins.getPerson().get(Person.FIRST_NAME), joins.getPerson().get(Person.LAST_NAME), 
+				joins.getPerson().get(Person.NATIONAL_HEALTH_ID), joins.getPerson().get(Person.SALUTATION), joins.getPerson().get(Person.OTHER_SALUTATION), joins.getPerson().get(Person.SEX),
 				caseRoot.get(Case.PREGNANT), joins.getPerson().get(Person.APPROXIMATE_AGE),
 				joins.getPerson().get(Person.APPROXIMATE_AGE_TYPE), joins.getPerson().get(Person.BIRTHDATE_DD),
 				joins.getPerson().get(Person.BIRTHDATE_MM), joins.getPerson().get(Person.BIRTHDATE_YYYY),
@@ -1331,11 +1336,12 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		Disease disease,
 		Date from,
 		Date to,
-		NewCaseDateType dateType) {
+		NewCaseDateType dateType,
+		Sex sex) {
 		Region region = regionService.getByReferenceDto(regionRef);
 		District district = districtService.getByReferenceDto(districtRef);
 
-		return service.countCasesForMap(region, district, disease, from, to, dateType);
+		return service.countCasesForMap(region, district, disease, from, to, dateType, sex);
 	}
 
 	@Override
@@ -1347,12 +1353,13 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		Disease disease,
 		Date from,
 		Date to,
-		NewCaseDateType dateType) {
+		NewCaseDateType dateType,
+		Sex sex) {
 
 		Region region = regionService.getByReferenceDto(regionRef);
 		District district = districtService.getByReferenceDto(districtRef);
 
-		List<MapCaseDto> cases = service.getCasesForMap(region, district, disease, from, to, dateType);
+		List<MapCaseDto> cases = service.getCasesForMap(region, district, disease, from, to, dateType, sex);
 
 		Pseudonymizer<MapCaseDto> pseudonymizer = createSimplePlaceholderPseudonymizer(cases);
 		pseudonymizer.pseudonymizeDtoCollection(MapCaseDto.class, cases, MapCaseDto::getInJurisdiction, null);
@@ -3191,6 +3198,15 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setDeleted(source.isDeleted());
 		target.setDeletionReason(source.getDeletionReason());
 		target.setOtherDeletionReason(source.getOtherDeletionReason());
+		target.setPostMortem(source.isPostMortem());
+		target.setDepartment(source.getHealthFacilityDepartment());
+
+		if (source.getNotifier() != null) {
+			target.setNotifier(NotifierDtoHelper.toVersionReferenceDto(source.getNotifier(), source.getNotifierDate()));
+		}
+
+		target.setRadiographyCompatibility(source.getRadiographyCompatibility());
+		target.setOtherDiagnosticCriteria(source.getOtherDiagnosticCriteria());
 
 		return target;
 	}
@@ -3392,6 +3408,16 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setDeleted(source.isDeleted());
 		target.setDeletionReason(source.getDeletionReason());
 		target.setOtherDeletionReason(source.getOtherDeletionReason());
+		target.setPostMortem(source.isPostMortem());
+		target.setHealthFacilityDepartment(source.getDepartment());
+
+		if (source.getNotifier() != null) {
+			target.setNotifier(notifierService.getVersionByReferenceDto(source.getNotifier()));
+			target.setNotifierDate(notifierService.getVersionDateByReferenceDto(source.getNotifier()));
+		}
+
+		target.setRadiographyCompatibility(source.getRadiographyCompatibility());
+		target.setOtherDiagnosticCriteria(source.getOtherDiagnosticCriteria());
 
 		return target;
 	}

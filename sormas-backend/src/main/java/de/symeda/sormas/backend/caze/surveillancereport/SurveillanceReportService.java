@@ -58,6 +58,11 @@ public class SurveillanceReportService extends AdoServiceWithUserFilterAndJurisd
 				.and(cb, filter, cb.equal(root.join(SurveillanceReport.CAZE, JoinType.LEFT).get(Case.UUID), criteria.getCaze().getUuid()));
 		}
 
+		if (criteria.getReportingType() != null) {
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(root.get(SurveillanceReport.REPORTING_TYPE), criteria.getReportingType()));
+		}
+
 		return filter;
 	}
 

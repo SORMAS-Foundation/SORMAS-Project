@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import de.symeda.sormas.api.importexport.DatabaseTable;
+import de.symeda.sormas.api.therapy.Drug;
 import de.symeda.sormas.backend.action.Action;
 import de.symeda.sormas.backend.activityascase.ActivityAsCase;
 import de.symeda.sormas.backend.campaign.Campaign;
@@ -89,6 +90,7 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.outbreak.Outbreak;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonContactDetail;
+import de.symeda.sormas.backend.person.notifier.Notifier;
 import de.symeda.sormas.backend.report.AggregateReport;
 import de.symeda.sormas.backend.report.WeeklyReport;
 import de.symeda.sormas.backend.report.WeeklyReportEntry;
@@ -102,7 +104,10 @@ import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccess;
 import de.symeda.sormas.backend.symptoms.Symptoms;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategory;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationValue;
 import de.symeda.sormas.backend.task.Task;
+import de.symeda.sormas.backend.therapy.DrugSusceptibility;
 import de.symeda.sormas.backend.therapy.Prescription;
 import de.symeda.sormas.backend.therapy.Therapy;
 import de.symeda.sormas.backend.therapy.Treatment;
@@ -148,6 +153,7 @@ public class DatabaseExportService {
 		EXPORT_CONFIGS.put(DatabaseTable.EVENTS, Event.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.EVENTS_EVENTGROUPS, Event.EVENTS_EVENT_GROUPS_TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.EVENTGROUPS, EventGroup.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.EVENT_ENVIRONMENTS, EventGroup.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.EVENTPARTICIPANTS, EventParticipant.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.ACTIONS, Action.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.TRAVEL_ENTRIES, TravelEntry.TABLE_NAME);
@@ -205,6 +211,10 @@ public class DatabaseExportService {
 		EXPORT_CONFIGS.put(DatabaseTable.FEATURE_CONFIGURATIONS, FeatureConfiguration.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.DISEASE_CONFIGURATIONS, DiseaseConfiguration.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.DELETION_CONFIGURATIONS, DeletionConfiguration.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.SYSTEM_CONFIGURATION_VALUES, SystemConfigurationValue.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.SYSTEM_CONFIGURATION_CATEGORIES, SystemConfigurationCategory.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.NOTIFIER, Notifier.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.DRUG_SUSCEPTIBILITY, DrugSusceptibility.TABLE_NAME);
 	}
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());

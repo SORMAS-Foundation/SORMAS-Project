@@ -8,6 +8,7 @@ import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
+import de.symeda.sormas.ui.events.eventLink.EventListComponent;
 import de.symeda.sormas.ui.samples.HasName;
 import de.symeda.sormas.ui.task.TaskListComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -21,6 +22,7 @@ public class EnvironmentDataView extends AbstractEnvironmentView implements HasN
 
 	public static final String TASKS_LOC = "tasks";
 	public static final String SAMPLES_LOC = "samples";
+	public static final String EVENTS_LOC = "events";
 
 	private CommitDiscardWrapperComponent<EnvironmentDataForm> editComponent;
 	private EnvironmentDto environment;
@@ -49,7 +51,7 @@ public class EnvironmentDataView extends AbstractEnvironmentView implements HasN
 		setSubComponent(container);
 		container.setEnabled(true);
 
-		LayoutWithSidePanel layout = new LayoutWithSidePanel(editComponent, TASKS_LOC, SAMPLES_LOC);
+		LayoutWithSidePanel layout = new LayoutWithSidePanel(editComponent, TASKS_LOC, SAMPLES_LOC, EVENTS_LOC);
 		container.addComponent(layout);
 
 		boolean isEditAllowed = isEditAllowed();
@@ -65,6 +67,12 @@ public class EnvironmentDataView extends AbstractEnvironmentView implements HasN
 			EnvironmentSampleListComponent sampleList = new EnvironmentSampleListComponent(environment, isEditAllowed, this::showUnsavedChangesPopup);
 			sampleList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addSidePanelComponent(sampleList, SAMPLES_LOC);
+		}
+
+		if (UiUtil.permitted(FeatureType.EVENT_SURVEILLANCE, UserRight.EVENT_VIEW)) {
+			EventListComponent eventList = new EventListComponent(environment.toReference(), this::showUnsavedChangesPopup, isEditAllowed);
+			eventList.addStyleName(CssStyles.SIDE_COMPONENT);
+			layout.addSidePanelComponent(eventList, EVENTS_LOC);
 		}
 
 		final String uuid = environment.getUuid();

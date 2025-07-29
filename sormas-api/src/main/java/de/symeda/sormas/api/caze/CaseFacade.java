@@ -51,6 +51,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.manualmessagelog.ManualMessageLogDto;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -111,7 +112,8 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 		Disease disease,
 		Date from,
 		Date to,
-		NewCaseDateType dateType);
+		NewCaseDateType dateType,
+		Sex sex);
 
 	Long countCasesForMap(
 		RegionReferenceDto regionRef,
@@ -119,7 +121,8 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 		Disease disease,
 		Date from,
 		Date to,
-		NewCaseDateType dateType);
+		NewCaseDateType dateType,
+		Sex sex);
 
 	List<Pair<DistrictDto, BigDecimal>> getCaseMeasurePerDistrict(Date onsetFromDate, Date onsetToDate, Disease disease, CaseMeasure caseMeasure);
 

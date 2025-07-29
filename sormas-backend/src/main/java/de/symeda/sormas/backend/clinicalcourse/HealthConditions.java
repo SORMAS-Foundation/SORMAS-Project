@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+import de.symeda.sormas.api.clinicalcourse.ComplianceWithTreatment;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
@@ -40,6 +41,10 @@ public class HealthConditions extends AbstractDomainObject {
 	private YesNoUnknown sickleCellDisease;
 	private YesNoUnknown immunodeficiencyIncludingHiv;
 	private String otherConditions;
+
+	private Integer tuberculosisInfectionYear;
+	private YesNoUnknown previousTuberculosisTreatment;
+	private ComplianceWithTreatment complianceWithTreatment;
 
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getTuberculosis() {
@@ -246,5 +251,31 @@ public class HealthConditions extends AbstractDomainObject {
 
 	public void setImmunodeficiencyIncludingHiv(YesNoUnknown immunodeficiencyIncludingHiv) {
 		this.immunodeficiencyIncludingHiv = immunodeficiencyIncludingHiv;
+	}
+
+	public Integer getTuberculosisInfectionYear() {
+		return tuberculosisInfectionYear;
+	}
+
+	public void setTuberculosisInfectionYear(Integer tuberculosisInfectionYear) {
+		this.tuberculosisInfectionYear = tuberculosisInfectionYear;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getPreviousTuberculosisTreatment() {
+		return previousTuberculosisTreatment;
+	}
+
+	public void setPreviousTuberculosisTreatment(YesNoUnknown previousTuberculosisTreatment) {
+		this.previousTuberculosisTreatment = previousTuberculosisTreatment;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ComplianceWithTreatment getComplianceWithTreatment() {
+		return complianceWithTreatment;
+	}
+
+	public void setComplianceWithTreatment(ComplianceWithTreatment complianceWithTreatment) {
+		this.complianceWithTreatment = complianceWithTreatment;
 	}
 }

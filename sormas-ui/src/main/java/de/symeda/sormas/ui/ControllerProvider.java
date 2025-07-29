@@ -25,8 +25,10 @@ import de.symeda.sormas.ui.caze.CaseController;
 import de.symeda.sormas.ui.caze.surveillancereport.SurveillanceReportController;
 import de.symeda.sormas.ui.clinicalcourse.ClinicalCourseController;
 import de.symeda.sormas.ui.configuration.customizableenum.CustomizableEnumController;
+import de.symeda.sormas.ui.configuration.disease.DiseaseConfigurationController;
 import de.symeda.sormas.ui.configuration.infrastructure.InfrastructureController;
 import de.symeda.sormas.ui.configuration.outbreak.OutbreakController;
+import de.symeda.sormas.ui.configuration.system.SystemConfigurationController;
 import de.symeda.sormas.ui.contact.ContactController;
 import de.symeda.sormas.ui.customexport.CustomExportController;
 import de.symeda.sormas.ui.dashboard.DashboardController;
@@ -62,6 +64,7 @@ import de.symeda.sormas.ui.utils.DeleteRestoreController;
 import de.symeda.sormas.ui.utils.PermanentDeleteController;
 import de.symeda.sormas.ui.vaccination.VaccinationController;
 import de.symeda.sormas.ui.visit.VisitController;
+import de.symeda.sormas.ui.caze.notifier.CaseNotifierSideViewController;
 
 public class ControllerProvider extends BaseControllerProvider {
 
@@ -104,11 +107,14 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final EnvironmentSampleController environmentSampleController;
 	private final ExternalEmailController externalEmailController;
 	private final CustomizableEnumController customizableEnumController;
+	private final DiseaseConfigurationController diseaseConfigurationController;
 	private final SpecialCaseAccessController specialCaseAccessController;
 	private final SelfReportController selfReportController;
 	private final SurveyController surveyController;
 	private final SurveyTokenController surveyTokenController;
 	private final SurveyDocumentController surveyDocumentController;
+	private final SystemConfigurationController systemConfigurationController;
+	private final CaseNotifierSideViewController caseNotifierSideViewController;
 
 	public ControllerProvider() {
 		super();
@@ -152,11 +158,14 @@ public class ControllerProvider extends BaseControllerProvider {
 		environmentSampleController = new EnvironmentSampleController();
 		externalEmailController = new ExternalEmailController();
 		customizableEnumController = new CustomizableEnumController();
+		diseaseConfigurationController = new DiseaseConfigurationController();
 		specialCaseAccessController = new SpecialCaseAccessController();
 		selfReportController = new SelfReportController();
 		surveyController = new SurveyController();
 		surveyTokenController = new SurveyTokenController();
 		surveyDocumentController = new SurveyDocumentController();
+		systemConfigurationController = new SystemConfigurationController();
+		caseNotifierSideViewController = new CaseNotifierSideViewController();
 	}
 
 	protected static ControllerProvider get() {
@@ -319,6 +328,10 @@ public class ControllerProvider extends BaseControllerProvider {
 		return get().customizableEnumController;
 	}
 
+	public static DiseaseConfigurationController getDiseaseConfirgurationController() {
+		return get().diseaseConfigurationController;
+	}
+
 	public static SpecialCaseAccessController getSpecialCaseAccessController() {
 		return get().specialCaseAccessController;
 	}
@@ -337,5 +350,13 @@ public class ControllerProvider extends BaseControllerProvider {
 
 	public static SurveyDocumentController getSurveyDocumentController() {
 		return get().surveyDocumentController;
+	}
+
+	public static SystemConfigurationController getSystemConfigurationController() {
+		return get().systemConfigurationController;
+	}
+
+	public static CaseNotifierSideViewController getCaseNotifierSideViewController() {
+		return get().caseNotifierSideViewController;
 	}
 }

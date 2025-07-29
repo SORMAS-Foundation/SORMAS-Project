@@ -96,6 +96,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionFacade;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentFacade;
 import de.symeda.sormas.api.manualmessagelog.ManualMessageLogFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
+import de.symeda.sormas.api.person.notifier.NotifierFacade;
 import de.symeda.sormas.api.report.AggregateReportFacade;
 import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.sample.AdditionalTestFacade;
@@ -111,6 +112,8 @@ import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasShareReq
 import de.symeda.sormas.api.specialcaseaccess.SpecialCaseAccessFacade;
 import de.symeda.sormas.api.survey.SurveyFacade;
 import de.symeda.sormas.api.survey.SurveyTokenFacade;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationCategoryFacade;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.api.systemevents.SystemEventFacade;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.therapy.PrescriptionFacade;
@@ -215,6 +218,8 @@ import de.symeda.sormas.backend.manualmessagelog.ManualMessageLogService;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb.OutbreakFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
+import de.symeda.sormas.backend.person.notifier.NotifierEjb;
+import de.symeda.sormas.backend.person.notifier.NotifierService;
 import de.symeda.sormas.backend.report.AggregateReportFacadeEjb;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb.WeeklyReportFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
@@ -260,6 +265,10 @@ import de.symeda.sormas.backend.survey.SurveyService;
 import de.symeda.sormas.backend.survey.SurveyTokenFacadeEjb.SurveyTokenFacadeEjbLocal;
 import de.symeda.sormas.backend.survey.SurveyTokenService;
 import de.symeda.sormas.backend.symptoms.SymptomsService;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategoryEjb;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategoryService;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationValueEjb;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationValueService;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
 import de.symeda.sormas.backend.task.TaskService;
@@ -1113,5 +1122,29 @@ public abstract class AbstractBeanTest {
 
 	public SurveyTokenService getSurveyTokenService() {
 		return getBean(SurveyTokenService.class);
+	}
+
+	public SystemConfigurationCategoryFacade getSystemConfigurationCategoryFacade() {
+		return getBean(SystemConfigurationCategoryEjb.SystemConfigurationCategoryEjbLocal.class);
+	}
+
+	public SystemConfigurationCategoryService getSystemConfigurationCategoryService() {
+		return getBean(SystemConfigurationCategoryService.class);
+	}
+
+	public SystemConfigurationValueFacade getSystemConfigurationValueFacade() {
+		return getBean(SystemConfigurationValueEjb.class);
+	}
+
+	public SystemConfigurationValueService getSystemConfigurationValueService() {
+		return getBean(SystemConfigurationValueService.class);
+	}
+
+	public NotifierFacade getNotifierFacade() {
+		return getBean(NotifierEjb.NotifierEjbLocal.class);
+	}
+
+	public NotifierService getNotifierService() {
+		return getBean(NotifierService.class);
 	}
 }

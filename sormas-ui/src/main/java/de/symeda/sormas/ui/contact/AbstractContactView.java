@@ -24,6 +24,7 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Component;
 
 import de.symeda.sormas.api.CoreFacade;
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -77,7 +78,7 @@ public abstract class AbstractContactView extends AbstractEditAllowedDetailView<
 		menu.removeAllViews();
 		menu.addView(ContactsView.VIEW_NAME, I18nProperties.getCaption(Captions.contactContactsList));
 
-		if (UiUtil.permitted(FeatureType.EXTERNAL_MESSAGES, UserRight.EXTERNAL_MESSAGE_VIEW)
+		if (UiUtil.permitted(FeatureType.EXTERNAL_MESSAGES, UserRight.EXTERNAL_MESSAGE_ACCESS)
 			&& FacadeProvider.getExternalMessageFacade().existsExternalMessageForEntity(getReference())) {
 			menu.addView(ExternalMessagesView.VIEW_NAME, I18nProperties.getCaption(Captions.externalMessagesList));
 		}
@@ -90,7 +91,7 @@ public abstract class AbstractContactView extends AbstractEditAllowedDetailView<
 		if (UiUtil.enabled(FeatureType.VIEW_TAB_CONTACTS_EPIDEMIOLOGICAL_DATA)) {
 			menu.addView(ContactEpiDataView.VIEW_NAME, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.EPI_DATA), params);
 		}
-		if (UiUtil.enabled(FeatureType.VIEW_TAB_CONTACTS_FOLLOW_UP_VISITS)) {
+		if (Disease.INVASIVE_MENINGOCOCCAL_INFECTION != contact.getDisease() && UiUtil.enabled(FeatureType.VIEW_TAB_CONTACTS_FOLLOW_UP_VISITS)) {
 			menu.addView(ContactVisitsView.VIEW_NAME, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.VISITS), params);
 		}
 

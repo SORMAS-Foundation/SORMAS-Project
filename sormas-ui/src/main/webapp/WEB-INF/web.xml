@@ -54,6 +54,10 @@
 	</security-role>
 
 	<security-role>
+		<role-name>DISEASE_MANAGEMENT</role-name>
+	</security-role>
+
+	<security-role>
 		<role-name>CASE_CHANGE_EPID_NUMBER</role-name>
 	</security-role>
 
@@ -682,19 +686,35 @@
 	</security-role>
 
 	<security-role>
-		<role-name>EXTERNAL_MESSAGE_VIEW</role-name>
-	</security-role>
-
-	<security-role>
-		<role-name>EXTERNAL_MESSAGE_PROCESS</role-name>
-	</security-role>
-
-	<security-role>
 		<role-name>EXTERNAL_MESSAGE_PUSH</role-name>
 	</security-role>
 
 	<security-role>
-		<role-name>EXTERNAL_MESSAGE_DELETE</role-name>
+		<role-name>EXTERNAL_MESSAGE_ACCESS</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EXTERNAL_MESSAGE_LABORATORY_VIEW</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EXTERNAL_MESSAGE_DOCTOR_DECLARATION_VIEW</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EXTERNAL_MESSAGE_LABORATORY_PROCESS</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EXTERNAL_MESSAGE_LABORATORY_DELETE</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE</role-name>
 	</security-role>
 
 	<security-role>
@@ -755,6 +775,10 @@
 
 	<security-role>
 		<role-name>ENVIRONMENT_EXPORT</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>ENVIRONMENT_LINK</role-name>
 	</security-role>
 
 	<security-role>
@@ -943,6 +967,10 @@
 
 	<security-role>
 		<role-name>CUSTOMIZABLE_ENUM_MANAGEMENT</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>SYSTEM_CONFIGURATION</role-name>
 	</security-role>
 
 </web-app>

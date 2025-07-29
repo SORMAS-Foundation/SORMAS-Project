@@ -364,18 +364,36 @@
     padding: 6px;
   }
 
+  .grid-row-gap-1 > div:first-child{
+    padding-right: 0 !important;
+  }
+
   .view-section{
-    padding: 10px 10px;
+    width: 99% !important;
+    padding: 5px 8px;
+    margin-left: 4px;
     border-radius: 4px;
     background-color: #ffffff;
     border-width: 0;
     border-style: solid;
     border-color: #ffffff;
-
     /*box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, .2), 0px 1px 1px 0px rgba(0, 0, 0, .14), 0px 1px 3px 0px rgba(0, 0, 0, .12);*/
+    -webkit-box-shadow: 0 0 2px rgba(0,0,0,0.12), 0 2px 4px rgba(0,0,0,0.14);
+    box-shadow: 0 0 2px rgba(0,0,0,0.12), 0 2px 4px rgba(0,0,0,0.14);
+  }
 
-    -webkit-box-shadow: 0 0 2px rgba(0,0,0,0.12), 0 2px 4px rgba(0,0,0,0.14);;
-    box-shadow: 0 0 2px rgba(0,0,0,0.12), 0 2px 4px rgba(0,0,0,0.14);;
+  .view-section-width-auto{
+    width: auto !important;
+    padding: 5px 8px;
+    margin-left: 4px;
+    border-radius: 4px;
+    background-color: #ffffff;
+    border-width: 0;
+    border-style: solid;
+    border-color: #ffffff;
+    /*box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, .2), 0px 1px 1px 0px rgba(0, 0, 0, .14), 0px 1px 3px 0px rgba(0, 0, 0, .12);*/
+    -webkit-box-shadow: 0 0 2px rgba(0,0,0,0.12), 0 2px 4px rgba(0,0,0,0.14);
+    box-shadow: 0 0 2px rgba(0,0,0,0.12), 0 2px 4px rgba(0,0,0,0.14);
   }
 
   .page-title{
@@ -441,5 +459,75 @@
   .inaccessible-label {
     font-style: italic;
     opacity: 0.5;
+  }
+
+  .system-configuration-dynamic-input .system-configuration-dynamic-input-fixed-size {
+    height: 30rem;
+    overflow: auto;
+  }
+
+  .system-configuration-dynamic-input .v-select-optiongroup-wrapping-checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .system-configuration-dynamic-input .v-select-optiongroup-wrapping-checkbox-group > .v-checkbox {
+    display: flex;
+    width: calc(33.33% - 1.5rem);
+  }
+
+  .system-configuration-dynamic-input .toggle-password .v-spacing {
+    display: none;
+  }
+
+  .system-configuration-dynamic-input .toggle-password .v-slot {
+    width: 100% !important;
+
+  }
+
+  .system-configuration-dynamic-input .toggle-password input {
+    height: 36px;
+  }
+
+  .system-configuration-dynamic-input .toggle-password .v-button {
+    margin-left: -4rem;
+    margin-top: 2px;
+  }
+
+  .case-notifier-side-view {
+    border-top: 1px solid $v-focus-color;
+    padding: 9px 0;
+  }
+
+  .gis-dashboard-map-header{
+    position: relative;
+    margin: 12px 0px -80px !important;
+    padding-left: 70px;
+    float: left;
+    clear: both;
+    z-index: 5;
+  }
+
+  .gis-dashboard-map-header .v-button {
+    color: #000000 !important;
+    font-weight: 600;
+    background-color: #FFFFFF !important;
+    border-radius: 24px;
+  }
+
+  .gis-dashboard-map-footer{
+    position: relative;
+    margin: -60px 0px 0px;
+    padding-right: 10px;
+    float: right;
+    clear: both;
+    z-index: 5;
+  }
+
+  .gis-dashboard-map-footer .v-button {
+    color: #000000 !important;
+    font-weight: 600;
+    background-color: #FFFFFF !important;
+    border-radius: 24px;
   }
 }

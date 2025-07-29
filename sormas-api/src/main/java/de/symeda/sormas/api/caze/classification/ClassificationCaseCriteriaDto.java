@@ -45,6 +45,7 @@ public class ClassificationCaseCriteriaDto extends ClassificationCriteriaDto {
 	private static final long serialVersionUID = 2640725590302569043L;
 
 	protected String propertyId;
+	protected String addition;
 	protected List<Object> propertyValues;
 
 	public ClassificationCaseCriteriaDto() {
@@ -54,6 +55,12 @@ public class ClassificationCaseCriteriaDto extends ClassificationCriteriaDto {
 	public ClassificationCaseCriteriaDto(String propertyId, Object... propertyValues) {
 		this.propertyId = propertyId;
 		this.propertyValues = Arrays.asList(propertyValues);
+	}
+	// to add the property values disease specific
+	public ClassificationCaseCriteriaDto(String propertyId, String addition, Object... propertyValues) {
+		this.propertyId = propertyId;
+		this.propertyValues = Arrays.asList(propertyValues);
+		this.addition = addition;
 	}
 
 	protected Class<? extends EntityDto> getInvokeClass() {
@@ -98,7 +105,7 @@ public class ClassificationCaseCriteriaDto extends ClassificationCriteriaDto {
 	public String buildDescription() {
 
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId));
+		stringBuilder.append(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId,null, addition));
 		appendDescValues(stringBuilder);
 		return stringBuilder.toString();
 	}

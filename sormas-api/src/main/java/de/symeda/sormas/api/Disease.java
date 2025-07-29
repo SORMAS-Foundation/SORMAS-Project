@@ -33,7 +33,7 @@ public enum Disease
 	EVD(true, true, true, false, true, 21, true, false, false),
 	GUINEA_WORM(true, true, true, false, false, 0, true, false, false),
 	LASSA(true, true, true, false, true, 21, true, false, false),
-	MEASLES(true, true, true, false, false, 21, true, true, false),
+	MEASLES(true, true, true, false, true, 21, true, true, false),
 	MONKEYPOX(true, true, true, false, true, 21, true, false, false),
 	NEW_INFLUENZA(true, true, true, false, true, 17, true, false, false),
 	PLAGUE(true, true, true, false, true, 7, true, false, false),
@@ -57,7 +57,8 @@ public enum Disease
 	DIARRHEA_BLOOD(true, false, false, true, false, 0, true, false, false),
 	SNAKE_BITE(true, false, false, true, false, 0, true, false, false),
 	RUBELLA(true, false, false, true, false, 0, true, false, false),
-	TUBERCULOSIS(true, false, false, true, false, 0, true, false, false),
+	TUBERCULOSIS(true, true, true, true, false, 0, true, false, false),
+	LATENT_TUBERCULOSIS(true, true, true, true, false, 0, true, false, false),
 	LEPROSY(true, false, false, true, false, 0, true, false, false),
 	LYMPHATIC_FILARIASIS(true, false, false, true, false, 0, true, false, false),
 	BURULI_ULCER(true, false, false, true, false, 0, true, false, false),
@@ -85,6 +86,8 @@ public enum Disease
 	POST_IMMUNIZATION_ADVERSE_EVENTS_MILD(true, false, false, true, false, 0, true, false, false),
 	POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE(true, false, false, true, false, 0, true, false, false),
 	FHA(true, false, false, true, false, 0, true, false, false),
+	INVASIVE_PNEUMOCOCCAL_INFECTION(true, true, true, false, false, 0, false, false, false),
+	INVASIVE_MENINGOCOCCAL_INFECTION(true, true, true, false, true, 7, false, false, false),
 	OTHER(true, true, true, false, true, 21, false, false, false),
 	UNDEFINED(true, true, true, false, true, 0, false, false, false);
 

@@ -3,10 +3,12 @@ package de.symeda.sormas.api.clinicalcourse;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.CountryHelper;
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
+import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
@@ -48,6 +50,9 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	public static final String ASTHMA = "asthma";
 	public static final String SICKLE_CELL_DISEASE = "sickleCellDisease";
 	public static final String IMMUNODEFICIENCY_INCLUDING_HIV = "immunodeficiencyIncludingHiv";
+	public static final String TUBERCULOSIS_INFECTION_YEAR = "tuberculosisInfectionYear";
+	public static final String PREVIOUS_TUBERCULOSIS_TREATMENT = "previousTuberculosisTreatment";
+	public static final String COMPLIANCE_WITH_TREATMENT = "complianceWithTreatment";
 
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
@@ -119,6 +124,21 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String otherConditions;
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	private YesNoUnknown previousTuberculosisTreatment;
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	private Integer tuberculosisInfectionYear;
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	private ComplianceWithTreatment complianceWithTreatment;
 
 	public static HealthConditionsDto build() {
 		HealthConditionsDto healthConditions = new HealthConditionsDto();
@@ -180,7 +200,7 @@ public class HealthConditionsDto extends PseudonymizableDto {
 		this.immunodeficiencyIncludingHiv = immunodeficiencyIncludingHiv;
 	}
 
-	@Order(10)
+	@Order(32)
 	public YesNoUnknown getHiv() {
 		return hiv;
 	}
@@ -331,5 +351,30 @@ public class HealthConditionsDto extends PseudonymizableDto {
 
 	public void setOtherConditions(String otherConditions) {
 		this.otherConditions = otherConditions;
+	}
+
+	@Order(10)
+	public YesNoUnknown getPreviousTuberculosisTreatment() {
+		return previousTuberculosisTreatment;
+	}
+
+	public void setPreviousTuberculosisTreatment(YesNoUnknown previousTuberculosisTreatment) {
+		this.previousTuberculosisTreatment = previousTuberculosisTreatment;
+	}
+
+	public Integer getTuberculosisInfectionYear() {
+		return tuberculosisInfectionYear;
+	}
+
+	public void setTuberculosisInfectionYear(Integer tuberculosisInfectionYear) {
+		this.tuberculosisInfectionYear = tuberculosisInfectionYear;
+	}
+
+	public ComplianceWithTreatment getComplianceWithTreatment() {
+		return complianceWithTreatment;
+	}
+
+	public void setComplianceWithTreatment(ComplianceWithTreatment complianceWithTreatment) {
+		this.complianceWithTreatment = complianceWithTreatment;
 	}
 }

@@ -72,6 +72,7 @@ import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentFacadeEjb;
 import de.symeda.sormas.backend.manualmessagelog.ManualMessageLogFacadeEjb;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb;
+import de.symeda.sormas.backend.person.notifier.NotifierEjb;
 import de.symeda.sormas.backend.report.AggregateReportFacadeEjb;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
@@ -90,6 +91,8 @@ import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShar
 import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessFacadeEjb;
 import de.symeda.sormas.backend.survey.SurveyFacadeEjb;
 import de.symeda.sormas.backend.survey.SurveyTokenFacadeEjb;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategoryEjb;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationValueEjb;
 import de.symeda.sormas.backend.task.TaskFacadeEjb;
 import de.symeda.sormas.backend.therapy.PrescriptionFacadeEjb;
 import de.symeda.sormas.backend.therapy.TreatmentFacadeEjb;
@@ -492,6 +495,7 @@ public class ArchitectureTest {
 	public void testSelfReportImportFacadeEjbAuthorization(JavaClasses classes) {
 		assertFacadeEjbAnnotated(SelfReportImportFacadeEjb.class, AuthMode.CLASS_ONLY, classes);
 	}
+
 	@ArchTest
 	public void testSurveyFacadeEjbAuthorization(JavaClasses classes) {
 		assertFacadeEjbAnnotated(SurveyFacadeEjb.class, AuthMode.CLASS_AND_METHODS, classes);
@@ -500,6 +504,21 @@ public class ArchitectureTest {
 	@ArchTest
 	public void testSurveyTokenFacadeEjbAuthorization(JavaClasses classes) {
 		assertFacadeEjbAnnotated(SurveyTokenFacadeEjb.class, AuthMode.CLASS_AND_METHODS, classes);
+	}
+
+	@ArchTest
+	public void testSystemConfigurationCategoryEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(SystemConfigurationCategoryEjb.class, AuthMode.CLASS_AND_METHODS, classes);
+	}
+
+	@ArchTest
+	public void testSystemConfigurationValueEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(SystemConfigurationValueEjb.class, AuthMode.CLASS_AND_METHODS, classes);
+	}
+
+	@ArchTest
+	public void testNotifierEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(NotifierEjb.class, AuthMode.CLASS_AND_METHODS, classes);
 	}
 
 	private void assertFacadeEjbAnnotated(Class<?> facadeEjbClass, JavaClasses classes) {

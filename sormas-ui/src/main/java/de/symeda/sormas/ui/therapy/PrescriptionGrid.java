@@ -38,7 +38,7 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 
 	private PrescriptionCriteria prescriptionCriteria = new PrescriptionCriteria();
 
-	public PrescriptionGrid(TherapyView parentView, boolean isPseudonymized, boolean isEditAllowed, boolean isDeleteAllowed) {
+	public PrescriptionGrid(TherapyForm parentView, boolean isPseudonymized, boolean isEditAllowed, boolean isDeleteAllowed) {
 
 		setSizeFull();
 

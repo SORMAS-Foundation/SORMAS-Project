@@ -17,8 +17,10 @@ package de.symeda.sormas.ui.externalmessage;
 import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showAlreadyProcessedPopup;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -76,6 +78,7 @@ import de.symeda.sormas.api.utils.dataprocessing.ProcessingResultStatus;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
+import de.symeda.sormas.ui.externalmessage.doctordeclaration.DoctorDeclarationMessageProcessingFlow;
 import de.symeda.sormas.ui.externalmessage.labmessage.LabMessageProcessingFlow;
 import de.symeda.sormas.ui.externalmessage.labmessage.LabMessageSlider;
 import de.symeda.sormas.ui.externalmessage.labmessage.RelatedLabMessageHandler;
@@ -108,7 +111,8 @@ public class ExternalMessageController {
 			FacadeProvider.getFacilityFacade(),
 			FacadeProvider.getCustomizableEnumFacade(),
 			FacadeProvider.getCountryFacade(),
-			FacadeProvider.getSurveillanceReportFacade()) {
+			FacadeProvider.getSurveillanceReportFacade(),
+			FacadeProvider.getNotifierFacade()) {
 
 			@Override
 			public boolean hasAllUserRights(UserRight... userRights) {
@@ -156,6 +160,35 @@ public class ExternalMessageController {
 		flow.run().handle((BiFunction<? super ProcessingResult<ExternalMessageProcessingResult>, Throwable, Void>) (result, exception) -> {
 			if (exception != null) {
 				logger.error("Unexpected exception while processing lab message", exception);
+
+				Notification.show(
+					I18nProperties.getString(Strings.errorOccurred, I18nProperties.getString(Strings.errorOccurred)),
+					I18nProperties.getString(Strings.errorWasReported),
+					Notification.Type.ERROR_MESSAGE);
+
+				return null;
+			}
+
+			ProcessingResultStatus status = result.getStatus();
+			if (status == ProcessingResultStatus.CANCELED_WITH_CORRECTIONS) {
+				showCorrectionsSavedPopup();
+			} else if (status == ProcessingResultStatus.DONE) {
+				SormasUI.get().getNavigator().navigateTo(ExternalMessagesView.VIEW_NAME);
+			}
+
+			return null;
+		});
+	}
+
+	public void processDoctorDeclarationMessage(String messageUuid) {
+		ExternalMessageDto externalMessageDto = FacadeProvider.getExternalMessageFacade().getByUuid(messageUuid);
+		ExternalMessageProcessingFacade processingFacade = getExternalMessageProcessingFacade();
+		ExternalMessageMapper mapper = new ExternalMessageMapper(externalMessageDto, processingFacade);
+		DoctorDeclarationMessageProcessingFlow flow = new DoctorDeclarationMessageProcessingFlow(externalMessageDto, mapper, processingFacade);
+
+		flow.run().handle((BiFunction<? super ProcessingResult<ExternalMessageProcessingResult>, Throwable, Void>) (result, exception) -> {
+			if (exception != null) {
+				logger.error("Unexpected exception while processing doctor declaration message", exception);
 
 				Notification.show(
 					I18nProperties.getString(Strings.errorOccurred, I18nProperties.getString(Strings.errorOccurred)),
@@ -302,7 +335,8 @@ public class ExternalMessageController {
 		buttonsPanel.setMargin(false);
 		buttonsPanel.setSpacing(true);
 
-		if (UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_DELETE)) {
+		if ((ReportingType.LABORATORY.equals(externalMessage.getType()) && UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_LABORATORY_DELETE)
+			|| ReportingType.DOCTOR.equals(externalMessage.getType()) && UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE))) {
 			Button deleteButton = ButtonHelper.createButton(
 				Captions.actionDelete,
 				I18nProperties.getCaption(Captions.actionDelete),
@@ -427,6 +461,8 @@ public class ExternalMessageController {
 		// get fresh data
 		ExternalMessageDto externalMessageDto = FacadeProvider.getExternalMessageFacade().getByUuid(labMessageUuid);
 
+		components.syncUsersForMessageType(Set.of(externalMessageDto.getType()));
+
 		if (externalMessageDto.getAssignee() != null) {
 			components.getAssigneeComboBox().setValue(externalMessageDto.getAssignee());
 		}
@@ -442,6 +478,15 @@ public class ExternalMessageController {
 	private void bulkEditAssignee(Collection<ExternalMessageIndexDto> selectedRows, Runnable callback) {
 
 		EditAssigneeComponentContainer components = new EditAssigneeComponentContainer();
+
+		final HashSet<ExternalMessageType> types = new HashSet<>();
+		if (UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_LABORATORY_PROCESS)) {
+			types.add(ExternalMessageType.LAB_MESSAGE);
+		}
+		if (UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS)) {
+			types.add(ExternalMessageType.PHYSICIANS_REPORT);
+		}
+		components.syncUsersForMessageType(types);
 
 		components.getAssignMeButton().addClickListener(e -> {
 			FacadeProvider.getExternalMessageFacade()

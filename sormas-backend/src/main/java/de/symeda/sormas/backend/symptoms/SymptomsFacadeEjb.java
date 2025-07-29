@@ -42,8 +42,11 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setChestPain(source.getChestPain());
 		target.setConfusedDisoriented(source.getConfusedDisoriented());
 		target.setConjunctivitis(source.getConjunctivitis());
+		target.setApnoea(source.getApnoea());
 		target.setCough(source.getCough());
 		target.setCoughingBlood(source.getCoughingBlood());
+		target.setCoughingBouts(source.getCoughingBouts());
+		target.setCoughsProvokeVomiting(source.getCoughsProvokeVomiting());
 		target.setDehydration(source.getDehydration());
 		target.setDiarrhea(source.getDiarrhea());
 		target.setDifficultyBreathing(source.getDifficultyBreathing());
@@ -190,6 +193,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setCoughWithHeamoptysis(source.getCoughWithHeamoptysis());
 		target.setLymphadenopathy(source.getLymphadenopathy());
 		target.setWheezing(source.getWheezing());
+		target.setWhoopSound(source.getWhoopSound());
 		target.setSkinUlcers(source.getSkinUlcers());
 		target.setInabilityToWalk(source.getInabilityToWalk());
 		target.setInDrawingOfChestWall(source.getInDrawingOfChestWall());
@@ -212,7 +216,22 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setDizzinessStandingUp(source.getDizzinessStandingUp());
 		target.setHighOrLowBloodPressure(source.getHighOrLowBloodPressure());
 		target.setUrinaryRetention(source.getUrinaryRetention());
+		target.setAsymptomatic(source.getAsymptomatic());
+		target.setArthritis(source.getArthritis());
+		target.setSepticaemia(source.getSepticaemia());
+		target.setHemorrhagicRash(source.getHemorrhagicRash());
+		target.setMeningitis(source.getMeningitis());
+		target.setOtherClinicalPresentation(source.getOtherClinicalPresentation());
+		target.setOtherClinicalPresentationText(source.getOtherClinicalPresentationText());
+		target.setDiagnosis(source.getDiagnosis());
+		target.setMajorSite(source.getMajorSite());
+		target.setOtherMajorSiteDetails(source.getOtherMajorSiteDetails());
+		target.setMinorSite(source.getMinorSite());
+		target.setOtherMinorSiteDetails(source.getOtherMinorSiteDetails());
+		target.setDateOfOnsetKnown(source.getDateOfOnsetKnown());
+		target.setClinicalPresentationStatus(source.getClinicalPresentationStatus());
 
+		target.setNocturnalCough(source.getNocturnalCough());
 		return target;
 	}
 
@@ -237,8 +256,11 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setChestPain(source.getChestPain());
 		target.setConfusedDisoriented(source.getConfusedDisoriented());
 		target.setConjunctivitis(source.getConjunctivitis());
+		target.setApnoea(source.getApnoea());
 		target.setCough(source.getCough());
 		target.setCoughingBlood(source.getCoughingBlood());
+		target.setCoughingBouts(source.getCoughingBouts());
+		target.setCoughsProvokeVomiting(source.getCoughsProvokeVomiting());
 		target.setDehydration(source.getDehydration());
 		target.setDiarrhea(source.getDiarrhea());
 		target.setDifficultyBreathing(source.getDifficultyBreathing());
@@ -385,6 +407,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setCoughWithHeamoptysis(source.getCoughWithHeamoptysis());
 		target.setLymphadenopathy(source.getLymphadenopathy());
 		target.setWheezing(source.getWheezing());
+		target.setWhoopSound(source.getWhoopSound());
 		target.setSkinUlcers(source.getSkinUlcers());
 		target.setInabilityToWalk(source.getInabilityToWalk());
 		target.setInDrawingOfChestWall(source.getInDrawingOfChestWall());
@@ -407,7 +430,22 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setDizzinessStandingUp(source.getDizzinessStandingUp());
 		target.setHighOrLowBloodPressure(source.getHighOrLowBloodPressure());
 		target.setUrinaryRetention(source.getUrinaryRetention());
+		target.setAsymptomatic(source.getAsymptomatic());
+		target.setSepticaemia(source.getSepticaemia());
+		target.setArthritis(source.getArthritis());
+		target.setHemorrhagicRash(source.getHemorrhagicRash());
+		target.setMeningitis(source.getMeningitis());
+		target.setOtherClinicalPresentation(source.getOtherClinicalPresentation());
+		target.setOtherClinicalPresentationText(source.getOtherClinicalPresentationText());
+		target.setDiagnosis(source.getDiagnosis());
+		target.setMajorSite(source.getMajorSite());
+		target.setOtherMajorSiteDetails(source.getOtherMajorSiteDetails());
+		target.setMinorSite(source.getMinorSite());
+		target.setOtherMinorSiteDetails(source.getOtherMinorSiteDetails());
+		target.setDateOfOnsetKnown(source.getDateOfOnsetKnown());
+		target.setClinicalPresentationStatus(source.getClinicalPresentationStatus());
 
+		target.setNocturnalCough(source.getNocturnalCough());
 		return target;
 	}
 

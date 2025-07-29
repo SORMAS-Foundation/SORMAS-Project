@@ -155,7 +155,7 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 						joins.getGeneratedDocument().get(Document.MIME_TYPE),
 						root.get(SurveyToken.RESPONSE_RECEIVED_DATE)),
 					// add sort properties to select
-					sortBy(sortProperties, root, cb, cq).stream())
+					sortBy(sortProperties, root, cb, cq, joins).stream())
 				.collect(Collectors.toList()));
 
 		Predicate filter = CriteriaBuilderHelper.and(cb, surveyTokenService.buildCriteriaFilter(criteria, cb, root, joins));
@@ -222,7 +222,7 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 		return instanceName + "_" + baseFilename;
 	}
 
-	private List<Selection<?>> sortBy(List<SortProperty> sortProperties, Root<SurveyToken> root, CriteriaBuilder cb, CriteriaQuery<?> cq) {
+	private List<Selection<?>> sortBy(List<SortProperty> sortProperties, Root<SurveyToken> root, CriteriaBuilder cb, CriteriaQuery<?> cq, SurveyTokenJoins joins) {
 
 		List<Selection<?>> selections = new ArrayList<>();
 
@@ -234,7 +234,14 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 				switch (sortProperty.propertyName) {
 				case Survey.UUID:
 				case Survey.DISEASE:
+				case SurveyToken.TOKEN:
+				case SurveyToken.ASSIGNMENT_DATE:
+				case SurveyToken.RESPONSE_RECEIVED:
+				case SurveyToken.RESPONSE_RECEIVED_DATE:
 					orderList = orderBuilder.build(root.get(sortProperty.propertyName));
+					break;
+				case SurveyTokenIndexDto.ASSIGNED_CASE_UUID:
+					orderList = orderBuilder.build(joins.getCaseAssignedTo().get(Case.UUID));
 					break;
 				case Survey.NAME:
 					orderList = orderBuilder.build(cb.lower(root.get(sortProperty.propertyName)));

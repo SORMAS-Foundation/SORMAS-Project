@@ -28,6 +28,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.DiseaseHelper;
+import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.vaadin.ui.Label;
@@ -117,8 +120,25 @@ public class PathogenTestController {
 		int caseSampleCount,
 		Consumer<PathogenTestDto> onSavedPathogenTest,
 		boolean suppressNavigateToCase) {
-
-		PathogenTestForm createForm = new PathogenTestForm(sampleDto, true, caseSampleCount, false, true); // Valid because jurisdiction doesn't matter for entities that are about to be created 
+		// Pathogen tests can be created for a sample that is associated with a case, event participant or contact.
+		Disease associatedEventOrCaseOrContactDisease = null;
+		if (sampleDto.getAssociatedCase() != null) {
+			CaseDataDto caseDataDto = FacadeProvider.getCaseFacade().getByUuid(sampleDto.getAssociatedCase().getUuid());
+			associatedEventOrCaseOrContactDisease = caseDataDto.getDisease();
+		}
+		if (associatedEventOrCaseOrContactDisease == null && sampleDto.getAssociatedEventParticipant() != null) {
+			EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(sampleDto.getAssociatedEventParticipant().getUuid());
+			EventReferenceDto eventDto = eventParticipant.getEvent();
+			EventDto participantEvent = FacadeProvider.getEventFacade().getEventByUuid(eventDto.getUuid(), false);
+			associatedEventOrCaseOrContactDisease = participantEvent.getDisease();
+		}
+		if (associatedEventOrCaseOrContactDisease == null && sampleDto.getAssociatedContact() != null) {
+			ContactDto contact = FacadeProvider.getContactFacade().getByUuid(sampleDto.getAssociatedContact().getUuid());
+			associatedEventOrCaseOrContactDisease = contact.getDisease();
+		}
+		PathogenTestForm createForm = new PathogenTestForm(sampleDto, true, caseSampleCount, false, true, associatedEventOrCaseOrContactDisease); // Valid because jurisdiction doesn't matter for entities that are about to be created
+		// Defaulting the case disease as tested disease
+		pathogenTest.setTestedDisease(associatedEventOrCaseOrContactDisease);
 		createForm.setValue(pathogenTest);
 		final CommitDiscardWrapperComponent<PathogenTestForm> editView =
 			new CommitDiscardWrapperComponent<>(createForm, UiUtil.permitted(UserRight.PATHOGEN_TEST_CREATE), createForm.getFieldGroup());
@@ -140,7 +160,7 @@ public class PathogenTestController {
 
 	public CommitDiscardWrapperComponent<PathogenTestForm> getPathogenTestCreateComponent(EnvironmentSampleDto sampleDto) {
 
-		PathogenTestForm createForm = new PathogenTestForm(sampleDto, true, false, true); // Valid because jurisdiction doesn't matter for entities that are about to be created
+		PathogenTestForm createForm = new PathogenTestForm(sampleDto, true, false, true, null); // Valid because jurisdiction doesn't matter for entities that are about to be created
 		createForm.setValue(PathogenTestDto.build(sampleDto, UiUtil.getUser()));
 
 		final CommitDiscardWrapperComponent<PathogenTestForm> editView =
@@ -191,11 +211,11 @@ public class PathogenTestController {
 		final PathogenTestForm form;
 		if (forHumanSample) {
 			SampleDto sample = FacadeProvider.getSampleFacade().getSampleByUuid(pathogenTest.getSample().getUuid());
-			form = new PathogenTestForm(sample, false, 0, pathogenTest.isPseudonymized(), pathogenTest.isInJurisdiction());
+			form = new PathogenTestForm(sample, false, 0, pathogenTest.isPseudonymized(), pathogenTest.isInJurisdiction(), pathogenTest.getTestedDisease());
 		} else {
 			EnvironmentSampleDto environmentSample =
 				FacadeProvider.getEnvironmentSampleFacade().getByUuid(pathogenTest.getEnvironmentSample().getUuid());
-			form = new PathogenTestForm(environmentSample, false, pathogenTest.isPseudonymized(), pathogenTest.isInJurisdiction());
+			form = new PathogenTestForm(environmentSample, false, pathogenTest.isPseudonymized(), pathogenTest.isInJurisdiction(), pathogenTest.getTestedDisease());
 		}
 
 		form.setValue(pathogenTest);
@@ -297,6 +317,12 @@ public class PathogenTestController {
 
 		pathogenTests.forEach(p -> {
 			p.setSample(sampleRef);
+			boolean luxTB = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && Disease.TUBERCULOSIS == p.getTestedDisease();
+			boolean invasiveDisease = DiseaseHelper.checkDiseaseIsInvasiveBacterialDiseases(p.getTestedDisease());
+			//the susceptibility test is applicable only for LUX TB and all-countries invasive disease
+			if(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY  == p.getTestType() && !luxTB && !invasiveDisease) {
+				p.setDrugSusceptibility(null);
+			}
 			facade.savePathogenTest(p);
 		});
 		if (associatedContact != null) {

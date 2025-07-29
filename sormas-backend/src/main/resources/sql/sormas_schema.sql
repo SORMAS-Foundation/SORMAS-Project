@@ -13827,4 +13827,593 @@ ALTER TABLE surveytokens ADD COLUMN responsereceiveddate timestamp;
 ALTER TABLE surveytokens_history ADD COLUMN responsereceiveddate timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (560, 'Create survey tokens pages #13253');
+
+-- 2025-03-11 added new column as vectortype for environment and environment sample #13267
+ALTER TABLE environments ADD column IF NOT EXISTS vectortype varchar(255);
+ALTER TABLE environmentsamples ADD column IF NOT EXISTS  vectortype varchar(255);
+
+ALTER TABLE environments_history ADD COLUMN vectortype varchar(255);
+ALTER TABLE environmentsamples_history ADD COLUMN vectortype varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (561, 'Added vectors to the environment #13267');
+
+-- 2025-03-17 add default disease configuration user rights for admin user role #13265
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'DISEASE_MANAGEMENT' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN');
+
+INSERT INTO schema_version (version_number, comment) VALUES (562, 'Disease configuration user interface #13265');
+
+
+-- 2025-03-10 events and environment linkage 13266
+CREATE TABLE IF NOT EXISTS events_environments (
+                                                   event_id bigint NOT NULL,
+                                                   environment_id bigint NOT NULL,
+                                                   sys_period tstzrange NOT NULL,
+                                                   CONSTRAINT events_environments_pkey PRIMARY KEY (event_id, environment_id)
+    );
+
+ALTER TABLE events_environments OWNER TO sormas_user;
+ALTER TABLE events_environments ADD CONSTRAINT fk_events_environment_environment_id FOREIGN KEY (environment_id) REFERENCES environments(id);
+ALTER TABLE events_environments ADD CONSTRAINT fk_events_environment_event_id FOREIGN KEY (event_id) REFERENCES events(id);
+
+CREATE TABLE  events_environments_history (LIKE events_environments);
+
+DROP TRIGGER IF EXISTS versioning_trigger ON events_environments;
+
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON events_environments
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'events_environments_history','true');
+
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'ENVIRONMENT_LINK' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN','NATIONAL_USER');
+
+INSERT INTO schema_version (version_number, comment) VALUES (563, 'Events and environment linkage #13266');
+
+-- 2025-03-03 Create system config structures #13269
+CREATE TABLE systemconfigurationcategory (
+                         id bigint not null,
+                         uuid varchar(36) not null unique,
+                         changedate timestamp not null,
+                         creationdate timestamp not null,
+                         change_user_id bigint,
+
+                         "name" varchar(255) not null,
+                         caption text,
+                         "description" text,
+
+                         sys_period tstzrange not null,
+                         primary key(id)
+);
+
+ALTER TABLE systemconfigurationcategory OWNER TO sormas_user;
+ALTER TABLE systemconfigurationcategory ADD CONSTRAINT fk_change_user_id FOREIGN KEY (change_user_id) REFERENCES users (id);
+
+CREATE TABLE systemconfigurationcategory_history (LIKE systemconfigurationcategory);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE ON systemconfigurationcategory
+                                                       FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'systemconfigurationcategory_history', true);
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON systemconfigurationcategory
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('systemconfigurationcategory_history', 'id');
+ALTER TABLE systemconfigurationcategory_history OWNER TO sormas_user;
+
+INSERT INTO systemconfigurationcategory(id, uuid, changedate, creationdate, name, caption, description) 
+VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'GENERAL_CATEGORY', 'i18n/General/categoryGeneral', 'i18n/General/categoryGeneral');
+
+CREATE TABLE systemconfigurationvalue (
+                         id bigint not null,
+                         uuid varchar(36) not null unique,
+                         changedate timestamp not null,
+                         creationdate timestamp not null,
+                         change_user_id bigint,
+
+                         category_id bigint not null,
+                         config_key varchar(255) not null,
+                         config_value text,
+                         value_optional boolean default false,
+                         value_pattern varchar(255),
+                         value_encrypt boolean default false,
+                         data_provider varchar(255),
+                         validation_message varchar(255),
+
+                         sys_period tstzrange not null,
+                         primary key(id)
+);
+
+ALTER TABLE systemconfigurationvalue OWNER TO sormas_user;
+ALTER TABLE systemconfigurationvalue ADD CONSTRAINT fk_change_user_id FOREIGN KEY (change_user_id) REFERENCES users (id);
+ALTER TABLE systemconfigurationvalue ADD CONSTRAINT fk_systemconfigurationcategory FOREIGN KEY (category_id) REFERENCES systemconfigurationcategory (id);
+
+CREATE TABLE systemconfigurationvalue_history (LIKE systemconfigurationvalue);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE ON systemconfigurationvalue
+                                                       FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'systemconfigurationvalue_history', true);
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON systemconfigurationvalue
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('systemconfigurationvalue_history', 'id');
+ALTER TABLE systemconfigurationvalue_history OWNER TO sormas_user;
+
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'SYSTEM_CONFIGURATION' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN');
+
+INSERT INTO schema_version (version_number, comment) VALUES (564, 'Create system config structures #13269');
+
+-- 2025-03-28 Notifier handling #13283
+CREATE TABLE notifier (
+                         id bigint not null,
+                         uuid varchar(36) not null unique,
+                         changedate timestamp not null,
+                         creationdate timestamp not null,
+                         change_user_id bigint,
+
+                         registrationnumber varchar(255) not null,
+                         firstname varchar(255),
+                         lastname varchar(255),
+                         address text,
+                         email varchar(255),
+                         phone varchar(255),
+
+                         sys_period tstzrange not null,
+                         primary key(id)
+);
+
+CREATE TABLE notifier_history (LIKE notifier);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE ON notifier
+                                                       FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'notifier_history', true);
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON notifier
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('notifier_history', 'id');
+
+ALTER TABLE cases ADD COLUMN notifier_id bigint;
+ALTER TABLE cases ADD CONSTRAINT fk_cases_notifier_id FOREIGN KEY (notifier_id) REFERENCES notifier (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE cases ADD COLUMN notifierdate timestamp;
+ALTER TABLE cases_history ADD COLUMN notifier_id bigint;
+ALTER TABLE cases_history ADD COLUMN notifierdate timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (565, 'Entities to Support Doctor Declaration XML Parsing #13283');
+
+-- 2025-04-14 Entries to the LUX+TB specific #13319
+ALTER TABLE cases ADD COLUMN IF NOT EXISTS  postMortem BOOLEAN DEFAULT false;
+ALTER TABLE cases ADD COLUMN IF NOT EXISTS  healthFacilityDepartment VARCHAR(255);
+
+ALTER TABLE cases_history ADD COLUMN IF NOT EXISTS  postMortem BOOLEAN DEFAULT false;
+ALTER TABLE cases_history ADD COLUMN IF NOT EXISTS  healthFacilityDepartment VARCHAR(255);
+
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS  previousTuberculosisTreatment VARCHAR(255);
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS  tuberculosisInfectionYear int8 default 0;
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS complianceWithTreatment VARCHAR(255);
+
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS  previousTuberculosisTreatment VARCHAR(255);
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS  tuberculosisInfectionYear int8 default 0;
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS complianceWithTreatment VARCHAR(255);
+
+ALTER TABLE person ADD COLUMN IF NOT EXISTS entrydate date;
+ALTER TABLE person ADD COLUMN IF NOT EXISTS livingStatus varchar(255);
+
+ALTER TABLE person_history ADD COLUMN IF NOT EXISTS entrydate date;
+ALTER TABLE person_history ADD COLUMN IF NOT EXISTS livingStatus varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (566, 'Entries to the LUX+TB specific #13319');
+
+-- 2025-03-24 Doctor declaration handling #13294
+ALTER TABLE externalmessage ADD COLUMN caseclassification varchar(255) DEFAULT 'NOT_CLASSIFIED';
+ALTER TABLE externalmessage ADD COLUMN casesymptoms_id bigint;
+ALTER TABLE externalmessage ADD CONSTRAINT fk_externalmessage_casesymptoms_id FOREIGN KEY (casesymptoms_id) REFERENCES symptoms (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE externalmessage ADD COLUMN personguardianfirstname varchar(255);
+ALTER TABLE externalmessage ADD COLUMN personguardianlastname varchar(255);
+ALTER TABLE externalmessage ADD COLUMN personguardianrelationship varchar(255);
+ALTER TABLE externalmessage ADD COLUMN personguardianphone varchar(255);
+ALTER TABLE externalmessage ADD COLUMN personguardianemail varchar(255);
+ALTER TABLE externalmessage ADD COLUMN notifierfirstname VARCHAR(255);
+ALTER TABLE externalmessage ADD COLUMN notifierlastname VARCHAR(255);
+ALTER TABLE externalmessage ADD COLUMN notifierregistrationnumber VARCHAR(255);
+ALTER TABLE externalmessage ADD COLUMN notifieraddress TEXT;
+ALTER TABLE externalmessage ADD COLUMN notifieremail VARCHAR(255);
+ALTER TABLE externalmessage ADD COLUMN notifierphone VARCHAR(255);
+ALTER TABLE externalmessage ADD COLUMN treatmentstarted VARCHAR(255);
+ALTER TABLE externalmessage ADD COLUMN treatmentstarteddate TIMESTAMP;
+ALTER TABLE externalmessage ADD COLUMN diagnosticdate TIMESTAMP;
+
+
+ALTER TABLE externalmessage_history ADD COLUMN caseclassification varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN casesymptoms_id bigint;
+ALTER TABLE externalmessage_history ADD COLUMN personguardianfirstname varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN personguardianlastname varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN personguardianrelationship varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN personguardianphone varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN personguardianemail varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN notifierfirstname VARCHAR(255);
+ALTER TABLE externalmessage_history ADD COLUMN notifierlastname VARCHAR(255);
+ALTER TABLE externalmessage_history ADD COLUMN notifierregistrationnumber VARCHAR(255);
+ALTER TABLE externalmessage_history ADD COLUMN notifieraddress TEXT;
+ALTER TABLE externalmessage_history ADD COLUMN notifieremail VARCHAR(255);
+ALTER TABLE externalmessage_history ADD COLUMN notifierphone VARCHAR(255);
+ALTER TABLE externalmessage_history ADD COLUMN treatmentstarted VARCHAR(255);
+ALTER TABLE externalmessage_history ADD COLUMN treatmentstarteddate TIMESTAMP;
+ALTER TABLE externalmessage_history ADD COLUMN diagnosticdate TIMESTAMP;
+
+INSERT INTO schema_version (version_number, comment) VALUES (567, 'Doctor declaration handling #13294');
+
+-- 2025-05-02 Redesign User Rights System for Message Types #13297
+DO $$
+DECLARE
+	row_data RECORD;
+BEGIN
+	DROP TABLE IF EXISTS tmp_roles_rights_inserts;
+	CREATE TEMP TABLE tmp_roles_rights_inserts (
+		userrole_id int8 NOT NULL,
+		sys_period tstzrange NOT NULL,
+		userright varchar(255) NOT NULL
+	);
+
+	FOR row_data IN
+        SELECT
+			userrole_id,
+			sys_period,
+			userright
+		FROM userroles_userrights
+		WHERE userright IN ('EXTERNAL_MESSAGE_DELETE','EXTERNAL_MESSAGE_PROCESS','EXTERNAL_MESSAGE_VIEW')
+    LOOP
+		IF row_data.userright = 'EXTERNAL_MESSAGE_DELETE' THEN
+			INSERT INTO tmp_roles_rights_inserts VALUES(row_data.userrole_id, row_data.sys_period, 'EXTERNAL_MESSAGE_LABORATORY_DELETE');
+			INSERT INTO tmp_roles_rights_inserts VALUES(row_data.userrole_id, row_data.sys_period, 'EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE');
+			CONTINUE;
+		END IF;
+
+		IF row_data.userright = 'EXTERNAL_MESSAGE_PROCESS' THEN
+			INSERT INTO tmp_roles_rights_inserts VALUES(row_data.userrole_id, row_data.sys_period, 'EXTERNAL_MESSAGE_LABORATORY_PROCESS');
+			INSERT INTO tmp_roles_rights_inserts VALUES(row_data.userrole_id, row_data.sys_period, 'EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS');
+			CONTINUE;
+		END IF;
+
+		IF row_data.userright = 'EXTERNAL_MESSAGE_VIEW' THEN
+			INSERT INTO tmp_roles_rights_inserts VALUES(row_data.userrole_id, row_data.sys_period, 'EXTERNAL_MESSAGE_ACCESS');
+			INSERT INTO tmp_roles_rights_inserts VALUES(row_data.userrole_id, row_data.sys_period, 'EXTERNAL_MESSAGE_LABORATORY_VIEW');
+			INSERT INTO tmp_roles_rights_inserts VALUES(row_data.userrole_id, row_data.sys_period, 'EXTERNAL_MESSAGE_DOCTOR_DECLARATION_VIEW');
+			CONTINUE;
+		END IF;
+	END LOOP;
+
+	INSERT INTO userroles_userrights(userrole_id,sys_period,userright)
+	SELECT userrole_id,
+			sys_period,
+			userright
+	FROM tmp_roles_rights_inserts;
+	DELETE FROM userroles_userrights
+	WHERE userrole_id IN (SELECT DISTINCT userrole_id FROM tmp_roles_rights_inserts)
+		AND userright IN ('EXTERNAL_MESSAGE_DELETE','EXTERNAL_MESSAGE_PROCESS','EXTERNAL_MESSAGE_VIEW');
+
+	DROP TABLE IF EXISTS tmp_roles_rights_inserts;
+END $$;
+INSERT INTO schema_version (version_number, comment) VALUES (568, 'Redesign User Rights System for Message Types #13297');
+
+-- 2025-05-05 Moving Email & SMS properties to the new system configuration structure #13311
+DO
+$$ DECLARE
+email_configuration_id bigint; sms_configuration_id
+bigint;
+
+BEGIN
+    -- Check if the category 'EMAIL' already exists
+SELECT id
+INTO email_configuration_id
+FROM systemconfigurationcategory
+WHERE name = 'EMAIL';
+
+SELECT id
+INTO sms_configuration_id
+FROM systemconfigurationcategory
+WHERE name = 'SMS';
+
+-- Insert the email category if it doesn't exist
+IF
+email_configuration_id IS NULL THEN
+        INSERT INTO systemconfigurationcategory(id, uuid, changedate, creationdate, name, caption, description) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'EMAIL', 'Email', 'Email Configuration')
+        RETURNING id INTO email_configuration_id;
+
+END IF;
+-- Insert the sms category if it doesn't exist
+IF
+sms_configuration_id IS NULL THEN
+INSERT INTO systemconfigurationcategory(id, uuid, changedate, creationdate, name, caption, description) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'SMS', 'SMS', 'SMS Configuration')
+        RETURNING id INTO sms_configuration_id;
+end if;
+
+
+DELETE
+FROM systemconfigurationvalue
+WHERE category_id = email_configuration_id
+  AND config_key = 'EMAIL_SENDER_ADDRESS';
+DELETE
+FROM systemconfigurationvalue_history
+WHERE category_id = email_configuration_id
+  AND config_key = 'EMAIL_SENDER_ADDRESS';
+INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_pattern,
+                                     value_encrypt, data_provider, validation_message, changedate, creationdate, id,
+                                     uuid)
+VALUES ('EMAIL_SENDER_ADDRESS', 'noreply@sormas.org', email_configuration_id, true,
+        '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', false, null,
+        'i18n/systemConfigurationValueValidationNotAEmail', now(), now(), nextval('entity_seq'),
+        generate_base32_uuid());
+
+DELETE
+FROM systemconfigurationvalue
+WHERE category_id = email_configuration_id
+  AND config_key = 'EMAIL_SENDER_NAME';
+DELETE
+FROM systemconfigurationvalue_history
+WHERE category_id = email_configuration_id
+  AND config_key = 'EMAIL_SENDER_NAME';
+INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_pattern,
+                                     value_encrypt, data_provider, validation_message, changedate, creationdate, id,
+                                     uuid)
+VALUES ('EMAIL_SENDER_NAME', 'SORMAS Support', email_configuration_id, true, '^[A-Za-z]+( [A-Za-z]+)*$', false, null,
+        'i18n/systemConfigurationValueValidationNotAValidEmailsenderName', now(), now(), nextval('entity_seq'),
+        generate_base32_uuid());
+
+
+DELETE
+FROM systemconfigurationvalue
+WHERE category_id = sms_configuration_id
+  AND config_key = 'SMS_SENDER_NAME';
+DELETE
+FROM systemconfigurationvalue_history
+WHERE category_id = sms_configuration_id
+  AND config_key = 'SMS_SENDER_NAME';
+INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_pattern,
+                                     value_encrypt, data_provider, validation_message, changedate, creationdate, id,
+                                     uuid)
+VALUES ('SMS_SENDER_NAME', '', sms_configuration_id, true,
+        '^(([1-9]{2}[0-9]{0,13})|([A-Za-z1-9]{1}[A-Za-z0-9]{0,10}))$', false, null,
+        'i18n/systemConfigurationValueValidationNotAValidSmsSenderName', now(), now(), nextval('entity_seq'),
+        generate_base32_uuid());
+
+DELETE
+FROM systemconfigurationvalue
+WHERE category_id = sms_configuration_id
+  AND config_key = 'SMS_AUTH_KEY';
+DELETE
+FROM systemconfigurationvalue_history
+WHERE category_id = sms_configuration_id
+  AND config_key = 'SMS_AUTH_KEY';
+INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_pattern,
+                                     value_encrypt, data_provider, validation_message, changedate, creationdate, id,
+                                     uuid)
+VALUES ('SMS_AUTH_KEY', '', sms_configuration_id, true, '\s*[^\s]+', false, null, 'i18n/smsAuthKeyValueValidation',
+        now(), now(), nextval('entity_seq'), generate_base32_uuid());
+
+DELETE
+FROM systemconfigurationvalue
+WHERE category_id = sms_configuration_id
+  AND config_key = 'SMS_AUTH_SECRET';
+DELETE
+FROM systemconfigurationvalue_history
+WHERE category_id = sms_configuration_id
+  AND config_key = 'SMS_AUTH_SECRET';
+INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_pattern,
+                                     value_encrypt, data_provider, validation_message, changedate, creationdate, id,
+                                     uuid)
+VALUES ('SMS_AUTH_SECRET', '', sms_configuration_id, true, '(?i)(secret|password|token|api[_-]?key)\s*[:=]\s*[^\s]+',
+        false, null, 'i18n/smsAuthSecretValueValidation', now(), now(), nextval('entity_seq'), generate_base32_uuid());
+END $$
+LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (569, 'Moving Email & SMS properties to the new system configuration structure #13311');
+
+
+-- 2025-05-26 Add description to system configuration values #13357
+
+ALTER TABLE systemconfigurationvalue ADD COLUMN value_description text;
+ALTER TABLE systemconfigurationvalue_history ADD COLUMN value_description text;
+
+DO $$ BEGIN
+    UPDATE systemconfigurationvalue
+    SET value_description = 'i18n/infoSystemConfigurationValueDescriptionEmailSenderAddress'
+    WHERE config_key = 'EMAIL_SENDER_ADDRESS';
+
+    UPDATE systemconfigurationvalue
+    SET value_description = 'i18n/infoSystemConfigurationValueDescriptionEmailSenderName'
+    WHERE config_key = 'EMAIL_SENDER_NAME';
+
+    UPDATE systemconfigurationvalue
+    SET value_description = 'i18n/infoSystemConfigurationValueDescriptionSmsSenderName'
+    WHERE config_key = 'SMS_SENDER_NAME';
+
+    UPDATE systemconfigurationvalue
+    SET value_description = 'i18n/infoSystemConfigurationValueDescriptionSmsAuthKey'
+    WHERE config_key = 'SMS_AUTH_KEY';
+
+    UPDATE systemconfigurationvalue
+    SET value_description = 'i18n/infoSystemConfigurationValueDescriptionSmsAuthSecret'
+    WHERE config_key = 'SMS_AUTH_SECRET';
+END $$ LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (570, 'Added description to system configuration values #13357');
+
+-- 2025-05-26 Update Pertussis symptoms #13373
+
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS apnoea varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS whoopsound varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS coughingbouts varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS coughsprovokevomiting varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS apnoea varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS whoopsound varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS coughingbouts varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS coughsprovokevomiting varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (571, 'Update Pertussis symptoms #13373');
+
+
+-- 2025-05-28 New Disease(s) IMI & IPI for LUX #13345, #13344
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS asymptomatic varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS hemorrhagicrash varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS arthritis varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS meningitis varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS septicaemia varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS otherclinicalpresentation varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS otherclinicalpresentationtext varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS asymptomatic varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS hemorrhagicrash varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS arthritis varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS meningitis varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS septicaemia varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS otherclinicalpresentation varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS otherclinicalpresentationtext varchar(255);
+
+alter table pathogentest add column IF NOT EXISTS seroGroupSpecification varchar(255);
+alter table pathogentest add column IF NOT EXISTS seroGroupSpecificationText varchar(255);
+alter table pathogentest add column IF NOT EXISTS seroTypingMethod varchar(255);
+alter table pathogentest add column IF NOT EXISTS seroTypingMethodText varchar(255);
+alter table pathogentest_history add column IF NOT EXISTS seroGroupSpecification varchar(255);
+alter table pathogentest_history add column IF NOT EXISTS seroGroupSpecificationText varchar(255);
+alter table pathogentest_history add column IF NOT EXISTS seroTypingMethod varchar(255);
+alter table pathogentest_history add column IF NOT EXISTS seroTypingMethodText varchar(255);
+
+alter table contact add column IF NOT EXISTS prophylaxisprescribed boolean default false;
+alter table contact add column IF NOT exists prescribedDrug varchar(255);
+alter table contact add column IF NOT exists prescribedDrugText varchar(255);
+alter table contact_history add column IF NOT EXISTS prophylaxisprescribed boolean default false;
+alter table contact_history add column IF NOT exists prescribedDrug varchar(255);
+alter table contact_history add column IF NOT exists prescribedDrugText varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (572, 'New Disease(s) IMI & IPI for LUX #13345, #13344');
+
+-- 2025-06-02 Add epi data to external message #13375
+
+ALTER TABLE externalmessage ADD COLUMN activitiesascase jsonb;
+ALTER TABLE externalmessage_history ADD COLUMN activitiesascase jsonb;
+ALTER TABLE externalmessage ADD COLUMN exposures jsonb;
+ALTER TABLE externalmessage_history ADD COLUMN exposures jsonb;
+
+INSERT INTO schema_version (version_number, comment) VALUES (573, 'Updated doctor declaration for Pertussis #13375');
+
+-- 2025-05-22 Tuberculosis specific updates - sample/testing, case, person, therapy, hospitalization  #13324
+create table drugsusceptibility
+(
+    id                          bigint       not null,
+    uuid                        varchar(36)  not null,
+    changedate                  timestamp(3) not null,
+    creationdate                timestamp(3) not null,
+    amikacinmic                 numeric,
+    amikacinsusceptibility      varchar(255),
+    bedaquilinemic              numeric,
+    bedaquilinesusceptibility   varchar(255),
+    capreomycinmic              numeric,
+    capreomycinsusceptibility   varchar(255),
+    ciprofloxacinmic            numeric,
+    ciprofloxacinsusceptibility varchar(255),
+    delamanidmic                numeric,
+    delamanidsusceptibility     varchar(255),
+    ethambutolmic               numeric,
+    ethambutolsusceptibility    varchar(255),
+    gatifloxacinmic             numeric,
+    gatifloxacinsusceptibility  varchar(255),
+    isoniazidmic                numeric,
+    isoniazidsusceptibility     varchar(255),
+    kanamycinmic                numeric,
+    kanamycinsusceptibility     varchar(255),
+    levofloxacinmic             numeric,
+    levofloxacinsusceptibility  varchar(255),
+    moxifloxacinmic             numeric,
+    moxifloxacinsusceptibility  varchar(255),
+    ofloxacinmic                numeric,
+    ofloxacinsusceptibility     varchar(255),
+    rifampicinmic               numeric,
+    rifampicinsusceptibility    varchar(255),
+    streptomycinmic             numeric,
+    streptomycinsusceptibility  varchar(255),
+    sys_period                  tstzrange    not null,
+    change_user_id              bigint
+);
+
+alter table drugsusceptibility owner to sormas_user;
+
+alter table drugsusceptibility add primary key (id);
+alter table drugsusceptibility add unique (uuid);
+alter table drugsusceptibility add constraint fk_drugsusceptibility_change_user_id foreign key (change_user_id) references users;
+
+CREATE TABLE drugsusceptibility_history (LIKE drugsusceptibility);
+DROP TRIGGER IF EXISTS versioning_trigger ON drugsusceptibility;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON drugsusceptibility
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'drugsusceptibility_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON drugsusceptibility;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON drugsusceptibility
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('drugsusceptibility_history', 'id');
+ALTER TABLE drugsusceptibility_history OWNER TO sormas_user;
+
+alter table pathogentest add rifampicinresistant varchar(255);
+alter table pathogentest add isoniazidresistant varchar(255);
+alter table pathogentest add specie varchar(255);
+alter table pathogentest add patternprofile varchar(255);
+alter table pathogentest add straincallstatus varchar(255);
+alter table pathogentest add testscale varchar(255);
+alter table pathogentest add drugsusceptibility_id bigint constraint pathogentest_drugsusceptibility_id_fk references drugsusceptibility;
+
+alter table pathogentest_history add rifampicinresistant varchar(255);
+alter table pathogentest_history add isoniazidresistant varchar(255);
+alter table pathogentest_history add specie varchar(255);
+alter table pathogentest_history add patternprofile varchar(255);
+alter table pathogentest_history add straincallstatus varchar(255);
+alter table pathogentest_history add testscale varchar(255);
+alter table pathogentest_history add drugsusceptibility_id bigint;
+
+alter table cases add radiographycompatibility varchar(255);
+alter table cases add otherdiagnosticcriteria text;
+
+alter table cases_history add radiographycompatibility varchar(255);
+alter table cases_history add otherdiagnosticcriteria text;
+
+alter table therapy add directlyobservedtreatment boolean default false;
+alter table therapy add mdrxdrtuberculosis boolean default false;
+alter table therapy add beijinglineage boolean default false;
+
+alter table therapy_history add directlyobservedtreatment boolean default false;
+alter table therapy_history add mdrxdrtuberculosis boolean default false;
+alter table therapy_history add beijinglineage boolean default false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (574, 'Tuberculosis disease updates - sample/testing, case, person, therapy, hospitalization  #13324');
+
+-- 2025-06-12 Therapy changes for IMI & IPI, #13319, #13342
+
+alter table drugsusceptibility add column IF NOT EXISTS ceftriaxonemic numeric;
+alter table drugsusceptibility add column IF NOT EXISTS ceftriaxoneSusceptibility varchar(255);
+alter table drugsusceptibility add column IF NOT EXISTS penicillinmic numeric;
+alter table drugsusceptibility add column IF NOT EXISTS penicillinSusceptibility varchar(255);
+alter table drugsusceptibility add column IF NOT EXISTS erythromycinmic numeric;
+alter table drugsusceptibility add column IF NOT EXISTS erythromycinSusceptibility varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (575, 'Therapy changes for IMI & IPI, #13319, #13342');
+
+-- 2025-06-16 Tuberculosis specific updates - symptoms changes #13324
+alter table symptoms add diagnosis varchar(255);
+alter table symptoms add majorsite varchar(255);
+alter table symptoms add othermajorsitedetails varchar(512);
+alter table symptoms add minorsite varchar(255);
+alter table symptoms add otherminorsitedetails varchar(512);
+alter table symptoms add dateofonsetknown varchar(255);
+alter table symptoms add clinicalpresentationstatus varchar(255);
+
+alter table symptoms_history add diagnosis varchar(255);
+alter table symptoms_history add majorsite varchar(255);
+alter table symptoms_history add othermajorsitedetails varchar(512);
+alter table symptoms_history add minorsite varchar(255);
+alter table symptoms_history add otherminorsitedetails varchar(512);
+alter table symptoms_history add dateofonsetknown varchar(255);
+alter table symptoms_history add clinicalpresentationstatus varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (576, 'Tuberculosis specific updates - symptoms changes #13324');
+
+-- 2025-06-16 Pertussis missed symptom, #13373
+alter table symptoms add column IF NOT EXISTS nocturnalcough varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (577, 'Pertussis missed symptom, #13373');
+
+-- 2025-06-27 Fix failing tests #13516
+alter table symptoms_history add nocturnalcough varchar(255);
+
+alter table drugsusceptibility_history add column IF NOT EXISTS ceftriaxonemic numeric;
+alter table drugsusceptibility_history add column IF NOT EXISTS ceftriaxoneSusceptibility varchar(255);
+alter table drugsusceptibility_history add column IF NOT EXISTS penicillinmic numeric;
+alter table drugsusceptibility_history add column IF NOT EXISTS penicillinSusceptibility varchar(255);
+alter table drugsusceptibility_history add column IF NOT EXISTS erythromycinmic numeric;
+alter table drugsusceptibility_history add column IF NOT EXISTS erythromycinSusceptibility varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (578, 'Update history tables #13516');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

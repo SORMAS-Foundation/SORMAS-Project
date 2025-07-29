@@ -28,6 +28,7 @@ import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
+import de.symeda.sormas.api.environment.VectorType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
@@ -80,6 +81,7 @@ public class EnvironmentSampleDto extends PseudonymizableDto {
 	public static final String DELETION_REASON = "deletionReason";
 	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
 	public static final String REPORTING_USER = "reportingUser";
+	public static final String VECTOR_TYPE = "vectorType";
 
 	@NotNull
 	private EnvironmentReferenceDto environment;
@@ -141,6 +143,7 @@ public class EnvironmentSampleDto extends PseudonymizableDto {
 	private DeletionReason deletionReason;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherDeletionReason;
+	private VectorType vectorType;
 
 	public static EnvironmentSampleDto build(EnvironmentReferenceDto environment, UserReferenceDto reportingUser) {
 		EnvironmentSampleDto sample = new EnvironmentSampleDto();
@@ -398,5 +401,13 @@ public class EnvironmentSampleDto extends PseudonymizableDto {
 
 	public EnvironmentSampleReferenceDto toReference() {
 		return new EnvironmentSampleReferenceDto(getUuid());
+	}
+
+	public VectorType getVectorType() {
+		return vectorType;
+	}
+
+	public void setVectorType(VectorType vectorType) {
+		this.vectorType = vectorType;
 	}
 }

@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.externalmessage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -28,6 +29,8 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportService;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportFacadeEjb;
@@ -36,6 +39,10 @@ import de.symeda.sormas.backend.infrastructure.country.CountryService;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.symptoms.Symptoms;
+import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
+import de.symeda.sormas.backend.symptoms.Symptoms;
+import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 
@@ -44,6 +51,8 @@ public class ExternalMessageFacadeEjbMappingTest {
 
 	@Mock
 	private SampleReportFacadeEjb.SampleReportFacadeEjbLocal sampleReportFacade;
+	@Mock
+	private SymptomsFacadeEjb.SymptomsFacadeEjbLocal symptomsFacadeEjb;
 	@Mock
 	private UserService userservice;
 	@Mock
@@ -107,9 +116,28 @@ public class ExternalMessageFacadeEjbMappingTest {
 		source.setCaseReportDate(new Date());
 		source.setPersonCountry(new CountryReferenceDto(country.getUuid(), country.getIsoCode()));
 		source.setPersonFacility(new FacilityReferenceDto(facility.getUuid()));
+		source.setPersonGuardianFirstName("Guardian First Name");
+		source.setPersonGuardianLastName("Guardian Last Name");
+		source.setPersonGuardianPhone("9876543210");
+		source.setPersonGuardianEmail("guardian@domain.com");
+		source.setPersonGuardianRelationship("Guardian Relationship");
+		source.setCaseSymptoms(new SymptomsDto());
+		source.setNotifierFirstName("Notifier First Name");
+		source.setNotifierLastName("Notifier Last Name");
+		source.setNotifierRegistrationNumber("Notifier Registration Number");
+		source.setNotifierAddress("Notifier Address");
+		source.setNotifierEmail("notifier@domain.com");
+		source.setNotifierPhone("1234567890");
+		source.setTreatmentStarted("Treatment Started");
+		source.setTreatmentStartedDate(new Date());
+		source.setDiagnosticDate(new Date());
 
 		when(countryService.getByReferenceDto(source.getPersonCountry())).thenReturn(country);
 		when(facilityService.getByReferenceDto(source.getPersonFacility())).thenReturn(facility);
+
+		final SymptomsDto symptomsDto = new SymptomsDto();
+		source.setCaseSymptoms(symptomsDto);
+		when(symptomsFacadeEjb.fillOrBuildEntity(symptomsDto, null, true)).thenReturn(new Symptoms());
 
 		ExternalMessage result = sut.fillOrBuildEntity(source, null, true);
 
@@ -143,6 +171,21 @@ public class ExternalMessageFacadeEjbMappingTest {
 		assertEquals(source.getCaseReportDate(), result.getCaseReportDate());
 		assertEquals(source.getPersonCountry().getUuid(), result.getPersonCountry().getUuid());
 		assertEquals(source.getPersonFacility().getUuid(), result.getPersonFacility().getUuid());
+		assertEquals(source.getPersonGuardianFirstName(), result.getPersonGuardianFirstName());
+		assertEquals(source.getPersonGuardianLastName(), result.getPersonGuardianLastName());
+		assertEquals(source.getPersonGuardianPhone(), result.getPersonGuardianPhone());
+		assertEquals(source.getPersonGuardianEmail(), result.getPersonGuardianEmail());
+		assertEquals(source.getPersonGuardianRelationship(), result.getPersonGuardianRelationship());
+		assertNotNull(result.getCaseSymptoms());
+		assertEquals(source.getNotifierFirstName(), result.getNotifierFirstName());
+		assertEquals(source.getNotifierLastName(), result.getNotifierLastName());
+		assertEquals(source.getNotifierRegistrationNumber(), result.getNotifierRegistrationNumber());
+		assertEquals(source.getNotifierAddress(), result.getNotifierAddress());
+		assertEquals(source.getNotifierEmail(), result.getNotifierEmail());
+		assertEquals(source.getNotifierPhone(), result.getNotifierPhone());
+		assertEquals(source.getTreatmentStarted(), result.getTreatmentStarted());
+		assertEquals(source.getTreatmentStartedDate(), result.getTreatmentStartedDate());
+		assertEquals(source.getDiagnosticDate(), result.getDiagnosticDate());
 	}
 
 	@Test
@@ -192,6 +235,21 @@ public class ExternalMessageFacadeEjbMappingTest {
 		source.setPersonExternalId("11111");
 		source.setPersonNationalHealthId("22222");
 		source.setCaseReportDate(new Date());
+		source.setPersonGuardianFirstName("Guardian First Name");
+		source.setPersonGuardianLastName("Guardian Last Name");
+		source.setPersonGuardianPhone("9876543210");
+		source.setPersonGuardianEmail("guardian@domain.com");
+		source.setPersonGuardianRelationship("Guardian Relationship");
+		source.setCaseSymptoms(new Symptoms());
+		source.setNotifierFirstName("Notifier First Name");
+		source.setNotifierLastName("Notifier Last Name");
+		source.setNotifierRegistrationNumber("Notifier Registration Number");
+		source.setNotifierAddress("Notifier Address");
+		source.setNotifierEmail("notifier@domain.com");
+		source.setNotifierPhone("1234567890");
+		source.setTreatmentStarted("Treatment Started");
+		source.setTreatmentStartedDate(new Date());
+		source.setDiagnosticDate(new Date());
 
 		ExternalMessageDto result = sut.toDto(source);
 
@@ -223,5 +281,20 @@ public class ExternalMessageFacadeEjbMappingTest {
 		assertEquals(source.getPersonExternalId(), result.getPersonExternalId());
 		assertEquals(source.getPersonNationalHealthId(), result.getPersonNationalHealthId());
 		assertEquals(source.getCaseReportDate(), result.getCaseReportDate());
+		assertEquals(source.getPersonGuardianFirstName(), result.getPersonGuardianFirstName());
+		assertEquals(source.getPersonGuardianLastName(), result.getPersonGuardianLastName());
+		assertEquals(source.getPersonGuardianPhone(), result.getPersonGuardianPhone());
+		assertEquals(source.getPersonGuardianEmail(), result.getPersonGuardianEmail());
+		assertEquals(source.getPersonGuardianRelationship(), result.getPersonGuardianRelationship());
+		assertNotNull(result.getCaseSymptoms());
+		assertEquals(source.getNotifierFirstName(), result.getNotifierFirstName());
+		assertEquals(source.getNotifierLastName(), result.getNotifierLastName());
+		assertEquals(source.getNotifierRegistrationNumber(), result.getNotifierRegistrationNumber());
+		assertEquals(source.getNotifierAddress(), result.getNotifierAddress());
+		assertEquals(source.getNotifierEmail(), result.getNotifierEmail());
+		assertEquals(source.getNotifierPhone(), result.getNotifierPhone());
+		assertEquals(source.getTreatmentStarted(), result.getTreatmentStarted());
+		assertEquals(source.getTreatmentStartedDate(), result.getTreatmentStartedDate());
+		assertEquals(source.getDiagnosticDate(), result.getDiagnosticDate());
 	}
 }

@@ -9,6 +9,22 @@ public class DiseaseConfigurationDto extends EntityDto {
 
 	private static final long serialVersionUID = -7653585175036656526L;
 
+	public static final String I18N_PREFIX = "DiseaseConfiguration";
+
+	public static final String DISEASE = "disease";
+	public static final String ACTIVE = "active";
+	public static final String PRIMARY_DISEASE = "primaryDisease";
+	public static final String CASE_SURVEILLANCE_ENABLED = "caseSurveillanceEnabled";
+	public static final String AGGREGATE_REPORTING_ENABLED = "aggregateReportingEnabled";
+	public static final String FOLLOW_UP_ENABLED = "followUpEnabled";
+	public static final String FOLLOW_UP_DURATION = "followUpDuration";
+	public static final String CASE_FOLLOW_UP_DURATION = "caseFollowUpDuration";
+	public static final String EVENT_PARTICIPANT_FOLLOW_UP_DURATION = "eventParticipantFollowUpDuration";
+	public static final String EXTENDED_CLASSIFICATION = "extendedClassification";
+	public static final String EXTENDED_CLASSIFICATION_MULTI = "extendedClassificationMulti";
+	public static final String AGE_GROUPS = "ageGroups";
+	public static final String AUTOMATIC_SAMPLE_ASSIGNMENT_THRESHOLD = "automaticSampleAssignmentThreshold";
+
 	private Disease disease;
 	private Boolean active;
 	private Boolean primaryDisease;

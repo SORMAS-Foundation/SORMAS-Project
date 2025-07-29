@@ -50,6 +50,7 @@ import de.symeda.sormas.api.sample.PathogenTestCriteria;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserRight;
@@ -79,6 +80,7 @@ import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
+import de.symeda.sormas.backend.therapy.DrugSusceptibilityMapper;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
@@ -123,6 +125,8 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	private SpecialCaseAccessService specialCaseAccessService;
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
+	@EJB
+	private DrugSusceptibilityMapper drugSusceptibilityMapper;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -310,6 +314,18 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setPrescriberCity(source.getPrescriberCity());
 		target.setPrescriberCountry(CountryFacadeEjb.toReferenceDto(source.getPrescriberCountry()));
 
+		target.setRifampicinResistant(source.getRifampicinResistant());
+		target.setIsoniazidResistant(source.getIsoniazidResistant());
+		target.setSpecie(source.getSpecie());
+		target.setPatternProfile(source.getPatternProfile());
+		target.setStrainCallStatus(source.getStrainCallStatus());
+		target.setTestScale(source.getTestScale());
+			target.setDrugSusceptibility(DrugSusceptibilityMapper.toDto(source.getDrugSusceptibility()));
+
+		target.setSeroTypingMethod(source.getSeroTypingMethod());
+		target.setSeroTypingMethodText(source.getSeroTypingMethodText());
+		target.setSeroGroupSpecification(source.getSeroGroupSpecification());
+		target.setSeroGroupSpecificationText(source.getSeroGroupSpecificationText());
 		return target;
 	}
 
@@ -453,6 +469,11 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 					Validations.required,
 					I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_RESULT_VERIFIED)));
 		}
+		// susceptibility is applicable for only LUX TB and all counties of IMI and IPI
+		if (pathogenTest.getDrugSusceptibility() != null && pathogenTest.getTestType() == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY
+				&& !DrugSusceptibilityMapper.hasData(pathogenTest.getDrugSusceptibility())) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.pathogenTestValidDrugSusceptibility));
+		}
 	}
 
 	private PathogenTestDto convertToDto(PathogenTest source) {
@@ -557,6 +578,21 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setPrescriberCity(source.getPrescriberCity());
 		target.setPrescriberCountry(countryService.getByReferenceDto(source.getPrescriberCountry()));
 
+		target.setRifampicinResistant(source.getRifampicinResistant());
+		target.setIsoniazidResistant(source.getIsoniazidResistant());
+		target.setSpecie(source.getSpecie());
+		target.setPatternProfile(source.getPatternProfile());
+		target.setStrainCallStatus(source.getStrainCallStatus());
+		target.setTestScale(source.getTestScale());
+		if (source.getDrugSusceptibility() !=null && source.getTestType() == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY) {
+			target.setDrugSusceptibility(
+				drugSusceptibilityMapper.fillOrBuildEntity(source.getDrugSusceptibility(), target.getDrugSusceptibility(), checkChangeDate));
+		}
+
+		target.setSeroTypingMethod(source.getSeroTypingMethod());
+		target.setSeroTypingMethodText(source.getSeroTypingMethodText());
+		target.setSeroGroupSpecification(source.getSeroGroupSpecification());
+		target.setSeroGroupSpecificationText(source.getSeroGroupSpecificationText());
 		return target;
 	}
 
