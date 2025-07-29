@@ -101,6 +101,7 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	public static final String NOTIFIER_EMAIL = "notifierEmail";
 	public static final String NOTIFIER_PHONE = "notifierPhone";
 	public static final String TREATMENT_STARTED = "treatmentStarted";
+	public static final String TREATMENT_NOT_APPLICABLE = "treatmentNotApplicable";
 	public static final String TREATMENT_STARTED_DATE = "treatmentStartedDate";
 	public static final String DIAGNOSTIC_DATE = "diagnosticDate";
 	public static final String ACTIVITIES_AS_CASE = "activitiesAsCase";
@@ -171,6 +172,7 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String personGuardianEmail;
 	private YesNoUnknown treatmentStarted;
+	private Boolean treatmentNotApplicable;
 	private Date treatmentStartedDate;
 	private Date diagnosticDate;
 	private Date deceasedDate;
@@ -687,6 +689,14 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	public void setTreatmentStarted(YesNoUnknown treatmentStarted) {
 		this.treatmentStarted = treatmentStarted;
+	}
+
+	public Boolean getTreatmentNotApplicable() {
+		return treatmentNotApplicable;
+	}
+
+	public void setTreatmentNotApplicable(Boolean treatmentNotApplicable) {
+		this.treatmentNotApplicable = treatmentNotApplicable;
 	}
 
 	public Date getTreatmentStartedDate() {

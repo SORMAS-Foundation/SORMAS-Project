@@ -3090,6 +3090,9 @@ public interface Captions {
 	String Therapy_beijingLineage = "Therapy.beijingLineage";
 	String Therapy_directlyObservedTreatment = "Therapy.directlyObservedTreatment";
 	String Therapy_mdrXdrTuberculosis = "Therapy.mdrXdrTuberculosis";
+	String Therapy_treatmentNotApplicable = "Therapy.treatmentNotApplicable";
+	String Therapy_treatmentStarted = "Therapy.treatmentStarted";
+	String Therapy_treatmentStartedDate = "Therapy.treatmentStartedDate";
 	String titleAefiInvestigationBasicDetails = "titleAefiInvestigationBasicDetails";
 	String titleAefiInvestigationColdChainAndTransport = "titleAefiInvestigationColdChainAndTransport";
 	String titleAefiInvestigationColdChainAndTransportLastVaccineStoragePoint = "titleAefiInvestigationColdChainAndTransportLastVaccineStoragePoint";

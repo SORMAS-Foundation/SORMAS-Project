@@ -49,7 +49,7 @@ public class CaseNotifierSideViewController {
         NotifierDto notifier =
             FacadeProvider.getNotifierFacade().getByUuidAndTime(caze.getNotifier().getUuid(), caze.getNotifier().getVersionDate().toInstant());
 
-        return new CaseNotifierSideViewContent(caze, notifier, getOldestReport(caze), getTreatment(caze.getTherapy()), true);
+        return new CaseNotifierSideViewContent(caze, notifier, getOldestReport(caze));
     }
 
     /**
