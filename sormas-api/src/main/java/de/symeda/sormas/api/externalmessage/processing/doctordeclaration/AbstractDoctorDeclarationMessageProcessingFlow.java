@@ -288,9 +288,9 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 
 		TherapyDto therapyDto = caseDto.getTherapy();
 
-		TreatmentDto treatmentDto = new TreatmentDto();
-		treatmentDto.setTherapy(new TherapyReferenceDto(therapyDto.getUuid()));
-		treatmentDto.setTreatmentDateTime(externalMessageDto.getTreatmentStartedDate());
+		therapyDto.setTreatmentStarted(externalMessageDto.getTreatmentStarted());
+		therapyDto.setTreatmentStartDate(externalMessageDto.getTreatmentStartedDate());
+		therapyDto.setTreatmentNotApplicable(Boolean.TRUE.equals(externalMessageDto.getTreatmentNotApplicable()));
 
 		logger.debug("[POST BUILD CASE] Therapy set for case with UUID: {}", caseDto.getUuid());
 

@@ -122,6 +122,7 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String NOTIFIER_PHONE = "notifierPhone";
 
 	public static final String TREATMENT_STARTED = "treatmentStarted";
+	public static final String TREATMENT_NOT_APPLICABLE = "treatmentNotApplicable";
 	public static final String TREATMENT_STARTED_DATE = "treatmentStartedDate";
 	public static final String DIAGNOSTIC_DATE = "diagnosticDate";
 
@@ -166,6 +167,7 @@ public class ExternalMessage extends AbstractDomainObject {
 	private String personGuardianPhone;
 	private String personGuardianEmail;
 	private YesNoUnknown treatmentStarted;
+	private Boolean treatmentNotApplicable;
 	private Date treatmentStartedDate;
 	private Date diagnosticDate;
 	private Date deceasedDate;
@@ -765,6 +767,15 @@ public class ExternalMessage extends AbstractDomainObject {
 	}
 
 	@Column
+	public Boolean getTreatmentNotApplicable() {
+		return treatmentNotApplicable;
+	}
+
+	public void setTreatmentNotApplicable(Boolean treatmentNotApplicable) {
+		this.treatmentNotApplicable = treatmentNotApplicable;
+	}
+
+	@Column
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getTreatmentStartedDate() {
 		return treatmentStartedDate;
@@ -805,7 +816,7 @@ public class ExternalMessage extends AbstractDomainObject {
 	}
 
 	public Date getDeceasedDate() {
-		return  deceasedDate;
+		return deceasedDate;
 	}
 
 	public void setDeceasedDate(Date deceasedDate) {

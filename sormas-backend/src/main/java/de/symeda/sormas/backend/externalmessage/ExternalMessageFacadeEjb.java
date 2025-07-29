@@ -210,6 +210,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setNotifierEmail(source.getNotifierEmail());
 		target.setNotifierPhone(source.getNotifierPhone());
 		target.setTreatmentStarted(source.getTreatmentStarted());
+		target.setTreatmentNotApplicable(source.getTreatmentNotApplicable());
 		target.setTreatmentStartedDate(source.getTreatmentStartedDate());
 		target.setDiagnosticDate(source.getDiagnosticDate());
 		target.setActivitiesAsCase(source.getActivitiesAsCase());
@@ -419,6 +420,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setNotifierEmail(source.getNotifierEmail());
 		target.setNotifierPhone(source.getNotifierPhone());
 		target.setTreatmentStarted(source.getTreatmentStarted());
+		target.setTreatmentNotApplicable(source.getTreatmentNotApplicable());
 		target.setTreatmentStartedDate(source.getTreatmentStartedDate());
 		target.setDiagnosticDate(source.getDiagnosticDate());
 		target.setActivitiesAsCase(source.getActivitiesAsCase());

@@ -35,7 +35,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.notifier.NotifierDto;
-import de.symeda.sormas.api.therapy.TreatmentDto;
+import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -63,15 +63,7 @@ public class CaseNotifierSideViewContent extends VerticalLayout {
      */
     private SurveillanceReportDto oldestReport;
 
-    /**
-     * The treatment details, if available.
-     */
-    private TreatmentDto treatment;
-
-    /**
-     * Indicates whether treatment is not applicable.
-     */
-    private boolean treatmentNotApplicable;
+    private TherapyDto therapy;
 
     /**
      * Constructs a new CaseNotifierSideViewContent instance.
@@ -87,18 +79,12 @@ public class CaseNotifierSideViewContent extends VerticalLayout {
      * @param treatmentNotApplicable
      *            Indicates whether treatment is not applicable.
      */
-    public CaseNotifierSideViewContent(
-        CaseDataDto caze,
-        NotifierDto notifier,
-        SurveillanceReportDto oldestReport,
-        TreatmentDto treatment,
-        boolean treatmentNotApplicable) {
+    public CaseNotifierSideViewContent(CaseDataDto caze, NotifierDto notifier, SurveillanceReportDto oldestReport) {
 
         this.caze = caze;
+        this.therapy = caze.getTherapy();
         this.notifier = notifier;
         this.oldestReport = oldestReport;
-        this.treatment = treatment;
-        this.treatmentNotApplicable = treatmentNotApplicable;
 
         setStyleName("case-notifier-side-view");
         setMargin(false);
@@ -165,13 +151,13 @@ public class CaseNotifierSideViewContent extends VerticalLayout {
         RadioButtonGroup<TreatmentOption> treatmentGroup = buildTreatmentOptions();
         addComponent(treatmentGroup);
 
-        if(notifier.getAgentFirstName() !=null || notifier.getAgentLastName() != null) {
+        if (notifier.getAgentFirstName() != null || notifier.getAgentLastName() != null) {
             // Spacer before Reporting Agent label
             Label spacerAgent = new Label();
             spacerAgent.setHeight("0.1rem");
             addComponent(spacerAgent);
             Label reportingAgent = new Label(I18nProperties.getCaption(Captions.Notification_reportingAgent));
-            CssStyles.style(reportingAgent, CssStyles.LABEL_BOLD,CssStyles.LABEL_BOTTOM_LINE);
+            CssStyles.style(reportingAgent, CssStyles.LABEL_BOLD, CssStyles.LABEL_BOTTOM_LINE);
             addComponent(reportingAgent);
             Label agentNameLabel = new Label(notifier.getAgentFirstName() + " " + notifier.getAgentLastName().toUpperCase(Locale.ROOT));
             CssStyles.style(agentNameLabel, CssStyles.LABEL_RELEVANT);
@@ -199,17 +185,22 @@ public class CaseNotifierSideViewContent extends VerticalLayout {
         treatmentGroup.setDataProvider(dataProvider);
         treatmentGroup.setItemCaptionGenerator(t -> t.getCaption());
 
-        if (treatmentNotApplicable) {
+        if (therapy.isTreatmentNotApplicable()) {
             treatmentGroup.setValue(notApplicable);
         } else {
-            if (treatment == null) {
+            final YesNoUnknown treatmentStarted = therapy.getTreatmentStarted();
+            switch (treatmentStarted) {
+            case YES:
+                treatmentGroup.setValue(yes);
+                break;
+            case NO:
+                treatmentGroup.setValue(no);
+                break;
+            case UNKNOWN:
                 treatmentGroup.setValue(unknown);
-            } else {
-                if (treatment.getTreatmentDateTime() != null) {
-                    treatmentGroup.setValue(yes);
-                } else {
-                    treatmentGroup.setValue(no);
-                }
+                break;
+            default:
+                treatmentGroup.clear();
             }
         }
         treatmentGroup.addStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);

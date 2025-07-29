@@ -143,6 +143,7 @@ public class ExternalMessageFacadeEjbMappingTest {
 		source.setNotifierEmail("notifier@domain.com");
 		source.setNotifierPhone("1234567890");
 		source.setTreatmentStarted(YesNoUnknown.YES);
+		source.setTreatmentNotApplicable(true);
 		source.setTreatmentStartedDate(new Date());
 		source.setDiagnosticDate(new Date());
 
@@ -199,6 +200,7 @@ public class ExternalMessageFacadeEjbMappingTest {
 		assertEquals(source.getNotifierEmail(), result.getNotifierEmail());
 		assertEquals(source.getNotifierPhone(), result.getNotifierPhone());
 		assertEquals(source.getTreatmentStarted(), result.getTreatmentStarted());
+		assertEquals(source.getTreatmentNotApplicable(), result.getTreatmentNotApplicable());
 		assertEquals(source.getTreatmentStartedDate(), result.getTreatmentStartedDate());
 		assertEquals(source.getDiagnosticDate(), result.getDiagnosticDate());
 	}

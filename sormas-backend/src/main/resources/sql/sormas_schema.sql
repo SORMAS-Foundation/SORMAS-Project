@@ -14462,4 +14462,20 @@ alter table notifier_history add column if not exists agentfirstname varchar(255
 alter table notifier_history add column if not exists agentlastname varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (580, 'Implemented Doctors declaration for IPI #13344');
+
+-- 2025-07-29 Added missing treatment fields for external message #13294
+
+ALTER TABLE therapy ADD COLUMN treatmentstarted varchar(255);
+ALTER TABLE therapy ADD COLUMN treatmentnotapplicable boolean DEFAULT false;
+ALTER TABLE therapy ADD COLUMN treatmentstartdate timestamp;
+
+ALTER TABLE therapy_history ADD COLUMN treatmentstarted varchar(255);
+ALTER TABLE therapy_history ADD COLUMN treatmentnotapplicable boolean DEFAULT false;
+ALTER TABLE therapy_history ADD COLUMN treatmentstartdate timestamp;
+
+ALTER TABLE externalmessage ADD COLUMN treatmentnotapplicable boolean DEFAULT false;
+ALTER TABLE externalmessage_history ADD COLUMN treatmentnotapplicable boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (581, 'Added missing treatment fields for external message #13294');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
