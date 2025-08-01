@@ -1646,10 +1646,12 @@ public interface Strings {
 	String none = "none";
 	String notAnswered = "notAnswered";
 	String notApplicable = "notApplicable";
+	String notificationCannotCreate = "notificationCannotCreate";
 	String notificationCaseClassificationChanged = "notificationCaseClassificationChanged";
 	String notificationCaseInvestigationDone = "notificationCaseInvestigationDone";
 	String notificationContactSymptomatic = "notificationContactSymptomatic";
 	String notificationContactWithoutCaseSymptomatic = "notificationContactWithoutCaseSymptomatic";
+	String notificationCreationNotAllowedWithoutSurveillanceReport = "notificationCreationNotAllowedWithoutSurveillanceReport";
 	String notificationDiseaseChanged = "notificationDiseaseChanged";
 	String notificationEventAddedToEventGroup = "notificationEventAddedToEventGroup";
 	String notificationEventGroupCreated = "notificationEventGroupCreated";

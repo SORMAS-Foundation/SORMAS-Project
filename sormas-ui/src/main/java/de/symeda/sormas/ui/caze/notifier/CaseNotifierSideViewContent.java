@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2023 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,9 +15,7 @@
 
 package de.symeda.sormas.ui.caze.notifier;
 
-import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.List;
 import java.util.Locale;
 
 import com.vaadin.data.provider.DataProvider;
@@ -33,51 +31,36 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.notifier.NotifierDto;
 import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 /**
- * Represents the side view content for a case notifier in the SORMAS UI.
- * Displays details about the notifier, including personal information,
- * notification dates, and treatment status.
+ * Side view content for case notifiers.
+ * Displays notifier details, notification dates, and treatment status.
  */
 public class CaseNotifierSideViewContent extends VerticalLayout {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * The case data associated with the notifier.
-     */
+    /** The case data associated with the notifier. */
     private CaseDataDto caze;
 
-    /**
-     * The notifier details.
-     */
+    /** The notifier details. */
     private NotifierDto notifier;
 
-    /**
-     * The oldest surveillance report associated with the case.
-     */
+    /** The oldest surveillance report associated with the case. */
     private SurveillanceReportDto oldestReport;
 
     private TherapyDto therapy;
 
     /**
-     * Constructs a new CaseNotifierSideViewContent instance.
-     *
-     * @param caze
-     *            The case data associated with the notifier.
-     * @param notifier
-     *            The notifier details.
-     * @param oldestReport
-     *            The oldest surveillance report associated with the case.
-     * @param treatment
-     *            The treatment details, if available.
-     * @param treatmentNotApplicable
-     *            Indicates whether treatment is not applicable.
+     * Creates a new case notifier side view content.
+     * 
+     * @param caze the case data
+     * @param notifier the notifier details
+     * @param oldestReport the oldest surveillance report for the case
      */
     public CaseNotifierSideViewContent(CaseDataDto caze, NotifierDto notifier, SurveillanceReportDto oldestReport) {
 
@@ -93,8 +76,7 @@ public class CaseNotifierSideViewContent extends VerticalLayout {
     }
 
     /**
-     * Builds the notifier details layout, including personal information,
-     * notification dates, and treatment status.
+     * Builds the notifier details layout with personal info, dates, and treatment status.
      */
     private void buildNotifierDetails() {
 
@@ -133,12 +115,20 @@ public class CaseNotifierSideViewContent extends VerticalLayout {
 
         // Date of notification
         DateField notificationDateField = new DateField(I18nProperties.getCaption(Captions.Notification_dateOfNotification));
-        notificationDateField.setValue(oldestReport.getReportDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+        notificationDateField.setValue(
+            oldestReport == null
+                ? notifier.getChangeDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                : oldestReport.getReportDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
         notificationDateField.setReadOnly(true);
 
         // Date of diagnostic
         DateField diagnosticDateField = new DateField(I18nProperties.getCaption(Captions.SurveillanceReport_dateOfDiagnosis));
-        diagnosticDateField.setValue(LocalDate.now()); // Example date
+        diagnosticDateField.setValue(
+            oldestReport == null
+                ? null
+                : oldestReport.getDateOfDiagnosis() == null
+                    ? null
+                    : oldestReport.getDateOfDiagnosis().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
         diagnosticDateField.setReadOnly(true);
 
         // Horizontal layout for date fields
@@ -166,45 +156,39 @@ public class CaseNotifierSideViewContent extends VerticalLayout {
     }
 
     /**
-     * Builds the treatment options as a radio button group.
+     * Builds treatment options as a radio button group.
      *
-     * @return A {@link RadioButtonGroup} containing treatment options.
+     * @return radio button group with treatment options
      */
     private RadioButtonGroup<TreatmentOption> buildTreatmentOptions() {
-        TreatmentOption yes = new TreatmentOption(YesNoUnknown.YES.toString(), I18nProperties.getEnumCaption(YesNoUnknown.YES));
-        TreatmentOption no = new TreatmentOption(YesNoUnknown.NO.toString(), I18nProperties.getEnumCaption(YesNoUnknown.NO));
-        TreatmentOption notApplicable = new TreatmentOption("NA", I18nProperties.getString(Strings.notApplicable));
-        TreatmentOption unknown = new TreatmentOption(YesNoUnknown.UNKNOWN.toString(), I18nProperties.getEnumCaption(YesNoUnknown.UNKNOWN));
-
-        List<TreatmentOption> options = List.of(yes, no, notApplicable, unknown);
-
-        DataProvider<TreatmentOption, ?> dataProvider = DataProvider.ofCollection(options);
+        DataProvider<TreatmentOption, ?> dataProvider = DataProvider.ofCollection(TreatmentOption.ALL_OPTIONS);
 
         // Treatment radios
         RadioButtonGroup<TreatmentOption> treatmentGroup = new RadioButtonGroup<>(I18nProperties.getCaption(Captions.Treatment));
         treatmentGroup.setDataProvider(dataProvider);
         treatmentGroup.setItemCaptionGenerator(t -> t.getCaption());
 
-        if (therapy.isTreatmentNotApplicable()) {
-            treatmentGroup.setValue(notApplicable);
-        } else {
-            final YesNoUnknown treatmentStarted = therapy.getTreatmentStarted();
-            switch (treatmentStarted) {
-            case YES:
-                treatmentGroup.setValue(yes);
-                break;
-            case NO:
-                treatmentGroup.setValue(no);
-                break;
-            case UNKNOWN:
-                treatmentGroup.setValue(unknown);
-                break;
-            default:
-                treatmentGroup.clear();
-            }
-        }
         treatmentGroup.addStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
         treatmentGroup.setReadOnly(true);
+        treatmentGroup.clear();
+
+        if (therapy == null) {
+            return treatmentGroup;
+        }
+
+        if (therapy.isTreatmentNotApplicable()) {
+            treatmentGroup.setValue(TreatmentOption.NOT_APPLICABLE);
+            return treatmentGroup;
+        }
+
+        final YesNoUnknown treatmentStarted = therapy.getTreatmentStarted();
+
+        if (treatmentStarted == null) {
+            return treatmentGroup;
+        }
+
+        treatmentGroup.setValue(TreatmentOption.forValue(treatmentStarted));
+
         return treatmentGroup;
     }
 }
