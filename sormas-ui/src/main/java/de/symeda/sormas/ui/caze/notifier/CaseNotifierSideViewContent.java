@@ -58,9 +58,12 @@ public class CaseNotifierSideViewContent extends VerticalLayout {
     /**
      * Creates a new case notifier side view content.
      * 
-     * @param caze the case data
-     * @param notifier the notifier details
-     * @param oldestReport the oldest surveillance report for the case
+     * @param caze
+     *            the case data
+     * @param notifier
+     *            the notifier details
+     * @param oldestReport
+     *            the oldest surveillance report for the case
      */
     public CaseNotifierSideViewContent(CaseDataDto caze, NotifierDto notifier, SurveillanceReportDto oldestReport) {
 
@@ -141,7 +144,8 @@ public class CaseNotifierSideViewContent extends VerticalLayout {
         RadioButtonGroup<TreatmentOption> treatmentGroup = buildTreatmentOptions();
         addComponent(treatmentGroup);
 
-        if (notifier.getAgentFirstName() != null || notifier.getAgentLastName() != null) {
+        if ((notifier.getAgentFirstName() != null && !notifier.getAgentFirstName().isBlank())
+            || (notifier.getAgentLastName() != null && !notifier.getAgentLastName().isBlank())) {
             // Spacer before Reporting Agent label
             Label spacerAgent = new Label();
             spacerAgent.setHeight("0.1rem");
@@ -153,6 +157,18 @@ public class CaseNotifierSideViewContent extends VerticalLayout {
             CssStyles.style(agentNameLabel, CssStyles.LABEL_RELEVANT);
             addComponent(agentNameLabel);
         }
+
+        Label spacerNotificationType = new Label();
+        spacerNotificationType.setHeight("0.1rem");
+        addComponent(spacerNotificationType);
+        // Notification type
+        Label notificationTypeLabel = new Label(
+            oldestReport == null
+                ? I18nProperties.getCaption(Captions.Notification_notificationTypePhone)
+                : I18nProperties.getCaption(Captions.Notification_notificationTypeExternal));
+        CssStyles.style(notificationTypeLabel, CssStyles.BADGE);
+        addComponent(notificationTypeLabel);
+
     }
 
     /**

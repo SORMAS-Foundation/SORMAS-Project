@@ -80,7 +80,7 @@ public class CaseNotifierSideViewComponent extends SideComponent {
 			}
 		} else {
 			addComponent(new Label(I18nProperties.getCaption(Captions.Notification_noNotification)));
-			Button newNotificationButton = ButtonHelper.createIconButton(Captions.Notifier_notification, VaadinIcons.PHONE, e -> {
+			Button newNotificationButton = ButtonHelper.createIconButton(Captions.Notification_createNotification, VaadinIcons.PHONE, e -> {
 				ControllerProvider.getCaseNotifierSideViewController().createNotifier(caze, () -> {
 					// Refresh the view by navigating back to the same case
 					ControllerProvider.getCaseController().navigateToCase(caze.getUuid());
