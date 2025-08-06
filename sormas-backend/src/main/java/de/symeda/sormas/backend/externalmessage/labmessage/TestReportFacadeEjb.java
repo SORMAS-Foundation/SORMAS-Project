@@ -76,6 +76,7 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setTestLabPostalCode(source.getTestLabPostalCode());
 		target.setTestLabCity(source.getTestLabCity());
 		target.setTestType(source.getTestType());
+		target.setTestTypeDetails(source.getTestTypeDetails());
 		target.setTestDateTime(source.getTestDateTime());
 		target.setTestResult(source.getTestResult());
 		target.setDateOfResult(source.getDateOfResult());
@@ -116,6 +117,7 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setTestLabPostalCode(source.getTestLabPostalCode());
 		target.setTestLabCity(source.getTestLabCity());
 		target.setTestType(source.getTestType());
+		target.setTestTypeDetails(source.getTestTypeDetails());
 		target.setTestDateTime(source.getTestDateTime());
 		target.setTestResult(source.getTestResult());
 		target.setDateOfResult(source.getDateOfResult());

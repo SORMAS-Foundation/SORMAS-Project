@@ -32,6 +32,7 @@ public class TestReportDto extends EntityDto {
 	public static final String TEST_LAB_POSTAL_CODE = "testLabPostalCode";
 	public static final String TEST_LAB_CITY = "testLabCity";
 	public static final String TEST_TYPE = "testType";
+	public static final String TEST_TYPE_DETAILS = "testTypeDetails";
 	public static final String TEST_DATE_TIME = "testDateTime";
 	public static final String TEST_RESULT = "testResult";
 	public static final String DATE_OF_RESULT = "dateOfResult";
@@ -63,6 +64,8 @@ public class TestReportDto extends EntityDto {
 	private String testLabCity;
 
 	private PathogenTestType testType;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String testTypeDetails;
 	private Date testDateTime;
 	private PathogenTestResultType testResult;
 	private Date dateOfResult;
@@ -174,6 +177,14 @@ public class TestReportDto extends EntityDto {
 
 	public void setTestType(PathogenTestType testType) {
 		this.testType = testType;
+	}
+
+	public String getTestTypeDetails() {
+		return testTypeDetails;
+	}
+
+	public void setTestTypeDetails(String testTypeDetails) {
+		this.testTypeDetails = testTypeDetails;
 	}
 
 	public Date getTestDateTime() {
