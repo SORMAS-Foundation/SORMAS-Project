@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 import javax.naming.CannotProceedException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.MutableLong;
 import org.apache.commons.lang3.mutable.MutableObject;
 
@@ -538,6 +539,16 @@ public class ExternalMessageProcessingUIHelper {
 			}
 		}
 		throw new UnsupportedOperationException("The created entity to be deleted could net be determined.");
+	}
+
+	public static void addLabelIfAvailable(HorizontalLayout layout, String text, String i18nPrefix, String captionKey) {
+		if (StringUtils.isBlank(text)) {
+			return;
+		}
+		Label label = new Label(text);
+		label.setCaption(I18nProperties.getPrefixCaption(i18nPrefix, captionKey));
+		label.setWidthUndefined();
+		layout.addComponent(label);
 	}
 
 }
