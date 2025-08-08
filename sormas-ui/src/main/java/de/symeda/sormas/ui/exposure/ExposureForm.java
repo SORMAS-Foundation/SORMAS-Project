@@ -51,6 +51,7 @@ import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.GatheringType;
 import de.symeda.sormas.api.exposure.HabitationType;
 import de.symeda.sormas.api.exposure.TypeOfAnimal;
+import de.symeda.sormas.api.exposure.TypeOfChildcareFacility;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -86,14 +87,16 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 							ExposureDto.EXPOSURE_TYPE_DETAILS,
 							ExposureDto.GATHERING_TYPE,
 							ExposureDto.HABITATION_TYPE,
-							ExposureDto.TYPE_OF_ANIMAL
+							ExposureDto.TYPE_OF_ANIMAL,
+							ExposureDto.TYPE_OF_CHILDCARE_FACILITY
 					))
 			) +
 			fluidRow(
 					fluidColumn(12, 0, locs(
 							ExposureDto.GATHERING_DETAILS,
 							ExposureDto.HABITATION_DETAILS,
-							ExposureDto.TYPE_OF_ANIMAL_DETAILS
+							ExposureDto.TYPE_OF_ANIMAL_DETAILS,
+							ExposureDto.CHILDCARE_FACILITY_DETAILS
 					))
 			) +
 			loc(LOC_EXPOSURE_DETAILS_HEADING) +
@@ -224,9 +227,11 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			ExposureDto.GATHERING_TYPE,
 			ExposureDto.HABITATION_TYPE,
 			ExposureDto.TYPE_OF_ANIMAL,
+			ExposureDto.TYPE_OF_CHILDCARE_FACILITY,
 			ExposureDto.GATHERING_DETAILS,
 			ExposureDto.HABITATION_DETAILS,
 			ExposureDto.TYPE_OF_ANIMAL_DETAILS,
+			ExposureDto.CHILDCARE_FACILITY_DETAILS,
 			ExposureDto.PHYSICAL_CONTACT_DURING_PREPARATION,
 			ExposureDto.PHYSICAL_CONTACT_WITH_BODY,
 			ExposureDto.DECEASED_PERSON_NAME,
@@ -276,9 +281,11 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.GATHERING_TYPE, ExposureDto.EXPOSURE_TYPE, ExposureType.GATHERING, true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.HABITATION_TYPE, ExposureDto.EXPOSURE_TYPE, ExposureType.HABITATION, true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.TYPE_OF_ANIMAL, ExposureDto.EXPOSURE_TYPE, ExposureType.ANIMAL_CONTACT, true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.TYPE_OF_CHILDCARE_FACILITY, ExposureDto.EXPOSURE_TYPE, ExposureType.CHILDCARE_FACILITY, true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.GATHERING_DETAILS, ExposureDto.GATHERING_TYPE, GatheringType.OTHER, true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.HABITATION_DETAILS, ExposureDto.HABITATION_TYPE, HabitationType.OTHER, true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.TYPE_OF_ANIMAL_DETAILS, ExposureDto.TYPE_OF_ANIMAL, TypeOfAnimal.OTHER, true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.CHILDCARE_FACILITY_DETAILS, ExposureDto.TYPE_OF_CHILDCARE_FACILITY, TypeOfChildcareFacility.OTHER, true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.LARGE_ATTENDANCE_NUMBER, ExposureDto.EXPOSURE_TYPE, ExposureType.GATHERING, true);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),

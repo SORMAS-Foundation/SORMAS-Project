@@ -1788,6 +1788,7 @@ public interface Captions {
 	String Exposure_animalMarket = "Exposure.animalMarket";
 	String Exposure_animalVaccinated = "Exposure.animalVaccinated";
 	String Exposure_bodyOfWater = "Exposure.bodyOfWater";
+	String Exposure_childcareFacilityDetails = "Exposure.childcareFacilityDetails";
 	String Exposure_connectionNumber = "Exposure.connectionNumber";
 	String Exposure_contactToBodyFluids = "Exposure.contactToBodyFluids";
 	String Exposure_contactToCase = "Exposure.contactToCase";
@@ -1829,6 +1830,7 @@ public interface Captions {
 	String Exposure_startDate = "Exposure.startDate";
 	String Exposure_typeOfAnimal = "Exposure.typeOfAnimal";
 	String Exposure_typeOfAnimalDetails = "Exposure.typeOfAnimalDetails";
+	String Exposure_typeOfChildcareFacility = "Exposure.typeOfChildcareFacility";
 	String Exposure_typeOfPlace = "Exposure.typeOfPlace";
 	String Exposure_typeOfPlaceDetails = "Exposure.typeOfPlaceDetails";
 	String Exposure_waterSource = "Exposure.waterSource";
