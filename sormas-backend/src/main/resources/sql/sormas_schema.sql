@@ -14416,4 +14416,12 @@ alter table drugsusceptibility_history add column IF NOT EXISTS erythromycinSusc
 
 INSERT INTO schema_version (version_number, comment) VALUES (578, 'Update history tables #13516');
 
+
+-- 2025-08-07 - RSV - Update Immunization #13542
+
+ALTER TABLE immunization ADD COLUMN IF NOT EXISTS injectionFacility varchar(255);
+ALTER TABLE immunization_history ADD COLUMN IF NOT EXISTS injectionFacility varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (583, 'RSV - Update Immunization #13542');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

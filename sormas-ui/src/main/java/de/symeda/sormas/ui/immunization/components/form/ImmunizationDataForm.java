@@ -116,6 +116,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		+ fluidRowLocs(VACCINATION_HEADING_LOC)
 		+ fluidRowLocs(ImmunizationDto.NUMBER_OF_DOSES, ImmunizationDto.NUMBER_OF_DOSES_DETAILS)
 		+ fluidRowLocs(ImmunizationDto.VACCINATIONS)
+		+ fluidRowLocs(ImmunizationDto.INJECTION_FACILITY)
 		+ fluidRowLocs(RECOVERY_HEADING_LOC)
 		+ fluidRowLocs(ImmunizationDto.POSITIVE_TEST_RESULT_DATE, ImmunizationDto.RECOVERY_DATE, LINK_IMMUNIZATION_TO_CASE_BTN_LOC)
 		+ fluidRow(fluidColumnLoc(6, 0, ImmunizationDto.COUNTRY))
@@ -253,6 +254,15 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 			Arrays.asList(MeansOfImmunization.VACCINATION, MeansOfImmunization.VACCINATION_RECOVERY),
 			false);
 		cbDisease.addValueChangeListener(e -> vaccinationsField.setDisease((Disease) cbDisease.getValue()));
+
+		ComboBox injectionFacilityField = addField(ImmunizationDto.INJECTION_FACILITY, ComboBox.class);
+		// Set conditional visibility for RSV cases only
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			ImmunizationDto.INJECTION_FACILITY,
+			ImmunizationDto.DISEASE,
+			Arrays.asList(Disease.RESPIRATORY_SYNCYTIAL_VIRUS),
+			true);
 
 		Label recoveryHeadingLabel = new Label(I18nProperties.getString(Strings.headingRecovery));
 		recoveryHeadingLabel.addStyleName(H3);
