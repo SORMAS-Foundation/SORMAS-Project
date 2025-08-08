@@ -2850,6 +2850,7 @@ public interface Captions {
 	String Symptoms_diagnosis = "Symptoms.diagnosis";
 	String Symptoms_diarrhea = "Symptoms.diarrhea";
 	String Symptoms_difficultyBreathing = "Symptoms.difficultyBreathing";
+	String Symptoms_difficultyBreathingDuringMeals = "Symptoms.difficultyBreathingDuringMeals";
 	String Symptoms_digestedBloodVomit = "Symptoms.digestedBloodVomit";
 	String Symptoms_dizzinessStandingUp = "Symptoms.dizzinessStandingUp";
 	String Symptoms_dysphagia = "Symptoms.dysphagia";
@@ -2954,7 +2955,9 @@ public interface Captions {
 	String Symptoms_palpableLiver = "Symptoms.palpableLiver";
 	String Symptoms_palpableSpleen = "Symptoms.palpableSpleen";
 	String Symptoms_palpitations = "Symptoms.palpitations";
+	String Symptoms_paradoxicalBreathing = "Symptoms.paradoxicalBreathing";
 	String Symptoms_paralysis = "Symptoms.paralysis";
+	String Symptoms_parentTimeOffWork = "Symptoms.parentTimeOffWork";
 	String Symptoms_paresis = "Symptoms.paresis";
 	String Symptoms_paresthesiaAroundWound = "Symptoms.paresthesiaAroundWound";
 	String Symptoms_patientIllLocation = "Symptoms.patientIllLocation";
@@ -2968,6 +2971,7 @@ public interface Captions {
 	String Symptoms_redBloodVomit = "Symptoms.redBloodVomit";
 	String Symptoms_refusalFeedorDrink = "Symptoms.refusalFeedorDrink";
 	String Symptoms_respiratoryDiseaseVentilation = "Symptoms.respiratoryDiseaseVentilation";
+	String Symptoms_respiratoryFatigue = "Symptoms.respiratoryFatigue";
 	String Symptoms_respiratoryRate = "Symptoms.respiratoryRate";
 	String Symptoms_runnyNose = "Symptoms.runnyNose";
 	String Symptoms_seizures = "Symptoms.seizures";
@@ -2993,6 +2997,7 @@ public interface Captions {
 	String Symptoms_temperature = "Symptoms.temperature";
 	String Symptoms_temperatureSource = "Symptoms.temperatureSource";
 	String Symptoms_throbocytopenia = "Symptoms.throbocytopenia";
+	String Symptoms_timeOffWorkDays = "Symptoms.timeOffWorkDays";
 	String Symptoms_tremor = "Symptoms.tremor";
 	String Symptoms_unexplainedBleeding = "Symptoms.unexplainedBleeding";
 	String Symptoms_unilateralCataracts = "Symptoms.unilateralCataracts";

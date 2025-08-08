@@ -127,7 +127,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	private static final String TUBERCULOSIS_ONSET_DATE_LOC = "tuberculosisOnsetDateLoc";
 	private static final String TUBERCULOSIS_CLINICAL_PRESENTATION_DETAILS_LOC = "tuberculosisClinicalPresentationDetailsLoc";
 
-	private static Map<String, List<String>> symptomGroupMap = new HashMap();
+	private static Map<String, List<String>> symptomGroupMap = new HashMap<>();
 
 	//@formatter:off
 	private static final String HTML_LAYOUT =
@@ -167,6 +167,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 					loc(CLINICAL_PRESENTATION_HEADING)+
 					fluidRowLocs(DATE_OF_ONSET_KNOWN, TUBERCULOSIS_ONSET_DATE_LOC, "") +
 					fluidRowLocs(CLINICAL_PRESENTATION_STATUS, TUBERCULOSIS_CLINICAL_PRESENTATION_DETAILS_LOC) +
+					fluidRowLocs(PARENT_TIME_OFF_WORK, TIME_OFF_WORK_DAYS) +
 					fluidRow(
 							fluidColumn(6, 0,
 									locsCss(VSPACE_3,
@@ -494,7 +495,10 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			DIZZINESS_STANDING_UP,
 			HIGH_OR_LOW_BLOOD_PRESSURE,
 			URINARY_RETENTION,
-			FEVER);
+			FEVER,
+			DIFFICULTY_BREATHING_DURING_MEALS,
+			PARADOXICAL_BREATHING,
+			RESPIRATORY_FATIGUE);
 
 		addField(SYMPTOMS_COMMENTS, TextField.class).setDescription(
 			I18nProperties.getPrefixDescription(I18N_PREFIX, SYMPTOMS_COMMENTS, "") + "\n" + I18nProperties.getDescription(Descriptions.descGdpr));
@@ -982,6 +986,17 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				.setItemCaption(ClinicalPresentationStatus.COMPATIBLE, ClinicalPresentationStatus.COMPATIBLE.buildCaption(disease.toShortString()));
 			getFieldGroup().getField(OTHER_CLINICAL_PRESENTATION_TEXT).setVisible(true);
 		}
+
+		final Field<?> parentTimeOffWorkField = addField(PARENT_TIME_OFF_WORK);
+		final TextField timeOffWorkDaysField = addField(TIME_OFF_WORK_DAYS, TextField.class);
+		parentTimeOffWorkField.addValueChangeListener(e -> {
+			if (!parentTimeOffWorkField.isVisible()) {
+				return;
+			}
+			final boolean isParentTimeOffWorkYes = YesNoUnknown.YES.equals(FieldHelper.getNullableSourceFieldValue(parentTimeOffWorkField));
+			timeOffWorkDaysField.setVisible(isParentTimeOffWorkYes);
+			timeOffWorkDaysField.setValue(isParentTimeOffWorkYes ? timeOffWorkDaysField.getValue() : null);
+		});
 	}
 
 	private void toggleFeverComponentError(NullableOptionGroup feverField, ComboBox temperatureField) {
