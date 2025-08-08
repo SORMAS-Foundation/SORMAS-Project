@@ -107,6 +107,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private static final long serialVersionUID = -1L;
 
 	private static final String PERSON_INFORMATION_HEADING_LOC = "personInformationHeadingLoc";
+	private static final String PERINATAL_DETAILS_HEADER = "perinatalDetailsHeader";
 	private static final String OCCUPATION_HEADER = "occupationHeader";
 	private static final String ADDRESS_HEADER = "addressHeader";
 	private static final String ADDRESSES_HEADER = "addressesHeader";
@@ -154,6 +155,12 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 					fluidRowLocs(PersonDto.HAS_COVID_APP, PersonDto.COVID_CODE_DELIVERED) +
 
+                    loc(PERINATAL_DETAILS_HEADER) +
+                    divsCss(VSPACE_3,
+                            fluidRowLocs(PersonDto.GESTATIONAL_AGE_CATEGORY, PersonDto.BIRTH_WEIGHT_CATEGORY) +
+                            fluidRowLocs(PersonDto.BIRTH_WEIGHT_VALUE, PersonDto.MULTIPLE_BIRTH)
+                    ) +
+
                     loc(OCCUPATION_HEADER) +
                     divsCss(VSPACE_3,
                             fluidRowLocs(PersonDto.OCCUPATION_TYPE, PersonDto.OCCUPATION_DETAILS) +
@@ -182,6 +189,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 					fluidRowLocs(PersonDto.PERSON_CONTACT_DETAILS)) +
 					loc(GENERAL_COMMENT_LOC) + fluidRowLocs(CaseDataDto.ADDITIONAL_DETAILS);
 	private final Label occupationHeader = new Label(I18nProperties.getString(Strings.headingPersonOccupation));
+	private final Label perinatalDetailsHeader = new Label(I18nProperties.getString(Strings.headingPerinatalDetails));
 	private final Label addressHeader = new Label(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.ADDRESS));
 	private final Label addressesHeader = new Label(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.ADDRESSES));
 	private final Label contactInformationHeader = new Label(I18nProperties.getString(Strings.headingContactInformation));
@@ -234,8 +242,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		this.diseaseDetails = diseaseDetails;
 		this.isPseudonymized = isPseudonymized;
 
-		CssStyles.style(CssStyles.H3, occupationHeader, addressHeader, addressesHeader, contactInformationHeader);
+		CssStyles.style(CssStyles.H3, occupationHeader, perinatalDetailsHeader, addressHeader, addressesHeader, contactInformationHeader);
 		getContent().addComponent(occupationHeader, OCCUPATION_HEADER);
+		getContent().addComponent(perinatalDetailsHeader, PERINATAL_DETAILS_HEADER);
 		getContent().addComponent(addressHeader, ADDRESS_HEADER);
 		getContent().addComponent(addressesHeader, ADDRESSES_HEADER);
 		getContent().addComponent(contactInformationHeader, CONTACT_INFORMATION_HEADER);
@@ -264,8 +273,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		this.diseaseDetails = diseaseDetails;
 		this.isPseudonymized = isPseudonymized;
 
-		CssStyles.style(CssStyles.H3, occupationHeader, addressHeader, addressesHeader, contactInformationHeader);
+		CssStyles.style(CssStyles.H3, occupationHeader, perinatalDetailsHeader, addressHeader, addressesHeader, contactInformationHeader);
 		getContent().addComponent(occupationHeader, OCCUPATION_HEADER);
+		getContent().addComponent(perinatalDetailsHeader, PERINATAL_DETAILS_HEADER);
 		getContent().addComponent(addressHeader, ADDRESS_HEADER);
 		getContent().addComponent(addressesHeader, ADDRESSES_HEADER);
 		getContent().addComponent(contactInformationHeader, CONTACT_INFORMATION_HEADER);
@@ -283,8 +293,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized),
 			isEditAllowed);
 
-		CssStyles.style(CssStyles.H3, occupationHeader, addressHeader, addressesHeader, contactInformationHeader);
+		CssStyles.style(CssStyles.H3, occupationHeader, perinatalDetailsHeader, addressHeader, addressesHeader, contactInformationHeader);
 		getContent().addComponent(occupationHeader, OCCUPATION_HEADER);
+		getContent().addComponent(perinatalDetailsHeader, PERINATAL_DETAILS_HEADER);
 		getContent().addComponent(addressHeader, ADDRESS_HEADER);
 		getContent().addComponent(addressesHeader, ADDRESSES_HEADER);
 		getContent().addComponent(contactInformationHeader, CONTACT_INFORMATION_HEADER);
@@ -366,6 +377,13 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			.setConversionError(I18nProperties.getValidationError(Validations.onlyIntegerNumbersAllowed, tfGestationAgeAtBirth.getCaption()));
 		TextField tfBirthWeight = addField(PersonDto.BIRTH_WEIGHT, TextField.class);
 		tfBirthWeight.setConversionError(I18nProperties.getValidationError(Validations.onlyIntegerNumbersAllowed, tfBirthWeight.getCaption()));
+
+		// RSV Perinatal Details
+		ComboBox gestationalAgeCategory = addField(PersonDto.GESTATIONAL_AGE_CATEGORY, ComboBox.class);
+		ComboBox birthWeightCategory = addField(PersonDto.BIRTH_WEIGHT_CATEGORY, ComboBox.class);
+		TextField birthWeightValue = addField(PersonDto.BIRTH_WEIGHT_VALUE, TextField.class);
+		birthWeightValue.setConversionError(I18nProperties.getValidationError(Validations.onlyIntegerNumbersAllowed, birthWeightValue.getCaption()));
+		ComboBox multipleBirth = addField(PersonDto.MULTIPLE_BIRTH, ComboBox.class);
 
 		AbstractSelect deathPlaceType = addField(PersonDto.DEATH_PLACE_TYPE, ComboBox.class);
 		deathPlaceType.setNullSelectionAllowed(true);
@@ -740,9 +758,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		} else {
 			canBeEmancipated = approximateAge >= minimumEmancipatedAge && approximateAge < minimumAdultAge;
 		}
-		if (!canBeEmancipated && (approximateAgeField).getValue() != null) {
+		if  (!canBeEmancipated && (approximateAgeField).getValue() != null)  {
 			Integer age = parseApproximateAge(approximateAgeField.getValue());
-			if (age != null && approximateAgeTypeField.getValue() == ApproximateAgeType.YEARS) {
+			if  (age != null && approximateAgeTypeField.getValue() == ApproximateAgeType.YEARS)  {
 				canBeEmancipated = age >= minimumEmancipatedAge && age < minimumAdultAge;
 				if (change) {
 					isEmancipated.setValue(canBeEmancipated);
