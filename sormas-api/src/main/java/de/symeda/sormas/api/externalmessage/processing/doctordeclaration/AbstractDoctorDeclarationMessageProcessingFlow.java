@@ -27,29 +27,23 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
 import de.symeda.sormas.api.activityascase.ActivityAsCaseType;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
-import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
-import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.contact.SimilarContactDto;
+import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
-import de.symeda.sormas.api.event.EventDto;
-import de.symeda.sormas.api.event.EventParticipantDto;
-import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.processing.AbstractMessageProcessingFlowBase;
-import de.symeda.sormas.api.externalmessage.processing.EventValidationResult;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult;
-import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEventResult;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
@@ -58,14 +52,11 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.therapy.TherapyDto;
-import de.symeda.sormas.api.therapy.TherapyReferenceDto;
-import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DtoCopyHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResult;
-import de.symeda.sormas.api.utils.dataprocessing.flow.FlowThen;
 
 /**
  * Abstract class defining the flow of processing a lab message allowing to
@@ -84,132 +75,6 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 		ExternalMessageMapper mapper,
 		ExternalMessageProcessingFacade processingFacade) {
 		super(user, externalMessage, mapper, processingFacade);
-	}
-
-	/**
-	 * Handles the flow for creating or selecting an event participant.
-	 *
-	 * @param flow
-	 *            The current flow of processing.
-	 * @return The updated flow after processing the event participant.
-	 */
-	protected FlowThen<ExternalMessageProcessingResult> doCreateEventParticipantFlow(FlowThen<ExternalMessageProcessingResult> flow) {
-
-		//@formatter:off
-		return flow.thenSwitch(p -> pickOrCreateEvent())
-				.when(PickOrCreateEventResult::isNewEvent, (f, p, r) -> {
-					FlowThen<ExternalMessageProcessingResult> eventFlow = f.then(ignored -> createEvent(r));
-					return eventFlow.then(pp -> createEventParticipant(pp.getData().getEvent(), r.getPerson(), pp.getData()));
-				})
-				.when(PickOrCreateEventResult::isEventSelected, (f, p, r) -> f
-					.thenSwitch(e -> validateSelectedEvent(p.getEvent(), e.getData().getPerson()))
-						.when(EventValidationResult::isEventSelected, (vf, v, vr) -> {
-							FlowThen<ExternalMessageProcessingResult> eventFlow = vf.then(e -> {
-								ExternalMessageProcessingResult withEvent = e.getData().withSelectedEvent(v.getEvent());
-
-								logger.debug("[MESSAGE PROCESSING] Continue processing with event: {}", withEvent);
-								
-								return ProcessingResult.continueWith(withEvent).asCompletedFuture();
-							});
-							return eventFlow.then(pp -> createEventParticipant(pp.getData().getEvent(), r.getPerson(), pp.getData()));
-						})
-						.when(EventValidationResult::isEventParticipantSelected, (vf, v, vr) -> {
-							EventDto event = getExternalMessageProcessingFacade().getEventByUuid(p.getEvent().getUuid());
-							EventParticipantDto eventParticipant = getExternalMessageProcessingFacade().getEventParticipantByUuid(v.getEventParticipant().getUuid());
-
-							FlowThen<ExternalMessageProcessingResult> eventParticipantFlow = vf.then(ignored -> {
-								ExternalMessageProcessingResult withEventParticipant = vr.withSelectedEvent(event).withSelectedEventParticipant(eventParticipant);
-								logger.debug("[MESSAGE PROCESSING] Continue processing with event participant: {}", withEventParticipant);
-								
-								return ProcessingResult
-										.continueWith(withEventParticipant)
-										.asCompletedFuture();
-							});
-
-							return eventParticipantFlow;
-						})
-						.when(EventValidationResult::isEventSelectionCanceled, (vf, v, vr) -> {
-							logger.debug("[MESSAGE PROCESSING] Event selection discarded");
-							return vf.then(ignored -> doCreateEventParticipantFlow(vf).getResult());
-						})
-					.then(ProcessingResult::asCompletedFuture))
-			.then(ProcessingResult::asCompletedFuture);
-		//@formatter:on
-	}
-
-	/**
-	 * Handles the flow when a case is selected.
-	 *
-	 * @param caseSelection
-	 *            The selected case.
-	 * @param flow
-	 *            The current flow of processing.
-	 * @return The updated flow after processing the selected case.
-	 */
-	protected FlowThen<ExternalMessageProcessingResult> doCaseSelectedFlow(
-		CaseSelectionDto caseSelection,
-		FlowThen<ExternalMessageProcessingResult> flow) {
-
-		CaseDataDto caze = getExternalMessageProcessingFacade().getCaseDataByUuid(caseSelection.getUuid());
-
-		return flow.then(previousResult -> {
-			ExternalMessageProcessingResult withCase = previousResult.getData().withSelectedCase(caze);
-
-			logger.debug("[MESSAGE PROCESSING] Continue processing with case: {}", withCase);
-
-			return ProcessingResult.continueWith(withCase).asCompletedFuture();
-		});
-	}
-
-	/**
-	 * Handles the flow when a contact is selected.
-	 *
-	 * @param contactSelection
-	 *            The selected contact.
-	 * @param flow
-	 *            The current flow of processing.
-	 * @return The updated flow after processing the selected contact.
-	 */
-	protected FlowThen<ExternalMessageProcessingResult> doContactSelectedFlow(
-		SimilarContactDto contactSelection,
-		FlowThen<ExternalMessageProcessingResult> flow) {
-
-		ContactDto contact = getExternalMessageProcessingFacade().getContactByUuid(contactSelection.getUuid());
-
-		return flow.then(previousResult -> {
-			ExternalMessageProcessingResult withContact = previousResult.getData().withSelectedContact(contact);
-
-			logger.debug("[MESSAGE PROCESSING] Continue processing with contact: {}", withContact);
-
-			return ProcessingResult.continueWith(withContact).asCompletedFuture();
-		});
-	}
-
-	/**
-	 * Handles the flow when an event participant is selected.
-	 *
-	 * @param eventParticipantSelection
-	 *            The selected event participant.
-	 * @param flow
-	 *            The current flow of processing.
-	 * @return The updated flow after processing the selected event participant.
-	 */
-	protected FlowThen<ExternalMessageProcessingResult> doEventParticipantSelectedFlow(
-		SimilarEventParticipantDto eventParticipantSelection,
-		FlowThen<ExternalMessageProcessingResult> flow) {
-
-		EventParticipantDto eventParticipant = getExternalMessageProcessingFacade().getEventParticipantByUuid(eventParticipantSelection.getUuid());
-		EventDto event = getExternalMessageProcessingFacade().getEventByUuid(eventParticipant.getEvent().getUuid());
-
-		return flow.then(previousResult -> {
-			ExternalMessageProcessingResult withEventParticipant =
-				previousResult.getData().withSelectedEvent(event).withSelectedEventParticipant(eventParticipant);
-
-			logger.debug("[MESSAGE PROCESSING] Continue processing with event participant: {}", withEventParticipant);
-
-			return ProcessingResult.continueWith(withEventParticipant).asCompletedFuture();
-		});
-
 	}
 
 	/**
@@ -248,6 +113,8 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 
 		logger.debug("[POST BUILD CASE] Processing case with UUID: {}", caseDto.getUuid());
 
+		postBuildCaseData(caseDto, externalMessageDto);
+		postBuildHealthConditions(caseDto, externalMessageDto);
 		postBuildCaseSymptoms(caseDto, externalMessageDto);
 		postBuildCaseTherapy(caseDto, externalMessageDto);
 		postBuildActivitiesAsCase(caseDto, externalMessageDto);
@@ -256,6 +123,65 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 
 		caseDto.setInvestigationStatus(InvestigationStatus.PENDING);
 		caseDto.setOutcome(CaseOutcome.NO_OUTCOME);
+	}
+
+	/**
+	 * Sets radiography compatibility and other diagnostic criteria for the case from the external message.
+	 *
+	 * @param caseDto
+	 *            The case data transfer object to update.
+	 * @param externalMessageDto
+	 *            The external message containing diagnostic data.
+	 */
+	protected void postBuildCaseData(CaseDataDto caseDto, ExternalMessageDto externalMessageDto) {
+		caseDto.setRadiographyCompatibility(externalMessageDto.getRadiographyCompatibility());
+		caseDto.setOtherDiagnosticCriteria(externalMessageDto.getOtherDiagnosticCriteria());
+	}
+
+	/**
+	 * Sets health conditions for the case from the external message.
+	 *
+	 * @param caseDto
+	 *            The case data transfer object to update.
+	 * @param externalMessageDto
+	 *            The external message containing health condition data.
+	 */
+	protected void postBuildHealthConditions(CaseDataDto caseDto, ExternalMessageDto externalMessageDto) {
+		final HealthConditionsDto healthConditionsDto =
+			caseDto.getHealthConditions() != null ? caseDto.getHealthConditions() : HealthConditionsDto.build();
+
+		if (Disease.TUBERCULOSIS.equals(externalMessageDto.getDisease())) {
+			postBuildTuberculosisHealthConditions(healthConditionsDto, externalMessageDto);
+		}
+
+		// we need to set it in case it is newly created
+		caseDto.setHealthConditions(healthConditionsDto);
+	}
+
+	/**
+	 * Sets tuberculosis-specific health conditions for the case from the external message.
+	 *
+	 * @param healthConditionsDto
+	 *            The health conditions data transfer object to update.
+	 * @param externalMessageDto
+	 *            The external message containing tuberculosis health condition data.
+	 */
+	protected void postBuildTuberculosisHealthConditions(HealthConditionsDto healthConditionsDto, ExternalMessageDto externalMessageDto) {
+		healthConditionsDto.setTuberculosis(externalMessageDto.getTuberculosis());
+		healthConditionsDto.setHiv(externalMessageDto.getHiv());
+		healthConditionsDto.setHivArt(externalMessageDto.getHivArt());
+		healthConditionsDto.setTuberculosisInfectionYear(externalMessageDto.getTuberculosisInfectionYear());
+		healthConditionsDto.setPreviousTuberculosisTreatment(externalMessageDto.getPreviousTuberculosisTreatment());
+		healthConditionsDto.setComplianceWithTreatment(externalMessageDto.getComplianceWithTreatment());
+
+		logger.debug(
+			"[POST BUILD HEALTH CONDITIONS] Tuberculosis health conditions set for case. Tuberculosis: {}, HIV: {}, HIV ART: {}, Infection Year: {}, Previous Treatment: {}, Compliance: {}",
+			externalMessageDto.getTuberculosis(),
+			externalMessageDto.getHiv(),
+			externalMessageDto.getHivArt(),
+			externalMessageDto.getTuberculosisInfectionYear(),
+			externalMessageDto.getPreviousTuberculosisTreatment(),
+			externalMessageDto.getComplianceWithTreatment());
 	}
 
 	/**

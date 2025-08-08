@@ -291,9 +291,12 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 	@Override
 	public void setValue(PathogenTestDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		super.setValue(newFieldValue);
+		testTypeField.setValue(newFieldValue.getTestType());
 		pcrTestSpecification.setValue(newFieldValue.getPcrTestSpecification());
 		testTypeTextField.setValue(newFieldValue.getTestTypeText());
+		testResultField.setValue(newFieldValue.getTestResult());
 		typingIdField.setValue(newFieldValue.getTypingId());
+		markAsDirty();
 	}
 
 	@Override

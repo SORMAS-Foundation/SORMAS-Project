@@ -14474,7 +14474,24 @@ ALTER TABLE therapy_history ADD COLUMN treatmentnotapplicable boolean DEFAULT fa
 ALTER TABLE therapy_history ADD COLUMN treatmentstartdate timestamp;
 
 ALTER TABLE externalmessage ADD COLUMN treatmentnotapplicable boolean DEFAULT false;
+ALTER TABLE externalmessage ADD COLUMN tuberculosis varchar(255);
+ALTER TABLE externalmessage ADD COLUMN hiv varchar(255);
+ALTER TABLE externalmessage ADD COLUMN hivArt varchar(255);
+ALTER TABLE externalmessage ADD COLUMN radiographyCompatibility varchar(255);
+ALTER TABLE externalmessage ADD COLUMN otherDiagnosticCriteria varchar(255);
+ALTER TABLE externalmessage ADD COLUMN tuberculosisInfectionYear integer;
+ALTER TABLE externalmessage ADD COLUMN previousTuberculosisTreatment varchar(255);
+ALTER TABLE externalmessage ADD COLUMN complianceWithTreatment varchar(255);
+
 ALTER TABLE externalmessage_history ADD COLUMN treatmentnotapplicable boolean DEFAULT false;
+ALTER TABLE externalmessage_history ADD COLUMN tuberculosis varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN hiv varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN hivArt varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN radiographyCompatibility varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN otherDiagnosticCriteria varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN tuberculosisInfectionYear integer;
+ALTER TABLE externalmessage_history ADD COLUMN previousTuberculosisTreatment varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN complianceWithTreatment varchar(255);
 
 ALTER TABLE testreport ADD COLUMN testTypeDetails varchar(255);
 ALTER TABLE testreport_history ADD COLUMN testTypeDetails varchar(255);

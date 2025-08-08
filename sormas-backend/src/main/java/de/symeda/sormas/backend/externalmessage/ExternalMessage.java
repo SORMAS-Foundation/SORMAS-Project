@@ -44,7 +44,9 @@ import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.RadiographyCompatibility;
 import de.symeda.sormas.api.caze.VaccinationStatus;
+import de.symeda.sormas.api.clinicalcourse.ComplianceWithTreatment;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.disease.DiseaseVariantConverter;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
@@ -129,6 +131,9 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String ACTIVITIES_AS_CASE = "activitiesAsCase";
 	public static final String EXPOSURES = "exposures";
 
+	public static final String RADIOGRAPHY_COMPATIBILITY = "radiographyCompatibility";
+	public static final String OTHER_DIAGNOSTIC_CRITERIA = "otherDiagnosticCriteria";
+
 	private ExternalMessageType type;
 	private Disease disease;
 	private String diseaseVariantValue;
@@ -189,37 +194,33 @@ public class ExternalMessage extends AbstractDomainObject {
 	private VaccinationStatus vaccinationStatus;
 
 	private YesNoUnknown admittedToHealthFacility;
-
 	private String hospitalizationFacilityName;
-
 	private String hospitalizationFacilityExternalId;
-
 	private String hospitalizationFacilityDepartment;
-
 	private Date hospitalizationAdmissionDate;
-
 	private Date hospitalizationDischargeDate;
 
-	@Column(length = CHARACTER_LIMIT_SMALL)
 	private String notifierFirstName;
-
-	@Column(length = CHARACTER_LIMIT_SMALL)
 	private String notifierLastName;
 
-	@Column(length = CHARACTER_LIMIT_SMALL)
 	private String notifierRegistrationNumber;
-
-	@Column(length = CHARACTER_LIMIT_TEXT)
 	private String notifierAddress;
-
-	@Column(length = CHARACTER_LIMIT_SMALL)
 	private String notifierEmail;
-
-	@Column(length = CHARACTER_LIMIT_SMALL)
 	private String notifierPhone;
 
 	private String activitiesAsCase;
 	private String exposures;
+
+	private RadiographyCompatibility radiographyCompatibility;
+	private String otherDiagnosticCriteria;
+
+	private YesNoUnknown tuberculosis;
+	private YesNoUnknown hiv;
+	private YesNoUnknown hivArt;
+
+	private Integer tuberculosisInfectionYear;
+	private YesNoUnknown previousTuberculosisTreatment;
+	private ComplianceWithTreatment complianceWithTreatment;
 
 	@Enumerated(EnumType.STRING)
 	public ExternalMessageType getType() {
@@ -822,4 +823,75 @@ public class ExternalMessage extends AbstractDomainObject {
 	public void setDeceasedDate(Date deceasedDate) {
 		this.deceasedDate = deceasedDate;
 	}
+
+	@Enumerated(EnumType.STRING)
+	public RadiographyCompatibility getRadiographyCompatibility() {
+		return radiographyCompatibility;
+	}
+
+	public void setRadiographyCompatibility(RadiographyCompatibility radiographyCompatibility) {
+		this.radiographyCompatibility = radiographyCompatibility;
+	}
+
+	public String getOtherDiagnosticCriteria() {
+		return otherDiagnosticCriteria;
+	}
+
+	public void setOtherDiagnosticCriteria(String otherDiagnosticCriteria) {
+		this.otherDiagnosticCriteria = otherDiagnosticCriteria;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getTuberculosis() {
+		return tuberculosis;
+	}
+
+	public void setTuberculosis(YesNoUnknown tuberculosis) {
+		this.tuberculosis = tuberculosis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getHiv() {
+		return hiv;
+	}
+
+	public void setHiv(YesNoUnknown hiv) {
+		this.hiv = hiv;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getHivArt() {
+		return hivArt;
+	}
+
+	public void setHivArt(YesNoUnknown hivArt) {
+		this.hivArt = hivArt;
+	}
+
+	public Integer getTuberculosisInfectionYear() {
+		return tuberculosisInfectionYear;
+	}
+
+	public void setTuberculosisInfectionYear(Integer tuberculosisInfectionYear) {
+		this.tuberculosisInfectionYear = tuberculosisInfectionYear;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getPreviousTuberculosisTreatment() {
+		return previousTuberculosisTreatment;
+	}
+
+	public void setPreviousTuberculosisTreatment(YesNoUnknown previousTuberculosisTreatment) {
+		this.previousTuberculosisTreatment = previousTuberculosisTreatment;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ComplianceWithTreatment getComplianceWithTreatment() {
+		return complianceWithTreatment;
+	}
+
+	public void setComplianceWithTreatment(ComplianceWithTreatment complianceWithTreatment) {
+		this.complianceWithTreatment = complianceWithTreatment;
+	}
+
 }

@@ -26,8 +26,10 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.RadiographyCompatibility;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
+import de.symeda.sormas.api.clinicalcourse.ComplianceWithTreatment;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -106,6 +108,14 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	public static final String DIAGNOSTIC_DATE = "diagnosticDate";
 	public static final String ACTIVITIES_AS_CASE = "activitiesAsCase";
 	public static final String EXPOSURES = "exposures";
+	public static final String RADIOGRAPHY_COMPATIBILITY = "radiographyCompatibility";
+	public static final String OTHER_DIAGNOSTIC_CRITERIA = "otherDiagnosticCriteria";
+	public static final String TUBERCULOSIS = "tuberculosis";
+	public static final String HIV = "hiv";
+	public static final String HIV_ART = "hivArt";
+	public static final String TUBERCULOSIS_INFECTION_YEAR = "tuberculosisInfectionYear";
+	public static final String PREVIOUS_TUBERCULOSIS_TREATMENT = "previousTuberculosisTreatment";
+	public static final String COMPLIANCE_WITH_TREATMENT = "complianceWithTreatment";
 
 	@AuditIncludeProperty
 	private ExternalMessageType type;
@@ -208,40 +218,42 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private VaccinationStatus vaccinationStatus;
 
 	private YesNoUnknown admittedToHealthFacility;
-
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String hospitalizationFacilityName;
-
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String hospitalizationFacilityExternalId;
-
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String hospitalizationFacilityDepartment;
-
 	private Date hospitalizationAdmissionDate;
-
 	private Date hospitalizationDischargeDate;
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String notifierFirstName;
-
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String notifierLastName;
-
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String notifierRegistrationNumber;
-
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String notifierAddress;
-
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String notifierEmail;
-
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String notifierPhone;
 
 	private String activitiesAsCase;
 	private String exposures;
+
+	private RadiographyCompatibility radiographyCompatibility;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String otherDiagnosticCriteria;
+
+	private YesNoUnknown tuberculosis;
+	private YesNoUnknown hiv;
+	private YesNoUnknown hivArt;
+
+	private Integer tuberculosisInfectionYear;
+	private YesNoUnknown previousTuberculosisTreatment;
+	private ComplianceWithTreatment complianceWithTreatment;
 
 	public ExternalMessageType getType() {
 		return type;
@@ -823,5 +835,69 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	public void setDeceasedDate(Date deceasedDate) {
 		this.deceasedDate = deceasedDate;
+	}
+
+	public RadiographyCompatibility getRadiographyCompatibility() {
+		return radiographyCompatibility;
+	}
+
+	public void setRadiographyCompatibility(RadiographyCompatibility radiographyCompatibility) {
+		this.radiographyCompatibility = radiographyCompatibility;
+	}
+
+	public String getOtherDiagnosticCriteria() {
+		return otherDiagnosticCriteria;
+	}
+
+	public void setOtherDiagnosticCriteria(String otherDiagnosticCriteria) {
+		this.otherDiagnosticCriteria = otherDiagnosticCriteria;
+	}
+
+	public YesNoUnknown getTuberculosis() {
+		return tuberculosis;
+	}
+
+	public void setTuberculosis(YesNoUnknown tuberculosis) {
+		this.tuberculosis = tuberculosis;
+	}
+
+	public YesNoUnknown getHiv() {
+		return hiv;
+	}
+
+	public void setHiv(YesNoUnknown hiv) {
+		this.hiv = hiv;
+	}
+
+	public YesNoUnknown getHivArt() {
+		return hivArt;
+	}
+
+	public void setHivArt(YesNoUnknown hivArt) {
+		this.hivArt = hivArt;
+	}
+
+	public Integer getTuberculosisInfectionYear() {
+		return tuberculosisInfectionYear;
+	}
+
+	public void setTuberculosisInfectionYear(Integer tuberculosisInfectionYear) {
+		this.tuberculosisInfectionYear = tuberculosisInfectionYear;
+	}
+
+	public YesNoUnknown getPreviousTuberculosisTreatment() {
+		return previousTuberculosisTreatment;
+	}
+
+	public void setPreviousTuberculosisTreatment(YesNoUnknown previousTuberculosisTreatment) {
+		this.previousTuberculosisTreatment = previousTuberculosisTreatment;
+	}
+
+	public ComplianceWithTreatment getComplianceWithTreatment() {
+		return complianceWithTreatment;
+	}
+
+	public void setComplianceWithTreatment(ComplianceWithTreatment complianceWithTreatment) {
+		this.complianceWithTreatment = complianceWithTreatment;
 	}
 }
