@@ -87,6 +87,9 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		target.setIntensiveCareUnit(source.getIntensiveCareUnit());
 		target.setIntensiveCareUnitStart(source.getIntensiveCareUnitStart());
 		target.setIntensiveCareUnitEnd(source.getIntensiveCareUnitEnd());
+		target.setOxygenPrescribed(source.getOxygenPrescribed());
+		target.setStillHospitalized(source.getStillHospitalized());
+		target.setIcuLengthOfStay(source.getIcuLengthOfStay());
 		target.setDescription(source.getDescription());
 		target.setCurrentlyHospitalized(source.getCurrentlyHospitalized());
 
@@ -123,6 +126,9 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		target.setIntensiveCareUnit(source.getIntensiveCareUnit());
 		target.setIntensiveCareUnitStart(source.getIntensiveCareUnitStart());
 		target.setIntensiveCareUnitEnd(source.getIntensiveCareUnitEnd());
+		target.setIcuLengthOfStay(source.getIcuLengthOfStay());
+		target.setOxygenPrescribed(source.getOxygenPrescribed());
+		target.setStillHospitalized(source.getStillHospitalized());
 
 		return target;
 	}
@@ -157,6 +163,9 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		target.setIntensiveCareUnit(source.getIntensiveCareUnit());
 		target.setIntensiveCareUnitStart(source.getIntensiveCareUnitStart());
 		target.setIntensiveCareUnitEnd(source.getIntensiveCareUnitEnd());
+		target.setOxygenPrescribed(source.getOxygenPrescribed());
+		target.setStillHospitalized(source.getStillHospitalized());
+		target.setIcuLengthOfStay(source.getIcuLengthOfStay());
 		target.setDescription(source.getDescription());
 		target.setCurrentlyHospitalized(source.getCurrentlyHospitalized());
 
@@ -190,6 +199,9 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		target.setIntensiveCareUnit(source.getIntensiveCareUnit());
 		target.setIntensiveCareUnitStart(source.getIntensiveCareUnitStart());
 		target.setIntensiveCareUnitEnd(source.getIntensiveCareUnitEnd());
+		target.setIcuLengthOfStay(source.getIcuLengthOfStay());
+		target.setOxygenPrescribed(source.getOxygenPrescribed());
+		target.setStillHospitalized(source.getStillHospitalized());
 
 		return target;
 	}
