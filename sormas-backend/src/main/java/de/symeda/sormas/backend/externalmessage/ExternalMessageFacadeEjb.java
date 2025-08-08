@@ -240,6 +240,16 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setHospitalizationAdmissionDate(source.getHospitalizationAdmissionDate());
 		target.setHospitalizationDischargeDate(source.getHospitalizationDischargeDate());
 
+		target.setRadiographyCompatibility(source.getRadiographyCompatibility());
+		target.setOtherDiagnosticCriteria(source.getOtherDiagnosticCriteria());
+
+		target.setTuberculosis(source.getTuberculosis());
+		target.setHiv(source.getHiv());
+		target.setHivArt(source.getHivArt());
+		target.setTuberculosisInfectionYear(source.getTuberculosisInfectionYear());
+		target.setPreviousTuberculosisTreatment(source.getPreviousTuberculosisTreatment());
+		target.setComplianceWithTreatment(source.getComplianceWithTreatment());
+
 		return target;
 	}
 
@@ -445,6 +455,16 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setHospitalizationFacilityDepartment(source.getHospitalizationFacilityDepartment());
 		target.setHospitalizationAdmissionDate(source.getHospitalizationAdmissionDate());
 		target.setHospitalizationDischargeDate(source.getHospitalizationDischargeDate());
+
+		target.setRadiographyCompatibility(source.getRadiographyCompatibility());
+		target.setOtherDiagnosticCriteria(source.getOtherDiagnosticCriteria());
+
+		target.setTuberculosis(source.getTuberculosis());
+		target.setHiv(source.getHiv());
+		target.setHivArt(source.getHivArt());
+		target.setTuberculosisInfectionYear(source.getTuberculosisInfectionYear());
+		target.setPreviousTuberculosisTreatment(source.getPreviousTuberculosisTreatment());
+		target.setComplianceWithTreatment(source.getComplianceWithTreatment());
 
 		return target;
 	}

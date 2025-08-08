@@ -15,13 +15,11 @@
 
 package de.symeda.sormas.backend.clinicalcourse;
 
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
-import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @LocalBean
