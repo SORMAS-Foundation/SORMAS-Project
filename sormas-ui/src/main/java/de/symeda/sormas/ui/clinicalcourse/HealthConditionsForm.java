@@ -35,8 +35,10 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
@@ -245,16 +247,28 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 
 	@Override
 	protected <F extends Field> F addFieldToLayout(CustomLayout layout, String propertyId, F field) {
-		field.addValueChangeListener(e -> fireValueChange(false));
+		field.addValueChangeListener(e -> {
+			if (this.isModified()) {
+				fireValueChange(false);
+			}
+		});
 
 		return super.addFieldToLayout(layout, propertyId, field);
 	}
 
 	public void setInaccessible() {
-		fieldsList.stream().forEach(field -> {
-			getContent().getComponent(field).setVisible(false);
+		final HashSet<String> disableFields = new HashSet<>(fieldsList);
+		disableFields.add(OTHER_CONDITIONS);
+		final List<Field<?>> fields = disableFields.stream()
+			.map(e -> getContent().getComponent(e))
+			.filter(f -> f instanceof Field<?>)
+			.map(f -> (Field<?>) f)
+			.collect(Collectors.toList());
+		fields.forEach(field -> {
+			field.setVisible(false);
+			getFieldGroup().unbind(field);
 		});
-		getContent().getComponent(OTHER_CONDITIONS).setVisible(false);
+
 		Label confidentialLabel = new Label(I18nProperties.getCaption(Captions.inaccessibleValue));
 		confidentialLabel.addStyleName(CssStyles.INACCESSIBLE_LABEL);
 		getContent().addComponent(confidentialLabel, CONFIDENTIAL_LABEL_LOC);

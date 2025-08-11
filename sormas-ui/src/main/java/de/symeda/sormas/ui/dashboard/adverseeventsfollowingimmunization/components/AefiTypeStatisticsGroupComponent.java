@@ -49,7 +49,8 @@ public class AefiTypeStatisticsGroupComponent extends CssLayout {
 				//statisticsComponent.getHeading().getTitleLabel().setValue(entry.getKey().toString());
 				statisticsComponent.hideHeading();
 				statisticsComponent.update(entry.getValue());
-				statisticsComponent.addStyleNames(CssStyles.VIEW_SECTION, CssStyles.PADDING_X_8, CssStyles.HSPACE_RIGHT_3, CssStyles.VSPACE_4);
+				statisticsComponent
+					.addStyleNames(CssStyles.VIEW_SECTION_WIDTH_AUTO, CssStyles.PADDING_X_8, CssStyles.HSPACE_RIGHT_3, CssStyles.VSPACE_4);
 				componentMap.put(entry.getKey(), statisticsComponent);
 
 				addComponent(statisticsComponent);

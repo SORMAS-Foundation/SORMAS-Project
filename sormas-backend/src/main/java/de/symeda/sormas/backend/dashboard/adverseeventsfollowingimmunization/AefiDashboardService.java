@@ -577,12 +577,12 @@ public class AefiDashboardService {
 		Join<Person, Location> immunizationPersonAddress = joins.getImmunizationJoins().getPersonJoins().getAddress();
 
 		cq.multiselect(
-			aefiFacility.get(Facility.LATITUDE),
 			aefiFacility.get(Facility.LONGITUDE),
-			immunizationFacility.get(Facility.LATITUDE),
+			aefiFacility.get(Facility.LATITUDE),
 			immunizationFacility.get(Facility.LONGITUDE),
-			immunizationPersonAddress.get(Facility.LATITUDE),
+			immunizationFacility.get(Facility.LATITUDE),
 			immunizationPersonAddress.get(Facility.LONGITUDE),
+			immunizationPersonAddress.get(Facility.LATITUDE),
 			aefiRoot.get(Aefi.SERIOUS));
 
 		final Predicate criteriaFilter = createAefiFilter(aefiQueryContext, criteria);
@@ -608,6 +608,7 @@ public class AefiDashboardService {
 					.region(criteria.getRegion())
 					.district(criteria.getDistrict())
 					.aefiType(criteria.getAefiType())
+					.gisMapCriteria(criteria.isGisMapCriteria())
 					.showSeriousAefiForMap(criteria.isShowSeriousAefiForMap())
 					.showNonSeriousAefiForMap(criteria.isShowNonSeriousAefiForMap()),
 				queryContext));

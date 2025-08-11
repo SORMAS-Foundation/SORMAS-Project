@@ -4,7 +4,7 @@ The SORMAS Android app is designed for use by users at the level of hospitals, c
 These have only limited access to the overall data of the system, so it is possible to transfer the relevant data set and make it available offline.
 
 The **offline** functionality was also one of the core requirements in the development of the app, as it is also to be used in areas where no or hardly any mobile data network is available.
-This makes it possible for users to use the app freely and, for example, to synchronise the recorded data with the server in the evening.
+This makes it possible for users to use the app freely and, for example, to synchronize the recorded data with the server in the evening.
 
 The app covers **all essential functionalities of SORMAS** and the complete data collection in the areas of
 cases, contacts, events, samples, messages, aggregate reports and tasks.
@@ -14,9 +14,9 @@ To manage the large number of devices used within a country and to simplify supp
 
 ## Data Synchronization
 
-For synchronisation, the Android app accesses the **SORMAS ReST** interface.
+For synchronization, the Android app accesses the **SORMAS ReST** interface.
 
-First, all data that has changed since the last synchronisation is retrieved from the server.
+First, all data that has changed since the last synchronization is retrieved from the server.
 In the app, a three-way merge takes place for all data that the user has changed himself in the meantime.
 For each individual field (e.g. gender of a person), it is checked whether the value on the server has changed compared to the original status on the device.
 If so, this change is adopted, otherwise any existing change of the user is retained.
@@ -48,7 +48,7 @@ During the update **existing data is automatically migrated** using the commands
 
 ## Device Encryption
 
-Each Android device using SORMAS should ahve device encryption enabled. This is currently not enforced.
+Each Android device using SORMAS should have device encryption enabled. This is currently not enforced.
 
 ## Data Storage
 

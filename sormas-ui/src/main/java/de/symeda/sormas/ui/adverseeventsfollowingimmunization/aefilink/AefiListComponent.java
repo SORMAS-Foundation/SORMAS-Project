@@ -41,7 +41,7 @@ public class AefiListComponent extends SideComponent {
 					.navigateToAefi("immunization/" + aefiListCriteria.getImmunization().getUuid() + "/adverseevent/create"),
 				UserRight.ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_CREATE);
 
-			if (totalVaccinations == 0) {
+			if (totalVaccinations == 0 && createButton != null) {
 				createButton.setEnabled(false);
 			}
 		}

@@ -595,11 +595,10 @@ public class ContactController {
 		} else {
 			disease = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid(), false).getDisease();
 		}
-		createForm = new ContactCreateForm(disease, false, false, true);
+		createForm = new ContactCreateForm(disease, false, false, true, true);
 
 		createForm.setValue(createNewContact(eventParticipant, disease));
 		createForm.setPerson(eventParticipant.getPerson());
-		createForm.setPersonDetailsReadOnly();
 		createForm.setDiseaseReadOnly();
 
 		final CommitDiscardWrapperComponent<ContactCreateForm> createComponent =
@@ -628,10 +627,9 @@ public class ContactController {
 	public CommitDiscardWrapperComponent<ContactCreateForm> getContactCreateComponent(PersonDto person) {
 		final ContactCreateForm createForm;
 
-		createForm = new ContactCreateForm(null, false, false, true);
+		createForm = new ContactCreateForm(null, false, false, true, true);
 		createForm.setValue(createNewContact(person));
 		createForm.setPerson(person);
-		createForm.setPersonDetailsReadOnly();
 
 		final CommitDiscardWrapperComponent<ContactCreateForm> createComponent =
 			new CommitDiscardWrapperComponent<>(createForm, UiUtil.permitted(UserRight.CONTACT_CREATE), createForm.getFieldGroup());

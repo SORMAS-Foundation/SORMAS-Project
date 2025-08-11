@@ -50,7 +50,7 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
 import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEventResult;
-import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractDoctorDeclarationMessageProcessingFlow;
+import de.symeda.sormas.api.externalmessage.processing.doctordeclaration.AbstractDoctorDeclarationMessageProcessingFlow;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -85,9 +85,12 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 	/**
 	 * Constructor for initializing the processing flow with the required dependencies.
 	 *
-	 * @param externalMessage The external message to be processed.
-	 * @param mapper          The mapper for mapping external message data.
-	 * @param processingFacade The facade for handling external message processing operations.
+	 * @param externalMessage
+	 *            The external message to be processed.
+	 * @param mapper
+	 *            The mapper for mapping external message data.
+	 * @param processingFacade
+	 *            The facade for handling external message processing operations.
 	 */
 	public DoctorDeclarationMessageProcessingFlow(
 		ExternalMessageDto externalMessage,
@@ -111,7 +114,8 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 	/**
 	 * Handles related forwarded messages for the external message.
 	 *
-	 * @return A {@link CompletionStage} that resolves to a boolean indicating whether the related forwarded messages were handled successfully.
+	 * @return A {@link CompletionStage} that resolves to a boolean indicating whether the related forwarded messages were handled
+	 *         successfully.
 	 */
 	@Override
 	protected CompletionStage<Boolean> handleRelatedForwardedMessages() {
@@ -122,8 +126,10 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 	/**
 	 * Displays a window to pick or create a person associated with the external message.
 	 *
-	 * @param person   The person to be picked or created.
-	 * @param callback The callback to handle the result of the operation.
+	 * @param person
+	 *            The person to be picked or created.
+	 * @param callback
+	 *            The callback to handle the result of the operation.
 	 */
 	@Override
 	protected void handlePickOrCreatePerson(PersonDto person, HandlerCallback<EntitySelection<PersonDto>> callback) {
@@ -134,11 +140,16 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 	/**
 	 * Handles the selection or creation of an entry (case, contact, or event participant) based on the external message.
 	 *
-	 * @param similarCases             A list of similar cases.
-	 * @param similarContacts          A list of similar contacts.
-	 * @param similarEventParticipants A list of similar event participants.
-	 * @param externalMessage          The external message being processed.
-	 * @param callback                 The callback to handle the result of the operation.
+	 * @param similarCases
+	 *            A list of similar cases.
+	 * @param similarContacts
+	 *            A list of similar contacts.
+	 * @param similarEventParticipants
+	 *            A list of similar event participants.
+	 * @param externalMessage
+	 *            The external message being processed.
+	 * @param callback
+	 *            The callback to handle the result of the operation.
 	 */
 	@Override
 	protected void handlePickOrCreateEntry(
@@ -147,12 +158,15 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 		List<SimilarEventParticipantDto> similarEventParticipants,
 		ExternalMessageDto externalMessage,
 		HandlerCallback<PickOrCreateEntryResult> callback) {
-		LOGGER.debug("Handling pick or create entry for externalMessage: {}, similarCases: {}, similarContacts: {}, similarEventParticipants: {}",
-			externalMessage, similarCases, similarContacts, similarEventParticipants);
+		LOGGER.debug(
+			"Handling pick or create entry for externalMessage: {}, similarCases: {}, similarContacts: {}, similarEventParticipants: {}",
+			externalMessage,
+			similarCases,
+			similarContacts,
+			similarEventParticipants);
 
 		// Build options for selecting or creating an entry (case, contact, or event participant)
-		EntrySelectionField.Options.Builder optionsBuilder = new EntrySelectionField.Options.Builder()
-			.addSelectCase(similarCases) // Add similar cases to the options
+		EntrySelectionField.Options.Builder optionsBuilder = new EntrySelectionField.Options.Builder().addSelectCase(similarCases) // Add similar cases to the options
 			.addSelectContact(similarContacts) // Add similar contacts to the options
 			.addSelectEventParticipant(similarEventParticipants) // Add similar event participants to the options
 			.addCreateEntry(EntrySelectionField.OptionType.CREATE_CASE, FeatureType.CASE_SURVEILANCE, UserRight.CASE_CREATE, UserRight.CASE_EDIT) // Option to create a new case
@@ -179,10 +193,14 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 	/**
 	 * Handles the creation of a case based on the external message.
 	 *
-	 * @param caze           The case data to be created.
-	 * @param person         The person associated with the case.
-	 * @param externalMessage The external message being processed.
-	 * @param callback       The callback to handle the result of the operation.
+	 * @param caze
+	 *            The case data to be created.
+	 * @param person
+	 *            The person associated with the case.
+	 * @param externalMessage
+	 *            The external message being processed.
+	 * @param callback
+	 *            The callback to handle the result of the operation.
 	 */
 	@Override
 	protected void handleCreateCase(CaseDataDto caze, PersonDto person, ExternalMessageDto externalMessage, HandlerCallback<CaseDataDto> callback) {
@@ -224,10 +242,14 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 	/**
 	 * Handles the creation of a contact based on the external message.
 	 *
-	 * @param contact        The contact data to be created.
-	 * @param person         The person associated with the contact.
-	 * @param externalMessage The external message being processed.
-	 * @param callback       The callback to handle the result of the operation.
+	 * @param contact
+	 *            The contact data to be created.
+	 * @param person
+	 *            The person associated with the contact.
+	 * @param externalMessage
+	 *            The external message being processed.
+	 * @param callback
+	 *            The callback to handle the result of the operation.
 	 */
 	@Override
 	protected void handleCreateContact(
@@ -260,8 +282,10 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 	/**
 	 * Displays a window to pick or create an event associated with the external message.
 	 *
-	 * @param externalMessage The external message being processed.
-	 * @param callback        The callback to handle the result of the operation.
+	 * @param externalMessage
+	 *            The external message being processed.
+	 * @param callback
+	 *            The callback to handle the result of the operation.
 	 */
 	@Override
 	protected void handlePickOrCreateEvent(ExternalMessageDto externalMessage, HandlerCallback<PickOrCreateEventResult> callback) {
@@ -302,8 +326,10 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 	/**
 	 * Handles the creation of an event based on the external message.
 	 *
-	 * @param event    The event data to be created.
-	 * @param callback The callback to handle the result of the operation.
+	 * @param event
+	 *            The event data to be created.
+	 * @param callback
+	 *            The callback to handle the result of the operation.
 	 */
 	@Override
 	protected void handleCreateEvent(EventDto event, HandlerCallback<EventDto> callback) {
@@ -341,10 +367,14 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 	/**
 	 * Handles the creation of an event participant based on the external message.
 	 *
-	 * @param eventParticipant The event participant data to be created.
-	 * @param event            The event associated with the participant.
-	 * @param externalMessage  The external message being processed.
-	 * @param callback         The callback to handle the result of the operation.
+	 * @param eventParticipant
+	 *            The event participant data to be created.
+	 * @param event
+	 *            The event associated with the participant.
+	 * @param externalMessage
+	 *            The external message being processed.
+	 * @param callback
+	 *            The callback to handle the result of the operation.
 	 */
 	@Override
 	protected void handleCreateEventParticipant(
@@ -352,7 +382,11 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 		EventDto event,
 		ExternalMessageDto externalMessage,
 		HandlerCallback<EventParticipantDto> callback) {
-		LOGGER.debug("Handling create event participant for eventParticipant: {}, event: {}, externalMessage: {}", eventParticipant, event, externalMessage);
+		LOGGER.debug(
+			"Handling create event participant for eventParticipant: {}, event: {}, externalMessage: {}",
+			eventParticipant,
+			event,
+			externalMessage);
 
 		Window window = VaadinUiUtil.createPopupWindow();
 
@@ -382,7 +416,8 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 	/**
 	 * Confirms whether to pick an existing event participant.
 	 *
-	 * @return A {@link CompletionStage} that resolves to a boolean indicating whether the user chose to continue with the existing participant.
+	 * @return A {@link CompletionStage} that resolves to a boolean indicating whether the user chose to continue with the existing
+	 *         participant.
 	 */
 	@Override
 	protected CompletionStage<Boolean> confirmPickExistingEventParticipant() {

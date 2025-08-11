@@ -3179,8 +3179,32 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(UserRole.class)
 					.executeRaw("ALTER TABLE userroles ADD COLUMN restrictAccessToAssignedEntities boolean NOT NULL DEFAULT false;");
 
+			case 359:
+				currentVersion = 359;
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN apnoea varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN arthritis varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN asymptomatic varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN clinicalpresentationstatus varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN coughingbouts varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN coughsprovokevomiting varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN dateofonsetknown varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN diagnosis varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN hemorrhagicrash varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN majorsite varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN meningitis varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN minorsite varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN nocturnalcough varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN otherclinicalpresentation varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN otherclinicalpresentationtext varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN othermajorsitedetails varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN otherminorsitedetails varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN septicaemia varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN whoopsound varchar(255);");
+
 				// ATTENTION: break should only be done after last version
 				break;
+
+
 
 			default:
 				throw new IllegalStateException("onUpgrade() with unknown oldVersion " + oldVersion);
