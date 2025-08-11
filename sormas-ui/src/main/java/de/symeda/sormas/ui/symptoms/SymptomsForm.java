@@ -936,7 +936,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			getField(PNEUMONIA_CLINICAL_OR_RADIOLOGIC).setCaption(I18nProperties.getCaption(Captions.Symptoms_ipi_pneumoniaClinicalOrRadiologic));
 		}
 
-		getField(CHEST_PAIN).setVisible(PlagueType.PNEUMONIC == caze.getPlagueType());
+		if (symptomsContext == SymptomsContext.CASE && caze != null && caze.getDisease() == Disease.PLAGUE) {
+			getField(CHEST_PAIN).setVisible(PlagueType.PNEUMONIC == caze.getPlagueType());
+		}
 
 		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && disease == Disease.TUBERCULOSIS) {
 			Label localisationHeadingLabel = createLabel(I18nProperties.getString(Strings.headingLocalisation), H3, LOCALISATION_HEADING_LOC);
