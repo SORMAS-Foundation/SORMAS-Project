@@ -44,6 +44,7 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.ui.AbstractSelect;
+import com.vaadin.v7.ui.AbstractTextField;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextArea;
@@ -198,7 +199,8 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 				// Only for TUBERCULOSIS disease below fields are visible,
 				// for all other diseases all health conditions should visible.
 				// This requirement is LUX + TB specific
-				List<String> visibilityHealthConditions = Arrays.asList(TUBERCULOSIS, PREVIOUS_TUBERCULOSIS_TREATMENT, HIV, HIV_ART);
+				List<String> visibilityHealthConditions =
+					Arrays.asList(TUBERCULOSIS, PREVIOUS_TUBERCULOSIS_TREATMENT, HIV, HIV_ART, OTHER_CONDITIONS);
 				fieldVisibilityCheck(getFieldGroup(), visibilityHealthConditions);
 			}
 		}
@@ -206,6 +208,17 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
 
+		if (Disease.TUBERCULOSIS.equals(disease)) {
+			Field<?> other = getField(OTHER_CONDITIONS);
+			if (other != null) {
+				other.setReadOnly(false);
+				other.setEnabled(true);
+
+				if (other instanceof AbstractTextField) {
+					((AbstractTextField) other).setInputPrompt("");
+				}
+			}
+		}
 	}
 
 	/**
@@ -258,7 +271,9 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 
 	public void setInaccessible() {
 		final HashSet<String> disableFields = new HashSet<>(fieldsList);
-		disableFields.add(OTHER_CONDITIONS);
+		if (disease != Disease.TUBERCULOSIS) {
+			disableFields.add(OTHER_CONDITIONS);
+		}
 		final List<Field<?>> fields = disableFields.stream()
 			.map(e -> getContent().getComponent(e))
 			.filter(f -> f instanceof Field<?>)

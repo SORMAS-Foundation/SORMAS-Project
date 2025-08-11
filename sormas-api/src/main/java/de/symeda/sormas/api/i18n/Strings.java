@@ -1878,6 +1878,7 @@ public interface Strings {
 	String setTo = "setTo";
 	String sormasToSormasLoadingShares = "sormasToSormasLoadingShares";
 	String step = "step";
+	String subheadingDiagnosisCriteria = "subheadingDiagnosisCriteria";
 	String text = "text";
 	String toCase = "toCase";
 	String total = "total";

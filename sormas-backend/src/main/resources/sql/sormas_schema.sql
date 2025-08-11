@@ -14416,4 +14416,9 @@ alter table drugsusceptibility_history add column IF NOT EXISTS erythromycinSusc
 
 INSERT INTO schema_version (version_number, comment) VALUES (578, 'Update history tables #13516');
 
+alter table hospitalization add currentlyhospitalized varchar(255);
+alter table hospitalization_history add currentlyhospitalized varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (579, 'Add currently hospitalized to hospitalization #13321');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

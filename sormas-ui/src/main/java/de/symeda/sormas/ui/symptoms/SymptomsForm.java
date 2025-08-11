@@ -57,6 +57,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.data.util.converter.Converter.ConversionException;
 import com.vaadin.v7.ui.AbstractField;
+import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
@@ -78,6 +79,7 @@ import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.ClinicalPresentationStatus;
 import de.symeda.sormas.api.symptoms.CongenitalHeartDiseaseType;
+import de.symeda.sormas.api.symptoms.DiagnosisType;
 import de.symeda.sormas.api.symptoms.InfectionSite;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
@@ -918,10 +920,10 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		// checking the disease is invasive bacterial disease(IMI/IPI)
 		boolean lablesVisible = false;
 
-		if(caze!=null) {
+		if (caze != null) {
 			lablesVisible = DiseaseHelper.checkDiseaseIsInvasiveBacterialDiseases(caze.getDisease()) || disease == Disease.PERTUSSIS;
 		}
-		
+
 		clinicalMeasurementsHeadingLabel.setVisible(!lablesVisible);
 		signsAndSymptomsHeadingLabel.setVisible(!lablesVisible);
 		respiratorySymptomsHeadingLabel.setVisible(!lablesVisible);
@@ -948,7 +950,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			setEmptyToUnknownButton.setVisible(false);
 			onsetSymptom.setVisible(false);
 
-			addField(DIAGNOSIS, ComboBox.class);
+			ComboBox diagnosisField = addField(DIAGNOSIS, ComboBox.class);
 
 			ComboBox majorSiteField = new ComboBox();
 			majorSiteField.addItems(InfectionSite.filter(disease, true, false));
@@ -966,11 +968,14 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			FieldHelper.setVisibleWhen(getFieldGroup(), OTHER_MAJOR_SITE_DETAILS, MAJOR_SITE, Arrays.asList(InfectionSite.OTHER), true);
 			FieldHelper.setVisibleWhen(getFieldGroup(), OTHER_MINOR_SITE_DETAILS, MINOR_SITE, Arrays.asList(InfectionSite.OTHER), true);
 
+			FieldHelper.setVisibleWhen(getFieldGroup(), MAJOR_SITE, DIAGNOSIS, Arrays.asList(DiagnosisType.EXTRAPULMONARY), true);
+
 			addField(DATE_OF_ONSET_KNOWN, OptionGroup.class);
 
 			FieldHelper.setEnabledWhen(getFieldGroup(), DATE_OF_ONSET_KNOWN, YesNoUnknown.YES, ONSET_DATE, true);
 
 			ComboBox clinicalPresentationStatusField = addField(CLINICAL_PRESENTATION_STATUS, ComboBox.class);
+			clinicalPresentationStatusField.setItemCaptionMode(AbstractSelect.ItemCaptionMode.EXPLICIT_DEFAULTS_ID);
 			clinicalPresentationStatusField
 				.setItemCaption(ClinicalPresentationStatus.COMPATIBLE, ClinicalPresentationStatus.COMPATIBLE.buildCaption(disease.toShortString()));
 			getFieldGroup().getField(OTHER_CLINICAL_PRESENTATION_TEXT).setVisible(true);
