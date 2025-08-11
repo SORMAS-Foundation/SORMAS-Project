@@ -72,6 +72,7 @@ public class Hospitalization extends AbstractDomainObject {
 	private HospitalizationReasonType hospitalizationReason;
 	private String otherHospitalizationReason;
 	private String description;
+	private YesNoUnknown currentlyHospitalized;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getAdmissionDate() {
@@ -209,5 +210,14 @@ public class Hospitalization extends AbstractDomainObject {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getCurrentlyHospitalized() {
+		return currentlyHospitalized;
+	}
+
+	public void setCurrentlyHospitalized(YesNoUnknown currentlyHospitalized) {
+		this.currentlyHospitalized = currentlyHospitalized;
 	}
 }

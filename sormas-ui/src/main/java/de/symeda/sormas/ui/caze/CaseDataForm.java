@@ -20,6 +20,7 @@ import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.CssStyles.LABEL_WHITE_SPACE_NORMAL;
 import static de.symeda.sormas.ui.utils.CssStyles.LAYOUT_COL_HIDE_INVSIBLE;
 import static de.symeda.sormas.ui.utils.CssStyles.SOFT_REQUIRED;
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_2;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.CssStyles.style;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
@@ -180,6 +181,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private static final String REINFECTION_DETAILS_COL_2_LOC = "reinfectionDetailsCol2Loc";
 	public static final String CASE_REFER_POINT_OF_ENTRY_BTN_LOC = "caseReferFromPointOfEntryBtnLoc";
 	public static final String DIAGNOSIS_CRITERIA_HEADING_LOC = "diagnosisCriteriaHeadingLoc";
+	public static final String DIAGNOSIS_CRITERIA_SUBHEADING_LOC = "diagnosisCriteriaSubheadingLoc";
 	public static final String DIAGNOSIS_CRITERIA_LAB_TEST_PANEL_LOC = "diagnosisCriteriaLoc";
 
 	//@formatter:off
@@ -254,6 +256,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(CaseDataDto.REPORT_LAT, CaseDataDto.REPORT_LON, CaseDataDto.REPORT_LAT_LON_ACCURACY) +
 					fluidRowLocs(CaseDataDto.HEALTH_CONDITIONS) +
 					loc(DIAGNOSIS_CRITERIA_HEADING_LOC) +
+					loc(DIAGNOSIS_CRITERIA_SUBHEADING_LOC) +
 					fluidRowLocs(DIAGNOSIS_CRITERIA_LAB_TEST_PANEL_LOC) +
 					fluidRowLocs(8, CaseDataDto.RADIOGRAPHY_COMPATIBILITY) +
 					fluidRowLocs(CaseDataDto.OTHER_DIAGNOSTIC_CRITERIA) +
@@ -945,7 +948,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		Label generalCommentLabel = new Label(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.ADDITIONAL_DETAILS));
 		generalCommentLabel.addStyleName(H3);
 		getContent().addComponent(generalCommentLabel, GENERAL_COMMENT_LOC);
-		generalCommentLabel.setVisible(disease!=Disease.TUBERCULOSIS);
+		generalCommentLabel.setVisible(disease != Disease.TUBERCULOSIS);
 
 		TextArea additionalDetails = addField(CaseDataDto.ADDITIONAL_DETAILS, TextArea.class);
 		additionalDetails.setRows(6);
@@ -1043,6 +1046,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			Label diagnosisCriteriaHeadingLabel = new Label(I18nProperties.getString(Strings.headingDiagnosisCriteria));
 			diagnosisCriteriaHeadingLabel.addStyleName(H3);
 			getContent().addComponent(diagnosisCriteriaHeadingLabel, DIAGNOSIS_CRITERIA_HEADING_LOC);
+
+			Label diagnosisCriteriaSubheadingLabel = new Label(I18nProperties.getString(Strings.subheadingDiagnosisCriteria));
+			diagnosisCriteriaSubheadingLabel.addStyleName(VSPACE_2);
+			getContent().addComponent(diagnosisCriteriaSubheadingLabel, DIAGNOSIS_CRITERIA_SUBHEADING_LOC);
 
 			if (UiUtil.permitted(UserRight.SAMPLE_VIEW)) {
 				List<SampleDto> samples = FacadeProvider.getSampleFacade().getByCaseUuids(Collections.singletonList(caseUuid));
@@ -1429,8 +1436,15 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			}
 
 		});
-		setVisible(!isLuxTuberculosisDisease(), CaseDataDto.POSTPARTUM, CaseDataDto.PREGNANT, CaseDataDto.SURVEILLANCE_OFFICER,
-				CaseDataDto.CLINICIAN_NAME, CaseDataDto.CLINICIAN_PHONE, CaseDataDto.CLINICIAN_EMAIL, CaseDataDto.ADDITIONAL_DETAILS);
+		setVisible(
+			!isLuxTuberculosisDisease(),
+			CaseDataDto.POSTPARTUM,
+			CaseDataDto.PREGNANT,
+			CaseDataDto.SURVEILLANCE_OFFICER,
+			CaseDataDto.CLINICIAN_NAME,
+			CaseDataDto.CLINICIAN_PHONE,
+			CaseDataDto.CLINICIAN_EMAIL,
+			CaseDataDto.ADDITIONAL_DETAILS);
 	}
 
 	private void hideJurisdictionFields() {
@@ -1452,6 +1466,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private boolean isLuxTuberculosisDisease() {
 		return isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && disease == Disease.TUBERCULOSIS;
 	}
+
 	private void updateFacilityOrHome() {
 		if (getValue().getHealthFacility() != null) {
 			boolean facilityOrHomeReadOnly = facilityOrHome.isReadOnly();
