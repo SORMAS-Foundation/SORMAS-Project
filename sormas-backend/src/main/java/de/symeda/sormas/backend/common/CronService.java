@@ -222,13 +222,11 @@ public class CronService {
 		}
 	}
 
-	@Schedule(hour = "*", minute = "*", second = "0", persistent = false)
+	@Schedule(hour = "1", minute = "35", second = "0", persistent = false)
 	public void fetchExternalMessages() {
 		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.EXTERNAL_MESSAGES)) {
 			externalMessageFacade.fetchAndSaveExternalMessages(null);
-			logger.info("externalMessageFacade.fetchAndSaveExternalMessages completed");
 		}
-		logger.info("cron.fetchExternalMessages completed");
 	}
 
 	@Schedule(hour = "1", minute = "40", second = "0", persistent = false)
