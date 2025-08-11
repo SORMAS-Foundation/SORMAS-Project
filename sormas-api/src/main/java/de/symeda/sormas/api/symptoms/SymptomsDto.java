@@ -2610,6 +2610,8 @@ public class SymptomsDto extends PseudonymizableDto {
 	private YesNoUnknown parentTimeOffWork;
 
 	@Diseases(RESPIRATORY_SYNCYTIAL_VIRUS)
+	@DependantOn("parentTimeOffWork")
+	@Size(max = 50, message = Validations.textTooLong) 
 	private String timeOffWorkDays;
 
 	private DiagnosisType diagnosis;
