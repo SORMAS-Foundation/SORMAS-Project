@@ -35,6 +35,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 
@@ -43,6 +44,7 @@ public class DiagnosisCriteriaLabTestPanel extends CustomLayout {
 	private static final long serialVersionUID = 3507451575384747784L;
 
 	private static final String FORM_HEADING_LOC = "formHeadingLoc";
+	private static final String FORM_SUBHEADING_LOC = "formSubheadingLoc";
 	private static final String IGRA_TEST_LOC = "igraTestLoc";
 	private static final String IGRA_TEST_RESULT_LOC = "igraTestResultLoc";
 	private static final String IGRA_TEST_RESULT_DATE_LOC = "igraTestResultDateLoc";
@@ -81,6 +83,7 @@ public class DiagnosisCriteriaLabTestPanel extends CustomLayout {
 	//@formatter:off
     private static final String HTML_LAYOUT =
             loc(FORM_HEADING_LOC) +
+            loc(FORM_SUBHEADING_LOC) +
                 fluidRowLocs(6, IGRA_TEST_LOC, 4, IGRA_TEST_RESULT_LOC, 2, IGRA_TEST_RESULT_DATE_LOC)
                 + fluidRowLocs(6, TST_TEST_LOC, 4, TST_TEST_RESULT_LOC, 2, TST_TEST_RESULT_DATE_LOC)
                 + fluidRowLocs(6, PCR_TEST_LOC, 4, PCR_TEST_RESULT_LOC, 2, PCR_TEST_RESULT_DATE_LOC)
@@ -120,6 +123,14 @@ public class DiagnosisCriteriaLabTestPanel extends CustomLayout {
 				Map<String, String> testResultDetails = new HashMap<>();
 				testResultDetails.put("RESULT", testResult);
 				testResultDetails.put("DATE", testDate);
+				testResultDetails.put(
+					PathogenTestDto.RIFAMPICIN_RESISTANT,
+					(pathogenTest.getRifampicinResistant() != null ? pathogenTest.getRifampicinResistant().toString().toUpperCase() : null));
+				testResultDetails.put(
+					PathogenTestDto.ISONIAZID_RESISTANT,
+					(pathogenTest.getIsoniazidResistant() != null ? pathogenTest.getIsoniazidResistant().toString().toUpperCase() : null));
+				testResultDetails
+					.put(PathogenTestDto.TEST_SCALE, (pathogenTest.getTestScale() != null ? pathogenTest.getTestScale().toString() : null));
 				testDetails.put(pathogenTest.getTestType().name(), testResultDetails);
 			}
 		}
@@ -129,7 +140,7 @@ public class DiagnosisCriteriaLabTestPanel extends CustomLayout {
 		if (List.of(Disease.TUBERCULOSIS).contains(disease)) {
 			OptionGroup igraTest = addTestTypeComponent(IGRA_TEST_LOC, I18nProperties.getEnumCaption(PathogenTestType.IGRA));
 			OptionGroup igraTestResult = addTestResultComponent(IGRA_TEST_RESULT_LOC);
-			TextField igraTestResultDate = addTestResultDateComponent(IGRA_TEST_RESULT_DATE_LOC);
+			TextField igraTestResultDate = addTextFieldComponent(IGRA_TEST_RESULT_DATE_LOC, "", true);
 			if (testDetails.containsKey(PathogenTestType.IGRA.name())) {
 				igraTest.setValue(TEST_TYPE_YES);
 				igraTestResult.setValue(testDetails.get(PathogenTestType.IGRA.name()).get("RESULT"));
@@ -140,7 +151,7 @@ public class DiagnosisCriteriaLabTestPanel extends CustomLayout {
 
 			OptionGroup tstTest = addTestTypeComponent(TST_TEST_LOC, I18nProperties.getEnumCaption(PathogenTestType.TST));
 			OptionGroup tstTestResult = addTestResultComponent(TST_TEST_RESULT_LOC);
-			TextField tstTestResultDate = addTestResultDateComponent(TST_TEST_RESULT_DATE_LOC);
+			TextField tstTestResultDate = addTextFieldComponent(TST_TEST_RESULT_DATE_LOC, "", true);
 			if (testDetails.containsKey(PathogenTestType.TST.name())) {
 				tstTest.setValue(TEST_TYPE_YES);
 				tstTestResult.setValue(testDetails.get(PathogenTestType.TST.name()).get("RESULT"));
@@ -151,29 +162,52 @@ public class DiagnosisCriteriaLabTestPanel extends CustomLayout {
 
 			OptionGroup pcrTest = addTestTypeComponent(PCR_TEST_LOC, I18nProperties.getEnumCaption(PathogenTestType.PCR_RT_PCR));
 			OptionGroup pcrTestResult = addTestResultComponent(PCR_TEST_RESULT_LOC);
-			TextField pcrTestResultDate = addTestResultDateComponent(PCR_TEST_RESULT_DATE_LOC);
+			TextField pcrTestResultDate = addTextFieldComponent(PCR_TEST_RESULT_DATE_LOC, "", true);
+			OptionGroup pcrRifampicinResistant = addYesNoUnknownComponent(
+				PCR_RIFAMPICIN_LOC,
+				I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.RIFAMPICIN_RESISTANT));
+			OptionGroup pcrIsoniazidResistant = addYesNoUnknownComponent(
+				PCR_ISONIAZID_LOC,
+				I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.ISONIAZID_RESISTANT));
 			if (testDetails.containsKey(PathogenTestType.PCR_RT_PCR.name())) {
 				pcrTest.setValue(TEST_TYPE_YES);
 				pcrTestResult.setValue(testDetails.get(PathogenTestType.PCR_RT_PCR.name()).get("RESULT"));
 				pcrTestResultDate.setValue(testDetails.get(PathogenTestType.PCR_RT_PCR.name()).get("DATE"));
+
+				String pcrRifampicinStr = testDetails.get(PathogenTestType.PCR_RT_PCR.name()).get(PathogenTestDto.RIFAMPICIN_RESISTANT);
+				if (pcrRifampicinStr != null) {
+					YesNoUnknown pcrRifampicin = YesNoUnknown.valueOf(pcrRifampicinStr);
+					pcrRifampicinResistant.setValue(pcrRifampicin);
+				}
+
+				String pcrIsoniazidStr = testDetails.get(PathogenTestType.PCR_RT_PCR.name()).get(PathogenTestDto.ISONIAZID_RESISTANT);
+				if (pcrIsoniazidStr != null) {
+					YesNoUnknown pcrIsoniazid = YesNoUnknown.valueOf(pcrIsoniazidStr);
+					pcrIsoniazidResistant.setValue(pcrIsoniazid);
+				}
 			} else {
 				pcrTest.setValue(TEST_TYPE_NO);
+				pcrRifampicinResistant.setVisible(false);
+				pcrIsoniazidResistant.setVisible(false);
 			}
 
 			OptionGroup microscopyTest = addTestTypeComponent(MICROSCOPY_TEST_LOC, I18nProperties.getEnumCaption(PathogenTestType.MICROSCOPY));
 			OptionGroup microscopyTestResult = addTestResultComponent(MICROSCOPY_TEST_RESULT_LOC);
-			TextField microscopyTestResultDate = addTestResultDateComponent(MICROSCOPY_TEST_RESULT_DATE_LOC);
+			TextField microscopyTestResultDate = addTextFieldComponent(MICROSCOPY_TEST_RESULT_DATE_LOC, "", true);
+			TextField microscopyTestScale = addTextFieldComponent(MICROSCOPY_TEST_SCALE_LOC, "Test Scale", false);
 			if (testDetails.containsKey(PathogenTestType.MICROSCOPY.name())) {
 				microscopyTest.setValue(TEST_TYPE_YES);
 				microscopyTestResult.setValue(testDetails.get(PathogenTestType.MICROSCOPY.name()).get("RESULT"));
 				microscopyTestResultDate.setValue(testDetails.get(PathogenTestType.MICROSCOPY.name()).get("DATE"));
+				microscopyTestScale.setValue(testDetails.get(PathogenTestType.MICROSCOPY.name()).get(PathogenTestDto.TEST_SCALE));
 			} else {
 				microscopyTest.setValue(TEST_TYPE_NO);
+				microscopyTestScale.setVisible(false);
 			}
 
 			OptionGroup cultureTest = addTestTypeComponent(CULTURE_TEST_LOC, I18nProperties.getEnumCaption(PathogenTestType.CULTURE));
 			OptionGroup cultureTestResult = addTestResultComponent(CULTURE_TEST_RESULT_LOC);
-			TextField cultureTestResultDate = addTestResultDateComponent(CULTURE_TEST_RESULT_DATE_LOC);
+			TextField cultureTestResultDate = addTextFieldComponent(CULTURE_TEST_RESULT_DATE_LOC, "", true);
 			if (testDetails.containsKey(PathogenTestType.CULTURE.name())) {
 				cultureTest.setValue(TEST_TYPE_YES);
 				cultureTestResult.setValue(testDetails.get(PathogenTestType.CULTURE.name()).get("RESULT"));
@@ -214,13 +248,30 @@ public class DiagnosisCriteriaLabTestPanel extends CustomLayout {
 		return field;
 	}
 
-	private TextField addTestResultDateComponent(String fieldId) {
+	private TextField addTextFieldComponent(String fieldId, String caption, boolean dateValue) {
 		TextField field = new TextField();
 		field.setId(fieldId);
 		field.setWidth(100, Unit.PERCENTAGE);
-		field.setCaption(null);
-		field.setInputPrompt(I18nProperties.getCaption(Captions.diagnosisCriteriaDetailTestResultDate));
-		//CssStyles.style(field, CssStyles.TEXTFIELD_ROW, CssStyles.TEXTFIELD_CAPTION_INLINE);
+		if (dateValue) {
+			field.setCaption(null);
+			field.setInputPrompt(I18nProperties.getCaption(Captions.diagnosisCriteriaDetailTestResultDate));
+		} else {
+			field.setCaption(caption);
+			field.setWidth(153, Unit.PIXELS);
+			CssStyles.style(field, CssStyles.TEXTFIELD_ROW, CssStyles.TEXTFIELD_CAPTION_INLINE);
+		}
+		field.setEnabled(false);
+		addComponent(field, fieldId);
+		return field;
+	}
+
+	private OptionGroup addYesNoUnknownComponent(String fieldId, String caption) {
+		OptionGroup field = new OptionGroup();
+		field.setId(fieldId);
+		field.setCaption(caption);
+		field.setWidth(100, Unit.PERCENTAGE);
+		CssStyles.style(field, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_CAPTION_INLINE);
+		field.addItems((Object[]) YesNoUnknown.values());
 		field.setEnabled(false);
 		addComponent(field, fieldId);
 		return field;

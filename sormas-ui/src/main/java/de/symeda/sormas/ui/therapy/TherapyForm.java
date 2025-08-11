@@ -99,6 +99,10 @@ public class TherapyForm extends AbstractEditForm<TherapyDto> {
 	private final CaseDataDto caze;
 	private final Disease disease;
 
+	private CheckBox mdrXdrTuberculosisField;
+	private PathogenTestDto latestAntibioticTest;
+	private PathogenTestDto latestBejingGenotypingTest;
+	private CheckBox beijingLineageField;
 	private DrugSusceptibilityResultPanel drugSusceptibilityResultPanel;
 
 	private PrescriptionCriteria prescriptionCriteria;
@@ -144,44 +148,50 @@ public class TherapyForm extends AbstractEditForm<TherapyDto> {
 	@Override
 	protected void addFields() {
 		boolean isLUXConfigured = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG);
-			CheckBox dotField = addField(TherapyDto.DIRECTLY_OBSERVED_TREATMENT, CheckBox.class);
-			dotField.addStyleName(VSPACE_3);
-            dotField.setVisible(isLUXConfigured && disease == Disease.TUBERCULOSIS);
+		CheckBox dotField = addField(TherapyDto.DIRECTLY_OBSERVED_TREATMENT, CheckBox.class);
+		dotField.addStyleName(VSPACE_3);
+		dotField.setVisible(isLUXConfigured && disease == Disease.TUBERCULOSIS);
 
-			CheckBox mdrXdrTuberculosisField = addField(TherapyDto.MDR_XDR_TUBERCULOSIS, CheckBox.class);
-			mdrXdrTuberculosisField.addStyleName(VSPACE_3);
-            mdrXdrTuberculosisField.setVisible(isLUXConfigured && disease == Disease.TUBERCULOSIS);
-			mdrXdrTuberculosisField.addValueChangeListener(e -> {
-				if (drugSusceptibilityResultPanel != null) {
-					drugSusceptibilityResultPanel.setVisible((Boolean) e.getProperty().getValue());
-				}
-			});
-
-			CheckBox beijingLineageField = addField(TherapyDto.BEIJING_LINEAGE, CheckBox.class);
-			beijingLineageField.addStyleName(VSPACE_3);
-            beijingLineageField.setVisible(isLUXConfigured && disease == Disease.TUBERCULOSIS);
-
-			List<SampleDto> samples = FacadeProvider.getSampleFacade().getByCaseUuids(Collections.singletonList(caze.getUuid()));
-			List<String> sampleUuids = Collections.emptyList();
-			if (samples != null && !samples.isEmpty()) {
-				sampleUuids = samples.stream().map(SampleDto::getUuid).collect(Collectors.toList());
+		mdrXdrTuberculosisField = addField(TherapyDto.MDR_XDR_TUBERCULOSIS, CheckBox.class);
+		mdrXdrTuberculosisField.addStyleName(VSPACE_3);
+		mdrXdrTuberculosisField.setVisible(isLUXConfigured && disease == Disease.TUBERCULOSIS);
+		mdrXdrTuberculosisField.addValueChangeListener(e -> {
+			if (drugSusceptibilityResultPanel != null) {
+				drugSusceptibilityResultPanel.setVisible((Boolean) e.getProperty().getValue());
 			}
+		});
 
-			List<PathogenTestDto> pathogenTests = FacadeProvider.getPathogenTestFacade().getBySampleUuids(sampleUuids);
-			PathogenTestDto latestAntibioticTest = null;
-			if (pathogenTests != null && !pathogenTests.isEmpty()) {
-				for (PathogenTestDto pathogenTest : pathogenTests) {
-					if (pathogenTest.getTestType() == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY) {
-						latestAntibioticTest = pathogenTest;
-						break;
-					}
+		beijingLineageField = addField(TherapyDto.BEIJING_LINEAGE, CheckBox.class);
+		beijingLineageField.addStyleName(VSPACE_3);
+		beijingLineageField.setVisible(isLUXConfigured && disease == Disease.TUBERCULOSIS);
+
+		List<SampleDto> samples = FacadeProvider.getSampleFacade().getByCaseUuids(Collections.singletonList(caze.getUuid()));
+		List<String> sampleUuids = Collections.emptyList();
+		if (samples != null && !samples.isEmpty()) {
+			sampleUuids = samples.stream().map(SampleDto::getUuid).collect(Collectors.toList());
+		}
+
+		List<PathogenTestDto> pathogenTests = FacadeProvider.getPathogenTestFacade().getBySampleUuids(sampleUuids);
+		if (pathogenTests != null && !pathogenTests.isEmpty()) {
+			for (PathogenTestDto pathogenTest : pathogenTests) {
+				if (pathogenTest.getTestType() == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY) {
+					latestAntibioticTest = pathogenTest;
+					break;
 				}
 			}
 
-			drugSusceptibilityResultPanel = new DrugSusceptibilityResultPanel(latestAntibioticTest);
-			drugSusceptibilityResultPanel.setVisible(disease != Disease.TUBERCULOSIS);
-			getContent().addComponent(drugSusceptibilityResultPanel, DRUD_SUSCEPTIBILITY_LOC);
-			drugSusceptibilityResultPanel.addStyleNames(VSPACE_TOP_4, VSPACE_3);
+			for (PathogenTestDto pathogenTest : pathogenTests) {
+				if (pathogenTest.getTestType() == PathogenTestType.BEIJINGGENOTYPING) {
+					latestBejingGenotypingTest = pathogenTest;
+					break;
+				}
+			}
+		}
+
+		drugSusceptibilityResultPanel = new DrugSusceptibilityResultPanel(latestAntibioticTest);
+		drugSusceptibilityResultPanel.setVisible(disease != Disease.TUBERCULOSIS);
+		getContent().addComponent(drugSusceptibilityResultPanel, DRUD_SUSCEPTIBILITY_LOC);
+		drugSusceptibilityResultPanel.addStyleNames(VSPACE_TOP_4, VSPACE_3);
 
 		//prescription
 		CustomLayout prescriptionsLayout = new CustomLayout();
@@ -419,5 +429,18 @@ public class TherapyForm extends AbstractEditForm<TherapyDto> {
 
 	private boolean isEditAllowed() {
 		return FacadeProvider.getCaseFacade().isEditAllowed(caze.toReference().getUuid());
+	}
+
+	@Override
+	public void attach() {
+		super.attach();
+
+		if (latestAntibioticTest != null) {
+			mdrXdrTuberculosisField.setValue(true);
+		}
+
+		if (latestBejingGenotypingTest != null) {
+			beijingLineageField.setValue(true);
+		}
 	}
 }

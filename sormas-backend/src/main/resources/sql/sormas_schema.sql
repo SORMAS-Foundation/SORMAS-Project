@@ -14424,4 +14424,9 @@ ALTER TABLE immunization_history ADD COLUMN IF NOT EXISTS injectionFacility varc
 
 INSERT INTO schema_version (version_number, comment) VALUES (583, 'RSV - Update Immunization #13542');
 
+alter table hospitalization add currentlyhospitalized varchar(255);
+alter table hospitalization_history add currentlyhospitalized varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (579, 'Add currently hospitalized to hospitalization #13321');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
