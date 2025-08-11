@@ -22,6 +22,7 @@ import java.util.Set;
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleMaterial;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SamplePurpose;
@@ -47,4 +48,12 @@ public interface SampleDashboardFacade {
 	List<MapSampleDto> getSamplesForMap(SampleDashboardCriteria criteria, Set<SampleAssociationType> associationTypes);
 
 	List<MapSampleDto> getEnvironmentalSamplesForMap(SampleDashboardCriteria criteria);
+
+	Map<SpecimenCondition, Long> getEnvironmentSampleCountsBySpecimenCondition(SampleDashboardCriteria dashboardCriteria);
+
+	Map<SampleShipmentStatus, Long> getEnvironmentSampleCountsByShipmentStatus(SampleDashboardCriteria dashboardCriteria);
+
+	Map<PathogenTestResultType, Long> getEnvironmentTestResultCountsByResultType(SampleDashboardCriteria dashboardCriteria);
+
+	Map<EnvironmentSampleMaterial, Long> getEnvironmentSampleCounts(SampleDashboardCriteria dashboardCriteria);
 }

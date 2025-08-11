@@ -27,6 +27,7 @@ import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
 import de.symeda.sormas.api.dashboard.sample.MapSampleDto;
 import de.symeda.sormas.api.dashboard.sample.SampleDashboardFacade;
 import de.symeda.sormas.api.dashboard.sample.SampleShipmentStatus;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleMaterial;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SamplePurpose;
@@ -84,6 +85,26 @@ public class SampleDashboardFacadeEjb implements SampleDashboardFacade {
 	@Override
 	public List<MapSampleDto> getEnvironmentalSamplesForMap(SampleDashboardCriteria criteria) {
 		return sampleDashboardService.getEnvironmentalSamplesForMap(criteria);
+	}
+
+	@Override
+	public Map<SpecimenCondition, Long> getEnvironmentSampleCountsBySpecimenCondition(SampleDashboardCriteria dashboardCriteria) {
+		return sampleDashboardService.getEnvironmentSampleCountsBySpecimenCondition(dashboardCriteria);
+	}
+
+	@Override
+	public Map<SampleShipmentStatus, Long> getEnvironmentSampleCountsByShipmentStatus(SampleDashboardCriteria dashboardCriteria) {
+		return sampleDashboardService.getEnvironmentSampleCountsByShipmentStatus(dashboardCriteria);
+	}
+
+	@Override
+	public Map<PathogenTestResultType, Long> getEnvironmentTestResultCountsByResultType(SampleDashboardCriteria dashboardCriteria) {
+		return sampleDashboardService.getEnvironmentTestResultCountsByResultType(dashboardCriteria);
+	}
+
+	@Override
+	public Map<EnvironmentSampleMaterial, Long> getEnvironmentSampleCounts(SampleDashboardCriteria dashboardCriteria) {
+		return sampleDashboardService.getEnvironmentSampleCounts(dashboardCriteria);
 	}
 
 	@LocalBean

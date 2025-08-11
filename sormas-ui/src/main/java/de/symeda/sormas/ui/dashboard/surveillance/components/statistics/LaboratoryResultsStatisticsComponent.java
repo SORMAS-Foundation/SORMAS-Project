@@ -2,9 +2,13 @@ package de.symeda.sormas.ui.dashboard.surveillance.components.statistics;
 
 import java.util.Map;
 
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -33,10 +37,22 @@ public class LaboratoryResultsStatisticsComponent extends DiseaseSectionStatisti
 
 		this.showNotDoneCount = showNotDoneCount;
 
+		HorizontalLayout titleLayout = new HorizontalLayout();
+		titleLayout.setMargin(false);
+		titleLayout.setSpacing(false);
+		addComponent(titleLayout);
+
 		if (subtitleCaption != null) {
 			Label subTitleLabel = new Label(I18nProperties.getCaption(subtitleCaption));
 			CssStyles.style(subTitleLabel, CssStyles.H3, CssStyles.VSPACE_TOP_5);
-			addComponent(subTitleLabel);
+			titleLayout.addComponent(subTitleLabel);
+		}
+		if (description != null) {
+			Label infoIcon = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+			infoIcon.setDescription(I18nProperties.getDescription(Descriptions.sampleDashboardHumans));
+			infoIcon.addStyleName(CssStyles.HSPACE_LEFT_4);
+			infoIcon.addStyleNames(CssStyles.H3);
+			titleLayout.addComponent(infoIcon);
 		}
 
 		// Count layout
