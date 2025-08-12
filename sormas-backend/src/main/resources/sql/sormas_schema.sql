@@ -14440,7 +14440,7 @@ ALTER TABLE externalmessage_history ADD COLUMN hospitalizationdischargedate time
 ALTER TABLE previoushospitalization ADD COLUMN healthfacilitydepartment varchar(255);
 ALTER TABLE previoushospitalization_history ADD COLUMN healthfacilitydepartment varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (579, 'Update external message with hospitalization fields #13516');
+INSERT INTO schema_version (version_number, comment) VALUES (580, 'Update external message with hospitalization fields #13516');
 
 
 -- 2025-07-18 Implemented Doctors declaration for IPI #13344
@@ -14453,7 +14453,7 @@ alter table notifier add column if not exists agentlastname varchar(255);
 alter table notifier_history add column if not exists agentfirstname varchar(255);
 alter table notifier_history add column if not exists agentlastname varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (580, 'Implemented Doctors declaration for IPI #13344');
+INSERT INTO schema_version (version_number, comment) VALUES (581, 'Implemented Doctors declaration for IPI #13344');
 
 -- 2025-07-29 Added missing fields for external message #13294
 
@@ -14488,6 +14488,6 @@ ALTER TABLE externalmessage_history ADD COLUMN complianceWithTreatment varchar(2
 ALTER TABLE testreport ADD COLUMN testTypeDetails varchar(255);
 ALTER TABLE testreport_history ADD COLUMN testTypeDetails varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (581, 'Added missing fields for external message #13294');
+INSERT INTO schema_version (version_number, comment) VALUES (582, 'Added missing fields for external message #13294');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
