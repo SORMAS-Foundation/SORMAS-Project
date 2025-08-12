@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.api.externalmessage.processing.doctordeclaration;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -371,6 +372,15 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 			hospitalizationDto.setAdmissionDate(externalMessageDto.getHospitalizationAdmissionDate());
 			hospitalizationDto.setDischargeDate(externalMessageDto.getHospitalizationDischargeDate());
 			hospitalizationDto.setAdmittedToHealthFacility(externalMessageDto.getAdmittedToHealthFacility());
+
+			// we need to do a sanity check on discharge date
+			// if the discharge date is before today's date, we need to handle it
+			if (hospitalizationDto.getDischargeDate() != null && hospitalizationDto.getDischargeDate().before(new Date())) {
+				hospitalizationDto.setCurrentlyHospitalized(YesNoUnknown.NO);
+			} else {
+				// the date is either null or in the future so we consider the patient currently hospitalized
+				hospitalizationDto.setCurrentlyHospitalized(YesNoUnknown.YES);
+			}
 
 			caseDto.setResponsibleRegion(hospitalFacility.getRegion());
 			caseDto.setResponsibleDistrict(hospitalFacility.getDistrict());
