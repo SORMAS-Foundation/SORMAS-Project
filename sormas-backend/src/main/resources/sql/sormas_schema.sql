@@ -14523,6 +14523,6 @@ ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS immunodepression varchar(2
 ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS recurrentBronchiolitis varchar(255);
 ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS immunodepression varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (584, 'RSV - Update Health Conditions section #13540');
+INSERT INTO schema_version (version_number, comment) VALUES (585, 'RSV - Update Health Conditions section #13540');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
