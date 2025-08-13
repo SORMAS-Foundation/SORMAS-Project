@@ -16,12 +16,14 @@
 package de.symeda.sormas.ui.externalmessage.doctordeclaration;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -320,8 +322,10 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 					notifierDto.setEmail(externalMessage.getNotifierEmail());
 					if (externalMessage.getReporterName() != null && externalMessage.getReporterName().contains("-")) {
 						// Split the reporter name into first and last names if it contains a hyphen
-						notifierDto.setAgentFirstName(externalMessage.getReporterName().split("-")[0]);
-						notifierDto.setAgentLastName(externalMessage.getReporterName().split("-")[1]);
+						// Some names may already contain hyphens, assume first parts are the first name and last parts are the last name
+						final String[] nameParts = externalMessage.getReporterName().split("-");
+						notifierDto.setAgentFirstName(Arrays.stream(nameParts).limit(nameParts.length - 1).map(String::trim).collect(Collectors.joining(" ")));
+						notifierDto.setAgentLastName(nameParts.length > 0 ? nameParts[nameParts.length - 1].trim() : "");
 					}
 					// Update the case with notifier details and complete the callback
 					callback.done(getExternalMessageProcessingFacade().updateAndSetCaseNotifier(result.getUuid(), notifierDto));

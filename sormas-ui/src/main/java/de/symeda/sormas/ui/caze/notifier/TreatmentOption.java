@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.ui.caze.notifier;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
@@ -35,7 +36,8 @@ public class TreatmentOption implements Comparable<TreatmentOption> {
     public static final TreatmentOption UNKNOWN =
         new TreatmentOption(YesNoUnknown.UNKNOWN.toString(), I18nProperties.getEnumCaption(YesNoUnknown.UNKNOWN));
 
-    public static final Set<TreatmentOption> ALL_OPTIONS = Collections.unmodifiableSet(new TreeSet<>(Set.of(YES, NO, NOT_APPLICABLE, UNKNOWN)));
+    public static final Set<TreatmentOption> ALL_OPTIONS =
+        Collections.unmodifiableSet(new TreeSet<>(Arrays.asList(YES, NO, NOT_APPLICABLE, UNKNOWN)));
 
     private String value;
     private String caption;
@@ -43,7 +45,8 @@ public class TreatmentOption implements Comparable<TreatmentOption> {
     /**
      * Creates a TreatmentOption from a YesNoUnknown enum value.
      * 
-     * @param yesNoUnknown the enum value to convert, null returns NOT_APPLICABLE
+     * @param yesNoUnknown
+     *            the enum value to convert, null returns NOT_APPLICABLE
      * @return corresponding TreatmentOption
      */
     public static final TreatmentOption forValue(YesNoUnknown yesNoUnknown) {
@@ -65,8 +68,10 @@ public class TreatmentOption implements Comparable<TreatmentOption> {
     /**
      * Creates a new TreatmentOption.
      * 
-     * @param value the internal value
-     * @param caption the display caption
+     * @param value
+     *            the internal value
+     * @param caption
+     *            the display caption
      */
     public TreatmentOption(String value, String caption) {
         this.value = value;
@@ -111,14 +116,14 @@ public class TreatmentOption implements Comparable<TreatmentOption> {
         if (other == null) {
             return 1;
         }
-        
+
         // Define the desired order: YES, NO, UNKNOWN, NOT_APPLICABLE
         int thisOrder = getOrder(this);
         int otherOrder = getOrder(other);
-        
+
         return Integer.compare(thisOrder, otherOrder);
     }
-    
+
     private int getOrder(TreatmentOption option) {
         if (option.equals(YES)) {
             return 1;
