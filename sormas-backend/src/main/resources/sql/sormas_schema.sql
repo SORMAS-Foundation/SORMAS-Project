@@ -14558,4 +14558,12 @@ ALTER TABLE person_history ADD COLUMN IF NOT EXISTS multipleBirth varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (587, 'RSV - Enhancements to the Person form #13539');
 
+
+-- 2025-08-07 - RSV - Update Immunization #13542
+
+ALTER TABLE immunization ADD COLUMN IF NOT EXISTS injectionFacility varchar(255);
+ALTER TABLE immunization_history ADD COLUMN IF NOT EXISTS injectionFacility varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (588, 'RSV - Update Immunization #13542');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
