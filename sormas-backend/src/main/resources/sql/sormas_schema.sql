@@ -14490,4 +14490,19 @@ ALTER TABLE testreport_history ADD COLUMN testTypeDetails varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (582, 'Added missing fields for external message #13294');
 
+-- 2025-07-29 RSV Symptoms #13544
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS difficultyBreathingDuringMeals varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS paradoxicalBreathing varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS respiratoryFatigue varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS parentTimeOffWork varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS timeOffWorkDays varchar(255);
+
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS difficultyBreathingDuringMeals varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS paradoxicalBreathing varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS respiratoryFatigue varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS parentTimeOffWork varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS timeOffWorkDays varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (583, 'Update symptoms for RSV #13544');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

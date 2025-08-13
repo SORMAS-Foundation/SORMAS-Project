@@ -308,12 +308,17 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String SEPSIS = "sepsis";
 	public static final String SHOCK = "shock";
 	// clinical
-    public static final String ASYMPTOMATIC = "asymptomatic";
+	public static final String ASYMPTOMATIC = "asymptomatic";
 	public static final String HEMORRHAGIC_RASH = "hemorrhagicRash";
 	public static final String ARTHRITIS = "arthritis";
 	public static final String MENINGITIS = "meningitis";
 	public static final String SEPTICAEMIA = "septicaemia";
 	public static final String UNKNOWN_SYMPTOM = "unknownSymptom";
+	public static final String DIFFICULTY_BREATHING_DURING_MEALS = "difficultyBreathingDuringMeals";
+	public static final String PARADOXICAL_BREATHING = "paradoxicalBreathing";
+	public static final String RESPIRATORY_FATIGUE = "respiratoryFatigue";
+	public static final String PARENT_TIME_OFF_WORK = "parentTimeOffWork";
+	public static final String TIME_OFF_WORK_DAYS = "timeOffWorkDays";
 	public static final String OTHER_CLINICAL_PRESENTATION = "otherClinicalPresentation";
 	public static final String OTHER_CLINICAL_PRESENTATION_TEXT = "otherClinicalPresentationText";
 
@@ -362,6 +367,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CHOLERA,
 		POLIO,
 		YELLOW_FEVER,
+		RESPIRATORY_SYNCYTIAL_VIRUS,
 		UNSPECIFIED_VHF,
 		UNDEFINED,
 		OTHER })
@@ -549,6 +555,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		ANTHRAX,
 		UNSPECIFIED_VHF,
 		CORONAVIRUS,
+		RESPIRATORY_SYNCYTIAL_VIRUS,
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
@@ -740,6 +747,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		RABIES,
 		ANTHRAX,
 		CORONAVIRUS,
+		RESPIRATORY_SYNCYTIAL_VIRUS,
 		UNDEFINED,
 		PERTUSSIS,
 		OTHER })
@@ -1318,9 +1326,9 @@ public class SymptomsDto extends PseudonymizableDto {
 		POST_IMMUNIZATION_ADVERSE_EVENTS_MILD,
 		POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE,
 		FHA,
-        INVASIVE_MENINGOCOCCAL_INFECTION,
-        INVASIVE_PNEUMOCOCCAL_INFECTION,
-		PERTUSSIS})
+		INVASIVE_MENINGOCOCCAL_INFECTION,
+		INVASIVE_PNEUMOCOCCAL_INFECTION,
+		PERTUSSIS })
 	@HideForCountries
 	@Outbreaks
 	private Date onsetDate;
@@ -1385,7 +1393,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		INVASIVE_MENINGOCOCCAL_INFECTION,
 		INVASIVE_PNEUMOCOCCAL_INFECTION,
 		FHA,
-		PERTUSSIS})
+		PERTUSSIS })
 	@HideForCountries
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String onsetSymptom;
@@ -1576,6 +1584,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		DENGUE,
 		GUINEA_WORM,
 		POLIO,
+		RESPIRATORY_SYNCYTIAL_VIRUS,
 		UNSPECIFIED_VHF,
 		UNDEFINED,
 		OTHER })
@@ -1622,6 +1631,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		MEASLES,
 		POLIO,
 		CORONAVIRUS,
+		RESPIRATORY_SYNCYTIAL_VIRUS,
 		UNDEFINED,
 		OTHER })
 	@SymptomGrouping(SymptomGroup.RESPIRATORY)
@@ -2140,7 +2150,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	private SymptomState whoopSound;
 
 	@Diseases({
-			PERTUSSIS })
+		PERTUSSIS })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.RESPIRATORY)
 	private SymptomState nocturnalCough;
@@ -2161,6 +2171,7 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	@Diseases({
 		CORONAVIRUS,
+		RESPIRATORY_SYNCYTIAL_VIRUS,
 		UNDEFINED,
 		OTHER })
 	@HideForCountries(countries = {
@@ -2546,9 +2557,10 @@ public class SymptomsDto extends PseudonymizableDto {
 	@SymptomGrouping(SymptomGroup.GENERAL)
 	private SymptomState shivering;
 
-	@Diseases({INVASIVE_MENINGOCOCCAL_INFECTION,
-			INVASIVE_PNEUMOCOCCAL_INFECTION,
-			PERTUSSIS})
+	@Diseases({
+		INVASIVE_MENINGOCOCCAL_INFECTION,
+		INVASIVE_PNEUMOCOCCAL_INFECTION,
+		PERTUSSIS })
 	private SymptomState asymptomatic;
 	@Diseases({
 		INVASIVE_MENINGOCOCCAL_INFECTION })
@@ -2580,6 +2592,27 @@ public class SymptomsDto extends PseudonymizableDto {
 			INVASIVE_PNEUMOCOCCAL_INFECTION,
 			INVASIVE_MENINGOCOCCAL_INFECTION })
 	private SymptomState unknownSymptom;
+
+	// RSV-specific symptoms
+	@Diseases(RESPIRATORY_SYNCYTIAL_VIRUS)
+	@SymptomGrouping(SymptomGroup.RESPIRATORY)
+	private SymptomState difficultyBreathingDuringMeals;
+
+	@Diseases(RESPIRATORY_SYNCYTIAL_VIRUS)
+	@SymptomGrouping(SymptomGroup.RESPIRATORY)
+	private SymptomState paradoxicalBreathing;
+
+	@Diseases(RESPIRATORY_SYNCYTIAL_VIRUS)
+	@SymptomGrouping(SymptomGroup.RESPIRATORY)
+	private SymptomState respiratoryFatigue;
+
+	@Diseases(RESPIRATORY_SYNCYTIAL_VIRUS)
+	private YesNoUnknown parentTimeOffWork;
+
+	@Diseases(RESPIRATORY_SYNCYTIAL_VIRUS)
+	@DependantOn("parentTimeOffWork")
+	@Size(max = 50, message = Validations.textTooLong) 
+	private String timeOffWorkDays;
 
 	private DiagnosisType diagnosis;
 	private InfectionSite majorSite;
@@ -4362,5 +4395,45 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	public void setUnknownSymptom(SymptomState unknownSymptom) {
 		this.unknownSymptom = unknownSymptom;
+	}
+
+	public SymptomState getDifficultyBreathingDuringMeals() {
+		return difficultyBreathingDuringMeals;
+	}
+
+	public void setDifficultyBreathingDuringMeals(SymptomState difficultyBreathingDuringMeals) {
+		this.difficultyBreathingDuringMeals = difficultyBreathingDuringMeals;
+	}
+
+	public SymptomState getParadoxicalBreathing() {
+		return paradoxicalBreathing;
+	}
+
+	public void setParadoxicalBreathing(SymptomState paradoxicalBreathing) {
+		this.paradoxicalBreathing = paradoxicalBreathing;
+	}
+
+	public SymptomState getRespiratoryFatigue() {
+		return respiratoryFatigue;
+	}
+
+	public void setRespiratoryFatigue(SymptomState respiratoryFatigue) {
+		this.respiratoryFatigue = respiratoryFatigue;
+	}
+
+	public YesNoUnknown getParentTimeOffWork() {
+		return parentTimeOffWork;
+	}
+
+	public void setParentTimeOffWork(YesNoUnknown parentTimeOffWork) {
+		this.parentTimeOffWork = parentTimeOffWork;
+	}
+
+	public String getTimeOffWorkDays() {
+		return timeOffWorkDays;
+	}
+
+	public void setTimeOffWorkDays(String timeOffWorkDays) {
+		this.timeOffWorkDays = timeOffWorkDays;
 	}
 }
