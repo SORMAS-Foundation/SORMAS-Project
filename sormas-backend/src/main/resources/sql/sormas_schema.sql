@@ -14505,4 +14505,14 @@ ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS timeOffWorkDays varchar(25
 
 INSERT INTO schema_version (version_number, comment) VALUES (583, 'Update symptoms for RSV #13544');
 
+-- 2025-08-05 RSV EpiData updates #13538
+
+ALTER TABLE exposures ADD COLUMN IF NOT EXISTS typeOfChildcareFacility varchar(255);
+ALTER TABLE exposures ADD COLUMN IF NOT EXISTS childcareFacilityDetails varchar(255);
+
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS typeOfChildcareFacility varchar(255);
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS childcareFacilityDetails varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (584, 'RSV EpiData updates #13538');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
