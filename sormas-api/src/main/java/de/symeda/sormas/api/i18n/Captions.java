@@ -897,6 +897,7 @@ public interface Captions {
 	String CaseHospitalization_healthFacility = "CaseHospitalization.healthFacility";
 	String CaseHospitalization_hospitalizationReason = "CaseHospitalization.hospitalizationReason";
 	String CaseHospitalization_hospitalizedPreviously = "CaseHospitalization.hospitalizedPreviously";
+	String CaseHospitalization_icuLengthOfStay = "CaseHospitalization.icuLengthOfStay";
 	String CaseHospitalization_intensiveCareUnit = "CaseHospitalization.intensiveCareUnit";
 	String CaseHospitalization_intensiveCareUnitEnd = "CaseHospitalization.intensiveCareUnitEnd";
 	String CaseHospitalization_intensiveCareUnitStart = "CaseHospitalization.intensiveCareUnitStart";
@@ -904,7 +905,9 @@ public interface Captions {
 	String CaseHospitalization_isolationDate = "CaseHospitalization.isolationDate";
 	String CaseHospitalization_leftAgainstAdvice = "CaseHospitalization.leftAgainstAdvice";
 	String CaseHospitalization_otherHospitalizationReason = "CaseHospitalization.otherHospitalizationReason";
+	String CaseHospitalization_oxygenPrescribed = "CaseHospitalization.oxygenPrescribed";
 	String CaseHospitalization_previousHospitalizations = "CaseHospitalization.previousHospitalizations";
+	String CaseHospitalization_stillHospitalized = "CaseHospitalization.stillHospitalized";
 	String caseImportErrorDescription = "caseImportErrorDescription";
 	String caseImportMergeCase = "caseImportMergeCase";
 	String caseInfrastructureDataChanged = "caseInfrastructureDataChanged";
@@ -935,14 +938,17 @@ public interface Captions {
 	String CasePreviousHospitalization_healthFacilityDepartment = "CasePreviousHospitalization.healthFacilityDepartment";
 	String CasePreviousHospitalization_healthFacilityDetails = "CasePreviousHospitalization.healthFacilityDetails";
 	String CasePreviousHospitalization_hospitalizationReason = "CasePreviousHospitalization.hospitalizationReason";
+	String CasePreviousHospitalization_icuLengthOfStay = "CasePreviousHospitalization.icuLengthOfStay";
 	String CasePreviousHospitalization_intensiveCareUnit = "CasePreviousHospitalization.intensiveCareUnit";
 	String CasePreviousHospitalization_intensiveCareUnitEnd = "CasePreviousHospitalization.intensiveCareUnitEnd";
 	String CasePreviousHospitalization_intensiveCareUnitStart = "CasePreviousHospitalization.intensiveCareUnitStart";
 	String CasePreviousHospitalization_isolated = "CasePreviousHospitalization.isolated";
 	String CasePreviousHospitalization_isolationDate = "CasePreviousHospitalization.isolationDate";
 	String CasePreviousHospitalization_otherHospitalizationReason = "CasePreviousHospitalization.otherHospitalizationReason";
+	String CasePreviousHospitalization_oxygenPrescribed = "CasePreviousHospitalization.oxygenPrescribed";
 	String CasePreviousHospitalization_prevHospPeriod = "CasePreviousHospitalization.prevHospPeriod";
 	String CasePreviousHospitalization_region = "CasePreviousHospitalization.region";
+	String CasePreviousHospitalization_stillHospitalized = "CasePreviousHospitalization.stillHospitalized";
 	String caseReferFromPointOfEntry = "caseReferFromPointOfEntry";
 	String caseSearchCase = "caseSearchCase";
 	String caseSearchSpecificCase = "caseSearchSpecificCase";

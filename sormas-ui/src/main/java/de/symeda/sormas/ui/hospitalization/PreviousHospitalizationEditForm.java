@@ -70,6 +70,7 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 			PreviousHospitalizationDto.INTENSIVE_CARE_UNIT,
 			PreviousHospitalizationDto.INTENSIVE_CARE_UNIT_START,
 			PreviousHospitalizationDto.INTENSIVE_CARE_UNIT_END)
+		+ fluidRowLocs(PreviousHospitalizationDto.ICU_LENGTH_OF_STAY, PreviousHospitalizationDto.OXYGEN_PRESCRIBED, PreviousHospitalizationDto.STILL_HOSPITALIZED)
 		+ fluidRowLocs(PreviousHospitalizationDto.DESCRIPTION);
 
 	private NullableOptionGroup intensiveCareUnit;
@@ -134,6 +135,11 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 		intensiveCareUnitEnd.setVisible(false);
 		FieldHelper
 			.setVisibleWhen(intensiveCareUnit, Arrays.asList(intensiveCareUnitStart, intensiveCareUnitEnd), Arrays.asList(YesNoUnknown.YES), true);
+
+		// RSV-specific fields
+		final TextField icuLengthOfStayField = addField(PreviousHospitalizationDto.ICU_LENGTH_OF_STAY, TextField.class);
+		final NullableOptionGroup oxygenPrescribedField = addField(PreviousHospitalizationDto.OXYGEN_PRESCRIBED, NullableOptionGroup.class);
+		final NullableOptionGroup stillHospitalizedField = addField(PreviousHospitalizationDto.STILL_HOSPITALIZED, NullableOptionGroup.class);
 
 		healthFacilityCombo.setImmediate(true);
 
@@ -269,6 +275,20 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 				true,
 				true,
 				I18nProperties.getValidationError(Validations.beforeDate, intensiveCareUnitEnd.getCaption(), dischargeDate.getCaption())));
+
+		// RSV-specific conditional visibility logic
+		// stillHospitalized should not be visible/writable if discharge date is filled
+		dischargeDate.addValueChangeListener(event -> {
+			boolean hasDischargeDate = dischargeDate.getValue() != null;
+			stillHospitalizedField.setVisible(!hasDischargeDate);
+			stillHospitalizedField.setEnabled(!hasDischargeDate);
+			if (hasDischargeDate) {
+				stillHospitalizedField.setValue(null);
+			}
+		});
+
+		// Show icuLengthOfStay when ICU dates are not available but survey has length information
+		FieldHelper.setVisibleWhen(intensiveCareUnit, Collections.singletonList(icuLengthOfStayField), Arrays.asList(YesNoUnknown.YES), true);
 
 		FieldHelper.addSoftRequiredStyle(admissionDate, dischargeDate, facilityCommunity, healthFacilityDetails);
 

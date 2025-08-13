@@ -60,6 +60,9 @@ public class PreviousHospitalizationDto extends PseudonymizableDto {
 	public static final String INTENSIVE_CARE_UNIT = "intensiveCareUnit";
 	public static final String INTENSIVE_CARE_UNIT_START = "intensiveCareUnitStart";
 	public static final String INTENSIVE_CARE_UNIT_END = "intensiveCareUnitEnd";
+	public static final String ICU_LENGTH_OF_STAY = "icuLengthOfStay";
+	public static final String OXYGEN_PRESCRIBED = "oxygenPrescribed";
+	public static final String STILL_HOSPITALIZED = "stillHospitalized";
 
 	private YesNoUnknown admittedToHealthFacility;
 	private Date admissionDate;
@@ -89,6 +92,9 @@ public class PreviousHospitalizationDto extends PseudonymizableDto {
 	private YesNoUnknown intensiveCareUnit;
 	private Date intensiveCareUnitStart;
 	private Date intensiveCareUnitEnd;
+	private Integer icuLengthOfStay;
+	private YesNoUnknown oxygenPrescribed;
+	private YesNoUnknown stillHospitalized;
 
 	public static PreviousHospitalizationDto build(CaseDataDto caze) {
 
@@ -122,6 +128,9 @@ public class PreviousHospitalizationDto extends PseudonymizableDto {
 		previousHospitalization.setIntensiveCareUnit(hospitalization.getIntensiveCareUnit());
 		previousHospitalization.setIntensiveCareUnitStart(hospitalization.getIntensiveCareUnitStart());
 		previousHospitalization.setIntensiveCareUnitEnd(hospitalization.getIntensiveCareUnitEnd());
+		previousHospitalization.setIcuLengthOfStay(hospitalization.getIcuLengthOfStay());
+		previousHospitalization.setOxygenPrescribed(hospitalization.getOxygenPrescribed());
+		previousHospitalization.setStillHospitalized(hospitalization.getStillHospitalized());
 		previousHospitalization.setDescription(hospitalization.getDescription());
 
 		return previousHospitalization;
@@ -261,5 +270,29 @@ public class PreviousHospitalizationDto extends PseudonymizableDto {
 
 	public void setIntensiveCareUnitEnd(Date intensiveCareUnitEnd) {
 		this.intensiveCareUnitEnd = intensiveCareUnitEnd;
+	}
+
+	public Integer getIcuLengthOfStay() {
+		return icuLengthOfStay;
+	}
+
+	public void setIcuLengthOfStay(Integer icuLengthOfStay) {
+		this.icuLengthOfStay = icuLengthOfStay;
+	}
+
+	public YesNoUnknown getOxygenPrescribed() {
+		return oxygenPrescribed;
+	}
+
+	public void setOxygenPrescribed(YesNoUnknown oxygenPrescribed) {
+		this.oxygenPrescribed = oxygenPrescribed;
+	}
+
+	public YesNoUnknown getStillHospitalized() {
+		return stillHospitalized;
+	}
+
+	public void setStillHospitalized(YesNoUnknown stillHospitalized) {
+		this.stillHospitalized = stillHospitalized;
 	}
 }

@@ -52,6 +52,9 @@ public class HospitalizationDto extends EntityDto {
 	public static final String INTENSIVE_CARE_UNIT = "intensiveCareUnit";
 	public static final String INTENSIVE_CARE_UNIT_START = "intensiveCareUnitStart";
 	public static final String INTENSIVE_CARE_UNIT_END = "intensiveCareUnitEnd";
+	public static final String OXYGEN_PRESCRIBED = "oxygenPrescribed";
+	public static final String STILL_HOSPITALIZED = "stillHospitalized";
+	public static final String ICU_LENGTH_OF_STAY = "icuLengthOfStay";
 	public static final String HOSPITALIZATION_REASON = "hospitalizationReason";
 	public static final String OTHER_HOSPITALIZATION_REASON = "otherHospitalizationReason";
 	public static final String DESCRIPTION = "description";
@@ -73,6 +76,9 @@ public class HospitalizationDto extends EntityDto {
 	private YesNoUnknown intensiveCareUnit;
 	private Date intensiveCareUnitStart;
 	private Date intensiveCareUnitEnd;
+	private YesNoUnknown oxygenPrescribed;
+	private YesNoUnknown stillHospitalized;
+	private Integer icuLengthOfStay;
 	private HospitalizationReasonType hospitalizationReason;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherHospitalizationReason;
@@ -206,5 +212,29 @@ public class HospitalizationDto extends EntityDto {
 
 	public void setCurrentlyHospitalized(YesNoUnknown currentlyHospitalized) {
 		this.currentlyHospitalized = currentlyHospitalized;
+	}
+
+	public YesNoUnknown getOxygenPrescribed() {
+		return oxygenPrescribed;
+	}
+
+	public void setOxygenPrescribed(YesNoUnknown oxygenPrescribed) {
+		this.oxygenPrescribed = oxygenPrescribed;
+	}
+
+	public YesNoUnknown getStillHospitalized() {
+		return stillHospitalized;
+	}
+
+	public void setStillHospitalized(YesNoUnknown stillHospitalized) {
+		this.stillHospitalized = stillHospitalized;
+	}
+
+	public Integer getIcuLengthOfStay() {
+		return icuLengthOfStay;
+	}
+
+	public void setIcuLengthOfStay(Integer icuLengthOfStay) {
+		this.icuLengthOfStay = icuLengthOfStay;
 	}
 }

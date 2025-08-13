@@ -54,6 +54,9 @@ public class Hospitalization extends AbstractDomainObject {
 	public static final String INTENSIVE_CARE_UNIT = "intensiveCareUnit";
 	public static final String INTENSIVE_CARE_UNIT_START = "intensiveCareUnitStart";
 	public static final String INTENSIVE_CARE_UNIT_END = "intensiveCareUnitEnd";
+	public static final String OXYGEN_PRESCRIBED = "oxygenPrescribed";
+	public static final String STILL_HOSPITALIZED = "stillHospitalized";
+	public static final String ICU_LENGTH_OF_STAY = "icuLengthOfStay";
 	public static final String DESCRIPTION = "description";
 
 	private YesNoUnknown admittedToHealthFacility;
@@ -69,6 +72,9 @@ public class Hospitalization extends AbstractDomainObject {
 	private YesNoUnknown intensiveCareUnit;
 	private Date intensiveCareUnitStart;
 	private Date intensiveCareUnitEnd;
+	private YesNoUnknown oxygenPrescribed;
+	private YesNoUnknown stillHospitalized;
+	private Integer icuLengthOfStay;
 	private HospitalizationReasonType hospitalizationReason;
 	private String otherHospitalizationReason;
 	private String description;
@@ -219,5 +225,31 @@ public class Hospitalization extends AbstractDomainObject {
 
 	public void setCurrentlyHospitalized(YesNoUnknown currentlyHospitalized) {
 		this.currentlyHospitalized = currentlyHospitalized;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getOxygenPrescribed() {
+		return oxygenPrescribed;
+	}
+
+	public void setOxygenPrescribed(YesNoUnknown oxygenPrescribed) {
+		this.oxygenPrescribed = oxygenPrescribed;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getStillHospitalized() {
+		return stillHospitalized;
+	}
+
+	public void setStillHospitalized(YesNoUnknown stillHospitalized) {
+		this.stillHospitalized = stillHospitalized;
+	}
+
+	public Integer getIcuLengthOfStay() {
+		return icuLengthOfStay;
+	}
+
+	public void setIcuLengthOfStay(Integer icuLengthOfStay) {
+		this.icuLengthOfStay = icuLengthOfStay;
 	}
 }

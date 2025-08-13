@@ -14525,4 +14525,24 @@ ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS immunodepression v
 
 INSERT INTO schema_version (version_number, comment) VALUES (585, 'RSV - Update Health Conditions section #13540');
 
+-- 2025-08-06 - RSV - Update Hospitalization #13541
+
+ALTER TABLE hospitalization ADD COLUMN IF NOT EXISTS oxygenPrescribed varchar(255);
+ALTER TABLE hospitalization ADD COLUMN IF NOT EXISTS stillHospitalized varchar(255);
+ALTER TABLE hospitalization ADD COLUMN IF NOT EXISTS icuLengthOfStay integer;
+
+ALTER TABLE hospitalization_history ADD COLUMN IF NOT EXISTS oxygenPrescribed varchar(255);
+ALTER TABLE hospitalization_history ADD COLUMN IF NOT EXISTS stillHospitalized varchar(255);
+ALTER TABLE hospitalization_history ADD COLUMN IF NOT EXISTS icuLengthOfStay integer;
+
+ALTER TABLE previoushospitalization ADD COLUMN IF NOT EXISTS oxygenPrescribed varchar(255);
+ALTER TABLE previoushospitalization ADD COLUMN IF NOT EXISTS stillHospitalized varchar(255);
+ALTER TABLE previoushospitalization ADD COLUMN IF NOT EXISTS icuLengthOfStay integer;
+
+ALTER TABLE previoushospitalization_history ADD COLUMN IF NOT EXISTS oxygenPrescribed varchar(255);
+ALTER TABLE previoushospitalization_history ADD COLUMN IF NOT EXISTS stillHospitalized varchar(255);
+ALTER TABLE previoushospitalization_history ADD COLUMN IF NOT EXISTS icuLengthOfStay integer;
+
+INSERT INTO schema_version (version_number, comment) VALUES (586, 'RSV - Update Hospitalization #13541');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
