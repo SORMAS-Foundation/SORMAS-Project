@@ -46,6 +46,9 @@ public class HealthConditions extends AbstractDomainObject {
 	private YesNoUnknown previousTuberculosisTreatment;
 	private ComplianceWithTreatment complianceWithTreatment;
 
+	private YesNoUnknown recurrentBronchiolitis;
+	private YesNoUnknown immunodepression;
+
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getTuberculosis() {
 		return tuberculosis;
@@ -277,5 +280,23 @@ public class HealthConditions extends AbstractDomainObject {
 
 	public void setComplianceWithTreatment(ComplianceWithTreatment complianceWithTreatment) {
 		this.complianceWithTreatment = complianceWithTreatment;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getRecurrentBronchiolitis() {
+		return recurrentBronchiolitis;
+	}
+
+	public void setRecurrentBronchiolitis(YesNoUnknown recurrentBronchiolitis) {
+		this.recurrentBronchiolitis = recurrentBronchiolitis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getImmunodepression() {
+		return immunodepression;
+	}
+
+	public void setImmunodepression(YesNoUnknown immunodepression) {
+		this.immunodepression = immunodepression;
 	}
 }

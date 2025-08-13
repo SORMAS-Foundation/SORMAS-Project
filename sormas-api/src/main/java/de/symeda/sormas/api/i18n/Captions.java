@@ -1972,10 +1972,12 @@ public interface Captions {
 	String HealthConditions_hivArt = "HealthConditions.hivArt";
 	String HealthConditions_immunodeficiencyIncludingHiv = "HealthConditions.immunodeficiencyIncludingHiv";
 	String HealthConditions_immunodeficiencyOtherThanHiv = "HealthConditions.immunodeficiencyOtherThanHiv";
+	String HealthConditions_immunodepression = "HealthConditions.immunodepression";
 	String HealthConditions_malignancyChemotherapy = "HealthConditions.malignancyChemotherapy";
 	String HealthConditions_obesity = "HealthConditions.obesity";
 	String HealthConditions_otherConditions = "HealthConditions.otherConditions";
 	String HealthConditions_previousTuberculosisTreatment = "HealthConditions.previousTuberculosisTreatment";
+	String HealthConditions_recurrentBronchiolitis = "HealthConditions.recurrentBronchiolitis";
 	String HealthConditions_sickleCellDisease = "HealthConditions.sickleCellDisease";
 	String HealthConditions_tuberculosis = "HealthConditions.tuberculosis";
 	String HealthConditions_tuberculosisInfectionYear = "HealthConditions.tuberculosisInfectionYear";
