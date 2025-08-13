@@ -36,7 +36,7 @@ public class TherapyDto extends EntityDto {
 	public static final String MDR_XDR_TUBERCULOSIS = "mdrXdrTuberculosis";
 	public static final String BEIJING_LINEAGE = "beijingLineage";
 
-	public static final String TREATMENT_STARTED = "treatementStarted";
+	public static final String TREATMENT_STARTED = "treatmentStarted";
 	public static final String TREATMENT_NOT_APPLICABLE = "treatmentNotApplicable";
 
 	private boolean directlyObservedTreatment;
