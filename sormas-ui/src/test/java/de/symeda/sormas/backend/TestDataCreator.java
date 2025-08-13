@@ -28,6 +28,11 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.environment.EnvironmentDto;
+import de.symeda.sormas.api.environment.EnvironmentMedia;
+import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleDto;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleMaterial;
 import org.jetbrains.annotations.NotNull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -149,6 +154,8 @@ import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserRole;
+
+import javax.annotation.Nullable;
 
 public class TestDataCreator {
 
@@ -1393,6 +1400,58 @@ public class TestDataCreator {
 
 		sample = beanTest.getSampleFacade().saveSample(sample);
 		return sample;
+	}
+
+	public EnvironmentDto createEnvironment(
+			String name,
+			EnvironmentMedia environmentMedia,
+			UserReferenceDto reportingUser,
+			RDCF rdcf,
+			Consumer<EnvironmentDto> extraConfig) {
+		EnvironmentDto environment = EnvironmentDto.build();
+		environment.setEnvironmentMedia(environmentMedia);
+		environment.setEnvironmentName(name);
+		environment.setReportingUser(reportingUser);
+		environment.setReportDate(new Date());
+
+		LocationDto location = environment.getLocation();
+		location.setLongitude(1.0);
+		location.setLatitude(1.0);
+
+		if (extraConfig != null) {
+			extraConfig.accept(environment);
+		}
+
+		if (rdcf != null) {
+			location.setRegion(rdcf.region);
+			location.setDistrict(rdcf.district);
+			location.setCommunity(rdcf.community);
+		}
+
+		environment = beanTest.getEnvironmentFacade().save(environment);
+
+		return environment;
+
+	}
+
+	public EnvironmentSampleDto createEnvironmentSample(
+			EnvironmentReferenceDto environment,
+			UserReferenceDto reportingUser,
+			RDCF rdcf,
+			FacilityReferenceDto lab,
+			@Nullable Consumer<EnvironmentSampleDto> extraConfig) {
+		EnvironmentSampleDto sample = EnvironmentSampleDto.build(environment, reportingUser);
+		sample.setSampleMaterial(EnvironmentSampleMaterial.WATER);
+		sample.getLocation().setRegion(rdcf.region);
+		sample.getLocation().setLatitude(1.0);
+		sample.getLocation().setLongitude(1.0);
+		sample.getLocation().setDistrict(rdcf.district);
+		sample.setLaboratory(lab);
+		if (extraConfig != null) {
+			extraConfig.accept(sample);
+		}
+
+		return beanTest.getEnvironmentSampleFacade().save(sample);
 	}
 
 	public SampleDto createSample(
