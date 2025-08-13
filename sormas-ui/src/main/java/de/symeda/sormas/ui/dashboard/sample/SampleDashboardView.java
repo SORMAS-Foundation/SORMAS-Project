@@ -189,9 +189,8 @@ public class SampleDashboardView extends AbstractDashboardView {
 
 		// Merging environment test result counts with human sample counts
 		Map<PathogenTestResultType, Long> testCountsResultMap = new HashMap<>(dataProvider.getTestResultCountsByResultType());
-		dataProvider.getEnvironmentTestResultCountsByResultType().forEach((resultType, count) -> {
-			testCountsResultMap.merge(resultType, count, Long::sum);
-		});
+		Optional.ofNullable(dataProvider.getEnvironmentTestResultCountsByResultType())
+				.ifPresent(m -> m.forEach((resultType, count) -> testCountsResultMap.merge(resultType, count, Long::sum)));
 		testCountsByResultType.update(testCountsResultMap);
 		epiCurveComponent.clearAndFillEpiCurveChart();
 		mapComponent.refreshMap();

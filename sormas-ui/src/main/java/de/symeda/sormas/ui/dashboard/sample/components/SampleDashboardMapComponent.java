@@ -151,6 +151,8 @@ public class SampleDashboardMapComponent extends BaseDashboardMapComponent<Sampl
 			// If only an environment sample is selected, we want to show only environment samples
 			environmentSamples =
 					showEnvironmentalSamples ? FacadeProvider.getSampleDashboardFacade().getEnvironmentalSamplesForMap(criteria) : Collections.emptyList();
+		} else{
+			// In the case of mixed sample criteria, we want to show both human and environment samples; for now this is not supported
 		}
 
 		List<LeafletMarker> markers = new ArrayList<>(environmentSamples.size() + environmentSamples.size());

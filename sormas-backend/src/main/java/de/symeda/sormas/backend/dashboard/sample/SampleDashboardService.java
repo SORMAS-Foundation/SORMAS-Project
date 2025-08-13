@@ -148,7 +148,7 @@ public class SampleDashboardService {
 			(cb, root) -> cb.and(buildExternalSamplePredicate(cb, root), cb.equal(root.get(Sample.RECEIVED), true)));
 	}
 
-	public Map<SpecimenCondition, Long> getEnvironmentSampleCountsBySpecimenCondition(SampleDashboardCriteria dashboardCriteria) {
+	public Map<SpecimenCondition, Long> getEnvironmentalSampleCountsBySpecimenCondition(SampleDashboardCriteria dashboardCriteria) {
 		return getEnvironmentSampleCountsBySpecimenCondition(
 				EnvironmentSample.SPECIMEN_CONDITION,
 				SpecimenCondition.class,
@@ -222,7 +222,7 @@ public class SampleDashboardService {
 				.collect(Collectors.toMap(t -> getSampleShipmentStatusByFlags((Boolean) t.get(0), (Boolean) t.get(1)), t -> (Long) t.get(2), Long::sum));
 	}
 
-	public Map<SampleShipmentStatus, Long> getEnvironmentSampleCountsByShipmentStatus(SampleDashboardCriteria dashboardCriteria) {
+	public Map<SampleShipmentStatus, Long> getEnvironmentalSampleCountsByShipmentStatus(SampleDashboardCriteria dashboardCriteria) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Tuple> cq = cb.createTupleQuery();
 		final Root<EnvironmentSample> sample = cq.from(EnvironmentSample.class);
@@ -270,7 +270,7 @@ public class SampleDashboardService {
 	 * @param dashboardCriteria
 	 * @return
 	 */
-	public Map<PathogenTestResultType, Long> getEnvironmentTestResultCountsByResultType(SampleDashboardCriteria dashboardCriteria) {
+	public Map<PathogenTestResultType, Long> getEnvironmentalTestResultCountsByResultType(SampleDashboardCriteria dashboardCriteria) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Tuple> cq = cb.createTupleQuery();
 		final Root<EnvironmentSample> sample = cq.from(EnvironmentSample.class);
@@ -286,6 +286,7 @@ public class SampleDashboardService {
 
 		return QueryHelper.getResultList(em, cq, null, null, Function.identity())
 				.stream()
+				.filter(t -> t.get(0) != null)
 				.collect(Collectors.toMap(t -> (PathogenTestResultType) t.get(0), t -> (Long) t.get(1)));
 	}
 
@@ -295,7 +296,7 @@ public class SampleDashboardService {
 	 * @param dashboardCriteria
 	 * @return
 	 */
-	public Map<EnvironmentSampleMaterial, Long> getEnvironmentSampleCounts(SampleDashboardCriteria dashboardCriteria) {
+	public Map<EnvironmentSampleMaterial, Long> getEnvironmentalSampleCounts(SampleDashboardCriteria dashboardCriteria) {
 		// This method is used to get the counts of environment samples by material type
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Tuple> cq = cb.createTupleQuery();

@@ -127,7 +127,6 @@ public class SampleDashboardDataProviderTest extends AbstractUiBeanTest {
 		dataProvider.refreshData();
 		Assertions.assertEquals(1, dataProvider.getEnvironmentTestResultCountsByResultType().size());
 		Assertions.assertEquals(1, dataProvider.getEnvSampleCountsBySpecimenCondition().size());
-		Assertions.assertEquals(1, dataProvider.getEnvironmentTestResultCountsByResultType().size());
 		Assertions.assertEquals(1, dataProvider.getEnvironmentSampleCount().size());
 	}
 }

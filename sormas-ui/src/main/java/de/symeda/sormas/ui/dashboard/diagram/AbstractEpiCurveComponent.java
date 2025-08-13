@@ -93,16 +93,16 @@ public abstract class AbstractEpiCurveComponent<P extends AbstractDashboardDataP
 		this.infoIcon.setDescription(I18nProperties.getDescription(description));
 		epiCurveLabel.setSizeUndefined();
 		CssStyles.style(epiCurveLabel, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
-		HorizontalLayout mapLabelLayout = new HorizontalLayout(epiCurveLabel, infoIcon);
-		mapLabelLayout.setMargin(false);
-		mapLabelLayout.setSpacing(false);
-		Component epiCurveLabelComponent = epiCurveLabel;
-		epiCurveLabelComponent = mapLabelLayout;
+		HorizontalLayout labelWithInfoLayout = new HorizontalLayout(epiCurveLabel, infoIcon);
+		labelWithInfoLayout.setMargin(false);
+		labelWithInfoLayout.setSpacing(false);
 		// Replace the original epiCurveLabel with the new one that includes the info icon
 		// in the header layout
 		epiCurveHeaderLayout.removeComponent(epiCurveLabel);
 		epiCurveHeaderLayout.removeComponent(expandEpiCurveButton);
-		epiCurveHeaderLayout.addComponent(epiCurveLabelComponent);
+		epiCurveHeaderLayout.addComponent(labelWithInfoLayout);
+		epiCurveHeaderLayout.setComponentAlignment(labelWithInfoLayout, Alignment.BOTTOM_LEFT);
+		epiCurveHeaderLayout.setExpandRatio(labelWithInfoLayout, 1f);
 		epiCurveHeaderLayout.addComponent(expandEpiCurveButton);
 		epiCurveHeaderLayout.setComponentAlignment(expandEpiCurveButton, Alignment.TOP_RIGHT);
 	}

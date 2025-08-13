@@ -79,10 +79,10 @@ public class SampleDashboardDataProvider extends AbstractDashboardDataProvider<S
 			envSampleCount = Maps.newHashMap();
 		} else if (sampleDashboardCriteria.getSampleMaterial() == null && sampleDashboardCriteria.getEnvironmentSampleMaterial() != null) {
 			// If the sampleCriteria is for Environment
-			envSampleCountsBySpecimenCondition = FacadeProvider.getSampleDashboardFacade().getEnvironmentSampleCountsBySpecimenCondition(sampleDashboardCriteria);
-			envSampleCountsByShipmentStatus = FacadeProvider.getSampleDashboardFacade().getEnvironmentSampleCountsByShipmentStatus(sampleDashboardCriteria);
-			envTestResultCountsByResultType = FacadeProvider.getSampleDashboardFacade().getEnvironmentTestResultCountsByResultType(sampleDashboardCriteria);
-			envSampleCount = FacadeProvider.getSampleDashboardFacade().getEnvironmentSampleCounts(sampleDashboardCriteria);
+			envSampleCountsBySpecimenCondition = FacadeProvider.getSampleDashboardFacade().getEnvironmentalSampleCountsBySpecimenCondition(sampleDashboardCriteria);
+			envSampleCountsByShipmentStatus = FacadeProvider.getSampleDashboardFacade().getEnvironmentalSampleCountsByShipmentStatus(sampleDashboardCriteria);
+			envTestResultCountsByResultType = FacadeProvider.getSampleDashboardFacade().getEnvironmentalTestResultCountsByResultType(sampleDashboardCriteria);
+			envSampleCount = FacadeProvider.getSampleDashboardFacade().getEnvironmentalSampleCounts(sampleDashboardCriteria);
 			sampleCountsByResultType = Maps.newHashMap();
 			sampleCountsByPurpose = Maps.newHashMap();
 			sampleCountsBySpecimenCondition = Maps.newHashMap();
@@ -97,10 +97,10 @@ public class SampleDashboardDataProvider extends AbstractDashboardDataProvider<S
 			testResultCountsByResultType = FacadeProvider.getSampleDashboardFacade().getTestResultCountsByResultType(sampleDashboardCriteria);
 			// Environment samples will not have diseases
 			if (sampleDashboardCriteria.getDisease() == null) {
-				envSampleCountsBySpecimenCondition = FacadeProvider.getSampleDashboardFacade().getEnvironmentSampleCountsBySpecimenCondition(sampleDashboardCriteria);
-				envSampleCountsByShipmentStatus = FacadeProvider.getSampleDashboardFacade().getEnvironmentSampleCountsByShipmentStatus(sampleDashboardCriteria);
-				envTestResultCountsByResultType = FacadeProvider.getSampleDashboardFacade().getEnvironmentTestResultCountsByResultType(sampleDashboardCriteria);
-				envSampleCount = FacadeProvider.getSampleDashboardFacade().getEnvironmentSampleCounts(sampleDashboardCriteria);
+				envSampleCountsBySpecimenCondition = FacadeProvider.getSampleDashboardFacade().getEnvironmentalSampleCountsBySpecimenCondition(sampleDashboardCriteria);
+				envSampleCountsByShipmentStatus = FacadeProvider.getSampleDashboardFacade().getEnvironmentalSampleCountsByShipmentStatus(sampleDashboardCriteria);
+				envTestResultCountsByResultType = FacadeProvider.getSampleDashboardFacade().getEnvironmentalTestResultCountsByResultType(sampleDashboardCriteria);
+				envSampleCount = FacadeProvider.getSampleDashboardFacade().getEnvironmentalSampleCounts(sampleDashboardCriteria);
 			} else {
 				envSampleCountsBySpecimenCondition = Maps.newHashMap();
 				envSampleCountsByShipmentStatus = Maps.newHashMap();

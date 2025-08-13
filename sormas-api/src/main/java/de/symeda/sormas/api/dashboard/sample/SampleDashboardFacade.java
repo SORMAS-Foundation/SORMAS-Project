@@ -49,11 +49,11 @@ public interface SampleDashboardFacade {
 
 	List<MapSampleDto> getEnvironmentalSamplesForMap(SampleDashboardCriteria criteria);
 
-	Map<SpecimenCondition, Long> getEnvironmentSampleCountsBySpecimenCondition(SampleDashboardCriteria dashboardCriteria);
+	Map<SpecimenCondition, Long> getEnvironmentalSampleCountsBySpecimenCondition(SampleDashboardCriteria dashboardCriteria);
 
-	Map<SampleShipmentStatus, Long> getEnvironmentSampleCountsByShipmentStatus(SampleDashboardCriteria dashboardCriteria);
+	Map<SampleShipmentStatus, Long> getEnvironmentalSampleCountsByShipmentStatus(SampleDashboardCriteria dashboardCriteria);
 
-	Map<PathogenTestResultType, Long> getEnvironmentTestResultCountsByResultType(SampleDashboardCriteria dashboardCriteria);
+	Map<PathogenTestResultType, Long> getEnvironmentalTestResultCountsByResultType(SampleDashboardCriteria dashboardCriteria);
 
-	Map<EnvironmentSampleMaterial, Long> getEnvironmentSampleCounts(SampleDashboardCriteria dashboardCriteria);
+	Map<EnvironmentSampleMaterial, Long> getEnvironmentalSampleCounts(SampleDashboardCriteria dashboardCriteria);
 }

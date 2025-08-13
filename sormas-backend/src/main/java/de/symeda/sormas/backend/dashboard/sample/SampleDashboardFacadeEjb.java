@@ -88,23 +88,23 @@ public class SampleDashboardFacadeEjb implements SampleDashboardFacade {
 	}
 
 	@Override
-	public Map<SpecimenCondition, Long> getEnvironmentSampleCountsBySpecimenCondition(SampleDashboardCriteria dashboardCriteria) {
-		return sampleDashboardService.getEnvironmentSampleCountsBySpecimenCondition(dashboardCriteria);
+	public Map<SpecimenCondition, Long> getEnvironmentalSampleCountsBySpecimenCondition(SampleDashboardCriteria dashboardCriteria) {
+		return sampleDashboardService.getEnvironmentalSampleCountsBySpecimenCondition(dashboardCriteria);
 	}
 
 	@Override
-	public Map<SampleShipmentStatus, Long> getEnvironmentSampleCountsByShipmentStatus(SampleDashboardCriteria dashboardCriteria) {
-		return sampleDashboardService.getEnvironmentSampleCountsByShipmentStatus(dashboardCriteria);
+	public Map<SampleShipmentStatus, Long> getEnvironmentalSampleCountsByShipmentStatus(SampleDashboardCriteria dashboardCriteria) {
+		return sampleDashboardService.getEnvironmentalSampleCountsByShipmentStatus(dashboardCriteria);
 	}
 
 	@Override
-	public Map<PathogenTestResultType, Long> getEnvironmentTestResultCountsByResultType(SampleDashboardCriteria dashboardCriteria) {
-		return sampleDashboardService.getEnvironmentTestResultCountsByResultType(dashboardCriteria);
+	public Map<PathogenTestResultType, Long> getEnvironmentalTestResultCountsByResultType(SampleDashboardCriteria dashboardCriteria) {
+		return sampleDashboardService.getEnvironmentalTestResultCountsByResultType(dashboardCriteria);
 	}
 
 	@Override
-	public Map<EnvironmentSampleMaterial, Long> getEnvironmentSampleCounts(SampleDashboardCriteria dashboardCriteria) {
-		return sampleDashboardService.getEnvironmentSampleCounts(dashboardCriteria);
+	public Map<EnvironmentSampleMaterial, Long> getEnvironmentalSampleCounts(SampleDashboardCriteria dashboardCriteria) {
+		return sampleDashboardService.getEnvironmentalSampleCounts(dashboardCriteria);
 	}
 
 	@LocalBean
