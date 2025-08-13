@@ -204,6 +204,7 @@ public interface Captions {
 	String Aefi_deletionReason = "Aefi.deletionReason";
 	String Aefi_externalId = "Aefi.externalId";
 	String Aefi_healthFacility = "Aefi.healthFacility";
+	String Aefi_healthFacilityDepartment = "Aefi.healthFacilityDepartment";
 	String Aefi_healthFacilityDetails = "Aefi.healthFacilityDetails";
 	String Aefi_investigationNeeded = "Aefi.investigationNeeded";
 	String Aefi_investigationPlannedDate = "Aefi.investigationPlannedDate";
@@ -706,6 +707,7 @@ public interface Captions {
 	String CaseData_followUpUntil = "CaseData.followUpUntil";
 	String CaseData_healthConditions = "CaseData.healthConditions";
 	String CaseData_healthFacility = "CaseData.healthFacility";
+	String CaseData_healthFacilityDepartment = "CaseData.healthFacilityDepartment";
 	String CaseData_healthFacilityDetails = "CaseData.healthFacilityDetails";
 	String CaseData_healthFacilityName = "CaseData.healthFacilityName";
 	String CaseData_hospitalization = "CaseData.hospitalization";
@@ -930,6 +932,7 @@ public interface Captions {
 	String CasePreviousHospitalization_district = "CasePreviousHospitalization.district";
 	String CasePreviousHospitalization_editColumn = "CasePreviousHospitalization.editColumn";
 	String CasePreviousHospitalization_healthFacility = "CasePreviousHospitalization.healthFacility";
+	String CasePreviousHospitalization_healthFacilityDepartment = "CasePreviousHospitalization.healthFacilityDepartment";
 	String CasePreviousHospitalization_healthFacilityDetails = "CasePreviousHospitalization.healthFacilityDetails";
 	String CasePreviousHospitalization_hospitalizationReason = "CasePreviousHospitalization.hospitalizationReason";
 	String CasePreviousHospitalization_intensiveCareUnit = "CasePreviousHospitalization.intensiveCareUnit";
@@ -1990,6 +1993,7 @@ public interface Captions {
 	String Immunization_externalId = "Immunization.externalId";
 	String Immunization_firstVaccinationDate = "Immunization.firstVaccinationDate";
 	String Immunization_healthFacility = "Immunization.healthFacility";
+	String Immunization_healthFacilityDepartment = "Immunization.healthFacilityDepartment";
 	String Immunization_healthFacilityDetails = "Immunization.healthFacilityDetails";
 	String Immunization_immunizationManagementStatus = "Immunization.immunizationManagementStatus";
 	String Immunization_immunizationPeriod = "Immunization.immunizationPeriod";
@@ -2172,8 +2176,15 @@ public interface Captions {
 	String name = "name";
 	String nationalHealthId = "nationalHealthId";
 	String notAvailableShort = "notAvailableShort";
+	String Notification_createNotification = "Notification.createNotification";
 	String Notification_dateOfNotification = "Notification.dateOfNotification";
+	String Notification_editNotification = "Notification.editNotification";
 	String Notification_noNotification = "Notification.noNotification";
+	String Notification_notificationTypeExternal = "Notification.notificationTypeExternal";
+	String Notification_notificationTypePhone = "Notification.notificationTypePhone";
+	String Notification_registrationNumber = "Notification.registrationNumber";
+	String Notification_reportingAgent = "Notification.reportingAgent";
+	String Notification_viewNotification = "Notification.viewNotification";
 	String notificationType = "notificationType";
 	String notificationType_caption = "notificationType.caption";
 	String notificationType_description = "notificationType.description";
@@ -2985,6 +2996,7 @@ public interface Captions {
 	String Symptoms_tremor = "Symptoms.tremor";
 	String Symptoms_unexplainedBleeding = "Symptoms.unexplainedBleeding";
 	String Symptoms_unilateralCataracts = "Symptoms.unilateralCataracts";
+	String Symptoms_unknownSymptom = "Symptoms.unknownSymptom";
 	String Symptoms_uproariousness = "Symptoms.uproariousness";
 	String Symptoms_urinaryRetention = "Symptoms.urinaryRetention";
 	String Symptoms_vomiting = "Symptoms.vomiting";
@@ -3084,6 +3096,9 @@ public interface Captions {
 	String Therapy_beijingLineage = "Therapy.beijingLineage";
 	String Therapy_directlyObservedTreatment = "Therapy.directlyObservedTreatment";
 	String Therapy_mdrXdrTuberculosis = "Therapy.mdrXdrTuberculosis";
+	String Therapy_treatmentNotApplicable = "Therapy.treatmentNotApplicable";
+	String Therapy_treatmentStarted = "Therapy.treatmentStarted";
+	String Therapy_treatmentStartedDate = "Therapy.treatmentStartedDate";
 	String titleAefiInvestigationBasicDetails = "titleAefiInvestigationBasicDetails";
 	String titleAefiInvestigationColdChainAndTransport = "titleAefiInvestigationColdChainAndTransport";
 	String titleAefiInvestigationColdChainAndTransportLastVaccineStoragePoint = "titleAefiInvestigationColdChainAndTransportLastVaccineStoragePoint";

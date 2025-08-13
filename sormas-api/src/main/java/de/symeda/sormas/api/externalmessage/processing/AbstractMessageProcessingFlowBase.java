@@ -19,10 +19,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.surveillancereport.ReportingType;
@@ -34,15 +38,23 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageType;
+import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
+import de.symeda.sormas.api.externalmessage.processing.labmessage.LabMessageProcessingHelper;
+import de.symeda.sormas.api.externalmessage.processing.labmessage.SampleAndPathogenTests;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.SampleCriteria;
+import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.dataprocessing.HandlerCallback;
@@ -59,23 +71,26 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractMessageProcessingFlowBase.class);
 
+    private final Boolean forceSampleCreation;
     private final ExternalMessageDto externalMessage;
 
-    /**
-     * Constructor for initializing the message processing flow.
-     *
-     * @param user The user performing the processing.
-     * @param externalMessage The external message to be processed.
-     * @param mapper The mapper for external messages.
-     * @param processingFacade The facade for external message processing operations.
-     */
     protected AbstractMessageProcessingFlowBase(
         UserDto user,
         ExternalMessageDto externalMessage,
         ExternalMessageMapper mapper,
         ExternalMessageProcessingFacade processingFacade) {
+        this(user, externalMessage, mapper, processingFacade, false);
+    }
+
+    protected AbstractMessageProcessingFlowBase(
+        UserDto user,
+        ExternalMessageDto externalMessage,
+        ExternalMessageMapper mapper,
+        ExternalMessageProcessingFacade processingFacade,
+        Boolean forceSampleCreation) {
         super(user, mapper, processingFacade);
         this.externalMessage = externalMessage;
+        this.forceSampleCreation = forceSampleCreation;
     }
 
     /**
@@ -110,7 +125,8 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
     /**
      * Performs the initial setup for the processing flow.
      *
-     * @param previousResult The result of the previous processing step.
+     * @param previousResult
+     *            The result of the previous processing step.
      * @return A {@link CompletionStage} containing the result of the setup.
      */
     protected CompletionStage<ProcessingResult<ExternalMessageProcessingResult>> doInitialSetup(
@@ -118,72 +134,257 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
         return previousResult.asCompletedFuture();
     }
 
-    /**
-     * Defines the flow for creating a new case.
-     *
-     * @param flow The current flow state.
-     * @return The updated flow state.
-     */
     protected FlowThen<ExternalMessageProcessingResult> doCreateCaseFlow(FlowThen<ExternalMessageProcessingResult> flow) {
-        return flow.then(p -> createCase(p.getData()));
+
+        FlowThen<ExternalMessageProcessingResult> caseFlow = flow.then(p -> createCase(p.getData()));
+
+        return caseFlow.then(p -> {
+            ExternalMessageProcessingResult previousResult = p.getData();
+            CaseDataDto caze = previousResult.getCase();
+
+            logger.debug("[MESSAGE PROCESSING] Continue processing with case: {}", previousResult);
+
+            BiFunction<Integer, ExternalMessageProcessingResult, CompletionStage<ProcessingResult<ExternalMessageProcessingResult>>> createSampleForCase =
+                (sampleReportIndex, previousSampleResult) -> createOneSampleAndPathogenTests(caze, sampleReportIndex, true, previousSampleResult);
+
+            return doPickOrCreateSamplesFlow(c -> c.sampleCriteria(new SampleCriteria().caze(caze.toReference())), createSampleForCase, caseFlow)
+                .getResult();
+        });
     }
 
-    /**
-     * Defines the flow for creating a new contact.
-     *
-     * @param flow The current flow state.
-     * @return The updated flow state.
-     */
     protected FlowThen<ExternalMessageProcessingResult> doCreateContactFlow(FlowThen<ExternalMessageProcessingResult> flow) {
-        return flow.then(p -> createContact(p.getData().getPerson(), p.getData()));
+
+        FlowThen<ExternalMessageProcessingResult> contactFlow = flow.then(p -> createContact(p.getData().getPerson(), p.getData()));
+        return contactFlow.then(p -> {
+            logger.debug("[MESSAGE PROCESSING] Continue processing with contact: {}", p.getData());
+
+            ContactDto contact = p.getData().getContact();
+            BiFunction<Integer, ExternalMessageProcessingResult, CompletionStage<ProcessingResult<ExternalMessageProcessingResult>>> createSampleForContact =
+                (sampleReportIndex, previousSampleResult) -> createOneSampleAndPathogenTests(contact, sampleReportIndex, true, previousSampleResult);
+
+            return doPickOrCreateSamplesFlow(
+                c -> c.sampleCriteria(new SampleCriteria().contact(contact.toReference())),
+                createSampleForContact,
+                contactFlow).getResult();
+        });
     }
 
-    /**
-     * Defines the flow for creating a new event participant.
-     *
-     * @param flow The current flow state.
-     * @return The updated flow state.
-     */
-    protected abstract FlowThen<ExternalMessageProcessingResult> doCreateEventParticipantFlow(FlowThen<ExternalMessageProcessingResult> flow);
+    protected FlowThen<ExternalMessageProcessingResult> doCreateEventParticipantFlow(FlowThen<ExternalMessageProcessingResult> flow) {
 
-    /**
-     * Defines the flow for handling a selected case.
-     *
-     * @param caseSelection The selected case.
-     * @param flow The current flow state.
-     * @return The updated flow state.
-     */
-    protected abstract FlowThen<ExternalMessageProcessingResult> doCaseSelectedFlow(
+        //@formatter:off
+		return flow.thenSwitch(p -> pickOrCreateEvent())
+				.when(PickOrCreateEventResult::isNewEvent, (f, p, r) -> {
+					FlowThen<ExternalMessageProcessingResult> eventFlow = f.then(ignored -> createEvent(r));
+					return eventFlow.then(ef -> {
+						logger.debug("[MESSAGE PROCESSING] Continue processing with event: {}", ef.getData());
+
+						return doCreateEventParticipantAndSamplesFlow(r.getPerson(), eventFlow).getResult();
+					});
+				})
+				.when(PickOrCreateEventResult::isEventSelected, (f, p, r) -> f
+					.thenSwitch(e -> validateSelectedEvent(p.getEvent(), e.getData().getPerson()))
+						.when(EventValidationResult::isEventSelected, (vf, v, vr) -> {
+							FlowThen<ExternalMessageProcessingResult> eventFlow = vf.then(e -> {
+								ExternalMessageProcessingResult withEvent = e.getData().withSelectedEvent(v.getEvent());
+
+								logger.debug("[MESSAGE PROCESSING] Continue processing with event: {}", withEvent);
+								
+								return ProcessingResult.continueWith(withEvent).asCompletedFuture();
+							});
+							return doCreateEventParticipantAndSamplesFlow(vr.getPerson(), eventFlow);
+						})
+						.when(EventValidationResult::isEventParticipantSelected, (vf, v, vr) -> {
+							EventDto event = getExternalMessageProcessingFacade().getEventByUuid(p.getEvent().getUuid());
+							EventParticipantDto eventParticipant = getExternalMessageProcessingFacade().getEventParticipantByUuid(v.getEventParticipant().getUuid());
+
+							FlowThen<ExternalMessageProcessingResult> eventParticipantFlow = vf.then(ignored -> {
+								ExternalMessageProcessingResult withEventParticipant = vr.withSelectedEvent(event).withSelectedEventParticipant(eventParticipant);
+								logger.debug("[MESSAGE PROCESSING] Continue processing with event participant: {}", withEventParticipant);
+								
+								return ProcessingResult
+										.continueWith(withEventParticipant)
+										.asCompletedFuture();
+							});
+
+							BiFunction<Integer, ExternalMessageProcessingResult, CompletionStage<ProcessingResult<ExternalMessageProcessingResult>>> createSampleForEventParticipant =
+								(sampleReportIndex, previousSampleResult) -> createOneSampleAndPathogenTests(
+									SampleDto.build(getUser().toReference(), eventParticipant.toReference()),
+									event.getDisease(),
+									sampleReportIndex,
+									false,
+									previousSampleResult);
+
+							return eventParticipantFlow.then(
+								sf -> doPickOrCreateSamplesFlow(
+									c -> c.sampleCriteria(new SampleCriteria().eventParticipant(eventParticipant.toReference())),
+									createSampleForEventParticipant,
+										eventParticipantFlow).getResult());
+						})
+						.when(EventValidationResult::isEventSelectionCanceled, (vf, v, vr) -> {
+							logger.debug("[MESSAGE PROCESSING] Event selection discarded");
+							return vf.then(ignored -> doCreateEventParticipantFlow(vf).getResult());
+						})
+					.then(ProcessingResult::asCompletedFuture))
+			.then(ProcessingResult::asCompletedFuture);
+		//@formatter:on
+    }
+
+    private FlowThen<ExternalMessageProcessingResult> doCreateEventParticipantAndSamplesFlow(
+        PersonDto person,
+        FlowThen<ExternalMessageProcessingResult> flow) {
+
+        FlowThen<ExternalMessageProcessingResult> eventParticipantFlow =
+            flow.then(p -> createEventParticipant(p.getData().getEvent(), person, p.getData()));
+        return eventParticipantFlow.then(p -> {
+            logger.debug("[MESSAGE PROCESSING] Continue processing with event participant: {}", p.getData());
+
+            EventParticipantDto eventParticipant = p.getData().getEventParticipant();
+
+            BiFunction<Integer, ExternalMessageProcessingResult, CompletionStage<ProcessingResult<ExternalMessageProcessingResult>>> createSampleForEventParticipant =
+                (sampleReportIndex, previousSampleResult) -> createOneSampleAndPathogenTests(
+                    eventParticipant.toReference(),
+                    previousSampleResult.getEvent(),
+                    sampleReportIndex,
+                    true,
+                    previousSampleResult);
+
+            return doPickOrCreateSamplesFlow(
+                c -> c.sampleCriteria(new SampleCriteria().eventParticipant(eventParticipant.toReference())),
+                createSampleForEventParticipant,
+                eventParticipantFlow).getResult();
+        });
+    }
+
+    private FlowThen<ExternalMessageProcessingResult> doPickOrCreateSamplesFlow(
+        Consumer<SampleSimilarityCriteria> addSampleSearchCriteria,
+        BiFunction<Integer, ExternalMessageProcessingResult, CompletionStage<ProcessingResult<ExternalMessageProcessingResult>>> createSampleAndPathogenTests,
+        FlowThen<ExternalMessageProcessingResult> flow) {
+
+        logger.debug("[MESSAGE PROCESSING] Processing sample report(s)");
+
+        List<SampleReportDto> sampleReports = getExternalMessage().getSampleReportsNullSafe();
+        if (sampleReports.size() > 1) {
+            flow = flow.then(result -> handleMultipleSampleConfirmation().thenCompose(next -> {
+                boolean confirmed = Boolean.TRUE.equals(next);
+                if (!confirmed) {
+                    logger.debug("[MESSAGE PROCESSING] Canceled processing of multiple sample reports.");
+                    return ProcessingResult.withStatus(ProcessingResultStatus.CANCELED, result.getData()).asCompletedFuture();
+                }
+
+                return ProcessingResult.withStatus(ProcessingResultStatus.CONTINUE, result.getData()).asCompletedFuture();
+            }));
+        }
+
+        int i = 0;
+        do {
+            flow = doSinglePickOrCreateSampleFlow(addSampleSearchCriteria, createSampleAndPathogenTests, flow, i);
+            i += 1;
+        }
+        while (i < sampleReports.size());
+
+        return flow;
+    }
+
+    protected FlowThen<ExternalMessageProcessingResult> doCaseSelectedFlow(
         CaseSelectionDto caseSelection,
-        FlowThen<ExternalMessageProcessingResult> flow);
+        FlowThen<ExternalMessageProcessingResult> flow) {
 
-    /**
-     * Defines the flow for handling a selected contact.
-     *
-     * @param contactSelection The selected contact.
-     * @param flow The current flow state.
-     * @return The updated flow state.
-     */
-    protected abstract FlowThen<ExternalMessageProcessingResult> doContactSelectedFlow(
+        CaseDataDto caze = getExternalMessageProcessingFacade().getCaseDataByUuid(caseSelection.getUuid());
+
+        BiFunction<Integer, ExternalMessageProcessingResult, CompletionStage<ProcessingResult<ExternalMessageProcessingResult>>> createSampleForCase =
+            (sampleReportIndex, previousSampleResult) -> createOneSampleAndPathogenTests(caze, sampleReportIndex, false, previousSampleResult);
+
+        FlowThen<ExternalMessageProcessingResult> caseFlow = flow.then(previousResult -> {
+            ExternalMessageProcessingResult withCase = previousResult.getData().withSelectedCase(caze);
+
+            logger.debug("[MESSAGE PROCESSING] Continue processing with case: {}", withCase);
+
+            return ProcessingResult.continueWith(withCase).asCompletedFuture();
+        });
+        return caseFlow.then(
+            previousResult -> doPickOrCreateSamplesFlow(
+                c -> c.sampleCriteria(new SampleCriteria().caze(caze.toReference())),
+                createSampleForCase,
+                caseFlow).getResult());
+    }
+
+    protected FlowThen<ExternalMessageProcessingResult> doContactSelectedFlow(
         SimilarContactDto contactSelection,
-        FlowThen<ExternalMessageProcessingResult> flow);
+        FlowThen<ExternalMessageProcessingResult> flow) {
 
-    /**
-     * Defines the flow for handling a selected event participant.
-     *
-     * @param eventParticipantSelection The selected event participant.
-     * @param flow The current flow state.
-     * @return The updated flow state.
-     */
-    protected abstract FlowThen<ExternalMessageProcessingResult> doEventParticipantSelectedFlow(
+        ContactDto contact = getExternalMessageProcessingFacade().getContactByUuid(contactSelection.getUuid());
+
+        BiFunction<Integer, ExternalMessageProcessingResult, CompletionStage<ProcessingResult<ExternalMessageProcessingResult>>> createSampleForContact =
+            (sampleReportIndex, previousSampleResult) -> createOneSampleAndPathogenTests(contact, sampleReportIndex, false, previousSampleResult);
+
+        FlowThen<ExternalMessageProcessingResult> contactFlow = flow.then(previousResult -> {
+            ExternalMessageProcessingResult withContact = previousResult.getData().withSelectedContact(contact);
+
+            logger.debug("[MESSAGE PROCESSING] Continue processing with contact: {}", withContact);
+
+            return ProcessingResult.continueWith(withContact).asCompletedFuture();
+        });
+
+        return contactFlow.then(
+            p -> doPickOrCreateSamplesFlow(
+                c -> c.sampleCriteria(new SampleCriteria().contact(contact.toReference())),
+                createSampleForContact,
+                contactFlow).getResult());
+    }
+
+    protected FlowThen<ExternalMessageProcessingResult> doEventParticipantSelectedFlow(
         SimilarEventParticipantDto eventParticipantSelection,
-        FlowThen<ExternalMessageProcessingResult> flow);
+        FlowThen<ExternalMessageProcessingResult> flow) {
+
+        EventParticipantDto eventParticipant = getExternalMessageProcessingFacade().getEventParticipantByUuid(eventParticipantSelection.getUuid());
+        EventDto event = getExternalMessageProcessingFacade().getEventByUuid(eventParticipant.getEvent().getUuid());
+
+        BiFunction<Integer, ExternalMessageProcessingResult, CompletionStage<ProcessingResult<ExternalMessageProcessingResult>>> createSampleForEventParticipant =
+            (sampleReportIndex, previousSampleResult) -> createOneSampleAndPathogenTests(
+                eventParticipant.toReference(),
+                event,
+                sampleReportIndex,
+                false,
+                previousSampleResult);
+
+        FlowThen<ExternalMessageProcessingResult> eventParticipantFlow = flow.then(previousResult -> {
+            ExternalMessageProcessingResult withEventParticipant =
+                previousResult.getData().withSelectedEvent(event).withSelectedEventParticipant(eventParticipant);
+
+            logger.debug("[MESSAGE PROCESSING] Continue processing with event participant: {}", withEventParticipant);
+
+            return ProcessingResult.continueWith(withEventParticipant).asCompletedFuture();
+        });
+
+        return eventParticipantFlow.then(
+            p -> doPickOrCreateSamplesFlow(
+                c -> c.sampleCriteria(new SampleCriteria().eventParticipant(eventParticipant.toReference())),
+                createSampleForEventParticipant,
+                eventParticipantFlow).getResult());
+    }
+
+    private FlowThen<ExternalMessageProcessingResult> doSinglePickOrCreateSampleFlow(
+        Consumer<SampleSimilarityCriteria> addSampleSearchCriteria,
+        BiFunction<Integer, ExternalMessageProcessingResult, CompletionStage<ProcessingResult<ExternalMessageProcessingResult>>> createSampleAndPathogenTests,
+        FlowThen<ExternalMessageProcessingResult> flow,
+        int sampleReportIndex) {
+
+        //@formatter:off
+		return flow.thenSwitch(p -> pickOrCreateSample(addSampleSearchCriteria, sampleReportIndex))
+				.when(PickOrCreateSampleResult::isNewSample, (sf, p, r) -> sf.then(ignored -> createSampleAndPathogenTests.apply(sampleReportIndex, r)))
+				.when(PickOrCreateSampleResult::isSelectedSample, (sf, p, r) -> sf.then(s -> editSample(p.getSample(), sampleReportIndex, r)))
+			.then(ProcessingResult::asCompletedFuture);
+		//@formatter:on
+
+    }
 
     /**
      * Retrieves similar event participants based on the selected person and lab message.
      *
-     * @param selectedPerson The selected person reference.
-     * @param labMessage The external lab message.
+     * @param selectedPerson
+     *            The selected person reference.
+     * @param labMessage
+     *            The external lab message.
      * @return A list of similar event participants.
      */
     protected List<SimilarEventParticipantDto> getSimilarEventParticipants(PersonReferenceDto selectedPerson, ExternalMessageDto labMessage) {
@@ -203,7 +404,8 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
     /**
      * Creates a new case based on the external message and previous result.
      *
-     * @param previousResult The result of the previous processing step.
+     * @param previousResult
+     *            The result of the previous processing step.
      * @return A {@link CompletionStage} containing the result of the case creation.
      */
     protected CompletionStage<ProcessingResult<ExternalMessageProcessingResult>> createCase(ExternalMessageProcessingResult previousResult) {
@@ -220,8 +422,10 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
     /**
      * Picks or creates an entry based on the external message and previous result.
      *
-     * @param previousResult The result of the previous processing step.
-     * @param externalMessage The external message to be processed.
+     * @param previousResult
+     *            The result of the previous processing step.
+     * @param externalMessage
+     *            The external message to be processed.
      * @return A {@link CompletionStage} containing the result of the entry selection or creation.
      */
     protected CompletionStage<ProcessingResult<PickOrCreateEntryResult>> pickOrCreateEntry(
@@ -243,8 +447,10 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
     /**
      * Creates a new contact based on the external message and previous result.
      *
-     * @param person The person associated with the contact.
-     * @param previousResult The result of the previous processing step.
+     * @param person
+     *            The person associated with the contact.
+     * @param previousResult
+     *            The result of the previous processing step.
      * @return A {@link CompletionStage} containing the result of the contact creation.
      */
     protected CompletionStage<ProcessingResult<ExternalMessageProcessingResult>> createContact(
@@ -261,8 +467,10 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
     /**
      * Builds an event participant based on the event and person.
      *
-     * @param eventDto The event associated with the participant.
-     * @param person The person associated with the participant.
+     * @param eventDto
+     *            The event associated with the participant.
+     * @param person
+     *            The person associated with the participant.
      * @return The constructed event participant.
      */
     protected EventParticipantDto buildEventParticipant(EventDto eventDto, PersonDto person) {
@@ -288,7 +496,8 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
     /**
      * Creates a new event based on the external message and previous result.
      *
-     * @param previousResult The result of the previous processing step.
+     * @param previousResult
+     *            The result of the previous processing step.
      * @return A {@link CompletionStage} containing the result of the event creation.
      */
     protected CompletionStage<ProcessingResult<ExternalMessageProcessingResult>> createEvent(ExternalMessageProcessingResult previousResult) {
@@ -306,8 +515,10 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
     /**
      * Builds a contact based on the external message and person.
      *
-     * @param externalMessageDto The external message associated with the contact.
-     * @param person The person associated with the contact.
+     * @param externalMessageDto
+     *            The external message associated with the contact.
+     * @param person
+     *            The person associated with the contact.
      * @return The constructed contact.
      */
     protected ContactDto buildContact(ExternalMessageDto externalMessageDto, PersonDto person) {
@@ -322,9 +533,12 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
     /**
      * Creates a new event participant based on the event, person, and previous result.
      *
-     * @param event The event associated with the participant.
-     * @param person The person associated with the participant.
-     * @param previousResult The result of the previous processing step.
+     * @param event
+     *            The event associated with the participant.
+     * @param person
+     *            The person associated with the participant.
+     * @param previousResult
+     *            The result of the previous processing step.
      * @return A {@link CompletionStage} containing the result of the event participant creation.
      */
     protected CompletionStage<ProcessingResult<ExternalMessageProcessingResult>> createEventParticipant(
@@ -343,8 +557,10 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
     /**
      * Validates the selected event based on the person.
      *
-     * @param event The selected event.
-     * @param person The person associated with the event.
+     * @param event
+     *            The selected event.
+     * @param person
+     *            The person associated with the event.
      * @return A {@link CompletionStage} containing the result of the event validation.
      */
     protected CompletionStage<ProcessingResult<EventValidationResult>> validateSelectedEvent(EventIndexDto event, PersonDto person) {
@@ -380,7 +596,8 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
     /**
      * Handles the completion of the processing flow.
      *
-     * @param result The result of the processing.
+     * @param result
+     *            The result of the processing.
      * @return A {@link CompletionStage} containing the final result of the processing.
      */
     protected CompletionStage<ProcessingResult<ExternalMessageProcessingResult>> handleProcessingDone(
@@ -406,8 +623,10 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
     /**
      * Creates a surveillance report based on the external message and case.
      *
-     * @param externalMessage The external message associated with the report.
-     * @param caze The case associated with the report.
+     * @param externalMessage
+     *            The external message associated with the report.
+     * @param caze
+     *            The case associated with the report.
      * @return The constructed surveillance report.
      */
     protected SurveillanceReportDto createSurveillanceReport(ExternalMessageDto externalMessage, CaseDataDto caze) {
@@ -423,9 +642,12 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
     /**
      * Sets the facility information for the surveillance report.
      *
-     * @param surveillanceReport The surveillance report to update.
-     * @param externalMessage The external message associated with the report.
-     * @param caze The case associated with the report.
+     * @param surveillanceReport
+     *            The surveillance report to update.
+     * @param externalMessage
+     *            The external message associated with the report.
+     * @param caze
+     *            The case associated with the report.
      */
     protected void setSurvReportFacility(SurveillanceReportDto surveillanceReport, ExternalMessageDto externalMessage, CaseDataDto caze) {
         FacilityReferenceDto reporterReference = getExternalMessageProcessingFacade().getFacilityReference(externalMessage.getReporterExternalIds());
@@ -457,8 +679,10 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
     /**
      * Sets the reporting type for the surveillance report.
      *
-     * @param surveillanceReport The surveillance report to update.
-     * @param externalMessage The external message associated with the report.
+     * @param surveillanceReport
+     *            The surveillance report to update.
+     * @param externalMessage
+     *            The external message associated with the report.
      */
     protected void setSurvReportingType(SurveillanceReportDto surveillanceReport, ExternalMessageDto externalMessage) {
         if (ExternalMessageType.LAB_MESSAGE.equals(externalMessage.getType())) {
@@ -470,6 +694,166 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
                 String.format("There is no reporting type defined for this type of external message: %s", externalMessage.getType()));
         }
     }
+
+    private static CompletableFuture<ProcessingResult<PickOrCreateSampleResult>> continueWithCreateSample() {
+        PickOrCreateSampleResult result = new PickOrCreateSampleResult();
+        result.setNewSample(true);
+        return ProcessingResult.continueWith(result).asCompletedFuture();
+    }
+
+    private static SampleSimilarityCriteria createSampleSimilarCriteria(SampleReportDto sampleReport) {
+
+        SampleSimilarityCriteria sampleCriteria = new SampleSimilarityCriteria();
+        sampleCriteria.setLabSampleId(sampleReport.getLabSampleId());
+        sampleCriteria.setSampleDateTime(sampleReport.getSampleDateTime());
+        sampleCriteria.setSampleMaterial(sampleReport.getSampleMaterial());
+
+        return sampleCriteria;
+    }
+
+    private static boolean isLastSample(ExternalMessageDto labMessage, int sampleReportIndex) {
+        if (sampleReportIndex >= labMessage.getSampleReportsNullSafe().size()) {
+            throw new IndexOutOfBoundsException("The sample report index is out of bounds.");
+        }
+        return labMessage.getSampleReportsNullSafe().size() == sampleReportIndex + 1;
+    }
+
+    private CompletionStage<ProcessingResult<ExternalMessageProcessingResult>> createOneSampleAndPathogenTests(
+        CaseDataDto caze,
+        int sampleReportIndex,
+        boolean entityCreated,
+        ExternalMessageProcessingResult previousResult) {
+
+        SampleDto sample = SampleDto.build(getUser().toReference(), caze.toReference());
+        return createOneSampleAndPathogenTests(sample, caze.getDisease(), sampleReportIndex, entityCreated, previousResult);
+    }
+
+    private CompletionStage<ProcessingResult<ExternalMessageProcessingResult>> createOneSampleAndPathogenTests(
+        ContactDto contact,
+        int sampleReportIndex,
+        boolean entityCreated,
+        ExternalMessageProcessingResult previousResult) {
+
+        SampleDto sample = SampleDto.build(getUser().toReference(), contact.toReference());
+        return createOneSampleAndPathogenTests(sample, contact.getDisease(), sampleReportIndex, entityCreated, previousResult);
+    }
+
+    private CompletionStage<ProcessingResult<ExternalMessageProcessingResult>> createOneSampleAndPathogenTests(
+        EventParticipantReferenceDto eventParticipant,
+        EventDto event,
+        int sampleReportIndex,
+        boolean entityCreated,
+        ExternalMessageProcessingResult previousResult) {
+
+        SampleDto sample = SampleDto.build(getUser().toReference(), eventParticipant);
+        return createOneSampleAndPathogenTests(sample, event.getDisease(), sampleReportIndex, entityCreated, previousResult);
+    }
+
+    private CompletionStage<ProcessingResult<ExternalMessageProcessingResult>> createOneSampleAndPathogenTests(
+        SampleDto sample,
+        Disease disease,
+        int sampleReportIndex,
+        boolean entityCreated,
+        ExternalMessageProcessingResult previousResult) {
+
+        SampleReportDto sampleReport = getExternalMessage().getSampleReportsNullSafe().get(sampleReportIndex);
+        getMapper().mapToSample(sample, sampleReport);
+        List<PathogenTestDto> pathogenTests =
+            LabMessageProcessingHelper.buildPathogenTests(sample, sampleReportIndex, getExternalMessage(), getMapper(), getUser());
+        HandlerCallback<SampleAndPathogenTests> callback = new HandlerCallback<>();
+        handleCreateSampleAndPathogenTests(
+            sample,
+            pathogenTests,
+            disease,
+            getExternalMessage(),
+            entityCreated,
+            isLastSample(getExternalMessage(), sampleReportIndex),
+            callback);
+
+        return mapHandlerResult(callback, previousResult, s -> {
+            ExternalMessageProcessingResult withSampleAndPathogenTests =
+                previousResult.andWithSampleAndPathogenTests(s.getSample(), s.getPathogenTests(), sampleReport, true);
+
+            logger.debug("[MESSAGE PROCESSING] Continue processing with sample and pathogen tests: {}", withSampleAndPathogenTests);
+
+            return withSampleAndPathogenTests;
+        });
+    }
+
+    private CompletionStage<ProcessingResult<PickOrCreateSampleResult>> pickOrCreateSample(
+        Consumer<SampleSimilarityCriteria> addSampleSearchCriteria,
+        int sampleReportIndex) {
+
+        if (Boolean.TRUE.equals(forceSampleCreation)) {
+            return continueWithCreateSample();
+        }
+
+        SampleSimilarityCriteria sampleSimilarityCriteria =
+            createSampleSimilarCriteria(getExternalMessage().getSampleReportsNullSafe().get(sampleReportIndex));
+        addSampleSearchCriteria.accept(sampleSimilarityCriteria);
+
+        List<SampleDto> selectableSamples = getExternalMessageProcessingFacade().getSamplesByCriteria(sampleSimilarityCriteria.getSampleCriteria());
+        List<SampleDto> similarSamples = getExternalMessageProcessingFacade().getSimilarSamples(sampleSimilarityCriteria);
+        List<SampleDto> otherSamples = selectableSamples.stream().filter(s -> !similarSamples.contains(s)).collect(Collectors.toList());
+
+        if (similarSamples.isEmpty() && otherSamples.isEmpty()) {
+            return continueWithCreateSample();
+        }
+
+        HandlerCallback<PickOrCreateSampleResult> callback = new HandlerCallback<>();
+        handlePickOrCreateSample(similarSamples, otherSamples, getExternalMessage(), sampleReportIndex, callback);
+
+        return callback.futureResult;
+    }
+
+    private CompletionStage<ProcessingResult<ExternalMessageProcessingResult>> editSample(
+        SampleDto sample,
+        int sampleReportIndex,
+        ExternalMessageProcessingResult previousResult) {
+
+        List<PathogenTestDto> newTests =
+            LabMessageProcessingHelper.buildPathogenTests(sample, sampleReportIndex, getExternalMessage(), getMapper(), getUser());
+        HandlerCallback<SampleAndPathogenTests> callback = new HandlerCallback<>();
+        handleEditSample(sample, newTests, getExternalMessage(), getMapper(), isLastSample(getExternalMessage(), sampleReportIndex), callback);
+
+        return mapHandlerResult(callback, previousResult, r -> {
+            ExternalMessageProcessingResult withSampleAndPathogenTests = previousResult.andWithSampleAndPathogenTests(
+                r.getSample(),
+                r.getPathogenTests(),
+                getExternalMessage().getSampleReportsNullSafe().get(sampleReportIndex),
+                false);
+
+            logger.debug("[MESSAGE PROCESSING] Continue processing with sample and pathogen tests: {}", withSampleAndPathogenTests);
+
+            return withSampleAndPathogenTests;
+        });
+    }
+
+    protected abstract void handlePickOrCreateSample(
+        List<SampleDto> similarSamples,
+        List<SampleDto> otherSamples,
+        ExternalMessageDto labMessage,
+        int sampleReportIndex,
+        HandlerCallback<PickOrCreateSampleResult> callback);
+
+    protected abstract void handleEditSample(
+        SampleDto sample,
+        List<PathogenTestDto> newPathogenTests,
+        ExternalMessageDto labMessage,
+        ExternalMessageMapper mapper,
+        boolean lastSample,
+        HandlerCallback<SampleAndPathogenTests> callback);
+
+    public abstract CompletionStage<Boolean> handleMultipleSampleConfirmation();
+
+    protected abstract void handleCreateSampleAndPathogenTests(
+        SampleDto sample,
+        List<PathogenTestDto> pathogenTests,
+        Disease disease,
+        ExternalMessageDto labMessage,
+        boolean entityCreated,
+        boolean lastSample,
+        HandlerCallback<SampleAndPathogenTests> callback);
 
     /**
      * Confirms whether to pick an existing event participant.
@@ -488,11 +872,16 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
     /**
      * Handles the selection or creation of an entry.
      *
-     * @param similarCases A list of similar cases.
-     * @param similarContacts A list of similar contacts.
-     * @param similarEventParticipants A list of similar event participants.
-     * @param externalMessageDto The external message associated with the entry.
-     * @param callback The callback for handling the result.
+     * @param similarCases
+     *            A list of similar cases.
+     * @param similarContacts
+     *            A list of similar contacts.
+     * @param similarEventParticipants
+     *            A list of similar event participants.
+     * @param externalMessageDto
+     *            The external message associated with the entry.
+     * @param callback
+     *            The callback for handling the result.
      */
     protected abstract void handlePickOrCreateEntry(
         List<CaseSelectionDto> similarCases,
@@ -504,10 +893,14 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
     /**
      * Handles the creation of a case.
      *
-     * @param caze The case to be created.
-     * @param person The person associated with the case.
-     * @param labMessage The external lab message associated with the case.
-     * @param callback The callback for handling the result.
+     * @param caze
+     *            The case to be created.
+     * @param person
+     *            The person associated with the case.
+     * @param labMessage
+     *            The external lab message associated with the case.
+     * @param callback
+     *            The callback for handling the result.
      */
     protected abstract void handleCreateCase(
         CaseDataDto caze,
@@ -518,10 +911,14 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
     /**
      * Handles the creation of a contact.
      *
-     * @param contact The contact to be created.
-     * @param person The person associated with the contact.
-     * @param externalMessage The external message associated with the contact.
-     * @param callback The callback for handling the result.
+     * @param contact
+     *            The contact to be created.
+     * @param person
+     *            The person associated with the contact.
+     * @param externalMessage
+     *            The external message associated with the contact.
+     * @param callback
+     *            The callback for handling the result.
      */
     protected abstract void handleCreateContact(
         ContactDto contact,
@@ -532,26 +929,34 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
     /**
      * Handles the selection or creation of an event.
      *
-     * @param externalMessage The external message associated with the event.
-     * @param callback The callback for handling the result.
+     * @param externalMessage
+     *            The external message associated with the event.
+     * @param callback
+     *            The callback for handling the result.
      */
     protected abstract void handlePickOrCreateEvent(ExternalMessageDto externalMessage, HandlerCallback<PickOrCreateEventResult> callback);
 
     /**
      * Handles the creation of an event.
      *
-     * @param event The event to be created.
-     * @param callback The callback for handling the result.
+     * @param event
+     *            The event to be created.
+     * @param callback
+     *            The callback for handling the result.
      */
     protected abstract void handleCreateEvent(EventDto event, HandlerCallback<EventDto> callback);
 
     /**
      * Handles the creation of an event participant.
      *
-     * @param eventParticipant The event participant to be created.
-     * @param event The event associated with the participant.
-     * @param externalMessage The external message associated with the participant.
-     * @param callback The callback for handling the result.
+     * @param eventParticipant
+     *            The event participant to be created.
+     * @param event
+     *            The event associated with the participant.
+     * @param externalMessage
+     *            The external message associated with the participant.
+     * @param callback
+     *            The callback for handling the result.
      */
     protected abstract void handleCreateEventParticipant(
         EventParticipantDto eventParticipant,
@@ -562,9 +967,12 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
     /**
      * Marks the external message as processed.
      *
-     * @param externalMessage The external message to be marked.
-     * @param result The result of the processing.
-     * @param surveillanceReport The surveillance report associated with the message.
+     * @param externalMessage
+     *            The external message to be marked.
+     * @param result
+     *            The result of the processing.
+     * @param surveillanceReport
+     *            The surveillance report associated with the message.
      */
     protected abstract void markExternalMessageAsProcessed(
         ExternalMessageDto externalMessage,

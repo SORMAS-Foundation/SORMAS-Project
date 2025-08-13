@@ -55,6 +55,7 @@ public class PreviousHospitalization extends AbstractDomainObject {
 	public static final String COMMUNITY = "community";
 	public static final String HEALTH_FACILIY = "healthFacility";
 	public static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
+	public static final String HEALTH_FACILITY_DEPARTMENT = "healthFacilityDepartment";
 	public static final String ISOLATED = "isolated";
 	public static final String ISOLATION_DATE = "isolationDate";
 	public static final String DESCRIPTION = "description";
@@ -71,6 +72,7 @@ public class PreviousHospitalization extends AbstractDomainObject {
 	private Community community;
 	private Facility healthFacility;
 	private String healthFacilityDetails;
+	private String healthFacilityDepartment;
 	private YesNoUnknown isolated;
 	private Date isolationDate;
 	private String description;
@@ -188,6 +190,15 @@ public class PreviousHospitalization extends AbstractDomainObject {
 
 	public void setHealthFacilityDetails(String healthFacilityDetails) {
 		this.healthFacilityDetails = healthFacilityDetails;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getHealthFacilityDepartment() {
+		return healthFacilityDepartment;
+	}
+
+	public void setHealthFacilityDepartment(String healthFacilityDepartment) {
+		this.healthFacilityDepartment = healthFacilityDepartment;
 	}
 
 	@Enumerated(EnumType.STRING)

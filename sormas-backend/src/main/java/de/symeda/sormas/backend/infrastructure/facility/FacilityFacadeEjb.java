@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.annotation.security.PermitAll;
@@ -100,6 +101,33 @@ public class FacilityFacadeEjb
 			Validations.importFacilityAlreadyExists,
 			null,
 			Strings.messageFacilityDearchivingNotPossible);
+	}
+
+	@Override
+	@PermitAll
+	public List<FacilityReferenceDto> getActiveFacilitiesByType(FacilityType type, boolean includeOtherFacility, boolean includeNoneFacility) {
+
+		List<Facility> facilities = service.getActiveFacilitiesByType(type, includeOtherFacility, includeNoneFacility);
+		return facilities.stream().map(FacilityFacadeEjb::toReferenceDto).collect(Collectors.toList());
+	}
+
+	@Override
+	@PermitAll
+	public List<FacilityReferenceDto> getActiveFacilitiesNameMatching(
+		FacilityType type,
+		Pattern pattern,
+		boolean includeOtherFacility,
+		boolean includeNoneFacility) {
+
+		if (pattern == null) {
+			return getActiveFacilitiesByType(type, includeOtherFacility, includeNoneFacility);
+		}
+
+		final List<Facility> facilities = service.getActiveFacilitiesByType(type, includeOtherFacility, includeNoneFacility);
+		return facilities.stream()
+			.filter(facility -> facility.getName() != null && pattern.matcher(facility.getName()).find())
+			.map(FacilityFacadeEjb::toReferenceDto)
+			.collect(Collectors.toList());
 	}
 
 	@Override

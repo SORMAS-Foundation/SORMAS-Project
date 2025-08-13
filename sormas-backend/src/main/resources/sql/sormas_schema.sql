@@ -14421,4 +14421,73 @@ alter table hospitalization_history add currentlyhospitalized varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (579, 'Add currently hospitalized to hospitalization #13321');
 
+-- 2025-07-14 Add hospitalization and additional fields to external message
+
+ALTER TABLE externalmessage ADD COLUMN casecomments varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN casecomments varchar(255);
+
+ALTER TABLE externalmessage ADD COLUMN hospitalizationfacilityname varchar(255);
+ALTER TABLE externalmessage ADD COLUMN hospitalizationfacilityexternalid varchar(255);
+ALTER TABLE externalmessage ADD COLUMN hospitalizationfacilitydepartment varchar(255);
+ALTER TABLE externalmessage ADD COLUMN hospitalizationadmissiondate timestamp;
+ALTER TABLE externalmessage ADD COLUMN hospitalizationdischargedate timestamp;
+ALTER TABLE externalmessage_history ADD COLUMN hospitalizationfacilityname varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN hospitalizationfacilityexternalid varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN hospitalizationfacilitydepartment varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN hospitalizationadmissiondate timestamp;
+ALTER TABLE externalmessage_history ADD COLUMN hospitalizationdischargedate timestamp;
+
+ALTER TABLE previoushospitalization ADD COLUMN healthfacilitydepartment varchar(255);
+ALTER TABLE previoushospitalization_history ADD COLUMN healthfacilitydepartment varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (580, 'Update external message with hospitalization fields #13516');
+
+
+-- 2025-07-18 Implemented Doctors declaration for IPI #13344
+alter table externalmessage add column if not exists deceasedDate TIMESTAMP;
+alter table externalmessage_history add column if not exists deceasedDate TIMESTAMP;
+alter table symptoms add column if not exists unknownSymptom varchar(255);
+alter table symptoms_history add column if not exists unknownSymptom varchar(255);
+alter table notifier add column if not exists agentfirstname varchar(255);
+alter table notifier add column if not exists agentlastname varchar(255);
+alter table notifier_history add column if not exists agentfirstname varchar(255);
+alter table notifier_history add column if not exists agentlastname varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (581, 'Implemented Doctors declaration for IPI #13344');
+
+-- 2025-07-29 Added missing fields for external message #13294
+
+ALTER TABLE therapy ADD COLUMN treatmentstarted varchar(255);
+ALTER TABLE therapy ADD COLUMN treatmentnotapplicable boolean DEFAULT false;
+ALTER TABLE therapy ADD COLUMN treatmentstartdate timestamp;
+
+ALTER TABLE therapy_history ADD COLUMN treatmentstarted varchar(255);
+ALTER TABLE therapy_history ADD COLUMN treatmentnotapplicable boolean DEFAULT false;
+ALTER TABLE therapy_history ADD COLUMN treatmentstartdate timestamp;
+
+ALTER TABLE externalmessage ADD COLUMN treatmentnotapplicable boolean DEFAULT false;
+ALTER TABLE externalmessage ADD COLUMN tuberculosis varchar(255);
+ALTER TABLE externalmessage ADD COLUMN hiv varchar(255);
+ALTER TABLE externalmessage ADD COLUMN hivArt varchar(255);
+ALTER TABLE externalmessage ADD COLUMN radiographyCompatibility varchar(255);
+ALTER TABLE externalmessage ADD COLUMN otherDiagnosticCriteria varchar(255);
+ALTER TABLE externalmessage ADD COLUMN tuberculosisInfectionYear integer;
+ALTER TABLE externalmessage ADD COLUMN previousTuberculosisTreatment varchar(255);
+ALTER TABLE externalmessage ADD COLUMN complianceWithTreatment varchar(255);
+
+ALTER TABLE externalmessage_history ADD COLUMN treatmentnotapplicable boolean DEFAULT false;
+ALTER TABLE externalmessage_history ADD COLUMN tuberculosis varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN hiv varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN hivArt varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN radiographyCompatibility varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN otherDiagnosticCriteria varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN tuberculosisInfectionYear integer;
+ALTER TABLE externalmessage_history ADD COLUMN previousTuberculosisTreatment varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN complianceWithTreatment varchar(255);
+
+ALTER TABLE testreport ADD COLUMN testTypeDetails varchar(255);
+ALTER TABLE testreport_history ADD COLUMN testTypeDetails varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (582, 'Added missing fields for external message #13294');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

@@ -63,6 +63,7 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 		+ fluidRowLocs(PreviousHospitalizationDto.REGION, PreviousHospitalizationDto.DISTRICT)
 		+ fluidRowLocs(PreviousHospitalizationDto.COMMUNITY, PreviousHospitalizationDto.HEALTH_FACILITY)
 		+ fluidRowLocs("", PreviousHospitalizationDto.HEALTH_FACILITY_DETAILS)
+		+ fluidRowLocs("", PreviousHospitalizationDto.HEALTH_FACILITY_DEPARTMENT)
 		+ fluidRowLocs(PreviousHospitalizationDto.ISOLATED, PreviousHospitalizationDto.ISOLATION_DATE)
 		+ fluidRowLocs(PreviousHospitalizationDto.HOSPITALIZATION_REASON, PreviousHospitalizationDto.OTHER_HOSPITALIZATION_REASON)
 		+ fluidRowLocs(
@@ -121,6 +122,7 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 		healthFacilityCombo = addInfrastructureField(PreviousHospitalizationDto.HEALTH_FACILITY);
 		TextField healthFacilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
 		healthFacilityDetails.setVisible(false);
+		addField(PreviousHospitalizationDto.HEALTH_FACILITY_DEPARTMENT, TextField.class);
 
 		addField(PreviousHospitalizationDto.HOSPITALIZATION_REASON);
 		addField(PreviousHospitalizationDto.OTHER_HOSPITALIZATION_REASON, TextField.class);

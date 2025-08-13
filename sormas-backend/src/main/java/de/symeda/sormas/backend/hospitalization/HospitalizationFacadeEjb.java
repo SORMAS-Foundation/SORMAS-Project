@@ -114,6 +114,7 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		target.setCommunity(communityService.getByReferenceDto(source.getCommunity()));
 		target.setHealthFacility(facilityService.getByReferenceDto(source.getHealthFacility()));
 		target.setHealthFacilityDetails(source.getHealthFacilityDetails());
+		target.setHealthFacilityDepartment(source.getHealthFacilityDepartment());
 		target.setIsolated(source.getIsolated());
 		target.setIsolationDate(source.getIsolationDate());
 		target.setDescription(source.getDescription());
@@ -180,6 +181,7 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		target.setCommunity(CommunityFacadeEjb.toReferenceDto(source.getCommunity()));
 		target.setHealthFacility(FacilityFacadeEjb.toReferenceDto(source.getHealthFacility()));
 		target.setHealthFacilityDetails(source.getHealthFacilityDetails());
+		target.setHealthFacilityDepartment(source.getHealthFacilityDepartment());
 		target.setIsolated(source.getIsolated());
 		target.setIsolationDate(source.getIsolationDate());
 		target.setDescription(source.getDescription());
