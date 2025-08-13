@@ -149,14 +149,14 @@ public class SampleDashboardService {
 	}
 
 	public Map<SpecimenCondition, Long> getEnvironmentalSampleCountsBySpecimenCondition(SampleDashboardCriteria dashboardCriteria) {
-		return getEnvironmentSampleCountsBySpecimenCondition(
+		return getEnvironmentalSampleCountsBySpecimenCondition(
 				EnvironmentSample.SPECIMEN_CONDITION,
 				SpecimenCondition.class,
 				dashboardCriteria,
 				null);
 	}
 
-	private Map<SpecimenCondition, Long> getEnvironmentSampleCountsBySpecimenCondition(String property, Class<SpecimenCondition> propertyType,
+	private Map<SpecimenCondition, Long> getEnvironmentalSampleCountsBySpecimenCondition(String property, Class<SpecimenCondition> propertyType,
 																					   SampleDashboardCriteria dashboardCriteria,
 																					   BiFunction<CriteriaBuilder, Root<EnvironmentSample>, Predicate> additionalFilters) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -174,6 +174,7 @@ public class SampleDashboardService {
 
 		return QueryHelper.getResultList(em, cq, null, null, Function.identity())
 				.stream()
+				.filter(t -> t.get(0) != null)
 				.collect(Collectors.toMap(t -> propertyType.cast(t.get(0)), t -> (Long) t.get(1)));
 	}
 
@@ -308,6 +309,7 @@ public class SampleDashboardService {
 		cq.groupBy(groupingProperty);
 		return QueryHelper.getResultList(em, cq, null, null, Function.identity())
 				.stream()
+				.filter(t -> t.get(0) != null)
 				.collect(Collectors.toMap(t -> (EnvironmentSampleMaterial) t.get(0), t -> (Long) t.get(1)));
 	}
 
@@ -383,7 +385,7 @@ public class SampleDashboardService {
 		return QueryHelper.getSingleResult(em, cq);
 	}
 
-	public Long countEnvironmentSamplesForMap(SampleDashboardCriteria criteria) {
+	public Long countEnvironmentalSamplesForMap(SampleDashboardCriteria criteria) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		final Root<EnvironmentSample> sample = cq.from(EnvironmentSample.class);

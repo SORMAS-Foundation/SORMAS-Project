@@ -74,7 +74,7 @@ public class SampleDashboardFacadeEjb implements SampleDashboardFacade {
 
 	@Override
 	public Long countEnvironmentalSamplesForMap(SampleDashboardCriteria criteria) {
-		return sampleDashboardService.countEnvironmentSamplesForMap(criteria);
+		return sampleDashboardService.countEnvironmentalSamplesForMap(criteria);
 	}
 
 	@Override
