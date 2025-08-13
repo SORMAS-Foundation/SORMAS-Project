@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,35 +13,33 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.exposure;
+package de.symeda.sormas.api.person;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.utils.Diseases;
 
-public enum ExposureType {
+/**
+ * Multiple birth classification for perinatal surveillance.
+ * Used specifically for RSV disease surveillance to track multiple births.
+ */
+public enum MultipleBirth {
 
-	WORK,
-	TRAVEL,
-	SPORT,
-	VISIT,
-	GATHERING,
-	HABITATION,
-	PERSONAL_SERVICES,
-	@Diseases(value = {
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
-	CHILDCARE_FACILITY,
-	@Diseases(value = {
-		Disease.CORONAVIRUS }, hide = true)
-	BURIAL,
-	@Diseases(value = {
-		Disease.CORONAVIRUS }, hide = true)
-	ANIMAL_CONTACT,
-	OTHER,
-	UNKNOWN;
+    /**
+     * Single birth (No - 1)
+     */
+    SINGLE,
 
-	@Override
-	public String toString() {
-		return I18nProperties.getEnumCaption(this);
-	}
+    /**
+     * Twin birth (Twins - 2)
+     */
+    TWINS,
+
+    /**
+     * Multiple birth (Triplet 3+ or more)
+     */
+    MULTIPLE;
+
+    @Override
+    public String toString() {
+        return I18nProperties.getEnumCaption(this);
+    }
 }

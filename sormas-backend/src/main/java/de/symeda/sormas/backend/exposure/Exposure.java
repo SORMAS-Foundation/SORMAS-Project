@@ -41,6 +41,7 @@ import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.GatheringType;
 import de.symeda.sormas.api.exposure.HabitationType;
 import de.symeda.sormas.api.exposure.TypeOfAnimal;
+import de.symeda.sormas.api.exposure.TypeOfChildcareFacility;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -116,6 +117,8 @@ public class Exposure extends AbstractDomainObject {
 	private String habitationDetails;
 	private TypeOfAnimal typeOfAnimal;
 	private String typeOfAnimalDetails;
+	private TypeOfChildcareFacility typeOfChildcareFacility;
+	private String childcareFacilityDetails;
 
 	// Fields specific to ExposureType.BURIAL
 	private YesNoUnknown physicalContactDuringPreparation;
@@ -475,6 +478,24 @@ public class Exposure extends AbstractDomainObject {
 
 	public void setTypeOfAnimalDetails(String typeOfAnimalDetails) {
 		this.typeOfAnimalDetails = typeOfAnimalDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public TypeOfChildcareFacility getTypeOfChildcareFacility() {
+		return typeOfChildcareFacility;
+	}
+
+	public void setTypeOfChildcareFacility(TypeOfChildcareFacility typeOfChildcareFacility) {
+		this.typeOfChildcareFacility = typeOfChildcareFacility;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getChildcareFacilityDetails() {
+		return childcareFacilityDetails;
+	}
+
+	public void setChildcareFacilityDetails(String childcareFacilityDetails) {
+		this.childcareFacilityDetails = childcareFacilityDetails;
 	}
 
 	@Enumerated(EnumType.STRING)

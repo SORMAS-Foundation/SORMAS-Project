@@ -38,8 +38,6 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-import com.vaadin.v7.ui.CheckBox;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.shared.ui.ErrorLevel;
@@ -50,6 +48,7 @@ import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
+import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
@@ -95,6 +94,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldAccessHelper;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
 import de.symeda.sormas.ui.utils.ResizableTextAreaWrapper;
 import de.symeda.sormas.ui.utils.SormasFieldGroupFieldFactory;
@@ -107,6 +107,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private static final long serialVersionUID = -1L;
 
 	private static final String PERSON_INFORMATION_HEADING_LOC = "personInformationHeadingLoc";
+	private static final String PERINATAL_DETAILS_HEADER = "perinatalDetailsHeader";
 	private static final String OCCUPATION_HEADER = "occupationHeader";
 	private static final String ADDRESS_HEADER = "addressHeader";
 	private static final String ADDRESSES_HEADER = "addressesHeader";
@@ -154,6 +155,12 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 					fluidRowLocs(PersonDto.HAS_COVID_APP, PersonDto.COVID_CODE_DELIVERED) +
 
+                    loc(PERINATAL_DETAILS_HEADER) +
+                    divsCss(VSPACE_3,
+                            fluidRowLocs(PersonDto.GESTATIONAL_AGE_CATEGORY, PersonDto.BIRTH_WEIGHT_CATEGORY) +
+                            fluidRowLocs(PersonDto.BIRTH_WEIGHT_VALUE, PersonDto.MULTIPLE_BIRTH)
+                    ) +
+
                     loc(OCCUPATION_HEADER) +
                     divsCss(VSPACE_3,
                             fluidRowLocs(PersonDto.OCCUPATION_TYPE, PersonDto.OCCUPATION_DETAILS) +
@@ -182,6 +189,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 					fluidRowLocs(PersonDto.PERSON_CONTACT_DETAILS)) +
 					loc(GENERAL_COMMENT_LOC) + fluidRowLocs(CaseDataDto.ADDITIONAL_DETAILS);
 	private final Label occupationHeader = new Label(I18nProperties.getString(Strings.headingPersonOccupation));
+	private final Label perinatalDetailsHeader = new Label(I18nProperties.getString(Strings.headingPerinatalDetails));
 	private final Label addressHeader = new Label(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.ADDRESS));
 	private final Label addressesHeader = new Label(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.ADDRESSES));
 	private final Label contactInformationHeader = new Label(I18nProperties.getString(Strings.headingContactInformation));
@@ -234,8 +242,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		this.diseaseDetails = diseaseDetails;
 		this.isPseudonymized = isPseudonymized;
 
-		CssStyles.style(CssStyles.H3, occupationHeader, addressHeader, addressesHeader, contactInformationHeader);
+		CssStyles.style(CssStyles.H3, occupationHeader, perinatalDetailsHeader, addressHeader, addressesHeader, contactInformationHeader);
 		getContent().addComponent(occupationHeader, OCCUPATION_HEADER);
+		getContent().addComponent(perinatalDetailsHeader, PERINATAL_DETAILS_HEADER);
 		getContent().addComponent(addressHeader, ADDRESS_HEADER);
 		getContent().addComponent(addressesHeader, ADDRESSES_HEADER);
 		getContent().addComponent(contactInformationHeader, CONTACT_INFORMATION_HEADER);
@@ -264,8 +273,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		this.diseaseDetails = diseaseDetails;
 		this.isPseudonymized = isPseudonymized;
 
-		CssStyles.style(CssStyles.H3, occupationHeader, addressHeader, addressesHeader, contactInformationHeader);
+		CssStyles.style(CssStyles.H3, occupationHeader, perinatalDetailsHeader, addressHeader, addressesHeader, contactInformationHeader);
 		getContent().addComponent(occupationHeader, OCCUPATION_HEADER);
+		getContent().addComponent(perinatalDetailsHeader, PERINATAL_DETAILS_HEADER);
 		getContent().addComponent(addressHeader, ADDRESS_HEADER);
 		getContent().addComponent(addressesHeader, ADDRESSES_HEADER);
 		getContent().addComponent(contactInformationHeader, CONTACT_INFORMATION_HEADER);
@@ -283,8 +293,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized),
 			isEditAllowed);
 
-		CssStyles.style(CssStyles.H3, occupationHeader, addressHeader, addressesHeader, contactInformationHeader);
+		CssStyles.style(CssStyles.H3, occupationHeader, perinatalDetailsHeader, addressHeader, addressesHeader, contactInformationHeader);
 		getContent().addComponent(occupationHeader, OCCUPATION_HEADER);
+		getContent().addComponent(perinatalDetailsHeader, PERINATAL_DETAILS_HEADER);
 		getContent().addComponent(addressHeader, ADDRESS_HEADER);
 		getContent().addComponent(addressesHeader, ADDRESSES_HEADER);
 		getContent().addComponent(contactInformationHeader, CONTACT_INFORMATION_HEADER);
@@ -367,6 +378,13 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		TextField tfBirthWeight = addField(PersonDto.BIRTH_WEIGHT, TextField.class);
 		tfBirthWeight.setConversionError(I18nProperties.getValidationError(Validations.onlyIntegerNumbersAllowed, tfBirthWeight.getCaption()));
 
+		// RSV Perinatal Details
+		ComboBox gestationalAgeCategory = addField(PersonDto.GESTATIONAL_AGE_CATEGORY, ComboBox.class);
+		ComboBox birthWeightCategory = addField(PersonDto.BIRTH_WEIGHT_CATEGORY, ComboBox.class);
+		TextField birthWeightValue = addField(PersonDto.BIRTH_WEIGHT_VALUE, TextField.class);
+		birthWeightValue.setConversionError(I18nProperties.getValidationError(Validations.onlyIntegerNumbersAllowed, birthWeightValue.getCaption()));
+		ComboBox multipleBirth = addField(PersonDto.MULTIPLE_BIRTH, ComboBox.class);
+
 		AbstractSelect deathPlaceType = addField(PersonDto.DEATH_PLACE_TYPE, ComboBox.class);
 		deathPlaceType.setNullSelectionAllowed(true);
 		TextField deathPlaceDesc = addField(PersonDto.DEATH_PLACE_DESCRIPTION, TextField.class);
@@ -405,14 +423,17 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		entryDateDF.setVisible(false);
 		// Entry date is only required for foreigners in Luxembourg with the TB+IMI+IPI diseases only.
 		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
-			boolean isEntryDateAllowedDisease = Arrays.asList(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.TUBERCULOSIS).contains(disease);
+			boolean isEntryDateAllowedDisease =
+				Arrays.asList(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.TUBERCULOSIS)
+					.contains(disease);
 			birthCountryCB.addValueChangeListener(e -> {
 				CountryReferenceDto countryRef = (CountryReferenceDto) e.getProperty().getValue();
 				boolean isForeigner = false;
 				if (countryRef != null) {
 					isForeigner = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
-							&& Arrays.asList(CountryHelper.COUNTRY_CODE_LUXEMBOURG, "LUX")
-							.stream().filter(Objects::nonNull)
+						&& Arrays.asList(CountryHelper.COUNTRY_CODE_LUXEMBOURG, "LUX")
+							.stream()
+							.filter(Objects::nonNull)
 							.noneMatch(country -> StringUtils.equalsIgnoreCase(country, countryRef.getIsoCode()));
 				}
 				setVisibleClear(isEntryDateAllowedDisease && isForeigner, PersonDto.ENTRY_DATE);
@@ -699,7 +720,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		Date birthDate = calcBirthDateValue();
 		if (birthDate != null) {
 			Pair<Integer, ApproximateAgeType> pair =
-					ApproximateAgeHelper.getApproximateAge(birthDate, (Date) getFieldGroup().getField(PersonDto.DEATH_DATE).getValue());
+				ApproximateAgeHelper.getApproximateAge(birthDate, (Date) getFieldGroup().getField(PersonDto.DEATH_DATE).getValue());
 			if ((pair.getElement0() != null) && (pair.getElement1() == ApproximateAgeType.YEARS)) {
 				return pair.getElement0();
 			}
@@ -710,7 +731,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private void onEmancipatedChange() {
 		boolean isEmancipatedChecked = (isEmancipated != null) && (isEmancipated.getValue());
 		hasGuardian.setValue(!isEmancipatedChecked);
-		if(isEmancipatedChecked) {
+		if (isEmancipatedChecked) {
 			nameOfGuardians.setValue("");
 		}
 		updateHasGuardianCheckBox(isEmancipatedChecked);
@@ -723,7 +744,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		boolean canBeEmancipated = personCanBeEmancipated(approximateAge, isEmancipatedChecked);
 		isEmancipated.setVisible(!isIncapacitatedChecked && canBeEmancipated);
 		hasGuardian.setValue(isIncapacitatedChecked || approximateAge < minimumAdultAge);
-		if(getApproximateAgeInYears() < minimumAdultAge) {
+		if (getApproximateAgeInYears() < minimumAdultAge) {
 			nameOfGuardians.setValue(getValue().getNamesOfGuardians());
 		}
 		updateHasGuardianCheckBox(false);
@@ -732,14 +753,14 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 	private boolean personCanBeEmancipated(int approximateAge, boolean change) {
 		boolean canBeEmancipated;
-		if(approximateAge == -1 && (approximateAgeField).getValue() != null) {
+		if (approximateAge == -1 && (approximateAgeField).getValue() != null) {
 			canBeEmancipated = false;
 		} else {
 			canBeEmancipated = approximateAge >= minimumEmancipatedAge && approximateAge < minimumAdultAge;
 		}
-		if(!canBeEmancipated && (approximateAgeField).getValue() != null){
-			int age = Integer.parseInt(approximateAgeField.getValue());
-			if(approximateAgeTypeField.getValue() == ApproximateAgeType.YEARS){
+		if  (!canBeEmancipated && (approximateAgeField).getValue() != null)  {
+			Integer age = parseApproximateAge(approximateAgeField.getValue());
+			if  (age != null && approximateAgeTypeField.getValue() == ApproximateAgeType.YEARS)  {
 				canBeEmancipated = age >= minimumEmancipatedAge && age < minimumAdultAge;
 				if (change) {
 					isEmancipated.setValue(canBeEmancipated);
@@ -747,6 +768,19 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			}
 		}
 		return canBeEmancipated;
+	}
+
+	private Integer parseApproximateAge(String ageString) {
+		if (ageString == null || ageString.trim().isEmpty()) {
+			return null;
+		}
+		try {
+			// Remove any formatting characters (commas, spaces) and parse only digits
+			String cleanedAge = ageString.replaceAll("[^0-9]", "");
+			return cleanedAge.isEmpty() ? null : Integer.parseInt(cleanedAge);
+		} catch (NumberFormatException e) {
+			return null;
+		}
 	}
 
 	private void hardResetNameOfGuardians(boolean isInitialized) {
@@ -760,12 +794,12 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		boolean isIncapacitatedChecked = (isIncapacitated != null) && (isIncapacitated.getValue());
 		boolean isEmancipatedChecked = (isEmancipated != null) && (isEmancipated.getValue());
 		boolean canBe = personCanBeEmancipated(getApproximateAgeInYears(), onEmancipatedChange);
-		if((!canBe || isIncapacitatedChecked) && isEmancipatedChecked) {
+		if ((!canBe || isIncapacitatedChecked) && isEmancipatedChecked) {
 			isEmancipatedChecked = false;
 			isEmancipated.setValue(Boolean.FALSE);
 			isIncapacitated.setVisible(true);
 		}
-		if(isEmancipatedChecked){
+		if (isEmancipatedChecked) {
 			hasGuardian.setVisible(false);
 			nameOfGuardians.setVisible(false);
 			isIncapacitated.setVisible(false);
@@ -778,7 +812,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		boolean isChildOrUnknownDate = getApproximateAgeInYears() < minimumAdultAge;
 		nameOfGuardians.setVisible(isChildOrUnknownDate || isIncapacitatedChecked);
 		hasGuardian.setVisible(isChildOrUnknownDate || isIncapacitatedChecked);
-		if((birthDate == null) || isChildOrUnknownDate ){
+		if ((birthDate == null) || isChildOrUnknownDate) {
 			hasGuardian.setValue(Boolean.TRUE);
 		}
 	}

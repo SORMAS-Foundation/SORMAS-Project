@@ -230,7 +230,11 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setOtherMinorSiteDetails(source.getOtherMinorSiteDetails());
 		target.setDateOfOnsetKnown(source.getDateOfOnsetKnown());
 		target.setClinicalPresentationStatus(source.getClinicalPresentationStatus());
-
+		target.setUnknownSymptom(source.getUnknownSymptom());		target.setDifficultyBreathingDuringMeals(source.getDifficultyBreathingDuringMeals());
+		target.setParadoxicalBreathing(source.getParadoxicalBreathing());
+		target.setRespiratoryFatigue(source.getRespiratoryFatigue());
+		target.setParentTimeOffWork(source.getParentTimeOffWork());
+		target.setTimeOffWorkDays(source.getTimeOffWorkDays());
 		target.setNocturnalCough(source.getNocturnalCough());
 		return target;
 	}
@@ -444,6 +448,12 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setOtherMinorSiteDetails(source.getOtherMinorSiteDetails());
 		target.setDateOfOnsetKnown(source.getDateOfOnsetKnown());
 		target.setClinicalPresentationStatus(source.getClinicalPresentationStatus());
+		target.setUnknownSymptom(source.getUnknownSymptom());
+		target.setDifficultyBreathingDuringMeals(source.getDifficultyBreathingDuringMeals());
+		target.setParadoxicalBreathing(source.getParadoxicalBreathing());
+		target.setRespiratoryFatigue(source.getRespiratoryFatigue());
+		target.setParentTimeOffWork(source.getParentTimeOffWork());
+		target.setTimeOffWorkDays(source.getTimeOffWorkDays());
 
 		target.setNocturnalCough(source.getNocturnalCough());
 		return target;

@@ -112,6 +112,10 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 	public static final String PLACE_OF_BIRTH_FACILITY_DETAILS = "placeOfBirthFacilityDetails";
 	public static final String GESTATION_AGE_AT_BIRTH = "gestationAgeAtBirth";
 	public static final String BIRTH_WEIGHT = "birthWeight";
+	public static final String GESTATIONAL_AGE_CATEGORY = "gestationalAgeCategory";
+	public static final String BIRTH_WEIGHT_CATEGORY = "birthWeightCategory";
+	public static final String BIRTH_WEIGHT_VALUE = "birthWeightValue";
+	public static final String MULTIPLE_BIRTH = "multipleBirth";
 	public static final String PASSPORT_NUMBER = "passportNumber";
 	public static final String NATIONAL_HEALTH_ID = "nationalHealthId";
 	public static final String EMAIL_ADDRESS = "emailAddress";
@@ -246,6 +250,20 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 		Disease.CONGENITAL_RUBELLA })
 	@HideForCountries
 	private Integer birthWeight;
+
+	// RSV-specific perinatal fields
+	@Diseases({
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
+	private GestationalAgeCategory gestationalAgeCategory;
+	@Diseases({
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
+	private BirthWeightCategory birthWeightCategory;
+	@Diseases({
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
+	private Integer birthWeightValue;
+	@Diseases({
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
+	private MultipleBirth multipleBirth;
 
 	@Outbreaks
 	private PresentCondition presentCondition;
@@ -388,12 +406,18 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@SensitiveData
-	@Diseases(value = {Disease.TUBERCULOSIS, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, Disease.INVASIVE_MENINGOCOCCAL_INFECTION})
+	@Diseases(value = {
+		Disease.TUBERCULOSIS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION })
 	private Date entryDate;
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@SensitiveData
-	@Diseases(value = {Disease.TUBERCULOSIS, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, Disease.INVASIVE_MENINGOCOCCAL_INFECTION})
+	@Diseases(value = {
+		Disease.TUBERCULOSIS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION })
 	private LivingStatus livingStatus;
 
 	@SuppressWarnings("serial")
@@ -925,6 +949,38 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 
 	public void setBirthWeight(Integer birthWeight) {
 		this.birthWeight = birthWeight;
+	}
+
+	public GestationalAgeCategory getGestationalAgeCategory() {
+		return gestationalAgeCategory;
+	}
+
+	public void setGestationalAgeCategory(GestationalAgeCategory gestationalAgeCategory) {
+		this.gestationalAgeCategory = gestationalAgeCategory;
+	}
+
+	public BirthWeightCategory getBirthWeightCategory() {
+		return birthWeightCategory;
+	}
+
+	public void setBirthWeightCategory(BirthWeightCategory birthWeightCategory) {
+		this.birthWeightCategory = birthWeightCategory;
+	}
+
+	public Integer getBirthWeightValue() {
+		return birthWeightValue;
+	}
+
+	public void setBirthWeightValue(Integer birthWeightValue) {
+		this.birthWeightValue = birthWeightValue;
+	}
+
+	public MultipleBirth getMultipleBirth() {
+		return multipleBirth;
+	}
+
+	public void setMultipleBirth(MultipleBirth multipleBirth) {
+		this.multipleBirth = multipleBirth;
 	}
 
 	public String getPassportNumber() {

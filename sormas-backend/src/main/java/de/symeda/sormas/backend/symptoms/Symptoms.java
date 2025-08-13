@@ -260,6 +260,15 @@ public class Symptoms extends AbstractDomainObject {
 	private String otherMinorSiteDetails;
 	private YesNoUnknown dateOfOnsetKnown;
 	private ClinicalPresentationStatus clinicalPresentationStatus;
+	// Added in case, enrolling person is not known about the symptoms, but sure of the case.
+	private SymptomState unknownSymptom;
+
+	// RSV-specific symptoms
+	private SymptomState difficultyBreathingDuringMeals;
+	private SymptomState paradoxicalBreathing;
+	private SymptomState respiratoryFatigue;
+	private YesNoUnknown parentTimeOffWork;
+	private String timeOffWorkDays;
 
 	// when adding new fields make sure to extend toHumanString
 
@@ -2025,5 +2034,58 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setNocturnalCough(SymptomState nocturnalCough) {
 		this.nocturnalCough = nocturnalCough;
+	}
+
+	public SymptomState getUnknownSymptom() {
+		return unknownSymptom;
+	}
+
+	public void setUnknownSymptom(SymptomState unknownSymptom) {
+		this.unknownSymptom = unknownSymptom;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getDifficultyBreathingDuringMeals() {
+		return difficultyBreathingDuringMeals;
+	}
+
+	public void setDifficultyBreathingDuringMeals(SymptomState difficultyBreathingDuringMeals) {
+		this.difficultyBreathingDuringMeals = difficultyBreathingDuringMeals;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getParadoxicalBreathing() {
+		return paradoxicalBreathing;
+	}
+
+	public void setParadoxicalBreathing(SymptomState paradoxicalBreathing) {
+		this.paradoxicalBreathing = paradoxicalBreathing;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getRespiratoryFatigue() {
+		return respiratoryFatigue;
+	}
+
+	public void setRespiratoryFatigue(SymptomState respiratoryFatigue) {
+		this.respiratoryFatigue = respiratoryFatigue;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getParentTimeOffWork() {
+		return parentTimeOffWork;
+	}
+
+	public void setParentTimeOffWork(YesNoUnknown parentTimeOffWork) {
+		this.parentTimeOffWork = parentTimeOffWork;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getTimeOffWorkDays() {
+		return timeOffWorkDays;
+	}
+
+	public void setTimeOffWorkDays(String timeOffWorkDays) {
+		this.timeOffWorkDays = timeOffWorkDays;
 	}
 }

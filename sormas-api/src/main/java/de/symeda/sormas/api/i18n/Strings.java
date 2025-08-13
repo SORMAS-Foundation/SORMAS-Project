@@ -776,6 +776,7 @@ public interface Strings {
 	String headingOutbreakIn = "headingOutbreakIn";
 	String headingPaperFormDates = "headingPaperFormDates";
 	String headingPathogenTestsDeleted = "headingPathogenTestsDeleted";
+	String headingPerinatalDetails = "headingPerinatalDetails";
 	String headingPersonData = "headingPersonData";
 	String headingPersonInformation = "headingPersonInformation";
 	String headingPersonOccupation = "headingPersonOccupation";
@@ -1648,10 +1649,12 @@ public interface Strings {
 	String none = "none";
 	String notAnswered = "notAnswered";
 	String notApplicable = "notApplicable";
+	String notificationCannotCreate = "notificationCannotCreate";
 	String notificationCaseClassificationChanged = "notificationCaseClassificationChanged";
 	String notificationCaseInvestigationDone = "notificationCaseInvestigationDone";
 	String notificationContactSymptomatic = "notificationContactSymptomatic";
 	String notificationContactWithoutCaseSymptomatic = "notificationContactWithoutCaseSymptomatic";
+	String notificationCreationNotAllowedWithoutSurveillanceReport = "notificationCreationNotAllowedWithoutSurveillanceReport";
 	String notificationDiseaseChanged = "notificationDiseaseChanged";
 	String notificationEventAddedToEventGroup = "notificationEventAddedToEventGroup";
 	String notificationEventGroupCreated = "notificationEventGroupCreated";
@@ -1880,6 +1883,7 @@ public interface Strings {
 	String setTo = "setTo";
 	String sormasToSormasLoadingShares = "sormasToSormasLoadingShares";
 	String step = "step";
+	String subheadingDiagnosisCriteria = "subheadingDiagnosisCriteria";
 	String text = "text";
 	String toCase = "toCase";
 	String total = "total";

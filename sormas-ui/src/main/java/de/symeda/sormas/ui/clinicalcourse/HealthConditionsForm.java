@@ -20,10 +20,12 @@ import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.HIV_ART;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.I18N_PREFIX;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.IMMUNODEFICIENCY_INCLUDING_HIV;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.IMMUNODEFICIENCY_OTHER_THAN_HIV;
+import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.IMMUNODEPRESSION;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.MALIGNANCY_CHEMOTHERAPY;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.OBESITY;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.OTHER_CONDITIONS;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.PREVIOUS_TUBERCULOSIS_TREATMENT;
+import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.RECURRENT_BRONCHIOLITIS;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.SICKLE_CELL_DISEASE;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.TUBERCULOSIS;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.TUBERCULOSIS_INFECTION_YEAR;
@@ -44,6 +46,7 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.ui.AbstractSelect;
+import com.vaadin.v7.ui.AbstractTextField;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextArea;
@@ -83,11 +86,11 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 							fluidColumn(6, 0, locs(
 									TUBERCULOSIS, PREVIOUS_TUBERCULOSIS_TREATMENT, ASPLENIA, HEPATITIS, DIABETES, IMMUNODEFICIENCY_OTHER_THAN_HIV,
 									IMMUNODEFICIENCY_INCLUDING_HIV, HIV, HIV_ART, CONGENITAL_SYPHILIS, DOWN_SYNDROME,
-									CHRONIC_LIVER_DISEASE, MALIGNANCY_CHEMOTHERAPY)),
+									CHRONIC_LIVER_DISEASE, MALIGNANCY_CHEMOTHERAPY, RECURRENT_BRONCHIOLITIS)),
 							fluidColumn(6, 0, locs(
 									"TUBERCULOSIS_INFECTION_YEAR_LAYOUT","COMPLIANCE_WITH_TREATMENT_LAYOUT",CHRONIC_HEART_FAILURE, CHRONIC_PULMONARY_DISEASE, CHRONIC_KIDNEY_DISEASE,
 									CHRONIC_NEUROLOGIC_CONDITION, CARDIOVASCULAR_DISEASE_INCLUDING_HYPERTENSION,
-									OBESITY, CURRENT_SMOKER, FORMER_SMOKER, ASTHMA, SICKLE_CELL_DISEASE))
+									OBESITY, CURRENT_SMOKER, FORMER_SMOKER, ASTHMA, SICKLE_CELL_DISEASE, IMMUNODEPRESSION))
 					) + loc(OTHER_CONDITIONS) + loc(CONFIDENTIAL_LABEL_LOC)+loc(DIAGNOSIS_LABEL_LOC);
 	//@formatter:on
 
@@ -114,7 +117,9 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 		FORMER_SMOKER,
 		ASTHMA,
 		SICKLE_CELL_DISEASE,
-		IMMUNODEFICIENCY_INCLUDING_HIV);
+		IMMUNODEFICIENCY_INCLUDING_HIV,
+		RECURRENT_BRONCHIOLITIS,
+		IMMUNODEPRESSION);
 
 	public HealthConditionsForm(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
 		super(HealthConditionsDto.class, I18N_PREFIX, true, fieldVisibilityCheckers, fieldAccessCheckers);
@@ -198,7 +203,8 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 				// Only for TUBERCULOSIS disease below fields are visible,
 				// for all other diseases all health conditions should visible.
 				// This requirement is LUX + TB specific
-				List<String> visibilityHealthConditions = Arrays.asList(TUBERCULOSIS, PREVIOUS_TUBERCULOSIS_TREATMENT, HIV, HIV_ART);
+				List<String> visibilityHealthConditions =
+					Arrays.asList(TUBERCULOSIS, PREVIOUS_TUBERCULOSIS_TREATMENT, HIV, HIV_ART, OTHER_CONDITIONS);
 				fieldVisibilityCheck(getFieldGroup(), visibilityHealthConditions);
 			}
 		}
@@ -206,6 +212,17 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
 
+		if (Disease.TUBERCULOSIS.equals(disease)) {
+			Field<?> other = getField(OTHER_CONDITIONS);
+			if (other != null) {
+				other.setReadOnly(false);
+				other.setEnabled(true);
+
+				if (other instanceof AbstractTextField) {
+					((AbstractTextField) other).setInputPrompt("");
+				}
+			}
+		}
 	}
 
 	/**
@@ -258,7 +275,9 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 
 	public void setInaccessible() {
 		final HashSet<String> disableFields = new HashSet<>(fieldsList);
-		disableFields.add(OTHER_CONDITIONS);
+		if (disease != Disease.TUBERCULOSIS) {
+			disableFields.add(OTHER_CONDITIONS);
+		}
 		final List<Field<?>> fields = disableFields.stream()
 			.map(e -> getContent().getComponent(e))
 			.filter(f -> f instanceof Field<?>)

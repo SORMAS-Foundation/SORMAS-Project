@@ -27,6 +27,7 @@ import javax.persistence.NonUniqueResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
@@ -66,6 +67,36 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility, 
 
 	public FacilityService() {
 		super(Facility.class);
+	}
+
+	public List<Facility> getActiveFacilitiesByType(FacilityType type, boolean includeOtherFacility, boolean includeNoneFacility) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
+		Root<Facility> from = cq.from(getElementClass());
+
+		Predicate filter = createBasicFilter(cb, from);
+
+		Join<Facility, Region> regionJoin = from.join(Facility.REGION, JoinType.LEFT);
+		Join<Region, Country> countryJoin = regionJoin.join(Region.COUNTRY, JoinType.LEFT);
+
+		filter = cb.and(filter, cb.equal(from.get(Facility.TYPE), type));
+		filter = cb.and(filter, cb.isFalse(countryJoin.get(Country.ARCHIVED)));
+
+		cq.where(filter);
+		cq.distinct(true);
+		cq.orderBy(cb.asc(from.get(Facility.NAME)));
+
+		List<Facility> facilities = em.createQuery(cq).getResultList();
+
+		if (includeOtherFacility) {
+			facilities.add(getByUuid(FacilityDto.OTHER_FACILITY_UUID));
+		}
+		if (includeNoneFacility) {
+			facilities.add(getByUuid(FacilityDto.NONE_FACILITY_UUID));
+		}
+
+		return facilities;
 	}
 
 	public List<Facility> getActiveFacilitiesByCommunityAndType(

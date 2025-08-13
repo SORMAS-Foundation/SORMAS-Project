@@ -22,10 +22,13 @@ public enum MeansOfImmunization {
 	VACCINATION,
 	RECOVERY,
 	VACCINATION_RECOVERY,
+	MATERNAL_VACCINATION,
+	MONOCLONAL_ANTIBODY,
 	OTHER;
 
 	public static boolean isVaccination(MeansOfImmunization meansOfImmunization) {
-		return meansOfImmunization == VACCINATION || meansOfImmunization == VACCINATION_RECOVERY;
+		return meansOfImmunization == VACCINATION || meansOfImmunization == VACCINATION_RECOVERY
+				|| meansOfImmunization == MATERNAL_VACCINATION || meansOfImmunization == MONOCLONAL_ANTIBODY;
 	}
 
 	public static boolean isRecovery(MeansOfImmunization meansOfImmunization) {

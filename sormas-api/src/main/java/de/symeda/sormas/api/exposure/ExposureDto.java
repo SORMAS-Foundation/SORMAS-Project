@@ -98,6 +98,8 @@ public class ExposureDto extends PseudonymizableDto {
 	public static final String HABITATION_DETAILS = "habitationDetails";
 	public static final String TYPE_OF_ANIMAL = "typeOfAnimal";
 	public static final String TYPE_OF_ANIMAL_DETAILS = "typeOfAnimalDetails";
+	public static final String TYPE_OF_CHILDCARE_FACILITY = "typeOfChildcareFacility";
+	public static final String CHILDCARE_FACILITY_DETAILS = "childcareFacilityDetails";
 	public static final String PHYSICAL_CONTACT_DURING_PREPARATION = "physicalContactDuringPreparation";
 	public static final String PHYSICAL_CONTACT_WITH_BODY = "physicalContactWithBody";
 	public static final String DECEASED_PERSON_ILL = "deceasedPersonIll";
@@ -262,6 +264,14 @@ public class ExposureDto extends PseudonymizableDto {
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String typeOfAnimalDetails;
+	@Diseases({
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
+	private TypeOfChildcareFacility typeOfChildcareFacility;
+	@SensitiveData
+	@Diseases({
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String childcareFacilityDetails;
 
 	// Fields specific to ExposureType.BURIAL
 	private YesNoUnknown physicalContactDuringPreparation;
@@ -579,6 +589,22 @@ public class ExposureDto extends PseudonymizableDto {
 
 	public void setTypeOfAnimalDetails(String typeOfAnimalDetails) {
 		this.typeOfAnimalDetails = typeOfAnimalDetails;
+	}
+
+	public TypeOfChildcareFacility getTypeOfChildcareFacility() {
+		return typeOfChildcareFacility;
+	}
+
+	public void setTypeOfChildcareFacility(TypeOfChildcareFacility typeOfChildcareFacility) {
+		this.typeOfChildcareFacility = typeOfChildcareFacility;
+	}
+
+	public String getChildcareFacilityDetails() {
+		return childcareFacilityDetails;
+	}
+
+	public void setChildcareFacilityDetails(String childcareFacilityDetails) {
+		this.childcareFacilityDetails = childcareFacilityDetails;
 	}
 
 	public YesNoUnknown getPhysicalContactDuringPreparation() {
