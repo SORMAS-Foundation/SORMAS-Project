@@ -2294,6 +2294,8 @@ public interface Captions {
 	String Person_birthdateYYYY = "Person.birthdateYYYY";
 	String Person_birthName = "Person.birthName";
 	String Person_birthWeight = "Person.birthWeight";
+	String Person_birthWeightCategory = "Person.birthWeightCategory";
+	String Person_birthWeightValue = "Person.birthWeightValue";
 	String Person_burialConductor = "Person.burialConductor";
 	String Person_burialDate = "Person.burialDate";
 	String Person_burialPlaceDescription = "Person.burialPlaceDescription";
@@ -2317,6 +2319,7 @@ public interface Captions {
 	String Person_fathersName = "Person.fathersName";
 	String Person_generalPractitionerDetails = "Person.generalPractitionerDetails";
 	String Person_gestationAgeAtBirth = "Person.gestationAgeAtBirth";
+	String Person_gestationalAgeCategory = "Person.gestationalAgeCategory";
 	String Person_hasCovidApp = "Person.hasCovidApp";
 	String Person_hasGuardian = "Person.hasGuardian";
 	String Person_incapacitated = "Person.incapacitated";
@@ -2326,6 +2329,7 @@ public interface Captions {
 	String Person_matchingCase = "Person.matchingCase";
 	String Person_mothersMaidenName = "Person.mothersMaidenName";
 	String Person_mothersName = "Person.mothersName";
+	String Person_multipleBirth = "Person.multipleBirth";
 	String Person_namesOfGuardians = "Person.namesOfGuardians";
 	String Person_nationalHealthId = "Person.nationalHealthId";
 	String Person_nickname = "Person.nickname";

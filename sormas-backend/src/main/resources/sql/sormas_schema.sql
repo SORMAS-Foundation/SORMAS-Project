@@ -14545,4 +14545,17 @@ ALTER TABLE previoushospitalization_history ADD COLUMN IF NOT EXISTS icuLengthOf
 
 INSERT INTO schema_version (version_number, comment) VALUES (586, 'RSV - Update Hospitalization #13541');
 
+-- 2025-08-08 RSV - Enhancements to the Person form #13539
+ALTER TABLE person ADD COLUMN IF NOT EXISTS gestationalAgeCategory varchar(255);
+ALTER TABLE person ADD COLUMN IF NOT EXISTS birthWeightCategory varchar(255);
+ALTER TABLE person ADD COLUMN IF NOT EXISTS birthWeightValue integer;
+ALTER TABLE person ADD COLUMN IF NOT EXISTS multipleBirth varchar(255);
+
+ALTER TABLE person_history ADD COLUMN IF NOT EXISTS gestationalAgeCategory varchar(255);
+ALTER TABLE person_history ADD COLUMN IF NOT EXISTS birthWeightCategory varchar(255);
+ALTER TABLE person_history ADD COLUMN IF NOT EXISTS birthWeightValue integer;
+ALTER TABLE person_history ADD COLUMN IF NOT EXISTS multipleBirth varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (587, 'RSV - Enhancements to the Person form #13539');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
