@@ -827,6 +827,7 @@ public interface Strings {
 	String headingSaveNotification = "headingSaveNotification";
 	String headingSaveUser = "headingSaveUser";
 	String headingSaveUserNotPossible = "headingSaveUserNotPossible";
+	String headingSearchSample = "headingSearchSample";
 	String headingSecurityAlert = "headingSecurityAlert";
 	String headingSeeAllPersons = "headingSeeAllPersons";
 	String headingSelectCampaign = "headingSelectCampaign";
@@ -1557,6 +1558,7 @@ public interface Strings {
 	String messageSampleOpened = "messageSampleOpened";
 	String messageSampleSaved = "messageSampleSaved";
 	String messageSamplesDeleted = "messageSamplesDeleted";
+	String messageSampleSearchWithDisease = "messageSampleSearchWithDisease";
 	String messageSamplesRestored = "messageSamplesRestored";
 	String messageSelectedPeriodTooLong = "messageSelectedPeriodTooLong";
 	String messageSelfReportArchived = "messageSelfReportArchived";

@@ -17,6 +17,8 @@ package de.symeda.sormas.ui.dashboard.sample;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -24,6 +26,7 @@ import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleMaterial;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -110,12 +113,31 @@ public class SampleDashboardFilterLayout extends DashboardFilterLayout<SampleDas
 		ComboBox sampleMaterialFilter = ComboBoxHelper.createComboBoxV7();
 		sampleMaterialFilter.setWidth(200, Unit.PIXELS);
 		sampleMaterialFilter.setInputPrompt(I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_MATERIAL));
-		sampleMaterialFilter
-			.addItems(Stream.of(SampleMaterial.values()).sorted(Comparator.comparing(SampleMaterial::toString)).collect(Collectors.toList()));
+		// sorting both the environment and human samples.
+		Set<Enum<?>> combinedSampleMaterials = Stream
+				.concat(Stream.of(SampleMaterial.values()), Stream.of(EnvironmentSampleMaterial.values()))
+				.sorted(Comparator.comparing(Enum::toString))
+				.collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(Enum::toString))));
+
+		sampleMaterialFilter.addItems(combinedSampleMaterials);
+
 		sampleMaterialFilter.setValue(dashboardDataProvider.getSampleMaterial());
 
 		sampleMaterialFilter.addValueChangeListener(e -> {
-			dashboardDataProvider.setSampleMaterial((SampleMaterial) sampleMaterialFilter.getValue());
+			// In Other as the selected sample, all samples should select.
+			if (e.getProperty().getValue() == SampleMaterial.OTHER || e.getProperty().getValue() == EnvironmentSampleMaterial.OTHER) {
+				dashboardDataProvider.setEnvironmentSampleMaterial(EnvironmentSampleMaterial.OTHER);
+				dashboardDataProvider.setSampleMaterial(SampleMaterial.OTHER);
+			} else if (e.getProperty().getValue() instanceof EnvironmentSampleMaterial) {
+				dashboardDataProvider.setEnvironmentSampleMaterial((EnvironmentSampleMaterial) e.getProperty().getValue());
+				dashboardDataProvider.setSampleMaterial(null);
+			} else if (e.getProperty().getValue() instanceof SampleMaterial) {
+				dashboardDataProvider.setEnvironmentSampleMaterial(null);
+				dashboardDataProvider.setSampleMaterial((SampleMaterial) e.getProperty().getValue());
+			} else {
+				dashboardDataProvider.setEnvironmentSampleMaterial(null);
+				dashboardDataProvider.setSampleMaterial(null);
+			}
 		});
 
 		addCustomComponent(sampleMaterialFilter, SAMPLE_MATERIAL_FILTER);
