@@ -46,12 +46,15 @@ import de.symeda.sormas.api.externaldata.HasExternalData;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ArmedForcesRelationType;
+import de.symeda.sormas.api.person.BirthWeightCategory;
 import de.symeda.sormas.api.person.BurialConductor;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.DeathPlaceType;
 import de.symeda.sormas.api.person.EducationType;
+import de.symeda.sormas.api.person.GestationalAgeCategory;
 import de.symeda.sormas.api.person.IsPerson;
 import de.symeda.sormas.api.person.LivingStatus;
+import de.symeda.sormas.api.person.MultipleBirth;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.OccupationTypeConverter;
 import de.symeda.sormas.api.person.PersonContactDetailType;
@@ -122,6 +125,10 @@ public class Person extends AbstractDomainObject implements IsPerson, HasExterna
 	public static final String PLACE_OF_BIRTH_FACILITY_DETAILS = "placeOfBirthFacilityDetails";
 	public static final String GESTATION_AGE_AT_BIRTH = "gestationAgeAtBirth";
 	public static final String BIRTH_WEIGHT = "birthWeight";
+	public static final String GESTATIONAL_AGE_CATEGORY = "gestationalAgeCategory";
+	public static final String BIRTH_WEIGHT_CATEGORY = "birthWeightCategory";
+	public static final String BIRTH_WEIGHT_VALUE = "birthWeightValue";
+	public static final String MULTIPLE_BIRTH = "multipleBirth";
 	public static final String PASSPORT_NUMBER = "passportNumber";
 	public static final String NATIONAL_HEALTH_ID = "nationalHealthId";
 	public static final String PLACE_OF_BIRTH_FACILITY_TYPE = "placeOfBirthFacilityType";
@@ -186,6 +193,10 @@ public class Person extends AbstractDomainObject implements IsPerson, HasExterna
 	private String placeOfBirthFacilityDetails;
 	private Integer gestationAgeAtBirth;
 	private Integer birthWeight;
+	private GestationalAgeCategory gestationalAgeCategory;
+	private BirthWeightCategory birthWeightCategory;
+	private Integer birthWeightValue;
+	private MultipleBirth multipleBirth;
 	private Date deathDate;
 
 	private EducationType educationType;
@@ -589,6 +600,41 @@ public class Person extends AbstractDomainObject implements IsPerson, HasExterna
 
 	public void setBirthWeight(Integer birthWeight) {
 		this.birthWeight = birthWeight;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public GestationalAgeCategory getGestationalAgeCategory() {
+		return gestationalAgeCategory;
+	}
+
+	public void setGestationalAgeCategory(GestationalAgeCategory gestationalAgeCategory) {
+		this.gestationalAgeCategory = gestationalAgeCategory;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public BirthWeightCategory getBirthWeightCategory() {
+		return birthWeightCategory;
+	}
+
+	public void setBirthWeightCategory(BirthWeightCategory birthWeightCategory) {
+		this.birthWeightCategory = birthWeightCategory;
+	}
+
+	public Integer getBirthWeightValue() {
+		return birthWeightValue;
+	}
+
+	public void setBirthWeightValue(Integer birthWeightValue) {
+		this.birthWeightValue = birthWeightValue;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public MultipleBirth getMultipleBirth() {
+		return multipleBirth;
+	}
+
+	public void setMultipleBirth(MultipleBirth multipleBirth) {
+		this.multipleBirth = multipleBirth;
 	}
 
 	@Column

@@ -33,6 +33,8 @@ import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleFacade;
+import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSampleFacadeEjb;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -1000,6 +1002,10 @@ public abstract class AbstractBeanTest {
 
 	public NotifierEjb.NotifierEjbLocal getNotifierFacade() {
 		return getBean(NotifierEjb.NotifierEjbLocal.class);
+	}
+
+	public EnvironmentSampleFacade getEnvironmentSampleFacade() {
+		return getBean(EnvironmentSampleFacadeEjb.EnvironmentSampleFacadeEjbLocal.class);
 	}
 
 	public <T extends Throwable> void assertThrowsWithMessage(Class<T> expectedType, String expectedMessage, Executable executable) {

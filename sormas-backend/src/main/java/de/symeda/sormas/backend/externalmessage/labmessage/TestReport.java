@@ -57,6 +57,7 @@ public class TestReport extends AbstractDomainObject {
 	public static final String TEST_LAB_POSTAL_CODE = "testLabPostalCode";
 	public static final String TEST_LAB_CITY = "testLabCity";
 	public static final String TEST_TYPE = "testType";
+	public static final String TEST_TYPE_DETAILS = "testTypeDetails";
 	public static final String TEST_DATE_TIME = "testDateTime";
 	public static final String TEST_RESULT = "testResult";
 	public static final String DATE_OF_RESULT = "dateOfResult";
@@ -85,6 +86,7 @@ public class TestReport extends AbstractDomainObject {
 	private String testLabCity;
 
 	private PathogenTestType testType;
+	private String testTypeDetails;
 	private Date testDateTime;
 	private PathogenTestResultType testResult;
 	private Date dateOfResult;
@@ -160,6 +162,15 @@ public class TestReport extends AbstractDomainObject {
 
 	public void setTestType(PathogenTestType testType) {
 		this.testType = testType;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getTestTypeDetails() {
+		return testTypeDetails;
+	}
+
+	public void setTestTypeDetails(String testTypeDetails) {
+		this.testTypeDetails = testTypeDetails;
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)

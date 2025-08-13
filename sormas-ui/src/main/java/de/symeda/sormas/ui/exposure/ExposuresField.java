@@ -44,6 +44,7 @@ import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.GatheringType;
 import de.symeda.sormas.api.exposure.HabitationType;
 import de.symeda.sormas.api.exposure.TypeOfAnimal;
+import de.symeda.sormas.api.exposure.TypeOfChildcareFacility;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -152,6 +153,12 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 				exposureString += " (" + (exposure.getTypeOfAnimal() != TypeOfAnimal.OTHER
 					? exposure.getTypeOfAnimal().toString()
 					: (exposure.getTypeOfAnimalDetails() != null ? exposure.getTypeOfAnimalDetails() : TypeOfAnimal.OTHER.toString())) + ")";
+			}
+
+			if (exposure.getExposureType() == ExposureType.CHILDCARE_FACILITY && exposure.getTypeOfChildcareFacility() != null) {
+				exposureString += " (" + (exposure.getTypeOfChildcareFacility() != TypeOfChildcareFacility.OTHER
+					? exposure.getTypeOfChildcareFacility().toString()
+					: (exposure.getChildcareFacilityDetails() != null ? exposure.getChildcareFacilityDetails() : TypeOfChildcareFacility.OTHER.toString())) + ")";
 			}
 
 			if (exposure.getRiskArea() == YesNoUnknown.YES || exposure.isProbableInfectionEnvironment())

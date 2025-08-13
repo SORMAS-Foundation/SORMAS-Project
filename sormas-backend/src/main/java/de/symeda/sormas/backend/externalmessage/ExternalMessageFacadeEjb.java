@@ -1,3 +1,18 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.backend.externalmessage;
 
 import static java.util.stream.Collectors.toList;
@@ -149,6 +164,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 		target.setType(source.getType());
 		target.setExternalMessageDetails(source.getExternalMessageDetails());
+		target.setCaseComments(source.getCaseComments());
 		target.setDisease(source.getDisease());
 		target.setDiseaseVariant(source.getDiseaseVariant());
 		target.setDiseaseVariantDetails(source.getDiseaseVariantDetails());
@@ -194,6 +210,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setNotifierEmail(source.getNotifierEmail());
 		target.setNotifierPhone(source.getNotifierPhone());
 		target.setTreatmentStarted(source.getTreatmentStarted());
+		target.setTreatmentNotApplicable(source.getTreatmentNotApplicable());
 		target.setTreatmentStartedDate(source.getTreatmentStartedDate());
 		target.setDiagnosticDate(source.getDiagnosticDate());
 		target.setActivitiesAsCase(source.getActivitiesAsCase());
@@ -217,6 +234,21 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setSurveillanceReport(surveillanceReportService.getByReferenceDto(source.getSurveillanceReport()));
 		target.setVaccinationStatus(source.getVaccinationStatus());
 		target.setAdmittedToHealthFacility(source.getAdmittedToHealthFacility());
+		target.setHospitalizationFacilityName(source.getHospitalizationFacilityName());
+		target.setHospitalizationFacilityExternalId(source.getHospitalizationFacilityExternalId());
+		target.setHospitalizationFacilityDepartment(source.getHospitalizationFacilityDepartment());
+		target.setHospitalizationAdmissionDate(source.getHospitalizationAdmissionDate());
+		target.setHospitalizationDischargeDate(source.getHospitalizationDischargeDate());
+
+		target.setRadiographyCompatibility(source.getRadiographyCompatibility());
+		target.setOtherDiagnosticCriteria(source.getOtherDiagnosticCriteria());
+
+		target.setTuberculosis(source.getTuberculosis());
+		target.setHiv(source.getHiv());
+		target.setHivArt(source.getHivArt());
+		target.setTuberculosisInfectionYear(source.getTuberculosisInfectionYear());
+		target.setPreviousTuberculosisTreatment(source.getPreviousTuberculosisTreatment());
+		target.setComplianceWithTreatment(source.getComplianceWithTreatment());
 
 		return target;
 	}
@@ -352,6 +384,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 		target.setType(source.getType());
 		target.setExternalMessageDetails(source.getExternalMessageDetails());
+		target.setCaseComments(source.getCaseComments());
 		target.setDisease(source.getDisease());
 		target.setDiseaseVariant(source.getDiseaseVariant());
 		target.setDiseaseVariantDetails(source.getDiseaseVariantDetails());
@@ -397,6 +430,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setNotifierEmail(source.getNotifierEmail());
 		target.setNotifierPhone(source.getNotifierPhone());
 		target.setTreatmentStarted(source.getTreatmentStarted());
+		target.setTreatmentNotApplicable(source.getTreatmentNotApplicable());
 		target.setTreatmentStartedDate(source.getTreatmentStartedDate());
 		target.setDiagnosticDate(source.getDiagnosticDate());
 		target.setActivitiesAsCase(source.getActivitiesAsCase());
@@ -416,6 +450,21 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 		target.setVaccinationStatus(source.getVaccinationStatus());
 		target.setAdmittedToHealthFacility(source.getAdmittedToHealthFacility());
+		target.setHospitalizationFacilityName(source.getHospitalizationFacilityName());
+		target.setHospitalizationFacilityExternalId(source.getHospitalizationFacilityExternalId());
+		target.setHospitalizationFacilityDepartment(source.getHospitalizationFacilityDepartment());
+		target.setHospitalizationAdmissionDate(source.getHospitalizationAdmissionDate());
+		target.setHospitalizationDischargeDate(source.getHospitalizationDischargeDate());
+
+		target.setRadiographyCompatibility(source.getRadiographyCompatibility());
+		target.setOtherDiagnosticCriteria(source.getOtherDiagnosticCriteria());
+
+		target.setTuberculosis(source.getTuberculosis());
+		target.setHiv(source.getHiv());
+		target.setHivArt(source.getHivArt());
+		target.setTuberculosisInfectionYear(source.getTuberculosisInfectionYear());
+		target.setPreviousTuberculosisTreatment(source.getPreviousTuberculosisTreatment());
+		target.setComplianceWithTreatment(source.getComplianceWithTreatment());
 
 		return target;
 	}

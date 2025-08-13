@@ -32,11 +32,13 @@ import com.vaadin.v7.ui.CheckBox;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
 import de.symeda.sormas.api.dashboard.sample.MapSampleDto;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleMaterial;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.SampleAssociationType;
+import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.dashboard.map.BaseDashboardMapComponent;
@@ -78,15 +80,80 @@ public class SampleDashboardMapComponent extends BaseDashboardMapComponent<Sampl
 				: 0);
 	}
 
+	/**
+	 * Checks if the sample criteria is null, meaning that no human sample material or environment sample material is selected.
+	 * @param criteria
+	 * @return boolean
+	 */
+	private boolean isEmptySampleCriteriaWithoutDisease(SampleDashboardCriteria criteria) {
+		return criteria.getSampleMaterial() == null && criteria.getEnvironmentSampleMaterial() == null && criteria.getDisease() == null;
+	}
+
+	/**
+	 * Checks if the sample criteria is null, meaning that no human sample material or environment sample material is selected.
+	 *
+	 * @param criteria
+	 * @return boolean
+	 */
+	private boolean isEmptySampleCriteriaWithDisease(SampleDashboardCriteria criteria) {
+		return criteria.getSampleMaterial() == null && criteria.getEnvironmentSampleMaterial() == null && criteria.getDisease() != null;
+	}
+
+	/**
+	 * Checks if the sample criteria is only for environment samples, meaning that no human sample material is selected.
+	 * @param criteria
+	 * @return boolean
+	 */
+	private boolean isOnlyEnvironmentSampleCriteria(SampleDashboardCriteria criteria) {
+		return criteria.getEnvironmentSampleMaterial() != null && criteria.getSampleMaterial() == null;
+	}
+
+	/**
+	 * Checks if the sample criteria is only for Human samples, meaning that no environment sample material is selected.
+	 * @param criteria
+	 * @return
+	 */
+	private boolean isOnlyHumanSampleCriteria(SampleDashboardCriteria criteria) {
+		return criteria.getSampleMaterial() != null && criteria.getEnvironmentSampleMaterial() == null;
+	}
+
+	/**
+	 * Checks if the sample criteria is for other sample materials, meaning that all other(Human+Environment) sample materials are selected except,
+	 *
+	 * @param criteria
+	 * @return
+	 */
+	private boolean isSampleCriteriaForOther(SampleDashboardCriteria criteria) {
+		return (criteria.getSampleMaterial() == SampleMaterial.OTHER || criteria.getEnvironmentSampleMaterial() == EnvironmentSampleMaterial.OTHER);
+	}
+
 	@Override
 	protected void loadMapData(Date fromDate, Date toDate) {
 		String markerGroup = "samples";
 		map.removeGroup(markerGroup);
 
 		SampleDashboardCriteria criteria = dashboardDataProvider.buildDashboardCriteriaWithDates();
-		List<MapSampleDto> humanSamples = FacadeProvider.getSampleDashboardFacade().getSamplesForMap(criteria, displayedHumanSamples);
-		List<MapSampleDto> environmentSamples =
-			showEnvironmentalSamples ? FacadeProvider.getSampleDashboardFacade().getEnvironmentalSamplesForMap(criteria) : Collections.emptyList();
+		List<MapSampleDto> humanSamples = List.of();
+		List<MapSampleDto> environmentSamples = List.of();
+		if (isSampleCriteriaForOther(criteria)) {
+			humanSamples = FacadeProvider.getSampleDashboardFacade().getSamplesForMap(criteria, displayedHumanSamples);
+			environmentSamples =
+					showEnvironmentalSamples ? FacadeProvider.getSampleDashboardFacade().getEnvironmentalSamplesForMap(criteria) : Collections.emptyList();
+		} else if (isEmptySampleCriteriaWithoutDisease(criteria)) {
+			// If no sample material is selected, we want to show all samples
+			humanSamples = FacadeProvider.getSampleDashboardFacade().getSamplesForMap(criteria, displayedHumanSamples);
+			environmentSamples =
+					showEnvironmentalSamples ? FacadeProvider.getSampleDashboardFacade().getEnvironmentalSamplesForMap(criteria) : Collections.emptyList();
+		} else if (isOnlyHumanSampleCriteria(criteria) || isEmptySampleCriteriaWithDisease(criteria)) {
+			// If only human sample is selected, we want to show only human samples
+			humanSamples = FacadeProvider.getSampleDashboardFacade().getSamplesForMap(criteria, displayedHumanSamples);
+		} else if (isOnlyEnvironmentSampleCriteria(criteria)) {
+			// If only an environment sample is selected, we want to show only environment samples
+			environmentSamples =
+					showEnvironmentalSamples ? FacadeProvider.getSampleDashboardFacade().getEnvironmentalSamplesForMap(criteria) : Collections.emptyList();
+		} else{
+			// In the case of mixed sample criteria, we want to show both human and environment samples; for now this is not supported
+		}
 
 		List<LeafletMarker> markers = new ArrayList<>(environmentSamples.size() + environmentSamples.size());
 

@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2025 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -35,6 +35,8 @@ public class NotifierDto extends PseudonymizableDto implements IsPerson {
     public static final String ADDRESS = "address";
     public static final String PHONE = "phone";
     public static final String EMAIL = "email";
+    public static final String AGENT_FIRST_NAME = "agentFirstName";
+    public static final String AGENT_LAST_NAME = "agentLastName";
 
     @Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
     @PersonalData

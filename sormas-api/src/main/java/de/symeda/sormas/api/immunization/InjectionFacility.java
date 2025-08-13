@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,32 +13,15 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.exposure;
+package de.symeda.sormas.api.immunization;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.utils.Diseases;
 
-public enum ExposureType {
+public enum InjectionFacility {
 
-	WORK,
-	TRAVEL,
-	SPORT,
-	VISIT,
-	GATHERING,
-	HABITATION,
-	PERSONAL_SERVICES,
-	@Diseases(value = {
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
-	CHILDCARE_FACILITY,
-	@Diseases(value = {
-		Disease.CORONAVIRUS }, hide = true)
-	BURIAL,
-	@Diseases(value = {
-		Disease.CORONAVIRUS }, hide = true)
-	ANIMAL_CONTACT,
-	OTHER,
-	UNKNOWN;
+	MATERNITY_WARD,
+	PAEDIATRIC_PRACTICE,
+	HOSPITAL;
 
 	@Override
 	public String toString() {

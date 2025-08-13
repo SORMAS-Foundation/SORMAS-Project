@@ -104,6 +104,7 @@ public class TestReportFacadeEjbMappingTest {
 		source.setTestLabPostalCode("38100");
 		source.setTestLabCity("Braunschweig");
 		source.setTestType(PathogenTestType.ANTIBODY_DETECTION);
+		source.setTestTypeDetails("Test Type Details");
 		source.setTestDateTime(new Date(9999999L));
 		source.setTestResult(PathogenTestResultType.POSITIVE);
 		source.setTestResultVerified(true);
@@ -121,6 +122,7 @@ public class TestReportFacadeEjbMappingTest {
 		assertEquals(source.getTestLabPostalCode(), result.getTestLabPostalCode());
 		assertEquals(source.getTestLabCity(), result.getTestLabCity());
 		assertEquals(source.getTestType(), result.getTestType());
+		assertEquals(source.getTestTypeDetails(), result.getTestTypeDetails());
 		assertEquals(source.getTestDateTime(), result.getTestDateTime());
 		assertEquals(source.getTestResult(), result.getTestResult());
 		assertEquals(source.isTestResultVerified(), result.isTestResultVerified());

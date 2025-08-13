@@ -23,6 +23,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
+import de.symeda.sormas.api.immunization.InjectionFacility;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.Case;
@@ -50,6 +51,7 @@ public class BaseImmunization extends CoreAdo implements SormasToSormasShareable
 	private ImmunizationStatus immunizationStatus;
 	private MeansOfImmunization meansOfImmunization;
 	private String meansOfImmunizationDetails;
+	private InjectionFacility injectionFacility;
 	private ImmunizationManagementStatus immunizationManagementStatus;
 	private String externalId;
 
@@ -349,6 +351,15 @@ public class BaseImmunization extends CoreAdo implements SormasToSormasShareable
 
 	public void setMeansOfImmunizationDetails(String meansOfImmunizationDetails) {
 		this.meansOfImmunizationDetails = meansOfImmunizationDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public InjectionFacility getInjectionFacility() {
+		return injectionFacility;
+	}
+
+	public void setInjectionFacility(InjectionFacility injectionFacility) {
+		this.injectionFacility = injectionFacility;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)

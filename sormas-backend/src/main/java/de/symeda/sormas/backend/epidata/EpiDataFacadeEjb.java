@@ -119,6 +119,8 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setAnimalCondition(source.getAnimalCondition());
 		target.setTypeOfAnimal(source.getTypeOfAnimal());
 		target.setTypeOfAnimalDetails(source.getTypeOfAnimalDetails());
+		target.setTypeOfChildcareFacility(source.getTypeOfChildcareFacility());
+		target.setChildcareFacilityDetails(source.getChildcareFacilityDetails());
 		target.setAnimalContactType(source.getAnimalContactType());
 		target.setAnimalContactTypeDetails(source.getAnimalContactTypeDetails());
 		target.setAnimalMarket(source.getAnimalMarket());
@@ -258,6 +260,8 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setAnimalCondition(source.getAnimalCondition());
 		target.setTypeOfAnimal(source.getTypeOfAnimal());
 		target.setTypeOfAnimalDetails(source.getTypeOfAnimalDetails());
+		target.setTypeOfChildcareFacility(source.getTypeOfChildcareFacility());
+		target.setChildcareFacilityDetails(source.getChildcareFacilityDetails());
 		target.setAnimalContactType(source.getAnimalContactType());
 		target.setAnimalContactTypeDetails(source.getAnimalContactTypeDetails());
 		target.setAnimalMarket(source.getAnimalMarket());

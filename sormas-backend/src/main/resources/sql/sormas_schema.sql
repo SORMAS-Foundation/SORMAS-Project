@@ -14416,7 +14416,34 @@ alter table drugsusceptibility_history add column IF NOT EXISTS erythromycinSusc
 
 INSERT INTO schema_version (version_number, comment) VALUES (578, 'Update history tables #13516');
 
--- 2025-07-14 Implemented Doctors declaration for IPI #13344
+alter table hospitalization add currentlyhospitalized varchar(255);
+alter table hospitalization_history add currentlyhospitalized varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (579, 'Add currently hospitalized to hospitalization #13321');
+
+-- 2025-07-14 Add hospitalization and additional fields to external message
+
+ALTER TABLE externalmessage ADD COLUMN casecomments varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN casecomments varchar(255);
+
+ALTER TABLE externalmessage ADD COLUMN hospitalizationfacilityname varchar(255);
+ALTER TABLE externalmessage ADD COLUMN hospitalizationfacilityexternalid varchar(255);
+ALTER TABLE externalmessage ADD COLUMN hospitalizationfacilitydepartment varchar(255);
+ALTER TABLE externalmessage ADD COLUMN hospitalizationadmissiondate timestamp;
+ALTER TABLE externalmessage ADD COLUMN hospitalizationdischargedate timestamp;
+ALTER TABLE externalmessage_history ADD COLUMN hospitalizationfacilityname varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN hospitalizationfacilityexternalid varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN hospitalizationfacilitydepartment varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN hospitalizationadmissiondate timestamp;
+ALTER TABLE externalmessage_history ADD COLUMN hospitalizationdischargedate timestamp;
+
+ALTER TABLE previoushospitalization ADD COLUMN healthfacilitydepartment varchar(255);
+ALTER TABLE previoushospitalization_history ADD COLUMN healthfacilitydepartment varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (580, 'Update external message with hospitalization fields #13516');
+
+
+-- 2025-07-18 Implemented Doctors declaration for IPI #13344
 alter table externalmessage add column if not exists deceasedDate TIMESTAMP;
 alter table externalmessage_history add column if not exists deceasedDate TIMESTAMP;
 alter table symptoms add column if not exists unknownSymptom varchar(255);
@@ -14426,5 +14453,117 @@ alter table notifier add column if not exists agentlastname varchar(255);
 alter table notifier_history add column if not exists agentfirstname varchar(255);
 alter table notifier_history add column if not exists agentlastname varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (579, 'Implemented Doctors declaration for IPI #13344');
+INSERT INTO schema_version (version_number, comment) VALUES (581, 'Implemented Doctors declaration for IPI #13344');
+
+-- 2025-07-29 Added missing fields for external message #13294
+
+ALTER TABLE therapy ADD COLUMN treatmentstarted varchar(255);
+ALTER TABLE therapy ADD COLUMN treatmentnotapplicable boolean DEFAULT false;
+ALTER TABLE therapy ADD COLUMN treatmentstartdate timestamp;
+
+ALTER TABLE therapy_history ADD COLUMN treatmentstarted varchar(255);
+ALTER TABLE therapy_history ADD COLUMN treatmentnotapplicable boolean DEFAULT false;
+ALTER TABLE therapy_history ADD COLUMN treatmentstartdate timestamp;
+
+ALTER TABLE externalmessage ADD COLUMN treatmentnotapplicable boolean DEFAULT false;
+ALTER TABLE externalmessage ADD COLUMN tuberculosis varchar(255);
+ALTER TABLE externalmessage ADD COLUMN hiv varchar(255);
+ALTER TABLE externalmessage ADD COLUMN hivArt varchar(255);
+ALTER TABLE externalmessage ADD COLUMN radiographyCompatibility varchar(255);
+ALTER TABLE externalmessage ADD COLUMN otherDiagnosticCriteria varchar(255);
+ALTER TABLE externalmessage ADD COLUMN tuberculosisInfectionYear integer;
+ALTER TABLE externalmessage ADD COLUMN previousTuberculosisTreatment varchar(255);
+ALTER TABLE externalmessage ADD COLUMN complianceWithTreatment varchar(255);
+
+ALTER TABLE externalmessage_history ADD COLUMN treatmentnotapplicable boolean DEFAULT false;
+ALTER TABLE externalmessage_history ADD COLUMN tuberculosis varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN hiv varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN hivArt varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN radiographyCompatibility varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN otherDiagnosticCriteria varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN tuberculosisInfectionYear integer;
+ALTER TABLE externalmessage_history ADD COLUMN previousTuberculosisTreatment varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN complianceWithTreatment varchar(255);
+
+ALTER TABLE testreport ADD COLUMN testTypeDetails varchar(255);
+ALTER TABLE testreport_history ADD COLUMN testTypeDetails varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (582, 'Added missing fields for external message #13294');
+
+-- 2025-07-29 RSV Symptoms #13544
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS difficultyBreathingDuringMeals varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS paradoxicalBreathing varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS respiratoryFatigue varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS parentTimeOffWork varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS timeOffWorkDays varchar(255);
+
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS difficultyBreathingDuringMeals varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS paradoxicalBreathing varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS respiratoryFatigue varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS parentTimeOffWork varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS timeOffWorkDays varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (583, 'Update symptoms for RSV #13544');
+
+-- 2025-08-05 RSV EpiData updates #13538
+
+ALTER TABLE exposures ADD COLUMN IF NOT EXISTS typeOfChildcareFacility varchar(255);
+ALTER TABLE exposures ADD COLUMN IF NOT EXISTS childcareFacilityDetails varchar(255);
+
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS typeOfChildcareFacility varchar(255);
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS childcareFacilityDetails varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (584, 'RSV EpiData updates #13538');
+
+-- 2025-08-05 RSV - Update Health Conditions section #13540
+
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS recurrentBronchiolitis varchar(255);
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS immunodepression varchar(255);
+
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS recurrentBronchiolitis varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS immunodepression varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (585, 'RSV - Update Health Conditions section #13540');
+
+-- 2025-08-06 - RSV - Update Hospitalization #13541
+
+ALTER TABLE hospitalization ADD COLUMN IF NOT EXISTS oxygenPrescribed varchar(255);
+ALTER TABLE hospitalization ADD COLUMN IF NOT EXISTS stillHospitalized varchar(255);
+ALTER TABLE hospitalization ADD COLUMN IF NOT EXISTS icuLengthOfStay integer;
+
+ALTER TABLE hospitalization_history ADD COLUMN IF NOT EXISTS oxygenPrescribed varchar(255);
+ALTER TABLE hospitalization_history ADD COLUMN IF NOT EXISTS stillHospitalized varchar(255);
+ALTER TABLE hospitalization_history ADD COLUMN IF NOT EXISTS icuLengthOfStay integer;
+
+ALTER TABLE previoushospitalization ADD COLUMN IF NOT EXISTS oxygenPrescribed varchar(255);
+ALTER TABLE previoushospitalization ADD COLUMN IF NOT EXISTS stillHospitalized varchar(255);
+ALTER TABLE previoushospitalization ADD COLUMN IF NOT EXISTS icuLengthOfStay integer;
+
+ALTER TABLE previoushospitalization_history ADD COLUMN IF NOT EXISTS oxygenPrescribed varchar(255);
+ALTER TABLE previoushospitalization_history ADD COLUMN IF NOT EXISTS stillHospitalized varchar(255);
+ALTER TABLE previoushospitalization_history ADD COLUMN IF NOT EXISTS icuLengthOfStay integer;
+
+INSERT INTO schema_version (version_number, comment) VALUES (586, 'RSV - Update Hospitalization #13541');
+
+-- 2025-08-08 RSV - Enhancements to the Person form #13539
+ALTER TABLE person ADD COLUMN IF NOT EXISTS gestationalAgeCategory varchar(255);
+ALTER TABLE person ADD COLUMN IF NOT EXISTS birthWeightCategory varchar(255);
+ALTER TABLE person ADD COLUMN IF NOT EXISTS birthWeightValue integer;
+ALTER TABLE person ADD COLUMN IF NOT EXISTS multipleBirth varchar(255);
+
+ALTER TABLE person_history ADD COLUMN IF NOT EXISTS gestationalAgeCategory varchar(255);
+ALTER TABLE person_history ADD COLUMN IF NOT EXISTS birthWeightCategory varchar(255);
+ALTER TABLE person_history ADD COLUMN IF NOT EXISTS birthWeightValue integer;
+ALTER TABLE person_history ADD COLUMN IF NOT EXISTS multipleBirth varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (587, 'RSV - Enhancements to the Person form #13539');
+
+
+-- 2025-08-07 - RSV - Update Immunization #13542
+
+ALTER TABLE immunization ADD COLUMN IF NOT EXISTS injectionFacility varchar(255);
+ALTER TABLE immunization_history ADD COLUMN IF NOT EXISTS injectionFacility varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (588, 'RSV - Update Immunization #13542');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
