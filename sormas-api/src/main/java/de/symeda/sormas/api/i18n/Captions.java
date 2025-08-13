@@ -2008,6 +2008,7 @@ public interface Captions {
 	String Immunization_immunizationManagementStatus = "Immunization.immunizationManagementStatus";
 	String Immunization_immunizationPeriod = "Immunization.immunizationPeriod";
 	String Immunization_immunizationStatus = "Immunization.immunizationStatus";
+	String Immunization_injectionFacility = "Immunization.injectionFacility";
 	String Immunization_lastInfectionDate = "Immunization.lastInfectionDate";
 	String Immunization_lastVaccinationDate = "Immunization.lastVaccinationDate";
 	String Immunization_lastVaccineType = "Immunization.lastVaccineType";

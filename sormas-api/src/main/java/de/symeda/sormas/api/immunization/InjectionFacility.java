@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,23 +17,11 @@ package de.symeda.sormas.api.immunization;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 
-public enum MeansOfImmunization {
+public enum InjectionFacility {
 
-	VACCINATION,
-	RECOVERY,
-	VACCINATION_RECOVERY,
-	MATERNAL_VACCINATION,
-	MONOCLONAL_ANTIBODY,
-	OTHER;
-
-	public static boolean isVaccination(MeansOfImmunization meansOfImmunization) {
-		return meansOfImmunization == VACCINATION || meansOfImmunization == VACCINATION_RECOVERY
-				|| meansOfImmunization == MATERNAL_VACCINATION || meansOfImmunization == MONOCLONAL_ANTIBODY;
-	}
-
-	public static boolean isRecovery(MeansOfImmunization meansOfImmunization) {
-		return meansOfImmunization == RECOVERY || meansOfImmunization == VACCINATION_RECOVERY;
-	}
+	MATERNITY_WARD,
+	PAEDIATRIC_PRACTICE,
+	HOSPITAL;
 
 	@Override
 	public String toString() {

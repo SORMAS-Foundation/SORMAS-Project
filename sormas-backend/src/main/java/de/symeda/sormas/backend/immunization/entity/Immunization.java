@@ -35,6 +35,7 @@ public class Immunization extends BaseImmunization implements IsImmunization {
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String IMMUNIZATION_STATUS = "immunizationStatus";
 	public static final String MEANS_OF_IMMUNIZATION = "meansOfImmunization";
+	public static final String INJECTION_FACILITY = "injectionFacility";
 	public static final String IMMUNIZATION_MANAGEMENT_STATUS = "immunizationManagementStatus";
 	public static final String EXTERNAL_ID = "externalId";
 	public static final String RESPONSIBLE_REGION = "responsibleRegion";

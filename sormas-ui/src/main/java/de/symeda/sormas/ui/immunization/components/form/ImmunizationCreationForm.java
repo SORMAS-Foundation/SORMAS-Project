@@ -24,6 +24,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import com.vaadin.ui.Label;
@@ -88,6 +89,7 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		+ fluidRowLocs(ImmunizationDto.VALID_FROM, ImmunizationDto.VALID_UNTIL)
 		+ fluidRowLocs(VACCINATION_HEADING_LOC)
 		+ fluidRow(fluidColumnLoc(6, 0, ImmunizationDto.NUMBER_OF_DOSES))
+		+ fluidRowLocs(ImmunizationDto.INJECTION_FACILITY)
 		+ fluidRowLocs(ImmunizationDto.PERSON);
 	//@formatter:on
 
@@ -190,6 +192,15 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		Field numberOfDosesField = addField(ImmunizationDto.NUMBER_OF_DOSES);
 		numberOfDosesField.addValidator(new NumberValidator(I18nProperties.getValidationError(Validations.vaccineDosesFormat), 1, 10, false));
 		numberOfDosesField.setVisible(false);
+
+		ComboBox injectionFacilityField = addField(ImmunizationDto.INJECTION_FACILITY, ComboBox.class);
+		// Set conditional visibility for RSV cases only
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			ImmunizationDto.INJECTION_FACILITY,
+			ImmunizationDto.DISEASE,
+			Arrays.asList(Disease.RESPIRATORY_SYNCYTIAL_VIRUS),
+			true);
 
 		personCreateForm = new PersonCreateForm(false, true, false);
 		personCreateForm.setWidth(100, Unit.PERCENTAGE);
