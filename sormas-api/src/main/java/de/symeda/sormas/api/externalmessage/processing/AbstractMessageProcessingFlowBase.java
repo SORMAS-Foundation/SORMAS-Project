@@ -255,7 +255,7 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
         });
     }
 
-    private FlowThen<ExternalMessageProcessingResult> doPickOrCreateSamplesFlow(
+    protected FlowThen<ExternalMessageProcessingResult> doPickOrCreateSamplesFlow(
         Consumer<SampleSimilarityCriteria> addSampleSearchCriteria,
         BiFunction<Integer, ExternalMessageProcessingResult, CompletionStage<ProcessingResult<ExternalMessageProcessingResult>>> createSampleAndPathogenTests,
         FlowThen<ExternalMessageProcessingResult> flow) {
