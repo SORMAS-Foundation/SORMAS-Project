@@ -190,6 +190,7 @@ public class MSersDirectorySteps implements En {
         (Integer ide) -> {
           TimeUnit.SECONDS.sleep(1);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(getEditButtonByIndex(ide));
+          TimeUnit.SECONDS.sleep(2); // waiting for grid refresh
           webDriverHelpers.doubleClickOnWebElementBySelector(getEditButtonByIndex(ide));
         });
     When(
