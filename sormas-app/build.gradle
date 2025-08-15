@@ -22,7 +22,7 @@ buildscript {
 plugins {
     // Use "dependencyUpdates" task to list all updateable dependencies.
     // For unknown reasons the Android Studio gradle tooling doesn't list all updates
-    id "com.github.ben-manes.versions" version "0.47.0"
+    id "com.github.ben-manes.versions" version "0.49.0"
 }
 
 allprojects {
