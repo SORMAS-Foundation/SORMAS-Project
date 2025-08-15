@@ -216,7 +216,7 @@ public class DemisSteps implements En {
         () -> {
           webDriverHelpers.fillAndSubmitInWebElement(
               SEARCH_MESSAGE_INPUT, patientFirstName + " " + patientLastName);
-          TimeUnit.SECONDS.sleep(2); // wait for reaction
+          TimeUnit.SECONDS.sleep(5); // wait for reaction
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
