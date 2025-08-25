@@ -24,12 +24,14 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
+import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -73,12 +75,27 @@ public class HospitalizationDto extends EntityDto {
 	private YesNoUnknown hospitalizedPreviously;
 	@Valid
 	private List<PreviousHospitalizationDto> previousHospitalizations = new ArrayList<>();
+
+	@Diseases({
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	private YesNoUnknown intensiveCareUnit;
+	@Diseases({
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	private Date intensiveCareUnitStart;
+	@Diseases({
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	private Date intensiveCareUnitEnd;
+
+	@Diseases({
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	private YesNoUnknown oxygenPrescribed;
+	@Diseases({
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	private YesNoUnknown stillHospitalized;
+	@Diseases({
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	private Integer icuLengthOfStay;
+
 	private HospitalizationReasonType hospitalizationReason;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherHospitalizationReason;
