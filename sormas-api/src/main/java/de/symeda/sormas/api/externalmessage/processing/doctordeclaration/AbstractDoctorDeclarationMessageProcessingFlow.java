@@ -19,6 +19,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletionStage;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
@@ -41,6 +44,7 @@ import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
+import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.processing.AbstractMessageProcessingFlowBase;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
@@ -51,6 +55,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.user.UserDto;
@@ -58,6 +63,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DtoCopyHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResult;
+import de.symeda.sormas.api.utils.dataprocessing.flow.FlowThen;
 
 /**
  * Abstract class defining the flow of processing a lab message allowing to
@@ -76,6 +82,30 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 		ExternalMessageMapper mapper,
 		ExternalMessageProcessingFacade processingFacade) {
 		super(user, externalMessage, mapper, processingFacade);
+	}
+
+	protected FlowThen<ExternalMessageProcessingResult> doPickOrCreateSamplesFlow(
+		Consumer<SampleSimilarityCriteria> addSampleSearchCriteria,
+		BiFunction<Integer, ExternalMessageProcessingResult, CompletionStage<ProcessingResult<ExternalMessageProcessingResult>>> createSampleAndPathogenTests,
+		FlowThen<ExternalMessageProcessingResult> flow) {
+
+		// We use the non null safe sample reports list in case no samples reports were created following DD parsing
+		final List<SampleReportDto> sampleReports = getExternalMessage().getSampleReports();
+
+		if (sampleReports == null || sampleReports.isEmpty()) {
+			// Just do nothing
+			return flow.then(ProcessingResult::asCompletedFuture);
+		}
+
+		// The sample report is not null or empty, we need to check if any tests exists or there are just empty reports
+		final boolean hasTests = sampleReports.stream().anyMatch(report -> report.getTestReports() != null && !report.getTestReports().isEmpty());
+		if (!hasTests) {
+			// Just do nothing
+			return flow.then(ProcessingResult::asCompletedFuture);
+		}
+
+		// Just proceed with the default implementation
+		return super.doPickOrCreateSamplesFlow(addSampleSearchCriteria, createSampleAndPathogenTests, flow);
 	}
 
 	/**
