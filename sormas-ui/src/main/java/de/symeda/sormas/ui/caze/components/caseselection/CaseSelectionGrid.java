@@ -90,7 +90,7 @@ public class CaseSelectionGrid extends Grid {
 		getContainer().removeAllItems();
 		getContainer().addAll(cases);
 		this.refreshAllRows();
-		setHeightByRows(cases.size() > 0 ? (cases.size() <= 10 ? cases.size() : 10) : 1);
+		setHeightByRows(cases.size() > 0 ? (cases.size() <= 10 ? cases.size() : 10) : 2);
 	}
 
 	public void setCases(List<CaseSelectionDto> cases) {
