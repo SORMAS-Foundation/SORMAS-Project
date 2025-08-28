@@ -542,20 +542,13 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		asymptomaticNOG.addValueChangeListener(e -> {
 			if (isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
-				if (SymptomState.YES.equals(asymptomaticNOG.getNullableValue())) {
+				boolean isSymptamatic = !SymptomState.YES.equals(asymptomaticNOG.getNullableValue());
 					editableAllowedFields().stream().filter(field -> !field.getId().equals(ASYMPTOMATIC)).forEach(field -> {
 						field.clear();
-						field.setEnabled(false);
-						onsetSymptom.setEnabled(false);
-						onsetDateField.setEnabled(false);
+						field.setEnabled(isSymptamatic);
+						onsetSymptom.setEnabled(isSymptamatic);
+						onsetDateField.setEnabled(isSymptamatic);
 					});
-				} else {
-					editableAllowedFields().stream().filter(field -> !field.getId().equals(ASYMPTOMATIC)).forEach(field -> {
-						field.setEnabled(true);
-						onsetSymptom.setEnabled(true);
-						onsetDateField.setEnabled(true);
-					});
-				}
 			}
 		});
 
@@ -587,16 +580,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		getField(SKIN_RASH).addValueChangeListener(e -> {
 			// Show skin rash onset date field only if skin rash is set to YES
 			if (isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
-				Set<Object> value1 = (Set<Object>) e.getProperty().getValue();
-				value1.stream().filter(value -> value instanceof SymptomState).findFirst().ifPresent(value -> {
-					if (value == SymptomState.YES) {
-						skinRashDateLabel.setVisible(true);
-						skinRashOnsetDate.setVisible(true);
-					} else {
-						skinRashDateLabel.setVisible(false);
-						skinRashOnsetDate.setVisible(false);
-					}
-				});
+				Object v = FieldHelper.getNullableSourceFieldValue((Field) e.getProperty());
+				boolean isVisible = v == SymptomState.YES || (v instanceof java.util.Set && ((java.util.Set<?>) v).contains(SymptomState.YES));
+				skinRashDateLabel.setVisible(isVisible);
 			}
 		});
 

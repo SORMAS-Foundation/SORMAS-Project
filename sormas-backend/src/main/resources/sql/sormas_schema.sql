@@ -14578,7 +14578,7 @@ alter table contact add column IF NOT EXISTS vaccination_dose1_date timestamp;
 alter table contact add column IF NOT EXISTS vaccination_dose2_date timestamp;
 alter table contact add column IF NOT EXISTS vaccinationProposed boolean default false;
 alter table contact add column IF NOT EXISTS immuneGlobulinProposed boolean default false;
-alter table testreport add column genoTypeResult varchar(255);
+alter table testreport add column IF NOT EXISTS genoTypeResult varchar(255);
 
 alter table symptoms_history add column if not exists skinRashOnsetDate timestamp;
 alter table symptoms_history add column if not exists acuteencephalitis varchar(255);
@@ -14591,7 +14591,7 @@ alter table contact_history add column IF NOT EXISTS vaccination_dose1_date time
 alter table contact_history add column IF NOT EXISTS vaccination_dose2_date timestamp;
 alter table contact_history add column IF NOT EXISTS vaccinationProposed boolean default false;
 alter table contact_history add column IF NOT EXISTS immuneGlobulinProposed boolean default false;
-alter table testreport_history add column genoTypeResult varchar(255);
+alter table testreport_history add column IF NOT EXISTS genoTypeResult varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (589, 'Customized Measles for Lux #13365');
 
