@@ -81,22 +81,22 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 			fluidRowLocs(HEALTH_FACILITY, HEALTH_FACILITY_DEPARTMENT) +
 			fluidRowLocs(HospitalizationDto.ADMISSION_DATE, HospitalizationDto.DISCHARGE_DATE, HospitalizationDto.LEFT_AGAINST_ADVICE, "") +
 			fluidRowLocs(HospitalizationDto.HOSPITALIZATION_REASON, HospitalizationDto.OTHER_HOSPITALIZATION_REASON) +
-					fluidRowLocs(3, HospitalizationDto.INTENSIVE_CARE_UNIT, 3,
-							HospitalizationDto.INTENSIVE_CARE_UNIT_START,
-							3,
-							HospitalizationDto.INTENSIVE_CARE_UNIT_END)
-					+ fluidRowLocs(HospitalizationDto.ICU_LENGTH_OF_STAY, HospitalizationDto.OXYGEN_PRESCRIBED, HospitalizationDto.STILL_HOSPITALIZED)
-					+ fluidRowLocs(HospitalizationDto.ISOLATED, HospitalizationDto.ISOLATION_DATE, "")
-					+ fluidRowLocs(HospitalizationDto.DESCRIPTION) +
+			fluidRowLocs(3, HospitalizationDto.INTENSIVE_CARE_UNIT, 
+						3, HospitalizationDto.INTENSIVE_CARE_UNIT_START, 
+						3, HospitalizationDto.INTENSIVE_CARE_UNIT_END, 
+						3, HospitalizationDto.ICU_LENGTH_OF_STAY) +
+			fluidRowLocs(HospitalizationDto.OXYGEN_PRESCRIBED, HospitalizationDto.STILL_HOSPITALIZED) +
+			fluidRowLocs(HospitalizationDto.ISOLATED, HospitalizationDto.ISOLATION_DATE, "") +
+			fluidRowLocs(HospitalizationDto.DESCRIPTION) +
 			loc(PREVIOUS_HOSPITALIZATIONS_HEADING_LOC) +
 			fluidRowLocs(HospitalizationDto.HOSPITALIZED_PREVIOUSLY) +
 			fluidRowLocs(HospitalizationDto.PREVIOUS_HOSPITALIZATIONS);
+	//@formatter:on
 	private final CaseDataDto caze;
 	private final ViewMode viewMode;
 	private NullableOptionGroup intensiveCareUnit;
 	private DateField intensiveCareUnitStart;
 	private DateField intensiveCareUnitEnd;
-	//@formatter:on
 
 	public HospitalizationForm(CaseDataDto caze, ViewMode viewMode, boolean isPseudonymized, boolean inJurisdiction, boolean isEditAllowed) {
 
@@ -145,18 +145,36 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		final NullableOptionGroup currentlyHospitalizedField = addField(HospitalizationDto.CURRENTLY_HOSPITALIZED, NullableOptionGroup.class);
 		final DateField admissionDateField = addField(HospitalizationDto.ADMISSION_DATE, DateField.class);
 		final DateField dischargeDateField = addDateField(HospitalizationDto.DISCHARGE_DATE, DateField.class, 7);
+
+		// RSV-specific fields
 		intensiveCareUnit = addField(HospitalizationDto.INTENSIVE_CARE_UNIT, NullableOptionGroup.class);
 		intensiveCareUnitStart = addField(HospitalizationDto.INTENSIVE_CARE_UNIT_START, DateField.class);
 		intensiveCareUnitStart.setVisible(false);
 		intensiveCareUnitEnd = addField(HospitalizationDto.INTENSIVE_CARE_UNIT_END, DateField.class);
 		intensiveCareUnitEnd.setVisible(false);
-		FieldHelper
-			.setVisibleWhen(intensiveCareUnit, Arrays.asList(intensiveCareUnitStart, intensiveCareUnitEnd), Arrays.asList(YesNoUnknown.YES), true);
+
+		if (caze.getDisease() == Disease.RESPIRATORY_SYNCYTIAL_VIRUS) {
+			FieldHelper.setVisibleWhen(
+				intensiveCareUnit,
+				Arrays.asList(intensiveCareUnitStart, intensiveCareUnitEnd),
+				Arrays.asList(YesNoUnknown.YES),
+				true);
+		} else {
+			intensiveCareUnit.setVisible(false);
+			intensiveCareUnitStart.setVisible(false);
+			intensiveCareUnitEnd.setVisible(false);
+		}
 
 		// RSV-specific fields
 		final TextField icuLengthOfStayField = addField(HospitalizationDto.ICU_LENGTH_OF_STAY, TextField.class);
 		final NullableOptionGroup oxygenPrescribedField = addField(HospitalizationDto.OXYGEN_PRESCRIBED, NullableOptionGroup.class);
 		final NullableOptionGroup stillHospitalizedField = addField(HospitalizationDto.STILL_HOSPITALIZED, NullableOptionGroup.class);
+
+		if (caze.getDisease() != Disease.RESPIRATORY_SYNCYTIAL_VIRUS) {
+			icuLengthOfStayField.setVisible(false);
+			oxygenPrescribedField.setVisible(false);
+			stillHospitalizedField.setVisible(false);
+		}
 
 		final Field isolationDateField = addField(HospitalizationDto.ISOLATION_DATE);
 		final TextArea descriptionField = addField(HospitalizationDto.DESCRIPTION, TextArea.class);
@@ -175,12 +193,9 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		// Add listener to trigger RSV hospitalization reason defaulting when admitted to health facility
 		admittedToHealthFacilityField.addValueChangeListener(event -> {
 			final Object eventValue = event.getProperty().getValue();
-			final boolean isAdmitted = eventValue != null && eventValue instanceof Collection<?>
-				? ((Collection<?>) eventValue).contains(YesNoUnknown.YES)
-				: false;
-			if (caze.getDisease() == Disease.RESPIRATORY_SYNCYTIAL_VIRUS
-				&& isAdmitted
-				&& hospitalizationReason.getValue() == null) {
+			final boolean isAdmitted =
+				eventValue != null && eventValue instanceof Collection<?> ? ((Collection<?>) eventValue).contains(YesNoUnknown.YES) : false;
+			if (caze.getDisease() == Disease.RESPIRATORY_SYNCYTIAL_VIRUS && isAdmitted && hospitalizationReason.getValue() == null) {
 				hospitalizationReason.setValue(HospitalizationReasonType.REPORTED_DISEASE);
 			}
 		});
@@ -200,6 +215,8 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 				intensiveCareUnit,
 				intensiveCareUnitStart,
 				intensiveCareUnitEnd,
+				oxygenPrescribedField,
+				stillHospitalizedField,
 				isolationDateField,
 				descriptionField,
 				isolatedField,
@@ -278,52 +295,59 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 				false,
 				I18nProperties.getValidationError(Validations.afterDate, dischargeDateField.getCaption(), admissionDateField.getCaption())));
 		dischargeDateField.addValueChangeListener(event -> admissionDateField.markAsDirty()); // re-evaluate admission date for consistent validation of all fields
-		intensiveCareUnitStart.addValidator(
-			new DateComparisonValidator(
-				intensiveCareUnitStart,
-				admissionDateField,
-				false,
-				false,
-				I18nProperties.getValidationError(Validations.afterDate, intensiveCareUnitStart.getCaption(), admissionDateField.getCaption())));
-		intensiveCareUnitStart.addValidator(
-			new DateComparisonValidator(
-				intensiveCareUnitStart,
-				intensiveCareUnitEnd,
-				true,
-				false,
-				I18nProperties.getValidationError(Validations.beforeDate, intensiveCareUnitStart.getCaption(), intensiveCareUnitEnd.getCaption())));
-		intensiveCareUnitEnd.addValidator(
-			new DateComparisonValidator(
-				intensiveCareUnitEnd,
-				intensiveCareUnitStart,
-				false,
-				false,
-				I18nProperties.getValidationError(Validations.afterDate, intensiveCareUnitEnd.getCaption(), intensiveCareUnitStart.getCaption())));
-		intensiveCareUnitEnd.addValidator(
-			new DateComparisonValidator(
-				intensiveCareUnitEnd,
-				dischargeDateField,
-				true,
-				false,
-				I18nProperties.getValidationError(Validations.beforeDate, intensiveCareUnitEnd.getCaption(), dischargeDateField.getCaption())));
-		intensiveCareUnitStart.addValueChangeListener(event -> intensiveCareUnitEnd.markAsDirty());
-		intensiveCareUnitEnd.addValueChangeListener(event -> intensiveCareUnitStart.markAsDirty());
+
+		// RSV specific logic
+		if (caze.getDisease() == Disease.RESPIRATORY_SYNCYTIAL_VIRUS) {
+			intensiveCareUnitStart.addValidator(
+				new DateComparisonValidator(
+					intensiveCareUnitStart,
+					admissionDateField,
+					false,
+					false,
+					I18nProperties.getValidationError(Validations.afterDate, intensiveCareUnitStart.getCaption(), admissionDateField.getCaption())));
+			intensiveCareUnitStart.addValidator(
+				new DateComparisonValidator(
+					intensiveCareUnitStart,
+					intensiveCareUnitEnd,
+					true,
+					false,
+					I18nProperties
+						.getValidationError(Validations.beforeDate, intensiveCareUnitStart.getCaption(), intensiveCareUnitEnd.getCaption())));
+			intensiveCareUnitEnd.addValidator(
+				new DateComparisonValidator(
+					intensiveCareUnitEnd,
+					intensiveCareUnitStart,
+					false,
+					false,
+					I18nProperties
+						.getValidationError(Validations.afterDate, intensiveCareUnitEnd.getCaption(), intensiveCareUnitStart.getCaption())));
+			intensiveCareUnitEnd.addValidator(
+				new DateComparisonValidator(
+					intensiveCareUnitEnd,
+					dischargeDateField,
+					true,
+					false,
+					I18nProperties.getValidationError(Validations.beforeDate, intensiveCareUnitEnd.getCaption(), dischargeDateField.getCaption())));
+			intensiveCareUnitStart.addValueChangeListener(event -> intensiveCareUnitEnd.markAsDirty());
+			intensiveCareUnitEnd.addValueChangeListener(event -> intensiveCareUnitStart.markAsDirty());
+
+			// RSV-specific conditional visibility logic
+			// stillHospitalized should not be visible/writable if discharge date is filled
+
+			dischargeDateField.addValueChangeListener(event -> {
+				boolean hasDischargeDate = dischargeDateField.getValue() != null;
+				stillHospitalizedField.setVisible(!hasDischargeDate);
+				stillHospitalizedField.setEnabled(!hasDischargeDate);
+				if (hasDischargeDate) {
+					stillHospitalizedField.setValue(null);
+				}
+			});
+			// Show icuLengthOfStay when ICU dates are not available but survey has length information
+			FieldHelper.setVisibleWhen(intensiveCareUnit, Collections.singletonList(icuLengthOfStayField), Arrays.asList(YesNoUnknown.YES), true);
+		}
+
 		hospitalizedPreviouslyField.addValueChangeListener(e -> updatePrevHospHint(hospitalizedPreviouslyField, previousHospitalizationsField));
 		previousHospitalizationsField.addValueChangeListener(e -> updatePrevHospHint(hospitalizedPreviouslyField, previousHospitalizationsField));
-
-		// RSV-specific conditional visibility logic
-		// stillHospitalized should not be visible/writable if discharge date is filled
-		dischargeDateField.addValueChangeListener(event -> {
-			boolean hasDischargeDate = dischargeDateField.getValue() != null;
-			stillHospitalizedField.setVisible(!hasDischargeDate);
-			stillHospitalizedField.setEnabled(!hasDischargeDate);
-			if (hasDischargeDate) {
-				stillHospitalizedField.setValue(null);
-			}
-		});
-
-		// Show icuLengthOfStay when ICU dates are not available but survey has length information
-		FieldHelper.setVisibleWhen(intensiveCareUnit, Collections.singletonList(icuLengthOfStayField), Arrays.asList(YesNoUnknown.YES), true);
 	}
 
 	private void updatePrevHospHint(NullableOptionGroup hospitalizedPreviouslyField, PreviousHospitalizationsField previousHospitalizationsField) {
