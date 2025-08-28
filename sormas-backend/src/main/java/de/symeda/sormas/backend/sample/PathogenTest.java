@@ -40,6 +40,7 @@ import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.disease.DiseaseVariantConverter;
 import de.symeda.sormas.api.disease.PathogenConverter;
 import de.symeda.sormas.api.environment.environmentsample.Pathogen;
+import de.symeda.sormas.api.sample.GenoTypeResult;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenSpecie;
 import de.symeda.sormas.api.sample.PathogenStrainCallStatus;
@@ -161,6 +162,8 @@ public class PathogenTest extends DeletableAdo {
 	private String miruPatternProfile;
 	private SerotypingMethod seroTypingMethod;
 	private String seroTypingMethodText;
+	private GenoTypeResult genoTypeResult;
+	private String genoTypeResultText;
 	private SeroGroupSpecification seroGroupSpecification;
 	private String seroGroupSpecificationText;
 
@@ -632,6 +635,23 @@ public class PathogenTest extends DeletableAdo {
 
 	public void setSeroTypingMethod(SerotypingMethod seroTypingMethod) {
 		this.seroTypingMethod = seroTypingMethod;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public GenoTypeResult getGenoTypeResult() {
+		return genoTypeResult;
+	}
+
+	public void setGenoTypeResult(GenoTypeResult genoTypeResult) {
+		this.genoTypeResult = genoTypeResult;
+	}
+
+	public String getGenoTypeResultText() {
+		return genoTypeResultText;
+	}
+
+	public void setGenoTypeResultText(String genoTypeResultText) {
+		this.genoTypeResultText = genoTypeResultText;
 	}
 
 	public String getSeroTypingMethodText() {

@@ -31,6 +31,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import de.symeda.sormas.api.sample.GenoTypeResult;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
@@ -117,6 +118,7 @@ public class TestReport extends AbstractDomainObject {
 	private String prescriberPostalCode;
 	private String prescriberCity;
 	private Country prescriberCountry;
+	private GenoTypeResult genoTypeResult;
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getTestLabName() {
@@ -421,5 +423,14 @@ public class TestReport extends AbstractDomainObject {
 
 	public void setPrescriberCountry(Country prescriberCountry) {
 		this.prescriberCountry = prescriberCountry;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public GenoTypeResult getGenoTypeResult() {
+		return genoTypeResult;
+	}
+
+	public void setGenoTypeResult(GenoTypeResult genoTypeResult) {
+		this.genoTypeResult = genoTypeResult;
 	}
 }

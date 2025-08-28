@@ -347,12 +347,18 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 
 		// Measles
 		suspect = allOf(
-			symptom(SymptomsDto.FEVER),
-			symptom(SymptomsDto.SKIN_RASH),
-			xOf(1, symptom(SymptomsDto.COUGH), symptom(SymptomsDto.RUNNY_NOSE), symptom(SymptomsDto.CONJUNCTIVITIS)));
-		probable = epiData(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN);
-		confirmed = allOf(suspect, positiveTestResult(Disease.MEASLES, PathogenTestType.IGM_SERUM_ANTIBODY));
-		addCriteria(Disease.MEASLES, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, notACase(Disease.MEASLES));
+				symptom(SymptomsDto.FEVER),
+				symptom(SymptomsDto.SKIN_RASH),
+				xOf(1, symptom(SymptomsDto.COUGH), symptom(SymptomsDto.RUNNY_NOSE), symptom(SymptomsDto.CONJUNCTIVITIS)));
+		if (configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+			probable = allOf(suspect, epiData(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN));
+			confirmed = allOf(suspect, symptom(SymptomsDto.SKIN_RASH, CountryHelper.COUNTRY_CODE_LUXEMBOURG + "-" + Disease.MEASLES.name()), xOf(1, positiveTestResult(Disease.MEASLES, PathogenTestType.CULTURE, PathogenTestType.IGM_SERUM_ANTIBODY, PathogenTestType.IGA_SERUM_ANTIBODY, PathogenTestType.PCR_RT_PCR, PathogenTestType.SEQUENCING, PathogenTestType.GENOTYPING)));
+			addCriteria(Disease.MEASLES, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, null);
+		} else {
+			probable = epiData(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN);
+			confirmed = allOf(suspect, positiveTestResult(Disease.MEASLES, PathogenTestType.IGM_SERUM_ANTIBODY));
+			addCriteria(Disease.MEASLES, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, notACase(Disease.MEASLES));
+		}
 
 		// Cholera
 		suspect = allOf(

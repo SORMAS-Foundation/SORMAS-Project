@@ -613,4 +613,13 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 	public void setHeading(String heading) {
 		throw new RuntimeException("setHeading should be implemented in " + getClass().getSimpleName());
 	}
+
+	/**
+	 * List of editable allowed fields,
+	 *
+	 * @return
+	 */
+	public List<Field<?>> editableAllowedFields() {
+		return editableAllowedFields;
+	}
 }

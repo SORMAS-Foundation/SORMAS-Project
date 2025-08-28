@@ -14566,4 +14566,33 @@ ALTER TABLE immunization_history ADD COLUMN IF NOT EXISTS injectionFacility varc
 
 INSERT INTO schema_version (version_number, comment) VALUES (588, 'RSV - Update Immunization #13542');
 
+-- 2025-08-12 Customized Measles for Lux #13365
+alter table symptoms add column if not exists skinRashOnsetDate timestamp;
+alter table symptoms add column if not exists acuteencephalitis varchar(255);
+alter table epidata add column IF NOT EXISTS caseImportedStatus  varchar(255);
+alter table epidata add column IF NOT EXISTS clusterType  varchar(255);
+alter table epidata add column IF NOT EXISTS clusterTypeText  varchar(255);
+alter table pathogentest add column IF NOT EXISTS genoTypeResult varchar(255);
+alter table pathogentest add column IF NOT EXISTS genoTypeResultText varchar(255);
+alter table contact add column IF NOT EXISTS vaccination_dose1_date timestamp;
+alter table contact add column IF NOT EXISTS vaccination_dose2_date timestamp;
+alter table contact add column IF NOT EXISTS vaccinationProposed boolean default false;
+alter table contact add column IF NOT EXISTS immuneGlobulinProposed boolean default false;
+alter table testreport add column genoTypeResult varchar(255);
+
+alter table symptoms_history add column if not exists skinRashOnsetDate timestamp;
+alter table symptoms_history add column if not exists acuteencephalitis varchar(255);
+alter table epidata_history add column IF NOT EXISTS caseImportedStatus  varchar(255);
+alter table epidata_history add column IF NOT EXISTS clusterType  varchar(255);
+alter table epidata_history add column IF NOT EXISTS clusterTypeText  varchar(255);
+alter table pathogentest_history add column IF NOT EXISTS genoTypeResult varchar(255);
+alter table pathogentest_history add column IF NOT EXISTS genoTypeResultText varchar(255);
+alter table contact_history add column IF NOT EXISTS vaccination_dose1_date timestamp;
+alter table contact_history add column IF NOT EXISTS vaccination_dose2_date timestamp;
+alter table contact_history add column IF NOT EXISTS vaccinationProposed boolean default false;
+alter table contact_history add column IF NOT EXISTS immuneGlobulinProposed boolean default false;
+alter table testreport_history add column genoTypeResult varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (589, 'Customized Measles for Lux #13365');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

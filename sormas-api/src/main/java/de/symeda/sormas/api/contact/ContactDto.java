@@ -154,6 +154,11 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 	public static final String PROPHYLAXIS_PRESCRIBED = "prophylaxisPrescribed";
 	public static final String PRESCRIBED_DRUG = "prescribedDrug";
 	public static final String PRESCRIBED_DRUG_TEXT = "prescribedDrugText";
+	public static final String VACCINATION_PROPOSED = "vaccinationProposed";
+	public static final String IMMUNE_GLOBULIN_PROPOSED = "immuneGlobulinProposed";
+
+	public static final String VACCINATION_DOSE_ONE_DATE = "vaccinationDoseOneDate";
+	public static final String VACCINATION_DOSE_TWO_DATE = "vaccinationDoseTwoDate";
 
 	@EmbeddedPersonalData
 	private CaseReferenceDto caze;
@@ -365,6 +370,13 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 	@Outbreaks
 	private VaccinationStatus vaccinationStatus;
 
+	@Diseases(value = {Disease.MEASLES})
+	@HideForCountriesExcept(countries = {COUNTRY_CODE_LUXEMBOURG})
+	private Date vaccinationDoseOneDate;
+	@Diseases(value = {Disease.MEASLES})
+	@HideForCountriesExcept(countries = {COUNTRY_CODE_LUXEMBOURG})
+	private Date vaccinationDoseTwoDate;
+
 	private Date previousQuarantineTo;
 	@SensitiveData
 	@Size(max = CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
@@ -385,6 +397,12 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 	@SensitiveData
 	@Diseases(Disease.INVASIVE_MENINGOCOCCAL_INFECTION)
 	private String prescribedDrugText;
+	@Diseases(value = {Disease.MEASLES})
+	@HideForCountriesExcept(countries = {COUNTRY_CODE_LUXEMBOURG})
+	private boolean vaccinationProposed;
+	@Diseases(value = {Disease.MEASLES})
+	@HideForCountriesExcept(countries = {COUNTRY_CODE_LUXEMBOURG})
+	private boolean immuneGlobulinProposed;
 
 	public static ContactDto build() {
 		final ContactDto contact = new ContactDto();
@@ -1109,4 +1127,35 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 		this.prescribedDrugText = prescribedDrugText;
 	}
 
+	public Date getVaccinationDoseOneDate() {
+		return vaccinationDoseOneDate;
+	}
+
+	public void setVaccinationDoseOneDate(Date vaccinationDoseOneDate) {
+		this.vaccinationDoseOneDate = vaccinationDoseOneDate;
+	}
+
+	public Date getVaccinationDoseTwoDate() {
+		return vaccinationDoseTwoDate;
+	}
+
+	public void setVaccinationDoseTwoDate(Date vaccinationDoseTwoDate) {
+		this.vaccinationDoseTwoDate = vaccinationDoseTwoDate;
+	}
+
+	public boolean isVaccinationProposed() {
+		return vaccinationProposed;
+	}
+
+	public void setVaccinationProposed(boolean vaccinationProposed) {
+		this.vaccinationProposed = vaccinationProposed;
+	}
+
+	public boolean isImmuneGlobulinProposed() {
+		return immuneGlobulinProposed;
+	}
+
+	public void setImmuneGlobulinProposed(boolean immuneGlobulinProposed) {
+		this.immuneGlobulinProposed = immuneGlobulinProposed;
+	}
 }

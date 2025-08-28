@@ -1556,6 +1556,9 @@ public interface Captions {
 	String EpiData_activitiesAsCase = "EpiData.activitiesAsCase";
 	String EpiData_activityAsCaseDetailsKnown = "EpiData.activityAsCaseDetailsKnown";
 	String EpiData_areaInfectedAnimals = "EpiData.areaInfectedAnimals";
+	String EpiData_caseImportedStatus = "EpiData.caseImportedStatus";
+	String EpiData_clusterType = "EpiData.clusterType";
+	String EpiData_clusterTypeText = "EpiData.clusterTypeText";
 	String EpiData_contactWithSourceCaseKnown = "EpiData.contactWithSourceCaseKnown";
 	String EpiData_exposureDetailsKnown = "EpiData.exposureDetailsKnown";
 	String EpiData_exposures = "EpiData.exposures";
@@ -1988,6 +1991,7 @@ public interface Captions {
 	String HealthConditions_tuberculosis = "HealthConditions.tuberculosis";
 	String HealthConditions_tuberculosisInfectionYear = "HealthConditions.tuberculosisInfectionYear";
 	String humanSampleViewType = "humanSampleViewType";
+	String immuneGlobulinProposed = "immuneGlobulinProposed";
 	String Immunization = "Immunization";
 	String Immunization_additionalDetails = "Immunization.additionalDetails";
 	String Immunization_ageAndBirthDate = "Immunization.ageAndBirthDate";
@@ -2194,9 +2198,8 @@ public interface Captions {
 	String Notification_notificationTypeExternal = "Notification.notificationTypeExternal";
 	String Notification_notificationTypePhone = "Notification.notificationTypePhone";
 	String Notification_registrationNumber = "Notification.registrationNumber";
-    String Notification_reportingAgent = "Notification.reportingAgent";
+	String Notification_reportingAgent = "Notification.reportingAgent";
 	String Notification_viewNotification = "Notification.viewNotification";
-    String Notification_reportingAgent = "Notification.reportingAgent";
 	String notificationType = "notificationType";
 	String notificationType_caption = "notificationType.caption";
 	String notificationType_description = "notificationType.description";
@@ -2229,6 +2232,8 @@ public interface Captions {
 	String PathogenTest_externalId = "PathogenTest.externalId";
 	String PathogenTest_externalOrderId = "PathogenTest.externalOrderId";
 	String PathogenTest_fourFoldIncreaseAntibodyTiter = "PathogenTest.fourFoldIncreaseAntibodyTiter";
+	String PathogenTest_genoTypeResult = "PathogenTest.genoTypeResult";
+	String PathogenTest_genoTypeResultText = "PathogenTest.genoTypeResultText";
 	String PathogenTest_isoniazidResistant = "PathogenTest.isoniazidResistant";
 	String PathogenTest_lab = "PathogenTest.lab";
 	String PathogenTest_labDetails = "PathogenTest.labDetails";
@@ -2811,6 +2816,7 @@ public interface Captions {
 	String Symptoms = "Symptoms";
 	String Symptoms_abdominalPain = "Symptoms.abdominalPain";
 	String Symptoms_abnormalLungXrayFindings = "Symptoms.abnormalLungXrayFindings";
+	String Symptoms_acuteEncephalitis = "Symptoms.acuteEncephalitis";
 	String Symptoms_acuteRespiratoryDistressSyndrome = "Symptoms.acuteRespiratoryDistressSyndrome";
 	String Symptoms_aerophobia = "Symptoms.aerophobia";
 	String Symptoms_agitation = "Symptoms.agitation";
@@ -2998,6 +3004,8 @@ public interface Captions {
 	String Symptoms_sidePain = "Symptoms.sidePain";
 	String Symptoms_skinBruising = "Symptoms.skinBruising";
 	String Symptoms_skinRash = "Symptoms.skinRash";
+	String Symptoms_skinRash_lu_MEASLES = "Symptoms.skinRash.lu-MEASLES";
+	String Symptoms_skinRashOnsetDate = "Symptoms.skinRashOnsetDate";
 	String Symptoms_skinUlcers = "Symptoms.skinUlcers";
 	String Symptoms_soreThroat = "Symptoms.soreThroat";
 	String Symptoms_splenomegaly = "Symptoms.splenomegaly";
@@ -3289,9 +3297,12 @@ public interface Captions {
 	String Vaccination_vaccineName = "Vaccination.vaccineName";
 	String Vaccination_vaccineType = "Vaccination.vaccineType";
 	String Vaccination_vaccineUniiCode = "Vaccination.vaccineUniiCode";
+	String vaccinationDoseOneDate = "vaccinationDoseOneDate";
+	String vaccinationDoseTwoDate = "vaccinationDoseTwoDate";
 	String vaccinationNewVaccination = "vaccinationNewVaccination";
 	String vaccinationNoVaccinationsForPerson = "vaccinationNoVaccinationsForPerson";
 	String vaccinationNoVaccinationsForPersonAndDisease = "vaccinationNoVaccinationsForPersonAndDisease";
+	String vaccinationProposed = "vaccinationProposed";
 	String versionIsMissing = "versionIsMissing";
 	String view = "view";
 	String View_actions = "View.actions";

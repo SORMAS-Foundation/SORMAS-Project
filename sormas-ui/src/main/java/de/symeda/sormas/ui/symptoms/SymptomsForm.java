@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.ui.symptoms;
 
+import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.COMPLIANCE_WITH_TREATMENT;
 import static de.symeda.sormas.api.symptoms.SymptomsDto.*;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.CssStyles.H4;
@@ -27,13 +28,16 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
+import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locsCss;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -50,6 +54,7 @@ import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
@@ -129,6 +134,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	private static final String TUBERCULOSIS_CLINICAL_PRESENTATION_DETAILS_LOC = "tuberculosisClinicalPresentationDetailsLoc";
 
 	private static Map<String, List<String>> symptomGroupMap = new HashMap<>();
+	public static final String SKIN_RASH_ONSET_DATE_LAYOUT = fluidRowLocs(6, "LBL_SKIN_RASH_ONSET_DATE",1,"",5, SKIN_RASH_ONSET_DATE);
 
 	//@formatter:off
 	private static final String HTML_LAYOUT =
@@ -144,6 +150,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 							//XXX #1620 fluidColumnLoc?
 							fluidColumn(8, 0, loc(SYMPTOMS_HINT_LOC))) +
 					fluidRow(fluidColumn(8,4, locCss(CssStyles.ALIGN_RIGHT,BUTTONS_LOC)))+
+					fluidRow(fluidColumn(6, 0, locsCss(VSPACE_3, ASYMPTOMATIC)))+
 					createSymptomGroupLayout(SymptomGroup.GENERAL, GENERAL_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
 					createSymptomGroupLayout(SymptomGroup.RESPIRATORY, RESPIRATORY_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
 					createSymptomGroupLayout(SymptomGroup.CARDIOVASCULAR, CARDIOVASCULAR_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
@@ -152,6 +159,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 					createSymptomGroupLayout(SymptomGroup.NERVOUS_SYSTEM, NERVOUS_SYSTEM_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
 					createSymptomGroupLayout(SymptomGroup.SKIN, SKIN_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
 					createSymptomGroupLayout(SymptomGroup.OTHER, OTHER_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
+//					fluidRow(fluidColumn(3, 0, locs(SKIN_RASH_ONSET_DATE)))+
+					fluidRow(fluidColumn(6, 0, loc("LAYOUT_SKIN_RASH_ONSET_DATE"))) +
 					locsCss(VSPACE_3, PATIENT_ILL_LOCATION, SYMPTOMS_COMMENTS) +
 					fluidRowLocsCss(VSPACE_3, ONSET_SYMPTOM, ONSET_DATE) +
 					loc(COMPLICATIONS_HEADING) +
@@ -172,7 +181,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 					fluidRow(
 							fluidColumn(6, 0,
 									locsCss(VSPACE_3,
-											ASYMPTOMATIC, HEMORRHAGIC_RASH, ARTHRITIS, MENINGITIS, MENINGEAL_SIGNS, SEPTICAEMIA, UNKNOWN_SYMPTOM)),
+											HEMORRHAGIC_RASH, ARTHRITIS, MENINGITIS, MENINGEAL_SIGNS, SEPTICAEMIA, ACUTE_ENCEPHALITIS, UNKNOWN_SYMPTOM)),
 							fluidColumn(6, 0,
 									locsCss(VSPACE_3, SHOCK,PNEUMONIA_CLINICAL_OR_RADIOLOGIC,OTHER_CLINICAL_PRESENTATION, OTHER_CLINICAL_PRESENTATION_TEXT))
 					);
@@ -524,15 +533,37 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		// Clinical presentation
 		String[] clinicalPresentationFieldIds = {
-			ASYMPTOMATIC,
 			HEMORRHAGIC_RASH,
 			ARTHRITIS,
 			MENINGITIS,
 			SEPTICAEMIA,
 			UNKNOWN_SYMPTOM,
+			ACUTE_ENCEPHALITIS,
 			OTHER_CLINICAL_PRESENTATION,
 			OTHER_CLINICAL_PRESENTATION_TEXT };
 		addFields(clinicalPresentationFieldIds);
+
+		NullableOptionGroup asymptomaticNOG = addField(ASYMPTOMATIC);
+
+		asymptomaticNOG.addValueChangeListener(e -> {
+			Set<SymptomState> set = new HashSet((Collection) e.getProperty().getValue());
+			if (isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+				if (set.contains(SymptomState.YES)) {
+					editableAllowedFields().stream().filter(field -> !field.getId().equals(ASYMPTOMATIC)).forEach(field -> {
+						field.clear();
+						field.setEnabled(false);
+						onsetSymptom.setEnabled(false);
+						onsetDateField.setEnabled(false);
+					});
+				} else {
+					editableAllowedFields().stream().filter(field -> !field.getId().equals(ASYMPTOMATIC)).forEach(field -> {
+						field.setEnabled(true);
+						onsetSymptom.setEnabled(true);
+						onsetDateField.setEnabled(true);
+					});
+				}
+			}
+		});
 
 		monkeypoxImageFieldIds = Arrays.asList(LESIONS_RESEMBLE_IMG1, LESIONS_RESEMBLE_IMG2, LESIONS_RESEMBLE_IMG3, LESIONS_RESEMBLE_IMG4);
 		for (String propertyId : monkeypoxImageFieldIds) {
@@ -540,6 +571,44 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			Field monkeypoxImageField = addField(propertyId);
 			CssStyles.style(monkeypoxImageField, VSPACE_NONE);
 		}
+
+		CustomLayout skinRashDateLayout = new CustomLayout();
+		skinRashDateLayout.setTemplateContents(SKIN_RASH_ONSET_DATE_LAYOUT);
+		skinRashDateLayout.setStyleName("compliance-padding");
+		skinRashDateLayout.setVisible(true);
+
+		Label skinRashDateLabel = new Label(I18nProperties.getCaption(Captions.Symptoms_skinRashOnsetDate));
+		skinRashDateLabel.setVisible(false);
+		skinRashDateLayout.addComponent(skinRashDateLabel, "LBL_SKIN_RASH_ONSET_DATE");
+
+		skinRashDateLabel.setVisible(isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && getField(SKIN_RASH).getValue() == YesNoUnknown.YES);
+		DateField skinRashOnsetDate = addField(skinRashDateLayout, SKIN_RASH_ONSET_DATE, DateField.class);
+		skinRashOnsetDate.setId(SKIN_RASH_ONSET_DATE);
+		skinRashOnsetDate.addStyleNames(ValoTheme.DATEFIELD_BORDERLESS, CssStyles.VIEW_SECTION_WIDTH_AUTO, VSPACE_3);
+		skinRashOnsetDate.setCaption(null);
+		skinRashDateLayout.addComponent(skinRashOnsetDate, SKIN_RASH_ONSET_DATE);
+		getContent().addComponent(skinRashDateLayout, "LAYOUT_SKIN_RASH_ONSET_DATE");
+
+
+		getField(SKIN_RASH).addValueChangeListener(e -> {
+			// Show skin rash onset date field only if skin rash is set to YES
+			if (isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+				Set<Object> value1 = (Set<Object>) e.getProperty().getValue();
+				value1.stream().filter(value -> value instanceof SymptomState).findFirst().ifPresent(value -> {
+					if (value == SymptomState.YES) {
+						skinRashDateLabel.setVisible(true);
+						skinRashOnsetDate.setVisible(true);
+					} else {
+						skinRashDateLabel.setVisible(false);
+						skinRashOnsetDate.setVisible(false);
+					}
+				});
+			}
+		});
+
+
+		Field<?> parentTimeOffWorkField = addField(PARENT_TIME_OFF_WORK);
+		TextField timeOffWorkDaysField = addField(TIME_OFF_WORK_DAYS, TextField.class);
 
 		// Set initial visibilities
 
@@ -738,6 +807,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			MENINGITIS,
 			SEPTICAEMIA,
 			UNKNOWN_SYMPTOM,
+			ACUTE_ENCEPHALITIS,
 			OTHER_CLINICAL_PRESENTATION);
 
 		// Set visibilities
@@ -948,6 +1018,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			getField(CHEST_PAIN).setVisible(PlagueType.PNEUMONIC == caze.getPlagueType());
 		}
 
+		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+			FieldHelper.setVisibleWhen(getFieldGroup(), SKIN_RASH_ONSET_DATE, SKIN_RASH, Arrays.asList(SymptomState.YES), true);
+		}
 		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && disease == Disease.TUBERCULOSIS) {
 			Label localisationHeadingLabel = createLabel(I18nProperties.getString(Strings.headingLocalisation), H3, LOCALISATION_HEADING_LOC);
 
@@ -992,8 +1065,6 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			getFieldGroup().getField(OTHER_CLINICAL_PRESENTATION_TEXT).setVisible(true);
 		}
 
-		final Field<?> parentTimeOffWorkField = addField(PARENT_TIME_OFF_WORK);
-		final TextField timeOffWorkDaysField = addField(TIME_OFF_WORK_DAYS, TextField.class);
 		parentTimeOffWorkField.addValueChangeListener(e -> {
 			if (!parentTimeOffWorkField.isVisible()) {
 				return;

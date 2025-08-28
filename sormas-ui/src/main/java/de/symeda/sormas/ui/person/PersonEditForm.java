@@ -38,6 +38,8 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import com.vaadin.v7.ui.CheckBox;
+import de.symeda.sormas.ui.utils.LayoutUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.shared.ui.ErrorLevel;
@@ -424,7 +426,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		// Entry date is only required for foreigners in Luxembourg with the TB+IMI+IPI diseases only.
 		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 			boolean isEntryDateAllowedDisease =
-				Arrays.asList(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.TUBERCULOSIS)
+					Arrays.asList(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.TUBERCULOSIS, Disease.MEASLES)
 					.contains(disease);
 			birthCountryCB.addValueChangeListener(e -> {
 				CountryReferenceDto countryRef = (CountryReferenceDto) e.getProperty().getValue();

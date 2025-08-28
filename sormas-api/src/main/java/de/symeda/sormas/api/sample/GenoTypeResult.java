@@ -1,6 +1,6 @@
 /*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2025 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,28 +15,41 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.api.caze;
+package de.symeda.sormas.api.sample;
 
-import de.symeda.sormas.api.CountryHelper;
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.utils.Diseases;
-import de.symeda.sormas.api.utils.HideForCountriesExcept;
 
-public enum VaccinationStatus {
+public enum GenoTypeResult {
 
-	VACCINATED,
-	UNVACCINATED,
-	@Diseases(value = {Disease.MEASLES})
-	VACCINATED_ONE_DOSE,
-	@Diseases(value = {Disease.MEASLES})
-	VACCINATED_TWO_DOSE,
-	@Diseases(value = {Disease.MEASLES})
-	RECOVERED,
-	UNKNOWN;
+    GENOTYPE_A,
+    GENOTYPE_B,
+    GENOTYPE_B2,
+    GENOTYPE_B3,
+    GENOTYPE_C1,
+    GENOTYPE_C2,
+    GENOTYPE_D1,
+    GENOTYPE_D10,
+    GENOTYPE_D11,
+    GENOTYPE_D2,
+    GENOTYPE_D3,
+    GENOTYPE_D4,
+    GENOTYPE_D5,
+    GENOTYPE_D6,
+    GENOTYPE_D7,
+    GENOTYPE_D8,
+    GENOTYPE_D9,
+    GENOTYPE_E,
+    GENOTYPE_F,
+    GENOTYPE_G1,
+    GENOTYPE_G2,
+    GENOTYPE_G3,
+    GENOTYPE_H1,
+    GENOTYPE_H2,
+    OTHER,
+    UNKNOWN;
 
-	@Override
-	public String toString() {
-		return I18nProperties.getEnumCaption(this);
-	}
+    @Override
+    public String toString() {
+        return I18nProperties.getEnumCaption(this);
+    }
 }

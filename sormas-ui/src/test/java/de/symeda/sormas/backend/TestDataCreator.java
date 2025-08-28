@@ -28,11 +28,15 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.environment.EnvironmentMedia;
 import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleDto;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleMaterial;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleReferenceDto;
+import de.symeda.sormas.api.environment.environmentsample.Pathogen;
+import de.symeda.sormas.backend.customizableenum.CustomizableEnumValue;
 import org.jetbrains.annotations.NotNull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -1454,6 +1458,31 @@ public class TestDataCreator {
 		return beanTest.getEnvironmentSampleFacade().save(sample);
 	}
 
+	public PathogenTestDto createPathogenTest(
+			EnvironmentSampleReferenceDto sample,
+			PathogenTestType testType,
+			Pathogen testedPathogen,
+			FacilityReferenceDto lab,
+			UserReferenceDto labUser,
+			PathogenTestResultType testResult,
+			Consumer<PathogenTestDto> extraConfig) {
+
+		PathogenTestDto sampleTest = PathogenTestDto.build(sample, labUser);
+		sampleTest.setTestType(testType);
+		sampleTest.setLab(lab);
+		sampleTest.setTestedPathogen(testedPathogen);
+		sampleTest.setTestResult(testResult);
+		sampleTest.setTestResultVerified(true);
+		sampleTest.setTestDateTime(new Date());
+
+		if (extraConfig != null) {
+			extraConfig.accept(sampleTest);
+		}
+
+		sampleTest = beanTest.getPathogenTestFacade().savePathogenTest(sampleTest);
+		return sampleTest;
+	}
+
 	public SampleDto createSample(
 		EventParticipantReferenceDto associatedEventParticipant,
 		Date sampleDateTime,
@@ -1569,6 +1598,21 @@ public class TestDataCreator {
 
 	public PathogenTestDto createPathogenTest(CaseDataDto associatedCase, PathogenTestType testType, PathogenTestResultType resultType) {
 		return createPathogenTest(associatedCase, null, testType, resultType);
+	}
+
+	public Pathogen createPathogen(String value, String caption) {
+
+		CustomizableEnumValue pathogen = new CustomizableEnumValue();
+		pathogen.setDataType(CustomizableEnumType.PATHOGEN);
+		pathogen.setValue(value);
+		pathogen.setCaption(caption);
+		pathogen.setActive(true);
+
+		beanTest.getCustomizableEnumValueService().ensurePersisted(pathogen);
+
+		beanTest.getCustomizableEnumFacade().loadData();
+
+		return beanTest.getCustomizableEnumFacade().getEnumValue(CustomizableEnumType.PATHOGEN, null, value);
 	}
 
 	public PathogenTestDto createPathogenTest(SampleReferenceDto sample, CaseDataDto associatedCase) {

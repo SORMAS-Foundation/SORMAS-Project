@@ -236,6 +236,8 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setParentTimeOffWork(source.getParentTimeOffWork());
 		target.setTimeOffWorkDays(source.getTimeOffWorkDays());
 		target.setNocturnalCough(source.getNocturnalCough());
+		target.setSkinRashOnsetDate(source.getSkinRashOnsetDate());
+		target.setAcuteEncephalitis(source.getAcuteEncephalitis());
 		return target;
 	}
 
@@ -456,6 +458,8 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setTimeOffWorkDays(source.getTimeOffWorkDays());
 
 		target.setNocturnalCough(source.getNocturnalCough());
+		target.setSkinRashOnsetDate(source.getSkinRashOnsetDate());
+		target.setAcuteEncephalitis(source.getAcuteEncephalitis());
 		return target;
 	}
 

@@ -100,6 +100,9 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		}
 		target.getActivitiesAsCase().clear();
 		target.getActivitiesAsCase().addAll(activitiesAsCase);
+		target.setClusterType(source.getClusterType());
+		target.setCaseImportedStatus(source.getCaseImportedStatus());
+		target.setClusterTypeText(source.getClusterTypeText());
 
 		return target;
 	}
@@ -243,6 +246,9 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 			activityAsCaseDtos.add(activityAsCaseDto);
 		}
 		target.setActivitiesAsCase(activityAsCaseDtos);
+		target.setClusterType(source.getClusterType());
+		target.setCaseImportedStatus(source.getCaseImportedStatus());
+		target.setClusterTypeText(source.getClusterTypeText());
 
 		return target;
 	}

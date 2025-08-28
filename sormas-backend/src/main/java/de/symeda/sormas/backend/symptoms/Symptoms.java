@@ -91,6 +91,7 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState otherHemorrhagicSymptoms;
 	private String otherHemorrhagicSymptomsText;
 	private SymptomState skinRash;
+	private Date skinRashOnsetDate;
 	private SymptomState neckStiffness;
 	private SymptomState soreThroat;
 	private SymptomState apnoea;
@@ -262,6 +263,7 @@ public class Symptoms extends AbstractDomainObject {
 	private ClinicalPresentationStatus clinicalPresentationStatus;
 	// Added in case, enrolling person is not known about the symptoms, but sure of the case.
 	private SymptomState unknownSymptom;
+	private SymptomState acuteEncephalitis;
 
 	// RSV-specific symptoms
 	private SymptomState difficultyBreathingDuringMeals;
@@ -2087,5 +2089,22 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setTimeOffWorkDays(String timeOffWorkDays) {
 		this.timeOffWorkDays = timeOffWorkDays;
+	}
+
+	public Date getSkinRashOnsetDate() {
+		return skinRashOnsetDate;
+	}
+
+	public void setSkinRashOnsetDate(Date skinRashOnsetDate) {
+		this.skinRashOnsetDate = skinRashOnsetDate;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getAcuteEncephalitis() {
+		return acuteEncephalitis;
+	}
+
+	public void setAcuteEncephalitis(SymptomState acuteEncephalitis) {
+		this.acuteEncephalitis = acuteEncephalitis;
 	}
 }

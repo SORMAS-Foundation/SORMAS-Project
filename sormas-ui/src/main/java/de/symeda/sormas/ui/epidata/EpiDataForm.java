@@ -20,15 +20,19 @@ package de.symeda.sormas.ui.epidata;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.divsCss;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import com.vaadin.v7.ui.TextField;
+import de.symeda.sormas.api.epidata.ClusterType;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import org.apache.commons.collections4.CollectionUtils;
@@ -60,6 +64,8 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	private static final long serialVersionUID = 1L;
 
 	private static final String LOC_EXPOSURE_INVESTIGATION_HEADING = "locExposureInvestigationHeading";
+	private static final String LOC_CASE_IMPORT_HEADING = "locCaseImportHeading";
+	private static final String LOC_CLUSTER_TYPE_HEADING = "locClusterTypeHeading";
 	private static final String LOC_ACTIVITY_AS_CASE_INVESTIGATION_HEADING = "locActivityAsCaseInvestigationHeading";
 	private static final String LOC_SOURCE_CASE_CONTACTS_HEADING = "locSourceCaseContactsHeading";
 	private static final String LOC_EPI_DATA_FIELDS_HINT = "locEpiDataFieldsHint";
@@ -69,9 +75,13 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			loc(LOC_EXPOSURE_INVESTIGATION_HEADING) + 
 			loc(EpiDataDto.EXPOSURE_DETAILS_KNOWN) +
 			loc(EpiDataDto.EXPOSURES) +
-			loc(LOC_ACTIVITY_AS_CASE_INVESTIGATION_HEADING) + 
+			loc(LOC_CASE_IMPORT_HEADING) +
+			fluidRowLocs(6,EpiDataDto.CASE_IMPORTED_STATUS,6,"") +
+			loc(LOC_ACTIVITY_AS_CASE_INVESTIGATION_HEADING) +
 			loc(EpiDataDto.ACTIVITY_AS_CASE_DETAILS_KNOWN)+
-			loc(EpiDataDto.ACTIVITIES_AS_CASE) + 
+			loc(EpiDataDto.ACTIVITIES_AS_CASE) +
+			loc(LOC_CLUSTER_TYPE_HEADING)+
+			fluidRowLocs(6,EpiDataDto.CLUSTER_TYPE,6,EpiDataDto.CLUSTER_TYPE_TEXT) +
 			locCss(VSPACE_TOP_3, LOC_EPI_DATA_FIELDS_HINT) +
 			loc(EpiDataDto.HIGH_TRANSMISSION_RISK_AREA) +
 			loc(EpiDataDto.LARGE_OUTBREAKS_AREA) + 
@@ -140,6 +150,10 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			});
 		}
 
+		addField(EpiDataDto.CASE_IMPORTED_STATUS);
+		addField(EpiDataDto.CLUSTER_TYPE);
+		TextField clustorTypeTF = addField(EpiDataDto.CLUSTER_TYPE_TEXT);
+		FieldHelper.setVisibleWhen(getField(EpiDataDto.CLUSTER_TYPE), Arrays.asList(clustorTypeTF), Arrays.asList(ClusterType.OTHER), true);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
 			EpiDataDto.EXPOSURES,
@@ -195,6 +209,12 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		getContent().addComponent(
 			new MultilineLabel(divsCss(VSPACE_3, I18nProperties.getString(Strings.infoEpiDataFieldsHint)), ContentMode.HTML),
 			LOC_EPI_DATA_FIELDS_HINT);
+
+		getContent().addComponent(new MultilineLabel(h3(I18nProperties.getString(Strings.headingEpiCaseImport)) + divsCss(VSPACE_3), ContentMode.HTML),
+				LOC_CASE_IMPORT_HEADING);
+
+		getContent().addComponent(new MultilineLabel(h3(I18nProperties.getString(Strings.headingClusterType)) + divsCss(VSPACE_3), ContentMode.HTML),
+				LOC_CLUSTER_TYPE_HEADING);
 
 		getContent().addComponent(
 			new MultilineLabel(

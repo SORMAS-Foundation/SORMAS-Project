@@ -21,8 +21,12 @@ import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.environment.EnvironmentMedia;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleDto;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleMaterial;
+import de.symeda.sormas.api.environment.environmentsample.Pathogen;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.sample.SpecimenCondition;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -107,9 +111,10 @@ public class SampleDashboardDataProviderTest extends AbstractUiBeanTest {
 
 		EnvironmentDto environment = creator.createEnvironment("Test env", EnvironmentMedia.WATER, user.toReference(), rdcf, null);
 		FacilityDto lab1 = creator.createFacility("Lab", rdcf.region, rdcf.district, rdcf.community, FacilityType.LABORATORY);
-		EnvironmentSampleDto environmentSampleDto =
+		EnvironmentSampleDto environmentSample =
 				creator.createEnvironmentSample(environment.toReference(), user.toReference(), rdcf, lab1.toReference(), s -> {
 					s.setSampleMaterial(EnvironmentSampleMaterial.AIR);
+					s.setSpecimenCondition(SpecimenCondition.ADEQUATE);
 				});
 		// Invalid sample criteria, environment sample should not be combined with disease
 		dataProvider.setDisease(Disease.AFP);
@@ -124,6 +129,8 @@ public class SampleDashboardDataProviderTest extends AbstractUiBeanTest {
 		Assertions.assertEquals(0, dataProvider.getTestResultCountsByResultType().size());
 
 		dataProvider.setDisease(null);
+		Pathogen pathogen = creator.createPathogen("TEST_PATHOGEN", "Test pathogen");
+		creator.createPathogenTest(environmentSample.toReference(), PathogenTestType.RAPID_TEST, pathogen, lab1.toReference(), user.toReference(), PathogenTestResultType.POSITIVE, null);
 		dataProvider.refreshData();
 		Assertions.assertEquals(1, dataProvider.getEnvironmentTestResultCountsByResultType().size());
 		Assertions.assertEquals(1, dataProvider.getEnvSampleCountsBySpecimenCondition().size());

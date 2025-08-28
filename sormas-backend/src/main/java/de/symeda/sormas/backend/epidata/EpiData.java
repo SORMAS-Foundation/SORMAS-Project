@@ -27,6 +27,8 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.OneToMany;
 
+import de.symeda.sormas.api.epidata.CaseImportedStatus;
+import de.symeda.sormas.api.epidata.ClusterType;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.activityascase.ActivityAsCase;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -50,6 +52,10 @@ public class EpiData extends AbstractDomainObject {
 	private YesNoUnknown highTransmissionRiskArea;
 	private YesNoUnknown largeOutbreaksArea;
 	private YesNoUnknown areaInfectedAnimals;
+
+	private CaseImportedStatus caseImportedStatus;
+	private ClusterType clusterType;
+	private String clusterTypeText;
 
 	private List<Exposure> exposures = new ArrayList<>();
 	private List<ActivityAsCase> activitiesAsCase = new ArrayList<>();
@@ -137,5 +143,31 @@ public class EpiData extends AbstractDomainObject {
 
 	public void setContactWithSourceCaseKnown(YesNoUnknown contactWithSourceCaseKnown) {
 		this.contactWithSourceCaseKnown = contactWithSourceCaseKnown;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public CaseImportedStatus getCaseImportedStatus() {
+		return caseImportedStatus;
+	}
+
+	public void setCaseImportedStatus(CaseImportedStatus caseImportedStatus) {
+		this.caseImportedStatus = caseImportedStatus;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ClusterType getClusterType() {
+		return clusterType;
+	}
+
+	public void setClusterType(ClusterType clusterType) {
+		this.clusterType = clusterType;
+	}
+
+	public String getClusterTypeText() {
+		return clusterTypeText;
+	}
+
+	public void setClusterTypeText(String clusterTypeText) {
+		this.clusterTypeText = clusterTypeText;
 	}
 }

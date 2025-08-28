@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import de.symeda.sormas.api.DiseaseHelper;
+import de.symeda.sormas.api.sample.GenoTypeResult;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.vaadin.ui.Label;
@@ -107,6 +108,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			fluidRowLocs(PathogenTestDto.DRUG_SUSCEPTIBILITY) +
 			fluidRowLocs(4,PathogenTestDto.SEROTYPE, 4,PathogenTestDto.SEROTYPING_METHOD, 4,PathogenTestDto.SERO_TYPING_METHOD_TEXT) +
 			fluidRowLocs(6,PathogenTestDto.SERO_GROUP_SPECIFICATION , 6, PathogenTestDto.SERO_GROUP_SPECIFICATION_TEXT) +
+			fluidRowLocs(4,PathogenTestDto.GENOTYPE_RESULT,6, PathogenTestDto.GENOTYPE_RESULT_TEXT) +
 			fluidRowLocs(PathogenTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, "") +
 			fluidRowLocs(PathogenTestDto.CQ_VALUE, "") +
 			fluidRowLocs(PathogenTestDto.CT_VALUE_E, PathogenTestDto.CT_VALUE_N) +
@@ -345,6 +347,11 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		TextField diseaseVariantDetailsField = addField(PathogenTestDto.TESTED_DISEASE_VARIANT_DETAILS, TextField.class);
 		diseaseVariantDetailsField.setVisible(false);
 
+		ComboBox genoTypingCB = addField(PathogenTestDto.GENOTYPE_RESULT, ComboBox.class);
+		genoTypingCB.setVisible(true);
+		TextField genoTypingResultTextTF = addField(PathogenTestDto.GENOTYPE_RESULT_TEXT, TextField.class);
+		genoTypingResultTextTF.setVisible(true);
+
 		ComboBox testedPathogenField = addCustomizableEnumField(PathogenTestDto.TESTED_PATHOGEN);
 		TextField testedPathogenDetailsField = addField(PathogenTestDto.TESTED_PATHOGEN_DETAILS, TextField.class);
 		testedPathogenDetailsField.setVisible(false);
@@ -478,6 +485,21 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			};
 			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.DRUG_SUSCEPTIBILITY, tuberculosisAntibioticDependencies, true);
 
+			//Measles Genotyping specification
+			Map<Object, List<Object>> measlesGenoTypingDependencies = new HashMap<>() {
+
+				{
+					put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.MEASLES));
+					put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.GENOTYPING));
+				}
+			};
+			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.GENOTYPE_RESULT, measlesGenoTypingDependencies, true);
+			FieldHelper.setVisibleWhen(
+					getFieldGroup(),
+					PathogenTestDto.GENOTYPE_RESULT_TEXT,
+					PathogenTestDto.GENOTYPE_RESULT,
+					GenoTypeResult.OTHER,
+					true);
 			//test result - read only
 			Map<Object, List<Object>> tuberculosisTestResultReadOnlyDependencies = new HashMap<>() {
 
@@ -715,10 +737,15 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			}
 
 				// If disease is IMI or IPI and test type is antibiotic susceptibility, then test result is set to positive
-				if ((diseaseField.getValue() == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION || diseaseField.getValue() == Disease.INVASIVE_MENINGOCOCCAL_INFECTION)
-				&& testType == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY) {
-					testResultField.setValue(PathogenTestResultType.POSITIVE);
-				}
+			if (diseaseField.getValue() != null && List.of(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, Disease.INVASIVE_MENINGOCOCCAL_INFECTION).contains(diseaseField.getValue())
+					&& testType == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY) {
+				testResultField.setValue(PathogenTestResultType.POSITIVE);
+			}
+			// for Measles Genotyping test result is set to positive and disabled
+			if (diseaseField.getValue() == Disease.MEASLES && testType == PathogenTestType.GENOTYPING) {
+				testResultField.setValue(PathogenTestResultType.POSITIVE);
+				testResultField.setEnabled(false);
+			}
 		});
 		lab.addValueChangeListener(event -> {
 			if (event.getProperty().getValue() != null
