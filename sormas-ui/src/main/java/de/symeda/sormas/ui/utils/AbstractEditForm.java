@@ -19,6 +19,7 @@ import static com.vaadin.v7.data.fieldgroup.DefaultFieldGroupFieldFactory.CAPTIO
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -612,5 +613,13 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 
 	public void setHeading(String heading) {
 		throw new RuntimeException("setHeading should be implemented in " + getClass().getSimpleName());
+	}
+
+	/**
+	 * List of editable allowed fields,
+	 * @return
+	 */
+	public List<Field<?>> editableAllowedFields(){
+		return Collections.unmodifiableList(editableAllowedFields);
 	}
 }

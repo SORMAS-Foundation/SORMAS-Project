@@ -28,13 +28,27 @@ public enum SampleMaterial {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	BLOOD,
 	@Diseases(value = {
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION }, hide = true)
+	DRY_BLOOD,
+	@Diseases(value = {
 			Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION }, hide = true)
 	SERA,
 	@Diseases(value = {
-		Disease.CORONAVIRUS, Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION }, hide = true)
+				Disease.CORONAVIRUS,
+				Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+				Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+				Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+				Disease.MEASLES},
+			hide = true)
 	STOOL,
 	@Diseases(value = {
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION }, hide = true)
+			Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION }, hide = true)
+	THROAT_ASPIRATE,
+	@Diseases(value = {
+				Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+				Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+				Disease.MEASLES},
+			hide = true)
 	NASAL_SWAB,
 	@Diseases(value = {
 			Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION }, hide = true)
@@ -43,61 +57,160 @@ public enum SampleMaterial {
 			Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION }, hide = true)
 	NP_SWAB,
 	@Diseases(value = {
-		Disease.CORONAVIRUS, Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION }, hide = true)
+				Disease.CORONAVIRUS,
+				Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+				Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+				Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+				Disease.MEASLES},
+			hide = true)
 	RECTAL_SWAB,
-	@Diseases(value = {
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
+	@Diseases(
+			value = {
+					Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+					Disease.MEASLES
+			}, hide = true)
 	CEREBROSPINAL_FLUID,
-	@Diseases(value = {
-		Disease.CORONAVIRUS, Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION }, hide = true)
+	@Diseases(
+			value = {
+					Disease.CORONAVIRUS,
+					Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+					Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+					Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+					Disease.MEASLES
+			},
+			hide = true)
 	CRUST,
-	@Diseases(value = {
-			Disease.RESPIRATORY_SYNCYTIAL_VIRUS,Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION }, hide = true)
+	@Diseases(
+			value = {
+					Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+					Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+					Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+					Disease.MEASLES
+			},
+			hide = true)
 	TISSUE,
 	@Diseases(value = {
 		Disease.CORONAVIRUS, Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
 	URINE,
-	@Diseases(value = {
-		Disease.CORONAVIRUS, Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION }, hide = true)
+	@Diseases(
+			value = {
+					Disease.CORONAVIRUS,
+					Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+					Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+					Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+					Disease.MEASLES
+			},
+			hide = true)
 	CORNEA_PM,
-	@Diseases(value = {
-			Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION }, hide = true)
+	@Diseases(
+			value = {
+					Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+					Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+					Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+			},
+			hide = true)
 	SALIVA,
-	@Diseases(value = {
-		Disease.CORONAVIRUS, Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.INVASIVE_MENINGOCOCCAL_INFECTION , Disease.INVASIVE_PNEUMOCOCCAL_INFECTION}, hide = true)
+	@Diseases(
+			value = {
+					Disease.CORONAVIRUS,
+					Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+					Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+					Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+					Disease.MEASLES},
+			hide = true)
 	URINE_PM,
-	@Diseases(value = {
-		Disease.CORONAVIRUS, Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION }, hide = true)
+	@Diseases(
+			value = {
+					Disease.CORONAVIRUS,
+					Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+					Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+					Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+					Disease.MEASLES},
+			hide = true)
 	NUCHAL_SKIN_BIOPSY,
-	@Diseases(value = {
-			Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION }, hide = true)
+	@Diseases(
+			value = {
+					Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+					Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+					Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+					Disease.MEASLES},
+			hide = true)
 	SPUTUM,
-	@Diseases(value = {
-			Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.INVASIVE_MENINGOCOCCAL_INFECTION , Disease.INVASIVE_PNEUMOCOCCAL_INFECTION}, hide = true)
+	@Diseases(
+			value = {
+					Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+					Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+					Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+					Disease.MEASLES},
+			hide = true)
 	ENDOTRACHEAL_ASPIRATE,
-	@Diseases(value = {
-			Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION }, hide = true)
+	@Diseases(
+			value = {
+					Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+					Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+					Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+					Disease.MEASLES},
+			hide = true)
 	BRONCHOALVEOLAR_LAVAGE,
-	@Diseases(value = {
-		Disease.CORONAVIRUS, Disease.RESPIRATORY_SYNCYTIAL_VIRUS , Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION}, hide = true)
+	@Diseases(
+			value = {
+					Disease.CORONAVIRUS,
+					Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+					Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+					Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+					Disease.MEASLES},
+			hide = true)
 	BRAIN_TISSUE,
-	@Diseases(value = {
-			Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.INVASIVE_MENINGOCOCCAL_INFECTION , Disease.INVASIVE_PNEUMOCOCCAL_INFECTION}, hide = true)
+	@Diseases(
+			value = {
+					Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+					Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+					Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+					Disease.MEASLES},
+			hide = true)
 	ANTERIOR_NARES_SWAB,
-	@Diseases(value = {
-			Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.INVASIVE_MENINGOCOCCAL_INFECTION , Disease.INVASIVE_PNEUMOCOCCAL_INFECTION}, hide = true)
+	@Diseases(
+			value = {
+					Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+					Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+					Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+					Disease.MEASLES},
+			hide = true)
 	OP_ASPIRATE,
-	@Diseases(value = {
-			Disease.INVASIVE_MENINGOCOCCAL_INFECTION , Disease.INVASIVE_PNEUMOCOCCAL_INFECTION}, hide = true)
+	@Diseases(
+			value = {
+					Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+					Disease.INVASIVE_PNEUMOCOCCAL_INFECTION
+			},
+			hide = true)
 	NP_ASPIRATE,
+	@Diseases(
+			value = {
+					Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+					Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+					Disease.MEASLES},
+			hide = true)
+	PLEURAL_FLUID,
 	@Diseases(value = {
 			Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
-	PLEURAL_FLUID,
+	AMNIOTIC_FLUID,
+	@Diseases(
+			value = {
+					Disease.MEASLES},
+			hide = true)
 	CLINICAL_SAMPLE,
 	@Diseases(value = {
-			Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
+			Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+			Disease.MEASLES},
+			hide = true)
 	PERITONEAL_FLUID,
+	@Diseases(
+			value = {
+					Disease.MEASLES},
+			hide = true)
 	SYNOVIAL_FLUID,
+	// for all diseases
+	EDTA_WHOLE_BLOOD,
 	OTHER;
 
 	@Override

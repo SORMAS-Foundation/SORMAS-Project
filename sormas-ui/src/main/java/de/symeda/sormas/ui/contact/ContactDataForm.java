@@ -22,9 +22,12 @@ import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.CssStyles.LABEL_WHITE_SPACE_NORMAL;
 import static de.symeda.sormas.ui.utils.CssStyles.LAYOUT_COL_HIDE_INVSIBLE;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLocCss;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
+import static de.symeda.sormas.ui.utils.LayoutUtil.oneOfTwoCol;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -53,6 +56,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -157,7 +161,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 					fluidRowLocs(ContactDto.END_OF_QUARANTINE_REASON, ContactDto.END_OF_QUARANTINE_REASON_DETAILS) +
 					locCss(VSPACE_3, ContactDto.HIGH_PRIORITY) +
 					fluidRowLocs(ContactDto.HEALTH_CONDITIONS) +
-					fluidRowLocs(ContactDto.VACCINATION_STATUS, "") +
+					fluidRow(fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 6, 0,ContactDto.VACCINATION_STATUS), oneOfTwoCol(ContactDto.VACCINATION_DOSE_ONE_DATE), oneOfTwoCol(ContactDto.VACCINATION_DOSE_TWO_DATE)) +
+					fluidRowLocs(ContactDto.VACCINATION_PROPOSED, ContactDto.IMMUNE_GLOBULIN_PROPOSED) +
 					fluidRowLocs(ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE, ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS) +
                     loc(ContactDto.CARE_FOR_PEOPLE_OVER_60) +
 					loc(FOLLOW_UP_STATUS_HEADING_LOC) +
@@ -455,7 +460,13 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			true);
 
 		addField(ContactDto.DESCRIPTION, TextArea.class).setRows(6);
-		addField(ContactDto.VACCINATION_STATUS);
+		ComboBox vaccinationStatusCB = addField(ContactDto.VACCINATION_STATUS);
+		DateField vaccinationDose1DateDF = addField(ContactDto.VACCINATION_DOSE_ONE_DATE);
+		DateField vaccinationDose2DateDF = addField(ContactDto.VACCINATION_DOSE_TWO_DATE);
+		FieldHelper.setVisibleWhen(vaccinationStatusCB, Arrays.asList(vaccinationDose1DateDF), Arrays.asList(VaccinationStatus.VACCINATED_ONE_DOSE), true);
+		FieldHelper.setVisibleWhen(vaccinationStatusCB, Arrays.asList(vaccinationDose2DateDF), Arrays.asList(VaccinationStatus.VACCINATED_TWO_DOSE), true);
+		addField(ContactDto.VACCINATION_PROPOSED, CheckBox.class);
+		addField(ContactDto.IMMUNE_GLOBULIN_PROPOSED, CheckBox.class);
 		addField(ContactDto.RETURNING_TRAVELER, NullableOptionGroup.class);
 		addField(ContactDto.CASE_ID_EXTERNAL_SYSTEM, TextField.class);
 		addField(ContactDto.CASE_OR_EVENT_INFORMATION, TextArea.class).setRows(4);

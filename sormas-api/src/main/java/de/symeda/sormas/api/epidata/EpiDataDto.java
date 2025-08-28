@@ -22,6 +22,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
@@ -31,6 +32,7 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
@@ -51,12 +53,29 @@ public class EpiDataDto extends PseudonymizableDto {
 	public static final String AREA_INFECTED_ANIMALS = "areaInfectedAnimals";
 	public static final String HIGH_TRANSMISSION_RISK_AREA = "highTransmissionRiskArea";
 	public static final String LARGE_OUTBREAKS_AREA = "largeOutbreaksArea";
+	public static final String CASE_IMPORTED_STATUS = "caseImportedStatus";
+	public static final String CLUSTER_TYPE = "clusterType";
+	public static final String CLUSTER_TYPE_TEXT = "clusterTypeText";
 
 	private YesNoUnknown exposureDetailsKnown;
 	private YesNoUnknown activityAsCaseDetailsKnown;
 	private YesNoUnknown contactWithSourceCaseKnown;
 	private YesNoUnknown highTransmissionRiskArea;
 	private YesNoUnknown largeOutbreaksArea;
+	@Diseases({
+			Disease.MEASLES})
+	@HideForCountriesExcept(countries = {CountryHelper.COUNTRY_CODE_LUXEMBOURG})
+	private CaseImportedStatus caseImportedStatus;
+	@Diseases({
+			Disease.MEASLES})
+	@HideForCountriesExcept(countries = {CountryHelper.COUNTRY_CODE_LUXEMBOURG})
+	private ClusterType clusterType;
+
+	@HideForCountriesExcept(countries = {CountryHelper.COUNTRY_CODE_LUXEMBOURG})
+	@Diseases({
+			Disease.MEASLES})
+	private String clusterTypeText;
+
 	@Diseases({
 		Disease.AFP,
 		Disease.GUINEA_WORM,
@@ -144,6 +163,30 @@ public class EpiDataDto extends PseudonymizableDto {
 		EpiDataDto epiData = new EpiDataDto();
 		epiData.setUuid(DataHelper.createUuid());
 		return epiData;
+	}
+
+	public CaseImportedStatus getCaseImportedStatus() {
+		return caseImportedStatus;
+	}
+
+	public void setCaseImportedStatus(CaseImportedStatus caseImportedStatus) {
+		this.caseImportedStatus = caseImportedStatus;
+	}
+
+	public ClusterType getClusterType() {
+		return clusterType;
+	}
+
+	public void setClusterType(ClusterType clusterType) {
+		this.clusterType = clusterType;
+	}
+
+	public String getClusterTypeText() {
+		return clusterTypeText;
+	}
+
+	public void setClusterTypeText(String clusterTypeText) {
+		this.clusterTypeText = clusterTypeText;
 	}
 
 	@Override

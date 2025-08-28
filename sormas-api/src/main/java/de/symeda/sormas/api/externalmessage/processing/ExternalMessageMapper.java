@@ -334,7 +334,12 @@ public final class ExternalMessageMapper {
 							pathogenTest::setPrescriberCountry,
 							pathogenTest.getPrescriberCountry(),
 							sourceTestReport.getPrescriberCountry(),
-							PathogenTestDto.PRESCRIBER_COUNTRY))));
+								PathogenTestDto.PRESCRIBER_COUNTRY),
+							Mapping.of(
+									pathogenTest::setGenoTypeResult,
+									pathogenTest.getGenoTypeResult(),
+									sourceTestReport.getGenoTypeResult(),
+									PathogenTestDto.GENOTYPE_RESULT))));
 		}
 
 		changedFields.addAll(

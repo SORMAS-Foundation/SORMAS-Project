@@ -326,6 +326,8 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setSeroTypingMethodText(source.getSeroTypingMethodText());
 		target.setSeroGroupSpecification(source.getSeroGroupSpecification());
 		target.setSeroGroupSpecificationText(source.getSeroGroupSpecificationText());
+		target.setGenoTypeResult(source.getGenoTypeResult());
+		target.setGenoTypeResultText(source.getGenoTypeResultText());
 		return target;
 	}
 
@@ -593,6 +595,8 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setSeroTypingMethodText(source.getSeroTypingMethodText());
 		target.setSeroGroupSpecification(source.getSeroGroupSpecification());
 		target.setSeroGroupSpecificationText(source.getSeroGroupSpecificationText());
+		target.setGenoTypeResult(source.getGenoTypeResult());
+		target.setGenoTypeResultText(source.getGenoTypeResultText());
 		return target;
 	}
 

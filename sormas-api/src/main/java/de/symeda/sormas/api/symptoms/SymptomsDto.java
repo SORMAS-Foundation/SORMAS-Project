@@ -255,6 +255,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String SIDE_PAIN = "sidePain";
 	public static final String SKIN_BRUISING = "skinBruising";
 	public static final String SKIN_RASH = "skinRash";
+	public static final String SKIN_RASH_ONSET_DATE = "skinRashOnsetDate";
 	public static final String SKIN_ULCERS = "skinUlcers";
 	public static final String SORE_THROAT = "soreThroat";
 	public static final String SPLENOMEGALY = "splenomegaly";
@@ -307,6 +308,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String SEIZURES = "seizures";
 	public static final String SEPSIS = "sepsis";
 	public static final String SHOCK = "shock";
+	public static final String ACUTE_ENCEPHALITIS = "acuteEncephalitis";
 	// clinical
 	public static final String ASYMPTOMATIC = "asymptomatic";
 	public static final String HEMORRHAGIC_RASH = "hemorrhagicRash";
@@ -1116,6 +1118,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Diseases({
 		CORONAVIRUS,
 		UNDEFINED,
+		MEASLES,
 		OTHER })
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
@@ -1686,6 +1689,12 @@ public class SymptomsDto extends PseudonymizableDto {
 	private SymptomState skinRash;
 
 	@Diseases({
+		MEASLES })
+	@Outbreaks
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	private Date skinRashOnsetDate;
+
+	@Diseases({
 		AFP,
 		EVD,
 		GUINEA_WORM,
@@ -2138,6 +2147,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CORONAVIRUS,
 		INVASIVE_MENINGOCOCCAL_INFECTION,
 		INVASIVE_PNEUMOCOCCAL_INFECTION,
+		MEASLES,
 		UNDEFINED,
 		OTHER })
 	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
@@ -2561,7 +2571,8 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Diseases({
 		INVASIVE_MENINGOCOCCAL_INFECTION,
 		INVASIVE_PNEUMOCOCCAL_INFECTION,
-		PERTUSSIS })
+		PERTUSSIS,
+    	MEASLES })
 	private SymptomState asymptomatic;
 	@Diseases({
 		INVASIVE_MENINGOCOCCAL_INFECTION })
@@ -2591,7 +2602,8 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	@Diseases({
 			INVASIVE_PNEUMOCOCCAL_INFECTION,
-			INVASIVE_MENINGOCOCCAL_INFECTION })
+			INVASIVE_MENINGOCOCCAL_INFECTION,
+            MEASLES })
 	private SymptomState unknownSymptom;
 
 	// RSV-specific symptoms
@@ -2612,10 +2624,15 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	@Diseases(RESPIRATORY_SYNCYTIAL_VIRUS)
 	@DependantOn("parentTimeOffWork")
-	@Size(max = 50, message = Validations.textTooLong) 
+	@Size(max = 50, message = Validations.textTooLong)
 	private String timeOffWorkDays;
 
-	private DiagnosisType diagnosis;
+    @HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+    @Diseases({
+            MEASLES })
+    private SymptomState acuteEncephalitis;
+
+    private DiagnosisType diagnosis;
 	private InfectionSite majorSite;
 	private String otherMajorSiteDetails;
 	private InfectionSite minorSite;
@@ -4436,5 +4453,21 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	public void setTimeOffWorkDays(String timeOffWorkDays) {
 		this.timeOffWorkDays = timeOffWorkDays;
+	}
+
+	public Date getSkinRashOnsetDate() {
+		return skinRashOnsetDate;
+	}
+
+	public void setSkinRashOnsetDate(Date skinRashOnsetDate) {
+		this.skinRashOnsetDate = skinRashOnsetDate;
+	}
+
+	public SymptomState getAcuteEncephalitis() {
+		return acuteEncephalitis;
+	}
+
+	public void setAcuteEncephalitis(SymptomState acuteEncephalitis) {
+		this.acuteEncephalitis = acuteEncephalitis;
 	}
 }

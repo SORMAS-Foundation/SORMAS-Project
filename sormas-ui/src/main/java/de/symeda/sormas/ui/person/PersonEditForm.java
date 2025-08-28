@@ -424,7 +424,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		// Entry date is only required for foreigners in Luxembourg with the TB+IMI+IPI diseases only.
 		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 			boolean isEntryDateAllowedDisease =
-				Arrays.asList(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.TUBERCULOSIS)
+					Arrays.asList(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.TUBERCULOSIS, Disease.MEASLES)
 					.contains(disease);
 			birthCountryCB.addValueChangeListener(e -> {
 				CountryReferenceDto countryRef = (CountryReferenceDto) e.getProperty().getValue();

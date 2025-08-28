@@ -14,9 +14,7 @@
  */
 package de.symeda.sormas.api.sample;
 
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -113,6 +111,8 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String SERO_TYPING_METHOD_TEXT = "seroTypingMethodText";
 	public static final String SERO_GROUP_SPECIFICATION = "seroGroupSpecification";
 	public static final String SERO_GROUP_SPECIFICATION_TEXT = "seroGroupSpecificationText";
+	public static final String GENOTYPE_RESULT = "genoTypeResult";
+	public static final String GENOTYPE_RESULT_TEXT = "genoTypeResultText";
 
 	private SampleReferenceDto sample;
 	private EnvironmentSampleReferenceDto environmentSample;
@@ -226,6 +226,17 @@ public class PathogenTestDto extends PseudonymizableDto {
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	@Diseases(value = {Disease.INVASIVE_PNEUMOCOCCAL_INFECTION})
 	private SerotypingMethod seroTypingMethod;
+
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {Disease.MEASLES})
+	private GenoTypeResult genoTypeResult;
+
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {Disease.MEASLES})
+	private String genoTypeResultText;
+
 	@SensitiveData
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION})
@@ -716,6 +727,22 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	public void setSeroTypingMethod(SerotypingMethod seroTypingMethod) {
 		this.seroTypingMethod = seroTypingMethod;
+	}
+
+	public GenoTypeResult getGenoTypeResult() {
+		return genoTypeResult;
+	}
+
+	public void setGenoTypeResult(GenoTypeResult genoTypeResult) {
+		this.genoTypeResult = genoTypeResult;
+	}
+
+	public String getGenoTypeResultText() {
+		return genoTypeResultText;
+	}
+
+	public void setGenoTypeResultText(String genoTypeResultText) {
+		this.genoTypeResultText = genoTypeResultText;
 	}
 
 	public String getSeroTypingMethodText() {

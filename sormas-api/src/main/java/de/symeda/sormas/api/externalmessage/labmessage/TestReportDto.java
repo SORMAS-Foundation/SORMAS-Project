@@ -11,6 +11,7 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
+import de.symeda.sormas.api.sample.GenoTypeResult;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -130,6 +131,8 @@ public class TestReportDto extends EntityDto {
 	private String prescriberCity;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	private CountryReferenceDto prescriberCountry;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	private GenoTypeResult genoTypeResult;
 
 	public SampleReportReferenceDto getSampleReport() {
 		return sampleReport;
@@ -407,5 +410,13 @@ public class TestReportDto extends EntityDto {
 
 	public void setPrescriberCountry(CountryReferenceDto prescriberCountry) {
 		this.prescriberCountry = prescriberCountry;
+	}
+
+	public GenoTypeResult getGenoTypeResult() {
+		return genoTypeResult;
+	}
+
+	public void setGenoTypeResult(GenoTypeResult genoTypeResult) {
+		this.genoTypeResult = genoTypeResult;
 	}
 }

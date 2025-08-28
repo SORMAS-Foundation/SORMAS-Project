@@ -1629,6 +1629,10 @@ public class ContactFacadeEjb
 		target.setProphylaxisPrescribed(source.getProphylaxisPrescribed());
 		target.setPrescribedDrug(source.getPrescribedDrug());
 		target.setPrescribedDrugText(source.getPrescribedDrugText());
+		target.setVaccinationDoseOneDate(source.getVaccinationDoseOneDate());
+		target.setVaccinationDoseTwoDate(source.getVaccinationDoseTwoDate());
+		target.setVaccinationProposed(source.isVaccinationProposed());
+		target.setImmuneGlobulinProposed(source.isImmuneGlobulinProposed());
 
 		return target;
 	}
@@ -1977,6 +1981,11 @@ public class ContactFacadeEjb
 		target.setProphylaxisPrescribed(source.getProphylaxisPrescribed());
 		target.setPrescribedDrug(source.getPrescribedDrug());
 		target.setPrescribedDrugText(source.getPrescribedDrugText());
+
+		target.setVaccinationDoseOneDate(source.getVaccinationDoseOneDate());
+		target.setVaccinationDoseTwoDate(source.getVaccinationDoseTwoDate());
+		target.setVaccinationProposed(source.isVaccinationProposed());
+		target.setImmuneGlobulinProposed(source.isImmuneGlobulinProposed());
 		return target;
 	}
 

@@ -16,6 +16,7 @@
 package de.symeda.sormas.ui.caze;
 
 import java.util.EnumSet;
+import java.util.List;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.UI;
@@ -24,6 +25,7 @@ import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.CoreFacade;
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
@@ -186,7 +188,9 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 			}
 			if (UiUtil.permitted(FeatureType.VIEW_TAB_CASES_THERAPY, UserRight.THERAPY_VIEW)
 				&& !caze.checkIsUnreferredPortHealthCase()
-				&& UiUtil.enabled(FeatureType.CLINICAL_MANAGEMENT)) {
+				&& UiUtil.enabled(FeatureType.CLINICAL_MANAGEMENT) &&
+					!(FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && List.of(Disease.MEASLES).contains(caze.getDisease()))) {
+				// Therapy view is not available for Luxembourg for Measles cases
 				menu.addView(TherapyView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.THERAPY), params);
 			}
 		}
@@ -199,12 +203,15 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 
 		if (showExtraMenuEntries) {
 			if (UiUtil.permitted(
-				EnumSet.of(FeatureType.VIEW_TAB_CASES_FOLLOW_UP, FeatureType.VIEW_TAB_CASES_CLINICAL_COURSE, FeatureType.CLINICAL_MANAGEMENT),
-				UserRight.CLINICAL_COURSE_VIEW) && !caze.checkIsUnreferredPortHealthCase() && !DiseaseHelper.checkDiseaseIsInvasiveBacterialDiseases(caze.getDisease())) {
+					EnumSet.of(FeatureType.VIEW_TAB_CASES_FOLLOW_UP, FeatureType.VIEW_TAB_CASES_CLINICAL_COURSE, FeatureType.CLINICAL_MANAGEMENT),
+					UserRight.CLINICAL_COURSE_VIEW) && !caze.checkIsUnreferredPortHealthCase() && !List.of(Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION).contains(caze.getDisease()) &&
+					!(FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && List.of(Disease.MEASLES).contains(caze.getDisease()))) {
+				// clinical course view is not available for Luxembourg for Measles cases,
+				// and for all other countries IMI & IPI cases.
 				menu.addView(
-					ClinicalCourseView.VIEW_NAME,
-					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CLINICAL_COURSE),
-					params);
+						ClinicalCourseView.VIEW_NAME,
+						I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CLINICAL_COURSE),
+						params);
 			}
 		}
 		if (FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(caze.getDisease())

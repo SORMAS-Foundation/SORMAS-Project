@@ -1043,6 +1043,7 @@ public interface Captions {
 	String Contact_followUpStatusChangeUser = "Contact.followUpStatusChangeUser";
 	String Contact_followUpUntil = "Contact.followUpUntil";
 	String Contact_highPriority = "Contact.highPriority";
+	String Contact_immuneGlobulinProposed = "Contact.immuneGlobulinProposed";
 	String Contact_immunosuppressiveTherapyBasicDisease = "Contact.immunosuppressiveTherapyBasicDisease";
 	String Contact_immunosuppressiveTherapyBasicDiseaseDetails = "Contact.immunosuppressiveTherapyBasicDiseaseDetails";
 	String Contact_internalToken = "Contact.internalToken";
@@ -1098,6 +1099,9 @@ public interface Captions {
 	String Contact_tracingApp = "Contact.tracingApp";
 	String Contact_tracingAppDetails = "Contact.tracingAppDetails";
 	String Contact_uuid = "Contact.uuid";
+	String Contact_vaccinationDoseOneDate = "Contact.vaccinationDoseOneDate";
+	String Contact_vaccinationDoseTwoDate = "Contact.vaccinationDoseTwoDate";
+	String Contact_vaccinationProposed = "Contact.vaccinationProposed";
 	String Contact_vaccinationStatus = "Contact.vaccinationStatus";
 	String Contact_visits = "Contact.visits";
 	String contactActiveContacts = "contactActiveContacts";
@@ -1556,6 +1560,9 @@ public interface Captions {
 	String EpiData_activitiesAsCase = "EpiData.activitiesAsCase";
 	String EpiData_activityAsCaseDetailsKnown = "EpiData.activityAsCaseDetailsKnown";
 	String EpiData_areaInfectedAnimals = "EpiData.areaInfectedAnimals";
+	String EpiData_caseImportedStatus = "EpiData.caseImportedStatus";
+	String EpiData_clusterType = "EpiData.clusterType";
+	String EpiData_clusterTypeText = "EpiData.clusterTypeText";
 	String EpiData_contactWithSourceCaseKnown = "EpiData.contactWithSourceCaseKnown";
 	String EpiData_exposureDetailsKnown = "EpiData.exposureDetailsKnown";
 	String EpiData_exposures = "EpiData.exposures";
@@ -2228,6 +2235,8 @@ public interface Captions {
 	String PathogenTest_externalId = "PathogenTest.externalId";
 	String PathogenTest_externalOrderId = "PathogenTest.externalOrderId";
 	String PathogenTest_fourFoldIncreaseAntibodyTiter = "PathogenTest.fourFoldIncreaseAntibodyTiter";
+	String PathogenTest_genoTypeResult = "PathogenTest.genoTypeResult";
+	String PathogenTest_genoTypeResultText = "PathogenTest.genoTypeResultText";
 	String PathogenTest_isoniazidResistant = "PathogenTest.isoniazidResistant";
 	String PathogenTest_lab = "PathogenTest.lab";
 	String PathogenTest_labDetails = "PathogenTest.labDetails";
@@ -2810,6 +2819,7 @@ public interface Captions {
 	String Symptoms = "Symptoms";
 	String Symptoms_abdominalPain = "Symptoms.abdominalPain";
 	String Symptoms_abnormalLungXrayFindings = "Symptoms.abnormalLungXrayFindings";
+	String Symptoms_acuteEncephalitis = "Symptoms.acuteEncephalitis";
 	String Symptoms_acuteRespiratoryDistressSyndrome = "Symptoms.acuteRespiratoryDistressSyndrome";
 	String Symptoms_aerophobia = "Symptoms.aerophobia";
 	String Symptoms_agitation = "Symptoms.agitation";
@@ -2997,6 +3007,8 @@ public interface Captions {
 	String Symptoms_sidePain = "Symptoms.sidePain";
 	String Symptoms_skinBruising = "Symptoms.skinBruising";
 	String Symptoms_skinRash = "Symptoms.skinRash";
+	String Symptoms_skinRash_lu_MEASLES = "Symptoms.skinRash.lu-MEASLES";
+	String Symptoms_skinRashOnsetDate = "Symptoms.skinRashOnsetDate";
 	String Symptoms_skinUlcers = "Symptoms.skinUlcers";
 	String Symptoms_soreThroat = "Symptoms.soreThroat";
 	String Symptoms_splenomegaly = "Symptoms.splenomegaly";

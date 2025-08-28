@@ -498,6 +498,7 @@ public interface Strings {
 	String headingClinicalMeasurements = "headingClinicalMeasurements";
 	String headingClinicalPresentation = "headingClinicalPresentation";
 	String headingClinicalVisitsDeleted = "headingClinicalVisitsDeleted";
+	String headingClusterType = "headingClusterType";
 	String headingComparisonCase = "headingComparisonCase";
 	String headingCompleteness = "headingCompleteness";
 	String headingComplications = "headingComplications";
@@ -637,6 +638,7 @@ public interface Strings {
 	String headingEnvironmentSamplesNotDeleted = "headingEnvironmentSamplesNotDeleted";
 	String headingEnvironmentSamplesNotRestored = "headingEnvironmentSamplesNotRestored";
 	String headingEnvironmentSamplesRestored = "headingEnvironmentSamplesRestored";
+	String headingEpiCaseImport = "headingEpiCaseImport";
 	String headingEpiCurve = "headingEpiCurve";
 	String headingEpiDataSourceCaseContacts = "headingEpiDataSourceCaseContacts";
 	String headingErrorReportNotAvailable = "headingErrorReportNotAvailable";

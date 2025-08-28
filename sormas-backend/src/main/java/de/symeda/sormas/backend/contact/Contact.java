@@ -172,6 +172,8 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 	public static final String PROPHYLAXIS_PRESCRIBED ="prophylaxisPrescribed";
 	public static final String PRESCRIBED_DRUG ="prescribedDrug";
 	public static final String PRESCRIBED_DRUG_TEXT ="prescribedDrugText";
+	public static final String VACCINATION_DOSE_ONE_DATE ="vaccinationDoseOneDate";
+	public static final String VACCINATION_DOSE_TWO_DATE ="vaccinationDoseTwoDate";
 
 	private Date reportDateTime;
 	private User reportingUser;
@@ -292,6 +294,12 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 		Disease.OTHER })
 	@Outbreaks
 	private VaccinationStatus vaccinationStatus;
+
+	private Date vaccinationDoseOneDate;
+	private Date vaccinationDoseTwoDate;
+
+	private boolean vaccinationProposed;
+	private boolean immuneGlobulinProposed;
 
 	private Long personId;
 
@@ -1134,5 +1142,39 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 
 	public void setPrescribedDrugText(String prescribedDrugText) {
 		this.prescribedDrugText = prescribedDrugText;
+	}
+
+	@Column(name = "vaccination_dose1_date")
+	public Date getVaccinationDoseOneDate() {
+		return vaccinationDoseOneDate;
+	}
+
+	public void setVaccinationDoseOneDate(Date vaccinationDoseOneDate) {
+		this.vaccinationDoseOneDate = vaccinationDoseOneDate;
+	}
+
+	@Column(name = "vaccination_dose2_date")
+	public Date getVaccinationDoseTwoDate() {
+		return vaccinationDoseTwoDate;
+	}
+
+	public void setVaccinationDoseTwoDate(Date vaccinationDoseTwoDate) {
+		this.vaccinationDoseTwoDate = vaccinationDoseTwoDate;
+	}
+
+	public boolean isVaccinationProposed() {
+		return vaccinationProposed;
+	}
+
+	public void setVaccinationProposed(boolean vaccinationProposed) {
+		this.vaccinationProposed = vaccinationProposed;
+	}
+
+	public boolean isImmuneGlobulinProposed() {
+		return immuneGlobulinProposed;
+	}
+
+	public void setImmuneGlobulinProposed(boolean immuneGlobulinProposed) {
+		this.immuneGlobulinProposed = immuneGlobulinProposed;
 	}
 }
