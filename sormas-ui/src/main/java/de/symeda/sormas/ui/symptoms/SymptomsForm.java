@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.ui.symptoms;
 
-import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.COMPLIANCE_WITH_TREATMENT;
 import static de.symeda.sormas.api.symptoms.SymptomsDto.*;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.CssStyles.H4;
@@ -28,16 +27,13 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
-import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locsCss;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -159,7 +155,6 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 					createSymptomGroupLayout(SymptomGroup.NERVOUS_SYSTEM, NERVOUS_SYSTEM_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
 					createSymptomGroupLayout(SymptomGroup.SKIN, SKIN_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
 					createSymptomGroupLayout(SymptomGroup.OTHER, OTHER_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
-//					fluidRow(fluidColumn(3, 0, locs(SKIN_RASH_ONSET_DATE)))+
 					fluidRow(fluidColumn(6, 0, loc("LAYOUT_SKIN_RASH_ONSET_DATE"))) +
 					locsCss(VSPACE_3, PATIENT_ILL_LOCATION, SYMPTOMS_COMMENTS) +
 					fluidRowLocsCss(VSPACE_3, ONSET_SYMPTOM, ONSET_DATE) +
@@ -546,9 +541,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		NullableOptionGroup asymptomaticNOG = addField(ASYMPTOMATIC);
 
 		asymptomaticNOG.addValueChangeListener(e -> {
-			Set<SymptomState> set = new HashSet((Collection) e.getProperty().getValue());
 			if (isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
-				if (set.contains(SymptomState.YES)) {
+				if (SymptomState.YES.equals(asymptomaticNOG.getNullableValue())) {
 					editableAllowedFields().stream().filter(field -> !field.getId().equals(ASYMPTOMATIC)).forEach(field -> {
 						field.clear();
 						field.setEnabled(false);
@@ -581,7 +575,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		skinRashDateLabel.setVisible(false);
 		skinRashDateLayout.addComponent(skinRashDateLabel, "LBL_SKIN_RASH_ONSET_DATE");
 
-		skinRashDateLabel.setVisible(isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && getField(SKIN_RASH).getValue() == YesNoUnknown.YES);
+		skinRashDateLabel.setVisible(isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && FieldHelper.getNullableSourceFieldValue(getField(SKIN_RASH)) == YesNoUnknown.YES);
 		DateField skinRashOnsetDate = addField(skinRashDateLayout, SKIN_RASH_ONSET_DATE, DateField.class);
 		skinRashOnsetDate.setId(SKIN_RASH_ONSET_DATE);
 		skinRashOnsetDate.addStyleNames(ValoTheme.DATEFIELD_BORDERLESS, CssStyles.VIEW_SECTION_WIDTH_AUTO, VSPACE_3);

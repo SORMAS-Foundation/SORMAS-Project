@@ -1043,6 +1043,7 @@ public interface Captions {
 	String Contact_followUpStatusChangeUser = "Contact.followUpStatusChangeUser";
 	String Contact_followUpUntil = "Contact.followUpUntil";
 	String Contact_highPriority = "Contact.highPriority";
+	String Contact_immuneGlobulinProposed = "Contact.immuneGlobulinProposed";
 	String Contact_immunosuppressiveTherapyBasicDisease = "Contact.immunosuppressiveTherapyBasicDisease";
 	String Contact_immunosuppressiveTherapyBasicDiseaseDetails = "Contact.immunosuppressiveTherapyBasicDiseaseDetails";
 	String Contact_internalToken = "Contact.internalToken";
@@ -1098,6 +1099,9 @@ public interface Captions {
 	String Contact_tracingApp = "Contact.tracingApp";
 	String Contact_tracingAppDetails = "Contact.tracingAppDetails";
 	String Contact_uuid = "Contact.uuid";
+	String Contact_vaccinationDoseOneDate = "Contact.vaccinationDoseOneDate";
+	String Contact_vaccinationDoseTwoDate = "Contact.vaccinationDoseTwoDate";
+	String Contact_vaccinationProposed = "Contact.vaccinationProposed";
 	String Contact_vaccinationStatus = "Contact.vaccinationStatus";
 	String Contact_visits = "Contact.visits";
 	String contactActiveContacts = "contactActiveContacts";
@@ -1991,7 +1995,6 @@ public interface Captions {
 	String HealthConditions_tuberculosis = "HealthConditions.tuberculosis";
 	String HealthConditions_tuberculosisInfectionYear = "HealthConditions.tuberculosisInfectionYear";
 	String humanSampleViewType = "humanSampleViewType";
-	String immuneGlobulinProposed = "immuneGlobulinProposed";
 	String Immunization = "Immunization";
 	String Immunization_additionalDetails = "Immunization.additionalDetails";
 	String Immunization_ageAndBirthDate = "Immunization.ageAndBirthDate";
@@ -3297,12 +3300,9 @@ public interface Captions {
 	String Vaccination_vaccineName = "Vaccination.vaccineName";
 	String Vaccination_vaccineType = "Vaccination.vaccineType";
 	String Vaccination_vaccineUniiCode = "Vaccination.vaccineUniiCode";
-	String vaccinationDoseOneDate = "vaccinationDoseOneDate";
-	String vaccinationDoseTwoDate = "vaccinationDoseTwoDate";
 	String vaccinationNewVaccination = "vaccinationNewVaccination";
 	String vaccinationNoVaccinationsForPerson = "vaccinationNoVaccinationsForPerson";
 	String vaccinationNoVaccinationsForPersonAndDisease = "vaccinationNoVaccinationsForPersonAndDisease";
-	String vaccinationProposed = "vaccinationProposed";
 	String versionIsMissing = "versionIsMissing";
 	String view = "view";
 	String View_actions = "View.actions";

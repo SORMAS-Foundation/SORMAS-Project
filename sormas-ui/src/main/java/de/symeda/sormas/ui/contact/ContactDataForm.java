@@ -463,7 +463,6 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		ComboBox vaccinationStatusCB = addField(ContactDto.VACCINATION_STATUS);
 		DateField vaccinationDose1DateDF = addField(ContactDto.VACCINATION_DOSE_ONE_DATE);
 		DateField vaccinationDose2DateDF = addField(ContactDto.VACCINATION_DOSE_TWO_DATE);
-		FieldHelper.setVisibleWhen(vaccinationStatusCB, Arrays.asList(vaccinationDose1DateDF, vaccinationDose2DateDF), Arrays.asList(VaccinationStatus.VACCINATED_TWO_DOSE, VaccinationStatus.VACCINATED_ONE_DOSE), true);
 		FieldHelper.setVisibleWhen(vaccinationStatusCB, Arrays.asList(vaccinationDose1DateDF), Arrays.asList(VaccinationStatus.VACCINATED_ONE_DOSE), true);
 		FieldHelper.setVisibleWhen(vaccinationStatusCB, Arrays.asList(vaccinationDose2DateDF), Arrays.asList(VaccinationStatus.VACCINATED_TWO_DOSE), true);
 		addField(ContactDto.VACCINATION_PROPOSED, CheckBox.class);
