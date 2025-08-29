@@ -328,6 +328,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setSeroGroupSpecificationText(source.getSeroGroupSpecificationText());
 		target.setGenoTypeResult(source.getGenoTypeResult());
 		target.setGenoTypeResultText(source.getGenoTypeResultText());
+		target.setRsvSubtype(source.getRsvSubtype());
 		return target;
 	}
 
@@ -597,6 +598,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setSeroGroupSpecificationText(source.getSeroGroupSpecificationText());
 		target.setGenoTypeResult(source.getGenoTypeResult());
 		target.setGenoTypeResultText(source.getGenoTypeResultText());
+		target.setRsvSubtype(source.getRsvSubtype());
 		return target;
 	}
 

@@ -40,6 +40,7 @@ import com.vladmihalcea.hibernate.type.array.ListArrayType;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.sample.RsvSubtype;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 
@@ -119,6 +120,7 @@ public class TestReport extends AbstractDomainObject {
 	private String prescriberCity;
 	private Country prescriberCountry;
 	private GenoTypeResult genoTypeResult;
+	private RsvSubtype rsvSubtype;
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getTestLabName() {
@@ -432,5 +434,14 @@ public class TestReport extends AbstractDomainObject {
 
 	public void setGenoTypeResult(GenoTypeResult genoTypeResult) {
 		this.genoTypeResult = genoTypeResult;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public RsvSubtype getRsvSubtype() {
+		return rsvSubtype;
+	}
+
+	public void setRsvSubtype(RsvSubtype rsvSubtype) {
+		this.rsvSubtype = rsvSubtype;
 	}
 }
