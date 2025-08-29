@@ -113,6 +113,7 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String SERO_GROUP_SPECIFICATION_TEXT = "seroGroupSpecificationText";
 	public static final String GENOTYPE_RESULT = "genoTypeResult";
 	public static final String GENOTYPE_RESULT_TEXT = "genoTypeResultText";
+	public static final String RSV_SUBTYPE = "rsvSubtype";
 
 	private SampleReferenceDto sample;
 	private EnvironmentSampleReferenceDto environmentSample;
@@ -220,11 +221,13 @@ public class PathogenTestDto extends PseudonymizableDto {
 	private DrugSusceptibilityDto drugSusceptibility;
 	@SensitiveData
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
-	@Diseases(value = {Disease.INVASIVE_PNEUMOCOCCAL_INFECTION})
+	@Diseases(value = {
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
 	private String seroTypingMethodText;
 	@SensitiveData
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
-	@Diseases(value = {Disease.INVASIVE_PNEUMOCOCCAL_INFECTION})
+	@Diseases(value = {
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
 	private SerotypingMethod seroTypingMethod;
 
 	@SensitiveData
@@ -239,12 +242,17 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	@SensitiveData
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
-	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION})
+	@Diseases(value = {
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION })
 	private SeroGroupSpecification seroGroupSpecification;
 	@SensitiveData
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
-	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION})
+	@Diseases(value = {
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION })
 	private String seroGroupSpecificationText;
+	@Diseases(value = {
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
+	private RsvSubtype rsvSubtype;
 
 	public static PathogenTestDto build(SampleDto sample, UserDto currentUser) {
 
@@ -767,6 +775,14 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	public void setSeroGroupSpecificationText(String seroGroupSpecificationText) {
 		this.seroGroupSpecificationText = seroGroupSpecificationText;
+	}
+
+	public RsvSubtype getRsvSubtype() {
+		return rsvSubtype;
+	}
+
+	public void setRsvSubtype(RsvSubtype rsvSubtype) {
+		this.rsvSubtype = rsvSubtype;
 	}
 
 	@Override

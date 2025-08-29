@@ -14595,4 +14595,15 @@ alter table testreport_history add column IF NOT EXISTS genoTypeResult varchar(2
 
 INSERT INTO schema_version (version_number, comment) VALUES (589, 'Customized Measles for Lux #13365');
 
+
+-- 2025-08-23 -  RSV - Update samples and pathogen tests #13543
+
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS rsvsubtype varchar(255);
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS rsvsubtype varchar(255);
+
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS rsvsubtype varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS rsvsubtype varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (590, 'RSV - Update samples and pathogen tests #13543');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

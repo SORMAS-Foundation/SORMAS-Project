@@ -48,6 +48,7 @@ import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestScale;
 import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.sample.RsvSubtype;
 import de.symeda.sormas.api.sample.SeroGroupSpecification;
 import de.symeda.sormas.api.sample.SerotypingMethod;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -108,6 +109,7 @@ public class PathogenTest extends DeletableAdo {
 	public static final String STRAIN_CALL_STATUS = "strainCallStatus";
 	public static final String TEST_SCALE = "testScale";
 	public static final String DRUG_SUSCEPTIBILITY = "drugSusceptibility";
+	public static final String RSV_SUBTYPE = "rsvSubtype";
 
 	private Sample sample;
 	private EnvironmentSample environmentSample;
@@ -166,6 +168,7 @@ public class PathogenTest extends DeletableAdo {
 	private String genoTypeResultText;
 	private SeroGroupSpecification seroGroupSpecification;
 	private String seroGroupSpecificationText;
+	private RsvSubtype rsvSubtype;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	public Sample getSample() {
@@ -677,5 +680,14 @@ public class PathogenTest extends DeletableAdo {
 
 	public void setSeroGroupSpecificationText(String seroGroupSpecificationText) {
 		this.seroGroupSpecificationText = seroGroupSpecificationText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public RsvSubtype getRsvSubtype() {
+		return rsvSubtype;
+	}
+
+	public void setRsvSubtype(RsvSubtype rsvSubtype) {
+		this.rsvSubtype = rsvSubtype;
 	}
 }
