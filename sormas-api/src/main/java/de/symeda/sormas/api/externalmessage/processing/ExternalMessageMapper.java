@@ -347,6 +347,16 @@ public final class ExternalMessageMapper {
 							sourceTestReport.getRsvSubtype(),
 							PathogenTestDto.RSV_SUBTYPE),
 						Mapping.of(
+							pathogenTest::setTubeNil,
+							pathogenTest.getTubeNil(),
+							sourceTestReport.getTubeNil(),
+							PathogenTestDto.TUBE_NIL),
+						Mapping.of(
+							pathogenTest::setTubeNilGT10,
+							pathogenTest.getTubeNilGT10(),
+							sourceTestReport.getTubeNilGT10(),
+							PathogenTestDto.TUBE_NIL_GT10),
+						Mapping.of(
 							pathogenTest::setTubeAgTb1,
 							pathogenTest.getTubeAgTb1(),
 							sourceTestReport.getTubeAgTb1(),

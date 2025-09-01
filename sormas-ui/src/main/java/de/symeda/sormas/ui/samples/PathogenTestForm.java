@@ -799,13 +799,13 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 					tubeAgTb1Field.clear();
 					return;
 				}
-				// if the checkbox is checked and the value is less than 10, we clear the field
-				if (checked && tubeAgTb1NewValue < 10) {
+				// if the checkbox is checked and the value is less than or equal to 10, we clear the field
+				if (checked && tubeAgTb1NewValue <= 10) {
 					tubeAgTb1Field.clear();
 					return;
 				}
-				// if the checkbox is unchecked and the value is greater than or equal to 10, we clear the field
-				if(!checked && tubeAgTb1NewValue >= 10) {
+				// if the checkbox is unchecked and the value is greater than 10, we clear the field
+				if(!checked && tubeAgTb1NewValue > 10) {
 					tubeAgTb1Field.clear();
 					return;
 				}
@@ -838,13 +838,13 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 					tubeAgTb2Field.clear();
 					return;
 				}
-				// if the checkbox is checked and the value is less than 10, we clear the field
-				if (checked && tubeAgTb2NewValue < 10) {
+				// if the checkbox is checked and the value is less than or equal to 10, we clear the field
+				if (checked && tubeAgTb2NewValue <= 10) {
 					tubeAgTb2Field.clear();
 					return;
 				}
-				// if the checkbox is unchecked and the value is greater than or equal to 10, we clear the field
-				if(!checked && tubeAgTb2NewValue >= 10) {
+				// if the checkbox is unchecked and the value is greater than 10, we clear the field
+				if(!checked && tubeAgTb2NewValue > 10) {
 					tubeAgTb2Field.clear();
 					return;
 				}
@@ -877,13 +877,13 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 					tubeMitogeneField.clear();
 					return;
 				}
-				// if the checkbox is checked and the value is less than 10, we clear the field
-				if (checked && tubeMitogeneNewValue < 10) {
+				// if the checkbox is checked and the value is less than or equal to 10, we clear the field
+				if (checked && tubeMitogeneNewValue <= 10) {
 					tubeMitogeneField.clear();
 					return;
 				}
-				// if the checkbox is unchecked and the value is greater than or equal to 10, we clear the field
-				if(!checked && tubeMitogeneNewValue >= 10) {
+				// if the checkbox is unchecked and the value is greater than 10, we clear the field
+				if(!checked && tubeMitogeneNewValue > 10) {
 					tubeMitogeneField.clear();
 					return;
 				}

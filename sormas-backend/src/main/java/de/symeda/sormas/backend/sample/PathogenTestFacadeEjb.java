@@ -488,6 +488,24 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 			&& !DrugSusceptibilityMapper.hasData(pathogenTest.getDrugSusceptibility())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.pathogenTestValidDrugSusceptibility));
 		}
+
+		if (pathogenTest.getTestType() == PathogenTestType.IGRA) {
+			final float t = 10.0f;
+			if (pathogenTest.getTubeNil() != null && (pathogenTest.getTubeNil() > t) != Boolean.TRUE.equals(pathogenTest.getTubeNilGT10())) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.pathogenTestInvalidIgraValueCombination));
+			}
+			if (pathogenTest.getTubeAgTb1() != null && (pathogenTest.getTubeAgTb1() > t) != Boolean.TRUE.equals(pathogenTest.getTubeAgTb1GT10())) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.pathogenTestInvalidIgraValueCombination));
+			}
+			if (pathogenTest.getTubeAgTb2() != null && (pathogenTest.getTubeAgTb2() > t) != Boolean.TRUE.equals(pathogenTest.getTubeAgTb2GT10())) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.pathogenTestInvalidIgraValueCombination));
+			}
+			if (pathogenTest.getTubeMitogene() != null
+				&& (pathogenTest.getTubeMitogene() > t) != Boolean.TRUE.equals(pathogenTest.getTubeMitogeneGT10())) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.pathogenTestInvalidIgraValueCombination));
+			}
+		}
+
 	}
 
 	private PathogenTestDto convertToDto(PathogenTest source) {
@@ -612,14 +630,25 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setRsvSubtype(source.getRsvSubtype());
 
 		// IGRA tube values
-		target.setTubeNil(source.getTubeNil());
-		target.setTubeNilGT10(source.getTubeNilGT10());
-		target.setTubeAgTb1(source.getTubeAgTb1());
-		target.setTubeAgTb1GT10(source.getTubeAgTb1GT10());
-		target.setTubeAgTb2(source.getTubeAgTb2());
-		target.setTubeAgTb2GT10(source.getTubeAgTb2GT10());
-		target.setTubeMitogene(source.getTubeMitogene());
-		target.setTubeMitogeneGT10(source.getTubeMitogeneGT10());
+		if (target.getTestType() != PathogenTestType.IGRA) {
+			target.setTubeNil(null);
+			target.setTubeNilGT10(null);
+			target.setTubeAgTb1(null);
+			target.setTubeAgTb1GT10(null);
+			target.setTubeAgTb2(null);
+			target.setTubeAgTb2GT10(null);
+			target.setTubeMitogene(null);
+			target.setTubeMitogeneGT10(null);
+		} else {
+			target.setTubeNil(source.getTubeNil());
+			target.setTubeNilGT10(source.getTubeNilGT10());
+			target.setTubeAgTb1(source.getTubeAgTb1());
+			target.setTubeAgTb1GT10(source.getTubeAgTb1GT10());
+			target.setTubeAgTb2(source.getTubeAgTb2());
+			target.setTubeAgTb2GT10(source.getTubeAgTb2GT10());
+			target.setTubeMitogene(source.getTubeMitogene());
+			target.setTubeMitogeneGT10(source.getTubeMitogeneGT10());
+		}
 		return target;
 	}
 
