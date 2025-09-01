@@ -18,7 +18,6 @@ package de.symeda.sormas.backend.contact;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.therapy.Drug;
 import org.hibernate.transform.ResultTransformer;
 
 import de.symeda.sormas.api.Disease;
@@ -32,6 +31,7 @@ import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
+import de.symeda.sormas.api.therapy.Drug;
 
 public class ContactIndexDtoResultTransformer implements ResultTransformer {
 
@@ -42,7 +42,7 @@ public class ContactIndexDtoResultTransformer implements ResultTransformer {
 		int index = -1;
 		//@formatter:off
         return new ContactIndexDto(
-                (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index],
+                (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index],
                 (Disease) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index],
                 (String) tuple[++index], (Date) tuple[++index], (ContactCategory) tuple[++index],
                 (ContactProximity) tuple[++index], (ContactClassification) tuple[++index], (ContactStatus) tuple[++index], (Float) tuple[++index],
