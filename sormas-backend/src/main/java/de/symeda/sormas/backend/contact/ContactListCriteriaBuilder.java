@@ -96,6 +96,7 @@ public class ContactListCriteriaBuilder {
 		return Arrays.asList(
 			contact.get(Contact.UUID),
 			joins.getPerson().get(Person.UUID),
+			joins.getPerson().get(Person.NATIONAL_HEALTH_ID),
 			joins.getPerson().get(Person.FIRST_NAME),
 			joins.getPerson().get(Person.LAST_NAME),
 			joins.getCaze().get(Case.UUID),
@@ -206,6 +207,7 @@ public class ContactListCriteriaBuilder {
 		case ContactIndexDto.PERSON_UUID:
 			expressions.add(joins.getPerson().get(Person.UUID));
 			break;
+		case ContactIndexDto.PERSON_NATIONAL_HEALTH_ID:
 		case ContactIndexDto.PERSON_FIRST_NAME:
 		case ContactIndexDto.PERSON_LAST_NAME:
 			expressions.add(cb.lower(joins.getPerson().get(sortProperty.propertyName)));

@@ -40,6 +40,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 	public static final String UUID = "uuid";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String PERSON_UUID = "personUuid";
+	public static final String PERSON_NATIONAL_HEALTH_ID = "nationalHealthId";
 	public static final String PERSON_FIRST_NAME = "firstName";
 	public static final String PERSON_LAST_NAME = "lastName";
 	public static final String CAZE = "caze";
@@ -68,6 +69,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 	public static final String PRESCRIBED_DRUG_TEXT = "prescribedDrugText";
 
 	private String personUuid;
+	private String nationalHealthId;
 	@PersonalData
 	private String firstName;
 	@PersonalData
@@ -109,7 +111,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 	private ContactJurisdictionFlagsDto contactJurisdictionFlagsDto;
 
 	//@formatter:off
-	public ContactIndexDto(String uuid, String personUuid, String personFirstName, String personLastName, String cazeUuid,
+	public ContactIndexDto(String uuid, String personUuid, String nationalHealthId, String personFirstName, String personLastName, String cazeUuid,
 						   Disease disease, String diseaseDetails, String caseFirstName, String caseLastName, String regionName,
 						   String districtName, Date lastContactDate, ContactCategory contactCategory,
 						   ContactProximity contactProximity, ContactClassification contactClassification, ContactStatus contactStatus, Float completeness,
@@ -124,6 +126,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 
 		super(uuid);
 		this.personUuid = personUuid;
+		this.nationalHealthId = nationalHealthId;
 		this.firstName = personFirstName;
 		this.lastName = personLastName;
 
@@ -171,6 +174,14 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 
 	public void setPersonUuid(String personUuid) {
 		this.personUuid = personUuid;
+	}
+
+	public String getNationalHealthId() {
+		return nationalHealthId;
+	}
+
+	public void setNationalHealthId(String nationalHealthId) {
+		this.nationalHealthId = nationalHealthId;
 	}
 
 	public String getFirstName() {

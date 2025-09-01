@@ -61,7 +61,7 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 	private ContactRelation relationToCase;
 
 	//@formatter:off
-	public ContactIndexDetailedDto(String uuid, String personUuid, String personFirstName, String personLastName,
+	public ContactIndexDetailedDto(String uuid, String personUuid, String nationalHealthId, String personFirstName, String personLastName,
 								   String cazeUuid,
 								   Disease disease, String diseaseDetails, String caseFirstName, String caseLastName, String regionName,
 								   String districtName, Date lastContactDate, ContactCategory contactCategory,
@@ -80,7 +80,7 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 	//@formatter:on
 
 		//@formatter:off
-		super(uuid, personUuid, personFirstName, personLastName, cazeUuid, disease, diseaseDetails, caseFirstName, caseLastName,
+		super(uuid, personUuid, nationalHealthId, personFirstName, personLastName, cazeUuid, disease, diseaseDetails, caseFirstName, caseLastName,
 			regionName, districtName, lastContactDate, contactCategory, contactProximity, contactClassification, contactStatus,
 				completeness, followUpStatus, followUpUntil, symptomJournalStatus, vaccinationStatus, contactOfficerUuid, reportingUserUuid, reportDateTime, caseClassification,
 			caseRegionName, caseDistrictName, changeDate, externalID, externalToken, internalToken, caseReferenceNumber, deletionReason, otherDeleteReason,isInJurisdiction, isCaseInJurisdiction , visitCount,
