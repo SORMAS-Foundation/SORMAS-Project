@@ -14606,4 +14606,46 @@ ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS rsvsubtype varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (590, 'RSV - Update samples and pathogen tests #13543');
 
+-- 2025-08-08 - Tuberculosis - Implement functionality to receive messages from laboratory for TB #13563
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS tubenil float;
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS tubenilgt10 boolean;
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS tubeagtb1 float;
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS tubeagtb1gt10 boolean;
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS tubeagtb2 float;
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS tubeagtb2gt10 boolean;
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS tubemitogene float;
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS tubemitogenegt10 boolean;
+
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS tubenil float;
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS tubenilgt10 boolean;
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS tubeagtb1 float;
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS tubeagtb1gt10 boolean;
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS tubeagtb2 float;
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS tubeagtb2gt10 boolean;
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS tubemitogene float;
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS tubemitogenegt10 boolean;
+
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS specie varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS tubenil float;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS tubenilgt10 boolean;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS tubeagtb1 float;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS tubeagtb1gt10 boolean;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS tubeagtb2 float;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS tubeagtb2gt10 boolean;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS tubemitogene float;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS tubemitogenegt10 boolean;
+
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS specie varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS tubenil float;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS tubenilgt10 boolean;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS tubeagtb1 float;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS tubeagtb1gt10 boolean;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS tubeagtb2 float;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS tubeagtb2gt10 boolean;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS tubemitogene float;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS tubemitogenegt10 boolean;
+
+INSERT INTO schema_version (version_number, comment) VALUES (591, 'Implement functionality to receive messages from laboratory for TB #13563');
+
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

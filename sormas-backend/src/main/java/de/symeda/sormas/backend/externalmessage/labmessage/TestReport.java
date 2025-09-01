@@ -38,6 +38,7 @@ import org.hibernate.annotations.TypeDef;
 import com.vladmihalcea.hibernate.type.array.ListArrayType;
 
 import de.symeda.sormas.api.sample.PCRTestSpecification;
+import de.symeda.sormas.api.sample.PathogenSpecie;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.RsvSubtype;
@@ -121,6 +122,16 @@ public class TestReport extends AbstractDomainObject {
 	private Country prescriberCountry;
 	private GenoTypeResult genoTypeResult;
 	private RsvSubtype rsvSubtype;
+
+	private PathogenSpecie specie;
+	private Float tubeNil;
+	private Boolean tubeNilGT10;
+	private Float tubeAgTb1;
+	private Boolean tubeAgTb1GT10;
+	private Float tubeAgTb2;
+	private Boolean tubeAgTb2GT10;
+	private Float tubeMitogene;
+	private Boolean tubeMitogeneGT10;
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getTestLabName() {
@@ -444,4 +455,88 @@ public class TestReport extends AbstractDomainObject {
 	public void setRsvSubtype(RsvSubtype rsvSubtype) {
 		this.rsvSubtype = rsvSubtype;
 	}
+
+	@Enumerated(EnumType.STRING)
+	public PathogenSpecie getSpecie() {
+		return specie;
+	}
+
+	public void setSpecie(PathogenSpecie specie) {
+		this.specie = specie;
+	}
+
+	@Column
+	public Float getTubeNil() {
+		return tubeNil;
+	}
+
+	public void setTubeNil(Float tubeNil) {
+		this.tubeNil = tubeNil;
+	}
+
+	@Column
+	public Boolean getTubeNilGT10() {
+		return tubeNilGT10;
+	}
+
+	public void setTubeNilGT10(Boolean tubeNilGT10) {
+		this.tubeNilGT10 = tubeNilGT10;
+	}
+
+	@Column
+	public Float getTubeAgTb1() {
+		return tubeAgTb1;
+	}
+
+	public void setTubeAgTb1(Float tubeAgTb1) {
+		this.tubeAgTb1 = tubeAgTb1;
+	}
+
+	@Column
+	public Boolean getTubeAgTb1GT10() {
+		return tubeAgTb1GT10;
+	}
+
+	public void setTubeAgTb1GT10(Boolean tubeAgTb1GT10) {
+		this.tubeAgTb1GT10 = tubeAgTb1GT10;
+	}
+
+	@Column
+	public Float getTubeAgTb2() {
+		return tubeAgTb2;
+	}
+
+	public void setTubeAgTb2(Float tubeAgTb2) {
+		this.tubeAgTb2 = tubeAgTb2;
+	}
+
+	@Column
+	public Boolean getTubeAgTb2GT10() {
+		return tubeAgTb2GT10;
+	}
+
+	public void setTubeAgTb2GT10(Boolean tubeAgTb2GT10) {
+		this.tubeAgTb2GT10 = tubeAgTb2GT10;
+	}
+
+	@Column
+	public Float getTubeMitogene() {
+		return tubeMitogene;
+	}
+
+	public void setTubeMitogene(Float tubeMitogene) {
+		this.tubeMitogene = tubeMitogene;
+	}
+
+	@Column
+	public Boolean getTubeMitogeneGT10() {
+		return tubeMitogeneGT10;
+	}
+
+	public void setTubeMitogeneGT10(Boolean tubeMitogeneGT10) {
+		this.tubeMitogeneGT10 = tubeMitogeneGT10;
+	}
+
+
+
 }

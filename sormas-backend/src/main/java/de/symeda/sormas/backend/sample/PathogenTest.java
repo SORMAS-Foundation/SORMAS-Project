@@ -169,6 +169,14 @@ public class PathogenTest extends DeletableAdo {
 	private SeroGroupSpecification seroGroupSpecification;
 	private String seroGroupSpecificationText;
 	private RsvSubtype rsvSubtype;
+	private Float tubeNil;
+	private Boolean tubeNilGT10;
+	private Float tubeAgTb1;
+	private Boolean tubeAgTb1GT10;
+	private Float tubeAgTb2;
+	private Boolean tubeAgTb2GT10;
+	private Float tubeMitogene;
+	private Boolean tubeMitogeneGT10;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	public Sample getSample() {
@@ -690,4 +698,69 @@ public class PathogenTest extends DeletableAdo {
 	public void setRsvSubtype(RsvSubtype rsvSubtype) {
 		this.rsvSubtype = rsvSubtype;
 	}
+
+	public Float getTubeNil() {
+		return tubeNil;
+	}
+
+	public void setTubeNil(Float tubeNil) {
+		this.tubeNil = tubeNil;
+	}
+
+	public Boolean getTubeNilGT10() {
+		return tubeNilGT10;
+	}
+
+	public void setTubeNilGT10(Boolean tubeNilGT10) {
+		this.tubeNilGT10 = tubeNilGT10;
+	}
+
+	public Float getTubeAgTb1() {
+		return tubeAgTb1;
+	}
+
+	public void setTubeAgTb1(Float tubeAgTb1) {
+		this.tubeAgTb1 = tubeAgTb1;
+	}
+
+	public Boolean getTubeAgTb1GT10() {
+		return tubeAgTb1GT10;
+	}
+
+	public void setTubeAgTb1GT10(Boolean tubeAgTb1GT10) {
+		this.tubeAgTb1GT10 = tubeAgTb1GT10;
+	}
+
+	public Float getTubeAgTb2() {
+		return tubeAgTb2;
+	}
+
+	public void setTubeAgTb2(Float tubeAgTb2) {
+		this.tubeAgTb2 = tubeAgTb2;
+	}
+
+	public Boolean getTubeAgTb2GT10() {
+		return tubeAgTb2GT10;
+	}
+
+	public void setTubeAgTb2GT10(Boolean tubeAgTb2GT10) {
+		this.tubeAgTb2GT10 = tubeAgTb2GT10;
+	}
+
+	public Float getTubeMitogene() {
+		return tubeMitogene;
+	}
+
+	public void setTubeMitogene(Float tubeMitogene) {
+		this.tubeMitogene = tubeMitogene;
+	}
+
+	public Boolean getTubeMitogeneGT10() {
+		return tubeMitogeneGT10;
+	}
+
+	public void setTubeMitogeneGT10(Boolean tubeMitogeneGT10) {
+		this.tubeMitogeneGT10 = tubeMitogeneGT10;
+	}
+
 }

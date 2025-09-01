@@ -345,7 +345,38 @@ public final class ExternalMessageMapper {
 							pathogenTest::setRsvSubtype,
 							pathogenTest.getRsvSubtype(),
 							sourceTestReport.getRsvSubtype(),
-							PathogenTestDto.RSV_SUBTYPE))));
+							PathogenTestDto.RSV_SUBTYPE),
+						Mapping.of(
+							pathogenTest::setTubeAgTb1,
+							pathogenTest.getTubeAgTb1(),
+							sourceTestReport.getTubeAgTb1(),
+							PathogenTestDto.TUBE_AG_TB1),
+						Mapping.of(
+							pathogenTest::setTubeAgTb1GT10,
+							pathogenTest.getTubeAgTb1GT10(),
+							sourceTestReport.getTubeAgTb1GT10(),
+							PathogenTestDto.TUBE_AG_TB1_GT10),
+						Mapping.of(
+							pathogenTest::setTubeAgTb2,
+							pathogenTest.getTubeAgTb2(),
+							sourceTestReport.getTubeAgTb2(),
+							PathogenTestDto.TUBE_AG_TB2),
+						Mapping.of(
+							pathogenTest::setTubeAgTb2GT10,
+							pathogenTest.getTubeAgTb2GT10(),
+							sourceTestReport.getTubeAgTb2GT10(),
+							PathogenTestDto.TUBE_AG_TB2_GT10),
+						Mapping.of(
+							pathogenTest::setTubeMitogene,
+							pathogenTest.getTubeMitogene(),
+							sourceTestReport.getTubeMitogene(),
+							PathogenTestDto.TUBE_MITOGENE),
+						Mapping.of(
+							pathogenTest::setTubeMitogeneGT10,
+							pathogenTest.getTubeMitogeneGT10(),
+							sourceTestReport.getTubeMitogeneGT10(),
+							PathogenTestDto.TUBE_MITOGENE_GT10),
+						Mapping.of(pathogenTest::setSpecie, pathogenTest.getSpecie(), sourceTestReport.getSpecie(), PathogenTestDto.SPECIE))));
 		}
 
 		changedFields.addAll(
