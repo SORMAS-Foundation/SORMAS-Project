@@ -2275,6 +2275,14 @@ public interface Captions {
 	String PathogenTest_testScale = "PathogenTest.testScale";
 	String PathogenTest_testType = "PathogenTest.testType";
 	String PathogenTest_testTypeText = "PathogenTest.testTypeText";
+	String PathogenTest_tubeAgTb1 = "PathogenTest.tubeAgTb1";
+	String PathogenTest_tubeAgTb1GT10 = "PathogenTest.tubeAgTb1GT10";
+	String PathogenTest_tubeAgTb2 = "PathogenTest.tubeAgTb2";
+	String PathogenTest_tubeAgTb2GT10 = "PathogenTest.tubeAgTb2GT10";
+	String PathogenTest_tubeMitogene = "PathogenTest.tubeMitogene";
+	String PathogenTest_tubeMitogeneGT10 = "PathogenTest.tubeMitogeneGT10";
+	String PathogenTest_tubeNil = "PathogenTest.tubeNil";
+	String PathogenTest_tubeNilGT10 = "PathogenTest.tubeNilGT10";
 	String PathogenTest_typingId = "PathogenTest.typingId";
 	String PathogenTest_viaLims = "PathogenTest.viaLims";
 	String pathogenTestAdd = "pathogenTestAdd";
@@ -3118,6 +3126,7 @@ public interface Captions {
 	String TestReport_prescriberPhoneNumber = "TestReport.prescriberPhoneNumber";
 	String TestReport_prescriberPhysicianCode = "TestReport.prescriberPhysicianCode";
 	String TestReport_prescriberPostalCode = "TestReport.prescriberPostalCode";
+	String TestReport_specie = "TestReport.specie";
 	String TestReport_testDateTime = "TestReport.testDateTime";
 	String TestReport_testLabCity = "TestReport.testLabCity";
 	String TestReport_testLabExternalId = "TestReport.testLabExternalId";
@@ -3125,6 +3134,14 @@ public interface Captions {
 	String TestReport_testLabPostalCode = "TestReport.testLabPostalCode";
 	String TestReport_testResult = "TestReport.testResult";
 	String TestReport_testType = "TestReport.testType";
+	String TestReport_tubeAgTb1 = "TestReport.tubeAgTb1";
+	String TestReport_tubeAgTb1GT10 = "TestReport.tubeAgTb1GT10";
+	String TestReport_tubeAgTb2 = "TestReport.tubeAgTb2";
+	String TestReport_tubeAgTb2GT10 = "TestReport.tubeAgTb2GT10";
+	String TestReport_tubeMitogene = "TestReport.tubeMitogene";
+	String TestReport_tubeMitogeneGT10 = "TestReport.tubeMitogeneGT10";
+	String TestReport_tubeNil = "TestReport.tubeNil";
+	String TestReport_tubeNilGT10 = "TestReport.tubeNilGT10";
 	String Therapy_beijingLineage = "Therapy.beijingLineage";
 	String Therapy_directlyObservedTreatment = "Therapy.directlyObservedTreatment";
 	String Therapy_mdrXdrTuberculosis = "Therapy.mdrXdrTuberculosis";

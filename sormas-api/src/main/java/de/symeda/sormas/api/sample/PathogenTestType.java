@@ -37,8 +37,6 @@ public enum PathogenTestType {
 
 	RAPID_TEST,
 
-	@Diseases(value = {
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	CULTURE,
 
 	@Diseases(value = {

@@ -114,6 +114,14 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String GENOTYPE_RESULT = "genoTypeResult";
 	public static final String GENOTYPE_RESULT_TEXT = "genoTypeResultText";
 	public static final String RSV_SUBTYPE = "rsvSubtype";
+	public static final String TUBE_NIL = "tubeNil";
+	public static final String TUBE_NIL_GT10 = "tubeNilGT10";
+	public static final String TUBE_AG_TB1 = "tubeAgTb1";
+	public static final String TUBE_AG_TB1_GT10 = "tubeAgTb1GT10";
+	public static final String TUBE_AG_TB2 = "tubeAgTb2";
+	public static final String TUBE_AG_TB2_GT10 = "tubeAgTb2GT10";
+	public static final String TUBE_MITOGENE = "tubeMitogene";
+	public static final String TUBE_MITOGENE_GT10 = "tubeMitogeneGT10";
 
 	private SampleReferenceDto sample;
 	private EnvironmentSampleReferenceDto environmentSample;
@@ -253,6 +261,46 @@ public class PathogenTestDto extends PseudonymizableDto {
 	@Diseases(value = {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	private RsvSubtype rsvSubtype;
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	private Float tubeNil;
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	private Boolean tubeNilGT10;
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	private Float tubeAgTb1;
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	private Boolean tubeAgTb1GT10;
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	private Float tubeAgTb2;
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	private Boolean tubeAgTb2GT10;
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	private Float tubeMitogene;
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
+	private Boolean tubeMitogeneGT10;
 
 	public static PathogenTestDto build(SampleDto sample, UserDto currentUser) {
 
@@ -783,6 +831,70 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	public void setRsvSubtype(RsvSubtype rsvSubtype) {
 		this.rsvSubtype = rsvSubtype;
+	}
+
+	public Float getTubeNil() {
+		return tubeNil;
+	}
+
+	public void setTubeNil(Float tubeNil) {
+		this.tubeNil = tubeNil;
+	}
+
+	public Boolean getTubeNilGT10() {
+		return tubeNilGT10;
+	}
+
+	public void setTubeNilGT10(Boolean tubeNilGT10) {
+		this.tubeNilGT10 = tubeNilGT10;
+	}
+
+	public Float getTubeAgTb1() {
+		return tubeAgTb1;
+	}
+
+	public void setTubeAgTb1(Float tubeAgTb1) {
+		this.tubeAgTb1 = tubeAgTb1;
+	}
+
+	public Boolean getTubeAgTb1GT10() {
+		return tubeAgTb1GT10;
+	}
+
+	public void setTubeAgTb1GT10(Boolean tubeAgTb1GT10) {
+		this.tubeAgTb1GT10 = tubeAgTb1GT10;
+	}
+
+	public Float getTubeAgTb2() {
+		return tubeAgTb2;
+	}
+
+	public void setTubeAgTb2(Float tubeAgTb2) {
+		this.tubeAgTb2 = tubeAgTb2;
+	}
+
+	public Boolean getTubeAgTb2GT10() {
+		return tubeAgTb2GT10;
+	}
+
+	public void setTubeAgTb2GT10(Boolean tubeAgTb2GT10) {
+		this.tubeAgTb2GT10 = tubeAgTb2GT10;
+	}
+
+	public Float getTubeMitogene() {
+		return tubeMitogene;
+	}
+
+	public void setTubeMitogene(Float tubeMitogene) {
+		this.tubeMitogene = tubeMitogene;
+	}
+
+	public Boolean getTubeMitogeneGT10() {
+		return tubeMitogeneGT10;
+	}
+
+	public void setTubeMitogeneGT10(Boolean tubeMitogeneGT10) {
+		this.tubeMitogeneGT10 = tubeMitogeneGT10;
 	}
 
 	@Override

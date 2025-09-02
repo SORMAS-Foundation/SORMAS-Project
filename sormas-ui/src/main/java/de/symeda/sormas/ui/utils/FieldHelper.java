@@ -851,6 +851,14 @@ public final class FieldHelper {
 		}
 	}
 
+	public static <T> T getFieldValueAs(Class<T> clazz, Field field) {
+		Object value = field.getValue();
+		if (value != null && clazz.isAssignableFrom(value.getClass())) {
+			return (T) value;
+		}
+		return null;
+	}
+
 	public static void updateOfficersField(UserField officerField, CaseDataDto caze, UserRight right) {
 		List<DistrictReferenceDto> officerDistricts =
 			Stream.of(caze.getResponsibleDistrict(), caze.getDistrict()).filter(Objects::nonNull).collect(Collectors.toList());

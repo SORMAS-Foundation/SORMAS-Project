@@ -13,6 +13,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.sample.GenoTypeResult;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
+import de.symeda.sormas.api.sample.PathogenSpecie;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.RsvSubtype;
@@ -46,6 +47,15 @@ public class TestReportDto extends EntityDto {
 	public static final String CT_VALUE_S = "ctValueS";
 	public static final String CT_VALUE_ORF_1 = "ctValueOrf1";
 	public static final String CT_VALUE_RDRP_S = "ctValueRdrpS";
+	public static final String SPECIE = "specie";
+	public static final String TUBE_NIL = "tubeNil";
+	public static final String TUBE_NIL_GT10 = "tubeNilGT10";
+	public static final String TUBE_AG_TB1 = "tubeAgTb1";
+	public static final String TUBE_AG_TB1_GT10 = "tubeAgTb1GT10";
+	public static final String TUBE_AG_TB2 = "tubeAgTb2";
+	public static final String TUBE_AG_TB2_GT10 = "tubeAgTb2GT10";
+	public static final String TUBE_MITOGENE = "tubeMitogene";
+	public static final String TUBE_MITOGENE_GT10 = "tubeMitogeneGT10";
 	public static final String PRESCRIBER_PHYSICIAN_CODE = "prescriberPhysicianCode";
 	public static final String PRESCRIBER_FIRST_NAME = "prescriberFirstName";
 	public static final String PRESCRIBER_LAST_NAME = "prescriberLastName";
@@ -102,6 +112,24 @@ public class TestReportDto extends EntityDto {
 	private Float ctValueOrf1;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	private Float ctValueRdrpS;
+	private PathogenSpecie specie;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	private Float tubeNil;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	private Boolean tubeNilGT10;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	private Float tubeAgTb1;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	private Boolean tubeAgTb1GT10;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	private Float tubeAgTb2;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	private Boolean tubeAgTb2GT10;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	private Float tubeMitogene;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	private Boolean tubeMitogeneGT10;
+
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
@@ -349,6 +377,78 @@ public class TestReportDto extends EntityDto {
 
 	public void setCtValueRdrpS(Float ctValueRdrpS) {
 		this.ctValueRdrpS = ctValueRdrpS;
+	}
+
+	public PathogenSpecie getSpecie() {
+		return specie;
+	}
+
+	public void setSpecie(PathogenSpecie specie) {
+		this.specie = specie;
+	}
+
+	public Float getTubeNil() {
+		return tubeNil;
+	}
+
+	public void setTubeNil(Float tubeNil) {
+		this.tubeNil = tubeNil;
+	}
+
+	public Boolean getTubeNilGT10() {
+		return tubeNilGT10;
+	}
+
+	public void setTubeNilGT10(Boolean tubeNilGT10) {
+		this.tubeNilGT10 = tubeNilGT10;
+	}
+
+	public Float getTubeAgTb1() {
+		return tubeAgTb1;
+	}
+
+	public void setTubeAgTb1(Float tubeAgTb1) {
+		this.tubeAgTb1 = tubeAgTb1;
+	}
+
+	public Boolean getTubeAgTb1GT10() {
+		return tubeAgTb1GT10;
+	}
+
+	public void setTubeAgTb1GT10(Boolean tubeAgTb1GT10) {
+		this.tubeAgTb1GT10 = tubeAgTb1GT10;
+	}
+
+	public Float getTubeAgTb2() {
+		return tubeAgTb2;
+	}
+
+	public void setTubeAgTb2(Float tubeAgTb2) {
+		this.tubeAgTb2 = tubeAgTb2;
+	}
+
+	public Boolean getTubeAgTb2GT10() {
+		return tubeAgTb2GT10;
+	}
+
+	public void setTubeAgTb2GT10(Boolean tubeAgTb2GT10) {
+		this.tubeAgTb2GT10 = tubeAgTb2GT10;
+	}
+
+	public Float getTubeMitogene() {
+		return tubeMitogene;
+	}
+
+	public void setTubeMitogene(Float tubeMitogene) {
+		this.tubeMitogene = tubeMitogene;
+	}
+
+	public Boolean getTubeMitogeneGT10() {
+		return tubeMitogeneGT10;
+	}
+
+	public void setTubeMitogeneGT10(Boolean tubeMitogeneGT10) {
+		this.tubeMitogeneGT10 = tubeMitogeneGT10;
 	}
 
 	public String getPrescriberPhysicianCode() {

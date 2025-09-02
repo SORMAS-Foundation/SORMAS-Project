@@ -20,6 +20,7 @@ import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.sample.PathogenSpecie;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageService;
 import de.symeda.sormas.backend.infrastructure.country.CountryService;
 
@@ -68,6 +69,16 @@ public class TestReportFacadeEjbMappingTest {
 		source.setTestResultText("Test result text");
 		source.setTestPcrTestSpecification(PCRTestSpecification.VARIANT_SPECIFIC);
 
+		source.setSpecie(PathogenSpecie.UNKNOWN);
+		source.setTubeNil(1.23f);
+		source.setTubeNilGT10(true);
+		source.setTubeAgTb1(2.34f);
+		source.setTubeAgTb1GT10(false);
+		source.setTubeAgTb2(3.45f);
+		source.setTubeAgTb2GT10(true);
+		source.setTubeMitogene(4.56f);
+		source.setTubeMitogeneGT10(false);
+
 		TestReport result = sut.fromDto(source, true);
 
 		assertNotSame(source.getCreationDate().getTime(), result.getCreationDate().getTime());
@@ -84,6 +95,16 @@ public class TestReportFacadeEjbMappingTest {
 		assertEquals(source.isTestResultVerified(), result.isTestResultVerified());
 		assertEquals(source.getTestResultText(), result.getTestResultText());
 		assertEquals(source.getTestPcrTestSpecification(), result.getTestPcrTestSpecification());
+
+		assertEquals(source.getSpecie(), result.getSpecie());
+		assertEquals(source.getTubeNil(), result.getTubeNil());
+		assertEquals(source.getTubeNilGT10(), result.getTubeNilGT10());
+		assertEquals(source.getTubeAgTb1(), result.getTubeAgTb1());
+		assertEquals(source.getTubeAgTb1GT10(), result.getTubeAgTb1GT10());
+		assertEquals(source.getTubeAgTb2(), result.getTubeAgTb2());
+		assertEquals(source.getTubeAgTb2GT10(), result.getTubeAgTb2GT10());
+		assertEquals(source.getTubeMitogene(), result.getTubeMitogene());
+		assertEquals(source.getTubeMitogeneGT10(), result.getTubeMitogeneGT10());
 
 	}
 
@@ -111,7 +132,17 @@ public class TestReportFacadeEjbMappingTest {
 		source.setTestResultText("Test result text");
 		source.setTestPcrTestSpecification(PCRTestSpecification.VARIANT_SPECIFIC);
 
-		TestReportDto result = sut.toDto(source);
+		source.setSpecie(PathogenSpecie.UNKNOWN);
+		source.setTubeNil(1.23f);
+		source.setTubeNilGT10(true);
+		source.setTubeAgTb1(2.34f);
+		source.setTubeAgTb1GT10(false);
+		source.setTubeAgTb2(3.45f);
+		source.setTubeAgTb2GT10(true);
+		source.setTubeMitogene(4.56f);
+		source.setTubeMitogeneGT10(false);
+
+	TestReportDto result = TestReportFacadeEjb.toDto(source);
 
 		assertNotSame(source.getCreationDate().getTime(), result.getCreationDate().getTime());
 		assertEquals(source.getChangeDate(), result.getChangeDate());
@@ -128,6 +159,16 @@ public class TestReportFacadeEjbMappingTest {
 		assertEquals(source.isTestResultVerified(), result.isTestResultVerified());
 		assertEquals(source.getTestResultText(), result.getTestResultText());
 		assertEquals(source.getTestPcrTestSpecification(), result.getTestPcrTestSpecification());
+
+		assertEquals(source.getSpecie(), result.getSpecie());
+		assertEquals(source.getTubeNil(), result.getTubeNil());
+		assertEquals(source.getTubeNilGT10(), result.getTubeNilGT10());
+		assertEquals(source.getTubeAgTb1(), result.getTubeAgTb1());
+		assertEquals(source.getTubeAgTb1GT10(), result.getTubeAgTb1GT10());
+		assertEquals(source.getTubeAgTb2(), result.getTubeAgTb2());
+		assertEquals(source.getTubeAgTb2GT10(), result.getTubeAgTb2GT10());
+		assertEquals(source.getTubeMitogene(), result.getTubeMitogene());
+		assertEquals(source.getTubeMitogeneGT10(), result.getTubeMitogeneGT10());
 
 	}
 }

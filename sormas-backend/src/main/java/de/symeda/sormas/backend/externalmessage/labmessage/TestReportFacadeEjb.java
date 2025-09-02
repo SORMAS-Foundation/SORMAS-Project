@@ -106,6 +106,16 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setPrescriberCountry(CountryFacadeEjb.toReferenceDto(source.getPrescriberCountry()));
 		target.setGenoTypeResult(source.getGenoTypeResult());
 		target.setRsvSubtype(source.getRsvSubtype());
+		target.setSpecie(source.getSpecie());
+		target.setTubeNil(source.getTubeNil());
+		target.setTubeNilGT10(source.getTubeNilGT10());
+		target.setTubeAgTb1(source.getTubeAgTb1());
+		target.setTubeAgTb1GT10(source.getTubeAgTb1GT10());
+		target.setTubeAgTb2(source.getTubeAgTb2());
+		target.setTubeAgTb2GT10(source.getTubeAgTb2GT10());
+		target.setTubeMitogene(source.getTubeMitogene());
+		target.setTubeMitogeneGT10(source.getTubeMitogeneGT10());
+
 		return target;
 	}
 
@@ -148,6 +158,16 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setPrescriberCountry(countryService.getByReferenceDto(source.getPrescriberCountry()));
 		target.setGenoTypeResult(source.getGenoTypeResult());
 		target.setRsvSubtype(source.getRsvSubtype());
+		target.setSpecie(source.getSpecie());
+		target.setTubeNil(source.getTubeNil());
+		target.setTubeNilGT10(source.getTubeNilGT10());
+		target.setTubeAgTb1(source.getTubeAgTb1());
+		target.setTubeAgTb1GT10(source.getTubeAgTb1GT10());
+		target.setTubeAgTb2(source.getTubeAgTb2());
+		target.setTubeAgTb2GT10(source.getTubeAgTb2GT10());
+		target.setTubeMitogene(source.getTubeMitogene());
+		target.setTubeMitogeneGT10(source.getTubeMitogeneGT10());
+
 		return target;
 	}
 
