@@ -544,7 +544,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			if (isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 				boolean isSymptamatic = !SymptomState.YES.equals(asymptomaticNOG.getNullableValue());
 					editableAllowedFields().stream().filter(field -> !field.getId().equals(ASYMPTOMATIC)).forEach(field -> {
-						field.clear();
+						if (!isSymptamatic) {
+							field.clear();
+						}
 						field.setEnabled(isSymptamatic);
 						onsetSymptom.setEnabled(isSymptamatic);
 						onsetDateField.setEnabled(isSymptamatic);
