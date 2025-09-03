@@ -2204,6 +2204,18 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			}
 		}
 
+		if (Objects.nonNull(existingCase)) {
+			// Contact with the source case known with the confirmed status. Github#13507 fix
+			boolean isConfirmedCaseExists = contactService.getAllByResultingCase(caseService.getByUuid(existingCase.getUuid())).stream().anyMatch(e -> CaseClassification.CONFIRMED == e.getCaze().getCaseClassification());
+			// If contact with source case is known by epidemiolist, && its classified as confirmed, then set epidemiological confirmation to YES
+			// Otherwise set to No
+			if ((YesNoUnknown.YES == newCase.getEpiData().getContactWithSourceCaseKnown() && isConfirmedCaseExists)) {
+				newCase.setEpidemiologicalConfirmation(YesNoUnknown.YES);
+			} else {
+				newCase.setEpidemiologicalConfirmation(YesNoUnknown.NO);
+			}
+		}
+
 		// Update follow-up
 		service.updateFollowUpDetails(newCase, existingCase != null && newCase.getFollowUpStatus() != existingCase.getFollowUpStatus());
 
