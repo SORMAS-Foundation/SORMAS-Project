@@ -144,8 +144,9 @@ public class CaseNotifierSideViewController {
             return;
         }
 
+        // We only edit the current version
         NotifierDto notifier =
-            FacadeProvider.getNotifierFacade().getByUuidAndTime(caze.getNotifier().getUuid(), caze.getNotifier().getVersionDate().toInstant());
+            FacadeProvider.getNotifierFacade().getByUuid(caze.getNotifier().getUuid());
         TherapyDto therapy = caze.getTherapy();
 
         openEditWindow(
