@@ -63,6 +63,7 @@ import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ComboBoxWithPlaceholder;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
@@ -219,7 +220,10 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	private void addBasicFields() {
 		addFields(ExposureDto.UUID, ExposureDto.REPORTING_USER, ExposureDto.PROBABLE_INFECTION_ENVIRONMENT);
 
-		addFields(DateTimeField.class, ExposureDto.START_DATE, ExposureDto.END_DATE);
+		DateTimeField startDate = addField(ExposureDto.START_DATE, DateTimeField.class);
+		DateTimeField endDate = addField(ExposureDto.END_DATE, DateTimeField.class);
+
+		DateComparisonValidator.addStartEndValidators(startDate, endDate);
 
 		addFields(
 			ExposureDto.EXPOSURE_TYPE,
