@@ -32,6 +32,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.vaadin.v7.ui.TextField;
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.epidata.ClusterType;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
@@ -81,7 +82,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			loc(EpiDataDto.ACTIVITY_AS_CASE_DETAILS_KNOWN)+
 			loc(EpiDataDto.ACTIVITIES_AS_CASE) +
 			loc(LOC_CLUSTER_TYPE_HEADING)+
-			fluidRowLocs(6,EpiDataDto.CLUSTER_TYPE,6,EpiDataDto.CLUSTER_TYPE_TEXT) +
+			fluidRowLocs(3, EpiDataDto.CLUSTER_RELATED,5,EpiDataDto.CLUSTER_TYPE,4,EpiDataDto.CLUSTER_TYPE_TEXT) +
 			locCss(VSPACE_TOP_3, LOC_EPI_DATA_FIELDS_HINT) +
 			loc(EpiDataDto.HIGH_TRANSMISSION_RISK_AREA) +
 			loc(EpiDataDto.LARGE_OUTBREAKS_AREA) + 
@@ -152,7 +153,9 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 
 		addField(EpiDataDto.CASE_IMPORTED_STATUS);
 		addField(EpiDataDto.CLUSTER_TYPE);
+		addField(EpiDataDto.CLUSTER_RELATED);
 		TextField clustorTypeTF = addField(EpiDataDto.CLUSTER_TYPE_TEXT);
+		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.CLUSTER_TYPE, EpiDataDto.CLUSTER_RELATED, Collections.singletonList(Boolean.TRUE), true);
 		FieldHelper.setVisibleWhen(getField(EpiDataDto.CLUSTER_TYPE), Arrays.asList(clustorTypeTF), Arrays.asList(ClusterType.OTHER), true);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
@@ -210,11 +213,12 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			new MultilineLabel(divsCss(VSPACE_3, I18nProperties.getString(Strings.infoEpiDataFieldsHint)), ContentMode.HTML),
 			LOC_EPI_DATA_FIELDS_HINT);
 
-		getContent().addComponent(new MultilineLabel(h3(I18nProperties.getString(Strings.headingEpiCaseImport)) + divsCss(VSPACE_3), ContentMode.HTML),
-				LOC_CASE_IMPORT_HEADING);
-
-		getContent().addComponent(new MultilineLabel(h3(I18nProperties.getString(Strings.headingClusterType)) + divsCss(VSPACE_3), ContentMode.HTML),
-				LOC_CLUSTER_TYPE_HEADING);
+		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && Disease.MEASLES == disease) {
+			getContent().addComponent(new MultilineLabel(h3(I18nProperties.getString(Strings.headingEpiCaseImport)) + divsCss(VSPACE_3), ContentMode.HTML),
+					LOC_CASE_IMPORT_HEADING);
+			getContent().addComponent(new MultilineLabel(h3(I18nProperties.getString(Strings.headingClusterType)) + divsCss(VSPACE_3), ContentMode.HTML),
+					LOC_CLUSTER_TYPE_HEADING);
+		}
 
 		getContent().addComponent(
 			new MultilineLabel(

@@ -56,6 +56,7 @@ public class EpiData extends AbstractDomainObject {
 	private CaseImportedStatus caseImportedStatus;
 	private ClusterType clusterType;
 	private String clusterTypeText;
+	private boolean clusterRelated;
 
 	private List<Exposure> exposures = new ArrayList<>();
 	private List<ActivityAsCase> activitiesAsCase = new ArrayList<>();
@@ -169,5 +170,13 @@ public class EpiData extends AbstractDomainObject {
 
 	public void setClusterTypeText(String clusterTypeText) {
 		this.clusterTypeText = clusterTypeText;
+	}
+
+	public boolean isClusterRelated() {
+		return clusterRelated;
+	}
+
+	public void setClusterRelated(boolean clusterRelated) {
+		this.clusterRelated = clusterRelated;
 	}
 }

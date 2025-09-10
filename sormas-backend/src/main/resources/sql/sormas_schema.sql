@@ -14647,5 +14647,9 @@ ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS tubemitogenegt10 boolean
 
 INSERT INTO schema_version (version_number, comment) VALUES (591, 'Implement functionality to receive messages from laboratory for TB #13563');
 
+-- 2025-09-09 -  Lux measles - cluster related checkbox #13365
+alter table  epidata  add column IF NOT EXISTS clusterRelated boolean DEFAULT false;
+alter table  epidata_history  add column IF NOT EXISTS clusterRelated boolean DEFAULT false;
+INSERT INTO schema_version (version_number, comment) VALUES (592, 'Added cluster related checkbox for LUX Measles #13365');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

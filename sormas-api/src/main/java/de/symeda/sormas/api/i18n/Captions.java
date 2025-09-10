@@ -1561,6 +1561,7 @@ public interface Captions {
 	String EpiData_activityAsCaseDetailsKnown = "EpiData.activityAsCaseDetailsKnown";
 	String EpiData_areaInfectedAnimals = "EpiData.areaInfectedAnimals";
 	String EpiData_caseImportedStatus = "EpiData.caseImportedStatus";
+	String EpiData_clusterRelated = "EpiData.clusterRelated";
 	String EpiData_clusterType = "EpiData.clusterType";
 	String EpiData_clusterTypeText = "EpiData.clusterTypeText";
 	String EpiData_contactWithSourceCaseKnown = "EpiData.contactWithSourceCaseKnown";

@@ -103,6 +103,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setClusterType(source.getClusterType());
 		target.setCaseImportedStatus(source.getCaseImportedStatus());
 		target.setClusterTypeText(source.getClusterTypeText());
+		target.setClusterRelated(source.isClusterRelated());
 
 		return target;
 	}
@@ -249,6 +250,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setClusterType(source.getClusterType());
 		target.setCaseImportedStatus(source.getCaseImportedStatus());
 		target.setClusterTypeText(source.getClusterTypeText());
+		target.setClusterRelated(source.isClusterRelated());
 
 		return target;
 	}

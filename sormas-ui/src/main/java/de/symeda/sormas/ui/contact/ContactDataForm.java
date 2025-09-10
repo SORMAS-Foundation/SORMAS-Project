@@ -179,6 +179,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private final ViewMode viewMode;
 	private final Disease disease;
 	private final boolean diseaseHasFollowUp;
+	private final boolean luxMeasles;
 	private NullableOptionGroup contactProximity;
 	private ComboBox region;
 	private ComboBox district;
@@ -219,6 +220,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		this.viewMode = viewMode;
 		this.disease = disease;
 		this.diseaseHasFollowUp = FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(disease);
+		this.luxMeasles = Disease.MEASLES == disease && FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 		addFields();
 	}
 
@@ -241,7 +243,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		Label followUpStausHeadingLabel = new Label(I18nProperties.getString(Strings.headingFollowUpStatus));
 		followUpStausHeadingLabel.addStyleName(H3);
 		getContent().addComponent(followUpStausHeadingLabel, FOLLOW_UP_STATUS_HEADING_LOC);
-		followUpStausHeadingLabel.setVisible(diseaseHasFollowUp);
+		followUpStausHeadingLabel.setVisible(diseaseHasFollowUp && !luxMeasles);
 
 		Label prophylaxisLabel = new Label(I18nProperties.getString(Strings.headingProphylaxisLoc));
 		prophylaxisLabel.addStyleName(H3);
@@ -888,6 +890,20 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				ContactDto.OVERWRITE_FOLLOW_UP_UNTIL),
 			field -> diseaseHasFollowUp,
 			field -> false);
+
+		// For LUX measles cases do not require the follow-up details. For other countries works as it is
+		FieldHelper.setMultipleVisible(
+				getFieldGroup(),
+				Arrays.asList(
+						ContactDto.FOLLOW_UP_STATUS,
+						ContactDto.FOLLOW_UP_STATUS_CHANGE_DATE,
+						ContactDto.FOLLOW_UP_STATUS_CHANGE_USER,
+						ContactDto.FOLLOW_UP_COMMENT,
+						ContactDto.FOLLOW_UP_UNTIL,
+						ContactDto.CONTACT_OFFICER,
+						ContactDto.OVERWRITE_FOLLOW_UP_UNTIL),
+				field -> !luxMeasles,
+				field -> false);
 
 		FieldHelper.updateEnumData(
 			contactProximity,
