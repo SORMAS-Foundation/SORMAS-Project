@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -56,6 +57,7 @@ public class EpiData extends AbstractDomainObject {
 	private CaseImportedStatus caseImportedStatus;
 	private ClusterType clusterType;
 	private String clusterTypeText;
+	@Column(nullable = false)
 	private boolean clusterRelated;
 
 	private List<Exposure> exposures = new ArrayList<>();

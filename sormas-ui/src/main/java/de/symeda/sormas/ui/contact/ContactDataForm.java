@@ -243,7 +243,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		Label followUpStausHeadingLabel = new Label(I18nProperties.getString(Strings.headingFollowUpStatus));
 		followUpStausHeadingLabel.addStyleName(H3);
 		getContent().addComponent(followUpStausHeadingLabel, FOLLOW_UP_STATUS_HEADING_LOC);
-		followUpStausHeadingLabel.setVisible(diseaseHasFollowUp && !luxMeasles);
+		followUpStausHeadingLabel.setVisible(diseaseHasFollowUp && !isLuxMeasles(this.disease));
 
 		Label prophylaxisLabel = new Label(I18nProperties.getString(Strings.headingProphylaxisLoc));
 		prophylaxisLabel.addStyleName(H3);
@@ -902,7 +902,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 						ContactDto.FOLLOW_UP_UNTIL,
 						ContactDto.CONTACT_OFFICER,
 						ContactDto.OVERWRITE_FOLLOW_UP_UNTIL),
-				field -> !luxMeasles,
+				field -> !isLuxMeasles(disease),
 				field -> false);
 
 		FieldHelper.updateEnumData(
@@ -1155,5 +1155,15 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
 		// this hopefully resets everything to its correct value
 		discard();
+	}
+
+	/**
+	 * To validate the Lux specific measles rules
+	 *
+	 * @param disease
+	 * @return
+	 */
+	private boolean isLuxMeasles(Disease disease) {
+		return Disease.MEASLES == disease && isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 	}
 }
