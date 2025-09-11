@@ -61,7 +61,7 @@ public class SampleDashboardMapComponent extends BaseDashboardMapComponent<Sampl
 		displayedHumanSamples =
 			new HashSet<>(Arrays.asList(SampleAssociationType.CASE, SampleAssociationType.CONTACT, SampleAssociationType.EVENT_PARTICIPANT));
 		if (UiUtil.permitted(FeatureType.ENVIRONMENT_MANAGEMENT, UserRight.ENVIRONMENT_SAMPLE_VIEW)) {
-			showEnvironmentalSamples = true;
+			showEnvironmentalSamples = false; // Changed to false: environment samples are OFF by default
 		}
 
 		super.addComponents();
@@ -243,14 +243,9 @@ public class SampleDashboardMapComponent extends BaseDashboardMapComponent<Sampl
 			CheckBox showEnvironmentSamplesCheckBox = new CheckBox();
 			showEnvironmentSamplesCheckBox.setId(Captions.sampleDashboardShowEnvironmentSamples);
 			showEnvironmentSamplesCheckBox.setCaption(I18nProperties.getCaption(Captions.sampleDashboardShowEnvironmentSamples));
-			showEnvironmentSamplesCheckBox.setValue(shouldShowEventParticipantSamples());
+			showEnvironmentSamplesCheckBox.setValue(showEnvironmentalSamples); // Use the correct state!
 			showEnvironmentSamplesCheckBox.addValueChangeListener(e -> {
-				if ((boolean) e.getProperty().getValue()) {
-					showEnvironmentalSamples = true;
-				} else {
-					showEnvironmentalSamples = false;
-				}
-
+				showEnvironmentalSamples = (boolean) e.getProperty().getValue();
 				refreshMap(true);
 			});
 			layersLayout.addComponent(showEnvironmentSamplesCheckBox);
