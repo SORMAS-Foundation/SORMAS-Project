@@ -363,11 +363,7 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 
 			// Initialize means of immunization field based on current disease
 			if (currentDisease != null) {
-				FieldHelper.updateItems(
-					meansOfImmunizationField,
-					Arrays.asList(MeansOfImmunization.values()),
-					FieldVisibilityCheckers.withDisease(currentDisease),
-					MeansOfImmunization.class);
+				updateMeansOfImmunizationField(currentDisease);
 			}
 
 			if (disease != null) {

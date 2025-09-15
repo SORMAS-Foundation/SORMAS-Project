@@ -1079,7 +1079,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 		caze.setEpidemiologicalConfirmation(YesNoUnknown.YES);
 		caze = getCaseFacade().save(caze);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
-		assertEquals(CaseClassification.PROBABLE, caze.getCaseClassification());
+		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
 
 		// Confirmed
 		caze = getCaseFacade().save(buildSuspectCase(Disease.INVASIVE_MENINGOCOCCAL_INFECTION));
@@ -1137,7 +1137,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 				PathogenTestType.PCR_RT_PCR,
 				PathogenTestType.ANTIGEN_DETECTION, PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
-		assertEquals(CaseClassification.PROBABLE, caze.getCaseClassification());
+		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
 	}
 
 	@Test

@@ -134,7 +134,8 @@ public enum PathogenTestType {
 	CQ_VALUE_DETECTION,
 
 	@Diseases(value = {
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+			Disease.MEASLES})
 	SEQUENCING,
 
 	@Diseases(value = {

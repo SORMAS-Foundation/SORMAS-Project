@@ -56,6 +56,7 @@ public class EpiDataDto extends PseudonymizableDto {
 	public static final String CASE_IMPORTED_STATUS = "caseImportedStatus";
 	public static final String CLUSTER_TYPE = "clusterType";
 	public static final String CLUSTER_TYPE_TEXT = "clusterTypeText";
+	public static final String CLUSTER_RELATED = "clusterRelated";
 
 	private YesNoUnknown exposureDetailsKnown;
 	private YesNoUnknown activityAsCaseDetailsKnown;
@@ -70,6 +71,11 @@ public class EpiDataDto extends PseudonymizableDto {
 			Disease.MEASLES})
 	@HideForCountriesExcept(countries = {CountryHelper.COUNTRY_CODE_LUXEMBOURG})
 	private ClusterType clusterType;
+
+	@Diseases({
+			Disease.MEASLES})
+	@HideForCountriesExcept(countries = {CountryHelper.COUNTRY_CODE_LUXEMBOURG})
+	private boolean clusterRelated;
 
 	@HideForCountriesExcept(countries = {CountryHelper.COUNTRY_CODE_LUXEMBOURG})
 	@Diseases({
@@ -187,6 +193,14 @@ public class EpiDataDto extends PseudonymizableDto {
 
 	public void setClusterTypeText(String clusterTypeText) {
 		this.clusterTypeText = clusterTypeText;
+	}
+
+	public boolean isClusterRelated() {
+		return clusterRelated;
+	}
+
+	public void setClusterRelated(boolean clusterRelated) {
+		this.clusterRelated = clusterRelated;
 	}
 
 	@Override
