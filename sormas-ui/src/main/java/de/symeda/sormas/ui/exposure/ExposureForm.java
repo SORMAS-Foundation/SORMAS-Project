@@ -223,7 +223,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		DateTimeField startDate = addField(ExposureDto.START_DATE, DateTimeField.class);
 		DateTimeField endDate = addField(ExposureDto.END_DATE, DateTimeField.class);
 
-		DateComparisonValidator.addStartEndValidators(startDate, endDate);
+		DateComparisonValidator.addStartEndValidators(startDate, endDate, false);
 
 		addFields(
 			ExposureDto.EXPOSURE_TYPE,
