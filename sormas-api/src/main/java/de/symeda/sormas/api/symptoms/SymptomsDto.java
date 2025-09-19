@@ -2592,14 +2592,14 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	@Diseases({
 		INVASIVE_PNEUMOCOCCAL_INFECTION,
-			INVASIVE_MENINGOCOCCAL_INFECTION,
-			MEASLES})
+		INVASIVE_MENINGOCOCCAL_INFECTION,
+		MEASLES})
 	private SymptomState otherClinicalPresentation;
 
 	@Diseases({
 		INVASIVE_PNEUMOCOCCAL_INFECTION,
-			INVASIVE_MENINGOCOCCAL_INFECTION,
-			MEASLES})
+		INVASIVE_MENINGOCOCCAL_INFECTION,
+		MEASLES})
 	private String otherClinicalPresentationText;
 
 	@Diseases({
