@@ -268,7 +268,7 @@
     <string name="caption_aggregate_deaths_abbr">D</string>
     <string name="caption_start_date_existing">Date de début existante</string>
     <string name="caption_end_date_existing">Date de fin existante</string>
-    <string name="caption_sync_send_new">%1$s. Sending new data…</string>
+    <string name="caption_sync_send_new">%1$s. Envoi de nouvelles données…</string>
     <string name="caption_sync_pull_infrastructure">%1$s. Pulling infrastructure data…</string>
     <string name="caption_sync_clear_up_infrastructure">%1$s. Clearing up infrastructure data…</string>
     <string name="caption_sync_delete_obsolete">%1$s. Deleting obsolete data…</string>
