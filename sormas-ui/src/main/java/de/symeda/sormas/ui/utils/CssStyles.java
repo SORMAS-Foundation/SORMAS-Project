@@ -527,6 +527,10 @@ public final class CssStyles {
 			return "background-disease-invasive-meningococcal-infection";
 		case INVASIVE_PNEUMOCOCCAL_INFECTION:
 			return "background-disease-invasive-pneumococcal-infection";
+		case GIARDIASIS:
+			return "background-disease-giardiasis";
+		case CRYPTOSPORIDIUM:
+			return "background-disease-cryptosporidium";
 		case UNDEFINED:
 		default:
 			return "background-disease-undefined";

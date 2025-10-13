@@ -17,39 +17,98 @@
  *******************************************************************************/
 package de.symeda.sormas.api.sample;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.utils.Diseases;
 
 public enum GenoTypeResult {
 
-    GENOTYPE_A,
-    GENOTYPE_B,
-    GENOTYPE_B2,
-    GENOTYPE_B3,
-    GENOTYPE_C1,
-    GENOTYPE_C2,
-    GENOTYPE_D1,
-    GENOTYPE_D10,
-    GENOTYPE_D11,
-    GENOTYPE_D2,
-    GENOTYPE_D3,
-    GENOTYPE_D4,
-    GENOTYPE_D5,
-    GENOTYPE_D6,
-    GENOTYPE_D7,
-    GENOTYPE_D8,
-    GENOTYPE_D9,
-    GENOTYPE_E,
-    GENOTYPE_F,
-    GENOTYPE_G1,
-    GENOTYPE_G2,
-    GENOTYPE_G3,
-    GENOTYPE_H1,
-    GENOTYPE_H2,
-    OTHER,
-    UNKNOWN;
+	@Diseases({
+		Disease.MEASLES })
+	GENOTYPE_A,
+	@Diseases({
+		Disease.MEASLES })
+	GENOTYPE_B,
+	@Diseases({
+		Disease.MEASLES })
+	GENOTYPE_B2,
+	@Diseases({
+		Disease.MEASLES })
+	GENOTYPE_B3,
+	@Diseases({
+		Disease.MEASLES })
+	GENOTYPE_C1,
+	@Diseases({
+		Disease.MEASLES })
+	GENOTYPE_C2,
+	@Diseases({
+		Disease.MEASLES })
+	GENOTYPE_D1,
+	@Diseases({
+		Disease.MEASLES })
+	GENOTYPE_D10,
+	@Diseases({
+		Disease.MEASLES })
+	GENOTYPE_D11,
+	@Diseases({
+		Disease.MEASLES })
+	GENOTYPE_D2,
+	@Diseases({
+		Disease.MEASLES })
+	GENOTYPE_D3,
+	@Diseases({
+		Disease.MEASLES })
+	GENOTYPE_D4,
+	@Diseases({
+		Disease.MEASLES })
+	GENOTYPE_D5,
+	@Diseases({
+		Disease.MEASLES })
+	GENOTYPE_D6,
+	@Diseases({
+		Disease.MEASLES })
+	GENOTYPE_D7,
+	@Diseases({
+		Disease.MEASLES })
+	GENOTYPE_D8,
+	@Diseases({
+		Disease.MEASLES })
+	GENOTYPE_D9,
+	@Diseases({
+		Disease.MEASLES })
+	GENOTYPE_E,
+	@Diseases({
+		Disease.MEASLES })
+	GENOTYPE_F,
+	@Diseases({
+		Disease.MEASLES })
+	GENOTYPE_G1,
+	@Diseases({
+		Disease.MEASLES })
+	GENOTYPE_G2,
+	@Diseases({
+		Disease.MEASLES })
+	GENOTYPE_G3,
+	@Diseases({
+		Disease.MEASLES })
+	GENOTYPE_H1,
+	@Diseases({
+		Disease.MEASLES })
+	GENOTYPE_H2,
+	@Diseases({
+		Disease.CRYPTOSPORIDIUM })
+	CRYPTOSPORIDIUM_HOMINIS,
+	@Diseases({
+		Disease.CRYPTOSPORIDIUM })
+	CRYPTOSPORIDIUM_PARVUM,
+	@Diseases({
+		Disease.CRYPTOSPORIDIUM })
+	OTHER_CRYPTOSPORIDIUM_SPECIES,
+	OTHER,
+	UNKNOWN;
 
-    @Override
-    public String toString() {
-        return I18nProperties.getEnumCaption(this);
-    }
+	@Override
+	public String toString() {
+		return I18nProperties.getEnumCaption(this);
+	}
 }

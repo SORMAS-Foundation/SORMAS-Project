@@ -21,22 +21,64 @@ import de.symeda.sormas.api.utils.Diseases;
 
 public enum ExposureType {
 
+	@Diseases(value = {
+		Disease.CRYPTOSPORIDIUM,
+		Disease.GIARDIASIS }, hide = true)
 	WORK,
+	@Diseases({
+		Disease.CRYPTOSPORIDIUM,
+		Disease.GIARDIASIS })
 	TRAVEL,
+	@Diseases(value = {
+		Disease.CRYPTOSPORIDIUM,
+		Disease.GIARDIASIS }, hide = true)
 	SPORT,
+	@Diseases(value = {
+		Disease.CRYPTOSPORIDIUM,
+		Disease.GIARDIASIS }, hide = true)
 	VISIT,
+	@Diseases(value = {
+		Disease.CRYPTOSPORIDIUM,
+		Disease.GIARDIASIS }, hide = true)
 	GATHERING,
+	@Diseases(value = {
+		Disease.CRYPTOSPORIDIUM,
+		Disease.GIARDIASIS }, hide = true)
 	HABITATION,
+	@Diseases(value = {
+		Disease.CRYPTOSPORIDIUM,
+		Disease.GIARDIASIS }, hide = true)
 	PERSONAL_SERVICES,
 	@Diseases(value = {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	CHILDCARE_FACILITY,
 	@Diseases(value = {
-		Disease.CORONAVIRUS }, hide = true)
+		Disease.CORONAVIRUS,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIUM }, hide = true)
 	BURIAL,
 	@Diseases(value = {
 		Disease.CORONAVIRUS }, hide = true)
 	ANIMAL_CONTACT,
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIUM })
+	RECREATIONAL_WATER,
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIUM })
+	FOOD,
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIUM })
+	SEXUAL_CONTACT,
+	@Diseases({
+		Disease.CRYPTOSPORIDIUM })
+	SYMPTOMATIC_CONTACT,
+	@Diseases({
+		Disease.CRYPTOSPORIDIUM,
+		Disease.GIARDIASIS })
+	FLOOD_EXPOSURE,
 	OTHER,
 	UNKNOWN;
 

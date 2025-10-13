@@ -424,7 +424,14 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		// Entry date is only required for foreigners in Luxembourg with the TB+IMI+IPI diseases only.
 		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 			boolean isEntryDateAllowedDisease =
-					Arrays.asList(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.TUBERCULOSIS, Disease.MEASLES)
+				Arrays
+					.asList(
+						Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+						Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+						Disease.TUBERCULOSIS,
+						Disease.MEASLES,
+						Disease.GIARDIASIS,
+						Disease.CRYPTOSPORIDIUM)
 					.contains(disease);
 			birthCountryCB.addValueChangeListener(e -> {
 				CountryReferenceDto countryRef = (CountryReferenceDto) e.getProperty().getValue();
@@ -758,9 +765,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		} else {
 			canBeEmancipated = approximateAge >= minimumEmancipatedAge && approximateAge < minimumAdultAge;
 		}
-		if  (!canBeEmancipated && (approximateAgeField).getValue() != null)  {
+		if (!canBeEmancipated && (approximateAgeField).getValue() != null) {
 			Integer age = parseApproximateAge(approximateAgeField.getValue());
-			if  (age != null && approximateAgeTypeField.getValue() == ApproximateAgeType.YEARS)  {
+			if (age != null && approximateAgeTypeField.getValue() == ApproximateAgeType.YEARS) {
 				canBeEmancipated = age >= minimumEmancipatedAge && age < minimumAdultAge;
 				if (change) {
 					isEmancipated.setValue(canBeEmancipated);

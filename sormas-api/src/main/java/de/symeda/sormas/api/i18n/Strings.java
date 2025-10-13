@@ -664,6 +664,7 @@ public interface Strings {
 	String headingExportUserRightsFailed = "headingExportUserRightsFailed";
 	String headingExposureDetails = "headingExposureDetails";
 	String headingExposureInvestigation = "headingExposureInvestigation";
+	String headingExposuresConclusion = "headingExposuresConclusion";
 	String headingExtendFollowUp = "headingExtendFollowUp";
 	String headingExtendQuarantine = "headingExtendQuarantine";
 	String headingExternalEmailDetails = "headingExternalEmailDetails";

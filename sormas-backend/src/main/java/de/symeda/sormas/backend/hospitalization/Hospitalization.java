@@ -58,6 +58,7 @@ public class Hospitalization extends AbstractDomainObject {
 	public static final String STILL_HOSPITALIZED = "stillHospitalized";
 	public static final String ICU_LENGTH_OF_STAY = "icuLengthOfStay";
 	public static final String DESCRIPTION = "description";
+	public static final String DURATION_OF_HOSPITALIZATION = "durationOfHospitalization";
 
 	private YesNoUnknown admittedToHealthFacility;
 	private Date admissionDate;
@@ -79,6 +80,7 @@ public class Hospitalization extends AbstractDomainObject {
 	private String otherHospitalizationReason;
 	private String description;
 	private YesNoUnknown currentlyHospitalized;
+	private Integer durationOfHospitalization;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getAdmissionDate() {
@@ -251,5 +253,13 @@ public class Hospitalization extends AbstractDomainObject {
 
 	public void setIcuLengthOfStay(Integer icuLengthOfStay) {
 		this.icuLengthOfStay = icuLengthOfStay;
+	}
+
+	public Integer getDurationOfHospitalization() {
+		return durationOfHospitalization;
+	}
+
+	public void setDurationOfHospitalization(Integer durationOfHospitalization) {
+		this.durationOfHospitalization = durationOfHospitalization;
 	}
 }

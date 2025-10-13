@@ -18,6 +18,7 @@
 package de.symeda.sormas.api.symptoms;
 
 import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_GERMANY;
+import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_LUXEMBOURG;
 import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_SWITZERLAND;
 import static de.symeda.sormas.api.Disease.ACUTE_VIRAL_HEPATITIS;
 import static de.symeda.sormas.api.Disease.ADENOVIRUS;
@@ -29,6 +30,7 @@ import static de.symeda.sormas.api.Disease.CHIKUNGUNYA;
 import static de.symeda.sormas.api.Disease.CHOLERA;
 import static de.symeda.sormas.api.Disease.CONGENITAL_RUBELLA;
 import static de.symeda.sormas.api.Disease.CORONAVIRUS;
+import static de.symeda.sormas.api.Disease.CRYPTOSPORIDIUM;
 import static de.symeda.sormas.api.Disease.CSM;
 import static de.symeda.sormas.api.Disease.C_PNEUMONIAE;
 import static de.symeda.sormas.api.Disease.DENGUE;
@@ -38,6 +40,7 @@ import static de.symeda.sormas.api.Disease.DIPHTERIA;
 import static de.symeda.sormas.api.Disease.ENTEROVIRUS;
 import static de.symeda.sormas.api.Disease.EVD;
 import static de.symeda.sormas.api.Disease.FHA;
+import static de.symeda.sormas.api.Disease.GIARDIASIS;
 import static de.symeda.sormas.api.Disease.GUINEA_WORM;
 import static de.symeda.sormas.api.Disease.HIV;
 import static de.symeda.sormas.api.Disease.H_METAPNEUMOVIRUS;
@@ -332,6 +335,16 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String DATE_OF_ONSET_KNOWN = "dateOfOnsetKnown";
 	public static final String CLINICAL_PRESENTATION_STATUS = "clinicalPresentationStatus";
 
+	// Giardiasis & Cryptosporidium symptoms
+	public static final String EGGY_BURPS = "eggyBurps";
+	public static final String WEIGHT_LOSS = "weightLoss";
+	public static final String WEIGHT_LOSS_AMOUNT = "weightLossAmount";
+	public static final String BLOATING = "bloating";
+	public static final String REOCCURRENCE = "reoccurrence";
+	public static final String OVERNIGHT_STAY_REQUIRED = "overnightStayRequired";
+	public static final String SYMPTOM_CURRENT_STATUS = "symptomCurrentStatus";
+	public static final String DURATION_OF_SYMPTOMS = "durationOfSymptoms";
+
 	// Fields are declared in the order they should appear in the import template
 
 	public static SymptomsDto build() {
@@ -354,6 +367,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		ANTHRAX,
 		CORONAVIRUS,
 		UNSPECIFIED_VHF,
+		GIARDIASIS,
+		CRYPTOSPORIDIUM,
 		UNDEFINED,
 		OTHER })
 	@HideForCountries
@@ -371,6 +386,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		YELLOW_FEVER,
 		RESPIRATORY_SYNCYTIAL_VIRUS,
 		UNSPECIFIED_VHF,
+		GIARDIASIS,
+		CRYPTOSPORIDIUM,
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
@@ -615,6 +632,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		CHOLERA,
 		POLIO,
 		UNSPECIFIED_VHF,
+		GIARDIASIS,
+		CRYPTOSPORIDIUM,
 		UNDEFINED,
 		OTHER })
 	@HideForCountries
@@ -635,6 +654,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		ANTHRAX,
 		CORONAVIRUS,
 		UNSPECIFIED_VHF,
+		GIARDIASIS,
+		CRYPTOSPORIDIUM,
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
@@ -753,6 +774,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		RESPIRATORY_SYNCYTIAL_VIRUS,
 		UNDEFINED,
 		PERTUSSIS,
+		GIARDIASIS,
+		CRYPTOSPORIDIUM,
 		OTHER })
 	@Outbreaks
 	@SymptomGrouping(SymptomGroup.GENERAL)
@@ -1212,6 +1235,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		RABIES,
 		ANTHRAX,
 		CORONAVIRUS,
+		CRYPTOSPORIDIUM,
+		GIARDIASIS,
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
@@ -1332,7 +1357,9 @@ public class SymptomsDto extends PseudonymizableDto {
 		FHA,
 		INVASIVE_MENINGOCOCCAL_INFECTION,
 		INVASIVE_PNEUMOCOCCAL_INFECTION,
-		PERTUSSIS })
+		PERTUSSIS,
+		GIARDIASIS,
+		CRYPTOSPORIDIUM })
 	@HideForCountries
 	@Outbreaks
 	private Date onsetDate;
@@ -1766,6 +1793,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		UNSPECIFIED_VHF,
 		CONGENITAL_RUBELLA,
 		CORONAVIRUS,
+		GIARDIASIS,
+		CRYPTOSPORIDIUM,
 		UNDEFINED,
 		OTHER })
 	@SensitiveData
@@ -1957,6 +1986,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		UNDEFINED,
 		POLIO,
 		CORONAVIRUS,
+		CRYPTOSPORIDIUM,
+		GIARDIASIS,
 		OTHER })
 	@Outbreaks
 	@HideForCountries
@@ -2379,6 +2410,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		PLAGUE,
 		ANTHRAX,
 		CORONAVIRUS,
+		GIARDIASIS,
+		CRYPTOSPORIDIUM,
 		UNDEFINED,
 		OTHER })
 	@Complication
@@ -2487,9 +2520,13 @@ public class SymptomsDto extends PseudonymizableDto {
 	private SymptomState weakness;
 	@Diseases({
 		CORONAVIRUS,
+		GIARDIASIS,
+		CRYPTOSPORIDIUM,
 		UNDEFINED,
 		OTHER })
-	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_SWITZERLAND,
+		COUNTRY_CODE_LUXEMBOURG })
 	@SymptomGrouping(SymptomGroup.GENERAL)
 	private SymptomState fatigue;
 	@Diseases({
@@ -2572,7 +2609,9 @@ public class SymptomsDto extends PseudonymizableDto {
 		INVASIVE_MENINGOCOCCAL_INFECTION,
 		INVASIVE_PNEUMOCOCCAL_INFECTION,
 		PERTUSSIS,
-    	MEASLES })
+		MEASLES,
+		GIARDIASIS,
+		CRYPTOSPORIDIUM })
 	private SymptomState asymptomatic;
 	@Diseases({
 		INVASIVE_MENINGOCOCCAL_INFECTION })
@@ -2593,19 +2632,23 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Diseases({
 		INVASIVE_PNEUMOCOCCAL_INFECTION,
 		INVASIVE_MENINGOCOCCAL_INFECTION,
-		MEASLES})
+		MEASLES,
+		GIARDIASIS,
+		CRYPTOSPORIDIUM })
 	private SymptomState otherClinicalPresentation;
 
 	@Diseases({
 		INVASIVE_PNEUMOCOCCAL_INFECTION,
 		INVASIVE_MENINGOCOCCAL_INFECTION,
-		MEASLES})
+		MEASLES,
+		GIARDIASIS,
+		CRYPTOSPORIDIUM })
 	private String otherClinicalPresentationText;
 
 	@Diseases({
-			INVASIVE_PNEUMOCOCCAL_INFECTION,
-			INVASIVE_MENINGOCOCCAL_INFECTION,
-            MEASLES })
+		INVASIVE_PNEUMOCOCCAL_INFECTION,
+		INVASIVE_MENINGOCOCCAL_INFECTION,
+		MEASLES })
 	private SymptomState unknownSymptom;
 
 	// RSV-specific symptoms
@@ -2621,20 +2664,59 @@ public class SymptomsDto extends PseudonymizableDto {
 	@SymptomGrouping(SymptomGroup.RESPIRATORY)
 	private SymptomState respiratoryFatigue;
 
-	@Diseases(RESPIRATORY_SYNCYTIAL_VIRUS)
+	@Diseases({
+		RESPIRATORY_SYNCYTIAL_VIRUS,
+		GIARDIASIS,
+		CRYPTOSPORIDIUM })
 	private YesNoUnknown parentTimeOffWork;
 
-	@Diseases(RESPIRATORY_SYNCYTIAL_VIRUS)
+	@Diseases({
+		RESPIRATORY_SYNCYTIAL_VIRUS,
+		GIARDIASIS,
+		CRYPTOSPORIDIUM })
 	@DependantOn("parentTimeOffWork")
 	@Size(max = 50, message = Validations.textTooLong)
 	private String timeOffWorkDays;
 
-    @HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
-    @Diseases({
-            MEASLES })
-    private SymptomState acuteEncephalitis;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases({
+		MEASLES })
+	private SymptomState acuteEncephalitis;
+	@Diseases({
+		GIARDIASIS })
+	private SymptomState eggyBurps;
 
-    private DiagnosisType diagnosis;
+	@Diseases({
+		GIARDIASIS,
+		CRYPTOSPORIDIUM })
+	private SymptomState weightLoss;
+
+	private Integer weightLossAmount;
+
+	@Diseases({
+		GIARDIASIS,
+		CRYPTOSPORIDIUM })
+	private SymptomState symptomCurrentStatus;
+
+	@Diseases({
+		GIARDIASIS,
+		CRYPTOSPORIDIUM })
+	private Integer durationOfSymptoms;
+
+	@Diseases({
+		GIARDIASIS,
+		CRYPTOSPORIDIUM })
+	private SymptomState reoccurrence;
+	@Diseases({
+		GIARDIASIS,
+		CRYPTOSPORIDIUM })
+	private SymptomState overnightStayRequired;
+	@Diseases({
+		GIARDIASIS })
+	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
+	private SymptomState bloating;
+
+	private DiagnosisType diagnosis;
 	private InfectionSite majorSite;
 	private String otherMajorSiteDetails;
 	private InfectionSite minorSite;
@@ -4471,5 +4553,69 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	public void setAcuteEncephalitis(SymptomState acuteEncephalitis) {
 		this.acuteEncephalitis = acuteEncephalitis;
+	}
+
+	public SymptomState getEggyBurps() {
+		return eggyBurps;
+	}
+
+	public void setEggyBurps(SymptomState eggyBurps) {
+		this.eggyBurps = eggyBurps;
+	}
+
+	public SymptomState getWeightLoss() {
+		return weightLoss;
+	}
+
+	public void setWeightLoss(SymptomState weightLoss) {
+		this.weightLoss = weightLoss;
+	}
+
+	public Integer getWeightLossAmount() {
+		return weightLossAmount;
+	}
+
+	public void setWeightLossAmount(Integer weightLossAmount) {
+		this.weightLossAmount = weightLossAmount;
+	}
+
+	public SymptomState getSymptomCurrentStatus() {
+		return symptomCurrentStatus;
+	}
+
+	public void setSymptomCurrentStatus(SymptomState symptomCurrentStatus) {
+		this.symptomCurrentStatus = symptomCurrentStatus;
+	}
+
+	public Integer getDurationOfSymptoms() {
+		return durationOfSymptoms;
+	}
+
+	public void setDurationOfSymptoms(Integer durationOfSymptoms) {
+		this.durationOfSymptoms = durationOfSymptoms;
+	}
+
+	public SymptomState getReoccurrence() {
+		return reoccurrence;
+	}
+
+	public void setReoccurrence(SymptomState reoccurrence) {
+		this.reoccurrence = reoccurrence;
+	}
+
+	public SymptomState getOvernightStayRequired() {
+		return overnightStayRequired;
+	}
+
+	public void setOvernightStayRequired(SymptomState overnightStayRequired) {
+		this.overnightStayRequired = overnightStayRequired;
+	}
+
+	public SymptomState getBloating() {
+		return bloating;
+	}
+
+	public void setBloating(SymptomState bloating) {
+		this.bloating = bloating;
 	}
 }

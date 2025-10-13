@@ -61,6 +61,7 @@ public class HospitalizationDto extends EntityDto {
 	public static final String OTHER_HOSPITALIZATION_REASON = "otherHospitalizationReason";
 	public static final String DESCRIPTION = "description";
 	public static final String CURRENTLY_HOSPITALIZED = "currentlyHospitalized";
+	public static final String DURATION_OF_HOSPITALIZATION = "durationOfHospitalization";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -77,23 +78,33 @@ public class HospitalizationDto extends EntityDto {
 	private List<PreviousHospitalizationDto> previousHospitalizations = new ArrayList<>();
 
 	@Diseases({
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIUM })
 	private YesNoUnknown intensiveCareUnit;
 	@Diseases({
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIUM })
 	private Date intensiveCareUnitStart;
 	@Diseases({
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIUM })
 	private Date intensiveCareUnitEnd;
 
 	@Diseases({
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	private YesNoUnknown oxygenPrescribed;
 	@Diseases({
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIUM })
 	private YesNoUnknown stillHospitalized;
 	@Diseases({
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIUM })
 	private Integer icuLengthOfStay;
 
 	private HospitalizationReasonType hospitalizationReason;
@@ -102,6 +113,11 @@ public class HospitalizationDto extends EntityDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String description;
 	private YesNoUnknown currentlyHospitalized;
+
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIUM })
+	private Integer durationOfHospitalization;
 
 	public static HospitalizationDto build() {
 		HospitalizationDto hospitalization = new HospitalizationDto();
@@ -253,5 +269,13 @@ public class HospitalizationDto extends EntityDto {
 
 	public void setIcuLengthOfStay(Integer icuLengthOfStay) {
 		this.icuLengthOfStay = icuLengthOfStay;
+	}
+
+	public Integer getDurationOfHospitalization() {
+		return durationOfHospitalization;
+	}
+
+	public void setDurationOfHospitalization(Integer durationOfHospitalization) {
+		this.durationOfHospitalization = durationOfHospitalization;
 	}
 }

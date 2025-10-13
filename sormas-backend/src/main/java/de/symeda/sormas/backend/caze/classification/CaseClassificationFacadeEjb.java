@@ -347,12 +347,24 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 
 		// Measles
 		suspect = allOf(
-				symptom(SymptomsDto.FEVER),
-				symptom(SymptomsDto.SKIN_RASH),
-				xOf(1, symptom(SymptomsDto.COUGH), symptom(SymptomsDto.RUNNY_NOSE), symptom(SymptomsDto.CONJUNCTIVITIS)));
+			symptom(SymptomsDto.FEVER),
+			symptom(SymptomsDto.SKIN_RASH),
+			xOf(1, symptom(SymptomsDto.COUGH), symptom(SymptomsDto.RUNNY_NOSE), symptom(SymptomsDto.CONJUNCTIVITIS)));
 		if (configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 			probable = allOf(suspect, epiData(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN));
-			confirmed = allOf(suspect, symptom(SymptomsDto.SKIN_RASH, CountryHelper.COUNTRY_CODE_LUXEMBOURG + "-" + Disease.MEASLES.name()), xOf(1, positiveTestResult(Disease.MEASLES, PathogenTestType.CULTURE, PathogenTestType.IGM_SERUM_ANTIBODY, PathogenTestType.IGA_SERUM_ANTIBODY, PathogenTestType.PCR_RT_PCR, PathogenTestType.SEQUENCING, PathogenTestType.GENOTYPING)));
+			confirmed = allOf(
+				suspect,
+				symptom(SymptomsDto.SKIN_RASH, CountryHelper.COUNTRY_CODE_LUXEMBOURG + "-" + Disease.MEASLES.name()),
+				xOf(
+					1,
+					positiveTestResult(
+						Disease.MEASLES,
+						PathogenTestType.CULTURE,
+						PathogenTestType.IGM_SERUM_ANTIBODY,
+						PathogenTestType.IGA_SERUM_ANTIBODY,
+						PathogenTestType.PCR_RT_PCR,
+						PathogenTestType.SEQUENCING,
+						PathogenTestType.GENOTYPING)));
 			addCriteria(Disease.MEASLES, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, null);
 		} else {
 			probable = epiData(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN);
@@ -467,68 +479,87 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 
 		// Invasive Meningococcal Infection
 		suspect = xOf(
-						1,
-						symptom(SymptomsDto.MENINGEAL_SIGNS),
-						symptom(SymptomsDto.HEMORRHAGIC_RASH),
-						symptom(SymptomsDto.SHOCK),
-						symptom(SymptomsDto.ARTHRITIS));
+			1,
+			symptom(SymptomsDto.MENINGEAL_SIGNS),
+			symptom(SymptomsDto.HEMORRHAGIC_RASH),
+			symptom(SymptomsDto.SHOCK),
+			symptom(SymptomsDto.ARTHRITIS));
 
 		probable = allOf(suspect, caseData(CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, YesNoUnknown.YES));
 
 		confirmed = allOf(
-				suspect,
-				xOf(1,(positiveTestResult(
-						Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-						PathogenTestType.MICROSCOPY,
-						PathogenTestType.PCR_RT_PCR,
-						PathogenTestType.ANTIGEN_DETECTION))));
-		addCriteria(
-				Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-				DateHelper.getDateZero(2020, 11, 6),
-				suspect,
-				probable,
-				confirmed,
-				null);
+			suspect,
+			xOf(
+				1,
+				(positiveTestResult(
+					Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+					PathogenTestType.MICROSCOPY,
+					PathogenTestType.PCR_RT_PCR,
+					PathogenTestType.ANTIGEN_DETECTION))));
+		addCriteria(Disease.INVASIVE_MENINGOCOCCAL_INFECTION, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, null);
 
 		//Invasive Pneumococcal Infection
 		suspect = null;
 		probable = null;
-		confirmed = xOf(1, positiveTestResult(
-						Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-						PathogenTestType.CULTURE,
-						PathogenTestType.PCR_RT_PCR,
-						PathogenTestType.SEQUENCING));
-		addCriteria(
+		confirmed = xOf(
+			1,
+			positiveTestResult(
 				Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-				DateHelper.getDateZero(2020, 11, 6),
-				suspect,
-				probable,
-				confirmed,
-				null);
+				PathogenTestType.CULTURE,
+				PathogenTestType.PCR_RT_PCR,
+				PathogenTestType.SEQUENCING));
+		addCriteria(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, null);
 
 		// Pertusis
-		suspect = xOf(1,allOfTogether(symptom(SymptomsDto.COUGHING_BOUTS, Disease.PERTUSSIS.name()),xOfSub(1, false,
-								symptom(SymptomsDto.WHOOP_SOUND), symptom(SymptomsDto.COUGHS_PROVOKE_VOMITING), symptom(SymptomsDto.NOCTURNAL_COUGH))),
-				symptom(SymptomsDto.APNOEA, Disease.PERTUSSIS.name()),
-				caseData(CaseDataDto.CLINICAL_CONFIRMATION, Disease.PERTUSSIS.name(), YesNoUnknown.YES));
+		suspect = xOf(
+			1,
+			allOfTogether(
+				symptom(SymptomsDto.COUGHING_BOUTS, Disease.PERTUSSIS.name()),
+				xOfSub(
+					1,
+					false,
+					symptom(SymptomsDto.WHOOP_SOUND),
+					symptom(SymptomsDto.COUGHS_PROVOKE_VOMITING),
+					symptom(SymptomsDto.NOCTURNAL_COUGH))),
+			symptom(SymptomsDto.APNOEA, Disease.PERTUSSIS.name()),
+			caseData(CaseDataDto.CLINICAL_CONFIRMATION, Disease.PERTUSSIS.name(), YesNoUnknown.YES));
 
 		probable = allOf(suspect, caseData(CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, YesNoUnknown.YES));
 
 		confirmed = allOf(
-				suspect,
-				xOf(1,(positiveTestResult(
-						Disease.PERTUSSIS,
-						PathogenTestType.MICROSCOPY,
-						PathogenTestType.PCR_RT_PCR,
-						PathogenTestType.CULTURE))));
-		addCriteria(
-				Disease.PERTUSSIS,
-				DateHelper.getDateZero(2020, 11, 6),
-				suspect,
-				probable,
-				confirmed,
-				null);
+			suspect,
+			xOf(1, (positiveTestResult(Disease.PERTUSSIS, PathogenTestType.MICROSCOPY, PathogenTestType.PCR_RT_PCR, PathogenTestType.CULTURE))));
+		addCriteria(Disease.PERTUSSIS, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, null);
 
+		// Giardiasis
+		// FIXME: Check the case classification exposure criteria for giardiasis, its is wrong for now
+		probable = allOf(
+			xOf(
+				1,
+				symptom(SymptomsDto.DIARRHEA),
+				symptom(SymptomsDto.BLOATING),
+				symptom(SymptomsDto.ABDOMINAL_PAIN),
+				symptom(SymptomsDto.WEIGHT_LOSS)),
+			xOf(
+				1,
+				epiData(EpiDataDto.EXPOSURE_DETAILS_KNOWN),
+				exposure(ExposureDto.HANDLING_SAMPLES, ExposureType.FLOOD_EXPOSURE),
+				exposure(ExposureDto.HANDLING_SAMPLES, ExposureType.SYMPTOMATIC_CONTACT),
+				exposure(ExposureDto.HANDLING_SAMPLES, ExposureType.SEXUAL_CONTACT)));
+		confirmed = allOf(
+			xOf(1, (positiveTestResult(Disease.GIARDIASIS, PathogenTestType.MICROSCOPY, PathogenTestType.PCR_RT_PCR, PathogenTestType.CULTURE))));
+		addCriteria(Disease.GIARDIASIS, DateHelper.getDateZero(2020, 11, 6), null, probable, confirmed, null);
+
+		// Cryptosporidiosis
+		// FIXME: Check the case classification exposure criteria for cryptosporidiosis, its is wrong for now
+		probable = allOf(
+			caseData(CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, YesNoUnknown.YES),
+			xOf(1, symptom(SymptomsDto.DIARRHEA), symptom(SymptomsDto.ABDOMINAL_PAIN)));
+		confirmed = allOf(
+			xOf(
+				1,
+				(positiveTestResult(Disease.CRYPTOSPORIDIUM, PathogenTestType.MICROSCOPY, PathogenTestType.PCR_RT_PCR, PathogenTestType.CULTURE))));
+		addCriteria(Disease.CRYPTOSPORIDIUM, DateHelper.getDateZero(2020, 11, 6), null, probable, confirmed, null);
 
 		// CORONAVIRUS
 		suspect = xOf(
@@ -667,13 +698,15 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 	private ClassificationCaseCriteriaDto caseData(String propertyId, Object... propertyValues) {
 		return new ClassificationCaseCriteriaDto(propertyId, propertyValues);
 	}
+
 	private ClassificationCaseCriteriaDto caseData(String propertyId, String addition, Object... propertyValues) {
-		return new ClassificationCaseCriteriaDto(propertyId,addition, propertyValues);
+		return new ClassificationCaseCriteriaDto(propertyId, addition, propertyValues);
 	}
 
 	private ClassificationSymptomsCriteriaDto symptom(String propertyId) {
 		return new ClassificationSymptomsCriteriaDto(propertyId);
 	}
+
 	private ClassificationSymptomsCriteriaDto symptom(String propertyId, String addition) {
 		return new ClassificationSymptomsCriteriaDto(propertyId, addition);
 	}

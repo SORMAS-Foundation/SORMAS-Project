@@ -175,6 +175,21 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setRiskArea(source.getRiskArea());
 		target.setExposureRole(source.getExposureRole());
 		target.setLargeAttendanceNumber(source.getLargeAttendanceNumber());
+		target.setTravelAccommodation(source.getTravelAccommodation());
+		target.setTravelAccommodationType(source.getTravelAccommodationType());
+		target.setSwimmingLocation(source.getSwimmingLocation());
+		target.setSwimmingLocationType(source.getSwimmingLocationType());
+		target.setModeOfTransmission(source.getModeOfTransmission());
+		target.setModeOfTransmissionType(source.getModeOfTransmissionType());
+		target.setAnimalLocation(source.getAnimalLocation());
+		target.setDomesticSwimming(source.getDomesticSwimming());
+		target.setInternationalSwimming(source.getInternationalSwimming());
+		target.setSexualExposureText(source.getSexualExposureText());
+		target.setInfectionSource(source.getInfectionSource());
+		target.setInfectionSourceText(source.getInfectionSourceText());
+		target.setRawFoodContact(source.getRawFoodContact());
+		target.setRawFoodContactText(source.getRawFoodContactText());
+		target.setSymptomaticIndividualText(source.getSymptomaticIndividualText());
 
 		return target;
 	}
@@ -320,6 +335,21 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setRiskArea(source.getRiskArea());
 		target.setExposureRole(source.getExposureRole());
 		target.setLargeAttendanceNumber(source.getLargeAttendanceNumber());
+		target.setTravelAccommodation(source.getTravelAccommodation());
+		target.setTravelAccommodationType(source.getTravelAccommodationType());
+		target.setSwimmingLocation(source.getSwimmingLocation());
+		target.setSwimmingLocationType(source.getSwimmingLocationType());
+		target.setModeOfTransmission(source.getModeOfTransmission());
+		target.setModeOfTransmissionType(source.getModeOfTransmissionType());
+		target.setAnimalLocation(source.getAnimalLocation());
+		target.setDomesticSwimming(source.getDomesticSwimming());
+		target.setInternationalSwimming(source.getInternationalSwimming());
+		target.setSexualExposureText(source.getSexualExposureText());
+		target.setInfectionSource(source.getInfectionSource());
+		target.setInfectionSourceText(source.getInfectionSourceText());
+		target.setRawFoodContact(source.getRawFoodContact());
+		target.setRawFoodContactText(source.getRawFoodContactText());
+		target.setSymptomaticIndividualText(source.getSymptomaticIndividualText());
 
 		return target;
 	}

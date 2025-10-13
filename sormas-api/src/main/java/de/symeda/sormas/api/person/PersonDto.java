@@ -410,7 +410,9 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 		Disease.TUBERCULOSIS,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-        Disease.MEASLES})
+		Disease.MEASLES,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIUM })
 	private Date entryDate;
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
@@ -419,7 +421,9 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 		Disease.TUBERCULOSIS,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-        Disease.MEASLES })
+		Disease.MEASLES,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIUM })
 	private LivingStatus livingStatus;
 
 	@SuppressWarnings("serial")

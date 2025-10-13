@@ -15,24 +15,72 @@
 
 package de.symeda.sormas.api.exposure;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.utils.Diseases;
 
 public enum TypeOfAnimal {
 
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIUM }, hide = true)
 	BAT,
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIUM }, hide = true)
 	POULTRY,
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIUM }, hide = true)
 	CAMEL,
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIUM }, hide = true)
 	CANIDAE,
 	CAT,
 	CATTLE,
 	DOG,
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIUM }, hide = true)
 	PRIMATE,
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIUM }, hide = true)
 	SNAKE,
 	SWINE,
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIUM }, hide = true)
 	RABBIT,
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIUM }, hide = true)
 	RODENT,
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIUM }, hide = true)
 	TICK,
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIUM }, hide = true)
 	FLEA,
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIUM })
+	BIRDS,
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIUM })
+	GOAT,
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIUM })
+	HORSE,
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIUM })
+	SHEEP,
 	OTHER;
 
 	@Override

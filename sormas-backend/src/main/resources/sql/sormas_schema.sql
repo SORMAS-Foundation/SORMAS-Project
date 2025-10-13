@@ -14656,4 +14656,60 @@ update epidata_history set clusterRelated = false where clusterRelated is null;
 alter table epidata_history alter column clusterRelated set not null;
 INSERT INTO schema_version (version_number, comment) VALUES (592, 'Added cluster related checkbox for LUX Measles #13365');
 
+-- 2025-09-19 - Integrated new diseases named Giardiasis and Cryptosporidiosis #13601 #13608
+INSERT INTO customizableenumvalue(id, uuid, changedate, creationdate, datatype, value, caption, diseases, properties)
+VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'OCCUPATION_TYPE', 'WORK_PLACE', 'Place of work/ school/ Nursery',
+        null,jsonb_build_object('hasDetails', false));
+
+alter table symptoms add column if not exists eggyBurps varchar(255);
+alter table symptoms add column if not exists weightLoss varchar(255);
+alter table symptoms add column if not exists weightLossAmount integer;
+alter table symptoms add column if not exists reoccurrence varchar(255);
+alter table symptoms add column if not exists symptomCurrentStatus varchar(255);
+alter table symptoms add column if not exists durationOfSymptoms integer;
+alter table symptoms add column if not exists overnightStayRequired varchar(255);
+alter table symptoms add column if not exists bloating varchar(255);
+alter table exposures add column if not exists travelAccommodation varchar(255);
+alter table exposures add column if not exists travelAccommodationType varchar(255);
+alter table exposures add column if not exists swimmingLocation varchar(255);
+alter table exposures add column if not exists swimmingLocationType varchar(255);
+alter table exposures add column if not exists modeOfTransmission varchar(255);
+alter table exposures add column if not exists modeOfTransmissionType varchar(255);
+alter table exposures add column if not exists animallocation varchar(255);
+alter table exposures add column if not exists domesticswimming varchar(255);
+alter table exposures add column if not exists internationalswimming varchar(255);
+alter table exposures add column if not exists sexualexposuretext varchar(255);
+alter table exposures add column if not exists infectionSource varchar(255);
+alter table exposures add column if not exists infectionSourcetext varchar(255);
+alter table exposures add column if not exists rawfoodcontact varchar(255);
+alter table exposures add column if not exists rawfoodcontacttext varchar(255);
+alter table exposures add column if not exists symptomaticindividualtext varchar(255);
+ALTER TABLE hospitalization ADD COLUMN IF NOT EXISTS durationOfHospitalization integer;
+
+alter table symptoms_history add column if not exists eggyBurps varchar(255);
+alter table symptoms_history add column if not exists weightLoss varchar(255);
+alter table symptoms_history add column if not exists weightLossAmount integer;
+alter table symptoms_history add column if not exists reoccurrence varchar(255);
+alter table symptoms_history add column if not exists symptomCurrentStatus varchar(255);
+alter table symptoms_history add column if not exists durationOfSymptoms integer;
+alter table symptoms_history add column if not exists overnightStayRequired varchar(255);
+alter table symptoms_history add column if not exists bloating varchar(255);
+alter table exposures_history add column if not exists travelAccommodation varchar(255);
+alter table exposures_history add column if not exists travelAccommodationType varchar(255);
+alter table exposures_history add column if not exists swimmingLocation varchar(255);
+alter table exposures_history add column if not exists swimmingLocationType varchar(255);
+alter table exposures_history add column if not exists modeOfTransmission varchar(255);
+alter table exposures_history add column if not exists modeOfTransmissionType varchar(255);
+alter table exposures_history add column if not exists animallocation varchar(255);
+alter table exposures_history add column if not exists domesticswimming varchar(255);
+alter table exposures_history add column if not exists internationalswimming varchar(255);
+alter table exposures_history add column if not exists sexualexposuretext varchar(255);
+alter table exposures_history add column if not exists infectionSource varchar(255);
+alter table exposures_history add column if not exists infectionSourcetext varchar(255);
+alter table exposures_history add column if not exists rawfoodcontact varchar(255);
+alter table exposures_history add column if not exists rawfoodcontacttext varchar(255);
+alter table exposures_history add column if not exists symptomaticindividualtext varchar(255);
+alter table hospitalization_history add column if not exists durationOfHospitalization integer;
+
+INSERT INTO schema_version (version_number, comment) VALUES (593, 'Integrated new diseases named Giardiasis and Cryptosporidiosis #13601 #13608');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
