@@ -346,6 +346,7 @@ public class ExposureDto extends PseudonymizableDto {
 	@Diseases({
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS })
+	@SensitiveData
 	private TravelAccommodation travelAccommodation;
 
 	@Diseases({
@@ -376,15 +377,22 @@ public class ExposureDto extends PseudonymizableDto {
 	private YesNoUnknown internationalSwimming;
 
 	@Diseases(Disease.GIARDIASIS)
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String sexualExposureText;
 	@Diseases({
 		Disease.CRYPTOSPORIDIOSIS })
+	@SensitiveData
 	private YesNoUnknown rawFoodContact;
 	@Diseases({
 		Disease.CRYPTOSPORIDIOSIS })
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String rawFoodContactText;
 	@Diseases({
 		Disease.CRYPTOSPORIDIOSIS })
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String symptomaticIndividualText;
 
 	public static ExposureDto build(ExposureType exposureType) {
