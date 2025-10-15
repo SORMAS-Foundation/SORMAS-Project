@@ -28,7 +28,7 @@ public enum PathogenTestType {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	ANTIBODY_DETECTION,
 
 	ANTIGEN_DETECTION,
@@ -49,7 +49,7 @@ public enum PathogenTestType {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	HISTOPATHOLOGY,
 
 	@Diseases(value = {
@@ -58,7 +58,7 @@ public enum PathogenTestType {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	ISOLATION,
 
 	@Diseases(value = {
@@ -66,7 +66,7 @@ public enum PathogenTestType {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	IGM_SERUM_ANTIBODY,
 
 	@Diseases(value = {
@@ -74,7 +74,7 @@ public enum PathogenTestType {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	IGG_SERUM_ANTIBODY,
 
 	@Diseases(value = {
@@ -83,7 +83,7 @@ public enum PathogenTestType {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	IGA_SERUM_ANTIBODY,
 
 	@Diseases(value = {
@@ -93,7 +93,7 @@ public enum PathogenTestType {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	INCUBATION_TIME,
 
 	@Diseases(value = {
@@ -123,7 +123,7 @@ public enum PathogenTestType {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	NEUTRALIZING_ANTIBODIES,
 
 	@Diseases(value = {
@@ -137,7 +137,7 @@ public enum PathogenTestType {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	GRAM_STAIN,
 
 	@Diseases(value = {
@@ -147,7 +147,7 @@ public enum PathogenTestType {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	LATEX_AGGLUTINATION,
 
 	@Diseases(value = {
@@ -156,7 +156,7 @@ public enum PathogenTestType {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	CQ_VALUE_DETECTION,
 
 	@Diseases(value = {
@@ -170,7 +170,7 @@ public enum PathogenTestType {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	DNA_MICROARRAY,
 
 	@Diseases(value = {
@@ -179,7 +179,7 @@ public enum PathogenTestType {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	TMA,
 
 	@Diseases(value = {
@@ -231,7 +231,7 @@ public enum PathogenTestType {
 
 	@Diseases(value = {
 		Disease.MEASLES,
-		Disease.CRYPTOSPORIDIUM })
+		Disease.CRYPTOSPORIDIOSIS })
 	GENOTYPING,
 
 	OTHER;

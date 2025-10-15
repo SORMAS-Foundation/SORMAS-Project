@@ -1569,7 +1569,11 @@ public interface Captions {
 	String EpiData_exposureDetailsKnown = "EpiData.exposureDetailsKnown";
 	String EpiData_exposures = "EpiData.exposures";
 	String EpiData_highTransmissionRiskArea = "EpiData.highTransmissionRiskArea";
+	String EpiData_infectionSource = "EpiData.infectionSource";
+	String EpiData_infectionSourceText = "EpiData.infectionSourceText";
 	String EpiData_largeOutbreaksArea = "EpiData.largeOutbreaksArea";
+	String EpiData_modeOfTransmission = "EpiData.modeOfTransmission";
+	String EpiData_modeOfTransmissionType = "EpiData.modeOfTransmissionType";
 	String epiDataNoSourceContacts = "epiDataNoSourceContacts";
 	String epiWeekFrom = "epiWeekFrom";
 	String epiWeekTo = "epiWeekTo";
@@ -1827,16 +1831,12 @@ public interface Captions {
 	String Exposure_imi_longFaceToFaceContact = "Exposure.imi.longFaceToFaceContact";
 	String Exposure_imi_shortDistance = "Exposure.imi.shortDistance";
 	String Exposure_indoors = "Exposure.indoors";
-	String Exposure_infectionSource = "Exposure.infectionSource";
-	String Exposure_infectionSourceText = "Exposure.infectionSourceText";
 	String Exposure_internationalSwimming = "Exposure.internationalSwimming";
 	String Exposure_largeAttendanceNumber = "Exposure.largeAttendanceNumber";
 	String Exposure_location = "Exposure.location";
 	String Exposure_longFaceToFaceContact = "Exposure.longFaceToFaceContact";
 	String Exposure_meansOfTransport = "Exposure.meansOfTransport";
 	String Exposure_meansOfTransportDetails = "Exposure.meansOfTransportDetails";
-	String Exposure_modeOfTransmission = "Exposure.modeOfTransmission";
-	String Exposure_modeOfTransmissionType = "Exposure.modeOfTransmissionType";
 	String Exposure_otherProtectiveMeasures = "Exposure.otherProtectiveMeasures";
 	String Exposure_outdoors = "Exposure.outdoors";
 	String Exposure_percutaneous = "Exposure.percutaneous";
@@ -2392,6 +2392,8 @@ public interface Captions {
 	String Person_sex = "Person.sex";
 	String Person_symptomJournalStatus = "Person.symptomJournalStatus";
 	String Person_uuid = "Person.uuid";
+	String Person_workPlace = "Person.workPlace";
+	String Person_workPlaceText = "Person.workPlaceText";
 	String personAgeAndBirthdate = "personAgeAndBirthdate";
 	String personCommunityPrompt = "personCommunityPrompt";
 	String PersonContactDetail = "PersonContactDetail";

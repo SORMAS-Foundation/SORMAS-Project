@@ -188,8 +188,8 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 				&& UiUtil.enabled(FeatureType.CLINICAL_MANAGEMENT)
 				&& (!(FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 					&& List.of(Disease.MEASLES).contains(caze.getDisease())))
-				&& !List.of(Disease.GIARDIASIS, Disease.CRYPTOSPORIDIUM).contains(caze.getDisease())) {
-				// Therapy view is not available for Luxembourg for Measles cases and for all Giadiasis & Cryptosporidium cases.
+				&& !List.of(Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS).contains(caze.getDisease())) {
+				// Therapy view is not available for Luxembourg for Measles cases and for all Gradiastis & Cryptosporidiosis cases.
 				menu.addView(TherapyView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.THERAPY), params);
 			}
 		}
@@ -210,12 +210,12 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 						Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 						Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 						Disease.GIARDIASIS,
-						Disease.CRYPTOSPORIDIUM)
+						Disease.CRYPTOSPORIDIOSIS)
 					.contains(caze.getDisease())
 				&& !(FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 					&& List.of(Disease.MEASLES).contains(caze.getDisease()))) {
 				// clinical course view is not available for Luxembourg for Measles cases,
-				// and for all other countries GIARDIASIS,CRYPTOSPORIDIUM, IMI & IPI cases.
+				// and for all other countries GIARDIASIS, Cryptosporidiosis, IMI & IPI cases.
 				menu.addView(
 					ClinicalCourseView.VIEW_NAME,
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CLINICAL_COURSE),

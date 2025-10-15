@@ -366,7 +366,7 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private HealthConditionsDto healthConditions;
 	private YesNoUnknown pregnant;
 	@Diseases({
@@ -381,6 +381,7 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 		Disease.ANTHRAX,
 		Disease.CORONAVIRUS,
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.CRYPTOSPORIDIOSIS,
 		Disease.OTHER })
 	@Outbreaks
 	private VaccinationStatus vaccinationStatus;

@@ -30,6 +30,8 @@ import javax.persistence.OneToMany;
 
 import de.symeda.sormas.api.epidata.CaseImportedStatus;
 import de.symeda.sormas.api.epidata.ClusterType;
+import de.symeda.sormas.api.exposure.InfectionSource;
+import de.symeda.sormas.api.exposure.ModeOfTransmission;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.activityascase.ActivityAsCase;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -58,6 +60,12 @@ public class EpiData extends AbstractDomainObject {
 	private ClusterType clusterType;
 	private String clusterTypeText;
 	private boolean clusterRelated;
+
+	// Giardiasis & Cryptosporidiosis specific
+	private InfectionSource infectionSource;
+	private String infectionSourceText;
+	private ModeOfTransmission modeOfTransmission;
+	private String modeOfTransmissionType;
 
 	private List<Exposure> exposures = new ArrayList<>();
 	private List<ActivityAsCase> activitiesAsCase = new ArrayList<>();
@@ -180,5 +188,39 @@ public class EpiData extends AbstractDomainObject {
 
 	public void setClusterRelated(boolean clusterRelated) {
 		this.clusterRelated = clusterRelated;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ModeOfTransmission getModeOfTransmission() {
+		return modeOfTransmission;
+	}
+
+	public void setModeOfTransmission(ModeOfTransmission modeOfTransmission) {
+		this.modeOfTransmission = modeOfTransmission;
+	}
+
+	public String getModeOfTransmissionType() {
+		return modeOfTransmissionType;
+	}
+
+	public void setModeOfTransmissionType(String modeOfTransmissionType) {
+		this.modeOfTransmissionType = modeOfTransmissionType;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public InfectionSource getInfectionSource() {
+		return infectionSource;
+	}
+
+	public void setInfectionSource(InfectionSource infectionSource) {
+		this.infectionSource = infectionSource;
+	}
+
+	public String getInfectionSourceText() {
+		return infectionSourceText;
+	}
+
+	public void setInfectionSourceText(String infectionSourceText) {
+		this.infectionSourceText = infectionSourceText;
 	}
 }

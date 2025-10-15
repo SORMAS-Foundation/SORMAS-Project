@@ -542,10 +542,13 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 				symptom(SymptomsDto.WEIGHT_LOSS)),
 			xOf(
 				1,
-				epiData(EpiDataDto.EXPOSURE_DETAILS_KNOWN),
-				exposure(ExposureDto.HANDLING_SAMPLES, ExposureType.FLOOD_EXPOSURE),
-				exposure(ExposureDto.HANDLING_SAMPLES, ExposureType.SYMPTOMATIC_CONTACT),
-				exposure(ExposureDto.HANDLING_SAMPLES, ExposureType.SEXUAL_CONTACT)));
+				oneOfCompact(epiData(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN), exposure(ExposureDto.EXPOSURE_TYPE, ExposureType.ANIMAL_CONTACT)),
+				oneOfCompact(
+					epiData(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN),
+					exposure(ExposureDto.EXPOSURE_TYPE, ExposureType.RECREATIONAL_WATER)),
+				oneOfCompact(epiData(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN), exposure(ExposureDto.EXPOSURE_TYPE, ExposureType.FOOD)),
+				oneOfCompact(epiData(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN), exposure(ExposureDto.EXPOSURE_TYPE, ExposureType.FLOOD_EXPOSURE)),
+				oneOfCompact(epiData(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN), exposure(ExposureDto.EXPOSURE_TYPE, ExposureType.SEXUAL_CONTACT))));
 		confirmed = allOf(
 			xOf(1, (positiveTestResult(Disease.GIARDIASIS, PathogenTestType.MICROSCOPY, PathogenTestType.PCR_RT_PCR, PathogenTestType.CULTURE))));
 		addCriteria(Disease.GIARDIASIS, DateHelper.getDateZero(2020, 11, 6), null, probable, confirmed, null);
@@ -554,12 +557,17 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		// FIXME: Check the case classification exposure criteria for cryptosporidiosis, its is wrong for now
 		probable = allOf(
 			caseData(CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, YesNoUnknown.YES),
-			xOf(1, symptom(SymptomsDto.DIARRHEA), symptom(SymptomsDto.ABDOMINAL_PAIN)));
+			xOf(1, symptom(SymptomsDto.DIARRHEA), symptom(SymptomsDto.ABDOMINAL_PAIN)),
+			xOf(
+				1,
+				exposure(ExposureDto.RAW_FOOD_CONTACT, ExposureType.FOOD),
+				exposure(ExposureDto.SYMPTOMATIC_INDIVIDUAL_TEXT, ExposureType.SYMPTOMATIC_CONTACT),
+				exposure(ExposureDto.SEXUAL_EXPOSURE_TEXT, ExposureType.SEXUAL_CONTACT)));
 		confirmed = allOf(
 			xOf(
 				1,
-				(positiveTestResult(Disease.CRYPTOSPORIDIUM, PathogenTestType.MICROSCOPY, PathogenTestType.PCR_RT_PCR, PathogenTestType.CULTURE))));
-		addCriteria(Disease.CRYPTOSPORIDIUM, DateHelper.getDateZero(2020, 11, 6), null, probable, confirmed, null);
+				(positiveTestResult(Disease.CRYPTOSPORIDIOSIS, PathogenTestType.MICROSCOPY, PathogenTestType.PCR_RT_PCR, PathogenTestType.CULTURE))));
+		addCriteria(Disease.CRYPTOSPORIDIOSIS, DateHelper.getDateZero(2020, 11, 6), null, probable, confirmed, null);
 
 		// CORONAVIRUS
 		suspect = xOf(

@@ -179,8 +179,8 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 		}
 
 		if (UiUtil.permitted(FeatureType.IMMUNIZATION_MANAGEMENT, UserRight.IMMUNIZATION_VIEW)) {
-			// Immunizations are not shown for Giardiasis and Cryptosporidium
-			if (!List.of(Disease.GIARDIASIS, Disease.CRYPTOSPORIDIUM).contains(caze.getDisease())) {
+			// Immunizations are not shown for Giardiasis and Cryptosporidiosis
+			if (!List.of(Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS).contains(caze.getDisease())) {
 				if (!FacadeProvider.getFeatureConfigurationFacade()
 					.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
 					layout.addSidePanelComponent(new SideComponentLayout(new ImmunizationListComponent(() -> {

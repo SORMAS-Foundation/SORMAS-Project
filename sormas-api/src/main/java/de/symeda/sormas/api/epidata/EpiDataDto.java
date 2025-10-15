@@ -21,17 +21,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
 import de.symeda.sormas.api.exposure.ExposureDto;
+import de.symeda.sormas.api.exposure.InfectionSource;
+import de.symeda.sormas.api.exposure.ModeOfTransmission;
 import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
@@ -57,6 +61,10 @@ public class EpiDataDto extends PseudonymizableDto {
 	public static final String CLUSTER_TYPE = "clusterType";
 	public static final String CLUSTER_TYPE_TEXT = "clusterTypeText";
 	public static final String CLUSTER_RELATED = "clusterRelated";
+	public static final String MODE_OF_TRANSMISSION = "modeOfTransmission";
+	public static final String MODE_OF_TRANSMISSION_TYPE = "modeOfTransmissionType";
+	public static final String INFECTION_SOURCE = "infectionSource";
+	public static final String INFECTION_SOURCE_TEXT = "infectionSourceText";
 
 	private YesNoUnknown exposureDetailsKnown;
 	private YesNoUnknown activityAsCaseDetailsKnown;
@@ -64,22 +72,26 @@ public class EpiDataDto extends PseudonymizableDto {
 	private YesNoUnknown highTransmissionRiskArea;
 	private YesNoUnknown largeOutbreaksArea;
 	@Diseases({
-			Disease.MEASLES})
-	@HideForCountriesExcept(countries = {CountryHelper.COUNTRY_CODE_LUXEMBOURG})
+		Disease.MEASLES,
+		Disease.GIARDIASIS })
 	private CaseImportedStatus caseImportedStatus;
+
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@Diseases({
-			Disease.MEASLES})
-	@HideForCountriesExcept(countries = {CountryHelper.COUNTRY_CODE_LUXEMBOURG})
+		Disease.MEASLES })
 	private ClusterType clusterType;
 
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@Diseases({
-			Disease.MEASLES})
-	@HideForCountriesExcept(countries = {CountryHelper.COUNTRY_CODE_LUXEMBOURG})
+		Disease.MEASLES })
 	private boolean clusterRelated;
 
-	@HideForCountriesExcept(countries = {CountryHelper.COUNTRY_CODE_LUXEMBOURG})
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@Diseases({
-			Disease.MEASLES})
+		Disease.MEASLES })
 	private String clusterTypeText;
 
 	@Diseases({
@@ -91,6 +103,26 @@ public class EpiDataDto extends PseudonymizableDto {
 		Disease.UNDEFINED,
 		Disease.OTHER })
 	private YesNoUnknown areaInfectedAnimals;
+
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
+	private ModeOfTransmission modeOfTransmission;
+
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String modeOfTransmissionType;
+
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
+	private InfectionSource infectionSource;
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
+	private String infectionSourceText;
 
 	@Valid
 	private List<ExposureDto> exposures = new ArrayList<>();
@@ -201,6 +233,38 @@ public class EpiDataDto extends PseudonymizableDto {
 
 	public void setClusterRelated(boolean clusterRelated) {
 		this.clusterRelated = clusterRelated;
+	}
+
+	public InfectionSource getInfectionSource() {
+		return infectionSource;
+	}
+
+	public void setInfectionSource(InfectionSource infectionSource) {
+		this.infectionSource = infectionSource;
+	}
+
+	public String getInfectionSourceText() {
+		return infectionSourceText;
+	}
+
+	public void setInfectionSourceText(String infectionSourceText) {
+		this.infectionSourceText = infectionSourceText;
+	}
+
+	public ModeOfTransmission getModeOfTransmission() {
+		return modeOfTransmission;
+	}
+
+	public void setModeOfTransmission(ModeOfTransmission modeOfTransmission) {
+		this.modeOfTransmission = modeOfTransmission;
+	}
+
+	public String getModeOfTransmissionType() {
+		return modeOfTransmissionType;
+	}
+
+	public void setModeOfTransmissionType(String modeOfTransmissionType) {
+		this.modeOfTransmissionType = modeOfTransmissionType;
 	}
 
 	@Override

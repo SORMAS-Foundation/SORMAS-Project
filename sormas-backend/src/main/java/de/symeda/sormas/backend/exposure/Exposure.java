@@ -41,8 +41,6 @@ import de.symeda.sormas.api.exposure.ExposureRole;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.GatheringType;
 import de.symeda.sormas.api.exposure.HabitationType;
-import de.symeda.sormas.api.exposure.InfectionSource;
-import de.symeda.sormas.api.exposure.ModeOfTransmission;
 import de.symeda.sormas.api.exposure.SwimmingLocation;
 import de.symeda.sormas.api.exposure.TravelAccommodation;
 import de.symeda.sormas.api.exposure.TypeOfAnimal;
@@ -135,28 +133,15 @@ public class Exposure extends AbstractDomainObject {
 	// Fields specific to ExposureType.GATHERING
 	private YesNoUnknown largeAttendanceNumber;
 
-	// Fields specific to Giardiasis and Cryptosporidum
+	// Fields specific to Giardiasis and Cryptosporidiosis
 	private TravelAccommodation travelAccommodation;
-
 	private String travelAccommodationType;
-
 	private SwimmingLocation swimmingLocation;
-
 	private String swimmingLocationType;
-
-	private ModeOfTransmission modeOfTransmission;
-
-	private String modeOfTransmissionType;
-
 	private AnimalLocation animalLocation;
-
 	private YesNoUnknown internationalSwimming;
 	private YesNoUnknown domesticSwimming;
-
 	private String sexualExposureText;
-
-	private InfectionSource infectionSource;
-	private String infectionSourceText;
 	private YesNoUnknown rawFoodContact;
 	private String rawFoodContactText;
 	private String symptomaticIndividualText;
@@ -708,23 +693,6 @@ public class Exposure extends AbstractDomainObject {
 	}
 
 	@Enumerated(EnumType.STRING)
-	public ModeOfTransmission getModeOfTransmission() {
-		return modeOfTransmission;
-	}
-
-	public void setModeOfTransmission(ModeOfTransmission modeOfTransmission) {
-		this.modeOfTransmission = modeOfTransmission;
-	}
-
-	public String getModeOfTransmissionType() {
-		return modeOfTransmissionType;
-	}
-
-	public void setModeOfTransmissionType(String modeOfTransmissionType) {
-		this.modeOfTransmissionType = modeOfTransmissionType;
-	}
-
-	@Enumerated(EnumType.STRING)
 	public AnimalLocation getAnimalLocation() {
 		return animalLocation;
 	}
@@ -733,6 +701,7 @@ public class Exposure extends AbstractDomainObject {
 		this.animalLocation = animalLocation;
 	}
 
+	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getInternationalSwimming() {
 		return internationalSwimming;
 	}
@@ -741,6 +710,7 @@ public class Exposure extends AbstractDomainObject {
 		this.internationalSwimming = internationalSwimming;
 	}
 
+	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getDomesticSwimming() {
 		return domesticSwimming;
 	}
@@ -757,22 +727,7 @@ public class Exposure extends AbstractDomainObject {
 		this.sexualExposureText = sexualExposureText;
 	}
 
-	public InfectionSource getInfectionSource() {
-		return infectionSource;
-	}
-
-	public void setInfectionSource(InfectionSource infectionSource) {
-		this.infectionSource = infectionSource;
-	}
-
-	public String getInfectionSourceText() {
-		return infectionSourceText;
-	}
-
-	public void setInfectionSourceText(String infectionSourceText) {
-		this.infectionSourceText = infectionSourceText;
-	}
-
+	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getRawFoodContact() {
 		return rawFoodContact;
 	}

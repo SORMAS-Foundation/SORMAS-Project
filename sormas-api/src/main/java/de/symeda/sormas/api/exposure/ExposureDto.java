@@ -112,14 +112,10 @@ public class ExposureDto extends PseudonymizableDto {
 	public static final String TRAVEL_ACCOMMODATION_TYPE = "travelAccommodationType";
 	public static final String SWIMMING_LOCATION = "swimmingLocation";
 	public static final String SWIMMING_LOCATION_TYPE = "swimmingLocationType";
-	public static final String MODE_OF_TRANSMISSION = "modeOfTransmission";
-	public static final String MODE_OF_TRANSMISSION_TYPE = "modeOfTransmissionType";
 	public static final String ANIMAL_LOCATION = "animalLocation";
 	public static final String DOMESTIC_SWIMMING = "domesticSwimming";
 	public static final String INTERNATIONAL_SWIMMING = "internationalSwimming";
 	public static final String SEXUAL_EXPOSURE_TEXT = "sexualExposureText";
-	public static final String INFECTION_SOURCE = "infectionSource";
-	public static final String INFECTION_SOURCE_TEXT = "infectionSourceText";
 	public static final String RAW_FOOD_CONTACT = "rawFoodContact";
 	public static final String RAW_FOOD_CONTACT_TEXT = "rawFoodContactText";
 	public static final String SYMPTOMATIC_INDIVIDUAL_TEXT = "symptomaticIndividualText";
@@ -144,7 +140,7 @@ public class ExposureDto extends PseudonymizableDto {
 	private LocationDto location;
 	@Diseases(value = {
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private ExposureRole exposureRole;
 
 	// Type of Place
@@ -168,37 +164,37 @@ public class ExposureDto extends PseudonymizableDto {
 	// Details
 	@Diseases(value = {
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private YesNoUnknown indoors;
 	@Diseases(value = {
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private YesNoUnknown outdoors;
 	@Diseases(value = {
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private YesNoUnknown wearingMask;
 	@Diseases(value = {
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private YesNoUnknown wearingPpe;
 	@Diseases(value = {
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private YesNoUnknown otherProtectiveMeasures;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	@Diseases(value = {
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private String protectiveMeasuresDetails;
 	@Diseases(value = {
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private YesNoUnknown shortDistance;
 	@Diseases(value = {
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private YesNoUnknown longFaceToFaceContact;
 	@Diseases({
 		Disease.UNDEFINED,
@@ -258,22 +254,22 @@ public class ExposureDto extends PseudonymizableDto {
 	private YesNoUnknown handlingAnimals;
 	@Diseases(value = {
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private AnimalCondition animalCondition;
 	@Diseases(value = {
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private YesNoUnknown animalVaccinated;
 	@Diseases(value = {
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private AnimalContactType animalContactType;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String animalContactTypeDetails;
 	@Diseases({
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM })
+		Disease.CRYPTOSPORIDIOSIS })
 	private AnimalLocation animalLocation;
 	@Diseases({
 		Disease.AFP,
@@ -303,14 +299,14 @@ public class ExposureDto extends PseudonymizableDto {
 	private String waterSourceDetails;
 	@Diseases(value = {
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	@PersonalData
 	private ContactReferenceDto contactToCase;
 	private YesNoUnknown prophylaxis;
 	private Date prophylaxisDate;
 	@Diseases(value = {
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private YesNoUnknown riskArea;
 
 	// Exposure sub-types
@@ -349,65 +345,46 @@ public class ExposureDto extends PseudonymizableDto {
 
 	@Diseases({
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM })
+		Disease.CRYPTOSPORIDIOSIS })
 	private TravelAccommodation travelAccommodation;
 
 	@Diseases({
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM })
+		Disease.CRYPTOSPORIDIOSIS })
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String travelAccommodationType;
 
 	@Diseases({
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM })
+		Disease.CRYPTOSPORIDIOSIS })
 	@DependantOn(INTERNATIONAL_SWIMMING)
 	private SwimmingLocation swimmingLocation;
 
 	@Diseases({
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM })
+		Disease.CRYPTOSPORIDIOSIS })
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String swimmingLocationType;
 
 	@Diseases({
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM })
-	private ModeOfTransmission modeOfTransmission;
-
-	@Diseases({
-		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM })
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
-	private String modeOfTransmissionType;
-	@Diseases({
-		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM })
+		Disease.CRYPTOSPORIDIOSIS })
 	private YesNoUnknown domesticSwimming;
 	@Diseases({
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM })
+		Disease.CRYPTOSPORIDIOSIS })
 	private YesNoUnknown internationalSwimming;
 
 	@Diseases(Disease.GIARDIASIS)
 	private String sexualExposureText;
 	@Diseases({
-		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM })
-	private InfectionSource infectionSource;
-	@Diseases({
-		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM })
-	private String infectionSourceText;
-
-	@Diseases({
-		Disease.CRYPTOSPORIDIUM })
+		Disease.CRYPTOSPORIDIOSIS })
 	private YesNoUnknown rawFoodContact;
 	@Diseases({
-		Disease.CRYPTOSPORIDIUM })
+		Disease.CRYPTOSPORIDIOSIS })
 	private String rawFoodContactText;
 	@Diseases({
-		Disease.CRYPTOSPORIDIUM })
+		Disease.CRYPTOSPORIDIOSIS })
 	private String symptomaticIndividualText;
 
 	public static ExposureDto build(ExposureType exposureType) {
@@ -900,22 +877,6 @@ public class ExposureDto extends PseudonymizableDto {
 		this.swimmingLocationType = swimmingLocationType;
 	}
 
-	public ModeOfTransmission getModeOfTransmission() {
-		return modeOfTransmission;
-	}
-
-	public void setModeOfTransmission(ModeOfTransmission modeOfTransmission) {
-		this.modeOfTransmission = modeOfTransmission;
-	}
-
-	public String getModeOfTransmissionType() {
-		return modeOfTransmissionType;
-	}
-
-	public void setModeOfTransmissionType(String modeOfTransmissionType) {
-		this.modeOfTransmissionType = modeOfTransmissionType;
-	}
-
 	public YesNoUnknown getDomesticSwimming() {
 		return domesticSwimming;
 	}
@@ -938,22 +899,6 @@ public class ExposureDto extends PseudonymizableDto {
 
 	public void setSexualExposureText(String sexualExposureText) {
 		this.sexualExposureText = sexualExposureText;
-	}
-
-	public InfectionSource getInfectionSource() {
-		return infectionSource;
-	}
-
-	public void setInfectionSource(InfectionSource infectionSource) {
-		this.infectionSource = infectionSource;
-	}
-
-	public String getInfectionSourceText() {
-		return infectionSourceText;
-	}
-
-	public void setInfectionSourceText(String infectionSourceText) {
-		this.infectionSourceText = infectionSourceText;
 	}
 
 	public YesNoUnknown getRawFoodContact() {

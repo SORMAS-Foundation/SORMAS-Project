@@ -272,10 +272,10 @@ public class Symptoms extends AbstractDomainObject {
 	private YesNoUnknown parentTimeOffWork;
 	private String timeOffWorkDays;
 
-	// Giardia & Cryptosporidium-specific symptoms
+	// Giardia & Cryptosporidiosis-specific symptoms
 	private SymptomState eggyBurps;
 	private SymptomState weightLoss;
-	private Integer weightLossAmount;
+	private Float weightLossAmount;
 	private SymptomState symptomCurrentStatus;
 	private Integer durationOfSymptoms;
 	private SymptomState reoccurrence;
@@ -2136,11 +2136,11 @@ public class Symptoms extends AbstractDomainObject {
 		this.weightLoss = weightLoss;
 	}
 
-	public Integer getWeightLossAmount() {
+	public Float getWeightLossAmount() {
 		return weightLossAmount;
 	}
 
-	public void setWeightLossAmount(Integer weightLossAmount) {
+	public void setWeightLossAmount(Float weightLossAmount) {
 		this.weightLossAmount = weightLossAmount;
 	}
 
@@ -2170,6 +2170,7 @@ public class Symptoms extends AbstractDomainObject {
 		this.reoccurrence = reoccurrence;
 	}
 
+	@Enumerated(EnumType.STRING)
 	public SymptomState getOvernightStayRequired() {
 		return overnightStayRequired;
 	}
@@ -2178,6 +2179,7 @@ public class Symptoms extends AbstractDomainObject {
 		this.overnightStayRequired = overnightStayRequired;
 	}
 
+	@Enumerated(EnumType.STRING)
 	public SymptomState getBloating() {
 		return bloating;
 	}

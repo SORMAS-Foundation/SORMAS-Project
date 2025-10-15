@@ -104,6 +104,10 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setCaseImportedStatus(source.getCaseImportedStatus());
 		target.setClusterTypeText(source.getClusterTypeText());
 		target.setClusterRelated(source.isClusterRelated());
+		target.setModeOfTransmission(source.getModeOfTransmission());
+		target.setModeOfTransmissionType(source.getModeOfTransmissionType());
+		target.setInfectionSource(source.getInfectionSource());
+		target.setInfectionSourceText(source.getInfectionSourceText());
 
 		return target;
 	}
@@ -179,14 +183,12 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setTravelAccommodationType(source.getTravelAccommodationType());
 		target.setSwimmingLocation(source.getSwimmingLocation());
 		target.setSwimmingLocationType(source.getSwimmingLocationType());
-		target.setModeOfTransmission(source.getModeOfTransmission());
-		target.setModeOfTransmissionType(source.getModeOfTransmissionType());
+
 		target.setAnimalLocation(source.getAnimalLocation());
 		target.setDomesticSwimming(source.getDomesticSwimming());
 		target.setInternationalSwimming(source.getInternationalSwimming());
 		target.setSexualExposureText(source.getSexualExposureText());
-		target.setInfectionSource(source.getInfectionSource());
-		target.setInfectionSourceText(source.getInfectionSourceText());
+
 		target.setRawFoodContact(source.getRawFoodContact());
 		target.setRawFoodContactText(source.getRawFoodContactText());
 		target.setSymptomaticIndividualText(source.getSymptomaticIndividualText());
@@ -266,6 +268,10 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setCaseImportedStatus(source.getCaseImportedStatus());
 		target.setClusterTypeText(source.getClusterTypeText());
 		target.setClusterRelated(source.isClusterRelated());
+		target.setModeOfTransmission(source.getModeOfTransmission());
+		target.setModeOfTransmissionType(source.getModeOfTransmissionType());
+		target.setInfectionSource(source.getInfectionSource());
+		target.setInfectionSourceText(source.getInfectionSourceText());
 
 		return target;
 	}
@@ -339,14 +345,10 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setTravelAccommodationType(source.getTravelAccommodationType());
 		target.setSwimmingLocation(source.getSwimmingLocation());
 		target.setSwimmingLocationType(source.getSwimmingLocationType());
-		target.setModeOfTransmission(source.getModeOfTransmission());
-		target.setModeOfTransmissionType(source.getModeOfTransmissionType());
 		target.setAnimalLocation(source.getAnimalLocation());
 		target.setDomesticSwimming(source.getDomesticSwimming());
 		target.setInternationalSwimming(source.getInternationalSwimming());
 		target.setSexualExposureText(source.getSexualExposureText());
-		target.setInfectionSource(source.getInfectionSource());
-		target.setInfectionSourceText(source.getInfectionSourceText());
 		target.setRawFoodContact(source.getRawFoodContact());
 		target.setRawFoodContactText(source.getRawFoodContactText());
 		target.setSymptomaticIndividualText(source.getSymptomaticIndividualText());

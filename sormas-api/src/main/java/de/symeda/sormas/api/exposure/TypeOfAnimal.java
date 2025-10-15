@@ -23,63 +23,63 @@ public enum TypeOfAnimal {
 
 	@Diseases(value = {
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	BAT,
 	@Diseases(value = {
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	POULTRY,
 	@Diseases(value = {
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	CAMEL,
 	@Diseases(value = {
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	CANIDAE,
 	CAT,
 	CATTLE,
 	DOG,
 	@Diseases(value = {
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	PRIMATE,
 	@Diseases(value = {
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	SNAKE,
 	SWINE,
 	@Diseases(value = {
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	RABBIT,
 	@Diseases(value = {
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	RODENT,
 	@Diseases(value = {
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	TICK,
 	@Diseases(value = {
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	FLEA,
 	@Diseases({
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM })
+		Disease.CRYPTOSPORIDIOSIS })
 	BIRDS,
 	@Diseases({
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM })
+		Disease.CRYPTOSPORIDIOSIS })
 	GOAT,
 	@Diseases({
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM })
+		Disease.CRYPTOSPORIDIOSIS })
 	HORSE,
 	@Diseases({
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM })
+		Disease.CRYPTOSPORIDIOSIS })
 	SHEEP,
 	OTHER;
 

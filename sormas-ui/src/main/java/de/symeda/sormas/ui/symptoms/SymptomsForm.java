@@ -155,18 +155,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
                     fluidRow(
                             fluidColumn(6, 0,
                                     locsCss(VSPACE_3,
-                                            HEMORRHAGIC_RASH, ARTHRITIS, MENINGITIS, MENINGEAL_SIGNS, SEPTICAEMIA, ACUTE_ENCEPHALITIS,EGGY_BURPS, UNKNOWN_SYMPTOM)),
+                                            HEMORRHAGIC_RASH, ARTHRITIS, MENINGITIS, MENINGEAL_SIGNS, SEPTICAEMIA, ACUTE_ENCEPHALITIS, UNKNOWN_SYMPTOM)),
                             fluidColumn(6, 0,
-                                    locsCss(VSPACE_3, SHOCK, PNEUMONIA_CLINICAL_OR_RADIOLOGIC,OTHER_CLINICAL_PRESENTATION, OTHER_CLINICAL_PRESENTATION_TEXT)))+
-					fluidRow(fluidColumn(6,0,locsCss(VSPACE_3,WEIGHT_LOSS,WEIGHT_LOSS_AMOUNT)))+
-                    loc(COMPLICATIONS_HEADING) +
-                    fluidRow(
-                            fluidColumn(6, 0,
-                                    locsCss(VSPACE_3, ALTERED_CONSCIOUSNESS, CONFUSED_DISORIENTED, HEMORRHAGIC_SYNDROME, HYPERGLYCEMIA, HYPOGLYCEMIA, OVERNIGHT_STAY_REQUIRED)),
-                            fluidColumn(6, 0,
-                                    locsCss(VSPACE_3, MENINGEAL_SIGNS, SEIZURES, SEPSIS, SHOCK,REOCCURRENCE, OTHER_COMPLICATIONS, OTHER_COMPLICATIONS_TEXT)))+
-					fluidRowLocs(PARENT_TIME_OFF_WORK, TIME_OFF_WORK_DAYS) +
-
+                                    locsCss(VSPACE_3, SHOCK, PNEUMONIA_CLINICAL_OR_RADIOLOGIC)))+
 					createSymptomGroupLayout(SymptomGroup.GENERAL, GENERAL_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
 					createSymptomGroupLayout(SymptomGroup.RESPIRATORY, RESPIRATORY_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
 					createSymptomGroupLayout(SymptomGroup.CARDIOVASCULAR, CARDIOVASCULAR_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
@@ -175,8 +166,16 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 					createSymptomGroupLayout(SymptomGroup.NERVOUS_SYSTEM, NERVOUS_SYSTEM_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
 					createSymptomGroupLayout(SymptomGroup.SKIN, SKIN_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
 					createSymptomGroupLayout(SymptomGroup.OTHER, OTHER_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
-					fluidRow(fluidColumn(6, 0, loc("LAYOUT_SKIN_RASH_ONSET_DATE"))) +
 					fluidRowLocsCss(VSPACE_3, SYMPTOM_CURRENT_STATUS, DURATION_OF_SYMPTOMS)+
+					fluidRow(fluidColumn(6, 0, loc("LAYOUT_SKIN_RASH_ONSET_DATE"))) +
+					
+					loc(COMPLICATIONS_HEADING) +
+					fluidRow(
+							fluidColumn(6, 0,
+									locsCss(VSPACE_3, ALTERED_CONSCIOUSNESS, CONFUSED_DISORIENTED, HEMORRHAGIC_SYNDROME, HYPERGLYCEMIA, HYPOGLYCEMIA, OVERNIGHT_STAY_REQUIRED)),
+							fluidColumn(6, 0,
+									locsCss(VSPACE_3, MENINGEAL_SIGNS, SEIZURES, SEPSIS, SHOCK,REOCCURRENCE, OTHER_COMPLICATIONS, OTHER_COMPLICATIONS_TEXT)))+
+					fluidRowLocs(PARENT_TIME_OFF_WORK, TIME_OFF_WORK_DAYS) +
 					locsCss(VSPACE_3, PATIENT_ILL_LOCATION, SYMPTOMS_COMMENTS) +
 					fluidRowLocsCss(VSPACE_3, ONSET_SYMPTOM, ONSET_DATE);
 	//@formatter:on
@@ -547,17 +546,15 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		NullableOptionGroup asymptomaticNOG = addField(ASYMPTOMATIC);
 
 		asymptomaticNOG.addValueChangeListener(e -> {
-			if (isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
-				boolean isSymptamatic = !SymptomState.YES.equals(asymptomaticNOG.getNullableValue());
-				editableAllowedFields().stream().filter(field -> !field.getId().equals(ASYMPTOMATIC)).forEach(field -> {
-					if (!isSymptamatic) {
-						field.clear();
-					}
-					field.setEnabled(isSymptamatic);
-					onsetSymptom.setEnabled(isSymptamatic);
-					onsetDateField.setEnabled(isSymptamatic);
-				});
-			}
+			boolean isSymptamatic = !SymptomState.YES.equals(asymptomaticNOG.getNullableValue());
+			editableAllowedFields().stream().filter(field -> !field.getId().equals(ASYMPTOMATIC)).forEach(field -> {
+				if (!isSymptamatic) {
+					field.clear();
+				}
+				field.setEnabled(isSymptamatic);
+				onsetSymptom.setEnabled(isSymptamatic);
+				onsetDateField.setEnabled(isSymptamatic);
+			});
 		});
 
 		monkeypoxImageFieldIds = Arrays.asList(LESIONS_RESEMBLE_IMG1, LESIONS_RESEMBLE_IMG2, LESIONS_RESEMBLE_IMG3, LESIONS_RESEMBLE_IMG4);
@@ -1071,8 +1068,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			timeOffWorkDaysField.setValue(isParentTimeOffWorkYes ? timeOffWorkDaysField.getValue() : null);
 		});
 
-		// Change captions for giardiasis and cryptosporidium
-		if (ImmutableList.of(Disease.GIARDIASIS, Disease.CRYPTOSPORIDIUM).contains(disease)) {
+		// Change captions for giardiasis and Cryptosporidiosis
+		if (ImmutableList.of(Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS).contains(disease)) {
 			parentTimeOffWorkField.setCaption(I18nProperties.getCaption(Captions.Symptoms_timeOffWorkOrSchool));
 			timeOffWorkDaysField.setCaption(I18nProperties.getCaption(Captions.Symptoms_timeOffWorkDays_giardiasis));
 			getField(OTHER_COMPLICATIONS).setCaption(I18nProperties.getCaption(Captions.Symptoms_otherComplications_CryptoGiardia));

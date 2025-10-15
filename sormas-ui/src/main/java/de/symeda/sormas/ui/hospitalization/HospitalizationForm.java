@@ -156,7 +156,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		intensiveCareUnitEnd.setVisible(false);
 		DateComparisonValidator.addStartEndValidators(intensiveCareUnitStart, intensiveCareUnitEnd, true);
 
-		if (List.of(Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.GIARDIASIS, Disease.CRYPTOSPORIDIUM).contains(caze.getDisease())) {
+		if (List.of(Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS).contains(caze.getDisease())) {
 			FieldHelper.setVisibleWhen(
 				intensiveCareUnit,
 				Arrays.asList(intensiveCareUnitStart, intensiveCareUnitEnd),
@@ -173,7 +173,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		final NullableOptionGroup oxygenPrescribedField = addField(HospitalizationDto.OXYGEN_PRESCRIBED, NullableOptionGroup.class);
 		final NullableOptionGroup stillHospitalizedField = addField(HospitalizationDto.STILL_HOSPITALIZED, NullableOptionGroup.class);
 
-		if (!List.of(Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.GIARDIASIS, Disease.CRYPTOSPORIDIUM).contains(caze.getDisease())) {
+		if (!List.of(Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS).contains(caze.getDisease())) {
 			icuLengthOfStayField.setVisible(false);
 			oxygenPrescribedField.setVisible(false);
 			stillHospitalizedField.setVisible(false);
@@ -246,7 +246,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
 
-		if (List.of(Disease.GIARDIASIS, Disease.CRYPTOSPORIDIUM).contains(caze.getDisease())) {
+		if (List.of(Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS).contains(caze.getDisease())) {
 			FieldHelper
 				.setRequiredWhenNotNull(getFieldGroup(), HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY, HospitalizationDto.HOSPITALIZATION_REASON);
 			durationOfHospitalization.setVisible(true);
@@ -321,7 +321,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		dischargeDateField.addValueChangeListener(event -> admissionDateField.markAsDirty()); // re-evaluate admission date for consistent validation of all fields
 
 		// RSV specific logic
-		if (List.of(Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.CRYPTOSPORIDIUM, Disease.GIARDIASIS).contains(caze.getDisease())) {
+		if (List.of(Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.CRYPTOSPORIDIOSIS, Disease.GIARDIASIS).contains(caze.getDisease())) {
 			intensiveCareUnitStart.addValidator(
 				new DateComparisonValidator(
 					intensiveCareUnitStart,

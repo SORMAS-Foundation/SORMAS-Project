@@ -49,8 +49,6 @@ import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.GatheringType;
 import de.symeda.sormas.api.exposure.HabitationType;
-import de.symeda.sormas.api.exposure.InfectionSource;
-import de.symeda.sormas.api.exposure.ModeOfTransmission;
 import de.symeda.sormas.api.exposure.SwimmingLocation;
 import de.symeda.sormas.api.exposure.TravelAccommodation;
 import de.symeda.sormas.api.exposure.TypeOfAnimal;
@@ -138,9 +136,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			loc(ExposureDto.PHYSICAL_CONTACT_DURING_PREPARATION) +
 			loc(ExposureDto.PHYSICAL_CONTACT_WITH_BODY) +
 			fluidRowLocs(ExposureDto.DECEASED_PERSON_NAME, ExposureDto.DECEASED_PERSON_RELATION) +
-			loc(LOC_CONCLUSION_HEADING) +
-			fluidRowLocs(ExposureDto.MODE_OF_TRANSMISSION, ExposureDto.MODE_OF_TRANSMISSION_TYPE) +
-			fluidRowLocs(ExposureDto.INFECTION_SOURCE, ExposureDto.INFECTION_SOURCE_TEXT) +
+
 			loc(LOC_LOCATION_HEADING) +
 			fluidRow(
 					fluidColumn(6, 0, locs(ExposureDto.TYPE_OF_PLACE)),
@@ -231,8 +227,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		getContent()
 			.addComponent(new Label(h3(I18nProperties.getString(Strings.headingBurialDetails)), ContentMode.HTML), LOC_BURIAL_DETAILS_HEADING);
 
-		getContent()
-			.addComponent(new Label(h3(I18nProperties.getString(Strings.headingExposuresConclusion)), ContentMode.HTML), LOC_CONCLUSION_HEADING);
+		getContent().addComponent(new Label(h3(I18nProperties.getString(Strings.headingEpiConclusion)), ContentMode.HTML), LOC_CONCLUSION_HEADING);
 	}
 
 	private void addBasicFields() {
@@ -274,11 +269,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			ExposureDto.INTERNATIONAL_SWIMMING,
 			ExposureDto.SWIMMING_LOCATION,
 			ExposureDto.SWIMMING_LOCATION_TYPE,
-			ExposureDto.MODE_OF_TRANSMISSION,
-			ExposureDto.MODE_OF_TRANSMISSION_TYPE,
-			ExposureDto.INFECTION_SOURCE,
 			ExposureDto.RAW_FOOD_CONTACT,
-			ExposureDto.INFECTION_SOURCE_TEXT,
 			ExposureDto.RAW_FOOD_CONTACT_TEXT,
 			ExposureDto.SYMPTOMATIC_INDIVIDUAL_TEXT,
 			ExposureDto.ANIMAL_LOCATION,
@@ -324,7 +315,6 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			ExposureDto.EXPOSURE_TYPE,
 			ExposureType.RECREATIONAL_WATER,
 			true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.SWIMMING_LOCATION, ExposureDto.INTERNATIONAL_SWIMMING, YesNoUnknown.YES, true);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
 			ExposureDto.TYPE_OF_CHILDCARE_FACILITY,
@@ -353,8 +343,8 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			true);
 		FieldHelper
 			.setVisibleWhen(getFieldGroup(), ExposureDto.PROTECTIVE_MEASURES_DETAILS, ExposureDto.OTHER_PROTECTIVE_MEASURES, YesNoUnknown.YES, true);
-		// Animal-contact-related fields are not relevant for Giardiasis and Cryptosporidium
-		if (!List.of(Disease.GIARDIASIS, Disease.CRYPTOSPORIDIUM).contains(disease)) {
+		// Animal-contact-related fields are not relevant for Giardiasis and Cryptosporidiosis
+		if (!List.of(Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS).contains(disease)) {
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),
 				Arrays.asList(ExposureDto.ANIMAL_CONDITION, ExposureDto.ANIMAL_VACCINATED, ExposureDto.ANIMAL_CONTACT_TYPE),
@@ -397,11 +387,8 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.SWIMMING_LOCATION, ExposureDto.INTERNATIONAL_SWIMMING, YesNoUnknown.YES, true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.SWIMMING_LOCATION_TYPE, ExposureDto.SWIMMING_LOCATION, SwimmingLocation.OTHER, true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.ANIMAL_LOCATION, ExposureDto.EXPOSURE_TYPE, ExposureType.ANIMAL_CONTACT, true);
-		FieldHelper
-			.setVisibleWhen(getFieldGroup(), ExposureDto.MODE_OF_TRANSMISSION_TYPE, ExposureDto.MODE_OF_TRANSMISSION, ModeOfTransmission.OTHER, true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.SEXUAL_EXPOSURE_TEXT, ExposureDto.EXPOSURE_TYPE, ExposureType.SEXUAL_CONTACT, true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.INFECTION_SOURCE_TEXT, ExposureDto.INFECTION_SOURCE, InfectionSource.OTHER, true);
-		if (Disease.CRYPTOSPORIDIUM == disease) {
+		if (Disease.CRYPTOSPORIDIOSIS == disease) {
 			FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.RAW_FOOD_CONTACT, ExposureDto.EXPOSURE_TYPE, ExposureType.ANIMAL_CONTACT, true);
 			FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.RAW_FOOD_CONTACT_TEXT, ExposureDto.RAW_FOOD_CONTACT, YesNoUnknown.YES, true);
 			FieldHelper.setVisibleWhen(
@@ -416,13 +403,15 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		getContent().getComponent(LOC_BURIAL_DETAILS_HEADING).setVisible(false);
 		getField(ExposureDto.EXPOSURE_TYPE).addValueChangeListener(e -> {
 			ExposureType selectedExposureType = (ExposureType) e.getProperty().getValue();
-			getContent().getComponent(LOC_ANIMAL_CONTACT_DETAILS_HEADING).setVisible(selectedExposureType == ExposureType.ANIMAL_CONTACT);
-			// Exposure details heading is hidden if an exposure type is Animal Contact or Other (there are no relevant fields)
-			getContent().getComponent(LOC_EXPOSURE_DETAILS_HEADING)
-				.setVisible(!List.of(ExposureType.ANIMAL_CONTACT, ExposureType.OTHER).contains(selectedExposureType));
-			getContent().getComponent(LOC_BURIAL_DETAILS_HEADING).setVisible(selectedExposureType == ExposureType.BURIAL);
+			if (selectedExposureType != null) {
+				getContent().getComponent(LOC_ANIMAL_CONTACT_DETAILS_HEADING).setVisible(selectedExposureType == ExposureType.ANIMAL_CONTACT);
+				// Exposure details heading is hidden if an exposure type is Animal Contact or Other (there are no relevant fields)
+				getContent().getComponent(LOC_EXPOSURE_DETAILS_HEADING)
+					.setVisible(!List.of(ExposureType.ANIMAL_CONTACT, ExposureType.OTHER).contains(selectedExposureType));
+				getContent().getComponent(LOC_BURIAL_DETAILS_HEADING).setVisible(selectedExposureType == ExposureType.BURIAL);
+			}
 		});
-		getContent().getComponent(LOC_CONCLUSION_HEADING).setVisible(List.of(Disease.GIARDIASIS, Disease.CRYPTOSPORIDIUM).contains(disease));
+		getContent().getComponent(LOC_CONCLUSION_HEADING).setVisible(List.of(Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS).contains(disease));
 		locationForm.setFacilityFieldsVisible(getField(ExposureDto.TYPE_OF_PLACE).getValue() == TypeOfPlace.FACILITY, true);
 		getField(ExposureDto.TYPE_OF_PLACE)
 			.addValueChangeListener(e -> locationForm.setFacilityFieldsVisible(e.getProperty().getValue() == TypeOfPlace.FACILITY, true));

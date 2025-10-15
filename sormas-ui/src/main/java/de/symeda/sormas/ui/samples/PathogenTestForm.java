@@ -362,7 +362,8 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		ComboBox testedPathogenField = addCustomizableEnumField(PathogenTestDto.TESTED_PATHOGEN);
 		TextField testedPathogenDetailsField = addField(PathogenTestDto.TESTED_PATHOGEN_DETAILS, TextField.class);
 		testedPathogenDetailsField.setVisible(false);
-		FieldHelper.updateItems(testedPathogenField, FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.PATHOGEN, null));
+		FieldHelper
+			.updateItems(testedPathogenField, FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.PATHOGEN, disease));
 		testedPathogenField.addValueChangeListener(e -> {
 			Pathogen pathogen = (Pathogen) e.getProperty().getValue();
 			if (pathogen != null && pathogen.isHasDetails()) {
@@ -1019,16 +1020,15 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			SeroGroupSpecification.OTHER,
 			true);
 		// End of IMI serogroup specification
-		//Cryptosporidium for all countries Genotyping specification
+		//Cryptosporidiosis for all countries Genotyping specification
 		Map<Object, List<Object>> cryptoGenoTypingDependencies = new HashMap<>() {
 
 			{
-				put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.MEASLES, Disease.CRYPTOSPORIDIUM));
+				put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.MEASLES, Disease.CRYPTOSPORIDIOSIS));
 				put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.GENOTYPING));
 				put(PathogenTestDto.TEST_RESULT, Arrays.asList(PathogenTestResultType.POSITIVE));
 			}
 		};
-		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.GENOTYPE_RESULT, cryptoGenoTypingDependencies, true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.GENOTYPE_RESULT, cryptoGenoTypingDependencies, true);
 
 		FieldHelper
@@ -1094,7 +1094,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY),
 			Disease.MEASLES,
 			ImmutableList.of(PathogenTestType.GENOTYPING),
-			Disease.CRYPTOSPORIDIUM,
+			Disease.CRYPTOSPORIDIOSIS,
 			ImmutableList.of(PathogenTestType.GENOTYPING));
 
 		BiConsumer<Disease, PathogenTestType> resultField = (disease, testType) -> {

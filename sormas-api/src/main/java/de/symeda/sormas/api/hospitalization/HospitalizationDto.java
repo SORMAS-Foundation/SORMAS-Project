@@ -80,17 +80,17 @@ public class HospitalizationDto extends EntityDto {
 	@Diseases({
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM })
+		Disease.CRYPTOSPORIDIOSIS })
 	private YesNoUnknown intensiveCareUnit;
 	@Diseases({
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM })
+		Disease.CRYPTOSPORIDIOSIS })
 	private Date intensiveCareUnitStart;
 	@Diseases({
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM })
+		Disease.CRYPTOSPORIDIOSIS })
 	private Date intensiveCareUnitEnd;
 
 	@Diseases({
@@ -99,12 +99,12 @@ public class HospitalizationDto extends EntityDto {
 	@Diseases({
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM })
+		Disease.CRYPTOSPORIDIOSIS })
 	private YesNoUnknown stillHospitalized;
 	@Diseases({
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM })
+		Disease.CRYPTOSPORIDIOSIS })
 	private Integer icuLengthOfStay;
 
 	private HospitalizationReasonType hospitalizationReason;
@@ -116,7 +116,7 @@ public class HospitalizationDto extends EntityDto {
 
 	@Diseases({
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIUM })
+		Disease.CRYPTOSPORIDIOSIS })
 	private Integer durationOfHospitalization;
 
 	public static HospitalizationDto build() {
