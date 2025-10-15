@@ -39,6 +39,8 @@ import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.exposure.Exposure;
 import de.symeda.sormas.backend.exposure.ExposureService;
+import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.country.CountryService;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
@@ -58,6 +60,8 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 	private ContactService contactService;
 	@EJB
 	private UserService userService;
+	@EJB
+	private CountryService countryService;
 
 	public EpiData fillOrBuildEntity(EpiDataDto source, EpiData target, boolean checkChangeDate) {
 		if (source == null) {
@@ -108,6 +112,8 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setModeOfTransmissionType(source.getModeOfTransmissionType());
 		target.setInfectionSource(source.getInfectionSource());
 		target.setInfectionSourceText(source.getInfectionSourceText());
+		target.setCountry(countryService.getByReferenceDto(source.getCountry()));
+		target.setImportedCase(source.getImportedCase());
 
 		return target;
 	}
@@ -272,7 +278,8 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setModeOfTransmissionType(source.getModeOfTransmissionType());
 		target.setInfectionSource(source.getInfectionSource());
 		target.setInfectionSourceText(source.getInfectionSourceText());
-
+		target.setCountry(CountryFacadeEjb.toReferenceDto(source.getCountry()));
+		target.setImportedCase(source.getImportedCase());
 		return target;
 	}
 

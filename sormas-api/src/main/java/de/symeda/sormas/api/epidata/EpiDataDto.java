@@ -32,6 +32,7 @@ import de.symeda.sormas.api.exposure.InfectionSource;
 import de.symeda.sormas.api.exposure.ModeOfTransmission;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.Diseases;
@@ -65,6 +66,8 @@ public class EpiDataDto extends PseudonymizableDto {
 	public static final String MODE_OF_TRANSMISSION_TYPE = "modeOfTransmissionType";
 	public static final String INFECTION_SOURCE = "infectionSource";
 	public static final String INFECTION_SOURCE_TEXT = "infectionSourceText";
+	public static final String IMPORTED_CASE = "importedCase";
+	public static final String COUNTRY = "country";
 
 	private YesNoUnknown exposureDetailsKnown;
 	private YesNoUnknown activityAsCaseDetailsKnown;
@@ -72,9 +75,12 @@ public class EpiDataDto extends PseudonymizableDto {
 	private YesNoUnknown highTransmissionRiskArea;
 	private YesNoUnknown largeOutbreaksArea;
 	@Diseases({
-		Disease.MEASLES,
-		Disease.GIARDIASIS })
+		Disease.MEASLES })
 	private CaseImportedStatus caseImportedStatus;
+
+	@Diseases({
+		Disease.GIARDIASIS })
+	private YesNoUnknown importedCase;
 
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
@@ -123,6 +129,10 @@ public class EpiDataDto extends PseudonymizableDto {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS })
 	private String infectionSourceText;
+
+	@Diseases({
+		Disease.GIARDIASIS })
+	private CountryReferenceDto country;
 
 	@Valid
 	private List<ExposureDto> exposures = new ArrayList<>();
@@ -265,6 +275,22 @@ public class EpiDataDto extends PseudonymizableDto {
 
 	public void setModeOfTransmissionType(String modeOfTransmissionType) {
 		this.modeOfTransmissionType = modeOfTransmissionType;
+	}
+
+	public YesNoUnknown getImportedCase() {
+		return importedCase;
+	}
+
+	public void setImportedCase(YesNoUnknown importedCase) {
+		this.importedCase = importedCase;
+	}
+
+	public CountryReferenceDto getCountry() {
+		return country;
+	}
+
+	public void setCountry(CountryReferenceDto country) {
+		this.country = country;
 	}
 
 	@Override
