@@ -638,7 +638,7 @@ public interface Strings {
 	String headingEnvironmentSamplesNotDeleted = "headingEnvironmentSamplesNotDeleted";
 	String headingEnvironmentSamplesNotRestored = "headingEnvironmentSamplesNotRestored";
 	String headingEnvironmentSamplesRestored = "headingEnvironmentSamplesRestored";
-	String headingEpiCaseImport = "headingEpiCaseImport";
+	String headingEpiConclusion = "headingEpiConclusion";
 	String headingEpiCurve = "headingEpiCurve";
 	String headingEpiDataSourceCaseContacts = "headingEpiDataSourceCaseContacts";
 	String headingErrorReportNotAvailable = "headingErrorReportNotAvailable";

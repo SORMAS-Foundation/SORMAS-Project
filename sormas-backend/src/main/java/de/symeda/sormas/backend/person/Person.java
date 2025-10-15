@@ -63,6 +63,7 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
+import de.symeda.sormas.api.person.WorkPlace;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
@@ -231,6 +232,10 @@ public class Person extends AbstractDomainObject implements IsPerson, HasExterna
 	private Date entryDate;
 
 	private LivingStatus livingStatus;
+
+	// Cryptosporidiosis & Giardiasis specific
+	private WorkPlace workPlace;
+	private String workPlaceText;
 
 	private List<Case> cases = new ArrayList<>();
 	private List<Contact> contacts = new ArrayList<>();
@@ -890,6 +895,23 @@ public class Person extends AbstractDomainObject implements IsPerson, HasExterna
 
 	public void setLivingStatus(LivingStatus livingStatus) {
 		this.livingStatus = livingStatus;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public WorkPlace getWorkPlace() {
+		return workPlace;
+	}
+
+	public void setWorkPlace(WorkPlace workPlace) {
+		this.workPlace = workPlace;
+	}
+
+	public String getWorkPlaceText() {
+		return workPlaceText;
+	}
+
+	public void setWorkPlaceText(String workPlaceText) {
+		this.workPlaceText = workPlaceText;
 	}
 
 	@Transient

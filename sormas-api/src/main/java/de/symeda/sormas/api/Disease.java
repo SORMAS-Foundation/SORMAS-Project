@@ -88,6 +88,8 @@ public enum Disease
 	FHA(true, false, false, true, false, 0, true, false, false),
 	INVASIVE_PNEUMOCOCCAL_INFECTION(true, true, true, false, false, 0, false, false, false),
 	INVASIVE_MENINGOCOCCAL_INFECTION(true, true, true, false, true, 7, false, false, false),
+	GIARDIASIS(true, true, true, false, true, 14, false, false, false),
+	CRYPTOSPORIDIOSIS(true, true, true, false, true, 14, false, false, false),
 	OTHER(true, true, true, false, true, 21, false, false, false),
 	UNDEFINED(true, true, true, false, true, 0, false, false, false);
 

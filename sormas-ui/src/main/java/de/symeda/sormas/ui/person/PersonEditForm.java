@@ -81,6 +81,7 @@ import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Salutation;
+import de.symeda.sormas.api.person.WorkPlace;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -165,6 +166,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
                     divsCss(VSPACE_3,
                             fluidRowLocs(PersonDto.OCCUPATION_TYPE, PersonDto.OCCUPATION_DETAILS) +
                             fluidRow(oneOfTwoCol(PersonDto.ARMED_FORCES_RELATION_TYPE)),
+                            fluidRowLocs(PersonDto.WORK_PLACE, PersonDto.WORK_PLACE_TEXT),
                             fluidRowLocs(PersonDto.EDUCATION_TYPE, PersonDto.EDUCATION_DETAILS)
                     ) +
 
@@ -424,7 +426,14 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		// Entry date is only required for foreigners in Luxembourg with the TB+IMI+IPI diseases only.
 		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 			boolean isEntryDateAllowedDisease =
-					Arrays.asList(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.TUBERCULOSIS, Disease.MEASLES)
+				Arrays
+					.asList(
+						Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+						Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+						Disease.TUBERCULOSIS,
+						Disease.MEASLES,
+						Disease.GIARDIASIS,
+						Disease.CRYPTOSPORIDIOSIS)
 					.contains(disease);
 			birthCountryCB.addValueChangeListener(e -> {
 				CountryReferenceDto countryRef = (CountryReferenceDto) e.getProperty().getValue();
@@ -456,6 +465,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		externalTokenWarningLabel.addStyleNames(VSPACE_3, LABEL_WHITE_SPACE_NORMAL);
 		getContent().addComponent(externalTokenWarningLabel, EXTERNAL_TOKEN_WARNING_LOC);
 		addField(PersonDto.INTERNAL_TOKEN);
+
+		addField(PersonDto.WORK_PLACE);
+		addField(PersonDto.WORK_PLACE_TEXT);
 
 		AtomicBoolean nationalHealthIdFirstLoading = new AtomicBoolean(true);
 		nationalHealthIdField.addTextFieldValueChangeListener(e -> {
@@ -520,6 +532,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			burialDate,
 			burialPlaceDesc,
 			burialConductor);
+		FieldHelper.setVisibleWhen(getFieldGroup(), PersonDto.WORK_PLACE_TEXT, PersonDto.WORK_PLACE, WorkPlace.OTHER, true);
 
 		// Set initial visibilities
 
@@ -758,9 +771,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		} else {
 			canBeEmancipated = approximateAge >= minimumEmancipatedAge && approximateAge < minimumAdultAge;
 		}
-		if  (!canBeEmancipated && (approximateAgeField).getValue() != null)  {
+		if (!canBeEmancipated && (approximateAgeField).getValue() != null) {
 			Integer age = parseApproximateAge(approximateAgeField.getValue());
-			if  (age != null && approximateAgeTypeField.getValue() == ApproximateAgeType.YEARS)  {
+			if (age != null && approximateAgeTypeField.getValue() == ApproximateAgeType.YEARS) {
 				canBeEmancipated = age >= minimumEmancipatedAge && age < minimumAdultAge;
 				if (change) {
 					isEmancipated.setValue(canBeEmancipated);

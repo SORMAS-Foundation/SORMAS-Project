@@ -46,6 +46,7 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DependantOn;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
@@ -136,6 +137,8 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 	public static final String IS_INCAPACITATED = "incapacitated";
 	public static final String ENTRY_DATE = "entryDate";
 	public static final String LIVING_STATUS = "livingStatus";
+	public static final String WORK_PLACE = "workPlace";
+	public static final String WORK_PLACE_TEXT = "workPlaceText";
 	private static final long serialVersionUID = -8558187171374254398L;
 
 	// Fields are declared in the order they should appear in the import template
@@ -410,7 +413,9 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 		Disease.TUBERCULOSIS,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-        Disease.MEASLES})
+		Disease.MEASLES,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
 	private Date entryDate;
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
@@ -419,8 +424,21 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 		Disease.TUBERCULOSIS,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-        Disease.MEASLES })
+		Disease.MEASLES,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
 	private LivingStatus livingStatus;
+	@SensitiveData
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
+	private WorkPlace workPlace;
+	@SensitiveData
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
+	@DependantOn(WORK_PLACE)
+	private String workPlaceText;
 
 	@SuppressWarnings("serial")
 	public static class SeveralNonPrimaryContactDetailsException extends RuntimeException {
@@ -1122,6 +1140,22 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 
 	public void setIncapacitated(boolean incapacitated) {
 		this.incapacitated = incapacitated;
+	}
+
+	public WorkPlace getWorkPlace() {
+		return workPlace;
+	}
+
+	public void setWorkPlace(WorkPlace workPlace) {
+		this.workPlace = workPlace;
+	}
+
+	public String getWorkPlaceText() {
+		return workPlaceText;
+	}
+
+	public void setWorkPlaceText(String workPlaceText) {
+		this.workPlaceText = workPlaceText;
 	}
 
 	@Override

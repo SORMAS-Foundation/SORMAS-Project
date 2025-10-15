@@ -22,6 +22,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
@@ -52,6 +53,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateComparator;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UiUtil;
@@ -80,7 +82,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 			fluidRowLocs(HospitalizationDto.CURRENTLY_HOSPITALIZED) +
 			fluidRowLocs(HEALTH_FACILITY, HEALTH_FACILITY_DEPARTMENT) +
 			fluidRowLocs(HospitalizationDto.ADMISSION_DATE, HospitalizationDto.DISCHARGE_DATE, HospitalizationDto.LEFT_AGAINST_ADVICE, "") +
-			fluidRowLocs(HospitalizationDto.HOSPITALIZATION_REASON, HospitalizationDto.OTHER_HOSPITALIZATION_REASON) +
+			fluidRowLocs( HospitalizationDto.DURATION_OF_HOSPITALIZATION,  HospitalizationDto.HOSPITALIZATION_REASON,  HospitalizationDto.OTHER_HOSPITALIZATION_REASON, "") +
 			fluidRowLocs(3, HospitalizationDto.INTENSIVE_CARE_UNIT, 
 						3, HospitalizationDto.INTENSIVE_CARE_UNIT_START, 
 						3, HospitalizationDto.INTENSIVE_CARE_UNIT_END, 
@@ -152,8 +154,9 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		intensiveCareUnitStart.setVisible(false);
 		intensiveCareUnitEnd = addField(HospitalizationDto.INTENSIVE_CARE_UNIT_END, DateField.class);
 		intensiveCareUnitEnd.setVisible(false);
+		DateComparisonValidator.addStartEndValidators(intensiveCareUnitStart, intensiveCareUnitEnd, true);
 
-		if (caze.getDisease() == Disease.RESPIRATORY_SYNCYTIAL_VIRUS) {
+		if (List.of(Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS).contains(caze.getDisease())) {
 			FieldHelper.setVisibleWhen(
 				intensiveCareUnit,
 				Arrays.asList(intensiveCareUnitStart, intensiveCareUnitEnd),
@@ -170,7 +173,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		final NullableOptionGroup oxygenPrescribedField = addField(HospitalizationDto.OXYGEN_PRESCRIBED, NullableOptionGroup.class);
 		final NullableOptionGroup stillHospitalizedField = addField(HospitalizationDto.STILL_HOSPITALIZED, NullableOptionGroup.class);
 
-		if (caze.getDisease() != Disease.RESPIRATORY_SYNCYTIAL_VIRUS) {
+		if (!List.of(Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS).contains(caze.getDisease())) {
 			icuLengthOfStayField.setVisible(false);
 			oxygenPrescribedField.setVisible(false);
 			stillHospitalizedField.setVisible(false);
@@ -204,6 +207,8 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		CssStyles.style(hospitalizedPreviouslyField, CssStyles.ERROR_COLOR_PRIMARY);
 		PreviousHospitalizationsField previousHospitalizationsField =
 			addField(HospitalizationDto.PREVIOUS_HOSPITALIZATIONS, PreviousHospitalizationsField.class);
+		final TextField durationOfHospitalization = addField(HospitalizationDto.DURATION_OF_HOSPITALIZATION, TextField.class);
+		durationOfHospitalization.setVisible(false);
 
 		FieldHelper.setEnabledWhen(
 			admittedToHealthFacilityField,
@@ -222,11 +227,30 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 				isolatedField,
 				leftAgainstAdviceField,
 				hospitalizationReason,
+				icuLengthOfStayField,
+				durationOfHospitalization,
 				otherHospitalizationReason),
 			false);
+		FieldHelper.setEnabledWhen(
+			currentlyHospitalizedField,
+			Arrays.asList(YesNoUnknown.YES),
+			Arrays.asList(
+				admissionDateField,
+				dischargeDateField,
+				leftAgainstAdviceField,
+				durationOfHospitalization,
+				hospitalizationReason,
+				otherHospitalizationReason),
+			true);
 
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
+
+		if (List.of(Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS).contains(caze.getDisease())) {
+			FieldHelper
+				.setRequiredWhenNotNull(getFieldGroup(), HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY, HospitalizationDto.HOSPITALIZATION_REASON);
+			durationOfHospitalization.setVisible(true);
+		}
 
 		if (isVisibleAllowed(HospitalizationDto.ISOLATION_DATE)) {
 			FieldHelper.setVisibleWhen(
@@ -297,7 +321,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		dischargeDateField.addValueChangeListener(event -> admissionDateField.markAsDirty()); // re-evaluate admission date for consistent validation of all fields
 
 		// RSV specific logic
-		if (caze.getDisease() == Disease.RESPIRATORY_SYNCYTIAL_VIRUS) {
+		if (List.of(Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.CRYPTOSPORIDIOSIS, Disease.GIARDIASIS).contains(caze.getDisease())) {
 			intensiveCareUnitStart.addValidator(
 				new DateComparisonValidator(
 					intensiveCareUnitStart,
@@ -340,6 +364,10 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 				stillHospitalizedField.setEnabled(!hasDischargeDate);
 				if (hasDischargeDate) {
 					stillHospitalizedField.setValue(null);
+				}
+				// If the discharge date is set, the duration of hospitalization must be calculated based on admission and discharge date
+				if (hasDischargeDate && admissionDateField.getValue() != null) {
+					durationOfHospitalization.setValue("" + DateHelper.getDaysBetween(admissionDateField.getValue(), dischargeDateField.getValue()));
 				}
 			});
 			// Show icuLengthOfStay when ICU dates are not available but survey has length information

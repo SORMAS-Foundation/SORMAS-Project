@@ -364,7 +364,9 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	@SensitiveData
 	@Diseases(value = {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION}, hide = true)
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private HealthConditionsDto healthConditions;
 	private YesNoUnknown pregnant;
 	@Diseases({
@@ -1839,8 +1841,6 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	public void setOtherDiagnosticCriteria(String otherDiagnosticCriteria) {
 		this.otherDiagnosticCriteria = otherDiagnosticCriteria;
 	}
-
-
 
 	@JsonIgnore
 	public String i18nPrefix() {

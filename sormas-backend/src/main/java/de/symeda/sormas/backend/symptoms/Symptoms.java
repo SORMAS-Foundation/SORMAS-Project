@@ -272,6 +272,16 @@ public class Symptoms extends AbstractDomainObject {
 	private YesNoUnknown parentTimeOffWork;
 	private String timeOffWorkDays;
 
+	// Giardia & Cryptosporidiosis-specific symptoms
+	private SymptomState eggyBurps;
+	private SymptomState weightLoss;
+	private Float weightLossAmount;
+	private SymptomState symptomCurrentStatus;
+	private Integer durationOfSymptoms;
+	private SymptomState reoccurrence;
+	private SymptomState overnightStayRequired;
+	private SymptomState bloating;
+
 	// when adding new fields make sure to extend toHumanString
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -2106,5 +2116,75 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setAcuteEncephalitis(SymptomState acuteEncephalitis) {
 		this.acuteEncephalitis = acuteEncephalitis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getEggyBurps() {
+		return eggyBurps;
+	}
+
+	public void setEggyBurps(SymptomState eggyBurps) {
+		this.eggyBurps = eggyBurps;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getWeightLoss() {
+		return weightLoss;
+	}
+
+	public void setWeightLoss(SymptomState weightLoss) {
+		this.weightLoss = weightLoss;
+	}
+
+	public Float getWeightLossAmount() {
+		return weightLossAmount;
+	}
+
+	public void setWeightLossAmount(Float weightLossAmount) {
+		this.weightLossAmount = weightLossAmount;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getSymptomCurrentStatus() {
+		return symptomCurrentStatus;
+	}
+
+	public void setSymptomCurrentStatus(SymptomState symptomCurrentStatus) {
+		this.symptomCurrentStatus = symptomCurrentStatus;
+	}
+
+	public Integer getDurationOfSymptoms() {
+		return durationOfSymptoms;
+	}
+
+	public void setDurationOfSymptoms(Integer durationOfSymptoms) {
+		this.durationOfSymptoms = durationOfSymptoms;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getReoccurrence() {
+		return reoccurrence;
+	}
+
+	public void setReoccurrence(SymptomState reoccurrence) {
+		this.reoccurrence = reoccurrence;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getOvernightStayRequired() {
+		return overnightStayRequired;
+	}
+
+	public void setOvernightStayRequired(SymptomState overnightStayRequired) {
+		this.overnightStayRequired = overnightStayRequired;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getBloating() {
+		return bloating;
+	}
+
+	public void setBloating(SymptomState bloating) {
+		this.bloating = bloating;
 	}
 }

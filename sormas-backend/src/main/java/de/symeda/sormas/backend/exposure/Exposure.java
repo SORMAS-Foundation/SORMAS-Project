@@ -36,10 +36,13 @@ import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.AnimalContactType;
+import de.symeda.sormas.api.exposure.AnimalLocation;
 import de.symeda.sormas.api.exposure.ExposureRole;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.GatheringType;
 import de.symeda.sormas.api.exposure.HabitationType;
+import de.symeda.sormas.api.exposure.SwimmingLocation;
+import de.symeda.sormas.api.exposure.TravelAccommodation;
 import de.symeda.sormas.api.exposure.TypeOfAnimal;
 import de.symeda.sormas.api.exposure.TypeOfChildcareFacility;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
@@ -129,6 +132,19 @@ public class Exposure extends AbstractDomainObject {
 
 	// Fields specific to ExposureType.GATHERING
 	private YesNoUnknown largeAttendanceNumber;
+
+	// Fields specific to Giardiasis and Cryptosporidiosis
+	private TravelAccommodation travelAccommodation;
+	private String travelAccommodationType;
+	private SwimmingLocation swimmingLocation;
+	private String swimmingLocationType;
+	private AnimalLocation animalLocation;
+	private YesNoUnknown internationalSwimming;
+	private YesNoUnknown domesticSwimming;
+	private String sexualExposureText;
+	private YesNoUnknown rawFoodContact;
+	private String rawFoodContactText;
+	private String symptomaticIndividualText;
 
 	@ManyToOne
 	@JoinColumn(nullable = false)
@@ -640,5 +656,99 @@ public class Exposure extends AbstractDomainObject {
 
 	public void setLargeAttendanceNumber(YesNoUnknown largeAttendanceNumber) {
 		this.largeAttendanceNumber = largeAttendanceNumber;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public TravelAccommodation getTravelAccommodation() {
+		return travelAccommodation;
+	}
+
+	public void setTravelAccommodation(TravelAccommodation travelAccommodation) {
+		this.travelAccommodation = travelAccommodation;
+	}
+
+	public String getTravelAccommodationType() {
+		return travelAccommodationType;
+	}
+
+	public void setTravelAccommodationType(String travelAccommodationType) {
+		this.travelAccommodationType = travelAccommodationType;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SwimmingLocation getSwimmingLocation() {
+		return swimmingLocation;
+	}
+
+	public void setSwimmingLocation(SwimmingLocation swimmingLocation) {
+		this.swimmingLocation = swimmingLocation;
+	}
+
+	public String getSwimmingLocationType() {
+		return swimmingLocationType;
+	}
+
+	public void setSwimmingLocationType(String swimmingLocationType) {
+		this.swimmingLocationType = swimmingLocationType;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public AnimalLocation getAnimalLocation() {
+		return animalLocation;
+	}
+
+	public void setAnimalLocation(AnimalLocation animalLocation) {
+		this.animalLocation = animalLocation;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getInternationalSwimming() {
+		return internationalSwimming;
+	}
+
+	public void setInternationalSwimming(YesNoUnknown internationalSwimming) {
+		this.internationalSwimming = internationalSwimming;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getDomesticSwimming() {
+		return domesticSwimming;
+	}
+
+	public void setDomesticSwimming(YesNoUnknown domesticSwimming) {
+		this.domesticSwimming = domesticSwimming;
+	}
+
+	public String getSexualExposureText() {
+		return sexualExposureText;
+	}
+
+	public void setSexualExposureText(String sexualExposureText) {
+		this.sexualExposureText = sexualExposureText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getRawFoodContact() {
+		return rawFoodContact;
+	}
+
+	public void setRawFoodContact(YesNoUnknown rawFoodContact) {
+		this.rawFoodContact = rawFoodContact;
+	}
+
+	public String getRawFoodContactText() {
+		return rawFoodContactText;
+	}
+
+	public void setRawFoodContactText(String rawFoodContactText) {
+		this.rawFoodContactText = rawFoodContactText;
+	}
+
+	public String getSymptomaticIndividualText() {
+		return symptomaticIndividualText;
+	}
+
+	public void setSymptomaticIndividualText(String symptomaticIndividualText) {
+		this.symptomaticIndividualText = symptomaticIndividualText;
 	}
 }

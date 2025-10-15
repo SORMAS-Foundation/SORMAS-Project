@@ -92,6 +92,7 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		target.setIcuLengthOfStay(source.getIcuLengthOfStay());
 		target.setDescription(source.getDescription());
 		target.setCurrentlyHospitalized(source.getCurrentlyHospitalized());
+		target.setDurationOfHospitalization(source.getDurationOfHospitalization());
 
 		return target;
 	}
@@ -168,6 +169,7 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		target.setIcuLengthOfStay(source.getIcuLengthOfStay());
 		target.setDescription(source.getDescription());
 		target.setCurrentlyHospitalized(source.getCurrentlyHospitalized());
+		target.setDurationOfHospitalization(source.getDurationOfHospitalization());
 
 		return target;
 	}

@@ -576,4 +576,22 @@
       fill: #ca6f1e;
     }
   }
+  .background-disease-giardiasis{
+    background-color: #22b8e6;
+    fill: #22b8e6;
+
+    &.background-darker {
+      background-color: #064c63;
+      fill: #064c63;
+    }
+  }
+  .background-disease-cryptosporidiosis{
+    background-color: #9938ca;
+    fill: #9938ca;
+
+    &.background-darker {
+      background-color: #4b066a;
+      fill: #4b066a;
+    }
+  }
 }

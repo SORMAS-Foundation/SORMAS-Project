@@ -139,6 +139,8 @@ public class PathogenTestListEntry extends SideComponentField {
 			} else if (testType == PathogenTestType.MIRU_PATTERN_CODE) {
 				resultText = StringUtils.abbreviate(pathogenTest.getPatternProfile(), 125);
 			}
+		} else if (testType == PathogenTestType.GENOTYPING) {
+			resultText = StringUtils.abbreviate((pathogenTest.getGenoTypeResult() != null ? pathogenTest.getGenoTypeResult().toString() : ""), 125);
 		} else {
 			resultText = pathogenTest.getTestResult();
 		}
