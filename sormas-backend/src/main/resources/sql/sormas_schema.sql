@@ -14665,6 +14665,7 @@ alter table symptoms add column if not exists symptomCurrentStatus varchar(255);
 alter table symptoms add column if not exists durationOfSymptoms integer;
 alter table symptoms add column if not exists overnightStayRequired varchar(255);
 alter table symptoms add column if not exists bloating varchar(255);
+ALTER TABLE symptoms ALTER COLUMN weightlossamount TYPE float4 USING weightlossamount::float4;
 alter table exposures add column if not exists travelAccommodation varchar(255);
 alter table exposures add column if not exists travelAccommodationType varchar(255);
 alter table exposures add column if not exists swimmingLocation varchar(255);
@@ -14677,11 +14678,12 @@ alter table exposures add column if not exists rawfoodcontact varchar(255);
 alter table exposures add column if not exists rawfoodcontacttext varchar(255);
 alter table exposures add column if not exists symptomaticindividualtext varchar(255);
 ALTER TABLE hospitalization ADD COLUMN IF NOT EXISTS durationOfHospitalization integer;
-
 alter table epidata add column if not exists modeOfTransmission varchar(255);
 alter table epidata add column if not exists modeOfTransmissionType varchar(255);
 alter table epidata add column if not exists infectionSource varchar(255);
 alter table epidata add column if not exists infectionSourcetext varchar(255);
+alter table epidata add column if not exists importedCase varchar(255);
+alter table epidata add column if not exists country_id bigint;
 ALTER TABLE person ADD COLUMN IF NOT EXISTS workplace varchar(255);
 ALTER TABLE person ADD COLUMN IF NOT EXISTS workplacetext varchar(255);
 
@@ -14693,6 +14695,7 @@ alter table symptoms_history add column if not exists symptomCurrentStatus varch
 alter table symptoms_history add column if not exists durationOfSymptoms integer;
 alter table symptoms_history add column if not exists overnightStayRequired varchar(255);
 alter table symptoms_history add column if not exists bloating varchar(255);
+ALTER TABLE symptoms_history ALTER COLUMN weightlossamount TYPE float4 USING weightlossamount::float4;
 alter table exposures_history add column if not exists travelAccommodation varchar(255);
 alter table exposures_history add column if not exists travelAccommodationType varchar(255);
 alter table exposures_history add column if not exists swimmingLocation varchar(255);
@@ -14705,6 +14708,8 @@ alter table epidata_history add column if not exists modeOfTransmission varchar(
 alter table epidata_history add column if not exists modeOfTransmissionType varchar(255);
 alter table epidata_history add column if not exists infectionSource varchar(255);
 alter table epidata_history add column if not exists infectionSourcetext varchar(255);
+alter table epidata_history add column if not exists importedCase varchar(255);
+alter table epidata_history add column if not exists country_id bigint;
 alter table exposures_history add column if not exists rawfoodcontact varchar(255);
 alter table exposures_history add column if not exists rawfoodcontacttext varchar(255);
 alter table exposures_history add column if not exists symptomaticindividualtext varchar(255);

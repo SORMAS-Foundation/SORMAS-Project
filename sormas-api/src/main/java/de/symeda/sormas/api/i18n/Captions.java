@@ -1566,9 +1566,11 @@ public interface Captions {
 	String EpiData_clusterType = "EpiData.clusterType";
 	String EpiData_clusterTypeText = "EpiData.clusterTypeText";
 	String EpiData_contactWithSourceCaseKnown = "EpiData.contactWithSourceCaseKnown";
+	String EpiData_country = "EpiData.country";
 	String EpiData_exposureDetailsKnown = "EpiData.exposureDetailsKnown";
 	String EpiData_exposures = "EpiData.exposures";
 	String EpiData_highTransmissionRiskArea = "EpiData.highTransmissionRiskArea";
+	String EpiData_importedCase = "EpiData.importedCase";
 	String EpiData_infectionSource = "EpiData.infectionSource";
 	String EpiData_infectionSourceText = "EpiData.infectionSourceText";
 	String EpiData_largeOutbreaksArea = "EpiData.largeOutbreaksArea";

@@ -26,6 +26,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import de.symeda.sormas.api.epidata.CaseImportedStatus;
@@ -37,6 +39,7 @@ import de.symeda.sormas.backend.activityascase.ActivityAsCase;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.NotExposedToApi;
 import de.symeda.sormas.backend.exposure.Exposure;
+import de.symeda.sormas.backend.infrastructure.country.Country;
 
 @Entity
 public class EpiData extends AbstractDomainObject {
@@ -56,6 +59,7 @@ public class EpiData extends AbstractDomainObject {
 	private YesNoUnknown largeOutbreaksArea;
 	private YesNoUnknown areaInfectedAnimals;
 
+	private YesNoUnknown importedCase;
 	private CaseImportedStatus caseImportedStatus;
 	private ClusterType clusterType;
 	private String clusterTypeText;
@@ -66,6 +70,8 @@ public class EpiData extends AbstractDomainObject {
 	private String infectionSourceText;
 	private ModeOfTransmission modeOfTransmission;
 	private String modeOfTransmissionType;
+
+	private Country country;
 
 	private List<Exposure> exposures = new ArrayList<>();
 	private List<ActivityAsCase> activitiesAsCase = new ArrayList<>();
@@ -222,5 +228,23 @@ public class EpiData extends AbstractDomainObject {
 
 	public void setInfectionSourceText(String infectionSourceText) {
 		this.infectionSourceText = infectionSourceText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getImportedCase() {
+		return importedCase;
+	}
+
+	public void setImportedCase(YesNoUnknown importedCase) {
+		this.importedCase = importedCase;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	public Country getCountry() {
+		return country;
+	}
+
+	public void setCountry(Country country) {
+		this.country = country;
 	}
 }
