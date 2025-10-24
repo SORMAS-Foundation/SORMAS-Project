@@ -22,6 +22,7 @@ import de.symeda.sormas.ui.adverseeventsfollowingimmunization.AefiController;
 import de.symeda.sormas.ui.adverseeventsfollowingimmunization.AefiInvestigationController;
 import de.symeda.sormas.ui.campaign.CampaignController;
 import de.symeda.sormas.ui.caze.CaseController;
+import de.symeda.sormas.ui.caze.notifier.CaseNotifierSideViewController;
 import de.symeda.sormas.ui.caze.surveillancereport.SurveillanceReportController;
 import de.symeda.sormas.ui.clinicalcourse.ClinicalCourseController;
 import de.symeda.sormas.ui.configuration.customizableenum.CustomizableEnumController;
@@ -35,6 +36,7 @@ import de.symeda.sormas.ui.dashboard.DashboardController;
 import de.symeda.sormas.ui.docgeneration.DocGenerationController;
 import de.symeda.sormas.ui.email.ExternalEmailController;
 import de.symeda.sormas.ui.environment.EnvironmentController;
+import de.symeda.sormas.ui.epipulse.EpiPulseExportController;
 import de.symeda.sormas.ui.events.EventController;
 import de.symeda.sormas.ui.events.EventGroupController;
 import de.symeda.sormas.ui.events.EventParticipantsController;
@@ -64,7 +66,6 @@ import de.symeda.sormas.ui.utils.DeleteRestoreController;
 import de.symeda.sormas.ui.utils.PermanentDeleteController;
 import de.symeda.sormas.ui.vaccination.VaccinationController;
 import de.symeda.sormas.ui.visit.VisitController;
-import de.symeda.sormas.ui.caze.notifier.CaseNotifierSideViewController;
 
 public class ControllerProvider extends BaseControllerProvider {
 
@@ -115,6 +116,7 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final SurveyDocumentController surveyDocumentController;
 	private final SystemConfigurationController systemConfigurationController;
 	private final CaseNotifierSideViewController caseNotifierSideViewController;
+	private final EpiPulseExportController epipulseExportController;
 
 	public ControllerProvider() {
 		super();
@@ -166,6 +168,7 @@ public class ControllerProvider extends BaseControllerProvider {
 		surveyDocumentController = new SurveyDocumentController();
 		systemConfigurationController = new SystemConfigurationController();
 		caseNotifierSideViewController = new CaseNotifierSideViewController();
+		epipulseExportController = new EpiPulseExportController();
 	}
 
 	protected static ControllerProvider get() {
@@ -358,5 +361,9 @@ public class ControllerProvider extends BaseControllerProvider {
 
 	public static CaseNotifierSideViewController getCaseNotifierSideViewController() {
 		return get().caseNotifierSideViewController;
+	}
+
+	public static EpiPulseExportController getEpipulseExportController() {
+		return get().epipulseExportController;
 	}
 }

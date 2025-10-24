@@ -322,7 +322,11 @@ public enum UserRight {
 	EXTERNAL_EMAIL_ATTACH_DOCUMENTS(UserRightGroup.EXTERNAL_EMAILS, UserRight._EXTERNAL_EMAIL_SEND),
 	CUSTOMIZABLE_ENUM_MANAGEMENT(UserRightGroup.CONFIGURATION),
 	SYSTEM_CONFIGURATION(UserRightGroup.CONFIGURATION),
-	DISEASE_MANAGEMENT(UserRightGroup.CONFIGURATION);
+	DISEASE_MANAGEMENT(UserRightGroup.CONFIGURATION),
+	EPIPULSE_EXPORT_VIEW(UserRightGroup.EPIPULSE),
+	EPIPULSE_EXPORT_CREATE(UserRightGroup.EPIPULSE),
+	EPIPULSE_EXPORT_DOWNLOAD(UserRightGroup.EPIPULSE),
+	EPIPULSE_EXPORT_DELETE(UserRightGroup.EPIPULSE);
 
 	//@formatter:on
 
@@ -570,6 +574,11 @@ public enum UserRight {
 	public static final String _CUSTOMIZABLE_ENUM_MANAGEMENT = "CUSTOMIZABLE_ENUM_MANAGEMENT";
 	public static final String _SYSTEM_CONFIGURATION = "SYSTEM_CONFIGURATION";
 	public static final String _DISEASE_MANAGEMENT = "DISEASE_MANAGEMENT";
+
+	public static final String _EPIPULSE_EXPORT_VIEW = "EPIPULSE_EXPORT_VIEW";
+	public static final String _EPIPULSE_EXPORT_CREATE = "EPIPULSE_EXPORT_CREATE";
+	public static final String _EPIPULSE_EXPORT_DOWNLOAD = "EPIPULSE_EXPORT_DOWNLOAD";
+	public static final String _EPIPULSE_EXPORT_DELETE = "EPIPULSE_EXPORT_DELETE";
 
 	private static final Map<UserRight, Set<UserRight>> userRightDependencies = buildUserRightDependencies();
 
