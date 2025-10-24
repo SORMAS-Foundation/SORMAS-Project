@@ -28,6 +28,7 @@ public interface Strings {
 	String classificationConfirmedUnknownSymptoms = "classificationConfirmedUnknownSymptoms";
 	String classificationCriteriaForExposureType = "classificationCriteriaForExposureType";
 	String classificationCriteriaForTestType = "classificationCriteriaForTestType";
+	String classificationCriteriaRestrictedToExposureType = "classificationCriteriaRestrictedToExposureType";
 	String classificationDaysBeforeCaseStart = "classificationDaysBeforeCaseStart";
 	String classificationEventCluster = "classificationEventCluster";
 	String classificationForDisease = "classificationForDisease";
@@ -423,6 +424,7 @@ public interface Strings {
 	String forContact = "forContact";
 	String forEnvironment = "forEnvironment";
 	String forEventParticipant = "forEventParticipant";
+	String giardiaInfoExposureInvestigation = "giardiaInfoExposureInvestigation";
 	String headingAccessDenied = "headingAccessDenied";
 	String headingActivityAsCase = "headingActivityAsCase";
 	String headingActivityAsCaseDetails = "headingActivityAsCaseDetails";

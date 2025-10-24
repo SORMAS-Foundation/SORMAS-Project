@@ -14718,4 +14718,21 @@ ALTER TABLE person_history ADD COLUMN IF NOT EXISTS workplace varchar(255);
 ALTER TABLE person_history ADD COLUMN IF NOT EXISTS workplacetext varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (593, 'Integrated new diseases named Giardiasis and Cryptosporidiosis #13601 #13608');
+
+-- 2025-10-23 - RSV issue fixes and minor observations of Giardiasis and Cryptosporidiosis #13540 #13613
+alter table exposures add column if not exists animallocationtext varchar(255);
+alter table epidata drop constraint if exists fk_epidata_country_id;
+alter table epidata add constraint fk_epidata_country_id foreign key (country_id) references country(id);
+update symptoms set timeoffworkdays = null where trim(timeoffworkdays) = '' OR timeoffworkdays !~ '^\s*-?[0-9]*\.?[0-9]+\s*$';
+ALTER TABLE symptoms ALTER COLUMN timeoffworkdays TYPE float4 USING timeoffworkdays::float4;
+ALTER TABLE healthconditions DROP COLUMN IF EXISTS immunodepression;
+
+alter table exposures_history add column if not exists animallocationtext varchar(255);
+alter table epidata_history drop constraint if exists fk_epi_country_id;
+alter table epidata_history add constraint fk_epi_country_id foreign key (country_id) references country(id);
+update symptoms_history set timeoffworkdays = null where trim(timeoffworkdays) = '' OR timeoffworkdays !~ '^\s*-?[0-9]*\.?[0-9]+\s*$';
+ALTER TABLE symptoms_history ALTER COLUMN timeoffworkdays TYPE float4 USING timeoffworkdays::float4;
+ALTER TABLE healthconditions_history DROP COLUMN IF EXISTS immunodepression;
+
+INSERT INTO schema_version (version_number, comment) VALUES (594, 'RSV issue fixes and minor observations of Giardiasis and Cryptosporidiosis #13540 #13613');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

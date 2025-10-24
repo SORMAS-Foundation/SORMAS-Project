@@ -191,6 +191,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setSwimmingLocationType(source.getSwimmingLocationType());
 
 		target.setAnimalLocation(source.getAnimalLocation());
+		target.setAnimalLocationText(source.getAnimalLocationText());
 		target.setDomesticSwimming(source.getDomesticSwimming());
 		target.setInternationalSwimming(source.getInternationalSwimming());
 		target.setSexualExposureText(source.getSexualExposureText());
@@ -353,6 +354,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setSwimmingLocation(source.getSwimmingLocation());
 		target.setSwimmingLocationType(source.getSwimmingLocationType());
 		target.setAnimalLocation(source.getAnimalLocation());
+		target.setAnimalLocationText(source.getAnimalLocationText());
 		target.setDomesticSwimming(source.getDomesticSwimming());
 		target.setInternationalSwimming(source.getInternationalSwimming());
 		target.setSexualExposureText(source.getSexualExposureText());

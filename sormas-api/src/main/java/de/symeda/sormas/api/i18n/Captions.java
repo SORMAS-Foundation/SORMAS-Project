@@ -1807,6 +1807,7 @@ public interface Captions {
 	String Exposure_animalContactType = "Exposure.animalContactType";
 	String Exposure_animalContactTypeDetails = "Exposure.animalContactTypeDetails";
 	String Exposure_animalLocation = "Exposure.animalLocation";
+	String Exposure_animalLocationText = "Exposure.animalLocationText";
 	String Exposure_animalMarket = "Exposure.animalMarket";
 	String Exposure_animalVaccinated = "Exposure.animalVaccinated";
 	String Exposure_bodyOfWater = "Exposure.bodyOfWater";

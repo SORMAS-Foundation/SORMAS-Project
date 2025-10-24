@@ -139,6 +139,7 @@ public class Exposure extends AbstractDomainObject {
 	private SwimmingLocation swimmingLocation;
 	private String swimmingLocationType;
 	private AnimalLocation animalLocation;
+	private String animalLocationText;
 	private YesNoUnknown internationalSwimming;
 	private YesNoUnknown domesticSwimming;
 	private String sexualExposureText;
@@ -699,6 +700,14 @@ public class Exposure extends AbstractDomainObject {
 
 	public void setAnimalLocation(AnimalLocation animalLocation) {
 		this.animalLocation = animalLocation;
+	}
+
+	public String getAnimalLocationText() {
+		return animalLocationText;
+	}
+
+	public void setAnimalLocationText(String animalLocationText) {
+		this.animalLocationText = animalLocationText;
 	}
 
 	@Enumerated(EnumType.STRING)

@@ -62,7 +62,6 @@ public class HealthConditionsMapper {
 		target.setTuberculosisInfectionYear(source.getTuberculosisInfectionYear());
 		target.setComplianceWithTreatment(source.getComplianceWithTreatment());
 		target.setRecurrentBronchiolitis(source.getRecurrentBronchiolitis());
-		target.setImmunodepression(source.getImmunodepression());
 		return target;
 	}
 
@@ -100,7 +99,6 @@ public class HealthConditionsMapper {
 		target.setTuberculosisInfectionYear(source.getTuberculosisInfectionYear());
 		target.setComplianceWithTreatment(source.getComplianceWithTreatment());
 		target.setRecurrentBronchiolitis(source.getRecurrentBronchiolitis());
-		target.setImmunodepression(source.getImmunodepression());
 
 		return target;
 	}

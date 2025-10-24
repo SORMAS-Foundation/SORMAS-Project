@@ -2218,6 +2218,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+	@SymptomGrouping(SymptomGroup.RESPIRATORY)
 	private SymptomState wheezing;
 
 	@Diseases({
@@ -2609,7 +2610,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		PERTUSSIS,
 		MEASLES,
 		GIARDIASIS,
-		CRYPTOSPORIDIOSIS })
+		CRYPTOSPORIDIOSIS,
+		RESPIRATORY_SYNCYTIAL_VIRUS })
 	private SymptomState asymptomatic;
 	@Diseases({
 		INVASIVE_MENINGOCOCCAL_INFECTION })
@@ -2675,8 +2677,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		GIARDIASIS,
 		CRYPTOSPORIDIOSIS })
 	@DependantOn("parentTimeOffWork")
-	@Size(max = 50, message = Validations.textTooLong)
-	private String timeOffWorkDays;
+	private Float timeOffWorkDays;
 
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	@Diseases({
@@ -4540,11 +4541,11 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.parentTimeOffWork = parentTimeOffWork;
 	}
 
-	public String getTimeOffWorkDays() {
+	public Float getTimeOffWorkDays() {
 		return timeOffWorkDays;
 	}
 
-	public void setTimeOffWorkDays(String timeOffWorkDays) {
+	public void setTimeOffWorkDays(Float timeOffWorkDays) {
 		this.timeOffWorkDays = timeOffWorkDays;
 	}
 

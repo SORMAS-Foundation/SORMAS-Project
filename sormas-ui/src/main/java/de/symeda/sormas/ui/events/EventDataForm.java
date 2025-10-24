@@ -251,14 +251,16 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		addField(EventDto.EVENT_IDENTIFICATION_SOURCE, NullableOptionGroup.class);
 
 		addField(EventDto.EVENT_INVESTIGATION_STATUS, NullableOptionGroup.class);
-		addField(EventDto.EVENT_INVESTIGATION_START_DATE, DateField.class);
-		addField(EventDto.EVENT_INVESTIGATION_END_DATE, DateField.class);
+		DateField investigationStartDate = addField(EventDto.EVENT_INVESTIGATION_START_DATE, DateField.class);
+		DateField investigationEndDate = addField(EventDto.EVENT_INVESTIGATION_END_DATE, DateField.class);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
 			Arrays.asList(EventDto.EVENT_INVESTIGATION_START_DATE, EventDto.EVENT_INVESTIGATION_END_DATE),
 			EventDto.EVENT_INVESTIGATION_STATUS,
 			Arrays.asList(EventInvestigationStatus.ONGOING, EventInvestigationStatus.DONE, EventInvestigationStatus.DISCARDED),
 			true);
+		DateComparisonValidator.addStartEndValidators(investigationStartDate, investigationEndDate, false);
+		DateComparisonValidator.addStartEndValidators(startDate, investigationStartDate, false);
 		TextField title = addField(EventDto.EVENT_TITLE, TextField.class);
 		title.addStyleName(CssStyles.SOFT_REQUIRED);
 

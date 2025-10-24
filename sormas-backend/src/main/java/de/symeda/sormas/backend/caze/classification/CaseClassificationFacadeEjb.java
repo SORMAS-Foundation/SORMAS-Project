@@ -532,7 +532,6 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		addCriteria(Disease.PERTUSSIS, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, null);
 
 		// Giardiasis
-		// FIXME: Check the case classification exposure criteria for giardiasis, its is wrong for now
 		probable = allOf(
 			xOf(
 				1,
@@ -542,28 +541,34 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 				symptom(SymptomsDto.WEIGHT_LOSS)),
 			xOf(
 				1,
-				oneOfCompact(epiData(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN), exposure(ExposureDto.EXPOSURE_TYPE, ExposureType.ANIMAL_CONTACT)),
-				oneOfCompact(
-					epiData(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN),
-					exposure(ExposureDto.EXPOSURE_TYPE, ExposureType.RECREATIONAL_WATER)),
-				oneOfCompact(epiData(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN), exposure(ExposureDto.EXPOSURE_TYPE, ExposureType.FOOD)),
-				oneOfCompact(epiData(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN), exposure(ExposureDto.EXPOSURE_TYPE, ExposureType.FLOOD_EXPOSURE)),
-				oneOfCompact(epiData(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN), exposure(ExposureDto.EXPOSURE_TYPE, ExposureType.SEXUAL_CONTACT))));
+				exposure(ExposureType.ANIMAL_CONTACT),
+				exposure(ExposureType.RECREATIONAL_WATER),
+				exposure(ExposureType.FOOD),
+				exposure(ExposureType.FLOOD_EXPOSURE),
+				exposure(ExposureType.SEXUAL_CONTACT)));
 		confirmed = allOf(
+			xOf(
+				1,
+				symptom(SymptomsDto.DIARRHEA),
+				symptom(SymptomsDto.BLOATING),
+				symptom(SymptomsDto.ABDOMINAL_PAIN),
+				symptom(SymptomsDto.WEIGHT_LOSS)),
 			xOf(1, (positiveTestResult(Disease.GIARDIASIS, PathogenTestType.MICROSCOPY, PathogenTestType.PCR_RT_PCR, PathogenTestType.CULTURE))));
 		addCriteria(Disease.GIARDIASIS, DateHelper.getDateZero(2020, 11, 6), null, probable, confirmed, null);
 
 		// Cryptosporidiosis
-		// FIXME: Check the case classification exposure criteria for cryptosporidiosis, its is wrong for now
 		probable = allOf(
-			caseData(CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, YesNoUnknown.YES),
 			xOf(1, symptom(SymptomsDto.DIARRHEA), symptom(SymptomsDto.ABDOMINAL_PAIN)),
 			xOf(
 				1,
-				exposure(ExposureDto.RAW_FOOD_CONTACT, ExposureType.FOOD),
-				exposure(ExposureDto.SYMPTOMATIC_INDIVIDUAL_TEXT, ExposureType.SYMPTOMATIC_CONTACT),
-				exposure(ExposureDto.SEXUAL_EXPOSURE_TEXT, ExposureType.SEXUAL_CONTACT)));
+				exposure(ExposureType.FOOD),
+				exposure(ExposureType.RECREATIONAL_WATER),
+				exposure(ExposureType.SEXUAL_CONTACT),
+				exposure(ExposureType.FLOOD_EXPOSURE),
+				exposure(ExposureType.SYMPTOMATIC_CONTACT),
+				exposure(ExposureType.ANIMAL_CONTACT)));
 		confirmed = allOf(
+			xOf(1, symptom(SymptomsDto.DIARRHEA), symptom(SymptomsDto.ABDOMINAL_PAIN)),
 			xOf(
 				1,
 				(positiveTestResult(Disease.CRYPTOSPORIDIOSIS, PathogenTestType.MICROSCOPY, PathogenTestType.PCR_RT_PCR, PathogenTestType.CULTURE))));
@@ -721,6 +726,10 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 
 	private ClassificationEpiDataCriteriaDto epiData(String propertyId) {
 		return new ClassificationEpiDataCriteriaDto(propertyId);
+	}
+
+	private ClassificationExposureCriteriaDto exposure(ExposureType exposureType) {
+		return new ClassificationExposureCriteriaDto(exposureType);
 	}
 
 	private ClassificationExposureCriteriaDto exposure(String propertyId, ExposureType exposureType, Object... propertyValues) {

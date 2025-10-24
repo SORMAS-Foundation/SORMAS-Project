@@ -20,7 +20,6 @@ import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.HIV_ART;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.I18N_PREFIX;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.IMMUNODEFICIENCY_INCLUDING_HIV;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.IMMUNODEFICIENCY_OTHER_THAN_HIV;
-import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.IMMUNODEPRESSION;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.MALIGNANCY_CHEMOTHERAPY;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.OBESITY;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.OTHER_CONDITIONS;
@@ -90,7 +89,7 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 							fluidColumn(6, 0, locs(
 									"TUBERCULOSIS_INFECTION_YEAR_LAYOUT","COMPLIANCE_WITH_TREATMENT_LAYOUT",CHRONIC_HEART_FAILURE, CHRONIC_PULMONARY_DISEASE, CHRONIC_KIDNEY_DISEASE,
 									CHRONIC_NEUROLOGIC_CONDITION, CARDIOVASCULAR_DISEASE_INCLUDING_HYPERTENSION,
-									OBESITY, CURRENT_SMOKER, FORMER_SMOKER, ASTHMA, SICKLE_CELL_DISEASE, IMMUNODEPRESSION))
+									OBESITY, CURRENT_SMOKER, FORMER_SMOKER, ASTHMA, SICKLE_CELL_DISEASE))
 					) + loc(OTHER_CONDITIONS) + loc(CONFIDENTIAL_LABEL_LOC)+loc(DIAGNOSIS_LABEL_LOC);
 	//@formatter:on
 
@@ -118,8 +117,7 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 		ASTHMA,
 		SICKLE_CELL_DISEASE,
 		IMMUNODEFICIENCY_INCLUDING_HIV,
-		RECURRENT_BRONCHIOLITIS,
-		IMMUNODEPRESSION);
+		RECURRENT_BRONCHIOLITIS);
 
 	public HealthConditionsForm(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
 		super(HealthConditionsDto.class, I18N_PREFIX, true, fieldVisibilityCheckers, fieldAccessCheckers);
