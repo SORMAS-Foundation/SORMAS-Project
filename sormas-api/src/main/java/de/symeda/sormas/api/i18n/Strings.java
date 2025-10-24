@@ -306,6 +306,7 @@ public interface Strings {
 	String entityVaccinations = "entityVaccinations";
 	String entityVisits = "entityVisits";
 	String entityWeeklyReports = "entityWeeklyReports";
+	String epipulseDownloadLinkText = "epipulseDownloadLinkText";
 	String epiWeek = "epiWeek";
 	String errorAccessDenied = "errorAccessDenied";
 	String errorAdverseEventInvestigationNotEditable = "errorAdverseEventInvestigationNotEditable";
@@ -549,6 +550,7 @@ public interface Strings {
 	String headingCreateNewContactIssue = "headingCreateNewContactIssue";
 	String headingCreateNewEnvironment = "headingCreateNewEnvironment";
 	String headingCreateNewEnvironmentSample = "headingCreateNewEnvironmentSample";
+	String headingCreateNewEpipulseExport = "headingCreateNewEpipulseExport";
 	String headingCreateNewEvent = "headingCreateNewEvent";
 	String headingCreateNewEventGroup = "headingCreateNewEventGroup";
 	String headingCreateNewEventParticipant = "headingCreateNewEventParticipant";
@@ -911,6 +913,7 @@ public interface Strings {
 	String headingVaccination = "headingVaccination";
 	String headingViewAdditionalTest = "headingViewAdditionalTest";
 	String headingViewClinicalVisit = "headingViewClinicalVisit";
+	String headingViewEpipulseExport = "headingViewEpipulseExport";
 	String headingViewNotFound = "headingViewNotFound";
 	String headingViewPathogenTestResult = "headingViewPathogenTestResult";
 	String headingViewPrescription = "headingViewPrescription";
@@ -1795,6 +1798,8 @@ public interface Strings {
 	String promptEnvironmentSampleRegion = "promptEnvironmentSampleRegion";
 	String promptEnvironmentSampleTestedPathogen = "promptEnvironmentSampleTestedPathogen";
 	String promptEnvironmentSearchField = "promptEnvironmentSearchField";
+	String promptEpipulseExportDateFrom = "promptEpipulseExportDateFrom";
+	String promptEpipulseExportDateTo = "promptEpipulseExportDateTo";
 	String promptEventDateFrom = "promptEventDateFrom";
 	String promptEventDateTo = "promptEventDateTo";
 	String promptEventDateType = "promptEventDateType";
