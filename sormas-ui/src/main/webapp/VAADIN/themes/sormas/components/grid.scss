@@ -69,6 +69,21 @@ $v-grid-cell-focused-border: none !default;
           color: $s-warning-color;
           font-weight: 600;
         }
+        &.status-pending {
+          color: $s-warning-color;
+        }
+        &.status-in-progress {
+          color: $s-neutral-color;
+        }
+        &.status-completed {
+          color: $s-positive-color;
+        }
+        &.status-failed {
+          color: $s-critical-color;
+        }
+        &.status-cancelled {
+          color: $v-font-color;
+        }
 		
         &.odd {
           background-color: #eee;

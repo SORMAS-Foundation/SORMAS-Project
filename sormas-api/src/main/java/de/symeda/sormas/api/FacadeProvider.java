@@ -52,6 +52,7 @@ import de.symeda.sormas.api.environment.EnvironmentFacade;
 import de.symeda.sormas.api.environment.EnvironmentImportFacade;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleFacade;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
+import de.symeda.sormas.api.epipulse.EpipulseExportFacade;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventGroupFacade;
 import de.symeda.sormas.api.event.EventParticipantFacade;
@@ -577,6 +578,10 @@ public class FacadeProvider {
 
 	public static NotifierFacade getNotifierFacade() {
 		return get().lookupEjbRemote(NotifierFacade.class);
+	}
+
+	public static EpipulseExportFacade getEpipulseExportFacade() {
+		return get().lookupEjbRemote(EpipulseExportFacade.class);
 	}
 
 	@SuppressWarnings("unchecked")
