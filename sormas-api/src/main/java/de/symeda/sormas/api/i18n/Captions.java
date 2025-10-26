@@ -981,6 +981,7 @@ public interface Captions {
 	String Community_defaultInfrastructure = "Community.defaultInfrastructure";
 	String Community_district = "Community.district";
 	String Community_externalID = "Community.externalID";
+	String Community_nutsCode = "Community.nutsCode";
 	String Community_region = "Community.region";
 	String communityActiveCommunities = "communityActiveCommunities";
 	String communityAllCommunities = "communityAllCommunities";
@@ -1190,6 +1191,7 @@ public interface Captions {
 	String Country_displayName = "Country.displayName";
 	String Country_externalId = "Country.externalId";
 	String Country_isoCode = "Country.isoCode";
+	String Country_nutsCode = "Country.nutsCode";
 	String Country_subcontinent = "Country.subcontinent";
 	String Country_unoCode = "Country.unoCode";
 	String countryActiveCountries = "countryActiveCountries";
@@ -1436,6 +1438,7 @@ public interface Captions {
 	String District_epidCode = "District.epidCode";
 	String District_externalID = "District.externalID";
 	String District_growthRate = "District.growthRate";
+	String District_nutsCode = "District.nutsCode";
 	String District_population = "District.population";
 	String District_region = "District.region";
 	String districtActiveDistricts = "districtActiveDistricts";
@@ -2526,6 +2529,7 @@ public interface Captions {
 	String Region_epidCode = "Region.epidCode";
 	String Region_externalID = "Region.externalID";
 	String Region_growthRate = "Region.growthRate";
+	String Region_nutsCode = "Region.nutsCode";
 	String Region_population = "Region.population";
 	String regionActiveRegions = "regionActiveRegions";
 	String regionAllRegions = "regionAllRegions";

@@ -125,19 +125,6 @@ public class EpipulseExportGrid extends FilteredGrid<EpipulseExportIndexDto, Epi
 			EXPORT_FILE_SIZE_FORMATTED,
 			DOWNLOAD_LINK_COLUMN);
 
-		/*
-		 * setColumnOrder(
-		 * EpipulseExportIndexDto.UUID,
-		 * EpipulseExportIndexDto.DISEASE,
-		 * EpipulseExportIndexDto.START_DATE,
-		 * EpipulseExportIndexDto.END_DATE,
-		 * EpipulseExportIndexDto.CREATION_DATE,
-		 * EpipulseExportIndexDto.STATUS,
-		 * EpipulseExportIndexDto.TOTAL_RECORDS,
-		 * EpipulseExportIndexDto.EXPORT_FILE_SIZE,
-		 * DOWNLOAD_LINK_COLUMN);
-		 */
-
 		((Column<EpipulseExportIndexDto, String>) getColumn(EpipulseExportIndexDto.UUID)).setRenderer(new UuidRenderer());
 		addItemClickListener(
 			new ShowDetailsListener<>(AefiIndexDto.UUID, e -> ControllerProvider.getEpipulseExportController().view(e, this::reload)));
