@@ -55,6 +55,7 @@ public class District extends InfrastructureAdoWithDefault {
 	public static final String GROWTH_RATE = "growthRate";
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String FEATURE_CONFIGURATIONS = "featureConfigurations";
+	public static final String NUTS_CODE = "nutsCode";
 
 	private String name;
 	private Region region;
@@ -62,6 +63,7 @@ public class District extends InfrastructureAdoWithDefault {
 	private List<Community> communities;
 	private Float growthRate;
 	private String externalID;
+	private String nutsCode;
 
 	private List<FeatureConfiguration> featureConfigurations;
 
@@ -126,5 +128,13 @@ public class District extends InfrastructureAdoWithDefault {
 
 	public void setFeatureConfigurations(List<FeatureConfiguration> featureConfigurations) {
 		this.featureConfigurations = featureConfigurations;
+	}
+
+	public String getNutsCode() {
+		return nutsCode;
+	}
+
+	public void setNutsCode(String nutsCode) {
+		this.nutsCode = nutsCode;
 	}
 }

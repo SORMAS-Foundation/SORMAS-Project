@@ -42,7 +42,7 @@ public class CommunityEditForm extends AbstractEditForm<CommunityDto> {
 
 	private static final String HTML_LAYOUT = loc(CommunityDto.NAME)
 		+ fluidRowLocs(CommunityDto.REGION, CommunityDto.DISTRICT)
-		+ fluidRowLocs(RegionDto.EXTERNAL_ID)
+		+ fluidRowLocs(RegionDto.EXTERNAL_ID, CommunityDto.NUTS_CODE)
 		+ fluidRowLocs(InfrastructureDtoWithDefault.DEFAULT_INFRASTRUCTURE);
 
 	private boolean create;
@@ -67,6 +67,7 @@ public class CommunityEditForm extends AbstractEditForm<CommunityDto> {
 		ComboBox region = addInfrastructureField(CommunityDto.REGION);
 		ComboBox district = addInfrastructureField(CommunityDto.DISTRICT);
 		addField(RegionDto.EXTERNAL_ID, TextField.class);
+		addField(CommunityDto.NUTS_CODE, TextField.class);
 
 		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
 			addField(InfrastructureDtoWithDefault.DEFAULT_INFRASTRUCTURE, CheckBox.class);
