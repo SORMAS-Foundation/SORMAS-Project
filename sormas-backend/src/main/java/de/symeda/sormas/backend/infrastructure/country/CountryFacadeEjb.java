@@ -163,6 +163,7 @@ public class CountryFacadeEjb
 				case CountryIndexDto.EXTERNAL_ID:
 				case CountryIndexDto.ISO_CODE:
 				case CountryIndexDto.UNO_CODE:
+				case CountryIndexDto.NUTS_CODE:
 					expression = cb.lower(country.get(sortProperty.propertyName));
 					break;
 				default:
@@ -229,6 +230,7 @@ public class CountryFacadeEjb
 		dto.setUnoCode(entity.getUnoCode());
 		dto.setUuid(entity.getUuid());
 		dto.setSubcontinent(SubcontinentFacadeEjb.toReferenceDto(entity.getSubcontinent()));
+		dto.setNutsCode(entity.getNutsCode());
 		applyToDtoInheritance(dto, entity);
 
 		return dto;
@@ -256,6 +258,7 @@ public class CountryFacadeEjb
 		dto.setUnoCode(entity.getUnoCode());
 		dto.setUuid(entity.getUuid());
 		dto.setSubcontinent(SubcontinentFacadeEjb.toReferenceDto(entity.getSubcontinent()));
+		dto.setNutsCode(entity.getNutsCode());
 
 		return dto;
 	}
@@ -280,6 +283,7 @@ public class CountryFacadeEjb
 		target.setExternalId(source.getExternalId());
 		target.setIsoCode(source.getIsoCode());
 		target.setUnoCode(source.getUnoCode());
+		target.setNutsCode(source.getNutsCode());
 		applyFillOrBuildEntityInheritance(target, source);
 
 		final SubcontinentReferenceDto subcontinent = source.getSubcontinent();

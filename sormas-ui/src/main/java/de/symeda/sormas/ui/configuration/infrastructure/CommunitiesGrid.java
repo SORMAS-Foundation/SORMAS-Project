@@ -55,7 +55,8 @@ public class CommunitiesGrid extends FilteredGrid<CommunityDto, CommunityCriteri
 			CommunityDto.NAME,
 			CommunityDto.REGION,
 			CommunityDto.DISTRICT,
-			CommunityDto.EXTERNAL_ID };
+			CommunityDto.EXTERNAL_ID,
+			CommunityDto.NUTS_CODE };
 		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
 			columns = ArrayUtils.add(columns, CommunityDto.DEFAULT_INFRASTRUCTURE);
 		}
