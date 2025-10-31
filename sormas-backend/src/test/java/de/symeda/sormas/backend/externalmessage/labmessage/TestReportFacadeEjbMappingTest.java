@@ -19,8 +19,9 @@ import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.sample.PathogenSpecie;
+import de.symeda.sormas.api.therapy.DrugSusceptibilityType;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageService;
 import de.symeda.sormas.backend.infrastructure.country.CountryService;
 
@@ -79,6 +80,42 @@ public class TestReportFacadeEjbMappingTest {
 		source.setTubeMitogene(4.56f);
 		source.setTubeMitogeneGT10(false);
 
+		// Drug susceptibility test data
+		source.setAmikacinMic(1.5f);
+		source.setAmikacinSusceptibility(DrugSusceptibilityType.SUSCEPTIBLE);
+		source.setBedaquilineMic(2.0f);
+		source.setBedaquilineSusceptibility(DrugSusceptibilityType.RESISTANT);
+		source.setCapreomycinMic(0.8f);
+		source.setCapreomycinSusceptibility(DrugSusceptibilityType.INTERMEDIATE);
+		source.setCiprofloxacinMic(1.2f);
+		source.setCiprofloxacinSusceptibility(DrugSusceptibilityType.SUSCEPTIBLE);
+		source.setDelamanidMic(0.3f);
+		source.setDelamanidSusceptibility(DrugSusceptibilityType.RESISTANT);
+		source.setEthambutolMic(2.5f);
+		source.setEthambutolSusceptibility(DrugSusceptibilityType.INTERMEDIATE);
+		source.setGatifloxacinMic(1.8f);
+		source.setGatifloxacinSusceptibility(DrugSusceptibilityType.SUSCEPTIBLE);
+		source.setIsoniazidMic(0.5f);
+		source.setIsoniazidSusceptibility(DrugSusceptibilityType.INTERMEDIATE);
+		source.setKanamycinMic(3.0f);
+		source.setKanamycinSusceptibility(DrugSusceptibilityType.RESISTANT);
+		source.setLevofloxacinMic(1.1f);
+		source.setLevofloxacinSusceptibility(DrugSusceptibilityType.SUSCEPTIBLE);
+		source.setMoxifloxacinMic(0.9f);
+		source.setMoxifloxacinSusceptibility(DrugSusceptibilityType.INTERMEDIATE);
+		source.setOfloxacinMic(2.2f);
+		source.setOfloxacinSusceptibility(DrugSusceptibilityType.RESISTANT);
+		source.setRifampicinMic(1.0f);
+		source.setRifampicinSusceptibility(DrugSusceptibilityType.SUSCEPTIBLE);
+		source.setStreptomycinMic(4.0f);
+		source.setStreptomycinSusceptibility(DrugSusceptibilityType.RESISTANT);
+		source.setCeftriaxoneMic(0.7f);
+		source.setCeftriaxoneSusceptibility(DrugSusceptibilityType.INTERMEDIATE);
+		source.setPenicillinMic(1.6f);
+		source.setPenicillinSusceptibility(DrugSusceptibilityType.SUSCEPTIBLE);
+		source.setErythromycinMic(2.8f);
+		source.setErythromycinSusceptibility(DrugSusceptibilityType.RESISTANT);
+
 		TestReport result = sut.fromDto(source, true);
 
 		assertNotSame(source.getCreationDate().getTime(), result.getCreationDate().getTime());
@@ -105,6 +142,42 @@ public class TestReportFacadeEjbMappingTest {
 		assertEquals(source.getTubeAgTb2GT10(), result.getTubeAgTb2GT10());
 		assertEquals(source.getTubeMitogene(), result.getTubeMitogene());
 		assertEquals(source.getTubeMitogeneGT10(), result.getTubeMitogeneGT10());
+
+		// Drug susceptibility assertions
+		assertEquals(source.getAmikacinMic(), result.getAmikacinMic());
+		assertEquals(source.getAmikacinSusceptibility(), result.getAmikacinSusceptibility());
+		assertEquals(source.getBedaquilineMic(), result.getBedaquilineMic());
+		assertEquals(source.getBedaquilineSusceptibility(), result.getBedaquilineSusceptibility());
+		assertEquals(source.getCapreomycinMic(), result.getCapreomycinMic());
+		assertEquals(source.getCapreomycinSusceptibility(), result.getCapreomycinSusceptibility());
+		assertEquals(source.getCiprofloxacinMic(), result.getCiprofloxacinMic());
+		assertEquals(source.getCiprofloxacinSusceptibility(), result.getCiprofloxacinSusceptibility());
+		assertEquals(source.getDelamanidMic(), result.getDelamanidMic());
+		assertEquals(source.getDelamanidSusceptibility(), result.getDelamanidSusceptibility());
+		assertEquals(source.getEthambutolMic(), result.getEthambutolMic());
+		assertEquals(source.getEthambutolSusceptibility(), result.getEthambutolSusceptibility());
+		assertEquals(source.getGatifloxacinMic(), result.getGatifloxacinMic());
+		assertEquals(source.getGatifloxacinSusceptibility(), result.getGatifloxacinSusceptibility());
+		assertEquals(source.getIsoniazidMic(), result.getIsoniazidMic());
+		assertEquals(source.getIsoniazidSusceptibility(), result.getIsoniazidSusceptibility());
+		assertEquals(source.getKanamycinMic(), result.getKanamycinMic());
+		assertEquals(source.getKanamycinSusceptibility(), result.getKanamycinSusceptibility());
+		assertEquals(source.getLevofloxacinMic(), result.getLevofloxacinMic());
+		assertEquals(source.getLevofloxacinSusceptibility(), result.getLevofloxacinSusceptibility());
+		assertEquals(source.getMoxifloxacinMic(), result.getMoxifloxacinMic());
+		assertEquals(source.getMoxifloxacinSusceptibility(), result.getMoxifloxacinSusceptibility());
+		assertEquals(source.getOfloxacinMic(), result.getOfloxacinMic());
+		assertEquals(source.getOfloxacinSusceptibility(), result.getOfloxacinSusceptibility());
+		assertEquals(source.getRifampicinMic(), result.getRifampicinMic());
+		assertEquals(source.getRifampicinSusceptibility(), result.getRifampicinSusceptibility());
+		assertEquals(source.getStreptomycinMic(), result.getStreptomycinMic());
+		assertEquals(source.getStreptomycinSusceptibility(), result.getStreptomycinSusceptibility());
+		assertEquals(source.getCeftriaxoneMic(), result.getCeftriaxoneMic());
+		assertEquals(source.getCeftriaxoneSusceptibility(), result.getCeftriaxoneSusceptibility());
+		assertEquals(source.getPenicillinMic(), result.getPenicillinMic());
+		assertEquals(source.getPenicillinSusceptibility(), result.getPenicillinSusceptibility());
+		assertEquals(source.getErythromycinMic(), result.getErythromycinMic());
+		assertEquals(source.getErythromycinSusceptibility(), result.getErythromycinSusceptibility());
 
 	}
 
@@ -142,6 +215,42 @@ public class TestReportFacadeEjbMappingTest {
 		source.setTubeMitogene(4.56f);
 		source.setTubeMitogeneGT10(false);
 
+		// Drug susceptibility test data
+		source.setAmikacinMic(1.5f);
+		source.setAmikacinSusceptibility(DrugSusceptibilityType.SUSCEPTIBLE);
+		source.setBedaquilineMic(2.0f);
+		source.setBedaquilineSusceptibility(DrugSusceptibilityType.RESISTANT);
+		source.setCapreomycinMic(0.8f);
+		source.setCapreomycinSusceptibility(DrugSusceptibilityType.INTERMEDIATE);
+		source.setCiprofloxacinMic(1.2f);
+		source.setCiprofloxacinSusceptibility(DrugSusceptibilityType.SUSCEPTIBLE);
+		source.setDelamanidMic(0.3f);
+		source.setDelamanidSusceptibility(DrugSusceptibilityType.RESISTANT);
+		source.setEthambutolMic(2.5f);
+		source.setEthambutolSusceptibility(DrugSusceptibilityType.INTERMEDIATE);
+		source.setGatifloxacinMic(1.8f);
+		source.setGatifloxacinSusceptibility(DrugSusceptibilityType.SUSCEPTIBLE);
+		source.setIsoniazidMic(0.5f);
+		source.setIsoniazidSusceptibility(DrugSusceptibilityType.INTERMEDIATE);
+		source.setKanamycinMic(3.0f);
+		source.setKanamycinSusceptibility(DrugSusceptibilityType.RESISTANT);
+		source.setLevofloxacinMic(1.1f);
+		source.setLevofloxacinSusceptibility(DrugSusceptibilityType.SUSCEPTIBLE);
+		source.setMoxifloxacinMic(0.9f);
+		source.setMoxifloxacinSusceptibility(DrugSusceptibilityType.INTERMEDIATE);
+		source.setOfloxacinMic(2.2f);
+		source.setOfloxacinSusceptibility(DrugSusceptibilityType.RESISTANT);
+		source.setRifampicinMic(1.0f);
+		source.setRifampicinSusceptibility(DrugSusceptibilityType.SUSCEPTIBLE);
+		source.setStreptomycinMic(4.0f);
+		source.setStreptomycinSusceptibility(DrugSusceptibilityType.RESISTANT);
+		source.setCeftriaxoneMic(0.7f);
+		source.setCeftriaxoneSusceptibility(DrugSusceptibilityType.INTERMEDIATE);
+		source.setPenicillinMic(1.6f);
+		source.setPenicillinSusceptibility(DrugSusceptibilityType.SUSCEPTIBLE);
+		source.setErythromycinMic(2.8f);
+		source.setErythromycinSusceptibility(DrugSusceptibilityType.RESISTANT);
+
 	TestReportDto result = TestReportFacadeEjb.toDto(source);
 
 		assertNotSame(source.getCreationDate().getTime(), result.getCreationDate().getTime());
@@ -169,6 +278,42 @@ public class TestReportFacadeEjbMappingTest {
 		assertEquals(source.getTubeAgTb2GT10(), result.getTubeAgTb2GT10());
 		assertEquals(source.getTubeMitogene(), result.getTubeMitogene());
 		assertEquals(source.getTubeMitogeneGT10(), result.getTubeMitogeneGT10());
+
+		// Drug susceptibility assertions
+		assertEquals(source.getAmikacinMic(), result.getAmikacinMic());
+		assertEquals(source.getAmikacinSusceptibility(), result.getAmikacinSusceptibility());
+		assertEquals(source.getBedaquilineMic(), result.getBedaquilineMic());
+		assertEquals(source.getBedaquilineSusceptibility(), result.getBedaquilineSusceptibility());
+		assertEquals(source.getCapreomycinMic(), result.getCapreomycinMic());
+		assertEquals(source.getCapreomycinSusceptibility(), result.getCapreomycinSusceptibility());
+		assertEquals(source.getCiprofloxacinMic(), result.getCiprofloxacinMic());
+		assertEquals(source.getCiprofloxacinSusceptibility(), result.getCiprofloxacinSusceptibility());
+		assertEquals(source.getDelamanidMic(), result.getDelamanidMic());
+		assertEquals(source.getDelamanidSusceptibility(), result.getDelamanidSusceptibility());
+		assertEquals(source.getEthambutolMic(), result.getEthambutolMic());
+		assertEquals(source.getEthambutolSusceptibility(), result.getEthambutolSusceptibility());
+		assertEquals(source.getGatifloxacinMic(), result.getGatifloxacinMic());
+		assertEquals(source.getGatifloxacinSusceptibility(), result.getGatifloxacinSusceptibility());
+		assertEquals(source.getIsoniazidMic(), result.getIsoniazidMic());
+		assertEquals(source.getIsoniazidSusceptibility(), result.getIsoniazidSusceptibility());
+		assertEquals(source.getKanamycinMic(), result.getKanamycinMic());
+		assertEquals(source.getKanamycinSusceptibility(), result.getKanamycinSusceptibility());
+		assertEquals(source.getLevofloxacinMic(), result.getLevofloxacinMic());
+		assertEquals(source.getLevofloxacinSusceptibility(), result.getLevofloxacinSusceptibility());
+		assertEquals(source.getMoxifloxacinMic(), result.getMoxifloxacinMic());
+		assertEquals(source.getMoxifloxacinSusceptibility(), result.getMoxifloxacinSusceptibility());
+		assertEquals(source.getOfloxacinMic(), result.getOfloxacinMic());
+		assertEquals(source.getOfloxacinSusceptibility(), result.getOfloxacinSusceptibility());
+		assertEquals(source.getRifampicinMic(), result.getRifampicinMic());
+		assertEquals(source.getRifampicinSusceptibility(), result.getRifampicinSusceptibility());
+		assertEquals(source.getStreptomycinMic(), result.getStreptomycinMic());
+		assertEquals(source.getStreptomycinSusceptibility(), result.getStreptomycinSusceptibility());
+		assertEquals(source.getCeftriaxoneMic(), result.getCeftriaxoneMic());
+		assertEquals(source.getCeftriaxoneSusceptibility(), result.getCeftriaxoneSusceptibility());
+		assertEquals(source.getPenicillinMic(), result.getPenicillinMic());
+		assertEquals(source.getPenicillinSusceptibility(), result.getPenicillinSusceptibility());
+		assertEquals(source.getErythromycinMic(), result.getErythromycinMic());
+		assertEquals(source.getErythromycinSusceptibility(), result.getErythromycinSusceptibility());
 
 	}
 }

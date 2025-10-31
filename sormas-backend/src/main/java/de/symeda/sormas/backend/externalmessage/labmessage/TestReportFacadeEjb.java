@@ -116,6 +116,42 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setTubeMitogene(source.getTubeMitogene());
 		target.setTubeMitogeneGT10(source.getTubeMitogeneGT10());
 
+		// Drug susceptibility mappings
+		target.setAmikacinMic(source.getAmikacinMic());
+		target.setAmikacinSusceptibility(source.getAmikacinSusceptibility());
+		target.setBedaquilineMic(source.getBedaquilineMic());
+		target.setBedaquilineSusceptibility(source.getBedaquilineSusceptibility());
+		target.setCapreomycinMic(source.getCapreomycinMic());
+		target.setCapreomycinSusceptibility(source.getCapreomycinSusceptibility());
+		target.setCiprofloxacinMic(source.getCiprofloxacinMic());
+		target.setCiprofloxacinSusceptibility(source.getCiprofloxacinSusceptibility());
+		target.setDelamanidMic(source.getDelamanidMic());
+		target.setDelamanidSusceptibility(source.getDelamanidSusceptibility());
+		target.setEthambutolMic(source.getEthambutolMic());
+		target.setEthambutolSusceptibility(source.getEthambutolSusceptibility());
+		target.setGatifloxacinMic(source.getGatifloxacinMic());
+		target.setGatifloxacinSusceptibility(source.getGatifloxacinSusceptibility());
+		target.setIsoniazidMic(source.getIsoniazidMic());
+		target.setIsoniazidSusceptibility(source.getIsoniazidSusceptibility());
+		target.setKanamycinMic(source.getKanamycinMic());
+		target.setKanamycinSusceptibility(source.getKanamycinSusceptibility());
+		target.setLevofloxacinMic(source.getLevofloxacinMic());
+		target.setLevofloxacinSusceptibility(source.getLevofloxacinSusceptibility());
+		target.setMoxifloxacinMic(source.getMoxifloxacinMic());
+		target.setMoxifloxacinSusceptibility(source.getMoxifloxacinSusceptibility());
+		target.setOfloxacinMic(source.getOfloxacinMic());
+		target.setOfloxacinSusceptibility(source.getOfloxacinSusceptibility());
+		target.setRifampicinMic(source.getRifampicinMic());
+		target.setRifampicinSusceptibility(source.getRifampicinSusceptibility());
+		target.setStreptomycinMic(source.getStreptomycinMic());
+		target.setStreptomycinSusceptibility(source.getStreptomycinSusceptibility());
+		target.setCeftriaxoneMic(source.getCeftriaxoneMic());
+		target.setCeftriaxoneSusceptibility(source.getCeftriaxoneSusceptibility());
+		target.setPenicillinMic(source.getPenicillinMic());
+		target.setPenicillinSusceptibility(source.getPenicillinSusceptibility());
+		target.setErythromycinMic(source.getErythromycinMic());
+		target.setErythromycinSusceptibility(source.getErythromycinSusceptibility());
+
 		return target;
 	}
 
@@ -167,6 +203,42 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setTubeAgTb2GT10(source.getTubeAgTb2GT10());
 		target.setTubeMitogene(source.getTubeMitogene());
 		target.setTubeMitogeneGT10(source.getTubeMitogeneGT10());
+
+		// Drug susceptibility mappings
+		target.setAmikacinMic(source.getAmikacinMic());
+		target.setAmikacinSusceptibility(source.getAmikacinSusceptibility());
+		target.setBedaquilineMic(source.getBedaquilineMic());
+		target.setBedaquilineSusceptibility(source.getBedaquilineSusceptibility());
+		target.setCapreomycinMic(source.getCapreomycinMic());
+		target.setCapreomycinSusceptibility(source.getCapreomycinSusceptibility());
+		target.setCiprofloxacinMic(source.getCiprofloxacinMic());
+		target.setCiprofloxacinSusceptibility(source.getCiprofloxacinSusceptibility());
+		target.setDelamanidMic(source.getDelamanidMic());
+		target.setDelamanidSusceptibility(source.getDelamanidSusceptibility());
+		target.setEthambutolMic(source.getEthambutolMic());
+		target.setEthambutolSusceptibility(source.getEthambutolSusceptibility());
+		target.setGatifloxacinMic(source.getGatifloxacinMic());
+		target.setGatifloxacinSusceptibility(source.getGatifloxacinSusceptibility());
+		target.setIsoniazidMic(source.getIsoniazidMic());
+		target.setIsoniazidSusceptibility(source.getIsoniazidSusceptibility());
+		target.setKanamycinMic(source.getKanamycinMic());
+		target.setKanamycinSusceptibility(source.getKanamycinSusceptibility());
+		target.setLevofloxacinMic(source.getLevofloxacinMic());
+		target.setLevofloxacinSusceptibility(source.getLevofloxacinSusceptibility());
+		target.setMoxifloxacinMic(source.getMoxifloxacinMic());
+		target.setMoxifloxacinSusceptibility(source.getMoxifloxacinSusceptibility());
+		target.setOfloxacinMic(source.getOfloxacinMic());
+		target.setOfloxacinSusceptibility(source.getOfloxacinSusceptibility());
+		target.setRifampicinMic(source.getRifampicinMic());
+		target.setRifampicinSusceptibility(source.getRifampicinSusceptibility());
+		target.setStreptomycinMic(source.getStreptomycinMic());
+		target.setStreptomycinSusceptibility(source.getStreptomycinSusceptibility());
+		target.setCeftriaxoneMic(source.getCeftriaxoneMic());
+		target.setCeftriaxoneSusceptibility(source.getCeftriaxoneSusceptibility());
+		target.setPenicillinMic(source.getPenicillinMic());
+		target.setPenicillinSusceptibility(source.getPenicillinSusceptibility());
+		target.setErythromycinMic(source.getErythromycinMic());
+		target.setErythromycinSusceptibility(source.getErythromycinSusceptibility());
 
 		return target;
 	}

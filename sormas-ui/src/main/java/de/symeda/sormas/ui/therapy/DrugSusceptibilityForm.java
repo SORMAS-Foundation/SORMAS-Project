@@ -22,7 +22,10 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.ComboBox;
@@ -34,6 +37,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.therapy.Drug;
 import de.symeda.sormas.api.therapy.DrugSusceptibilityDto;
+import de.symeda.sormas.api.therapy.DrugSusceptibilityType;
 import de.symeda.sormas.api.utils.AnnotationFieldHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -147,14 +151,14 @@ public class DrugSusceptibilityForm extends AbstractEditForm<DrugSusceptibilityD
 
 		addMicField(DrugSusceptibilityDto.CEFTRIAXONE_MIC, Drug.CEFTRIAXONE).setInputPrompt(I18nProperties.getString(Strings.promptMicValue));
 		addResistanceResultField(DrugSusceptibilityDto.CEFTRIAXONE_SUSCEPTIBILITY)
-				.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
+			.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
 		addMicField(DrugSusceptibilityDto.PENICILLIN_MIC, Drug.PENICILLIN).setInputPrompt(I18nProperties.getString(Strings.promptMicValue));
 		addResistanceResultField(DrugSusceptibilityDto.PENICILLIN_SUSCEPTIBILITY)
-				.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
+			.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
 
 		addMicField(DrugSusceptibilityDto.ERYTHROMYCIN_MIC, Drug.ERYTHROMYCIN).setInputPrompt(I18nProperties.getString(Strings.promptMicValue));
 		addResistanceResultField(DrugSusceptibilityDto.ERYTHROMYCIN_SUSCEPTIBILITY)
-				.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
+			.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
 
 		FieldHelper.hideFieldsNotInList(getFieldGroup(), List.of(), true);
 	}
@@ -174,6 +178,58 @@ public class DrugSusceptibilityForm extends AbstractEditForm<DrugSusceptibilityD
 		field.setDescription(I18nProperties.getString(Strings.promptResistanceResult));
 		field.setWidth(150, Unit.PIXELS);
 		return field;
+	}
+
+	public void markAsDirty() {
+
+	}
+
+	public void forceUpdateDrugSusceptibilityFields() {
+		final DrugSusceptibilityDto drugSusceptibilityDto = getValue();
+		if (drugSusceptibilityDto == null) {
+			return;
+		}
+
+		final Map<String, Optional<DrugSusceptibilityType>> applicableFieldIds = Collections.unmodifiableMap(
+			Map.ofEntries(
+				Map.entry(DrugSusceptibilityDto.AMIKACIN_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getAmikacinSusceptibility())),
+				Map.entry(DrugSusceptibilityDto.BEDAQUILINE_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getBedaquilineSusceptibility())),
+				Map.entry(DrugSusceptibilityDto.CAPREOMYCIN_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getCapreomycinSusceptibility())),
+				Map.entry(DrugSusceptibilityDto.CIPROFLOXACIN_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getCiprofloxacinSusceptibility())),
+				Map.entry(DrugSusceptibilityDto.DELAMANID_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getDelamanidSusceptibility())),
+				Map.entry(DrugSusceptibilityDto.ETHAMBUTOL_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getEthambutolSusceptibility())),
+				Map.entry(DrugSusceptibilityDto.GATIFLOXACIN_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getGatifloxacinSusceptibility())),
+				Map.entry(DrugSusceptibilityDto.CEFTRIAXONE_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getCeftriaxoneSusceptibility())),
+				Map.entry(DrugSusceptibilityDto.ERYTHROMYCIN_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getErythromycinSusceptibility())),
+				Map.entry(DrugSusceptibilityDto.ISONIAZID_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getIsoniazidSusceptibility())),
+				Map.entry(DrugSusceptibilityDto.KANAMYCIN_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getKanamycinSusceptibility())),
+				Map.entry(DrugSusceptibilityDto.LEVOFLOXACIN_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getLevofloxacinSusceptibility())),
+				Map.entry(DrugSusceptibilityDto.MOXIFLOXACIN_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getMoxifloxacinSusceptibility())),
+				Map.entry(DrugSusceptibilityDto.OFLOXACIN_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getOfloxacinSusceptibility())),
+				Map.entry(DrugSusceptibilityDto.RIFAMPICIN_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getRifampicinSusceptibility())),
+				Map.entry(DrugSusceptibilityDto.STREPTOMYCIN_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getStreptomycinSusceptibility())),
+				Map.entry(DrugSusceptibilityDto.PENICILLIN_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getPenicillinSusceptibility()))));
+
+		applicableFieldIds.forEach(this::forceUpdateDrugSusceptibilityField);
+	}
+
+	private void forceUpdateDrugSusceptibilityField(String fieldId, Optional<DrugSusceptibilityType> drugSusceptibilityType) {
+		final ComboBox field = getField(fieldId);
+		if (field == null) {
+			return;
+		}
+		if (field.isReadOnly()) {
+			return;
+		}
+		if (drugSusceptibilityType.isEmpty()) {
+			field.clear();
+			return;
+		}
+		if (!field.containsId(drugSusceptibilityType.get())) {
+			field.addItem(drugSusceptibilityType.get());
+		}
+
+		field.setValue(drugSusceptibilityType.get());
 	}
 
 	public void updateFieldsVisibility(Disease disease, PathogenTestType pathogenTestType) {

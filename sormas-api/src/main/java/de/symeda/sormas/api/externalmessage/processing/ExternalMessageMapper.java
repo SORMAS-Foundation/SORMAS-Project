@@ -43,6 +43,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.therapy.DrugSusceptibilityDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 
@@ -347,12 +348,12 @@ public final class ExternalMessageMapper {
 							sourceTestReport.getRsvSubtype(),
 							PathogenTestDto.RSV_SUBTYPE),
 						Mapping.of(
-							pathogenTest::setTubeNil,
+							pathogenTest::setTubeNil, // Tube nil flag
 							pathogenTest.getTubeNil(),
 							sourceTestReport.getTubeNil(),
 							PathogenTestDto.TUBE_NIL),
 						Mapping.of(
-							pathogenTest::setTubeNilGT10,
+							pathogenTest::setTubeNilGT10, // Nil >10 flag
 							pathogenTest.getTubeNilGT10(),
 							sourceTestReport.getTubeNilGT10(),
 							PathogenTestDto.TUBE_NIL_GT10),
@@ -386,7 +387,212 @@ public final class ExternalMessageMapper {
 							pathogenTest.getTubeMitogeneGT10(),
 							sourceTestReport.getTubeMitogeneGT10(),
 							PathogenTestDto.TUBE_MITOGENE_GT10),
-						Mapping.of(pathogenTest::setSpecie, pathogenTest.getSpecie(), sourceTestReport.getSpecie(), PathogenTestDto.SPECIE))));
+						Mapping.of(pathogenTest::setSpecie, pathogenTest.getSpecie(), sourceTestReport.getSpecie(), PathogenTestDto.SPECIE),
+						// Drug susceptibility mappings
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setAmikacinMic,
+							pathogenTest.getDrugSusceptibility().getAmikacinMic(),
+							sourceTestReport.getAmikacinMic(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.AMIKACIN_MIC),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setAmikacinSusceptibility,
+							pathogenTest.getDrugSusceptibility().getAmikacinSusceptibility(),
+							sourceTestReport.getAmikacinSusceptibility(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.AMIKACIN_SUSCEPTIBILITY),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setBedaquilineMic,
+							pathogenTest.getDrugSusceptibility().getBedaquilineMic(),
+							sourceTestReport.getBedaquilineMic(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.BEDAQUILINE_MIC),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setBedaquilineSusceptibility,
+							pathogenTest.getDrugSusceptibility().getBedaquilineSusceptibility(),
+							sourceTestReport.getBedaquilineSusceptibility(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.BEDAQUILINE_SUSCEPTIBILITY),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setCapreomycinMic,
+							pathogenTest.getDrugSusceptibility().getCapreomycinMic(),
+							sourceTestReport.getCapreomycinMic(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.CAPREOMYCIN_MIC),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setCapreomycinSusceptibility,
+							pathogenTest.getDrugSusceptibility().getCapreomycinSusceptibility(),
+							sourceTestReport.getCapreomycinSusceptibility(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.CAPREOMYCIN_SUSCEPTIBILITY),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setCiprofloxacinMic,
+							pathogenTest.getDrugSusceptibility().getCiprofloxacinMic(),
+							sourceTestReport.getCiprofloxacinMic(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.CIPROFLOXACIN_MIC),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setCiprofloxacinSusceptibility,
+							pathogenTest.getDrugSusceptibility().getCiprofloxacinSusceptibility(),
+							sourceTestReport.getCiprofloxacinSusceptibility(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.CIPROFLOXACIN_SUSCEPTIBILITY),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setDelamanidMic,
+							pathogenTest.getDrugSusceptibility().getDelamanidMic(),
+							sourceTestReport.getDelamanidMic(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.DELAMANID_MIC),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setDelamanidSusceptibility,
+							pathogenTest.getDrugSusceptibility().getDelamanidSusceptibility(),
+							sourceTestReport.getDelamanidSusceptibility(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.DELAMANID_SUSCEPTIBILITY),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setEthambutolMic,
+							pathogenTest.getDrugSusceptibility().getEthambutolMic(),
+							sourceTestReport.getEthambutolMic(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.ETHAMBUTOL_MIC),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setEthambutolSusceptibility,
+							pathogenTest.getDrugSusceptibility().getEthambutolSusceptibility(),
+							sourceTestReport.getEthambutolSusceptibility(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.ETHAMBUTOL_SUSCEPTIBILITY),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setGatifloxacinMic,
+							pathogenTest.getDrugSusceptibility().getGatifloxacinMic(),
+							sourceTestReport.getGatifloxacinMic(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.GATIFLOXACIN_MIC),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setGatifloxacinSusceptibility,
+							pathogenTest.getDrugSusceptibility().getGatifloxacinSusceptibility(),
+							sourceTestReport.getGatifloxacinSusceptibility(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.GATIFLOXACIN_SUSCEPTIBILITY),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setIsoniazidMic,
+							pathogenTest.getDrugSusceptibility().getIsoniazidMic(),
+							sourceTestReport.getIsoniazidMic(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.ISONIAZID_MIC),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setIsoniazidSusceptibility,
+							pathogenTest.getDrugSusceptibility().getIsoniazidSusceptibility(),
+							sourceTestReport.getIsoniazidSusceptibility(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.ISONIAZID_SUSCEPTIBILITY),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setKanamycinMic,
+							pathogenTest.getDrugSusceptibility().getKanamycinMic(),
+							sourceTestReport.getKanamycinMic(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.KANAMYCIN_MIC),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setKanamycinSusceptibility,
+							pathogenTest.getDrugSusceptibility().getKanamycinSusceptibility(),
+							sourceTestReport.getKanamycinSusceptibility(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.KANAMYCIN_SUSCEPTIBILITY),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setLevofloxacinMic,
+							pathogenTest.getDrugSusceptibility().getLevofloxacinMic(),
+							sourceTestReport.getLevofloxacinMic(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.LEVOFLOXACIN_MIC),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setLevofloxacinSusceptibility,
+							pathogenTest.getDrugSusceptibility().getLevofloxacinSusceptibility(),
+							sourceTestReport.getLevofloxacinSusceptibility(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.LEVOFLOXACIN_SUSCEPTIBILITY),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setMoxifloxacinMic,
+							pathogenTest.getDrugSusceptibility().getMoxifloxacinMic(),
+							sourceTestReport.getMoxifloxacinMic(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.MOXIFLOXACIN_MIC),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setMoxifloxacinSusceptibility,
+							pathogenTest.getDrugSusceptibility().getMoxifloxacinSusceptibility(),
+							sourceTestReport.getMoxifloxacinSusceptibility(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.MOXIFLOXACIN_SUSCEPTIBILITY),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setOfloxacinMic,
+							pathogenTest.getDrugSusceptibility().getOfloxacinMic(),
+							sourceTestReport.getOfloxacinMic(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.OFLOXACIN_MIC),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setOfloxacinSusceptibility,
+							pathogenTest.getDrugSusceptibility().getOfloxacinSusceptibility(),
+							sourceTestReport.getOfloxacinSusceptibility(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.OFLOXACIN_SUSCEPTIBILITY),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setRifampicinMic,
+							pathogenTest.getDrugSusceptibility().getRifampicinMic(),
+							sourceTestReport.getRifampicinMic(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.RIFAMPICIN_MIC),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setRifampicinSusceptibility,
+							pathogenTest.getDrugSusceptibility().getRifampicinSusceptibility(),
+							sourceTestReport.getRifampicinSusceptibility(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.RIFAMPICIN_SUSCEPTIBILITY),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setStreptomycinMic,
+							pathogenTest.getDrugSusceptibility().getStreptomycinMic(),
+							sourceTestReport.getStreptomycinMic(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.STREPTOMYCIN_MIC),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setStreptomycinSusceptibility,
+							pathogenTest.getDrugSusceptibility().getStreptomycinSusceptibility(),
+							sourceTestReport.getStreptomycinSusceptibility(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.STREPTOMYCIN_SUSCEPTIBILITY),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setCeftriaxoneMic,
+							pathogenTest.getDrugSusceptibility().getCeftriaxoneMic(),
+							sourceTestReport.getCeftriaxoneMic(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.CEFTRIAXONE_MIC),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setCeftriaxoneSusceptibility,
+							pathogenTest.getDrugSusceptibility().getCeftriaxoneSusceptibility(),
+							sourceTestReport.getCeftriaxoneSusceptibility(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.CEFTRIAXONE_SUSCEPTIBILITY),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setPenicillinMic,
+							pathogenTest.getDrugSusceptibility().getPenicillinMic(),
+							sourceTestReport.getPenicillinMic(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.PENICILLIN_MIC),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setPenicillinSusceptibility,
+							pathogenTest.getDrugSusceptibility().getPenicillinSusceptibility(),
+							sourceTestReport.getPenicillinSusceptibility(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.PENICILLIN_SUSCEPTIBILITY),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setErythromycinMic,
+							pathogenTest.getDrugSusceptibility().getErythromycinMic(),
+							sourceTestReport.getErythromycinMic(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.ERYTHROMYCIN_MIC),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setErythromycinSusceptibility,
+							pathogenTest.getDrugSusceptibility().getErythromycinSusceptibility(),
+							sourceTestReport.getErythromycinSusceptibility(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.ERYTHROMYCIN_SUSCEPTIBILITY))));
 		}
 
 		changedFields.addAll(

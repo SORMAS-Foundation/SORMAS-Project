@@ -465,7 +465,6 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setTuberculosisInfectionYear(source.getTuberculosisInfectionYear());
 		target.setPreviousTuberculosisTreatment(source.getPreviousTuberculosisTreatment());
 		target.setComplianceWithTreatment(source.getComplianceWithTreatment());
-
 		return target;
 	}
 

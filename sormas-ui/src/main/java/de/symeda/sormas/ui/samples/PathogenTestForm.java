@@ -302,9 +302,12 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		testTypeField.setValue(newFieldValue.getTestType());
 		pcrTestSpecification.setValue(newFieldValue.getPcrTestSpecification());
 		testTypeTextField.setValue(newFieldValue.getTestTypeText());
-		testResultField.setValue(newFieldValue.getTestResult());
+		if(!testResultField.isReadOnly()) {
+			testResultField.setValue(newFieldValue.getTestResult());
+		}
 		typingIdField.setValue(newFieldValue.getTypingId());
 		specieField.setValue(newFieldValue.getSpecie());
+		drugSusceptibilityField.forceUpdateDrugSusceptibilityFields();
 		markAsDirty();
 	}
 
@@ -1100,6 +1103,9 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			ImmutableList.of(PathogenTestType.GENOTYPING));
 
 		BiConsumer<Disease, PathogenTestType> resultField = (disease, testType) -> {
+			if(testResultField.isReadOnly()) {
+				return;
+			}
 			if (resultFieldDecisionMap.containsKey(disease) && resultFieldDecisionMap.get(disease).contains(testType)) {
 				testResultField.setValue(PathogenTestResultType.POSITIVE);
 				testResultField.setEnabled(false);

@@ -123,9 +123,22 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 	 *         successfully.
 	 */
 	protected CompletionStage<Boolean> handleInfraDataChecks() {
-		final FacilityReferenceDto hospitalFacilityReference = getHospitalFacilityReference(getExternalMessage());
 
 		final CompletableFuture<Boolean> ret = new CompletableFuture<>();
+
+		// In case no hospitalization information is present, we don't need to alert the user
+		if (getExternalMessage().getAdmittedToHealthFacility() == null
+			&& getExternalMessage().getHospitalizationFacilityName() == null
+			&& getExternalMessage().getHospitalizationFacilityExternalId() == null
+			&& getExternalMessage().getHospitalizationFacilityDepartment() == null
+			&& getExternalMessage().getHospitalizationAdmissionDate() == null
+			&& getExternalMessage().getHospitalizationDischargeDate() == null) {
+
+			ret.complete(true);
+			return ret;
+		}
+
+		final FacilityReferenceDto hospitalFacilityReference = getHospitalFacilityReference(getExternalMessage());
 
 		if (hospitalFacilityReference == null) {
 			LOGGER.warn("Hospital facility reference is null for externalMessage: {}", getExternalMessage());

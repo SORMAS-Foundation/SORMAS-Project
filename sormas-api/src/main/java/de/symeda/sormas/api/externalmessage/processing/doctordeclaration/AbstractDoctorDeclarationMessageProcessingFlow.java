@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.api.externalmessage.processing.doctordeclaration;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -370,6 +369,16 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 	protected void postBuildHospitalization(CaseDataDto caseDto, ExternalMessageDto externalMessageDto) {
 
 		final FacilityReferenceDto hospitalFacilityReference = getHospitalFacilityReference(externalMessageDto);
+
+		if (externalMessageDto.getAdmittedToHealthFacility() == null
+			&& externalMessageDto.getHospitalizationFacilityName() == null
+			&& externalMessageDto.getHospitalizationFacilityExternalId() == null
+			&& externalMessageDto.getHospitalizationFacilityDepartment() == null
+			&& externalMessageDto.getHospitalizationAdmissionDate() == null
+			&& externalMessageDto.getHospitalizationDischargeDate() == null) {
+			logger.info("[POST BUILD HOSPITALIZATION] No hospitalization information found for case with UUID: {}.", caseDto.getUuid());
+			return;
+		}
 
 		// If we do not have a hospital facility reference, we quit early
 		if (hospitalFacilityReference == null) {
