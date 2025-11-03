@@ -275,6 +275,7 @@ public class ExposureDto extends PseudonymizableDto {
 	@Diseases({
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String animalLocationText;
 	@Diseases({
 		Disease.AFP,

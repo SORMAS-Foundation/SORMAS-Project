@@ -25,7 +25,7 @@ public enum Disease
 	implements
 	StatisticsGroupingKey {
 
-	AFP(true, true, true, false, false, 0, true, false, false),
+	AFP(true, true, true, false, true, 60, true, false, false),
 	CHOLERA(true, true, true, false, true, 5, true, false, false),
 	CONGENITAL_RUBELLA(true, true, true, false, true, 21, true, false, false),
 	CSM(true, true, true, false, false, 10, true, false, false),
@@ -70,9 +70,9 @@ public enum Disease
 	YAWS_ENDEMIC_SYPHILIS(true, false, false, true, false, 0, true, false, false),
 	MATERNAL_DEATHS(true, false, false, true, false, 0, true, false, false),
 	PERINATAL_DEATHS(true, false, false, true, false, 0, true, false, false),
-	INFLUENZA(false, false, false, false, false, 0, true, false, false),
-	INFLUENZA_A(true, true, true, false, false, 0, true, false, false),
-	INFLUENZA_B(true, true, true, false, false, 0, true, false, false),
+	INFLUENZA(true, false, false, false, false, 0, true, false, false),
+	INFLUENZA_A(false, true, true, false, false, 0, true, false, false),
+	INFLUENZA_B(false, true, true, false, false, 0, true, false, false),
 	H_METAPNEUMOVIRUS(true, false, true, false, false, 0, true, false, false),
 	RESPIRATORY_SYNCYTIAL_VIRUS(true, false, true, false, false, 0, true, false, false),
 	PARAINFLUENZA_1_4(true, false, true, false, false, 0, true, false, false),

@@ -1649,6 +1649,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 		case GIARDIASIS:
 		case CRYPTOSPORIDIOSIS:
 			caze.getEpiData().getExposures().add(creator.buildAnimalContactExposure(TypeOfAnimal.CAT));
+			break;
 		default:
 			throw new UnsupportedOperationException("Disease has no constant requirement or variation in probable definition");
 		}

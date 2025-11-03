@@ -352,7 +352,13 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 					true,
 					false,
 					I18nProperties.getValidationError(Validations.beforeDate, intensiveCareUnitEnd.getCaption(), dischargeDateField.getCaption())));
-			intensiveCareUnitStart.addValueChangeListener(event -> intensiveCareUnitEnd.markAsDirty());
+			intensiveCareUnitStart.addValueChangeListener(event -> {
+				intensiveCareUnitEnd.markAsDirty();
+				boolean hasIcuStartDate = intensiveCareUnitStart.getValue() != null;
+				if (hasIcuStartDate && intensiveCareUnitEnd.getValue() != null) {
+					icuLengthOfStayField.setValue("" + DateHelper.getDaysBetween(intensiveCareUnitStart.getValue(), intensiveCareUnitEnd.getValue()));
+				}
+			});
 			intensiveCareUnitEnd.addValueChangeListener(event -> {
 				intensiveCareUnitStart.markAsDirty();
 				boolean hasIcuEndDate = intensiveCareUnitEnd.getValue() != null;
