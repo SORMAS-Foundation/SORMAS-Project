@@ -17,6 +17,8 @@ import de.symeda.sormas.api.sample.PathogenSpecie;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.RsvSubtype;
+import de.symeda.sormas.api.sample.SeroGroupSpecification;
+import de.symeda.sormas.api.sample.SerotypingMethod;
 import de.symeda.sormas.api.therapy.DrugSusceptibilityType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
@@ -201,6 +203,11 @@ public class TestReportDto extends EntityDto {
 	private DrugSusceptibilityType penicillinSusceptibility;
 	private Float erythromycinMic;
 	private DrugSusceptibilityType erythromycinSusceptibility;
+
+	private SeroGroupSpecification seroGroupSpecification;
+	private String seroGroupSpecificationText;
+	private SerotypingMethod seroTypingMethod;
+	private String seroTypingMethodText;
 
 	public SampleReportReferenceDto getSampleReport() {
 		return sampleReport;
@@ -839,5 +846,37 @@ public class TestReportDto extends EntityDto {
 
 	public void setErythromycinSusceptibility(DrugSusceptibilityType erythromycinSusceptibility) {
 		this.erythromycinSusceptibility = erythromycinSusceptibility;
+	}
+
+	public SeroGroupSpecification getSeroGroupSpecification() {
+		return seroGroupSpecification;
+	}
+
+	public void setSeroGroupSpecification(SeroGroupSpecification seroGroupSpecification) {
+		this.seroGroupSpecification = seroGroupSpecification;
+	}
+
+	public String getSeroGroupSpecificationText() {
+		return seroGroupSpecificationText;
+	}
+
+	public void setSeroGroupSpecificationText(String seroGroupSpecificationText) {
+		this.seroGroupSpecificationText = seroGroupSpecificationText;
+	}
+
+	public SerotypingMethod getSeroTypingMethod() {
+		return seroTypingMethod;
+	}
+
+	public void setSeroTypingMethod(SerotypingMethod seroTypingMethod) {
+		this.seroTypingMethod = seroTypingMethod;
+	}
+
+	public String getSeroTypingMethodText() {
+		return seroTypingMethodText;
+	}
+
+	public void setSeroTypingMethodText(String seroTypingMethodText) {
+		this.seroTypingMethodText = seroTypingMethodText;
 	}
 }

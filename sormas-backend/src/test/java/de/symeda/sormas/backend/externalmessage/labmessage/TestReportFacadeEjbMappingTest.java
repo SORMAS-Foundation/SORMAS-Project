@@ -19,6 +19,8 @@ import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.sample.SeroGroupSpecification;
+import de.symeda.sormas.api.sample.SerotypingMethod;
 import de.symeda.sormas.api.sample.PathogenSpecie;
 import de.symeda.sormas.api.therapy.DrugSusceptibilityType;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -116,6 +118,12 @@ public class TestReportFacadeEjbMappingTest {
 		source.setErythromycinMic(2.8f);
 		source.setErythromycinSusceptibility(DrugSusceptibilityType.RESISTANT);
 
+		// Sero group
+		source.setSeroGroupSpecification(SeroGroupSpecification.SEROGROUP_A);
+		source.setSeroGroupSpecificationText("SeroGroup A");
+		source.setSeroTypingMethod(SerotypingMethod.MULTIPLEX_PCR);
+		source.setSeroTypingMethodText("Multiplex PCR Method");
+
 		TestReport result = sut.fromDto(source, true);
 
 		assertNotSame(source.getCreationDate().getTime(), result.getCreationDate().getTime());
@@ -178,6 +186,12 @@ public class TestReportFacadeEjbMappingTest {
 		assertEquals(source.getPenicillinSusceptibility(), result.getPenicillinSusceptibility());
 		assertEquals(source.getErythromycinMic(), result.getErythromycinMic());
 		assertEquals(source.getErythromycinSusceptibility(), result.getErythromycinSusceptibility());
+
+		// Sero group
+		assertEquals(source.getSeroGroupSpecification(), result.getSeroGroupSpecification());
+		assertEquals(source.getSeroGroupSpecificationText(), result.getSeroGroupSpecificationText());
+		assertEquals(source.getSeroTypingMethod(), result.getSeroTypingMethod());
+		assertEquals(source.getSeroTypingMethodText(), result.getSeroTypingMethodText());
 
 	}
 
@@ -251,6 +265,12 @@ public class TestReportFacadeEjbMappingTest {
 		source.setErythromycinMic(2.8f);
 		source.setErythromycinSusceptibility(DrugSusceptibilityType.RESISTANT);
 
+		// Sero group
+		source.setSeroGroupSpecification(SeroGroupSpecification.SEROGROUP_A);
+		source.setSeroGroupSpecificationText("SeroGroup A");
+		source.setSeroTypingMethod(SerotypingMethod.MULTIPLEX_PCR);
+		source.setSeroTypingMethodText("Multiplex PCR Method");
+
 	TestReportDto result = TestReportFacadeEjb.toDto(source);
 
 		assertNotSame(source.getCreationDate().getTime(), result.getCreationDate().getTime());
@@ -314,6 +334,12 @@ public class TestReportFacadeEjbMappingTest {
 		assertEquals(source.getPenicillinSusceptibility(), result.getPenicillinSusceptibility());
 		assertEquals(source.getErythromycinMic(), result.getErythromycinMic());
 		assertEquals(source.getErythromycinSusceptibility(), result.getErythromycinSusceptibility());
+
+		// Sero group
+		assertEquals(source.getSeroGroupSpecification(), result.getSeroGroupSpecification());
+		assertEquals(source.getSeroGroupSpecificationText(), result.getSeroGroupSpecificationText());
+		assertEquals(source.getSeroTypingMethod(), result.getSeroTypingMethod());
+		assertEquals(source.getSeroTypingMethodText(), result.getSeroTypingMethodText());
 
 	}
 }

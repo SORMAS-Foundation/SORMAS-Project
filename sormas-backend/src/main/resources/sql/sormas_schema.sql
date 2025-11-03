@@ -14793,6 +14793,16 @@ ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS penicillinSusceptibility
 ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS erythromycinmic numeric;
 ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS erythromycinSusceptibility varchar(255);
 
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS seroGroupSpecification varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS seroGroupSpecificationText varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS seroTypingMethod varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS seroTypingMethodText varchar(255);
+
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS seroGroupSpecification varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS seroGroupSpecificationText varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS seroTypingMethod varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS seroTypingMethodText varchar(255);
+
 INSERT INTO schema_version (version_number, comment) VALUES (594, 'Additional fields for extenal message processing #13563, #13638');
 
 

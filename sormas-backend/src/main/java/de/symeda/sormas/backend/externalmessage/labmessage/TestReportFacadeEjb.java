@@ -152,6 +152,11 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setErythromycinMic(source.getErythromycinMic());
 		target.setErythromycinSusceptibility(source.getErythromycinSusceptibility());
 
+		target.setSeroGroupSpecification(source.getSeroGroupSpecification());
+		target.setSeroGroupSpecificationText(source.getSeroGroupSpecificationText());
+		target.setSeroTypingMethod(source.getSeroTypingMethod());
+		target.setSeroTypingMethodText(source.getSeroTypingMethodText());
+
 		return target;
 	}
 
@@ -239,6 +244,11 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setPenicillinSusceptibility(source.getPenicillinSusceptibility());
 		target.setErythromycinMic(source.getErythromycinMic());
 		target.setErythromycinSusceptibility(source.getErythromycinSusceptibility());
+
+		target.setSeroGroupSpecification(source.getSeroGroupSpecification());
+		target.setSeroGroupSpecificationText(source.getSeroGroupSpecificationText());
+		target.setSeroTypingMethod(source.getSeroTypingMethod());
+		target.setSeroTypingMethodText(source.getSeroTypingMethodText());
 
 		return target;
 	}
