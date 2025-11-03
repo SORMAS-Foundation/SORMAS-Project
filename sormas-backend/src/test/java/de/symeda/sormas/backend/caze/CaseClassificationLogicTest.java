@@ -1240,7 +1240,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void rollOutFalsePositivesForGiardiasis() {
+	public void ruleOutFalsePositivesForGiardiasis() {
 		CaseDataDto caze = creator.createUnclassifiedCase(Disease.GIARDIASIS);
 		caze.getSymptoms().setAsymptomatic(SymptomState.YES);
 		caze = getCaseFacade().save(caze);
@@ -1279,7 +1279,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void rollOutFalsePositivesForCryptosporidiosis() {
+	public void ruleOutFalsePositivesForCryptosporidiosis() {
 		CaseDataDto caze = creator.createUnclassifiedCase(Disease.CRYPTOSPORIDIOSIS);
 		caze.getSymptoms().setAsymptomatic(SymptomState.YES);
 		caze = getCaseFacade().save(caze);
