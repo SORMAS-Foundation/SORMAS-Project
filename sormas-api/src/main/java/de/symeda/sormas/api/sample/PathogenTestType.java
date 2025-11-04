@@ -183,27 +183,33 @@ public enum PathogenTestType {
 	TMA,
 
 	@Diseases(value = {
-		Disease.TUBERCULOSIS })
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
 	IGRA,
 
 	@Diseases(value = {
-		Disease.TUBERCULOSIS })
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
 	TST,
 
 	@Diseases(value = {
-		Disease.TUBERCULOSIS })
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
 	BEIJINGGENOTYPING,
 
 	@Diseases(value = {
-		Disease.TUBERCULOSIS })
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
 	SPOLIGOTYPING,
 
 	@Diseases(value = {
-		Disease.TUBERCULOSIS })
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
 	MIRU_PATTERN_CODE,
 
 	@Diseases(value = {
 		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
 	ANTIBIOTIC_SUSCEPTIBILITY,
