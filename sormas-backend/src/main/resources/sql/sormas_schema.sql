@@ -14444,14 +14444,14 @@ INSERT INTO schema_version (version_number, comment) VALUES (580, 'Update extern
 
 
 -- 2025-07-18 Implemented Doctors declaration for IPI #13344
-alter table externalmessage add column if not exists deceasedDate TIMESTAMP;
-alter table externalmessage_history add column if not exists deceasedDate TIMESTAMP;
-alter table symptoms add column if not exists unknownSymptom varchar(255);
-alter table symptoms_history add column if not exists unknownSymptom varchar(255);
-alter table notifier add column if not exists agentfirstname varchar(255);
-alter table notifier add column if not exists agentlastname varchar(255);
-alter table notifier_history add column if not exists agentfirstname varchar(255);
-alter table notifier_history add column if not exists agentlastname varchar(255);
+ALTER TABLE externalmessage ADD COLUMN IF NOT EXISTS deceaseddate TIMESTAMP;
+ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS deceaseddate TIMESTAMP;
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS unknownsymptom VARCHAR(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS unknownsymptom VARCHAR(255);
+ALTER TABLE notifier ADD COLUMN IF NOT EXISTS agentfirstname VARCHAR(255);
+ALTER TABLE notifier ADD COLUMN IF NOT EXISTS agentlastname VARCHAR(255);
+ALTER TABLE notifier_history ADD COLUMN IF NOT EXISTS agentfirstname VARCHAR(255);
+ALTER TABLE notifier_history ADD COLUMN IF NOT EXISTS agentlastname VARCHAR(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (581, 'Implemented Doctors declaration for IPI #13344');
 
@@ -14567,31 +14567,31 @@ ALTER TABLE immunization_history ADD COLUMN IF NOT EXISTS injectionFacility varc
 INSERT INTO schema_version (version_number, comment) VALUES (588, 'RSV - Update Immunization #13542');
 
 -- 2025-08-12 Customized Measles for Lux #13365
-alter table symptoms add column if not exists skinRashOnsetDate timestamp;
-alter table symptoms add column if not exists acuteencephalitis varchar(255);
-alter table epidata add column IF NOT EXISTS caseImportedStatus  varchar(255);
-alter table epidata add column IF NOT EXISTS clusterType  varchar(255);
-alter table epidata add column IF NOT EXISTS clusterTypeText  varchar(255);
-alter table pathogentest add column IF NOT EXISTS genoTypeResult varchar(255);
-alter table pathogentest add column IF NOT EXISTS genoTypeResultText varchar(255);
-alter table contact add column IF NOT EXISTS vaccination_dose1_date timestamp;
-alter table contact add column IF NOT EXISTS vaccination_dose2_date timestamp;
-alter table contact add column IF NOT EXISTS vaccinationProposed boolean default false;
-alter table contact add column IF NOT EXISTS immuneGlobulinProposed boolean default false;
-alter table testreport add column IF NOT EXISTS genoTypeResult varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS skinrashonsetdate timestamp;
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS acuteencephalitis varchar(255);
+ALTER TABLE epidata ADD COLUMN IF NOT EXISTS caseimportedstatus varchar(255);
+ALTER TABLE epidata ADD COLUMN IF NOT EXISTS clustertype varchar(255);
+ALTER TABLE epidata ADD COLUMN IF NOT EXISTS clustertypetext varchar(255);
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS genotyperesult varchar(255);
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS genotyperesulttext varchar(255);
+ALTER TABLE contact ADD COLUMN IF NOT EXISTS vaccination_dose1_date timestamp;
+ALTER TABLE contact ADD COLUMN IF NOT EXISTS vaccination_dose2_date timestamp;
+ALTER TABLE contact ADD COLUMN IF NOT EXISTS vaccinationproposed boolean DEFAULT false;
+ALTER TABLE contact ADD COLUMN IF NOT EXISTS immuneglobulinproposed boolean DEFAULT false;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS genotyperesult varchar(255);
 
-alter table symptoms_history add column if not exists skinRashOnsetDate timestamp;
-alter table symptoms_history add column if not exists acuteencephalitis varchar(255);
-alter table epidata_history add column IF NOT EXISTS caseImportedStatus  varchar(255);
-alter table epidata_history add column IF NOT EXISTS clusterType  varchar(255);
-alter table epidata_history add column IF NOT EXISTS clusterTypeText  varchar(255);
-alter table pathogentest_history add column IF NOT EXISTS genoTypeResult varchar(255);
-alter table pathogentest_history add column IF NOT EXISTS genoTypeResultText varchar(255);
-alter table contact_history add column IF NOT EXISTS vaccination_dose1_date timestamp;
-alter table contact_history add column IF NOT EXISTS vaccination_dose2_date timestamp;
-alter table contact_history add column IF NOT EXISTS vaccinationProposed boolean default false;
-alter table contact_history add column IF NOT EXISTS immuneGlobulinProposed boolean default false;
-alter table testreport_history add column IF NOT EXISTS genoTypeResult varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS skinrashonsetdate timestamp;
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS acuteencephalitis varchar(255);
+ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS caseimportedstatus varchar(255);
+ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS clustertype varchar(255);
+ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS clustertypetext varchar(255);
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS genotyperesult varchar(255);
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS genotyperesulttext varchar(255);
+ALTER TABLE contact_history ADD COLUMN IF NOT EXISTS vaccination_dose1_date timestamp;
+ALTER TABLE contact_history ADD COLUMN IF NOT EXISTS vaccination_dose2_date timestamp;
+ALTER TABLE contact_history ADD COLUMN IF NOT EXISTS vaccinationproposed boolean DEFAULT false;
+ALTER TABLE contact_history ADD COLUMN IF NOT EXISTS immuneglobulinproposed boolean DEFAULT false;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS genotyperesult varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (589, 'Customized Measles for Lux #13365');
 
@@ -14648,89 +14648,89 @@ ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS tubemitogenegt10 boolean
 INSERT INTO schema_version (version_number, comment) VALUES (591, 'Implement functionality to receive messages from laboratory for TB #13563');
 
 -- 2025-09-09 -  Lux measles - cluster related checkbox #13365
-alter table  epidata  add column IF NOT EXISTS clusterRelated boolean DEFAULT false;
-update epidata set clusterRelated = false where clusterRelated is null;
-alter table epidata alter column clusterRelated set not null;
-alter table  epidata_history  add column IF NOT EXISTS clusterRelated boolean DEFAULT false;
-update epidata_history set clusterRelated = false where clusterRelated is null;
-alter table epidata_history alter column clusterRelated set not null;
+ALTER TABLE epidata ADD COLUMN IF NOT EXISTS clusterrelated boolean DEFAULT false;
+UPDATE epidata SET clusterrelated = false WHERE clusterrelated IS NULL;
+ALTER TABLE epidata ALTER COLUMN clusterrelated SET NOT NULL;
+ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS clusterrelated boolean DEFAULT false;
+UPDATE epidata_history SET clusterrelated = false WHERE clusterrelated IS NULL;
+ALTER TABLE epidata_history ALTER COLUMN clusterrelated SET NOT NULL;
 INSERT INTO schema_version (version_number, comment) VALUES (592, 'Added cluster related checkbox for LUX Measles #13365');
 
 -- 2025-09-19 - Integrated new diseases named Giardiasis and Cryptosporidiosis #13601 #13608
-alter table symptoms add column if not exists eggyBurps varchar(255);
-alter table symptoms add column if not exists weightLoss varchar(255);
-alter table symptoms add column if not exists weightLossAmount integer;
-alter table symptoms add column if not exists reoccurrence varchar(255);
-alter table symptoms add column if not exists symptomCurrentStatus varchar(255);
-alter table symptoms add column if not exists durationOfSymptoms integer;
-alter table symptoms add column if not exists overnightStayRequired varchar(255);
-alter table symptoms add column if not exists bloating varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS eggyburps varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS weightloss varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS weightlossamount integer;
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS reoccurrence varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS symptomcurrentstatus varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS durationofsymptoms integer;
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS overnightstayrequired varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS bloating varchar(255);
 ALTER TABLE symptoms ALTER COLUMN weightlossamount TYPE float4 USING weightlossamount::float4;
-alter table exposures add column if not exists travelAccommodation varchar(255);
-alter table exposures add column if not exists travelAccommodationType varchar(255);
-alter table exposures add column if not exists swimmingLocation varchar(255);
-alter table exposures add column if not exists swimmingLocationType varchar(255);
-alter table exposures add column if not exists animallocation varchar(255);
-alter table exposures add column if not exists domesticswimming varchar(255);
-alter table exposures add column if not exists internationalswimming varchar(255);
-alter table exposures add column if not exists sexualexposuretext varchar(255);
-alter table exposures add column if not exists rawfoodcontact varchar(255);
-alter table exposures add column if not exists rawfoodcontacttext varchar(255);
-alter table exposures add column if not exists symptomaticindividualtext varchar(255);
-ALTER TABLE hospitalization ADD COLUMN IF NOT EXISTS durationOfHospitalization integer;
-alter table epidata add column if not exists modeOfTransmission varchar(255);
-alter table epidata add column if not exists modeOfTransmissionType varchar(255);
-alter table epidata add column if not exists infectionSource varchar(255);
-alter table epidata add column if not exists infectionSourcetext varchar(255);
-alter table epidata add column if not exists importedCase varchar(255);
-alter table epidata add column if not exists country_id bigint;
+ALTER TABLE exposures ADD COLUMN IF NOT EXISTS travelaccommodation varchar(255);
+ALTER TABLE exposures ADD COLUMN IF NOT EXISTS travelaccommodationtype varchar(255);
+ALTER TABLE exposures ADD COLUMN IF NOT EXISTS swimminglocation varchar(255);
+ALTER TABLE exposures ADD COLUMN IF NOT EXISTS swimminglocationtype varchar(255);
+ALTER TABLE exposures ADD COLUMN IF NOT EXISTS animallocation varchar(255);
+ALTER TABLE exposures ADD COLUMN IF NOT EXISTS domesticswimming varchar(255);
+ALTER TABLE exposures ADD COLUMN IF NOT EXISTS internationalswimming varchar(255);
+ALTER TABLE exposures ADD COLUMN IF NOT EXISTS sexualexposuretext varchar(255);
+ALTER TABLE exposures ADD COLUMN IF NOT EXISTS rawfoodcontact varchar(255);
+ALTER TABLE exposures ADD COLUMN IF NOT EXISTS rawfoodcontacttext varchar(255);
+ALTER TABLE exposures ADD COLUMN IF NOT EXISTS symptomaticindividualtext varchar(255);
+ALTER TABLE hospitalization ADD COLUMN IF NOT EXISTS durationofhospitalization integer;
+ALTER TABLE epidata ADD COLUMN IF NOT EXISTS modeoftransmission varchar(255);
+ALTER TABLE epidata ADD COLUMN IF NOT EXISTS modeoftransmissiontype varchar(255);
+ALTER TABLE epidata ADD COLUMN IF NOT EXISTS infectionsource varchar(255);
+ALTER TABLE epidata ADD COLUMN IF NOT EXISTS infectionsourcetext varchar(255);
+ALTER TABLE epidata ADD COLUMN IF NOT EXISTS importedcase varchar(255);
+ALTER TABLE epidata ADD COLUMN IF NOT EXISTS country_id bigint;
 ALTER TABLE person ADD COLUMN IF NOT EXISTS workplace varchar(255);
 ALTER TABLE person ADD COLUMN IF NOT EXISTS workplacetext varchar(255);
 
-alter table symptoms_history add column if not exists eggyBurps varchar(255);
-alter table symptoms_history add column if not exists weightLoss varchar(255);
-alter table symptoms_history add column if not exists weightLossAmount integer;
-alter table symptoms_history add column if not exists reoccurrence varchar(255);
-alter table symptoms_history add column if not exists symptomCurrentStatus varchar(255);
-alter table symptoms_history add column if not exists durationOfSymptoms integer;
-alter table symptoms_history add column if not exists overnightStayRequired varchar(255);
-alter table symptoms_history add column if not exists bloating varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS eggyburps varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS weightloss varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS weightlossamount integer;
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS reoccurrence varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS symptomcurrentstatus varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS durationofsymptoms integer;
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS overnightstayrequired varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS bloating varchar(255);
 ALTER TABLE symptoms_history ALTER COLUMN weightlossamount TYPE float4 USING weightlossamount::float4;
-alter table exposures_history add column if not exists travelAccommodation varchar(255);
-alter table exposures_history add column if not exists travelAccommodationType varchar(255);
-alter table exposures_history add column if not exists swimmingLocation varchar(255);
-alter table exposures_history add column if not exists swimmingLocationType varchar(255);
-alter table exposures_history add column if not exists animallocation varchar(255);
-alter table exposures_history add column if not exists domesticswimming varchar(255);
-alter table exposures_history add column if not exists internationalswimming varchar(255);
-alter table exposures_history add column if not exists sexualexposuretext varchar(255);
-alter table epidata_history add column if not exists modeOfTransmission varchar(255);
-alter table epidata_history add column if not exists modeOfTransmissionType varchar(255);
-alter table epidata_history add column if not exists infectionSource varchar(255);
-alter table epidata_history add column if not exists infectionSourcetext varchar(255);
-alter table epidata_history add column if not exists importedCase varchar(255);
-alter table epidata_history add column if not exists country_id bigint;
-alter table exposures_history add column if not exists rawfoodcontact varchar(255);
-alter table exposures_history add column if not exists rawfoodcontacttext varchar(255);
-alter table exposures_history add column if not exists symptomaticindividualtext varchar(255);
-alter table hospitalization_history add column if not exists durationOfHospitalization integer;
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS travelaccommodation varchar(255);
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS travelaccommodationtype varchar(255);
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS swimminglocation varchar(255);
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS swimminglocationtype varchar(255);
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS animallocation varchar(255);
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS domesticswimming varchar(255);
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS internationalswimming varchar(255);
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS sexualexposuretext varchar(255);
+ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS modeoftransmission varchar(255);
+ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS modeoftransmissiontype varchar(255);
+ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS infectionsource varchar(255);
+ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS infectionsourcetext varchar(255);
+ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS importedcase varchar(255);
+ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS country_id bigint;
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS rawfoodcontact varchar(255);
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS rawfoodcontacttext varchar(255);
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS symptomaticindividualtext varchar(255);
+ALTER TABLE hospitalization_history ADD COLUMN IF NOT EXISTS durationofhospitalization integer;
 ALTER TABLE person_history ADD COLUMN IF NOT EXISTS workplace varchar(255);
 ALTER TABLE person_history ADD COLUMN IF NOT EXISTS workplacetext varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (593, 'Integrated new diseases named Giardiasis and Cryptosporidiosis #13601 #13608');
 
 -- 2025-10-23 - RSV issue fixes and minor observations of Giardiasis and Cryptosporidiosis #13540 #13613
-alter table exposures add column if not exists animallocationtext varchar(255);
-alter table epidata drop constraint if exists fk_epidata_country_id;
-alter table epidata add constraint fk_epidata_country_id foreign key (country_id) references country(id);
-update symptoms set timeoffworkdays = null where trim(timeoffworkdays) = '' OR timeoffworkdays !~ '^\s*-?[0-9]*\.?[0-9]+\s*$';
+ALTER TABLE exposures ADD COLUMN IF NOT EXISTS animallocationtext varchar(255);
+ALTER TABLE epidata DROP CONSTRAINT IF EXISTS fk_epidata_country_id;
+ALTER TABLE epidata ADD CONSTRAINT fk_epidata_country_id FOREIGN KEY (country_id) REFERENCES country (id);
+UPDATE symptoms SET timeoffworkdays = NULL WHERE TRIM(timeoffworkdays) = '' OR timeoffworkdays !~ '^\s*-?[0-9]*\.?[0-9]+\s*$';
 ALTER TABLE symptoms ALTER COLUMN timeoffworkdays TYPE float4 USING timeoffworkdays::float4;
 ALTER TABLE healthconditions DROP COLUMN IF EXISTS immunodepression;
 
-alter table exposures_history add column if not exists animallocationtext varchar(255);
-alter table epidata_history drop constraint if exists fk_epi_country_id;
-alter table epidata_history add constraint fk_epi_country_id foreign key (country_id) references country(id);
-update symptoms_history set timeoffworkdays = null where trim(timeoffworkdays) = '' OR timeoffworkdays !~ '^\s*-?[0-9]*\.?[0-9]+\s*$';
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS animallocationtext varchar(255);
+ALTER TABLE epidata_history DROP CONSTRAINT IF EXISTS fk_epi_country_id;
+ALTER TABLE epidata_history ADD CONSTRAINT fk_epi_country_id FOREIGN KEY (country_id) REFERENCES country (id);
+UPDATE symptoms_history SET timeoffworkdays = NULL WHERE TRIM(timeoffworkdays) = '' OR timeoffworkdays !~ '^\s*-?[0-9]*\.?[0-9]+\s*$';
 ALTER TABLE symptoms_history ALTER COLUMN timeoffworkdays TYPE float4 USING timeoffworkdays::float4;
 ALTER TABLE healthconditions_history DROP COLUMN IF EXISTS immunodepression;
 
