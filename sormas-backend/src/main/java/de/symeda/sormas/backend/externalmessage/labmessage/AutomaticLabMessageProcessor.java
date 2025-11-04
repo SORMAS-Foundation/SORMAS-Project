@@ -312,7 +312,7 @@ public class AutomaticLabMessageProcessor {
 
 		@Override
 		public CompletionStage<Boolean> handleMultipleSampleConfirmation() {
-			return CompletableFuture.completedFuture(Boolean.FALSE);
+			return CompletableFuture.completedFuture(Boolean.TRUE);
 		}
 
 		@Override
