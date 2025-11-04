@@ -1673,7 +1673,6 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 			break;
 		case INVASIVE_MENINGOCOCCAL_INFECTION:
 			caze.getSymptoms().setMeningealSigns(SymptomState.YES);
-			creator.createPathogenTest(caze, disease, PathogenTestType.MICROSCOPY, PathogenTestResultType.POSITIVE);
 			break;
 		default:
 			throw new UnsupportedOperationException("Disease has no constant requirement or variation in confirmed definition");
