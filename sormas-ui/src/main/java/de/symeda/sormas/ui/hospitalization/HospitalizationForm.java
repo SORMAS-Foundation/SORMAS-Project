@@ -352,9 +352,20 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 					true,
 					false,
 					I18nProperties.getValidationError(Validations.beforeDate, intensiveCareUnitEnd.getCaption(), dischargeDateField.getCaption())));
-			intensiveCareUnitStart.addValueChangeListener(event -> intensiveCareUnitEnd.markAsDirty());
-			intensiveCareUnitEnd.addValueChangeListener(event -> intensiveCareUnitStart.markAsDirty());
-
+			intensiveCareUnitStart.addValueChangeListener(event -> {
+				intensiveCareUnitEnd.markAsDirty();
+				boolean hasIcuStartDate = intensiveCareUnitStart.getValue() != null;
+				if (hasIcuStartDate && intensiveCareUnitEnd.getValue() != null) {
+					icuLengthOfStayField.setValue("" + DateHelper.getDaysBetween(intensiveCareUnitStart.getValue(), intensiveCareUnitEnd.getValue()));
+				}
+			});
+			intensiveCareUnitEnd.addValueChangeListener(event -> {
+				intensiveCareUnitStart.markAsDirty();
+				boolean hasIcuEndDate = intensiveCareUnitEnd.getValue() != null;
+				if (hasIcuEndDate && intensiveCareUnitStart.getValue() != null) {
+					icuLengthOfStayField.setValue("" + DateHelper.getDaysBetween(intensiveCareUnitStart.getValue(), intensiveCareUnitEnd.getValue()));
+				}
+			});
 			// RSV-specific conditional visibility logic
 			// stillHospitalized should not be visible/writable if discharge date is filled
 

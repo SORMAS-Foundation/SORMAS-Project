@@ -57,6 +57,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.data.util.converter.Converter.ConversionException;
+import com.vaadin.v7.data.util.converter.StringToFloatConverter;
 import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.ComboBox;
@@ -594,7 +595,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		Field<?> parentTimeOffWorkField = addField(PARENT_TIME_OFF_WORK);
 		TextField timeOffWorkDaysField = addField(TIME_OFF_WORK_DAYS, TextField.class);
-
+		timeOffWorkDaysField.setConverter(new StringToFloatConverter());
+		timeOffWorkDaysField
+			.setConversionError(I18nProperties.getValidationError(Validations.onlyDecimalNumbersAllowed, timeOffWorkDaysField.getCaption()));
 		Field<?> overNightStayRequiredField = addField(OVERNIGHT_STAY_REQUIRED);
 		addField(DURATION_OF_SYMPTOMS, TextField.class);
 

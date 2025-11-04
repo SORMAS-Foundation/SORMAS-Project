@@ -32,6 +32,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.v7.ui.ComboBox;
@@ -77,7 +78,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT = 
-			loc(LOC_EXPOSURE_INVESTIGATION_HEADING) + 
+			loc(LOC_EXPOSURE_INVESTIGATION_HEADING) +
 			loc(EpiDataDto.EXPOSURE_DETAILS_KNOWN) +
 			loc(EpiDataDto.EXPOSURES) +
 			loc(LOC_CONCLUSION_HEADING) +
@@ -232,7 +233,8 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 					+ divsCss(
 						VSPACE_3,
 						I18nProperties.getString(
-							parentClass == ContactDto.class ? Strings.infoExposureInvestigationContacts : Strings.infoExposureInvestigation)),
+							parentClass == ContactDto.class ? Strings.infoExposureInvestigationContacts : Strings.infoExposureInvestigation),
+						disease == Disease.GIARDIASIS ? I18nProperties.getString(Strings.giardiaInfoExposureInvestigation) : StringUtils.EMPTY),
 				ContentMode.HTML),
 			LOC_EXPOSURE_INVESTIGATION_HEADING);
 

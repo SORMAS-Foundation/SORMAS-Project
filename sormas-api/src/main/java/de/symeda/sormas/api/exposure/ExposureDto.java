@@ -113,6 +113,7 @@ public class ExposureDto extends PseudonymizableDto {
 	public static final String SWIMMING_LOCATION = "swimmingLocation";
 	public static final String SWIMMING_LOCATION_TYPE = "swimmingLocationType";
 	public static final String ANIMAL_LOCATION = "animalLocation";
+	public static final String ANIMAL_LOCATION_TEXT = "animalLocationText";
 	public static final String DOMESTIC_SWIMMING = "domesticSwimming";
 	public static final String INTERNATIONAL_SWIMMING = "internationalSwimming";
 	public static final String SEXUAL_EXPOSURE_TEXT = "sexualExposureText";
@@ -271,6 +272,11 @@ public class ExposureDto extends PseudonymizableDto {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS })
 	private AnimalLocation animalLocation;
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String animalLocationText;
 	@Diseases({
 		Disease.AFP,
 		Disease.CHOLERA,
@@ -851,6 +857,14 @@ public class ExposureDto extends PseudonymizableDto {
 
 	public void setAnimalLocation(AnimalLocation animalLocation) {
 		this.animalLocation = animalLocation;
+	}
+
+	public String getAnimalLocationText() {
+		return animalLocationText;
+	}
+
+	public void setAnimalLocationText(String animalLocationText) {
+		this.animalLocationText = animalLocationText;
 	}
 
 	public TravelAccommodation getTravelAccommodation() {

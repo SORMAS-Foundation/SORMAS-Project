@@ -98,12 +98,12 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			fluidRowLocs(PathogenTestDto.TESTED_DISEASE, PathogenTestDto.TESTED_DISEASE_DETAILS) +
 			fluidRowLocs(PathogenTestDto.TEST_TYPE, PathogenTestDto.TEST_TYPE_TEXT) +
 			fluidRowLocs(PathogenTestDto.PCR_TEST_SPECIFICATION, "") +
-			fluidRowLocs(PathogenTestDto.TESTED_DISEASE_VARIANT, PathogenTestDto.TESTED_DISEASE_VARIANT_DETAILS) +
 			fluidRowLocs(PathogenTestDto.TESTED_PATHOGEN, PathogenTestDto.TESTED_PATHOGEN_DETAILS) +
 			fluidRowLocs(PathogenTestDto.TYPING_ID, "") +
 			fluidRowLocs(PathogenTestDto.TEST_DATE_TIME, PathogenTestDto.LAB) +
 			fluidRowLocs("", PathogenTestDto.LAB_DETAILS) +
 			fluidRowLocs(6,PathogenTestDto.TEST_RESULT, 4, PathogenTestDto.TEST_RESULT_VERIFIED, 2,PathogenTestDto.PRELIMINARY) +
+			fluidRowLocs(PathogenTestDto.TESTED_DISEASE_VARIANT, PathogenTestDto.TESTED_DISEASE_VARIANT_DETAILS) +
 			fluidRowLocs(PathogenTestDto.RIFAMPICIN_RESISTANT, PathogenTestDto.ISONIAZID_RESISTANT, "", "") +
 			fluidRowLocs(PathogenTestDto.TEST_SCALE, "") +
 			fluidRowLocs(PathogenTestDto.STRAIN_CALL_STATUS, "") +
@@ -1094,6 +1094,8 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY),
 			Disease.MEASLES,
 			ImmutableList.of(PathogenTestType.GENOTYPING),
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+			ImmutableList.of(PathogenTestType.SEQUENCING, PathogenTestType.WHOLE_GENOME_SEQUENCING),
 			Disease.CRYPTOSPORIDIOSIS,
 			ImmutableList.of(PathogenTestType.GENOTYPING));
 

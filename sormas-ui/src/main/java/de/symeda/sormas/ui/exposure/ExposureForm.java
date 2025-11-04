@@ -45,6 +45,7 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.AnimalContactType;
+import de.symeda.sormas.api.exposure.AnimalLocation;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.GatheringType;
@@ -130,7 +131,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			loc(LOC_ANIMAL_CONTACT_DETAILS_HEADING) +
 			loc(ExposureDto.ANIMAL_CONDITION) +
 			fluidRowLocs(ExposureDto.ANIMAL_CONTACT_TYPE, ExposureDto.ANIMAL_CONTACT_TYPE_DETAILS) +
-			fluidRowLocs(ExposureDto.ANIMAL_LOCATION) +
+			fluidRowLocs(ExposureDto.ANIMAL_LOCATION, ExposureDto.ANIMAL_LOCATION_TEXT) +
 			loc(ExposureDto.ANIMAL_VACCINATED) +
 			loc(LOC_BURIAL_DETAILS_HEADING) +
 			loc(ExposureDto.PHYSICAL_CONTACT_DURING_PREPARATION) +
@@ -273,6 +274,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			ExposureDto.RAW_FOOD_CONTACT_TEXT,
 			ExposureDto.SYMPTOMATIC_INDIVIDUAL_TEXT,
 			ExposureDto.ANIMAL_LOCATION,
+			ExposureDto.ANIMAL_LOCATION_TEXT,
 			ExposureDto.SEXUAL_EXPOSURE_TEXT,
 			ExposureDto.WORK_ENVIRONMENT);
 
@@ -354,6 +356,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		}
 		FieldHelper
 			.setVisibleWhen(getFieldGroup(), ExposureDto.ANIMAL_CONTACT_TYPE_DETAILS, ExposureDto.ANIMAL_CONTACT_TYPE, AnimalContactType.OTHER, true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.ANIMAL_LOCATION_TEXT, ExposureDto.ANIMAL_LOCATION, AnimalLocation.OTHER, true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.TYPE_OF_PLACE_DETAILS, ExposureDto.TYPE_OF_PLACE, TypeOfPlace.OTHER, true);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),

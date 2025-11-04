@@ -270,7 +270,7 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState paradoxicalBreathing;
 	private SymptomState respiratoryFatigue;
 	private YesNoUnknown parentTimeOffWork;
-	private String timeOffWorkDays;
+	private Float timeOffWorkDays;
 
 	// Giardia & Cryptosporidiosis-specific symptoms
 	private SymptomState eggyBurps;
@@ -2092,12 +2092,11 @@ public class Symptoms extends AbstractDomainObject {
 		this.parentTimeOffWork = parentTimeOffWork;
 	}
 
-	@Column(length = CHARACTER_LIMIT_DEFAULT)
-	public String getTimeOffWorkDays() {
+	public Float getTimeOffWorkDays() {
 		return timeOffWorkDays;
 	}
 
-	public void setTimeOffWorkDays(String timeOffWorkDays) {
+	public void setTimeOffWorkDays(Float timeOffWorkDays) {
 		this.timeOffWorkDays = timeOffWorkDays;
 	}
 

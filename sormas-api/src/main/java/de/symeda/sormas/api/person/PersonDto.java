@@ -218,29 +218,35 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 	@Outbreaks
 	private Date approximateAgeReferenceDate;
 	@Diseases({
-		Disease.CONGENITAL_RUBELLA })
+		Disease.CONGENITAL_RUBELLA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	@HideForCountries
 	private RegionReferenceDto placeOfBirthRegion;
 	@Diseases({
-		Disease.CONGENITAL_RUBELLA })
+		Disease.CONGENITAL_RUBELLA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	@HideForCountries
 	private DistrictReferenceDto placeOfBirthDistrict;
 	@Diseases({
-		Disease.CONGENITAL_RUBELLA })
+		Disease.CONGENITAL_RUBELLA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	@HideForCountries
 	@SensitiveData
 	private CommunityReferenceDto placeOfBirthCommunity;
 	@Diseases({
-		Disease.CONGENITAL_RUBELLA })
+		Disease.CONGENITAL_RUBELLA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	@HideForCountries
 	private FacilityType placeOfBirthFacilityType;
 	@Diseases({
-		Disease.CONGENITAL_RUBELLA })
+		Disease.CONGENITAL_RUBELLA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	@HideForCountries
 	@SensitiveData
 	private FacilityReferenceDto placeOfBirthFacility;
 	@Diseases({
-		Disease.CONGENITAL_RUBELLA })
+		Disease.CONGENITAL_RUBELLA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	@HideForCountries
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
