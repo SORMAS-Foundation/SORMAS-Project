@@ -217,7 +217,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			if ((FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG))) {
 				boolean wasReadOnly = testResultField.isReadOnly();
 
-				if (disease == Disease.TUBERCULOSIS && testType != null) {
+				if ((disease == Disease.TUBERCULOSIS || disease == Disease.LATENT_TUBERCULOSIS) && testType != null) {
 					if (Arrays
 						.asList(PathogenTestType.BEIJINGGENOTYPING, PathogenTestType.MIRU_PATTERN_CODE, PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)
 						.contains(testType)) {
@@ -249,7 +249,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 				drugSusceptibilityField.updateFieldsVisibility(disease, testType);
 			} else {
-				if (disease != Disease.TUBERCULOSIS
+				if ((disease != Disease.TUBERCULOSIS && disease != Disease.LATENT_TUBERCULOSIS)
 					&& (DiseaseHelper.checkDiseaseIsInvasiveBacterialDiseases(disease) && testType == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)) { // for non lux tb no drug susceptibility
 					drugSusceptibilityField.updateFieldsVisibility(disease, testType);
 					drugSusceptibilityField.setVisible(true);
@@ -431,7 +431,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			Map<Object, List<Object>> tuberculosisPcrDependencies = new HashMap<>() {
 
 				{
-					put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.TUBERCULOSIS));
+					put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.TUBERCULOSIS, Disease.LATENT_TUBERCULOSIS));
 					put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.PCR_RT_PCR));
 					put(PathogenTestDto.TEST_RESULT, Arrays.asList(PathogenTestResultType.POSITIVE));
 				}
@@ -445,7 +445,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			Map<Object, List<Object>> tuberculosisMicroscopyDependencies = new HashMap<>() {
 
 				{
-					put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.TUBERCULOSIS));
+					put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.TUBERCULOSIS, Disease.LATENT_TUBERCULOSIS));
 					put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.MICROSCOPY));
 				}
 			};
@@ -456,7 +456,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			Map<Object, List<Object>> tuberculosisBeijingDependencies = new HashMap<>() {
 
 				{
-					put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.TUBERCULOSIS));
+					put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.TUBERCULOSIS, Disease.LATENT_TUBERCULOSIS));
 					put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.BEIJINGGENOTYPING));
 				}
 			};
@@ -467,7 +467,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			Map<Object, List<Object>> tuberculosisSpoligotypingDependencies = new HashMap<>() {
 
 				{
-					put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.TUBERCULOSIS));
+					put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.TUBERCULOSIS, Disease.LATENT_TUBERCULOSIS));
 					put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.SPOLIGOTYPING));
 					put(PathogenTestDto.TEST_RESULT, Arrays.asList(PathogenTestResultType.POSITIVE));
 				}
@@ -479,7 +479,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			Map<Object, List<Object>> tuberculosisMiruCodeDependencies = new HashMap<>() {
 
 				{
-					put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.TUBERCULOSIS));
+					put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.TUBERCULOSIS, Disease.LATENT_TUBERCULOSIS));
 					put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.MIRU_PATTERN_CODE));
 				}
 			};
@@ -492,7 +492,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				{
 					put(
 						PathogenTestDto.TESTED_DISEASE,
-						Arrays.asList(Disease.TUBERCULOSIS, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
+						Arrays.asList(Disease.TUBERCULOSIS, Disease.LATENT_TUBERCULOSIS, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
 					put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY));
 				}
 			};
@@ -503,7 +503,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				{
 					put(
 						PathogenTestDto.TESTED_DISEASE,
-						Arrays.asList(Disease.TUBERCULOSIS, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
+						Arrays.asList(Disease.TUBERCULOSIS, Disease.LATENT_TUBERCULOSIS, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
 					put(
 						PathogenTestDto.TEST_TYPE,
 						Arrays.asList(

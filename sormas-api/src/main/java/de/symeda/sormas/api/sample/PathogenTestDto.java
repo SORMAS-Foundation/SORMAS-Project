@@ -267,42 +267,50 @@ public class PathogenTestDto extends PseudonymizableDto {
 	@SensitiveData
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	@Diseases(value = {
-		Disease.TUBERCULOSIS })
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
 	private Float tubeNil;
 	@SensitiveData
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	@Diseases(value = {
-		Disease.TUBERCULOSIS })
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
 	private Boolean tubeNilGT10;
 	@SensitiveData
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	@Diseases(value = {
-		Disease.TUBERCULOSIS })
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
 	private Float tubeAgTb1;
 	@SensitiveData
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	@Diseases(value = {
-		Disease.TUBERCULOSIS })
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
 	private Boolean tubeAgTb1GT10;
 	@SensitiveData
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	@Diseases(value = {
-		Disease.TUBERCULOSIS })
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
 	private Float tubeAgTb2;
 	@SensitiveData
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	@Diseases(value = {
-		Disease.TUBERCULOSIS })
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
 	private Boolean tubeAgTb2GT10;
 	@SensitiveData
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	@Diseases(value = {
-		Disease.TUBERCULOSIS })
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
 	private Float tubeMitogene;
 	@SensitiveData
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	@Diseases(value = {
-		Disease.TUBERCULOSIS })
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
 	private Boolean tubeMitogeneGT10;
 
 	public static PathogenTestDto build(SampleDto sample, UserDto currentUser) {
