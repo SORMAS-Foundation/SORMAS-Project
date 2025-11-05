@@ -14719,7 +14719,7 @@ ALTER TABLE person_history ADD COLUMN IF NOT EXISTS workplacetext varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (593, 'Integrated new diseases named Giardiasis and Cryptosporidiosis #13601 #13608');
 
-
+-- 2025-10-20 - Added additional fields for external message processing
 ALTER TABLE testreport ADD COLUMN IF NOT EXISTS amikacinmic numeric;
 ALTER TABLE testreport ADD COLUMN IF NOT EXISTS amikacinsusceptibility varchar(255);
 ALTER TABLE testreport ADD COLUMN IF NOT EXISTS bedaquilinemic numeric;
@@ -14778,7 +14778,6 @@ ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS rifampicinsusceptibility
 ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS streptomycinmic numeric;
 ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS streptomycinsusceptibility varchar(255);
 
-
 ALTER TABLE testreport ADD COLUMN IF NOT EXISTS ceftriaxonemic numeric;
 ALTER TABLE testreport ADD COLUMN IF NOT EXISTS ceftriaxoneSusceptibility varchar(255);
 ALTER TABLE testreport ADD COLUMN IF NOT EXISTS penicillinmic numeric;
@@ -14804,7 +14803,6 @@ ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS seroTypingMethod varchar
 ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS seroTypingMethodText varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (594, 'Additional fields for extenal message processing #13563, #13638');
-
 
 -- 2025-10-23 - RSV issue fixes and minor observations of Giardiasis and Cryptosporidiosis #13540 #13613
 ALTER TABLE exposures ADD COLUMN IF NOT EXISTS animallocationtext varchar(255);
