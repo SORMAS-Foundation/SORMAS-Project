@@ -14808,14 +14808,14 @@ INSERT INTO schema_version (version_number, comment) VALUES (594, 'Additional fi
 ALTER TABLE exposures ADD COLUMN IF NOT EXISTS animallocationtext varchar(255);
 ALTER TABLE epidata DROP CONSTRAINT IF EXISTS fk_epidata_country_id;
 ALTER TABLE epidata ADD CONSTRAINT fk_epidata_country_id FOREIGN KEY (country_id) REFERENCES country (id);
-UPDATE symptoms SET timeoffworkdays = NULL WHERE TRIM(timeoffworkdays) = '' OR timeoffworkdays !~ '^\s*(?:\d+(?:\.\d*)?|\.\d+)\s*$';
+UPDATE symptoms SET timeoffworkdays = NULL WHERE TRIM(timeoffworkdays) = '' OR timeoffworkdays !~ '^\s*(\d+(\.\d*)?|\.\d+)\s*$';
 ALTER TABLE symptoms ALTER COLUMN timeoffworkdays TYPE float4 USING timeoffworkdays::float4;
 ALTER TABLE healthconditions DROP COLUMN IF EXISTS immunodepression;
 
 ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS animallocationtext varchar(255);
 ALTER TABLE epidata_history DROP CONSTRAINT IF EXISTS fk_epi_country_id;
 ALTER TABLE epidata_history ADD CONSTRAINT fk_epi_country_id FOREIGN KEY (country_id) REFERENCES country (id);
-UPDATE symptoms_history SET timeoffworkdays = NULL WHERE TRIM(timeoffworkdays) = '' OR timeoffworkdays !~ '^\s*(?:\d+(?:\.\d*)?|\.\d+)\s*$';
+UPDATE symptoms_history SET timeoffworkdays = NULL WHERE TRIM(timeoffworkdays) = '' OR timeoffworkdays !~ '^\s*(\d+(\.\d*)?|\.\d+)\s*$';
 ALTER TABLE symptoms_history ALTER COLUMN timeoffworkdays TYPE float4 USING timeoffworkdays::float4;
 ALTER TABLE healthconditions_history DROP COLUMN IF EXISTS immunodepression;
 
