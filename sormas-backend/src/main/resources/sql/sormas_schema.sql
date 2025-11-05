@@ -14779,28 +14779,28 @@ ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS streptomycinmic numeric;
 ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS streptomycinsusceptibility varchar(255);
 
 ALTER TABLE testreport ADD COLUMN IF NOT EXISTS ceftriaxonemic numeric;
-ALTER TABLE testreport ADD COLUMN IF NOT EXISTS ceftriaxoneSusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS ceftriaxonesusceptibility varchar(255);
 ALTER TABLE testreport ADD COLUMN IF NOT EXISTS penicillinmic numeric;
-ALTER TABLE testreport ADD COLUMN IF NOT EXISTS penicillinSusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS penicillinsusceptibility varchar(255);
 ALTER TABLE testreport ADD COLUMN IF NOT EXISTS erythromycinmic numeric;
-ALTER TABLE testreport ADD COLUMN IF NOT EXISTS erythromycinSusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS erythromycinsusceptibility varchar(255);
 
 ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS ceftriaxonemic numeric;
-ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS ceftriaxoneSusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS ceftriaxonesusceptibility varchar(255);
 ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS penicillinmic numeric;
-ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS penicillinSusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS penicillinsusceptibility varchar(255);
 ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS erythromycinmic numeric;
-ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS erythromycinSusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS erythromycinsusceptibility varchar(255);
 
-ALTER TABLE testreport ADD COLUMN IF NOT EXISTS seroGroupSpecification varchar(255);
-ALTER TABLE testreport ADD COLUMN IF NOT EXISTS seroGroupSpecificationText varchar(255);
-ALTER TABLE testreport ADD COLUMN IF NOT EXISTS seroTypingMethod varchar(255);
-ALTER TABLE testreport ADD COLUMN IF NOT EXISTS seroTypingMethodText varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS serogroupspecification varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS serogroupspecificationtext varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS serotypingmethod varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS serotypingmethodtext varchar(255);
 
-ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS seroGroupSpecification varchar(255);
-ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS seroGroupSpecificationText varchar(255);
-ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS seroTypingMethod varchar(255);
-ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS seroTypingMethodText varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS serogroupspecification varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS serogroupspecificationtext varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS serotypingmethod varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS serotypingmethodtext varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (594, 'Additional fields for extenal message processing #13563, #13638');
 
