@@ -75,7 +75,7 @@ public enum Disease
 	INFLUENZA_B(false, true, true, false, false, 0, true, false, false),
 	H_METAPNEUMOVIRUS(true, false, true, false, false, 0, true, false, false),
 	RESPIRATORY_SYNCYTIAL_VIRUS(true, false, true, false, false, 0, true, false, false),
-	PARAINFLUENZA_1_4(true, false, true, false, false, 0, true, false, false),
+	PARAINFLUENZA_1_4(false, false, true, false, false, 0, true, false, false),
 	ADENOVIRUS(true, false, true, false, false, 0, true, false, false),
 	RHINOVIRUS(true, false, true, false, false, 0, true, false, false),
 	ENTEROVIRUS(true, false, true, false, false, 0, true, false, false),

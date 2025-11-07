@@ -247,8 +247,15 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		initializeAccessAndAllowedAccesses();
 
 		if (List.of(Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS).contains(caze.getDisease())) {
-			FieldHelper
-				.setRequiredWhenNotNull(getFieldGroup(), HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY, HospitalizationDto.HOSPITALIZATION_REASON);
+			// Make hospitalization reason required when admitted to health facility or currently hospitalized
+			admittedToHealthFacilityField.addValueChangeListener(e -> {
+				YesNoUnknown value = (YesNoUnknown) admittedToHealthFacilityField.getNullableValue();
+				hospitalizationReason.setRequired(value == YesNoUnknown.YES);
+			});
+			currentlyHospitalizedField.addValueChangeListener(e -> {
+				YesNoUnknown value = (YesNoUnknown) currentlyHospitalizedField.getNullableValue();
+				hospitalizationReason.setRequired(value == YesNoUnknown.YES);
+			});
 			durationOfHospitalization.setVisible(true);
 		}
 

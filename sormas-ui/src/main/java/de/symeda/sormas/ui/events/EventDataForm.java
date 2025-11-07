@@ -259,8 +259,8 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			EventDto.EVENT_INVESTIGATION_STATUS,
 			Arrays.asList(EventInvestigationStatus.ONGOING, EventInvestigationStatus.DONE, EventInvestigationStatus.DISCARDED),
 			true);
-		DateComparisonValidator.addStartEndValidators(investigationStartDate, investigationEndDate, false);
-		DateComparisonValidator.addStartEndValidators(startDate, investigationStartDate, false);
+		DateComparisonValidator.addStartEndValidators(investigationStartDate, investigationEndDate, true);
+		DateComparisonValidator.addStartEndValidators(startDate, investigationStartDate, true);
 		TextField title = addField(EventDto.EVENT_TITLE, TextField.class);
 		title.addStyleName(CssStyles.SOFT_REQUIRED);
 

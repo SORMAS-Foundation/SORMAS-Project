@@ -105,6 +105,7 @@ public class PathogenTestListEntry extends SideComponentField {
 
 			if (pathogenTest.getTestedDiseaseVariant() != null) {
 				Label labelBottomLeft = new Label(pathogenTest.getTestedDiseaseVariant().toString());
+				CssStyles.style(labelBottomLeft, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE, CssStyles.LABEL_CRITICAL);
 				bottomLabelLayout.addComponent(labelBottomLeft);
 			}
 

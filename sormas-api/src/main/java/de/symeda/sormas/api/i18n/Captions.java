@@ -2275,6 +2275,8 @@ public interface Captions {
 	String PathogenTest_prescriberPostalCode = "PathogenTest.prescriberPostalCode";
 	String PathogenTest_reportDate = "PathogenTest.reportDate";
 	String PathogenTest_rifampicinResistant = "PathogenTest.rifampicinResistant";
+	String PathogenTest_rsv_testedDiseaseVariant = "PathogenTest.rsv.testedDiseaseVariant";
+	String PathogenTest_rsv_testedDiseaseVariantDetails = "PathogenTest.rsv.testedDiseaseVariantDetails";
 	String PathogenTest_seroGroupSpecification = "PathogenTest.seroGroupSpecification";
 	String PathogenTest_seroGroupSpecificationText = "PathogenTest.seroGroupSpecificationText";
 	String PathogenTest_serotype = "PathogenTest.serotype";
