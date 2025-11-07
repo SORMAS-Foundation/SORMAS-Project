@@ -31,11 +31,13 @@ import de.symeda.sormas.api.externalmessage.processing.PersonAndPickOrCreateEntr
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.dataprocessing.EntitySelection;
 import de.symeda.sormas.api.utils.dataprocessing.HandlerCallback;
 import de.symeda.sormas.api.utils.dataprocessing.PickOrCreateEntryResult;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResult;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResultStatus;
 
+@Deprecated
 public abstract class AbstractPhysiciansReportProcessingFlow extends AbstractProcessingFlow {
 
 	public AbstractPhysiciansReportProcessingFlow(UserDto user, ExternalMessageMapper mapper, ExternalMessageProcessingFacade processingFacade) {
@@ -134,6 +136,11 @@ public abstract class AbstractPhysiciansReportProcessingFlow extends AbstractPro
 
 	@Override
 	protected void postBuildPerson(PersonDto personDto, ExternalMessageDto externalMessageDto) {
+		// No additional actions needed for physicians report
+	}
+
+	@Override
+	protected void doPersonUpdates(EntitySelection<PersonDto> personSelection) {
 		// No additional actions needed for physicians report
 	}
 }

@@ -46,9 +46,11 @@ import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.LabMessageProcessingHelper;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.SampleAndPathogenTests;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -57,6 +59,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.dataprocessing.EntitySelection;
 import de.symeda.sormas.api.utils.dataprocessing.HandlerCallback;
 import de.symeda.sormas.api.utils.dataprocessing.PickOrCreateEntryResult;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResult;
@@ -978,6 +981,49 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
         ExternalMessageDto externalMessage,
         ProcessingResult<ExternalMessageProcessingResult> result,
         SurveillanceReportDto surveillanceReport);
+
+
+    protected void doPersonUpdates(EntitySelection<PersonDto> personSelection) {
+        // requested for #13589
+        // TODO: we need to find a better way to handle this
+
+        if(personSelection.isNew()) {
+            // no updates for new persons
+            return;
+        }
+
+        final PersonDto person = personSelection.getEntity();
+        if(person == null) {
+            return;
+        }
+
+        final LocationDto personAddress = person.getAddress();
+
+        if(personAddress != null) {
+            final String houseNumber = getExternalMessage().getPersonHouseNumber();
+            if(houseNumber != null ) {
+                personAddress.setHouseNumber(houseNumber);
+            }
+            final String street = getExternalMessage().getPersonStreet();
+            if(street != null) {
+                personAddress.setStreet(street);
+            }
+            final String city = getExternalMessage().getPersonCity();
+            if(city != null) {
+                personAddress.setCity(city);
+            }
+            final String postalCode = getExternalMessage().getPersonPostalCode();
+            if(postalCode != null) {
+                personAddress.setPostalCode(postalCode);
+            }
+            final CountryReferenceDto country = getExternalMessage().getPersonCountry();
+            if(country != null) {
+                personAddress.setCountry(country);
+            }
+
+            getExternalMessageProcessingFacade().updatePerson(person);
+        }
+    }
 
     /**
      * Retrieves the external message associated with the processing flow.

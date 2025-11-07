@@ -41,6 +41,7 @@ import de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingU
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.processing.EntrySelectionField;
 
+@Deprecated
 public class PhysiciansReportProcessingFlow extends AbstractPhysiciansReportProcessingFlow {
 
 	public PhysiciansReportProcessingFlow(ExternalMessageMapper mapper, ExternalMessageProcessingFacade processingFacade) {

@@ -209,6 +209,7 @@ public class ExternalMessageController {
 		});
 	}
 
+	@Deprecated
 	public void processPhysiciansReport(String uuid) {
 		ExternalMessageDto physicianReport = FacadeProvider.getExternalMessageFacade().getByUuid(uuid);
 		ExternalMessageProcessingFacade processingFacade = getExternalMessageProcessingFacade();
