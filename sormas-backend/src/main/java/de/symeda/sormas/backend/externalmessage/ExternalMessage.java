@@ -893,5 +893,4 @@ public class ExternalMessage extends AbstractDomainObject {
 	public void setComplianceWithTreatment(ComplianceWithTreatment complianceWithTreatment) {
 		this.complianceWithTreatment = complianceWithTreatment;
 	}
-
 }

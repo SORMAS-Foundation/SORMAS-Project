@@ -14719,20 +14719,105 @@ ALTER TABLE person_history ADD COLUMN IF NOT EXISTS workplacetext varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (593, 'Integrated new diseases named Giardiasis and Cryptosporidiosis #13601 #13608');
 
+-- 2025-10-20 - Added additional fields for external message processing
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS amikacinmic numeric;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS amikacinsusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS bedaquilinemic numeric;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS bedaquilinesusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS capreomycinmic numeric;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS capreomycinsusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS ciprofloxacinmic numeric;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS ciprofloxacinsusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS delamanidmic numeric;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS delamanidsusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS ethambutolmic numeric;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS ethambutolsusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS gatifloxacinmic numeric;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS gatifloxacinsusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS isoniazidmic numeric;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS isoniazidsusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS kanamycinmic numeric;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS kanamycinsusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS levofloxacinmic numeric;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS levofloxacinsusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS moxifloxacinmic numeric;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS moxifloxacinsusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS ofloxacinmic numeric;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS ofloxacinsusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS rifampicinmic numeric;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS rifampicinsusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS streptomycinmic numeric;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS streptomycinsusceptibility varchar(255);
+
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS amikacinmic numeric;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS amikacinsusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS bedaquilinemic numeric;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS bedaquilinesusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS capreomycinmic numeric;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS capreomycinsusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS ciprofloxacinmic numeric;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS ciprofloxacinsusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS delamanidmic numeric;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS delamanidsusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS ethambutolmic numeric;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS ethambutolsusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS gatifloxacinmic numeric;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS gatifloxacinsusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS isoniazidmic numeric;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS isoniazidsusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS kanamycinmic numeric;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS kanamycinsusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS levofloxacinmic numeric;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS levofloxacinsusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS moxifloxacinmic numeric;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS moxifloxacinsusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS ofloxacinmic numeric;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS ofloxacinsusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS rifampicinmic numeric;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS rifampicinsusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS streptomycinmic numeric;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS streptomycinsusceptibility varchar(255);
+
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS ceftriaxonemic numeric;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS ceftriaxonesusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS penicillinmic numeric;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS penicillinsusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS erythromycinmic numeric;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS erythromycinsusceptibility varchar(255);
+
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS ceftriaxonemic numeric;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS ceftriaxonesusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS penicillinmic numeric;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS penicillinsusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS erythromycinmic numeric;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS erythromycinsusceptibility varchar(255);
+
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS serogroupspecification varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS serogroupspecificationtext varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS serotypingmethod varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS serotypingmethodtext varchar(255);
+
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS serogroupspecification varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS serogroupspecificationtext varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS serotypingmethod varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS serotypingmethodtext varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (594, 'Additional fields for extenal message processing #13563, #13638');
+
 -- 2025-10-23 - RSV issue fixes and minor observations of Giardiasis and Cryptosporidiosis #13540 #13613
 ALTER TABLE exposures ADD COLUMN IF NOT EXISTS animallocationtext varchar(255);
 ALTER TABLE epidata DROP CONSTRAINT IF EXISTS fk_epidata_country_id;
 ALTER TABLE epidata ADD CONSTRAINT fk_epidata_country_id FOREIGN KEY (country_id) REFERENCES country (id);
-UPDATE symptoms SET timeoffworkdays = NULL WHERE TRIM(timeoffworkdays) = '' OR timeoffworkdays !~ '^\s*(?:\d+(?:\.\d*)?|\.\d+)\s*$';
+UPDATE symptoms SET timeoffworkdays = NULL WHERE TRIM(timeoffworkdays) = '' OR timeoffworkdays !~ '^\s*(\d+(\.\d*)?|\.\d+)\s*$';
 ALTER TABLE symptoms ALTER COLUMN timeoffworkdays TYPE float4 USING timeoffworkdays::float4;
 ALTER TABLE healthconditions DROP COLUMN IF EXISTS immunodepression;
 
 ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS animallocationtext varchar(255);
 ALTER TABLE epidata_history DROP CONSTRAINT IF EXISTS fk_epi_country_id;
 ALTER TABLE epidata_history ADD CONSTRAINT fk_epi_country_id FOREIGN KEY (country_id) REFERENCES country (id);
-UPDATE symptoms_history SET timeoffworkdays = NULL WHERE TRIM(timeoffworkdays) = '' OR timeoffworkdays !~ '^\s*(?:\d+(?:\.\d*)?|\.\d+)\s*$';
+UPDATE symptoms_history SET timeoffworkdays = NULL WHERE TRIM(timeoffworkdays) = '' OR timeoffworkdays !~ '^\s*(\d+(\.\d*)?|\.\d+)\s*$';
 ALTER TABLE symptoms_history ALTER COLUMN timeoffworkdays TYPE float4 USING timeoffworkdays::float4;
 ALTER TABLE healthconditions_history DROP COLUMN IF EXISTS immunodepression;
 
-INSERT INTO schema_version (version_number, comment) VALUES (594, 'RSV issue fixes and minor observations of Giardiasis and Cryptosporidiosis #13540 #13613');
+INSERT INTO schema_version (version_number, comment) VALUES (595, 'RSV issue fixes and minor observations of Giardiasis and Cryptosporidiosis #13540 #13613');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

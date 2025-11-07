@@ -218,6 +218,7 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private VaccinationStatus vaccinationStatus;
 
 	private YesNoUnknown admittedToHealthFacility;
+
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String hospitalizationFacilityName;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)

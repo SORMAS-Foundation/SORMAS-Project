@@ -17,6 +17,9 @@ import de.symeda.sormas.api.sample.PathogenSpecie;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.RsvSubtype;
+import de.symeda.sormas.api.sample.SeroGroupSpecification;
+import de.symeda.sormas.api.sample.SerotypingMethod;
+import de.symeda.sormas.api.therapy.DrugSusceptibilityType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
@@ -164,6 +167,47 @@ public class TestReportDto extends EntityDto {
 	private GenoTypeResult genoTypeResult;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	private RsvSubtype rsvSubtype;
+
+	// Drug susceptibility fields
+	private Float amikacinMic;
+	private DrugSusceptibilityType amikacinSusceptibility;
+	private Float bedaquilineMic;
+	private DrugSusceptibilityType bedaquilineSusceptibility;
+	private Float capreomycinMic;
+	private DrugSusceptibilityType capreomycinSusceptibility;
+	private Float ciprofloxacinMic;
+	private DrugSusceptibilityType ciprofloxacinSusceptibility;
+	private Float delamanidMic;
+	private DrugSusceptibilityType delamanidSusceptibility;
+	private Float ethambutolMic;
+	private DrugSusceptibilityType ethambutolSusceptibility;
+	private Float gatifloxacinMic;
+	private DrugSusceptibilityType gatifloxacinSusceptibility;
+	private Float isoniazidMic;
+	private DrugSusceptibilityType isoniazidSusceptibility;
+	private Float kanamycinMic;
+	private DrugSusceptibilityType kanamycinSusceptibility;
+	private Float levofloxacinMic;
+	private DrugSusceptibilityType levofloxacinSusceptibility;
+	private Float moxifloxacinMic;
+	private DrugSusceptibilityType moxifloxacinSusceptibility;
+	private Float ofloxacinMic;
+	private DrugSusceptibilityType ofloxacinSusceptibility;
+	private Float rifampicinMic;
+	private DrugSusceptibilityType rifampicinSusceptibility;
+	private Float streptomycinMic;
+	private DrugSusceptibilityType streptomycinSusceptibility;
+	private Float ceftriaxoneMic;
+	private DrugSusceptibilityType ceftriaxoneSusceptibility;
+	private Float penicillinMic;
+	private DrugSusceptibilityType penicillinSusceptibility;
+	private Float erythromycinMic;
+	private DrugSusceptibilityType erythromycinSusceptibility;
+
+	private SeroGroupSpecification seroGroupSpecification;
+	private String seroGroupSpecificationText;
+	private SerotypingMethod seroTypingMethod;
+	private String seroTypingMethodText;
 
 	public SampleReportReferenceDto getSampleReport() {
 		return sampleReport;
@@ -529,5 +573,310 @@ public class TestReportDto extends EntityDto {
 
 	public void setRsvSubtype(RsvSubtype rsvSubtype) {
 		this.rsvSubtype = rsvSubtype;
+	}
+
+	// Drug susceptibility getters and setters
+	public Float getAmikacinMic() {
+		return amikacinMic;
+	}
+
+	public void setAmikacinMic(Float amikacinMic) {
+		this.amikacinMic = amikacinMic;
+	}
+
+	public DrugSusceptibilityType getAmikacinSusceptibility() {
+		return amikacinSusceptibility;
+	}
+
+	public void setAmikacinSusceptibility(DrugSusceptibilityType amikacinSusceptibility) {
+		this.amikacinSusceptibility = amikacinSusceptibility;
+	}
+
+	public Float getBedaquilineMic() {
+		return bedaquilineMic;
+	}
+
+	public void setBedaquilineMic(Float bedaquilineMic) {
+		this.bedaquilineMic = bedaquilineMic;
+	}
+
+	public DrugSusceptibilityType getBedaquilineSusceptibility() {
+		return bedaquilineSusceptibility;
+	}
+
+	public void setBedaquilineSusceptibility(DrugSusceptibilityType bedaquilineSusceptibility) {
+		this.bedaquilineSusceptibility = bedaquilineSusceptibility;
+	}
+
+	public Float getCapreomycinMic() {
+		return capreomycinMic;
+	}
+
+	public void setCapreomycinMic(Float capreomycinMic) {
+		this.capreomycinMic = capreomycinMic;
+	}
+
+	public DrugSusceptibilityType getCapreomycinSusceptibility() {
+		return capreomycinSusceptibility;
+	}
+
+	public void setCapreomycinSusceptibility(DrugSusceptibilityType capreomycinSusceptibility) {
+		this.capreomycinSusceptibility = capreomycinSusceptibility;
+	}
+
+	public Float getCiprofloxacinMic() {
+		return ciprofloxacinMic;
+	}
+
+	public void setCiprofloxacinMic(Float ciprofloxacinMic) {
+		this.ciprofloxacinMic = ciprofloxacinMic;
+	}
+
+	public DrugSusceptibilityType getCiprofloxacinSusceptibility() {
+		return ciprofloxacinSusceptibility;
+	}
+
+	public void setCiprofloxacinSusceptibility(DrugSusceptibilityType ciprofloxacinSusceptibility) {
+		this.ciprofloxacinSusceptibility = ciprofloxacinSusceptibility;
+	}
+
+	public Float getDelamanidMic() {
+		return delamanidMic;
+	}
+
+	public void setDelamanidMic(Float delamanidMic) {
+		this.delamanidMic = delamanidMic;
+	}
+
+	public DrugSusceptibilityType getDelamanidSusceptibility() {
+		return delamanidSusceptibility;
+	}
+
+	public void setDelamanidSusceptibility(DrugSusceptibilityType delamanidSusceptibility) {
+		this.delamanidSusceptibility = delamanidSusceptibility;
+	}
+
+	public Float getEthambutolMic() {
+		return ethambutolMic;
+	}
+
+	public void setEthambutolMic(Float ethambutolMic) {
+		this.ethambutolMic = ethambutolMic;
+	}
+
+	public DrugSusceptibilityType getEthambutolSusceptibility() {
+		return ethambutolSusceptibility;
+	}
+
+	public void setEthambutolSusceptibility(DrugSusceptibilityType ethambutolSusceptibility) {
+		this.ethambutolSusceptibility = ethambutolSusceptibility;
+	}
+
+	public Float getGatifloxacinMic() {
+		return gatifloxacinMic;
+	}
+
+	public void setGatifloxacinMic(Float gatifloxacinMic) {
+		this.gatifloxacinMic = gatifloxacinMic;
+	}
+
+	public DrugSusceptibilityType getGatifloxacinSusceptibility() {
+		return gatifloxacinSusceptibility;
+	}
+
+	public void setGatifloxacinSusceptibility(DrugSusceptibilityType gatifloxacinSusceptibility) {
+		this.gatifloxacinSusceptibility = gatifloxacinSusceptibility;
+	}
+
+	public Float getIsoniazidMic() {
+		return isoniazidMic;
+	}
+
+	public void setIsoniazidMic(Float isoniazidMic) {
+		this.isoniazidMic = isoniazidMic;
+	}
+
+	public DrugSusceptibilityType getIsoniazidSusceptibility() {
+		return isoniazidSusceptibility;
+	}
+
+	public void setIsoniazidSusceptibility(DrugSusceptibilityType isoniazidSusceptibility) {
+		this.isoniazidSusceptibility = isoniazidSusceptibility;
+	}
+
+	public Float getKanamycinMic() {
+		return kanamycinMic;
+	}
+
+	public void setKanamycinMic(Float kanamycinMic) {
+		this.kanamycinMic = kanamycinMic;
+	}
+
+	public DrugSusceptibilityType getKanamycinSusceptibility() {
+		return kanamycinSusceptibility;
+	}
+
+	public void setKanamycinSusceptibility(DrugSusceptibilityType kanamycinSusceptibility) {
+		this.kanamycinSusceptibility = kanamycinSusceptibility;
+	}
+
+	public Float getLevofloxacinMic() {
+		return levofloxacinMic;
+	}
+
+	public void setLevofloxacinMic(Float levofloxacinMic) {
+		this.levofloxacinMic = levofloxacinMic;
+	}
+
+	public DrugSusceptibilityType getLevofloxacinSusceptibility() {
+		return levofloxacinSusceptibility;
+	}
+
+	public void setLevofloxacinSusceptibility(DrugSusceptibilityType levofloxacinSusceptibility) {
+		this.levofloxacinSusceptibility = levofloxacinSusceptibility;
+	}
+
+	public Float getMoxifloxacinMic() {
+		return moxifloxacinMic;
+	}
+
+	public void setMoxifloxacinMic(Float moxifloxacinMic) {
+		this.moxifloxacinMic = moxifloxacinMic;
+	}
+
+	public DrugSusceptibilityType getMoxifloxacinSusceptibility() {
+		return moxifloxacinSusceptibility;
+	}
+
+	public void setMoxifloxacinSusceptibility(DrugSusceptibilityType moxifloxacinSusceptibility) {
+		this.moxifloxacinSusceptibility = moxifloxacinSusceptibility;
+	}
+
+	public Float getOfloxacinMic() {
+		return ofloxacinMic;
+	}
+
+	public void setOfloxacinMic(Float ofloxacinMic) {
+		this.ofloxacinMic = ofloxacinMic;
+	}
+
+	public DrugSusceptibilityType getOfloxacinSusceptibility() {
+		return ofloxacinSusceptibility;
+	}
+
+	public void setOfloxacinSusceptibility(DrugSusceptibilityType ofloxacinSusceptibility) {
+		this.ofloxacinSusceptibility = ofloxacinSusceptibility;
+	}
+
+	public Float getRifampicinMic() {
+		return rifampicinMic;
+	}
+
+	public void setRifampicinMic(Float rifampicinMic) {
+		this.rifampicinMic = rifampicinMic;
+	}
+
+	public DrugSusceptibilityType getRifampicinSusceptibility() {
+		return rifampicinSusceptibility;
+	}
+
+	public void setRifampicinSusceptibility(DrugSusceptibilityType rifampicinSusceptibility) {
+		this.rifampicinSusceptibility = rifampicinSusceptibility;
+	}
+
+	public Float getStreptomycinMic() {
+		return streptomycinMic;
+	}
+
+	public void setStreptomycinMic(Float streptomycinMic) {
+		this.streptomycinMic = streptomycinMic;
+	}
+
+	public DrugSusceptibilityType getStreptomycinSusceptibility() {
+		return streptomycinSusceptibility;
+	}
+
+	public void setStreptomycinSusceptibility(DrugSusceptibilityType streptomycinSusceptibility) {
+		this.streptomycinSusceptibility = streptomycinSusceptibility;
+	}
+
+	public Float getCeftriaxoneMic() {
+		return ceftriaxoneMic;
+	}
+
+	public void setCeftriaxoneMic(Float ceftriaxoneMic) {
+		this.ceftriaxoneMic = ceftriaxoneMic;
+	}
+
+	public DrugSusceptibilityType getCeftriaxoneSusceptibility() {
+		return ceftriaxoneSusceptibility;
+	}
+
+	public void setCeftriaxoneSusceptibility(DrugSusceptibilityType ceftriaxoneSusceptibility) {
+		this.ceftriaxoneSusceptibility = ceftriaxoneSusceptibility;
+	}
+
+	public Float getPenicillinMic() {
+		return penicillinMic;
+	}
+
+	public void setPenicillinMic(Float penicillinMic) {
+		this.penicillinMic = penicillinMic;
+	}
+
+	public DrugSusceptibilityType getPenicillinSusceptibility() {
+		return penicillinSusceptibility;
+	}
+
+	public void setPenicillinSusceptibility(DrugSusceptibilityType penicillinSusceptibility) {
+		this.penicillinSusceptibility = penicillinSusceptibility;
+	}
+
+	public Float getErythromycinMic() {
+		return erythromycinMic;
+	}
+
+	public void setErythromycinMic(Float erythromycinMic) {
+		this.erythromycinMic = erythromycinMic;
+	}
+
+	public DrugSusceptibilityType getErythromycinSusceptibility() {
+		return erythromycinSusceptibility;
+	}
+
+	public void setErythromycinSusceptibility(DrugSusceptibilityType erythromycinSusceptibility) {
+		this.erythromycinSusceptibility = erythromycinSusceptibility;
+	}
+
+	public SeroGroupSpecification getSeroGroupSpecification() {
+		return seroGroupSpecification;
+	}
+
+	public void setSeroGroupSpecification(SeroGroupSpecification seroGroupSpecification) {
+		this.seroGroupSpecification = seroGroupSpecification;
+	}
+
+	public String getSeroGroupSpecificationText() {
+		return seroGroupSpecificationText;
+	}
+
+	public void setSeroGroupSpecificationText(String seroGroupSpecificationText) {
+		this.seroGroupSpecificationText = seroGroupSpecificationText;
+	}
+
+	public SerotypingMethod getSeroTypingMethod() {
+		return seroTypingMethod;
+	}
+
+	public void setSeroTypingMethod(SerotypingMethod seroTypingMethod) {
+		this.seroTypingMethod = seroTypingMethod;
+	}
+
+	public String getSeroTypingMethodText() {
+		return seroTypingMethodText;
+	}
+
+	public void setSeroTypingMethodText(String seroTypingMethodText) {
+		this.seroTypingMethodText = seroTypingMethodText;
 	}
 }
