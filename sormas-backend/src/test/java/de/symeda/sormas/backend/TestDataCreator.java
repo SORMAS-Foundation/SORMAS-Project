@@ -147,6 +147,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.PasswordHelper;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
@@ -2554,5 +2555,24 @@ public class TestDataCreator {
 			this.district = district;
 			this.pointOfEntry = pointOfEntry;
 		}
+	}
+
+	public User createTestUser() {
+
+		User user = new User();
+		user.setUserName("testuser");
+		user.setFirstName("Test");
+		user.setLastName("User");
+		user.setUuid(DataHelper.createUuid());
+		String password = "password";
+		String seed = "seed";
+		String encodedPassword = PasswordHelper.encodePassword(password, seed);
+		user.setPassword(encodedPassword);
+		user.setSeed(seed);
+		user.setActive(true);
+		user.setUserRoles(new HashSet<>(Arrays.asList(getUserRole(DefaultUserRole.ADMIN), getUserRole(DefaultUserRole.NATIONAL_USER))));
+
+		beanTest.getUserService().persist(user);
+		return user;
 	}
 }

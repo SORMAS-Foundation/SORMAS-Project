@@ -13,35 +13,43 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.app.rest;
+package de.symeda.sormas.app.login;
 
-import java.util.List;
+import androidx.databinding.BaseObservable;
 
-import de.symeda.sormas.api.user.UserDto;
-import retrofit2.Call;
-import retrofit2.http.Body;
-import retrofit2.http.GET;
-import retrofit2.http.POST;
-import retrofit2.http.Path;
-import de.symeda.sormas.api.user.UserPasswordChangeDto;
+public class ChangePasswordViewModel extends BaseObservable {
 
-/**
- * Created by Martin Wahnschaffe on 07.06.2016.
- */
-public interface UserFacadeRetro {
+	private String currentPassword;
+	private String newPassword;
+	private String confirmPassword;
 
-	@GET("users/all/{since}")
-	Call<List<UserDto>> pullAllSince(@Path("since") long since);
+	public String getCurrentPassword() {
 
-	@POST("users/query")
-	Call<List<UserDto>> pullByUuids(@Body List<String> uuids);
+		return currentPassword;
+	}
 
-	@GET("users/uuids")
-	Call<List<String>> pullUuids();
+	public void setCurrentPassword(String currentPassword) {
 
-	@POST("users/saveNewPassword")
-	Call<String> saveNewPassword(@Body UserPasswordChangeDto userPasswordChangeDto);
+		this.currentPassword = currentPassword;
+	}
 
-	@GET("users/generatePassword")
-	Call<String> generatePassword();
+	public String getNewPassword() {
+
+		return newPassword;
+	}
+
+	public void setNewPassword(String newPassword) {
+
+		this.newPassword = newPassword;
+	}
+
+	public String getConfirmPassword() {
+
+		return confirmPassword;
+	}
+
+	public void setConfirmPassword(String confirmPassword) {
+
+		this.confirmPassword = confirmPassword;
+	}
 }

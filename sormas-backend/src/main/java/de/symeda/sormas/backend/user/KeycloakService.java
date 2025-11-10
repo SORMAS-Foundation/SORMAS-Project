@@ -61,6 +61,7 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.user.event.PasswordChangeEvent;
 import de.symeda.sormas.backend.user.event.PasswordResetEvent;
 import de.symeda.sormas.backend.user.event.SyncUsersFromProviderEvent;
 import de.symeda.sormas.backend.user.event.UserCreateEvent;
@@ -231,6 +232,78 @@ public class KeycloakService {
 				keycloak.get().realm(REALM_NAME).users().get(existing.getId()).update(existing);
 			});
 		}
+	}
+
+	public boolean validateCurrentPassword(String username, String password) {
+
+		Optional<String> oidcJson = ConfigProvider.getConfig().getOptionalValue("sormas.backend.security.oidc.json", String.class);
+
+		if (oidcJson.isEmpty()) {
+			logger.warn(
+				"Undefined KEYCLOAK configuration for sormas.backend.security.oidc.json. Configure the property or disable the KEYCLOAK authentication provider.");
+			return false;
+		}
+
+		String keycloakJsonConfig = oidcJson.get();
+		String secret = JsonPath.read(keycloakJsonConfig, OIDC_SECRET);
+		String realm = JsonPath.read(keycloakJsonConfig, OIDC_REALM);
+		String clientId = "sormas-backend";
+		String serverUrl = JsonPath.read(keycloakJsonConfig, OIDC_SERVER_URL);
+
+		try {
+
+			Keycloak keycloak = KeycloakBuilder.builder()
+				.serverUrl(serverUrl)
+				.realm(realm)
+				.clientId(clientId)
+				.clientSecret(secret)
+				.username(username)
+				.password(password)
+				.grantType("password")
+				.build();
+
+			try {
+				keycloak.tokenManager().getAccessToken();
+				logger.info("Token retrieved Successfully");
+				keycloak.tokenManager().logout();
+				return true;
+			} catch (Exception e) {
+				logger.error(
+					"Token retrieval failed...Kindly Check if you have turned on Direct access grant"
+						+ " on 'sormas-backend' client  on the Keycloak console",
+					e);
+				throw e;
+			}
+		} catch (Exception e) {
+			logger.error("Authentication attempt failed", e);
+		}
+		return false;
+	}
+
+	public void handlePasswordChangeEvent(@Observes PasswordChangeEvent passwordChangeEvent) {
+		Optional<String> oidcJson = ConfigProvider.getConfig().getOptionalValue("sormas.backend.security.oidc.json", String.class);
+
+		if (oidcJson.isEmpty()) {
+			logger.warn(
+				"Undefined KEYCLOAK configuration for sormas.backend.security.oidc.json. Configure the property or disable the KEYCLOAK authentication provider.");
+			return;
+		}
+		User user = passwordChangeEvent.getUser();
+		String password = user.getPassword();
+		String username = user.getUserName();
+
+		Optional<Keycloak> keycloak = Optional.of(keycloakInstance);
+		Optional<UserRepresentation> userRepresentation = getUserByUsername(keycloak.get(), username);
+		if (userRepresentation.isEmpty()) {
+			logger.warn("Cannot find user or email for user with username {} to reset the password", user.getUserName());
+			return;
+		}
+
+		Optional<Keycloak> adminClient = getKeycloakInstance();
+		adminClient.ifPresent(value -> userRepresentation.ifPresent(existing -> {
+			setCredentialsForChangePassword(existing, password, user.getSeed());
+			value.realm(REALM_NAME).users().get(existing.getId()).update(existing);
+		}));
 	}
 
 	public void handleSyncUsersFromProviderEvent(@Observes SyncUsersFromProviderEvent syncUsersFromProviderEvent) {
@@ -460,6 +533,25 @@ public class KeycloakService {
 		credential.setType(CredentialRepresentation.PASSWORD);
 		// force user to reset password to avoid the usage of SHA for password hashing for any long than necessary
 		credential.setTemporary(true);
+		credential.setSecretData(secretData.build().toString());
+		credential.setCredentialData(credentialData.build().toString());
+		userRepresentation.setCredentials(singletonList(credential));
+	}
+
+	private void setCredentialsForChangePassword(UserRepresentation userRepresentation, String password, String salt) {
+
+		JsonObjectBuilder secretData = Json.createObjectBuilder();
+		secretData.add("value", password);
+		secretData.add("salt", Base64.getEncoder().encodeToString(salt.getBytes()));
+
+		JsonObjectBuilder credentialData = Json.createObjectBuilder();
+		credentialData.add("hashIterations", 1);
+		credentialData.add("algorithm", "sormas-sha256");
+
+		CredentialRepresentation credential = new CredentialRepresentation();
+		credential.setType(CredentialRepresentation.PASSWORD);
+		// let user use the password he set
+		credential.setTemporary(false);
 		credential.setSecretData(secretData.build().toString());
 		credential.setCredentialData(credentialData.build().toString());
 		userRepresentation.setCredentials(singletonList(credential));

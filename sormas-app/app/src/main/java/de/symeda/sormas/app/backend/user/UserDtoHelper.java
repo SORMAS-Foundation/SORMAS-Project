@@ -31,6 +31,7 @@ import de.symeda.sormas.app.backend.location.LocationDtoHelper;
 import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
+import de.symeda.sormas.api.user.UserPasswordChangeDto;
 
 /**
  * Created by Martin Wahnschaffe on 27.07.2016.
@@ -132,6 +133,17 @@ public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
 		UserReferenceDto dto = new UserReferenceDto(ado.getUuid());
 		return dto;
 	}
+
+	public static Call<String> saveNewPassword(String uuid, String newPassword) throws NoConnectionException {
+
+		return RetroProvider.getUserFacade().saveNewPassword(new UserPasswordChangeDto(uuid, newPassword));
+	}
+
+	public static Call<String> generatePassword() throws NoConnectionException {
+
+		return RetroProvider.getUserFacade().generatePassword();
+	}
+
 	public static boolean isRestrictedToAssignEntities(User user) {
 		if (user != null && !user.getUserRoles().isEmpty()) {
 			return user.getUserRoles().stream().allMatch(UserRole::isRestrictAccessToAssignedEntities);

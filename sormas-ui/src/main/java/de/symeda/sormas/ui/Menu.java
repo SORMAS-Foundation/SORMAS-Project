@@ -53,6 +53,8 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import static de.symeda.sormas.ui.UiUtil.permitted;
+import de.symeda.sormas.api.feature.FeatureType;
 
 /**
  * Responsive navigation menu presenting a list of available views to the user.
@@ -144,6 +146,11 @@ public class Menu extends CssLayout {
 
 		CommitDiscardWrapperComponent<UserSettingsForm> component =
 			ControllerProvider.getUserController().getUserSettingsComponent(() -> window.close());
+
+		if (permitted(FeatureType.SELF_PASSWORD_RESET)) {
+			Button resetPasswordButton = ControllerProvider.getUserController().createUpdatePasswordButton();
+			component.getButtonsPanel().addComponent(resetPasswordButton, 0);
+		}
 
 		window.setContent(component);
 		UI.getCurrent().addWindow(window);

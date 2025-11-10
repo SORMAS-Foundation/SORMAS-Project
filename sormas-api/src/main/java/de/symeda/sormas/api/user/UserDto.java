@@ -69,8 +69,16 @@ public class UserDto extends EntityDto {
 	public static final String HAS_CONSENTED_TO_GDPR = "hasConsentedToGdpr";
 	public static final String EXTERNAL_ID = "externalId";
 	public static final String JURISDICTION_LEVEL = "jurisdictionLevel";
+	public static final String PASSWORD = "currentPassword";
+	public static final String NEW_PASSWORD = "newPassword";
+	public static final String CONFIRM_PASSWORD = "confirmPassword";
 
 	private boolean active = true;
+
+	private String currentPassword;
+	private String newPassword;
+	private String confirmPassword;
+	private String passwordStrength;
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	@AuditIncludeProperty
@@ -296,4 +304,37 @@ public class UserDto extends EntityDto {
 	public void setJurisdictionLevel(JurisdictionLevel jurisdictionLevel) {
 		this.jurisdictionLevel = jurisdictionLevel;
 	}
+
+	public void setCurrentPassword(String currentPassword) {
+		this.currentPassword = currentPassword;
+	}
+
+	public String getCurrentPassword() {
+		return currentPassword;
+	}
+
+	public void setNewPassword(String newPassword) {
+		this.newPassword = newPassword;
+	}
+
+	public String getNewPassword() {
+		return newPassword;
+	}
+
+	public void setConfirmPassword(String confirmPassword) {
+		this.confirmPassword = confirmPassword;
+	}
+
+	public String getConfirmPassword() {
+		return confirmPassword;
+	}
+
+	public void setPasswordStrength(String passwordStrength) {
+		this.passwordStrength = passwordStrength;
+	}
+
+	public String getPasswordStrength() {
+		return passwordStrength;
+	}
+
 }

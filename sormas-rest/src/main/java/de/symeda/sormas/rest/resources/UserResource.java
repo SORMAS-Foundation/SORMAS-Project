@@ -36,6 +36,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceWithTaskNumbersDto;
 import de.symeda.sormas.api.user.UserRight;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import de.symeda.sormas.api.user.UserPasswordChangeDto;
 
 /**
  * @see <a href="https://jersey.java.net/documentation/latest/">Jersey documentation</a>
@@ -96,5 +97,19 @@ public class UserResource {
 	@Path("/rights/{uuid}")
 	public List<UserRight> getUserRights(@PathParam("uuid") String uuid) {
 		return FacadeProvider.getUserFacade().getUserRights(uuid);
+	}
+
+	@POST
+	@Path("/saveNewPassword")
+	public String saveNewPassword(UserPasswordChangeDto userPasswordChangeDto) {
+
+		return FacadeProvider.getUserFacade().updateUserPassword(userPasswordChangeDto.getUuid(), userPasswordChangeDto.getNewPassword());
+	}
+
+	@GET
+	@Path("/generatePassword")
+	public String generatePassword() {
+
+		return FacadeProvider.getUserFacade().generatePassword();
 	}
 }
