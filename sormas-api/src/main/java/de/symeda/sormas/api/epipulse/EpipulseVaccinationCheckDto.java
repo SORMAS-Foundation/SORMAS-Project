@@ -15,28 +15,26 @@
 
 package de.symeda.sormas.api.epipulse;
 
-import java.util.List;
+import java.util.Date;
 
-import javax.ejb.Remote;
+public class EpipulseVaccinationCheckDto {
 
-import de.symeda.sormas.api.DeletableFacade;
-import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.utils.SortProperty;
+	private Date vaccinationDate;
+	private Integer vaccineDose;
 
-@Remote
-public interface EpipulseExportFacade extends DeletableFacade {
+	public Date getVaccinationDate() {
+		return vaccinationDate;
+	}
 
-	EpipulseExportDto saveEpipulseExport(EpipulseExportDto dto);
+	public void setVaccinationDate(Date vaccinationDate) {
+		this.vaccinationDate = vaccinationDate;
+	}
 
-	Page<EpipulseExportIndexDto> getIndexPage(EpipulseExportCriteria criteria, Integer offset, Integer size, List<SortProperty> sortProperties);
+	public Integer getVaccineDose() {
+		return vaccineDose;
+	}
 
-	EpipulseExportDto getEpiPulseExportByUuid(String uuid);
-
-	long count(EpipulseExportCriteria criteria);
-
-	List<EpipulseExportIndexDto> getIndexList(EpipulseExportCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
-
-	void cancelEpipulseExport(String uuid);
-
-	void deleteEpipulseExport(String uuid);
+	public void setVaccineDose(Integer vaccineDose) {
+		this.vaccineDose = vaccineDose;
+	}
 }

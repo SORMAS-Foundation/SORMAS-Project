@@ -15,15 +15,14 @@
 
 package de.symeda.sormas.backend.epipulse;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
 import org.hibernate.transform.ResultTransformer;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.epipulse.EpipulseExportIndexDto;
 import de.symeda.sormas.api.epipulse.EpipulseExportStatus;
+import de.symeda.sormas.api.epipulse.EpipulseSubjectCode;
 
 public class EpipulseExportIndexDtoResultTransformer implements ResultTransformer {
 
@@ -37,14 +36,14 @@ public class EpipulseExportIndexDtoResultTransformer implements ResultTransforme
 		//@formatter:off
         return new EpipulseExportIndexDto(
                 (String) objects[++index],
-                (Disease) objects[++index],
+                (EpipulseSubjectCode) objects[++index],
                 (Date) objects[++index],
                 (Date) objects[++index],
                 (EpipulseExportStatus) objects[++index],
                 (Date) objects[++index],
                 (Long) objects[++index],
                 (String) objects[++index],
-                (BigDecimal) objects[++index],
+                (Long) objects[++index],
                 (Date) objects[++index],
                 (String) objects[++index],
                 (String) objects[++index],

@@ -18,7 +18,6 @@ package de.symeda.sormas.api.epipulse;
 import java.io.Serializable;
 import java.util.Date;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
@@ -28,28 +27,28 @@ public class EpipulseExportCriteria extends BaseCriteria implements Serializable
 
 	public static final String I18N_PREFIX = "EpipulseExport";
 
-	public static final String DISEASE = "disease";
+	public static final String SUBJECT_CODE = "subjectCode";
 	public static final String REPORT_DATE_FROM = "reportDateFrom";
 	public static final String REPORT_DATE_TO = "reportDateTo";
 	public static final String STATUS = "status";
 	public static final String RELEVANCE_STATUS = "relevanceStatus";
 
-	private Disease disease;
+	private EpipulseSubjectCode subjectCode;
 	private Date reportDateFrom;
 	private Date reportDateTo;
 	private EpipulseExportStatus status;
 	private EntityRelevanceStatus relevanceStatus;
 
-	public Disease getDisease() {
-		return disease;
+	public EpipulseSubjectCode getSubjectCode() {
+		return subjectCode;
 	}
 
-	public void setDisease(Disease disease) {
-		this.disease = disease;
+	public void setSubjectCode(EpipulseSubjectCode subjectCode) {
+		this.subjectCode = subjectCode;
 	}
 
 	public EpipulseExportCriteria disease() {
-		setDisease(disease);
+		setSubjectCode(subjectCode);
 		return this;
 	}
 

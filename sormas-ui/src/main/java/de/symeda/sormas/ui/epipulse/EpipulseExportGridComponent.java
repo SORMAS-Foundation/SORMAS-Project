@@ -173,4 +173,8 @@ public class EpipulseExportGridComponent extends VerticalLayout {
 	public EpipulseExportCriteria getCriteria() {
 		return criteria;
 	}
+
+	public EpipulseExportGridFilterForm getFilterForm() {
+		return filterForm;
+	}
 }
