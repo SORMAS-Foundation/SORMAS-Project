@@ -42,6 +42,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.DirtyCheckPopup;
 import de.symeda.sormas.ui.utils.ViewMode;
 
+@Deprecated
 public class PhysiciansReportCaseEditComponent extends CommitDiscardWrapperComponent<VerticalLayout> {
 
 	private static final long serialVersionUID = 1452145334216485391L;

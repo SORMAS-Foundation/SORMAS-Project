@@ -246,4 +246,15 @@ public abstract class ExternalMessageProcessingFacade extends AbstractProcessing
 		caseDto.setNotifier(notifierReferenceDto);
 		return caseFacade.save(caseDto);
 	}
+
+	public void updatePerson(PersonDto personDto) {
+		if(personFacade == null) {
+			return;
+		}
+		if(personDto == null) {
+			return;
+		}
+
+		personFacade.save(personDto);
+	}
 }
