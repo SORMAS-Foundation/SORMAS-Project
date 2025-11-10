@@ -447,6 +447,8 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 
 		PersonDto person = PersonDto.build();
 		person.setFirstName("Ftest");
+		person.setLastName("Ftest");
+		person.setSex(Sex.UNKNOWN);
 
 		doAnswer(answerPickOrCreatePerson(person)).when(handlePickOrCreatePerson).apply(any(), any());
 		PickOrCreateEntryResult pickOrCreateEntryResult = new PickOrCreateEntryResult();
