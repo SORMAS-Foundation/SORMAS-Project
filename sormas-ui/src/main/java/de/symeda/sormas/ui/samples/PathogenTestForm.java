@@ -23,6 +23,8 @@ import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_4;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -302,7 +304,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		testTypeField.setValue(newFieldValue.getTestType());
 		pcrTestSpecification.setValue(newFieldValue.getPcrTestSpecification());
 		testTypeTextField.setValue(newFieldValue.getTestTypeText());
-		if(!testResultField.isReadOnly()) {
+		if (!testResultField.isReadOnly()) {
 			testResultField.setValue(newFieldValue.getTestResult());
 		}
 		typingIdField.setValue(newFieldValue.getTypingId());
@@ -331,17 +333,37 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		testTypeTextField = addField(PathogenTestDto.TEST_TYPE_TEXT, TextField.class);
 		FieldHelper.addSoftRequiredStyle(testTypeTextField);
 		DateTimeField testDateField = addField(PathogenTestDto.TEST_DATE_TIME, DateTimeField.class);
+		testDateField.removeAllValidators();
 		testDateField.addValidator(
 			new DateComparisonValidator(
 				testDateField,
 				this::getSampleDate,
 				false,
 				false,
+				true,
 				I18nProperties.getValidationError(
 					Validations.afterDateWithDate,
 					testDateField.getCaption(),
 					I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_DATE_TIME),
 					DateFormatHelper.formatDate(getSampleDate()))));
+		testDateField.addValueChangeListener(e -> {
+			boolean hasTime = !getSampleDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().equals(LocalTime.MIDNIGHT);
+			if (hasTime) {
+				testDateField.removeAllValidators();
+				testDateField.addValidator(
+					new DateComparisonValidator(
+						testDateField,
+						this::getSampleDate,
+						false,
+						false,
+						false,
+						I18nProperties.getValidationError(
+							Validations.afterDateWithDate,
+							testDateField.getCaption(),
+							I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_DATE_TIME),
+							DateFormatHelper.formatLocalDateTime(getSampleDate()))));
+			}
+		});
 		ComboBox lab = addInfrastructureField(PathogenTestDto.LAB);
 		lab.addItems(FacadeProvider.getFacilityFacade().getAllActiveLaboratories(true));
 		TextField labDetails = addField(PathogenTestDto.LAB_DETAILS, TextField.class);
@@ -354,9 +376,13 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		addField(PathogenTestDto.TESTED_DISEASE_DETAILS, TextField.class);
 		ComboBox diseaseVariantField = addCustomizableEnumField(PathogenTestDto.TESTED_DISEASE_VARIANT);
 		diseaseVariantField.setNullSelectionAllowed(true);
+		diseaseVariantField.setVisible(false);
 		TextField diseaseVariantDetailsField = addField(PathogenTestDto.TESTED_DISEASE_VARIANT_DETAILS, TextField.class);
 		diseaseVariantDetailsField.setVisible(false);
-
+		if (disease == Disease.RESPIRATORY_SYNCYTIAL_VIRUS) {
+			diseaseVariantField.setCaption(I18nProperties.getCaption(Captions.PathogenTest_rsv_testedDiseaseVariant));
+			diseaseVariantDetailsField.setCaption(I18nProperties.getCaption(Captions.PathogenTest_rsv_testedDiseaseVariantDetails));
+		}
 		ComboBox genoTypingCB = addField(PathogenTestDto.GENOTYPE_RESULT, ComboBox.class);
 		genoTypingCB.setVisible(true);
 		TextField genoTypingResultTextTF = addField(PathogenTestDto.GENOTYPE_RESULT_TEXT, TextField.class);
@@ -492,7 +518,11 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				{
 					put(
 						PathogenTestDto.TESTED_DISEASE,
-						Arrays.asList(Disease.TUBERCULOSIS, Disease.LATENT_TUBERCULOSIS, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
+						Arrays.asList(
+							Disease.TUBERCULOSIS,
+							Disease.LATENT_TUBERCULOSIS,
+							Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+							Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
 					put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY));
 				}
 			};
@@ -503,7 +533,11 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				{
 					put(
 						PathogenTestDto.TESTED_DISEASE,
-						Arrays.asList(Disease.TUBERCULOSIS, Disease.LATENT_TUBERCULOSIS, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
+						Arrays.asList(
+							Disease.TUBERCULOSIS,
+							Disease.LATENT_TUBERCULOSIS,
+							Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+							Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
 					put(
 						PathogenTestDto.TEST_TYPE,
 						Arrays.asList(
@@ -1037,6 +1071,17 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		FieldHelper
 			.setVisibleWhen(getFieldGroup(), PathogenTestDto.GENOTYPE_RESULT_TEXT, PathogenTestDto.GENOTYPE_RESULT, GenoTypeResult.OTHER, true);
 
+		//RSV subtype specification
+		Map<Object, List<Object>> rsvSubTypeDependencies = new HashMap<>() {
+
+			{
+				put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.RESPIRATORY_SYNCYTIAL_VIRUS));
+				put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.SEQUENCING, PathogenTestType.WHOLE_GENOME_SEQUENCING));
+				put(PathogenTestDto.TEST_RESULT, Arrays.asList(PathogenTestResultType.POSITIVE));
+			}
+		};
+		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.TESTED_DISEASE_VARIANT, rsvSubTypeDependencies, true);
+
 		Consumer<Disease> updateDiseaseVariantField = disease -> {
 			List<DiseaseVariant> diseaseVariants =
 				FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
@@ -1103,7 +1148,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			ImmutableList.of(PathogenTestType.GENOTYPING));
 
 		BiConsumer<Disease, PathogenTestType> resultField = (disease, testType) -> {
-			if(testResultField.isReadOnly()) {
+			if (testResultField.isReadOnly()) {
 				return;
 			}
 			if (resultFieldDecisionMap.containsKey(disease) && resultFieldDecisionMap.get(disease).contains(testType)) {

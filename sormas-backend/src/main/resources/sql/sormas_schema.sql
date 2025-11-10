@@ -14820,4 +14820,11 @@ ALTER TABLE symptoms_history ALTER COLUMN timeoffworkdays TYPE float4 USING time
 ALTER TABLE healthconditions_history DROP COLUMN IF EXISTS immunodepression;
 
 INSERT INTO schema_version (version_number, comment) VALUES (595, 'RSV issue fixes and minor observations of Giardiasis and Cryptosporidiosis #13540 #13613');
+
+-- 2025-10-29 - Included new Disease variant/subtype for RSV #13543
+INSERT INTO customizableenumvalue(id, uuid, changedate, creationdate, datatype, value, caption, diseases)
+VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'DISEASE_VARIANT', 'INDETERMINATE', 'Indeterminate',
+        'RESPIRATORY_SYNCYTIAL_VIRUS');
+INSERT INTO schema_version (version_number, comment) VALUES (596, 'Included new Disease variant/subtype for RSV #13543');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

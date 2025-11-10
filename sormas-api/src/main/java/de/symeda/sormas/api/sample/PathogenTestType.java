@@ -161,7 +161,9 @@ public enum PathogenTestType {
 
 	@Diseases(value = {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
-		Disease.MEASLES })
+		Disease.MEASLES,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION })
 	SEQUENCING,
 
 	@Diseases(value = {

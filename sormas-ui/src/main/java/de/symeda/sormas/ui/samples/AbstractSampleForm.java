@@ -285,7 +285,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 			new DateComparisonValidator(
 				shipmentDate,
 				sampleDateField,
-				false,
+				true,
 				false,
 				I18nProperties.getValidationError(Validations.afterDate, shipmentDate.getCaption(), sampleDateField.getCaption())));
 		shipmentDate.addValidator(
