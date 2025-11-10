@@ -61,7 +61,9 @@ public class SampleDashboardMapComponent extends BaseDashboardMapComponent<Sampl
 
     /**
      * Constructs a new SampleDashboardMapComponent.
-     * @param dashboardDataProvider The data provider for dashboard criteria and sample data.
+     * 
+     * @param dashboardDataProvider
+     *            The data provider for dashboard criteria and sample data.
      */
     public SampleDashboardMapComponent(SampleDashboardDataProvider dashboardDataProvider) {
         super(Strings.headingSampleDashboardMap, dashboardDataProvider, Strings.infoHeadingSampleDashboardMap);
@@ -88,9 +90,13 @@ public class SampleDashboardMapComponent extends BaseDashboardMapComponent<Sampl
 
     /**
      * Returns the total count of markers to display on the map for the given date range and max count.
-     * @param fromDate The start date for filtering.
-     * @param toDate The end date for filtering.
-     * @param maxCount The maximum number of markers to return.
+     * 
+     * @param fromDate
+     *            The start date for filtering.
+     * @param toDate
+     *            The end date for filtering.
+     * @param maxCount
+     *            The maximum number of markers to return.
      * @return The total number of markers.
      */
     @Override
@@ -104,7 +110,9 @@ public class SampleDashboardMapComponent extends BaseDashboardMapComponent<Sampl
 
     /**
      * Checks if the sample criteria is null, meaning that no human sample material or environment sample material is selected.
-     * @param criteria The dashboard criteria to check.
+     * 
+     * @param criteria
+     *            The dashboard criteria to check.
      * @return true if no sample or environment material and no disease is selected.
      */
     private boolean isEmptySampleCriteriaWithoutDisease(SampleDashboardCriteria criteria) {
@@ -114,7 +122,9 @@ public class SampleDashboardMapComponent extends BaseDashboardMapComponent<Sampl
     /**
      * Checks if the sample criteria is null, meaning that no human sample material or environment sample material is selected,
      * but a disease is selected.
-     * @param criteria The dashboard criteria to check.
+     * 
+     * @param criteria
+     *            The dashboard criteria to check.
      * @return true if no sample or environment material but a disease is selected.
      */
     private boolean isEmptySampleCriteriaWithDisease(SampleDashboardCriteria criteria) {
@@ -123,7 +133,9 @@ public class SampleDashboardMapComponent extends BaseDashboardMapComponent<Sampl
 
     /**
      * Checks if the sample criteria is only for environment samples, meaning no human sample material is selected.
-     * @param criteria The dashboard criteria to check.
+     * 
+     * @param criteria
+     *            The dashboard criteria to check.
      * @return true if only environment sample material is selected.
      */
     private boolean isOnlyEnvironmentSampleCriteria(SampleDashboardCriteria criteria) {
@@ -132,7 +144,9 @@ public class SampleDashboardMapComponent extends BaseDashboardMapComponent<Sampl
 
     /**
      * Checks if the sample criteria is only for human samples, meaning no environment sample material is selected.
-     * @param criteria The dashboard criteria to check.
+     * 
+     * @param criteria
+     *            The dashboard criteria to check.
      * @return true if only human sample material is selected.
      */
     private boolean isOnlyHumanSampleCriteria(SampleDashboardCriteria criteria) {
@@ -141,7 +155,9 @@ public class SampleDashboardMapComponent extends BaseDashboardMapComponent<Sampl
 
     /**
      * Checks if the sample criteria is for "other" sample materials (either human or environment).
-     * @param criteria The dashboard criteria to check.
+     * 
+     * @param criteria
+     *            The dashboard criteria to check.
      * @return true if either human or environment sample material is set to OTHER.
      */
     private boolean isSampleCriteriaForOther(SampleDashboardCriteria criteria) {
@@ -150,8 +166,11 @@ public class SampleDashboardMapComponent extends BaseDashboardMapComponent<Sampl
 
     /**
      * Loads and displays sample and environment sample data on the map for the given date range.
-     * @param fromDate The start date.
-     * @param toDate The end date.
+     * 
+     * @param fromDate
+     *            The start date.
+     * @param toDate
+     *            The end date.
      */
     @Override
     protected void loadMapData(Date fromDate, Date toDate) {
@@ -163,21 +182,24 @@ public class SampleDashboardMapComponent extends BaseDashboardMapComponent<Sampl
         List<MapSampleDto> environmentSamples = List.of();
         if (isSampleCriteriaForOther(criteria)) {
             humanSamples = FacadeProvider.getSampleDashboardFacade().getSamplesForMap(criteria, displayedHumanSamples);
-            environmentSamples =
-                    showEnvironmentalSamples ? FacadeProvider.getSampleDashboardFacade().getEnvironmentalSamplesForMap(criteria) : Collections.emptyList();
+            environmentSamples = showEnvironmentalSamples
+                ? FacadeProvider.getSampleDashboardFacade().getEnvironmentalSamplesForMap(criteria)
+                : Collections.emptyList();
         } else if (isEmptySampleCriteriaWithoutDisease(criteria)) {
             // If no sample material is selected, we want to show all samples
             humanSamples = FacadeProvider.getSampleDashboardFacade().getSamplesForMap(criteria, displayedHumanSamples);
-            environmentSamples =
-                    showEnvironmentalSamples ? FacadeProvider.getSampleDashboardFacade().getEnvironmentalSamplesForMap(criteria) : Collections.emptyList();
+            environmentSamples = showEnvironmentalSamples
+                ? FacadeProvider.getSampleDashboardFacade().getEnvironmentalSamplesForMap(criteria)
+                : Collections.emptyList();
         } else if (isOnlyHumanSampleCriteria(criteria) || isEmptySampleCriteriaWithDisease(criteria)) {
             // If only human sample is selected, we want to show only human samples
             humanSamples = FacadeProvider.getSampleDashboardFacade().getSamplesForMap(criteria, displayedHumanSamples);
         } else if (isOnlyEnvironmentSampleCriteria(criteria)) {
             // If only an environment sample is selected, we want to show only environment samples
-            environmentSamples =
-                    showEnvironmentalSamples ? FacadeProvider.getSampleDashboardFacade().getEnvironmentalSamplesForMap(criteria) : Collections.emptyList();
-        } else{
+            environmentSamples = showEnvironmentalSamples
+                ? FacadeProvider.getSampleDashboardFacade().getEnvironmentalSamplesForMap(criteria)
+                : Collections.emptyList();
+        } else {
             // In the case of mixed sample criteria, we want to show both human and environment samples; for now this is not supported
         }
 
@@ -213,7 +235,9 @@ public class SampleDashboardMapComponent extends BaseDashboardMapComponent<Sampl
 
     /**
      * Adds the toggle controls for layer options (case, contact, event participant, environment) to the map UI.
-     * @param layersLayout The layout to which components are added.
+     * 
+     * @param layersLayout
+     *            The layout to which components are added.
      */
     @Override
     protected void addLayerOptions(VerticalLayout layersLayout) {
@@ -284,6 +308,7 @@ public class SampleDashboardMapComponent extends BaseDashboardMapComponent<Sampl
 
     /**
      * Returns the legend components for the map, showing human and environmental sample icons.
+     * 
      * @return A list of legend components.
      */
     @Override
@@ -329,6 +354,7 @@ public class SampleDashboardMapComponent extends BaseDashboardMapComponent<Sampl
 
     /**
      * Determines whether case samples should be displayed based on the toggle state.
+     * 
      * @return true if case samples are to be shown, false otherwise.
      */
     private boolean shouldShowCaseSamples() {
@@ -337,6 +363,7 @@ public class SampleDashboardMapComponent extends BaseDashboardMapComponent<Sampl
 
     /**
      * Determines whether contact samples should be displayed based on the toggle state.
+     * 
      * @return true if contact samples are to be shown, false otherwise.
      */
     private boolean shouldShowContactSamples() {
@@ -345,6 +372,7 @@ public class SampleDashboardMapComponent extends BaseDashboardMapComponent<Sampl
 
     /**
      * Determines whether event participant samples should be displayed based on the toggle state.
+     * 
      * @return true if event participant samples are to be shown, false otherwise.
      */
     private boolean shouldShowEventParticipantSamples() {
@@ -354,8 +382,11 @@ public class SampleDashboardMapComponent extends BaseDashboardMapComponent<Sampl
     /**
      * Callback for when a marker on the map is clicked.
      * This implementation does nothing, but can be overridden to provide custom marker click behavior.
-     * @param groupId The group ID of the marker.
-     * @param markerIndex The index of the marker in the group.
+     * 
+     * @param groupId
+     *            The group ID of the marker.
+     * @param markerIndex
+     *            The index of the marker in the group.
      */
     @Override
     protected void onMarkerClicked(String groupId, int markerIndex) {
