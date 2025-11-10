@@ -15,10 +15,8 @@
 
 package de.symeda.sormas.api.epipulse;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -35,7 +33,7 @@ public class EpipulseExportDto extends PseudonymizableDto {
 
 	public static final String I18N_PREFIX = "EpipulseExport";
 
-	public static final String DISEASE = "disease";
+	public static final String SUBJECT_CODE = "subjectCode";
 	public static final String START_DATE = "startDate";
 	public static final String END_DATE = "endDate";
 	public static final String STATUS = "status";
@@ -45,15 +43,16 @@ public class EpipulseExportDto extends PseudonymizableDto {
 	public static final String EXPORT_FILE_SIZE = "exportFileSize";
 	public static final String CREATION_USER = "creationUser";
 
-	private Disease disease;
+	private EpipulseSubjectCode subjectCode;
 	private Date startDate;
 	private Date endDate;
 	private EpipulseExportStatus status;
 	private Date statusChangeDate;
 	private Long totalRecords;
 	private String exportFileName;
-	private BigDecimal exportFileSize;
+	private Long exportFileSize;
 	private UserReferenceDto creationUser;
+	private String statusReason;
 
 	public static EpipulseExportDto build(UserReferenceDto user) {
 
@@ -76,20 +75,20 @@ public class EpipulseExportDto extends PseudonymizableDto {
 		return new EpipulseExportReferenceDto(getUuid());
 	}
 
-	public BigDecimal getExportFileSize() {
+	public Long getExportFileSize() {
 		return exportFileSize;
 	}
 
-	public void setExportFileSize(BigDecimal exportFileSize) {
+	public void setExportFileSize(Long exportFileSize) {
 		this.exportFileSize = exportFileSize;
 	}
 
-	public Disease getDisease() {
-		return disease;
+	public EpipulseSubjectCode getSubjectCode() {
+		return subjectCode;
 	}
 
-	public void setDisease(Disease disease) {
-		this.disease = disease;
+	public void setSubjectCode(EpipulseSubjectCode subjectCode) {
+		this.subjectCode = subjectCode;
 	}
 
 	public Date getStartDate() {
@@ -146,5 +145,13 @@ public class EpipulseExportDto extends PseudonymizableDto {
 
 	public void setCreationUser(UserReferenceDto creationUser) {
 		this.creationUser = creationUser;
+	}
+
+	public String getStatusReason() {
+		return statusReason;
+	}
+
+	public void setStatusReason(String statusReason) {
+		this.statusReason = statusReason;
 	}
 }

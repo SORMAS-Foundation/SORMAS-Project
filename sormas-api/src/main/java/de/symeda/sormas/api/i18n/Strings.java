@@ -265,6 +265,7 @@ public interface Strings {
 	String entityEnvironments = "entityEnvironments";
 	String entityEnvironmentSample = "entityEnvironmentSample";
 	String entityEnvironmentSamples = "entityEnvironmentSamples";
+	String entityEpipulseExport = "entityEpipulseExport";
 	String entityEvent = "entityEvent";
 	String entityEventActions = "entityEventActions";
 	String entityEventGroup = "entityEventGroup";
@@ -645,6 +646,7 @@ public interface Strings {
 	String headingEpiConclusion = "headingEpiConclusion";
 	String headingEpiCurve = "headingEpiCurve";
 	String headingEpiDataSourceCaseContacts = "headingEpiDataSourceCaseContacts";
+	String headingEpipulseExportCreated = "headingEpipulseExportCreated";
 	String headingErrorReportNotAvailable = "headingErrorReportNotAvailable";
 	String headingErrorSendingExternalEmail = "headingErrorSendingExternalEmail";
 	String headingEventData = "headingEventData";
@@ -1391,6 +1393,18 @@ public interface Strings {
 	String messageEnvironmentSaved = "messageEnvironmentSaved";
 	String messageEpiDataHint = "messageEpiDataHint";
 	String messageEpidNumberWarning = "messageEpidNumberWarning";
+	String messageEpipulseExportCancelConfirmationCaption = "messageEpipulseExportCancelConfirmationCaption";
+	String messageEpipulseExportCancelConfirmationDescription = "messageEpipulseExportCancelConfirmationDescription";
+	String messageEpipulseExportCancelled = "messageEpipulseExportCancelled";
+	String messageEpipulseExportCreatedCaption = "messageEpipulseExportCreatedCaption";
+	String messageEpipulseExportCreatedDescription = "messageEpipulseExportCreatedDescription";
+	String messageEpipulseExportCreatedError = "messageEpipulseExportCreatedError";
+	String messageEpipulseExportDeleteConfirmationCaption = "messageEpipulseExportDeleteConfirmationCaption";
+	String messageEpipulseExportDeleteConfirmationDescription = "messageEpipulseExportDeleteConfirmationDescription";
+	String messageEpipulseExportDeleted = "messageEpipulseExportDeleted";
+	String messageEpipulseExportDownloadNoFileName = "messageEpipulseExportDownloadNoFileName";
+	String messageEpipulseExportNoCancel = "messageEpipulseExportNoCancel";
+	String messageEpipulseExportNoDelete = "messageEpipulseExportNoDelete";
 	String messageErrorReportNotAvailable = "messageErrorReportNotAvailable";
 	String messageEventArchived = "messageEventArchived";
 	String messageEventCreated = "messageEventCreated";

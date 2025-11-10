@@ -15,9 +15,13 @@
 
 package de.symeda.sormas.ui.epipulse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.epipulse.EpipulseExportCriteria;
@@ -30,14 +34,19 @@ import de.symeda.sormas.ui.statistics.AbstractStatisticsView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
+// @Push
 public class EpipulseExportView extends AbstractStatisticsView {
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
 	private static final long serialVersionUID = -5549414867103771784L;
+	private static final int POLL_INTERVAL_MS = 10000;
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/epipulse-export";
 
 	private final EpipulseExportGridComponent epipulseExportGridComponent;
 	private ViewConfiguration viewConfiguration;
+	private Thread pollThread;
 
 	public EpipulseExportView() {
 
@@ -68,6 +77,48 @@ public class EpipulseExportView extends AbstractStatisticsView {
 	public void enter(ViewChangeListener.ViewChangeEvent event) {
 		super.enter(event);
 		epipulseExportGridComponent.reload(event);
+
+		//startPolling();
+	}
+
+	@Override
+	public void detach() {
+		super.detach();
+
+		//stopPolling();
+	}
+
+	private void startPolling() {
+		if (pollThread == null || !pollThread.isAlive()) {
+			UI ui = UI.getCurrent();
+
+			pollThread = new Thread(() -> {
+				while (!Thread.currentThread().isInterrupted()) {
+					try {
+						Thread.sleep(POLL_INTERVAL_MS);
+
+						ui.access(() -> {
+							if (isAttached()) {
+								epipulseExportGridComponent.getGrid().getDataProvider().refreshAll();
+								logger.info("Reloaded Epipulse export grid");
+							}
+						});
+					} catch (InterruptedException e) {
+						Thread.currentThread().interrupt();
+						break;
+					}
+				}
+			});
+
+			pollThread.setDaemon(true);
+			pollThread.start();
+		}
+	}
+
+	private void stopPolling() {
+		if (pollThread != null && pollThread.isAlive()) {
+			pollThread.interrupt();
+		}
 	}
 
 	public ViewConfiguration getViewConfiguration() {

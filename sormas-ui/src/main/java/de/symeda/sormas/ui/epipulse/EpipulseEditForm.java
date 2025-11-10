@@ -23,7 +23,6 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.epipulse.EpipulseExportDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -42,7 +41,7 @@ public class EpipulseEditForm extends AbstractEditForm<EpipulseExportDto> {
 
 	//@formatter:off
     private static final String HTML_LAYOUT =
-                    fluidRowLocs(EpipulseExportDto.DISEASE, "") +
+                    fluidRowLocs(EpipulseExportDto.SUBJECT_CODE, "") +
                     fluidRowLocs(EpipulseExportDto.START_DATE, EpipulseExportDto.END_DATE);
     //@formatter:on
 
@@ -69,11 +68,11 @@ public class EpipulseEditForm extends AbstractEditForm<EpipulseExportDto> {
 	@Override
 	protected void addFields() {
 
-		ComboBox diseaseField = addDiseaseField(CaseDataDto.DISEASE, false, false);
+		ComboBox diseaseField = addDiseaseField(EpipulseExportDto.SUBJECT_CODE, false, false);
 		DateField reportStartDate = addField(EpipulseExportDto.START_DATE, DateField.class);
 		DateField reportEndDate = addField(EpipulseExportDto.END_DATE, DateField.class);
 
-		setRequired(true, EpipulseExportDto.DISEASE, EpipulseExportDto.START_DATE, EpipulseExportDto.END_DATE);
+		setRequired(true, EpipulseExportDto.SUBJECT_CODE, EpipulseExportDto.START_DATE, EpipulseExportDto.END_DATE);
 
 		reportStartDate.addValidator(
 			new DateComparisonValidator(

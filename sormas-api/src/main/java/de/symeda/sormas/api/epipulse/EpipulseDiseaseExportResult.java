@@ -17,26 +17,33 @@ package de.symeda.sormas.api.epipulse;
 
 import java.util.List;
 
-import javax.ejb.Remote;
+public class EpipulseDiseaseExportResult {
 
-import de.symeda.sormas.api.DeletableFacade;
-import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.utils.SortProperty;
+	private int maxPathogenTests;
+	private int maxImmunizations;
+	private List<EpipulseDiseaseExportEntryDto> exportEntryList;
 
-@Remote
-public interface EpipulseExportFacade extends DeletableFacade {
+	public int getMaxPathogenTests() {
+		return maxPathogenTests;
+	}
 
-	EpipulseExportDto saveEpipulseExport(EpipulseExportDto dto);
+	public void setMaxPathogenTests(int maxPathogenTests) {
+		this.maxPathogenTests = maxPathogenTests;
+	}
 
-	Page<EpipulseExportIndexDto> getIndexPage(EpipulseExportCriteria criteria, Integer offset, Integer size, List<SortProperty> sortProperties);
+	public int getMaxImmunizations() {
+		return maxImmunizations;
+	}
 
-	EpipulseExportDto getEpiPulseExportByUuid(String uuid);
+	public void setMaxImmunizations(int maxImmunizations) {
+		this.maxImmunizations = maxImmunizations;
+	}
 
-	long count(EpipulseExportCriteria criteria);
+	public List<EpipulseDiseaseExportEntryDto> getExportEntryList() {
+		return exportEntryList;
+	}
 
-	List<EpipulseExportIndexDto> getIndexList(EpipulseExportCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
-
-	void cancelEpipulseExport(String uuid);
-
-	void deleteEpipulseExport(String uuid);
+	public void setExportEntryList(List<EpipulseDiseaseExportEntryDto> exportEntryList) {
+		this.exportEntryList = exportEntryList;
+	}
 }

@@ -49,8 +49,8 @@ public class EpipulseExportService extends BaseAdoService<EpipulseExport> {
 
 		Predicate filter = null;
 
-		if (criteria.getDisease() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(EpipulseExport.DISEASE), criteria.getDisease()));
+		if (criteria.getSubjectCode() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(EpipulseExport.SUBJECT_CODE), criteria.getSubjectCode()));
 		}
 		if (criteria.getStatus() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(EpipulseExport.STATUS), criteria.getStatus()));

@@ -52,10 +52,10 @@ public class EpipulseExportInfoLayout extends AbstractInfoLayout<EpipulseExportD
 
 		addDescLabel(
 			leftColumnLayout,
-			EpipulseExportDto.DISEASE,
-			epipulseExportDto.getDisease(),
-			I18nProperties.getPrefixCaption(EpipulseExportDto.I18N_PREFIX, EpipulseExportDto.DISEASE))
-			.setDescription(epipulseExportDto.getDisease().toString());
+			EpipulseExportDto.SUBJECT_CODE,
+			epipulseExportDto.getSubjectCode(),
+			I18nProperties.getPrefixCaption(EpipulseExportDto.I18N_PREFIX, EpipulseExportDto.SUBJECT_CODE))
+			.setDescription(epipulseExportDto.getSubjectCode().toString());
 
 		String startDate = DateHelper.formatLocalDate(epipulseExportDto.getStartDate(), userLanguage);
 		addDescLabel(

@@ -15,28 +15,10 @@
 
 package de.symeda.sormas.api.epipulse;
 
-import java.util.List;
-
 import javax.ejb.Remote;
 
-import de.symeda.sormas.api.DeletableFacade;
-import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.utils.SortProperty;
-
 @Remote
-public interface EpipulseExportFacade extends DeletableFacade {
+public interface EpipulseDiseaseExportFacade {
 
-	EpipulseExportDto saveEpipulseExport(EpipulseExportDto dto);
-
-	Page<EpipulseExportIndexDto> getIndexPage(EpipulseExportCriteria criteria, Integer offset, Integer size, List<SortProperty> sortProperties);
-
-	EpipulseExportDto getEpiPulseExportByUuid(String uuid);
-
-	long count(EpipulseExportCriteria criteria);
-
-	List<EpipulseExportIndexDto> getIndexList(EpipulseExportCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
-
-	void cancelEpipulseExport(String uuid);
-
-	void deleteEpipulseExport(String uuid);
+	public void exportPertussisCaseBased(String uuid);
 }
