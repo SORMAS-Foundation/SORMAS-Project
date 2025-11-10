@@ -14827,4 +14827,71 @@ VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'DISEASE_VA
         'RESPIRATORY_SYNCYTIAL_VIRUS');
 INSERT INTO schema_version (version_number, comment) VALUES (596, 'Included new Disease variant/subtype for RSV #13543');
 
+
+-- epipulse export table
+create table epipulse_export
+(
+    id                  bigint                not null,
+    uuid                varchar(36)           not null,
+    creationdate        timestamp(3)          not null,
+    changedate          timestamp(3)          not null,
+    subject_code        varchar(255)          not null,
+    start_date          date                  not null,
+    end_date            date                  not null,
+    status              varchar(255)          not null,
+    status_change_date  timestamp(3)          not null,
+    total_records       bigint  default 0,
+    export_file_name    varchar(255),
+    export_file_size    bigint,
+    archived            boolean default false not null,
+    archiveundonereason varchar(512),
+    deleted             boolean default false not null,
+    deletionreason      varchar(255),
+    otherdeletionreason text,
+    sys_period          tstzrange             not null,
+    creation_user_id    bigint                not null,
+    change_user_id      bigint                not null,
+    status_reason       text
+);
+
+alter table epipulse_export owner to sormas_user;
+
+alter table epipulse_export add primary key (id);
+alter table epipulse_export add unique (uuid);
+alter table epipulse_export add constraint epipulse_export_change_user_fk foreign key (change_user_id) references users;
+alter table epipulse_export add constraint epipulse_export_creation_user_fk foreign key (creation_user_id) references users;
+
+-- epipulse export history
+CREATE TABLE epipulse_export_history (LIKE epipulse_export);
+DROP TRIGGER IF EXISTS versioning_trigger ON epipulse_export;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON epipulse_export
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'epipulse_export_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON epipulse_export;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON epipulse_export
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('epipulse_export_history', 'id');
+ALTER TABLE epipulse_export_history OWNER TO sormas_user;
+
+-- Assign epipulse export user rights to default admin and national_user user roles
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'EPIPULSE_EXPORT_VIEW' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN');
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'EPIPULSE_EXPORT_CREATE' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN');
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'EPIPULSE_EXPORT_DOWNLOAD' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN');
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'EPIPULSE_EXPORT_DELETE' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN');
+
+-- add nutscode to country, region, district and commmunity
+alter table country add nutscode varchar(10) constraint country_nutscode_pk unique;
+alter table country_history add nutscode varchar(10);
+
+alter table region add nutscode varchar(10);
+alter table region_history add nutscode varchar(10);
+
+alter table district add nutscode varchar(10);
+alter table district_history add nutscode varchar(10);
+
+alter table community add nutscode varchar(10);
+alter table community_history add nutscode varchar(10);
+
+INSERT INTO schema_version (version_number, comment) VALUES (596, 'Epipulse export module #13631');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
