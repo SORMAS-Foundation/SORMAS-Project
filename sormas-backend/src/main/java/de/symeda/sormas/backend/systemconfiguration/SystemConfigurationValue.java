@@ -15,13 +15,14 @@
 
 package de.symeda.sormas.backend.systemconfiguration;
 
-import de.symeda.sormas.backend.common.AbstractDomainObject;
-import org.hibernate.annotations.ColumnDefault;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
+
+import org.hibernate.annotations.ColumnDefault;
+
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 @Entity(name = SystemConfigurationValue.TABLE_NAME)
 public class SystemConfigurationValue extends AbstractDomainObject {
