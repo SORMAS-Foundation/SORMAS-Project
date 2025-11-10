@@ -86,7 +86,7 @@ public enum Disease
 	POST_IMMUNIZATION_ADVERSE_EVENTS_MILD(true, false, false, true, false, 0, true, false, false),
 	POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE(true, false, false, true, false, 0, true, false, false),
 	FHA(true, false, false, true, false, 0, true, false, false),
-	INVASIVE_PNEUMOCOCCAL_INFECTION(true, true, true, false, true, 7, false, false, false),
+	INVASIVE_PNEUMOCOCCAL_INFECTION(true, true, true, false, false, 0, false, false, false),
 	INVASIVE_MENINGOCOCCAL_INFECTION(true, true, true, false, true, 7, false, false, false),
 	GIARDIASIS(true, true, true, false, true, 14, false, false, false),
 	CRYPTOSPORIDIOSIS(true, true, true, false, true, 14, false, false, false),
