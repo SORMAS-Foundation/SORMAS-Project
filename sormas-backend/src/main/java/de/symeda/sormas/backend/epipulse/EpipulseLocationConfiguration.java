@@ -25,6 +25,8 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 @Entity(name = "epipulse_location_configuration")
 public class EpipulseLocationConfiguration extends AbstractDomainObject {
 
+	public static final String TABLE_NAME = "epipulse_location_configuration";
+
 	private String type;
 	private String code;
 	private String name;

@@ -25,6 +25,8 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 @Entity(name = "epipulse_subjectcode_configuration")
 public class EpipulseSubjectcodeConfiguration extends AbstractDomainObject {
 
+	public static final String TABLE_NAME = "epipulse_subjectcode_configuration";
+
 	private String subjectcode;
 	private String name;
 	private String disease;

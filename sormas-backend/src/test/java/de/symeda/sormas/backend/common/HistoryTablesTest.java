@@ -33,12 +33,19 @@ import de.hilling.junit.cdi.CdiTestJunitExtension;
 import de.hilling.junit.cdi.annotations.BypassTestInterceptor;
 import de.symeda.sormas.backend.adverseeventsfollowingimmunization.entity.Aefi;
 import de.symeda.sormas.backend.adverseeventsfollowingimmunization.entity.AefiInvestigation;
+import de.symeda.sormas.backend.epipulse.EpipulseDatasourceConfiguration;
+import de.symeda.sormas.backend.epipulse.EpipulseLocationConfiguration;
+import de.symeda.sormas.backend.epipulse.EpipulseSubjectcodeConfiguration;
 
 @ExtendWith(CdiTestJunitExtension.class)
 public class HistoryTablesTest {
 
-	private static final List<String> NO_HISTORY_REQUIRED_TABLES =
-		Arrays.asList(Aefi.AEFI_VACCINATIONS_TABLE_NAME, AefiInvestigation.AEFI_INVESTIGATION_VACCINATIONS_TABLE_NAME);
+	private static final List<String> NO_HISTORY_REQUIRED_TABLES = Arrays.asList(
+		Aefi.AEFI_VACCINATIONS_TABLE_NAME,
+		AefiInvestigation.AEFI_INVESTIGATION_VACCINATIONS_TABLE_NAME,
+		EpipulseSubjectcodeConfiguration.TABLE_NAME,
+		EpipulseDatasourceConfiguration.TABLE_NAME,
+		EpipulseLocationConfiguration.TABLE_NAME);
 
 	/**
 	 * Test that the *_history tables have the same columns as the corresponding production tables
