@@ -99,6 +99,9 @@
 		<class>de.symeda.sormas.backend.person.notifier.Notifier</class>
 		<class>de.symeda.sormas.backend.therapy.DrugSusceptibility</class>
 		<class>de.symeda.sormas.backend.epipulse.EpipulseExport</class>
+        <class>de.symeda.sormas.backend.epipulse.EpipulseDatasourceConfiguration</class>
+        <class>de.symeda.sormas.backend.epipulse.EpipulseLocationConfiguration</class>
+        <class>de.symeda.sormas.backend.epipulse.EpipulseSubjectcodeConfiguration</class>
 
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
 

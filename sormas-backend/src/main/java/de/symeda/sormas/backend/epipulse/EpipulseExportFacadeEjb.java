@@ -17,10 +17,12 @@ package de.symeda.sormas.backend.epipulse;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -38,6 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.epipulse.EpipulseExportCriteria;
@@ -45,6 +48,7 @@ import de.symeda.sormas.api.epipulse.EpipulseExportDto;
 import de.symeda.sormas.api.epipulse.EpipulseExportFacade;
 import de.symeda.sormas.api.epipulse.EpipulseExportIndexDto;
 import de.symeda.sormas.api.epipulse.EpipulseExportReferenceDto;
+import de.symeda.sormas.api.epipulse.EpipulseExportStatus;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -67,7 +71,7 @@ import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "EpipulseExportFacade")
 @RightsAllowed(UserRight._EPIPULSE_EXPORT_VIEW)
-public class EpipulseExportEjb implements EpipulseExportFacade {
+public class EpipulseExportFacadeEjb implements EpipulseExportFacade {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -83,23 +87,25 @@ public class EpipulseExportEjb implements EpipulseExportFacade {
 	@EJB
 	private UserService userService;
 
+	@EJB
+	private EpipulseExportTimerEjb exportTimerEjb;
+
 	@RightsAllowed({
 		UserRight._EPIPULSE_EXPORT_CREATE })
 	@Override
 	public EpipulseExportDto saveEpipulseExport(EpipulseExportDto dto) {
 		EpipulseExport existingEpipulseExport = epipulseExportService.getByUuid(dto.getUuid());
 
-		FacadeHelper.checkCreateAndEditRights(
-			existingEpipulseExport,
-			userService,
-			UserRight.ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_CREATE,
-			UserRight.ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_EDIT);
+		FacadeHelper
+			.checkCreateAndEditRights(existingEpipulseExport, userService, UserRight.EPIPULSE_EXPORT_CREATE, UserRight.EPIPULSE_EXPORT_CREATE);
 
 		validate(dto);
 
 		EpipulseExport epipulseExport = fillOrBuildEntity(dto, existingEpipulseExport);
 
 		epipulseExportService.ensurePersisted(epipulseExport);
+
+		exportTimerEjb.scheduleExportDisease(epipulseExport.getUuid(), epipulseExport.getSubjectCode());
 
 		return toDto(epipulseExport);
 	}
@@ -152,7 +158,7 @@ public class EpipulseExportEjb implements EpipulseExportFacade {
 			List<Selection<?>> selections = new ArrayList<>(
 				Arrays.asList(
 					epipulseExport.get(EpipulseExport.UUID),
-					epipulseExport.get(EpipulseExport.DISEASE),
+					epipulseExport.get(EpipulseExport.SUBJECT_CODE),
 					epipulseExport.get(EpipulseExport.START_DATE),
 					epipulseExport.get(EpipulseExport.END_DATE),
 					epipulseExport.get(EpipulseExport.STATUS),
@@ -222,7 +228,7 @@ public class EpipulseExportEjb implements EpipulseExportFacade {
 
 				switch (sortProperty.propertyName) {
 				case EpipulseExportIndexDto.UUID:
-				case EpipulseExportIndexDto.DISEASE:
+				case EpipulseExportIndexDto.SUBJECT_CODE:
 				case EpipulseExportIndexDto.START_DATE:
 				case EpipulseExportIndexDto.END_DATE:
 				case EpipulseExportIndexDto.STATUS:
@@ -273,7 +279,7 @@ public class EpipulseExportEjb implements EpipulseExportFacade {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, EpipulseExport::new, true);
 
-		target.setDisease(source.getDisease());
+		target.setSubjectCode(source.getSubjectCode());
 		target.setStartDate(source.getStartDate());
 		target.setEndDate(source.getEndDate());
 		target.setStatus(source.getStatus());
@@ -295,12 +301,14 @@ public class EpipulseExportEjb implements EpipulseExportFacade {
 		EpipulseExportDto dto = new EpipulseExportDto();
 		DtoHelper.fillDto(dto, entity);
 
-		dto.setDisease(entity.getDisease());
+		dto.setSubjectCode(entity.getSubjectCode());
 		dto.setStartDate(entity.getStartDate());
 		dto.setEndDate(entity.getEndDate());
 		dto.setStatus(entity.getStatus());
 		dto.setStatusChangeDate(entity.getStatusChangeDate());
 		dto.setTotalRecords(entity.getTotalRecords());
+		dto.setExportFileName(entity.getExportFileName());
+		dto.setExportFileSize(entity.getExportFileSize());
 		dto.setCreationUser(UserFacadeEjb.toReferenceDto(entity.getCreationUser()));
 
 		return dto;
@@ -329,9 +337,49 @@ public class EpipulseExportEjb implements EpipulseExportFacade {
 		}
 	}
 
+	@RightsAllowed({
+		UserRight._EPIPULSE_EXPORT_CREATE })
+	@Override
+	public void cancelEpipulseExport(String uuid) {
+		EpipulseExport existingEpipulseExport = epipulseExportService.getByUuid(uuid);
+
+		if (existingEpipulseExport.getStatus() == EpipulseExportStatus.COMPLETED
+			|| existingEpipulseExport.getStatus() == EpipulseExportStatus.FAILED
+			|| existingEpipulseExport.getStatus() == EpipulseExportStatus.CANCELLED) {
+			throw new ValidationRuntimeException(I18nProperties.getString(Strings.messageEpipulseExportNoCancel));
+		}
+
+		FacadeHelper
+			.checkCreateAndEditRights(existingEpipulseExport, userService, UserRight.EPIPULSE_EXPORT_CREATE, UserRight.EPIPULSE_EXPORT_CREATE);
+
+		existingEpipulseExport.setStatus(EpipulseExportStatus.CANCELLED);
+		existingEpipulseExport.setStatusChangeDate(new Date());
+
+		epipulseExportService.ensurePersisted(existingEpipulseExport);
+	}
+
+	@RightsAllowed({
+		UserRight._EPIPULSE_EXPORT_CREATE })
+	@Override
+	public void deleteEpipulseExport(String uuid) {
+		EpipulseExport existingEpipulseExport = epipulseExportService.getByUuid(uuid);
+
+		if (existingEpipulseExport.getStatus() == EpipulseExportStatus.PENDING
+			|| existingEpipulseExport.getStatus() == EpipulseExportStatus.IN_PROGRESS) {
+			throw new ValidationRuntimeException(I18nProperties.getString(Strings.messageEpipulseExportNoDelete));
+		}
+
+		FacadeHelper
+			.checkCreateAndEditRights(existingEpipulseExport, userService, UserRight.EPIPULSE_EXPORT_CREATE, UserRight.EPIPULSE_EXPORT_CREATE);
+
+		existingEpipulseExport.setDeleted(true);
+		existingEpipulseExport.setDeletionReason(DeletionReason.OTHER_REASON);
+
+		epipulseExportService.ensurePersisted(existingEpipulseExport);
+	}
+
 	@Override
 	public void delete(String uuid, DeletionDetails deletionDetails) {
-
 	}
 
 	@Override
@@ -352,5 +400,11 @@ public class EpipulseExportEjb implements EpipulseExportFacade {
 	@Override
 	public boolean isDeleted(String uuid) {
 		return false;
+	}
+
+	@LocalBean
+	@Stateless
+	public static class EpipulseExportFacadeEjbLocal extends EpipulseExportFacadeEjb {
+
 	}
 }

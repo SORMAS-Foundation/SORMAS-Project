@@ -16,10 +16,8 @@
 package de.symeda.sormas.api.epipulse;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Date;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
@@ -30,7 +28,7 @@ public class EpipulseExportIndexDto extends PseudonymizableIndexDto implements S
 	public static final String I18N_PREFIX = "EpipulseExport";
 
 	public static final String UUID = "uuid";
-	public static final String DISEASE = "disease";
+	public static final String SUBJECT_CODE = "subjectCode";
 	public static final String CREATION_DATE = "creationDate";
 	public static final String START_DATE = "startDate";
 	public static final String END_DATE = "endDate";
@@ -41,33 +39,33 @@ public class EpipulseExportIndexDto extends PseudonymizableIndexDto implements S
 	public static final String EXPORT_FILE_SIZE = "exportFileSize";
 	public static final String CREATION_USER = "creationUser";
 
-	private Disease disease;
+	private EpipulseSubjectCode subjectCode;
 	private Date startDate;
 	private Date endDate;
 	private EpipulseExportStatus status;
 	private Date statusChangeDate;
 	private Long totalRecords;
 	private String exportFileName;
-	private BigDecimal exportFileSize;
+	private Long exportFileSize;
 	private Date creationDate;
 	private UserReferenceDto creationUser;
 
 	public EpipulseExportIndexDto(
 		String uuid,
-		Disease disease,
+		EpipulseSubjectCode subjectCode,
 		Date startDate,
 		Date endDate,
 		EpipulseExportStatus status,
 		Date statusChangeDate,
 		Long totalRecords,
 		String exportFileName,
-		BigDecimal exportFileSize,
+		Long exportFileSize,
 		Date creationDate,
 		String creationUserUuid,
 		String creationUserFirstName,
 		String creationUserLastName) {
 		super(uuid);
-		this.disease = disease;
+		this.subjectCode = subjectCode;
 		this.startDate = startDate;
 		this.endDate = endDate;
 		this.status = status;
@@ -79,12 +77,12 @@ public class EpipulseExportIndexDto extends PseudonymizableIndexDto implements S
 		this.creationUser = new UserReferenceDto(creationUserUuid, creationUserFirstName, creationUserLastName);;
 	}
 
-	public Disease getDisease() {
-		return disease;
+	public EpipulseSubjectCode getSubjectCode() {
+		return subjectCode;
 	}
 
-	public void setDisease(Disease disease) {
-		this.disease = disease;
+	public void setSubjectCode(EpipulseSubjectCode subjectCode) {
+		this.subjectCode = subjectCode;
 	}
 
 	public Date getStartDate() {
@@ -135,11 +133,11 @@ public class EpipulseExportIndexDto extends PseudonymizableIndexDto implements S
 		this.exportFileName = exportFileName;
 	}
 
-	public BigDecimal getExportFileSize() {
+	public Long getExportFileSize() {
 		return exportFileSize;
 	}
 
-	public void setExportFileSize(BigDecimal exportFileSize) {
+	public void setExportFileSize(Long exportFileSize) {
 		this.exportFileSize = exportFileSize;
 	}
 

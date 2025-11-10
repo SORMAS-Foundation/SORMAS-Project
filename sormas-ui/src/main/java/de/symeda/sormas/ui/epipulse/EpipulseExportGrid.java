@@ -15,8 +15,6 @@
 
 package de.symeda.sormas.ui.epipulse;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Date;
 
 import com.vaadin.data.provider.DataProviderListener;
@@ -74,16 +72,20 @@ public class EpipulseExportGrid extends FilteredGrid<EpipulseExportIndexDto, Epi
 			if (entry.getExportFileSize() == null) {
 				return "-";
 			} else {
-				BigDecimal bytes = entry.getExportFileSize();
+				Long bytes = entry.getExportFileSize();
 
-				if (bytes.compareTo(BigDecimal.valueOf(1024)) < 0) {
-					return bytes.longValue() + " B";
-				} else if (bytes.compareTo(BigDecimal.valueOf(1024 * 1024)) < 0) {
-					BigDecimal kb = bytes.divide(BigDecimal.valueOf(1024), 2, RoundingMode.HALF_UP);
-					return String.format(userLanguage.getLocale(), "%.2f KB", kb.doubleValue());
+				if (bytes == null) {
+					return "";
+				}
+
+				if (bytes < 1024) {
+					return bytes + " B";
+				} else if (bytes < 1024 * 1024) {
+					double kb = bytes / 1024.0;
+					return String.format(userLanguage.getLocale(), "%.2f KB", kb);
 				} else {
-					BigDecimal mb = bytes.divide(BigDecimal.valueOf(1024 * 1024), 2, RoundingMode.HALF_UP);
-					return String.format(userLanguage.getLocale(), "%.2f MB", mb.doubleValue());
+					double mb = bytes / (1024.0 * 1024);
+					return String.format(userLanguage.getLocale(), "%.2f MB", mb);
 				}
 			}
 		});
@@ -116,7 +118,7 @@ public class EpipulseExportGrid extends FilteredGrid<EpipulseExportIndexDto, Epi
 
 		setColumns(
 			EpipulseExportIndexDto.UUID,
-			EpipulseExportIndexDto.DISEASE,
+			EpipulseExportIndexDto.SUBJECT_CODE,
 			EpipulseExportIndexDto.START_DATE,
 			EpipulseExportIndexDto.END_DATE,
 			EpipulseExportIndexDto.CREATION_DATE,
@@ -166,6 +168,15 @@ public class EpipulseExportGrid extends FilteredGrid<EpipulseExportIndexDto, Epi
 				return CssStyles.GRID_CELL_LINK_DISABLED;
 			}
 			return null;
+		});
+
+		addItemClickListener(event -> {
+			if (event.getItem() != null
+				&& event.getColumn() != null
+				&& DOWNLOAD_LINK_COLUMN.equals(event.getColumn().getId())
+				&& event.getItem().getStatus() == EpipulseExportStatus.COMPLETED) {
+				ControllerProvider.getEpipulseExportController().download(event.getItem());
+			}
 		});
 
 		for (Column<?, ?> column : getColumns()) {

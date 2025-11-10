@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.backend.epipulse;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -26,8 +25,8 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.epipulse.EpipulseExportStatus;
+import de.symeda.sormas.api.epipulse.EpipulseSubjectCode;
 import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.common.NotExposedToApi;
 import de.symeda.sormas.backend.user.User;
@@ -39,7 +38,7 @@ public class EpipulseExport extends DeletableAdo {
 
 	public static final String TABLE_NAME = "epipulse_export";
 
-	public static final String DISEASE = "disease";
+	public static final String SUBJECT_CODE = "subjectCode";
 	public static final String START_DATE = "startDate";
 	public static final String END_DATE = "endDate";
 	public static final String STATUS = "status";
@@ -50,7 +49,7 @@ public class EpipulseExport extends DeletableAdo {
 	public static final String CREATION_USER = "creationUser";
 	public static final String ARCHIVED = "archived";
 
-	private Disease disease;
+	private EpipulseSubjectCode subjectCode;
 
 	private Date startDate;
 	private Date endDate;
@@ -60,7 +59,7 @@ public class EpipulseExport extends DeletableAdo {
 	private Date statusChangeDate;
 	private Long totalRecords;
 	private String exportFileName;
-	private BigDecimal exportFileSize;
+	private Long exportFileSize;
 
 	@NotExposedToApi
 	private boolean archived;
@@ -70,13 +69,16 @@ public class EpipulseExport extends DeletableAdo {
 
 	private User creationUser;
 
+	private String statusReason;
+
 	@Enumerated(EnumType.STRING)
-	public Disease getDisease() {
-		return disease;
+	@Column(name = "subject_code")
+	public EpipulseSubjectCode getSubjectCode() {
+		return subjectCode;
 	}
 
-	public void setDisease(Disease disease) {
-		this.disease = disease;
+	public void setSubjectCode(EpipulseSubjectCode subjectCode) {
+		this.subjectCode = subjectCode;
 	}
 
 	@Column(name = "start_date")
@@ -134,11 +136,11 @@ public class EpipulseExport extends DeletableAdo {
 	}
 
 	@Column(name = "export_file_size")
-	public BigDecimal getExportFileSize() {
+	public Long getExportFileSize() {
 		return exportFileSize;
 	}
 
-	public void setExportFileSize(BigDecimal exportFileSize) {
+	public void setExportFileSize(Long exportFileSize) {
 		this.exportFileSize = exportFileSize;
 	}
 
@@ -166,5 +168,14 @@ public class EpipulseExport extends DeletableAdo {
 
 	public void setCreationUser(User creationUser) {
 		this.creationUser = creationUser;
+	}
+
+	@Column(name = "status_reason")
+	public String getStatusReason() {
+		return statusReason;
+	}
+
+	public void setStatusReason(String statusReason) {
+		this.statusReason = statusReason;
 	}
 }

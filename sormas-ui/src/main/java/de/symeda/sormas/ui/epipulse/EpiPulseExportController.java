@@ -15,9 +15,16 @@
 
 package de.symeda.sormas.ui.epipulse;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.Date;
 
+import com.vaadin.server.Page;
+import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -28,6 +35,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -55,8 +63,31 @@ public class EpiPulseExportController {
 				dto.setStatus(EpipulseExportStatus.PENDING);
 				dto.setStatusChangeDate(new Date());
 
-				FacadeProvider.getEpipulseExportFacade().saveEpipulseExport(dto);
-				callback.run();
+				EpipulseExportDto savedEpipulseExport = FacadeProvider.getEpipulseExportFacade().saveEpipulseExport(dto);
+
+				Notification notification;
+				if (savedEpipulseExport != null) {
+					notification = new Notification(
+						I18nProperties.getString(Strings.messageEpipulseExportCreatedCaption),
+						I18nProperties.getString(Strings.messageEpipulseExportCreatedDescription),
+						Notification.Type.TRAY_NOTIFICATION,
+						true);
+					notification.setDelayMsec(-1);
+				} else {
+					notification = new Notification(
+						"",
+						I18nProperties.getString(Strings.messageEpipulseExportCreatedError),
+						Notification.Type.ERROR_MESSAGE,
+						true);
+					notification.setDelayMsec(-1);
+				}
+
+				notification.show(Page.getCurrent());
+
+				if (callback != null) {
+					callback.run();
+				}
+
 			}
 		});
 
@@ -86,69 +117,128 @@ public class EpiPulseExportController {
 			confirmationComponent.getConfirmButton().setCaption(I18nProperties.getString(Strings.close));
 			confirmationComponent.getCancelButton().setVisible(false);
 
-			// Cancel export button - for canceling pending/incomplete exports
-			if (epipulseExportDto.getStatus() == EpipulseExportStatus.PENDING || epipulseExportDto.getStatus() == EpipulseExportStatus.IN_PROGRESS) {
+			EpipulseExportStatus exportStatus = epipulseExportDto.getStatus();
+
+			if (exportStatus == EpipulseExportStatus.PENDING || exportStatus == EpipulseExportStatus.IN_PROGRESS) {
 				Button cancelExportButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.actionCancel), event -> {
-					/*
-					 * VaadinUiUtil.showConfirmationPopup(
-					 * I18nProperties.getCaption(Captions.actionConfirmAction),
-					 * new Label(I18nProperties.getString(Strings.confirmationCancelBulkAction)),
-					 * I18nProperties.getCaption(Captions.actionYes),
-					 * I18nProperties.getCaption(Captions.actionNo),
-					 * 560,
-					 * result -> {
-					 * if (result) {
-					 * // Cancel the export
-					 * epipulseExportDto.setStatus(EpipulseExportStatus.CANCELED);
-					 * epipulseExportDto.setStatusChangeDate(new Date());
-					 * FacadeProvider.getEpipulseExportFacade().saveEpipulseExport(epipulseExportDto);
-					 * callback.run();
-					 * popupWindow.close();
-					 * }
-					 * }
-					 * );
-					 */
-				}, ValoTheme.BUTTON_DANGER);
+					VaadinUiUtil.showConfirmationPopup(
+						I18nProperties.getString(Strings.messageEpipulseExportCancelConfirmationCaption),
+						new Label(I18nProperties.getString(Strings.messageEpipulseExportCancelConfirmationDescription)),
+						I18nProperties.getCaption(Captions.actionYes),
+						I18nProperties.getCaption(Captions.actionNo),
+						null,
+						result -> {
+							if (result) {
+								// Cancel the export
+								try {
+									FacadeProvider.getEpipulseExportFacade().cancelEpipulseExport(epipulseExportDto.getUuid());
+
+									if (callback != null) {
+										callback.run();
+									}
+
+									popupWindow.close();
+								} catch (Exception e) {
+									if (e instanceof ValidationRuntimeException) {
+										Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
+									} else {
+										Notification.show(
+											I18nProperties.getString(Strings.errorOccurred, I18nProperties.getString(Strings.errorOccurred)),
+											I18nProperties.getString(Strings.errorWasReported),
+											Notification.Type.ERROR_MESSAGE);
+									}
+								}
+							}
+						});
+				}, ValoTheme.BUTTON_LINK);
 				confirmationComponent.addExtraButton(cancelExportButton, e -> {
 				});
 			}
 
 			// Delete button - always available
-			Button deleteButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.actionDelete), event -> {
-				/*
-				 * VaadinUiUtil.showDeleteConfirmationWindow(
-				 * String.format(
-				 * I18nProperties.getString(Strings.confirmationDeleteEntity),
-				 * "EpiPulse Export"
-				 * ),
-				 * () -> {
-				 * FacadeProvider.getEpipulseExportFacade().deleteEpipulseExport(epipulseExportDto.getUuid());
-				 * popupWindow.close();
-				 * callback.run();
-				 * }
-				 * );
-				 */
-			}, ValoTheme.BUTTON_DANGER);
-			confirmationComponent.addExtraButton(deleteButton, e -> {
-			});
+			if (exportStatus == EpipulseExportStatus.COMPLETED
+				|| exportStatus == EpipulseExportStatus.FAILED
+				|| exportStatus == EpipulseExportStatus.CANCELLED) {
+				Button deleteButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.actionDelete), event -> {
+
+					VaadinUiUtil.showConfirmationPopup(
+						I18nProperties.getString(Strings.messageEpipulseExportDeleteConfirmationCaption),
+						new Label(I18nProperties.getString(Strings.messageEpipulseExportDeleteConfirmationDescription)),
+						I18nProperties.getCaption(Captions.actionYes),
+						I18nProperties.getCaption(Captions.actionNo),
+						null,
+						result -> {
+							if (result) {
+								// Cancel the export
+								try {
+									FacadeProvider.getEpipulseExportFacade().deleteEpipulseExport(epipulseExportDto.getUuid());
+
+									if (callback != null) {
+										callback.run();
+									}
+
+									popupWindow.close();
+								} catch (Exception e) {
+									if (e instanceof ValidationRuntimeException) {
+										Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
+									} else {
+										Notification.show(
+											I18nProperties.getString(Strings.errorOccurred, I18nProperties.getString(Strings.errorOccurred)),
+											I18nProperties.getString(Strings.errorWasReported),
+											Notification.Type.ERROR_MESSAGE);
+									}
+								}
+							}
+						});
+				}, ValoTheme.BUTTON_LINK);
+				confirmationComponent.addExtraButton(deleteButton, e -> {
+				});
+			}
 
 			return confirmationComponent;
 		}, 640);
 	}
 
-	/*
-	 * public void view(EpipulseExportIndexDto exportIndexDto, Runnable callback) {
-	 * EpipulseExportDto epipulseExportDto = FacadeProvider.getEpipulseExportFacade().getEpiPulseExportByUuid(exportIndexDto.getUuid());
-	 * EpipulseExportInfoLayout exportInfoLayout = new EpipulseExportInfoLayout(epipulseExportDto, null);
-	 * VaadinUiUtil.showConfirmationPopup(
-	 * I18nProperties.getString(Strings.headingViewEpipulseExport),
-	 * exportInfoLayout,
-	 * I18nProperties.getString(Strings.close),
-	 * null,
-	 * 640,
-	 * confirmed -> {
-	 * return true;
-	 * });
-	 * }
-	 */
+	public void download(EpipulseExportIndexDto exportIndexDto) {
+		if (exportIndexDto.getExportFileName() == null) {
+			Notification notification = new Notification(
+				"",
+				I18nProperties.getString(Strings.messageEpipulseExportDownloadNoFileName),
+				Notification.Type.ERROR_MESSAGE,
+				true);
+			notification.setDelayMsec(-1);
+			notification.show(Page.getCurrent());
+			return;
+		}
+
+		String generatedFilesPath = FacadeProvider.getConfigFacade().getGeneratedFilesPath();
+		String exportFilePath = generatedFilesPath + "/" + exportIndexDto.getExportFileName();
+
+		File file = new File(exportFilePath);
+		if (!file.exists()) {
+			Notification notification = new Notification(
+				"",
+				I18nProperties.getString(Strings.messageEpipulseExportDownloadNoFileName),
+				Notification.Type.ERROR_MESSAGE,
+				true);
+			notification.setDelayMsec(-1);
+			notification.show(Page.getCurrent());
+			return;
+		}
+
+		StreamResource streamResource = new StreamResource(() -> {
+			try {
+				return new FileInputStream(file);
+			} catch (FileNotFoundException e) {
+				Notification.show(I18nProperties.getString(Strings.messageEpipulseExportDownloadNoFileName), Notification.Type.ERROR_MESSAGE);
+				return null;
+			}
+		}, exportIndexDto.getExportFileName());
+
+		streamResource.setMIMEType("text/csv");
+
+		streamResource.setCacheTime(0);
+
+		Page.getCurrent().open(streamResource, null, false);
+	}
 }

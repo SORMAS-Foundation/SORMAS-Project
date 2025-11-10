@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.ui.epipulse;
 
+import com.vaadin.ui.Button;
 import com.vaadin.v7.ui.PopupDateField;
 
 import de.symeda.sormas.api.epipulse.EpipulseExportCriteria;
@@ -44,7 +45,7 @@ public class EpipulseExportGridFilterForm extends AbstractFilterForm<EpipulseExp
 	@Override
 	protected String[] getMainFilterLocators() {
 		return new String[] {
-			EpipulseExportCriteria.DISEASE,
+			EpipulseExportCriteria.SUBJECT_CODE,
 			EpipulseExportCriteria.STATUS,
 			EpipulseExportCriteria.REPORT_DATE_FROM,
 			EpipulseExportCriteria.REPORT_DATE_TO };
@@ -57,7 +58,7 @@ public class EpipulseExportGridFilterForm extends AbstractFilterForm<EpipulseExp
 
 	@Override
 	protected void addFields() {
-		addField(FieldConfiguration.pixelSized(EpipulseExportCriteria.DISEASE, 150));
+		addField(FieldConfiguration.pixelSized(EpipulseExportCriteria.SUBJECT_CODE, 150));
 		addField(FieldConfiguration.pixelSized(EpipulseExportCriteria.STATUS, 150));
 
 		PopupDateField reportDateFrom = addField(getContent(), FieldConfiguration.pixelSized(EpipulseExportCriteria.REPORT_DATE_FROM, 140));
@@ -65,5 +66,9 @@ public class EpipulseExportGridFilterForm extends AbstractFilterForm<EpipulseExp
 
 		PopupDateField reoprtDateTo = addField(getContent(), FieldConfiguration.pixelSized(EpipulseExportCriteria.REPORT_DATE_TO, 140));
 		reoprtDateTo.setInputPrompt(I18nProperties.getString(Strings.promptEpipulseExportDateTo));
+	}
+
+	public Button getApplyButton() {
+		return getFormActionButtonsComponent().getApplyResetButtonsComponent().getApplyButton();
 	}
 }

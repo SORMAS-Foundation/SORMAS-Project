@@ -15,28 +15,27 @@
 
 package de.symeda.sormas.api.epipulse;
 
-import java.util.List;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestType;
 
-import javax.ejb.Remote;
+public class EpipulsePathogentTestCheckDto {
 
-import de.symeda.sormas.api.DeletableFacade;
-import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.utils.SortProperty;
+	private PathogenTestType testType;
+	private PathogenTestResultType testResult;
 
-@Remote
-public interface EpipulseExportFacade extends DeletableFacade {
+	public PathogenTestType getTestType() {
+		return testType;
+	}
 
-	EpipulseExportDto saveEpipulseExport(EpipulseExportDto dto);
+	public void setTestType(PathogenTestType testType) {
+		this.testType = testType;
+	}
 
-	Page<EpipulseExportIndexDto> getIndexPage(EpipulseExportCriteria criteria, Integer offset, Integer size, List<SortProperty> sortProperties);
+	public PathogenTestResultType getTestResult() {
+		return testResult;
+	}
 
-	EpipulseExportDto getEpiPulseExportByUuid(String uuid);
-
-	long count(EpipulseExportCriteria criteria);
-
-	List<EpipulseExportIndexDto> getIndexList(EpipulseExportCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
-
-	void cancelEpipulseExport(String uuid);
-
-	void deleteEpipulseExport(String uuid);
+	public void setTestResult(PathogenTestResultType testResult) {
+		this.testResult = testResult;
+	}
 }
