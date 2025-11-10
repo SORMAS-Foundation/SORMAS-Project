@@ -1202,4 +1202,24 @@
         <group-name>SYSTEM_CONFIGURATION</group-name>
     </security-role-mapping>
 
+    <security-role-mapping>
+        <role-name>EPIPULSE_EXPORT_VIEW</role-name>
+        <group-name>EPIPULSE_EXPORT_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EPIPULSE_EXPORT_CREATE</role-name>
+        <group-name>EPIPULSE_EXPORT_CREATE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EPIPULSE_EXPORT_DOWNLOAD</role-name>
+        <group-name>EPIPULSE_EXPORT_DOWNLOAD</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EPIPULSE_EXPORT_DELETE</role-name>
+        <group-name>EPIPULSE_EXPORT_DELETE</group-name>
+    </security-role-mapping>
+
 </glassfish-web-app>

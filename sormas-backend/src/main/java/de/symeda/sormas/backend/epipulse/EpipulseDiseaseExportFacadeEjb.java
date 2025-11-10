@@ -58,7 +58,7 @@ public class EpipulseDiseaseExportFacadeEjb implements EpipulseDiseaseExportFaca
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb;
 
-	public void exportPertussisCaseBased(String uuid) {
+	public void startPertussisExport(String uuid) {
 
 		CSVWriter writer = null;
 		EpipulseExport epipulseExport = null;

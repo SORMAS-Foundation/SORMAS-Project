@@ -29,6 +29,10 @@ import de.symeda.sormas.backend.adverseeventsfollowingimmunization.entity.AefiIn
 import de.symeda.sormas.backend.docgeneration.DocumentTemplate;
 import de.symeda.sormas.backend.environment.Environment;
 import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSample;
+import de.symeda.sormas.backend.epipulse.EpipulseDatasourceConfiguration;
+import de.symeda.sormas.backend.epipulse.EpipulseExport;
+import de.symeda.sormas.backend.epipulse.EpipulseLocationConfiguration;
+import de.symeda.sormas.backend.epipulse.EpipulseSubjectcodeConfiguration;
 import de.symeda.sormas.backend.immunization.entity.DirectoryImmunization;
 import de.symeda.sormas.backend.manualmessagelog.ManualMessageLog;
 import de.symeda.sormas.backend.selfreport.SelfReport;
@@ -76,7 +80,11 @@ public class DatabaseExportServiceTest {
 		AefiInvestigation.class,
 		DocumentTemplate.class,
 		Survey.class,
-		SurveyToken.class);
+		SurveyToken.class,
+		EpipulseExport.class,
+		EpipulseSubjectcodeConfiguration.class,
+		EpipulseDatasourceConfiguration.class,
+		EpipulseLocationConfiguration.class);
 
 	@Test
 	public void test_all_entities_have_export_configuration() {

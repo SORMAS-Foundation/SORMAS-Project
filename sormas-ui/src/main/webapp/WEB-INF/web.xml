@@ -973,4 +973,20 @@
 		<role-name>SYSTEM_CONFIGURATION</role-name>
 	</security-role>
 
+	<security-role>
+		<role-name>EPIPULSE_EXPORT_VIEW</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EPIPULSE_EXPORT_CREATE</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EPIPULSE_EXPORT_DOWNLOAD</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EPIPULSE_EXPORT_DELETE</role-name>
+	</security-role>
+
 </web-app>

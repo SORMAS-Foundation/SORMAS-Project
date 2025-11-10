@@ -20,5 +20,5 @@ import javax.ejb.Remote;
 @Remote
 public interface EpipulseDiseaseExportFacade {
 
-	public void exportPertussisCaseBased(String uuid);
+	public void startPertussisExport(String uuid);
 }

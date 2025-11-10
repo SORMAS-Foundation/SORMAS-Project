@@ -25,6 +25,8 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 @Entity(name = "epipulse_datasource_configuration")
 public class EpipulseDatasourceConfiguration extends AbstractDomainObject {
 
+	public static final String TABLE_NAME = "epipulse_datasource_configuration";
+
 	private String countryIso2Code;
 	private String datasource;
 	private String name;

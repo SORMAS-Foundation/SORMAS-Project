@@ -65,7 +65,7 @@ public class EpipulseExportTimerEjb {
 
 			switch (subjectCode) {
 			case PERT:
-				diseaseExportFacadeEjb.exportPertussisCaseBased(uuid);
+				diseaseExportFacadeEjb.startPertussisExport(uuid);
 				break;
 			default:
 				logger.warn("No export for subject code: {}", subjectCodeStr);
