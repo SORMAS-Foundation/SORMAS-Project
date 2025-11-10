@@ -15,35 +15,6 @@
 
 package de.symeda.sormas.backend.systemconfiguration;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.TreeMap;
-import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.security.PermitAll;
-import javax.ejb.DependsOn;
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Lock;
-import javax.ejb.LockType;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
-import javax.inject.Inject;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueCriteria;
@@ -63,6 +34,32 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.util.RightsAllowed;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.security.PermitAll;
+import javax.ejb.DependsOn;
+import javax.ejb.EJB;
+import javax.ejb.Lock;
+import javax.ejb.LockType;
+import javax.ejb.Singleton;
+import javax.ejb.Startup;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
+import javax.inject.Inject;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.util.List;
+import java.util.Optional;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of the {@link SystemConfigurationValueFacade} interface.
@@ -74,9 +71,9 @@ import de.symeda.sormas.backend.util.RightsAllowed;
 @TransactionManagement(TransactionManagementType.CONTAINER)
 @RightsAllowed(UserRight._SYSTEM_CONFIGURATION)
 public class SystemConfigurationValueEjb
-    extends
-    AbstractBaseEjb<SystemConfigurationValue, SystemConfigurationValueDto, SystemConfigurationValueIndexDto, SystemConfigurationValueReferenceDto, SystemConfigurationValueService, SystemConfigurationValueCriteria>
-    implements SystemConfigurationValueFacade {
+        extends
+        AbstractBaseEjb<SystemConfigurationValue, SystemConfigurationValueDto, SystemConfigurationValueIndexDto, SystemConfigurationValueReferenceDto, SystemConfigurationValueService, SystemConfigurationValueCriteria>
+        implements SystemConfigurationValueFacade {
 
     private static final long serialVersionUID = 1L;
 
@@ -117,8 +114,7 @@ public class SystemConfigurationValueEjb
     /**
      * Retrieves a configuration value associated with the given key.
      *
-     * @param key
-     *            The key of the configuration value to retrieve.
+     * @param key The key of the configuration value to retrieve.
      * @return An {@link Optional} containing the value if found, or an empty {@link Optional} if not found.
      */
     @PermitAll
@@ -140,8 +136,7 @@ public class SystemConfigurationValueEjb
     /**
      * Saves a system configuration value.
      *
-     * @param dto
-     *            The {@link SystemConfigurationValueDto} to save.
+     * @param dto The {@link SystemConfigurationValueDto} to save.
      * @return The saved {@link SystemConfigurationValueDto}.
      */
     @Lock(LockType.READ)
@@ -169,8 +164,7 @@ public class SystemConfigurationValueEjb
     /**
      * Counts the number of system configuration values matching the given criteria.
      *
-     * @param criteria
-     *            The {@link SystemConfigurationValueCriteria} to match.
+     * @param criteria The {@link SystemConfigurationValueCriteria} to match.
      * @return The count of matching system configuration values.
      */
     @Lock(LockType.READ)
@@ -195,8 +189,7 @@ public class SystemConfigurationValueEjb
     /**
      * Retrieves system configuration values by their UUIDs.
      *
-     * @param uuids
-     *            The list of UUIDs to retrieve.
+     * @param uuids The list of UUIDs to retrieve.
      * @return A list of {@link SystemConfigurationValueDto} objects.
      */
     @Lock(LockType.READ)
@@ -222,31 +215,27 @@ public class SystemConfigurationValueEjb
      * Retrieves a list of {@link SystemConfigurationValueIndexDto} objects for frontend filtering and display.
      * This method applies filtering, sorting, and pagination based on the provided criteria.
      *
-     * @param criteria
-     *            The filtering criteria, or {@code null} for no filtering.
-     * @param first
-     *            The index of the first result to retrieve (for pagination), or {@code null} to start from the beginning.
-     * @param max
-     *            The maximum number of results to retrieve (for pagination), or {@code null} for no limit.
-     * @param sortProperties
-     *            The list of sort properties to apply to the results.
+     * @param criteria       The filtering criteria, or {@code null} for no filtering.
+     * @param first          The index of the first result to retrieve (for pagination), or {@code null} to start from the beginning.
+     * @param max            The maximum number of results to retrieve (for pagination), or {@code null} for no limit.
+     * @param sortProperties The list of sort properties to apply to the results.
      * @return A list of {@link SystemConfigurationValueIndexDto} objects matching the criteria.
      */
     @Lock(LockType.READ)
     @RightsAllowed(UserRight._SYSTEM_CONFIGURATION)
     @Override
     public List<SystemConfigurationValueIndexDto> getIndexList(
-        final SystemConfigurationValueCriteria criteria,
-        final Integer first,
-        final Integer max,
-        final List<SortProperty> sortProperties) {
+            final SystemConfigurationValueCriteria criteria,
+            final Integer first,
+            final Integer max,
+            final List<SortProperty> sortProperties) {
 
         LOGGER.debug(
-            "Retrieving SystemConfigurationValueIndexDto list with criteria: {}, first: {}, max: {}, sortProperties: {}",
-            criteria,
-            first,
-            max,
-            sortProperties);
+                "Retrieving SystemConfigurationValueIndexDto list with criteria: {}, first: {}, max: {}, sortProperties: {}",
+                criteria,
+                first,
+                max,
+                sortProperties);
         final CriteriaBuilder cb = em.getCriteriaBuilder();
         final CriteriaQuery<SystemConfigurationValue> cq = cb.createQuery(SystemConfigurationValue.class);
         final Root<SystemConfigurationValue> root = cq.from(SystemConfigurationValue.class);
@@ -264,15 +253,18 @@ public class SystemConfigurationValueEjb
             final List<Order> order = sortProperties.stream().map(sortProperty -> {
                 final Expression<?> expression;
                 switch (sortProperty.propertyName) {
-                case SystemConfigurationValue.KEY_FIELD_NAME:
-                    expression = cb.lower(root.get(sortProperty.propertyName));
-                    break;
-                case SystemConfigurationValue.VALUE_FIELD_NAME:
-                    expression = root.get(sortProperty.propertyName);
-                    break;
-                default:
-                    LOGGER.error("Invalid sort property {}.", sortProperty.propertyName);
-                    throw new IllegalArgumentException(sortProperty.propertyName);
+                    case SystemConfigurationValue.KEY_FIELD_NAME:
+                        expression = cb.lower(root.get(sortProperty.propertyName));
+                        break;
+                    case SystemConfigurationValue.VALUE_FIELD_NAME:
+                        expression = root.get(sortProperty.propertyName);
+                        break;
+                    case SystemConfigurationValue.DESCRIPTION:
+                        expression = cb.lower(root.get(sortProperty.propertyName));
+                        break;
+                    default:
+                        LOGGER.error("Invalid sort property {}.", sortProperty.propertyName);
+                        throw new IllegalArgumentException(sortProperty.propertyName);
                 }
                 return sortProperty.ascending ? cb.asc(expression) : cb.desc(expression);
             }).collect(Collectors.toList());
@@ -293,10 +285,8 @@ public class SystemConfigurationValueEjb
      * The method also checks if the value matches the pattern if a pattern is provided.
      * If the value is encrypted, the validation for the value will not be performed.
      *
-     * @param dto
-     *            The {@link SystemConfigurationValueDto} data transfer object to validate.
-     * @throws ValidationRuntimeException
-     *             if the key or value in the DTO is invalid.
+     * @param dto The {@link SystemConfigurationValueDto} data transfer object to validate.
+     * @throws ValidationRuntimeException if the key or value in the DTO is invalid.
      */
     @RightsAllowed(UserRight._SYSTEM_CONFIGURATION)
     @Override
@@ -324,8 +314,8 @@ public class SystemConfigurationValueEjb
         }
 
         if (dto.getPattern() != null
-            && !dto.getPattern().isBlank()
-            && !SystemConfigurationValueHelper.isConfigurationValueMatchingPattern(dto.getValue(), dto.getPattern())) {
+                && !dto.getPattern().isBlank()
+                && !SystemConfigurationValueHelper.isConfigurationValueMatchingPattern(dto.getValue(), dto.getPattern())) {
             LOGGER.warn("Invalid value in SystemConfigurationValueDto: {}", dto);
 
             String message = null;
@@ -362,21 +352,17 @@ public class SystemConfigurationValueEjb
      * Converts a {@link SystemConfigurationValueDto} data transfer object to a {@link SystemConfigurationValue} entity.
      * If a target entity is provided, it will be filled with the data from the DTO; otherwise, a new entity will be created.
      *
-     * @param source
-     *            The {@link SystemConfigurationValueDto} data transfer object to convert. Must not be {@code null}.
-     * @param target
-     *            The target {@link SystemConfigurationValue} entity to fill, or {@code null} to create a new entity.
-     * @param checkChangeDate
-     *            Whether to check the change date during the fill or build process.
+     * @param source          The {@link SystemConfigurationValueDto} data transfer object to convert. Must not be {@code null}.
+     * @param target          The target {@link SystemConfigurationValue} entity to fill, or {@code null} to create a new entity.
+     * @param checkChangeDate Whether to check the change date during the fill or build process.
      * @return The filled or newly created {@link SystemConfigurationValue} entity.
-     * @throws NullPointerException
-     *             if the source DTO is {@code null}.
+     * @throws NullPointerException if the source DTO is {@code null}.
      */
     @Override
     protected SystemConfigurationValue fillOrBuildEntity(
-        @NotNull final SystemConfigurationValueDto source,
-        SystemConfigurationValue target,
-        final boolean checkChangeDate) {
+            @NotNull final SystemConfigurationValueDto source,
+            SystemConfigurationValue target,
+            final boolean checkChangeDate) {
 
         target = DtoHelper.fillOrBuildEntity(source, target, SystemConfigurationValue::new, checkChangeDate);
 
@@ -398,10 +384,9 @@ public class SystemConfigurationValueEjb
     /**
      * Converts a {@link SystemConfigurationValue} entity to a {@link SystemConfigurationValueDto} data transfer object.
      *
-     * @param source
-     *            The {@link SystemConfigurationValue} entity to convert.
+     * @param source The {@link SystemConfigurationValue} entity to convert.
      * @return The corresponding {@link SystemConfigurationValueDto} data transfer object, or {@code null} if the source entity is
-     *         {@code null}.
+     * {@code null}.
      */
     @Override
     protected SystemConfigurationValueDto toDto(final SystemConfigurationValue source) {
@@ -417,9 +402,9 @@ public class SystemConfigurationValueEjb
         target.setValue(source.getValue());
         target.setDescription(source.getDescription());
         target.setCategory(
-            source.getCategory() != null
-                ? categoryFacade.getReferenceByUuid(source.getCategory().getUuid())
-                : categoryFacade.getDefaultCategoryReferenceDto());
+                source.getCategory() != null
+                        ? categoryFacade.getReferenceByUuid(source.getCategory().getUuid())
+                        : categoryFacade.getDefaultCategoryReferenceDto());
         target.setOptional(source.getOptional() != null ? source.getOptional() : Boolean.FALSE);
         target.setPattern(source.getPattern());
         target.setEncrypt(source.getEncrypt());
@@ -429,7 +414,7 @@ public class SystemConfigurationValueEjb
             try {
                 final Class<?> clazz = Class.forName(source.getDataProvider());
                 final SystemConfigurationValueDataProvider dataProvider =
-                    (SystemConfigurationValueDataProvider) clazz.getDeclaredConstructor().newInstance();
+                        (SystemConfigurationValueDataProvider) clazz.getDeclaredConstructor().newInstance();
                 target.setDataProvider(dataProvider);
             } catch (final Exception e) {
                 LOGGER.error("Failed to instantiate SystemConfigurationValueDataProvider", e);
@@ -444,8 +429,7 @@ public class SystemConfigurationValueEjb
     /**
      * Converts a {@link SystemConfigurationValue} entity to a {@link SystemConfigurationValueReferenceDto}.
      *
-     * @param source
-     *            The {@link SystemConfigurationValue} entity to convert.
+     * @param source The {@link SystemConfigurationValue} entity to convert.
      * @return The corresponding {@link SystemConfigurationValueReferenceDto}, or {@code null} if the source is {@code null}.
      */
     @Override
@@ -462,21 +446,17 @@ public class SystemConfigurationValueEjb
      * Pseudonymizes a {@link SystemConfigurationValueDto} data transfer object.
      * This method is currently not required for system configuration values.
      *
-     * @param source
-     *            The {@link SystemConfigurationValue} entity to pseudonymize.
-     * @param dto
-     *            The {@link SystemConfigurationValueDto} data transfer object to pseudonymize.
-     * @param pseudonymizer
-     *            The pseudonymizer to use.
-     * @param inJurisdiction
-     *            Whether the pseudonymization is within jurisdiction.
+     * @param source         The {@link SystemConfigurationValue} entity to pseudonymize.
+     * @param dto            The {@link SystemConfigurationValueDto} data transfer object to pseudonymize.
+     * @param pseudonymizer  The pseudonymizer to use.
+     * @param inJurisdiction Whether the pseudonymization is within jurisdiction.
      */
     @Override
     protected void pseudonymizeDto(
-        final SystemConfigurationValue source,
-        final SystemConfigurationValueDto dto,
-        final Pseudonymizer<SystemConfigurationValueDto> pseudonymizer,
-        final boolean inJurisdiction) {
+            final SystemConfigurationValue source,
+            final SystemConfigurationValueDto dto,
+            final Pseudonymizer<SystemConfigurationValueDto> pseudonymizer,
+            final boolean inJurisdiction) {
         LOGGER.debug("Pseudonymizing SystemConfigurationValue ignored: {}", source);
     }
 
@@ -484,29 +464,24 @@ public class SystemConfigurationValueEjb
      * Restores a pseudonymized {@link SystemConfigurationValueDto} data transfer object.
      * This method is currently not required for system configuration values.
      *
-     * @param dto
-     *            The {@link SystemConfigurationValueDto} data transfer object to restore.
-     * @param existingDto
-     *            The existing {@link SystemConfigurationValueDto} data transfer object.
-     * @param entity
-     *            The {@link SystemConfigurationValue} entity.
-     * @param pseudonymizer
-     *            The pseudonymizer to use.
+     * @param dto           The {@link SystemConfigurationValueDto} data transfer object to restore.
+     * @param existingDto   The existing {@link SystemConfigurationValueDto} data transfer object.
+     * @param entity        The {@link SystemConfigurationValue} entity.
+     * @param pseudonymizer The pseudonymizer to use.
      */
     @Override
     protected void restorePseudonymizedDto(
-        final SystemConfigurationValueDto dto,
-        final SystemConfigurationValueDto existingDto,
-        final SystemConfigurationValue entity,
-        final Pseudonymizer<SystemConfigurationValueDto> pseudonymizer) {
+            final SystemConfigurationValueDto dto,
+            final SystemConfigurationValueDto existingDto,
+            final SystemConfigurationValue entity,
+            final Pseudonymizer<SystemConfigurationValueDto> pseudonymizer) {
         LOGGER.debug("Restoring pseudonymized SystemConfigurationValue ignored: {}", dto);
     }
 
     /**
      * Converts a {@link SystemConfigurationValue} entity to a {@link SystemConfigurationValueIndexDto}.
      *
-     * @param entity
-     *            The {@link SystemConfigurationValue} entity to convert.
+     * @param entity The {@link SystemConfigurationValue} entity to convert.
      * @return The corresponding {@link SystemConfigurationValueIndexDto}, or {@code null} if the entity is {@code null}.
      */
     private SystemConfigurationValueIndexDto toIndexDto(final SystemConfigurationValue entity) {
