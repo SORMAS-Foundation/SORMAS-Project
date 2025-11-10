@@ -981,6 +981,7 @@ public interface Captions {
 	String Community_defaultInfrastructure = "Community.defaultInfrastructure";
 	String Community_district = "Community.district";
 	String Community_externalID = "Community.externalID";
+	String Community_nutsCode = "Community.nutsCode";
 	String Community_region = "Community.region";
 	String communityActiveCommunities = "communityActiveCommunities";
 	String communityAllCommunities = "communityAllCommunities";
@@ -1190,6 +1191,7 @@ public interface Captions {
 	String Country_displayName = "Country.displayName";
 	String Country_externalId = "Country.externalId";
 	String Country_isoCode = "Country.isoCode";
+	String Country_nutsCode = "Country.nutsCode";
 	String Country_subcontinent = "Country.subcontinent";
 	String Country_unoCode = "Country.unoCode";
 	String countryActiveCountries = "countryActiveCountries";
@@ -1436,6 +1438,7 @@ public interface Captions {
 	String District_epidCode = "District.epidCode";
 	String District_externalID = "District.externalID";
 	String District_growthRate = "District.growthRate";
+	String District_nutsCode = "District.nutsCode";
 	String District_population = "District.population";
 	String District_region = "District.region";
 	String districtActiveDistricts = "districtActiveDistricts";
@@ -1577,6 +1580,22 @@ public interface Captions {
 	String EpiData_modeOfTransmission = "EpiData.modeOfTransmission";
 	String EpiData_modeOfTransmissionType = "EpiData.modeOfTransmissionType";
 	String epiDataNoSourceContacts = "epiDataNoSourceContacts";
+	String epipulseActiveExports = "epipulseActiveExports";
+	String epipulseAllExports = "epipulseAllExports";
+	String epipulseArchivedExports = "epipulseArchivedExports";
+	String epipulseDownloadColumnCaption = "epipulseDownloadColumnCaption";
+	String EpipulseExport_creationUser = "EpipulseExport.creationUser";
+	String EpipulseExport_endDate = "EpipulseExport.endDate";
+	String EpipulseExport_exportFileSize = "EpipulseExport.exportFileSize";
+	String EpipulseExport_startDate = "EpipulseExport.startDate";
+	String EpipulseExport_status = "EpipulseExport.status";
+	String EpipulseExport_statusChangeDate = "EpipulseExport.statusChangeDate";
+	String EpipulseExport_subjectCode = "EpipulseExport.subjectCode";
+	String EpipulseExport_totalRecords = "EpipulseExport.totalRecords";
+	String EpipulseExport_uuid = "EpipulseExport.uuid";
+	String epipulseFileSizeColumnCaption = "epipulseFileSizeColumnCaption";
+	String epipulseNewExport = "epipulseNewExport";
+	String epipulseTotalRecordsColumnCaption = "epipulseTotalRecordsColumnCaption";
 	String epiWeekFrom = "epiWeekFrom";
 	String epiWeekTo = "epiWeekTo";
 	String Event = "Event";
@@ -2510,6 +2529,7 @@ public interface Captions {
 	String Region_epidCode = "Region.epidCode";
 	String Region_externalID = "Region.externalID";
 	String Region_growthRate = "Region.growthRate";
+	String Region_nutsCode = "Region.nutsCode";
 	String Region_population = "Region.population";
 	String regionActiveRegions = "regionActiveRegions";
 	String regionAllRegions = "regionAllRegions";
@@ -2789,6 +2809,7 @@ public interface Captions {
 	String statisticsDontGroupRows = "statisticsDontGroupRows";
 	String statisticsDontGroupSeries = "statisticsDontGroupSeries";
 	String statisticsDontGroupX = "statisticsDontGroupX";
+	String statisticsEpipulseExport = "statisticsEpipulseExport";
 	String statisticsExchange = "statisticsExchange";
 	String statisticsIncidenceDivisor = "statisticsIncidenceDivisor";
 	String statisticsMapType = "statisticsMapType";
@@ -3468,6 +3489,7 @@ public interface Captions {
 	String View_shareRequests = "View.shareRequests";
 	String View_statistics = "View.statistics";
 	String View_statistics_database_export = "View.statistics.database-export";
+	String View_statistics_epipulse_export = "View.statistics.epipulse-export";
 	String View_surveys = "View.surveys";
 	String View_surveys_surveyTokens = "View.surveys.surveyTokens";
 	String View_tasks = "View.tasks";

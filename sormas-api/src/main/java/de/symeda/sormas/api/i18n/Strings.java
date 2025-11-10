@@ -265,6 +265,7 @@ public interface Strings {
 	String entityEnvironments = "entityEnvironments";
 	String entityEnvironmentSample = "entityEnvironmentSample";
 	String entityEnvironmentSamples = "entityEnvironmentSamples";
+	String entityEpipulseExport = "entityEpipulseExport";
 	String entityEvent = "entityEvent";
 	String entityEventActions = "entityEventActions";
 	String entityEventGroup = "entityEventGroup";
@@ -307,6 +308,7 @@ public interface Strings {
 	String entityVaccinations = "entityVaccinations";
 	String entityVisits = "entityVisits";
 	String entityWeeklyReports = "entityWeeklyReports";
+	String epipulseDownloadLinkText = "epipulseDownloadLinkText";
 	String epiWeek = "epiWeek";
 	String errorAccessDenied = "errorAccessDenied";
 	String errorAdverseEventInvestigationNotEditable = "errorAdverseEventInvestigationNotEditable";
@@ -551,6 +553,7 @@ public interface Strings {
 	String headingCreateNewContactIssue = "headingCreateNewContactIssue";
 	String headingCreateNewEnvironment = "headingCreateNewEnvironment";
 	String headingCreateNewEnvironmentSample = "headingCreateNewEnvironmentSample";
+	String headingCreateNewEpipulseExport = "headingCreateNewEpipulseExport";
 	String headingCreateNewEvent = "headingCreateNewEvent";
 	String headingCreateNewEventGroup = "headingCreateNewEventGroup";
 	String headingCreateNewEventParticipant = "headingCreateNewEventParticipant";
@@ -643,6 +646,7 @@ public interface Strings {
 	String headingEpiConclusion = "headingEpiConclusion";
 	String headingEpiCurve = "headingEpiCurve";
 	String headingEpiDataSourceCaseContacts = "headingEpiDataSourceCaseContacts";
+	String headingEpipulseExportCreated = "headingEpipulseExportCreated";
 	String headingErrorReportNotAvailable = "headingErrorReportNotAvailable";
 	String headingErrorSendingExternalEmail = "headingErrorSendingExternalEmail";
 	String headingEventData = "headingEventData";
@@ -913,6 +917,7 @@ public interface Strings {
 	String headingVaccination = "headingVaccination";
 	String headingViewAdditionalTest = "headingViewAdditionalTest";
 	String headingViewClinicalVisit = "headingViewClinicalVisit";
+	String headingViewEpipulseExport = "headingViewEpipulseExport";
 	String headingViewNotFound = "headingViewNotFound";
 	String headingViewPathogenTestResult = "headingViewPathogenTestResult";
 	String headingViewPrescription = "headingViewPrescription";
@@ -1388,6 +1393,18 @@ public interface Strings {
 	String messageEnvironmentSaved = "messageEnvironmentSaved";
 	String messageEpiDataHint = "messageEpiDataHint";
 	String messageEpidNumberWarning = "messageEpidNumberWarning";
+	String messageEpipulseExportCancelConfirmationCaption = "messageEpipulseExportCancelConfirmationCaption";
+	String messageEpipulseExportCancelConfirmationDescription = "messageEpipulseExportCancelConfirmationDescription";
+	String messageEpipulseExportCancelled = "messageEpipulseExportCancelled";
+	String messageEpipulseExportCreatedCaption = "messageEpipulseExportCreatedCaption";
+	String messageEpipulseExportCreatedDescription = "messageEpipulseExportCreatedDescription";
+	String messageEpipulseExportCreatedError = "messageEpipulseExportCreatedError";
+	String messageEpipulseExportDeleteConfirmationCaption = "messageEpipulseExportDeleteConfirmationCaption";
+	String messageEpipulseExportDeleteConfirmationDescription = "messageEpipulseExportDeleteConfirmationDescription";
+	String messageEpipulseExportDeleted = "messageEpipulseExportDeleted";
+	String messageEpipulseExportDownloadNoFileName = "messageEpipulseExportDownloadNoFileName";
+	String messageEpipulseExportNoCancel = "messageEpipulseExportNoCancel";
+	String messageEpipulseExportNoDelete = "messageEpipulseExportNoDelete";
 	String messageErrorReportNotAvailable = "messageErrorReportNotAvailable";
 	String messageEventArchived = "messageEventArchived";
 	String messageEventCreated = "messageEventCreated";
@@ -1797,6 +1814,8 @@ public interface Strings {
 	String promptEnvironmentSampleRegion = "promptEnvironmentSampleRegion";
 	String promptEnvironmentSampleTestedPathogen = "promptEnvironmentSampleTestedPathogen";
 	String promptEnvironmentSearchField = "promptEnvironmentSearchField";
+	String promptEpipulseExportDateFrom = "promptEpipulseExportDateFrom";
+	String promptEpipulseExportDateTo = "promptEpipulseExportDateTo";
 	String promptEventDateFrom = "promptEventDateFrom";
 	String promptEventDateTo = "promptEventDateTo";
 	String promptEventDateType = "promptEventDateType";
