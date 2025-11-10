@@ -30,7 +30,7 @@ public class SystemConfigurationValueIndexDto extends EntityDto {
     public static final String VALUE_PROPERTY_NAME = "value";
     public static final String DESCRIPTION_PROPERTY_NAME = "description";
     public static final String ENCRYPTED_PROPERTY_NAME = "encrypted";
-    public static final String CATEGORY_NAME_PROPERTY_NAME = "categoryName";
+    public static final String CATEGORY_NAME_PROPERTY_NAME = "category";
     public static final String CATEGORY_CAPTION_PROPERTY_NAME = "categoryCaption";
     public static final String CATEGORY_DESCRIPTION_PROPERTY_NAME = "categoryDescription";
 
@@ -38,7 +38,7 @@ public class SystemConfigurationValueIndexDto extends EntityDto {
     private String key;
     private String description;
     private boolean encrypted;
-    private String categoryName;
+    private String category;
     private String categoryCaption;
     private String categoryDescription;
 
@@ -123,18 +123,18 @@ public class SystemConfigurationValueIndexDto extends EntityDto {
      * 
      * @return the category name
      */
-    public String getCategoryName() {
-        return categoryName;
+    public String getCategory() {
+        return category;
     }
 
     /**
      * Sets the category name of the configuration.
      * 
-     * @param categoryName
+     * @param category
      *            the category name to set
      */
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     /**

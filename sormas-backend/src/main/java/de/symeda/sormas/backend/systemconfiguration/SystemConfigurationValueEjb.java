@@ -263,6 +263,9 @@ public class SystemConfigurationValueEjb
             final List<Order> order = sortProperties.stream().map(sortProperty -> {
                 final Expression<?> expression;
                 switch (sortProperty.propertyName) {
+                case SystemConfigurationValue.CATEGORY_FIELD_NAME:
+                    expression = root.get(sortProperty.propertyName);
+                    break;
                 case SystemConfigurationValue.KEY_FIELD_NAME:
                     expression = cb.lower(root.get(sortProperty.propertyName));
                     break;
@@ -524,7 +527,7 @@ public class SystemConfigurationValueEjb
         dto.setKey(entity.getKey());
         dto.setDescription(entity.getDescription());
         dto.setEncrypted(entity.getEncrypt()); // encrypt needed for list view
-        dto.setCategoryName(entity.getCategory() != null ? entity.getCategory().getName() : null);
+        dto.setCategory(entity.getCategory() != null ? entity.getCategory().getName() : null);
         dto.setCategoryCaption(entity.getCategory() != null ? entity.getCategory().getCaption() : null);
         dto.setCategoryDescription(entity.getCategory() != null ? entity.getCategory().getDescription() : null);
 
