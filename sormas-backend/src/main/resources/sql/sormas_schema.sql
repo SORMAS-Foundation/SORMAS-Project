@@ -14827,7 +14827,6 @@ VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'DISEASE_VA
         'RESPIRATORY_SYNCYTIAL_VIRUS');
 INSERT INTO schema_version (version_number, comment) VALUES (596, 'Included new Disease variant/subtype for RSV #13543');
 
-
 -- epipulse export table
 create table epipulse_export
 (
@@ -14892,6 +14891,6 @@ alter table district_history add nutscode varchar(10);
 alter table community add nutscode varchar(10);
 alter table community_history add nutscode varchar(10);
 
-INSERT INTO schema_version (version_number, comment) VALUES (596, 'Epipulse export module #13631');
+INSERT INTO schema_version (version_number, comment) VALUES (597, 'Epipulse export module #13631');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
