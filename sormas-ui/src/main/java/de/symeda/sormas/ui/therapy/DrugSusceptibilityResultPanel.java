@@ -33,8 +33,6 @@ import static de.symeda.sormas.api.therapy.DrugSusceptibilityDto.PENICILLIN_SUSC
 import static de.symeda.sormas.api.therapy.DrugSusceptibilityDto.RIFAMPICIN_SUSCEPTIBILITY;
 import static de.symeda.sormas.api.therapy.DrugSusceptibilityDto.STREPTOMYCIN_SUSCEPTIBILITY;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
@@ -78,30 +76,19 @@ public class DrugSusceptibilityResultPanel extends CustomLayout {
 
 	//@formatter:off
     private static final String HTML_LAYOUT =
-            loc(FORM_HEADING_LOC) +
-                    fluidRow(
-                            fluidColumn(4, 0,
-                                    fluidRowLocs(AMIKACIN_SUSCEPTIBILITY)
-                                            + fluidRowLocs(BEDAQUILINE_SUSCEPTIBILITY)
-                                            + fluidRowLocs(CAPREOMYCIN_SUSCEPTIBILITY)
-                                            + fluidRowLocs(CIPROFLOXACIN_SUSCEPTIBILITY)
-                                            + fluidRowLocs(DELAMANID_SUSCEPTIBILITY)
-                                            + fluidRowLocs(ETHAMBUTOL_SUSCEPTIBILITY)
-                                            + fluidRowLocs(GATIFLOXACIN_SUSCEPTIBILITY)
-											+ fluidRowLocs("LAYOUT_CEFTRIAXONE")
-											+ fluidRowLocs("LAYOUT_CIPROFLOXACIN")
-											+ fluidRowLocs("LAYOUT_ERYTHROMYCIN")),
-                            fluidColumn(4, 0,
-                                    fluidRowLocs(ISONIAZID_SUSCEPTIBILITY)
-                                            + fluidRowLocs(KANAMYCIN_SUSCEPTIBILITY)
-                                            + fluidRowLocs(LEVOFLOXACIN_SUSCEPTIBILITY)
-                                            + fluidRowLocs(MOXIFLOXACIN_SUSCEPTIBILITY)
-                                            + fluidRowLocs(OFLOXACIN_SUSCEPTIBILITY)
-                                            + fluidRowLocs(RIFAMPICIN_SUSCEPTIBILITY)
-                                            + fluidRowLocs(STREPTOMYCIN_SUSCEPTIBILITY)
-                                            + fluidRowLocs("LAYOUT_RIFAMPICIN")
-											+fluidRowLocs("LAYOUT_PENICILLIN"))
-                    );
+            loc(FORM_HEADING_LOC)
+                    + fluidRowLocs(ISONIAZID_SUSCEPTIBILITY, RIFAMPICIN_SUSCEPTIBILITY, "", "")
+                    + fluidRowLocs(ETHAMBUTOL_SUSCEPTIBILITY, STREPTOMYCIN_SUSCEPTIBILITY, "", "")
+                    + fluidRowLocs(LEVOFLOXACIN_SUSCEPTIBILITY, MOXIFLOXACIN_SUSCEPTIBILITY, "", "")
+                    + fluidRowLocs(BEDAQUILINE_SUSCEPTIBILITY, "", "", "")
+                    + fluidRowLocs(DELAMANID_SUSCEPTIBILITY, CAPREOMYCIN_SUSCEPTIBILITY, "", "")
+                    + fluidRowLocs(KANAMYCIN_SUSCEPTIBILITY, "", "", "")
+                    + fluidRowLocs(CIPROFLOXACIN_SUSCEPTIBILITY, OFLOXACIN_SUSCEPTIBILITY, "", "")
+                    + fluidRowLocs(GATIFLOXACIN_SUSCEPTIBILITY, "", "", "")
+                    + fluidRowLocs(AMIKACIN_SUSCEPTIBILITY, "", "", "")
+                    + fluidRowLocs("LAYOUT_CEFTRIAXONE", "LAYOUT_RIFAMPICIN", "", "")
+                    + fluidRowLocs("LAYOUT_CIPROFLOXACIN", "LAYOUT_PENICILLIN", "", "")
+                    + fluidRowLocs("LAYOUT_ERYTHROMYCIN", "", "", "");
     //@formatter:on
 
 	private static final List<String> componentLocationsList = List.of(
@@ -142,87 +129,103 @@ public class DrugSusceptibilityResultPanel extends CustomLayout {
 				DrugSusceptibilityDto drugSusceptibilityDto = pathogenTestDto.getDrugSusceptibility();
 
 				addResistanceResultField(
-					AMIKACIN_SUSCEPTIBILITY,
-					drugSusceptibilityDto.getAmikacinSusceptibility(),
-					I18nProperties.getEnumCaption(Drug.AMIKACIN),
-					pathogenTestDto.getTestedDisease());
-				addResistanceResultField(
-					BEDAQUILINE_SUSCEPTIBILITY,
-					drugSusceptibilityDto.getBedaquilineSusceptibility(),
-					I18nProperties.getEnumCaption(Drug.BEDAQUILINE),
-					pathogenTestDto.getTestedDisease());
-				addResistanceResultField(
-					CAPREOMYCIN_SUSCEPTIBILITY,
-					drugSusceptibilityDto.getCapreomycinSusceptibility(),
-					I18nProperties.getEnumCaption(Drug.CAPREOMYCIN),
-					pathogenTestDto.getTestedDisease());
-				addResistanceResultField(
-					CIPROFLOXACIN_SUSCEPTIBILITY,
-					drugSusceptibilityDto.getCiprofloxacinSusceptibility(),
-					I18nProperties.getEnumCaption(Drug.CIPROFLOXACIN),
-					pathogenTestDto.getTestedDisease());
-				addResistanceResultField(
-					DELAMANID_SUSCEPTIBILITY,
-					drugSusceptibilityDto.getDelamanidSusceptibility(),
-					I18nProperties.getEnumCaption(Drug.DELAMANID),
-					pathogenTestDto.getTestedDisease());
-				addResistanceResultField(
-					ETHAMBUTOL_SUSCEPTIBILITY,
-					drugSusceptibilityDto.getEthambutolSusceptibility(),
-					I18nProperties.getEnumCaption(Drug.ETHAMBUTOL),
-					pathogenTestDto.getTestedDisease());
-				addResistanceResultField(
-					GATIFLOXACIN_SUSCEPTIBILITY,
-					drugSusceptibilityDto.getGatifloxacinSusceptibility(),
-					I18nProperties.getEnumCaption(Drug.GATIFLOXACIN),
-					pathogenTestDto.getTestedDisease());
-				addResistanceResultField(
 					ISONIAZID_SUSCEPTIBILITY,
 					drugSusceptibilityDto.getIsoniazidSusceptibility(),
 					I18nProperties.getEnumCaption(Drug.ISONIAZID),
 					pathogenTestDto.getTestedDisease());
-				addResistanceResultField(
-					KANAMYCIN_SUSCEPTIBILITY,
-					drugSusceptibilityDto.getKanamycinSusceptibility(),
-					I18nProperties.getEnumCaption(Drug.KANAMYCIN),
-					pathogenTestDto.getTestedDisease());
-				addResistanceResultField(
-					LEVOFLOXACIN_SUSCEPTIBILITY,
-					drugSusceptibilityDto.getLevofloxacinSusceptibility(),
-					I18nProperties.getEnumCaption(Drug.LEVOFLOXACIN),
-					pathogenTestDto.getTestedDisease());
-				addResistanceResultField(
-					MOXIFLOXACIN_SUSCEPTIBILITY,
-					drugSusceptibilityDto.getMoxifloxacinSusceptibility(),
-					I18nProperties.getEnumCaption(Drug.MOXIFLOXACIN),
-					pathogenTestDto.getTestedDisease());
-				addResistanceResultField(
-					OFLOXACIN_SUSCEPTIBILITY,
-					drugSusceptibilityDto.getOfloxacinSusceptibility(),
-					I18nProperties.getEnumCaption(Drug.OFLOXACIN),
-					pathogenTestDto.getTestedDisease());
+
 				addResistanceResultField(
 					RIFAMPICIN_SUSCEPTIBILITY,
 					drugSusceptibilityDto.getRifampicinSusceptibility(),
 					I18nProperties.getEnumCaption(Drug.RIFAMPICIN),
 					pathogenTestDto.getTestedDisease());
+
+				addResistanceResultField(
+					ETHAMBUTOL_SUSCEPTIBILITY,
+					drugSusceptibilityDto.getEthambutolSusceptibility(),
+					I18nProperties.getEnumCaption(Drug.ETHAMBUTOL),
+					pathogenTestDto.getTestedDisease());
+
 				addResistanceResultField(
 					STREPTOMYCIN_SUSCEPTIBILITY,
 					drugSusceptibilityDto.getStreptomycinSusceptibility(),
 					I18nProperties.getEnumCaption(Drug.STREPTOMYCIN),
 					pathogenTestDto.getTestedDisease());
+
+				addResistanceResultField(
+					LEVOFLOXACIN_SUSCEPTIBILITY,
+					drugSusceptibilityDto.getLevofloxacinSusceptibility(),
+					I18nProperties.getEnumCaption(Drug.LEVOFLOXACIN),
+					pathogenTestDto.getTestedDisease());
+
+				addResistanceResultField(
+					MOXIFLOXACIN_SUSCEPTIBILITY,
+					drugSusceptibilityDto.getMoxifloxacinSusceptibility(),
+					I18nProperties.getEnumCaption(Drug.MOXIFLOXACIN),
+					pathogenTestDto.getTestedDisease());
+
+				addResistanceResultField(
+					BEDAQUILINE_SUSCEPTIBILITY,
+					drugSusceptibilityDto.getBedaquilineSusceptibility(),
+					I18nProperties.getEnumCaption(Drug.BEDAQUILINE),
+					pathogenTestDto.getTestedDisease());
+
+				addResistanceResultField(
+					DELAMANID_SUSCEPTIBILITY,
+					drugSusceptibilityDto.getDelamanidSusceptibility(),
+					I18nProperties.getEnumCaption(Drug.DELAMANID),
+					pathogenTestDto.getTestedDisease());
+
+				addResistanceResultField(
+					CAPREOMYCIN_SUSCEPTIBILITY,
+					drugSusceptibilityDto.getCapreomycinSusceptibility(),
+					I18nProperties.getEnumCaption(Drug.CAPREOMYCIN),
+					pathogenTestDto.getTestedDisease());
+
+				addResistanceResultField(
+					KANAMYCIN_SUSCEPTIBILITY,
+					drugSusceptibilityDto.getKanamycinSusceptibility(),
+					I18nProperties.getEnumCaption(Drug.KANAMYCIN),
+					pathogenTestDto.getTestedDisease());
+
+				addResistanceResultField(
+					CIPROFLOXACIN_SUSCEPTIBILITY,
+					drugSusceptibilityDto.getCiprofloxacinSusceptibility(),
+					I18nProperties.getEnumCaption(Drug.CIPROFLOXACIN),
+					pathogenTestDto.getTestedDisease());
+
+				addResistanceResultField(
+					OFLOXACIN_SUSCEPTIBILITY,
+					drugSusceptibilityDto.getOfloxacinSusceptibility(),
+					I18nProperties.getEnumCaption(Drug.OFLOXACIN),
+					pathogenTestDto.getTestedDisease());
+
+				addResistanceResultField(
+					GATIFLOXACIN_SUSCEPTIBILITY,
+					drugSusceptibilityDto.getGatifloxacinSusceptibility(),
+					I18nProperties.getEnumCaption(Drug.GATIFLOXACIN),
+					pathogenTestDto.getTestedDisease());
+
+				addResistanceResultField(
+					AMIKACIN_SUSCEPTIBILITY,
+					drugSusceptibilityDto.getAmikacinSusceptibility(),
+					I18nProperties.getEnumCaption(Drug.AMIKACIN),
+					pathogenTestDto.getTestedDisease());
+
 				// CEFTRIAXONE
 				addResistanceResultField(
 					CEFTRIAXONE_SUSCEPTIBILITY,
 					drugSusceptibilityDto.getCeftriaxoneSusceptibility(),
 					I18nProperties.getEnumCaption(Drug.CEFTRIAXONE),
 					pathogenTestDto.getTestedDisease());
+
 				// PENICILLIN
 				addResistanceResultField(
 					PENICILLIN_SUSCEPTIBILITY,
 					drugSusceptibilityDto.getPenicillinSusceptibility(),
 					I18nProperties.getEnumCaption(Drug.PENICILLIN),
 					pathogenTestDto.getTestedDisease());
+
 				// ERYTHROMYCIN
 				addResistanceResultField(
 					ERYTHROMYCIN_SUSCEPTIBILITY,
