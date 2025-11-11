@@ -80,8 +80,8 @@ public class TherapyForm extends AbstractEditForm<TherapyDto> {
 
 	//@formatter:off
     private static final String MAIN_HTML_LAYOUT =
-            fluidRowLocs(TherapyDto.DIRECTLY_OBSERVED_TREATMENT, "", "") +
-            fluidRowLocs(TherapyDto.MDR_XDR_TUBERCULOSIS, TherapyDto.BEIJING_LINEAGE, "") +
+            fluidRowLocs(TherapyDto.DIRECTLY_OBSERVED_TREATMENT, "", "", "") +
+            fluidRowLocs(TherapyDto.MDR_XDR_TUBERCULOSIS, TherapyDto.BEIJING_LINEAGE, "", "") +
             fluidRowLocs(DRUD_SUSCEPTIBILITY_LOC) +
             fluidRowLocs(PRESCRIPTION_LOC) +
             fluidRowLocs(TREATMENT_LOC) +
@@ -147,23 +147,20 @@ public class TherapyForm extends AbstractEditForm<TherapyDto> {
 
 	@Override
 	protected void addFields() {
-		boolean isLUXConfigured = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+		boolean isLuxembourgServer = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+
 		CheckBox dotField = addField(TherapyDto.DIRECTLY_OBSERVED_TREATMENT, CheckBox.class);
 		dotField.addStyleName(VSPACE_3);
-		dotField.setVisible(isLUXConfigured && disease == Disease.TUBERCULOSIS);
+		dotField.setVisible(isLuxembourgServer && disease == Disease.TUBERCULOSIS);
 
 		mdrXdrTuberculosisField = addField(TherapyDto.MDR_XDR_TUBERCULOSIS, CheckBox.class);
 		mdrXdrTuberculosisField.addStyleName(VSPACE_3);
-		mdrXdrTuberculosisField.setVisible(isLUXConfigured && disease == Disease.TUBERCULOSIS);
-		mdrXdrTuberculosisField.addValueChangeListener(e -> {
-			if (drugSusceptibilityResultPanel != null) {
-				drugSusceptibilityResultPanel.setVisible((Boolean) e.getProperty().getValue());
-			}
-		});
+		mdrXdrTuberculosisField.setVisible(isLuxembourgServer && disease == Disease.TUBERCULOSIS);
+		mdrXdrTuberculosisField.setEnabled(false);
 
 		beijingLineageField = addField(TherapyDto.BEIJING_LINEAGE, CheckBox.class);
 		beijingLineageField.addStyleName(VSPACE_3);
-		beijingLineageField.setVisible(isLUXConfigured && disease == Disease.TUBERCULOSIS);
+		beijingLineageField.setVisible(isLuxembourgServer && disease == Disease.TUBERCULOSIS);
 
 		List<SampleDto> samples = FacadeProvider.getSampleFacade().getByCaseUuids(Collections.singletonList(caze.getUuid()));
 		List<String> sampleUuids = Collections.emptyList();
@@ -189,7 +186,7 @@ public class TherapyForm extends AbstractEditForm<TherapyDto> {
 		}
 
 		drugSusceptibilityResultPanel = new DrugSusceptibilityResultPanel(latestAntibioticTest);
-		drugSusceptibilityResultPanel.setVisible(disease != Disease.TUBERCULOSIS);
+		drugSusceptibilityResultPanel.setVisible(false);
 		getContent().addComponent(drugSusceptibilityResultPanel, DRUD_SUSCEPTIBILITY_LOC);
 		drugSusceptibilityResultPanel.addStyleNames(VSPACE_TOP_4, VSPACE_3);
 
@@ -435,8 +432,10 @@ public class TherapyForm extends AbstractEditForm<TherapyDto> {
 	public void attach() {
 		super.attach();
 
-		if (latestAntibioticTest != null) {
-			mdrXdrTuberculosisField.setValue(true);
+		if (getValue() != null) {
+			if (getValue().isMdrXdrTuberculosis()) {
+				drugSusceptibilityResultPanel.setVisible(true);
+			}
 		}
 
 		if (latestBejingGenotypingTest != null) {

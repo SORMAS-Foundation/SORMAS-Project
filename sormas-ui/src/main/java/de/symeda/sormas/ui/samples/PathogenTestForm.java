@@ -35,6 +35,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -87,6 +89,8 @@ import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 	private static final long serialVersionUID = -1218707278398543154L;
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private static final String PATHOGEN_TEST_HEADING_LOC = "pathogenTestHeadingLoc";
 
@@ -220,6 +224,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				boolean wasReadOnly = testResultField.isReadOnly();
 
 				if ((disease == Disease.TUBERCULOSIS || disease == Disease.LATENT_TUBERCULOSIS) && testType != null) {
+
 					if (Arrays
 						.asList(PathogenTestType.BEIJINGGENOTYPING, PathogenTestType.MIRU_PATTERN_CODE, PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)
 						.contains(testType)) {
@@ -250,6 +255,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				}
 
 				drugSusceptibilityField.updateFieldsVisibility(disease, testType);
+				drugSusceptibilityField.setVisible(true);
 			} else {
 				if ((disease != Disease.TUBERCULOSIS && disease != Disease.LATENT_TUBERCULOSIS)
 					&& (DiseaseHelper.checkDiseaseIsInvasiveBacterialDiseases(disease) && testType == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)) { // for non lux tb no drug susceptibility
@@ -527,6 +533,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				}
 			};
 			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.DRUG_SUSCEPTIBILITY, tuberculosisAntibioticDependencies, true);
+
 			//test result - read only
 			Map<Object, List<Object>> tuberculosisTestResultReadOnlyDependencies = new HashMap<>() {
 

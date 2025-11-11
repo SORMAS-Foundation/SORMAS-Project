@@ -52,6 +52,7 @@ import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.api.therapy.DrugSusceptibilityType;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -80,6 +81,7 @@ import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
+import de.symeda.sormas.backend.therapy.DrugSusceptibility;
 import de.symeda.sormas.backend.therapy.DrugSusceptibilityMapper;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
@@ -351,6 +353,18 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		// Update case classification if necessary
 		final Case associatedCase = pathogenTest.getSample().getAssociatedCase();
 		if (associatedCase != null) {
+			DrugSusceptibility drugSusceptibility = pathogenTest.getDrugSusceptibility();
+			if (drugSusceptibility != null) {
+				if (associatedCase.getTherapy() != null) {
+					if (drugSusceptibility.getIsoniazidSusceptibility() == DrugSusceptibilityType.RESISTANT
+						&& drugSusceptibility.getRifampicinSusceptibility() == DrugSusceptibilityType.RESISTANT) {
+						associatedCase.getTherapy().setMdrXdrTuberculosis(true);
+					} else {
+						associatedCase.getTherapy().setMdrXdrTuberculosis(false);
+					}
+				}
+			}
+
 			caseFacade.onCaseSampleChanged(associatedCase, syncShares);
 		}
 
