@@ -156,6 +156,8 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 	private Disease disease;
 	private TextField typingIdField;
 	private ComboBox specieField;
+	private ComboBox genoTypingCB;
+	private TextField genoTypingResultTextTF;
 	// List of tests that are used for serogrouping
 
 	public PathogenTestForm(
@@ -315,6 +317,13 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		}
 		typingIdField.setValue(newFieldValue.getTypingId());
 		specieField.setValue(newFieldValue.getSpecie());
+		if(!genoTypingCB.isReadOnly()) {
+			genoTypingCB.setValue(newFieldValue.getGenoTypeResult());
+			// We only set the genotyping result text if the genotyping result is not read only
+			if(!genoTypingResultTextTF.isReadOnly()) {
+				genoTypingResultTextTF.setValue(newFieldValue.getGenoTypeResultText());
+			}
+		}
 		drugSusceptibilityField.forceUpdateDrugSusceptibilityFields();
 		markAsDirty();
 	}
@@ -389,9 +398,9 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			diseaseVariantField.setCaption(I18nProperties.getCaption(Captions.PathogenTest_rsv_testedDiseaseVariant));
 			diseaseVariantDetailsField.setCaption(I18nProperties.getCaption(Captions.PathogenTest_rsv_testedDiseaseVariantDetails));
 		}
-		ComboBox genoTypingCB = addField(PathogenTestDto.GENOTYPE_RESULT, ComboBox.class);
+		genoTypingCB = addField(PathogenTestDto.GENOTYPE_RESULT, ComboBox.class);
 		genoTypingCB.setVisible(true);
-		TextField genoTypingResultTextTF = addField(PathogenTestDto.GENOTYPE_RESULT_TEXT, TextField.class);
+		genoTypingResultTextTF = addField(PathogenTestDto.GENOTYPE_RESULT_TEXT, TextField.class);
 		genoTypingResultTextTF.setVisible(true);
 
 		ComboBox testedPathogenField = addCustomizableEnumField(PathogenTestDto.TESTED_PATHOGEN);
