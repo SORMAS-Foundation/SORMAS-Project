@@ -665,8 +665,10 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 				case ExternalMessageIndexDto.MESSAGE_DATE_TIME:
 				case ExternalMessageIndexDto.STATUS:
 				case ExternalMessageIndexDto.DISEASE:
-				case ExternalMessageIndexDto.DISEASE_VARIANT:
 					order.addAll(orderBuilder.build(externalMessageRoot.get(sortProperty.propertyName)));
+					break;
+				case ExternalMessageIndexDto.DISEASE_VARIANT:
+					order.addAll(orderBuilder.build(externalMessageRoot.get(ExternalMessage.DISEASE_VARIANT_VALUE)));
 					break;
 				case ExternalMessageIndexDto.PERSON_FIRST_NAME:
 				case ExternalMessageIndexDto.PERSON_LAST_NAME:
