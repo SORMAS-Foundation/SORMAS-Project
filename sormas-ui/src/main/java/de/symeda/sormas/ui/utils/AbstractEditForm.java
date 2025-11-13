@@ -617,9 +617,68 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 
 	/**
 	 * List of editable allowed fields,
+	 * 
 	 * @return
 	 */
-	public List<Field<?>> editableAllowedFields(){
+	public List<Field<?>> editableAllowedFields() {
 		return Collections.unmodifiableList(editableAllowedFields);
+	}
+
+	/**
+	 * Clears the field if it is not read-only.
+	 *
+	 * @param field
+	 */
+	protected void safeClearField(Field<?> field) {
+		if (field.isReadOnly()) {
+			return;
+		}
+		field.clear();
+	}
+
+	/**
+	 * Clears the field if it is not read-only.
+	 *
+	 * @param propertyId
+	 */
+	protected void safeClearField(String propertyId) {
+		final Field<?> field = getField(propertyId);
+		if (field == null) {
+			return;
+		}
+		safeClearField(field);
+	}
+
+	/**
+	 * Sets the field value if it is not read-only.
+	 *
+	 * @param <T>
+	 * @param field
+	 * @param value
+	 * @return
+	 */
+	protected <T> T safeSetFieldValue(Field<T> field, T value) {
+		if (field.isReadOnly()) {
+			return field.getValue();
+		}
+		final T oldValue = field.getValue();
+		field.setValue(value);
+		return oldValue;
+	}
+
+	/**
+	 * Sets the field value if it is not read-only.
+	 *
+	 * @param <T>
+	 * @param propertyId
+	 * @param value
+	 * @return
+	 */
+	protected <T> T safeSetFieldValue(String propertyId, T value) {
+		final Field<T> field = getField(propertyId);
+		if (field == null) {
+			return null;
+		}
+		return safeSetFieldValue(field, value);
 	}
 }
