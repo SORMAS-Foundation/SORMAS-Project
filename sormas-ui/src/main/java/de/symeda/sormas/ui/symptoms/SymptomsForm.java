@@ -30,9 +30,11 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locsCss;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -132,6 +134,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	private static final String TUBERCULOSIS_ONSET_DATE_LOC = "tuberculosisOnsetDateLoc";
 	private static final String TUBERCULOSIS_CLINICAL_PRESENTATION_DETAILS_LOC = "tuberculosisClinicalPresentationDetailsLoc";
 
+	private static final List<String> YES_NO_UNKNOWN_SYMPTOM_FIELD_IDS =
+		Collections.unmodifiableList(Arrays.asList(PARENT_TIME_OFF_WORK, JAUNDICE_WITHIN_24_HOURS_OF_BIRTH, DATE_OF_ONSET_KNOWN));
+
 	private static Map<String, List<String>> symptomGroupMap = new HashMap<>();
 	public static final String SKIN_RASH_ONSET_DATE_LAYOUT = fluidRowLocs(6, "LBL_SKIN_RASH_ONSET_DATE", 1, "", 5, SKIN_RASH_ONSET_DATE);
 
@@ -214,6 +219,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	private final PersonDto person;
 	private final SymptomsContext symptomsContext;
 	private final ViewMode viewMode;
+
 	private transient List<String> unconditionalSymptomFieldIds;
 	private List<String> conditionalBleedingSymptomFieldIds;
 	private List<String> lesionsFieldIds;
@@ -678,6 +684,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			COUGH_WITH_HEAMOPTYSIS,
 			RUNNY_NOSE,
 			DIFFICULTY_BREATHING,
+			DIFFICULTY_BREATHING_DURING_MEALS,
 			CHEST_PAIN,
 			CONJUNCTIVITIS,
 			EYE_PAIN_LIGHT_SENSITIVE,
@@ -750,6 +757,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			HYPERACTIVITY,
 			INSOMNIA,
 			OPISTHOTONUS,
+			PARADOXICAL_BREATHING,
 			PARALYSIS,
 			PARASTHESIA_AROUND_WOUND,
 			PARESIS,
@@ -766,6 +774,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			FEELING_ILL,
 			SHIVERING,
 			RESPIRATORY_DISEASE_VENTILATION,
+			RESPIRATORY_FATIGUE,
 			FAST_HEART_RATE,
 			OXYGEN_SATURATION_LOWER_94,
 			FEVERISHFEELING,
@@ -942,21 +951,12 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		addListenerForOnsetFields(onsetSymptom, onsetDateField);
 
 		Button clearAllButton = ButtonHelper.createButton(Captions.actionClearAll, event -> {
-			for (Object symptomId : unconditionalSymptomFieldIds) {
-				getFieldGroup().getField(symptomId).setValue(null);
-			}
-			for (Object symptomId : conditionalBleedingSymptomFieldIds) {
-				getFieldGroup().getField(symptomId).setValue(null);
-			}
-			for (Object symptomId : lesionsFieldIds) {
-				getFieldGroup().getField(symptomId).setValue(null);
-			}
-			for (Object symptomId : lesionsLocationFieldIds) {
-				getFieldGroup().getField(symptomId).setValue(null);
-			}
-			for (Object symptomId : monkeypoxImageFieldIds) {
-				getFieldGroup().getField(symptomId).setValue(null);
-			}
+			unconditionalSymptomFieldIds.forEach(this::safeClearField);
+			conditionalBleedingSymptomFieldIds.forEach(this::safeClearField);
+			lesionsFieldIds.forEach(this::safeClearField);
+			lesionsLocationFieldIds.forEach(this::safeClearField);
+			monkeypoxImageFieldIds.forEach(this::safeClearField);
+			YES_NO_UNKNOWN_SYMPTOM_FIELD_IDS.forEach(this::safeClearField);
 		}, ValoTheme.BUTTON_LINK);
 
 		Button setEmptyToNoButton = createButtonSetClearedToSymptomState(Captions.symptomsSetClearedToNo, SymptomState.NO);
@@ -1420,6 +1420,56 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 					}
 				}
 			}
+			// Clear YesNoUnknown fields - map SymptomState to YesNoUnknown
+			YesNoUnknown yesNoValue;
+			switch (symptomState) {
+				case YES:
+					yesNoValue = YesNoUnknown.YES;
+					break;
+				case NO:
+					yesNoValue = YesNoUnknown.NO;
+					break;
+				case UNKNOWN:
+				default:
+					yesNoValue = YesNoUnknown.UNKNOWN;
+					break;
+			}
+			YES_NO_UNKNOWN_SYMPTOM_FIELD_IDS.forEach(symptomId -> {
+				final Field<Object> field = (Field<Object>) getFieldGroup().getField(symptomId);
+				// quit early if the field is not supposed to be set
+				if (field == null) {
+					return;
+				}
+				if (!field.isVisible()) {
+					return;
+				}
+				if (field.isReadOnly()) {
+					return;
+				}
+
+				final Object value = field.getValue();
+				final Set<?> valueSet = value instanceof Set ? (Set<?>) value : null;
+
+				// non empty value within a set
+				if (valueSet != null && !valueSet.isEmpty()) {
+					return;
+				}
+
+				// non empty raw value
+				if (valueSet == null && value != null) {
+					return;
+				}
+
+				// if we have a set as value, add the new value
+				if(valueSet != null) {
+					safeSetFieldValue(field, Collections.singleton(yesNoValue));
+					return;
+				}
+
+				// we have a raw value, set it
+				safeSetFieldValue(field, yesNoValue);
+				
+			});
 		}, ValoTheme.BUTTON_LINK);
 
 		return button;
