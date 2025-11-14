@@ -164,6 +164,9 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 	 *            The external message containing diagnostic data.
 	 */
 	protected void postBuildCaseData(CaseDataDto caseDto, ExternalMessageDto externalMessageDto) {
+
+		caseDto.setCaseClassification(
+			externalMessageDto.getCaseClassification() != null ? externalMessageDto.getCaseClassification() : caseDto.getCaseClassification());
 		caseDto.setRadiographyCompatibility(externalMessageDto.getRadiographyCompatibility());
 		caseDto.setOtherDiagnosticCriteria(externalMessageDto.getOtherDiagnosticCriteria());
 	}
