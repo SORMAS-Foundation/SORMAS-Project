@@ -132,7 +132,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		addField(SampleDto.SAMPLE_MATERIAL_TEXT, TextField.class);
 		addField(SampleDto.SAMPLE_SOURCE, ComboBox.class);
 		addField(SampleDto.FIELD_SAMPLE_ID, TextField.class);
-		addDateField(SampleDto.SHIPMENT_DATE, DateField.class, 7);
+		addDateField(SampleDto.SHIPMENT_DATE, DateField.class, 0);
 		addField(SampleDto.SHIPMENT_DETAILS, TextField.class);
 		addField(SampleDto.RECEIVED_DATE, DateField.class);
 		final ComboBox lab = addInfrastructureField(SampleDto.LAB);
@@ -285,7 +285,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 			new DateComparisonValidator(
 				shipmentDate,
 				sampleDateField,
-				true,
+				false,
 				false,
 				I18nProperties.getValidationError(Validations.afterDate, shipmentDate.getCaption(), sampleDateField.getCaption())));
 		shipmentDate.addValidator(

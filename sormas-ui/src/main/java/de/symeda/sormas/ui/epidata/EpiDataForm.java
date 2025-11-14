@@ -251,6 +251,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		getContent().addComponent(
 			new MultilineLabel(h3(I18nProperties.getString(Strings.headingEpiConclusion)) + divsCss(VSPACE_3), ContentMode.HTML),
 			LOC_CONCLUSION_HEADING);
+		getContent().getComponent(LOC_CONCLUSION_HEADING).setVisible(Arrays.asList(Disease.CRYPTOSPORIDIOSIS, Disease.GIARDIASIS).contains(disease));
 
 		getContent().addComponent(
 			new MultilineLabel(
