@@ -317,10 +317,10 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		}
 		typingIdField.setValue(newFieldValue.getTypingId());
 		specieField.setValue(newFieldValue.getSpecie());
-		if(!genoTypingCB.isReadOnly()) {
+		if (!genoTypingCB.isReadOnly()) {
 			genoTypingCB.setValue(newFieldValue.getGenoTypeResult());
 			// We only set the genotyping result text if the genotyping result is not read only
-			if(!genoTypingResultTextTF.isReadOnly()) {
+			if (!genoTypingResultTextTF.isReadOnly()) {
 				genoTypingResultTextTF.setValue(newFieldValue.getGenoTypeResultText());
 			}
 		}
@@ -362,22 +362,27 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 					I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_DATE_TIME),
 					DateFormatHelper.formatDate(getSampleDate()))));
 		testDateField.addValueChangeListener(e -> {
-			boolean hasTime = !getSampleDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().equals(LocalTime.MIDNIGHT);
-			if (hasTime) {
-				testDateField.removeAllValidators();
-				testDateField.addValidator(
-					new DateComparisonValidator(
-						testDateField,
-						this::getSampleDate,
-						false,
-						false,
-						false,
-						I18nProperties.getValidationError(
-							Validations.afterDateWithDate,
-							testDateField.getCaption(),
-							I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_DATE_TIME),
-							DateFormatHelper.formatLocalDateTime(getSampleDate()))));
+			boolean hasTime =
+				getSampleDate() != null && !getSampleDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().equals(LocalTime.MIDNIGHT);
+
+			if (!hasTime) {
+				return;
 			}
+
+			testDateField.removeAllValidators();
+			testDateField.addValidator(
+				new DateComparisonValidator(
+					testDateField,
+					this::getSampleDate,
+					false,
+					false,
+					false,
+					I18nProperties.getValidationError(
+						Validations.afterDateWithDate,
+						testDateField.getCaption(),
+						I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_DATE_TIME),
+						DateFormatHelper.formatLocalDateTime(getSampleDate()))));
+
 		});
 		ComboBox lab = addInfrastructureField(PathogenTestDto.LAB);
 		lab.addItems(FacadeProvider.getFacilityFacade().getAllActiveLaboratories(true));
