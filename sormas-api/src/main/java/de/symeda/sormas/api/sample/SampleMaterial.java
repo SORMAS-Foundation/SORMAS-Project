@@ -258,7 +258,6 @@ public enum SampleMaterial {
 	@Diseases(value = {
 		Disease.MEASLES,
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
-		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	CLINICAL_SAMPLE,
 
