@@ -561,6 +561,10 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 		return isVisibleAllowed(getFieldGroup().getField(propertyId));
 	}
 
+	protected void addToVisibleAllowedFields(Field<?> field) {
+		visibleAllowedFields.add(field);
+	}
+
 	/**
 	 * Sets the initial enabled states based on annotations and builds a list of all fields in a form
 	 * that are allowed to be enabled based on access rights

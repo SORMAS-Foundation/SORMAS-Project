@@ -225,47 +225,59 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			if ((FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG))) {
 				boolean wasReadOnly = testResultField.isReadOnly();
 
-				if ((disease == Disease.TUBERCULOSIS || disease == Disease.LATENT_TUBERCULOSIS) && testType != null) {
+				if (List
+					.of(
+						Disease.TUBERCULOSIS,
+						Disease.LATENT_TUBERCULOSIS,
+						Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+						Disease.INVASIVE_PNEUMOCOCCAL_INFECTION)
+					.contains(disease)
+					&& testType != null) {
+					if (List.of(Disease.TUBERCULOSIS, Disease.LATENT_TUBERCULOSIS).contains(disease)) {
+						if (Arrays
+							.asList(
+								PathogenTestType.BEIJINGGENOTYPING,
+								PathogenTestType.MIRU_PATTERN_CODE,
+								PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)
+							.contains(testType)) {
+							if (wasReadOnly) {
+								testResultField.setReadOnly(false);
+							}
+							testResultField.setValue(PathogenTestResultType.NOT_APPLICABLE);
+							if (wasReadOnly) {
+								testResultField.setReadOnly(true);
+							}
+						} else if (testType == PathogenTestType.SPOLIGOTYPING) {
+							if (wasReadOnly) {
+								testResultField.setReadOnly(false);
+							}
+							testResultField.setValue(PathogenTestResultType.POSITIVE);
+							if (wasReadOnly) {
+								testResultField.setReadOnly(true);
+							}
+						} else if (wasReadOnly) {
+							// Field was read-only but no longer meets conditions for auto-set values
+							testResultField.setReadOnly(false);
+							testResultField.setValue(null);
+						}
+					}
 
-					if (Arrays
-						.asList(PathogenTestType.BEIJINGGENOTYPING, PathogenTestType.MIRU_PATTERN_CODE, PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)
-						.contains(testType)) {
-						if (wasReadOnly) {
-							testResultField.setReadOnly(false);
-						}
-						testResultField.setValue(PathogenTestResultType.NOT_APPLICABLE);
-						if (wasReadOnly) {
-							testResultField.setReadOnly(true);
-						}
-					} else if (testType == PathogenTestType.SPOLIGOTYPING) {
-						if (wasReadOnly) {
-							testResultField.setReadOnly(false);
-						}
-						testResultField.setValue(PathogenTestResultType.POSITIVE);
-						if (wasReadOnly) {
-							testResultField.setReadOnly(true);
-						}
-					} else if (wasReadOnly) {
-						// Field was read-only but no longer meets conditions for auto-set values
-						testResultField.setReadOnly(false);
-						testResultField.setValue(null);
+					if (List.of(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY).contains(testType)) {
+						drugSusceptibilityField.updateFieldsVisibility(disease, testType);
+					} else {
+						drugSusceptibilityField.updateFieldsVisibility(disease, testType);
 					}
 				} else if (wasReadOnly) {
 					// Disease is not TB or testType is null, but field was read-only
 					testResultField.setReadOnly(false);
 					testResultField.setValue(null);
 				}
-
-				drugSusceptibilityField.updateFieldsVisibility(disease, testType);
-				drugSusceptibilityField.setVisible(true);
 			} else {
 				if ((disease != Disease.TUBERCULOSIS && disease != Disease.LATENT_TUBERCULOSIS)
 					&& (DiseaseHelper.checkDiseaseIsInvasiveBacterialDiseases(disease) && testType == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)) { // for non lux tb no drug susceptibility
 					drugSusceptibilityField.updateFieldsVisibility(disease, testType);
-					drugSusceptibilityField.setVisible(true);
 				} else {
 					if (drugSusceptibilityField != null) {
-						drugSusceptibilityField.setVisible(false);
 						drugSusceptibilityField.updateFieldsVisibility(disease, testType);
 					}
 				}
@@ -467,10 +479,11 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		drugSusceptibilityField = (DrugSusceptibilityForm) addField(
 			PathogenTestDto.DRUG_SUSCEPTIBILITY,
 			new DrugSusceptibilityForm(
-				FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
+				FieldVisibilityCheckers.getNoop(),
 				UiFieldAccessCheckers.getDefault(true, FacadeProvider.getConfigFacade().getCountryLocale())));
 		drugSusceptibilityField.setCaption(null);
-		drugSusceptibilityField.setVisible(false);
+		//drugSusceptibilityField.setVisible(false);
+		addToVisibleAllowedFields(drugSusceptibilityField);
 
 		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 			//tuberculosis-pcr test specification
@@ -531,22 +544,6 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			};
 			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.PATTERN_PROFILE, tuberculosisMiruCodeDependencies, true);
 			//FieldHelper.setRequiredWhen(getFieldGroup(), PathogenTestDto.PATTERN_PROFILE, tuberculosisMiruCodeDependencies);
-
-			//tuberculosis-antibiotic test specification
-			Map<Object, List<Object>> tuberculosisAntibioticDependencies = new HashMap<>() {
-
-				{
-					put(
-						PathogenTestDto.TESTED_DISEASE,
-						Arrays.asList(
-							Disease.TUBERCULOSIS,
-							Disease.LATENT_TUBERCULOSIS,
-							Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-							Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
-					put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY));
-				}
-			};
-			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.DRUG_SUSCEPTIBILITY, tuberculosisAntibioticDependencies, true);
 
 			//test result - read only
 			Map<Object, List<Object>> tuberculosisTestResultReadOnlyDependencies = new HashMap<>() {
@@ -964,9 +961,6 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		addField(PathogenTestDto.OTHER_DELETION_REASON, TextArea.class).setRows(3);
 		setVisible(false, PathogenTestDto.DELETION_REASON, PathogenTestDto.OTHER_DELETION_REASON);
 
-		initializeAccessAndAllowedAccesses();
-		initializeVisibilitiesAndAllowedVisibilities();
-
 		pcrTestSpecification.setVisible(false);
 
 		if (isVisibleAllowed(PathogenTestDto.PRESCRIBER_PHYSICIAN_CODE)) {
@@ -1262,5 +1256,8 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			setRequired(true, PathogenTestDto.LAB);
 		}
 		setRequired(true, PathogenTestDto.TEST_TYPE, PathogenTestDto.TEST_RESULT);
+
+		initializeAccessAndAllowedAccesses();
+		initializeVisibilitiesAndAllowedVisibilities();
 	}
 }

@@ -51,6 +51,8 @@ public class DrugSusceptibilityForm extends AbstractEditForm<DrugSusceptibilityD
 
 	private static final String FORM_HEADING_LOC = "formHeadingLoc";
 
+	private Label formHeadingLabel;
+
 	//@formatter:off
     private static final String HTML_LAYOUT =
 		loc(FORM_HEADING_LOC) +
@@ -79,7 +81,7 @@ public class DrugSusceptibilityForm extends AbstractEditForm<DrugSusceptibilityD
 
 	public DrugSusceptibilityForm(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
 		super(DrugSusceptibilityDto.class, I18N_PREFIX, true, fieldVisibilityCheckers, fieldAccessCheckers);
-		this.addStyleNames(CssStyles.VIEW_SECTION, CssStyles.VSPACE_2);
+		//this.addStyleNames(CssStyles.VIEW_SECTION, CssStyles.VSPACE_2);
 	}
 
 	@Override
@@ -89,9 +91,10 @@ public class DrugSusceptibilityForm extends AbstractEditForm<DrugSusceptibilityD
 
 	@Override
 	protected void addFields() {
-		Label formHeadingLabel = new Label(I18nProperties.getString(Strings.headingDrugSusceptibility));
+		formHeadingLabel = new Label(I18nProperties.getString(Strings.headingDrugSusceptibility));
 		formHeadingLabel.addStyleName(H3);
 		getContent().addComponent(formHeadingLabel, FORM_HEADING_LOC);
+		formHeadingLabel.setVisible(false);
 
 		addMicField(DrugSusceptibilityDto.AMIKACIN_MIC, Drug.AMIKACIN).setInputPrompt(I18nProperties.getString(Strings.promptMicValue));
 		addResistanceResultField(DrugSusceptibilityDto.AMIKACIN_SUSCEPTIBILITY)
