@@ -256,7 +256,6 @@ public enum SampleMaterial {
 	AMNIOTIC_FLUID,
 
 	@Diseases(value = {
-		Disease.MEASLES,
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	CLINICAL_SAMPLE,
