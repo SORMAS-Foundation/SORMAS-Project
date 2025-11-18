@@ -177,7 +177,7 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.PORT_HEALTH_INFO),
 					params);
 			}
-			if (UiUtil.enabled(FeatureType.VIEW_TAB_CASES_SYMPTOMS)) {
+			if (UiUtil.enabled(FeatureType.VIEW_TAB_CASES_SYMPTOMS) && !List.of(Disease.LATENT_TUBERCULOSIS).contains(caze.getDisease())) {
 				menu.addView(CaseSymptomsView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.SYMPTOMS), params);
 			}
 			if (UiUtil.enabled(FeatureType.VIEW_TAB_CASES_EPIDEMIOLOGICAL_DATA) && caze.getDisease() != Disease.CONGENITAL_RUBELLA) {

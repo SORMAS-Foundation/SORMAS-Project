@@ -643,6 +643,8 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	private String department;
 
 	private NotifierReferenceDto notifier;
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
 	private RadiographyCompatibility radiographyCompatibility;
 	private String otherDiagnosticCriteria;
 
