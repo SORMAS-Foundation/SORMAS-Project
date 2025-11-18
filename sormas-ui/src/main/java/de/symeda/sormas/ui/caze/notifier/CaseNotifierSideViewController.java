@@ -145,8 +145,7 @@ public class CaseNotifierSideViewController {
         }
 
         // We only edit the current version
-        NotifierDto notifier =
-            FacadeProvider.getNotifierFacade().getByUuid(caze.getNotifier().getUuid());
+        NotifierDto notifier = FacadeProvider.getNotifierFacade().getByUuid(caze.getNotifier().getUuid());
         TherapyDto therapy = caze.getTherapy();
 
         openEditWindow(
@@ -207,13 +206,21 @@ public class CaseNotifierSideViewController {
         final Window window = VaadinUiUtil.showModalPopupWindow(editView, title);
 
         if (isEditAllowed) {
+            editView.setPreCommitListener((cb) -> {
+                if (!notifierForm.isValid()) {
+                    // Form validation failed - errors are already shown on the form
+                    return;
+                }
+                cb.run();
+            });
             editView.addCommitListener(() -> {
                 if (notifierForm.isValid()) {
                     NotifierDto savedNotifier = notifierForm.getValue();
                     savedNotifier = FacadeProvider.getNotifierFacade().save(savedNotifier);
 
                     // always set the notifier reference on the case to the current version
-                    final NotifierReferenceDto notifierRef = FacadeProvider.getNotifierFacade().getVersionReferenceByUuidAndDate(savedNotifier.getUuid());
+                    final NotifierReferenceDto notifierRef =
+                        FacadeProvider.getNotifierFacade().getVersionReferenceByUuidAndDate(savedNotifier.getUuid());
                     caze.setNotifier(notifierRef);
 
                     // Handle treatment option changes
