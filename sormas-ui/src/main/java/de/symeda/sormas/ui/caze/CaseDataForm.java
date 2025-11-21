@@ -205,7 +205,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(CaseDataDto.CASE_REFERENCE_NUMBER, "") +
 					fluidRow(
 							fluidColumnLoc(6, 0, CaseDataDto.DISEASE),
-							fluidColumn(6, 0, locs(
+							fluidColumnLoc(6, 0, CaseDataDto.IDSR_DIAGNOSIS)) +
+					fluidRow(
+							fluidColumn(12, 0, locs(
 									CaseDataDto.DISEASE_DETAILS,
 									CaseDataDto.PLAGUE_TYPE,
 									CaseDataDto.DENGUE_FEVER_TYPE,
@@ -474,6 +476,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		diseaseVariantDetailsField.setVisible(false);
 		diseaseVariantField.setNullSelectionAllowed(true);
 		addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
+		ComboBox idsrDiagnosisField = addField(CaseDataDto.IDSR_DIAGNOSIS, ComboBox.class);
+		idsrDiagnosisField.setNullSelectionAllowed(true);
 		addField(CaseDataDto.PLAGUE_TYPE, NullableOptionGroup.class);
 		addField(CaseDataDto.DENGUE_FEVER_TYPE, NullableOptionGroup.class);
 		addField(CaseDataDto.RABIES_TYPE, NullableOptionGroup.class);
@@ -1171,6 +1175,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		if (isVisibleAllowed(CaseDataDto.RABIES_TYPE)) {
 			FieldHelper
 				.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.RABIES_TYPE), CaseDataDto.DISEASE, Arrays.asList(Disease.RABIES), true);
+		}
+		if (isVisibleAllowed(CaseDataDto.IDSR_DIAGNOSIS)) {
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				Arrays.asList(CaseDataDto.IDSR_DIAGNOSIS),
+				CaseDataDto.DISEASE,
+				Arrays.asList(Disease.IMMEDIATE_CASE_BASED_FORM_OTHER_CONDITIONS),
+				true);
 		}
 		if (isVisibleAllowed(CaseDataDto.SMALLPOX_VACCINATION_SCAR)) {
 			FieldHelper.setVisibleWhen(

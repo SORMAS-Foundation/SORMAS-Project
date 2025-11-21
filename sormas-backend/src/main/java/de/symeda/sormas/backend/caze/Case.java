@@ -41,31 +41,10 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import de.symeda.sormas.api.caze.*;
 import org.hibernate.annotations.Type;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseIdentificationSource;
-import de.symeda.sormas.api.caze.CaseOrigin;
-import de.symeda.sormas.api.caze.CaseOutcome;
-import de.symeda.sormas.api.caze.CaseReferenceDefinition;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.caze.ContactTracingContactType;
-import de.symeda.sormas.api.caze.DengueFeverType;
-import de.symeda.sormas.api.caze.EndOfIsolationReason;
-import de.symeda.sormas.api.caze.HospitalWardType;
-import de.symeda.sormas.api.caze.InfectionSetting;
-import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.caze.IsCase;
-import de.symeda.sormas.api.caze.PlagueType;
-import de.symeda.sormas.api.caze.QuarantineReason;
-import de.symeda.sormas.api.caze.RabiesType;
-import de.symeda.sormas.api.caze.RadiographyCompatibility;
-import de.symeda.sormas.api.caze.ReinfectionDetail;
-import de.symeda.sormas.api.caze.ReinfectionStatus;
-import de.symeda.sormas.api.caze.ScreeningType;
-import de.symeda.sormas.api.caze.Trimester;
-import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
@@ -449,8 +428,9 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	private String healthFacilityDepartment;
 	private RadiographyCompatibility radiographyCompatibility;
 	private String otherDiagnosticCriteria;
+    private IdsrType idsrDiagnosis;
 
-	public static Case build() {
+    public static Case build() {
 		Case caze = new Case();
 		caze.setSystemCaseClassification(CaseClassification.NOT_CLASSIFIED);
 		caze.setInvestigationStatus(InvestigationStatus.PENDING);
@@ -1868,4 +1848,13 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	public void setOtherDiagnosticCriteria(String otherDiagnosticCriteria) {
 		this.otherDiagnosticCriteria = otherDiagnosticCriteria;
 	}
+
+    @Enumerated(EnumType.STRING)
+    public IdsrType getIdsrDiagnosis() {
+        return idsrDiagnosis;
+    }
+
+    public void setIdsrDiagnosis(IdsrType idsrDiagnosis) {
+        this.idsrDiagnosis = idsrDiagnosis;
+    }
 }
