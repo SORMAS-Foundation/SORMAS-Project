@@ -86,7 +86,9 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.api.utils.ExtendedReduced;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
@@ -465,8 +467,10 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		ComboBox vaccinationStatusCB = addField(ContactDto.VACCINATION_STATUS);
 		DateField vaccinationDose1DateDF = addField(ContactDto.VACCINATION_DOSE_ONE_DATE);
 		DateField vaccinationDose2DateDF = addField(ContactDto.VACCINATION_DOSE_TWO_DATE);
-		FieldHelper.setVisibleWhen(vaccinationStatusCB, Arrays.asList(vaccinationDose1DateDF), Arrays.asList(VaccinationStatus.VACCINATED_ONE_DOSE), true);
-		FieldHelper.setVisibleWhen(vaccinationStatusCB, Arrays.asList(vaccinationDose2DateDF), Arrays.asList(VaccinationStatus.VACCINATED_TWO_DOSE), true);
+		FieldHelper
+			.setVisibleWhen(vaccinationStatusCB, Arrays.asList(vaccinationDose1DateDF), Arrays.asList(VaccinationStatus.VACCINATED_ONE_DOSE), true);
+		FieldHelper
+			.setVisibleWhen(vaccinationStatusCB, Arrays.asList(vaccinationDose2DateDF), Arrays.asList(VaccinationStatus.VACCINATED_TWO_DOSE), true);
 		addField(ContactDto.VACCINATION_PROPOSED, CheckBox.class);
 		addField(ContactDto.IMMUNE_GLOBULIN_PROPOSED, CheckBox.class);
 		addField(ContactDto.RETURNING_TRAVELER, NullableOptionGroup.class);
@@ -534,7 +538,13 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		cbDisease.addValueChangeListener(e -> updateDiseaseConfiguration((Disease) e.getProperty().getValue()));
 
-		HealthConditionsForm clinicalCourseForm = addField(ContactDto.HEALTH_CONDITIONS, HealthConditionsForm.class);
+		HealthConditionsForm clinicalCourseForm = addField(
+			ContactDto.HEALTH_CONDITIONS,
+			new HealthConditionsForm(
+				disease,
+				FieldVisibilityCheckers.withDisease(disease)
+					.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
+				UiFieldAccessCheckers.getDefault(true, FacadeProvider.getConfigFacade().getCountryLocale())));
 		clinicalCourseForm.setCaption(null);
 
 		Label generalCommentLabel = new Label(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.ADDITIONAL_DETAILS));
@@ -743,11 +753,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			ContactDto.PRESCRIBED_DRUG,
 			Collections.singletonList(Drug.OTHER),
 			true);
-		FieldHelper.setRequiredWhen(
-			getFieldGroup(),
-			ContactDto.PRESCRIBED_DRUG,
-			Arrays.asList(ContactDto.PRESCRIBED_DRUG_TEXT),
-			Arrays.asList(Drug.OTHER));
+		FieldHelper
+			.setRequiredWhen(getFieldGroup(), ContactDto.PRESCRIBED_DRUG, Arrays.asList(ContactDto.PRESCRIBED_DRUG_TEXT), Arrays.asList(Drug.OTHER));
 	}
 
 	private void updateContactOfficers() {
@@ -893,17 +900,17 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		// For LUX measles cases do not require the follow-up details. For other countries works as it is
 		FieldHelper.setMultipleVisible(
-				getFieldGroup(),
-				Arrays.asList(
-						ContactDto.FOLLOW_UP_STATUS,
-						ContactDto.FOLLOW_UP_STATUS_CHANGE_DATE,
-						ContactDto.FOLLOW_UP_STATUS_CHANGE_USER,
-						ContactDto.FOLLOW_UP_COMMENT,
-						ContactDto.FOLLOW_UP_UNTIL,
-						ContactDto.CONTACT_OFFICER,
-						ContactDto.OVERWRITE_FOLLOW_UP_UNTIL),
-				field -> !isLuxMeasles(disease),
-				field -> false);
+			getFieldGroup(),
+			Arrays.asList(
+				ContactDto.FOLLOW_UP_STATUS,
+				ContactDto.FOLLOW_UP_STATUS_CHANGE_DATE,
+				ContactDto.FOLLOW_UP_STATUS_CHANGE_USER,
+				ContactDto.FOLLOW_UP_COMMENT,
+				ContactDto.FOLLOW_UP_UNTIL,
+				ContactDto.CONTACT_OFFICER,
+				ContactDto.OVERWRITE_FOLLOW_UP_UNTIL),
+			field -> !isLuxMeasles(disease),
+			field -> false);
 
 		FieldHelper.updateEnumData(
 			contactProximity,
