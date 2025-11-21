@@ -235,8 +235,10 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	public static final String NOTIFIER = "notifier";
 	public static final String RADIOGRAPHY_COMPATIBILITY = "radiographyCompatibility";
 	public static final String OTHER_DIAGNOSTIC_CRITERIA = "otherDiagnosticCriteria";
+    public static final String IDSR_DIAGNOSIS = "idsrDiagnosis";
 
-	// Fields are declared in the order they should appear in the import template
+
+    // Fields are declared in the order they should appear in the import template
 
 	@Outbreaks
 	@NotNull(message = Validations.validDisease)
@@ -643,6 +645,10 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	private NotifierReferenceDto notifier;
 	private RadiographyCompatibility radiographyCompatibility;
 	private String otherDiagnosticCriteria;
+    @Diseases({
+            Disease.IMMEDIATE_CASE_BASED_FORM_OTHER_CONDITIONS })
+    @Outbreaks
+    private IdsrType idsrDiagnosis;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		return build(person, disease, HealthConditionsDto.build());
@@ -1840,9 +1846,15 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 		this.otherDiagnosticCriteria = otherDiagnosticCriteria;
 	}
 
+    public IdsrType getIdsrDiagnosis() {
+        return idsrDiagnosis;
+    }
 
+    public void setIdsrDiagnosis(IdsrType idsrDiagnosis) {
+        this.idsrDiagnosis = idsrDiagnosis;
+    }
 
-	@JsonIgnore
+    @JsonIgnore
 	public String i18nPrefix() {
 		return I18N_PREFIX;
 	}
