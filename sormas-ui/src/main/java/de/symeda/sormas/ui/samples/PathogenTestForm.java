@@ -139,6 +139,35 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			fluidRowLocs(PathogenTestDto.OTHER_DELETION_REASON);
 	//@formatter:on
 
+	// map to decide the result type field value and enable/disable state
+	public static final ImmutableMap<Disease, ImmutableList<PathogenTestType>> RESULT_FIELD_DECISION_MAP =
+		ImmutableMap.<Disease, ImmutableList<PathogenTestType>> builder()
+			.put(
+				Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+				ImmutableList.of(
+					PathogenTestType.SEROGROUPING,
+					PathogenTestType.MULTILOCUS_SEQUENCE_TYPING,
+					PathogenTestType.SLIDE_AGGLUTINATION,
+					PathogenTestType.WHOLE_GENOME_SEQUENCING,
+					PathogenTestType.SEQUENCING,
+					PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY))
+			.put(
+				Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+				ImmutableList.of(
+					PathogenTestType.SEROGROUPING,
+					PathogenTestType.MULTILOCUS_SEQUENCE_TYPING,
+					PathogenTestType.SLIDE_AGGLUTINATION,
+					PathogenTestType.WHOLE_GENOME_SEQUENCING,
+					PathogenTestType.SEQUENCING,
+					PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY))
+			.put(Disease.MEASLES, ImmutableList.of(PathogenTestType.GENOTYPING))
+			.put(
+				Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+				ImmutableList.of(PathogenTestType.SEQUENCING, PathogenTestType.WHOLE_GENOME_SEQUENCING, PathogenTestType.PCR_RT_PCR))
+			.put(Disease.INFLUENZA, ImmutableList.of(PathogenTestType.ISOLATION, PathogenTestType.PCR_RT_PCR))
+			.put(Disease.CRYPTOSPORIDIOSIS, ImmutableList.of(PathogenTestType.GENOTYPING))
+			.build();
+
 	private SampleDto sample;
 	private EnvironmentSampleDto environmentSample;
 	private AbstractSampleForm sampleForm;
@@ -1086,16 +1115,22 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		FieldHelper
 			.setVisibleWhen(getFieldGroup(), PathogenTestDto.GENOTYPE_RESULT_TEXT, PathogenTestDto.GENOTYPE_RESULT, GenoTypeResult.OTHER, true);
 
-		//RSV subtype specification
-		Map<Object, List<Object>> rsvSubTypeDependencies = new HashMap<>() {
+		//disease variant specifications for RSV and Influenza
+		Map<Object, List<Object>> diseaseVariantDependencies = new HashMap<>() {
 
 			{
-				put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.RESPIRATORY_SYNCYTIAL_VIRUS));
-				put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.SEQUENCING, PathogenTestType.WHOLE_GENOME_SEQUENCING));
-				put(PathogenTestDto.TEST_RESULT, Arrays.asList(PathogenTestResultType.POSITIVE));
+				put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.INFLUENZA));
+				put(
+					PathogenTestDto.TEST_TYPE,
+					Arrays.asList(
+						PathogenTestType.SEQUENCING,
+						PathogenTestType.WHOLE_GENOME_SEQUENCING,
+						PathogenTestType.PCR_RT_PCR,
+						PathogenTestType.ISOLATION,
+						PathogenTestType.OTHER));
 			}
 		};
-		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.TESTED_DISEASE_VARIANT, rsvSubTypeDependencies, true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.TESTED_DISEASE_VARIANT, diseaseVariantDependencies, true);
 
 		Consumer<Disease> updateDiseaseVariantField = disease -> {
 			List<DiseaseVariant> diseaseVariants =
@@ -1137,36 +1172,11 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			diseaseVariantDetailsField.setVisible(diseaseVariant != null && diseaseVariant.matchPropertyValue(DiseaseVariant.HAS_DETAILS, true));
 		});
 
-		// map to decide the result type field value and enable/disable state
-		ImmutableMap<Disease, ImmutableList<PathogenTestType>> resultFieldDecisionMap = ImmutableMap.of(
-			Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-			ImmutableList.of(
-				PathogenTestType.SEROGROUPING,
-				PathogenTestType.MULTILOCUS_SEQUENCE_TYPING,
-				PathogenTestType.SLIDE_AGGLUTINATION,
-				PathogenTestType.WHOLE_GENOME_SEQUENCING,
-				PathogenTestType.SEQUENCING,
-				PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY),
-			Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-			ImmutableList.of(
-				PathogenTestType.SEROGROUPING,
-				PathogenTestType.MULTILOCUS_SEQUENCE_TYPING,
-				PathogenTestType.SLIDE_AGGLUTINATION,
-				PathogenTestType.WHOLE_GENOME_SEQUENCING,
-				PathogenTestType.SEQUENCING,
-				PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY),
-			Disease.MEASLES,
-			ImmutableList.of(PathogenTestType.GENOTYPING),
-			Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
-			ImmutableList.of(PathogenTestType.SEQUENCING, PathogenTestType.WHOLE_GENOME_SEQUENCING),
-			Disease.CRYPTOSPORIDIOSIS,
-			ImmutableList.of(PathogenTestType.GENOTYPING));
-
 		BiConsumer<Disease, PathogenTestType> resultField = (disease, testType) -> {
 			if (testResultField.isReadOnly()) {
 				return;
 			}
-			if (resultFieldDecisionMap.containsKey(disease) && resultFieldDecisionMap.get(disease).contains(testType)) {
+			if (RESULT_FIELD_DECISION_MAP.containsKey(disease) && RESULT_FIELD_DECISION_MAP.get(disease).contains(testType)) {
 				testResultField.setValue(PathogenTestResultType.POSITIVE);
 				testResultField.setEnabled(false);
 			} else {

@@ -240,7 +240,7 @@ public class AefiDataForm extends AbstractEditForm<AefiDto> {
 		getContent().addComponent(firstDecisionLevelHeadingLabel, FIRST_DECISION_LEVEL_HEADING_LOC);
 
 		addField(AefiDto.INVESTIGATION_NEEDED, NullableOptionGroup.class);
-		addField(AefiDto.INVESTIGATION_PLANNED_DATE, DateField.class);
+		addDateField(AefiDto.INVESTIGATION_PLANNED_DATE, DateField.class, -1);
 
 		Label nationalDecisionLevelHeadingLabel = new Label(I18nProperties.getString(Strings.headingAefiNationalDecisionLevel));
 		nationalDecisionLevelHeadingLabel.addStyleName(H3);
