@@ -260,6 +260,14 @@
                     app:required="true"
                     style="@style/ControlSingleColumnStyle" />
 
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/caseData_idsrDiagnosis"
+                    app:value="@={data.idsrDiagnosis}"
+                    app:dependencyParentField="@{caseDataDisease}"
+                    app:dependencyParentValue="@{Disease.IMMEDIATE_CASE_BASED_FORM_OTHER_CONDITIONS}"
+                    app:userEditRight="@{UserRight.CASE_CHANGE_DISEASE}"
+                    style="@style/ControlSingleColumnStyle" />
+
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/caseData_diseaseDetails"
                     style="@style/ControlSingleColumnStyle"

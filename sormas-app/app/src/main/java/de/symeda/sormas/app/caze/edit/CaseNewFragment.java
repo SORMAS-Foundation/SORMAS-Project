@@ -26,6 +26,7 @@ import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.DengueFeverType;
+import de.symeda.sormas.api.caze.IdsrType;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
@@ -70,6 +71,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 	private List<Item> plagueTypeList;
 	private List<Item> dengueFeverTypeList;
 	private List<Item> rabiesTypeList;
+	private List<Item> idsrDiagnosisList;
 	private List<Item> initialResponsibleDistricts;
 	private List<Item> initialResponsibleCommunities;
 	private List<Item> initialRegions;
@@ -117,6 +119,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 		plagueTypeList = DataUtils.getEnumItems(PlagueType.class, true);
 		dengueFeverTypeList = DataUtils.getEnumItems(DengueFeverType.class, true);
 		rabiesTypeList = DataUtils.getEnumItems(RabiesType.class, true);
+		idsrDiagnosisList = DataUtils.getEnumItems(IdsrType.class, true);
 
 		yearList = DataUtils.toItems(DateHelper.getYearsToNow(), true);
 		monthList = DataUtils.getMonthItems(true);
@@ -219,6 +222,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 		contentBinding.caseDataPlagueType.initializeSpinner(plagueTypeList);
 		contentBinding.caseDataDengueFeverType.initializeSpinner(dengueFeverTypeList);
 		contentBinding.caseDataHumanRabiesType.initializeSpinner(rabiesTypeList);
+		contentBinding.caseDataIdsrDiagnosis.initializeSpinner(idsrDiagnosisList);
 		contentBinding.caseDataReportDate.initializeDateField(getFragmentManager());
 		contentBinding.symptomsOnsetDate.initializeDateField(getFragmentManager());
 
