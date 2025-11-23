@@ -1645,6 +1645,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			existingCase.setDengueFeverType(updatedCaseBulkEditData.getDengueFeverType());
 			existingCase.setRabiesType(updatedCaseBulkEditData.getRabiesType());
 			existingCase.setIdsrDiagnosis(updatedCaseBulkEditData.getIdsrDiagnosis());
+			existingCase.setIdsrDiagnosisDetails(updatedCaseBulkEditData.getIdsrDiagnosisDetails());
 		}
 		if (classificationChange) {
 			existingCase.setCaseClassification(updatedCaseBulkEditData.getCaseClassification());
@@ -3047,6 +3048,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setDengueFeverType(source.getDengueFeverType());
 		target.setRabiesType(source.getRabiesType());
 		target.setIdsrDiagnosis(source.getIdsrDiagnosis());
+		target.setIdsrDiagnosisDetails(source.getIdsrDiagnosisDetails());
 		target.setCaseClassification(source.getCaseClassification());
 		target.setCaseIdentificationSource(source.getCaseIdentificationSource());
 		target.setScreeningType(source.getScreeningType());
@@ -3210,6 +3212,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setRadiographyCompatibility(source.getRadiographyCompatibility());
 		target.setOtherDiagnosticCriteria(source.getOtherDiagnosticCriteria());
         target.setIdsrDiagnosis(source.getIdsrDiagnosis());
+        target.setIdsrDiagnosisDetails(source.getIdsrDiagnosisDetails());
 
 		return target;
 	}
@@ -3238,6 +3241,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setDengueFeverType(source.getDengueFeverType());
 		target.setRabiesType(source.getRabiesType());
 		target.setIdsrDiagnosis(source.getIdsrDiagnosis());
+		target.setIdsrDiagnosisDetails(source.getIdsrDiagnosisDetails());
 		if (source.getReportDate() != null) {
 			target.setReportDate(source.getReportDate());
 		} else {
@@ -3423,6 +3427,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setRadiographyCompatibility(source.getRadiographyCompatibility());
 		target.setOtherDiagnosticCriteria(source.getOtherDiagnosticCriteria());
         target.setIdsrDiagnosis(source.getIdsrDiagnosis());
+        target.setIdsrDiagnosisDetails(source.getIdsrDiagnosisDetails());
         return target;
 	}
 

@@ -233,6 +233,7 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	public static final String NOTIFIER_DATE = "notifierDate";
 	public static final String RADIOGRAPHY_COMPATIBILITY = "radiographyCompatibility";
 	public static final String OTHER_DIAGNOSTIC_CRITERIA = "otherDiagnosticCriteria";
+	public static final String IDSR_DIAGNOSIS_DETAILS = "idsrDiagnosisDetails";
 
 	private Person person;
 	private String description;
@@ -429,6 +430,7 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	private RadiographyCompatibility radiographyCompatibility;
 	private String otherDiagnosticCriteria;
     private IdsrType idsrDiagnosis;
+    private String idsrDiagnosisDetails;
 
     public static Case build() {
 		Case caze = new Case();
@@ -1856,5 +1858,14 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 
     public void setIdsrDiagnosis(IdsrType idsrDiagnosis) {
         this.idsrDiagnosis = idsrDiagnosis;
+    }
+
+    @Column(length = CHARACTER_LIMIT_DEFAULT)
+    public String getIdsrDiagnosisDetails() {
+        return idsrDiagnosisDetails;
+    }
+
+    public void setIdsrDiagnosisDetails(String idsrDiagnosisDetails) {
+        this.idsrDiagnosisDetails = idsrDiagnosisDetails;
     }
 }
