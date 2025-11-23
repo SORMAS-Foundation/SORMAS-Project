@@ -41,6 +41,7 @@ import de.symeda.sormas.api.caze.ContactTracingContactType;
 import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.EndOfIsolationReason;
 import de.symeda.sormas.api.caze.HospitalWardType;
+import de.symeda.sormas.api.caze.IdsrType;
 import de.symeda.sormas.api.caze.InfectionSetting;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
@@ -137,6 +138,12 @@ public class Case extends PseudonymizableAdo {
 
 	@Enumerated(EnumType.STRING)
 	private RabiesType rabiesType;
+
+	@Enumerated(EnumType.STRING)
+	private IdsrType idsrDiagnosis;
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	private String idsrDiagnosisDetails;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
@@ -487,6 +494,22 @@ public class Case extends PseudonymizableAdo {
 
 	public void setRabiesType(RabiesType rabiesType) {
 		this.rabiesType = rabiesType;
+	}
+
+	public IdsrType getIdsrDiagnosis() {
+		return idsrDiagnosis;
+	}
+
+	public void setIdsrDiagnosis(IdsrType idsrDiagnosis) {
+		this.idsrDiagnosis = idsrDiagnosis;
+	}
+
+	public String getIdsrDiagnosisDetails() {
+		return idsrDiagnosisDetails;
+	}
+
+	public void setIdsrDiagnosisDetails(String idsrDiagnosisDetails) {
+		this.idsrDiagnosisDetails = idsrDiagnosisDetails;
 	}
 
 	public CaseClassification getCaseClassification() {

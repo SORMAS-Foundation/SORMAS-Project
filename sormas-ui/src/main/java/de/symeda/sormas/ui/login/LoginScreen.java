@@ -62,7 +62,8 @@ public class LoginScreen extends CssLayout {
 
 	private static final String UTF_8 = "UTF-8";
 	private static final int LOGO_WIDTH = 220;
-	private static final int CUSTOM_BRANDING_LOGO_WIDTH = 150;
+    private static final int SPONSOR_WIDTHS = 320;
+    private static final int CUSTOM_BRANDING_LOGO_WIDTH = 150;
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -311,11 +312,17 @@ public class LoginScreen extends CssLayout {
 			CssStyles.style(poweredByLayout, CssStyles.VSPACE_TOP_1);
 		}
 
-		Image imgSormasFoundation = new Image(null, new ThemeResource("img/sormas-foundation-logo.png"));
-		imgSormasFoundation.setWidth(isCustomBranding ? CUSTOM_BRANDING_LOGO_WIDTH : LOGO_WIDTH, Unit.PIXELS);
-		poweredByLayout.addComponent(imgSormasFoundation);
+//		Image imgSormasFoundation = new Image(null, new ThemeResource("img/sormas-foundation-logo.png"));
+//		imgSormasFoundation.setWidth(isCustomBranding ? CUSTOM_BRANDING_LOGO_WIDTH : LOGO_WIDTH, Unit.PIXELS);
+//		poweredByLayout.addComponent(imgSormasFoundation);
+//
+//		loginSidebarLayout.addComponent(poweredByLayout);
 
-		loginSidebarLayout.addComponent(poweredByLayout);
+        Image gambiaHealthImg = new Image(null, new ThemeResource("img/sponsors-logo.png"));
+        gambiaHealthImg.setWidth(isCustomBranding ? CUSTOM_BRANDING_LOGO_WIDTH : SPONSOR_WIDTHS, Unit.PIXELS);
+        poweredByLayout.addComponent(gambiaHealthImg);
+
+        loginSidebarLayout.addComponent(poweredByLayout);
 
 		Label customSidebarLabel = new Label();
 		customSidebarLabel.setContentMode(ContentMode.HTML);

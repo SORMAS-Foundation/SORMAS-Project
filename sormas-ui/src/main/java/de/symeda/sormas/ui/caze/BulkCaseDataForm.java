@@ -48,6 +48,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseBulkEditData;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.IdsrType;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
@@ -175,6 +176,8 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 		addField(CaseBulkEditData.PLAGUE_TYPE, NullableOptionGroup.class);
 		addField(CaseBulkEditData.DENGUE_FEVER_TYPE, NullableOptionGroup.class);
 		addField(CaseBulkEditData.RABIES_TYPE, NullableOptionGroup.class);
+		addField(CaseBulkEditData.IDSR_DIAGNOSIS, NullableOptionGroup.class);
+		addField(CaseBulkEditData.IDSR_DIAGNOSIS_DETAILS, TextField.class);
 
 		if (isVisibleAllowed(CaseBulkEditData.DISEASE_DETAILS)) {
 			FieldHelper.setVisibleWhen(
@@ -211,6 +214,22 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 				Arrays.asList(CaseBulkEditData.RABIES_TYPE),
 				CaseBulkEditData.DISEASE,
 				Arrays.asList(Disease.RABIES),
+				true);
+		}
+		if (isVisibleAllowed(CaseBulkEditData.IDSR_DIAGNOSIS)) {
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				Arrays.asList(CaseBulkEditData.IDSR_DIAGNOSIS),
+				CaseBulkEditData.DISEASE,
+				Arrays.asList(Disease.IMMEDIATE_CASE_BASED_FORM_OTHER_CONDITIONS),
+				true);
+		}
+		if (isVisibleAllowed(CaseBulkEditData.IDSR_DIAGNOSIS_DETAILS)) {
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				Arrays.asList(CaseBulkEditData.IDSR_DIAGNOSIS_DETAILS),
+				CaseBulkEditData.IDSR_DIAGNOSIS,
+				Arrays.asList(IdsrType.OTHER),
 				true);
 		}
 

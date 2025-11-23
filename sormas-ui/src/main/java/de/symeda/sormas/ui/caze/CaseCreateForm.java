@@ -48,6 +48,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.IdsrType;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
@@ -129,9 +130,13 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
         + fluidRowLocs(CaseDataDto.REPORT_DATE, CaseDataDto.EPID_NUMBER)
 		+ fluidRowLocs(CaseDataDto.CASE_CLASSIFICATION)
         + fluidRowLocs(CaseDataDto.CASE_REFERENCE_NUMBER, CaseDataDto.EXTERNAL_ID)
+        + fluidRowLocs(6, CaseDataDto.DISEASE)
+		+ fluidRow(
+							fluidColumnLoc(6, 0, CaseDataDto.DISEASE),
+							fluidColumnLoc(6, 0, CaseDataDto.IDSR_DIAGNOSIS),
+							fluidColumnLoc(6, 0, CaseDataDto.IDSR_DIAGNOSIS_DETAILS))
         + fluidRow(
-        fluidColumnLoc(6, 0, CaseDataDto.DISEASE),
-        fluidColumn(6, 0,
+        fluidColumn(12, 0,
             locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE, CaseDataDto.DENGUE_FEVER_TYPE,
                 CaseDataDto.RABIES_TYPE)))
         + fluidRowLocs(CaseDataDto.DISEASE_VARIANT, CaseDataDto.DISEASE_VARIANT_DETAILS)
@@ -210,6 +215,10 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		diseaseVariantField.setNullSelectionAllowed(true);
 		diseaseVariantField.setVisible(false);
 		addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
+		ComboBox idsrDiagnosisField = addField(CaseDataDto.IDSR_DIAGNOSIS, ComboBox.class);
+		idsrDiagnosisField.setNullSelectionAllowed(true);
+		TextField idsrDiagnosisDetailsField = addField(CaseDataDto.IDSR_DIAGNOSIS_DETAILS, TextField.class);
+		idsrDiagnosisDetailsField.setVisible(false);
 		NullableOptionGroup plagueType = addField(CaseDataDto.PLAGUE_TYPE, NullableOptionGroup.class);
 		addField(CaseDataDto.DENGUE_FEVER_TYPE, NullableOptionGroup.class);
 		addField(CaseDataDto.RABIES_TYPE, NullableOptionGroup.class);
@@ -503,6 +512,9 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		FieldHelper
 			.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.DENGUE_FEVER_TYPE), CaseDataDto.DISEASE, Arrays.asList(Disease.DENGUE), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.RABIES_TYPE), CaseDataDto.DISEASE, Arrays.asList(Disease.RABIES), true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.IDSR_DIAGNOSIS), CaseDataDto.DISEASE, Arrays.asList(Disease.IMMEDIATE_CASE_BASED_FORM_OTHER_CONDITIONS), true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.IDSR_DIAGNOSIS_DETAILS), CaseDataDto.IDSR_DIAGNOSIS, Arrays.asList(IdsrType.OTHER), true);
+		FieldHelper.setRequiredWhen(getFieldGroup(), CaseDataDto.IDSR_DIAGNOSIS, Arrays.asList(CaseDataDto.IDSR_DIAGNOSIS_DETAILS), Arrays.asList(IdsrType.OTHER));
 		FieldHelper.setVisibleWhen(
 			facilityOrHome,
 			Arrays.asList(facilityTypeGroup, facilityType, facilityCombo),

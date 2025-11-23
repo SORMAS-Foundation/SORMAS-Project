@@ -14416,4 +14416,15 @@ alter table drugsusceptibility_history add column IF NOT EXISTS erythromycinSusc
 
 INSERT INTO schema_version (version_number, comment) VALUES (578, 'Update history tables #13516');
 
+-- 2025-01-XX Add IDSR diagnosis field to cases
+alter table cases add idsrdiagnosis varchar(255);
+alter table cases_history add idsrdiagnosis varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (579, 'Add IDSR diagnosis field to cases');
+
+alter table cases add idsrdiagnosisdetails varchar(512);
+alter table cases_history add idsrdiagnosisdetails varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (580, 'Add IDSR diagnosis details field to cases');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

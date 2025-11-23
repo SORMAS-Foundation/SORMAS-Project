@@ -48,6 +48,8 @@ public class CaseBulkEditData extends EntityDto {
 	public static final String PLAGUE_TYPE = "plagueType";
 	public static final String DENGUE_FEVER_TYPE = "dengueFeverType";
 	public static final String RABIES_TYPE = "rabiesType";
+	public static final String IDSR_DIAGNOSIS = "idsrDiagnosis";
+	public static final String IDSR_DIAGNOSIS_DETAILS = "idsrDiagnosisDetails";
 	public static final String CASE_CLASSIFICATION = "caseClassification";
 	public static final String INVESTIGATION_STATUS = "investigationStatus";
 	public static final String OUTCOME = "outcome";
@@ -69,6 +71,9 @@ public class CaseBulkEditData extends EntityDto {
 	private PlagueType plagueType;
 	private DengueFeverType dengueFeverType;
 	private RabiesType rabiesType;
+	private IdsrType idsrDiagnosis;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String idsrDiagnosisDetails;
 	private CaseClassification caseClassification;
 	private InvestigationStatus investigationStatus;
 	private CaseOutcome outcome;
@@ -136,6 +141,22 @@ public class CaseBulkEditData extends EntityDto {
 
 	public void setRabiesType(RabiesType rabiesType) {
 		this.rabiesType = rabiesType;
+	}
+
+	public IdsrType getIdsrDiagnosis() {
+		return idsrDiagnosis;
+	}
+
+	public void setIdsrDiagnosis(IdsrType idsrDiagnosis) {
+		this.idsrDiagnosis = idsrDiagnosis;
+	}
+
+	public String getIdsrDiagnosisDetails() {
+		return idsrDiagnosisDetails;
+	}
+
+	public void setIdsrDiagnosisDetails(String idsrDiagnosisDetails) {
+		this.idsrDiagnosisDetails = idsrDiagnosisDetails;
 	}
 
 	public CaseClassification getCaseClassification() {
