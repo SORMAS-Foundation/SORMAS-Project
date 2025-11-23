@@ -142,6 +142,9 @@ public class Case extends PseudonymizableAdo {
 	@Enumerated(EnumType.STRING)
 	private IdsrType idsrDiagnosis;
 
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	private String idsrDiagnosisDetails;
+
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private CaseClassification caseClassification;
@@ -499,6 +502,14 @@ public class Case extends PseudonymizableAdo {
 
 	public void setIdsrDiagnosis(IdsrType idsrDiagnosis) {
 		this.idsrDiagnosis = idsrDiagnosis;
+	}
+
+	public String getIdsrDiagnosisDetails() {
+		return idsrDiagnosisDetails;
+	}
+
+	public void setIdsrDiagnosisDetails(String idsrDiagnosisDetails) {
+		this.idsrDiagnosisDetails = idsrDiagnosisDetails;
 	}
 
 	public CaseClassification getCaseClassification() {

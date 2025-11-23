@@ -116,6 +116,7 @@ public class CaseDtoHelper extends PersonDependentDtoHelper<Case, CaseDataDto> {
 		target.setPlagueType(source.getPlagueType());
 		target.setDengueFeverType(source.getDengueFeverType());
 		target.setIdsrDiagnosis(source.getIdsrDiagnosis());
+		target.setIdsrDiagnosisDetails(source.getIdsrDiagnosisDetails());
 
 		target.setHealthFacility(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getHealthFacility()));
 		target.setHealthFacilityDetails(source.getHealthFacilityDetails());
@@ -265,6 +266,7 @@ public class CaseDtoHelper extends PersonDependentDtoHelper<Case, CaseDataDto> {
 		target.setPlagueType(source.getPlagueType());
 		target.setDengueFeverType(source.getDengueFeverType());
 		target.setIdsrDiagnosis(source.getIdsrDiagnosis());
+		target.setIdsrDiagnosisDetails(source.getIdsrDiagnosisDetails());
 
 		if (source.getHealthFacility() != null) {
 			Facility facility = DatabaseHelper.getFacilityDao().queryForId(source.getHealthFacility().getId());

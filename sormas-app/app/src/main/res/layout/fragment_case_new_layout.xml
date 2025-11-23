@@ -28,6 +28,7 @@
         <import type="de.symeda.sormas.api.i18n.I18nProperties" />
         <import type="de.symeda.sormas.api.i18n.Strings" />
         <import type="de.symeda.sormas.api.disease.DiseaseVariant" />
+        <import type="de.symeda.sormas.api.caze.IdsrType" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.caze.Case" />
         <variable name="caseOriginClass" type="Class" />
@@ -70,6 +71,14 @@
                 app:dependencyParentField="@{caseDataDisease}"
                 app:dependencyParentValue="@{Disease.IMMEDIATE_CASE_BASED_FORM_OTHER_CONDITIONS}"
                 app:value="@={data.idsrDiagnosis}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/caseData_idsrDiagnosisDetails"
+                style="@style/ControlSingleColumnStyle"
+                app:dependencyParentField="@{caseDataIdsrDiagnosis}"
+                app:dependencyParentValue="@{IdsrType.OTHER}"
+                app:required="true"
+                app:value="@={data.idsrDiagnosisDetails}" />
 
             <de.symeda.sormas.app.component.controls.ControlCheckBoxField
                 android:id="@+id/rapid_case_entry_checkBox"

@@ -39,6 +39,7 @@
         <import type="de.symeda.sormas.api.i18n.I18nProperties" />
         <import type="de.symeda.sormas.api.i18n.Strings" />
         <import type="de.symeda.sormas.api.disease.DiseaseVariant" />
+        <import type="de.symeda.sormas.api.caze.IdsrType" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.caze.Case" />
         <variable name="singleClassification" type="de.symeda.sormas.api.caze.CaseConfirmationBasis" />
@@ -250,6 +251,13 @@
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_idsrDiagnosisDetails"
+                    app:value="@{data.idsrDiagnosisDetails}"
+                    app:dependencyParentField="@{caseDataIdsrDiagnosis}"
+                    app:dependencyParentValue="@{IdsrType.OTHER}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/caseData_diseaseVariant"
