@@ -39,6 +39,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.caze.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -72,21 +73,6 @@ import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseConfirmationBasis;
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseIdentificationSource;
-import de.symeda.sormas.api.caze.CaseLogic;
-import de.symeda.sormas.api.caze.CaseOrigin;
-import de.symeda.sormas.api.caze.CaseOutcome;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.caze.EndOfIsolationReason;
-import de.symeda.sormas.api.caze.HospitalWardType;
-import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.caze.PreviousCaseDto;
-import de.symeda.sormas.api.caze.QuarantineReason;
-import de.symeda.sormas.api.caze.ReinfectionDetail;
-import de.symeda.sormas.api.caze.ReinfectionDetailGroup;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
@@ -205,7 +191,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(CaseDataDto.CASE_REFERENCE_NUMBER, "") +
 					fluidRow(
 							fluidColumnLoc(6, 0, CaseDataDto.DISEASE),
-							fluidColumnLoc(6, 0, CaseDataDto.IDSR_DIAGNOSIS)) +
+							fluidColumnLoc(6, 0, CaseDataDto.IDSR_DIAGNOSIS),
+							fluidColumnLoc(6, 0, CaseDataDto.IDSR_DIAGNOSIS_DETAILS)) +
 					fluidRow(
 							fluidColumn(12, 0, locs(
 									CaseDataDto.DISEASE_DETAILS,
@@ -478,6 +465,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
 		ComboBox idsrDiagnosisField = addField(CaseDataDto.IDSR_DIAGNOSIS, ComboBox.class);
 		idsrDiagnosisField.setNullSelectionAllowed(true);
+        TextField idsrDiagnosisDetailsField = addField(CaseDataDto.IDSR_DIAGNOSIS_DETAILS, TextField.class);
+        idsrDiagnosisDetailsField.setVisible(false);
 		addField(CaseDataDto.PLAGUE_TYPE, NullableOptionGroup.class);
 		addField(CaseDataDto.DENGUE_FEVER_TYPE, NullableOptionGroup.class);
 		addField(CaseDataDto.RABIES_TYPE, NullableOptionGroup.class);
@@ -1184,6 +1173,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				Arrays.asList(Disease.IMMEDIATE_CASE_BASED_FORM_OTHER_CONDITIONS),
 				true);
 		}
+        FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.IDSR_DIAGNOSIS_DETAILS), CaseDataDto.IDSR_DIAGNOSIS, Arrays.asList(IdsrType.OTHER), true);
+        FieldHelper.setRequiredWhen(getFieldGroup(), CaseDataDto.IDSR_DIAGNOSIS, Arrays.asList(CaseDataDto.IDSR_DIAGNOSIS_DETAILS), Arrays.asList(IdsrType.OTHER));
 		if (isVisibleAllowed(CaseDataDto.SMALLPOX_VACCINATION_SCAR)) {
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),
