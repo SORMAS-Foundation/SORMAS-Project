@@ -728,7 +728,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		minimumAdultAge = FacadeProvider.getConfigFacade().getMinimumAdultAge();
 		minimumEmancipatedAge = FacadeProvider.getConfigFacade().getMinimumEmancipatedAge();
 
-		if (!List.of(Disease.RESPIRATORY_SYNCYTIAL_VIRUS).contains(disease)) {
+		if (disease != null && disease != Disease.RESPIRATORY_SYNCYTIAL_VIRUS) {
 			perinatalDetailsHeader.setVisible(false);
 		}
 	}
