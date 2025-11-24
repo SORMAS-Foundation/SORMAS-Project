@@ -24,6 +24,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Link;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
@@ -49,7 +50,7 @@ public class AbstractStatisticsView extends AbstractSubNavigationView<Component>
 			menu.addView(DatabaseExportView.VIEW_NAME, I18nProperties.getCaption(Captions.statisticsDatabaseExport), params);
 		}
 
-		if (UiUtil.permitted(UserRight.EPIPULSE_EXPORT_VIEW)) {
+		if (UiUtil.permitted(FeatureType.EPIPULSE_EXPORT, UserRight.EPIPULSE_EXPORT_VIEW)) {
 			menu.addView(EpipulseExportView.VIEW_NAME, I18nProperties.getCaption(Captions.statisticsEpipulseExport), params);
 		}
 
