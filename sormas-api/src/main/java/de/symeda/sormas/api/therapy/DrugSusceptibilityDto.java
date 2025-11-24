@@ -68,7 +68,6 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 	public static final String ERYTHROMYCIN_MIC = "erythromycinMic";
 	public static final String ERYTHROMYCIN_SUSCEPTIBILITY = "erythromycinSusceptibility";
 
-
 	@Diseases(value = {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
@@ -100,12 +99,14 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private DrugSusceptibilityType capreomycinSusceptibility;
 	@Diseases(value = {
-		Disease.TUBERCULOSIS, Disease.INVASIVE_MENINGOCOCCAL_INFECTION })
+		Disease.TUBERCULOSIS,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private Float ciprofloxacinMic;
 	@Diseases(value = {
-		Disease.TUBERCULOSIS, Disease.INVASIVE_MENINGOCOCCAL_INFECTION })
+		Disease.TUBERCULOSIS,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private DrugSusceptibilityType ciprofloxacinSusceptibility;
@@ -142,14 +143,12 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 	@Diseases(value = {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY,
-		PathogenTestType.PCR_RT_PCR })
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private Float isoniazidMic;
 	@Diseases(value = {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY,
-		PathogenTestType.PCR_RT_PCR })
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private DrugSusceptibilityType isoniazidSusceptibility;
 	@Diseases(value = {
 		Disease.TUBERCULOSIS })
@@ -192,16 +191,16 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private DrugSusceptibilityType ofloxacinSusceptibility;
 	@Diseases(value = {
-		Disease.TUBERCULOSIS, Disease.INVASIVE_MENINGOCOCCAL_INFECTION })
+		Disease.TUBERCULOSIS,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY,
-		PathogenTestType.PCR_RT_PCR })
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private Float rifampicinMic;
 	@Diseases(value = {
-		Disease.TUBERCULOSIS, Disease.INVASIVE_MENINGOCOCCAL_INFECTION })
+		Disease.TUBERCULOSIS,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY,
-		PathogenTestType.PCR_RT_PCR })
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private DrugSusceptibilityType rifampicinSusceptibility;
 	@Diseases(value = {
 		Disease.TUBERCULOSIS })
@@ -215,36 +214,40 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 	private DrugSusceptibilityType streptomycinSusceptibility;
 
 	@Diseases(value = {
-			Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
-			PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private Float ceftriaxoneMic;
 	@Diseases(value = {
-			Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
-			PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private DrugSusceptibilityType ceftriaxoneSusceptibility;
 
 	@Diseases(value = {
-			Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
-			PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private Float penicillinMic;
 	@Diseases(value = {
-			Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
-			PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private DrugSusceptibilityType penicillinSusceptibility;
 
 	@Diseases(value = {
-			Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
-			PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private Float erythromycinMic;
 	@Diseases(value = {
-			Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
-			PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private DrugSusceptibilityType erythromycinSusceptibility;
 
 	public static DrugSusceptibilityDto build() {

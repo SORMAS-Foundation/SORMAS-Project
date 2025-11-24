@@ -210,13 +210,19 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		setWidth(900, Unit.PIXELS);
 	}
 
-	private static void setCqValueVisibility(TextField cqValueField, PathogenTestType testType, PathogenTestResultType testResultType) {
-		if (((testType == PathogenTestType.PCR_RT_PCR && testResultType == PathogenTestResultType.POSITIVE))
-			|| testType == PathogenTestType.CQ_VALUE_DETECTION) {
-			cqValueField.setVisible(true);
-		} else {
-			cqValueField.setVisible(false);
-			cqValueField.clear();
+	private static void setCqValueVisibility(
+		ComboBox diseaseField,
+		TextField cqValueField,
+		PathogenTestType testType,
+		PathogenTestResultType testResultType) {
+		if (!List.of(Disease.TUBERCULOSIS).contains((Disease) diseaseField.getValue())) {
+			if (((testType == PathogenTestType.PCR_RT_PCR && testResultType == PathogenTestResultType.POSITIVE))
+				|| testType == PathogenTestType.CQ_VALUE_DETECTION) {
+				cqValueField.setVisible(true);
+			} else {
+				cqValueField.setVisible(false);
+				cqValueField.clear();
+			}
 		}
 	}
 
@@ -259,6 +265,16 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 							// Field was read-only but no longer meets conditions for auto-set values
 							testResultField.setReadOnly(false);
 							testResultField.setValue(null);
+						}
+					} else if (List.of(Disease.INVASIVE_MENINGOCOCCAL_INFECTION).contains(disease)) {
+						if (Arrays.asList(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY).contains(testType)) {
+							if (wasReadOnly) {
+								testResultField.setReadOnly(false);
+							}
+							testResultField.setValue(PathogenTestResultType.NOT_APPLICABLE);
+							if (wasReadOnly) {
+								testResultField.setReadOnly(true);
+							}
 						}
 					}
 
@@ -496,9 +512,6 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				}
 			};
 			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.RIFAMPICIN_RESISTANT, tuberculosisPcrDependencies, true);
-			//FieldHelper.setRequiredWhen(getFieldGroup(), PathogenTestDto.RIFAMPICIN_RESISTANT, tuberculosisPcrDependencies);
-			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.ISONIAZID_RESISTANT, tuberculosisPcrDependencies, true);
-			//FieldHelper.setRequiredWhen(getFieldGroup(), PathogenTestDto.ISONIAZID_RESISTANT, tuberculosisPcrDependencies);
 
 			//tuberculosis-microscopy test specification
 			Map<Object, List<Object>> tuberculosisMicroscopyDependencies = new HashMap<>() {
@@ -1185,17 +1198,30 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 					fourFoldIncrease.setVisible(false);
 					fourFoldIncrease.setEnabled(false);
 				}
+
 				updateDrugSusceptibilityFieldSpecifications(testType, (Disease) diseaseField.getValue());
 
-				setVisibleClear(
-					PathogenTestType.PCR_RT_PCR == testType,
-					PathogenTestDto.CQ_VALUE,
-					PathogenTestDto.CT_VALUE_E,
-					PathogenTestDto.CT_VALUE_N,
-					PathogenTestDto.CT_VALUE_RDRP,
-					PathogenTestDto.CT_VALUE_S,
-					PathogenTestDto.CT_VALUE_ORF_1,
-					PathogenTestDto.CT_VALUE_RDRP_S);
+				if (!List.of(Disease.TUBERCULOSIS).contains((Disease) diseaseField.getValue())) {
+					setVisibleClear(
+						PathogenTestType.PCR_RT_PCR == testType,
+						PathogenTestDto.CQ_VALUE,
+						PathogenTestDto.CT_VALUE_E,
+						PathogenTestDto.CT_VALUE_N,
+						PathogenTestDto.CT_VALUE_RDRP,
+						PathogenTestDto.CT_VALUE_S,
+						PathogenTestDto.CT_VALUE_ORF_1,
+						PathogenTestDto.CT_VALUE_RDRP_S);
+				} else {
+					setVisibleClear(
+						false,
+						PathogenTestDto.CQ_VALUE,
+						PathogenTestDto.CT_VALUE_E,
+						PathogenTestDto.CT_VALUE_N,
+						PathogenTestDto.CT_VALUE_RDRP,
+						PathogenTestDto.CT_VALUE_S,
+						PathogenTestDto.CT_VALUE_ORF_1,
+						PathogenTestDto.CT_VALUE_RDRP_S);
+				}
 				// Show tube IGRA fields only for IGRA tests and Luxembourg
 				setVisibleClear(
 					PathogenTestType.IGRA == testType && FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG),
@@ -1244,12 +1270,12 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 		testTypeField.addValueChangeListener(e -> {
 			PathogenTestType testType = (PathogenTestType) e.getProperty().getValue();
-			setCqValueVisibility(cqValueField, testType, (PathogenTestResultType) testResultField.getValue());
+			setCqValueVisibility(diseaseField, cqValueField, testType, (PathogenTestResultType) testResultField.getValue());
 		});
 
 		testResultField.addValueChangeListener(e -> {
 			PathogenTestResultType testResult = (PathogenTestResultType) e.getProperty().getValue();
-			setCqValueVisibility(cqValueField, (PathogenTestType) testTypeField.getValue(), testResult);
+			setCqValueVisibility(diseaseField, cqValueField, (PathogenTestType) testTypeField.getValue(), testResult);
 		});
 
 		if (SamplePurpose.INTERNAL.equals(getSamplePurpose())) { // this only works for already saved samples
