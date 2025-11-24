@@ -14893,4 +14893,8 @@ alter table community_history add nutscode varchar(10);
 
 INSERT INTO schema_version (version_number, comment) VALUES (597, 'Epipulse export module #13631');
 
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'EVENT_VIEW_ARCHIVED' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN','NATIONAL_USER') ON CONFLICT (userrole_id, userright) DO NOTHING;
+
+INSERT INTO schema_version (version_number, comment) VALUES (598, 'Add view archived events to default ADMIN and NATIONAL_USER roles #13470');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

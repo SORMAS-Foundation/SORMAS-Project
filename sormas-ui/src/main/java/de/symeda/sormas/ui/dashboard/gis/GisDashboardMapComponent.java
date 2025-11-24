@@ -53,6 +53,7 @@ import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.dashboard.AefiDashboardCriteria;
+import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.dashboard.DashboardEventDto;
 import de.symeda.sormas.api.dashboard.GisDashboardCriteria;
 import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
@@ -159,7 +160,7 @@ public class GisDashboardMapComponent extends BaseDashboardMapComponent<GisDashb
 	protected void addComponents() {
 		displayedHumanSamples = new HashSet<>();
 		if (UiUtil.permitted(FeatureType.ENVIRONMENT_MANAGEMENT, UserRight.ENVIRONMENT_SAMPLE_VIEW)) {
-			showEnvironmentalSamples = true;
+			showEnvironmentalSamples = false;
 		}
 
 		caseClassificationOption = MapCaseClassificationOption.ALL_CASES;
@@ -244,7 +245,9 @@ public class GisDashboardMapComponent extends BaseDashboardMapComponent<GisDashb
 			markerCount += FacadeProvider.getAefiDashboardFacade().countAefiForMap(dashboardDataProvider.buildAefiDashboardCriteria());
 		} else if (loadEvents) {
 			if (showEvents) {
-				markerCount += dashboardDataProvider.getEvents().size();
+				DashboardCriteria eventDashboardCriteria = dashboardDataProvider.buildEventDashboardCriteria();
+				List<DashboardEventDto> events = FacadeProvider.getDashboardFacade().getNewEvents(eventDashboardCriteria);
+				markerCount += events.size();
 			}
 		}
 
@@ -309,7 +312,7 @@ public class GisDashboardMapComponent extends BaseDashboardMapComponent<GisDashb
 		if (loadEvents) {
 			clearEventMarkers();
 			if (showEvents) {
-				showEventMarkers(dashboardDataProvider.getEvents());
+				showEventMarkers();
 			}
 			loadEvents = false;
 		}
@@ -523,7 +526,7 @@ public class GisDashboardMapComponent extends BaseDashboardMapComponent<GisDashb
 				showEnvironmentSamplesCheckBox = new CheckBox();
 				showEnvironmentSamplesCheckBox.setId(Captions.sampleDashboardShowEnvironmentSamples);
 				showEnvironmentSamplesCheckBox.setCaption(I18nProperties.getCaption(Captions.sampleDashboardShowEnvironmentSamples));
-				showEnvironmentSamplesCheckBox.setValue(shouldShowEventParticipantSamples());
+				showEnvironmentSamplesCheckBox.setValue(showEnvironmentalSamples);
 				showEnvironmentSamplesCheckBox.addValueChangeListener(e -> {
 					if ((boolean) e.getProperty().getValue()) {
 						showEnvironmentalSamples = true;
@@ -585,7 +588,7 @@ public class GisDashboardMapComponent extends BaseDashboardMapComponent<GisDashb
 					refreshMap(true);
 				});
 				samplesLayers.addComponent(showEventsCheckBox);
-				showEventsCheckBox.setVisible(false);
+				showEventsCheckBox.setVisible(true);
 			}
 
 			if (UiUtil.hasNationJurisdictionLevel() && UiUtil.permitted(UserRight.CASE_VIEW)) {
@@ -1341,8 +1344,11 @@ public class GisDashboardMapComponent extends BaseDashboardMapComponent<GisDashb
 		markerEvents.clear();
 	}
 
-	private void showEventMarkers(List<DashboardEventDto> events) {
+	private void showEventMarkers() {
 		clearEventMarkers();
+
+		DashboardCriteria eventDashboardCriteria = dashboardDataProvider.buildEventDashboardCriteria();
+		List<DashboardEventDto> events = FacadeProvider.getDashboardFacade().getNewEvents(eventDashboardCriteria);
 
 		List<LeafletMarker> eventMarkers = new ArrayList<LeafletMarker>();
 
