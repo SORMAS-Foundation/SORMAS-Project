@@ -16,7 +16,7 @@
 package de.symeda.sormas.ui.caze;
 
 import java.util.EnumSet;
-import java.util.List;
+import java.util.Set;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.UI;
@@ -60,6 +60,18 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 	public static final String VIEW_MODE_URL_PREFIX = "v";
 
 	public static final String ROOT_VIEW_NAME = CasesView.VIEW_NAME;
+
+	public static final Set<Disease> CLINICAL_COURSE_DISABLED_DISEASES =
+		Set.of(Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS);
+
+	public static final Set<Disease> THERAPY_DISABLED_DISEASES = Set.of(
+		Disease.MEASLES,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION);
+
+	public static final Set<Disease> SYMPTOMS_DISABLED_DISEASES = Set.of(Disease.INFLUENZA, Disease.LATENT_TUBERCULOSIS);
 
 	private Boolean hasOutbreak;
 	private boolean caseFollowupEnabled;
@@ -177,7 +189,7 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.PORT_HEALTH_INFO),
 					params);
 			}
-			if (UiUtil.enabled(FeatureType.VIEW_TAB_CASES_SYMPTOMS) && !List.of(Disease.LATENT_TUBERCULOSIS).contains(caze.getDisease())) {
+			if (UiUtil.enabled(FeatureType.VIEW_TAB_CASES_SYMPTOMS) && !SYMPTOMS_DISABLED_DISEASES.contains(caze.getDisease())) {
 				menu.addView(CaseSymptomsView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.SYMPTOMS), params);
 			}
 			if (UiUtil.enabled(FeatureType.VIEW_TAB_CASES_EPIDEMIOLOGICAL_DATA) && caze.getDisease() != Disease.CONGENITAL_RUBELLA) {
@@ -187,9 +199,11 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 				&& !caze.checkIsUnreferredPortHealthCase()
 				&& UiUtil.enabled(FeatureType.CLINICAL_MANAGEMENT)
 				&& (!(FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
-					&& List.of(Disease.MEASLES).contains(caze.getDisease())))
-				&& !List.of(Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS).contains(caze.getDisease())) {
-				// Therapy view is not available for Luxembourg for Measles cases and for all Gradiastis & Cryptosporidiosis cases.
+					&& THERAPY_DISABLED_DISEASES.contains(caze.getDisease())))
+				&& Disease.INFLUENZA != caze.getDisease()) {
+				// Therapy view is not available for Luxembourg for Measles, IMI, IPI, Gradiastis & Cryptosporidiosis cases.
+				// But for other countries, it should be available for the above diseases
+				// Therapy view is not available for all countries Influenza cases. #13708
 				menu.addView(TherapyView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.THERAPY), params);
 			}
 		}
@@ -205,17 +219,11 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 				EnumSet.of(FeatureType.VIEW_TAB_CASES_FOLLOW_UP, FeatureType.VIEW_TAB_CASES_CLINICAL_COURSE, FeatureType.CLINICAL_MANAGEMENT),
 				UserRight.CLINICAL_COURSE_VIEW)
 				&& !caze.checkIsUnreferredPortHealthCase()
-				&& !List
-					.of(
-						Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-						Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-						Disease.GIARDIASIS,
-						Disease.CRYPTOSPORIDIOSIS)
-					.contains(caze.getDisease())
 				&& !(FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
-					&& List.of(Disease.MEASLES).contains(caze.getDisease()))) {
-				// clinical course view is not available for Luxembourg for Measles cases,
-				// and for all other countries GIARDIASIS, Cryptosporidiosis, IMI & IPI cases.
+					&& CLINICAL_COURSE_DISABLED_DISEASES.contains(caze.getDisease()))
+				&& Disease.INFLUENZA != caze.getDisease()) {
+				// clinical course view is not available for Luxembourg for Measles, IMI, IPI, GIARDIASIS, Cryptosporidiosis cases,
+				// and for all other countries Influenza cases. 13708
 				menu.addView(
 					ClinicalCourseView.VIEW_NAME,
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CLINICAL_COURSE),
