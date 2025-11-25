@@ -235,6 +235,23 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
 		target.setHighOrLowBloodPressure(source.getHighOrLowBloodPressure());
 		target.setUrinaryRetention(source.getUrinaryRetention());
 		target.setShivering(source.getShivering());
+        target.setAcuteEncephalitis(source.getAcuteEncephalitis());
+        target.setEggyBurps(source.getEggyBurps());
+        target.setWeightLoss(source.getWeightLoss());
+        target.setWeightLossAmount(source.getWeightLossAmount());
+        target.setReoccurrence(source.getReoccurrence());
+        target.setSymptomCurrentStatus(source.getSymptomCurrentStatus());
+        target.setDurationOfSymptoms(source.getDurationOfSymptoms());
+        target.setOvernightStayRequired(source.getOvernightStayRequired());
+        target.setBloating(source.getBloating());
+        target.setDifficultyBreathing(source.getDifficultyBreathing());
+        target.setParadoxicalBreathing(source.getParadoxicalBreathing());
+        target.setRespiratoryFatigue(source.getRespiratoryFatigue());
+        target.setParentTimeOffWork(source.getParentTimeOffWork());
+        target.setTimeOffWorkDays(source.getTimeOffWorkDays());
+        target.setUnknownSymptom(source.getUnknownSymptom());
+        target.setSkinRashOnsetDate(source.getSkinRashOnsetDate());
+        target.setAsymptomatic(source.getAsymptomatic());
 
 		target.setPseudonymized(source.isPseudonymized());
 	}
@@ -421,6 +438,23 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
 		target.setHighOrLowBloodPressure(source.getHighOrLowBloodPressure());
 		target.setUrinaryRetention(source.getUrinaryRetention());
 		target.setShivering(source.getShivering());
+        target.setAcuteEncephalitis(source.getAcuteEncephalitis());
+        target.setEggyBurps(source.getEggyBurps());
+        target.setWeightLoss(source.getWeightLoss());
+        target.setWeightLossAmount(source.getWeightLossAmount());
+        target.setReoccurrence(source.getReoccurrence());
+        target.setSymptomCurrentStatus(source.getSymptomCurrentStatus());
+        target.setDurationOfSymptoms(source.getDurationOfSymptoms());
+        target.setOvernightStayRequired(source.getOvernightStayRequired());
+        target.setBloating(source.getBloating());
+        target.setDifficultyBreathing(source.getDifficultyBreathing());
+        target.setParadoxicalBreathing(source.getParadoxicalBreathing());
+        target.setRespiratoryFatigue(source.getRespiratoryFatigue());
+        target.setParentTimeOffWork(source.getParentTimeOffWork());
+        target.setTimeOffWorkDays(source.getTimeOffWorkDays());
+        target.setUnknownSymptom(source.getUnknownSymptom());
+        target.setSkinRashOnsetDate(source.getSkinRashOnsetDate());
+        target.setAsymptomatic(source.getAsymptomatic());
 
 		target.setPseudonymized(source.isPseudonymized());
 	}

@@ -219,7 +219,19 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 
 		// Only use user filter if no restricting case is specified
 		if (contactCriteria.getIncludeContactsFromOtherJurisdictions().equals(false)) {
-			whereStatements.add(where.or(createJurisdictionFilterForCase(where), createJurisdictionFilter(where)));
+//			whereStatements.add(where.or(createJurisdictionFilterForCase(where), createJurisdictionFilter(where)));
+            Where<Contact, Long> caseJurisdictionWhere = createJurisdictionFilterForCase(where);
+            Where<Contact, Long> jurisdictionWhere = createJurisdictionFilter(where);
+            if (caseJurisdictionWhere != null && jurisdictionWhere != null) {
+                whereStatements.add(where.or(caseJurisdictionWhere, jurisdictionWhere));
+            } else {
+                if (caseJurisdictionWhere != null) {
+                    whereStatements.add(caseJurisdictionWhere);
+                }
+                if (jurisdictionWhere != null) {
+                    whereStatements.add(jurisdictionWhere);
+                }
+            }
 		}
 
 		if (contactCriteria != null) {
@@ -283,8 +295,9 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 
 		if (!whereJurisdictionFilterStatements.isEmpty()) {
 			where.or(whereJurisdictionFilterStatements.size());
+            return where;
 		}
-		return where;
+		return null;
 	}
 
 	public Where<Contact, Long> createJurisdictionFilter(Where<Contact, Long> where) throws SQLException {
@@ -316,9 +329,10 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 
 		if (!whereUserFilterStatements.isEmpty()) {
 			where.or(whereUserFilterStatements.size());
+            return where;
 		}
 
-		return where;
+		return null;
 	}
 
 	public Where<Contact, Long> createCriteriaFilter(List<Where<Contact, Long>> whereStatements, Where<Contact, Long> where, ContactCriteria criteria)
