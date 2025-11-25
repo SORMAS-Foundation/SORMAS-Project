@@ -111,6 +111,8 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 					fluidRowLocs(CaseDataDto.OTHER_DELETION_REASON);
     //@formatter:on
 
+	private Disease disease;
+
 	protected AbstractSampleForm(Class<SampleDto> type, String propertyI18nPrefix, Disease disease, UiFieldAccessCheckers fieldAccessCheckers) {
 		super(
 			type,
@@ -118,6 +120,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 			true,
 			FieldVisibilityCheckers.withDisease(disease).andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
 			fieldAccessCheckers);
+		this.disease = disease;
 	}
 
 	protected void addCommonFields() {
@@ -455,5 +458,10 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		} else {
 			getContent().removeComponent(REQUESTED_ADDITIONAL_TESTS_READ_LOC);
 		}
+	}
+
+	
+	public Disease getDisease() {
+		return disease;
 	}
 }
