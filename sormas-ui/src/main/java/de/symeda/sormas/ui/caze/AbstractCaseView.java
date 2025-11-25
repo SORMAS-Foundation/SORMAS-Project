@@ -15,7 +15,10 @@
 
 package de.symeda.sormas.ui.caze;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Set;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -61,21 +64,26 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 
 	public static final String ROOT_VIEW_NAME = CasesView.VIEW_NAME;
 
-	public static final Set<Disease> CLINICAL_COURSE_DISABLED_DISEASES = Set.of(
-		Disease.MEASLES,
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS);
+	public static final Set<Disease> CLINICAL_COURSE_DISABLED_DISEASES = Collections.unmodifiableSet(
+		new HashSet<>(
+			Arrays.asList(
+				Disease.MEASLES,
+				Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+				Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+				Disease.GIARDIASIS,
+				Disease.CRYPTOSPORIDIOSIS)));
 
-	public static final Set<Disease> THERAPY_DISABLED_DISEASES = Set.of(
-		Disease.MEASLES,
-		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS,
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION);
+	public static final Set<Disease> THERAPY_DISABLED_DISEASES = Collections.unmodifiableSet(
+		new HashSet<>(
+			Arrays.asList(
+				Disease.MEASLES,
+				Disease.GIARDIASIS,
+				Disease.CRYPTOSPORIDIOSIS,
+				Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+				Disease.INVASIVE_PNEUMOCOCCAL_INFECTION)));
 
-	public static final Set<Disease> SYMPTOMS_DISABLED_DISEASES = Set.of(Disease.INFLUENZA, Disease.LATENT_TUBERCULOSIS);
+	public static final Set<Disease> SYMPTOMS_DISABLED_DISEASES =
+		Collections.unmodifiableSet(new HashSet<>(Arrays.asList(Disease.INFLUENZA, Disease.LATENT_TUBERCULOSIS)));
 
 	private Boolean hasOutbreak;
 	private boolean caseFollowupEnabled;
