@@ -2649,6 +2649,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	private String otherClinicalPresentationText;
 
 	@Diseases({
+		PERTUSSIS,
 		INVASIVE_PNEUMOCOCCAL_INFECTION,
 		INVASIVE_MENINGOCOCCAL_INFECTION,
 		MEASLES })
