@@ -244,7 +244,8 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		TextField cqValueField,
 		PathogenTestType testType,
 		PathogenTestResultType testResultType) {
-		if (!List.of(Disease.TUBERCULOSIS).contains((Disease) diseaseField.getValue())) {
+
+		if (diseaseField.getValue() == null || !List.of(Disease.TUBERCULOSIS).contains((Disease) diseaseField.getValue())) {
 			if (((testType == PathogenTestType.PCR_RT_PCR && testResultType == PathogenTestResultType.POSITIVE))
 				|| testType == PathogenTestType.CQ_VALUE_DETECTION) {
 				cqValueField.setVisible(true);
@@ -1211,7 +1212,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 				updateDrugSusceptibilityFieldSpecifications(testType, (Disease) diseaseField.getValue());
 
-				if (!List.of(Disease.TUBERCULOSIS).contains((Disease) diseaseField.getValue())) {
+				if (diseaseField.getValue() == null || !List.of(Disease.TUBERCULOSIS).contains((Disease) diseaseField.getValue())) {
 					setVisibleClear(
 						PathogenTestType.PCR_RT_PCR == testType,
 						PathogenTestDto.CQ_VALUE,
