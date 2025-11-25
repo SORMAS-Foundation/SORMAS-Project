@@ -61,8 +61,12 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 
 	public static final String ROOT_VIEW_NAME = CasesView.VIEW_NAME;
 
-	public static final Set<Disease> CLINICAL_COURSE_DISABLED_DISEASES =
-		Set.of(Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS);
+	public static final Set<Disease> CLINICAL_COURSE_DISABLED_DISEASES = Set.of(
+		Disease.MEASLES,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS);
 
 	public static final Set<Disease> THERAPY_DISABLED_DISEASES = Set.of(
 		Disease.MEASLES,
