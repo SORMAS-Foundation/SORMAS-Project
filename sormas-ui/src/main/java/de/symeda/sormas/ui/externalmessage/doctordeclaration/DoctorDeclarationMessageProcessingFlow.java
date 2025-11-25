@@ -126,18 +126,6 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 
 		final CompletableFuture<Boolean> ret = new CompletableFuture<>();
 
-		// In case no hospitalization information is present, we don't need to alert the user
-		if (getExternalMessage().getAdmittedToHealthFacility() == null
-			&& getExternalMessage().getHospitalizationFacilityName() == null
-			&& getExternalMessage().getHospitalizationFacilityExternalId() == null
-			&& getExternalMessage().getHospitalizationFacilityDepartment() == null
-			&& getExternalMessage().getHospitalizationAdmissionDate() == null
-			&& getExternalMessage().getHospitalizationDischargeDate() == null) {
-
-			ret.complete(true);
-			return ret;
-		}
-
 		final FacilityReferenceDto hospitalFacilityReference = getHospitalFacilityReference(getExternalMessage());
 
 		if (hospitalFacilityReference == null) {
@@ -152,23 +140,32 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 				: getExternalMessage().getHospitalizationFacilityExternalId();
 
 			if (StringUtils.isBlank(hospitalNameWithCode)) {
-				LOGGER.warn("Hospital facility name and external ID are both blank for externalMessage: {}", getExternalMessage());
+				// Only warn if one of the hospitalization fields is filled
+				if (getExternalMessage().getAdmittedToHealthFacility() != null
+					|| getExternalMessage().getHospitalizationFacilityName() != null
+					|| getExternalMessage().getHospitalizationFacilityExternalId() != null
+					|| getExternalMessage().getHospitalizationFacilityDepartment() != null
+					|| getExternalMessage().getHospitalizationAdmissionDate() != null
+					|| getExternalMessage().getHospitalizationDischargeDate() != null) {
+					LOGGER.warn("Hospital facility name and external ID are both blank for externalMessage: {}", getExternalMessage());
 
-				final String hospitalDataMissing =
-					"The external message contains a hospitalization entry without a hospital name. The processing can continue but the hospitalization will be skipped.";
+					final String hospitalDataMissing = I18nProperties.getString(Strings.infoExternalMessageHospitalizationFacilityMissing);
 
-				CommitDiscardWrapperComponent<VerticalLayout> commitDiscardWrapperComponent =
-					new CommitDiscardWrapperComponent<>(new VerticalLayout(new Label(hospitalDataMissing)));
-				commitDiscardWrapperComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionContinue)); // Continue button
-				commitDiscardWrapperComponent.getDiscardButton().setCaption(I18nProperties.getCaption(Captions.actionDone)); // Back button
+					CommitDiscardWrapperComponent<VerticalLayout> commitDiscardWrapperComponent =
+						new CommitDiscardWrapperComponent<>(new VerticalLayout(new Label(hospitalDataMissing)));
+					commitDiscardWrapperComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionContinue)); // Continue button
+					commitDiscardWrapperComponent.getDiscardButton().setVisible(false);
 
-				commitDiscardWrapperComponent.addCommitListener(() -> ret.complete(true));
-				commitDiscardWrapperComponent.addDiscardListener(() -> ret.complete(false));
+					commitDiscardWrapperComponent.addCommitListener(() -> ret.complete(true));
 
-				VaadinUiUtil.showModalPopupWindow(commitDiscardWrapperComponent, I18nProperties.getCaption(Captions.info), true);
+					VaadinUiUtil.showModalPopupWindow(commitDiscardWrapperComponent, I18nProperties.getCaption(Captions.info), true);
+				} else {
+					ret.complete(true);
+				}
 			} else {
-				final String hospitalNotFound = "Hospital facility missing for hospital '" + hospitalNameWithCode
-					+ "' contact your system administrator to configure the hospital facility.";
+				final String hospitalNotFound =
+					String.format(I18nProperties.getString(Strings.infoExternalMessageHospitalizationMissingHospital), hospitalNameWithCode);
+
 				CommitDiscardWrapperComponent<VerticalLayout> commitDiscardWrapperComponent =
 					new CommitDiscardWrapperComponent<>(new VerticalLayout(new Label(hospitalNotFound)));
 				commitDiscardWrapperComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionDone));
@@ -337,7 +334,8 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 						// Split the reporter name into first and last names if it contains a hyphen
 						// Some names may already contain hyphens, assume first parts are the first name and last parts are the last name
 						final String[] nameParts = externalMessage.getReporterName().split("-");
-						notifierDto.setAgentFirstName(Arrays.stream(nameParts).limit(nameParts.length - 1).map(String::trim).collect(Collectors.joining(" ")));
+						notifierDto.setAgentFirstName(
+							Arrays.stream(nameParts).limit(nameParts.length - 1).map(String::trim).collect(Collectors.joining(" ")));
 						notifierDto.setAgentLastName(nameParts.length > 0 ? nameParts[nameParts.length - 1].trim() : "");
 					}
 					// Update the case with notifier details and complete the callback

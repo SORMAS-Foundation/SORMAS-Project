@@ -1035,6 +1035,8 @@ public interface Strings {
 	String infoExposureInvestigationContacts = "infoExposureInvestigationContacts";
 	String infoExposuresInfectionEnvironmentHint = "infoExposuresInfectionEnvironmentHint";
 	String infoExposuresRiskAreaHint = "infoExposuresRiskAreaHint";
+	String infoExternalMessageHospitalizationFacilityMissing = "infoExternalMessageHospitalizationFacilityMissing";
+	String infoExternalMessageHospitalizationMissingHospital = "infoExternalMessageHospitalizationMissingHospital";
 	String infoFacilityCsvImport = "infoFacilityCsvImport";
 	String infoFacilityNeedsDistrict = "infoFacilityNeedsDistrict";
 	String infoHeadingAefiDashboardMap = "infoHeadingAefiDashboardMap";
