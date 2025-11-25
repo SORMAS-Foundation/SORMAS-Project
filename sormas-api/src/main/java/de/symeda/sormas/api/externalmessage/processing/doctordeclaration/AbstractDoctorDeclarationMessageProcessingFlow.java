@@ -387,6 +387,9 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 			logger.debug("[POST BUILD HOSPITALIZATION] Hospitalization initialized for case with UUID: {}", caseDto.getUuid());
 		}
 
+		final FacilityDto hospitalFacility =
+			hospitalFacilityReference != null ? getExternalMessageProcessingFacade().getFacilityByUuid(hospitalFacilityReference.getUuid()) : null;
+
 		// In case the patient is admitted to a health facility, we need to set the case hospitalization details and quit early
 		if (YesNoUnknown.YES.equals(externalMessageDto.getAdmittedToHealthFacility())) {
 			hospitalizationDto.setAdmissionDate(externalMessageDto.getHospitalizationAdmissionDate());
@@ -404,31 +407,30 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 
 			caseDto.setDepartment(externalMessageDto.getHospitalizationFacilityDepartment());
 			caseDto.setFacilityType(FacilityType.HOSPITAL);
-			return;
-		}
 
-		final FacilityDto hospitalFacility =
-			hospitalFacilityReference != null ? getExternalMessageProcessingFacade().getFacilityByUuid(hospitalFacilityReference.getUuid()) : null;
-
-		// if for whatever reason the hospital facility is not found, we quit early
-		if (hospitalFacility == null) {
-			logger.warn(
-				"[POST BUILD HOSPITALIZATION] Hospital facility with UUID: {} not found for case with UUID: {}. Hospitalization details will not be set.",
-				"NULL",
-				caseDto.getUuid());
-		} else {
+			// if for whatever reason the hospital facility is not found, we quit early
+			if (hospitalFacility == null) {
+				logger.warn(
+					"[POST BUILD HOSPITALIZATION] Hospital facility not found for case with UUID: {}. Hospitalization details will not be set.",
+					caseDto.getUuid());
+				return;
+			}
+			
+			// we have a facility, so we set the responsible region, district and community
 			caseDto.setResponsibleRegion(hospitalFacility.getRegion());
 			caseDto.setResponsibleDistrict(hospitalFacility.getDistrict());
 			caseDto.setResponsibleCommunity(hospitalFacility.getCommunity());
 			caseDto.setHealthFacility(hospitalFacilityReference);
-			caseDto.setFacilityType(hospitalFacility.getType());
+
+			return;
 		}
 
 		// the patient is not admitted to a health facility, so we create a previous hospitalization entry
 		final PreviousHospitalizationDto previousHospitalization = new PreviousHospitalizationDto();
 		previousHospitalization.setUuid(DataHelper.createUuid());
 
-		previousHospitalization.setAdmittedToHealthFacility(externalMessageDto.getAdmittedToHealthFacility());
+		// Here we set the admitted to health facility to yes, because currently he is not admitted to a health facility thus meaning that this is a previous hospitalization
+		previousHospitalization.setAdmittedToHealthFacility(YesNoUnknown.YES);
 		previousHospitalization.setAdmissionDate(externalMessageDto.getHospitalizationAdmissionDate());
 		previousHospitalization.setDischargeDate(externalMessageDto.getHospitalizationDischargeDate());
 
