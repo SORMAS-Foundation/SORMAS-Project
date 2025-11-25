@@ -89,6 +89,10 @@ public class NullableOptionGroup extends OptionGroup {
 		this.removeAllItems();
 		Item item = this.addItem(1);
 
+		if(item == null) {
+			return;
+		}
+
 		if (item.getItemPropertyIds().isEmpty()) {
 			return;
 		}
