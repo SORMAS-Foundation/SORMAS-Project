@@ -186,7 +186,6 @@ public class TherapyForm extends AbstractEditForm<TherapyDto> {
 		}
 
 		drugSusceptibilityResultPanel = new DrugSusceptibilityResultPanel(latestAntibioticTest);
-		drugSusceptibilityResultPanel.setVisible(false);
 		getContent().addComponent(drugSusceptibilityResultPanel, DRUD_SUSCEPTIBILITY_LOC);
 		drugSusceptibilityResultPanel.addStyleNames(VSPACE_TOP_4, VSPACE_3);
 

@@ -73,14 +73,8 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 				Disease.GIARDIASIS,
 				Disease.CRYPTOSPORIDIOSIS)));
 
-	public static final Set<Disease> THERAPY_DISABLED_DISEASES = Collections.unmodifiableSet(
-		new HashSet<>(
-			Arrays.asList(
-				Disease.MEASLES,
-				Disease.GIARDIASIS,
-				Disease.CRYPTOSPORIDIOSIS,
-				Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-				Disease.INVASIVE_PNEUMOCOCCAL_INFECTION)));
+	public static final Set<Disease> THERAPY_DISABLED_DISEASES =
+		Collections.unmodifiableSet(new HashSet<>(Arrays.asList(Disease.MEASLES, Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS)));
 
 	public static final Set<Disease> SYMPTOMS_DISABLED_DISEASES =
 		Collections.unmodifiableSet(new HashSet<>(Arrays.asList(Disease.INFLUENZA, Disease.LATENT_TUBERCULOSIS)));
