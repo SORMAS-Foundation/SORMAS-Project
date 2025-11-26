@@ -52,7 +52,6 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
@@ -257,7 +256,13 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 	}
 
 	private void updateDrugSusceptibilityFieldSpecifications(PathogenTestType testType, Disease disease) {
-		if (disease != null) { // Drug susceptibility is applicable only diseass not for environment
+
+		// Hide or show drug susceptibility fields based on the disease and test type (if disease is null then drug susceptibility should be hidden)
+		if (drugSusceptibilityField != null) {
+			drugSusceptibilityField.updateFieldsVisibility(disease, testType);
+		}
+
+		if (disease != null) {
 			if ((FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG))) {
 				boolean wasReadOnly = testResultField.isReadOnly();
 
@@ -307,25 +312,10 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 							}
 						}
 					}
-
-					if (List.of(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY).contains(testType)) {
-						drugSusceptibilityField.updateFieldsVisibility(disease, testType);
-					} else {
-						drugSusceptibilityField.updateFieldsVisibility(disease, testType);
-					}
 				} else if (wasReadOnly) {
 					// Disease is not TB or testType is null, but field was read-only
 					testResultField.setReadOnly(false);
 					testResultField.setValue(null);
-				}
-			} else {
-				if ((disease != Disease.TUBERCULOSIS && disease != Disease.LATENT_TUBERCULOSIS)
-					&& (DiseaseHelper.checkDiseaseIsInvasiveBacterialDiseases(disease) && testType == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)) { // for non lux tb no drug susceptibility
-					drugSusceptibilityField.updateFieldsVisibility(disease, testType);
-				} else {
-					if (drugSusceptibilityField != null) {
-						drugSusceptibilityField.updateFieldsVisibility(disease, testType);
-					}
 				}
 			}
 		}
@@ -609,22 +599,10 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				}
 			};
 			FieldHelper.setReadOnlyWhen(getFieldGroup(), PathogenTestDto.TEST_RESULT, tuberculosisTestResultReadOnlyDependencies, true, false);
-		} else if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
-			&& DiseaseHelper.checkDiseaseIsInvasiveBacterialDiseases(disease)) {
-			//invasive-antibiotic test specification
-			Map<Object, List<Object>> invasiveAntibioticDependencies = new HashMap<>() {
-
-				{
-					put(
-						PathogenTestDto.TESTED_DISEASE,
-						Arrays.asList(Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
-					put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY));
-				}
-			};
-			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.DRUG_SUSCEPTIBILITY, invasiveAntibioticDependencies, true);
 		}
 
 		seroTypeTF.setVisible(false);
+
 		ComboBox seroTypeMetCB = addField(PathogenTestDto.SEROTYPING_METHOD, ComboBox.class);
 		seroTypeMetCB.setVisible(false);
 		ComboBox seroGrpSepcCB = addField(PathogenTestDto.SERO_GROUP_SPECIFICATION, ComboBox.class);
@@ -1006,12 +984,9 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 		pcrTestSpecification.setVisible(false);
 
-		if (isVisibleAllowed(PathogenTestDto.PRESCRIBER_PHYSICIAN_CODE)) {
-			Label prescriberHeadingLabel = new Label(I18nProperties.getCaption(Captions.PathogenTest_prescriber));
-			prescriberHeadingLabel.addStyleName(H3);
-			getContent().addComponent(prescriberHeadingLabel, PRESCRIBER_HEADING_LOC);
-		}
-
+		Label prescriberHeadingLabel = new Label(I18nProperties.getCaption(Captions.PathogenTest_prescriber));
+		prescriberHeadingLabel.addStyleName(H3);
+		getContent().addComponent(prescriberHeadingLabel, PRESCRIBER_HEADING_LOC);
 		Map<Object, List<Object>> pcrTestSpecificationVisibilityDependencies = new HashMap<>() {
 
 			{
@@ -1296,5 +1271,16 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 		initializeAccessAndAllowedAccesses();
 		initializeVisibilitiesAndAllowedVisibilities();
+
+		// Hide/show prescriber heading after the visibilities have been initialized
+		prescriberHeadingLabel.setVisible(
+			isVisibleAllowed(PathogenTestDto.PRESCRIBER_PHYSICIAN_CODE)
+				|| isVisibleAllowed(PathogenTestDto.PRESCRIBER_FIRST_NAME)
+				|| isVisibleAllowed(PathogenTestDto.PRESCRIBER_LAST_NAME)
+				|| isVisibleAllowed(PathogenTestDto.PRESCRIBER_PHONE_NUMBER)
+				|| isVisibleAllowed(PathogenTestDto.PRESCRIBER_ADDRESS)
+				|| isVisibleAllowed(PathogenTestDto.PRESCRIBER_POSTAL_CODE)
+				|| isVisibleAllowed(PathogenTestDto.PRESCRIBER_CITY)
+				|| isVisibleAllowed(PathogenTestDto.PRESCRIBER_COUNTRY));
 	}
 }
