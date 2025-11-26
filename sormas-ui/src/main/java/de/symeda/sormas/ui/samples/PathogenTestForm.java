@@ -1162,12 +1162,13 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		});
 
 		BiConsumer<Disease, PathogenTestType> resultField = (disease, testType) -> {
-			if (testResultField.isReadOnly()) {
-				return;
-			}
+			final boolean testResultFieldReadOnly = testResultField.isReadOnly();
+			testResultField.setReadOnly(false);
+			
 			if (RESULT_FIELD_DECISION_MAP.containsKey(disease) && RESULT_FIELD_DECISION_MAP.get(disease).contains(testType)) {
 				testResultField.setValue(PathogenTestResultType.POSITIVE);
 				testResultField.setEnabled(false);
+				testResultField.setReadOnly(testResultFieldReadOnly);
 			} else {
 				testResultField.clear();
 				testResultField.setEnabled(true);
