@@ -100,6 +100,7 @@ import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 public class SampleController {
 
 	private Disease disease;
+
 	public SampleController() {
 	}
 
@@ -212,7 +213,10 @@ public class SampleController {
 		separator.setVisible(addSeparator);
 		sampleComponent.addComponent(separator, sampleComponent.getComponentCount() - 1);
 
-		PathogenTestForm pathogenTestForm = new PathogenTestForm(sampleComponent.getWrappedComponent(), true, caseSampleCount, false, true, disease);  // Valid because jurisdiction doesn't matter for entities that are about to be created
+		final Disease pathogenTestFormDisease = disease != null ? disease : sampleComponent.getWrappedComponent().getDisease();
+
+		PathogenTestForm pathogenTestForm =
+			new PathogenTestForm(sampleComponent.getWrappedComponent(), true, caseSampleCount, false, true, pathogenTestFormDisease);  // Valid because jurisdiction doesn't matter for entities that are about to be created
 		// prefill fields
 		if (pathogenTest != null) {
 			pathogenTestForm.setValue(pathogenTest);
@@ -228,8 +232,7 @@ public class SampleController {
 			pathogenTestResultField.setValue(PathogenTestResultType.PENDING);
 			ComboBox testDiseaseField = pathogenTestForm.getField(PathogenTestDto.TESTED_DISEASE);
 			// setting the disease field value is only necessary if the disease is not null
-			testDiseaseField.setValue(disease);
-
+			testDiseaseField.setValue(pathogenTestFormDisease);
 		}
 		// setup field updates
 		Field testLabField = pathogenTestForm.getField(PathogenTestDto.LAB);

@@ -302,6 +302,8 @@ public class DrugSusceptibilityForm extends AbstractEditForm<DrugSusceptibilityD
 			List<String> applicableFieldIds =
 				AnnotationFieldHelper.getFieldNamesWithMatchingDiseaseAndTestAnnotations(DrugSusceptibilityDto.class, disease, pathogenTestType);
 
+			formHeadingLabel.setVisible(!applicableFieldIds.isEmpty());
+
 			if (!applicableFieldIds.isEmpty()) {
 				FieldHelper.showOnlyFields(getFieldGroup(), applicableFieldIds, true);
 			}

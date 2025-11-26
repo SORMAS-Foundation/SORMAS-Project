@@ -84,9 +84,20 @@ public class NullableOptionGroup extends OptionGroup {
 		return value.stream().findFirst().orElse(null);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setInaccessible() {
 		this.removeAllItems();
 		Item item = this.addItem(1);
+
+		if(item == null) {
+			return;
+		}
+
+		if (item.getItemPropertyIds().isEmpty()) {
+			return;
+		}
+		
 		item.getItemProperty(item.getItemPropertyIds().stream().findFirst().get()).setValue(I18nProperties.getCaption(Captions.inaccessibleValue));
+
 	}
 }

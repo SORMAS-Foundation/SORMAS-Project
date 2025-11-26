@@ -373,21 +373,10 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 
 		final FacilityReferenceDto hospitalFacilityReference = getHospitalFacilityReference(externalMessageDto);
 
-		if (externalMessageDto.getAdmittedToHealthFacility() == null
-			&& externalMessageDto.getHospitalizationFacilityName() == null
+		if (externalMessageDto.getHospitalizationFacilityName() == null
 			&& externalMessageDto.getHospitalizationFacilityExternalId() == null
-			&& externalMessageDto.getHospitalizationFacilityDepartment() == null
-			&& externalMessageDto.getHospitalizationAdmissionDate() == null
-			&& externalMessageDto.getHospitalizationDischargeDate() == null) {
+			&& externalMessageDto.getHospitalizationFacilityDepartment() == null) {
 			logger.info("[POST BUILD HOSPITALIZATION] No hospitalization information found for case with UUID: {}.", caseDto.getUuid());
-			return;
-		}
-
-		// If we do not have a hospital facility reference, we quit early
-		if (hospitalFacilityReference == null) {
-			logger.warn(
-				"[POST BUILD HOSPITALIZATION] No hospital facility found for case with UUID: {}. Hospitalization details will not be set.",
-				caseDto.getUuid());
 			return;
 		}
 
@@ -398,16 +387,8 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 			logger.debug("[POST BUILD HOSPITALIZATION] Hospitalization initialized for case with UUID: {}", caseDto.getUuid());
 		}
 
-		final FacilityDto hospitalFacility = getExternalMessageProcessingFacade().getFacilityByUuid(hospitalFacilityReference.getUuid());
-
-		// if for whatever reason the hospital facility is not found, we quit early
-		if (hospitalFacility == null) {
-			logger.warn(
-				"[POST BUILD HOSPITALIZATION] Hospital facility with UUID: {} not found for case with UUID: {}. Hospitalization details will not be set.",
-				hospitalFacilityReference.getUuid(),
-				caseDto.getUuid());
-			return;
-		}
+		final FacilityDto hospitalFacility =
+			hospitalFacilityReference != null ? getExternalMessageProcessingFacade().getFacilityByUuid(hospitalFacilityReference.getUuid()) : null;
 
 		// In case the patient is admitted to a health facility, we need to set the case hospitalization details and quit early
 		if (YesNoUnknown.YES.equals(externalMessageDto.getAdmittedToHealthFacility())) {
@@ -424,12 +405,23 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 				hospitalizationDto.setCurrentlyHospitalized(YesNoUnknown.YES);
 			}
 
+			caseDto.setDepartment(externalMessageDto.getHospitalizationFacilityDepartment());
+			caseDto.setFacilityType(FacilityType.HOSPITAL);
+
+			// if for whatever reason the hospital facility is not found, we quit early
+			if (hospitalFacility == null) {
+				logger.warn(
+					"[POST BUILD HOSPITALIZATION] Hospital facility not found for case with UUID: {}. Hospitalization details will not be set.",
+					caseDto.getUuid());
+				return;
+			}
+			
+			// we have a facility, so we set the responsible region, district and community
 			caseDto.setResponsibleRegion(hospitalFacility.getRegion());
 			caseDto.setResponsibleDistrict(hospitalFacility.getDistrict());
 			caseDto.setResponsibleCommunity(hospitalFacility.getCommunity());
 			caseDto.setHealthFacility(hospitalFacilityReference);
-			caseDto.setDepartment(externalMessageDto.getHospitalizationFacilityDepartment());
-			caseDto.setFacilityType(FacilityType.HOSPITAL);
+
 			return;
 		}
 
@@ -437,14 +429,18 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 		final PreviousHospitalizationDto previousHospitalization = new PreviousHospitalizationDto();
 		previousHospitalization.setUuid(DataHelper.createUuid());
 
-		previousHospitalization.setAdmittedToHealthFacility(externalMessageDto.getAdmittedToHealthFacility());
+		// Here we set the admitted to health facility to yes, because currently he is not admitted to a health facility thus meaning that this is a previous hospitalization
+		previousHospitalization.setAdmittedToHealthFacility(YesNoUnknown.YES);
 		previousHospitalization.setAdmissionDate(externalMessageDto.getHospitalizationAdmissionDate());
 		previousHospitalization.setDischargeDate(externalMessageDto.getHospitalizationDischargeDate());
 
-		previousHospitalization.setRegion(hospitalFacility.getRegion());
-		previousHospitalization.setDistrict(hospitalFacility.getDistrict());
-		previousHospitalization.setCommunity(hospitalFacility.getCommunity());
-		previousHospitalization.setHealthFacility(hospitalFacilityReference);
+		if (hospitalFacility != null) {
+			previousHospitalization.setRegion(hospitalFacility.getRegion());
+			previousHospitalization.setDistrict(hospitalFacility.getDistrict());
+			previousHospitalization.setCommunity(hospitalFacility.getCommunity());
+			previousHospitalization.setHealthFacility(hospitalFacilityReference);
+		}
+
 		previousHospitalization.setHealthFacilityDepartment(externalMessageDto.getHospitalizationFacilityDepartment());
 
 		if (hospitalizationDto.getPreviousHospitalizations() == null) {
@@ -464,18 +460,7 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 	 */
 	@Override
 	protected void postBuildPerson(PersonDto personDto, ExternalMessageDto externalMessageDto) {
-
-		logger.debug("[POST BUILD PERSON] Processing person with UUID: {}", personDto.getUuid());
-
-		if (externalMessageDto.getPersonGuardianFirstName() != null && externalMessageDto.getPersonGuardianLastName() != null) {
-			personDto.setNamesOfGuardians(externalMessageDto.getPersonGuardianFirstName() + " " + externalMessageDto.getPersonGuardianLastName());
-
-			logger.debug(
-				"[POST BUILD PERSON] Guardian names set for person with UUID: {} - Guardian: {} {}",
-				personDto.getUuid(),
-				externalMessageDto.getPersonGuardianFirstName(),
-				externalMessageDto.getPersonGuardianLastName());
-		}
+		// No additional actions needed for person data
 	}
 
 	/**
