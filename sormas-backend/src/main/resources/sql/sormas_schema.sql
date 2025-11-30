@@ -14435,4 +14435,12 @@ alter table contact_history add idsrdiagnosisdetails varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (581, 'Add IDSR diagnosis fields to contact');
 
+-- 2025-11-30 Add IDSR diagnosis fields to events
+alter table events add idsrdiagnosis varchar(255);
+alter table events add idsrdiagnosisdetails varchar(512);
+alter table events_history add idsrdiagnosis varchar(255);
+alter table events_history add idsrdiagnosisdetails varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (582, 'Add IDSR diagnosis fields to events');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

@@ -50,6 +50,7 @@ import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.IdsrType;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.DiseaseTransmissionMode;
@@ -125,6 +126,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 					fluidRow(
 							fluidColumnLoc(6, 0, EventDto.DISEASE),
 							fluidColumnLoc(6, 0, EventDto.DISEASE_DETAILS)) +
+					fluidRowLocs(EventDto.IDSR_DIAGNOSIS, EventDto.IDSR_DIAGNOSIS_DETAILS) +
 					fluidRowLocs(EventDto.DISEASE_VARIANT, EventDto.DISEASE_VARIANT_DETAILS) +
 					fluidRowLocs(EventDto.EXTERNAL_ID, EventDto.EXTERNAL_TOKEN) +
 					fluidRowLocs(EventDto.INTERNAL_TOKEN, EXTERNAL_TOKEN_WARNING_LOC) +
@@ -224,6 +226,10 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		addField(EventDto.UUID, TextField.class);
 		ComboBox diseaseField = addDiseaseField(EventDto.DISEASE, false, isCreateForm, false);
 		addField(EventDto.DISEASE_DETAILS, TextField.class);
+		ComboBox idsrDiagnosisField = addField(EventDto.IDSR_DIAGNOSIS, ComboBox.class);
+		idsrDiagnosisField.setNullSelectionAllowed(true);
+		TextField idsrDiagnosisDetailsField = addField(EventDto.IDSR_DIAGNOSIS_DETAILS, TextField.class);
+		idsrDiagnosisDetailsField.setVisible(false);
 		ComboBox diseaseVariantField = addCustomizableEnumField(EventDto.DISEASE_VARIANT);
 		diseaseVariantField.setNullSelectionAllowed(true);
 		addFields(EventDto.EXTERNAL_ID);
@@ -433,6 +439,25 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			EventDto.DISEASE,
 			Collections.singletonList(EventDto.DISEASE_DETAILS),
 			Collections.singletonList(Disease.OTHER));
+
+		// IDSR diagnosis visibility
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			Arrays.asList(EventDto.IDSR_DIAGNOSIS),
+			EventDto.DISEASE,
+			Arrays.asList(Disease.IMMEDIATE_CASE_BASED_FORM_OTHER_CONDITIONS),
+			true);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			Arrays.asList(EventDto.IDSR_DIAGNOSIS_DETAILS),
+			EventDto.IDSR_DIAGNOSIS,
+			Arrays.asList(IdsrType.OTHER),
+			true);
+		FieldHelper.setRequiredWhen(
+			getFieldGroup(),
+			EventDto.IDSR_DIAGNOSIS,
+			Arrays.asList(EventDto.IDSR_DIAGNOSIS_DETAILS),
+			Arrays.asList(IdsrType.OTHER));
 
 		// Customizable enum fields visibilities
 		diseaseVariantField.setVisible(false);
