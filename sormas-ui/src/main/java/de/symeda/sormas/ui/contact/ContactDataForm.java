@@ -53,6 +53,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.IdsrType;
 import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -123,6 +124,9 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 						LayoutUtil.fluidColumnLocCss(LAYOUT_COL_HIDE_INVSIBLE,4,0, ContactDto.FIRST_CONTACT_DATE),
 						LayoutUtil.fluidColumnLoc(4, 0, ContactDto.LAST_CONTACT_DATE),
 						LayoutUtil.fluidColumnLoc(4, 0, ContactDto.DISEASE)) +
+					LayoutUtil.fluidRow(
+						LayoutUtil.fluidColumnLoc(6, 0, ContactDto.IDSR_DIAGNOSIS),
+						LayoutUtil.fluidColumnLoc(6, 0, ContactDto.IDSR_DIAGNOSIS_DETAILS)) +
                     fluidRowLocs(ContactDto.DISEASE_DETAILS) +
 					fluidRowLocs(ContactDto.UUID) +
 					fluidRowLocs(ContactDto.EXTERNAL_ID, ContactDto.EXTERNAL_TOKEN) +
@@ -314,6 +318,10 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		cbDisease = addDiseaseField(ContactDto.DISEASE, false, true);
 		cbDisease.setNullSelectionAllowed(false);
 		addField(ContactDto.DISEASE_DETAILS, TextField.class);
+		ComboBox idsrDiagnosisField = addField(ContactDto.IDSR_DIAGNOSIS, ComboBox.class);
+		idsrDiagnosisField.setNullSelectionAllowed(true);
+		TextField idsrDiagnosisDetailsField = addField(ContactDto.IDSR_DIAGNOSIS_DETAILS, TextField.class);
+		idsrDiagnosisDetailsField.setVisible(false);
 
 		addField(ContactDto.PROHIBITION_TO_WORK, NullableOptionGroup.class).addStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
 		DateField prohibitionToWorkFrom = addField(ContactDto.PROHIBITION_TO_WORK_FROM);
@@ -583,6 +591,9 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.DISEASE_DETAILS, ContactDto.DISEASE, Arrays.asList(Disease.OTHER), true);
 		FieldHelper.setRequiredWhen(getFieldGroup(), ContactDto.DISEASE, Arrays.asList(ContactDto.DISEASE_DETAILS), Arrays.asList(Disease.OTHER));
+		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(ContactDto.IDSR_DIAGNOSIS), ContactDto.DISEASE, Arrays.asList(Disease.IMMEDIATE_CASE_BASED_FORM_OTHER_CONDITIONS), true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(ContactDto.IDSR_DIAGNOSIS_DETAILS), ContactDto.IDSR_DIAGNOSIS, Arrays.asList(IdsrType.OTHER), true);
+		FieldHelper.setRequiredWhen(getFieldGroup(), ContactDto.IDSR_DIAGNOSIS, Arrays.asList(ContactDto.IDSR_DIAGNOSIS_DETAILS), Arrays.asList(IdsrType.OTHER));
 		FieldHelper.setReadOnlyWhen(
 			getFieldGroup(),
 			Arrays.asList(ContactDto.FOLLOW_UP_UNTIL),

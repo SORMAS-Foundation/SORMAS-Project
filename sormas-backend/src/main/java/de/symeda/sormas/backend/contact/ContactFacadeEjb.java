@@ -1629,6 +1629,8 @@ public class ContactFacadeEjb
 		target.setProphylaxisPrescribed(source.getProphylaxisPrescribed());
 		target.setPrescribedDrug(source.getPrescribedDrug());
 		target.setPrescribedDrugText(source.getPrescribedDrugText());
+		target.setIdsrDiagnosis(source.getIdsrDiagnosis());
+		target.setIdsrDiagnosisDetails(source.getIdsrDiagnosisDetails());
 
 		return target;
 	}
@@ -1977,6 +1979,8 @@ public class ContactFacadeEjb
 		target.setProphylaxisPrescribed(source.getProphylaxisPrescribed());
 		target.setPrescribedDrug(source.getPrescribedDrug());
 		target.setPrescribedDrugText(source.getPrescribedDrugText());
+		target.setIdsrDiagnosis(source.getIdsrDiagnosis());
+		target.setIdsrDiagnosisDetails(source.getIdsrDiagnosisDetails());
 		return target;
 	}
 

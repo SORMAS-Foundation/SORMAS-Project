@@ -42,6 +42,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.IdsrType;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
@@ -172,6 +173,8 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 	public static final String PROPHYLAXIS_PRESCRIBED ="prophylaxisPrescribed";
 	public static final String PRESCRIBED_DRUG ="prescribedDrug";
 	public static final String PRESCRIBED_DRUG_TEXT ="prescribedDrugText";
+	public static final String IDSR_DIAGNOSIS = "idsrDiagnosis";
+	public static final String IDSR_DIAGNOSIS_DETAILS = "idsrDiagnosisDetails";
 
 	private Date reportDateTime;
 	private User reportingUser;
@@ -277,6 +280,15 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 	private Drug prescribedDrug;
 	private String prescribedDrugText;
 	private Boolean prophylaxisPrescribed;
+
+	@Diseases({
+		Disease.IMMEDIATE_CASE_BASED_FORM_OTHER_CONDITIONS })
+	@Outbreaks
+	private IdsrType idsrDiagnosis;
+	@Diseases({
+		Disease.IMMEDIATE_CASE_BASED_FORM_OTHER_CONDITIONS })
+	@Outbreaks
+	private String idsrDiagnosisDetails;
 
 	@Diseases({
 		Disease.AFP,
@@ -1134,5 +1146,23 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 
 	public void setPrescribedDrugText(String prescribedDrugText) {
 		this.prescribedDrugText = prescribedDrugText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public IdsrType getIdsrDiagnosis() {
+		return idsrDiagnosis;
+	}
+
+	public void setIdsrDiagnosis(IdsrType idsrDiagnosis) {
+		this.idsrDiagnosis = idsrDiagnosis;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getIdsrDiagnosisDetails() {
+		return idsrDiagnosisDetails;
+	}
+
+	public void setIdsrDiagnosisDetails(String idsrDiagnosisDetails) {
+		this.idsrDiagnosisDetails = idsrDiagnosisDetails;
 	}
 }
