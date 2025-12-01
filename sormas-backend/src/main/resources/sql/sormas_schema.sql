@@ -14897,6 +14897,7 @@ INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'EVENT_VIEW
 
 INSERT INTO schema_version (version_number, comment) VALUES (598, 'Add view archived events to default ADMIN and NATIONAL_USER roles #13470');
 
+-- Deleted the duplicate column from Person table #13674
 UPDATE person SET birthWeight = birthWeightValue where birthWeightValue is not null;
 UPDATE person_history SET birthWeight = birthWeightValue where birthWeightValue is not null;
 ALTER TABLE person DROP COLUMN birthWeightValue;
