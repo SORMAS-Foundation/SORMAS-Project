@@ -24,6 +24,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.IdsrType;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
@@ -75,6 +76,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 	private List<Item> contactIdentificationSources;
 	private List<Item> tracingApps;
 	private List<Item> endOfQuarantineReasons;
+	private List<Item> idsrDiagnosisList;
 
 	// Instance methods
 
@@ -180,6 +182,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 		contactIdentificationSources = DataUtils.getEnumItems(ContactIdentificationSource.class, true);
 		tracingApps = DataUtils.getEnumItems(TracingApp.class, true);
 		endOfQuarantineReasons = DataUtils.getEnumItems(EndOfQuarantineReason.class, true);
+		idsrDiagnosisList = DataUtils.getEnumItems(IdsrType.class, true);
 
 		if (record.getQuarantineTo() == null) {
 			record.setQuarantineTo(record.getFollowUpUntil());
@@ -411,6 +414,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 		contentBinding.contactTracingApp.initializeSpinner(tracingApps);
 		contentBinding.contactEndOfQuarantineReason.initializeSpinner(endOfQuarantineReasons);
 		contentBinding.contactReportingDistrict.initializeSpinner(allDistricts);
+		contentBinding.contactIdsrDiagnosis.initializeSpinner(idsrDiagnosisList);
 
 		// Initialize ControlDateFields
 		contentBinding.contactFirstContactDate.initializeDateField(getFragmentManager());

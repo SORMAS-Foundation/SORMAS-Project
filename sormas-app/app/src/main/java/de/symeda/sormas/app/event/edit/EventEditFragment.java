@@ -25,6 +25,7 @@ import java.util.Optional;
 import android.view.View;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.IdsrType;
 import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
@@ -94,6 +95,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 	private List<Item> medicallyAssociatedTransmissionModeList;
 	private List<Item> infectionPathCertaintyList;
 	private List<Item> specificRiskList;
+	private List<Item> idsrDiagnosisList;
 
 	public static EventEditFragment newInstance(Event activityRootData) {
 		EventEditFragment fragment = newInstanceWithFieldCheckers(
@@ -221,6 +223,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		parenteralTransmissionModeList = DataUtils.getEnumItems(ParenteralTransmissionMode.class, true);
 		medicallyAssociatedTransmissionModeList = DataUtils.getEnumItems(MedicallyAssociatedTransmissionMode.class, true);
 		infectionPathCertaintyList = DataUtils.getEnumItems(InfectionPathCertainty.class, true);
+		idsrDiagnosisList = DataUtils.getEnumItems(IdsrType.class, true);
 	}
 
 	@Override
@@ -257,6 +260,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		contentBinding.eventMedicallyAssociatedTransmissionMode.initializeSpinner(medicallyAssociatedTransmissionModeList);
 		contentBinding.eventInfectionPathCertainty.initializeSpinner(infectionPathCertaintyList);
 		contentBinding.eventSpecificRisk.initializeSpinner(specificRiskList);
+		contentBinding.eventIdsrDiagnosis.initializeSpinner(idsrDiagnosisList);
 
 		// Initialize ControlDateFields
 		contentBinding.eventReportDateTime.initializeDateField(getFragmentManager());

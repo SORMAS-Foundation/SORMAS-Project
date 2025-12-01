@@ -30,6 +30,7 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.IdsrType;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
@@ -67,6 +68,8 @@ public class Contact extends PseudonymizableAdo {
 	public static final String CASE_UUID = "caseUuid";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_COLUMN = "caseDisease";
+	public static final String IDSR_DIAGNOSIS = "idsrDiagnosis";
+	public static final String IDSR_DIAGNOSIS_DETAILS = "idsrDiagnosisDetails";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String MULTI_DAY_CONTACT = "multiDayContact";
@@ -123,6 +126,10 @@ public class Contact extends PseudonymizableAdo {
 	private Disease disease;
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String diseaseDetails;
+	@Enumerated(EnumType.STRING)
+	private IdsrType idsrDiagnosis;
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	private String idsrDiagnosisDetails;
 	@DatabaseField
 	private boolean multiDayContact;
 	@DatabaseField(dataType = DataType.DATE_LONG)
@@ -510,6 +517,22 @@ public class Contact extends PseudonymizableAdo {
 
 	public void setDiseaseDetails(String diseaseDetails) {
 		this.diseaseDetails = diseaseDetails;
+	}
+
+	public IdsrType getIdsrDiagnosis() {
+		return idsrDiagnosis;
+	}
+
+	public void setIdsrDiagnosis(IdsrType idsrDiagnosis) {
+		this.idsrDiagnosis = idsrDiagnosis;
+	}
+
+	public String getIdsrDiagnosisDetails() {
+		return idsrDiagnosisDetails;
+	}
+
+	public void setIdsrDiagnosisDetails(String idsrDiagnosisDetails) {
+		this.idsrDiagnosisDetails = idsrDiagnosisDetails;
 	}
 
 	public String getExternalID() {
