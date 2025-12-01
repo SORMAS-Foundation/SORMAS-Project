@@ -251,7 +251,8 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String placeOfBirthFacilityDetails;
 	@Diseases({
-		Disease.CONGENITAL_RUBELLA })
+		Disease.CONGENITAL_RUBELLA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	@HideForCountries
 	private Integer gestationAgeAtBirth;
 	@Diseases({
@@ -262,13 +263,16 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 
 	// RSV-specific perinatal fields
 	@Diseases({
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.CONGENITAL_RUBELLA })
 	private GestationalAgeCategory gestationalAgeCategory;
 	@Diseases({
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.CONGENITAL_RUBELLA })
 	private BirthWeightCategory birthWeightCategory;
 	@Diseases({
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.CONGENITAL_RUBELLA })
 	private MultipleBirth multipleBirth;
 
 	@Outbreaks

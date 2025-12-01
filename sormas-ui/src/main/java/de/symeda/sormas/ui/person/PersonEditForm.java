@@ -33,8 +33,10 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -117,6 +119,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private static final String NATIONAL_HEALTH_ID_WARNING_LABEL = "nationalHealthIdWarningLoc";
 	private static final String GENERAL_COMMENT_LOC = "generalCommentLoc";
 	public static final String HAS_GUARDIAN = "hasGuardian";
+	public static final Set<Disease> PERINATAL_DISEASES =
+		Collections.unmodifiableSet(new HashSet<>(Arrays.asList(Disease.CONGENITAL_RUBELLA, Disease.RESPIRATORY_SYNCYTIAL_VIRUS)));
+
 	//@formatter:off
     private static final String HTML_LAYOUT =
             loc(PERSON_INFORMATION_HEADING_LOC) +
@@ -156,11 +161,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 					fluidRowLocs(PersonDto.HAS_COVID_APP, PersonDto.COVID_CODE_DELIVERED) +
 
                     loc(PERINATAL_DETAILS_HEADER) +
-					fluidRowLocs(PersonDto.GESTATION_AGE_AT_BIRTH, PersonDto.BIRTH_WEIGHT) +
-                    divsCss(VSPACE_3,
-                            fluidRowLocs(PersonDto.GESTATIONAL_AGE_CATEGORY, PersonDto.BIRTH_WEIGHT_CATEGORY) +
-                            fluidRowLocs(PersonDto.MULTIPLE_BIRTH)
-                    ) +
+					divsCss(VSPACE_3,fluidRowLocs(PersonDto.GESTATIONAL_AGE_CATEGORY,PersonDto.GESTATION_AGE_AT_BIRTH) +
+					fluidRowLocs(PersonDto.BIRTH_WEIGHT_CATEGORY, PersonDto.BIRTH_WEIGHT) +
+                    fluidRowLocs(PersonDto.MULTIPLE_BIRTH,""))+
 
                     loc(OCCUPATION_HEADER) +
                     divsCss(VSPACE_3,
@@ -726,7 +729,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		minimumAdultAge = FacadeProvider.getConfigFacade().getMinimumAdultAge();
 		minimumEmancipatedAge = FacadeProvider.getConfigFacade().getMinimumEmancipatedAge();
 
-		if (disease != null && disease != Disease.RESPIRATORY_SYNCYTIAL_VIRUS) {
+		if (disease != null && !PERINATAL_DISEASES.contains(disease)) {
 			perinatalDetailsHeader.setVisible(false);
 		}
 	}
