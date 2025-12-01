@@ -129,7 +129,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
                     ) +
                     fluidRowLocs(PersonDto.PLACE_OF_BIRTH_REGION, PersonDto.PLACE_OF_BIRTH_DISTRICT, PersonDto.PLACE_OF_BIRTH_COMMUNITY) +
                     fluidRowLocs(PersonDto.PLACE_OF_BIRTH_FACILITY_TYPE, PersonDto.PLACE_OF_BIRTH_FACILITY, PersonDto.PLACE_OF_BIRTH_FACILITY_DETAILS) +
-                    fluidRowLocs(PersonDto.GESTATION_AGE_AT_BIRTH, PersonDto.BIRTH_WEIGHT) +
                     fluidRowLocs(PersonDto.SEX, PersonDto.PRESENT_CONDITION) +
 					fluidRow(
 							oneOfFourCol(PersonDto.DEATH_DATE),
@@ -157,9 +156,10 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 					fluidRowLocs(PersonDto.HAS_COVID_APP, PersonDto.COVID_CODE_DELIVERED) +
 
                     loc(PERINATAL_DETAILS_HEADER) +
+					fluidRowLocs(PersonDto.GESTATION_AGE_AT_BIRTH, PersonDto.BIRTH_WEIGHT) +
                     divsCss(VSPACE_3,
                             fluidRowLocs(PersonDto.GESTATIONAL_AGE_CATEGORY, PersonDto.BIRTH_WEIGHT_CATEGORY) +
-                            fluidRowLocs(PersonDto.BIRTH_WEIGHT_VALUE, PersonDto.MULTIPLE_BIRTH)
+                            fluidRowLocs(PersonDto.MULTIPLE_BIRTH)
                     ) +
 
                     loc(OCCUPATION_HEADER) +
@@ -383,8 +383,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		// RSV Perinatal Details
 		ComboBox gestationalAgeCategory = addField(PersonDto.GESTATIONAL_AGE_CATEGORY, ComboBox.class);
 		ComboBox birthWeightCategory = addField(PersonDto.BIRTH_WEIGHT_CATEGORY, ComboBox.class);
-		TextField birthWeightValue = addField(PersonDto.BIRTH_WEIGHT_VALUE, TextField.class);
-		birthWeightValue.setConversionError(I18nProperties.getValidationError(Validations.onlyIntegerNumbersAllowed, birthWeightValue.getCaption()));
 		ComboBox multipleBirth = addField(PersonDto.MULTIPLE_BIRTH, ComboBox.class);
 
 		AbstractSelect deathPlaceType = addField(PersonDto.DEATH_PLACE_TYPE, ComboBox.class);

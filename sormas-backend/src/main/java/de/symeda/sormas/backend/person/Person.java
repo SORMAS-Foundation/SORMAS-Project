@@ -128,7 +128,6 @@ public class Person extends AbstractDomainObject implements IsPerson, HasExterna
 	public static final String BIRTH_WEIGHT = "birthWeight";
 	public static final String GESTATIONAL_AGE_CATEGORY = "gestationalAgeCategory";
 	public static final String BIRTH_WEIGHT_CATEGORY = "birthWeightCategory";
-	public static final String BIRTH_WEIGHT_VALUE = "birthWeightValue";
 	public static final String MULTIPLE_BIRTH = "multipleBirth";
 	public static final String PASSPORT_NUMBER = "passportNumber";
 	public static final String NATIONAL_HEALTH_ID = "nationalHealthId";
@@ -196,7 +195,6 @@ public class Person extends AbstractDomainObject implements IsPerson, HasExterna
 	private Integer birthWeight;
 	private GestationalAgeCategory gestationalAgeCategory;
 	private BirthWeightCategory birthWeightCategory;
-	private Integer birthWeightValue;
 	private MultipleBirth multipleBirth;
 	private Date deathDate;
 
@@ -623,14 +621,6 @@ public class Person extends AbstractDomainObject implements IsPerson, HasExterna
 
 	public void setBirthWeightCategory(BirthWeightCategory birthWeightCategory) {
 		this.birthWeightCategory = birthWeightCategory;
-	}
-
-	public Integer getBirthWeightValue() {
-		return birthWeightValue;
-	}
-
-	public void setBirthWeightValue(Integer birthWeightValue) {
-		this.birthWeightValue = birthWeightValue;
 	}
 
 	@Enumerated(EnumType.STRING)

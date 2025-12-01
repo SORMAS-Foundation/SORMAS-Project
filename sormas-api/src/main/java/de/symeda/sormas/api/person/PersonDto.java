@@ -115,7 +115,6 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 	public static final String BIRTH_WEIGHT = "birthWeight";
 	public static final String GESTATIONAL_AGE_CATEGORY = "gestationalAgeCategory";
 	public static final String BIRTH_WEIGHT_CATEGORY = "birthWeightCategory";
-	public static final String BIRTH_WEIGHT_VALUE = "birthWeightValue";
 	public static final String MULTIPLE_BIRTH = "multipleBirth";
 	public static final String PASSPORT_NUMBER = "passportNumber";
 	public static final String NATIONAL_HEALTH_ID = "nationalHealthId";
@@ -256,7 +255,8 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 	@HideForCountries
 	private Integer gestationAgeAtBirth;
 	@Diseases({
-		Disease.CONGENITAL_RUBELLA })
+		Disease.CONGENITAL_RUBELLA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	@HideForCountries
 	private Integer birthWeight;
 
@@ -267,9 +267,6 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 	@Diseases({
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	private BirthWeightCategory birthWeightCategory;
-	@Diseases({
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
-	private Integer birthWeightValue;
 	@Diseases({
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	private MultipleBirth multipleBirth;
@@ -991,14 +988,6 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 
 	public void setBirthWeightCategory(BirthWeightCategory birthWeightCategory) {
 		this.birthWeightCategory = birthWeightCategory;
-	}
-
-	public Integer getBirthWeightValue() {
-		return birthWeightValue;
-	}
-
-	public void setBirthWeightValue(Integer birthWeightValue) {
-		this.birthWeightValue = birthWeightValue;
 	}
 
 	public MultipleBirth getMultipleBirth() {
