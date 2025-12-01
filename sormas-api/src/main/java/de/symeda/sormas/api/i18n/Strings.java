@@ -1407,6 +1407,7 @@ public interface Strings {
 	String messageEpipulseExportDownloadNoFileName = "messageEpipulseExportDownloadNoFileName";
 	String messageEpipulseExportNoCancel = "messageEpipulseExportNoCancel";
 	String messageEpipulseExportNoDelete = "messageEpipulseExportNoDelete";
+	String messageEpipulseInvalidConfigError = "messageEpipulseInvalidConfigError";
 	String messageErrorReportNotAvailable = "messageErrorReportNotAvailable";
 	String messageEventArchived = "messageEventArchived";
 	String messageEventCreated = "messageEventCreated";

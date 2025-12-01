@@ -337,6 +337,11 @@ public class EpipulseExportFacadeEjb implements EpipulseExportFacade {
 		}
 	}
 
+	@Override
+	public boolean configured() {
+		return epipulseExportService.configured();
+	}
+
 	@RightsAllowed({
 		UserRight._EPIPULSE_EXPORT_CREATE })
 	@Override
