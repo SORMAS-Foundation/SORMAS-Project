@@ -149,8 +149,10 @@ public class SampleDataView extends AbstractSampleView implements HasName {
 		}
 
 		SampleReferenceDto sampleReferenceDto = getSampleRef();
+		// Rule: If a sample is not received, user should not create "Pathogen Test" results
+		boolean canCreatePathogenTest = isEditAllowed() && Boolean.TRUE.equals(sampleDto.isReceived());
 		PathogenTestListComponent pathogenTestListComponent =
-			new PathogenTestListComponent(sampleReferenceDto, this::showUnsavedChangesPopup, isEditAllowed());
+			new PathogenTestListComponent(sampleReferenceDto, this::showUnsavedChangesPopup, canCreatePathogenTest);
 		layout.addSidePanelComponent(new SideComponentLayout(pathogenTestListComponent), PATHOGEN_TESTS_LOC);
 
 		if (UiUtil.permitted(FeatureType.ADDITIONAL_TESTS, UserRight.ADDITIONAL_TEST_VIEW)) {

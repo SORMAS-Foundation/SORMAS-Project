@@ -338,6 +338,16 @@ public class SampleController {
 				pathogenTestForm.addDetachListener((de) -> deleteCallback.run());
 			}
 		});
+
+		// Rule: If a sample is not received, user should not create "Pathogen Test" results
+		Field<?> receivedField = editView.getWrappedComponent().getField(SampleDto.RECEIVED);
+		Runnable updatePathogenTestButtonVisibility = () -> {
+			boolean isReceived = Boolean.TRUE.equals(receivedField.getValue());
+			addPathogenTestButton.setEnabled(isReceived);
+		};
+		updatePathogenTestButtonVisibility.run();
+		receivedField.addValueChangeListener(e -> updatePathogenTestButtonVisibility.run());
+
 		editView.getButtonsPanel().addComponent(addPathogenTestButton, 0);
 	}
 

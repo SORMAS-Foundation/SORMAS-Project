@@ -176,6 +176,11 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 
 		samplePurposeField.setRequired(true);
 
+		// Rule: If a sample is not shipped, it must not be received
+		// Disable received checkbox when shipped is not checked
+		updateReceivedFieldBasedOnShipped(shippedField, receivedField);
+		shippedField.addValueChangeListener(e -> updateReceivedFieldBasedOnShipped(shippedField, receivedField));
+
 		Disease disease = null;
 		final CaseReferenceDto associatedCase = getValue().getAssociatedCase();
 		if (associatedCase != null && UiUtil.permitted(UserRight.CASE_VIEW)) {
@@ -394,6 +399,18 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		getContent().addComponent(additionalTestsHeading, ADDITIONAL_TESTING_READ_HEADLINE_LOC);
 
 		updateRequestedTestFields();
+	}
+
+	/**
+	 * Updates the received field based on the shipped field value.
+	 * If sample is not shipped, received must be disabled and cleared.
+	 */
+	private void updateReceivedFieldBasedOnShipped(Field<?> shippedField, Field<?> receivedField) {
+		boolean isShipped = Boolean.TRUE.equals(shippedField.getValue());
+		receivedField.setEnabled(isShipped);
+		if (!isShipped) {
+			receivedField.clear();
+		}
 	}
 
 	private void updateRequestedTestFields() {
