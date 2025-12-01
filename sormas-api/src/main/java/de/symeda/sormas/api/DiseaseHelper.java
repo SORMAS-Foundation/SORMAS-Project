@@ -17,6 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.api;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Set;
+
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.caze.PlagueType;
@@ -26,6 +30,12 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.DataHelper;
 
 public final class DiseaseHelper {
+
+	/**
+	 * Diseases which are having subtypes.
+	 */
+	public static final Set<Disease> SUBTYPE_ALLOWED_DISEASES =
+		Collections.unmodifiableSet(new java.util.HashSet<Disease>(Arrays.asList(Disease.INFLUENZA, Disease.RESPIRATORY_SYNCYTIAL_VIRUS)));
 
 	private DiseaseHelper() {
 		// Hide Utility Class Constructor
@@ -73,10 +83,10 @@ public final class DiseaseHelper {
 
 	/**
 	 * Checks if the case is an invasive bacterial disease (meningococcal or pneumococcal)
+	 * 
 	 * @return boolean
 	 */
-	public static boolean checkDiseaseIsInvasiveBacterialDiseases(Disease disease){
-		return disease != null && (disease == Disease.INVASIVE_MENINGOCOCCAL_INFECTION ||
-				disease == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION);
+	public static boolean checkDiseaseIsInvasiveBacterialDiseases(Disease disease) {
+		return disease != null && (disease == Disease.INVASIVE_MENINGOCOCCAL_INFECTION || disease == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION);
 	}
 }

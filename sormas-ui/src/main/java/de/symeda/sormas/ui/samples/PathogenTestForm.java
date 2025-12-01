@@ -52,6 +52,7 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
@@ -447,7 +448,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		diseaseVariantField.setVisible(false);
 		TextField diseaseVariantDetailsField = addField(PathogenTestDto.TESTED_DISEASE_VARIANT_DETAILS, TextField.class);
 		diseaseVariantDetailsField.setVisible(false);
-		if (disease == Disease.RESPIRATORY_SYNCYTIAL_VIRUS) {
+		if (DiseaseHelper.SUBTYPE_ALLOWED_DISEASES.contains(disease)) {
 			diseaseVariantField.setCaption(I18nProperties.getCaption(Captions.PathogenTest_rsv_testedDiseaseVariant));
 			diseaseVariantDetailsField.setCaption(I18nProperties.getCaption(Captions.PathogenTest_rsv_testedDiseaseVariantDetails));
 		}
@@ -1164,7 +1165,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		BiConsumer<Disease, PathogenTestType> resultField = (disease, testType) -> {
 			final boolean testResultFieldReadOnly = testResultField.isReadOnly();
 			testResultField.setReadOnly(false);
-			
+
 			if (RESULT_FIELD_DECISION_MAP.containsKey(disease) && RESULT_FIELD_DECISION_MAP.get(disease).contains(testType)) {
 				testResultField.setValue(PathogenTestResultType.POSITIVE);
 				testResultField.setEnabled(false);

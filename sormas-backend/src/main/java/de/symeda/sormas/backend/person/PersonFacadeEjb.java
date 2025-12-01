@@ -1017,7 +1017,6 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		target.setBirthWeight(source.getBirthWeight());
 		target.setGestationalAgeCategory(source.getGestationalAgeCategory());
 		target.setBirthWeightCategory(source.getBirthWeightCategory());
-		target.setBirthWeightValue(source.getBirthWeightValue());
 		target.setMultipleBirth(source.getMultipleBirth());
 
 		target.setPassportNumber(source.getPassportNumber());
@@ -1792,7 +1791,6 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		target.setBirthWeight(source.getBirthWeight());
 		target.setGestationalAgeCategory(source.getGestationalAgeCategory());
 		target.setBirthWeightCategory(source.getBirthWeightCategory());
-		target.setBirthWeightValue(source.getBirthWeightValue());
 		target.setMultipleBirth(source.getMultipleBirth());
 
 		target.setPassportNumber(source.getPassportNumber());
