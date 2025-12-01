@@ -26,6 +26,7 @@ import android.view.View;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.IdsrType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
@@ -71,6 +72,7 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 	private List<Item> immunizationStatusList;
 	private List<Item> meansOfImmunizationList;
 	private List<Item> immunizationManagementStatusList;
+	private List<Item> idsrDiagnosisList;
 
 	private List<Item> initialRegions;
 	private List<Item> initialDistricts;
@@ -125,6 +127,7 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 		immunizationStatusList = DataUtils.getEnumItems(ImmunizationStatus.class, true);
 		meansOfImmunizationList = DataUtils.getEnumItems(MeansOfImmunization.class, true);
 		immunizationManagementStatusList = DataUtils.getEnumItems(ImmunizationManagementStatus.class, false);
+		idsrDiagnosisList = DataUtils.getEnumItems(IdsrType.class, true);
 
 		countries = InfrastructureDaoHelper.loadCountries();
 		initialRegions = InfrastructureDaoHelper.loadRegionsByServerCountry();
@@ -185,6 +188,7 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 		contentBinding.immunizationImmunizationStatus.setEnabled(false);
 		contentBinding.immunizationImmunizationManagementStatus.initializeSpinner(immunizationManagementStatusList);
 		contentBinding.immunizationMeansOfImmunization.initializeSpinner(meansOfImmunizationList);
+		contentBinding.immunizationIdsrDiagnosis.initializeSpinner(idsrDiagnosisList);
 
 		// Initialize ControlDateFields
 		contentBinding.immunizationReportDate.initializeDateField(getFragmentManager());

@@ -14443,4 +14443,12 @@ alter table events_history add idsrdiagnosisdetails varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (582, 'Add IDSR diagnosis fields to events');
 
+-- 2025-12-01 Add IDSR diagnosis fields to immunization
+alter table immunization add idsrdiagnosis varchar(255);
+alter table immunization add idsrdiagnosisdetails varchar(512);
+alter table immunization_history add idsrdiagnosis varchar(255);
+alter table immunization_history add idsrdiagnosisdetails varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (583, 'Add IDSR diagnosis fields to immunization');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

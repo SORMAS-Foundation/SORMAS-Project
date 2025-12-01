@@ -25,6 +25,7 @@ import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.IdsrType;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
@@ -62,6 +63,8 @@ public class ImmunizationDto extends SormasToSormasShareableDto implements IsImm
 	public static final String COUNTRY = "country";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
+	public static final String IDSR_DIAGNOSIS = "idsrDiagnosis";
+	public static final String IDSR_DIAGNOSIS_DETAILS = "idsrDiagnosisDetails";
 	public static final String END_DATE = "endDate";
 	public static final String EXTERNAL_ID = "externalId";
 	public static final String FACILITY_TYPE = "facilityType";
@@ -98,6 +101,9 @@ public class ImmunizationDto extends SormasToSormasShareableDto implements IsImm
 	@Outbreaks
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String diseaseDetails;
+	private IdsrType idsrDiagnosis;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String idsrDiagnosisDetails;
 	@NotNull(message = Validations.validPerson)
 	@EmbeddedPersonalData
 	private PersonReferenceDto person;
@@ -194,6 +200,22 @@ public class ImmunizationDto extends SormasToSormasShareableDto implements IsImm
 
 	public void setDiseaseDetails(String diseaseDetails) {
 		this.diseaseDetails = diseaseDetails;
+	}
+
+	public IdsrType getIdsrDiagnosis() {
+		return idsrDiagnosis;
+	}
+
+	public void setIdsrDiagnosis(IdsrType idsrDiagnosis) {
+		this.idsrDiagnosis = idsrDiagnosis;
+	}
+
+	public String getIdsrDiagnosisDetails() {
+		return idsrDiagnosisDetails;
+	}
+
+	public void setIdsrDiagnosisDetails(String idsrDiagnosisDetails) {
+		this.idsrDiagnosisDetails = idsrDiagnosisDetails;
 	}
 
 	public PersonReferenceDto getPerson() {

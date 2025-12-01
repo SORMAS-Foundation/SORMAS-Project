@@ -29,6 +29,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.IdsrType;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
@@ -58,6 +59,8 @@ public class Immunization extends PseudonymizableAdo {
 	public static final String PERSON = "person";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
+	public static final String IDSR_DIAGNOSIS = "idsrDiagnosis";
+	public static final String IDSR_DIAGNOSIS_DETAILS = "idsrDiagnosisDetails";
 	public static final String RESPONSIBLE_REGION = "responsibleRegion";
 
 	public static final String POSITIVE_TEST_RESULT_DATE = "positivetestresultdate";
@@ -77,6 +80,10 @@ public class Immunization extends PseudonymizableAdo {
 	private Disease disease;
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String diseaseDetails;
+	@Enumerated(EnumType.STRING)
+	private IdsrType idsrDiagnosis;
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	private String idsrDiagnosisDetails;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
 	private Person person;
 	@DatabaseField(dataType = DataType.DATE_LONG)
@@ -383,6 +390,22 @@ public class Immunization extends PseudonymizableAdo {
 
 	public void setDiseaseDetails(String diseaseDetails) {
 		this.diseaseDetails = diseaseDetails;
+	}
+
+	public IdsrType getIdsrDiagnosis() {
+		return idsrDiagnosis;
+	}
+
+	public void setIdsrDiagnosis(IdsrType idsrDiagnosis) {
+		this.idsrDiagnosis = idsrDiagnosis;
+	}
+
+	public String getIdsrDiagnosisDetails() {
+		return idsrDiagnosisDetails;
+	}
+
+	public void setIdsrDiagnosisDetails(String idsrDiagnosisDetails) {
+		this.idsrDiagnosisDetails = idsrDiagnosisDetails;
 	}
 
 	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {

@@ -49,6 +49,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.IdsrType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
@@ -101,6 +102,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 	private static final String HTML_LAYOUT = fluidRowLocs(ImmunizationDto.UUID, ImmunizationDto.EXTERNAL_ID)
 		+ fluidRowLocs(6, ImmunizationDto.REPORT_DATE, 3,ImmunizationDto.REPORTING_USER, 3, "")
 		+ fluidRowLocs(ImmunizationDto.DISEASE, ImmunizationDto.DISEASE_DETAILS)
+		+ fluidRowLocs(ImmunizationDto.IDSR_DIAGNOSIS, ImmunizationDto.IDSR_DIAGNOSIS_DETAILS)
 		+ fluidRowLocs(ImmunizationDto.MEANS_OF_IMMUNIZATION, ImmunizationDto.MEANS_OF_IMMUNIZATION_DETAILS)
 		+ fluidRowLocs(OVERWRITE_IMMUNIZATION_MANAGEMENT_STATUS)
 		+ fluidRowLocs(ImmunizationDto.IMMUNIZATION_MANAGEMENT_STATUS, ImmunizationDto.IMMUNIZATION_STATUS)
@@ -166,6 +168,11 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 
 		ComboBox cbDisease = addDiseaseField(ImmunizationDto.DISEASE, false, false);
 		addField(ImmunizationDto.DISEASE_DETAILS, TextField.class);
+
+		ComboBox idsrDiagnosisField = addField(ImmunizationDto.IDSR_DIAGNOSIS, ComboBox.class);
+		idsrDiagnosisField.setNullSelectionAllowed(true);
+		TextField idsrDiagnosisDetailsField = addField(ImmunizationDto.IDSR_DIAGNOSIS_DETAILS, TextField.class);
+		idsrDiagnosisDetailsField.setVisible(false);
 
 		ComboBox meansOfImmunizationField = addField(ImmunizationDto.MEANS_OF_IMMUNIZATION, ComboBox.class);
 		addField(ImmunizationDto.MEANS_OF_IMMUNIZATION_DETAILS, TextField.class);
@@ -309,6 +316,24 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 			true);
 		FieldHelper
 			.setRequiredWhen(getFieldGroup(), ImmunizationDto.DISEASE, Arrays.asList(ImmunizationDto.DISEASE_DETAILS), Arrays.asList(Disease.OTHER));
+
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			ImmunizationDto.IDSR_DIAGNOSIS,
+			ImmunizationDto.DISEASE,
+			Collections.singletonList(Disease.IMMEDIATE_CASE_BASED_FORM_OTHER_CONDITIONS),
+			true);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			Collections.singletonList(ImmunizationDto.IDSR_DIAGNOSIS_DETAILS),
+			ImmunizationDto.IDSR_DIAGNOSIS,
+			Collections.singletonList(IdsrType.OTHER),
+			true);
+		FieldHelper.setRequiredWhen(
+			getFieldGroup(),
+			ImmunizationDto.IDSR_DIAGNOSIS,
+			Collections.singletonList(ImmunizationDto.IDSR_DIAGNOSIS_DETAILS),
+			Collections.singletonList(IdsrType.OTHER));
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
