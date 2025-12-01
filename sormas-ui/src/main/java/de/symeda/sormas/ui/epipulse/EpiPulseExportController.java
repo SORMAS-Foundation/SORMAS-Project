@@ -50,48 +50,56 @@ public class EpiPulseExportController {
 
 	public void create(Runnable callback) {
 
-		EpipulseEditForm createForm = new EpipulseEditForm(true);
-		createForm.setValue(EpipulseExportDto.build(UserProvider.getCurrent().getUserReference()));
-		final CommitDiscardWrapperComponent<EpipulseEditForm> editView = new CommitDiscardWrapperComponent<EpipulseEditForm>(
-			createForm,
-			UiUtil.permitted(UserRight.EPIPULSE_EXPORT_CREATE),
-			createForm.getFieldGroup());
+		boolean configured = FacadeProvider.getEpipulseExportFacade().configured();
+		if (configured) {
+			EpipulseEditForm createForm = new EpipulseEditForm(true);
+			createForm.setValue(EpipulseExportDto.build(UserProvider.getCurrent().getUserReference()));
+			final CommitDiscardWrapperComponent<EpipulseEditForm> editView = new CommitDiscardWrapperComponent<EpipulseEditForm>(
+				createForm,
+				UiUtil.permitted(UserRight.EPIPULSE_EXPORT_CREATE),
+				createForm.getFieldGroup());
 
-		editView.addCommitListener(() -> {
-			if (!createForm.getFieldGroup().isModified()) {
-				EpipulseExportDto dto = createForm.getValue();
-				dto.setStatus(EpipulseExportStatus.PENDING);
-				dto.setStatusChangeDate(new Date());
+			editView.addCommitListener(() -> {
+				if (!createForm.getFieldGroup().isModified()) {
+					EpipulseExportDto dto = createForm.getValue();
+					dto.setStatus(EpipulseExportStatus.PENDING);
+					dto.setStatusChangeDate(new Date());
 
-				EpipulseExportDto savedEpipulseExport = FacadeProvider.getEpipulseExportFacade().saveEpipulseExport(dto);
+					EpipulseExportDto savedEpipulseExport = FacadeProvider.getEpipulseExportFacade().saveEpipulseExport(dto);
 
-				Notification notification;
-				if (savedEpipulseExport != null) {
-					notification = new Notification(
-						I18nProperties.getString(Strings.messageEpipulseExportCreatedCaption),
-						I18nProperties.getString(Strings.messageEpipulseExportCreatedDescription),
-						Notification.Type.TRAY_NOTIFICATION,
-						true);
-					notification.setDelayMsec(-1);
-				} else {
-					notification = new Notification(
-						"",
-						I18nProperties.getString(Strings.messageEpipulseExportCreatedError),
-						Notification.Type.ERROR_MESSAGE,
-						true);
-					notification.setDelayMsec(-1);
+					Notification notification;
+					if (savedEpipulseExport != null) {
+						notification = new Notification(
+							I18nProperties.getString(Strings.messageEpipulseExportCreatedCaption),
+							I18nProperties.getString(Strings.messageEpipulseExportCreatedDescription),
+							Notification.Type.TRAY_NOTIFICATION,
+							true);
+						notification.setDelayMsec(-1);
+					} else {
+						notification = new Notification(
+							"",
+							I18nProperties.getString(Strings.messageEpipulseExportCreatedError),
+							Notification.Type.ERROR_MESSAGE,
+							true);
+						notification.setDelayMsec(-1);
+					}
+
+					notification.show(Page.getCurrent());
+
+					if (callback != null) {
+						callback.run();
+					}
+
 				}
+			});
 
-				notification.show(Page.getCurrent());
-
-				if (callback != null) {
-					callback.run();
-				}
-
-			}
-		});
-
-		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreateNewEpipulseExport));
+			VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreateNewEpipulseExport));
+		} else {
+			Notification notification =
+				new Notification("", I18nProperties.getString(Strings.messageEpipulseInvalidConfigError), Notification.Type.ERROR_MESSAGE, true);
+			notification.setDelayMsec(-1);
+			notification.show(Page.getCurrent());
+		}
 	}
 
 	public void view(EpipulseExportIndexDto exportIndexDto, Runnable callback) {

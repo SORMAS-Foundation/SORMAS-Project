@@ -39,4 +39,6 @@ public interface EpipulseExportFacade extends DeletableFacade {
 	void cancelEpipulseExport(String uuid);
 
 	void deleteEpipulseExport(String uuid);
+
+	boolean configured();
 }

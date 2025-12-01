@@ -15,7 +15,10 @@
 
 package de.symeda.sormas.backend.epipulse;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -75,6 +78,34 @@ public class EpipulseExportService extends BaseAdoService<EpipulseExport> {
 		}
 
 		return filter;
+	}
+
+	public boolean configured() {
+		try {
+			//@formatter:off
+            List<String> requiredTables =
+                    Arrays.asList(
+                            EpipulseDatasourceConfiguration.TABLE_NAME,
+                            EpipulseLocationConfiguration.TABLE_NAME,
+                            EpipulseSubjectcodeConfiguration.TABLE_NAME
+                    );
+
+            String query = "SELECT COUNT(*) " +
+                    "FROM information_schema.tables " +
+                    "WHERE table_schema = 'public' " +
+                    "AND table_name IN (" +
+                    String.join(",", requiredTables.stream()
+                            .map(table -> "'" + table + "'")
+                            .collect(Collectors.toList())) +
+                    ")";
+            //@formatter:on
+
+			Number count = (Number) em.createNativeQuery(query).getSingleResult();
+			return count.intValue() == requiredTables.size();
+		} catch (Exception e) {
+			logger.warning("Error checking epipulse configuration tables: " + e.getMessage());
+			return false;
+		}
 	}
 
 	public boolean isArchived(String uuid) {
