@@ -207,6 +207,8 @@ public class ImmunizationFacadeEjb
 
 		dto.setDisease(entity.getDisease());
 		dto.setDiseaseDetails(entity.getDiseaseDetails());
+		dto.setIdsrDiagnosis(entity.getIdsrDiagnosis());
+		dto.setIdsrDiagnosisDetails(entity.getIdsrDiagnosisDetails());
 		dto.setPerson(PersonFacadeEjb.toReferenceDto(entity.getPerson()));
 		dto.setReportDate(entity.getReportDate());
 		dto.setReportingUser(UserFacadeEjb.toReferenceDto(entity.getReportingUser()));
@@ -555,6 +557,8 @@ public class ImmunizationFacadeEjb
 
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
+		target.setIdsrDiagnosis(source.getIdsrDiagnosis());
+		target.setIdsrDiagnosisDetails(source.getIdsrDiagnosisDetails());
 		target.setPerson(personService.getByReferenceDto(source.getPerson()));
 		target.setReportDate(source.getReportDate());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));

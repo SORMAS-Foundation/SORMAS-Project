@@ -40,6 +40,7 @@ import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.IdsrType;
 import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactProximity;
@@ -81,7 +82,11 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 					LayoutUtil.fluidRowLocs(ContactDto.PERSON) + 
 					LayoutUtil.fluidRowLocs(ContactDto.RETURNING_TRAVELER) +
 					LayoutUtil.fluidRowLocs(ContactDto.REPORT_DATE_TIME, CaseDataDto.CASE_REFERENCE_NUMBER) +
-					LayoutUtil.fluidRowLocs(ContactDto.DISEASE, ContactDto.DISEASE_DETAILS) +
+					LayoutUtil.fluidRow(
+							LayoutUtil.fluidColumnLoc(6, 0, ContactDto.DISEASE),
+							LayoutUtil.fluidColumnLoc(6, 0, ContactDto.IDSR_DIAGNOSIS),
+							LayoutUtil.fluidColumnLoc(6, 0, ContactDto.IDSR_DIAGNOSIS_DETAILS)) +
+					LayoutUtil.fluidRowLocs(ContactDto.DISEASE_DETAILS) +
 					LayoutUtil.fluidRowLocs(6, CASE_INFO_LOC, 3, CHOOSE_CASE_LOC, 3, REMOVE_CASE_LOC) +
 					LayoutUtil.fluidRowLocs(ContactDto.CASE_ID_EXTERNAL_SYSTEM) +
 					LayoutUtil.fluidRowLocs(ContactDto.MULTI_DAY_CONTACT) +
@@ -167,6 +172,10 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		addField(CaseDataDto.CASE_REFERENCE_NUMBER, TextField.class);
 		ComboBox cbDisease = addDiseaseField(ContactDto.DISEASE, false, true, true);
 		addField(ContactDto.DISEASE_DETAILS, TextField.class);
+		ComboBox idsrDiagnosisField = addField(ContactDto.IDSR_DIAGNOSIS, ComboBox.class);
+		idsrDiagnosisField.setNullSelectionAllowed(true);
+		TextField idsrDiagnosisDetailsField = addField(ContactDto.IDSR_DIAGNOSIS_DETAILS, TextField.class);
+		idsrDiagnosisDetailsField.setVisible(false);
 
 		personCreateForm = new PersonCreateForm(false, false, false, showPersonSearchButton);
 		if (isPersonReadOnly) {
@@ -251,6 +260,9 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.DISEASE_DETAILS, ContactDto.DISEASE, Arrays.asList(Disease.OTHER), true);
 		FieldHelper.setRequiredWhen(getFieldGroup(), ContactDto.DISEASE, Arrays.asList(ContactDto.DISEASE_DETAILS), Arrays.asList(Disease.OTHER));
+		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(ContactDto.IDSR_DIAGNOSIS), ContactDto.DISEASE, Arrays.asList(Disease.IMMEDIATE_CASE_BASED_FORM_OTHER_CONDITIONS), true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(ContactDto.IDSR_DIAGNOSIS_DETAILS), ContactDto.IDSR_DIAGNOSIS, Arrays.asList(IdsrType.OTHER), true);
+		FieldHelper.setRequiredWhen(getFieldGroup(), ContactDto.IDSR_DIAGNOSIS, Arrays.asList(ContactDto.IDSR_DIAGNOSIS_DETAILS), Arrays.asList(IdsrType.OTHER));
 
 		cbDisease.addValueChangeListener(e -> {
 			disease = (Disease) e.getProperty().getValue();

@@ -20,6 +20,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.IdsrType;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
@@ -44,6 +45,8 @@ public class BaseImmunization extends CoreAdo implements SormasToSormasShareable
 
 	private Disease disease;
 	private String diseaseDetails;
+	private IdsrType idsrDiagnosis;
+	private String idsrDiagnosisDetails;
 	private Person person;
 	private Date reportDate;
 	private User reportingUser;
@@ -103,6 +106,24 @@ public class BaseImmunization extends CoreAdo implements SormasToSormasShareable
 
 	public void setDiseaseDetails(String diseaseDetails) {
 		this.diseaseDetails = diseaseDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public IdsrType getIdsrDiagnosis() {
+		return idsrDiagnosis;
+	}
+
+	public void setIdsrDiagnosis(IdsrType idsrDiagnosis) {
+		this.idsrDiagnosis = idsrDiagnosis;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getIdsrDiagnosisDetails() {
+		return idsrDiagnosisDetails;
+	}
+
+	public void setIdsrDiagnosisDetails(String idsrDiagnosisDetails) {
+		this.idsrDiagnosisDetails = idsrDiagnosisDetails;
 	}
 
 	@Column(name = "person_id", updatable = false, insertable = false)

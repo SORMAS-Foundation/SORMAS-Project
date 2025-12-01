@@ -82,6 +82,8 @@ public class ImmunizationDtoHelper extends PersonDependentDtoHelper<Immunization
 	protected void fillInnerFromDto(Immunization target, ImmunizationDto source) {
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
+		target.setIdsrDiagnosis(source.getIdsrDiagnosis());
+		target.setIdsrDiagnosisDetails(source.getIdsrDiagnosisDetails());
 		target.setPerson(DatabaseHelper.getPersonDao().getByReferenceDto(source.getPerson()));
 		target.setReportDate(source.getReportDate());
 		target.setReportingUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getReportingUser()));
@@ -131,6 +133,8 @@ public class ImmunizationDtoHelper extends PersonDependentDtoHelper<Immunization
 	protected void fillInnerFromAdo(ImmunizationDto target, Immunization source) {
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
+		target.setIdsrDiagnosis(source.getIdsrDiagnosis());
+		target.setIdsrDiagnosisDetails(source.getIdsrDiagnosisDetails());
 		if (source.getPerson() != null) {
 			Person person = DatabaseHelper.getPersonDao().queryForId(source.getPerson().getId());
 			target.setPerson(PersonDtoHelper.toReferenceDto(person));

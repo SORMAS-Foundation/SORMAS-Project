@@ -41,6 +41,7 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Type;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.IdsrType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.disease.DiseaseVariantConverter;
 import de.symeda.sormas.api.event.DiseaseTransmissionMode;
@@ -148,6 +149,8 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 	public static final String SORMAS_TO_SORMAS_ORIGIN_INFO = "sormasToSormasOriginInfo";
 	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
 	public static final String ENVIRONMENTS = "environments";
+	public static final String IDSR_DIAGNOSIS = "idsrDiagnosis";
+	public static final String IDSR_DIAGNOSIS_DETAILS = "idsrDiagnosisDetails";
 
 	private Event superordinateEvent;
 	private List<Event> subordinateEvents;
@@ -222,6 +225,9 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 	private String internalToken;
 
 	private EventIdentificationSource eventIdentificationSource;
+
+	private IdsrType idsrDiagnosis;
+	private String idsrDiagnosisDetails;
 
 	private List<ExternalShareInfo> externalShares = new ArrayList<>(0);
 
@@ -854,5 +860,23 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 	public void unlinkEnvironment(Environment environment) {
 		environments.remove(environment);
 		environment.getEvents().remove(this);
+	}
+
+	@Enumerated(EnumType.STRING)
+	public IdsrType getIdsrDiagnosis() {
+		return idsrDiagnosis;
+	}
+
+	public void setIdsrDiagnosis(IdsrType idsrDiagnosis) {
+		this.idsrDiagnosis = idsrDiagnosis;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getIdsrDiagnosisDetails() {
+		return idsrDiagnosisDetails;
+	}
+
+	public void setIdsrDiagnosisDetails(String idsrDiagnosisDetails) {
+		this.idsrDiagnosisDetails = idsrDiagnosisDetails;
 	}
 }

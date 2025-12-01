@@ -82,6 +82,8 @@ public class ContactDtoHelper extends PersonDependentDtoHelper<Contact, ContactD
 		target.setCaseUuid(source.getCaze() != null ? source.getCaze().getUuid() : null);
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
+		target.setIdsrDiagnosis(source.getIdsrDiagnosis());
+		target.setIdsrDiagnosisDetails(source.getIdsrDiagnosisDetails());
 		target.setPerson(DatabaseHelper.getPersonDao().getByReferenceDto(source.getPerson()));
 
 		target.setReportingUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getReportingUser()));
@@ -212,6 +214,8 @@ public class ContactDtoHelper extends PersonDependentDtoHelper<Contact, ContactD
 
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
+		target.setIdsrDiagnosis(source.getIdsrDiagnosis());
+		target.setIdsrDiagnosisDetails(source.getIdsrDiagnosisDetails());
 
 		if (source.getReportingUser() != null) {
 			User user = DatabaseHelper.getUserDao().queryForId(source.getReportingUser().getId());

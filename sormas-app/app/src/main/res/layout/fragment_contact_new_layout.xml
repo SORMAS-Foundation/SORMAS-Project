@@ -24,6 +24,7 @@
 
     <data>
         <import type="de.symeda.sormas.api.Disease" />
+        <import type="de.symeda.sormas.api.caze.IdsrType" />
         <import type="de.symeda.sormas.api.contact.ContactRelation" />
         <import type="de.symeda.sormas.api.i18n.I18nProperties" />
         <import type="de.symeda.sormas.api.i18n.Strings" />
@@ -122,6 +123,21 @@
                 app:value="@={data.diseaseDetails}"
                 app:dependencyParentField="@{contactDisease}"
                 app:dependencyParentValue="@{Disease.OTHER}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/contact_idsrDiagnosis"
+                app:value="@={data.idsrDiagnosis}"
+                app:dependencyParentField="@{contactDisease}"
+                app:dependencyParentValue="@{Disease.IMMEDIATE_CASE_BASED_FORM_OTHER_CONDITIONS}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/contact_idsrDiagnosisDetails"
+                app:value="@={data.idsrDiagnosisDetails}"
+                app:dependencyParentField="@{contactIdsrDiagnosis}"
+                app:dependencyParentValue="@{IdsrType.OTHER}"
+                app:required="true"
                 style="@style/ControlSingleColumnStyle" />
 
             <LinearLayout

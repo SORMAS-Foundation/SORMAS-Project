@@ -3204,11 +3204,15 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				currentVersion = 360;
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN idsrdiagnosis varchar(255);");
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN idsrdiagnosisdetails varchar(512);");
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN idsrdiagnosis varchar(255);");
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN idsrdiagnosisdetails varchar(512);");
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN idsrdiagnosis varchar(255);");
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN idsrdiagnosisdetails varchar(512);");
+				getDao(Immunization.class).executeRaw("ALTER TABLE immunization ADD COLUMN idsrdiagnosis varchar(255);");
+				getDao(Immunization.class).executeRaw("ALTER TABLE immunization ADD COLUMN idsrdiagnosisdetails varchar(512);");
 
 				// ATTENTION: break should only be done after last version
 				break;
-
-
 
 			default:
 				throw new IllegalStateException("onUpgrade() with unknown oldVersion " + oldVersion);

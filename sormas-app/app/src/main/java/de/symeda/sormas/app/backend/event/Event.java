@@ -33,6 +33,7 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.IdsrType;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.DiseaseTransmissionMode;
@@ -96,6 +97,8 @@ public class Event extends PseudonymizableAdo {
 	public static final String SRC_EMAIL = "srcEmail";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
+	public static final String IDSR_DIAGNOSIS = "idsrDiagnosis";
+	public static final String IDSR_DIAGNOSIS_DETAILS = "idsrDiagnosisDetails";
 	public static final String RESPONSIBLE_USER = "responsibleUser";
 	public static final String TYPE_OF_PLACE_TEXT = "typeOfPlaceText";
 	public static final String CONNECTION_NUMBER = "connectionNumber";
@@ -223,6 +226,12 @@ public class Event extends PseudonymizableAdo {
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String diseaseVariantDetails;
+
+	@Enumerated(EnumType.STRING)
+	private IdsrType idsrDiagnosis;
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	private String idsrDiagnosisDetails;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, columnName = "surveillanceOfficer_id")
 	private User responsibleUser;
@@ -575,6 +584,22 @@ public class Event extends PseudonymizableAdo {
 
 	public String getDiseaseVariantDetails() {
 		return diseaseVariantDetails;
+	}
+
+	public IdsrType getIdsrDiagnosis() {
+		return idsrDiagnosis;
+	}
+
+	public void setIdsrDiagnosis(IdsrType idsrDiagnosis) {
+		this.idsrDiagnosis = idsrDiagnosis;
+	}
+
+	public String getIdsrDiagnosisDetails() {
+		return idsrDiagnosisDetails;
+	}
+
+	public void setIdsrDiagnosisDetails(String idsrDiagnosisDetails) {
+		this.idsrDiagnosisDetails = idsrDiagnosisDetails;
 	}
 
 	public void setDiseaseVariantDetails(String diseaseVariantDetails) {

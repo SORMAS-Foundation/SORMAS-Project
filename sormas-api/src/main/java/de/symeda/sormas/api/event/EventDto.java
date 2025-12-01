@@ -28,6 +28,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.IdsrType;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
@@ -122,6 +123,8 @@ public class EventDto extends SormasToSormasShareableDto {
 	public static final String EVENT_IDENTIFICATION_SOURCE = "eventIdentificationSource";
 	public static final String DELETION_REASON = "deletionReason";
 	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
+	public static final String IDSR_DIAGNOSIS = "idsrDiagnosis";
+	public static final String IDSR_DIAGNOSIS_DETAILS = "idsrDiagnosisDetails";
 
 	private EventReferenceDto superordinateEvent;
 	@NotNull(message = Validations.validEventStatus)
@@ -237,6 +240,9 @@ public class EventDto extends SormasToSormasShareableDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherDeletionReason;
 	private List<EnvironmentReferenceDto> environmentReferenceDtos = new ArrayList<>();
+	private IdsrType idsrDiagnosis;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String idsrDiagnosisDetails;
 
 	public static EventDto build() {
 		EventDto event = new EventDto();
@@ -770,5 +776,21 @@ public class EventDto extends SormasToSormasShareableDto {
 
 	public void setEnvironmentReferenceDtos(List<EnvironmentReferenceDto> environmentReferenceDtos) {
 		this.environmentReferenceDtos = environmentReferenceDtos;
+	}
+
+	public IdsrType getIdsrDiagnosis() {
+		return idsrDiagnosis;
+	}
+
+	public void setIdsrDiagnosis(IdsrType idsrDiagnosis) {
+		this.idsrDiagnosis = idsrDiagnosis;
+	}
+
+	public String getIdsrDiagnosisDetails() {
+		return idsrDiagnosisDetails;
+	}
+
+	public void setIdsrDiagnosisDetails(String idsrDiagnosisDetails) {
+		this.idsrDiagnosisDetails = idsrDiagnosisDetails;
 	}
 }

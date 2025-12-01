@@ -31,6 +31,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.MappingException;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.IdsrType;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.common.DeletionReason;
@@ -154,6 +155,8 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 	public static final String PROPHYLAXIS_PRESCRIBED = "prophylaxisPrescribed";
 	public static final String PRESCRIBED_DRUG = "prescribedDrug";
 	public static final String PRESCRIBED_DRUG_TEXT = "prescribedDrugText";
+	public static final String IDSR_DIAGNOSIS = "idsrDiagnosis";
+	public static final String IDSR_DIAGNOSIS_DETAILS = "idsrDiagnosisDetails";
 
 	@EmbeddedPersonalData
 	private CaseReferenceDto caze;
@@ -385,6 +388,16 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 	@SensitiveData
 	@Diseases(Disease.INVASIVE_MENINGOCOCCAL_INFECTION)
 	private String prescribedDrugText;
+
+	@Diseases({
+			Disease.IMMEDIATE_CASE_BASED_FORM_OTHER_CONDITIONS })
+	@Outbreaks
+	private IdsrType idsrDiagnosis;
+	@Diseases({
+			Disease.IMMEDIATE_CASE_BASED_FORM_OTHER_CONDITIONS })
+	@Outbreaks
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String idsrDiagnosisDetails;
 
 	public static ContactDto build() {
 		final ContactDto contact = new ContactDto();
@@ -1107,6 +1120,22 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 
 	public void setPrescribedDrugText(String prescribedDrugText) {
 		this.prescribedDrugText = prescribedDrugText;
+	}
+
+	public IdsrType getIdsrDiagnosis() {
+		return idsrDiagnosis;
+	}
+
+	public void setIdsrDiagnosis(IdsrType idsrDiagnosis) {
+		this.idsrDiagnosis = idsrDiagnosis;
+	}
+
+	public String getIdsrDiagnosisDetails() {
+		return idsrDiagnosisDetails;
+	}
+
+	public void setIdsrDiagnosisDetails(String idsrDiagnosisDetails) {
+		this.idsrDiagnosisDetails = idsrDiagnosisDetails;
 	}
 
 }

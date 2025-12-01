@@ -112,6 +112,8 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setDiseaseVariant(source.getDiseaseVariant());
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setDiseaseVariantDetails(source.getDiseaseVariantDetails());
+		target.setIdsrDiagnosis(source.getIdsrDiagnosis());
+		target.setIdsrDiagnosisDetails(source.getIdsrDiagnosisDetails());
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
@@ -200,6 +202,8 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setDiseaseVariant(source.getDiseaseVariant());
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setDiseaseVariantDetails(source.getDiseaseVariantDetails());
+		target.setIdsrDiagnosis(source.getIdsrDiagnosis());
+		target.setIdsrDiagnosisDetails(source.getIdsrDiagnosisDetails());
 
 		if (source.getResponsibleUser() != null) {
 			User user = DatabaseHelper.getUserDao().queryForId(source.getResponsibleUser().getId());

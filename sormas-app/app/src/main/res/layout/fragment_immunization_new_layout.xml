@@ -38,6 +38,7 @@
         <import type="de.symeda.sormas.api.i18n.Strings" />
         <import type="de.symeda.sormas.api.event.TypeOfPlace" />
         <import type="de.symeda.sormas.api.Disease" />
+        <import type="de.symeda.sormas.api.caze.IdsrType" />
     </data>
 
     <ScrollView
@@ -71,6 +72,21 @@
                 app:value="@={data.diseaseDetails}"
                 app:dependencyParentField="@{immunizationDisease}"
                 app:dependencyParentValue="@{Disease.OTHER}"
+                app:required="true"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/immunization_idsrDiagnosis"
+                app:value="@={data.idsrDiagnosis}"
+                app:dependencyParentField="@{immunizationDisease}"
+                app:dependencyParentValue="@{Disease.IMMEDIATE_CASE_BASED_FORM_OTHER_CONDITIONS}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/immunization_idsrDiagnosisDetails"
+                app:value="@={data.idsrDiagnosisDetails}"
+                app:dependencyParentField="@{immunizationIdsrDiagnosis}"
+                app:dependencyParentValue="@{IdsrType.OTHER}"
                 app:required="true"
                 style="@style/ControlSingleColumnStyle" />
 
