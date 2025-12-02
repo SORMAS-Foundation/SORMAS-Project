@@ -255,6 +255,9 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private Integer tuberculosisInfectionYear;
 	private YesNoUnknown previousTuberculosisTreatment;
 	private ComplianceWithTreatment complianceWithTreatment;
+	private Boolean tuberculosisDirectlyObservedTreatment;
+	private Boolean tuberculosisMdrXdrTuberculosis;
+	private Boolean tuberculosisBeijingLineage;
 
 	public ExternalMessageType getType() {
 		return type;
@@ -900,5 +903,29 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	public void setComplianceWithTreatment(ComplianceWithTreatment complianceWithTreatment) {
 		this.complianceWithTreatment = complianceWithTreatment;
+	}
+
+	public Boolean getTuberculosisDirectlyObservedTreatment() {
+		return tuberculosisDirectlyObservedTreatment;
+	}
+
+	public void setTuberculosisDirectlyObservedTreatment(Boolean tuberculosisDirectlyObservedTreatment) {
+		this.tuberculosisDirectlyObservedTreatment = tuberculosisDirectlyObservedTreatment;
+	}
+
+	public Boolean getTuberculosisMdrXdrTuberculosis() {
+		return tuberculosisMdrXdrTuberculosis;
+	}
+
+	public void setTuberculosisMdrXdrTuberculosis(Boolean tuberculosisMdrXdrTuberculosis) {
+		this.tuberculosisMdrXdrTuberculosis = tuberculosisMdrXdrTuberculosis;
+	}
+
+	public Boolean getTuberculosisBeijingLineage() {
+		return tuberculosisBeijingLineage;
+	}
+
+	public void setTuberculosisBeijingLineage(Boolean tuberculosisBeijingLineage) {
+		this.tuberculosisBeijingLineage = tuberculosisBeijingLineage;
 	}
 }

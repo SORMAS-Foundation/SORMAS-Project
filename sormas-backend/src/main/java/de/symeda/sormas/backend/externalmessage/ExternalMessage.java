@@ -221,6 +221,9 @@ public class ExternalMessage extends AbstractDomainObject {
 	private Integer tuberculosisInfectionYear;
 	private YesNoUnknown previousTuberculosisTreatment;
 	private ComplianceWithTreatment complianceWithTreatment;
+	private Boolean tuberculosisDirectlyObservedTreatment;
+	private Boolean tuberculosisMdrXdrTuberculosis;
+	private Boolean tuberculosisBeijingLineage;
 
 	@Enumerated(EnumType.STRING)
 	public ExternalMessageType getType() {
@@ -892,5 +895,29 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public void setComplianceWithTreatment(ComplianceWithTreatment complianceWithTreatment) {
 		this.complianceWithTreatment = complianceWithTreatment;
+	}
+
+	public Boolean getTuberculosisDirectlyObservedTreatment() {
+		return tuberculosisDirectlyObservedTreatment;
+	}
+
+	public void setTuberculosisDirectlyObservedTreatment(Boolean tuberculosisDirectlyObservedTreatment) {
+		this.tuberculosisDirectlyObservedTreatment = tuberculosisDirectlyObservedTreatment;
+	}
+
+	public Boolean getTuberculosisMdrXdrTuberculosis() {
+		return tuberculosisMdrXdrTuberculosis;
+	}
+
+	public void setTuberculosisMdrXdrTuberculosis(Boolean tuberculosisMdrXdrTuberculosis) {
+		this.tuberculosisMdrXdrTuberculosis = tuberculosisMdrXdrTuberculosis;
+	}
+
+	public Boolean getTuberculosisBeijingLineage() {
+		return tuberculosisBeijingLineage;
+	}
+
+	public void setTuberculosisBeijingLineage(Boolean tuberculosisBeijingLineage) {
+		this.tuberculosisBeijingLineage = tuberculosisBeijingLineage;
 	}
 }

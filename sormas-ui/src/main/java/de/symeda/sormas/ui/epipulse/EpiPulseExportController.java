@@ -50,7 +50,7 @@ public class EpiPulseExportController {
 
 	public void create(Runnable callback) {
 
-		boolean configured = FacadeProvider.getEpipulseExportFacade().configured();
+		boolean configured = FacadeProvider.getEpipulseExportFacade().isConfigured();
 		if (configured) {
 			EpipulseEditForm createForm = new EpipulseEditForm(true);
 			createForm.setValue(EpipulseExportDto.build(UserProvider.getCurrent().getUserReference()));

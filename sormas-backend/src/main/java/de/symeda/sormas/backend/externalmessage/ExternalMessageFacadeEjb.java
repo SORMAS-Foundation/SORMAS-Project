@@ -249,6 +249,9 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setTuberculosisInfectionYear(source.getTuberculosisInfectionYear());
 		target.setPreviousTuberculosisTreatment(source.getPreviousTuberculosisTreatment());
 		target.setComplianceWithTreatment(source.getComplianceWithTreatment());
+		target.setTuberculosisDirectlyObservedTreatment(source.getTuberculosisDirectlyObservedTreatment());
+		target.setTuberculosisMdrXdrTuberculosis(source.getTuberculosisMdrXdrTuberculosis());
+		target.setTuberculosisBeijingLineage(source.getTuberculosisBeijingLineage());
 
 		return target;
 	}
@@ -465,6 +468,9 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setTuberculosisInfectionYear(source.getTuberculosisInfectionYear());
 		target.setPreviousTuberculosisTreatment(source.getPreviousTuberculosisTreatment());
 		target.setComplianceWithTreatment(source.getComplianceWithTreatment());
+		target.setTuberculosisDirectlyObservedTreatment(source.getTuberculosisDirectlyObservedTreatment());
+		target.setTuberculosisMdrXdrTuberculosis(source.getTuberculosisMdrXdrTuberculosis());
+		target.setTuberculosisBeijingLineage(source.getTuberculosisBeijingLineage());
 		return target;
 	}
 

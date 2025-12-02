@@ -14903,4 +14903,19 @@ UPDATE person_history SET birthWeight = COALESCE(birthWeight, birthWeightValue) 
 ALTER TABLE person DROP COLUMN birthWeightValue;
 ALTER TABLE person_history DROP COLUMN birthWeightValue;
 INSERT INTO schema_version (version_number, comment) VALUES (599, 'Deleted the duplicate column #13674');
+
+
+-- external message tuberculosis additional fields
+
+ALTER TABLE externalmessage ADD COLUMN tuberculosisdirectlyobservedtreatment boolean;
+ALTER TABLE externalmessage ADD COLUMN tuberculosismdrxdrtuberculosis boolean;
+ALTER TABLE externalmessage ADD COLUMN tuberculosisbeijinglineage boolean;
+
+ALTER TABLE externalmessage_history ADD COLUMN tuberculosisdirectlyobservedtreatment boolean;
+ALTER TABLE externalmessage_history ADD COLUMN tuberculosismdrxdrtuberculosis boolean;
+ALTER TABLE externalmessage_history ADD COLUMN tuberculosisbeijinglineage boolean;
+
+INSERT INTO schema_version (version_number, comment) VALUES (600, 'External message tuberculosis additional fields #13727');
+
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

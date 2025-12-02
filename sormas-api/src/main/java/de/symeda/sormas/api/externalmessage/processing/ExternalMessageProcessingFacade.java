@@ -153,6 +153,10 @@ public abstract class ExternalMessageProcessingFacade extends AbstractProcessing
 		return facilityFacade.getReferenceByUuid(uuid);
 	}
 
+	public List<SampleDto> getSamplesByCaseUuids(List<String> caseUuids) {
+		return sampleFacade.getByCaseUuids(caseUuids);
+	}
+
 	public List<SampleDto> getSamplesByCriteria(SampleCriteria sampleCriteria) {
 		return sampleFacade.getSamplesByCriteria(sampleCriteria);
 	}
