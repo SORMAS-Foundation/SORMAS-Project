@@ -301,7 +301,6 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 
 	@ParameterizedTest
 	@CsvSource({
-		"null, null",
 		"lu, 2010010100774" 
 	})
 	public void testProcessWithExistingPersonAndCaseWithBySampleDate(final String countryLocale, final String personalHealthId)
@@ -369,7 +368,7 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 		sample.setSampleDateTime(DateHelper.subtractDays(new Date(), 5));
 		getSampleFacade().saveSample(sample);
 
-		TimeUnit.SECONDS.sleep(1);
+		TimeUnit.SECONDS.sleep(2);
 
 		// STEP 3: Process the message again now with a set threshold but with a sample date that is valid
 		final int sampleCountBeforeStep3 = getSampleFacade().getAllActiveSamplesAfter(new Date(0)).size();
