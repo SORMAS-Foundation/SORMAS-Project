@@ -428,7 +428,7 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractMessagePr
 	}
 
 	/**
-	 * Checks if the test reports contain only IGRA negative tests.
+	 * Checks if the test reports contain only IGRA positive tests.
 	 * 
 	 * @param testReports
 	 * @return true if there is any IGRA positive test, false otherwise
