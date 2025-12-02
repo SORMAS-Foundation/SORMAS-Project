@@ -15,20 +15,27 @@
 
 package de.symeda.sormas.api.externalmessage.processing.labmessage;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletionStage;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.CountryHelper;
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
+import de.symeda.sormas.api.contact.SimilarContactDto;
+import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
@@ -38,9 +45,11 @@ import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResult;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResultStatus;
@@ -175,31 +184,273 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractMessagePr
 	 */
 	@Override
 	protected void postBuildCase(CaseDataDto caseDto, ExternalMessageDto externalMessageDto) {
-
 		if (getExternalMessageProcessingFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+			postBuildCaseLuxembourg(caseDto, externalMessageDto);
+		}
+	}
 
+	protected void postBuildCaseLuxembourg(CaseDataDto caseDto, ExternalMessageDto externalMessageDto) {
+
+		CaseClassification caseClassification = caseDto.getCaseClassification();
+
+		switch (externalMessageDto.getDisease()) {
+		case TUBERCULOSIS:
+			if (isLatentTuberculosisMessage(externalMessageDto)) {
+				caseDto.setDisease(Disease.LATENT_TUBERCULOSIS); // we also set the disease here because it is not set in the external message pre-processing
+
+				// we only do latent tuberculosis case classification here because it depends on IGRA tests which is not handled in external message pre-processing
+				// Special case for Latent Tuberculosis - if the case classification is not CONFIRMED and there is at least one positive IGRA test, set the case classification to CONFIRMED
+				if (caseClassification != CaseClassification.CONFIRMED
+					&& samplesContainPositiveTest(externalMessageDto.getSampleReports(), PathogenTestType.IGRA)) {
+					caseClassification = CaseClassification.CONFIRMED;
+				}
+
+				if (caseClassification != CaseClassification.NO_CASE && samplesContainOnlyNegativeTests(externalMessageDto.getSampleReports(), PathogenTestType.IGRA)) {
+					caseClassification = CaseClassification.NO_CASE;
+
+				}
+			}
+			// For tuberculosis we need special handling for therapy
+			TherapyDto therapyDto = caseDto.getTherapy();
+			therapyDto.setBeijingLineage(Boolean.TRUE.equals(externalMessageDto.getTuberculosisBeijingLineage()));
+
+			// for regular tuberculosis the case classification should be handled in the external message pre-processing
+			break;
+		case CORONAVIRUS:
+			// case classification is handled in the external message pre-processing
+			break;
+		// other special diseases
+		default:
+			// for other diseases we keep the legacy implementation:
 			// if any of the positive test reports from any sample is a CULTURE or PCR_RT_PCR test, set the case classification to CONFIRMED
-			if (externalMessageDto.getSampleReports() != null && !externalMessageDto.getSampleReports().isEmpty()) {
-				externalMessageDto.getSampleReports()
-					.stream()
-					.filter(Objects::nonNull)
-					.map(SampleReportDto::getTestReports)
-					.flatMap(List::stream)
-					.filter(testReport -> testReport != null && PathogenTestResultType.POSITIVE.equals(testReport.getTestResult()))
-					.map(TestReportDto::getTestType)
-					.filter(testType -> PathogenTestType.CULTURE.equals(testType) || PathogenTestType.PCR_RT_PCR.equals(testType))
-					.findAny()
-					.ifPresent(testType -> caseDto.setCaseClassification(CaseClassification.CONFIRMED));
+			if (caseClassification != CaseClassification.CONFIRMED
+				&& samplesContainPositiveTest(externalMessageDto.getSampleReports(), PathogenTestType.CULTURE)) {
+				caseClassification = CaseClassification.CONFIRMED;
 			}
 
-			caseDto.setInvestigationStatus(InvestigationStatus.PENDING);
-			caseDto.setOutcome(CaseOutcome.NO_OUTCOME);
+			if (caseClassification != CaseClassification.CONFIRMED
+				&& samplesContainPositiveTest(externalMessageDto.getSampleReports(), PathogenTestType.PCR_RT_PCR)) {
+				caseClassification = CaseClassification.CONFIRMED;
+			}
+			break;
 		}
+
+		caseDto.setCaseClassification(caseClassification);
+		caseDto.setInvestigationStatus(InvestigationStatus.PENDING);
+		caseDto.setOutcome(CaseOutcome.NO_OUTCOME);
 	}
 
 	@Override
 	protected void postBuildPerson(PersonDto personDto, ExternalMessageDto externalMessageDto) {
 		// No specific post-processing for person data in this flow
+	}
+
+	@Override
+	protected List<CaseSelectionDto> getSimilarCases(PersonReferenceDto selectedPerson, ExternalMessageDto externalMessage) {
+		if (isLatentTuberculosisMessage(externalMessage)) {
+			List<CaseSelectionDto> similarCases = super.getSimilarCases(selectedPerson, Disease.LATENT_TUBERCULOSIS);
+			similarCases.addAll(super.getSimilarCases(selectedPerson, Disease.TUBERCULOSIS));
+			return similarCases;
+		}
+
+		return super.getSimilarCases(selectedPerson, externalMessage);
+	}
+
+	@Override
+	protected List<SimilarContactDto> getSimilarContacts(PersonReferenceDto selectedPerson, ExternalMessageDto externalMessage) {
+		if (isLatentTuberculosisMessage(externalMessage)) {
+			return super.getSimilarContacts(selectedPerson, Disease.LATENT_TUBERCULOSIS);
+		}
+
+		return super.getSimilarContacts(selectedPerson, externalMessage);
+	}
+
+	@Override
+	protected List<SimilarEventParticipantDto> getSimilarEventParticipants(PersonReferenceDto selectedPerson, ExternalMessageDto externalMessage) {
+		if (isLatentTuberculosisMessage(externalMessage)) {
+			return super.getSimilarEventParticipants(selectedPerson, Disease.LATENT_TUBERCULOSIS);
+		}
+
+		return super.getSimilarEventParticipants(selectedPerson, externalMessage);
+	}
+
+	protected boolean isLatentTuberculosisMessage(ExternalMessageDto externalMessageDto) {
+		if (externalMessageDto == null) {
+			return false;
+		}
+
+		// Latent Tubeculosis is comming as a Tuberculosis message
+		final Disease disease = externalMessageDto.getDisease();
+		if (disease != Disease.TUBERCULOSIS) {
+			return false;
+		}
+
+		// Latent Tubeculosis message should contain only IGRA tests othewise it is Tuberculosis
+		final List<TestReportDto> testReports = externalMessageDto.getSampleReports()
+			.stream()
+			.filter(Objects::nonNull)
+			.flatMap(s -> s.getTestReports() != null ? s.getTestReports().stream() : Stream.empty())
+			.filter(Objects::nonNull)
+			.collect(Collectors.toList());
+
+		if (testReports.isEmpty()) {
+			return false;
+		}
+
+		final long igraTestCount = testReports.stream().filter(t -> t.getTestType() == PathogenTestType.IGRA).count();
+
+		// if we have no IGRA tests then it is not a Latent Tuberculosis message
+		if (igraTestCount == 0) {
+			return false;
+		}
+
+		// if we have other types of tests then it is not a Latent Tuberculosis message
+		if (testReports.size() > igraTestCount) {
+			return false;
+		}
+
+		// we only have IGRA tests so it is a Latent Tuberculosis message
+		return true;
+	}
+
+	protected boolean samplesContainOnlyNegativeTests(Collection<SampleReportDto> sampleReports, PathogenTestType testType) {
+		if (sampleReports == null) {
+			return false;
+		}
+		if (sampleReports.isEmpty()) {
+			return false;
+		}
+
+		final List<TestReportDto> testReports = sampleReports.stream()
+			.filter(Objects::nonNull)
+			.flatMap(s -> s.getTestReports() != null ? s.getTestReports().stream() : Stream.empty())
+			.filter(Objects::nonNull)
+			.filter(t -> t.getTestType() == testType)
+			.collect(Collectors.toList());
+
+		return containsOnlyNegativeTests(testReports);
+	}
+
+	protected boolean samplesContainPositiveTest(Collection<SampleReportDto> sampleReports, PathogenTestType testType) {
+		if (sampleReports == null) {
+			return false;
+		}
+		if (sampleReports.isEmpty()) {
+			return false;
+		}
+
+		final List<TestReportDto> testReports = sampleReports.stream()
+			.filter(Objects::nonNull)
+			.flatMap(s -> s.getTestReports() != null ? s.getTestReports().stream() : Stream.empty())
+			.filter(Objects::nonNull)
+			.filter(t -> t.getTestType() == testType)
+			.collect(Collectors.toList());
+
+		return containsPositiveTest(testReports);
+	}
+
+	protected boolean containsPositiveTest(Collection<TestReportDto> testReports) {
+		if (testReports == null) {
+			return false;
+		}
+		if (testReports.isEmpty()) {
+			return false;
+		}
+
+		return testReports.stream()
+			.filter(Objects::nonNull)
+			.anyMatch(t -> t.getTestResult() == PathogenTestResultType.POSITIVE);
+	}
+
+	protected boolean containsOnlyNegativeTests(Collection<TestReportDto> testReports) {
+		if (testReports == null) {
+			return false;
+		}
+		if (testReports.isEmpty()) {
+			return false;
+		}
+
+		return testReports.stream()
+			.filter(Objects::nonNull)
+			.anyMatch(t -> t.getTestResult() == PathogenTestResultType.NEGATIVE);
+	}
+
+	protected boolean containsPositiveTest(Collection<TestReportDto> testReports, PathogenTestType testType) {
+		if (testReports == null) {
+			return false;
+		}
+		if (testReports.isEmpty()) {
+			return false;
+		}
+
+		return testReports.stream()
+			.filter(Objects::nonNull)
+			.filter(t -> t.getTestType() == testType)
+			.anyMatch(t -> t.getTestResult() == PathogenTestResultType.POSITIVE);
+	}
+
+	protected boolean containsOnlyNegativeTests(Collection<TestReportDto> testReports, PathogenTestType testType) {
+		if (testReports == null) {
+			return false;
+		}
+		if (testReports.isEmpty()) {
+			return false;
+		}
+
+		return testReports.stream()
+			.filter(Objects::nonNull)
+			.filter(t -> t.getTestType() == testType)
+			.allMatch(t -> t.getTestResult() == PathogenTestResultType.NEGATIVE);
+	}
+
+	protected boolean samplesHaveIgraPositiveTest(Collection<SampleReportDto> sampleReports) {
+		if (sampleReports == null) {
+			return false;
+		}
+		if (sampleReports.isEmpty()) {
+			return false;
+		}
+
+		final List<TestReportDto> testReports = sampleReports.stream()
+			.filter(Objects::nonNull)
+			.flatMap(s -> s.getTestReports() != null ? s.getTestReports().stream() : Stream.empty())
+			.filter(Objects::nonNull)
+			.collect(Collectors.toList());
+
+		if (testReports.isEmpty()) {
+			return false;
+		}
+
+		return hasIgraPositiveTest(testReports);
+	}
+
+	/**
+	 * Checks if the test reports contain only IGRA negative tests.
+	 * 
+	 * @param testReports
+	 * @return true if there is any IGRA positive test, false otherwise
+	 */
+	protected boolean hasIgraPositiveTest(Collection<TestReportDto> testReports) {
+		return containsPositiveTest(testReports, PathogenTestType.IGRA);
+	}
+
+	/**
+	 * Checks if there are only IGRA negative tests in the test reports.
+	 * 
+	 * @param testReports
+	 * @return true if all the IGRA tests in the testReports are negative, false otherwise
+	 */
+	protected boolean hasOnlyIgraNegativeTest(List<TestReportDto> testReports) {
+		if (testReports == null) {
+			return false;
+		}
+		if (testReports.isEmpty()) {
+			return false;
+		}
+		return testReports.stream()
+			.filter(Objects::nonNull)
+			.filter(t -> t.getTestType() == PathogenTestType.IGRA)
+			.allMatch(t -> t.getTestResult() == PathogenTestResultType.NEGATIVE);
 	}
 
 }

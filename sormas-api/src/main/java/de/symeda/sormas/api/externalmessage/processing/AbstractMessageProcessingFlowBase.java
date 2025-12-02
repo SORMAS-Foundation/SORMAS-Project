@@ -382,15 +382,62 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
     }
 
     /**
+     * Retrieves similar cases based on the selected person and lab message.
+     * This method will call getSimilarCases(PersonReferenceDto selectedPerson, Disease disease) with the disease of the external message by
+     * default.
+     * 
+     * @param selectedPerson
+     * @param externalMessage
+     * @return
+     */
+    protected List<CaseSelectionDto> getSimilarCases(PersonReferenceDto selectedPerson, ExternalMessageDto externalMessage) {
+        return getSimilarCases(selectedPerson, externalMessage.getDisease());
+    }
+
+    protected List<CaseSelectionDto> getSimilarCases(PersonReferenceDto selectedPerson, Disease disease) {
+        return getExternalMessageProcessingFacade().getSimilarCases(selectedPerson, disease);
+    }
+
+    /**
+     * Retrieves similar contacts based on the selected person and lab message.
+     * This method will call getSimilarContacts(PersonReferenceDto selectedPerson, Disease disease) with the disease of the external message
+     * by default.
+     * 
+     * @param selectedPerson
+     * @param externalMessage
+     * @return
+     */
+    protected List<SimilarContactDto> getSimilarContacts(PersonReferenceDto selectedPerson, ExternalMessageDto externalMessage) {
+        return getSimilarContacts(selectedPerson, externalMessage.getDisease());
+    }
+
+    protected List<SimilarContactDto> getSimilarContacts(PersonReferenceDto selectedPerson, Disease disease) {
+        return getExternalMessageProcessingFacade().getSimilarContacts(selectedPerson, disease);
+    }
+
+    /**
+     * Retrieves similar event participants based on the selected person and lab message.
+     * This method will call getSimilarEventParticipants(PersonReferenceDto selectedPerson, Disease disease) with the disease of the
+     * external message by default.
+     * 
+     * @param selectedPerson
+     * @param externalMessage
+     * @return
+     */
+    protected List<SimilarEventParticipantDto> getSimilarEventParticipants(PersonReferenceDto selectedPerson, ExternalMessageDto externalMessage) {
+        return getSimilarEventParticipants(selectedPerson, externalMessage.getDisease());
+    }
+
+    /**
      * Retrieves similar event participants based on the selected person and lab message.
      *
      * @param selectedPerson
      *            The selected person reference.
-     * @param labMessage
+     * @param externalMessage
      *            The external lab message.
      * @return A list of similar event participants.
      */
-    protected List<SimilarEventParticipantDto> getSimilarEventParticipants(PersonReferenceDto selectedPerson, ExternalMessageDto labMessage) {
+    protected List<SimilarEventParticipantDto> getSimilarEventParticipants(PersonReferenceDto selectedPerson, Disease disease) {
 
         if (getExternalMessageProcessingFacade().isFeatureDisabled(FeatureType.EVENT_SURVEILLANCE)
             || !getExternalMessageProcessingFacade().hasAllUserRights(UserRight.EVENTPARTICIPANT_CREATE, UserRight.EVENTPARTICIPANT_EDIT)) {
@@ -399,7 +446,7 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
 
         EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
         eventParticipantCriteria.setPerson(selectedPerson);
-        eventParticipantCriteria.setDisease(labMessage.getDisease());
+        eventParticipantCriteria.setDisease(disease);
 
         return getExternalMessageProcessingFacade().getMatchingEventParticipants(eventParticipantCriteria);
     }
@@ -436,8 +483,9 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
         ExternalMessageDto externalMessage) {
 
         PersonReferenceDto personRef = previousResult.getPerson().toReference();
-        List<CaseSelectionDto> similarCases = getExternalMessageProcessingFacade().getSimilarCases(personRef, externalMessage.getDisease());
-        List<SimilarContactDto> similarContacts = getExternalMessageProcessingFacade().getSimilarContacts(personRef, externalMessage.getDisease());
+
+        List<CaseSelectionDto> similarCases = getSimilarCases(personRef, externalMessage);
+        List<SimilarContactDto> similarContacts = getSimilarContacts(personRef, externalMessage);
         List<SimilarEventParticipantDto> similarEventParticipants = getSimilarEventParticipants(personRef, externalMessage);
 
         HandlerCallback<PickOrCreateEntryResult> callback = new HandlerCallback<>();
@@ -982,42 +1030,41 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
         ProcessingResult<ExternalMessageProcessingResult> result,
         SurveillanceReportDto surveillanceReport);
 
-
     protected void doPersonUpdates(EntitySelection<PersonDto> personSelection) {
         // requested for #13589
         // TODO: we need to find a better way to handle this
 
-        if(personSelection.isNew()) {
+        if (personSelection.isNew()) {
             // no updates for new persons
             return;
         }
 
         final PersonDto person = personSelection.getEntity();
-        if(person == null) {
+        if (person == null) {
             return;
         }
 
         final LocationDto personAddress = person.getAddress();
 
-        if(personAddress != null) {
+        if (personAddress != null) {
             final String houseNumber = getExternalMessage().getPersonHouseNumber();
-            if(houseNumber != null ) {
+            if (houseNumber != null) {
                 personAddress.setHouseNumber(houseNumber);
             }
             final String street = getExternalMessage().getPersonStreet();
-            if(street != null) {
+            if (street != null) {
                 personAddress.setStreet(street);
             }
             final String city = getExternalMessage().getPersonCity();
-            if(city != null) {
+            if (city != null) {
                 personAddress.setCity(city);
             }
             final String postalCode = getExternalMessage().getPersonPostalCode();
-            if(postalCode != null) {
+            if (postalCode != null) {
                 personAddress.setPostalCode(postalCode);
             }
             final CountryReferenceDto country = getExternalMessage().getPersonCountry();
-            if(country != null) {
+            if (country != null) {
                 personAddress.setCountry(country);
             }
 
