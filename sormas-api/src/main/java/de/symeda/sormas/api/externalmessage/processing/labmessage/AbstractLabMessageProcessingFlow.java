@@ -205,7 +205,9 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractMessagePr
 					caseClassification = CaseClassification.CONFIRMED;
 				}
 
-				if (caseClassification != CaseClassification.NO_CASE && samplesContainOnlyNegativeTests(externalMessageDto.getSampleReports(), PathogenTestType.IGRA)) {
+				// latent tuberculosis will contain only IGRA tests so check if all are negative which would indicate a NO_CASE
+				if (caseClassification != CaseClassification.NO_CASE
+					&& samplesContainOnlyNegativeTests(externalMessageDto.getSampleReports(), PathogenTestType.IGRA)) {
 					caseClassification = CaseClassification.NO_CASE;
 
 				}
@@ -285,6 +287,11 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractMessagePr
 			return false;
 		}
 
+		final Collection<SampleReportDto> sampleReports = externalMessageDto.getSampleReports();
+		if (sampleReports == null || sampleReports.isEmpty()) {
+			return false;
+		}
+
 		// Latent Tubeculosis message should contain only IGRA tests othewise it is Tuberculosis
 		final List<TestReportDto> testReports = externalMessageDto.getSampleReports()
 			.stream()
@@ -357,9 +364,7 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractMessagePr
 			return false;
 		}
 
-		return testReports.stream()
-			.filter(Objects::nonNull)
-			.anyMatch(t -> t.getTestResult() == PathogenTestResultType.POSITIVE);
+		return testReports.stream().filter(Objects::nonNull).anyMatch(t -> t.getTestResult() == PathogenTestResultType.POSITIVE);
 	}
 
 	protected boolean containsOnlyNegativeTests(Collection<TestReportDto> testReports) {
@@ -370,9 +375,7 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractMessagePr
 			return false;
 		}
 
-		return testReports.stream()
-			.filter(Objects::nonNull)
-			.anyMatch(t -> t.getTestResult() == PathogenTestResultType.NEGATIVE);
+		return testReports.stream().filter(Objects::nonNull).allMatch(t -> t.getTestResult() == PathogenTestResultType.NEGATIVE);
 	}
 
 	protected boolean containsPositiveTest(Collection<TestReportDto> testReports, PathogenTestType testType) {
@@ -432,25 +435,6 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractMessagePr
 	 */
 	protected boolean hasIgraPositiveTest(Collection<TestReportDto> testReports) {
 		return containsPositiveTest(testReports, PathogenTestType.IGRA);
-	}
-
-	/**
-	 * Checks if there are only IGRA negative tests in the test reports.
-	 * 
-	 * @param testReports
-	 * @return true if all the IGRA tests in the testReports are negative, false otherwise
-	 */
-	protected boolean hasOnlyIgraNegativeTest(List<TestReportDto> testReports) {
-		if (testReports == null) {
-			return false;
-		}
-		if (testReports.isEmpty()) {
-			return false;
-		}
-		return testReports.stream()
-			.filter(Objects::nonNull)
-			.filter(t -> t.getTestType() == PathogenTestType.IGRA)
-			.allMatch(t -> t.getTestResult() == PathogenTestResultType.NEGATIVE);
 	}
 
 }
