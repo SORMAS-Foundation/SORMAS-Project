@@ -314,20 +314,44 @@ public class AutomaticLabMessageProcessor {
 					automaticAssignmentSampleDate,
 					automaticSampleAssignmentThreshold);
 
-
 				CaseSelectionDto caseToAssignTo = null;
 
-				// special case for LATENT_TUBERCULOSIS: if there are more caseUuids and we have tuberculosis cases we need to give priority to the tuberculosis cases
-				if (disease == Disease.LATENT_TUBERCULOSIS && autoAssignCaseUuids.size() > 1) {
-					// sort the cases by disease giving priority to tuberculosis cases and take the first one (the one with the highest priority and most recent report date)
-					caseToAssignTo = similarCases.stream()
-						.filter(c -> autoAssignCaseUuids.contains(c.getUuid()))
-						.sorted(Comparator.comparing((CaseSelectionDto c) -> c.getDisease() == Disease.TUBERCULOSIS ? 0 : 1)
-							.thenComparing((CaseSelectionDto c) -> c.getReportDate(), Comparator.reverseOrder()))
-						.findFirst()
-						.orElse(null);
-				} else {
-					caseToAssignTo = similarCases.stream().filter(c -> autoAssignCaseUuids.contains(c.getUuid())).findFirst().orElse(null);
+				if (!autoAssignCaseUuids.isEmpty()) {
+					// special case for LATENT_TUBERCULOSIS: if there are more caseUuids and we have tuberculosis cases we need to give priority to the tuberculosis cases
+					if (disease == Disease.LATENT_TUBERCULOSIS && autoAssignCaseUuids.size() > 1) {
+						// sort the cases by disease giving priority to tuberculosis cases and take the first one (the one with the highest priority and most recent report date)
+						// we can't use the autoAssignCaseUuids order because it may have at position 0 a case with LATENT_TUBERCULOSIS and we need to prioritize TUBERCULOSIS cases
+						caseToAssignTo = similarCases.stream()
+							.filter(c -> autoAssignCaseUuids.contains(c.getUuid()))
+							.sorted(
+								Comparator.comparing((CaseSelectionDto c) -> c.getDisease() == Disease.TUBERCULOSIS ? 0 : 1)
+									.thenComparing((CaseSelectionDto c) -> c.getReportDate(), Comparator.reverseOrder()))
+							.findFirst()
+							.orElse(null);
+					} else {
+						// autoAssignCaseUuids contains at least one element (checked above)
+						// autoAssignCaseUuids is ordered by date descending, so the first element is the most recent case
+						final String autoAssignMostRecentCaseUuid = autoAssignCaseUuids.get(0);
+						caseToAssignTo = similarCases.stream().filter(c -> autoAssignMostRecentCaseUuid.equals(c.getUuid())).findFirst().orElse(null);
+					}
+
+					if (logger.isDebugEnabled()) {
+						logger.debug(
+							"Similar cases : {}",
+							similarCases.stream()
+								.map(c -> String.format("%s(%s,%s)", c.getUuid(), c.getDisease().getName(), c.getReportDate()))
+								.collect(Collectors.joining(";")));
+						logger.debug("Similar case uuids: {}", similarCaseUuids);
+						logger.debug(
+							"Selected case: {}",
+							caseToAssignTo == null
+								? "null"
+								: String.format(
+									"%s(%s,%s)",
+									caseToAssignTo.getUuid(),
+									caseToAssignTo.getDisease().getName(),
+									caseToAssignTo.getReportDate()));
+					}
 				}
 
 				if (caseToAssignTo == null) {
