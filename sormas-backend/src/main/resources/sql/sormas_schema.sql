@@ -14917,5 +14917,141 @@ ALTER TABLE externalmessage_history ADD COLUMN tuberculosisbeijinglineage boolea
 
 INSERT INTO schema_version (version_number, comment) VALUES (600, 'External message tuberculosis additional fields #13727');
 
+-- rename aefi investigation vaccinations to a shorter name to align with history tables test
+alter table adverseeventsfollowingimmunizationinvestigation_vaccinations rename to aefiinvestigation_vaccinations;
+
+-- re-create versioning triggers to support delete for epipulse_export, aefi adverseeventsfollowingimmunization_vaccinations and aefiinvestigation_vaccinations
+DROP TRIGGER IF EXISTS versioning_trigger ON epipulse_export;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE OR DELETE ON epipulse_export
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'epipulse_export_history', true);
+
+DROP TRIGGER IF EXISTS versioning_trigger ON adverseeventsfollowingimmunization_vaccinations;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE OR DELETE ON adverseeventsfollowingimmunization_vaccinations
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'adverseeventsfollowingimmunization_vaccinations_history', true);
+
+DROP TRIGGER IF EXISTS versioning_trigger ON aefiinvestigation_vaccinations;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE OR DELETE ON aefiinvestigation_vaccinations
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'aefiinvestigation_vaccinations_history', true);
+
+-- epipulse_subjectcode_configuration
+create table epipulse_subjectcode_configuration
+(
+    id                  bigint       not null,
+    uuid                varchar(36)  not null,
+    creationdate        timestamp(3) not null,
+    changedate          timestamp(3) not null,
+    subjectcode         varchar(255) not null,
+    name                varchar(255) not null,
+    disease             varchar(255),
+    diseasename         varchar(255),
+    healthtopic         varchar(255),
+    healthtopicname     varchar(255),
+    aggregatedreporting boolean      not null,
+    validfrom           date,
+    validto             date,
+    sys_period          tstzrange    not null,
+    change_user_id      bigint
+);
+
+alter table epipulse_subjectcode_configuration owner to sormas_user;
+alter table epipulse_subjectcode_configuration add primary key (id);
+alter table epipulse_subjectcode_configuration add unique (uuid);
+alter table epipulse_subjectcode_configuration add unique (subjectcode);
+alter table epipulse_subjectcode_configuration add unique (name);
+alter table epipulse_subjectcode_configuration add constraint epipulse_subjectcode_configuration_change_user_fk foreign key (change_user_id) references users;
+
+-- epipulse subjectcode configuration history
+CREATE TABLE epipulse_subjectcode_configuration_history (LIKE epipulse_subjectcode_configuration);
+DROP TRIGGER IF EXISTS versioning_trigger ON epipulse_subjectcode_configuration;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE OR DELETE ON epipulse_subjectcode_configuration
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'epipulse_subjectcode_configuration_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON epipulse_subjectcode_configuration;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON epipulse_subjectcode_configuration
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('epipulse_subjectcode_configuration_history', 'id');
+ALTER TABLE epipulse_subjectcode_configuration_history OWNER TO sormas_user;
+
+-- epipulse_datasource_configuration
+create table epipulse_datasource_configuration
+(
+    id                    bigint       not null,
+    uuid                  varchar(36)  not null,
+    creationdate          timestamp(3) not null,
+    changedate            timestamp(3) not null,
+    country_iso2_code     varchar(2)   not null,
+    datasource            varchar(255) not null,
+    name                  varchar(255) not null,
+    description           varchar(255) not null,
+    subjectcode           varchar(255) not null,
+    geographicalcoverage  integer,
+    outermostregions      varchar(255),
+    surveillancestartdate date,
+    surveillanceenddate   date,
+    validfrom             date,
+    validto               date,
+    sys_period            tstzrange    not null,
+    change_user_id        bigint
+);
+
+alter table epipulse_datasource_configuration owner to sormas_user;
+alter table epipulse_datasource_configuration add primary key (id);
+alter table epipulse_datasource_configuration add unique (uuid);
+alter table epipulse_datasource_configuration add constraint epipulse_datasource_configuration_change_user_fk foreign key (change_user_id) references users;
+
+-- epipulse datasource config history
+CREATE TABLE epipulse_datasource_configuration_history (LIKE epipulse_datasource_configuration);
+DROP TRIGGER IF EXISTS versioning_trigger ON epipulse_datasource_configuration;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE OR DELETE ON epipulse_datasource_configuration
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'epipulse_datasource_configuration_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON epipulse_datasource_configuration;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON epipulse_datasource_configuration
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('epipulse_datasource_configuration_history', 'id');
+ALTER TABLE epipulse_datasource_configuration_history OWNER TO sormas_user;
+
+-- epipulse_location_configuration
+create table epipulse_location_configuration
+(
+    id                    bigint       not null,
+    uuid                  varchar(36)  not null,
+    creationdate          timestamp(3) not null,
+    changedate            timestamp(3) not null,
+    type                  varchar(255) not null,
+    code                  varchar(255) not null,
+    name                  varchar(255) not null,
+    eu_shortname          varchar(255),
+    eu_fullname           varchar(255),
+    administrative_centre varchar(255),
+    country_iso2_code     varchar(2)   not null,
+    country_iso3_code     varchar(3),
+    validfrom             date,
+    validto               date,
+    sys_period            tstzrange    not null,
+    change_user_id        bigint
+);
+
+alter table epipulse_location_configuration owner to sormas_user;
+alter table epipulse_location_configuration add primary key (id);
+alter table epipulse_location_configuration add unique (uuid);
+alter table epipulse_location_configuration add constraint epipulse_location_configuration_change_user_fk foreign key (change_user_id) references users;
+
+-- epipulse location config history
+CREATE TABLE epipulse_location_configuration_history (LIKE epipulse_location_configuration);
+DROP TRIGGER IF EXISTS versioning_trigger ON epipulse_location_configuration;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE OR DELETE ON epipulse_location_configuration
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'epipulse_location_configuration_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON epipulse_location_configuration;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON epipulse_location_configuration
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('epipulse_location_configuration_history', 'id');
+ALTER TABLE epipulse_location_configuration_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (601, 'Epipulse reference tables history');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
