@@ -31,7 +31,9 @@ import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -297,6 +299,12 @@ public class DrugSusceptibilityForm extends AbstractEditForm<DrugSusceptibilityD
 
 	public void updateFieldsVisibility(Disease disease, PathogenTestType pathogenTestType) {
 		FieldHelper.hideFieldsNotInList(getFieldGroup(), List.of(), true);
+		formHeadingLabel.setVisible(false);
+
+		// Drug susceptibility fields are hidden for other countries than Luxembourg
+		if(!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+			return;
+		}
 
 		if (disease != null && pathogenTestType != null) {
 			List<String> applicableFieldIds =

@@ -1175,11 +1175,14 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 			if (RESULT_FIELD_DECISION_MAP.containsKey(disease) && RESULT_FIELD_DECISION_MAP.get(disease).contains(testType)) {
 				testResultField.setValue(PathogenTestResultType.POSITIVE);
-				testResultField.setReadOnly(testResultFieldReadOnly);
+				testResultField.setEnabled(false);
 			} else {
 				testResultField.clear();
 				testResultField.setEnabled(true);
 			}
+
+			testResultField.setReadOnly(testResultFieldReadOnly);
+			updateDrugSusceptibilityFieldSpecifications(testType, (Disease) diseaseField.getValue());
 		};
 
 		testTypeField.addValueChangeListener(e -> {
@@ -1192,8 +1195,6 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 					fourFoldIncrease.setVisible(false);
 					fourFoldIncrease.setEnabled(false);
 				}
-
-				updateDrugSusceptibilityFieldSpecifications(testType, (Disease) diseaseField.getValue());
 
 				if (diseaseField.getValue() == null || !List.of(Disease.TUBERCULOSIS).contains((Disease) diseaseField.getValue())) {
 					setVisibleClear(
