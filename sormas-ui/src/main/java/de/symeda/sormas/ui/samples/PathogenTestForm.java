@@ -25,8 +25,10 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -38,8 +40,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
@@ -140,33 +140,35 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 	//@formatter:on
 
 	// map to decide the result type field value and enable/disable state
-	public static final ImmutableMap<Disease, ImmutableList<PathogenTestType>> RESULT_FIELD_DECISION_MAP =
-		ImmutableMap.<Disease, ImmutableList<PathogenTestType>> builder()
-			.put(
+	public static final Map<Disease, ArrayList<PathogenTestType>> RESULT_FIELD_DECISION_MAP = Collections.unmodifiableMap(new HashMap<>() {
+
+		{
+			put(
 				Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-				ImmutableList.of(
-					PathogenTestType.SEROGROUPING,
-					PathogenTestType.MULTILOCUS_SEQUENCE_TYPING,
-					PathogenTestType.SLIDE_AGGLUTINATION,
-					PathogenTestType.WHOLE_GENOME_SEQUENCING,
-					PathogenTestType.SEQUENCING,
-					PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY))
-			.put(
+				new ArrayList<>(
+					List.of(
+						PathogenTestType.SEROGROUPING,
+						PathogenTestType.MULTILOCUS_SEQUENCE_TYPING,
+						PathogenTestType.SLIDE_AGGLUTINATION,
+						PathogenTestType.WHOLE_GENOME_SEQUENCING,
+						PathogenTestType.SEQUENCING,
+						PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)));
+			put(
 				Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-				ImmutableList.of(
-					PathogenTestType.SEROGROUPING,
-					PathogenTestType.MULTILOCUS_SEQUENCE_TYPING,
-					PathogenTestType.SLIDE_AGGLUTINATION,
-					PathogenTestType.WHOLE_GENOME_SEQUENCING,
-					PathogenTestType.SEQUENCING,
-					PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY))
-			.put(Disease.MEASLES, ImmutableList.of(PathogenTestType.GENOTYPING))
-			.put(
-				Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
-				ImmutableList.of(PathogenTestType.SEQUENCING, PathogenTestType.WHOLE_GENOME_SEQUENCING, PathogenTestType.PCR_RT_PCR))
-			.put(Disease.INFLUENZA, ImmutableList.of(PathogenTestType.ISOLATION, PathogenTestType.PCR_RT_PCR))
-			.put(Disease.CRYPTOSPORIDIOSIS, ImmutableList.of(PathogenTestType.GENOTYPING))
-			.build();
+				new ArrayList<>(
+					List.of(
+						PathogenTestType.SEROGROUPING,
+						PathogenTestType.MULTILOCUS_SEQUENCE_TYPING,
+						PathogenTestType.SLIDE_AGGLUTINATION,
+						PathogenTestType.WHOLE_GENOME_SEQUENCING,
+						PathogenTestType.SEQUENCING,
+						PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)));
+			put(Disease.MEASLES, new ArrayList<>(List.of(PathogenTestType.GENOTYPING)));
+			put(Disease.RESPIRATORY_SYNCYTIAL_VIRUS, new ArrayList<>(List.of(PathogenTestType.SEQUENCING, PathogenTestType.WHOLE_GENOME_SEQUENCING)));
+			put(Disease.INFLUENZA, new ArrayList<>(List.of(PathogenTestType.ISOLATION)));
+			put(Disease.CRYPTOSPORIDIOSIS, new ArrayList<>(List.of(PathogenTestType.GENOTYPING)));
+		}
+	});
 
 	private SampleDto sample;
 	private EnvironmentSampleDto environmentSample;
@@ -1159,6 +1161,11 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		});
 		diseaseVariantField.addValueChangeListener(e -> {
 			DiseaseVariant diseaseVariant = (DiseaseVariant) e.getProperty().getValue();
+			if (diseaseVariant != null) {
+				testResultField.setValue(PathogenTestResultType.POSITIVE);
+			} else {
+				testResultField.clear();
+			}
 			diseaseVariantDetailsField.setVisible(diseaseVariant != null && diseaseVariant.matchPropertyValue(DiseaseVariant.HAS_DETAILS, true));
 		});
 
@@ -1168,7 +1175,6 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 			if (RESULT_FIELD_DECISION_MAP.containsKey(disease) && RESULT_FIELD_DECISION_MAP.get(disease).contains(testType)) {
 				testResultField.setValue(PathogenTestResultType.POSITIVE);
-				testResultField.setEnabled(false);
 				testResultField.setReadOnly(testResultFieldReadOnly);
 			} else {
 				testResultField.clear();

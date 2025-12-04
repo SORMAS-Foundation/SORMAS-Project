@@ -28,9 +28,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.DiseaseHelper;
-import de.symeda.sormas.api.event.EventReferenceDto;
-import de.symeda.sormas.api.sample.PathogenTestType;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.vaadin.ui.Label;
@@ -40,6 +37,7 @@ import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -54,6 +52,7 @@ import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleRefer
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -61,6 +60,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -127,7 +127,8 @@ public class PathogenTestController {
 			associatedEventOrCaseOrContactDisease = caseDataDto.getDisease();
 		}
 		if (associatedEventOrCaseOrContactDisease == null && sampleDto.getAssociatedEventParticipant() != null) {
-			EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(sampleDto.getAssociatedEventParticipant().getUuid());
+			EventParticipantDto eventParticipant =
+				FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(sampleDto.getAssociatedEventParticipant().getUuid());
 			EventReferenceDto eventDto = eventParticipant.getEvent();
 			EventDto participantEvent = FacadeProvider.getEventFacade().getEventByUuid(eventDto.getUuid(), false);
 			associatedEventOrCaseOrContactDisease = participantEvent.getDisease();
@@ -211,11 +212,22 @@ public class PathogenTestController {
 		final PathogenTestForm form;
 		if (forHumanSample) {
 			SampleDto sample = FacadeProvider.getSampleFacade().getSampleByUuid(pathogenTest.getSample().getUuid());
-			form = new PathogenTestForm(sample, false, 0, pathogenTest.isPseudonymized(), pathogenTest.isInJurisdiction(), pathogenTest.getTestedDisease());
+			form = new PathogenTestForm(
+				sample,
+				false,
+				0,
+				pathogenTest.isPseudonymized(),
+				pathogenTest.isInJurisdiction(),
+				pathogenTest.getTestedDisease());
 		} else {
 			EnvironmentSampleDto environmentSample =
 				FacadeProvider.getEnvironmentSampleFacade().getByUuid(pathogenTest.getEnvironmentSample().getUuid());
-			form = new PathogenTestForm(environmentSample, false, pathogenTest.isPseudonymized(), pathogenTest.isInJurisdiction(), pathogenTest.getTestedDisease());
+			form = new PathogenTestForm(
+				environmentSample,
+				false,
+				pathogenTest.isPseudonymized(),
+				pathogenTest.isInJurisdiction(),
+				pathogenTest.getTestedDisease());
 		}
 
 		form.setValue(pathogenTest);
@@ -274,7 +286,7 @@ public class PathogenTestController {
 					existingCaseDto.getDiseaseVariant() == null
 						? "[" + I18nProperties.getCaption(Captions.caseNoDiseaseVariant) + "]"
 						: existingCaseDto.getDiseaseVariant().toString(),
-					diseaseVariant.toString())),
+					diseaseVariant != null ? diseaseVariant.toString() : "[" + I18nProperties.getCaption(Captions.caseNoDiseaseVariant) + "]")),
 			I18nProperties.getString(Strings.yes),
 			I18nProperties.getString(Strings.no),
 			800,
@@ -317,10 +329,11 @@ public class PathogenTestController {
 
 		pathogenTests.forEach(p -> {
 			p.setSample(sampleRef);
-			boolean luxTB = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && Disease.TUBERCULOSIS == p.getTestedDisease();
+			boolean luxTB = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+				&& Disease.TUBERCULOSIS == p.getTestedDisease();
 			boolean invasiveDisease = DiseaseHelper.checkDiseaseIsInvasiveBacterialDiseases(p.getTestedDisease());
 			//the susceptibility test is applicable only for LUX TB and all-countries invasive disease
-			if(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY  == p.getTestType() && !luxTB && !invasiveDisease) {
+			if (PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY == p.getTestType() && !luxTB && !invasiveDisease) {
 				p.setDrugSusceptibility(null);
 			}
 			facade.savePathogenTest(p);
@@ -367,14 +380,21 @@ public class PathogenTestController {
 			.filter(t -> t.getTestResult() == PathogenTestResultType.NEGATIVE && t.getTestResultVerified())
 			.findFirst();
 
+		PathogenTestDto resultedPathogenTest;
 		if (positiveWithSameDisease.isPresent()) {
-			showChangeAssociatedSampleResultDialog(positiveWithSameDisease.get(), (accepted) -> {
+			resultedPathogenTest = positiveWithSameDisease.get();
+		} else if (negativeWithSameDisease.isPresent()) {
+			resultedPathogenTest = negativeWithSameDisease.get();
+		} else {
+			resultedPathogenTest = null;
+		}
+
+		if (resultedPathogenTest != null) {
+			showChangeAssociatedSampleResultDialog(resultedPathogenTest, (accepted) -> {
 				if (accepted) {
-					checkForDiseaseVariantUpdate(positiveWithSameDisease.get(), caze, suppressNavigateToCase, this::showConfirmCaseDialog);
+					checkForDiseaseVariantUpdate(resultedPathogenTest, caze, suppressNavigateToCase, this::showConfirmCaseDialog);
 				}
 			});
-		} else if (negativeWithSameDisease.isPresent()) {
-			showChangeAssociatedSampleResultDialog(negativeWithSameDisease.get(), null);
 		}
 
 		testsByDisease.keySet().stream().filter(disease -> disease != caze.getDisease()).forEach((disease) -> {
@@ -532,9 +552,7 @@ public class PathogenTestController {
 		CaseDataDto caze,
 		boolean suppressNavigateToCase,
 		Consumer<CaseDataDto> callback) {
-		if (test.getTestedDiseaseVariant() != null
-			&& !DataHelper.equal(test.getTestedDiseaseVariant(), caze.getDiseaseVariant())
-			&& isNotYetRelatedDiseaseVariant(test)) {
+		if (!DataHelper.equal(test.getTestedDiseaseVariant(), caze.getDiseaseVariant()) && isNotYetRelatedDiseaseVariant(test)) {
 			showCaseUpdateWithNewDiseaseVariantDialog(caze, test.getTestedDiseaseVariant(), test.getTestedDiseaseVariantDetails(), yes -> {
 				if (yes && !suppressNavigateToCase) {
 					ControllerProvider.getCaseController().navigateToCase(caze.getUuid());

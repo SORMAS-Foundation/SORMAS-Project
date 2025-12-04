@@ -2524,8 +2524,6 @@ public class SymptomsDto extends PseudonymizableDto {
 		CRYPTOSPORIDIOSIS,
 		UNDEFINED,
 		OTHER })
-	@HideForCountriesExcept(countries = {
-		CountryHelper.COUNTRY_CODE_SWITZERLAND })
 	@SymptomGrouping(SymptomGroup.GENERAL)
 	private SymptomState fatigue;
 	@Diseases({
