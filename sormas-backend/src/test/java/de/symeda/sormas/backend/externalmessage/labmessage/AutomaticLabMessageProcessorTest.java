@@ -27,7 +27,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -301,8 +300,8 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 
 	@ParameterizedTest
 	@CsvSource({
-		"lu, 2010010100774" 
-	})
+		"null, null",
+		"lu, 2010010100774" })
 	public void testProcessWithExistingPersonAndCaseWithBySampleDate(final String countryLocale, final String personalHealthId)
 		throws ExecutionException, InterruptedException {
 
@@ -345,15 +344,13 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 		sample.setSampleDateTime(DateHelper.subtractDays(new Date(), 11));
 		getSampleFacade().saveSample(sample);
 
-		TimeUnit.SECONDS.sleep(1);
-
 		// STEP 2: Process the message again now with a set threshold but with a sample date that is too old
 		final int sampleCountBeforeStep2 = getSampleFacade().getAllActiveSamplesAfter(new Date(0)).size();
 		result = runFlow(externalMessage);
 		assertThat(result.getStatus(), is(DONE));
 		assertThat(externalMessage.getStatus(), is(ExternalMessageStatus.PROCESSED));
 		final int sampleCountAfterStep2 = getSampleFacade().getAllActiveSamplesAfter(new Date(0)).size();
-		
+
 		final String step2ResultCaseUuid = result.getData().getCase().getUuid();
 
 		assertThat("Sample count should have incresed, new sample for new case.", sampleCountAfterStep2, is(greaterThan(sampleCountBeforeStep2)));
@@ -368,8 +365,6 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 		sample.setSampleDateTime(DateHelper.subtractDays(new Date(), 5));
 		getSampleFacade().saveSample(sample);
 
-		TimeUnit.SECONDS.sleep(2);
-
 		// STEP 3: Process the message again now with a set threshold but with a sample date that is valid
 		final int sampleCountBeforeStep3 = getSampleFacade().getAllActiveSamplesAfter(new Date(0)).size();
 		result = runFlow(externalMessage);
@@ -380,8 +375,14 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 
 		cases = getCaseFacade().getAllAfter(new Date(0));
 		assertThat("Case count should not have increased, sample date theshold was set in valid range", cases, hasSize(2));
-		assertThat("Sample count should have incresed, new sample for existing case.", sampleCountAfterStep3, is(greaterThan(sampleCountBeforeStep3)));
-		assertThat("Case UUID should be the same as the result of the previous step (result should be added to existing case).", step3ResultCaseUuid, is(step2ResultCaseUuid));
+		assertThat(
+			"Sample count should have incresed, new sample for existing case.",
+			sampleCountAfterStep3,
+			is(greaterThan(sampleCountBeforeStep3)));
+		assertThat(
+			"Case UUID should be the same as the result of the previous step (result should be added to existing case).",
+			step3ResultCaseUuid,
+			is(step2ResultCaseUuid));
 
 		persons = getPersonFacade().getAllAfter(new Date(0));
 		assertThat(persons, hasSize(1));
