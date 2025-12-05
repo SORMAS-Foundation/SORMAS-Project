@@ -343,6 +343,16 @@ public final class ExternalMessageMapper {
 							sourceTestReport.getGenoTypeResult(),
 							PathogenTestDto.GENOTYPE_RESULT),
 						Mapping.of(
+							pathogenTest::setSeroGroupSpecification,
+							pathogenTest.getSeroGroupSpecification(),
+							sourceTestReport.getSeroGroupSpecification(),
+							PathogenTestDto.SERO_GROUP_SPECIFICATION),
+						Mapping.of(
+							pathogenTest::setSeroGroupSpecificationText,
+							pathogenTest.getSeroGroupSpecificationText(),
+							sourceTestReport.getSeroGroupSpecificationText(),
+							PathogenTestDto.SERO_GROUP_SPECIFICATION),
+						Mapping.of(
 							pathogenTest::setRsvSubtype,
 							pathogenTest.getRsvSubtype(),
 							sourceTestReport.getRsvSubtype(),

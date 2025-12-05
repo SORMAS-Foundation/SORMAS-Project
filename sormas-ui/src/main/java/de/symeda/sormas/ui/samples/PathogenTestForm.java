@@ -238,7 +238,10 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 	private ComboBox specieField;
 	private ComboBox genoTypingCB;
 	private TextField genoTypingResultTextTF;
-	// List of tests that are used for serogrouping
+
+	private ComboBox seroGrpSepcCB;
+	private TextField seroGrpSpecTxt;
+
 
 	public PathogenTestForm(
 		AbstractSampleForm sampleForm,
@@ -399,11 +402,21 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		specieField.setValue(newFieldValue.getSpecie());
 		if (!genoTypingCB.isReadOnly()) {
 			genoTypingCB.setValue(newFieldValue.getGenoTypeResult());
-			// We only set the genotyping result text if the genotyping result is not read only
-			if (!genoTypingResultTextTF.isReadOnly()) {
-				genoTypingResultTextTF.setValue(newFieldValue.getGenoTypeResultText());
-			}
+
 		}
+
+		if (!genoTypingResultTextTF.isReadOnly()) {
+			genoTypingResultTextTF.setValue(newFieldValue.getGenoTypeResultText());
+		}
+
+		if (!seroGrpSepcCB.isReadOnly()) {
+			seroGrpSepcCB.setValue(newFieldValue.getSeroGroupSpecification());
+		}
+
+		if (!seroGrpSpecTxt.isReadOnly()) {
+			seroGrpSpecTxt.setValue(newFieldValue.getSeroGroupSpecificationText());
+		}
+
 		drugSusceptibilityField.forceUpdateDrugSusceptibilityFields();
 		markAsDirty();
 	}
@@ -582,9 +595,10 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 		ComboBox seroTypeMetCB = addField(PathogenTestDto.SEROTYPING_METHOD, ComboBox.class);
 		seroTypeMetCB.setVisible(false);
-		ComboBox seroGrpSepcCB = addField(PathogenTestDto.SERO_GROUP_SPECIFICATION, ComboBox.class);
+		seroGrpSepcCB = addField(PathogenTestDto.SERO_GROUP_SPECIFICATION, ComboBox.class);
 		seroGrpSepcCB.setVisible(false);
-		TextField seroGrpSpecTxt = addField(PathogenTestDto.SERO_GROUP_SPECIFICATION_TEXT, TextField.class);
+		seroGrpSpecTxt = addField(PathogenTestDto.SERO_GROUP_SPECIFICATION_TEXT, TextField.class);
+		
 		TextField cqValueField = addField(FieldConfiguration.withConversionError(PathogenTestDto.CQ_VALUE, Validations.onlyNumbersAllowed));
 		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 			cqValueField.setVisible(false);
