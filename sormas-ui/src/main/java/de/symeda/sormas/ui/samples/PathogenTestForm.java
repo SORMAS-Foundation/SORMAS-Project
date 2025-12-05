@@ -25,21 +25,20 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
@@ -140,33 +139,85 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 	//@formatter:on
 
 	// map to decide the result type field value and enable/disable state
-	public static final ImmutableMap<Disease, ImmutableList<PathogenTestType>> RESULT_FIELD_DECISION_MAP =
-		ImmutableMap.<Disease, ImmutableList<PathogenTestType>> builder()
-			.put(
+	public static final Map<Disease, ArrayList<PathogenTestType>> RESULT_FIELD_DECISION_MAP = Collections.unmodifiableMap(new HashMap<>() {
+
+		{
+			put(
 				Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-				ImmutableList.of(
-					PathogenTestType.SEROGROUPING,
-					PathogenTestType.MULTILOCUS_SEQUENCE_TYPING,
-					PathogenTestType.SLIDE_AGGLUTINATION,
-					PathogenTestType.WHOLE_GENOME_SEQUENCING,
-					PathogenTestType.SEQUENCING,
-					PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY))
-			.put(
+				new ArrayList<>(
+					List.of(
+						PathogenTestType.SEROGROUPING,
+						PathogenTestType.MULTILOCUS_SEQUENCE_TYPING,
+						PathogenTestType.SLIDE_AGGLUTINATION,
+						PathogenTestType.WHOLE_GENOME_SEQUENCING,
+						PathogenTestType.SEQUENCING,
+						PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)));
+			put(
 				Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-				ImmutableList.of(
-					PathogenTestType.SEROGROUPING,
-					PathogenTestType.MULTILOCUS_SEQUENCE_TYPING,
-					PathogenTestType.SLIDE_AGGLUTINATION,
-					PathogenTestType.WHOLE_GENOME_SEQUENCING,
-					PathogenTestType.SEQUENCING,
-					PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY))
-			.put(Disease.MEASLES, ImmutableList.of(PathogenTestType.GENOTYPING))
-			.put(
-				Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
-				ImmutableList.of(PathogenTestType.SEQUENCING, PathogenTestType.WHOLE_GENOME_SEQUENCING, PathogenTestType.PCR_RT_PCR))
-			.put(Disease.INFLUENZA, ImmutableList.of(PathogenTestType.ISOLATION, PathogenTestType.PCR_RT_PCR))
-			.put(Disease.CRYPTOSPORIDIOSIS, ImmutableList.of(PathogenTestType.GENOTYPING))
-			.build();
+				new ArrayList<>(
+					List.of(
+						PathogenTestType.SEROGROUPING,
+						PathogenTestType.MULTILOCUS_SEQUENCE_TYPING,
+						PathogenTestType.SLIDE_AGGLUTINATION,
+						PathogenTestType.WHOLE_GENOME_SEQUENCING,
+						PathogenTestType.SEQUENCING,
+						PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)));
+			put(Disease.MEASLES, new ArrayList<>(List.of(PathogenTestType.GENOTYPING)));
+			put(Disease.RESPIRATORY_SYNCYTIAL_VIRUS, new ArrayList<>(List.of(PathogenTestType.SEQUENCING, PathogenTestType.WHOLE_GENOME_SEQUENCING)));
+			put(Disease.INFLUENZA, new ArrayList<>(List.of(PathogenTestType.ISOLATION)));
+			put(Disease.CRYPTOSPORIDIOSIS, new ArrayList<>(List.of(PathogenTestType.GENOTYPING)));
+		}
+	});
+
+	public static final Map<Object, List<Object>> RIFAMPICIN_RESISTANT_VISIBILITY_CONDITIONS = Collections.unmodifiableMap(new HashMap<>() {
+
+		{
+			put(PathogenTestDto.TESTED_DISEASE, Collections.unmodifiableList(Arrays.asList(Disease.LATENT_TUBERCULOSIS, Disease.TUBERCULOSIS)));
+			put(PathogenTestDto.TEST_TYPE, Collections.unmodifiableList(Arrays.asList(PathogenTestType.PCR_RT_PCR)));
+			put(PathogenTestDto.TEST_RESULT, Collections.unmodifiableList(Arrays.asList(PathogenTestResultType.POSITIVE)));
+		}
+	});
+
+	public static final Map<Object, List<Object>> TEST_SCALE_VISIBILITY_CONDITIONS = Collections.unmodifiableMap(new HashMap<>() {
+
+		{
+			put(PathogenTestDto.TESTED_DISEASE, Collections.unmodifiableList(Arrays.asList(Disease.LATENT_TUBERCULOSIS, Disease.TUBERCULOSIS)));
+			put(PathogenTestDto.TEST_TYPE, Collections.unmodifiableList(Arrays.asList(PathogenTestType.MICROSCOPY)));
+		}
+	});
+
+	public static final Map<Object, List<Object>> STRAIN_CALL_STATUS_VISIBILITY_CONDITIONS = Collections.unmodifiableMap(new HashMap<>() {
+
+		{
+			put(PathogenTestDto.TESTED_DISEASE, Collections.unmodifiableList(Arrays.asList(Disease.LATENT_TUBERCULOSIS, Disease.TUBERCULOSIS)));
+			put(PathogenTestDto.TEST_TYPE, Collections.unmodifiableList(Arrays.asList(PathogenTestType.BEIJINGGENOTYPING)));
+		}
+	});
+
+	public static final Map<Object, List<Object>> SPECIE_VISIBILITY_CONDITIONS = Collections.unmodifiableMap(new HashMap<>() {
+
+		{
+			put(PathogenTestDto.TESTED_DISEASE, Collections.unmodifiableList(Arrays.asList(Disease.LATENT_TUBERCULOSIS, Disease.TUBERCULOSIS)));
+			put(PathogenTestDto.TEST_TYPE, Collections.unmodifiableList(Arrays.asList(PathogenTestType.SPOLIGOTYPING)));
+			put(PathogenTestDto.TEST_RESULT, Collections.unmodifiableList(Arrays.asList(PathogenTestResultType.POSITIVE)));
+		}
+	});
+
+	public static final Map<Object, List<Object>> PATTERN_PROFILE_VISIBILITY_CONDITIONS = Collections.unmodifiableMap(new HashMap<>() {
+
+		{
+			put(PathogenTestDto.TESTED_DISEASE, Collections.unmodifiableList(Arrays.asList(Disease.LATENT_TUBERCULOSIS, Disease.TUBERCULOSIS)));
+			put(PathogenTestDto.TEST_TYPE, Collections.unmodifiableList(Arrays.asList(PathogenTestType.MIRU_PATTERN_CODE)));
+		}
+	});
+
+	public static final Map<Object, List<Object>> PCR_TEST_SPECIFICATION_VISIBILITY_CONDITIONS = Collections.unmodifiableMap(new HashMap<>() {
+
+		{
+			put(PathogenTestDto.TESTED_DISEASE, Collections.unmodifiableList(Arrays.asList(Disease.CORONAVIRUS)));
+			put(PathogenTestDto.TEST_TYPE, Collections.unmodifiableList(Arrays.asList(PathogenTestType.PCR_RT_PCR)));
+		}
+	});
 
 	private SampleDto sample;
 	private EnvironmentSampleDto environmentSample;
@@ -187,7 +238,10 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 	private ComboBox specieField;
 	private ComboBox genoTypingCB;
 	private TextField genoTypingResultTextTF;
-	// List of tests that are used for serogrouping
+
+	private ComboBox seroGrpSepcCB;
+	private TextField seroGrpSpecTxt;
+
 
 	public PathogenTestForm(
 		AbstractSampleForm sampleForm,
@@ -263,63 +317,43 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			drugSusceptibilityField.updateFieldsVisibility(disease, testType);
 		}
 
-		if (disease != null) {
-			if ((FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG))) {
-				boolean wasReadOnly = testResultField.isReadOnly();
+		// if the disease is null, means that we are dealing with a environment sample
+		// and we don't need to update the result field
+		if (disease == null) {
+			return;
+		}
 
-				if (List
-					.of(
-						Disease.TUBERCULOSIS,
-						Disease.LATENT_TUBERCULOSIS,
-						Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-						Disease.INVASIVE_PNEUMOCOCCAL_INFECTION)
-					.contains(disease)
-					&& testType != null) {
-					if (List.of(Disease.TUBERCULOSIS, Disease.LATENT_TUBERCULOSIS).contains(disease)) {
-						if (Arrays
-							.asList(
-								PathogenTestType.BEIJINGGENOTYPING,
-								PathogenTestType.MIRU_PATTERN_CODE,
-								PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)
-							.contains(testType)) {
-							if (wasReadOnly) {
-								testResultField.setReadOnly(false);
-							}
-							testResultField.setValue(PathogenTestResultType.NOT_APPLICABLE);
-							if (wasReadOnly) {
-								testResultField.setReadOnly(true);
-							}
-						} else if (testType == PathogenTestType.SPOLIGOTYPING) {
-							if (wasReadOnly) {
-								testResultField.setReadOnly(false);
-							}
-							testResultField.setValue(PathogenTestResultType.POSITIVE);
-							if (wasReadOnly) {
-								testResultField.setReadOnly(true);
-							}
-						} else if (wasReadOnly) {
-							// Field was read-only but no longer meets conditions for auto-set values
-							testResultField.setReadOnly(false);
-							testResultField.setValue(null);
-						}
-					} else if (List.of(Disease.INVASIVE_MENINGOCOCCAL_INFECTION).contains(disease)) {
-						if (Arrays.asList(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY).contains(testType)) {
-							if (wasReadOnly) {
-								testResultField.setReadOnly(false);
-							}
-							testResultField.setValue(PathogenTestResultType.NOT_APPLICABLE);
-							if (wasReadOnly) {
-								testResultField.setReadOnly(true);
-							}
-						}
-					}
-				} else if (wasReadOnly) {
-					// Disease is not TB or testType is null, but field was read-only
-					testResultField.setReadOnly(false);
-					testResultField.setValue(null);
-				}
+		// if the test type is null we just clear the result field
+		if (testType == null) {
+			testResultField.setValue(null);
+			return;
+		}
+
+		// FIXME: why was this here originally?
+		// TODO: move this to another place, should be in listeners for disease/testType.
+
+		if ((FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG))) {
+
+			// testResult=NOT_APPLICABLE for Tuberculosis diseases, test types BEIJINGGENOTYPING,MIRU_PATTERN_CODE,ANTIBIOTIC_SUSCEPTIBILITY
+			if ((disease == Disease.LATENT_TUBERCULOSIS || disease == Disease.TUBERCULOSIS)
+				&& (testType == PathogenTestType.BEIJINGGENOTYPING
+					|| testType == PathogenTestType.MIRU_PATTERN_CODE
+					|| testType == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)) {
+				testResultField.setValue(PathogenTestResultType.NOT_APPLICABLE);
+			}
+
+			// testResult=POSITIVE for Tuberculosis diseases, test type SPOLIGOTYPING
+			if ((disease == Disease.LATENT_TUBERCULOSIS || disease == Disease.TUBERCULOSIS) && (testType == PathogenTestType.SPOLIGOTYPING)) {
+				testResultField.setValue(PathogenTestResultType.POSITIVE);
+			}
+
+			// testResult=POSITIVE for IMI and IPI, test type ANTIBIOTIC_SUSCEPTIBILITY
+			if ((disease == Disease.INVASIVE_MENINGOCOCCAL_INFECTION || disease == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION)
+				&& testType == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY) {
+				testResultField.setValue(PathogenTestResultType.POSITIVE);
 			}
 		}
+
 	}
 
 	private Date getSampleDate() {
@@ -368,11 +402,21 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		specieField.setValue(newFieldValue.getSpecie());
 		if (!genoTypingCB.isReadOnly()) {
 			genoTypingCB.setValue(newFieldValue.getGenoTypeResult());
-			// We only set the genotyping result text if the genotyping result is not read only
-			if (!genoTypingResultTextTF.isReadOnly()) {
-				genoTypingResultTextTF.setValue(newFieldValue.getGenoTypeResultText());
-			}
+
 		}
+
+		if (!genoTypingResultTextTF.isReadOnly()) {
+			genoTypingResultTextTF.setValue(newFieldValue.getGenoTypeResultText());
+		}
+
+		if (!seroGrpSepcCB.isReadOnly()) {
+			seroGrpSepcCB.setValue(newFieldValue.getSeroGroupSpecification());
+		}
+
+		if (!seroGrpSpecTxt.isReadOnly()) {
+			seroGrpSpecTxt.setValue(newFieldValue.getSeroGroupSpecificationText());
+		}
+
 		drugSusceptibilityField.forceUpdateDrugSusceptibilityFields();
 		markAsDirty();
 	}
@@ -524,49 +568,16 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 			//tuberculosis-pcr test specification
-			Map<Object, List<Object>> tuberculosisPcrDependencies = new HashMap<>() {
-
-				{
-					put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.TUBERCULOSIS, Disease.LATENT_TUBERCULOSIS));
-					put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.PCR_RT_PCR));
-					put(PathogenTestDto.TEST_RESULT, Arrays.asList(PathogenTestResultType.POSITIVE));
-				}
-			};
-			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.RIFAMPICIN_RESISTANT, tuberculosisPcrDependencies, true);
+			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.RIFAMPICIN_RESISTANT, RIFAMPICIN_RESISTANT_VISIBILITY_CONDITIONS, true);
 
 			//tuberculosis-microscopy test specification
-			Map<Object, List<Object>> tuberculosisMicroscopyDependencies = new HashMap<>() {
-
-				{
-					put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.TUBERCULOSIS, Disease.LATENT_TUBERCULOSIS));
-					put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.MICROSCOPY));
-				}
-			};
-			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.TEST_SCALE, tuberculosisMicroscopyDependencies, true);
-			//FieldHelper.setRequiredWhen(getFieldGroup(), PathogenTestDto.TEST_SCALE, tuberculosisMicroscopyDependencies);
+			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.TEST_SCALE, TEST_SCALE_VISIBILITY_CONDITIONS, true);
 
 			//tuberculosis-beijinggenotyping test specification
-			Map<Object, List<Object>> tuberculosisBeijingDependencies = new HashMap<>() {
-
-				{
-					put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.TUBERCULOSIS, Disease.LATENT_TUBERCULOSIS));
-					put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.BEIJINGGENOTYPING));
-				}
-			};
-			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.STRAIN_CALL_STATUS, tuberculosisBeijingDependencies, true);
-			//FieldHelper.setRequiredWhen(getFieldGroup(), PathogenTestDto.STRAIN_CALL_STATUS, tuberculosisBeijingDependencies);
+			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.STRAIN_CALL_STATUS, STRAIN_CALL_STATUS_VISIBILITY_CONDITIONS, true);
 
 			//tuberculosis-spoligotyping test specification
-			Map<Object, List<Object>> tuberculosisSpoligotypingDependencies = new HashMap<>() {
-
-				{
-					put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.TUBERCULOSIS, Disease.LATENT_TUBERCULOSIS));
-					put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.SPOLIGOTYPING));
-					put(PathogenTestDto.TEST_RESULT, Arrays.asList(PathogenTestResultType.POSITIVE));
-				}
-			};
-			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.SPECIE, tuberculosisSpoligotypingDependencies, true);
-			//FieldHelper.setRequiredWhen(getFieldGroup(), PathogenTestDto.SPECIE, tuberculosisSpoligotypingDependencies);
+			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.SPECIE, SPECIE_VISIBILITY_CONDITIONS, true);
 
 			//tuberculosis-miru-code test specification
 			Map<Object, List<Object>> tuberculosisMiruCodeDependencies = new HashMap<>() {
@@ -578,37 +589,16 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			};
 			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.PATTERN_PROFILE, tuberculosisMiruCodeDependencies, true);
 			//FieldHelper.setRequiredWhen(getFieldGroup(), PathogenTestDto.PATTERN_PROFILE, tuberculosisMiruCodeDependencies);
-
-			//test result - read only
-			Map<Object, List<Object>> tuberculosisTestResultReadOnlyDependencies = new HashMap<>() {
-
-				{
-					put(
-						PathogenTestDto.TESTED_DISEASE,
-						Arrays.asList(
-							Disease.TUBERCULOSIS,
-							Disease.LATENT_TUBERCULOSIS,
-							Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-							Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
-					put(
-						PathogenTestDto.TEST_TYPE,
-						Arrays.asList(
-							PathogenTestType.BEIJINGGENOTYPING,
-							PathogenTestType.SPOLIGOTYPING,
-							PathogenTestType.MIRU_PATTERN_CODE,
-							PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY));
-				}
-			};
-			FieldHelper.setReadOnlyWhen(getFieldGroup(), PathogenTestDto.TEST_RESULT, tuberculosisTestResultReadOnlyDependencies, true, false);
 		}
 
 		seroTypeTF.setVisible(false);
 
 		ComboBox seroTypeMetCB = addField(PathogenTestDto.SEROTYPING_METHOD, ComboBox.class);
 		seroTypeMetCB.setVisible(false);
-		ComboBox seroGrpSepcCB = addField(PathogenTestDto.SERO_GROUP_SPECIFICATION, ComboBox.class);
+		seroGrpSepcCB = addField(PathogenTestDto.SERO_GROUP_SPECIFICATION, ComboBox.class);
 		seroGrpSepcCB.setVisible(false);
-		TextField seroGrpSpecTxt = addField(PathogenTestDto.SERO_GROUP_SPECIFICATION_TEXT, TextField.class);
+		seroGrpSpecTxt = addField(PathogenTestDto.SERO_GROUP_SPECIFICATION_TEXT, TextField.class);
+		
 		TextField cqValueField = addField(FieldConfiguration.withConversionError(PathogenTestDto.CQ_VALUE, Validations.onlyNumbersAllowed));
 		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 			cqValueField.setVisible(false);
@@ -963,6 +953,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		NullableOptionGroup testResultVerifiedField = addField(PathogenTestDto.TEST_RESULT_VERIFIED, NullableOptionGroup.class);
 		testResultVerifiedField.setRequired(true);
 		addField(PathogenTestDto.PRELIMINARY).addStyleName(CssStyles.VSPACE_4);
+
 		CheckBox fourFoldIncrease = addField(PathogenTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, CheckBox.class);
 		CssStyles.style(fourFoldIncrease, VSPACE_3, VSPACE_TOP_4);
 		fourFoldIncrease.setVisible(false);
@@ -988,14 +979,8 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		Label prescriberHeadingLabel = new Label(I18nProperties.getCaption(Captions.PathogenTest_prescriber));
 		prescriberHeadingLabel.addStyleName(H3);
 		getContent().addComponent(prescriberHeadingLabel, PRESCRIBER_HEADING_LOC);
-		Map<Object, List<Object>> pcrTestSpecificationVisibilityDependencies = new HashMap<>() {
 
-			{
-				put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.CORONAVIRUS));
-				put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.PCR_RT_PCR));
-			}
-		};
-		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.PCR_TEST_SPECIFICATION, pcrTestSpecificationVisibilityDependencies, true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.PCR_TEST_SPECIFICATION, PCR_TEST_SPECIFICATION_VISIBILITY_CONDITIONS, true);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
 			PathogenTestDto.TEST_TYPE_TEXT,
@@ -1159,22 +1144,13 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		});
 		diseaseVariantField.addValueChangeListener(e -> {
 			DiseaseVariant diseaseVariant = (DiseaseVariant) e.getProperty().getValue();
-			diseaseVariantDetailsField.setVisible(diseaseVariant != null && diseaseVariant.matchPropertyValue(DiseaseVariant.HAS_DETAILS, true));
-		});
-
-		BiConsumer<Disease, PathogenTestType> resultField = (disease, testType) -> {
-			final boolean testResultFieldReadOnly = testResultField.isReadOnly();
-			testResultField.setReadOnly(false);
-
-			if (RESULT_FIELD_DECISION_MAP.containsKey(disease) && RESULT_FIELD_DECISION_MAP.get(disease).contains(testType)) {
+			if (diseaseVariant != null) {
 				testResultField.setValue(PathogenTestResultType.POSITIVE);
-				testResultField.setEnabled(false);
-				testResultField.setReadOnly(testResultFieldReadOnly);
 			} else {
 				testResultField.clear();
-				testResultField.setEnabled(true);
 			}
-		};
+			diseaseVariantDetailsField.setVisible(diseaseVariant != null && diseaseVariant.matchPropertyValue(DiseaseVariant.HAS_DETAILS, true));
+		});
 
 		testTypeField.addValueChangeListener(e -> {
 			PathogenTestType testType = (PathogenTestType) e.getProperty().getValue();
@@ -1186,8 +1162,6 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 					fourFoldIncrease.setVisible(false);
 					fourFoldIncrease.setEnabled(false);
 				}
-
-				updateDrugSusceptibilityFieldSpecifications(testType, (Disease) diseaseField.getValue());
 
 				if (diseaseField.getValue() == null || !List.of(Disease.TUBERCULOSIS).contains((Disease) diseaseField.getValue())) {
 					setVisibleClear(
@@ -1242,9 +1216,19 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				testResultField.clear();
 				testResultField.setEnabled(true);
 			}
-			resultField.accept((Disease) diseaseField.getValue(), testType);
+
+			if (RESULT_FIELD_DECISION_MAP.containsKey(disease) && RESULT_FIELD_DECISION_MAP.get(disease).contains(testType)) {
+				testResultField.setValue(PathogenTestResultType.POSITIVE);
+			} else {
+				testResultField.clear();
+			}
+
+			updateDrugSusceptibilityFieldSpecifications(testType, (Disease) diseaseField.getValue());
 		});
-		lab.addValueChangeListener(event -> {
+
+		lab.addValueChangeListener(event ->
+
+		{
 			if (event.getProperty().getValue() != null
 				&& ((FacilityReferenceDto) event.getProperty().getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
 				labDetails.setVisible(true);
@@ -1284,5 +1268,14 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				|| isVisibleAllowed(PathogenTestDto.PRESCRIBER_POSTAL_CODE)
 				|| isVisibleAllowed(PathogenTestDto.PRESCRIBER_CITY)
 				|| isVisibleAllowed(PathogenTestDto.PRESCRIBER_COUNTRY));
+	}
+
+	static class TestTypeValueChangeListener implements ValueChangeListener {
+
+		@Override
+		public void valueChange(com.vaadin.v7.data.Property.ValueChangeEvent event) {
+			// TODO Auto-generated method stub
+
+		}
 	}
 }

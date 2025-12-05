@@ -31,7 +31,9 @@ import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -297,16 +299,36 @@ public class DrugSusceptibilityForm extends AbstractEditForm<DrugSusceptibilityD
 
 	public void updateFieldsVisibility(Disease disease, PathogenTestType pathogenTestType) {
 		FieldHelper.hideFieldsNotInList(getFieldGroup(), List.of(), true);
+		formHeadingLabel.setVisible(false);
 
-		if (disease != null && pathogenTestType != null) {
-			List<String> applicableFieldIds =
-				AnnotationFieldHelper.getFieldNamesWithMatchingDiseaseAndTestAnnotations(DrugSusceptibilityDto.class, disease, pathogenTestType);
+		// we hide if we don't have a disease
+		if (disease == null) {
+			return;
+		}
 
-			formHeadingLabel.setVisible(!applicableFieldIds.isEmpty());
+		// we hide if we have another test type than antibiotic susceptibility
+		if (pathogenTestType != PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY) {
+			return;
+		}
 
-			if (!applicableFieldIds.isEmpty()) {
-				FieldHelper.showOnlyFields(getFieldGroup(), applicableFieldIds, true);
-			}
+		// we have a disease and a ANTIBIOTIC_SUSCEPTIBILITY test type, so we can proceed
+
+		// TODO: this is kind of temporary as it should be consolidated with the logic in the PathogenTestForm
+		// For other countries if the disease is Tuberculosis/Latent Tuberculosis, drug susceptibility fields should remain hidden
+		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+			&& (disease == Disease.TUBERCULOSIS || disease == Disease.LATENT_TUBERCULOSIS)) {
+			//quit, we do not want to show the fields if TUBERCULOSIS/LATENT_TUBERCULOSIS and we are not in Luxembourg
+			return;
+		}
+
+		// if we passed the exclusions, we show or hide the fields based on annotations
+		List<String> applicableFieldIds =
+			AnnotationFieldHelper.getFieldNamesWithMatchingDiseaseAndTestAnnotations(DrugSusceptibilityDto.class, disease, pathogenTestType);
+
+		formHeadingLabel.setVisible(!applicableFieldIds.isEmpty());
+
+		if (!applicableFieldIds.isEmpty()) {
+			FieldHelper.showOnlyFields(getFieldGroup(), applicableFieldIds, true);
 		}
 	}
 }
