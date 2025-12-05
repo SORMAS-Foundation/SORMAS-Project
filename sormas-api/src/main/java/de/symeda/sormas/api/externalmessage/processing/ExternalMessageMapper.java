@@ -352,6 +352,17 @@ public final class ExternalMessageMapper {
 							pathogenTest.getSeroGroupSpecificationText(),
 							sourceTestReport.getSeroGroupSpecificationText(),
 							PathogenTestDto.SERO_GROUP_SPECIFICATION),
+						Mapping.of(pathogenTest::setSerotype, pathogenTest.getSerotype(), sourceTestReport.getSerotype(), PathogenTestDto.SEROTYPE),
+						Mapping.of(
+							pathogenTest::setSeroTypingMethod,
+							pathogenTest.getSeroTypingMethod(),
+							sourceTestReport.getSeroTypingMethod(),
+							PathogenTestDto.SEROTYPING_METHOD),
+						Mapping.of(
+							pathogenTest::setSeroTypingMethodText,
+							pathogenTest.getSeroTypingMethodText(),
+							sourceTestReport.getSeroTypingMethodText(),
+							PathogenTestDto.SERO_TYPING_METHOD_TEXT),
 						Mapping.of(
 							pathogenTest::setRsvSubtype,
 							pathogenTest.getRsvSubtype(),
@@ -397,6 +408,11 @@ public final class ExternalMessageMapper {
 							pathogenTest.getTubeMitogeneGT10(),
 							sourceTestReport.getTubeMitogeneGT10(),
 							PathogenTestDto.TUBE_MITOGENE_GT10),
+						Mapping.of(
+							pathogenTest::setStrainCallStatus,
+							pathogenTest.getStrainCallStatus(),
+							sourceTestReport.getStrainCallStatus(),
+							PathogenTestDto.STRAIN_CALL_STATUS),
 						Mapping.of(pathogenTest::setSpecie, pathogenTest.getSpecie(), sourceTestReport.getSpecie(), PathogenTestDto.SPECIE),
 						// Drug susceptibility mappings
 						Mapping.of(

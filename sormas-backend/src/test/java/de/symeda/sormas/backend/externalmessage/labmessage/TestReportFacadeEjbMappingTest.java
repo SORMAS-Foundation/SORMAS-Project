@@ -17,11 +17,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportReferenceDto;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
+import de.symeda.sormas.api.sample.PathogenSpecie;
+import de.symeda.sormas.api.sample.PathogenStrainCallStatus;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SeroGroupSpecification;
 import de.symeda.sormas.api.sample.SerotypingMethod;
-import de.symeda.sormas.api.sample.PathogenSpecie;
 import de.symeda.sormas.api.therapy.DrugSusceptibilityType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageService;
@@ -228,6 +229,7 @@ public class TestReportFacadeEjbMappingTest {
 		source.setTubeAgTb2GT10(true);
 		source.setTubeMitogene(4.56f);
 		source.setTubeMitogeneGT10(false);
+		source.setStrainCallStatus(PathogenStrainCallStatus.BEIJING);
 
 		// Drug susceptibility test data
 		source.setAmikacinMic(1.5f);
@@ -270,8 +272,9 @@ public class TestReportFacadeEjbMappingTest {
 		source.setSeroGroupSpecificationText("SeroGroup A");
 		source.setSeroTypingMethod(SerotypingMethod.MULTIPLEX_PCR);
 		source.setSeroTypingMethodText("Multiplex PCR Method");
+		source.setSerotype("Test serotype");
 
-	TestReportDto result = TestReportFacadeEjb.toDto(source);
+		TestReportDto result = TestReportFacadeEjb.toDto(source);
 
 		assertNotSame(source.getCreationDate().getTime(), result.getCreationDate().getTime());
 		assertEquals(source.getChangeDate(), result.getChangeDate());

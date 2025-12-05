@@ -14,6 +14,7 @@ import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.sample.GenoTypeResult;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenSpecie;
+import de.symeda.sormas.api.sample.PathogenStrainCallStatus;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.RsvSubtype;
@@ -59,6 +60,7 @@ public class TestReportDto extends EntityDto {
 	public static final String TUBE_AG_TB2_GT10 = "tubeAgTb2GT10";
 	public static final String TUBE_MITOGENE = "tubeMitogene";
 	public static final String TUBE_MITOGENE_GT10 = "tubeMitogeneGT10";
+	public static final String STRAIN_CALL_STATUS = "strainCallStatus";
 	public static final String PRESCRIBER_PHYSICIAN_CODE = "prescriberPhysicianCode";
 	public static final String PRESCRIBER_FIRST_NAME = "prescriberFirstName";
 	public static final String PRESCRIBER_LAST_NAME = "prescriberLastName";
@@ -132,6 +134,8 @@ public class TestReportDto extends EntityDto {
 	private Float tubeMitogene;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	private Boolean tubeMitogeneGT10;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	private PathogenStrainCallStatus strainCallStatus;
 
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	@SensitiveData
@@ -208,6 +212,7 @@ public class TestReportDto extends EntityDto {
 	private String seroGroupSpecificationText;
 	private SerotypingMethod seroTypingMethod;
 	private String seroTypingMethodText;
+	private String serotype;
 
 	public SampleReportReferenceDto getSampleReport() {
 		return sampleReport;
@@ -493,6 +498,14 @@ public class TestReportDto extends EntityDto {
 
 	public void setTubeMitogeneGT10(Boolean tubeMitogeneGT10) {
 		this.tubeMitogeneGT10 = tubeMitogeneGT10;
+	}
+
+	public PathogenStrainCallStatus getStrainCallStatus() {
+		return strainCallStatus;
+	}
+
+	public void setStrainCallStatus(PathogenStrainCallStatus strainCallStatus) {
+		this.strainCallStatus = strainCallStatus;
 	}
 
 	public String getPrescriberPhysicianCode() {
@@ -878,5 +891,13 @@ public class TestReportDto extends EntityDto {
 
 	public void setSeroTypingMethodText(String seroTypingMethodText) {
 		this.seroTypingMethodText = seroTypingMethodText;
+	}
+
+	public String getSerotype() {
+		return serotype;
+	}
+
+	public void setSerotype(String serotype) {
+		this.serotype = serotype;
 	}
 }
