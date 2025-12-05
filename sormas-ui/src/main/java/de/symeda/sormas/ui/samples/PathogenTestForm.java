@@ -344,9 +344,10 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				testResultField.setValue(PathogenTestResultType.POSITIVE);
 			}
 
-			// testResult=NOT_APPLICABLE for IMI, test type ANTIBIOTIC_SUSCEPTIBILITY
-			if (disease == Disease.INVASIVE_MENINGOCOCCAL_INFECTION && testType == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY) {
-				testResultField.setValue(PathogenTestResultType.NOT_APPLICABLE);
+			// testResult=POSITIVE for IMI and IPI, test type ANTIBIOTIC_SUSCEPTIBILITY
+			if ((disease == Disease.INVASIVE_MENINGOCOCCAL_INFECTION || disease == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION)
+				&& testType == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY) {
+				testResultField.setValue(PathogenTestResultType.POSITIVE);
 			}
 		}
 
