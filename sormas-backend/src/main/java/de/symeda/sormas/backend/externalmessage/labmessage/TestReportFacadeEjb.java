@@ -115,6 +115,7 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setTubeAgTb2GT10(source.getTubeAgTb2GT10());
 		target.setTubeMitogene(source.getTubeMitogene());
 		target.setTubeMitogeneGT10(source.getTubeMitogeneGT10());
+		target.setStrainCallStatus(source.getStrainCallStatus());
 
 		// Drug susceptibility mappings
 		target.setAmikacinMic(source.getAmikacinMic());
@@ -156,6 +157,7 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setSeroGroupSpecificationText(source.getSeroGroupSpecificationText());
 		target.setSeroTypingMethod(source.getSeroTypingMethod());
 		target.setSeroTypingMethodText(source.getSeroTypingMethodText());
+		target.setSerotype(source.getSerotype());
 
 		return target;
 	}
@@ -208,6 +210,7 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setTubeAgTb2GT10(source.getTubeAgTb2GT10());
 		target.setTubeMitogene(source.getTubeMitogene());
 		target.setTubeMitogeneGT10(source.getTubeMitogeneGT10());
+		target.setStrainCallStatus(source.getStrainCallStatus());
 
 		// Drug susceptibility mappings
 		target.setAmikacinMic(source.getAmikacinMic());
@@ -249,6 +252,7 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setSeroGroupSpecificationText(source.getSeroGroupSpecificationText());
 		target.setSeroTypingMethod(source.getSeroTypingMethod());
 		target.setSeroTypingMethodText(source.getSeroTypingMethodText());
+		target.setSerotype(source.getSerotype());
 
 		return target;
 	}

@@ -15054,4 +15054,12 @@ ALTER TABLE epipulse_location_configuration_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (601, 'Epipulse reference tables history');
 
+-- external message tuberculosis additional pathogen test fields
+ALTER TABLE testreport ADD COLUMN serotype character varying(255);
+ALTER TABLE testreport ADD COLUMN straincallstatus character varying(255);
+
+ALTER TABLE testreport_history ADD COLUMN serotype character varying(255);
+ALTER TABLE testreport_history ADD COLUMN straincallstatus character varying(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (602, 'External message additional fields');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

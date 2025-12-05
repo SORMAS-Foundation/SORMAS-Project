@@ -39,6 +39,7 @@ import com.vladmihalcea.hibernate.type.array.ListArrayType;
 import de.symeda.sormas.api.sample.GenoTypeResult;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenSpecie;
+import de.symeda.sormas.api.sample.PathogenStrainCallStatus;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.RsvSubtype;
@@ -135,6 +136,7 @@ public class TestReport extends AbstractDomainObject {
 	private Boolean tubeAgTb2GT10;
 	private Float tubeMitogene;
 	private Boolean tubeMitogeneGT10;
+	private PathogenStrainCallStatus strainCallStatus;
 
 	// Drug susceptibility
 	private Float amikacinMic;
@@ -176,6 +178,7 @@ public class TestReport extends AbstractDomainObject {
 	private String seroGroupSpecificationText;
 	private SerotypingMethod seroTypingMethod;
 	private String seroTypingMethodText;
+	private String serotype;
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getTestLabName() {
@@ -581,6 +584,15 @@ public class TestReport extends AbstractDomainObject {
 		this.tubeMitogeneGT10 = tubeMitogeneGT10;
 	}
 
+	@Enumerated(EnumType.STRING)
+	public PathogenStrainCallStatus getStrainCallStatus() {
+		return strainCallStatus;
+	}
+
+	public void setStrainCallStatus(PathogenStrainCallStatus strainCallStatus) {
+		this.strainCallStatus = strainCallStatus;
+	}
+
 	public Float getAmikacinMic() {
 		return amikacinMic;
 	}
@@ -902,6 +914,14 @@ public class TestReport extends AbstractDomainObject {
 
 	public void setSeroTypingMethodText(String seroTypingMethodText) {
 		this.seroTypingMethodText = seroTypingMethodText;
+	}
+
+	public String getSerotype() {
+		return serotype;
+	}
+
+	public void setSerotype(String serotype) {
+		this.serotype = serotype;
 	}
 
 }
