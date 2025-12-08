@@ -215,6 +215,7 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractMessagePr
 			// For tuberculosis we need special handling for therapy
 			TherapyDto therapyDto = caseDto.getTherapy();
 			therapyDto.setBeijingLineage(Boolean.TRUE.equals(externalMessageDto.getTuberculosisBeijingLineage()));
+			therapyDto.setMdrXdrTuberculosis(Boolean.TRUE.equals(externalMessageDto.getTuberculosisMdrXdrTuberculosis()));
 
 			// for regular tuberculosis the case classification should be handled in the external message pre-processing
 			break;
