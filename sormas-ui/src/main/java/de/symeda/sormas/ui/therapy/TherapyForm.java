@@ -44,6 +44,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.sample.PathogenStrainCallStatus;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
@@ -437,7 +438,9 @@ public class TherapyForm extends AbstractEditForm<TherapyDto> {
 			}
 		}
 
-		if (latestBejingGenotypingTest != null) {
+		if (latestBejingGenotypingTest != null
+			&& latestBejingGenotypingTest.getStrainCallStatus() != null
+			&& latestBejingGenotypingTest.getStrainCallStatus() == PathogenStrainCallStatus.BEIJING) {
 			beijingLineageField.setValue(true);
 		}
 	}
