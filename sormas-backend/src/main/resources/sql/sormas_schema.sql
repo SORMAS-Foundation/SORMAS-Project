@@ -14416,4 +14416,650 @@ alter table drugsusceptibility_history add column IF NOT EXISTS erythromycinSusc
 
 INSERT INTO schema_version (version_number, comment) VALUES (578, 'Update history tables #13516');
 
+alter table hospitalization add currentlyhospitalized varchar(255);
+alter table hospitalization_history add currentlyhospitalized varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (579, 'Add currently hospitalized to hospitalization #13321');
+
+-- 2025-07-14 Add hospitalization and additional fields to external message
+
+ALTER TABLE externalmessage ADD COLUMN casecomments varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN casecomments varchar(255);
+
+ALTER TABLE externalmessage ADD COLUMN hospitalizationfacilityname varchar(255);
+ALTER TABLE externalmessage ADD COLUMN hospitalizationfacilityexternalid varchar(255);
+ALTER TABLE externalmessage ADD COLUMN hospitalizationfacilitydepartment varchar(255);
+ALTER TABLE externalmessage ADD COLUMN hospitalizationadmissiondate timestamp;
+ALTER TABLE externalmessage ADD COLUMN hospitalizationdischargedate timestamp;
+ALTER TABLE externalmessage_history ADD COLUMN hospitalizationfacilityname varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN hospitalizationfacilityexternalid varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN hospitalizationfacilitydepartment varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN hospitalizationadmissiondate timestamp;
+ALTER TABLE externalmessage_history ADD COLUMN hospitalizationdischargedate timestamp;
+
+ALTER TABLE previoushospitalization ADD COLUMN healthfacilitydepartment varchar(255);
+ALTER TABLE previoushospitalization_history ADD COLUMN healthfacilitydepartment varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (580, 'Update external message with hospitalization fields #13516');
+
+
+-- 2025-07-18 Implemented Doctors declaration for IPI #13344
+ALTER TABLE externalmessage ADD COLUMN IF NOT EXISTS deceaseddate TIMESTAMP;
+ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS deceaseddate TIMESTAMP;
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS unknownsymptom VARCHAR(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS unknownsymptom VARCHAR(255);
+ALTER TABLE notifier ADD COLUMN IF NOT EXISTS agentfirstname VARCHAR(255);
+ALTER TABLE notifier ADD COLUMN IF NOT EXISTS agentlastname VARCHAR(255);
+ALTER TABLE notifier_history ADD COLUMN IF NOT EXISTS agentfirstname VARCHAR(255);
+ALTER TABLE notifier_history ADD COLUMN IF NOT EXISTS agentlastname VARCHAR(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (581, 'Implemented Doctors declaration for IPI #13344');
+
+-- 2025-07-29 Added missing fields for external message #13294
+
+ALTER TABLE therapy ADD COLUMN treatmentstarted varchar(255);
+ALTER TABLE therapy ADD COLUMN treatmentnotapplicable boolean DEFAULT false;
+ALTER TABLE therapy ADD COLUMN treatmentstartdate timestamp;
+
+ALTER TABLE therapy_history ADD COLUMN treatmentstarted varchar(255);
+ALTER TABLE therapy_history ADD COLUMN treatmentnotapplicable boolean DEFAULT false;
+ALTER TABLE therapy_history ADD COLUMN treatmentstartdate timestamp;
+
+ALTER TABLE externalmessage ADD COLUMN treatmentnotapplicable boolean DEFAULT false;
+ALTER TABLE externalmessage ADD COLUMN tuberculosis varchar(255);
+ALTER TABLE externalmessage ADD COLUMN hiv varchar(255);
+ALTER TABLE externalmessage ADD COLUMN hivArt varchar(255);
+ALTER TABLE externalmessage ADD COLUMN radiographyCompatibility varchar(255);
+ALTER TABLE externalmessage ADD COLUMN otherDiagnosticCriteria varchar(255);
+ALTER TABLE externalmessage ADD COLUMN tuberculosisInfectionYear integer;
+ALTER TABLE externalmessage ADD COLUMN previousTuberculosisTreatment varchar(255);
+ALTER TABLE externalmessage ADD COLUMN complianceWithTreatment varchar(255);
+
+ALTER TABLE externalmessage_history ADD COLUMN treatmentnotapplicable boolean DEFAULT false;
+ALTER TABLE externalmessage_history ADD COLUMN tuberculosis varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN hiv varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN hivArt varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN radiographyCompatibility varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN otherDiagnosticCriteria varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN tuberculosisInfectionYear integer;
+ALTER TABLE externalmessage_history ADD COLUMN previousTuberculosisTreatment varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN complianceWithTreatment varchar(255);
+
+ALTER TABLE testreport ADD COLUMN testTypeDetails varchar(255);
+ALTER TABLE testreport_history ADD COLUMN testTypeDetails varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (582, 'Added missing fields for external message #13294');
+
+-- 2025-07-29 RSV Symptoms #13544
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS difficultyBreathingDuringMeals varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS paradoxicalBreathing varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS respiratoryFatigue varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS parentTimeOffWork varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS timeOffWorkDays varchar(255);
+
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS difficultyBreathingDuringMeals varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS paradoxicalBreathing varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS respiratoryFatigue varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS parentTimeOffWork varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS timeOffWorkDays varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (583, 'Update symptoms for RSV #13544');
+
+-- 2025-08-05 RSV EpiData updates #13538
+
+ALTER TABLE exposures ADD COLUMN IF NOT EXISTS typeOfChildcareFacility varchar(255);
+ALTER TABLE exposures ADD COLUMN IF NOT EXISTS childcareFacilityDetails varchar(255);
+
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS typeOfChildcareFacility varchar(255);
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS childcareFacilityDetails varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (584, 'RSV EpiData updates #13538');
+
+-- 2025-08-05 RSV - Update Health Conditions section #13540
+
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS recurrentBronchiolitis varchar(255);
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS immunodepression varchar(255);
+
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS recurrentBronchiolitis varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS immunodepression varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (585, 'RSV - Update Health Conditions section #13540');
+
+-- 2025-08-06 - RSV - Update Hospitalization #13541
+
+ALTER TABLE hospitalization ADD COLUMN IF NOT EXISTS oxygenPrescribed varchar(255);
+ALTER TABLE hospitalization ADD COLUMN IF NOT EXISTS stillHospitalized varchar(255);
+ALTER TABLE hospitalization ADD COLUMN IF NOT EXISTS icuLengthOfStay integer;
+
+ALTER TABLE hospitalization_history ADD COLUMN IF NOT EXISTS oxygenPrescribed varchar(255);
+ALTER TABLE hospitalization_history ADD COLUMN IF NOT EXISTS stillHospitalized varchar(255);
+ALTER TABLE hospitalization_history ADD COLUMN IF NOT EXISTS icuLengthOfStay integer;
+
+ALTER TABLE previoushospitalization ADD COLUMN IF NOT EXISTS oxygenPrescribed varchar(255);
+ALTER TABLE previoushospitalization ADD COLUMN IF NOT EXISTS stillHospitalized varchar(255);
+ALTER TABLE previoushospitalization ADD COLUMN IF NOT EXISTS icuLengthOfStay integer;
+
+ALTER TABLE previoushospitalization_history ADD COLUMN IF NOT EXISTS oxygenPrescribed varchar(255);
+ALTER TABLE previoushospitalization_history ADD COLUMN IF NOT EXISTS stillHospitalized varchar(255);
+ALTER TABLE previoushospitalization_history ADD COLUMN IF NOT EXISTS icuLengthOfStay integer;
+
+INSERT INTO schema_version (version_number, comment) VALUES (586, 'RSV - Update Hospitalization #13541');
+
+-- 2025-08-08 RSV - Enhancements to the Person form #13539
+ALTER TABLE person ADD COLUMN IF NOT EXISTS gestationalAgeCategory varchar(255);
+ALTER TABLE person ADD COLUMN IF NOT EXISTS birthWeightCategory varchar(255);
+ALTER TABLE person ADD COLUMN IF NOT EXISTS birthWeightValue integer;
+ALTER TABLE person ADD COLUMN IF NOT EXISTS multipleBirth varchar(255);
+
+ALTER TABLE person_history ADD COLUMN IF NOT EXISTS gestationalAgeCategory varchar(255);
+ALTER TABLE person_history ADD COLUMN IF NOT EXISTS birthWeightCategory varchar(255);
+ALTER TABLE person_history ADD COLUMN IF NOT EXISTS birthWeightValue integer;
+ALTER TABLE person_history ADD COLUMN IF NOT EXISTS multipleBirth varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (587, 'RSV - Enhancements to the Person form #13539');
+
+
+-- 2025-08-07 - RSV - Update Immunization #13542
+
+ALTER TABLE immunization ADD COLUMN IF NOT EXISTS injectionFacility varchar(255);
+ALTER TABLE immunization_history ADD COLUMN IF NOT EXISTS injectionFacility varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (588, 'RSV - Update Immunization #13542');
+
+-- 2025-08-12 Customized Measles for Lux #13365
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS skinrashonsetdate timestamp;
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS acuteencephalitis varchar(255);
+ALTER TABLE epidata ADD COLUMN IF NOT EXISTS caseimportedstatus varchar(255);
+ALTER TABLE epidata ADD COLUMN IF NOT EXISTS clustertype varchar(255);
+ALTER TABLE epidata ADD COLUMN IF NOT EXISTS clustertypetext varchar(255);
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS genotyperesult varchar(255);
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS genotyperesulttext varchar(255);
+ALTER TABLE contact ADD COLUMN IF NOT EXISTS vaccination_dose1_date timestamp;
+ALTER TABLE contact ADD COLUMN IF NOT EXISTS vaccination_dose2_date timestamp;
+ALTER TABLE contact ADD COLUMN IF NOT EXISTS vaccinationproposed boolean DEFAULT false;
+ALTER TABLE contact ADD COLUMN IF NOT EXISTS immuneglobulinproposed boolean DEFAULT false;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS genotyperesult varchar(255);
+
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS skinrashonsetdate timestamp;
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS acuteencephalitis varchar(255);
+ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS caseimportedstatus varchar(255);
+ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS clustertype varchar(255);
+ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS clustertypetext varchar(255);
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS genotyperesult varchar(255);
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS genotyperesulttext varchar(255);
+ALTER TABLE contact_history ADD COLUMN IF NOT EXISTS vaccination_dose1_date timestamp;
+ALTER TABLE contact_history ADD COLUMN IF NOT EXISTS vaccination_dose2_date timestamp;
+ALTER TABLE contact_history ADD COLUMN IF NOT EXISTS vaccinationproposed boolean DEFAULT false;
+ALTER TABLE contact_history ADD COLUMN IF NOT EXISTS immuneglobulinproposed boolean DEFAULT false;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS genotyperesult varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (589, 'Customized Measles for Lux #13365');
+
+
+-- 2025-08-23 -  RSV - Update samples and pathogen tests #13543
+
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS rsvsubtype varchar(255);
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS rsvsubtype varchar(255);
+
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS rsvsubtype varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS rsvsubtype varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (590, 'RSV - Update samples and pathogen tests #13543');
+
+-- 2025-08-08 - Tuberculosis - Implement functionality to receive messages from laboratory for TB #13563
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS tubenil float;
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS tubenilgt10 boolean;
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS tubeagtb1 float;
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS tubeagtb1gt10 boolean;
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS tubeagtb2 float;
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS tubeagtb2gt10 boolean;
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS tubemitogene float;
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS tubemitogenegt10 boolean;
+
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS tubenil float;
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS tubenilgt10 boolean;
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS tubeagtb1 float;
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS tubeagtb1gt10 boolean;
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS tubeagtb2 float;
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS tubeagtb2gt10 boolean;
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS tubemitogene float;
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS tubemitogenegt10 boolean;
+
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS specie varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS tubenil float;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS tubenilgt10 boolean;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS tubeagtb1 float;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS tubeagtb1gt10 boolean;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS tubeagtb2 float;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS tubeagtb2gt10 boolean;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS tubemitogene float;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS tubemitogenegt10 boolean;
+
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS specie varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS tubenil float;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS tubenilgt10 boolean;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS tubeagtb1 float;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS tubeagtb1gt10 boolean;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS tubeagtb2 float;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS tubeagtb2gt10 boolean;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS tubemitogene float;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS tubemitogenegt10 boolean;
+
+INSERT INTO schema_version (version_number, comment) VALUES (591, 'Implement functionality to receive messages from laboratory for TB #13563');
+
+-- 2025-09-09 -  Lux measles - cluster related checkbox #13365
+ALTER TABLE epidata ADD COLUMN IF NOT EXISTS clusterrelated boolean DEFAULT false;
+UPDATE epidata SET clusterrelated = false WHERE clusterrelated IS NULL;
+ALTER TABLE epidata ALTER COLUMN clusterrelated SET NOT NULL;
+ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS clusterrelated boolean DEFAULT false;
+UPDATE epidata_history SET clusterrelated = false WHERE clusterrelated IS NULL;
+ALTER TABLE epidata_history ALTER COLUMN clusterrelated SET NOT NULL;
+INSERT INTO schema_version (version_number, comment) VALUES (592, 'Added cluster related checkbox for LUX Measles #13365');
+
+-- 2025-09-19 - Integrated new diseases named Giardiasis and Cryptosporidiosis #13601 #13608
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS eggyburps varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS weightloss varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS weightlossamount integer;
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS reoccurrence varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS symptomcurrentstatus varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS durationofsymptoms integer;
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS overnightstayrequired varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS bloating varchar(255);
+ALTER TABLE symptoms ALTER COLUMN weightlossamount TYPE float4 USING weightlossamount::float4;
+ALTER TABLE exposures ADD COLUMN IF NOT EXISTS travelaccommodation varchar(255);
+ALTER TABLE exposures ADD COLUMN IF NOT EXISTS travelaccommodationtype varchar(255);
+ALTER TABLE exposures ADD COLUMN IF NOT EXISTS swimminglocation varchar(255);
+ALTER TABLE exposures ADD COLUMN IF NOT EXISTS swimminglocationtype varchar(255);
+ALTER TABLE exposures ADD COLUMN IF NOT EXISTS animallocation varchar(255);
+ALTER TABLE exposures ADD COLUMN IF NOT EXISTS domesticswimming varchar(255);
+ALTER TABLE exposures ADD COLUMN IF NOT EXISTS internationalswimming varchar(255);
+ALTER TABLE exposures ADD COLUMN IF NOT EXISTS sexualexposuretext varchar(255);
+ALTER TABLE exposures ADD COLUMN IF NOT EXISTS rawfoodcontact varchar(255);
+ALTER TABLE exposures ADD COLUMN IF NOT EXISTS rawfoodcontacttext varchar(255);
+ALTER TABLE exposures ADD COLUMN IF NOT EXISTS symptomaticindividualtext varchar(255);
+ALTER TABLE hospitalization ADD COLUMN IF NOT EXISTS durationofhospitalization integer;
+ALTER TABLE epidata ADD COLUMN IF NOT EXISTS modeoftransmission varchar(255);
+ALTER TABLE epidata ADD COLUMN IF NOT EXISTS modeoftransmissiontype varchar(255);
+ALTER TABLE epidata ADD COLUMN IF NOT EXISTS infectionsource varchar(255);
+ALTER TABLE epidata ADD COLUMN IF NOT EXISTS infectionsourcetext varchar(255);
+ALTER TABLE epidata ADD COLUMN IF NOT EXISTS importedcase varchar(255);
+ALTER TABLE epidata ADD COLUMN IF NOT EXISTS country_id bigint;
+ALTER TABLE person ADD COLUMN IF NOT EXISTS workplace varchar(255);
+ALTER TABLE person ADD COLUMN IF NOT EXISTS workplacetext varchar(255);
+
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS eggyburps varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS weightloss varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS weightlossamount integer;
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS reoccurrence varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS symptomcurrentstatus varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS durationofsymptoms integer;
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS overnightstayrequired varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS bloating varchar(255);
+ALTER TABLE symptoms_history ALTER COLUMN weightlossamount TYPE float4 USING weightlossamount::float4;
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS travelaccommodation varchar(255);
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS travelaccommodationtype varchar(255);
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS swimminglocation varchar(255);
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS swimminglocationtype varchar(255);
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS animallocation varchar(255);
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS domesticswimming varchar(255);
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS internationalswimming varchar(255);
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS sexualexposuretext varchar(255);
+ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS modeoftransmission varchar(255);
+ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS modeoftransmissiontype varchar(255);
+ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS infectionsource varchar(255);
+ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS infectionsourcetext varchar(255);
+ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS importedcase varchar(255);
+ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS country_id bigint;
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS rawfoodcontact varchar(255);
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS rawfoodcontacttext varchar(255);
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS symptomaticindividualtext varchar(255);
+ALTER TABLE hospitalization_history ADD COLUMN IF NOT EXISTS durationofhospitalization integer;
+ALTER TABLE person_history ADD COLUMN IF NOT EXISTS workplace varchar(255);
+ALTER TABLE person_history ADD COLUMN IF NOT EXISTS workplacetext varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (593, 'Integrated new diseases named Giardiasis and Cryptosporidiosis #13601 #13608');
+
+-- 2025-10-20 - Added additional fields for external message processing
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS amikacinmic numeric;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS amikacinsusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS bedaquilinemic numeric;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS bedaquilinesusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS capreomycinmic numeric;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS capreomycinsusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS ciprofloxacinmic numeric;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS ciprofloxacinsusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS delamanidmic numeric;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS delamanidsusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS ethambutolmic numeric;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS ethambutolsusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS gatifloxacinmic numeric;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS gatifloxacinsusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS isoniazidmic numeric;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS isoniazidsusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS kanamycinmic numeric;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS kanamycinsusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS levofloxacinmic numeric;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS levofloxacinsusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS moxifloxacinmic numeric;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS moxifloxacinsusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS ofloxacinmic numeric;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS ofloxacinsusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS rifampicinmic numeric;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS rifampicinsusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS streptomycinmic numeric;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS streptomycinsusceptibility varchar(255);
+
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS amikacinmic numeric;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS amikacinsusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS bedaquilinemic numeric;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS bedaquilinesusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS capreomycinmic numeric;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS capreomycinsusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS ciprofloxacinmic numeric;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS ciprofloxacinsusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS delamanidmic numeric;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS delamanidsusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS ethambutolmic numeric;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS ethambutolsusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS gatifloxacinmic numeric;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS gatifloxacinsusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS isoniazidmic numeric;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS isoniazidsusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS kanamycinmic numeric;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS kanamycinsusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS levofloxacinmic numeric;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS levofloxacinsusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS moxifloxacinmic numeric;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS moxifloxacinsusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS ofloxacinmic numeric;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS ofloxacinsusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS rifampicinmic numeric;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS rifampicinsusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS streptomycinmic numeric;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS streptomycinsusceptibility varchar(255);
+
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS ceftriaxonemic numeric;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS ceftriaxonesusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS penicillinmic numeric;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS penicillinsusceptibility varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS erythromycinmic numeric;
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS erythromycinsusceptibility varchar(255);
+
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS ceftriaxonemic numeric;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS ceftriaxonesusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS penicillinmic numeric;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS penicillinsusceptibility varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS erythromycinmic numeric;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS erythromycinsusceptibility varchar(255);
+
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS serogroupspecification varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS serogroupspecificationtext varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS serotypingmethod varchar(255);
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS serotypingmethodtext varchar(255);
+
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS serogroupspecification varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS serogroupspecificationtext varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS serotypingmethod varchar(255);
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS serotypingmethodtext varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (594, 'Additional fields for extenal message processing #13563, #13638');
+
+-- 2025-10-23 - RSV issue fixes and minor observations of Giardiasis and Cryptosporidiosis #13540 #13613
+ALTER TABLE exposures ADD COLUMN IF NOT EXISTS animallocationtext varchar(255);
+ALTER TABLE epidata DROP CONSTRAINT IF EXISTS fk_epidata_country_id;
+ALTER TABLE epidata ADD CONSTRAINT fk_epidata_country_id FOREIGN KEY (country_id) REFERENCES country (id);
+UPDATE symptoms SET timeoffworkdays = NULL WHERE TRIM(timeoffworkdays) = '' OR timeoffworkdays !~ '^\s*(\d+(\.\d*)?|\.\d+)\s*$';
+ALTER TABLE symptoms ALTER COLUMN timeoffworkdays TYPE float4 USING timeoffworkdays::float4;
+ALTER TABLE healthconditions DROP COLUMN IF EXISTS immunodepression;
+
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS animallocationtext varchar(255);
+ALTER TABLE epidata_history DROP CONSTRAINT IF EXISTS fk_epi_country_id;
+ALTER TABLE epidata_history ADD CONSTRAINT fk_epi_country_id FOREIGN KEY (country_id) REFERENCES country (id);
+UPDATE symptoms_history SET timeoffworkdays = NULL WHERE TRIM(timeoffworkdays) = '' OR timeoffworkdays !~ '^\s*(\d+(\.\d*)?|\.\d+)\s*$';
+ALTER TABLE symptoms_history ALTER COLUMN timeoffworkdays TYPE float4 USING timeoffworkdays::float4;
+ALTER TABLE healthconditions_history DROP COLUMN IF EXISTS immunodepression;
+
+INSERT INTO schema_version (version_number, comment) VALUES (595, 'RSV issue fixes and minor observations of Giardiasis and Cryptosporidiosis #13540 #13613');
+
+-- 2025-10-29 - Included new Disease variant/subtype for RSV #13543
+INSERT INTO customizableenumvalue(id, uuid, changedate, creationdate, datatype, value, caption, diseases)
+VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'DISEASE_VARIANT', 'INDETERMINATE', 'Indeterminate',
+        'RESPIRATORY_SYNCYTIAL_VIRUS');
+INSERT INTO schema_version (version_number, comment) VALUES (596, 'Included new Disease variant/subtype for RSV #13543');
+
+-- epipulse export table
+create table epipulse_export
+(
+    id                  bigint                not null,
+    uuid                varchar(36)           not null,
+    creationdate        timestamp(3)          not null,
+    changedate          timestamp(3)          not null,
+    subject_code        varchar(255)          not null,
+    start_date          date                  not null,
+    end_date            date                  not null,
+    status              varchar(255)          not null,
+    status_change_date  timestamp(3)          not null,
+    total_records       bigint  default 0,
+    export_file_name    varchar(255),
+    export_file_size    bigint,
+    archived            boolean default false not null,
+    archiveundonereason varchar(512),
+    deleted             boolean default false not null,
+    deletionreason      varchar(255),
+    otherdeletionreason text,
+    sys_period          tstzrange             not null,
+    creation_user_id    bigint                not null,
+    change_user_id      bigint                not null,
+    status_reason       text
+);
+
+alter table epipulse_export owner to sormas_user;
+
+alter table epipulse_export add primary key (id);
+alter table epipulse_export add unique (uuid);
+alter table epipulse_export add constraint epipulse_export_change_user_fk foreign key (change_user_id) references users;
+alter table epipulse_export add constraint epipulse_export_creation_user_fk foreign key (creation_user_id) references users;
+
+-- epipulse export history
+CREATE TABLE epipulse_export_history (LIKE epipulse_export);
+DROP TRIGGER IF EXISTS versioning_trigger ON epipulse_export;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON epipulse_export
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'epipulse_export_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON epipulse_export;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON epipulse_export
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('epipulse_export_history', 'id');
+ALTER TABLE epipulse_export_history OWNER TO sormas_user;
+
+-- Assign epipulse export user rights to default admin and national_user user roles
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'EPIPULSE_EXPORT_VIEW' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN');
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'EPIPULSE_EXPORT_CREATE' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN');
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'EPIPULSE_EXPORT_DOWNLOAD' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN');
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'EPIPULSE_EXPORT_DELETE' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN');
+
+-- add nutscode to country, region, district and commmunity
+alter table country add nutscode varchar(10) constraint country_nutscode_pk unique;
+alter table country_history add nutscode varchar(10);
+
+alter table region add nutscode varchar(10);
+alter table region_history add nutscode varchar(10);
+
+alter table district add nutscode varchar(10);
+alter table district_history add nutscode varchar(10);
+
+alter table community add nutscode varchar(10);
+alter table community_history add nutscode varchar(10);
+
+INSERT INTO schema_version (version_number, comment) VALUES (597, 'Epipulse export module #13631');
+
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'EVENT_VIEW_ARCHIVED' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN','NATIONAL_USER') ON CONFLICT (userrole_id, userright) DO NOTHING;
+
+INSERT INTO schema_version (version_number, comment) VALUES (598, 'Add view archived events to default ADMIN and NATIONAL_USER roles #13470');
+
+-- Deleted the duplicate column from Person table #13674
+UPDATE person SET birthWeight = COALESCE(birthWeight, birthWeightValue) where birthWeightValue is not null;
+UPDATE person_history SET birthWeight = COALESCE(birthWeight, birthWeightValue) where birthWeightValue is not null;
+ALTER TABLE person DROP COLUMN birthWeightValue;
+ALTER TABLE person_history DROP COLUMN birthWeightValue;
+INSERT INTO schema_version (version_number, comment) VALUES (599, 'Deleted the duplicate column #13674');
+
+
+-- external message tuberculosis additional fields
+
+ALTER TABLE externalmessage ADD COLUMN tuberculosisdirectlyobservedtreatment boolean;
+ALTER TABLE externalmessage ADD COLUMN tuberculosismdrxdrtuberculosis boolean;
+ALTER TABLE externalmessage ADD COLUMN tuberculosisbeijinglineage boolean;
+
+ALTER TABLE externalmessage_history ADD COLUMN tuberculosisdirectlyobservedtreatment boolean;
+ALTER TABLE externalmessage_history ADD COLUMN tuberculosismdrxdrtuberculosis boolean;
+ALTER TABLE externalmessage_history ADD COLUMN tuberculosisbeijinglineage boolean;
+
+INSERT INTO schema_version (version_number, comment) VALUES (600, 'External message tuberculosis additional fields #13727');
+
+-- rename aefi investigation vaccinations to a shorter name to align with history tables test
+alter table adverseeventsfollowingimmunizationinvestigation_vaccinations rename to aefiinvestigation_vaccinations;
+
+-- re-create versioning triggers to support delete for epipulse_export, aefi adverseeventsfollowingimmunization_vaccinations and aefiinvestigation_vaccinations
+DROP TRIGGER IF EXISTS versioning_trigger ON epipulse_export;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE OR DELETE ON epipulse_export
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'epipulse_export_history', true);
+
+DROP TRIGGER IF EXISTS versioning_trigger ON adverseeventsfollowingimmunization_vaccinations;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE OR DELETE ON adverseeventsfollowingimmunization_vaccinations
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'adverseeventsfollowingimmunization_vaccinations_history', true);
+
+DROP TRIGGER IF EXISTS versioning_trigger ON aefiinvestigation_vaccinations;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE OR DELETE ON aefiinvestigation_vaccinations
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'aefiinvestigation_vaccinations_history', true);
+
+-- epipulse_subjectcode_configuration
+create table epipulse_subjectcode_configuration
+(
+    id                  bigint       not null,
+    uuid                varchar(36)  not null,
+    creationdate        timestamp(3) not null,
+    changedate          timestamp(3) not null,
+    subjectcode         varchar(255) not null,
+    name                varchar(255) not null,
+    disease             varchar(255),
+    diseasename         varchar(255),
+    healthtopic         varchar(255),
+    healthtopicname     varchar(255),
+    aggregatedreporting boolean      not null,
+    validfrom           date,
+    validto             date,
+    sys_period          tstzrange    not null,
+    change_user_id      bigint
+);
+
+alter table epipulse_subjectcode_configuration owner to sormas_user;
+alter table epipulse_subjectcode_configuration add primary key (id);
+alter table epipulse_subjectcode_configuration add unique (uuid);
+alter table epipulse_subjectcode_configuration add unique (subjectcode);
+alter table epipulse_subjectcode_configuration add unique (name);
+alter table epipulse_subjectcode_configuration add constraint epipulse_subjectcode_configuration_change_user_fk foreign key (change_user_id) references users;
+
+-- epipulse subjectcode configuration history
+CREATE TABLE epipulse_subjectcode_configuration_history (LIKE epipulse_subjectcode_configuration);
+DROP TRIGGER IF EXISTS versioning_trigger ON epipulse_subjectcode_configuration;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE OR DELETE ON epipulse_subjectcode_configuration
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'epipulse_subjectcode_configuration_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON epipulse_subjectcode_configuration;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON epipulse_subjectcode_configuration
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('epipulse_subjectcode_configuration_history', 'id');
+ALTER TABLE epipulse_subjectcode_configuration_history OWNER TO sormas_user;
+
+-- epipulse_datasource_configuration
+create table epipulse_datasource_configuration
+(
+    id                    bigint       not null,
+    uuid                  varchar(36)  not null,
+    creationdate          timestamp(3) not null,
+    changedate            timestamp(3) not null,
+    country_iso2_code     varchar(2)   not null,
+    datasource            varchar(255) not null,
+    name                  varchar(255) not null,
+    description           varchar(255) not null,
+    subjectcode           varchar(255) not null,
+    geographicalcoverage  integer,
+    outermostregions      varchar(255),
+    surveillancestartdate date,
+    surveillanceenddate   date,
+    validfrom             date,
+    validto               date,
+    sys_period            tstzrange    not null,
+    change_user_id        bigint
+);
+
+alter table epipulse_datasource_configuration owner to sormas_user;
+alter table epipulse_datasource_configuration add primary key (id);
+alter table epipulse_datasource_configuration add unique (uuid);
+alter table epipulse_datasource_configuration add constraint epipulse_datasource_configuration_change_user_fk foreign key (change_user_id) references users;
+
+-- epipulse datasource config history
+CREATE TABLE epipulse_datasource_configuration_history (LIKE epipulse_datasource_configuration);
+DROP TRIGGER IF EXISTS versioning_trigger ON epipulse_datasource_configuration;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE OR DELETE ON epipulse_datasource_configuration
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'epipulse_datasource_configuration_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON epipulse_datasource_configuration;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON epipulse_datasource_configuration
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('epipulse_datasource_configuration_history', 'id');
+ALTER TABLE epipulse_datasource_configuration_history OWNER TO sormas_user;
+
+-- epipulse_location_configuration
+create table epipulse_location_configuration
+(
+    id                    bigint       not null,
+    uuid                  varchar(36)  not null,
+    creationdate          timestamp(3) not null,
+    changedate            timestamp(3) not null,
+    type                  varchar(255) not null,
+    code                  varchar(255) not null,
+    name                  varchar(255) not null,
+    eu_shortname          varchar(255),
+    eu_fullname           varchar(255),
+    administrative_centre varchar(255),
+    country_iso2_code     varchar(2)   not null,
+    country_iso3_code     varchar(3),
+    validfrom             date,
+    validto               date,
+    sys_period            tstzrange    not null,
+    change_user_id        bigint
+);
+
+alter table epipulse_location_configuration owner to sormas_user;
+alter table epipulse_location_configuration add primary key (id);
+alter table epipulse_location_configuration add unique (uuid);
+alter table epipulse_location_configuration add constraint epipulse_location_configuration_change_user_fk foreign key (change_user_id) references users;
+
+-- epipulse location config history
+CREATE TABLE epipulse_location_configuration_history (LIKE epipulse_location_configuration);
+DROP TRIGGER IF EXISTS versioning_trigger ON epipulse_location_configuration;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE OR DELETE ON epipulse_location_configuration
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'epipulse_location_configuration_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON epipulse_location_configuration;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON epipulse_location_configuration
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('epipulse_location_configuration_history', 'id');
+ALTER TABLE epipulse_location_configuration_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (601, 'Epipulse reference tables history');
+
+-- external message tuberculosis additional pathogen test fields
+ALTER TABLE testreport ADD COLUMN serotype character varying(255);
+ALTER TABLE testreport ADD COLUMN straincallstatus character varying(255);
+
+ALTER TABLE testreport_history ADD COLUMN serotype character varying(255);
+ALTER TABLE testreport_history ADD COLUMN straincallstatus character varying(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (602, 'External message additional fields');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

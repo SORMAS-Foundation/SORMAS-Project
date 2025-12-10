@@ -38,4 +38,8 @@ public class ApplyResetButtonsComponent extends HorizontalLayout {
 	public void style(String style) {
 		CssStyles.style(style, applyButton, resetButton);
 	}
+
+	public Button getApplyButton() {
+		return applyButton;
+	}
 }

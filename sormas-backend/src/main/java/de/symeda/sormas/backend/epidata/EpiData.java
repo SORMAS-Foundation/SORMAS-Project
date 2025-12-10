@@ -22,16 +22,24 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import de.symeda.sormas.api.epidata.CaseImportedStatus;
+import de.symeda.sormas.api.epidata.ClusterType;
+import de.symeda.sormas.api.exposure.InfectionSource;
+import de.symeda.sormas.api.exposure.ModeOfTransmission;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.activityascase.ActivityAsCase;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.NotExposedToApi;
 import de.symeda.sormas.backend.exposure.Exposure;
+import de.symeda.sormas.backend.infrastructure.country.Country;
 
 @Entity
 public class EpiData extends AbstractDomainObject {
@@ -50,6 +58,20 @@ public class EpiData extends AbstractDomainObject {
 	private YesNoUnknown highTransmissionRiskArea;
 	private YesNoUnknown largeOutbreaksArea;
 	private YesNoUnknown areaInfectedAnimals;
+
+	private YesNoUnknown importedCase;
+	private CaseImportedStatus caseImportedStatus;
+	private ClusterType clusterType;
+	private String clusterTypeText;
+	private boolean clusterRelated;
+
+	// Giardiasis & Cryptosporidiosis specific
+	private InfectionSource infectionSource;
+	private String infectionSourceText;
+	private ModeOfTransmission modeOfTransmission;
+	private String modeOfTransmissionType;
+
+	private Country country;
 
 	private List<Exposure> exposures = new ArrayList<>();
 	private List<ActivityAsCase> activitiesAsCase = new ArrayList<>();
@@ -137,5 +159,92 @@ public class EpiData extends AbstractDomainObject {
 
 	public void setContactWithSourceCaseKnown(YesNoUnknown contactWithSourceCaseKnown) {
 		this.contactWithSourceCaseKnown = contactWithSourceCaseKnown;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public CaseImportedStatus getCaseImportedStatus() {
+		return caseImportedStatus;
+	}
+
+	public void setCaseImportedStatus(CaseImportedStatus caseImportedStatus) {
+		this.caseImportedStatus = caseImportedStatus;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ClusterType getClusterType() {
+		return clusterType;
+	}
+
+	public void setClusterType(ClusterType clusterType) {
+		this.clusterType = clusterType;
+	}
+
+	public String getClusterTypeText() {
+		return clusterTypeText;
+	}
+
+	public void setClusterTypeText(String clusterTypeText) {
+		this.clusterTypeText = clusterTypeText;
+	}
+
+	@Column(nullable = false)
+	public boolean isClusterRelated() {
+		return clusterRelated;
+	}
+
+	public void setClusterRelated(boolean clusterRelated) {
+		this.clusterRelated = clusterRelated;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ModeOfTransmission getModeOfTransmission() {
+		return modeOfTransmission;
+	}
+
+	public void setModeOfTransmission(ModeOfTransmission modeOfTransmission) {
+		this.modeOfTransmission = modeOfTransmission;
+	}
+
+	public String getModeOfTransmissionType() {
+		return modeOfTransmissionType;
+	}
+
+	public void setModeOfTransmissionType(String modeOfTransmissionType) {
+		this.modeOfTransmissionType = modeOfTransmissionType;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public InfectionSource getInfectionSource() {
+		return infectionSource;
+	}
+
+	public void setInfectionSource(InfectionSource infectionSource) {
+		this.infectionSource = infectionSource;
+	}
+
+	public String getInfectionSourceText() {
+		return infectionSourceText;
+	}
+
+	public void setInfectionSourceText(String infectionSourceText) {
+		this.infectionSourceText = infectionSourceText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getImportedCase() {
+		return importedCase;
+	}
+
+	public void setImportedCase(YesNoUnknown importedCase) {
+		this.importedCase = importedCase;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	public Country getCountry() {
+		return country;
+	}
+
+	public void setCountry(Country country) {
+		this.country = country;
 	}
 }

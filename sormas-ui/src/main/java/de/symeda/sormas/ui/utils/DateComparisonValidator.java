@@ -59,6 +59,32 @@ public class DateComparisonValidator extends AbstractValidator<Date> {
 		this.changeInvalidCommitted = changeInvalidCommitted;
 	}
 
+	/**
+	 * To compare the time along with dates, set dateOnly to false.
+	 * 
+	 * @param dateField
+	 * @param referenceDateSupplier
+	 * @param earlierOrSame
+	 * @param changeInvalidCommitted
+	 * @param dateOnly
+	 * @param errorMessage
+	 */
+	public DateComparisonValidator(
+		Field<Date> dateField,
+		Supplier<Date> referenceDateSupplier,
+		boolean earlierOrSame,
+		boolean changeInvalidCommitted,
+		boolean dateOnly,
+		String errorMessage) {
+
+		super(errorMessage);
+		this.dateField = dateField;
+		this.referenceDateSupplier = referenceDateSupplier;
+		this.earlierOrSame = earlierOrSame;
+		this.dateOnly = dateOnly;
+		this.changeInvalidCommitted = changeInvalidCommitted;
+	}
+
 	public DateComparisonValidator(
 		Field<Date> dateField,
 		Supplier<Date> referenceDateSupplier,
@@ -93,7 +119,6 @@ public class DateComparisonValidator extends AbstractValidator<Date> {
 
 		this(dateField, () -> referenceDate, earlierOrSame, changeInvalidCommitted, errorMessage);
 	}
-
 
 	@Override
 	protected boolean isValidValue(Date date) {

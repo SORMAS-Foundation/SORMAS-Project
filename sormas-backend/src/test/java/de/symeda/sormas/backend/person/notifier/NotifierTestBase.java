@@ -20,7 +20,8 @@ public abstract class NotifierTestBase extends AbstractBeanTest {
                 "CREATE TABLE notifier_history (" + "id bigint GENERATED ALWAYS AS IDENTITY, " + "uuid varchar(36) not null, "
                     + "changedate timestamp not null, " + "creationdate timestamp not null, " + "change_user_id bigint, "
                     + "registrationnumber varchar(255), " + "firstname varchar(255) not null, " + "lastname varchar(255) not null, "
-                    + "address text, " + "email varchar(255), " + "phone varchar(255), " + "sys_period varchar(255))");
+                    + "address text, " + "email varchar(255), " + "phone varchar(255), " + "agentfirstname varchar(255), "
+                        + "agentlastname varchar(255), "+"sys_period varchar(255))");
             nativeQuery.executeUpdate();
 
             nativeQuery = em.createNativeQuery(

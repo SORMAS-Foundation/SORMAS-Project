@@ -214,6 +214,7 @@ public class ImmunizationFacadeEjb
 		dto.setImmunizationStatus(entity.getImmunizationStatus());
 		dto.setMeansOfImmunization(entity.getMeansOfImmunization());
 		dto.setMeansOfImmunizationDetails(entity.getMeansOfImmunizationDetails());
+		dto.setInjectionFacility(entity.getInjectionFacility());
 		dto.setImmunizationManagementStatus(entity.getImmunizationManagementStatus());
 		dto.setExternalId(entity.getExternalId());
 		dto.setResponsibleRegion(RegionFacadeEjb.toReferenceDto(entity.getResponsibleRegion()));
@@ -564,6 +565,7 @@ public class ImmunizationFacadeEjb
 		}
 		target.setMeansOfImmunization(source.getMeansOfImmunization());
 		target.setMeansOfImmunizationDetails(source.getMeansOfImmunizationDetails());
+		target.setInjectionFacility(source.getInjectionFacility());
 		if (source.getImmunizationManagementStatus() != null) {
 			target.setImmunizationManagementStatus(source.getImmunizationManagementStatus());
 		}

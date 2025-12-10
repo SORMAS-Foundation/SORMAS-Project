@@ -201,6 +201,7 @@ public interface Validations {
 	String patchNoSuchFieldException = "patchNoSuchFieldException";
 	String patchUnsupportedCollectionFieldType = "patchUnsupportedCollectionFieldType";
 	String patchWrongUuid = "patchWrongUuid";
+	String pathogenTestInvalidIgraValueCombination = "pathogenTestInvalidIgraValueCombination";
 	String pathogenTestValidDisease = "pathogenTestValidDisease";
 	String pathogenTestValidDrugSusceptibility = "pathogenTestValidDrugSusceptibility";
 	String pathogenTestValidPathogen = "pathogenTestValidPathogen";

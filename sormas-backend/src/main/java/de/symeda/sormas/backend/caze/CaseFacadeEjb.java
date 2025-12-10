@@ -2204,6 +2204,26 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			}
 		}
 
+		if (existingCase != null && newCase.getEpiData() != null) {
+			// If contact with source case is known and at least one source case (same disease) is confirmed, set YES.
+			final YesNoUnknown contactKnown = newCase.getEpiData().getContactWithSourceCaseKnown();
+			if (contactKnown == YesNoUnknown.YES) {
+				// Check if at least one source case is confirmed
+				// We only check for contacts that have this case as resulting case
+				final boolean hasConfirmedSourceCase = contactService.getAllByResultingCase(caseService.getByUuid(existingCase.getUuid())).stream()
+						.map(Contact::getCaze)
+						.filter(Objects::nonNull)
+						.anyMatch(src ->
+								src.getDisease() == newCase.getDisease()
+										&& CaseClassification.getConfirmedClassifications().contains(src.getCaseClassification()));
+				newCase.setEpidemiologicalConfirmation(hasConfirmedSourceCase ? YesNoUnknown.YES : YesNoUnknown.NO);
+			} else if (contactKnown == YesNoUnknown.NO) {
+				newCase.setEpidemiologicalConfirmation(YesNoUnknown.NO);
+			} else {
+				newCase.setEpidemiologicalConfirmation(YesNoUnknown.UNKNOWN);
+			}
+		}
+
 		// Update follow-up
 		service.updateFollowUpDetails(newCase, existingCase != null && newCase.getFollowUpStatus() != existingCase.getFollowUpStatus());
 

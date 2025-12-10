@@ -18,6 +18,7 @@ package de.symeda.sormas.backend.externalmessage.labmessage;
 import static de.symeda.sormas.api.utils.dataprocessing.ProcessingResultStatus.CANCELED;
 import static de.symeda.sormas.api.utils.dataprocessing.ProcessingResultStatus.DONE;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -254,7 +255,8 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 		cases = getCaseFacade().getByPersonUuids(persons.stream().map(PersonDto::getUuid).collect(Collectors.toList()));
 		assertThat(cases, hasSize(2));
 		// the sample should be added on the new case
-		List<SampleDto> samples = getSampleFacade().getByCaseUuids(Collections.singletonList(newCase.getUuid()));
+		List<SampleDto> samples = getSampleFacade().getAllActiveSamplesAfter(new Date(0));
+		//a new case was created so the number of total samples should be 2
 		assertThat(samples, hasSize(2));
 	}
 
@@ -323,12 +325,16 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 
 		SampleDto sample = creator.createSample(caze.toReference(), reportingUser.toReference(), lab.toReference());
 
-		// can't process if there is no automaticSampleAssignmentThreshold set for the
-		// disease
+		// STEP 1: Process a message with no threshold set
+		final int sampleCountBeforeStep1 = getSampleFacade().getAllActiveSamplesAfter(new Date(0)).size();
 		ProcessingResult<ExternalMessageProcessingResult> result = runFlow(externalMessage);
+		// can't process if there is no automaticSampleAssignmentThreshold set for the disease
 		assertThat(result.getStatus(), is(CANCELED));
 		assertThat(externalMessage.getStatus(), is(ExternalMessageStatus.UNPROCESSED));
 		assertThat(getExternalMessageFacade().getByUuid(externalMessage.getUuid()).getStatus(), is(ExternalMessageStatus.UNPROCESSED));
+
+		final int sampleCountAfterStep1 = getSampleFacade().getAllActiveSamplesAfter(new Date(0)).size();
+		assertThat("Sample count should have remained the same.", sampleCountAfterStep1, is(sampleCountBeforeStep1));
 
 		// set the threshold
 		creator.updateDiseaseConfiguration(externalMessage.getDisease(), true, true, true, true, null, 10);
@@ -338,28 +344,50 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 		sample.setSampleDateTime(DateHelper.subtractDays(new Date(), 11));
 		getSampleFacade().saveSample(sample);
 
+		// STEP 2: Process the message again now with a set threshold but with a sample date that is too old
+		final int sampleCountBeforeStep2 = getSampleFacade().getAllActiveSamplesAfter(new Date(0)).size();
 		result = runFlow(externalMessage);
 		assertThat(result.getStatus(), is(DONE));
 		assertThat(externalMessage.getStatus(), is(ExternalMessageStatus.PROCESSED));
+		final int sampleCountAfterStep2 = getSampleFacade().getAllActiveSamplesAfter(new Date(0)).size();
+
+		final String step2ResultCaseUuid = result.getData().getCase().getUuid();
+
+		assertThat("Sample count should have incresed, new sample for new case.", sampleCountAfterStep2, is(greaterThan(sampleCountBeforeStep2)));
 
 		List<PersonDto> persons = getPersonFacade().getAllAfter(new Date(0));
-		List<CaseDataDto> cases = getCaseFacade().getByPersonUuids(persons.stream().map(PersonDto::getUuid).collect(Collectors.toList()));
-		assertThat(cases, hasSize(2));
+		List<CaseDataDto> cases = getCaseFacade().getAllAfter(new Date(0));
+		assertThat("Case count should have been increased to 2, new case due to existing sample date too old", cases, hasSize(2));
 		CaseDataDto newCase = cases.stream().filter(c -> !DataHelper.isSame(c, caze)).findFirst().get();
+		assertThat("Case UUID should be the same as the result of the previous step.", newCase.getUuid(), is(step2ResultCaseUuid));
 
 		// set the sample date time after the threshold
 		sample.setSampleDateTime(DateHelper.subtractDays(new Date(), 5));
 		getSampleFacade().saveSample(sample);
 
+		// STEP 3: Process the message again now with a set threshold but with a sample date that is valid
+		final int sampleCountBeforeStep3 = getSampleFacade().getAllActiveSamplesAfter(new Date(0)).size();
 		result = runFlow(externalMessage);
 		assertThat(result.getStatus(), is(DONE));
 		assertThat(externalMessage.getStatus(), is(ExternalMessageStatus.PROCESSED));
+		final int sampleCountAfterStep3 = getSampleFacade().getAllActiveSamplesAfter(new Date(0)).size();
+		final String step3ResultCaseUuid = result.getData().getCase().getUuid();
+
+		cases = getCaseFacade().getAllAfter(new Date(0));
+		assertThat("Case count should not have increased, sample date theshold was set in valid range", cases, hasSize(2));
+		assertThat(
+			"Sample count should have incresed, new sample for existing case.",
+			sampleCountAfterStep3,
+			is(greaterThan(sampleCountBeforeStep3)));
+		assertThat(
+			"Case UUID should be the same as the result of the previous step (result should be added to existing case).",
+			step3ResultCaseUuid,
+			is(step2ResultCaseUuid));
 
 		persons = getPersonFacade().getAllAfter(new Date(0));
 		assertThat(persons, hasSize(1));
 		assertThat(persons.get(0).getUuid(), is(person.getUuid()));
-		cases = getCaseFacade().getByPersonUuids(persons.stream().map(PersonDto::getUuid).collect(Collectors.toList()));
-		assertThat(cases, hasSize(2));
+
 		List<SampleDto> samples = getSampleFacade().getByCaseUuids(Collections.singletonList(newCase.getUuid()));
 		assertThat(samples, hasSize(2));
 		SampleDto processedSample = samples.stream().filter(s -> !DataHelper.isSame(s, sample)).findFirst().get();

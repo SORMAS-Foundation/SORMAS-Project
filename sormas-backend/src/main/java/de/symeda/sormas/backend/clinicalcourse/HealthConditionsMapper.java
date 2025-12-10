@@ -15,13 +15,11 @@
 
 package de.symeda.sormas.backend.clinicalcourse;
 
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
-import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @LocalBean
@@ -63,6 +61,7 @@ public class HealthConditionsMapper {
 		target.setPreviousTuberculosisTreatment(source.getPreviousTuberculosisTreatment());
 		target.setTuberculosisInfectionYear(source.getTuberculosisInfectionYear());
 		target.setComplianceWithTreatment(source.getComplianceWithTreatment());
+		target.setRecurrentBronchiolitis(source.getRecurrentBronchiolitis());
 		return target;
 	}
 
@@ -99,6 +98,7 @@ public class HealthConditionsMapper {
 		target.setPreviousTuberculosisTreatment(source.getPreviousTuberculosisTreatment());
 		target.setTuberculosisInfectionYear(source.getTuberculosisInfectionYear());
 		target.setComplianceWithTreatment(source.getComplianceWithTreatment());
+		target.setRecurrentBronchiolitis(source.getRecurrentBronchiolitis());
 
 		return target;
 	}

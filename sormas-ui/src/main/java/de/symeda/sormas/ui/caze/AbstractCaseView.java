@@ -15,7 +15,11 @@
 
 package de.symeda.sormas.ui.caze;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.UI;
@@ -24,8 +28,8 @@ import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.CoreFacade;
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
@@ -59,6 +63,21 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 	public static final String VIEW_MODE_URL_PREFIX = "v";
 
 	public static final String ROOT_VIEW_NAME = CasesView.VIEW_NAME;
+
+	public static final Set<Disease> CLINICAL_COURSE_DISABLED_DISEASES = Collections.unmodifiableSet(
+		new HashSet<>(
+			Arrays.asList(
+				Disease.MEASLES,
+				Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+				Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+				Disease.GIARDIASIS,
+				Disease.CRYPTOSPORIDIOSIS)));
+
+	public static final Set<Disease> THERAPY_DISABLED_DISEASES =
+		Collections.unmodifiableSet(new HashSet<>(Arrays.asList(Disease.MEASLES, Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS)));
+
+	public static final Set<Disease> SYMPTOMS_DISABLED_DISEASES =
+		Collections.unmodifiableSet(new HashSet<>(Arrays.asList(Disease.INFLUENZA, Disease.LATENT_TUBERCULOSIS)));
 
 	private Boolean hasOutbreak;
 	private boolean caseFollowupEnabled;
@@ -162,9 +181,7 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.MATERNAL_HISTORY),
 					params);
 			}
-			if (UiUtil.enabled(FeatureType.VIEW_TAB_CASES_HOSPITALIZATION)
-				&& !caze.checkIsUnreferredPortHealthCase()
-				&& !UiUtil.isPortHealthUser()) {
+			if (UiUtil.enabled(FeatureType.VIEW_TAB_CASES_HOSPITALIZATION) && !caze.checkIsUnreferredPortHealthCase() && !UiUtil.isPortHealthUser()) {
 				menu.addView(
 					HospitalizationView.VIEW_NAME,
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HOSPITALIZATION),
@@ -178,7 +195,7 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.PORT_HEALTH_INFO),
 					params);
 			}
-			if (UiUtil.enabled(FeatureType.VIEW_TAB_CASES_SYMPTOMS)) {
+			if (UiUtil.enabled(FeatureType.VIEW_TAB_CASES_SYMPTOMS) && !SYMPTOMS_DISABLED_DISEASES.contains(caze.getDisease())) {
 				menu.addView(CaseSymptomsView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.SYMPTOMS), params);
 			}
 			if (UiUtil.enabled(FeatureType.VIEW_TAB_CASES_EPIDEMIOLOGICAL_DATA) && caze.getDisease() != Disease.CONGENITAL_RUBELLA) {
@@ -186,7 +203,13 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 			}
 			if (UiUtil.permitted(FeatureType.VIEW_TAB_CASES_THERAPY, UserRight.THERAPY_VIEW)
 				&& !caze.checkIsUnreferredPortHealthCase()
-				&& UiUtil.enabled(FeatureType.CLINICAL_MANAGEMENT)) {
+				&& UiUtil.enabled(FeatureType.CLINICAL_MANAGEMENT)
+				&& (!(FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+					&& THERAPY_DISABLED_DISEASES.contains(caze.getDisease())))
+				&& Disease.INFLUENZA != caze.getDisease()) {
+				// Therapy view is not available for Luxembourg for Measles, IMI, IPI, Gradiastis & Cryptosporidiosis cases.
+				// But for other countries, it should be available for the above diseases
+				// Therapy view is not available for all countries Influenza cases. #13708
 				menu.addView(TherapyView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.THERAPY), params);
 			}
 		}
@@ -200,7 +223,13 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 		if (showExtraMenuEntries) {
 			if (UiUtil.permitted(
 				EnumSet.of(FeatureType.VIEW_TAB_CASES_FOLLOW_UP, FeatureType.VIEW_TAB_CASES_CLINICAL_COURSE, FeatureType.CLINICAL_MANAGEMENT),
-				UserRight.CLINICAL_COURSE_VIEW) && !caze.checkIsUnreferredPortHealthCase() && !DiseaseHelper.checkDiseaseIsInvasiveBacterialDiseases(caze.getDisease())) {
+				UserRight.CLINICAL_COURSE_VIEW)
+				&& !caze.checkIsUnreferredPortHealthCase()
+				&& !(FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+					&& CLINICAL_COURSE_DISABLED_DISEASES.contains(caze.getDisease()))
+				&& Disease.INFLUENZA != caze.getDisease()) {
+				// clinical course view is not available for Luxembourg for Measles, IMI, IPI, GIARDIASIS, Cryptosporidiosis cases,
+				// and for all other countries Influenza cases. 13708
 				menu.addView(
 					ClinicalCourseView.VIEW_NAME,
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CLINICAL_COURSE),

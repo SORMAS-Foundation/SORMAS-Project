@@ -40,6 +40,7 @@ import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
+import javax.transaction.Transactional;
 
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -922,6 +923,7 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 		}
 	}
 
+	@Transactional(Transactional.TxType.REQUIRED)
 	public boolean isPortHealthUser() {
 		User user = getCurrentUser();
 		Set<UserRoleDto> userRoleDtos = user.getUserRoles().stream().map(UserRoleFacadeEjb::toDto).collect(Collectors.toSet());

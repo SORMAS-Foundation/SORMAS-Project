@@ -39,6 +39,8 @@ import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.exposure.Exposure;
 import de.symeda.sormas.backend.exposure.ExposureService;
+import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.country.CountryService;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
@@ -58,6 +60,8 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 	private ContactService contactService;
 	@EJB
 	private UserService userService;
+	@EJB
+	private CountryService countryService;
 
 	public EpiData fillOrBuildEntity(EpiDataDto source, EpiData target, boolean checkChangeDate) {
 		if (source == null) {
@@ -100,6 +104,16 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		}
 		target.getActivitiesAsCase().clear();
 		target.getActivitiesAsCase().addAll(activitiesAsCase);
+		target.setClusterType(source.getClusterType());
+		target.setCaseImportedStatus(source.getCaseImportedStatus());
+		target.setClusterTypeText(source.getClusterTypeText());
+		target.setClusterRelated(source.isClusterRelated());
+		target.setModeOfTransmission(source.getModeOfTransmission());
+		target.setModeOfTransmissionType(source.getModeOfTransmissionType());
+		target.setInfectionSource(source.getInfectionSource());
+		target.setInfectionSourceText(source.getInfectionSourceText());
+		target.setCountry(countryService.getByReferenceDto(source.getCountry()));
+		target.setImportedCase(source.getImportedCase());
 
 		return target;
 	}
@@ -119,6 +133,8 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setAnimalCondition(source.getAnimalCondition());
 		target.setTypeOfAnimal(source.getTypeOfAnimal());
 		target.setTypeOfAnimalDetails(source.getTypeOfAnimalDetails());
+		target.setTypeOfChildcareFacility(source.getTypeOfChildcareFacility());
+		target.setChildcareFacilityDetails(source.getChildcareFacilityDetails());
 		target.setAnimalContactType(source.getAnimalContactType());
 		target.setAnimalContactTypeDetails(source.getAnimalContactTypeDetails());
 		target.setAnimalMarket(source.getAnimalMarket());
@@ -169,6 +185,20 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setRiskArea(source.getRiskArea());
 		target.setExposureRole(source.getExposureRole());
 		target.setLargeAttendanceNumber(source.getLargeAttendanceNumber());
+		target.setTravelAccommodation(source.getTravelAccommodation());
+		target.setTravelAccommodationType(source.getTravelAccommodationType());
+		target.setSwimmingLocation(source.getSwimmingLocation());
+		target.setSwimmingLocationType(source.getSwimmingLocationType());
+
+		target.setAnimalLocation(source.getAnimalLocation());
+		target.setAnimalLocationText(source.getAnimalLocationText());
+		target.setDomesticSwimming(source.getDomesticSwimming());
+		target.setInternationalSwimming(source.getInternationalSwimming());
+		target.setSexualExposureText(source.getSexualExposureText());
+
+		target.setRawFoodContact(source.getRawFoodContact());
+		target.setRawFoodContactText(source.getRawFoodContactText());
+		target.setSymptomaticIndividualText(source.getSymptomaticIndividualText());
 
 		return target;
 	}
@@ -241,7 +271,16 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 			activityAsCaseDtos.add(activityAsCaseDto);
 		}
 		target.setActivitiesAsCase(activityAsCaseDtos);
-
+		target.setClusterType(source.getClusterType());
+		target.setCaseImportedStatus(source.getCaseImportedStatus());
+		target.setClusterTypeText(source.getClusterTypeText());
+		target.setClusterRelated(source.isClusterRelated());
+		target.setModeOfTransmission(source.getModeOfTransmission());
+		target.setModeOfTransmissionType(source.getModeOfTransmissionType());
+		target.setInfectionSource(source.getInfectionSource());
+		target.setInfectionSourceText(source.getInfectionSourceText());
+		target.setCountry(CountryFacadeEjb.toReferenceDto(source.getCountry()));
+		target.setImportedCase(source.getImportedCase());
 		return target;
 	}
 
@@ -258,6 +297,8 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setAnimalCondition(source.getAnimalCondition());
 		target.setTypeOfAnimal(source.getTypeOfAnimal());
 		target.setTypeOfAnimalDetails(source.getTypeOfAnimalDetails());
+		target.setTypeOfChildcareFacility(source.getTypeOfChildcareFacility());
+		target.setChildcareFacilityDetails(source.getChildcareFacilityDetails());
 		target.setAnimalContactType(source.getAnimalContactType());
 		target.setAnimalContactTypeDetails(source.getAnimalContactTypeDetails());
 		target.setAnimalMarket(source.getAnimalMarket());
@@ -308,6 +349,18 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setRiskArea(source.getRiskArea());
 		target.setExposureRole(source.getExposureRole());
 		target.setLargeAttendanceNumber(source.getLargeAttendanceNumber());
+		target.setTravelAccommodation(source.getTravelAccommodation());
+		target.setTravelAccommodationType(source.getTravelAccommodationType());
+		target.setSwimmingLocation(source.getSwimmingLocation());
+		target.setSwimmingLocationType(source.getSwimmingLocationType());
+		target.setAnimalLocation(source.getAnimalLocation());
+		target.setAnimalLocationText(source.getAnimalLocationText());
+		target.setDomesticSwimming(source.getDomesticSwimming());
+		target.setInternationalSwimming(source.getInternationalSwimming());
+		target.setSexualExposureText(source.getSexualExposureText());
+		target.setRawFoodContact(source.getRawFoodContact());
+		target.setRawFoodContactText(source.getRawFoodContactText());
+		target.setSymptomaticIndividualText(source.getSymptomaticIndividualText());
 
 		return target;
 	}

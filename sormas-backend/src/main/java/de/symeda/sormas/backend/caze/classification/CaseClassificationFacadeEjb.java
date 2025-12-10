@@ -350,9 +350,27 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 			symptom(SymptomsDto.FEVER),
 			symptom(SymptomsDto.SKIN_RASH),
 			xOf(1, symptom(SymptomsDto.COUGH), symptom(SymptomsDto.RUNNY_NOSE), symptom(SymptomsDto.CONJUNCTIVITIS)));
-		probable = epiData(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN);
-		confirmed = allOf(suspect, positiveTestResult(Disease.MEASLES, PathogenTestType.IGM_SERUM_ANTIBODY));
-		addCriteria(Disease.MEASLES, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, notACase(Disease.MEASLES));
+		if (configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+			probable = allOf(suspect, epiData(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN));
+			confirmed = allOf(
+				suspect,
+				symptom(SymptomsDto.SKIN_RASH, CountryHelper.COUNTRY_CODE_LUXEMBOURG + "-" + Disease.MEASLES.name()),
+				xOf(
+					1,
+					positiveTestResult(
+						Disease.MEASLES,
+						PathogenTestType.CULTURE,
+						PathogenTestType.IGM_SERUM_ANTIBODY,
+						PathogenTestType.IGA_SERUM_ANTIBODY,
+						PathogenTestType.PCR_RT_PCR,
+						PathogenTestType.SEQUENCING,
+						PathogenTestType.GENOTYPING)));
+			addCriteria(Disease.MEASLES, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, null);
+		} else {
+			probable = epiData(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN);
+			confirmed = allOf(suspect, positiveTestResult(Disease.MEASLES, PathogenTestType.IGM_SERUM_ANTIBODY));
+			addCriteria(Disease.MEASLES, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, notACase(Disease.MEASLES));
+		}
 
 		// Cholera
 		suspect = allOf(
@@ -461,68 +479,100 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 
 		// Invasive Meningococcal Infection
 		suspect = xOf(
-						1,
-						symptom(SymptomsDto.MENINGEAL_SIGNS),
-						symptom(SymptomsDto.HEMORRHAGIC_RASH),
-						symptom(SymptomsDto.SHOCK),
-						symptom(SymptomsDto.ARTHRITIS));
+			1,
+			symptom(SymptomsDto.MENINGEAL_SIGNS),
+			symptom(SymptomsDto.HEMORRHAGIC_RASH),
+			symptom(SymptomsDto.SHOCK),
+			symptom(SymptomsDto.ARTHRITIS));
 
 		probable = allOf(suspect, caseData(CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, YesNoUnknown.YES));
 
 		confirmed = allOf(
-				suspect,
-				xOf(1,(positiveTestResult(
-						Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-						PathogenTestType.MICROSCOPY,
-						PathogenTestType.PCR_RT_PCR,
-						PathogenTestType.ANTIGEN_DETECTION))));
-		addCriteria(
-				Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-				DateHelper.getDateZero(2020, 11, 6),
-				suspect,
-				probable,
-				confirmed,
-				null);
+			suspect,
+			xOf(
+				1,
+				(positiveTestResult(
+					Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+					PathogenTestType.MICROSCOPY,
+					PathogenTestType.PCR_RT_PCR,
+					PathogenTestType.ANTIGEN_DETECTION))));
+		addCriteria(Disease.INVASIVE_MENINGOCOCCAL_INFECTION, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, null);
 
 		//Invasive Pneumococcal Infection
 		suspect = null;
 		probable = null;
-		confirmed = xOf(1, positiveTestResult(
-						Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-						PathogenTestType.CULTURE,
-						PathogenTestType.PCR_RT_PCR,
-						PathogenTestType.SEQUENCING));
-		addCriteria(
+		confirmed = xOf(
+			1,
+			positiveTestResult(
 				Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-				DateHelper.getDateZero(2020, 11, 6),
-				suspect,
-				probable,
-				confirmed,
-				null);
+				PathogenTestType.CULTURE,
+				PathogenTestType.PCR_RT_PCR,
+				PathogenTestType.SEQUENCING));
+		addCriteria(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, null);
 
 		// Pertusis
-		suspect = xOf(1,allOfTogether(symptom(SymptomsDto.COUGHING_BOUTS, Disease.PERTUSSIS.name()),xOfSub(1, false,
-								symptom(SymptomsDto.WHOOP_SOUND), symptom(SymptomsDto.COUGHS_PROVOKE_VOMITING), symptom(SymptomsDto.NOCTURNAL_COUGH))),
-				symptom(SymptomsDto.APNOEA, Disease.PERTUSSIS.name()),
-				caseData(CaseDataDto.CLINICAL_CONFIRMATION, Disease.PERTUSSIS.name(), YesNoUnknown.YES));
+		suspect = xOf(
+			1,
+			allOfTogether(
+				symptom(SymptomsDto.COUGHING_BOUTS, Disease.PERTUSSIS.name()),
+				xOfSub(
+					1,
+					false,
+					symptom(SymptomsDto.WHOOP_SOUND),
+					symptom(SymptomsDto.COUGHS_PROVOKE_VOMITING),
+					symptom(SymptomsDto.NOCTURNAL_COUGH))),
+			symptom(SymptomsDto.APNOEA, Disease.PERTUSSIS.name()),
+			caseData(CaseDataDto.CLINICAL_CONFIRMATION, Disease.PERTUSSIS.name(), YesNoUnknown.YES));
 
 		probable = allOf(suspect, caseData(CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, YesNoUnknown.YES));
 
 		confirmed = allOf(
-				suspect,
-				xOf(1,(positiveTestResult(
-						Disease.PERTUSSIS,
-						PathogenTestType.MICROSCOPY,
-						PathogenTestType.PCR_RT_PCR,
-						PathogenTestType.CULTURE))));
-		addCriteria(
-				Disease.PERTUSSIS,
-				DateHelper.getDateZero(2020, 11, 6),
-				suspect,
-				probable,
-				confirmed,
-				null);
+			suspect,
+			xOf(1, (positiveTestResult(Disease.PERTUSSIS, PathogenTestType.MICROSCOPY, PathogenTestType.PCR_RT_PCR, PathogenTestType.CULTURE))));
+		addCriteria(Disease.PERTUSSIS, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, null);
 
+		// Giardiasis
+		probable = allOf(
+			xOf(
+				1,
+				symptom(SymptomsDto.DIARRHEA),
+				symptom(SymptomsDto.BLOATING),
+				symptom(SymptomsDto.ABDOMINAL_PAIN),
+				symptom(SymptomsDto.WEIGHT_LOSS)),
+			xOf(
+				1,
+				exposure(ExposureType.ANIMAL_CONTACT),
+				exposure(ExposureType.RECREATIONAL_WATER),
+				exposure(ExposureType.FOOD),
+				exposure(ExposureType.FLOOD_EXPOSURE),
+				exposure(ExposureType.SEXUAL_CONTACT)));
+		confirmed = allOf(
+			xOf(
+				1,
+				symptom(SymptomsDto.DIARRHEA),
+				symptom(SymptomsDto.BLOATING),
+				symptom(SymptomsDto.ABDOMINAL_PAIN),
+				symptom(SymptomsDto.WEIGHT_LOSS)),
+			xOf(1, (positiveTestResult(Disease.GIARDIASIS, PathogenTestType.MICROSCOPY, PathogenTestType.PCR_RT_PCR, PathogenTestType.CULTURE))));
+		addCriteria(Disease.GIARDIASIS, DateHelper.getDateZero(2020, 11, 6), null, probable, confirmed, null);
+
+		// Cryptosporidiosis
+		probable = allOf(
+			xOf(1, symptom(SymptomsDto.DIARRHEA), symptom(SymptomsDto.ABDOMINAL_PAIN)),
+			xOf(
+				1,
+				exposure(ExposureType.FOOD),
+				exposure(ExposureType.RECREATIONAL_WATER),
+				exposure(ExposureType.SEXUAL_CONTACT),
+				exposure(ExposureType.FLOOD_EXPOSURE),
+				exposure(ExposureType.SYMPTOMATIC_CONTACT),
+				exposure(ExposureType.ANIMAL_CONTACT)));
+		confirmed = allOf(
+			xOf(1, symptom(SymptomsDto.DIARRHEA), symptom(SymptomsDto.ABDOMINAL_PAIN)),
+			xOf(
+				1,
+				(positiveTestResult(Disease.CRYPTOSPORIDIOSIS, PathogenTestType.MICROSCOPY, PathogenTestType.PCR_RT_PCR, PathogenTestType.CULTURE))));
+		addCriteria(Disease.CRYPTOSPORIDIOSIS, DateHelper.getDateZero(2020, 11, 6), null, probable, confirmed, null);
 
 		// CORONAVIRUS
 		suspect = xOf(
@@ -661,19 +711,25 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 	private ClassificationCaseCriteriaDto caseData(String propertyId, Object... propertyValues) {
 		return new ClassificationCaseCriteriaDto(propertyId, propertyValues);
 	}
+
 	private ClassificationCaseCriteriaDto caseData(String propertyId, String addition, Object... propertyValues) {
-		return new ClassificationCaseCriteriaDto(propertyId,addition, propertyValues);
+		return new ClassificationCaseCriteriaDto(propertyId, addition, propertyValues);
 	}
 
 	private ClassificationSymptomsCriteriaDto symptom(String propertyId) {
 		return new ClassificationSymptomsCriteriaDto(propertyId);
 	}
+
 	private ClassificationSymptomsCriteriaDto symptom(String propertyId, String addition) {
 		return new ClassificationSymptomsCriteriaDto(propertyId, addition);
 	}
 
 	private ClassificationEpiDataCriteriaDto epiData(String propertyId) {
 		return new ClassificationEpiDataCriteriaDto(propertyId);
+	}
+
+	private ClassificationExposureCriteriaDto exposure(ExposureType exposureType) {
+		return new ClassificationExposureCriteriaDto(exposureType);
 	}
 
 	private ClassificationExposureCriteriaDto exposure(String propertyId, ExposureType exposureType, Object... propertyValues) {

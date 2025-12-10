@@ -15,8 +15,10 @@
 
 package de.symeda.sormas.api.externalmessage.processing;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -151,6 +153,10 @@ public abstract class ExternalMessageProcessingFacade extends AbstractProcessing
 		return facilityFacade.getReferenceByUuid(uuid);
 	}
 
+	public List<SampleDto> getSamplesByCaseUuids(List<String> caseUuids) {
+		return sampleFacade.getByCaseUuids(caseUuids);
+	}
+
 	public List<SampleDto> getSamplesByCriteria(SampleCriteria sampleCriteria) {
 		return sampleFacade.getSamplesByCriteria(sampleCriteria);
 	}
@@ -195,6 +201,26 @@ public abstract class ExternalMessageProcessingFacade extends AbstractProcessing
 		}
 	}
 
+	public FacilityReferenceDto getHospitalFacilityReferenceByExternalId(String externalId) {
+		return facilityFacade.getByExternalIdAndType(externalId, FacilityType.HOSPITAL, false)
+			.stream()
+			.filter(Objects::nonNull)
+			.findFirst()
+			.orElse(null);
+	}
+
+	public List<FacilityReferenceDto> getHospitalFacilityReferenceNameMatching(Pattern pattern) {
+
+		if (pattern == null) {
+			return Collections.emptyList();
+		}
+
+		return facilityFacade.getActiveFacilitiesNameMatching(FacilityType.HOSPITAL, pattern, false, false)
+			.stream()
+			.filter(Objects::nonNull)
+			.collect(Collectors.toList());
+	}
+
 	public void saveExternalMessage(ExternalMessageDto externalMessage) {
 		externalMessageFacade.save(externalMessage);
 	}
@@ -223,5 +249,16 @@ public abstract class ExternalMessageProcessingFacade extends AbstractProcessing
 			notifierFacade.getVersionReferenceByUuidAndDate(updatedNotifierDto.getUuid(), updatedNotifierDto.getChangeDate());
 		caseDto.setNotifier(notifierReferenceDto);
 		return caseFacade.save(caseDto);
+	}
+
+	public void updatePerson(PersonDto personDto) {
+		if(personFacade == null) {
+			return;
+		}
+		if(personDto == null) {
+			return;
+		}
+
+		personFacade.save(personDto);
 	}
 }

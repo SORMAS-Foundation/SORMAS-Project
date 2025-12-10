@@ -1015,6 +1015,9 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		target.setPlaceOfBirthFacilityDetails(source.getPlaceOfBirthFacilityDetails());
 		target.setGestationAgeAtBirth(source.getGestationAgeAtBirth());
 		target.setBirthWeight(source.getBirthWeight());
+		target.setGestationalAgeCategory(source.getGestationalAgeCategory());
+		target.setBirthWeightCategory(source.getBirthWeightCategory());
+		target.setMultipleBirth(source.getMultipleBirth());
 
 		target.setPassportNumber(source.getPassportNumber());
 		target.setNationalHealthId(source.getNationalHealthId());
@@ -1034,6 +1037,8 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		target.setEmancipated(source.isEmancipated());
 		target.setEntryDate(source.getEntryDate());
 		target.setLivingStatus(source.getLivingStatus());
+		target.setWorkPlace(source.getWorkPlace());
+		target.setWorkPlaceText(source.getWorkPlaceText());
 		return target;
 	}
 
@@ -1784,6 +1789,9 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		target.setPlaceOfBirthFacilityDetails(source.getPlaceOfBirthFacilityDetails());
 		target.setGestationAgeAtBirth(source.getGestationAgeAtBirth());
 		target.setBirthWeight(source.getBirthWeight());
+		target.setGestationalAgeCategory(source.getGestationalAgeCategory());
+		target.setBirthWeightCategory(source.getBirthWeightCategory());
+		target.setMultipleBirth(source.getMultipleBirth());
 
 		target.setPassportNumber(source.getPassportNumber());
 		target.setNationalHealthId(source.getNationalHealthId());
@@ -1806,7 +1814,8 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		target.setEmancipated(source.isEmancipated());
 		target.setEntryDate(source.getEntryDate());
 		target.setLivingStatus(source.getLivingStatus());
-
+		target.setWorkPlace(source.getWorkPlace());
+		target.setWorkPlaceText(source.getWorkPlaceText());
 		return target;
 	}
 

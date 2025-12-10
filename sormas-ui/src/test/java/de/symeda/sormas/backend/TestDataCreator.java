@@ -28,6 +28,15 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
+import de.symeda.sormas.api.environment.EnvironmentDto;
+import de.symeda.sormas.api.environment.EnvironmentMedia;
+import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleDto;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleMaterial;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleReferenceDto;
+import de.symeda.sormas.api.environment.environmentsample.Pathogen;
+import de.symeda.sormas.backend.customizableenum.CustomizableEnumValue;
 import org.jetbrains.annotations.NotNull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -149,6 +158,8 @@ import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserRole;
+
+import javax.annotation.Nullable;
 
 public class TestDataCreator {
 
@@ -1395,6 +1406,83 @@ public class TestDataCreator {
 		return sample;
 	}
 
+	public EnvironmentDto createEnvironment(
+			String name,
+			EnvironmentMedia environmentMedia,
+			UserReferenceDto reportingUser,
+			RDCF rdcf,
+			Consumer<EnvironmentDto> extraConfig) {
+		EnvironmentDto environment = EnvironmentDto.build();
+		environment.setEnvironmentMedia(environmentMedia);
+		environment.setEnvironmentName(name);
+		environment.setReportingUser(reportingUser);
+		environment.setReportDate(new Date());
+
+		LocationDto location = environment.getLocation();
+		location.setLongitude(1.0);
+		location.setLatitude(1.0);
+
+		if (extraConfig != null) {
+			extraConfig.accept(environment);
+		}
+
+		if (rdcf != null) {
+			location.setRegion(rdcf.region);
+			location.setDistrict(rdcf.district);
+			location.setCommunity(rdcf.community);
+		}
+
+		environment = beanTest.getEnvironmentFacade().save(environment);
+
+		return environment;
+
+	}
+
+	public EnvironmentSampleDto createEnvironmentSample(
+			EnvironmentReferenceDto environment,
+			UserReferenceDto reportingUser,
+			RDCF rdcf,
+			FacilityReferenceDto lab,
+			@Nullable Consumer<EnvironmentSampleDto> extraConfig) {
+		EnvironmentSampleDto sample = EnvironmentSampleDto.build(environment, reportingUser);
+		sample.setSampleMaterial(EnvironmentSampleMaterial.WATER);
+		sample.getLocation().setRegion(rdcf.region);
+		sample.getLocation().setLatitude(1.0);
+		sample.getLocation().setLongitude(1.0);
+		sample.getLocation().setDistrict(rdcf.district);
+		sample.setLaboratory(lab);
+		if (extraConfig != null) {
+			extraConfig.accept(sample);
+		}
+
+		return beanTest.getEnvironmentSampleFacade().save(sample);
+	}
+
+	public PathogenTestDto createPathogenTest(
+			EnvironmentSampleReferenceDto sample,
+			PathogenTestType testType,
+			Pathogen testedPathogen,
+			FacilityReferenceDto lab,
+			UserReferenceDto labUser,
+			PathogenTestResultType testResult,
+			Consumer<PathogenTestDto> extraConfig) {
+
+		PathogenTestDto sampleTest = PathogenTestDto.build(sample, labUser);
+		sampleTest.setTestType(testType);
+		sampleTest.setLab(lab);
+		sampleTest.setTestedPathogen(testedPathogen);
+		sampleTest.setTestResult(testResult);
+		sampleTest.setTestResultVerified(true);
+		sampleTest.setTestDateTime(new Date());
+
+		if (extraConfig != null) {
+			extraConfig.accept(sampleTest);
+		}
+
+		sampleTest = beanTest.getPathogenTestFacade().savePathogenTest(sampleTest);
+		return sampleTest;
+	}
+
 	public SampleDto createSample(
 		EventParticipantReferenceDto associatedEventParticipant,
 		Date sampleDateTime,
@@ -1510,6 +1598,21 @@ public class TestDataCreator {
 
 	public PathogenTestDto createPathogenTest(CaseDataDto associatedCase, PathogenTestType testType, PathogenTestResultType resultType) {
 		return createPathogenTest(associatedCase, null, testType, resultType);
+	}
+
+	public Pathogen createPathogen(String value, String caption) {
+
+		CustomizableEnumValue pathogen = new CustomizableEnumValue();
+		pathogen.setDataType(CustomizableEnumType.PATHOGEN);
+		pathogen.setValue(value);
+		pathogen.setCaption(caption);
+		pathogen.setActive(true);
+
+		beanTest.getCustomizableEnumValueService().ensurePersisted(pathogen);
+
+		beanTest.getCustomizableEnumFacade().loadData();
+
+		return beanTest.getCustomizableEnumFacade().getEnumValue(CustomizableEnumType.PATHOGEN, null, value);
 	}
 
 	public PathogenTestDto createPathogenTest(SampleReferenceDto sample, CaseDataDto associatedCase) {

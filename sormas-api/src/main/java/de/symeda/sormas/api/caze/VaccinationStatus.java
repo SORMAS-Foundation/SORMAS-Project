@@ -17,12 +17,22 @@
  *******************************************************************************/
 package de.symeda.sormas.api.caze;
 
+import de.symeda.sormas.api.CountryHelper;
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.HideForCountriesExcept;
 
 public enum VaccinationStatus {
 
 	VACCINATED,
 	UNVACCINATED,
+	@Diseases(value = {Disease.MEASLES})
+	VACCINATED_ONE_DOSE,
+	@Diseases(value = {Disease.MEASLES})
+	VACCINATED_TWO_DOSE,
+	@Diseases(value = {Disease.MEASLES})
+	RECOVERED,
 	UNKNOWN;
 
 	@Override

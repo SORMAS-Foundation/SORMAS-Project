@@ -32,6 +32,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DependantOn;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
@@ -98,6 +99,8 @@ public class ExposureDto extends PseudonymizableDto {
 	public static final String HABITATION_DETAILS = "habitationDetails";
 	public static final String TYPE_OF_ANIMAL = "typeOfAnimal";
 	public static final String TYPE_OF_ANIMAL_DETAILS = "typeOfAnimalDetails";
+	public static final String TYPE_OF_CHILDCARE_FACILITY = "typeOfChildcareFacility";
+	public static final String CHILDCARE_FACILITY_DETAILS = "childcareFacilityDetails";
 	public static final String PHYSICAL_CONTACT_DURING_PREPARATION = "physicalContactDuringPreparation";
 	public static final String PHYSICAL_CONTACT_WITH_BODY = "physicalContactWithBody";
 	public static final String DECEASED_PERSON_ILL = "deceasedPersonIll";
@@ -105,6 +108,18 @@ public class ExposureDto extends PseudonymizableDto {
 	public static final String DECEASED_PERSON_RELATION = "deceasedPersonRelation";
 	public static final String EXPOSURE_ROLE = "exposureRole";
 	public static final String LARGE_ATTENDANCE_NUMBER = "largeAttendanceNumber";
+	public static final String TRAVEL_ACCOMMODATION = "travelAccommodation";
+	public static final String TRAVEL_ACCOMMODATION_TYPE = "travelAccommodationType";
+	public static final String SWIMMING_LOCATION = "swimmingLocation";
+	public static final String SWIMMING_LOCATION_TYPE = "swimmingLocationType";
+	public static final String ANIMAL_LOCATION = "animalLocation";
+	public static final String ANIMAL_LOCATION_TEXT = "animalLocationText";
+	public static final String DOMESTIC_SWIMMING = "domesticSwimming";
+	public static final String INTERNATIONAL_SWIMMING = "internationalSwimming";
+	public static final String SEXUAL_EXPOSURE_TEXT = "sexualExposureText";
+	public static final String RAW_FOOD_CONTACT = "rawFoodContact";
+	public static final String RAW_FOOD_CONTACT_TEXT = "rawFoodContactText";
+	public static final String SYMPTOMATIC_INDIVIDUAL_TEXT = "symptomaticIndividualText";
 
 	@SensitiveData
 	private UserReferenceDto reportingUser;
@@ -124,6 +139,9 @@ public class ExposureDto extends PseudonymizableDto {
 	@EmbeddedPersonalData
 	@EmbeddedSensitiveData
 	private LocationDto location;
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private ExposureRole exposureRole;
 
 	// Type of Place
@@ -145,15 +163,39 @@ public class ExposureDto extends PseudonymizableDto {
 	private WorkEnvironment workEnvironment;
 
 	// Details
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private YesNoUnknown indoors;
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private YesNoUnknown outdoors;
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private YesNoUnknown wearingMask;
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private YesNoUnknown wearingPpe;
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private YesNoUnknown otherProtectiveMeasures;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private String protectiveMeasuresDetails;
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private YesNoUnknown shortDistance;
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private YesNoUnknown longFaceToFaceContact;
 	@Diseases({
 		Disease.UNDEFINED,
@@ -211,12 +253,30 @@ public class ExposureDto extends PseudonymizableDto {
 		Disease.UNDEFINED,
 		Disease.OTHER })
 	private YesNoUnknown handlingAnimals;
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private AnimalCondition animalCondition;
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private YesNoUnknown animalVaccinated;
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private AnimalContactType animalContactType;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String animalContactTypeDetails;
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
+	private AnimalLocation animalLocation;
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String animalLocationText;
 	@Diseases({
 		Disease.AFP,
 		Disease.CHOLERA,
@@ -243,10 +303,16 @@ public class ExposureDto extends PseudonymizableDto {
 		Disease.OTHER })
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String waterSourceDetails;
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	@PersonalData
 	private ContactReferenceDto contactToCase;
 	private YesNoUnknown prophylaxis;
 	private Date prophylaxisDate;
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private YesNoUnknown riskArea;
 
 	// Exposure sub-types
@@ -262,6 +328,14 @@ public class ExposureDto extends PseudonymizableDto {
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String typeOfAnimalDetails;
+	@Diseases({
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
+	private TypeOfChildcareFacility typeOfChildcareFacility;
+	@SensitiveData
+	@Diseases({
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String childcareFacilityDetails;
 
 	// Fields specific to ExposureType.BURIAL
 	private YesNoUnknown physicalContactDuringPreparation;
@@ -274,6 +348,58 @@ public class ExposureDto extends PseudonymizableDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String deceasedPersonRelation;
 	private YesNoUnknown largeAttendanceNumber;
+
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
+	@SensitiveData
+	private TravelAccommodation travelAccommodation;
+
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String travelAccommodationType;
+
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
+	@DependantOn(INTERNATIONAL_SWIMMING)
+	private SwimmingLocation swimmingLocation;
+
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String swimmingLocationType;
+
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
+	private YesNoUnknown domesticSwimming;
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
+	private YesNoUnknown internationalSwimming;
+
+	@Diseases(Disease.GIARDIASIS)
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String sexualExposureText;
+	@Diseases({
+		Disease.CRYPTOSPORIDIOSIS })
+	@SensitiveData
+	private YesNoUnknown rawFoodContact;
+	@Diseases({
+		Disease.CRYPTOSPORIDIOSIS })
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String rawFoodContactText;
+	@Diseases({
+		Disease.CRYPTOSPORIDIOSIS })
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String symptomaticIndividualText;
 
 	public static ExposureDto build(ExposureType exposureType) {
 
@@ -581,6 +707,22 @@ public class ExposureDto extends PseudonymizableDto {
 		this.typeOfAnimalDetails = typeOfAnimalDetails;
 	}
 
+	public TypeOfChildcareFacility getTypeOfChildcareFacility() {
+		return typeOfChildcareFacility;
+	}
+
+	public void setTypeOfChildcareFacility(TypeOfChildcareFacility typeOfChildcareFacility) {
+		this.typeOfChildcareFacility = typeOfChildcareFacility;
+	}
+
+	public String getChildcareFacilityDetails() {
+		return childcareFacilityDetails;
+	}
+
+	public void setChildcareFacilityDetails(String childcareFacilityDetails) {
+		this.childcareFacilityDetails = childcareFacilityDetails;
+	}
+
 	public YesNoUnknown getPhysicalContactDuringPreparation() {
 		return physicalContactDuringPreparation;
 	}
@@ -707,6 +849,102 @@ public class ExposureDto extends PseudonymizableDto {
 
 	public void setLargeAttendanceNumber(YesNoUnknown largeAttendanceNumber) {
 		this.largeAttendanceNumber = largeAttendanceNumber;
+	}
+
+	public AnimalLocation getAnimalLocation() {
+		return animalLocation;
+	}
+
+	public void setAnimalLocation(AnimalLocation animalLocation) {
+		this.animalLocation = animalLocation;
+	}
+
+	public String getAnimalLocationText() {
+		return animalLocationText;
+	}
+
+	public void setAnimalLocationText(String animalLocationText) {
+		this.animalLocationText = animalLocationText;
+	}
+
+	public TravelAccommodation getTravelAccommodation() {
+		return travelAccommodation;
+	}
+
+	public void setTravelAccommodation(TravelAccommodation travelAccommodation) {
+		this.travelAccommodation = travelAccommodation;
+	}
+
+	public String getTravelAccommodationType() {
+		return travelAccommodationType;
+	}
+
+	public void setTravelAccommodationType(String travelAccommodationType) {
+		this.travelAccommodationType = travelAccommodationType;
+	}
+
+	public SwimmingLocation getSwimmingLocation() {
+		return swimmingLocation;
+	}
+
+	public void setSwimmingLocation(SwimmingLocation swimmingLocation) {
+		this.swimmingLocation = swimmingLocation;
+	}
+
+	public String getSwimmingLocationType() {
+		return swimmingLocationType;
+	}
+
+	public void setSwimmingLocationType(String swimmingLocationType) {
+		this.swimmingLocationType = swimmingLocationType;
+	}
+
+	public YesNoUnknown getDomesticSwimming() {
+		return domesticSwimming;
+	}
+
+	public void setDomesticSwimming(YesNoUnknown domesticSwimming) {
+		this.domesticSwimming = domesticSwimming;
+	}
+
+	public YesNoUnknown getInternationalSwimming() {
+		return internationalSwimming;
+	}
+
+	public void setInternationalSwimming(YesNoUnknown internationalSwimming) {
+		this.internationalSwimming = internationalSwimming;
+	}
+
+	public String getSexualExposureText() {
+		return sexualExposureText;
+	}
+
+	public void setSexualExposureText(String sexualExposureText) {
+		this.sexualExposureText = sexualExposureText;
+	}
+
+	public YesNoUnknown getRawFoodContact() {
+		return rawFoodContact;
+	}
+
+	public void setRawFoodContact(YesNoUnknown rawFoodContact) {
+		this.rawFoodContact = rawFoodContact;
+	}
+
+	public String getRawFoodContactText() {
+		return rawFoodContactText;
+	}
+
+	public void setRawFoodContactText(String rawFoodContactText) {
+		this.rawFoodContactText = rawFoodContactText;
+	}
+
+	public String getSymptomaticIndividualText() {
+		return symptomaticIndividualText;
+	}
+
+	public void setSymptomaticIndividualText(String symptomaticIndividualText) {
+		this.symptomaticIndividualText = symptomaticIndividualText;
 	}
 
 	@Override

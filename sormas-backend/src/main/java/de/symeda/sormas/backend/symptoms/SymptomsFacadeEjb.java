@@ -230,8 +230,24 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setOtherMinorSiteDetails(source.getOtherMinorSiteDetails());
 		target.setDateOfOnsetKnown(source.getDateOfOnsetKnown());
 		target.setClinicalPresentationStatus(source.getClinicalPresentationStatus());
-
+		target.setUnknownSymptom(source.getUnknownSymptom());
+		target.setDifficultyBreathingDuringMeals(source.getDifficultyBreathingDuringMeals());
+		target.setParadoxicalBreathing(source.getParadoxicalBreathing());
+		target.setRespiratoryFatigue(source.getRespiratoryFatigue());
+		target.setParentTimeOffWork(source.getParentTimeOffWork());
+		target.setTimeOffWorkDays(source.getTimeOffWorkDays());
 		target.setNocturnalCough(source.getNocturnalCough());
+		target.setSkinRashOnsetDate(source.getSkinRashOnsetDate());
+		target.setAcuteEncephalitis(source.getAcuteEncephalitis());
+		target.setEggyBurps(source.getEggyBurps());
+		target.setSymptomCurrentStatus(source.getSymptomCurrentStatus());
+		target.setDurationOfSymptoms(source.getDurationOfSymptoms());
+		target.setReoccurrence(source.getReoccurrence());
+		target.setWeightLoss(source.getWeightLoss());
+		target.setWeightLossAmount(source.getWeightLossAmount());
+		target.setBloating(source.getBloating());
+		target.setOvernightStayRequired(source.getOvernightStayRequired());
+
 		return target;
 	}
 
@@ -444,8 +460,24 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setOtherMinorSiteDetails(source.getOtherMinorSiteDetails());
 		target.setDateOfOnsetKnown(source.getDateOfOnsetKnown());
 		target.setClinicalPresentationStatus(source.getClinicalPresentationStatus());
+		target.setUnknownSymptom(source.getUnknownSymptom());
+		target.setDifficultyBreathingDuringMeals(source.getDifficultyBreathingDuringMeals());
+		target.setParadoxicalBreathing(source.getParadoxicalBreathing());
+		target.setRespiratoryFatigue(source.getRespiratoryFatigue());
+		target.setParentTimeOffWork(source.getParentTimeOffWork());
+		target.setTimeOffWorkDays(source.getTimeOffWorkDays());
 
 		target.setNocturnalCough(source.getNocturnalCough());
+		target.setSkinRashOnsetDate(source.getSkinRashOnsetDate());
+		target.setAcuteEncephalitis(source.getAcuteEncephalitis());
+		target.setEggyBurps(source.getEggyBurps());
+		target.setReoccurrence(source.getReoccurrence());
+		target.setOvernightStayRequired(source.getOvernightStayRequired());
+		target.setBloating(source.getBloating());
+		target.setSymptomCurrentStatus(source.getSymptomCurrentStatus());
+		target.setDurationOfSymptoms(source.getDurationOfSymptoms());
+		target.setWeightLoss(source.getWeightLoss());
+		target.setWeightLossAmount(source.getWeightLossAmount());
 		return target;
 	}
 

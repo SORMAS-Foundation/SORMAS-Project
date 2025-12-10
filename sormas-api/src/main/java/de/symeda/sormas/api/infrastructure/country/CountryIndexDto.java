@@ -16,6 +16,7 @@ public class CountryIndexDto extends EntityDto {
 	public static final String ISO_CODE = "isoCode";
 	public static final String UNO_CODE = "unoCode";
 	public static final String SUBCONTINENT = "subcontinent";
+	public static final String NUTS_CODE = "nutsCode";
 
 	private String defaultName;
 	private String displayName;
@@ -24,6 +25,7 @@ public class CountryIndexDto extends EntityDto {
 	private String unoCode;
 	private boolean archived;
 	private SubcontinentReferenceDto subcontinent;
+	private String nutsCode;
 
 	public String getDefaultName() {
 		return defaultName;
@@ -79,6 +81,14 @@ public class CountryIndexDto extends EntityDto {
 
 	public void setSubcontinent(SubcontinentReferenceDto subcontinent) {
 		this.subcontinent = subcontinent;
+	}
+
+	public String getNutsCode() {
+		return nutsCode;
+	}
+
+	public void setNutsCode(String nutsCode) {
+		this.nutsCode = nutsCode;
 	}
 
 	@Override

@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -26,8 +26,10 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.RadiographyCompatibility;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
+import de.symeda.sormas.api.clinicalcourse.ComplianceWithTreatment;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -101,10 +103,19 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	public static final String NOTIFIER_EMAIL = "notifierEmail";
 	public static final String NOTIFIER_PHONE = "notifierPhone";
 	public static final String TREATMENT_STARTED = "treatmentStarted";
+	public static final String TREATMENT_NOT_APPLICABLE = "treatmentNotApplicable";
 	public static final String TREATMENT_STARTED_DATE = "treatmentStartedDate";
 	public static final String DIAGNOSTIC_DATE = "diagnosticDate";
 	public static final String ACTIVITIES_AS_CASE = "activitiesAsCase";
 	public static final String EXPOSURES = "exposures";
+	public static final String RADIOGRAPHY_COMPATIBILITY = "radiographyCompatibility";
+	public static final String OTHER_DIAGNOSTIC_CRITERIA = "otherDiagnosticCriteria";
+	public static final String TUBERCULOSIS = "tuberculosis";
+	public static final String HIV = "hiv";
+	public static final String HIV_ART = "hivArt";
+	public static final String TUBERCULOSIS_INFECTION_YEAR = "tuberculosisInfectionYear";
+	public static final String PREVIOUS_TUBERCULOSIS_TREATMENT = "previousTuberculosisTreatment";
+	public static final String COMPLIANCE_WITH_TREATMENT = "complianceWithTreatment";
 
 	@AuditIncludeProperty
 	private ExternalMessageType type;
@@ -170,9 +181,11 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private String personGuardianPhone;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String personGuardianEmail;
-	private String treatmentStarted;
+	private YesNoUnknown treatmentStarted;
+	private Boolean treatmentNotApplicable;
 	private Date treatmentStartedDate;
 	private Date diagnosticDate;
+	private Date deceasedDate;
 
 	@AuditIncludeProperty
 	private List<SampleReportDto> sampleReports;
@@ -181,6 +194,8 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String externalMessageDetails;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String caseComments;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String reportId;
 
@@ -204,26 +219,45 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	private YesNoUnknown admittedToHealthFacility;
 
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String hospitalizationFacilityName;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String hospitalizationFacilityExternalId;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String hospitalizationFacilityDepartment;
+	private Date hospitalizationAdmissionDate;
+	private Date hospitalizationDischargeDate;
+
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String notifierFirstName;
-
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String notifierLastName;
-
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String notifierRegistrationNumber;
-
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String notifierAddress;
-
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String notifierEmail;
-
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String notifierPhone;
 
 	private String activitiesAsCase;
 	private String exposures;
+
+	private RadiographyCompatibility radiographyCompatibility;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String otherDiagnosticCriteria;
+
+	private YesNoUnknown tuberculosis;
+	private YesNoUnknown hiv;
+	private YesNoUnknown hivArt;
+
+	private Integer tuberculosisInfectionYear;
+	private YesNoUnknown previousTuberculosisTreatment;
+	private ComplianceWithTreatment complianceWithTreatment;
+	private Boolean tuberculosisDirectlyObservedTreatment;
+	private Boolean tuberculosisMdrXdrTuberculosis;
+	private Boolean tuberculosisBeijingLineage;
 
 	public ExternalMessageType getType() {
 		return type;
@@ -513,6 +547,14 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 		this.externalMessageDetails = externalMessageDetails;
 	}
 
+	public String getCaseComments() {
+		return caseComments;
+	}
+
+	public void setCaseComments(String caseComments) {
+		this.caseComments = caseComments;
+	}
+
 	public ExternalMessageStatus getStatus() {
 		return status;
 	}
@@ -569,6 +611,46 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 		this.admittedToHealthFacility = admittedToHealthFacility;
 	}
 
+	public String getHospitalizationFacilityName() {
+		return hospitalizationFacilityName;
+	}
+
+	public void setHospitalizationFacilityName(String hospitalizationFacilityName) {
+		this.hospitalizationFacilityName = hospitalizationFacilityName;
+	}
+
+	public String getHospitalizationFacilityExternalId() {
+		return hospitalizationFacilityExternalId;
+	}
+
+	public void setHospitalizationFacilityExternalId(String hospitalizationFacilityExternalId) {
+		this.hospitalizationFacilityExternalId = hospitalizationFacilityExternalId;
+	}
+
+	public String getHospitalizationFacilityDepartment() {
+		return hospitalizationFacilityDepartment;
+	}
+
+	public void setHospitalizationFacilityDepartment(String hospitalizationFacilityDepartment) {
+		this.hospitalizationFacilityDepartment = hospitalizationFacilityDepartment;
+	}
+
+	public Date getHospitalizationAdmissionDate() {
+		return hospitalizationAdmissionDate;
+	}
+
+	public void setHospitalizationAdmissionDate(Date hospitalizationAdmissionDate) {
+		this.hospitalizationAdmissionDate = hospitalizationAdmissionDate;
+	}
+
+	public Date getHospitalizationDischargeDate() {
+		return hospitalizationDischargeDate;
+	}
+
+	public void setHospitalizationDischargeDate(Date hospitalizationDischargeDate) {
+		this.hospitalizationDischargeDate = hospitalizationDischargeDate;
+	}
+
 	public String getNotifierFirstName() {
 		return notifierFirstName;
 	}
@@ -617,12 +699,20 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 		this.notifierPhone = notifierPhone;
 	}
 
-	public String getTreatmentStarted() {
+	public YesNoUnknown getTreatmentStarted() {
 		return treatmentStarted;
 	}
 
-	public void setTreatmentStarted(String treatmentStarted) {
+	public void setTreatmentStarted(YesNoUnknown treatmentStarted) {
 		this.treatmentStarted = treatmentStarted;
+	}
+
+	public Boolean getTreatmentNotApplicable() {
+		return treatmentNotApplicable;
+	}
+
+	public void setTreatmentNotApplicable(Boolean treatmentNotApplicable) {
+		this.treatmentNotApplicable = treatmentNotApplicable;
 	}
 
 	public Date getTreatmentStartedDate() {
@@ -743,4 +833,99 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 		this.exposures = exposures;
 	}
 
+	public Date getDeceasedDate() {
+		return deceasedDate;
+	}
+
+	public void setDeceasedDate(Date deceasedDate) {
+		this.deceasedDate = deceasedDate;
+	}
+
+	public RadiographyCompatibility getRadiographyCompatibility() {
+		return radiographyCompatibility;
+	}
+
+	public void setRadiographyCompatibility(RadiographyCompatibility radiographyCompatibility) {
+		this.radiographyCompatibility = radiographyCompatibility;
+	}
+
+	public String getOtherDiagnosticCriteria() {
+		return otherDiagnosticCriteria;
+	}
+
+	public void setOtherDiagnosticCriteria(String otherDiagnosticCriteria) {
+		this.otherDiagnosticCriteria = otherDiagnosticCriteria;
+	}
+
+	public YesNoUnknown getTuberculosis() {
+		return tuberculosis;
+	}
+
+	public void setTuberculosis(YesNoUnknown tuberculosis) {
+		this.tuberculosis = tuberculosis;
+	}
+
+	public YesNoUnknown getHiv() {
+		return hiv;
+	}
+
+	public void setHiv(YesNoUnknown hiv) {
+		this.hiv = hiv;
+	}
+
+	public YesNoUnknown getHivArt() {
+		return hivArt;
+	}
+
+	public void setHivArt(YesNoUnknown hivArt) {
+		this.hivArt = hivArt;
+	}
+
+	public Integer getTuberculosisInfectionYear() {
+		return tuberculosisInfectionYear;
+	}
+
+	public void setTuberculosisInfectionYear(Integer tuberculosisInfectionYear) {
+		this.tuberculosisInfectionYear = tuberculosisInfectionYear;
+	}
+
+	public YesNoUnknown getPreviousTuberculosisTreatment() {
+		return previousTuberculosisTreatment;
+	}
+
+	public void setPreviousTuberculosisTreatment(YesNoUnknown previousTuberculosisTreatment) {
+		this.previousTuberculosisTreatment = previousTuberculosisTreatment;
+	}
+
+	public ComplianceWithTreatment getComplianceWithTreatment() {
+		return complianceWithTreatment;
+	}
+
+	public void setComplianceWithTreatment(ComplianceWithTreatment complianceWithTreatment) {
+		this.complianceWithTreatment = complianceWithTreatment;
+	}
+
+	public Boolean getTuberculosisDirectlyObservedTreatment() {
+		return tuberculosisDirectlyObservedTreatment;
+	}
+
+	public void setTuberculosisDirectlyObservedTreatment(Boolean tuberculosisDirectlyObservedTreatment) {
+		this.tuberculosisDirectlyObservedTreatment = tuberculosisDirectlyObservedTreatment;
+	}
+
+	public Boolean getTuberculosisMdrXdrTuberculosis() {
+		return tuberculosisMdrXdrTuberculosis;
+	}
+
+	public void setTuberculosisMdrXdrTuberculosis(Boolean tuberculosisMdrXdrTuberculosis) {
+		this.tuberculosisMdrXdrTuberculosis = tuberculosisMdrXdrTuberculosis;
+	}
+
+	public Boolean getTuberculosisBeijingLineage() {
+		return tuberculosisBeijingLineage;
+	}
+
+	public void setTuberculosisBeijingLineage(Boolean tuberculosisBeijingLineage) {
+		this.tuberculosisBeijingLineage = tuberculosisBeijingLineage;
+	}
 }

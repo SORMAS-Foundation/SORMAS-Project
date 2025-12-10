@@ -28,7 +28,6 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
@@ -43,7 +42,7 @@ public class CaseIndexDtoResultTransformer implements ResultTransformer {
 		int index = -1;
 
 		//@formatter:off
-		return new CaseIndexDto((Long)tuple[++index], (String)tuple[++index], (String)tuple[++index], (String)tuple[++index], (String)tuple[++index], (String)tuple[++index], (String)tuple[++index], (String)tuple[++index], (String)tuple[++index], (String)tuple[++index], (Disease)tuple[++index],
+		return new CaseIndexDto((Long)tuple[++index], (String)tuple[++index], (String)tuple[++index], (String)tuple[++index], (String)tuple[++index], (String)tuple[++index], (String)tuple[++index], (String)tuple[++index], (String)tuple[++index], (String)tuple[++index], (String)tuple[++index], (Disease)tuple[++index],
 				(String) tuple[++index], (String)tuple[++index], (CaseClassification)tuple[++index], (InvestigationStatus)tuple[++index],
 				(PresentCondition)tuple[++index], (Date)tuple[++index], (Date)tuple[++index], (String)tuple[++index],
 				(String)tuple[++index], (String)tuple[++index], (String)tuple[++index], (String)tuple[++index],

@@ -17,6 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples.pathogentestlink;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,6 +29,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -36,14 +40,16 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentField;
 
-import java.util.Arrays;
-import java.util.List;
-
 @SuppressWarnings("serial")
 public class PathogenTestListEntry extends SideComponentField {
 
 	private final PathogenTestDto pathogenTest;
-	List<PathogenTestType> seroGrpTests = Arrays.asList(PathogenTestType.SEROGROUPING, PathogenTestType.MULTILOCUS_SEQUENCE_TYPING, PathogenTestType.SLIDE_AGGLUTINATION, PathogenTestType.WHOLE_GENOME_SEQUENCING, PathogenTestType.SEQUENCING);
+	List<PathogenTestType> seroGrpTests = Arrays.asList(
+		PathogenTestType.SEROGROUPING,
+		PathogenTestType.MULTILOCUS_SEQUENCE_TYPING,
+		PathogenTestType.SLIDE_AGGLUTINATION,
+		PathogenTestType.WHOLE_GENOME_SEQUENCING,
+		PathogenTestType.SEQUENCING);
 
 	public PathogenTestListEntry(PathogenTestDto pathogenTest, boolean showTestResultText) {
 
@@ -67,11 +73,13 @@ public class PathogenTestListEntry extends SideComponentField {
 			topLabelLayout.setComponentAlignment(labelTopRight, Alignment.TOP_RIGHT);
 		}
 
-		if (showTestResultText && !DataHelper.isNullOrEmpty(pathogenTest.getTestResultText())) {
-			Label resultTextLabel = new Label(StringUtils.abbreviate(pathogenTest.getTestResultText(), 125));
-			resultTextLabel.setDescription(pathogenTest.getTestResultText());
-			resultTextLabel.setWidthFull();
-			addComponentToField(resultTextLabel);
+		if (pathogenTest.getTestedDisease() != Disease.TUBERCULOSIS) {
+			if (showTestResultText && !DataHelper.isNullOrEmpty(pathogenTest.getTestResultText())) {
+				Label resultTextLabel = new Label(StringUtils.abbreviate(pathogenTest.getTestResultText(), 125));
+				resultTextLabel.setDescription(pathogenTest.getTestResultText());
+				resultTextLabel.setWidthFull();
+				addComponentToField(resultTextLabel);
+			}
 		}
 
 		HorizontalLayout middleLabelLayout = new HorizontalLayout();
@@ -97,6 +105,7 @@ public class PathogenTestListEntry extends SideComponentField {
 
 			if (pathogenTest.getTestedDiseaseVariant() != null) {
 				Label labelBottomLeft = new Label(pathogenTest.getTestedDiseaseVariant().toString());
+				CssStyles.style(labelBottomLeft, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE, CssStyles.LABEL_CRITICAL);
 				bottomLabelLayout.addComponent(labelBottomLeft);
 			}
 
@@ -108,11 +117,35 @@ public class PathogenTestListEntry extends SideComponentField {
 				bottomLabelLayout.setComponentAlignment(labelBottomRight, Alignment.TOP_RIGHT);
 			}
 		}
-		// For serogroup test types(IMI/IPI), need to display serogroup specification not the result.
-		// If IMI, serogroup specification, otherwise(IPI) serotype should display.
-		Object resultText = seroGrpTests.contains(pathogenTest.getTestType()) ?
-				pathogenTest.getSeroGroupSpecification() !=null ?pathogenTest.getSeroGroupSpecification() : pathogenTest.getSerotype() :
-				pathogenTest.getTestResult();
+
+		Object resultText = "";
+		PathogenTestType testType = pathogenTest.getTestType();
+		if (seroGrpTests.contains(pathogenTest.getTestType())) {
+			resultText = pathogenTest.getSeroGroupSpecification() != null ? pathogenTest.getSeroGroupSpecification() : pathogenTest.getSerotype();
+		} else if (pathogenTest.getTestedDisease() == Disease.TUBERCULOSIS
+			&& Arrays
+				.asList(
+					PathogenTestType.MICROSCOPY,
+					PathogenTestType.BEIJINGGENOTYPING,
+					PathogenTestType.SPOLIGOTYPING,
+					PathogenTestType.MIRU_PATTERN_CODE)
+				.contains(testType)) {
+			if (testType == PathogenTestType.MICROSCOPY) {
+				resultText = StringUtils.abbreviate((pathogenTest.getTestScale() != null ? pathogenTest.getTestScale().toString() : ""), 125);
+			} else if (testType == PathogenTestType.BEIJINGGENOTYPING) {
+				resultText =
+					StringUtils.abbreviate((pathogenTest.getStrainCallStatus() != null ? pathogenTest.getStrainCallStatus().toString() : ""), 125);
+			} else if (testType == PathogenTestType.SPOLIGOTYPING) {
+				resultText = StringUtils.abbreviate((pathogenTest.getSpecie() != null ? pathogenTest.getSpecie().toString() : ""), 125);
+			} else if (testType == PathogenTestType.MIRU_PATTERN_CODE) {
+				resultText = StringUtils.abbreviate(pathogenTest.getPatternProfile(), 125);
+			}
+		} else if (testType == PathogenTestType.GENOTYPING) {
+			resultText = StringUtils.abbreviate((pathogenTest.getGenoTypeResult() != null ? pathogenTest.getGenoTypeResult().toString() : ""), 125);
+		} else {
+			resultText = pathogenTest.getTestResult();
+		}
+
 		Label labelResult = new Label(DataHelper.toStringNullable(resultText));
 		CssStyles.style(labelResult, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
 		if (pathogenTest.getTestResult() == PathogenTestResultType.POSITIVE) {
@@ -121,6 +154,24 @@ public class PathogenTestListEntry extends SideComponentField {
 			CssStyles.style(labelResult, CssStyles.LABEL_WARNING);
 		}
 		addComponentToField(labelResult);
+
+		if (pathogenTest.getTestedDisease() == Disease.TUBERCULOSIS) {
+			if (testType == PathogenTestType.PCR_RT_PCR) {
+				Label pcrRifampicinTextLabel = new Label(
+					I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.RIFAMPICIN_RESISTANT) + ": " + StringUtils
+						.abbreviate((pathogenTest.getRifampicinResistant() != null ? pathogenTest.getRifampicinResistant().toString() : ""), 125));
+				pcrRifampicinTextLabel.setWidthFull();
+				addComponentToField(pcrRifampicinTextLabel);
+
+				Label pcrIsoniazidTextLabel = new Label(
+					I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.ISONIAZID_RESISTANT) + ": " + StringUtils
+						.abbreviate((pathogenTest.getIsoniazidResistant() != null ? pathogenTest.getIsoniazidResistant().toString() : ""), 125));
+				pcrIsoniazidTextLabel.setWidthFull();
+				addComponentToField(pcrIsoniazidTextLabel);
+			} else if (testType == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY) {
+				labelResult.setVisible(false);
+			}
+		}
 	}
 
 	@Nullable

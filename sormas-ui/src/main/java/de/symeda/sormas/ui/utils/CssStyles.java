@@ -332,6 +332,13 @@ public final class CssStyles {
 	public static final String GIS_DASHBOARD_MAP_FOOTER = "gis-dashboard-map-footer";
 	public static final String VIEW_SECTION_WIDTH_AUTO = "view-section-width-auto";
 
+	public static final String GRID_CELL_STATUS_PENDING = "status-pending";
+	public static final String GRID_CELL_STATUS_IN_PROGRESS = "status-in-progress";
+	public static final String GRID_CELL_STATUS_COMPLETED = "status-completed";
+	public static final String GRID_CELL_STATUS_FAILED = "status-failed";
+	public static final String GRID_CELL_STATUS_CANCELLED = "status-cancelled";
+	public static final String GRID_CELL_LINK_DISABLED = "link-disabled";
+
 	public static String buildVaadinStyle(String primaryStyle, String... styles) {
 		StringBuilder styleBuilder = new StringBuilder();
 		styleBuilder.append(primaryStyle);
@@ -527,6 +534,10 @@ public final class CssStyles {
 			return "background-disease-invasive-meningococcal-infection";
 		case INVASIVE_PNEUMOCOCCAL_INFECTION:
 			return "background-disease-invasive-pneumococcal-infection";
+		case GIARDIASIS:
+			return "background-disease-giardiasis";
+		case CRYPTOSPORIDIOSIS:
+			return "background-disease-cryptosporidiosis";
 		case UNDEFINED:
 		default:
 			return "background-disease-undefined";

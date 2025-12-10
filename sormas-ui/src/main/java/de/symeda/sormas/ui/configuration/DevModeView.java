@@ -945,6 +945,11 @@ public class DevModeView extends AbstractConfigurationView {
 			valid = false;
 		}
 
+		if (config.getDisease() == null) {
+			errorMessage.append("You must set a valid value for field 'Disease of the cases' in 'Generate Cases'").append("<br>");
+			valid = false;
+		}
+
 		if (valid) {
 			generateCases(config);
 		} else {

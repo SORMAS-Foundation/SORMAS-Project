@@ -22,18 +22,24 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.therapy.Drug;
 import de.symeda.sormas.api.therapy.DrugSusceptibilityDto;
+import de.symeda.sormas.api.therapy.DrugSusceptibilityType;
 import de.symeda.sormas.api.utils.AnnotationFieldHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -46,6 +52,8 @@ public class DrugSusceptibilityForm extends AbstractEditForm<DrugSusceptibilityD
 	private static final long serialVersionUID = -8824484702333610347L;
 
 	private static final String FORM_HEADING_LOC = "formHeadingLoc";
+
+	private Label formHeadingLabel;
 
 	//@formatter:off
     private static final String HTML_LAYOUT =
@@ -75,7 +83,7 @@ public class DrugSusceptibilityForm extends AbstractEditForm<DrugSusceptibilityD
 
 	public DrugSusceptibilityForm(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
 		super(DrugSusceptibilityDto.class, I18N_PREFIX, true, fieldVisibilityCheckers, fieldAccessCheckers);
-		this.addStyleNames(CssStyles.VIEW_SECTION, CssStyles.VSPACE_2);
+		//this.addStyleNames(CssStyles.VIEW_SECTION, CssStyles.VSPACE_2);
 	}
 
 	@Override
@@ -85,9 +93,10 @@ public class DrugSusceptibilityForm extends AbstractEditForm<DrugSusceptibilityD
 
 	@Override
 	protected void addFields() {
-		Label formHeadingLabel = new Label(I18nProperties.getString(Strings.headingDrugSusceptibility));
+		formHeadingLabel = new Label(I18nProperties.getString(Strings.headingDrugSusceptibility));
 		formHeadingLabel.addStyleName(H3);
 		getContent().addComponent(formHeadingLabel, FORM_HEADING_LOC);
+		formHeadingLabel.setVisible(false);
 
 		addMicField(DrugSusceptibilityDto.AMIKACIN_MIC, Drug.AMIKACIN).setInputPrompt(I18nProperties.getString(Strings.promptMicValue));
 		addResistanceResultField(DrugSusceptibilityDto.AMIKACIN_SUSCEPTIBILITY)
@@ -147,14 +156,14 @@ public class DrugSusceptibilityForm extends AbstractEditForm<DrugSusceptibilityD
 
 		addMicField(DrugSusceptibilityDto.CEFTRIAXONE_MIC, Drug.CEFTRIAXONE).setInputPrompt(I18nProperties.getString(Strings.promptMicValue));
 		addResistanceResultField(DrugSusceptibilityDto.CEFTRIAXONE_SUSCEPTIBILITY)
-				.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
+			.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
 		addMicField(DrugSusceptibilityDto.PENICILLIN_MIC, Drug.PENICILLIN).setInputPrompt(I18nProperties.getString(Strings.promptMicValue));
 		addResistanceResultField(DrugSusceptibilityDto.PENICILLIN_SUSCEPTIBILITY)
-				.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
+			.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
 
 		addMicField(DrugSusceptibilityDto.ERYTHROMYCIN_MIC, Drug.ERYTHROMYCIN).setInputPrompt(I18nProperties.getString(Strings.promptMicValue));
 		addResistanceResultField(DrugSusceptibilityDto.ERYTHROMYCIN_SUSCEPTIBILITY)
-				.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
+			.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
 
 		FieldHelper.hideFieldsNotInList(getFieldGroup(), List.of(), true);
 	}
@@ -176,16 +185,150 @@ public class DrugSusceptibilityForm extends AbstractEditForm<DrugSusceptibilityD
 		return field;
 	}
 
+	public void markAsDirty() {
+
+	}
+
+	public void forceUpdateDrugSusceptibilityFields() {
+		final DrugSusceptibilityDto drugSusceptibilityDto = getValue();
+		if (drugSusceptibilityDto == null) {
+			return;
+		}
+
+		final Map<String, Optional<DrugSusceptibilityType>> applicableFieldIds = Collections.unmodifiableMap(
+			Map.ofEntries(
+				Map.entry(DrugSusceptibilityDto.AMIKACIN_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getAmikacinSusceptibility())),
+				Map.entry(
+					DrugSusceptibilityDto.BEDAQUILINE_SUSCEPTIBILITY,
+					Optional.ofNullable(drugSusceptibilityDto.getBedaquilineSusceptibility())),
+				Map.entry(
+					DrugSusceptibilityDto.CAPREOMYCIN_SUSCEPTIBILITY,
+					Optional.ofNullable(drugSusceptibilityDto.getCapreomycinSusceptibility())),
+				Map.entry(
+					DrugSusceptibilityDto.CIPROFLOXACIN_SUSCEPTIBILITY,
+					Optional.ofNullable(drugSusceptibilityDto.getCiprofloxacinSusceptibility())),
+				Map.entry(DrugSusceptibilityDto.DELAMANID_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getDelamanidSusceptibility())),
+				Map.entry(DrugSusceptibilityDto.ETHAMBUTOL_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getEthambutolSusceptibility())),
+				Map.entry(
+					DrugSusceptibilityDto.GATIFLOXACIN_SUSCEPTIBILITY,
+					Optional.ofNullable(drugSusceptibilityDto.getGatifloxacinSusceptibility())),
+				Map.entry(
+					DrugSusceptibilityDto.CEFTRIAXONE_SUSCEPTIBILITY,
+					Optional.ofNullable(drugSusceptibilityDto.getCeftriaxoneSusceptibility())),
+				Map.entry(
+					DrugSusceptibilityDto.ERYTHROMYCIN_SUSCEPTIBILITY,
+					Optional.ofNullable(drugSusceptibilityDto.getErythromycinSusceptibility())),
+				Map.entry(DrugSusceptibilityDto.ISONIAZID_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getIsoniazidSusceptibility())),
+				Map.entry(DrugSusceptibilityDto.KANAMYCIN_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getKanamycinSusceptibility())),
+				Map.entry(
+					DrugSusceptibilityDto.LEVOFLOXACIN_SUSCEPTIBILITY,
+					Optional.ofNullable(drugSusceptibilityDto.getLevofloxacinSusceptibility())),
+				Map.entry(
+					DrugSusceptibilityDto.MOXIFLOXACIN_SUSCEPTIBILITY,
+					Optional.ofNullable(drugSusceptibilityDto.getMoxifloxacinSusceptibility())),
+				Map.entry(DrugSusceptibilityDto.OFLOXACIN_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getOfloxacinSusceptibility())),
+				Map.entry(DrugSusceptibilityDto.RIFAMPICIN_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getRifampicinSusceptibility())),
+				Map.entry(
+					DrugSusceptibilityDto.STREPTOMYCIN_SUSCEPTIBILITY,
+					Optional.ofNullable(drugSusceptibilityDto.getStreptomycinSusceptibility())),
+				Map.entry(
+					DrugSusceptibilityDto.PENICILLIN_SUSCEPTIBILITY,
+					Optional.ofNullable(drugSusceptibilityDto.getPenicillinSusceptibility()))));
+
+		applicableFieldIds.forEach(this::forceUpdateDrugSusceptibilityField);
+
+		final Map<String, Optional<Float>> drugSusceptibilityMic = Collections.unmodifiableMap(
+			Map.ofEntries(
+				Map.entry(DrugSusceptibilityDto.AMIKACIN_MIC, Optional.ofNullable(drugSusceptibilityDto.getAmikacinMic())),
+				Map.entry(DrugSusceptibilityDto.BEDAQUILINE_MIC, Optional.ofNullable(drugSusceptibilityDto.getBedaquilineMic())),
+				Map.entry(DrugSusceptibilityDto.CAPREOMYCIN_MIC, Optional.ofNullable(drugSusceptibilityDto.getCapreomycinMic())),
+				Map.entry(DrugSusceptibilityDto.CIPROFLOXACIN_MIC, Optional.ofNullable(drugSusceptibilityDto.getCiprofloxacinMic())),
+				Map.entry(DrugSusceptibilityDto.DELAMANID_MIC, Optional.ofNullable(drugSusceptibilityDto.getDelamanidMic())),
+				Map.entry(DrugSusceptibilityDto.ETHAMBUTOL_MIC, Optional.ofNullable(drugSusceptibilityDto.getEthambutolMic())),
+				Map.entry(DrugSusceptibilityDto.GATIFLOXACIN_MIC, Optional.ofNullable(drugSusceptibilityDto.getGatifloxacinMic())),
+				Map.entry(DrugSusceptibilityDto.CEFTRIAXONE_MIC, Optional.ofNullable(drugSusceptibilityDto.getCeftriaxoneMic())),
+				Map.entry(DrugSusceptibilityDto.ERYTHROMYCIN_MIC, Optional.ofNullable(drugSusceptibilityDto.getErythromycinMic())),
+				Map.entry(DrugSusceptibilityDto.ISONIAZID_MIC, Optional.ofNullable(drugSusceptibilityDto.getIsoniazidMic())),
+				Map.entry(DrugSusceptibilityDto.KANAMYCIN_MIC, Optional.ofNullable(drugSusceptibilityDto.getKanamycinMic())),
+				Map.entry(DrugSusceptibilityDto.LEVOFLOXACIN_MIC, Optional.ofNullable(drugSusceptibilityDto.getLevofloxacinMic())),
+				Map.entry(DrugSusceptibilityDto.MOXIFLOXACIN_MIC, Optional.ofNullable(drugSusceptibilityDto.getMoxifloxacinMic())),
+				Map.entry(DrugSusceptibilityDto.OFLOXACIN_MIC, Optional.ofNullable(drugSusceptibilityDto.getOfloxacinMic())),
+				Map.entry(DrugSusceptibilityDto.RIFAMPICIN_MIC, Optional.ofNullable(drugSusceptibilityDto.getRifampicinMic())),
+				Map.entry(DrugSusceptibilityDto.STREPTOMYCIN_MIC, Optional.ofNullable(drugSusceptibilityDto.getStreptomycinMic())),
+				Map.entry(DrugSusceptibilityDto.PENICILLIN_MIC, Optional.ofNullable(drugSusceptibilityDto.getPenicillinMic()))));
+
+		drugSusceptibilityMic.forEach(this::forceUpdateDrugSusceptibilityMicField);
+
+	}
+
+	private void forceUpdateDrugSusceptibilityField(String fieldId, Optional<DrugSusceptibilityType> drugSusceptibilityType) {
+		final ComboBox field = getField(fieldId);
+		if (field == null) {
+			return;
+		}
+		if (field.isReadOnly()) {
+			return;
+		}
+		if (drugSusceptibilityType.isEmpty()) {
+			field.clear();
+			return;
+		}
+		if (!field.containsId(drugSusceptibilityType.get())) {
+			field.addItem(drugSusceptibilityType.get());
+		}
+
+		field.setValue(drugSusceptibilityType.get());
+	}
+
+	private void forceUpdateDrugSusceptibilityMicField(String fieldId, Optional<Float> drugSusceptibilityMic) {
+		final TextField field = getField(fieldId);
+		if (field == null) {
+			return;
+		}
+		if (field.isReadOnly()) {
+			return;
+		}
+		if (drugSusceptibilityMic.isEmpty()) {
+			field.clear();
+			return;
+		}
+
+		// TODO: check if Float.toString() is the correct way to format the value
+		field.setValue(drugSusceptibilityMic.get().toString());
+	}
+
 	public void updateFieldsVisibility(Disease disease, PathogenTestType pathogenTestType) {
 		FieldHelper.hideFieldsNotInList(getFieldGroup(), List.of(), true);
+		formHeadingLabel.setVisible(false);
 
-		if (disease != null && pathogenTestType != null) {
-			List<String> applicableFieldIds =
-				AnnotationFieldHelper.getFieldNamesWithMatchingDiseaseAndTestAnnotations(DrugSusceptibilityDto.class, disease, pathogenTestType);
+		// we hide if we don't have a disease
+		if (disease == null) {
+			return;
+		}
 
-			if (!applicableFieldIds.isEmpty()) {
-				FieldHelper.showOnlyFields(getFieldGroup(), applicableFieldIds, true);
-			}
+		// we hide if we have another test type than antibiotic susceptibility
+		if (pathogenTestType != PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY) {
+			return;
+		}
+
+		// we have a disease and a ANTIBIOTIC_SUSCEPTIBILITY test type, so we can proceed
+
+		// TODO: this is kind of temporary as it should be consolidated with the logic in the PathogenTestForm
+		// For other countries if the disease is Tuberculosis/Latent Tuberculosis, drug susceptibility fields should remain hidden
+		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+			&& (disease == Disease.TUBERCULOSIS || disease == Disease.LATENT_TUBERCULOSIS)) {
+			//quit, we do not want to show the fields if TUBERCULOSIS/LATENT_TUBERCULOSIS and we are not in Luxembourg
+			return;
+		}
+
+		// if we passed the exclusions, we show or hide the fields based on annotations
+		List<String> applicableFieldIds =
+			AnnotationFieldHelper.getFieldNamesWithMatchingDiseaseAndTestAnnotations(DrugSusceptibilityDto.class, disease, pathogenTestType);
+
+		formHeadingLabel.setVisible(!applicableFieldIds.isEmpty());
+
+		if (!applicableFieldIds.isEmpty()) {
+			FieldHelper.showOnlyFields(getFieldGroup(), applicableFieldIds, true);
 		}
 	}
 }

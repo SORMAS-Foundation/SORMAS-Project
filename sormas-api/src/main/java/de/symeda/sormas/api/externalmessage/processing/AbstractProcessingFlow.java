@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.api.externalmessage.processing;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 
@@ -55,6 +56,7 @@ public abstract class AbstractProcessingFlow {
 		ExternalMessageDto externalMessage,
 		ExternalMessageProcessingResult defaultResult) {
 		return new FlowThen<ExternalMessageProcessingResult>().then(ignored -> checkDisease(externalMessage, defaultResult))
+			.then(ignored -> checkInfraData(externalMessage, defaultResult))
 			.then(ignored -> checkRelatedForwardedMessages(externalMessage, defaultResult));
 	}
 
@@ -76,6 +78,43 @@ public abstract class AbstractProcessingFlow {
 		} else {
 			return ProcessingResult.continueWith(defaultResult).asCompletedFuture();
 		}
+	}
+
+	/**
+	 * This method is called to check the infrastructure data of the external message.
+	 * It can be overridden to implement specific checks.
+	 *
+	 * @param externalMessageDto
+	 *            The external message to check.
+	 * @param defaultResult
+	 *            The default result to return if the checks pass.
+	 * @return A CompletableFuture containing the processing result.
+	 */
+	private CompletionStage<ProcessingResult<ExternalMessageProcessingResult>> checkInfraData(
+		ExternalMessageDto externalMessageDto,
+		ExternalMessageProcessingResult defaultResult) {
+
+		return handleInfraDataChecks().thenCompose(next -> {
+			if (Boolean.TRUE.equals(next)) {
+				logger.debug("[MESSAGE PROCESSING] The infrastructure data checks passed, continuing processing");
+				return ProcessingResult.continueWith(defaultResult).asCompletedFuture();
+			} else {
+				logger.debug("[MESSAGE PROCESSING] The infrastructure data checks failed, canceling processing");
+				return ProcessingResult.withStatus(ProcessingResultStatus.CANCELED, defaultResult).asCompletedFuture();
+			}
+		});
+	}
+
+	/**
+	 * This method is called to perform infrastructure data checks.
+	 * It can be overridden to implement specific checks.
+	 * By default, no checks are performed, and it returns a completed future with true.
+	 *
+	 * @return A CompletableFuture containing a boolean indicating whether the checks passed.
+	 */
+	protected CompletionStage<Boolean> handleInfraDataChecks() {
+		// No specific infrastructure data checks are performed by default,
+		return CompletableFuture.completedFuture(Boolean.TRUE);
 	}
 
 	protected abstract CompletionStage<Boolean> handleMissingDisease();
@@ -112,6 +151,10 @@ public abstract class AbstractProcessingFlow {
 
 		return mapHandlerResult(callback, previousResult, personSelection -> {
 			logger.debug("[MESSAGE PROCESSING] Continue processing with person: {}", personSelection);
+
+			// requested for #13589
+			doPersonUpdates(personSelection);
+
 			return previousResult.withPerson(personSelection.getEntity(), personSelection.isNew());
 		});
 	}
@@ -131,6 +174,8 @@ public abstract class AbstractProcessingFlow {
 	}
 
 	protected abstract void handlePickOrCreatePerson(PersonDto person, HandlerCallback<EntitySelection<PersonDto>> callback);
+
+	protected abstract void doPersonUpdates(EntitySelection<PersonDto> personSelection);
 
 	private PersonDto buildPerson() {
 

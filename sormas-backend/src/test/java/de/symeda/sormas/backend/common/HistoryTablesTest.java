@@ -27,18 +27,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.images.builder.ImageFromDockerfile;
-import org.testcontainers.shaded.org.apache.commons.lang3.StringUtils;
 
 import de.hilling.junit.cdi.CdiTestJunitExtension;
 import de.hilling.junit.cdi.annotations.BypassTestInterceptor;
-import de.symeda.sormas.backend.adverseeventsfollowingimmunization.entity.Aefi;
-import de.symeda.sormas.backend.adverseeventsfollowingimmunization.entity.AefiInvestigation;
 
 @ExtendWith(CdiTestJunitExtension.class)
 public class HistoryTablesTest {
-
-	private static final List<String> NO_HISTORY_REQUIRED_TABLES =
-		Arrays.asList(Aefi.AEFI_VACCINATIONS_TABLE_NAME, AefiInvestigation.AEFI_INVESTIGATION_VACCINATIONS_TABLE_NAME);
 
 	/**
 	 * Test that the *_history tables have the same columns as the corresponding production tables
@@ -77,7 +71,6 @@ public class HistoryTablesTest {
 			Files.readAllBytes(Paths.get(Objects.requireNonNull(getClass().getClassLoader().getResource("checkHistoryTables.sql")).toURI())));
 		@SuppressWarnings("unchecked")
 		List<Object[]> results = (List<Object[]>) em.createNativeQuery(checkHistoryTablesSql).getResultList();
-		results.removeIf(o -> StringUtils.containsAny(o[1].toString(), NO_HISTORY_REQUIRED_TABLES.toArray(String[]::new)));
 		StringBuilder result = new StringBuilder();
 		results.forEach(objects -> {
 			result.append("\n");

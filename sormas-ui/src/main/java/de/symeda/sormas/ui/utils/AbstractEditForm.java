@@ -19,6 +19,7 @@ import static com.vaadin.v7.data.fieldgroup.DefaultFieldGroupFieldFactory.CAPTIO
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -560,6 +561,10 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 		return isVisibleAllowed(getFieldGroup().getField(propertyId));
 	}
 
+	protected void addToVisibleAllowedFields(Field<?> field) {
+		visibleAllowedFields.add(field);
+	}
+
 	/**
 	 * Sets the initial enabled states based on annotations and builds a list of all fields in a form
 	 * that are allowed to be enabled based on access rights
@@ -612,5 +617,72 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 
 	public void setHeading(String heading) {
 		throw new RuntimeException("setHeading should be implemented in " + getClass().getSimpleName());
+	}
+
+	/**
+	 * List of editable allowed fields,
+	 * 
+	 * @return
+	 */
+	public List<Field<?>> editableAllowedFields() {
+		return Collections.unmodifiableList(editableAllowedFields);
+	}
+
+	/**
+	 * Clears the field if it is not read-only.
+	 *
+	 * @param field
+	 */
+	protected void safeClearField(Field<?> field) {
+		if (field.isReadOnly()) {
+			return;
+		}
+		field.clear();
+	}
+
+	/**
+	 * Clears the field if it is not read-only.
+	 *
+	 * @param propertyId
+	 */
+	protected void safeClearField(String propertyId) {
+		final Field<?> field = getField(propertyId);
+		if (field == null) {
+			return;
+		}
+		safeClearField(field);
+	}
+
+	/**
+	 * Sets the field value if it is not read-only.
+	 *
+	 * @param <T>
+	 * @param field
+	 * @param value
+	 * @return
+	 */
+	protected <T> T safeSetFieldValue(Field<T> field, T value) {
+		if (field.isReadOnly()) {
+			return field.getValue();
+		}
+		final T oldValue = field.getValue();
+		field.setValue(value);
+		return oldValue;
+	}
+
+	/**
+	 * Sets the field value if it is not read-only.
+	 *
+	 * @param <T>
+	 * @param propertyId
+	 * @param value
+	 * @return
+	 */
+	protected <T> T safeSetFieldValue(String propertyId, T value) {
+		final Field<T> field = getField(propertyId);
+		if (field == null) {
+			return null;
+		}
+		return safeSetFieldValue(field, value);
 	}
 }

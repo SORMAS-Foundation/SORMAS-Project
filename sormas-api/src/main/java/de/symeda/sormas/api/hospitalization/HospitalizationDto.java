@@ -17,8 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.api.hospitalization;
 
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -26,10 +24,14 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ImportIgnore;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
+import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -52,9 +54,14 @@ public class HospitalizationDto extends EntityDto {
 	public static final String INTENSIVE_CARE_UNIT = "intensiveCareUnit";
 	public static final String INTENSIVE_CARE_UNIT_START = "intensiveCareUnitStart";
 	public static final String INTENSIVE_CARE_UNIT_END = "intensiveCareUnitEnd";
+	public static final String OXYGEN_PRESCRIBED = "oxygenPrescribed";
+	public static final String STILL_HOSPITALIZED = "stillHospitalized";
+	public static final String ICU_LENGTH_OF_STAY = "icuLengthOfStay";
 	public static final String HOSPITALIZATION_REASON = "hospitalizationReason";
 	public static final String OTHER_HOSPITALIZATION_REASON = "otherHospitalizationReason";
 	public static final String DESCRIPTION = "description";
+	public static final String CURRENTLY_HOSPITALIZED = "currentlyHospitalized";
+	public static final String DURATION_OF_HOSPITALIZATION = "durationOfHospitalization";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -69,14 +76,48 @@ public class HospitalizationDto extends EntityDto {
 	private YesNoUnknown hospitalizedPreviously;
 	@Valid
 	private List<PreviousHospitalizationDto> previousHospitalizations = new ArrayList<>();
+
+	@Diseases({
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
 	private YesNoUnknown intensiveCareUnit;
+	@Diseases({
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
 	private Date intensiveCareUnitStart;
+	@Diseases({
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
 	private Date intensiveCareUnitEnd;
+
+	@Diseases({
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
+	private YesNoUnknown oxygenPrescribed;
+	@Diseases({
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
+	private YesNoUnknown stillHospitalized;
+	@Diseases({
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
+	private Integer icuLengthOfStay;
+
 	private HospitalizationReasonType hospitalizationReason;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherHospitalizationReason;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String description;
+	private YesNoUnknown currentlyHospitalized;
+
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
+	private Integer durationOfHospitalization;
 
 	public static HospitalizationDto build() {
 		HospitalizationDto hospitalization = new HospitalizationDto();
@@ -196,5 +237,45 @@ public class HospitalizationDto extends EntityDto {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public YesNoUnknown getCurrentlyHospitalized() {
+		return currentlyHospitalized;
+	}
+
+	public void setCurrentlyHospitalized(YesNoUnknown currentlyHospitalized) {
+		this.currentlyHospitalized = currentlyHospitalized;
+	}
+
+	public YesNoUnknown getOxygenPrescribed() {
+		return oxygenPrescribed;
+	}
+
+	public void setOxygenPrescribed(YesNoUnknown oxygenPrescribed) {
+		this.oxygenPrescribed = oxygenPrescribed;
+	}
+
+	public YesNoUnknown getStillHospitalized() {
+		return stillHospitalized;
+	}
+
+	public void setStillHospitalized(YesNoUnknown stillHospitalized) {
+		this.stillHospitalized = stillHospitalized;
+	}
+
+	public Integer getIcuLengthOfStay() {
+		return icuLengthOfStay;
+	}
+
+	public void setIcuLengthOfStay(Integer icuLengthOfStay) {
+		this.icuLengthOfStay = icuLengthOfStay;
+	}
+
+	public Integer getDurationOfHospitalization() {
+		return durationOfHospitalization;
+	}
+
+	public void setDurationOfHospitalization(Integer durationOfHospitalization) {
+		this.durationOfHospitalization = durationOfHospitalization;
 	}
 }

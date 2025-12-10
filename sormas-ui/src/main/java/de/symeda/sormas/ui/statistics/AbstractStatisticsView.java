@@ -24,11 +24,13 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Link;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UiUtil;
+import de.symeda.sormas.ui.epipulse.EpipulseExportView;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -46,6 +48,10 @@ public class AbstractStatisticsView extends AbstractSubNavigationView<Component>
 		menu.addView(StatisticsView.VIEW_NAME, I18nProperties.getCaption(Captions.statisticsStatistics), params);
 		if (UiUtil.permitted(UserRight.DATABASE_EXPORT_ACCESS)) {
 			menu.addView(DatabaseExportView.VIEW_NAME, I18nProperties.getCaption(Captions.statisticsDatabaseExport), params);
+		}
+
+		if (UiUtil.permitted(FeatureType.EPIPULSE_EXPORT, UserRight.EPIPULSE_EXPORT_VIEW)) {
+			menu.addView(EpipulseExportView.VIEW_NAME, I18nProperties.getCaption(Captions.statisticsEpipulseExport), params);
 		}
 
 		String sormasStatsUrl = FacadeProvider.getConfigFacade().getSormasStatsUrl();

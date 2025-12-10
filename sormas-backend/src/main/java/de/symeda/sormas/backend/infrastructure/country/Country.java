@@ -26,12 +26,14 @@ public class Country extends InfrastructureAdo {
 	public static final String ISO_CODE = "isoCode";
 	public static final String UNO_CODE = "unoCode";
 	public static final String SUBCONTINENT = "subcontinent";
+	public static final String NUTS_CODE = "nutsCode";
 
 	private String defaultName;
 	private String externalId;
 	private String isoCode;
 	private String unoCode;
 	private Subcontinent subcontinent;
+	private String nutsCode;
 
 	public String getDefaultName() {
 		return defaultName;
@@ -72,5 +74,13 @@ public class Country extends InfrastructureAdo {
 
 	public void setSubcontinent(Subcontinent subcontinent) {
 		this.subcontinent = subcontinent;
+	}
+
+	public String getNutsCode() {
+		return nutsCode;
+	}
+
+	public void setNutsCode(String nutsCode) {
+		this.nutsCode = nutsCode;
 	}
 }

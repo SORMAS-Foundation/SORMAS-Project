@@ -20,33 +20,43 @@ package de.symeda.sormas.ui.epidata;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.divsCss;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
-import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.epidata.ClusterType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.exposure.InfectionSource;
+import de.symeda.sormas.api.exposure.ModeOfTransmission;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.ui.ActivityAsCase.ActivityAsCaseField;
 import de.symeda.sormas.ui.exposure.ExposuresField;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -60,18 +70,27 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	private static final long serialVersionUID = 1L;
 
 	private static final String LOC_EXPOSURE_INVESTIGATION_HEADING = "locExposureInvestigationHeading";
+	private static final String LOC_CONCLUSION_HEADING = "locConclusionHeading";
+	private static final String LOC_CLUSTER_TYPE_HEADING = "locClusterTypeHeading";
 	private static final String LOC_ACTIVITY_AS_CASE_INVESTIGATION_HEADING = "locActivityAsCaseInvestigationHeading";
 	private static final String LOC_SOURCE_CASE_CONTACTS_HEADING = "locSourceCaseContactsHeading";
 	private static final String LOC_EPI_DATA_FIELDS_HINT = "locEpiDataFieldsHint";
 
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT = 
-			loc(LOC_EXPOSURE_INVESTIGATION_HEADING) + 
+			loc(LOC_EXPOSURE_INVESTIGATION_HEADING) +
 			loc(EpiDataDto.EXPOSURE_DETAILS_KNOWN) +
 			loc(EpiDataDto.EXPOSURES) +
-			loc(LOC_ACTIVITY_AS_CASE_INVESTIGATION_HEADING) + 
+			loc(LOC_CONCLUSION_HEADING) +
+			fluidRowLocs(6,EpiDataDto.CASE_IMPORTED_STATUS,6,"") +
+			fluidRowLocs(6, EpiDataDto.IMPORTED_CASE, 6, EpiDataDto.COUNTRY)+
+			fluidRowLocs(EpiDataDto.MODE_OF_TRANSMISSION, EpiDataDto.MODE_OF_TRANSMISSION_TYPE) +
+			fluidRowLocs(EpiDataDto.INFECTION_SOURCE, EpiDataDto.INFECTION_SOURCE_TEXT) +
+			loc(LOC_ACTIVITY_AS_CASE_INVESTIGATION_HEADING) +
 			loc(EpiDataDto.ACTIVITY_AS_CASE_DETAILS_KNOWN)+
-			loc(EpiDataDto.ACTIVITIES_AS_CASE) + 
+			loc(EpiDataDto.ACTIVITIES_AS_CASE) +
+			loc(LOC_CLUSTER_TYPE_HEADING)+
+			fluidRowLocs(3, EpiDataDto.CLUSTER_RELATED,5,EpiDataDto.CLUSTER_TYPE,4,EpiDataDto.CLUSTER_TYPE_TEXT) +
 			locCss(VSPACE_TOP_3, LOC_EPI_DATA_FIELDS_HINT) +
 			loc(EpiDataDto.HIGH_TRANSMISSION_RISK_AREA) +
 			loc(EpiDataDto.LARGE_OUTBREAKS_AREA) + 
@@ -117,8 +136,14 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		addHeadingsAndInfoTexts();
 
 		NullableOptionGroup ogExposureDetailsKnown = addField(EpiDataDto.EXPOSURE_DETAILS_KNOWN, NullableOptionGroup.class);
-		ExposuresField exposuresField = addField(EpiDataDto.EXPOSURES, new ExposuresField(disease, FieldVisibilityCheckers.withDisease(disease)
-				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())), UiFieldAccessCheckers.getDefault(false, FacadeProvider.getConfigFacade().getCountryLocale()), true));
+		ExposuresField exposuresField = addField(
+			EpiDataDto.EXPOSURES,
+			new ExposuresField(
+				disease,
+				FieldVisibilityCheckers.withDisease(disease)
+					.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
+				UiFieldAccessCheckers.getDefault(false, FacadeProvider.getConfigFacade().getCountryLocale()),
+				true));
 
 		exposuresField.setEpiDataParentClass(parentClass);
 		exposuresField.setWidthFull();
@@ -140,13 +165,33 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			});
 		}
 
+		addField(EpiDataDto.CASE_IMPORTED_STATUS);
+		addField(EpiDataDto.CLUSTER_TYPE);
+		addField(EpiDataDto.CLUSTER_RELATED);
+
+		addField(EpiDataDto.MODE_OF_TRANSMISSION);
+		addField(EpiDataDto.MODE_OF_TRANSMISSION_TYPE);
+		addField(EpiDataDto.INFECTION_SOURCE);
+		addField(EpiDataDto.INFECTION_SOURCE_TEXT);
+		addField(EpiDataDto.IMPORTED_CASE, NullableOptionGroup.class);
+		List<CountryReferenceDto> countries = FacadeProvider.getCountryFacade().getAllActiveAsReference();
+		ComboBox country = addInfrastructureField(EpiDataDto.COUNTRY);
+		country.addItems(countries);
+
+		TextField clusterTypeTF = addField(EpiDataDto.CLUSTER_TYPE_TEXT);
+		FieldHelper
+			.setVisibleWhen(getFieldGroup(), EpiDataDto.CLUSTER_TYPE, EpiDataDto.CLUSTER_RELATED, Collections.singletonList(Boolean.TRUE), true);
+		FieldHelper.setVisibleWhen(getField(EpiDataDto.CLUSTER_TYPE), Arrays.asList(clusterTypeTF), Arrays.asList(ClusterType.OTHER), true);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
 			EpiDataDto.EXPOSURES,
 			EpiDataDto.EXPOSURE_DETAILS_KNOWN,
 			Collections.singletonList(YesNoUnknown.YES),
 			true);
-
+		FieldHelper
+			.setVisibleWhen(getFieldGroup(), EpiDataDto.MODE_OF_TRANSMISSION_TYPE, EpiDataDto.MODE_OF_TRANSMISSION, ModeOfTransmission.OTHER, true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.INFECTION_SOURCE_TEXT, EpiDataDto.INFECTION_SOURCE, InfectionSource.OTHER, true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.COUNTRY, EpiDataDto.IMPORTED_CASE, YesNoUnknown.YES, true);
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
 
@@ -188,13 +233,25 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 					+ divsCss(
 						VSPACE_3,
 						I18nProperties.getString(
-							parentClass == ContactDto.class ? Strings.infoExposureInvestigationContacts : Strings.infoExposureInvestigation)),
+							parentClass == ContactDto.class ? Strings.infoExposureInvestigationContacts : Strings.infoExposureInvestigation),
+						disease == Disease.GIARDIASIS ? I18nProperties.getString(Strings.giardiaInfoExposureInvestigation) : StringUtils.EMPTY),
 				ContentMode.HTML),
 			LOC_EXPOSURE_INVESTIGATION_HEADING);
 
 		getContent().addComponent(
 			new MultilineLabel(divsCss(VSPACE_3, I18nProperties.getString(Strings.infoEpiDataFieldsHint)), ContentMode.HTML),
 			LOC_EPI_DATA_FIELDS_HINT);
+
+		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && Disease.MEASLES == disease) {
+			getContent().addComponent(
+				new MultilineLabel(h3(I18nProperties.getString(Strings.headingClusterType)) + divsCss(VSPACE_3), ContentMode.HTML),
+				LOC_CLUSTER_TYPE_HEADING);
+		}
+		// Conclusion heading should be visible for all countries Giardiasis & Cryptosporidiosis specific fields
+		getContent().addComponent(
+			new MultilineLabel(h3(I18nProperties.getString(Strings.headingEpiConclusion)) + divsCss(VSPACE_3), ContentMode.HTML),
+			LOC_CONCLUSION_HEADING);
+		getContent().getComponent(LOC_CONCLUSION_HEADING).setVisible(Arrays.asList(Disease.CRYPTOSPORIDIOSIS, Disease.GIARDIASIS).contains(disease));
 
 		getContent().addComponent(
 			new MultilineLabel(

@@ -46,6 +46,7 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DependantOn;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
@@ -112,6 +113,9 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 	public static final String PLACE_OF_BIRTH_FACILITY_DETAILS = "placeOfBirthFacilityDetails";
 	public static final String GESTATION_AGE_AT_BIRTH = "gestationAgeAtBirth";
 	public static final String BIRTH_WEIGHT = "birthWeight";
+	public static final String GESTATIONAL_AGE_CATEGORY = "gestationalAgeCategory";
+	public static final String BIRTH_WEIGHT_CATEGORY = "birthWeightCategory";
+	public static final String MULTIPLE_BIRTH = "multipleBirth";
 	public static final String PASSPORT_NUMBER = "passportNumber";
 	public static final String NATIONAL_HEALTH_ID = "nationalHealthId";
 	public static final String EMAIL_ADDRESS = "emailAddress";
@@ -132,6 +136,8 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 	public static final String IS_INCAPACITATED = "incapacitated";
 	public static final String ENTRY_DATE = "entryDate";
 	public static final String LIVING_STATUS = "livingStatus";
+	public static final String WORK_PLACE = "workPlace";
+	public static final String WORK_PLACE_TEXT = "workPlaceText";
 	private static final long serialVersionUID = -8558187171374254398L;
 
 	// Fields are declared in the order they should appear in the import template
@@ -211,41 +217,63 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 	@Outbreaks
 	private Date approximateAgeReferenceDate;
 	@Diseases({
-		Disease.CONGENITAL_RUBELLA })
+		Disease.CONGENITAL_RUBELLA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	@HideForCountries
 	private RegionReferenceDto placeOfBirthRegion;
 	@Diseases({
-		Disease.CONGENITAL_RUBELLA })
+		Disease.CONGENITAL_RUBELLA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	@HideForCountries
 	private DistrictReferenceDto placeOfBirthDistrict;
 	@Diseases({
-		Disease.CONGENITAL_RUBELLA })
+		Disease.CONGENITAL_RUBELLA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	@HideForCountries
 	@SensitiveData
 	private CommunityReferenceDto placeOfBirthCommunity;
 	@Diseases({
-		Disease.CONGENITAL_RUBELLA })
+		Disease.CONGENITAL_RUBELLA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	@HideForCountries
 	private FacilityType placeOfBirthFacilityType;
 	@Diseases({
-		Disease.CONGENITAL_RUBELLA })
+		Disease.CONGENITAL_RUBELLA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	@HideForCountries
 	@SensitiveData
 	private FacilityReferenceDto placeOfBirthFacility;
 	@Diseases({
-		Disease.CONGENITAL_RUBELLA })
+		Disease.CONGENITAL_RUBELLA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	@HideForCountries
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String placeOfBirthFacilityDetails;
 	@Diseases({
-		Disease.CONGENITAL_RUBELLA })
+		Disease.CONGENITAL_RUBELLA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	@HideForCountries
 	private Integer gestationAgeAtBirth;
 	@Diseases({
-		Disease.CONGENITAL_RUBELLA })
+		Disease.CONGENITAL_RUBELLA,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	@HideForCountries
 	private Integer birthWeight;
+
+	// RSV-specific perinatal fields
+	@Diseases({
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.CONGENITAL_RUBELLA })
+	private GestationalAgeCategory gestationalAgeCategory;
+	@Diseases({
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.CONGENITAL_RUBELLA })
+	private BirthWeightCategory birthWeightCategory;
+	@Diseases({
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.CONGENITAL_RUBELLA })
+	private MultipleBirth multipleBirth;
 
 	@Outbreaks
 	private PresentCondition presentCondition;
@@ -388,13 +416,36 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@SensitiveData
-	@Diseases(value = {Disease.TUBERCULOSIS, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, Disease.INVASIVE_MENINGOCOCCAL_INFECTION})
+	@Diseases(value = {
+		Disease.TUBERCULOSIS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.MEASLES,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
 	private Date entryDate;
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@SensitiveData
-	@Diseases(value = {Disease.TUBERCULOSIS, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, Disease.INVASIVE_MENINGOCOCCAL_INFECTION})
+	@Diseases(value = {
+		Disease.TUBERCULOSIS,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.MEASLES,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
 	private LivingStatus livingStatus;
+	@SensitiveData
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
+	private WorkPlace workPlace;
+	@SensitiveData
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
+	@DependantOn(WORK_PLACE)
+	private String workPlaceText;
 
 	@SuppressWarnings("serial")
 	public static class SeveralNonPrimaryContactDetailsException extends RuntimeException {
@@ -927,6 +978,30 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 		this.birthWeight = birthWeight;
 	}
 
+	public GestationalAgeCategory getGestationalAgeCategory() {
+		return gestationalAgeCategory;
+	}
+
+	public void setGestationalAgeCategory(GestationalAgeCategory gestationalAgeCategory) {
+		this.gestationalAgeCategory = gestationalAgeCategory;
+	}
+
+	public BirthWeightCategory getBirthWeightCategory() {
+		return birthWeightCategory;
+	}
+
+	public void setBirthWeightCategory(BirthWeightCategory birthWeightCategory) {
+		this.birthWeightCategory = birthWeightCategory;
+	}
+
+	public MultipleBirth getMultipleBirth() {
+		return multipleBirth;
+	}
+
+	public void setMultipleBirth(MultipleBirth multipleBirth) {
+		this.multipleBirth = multipleBirth;
+	}
+
 	public String getPassportNumber() {
 		return passportNumber;
 	}
@@ -1064,6 +1139,22 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 
 	public void setIncapacitated(boolean incapacitated) {
 		this.incapacitated = incapacitated;
+	}
+
+	public WorkPlace getWorkPlace() {
+		return workPlace;
+	}
+
+	public void setWorkPlace(WorkPlace workPlace) {
+		this.workPlace = workPlace;
+	}
+
+	public String getWorkPlaceText() {
+		return workPlaceText;
+	}
+
+	public void setWorkPlaceText(String workPlaceText) {
+		this.workPlaceText = workPlaceText;
 	}
 
 	@Override

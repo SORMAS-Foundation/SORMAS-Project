@@ -95,7 +95,8 @@ public class NotifierService extends AdoServiceWithUserFilterAndJurisdiction<Not
             + "a.creationdate AS creationdate, a.change_user_id AS change_user_id,"
             + "COALESCE(b.registrationnumber, a.registrationnumber) AS registrationnumber," + "COALESCE(b.firstname, a.firstname) AS firstname,"
             + "COALESCE(b.lastname, a.lastname) AS lastname," + "COALESCE(b.address, a.address) AS address," + "COALESCE(b.email, a.email) AS email,"
-            + "COALESCE(b.phone, a.phone) AS phone " + "FROM notifier a " + "LEFT JOIN " + "(SELECT * FROM notifier_history "
+            + "COALESCE(b.phone, a.phone) AS phone, "+ "COALESCE(b.agentfirstname, a.agentfirstname) AS agentfirstname, "
+            + "COALESCE(b.agentlastname, a.agentlastname) AS agentlastname "+ "FROM notifier a " + "LEFT JOIN " + "(SELECT * FROM notifier_history "
             + "WHERE uuid = :uuid AND changedate <= CAST(:changeDate AS TIMESTAMP) " + "ORDER BY changedate DESC LIMIT 1" + ") b ON a.uuid = b.uuid "
             + "WHERE a.uuid = :uuid";
 

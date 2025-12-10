@@ -91,7 +91,7 @@ public abstract class AbstractContactView extends AbstractEditAllowedDetailView<
 		if (UiUtil.enabled(FeatureType.VIEW_TAB_CONTACTS_EPIDEMIOLOGICAL_DATA)) {
 			menu.addView(ContactEpiDataView.VIEW_NAME, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.EPI_DATA), params);
 		}
-		if (Disease.INVASIVE_MENINGOCOCCAL_INFECTION != contact.getDisease() && UiUtil.enabled(FeatureType.VIEW_TAB_CONTACTS_FOLLOW_UP_VISITS)) {
+		if (!List.of(Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.MEASLES).contains(contact.getDisease()) && UiUtil.enabled(FeatureType.VIEW_TAB_CONTACTS_FOLLOW_UP_VISITS)) {
 			menu.addView(ContactVisitsView.VIEW_NAME, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.VISITS), params);
 		}
 

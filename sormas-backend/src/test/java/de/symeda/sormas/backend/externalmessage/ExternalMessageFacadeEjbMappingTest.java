@@ -1,3 +1,18 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.backend.externalmessage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -30,7 +45,7 @@ import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
-import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportService;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportFacadeEjb;
@@ -39,8 +54,6 @@ import de.symeda.sormas.backend.infrastructure.country.CountryService;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.sample.Sample;
-import de.symeda.sormas.backend.symptoms.Symptoms;
-import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.user.User;
@@ -89,6 +102,7 @@ public class ExternalMessageFacadeEjbMappingTest {
 		source.setChangeDate(new Date());
 		source.setUuid("UUID");
 		source.setMessageDateTime(new Date());
+		source.setCaseComments("Test Case Comments");
 		source.setReporterName("Test Lab Name");
 		source.setReporterExternalIds(Arrays.asList("Test Lab External Id 1", "Test Lab External Id 2"));
 		source.setReporterPostalCode("Test Lab Postal Code");
@@ -128,7 +142,8 @@ public class ExternalMessageFacadeEjbMappingTest {
 		source.setNotifierAddress("Notifier Address");
 		source.setNotifierEmail("notifier@domain.com");
 		source.setNotifierPhone("1234567890");
-		source.setTreatmentStarted("Treatment Started");
+		source.setTreatmentStarted(YesNoUnknown.YES);
+		source.setTreatmentNotApplicable(true);
 		source.setTreatmentStartedDate(new Date());
 		source.setDiagnosticDate(new Date());
 
@@ -146,6 +161,7 @@ public class ExternalMessageFacadeEjbMappingTest {
 		assertNotSame(source.getChangeDate(), result.getChangeDate());
 		assertEquals(source.getUuid(), result.getUuid());
 		assertEquals(source.getMessageDateTime(), result.getMessageDateTime());
+		assertEquals(source.getCaseComments(), result.getCaseComments());
 		assertEquals(source.getReporterName(), result.getReporterName());
 		assertEquals(source.getReporterExternalIds(), result.getReporterExternalIds());
 		assertEquals(source.getReporterPostalCode(), result.getReporterPostalCode());
@@ -184,6 +200,7 @@ public class ExternalMessageFacadeEjbMappingTest {
 		assertEquals(source.getNotifierEmail(), result.getNotifierEmail());
 		assertEquals(source.getNotifierPhone(), result.getNotifierPhone());
 		assertEquals(source.getTreatmentStarted(), result.getTreatmentStarted());
+		assertEquals(source.getTreatmentNotApplicable(), result.getTreatmentNotApplicable());
 		assertEquals(source.getTreatmentStartedDate(), result.getTreatmentStartedDate());
 		assertEquals(source.getDiagnosticDate(), result.getDiagnosticDate());
 	}
@@ -208,6 +225,7 @@ public class ExternalMessageFacadeEjbMappingTest {
 		source.setCreationDate(new Timestamp(new Date().getTime()));
 		source.setChangeDate(new Timestamp(new Date().getTime()));
 		source.setUuid("UUID");
+		source.setCaseComments("Test Case Comments");
 		source.setMessageDateTime(new Date());
 		source.setReporterName("Test Lab Name");
 		source.setReporterExternalIds(Arrays.asList("Test Lab External Id 1", "Test Lab External Id 2"));
@@ -247,7 +265,7 @@ public class ExternalMessageFacadeEjbMappingTest {
 		source.setNotifierAddress("Notifier Address");
 		source.setNotifierEmail("notifier@domain.com");
 		source.setNotifierPhone("1234567890");
-		source.setTreatmentStarted("Treatment Started");
+		source.setTreatmentStarted(YesNoUnknown.YES);
 		source.setTreatmentStartedDate(new Date());
 		source.setDiagnosticDate(new Date());
 
@@ -257,6 +275,7 @@ public class ExternalMessageFacadeEjbMappingTest {
 		assertNotSame(source.getCreationDate().getTime(), result.getCreationDate().getTime());
 		assertEquals(source.getChangeDate(), result.getChangeDate());
 		assertEquals(source.getUuid(), result.getUuid());
+		assertEquals(source.getCaseComments(), result.getCaseComments());
 		assertEquals(source.getMessageDateTime(), result.getMessageDateTime());
 		assertEquals(source.getReporterName(), result.getReporterName());
 		assertEquals(source.getReporterExternalIds(), result.getReporterExternalIds());

@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,28 +15,30 @@
 
 package de.symeda.sormas.ui.externalmessage.doctordeclaration;
 
-import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showCreateCaseWindow;
-import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showFormWithLabMessage;
-import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showMissingDiseaseConfiguration;
-import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showRelatedForwardedMessageConfirmation;
-import static de.symeda.sormas.ui.utils.processing.ProcessingUiHelper.showPickOrCreateEntryWindow;
-import static de.symeda.sormas.ui.utils.processing.ProcessingUiHelper.showPickOrCreatePersonWindow;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.Registration;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
@@ -47,16 +49,24 @@ import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
 import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEventResult;
+import de.symeda.sormas.api.externalmessage.processing.PickOrCreateSampleResult;
 import de.symeda.sormas.api.externalmessage.processing.doctordeclaration.AbstractDoctorDeclarationMessageProcessingFlow;
+import de.symeda.sormas.api.externalmessage.processing.labmessage.LabMessageProcessingHelper;
+import de.symeda.sormas.api.externalmessage.processing.labmessage.SampleAndPathogenTests;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.notifier.NotifierDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.dataprocessing.EntitySelection;
 import de.symeda.sormas.api.utils.dataprocessing.HandlerCallback;
@@ -67,11 +77,17 @@ import de.symeda.sormas.ui.contact.ContactCreateForm;
 import de.symeda.sormas.ui.events.EventDataForm;
 import de.symeda.sormas.ui.events.EventParticipantCreateForm;
 import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
+import de.symeda.sormas.ui.externalmessage.labmessage.LabMessageUiHelper;
 import de.symeda.sormas.ui.externalmessage.processing.EntrySelectionComponentForExternalMessage;
 import de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper;
+import de.symeda.sormas.ui.samples.humansample.SampleController;
+import de.symeda.sormas.ui.samples.humansample.SampleCreateForm;
+import de.symeda.sormas.ui.samples.humansample.SampleEditPathogenTestListHandler;
+import de.symeda.sormas.ui.samples.humansample.SampleSelectionField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.processing.EntrySelectionField;
+import de.symeda.sormas.ui.utils.processing.ProcessingUiHelper;
 
 /**
  * Doctor declaration processing flow implemented with Vaadin dialogs/components for handling confirmation and object edit/save steps.
@@ -101,6 +117,73 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 	}
 
 	/**
+	 * Handles the infrastructure data checks for the external message.
+	 *
+	 * @return A {@link CompletionStage} that resolves to a boolean indicating whether the infrastructure data checks were handled
+	 *         successfully.
+	 */
+	protected CompletionStage<Boolean> handleInfraDataChecks() {
+
+		final CompletableFuture<Boolean> ret = new CompletableFuture<>();
+
+		final FacilityReferenceDto hospitalFacilityReference = getHospitalFacilityReference(getExternalMessage());
+
+		if (hospitalFacilityReference == null) {
+			LOGGER.warn("Hospital facility reference is null for externalMessage: {}", getExternalMessage());
+
+			final String hospitalNameWithCode = StringUtils.isNotBlank(getExternalMessage().getHospitalizationFacilityName())
+				? getExternalMessage().getHospitalizationFacilityName()
+					+ (StringUtils.isNotBlank(getExternalMessage().getHospitalizationFacilityExternalId())
+						&& !getExternalMessage().getHospitalizationFacilityExternalId().equals(getExternalMessage().getHospitalizationFacilityName())
+							? "(" + getExternalMessage().getHospitalizationFacilityExternalId() + ")"
+							: "")
+				: getExternalMessage().getHospitalizationFacilityExternalId();
+
+			if (StringUtils.isBlank(hospitalNameWithCode)) {
+				// Only warn if one of the hospitalization fields is filled
+				if (getExternalMessage().getAdmittedToHealthFacility() != null
+					|| getExternalMessage().getHospitalizationFacilityName() != null
+					|| getExternalMessage().getHospitalizationFacilityExternalId() != null
+					|| getExternalMessage().getHospitalizationFacilityDepartment() != null
+					|| getExternalMessage().getHospitalizationAdmissionDate() != null
+					|| getExternalMessage().getHospitalizationDischargeDate() != null) {
+					LOGGER.warn("Hospital facility name and external ID are both blank for externalMessage: {}", getExternalMessage());
+
+					final String hospitalDataMissing = I18nProperties.getString(Strings.infoExternalMessageHospitalizationFacilityMissing);
+
+					CommitDiscardWrapperComponent<VerticalLayout> commitDiscardWrapperComponent =
+						new CommitDiscardWrapperComponent<>(new VerticalLayout(new Label(hospitalDataMissing)));
+					commitDiscardWrapperComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionContinue)); // Continue button
+					commitDiscardWrapperComponent.getDiscardButton().setVisible(false);
+
+					commitDiscardWrapperComponent.addCommitListener(() -> ret.complete(true));
+
+					VaadinUiUtil.showModalPopupWindow(commitDiscardWrapperComponent, I18nProperties.getCaption(Captions.info), true);
+				} else {
+					ret.complete(true);
+				}
+			} else {
+				final String hospitalNotFound =
+					String.format(I18nProperties.getString(Strings.infoExternalMessageHospitalizationMissingHospital), hospitalNameWithCode);
+
+				CommitDiscardWrapperComponent<VerticalLayout> commitDiscardWrapperComponent =
+					new CommitDiscardWrapperComponent<>(new VerticalLayout(new Label(hospitalNotFound)));
+				commitDiscardWrapperComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionDone));
+				commitDiscardWrapperComponent.getDiscardButton().setVisible(false); // No discard button
+
+				//commitDiscardWrapperComponent.addCommitListener(() -> ret.complete(true));
+				commitDiscardWrapperComponent.addDiscardListener(() -> ret.complete(false));
+
+				VaadinUiUtil.showModalPopupWindow(commitDiscardWrapperComponent, I18nProperties.getCaption(Captions.info), true);
+			}
+		} else {
+			ret.complete(true);
+		}
+
+		return ret;
+	}
+
+	/**
 	 * Handles the case where the disease is missing in the external message.
 	 *
 	 * @return A {@link CompletionStage} that resolves to a boolean indicating whether the missing disease was handled successfully.
@@ -108,7 +191,7 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 	@Override
 	protected CompletionStage<Boolean> handleMissingDisease() {
 		LOGGER.debug("Handling missing disease for externalMessage: {}", getExternalMessage());
-		return showMissingDiseaseConfiguration();
+		return ExternalMessageProcessingUIHelper.showMissingDiseaseConfiguration();
 	}
 
 	/**
@@ -120,7 +203,7 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 	@Override
 	protected CompletionStage<Boolean> handleRelatedForwardedMessages() {
 		LOGGER.debug("Handling related forwarded messages for externalMessage: {}", getExternalMessage());
-		return showRelatedForwardedMessageConfirmation();
+		return ExternalMessageProcessingUIHelper.showRelatedForwardedMessageConfirmation();
 	}
 
 	/**
@@ -134,7 +217,34 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 	@Override
 	protected void handlePickOrCreatePerson(PersonDto person, HandlerCallback<EntitySelection<PersonDto>> callback) {
 		LOGGER.debug("Handling pick or create person for person: {}", person);
-		showPickOrCreatePersonWindow(person, callback);
+
+		// if any of the person name fields are empty or match the national health ID, try to find a matching person by national health ID
+		final String patientHealthId =
+			getExternalMessage().getPersonNationalHealthId() == null ? null : getExternalMessage().getPersonNationalHealthId().trim();
+		final String patientFirstName = getExternalMessage().getPersonFirstName() == null ? null : getExternalMessage().getPersonFirstName().trim();
+		final String patientLastName = getExternalMessage().getPersonLastName() == null ? null : getExternalMessage().getPersonLastName().trim();
+		if (patientFirstName == null
+			|| patientFirstName.isEmpty()
+			|| patientFirstName.equalsIgnoreCase(patientHealthId)
+			|| patientLastName == null
+			|| patientLastName.isEmpty()
+			|| patientLastName.equalsIgnoreCase(patientHealthId)) {
+			final List<PersonDto> matchingPersons = FacadeProvider.getPersonFacade().getByNationalHealthId(patientHealthId);
+			final PersonDto matchingPerson = matchingPersons == null || matchingPersons.isEmpty()
+				? null
+				: matchingPersons.stream()
+					.filter(Objects::nonNull)
+					.filter(p -> p.getFirstName() != null && p.getLastName() != null)
+					.findFirst()
+					.orElse(null);
+			if (matchingPerson != null) {
+				ProcessingUiHelper.showPickOrCreatePersonWindow(matchingPerson, callback);
+				return;
+			}
+		}
+
+		// If no matching person is found by national health ID, proceed with the regular pick or create person flow
+		ProcessingUiHelper.showPickOrCreatePersonWindow(person, callback);
 	}
 
 	/**
@@ -183,7 +293,8 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 
 		// If multiple options are available, show a selection window
 		if (optionsBuilder.size() > 1) {
-			showPickOrCreateEntryWindow(new EntrySelectionComponentForExternalMessage(externalMessage, optionsBuilder.build()), callback);
+			ProcessingUiHelper
+				.showPickOrCreateEntryWindow(new EntrySelectionComponentForExternalMessage(externalMessage, optionsBuilder.build()), callback);
 		} else {
 			// If only one option is available, directly proceed with it
 			callback.done(optionsBuilder.getSingleAvailableCreateResult());
@@ -219,7 +330,14 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 					notifierDto.setAddress(externalMessage.getNotifierAddress());
 					notifierDto.setPhone(externalMessage.getNotifierPhone());
 					notifierDto.setEmail(externalMessage.getNotifierEmail());
-
+					if (externalMessage.getReporterName() != null && externalMessage.getReporterName().contains("-")) {
+						// Split the reporter name into first and last names if it contains a hyphen
+						// Some names may already contain hyphens, assume first parts are the first name and last parts are the last name
+						final String[] nameParts = externalMessage.getReporterName().split("-");
+						notifierDto.setAgentFirstName(
+							Arrays.stream(nameParts).limit(nameParts.length - 1).map(String::trim).collect(Collectors.joining(" ")));
+						notifierDto.setAgentLastName(nameParts.length > 0 ? nameParts[nameParts.length - 1].trim() : "");
+					}
 					// Update the case with notifier details and complete the callback
 					callback.done(getExternalMessageProcessingFacade().updateAndSetCaseNotifier(result.getUuid(), notifierDto));
 					return;
@@ -236,7 +354,7 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 		};
 
 		// Show the create case window with the provided data and callback
-		showCreateCaseWindow(caze, person, externalMessage, getMapper(), updateNotifierCallback);
+		ExternalMessageProcessingUIHelper.showCreateCaseWindow(caze, person, externalMessage, getMapper(), updateNotifierCallback);
 	}
 
 	/**
@@ -276,7 +394,12 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 		contactCreateComponent.getWrappedComponent().setValue(contact);
 		contactCreateComponent.getWrappedComponent().setPerson(person);
 
-		showFormWithLabMessage(externalMessage, contactCreateComponent, window, I18nProperties.getString(Strings.headingCreateNewContact), false);
+		ExternalMessageProcessingUIHelper.showFormWithLabMessage(
+			externalMessage,
+			contactCreateComponent,
+			window,
+			I18nProperties.getString(Strings.headingCreateNewContact),
+			false);
 	}
 
 	/**
@@ -410,7 +533,144 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 		});
 		createComponent.addDiscardListener(callback::cancel);
 
-		showFormWithLabMessage(externalMessage, createComponent, window, I18nProperties.getString(Strings.headingCreateNewEventParticipant), false);
+		ExternalMessageProcessingUIHelper.showFormWithLabMessage(
+			externalMessage,
+			createComponent,
+			window,
+			I18nProperties.getString(Strings.headingCreateNewEventParticipant),
+			false);
+	}
+
+	@Override
+	protected void handlePickOrCreateSample(
+		List<SampleDto> similarSamples,
+		List<SampleDto> otherSamples,
+		ExternalMessageDto labMessage,
+		int sampleReportIndex,
+		HandlerCallback<PickOrCreateSampleResult> callback) {
+
+		HorizontalLayout sampleDetailsLayout = new HorizontalLayout();
+		sampleDetailsLayout.setSpacing(true);
+
+		SampleReportDto sampleReport = labMessage.getSampleReportsNullSafe().get(sampleReportIndex);
+
+		Date sampleDateTime = sampleReport.getSampleDateTime();
+		ExternalMessageProcessingUIHelper.addLabelIfAvailable(
+			sampleDetailsLayout,
+			sampleDateTime == null ? null : sampleDateTime.toString(),
+			ExternalMessageDto.I18N_PREFIX,
+			SampleReportDto.SAMPLE_DATE_TIME);
+		ExternalMessageProcessingUIHelper
+			.addLabelIfAvailable(sampleDetailsLayout, sampleReport.getLabSampleId(), ExternalMessageDto.I18N_PREFIX, SampleReportDto.LAB_SAMPLE_ID);
+
+		SampleMaterial sampleMaterial = sampleReport.getSampleMaterial();
+		ExternalMessageProcessingUIHelper.addLabelIfAvailable(
+			sampleDetailsLayout,
+			sampleMaterial == null ? null : sampleMaterial.toString(),
+			ExternalMessageDto.I18N_PREFIX,
+			SampleReportDto.SAMPLE_MATERIAL);
+
+		SampleSelectionField selectField =
+			new SampleSelectionField(similarSamples, otherSamples, I18nProperties.getString(Strings.infoPickOrCreateSample), sampleDetailsLayout);
+
+		Window window = VaadinUiUtil.createPopupWindow();
+
+		final CommitDiscardWrapperComponent<SampleSelectionField> selectionField = new CommitDiscardWrapperComponent<>(selectField);
+		selectionField.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
+		selectionField.setWidth(1280, Sizeable.Unit.PIXELS);
+		selectionField.addCommitListener(() -> {
+			PickOrCreateSampleResult result = new PickOrCreateSampleResult();
+
+			SampleDto sampleDto = selectField.getValue();
+			if (sampleDto != null) {
+				result.setSample(sampleDto);
+			} else {
+				result.setNewSample(true);
+			}
+
+			callback.done(result);
+		});
+		selectionField.addDiscardListener(callback::cancel);
+
+		selectField.setSelectionChangeCallback(commitAllowed -> selectionField.getCommitButton().setEnabled(commitAllowed));
+		selectionField.getCommitButton().setEnabled(false);
+
+		ExternalMessageProcessingUIHelper
+			.showFormWithLabMessage(labMessage, selectionField, window, I18nProperties.getString(Strings.headingPickOrCreateSample), false);
+	}
+
+	@Override
+	protected void handleEditSample(
+		SampleDto sample,
+		List<PathogenTestDto> newPathogenTests,
+		ExternalMessageDto labMessage,
+		ExternalMessageMapper mapper,
+		boolean lastSample,
+		HandlerCallback<SampleAndPathogenTests> callback) {
+
+		ExternalMessageProcessingUIHelper
+			.showEditSampleWindow(sample, lastSample, newPathogenTests, labMessage, getMapper(), callback::done, callback::cancel);
+	}
+
+	@Override
+	public CompletionStage<Boolean> handleMultipleSampleConfirmation() {
+		return ExternalMessageProcessingUIHelper.showMultipleSamplesPopup();
+	}
+
+	@Override
+	protected void handleCreateSampleAndPathogenTests(
+		SampleDto sample,
+		List<PathogenTestDto> pathogenTests,
+		Disease disease,
+		ExternalMessageDto labMessage,
+		boolean entityCreated,
+		boolean lastSample,
+		HandlerCallback<SampleAndPathogenTests> callback) {
+
+		SampleEditPathogenTestListHandler pathogenTestHandler = new SampleEditPathogenTestListHandler();
+		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent =
+			getSampleCreateComponent(sample, lastSample, pathogenTests, disease, pathogenTestHandler::addPathogenTest);
+
+		sampleCreateComponent.setPostCommitListener(() -> {
+			pathogenTestHandler.saveAll(sample.toReference());
+
+			callback.done(new SampleAndPathogenTests(sampleCreateComponent.getWrappedComponent().getValue(), pathogenTestHandler.getPathogenTests()));
+		});
+		sampleCreateComponent.addDiscardListener(callback::cancel);
+
+		Window window = VaadinUiUtil.createPopupWindow();
+		ExternalMessageProcessingUIHelper.showFormWithLabMessage(
+			labMessage,
+			sampleCreateComponent,
+			window,
+			I18nProperties.getString(Strings.headingCreateNewSample),
+			entityCreated);
+	}
+
+	private CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(
+		SampleDto sample,
+		boolean lastSample,
+		List<PathogenTestDto> pathogenTests,
+		Disease disease,
+		Consumer<PathogenTestDto> pathogenTestSaveHandler) {
+		SampleController sampleController = ControllerProvider.getSampleController();
+		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent = sampleController.getSampleCreateComponent(sample, disease, null);
+
+		// add pathogen test create components
+		List<PathogenTestDto> pathogenTestsToAdd = new ArrayList<>(pathogenTests);
+		// always build at least one PathogenTestDto
+		if (pathogenTestsToAdd.isEmpty()) {
+			pathogenTestsToAdd.add(LabMessageProcessingHelper.buildPathogenTest(null, getMapper(), sample, getUser()));
+		}
+
+		ExternalMessageProcessingUIHelper.addNewPathogenTests(pathogenTestsToAdd, sampleCreateComponent, true, pathogenTestSaveHandler, null);
+
+		// add option to create additional pathogen tests
+		sampleController.addPathogenTestButton(sampleCreateComponent, true, null, null, pathogenTestSaveHandler);
+
+		LabMessageUiHelper.establishCommitButtons(sampleCreateComponent, lastSample);
+
+		return sampleCreateComponent;
 	}
 
 	/**

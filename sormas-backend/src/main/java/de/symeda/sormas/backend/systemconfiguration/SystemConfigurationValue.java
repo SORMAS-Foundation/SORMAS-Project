@@ -38,6 +38,7 @@ public class SystemConfigurationValue extends AbstractDomainObject {
     public static final String PATTERN_FIELD_NAME = "pattern";
     public static final String ENCRYPT_FIELD_NAME = "encrypt";
     public static final String DATA_PROVIDER_FIELD_NAME = "dataProvider";
+    public static final String DESCRIPTION = "description";
 
     private String value;
     private String key;

@@ -2407,20 +2407,59 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 		cq.select(caseRoot.get(Case.UUID));
 		cq.where(
-			caseRoot.get(Case.UUID).in(uuids),
-			cb.equal(caseRoot.get(Case.DISEASE), disease),
-			cb.lessThanOrEqualTo(
-				CriteriaBuilderHelper.dateDiff(
-					cb,
-					cb.function(
-						ExtendedPostgreSQL94Dialect.DATE,
-						Date.class,
-						CriteriaBuilderHelper.coalesce(cb, Date.class, earliestSampleSq, caseRoot.get(Case.REPORT_DATE))),
-					cb.function(ExtendedPostgreSQL94Dialect.DATE, Date.class, cb.literal(dateToCompareTo))),
-				Long.valueOf(TimeUnit.DAYS.toSeconds(threshold)).doubleValue()));
+			cb.and(
+				caseRoot.get(Case.UUID).in(uuids),
+				cb.equal(caseRoot.get(Case.DISEASE), disease),
+				cb.lessThanOrEqualTo(
+					CriteriaBuilderHelper.dateDiff(
+						cb,
+						cb.function(
+							ExtendedPostgreSQL94Dialect.DATE,
+							Date.class,
+							CriteriaBuilderHelper.coalesce(cb, Date.class, earliestSampleSq, caseRoot.get(Case.REPORT_DATE))),
+						cb.function(ExtendedPostgreSQL94Dialect.DATE, Date.class, cb.literal(dateToCompareTo))),
+					Long.valueOf(TimeUnit.DAYS.toSeconds(threshold)).doubleValue())));
 		cq.orderBy(cb.desc(caseRoot.get(Case.REPORT_DATE)));
 
 		List<String> caseUuids = em.createQuery(cq).getResultList();
 		return caseUuids.isEmpty() ? null : caseUuids.get(0);
+	}
+
+	public List<String> getCaseUuidsForAutomaticSampleAssignment(
+		Set<String> uuids,
+		Set<Disease> diseases,
+		@Nullable Date sampleDateTime,
+		int threshold) {
+		Date dateToCompareTo = sampleDateTime != null ? sampleDateTime : new Date();
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Case> caseRoot = cq.from(Case.class);
+
+		Subquery<Date> earliestSampleSq = cq.subquery(Date.class);
+		Root<Sample> sampleRoot = earliestSampleSq.from(Sample.class);
+		earliestSampleSq.select(cb.least(sampleRoot.<Date> get(Sample.SAMPLE_DATE_TIME)));
+		earliestSampleSq.where(cb.equal(sampleRoot.get(Sample.ASSOCIATED_CASE), caseRoot));
+
+		Predicate diseasePredicate = cb.or(
+			diseases.stream().map(d -> cb.equal(caseRoot.get(Case.DISEASE), d)).toArray(Predicate[]::new));
+
+		cq.select(caseRoot.get(Case.UUID));
+		cq.where(
+			cb.and(
+				caseRoot.get(Case.UUID).in(uuids),
+				diseasePredicate,
+				cb.lessThanOrEqualTo(
+					CriteriaBuilderHelper.dateDiff(
+						cb,
+						cb.function(
+							ExtendedPostgreSQL94Dialect.DATE,
+							Date.class,
+							CriteriaBuilderHelper.coalesce(cb, Date.class, earliestSampleSq, caseRoot.get(Case.REPORT_DATE))),
+						cb.function(ExtendedPostgreSQL94Dialect.DATE, Date.class, cb.literal(dateToCompareTo))),
+					Long.valueOf(TimeUnit.DAYS.toSeconds(threshold)).doubleValue())));
+		cq.orderBy(cb.desc(caseRoot.get(Case.REPORT_DATE)));
+
+		return em.createQuery(cq).getResultList();
 	}
 }

@@ -22,6 +22,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 
+import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.Component;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -51,11 +53,14 @@ public abstract class AbstractEpiCurveComponent<P extends AbstractDashboardDataP
 	protected final P dashboardDataProvider;
 	protected final HighChart epiCurveChart;
 	protected Label epiCurveLabel;
+	protected Label infoIcon;
 
 	// Others
 	protected EpiCurveGrouping epiCurveGrouping;
 	private boolean showMinimumEntries;
 	private Consumer<Boolean> externalExpandListener;
+	private HorizontalLayout epiCurveHeaderLayout;
+	private Button expandEpiCurveButton;
 
 	public AbstractEpiCurveComponent(P dashboardDataProvider) {
 
@@ -79,13 +84,36 @@ public abstract class AbstractEpiCurveComponent<P extends AbstractDashboardDataP
 		//clearAndFillEpiCurveChart();
 	}
 
+	public AbstractEpiCurveComponent(P dashboardDataProvider, String description) {
+		this(dashboardDataProvider);
+
+		infoIcon = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+		CssStyles.style(infoIcon, CssStyles.H3, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE, CssStyles.HSPACE_LEFT_4);
+
+		this.infoIcon.setDescription(I18nProperties.getDescription(description));
+		epiCurveLabel.setSizeUndefined();
+		CssStyles.style(epiCurveLabel, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
+		HorizontalLayout labelWithInfoLayout = new HorizontalLayout(epiCurveLabel, infoIcon);
+		labelWithInfoLayout.setMargin(false);
+		labelWithInfoLayout.setSpacing(false);
+		// Replace the original epiCurveLabel with the new one that includes the info icon
+		// in the header layout
+		epiCurveHeaderLayout.removeComponent(epiCurveLabel);
+		epiCurveHeaderLayout.removeComponent(expandEpiCurveButton);
+		epiCurveHeaderLayout.addComponent(labelWithInfoLayout);
+		epiCurveHeaderLayout.setComponentAlignment(labelWithInfoLayout, Alignment.BOTTOM_LEFT);
+		epiCurveHeaderLayout.setExpandRatio(labelWithInfoLayout, 1f);
+		epiCurveHeaderLayout.addComponent(expandEpiCurveButton);
+		epiCurveHeaderLayout.setComponentAlignment(expandEpiCurveButton, Alignment.TOP_RIGHT);
+	}
+
 	public void setExpandListener(Consumer<Boolean> listener) {
 		externalExpandListener = listener;
 	}
 
 	private HorizontalLayout createHeader() {
 
-		HorizontalLayout epiCurveHeaderLayout = new HorizontalLayout();
+		epiCurveHeaderLayout = new HorizontalLayout();
 		epiCurveHeaderLayout.setWidth(100, Unit.PERCENTAGE);
 		epiCurveHeaderLayout.setSpacing(true);
 		CssStyles.style(epiCurveHeaderLayout, CssStyles.VSPACE_4);
@@ -99,7 +127,7 @@ public abstract class AbstractEpiCurveComponent<P extends AbstractDashboardDataP
 		epiCurveHeaderLayout.setExpandRatio(epiCurveLabel, 1);
 
 		// "Expand" and "Collapse" buttons
-		Button expandEpiCurveButton =
+		expandEpiCurveButton =
 			ButtonHelper.createIconButtonWithCaption("expandEpiCurve", "", VaadinIcons.EXPAND, null, CssStyles.BUTTON_SUBTLE, CssStyles.VSPACE_NONE);
 		Button collapseEpiCurveButton = ButtonHelper
 			.createIconButtonWithCaption("collapseEpiCurve", "", VaadinIcons.COMPRESS, null, CssStyles.BUTTON_SUBTLE, CssStyles.VSPACE_NONE);

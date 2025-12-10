@@ -89,6 +89,7 @@ public enum ContactProximity {
 		if(disease != null && serverLocale != null && StringUtils.endsWithIgnoreCase(serverLocale,CountryHelper.COUNTRY_CODE_LUXEMBOURG)){
 			switch (disease) {
 				case INVASIVE_MENINGOCOCCAL_INFECTION:
+				case MEASLES:
 					return new ContactProximity[] {
 							PHYSICAL_CONTACT,
 							CLOSE_CONTACT,

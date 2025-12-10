@@ -14,10 +14,13 @@
  */
 package de.symeda.sormas.ui.caze;
 
+import java.util.List;
+
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -135,8 +138,7 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 		boolean isEditAllowed = isEditAllowed();
 
 		if (UiUtil.enabled(FeatureType.SURVEILLANCE_REPORTS)) {
-			CaseNotifierSideViewComponent notifierSideViewComponent =
-				new CaseNotifierSideViewComponent(caze);
+			CaseNotifierSideViewComponent notifierSideViewComponent = new CaseNotifierSideViewComponent(caze);
 			notifierSideViewComponent.addStyleNames(CssStyles.SIDE_COMPONENT);
 			layout.addSidePanelComponent(notifierSideViewComponent, CASE_NOTIFIER_LOC);
 		}
@@ -177,22 +179,25 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 		}
 
 		if (UiUtil.permitted(FeatureType.IMMUNIZATION_MANAGEMENT, UserRight.IMMUNIZATION_VIEW)) {
-			if (!FacadeProvider.getFeatureConfigurationFacade()
-				.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
-				layout.addSidePanelComponent(new SideComponentLayout(new ImmunizationListComponent(() -> {
-					CaseDataDto refreshedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
-					return new ImmunizationListCriteria.Builder(refreshedCase.getPerson()).withDisease(refreshedCase.getDisease()).build();
-				}, null, this::showUnsavedChangesPopup, isEditAllowed)), IMMUNIZATION_LOC);
-			} else {
-				layout.addSidePanelComponent(new SideComponentLayout(new VaccinationListComponent(() -> {
-					CaseDataDto refreshedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
-					return new VaccinationCriteria.Builder(refreshedCase.getPerson()).withDisease(refreshedCase.getDisease())
-						.build()
-						.vaccinationAssociationType(VaccinationAssociationType.CASE)
-						.caseReference(getCaseRef())
-						.region(refreshedCase.getResponsibleRegion())
-						.district(refreshedCase.getResponsibleDistrict());
-				}, null, this::showUnsavedChangesPopup, isEditAllowed)), VACCINATIONS_LOC);
+			// Immunizations are not shown for Giardiasis and Cryptosporidiosis
+			if (!List.of(Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS).contains(caze.getDisease())) {
+				if (!FacadeProvider.getFeatureConfigurationFacade()
+					.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
+					layout.addSidePanelComponent(new SideComponentLayout(new ImmunizationListComponent(() -> {
+						CaseDataDto refreshedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
+						return new ImmunizationListCriteria.Builder(refreshedCase.getPerson()).withDisease(refreshedCase.getDisease()).build();
+					}, null, this::showUnsavedChangesPopup, isEditAllowed)), IMMUNIZATION_LOC);
+				} else {
+					layout.addSidePanelComponent(new SideComponentLayout(new VaccinationListComponent(() -> {
+						CaseDataDto refreshedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
+						return new VaccinationCriteria.Builder(refreshedCase.getPerson()).withDisease(refreshedCase.getDisease())
+							.build()
+							.vaccinationAssociationType(VaccinationAssociationType.CASE)
+							.caseReference(getCaseRef())
+							.region(refreshedCase.getResponsibleRegion())
+							.district(refreshedCase.getResponsibleDistrict());
+					}, null, this::showUnsavedChangesPopup, isEditAllowed)), VACCINATIONS_LOC);
+				}
 			}
 		}
 
@@ -256,7 +261,7 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 
 		if (UiUtil.permitted(FeatureType.SELF_REPORTING)) {
 			SelfReportListComponent selfReportListComponent =
-					new SelfReportListComponent(SelfReportType.CASE, new SelfReportCriteria().setCaze(new CaseReferenceDto(caze.getUuid())));
+				new SelfReportListComponent(SelfReportType.CASE, new SelfReportCriteria().setCaze(new CaseReferenceDto(caze.getUuid())));
 			SelfReportListComponentLayout selfReportListComponentLayout = new SelfReportListComponentLayout(selfReportListComponent);
 			layout.addSidePanelComponent(selfReportListComponentLayout, SELF_REPORT_LOC);
 		}

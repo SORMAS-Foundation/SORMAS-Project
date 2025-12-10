@@ -141,6 +141,7 @@ public interface Descriptions {
 	String sampleDashboardCountsBySpecimenCondition = "sampleDashboardCountsBySpecimenCondition";
 	String sampleDashboardDiseaseFilter = "sampleDashboardDiseaseFilter";
 	String sampleDashboardDistrictFilter = "sampleDashboardDistrictFilter";
+	String sampleDashboardHumans = "sampleDashboardHumans";
 	String sampleDashboardRegionFilter = "sampleDashboardRegionFilter";
 	String SormasToSormasOptions_comment = "SormasToSormasOptions.comment";
 	String SurveillanceReport_associatedMessage = "SurveillanceReport.associatedMessage";

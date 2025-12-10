@@ -52,6 +52,7 @@ import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.api.therapy.DrugSusceptibilityType;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -80,6 +81,7 @@ import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
+import de.symeda.sormas.backend.therapy.DrugSusceptibility;
 import de.symeda.sormas.backend.therapy.DrugSusceptibilityMapper;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
@@ -320,12 +322,25 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setPatternProfile(source.getPatternProfile());
 		target.setStrainCallStatus(source.getStrainCallStatus());
 		target.setTestScale(source.getTestScale());
-			target.setDrugSusceptibility(DrugSusceptibilityMapper.toDto(source.getDrugSusceptibility()));
+		target.setDrugSusceptibility(DrugSusceptibilityMapper.toDto(source.getDrugSusceptibility()));
 
 		target.setSeroTypingMethod(source.getSeroTypingMethod());
 		target.setSeroTypingMethodText(source.getSeroTypingMethodText());
 		target.setSeroGroupSpecification(source.getSeroGroupSpecification());
 		target.setSeroGroupSpecificationText(source.getSeroGroupSpecificationText());
+		target.setGenoTypeResult(source.getGenoTypeResult());
+		target.setGenoTypeResultText(source.getGenoTypeResultText());
+		target.setRsvSubtype(source.getRsvSubtype());
+
+		// IGRA tube values
+		target.setTubeNil(source.getTubeNil());
+		target.setTubeNilGT10(source.getTubeNilGT10());
+		target.setTubeAgTb1(source.getTubeAgTb1());
+		target.setTubeAgTb1GT10(source.getTubeAgTb1GT10());
+		target.setTubeAgTb2(source.getTubeAgTb2());
+		target.setTubeAgTb2GT10(source.getTubeAgTb2GT10());
+		target.setTubeMitogene(source.getTubeMitogene());
+		target.setTubeMitogeneGT10(source.getTubeMitogeneGT10());
 		return target;
 	}
 
@@ -338,6 +353,18 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		// Update case classification if necessary
 		final Case associatedCase = pathogenTest.getSample().getAssociatedCase();
 		if (associatedCase != null) {
+			DrugSusceptibility drugSusceptibility = pathogenTest.getDrugSusceptibility();
+			if (drugSusceptibility != null) {
+				if (associatedCase.getTherapy() != null) {
+					if (drugSusceptibility.getIsoniazidSusceptibility() == DrugSusceptibilityType.RESISTANT
+						&& drugSusceptibility.getRifampicinSusceptibility() == DrugSusceptibilityType.RESISTANT) {
+						associatedCase.getTherapy().setMdrXdrTuberculosis(true);
+					} else {
+						associatedCase.getTherapy().setMdrXdrTuberculosis(false);
+					}
+				}
+			}
+
 			caseFacade.onCaseSampleChanged(associatedCase, syncShares);
 		}
 
@@ -470,10 +497,29 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 					I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_RESULT_VERIFIED)));
 		}
 		// susceptibility is applicable for only LUX TB and all counties of IMI and IPI
-		if (pathogenTest.getDrugSusceptibility() != null && pathogenTest.getTestType() == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY
-				&& !DrugSusceptibilityMapper.hasData(pathogenTest.getDrugSusceptibility())) {
+		if (pathogenTest.getDrugSusceptibility() != null
+			&& pathogenTest.getTestType() == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY
+			&& !DrugSusceptibilityMapper.hasData(pathogenTest.getDrugSusceptibility())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.pathogenTestValidDrugSusceptibility));
 		}
+
+		if (pathogenTest.getTestType() == PathogenTestType.IGRA) {
+			final float t = 10.0f;
+			if (pathogenTest.getTubeNil() != null && (pathogenTest.getTubeNil() > t) != Boolean.TRUE.equals(pathogenTest.getTubeNilGT10())) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.pathogenTestInvalidIgraValueCombination));
+			}
+			if (pathogenTest.getTubeAgTb1() != null && (pathogenTest.getTubeAgTb1() > t) != Boolean.TRUE.equals(pathogenTest.getTubeAgTb1GT10())) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.pathogenTestInvalidIgraValueCombination));
+			}
+			if (pathogenTest.getTubeAgTb2() != null && (pathogenTest.getTubeAgTb2() > t) != Boolean.TRUE.equals(pathogenTest.getTubeAgTb2GT10())) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.pathogenTestInvalidIgraValueCombination));
+			}
+			if (pathogenTest.getTubeMitogene() != null
+				&& (pathogenTest.getTubeMitogene() > t) != Boolean.TRUE.equals(pathogenTest.getTubeMitogeneGT10())) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.pathogenTestInvalidIgraValueCombination));
+			}
+		}
+
 	}
 
 	private PathogenTestDto convertToDto(PathogenTest source) {
@@ -584,7 +630,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setPatternProfile(source.getPatternProfile());
 		target.setStrainCallStatus(source.getStrainCallStatus());
 		target.setTestScale(source.getTestScale());
-		if (source.getDrugSusceptibility() !=null && source.getTestType() == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY) {
+		if (source.getDrugSusceptibility() != null && source.getTestType() == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY) {
 			target.setDrugSusceptibility(
 				drugSusceptibilityMapper.fillOrBuildEntity(source.getDrugSusceptibility(), target.getDrugSusceptibility(), checkChangeDate));
 		}
@@ -593,6 +639,30 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setSeroTypingMethodText(source.getSeroTypingMethodText());
 		target.setSeroGroupSpecification(source.getSeroGroupSpecification());
 		target.setSeroGroupSpecificationText(source.getSeroGroupSpecificationText());
+		target.setGenoTypeResult(source.getGenoTypeResult());
+		target.setGenoTypeResultText(source.getGenoTypeResultText());
+		target.setRsvSubtype(source.getRsvSubtype());
+
+		// IGRA tube values
+		if (target.getTestType() != PathogenTestType.IGRA) {
+			target.setTubeNil(null);
+			target.setTubeNilGT10(null);
+			target.setTubeAgTb1(null);
+			target.setTubeAgTb1GT10(null);
+			target.setTubeAgTb2(null);
+			target.setTubeAgTb2GT10(null);
+			target.setTubeMitogene(null);
+			target.setTubeMitogeneGT10(null);
+		} else {
+			target.setTubeNil(source.getTubeNil());
+			target.setTubeNilGT10(source.getTubeNilGT10());
+			target.setTubeAgTb1(source.getTubeAgTb1());
+			target.setTubeAgTb1GT10(source.getTubeAgTb1GT10());
+			target.setTubeAgTb2(source.getTubeAgTb2());
+			target.setTubeAgTb2GT10(source.getTubeAgTb2GT10());
+			target.setTubeMitogene(source.getTubeMitogene());
+			target.setTubeMitogeneGT10(source.getTubeMitogeneGT10());
+		}
 		return target;
 	}
 

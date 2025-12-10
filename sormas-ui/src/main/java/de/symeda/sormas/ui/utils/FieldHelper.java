@@ -656,6 +656,19 @@ public final class FieldHelper {
 		select.setReadOnly(readOnly);
 	}
 
+	public static void updateItems(Disease disease, AbstractSelect select, Class<? extends Enum> enumClass) {
+
+		List<? extends Enum> filteredValues = Arrays.stream(enumClass.getEnumConstants()).filter(value -> {
+			try {
+				java.lang.reflect.Field enumField = enumClass.getField(value.name());
+				return FieldVisibilityCheckers.withDisease(disease).isVisible(enumClass, enumField);
+			} catch (NoSuchFieldException e) {
+				return true;
+			}
+		}).collect(Collectors.toList());
+		FieldHelper.updateEnumData(select, filteredValues);
+	}
+
 	public static void updateItems(
 		AbstractSelect select,
 		List<?> items,
@@ -849,6 +862,14 @@ public final class FieldHelper {
 		} else {
 			return sourceField.getValue();
 		}
+	}
+
+	public static <T> T getFieldValueAs(Class<T> clazz, Field field) {
+		Object value = field.getValue();
+		if (value != null && clazz.isAssignableFrom(value.getClass())) {
+			return (T) value;
+		}
+		return null;
 	}
 
 	public static void updateOfficersField(UserField officerField, CaseDataDto caze, UserRight right) {

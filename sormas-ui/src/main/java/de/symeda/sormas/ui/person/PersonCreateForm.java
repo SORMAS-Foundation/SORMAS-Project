@@ -370,6 +370,7 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 		person.setPresentCondition(personCreated.getPresentCondition());
 		person.setNationalHealthId(personCreated.getNationalHealthId());
 		person.setPassportNumber(personCreated.getPassportNumber());
+		person.setDeathDate(personCreated.getDeathDate());
 
 		if (StringUtils.isNotEmpty(getPhone())) {
 			person.setPhone(getPhone());

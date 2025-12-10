@@ -46,6 +46,8 @@ public class Notifier extends AbstractDomainObject {
     private String address;
     private String phone;
     private String email;
+    private String agentFirstName;
+    private String agentLastName;
 
     @Column(nullable = false)
     public String getRegistrationNumber() {
@@ -99,6 +101,24 @@ public class Notifier extends AbstractDomainObject {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    @Column
+    public String getAgentFirstName() {
+        return agentFirstName;
+    }
+
+    public void setAgentFirstName(String agentFirstName) {
+        this.agentFirstName = agentFirstName;
+    }
+
+    @Column
+    public String getAgentLastName() {
+        return agentLastName;
+    }
+
+    public void setAgentLastName(String agentLastName) {
+        this.agentLastName = agentLastName;
     }
 
     @Override

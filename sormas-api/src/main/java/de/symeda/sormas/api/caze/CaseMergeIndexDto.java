@@ -5,7 +5,6 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
@@ -20,7 +19,7 @@ public class CaseMergeIndexDto extends CaseIndexDto {
 
 	//@formatter:off
 	public CaseMergeIndexDto(
-			long id, String uuid, String epidNumber, String externalID, String externalToken, String internalToken, String caseReferenceNumber, String personUuid, String personFirstName, String personLastName, Disease disease,
+			long id, String uuid, String epidNumber, String externalID, String externalToken, String internalToken, String caseReferenceNumber, String personUuid, String nationalHealthId, String personFirstName, String personLastName, Disease disease,
 			String diseaseVariant, String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
 			PresentCondition presentCondition, Date reportDate, Date creationDate, String regionUuid,
 			String districtUuid, String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
@@ -39,6 +38,7 @@ public class CaseMergeIndexDto extends CaseIndexDto {
 			internalToken,
 			caseReferenceNumber,
 			personUuid,
+            nationalHealthId,
 			personFirstName,
 			personLastName,
 			disease,

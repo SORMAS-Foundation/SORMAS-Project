@@ -332,7 +332,10 @@ public enum FeatureType {
 			CASE_SURVEILANCE,
 			CONTACT_TRACING },
 		null,
-		ImmutableMap.of(FeatureTypeProperty.S2S_SHARING, Boolean.FALSE));
+		ImmutableMap.of(FeatureTypeProperty.S2S_SHARING, Boolean.FALSE)),
+
+	// EPIPULSE EXPORT
+	EPIPULSE_EXPORT(true, false, null, null, null);
 
 	public static final FeatureType[] SURVEILLANCE_FEATURE_TYPES = {
 		FeatureType.CASE_SURVEILANCE,

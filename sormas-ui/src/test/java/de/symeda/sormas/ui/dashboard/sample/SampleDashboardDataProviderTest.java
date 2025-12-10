@@ -17,6 +17,16 @@ package de.symeda.sormas.ui.dashboard.sample;
 
 import java.util.Date;
 
+import de.symeda.sormas.api.environment.EnvironmentDto;
+import de.symeda.sormas.api.environment.EnvironmentMedia;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleDto;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleMaterial;
+import de.symeda.sormas.api.environment.environmentsample.Pathogen;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.sample.SpecimenCondition;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -63,6 +73,12 @@ public class SampleDashboardDataProviderTest extends AbstractUiBeanTest {
 		Assertions.assertEquals(dataProvider.getDisease(), criteria.getDisease());
 		Assertions.assertEquals(dataProvider.getSampleMaterial(), criteria.getSampleMaterial());
 		Assertions.assertEquals(dataProvider.getWithNoDisease(), criteria.getWithNoDisease());
+
+		dataProvider.setEnvironmentSampleMaterial(EnvironmentSampleMaterial.AIR);
+		dataProvider.setSampleMaterial(null);
+		criteria = dataProvider.buildDashboardCriteriaWithDates();
+		Assertions.assertEquals(dataProvider.getEnvironmentSampleMaterial(), criteria.getEnvironmentSampleMaterial());
+		Assertions.assertNull(criteria.getSampleMaterial());
 	}
 
 	@Test
@@ -92,5 +108,32 @@ public class SampleDashboardDataProviderTest extends AbstractUiBeanTest {
 		Assertions.assertEquals(1, dataProvider.getSampleCountsBySpecimenCondition().size());
 		Assertions.assertEquals(1, dataProvider.getSampleCountsByShipmentStatus().size());
 		Assertions.assertEquals(2, dataProvider.getTestResultCountsByResultType().size());
+
+		EnvironmentDto environment = creator.createEnvironment("Test env", EnvironmentMedia.WATER, user.toReference(), rdcf, null);
+		FacilityDto lab1 = creator.createFacility("Lab", rdcf.region, rdcf.district, rdcf.community, FacilityType.LABORATORY);
+		EnvironmentSampleDto environmentSample =
+				creator.createEnvironmentSample(environment.toReference(), user.toReference(), rdcf, lab1.toReference(), s -> {
+					s.setSampleMaterial(EnvironmentSampleMaterial.AIR);
+					s.setSpecimenCondition(SpecimenCondition.ADEQUATE);
+				});
+		// Invalid sample criteria, environment sample should not be combined with disease
+		dataProvider.setDisease(Disease.AFP);
+		dataProvider.refreshData();
+		Assertions.assertEquals(0, dataProvider.getEnvSampleCountsBySpecimenCondition().size());
+		Assertions.assertEquals(0, dataProvider.getEnvironmentTestResultCountsByResultType().size());
+		Assertions.assertEquals(0, dataProvider.getEnvironmentSampleCount().size());
+		Assertions.assertEquals(0, dataProvider.getSampleCountsByPurpose().size());
+		Assertions.assertEquals(0, dataProvider.getSampleCountsByResultType().size());
+		Assertions.assertEquals(0, dataProvider.getSampleCountsBySpecimenCondition().size());
+		Assertions.assertEquals(0, dataProvider.getSampleCountsByShipmentStatus().size());
+		Assertions.assertEquals(0, dataProvider.getTestResultCountsByResultType().size());
+
+		dataProvider.setDisease(null);
+		Pathogen pathogen = creator.createPathogen("TEST_PATHOGEN", "Test pathogen");
+		creator.createPathogenTest(environmentSample.toReference(), PathogenTestType.RAPID_TEST, pathogen, lab1.toReference(), user.toReference(), PathogenTestResultType.POSITIVE, null);
+		dataProvider.refreshData();
+		Assertions.assertEquals(1, dataProvider.getEnvironmentTestResultCountsByResultType().size());
+		Assertions.assertEquals(1, dataProvider.getEnvSampleCountsBySpecimenCondition().size());
+		Assertions.assertEquals(1, dataProvider.getEnvironmentSampleCount().size());
 	}
 }

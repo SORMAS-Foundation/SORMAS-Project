@@ -219,7 +219,9 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 					ContactIndexDto.FOLLOW_UP_UNTIL,
 					ContactIndexDto.SYMPTOM_JOURNAL_STATUS,
 					ContactIndexDto.VACCINATION_STATUS,
-					NUMBER_OF_VISITS, ContactIndexDto.PROPHYLAXIS_PRESCRIBED, ContactIndexDto.PRESCRIBED_DRUG),
+					NUMBER_OF_VISITS,
+					ContactIndexDto.PROPHYLAXIS_PRESCRIBED,
+					ContactIndexDto.PRESCRIBED_DRUG),
 				Stream.of(NUMBER_OF_PENDING_TASKS).filter(column -> UiUtil.permitted(FeatureType.TASK_MANAGEMENT, UserRight.TASK_VIEW)),
 				Stream.of(COLUMN_COMPLETENESS),
 				Stream.of(DELETE_REASON_COLUMN))
@@ -227,7 +229,11 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 	}
 
 	protected Stream<String> getPersonColumns() {
-		return Stream.of(ContactIndexDto.PERSON_UUID, ContactIndexDto.PERSON_FIRST_NAME, ContactIndexDto.PERSON_LAST_NAME);
+		return Stream.of(
+			ContactIndexDto.PERSON_UUID,
+			ContactIndexDto.PERSON_NATIONAL_HEALTH_ID,
+			ContactIndexDto.PERSON_FIRST_NAME,
+			ContactIndexDto.PERSON_LAST_NAME);
 	}
 
 	protected Stream<String> getEventColumns() {

@@ -53,6 +53,7 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	public static final String TUBERCULOSIS_INFECTION_YEAR = "tuberculosisInfectionYear";
 	public static final String PREVIOUS_TUBERCULOSIS_TREATMENT = "previousTuberculosisTreatment";
 	public static final String COMPLIANCE_WITH_TREATMENT = "complianceWithTreatment";
+	public static final String RECURRENT_BRONCHIOLITIS = "recurrentBronchiolitis";
 
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
@@ -139,6 +140,10 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	@Diseases(value = {
 		Disease.TUBERCULOSIS })
 	private ComplianceWithTreatment complianceWithTreatment;
+
+	@Diseases(value = {
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
+	private YesNoUnknown recurrentBronchiolitis;
 
 	public static HealthConditionsDto build() {
 		HealthConditionsDto healthConditions = new HealthConditionsDto();
@@ -376,5 +381,13 @@ public class HealthConditionsDto extends PseudonymizableDto {
 
 	public void setComplianceWithTreatment(ComplianceWithTreatment complianceWithTreatment) {
 		this.complianceWithTreatment = complianceWithTreatment;
+	}
+
+	public YesNoUnknown getRecurrentBronchiolitis() {
+		return recurrentBronchiolitis;
+	}
+
+	public void setRecurrentBronchiolitis(YesNoUnknown recurrentBronchiolitis) {
+		this.recurrentBronchiolitis = recurrentBronchiolitis;
 	}
 }

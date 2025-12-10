@@ -190,7 +190,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 359;
+	public static final int DATABASE_VERSION = 360;
 
 	private static DatabaseHelper instance = null;
 
@@ -398,7 +398,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		// IMPORTANT: table and column names are CASE SENSITIVE!
 		int currentVersion = oldVersion;
 		try {
-			switch (oldVersion) {
+			switch (newVersion) {
 			case 91:
 				currentVersion = 91;
 				getDao(District.class).executeRaw("ALTER TABLE district ADD COLUMN epidCode varchar(255);");
@@ -3201,8 +3201,28 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN septicaemia varchar(255);");
 				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN whoopsound varchar(255);");
 
-				// ATTENTION: break should only be done after last version
-				break;
+            case 360:
+				currentVersion = 360;
+                getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN acuteEncephalitis varchar(255);");
+                getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN eggyBurps varchar(255);");
+                getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN weightLoss varchar(255);");
+                getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN weightLossAmount float8;");
+                getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN reoccurrence varchar(255);");
+                getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN symptomCurrentStatus varchar(255);");
+                getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN durationOfSymptoms int;");
+                getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN overnightStayRequired varchar(255);");
+                getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN bloating varchar(255);");
+                getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN difficultyBreathingDuringMeals varchar(255);");
+                getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN paradoxicalBreathing varchar(255);");
+                getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN respiratoryFatigue varchar(255);");
+                getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN parentTimeOffWork varchar(255);");
+                getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN timeOffWorkDays float8;");
+                getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN unknownSymptom varchar(255);");
+                getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN skinRashOnsetDate timestamp;");
+
+
+                // ATTENTION: break should only be done after last version
+                break;
 
 
 
