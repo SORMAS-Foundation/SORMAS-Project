@@ -16,6 +16,7 @@ package de.symeda.sormas.ui.externalmessage;
 
 import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showAlreadyProcessedPopup;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -417,6 +418,28 @@ public class ExternalMessageController {
 		return buttonsPanel;
 	}
 
+	/**
+	 * Downloads the attachment of an external message as byte array.
+	 * 
+	 * @param externalMessageUuid
+	 *            the UUID of the external message
+	 * @return the attachment as byte array wrapped in an Optional
+	 */
+	public Optional<byte[]> downloadExternalMessageAttachment(String externalMessageUuid) {
+
+		if (StringUtils.isBlank(externalMessageUuid)) {
+			return Optional.empty();
+		}
+
+		ExternalMessageDto externalMessageDto = FacadeProvider.getExternalMessageFacade().getByUuid(externalMessageUuid);
+
+		return Optional.ofNullable(externalMessageDto.getExternalMessageDetails().getBytes(StandardCharsets.UTF_8));
+	}
+
+	/**
+	 * Converts the external message to PDF format.
+	 * Keeping this method for future use cases.
+	 */
 	public Optional<byte[]> convertToPDF(String externalMessageUuid) {
 
 		ExternalMessageDto externalMessageDto = FacadeProvider.getExternalMessageFacade().getByUuid(externalMessageUuid);
