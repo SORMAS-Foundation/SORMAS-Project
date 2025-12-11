@@ -17,44 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.contact;
 
-import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
-import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.VaccinationStatus;
-import de.symeda.sormas.api.contact.ContactCategory;
-import de.symeda.sormas.api.contact.ContactClassification;
-import de.symeda.sormas.api.contact.ContactIdentificationSource;
-import de.symeda.sormas.api.contact.ContactProximity;
-import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.contact.ContactRelation;
-import de.symeda.sormas.api.contact.ContactStatus;
-import de.symeda.sormas.api.contact.EndOfQuarantineReason;
-import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.contact.IsContact;
-import de.symeda.sormas.api.contact.QuarantineType;
-import de.symeda.sormas.api.contact.TracingApp;
+import de.symeda.sormas.api.contact.*;
 import de.symeda.sormas.api.externaldata.HasExternalData;
 import de.symeda.sormas.api.therapy.Drug;
 import de.symeda.sormas.api.utils.Diseases;
@@ -77,6 +42,12 @@ import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.visit.Visit;
 
+import javax.persistence.*;
+import java.util.*;
+
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
+
 @Entity(name = "contact")
 public class Contact extends CoreAdo implements IsContact, SormasToSormasShareable, HasExternalData {
 
@@ -96,7 +67,7 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 	public static final String CONTACT_IDENTIFICATION_SOURCE = "contactIdentificationSource";
 	public static final String CONTACT_IDENTIFICATION_SOURCE_DETAILS = "contactIdentificationSourceDetails";
 	public static final String CONTACT_OFFICER = "contactOfficer";
-	public static final String CONTACT_PROXIMITY = "contactProximity";
+	public static final String CONTACT_PROXIMITIES = "contactProximities";
 	public static final String CONTACT_PROXIMITY_DETAILS = "contactProximityDetails";
 	public static final String CONTACT_STATUS = "contactStatus";
 	public static final String DESCRIPTION = "description";
@@ -198,7 +169,7 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 	private String contactIdentificationSourceDetails;
 	private TracingApp tracingApp;
 	private String tracingAppDetails;
-	private ContactProximity contactProximity;
+	private Set<ContactProximity> contactProximities;
 	private ContactClassification contactClassification;
 	private ContactStatus contactStatus;
 	private FollowUpStatus followUpStatus;
@@ -440,13 +411,20 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 		this.tracingAppDetails = tracingAppDetails;
 	}
 
+	@ElementCollection(fetch = FetchType.LAZY)
 	@Enumerated(EnumType.STRING)
-	public ContactProximity getContactProximity() {
-		return contactProximity;
+	@CollectionTable(name = "contact_contactproximities",
+		joinColumns = @JoinColumn(name = "contact_id", referencedColumnName = Contact.ID, nullable = false))
+	@Column(name = "contactproximity", nullable = false)
+	public Set<ContactProximity> getContactProximities() {
+		if (contactProximities == null) {
+			contactProximities = new HashSet<>();
+		}
+		return contactProximities;
 	}
 
-	public void setContactProximity(ContactProximity contactProximity) {
-		this.contactProximity = contactProximity;
+	public void setContactProximities(Set<ContactProximity> contactProximities) {
+		this.contactProximities = contactProximities;
 	}
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)

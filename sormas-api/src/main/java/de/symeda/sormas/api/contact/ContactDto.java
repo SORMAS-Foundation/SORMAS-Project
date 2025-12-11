@@ -20,6 +20,8 @@ import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_SWITZERLAND;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
@@ -82,7 +84,7 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 	public static final String CONTACT_IDENTIFICATION_SOURCE = "contactIdentificationSource";
 	public static final String CONTACT_IDENTIFICATION_SOURCE_DETAILS = "contactIdentificationSourceDetails";
 	public static final String CONTACT_OFFICER = "contactOfficer";
-	public static final String CONTACT_PROXIMITY = "contactProximity";
+	public static final String CONTACT_PROXIMITIES = "contactProximities";
 	public static final String CONTACT_PROXIMITY_DETAILS = "contactProximityDetails";
 	public static final String CONTACT_STATUS = "contactStatus";
 	public static final String DESCRIPTION = "description";
@@ -208,7 +210,7 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String tracingAppDetails;
-	private ContactProximity contactProximity;
+	private Set<ContactProximity> contactProximities;
 	@HideForCountriesExcept
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
@@ -543,12 +545,15 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 		this.tracingAppDetails = tracingAppDetails;
 	}
 
-	public ContactProximity getContactProximity() {
-		return contactProximity;
+	public Set<ContactProximity> getContactProximities() {
+		if (contactProximities == null) {
+			contactProximities = new HashSet<>();
+		}
+		return contactProximities;
 	}
 
-	public void setContactProximity(ContactProximity contactProximity) {
-		this.contactProximity = contactProximity;
+	public void setContactProximities(Set<ContactProximity> contactProximities) {
+		this.contactProximities = contactProximities;
 	}
 
 	public String getDescription() {

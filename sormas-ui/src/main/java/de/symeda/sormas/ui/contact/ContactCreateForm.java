@@ -15,32 +15,16 @@
 
 package de.symeda.sormas.ui.contact;
 
-import static de.symeda.sormas.ui.utils.CssStyles.LAYOUT_COL_HIDE_INVSIBLE;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
-import com.google.common.collect.Sets;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.ui.AbstractField;
-import com.vaadin.v7.ui.CheckBox;
-import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.DateField;
-import com.vaadin.v7.ui.TextArea;
-import com.vaadin.v7.ui.TextField;
-
+import com.vaadin.v7.ui.*;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
@@ -57,13 +41,12 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.person.PersonCreateForm;
 import de.symeda.sormas.ui.person.PersonFormHelper;
-import de.symeda.sormas.ui.utils.AbstractEditForm;
-import de.symeda.sormas.ui.utils.ButtonHelper;
-import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DateComparisonValidator;
-import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.LayoutUtil;
-import de.symeda.sormas.ui.utils.NullableOptionGroup;
+import de.symeda.sormas.ui.utils.*;
+
+import java.util.*;
+
+import static de.symeda.sormas.ui.utils.CssStyles.LAYOUT_COL_HIDE_INVSIBLE;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
 public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 
@@ -78,7 +61,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	//@formatter:off
 	private static final String HTML_LAYOUT =
 			LayoutUtil.loc(PERSON_NAME_LOC) +
-					LayoutUtil.fluidRowLocs(ContactDto.PERSON) + 
+					LayoutUtil.fluidRowLocs(ContactDto.PERSON) +
 					LayoutUtil.fluidRowLocs(ContactDto.RETURNING_TRAVELER) +
 					LayoutUtil.fluidRowLocs(ContactDto.REPORT_DATE_TIME, CaseDataDto.CASE_REFERENCE_NUMBER) +
 					LayoutUtil.fluidRowLocs(ContactDto.DISEASE, ContactDto.DISEASE_DETAILS) +
@@ -91,7 +74,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 					LayoutUtil.fluidRowLocs(ContactDto.CASE_OR_EVENT_INFORMATION) +
 					LayoutUtil.fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT) +
 					LayoutUtil.fluidRowLocs(ContactDto.COMMUNITY) +
-					LayoutUtil.fluidRowLocs(ContactDto.CONTACT_PROXIMITY) +
+					LayoutUtil.fluidRowLocs(ContactDto.CONTACT_PROXIMITIES) +
 					fluidRowLocs(ContactDto.CONTACT_PROXIMITY_DETAILS) +
 					fluidRowLocs(ContactDto.CONTACT_CATEGORY) +
 					LayoutUtil.fluidRowLocs(ContactDto.RELATION_TO_CASE) +
@@ -100,7 +83,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 					LayoutUtil.fluidRowLocs(ContactDto.DESCRIPTION);
 	//@formatter:on
 
-	private NullableOptionGroup contactProximity;
+	private OptionGroup contactProximities;
 	private Disease disease;
 	private final Boolean hasCaseRelation;
 	private final boolean asSourceContact;
@@ -207,10 +190,19 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			.setVisibleWhen(getFieldGroup(), ContactDto.FIRST_CONTACT_DATE, ContactDto.MULTI_DAY_CONTACT, Collections.singletonList(true), true);
 		updateDateComparison();
 
-		contactProximity = addField(ContactDto.CONTACT_PROXIMITY, NullableOptionGroup.class);
-		contactProximity.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
+		contactProximities = addField(ContactDto.CONTACT_PROXIMITIES, OptionGroup.class);
+		contactProximities.setCaption(I18nProperties.getCaption(Captions.Contact_contactProximityLongForm));
+		contactProximities.setMultiSelect(true);
+		contactProximities.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
 		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
-			contactProximity.addValueChangeListener(e -> updateContactCategory((ContactProximity) contactProximity.getNullableValue()));
+			contactProximities.addValueChangeListener(e -> {
+				Object value = contactProximities.getValue();
+				if (value instanceof Set) {
+					@SuppressWarnings("unchecked")
+					Set<ContactProximity> proximities = (Set<ContactProximity>) value;
+					updateContactCategory(proximities);
+				}
+			});
 			contactProximityDetails = addField(ContactDto.CONTACT_PROXIMITY_DETAILS, TextField.class);
 			contactCategory = addField(ContactDto.CONTACT_CATEGORY, NullableOptionGroup.class);
 		}
@@ -227,7 +219,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 
 		initializeVisibilitiesAndAllowedVisibilities();
 
-		CssStyles.style(CssStyles.SOFT_REQUIRED, firstContactDate, lastContactDate, contactProximity, relationToCase);
+		CssStyles.style(CssStyles.SOFT_REQUIRED, firstContactDate, lastContactDate, contactProximities, relationToCase);
 
 		region.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
@@ -254,7 +246,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 
 		cbDisease.addValueChangeListener(e -> {
 			disease = (Disease) e.getProperty().getValue();
-			setVisible(disease != null, ContactDto.CONTACT_PROXIMITY);
+			setVisible(disease != null, ContactDto.CONTACT_PROXIMITIES);
 			if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 				setVisible(disease == Disease.CORONAVIRUS, ContactDto.CONTACT_CATEGORY, ContactDto.CONTACT_PROXIMITY_DETAILS);
 			}
@@ -309,7 +301,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		addValueChangeListener(e -> {
 			updateFieldVisibilitiesByCase(hasCaseRelation);
 			if (!hasCaseRelation && disease == null) {
-				setVisible(false, ContactDto.CONTACT_PROXIMITY);
+				setVisible(false, ContactDto.CONTACT_PROXIMITIES);
 				if (isConfiguredServer("de")) {
 					contactCategory.setVisible(false);
 					contactProximityDetails.setVisible(false);
@@ -332,35 +324,12 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 
 	/*
 	 * Only used for Systems in Germany. Follows specific rules for german systems.
+	 * With multiple contact proximities selected, determines category based on highest risk proximity.
 	 */
-	private void updateContactCategory(ContactProximity proximity) {
+	private void updateContactCategory(Set<ContactProximity> proximities) {
 
-		if (proximity != null) {
-			switch (proximity) {
-			case FACE_TO_FACE_LONG:
-			case TOUCHED_FLUID:
-			case AEROSOL:
-				contactCategory.setValue(Sets.newHashSet(ContactCategory.HIGH_RISK));
-				break;
-			case MEDICAL_UNSAFE:
-				contactCategory.setValue(Sets.newHashSet(ContactCategory.HIGH_RISK_MED));
-				break;
-			case MEDICAL_LIMITED:
-				contactCategory.setValue(Sets.newHashSet(ContactCategory.MEDIUM_RISK_MED));
-				break;
-			case SAME_ROOM:
-			case FACE_TO_FACE_SHORT:
-			case MEDICAL_SAME_ROOM:
-				contactCategory.setValue(Sets.newHashSet(ContactCategory.LOW_RISK));
-				break;
-			case MEDICAL_DISTANT:
-			case MEDICAL_SAFE:
-				contactCategory.setValue(Sets.newHashSet(ContactCategory.NO_RISK));
-				break;
-			default:
-			}
-		}
-	}
+        ContactDataForm.deduceContactCategory(proximities, contactCategory);
+    }
 
 	private void updateFieldVisibilitiesByCase(boolean caseSelected) {
 		setVisible(!caseSelected, ContactDto.DISEASE, ContactDto.CASE_ID_EXTERNAL_SYSTEM, ContactDto.CASE_OR_EVENT_INFORMATION);
@@ -386,11 +355,13 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 
 	private void updateContactProximity() {
 
-		ContactProximity value = (ContactProximity) contactProximity.getNullableValue();
+		Object valueObj = contactProximities.getValue();
+		@SuppressWarnings("unchecked")
+		Set<ContactProximity> value = valueObj instanceof Set ? (Set<ContactProximity>) valueObj : null;
 		FieldHelper.updateEnumData(
-			contactProximity,
+			contactProximities,
 			Arrays.asList(ContactProximity.getValues(disease, FacadeProvider.getConfigFacade().getCountryLocale())));
-		contactProximity.setValue(value);
+		contactProximities.setValue(value);
 	}
 
 	private void hideAndFillJurisdictionFields() {

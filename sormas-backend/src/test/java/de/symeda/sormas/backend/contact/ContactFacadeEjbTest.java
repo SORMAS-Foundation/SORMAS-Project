@@ -2346,4 +2346,242 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, dashboardContactDtos.size());
 		assertEquals(VisitStatus.COOPERATIVE, dashboardContactDtos.get(0).getLastVisitStatus());
 	}
+
+	@Test
+	public void testContactProximitiesMultiSelect() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		PersonDto contactPerson = creator.createPerson("Contact", "Person");
+
+		ContactDto contact = creator.createContact(
+			user.toReference(),
+			user.toReference(),
+			contactPerson.toReference(),
+			caze,
+			new Date(),
+			new Date(),
+			null);
+
+		Set<de.symeda.sormas.api.contact.ContactProximity> proximities = new HashSet<>();
+		proximities.add(de.symeda.sormas.api.contact.ContactProximity.TOUCHED_FLUID);
+		proximities.add(de.symeda.sormas.api.contact.ContactProximity.PHYSICAL_CONTACT);
+		proximities.add(de.symeda.sormas.api.contact.ContactProximity.SAME_ROOM);
+
+		contact.setContactProximities(proximities);
+		contact = getContactFacade().save(contact);
+
+		ContactDto savedContact = getContactFacade().getByUuid(contact.getUuid());
+		assertNotNull(savedContact.getContactProximities());
+		assertEquals(3, savedContact.getContactProximities().size());
+		assertTrue(savedContact.getContactProximities().contains(de.symeda.sormas.api.contact.ContactProximity.TOUCHED_FLUID));
+		assertTrue(savedContact.getContactProximities().contains(de.symeda.sormas.api.contact.ContactProximity.PHYSICAL_CONTACT));
+		assertTrue(savedContact.getContactProximities().contains(de.symeda.sormas.api.contact.ContactProximity.SAME_ROOM));
+	}
+
+	@Test
+	public void testContactProximitiesEmptySet() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		PersonDto contactPerson = creator.createPerson("Contact", "Person");
+
+		ContactDto contact = creator.createContact(
+			user.toReference(),
+			user.toReference(),
+			contactPerson.toReference(),
+			caze,
+			new Date(),
+			new Date(),
+			null);
+
+		contact.setContactProximities(new HashSet<>());
+		contact = getContactFacade().save(contact);
+
+		ContactDto savedContact = getContactFacade().getByUuid(contact.getUuid());
+		assertNotNull(savedContact.getContactProximities());
+		assertEquals(0, savedContact.getContactProximities().size());
+	}
+
+	@Test
+	public void testContactProximitiesSingleValue() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		PersonDto contactPerson = creator.createPerson("Contact", "Person");
+
+		ContactDto contact = creator.createContact(
+			user.toReference(),
+			user.toReference(),
+			contactPerson.toReference(),
+			caze,
+			new Date(),
+			new Date(),
+			null);
+
+		Set<de.symeda.sormas.api.contact.ContactProximity> proximities = new HashSet<>();
+		proximities.add(de.symeda.sormas.api.contact.ContactProximity.CLOSE_CONTACT);
+
+		contact.setContactProximities(proximities);
+		contact = getContactFacade().save(contact);
+
+		ContactDto savedContact = getContactFacade().getByUuid(contact.getUuid());
+		assertNotNull(savedContact.getContactProximities());
+		assertEquals(1, savedContact.getContactProximities().size());
+		assertTrue(savedContact.getContactProximities().contains(de.symeda.sormas.api.contact.ContactProximity.CLOSE_CONTACT));
+	}
+
+	@Test
+	public void testContactProximitiesInIndexDto() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		PersonDto contactPerson = creator.createPerson("Contact", "Person");
+
+		ContactDto contact = creator.createContact(
+			user.toReference(),
+			user.toReference(),
+			contactPerson.toReference(),
+			caze,
+			new Date(),
+			new Date(),
+			null);
+
+		Set<de.symeda.sormas.api.contact.ContactProximity> proximities = new HashSet<>();
+		proximities.add(de.symeda.sormas.api.contact.ContactProximity.TOUCHED_FLUID);
+		proximities.add(de.symeda.sormas.api.contact.ContactProximity.MEDICAL_UNSAFE);
+
+		contact.setContactProximities(proximities);
+		contact = getContactFacade().save(contact);
+
+		final String contactUuid = contact.getUuid();
+		ContactCriteria criteria = new ContactCriteria();
+		List<ContactIndexDto> indexList = getContactFacade().getIndexList(criteria, 0, 100, null);
+
+		ContactIndexDto indexDto = indexList.stream().filter(c -> c.getUuid().equals(contactUuid)).findFirst().orElse(null);
+		assertNotNull(indexDto);
+		assertNotNull(indexDto.getContactProximities());
+		assertEquals(2, indexDto.getContactProximities().size());
+		assertTrue(indexDto.getContactProximities().contains(de.symeda.sormas.api.contact.ContactProximity.TOUCHED_FLUID));
+		assertTrue(indexDto.getContactProximities().contains(de.symeda.sormas.api.contact.ContactProximity.MEDICAL_UNSAFE));
+	}
+
+	@Test
+	public void testContactProximitiesInDetailedIndexDto() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		PersonDto contactPerson = creator.createPerson("Contact", "Person");
+
+		ContactDto contact = creator.createContact(
+			user.toReference(),
+			user.toReference(),
+			contactPerson.toReference(),
+			caze,
+			new Date(),
+			new Date(),
+			null);
+
+		Set<de.symeda.sormas.api.contact.ContactProximity> proximities = new HashSet<>();
+		proximities.add(de.symeda.sormas.api.contact.ContactProximity.AEROSOL);
+		proximities.add(de.symeda.sormas.api.contact.ContactProximity.FACE_TO_FACE_LONG);
+
+		contact.setContactProximities(proximities);
+		contact = getContactFacade().save(contact);
+
+		final String contactUuid = contact.getUuid();
+		ContactCriteria criteria = new ContactCriteria();
+		List<ContactIndexDetailedDto> detailedList = getContactFacade().getIndexDetailedList(criteria, 0, 100, null);
+
+		ContactIndexDetailedDto detailedDto = detailedList.stream().filter(c -> c.getUuid().equals(contactUuid)).findFirst().orElse(null);
+		assertNotNull(detailedDto);
+		assertNotNull(detailedDto.getContactProximities());
+		assertEquals(2, detailedDto.getContactProximities().size());
+		assertTrue(detailedDto.getContactProximities().contains(de.symeda.sormas.api.contact.ContactProximity.AEROSOL));
+		assertTrue(detailedDto.getContactProximities().contains(de.symeda.sormas.api.contact.ContactProximity.FACE_TO_FACE_LONG));
+	}
+
+	@Test
+	public void testContactProximitiesUpdate() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		PersonDto contactPerson = creator.createPerson("Contact", "Person");
+
+		ContactDto contact = creator.createContact(
+			user.toReference(),
+			user.toReference(),
+			contactPerson.toReference(),
+			caze,
+			new Date(),
+			new Date(),
+			null);
+
+		Set<de.symeda.sormas.api.contact.ContactProximity> proximities = new HashSet<>();
+		proximities.add(de.symeda.sormas.api.contact.ContactProximity.TOUCHED_FLUID);
+		contact.setContactProximities(proximities);
+		contact = getContactFacade().save(contact);
+
+		ContactDto savedContact = getContactFacade().getByUuid(contact.getUuid());
+		assertEquals(1, savedContact.getContactProximities().size());
+
+		proximities.add(de.symeda.sormas.api.contact.ContactProximity.PHYSICAL_CONTACT);
+		proximities.add(de.symeda.sormas.api.contact.ContactProximity.CLOSE_CONTACT);
+		savedContact.setContactProximities(proximities);
+		savedContact = getContactFacade().save(savedContact);
+
+		ContactDto updatedContact = getContactFacade().getByUuid(contact.getUuid());
+		assertEquals(3, updatedContact.getContactProximities().size());
+		assertTrue(updatedContact.getContactProximities().contains(de.symeda.sormas.api.contact.ContactProximity.TOUCHED_FLUID));
+		assertTrue(updatedContact.getContactProximities().contains(de.symeda.sormas.api.contact.ContactProximity.PHYSICAL_CONTACT));
+		assertTrue(updatedContact.getContactProximities().contains(de.symeda.sormas.api.contact.ContactProximity.CLOSE_CONTACT));
+	}
 }
