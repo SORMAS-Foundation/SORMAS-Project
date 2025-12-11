@@ -113,7 +113,7 @@ public class ContactLineField extends CustomField<ContactLineFieldDto> {
 		dateOfReport.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REPORT_DATE));
 		dateOfReport.removeStyleName(CssStyles.CAPTION_HIDDEN);
 		multiDay.showCaptions();
-		typeOfContact.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.CONTACT_PROXIMITY));
+		typeOfContact.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.CONTACT_PROXIMITIES));
 		typeOfContact.removeStyleName(CssStyles.CAPTION_HIDDEN);
 		relationToCase.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.RELATION_TO_CASE));
 		relationToCase.removeStyleName(CssStyles.CAPTION_HIDDEN);
