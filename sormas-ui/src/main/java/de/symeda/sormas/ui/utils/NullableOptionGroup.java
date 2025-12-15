@@ -71,6 +71,14 @@ public class NullableOptionGroup extends OptionGroup {
 		return ObjectUtils.isNotEmpty(value) ? getFirstValue((Set) value) : null;
 	}
 
+	public void setNullableValue(Object value) {
+		if (value != null) {
+			super.setValue(java.util.Collections.singleton(value));
+		} else {
+			super.setValue(null);
+		}
+	}
+
 	@Override
 	public void setRequired(boolean required) {
 		boolean readOnly = isReadOnly();

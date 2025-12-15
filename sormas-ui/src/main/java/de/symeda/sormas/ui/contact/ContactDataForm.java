@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
-import com.google.common.collect.Sets;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.shared.ui.ErrorLevel;
 import com.vaadin.ui.Button;
@@ -783,7 +782,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
             }
 
             if (highestRiskCategory != null) {
-                contactCategory.setValue(Sets.newHashSet(highestRiskCategory));
+                contactCategory.setNullableValue(highestRiskCategory);
             }
         }
     }
