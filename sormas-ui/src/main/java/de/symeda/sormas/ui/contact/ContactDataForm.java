@@ -17,6 +17,23 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
+import static de.symeda.sormas.ui.utils.CssStyles.FORCE_CAPTION;
+import static de.symeda.sormas.ui.utils.CssStyles.H3;
+import static de.symeda.sormas.ui.utils.CssStyles.LABEL_WHITE_SPACE_NORMAL;
+import static de.symeda.sormas.ui.utils.CssStyles.LAYOUT_COL_HIDE_INVSIBLE;
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLocCss;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
+import static de.symeda.sormas.ui.utils.LayoutUtil.oneOfTwoCol;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Set;
+
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.shared.ui.ErrorLevel;
 import com.vaadin.ui.Button;
@@ -27,19 +44,41 @@ import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.data.validator.DateRangeValidator;
 import com.vaadin.v7.shared.ui.datefield.Resolution;
-import com.vaadin.v7.ui.*;
+import com.vaadin.v7.ui.CheckBox;
+import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.DateField;
+import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.OptionGroup;
+import com.vaadin.v7.ui.TextArea;
+import com.vaadin.v7.ui.TextField;
+
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
-import de.symeda.sormas.api.contact.*;
+import de.symeda.sormas.api.contact.ContactCategory;
+import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactIdentificationSource;
+import de.symeda.sormas.api.contact.ContactLogic;
+import de.symeda.sormas.api.contact.ContactProximity;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.contact.ContactRelation;
+import de.symeda.sormas.api.contact.EndOfQuarantineReason;
+import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.contact.QuarantineType;
+import de.symeda.sormas.api.contact.TracingApp;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.followup.FollowUpPeriodDto;
-import de.symeda.sormas.api.i18n.*;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Descriptions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.therapy.Drug;
@@ -54,15 +93,18 @@ import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilit
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
-import de.symeda.sormas.ui.utils.*;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Set;
-
-import static de.symeda.sormas.ui.utils.CssStyles.*;
-import static de.symeda.sormas.ui.utils.LayoutUtil.*;
+import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateComparisonValidator;
+import de.symeda.sormas.ui.utils.FieldAccessHelper;
+import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.NullableOptionGroup;
+import de.symeda.sormas.ui.utils.UserField;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.ValidationUtils;
+import de.symeda.sormas.ui.utils.ViewMode;
 
 public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
@@ -748,46 +790,45 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	 * Only used for Systems in Germany. Follows specific rules for german systems.
 	 */
 	private void updateContactCategory(Set<ContactProximity> proximities) {
-        deduceContactCategory(proximities, contactCategory);
-    }
+		deduceContactCategory(proximities, contactCategory);
+	}
 
-    static void deduceContactCategory(Set<ContactProximity> proximities, NullableOptionGroup contactCategory) {
-        if (proximities != null && !proximities.isEmpty()) {
-            ContactCategory highestRiskCategory = null;
+	static void deduceContactCategory(Set<ContactProximity> proximities, NullableOptionGroup contactCategory) {
+		if (proximities != null && !proximities.isEmpty()) {
+			ContactCategory highestRiskCategory = null;
 
-            // Check for highest risk first (HIGH_RISK)
-            if (proximities.contains(ContactProximity.FACE_TO_FACE_LONG)
-                || proximities.contains(ContactProximity.TOUCHED_FLUID)
-                || proximities.contains(ContactProximity.AEROSOL)) {
-                highestRiskCategory = ContactCategory.HIGH_RISK;
-            }
-            // HIGH_RISK_MED
-            else if (proximities.contains(ContactProximity.MEDICAL_UNSAFE)) {
-                highestRiskCategory = ContactCategory.HIGH_RISK_MED;
-            }
-            // MEDIUM_RISK_MED
-            else if (proximities.contains(ContactProximity.MEDICAL_LIMITED)) {
-                highestRiskCategory = ContactCategory.MEDIUM_RISK_MED;
-            }
-            // LOW_RISK
-            else if (proximities.contains(ContactProximity.SAME_ROOM)
-                || proximities.contains(ContactProximity.FACE_TO_FACE_SHORT)
-                || proximities.contains(ContactProximity.MEDICAL_SAME_ROOM)) {
-                highestRiskCategory = ContactCategory.LOW_RISK;
-            }
-            // NO_RISK
-            else if (proximities.contains(ContactProximity.MEDICAL_DISTANT)
-                || proximities.contains(ContactProximity.MEDICAL_SAFE)) {
-                highestRiskCategory = ContactCategory.NO_RISK;
-            }
+			// Check for highest risk first (HIGH_RISK)
+			if (proximities.contains(ContactProximity.FACE_TO_FACE_LONG)
+				|| proximities.contains(ContactProximity.TOUCHED_FLUID)
+				|| proximities.contains(ContactProximity.AEROSOL)) {
+				highestRiskCategory = ContactCategory.HIGH_RISK;
+			}
+			// HIGH_RISK_MED
+			else if (proximities.contains(ContactProximity.MEDICAL_UNSAFE)) {
+				highestRiskCategory = ContactCategory.HIGH_RISK_MED;
+			}
+			// MEDIUM_RISK_MED
+			else if (proximities.contains(ContactProximity.MEDICAL_LIMITED)) {
+				highestRiskCategory = ContactCategory.MEDIUM_RISK_MED;
+			}
+			// LOW_RISK
+			else if (proximities.contains(ContactProximity.SAME_ROOM)
+				|| proximities.contains(ContactProximity.FACE_TO_FACE_SHORT)
+				|| proximities.contains(ContactProximity.MEDICAL_SAME_ROOM)) {
+				highestRiskCategory = ContactCategory.LOW_RISK;
+			}
+			// NO_RISK
+			else if (proximities.contains(ContactProximity.MEDICAL_DISTANT) || proximities.contains(ContactProximity.MEDICAL_SAFE)) {
+				highestRiskCategory = ContactCategory.NO_RISK;
+			}
 
-            if (highestRiskCategory != null) {
-                contactCategory.setNullableValue(highestRiskCategory);
-            }
-        }
-    }
+			if (highestRiskCategory != null) {
+				contactCategory.setNullableValue(highestRiskCategory);
+			}
+		}
+	}
 
-    private ValueChangeListener getHighPriorityValueChangeListener(CheckBox cbHighPriority) {
+	private ValueChangeListener getHighPriorityValueChangeListener(CheckBox cbHighPriority) {
 		return e -> {
 			if (YesNoUnknown.YES.equals(FieldHelper.getNullableSourceFieldValue((Field) e.getProperty()))) {
 				cbHighPriority.setValue(true);

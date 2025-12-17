@@ -1,7 +1,6 @@
 package de.symeda.sormas.api.contact;
 
 import java.util.Date;
-import java.util.Set;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;

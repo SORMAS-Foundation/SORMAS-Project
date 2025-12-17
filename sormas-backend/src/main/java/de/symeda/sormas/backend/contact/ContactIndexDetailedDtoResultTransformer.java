@@ -17,7 +17,6 @@ package de.symeda.sormas.backend.contact;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import org.hibernate.transform.ResultTransformer;
 
@@ -28,7 +27,6 @@ import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactIndexDetailedDto;
-import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;

@@ -221,15 +221,19 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 	private ContactCategory contactCategory;
 	private ContactClassification contactClassification;
 	private ContactStatus contactStatus;
-	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
+	@Diseases(value = {
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION }, hide = true)
 	private FollowUpStatus followUpStatus;
 	@SensitiveData
 	@Size(max = CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
-	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
+	@Diseases(value = {
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION }, hide = true)
 	private String followUpComment;
-	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
+	@Diseases(value = {
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION }, hide = true)
 	private Date followUpUntil;
-	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
+	@Diseases(value = {
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION }, hide = true)
 	private boolean overwriteFollowUpUntil;
 	@SensitiveData
 	@Size(max = CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
@@ -372,11 +376,15 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 	@Outbreaks
 	private VaccinationStatus vaccinationStatus;
 
-	@Diseases(value = {Disease.MEASLES})
-	@HideForCountriesExcept(countries = {COUNTRY_CODE_LUXEMBOURG})
+	@Diseases(value = {
+		Disease.MEASLES })
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_LUXEMBOURG })
 	private Date vaccinationDoseOneDate;
-	@Diseases(value = {Disease.MEASLES})
-	@HideForCountriesExcept(countries = {COUNTRY_CODE_LUXEMBOURG})
+	@Diseases(value = {
+		Disease.MEASLES })
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_LUXEMBOURG })
 	private Date vaccinationDoseTwoDate;
 
 	private Date previousQuarantineTo;
@@ -387,23 +395,30 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 	private DeletionReason deletionReason;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherDeletionReason;
-	@HideForCountriesExcept(countries = {COUNTRY_CODE_LUXEMBOURG})
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_LUXEMBOURG })
 	@SensitiveData
 	@Diseases(Disease.INVASIVE_MENINGOCOCCAL_INFECTION)
 	private Boolean prophylaxisPrescribed;
-	@HideForCountriesExcept(countries = {COUNTRY_CODE_LUXEMBOURG})
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_LUXEMBOURG })
 	@SensitiveData
 	@Diseases(Disease.INVASIVE_MENINGOCOCCAL_INFECTION)
 	private Drug prescribedDrug;
-	@HideForCountriesExcept(countries = {COUNTRY_CODE_LUXEMBOURG})
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_LUXEMBOURG })
 	@SensitiveData
 	@Diseases(Disease.INVASIVE_MENINGOCOCCAL_INFECTION)
 	private String prescribedDrugText;
-	@Diseases(value = {Disease.MEASLES})
-	@HideForCountriesExcept(countries = {COUNTRY_CODE_LUXEMBOURG})
+	@Diseases(value = {
+		Disease.MEASLES })
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_LUXEMBOURG })
 	private boolean vaccinationProposed;
-	@Diseases(value = {Disease.MEASLES})
-	@HideForCountriesExcept(countries = {COUNTRY_CODE_LUXEMBOURG})
+	@Diseases(value = {
+		Disease.MEASLES })
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_LUXEMBOURG })
 	private boolean immuneGlobulinProposed;
 
 	public static ContactDto build() {

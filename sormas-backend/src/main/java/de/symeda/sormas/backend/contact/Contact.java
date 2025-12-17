@@ -17,9 +17,46 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.contact;
 
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.VaccinationStatus;
-import de.symeda.sormas.api.contact.*;
+import de.symeda.sormas.api.contact.ContactCategory;
+import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.contact.ContactIdentificationSource;
+import de.symeda.sormas.api.contact.ContactProximity;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.contact.ContactRelation;
+import de.symeda.sormas.api.contact.ContactStatus;
+import de.symeda.sormas.api.contact.EndOfQuarantineReason;
+import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.contact.IsContact;
+import de.symeda.sormas.api.contact.QuarantineType;
+import de.symeda.sormas.api.contact.TracingApp;
 import de.symeda.sormas.api.externaldata.HasExternalData;
 import de.symeda.sormas.api.therapy.Drug;
 import de.symeda.sormas.api.utils.Diseases;
@@ -41,12 +78,6 @@ import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShar
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.visit.Visit;
-
-import javax.persistence.*;
-import java.util.*;
-
-import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
-import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 @Entity(name = "contact")
 public class Contact extends CoreAdo implements IsContact, SormasToSormasShareable, HasExternalData {
@@ -139,12 +170,12 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
 	public static final String VISITS = "visits";
 	public static final String DUPLICATE_OF = "duplicateOf";
-	public static final String SELF_REPORT ="selfReport";
-	public static final String PROPHYLAXIS_PRESCRIBED ="prophylaxisPrescribed";
-	public static final String PRESCRIBED_DRUG ="prescribedDrug";
-	public static final String PRESCRIBED_DRUG_TEXT ="prescribedDrugText";
-	public static final String VACCINATION_DOSE_ONE_DATE ="vaccinationDoseOneDate";
-	public static final String VACCINATION_DOSE_TWO_DATE ="vaccinationDoseTwoDate";
+	public static final String SELF_REPORT = "selfReport";
+	public static final String PROPHYLAXIS_PRESCRIBED = "prophylaxisPrescribed";
+	public static final String PRESCRIBED_DRUG = "prescribedDrug";
+	public static final String PRESCRIBED_DRUG_TEXT = "prescribedDrugText";
+	public static final String VACCINATION_DOSE_ONE_DATE = "vaccinationDoseOneDate";
+	public static final String VACCINATION_DOSE_TWO_DATE = "vaccinationDoseTwoDate";
 
 	private Date reportDateTime;
 	private User reportingUser;

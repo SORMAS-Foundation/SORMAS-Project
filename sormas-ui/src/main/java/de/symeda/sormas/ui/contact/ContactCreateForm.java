@@ -15,12 +15,28 @@
 
 package de.symeda.sormas.ui.contact;
 
+import static de.symeda.sormas.ui.utils.CssStyles.LAYOUT_COL_HIDE_INVSIBLE;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.ui.*;
+import com.vaadin.v7.ui.AbstractField;
+import com.vaadin.v7.ui.CheckBox;
+import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.DateField;
+import com.vaadin.v7.ui.OptionGroup;
+import com.vaadin.v7.ui.TextArea;
+import com.vaadin.v7.ui.TextField;
+
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -41,12 +57,13 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.person.PersonCreateForm;
 import de.symeda.sormas.ui.person.PersonFormHelper;
-import de.symeda.sormas.ui.utils.*;
-
-import java.util.*;
-
-import static de.symeda.sormas.ui.utils.CssStyles.LAYOUT_COL_HIDE_INVSIBLE;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateComparisonValidator;
+import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.NullableOptionGroup;
 
 public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 
@@ -328,8 +345,8 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	 */
 	private void updateContactCategory(Set<ContactProximity> proximities) {
 
-        ContactDataForm.deduceContactCategory(proximities, contactCategory);
-    }
+		ContactDataForm.deduceContactCategory(proximities, contactCategory);
+	}
 
 	private void updateFieldVisibilitiesByCase(boolean caseSelected) {
 		setVisible(!caseSelected, ContactDto.DISEASE, ContactDto.CASE_ID_EXTERNAL_SYSTEM, ContactDto.CASE_OR_EVENT_INFORMATION);

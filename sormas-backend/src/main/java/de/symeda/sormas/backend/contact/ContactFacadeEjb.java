@@ -17,6 +17,61 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.contact;
 
+import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
+import static java.time.temporal.ChronoUnit.DAYS;
+import static java.util.Objects.isNull;
+
+import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.annotation.Resource;
+import javax.annotation.security.PermitAll;
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.enterprise.concurrent.ManagedScheduledExecutorService;
+import javax.inject.Inject;
+import javax.persistence.Query;
+import javax.persistence.Tuple;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.Language;
@@ -29,7 +84,27 @@ import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
-import de.symeda.sormas.api.contact.*;
+import de.symeda.sormas.api.contact.ContactBulkEditData;
+import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.contact.ContactCriteria;
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactExportDto;
+import de.symeda.sormas.api.contact.ContactFacade;
+import de.symeda.sormas.api.contact.ContactFollowUpDto;
+import de.symeda.sormas.api.contact.ContactIndexDetailedDto;
+import de.symeda.sormas.api.contact.ContactIndexDto;
+import de.symeda.sormas.api.contact.ContactJurisdictionFlagsDto;
+import de.symeda.sormas.api.contact.ContactListEntryDto;
+import de.symeda.sormas.api.contact.ContactLogic;
+import de.symeda.sormas.api.contact.ContactProximity;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
+import de.symeda.sormas.api.contact.ContactStatus;
+import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.contact.IsContact;
+import de.symeda.sormas.api.contact.MapContactDto;
+import de.symeda.sormas.api.contact.MergeContactIndexDto;
+import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.dashboard.DashboardContactDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
@@ -59,12 +134,27 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasRuntimeException;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
-import de.symeda.sormas.api.task.*;
+import de.symeda.sormas.api.task.TaskContext;
+import de.symeda.sormas.api.task.TaskCriteria;
+import de.symeda.sormas.api.task.TaskPriority;
+import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.*;
+import de.symeda.sormas.api.utils.AccessDeniedException;
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.DtoCopyHelper;
+import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.UtilDate;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.AnnotationBasedFieldAccessChecker.SpecialAccessCheck;
 import de.symeda.sormas.api.uuid.AbstractUuidDto;
-import de.symeda.sormas.api.visit.*;
+import de.symeda.sormas.api.visit.VisitDto;
+import de.symeda.sormas.api.visit.VisitResultDto;
+import de.symeda.sormas.api.visit.VisitStatus;
+import de.symeda.sormas.api.visit.VisitSummaryExportDetailsDto;
+import de.symeda.sormas.api.visit.VisitSummaryExportDto;
 import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
@@ -123,7 +213,13 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserReference;
 import de.symeda.sormas.backend.user.UserRoleFacadeEjb;
-import de.symeda.sormas.backend.util.*;
+import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.Pseudonymizer;
+import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 import de.symeda.sormas.backend.vaccination.Vaccination;
 import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
 import de.symeda.sormas.backend.vaccination.VaccinationService;
@@ -131,36 +227,6 @@ import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 import de.symeda.sormas.backend.visit.VisitService;
-import org.apache.commons.collections4.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.annotation.Resource;
-import javax.annotation.security.PermitAll;
-import javax.ejb.*;
-import javax.enterprise.concurrent.ManagedScheduledExecutorService;
-import javax.inject.Inject;
-import javax.persistence.Query;
-import javax.persistence.Tuple;
-import javax.persistence.criteria.*;
-import javax.persistence.criteria.Order;
-import javax.validation.Valid;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import java.math.BigInteger;
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
-import static java.time.temporal.ChronoUnit.DAYS;
-import static java.util.Objects.isNull;
 
 @Stateless(name = "ContactFacade")
 @RightsAllowed(UserRight._CONTACT_VIEW)
@@ -754,8 +820,8 @@ public class ContactFacadeEjb
 
 			// Populate contactProximities separately (ElementCollection cannot be selected in multiselect)
 			Map<Long, Set<ContactProximity>> contactProximitiesMap = service.getContactProximitiesByContactIds(exportContactIds);
-			exportContacts.forEach(exportContact -> exportContact.setContactProximities(
-				contactProximitiesMap.getOrDefault(exportContact.getId(), new HashSet<>())));
+			exportContacts.forEach(
+				exportContact -> exportContact.setContactProximities(contactProximitiesMap.getOrDefault(exportContact.getId(), new HashSet<>())));
 
 			List<VisitSummaryExportDetails> visitSummaries = null;
 			if (ExportHelper.shouldExportFields(
@@ -1283,8 +1349,7 @@ public class ContactFacadeEjb
 		if (!dtos.isEmpty()) {
 			List<Long> contactIds = dtos.stream().map(ContactIndexDto::getId).collect(Collectors.toList());
 			Map<Long, Set<ContactProximity>> contactProximitiesMap = service.getContactProximitiesByContactIds(contactIds);
-			dtos.forEach(dto -> dto.setContactProximities(
-				contactProximitiesMap.getOrDefault(dto.getId(), new HashSet<>())));
+			dtos.forEach(dto -> dto.setContactProximities(contactProximitiesMap.getOrDefault(dto.getId(), new HashSet<>())));
 		}
 
 		Pseudonymizer<ContactIndexDto> pseudonymizer = createGenericPlaceholderPseudonymizer(createSpecialAccessChecker(dtos));
@@ -1340,8 +1405,7 @@ public class ContactFacadeEjb
 		if (!dtos.isEmpty()) {
 			List<Long> contactIds = dtos.stream().map(ContactIndexDetailedDto::getId).collect(Collectors.toList());
 			Map<Long, Set<ContactProximity>> contactProximitiesMap = service.getContactProximitiesByContactIds(contactIds);
-			dtos.forEach(dto -> dto.setContactProximities(
-				contactProximitiesMap.getOrDefault(dto.getId(), new HashSet<>())));
+			dtos.forEach(dto -> dto.setContactProximities(contactProximitiesMap.getOrDefault(dto.getId(), new HashSet<>())));
 		}
 
 		if (userService.hasRight(UserRight.EVENT_VIEW)) {
@@ -2091,10 +2155,9 @@ public class ContactFacadeEjb
 
 		// Populate contactProximities separately (ElementCollection cannot be selected in multiselect)
 		if (!contacts.isEmpty()) {
-			Map<Long, Set<ContactProximity>> contactProximitiesMap = service.getContactProximitiesByContactIds(
-				contacts.stream().map(c -> c.getId()).collect(Collectors.toList()));
-			contacts.forEach(contact -> contact.setContactProximities(
-				contactProximitiesMap.getOrDefault(contact.getId(), new HashSet<>())));
+			Map<Long, Set<ContactProximity>> contactProximitiesMap =
+				service.getContactProximitiesByContactIds(contacts.stream().map(c -> c.getId()).collect(Collectors.toList()));
+			contacts.forEach(contact -> contact.setContactProximities(contactProximitiesMap.getOrDefault(contact.getId(), new HashSet<>())));
 		}
 
 		Pseudonymizer<SimilarContactDto> pseudonymizer = createGenericPseudonymizer(createSpecialAccessChecker(contacts));
