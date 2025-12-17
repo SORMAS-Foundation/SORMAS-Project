@@ -315,7 +315,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			contactProximities.addValueChangeListener(e -> {
-				if (!getInternalValue().getContactProximities().equals(e.getProperty().getValue()) || contactCategory.isModified()) {
+				if (getInternalValue() != null
+					&& (!getInternalValue().getContactProximities().equals(e.getProperty().getValue()) || contactCategory.isModified())) {
 					updateContactCategory((Set<ContactProximity>) contactProximities.getValue());
 				}
 			});
