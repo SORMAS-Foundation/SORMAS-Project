@@ -1582,8 +1582,7 @@ public class CaseController {
 				Label valuesLabel = new Label(I18nProperties.getCaption(Captions.confirmChangesValue));
 				valuesLabel.addStyleName(CssStyles.LABEL_SECONDARY);
 				valuesLayout.addComponent(valuesLabel);
-				valuesLayout.addComponent(
-					new Label((person.getPresentCondition() == null ? PresentCondition.DEAD : person.getPresentCondition()).toString()));
+				valuesLayout.addComponent(new Label(getNewPresentConditionFromOutcome(caze.getOutcome()).toString()));
 				valuesLayout.addComponent(new Label(CauseOfDeath.EPIDEMIC_DISEASE.toString()));
 				valuesLayout.addComponent(new Label(caze.getDisease().toString()));
 				valuesLayout.addComponent(new Label(DateFormatHelper.formatDate(caze.getOutcomeDate())));
@@ -1608,6 +1607,22 @@ public class CaseController {
 			}
 		}
 		saveCase(caze);
+	}
+
+	private PresentCondition getNewPresentConditionFromOutcome(CaseOutcome outcome) {
+		if (outcome == null) {
+			return PresentCondition.UNKNOWN;
+		}
+		switch (outcome) {
+			case DECEASED:
+				return PresentCondition.DEAD;
+			case RECOVERED:
+				return PresentCondition.ALIVE;
+			case NO_OUTCOME:
+			case UNKNOWN:
+			default:
+				return PresentCondition.UNKNOWN;
+		}
 	}
 
 	public void referFromPointOfEntry(CaseDataDto caze) {
