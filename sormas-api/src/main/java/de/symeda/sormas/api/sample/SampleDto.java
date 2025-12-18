@@ -24,6 +24,7 @@ import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.IdsrType;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
@@ -78,6 +79,8 @@ public class SampleDto extends SormasToSormasShareableDto implements IsSample {
 	public static final String SAMPLING_REASON_DETAILS = "samplingReasonDetails";
 	public static final String DELETION_REASON = "deletionReason";
 	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
+	public static final String IDSR_DIAGNOSIS = "idsrDiagnosis";
+	public static final String IDSR_DIAGNOSIS_DETAILS = "idsrDiagnosisDetails";
 
 	private CaseReferenceDto associatedCase;
 	private ContactReferenceDto associatedContact;
@@ -151,6 +154,9 @@ public class SampleDto extends SormasToSormasShareableDto implements IsSample {
 	private DeletionReason deletionReason;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherDeletionReason;
+	private IdsrType idsrDiagnosis;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String idsrDiagnosisDetails;
 
 	@ImportIgnore
 	public CaseReferenceDto getAssociatedCase() {
@@ -560,5 +566,21 @@ public class SampleDto extends SormasToSormasShareableDto implements IsSample {
 
 	public void setOtherDeletionReason(String otherDeletionReason) {
 		this.otherDeletionReason = otherDeletionReason;
+	}
+
+	public IdsrType getIdsrDiagnosis() {
+		return idsrDiagnosis;
+	}
+
+	public void setIdsrDiagnosis(IdsrType idsrDiagnosis) {
+		this.idsrDiagnosis = idsrDiagnosis;
+	}
+
+	public String getIdsrDiagnosisDetails() {
+		return idsrDiagnosisDetails;
+	}
+
+	public void setIdsrDiagnosisDetails(String idsrDiagnosisDetails) {
+		this.idsrDiagnosisDetails = idsrDiagnosisDetails;
 	}
 }

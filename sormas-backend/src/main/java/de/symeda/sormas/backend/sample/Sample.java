@@ -44,6 +44,7 @@ import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
 
+import de.symeda.sormas.api.caze.IdsrType;
 import de.symeda.sormas.api.sample.AdditionalTestType;
 import de.symeda.sormas.api.sample.IsSample;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -109,6 +110,8 @@ public class Sample extends DeletableAdo implements IsSample, SormasToSormasShar
 	public static final String SAMPLING_REASON_DETAILS = "samplingReasonDetails";
 	public static final String SORMAS_TO_SORMAS_ORIGIN_INFO = "sormasToSormasOriginInfo";
 	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
+	public static final String IDSR_DIAGNOSIS = "idsrDiagnosis";
+	public static final String IDSR_DIAGNOSIS_DETAILS = "idsrDiagnosisDetails";
 
 	private Case associatedCase;
 	private Contact associatedContact;
@@ -151,6 +154,8 @@ public class Sample extends DeletableAdo implements IsSample, SormasToSormasShar
 	private String requestedAdditionalTestsString;
 	private SamplingReason samplingReason;
 	private String samplingReasonDetails;
+	private IdsrType idsrDiagnosis;
+	private String idsrDiagnosisDetails;
 
 	private List<PathogenTest> pathogenTests;
 	private List<AdditionalTest> additionalTests;
@@ -611,5 +616,23 @@ public class Sample extends DeletableAdo implements IsSample, SormasToSormasShar
 
 	public void setSampleReports(List<SampleReport> externalMessages) {
 		this.sampleReports = externalMessages;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public IdsrType getIdsrDiagnosis() {
+		return idsrDiagnosis;
+	}
+
+	public void setIdsrDiagnosis(IdsrType idsrDiagnosis) {
+		this.idsrDiagnosis = idsrDiagnosis;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getIdsrDiagnosisDetails() {
+		return idsrDiagnosisDetails;
+	}
+
+	public void setIdsrDiagnosisDetails(String idsrDiagnosisDetails) {
+		this.idsrDiagnosisDetails = idsrDiagnosisDetails;
 	}
 }

@@ -30,6 +30,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.IdsrType;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Descriptions;
@@ -108,7 +109,9 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
                     fluidRowLocs(SampleDto.COMMENT) +
                     fluidRowLocs(SampleDto.PATHOGEN_TEST_RESULT) +
 					fluidRowLocs(CaseDataDto.DELETION_REASON) +
-					fluidRowLocs(CaseDataDto.OTHER_DELETION_REASON);
+					fluidRowLocs(CaseDataDto.OTHER_DELETION_REASON) +
+					fluidRowLocs(SampleDto.IDSR_DIAGNOSIS) +
+					fluidRowLocs(SampleDto.IDSR_DIAGNOSIS_DETAILS);
     //@formatter:on
 
 	protected AbstractSampleForm(Class<SampleDto> type, String propertyI18nPrefix, Disease disease, UiFieldAccessCheckers fieldAccessCheckers) {
@@ -166,6 +169,13 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		addField(SampleDto.OTHER_DELETION_REASON, TextArea.class).setRows(3);
 		setVisible(false, SampleDto.DELETION_REASON, SampleDto.OTHER_DELETION_REASON);
 
+		ComboBox idsrDiagnosisField = addField(SampleDto.IDSR_DIAGNOSIS, ComboBox.class);
+		idsrDiagnosisField.setNullSelectionAllowed(true);
+		idsrDiagnosisField.setVisible(false);
+		TextField idsrDiagnosisDetailsField = addField(SampleDto.IDSR_DIAGNOSIS_DETAILS, TextField.class);
+		idsrDiagnosisDetailsField.setVisible(false);
+		idsrDiagnosisDetailsField.setCaption(I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.IDSR_DIAGNOSIS_DETAILS));
+
 	}
 
 	protected void defaultValueChangeListener() {
@@ -208,6 +218,26 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		if (disease != Disease.NEW_INFLUENZA) {
 			getField(SampleDto.SAMPLE_SOURCE).setVisible(false);
 		}
+
+		// IDSR diagnosis visibility
+		Field<?> idsrDiagnosisField = getField(SampleDto.IDSR_DIAGNOSIS);
+		if (disease == Disease.IMMEDIATE_CASE_BASED_FORM_OTHER_CONDITIONS) {
+			idsrDiagnosisField.setVisible(true);
+		} else {
+			idsrDiagnosisField.setVisible(false);
+		}
+
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			Arrays.asList(SampleDto.IDSR_DIAGNOSIS_DETAILS),
+			SampleDto.IDSR_DIAGNOSIS,
+			Arrays.asList(IdsrType.OTHER),
+			true);
+		FieldHelper.setRequiredWhen(
+			getFieldGroup(),
+			SampleDto.IDSR_DIAGNOSIS,
+			Arrays.asList(SampleDto.IDSR_DIAGNOSIS_DETAILS),
+			Arrays.asList(IdsrType.OTHER));
 
 		UserReferenceDto reportingUser = getValue().getReportingUser();
 		if (UiUtil.permitted(UserRight.SAMPLE_EDIT_NOT_OWNED) || (reportingUser != null && UiUtil.getUserUuid().equals(reportingUser.getUuid()))) {
