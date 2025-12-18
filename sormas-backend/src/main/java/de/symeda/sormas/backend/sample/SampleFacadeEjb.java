@@ -864,6 +864,8 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setRequestedOtherAdditionalTests(source.getRequestedOtherAdditionalTests());
 		target.setSamplingReason(source.getSamplingReason());
 		target.setSamplingReasonDetails(source.getSamplingReasonDetails());
+		target.setIdsrDiagnosis(source.getIdsrDiagnosis());
+		target.setIdsrDiagnosisDetails(source.getIdsrDiagnosisDetails());
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
@@ -1017,6 +1019,8 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setRequestedOtherAdditionalTests(source.getRequestedOtherAdditionalTests());
 		target.setSamplingReason(source.getSamplingReason());
 		target.setSamplingReasonDetails(source.getSamplingReasonDetails());
+		target.setIdsrDiagnosis(source.getIdsrDiagnosis());
+		target.setIdsrDiagnosisDetails(source.getIdsrDiagnosisDetails());
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
