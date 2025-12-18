@@ -37,7 +37,9 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -962,11 +964,16 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				+ I18nProperties.getDescription(Descriptions.descGdpr));
 		CssStyles.style(additionalDetails, CssStyles.CAPTION_HIDDEN);
 
-		addField(CaseDataDto.PREGNANT, NullableOptionGroup.class);
+		NullableOptionGroup pregnantField = addField(CaseDataDto.PREGNANT, NullableOptionGroup.class);
 
-		addField(CaseDataDto.POSTPARTUM, NullableOptionGroup.class);
+		NullableOptionGroup postpartumField = addField(CaseDataDto.POSTPARTUM, NullableOptionGroup.class);
 		addField(CaseDataDto.TRIMESTER, NullableOptionGroup.class);
 		FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.TRIMESTER, CaseDataDto.PREGNANT, Arrays.asList(YesNoUnknown.YES), true);
+
+		// Mutual exclusivity: Pregnancy and Postpartum
+		if (pregnantField != null && postpartumField != null) {
+			setupMutuallyExclusiveFields(pregnantField, postpartumField);
+		}
 
 		addField(CaseDataDto.VACCINATION_STATUS, TextField.class);
 //		getContent().addComponent(new Label("Debug vaccination"), CaseDataDto.VACCINATION_STATUS);
