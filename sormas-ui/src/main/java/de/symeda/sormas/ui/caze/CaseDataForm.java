@@ -72,6 +72,7 @@ import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.FormType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -95,6 +96,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.infrastructure.forms.FormBuilderDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -129,6 +131,7 @@ import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
 import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
+import de.symeda.sormas.ui.infrastructure.forms.FormBuilderComponent;
 import de.symeda.sormas.ui.utils.UserField;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ValidationUtils;
@@ -148,6 +151,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private static final String EPID_NUMBER_WARNING_LOC = "epidNumberWarningLoc";
 	private static final String EXTERNAL_TOKEN_WARNING_LOC = "externalTokenWarningLoc";
 	private static final String GENERAL_COMMENT_LOC = "generalCommentLoc";
+	private static final String DYNAMIC_FORM_LOC = "dynamicFormLoc";
 	private static final String FOLLOW_UP_STATUS_HEADING_LOC = "followUpStatusHeadingLoc";
 	private static final String CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC = "cancelOrResumeFollowUpBtnLoc";
 	private static final String LOST_FOLLOW_UP_BTN_LOC = "lostFollowUpBtnLoc";
@@ -271,6 +275,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					loc(PAPER_FORM_DATES_LOC) +
 					fluidRowLocs(CaseDataDto.DISTRICT_LEVEL_DATE, CaseDataDto.REGION_LEVEL_DATE, CaseDataDto.NATIONAL_LEVEL_DATE) +
 					loc(GENERAL_COMMENT_LOC) + fluidRowLocs(CaseDataDto.ADDITIONAL_DETAILS) +
+					loc(DYNAMIC_FORM_LOC) +
 					fluidRowLocs(CaseDataDto.DELETION_REASON) +
 					fluidRowLocs(CaseDataDto.OTHER_DELETION_REASON);
 	//@formatter:on
@@ -946,6 +951,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			I18nProperties.getPrefixDescription(CaseDataDto.I18N_PREFIX, CaseDataDto.ADDITIONAL_DETAILS, "") + "\n"
 				+ I18nProperties.getDescription(Descriptions.descGdpr));
 		CssStyles.style(additionalDetails, CssStyles.CAPTION_HIDDEN);
+
+		// Add dynamic form builder component
+//		addDynamicFormFields();
 
 		addField(CaseDataDto.PREGNANT, NullableOptionGroup.class);
 
@@ -1920,4 +1928,29 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			setVisible(false, CaseDataDto.PREVIOUS_QUARANTINE_TO, CaseDataDto.QUARANTINE_CHANGE_COMMENT);
 		}
 	}
+
+	/**
+	 * Adds dynamic form fields based on FormBuilder configuration.
+	 * Fetches FormBuilder by formType (CIF) and disease, then renders the dynamic form.
+	 */
+//	private void addDynamicFormFields() {
+//		if (disease == null) {
+//			return;
+//		}
+//
+//		try {
+//			FormBuilderDto formBuilder = FacadeProvider.getFormBuilderFacade()
+//				.getByFormTypeAndDisease(FormType., disease, true);
+//
+//			if (formBuilder != null && formBuilder.getFormFields() != null && !formBuilder.getFormFields().isEmpty()) {
+//				FormBuilderComponent dynamicForm = new FormBuilderComponent(formBuilder);
+//				// Set read-only based on field group read-only state
+//				dynamicForm.setReadOnly(getFieldGroup().isReadOnly());
+//				getContent().addComponent(dynamicForm, DYNAMIC_FORM_LOC);
+//			}
+//		} catch (Exception e) {
+//			// Log error but don't break the form if FormBuilder is not available
+//			// This allows the form to work even if FormBuilder is not configured
+//		}
+//	}
 }
