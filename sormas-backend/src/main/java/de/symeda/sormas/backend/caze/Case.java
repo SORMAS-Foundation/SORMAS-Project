@@ -42,6 +42,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import de.symeda.sormas.api.caze.*;
+import de.symeda.sormas.api.utils.Diseases;
 import org.hibernate.annotations.Type;
 
 import de.symeda.sormas.api.Disease;
@@ -431,6 +432,12 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	private String otherDiagnosticCriteria;
     private IdsrType idsrDiagnosis;
     private String idsrDiagnosisDetails;
+	private String notifiedBy;
+	private Date dateOfNotification;
+	private Date dateOfInvestigation;
+	private String division;
+	private String compoundOwner;
+	private String nationality;
 
     public static Case build() {
 		Case caze = new Case();
@@ -1868,4 +1875,50 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
     public void setIdsrDiagnosisDetails(String idsrDiagnosisDetails) {
         this.idsrDiagnosisDetails = idsrDiagnosisDetails;
     }
+
+	public String getNotifiedBy() {
+		return notifiedBy;
+	}
+
+	public void setNotifiedBy(String notifiedBy) {
+		this.notifiedBy = notifiedBy;
+	}
+
+	public Date getDateOfNotification() {
+		return dateOfNotification;
+	}
+
+	public void setDateOfNotification(Date dateOfNotification) {
+		this.dateOfNotification = dateOfNotification;
+	}
+
+	public Date getDateOfInvestigation() {
+		return dateOfInvestigation;
+	}
+
+	public void setDateOfInvestigation(Date dateOfInvestigation) {
+		this.dateOfInvestigation = dateOfInvestigation;
+	}
+
+	public String getDivision() {
+		return division;
+	}
+
+	public void setDivision(String division) {
+		this.division = division;
+	}
+	public String getCompoundOwner() {
+		return compoundOwner;
+	}
+
+	public void setCompoundOwner(String compoundOwner) {
+		this.compoundOwner = compoundOwner;
+	}
+	public String getNationality() {
+		return nationality;
+	}
+
+	public void setNationality(String nationality) {
+		this.nationality = nationality;
+	}
 }

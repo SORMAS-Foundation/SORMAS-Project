@@ -14459,4 +14459,20 @@ alter table samples_history add idsrdiagnosisdetails varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (584, 'Add IDSR diagnosis fields to samples');
 
+-- 22-12-25 Add NNT casecreate and case data fields
+alter table cases add notifiedby varchar(255);
+alter table cases add dateofnotification date;
+alter table cases add dateofinvestigation date;
+alter table cases add division varchar(255);
+alter table cases add compoundowner varchar(255);
+alter table cases add nationality varchar(255);
+alter table cases_history add notifiedby varchar(255);
+alter table cases_history add dateofnotification date;
+alter table cases_history add dateofinvestigation date;
+alter table cases_history add division varchar(255);
+alter table cases_history add compoundowner varchar(255);
+alter table cases_history add nationality varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (585, 'Add NNT casecreate and case data fields');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

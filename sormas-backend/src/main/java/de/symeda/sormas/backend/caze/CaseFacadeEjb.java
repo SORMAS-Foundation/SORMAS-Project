@@ -3049,6 +3049,12 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setRabiesType(source.getRabiesType());
 		target.setIdsrDiagnosis(source.getIdsrDiagnosis());
 		target.setIdsrDiagnosisDetails(source.getIdsrDiagnosisDetails());
+		target.setNotifiedBy(source.getNotifiedBy());
+		target.setDateOfNotification(source.getDateOfNotification());
+		target.setDateOfInvestigation(source.getDateOfInvestigation());
+		target.setDivision(source.getDivision());
+		target.setCompoundOwner(source.getCompoundOwner());
+		target.setNationality(source.getNationality());
 		target.setCaseClassification(source.getCaseClassification());
 		target.setCaseIdentificationSource(source.getCaseIdentificationSource());
 		target.setScreeningType(source.getScreeningType());
@@ -3263,6 +3269,12 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setClassificationDate(source.getClassificationDate());
 		target.setClassificationComment(source.getClassificationComment());
 		target.setClinicalConfirmation(source.getClinicalConfirmation());
+		target.setNotifiedBy(source.getNotifiedBy());
+		target.setDateOfNotification(source.getDateOfNotification());
+		target.setDateOfInvestigation(source.getDateOfInvestigation());
+		target.setDivision(source.getDivision());
+		target.setCompoundOwner(source.getCompoundOwner());
+		target.setNationality(source.getNationality());
 		target.setEpidemiologicalConfirmation(source.getEpidemiologicalConfirmation());
 		target.setLaboratoryDiagnosticConfirmation(source.getLaboratoryDiagnosticConfirmation());
 		if (source.getInvestigationStatus() != null) {

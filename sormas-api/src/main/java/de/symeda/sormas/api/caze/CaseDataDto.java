@@ -237,6 +237,12 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	public static final String OTHER_DIAGNOSTIC_CRITERIA = "otherDiagnosticCriteria";
     public static final String IDSR_DIAGNOSIS = "idsrDiagnosis";
     public static final String IDSR_DIAGNOSIS_DETAILS = "idsrDiagnosisDetails";
+	public static final String NOTIFIED_BY = "notifiedBy";
+	public static final String DATE_OF_NOTIFICATION = "dateOfNotification";
+	public static final String DATE_OF_INVESTIGATION = "dateOfInvestigation";
+	public static final String DIVISION = "division";
+	public static final String COMPOUND_OWNER = "compoundOwner";
+	public static final String NATIONALITY = "nationality";
 
 
     // Fields are declared in the order they should appear in the import template
@@ -655,6 +661,25 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
     @Outbreaks
     @Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
     private String idsrDiagnosisDetails;
+
+	@Diseases({
+			Disease.NEONATAL_TETANUS})
+	private String notifiedBy;
+	@Diseases({
+			Disease.NEONATAL_TETANUS})
+	private Date dateOfNotification;
+	@Diseases({
+			Disease.NEONATAL_TETANUS})
+	private Date dateOfInvestigation;
+	@Diseases({
+			Disease.NEONATAL_TETANUS})
+	private String division;
+	@Diseases({
+			Disease.NEONATAL_TETANUS})
+	private String compoundOwner;
+	@Diseases({
+			Disease.NEONATAL_TETANUS})
+	private String nationality;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		return build(person, disease, HealthConditionsDto.build());
@@ -1867,7 +1892,51 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
     public void setIdsrDiagnosisDetails(String idsrDiagnosisDetails) {
         this.idsrDiagnosisDetails = idsrDiagnosisDetails;
     }
+	public String getNotifiedBy() {
+		return notifiedBy;
+	}
 
+	public void setNotifiedBy(String notifiedBy) {
+		this.notifiedBy = notifiedBy;
+	}
+
+	public Date getDateOfNotification() {
+		return dateOfNotification;
+	}
+
+	public void setDateOfNotification(Date dateOfNotification) {
+		this.dateOfNotification = dateOfNotification;
+	}
+
+	public Date getDateOfInvestigation() {
+		return dateOfInvestigation;
+	}
+
+	public void setDateOfInvestigation(Date dateOfInvestigation) {
+		this.dateOfInvestigation = dateOfInvestigation;
+	}
+
+	public String getDivision() {
+		return division;
+	}
+
+	public void setDivision(String division) {
+		this.division = division;
+	}
+	public String getCompoundOwner() {
+		return compoundOwner;
+	}
+
+	public void setCompoundOwner(String compoundOwner) {
+		this.compoundOwner = compoundOwner;
+	}
+	public String getNationality() {
+		return nationality;
+	}
+
+	public void setNationality(String nationality) {
+		this.nationality = nationality;
+	}
     @JsonIgnore
 	public String i18nPrefix() {
 		return I18N_PREFIX;

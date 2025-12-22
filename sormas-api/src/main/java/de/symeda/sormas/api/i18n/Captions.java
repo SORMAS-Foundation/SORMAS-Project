@@ -732,6 +732,12 @@ public interface Captions {
 	String CaseData_numberOfVisits = "CaseData.numberOfVisits";
 	String CaseData_otherDeletionReason = "CaseData.otherDeletionReason";
 	String CaseData_otherDiagnosticCriteria = "CaseData.otherDiagnosticCriteria";
+	String CaseData_notifiedBy = "CaseData.notifiedBy";
+	String CaseData_dateOfNotification = "CaseData.dateOfNotification";
+	String CaseData_dateOfInvestigation = "CaseData.dateOfInvestigation";
+	String CaseData_division = "CaseData.division";
+	String CaseData_compoundOwner = "CaseData.compoundOwner";
+	String CaseData_nationality = "CaseData.nationality";
 	String CaseData_outcome = "CaseData.outcome";
 	String CaseData_outcomeDate = "CaseData.outcomeDate";
 	String CaseData_overwriteFollowUpUntil = "CaseData.overwriteFollowUpUntil";

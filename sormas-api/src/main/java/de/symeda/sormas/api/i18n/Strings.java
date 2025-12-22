@@ -1685,6 +1685,7 @@ public interface Strings {
 	String notificationTaskStartGeneral = "notificationTaskStartGeneral";
 	String notificationTaskStartSpecific = "notificationTaskStartSpecific";
 	String notificationVisitCompleted = "notificationVisitCompleted";
+	String notifyInvestigate = "headingnotifyInvestigate";
 	String notSpecified = "notSpecified";
 	String number = "number";
 	String numberEight = "numberEight";
