@@ -202,7 +202,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 		addField(CaseDataDto.CASE_REFERENCE_NUMBER, TextField.class);
 
-		addField(CaseDataDto.REPORT_DATE, DateField.class);
+		DateField reportDate = addField(CaseDataDto.REPORT_DATE, DateField.class);
 
 		final NullableOptionGroup caseClassificationGroup = addField(CaseDataDto.CASE_CLASSIFICATION, NullableOptionGroup.class);
 		caseClassificationGroup.removeItem(CaseClassification.CONFIRMED_NO_SYMPTOMS);
@@ -557,6 +557,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 				personCreateForm.getField(PersonDto.PHONE).setVisible(false);
 				personCreateForm.getField(PersonDto.EMAIL_ADDRESS).setVisible(false);
 				personCreateForm.getField(PersonDto.PRESENT_CONDITION).setVisible(false);
+				setRequired(false, CaseDataDto.REPORT_DATE);
 			}
 			personCreateForm.updatePresentConditionEnum((Disease) valueChangeEvent.getProperty().getValue());
 		});
