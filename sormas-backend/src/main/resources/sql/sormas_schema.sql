@@ -14475,4 +14475,17 @@ alter table cases_history add nationality varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (585, 'Add NNT casecreate and case data fields');
 
+ALTER TABLE cases ADD COLUMN mothervaccinatedwithtt varchar(255);
+ALTER TABLE cases ADD COLUMN motherhavecard varchar(255);
+ALTER TABLE cases ADD COLUMN mothernumberofdoses varchar(255);
+ALTER TABLE cases ADD COLUMN mothervaccinationstatus varchar(255);
+ALTER TABLE cases ADD COLUMN motherttdateone date;
+ALTER TABLE cases ADD COLUMN motherttdatetwo date;
+ALTER TABLE cases ADD COLUMN motherttdatethree date;
+ALTER TABLE cases ADD COLUMN motherttdatefour date;
+ALTER TABLE cases ADD COLUMN motherttdatefive date;
+ALTER TABLE cases ADD COLUMN motherlastdosedate date;
+
+INSERT INTO schema_version (version_number, comment) VALUES (586, 'Added columns to cases to implement MOTHER VACCINATION HISTORY');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

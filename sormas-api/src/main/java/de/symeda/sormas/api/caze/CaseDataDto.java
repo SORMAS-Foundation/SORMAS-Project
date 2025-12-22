@@ -31,6 +31,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import de.symeda.sormas.api.caze.caseimport.MotherVaccinationStatus;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -243,6 +244,16 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	public static final String DIVISION = "division";
 	public static final String COMPOUND_OWNER = "compoundOwner";
 	public static final String NATIONALITY = "nationality";
+	public static final String MOTHER_VACCINATED_WITH_TT = "motherVaccinatedWithTT";
+	public static final String MOTHER_HAVE_CARD = "motherHaveCard";
+	public static final String MOTHER_NUMBER_OF_DOSES = "motherNumberOfDoses";
+	public static final String MOTHER_VACCINATION_STATUS = "motherVaccinationStatus";
+	public static final String MOTHER_TT_DATE_ONE = "motherTTDateOne";
+	public static final String MOTHER_TT_DATE_TWO = "motherTTDateTwo";
+	public static final String MOTHER_TT_DATE_THREE = "motherTTDateThree";
+	public static final String MOTHER_TT_DATE_FOUR = "motherTTDateFour";
+	public static final String MOTHER_TT_DATE_FIVE = "motherTTDateFive";
+	public static final String MOTHER_LAST_DOSE_DATE = "motherLastDoseDate";
 
 
     // Fields are declared in the order they should appear in the import template
@@ -680,6 +691,17 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	@Diseases({
 			Disease.NEONATAL_TETANUS})
 	private String nationality;
+
+	private YesNoUnknown motherVaccinatedWithTT;
+	private YesNoUnknown motherHaveCard;
+	private String motherNumberOfDoses;
+	private MotherVaccinationStatus motherVaccinationStatus;
+	private Date motherTTDateOne;
+	private Date motherTTDateTwo;
+	private Date motherTTDateThree;
+	private Date motherTTDateFour;
+	private Date motherTTDateFive;
+	private Date motherLastDoseDate;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		return build(person, disease, HealthConditionsDto.build());
@@ -1937,6 +1959,86 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	public void setNationality(String nationality) {
 		this.nationality = nationality;
 	}
+
+	public YesNoUnknown getMotherVaccinatedWithTT() {
+		return motherVaccinatedWithTT;
+	}
+
+	public void setMotherVaccinatedWithTT(YesNoUnknown motherVaccinatedWithTT) {
+		this.motherVaccinatedWithTT = motherVaccinatedWithTT;
+	}
+
+	public YesNoUnknown getMotherHaveCard() {
+		return motherHaveCard;
+	}
+
+	public void setMotherHaveCard(YesNoUnknown motherHaveCard) {
+		this.motherHaveCard = motherHaveCard;
+	}
+
+	public String getMotherNumberOfDoses() {
+		return motherNumberOfDoses;
+	}
+
+	public void setMotherNumberOfDoses(String motherNumberOfDoses) {
+		this.motherNumberOfDoses = motherNumberOfDoses;
+	}
+
+	public MotherVaccinationStatus getMotherVaccinationStatus() {
+		return motherVaccinationStatus;
+	}
+
+	public void setMotherVaccinationStatus(MotherVaccinationStatus motherVaccinationStatus) {
+		this.motherVaccinationStatus = motherVaccinationStatus;
+	}
+
+	public Date getMotherTTDateOne() {
+		return motherTTDateOne;
+	}
+
+	public void setMotherTTDateOne(Date motherTTDateOne) {
+		this.motherTTDateOne = motherTTDateOne;
+	}
+
+	public Date getMotherTTDateTwo() {
+		return motherTTDateTwo;
+	}
+
+	public void setMotherTTDateTwo(Date motherTTDateTwo) {
+		this.motherTTDateTwo = motherTTDateTwo;
+	}
+
+	public Date getMotherTTDateThree() {
+		return motherTTDateThree;
+	}
+
+	public void setMotherTTDateThree(Date motherTTDateThree) {
+		this.motherTTDateThree = motherTTDateThree;
+	}
+
+	public Date getMotherTTDateFour() {
+		return motherTTDateFour;
+	}
+
+	public void setMotherTTDateFour(Date motherTTDateFour) {
+		this.motherTTDateFour = motherTTDateFour;
+	}
+
+	public Date getMotherTTDateFive() {
+		return motherTTDateFive;
+	}
+
+	public void setMotherTTDateFive(Date motherTTDateFive) {
+		this.motherTTDateFive = motherTTDateFive;
+	}
+
+	public Date getMotherLastDoseDate() {
+		return motherLastDoseDate;
+	}
+	public void setMotherLastDoseDate(Date motherLastDoseDate) {
+		this.motherLastDoseDate = motherLastDoseDate;
+	}
+
     @JsonIgnore
 	public String i18nPrefix() {
 		return I18N_PREFIX;

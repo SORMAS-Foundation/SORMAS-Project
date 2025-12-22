@@ -42,6 +42,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import de.symeda.sormas.api.caze.*;
+import de.symeda.sormas.api.caze.caseimport.MotherVaccinationStatus;
 import de.symeda.sormas.api.utils.Diseases;
 import org.hibernate.annotations.Type;
 
@@ -438,6 +439,16 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	private String division;
 	private String compoundOwner;
 	private String nationality;
+	private YesNoUnknown motherVaccinatedWithTT;
+	private YesNoUnknown motherHaveCard;
+	private String motherNumberOfDoses;
+	private MotherVaccinationStatus motherVaccinationStatus;
+	private Date motherTTDateOne;
+	private Date motherTTDateTwo;
+	private Date motherTTDateThree;
+	private Date motherTTDateFour;
+	private Date motherTTDateFive;
+	private Date motherLastDoseDate;
 
     public static Case build() {
 		Case caze = new Case();
@@ -1920,5 +1931,85 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 
 	public void setNationality(String nationality) {
 		this.nationality = nationality;
+	}
+
+	public YesNoUnknown getMotherVaccinatedWithTT() {
+		return motherVaccinatedWithTT;
+	}
+
+	public void setMotherVaccinatedWithTT(YesNoUnknown motherVaccinatedWithTT) {
+		this.motherVaccinatedWithTT = motherVaccinatedWithTT;
+	}
+
+	public YesNoUnknown getMotherHaveCard() {
+		return motherHaveCard;
+	}
+
+	public void setMotherHaveCard(YesNoUnknown motherHaveCard) {
+		this.motherHaveCard = motherHaveCard;
+	}
+
+	public String getMotherNumberOfDoses() {
+		return motherNumberOfDoses;
+	}
+
+	public void setMotherNumberOfDoses(String motherNumberOfDoses) {
+		this.motherNumberOfDoses = motherNumberOfDoses;
+	}
+
+	public MotherVaccinationStatus getMotherVaccinationStatus() {
+		return motherVaccinationStatus;
+	}
+
+	public void setMotherVaccinationStatus(MotherVaccinationStatus motherVaccinationStatus) {
+		this.motherVaccinationStatus = motherVaccinationStatus;
+	}
+
+	public Date getMotherTTDateOne() {
+		return motherTTDateOne;
+	}
+
+	public void setMotherTTDateOne(Date motherTTDateOne) {
+		this.motherTTDateOne = motherTTDateOne;
+	}
+
+	public Date getMotherTTDateTwo() {
+		return motherTTDateTwo;
+	}
+
+	public void setMotherTTDateTwo(Date motherTTDateTwo) {
+		this.motherTTDateTwo = motherTTDateTwo;
+	}
+
+	public Date getMotherTTDateThree() {
+		return motherTTDateThree;
+	}
+
+	public void setMotherTTDateThree(Date motherTTDateThree) {
+		this.motherTTDateThree = motherTTDateThree;
+	}
+
+	public Date getMotherTTDateFour() {
+		return motherTTDateFour;
+	}
+
+	public void setMotherTTDateFour(Date motherTTDateFour) {
+		this.motherTTDateFour = motherTTDateFour;
+	}
+
+	public Date getMotherTTDateFive() {
+		return motherTTDateFive;
+	}
+
+	public void setMotherTTDateFive(Date motherTTDateFive) {
+		this.motherTTDateFive = motherTTDateFive;
+	}
+
+	public Date getMotherLastDoseDate() {
+		return motherLastDoseDate;
+	}
+
+	public void setMotherLastDoseDate(Date motherLastDoseDate) {
+		this.motherLastDoseDate = motherLastDoseDate;
 	}
 }

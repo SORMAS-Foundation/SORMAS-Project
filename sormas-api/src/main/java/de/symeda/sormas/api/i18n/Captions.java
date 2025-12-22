@@ -719,6 +719,16 @@ public interface Captions {
 	String CaseData_latestEventTitle = "CaseData.latestEventTitle";
 	String CaseData_latestSampleDateTime = "CaseData.latestSampleDateTime";
 	String CaseData_maternalHistory = "CaseData.maternalHistory";
+	String CaseData_motherVaccinatedWithTT = "CaseData.motherVaccinatedWithTT";
+	String CaseData_motherHaveCard = "CaseData.motherHaveCard";
+	String CaseData_motherNumberOfDoses = "CaseData.motherNumberOfDoses";
+	String CaseData_motherVaccinationStatus = "CaseData.motherVaccinationStatus";
+	String CaseData_motherTTDateOne = "CaseData.motherTTDateOne";
+	String CaseData_motherTTDateTwo = "CaseData.motherTTDateTwo";
+	String CaseData_motherTTDateThree = "CaseData.motherTTDateThree";
+	String CaseData_motherTTDateFour = "CaseData.motherTTDateFour";
+	String CaseData_motherTTDateFive = "CaseData.motherTTDateFive";
+	String CaseData_motherLastDoseDate = "CaseData.motherLastDoseDate";
 	String CaseData_nationalLevelDate = "CaseData.nationalLevelDate";
 	String CaseData_noneHealthFacilityDetails = "CaseData.noneHealthFacilityDetails";
 	String CaseData_nosocomialOutbreak = "CaseData.nosocomialOutbreak";

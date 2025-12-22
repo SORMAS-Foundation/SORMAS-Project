@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.vaadin.v7.data.validator.RegexpValidator;
 import de.symeda.sormas.api.caze.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -222,6 +223,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					locCss(VSPACE_3, CaseDataDto.SHARED_TO_COUNTRY) +
 					loc(NOTIFY_INVESTIGATE) +
 					fluidRowLocs(CaseDataDto.NOTIFIED_BY, CaseDataDto.DATE_OF_NOTIFICATION, CaseDataDto.DATE_OF_INVESTIGATION) +
+					fluidRowLocs(CaseDataDto.MOTHER_VACCINATED_WITH_TT, CaseDataDto.MOTHER_HAVE_CARD) +
+					fluidRowLocs(CaseDataDto.MOTHER_VACCINATION_STATUS, CaseDataDto.MOTHER_NUMBER_OF_DOSES) +
+					fluidRowLocs(CaseDataDto.MOTHER_TT_DATE_ONE, CaseDataDto.MOTHER_TT_DATE_TWO) +
+					fluidRowLocs(CaseDataDto.MOTHER_TT_DATE_THREE, CaseDataDto.MOTHER_TT_DATE_FOUR) +
+					fluidRowLocs(CaseDataDto.MOTHER_TT_DATE_FIVE, CaseDataDto.MOTHER_LAST_DOSE_DATE) +
 					fluidRowLocs(4, CaseDataDto.PROHIBITION_TO_WORK, 4, CaseDataDto.PROHIBITION_TO_WORK_FROM, 4, CaseDataDto.PROHIBITION_TO_WORK_UNTIL) +
 					fluidRowLocs(4, CaseDataDto.QUARANTINE_HOME_POSSIBLE, 8, CaseDataDto.QUARANTINE_HOME_POSSIBLE_COMMENT) +
 					fluidRowLocs(4, CaseDataDto.QUARANTINE_HOME_SUPPLY_ENSURED, 8, CaseDataDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT) +
@@ -307,6 +313,16 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private boolean ignoreDifferentPlaceOfStayJurisdiction = false;
 	private CheckBox postMortemCB;
 	private Label medicalInformationCaptionLabel;
+	private NullableOptionGroup motherVaccinatedWithTT;
+	private NullableOptionGroup motherHaveCard;
+	private TextField motherNumberOfDoses;
+	private NullableOptionGroup motherVaccinationStatus;
+	private DateField motherTTDateOne;
+	private DateField motherTTDateTwo;
+	private DateField motherTTDateThree;
+	private DateField motherTTDateFour;
+	private DateField motherTTDateFive;
+	private DateField motherLastDoseDate;
 
 	public CaseDataForm(
 		String caseUuid,
@@ -1454,14 +1470,81 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		setVisible(!isLuxTuberculosisDisease(), CaseDataDto.POSTPARTUM, CaseDataDto.PREGNANT, CaseDataDto.SURVEILLANCE_OFFICER,
 				CaseDataDto.CLINICIAN_NAME, CaseDataDto.CLINICIAN_PHONE, CaseDataDto.CLINICIAN_EMAIL, CaseDataDto.ADDITIONAL_DETAILS);
 
-		//More diseases to be added here. If not, switch to if statement: TODO
+		//More diseases to be added here. If not, switch to if statement and parse methods in this switch block: TODO
 		switch (disease) {
 			case NEONATAL_TETANUS:
 				hideAllFields();
-				setVisible(true, CaseDataDto.UUID, CaseDataDto.REPORT_DATE, CaseDataDto.REPORTING_USER, CaseDataDto.EPID_NUMBER, CaseDataDto.DISEASE, CaseDataDto.CASE_ORIGIN,
-						CaseDataDto.RESPONSIBLE_REGION, CaseDataDto.RESPONSIBLE_DISTRICT, CaseDataDto.FACILITY_TYPE, CaseDataDto.HEALTH_FACILITY, CaseDataDto.HEALTH_FACILITY_DETAILS,
-						CaseDataDto.NOTIFIED_BY, CaseDataDto.DATE_OF_NOTIFICATION, CaseDataDto.DATE_OF_INVESTIGATION, CaseDataDto.NOTIFIED_BY, CaseDataDto.DATE_OF_NOTIFICATION, CaseDataDto.DATE_OF_INVESTIGATION);
+				setVisible(true,
+						CaseDataDto.UUID,
+						CaseDataDto.REPORT_DATE,
+						CaseDataDto.REPORTING_USER,
+						CaseDataDto.EPID_NUMBER,
+						CaseDataDto.DISEASE,
+						CaseDataDto.CASE_ORIGIN,
+						CaseDataDto.RESPONSIBLE_REGION,
+						CaseDataDto.RESPONSIBLE_DISTRICT,
+						CaseDataDto.FACILITY_TYPE,
+						CaseDataDto.HEALTH_FACILITY,
+						CaseDataDto.HEALTH_FACILITY_DETAILS,
+						CaseDataDto.NOTIFIED_BY,
+						CaseDataDto.DATE_OF_NOTIFICATION,
+						CaseDataDto.DATE_OF_INVESTIGATION
+				);
+
 				medicalInformationCaptionLabel.setVisible(false);
+
+				if (motherVaccinatedWithTT == null) {
+					motherVaccinatedWithTT = addField(CaseDataDto.MOTHER_VACCINATED_WITH_TT, NullableOptionGroup.class);
+					motherHaveCard = addField(CaseDataDto.MOTHER_HAVE_CARD, NullableOptionGroup.class);
+					motherNumberOfDoses = addField(CaseDataDto.MOTHER_NUMBER_OF_DOSES, TextField.class);
+
+					motherNumberOfDoses.addValidator(
+							new RegexpValidator("[0-9]*",
+									I18nProperties.getValidationError(
+											Validations.onlyIntegerNumbersAllowed,
+											motherNumberOfDoses.getCaption())));
+
+					motherNumberOfDoses.addValueChangeListener(e -> {
+						String value = motherNumberOfDoses.getValue();
+
+						if (StringUtils.isNumeric(value)) {
+							handleNumberOfDosesChange(Integer.parseInt(value));
+						} else {
+							handleNumberOfDosesChange(0);
+						}
+					});
+
+
+					motherVaccinationStatus = addField(CaseDataDto.MOTHER_VACCINATION_STATUS, NullableOptionGroup.class);
+					motherTTDateOne = addField(CaseDataDto.MOTHER_TT_DATE_ONE, DateField.class);
+					motherTTDateTwo = addField(CaseDataDto.MOTHER_TT_DATE_TWO, DateField.class);
+					motherTTDateThree = addField(CaseDataDto.MOTHER_TT_DATE_THREE, DateField.class);
+					motherTTDateFour = addField(CaseDataDto.MOTHER_TT_DATE_FOUR, DateField.class);
+					motherTTDateFive = addField(CaseDataDto.MOTHER_TT_DATE_FIVE, DateField.class);
+					motherLastDoseDate = addField(CaseDataDto.MOTHER_LAST_DOSE_DATE, DateField.class);
+
+
+					FieldHelper.setVisibleWhen(
+							motherVaccinatedWithTT,
+							Arrays.asList(motherHaveCard),
+							Arrays.asList(YesNoUnknown.YES),
+							true);
+
+					FieldHelper.setVisibleWhen(
+							motherHaveCard,
+							Arrays.asList(motherNumberOfDoses),
+							Arrays.asList(YesNoUnknown.YES),
+							true);
+				}
+				setVisible(
+						true,
+						CaseDataDto.MOTHER_VACCINATED_WITH_TT, CaseDataDto.MOTHER_HAVE_CARD, CaseDataDto.MOTHER_NUMBER_OF_DOSES, CaseDataDto.MOTHER_VACCINATION_STATUS
+				);
+				setVisible(false,
+						CaseDataDto.MOTHER_TT_DATE_ONE,	CaseDataDto.MOTHER_TT_DATE_TWO,	CaseDataDto.MOTHER_TT_DATE_THREE, CaseDataDto.MOTHER_TT_DATE_FOUR, CaseDataDto.MOTHER_TT_DATE_FIVE, CaseDataDto.MOTHER_LAST_DOSE_DATE
+				);
+
+
 				break;
 			default:
 				break;
@@ -1952,4 +2035,25 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			setVisible(false, CaseDataDto.PREVIOUS_QUARANTINE_TO, CaseDataDto.QUARANTINE_CHANGE_COMMENT);
 		}
 	}
+
+	private void handleNumberOfDosesChange(Integer selectedNumberOfDoses) {
+
+		if (selectedNumberOfDoses == null) {
+			return;
+		}
+
+		setVisibleIfExists(motherTTDateOne, selectedNumberOfDoses >= 1);
+		setVisibleIfExists(motherTTDateTwo, selectedNumberOfDoses >= 2);
+		setVisibleIfExists(motherTTDateThree, selectedNumberOfDoses >= 3);
+		setVisibleIfExists(motherTTDateFour, selectedNumberOfDoses >= 4);
+		setVisibleIfExists(motherTTDateFive, selectedNumberOfDoses >= 5);
+		setVisibleIfExists(motherLastDoseDate, selectedNumberOfDoses >= 6);
+	}
+
+	private void setVisibleIfExists(Field<?> field, boolean visible) {
+		if (field != null) {
+			field.setVisible(visible);
+		}
+	}
+
 }
