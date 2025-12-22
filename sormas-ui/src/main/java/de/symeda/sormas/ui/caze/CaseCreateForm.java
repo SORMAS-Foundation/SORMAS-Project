@@ -225,7 +225,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 		addField(CaseDataDto.RE_INFECTION, NullableOptionGroup.class);
 
-		personCreateForm = new PersonCreateForm(showHomeAddressForm, true, true, showPersonSearchButton);
+		personCreateForm = new PersonCreateForm(showHomeAddressForm, true, false, showPersonSearchButton);
 		personCreateForm.setWidth(100, Unit.PERCENTAGE);
 		getContent().addComponent(personCreateForm, CaseDataDto.PERSON);
 
@@ -542,7 +542,22 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			}
 		});
 		diseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> {
-			handleDiseaseChanged((Disease) valueChangeEvent.getProperty().getValue());
+			Disease selectedDisease = (Disease) valueChangeEvent.getProperty().getValue();
+
+			hideAllFields();
+			handleDiseaseChanged(selectedDisease);
+
+			if (selectedDisease == Disease.NEONATAL_TETANUS) {
+				setVisible(true, epidField, diseaseField, responsibleRegionCombo, responsibleDistrictCombo, responsibleDistrictCombo, facilityOrHome, facilityDetails, facilityCombo, facilityType);
+				personCreateForm.getField(PersonDto.BIRTH_DATE_YYYY).setVisible(false);
+				personCreateForm.getField(PersonDto.BIRTH_DATE_MM).setVisible(false);
+				personCreateForm.getField(PersonDto.BIRTH_DATE_DD).setVisible(false);
+				personCreateForm.getField(PersonDto.PASSPORT_NUMBER).setVisible(false);
+				personCreateForm.getField(PersonDto.NATIONAL_HEALTH_ID).setVisible(false);
+				personCreateForm.getField(PersonDto.PHONE).setVisible(false);
+				personCreateForm.getField(PersonDto.EMAIL_ADDRESS).setVisible(false);
+				personCreateForm.getField(PersonDto.PRESENT_CONDITION).setVisible(false);
+			}
 			personCreateForm.updatePresentConditionEnum((Disease) valueChangeEvent.getProperty().getValue());
 		});
 
