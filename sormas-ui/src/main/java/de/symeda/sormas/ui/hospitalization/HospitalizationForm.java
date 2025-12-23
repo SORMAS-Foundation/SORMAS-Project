@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 
+import de.symeda.sormas.api.Disease;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.server.ErrorMessage;
@@ -76,6 +77,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 	private static final String HTML_LAYOUT =
 			loc(HOSPITALIZATION_HEADING_LOC) +
 			fluidRowLocs(HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY) +
+			fluidRowLocs(HospitalizationDto.HOSPITAL_RECORD_NUMBER,  HospitalizationDto.SELECT_INPATIENT_OUTPATIENT) +
 			fluidRowLocs(HEALTH_FACILITY, HEALTH_FACILITY_DEPARTMENT) +
 			fluidRowLocs(HospitalizationDto.ADMISSION_DATE, HospitalizationDto.DISCHARGE_DATE, HospitalizationDto.LEFT_AGAINST_ADVICE, "") +
 			fluidRowLocs(HospitalizationDto.HOSPITALIZATION_REASON, HospitalizationDto.OTHER_HOSPITALIZATION_REASON) +
@@ -93,6 +95,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 	private NullableOptionGroup intensiveCareUnit;
 	private DateField intensiveCareUnitStart;
 	private DateField intensiveCareUnitEnd;
+	private ComboBox selectInpatientOutpatient;
 	//@formatter:on
 
 	public HospitalizationForm(CaseDataDto caze, ViewMode viewMode, boolean isPseudonymized, boolean inJurisdiction, boolean isEditAllowed) {
@@ -281,6 +284,14 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		intensiveCareUnitEnd.addValueChangeListener(event -> intensiveCareUnitStart.markAsDirty());
 		hospitalizedPreviouslyField.addValueChangeListener(e -> updatePrevHospHint(hospitalizedPreviouslyField, previousHospitalizationsField));
 		previousHospitalizationsField.addValueChangeListener(e -> updatePrevHospHint(hospitalizedPreviouslyField, previousHospitalizationsField));
+
+		TextField hospitalRecordNumber = addField(HospitalizationDto.HOSPITAL_RECORD_NUMBER, TextField.class);
+		selectInpatientOutpatient = addField(HospitalizationDto.SELECT_INPATIENT_OUTPATIENT ,ComboBox.class);
+
+		if (caze.getDisease() == Disease.NEONATAL_TETANUS) {
+			hideAllFields();
+			setVisible(true, HospitalizationDto.HOSPITAL_RECORD_NUMBER,  HospitalizationDto.SELECT_INPATIENT_OUTPATIENT,HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY, HospitalizationDto.ADMISSION_DATE, HEALTH_FACILITY);
+		}
 	}
 
 	private void updatePrevHospHint(NullableOptionGroup hospitalizedPreviouslyField, PreviousHospitalizationsField previousHospitalizationsField) {

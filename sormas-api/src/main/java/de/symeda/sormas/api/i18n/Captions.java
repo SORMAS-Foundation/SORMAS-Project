@@ -917,6 +917,8 @@ public interface Captions {
 	String CaseHospitalization_isolationDate = "CaseHospitalization.isolationDate";
 	String CaseHospitalization_leftAgainstAdvice = "CaseHospitalization.leftAgainstAdvice";
 	String CaseHospitalization_otherHospitalizationReason = "CaseHospitalization.otherHospitalizationReason";
+	String CaseHospitalization_selectInpatientOutpatient = "CaseHospitalization.selectInpatientOutpatient";
+	String CaseHospitalization_hospitalRecordNumber = "CaseHospitalization.hospitalRecordNumber";
 	String CaseHospitalization_previousHospitalizations = "CaseHospitalization.previousHospitalizations";
 	String caseImportErrorDescription = "caseImportErrorDescription";
 	String caseImportMergeCase = "caseImportMergeCase";

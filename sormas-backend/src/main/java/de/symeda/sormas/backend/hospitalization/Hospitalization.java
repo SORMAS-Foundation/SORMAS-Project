@@ -33,6 +33,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
+import de.symeda.sormas.api.utils.InpatOutpat;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
@@ -72,6 +73,8 @@ public class Hospitalization extends AbstractDomainObject {
 	private HospitalizationReasonType hospitalizationReason;
 	private String otherHospitalizationReason;
 	private String description;
+	private String hospitalRecordNumber;
+	private InpatOutpat selectInpatientOutpatient;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getAdmissionDate() {
@@ -209,5 +212,21 @@ public class Hospitalization extends AbstractDomainObject {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public String getHospitalRecordNumber() {
+		return hospitalRecordNumber;
+	}
+
+	public void setHospitalRecordNumber(String hospitalRecordNumber) {
+		this.hospitalRecordNumber = hospitalRecordNumber;
+	}
+	@Enumerated(EnumType.STRING)
+	public InpatOutpat getSelectInpatientOutpatient() {
+		return selectInpatientOutpatient;
+	}
+
+	public void setSelectInpatientOutpatient(InpatOutpat selectInpatientOutpatient) {
+		this.selectInpatientOutpatient = selectInpatientOutpatient;
 	}
 }
