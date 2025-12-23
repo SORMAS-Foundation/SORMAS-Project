@@ -39,7 +39,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import com.vaadin.v7.ui.CheckBox;
-import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.api.person.*;
+import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
+import de.symeda.sormas.ui.utils.*;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.shared.ui.ErrorLevel;
@@ -73,15 +76,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
-import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
-import de.symeda.sormas.api.person.CauseOfDeath;
-import de.symeda.sormas.api.person.EducationType;
-import de.symeda.sormas.api.person.OccupationType;
-import de.symeda.sormas.api.person.PersonContext;
-import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PresentCondition;
-import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -89,17 +84,6 @@ import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilit
 import de.symeda.sormas.api.utils.luxembourg.LuxembourgNationalHealthIdValidator;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.location.LocationEditForm;
-import de.symeda.sormas.ui.utils.AbstractEditForm;
-import de.symeda.sormas.ui.utils.ApproximateAgeValidator;
-import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DateComparisonValidator;
-import de.symeda.sormas.ui.utils.FieldAccessHelper;
-import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
-import de.symeda.sormas.ui.utils.ResizableTextAreaWrapper;
-import de.symeda.sormas.ui.utils.SormasFieldGroupFieldFactory;
-import de.symeda.sormas.ui.utils.ValidationUtils;
-import de.symeda.sormas.ui.utils.ViewMode;
 import de.symeda.sormas.ui.utils.components.SormasTextField;
 
 public class PersonEditForm extends AbstractEditForm<PersonDto> {
@@ -151,6 +135,12 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
                     fluidRowLocs("", NATIONAL_HEALTH_ID_WARNING_LABEL) +
 					fluidRowLocs(PersonDto.EXTERNAL_ID, PersonDto.EXTERNAL_TOKEN) +
 					fluidRowLocs(PersonDto.INTERNAL_TOKEN, EXTERNAL_TOKEN_WARNING_LOC) +
+
+					fluidRowLocs(PersonDto.RECEIVED_ANTENATAL_CARE, PersonDto.RECEIVED_ANTENATAL_CARE_WHERE)+
+					fluidRowLocs(PersonDto.DESCRIBE_TREATMENT_OF_CARD, PersonDto.PRENATAL_TOTAL_VISITS)+
+					fluidRowLocs(PersonDto.ATTENDED_BY_TRAINED_TBA, PersonDto.ATTENDED_BY_TRAINED_TBA_MIDWIFE_NAME)+
+					fluidRowLocs(PersonDto.ATTENDED_BY_DOCTOR_NURSE, PersonDto.CUT_CORD_WITH_STERILE_BLADE)+
+					fluidRowLocs(PersonDto.CORD_TREATED_WITH_ANYTHING, PersonDto.CORD_TREATED_WITH_ANYTHING_WHERE)+
 
 					fluidRowLocs(PersonDto.HAS_COVID_APP, PersonDto.COVID_CODE_DELIVERED) +
 
@@ -209,6 +199,18 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private long minimumEmancipatedAge;
 	private TextField approximateAgeField;
 	private ComboBox approximateAgeTypeField;
+	private NullableOptionGroup receivedAntenatalCare;
+	private TextField prenatalTotalVisits;
+	private TextArea describeTreatmentOfCard;
+	private NullableOptionGroup attendedByTrainedTba;
+	private TextField attendedByTrainedTbaMidwifeName;
+	private NullableOptionGroup attendedByDoctorNurse;
+	private NullableOptionGroup birthInInstitutionField;
+	private ComboBox locationOfBirthField;
+	private NullableOptionGroup cutCordWithSterileBlade;
+	private NullableOptionGroup cordTreatedWithAnything;
+	private TextField cordTreatedWithAnythingWhere;
+
 	//@formatter:on
 
 	public PersonEditForm(
@@ -373,7 +375,11 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		DateField burialDate = addField(PersonDto.BURIAL_DATE, DateField.class);
 		TextField burialPlaceDesc = addField(PersonDto.BURIAL_PLACE_DESCRIPTION, TextField.class);
 		ComboBox burialConductor = addField(PersonDto.BURIAL_CONDUCTOR, ComboBox.class);
-		addressForm = addField(PersonDto.ADDRESS, LocationEditForm.class);
+//		addressForm = addField(PersonDto.ADDRESS, LocationEditForm.class);
+
+		addressForm = addField(PersonDto.ADDRESS, new LocationEditForm(
+				FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
+				UiFieldAccessCheckers.getNoop(), disease));
 		addressForm.setCaption(null);
 		addField(PersonDto.ADDRESSES, LocationsField.class).setCaption(null);
 
@@ -693,6 +699,73 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		nameOfGuardians.setVisible(true);
 		minimumAdultAge = FacadeProvider.getConfigFacade().getMinimumAdultAge();
 		minimumEmancipatedAge = FacadeProvider.getConfigFacade().getMinimumEmancipatedAge();
+
+		addressForm.handleIncomingDisease(disease);
+
+		if (disease == Disease.NEONATAL_TETANUS) {
+			hideAllFields();
+			addressesHeader.setVisible(false);
+			contactInformationHeader.setVisible(false);
+			occupationHeader.setVisible(false);
+			addressHeader.setVisible(false);
+
+			if (receivedAntenatalCare == null) {
+
+				receivedAntenatalCare = addField(PersonDto.RECEIVED_ANTENATAL_CARE, NullableOptionGroup.class);
+				prenatalTotalVisits = addField(PersonDto.PRENATAL_TOTAL_VISITS, TextField.class);
+				describeTreatmentOfCard = addField(PersonDto.DESCRIBE_TREATMENT_OF_CARD, TextArea.class);
+				describeTreatmentOfCard.setRows(4);
+
+				attendedByTrainedTba = addField(PersonDto.ATTENDED_BY_TRAINED_TBA, NullableOptionGroup.class);
+				attendedByTrainedTbaMidwifeName = addField(PersonDto.ATTENDED_BY_TRAINED_TBA_MIDWIFE_NAME, TextField.class);
+
+				attendedByDoctorNurse = addField(PersonDto.ATTENDED_BY_DOCTOR_NURSE, NullableOptionGroup.class);
+				birthInInstitutionField = addField(PersonDto.BIRTH_IN_INSTITUTION, NullableOptionGroup.class);
+				locationOfBirthField = addField(PersonDto.LOCATION_OF_BIRTH, ComboBox.class);
+
+				cutCordWithSterileBlade = addField(PersonDto.CUT_CORD_WITH_STERILE_BLADE, NullableOptionGroup.class);
+				cordTreatedWithAnything = addField(PersonDto.CORD_TREATED_WITH_ANYTHING, NullableOptionGroup.class);
+				cordTreatedWithAnythingWhere = addField(PersonDto.CORD_TREATED_WITH_ANYTHING_WHERE, TextField.class);
+
+				attendedByDoctorNurse.addItems(AttendedBy.values());
+
+				FieldHelper.setVisibleWhen(
+						getFieldGroup(),
+						PersonDto.ATTENDED_BY_TRAINED_TBA_MIDWIFE_NAME,
+						PersonDto.ATTENDED_BY_TRAINED_TBA,
+						YesNoUnknown.YES,
+						true
+				);
+
+				FieldHelper.setVisibleWhen(
+						getFieldGroup(),
+						PersonDto.CORD_TREATED_WITH_ANYTHING_WHERE,
+						PersonDto.CORD_TREATED_WITH_ANYTHING,
+						YesNoUnknown.YES,
+						true
+				);
+			}
+			//PERSON DATA
+			setVisible(true,
+					PersonDto.UUID,PersonDto.FIRST_NAME, PersonDto.LAST_NAME, PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD, PersonDto.APPROXIMATE_AGE,
+			PersonDto.APPROXIMATE_AGE_TYPE, PersonDto.APPROXIMATE_AGE_GROUP, PersonDto.SEX);
+
+			setVisible(true,
+					PersonDto.RECEIVED_ANTENATAL_CARE,
+					PersonDto.RECEIVED_ANTENATAL_CARE_WHERE,
+					PersonDto.PRENATAL_TOTAL_VISITS,
+					PersonDto.ATTENDED_BY_TRAINED_TBA,
+					PersonDto.ATTENDED_BY_TRAINED_TBA_MIDWIFE_NAME,
+					PersonDto.ATTENDED_BY_DOCTOR_NURSE,
+					PersonDto.CUT_CORD_WITH_STERILE_BLADE,
+					PersonDto.CORD_TREATED_WITH_ANYTHING,
+					PersonDto.CORD_TREATED_WITH_ANYTHING_WHERE,
+					PersonDto.LOCATION_OF_BIRTH,
+					PersonDto.BIRTH_IN_INSTITUTION,
+					PersonDto.DESCRIBE_TREATMENT_OF_CARD
+			);
+
+		}
 	}
 
 	private int getApproximateAgeInYears() {

@@ -14488,4 +14488,23 @@ ALTER TABLE cases ADD COLUMN motherlastdosedate date;
 
 INSERT INTO schema_version (version_number, comment) VALUES (586, 'Added columns to cases to implement MOTHER VACCINATION HISTORY');
 
+-- 23-12-25 Add NNT personedit data fields to implement birth of infant
+ALTER TABLE person ADD COLUMN receivedantenatalcare varchar(255);
+ALTER TABLE person ADD COLUMN receivedantenatalcarewhere varchar(255);
+ALTER TABLE person ADD COLUMN prenataltotalvisits varchar(255);
+ALTER TABLE person ADD COLUMN attendedbytrainedtba varchar(255);
+ALTER TABLE person ADD COLUMN attendedbytrainedtbamidwifename varchar(255);
+ALTER TABLE person ADD COLUMN attendedbydoctornurse varchar(255);
+ALTER TABLE person ADD COLUMN locationofdelivery varchar(255);
+ALTER TABLE person ADD COLUMN birthbyinstitution varchar(255);
+ALTER TABLE person ADD COLUMN birthbyinstitutionname varchar(255);
+ALTER TABLE person ADD COLUMN cutcordwithsterileblade varchar(255);
+ALTER TABLE person ADD COLUMN cordtreatedwithanything varchar(255);
+ALTER TABLE person ADD COLUMN cordtreatedwithanythingwhere varchar(255);
+ALTER TABLE person ADD COLUMN locationofbirth varchar(255);
+ALTER TABLE person ADD COLUMN birthininstitution varchar(255);
+ALTER TABLE person ADD COLUMN describetreatmentofcard varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (587, 'Added columns to person to implement BIRTH OF INFANT');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

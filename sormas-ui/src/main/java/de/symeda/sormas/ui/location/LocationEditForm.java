@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.location;
 
+import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.divs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
@@ -28,6 +29,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import de.symeda.sormas.api.Disease;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -140,9 +142,19 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	private boolean skipFacilityTypeUpdate;
 	private boolean disableFacilityAddressCheck;
 	private boolean hasEventParticipantsWithoutJurisdiction;
+	private Disease caseDisease;
 
 	public LocationEditForm(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
 		super(LocationDto.class, LocationDto.I18N_PREFIX, true, fieldVisibilityCheckers, fieldAccessCheckers);
+
+		if (FacadeProvider.getGeocodingFacade().isEnabled() && isEditableAllowed(LocationDto.LATITUDE) && isEditableAllowed(LocationDto.LONGITUDE)) {
+			getContent().addComponent(createGeoButton(), GEO_BUTTONS_LOC);
+		}
+	}
+
+	public LocationEditForm(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers, Disease disease) {
+		super(LocationDto.class, LocationDto.I18N_PREFIX, true, fieldVisibilityCheckers, fieldAccessCheckers, disease);
+		this.caseDisease = disease;
 
 		if (FacadeProvider.getGeocodingFacade().isEnabled() && isEditableAllowed(LocationDto.LATITUDE) && isEditableAllowed(LocationDto.LONGITUDE)) {
 			getContent().addComponent(createGeoButton(), GEO_BUTTONS_LOC);
@@ -177,6 +189,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void addFields() {
+		caseDisease = getCaseDisease();
 
 		addressType = addField(LocationDto.ADDRESS_TYPE, ComboBox.class);
 		addressType.setVisible(false);
@@ -572,6 +585,19 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 		// Set initial visiblity of facility-contactperson-details (should only be visible if at least a facilityType has been selected)
 		setFacilityContactPersonFieldsVisible(facilityType.getValue() != null, true);
+	}
+
+	public void handleIncomingDisease(Disease disease){
+		if (disease == null) {
+			return;
+		}
+
+		if (disease == Disease.NEONATAL_TETANUS) {
+			hideAllFields();
+			setVisible(true, LocationDto.REGION, LocationDto.DISTRICT, LocationDto.COMMUNITY);
+
+		}
+
 	}
 
 	private void hideAndFillJurisdictionFields() {

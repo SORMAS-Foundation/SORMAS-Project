@@ -41,6 +41,7 @@ import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.InfrastructureDataReferenceDto;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -65,6 +66,7 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 
 	private ComboBox diseaseField;
 	private boolean setServerDiseaseAsDefault;
+	private Disease caseDisease;
 
 	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix) {
 		this(type, propertyI18nPrefix, true, null, null);
@@ -610,6 +612,29 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 		return isEditableAllowed(getFieldGroup().getField(propertyId));
 	}
 
+	protected AbstractEditForm(
+			Class<DTO> type,
+			String propertyI18nPrefix,
+			boolean addFields,
+			FieldVisibilityCheckers fieldVisibilityCheckers,
+			UiFieldAccessCheckers fieldAccessCheckers,
+			Disease disease) {
+
+		super(type, propertyI18nPrefix, new SormasFieldGroupFieldFactory(fieldVisibilityCheckers, fieldAccessCheckers), false);
+		this.fieldVisibilityCheckers = fieldVisibilityCheckers;
+		this.fieldAccessCheckers = fieldAccessCheckers;
+		this.caseDisease = disease;
+
+		getFieldGroup().addCommitHandler(this);
+		setWidth(900, Unit.PIXELS);
+
+		if (addFields) {
+			addFields();
+		}
+	}
+
+
+
 	public void setHeading(String heading) {
 		throw new RuntimeException("setHeading should be implemented in " + getClass().getSimpleName());
 	}
@@ -620,6 +645,10 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 				field.setVisible(false);
 			}
 		}
+	}
+
+	public Disease getCaseDisease () {
+		return caseDisease;
 	}
 
 }
