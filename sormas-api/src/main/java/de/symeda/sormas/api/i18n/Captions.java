@@ -3022,6 +3022,14 @@ public interface Captions {
 	String symptomsMaxTemperature = "symptomsMaxTemperature";
 	String symptomsSetClearedToNo = "symptomsSetClearedToNo";
 	String symptomsSetClearedToUnknown = "symptomsSetClearedToUnknown";
+	String Symptoms_babyDied = "Symptoms.babyDied";
+	String Symptoms_ageAtDeathDays = "Symptoms.ageAtDeathDays";
+	String Symptoms_ageAtOnsetDays = "Symptoms.ageAtOnsetDays";
+	String Symptoms_babyNormalAtBirth = "Symptoms.babyNormalAtBirth";
+	String Symptoms_normalCryAndSuck = "Symptoms.normalCryAndSuck";
+	String Symptoms_stoppedSuckingAfterTwoDays = "Symptoms.stoppedSuckingAfterTwoDays";
+	String Symptoms_stiffness = "Symptoms.stiffness";
+	String Symptoms_outcome = "Symptoms.outcome";
 	String sync = "sync";
 	String syncErrors = "syncErrors";
 	String syncProcessed = "syncProcessed";

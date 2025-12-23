@@ -232,6 +232,14 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setClinicalPresentationStatus(source.getClinicalPresentationStatus());
 
 		target.setNocturnalCough(source.getNocturnalCough());
+		target.setBabyNormalAtBirth(source.getBabyNormalAtBirth());
+		target.setAgeAtDeathDays(source.getAgeAtDeathDays());
+		target.setAgeAtOnsetDays(source.getAgeAtOnsetDays());
+		target.setStoppedSuckingAfterTwoDays(source.getStoppedSuckingAfterTwoDays());
+		target.setNormalCryAndSuck(source.getNormalCryAndSuck());
+		target.setStiffness(source.getStiffness());
+		target.setOutcome(source.getOutcome());
+		target.setBabyDied(source.getBabyDied());
 		return target;
 	}
 
@@ -446,6 +454,14 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setClinicalPresentationStatus(source.getClinicalPresentationStatus());
 
 		target.setNocturnalCough(source.getNocturnalCough());
+		target.setBabyNormalAtBirth(source.getBabyNormalAtBirth());
+		target.setAgeAtDeathDays(source.getAgeAtDeathDays());
+		target.setAgeAtOnsetDays(source.getAgeAtOnsetDays());
+		target.setStoppedSuckingAfterTwoDays(source.getStoppedSuckingAfterTwoDays());
+		target.setNormalCryAndSuck(source.getNormalCryAndSuck());
+		target.setStiffness(source.getStiffness());
+		target.setOutcome(source.getOutcome());
+		target.setBabyDied(source.getBabyDied());
 		return target;
 	}
 

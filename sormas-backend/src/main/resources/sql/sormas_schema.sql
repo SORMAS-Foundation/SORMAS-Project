@@ -14507,4 +14507,15 @@ ALTER TABLE person ADD COLUMN describetreatmentofcard varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (587, 'Added columns to person to implement BIRTH OF INFANT');
 
+ALTER TABLE symptoms ADD COLUMN babynormalatbirth varchar(255);
+ALTER TABLE symptoms ADD COLUMN ageatdeathdays varchar(255);
+ALTER TABLE symptoms ADD COLUMN ageatonsetdays varchar(255);
+ALTER TABLE symptoms ADD COLUMN stoppedsuckingaftertwodays varchar(255);
+ALTER TABLE symptoms ADD COLUMN normalcryandsuck varchar(255);
+ALTER TABLE symptoms ADD COLUMN stiffness varchar(255);
+ALTER TABLE symptoms ADD COLUMN outcome varchar(255);
+ALTER TABLE symptoms ADD COLUMN babyDied varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (588, 'Added columns to symptoms to implement CLINICAL HISTORY');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

@@ -19,70 +19,7 @@ package de.symeda.sormas.api.symptoms;
 
 import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_GERMANY;
 import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_SWITZERLAND;
-import static de.symeda.sormas.api.Disease.ACUTE_VIRAL_HEPATITIS;
-import static de.symeda.sormas.api.Disease.ADENOVIRUS;
-import static de.symeda.sormas.api.Disease.AFP;
-import static de.symeda.sormas.api.Disease.ANTHRAX;
-import static de.symeda.sormas.api.Disease.ARI;
-import static de.symeda.sormas.api.Disease.BURULI_ULCER;
-import static de.symeda.sormas.api.Disease.CHIKUNGUNYA;
-import static de.symeda.sormas.api.Disease.CHOLERA;
-import static de.symeda.sormas.api.Disease.CONGENITAL_RUBELLA;
-import static de.symeda.sormas.api.Disease.CORONAVIRUS;
-import static de.symeda.sormas.api.Disease.CSM;
-import static de.symeda.sormas.api.Disease.C_PNEUMONIAE;
-import static de.symeda.sormas.api.Disease.DENGUE;
-import static de.symeda.sormas.api.Disease.DIARRHEA_BLOOD;
-import static de.symeda.sormas.api.Disease.DIARRHEA_DEHYDRATION;
-import static de.symeda.sormas.api.Disease.DIPHTERIA;
-import static de.symeda.sormas.api.Disease.ENTEROVIRUS;
-import static de.symeda.sormas.api.Disease.EVD;
-import static de.symeda.sormas.api.Disease.FHA;
-import static de.symeda.sormas.api.Disease.GUINEA_WORM;
-import static de.symeda.sormas.api.Disease.HIV;
-import static de.symeda.sormas.api.Disease.H_METAPNEUMOVIRUS;
-import static de.symeda.sormas.api.Disease.INFLUENZA;
-import static de.symeda.sormas.api.Disease.INFLUENZA_A;
-import static de.symeda.sormas.api.Disease.INFLUENZA_B;
-import static de.symeda.sormas.api.Disease.INVASIVE_MENINGOCOCCAL_INFECTION;
-import static de.symeda.sormas.api.Disease.INVASIVE_PNEUMOCOCCAL_INFECTION;
-import static de.symeda.sormas.api.Disease.LASSA;
-import static de.symeda.sormas.api.Disease.LEPROSY;
-import static de.symeda.sormas.api.Disease.LYMPHATIC_FILARIASIS;
-import static de.symeda.sormas.api.Disease.MALARIA;
-import static de.symeda.sormas.api.Disease.MATERNAL_DEATHS;
-import static de.symeda.sormas.api.Disease.MEASLES;
-import static de.symeda.sormas.api.Disease.MONKEYPOX;
-import static de.symeda.sormas.api.Disease.M_PNEUMONIAE;
-import static de.symeda.sormas.api.Disease.NEONATAL_TETANUS;
-import static de.symeda.sormas.api.Disease.NEW_INFLUENZA;
-import static de.symeda.sormas.api.Disease.NON_NEONATAL_TETANUS;
-import static de.symeda.sormas.api.Disease.ONCHOCERCIASIS;
-import static de.symeda.sormas.api.Disease.OTHER;
-import static de.symeda.sormas.api.Disease.PARAINFLUENZA_1_4;
-import static de.symeda.sormas.api.Disease.PERINATAL_DEATHS;
-import static de.symeda.sormas.api.Disease.PERTUSSIS;
-import static de.symeda.sormas.api.Disease.PLAGUE;
-import static de.symeda.sormas.api.Disease.PNEUMONIA;
-import static de.symeda.sormas.api.Disease.POLIO;
-import static de.symeda.sormas.api.Disease.POST_IMMUNIZATION_ADVERSE_EVENTS_MILD;
-import static de.symeda.sormas.api.Disease.POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE;
-import static de.symeda.sormas.api.Disease.RABIES;
-import static de.symeda.sormas.api.Disease.RESPIRATORY_SYNCYTIAL_VIRUS;
-import static de.symeda.sormas.api.Disease.RHINOVIRUS;
-import static de.symeda.sormas.api.Disease.RUBELLA;
-import static de.symeda.sormas.api.Disease.SCHISTOSOMIASIS;
-import static de.symeda.sormas.api.Disease.SNAKE_BITE;
-import static de.symeda.sormas.api.Disease.SOIL_TRANSMITTED_HELMINTHS;
-import static de.symeda.sormas.api.Disease.TRACHOMA;
-import static de.symeda.sormas.api.Disease.TRYPANOSOMIASIS;
-import static de.symeda.sormas.api.Disease.TUBERCULOSIS;
-import static de.symeda.sormas.api.Disease.TYPHOID_FEVER;
-import static de.symeda.sormas.api.Disease.UNDEFINED;
-import static de.symeda.sormas.api.Disease.UNSPECIFIED_VHF;
-import static de.symeda.sormas.api.Disease.WEST_NILE_FEVER;
-import static de.symeda.sormas.api.Disease.YAWS_ENDEMIC_SYPHILIS;
-import static de.symeda.sormas.api.Disease.YELLOW_FEVER;
+import static de.symeda.sormas.api.Disease.*;
 
 import java.util.Date;
 
@@ -90,6 +27,7 @@ import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.ImportIgnore;
+import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.Complication;
@@ -323,6 +261,14 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String OTHER_MINOR_SITE_DETAILS = "otherMinorSiteDetails";
 	public static final String DATE_OF_ONSET_KNOWN = "dateOfOnsetKnown";
 	public static final String CLINICAL_PRESENTATION_STATUS = "clinicalPresentationStatus";
+	public static final String BABY_NORMAL_AT_BIRTH = "babyNormalAtBirth";
+	public static final String AGE_AT_DEATH_DAYS = "ageAtDeathDays";
+	public static final String AGE_AT_ONSET_DAYS = "ageAtOnsetDays";
+	public static final String STOPPED_SUCKING_AFTER_TWO_DAYS = "stoppedSuckingAfterTwoDays";
+	public static final String NORMAL_CRY_AND_SUCK = "normalCryAndSuck";
+	public static final String STIFFNESS = "stiffness";
+	public static final String OUTCOME = "outcome";
+	public static final String BABY_DIED = "babyDied";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -331,7 +277,6 @@ public class SymptomsDto extends PseudonymizableDto {
 		symptoms.setUuid(DataHelper.createUuid());
 		return symptoms;
 	}
-
 	@Diseases({
 		AFP,
 		EVD,
@@ -2356,6 +2301,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		PLAGUE,
 		ANTHRAX,
 		CORONAVIRUS,
+		NEONATAL_TETANUS,
 		UNDEFINED,
 		OTHER })
 	@Complication
@@ -2582,6 +2528,58 @@ public class SymptomsDto extends PseudonymizableDto {
 	private String otherMinorSiteDetails;
 	private YesNoUnknown dateOfOnsetKnown;
 	private ClinicalPresentationStatus clinicalPresentationStatus;
+
+	@Diseases({
+			NEONATAL_TETANUS
+	})
+	@Outbreaks
+	@SymptomGrouping(SymptomGroup.GENERAL)
+	private SymptomState babyNormalAtBirth;
+
+	@DependantOn(BABY_DIED)
+	@SymptomGrouping(SymptomGroup.GENERAL)
+	@HideForCountries
+	private Integer ageAtDeathDays;
+
+	@DependantOn(BABY_DIED)
+	@SymptomGrouping(SymptomGroup.GENERAL)
+	@HideForCountries
+	private Integer ageAtOnsetDays;
+
+	@Diseases({
+			NEONATAL_TETANUS
+	})
+	@Outbreaks
+	@SymptomGrouping(SymptomGroup.GENERAL)
+	private SymptomState stoppedSuckingAfterTwoDays;
+
+	@Diseases({
+			NEONATAL_TETANUS
+	})
+	@Outbreaks
+	@SymptomGrouping(SymptomGroup.GENERAL)
+	private SymptomState normalCryAndSuck;
+
+	@Diseases({
+			NEONATAL_TETANUS
+	})
+	@Outbreaks
+	@SymptomGrouping(SymptomGroup.GENERAL)
+	private SymptomState stiffness;
+
+	@Diseases({
+			NEONATAL_TETANUS
+	})
+	@Outbreaks
+	private CaseOutcome outcome;
+
+	@Diseases({
+			NEONATAL_TETANUS
+	})
+	@Outbreaks
+	@SymptomGrouping(SymptomGroup.GENERAL)
+	@HideForCountries
+	private SymptomState babyDied;
 
 	@Order(0)
 	public Float getTemperature() {
@@ -4348,5 +4346,69 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	public void setNocturnalCough(SymptomState nocturnalCough) {
 		this.nocturnalCough = nocturnalCough;
+	}
+
+	public SymptomState getBabyNormalAtBirth() {
+		return babyNormalAtBirth;
+	}
+
+	public void setBabyNormalAtBirth(SymptomState babyNormalAtBirth) {
+		this.babyNormalAtBirth = babyNormalAtBirth;
+	}
+
+	public Integer getAgeAtDeathDays() {
+		return ageAtDeathDays;
+	}
+
+	public void setAgeAtDeathDays(Integer ageAtDeathDays) {
+		this.ageAtDeathDays = ageAtDeathDays;
+	}
+
+	public Integer getAgeAtOnsetDays() {
+		return ageAtOnsetDays;
+	}
+
+	public void setAgeAtOnsetDays(Integer ageAtOnsetDays) {
+		this.ageAtOnsetDays = ageAtOnsetDays;
+	}
+
+	public SymptomState getStoppedSuckingAfterTwoDays() {
+		return stoppedSuckingAfterTwoDays;
+	}
+
+	public void setStoppedSuckingAfterTwoDays(SymptomState stoppedSuckingAfterTwoDays) {
+		this.stoppedSuckingAfterTwoDays = stoppedSuckingAfterTwoDays;
+	}
+
+	public SymptomState getNormalCryAndSuck() {
+		return normalCryAndSuck;
+	}
+
+	public void setNormalCryAndSuck(SymptomState normalCryAndSuck) {
+		this.normalCryAndSuck = normalCryAndSuck;
+	}
+
+	public SymptomState getStiffness() {
+		return stiffness;
+	}
+
+	public void setStiffness(SymptomState stiffness) {
+		this.stiffness = stiffness;
+	}
+
+	public CaseOutcome getOutcome() {
+		return outcome;
+	}
+
+	public void setOutcome(CaseOutcome outcome) {
+		this.outcome = outcome;
+	}
+
+	public SymptomState getBabyDied() {
+		return babyDied;
+	}
+
+	public void setBabyDied(SymptomState babyDied) {
+		this.babyDied = babyDied;
 	}
 }

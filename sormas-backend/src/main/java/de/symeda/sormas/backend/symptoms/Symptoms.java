@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.symptoms;
 
+import static de.symeda.sormas.api.Disease.NEONATAL_TETANUS;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.Date;
@@ -28,13 +29,14 @@ import javax.persistence.Enumerated;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.symptoms.ClinicalPresentationStatus;
 import de.symeda.sormas.api.symptoms.CongenitalHeartDiseaseType;
 import de.symeda.sormas.api.symptoms.DiagnosisType;
 import de.symeda.sormas.api.symptoms.InfectionSite;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
-import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.*;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 @Entity
@@ -260,6 +262,14 @@ public class Symptoms extends AbstractDomainObject {
 	private String otherMinorSiteDetails;
 	private YesNoUnknown dateOfOnsetKnown;
 	private ClinicalPresentationStatus clinicalPresentationStatus;
+	private SymptomState babyNormalAtBirth;
+	private Integer ageAtDeathDays;
+	private Integer ageAtOnsetDays;
+	private SymptomState stoppedSuckingAfterTwoDays;
+	private SymptomState normalCryAndSuck;
+	private SymptomState stiffness;
+	private CaseOutcome outcome;
+	private SymptomState babyDied;
 
 	// when adding new fields make sure to extend toHumanString
 
@@ -2021,6 +2031,70 @@ public class Symptoms extends AbstractDomainObject {
 	@Enumerated(EnumType.STRING)
 	public SymptomState getNocturnalCough() {
 		return nocturnalCough;
+	}
+	@Enumerated(EnumType.STRING)
+	public SymptomState getBabyNormalAtBirth() {
+		return babyNormalAtBirth;
+	}
+
+	public void setBabyNormalAtBirth(SymptomState babyNormalAtBirth) {
+		this.babyNormalAtBirth = babyNormalAtBirth;
+	}
+
+	public Integer getAgeAtDeathDays() {
+		return ageAtDeathDays;
+	}
+
+	public void setAgeAtDeathDays(Integer ageAtDeathDays) {
+		this.ageAtDeathDays = ageAtDeathDays;
+	}
+
+	public Integer getAgeAtOnsetDays() {
+		return ageAtOnsetDays;
+	}
+
+	public void setAgeAtOnsetDays(Integer ageAtOnsetDays) {
+		this.ageAtOnsetDays = ageAtOnsetDays;
+	}
+	@Enumerated(EnumType.STRING)
+	public SymptomState getStoppedSuckingAfterTwoDays() {
+		return stoppedSuckingAfterTwoDays;
+	}
+
+	public void setStoppedSuckingAfterTwoDays(SymptomState stoppedSuckingAfterTwoDays) {
+		this.stoppedSuckingAfterTwoDays = stoppedSuckingAfterTwoDays;
+	}
+	@Enumerated(EnumType.STRING)
+	public SymptomState getNormalCryAndSuck() {
+		return normalCryAndSuck;
+	}
+
+	public void setNormalCryAndSuck(SymptomState normalCryAndSuck) {
+		this.normalCryAndSuck = normalCryAndSuck;
+	}
+	@Enumerated(EnumType.STRING)
+	public SymptomState getStiffness() {
+		return stiffness;
+	}
+
+	public void setStiffness(SymptomState stiffness) {
+		this.stiffness = stiffness;
+	}
+	@Enumerated(EnumType.STRING)
+	public CaseOutcome getOutcome() {
+		return outcome;
+	}
+
+	public void setOutcome(CaseOutcome outcome) {
+		this.outcome = outcome;
+	}
+	@Enumerated(EnumType.STRING)
+	public SymptomState getBabyDied() {
+		return babyDied;
+	}
+
+	public void setBabyDied(SymptomState babyDied) {
+		this.babyDied = babyDied;
 	}
 
 	public void setNocturnalCough(SymptomState nocturnalCough) {
