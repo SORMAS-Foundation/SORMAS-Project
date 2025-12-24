@@ -23,7 +23,6 @@ import android.database.SQLException;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.Menu;
-
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -155,7 +154,7 @@ public class PathogenTestEditActivity extends BaseEditActivity<PathogenTest> {
 				if (taskResult.getResultStatus().isSuccess()) {
 					Sample sampleOfPathogenTestToSave = pathogenTestToSave.getSample();
 					if (sampleOfPathogenTestToSave != null
-						&& Boolean.TRUE == pathogenTestToSave.getTestResultVerified()
+						&& Boolean.TRUE.equals(pathogenTestToSave.getTestResultVerified())
 						&& pathogenTestToSave.getTestedDisease() == associatedCase.getDisease()
 						&& pathogenTestToSave.getTestResult() != sampleOfPathogenTestToSave.getPathogenTestResult()) {
 						final ConfirmationDialog confirmationDialog = new ConfirmationDialog(
