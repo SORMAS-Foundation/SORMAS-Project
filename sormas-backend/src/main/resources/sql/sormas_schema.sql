@@ -15062,4 +15062,10 @@ ALTER TABLE testreport_history ADD COLUMN serotype character varying(255);
 ALTER TABLE testreport_history ADD COLUMN straincallstatus character varying(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (602, 'External message additional fields');
+
+-- 2025-12-18 Make testResultVerified optional in pathogentest #13557
+ALTER TABLE pathogentest ALTER COLUMN testresultverified DROP NOT NULL;
+ALTER TABLE pathogentest_history ALTER COLUMN testresultverified DROP NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (603, 'Make testResultVerified optional in pathogentest #13557');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
