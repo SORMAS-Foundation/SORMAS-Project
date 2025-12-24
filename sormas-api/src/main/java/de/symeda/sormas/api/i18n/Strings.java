@@ -725,6 +725,7 @@ public interface Strings {
 	String headingInfrastructureLocked = "headingInfrastructureLocked";
 	String headingIntroduction = "headingIntroduction";
 	String headingInvalidDateEntered = "headingInvalidDateEntered";
+	String headingInvestigatingOfficer = "headingInvestigatingOfficer";
 	String headingLabMessageCorrectionThrough = "headingLabMessageCorrectionThrough";
 	String headingLaboratoryEnvironmentSample = "headingLaboratoryEnvironmentSample";
 	String headingLaboratorySample = "headingLaboratorySample";

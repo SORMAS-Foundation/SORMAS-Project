@@ -290,6 +290,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 
 		if (caze.getDisease() == Disease.NEONATAL_TETANUS) {
 			hideAllFields();
+			previousHospitalizationsHeadingLabel.setVisible(false);
 			setVisible(true, HospitalizationDto.HOSPITAL_RECORD_NUMBER,  HospitalizationDto.SELECT_INPATIENT_OUTPATIENT,HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY, HospitalizationDto.ADMISSION_DATE, HEALTH_FACILITY);
 		}
 	}

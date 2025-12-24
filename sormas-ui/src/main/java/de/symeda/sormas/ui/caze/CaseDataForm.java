@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 
 import com.vaadin.v7.data.validator.RegexpValidator;
 import de.symeda.sormas.api.caze.*;
+import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -163,6 +164,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	public static final String DIAGNOSIS_CRITERIA_HEADING_LOC = "diagnosisCriteriaHeadingLoc";
 	public static final String DIAGNOSIS_CRITERIA_LAB_TEST_PANEL_LOC = "diagnosisCriteriaLoc";
 	private static final String NOTIFY_INVESTIGATE = "notifyInvestigateLoc";
+	private static final String INVESTIGATING_OFFICER_INFO = "investigatingOfficerInfoLoc";
 
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT =
@@ -260,7 +262,13 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(CaseDataDto.NOTIFYING_CLINIC, CaseDataDto.NOTIFYING_CLINIC_DETAILS) +
 					fluidRowLocs(CaseDataDto.CLINICIAN_PHONE, CaseDataDto.CLINICIAN_EMAIL) +
 					loc(CONTACT_TRACING_FIRST_CONTACT_HEADER_LOC) +
-					fluidRowLocs(CaseDataDto.CONTACT_TRACING_FIRST_CONTACT_TYPE, CaseDataDto.CONTACT_TRACING_FIRST_CONTACT_DATE);
+					fluidRowLocs(CaseDataDto.CONTACT_TRACING_FIRST_CONTACT_TYPE, CaseDataDto.CONTACT_TRACING_FIRST_CONTACT_DATE) +
+					fluidRowLocs(6, CaseDataDto.MOTHER_GIVEN_PROTECTIVE_DOSE_TT, 3, CaseDataDto.MOTHER_GIVEN_PROTECTIVE_DOSE_TT_DATE, 3, CaseDataDto.SUPPLEMENTAL_IMMUNIZATION) +
+					fluidRowLocs(CaseDataDto.SUPPLEMENTAL_IMMUNIZATION_DETAILS) +
+					loc(INVESTIGATING_OFFICER_INFO) +
+					locCss(VSPACE_TOP_3, CaseDataDto.INVESTIGATOR_NAME) +
+					fluidRowLocs(CaseDataDto.INVESTIGATOR_TITLE, CaseDataDto.INVESTIGATOR_UNIT) +
+					fluidRowLocs(CaseDataDto.INVESTIGATOR_ADDRESS, CaseDataDto.INVESTIGATOR_TEL);
 
 	private static final String FOLLOWUP_LAYOUT =
 			loc(FOLLOW_UP_STATUS_HEADING_LOC) +
@@ -323,6 +331,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private DateField motherTTDateFour;
 	private DateField motherTTDateFive;
 	private DateField motherLastDoseDate;
+	private NullableOptionGroup motherGivenProtectiveDoseTT;
+	private DateField motherGivenProtectiveDoseTTDate;
+	private NullableOptionGroup supplementalImmunizationField;
+	private TextArea supplementalImmunizationDetails;
+	private Label headingInvestigatingOfficerLabel;
 
 	public CaseDataForm(
 		String caseUuid,
@@ -397,6 +410,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		Label caseNotifyInvestigateLabel = new Label(I18nProperties.getString(Strings.notifyInvestigate));
 		caseNotifyInvestigateLabel.addStyleName(H3);
 		getContent().addComponent(caseNotifyInvestigateLabel, NOTIFY_INVESTIGATE_HEADING_LOC);
+
+		headingInvestigatingOfficerLabel = new Label(I18nProperties.getString(Strings.headingInvestigatingOfficer));
+		headingInvestigatingOfficerLabel.addStyleName(H3);
+		getContent().addComponent(headingInvestigatingOfficerLabel, INVESTIGATING_OFFICER_INFO);
+		headingInvestigatingOfficerLabel.setVisible(false);
 
 		if (caseFollowUpEnabled) {
 			Label followUpStatusHeadingLabel = new Label(I18nProperties.getString(Strings.headingFollowUpStatus));
@@ -494,6 +512,29 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.RABIES_TYPE, NullableOptionGroup.class);
 
 		addField(CaseDataDto.CASE_ORIGIN, TextField.class);
+		addField(CaseDataDto.INVESTIGATOR_NAME, TextField.class);
+		addField(CaseDataDto.INVESTIGATOR_TITLE, TextField.class);
+		addField(CaseDataDto.INVESTIGATOR_UNIT, TextField.class);
+		addField(CaseDataDto.INVESTIGATOR_ADDRESS, TextField.class);
+
+		motherGivenProtectiveDoseTT = addField(CaseDataDto.MOTHER_GIVEN_PROTECTIVE_DOSE_TT, NullableOptionGroup.class);
+		motherGivenProtectiveDoseTTDate = addField(CaseDataDto.MOTHER_GIVEN_PROTECTIVE_DOSE_TT_DATE, DateField.class);
+		supplementalImmunizationField = addField(CaseDataDto.SUPPLEMENTAL_IMMUNIZATION, NullableOptionGroup.class);
+		supplementalImmunizationDetails = addField(CaseDataDto.SUPPLEMENTAL_IMMUNIZATION_DETAILS, TextArea.class);
+
+		FieldHelper.setVisibleWhen(
+				motherGivenProtectiveDoseTT,
+				Arrays.asList(motherGivenProtectiveDoseTTDate),
+				Arrays.asList(YesNoUnknown.YES),
+				true
+		);
+
+		FieldHelper.setVisibleWhen(
+				supplementalImmunizationField,
+				Arrays.asList(supplementalImmunizationDetails),
+				Arrays.asList(YesNoUnknown.YES),
+				true
+		);
 
 		quarantine = addField(CaseDataDto.QUARANTINE);
 		quarantine.addValueChangeListener(e -> onValueChange());
@@ -1488,10 +1529,19 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 						CaseDataDto.HEALTH_FACILITY_DETAILS,
 						CaseDataDto.NOTIFIED_BY,
 						CaseDataDto.DATE_OF_NOTIFICATION,
-						CaseDataDto.DATE_OF_INVESTIGATION
+						CaseDataDto.DATE_OF_INVESTIGATION,
+						CaseDataDto.INVESTIGATOR_NAME,
+						CaseDataDto.INVESTIGATOR_TITLE,
+						CaseDataDto.INVESTIGATOR_UNIT,
+						CaseDataDto.INVESTIGATOR_ADDRESS,
+						CaseDataDto.MOTHER_GIVEN_PROTECTIVE_DOSE_TT,
+						CaseDataDto.MOTHER_GIVEN_PROTECTIVE_DOSE_TT_DATE,
+						CaseDataDto.SUPPLEMENTAL_IMMUNIZATION,
+						CaseDataDto.SUPPLEMENTAL_IMMUNIZATION_DETAILS
 				);
 
 				medicalInformationCaptionLabel.setVisible(false);
+				headingInvestigatingOfficerLabel.setVisible(true);
 
 				if (motherVaccinatedWithTT == null) {
 					motherVaccinatedWithTT = addField(CaseDataDto.MOTHER_VACCINATED_WITH_TT, NullableOptionGroup.class);

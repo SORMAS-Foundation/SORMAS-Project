@@ -449,6 +449,15 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	private Date motherTTDateFour;
 	private Date motherTTDateFive;
 	private Date motherLastDoseDate;
+	private String investigatorName;
+	private String investigatorTitle;
+	private String investigatorUnit;
+	private String investigatorAddress;
+	private String investigatorTel;
+	private YesNoUnknown motherGivenProtectiveDoseTT;
+	private Date motherGivenProtectiveDoseTTDate;
+	private YesNoUnknown supplementalImmunization;
+	private String supplementalImmunizationDetails;
 
     public static Case build() {
 		Case caze = new Case();
@@ -2011,5 +2020,77 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 
 	public void setMotherLastDoseDate(Date motherLastDoseDate) {
 		this.motherLastDoseDate = motherLastDoseDate;
+	}
+
+	public String getInvestigatorName() {
+		return investigatorName;
+	}
+
+	public void setInvestigatorName(String investigatorName) {
+		this.investigatorName = investigatorName;
+	}
+
+	public String getInvestigatorTitle() {
+		return investigatorTitle;
+	}
+
+	public void setInvestigatorTitle(String investigatorTitle) {
+		this.investigatorTitle = investigatorTitle;
+	}
+
+	public String getInvestigatorUnit() {
+		return investigatorUnit;
+	}
+
+	public void setInvestigatorUnit(String investigatorUnit) {
+		this.investigatorUnit = investigatorUnit;
+	}
+
+	public String getInvestigatorAddress() {
+		return investigatorAddress;
+	}
+
+	public void setInvestigatorAddress(String investigatorAddress) {
+		this.investigatorAddress = investigatorAddress;
+	}
+
+	public String getInvestigatorTel() {
+		return investigatorTel;
+	}
+
+	public void setInvestigatorTel(String investigatorTel) {
+		this.investigatorTel = investigatorTel;
+	}
+
+	public YesNoUnknown getMotherGivenProtectiveDoseTT() {
+		return motherGivenProtectiveDoseTT;
+	}
+
+	public void setMotherGivenProtectiveDoseTT(YesNoUnknown motherGivenProtectiveDoseTT) {
+		this.motherGivenProtectiveDoseTT = motherGivenProtectiveDoseTT;
+	}
+
+	public Date getMotherGivenProtectiveDoseTTDate() {
+		return motherGivenProtectiveDoseTTDate;
+	}
+
+	public void setMotherGivenProtectiveDoseTTDate(Date motherGivenProtectiveDoseTTDate) {
+		this.motherGivenProtectiveDoseTTDate = motherGivenProtectiveDoseTTDate;
+	}
+
+	public YesNoUnknown getSupplementalImmunization() {
+		return supplementalImmunization;
+	}
+
+	public void setSupplementalImmunization(YesNoUnknown supplementalImmunization) {
+		this.supplementalImmunization = supplementalImmunization;
+	}
+
+	public String getSupplementalImmunizationDetails() {
+		return supplementalImmunizationDetails;
+	}
+
+	public void setSupplementalImmunizationDetails(String supplementalImmunizationDetails) {
+		this.supplementalImmunizationDetails = supplementalImmunizationDetails;
 	}
 }

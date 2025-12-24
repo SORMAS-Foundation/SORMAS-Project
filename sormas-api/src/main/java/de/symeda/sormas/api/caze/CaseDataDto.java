@@ -254,6 +254,15 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	public static final String MOTHER_TT_DATE_FOUR = "motherTTDateFour";
 	public static final String MOTHER_TT_DATE_FIVE = "motherTTDateFive";
 	public static final String MOTHER_LAST_DOSE_DATE = "motherLastDoseDate";
+	public static final String INVESTIGATOR_NAME = "investigatorName";
+	public static final String INVESTIGATOR_TITLE = "investigatorTitle";
+	public static final String INVESTIGATOR_UNIT = "investigatorUnit";
+	public static final String INVESTIGATOR_ADDRESS = "investigatorAddress";
+	public static final String INVESTIGATOR_TEL = "investigatorTel";
+	public static final String MOTHER_GIVEN_PROTECTIVE_DOSE_TT = "motherGivenProtectiveDoseTT";
+	public static final String MOTHER_GIVEN_PROTECTIVE_DOSE_TT_DATE = "motherGivenProtectiveDoseTTDate";
+	public static final String SUPPLEMENTAL_IMMUNIZATION = "supplementalImmunization";
+	public static final String SUPPLEMENTAL_IMMUNIZATION_DETAILS = "supplementalImmunizationDetails";
 
 
     // Fields are declared in the order they should appear in the import template
@@ -691,17 +700,64 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	@Diseases({
 			Disease.NEONATAL_TETANUS})
 	private String nationality;
-
+	@Diseases({
+			Disease.NEONATAL_TETANUS})
 	private YesNoUnknown motherVaccinatedWithTT;
+	@Diseases({
+			Disease.NEONATAL_TETANUS})
 	private YesNoUnknown motherHaveCard;
+	@Diseases({
+			Disease.NEONATAL_TETANUS})
 	private String motherNumberOfDoses;
+	@Diseases({
+			Disease.NEONATAL_TETANUS})
 	private MotherVaccinationStatus motherVaccinationStatus;
+	@Diseases({
+			Disease.NEONATAL_TETANUS})
 	private Date motherTTDateOne;
+	@Diseases({
+			Disease.NEONATAL_TETANUS})
 	private Date motherTTDateTwo;
+	@Diseases({
+			Disease.NEONATAL_TETANUS})
 	private Date motherTTDateThree;
+	@Diseases({
+			Disease.NEONATAL_TETANUS})
 	private Date motherTTDateFour;
+	@Diseases({
+			Disease.NEONATAL_TETANUS})
 	private Date motherTTDateFive;
+	@Diseases({
+			Disease.NEONATAL_TETANUS})
 	private Date motherLastDoseDate;
+	@Diseases({
+			Disease.NEONATAL_TETANUS})
+	private String investigatorName;
+	@Diseases({
+			Disease.NEONATAL_TETANUS})
+	private String investigatorTitle;
+	@Diseases({
+			Disease.NEONATAL_TETANUS})
+	private String investigatorUnit;
+	@Diseases({
+			Disease.NEONATAL_TETANUS})
+	private String investigatorAddress;
+	@Diseases({
+			Disease.NEONATAL_TETANUS})
+	private String investigatorTel;
+	@Diseases({
+			Disease.NEONATAL_TETANUS})
+	private YesNoUnknown motherGivenProtectiveDoseTT;
+	@Diseases({
+			Disease.NEONATAL_TETANUS})
+	private Date motherGivenProtectiveDoseTTDate;
+	@Diseases({
+			Disease.NEONATAL_TETANUS})
+	private YesNoUnknown supplementalImmunization;
+	@Diseases({
+			Disease.NEONATAL_TETANUS})
+	@Size(max = CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	private String supplementalImmunizationDetails;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		return build(person, disease, HealthConditionsDto.build());
@@ -2037,6 +2093,78 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	}
 	public void setMotherLastDoseDate(Date motherLastDoseDate) {
 		this.motherLastDoseDate = motherLastDoseDate;
+	}
+
+	public String getInvestigatorName() {
+		return investigatorName;
+	}
+
+	public void setInvestigatorName(String investigatorName) {
+		this.investigatorName = investigatorName;
+	}
+
+	public String getInvestigatorTitle() {
+		return investigatorTitle;
+	}
+
+	public void setInvestigatorTitle(String investigatorTitle) {
+		this.investigatorTitle = investigatorTitle;
+	}
+
+	public String getInvestigatorUnit() {
+		return investigatorUnit;
+	}
+
+	public void setInvestigatorUnit(String investigatorUnit) {
+		this.investigatorUnit = investigatorUnit;
+	}
+
+	public String getInvestigatorAddress() {
+		return investigatorAddress;
+	}
+
+	public void setInvestigatorAddress(String investigatorAddress) {
+		this.investigatorAddress = investigatorAddress;
+	}
+
+	public String getInvestigatorTel() {
+		return investigatorTel;
+	}
+
+	public void setInvestigatorTel(String investigatorTel) {
+		this.investigatorTel = investigatorTel;
+	}
+
+	public YesNoUnknown getMotherGivenProtectiveDoseTT() {
+		return motherGivenProtectiveDoseTT;
+	}
+
+	public void setMotherGivenProtectiveDoseTT(YesNoUnknown motherGivenProtectiveDoseTT) {
+		this.motherGivenProtectiveDoseTT = motherGivenProtectiveDoseTT;
+	}
+
+	public Date getMotherGivenProtectiveDoseTTDate() {
+		return motherGivenProtectiveDoseTTDate;
+	}
+
+	public void setMotherGivenProtectiveDoseTTDate(Date motherGivenProtectiveDoseTTDate) {
+		this.motherGivenProtectiveDoseTTDate = motherGivenProtectiveDoseTTDate;
+	}
+
+	public YesNoUnknown getSupplementalImmunization() {
+		return supplementalImmunization;
+	}
+
+	public void setSupplementalImmunization(YesNoUnknown supplementalImmunization) {
+		this.supplementalImmunization = supplementalImmunization;
+	}
+
+	public String getSupplementalImmunizationDetails() {
+		return supplementalImmunizationDetails;
+	}
+
+	public void setSupplementalImmunizationDetails(String supplementalImmunizationDetails) {
+		this.supplementalImmunizationDetails = supplementalImmunizationDetails;
 	}
 
     @JsonIgnore

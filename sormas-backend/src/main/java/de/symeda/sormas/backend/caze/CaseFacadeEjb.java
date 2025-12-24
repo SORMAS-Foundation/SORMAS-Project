@@ -3229,6 +3229,15 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setMotherTTDateFour(source.getMotherTTDateFour());
 		target.setMotherTTDateFive(source.getMotherTTDateFive());
 		target.setMotherLastDoseDate(source.getMotherLastDoseDate());
+		target.setInvestigatorName(source.getInvestigatorName());
+		target.setInvestigatorTitle(source.getInvestigatorTitle());
+		target.setInvestigatorUnit(source.getInvestigatorUnit());
+		target.setInvestigatorAddress(source.getInvestigatorAddress());
+		target.setInvestigatorTel(source.getInvestigatorTel());
+		target.setMotherGivenProtectiveDoseTT(source.getMotherGivenProtectiveDoseTT());
+		target.setMotherGivenProtectiveDoseTTDate(source.getMotherGivenProtectiveDoseTTDate());
+		target.setSupplementalImmunization(source.getSupplementalImmunization());
+		target.setSupplementalImmunizationDetails(source.getSupplementalImmunizationDetails());
 
 		return target;
 	}
@@ -3460,6 +3469,15 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setMotherTTDateFour(source.getMotherTTDateFour());
 		target.setMotherTTDateFive(source.getMotherTTDateFive());
 		target.setMotherLastDoseDate(source.getMotherLastDoseDate());
+		target.setInvestigatorName(source.getInvestigatorName());
+		target.setInvestigatorTitle(source.getInvestigatorTitle());
+		target.setInvestigatorUnit(source.getInvestigatorUnit());
+		target.setInvestigatorAddress(source.getInvestigatorAddress());
+		target.setInvestigatorTel(source.getInvestigatorTel());
+		target.setMotherGivenProtectiveDoseTT(source.getMotherGivenProtectiveDoseTT());
+		target.setMotherGivenProtectiveDoseTTDate(source.getMotherGivenProtectiveDoseTTDate());
+		target.setSupplementalImmunization(source.getSupplementalImmunization());
+		target.setSupplementalImmunizationDetails(source.getSupplementalImmunizationDetails());
         return target;
 	}
 

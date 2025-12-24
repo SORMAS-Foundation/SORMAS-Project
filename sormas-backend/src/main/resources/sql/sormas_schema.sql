@@ -14520,6 +14520,15 @@ INSERT INTO schema_version (version_number, comment) VALUES (588, 'Added columns
 
 ALTER TABLE hospitalization ADD COLUMN hospitalrecordnumber varchar(255);
 ALTER TABLE hospitalization ADD COLUMN selectinpatientoutpatient varchar(255);
+ALTER TABLE cases ADD COLUMN investigatorname varchar(255);
+ALTER TABLE cases ADD COLUMN investigatortitle varchar(255);
+ALTER TABLE cases ADD COLUMN investigatorunit varchar(255);
+ALTER TABLE cases ADD COLUMN investigatoraddress varchar(255);
+ALTER TABLE cases ADD COLUMN investigatortel varchar(255);
+ALTER TABLE cases ADD COLUMN mothergivenprotectivedosett varchar(255);
+ALTER TABLE cases ADD COLUMN mothergivenprotectivedosettdate date;
+ALTER TABLE cases ADD COLUMN supplementalimmunization varchar(255);
+ALTER TABLE cases ADD COLUMN supplementalimmunizationdetails varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (589, 'Added columns to symptoms to implement hospitalization and case data for NNT');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

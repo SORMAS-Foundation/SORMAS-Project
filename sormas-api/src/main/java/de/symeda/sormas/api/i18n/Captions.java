@@ -748,6 +748,15 @@ public interface Captions {
 	String CaseData_division = "CaseData.division";
 	String CaseData_compoundOwner = "CaseData.compoundOwner";
 	String CaseData_nationality = "CaseData.nationality";
+	String CaseData_motherGivenProtectiveDoseTT = "CaseData.motherGivenProtectiveDoseTT";
+	String CaseData_motherGivenProtectiveDoseTTDate = "CaseData.motherGivenProtectiveDoseTTDate";
+	String CaseData_supplementalImmunization = "CaseData.supplementalImmunization";
+	String CaseData_supplementalImmunizationDetails = "CaseData.supplementalImmunizationDetails";
+	String CaseData_investigatorName = "CaseData.investigatorName";
+	String CaseData_investigatorTitle = "CaseData.investigatorTitle";
+	String CaseData_investigatorAddress = "CaseData.investigatorAddress";
+	String CaseData_investigatorTel = "CaseData.investigatorTel";
+	String CaseData_investigatorUnit = "CaseData.investigatorUnit";
 	String CaseData_outcome = "CaseData.outcome";
 	String CaseData_outcomeDate = "CaseData.outcomeDate";
 	String CaseData_overwriteFollowUpUntil = "CaseData.overwriteFollowUpUntil";
