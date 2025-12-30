@@ -812,7 +812,7 @@ public class SynchronizationDialog extends AbstractDialog {
 		
 		// FormField must be before FormBuilder (dependency)
 		// Note: entityFormFields and entityFormBuilders will be available after regenerating Strings interface
-		allowedEntities.add("entityFormFields");
+		allowedEntities.add(Strings.entityFormFields);
 		allowedEntities.add("entityFormBuilders");
 
 		if (forDeletion) {
