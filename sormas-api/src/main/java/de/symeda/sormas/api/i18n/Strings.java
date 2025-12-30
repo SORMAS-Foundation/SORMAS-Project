@@ -275,6 +275,8 @@ public interface Strings {
 	String entityExternalMessages = "entityExternalMessages";
 	String entityFacilities = "entityFacilities";
 	String entityFeatureConfigurations = "entityFeatureConfigurations";
+	String entityFormBuilders = "entityFormBuilders";
+	String entityFormFields = "entityFormFields";
 	String entityGathering = "entityGathering";
 	String entityImmunization = "entityImmunization";
 	String entityImmunizations = "entityImmunizations";
