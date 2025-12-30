@@ -132,6 +132,8 @@ public final class RetroProvider {
 	private AggregateReportFacadeRetro aggregateReportFacadeRetro;
 	private EnvironmentFacadeRetro environmentFacadeRetro;
 	private EnvironmentSampleFacadeRetro environmentSampleFacadeRetro;
+	private FormBuilderFacadeRetro formBuilderFacadeRetro;
+	private FormFieldFacadeRetro formFieldFacadeRetro;
 
 	private RetroProvider(Context context) throws ServerConnectionException, ServerCommunicationException, ApiVersionException {
 
@@ -1011,6 +1013,32 @@ public final class RetroProvider {
 			}
 		}
 		return instance.environmentSampleFacadeRetro;
+	}
+
+	public static FormBuilderFacadeRetro getFormBuilderFacade() throws NoConnectionException {
+		if (instance == null)
+			throw new NoConnectionException();
+		if (instance.formBuilderFacadeRetro == null) {
+			synchronized ((RetroProvider.class)) {
+				if (instance.formBuilderFacadeRetro == null) {
+					instance.formBuilderFacadeRetro = instance.retrofit.create(FormBuilderFacadeRetro.class);
+				}
+			}
+		}
+		return instance.formBuilderFacadeRetro;
+	}
+
+	public static FormFieldFacadeRetro getFormFieldFacade() throws NoConnectionException {
+		if (instance == null)
+			throw new NoConnectionException();
+		if (instance.formFieldFacadeRetro == null) {
+			synchronized ((RetroProvider.class)) {
+				if (instance.formFieldFacadeRetro == null) {
+					instance.formFieldFacadeRetro = instance.retrofit.create(FormFieldFacadeRetro.class);
+				}
+			}
+		}
+		return instance.formFieldFacadeRetro;
 	}
 
 	public static void throwException(Response<?> response) throws ServerConnectionException, ServerCommunicationException {

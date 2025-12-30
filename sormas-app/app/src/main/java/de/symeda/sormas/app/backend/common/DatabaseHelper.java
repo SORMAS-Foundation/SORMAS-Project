@@ -108,6 +108,12 @@ import de.symeda.sormas.app.backend.exposure.ExposureDao;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.facility.FacilityDao;
 import de.symeda.sormas.app.backend.feature.FeatureConfiguration;
+import de.symeda.sormas.app.backend.formbuilder.FormBuilder;
+import de.symeda.sormas.app.backend.formbuilder.FormBuilderDao;
+import de.symeda.sormas.app.backend.formbuilder.FormBuilderFormField;
+import de.symeda.sormas.app.backend.formbuilder.FormBuilderFormFieldDao;
+import de.symeda.sormas.app.backend.formfield.FormField;
+import de.symeda.sormas.app.backend.formfield.FormFieldDao;
 import de.symeda.sormas.app.backend.feature.FeatureConfigurationDao;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.app.backend.hospitalization.HospitalizationDao;
@@ -190,7 +196,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 361;
+	public static final int DATABASE_VERSION = 363;
 
 	private static DatabaseHelper instance = null;
 
@@ -376,6 +382,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, LbdsSync.class);
 			TableUtils.createTable(connectionSource, Environment.class);
 			TableUtils.createTable(connectionSource, EnvironmentSample.class);
+			TableUtils.createTable(connectionSource, FormBuilder.class);
+			TableUtils.createTable(connectionSource, FormField.class);
+			TableUtils.createTable(connectionSource, FormBuilderFormField.class);
 		} catch (SQLException e) {
 			Log.e(DatabaseHelper.class.getName(), "Can't build database", e);
 			throw new RuntimeException(e);
@@ -3210,6 +3219,15 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN idsrdiagnosisdetails varchar(512);");
 				getDao(Immunization.class).executeRaw("ALTER TABLE immunization ADD COLUMN idsrdiagnosis varchar(255);");
 				getDao(Immunization.class).executeRaw("ALTER TABLE immunization ADD COLUMN idsrdiagnosisdetails varchar(512);");
+			case 361:
+				currentVersion = 361;
+				getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN idsrdiagnosis varchar(255);");
+				getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN idsrdiagnosisdetails varchar(512);");
+			case 362:
+				currentVersion = 362;
+				TableUtils.createTable(connectionSource, FormBuilder.class);
+				TableUtils.createTable(connectionSource, FormField.class);
+				TableUtils.createTable(connectionSource, FormBuilderFormField.class);
 
 				// ATTENTION: break should only be done after last version
 				break;
@@ -4148,6 +4166,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					dao = (AbstractAdoDao<ADO>) new EnvironmentDao((Dao<Environment, Long>) innerDao);
 				} else if (type.equals(EnvironmentSample.class)) {
 					dao = (AbstractAdoDao<ADO>) new EnvironmentSampleDao((Dao<EnvironmentSample, Long>) innerDao);
+				} else if (type.equals(FormField.class)) {
+					dao = (AbstractAdoDao<ADO>) new FormFieldDao((Dao<FormField, Long>) innerDao);
+				} else if (type.equals(FormBuilderFormField.class)) {
+					dao = (AbstractAdoDao<ADO>) new FormBuilderFormFieldDao((Dao<FormBuilderFormField, Long>) innerDao);
+				} else if (type.equals(FormBuilder.class)) {
+					dao = (AbstractAdoDao<ADO>) new FormBuilderDao((Dao<FormBuilder, Long>) innerDao, super.getDao(FormBuilderFormField.class));
 				} else {
 					throw new UnsupportedOperationException(type.toString());
 				}
@@ -4427,6 +4451,18 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	public static EnvironmentSampleDao getEnvironmentSampleDao() {
 		return (EnvironmentSampleDao) getAdoDao(EnvironmentSample.class);
+	}
+
+	public static FormBuilderDao getFormBuilderDao() {
+		return (FormBuilderDao) getAdoDao(FormBuilder.class);
+	}
+
+	public static FormFieldDao getFormFieldDao() {
+		return (FormFieldDao) getAdoDao(FormField.class);
+	}
+
+	public static FormBuilderFormFieldDao getFormBuilderFormFieldDao() {
+		return (FormBuilderFormFieldDao) getAdoDao(FormBuilderFormField.class);
 	}
 
 	/**
