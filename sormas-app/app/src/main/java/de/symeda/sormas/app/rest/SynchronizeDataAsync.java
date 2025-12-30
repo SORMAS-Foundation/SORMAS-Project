@@ -84,6 +84,8 @@ import de.symeda.sormas.app.backend.event.EventDtoHelper;
 import de.symeda.sormas.app.backend.event.EventParticipantDtoHelper;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
 import de.symeda.sormas.app.backend.feature.FeatureConfigurationDtoHelper;
+import de.symeda.sormas.app.backend.formbuilder.FormBuilderDtoHelper;
+import de.symeda.sormas.app.backend.formfield.FormFieldDtoHelper;
 import de.symeda.sormas.app.backend.immunization.Immunization;
 import de.symeda.sormas.app.backend.immunization.ImmunizationDtoHelper;
 import de.symeda.sormas.app.backend.infrastructure.InfrastructureHelper;
@@ -216,6 +218,19 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 				syncModeTrace.stop();
 				break;
+			case FormBuilder:
+				syncModeTrace = FirebasePerformance.getInstance().newTrace("syncModeFormBuilderTrace");
+				syncModeTrace.start();
+
+				syncCallbacks.ifPresent(c -> c.getUpdateStepNumberCallback().accept(1));
+				syncCallbacks.ifPresent(c ->
+						c.getUpdateSynchronizationStepCallback().accept(SynchronizationDialog.SynchronizationStep.SYNCHRONIZE_FORMS));
+
+				// Pull only form builder data
+				new FormBuilderDtoHelper().pullEntities(false, context, syncCallbacks);
+				new FormFieldDtoHelper().pullEntities(false, context, syncCallbacks);
+				syncModeTrace.stop();
+				break;
 			default:
 				throw new IllegalArgumentException(syncMode.toString());
 			}
@@ -330,6 +345,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		new PrescriptionDtoHelper().pushEntities(true, syncCallbacks);
 		new TreatmentDtoHelper().pushEntities(true, syncCallbacks);
 		new ClinicalVisitDtoHelper().pushEntities(true, syncCallbacks);
+		new FormFieldDtoHelper().pushEntities(true, syncCallbacks);
+		new FormBuilderDtoHelper().pushEntities(true, syncCallbacks);
 
 		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
 			new CampaignFormDataDtoHelper().pushEntities(true, syncCallbacks);
@@ -574,6 +591,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		new DiseaseConfigurationDtoHelper().repullEntities(context, syncCallbacks);
 		new CustomizableEnumValueDtoHelper().repullEntities(context, syncCallbacks);
 		new FeatureConfigurationDtoHelper().repullEntities(context, syncCallbacks);
+		new FormBuilderDtoHelper().repullEntities(context, syncCallbacks);
+		new FormFieldDtoHelper().repullEntities(context, syncCallbacks);
 		personDtoHelper.repullEntities(context, syncCallbacks);
 		caseDtoHelper.repullEntities(context, syncCallbacks);
 		immunizationDtoHelper.repullEntities(context, syncCallbacks);
@@ -653,6 +672,9 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		new DiseaseClassificationDtoHelper().pullEntities(false, context, syncCallbacks);
 		new DiseaseConfigurationDtoHelper().pullEntities(false, context, syncCallbacks);
 		new CustomizableEnumValueDtoHelper().pullEntities(false, context, syncCallbacks);
+		// FormField must be pulled before FormBuilder (dependency)
+		new FormFieldDtoHelper().pullEntities(false, context, syncCallbacks);
+		new FormBuilderDtoHelper().pullEntities(false, context, syncCallbacks);
 
 		// feature configurations may be removed, so have to pull the deleted uuids
 		// this may be applied to other entities later as well
@@ -663,7 +685,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		DatabaseHelper.getFeatureConfigurationDao().delete(featureConfigurationConfigUuids);
 
 		new FeatureConfigurationDtoHelper().pullEntities(false, context, syncCallbacks);
-
+		new FormFieldDtoHelper().pullEntities(false, context, syncCallbacks);
+		new FormBuilderDtoHelper().pullEntities(false, context, syncCallbacks);
 		ConfigProvider.setInitialSyncRequired(false);
 	}
 
@@ -1018,6 +1041,13 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		List<String> continentUuids = executeUuidCall(RetroProvider.getContinentFacade().pullUuids());
 		DatabaseHelper.getContinentDao().deleteInvalid(continentUuids, syncCallbacks);
 
+		//formFields
+		List<String> formFieldUuids = executeUuidCall(RetroProvider.getFormFieldFacade().pullUuids());
+		DatabaseHelper.getFormFieldDao().deleteInvalid(formFieldUuids, syncCallbacks);
+
+		List<String> formsUuids = executeUuidCall(RetroProvider.getFormBuilderFacade().pullUuids());
+		DatabaseHelper.getFormBuilderDao().deleteInvalid(formsUuids, syncCallbacks);
+
 		syncCallbacks.ifPresent(c -> c.getShowNextCleanupItemsCallback().run());
 
 		// order is important, due to dependencies
@@ -1035,6 +1065,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		new DiseaseConfigurationDtoHelper().pullMissing(diseaseConfigurationUuids, syncCallbacks);
 		new CustomizableEnumValueDtoHelper().pullMissing(customizableEnumValueUuids, syncCallbacks);
 		new FeatureConfigurationDtoHelper().pullMissing(featureConfigurationUuids, syncCallbacks);
+		new FormFieldDtoHelper().pullMissing(formFieldUuids, syncCallbacks);
+		new FormBuilderDtoHelper().pullMissing(formsUuids, syncCallbacks);
 	}
 
 	private List<String> executeUuidCall(Call<List<String>> call) throws ServerConnectionException, ServerCommunicationException {
@@ -1083,5 +1115,6 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		 * Use to handle conflict states resulting out of bugs.
 		 */
 		CompleteAndRepull,
+		FormBuilder
 	}
 }
