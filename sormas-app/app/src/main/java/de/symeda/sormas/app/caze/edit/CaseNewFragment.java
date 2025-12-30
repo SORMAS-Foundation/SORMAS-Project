@@ -24,6 +24,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FormType;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.IdsrType;
@@ -262,7 +263,11 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 				e.getValue() != null && ((CaseNewActivity) getActivity()).getLineListingDiseases().contains(e.getValue()) ? VISIBLE : GONE);
 			updateDiseaseVariantsField(contentBinding);
 			updatePresentConditionField(contentBinding);
-		});
+			Disease selectedDisease = (Disease) e.getValue();
+			if (selectedDisease != null) {
+				super.hideFieldsForDisease(selectedDisease, contentBinding.mainContent, FormType.CASE_CREATE);
+			}
+			});
 	}
 
 	@Override

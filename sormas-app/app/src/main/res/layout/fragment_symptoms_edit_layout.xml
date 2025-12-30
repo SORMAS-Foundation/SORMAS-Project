@@ -89,6 +89,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/activity_vertical_margin"
                 android:weightSum="2"
+                android:id="@+id/btns"
                 android:orientation="horizontal">
 
                 <de.symeda.sormas.app.component.controls.ControlButton
