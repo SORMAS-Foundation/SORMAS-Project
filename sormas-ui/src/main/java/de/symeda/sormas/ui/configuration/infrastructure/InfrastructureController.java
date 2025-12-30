@@ -38,6 +38,7 @@ import de.symeda.sormas.api.infrastructure.continent.ContinentDto;
 import de.symeda.sormas.api.infrastructure.country.CountryDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.forms.FormBuilderDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentDto;
@@ -503,5 +504,99 @@ public class InfrastructureController {
 				noEntriesRemainingCallback.run();
 			}
 		};
+	}
+
+	public void createFormField() {
+		CommitDiscardWrapperComponent<FormFieldsEditForm> createComponent = getFormFieldEditComponent(null);
+		VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateNewFormField));
+	}
+
+	public void editFormField(String uuid) {
+		de.symeda.sormas.api.infrastructure.fields.FormFieldsDto formField = FacadeProvider.getFormFieldFacade().getByUuid(uuid);
+		CommitDiscardWrapperComponent<FormFieldsEditForm> editComponent = getFormFieldEditComponent(formField);
+		String caption = I18nProperties.getString(Strings.edit);
+		VaadinUiUtil.showModalPopupWindow(editComponent, caption);
+	}
+
+	private CommitDiscardWrapperComponent<FormFieldsEditForm> getFormFieldEditComponent(de.symeda.sormas.api.infrastructure.fields.FormFieldsDto formField) {
+		boolean isNew = formField == null;
+		FormFieldsEditForm editForm = new FormFieldsEditForm(isNew);
+		if (isNew) {
+			formField = de.symeda.sormas.api.infrastructure.fields.FormFieldsDto.build();
+		}
+
+		editForm.setValue(formField);
+
+		final CommitDiscardWrapperComponent<FormFieldsEditForm> editView = new CommitDiscardWrapperComponent<FormFieldsEditForm>(
+			editForm,
+			UiUtil.permitted(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT),
+			editForm.getFieldGroup());
+
+		editView.addCommitListener(new CommitListener() {
+
+			@Override
+			public void onCommit() {
+				FacadeProvider.getFormFieldFacade().save(editForm.getValue());
+				Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
+				SormasUI.get().getNavigator().navigateTo(FormFieldsView.VIEW_NAME);
+			}
+		});
+
+		if (!isNew) {
+			extendEditComponentWithArchiveButton(
+				editView,
+				formField,
+				ArchiveHandlers.forInfrastructure(FacadeProvider.getFormFieldFacade(), ArchiveMessages.FACILITY),
+				() -> SormasUI.get().getNavigator().navigateTo(FormFieldsView.VIEW_NAME));
+		}
+
+		return editView;
+	}
+
+	public void createFormBuilder() {
+		CommitDiscardWrapperComponent<FormBuilderEditForm> createComponent = getFormBuilderEditComponent(null);
+		VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateNewFormBuilder));
+	}
+
+	public void editFormBuilder(String uuid) {
+		FormBuilderDto form = FacadeProvider.getFormBuilderFacade().getByUuid(uuid);
+		CommitDiscardWrapperComponent<FormBuilderEditForm> editComponent = getFormBuilderEditComponent(form);
+		String caption = I18nProperties.getString(Strings.edit);
+		VaadinUiUtil.showModalPopupWindow(editComponent, caption);
+	}
+
+	private CommitDiscardWrapperComponent<FormBuilderEditForm> getFormBuilderEditComponent(FormBuilderDto form) {
+		boolean isNew = form == null;
+		FormBuilderEditForm editForm = new FormBuilderEditForm(isNew);
+		if (isNew) {
+			form = FormBuilderDto.build();
+		}
+
+		editForm.setValue(form);
+
+		final CommitDiscardWrapperComponent<FormBuilderEditForm> editView = new CommitDiscardWrapperComponent<FormBuilderEditForm>(
+			editForm,
+			UiUtil.permitted(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT),
+			editForm.getFieldGroup());
+
+		editView.addCommitListener(new CommitListener() {
+
+			@Override
+			public void onCommit() {
+				FacadeProvider.getFormBuilderFacade().save(editForm.getValue());
+				Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
+				SormasUI.get().getNavigator().navigateTo(FormBuildersView.VIEW_NAME);
+			}
+		});
+
+		if (!isNew) {
+			extendEditComponentWithArchiveButton(
+				editView,
+				form,
+				ArchiveHandlers.forInfrastructure(FacadeProvider.getFormBuilderFacade(), ArchiveMessages.FACILITY),
+				() -> SormasUI.get().getNavigator().navigateTo(FormBuildersView.VIEW_NAME));
+		}
+
+		return editView;
 	}
 }

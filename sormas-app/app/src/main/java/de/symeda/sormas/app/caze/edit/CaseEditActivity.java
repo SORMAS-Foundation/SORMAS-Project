@@ -50,6 +50,7 @@ import de.symeda.sormas.app.backend.user.UserRole;
 import de.symeda.sormas.app.caze.CaseSection;
 import de.symeda.sormas.app.clinicalcourse.edit.ClinicalVisitNewActivity;
 import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
+import de.symeda.sormas.app.component.menu.DiseaseMenuCaptionHandler;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.contact.edit.ContactNewActivity;
@@ -72,6 +73,7 @@ import de.symeda.sormas.app.therapy.edit.TreatmentNewActivity;
 import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
+import de.symeda.sormas.app.util.DiseaseFieldHandler;
 
 public class CaseEditActivity extends BaseEditActivity<Case> {
 
@@ -106,6 +108,11 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 	public List<PageMenuItem> getPageMenuData() {
 		List<PageMenuItem> menuItems = PageMenuItem.fromEnum(CaseSection.values(), getContext());
 		Case caze = getStoredRootEntity();
+		Disease disease = caze != null ? caze.getDisease() : null;
+		if (disease != null) {
+			DiseaseFieldHandler.handleMenuDataForDisease(menuItems, disease);
+//			DiseaseMenuCaptionHandler.updateMenuCaptionsForDisease(menuItems, disease, getContext());
+		}
 		// Sections must be removed in reverse order
 		if (DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.TASK_MANAGEMENT)) {
 			menuItems.set(CaseSection.TASKS.ordinal(), null);

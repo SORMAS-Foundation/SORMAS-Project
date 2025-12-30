@@ -90,6 +90,7 @@ public class SettingsFragment extends BaseLandingFragment {
 		binding.settingsServerUrl.setValue(ConfigProvider.getServerRestUrl());
 		binding.changePin.setOnClickListener(v -> changePIN());
 		binding.resynchronizeData.setOnClickListener(v -> repullData());
+		binding.syncForms.setOnClickListener(v -> syncFormsOnly());
 		binding.showSyncLog.setOnClickListener(v -> openSyncLog());
 		binding.logout.setOnClickListener(v -> logout());
 		binding.kexLbds.setOnClickListener(v -> kexLbds());
@@ -158,6 +159,7 @@ public class SettingsFragment extends BaseLandingFragment {
 		binding.settingsServerUrl.setVisibility(!hasServerUrl() || isShowDevOptions() ? View.VISIBLE : View.GONE);
 		binding.changePin.setVisibility(hasUser ? View.VISIBLE : View.GONE);
 		binding.resynchronizeData.setVisibility(hasUser ? View.VISIBLE : View.GONE);
+		binding.syncForms.setVisibility(hasUser ? View.VISIBLE : View.GONE);
 		binding.showSyncLog.setVisibility(hasUser ? View.VISIBLE : View.GONE);
 		binding.logout.setVisibility(hasUser && isShowDevOptions() ? View.VISIBLE : View.GONE);
 		boolean showLbdsFeatures = isLbdsAppInstalled() && hasUser && isShowDevOptions();
@@ -186,6 +188,26 @@ public class SettingsFragment extends BaseLandingFragment {
 
 	private void repullData() {
 		checkAndShowUnsynchronizedChangesDialog(() -> showRepullDataConfirmationDialog(), "SYNC");
+	}
+
+	private void syncFormsOnly() {
+		showSyncFormsConfirmationDialog();
+	}
+
+	private void showSyncFormsConfirmationDialog() {
+		final ConfirmationDialog confirmationDialog =
+			new ConfirmationDialog(getActivity(), R.string.heading_confirmation_dialog, R.string.info_sync_forms_duration);
+
+		confirmationDialog.setPositiveCallback(() -> {
+			getBaseActivity().synchronizeData(SynchronizeDataAsync.SyncMode.FormBuilder, false, true, null, new Callback() {
+				@Override
+				public void call() {
+					// Sync completed
+				}
+			}, null);
+		});
+
+		confirmationDialog.show();
 	}
 
 	private void checkAndShowUnsynchronizedChangesDialog(Callback confirmedCallback, String wordToType) {

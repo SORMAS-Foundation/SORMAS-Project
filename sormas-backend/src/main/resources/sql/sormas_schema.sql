@@ -14459,4 +14459,69 @@ alter table samples_history add idsrdiagnosisdetails varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (584, 'Add IDSR diagnosis fields to samples');
 
+-- 2025-XX-XX Add Form Builder tables for dynamic form configuration
+CREATE TABLE forms(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp(3) not null,
+	creationdate timestamp(3) not null,
+	formtype varchar(255),
+	disease varchar(255),
+	active boolean,
+	centrally_managed boolean DEFAULT false,
+	change_user_id bigint,
+	archived boolean DEFAULT false,
+	sys_period tstzrange not null,
+	primary key(id)
+);
+
+ALTER TABLE forms OWNER TO sormas_user;
+
+CREATE TABLE forms_history (LIKE forms);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON forms
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'forms_history', true);
+ALTER TABLE forms_history OWNER TO sormas_user;
+
+CREATE TABLE form_fields(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp(3) not null,
+	creationdate timestamp(3) not null,
+	formtype varchar(255),
+	fieldname varchar(255),
+	description varchar(255),
+	active boolean,
+	centrally_managed boolean DEFAULT false,
+	change_user_id bigint,
+	archived boolean DEFAULT false,
+	sys_period tstzrange not null,
+	primary key(id)
+);
+
+ALTER TABLE form_fields OWNER TO sormas_user;
+
+CREATE TABLE form_fields_history (LIKE form_fields);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON form_fields
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'form_fields_history', true);
+ALTER TABLE form_fields_history OWNER TO sormas_user;
+
+CREATE TABLE forms_form_fields(
+	form_id bigint not null,
+	formfield_id bigint not null,
+	displayorder integer not null,
+	sys_period tstzrange not null,
+	primary key(form_id, formfield_id),
+	foreign key(form_id) references forms(id),
+	foreign key(formfield_id) references form_fields(id)
+);
+
+ALTER TABLE forms_form_fields OWNER TO sormas_user;
+
+CREATE TABLE forms_form_fields_history (LIKE forms_form_fields);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON forms_form_fields
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'forms_form_fields_history', true);
+ALTER TABLE forms_form_fields_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (585, 'Add Form Builder tables for dynamic form configuration');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

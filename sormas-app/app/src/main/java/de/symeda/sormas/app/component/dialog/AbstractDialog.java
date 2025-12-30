@@ -25,12 +25,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
+import android.widget.LinearLayout;
 
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FormType;
 import de.symeda.sormas.app.BR;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.controls.ControlButton;
@@ -39,6 +42,7 @@ import de.symeda.sormas.app.component.controls.ControlPropertyEditField;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.databinding.DialogRootLayoutBinding;
 import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.DiseaseFieldHandler;
 
 /**
  * This should probably inherit from DialogFragment
@@ -478,5 +482,10 @@ public abstract class AbstractDialog implements NotificationContext {
 
 	public void setCloseOnPositiveButtonClick(boolean closeOnPositiveButtonClick) {
 		this.closeOnPositiveButtonClick = closeOnPositiveButtonClick;
+	}
+
+	public void hideFieldsForDisease(Disease diseaseName, LinearLayout mainContent, FormType formType) {
+		DiseaseFieldHandler diseaseFieldHandler = new DiseaseFieldHandler(getContext());
+		diseaseFieldHandler.hideFieldsForDisease(diseaseName, mainContent, formType);
 	}
 }

@@ -13,6 +13,8 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.disease.DiseaseConfigurationDtoHelper;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
 import de.symeda.sormas.app.backend.feature.FeatureConfigurationDtoHelper;
+import de.symeda.sormas.app.backend.formbuilder.FormBuilderDtoHelper;
+import de.symeda.sormas.app.backend.formfield.FormFieldDtoHelper;
 import de.symeda.sormas.app.backend.pointofentry.PointOfEntryDtoHelper;
 import de.symeda.sormas.app.backend.region.AreaDtoHelper;
 import de.symeda.sormas.app.backend.region.CommunityDtoHelper;
@@ -91,5 +93,7 @@ public class InfrastructureHelper {
 		DatabaseHelper.getFeatureConfigurationDao().delete(infrastructureData.getDeletedFeatureConfigurationUuids());
 		new FeatureConfigurationDtoHelper()
 			.handlePulledList(DatabaseHelper.getFeatureConfigurationDao(), infrastructureData.getFeatureConfigurations(), callbacks);
+		new FormFieldDtoHelper().handlePulledList(DatabaseHelper.getFormFieldDao(), infrastructureData.getFormFields(), callbacks);
+		new FormBuilderDtoHelper().handlePulledList(DatabaseHelper.getFormBuilderDao(), infrastructureData.getFormBuilders(), callbacks);
 	}
 }

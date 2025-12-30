@@ -275,6 +275,8 @@ public interface Strings {
 	String entityExternalMessages = "entityExternalMessages";
 	String entityFacilities = "entityFacilities";
 	String entityFeatureConfigurations = "entityFeatureConfigurations";
+	String entityFormBuilders = "entityFormBuilders";
+	String entityFormFields = "entityFormFields";
 	String entityGathering = "entityGathering";
 	String entityImmunization = "entityImmunization";
 	String entityImmunizations = "entityImmunizations";
@@ -552,6 +554,8 @@ public interface Strings {
 	String headingCreateNewEventGroup = "headingCreateNewEventGroup";
 	String headingCreateNewEventParticipant = "headingCreateNewEventParticipant";
 	String headingCreateNewFacility = "headingCreateNewFacility";
+	String headingCreateNewFormBuilder = "headingCreateNewFormBuilder";
+	String headingCreateNewFormField = "headingCreateNewFormField";
 	String headingCreateNewImmunization = "headingCreateNewImmunization";
 	String headingCreateNewPerson = "headingCreateNewPerson";
 	String headingCreateNewPrescription = "headingCreateNewPrescription";
@@ -1150,6 +1154,8 @@ public interface Strings {
 	String labelNumberOfDiseaseConfigurations = "labelNumberOfDiseaseConfigurations";
 	String labelNumberOfDistricts = "labelNumberOfDistricts";
 	String labelNumberOfFacilities = "labelNumberOfFacilities";
+	String labelNumberOfFormFields = "labelNumberOfFormFields";
+	String labelNumberOfFormBuilders = "labelNumberOfFormBuilders";
 	String labelNumberOfPointofEntry = "labelNumberOfPointofEntry";
 	String labelNumberOfRegions = "labelNumberOfRegions";
 	String labelNumberOfSubcontinents = "labelNumberOfSubcontinents";
