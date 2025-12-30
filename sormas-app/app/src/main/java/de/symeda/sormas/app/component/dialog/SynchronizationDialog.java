@@ -157,6 +157,9 @@ public class SynchronizationDialog extends AbstractDialog {
 		case REPULL:
 			showRepullProgressItems();
 			break;
+		case SYNCHRONIZE_FORMS:
+			showSynchronizeFormsProgressItems();
+			break;
 		default:
 			throw new IllegalArgumentException(synchronizationStep.name());
 		}
@@ -313,6 +316,10 @@ public class SynchronizationDialog extends AbstractDialog {
 			allowedEntities.add(Strings.entityCustomizableEnumValues);
 		}
 		allowedEntities.add(Strings.entityFeatureConfigurations);
+		// FormField must be before FormBuilder (dependency)
+		// Note: entityFormFields and entityFormBuilders will be available after regenerating Strings interface
+		allowedEntities.add("entityFormFields");
+		allowedEntities.add("entityFormBuilders");
 		showProgressItems(true, false, allowedEntities);
 	}
 
@@ -595,6 +602,14 @@ public class SynchronizationDialog extends AbstractDialog {
 		showProgressItems(true, true, allowedEntities);
 	}
 
+	private void showSynchronizeFormsProgressItems() {
+		List<String> allowedEntities = new ArrayList<>();
+		// FormField must be before FormBuilder (dependency)
+		allowedEntities.add(Strings.entityFormFields);
+		allowedEntities.add(Strings.entityFormBuilders);
+		showProgressItems(true, false, allowedEntities);
+	}
+
 	private void showPullModifiedProgressItems() {
 
 		List<String> allowedEntities = new ArrayList<>();
@@ -779,7 +794,7 @@ public class SynchronizationDialog extends AbstractDialog {
 
 	private void showClearUpInfrastructureProgressItems(boolean forDeletion) {
 
-		List<String> allowedEntities = Arrays.asList(
+		List<String> allowedEntities = new ArrayList<>(Arrays.asList(
 			Strings.entityContinents,
 			Strings.entitySubcontinents,
 			Strings.entityCountries,
@@ -793,7 +808,12 @@ public class SynchronizationDialog extends AbstractDialog {
 			Strings.entityUsers,
 			Strings.entityDiseaseConfigurations,
 			Strings.entityCustomizableEnumValues,
-			Strings.entityFeatureConfigurations);
+			Strings.entityFeatureConfigurations));
+		
+		// FormField must be before FormBuilder (dependency)
+		// Note: entityFormFields and entityFormBuilders will be available after regenerating Strings interface
+		allowedEntities.add("entityFormFields");
+		allowedEntities.add("entityFormBuilders");
 
 		if (forDeletion) {
 			Collections.reverse(allowedEntities);
@@ -970,6 +990,7 @@ public class SynchronizationDialog extends AbstractDialog {
 		DELETE_OBSOLETE(R.string.caption_sync_delete_obsolete),
 		CLEAR_UP(R.string.caption_sync_clear_up),
 		SYNCHRONIZE(R.string.caption_sync_synchronize),
+		SYNCHRONIZE_FORMS(R.string.caption_sync_synchronize),
 		PULL_MODIFIED(R.string.caption_sync_pull_modified),
 		REPULL(R.string.caption_sync_repull);
 
