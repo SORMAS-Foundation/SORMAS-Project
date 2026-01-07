@@ -82,6 +82,27 @@ public class EpipulseDiseaseExportEntryDto {
 	private List<EpipulseImmunizationCheckDto> immunizations;
 	private List<EpipulseVaccinationCheckDto> vaccinations;
 
+	// MEAS-specific laboratory fields (can be mapped from existing SORMAS data)
+	private Date dateOfSpecimen;
+	private Date dateOfLaboratoryResult;
+	private List<String> typeOfSpecimenCollected; // SampleMaterial mapped to EpiPulse codes (repeatable)
+	private String resultOfVirusDetection; // PathogenTestResultType mapped to POS/NEG/EQUI/NOTEST
+	private String genotype; // PathogenTest typingId/genoTypeResult
+	private List<String> typeOfSpecimenSerology; // SampleMaterial for serology tests (repeatable)
+	private String resultIgG; // IgG test result
+	private String resultIgM; // IgM test result
+
+	// Phase 3: Clinical and epidemiology fields (mapped from existing SORMAS data)
+	private Date dateOfInvestigation; // CaseDataDto.investigatedDate
+	private Boolean clusterRelated; // EpiDataDto.clusterRelated
+	private String clusterIdentification; // EpiDataDto.clusterTypeText
+	private List<String> clusterSetting; // EpiDataDto.clusterType mapped to EpiPulse codes (repeatable)
+	private String importedStatus; // EpiDataDto.caseImportedStatus mapped to EpiPulse codes
+	private List<String> complicationDiagnosis; // SymptomsDto complications (repeatable)
+	private Boolean clinicalCriteriaStatus; // Derived from CaseDataDto.clinicalConfirmation
+	private List<String> placeOfInfection; // EpiDataDto.exposures locations (repeatable)
+	private String causeOfDeath; // PersonDto.causeOfDeathDetails
+
 	public String getReportingCountry() {
 		return reportingCountry;
 	}
@@ -326,6 +347,70 @@ public class EpipulseDiseaseExportEntryDto {
 		this.vaccinations = vaccinations;
 	}
 
+	public Date getDateOfSpecimen() {
+		return dateOfSpecimen;
+	}
+
+	public void setDateOfSpecimen(Date dateOfSpecimen) {
+		this.dateOfSpecimen = dateOfSpecimen;
+	}
+
+	public Date getDateOfLaboratoryResult() {
+		return dateOfLaboratoryResult;
+	}
+
+	public void setDateOfLaboratoryResult(Date dateOfLaboratoryResult) {
+		this.dateOfLaboratoryResult = dateOfLaboratoryResult;
+	}
+
+	public List<String> getTypeOfSpecimenCollected() {
+		return typeOfSpecimenCollected;
+	}
+
+	public void setTypeOfSpecimenCollected(List<String> typeOfSpecimenCollected) {
+		this.typeOfSpecimenCollected = typeOfSpecimenCollected;
+	}
+
+	public String getResultOfVirusDetection() {
+		return resultOfVirusDetection;
+	}
+
+	public void setResultOfVirusDetection(String resultOfVirusDetection) {
+		this.resultOfVirusDetection = resultOfVirusDetection;
+	}
+
+	public String getGenotype() {
+		return genotype;
+	}
+
+	public void setGenotype(String genotype) {
+		this.genotype = genotype;
+	}
+
+	public List<String> getTypeOfSpecimenSerology() {
+		return typeOfSpecimenSerology;
+	}
+
+	public void setTypeOfSpecimenSerology(List<String> typeOfSpecimenSerology) {
+		this.typeOfSpecimenSerology = typeOfSpecimenSerology;
+	}
+
+	public String getResultIgG() {
+		return resultIgG;
+	}
+
+	public void setResultIgG(String resultIgG) {
+		this.resultIgG = resultIgG;
+	}
+
+	public String getResultIgM() {
+		return resultIgM;
+	}
+
+	public void setResultIgM(String resultIgM) {
+		this.resultIgM = resultIgM;
+	}
+
 	public String getDiseaseForCsv() {
 		return EpipulseDiseaseRef.getBySubjectCode(subjectCode).name();
 	}
@@ -365,6 +450,7 @@ public class EpipulseDiseaseExportEntryDto {
 	public String getAgeMonthForCsv() {
 		switch (subjectCode) {
 		case PERT:
+		case MEAS:
 			if (ageYears != null && ageYears < 2) {
 				return ageMonths == null ? null : ageMonths.toString();
 			}
@@ -384,6 +470,7 @@ public class EpipulseDiseaseExportEntryDto {
 	public String getPlaceOfResidenceForCsv() {
 		switch (subjectCode) {
 		case PERT:
+		case MEAS:
 			if (addressCommunityNutsCode != null && !addressCommunityNutsCode.isEmpty()) {
 				return addressCommunityNutsCode;
 			} else if (addressDistrictNutsCode != null && !addressDistrictNutsCode.isEmpty()) {
@@ -400,6 +487,7 @@ public class EpipulseDiseaseExportEntryDto {
 	public String getPlaceOfNotificationForCsv() {
 		switch (subjectCode) {
 		case PERT:
+		case MEAS:
 			if (responsibleCommunityNutsCode != null && !responsibleCommunityNutsCode.isEmpty()) {
 				return responsibleCommunityNutsCode;
 			} else if (responsibleDistrictNutsCode != null && !responsibleDistrictNutsCode.isEmpty()) {
@@ -527,6 +615,203 @@ public class EpipulseDiseaseExportEntryDto {
 
 	public String getGestationalAgeAtVaccinationForCsv() {
 		return null;
+	}
+
+	// MEAS-specific laboratory field CSV getters
+	public String getDateOfSpecimenForCsv() {
+		return formatDateForCsv(dateOfSpecimen);
+	}
+
+	public String getDateOfLaboratoryResultForCsv() {
+		return formatDateForCsv(dateOfLaboratoryResult);
+	}
+
+	public List<String> getTypeOfSpecimenCollectedForCsv(int maxSpecimenVirDetect) {
+		// Repeatable field - return list padded to max length
+		List<String> specimens = new ArrayList<>();
+		for (int i = 0; i < maxSpecimenVirDetect; i++) {
+			if (typeOfSpecimenCollected != null && i < typeOfSpecimenCollected.size()) {
+				specimens.add(typeOfSpecimenCollected.get(i));
+			} else {
+				specimens.add("");
+			}
+		}
+		return specimens;
+	}
+
+	public String getResultOfVirusDetectionForCsv() {
+		// Already mapped to EpiPulse codes (POS/NEG/EQUI/NOTEST)
+		return resultOfVirusDetection;
+	}
+
+	public String getGenotypeForCsv() {
+		// Already mapped to EpiPulse genotype codes (MEASV_A, MEASV_B1, etc.)
+		return genotype;
+	}
+
+	public List<String> getTypeOfSpecimenSerologyForCsv(int maxSpecimenSero) {
+		// Repeatable field - return list padded to max length
+		List<String> specimens = new ArrayList<>();
+		for (int i = 0; i < maxSpecimenSero; i++) {
+			if (typeOfSpecimenSerology != null && i < typeOfSpecimenSerology.size()) {
+				specimens.add(typeOfSpecimenSerology.get(i));
+			} else {
+				specimens.add("");
+			}
+		}
+		return specimens;
+	}
+
+	public String getResultIgGForCsv() {
+		// Already mapped to EpiPulse codes (POS/NEG/EQUI/NOTEST)
+		return resultIgG;
+	}
+
+	public String getResultIgMForCsv() {
+		// Already mapped to EpiPulse codes (POS/NEG/EQUI/NOTEST)
+		return resultIgM;
+	}
+
+	// Phase 3: Getters and setters for clinical and epidemiology fields
+	public Date getDateOfInvestigation() {
+		return dateOfInvestigation;
+	}
+
+	public void setDateOfInvestigation(Date dateOfInvestigation) {
+		this.dateOfInvestigation = dateOfInvestigation;
+	}
+
+	public Boolean getClusterRelated() {
+		return clusterRelated;
+	}
+
+	public void setClusterRelated(Boolean clusterRelated) {
+		this.clusterRelated = clusterRelated;
+	}
+
+	public String getClusterIdentification() {
+		return clusterIdentification;
+	}
+
+	public void setClusterIdentification(String clusterIdentification) {
+		this.clusterIdentification = clusterIdentification;
+	}
+
+	public List<String> getClusterSetting() {
+		return clusterSetting;
+	}
+
+	public void setClusterSetting(List<String> clusterSetting) {
+		this.clusterSetting = clusterSetting;
+	}
+
+	public String getImportedStatus() {
+		return importedStatus;
+	}
+
+	public void setImportedStatus(String importedStatus) {
+		this.importedStatus = importedStatus;
+	}
+
+	public List<String> getComplicationDiagnosis() {
+		return complicationDiagnosis;
+	}
+
+	public void setComplicationDiagnosis(List<String> complicationDiagnosis) {
+		this.complicationDiagnosis = complicationDiagnosis;
+	}
+
+	public Boolean getClinicalCriteriaStatus() {
+		return clinicalCriteriaStatus;
+	}
+
+	public void setClinicalCriteriaStatus(Boolean clinicalCriteriaStatus) {
+		this.clinicalCriteriaStatus = clinicalCriteriaStatus;
+	}
+
+	public List<String> getPlaceOfInfection() {
+		return placeOfInfection;
+	}
+
+	public void setPlaceOfInfection(List<String> placeOfInfection) {
+		this.placeOfInfection = placeOfInfection;
+	}
+
+	public String getCauseOfDeath() {
+		return causeOfDeath;
+	}
+
+	public void setCauseOfDeath(String causeOfDeath) {
+		this.causeOfDeath = causeOfDeath;
+	}
+
+	// Phase 3: CSV getter methods
+	public String getDateOfInvestigationForCsv() {
+		return formatDateForCsv(dateOfInvestigation);
+	}
+
+	public String getClusterRelatedForCsv() {
+		return clusterRelated != null ? String.valueOf(clusterRelated) : "";
+	}
+
+	public String getClusterIdentificationForCsv() {
+		return clusterIdentification != null ? clusterIdentification : "";
+	}
+
+	public List<String> getClusterSettingForCsv(int maxClusterSettings) {
+		// Repeatable field - return list padded to max length
+		List<String> settings = new ArrayList<>();
+		for (int i = 0; i < maxClusterSettings; i++) {
+			if (clusterSetting != null && i < clusterSetting.size()) {
+				settings.add(clusterSetting.get(i));
+			} else {
+				settings.add("");
+			}
+		}
+		return settings;
+	}
+
+	public String getImportedStatusForCsv() {
+		return importedStatus != null ? importedStatus : "";
+	}
+
+	public List<String> getComplicationDiagnosisForCsv(int maxComplicationDiagnosis) {
+		// Repeatable field - return list padded to max length
+		List<String> complications = new ArrayList<>();
+		for (int i = 0; i < maxComplicationDiagnosis; i++) {
+			if (complicationDiagnosis != null && i < complicationDiagnosis.size()) {
+				complications.add(complicationDiagnosis.get(i));
+			} else {
+				// Use "NONE" for first empty slot if no complications, otherwise empty
+				if (i == 0 && (complicationDiagnosis == null || complicationDiagnosis.isEmpty())) {
+					complications.add("NONE");
+				} else {
+					complications.add("");
+				}
+			}
+		}
+		return complications;
+	}
+
+	public String getClinicalCriteriaStatusForCsv() {
+		return clinicalCriteriaStatus != null ? String.valueOf(clinicalCriteriaStatus) : "";
+	}
+
+	public List<String> getPlaceOfInfectionForCsv(int maxPlaceOfInfection) {
+		// Repeatable field - return list padded to max length
+		List<String> places = new ArrayList<>();
+		for (int i = 0; i < maxPlaceOfInfection; i++) {
+			if (placeOfInfection != null && i < placeOfInfection.size()) {
+				places.add(placeOfInfection.get(i));
+			} else {
+				places.add("");
+			}
+		}
+		return places;
+	}
+
+	public String getCauseOfDeathForCsv() {
+		return causeOfDeath != null ? causeOfDeath : "";
 	}
 
 	public void calculateAge() {

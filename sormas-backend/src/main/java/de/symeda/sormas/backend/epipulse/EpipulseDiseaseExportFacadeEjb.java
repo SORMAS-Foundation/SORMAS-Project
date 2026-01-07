@@ -225,6 +225,259 @@ public class EpipulseDiseaseExportFacadeEjb implements EpipulseDiseaseExportFaca
 		}
 	}
 
+	public void startMeaslesExport(String uuid) {
+
+		CSVWriter writer = null;
+		EpipulseExport epipulseExport = null;
+		EpipulseExportStatus exportStatus = EpipulseExportStatus.FAILED;
+		boolean shouldUpdateStatus = false;
+
+		Integer totalRecords = null;
+		BigDecimal exportFileSizeBytes = null;
+		String exportFileName = null;
+		String exportFilePath = null;
+
+		try {
+			epipulseExport = epipulseExportService.getByUuid(uuid);
+
+			if (epipulseExport == null) {
+				logger.error("EpipulseExport with uuid " + uuid + " not found");
+				return;
+			}
+
+			if (epipulseExport.getStatus() != EpipulseExportStatus.PENDING) {
+				logger.error("EpipulseExport with uuid " + uuid + " is not in status PENDING");
+				return;
+			}
+
+			shouldUpdateStatus = true;
+
+			diseaseExportService.updateStatusForBackgroundProcess(uuid, EpipulseExportStatus.IN_PROGRESS, null, null, null);
+
+			EpipulseExportDto exportDto = epipulseExportEjb.toEpipulseExportDto(epipulseExport);
+
+			String serverCountryLocale = configFacadeEjb.getCountryLocale();
+			String serverCountryCode = configFacadeEjb.getCountryCode();
+			String serverCountryName = configFacadeEjb.getCountryName();
+
+			String generatedFilesPath = configFacadeEjb.getGeneratedFilesPath();
+			exportFileName = diseaseExportService.generateDownloadFileName(exportDto, epipulseExport.getId());
+			exportFilePath = generatedFilesPath + "/" + exportFileName;
+
+			EpipulseDiseaseExportResult exportResult = diseaseExportService.exportMeaslesCaseBased(exportDto, serverCountryCode, serverCountryName);
+			totalRecords = exportResult.getExportEntryList().size();
+
+			writer = CSVUtils.createCSVWriter(
+				new OutputStreamWriter(new FileOutputStream(exportFilePath), StandardCharsets.UTF_8),
+				configFacadeEjb.getCsvSeparator());
+
+			// MEAS CSV columns - including Phase 2 laboratory fields and Phase 3 clinical/epidemiology fields
+			List<String> columnNames = new ArrayList<>(
+				List.of(
+					"Disease",
+					"ReportingCountry",
+					"Status",
+					"SubjectCode",
+					"NationalRecordId",
+					"DataSource",
+					"DateUsedForStatistics",
+					"Age",
+					"AgeMonth",
+					"Gender",
+					"CaseClassification",
+					"DateOfOnset",
+					"DateOfNotification",
+					"Hospitalisation",
+					"Outcome",
+					"PlaceOfNotification",
+					"PlaceOfResidence",
+					"DateOfSpecimen",
+					"DateOfLaboratoryResult"));
+
+			// Repeatable field: TypeOfSpecimenCollected
+			if (exportResult.getMaxSpecimenVirDetect() > 0) {
+				for (int i = 1; i <= exportResult.getMaxSpecimenVirDetect(); i++) {
+					columnNames.add("TypeOfSpecimenCollected");
+				}
+			}
+
+			columnNames.addAll(List.of("ResultOfVirusDetection", "Genotype"));
+
+			// Repeatable field: TypeOfSpecimenForSerologicalAnalysis
+			if (exportResult.getMaxSpecimenSero() > 0) {
+				for (int i = 1; i <= exportResult.getMaxSpecimenSero(); i++) {
+					columnNames.add("TypeOfSpecimenForSerologicalAnalysis");
+				}
+			}
+
+			columnNames.addAll(List.of("ResultIgG", "ResultIgM", "DateOfInvestigation", "ClusterRelated", "ClusterIdentification"));
+
+			// Repeatable field: ClusterSetting
+			if (exportResult.getMaxClusterSettings() > 0) {
+				for (int i = 1; i <= exportResult.getMaxClusterSettings(); i++) {
+					columnNames.add("ClusterSetting");
+				}
+			}
+
+			columnNames.add("ImportedStatus");
+
+			// Repeatable field: ComplicationDiagnosis
+			if (exportResult.getMaxComplicationDiagnosis() > 0) {
+				for (int i = 1; i <= exportResult.getMaxComplicationDiagnosis(); i++) {
+					columnNames.add("ComplicationDiagnosis");
+				}
+			}
+
+			columnNames.add("ClinicalCriteriaStatus");
+
+			// Repeatable field: PlaceOfInfection
+			if (exportResult.getMaxPlaceOfInfection() > 0) {
+				for (int i = 1; i <= exportResult.getMaxPlaceOfInfection(); i++) {
+					columnNames.add("PlaceOfInfection");
+				}
+			}
+
+			columnNames.add("CauseOfDeath");
+
+			if (exportResult.getMaxImmunizations() > 0) {
+				columnNames.add("DateOfLastVaccination");
+			}
+
+			columnNames.add("VaccinationStatus");
+
+			//write the headers
+			writer.writeNext(columnNames.toArray(new String[columnNames.size()]));
+
+			//write entries
+			String[] exportLine = new String[columnNames.size()];
+			int index;
+			for (EpipulseDiseaseExportEntryDto dto : exportResult.getExportEntryList()) {
+				index = -1;
+
+				exportLine[++index] = dto.getDiseaseForCsv();
+				exportLine[++index] = dto.getReportingCountryForCsv();
+				exportLine[++index] = dto.getStatusForCsv();
+				exportLine[++index] = dto.getSubjectCodeForCsv();
+				exportLine[++index] = dto.getNationalRecordIdForCsv();
+				exportLine[++index] = dto.getDataSourceForCsv();
+				exportLine[++index] = dto.getDateUsedForStatisticsCsv();
+				exportLine[++index] = dto.getAgeForCsv();
+				exportLine[++index] = dto.getAgeMonthForCsv();
+				exportLine[++index] = dto.getGenderForCsv();
+				exportLine[++index] = dto.getCaseClassificationForCsv();
+				exportLine[++index] = dto.getDateOfOnsetForCsv();
+				exportLine[++index] = dto.getDateOfNotificationForCsv();
+				exportLine[++index] = dto.getHospitalizationForCsv();
+				exportLine[++index] = dto.getOutcomeForCsv();
+				exportLine[++index] = dto.getPlaceOfNotificationForCsv();
+				exportLine[++index] = dto.getPlaceOfResidenceForCsv();
+
+				// Phase 2: Laboratory fields
+				exportLine[++index] = dto.getDateOfSpecimenForCsv();
+				exportLine[++index] = dto.getDateOfLaboratoryResultForCsv();
+
+				// Repeatable: TypeOfSpecimenCollected
+				if (exportResult.getMaxSpecimenVirDetect() > 0) {
+					List<String> specimenCollected = dto.getTypeOfSpecimenCollectedForCsv(exportResult.getMaxSpecimenVirDetect());
+					for (String specimen : specimenCollected) {
+						exportLine[++index] = specimen;
+					}
+				}
+
+				exportLine[++index] = dto.getResultOfVirusDetectionForCsv();
+				exportLine[++index] = dto.getGenotypeForCsv();
+
+				// Repeatable: TypeOfSpecimenForSerologicalAnalysis
+				if (exportResult.getMaxSpecimenSero() > 0) {
+					List<String> specimenSerology = dto.getTypeOfSpecimenSerologyForCsv(exportResult.getMaxSpecimenSero());
+					for (String specimen : specimenSerology) {
+						exportLine[++index] = specimen;
+					}
+				}
+
+				exportLine[++index] = dto.getResultIgGForCsv();
+				exportLine[++index] = dto.getResultIgMForCsv();
+
+				// Phase 3: Clinical and epidemiology fields
+				exportLine[++index] = dto.getDateOfInvestigationForCsv();
+				exportLine[++index] = dto.getClusterRelatedForCsv();
+				exportLine[++index] = dto.getClusterIdentificationForCsv();
+
+				// Repeatable: ClusterSetting
+				if (exportResult.getMaxClusterSettings() > 0) {
+					List<String> clusterSettings = dto.getClusterSettingForCsv(exportResult.getMaxClusterSettings());
+					for (String setting : clusterSettings) {
+						exportLine[++index] = setting;
+					}
+				}
+
+				exportLine[++index] = dto.getImportedStatusForCsv();
+
+				// Repeatable: ComplicationDiagnosis
+				if (exportResult.getMaxComplicationDiagnosis() > 0) {
+					List<String> complications = dto.getComplicationDiagnosisForCsv(exportResult.getMaxComplicationDiagnosis());
+					for (String complication : complications) {
+						exportLine[++index] = complication;
+					}
+				}
+
+				exportLine[++index] = dto.getClinicalCriteriaStatusForCsv();
+
+				// Repeatable: PlaceOfInfection
+				if (exportResult.getMaxPlaceOfInfection() > 0) {
+					List<String> placesOfInfection = dto.getPlaceOfInfectionForCsv(exportResult.getMaxPlaceOfInfection());
+					for (String place : placesOfInfection) {
+						exportLine[++index] = place;
+					}
+				}
+
+				exportLine[++index] = dto.getCauseOfDeathForCsv();
+
+				if (exportResult.getMaxImmunizations() > 0) {
+					exportLine[++index] = dto.getDateOfLastVaccinationForCsv();
+				}
+
+				exportLine[++index] = dto.getVaccinationStatusForCsv();
+
+				writer.writeNext(exportLine);
+			}
+
+			exportStatus = EpipulseExportStatus.COMPLETED;
+		} catch (Exception e) {
+			exportStatus = EpipulseExportStatus.FAILED;
+
+			logger.error("Error during export with uuid " + uuid + ": " + e.getMessage(), e);
+		} finally {
+			if (writer != null) {
+				try {
+					writer.close();
+				} catch (Exception e) {
+					logger.error("CRITICAL: Failed to close CSVWriter for uuid " + uuid + ": " + e.getMessage(), e);
+				}
+			}
+
+			// Calculate file size after writer is closed
+			if (exportFilePath != null && exportStatus == EpipulseExportStatus.COMPLETED) {
+				try {
+					long fileSizeInBytes = Files.size(Paths.get(exportFilePath));
+					exportFileSizeBytes = new BigDecimal(fileSizeInBytes);
+					logger.info("Export file size for uuid {}: {} bytes", uuid, fileSizeInBytes);
+				} catch (Exception e) {
+					logger.error("CRITICAL: Failed to calculate file size for uuid {}: {}", uuid, e.getMessage(), e);
+				}
+			}
+
+			if (shouldUpdateStatus && epipulseExport != null) {
+				try {
+					diseaseExportService
+						.updateStatusForBackgroundProcess(epipulseExport.getUuid(), exportStatus, totalRecords, exportFileName, exportFileSizeBytes);
+				} catch (Exception e) {
+					logger.error("CRITICAL: Failed to update export status for uuid " + uuid + ": " + e.getMessage(), e);
+				}
+			}
+		}
+	}
+
 	@LocalBean
 	@Stateless
 	public static class EpipulseDiseaseExportFacadeEjbLocal extends EpipulseDiseaseExportFacadeEjb {

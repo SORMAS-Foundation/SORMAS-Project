@@ -20,7 +20,8 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum EpipulseDiseaseRef {
 
-	PERT(EpipulseSubjectCode.PERT);
+	PERT(EpipulseSubjectCode.PERT),
+	MEAS(EpipulseSubjectCode.MEAS);
 
 	private final EpipulseSubjectCode[] subjectCodes;
 
