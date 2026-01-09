@@ -115,7 +115,7 @@ public abstract class AbstractEpipulseDiseaseExportStrategy {
 			exportResult.setExportEntryList(exportEntryList);
 
 		} catch (Exception e) {
-			logger.error("Error while exporting case based " + exportDto.getSubjectCode() + ":" + e.getMessage());
+			logger.error("Error while exporting case based " + exportDto.getSubjectCode() + ":" + e.getMessage(), e);
 			throw e;
 		}
 

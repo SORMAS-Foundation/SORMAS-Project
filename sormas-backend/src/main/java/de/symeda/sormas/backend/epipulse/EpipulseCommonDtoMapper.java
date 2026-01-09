@@ -173,14 +173,18 @@ public class EpipulseCommonDtoMapper {
 		int maxImmunizations = 0;
 
 		for (EpipulseDiseaseExportEntryDto entry : entries) {
-			int pathogenTestCount = entry.getPathogenTests().size();
-			if (pathogenTestCount > maxPathogenTests) {
-				maxPathogenTests = pathogenTestCount;
+			if (entry.getPathogenTests() != null) {
+				int pathogenTestCount = entry.getPathogenTests().size();
+				if (pathogenTestCount > maxPathogenTests) {
+					maxPathogenTests = pathogenTestCount;
+				}
 			}
 
-			int immunizationCount = entry.getImmunizations().size();
-			if (immunizationCount > maxImmunizations) {
-				maxImmunizations = immunizationCount;
+			if (entry.getImmunizations() != null) {
+				int immunizationCount = entry.getImmunizations().size();
+				if (immunizationCount > maxImmunizations) {
+					maxImmunizations = immunizationCount;
+				}
 			}
 		}
 

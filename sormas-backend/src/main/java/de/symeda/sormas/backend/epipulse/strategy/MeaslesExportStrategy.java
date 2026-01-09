@@ -81,18 +81,14 @@ public class MeaslesExportStrategy extends AbstractEpipulseDiseaseExportStrategy
 		dto.setDateOfLaboratoryResult((Date) row[++index]);
 
 		String specimenTypesVirusRaw = (String) row[++index];
-		if (!StringUtils.isBlank(specimenTypesVirusRaw)) {
-			List<String> specimenTypesVirus = new ArrayList<>();
-			for (String specimenType : specimenTypesVirusRaw.split(",")) {
-				specimenTypesVirus.add(EpipulseLaboratoryMapper.mapSampleMaterialToEpipulseCode(SampleMaterial.valueOf(specimenType.trim())));
-			}
-			dto.setTypeOfSpecimenCollected(specimenTypesVirus);
-		}
+		dto.setTypeOfSpecimenCollected(parseSpecimenTypes(specimenTypesVirusRaw));
 
 		String virusDetectionResultRaw = (String) row[++index];
 		if (!StringUtils.isBlank(virusDetectionResultRaw)) {
-			dto.setResultOfVirusDetection(
-				EpipulseLaboratoryMapper.mapTestResultToEpipulseCode(PathogenTestResultType.valueOf(virusDetectionResultRaw)));
+			PathogenTestResultType virusDetectionResult = parsePathogenTestResultType(virusDetectionResultRaw);
+			if (virusDetectionResult != null) {
+				dto.setResultOfVirusDetection(EpipulseLaboratoryMapper.mapTestResultToEpipulseCode(virusDetectionResult));
+			}
 		}
 
 		String genotypeRaw = (String) row[++index];
@@ -101,22 +97,22 @@ public class MeaslesExportStrategy extends AbstractEpipulseDiseaseExportStrategy
 		}
 
 		String specimenTypesSerologyRaw = (String) row[++index];
-		if (!StringUtils.isBlank(specimenTypesSerologyRaw)) {
-			List<String> specimenTypesSerology = new ArrayList<>();
-			for (String specimenType : specimenTypesSerologyRaw.split(",")) {
-				specimenTypesSerology.add(EpipulseLaboratoryMapper.mapSampleMaterialToEpipulseCode(SampleMaterial.valueOf(specimenType.trim())));
-			}
-			dto.setTypeOfSpecimenSerology(specimenTypesSerology);
-		}
+		dto.setTypeOfSpecimenSerology(parseSpecimenTypes(specimenTypesSerologyRaw));
 
 		String iggResultRaw = (String) row[++index];
 		if (!StringUtils.isBlank(iggResultRaw)) {
-			dto.setResultIgG(EpipulseLaboratoryMapper.mapTestResultToEpipulseCode(PathogenTestResultType.valueOf(iggResultRaw)));
+			PathogenTestResultType iggResult = parsePathogenTestResultType(iggResultRaw);
+			if (iggResult != null) {
+				dto.setResultIgG(EpipulseLaboratoryMapper.mapTestResultToEpipulseCode(iggResult));
+			}
 		}
 
 		String igmResultRaw = (String) row[++index];
 		if (!StringUtils.isBlank(igmResultRaw)) {
-			dto.setResultIgM(EpipulseLaboratoryMapper.mapTestResultToEpipulseCode(PathogenTestResultType.valueOf(igmResultRaw)));
+			PathogenTestResultType igmResult = parsePathogenTestResultType(igmResultRaw);
+			if (igmResult != null) {
+				dto.setResultIgM(EpipulseLaboratoryMapper.mapTestResultToEpipulseCode(igmResult));
+			}
 		}
 
 		// Clinical and epidemiology data (indices 36-47)
@@ -129,14 +125,20 @@ public class MeaslesExportStrategy extends AbstractEpipulseDiseaseExportStrategy
 
 		String clusterTypeRaw = (String) row[++index];
 		if (!StringUtils.isBlank(clusterTypeRaw)) {
-			List<String> clusterSettings = new ArrayList<>();
-			clusterSettings.add(EpipulseLaboratoryMapper.mapClusterTypeToEpipulseCode(ClusterType.valueOf(clusterTypeRaw)));
-			dto.setClusterSetting(clusterSettings);
+			ClusterType clusterType = parseClusterType(clusterTypeRaw);
+			if (clusterType != null) {
+				List<String> clusterSettings = new ArrayList<>();
+				clusterSettings.add(EpipulseLaboratoryMapper.mapClusterTypeToEpipulseCode(clusterType));
+				dto.setClusterSetting(clusterSettings);
+			}
 		}
 
 		String caseImportedStatusRaw = (String) row[++index];
 		if (!StringUtils.isBlank(caseImportedStatusRaw)) {
-			dto.setImportedStatus(EpipulseLaboratoryMapper.mapCaseImportedStatusToEpipulseCode(CaseImportedStatus.valueOf(caseImportedStatusRaw)));
+			CaseImportedStatus caseImportedStatus = parseCaseImportedStatus(caseImportedStatusRaw);
+			if (caseImportedStatus != null) {
+				dto.setImportedStatus(EpipulseLaboratoryMapper.mapCaseImportedStatusToEpipulseCode(caseImportedStatus));
+			}
 		}
 
 		// Complications mapping (4 fields)
@@ -156,7 +158,10 @@ public class MeaslesExportStrategy extends AbstractEpipulseDiseaseExportStrategy
 		// Clinical criteria status
 		String clinicalConfirmationRaw = (String) row[++index];
 		if (!StringUtils.isBlank(clinicalConfirmationRaw)) {
-			dto.setClinicalCriteriaStatus(EpipulseLaboratoryMapper.deriveClinicalCriteriaStatus(YesNoUnknown.valueOf(clinicalConfirmationRaw)));
+			YesNoUnknown clinicalConfirmation = parseYesNoUnknown(clinicalConfirmationRaw);
+			if (clinicalConfirmation != null) {
+				dto.setClinicalCriteriaStatus(EpipulseLaboratoryMapper.deriveClinicalCriteriaStatus(clinicalConfirmation));
+			}
 		}
 
 		// Place of infection (exposure locations)
@@ -380,6 +385,20 @@ public class MeaslesExportStrategy extends AbstractEpipulseDiseaseExportStrategy
 		return select.toString();
 	}
 
+	private List<String> parseSpecimenTypes(String specimenTypesRaw) {
+		if (StringUtils.isBlank(specimenTypesRaw)) {
+			return null;
+		}
+		List<String> specimenTypes = new ArrayList<>();
+		for (String specimenType : specimenTypesRaw.split(",")) {
+			SampleMaterial material = parseSampleMaterial(specimenType.trim());
+			if (material != null) {
+				specimenTypes.add(EpipulseLaboratoryMapper.mapSampleMaterialToEpipulseCode(material));
+			}
+		}
+		return specimenTypes;
+	}
+
 	private SymptomState parseSymptomState(String value) {
 		if (StringUtils.isBlank(value)) {
 			return null;
@@ -388,6 +407,66 @@ public class MeaslesExportStrategy extends AbstractEpipulseDiseaseExportStrategy
 			return SymptomState.valueOf(value);
 		} catch (IllegalArgumentException e) {
 			logger.warn("Invalid SymptomState value '{}', treating as null", value);
+			return null;
+		}
+	}
+
+	private SampleMaterial parseSampleMaterial(String value) {
+		if (StringUtils.isBlank(value)) {
+			return null;
+		}
+		try {
+			return SampleMaterial.valueOf(value);
+		} catch (IllegalArgumentException e) {
+			logger.warn("Invalid SampleMaterial value '{}', treating as null", value);
+			return null;
+		}
+	}
+
+	private PathogenTestResultType parsePathogenTestResultType(String value) {
+		if (StringUtils.isBlank(value)) {
+			return null;
+		}
+		try {
+			return PathogenTestResultType.valueOf(value);
+		} catch (IllegalArgumentException e) {
+			logger.warn("Invalid PathogenTestResultType value '{}', treating as null", value);
+			return null;
+		}
+	}
+
+	private ClusterType parseClusterType(String value) {
+		if (StringUtils.isBlank(value)) {
+			return null;
+		}
+		try {
+			return ClusterType.valueOf(value);
+		} catch (IllegalArgumentException e) {
+			logger.warn("Invalid ClusterType value '{}', treating as null", value);
+			return null;
+		}
+	}
+
+	private CaseImportedStatus parseCaseImportedStatus(String value) {
+		if (StringUtils.isBlank(value)) {
+			return null;
+		}
+		try {
+			return CaseImportedStatus.valueOf(value);
+		} catch (IllegalArgumentException e) {
+			logger.warn("Invalid CaseImportedStatus value '{}', treating as null", value);
+			return null;
+		}
+	}
+
+	private YesNoUnknown parseYesNoUnknown(String value) {
+		if (StringUtils.isBlank(value)) {
+			return null;
+		}
+		try {
+			return YesNoUnknown.valueOf(value);
+		} catch (IllegalArgumentException e) {
+			logger.warn("Invalid YesNoUnknown value '{}', treating as null", value);
 			return null;
 		}
 	}

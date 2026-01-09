@@ -129,26 +129,42 @@ public class EpipulseLaboratoryMapper {
 		}
 
 		// Try to parse formats like "A", "B1", "D10", etc. and add MEASV_ prefix
+		// This matches a single uppercase letter optionally followed by digits
 		if (normalized.matches("^[A-Z]\\d*$")) {
 			return "MEASV_" + normalized;
 		}
 
-		// Try to parse formats like "Genotype A", "MeV-A", etc.
-		if (normalized.contains("A")) {
-			return "MEASV_A";
-		}
-		if (normalized.matches(".*B[12]?.*")) {
-			if (normalized.contains("B1")) {
-				return "MEASV_B1";
-			} else if (normalized.contains("B2")) {
-				return "MEASV_B2";
-			} else if (normalized.contains("B3")) {
-				return "MEASV_B3";
-			}
-			return "MEASV_B1"; // Default to B1
+		// Try to extract genotype from common formats with delimiters
+		// Matches patterns like "MeV-A", "Genotype-B1", "MV/A", "MEASLES-D4"
+		String extracted = extractGenotypeFromDelimitedFormat(normalized);
+		if (extracted != null) {
+			return "MEASV_" + extracted;
 		}
 
-		// If we can't parse it, return null (field will be empty in CSV)
+		// Return null for ambiguous or unparseable inputs
+		return null;
+	}
+
+	/**
+	 * Extracts genotype code from delimited formats like "MeV-A", "Genotype B1", etc.
+	 * Uses strict pattern matching to avoid false positives.
+	 *
+	 * @param normalized
+	 *            Uppercase normalized genotype string
+	 * @return Extracted genotype code (e.g., "A", "B1", "D4"), or null if not extractable
+	 */
+	private static String extractGenotypeFromDelimitedFormat(String normalized) {
+		// Match patterns like "PREFIX-A", "PREFIX/B1", "PREFIX_D10", "PREFIX A"
+		// where PREFIX is some non-numeric text
+		// This captures the genotype part after common delimiters
+		String pattern = "(?:MEV|MEASLES?|GENOTYPE|MV)[-_/\\s]+([A-Z]\\d*)";
+		java.util.regex.Pattern p = java.util.regex.Pattern.compile(pattern);
+		java.util.regex.Matcher m = p.matcher(normalized);
+
+		if (m.find()) {
+			return m.group(1);
+		}
+
 		return null;
 	}
 

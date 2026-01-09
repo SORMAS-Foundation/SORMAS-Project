@@ -130,8 +130,8 @@ public class EpipulseCsvExportOrchestrator {
 			writer.writeNext(columnNames.toArray(new String[columnNames.size()]));
 
 			// Write entries using strategy
-			String[] exportLine = new String[columnNames.size()];
 			for (EpipulseDiseaseExportEntryDto dto : exportResult.getExportEntryList()) {
+				String[] exportLine = new String[columnNames.size()];
 				csvStrategy.writeEntryRow(dto, exportLine, exportResult);
 				writer.writeNext(exportLine);
 			}

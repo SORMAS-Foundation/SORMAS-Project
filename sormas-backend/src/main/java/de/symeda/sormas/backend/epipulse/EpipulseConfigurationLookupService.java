@@ -108,6 +108,10 @@ public class EpipulseConfigurationLookupService {
 	 * @return the NUTS code for the country, or null if not found
 	 */
 	private String lookupServerCountryNutsCode(String countryName) {
+		if (countryName == null) {
+			return null;
+		}
+
 		//@formatter:off
 		String serverCountryQuery =
 			"select nutscode " +
