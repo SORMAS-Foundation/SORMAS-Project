@@ -84,11 +84,11 @@ public class EpipulseLaboratoryMapper {
 	 *
 	 * @param testResult
 	 *            SORMAS test result enum
-	 * @return EpiPulse result code (POS/NEG/EQUI/NOTEST)
+	 * @return EpiPulse result code (POS/NEG/EQUI/NOTEST), or null if input is null
 	 */
 	public static String mapTestResultToEpipulseCode(PathogenTestResultType testResult) {
 		if (testResult == null) {
-			return "NOTEST";
+			return null;
 		}
 
 		switch (testResult) {
@@ -102,7 +102,7 @@ public class EpipulseLaboratoryMapper {
 		case NOT_DONE:
 			return "NOTEST";
 		default:
-			return "NOTEST";
+			return null;
 		}
 	}
 

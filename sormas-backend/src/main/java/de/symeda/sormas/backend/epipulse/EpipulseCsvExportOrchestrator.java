@@ -75,9 +75,6 @@ public class EpipulseCsvExportOrchestrator {
 	 */
 	public void orchestrateExport(String uuid, ExportFunction exportFunction, CsvExportStrategy csvStrategy) {
 
-		CSVWriter writer = null;
-		FileOutputStream fos = null;
-		OutputStreamWriter osw = null;
 		EpipulseExport epipulseExport = null;
 		EpipulseExportStatus exportStatus = EpipulseExportStatus.FAILED;
 		boolean shouldUpdateStatus = false;
@@ -119,22 +116,23 @@ public class EpipulseCsvExportOrchestrator {
 			EpipulseDiseaseExportResult exportResult = exportFunction.execute(exportDto, serverCountryCode, serverCountryName);
 			totalRecords = exportResult.getExportEntryList().size();
 
-			// Setup CSV writer with explicit stream management
-			fos = new FileOutputStream(exportFilePath);
-			osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
-			writer = CSVUtils.createCSVWriter(osw, configFacadeEjb.getCsvSeparator());
+			// Setup CSV writer with try-with-resources for automatic resource management
+			try (FileOutputStream fos = new FileOutputStream(exportFilePath);
+				OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
+				CSVWriter writer = CSVUtils.createCSVWriter(osw, configFacadeEjb.getCsvSeparator())) {
 
-			// Build column names using strategy
-			List<String> columnNames = csvStrategy.buildColumnNames(exportResult);
+				// Build column names using strategy
+				List<String> columnNames = csvStrategy.buildColumnNames(exportResult);
 
-			// Write headers
-			writer.writeNext(columnNames.toArray(new String[columnNames.size()]));
+				// Write headers
+				writer.writeNext(columnNames.toArray(new String[columnNames.size()]));
 
-			// Write entries using strategy
-			for (EpipulseDiseaseExportEntryDto dto : exportResult.getExportEntryList()) {
-				String[] exportLine = new String[columnNames.size()];
-				csvStrategy.writeEntryRow(dto, exportLine, exportResult);
-				writer.writeNext(exportLine);
+				// Write entries using strategy
+				for (EpipulseDiseaseExportEntryDto dto : exportResult.getExportEntryList()) {
+					String[] exportLine = new String[columnNames.size()];
+					csvStrategy.writeEntryRow(dto, exportLine, exportResult);
+					writer.writeNext(exportLine);
+				}
 			}
 
 			exportStatus = EpipulseExportStatus.COMPLETED;
@@ -142,29 +140,6 @@ public class EpipulseCsvExportOrchestrator {
 			exportStatus = EpipulseExportStatus.FAILED;
 			logger.error("Error during export with uuid " + uuid + ": " + e.getMessage(), e);
 		} finally {
-			// Close resources in reverse order
-			if (writer != null) {
-				try {
-					writer.close();
-				} catch (Exception e) {
-					logger.error("CRITICAL: Failed to close CSVWriter for uuid " + uuid + ": " + e.getMessage(), e);
-				}
-			}
-			if (osw != null) {
-				try {
-					osw.close();
-				} catch (Exception e) {
-					logger.error("CRITICAL: Failed to close OutputStreamWriter for uuid " + uuid + ": " + e.getMessage(), e);
-				}
-			}
-			if (fos != null) {
-				try {
-					fos.close();
-				} catch (Exception e) {
-					logger.error("CRITICAL: Failed to close FileOutputStream for uuid " + uuid + ": " + e.getMessage(), e);
-				}
-			}
-
 			// Calculate file size after writer is closed
 			if (exportFilePath != null && exportStatus == EpipulseExportStatus.COMPLETED) {
 				try {
