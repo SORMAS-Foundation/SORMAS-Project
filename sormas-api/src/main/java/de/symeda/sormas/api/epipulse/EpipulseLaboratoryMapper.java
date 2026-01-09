@@ -69,7 +69,7 @@ public class EpipulseLaboratoryMapper {
 		case EDTA_WHOLE_BLOOD:
 			return "EDTA"; // EDTA whole blood
 		default:
-			return "OTH";
+			return null;
 		}
 	}
 
@@ -129,8 +129,8 @@ public class EpipulseLaboratoryMapper {
 		}
 
 		// Try to parse formats like "A", "B1", "D10", etc. and add MEASV_ prefix
-		// This matches a single uppercase letter optionally followed by digits
-		if (normalized.matches("^[A-Z]\\d*$")) {
+		// Measles genotypes are limited (e.g., A, B1-3, C1-2, D1-11, E, F, G1-3, H1-2)
+		if (normalized.matches("^(A|B[1-3]|C[1-2]|D(1[0-1]|[1-9])|E|F|G[1-3]|H[1-2])$")) {
 			return "MEASV_" + normalized;
 		}
 
@@ -301,6 +301,9 @@ public class EpipulseLaboratoryMapper {
 	 * @return true if clinically confirmed, false otherwise
 	 */
 	public static Boolean deriveClinicalCriteriaStatus(YesNoUnknown clinicalConfirmation) {
+		if (clinicalConfirmation == null || clinicalConfirmation == YesNoUnknown.UNKNOWN) {
+			return null;
+		}
 		return clinicalConfirmation == YesNoUnknown.YES;
 	}
 }

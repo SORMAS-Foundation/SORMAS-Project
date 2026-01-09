@@ -223,7 +223,13 @@ public class MeaslesExportStrategy extends AbstractEpipulseDiseaseExportStrategy
 			   "                       STRING_AGG(DISTINCT CAST(s3.samplematerial AS text), ',' ORDER BY CAST(s3.samplematerial AS text)) as specimen_types_serology " +
 			   "                FROM filtered_cases c " +
 			   "                LEFT JOIN samples s ON s.associatedcase_id = c.id AND s.deleted = false " +
-			   "                LEFT JOIN samples s2 ON s2.associatedcase_id = c.id AND s2.deleted = false AND s2.samplematerial IS NOT NULL " +
+			   "                LEFT JOIN (SELECT DISTINCT s_vir.id, s_vir.associatedcase_id, s_vir.samplematerial " +
+			   "                           FROM samples s_vir " +
+			   "                           JOIN pathogentest pt_vir ON pt_vir.sample_id = s_vir.id " +
+			   "                           WHERE s_vir.deleted = false " +
+			   "                             AND s_vir.samplematerial IS NOT NULL " +
+			   "                             AND pt_vir.testtype IN ('PCR_RT_PCR', 'CULTURE', 'ISOLATION', 'DIRECT_FLUORESCENT_ANTIBODY', 'INDIRECT_FLUORESCENT_ANTIBODY')) s2 " +
+			   "                          ON s2.associatedcase_id = c.id " +
 			   "                LEFT JOIN (SELECT DISTINCT s_sero.id, s_sero.associatedcase_id, s_sero.samplematerial " +
 			   "                           FROM samples s_sero " +
 			   "                           JOIN pathogentest pt_sero ON pt_sero.sample_id = s_sero.id " +
@@ -316,13 +322,14 @@ public class MeaslesExportStrategy extends AbstractEpipulseDiseaseExportStrategy
 			   "                                  CASE " +
 			   "                                      WHEN co.defaultname IS NOT NULL THEN co.defaultname " +
 			   "                                      WHEN l.city IS NOT NULL THEN l.city " +
-			   "                                      ELSE l.details " +
+			   "                                      WHEN l.details IS NOT NULL THEN l.details " +
+			   "                                      ELSE 'Unknown' " +
 			   "                                  END, " +
 			   "                                  '; ' " +
 			   "                                  ORDER BY e.startdate DESC" +
 			   "                              ) as infection_locations " +
 			   "                       FROM exposures e " +
-			   "                       JOIN location l ON e.location_id = l.id " +
+			   "                       LEFT JOIN location l ON e.location_id = l.id " +
 			   "                       LEFT JOIN country co ON l.country_id = co.id " +
 			   "                       WHERE e.epidata_id IN (SELECT epidata_id FROM filtered_cases WHERE epidata_id IS NOT NULL) " +
 			   "                       GROUP BY e.epidata_id), ";

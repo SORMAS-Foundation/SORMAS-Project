@@ -94,15 +94,14 @@ public class EpipulseCsvExportOrchestrator {
 				return;
 			}
 
-			if (epipulseExport.getStatus() != EpipulseExportStatus.PENDING) {
-				logger.error("EpipulseExport with uuid " + uuid + " is not in status PENDING");
+			// Atomic status claim: try to update from PENDING to IN_PROGRESS
+			boolean claimed = diseaseExportService.tryClaimExportForProcessing(uuid);
+			if (!claimed) {
+				logger.info("Export {} not claimed - either already processing or not in PENDING status", uuid);
 				return;
 			}
 
 			shouldUpdateStatus = true;
-
-			// Update status to IN_PROGRESS
-			diseaseExportService.updateStatusForBackgroundProcess(uuid, EpipulseExportStatus.IN_PROGRESS, null, null, null);
 
 			// Load configuration
 			EpipulseExportDto exportDto = epipulseExportEjb.toEpipulseExportDto(epipulseExport);

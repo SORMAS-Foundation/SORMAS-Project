@@ -68,6 +68,39 @@ public class EpipulseDiseaseExportService {
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public boolean tryClaimExportForProcessing(String exportUuid) {
+		try {
+			String sql = "UPDATE epipulse_export SET " +
+				"status = :newStatus, " +
+				"status_change_date = now(), " +
+				"changedate = now() " +
+				"WHERE uuid = :uuid AND status = :expectedStatus";
+
+			int updated = em.createNativeQuery(sql)
+				.setParameter("newStatus", EpipulseExportStatus.IN_PROGRESS.name())
+				.setParameter("uuid", exportUuid)
+				.setParameter("expectedStatus", EpipulseExportStatus.PENDING.name())
+				.executeUpdate();
+
+			em.flush();
+
+			if (updated > 0) {
+				logger.info("Successfully claimed export {} for processing", exportUuid);
+				return true;
+			} else {
+				logger.info("Export {} already claimed by another process or not in PENDING status", exportUuid);
+				return false;
+			}
+
+		} catch (Exception e) {
+			logger.error("Failed to claim export {} for processing: {}", exportUuid, e.getMessage(), e);
+			return false;
+		} finally {
+			em.clear();
+		}
+	}
+
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void updateStatusForBackgroundProcess(
 		String exportUuid,
 		EpipulseExportStatus newStatus,
