@@ -123,9 +123,13 @@ public class EpipulseLaboratoryMapper {
 
 		String normalized = genotypeText.trim().toUpperCase();
 
-		// If already in MEASV_ format, return as-is
+		// If already in MEASV_ format, validate the suffix and return if valid
 		if (normalized.startsWith("MEASV_")) {
-			return normalized;
+			String suffix = normalized.substring(6); // Extract part after "MEASV_"
+			if (isValidMeaslesGenotype(suffix)) {
+				return normalized;
+			}
+			return null;
 		}
 
 		// Try to parse formats like "A", "B1", "D10", etc. and add MEASV_ prefix
@@ -137,12 +141,26 @@ public class EpipulseLaboratoryMapper {
 		// Try to extract genotype from common formats with delimiters
 		// Matches patterns like "MeV-A", "Genotype-B1", "MV/A", "MEASLES-D4"
 		String extracted = extractGenotypeFromDelimitedFormat(normalized);
-		if (extracted != null) {
+		if (isValidMeaslesGenotype(extracted)) {
 			return "MEASV_" + extracted;
 		}
 
 		// Return null for ambiguous or unparseable inputs
 		return null;
+	}
+
+	/**
+	 * Validates if a genotype code matches the known measles genotype pattern.
+	 *
+	 * @param genotype
+	 *            Genotype code without MEASV_ prefix (e.g., "A", "B1", "D10")
+	 * @return true if the genotype is a valid measles genotype, false otherwise
+	 */
+	private static boolean isValidMeaslesGenotype(String genotype) {
+		if (genotype == null) {
+			return false;
+		}
+		return genotype.matches("^(A|B[1-3]|C[1-2]|D(1[0-1]|[1-9])|E|F|G[1-3]|H[1-2])$");
 	}
 
 	/**
