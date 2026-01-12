@@ -132,6 +132,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 					fluidRowLocs(PersonDto.LIVING_STATUS, PersonDto.ENTRY_DATE) +
 
                     fluidRowLocs(PersonDto.PASSPORT_NUMBER, PersonDto.NATIONAL_HEALTH_ID) +
+                    fluidRowLocs(PersonDto.NATIONALITY, "") +
                     fluidRowLocs("", NATIONAL_HEALTH_ID_WARNING_LABEL) +
 					fluidRowLocs(PersonDto.EXTERNAL_ID, PersonDto.EXTERNAL_TOKEN) +
 					fluidRowLocs(PersonDto.INTERNAL_TOKEN, EXTERNAL_TOKEN_WARNING_LOC) +
@@ -404,6 +405,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		ComboBox birthCountryCB = addInfrastructureField(PersonDto.BIRTH_COUNTRY);
 		addInfrastructureField(PersonDto.CITIZENSHIP).addItems(countries);
 		addField(PersonDto.PASSPORT_NUMBER);
+		addField(PersonDto.NATIONALITY);
 		birthCountryCB.addItems(countries);
 
 		addField(PersonDto.LIVING_STATUS, ComboBox.class);

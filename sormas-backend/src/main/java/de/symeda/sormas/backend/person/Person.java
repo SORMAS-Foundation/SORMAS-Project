@@ -183,6 +183,7 @@ public class Person extends AbstractDomainObject implements IsPerson, HasExterna
 	private ArmedForcesRelationType armedForcesRelationType;
 	private String passportNumber;
 	private String nationalHealthId;
+	private String nationality;
 	private FacilityType placeOfBirthFacilityType;
 	private Set<Location> addresses = new HashSet<>();
 	private Set<PersonContactDetail> personContactDetails = new HashSet<>();
@@ -606,7 +607,13 @@ public class Person extends AbstractDomainObject implements IsPerson, HasExterna
 	public void setNationalHealthId(String nationalHealthId) {
 		this.nationalHealthId = nationalHealthId;
 	}
-
+	@Column
+	public String getNationality() {
+		return nationality;
+	}
+	public void setNationality(String nationality) {
+		this.nationality = nationality;
+	}
 	@Enumerated(EnumType.STRING)
 	public FacilityType getPlaceOfBirthFacilityType() {
 		return placeOfBirthFacilityType;

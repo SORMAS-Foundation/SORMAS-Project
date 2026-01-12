@@ -104,6 +104,7 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 	public static final String BIRTH_WEIGHT = "birthWeight";
 	public static final String PASSPORT_NUMBER = "passportNumber";
 	public static final String NATIONAL_HEALTH_ID = "nationalHealthId";
+	public static final String NATIONALITY = "nationality";
 	public static final String EMAIL_ADDRESS = "emailAddress";
 	public static final String OTHER_CONTACT_DETAILS = "otherContactDetails";
 	public static final String PLACE_OF_BIRTH_FACILITY_TYPE = "placeOfBirthFacilityType";
@@ -347,6 +348,10 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	@HideForCountries
 	private String nationalHealthId;
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@HideForCountries
+	private String nationality;
 	@Valid
 	private List<LocationDto> addresses = new ArrayList<>();
 	@Valid
@@ -956,6 +961,13 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 
 	public void setNationalHealthId(String nationalHealthId) {
 		this.nationalHealthId = nationalHealthId;
+	}
+
+	public String getNationality() {
+		return nationality;
+	}
+	public void setNationality(String nationality) {
+		this.nationality = nationality;
 	}
 
 	public FacilityType getPlaceOfBirthFacilityType() {

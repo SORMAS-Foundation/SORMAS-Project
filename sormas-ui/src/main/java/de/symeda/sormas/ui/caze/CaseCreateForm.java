@@ -15,16 +15,15 @@
 
 package de.symeda.sormas.ui.caze;
 
+import static de.symeda.sormas.api.symptoms.SymptomsDto.*;
+import static de.symeda.sormas.api.symptoms.SymptomsDto.AGE_AT_ONSET_DAYS;
 import static de.symeda.sormas.ui.utils.CssStyles.ERROR_COLOR_PRIMARY;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.CssStyles.SOFT_REQUIRED;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.CssStyles.style;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.*;
+import static de.symeda.sormas.ui.utils.LayoutUtil.locsCss;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -225,7 +224,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 		addField(CaseDataDto.RE_INFECTION, NullableOptionGroup.class);
 
-		personCreateForm = new PersonCreateForm(showHomeAddressForm, true, true, showPersonSearchButton);
+		//Made showHomeAddressForm false
+		personCreateForm = new PersonCreateForm(false, true, true, showPersonSearchButton);
 		personCreateForm.setWidth(100, Unit.PERCENTAGE);
 		getContent().addComponent(personCreateForm, CaseDataDto.PERSON);
 
@@ -548,10 +548,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			handleDiseaseChanged(selectedDisease);
 
 			if (selectedDisease == Disease.NEONATAL_TETANUS) {
-				setVisible(true, epidField, diseaseField, responsibleRegionCombo, responsibleDistrictCombo, responsibleDistrictCombo, facilityOrHome, facilityDetails, facilityCombo, facilityType, reportDate);
-				personCreateForm.getField(PersonDto.BIRTH_DATE_YYYY).setVisible(false);
-				personCreateForm.getField(PersonDto.BIRTH_DATE_MM).setVisible(false);
-				personCreateForm.getField(PersonDto.BIRTH_DATE_DD).setVisible(false);
+				setVisible(true, epidField, diseaseField, responsibleRegionCombo, responsibleDistrictCombo, responsibleCommunityCombo, facilityOrHome, facilityDetails, facilityCombo, facilityType, reportDate);
 				personCreateForm.getField(PersonDto.PASSPORT_NUMBER).setVisible(false);
 				personCreateForm.getField(PersonDto.NATIONAL_HEALTH_ID).setVisible(false);
 				personCreateForm.getField(PersonDto.PHONE).setVisible(false);

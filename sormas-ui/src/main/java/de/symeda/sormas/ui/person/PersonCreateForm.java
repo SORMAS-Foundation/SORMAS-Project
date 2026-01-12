@@ -94,6 +94,7 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 	private static final String HTML_LAYOUT =
 		"%s" + fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD), fluidRowLocs(PersonDto.SEX))
 			+ fluidRowLocs(PersonDto.NATIONAL_HEALTH_ID, PersonDto.PASSPORT_NUMBER)
+			+ fluidRowLocs(6, PersonDto.NATIONALITY)
 			+ fluidRowLocs(PersonDto.PRESENT_CONDITION, SymptomsDto.ONSET_DATE) + fluidRowLocs(PersonDto.PHONE, PersonDto.EMAIL_ADDRESS)
 			+ fluidRowLocs(ENTER_HOME_ADDRESS_NOW) + loc(HOME_ADDRESS_HEADER) + divsCss(VSPACE_3, fluidRowLocs(HOME_ADDRESS_LOC));
 
@@ -193,6 +194,8 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 
 		nationalHealthIdField = addField(PersonDto.NATIONAL_HEALTH_ID, SormasTextField.class);
 		nationalHealthIdField.setNullRepresentation("");
+
+		addField(PersonDto.NATIONALITY, TextField.class);
 
 		ComboBox presentCondition = addField(PersonDto.PRESENT_CONDITION, ComboBox.class);
 		presentCondition.setVisible(showPresentCondition);
@@ -407,6 +410,7 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 		getField(PersonDto.EMAIL_ADDRESS).setEnabled(enabled);
 		getField(PersonDto.PASSPORT_NUMBER).setEnabled(enabled);
 		getField(PersonDto.NATIONAL_HEALTH_ID).setEnabled(enabled);
+		getField(PersonDto.NATIONALITY).setEnabled(enabled);
 		if (homeAddressForm != null) {
 			homeAddressForm.setEnabled(enabled || alwaysEnableAddressFields);
 		}
@@ -445,6 +449,7 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 			PersonDto.BIRTH_DATE_DD,
 			PersonDto.NATIONAL_HEALTH_ID,
 			PersonDto.PASSPORT_NUMBER,
+			PersonDto.NATIONALITY,
 			PersonDto.PHONE,
 			PersonDto.EMAIL_ADDRESS);
 

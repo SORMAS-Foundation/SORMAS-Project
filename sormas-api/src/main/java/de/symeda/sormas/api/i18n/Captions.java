@@ -2197,6 +2197,7 @@ public interface Captions {
 	String moreActions = "moreActions";
 	String name = "name";
 	String nationalHealthId = "nationalHealthId";
+	String nationality = "nationality";
 	String notAvailableShort = "notAvailableShort";
 	String Notification_dateOfNotification = "Notification.dateOfNotification";
 	String Notification_noNotification = "Notification.noNotification";

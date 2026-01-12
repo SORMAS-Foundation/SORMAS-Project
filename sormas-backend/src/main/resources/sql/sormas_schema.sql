@@ -14531,4 +14531,7 @@ ALTER TABLE cases ADD COLUMN supplementalimmunization varchar(255);
 ALTER TABLE cases ADD COLUMN supplementalimmunizationdetails varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (589, 'Added columns to symptoms to implement hospitalization and case data for NNT');
+
+ALTER TABLE person ADD COLUMN nationality varchar(255);
+INSERT INTO schema_version (version_number, comment) VALUES (590, 'Added nationality for NNT');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
