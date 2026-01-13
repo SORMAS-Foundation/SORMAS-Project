@@ -23,14 +23,18 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FormType;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
+import de.symeda.sormas.app.util.DiseaseFieldHandler;
 import de.symeda.sormas.app.util.FieldVisibilityAndAccessHelper;
 
 public class BaseFragment extends Fragment {
@@ -145,5 +149,10 @@ public class BaseFragment extends Fragment {
 
 	public FirebaseAnalytics getFirebaseAnalytics() {
 		return firebaseAnalytics;
+	}
+
+	public void hideFieldsForDisease(Disease diseaseName, LinearLayout mainContent, FormType formType) {
+		DiseaseFieldHandler diseaseFieldHandler = new DiseaseFieldHandler(getContext());
+		diseaseFieldHandler.hideFieldsForDisease(diseaseName, mainContent, formType);
 	}
 }

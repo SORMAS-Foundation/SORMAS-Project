@@ -99,6 +99,7 @@
     <string name="action_report">Report Problem</string>
     <string name="action_repull_data">Re-synchronize data</string>
     <string name="action_reset_filters">Reset filters</string>
+    <string name="action_sync_forms">Sync forms only</string>
     <string name="action_save">Save</string>
     <string name="action_save_case">Save Case</string>
     <string name="action_save_clinical_visit">Save Clinical Visit</string>
@@ -523,6 +524,7 @@
     <string name="info_pick_person">Please look through this list of persons. <b>If you feel certain</b> that the personal details you have entered belong to one of these persons, select that person by tapping on them and then click the \"Select\" button below.</string>
     <string name="info_reset_pin">To reset your PIN you will <b>need your SORMAS user password.</b></string>
     <string name="info_resync_duration">Re-sync will probably take several minutes.</string>
+    <string name="info_sync_forms_duration">Synchronizing forms may take several minutes.</string>
     <string name="info_select_create_person">Please select a person or click \'Create\' to create a new one.</string>
     <string name="info_sign_in">Sign into SORMAS to continue the journey of saving lives.</string>
     <string name="info_similar_persons_found">SORMAS already contains at least one person that seems to be very similar to the personal details you have entered.</string>

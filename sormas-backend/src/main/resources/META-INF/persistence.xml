@@ -98,6 +98,8 @@
 		<class>de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategory</class>
 		<class>de.symeda.sormas.backend.person.notifier.Notifier</class>
 		<class>de.symeda.sormas.backend.therapy.DrugSusceptibility</class>
+		<class>de.symeda.sormas.backend.infrastructure.formfield.FormField</class>
+		<class>de.symeda.sormas.backend.infrastructure.formbuilder.FormBuilder</class>
 
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
 

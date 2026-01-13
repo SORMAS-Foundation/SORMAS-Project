@@ -39,6 +39,8 @@ import de.symeda.sormas.ui.configuration.infrastructure.ContinentsView;
 import de.symeda.sormas.ui.configuration.infrastructure.CountriesView;
 import de.symeda.sormas.ui.configuration.infrastructure.DistrictsView;
 import de.symeda.sormas.ui.configuration.infrastructure.FacilitiesView;
+import de.symeda.sormas.ui.configuration.infrastructure.FormBuildersView;
+import de.symeda.sormas.ui.configuration.infrastructure.FormFieldsView;
 import de.symeda.sormas.ui.configuration.infrastructure.PointsOfEntryView;
 import de.symeda.sormas.ui.configuration.infrastructure.PopulationDataView;
 import de.symeda.sormas.ui.configuration.infrastructure.RegionsView;
@@ -96,6 +98,12 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 
 			if (UiUtil.permitted(UserRight.POPULATION_MANAGE)) {
 				navigator.addView(PopulationDataView.VIEW_NAME, PopulationDataView.class);
+			}
+
+			// Form Fields and Form Builders
+			if (isAnySurveillanceEnabled) {
+				navigator.addView(FormFieldsView.VIEW_NAME, FormFieldsView.class);
+				navigator.addView(FormBuildersView.VIEW_NAME, FormBuildersView.class);
 			}
 		}
 
@@ -214,6 +222,20 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 				menu.addView(
 					PopulationDataView.VIEW_NAME,
 					I18nProperties.getPrefixCaption("View", PopulationDataView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+					null,
+					false);
+			}
+
+			// Form Fields and Form Builders
+			if (isAnySurveillanceEnabled) {
+				menu.addView(
+					FormFieldsView.VIEW_NAME,
+					I18nProperties.getPrefixCaption("View", FormFieldsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+					null,
+					false);
+				menu.addView(
+					FormBuildersView.VIEW_NAME,
+					I18nProperties.getPrefixCaption("View", FormBuildersView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
 					null,
 					false);
 			}

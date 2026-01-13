@@ -2485,6 +2485,14 @@ public interface Captions {
 	String regionActiveRegions = "regionActiveRegions";
 	String regionAllRegions = "regionAllRegions";
 	String regionArchivedRegions = "regionArchivedRegions";
+	String formFieldsAvailable = "formFieldsAvailable";
+	String formFieldsSelected = "formFieldsSelected";
+	String formFieldsActiveFormFields = "formFieldsActiveFormFields";
+	String formFieldsArchivedFormFields = "formFieldsArchivedFormFields";
+	String formFieldsAllFormFields = "formFieldsAllFormFields";
+	String formBuilderActiveFormBuilders = "formBuilderActiveFormBuilders";
+	String formBuilderArchivedFormBuilders = "formBuilderArchivedFormBuilders";
+	String formBuilderAllFormBuilders = "formBuilderAllFormBuilders";
 	String regionName = "regionName";
 	String registerInPatientDiaryButton = "registerInPatientDiaryButton";
 	String remove = "remove";
