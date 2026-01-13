@@ -24,6 +24,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import de.symeda.sormas.api.utils.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -45,17 +46,6 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
-import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DependingOnFeatureType;
-import de.symeda.sormas.api.utils.Diseases;
-import de.symeda.sormas.api.utils.EmbeddedPersonalData;
-import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
-import de.symeda.sormas.api.utils.FieldConstraints;
-import de.symeda.sormas.api.utils.HideForCountries;
-import de.symeda.sormas.api.utils.HideForCountriesExcept;
-import de.symeda.sormas.api.utils.Outbreaks;
-import de.symeda.sormas.api.utils.PersonalData;
-import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 @DependingOnFeatureType(featureType = {
@@ -114,6 +104,7 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 	public static final String BIRTH_WEIGHT = "birthWeight";
 	public static final String PASSPORT_NUMBER = "passportNumber";
 	public static final String NATIONAL_HEALTH_ID = "nationalHealthId";
+	public static final String NATIONALITY = "nationality";
 	public static final String EMAIL_ADDRESS = "emailAddress";
 	public static final String OTHER_CONTACT_DETAILS = "otherContactDetails";
 	public static final String PLACE_OF_BIRTH_FACILITY_TYPE = "placeOfBirthFacilityType";
@@ -132,6 +123,18 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 	public static final String IS_INCAPACITATED = "incapacitated";
 	public static final String ENTRY_DATE = "entryDate";
 	public static final String LIVING_STATUS = "livingStatus";
+	public static final String RECEIVED_ANTENATAL_CARE = "receivedAntenatalCare";
+	public static final String RECEIVED_ANTENATAL_CARE_WHERE = "receivedAntenatalCareWhere";
+	public static final String PRENATAL_TOTAL_VISITS = "prenatalTotalVisits";
+	public static final String ATTENDED_BY_TRAINED_TBA = "attendedByTrainedTBA";
+	public static final String ATTENDED_BY_TRAINED_TBA_MIDWIFE_NAME = "attendedByTrainedTBAMidwifeName";
+	public static final String ATTENDED_BY_DOCTOR_NURSE = "attendedByDoctorNurse";
+	public static final String CUT_CORD_WITH_STERILE_BLADE = "cutCordWithSterileBlade";
+	public static final String CORD_TREATED_WITH_ANYTHING = "cordTreatedWithAnything";
+	public static final String CORD_TREATED_WITH_ANYTHING_WHERE = "cordTreatedWithAnythingWhere";
+	public static final String LOCATION_OF_BIRTH = "locationOfBirth";
+	public static final String BIRTH_IN_INSTITUTION = "birthInInstitution";
+	public static final String DESCRIBE_TREATMENT_OF_CARD = "describeTreatmentOfCard";
 	private static final long serialVersionUID = -8558187171374254398L;
 
 	// Fields are declared in the order they should appear in the import template
@@ -345,6 +348,10 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	@HideForCountries
 	private String nationalHealthId;
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@HideForCountries
+	private String nationality;
 	@Valid
 	private List<LocationDto> addresses = new ArrayList<>();
 	@Valid
@@ -395,6 +402,19 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 	@SensitiveData
 	@Diseases(value = {Disease.TUBERCULOSIS, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, Disease.INVASIVE_MENINGOCOCCAL_INFECTION})
 	private LivingStatus livingStatus;
+
+	private YesNoUnknown receivedAntenatalCare;
+	private String receivedAntenatalCareWhere;
+	private Integer prenatalTotalVisits;
+	private YesNoUnknown attendedByTrainedTBA;
+	private String attendedByTrainedTBAMidwifeName;
+	private AttendedBy attendedByDoctorNurse;
+	private YesNoUnknown cutCordWithSterileBlade;
+	private YesNoUnknown cordTreatedWithAnything;
+	private String cordTreatedWithAnythingWhere;
+	private LocationOfBirth locationOfBirth;
+	private YesNoUnknown birthInInstitution;
+	private String describeTreatmentOfCard;
 
 	@SuppressWarnings("serial")
 	public static class SeveralNonPrimaryContactDetailsException extends RuntimeException {
@@ -943,6 +963,13 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 		this.nationalHealthId = nationalHealthId;
 	}
 
+	public String getNationality() {
+		return nationality;
+	}
+	public void setNationality(String nationality) {
+		this.nationality = nationality;
+	}
+
 	public FacilityType getPlaceOfBirthFacilityType() {
 		return placeOfBirthFacilityType;
 	}
@@ -1094,6 +1121,102 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 
 	public void setLivingStatus(LivingStatus livingStatus) {
 		this.livingStatus = livingStatus;
+	}
+
+	public YesNoUnknown getReceivedAntenatalCare() {
+		return receivedAntenatalCare;
+	}
+
+	public void setReceivedAntenatalCare(YesNoUnknown receivedAntenatalCare) {
+		this.receivedAntenatalCare = receivedAntenatalCare;
+	}
+
+	public String getReceivedAntenatalCareWhere() {
+		return receivedAntenatalCareWhere;
+	}
+
+	public void setReceivedAntenatalCareWhere(String receivedAntenatalCareWhere) {
+		this.receivedAntenatalCareWhere = receivedAntenatalCareWhere;
+	}
+
+	public Integer getPrenatalTotalVisits() {
+		return prenatalTotalVisits;
+	}
+
+	public void setPrenatalTotalVisits(Integer prenatalTotalVisits) {
+		this.prenatalTotalVisits = prenatalTotalVisits;
+	}
+
+	public YesNoUnknown getAttendedByTrainedTBA() {
+		return attendedByTrainedTBA;
+	}
+
+	public void setAttendedByTrainedTBA(YesNoUnknown attendedByTrainedTBA) {
+		this.attendedByTrainedTBA = attendedByTrainedTBA;
+	}
+
+	public String getAttendedByTrainedTBAMidwifeName() {
+		return attendedByTrainedTBAMidwifeName;
+	}
+
+	public void setAttendedByTrainedTBAMidwifeName(String attendedByTrainedTBAMidwifeName) {
+		this.attendedByTrainedTBAMidwifeName = attendedByTrainedTBAMidwifeName;
+	}
+
+	public AttendedBy getAttendedByDoctorNurse() {
+		return attendedByDoctorNurse;
+	}
+
+	public void setAttendedByDoctorNurse(AttendedBy attendedByDoctorNurse) {
+		this.attendedByDoctorNurse = attendedByDoctorNurse;
+	}
+
+	public YesNoUnknown getCutCordWithSterileBlade() {
+		return cutCordWithSterileBlade;
+	}
+
+	public void setCutCordWithSterileBlade(YesNoUnknown cutCordWithSterileBlade) {
+		this.cutCordWithSterileBlade = cutCordWithSterileBlade;
+	}
+
+	public YesNoUnknown getCordTreatedWithAnything() {
+		return cordTreatedWithAnything;
+	}
+
+	public void setCordTreatedWithAnything(YesNoUnknown cordTreatedWithAnything) {
+		this.cordTreatedWithAnything = cordTreatedWithAnything;
+	}
+
+	public String getCordTreatedWithAnythingWhere() {
+		return cordTreatedWithAnythingWhere;
+	}
+
+	public void setCordTreatedWithAnythingWhere(String cordTreatedWithAnythingWhere) {
+		this.cordTreatedWithAnythingWhere = cordTreatedWithAnythingWhere;
+	}
+
+	public LocationOfBirth getLocationOfBirth() {
+		return locationOfBirth;
+	}
+
+	public void setLocationOfBirth(LocationOfBirth locationOfBirth) {
+		this.locationOfBirth = locationOfBirth;
+	}
+
+	public YesNoUnknown getBirthInInstitution() {
+		return birthInInstitution;
+	}
+
+	public void setBirthInInstitution(YesNoUnknown birthInInstitution) {
+		this.birthInInstitution = birthInInstitution;
+	}
+
+	public String getDescribeTreatmentOfCard() {
+		return describeTreatmentOfCard;
+	}
+
+	public void setDescribeTreatmentOfCard(String describeTreatmentOfCard) {
+		this.describeTreatmentOfCard = describeTreatmentOfCard;
 	}
 
 	@Override

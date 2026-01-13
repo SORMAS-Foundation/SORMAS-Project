@@ -729,6 +729,7 @@ public interface Strings {
 	String headingInfrastructureLocked = "headingInfrastructureLocked";
 	String headingIntroduction = "headingIntroduction";
 	String headingInvalidDateEntered = "headingInvalidDateEntered";
+	String headingInvestigatingOfficer = "headingInvestigatingOfficer";
 	String headingLabMessageCorrectionThrough = "headingLabMessageCorrectionThrough";
 	String headingLaboratoryEnvironmentSample = "headingLaboratoryEnvironmentSample";
 	String headingLaboratorySample = "headingLaboratorySample";
@@ -1691,6 +1692,7 @@ public interface Strings {
 	String notificationTaskStartGeneral = "notificationTaskStartGeneral";
 	String notificationTaskStartSpecific = "notificationTaskStartSpecific";
 	String notificationVisitCompleted = "notificationVisitCompleted";
+	String notifyInvestigate = "headingnotifyInvestigate";
 	String notSpecified = "notSpecified";
 	String number = "number";
 	String numberEight = "numberEight";

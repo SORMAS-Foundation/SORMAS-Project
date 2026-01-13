@@ -14459,6 +14459,81 @@ alter table samples_history add idsrdiagnosisdetails varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (584, 'Add IDSR diagnosis fields to samples');
 
+-- 22-12-25 Add NNT casecreate and case data fields
+alter table cases add notifiedby varchar(255);
+alter table cases add dateofnotification date;
+alter table cases add dateofinvestigation date;
+alter table cases add division varchar(255);
+alter table cases add compoundowner varchar(255);
+alter table cases add nationality varchar(255);
+alter table cases_history add notifiedby varchar(255);
+alter table cases_history add dateofnotification date;
+alter table cases_history add dateofinvestigation date;
+alter table cases_history add division varchar(255);
+alter table cases_history add compoundowner varchar(255);
+alter table cases_history add nationality varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (585, 'Add NNT casecreate and case data fields');
+
+ALTER TABLE cases ADD COLUMN mothervaccinatedwithtt varchar(255);
+ALTER TABLE cases ADD COLUMN motherhavecard varchar(255);
+ALTER TABLE cases ADD COLUMN mothernumberofdoses varchar(255);
+ALTER TABLE cases ADD COLUMN mothervaccinationstatus varchar(255);
+ALTER TABLE cases ADD COLUMN motherttdateone date;
+ALTER TABLE cases ADD COLUMN motherttdatetwo date;
+ALTER TABLE cases ADD COLUMN motherttdatethree date;
+ALTER TABLE cases ADD COLUMN motherttdatefour date;
+ALTER TABLE cases ADD COLUMN motherttdatefive date;
+ALTER TABLE cases ADD COLUMN motherlastdosedate date;
+
+INSERT INTO schema_version (version_number, comment) VALUES (586, 'Added columns to cases to implement MOTHER VACCINATION HISTORY');
+
+-- 23-12-25 Add NNT personedit data fields to implement birth of infant
+ALTER TABLE person ADD COLUMN receivedantenatalcare varchar(255);
+ALTER TABLE person ADD COLUMN receivedantenatalcarewhere varchar(255);
+ALTER TABLE person ADD COLUMN prenataltotalvisits varchar(255);
+ALTER TABLE person ADD COLUMN attendedbytrainedtba varchar(255);
+ALTER TABLE person ADD COLUMN attendedbytrainedtbamidwifename varchar(255);
+ALTER TABLE person ADD COLUMN attendedbydoctornurse varchar(255);
+ALTER TABLE person ADD COLUMN locationofdelivery varchar(255);
+ALTER TABLE person ADD COLUMN birthbyinstitution varchar(255);
+ALTER TABLE person ADD COLUMN birthbyinstitutionname varchar(255);
+ALTER TABLE person ADD COLUMN cutcordwithsterileblade varchar(255);
+ALTER TABLE person ADD COLUMN cordtreatedwithanything varchar(255);
+ALTER TABLE person ADD COLUMN cordtreatedwithanythingwhere varchar(255);
+ALTER TABLE person ADD COLUMN locationofbirth varchar(255);
+ALTER TABLE person ADD COLUMN birthininstitution varchar(255);
+ALTER TABLE person ADD COLUMN describetreatmentofcard varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (587, 'Added columns to person to implement BIRTH OF INFANT');
+
+ALTER TABLE symptoms ADD COLUMN babynormalatbirth varchar(255);
+ALTER TABLE symptoms ADD COLUMN ageatdeathdays varchar(255);
+ALTER TABLE symptoms ADD COLUMN ageatonsetdays varchar(255);
+ALTER TABLE symptoms ADD COLUMN stoppedsuckingaftertwodays varchar(255);
+ALTER TABLE symptoms ADD COLUMN normalcryandsuck varchar(255);
+ALTER TABLE symptoms ADD COLUMN stiffness varchar(255);
+ALTER TABLE symptoms ADD COLUMN outcome varchar(255);
+ALTER TABLE symptoms ADD COLUMN babyDied varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (588, 'Added columns to symptoms to implement CLINICAL HISTORY');
+
+ALTER TABLE hospitalization ADD COLUMN hospitalrecordnumber varchar(255);
+ALTER TABLE hospitalization ADD COLUMN selectinpatientoutpatient varchar(255);
+ALTER TABLE cases ADD COLUMN investigatorname varchar(255);
+ALTER TABLE cases ADD COLUMN investigatortitle varchar(255);
+ALTER TABLE cases ADD COLUMN investigatorunit varchar(255);
+ALTER TABLE cases ADD COLUMN investigatoraddress varchar(255);
+ALTER TABLE cases ADD COLUMN investigatortel varchar(255);
+ALTER TABLE cases ADD COLUMN mothergivenprotectivedosett varchar(255);
+ALTER TABLE cases ADD COLUMN mothergivenprotectivedosettdate date;
+ALTER TABLE cases ADD COLUMN supplementalimmunization varchar(255);
+ALTER TABLE cases ADD COLUMN supplementalimmunizationdetails varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (589, 'Added columns to symptoms to implement hospitalization and case data for NNT');
+
+ALTER TABLE person ADD COLUMN nationality varchar(255);
+INSERT INTO schema_version (version_number, comment) VALUES (590, 'Added nationality for NNT');
 -- 2025-XX-XX Add Form Builder tables for dynamic form configuration
 CREATE TABLE forms(
 	id bigint not null,
@@ -14522,6 +14597,6 @@ CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON forms_for
 FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'forms_form_fields_history', true);
 ALTER TABLE forms_form_fields_history OWNER TO sormas_user;
 
-INSERT INTO schema_version (version_number, comment) VALUES (585, 'Add Form Builder tables for dynamic form configuration');
+INSERT INTO schema_version (version_number, comment) VALUES (591, 'Add Form Builder tables for dynamic form configuration');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

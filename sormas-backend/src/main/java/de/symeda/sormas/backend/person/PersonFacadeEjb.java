@@ -1018,6 +1018,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 		target.setPassportNumber(source.getPassportNumber());
 		target.setNationalHealthId(source.getNationalHealthId());
+		target.setNationality(source.getNationality());
 		target.setPlaceOfBirthFacilityType(source.getPlaceOfBirthFacilityType());
 		target.setSymptomJournalStatus(source.getSymptomJournalStatus());
 
@@ -1034,6 +1035,19 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		target.setEmancipated(source.isEmancipated());
 		target.setEntryDate(source.getEntryDate());
 		target.setLivingStatus(source.getLivingStatus());
+		target.setReceivedAntenatalCare(source.getReceivedAntenatalCare());
+		target.setReceivedAntenatalCareWhere(source.getReceivedAntenatalCareWhere());
+		target.setPrenatalTotalVisits(source.getPrenatalTotalVisits());
+		target.setAttendedByTrainedTBA(source.getAttendedByTrainedTBA());
+		target.setAttendedByTrainedTBAMidwifeName(source.getAttendedByTrainedTBAMidwifeName());
+		target.setAttendedByDoctorNurse(source.getAttendedByDoctorNurse());
+		target.setCutCordWithSterileBlade(source.getCutCordWithSterileBlade());
+		target.setCordTreatedWithAnything(source.getCordTreatedWithAnything());
+		target.setCordTreatedWithAnythingWhere(source.getCordTreatedWithAnythingWhere());
+		target.setLocationOfBirth(source.getLocationOfBirth());
+		target.setBirthInInstitution(source.getBirthInInstitution());
+		target.setDescribeTreatmentOfCard(source.getDescribeTreatmentOfCard());
+
 		return target;
 	}
 
@@ -1787,6 +1801,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 		target.setPassportNumber(source.getPassportNumber());
 		target.setNationalHealthId(source.getNationalHealthId());
+		target.setNationality(source.getNationality());
 		target.setPlaceOfBirthFacilityType(source.getPlaceOfBirthFacilityType());
 
 		if (!RequestContextHolder.isMobileSync()) {
@@ -1806,6 +1821,18 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		target.setEmancipated(source.isEmancipated());
 		target.setEntryDate(source.getEntryDate());
 		target.setLivingStatus(source.getLivingStatus());
+		target.setReceivedAntenatalCare(source.getReceivedAntenatalCare());
+		target.setReceivedAntenatalCareWhere(source.getReceivedAntenatalCareWhere());
+		target.setPrenatalTotalVisits(source.getPrenatalTotalVisits());
+		target.setAttendedByTrainedTBA(source.getAttendedByTrainedTBA());
+		target.setAttendedByTrainedTBAMidwifeName(source.getAttendedByTrainedTBAMidwifeName());
+		target.setAttendedByDoctorNurse(source.getAttendedByDoctorNurse());
+		target.setCutCordWithSterileBlade(source.getCutCordWithSterileBlade());
+		target.setCordTreatedWithAnything(source.getCordTreatedWithAnything());
+		target.setCordTreatedWithAnythingWhere(source.getCordTreatedWithAnythingWhere());
+		target.setLocationOfBirth(source.getLocationOfBirth());
+		target.setBirthInInstitution(source.getBirthInInstitution());
+		target.setDescribeTreatmentOfCard(source.getDescribeTreatmentOfCard());
 
 		return target;
 	}

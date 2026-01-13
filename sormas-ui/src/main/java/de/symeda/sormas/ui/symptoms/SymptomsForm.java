@@ -16,6 +16,7 @@
 package de.symeda.sormas.ui.symptoms;
 
 import static de.symeda.sormas.api.symptoms.SymptomsDto.*;
+import static de.symeda.sormas.api.symptoms.SymptomsDto.AGE_AT_ONSET_DAYS;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.CssStyles.H4;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
@@ -172,6 +173,17 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 							fluidColumn(6, 0,
 									locsCss(VSPACE_3, SHOCK,PNEUMONIA_CLINICAL_OR_RADIOLOGIC,OTHER_CLINICAL_PRESENTATION, OTHER_CLINICAL_PRESENTATION_TEXT))
 					);
+
+	public static final String NNT_LAYOUT = loc(SIGNS_AND_SYMPTOMS_HEADING_LOC) +
+			fluidRowLocs(SYMPTOMS_COMMENTS) +
+			fluidRowLocs(6, ONSET_DATE) +
+			fluidRowLocs(BABY_NORMAL_AT_BIRTH, STOPPED_SUCKING_AFTER_TWO_DAYS, BACKACHE) +
+			fluidRowLocs(6, NORMAL_CRY_AND_SUCK) +
+			fluidRowLocs(6, STIFFNESS) +
+			fluidRowLocs(OTHER_COMPLICATIONS, OTHER_COMPLICATIONS_TEXT) +
+			locsCss(VSPACE_3) +
+			fluidRowLocs(CONVULSION, OUTCOME) +
+			fluidRowLocs(BABY_DIED, AGE_AT_DEATH_DAYS, AGE_AT_ONSET_DAYS);
 	//@formatter:on
 
 	private static String createSymptomGroupLayout(SymptomGroup symptomGroup, String loc) {
@@ -277,7 +289,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		DateField onsetDateField = addField(ONSET_DATE, DateField.class);
 		ComboBox onsetSymptom = addField(ONSET_SYMPTOM, ComboBox.class);
-		if (symptomsContext == SymptomsContext.CASE) {
+		if (symptomsContext == SymptomsContext.CASE
+				&& disease != Disease.NEONATAL_TETANUS) {
 			// If the symptom onset date is after the hospital admission date, show a warning but don't prevent the user from saving
 			onsetDateField.addValueChangeListener(event -> {
 				if (caze.getHospitalization().getAdmissionDate() != null
@@ -492,10 +505,19 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			DIZZINESS_STANDING_UP,
 			HIGH_OR_LOW_BLOOD_PRESSURE,
 			URINARY_RETENTION,
+			BABY_DIED,
+			BABY_NORMAL_AT_BIRTH,
+			NORMAL_CRY_AND_SUCK,
+			STOPPED_SUCKING_AFTER_TWO_DAYS,
+			STIFFNESS,
 			FEVER);
 
 		addField(SYMPTOMS_COMMENTS, TextField.class).setDescription(
 			I18nProperties.getPrefixDescription(I18N_PREFIX, SYMPTOMS_COMMENTS, "") + "\n" + I18nProperties.getDescription(Descriptions.descGdpr));
+
+		addField(AGE_AT_DEATH_DAYS, TextField.class);
+		addField(AGE_AT_ONSET_DAYS, TextField.class);
+		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(AGE_AT_DEATH_DAYS, AGE_AT_ONSET_DAYS), BABY_DIED, Arrays.asList(SymptomState.YES), true);
 
 		addField(LESIONS_ONSET_DATE, DateField.class);
 
@@ -538,6 +560,14 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
 
+		if (disease == Disease.NEONATAL_TETANUS) {
+			Field<?> onsetDate = getFieldGroup().getField(ONSET_DATE);
+			if (onsetDate != null) {
+				onsetDate.setEnabled(true);
+				onsetDate.setReadOnly(false);
+			}
+		}
+
 		if (symptomsContext != SymptomsContext.CLINICAL_VISIT) {
 			setVisible(
 				false,
@@ -549,7 +579,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				HEIGHT,
 				MID_UPPER_ARM_CIRCUMFERENCE,
 				GLASGOW_COMA_SCALE);
-		} else {
+		} else if (disease != Disease.NEONATAL_TETANUS) {
 			setVisible(false, ONSET_SYMPTOM, ONSET_DATE);
 		}
 
@@ -968,9 +998,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 			addField(DATE_OF_ONSET_KNOWN, OptionGroup.class);
 
-			FieldHelper.setEnabledWhen(getFieldGroup(), DATE_OF_ONSET_KNOWN, YesNoUnknown.YES, ONSET_DATE, true);
+            FieldHelper.setEnabledWhen(getFieldGroup(), DATE_OF_ONSET_KNOWN, YesNoUnknown.YES, ONSET_DATE, true);
 
-			ComboBox clinicalPresentationStatusField = addField(CLINICAL_PRESENTATION_STATUS, ComboBox.class);
+            ComboBox clinicalPresentationStatusField = addField(CLINICAL_PRESENTATION_STATUS, ComboBox.class);
 			clinicalPresentationStatusField
 				.setItemCaption(ClinicalPresentationStatus.COMPATIBLE, ClinicalPresentationStatus.COMPATIBLE.buildCaption(disease.toShortString()));
 			getFieldGroup().getField(OTHER_CLINICAL_PRESENTATION_TEXT).setVisible(true);
@@ -1033,8 +1063,15 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				.replace(tbClinicalPresentationDetailsLoc, clinicalPresentationDetailsLoc)
 				.replace(vspace3Class, "");
 		}
-
-		return FINAL_HTML_LAYOUT;
+		if (caze == null) {
+			return FINAL_HTML_LAYOUT;
+		}
+		switch (caze.getDisease()) {
+			case NEONATAL_TETANUS:
+				return NNT_LAYOUT;
+			default:
+				return FINAL_HTML_LAYOUT;
+		}
 	}
 
 	public void initializeSymptomRequirementsForVisit(NullableOptionGroup visitStatus) {
@@ -1066,6 +1103,10 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	}
 
 	private void initializeSymptomRequirementsForCase() {
+
+		if (disease == Disease.NEONATAL_TETANUS) {
+			return;
+		}
 		addSoftRequiredStyleWhenSymptomaticAndCooperative(
 			getFieldGroup(),
 			ONSET_DATE,

@@ -44,22 +44,8 @@ import javax.persistence.Transient;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.externaldata.HasExternalData;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
-import de.symeda.sormas.api.person.ApproximateAgeType;
-import de.symeda.sormas.api.person.ArmedForcesRelationType;
-import de.symeda.sormas.api.person.BurialConductor;
-import de.symeda.sormas.api.person.CauseOfDeath;
-import de.symeda.sormas.api.person.DeathPlaceType;
-import de.symeda.sormas.api.person.EducationType;
-import de.symeda.sormas.api.person.IsPerson;
-import de.symeda.sormas.api.person.LivingStatus;
-import de.symeda.sormas.api.person.OccupationType;
-import de.symeda.sormas.api.person.OccupationTypeConverter;
-import de.symeda.sormas.api.person.PersonContactDetailType;
-import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.person.PresentCondition;
-import de.symeda.sormas.api.person.Salutation;
-import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.person.SymptomJournalStatus;
+import de.symeda.sormas.api.person.*;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
@@ -197,6 +183,7 @@ public class Person extends AbstractDomainObject implements IsPerson, HasExterna
 	private ArmedForcesRelationType armedForcesRelationType;
 	private String passportNumber;
 	private String nationalHealthId;
+	private String nationality;
 	private FacilityType placeOfBirthFacilityType;
 	private Set<Location> addresses = new HashSet<>();
 	private Set<PersonContactDetail> personContactDetails = new HashSet<>();
@@ -220,6 +207,18 @@ public class Person extends AbstractDomainObject implements IsPerson, HasExterna
 	private Date entryDate;
 
 	private LivingStatus livingStatus;
+	private YesNoUnknown receivedAntenatalCare;
+	private String receivedAntenatalCareWhere;
+	private Integer prenatalTotalVisits;
+	private YesNoUnknown attendedByTrainedTBA;
+	private String attendedByTrainedTBAMidwifeName;
+	private AttendedBy attendedByDoctorNurse;
+	private YesNoUnknown cutCordWithSterileBlade;
+	private YesNoUnknown cordTreatedWithAnything;
+	private String cordTreatedWithAnythingWhere;
+	private LocationOfBirth locationOfBirth;
+	private YesNoUnknown birthInInstitution;
+	private String describeTreatmentOfCard;
 
 	private List<Case> cases = new ArrayList<>();
 	private List<Contact> contacts = new ArrayList<>();
@@ -608,7 +607,13 @@ public class Person extends AbstractDomainObject implements IsPerson, HasExterna
 	public void setNationalHealthId(String nationalHealthId) {
 		this.nationalHealthId = nationalHealthId;
 	}
-
+	@Column
+	public String getNationality() {
+		return nationality;
+	}
+	public void setNationality(String nationality) {
+		this.nationality = nationality;
+	}
 	@Enumerated(EnumType.STRING)
 	public FacilityType getPlaceOfBirthFacilityType() {
 		return placeOfBirthFacilityType;
@@ -844,6 +849,102 @@ public class Person extends AbstractDomainObject implements IsPerson, HasExterna
 
 	public void setLivingStatus(LivingStatus livingStatus) {
 		this.livingStatus = livingStatus;
+	}
+
+	public YesNoUnknown getReceivedAntenatalCare() {
+		return receivedAntenatalCare;
+	}
+
+	public void setReceivedAntenatalCare(YesNoUnknown receivedAntenatalCare) {
+		this.receivedAntenatalCare = receivedAntenatalCare;
+	}
+
+	public String getReceivedAntenatalCareWhere() {
+		return receivedAntenatalCareWhere;
+	}
+
+	public void setReceivedAntenatalCareWhere(String receivedAntenatalCareWhere) {
+		this.receivedAntenatalCareWhere = receivedAntenatalCareWhere;
+	}
+
+	public Integer getPrenatalTotalVisits() {
+		return prenatalTotalVisits;
+	}
+
+	public void setPrenatalTotalVisits(Integer prenatalTotalVisits) {
+		this.prenatalTotalVisits = prenatalTotalVisits;
+	}
+
+	public YesNoUnknown getAttendedByTrainedTBA() {
+		return attendedByTrainedTBA;
+	}
+
+	public void setAttendedByTrainedTBA(YesNoUnknown attendedByTrainedTBA) {
+		this.attendedByTrainedTBA = attendedByTrainedTBA;
+	}
+
+	public String getAttendedByTrainedTBAMidwifeName() {
+		return attendedByTrainedTBAMidwifeName;
+	}
+
+	public void setAttendedByTrainedTBAMidwifeName(String attendedByTrainedTBAMidwifeName) {
+		this.attendedByTrainedTBAMidwifeName = attendedByTrainedTBAMidwifeName;
+	}
+
+	public AttendedBy getAttendedByDoctorNurse() {
+		return attendedByDoctorNurse;
+	}
+
+	public void setAttendedByDoctorNurse(AttendedBy attendedByDoctorNurse) {
+		this.attendedByDoctorNurse = attendedByDoctorNurse;
+	}
+
+	public YesNoUnknown getCutCordWithSterileBlade() {
+		return cutCordWithSterileBlade;
+	}
+
+	public void setCutCordWithSterileBlade(YesNoUnknown cutCordWithSterileBlade) {
+		this.cutCordWithSterileBlade = cutCordWithSterileBlade;
+	}
+
+	public YesNoUnknown getCordTreatedWithAnything() {
+		return cordTreatedWithAnything;
+	}
+
+	public void setCordTreatedWithAnything(YesNoUnknown cordTreatedWithAnything) {
+		this.cordTreatedWithAnything = cordTreatedWithAnything;
+	}
+
+	public String getCordTreatedWithAnythingWhere() {
+		return cordTreatedWithAnythingWhere;
+	}
+
+	public void setCordTreatedWithAnythingWhere(String cordTreatedWithAnythingWhere) {
+		this.cordTreatedWithAnythingWhere = cordTreatedWithAnythingWhere;
+	}
+
+	public LocationOfBirth getLocationOfBirth() {
+		return locationOfBirth;
+	}
+
+	public void setLocationOfBirth(LocationOfBirth locationOfBirth) {
+		this.locationOfBirth = locationOfBirth;
+	}
+
+	public YesNoUnknown getBirthInInstitution() {
+		return birthInInstitution;
+	}
+
+	public void setBirthInInstitution(YesNoUnknown birthInInstitution) {
+		this.birthInInstitution = birthInInstitution;
+	}
+
+	public String getDescribeTreatmentOfCard() {
+		return describeTreatmentOfCard;
+	}
+
+	public void setDescribeTreatmentOfCard(String describeTreatmentOfCard) {
+		this.describeTreatmentOfCard = describeTreatmentOfCard;
 	}
 
 	@Transient

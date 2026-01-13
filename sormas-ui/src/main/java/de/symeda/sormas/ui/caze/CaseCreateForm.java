@@ -15,16 +15,15 @@
 
 package de.symeda.sormas.ui.caze;
 
+import static de.symeda.sormas.api.symptoms.SymptomsDto.*;
+import static de.symeda.sormas.api.symptoms.SymptomsDto.AGE_AT_ONSET_DAYS;
 import static de.symeda.sormas.ui.utils.CssStyles.ERROR_COLOR_PRIMARY;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.CssStyles.SOFT_REQUIRED;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.CssStyles.style;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.*;
+import static de.symeda.sormas.ui.utils.LayoutUtil.locsCss;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -202,7 +201,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 		addField(CaseDataDto.CASE_REFERENCE_NUMBER, TextField.class);
 
-		addField(CaseDataDto.REPORT_DATE, DateField.class);
+		DateField reportDate = addField(CaseDataDto.REPORT_DATE, DateField.class);
 
 		final NullableOptionGroup caseClassificationGroup = addField(CaseDataDto.CASE_CLASSIFICATION, NullableOptionGroup.class);
 		caseClassificationGroup.removeItem(CaseClassification.CONFIRMED_NO_SYMPTOMS);
@@ -225,7 +224,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 		addField(CaseDataDto.RE_INFECTION, NullableOptionGroup.class);
 
-		personCreateForm = new PersonCreateForm(showHomeAddressForm, true, true, showPersonSearchButton);
+		//Made showHomeAddressForm false
+		personCreateForm = new PersonCreateForm(false, true, true, showPersonSearchButton);
 		personCreateForm.setWidth(100, Unit.PERCENTAGE);
 		getContent().addComponent(personCreateForm, CaseDataDto.PERSON);
 
@@ -542,8 +542,23 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			}
 		});
 		diseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> {
-			handleDiseaseChanged((Disease) valueChangeEvent.getProperty().getValue());
+			Disease selectedDisease = (Disease) valueChangeEvent.getProperty().getValue();
+
+			hideAllFields();
+			handleDiseaseChanged(selectedDisease);
+
+			if (selectedDisease == Disease.NEONATAL_TETANUS) {
+				setVisible(true, epidField, diseaseField, responsibleRegionCombo, responsibleDistrictCombo, responsibleCommunityCombo, facilityOrHome, facilityDetails, facilityCombo, facilityType, reportDate);
+				personCreateForm.getField(PersonDto.PASSPORT_NUMBER).setVisible(false);
+				personCreateForm.getField(PersonDto.NATIONAL_HEALTH_ID).setVisible(false);
+				personCreateForm.getField(PersonDto.PHONE).setVisible(false);
+				personCreateForm.getField(PersonDto.EMAIL_ADDRESS).setVisible(false);
+				personCreateForm.getField(PersonDto.PRESENT_CONDITION).setVisible(false);
+			}
 			personCreateForm.updatePresentConditionEnum((Disease) valueChangeEvent.getProperty().getValue());
+
+			// Show ONSET_DATE only for diseases that need it
+			personCreateForm.getField(SymptomsDto.ONSET_DATE).setVisible(false);
 		});
 
 		diseaseVariantField.addValueChangeListener(e -> {
