@@ -1,17 +1,17 @@
 /*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * <p>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
@@ -23,11 +23,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.server.FileResource;
+import com.vaadin.server.Page;
 import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Alignment;
@@ -57,22 +59,26 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 /**
  * Responsive navigation menu presenting a list of available views to the user.
  */
-@SuppressWarnings("serial")
 public class Menu extends CssLayout {
 
 	private static final String VALO_MENUITEMS = "valo-menuitems";
 	private static final String VALO_MENU_TOGGLE = "valo-menu-toggle";
 	private static final String VALO_MENU_VISIBLE = "valo-menu-visible";
-	private Navigator navigator;
-	private Map<String, Button> viewButtons = new HashMap<String, Button>();
+	private static final String BACKGROUND_COLOR_CONFIG_KEY = "MENU_BACKGROUND_COLOR";
 
-	private CssLayout menuItemsLayout;
-	private CssLayout menuPart;
+	private final Navigator navigator;
+	private final Map<String, Button> viewButtons = new HashMap<>();
+
+	private final CssLayout menuItemsLayout;
+	private final CssLayout menuPart;
 
 	public Menu(Navigator navigator) {
 
 		this.navigator = navigator;
 		setPrimaryStyleName(ValoTheme.MENU_ROOT);
+
+		defineCustomColorBackgroundIfSystemConfigured();
+
 		menuPart = new CssLayout();
 		menuPart.addStyleName(ValoTheme.MENU_PART);
 
@@ -136,14 +142,54 @@ public class Menu extends CssLayout {
 		addComponent(menuPart);
 	}
 
+	private void defineCustomColorBackgroundIfSystemConfigured() {
+		String backgroundColor = FacadeProvider.getSystemConfigurationValueFacade().getValue(BACKGROUND_COLOR_CONFIG_KEY);
+
+		if (StringUtils.isNotBlank(backgroundColor) || "default".equals(backgroundColor)) {
+			// no need to configure anything as we can keep the default color.
+			return;
+		}
+
+		addStyleName("color-background");
+
+		String actualColorBackgroundColor = determineActualColor(backgroundColor);
+
+		Page.Styles styles = Page.getCurrent().getStyles();
+		styles.add(
+			".valo-menu-color-background {\n" + "  background-color: " + actualColorBackgroundColor + " !important;\n"
+				+ "  background-image: -webkit-linear-gradient(right, " + actualColorBackgroundColor + " 0%, #EEFA5F" + actualColorBackgroundColor
+				+ " 8px) !important;\n" + "  background-image: linear-gradient(to left, " + actualColorBackgroundColor + " 0%, "
+				+ actualColorBackgroundColor + " 8px) !important;" + "  }");
+	}
+
+	private static @NotNull String determineActualColor(String backgroundColor) {
+		String actualColorBackgroundColor;
+		switch (backgroundColor) {
+		case "green":
+			actualColorBackgroundColor = "#108548";
+			break;
+		case "red":
+			actualColorBackgroundColor = "#dd2b0e";
+			break;
+		case "indigo":
+			actualColorBackgroundColor = "#7b58cf";
+			break;
+		case "gray":
+			actualColorBackgroundColor = "#737278";
+			break;
+		default:
+			actualColorBackgroundColor = backgroundColor;
+		}
+		return actualColorBackgroundColor;
+	}
+
 	private void showSettingsPopup() {
 
 		Window window = VaadinUiUtil.createPopupWindow();
 		window.setCaption(I18nProperties.getString(Strings.headingUserSettings));
 		window.setModal(true);
 
-		CommitDiscardWrapperComponent<UserSettingsForm> component =
-			ControllerProvider.getUserController().getUserSettingsComponent(() -> window.close());
+		CommitDiscardWrapperComponent<UserSettingsForm> component = ControllerProvider.getUserController().getUserSettingsComponent(window::close);
 
 		window.setContent(component);
 		UI.getCurrent().addWindow(window);

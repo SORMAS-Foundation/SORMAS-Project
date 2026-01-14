@@ -46,3 +46,5 @@ bin
 /sormas-e2e-tests/logs
 
 .DS_Store
+
+/.run-configs
