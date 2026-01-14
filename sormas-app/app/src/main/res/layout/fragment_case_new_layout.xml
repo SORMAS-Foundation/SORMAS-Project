@@ -131,12 +131,14 @@
                 style="@style/ControlSingleColumnStyle" />
 
             <TextView
+                android:id="@+id/caseData_headingCaseResponsibleJurisidction"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@{I18nProperties.getString(Strings.headingCaseResponsibleJurisidction)}"
                 style="@style/SubHeadingStyle" />
 
             <LinearLayout
+                android:id="@+id/caseData_responsibleRegionDistrict_Layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
@@ -279,7 +281,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/date_fields_layout"
+                android:id="@+id/caseData_dateFields_heading"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
@@ -366,7 +368,14 @@
                 app:value="@={data.person.presentCondition}"
                 style="@style/ControlSingleColumnStyle" />
 
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/person_nationality"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@={data.person.nationality}" />
+
         </LinearLayout>
+
+
 
     </ScrollView>
 

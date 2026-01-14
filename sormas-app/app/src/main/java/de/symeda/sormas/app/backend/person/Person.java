@@ -134,6 +134,9 @@ public class Person extends PseudonymizableAdo {
 	@Enumerated(EnumType.STRING)
 	private Sex sex;
 
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	private String nationality;
+
 	@Enumerated(EnumType.STRING)
 	private PresentCondition presentCondition;
 	@Enumerated(EnumType.STRING)
@@ -310,6 +313,14 @@ public class Person extends PseudonymizableAdo {
 
 	public void setSex(Sex sex) {
 		this.sex = sex;
+	}
+
+	public String getNationality() {
+		return nationality;
+	}
+
+	public void setNationality(String nationality) {
+		this.nationality = nationality;
 	}
 
 	public PresentCondition getPresentCondition() {

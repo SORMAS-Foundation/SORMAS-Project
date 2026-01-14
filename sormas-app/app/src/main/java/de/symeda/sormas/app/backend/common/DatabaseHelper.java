@@ -196,7 +196,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 363;
+	public static final int DATABASE_VERSION = 364;
 
 	private static DatabaseHelper instance = null;
 
@@ -3228,6 +3228,33 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				TableUtils.createTable(connectionSource, FormBuilder.class);
 				TableUtils.createTable(connectionSource, FormField.class);
 				TableUtils.createTable(connectionSource, FormBuilderFormField.class);
+
+				case 363:
+					currentVersion = 363;
+					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN nationality varchar(255) ;");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN notifiedby varchar(255);");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN dateofnotification date;");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN dateofinvestigation date;");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN mothervaccinatedwithtt varchar(255);");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN motherhavecard varchar(255);");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN mothernumberofdoses varchar(255);");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN mothervaccinationstatus varchar(255);");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN motherttdateone date;");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN motherttdatetwo date;");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN motherttdatethree date;");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN motherttdatefour date;");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN motherttdatefive date;");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN motherlastdosedate date;");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN investigatorname varchar(255);");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN investigatortitle varchar(255);");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN investigatorunit varchar(255);");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN investigatoraddress varchar(255);");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN investigatortel varchar(255);");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN mothergivenprotectivedosett varchar(255);");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN mothergivenprotectivedosettdate varchar(255);");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN supplementalimmunization varchar(255);");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN supplementalimmunizationdetails varchar(255);");
+
 
 				// ATTENTION: break should only be done after last version
 				break;
