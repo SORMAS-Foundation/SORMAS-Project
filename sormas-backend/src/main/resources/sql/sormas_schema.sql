@@ -13893,7 +13893,7 @@ CREATE TRIGGER delete_history_trigger
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('systemconfigurationcategory_history', 'id');
 ALTER TABLE systemconfigurationcategory_history OWNER TO sormas_user;
 
-INSERT INTO systemconfigurationcategory(id, uuid, changedate, creationdate, name, caption, description) 
+INSERT INTO systemconfigurationcategory(id, uuid, changedate, creationdate, name, caption, description)
 VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'GENERAL_CATEGORY', 'i18n/General/categoryGeneral', 'i18n/General/categoryGeneral');
 
 CREATE TABLE systemconfigurationvalue (
@@ -15063,10 +15063,7 @@ ALTER TABLE testreport_history ADD COLUMN straincallstatus character varying(255
 
 INSERT INTO schema_version (version_number, comment) VALUES (602, 'External message additional fields');
 
--- System configuration to visually distinguish different system types
-
-ALTER TABLE systemconfigurationvalue
-ADD CONSTRAINT uk_systemconfigurationvalue_config_key UNIQUE (config_key);
+ALTER TABLE systemconfigurationvalue ADD CONSTRAINT uk_systemconfigurationvalue_config_key UNIQUE (config_key);
 
 DO
 $$
@@ -15090,7 +15087,6 @@ $$
         END IF;
 
         -- Insert new configuration if missing
-
         INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_pattern,
                                              value_encrypt, data_provider, validation_message, changedate, creationdate,
                                              id,
@@ -15105,9 +15101,5 @@ $$
 $$
 LANGUAGE plpgsql;
 
-
-
-INSERT INTO schema_version (version_number, comment)
-VALUES (603, 'System configuration: to visually distinguish different system types');
-
+INSERT INTO schema_version (version_number, comment) VALUES (603, 'System configuration: to visually distinguish different system types');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
