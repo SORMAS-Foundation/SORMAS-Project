@@ -25,12 +25,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import android.util.Log;
 import android.webkit.WebView;
 
 import androidx.fragment.app.FragmentActivity;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FormType;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseConfirmationBasis;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -49,6 +51,7 @@ import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.caze.ScreeningType;
 import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.VaccinationStatus;
+import de.symeda.sormas.api.caze.caseimport.MotherVaccinationStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
@@ -461,6 +464,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		contentBinding.setVaccinationStatusClass(VaccinationStatus.class);
 		contentBinding.setTrimesterClass(Trimester.class);
 		contentBinding.setDifferentPlaceOfStayJurisdiction(differentPlaceOfStayJurisdiction);
+		contentBinding.setMotherVaccinationStatusClass(MotherVaccinationStatus.class);
 
 		Facility initialHealthFacility = record.getHealthFacility();
 
@@ -628,6 +632,15 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			.addValueChangedListener(e -> contentBinding.caseDataQuarantineReduced.setVisibility(record.isQuarantineReduced() ? VISIBLE : GONE));
 
 		CaseValidator.initializeProhibitionToWorkIntervalValidator(contentBinding);
+
+		Disease disease = record.getDisease();
+		if (disease == Disease.NEONATAL_TETANUS) {
+			handleNNT();
+		}
+
+		if (disease != null) {
+			super.hideFieldsForDisease(disease, contentBinding.mainContent, FormType.CASE_EDIT);
+		}
 	}
 
 	private void fillConfirmedCaseClassificationCombo() {
@@ -672,6 +685,15 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		contentBinding.caseDataQuarantineOrderedVerballyDate.initializeDateField(getChildFragmentManager());
 		contentBinding.caseDataQuarantineOrderedOfficialDocumentDate.initializeDateField(getChildFragmentManager());
 		contentBinding.caseDataQuarantineOfficialOrderSentDate.initializeDateField(getChildFragmentManager());
+		contentBinding.caseDataMotherTTDateOne.initializeDateField(getFragmentManager());
+		contentBinding.caseDataMotherTTDateTwo.initializeDateField(getFragmentManager());
+		contentBinding.caseDataMotherTTDateThree.initializeDateField(getFragmentManager());
+		contentBinding.caseDataMotherTTDateFour.initializeDateField(getFragmentManager());
+		contentBinding.caseDataMotherTTDateFive.initializeDateField(getFragmentManager());
+		contentBinding.caseDataMotherLastDoseDate.initializeDateField(getFragmentManager());
+		contentBinding.caseDataMotherGivenProtectiveDoseTTDate.initializeDateField(getFragmentManager());
+		contentBinding.caseDataDateOfInvestigation.initializeDateField(getFragmentManager());
+		contentBinding.caseDataDateOfNotification.initializeDateField(getFragmentManager());
 
 		// Replace classification user field with classified by field when case has been classified automatically
 		if (contentBinding.getData().getClassificationDate() != null && contentBinding.getData().getClassificationUser() == null) {
@@ -732,6 +754,47 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		contentBinding.caseDataDiseaseVariant.setSpinnerData(diseaseVariantList);
 		contentBinding.caseDataDiseaseVariant.setValue(null);
 		contentBinding.caseDataDiseaseVariant.setVisibility(diseaseVariants.isEmpty() ? GONE : VISIBLE);
+	}
+
+	private void handleNNT() {
+		FragmentCaseEditLayoutBinding contentBinding = getContentBinding();
+		YesNoUnknown motherHaveCard = contentBinding.caseDataMotherHaveCard != null
+				? (YesNoUnknown) contentBinding.caseDataMotherHaveCard.getValue() : null;
+		contentBinding.caseDataMotherNumberOfDoses.setVisibility(
+				motherHaveCard == YesNoUnknown.YES ? VISIBLE : GONE
+		);
+
+		String caseDataMotherNumberOfDoses = "0";
+		if (contentBinding.caseDataMotherNumberOfDoses != null &&
+				contentBinding.caseDataMotherNumberOfDoses.getValue() != null) {
+			caseDataMotherNumberOfDoses = contentBinding.caseDataMotherNumberOfDoses.getValue().toString();
+		}
+
+		if (caseDataMotherNumberOfDoses.isEmpty()) {
+			caseDataMotherNumberOfDoses = "0";
+		}
+
+		int numberOfDoses;
+		try {
+			numberOfDoses = Integer.parseInt(caseDataMotherNumberOfDoses);
+		} catch (NumberFormatException e) {
+			Log.e("NNT", "Invalid number format: " + caseDataMotherNumberOfDoses, e);
+			// Hide all fields on error
+			contentBinding.caseDataMotherTTDateOne.setVisibility(GONE);
+			contentBinding.caseDataMotherTTDateTwo.setVisibility(GONE);
+			contentBinding.caseDataMotherTTDateThree.setVisibility(GONE);
+			contentBinding.caseDataMotherTTDateFour.setVisibility(GONE);
+			contentBinding.caseDataMotherTTDateFive.setVisibility(GONE);
+			contentBinding.caseDataMotherLastDoseDate.setVisibility(GONE);
+			return;
+		}
+
+		contentBinding.caseDataMotherTTDateOne.setVisibility(numberOfDoses >= 1 ? VISIBLE : GONE);
+		contentBinding.caseDataMotherTTDateTwo.setVisibility(numberOfDoses >= 2 ? VISIBLE : GONE);
+		contentBinding.caseDataMotherTTDateThree.setVisibility(numberOfDoses >= 3 ? VISIBLE : GONE);
+		contentBinding.caseDataMotherTTDateFour.setVisibility(numberOfDoses >= 4 ? VISIBLE : GONE);
+		contentBinding.caseDataMotherTTDateFive.setVisibility(numberOfDoses >= 5 ? VISIBLE : GONE);
+		contentBinding.caseDataMotherLastDoseDate.setVisibility(numberOfDoses >= 6 ? VISIBLE : GONE);
 	}
 
 	@Override
