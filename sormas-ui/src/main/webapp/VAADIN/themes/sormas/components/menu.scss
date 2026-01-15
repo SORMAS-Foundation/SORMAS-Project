@@ -66,6 +66,7 @@ $valo-menu-background-color: $s-default-color !default;
 		  right: 0px;
 		  width: 4px;
 		  height: 74px;
+          background-color: $v-selection-color;
 		  content: "";
 		}
 	  }
@@ -123,5 +124,10 @@ $valo-menu-background-color: $s-default-color !default;
     .valo-menu .v-menubar-user-menu .v-menubar-menuitem-caption {
       width: auto;
     }
-  }    
+  }
+
+  .v-horizontallayout-environment-name {
+    font-size: 24px;
+    margin-bottom: -30px;
+  }
 }

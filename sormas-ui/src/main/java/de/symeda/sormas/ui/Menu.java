@@ -41,6 +41,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -85,10 +86,13 @@ public class Menu extends CssLayout {
 		menuPart.addStyleName(ValoTheme.MENU_PART);
 
 		// header of the menu
-		final HorizontalLayout top = new HorizontalLayout();
+		VerticalLayout topContainer = new VerticalLayout();
+		topContainer.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+		topContainer.addStyleName(ValoTheme.MENU_TITLE);
+		HorizontalLayout top = new HorizontalLayout();
 		top.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-		top.addStyleName(ValoTheme.MENU_TITLE);
 		top.setSpacing(true);
+
 		Label title = new Label(FacadeProvider.getConfigFacade().getSormasInstanceName());
 		title.setSizeUndefined();
 
@@ -103,8 +107,21 @@ public class Menu extends CssLayout {
 		CssStyles.style(image, ValoTheme.MENU_LOGO, ValoTheme.BUTTON_LINK);
 		top.addComponent(image);
 		top.addComponent(title);
-		top.addLayoutClickListener(listener -> SormasUI.get().getNavigator().navigateTo(SurveillanceDashboardView.VIEW_NAME));
-		menuPart.addComponent(top);
+		topContainer.addLayoutClickListener(listener -> SormasUI.get().getNavigator().navigateTo(SurveillanceDashboardView.VIEW_NAME));
+		topContainer.addComponent(top);
+		// TODO: new code to format
+
+		final HorizontalLayout environmentTitleContainer = new HorizontalLayout();
+		environmentTitleContainer.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+		environmentTitleContainer.setSpacing(false);
+		Label systemConfigurationLabel = new Label("QA");
+		systemConfigurationLabel.setSizeUndefined();
+		CssStyles.style(systemConfigurationLabel, CssStyles.LABEL_UNDERLINE);
+		environmentTitleContainer.addComponent(systemConfigurationLabel);
+		environmentTitleContainer.setStyleName("environment-name");
+		topContainer.addComponent(environmentTitleContainer);
+
+		menuPart.addComponent(topContainer);
 
 		// button for toggling the visibility of the menu when on a small screen
 		final Button showMenu = ButtonHelper.createIconButton(Captions.menu, VaadinIcons.MENU, event -> {
