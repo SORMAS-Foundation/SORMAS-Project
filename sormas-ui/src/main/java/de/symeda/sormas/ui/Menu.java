@@ -65,6 +65,8 @@ public class Menu extends CssLayout {
 	private static final String VALO_MENU_TOGGLE = "valo-menu-toggle";
 	private static final String VALO_MENU_VISIBLE = "valo-menu-visible";
 	private static final String BACKGROUND_COLOR_CONFIG_KEY = "MENU_BACKGROUND_COLOR";
+	private static final String DEFAULT_BACKGROUND_COLOR_NAME = "default";
+	private static final String COLOR_BACKGROUND_STYLE_NAME = "color-background";
 
 	private final Navigator navigator;
 	private final Map<String, Button> viewButtons = new HashMap<>();
@@ -145,21 +147,22 @@ public class Menu extends CssLayout {
 	private void defineCustomColorBackgroundIfSystemConfigured() {
 		String backgroundColor = FacadeProvider.getSystemConfigurationValueFacade().getValue(BACKGROUND_COLOR_CONFIG_KEY);
 
-		if (StringUtils.isNotBlank(backgroundColor) || "default".equals(backgroundColor)) {
+		if (StringUtils.isBlank(backgroundColor) || DEFAULT_BACKGROUND_COLOR_NAME.equals(backgroundColor)) {
 			// no need to configure anything as we can keep the default color.
 			return;
 		}
 
-		addStyleName("color-background");
+		addStyleName(COLOR_BACKGROUND_STYLE_NAME);
 
 		String actualColorBackgroundColor = determineActualColor(backgroundColor);
 
 		Page.Styles styles = Page.getCurrent().getStyles();
+		// specifying !important as inline CSS has lower precedence
 		styles.add(
-			".valo-menu-color-background {\n" + "  background-color: " + actualColorBackgroundColor + " !important;\n"
-				+ "  background-image: -webkit-linear-gradient(right, " + actualColorBackgroundColor + " 0%, #EEFA5F" + actualColorBackgroundColor
-				+ " 8px) !important;\n" + "  background-image: linear-gradient(to left, " + actualColorBackgroundColor + " 0%, "
-				+ actualColorBackgroundColor + " 8px) !important;" + "  }");
+				".valo-menu-color-background {\n" + "  background-color: " + actualColorBackgroundColor + " !important;\n"
+						+ "  background-image: -webkit-linear-gradient(right, " + actualColorBackgroundColor + " 0%, #EEFA5F" + actualColorBackgroundColor
+						+ " 8px) !important;\n" + "  background-image: linear-gradient(to left, " + actualColorBackgroundColor + " 0%, "
+						+ actualColorBackgroundColor + " 8px) !important;" + "  }");
 	}
 
 	private static @NotNull String determineActualColor(String backgroundColor) {
