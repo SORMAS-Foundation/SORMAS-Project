@@ -13893,7 +13893,7 @@ CREATE TRIGGER delete_history_trigger
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('systemconfigurationcategory_history', 'id');
 ALTER TABLE systemconfigurationcategory_history OWNER TO sormas_user;
 
-INSERT INTO systemconfigurationcategory(id, uuid, changedate, creationdate, name, caption, description)
+INSERT INTO systemconfigurationcategory(id, uuid, changedate, creationdate, name, caption, description) 
 VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'GENERAL_CATEGORY', 'i18n/General/categoryGeneral', 'i18n/General/categoryGeneral');
 
 CREATE TABLE systemconfigurationvalue (
@@ -15071,7 +15071,7 @@ $$
         general_configuration_id bigint;
 
     BEGIN
-        -- Check if the category 'EMAIL' already exists
+        -- Check if the category 'GENERAL_CATEGORY' already exists
         SELECT id
         INTO general_configuration_id
         FROM systemconfigurationcategory
