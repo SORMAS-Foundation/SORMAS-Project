@@ -15086,7 +15086,8 @@ $$
             RETURNING id INTO general_configuration_id;
         END IF;
 
-        -- Insert new configuration if missing
+        -- Insert new configurations if missing
+        -- Background color
         INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_pattern,
                                              value_encrypt, data_provider, validation_message, changedate, creationdate,
                                              id,
@@ -15097,6 +15098,19 @@ $$
                 'i18n/systemConfigurationValueValidationInvalidBackgroundColor', now(), now(), nextval('entity_seq'),
                 generate_base32_uuid())
         ON CONFLICT (config_key) DO NOTHING;
+
+        -- Menu Subtitle
+        INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_pattern,
+                                             value_encrypt, data_provider, validation_message, changedate, creationdate,
+                                             id,
+                                             uuid)
+        VALUES ('MENU_SUBTITLE', '', general_configuration_id, true,
+                '^\w{0,16}$', false,
+                null,
+                'i18n/systemConfigurationValueValidationMenuSubtitle', now(), now(), nextval('entity_seq'),
+                generate_base32_uuid())
+        ON CONFLICT (config_key) DO NOTHING;
+
     END
 $$
 LANGUAGE plpgsql;

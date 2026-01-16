@@ -126,8 +126,11 @@ $valo-menu-background-color: $s-default-color !default;
     }
   }
 
-  .v-horizontallayout-environment-name {
-    font-size: 24px;
-    margin-bottom: -30px;
+  .top-menu-container {
+    max-height: 115px;
+  }
+
+  .environment-name {
+    font-size: 26px;
   }
 }

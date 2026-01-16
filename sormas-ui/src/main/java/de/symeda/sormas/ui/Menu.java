@@ -88,7 +88,10 @@ public class Menu extends CssLayout {
 		// header of the menu
 		VerticalLayout topContainer = new VerticalLayout();
 		topContainer.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-		topContainer.addStyleName(ValoTheme.MENU_TITLE);
+		CssStyles.style(topContainer, ValoTheme.MENU_TITLE, "top-menu-container");
+		topContainer.setSpacing(false);
+		topContainer.setSpacing(false);
+
 		HorizontalLayout top = new HorizontalLayout();
 		top.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
 		top.setSpacing(true);
@@ -107,19 +110,16 @@ public class Menu extends CssLayout {
 		CssStyles.style(image, ValoTheme.MENU_LOGO, ValoTheme.BUTTON_LINK);
 		top.addComponent(image);
 		top.addComponent(title);
+
 		topContainer.addLayoutClickListener(listener -> SormasUI.get().getNavigator().navigateTo(SurveillanceDashboardView.VIEW_NAME));
 		topContainer.addComponent(top);
 		// TODO: new code to format
 
-		final HorizontalLayout environmentTitleContainer = new HorizontalLayout();
-		environmentTitleContainer.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-		environmentTitleContainer.setSpacing(false);
-		Label systemConfigurationLabel = new Label("QA");
+		// max allowed length: 1234567891011121
+		Label systemConfigurationLabel = new Label("1234567891011121");
 		systemConfigurationLabel.setSizeUndefined();
-		CssStyles.style(systemConfigurationLabel, CssStyles.LABEL_UNDERLINE);
-		environmentTitleContainer.addComponent(systemConfigurationLabel);
-		environmentTitleContainer.setStyleName("environment-name");
-		topContainer.addComponent(environmentTitleContainer);
+		CssStyles.style(systemConfigurationLabel, CssStyles.LABEL_UNDERLINE, "environment-name");
+		topContainer.addComponent(systemConfigurationLabel);
 
 		menuPart.addComponent(topContainer);
 
