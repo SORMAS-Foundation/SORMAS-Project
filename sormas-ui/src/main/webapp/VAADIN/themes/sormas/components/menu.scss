@@ -63,7 +63,7 @@ $valo-menu-background-color: $s-default-color !default;
 		&::before {
 		  position: absolute;
 		  top: -12px;
-		  right: 0px;
+          right: 0;
 		  width: 4px;
 		  height: 74px;
           background-color: $v-selection-color;
@@ -73,7 +73,7 @@ $valo-menu-background-color: $s-default-color !default;
 	}
 	
     .v-menubar-user-menu {
-    	margin: 8px 0px;
+      margin: 8px 0;
     	text-align: left;
     }
   }
@@ -130,7 +130,7 @@ $valo-menu-background-color: $s-default-color !default;
     max-height: 115px;
   }
 
-  .environment-name {
-    font-size: 26px;
+  .menu-subtitle {
+    font-size: 24px;
   }
 }

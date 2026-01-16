@@ -22,8 +22,9 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.Navigator;
@@ -65,9 +66,15 @@ public class Menu extends CssLayout {
 	private static final String VALO_MENUITEMS = "valo-menuitems";
 	private static final String VALO_MENU_TOGGLE = "valo-menu-toggle";
 	private static final String VALO_MENU_VISIBLE = "valo-menu-visible";
+
 	private static final String BACKGROUND_COLOR_CONFIG_KEY = "MENU_BACKGROUND_COLOR";
+	private static final String MENU_SUBTITLE_CONFIG_KEY = "MENU_SUBTITLE";
+
 	private static final String DEFAULT_BACKGROUND_COLOR_NAME = "default";
+
 	private static final String COLOR_BACKGROUND_STYLE_NAME = "color-background";
+	private static final String MENU_SUBTITLE_STYLE_NAME = "menu-subtitle";
+	private static final String TOP_MENU_CONTAINER_STYLE_NAME = "top-menu-container";
 
 	private final Navigator navigator;
 	private final Map<String, Button> viewButtons = new HashMap<>();
@@ -88,7 +95,7 @@ public class Menu extends CssLayout {
 		// header of the menu
 		VerticalLayout topContainer = new VerticalLayout();
 		topContainer.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-		CssStyles.style(topContainer, ValoTheme.MENU_TITLE, "top-menu-container");
+		CssStyles.style(topContainer, ValoTheme.MENU_TITLE, TOP_MENU_CONTAINER_STYLE_NAME);
 		topContainer.setSpacing(false);
 		topContainer.setSpacing(false);
 
@@ -113,13 +120,8 @@ public class Menu extends CssLayout {
 
 		topContainer.addLayoutClickListener(listener -> SormasUI.get().getNavigator().navigateTo(SurveillanceDashboardView.VIEW_NAME));
 		topContainer.addComponent(top);
-		// TODO: new code to format
 
-		// max allowed length: 1234567891011121
-		Label systemConfigurationLabel = new Label("1234567891011121");
-		systemConfigurationLabel.setSizeUndefined();
-		CssStyles.style(systemConfigurationLabel, CssStyles.LABEL_UNDERLINE, "environment-name");
-		topContainer.addComponent(systemConfigurationLabel);
+		defineMenuSubtitleIfSystemConfigured(topContainer);
 
 		menuPart.addComponent(topContainer);
 
@@ -176,10 +178,25 @@ public class Menu extends CssLayout {
 		Page.Styles styles = Page.getCurrent().getStyles();
 		// specifying !important as inline CSS has lower precedence
 		styles.add(
-				".valo-menu-color-background {\n" + "  background-color: " + actualColorBackgroundColor + " !important;\n"
-						+ "  background-image: -webkit-linear-gradient(right, " + actualColorBackgroundColor + " 0%, #EEFA5F" + actualColorBackgroundColor
-						+ " 8px) !important;\n" + "  background-image: linear-gradient(to left, " + actualColorBackgroundColor + " 0%, "
-						+ actualColorBackgroundColor + " 8px) !important;" + "  }");
+			".valo-menu-color-background {\n" + "  background-color: " + actualColorBackgroundColor + " !important;\n"
+				+ "  background-image: -webkit-linear-gradient(right, " + actualColorBackgroundColor + " 0%, #EEFA5F" + actualColorBackgroundColor
+				+ " 8px) !important;\n" + "  background-image: linear-gradient(to left, " + actualColorBackgroundColor + " 0%, "
+				+ actualColorBackgroundColor + " 8px) !important;" + "  }");
+	}
+
+	private static void defineMenuSubtitleIfSystemConfigured(VerticalLayout topContainer) {
+		String menuSubtitle = FacadeProvider.getSystemConfigurationValueFacade().getValue(MENU_SUBTITLE_CONFIG_KEY);
+
+		if (StringUtils.isBlank(menuSubtitle)) {
+			// no need to configure anything as we can keep the default color.
+			return;
+		}
+
+		Label systemConfigurationLabel = new Label(menuSubtitle);
+		systemConfigurationLabel.setSizeUndefined();
+		CssStyles.style(systemConfigurationLabel, CssStyles.LABEL_UNDERLINE, MENU_SUBTITLE_STYLE_NAME);
+
+		topContainer.addComponent(systemConfigurationLabel);
 	}
 
 	private static @NotNull String determineActualColor(String backgroundColor) {
