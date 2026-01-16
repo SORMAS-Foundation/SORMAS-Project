@@ -97,7 +97,6 @@ public class Menu extends CssLayout {
 		topContainer.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
 		CssStyles.style(topContainer, ValoTheme.MENU_TITLE, TOP_MENU_CONTAINER_STYLE_NAME);
 		topContainer.setSpacing(false);
-		topContainer.setSpacing(false);
 
 		HorizontalLayout top = new HorizontalLayout();
 		top.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
@@ -188,7 +187,7 @@ public class Menu extends CssLayout {
 		String menuSubtitle = FacadeProvider.getSystemConfigurationValueFacade().getValue(MENU_SUBTITLE_CONFIG_KEY);
 
 		if (StringUtils.isBlank(menuSubtitle)) {
-			// no need to configure anything as we can keep the default color.
+			// no need to configure anything as no subtitled must be added
 			return;
 		}
 
