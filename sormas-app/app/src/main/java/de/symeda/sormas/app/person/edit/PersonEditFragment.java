@@ -33,6 +33,7 @@ import androidx.databinding.ObservableList;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FormType;
 import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -41,6 +42,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ArmedForcesRelationType;
+import de.symeda.sormas.api.person.AttendedBy;
 import de.symeda.sormas.api.person.BurialConductor;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.DeathPlaceType;
@@ -52,6 +54,7 @@ import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
@@ -90,6 +93,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 	private AbstractDomainObject rootData;
 	private IEntryItemOnClickListener onAddressItemClickListener;
 	private IEntryItemOnClickListener onPersonContactDetailItemClickListener;
+	private Disease disease;
 
 	// Instance methods
 
@@ -558,6 +562,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		if (ado instanceof Case) {
 			record = ((Case) ado).getPerson();
 			rootData = ado;
+			disease = ((Case) ado).getDisease();
 		} else if (ado instanceof Contact) {
 			record = ((Contact) ado).getPerson();
 			rootData = ado;
@@ -594,8 +599,14 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		contentBinding.setPersonContactDetailList(getPersonContactDetails());
 		contentBinding.setPersonContactDetailItemClickCallback(onPersonContactDetailItemClickListener);
 		getContentBinding().setPersonContactDetailBindCallback(this::setPersonContactDetailFieldVisibilitiesAndAccesses);
+		contentBinding.setAttendedByClass(AttendedBy.class);
+		contentBinding.setYesNoUnknownClass(YesNoUnknown.class);
 
 		setUpLayoutBinding(this, record, contentBinding);
+
+		if (disease != null) {
+			super.hideFieldsForDisease(disease, contentBinding.mainContent, FormType.PERSON_EDIT);
+		}
 	}
 
 	@Override

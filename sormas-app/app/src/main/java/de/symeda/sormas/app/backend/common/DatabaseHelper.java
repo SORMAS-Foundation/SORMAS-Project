@@ -196,7 +196,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 364;
+	public static final int DATABASE_VERSION = 365;
 
 	private static DatabaseHelper instance = null;
 
@@ -3254,6 +3254,19 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN mothergivenprotectivedosettdate varchar(255);");
 					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN supplementalimmunization varchar(255);");
 					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN supplementalimmunizationdetails varchar(255);");
+
+				case 364:
+					currentVersion = 364;
+					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN receivedantenatalcare VARCHAR(255);");
+					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN prenataltotalvisits VARCHAR(255);");
+					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN attendedbytrainedtba VARCHAR(255);");
+					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN attendedbytrainedtbamidwifename VARCHAR(255);");
+					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN attendedbydoctornurse VARCHAR(255);");
+					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN cutcordwithsterileblade VARCHAR(255);");
+					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN cordtreatedwithanything VARCHAR(255);");
+					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN cordtreatedwithanythingwhere VARCHAR(255);");
+					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN describetreatmentofcard VARCHAR(512);");
+					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN nationality varchar(255);");
 
 
 				// ATTENTION: break should only be done after last version

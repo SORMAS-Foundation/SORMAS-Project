@@ -149,6 +149,15 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 		target.setBirthCountry(DatabaseHelper.getCountryDao().getByReferenceDto(source.getBirthCountry()));
 		target.setCitizenship(DatabaseHelper.getCountryDao().getByReferenceDto(source.getCitizenship()));
 		target.setAdditionalDetails(source.getAdditionalDetails());
+		target.setReceivedAntenatalCare(source.getReceivedAntenatalCare());
+		target.setPrenatalTotalVisits(source.getPrenatalTotalVisits());
+		target.setAttendedByTrainedTBA(source.getAttendedByTrainedTBA());
+		target.setAttendedByTrainedTBAMidwifeName(source.getAttendedByTrainedTBAMidwifeName());
+		target.setAttendedByDoctorNurse(source.getAttendedByDoctorNurse());
+		target.setCutCordWithSterileBlade(source.getCutCordWithSterileBlade());
+		target.setCordTreatedWithAnything(source.getCordTreatedWithAnything());
+		target.setCordTreatedWithAnythingWhere(source.getCordTreatedWithAnythingWhere());
+		target.setDescribeTreatmentOfCard(source.getDescribeTreatmentOfCard());
 	}
 
 	@Override
@@ -255,6 +264,15 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 		target.setBirthCountry(CountryDtoHelper.toReferenceDto(source.getBirthCountry()));
 		target.setCitizenship(CountryDtoHelper.toReferenceDto(source.getCitizenship()));
 		target.setAdditionalDetails(source.getAdditionalDetails());
+		target.setReceivedAntenatalCare(source.getReceivedAntenatalCare());
+		target.setPrenatalTotalVisits(source.getPrenatalTotalVisits());
+		target.setAttendedByTrainedTBA(source.getAttendedByTrainedTBA());
+		target.setAttendedByTrainedTBAMidwifeName(source.getAttendedByTrainedTBAMidwifeName());
+		target.setAttendedByDoctorNurse(source.getAttendedByDoctorNurse());
+		target.setCutCordWithSterileBlade(source.getCutCordWithSterileBlade());
+		target.setCordTreatedWithAnything(source.getCordTreatedWithAnything());
+		target.setCordTreatedWithAnythingWhere(source.getCordTreatedWithAnythingWhere());
+		target.setDescribeTreatmentOfCard(source.getDescribeTreatmentOfCard());
 	}
 
     @Override

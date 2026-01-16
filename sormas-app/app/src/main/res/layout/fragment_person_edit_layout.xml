@@ -42,6 +42,8 @@
         <variable name="personContactDetailList" type="androidx.databinding.ObservableList&lt;de.symeda.sormas.app.backend.person.PersonContactDetail&gt;" />
         <variable name="personContactDetailItemClickCallback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
         <variable name="personContactDetailBindCallback" type="de.symeda.sormas.app.util.TemplateBindingCallback" />
+        <variable name="yesNoUnknownClass" type="Class" />
+        <variable name="attendedByClass" type="Class" />
     </data>
 
     <ScrollView
@@ -58,6 +60,7 @@
             <requestFocus/>
 
             <LinearLayout
+                android:id="@+id/name_fields_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
@@ -99,6 +102,7 @@
                 style="@style/ControlLabelStyle"/>
 
             <LinearLayout
+                android:id="@+id/person_birthdateHeading"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
@@ -127,6 +131,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/person_approximateAgeHeading"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
@@ -349,6 +354,11 @@
 
             </LinearLayout>
 
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/person_nationality"
+                app:value="@={data.nationality}"
+                style="@style/ControlSingleColumnStyle" />
+
             <de.symeda.sormas.app.component.controls.ControlTextPopupField
                 android:id="@+id/person_address"
                 app:iconStart="@drawable/ic_edit_location_black_24dp"
@@ -541,6 +551,94 @@
                     style="@style/ControlSecondOfTwoColumnsStyle" />
 
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/person_prenatalCare_layout"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/person_receivedAntenatalCare"
+                    app:value="@={data.receivedAntenatalCare}"
+                    app:enumClass="@{yesNoUnknownClass}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/person_prenatalTotalVisits"
+                    app:value="@={data.prenatalTotalVisits}"
+                    app:inputType="number"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/person_attendedByTrainedTBA_layout"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/person_attendedByTrainedTBA"
+                    app:value="@={data.attendedByTrainedTBA}"
+                    app:enumClass="@{yesNoUnknownClass}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/person_attendedByTrainedTBAMidwifeName"
+                    app:value="@={data.attendedByTrainedTBAMidwifeName}"
+                    app:dependencyParentField="@{personAttendedByTrainedTBA}"
+                    app:dependencyParentValue="@{YesNoUnknown.YES}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/person_attendedByDoctorNurse_cutCordWithSterileBlade_layout"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/person_attendedByDoctorNurse"
+                    app:value="@={data.attendedByDoctorNurse}"
+                    app:enumClass="@{attendedByClass}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/person_cutCordWithSterileBlade"
+                    app:value="@={data.cutCordWithSterileBlade}"
+                    app:enumClass="@{yesNoUnknownClass}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/person_cordTreatedWithAnything_layout"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/person_cordTreatedWithAnything"
+                    app:value="@={data.cordTreatedWithAnything}"
+                    app:enumClass="@{yesNoUnknownClass}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/person_cordTreatedWithAnythingWhere"
+                    app:value="@={data.cordTreatedWithAnythingWhere}"
+                    app:dependencyParentField="@{personCordTreatedWithAnything}"
+                    app:dependencyParentValue="@{YesNoUnknown.YES}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/person_describeTreatmentOfCard"
+                app:value="@={data.describeTreatmentOfCard}"
+                style="@style/ControlSingleColumnStyle" />
 
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 
