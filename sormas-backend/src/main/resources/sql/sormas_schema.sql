@@ -14459,6 +14459,70 @@ alter table samples_history add idsrdiagnosisdetails varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (584, 'Add IDSR diagnosis fields to samples');
 
+CREATE TABLE forms(
+                      id bigint not null,
+                      uuid varchar(36) not null unique,
+                      changedate timestamp(3) not null,
+                      creationdate timestamp(3) not null,
+                      formtype varchar(255),
+                      disease varchar(255),
+                      active boolean,
+                      centrally_managed boolean DEFAULT false,
+                      change_user_id bigint,
+                      archived boolean DEFAULT false,
+                      sys_period tstzrange not null,
+                      primary key(id)
+);
+
+ALTER TABLE forms OWNER TO sormas_user;
+
+CREATE TABLE forms_history (LIKE forms);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON forms
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'forms_history', true);
+ALTER TABLE forms_history OWNER TO sormas_user;
+
+CREATE TABLE form_fields(
+                            id bigint not null,
+                            uuid varchar(36) not null unique,
+                            changedate timestamp(3) not null,
+                            creationdate timestamp(3) not null,
+                            formtype varchar(255),
+                            fieldname varchar(255),
+                            description varchar(255),
+                            active boolean,
+                            centrally_managed boolean DEFAULT false,
+                            change_user_id bigint,
+                            archived boolean DEFAULT false,
+                            sys_period tstzrange not null,
+                            primary key(id)
+);
+
+ALTER TABLE form_fields OWNER TO sormas_user;
+
+CREATE TABLE form_fields_history (LIKE form_fields);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON form_fields
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'form_fields_history', true);
+ALTER TABLE form_fields_history OWNER TO sormas_user;
+
+CREATE TABLE forms_form_fields(
+                                  form_id bigint not null,
+                                  formfield_id bigint not null,
+                                  displayorder integer not null,
+                                  sys_period tstzrange not null,
+                                  primary key(form_id, formfield_id),
+                                  foreign key(form_id) references forms(id),
+                                  foreign key(formfield_id) references form_fields(id)
+);
+
+ALTER TABLE forms_form_fields OWNER TO sormas_user;
+
+CREATE TABLE forms_form_fields_history (LIKE forms_form_fields);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON forms_form_fields
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'forms_form_fields_history', true);
+ALTER TABLE forms_form_fields_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (585, 'Add Form Builder tables for dynamic form configuration');
+
 -- 22-12-25 Add NNT casecreate and case data fields
 alter table cases add notifiedby varchar(255);
 alter table cases add dateofnotification date;
@@ -14473,7 +14537,7 @@ alter table cases_history add division varchar(255);
 alter table cases_history add compoundowner varchar(255);
 alter table cases_history add nationality varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (585, 'Add NNT casecreate and case data fields');
+INSERT INTO schema_version (version_number, comment) VALUES (586, 'Add NNT casecreate and case data fields');
 
 ALTER TABLE cases ADD COLUMN mothervaccinatedwithtt varchar(255);
 ALTER TABLE cases ADD COLUMN motherhavecard varchar(255);
@@ -14486,7 +14550,7 @@ ALTER TABLE cases ADD COLUMN motherttdatefour date;
 ALTER TABLE cases ADD COLUMN motherttdatefive date;
 ALTER TABLE cases ADD COLUMN motherlastdosedate date;
 
-INSERT INTO schema_version (version_number, comment) VALUES (586, 'Added columns to cases to implement MOTHER VACCINATION HISTORY');
+INSERT INTO schema_version (version_number, comment) VALUES (587, 'Added columns to cases to implement MOTHER VACCINATION HISTORY');
 
 -- 23-12-25 Add NNT personedit data fields to implement birth of infant
 ALTER TABLE person ADD COLUMN receivedantenatalcare varchar(255);
@@ -14505,7 +14569,7 @@ ALTER TABLE person ADD COLUMN locationofbirth varchar(255);
 ALTER TABLE person ADD COLUMN birthininstitution varchar(255);
 ALTER TABLE person ADD COLUMN describetreatmentofcard varchar(512);
 
-INSERT INTO schema_version (version_number, comment) VALUES (587, 'Added columns to person to implement BIRTH OF INFANT');
+INSERT INTO schema_version (version_number, comment) VALUES (588, 'Added columns to person to implement BIRTH OF INFANT');
 
 ALTER TABLE symptoms ADD COLUMN babynormalatbirth varchar(255);
 ALTER TABLE symptoms ADD COLUMN ageatdeathdays varchar(255);
@@ -14516,7 +14580,7 @@ ALTER TABLE symptoms ADD COLUMN stiffness varchar(255);
 ALTER TABLE symptoms ADD COLUMN outcome varchar(255);
 ALTER TABLE symptoms ADD COLUMN babyDied varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (588, 'Added columns to symptoms to implement CLINICAL HISTORY');
+INSERT INTO schema_version (version_number, comment) VALUES (589, 'Added columns to symptoms to implement CLINICAL HISTORY');
 
 ALTER TABLE hospitalization ADD COLUMN hospitalrecordnumber varchar(255);
 ALTER TABLE hospitalization ADD COLUMN selectinpatientoutpatient varchar(255);
@@ -14530,73 +14594,10 @@ ALTER TABLE cases ADD COLUMN mothergivenprotectivedosettdate date;
 ALTER TABLE cases ADD COLUMN supplementalimmunization varchar(255);
 ALTER TABLE cases ADD COLUMN supplementalimmunizationdetails varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (589, 'Added columns to symptoms to implement hospitalization and case data for NNT');
+INSERT INTO schema_version (version_number, comment) VALUES (590, 'Added columns to symptoms to implement hospitalization and case data for NNT');
 
 ALTER TABLE person ADD COLUMN nationality varchar(255);
-INSERT INTO schema_version (version_number, comment) VALUES (590, 'Added nationality for NNT');
+INSERT INTO schema_version (version_number, comment) VALUES (591, 'Added nationality for NNT');
 -- 2025-XX-XX Add Form Builder tables for dynamic form configuration
-CREATE TABLE forms(
-	id bigint not null,
-	uuid varchar(36) not null unique,
-	changedate timestamp(3) not null,
-	creationdate timestamp(3) not null,
-	formtype varchar(255),
-	disease varchar(255),
-	active boolean,
-	centrally_managed boolean DEFAULT false,
-	change_user_id bigint,
-	archived boolean DEFAULT false,
-	sys_period tstzrange not null,
-	primary key(id)
-);
-
-ALTER TABLE forms OWNER TO sormas_user;
-
-CREATE TABLE forms_history (LIKE forms);
-CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON forms
-FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'forms_history', true);
-ALTER TABLE forms_history OWNER TO sormas_user;
-
-CREATE TABLE form_fields(
-	id bigint not null,
-	uuid varchar(36) not null unique,
-	changedate timestamp(3) not null,
-	creationdate timestamp(3) not null,
-	formtype varchar(255),
-	fieldname varchar(255),
-	description varchar(255),
-	active boolean,
-	centrally_managed boolean DEFAULT false,
-	change_user_id bigint,
-	archived boolean DEFAULT false,
-	sys_period tstzrange not null,
-	primary key(id)
-);
-
-ALTER TABLE form_fields OWNER TO sormas_user;
-
-CREATE TABLE form_fields_history (LIKE form_fields);
-CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON form_fields
-FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'form_fields_history', true);
-ALTER TABLE form_fields_history OWNER TO sormas_user;
-
-CREATE TABLE forms_form_fields(
-	form_id bigint not null,
-	formfield_id bigint not null,
-	displayorder integer not null,
-	sys_period tstzrange not null,
-	primary key(form_id, formfield_id),
-	foreign key(form_id) references forms(id),
-	foreign key(formfield_id) references form_fields(id)
-);
-
-ALTER TABLE forms_form_fields OWNER TO sormas_user;
-
-CREATE TABLE forms_form_fields_history (LIKE forms_form_fields);
-CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON forms_form_fields
-FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'forms_form_fields_history', true);
-ALTER TABLE forms_form_fields_history OWNER TO sormas_user;
-
-INSERT INTO schema_version (version_number, comment) VALUES (591, 'Add Form Builder tables for dynamic form configuration');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
