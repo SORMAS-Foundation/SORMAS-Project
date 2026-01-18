@@ -58,12 +58,14 @@
                 app:goneIfNotValue="@{FacilityType.HOSPITAL}">
 
                 <TextView
+                    android:id="@+id/heading_most_recent_hospitalization"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/heading_most_recent_hospitalization"
                     style="@style/SubHeadingStyle" />
 
                 <LinearLayout
+                    android:id="@+id/caseHospitalizationFacility_type_fields_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
@@ -86,6 +88,7 @@
                     style="@style/ControlSingleColumnStyle" />
 
                 <LinearLayout
+                    android:id="@+id/caseHospitalization_admission_discharge_Date_heading"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
