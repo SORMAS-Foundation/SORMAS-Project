@@ -1211,7 +1211,9 @@ public class EpipulseDiseaseExportEntryDto {
 	public List<String> getClinicalPresentationForCsv(int maxCount) {
 		List<String> presentations = new ArrayList<>();
 		if (clinicalPresentation != null && !clinicalPresentation.isEmpty()) {
-			presentations.addAll(clinicalPresentation);
+			for (int i = 0; i < Math.min(maxCount, clinicalPresentation.size()); i++) {
+				presentations.add(clinicalPresentation.get(i));
+			}
 		}
 		// Pad with empty strings to match maxCount
 		while (presentations.size() < maxCount) {

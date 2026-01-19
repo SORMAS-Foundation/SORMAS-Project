@@ -76,9 +76,10 @@ public class EpipulseCommonDtoMapper {
 
 		// Index 2: Subject Code
 		String subjectCodeFromDb = (String) row[++index];
-		if (!StringUtils.isBlank(subjectCodeFromDb)) {
-			dto.setSubjectCode(EpipulseSubjectCode.valueOf(subjectCodeFromDb));
+		if (StringUtils.isBlank(subjectCodeFromDb)) {
+			throw new IllegalStateException("Subject code is missing for Epipulse export row");
 		}
+		dto.setSubjectCode(EpipulseSubjectCode.valueOf(subjectCodeFromDb));
 
 		// Index 3: National Record ID (case UUID)
 		dto.setNationalRecordId((String) row[++index]);

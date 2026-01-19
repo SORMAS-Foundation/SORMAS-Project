@@ -61,6 +61,13 @@ public class EpipulseConfigurationLookupService {
 	public EpipulseConfigurationContext lookupConfiguration(EpipulseExportDto exportDto, String serverCountryLocale, String serverCountryName)
 		throws IllegalArgumentException, IllegalStateException {
 
+		if (exportDto == null || exportDto.getSubjectCode() == null) {
+			throw new IllegalArgumentException("Subject code is required for Epipulse export");
+		}
+		if (StringUtils.isBlank(serverCountryLocale)) {
+			throw new IllegalArgumentException("Server country code/locale is required for Epipulse export");
+		}
+
 		String reportingCountry = lookupReportingCountry(serverCountryLocale);
 		String serverCountryNutsCode = lookupServerCountryNutsCode(serverCountryName);
 		String subjectCode = lookupSubjectCode(exportDto.getSubjectCode());
@@ -121,7 +128,7 @@ public class EpipulseConfigurationLookupService {
 
 		@SuppressWarnings("unchecked")
 		String serverCountryNutsCode = (String) em.createNativeQuery(serverCountryQuery)
-			.setParameter("countryName", countryName.toLowerCase())
+			.setParameter("countryName", countryName.toLowerCase(java.util.Locale.ROOT))
 			.getResultStream()
 			.filter(java.util.Objects::nonNull)
 			.findFirst()

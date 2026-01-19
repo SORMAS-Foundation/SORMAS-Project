@@ -271,16 +271,16 @@ public class IpiExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 		//@formatter:off
 		return "pneu_vaccination_details AS (" +
 			   "    SELECT c.id as case_id," +
-			   "           MAX(CASE WHEN pcv_row_num = 1 THEN v.vaccinationdate END) as date_pcv1," +
-			   "           MAX(CASE WHEN pcv_row_num = 1 THEN CAST(v.vaccinename AS text) END) as brand_pcv1," +
-			   "           MAX(CASE WHEN pcv_row_num = 2 THEN v.vaccinationdate END) as date_pcv2," +
-			   "           MAX(CASE WHEN pcv_row_num = 2 THEN CAST(v.vaccinename AS text) END) as brand_pcv2," +
-			   "           MAX(CASE WHEN pcv_row_num = 3 THEN v.vaccinationdate END) as date_pcv3," +
-			   "           MAX(CASE WHEN pcv_row_num = 3 THEN CAST(v.vaccinename AS text) END) as brand_pcv3," +
-			   "           MAX(CASE WHEN pcv_row_num = 4 THEN v.vaccinationdate END) as date_pcv4," +
-			   "           MAX(CASE WHEN pcv_row_num = 4 THEN CAST(v.vaccinename AS text) END) as brand_pcv4," +
+			   "           MAX(CASE WHEN is_pcv AND pcv_row_num = 1 THEN v.vaccinationdate END) as date_pcv1," +
+			   "           MAX(CASE WHEN is_pcv AND pcv_row_num = 1 THEN CAST(v.vaccinename AS text) END) as brand_pcv1," +
+			   "           MAX(CASE WHEN is_pcv AND pcv_row_num = 2 THEN v.vaccinationdate END) as date_pcv2," +
+			   "           MAX(CASE WHEN is_pcv AND pcv_row_num = 2 THEN CAST(v.vaccinename AS text) END) as brand_pcv2," +
+			   "           MAX(CASE WHEN is_pcv AND pcv_row_num = 3 THEN v.vaccinationdate END) as date_pcv3," +
+			   "           MAX(CASE WHEN is_pcv AND pcv_row_num = 3 THEN CAST(v.vaccinename AS text) END) as brand_pcv3," +
+			   "           MAX(CASE WHEN is_pcv AND pcv_row_num = 4 THEN v.vaccinationdate END) as date_pcv4," +
+			   "           MAX(CASE WHEN is_pcv AND pcv_row_num = 4 THEN CAST(v.vaccinename AS text) END) as brand_pcv4," +
 			   "           SUM(CASE WHEN is_pcv THEN 1 ELSE 0 END) as pcv_doses," +
-			   "           MAX(CASE WHEN ppv_row_num = 1 THEN v.vaccinationdate END) as date_ppv," +
+			   "           MAX(CASE WHEN is_ppv AND ppv_row_num = 1 THEN v.vaccinationdate END) as date_ppv," +
 			   "           SUM(CASE WHEN is_ppv THEN 1 ELSE 0 END) as ppv_doses " +
 			   "    FROM filtered_cases c " +
 			   "    LEFT JOIN vaccination v ON v.immunization_id IN (SELECT i.id FROM immunization i WHERE i.person_id = c.person_id AND i.disease = 'INVASIVE_PNEUMOCOCCAL_INFECTION') " +
@@ -293,12 +293,10 @@ public class IpiExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 			   "                 WHEN CAST(v.vaccinename AS text) LIKE '%PPV%' OR CAST(v.vaccinename AS text) LIKE '%POLYSACCHARIDE%' THEN true " +
 			   "                 ELSE false " +
 			   "               END as is_ppv," +
-			   "               ROW_NUMBER() OVER (PARTITION BY c.id, " +
-			   "                   CASE WHEN CAST(v.vaccinename AS text) LIKE '%PCV%' THEN 1 ELSE 0 END " +
-			   "                   ORDER BY v.vaccinationdate) as pcv_row_num," +
-			   "               ROW_NUMBER() OVER (PARTITION BY c.id, " +
-			   "                   CASE WHEN CAST(v.vaccinename AS text) LIKE '%PPV%' THEN 1 ELSE 0 END " +
-			   "                   ORDER BY v.vaccinationdate) as ppv_row_num " +
+               "               SUM(CASE WHEN CAST(v.vaccinename AS text) LIKE '%PCV%' OR CAST(v.vaccinename AS text) LIKE '%CONJUGATE%' THEN 1 ELSE 0 END) " +
+               "                   OVER (PARTITION BY c.id ORDER BY v.vaccinationdate) as pcv_row_num," +
+               "               SUM(CASE WHEN CAST(v.vaccinename AS text) LIKE '%PPV%' OR CAST(v.vaccinename AS text) LIKE '%POLYSACCHARIDE%' THEN 1 ELSE 0 END) " +
+               "                   OVER (PARTITION BY c.id ORDER BY v.vaccinationdate) as ppv_row_num " +
 			   "    ) vax_info ON true " +
 			   "    GROUP BY c.id) ";
 		//@formatter:on
