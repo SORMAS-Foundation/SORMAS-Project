@@ -24,7 +24,8 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 public enum EpipulseSubjectCode {
 
 	PERT(true, Disease.PERTUSSIS, false),
-	MEAS(true, Disease.MEASLES, false);
+	MEAS(true, Disease.MEASLES, false),
+	PNEU(true, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, false); // Invasive Pneumococcal Infection
 
 	private final boolean diseaseModel;
 	private final Disease disease;

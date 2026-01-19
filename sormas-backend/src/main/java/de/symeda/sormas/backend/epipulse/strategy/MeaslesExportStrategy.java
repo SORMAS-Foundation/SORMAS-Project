@@ -50,7 +50,7 @@ public class MeaslesExportStrategy extends AbstractEpipulseDiseaseExportStrategy
 		// Common CTEs
 		query.append(sqlCteBuilder.buildVariablesCte());
 		query.append(sqlCteBuilder.buildConfigDataCte());
-		query.append(sqlCteBuilder.buildFilteredCasesCte(true)); // Include Measles-specific fields (epidata_id, investigateddate, clinicalconfirmation)
+		query.append(sqlCteBuilder.buildFilteredCasesCte(true)); // Include epidata fields (epidata_id, investigateddate, clinicalconfirmation)
 		query.append(sqlCteBuilder.buildPreviousHospitalizationsCte());
 		query.append(sqlCteBuilder.buildSamplesCte());
 		query.append(sqlCteBuilder.buildPathogenTestsCte());

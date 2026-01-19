@@ -103,6 +103,69 @@ public class EpipulseDiseaseExportEntryDto {
 	private List<String> placeOfInfection; // EpiDataDto.exposures locations (repeatable)
 	private String causeOfDeath; // PersonDto.causeOfDeathDetails
 
+	// IPI-specific laboratory fields
+	private String resultOfCulture; // PathogenTestResultType for CULTURE → POS/NEG/EQUI/NOTEST
+	private String resultOfPCR; // PathogenTestResultType for PCR_RT_PCR → POS/NEG/EQUI/NOTEST
+	private String serotype; // PathogenTest typingId for pneumococcal serotypes (1-93)
+	private String serogroupMethod; // PathogenTestType.SEROGROUPING presence → POS/NEG/NOTEST
+	private String penicillinResistance; // DrugSusceptibilityDto → SENS/RESIST/INTER/NOTEST
+
+	// IPI-specific clinical fields
+	private List<String> clinicalPresentation; // SymptomsDto (meningitis, septicaemia, etc.) → MENING/SEPT/PNEUM/OME/ASYMP (repeatable)
+
+	// PNEU-specific fields (following metadata specification exactly)
+	// Demographics
+	private Boolean nrlData; // National Reference Laboratory data flag
+
+	// Clinical/Diagnostic
+	private Date dateOfDiagnosis; // Date of diagnosis
+	private String clinicalCriteria; // REF: BACTERPNEUMO, MENI, MENISEPTI, OTH, SEPTI
+
+	// Laboratory
+	private String pathogenDetectionMethod; // REF: COAGG, GDIFF, MPCR, OTH, PTEST, QUE, SLAGG
+
+	// Vaccination - Summary fields
+	private String vaccine; // REF: PCV7, PCV10, PCV13, PCV15, PCV20, PCV3, PPV23
+	private Date dateOfLastVaccination; // Date of last vaccination (shared with MEAS)
+
+	// Vaccination - Detailed PCV doses (1-4)
+	private Boolean dosePCV1;
+	private Date datePCV1;
+	private String brandPCV1; // REF: PCV7, PCV10, PCV13, PCV15, PCV20
+	private Boolean dosePCV2;
+	private Date datePCV2;
+	private String brandPCV2;
+	private Boolean dosePCV3;
+	private Date datePCV3;
+	private String brandPCV3;
+	private Boolean dosePCV4;
+	private Date datePCV4;
+	private String brandPCV4;
+	private Integer pcvDoses; // Total PCV dose count
+
+	// Vaccination - PPV doses
+	private Boolean dosePPV;
+	private Date datePPV;
+	private Integer ppvDoses; // Total PPV dose count
+
+	// Antimicrobial Susceptibility Testing (AST)
+	private String astMethod; // REF: AGARDIL, AUTOM, BROTHDIL, GRAD, OTH
+
+	// CTX/CFX (Cefotaxime/Ceftriaxone) AST
+	private String micSign_CTX_CFX; // REF: <, <=, =, >, >=
+	private Double micValueAST_CTX_CFX; // MIC value
+	private String sir_CTX_CFX; // REF: I, R, S
+
+	// ERY (Erythromycin) AST
+	private String micSign_ERY;
+	private Double micValueAST_ERY;
+	private String sir_ERY;
+
+	// PEN (Penicillin) AST
+	private String micSign_PEN;
+	private Double micValueAST_PEN;
+	private String sir_PEN;
+
 	public String getReportingCountry() {
 		return reportingCountry;
 	}
@@ -451,6 +514,7 @@ public class EpipulseDiseaseExportEntryDto {
 		switch (subjectCode) {
 		case PERT:
 		case MEAS:
+		case PNEU:
 			if (ageYears != null && ageYears < 2) {
 				return ageMonths == null ? null : ageMonths.toString();
 			}
@@ -471,6 +535,7 @@ public class EpipulseDiseaseExportEntryDto {
 		switch (subjectCode) {
 		case PERT:
 		case MEAS:
+		case PNEU:
 			if (addressCommunityNutsCode != null && !addressCommunityNutsCode.isEmpty()) {
 				return addressCommunityNutsCode;
 			} else if (addressDistrictNutsCode != null && !addressDistrictNutsCode.isEmpty()) {
@@ -488,6 +553,7 @@ public class EpipulseDiseaseExportEntryDto {
 		switch (subjectCode) {
 		case PERT:
 		case MEAS:
+		case PNEU:
 			if (responsibleCommunityNutsCode != null && !responsibleCommunityNutsCode.isEmpty()) {
 				return responsibleCommunityNutsCode;
 			} else if (responsibleDistrictNutsCode != null && !responsibleDistrictNutsCode.isEmpty()) {
@@ -745,6 +811,313 @@ public class EpipulseDiseaseExportEntryDto {
 		this.causeOfDeath = causeOfDeath;
 	}
 
+	// IPI-specific laboratory field getters/setters
+	public String getResultOfCulture() {
+		return resultOfCulture;
+	}
+
+	public void setResultOfCulture(String resultOfCulture) {
+		this.resultOfCulture = resultOfCulture;
+	}
+
+	public String getResultOfPCR() {
+		return resultOfPCR;
+	}
+
+	public void setResultOfPCR(String resultOfPCR) {
+		this.resultOfPCR = resultOfPCR;
+	}
+
+	public String getSerotype() {
+		return serotype;
+	}
+
+	public void setSerotype(String serotype) {
+		this.serotype = serotype;
+	}
+
+	public String getSerogroupMethod() {
+		return serogroupMethod;
+	}
+
+	public void setSerogroupMethod(String serogroupMethod) {
+		this.serogroupMethod = serogroupMethod;
+	}
+
+	public String getPenicillinResistance() {
+		return penicillinResistance;
+	}
+
+	public void setPenicillinResistance(String penicillinResistance) {
+		this.penicillinResistance = penicillinResistance;
+	}
+
+	// IPI-specific clinical field getters/setters
+	public List<String> getClinicalPresentation() {
+		return clinicalPresentation;
+	}
+
+	public void setClinicalPresentation(List<String> clinicalPresentation) {
+		this.clinicalPresentation = clinicalPresentation;
+	}
+
+	// PNEU-specific field getters/setters
+	public Boolean getNrlData() {
+		return nrlData;
+	}
+
+	public void setNrlData(Boolean nrlData) {
+		this.nrlData = nrlData;
+	}
+
+	public Date getDateOfDiagnosis() {
+		return dateOfDiagnosis;
+	}
+
+	public void setDateOfDiagnosis(Date dateOfDiagnosis) {
+		this.dateOfDiagnosis = dateOfDiagnosis;
+	}
+
+	public String getClinicalCriteria() {
+		return clinicalCriteria;
+	}
+
+	public void setClinicalCriteria(String clinicalCriteria) {
+		this.clinicalCriteria = clinicalCriteria;
+	}
+
+	public String getPathogenDetectionMethod() {
+		return pathogenDetectionMethod;
+	}
+
+	public void setPathogenDetectionMethod(String pathogenDetectionMethod) {
+		this.pathogenDetectionMethod = pathogenDetectionMethod;
+	}
+
+	public String getVaccine() {
+		return vaccine;
+	}
+
+	public void setVaccine(String vaccine) {
+		this.vaccine = vaccine;
+	}
+
+	public Date getDateOfLastVaccination() {
+		return dateOfLastVaccination;
+	}
+
+	public void setDateOfLastVaccination(Date dateOfLastVaccination) {
+		this.dateOfLastVaccination = dateOfLastVaccination;
+	}
+
+	public Boolean getDosePCV1() {
+		return dosePCV1;
+	}
+
+	public void setDosePCV1(Boolean dosePCV1) {
+		this.dosePCV1 = dosePCV1;
+	}
+
+	public Date getDatePCV1() {
+		return datePCV1;
+	}
+
+	public void setDatePCV1(Date datePCV1) {
+		this.datePCV1 = datePCV1;
+	}
+
+	public String getBrandPCV1() {
+		return brandPCV1;
+	}
+
+	public void setBrandPCV1(String brandPCV1) {
+		this.brandPCV1 = brandPCV1;
+	}
+
+	public Boolean getDosePCV2() {
+		return dosePCV2;
+	}
+
+	public void setDosePCV2(Boolean dosePCV2) {
+		this.dosePCV2 = dosePCV2;
+	}
+
+	public Date getDatePCV2() {
+		return datePCV2;
+	}
+
+	public void setDatePCV2(Date datePCV2) {
+		this.datePCV2 = datePCV2;
+	}
+
+	public String getBrandPCV2() {
+		return brandPCV2;
+	}
+
+	public void setBrandPCV2(String brandPCV2) {
+		this.brandPCV2 = brandPCV2;
+	}
+
+	public Boolean getDosePCV3() {
+		return dosePCV3;
+	}
+
+	public void setDosePCV3(Boolean dosePCV3) {
+		this.dosePCV3 = dosePCV3;
+	}
+
+	public Date getDatePCV3() {
+		return datePCV3;
+	}
+
+	public void setDatePCV3(Date datePCV3) {
+		this.datePCV3 = datePCV3;
+	}
+
+	public String getBrandPCV3() {
+		return brandPCV3;
+	}
+
+	public void setBrandPCV3(String brandPCV3) {
+		this.brandPCV3 = brandPCV3;
+	}
+
+	public Boolean getDosePCV4() {
+		return dosePCV4;
+	}
+
+	public void setDosePCV4(Boolean dosePCV4) {
+		this.dosePCV4 = dosePCV4;
+	}
+
+	public Date getDatePCV4() {
+		return datePCV4;
+	}
+
+	public void setDatePCV4(Date datePCV4) {
+		this.datePCV4 = datePCV4;
+	}
+
+	public String getBrandPCV4() {
+		return brandPCV4;
+	}
+
+	public void setBrandPCV4(String brandPCV4) {
+		this.brandPCV4 = brandPCV4;
+	}
+
+	public Integer getPcvDoses() {
+		return pcvDoses;
+	}
+
+	public void setPcvDoses(Integer pcvDoses) {
+		this.pcvDoses = pcvDoses;
+	}
+
+	public Boolean getDosePPV() {
+		return dosePPV;
+	}
+
+	public void setDosePPV(Boolean dosePPV) {
+		this.dosePPV = dosePPV;
+	}
+
+	public Date getDatePPV() {
+		return datePPV;
+	}
+
+	public void setDatePPV(Date datePPV) {
+		this.datePPV = datePPV;
+	}
+
+	public Integer getPpvDoses() {
+		return ppvDoses;
+	}
+
+	public void setPpvDoses(Integer ppvDoses) {
+		this.ppvDoses = ppvDoses;
+	}
+
+	public String getAstMethod() {
+		return astMethod;
+	}
+
+	public void setAstMethod(String astMethod) {
+		this.astMethod = astMethod;
+	}
+
+	public String getMicSign_CTX_CFX() {
+		return micSign_CTX_CFX;
+	}
+
+	public void setMicSign_CTX_CFX(String micSign_CTX_CFX) {
+		this.micSign_CTX_CFX = micSign_CTX_CFX;
+	}
+
+	public Double getMicValueAST_CTX_CFX() {
+		return micValueAST_CTX_CFX;
+	}
+
+	public void setMicValueAST_CTX_CFX(Double micValueAST_CTX_CFX) {
+		this.micValueAST_CTX_CFX = micValueAST_CTX_CFX;
+	}
+
+	public String getSir_CTX_CFX() {
+		return sir_CTX_CFX;
+	}
+
+	public void setSir_CTX_CFX(String sir_CTX_CFX) {
+		this.sir_CTX_CFX = sir_CTX_CFX;
+	}
+
+	public String getMicSign_ERY() {
+		return micSign_ERY;
+	}
+
+	public void setMicSign_ERY(String micSign_ERY) {
+		this.micSign_ERY = micSign_ERY;
+	}
+
+	public Double getMicValueAST_ERY() {
+		return micValueAST_ERY;
+	}
+
+	public void setMicValueAST_ERY(Double micValueAST_ERY) {
+		this.micValueAST_ERY = micValueAST_ERY;
+	}
+
+	public String getSir_ERY() {
+		return sir_ERY;
+	}
+
+	public void setSir_ERY(String sir_ERY) {
+		this.sir_ERY = sir_ERY;
+	}
+
+	public String getMicSign_PEN() {
+		return micSign_PEN;
+	}
+
+	public void setMicSign_PEN(String micSign_PEN) {
+		this.micSign_PEN = micSign_PEN;
+	}
+
+	public Double getMicValueAST_PEN() {
+		return micValueAST_PEN;
+	}
+
+	public void setMicValueAST_PEN(Double micValueAST_PEN) {
+		this.micValueAST_PEN = micValueAST_PEN;
+	}
+
+	public String getSir_PEN() {
+		return sir_PEN;
+	}
+
+	public void setSir_PEN(String sir_PEN) {
+		this.sir_PEN = sir_PEN;
+	}
+
 	// Phase 3: CSV getter methods
 	public String getDateOfInvestigationForCsv() {
 		return formatDateForCsv(dateOfInvestigation);
@@ -812,6 +1185,164 @@ public class EpipulseDiseaseExportEntryDto {
 
 	public String getCauseOfDeathForCsv() {
 		return causeOfDeath != null ? causeOfDeath : "";
+	}
+
+	// IPI-specific CSV getter methods
+	public String getResultOfCultureForCsv() {
+		return resultOfCulture != null ? resultOfCulture : "";
+	}
+
+	public String getResultOfPCRForCsv() {
+		return resultOfPCR != null ? resultOfPCR : "";
+	}
+
+	public String getSerotypeForCsv() {
+		return serotype != null ? serotype : "";
+	}
+
+	public String getSerogroupMethodForCsv() {
+		return serogroupMethod != null ? serogroupMethod : "";
+	}
+
+	public String getPenicillinResistanceForCsv() {
+		return penicillinResistance != null ? penicillinResistance : "";
+	}
+
+	public List<String> getClinicalPresentationForCsv(int maxCount) {
+		List<String> presentations = new ArrayList<>();
+		if (clinicalPresentation != null && !clinicalPresentation.isEmpty()) {
+			presentations.addAll(clinicalPresentation);
+		}
+		// Pad with empty strings to match maxCount
+		while (presentations.size() < maxCount) {
+			presentations.add("");
+		}
+		return presentations;
+	}
+
+	// PNEU-specific CSV getter methods
+	public String getNrlDataForCsv() {
+		return nrlData != null ? String.valueOf(nrlData) : "";
+	}
+
+	public String getDateOfDiagnosisForCsv() {
+		return formatDateForCsv(dateOfDiagnosis);
+	}
+
+	public String getClinicalCriteriaForCsv() {
+		return clinicalCriteria != null ? clinicalCriteria : "";
+	}
+
+	public String getPathogenDetectionMethodForCsv() {
+		return pathogenDetectionMethod != null ? pathogenDetectionMethod : "";
+	}
+
+	public String getVaccineForCsv() {
+		return vaccine != null ? vaccine : "";
+	}
+
+	public String getDosePCV1ForCsv() {
+		return dosePCV1 != null ? String.valueOf(dosePCV1) : "";
+	}
+
+	public String getDatePCV1ForCsv() {
+		return formatDateForCsv(datePCV1);
+	}
+
+	public String getBrandPCV1ForCsv() {
+		return brandPCV1 != null ? brandPCV1 : "";
+	}
+
+	public String getDosePCV2ForCsv() {
+		return dosePCV2 != null ? String.valueOf(dosePCV2) : "";
+	}
+
+	public String getDatePCV2ForCsv() {
+		return formatDateForCsv(datePCV2);
+	}
+
+	public String getBrandPCV2ForCsv() {
+		return brandPCV2 != null ? brandPCV2 : "";
+	}
+
+	public String getDosePCV3ForCsv() {
+		return dosePCV3 != null ? String.valueOf(dosePCV3) : "";
+	}
+
+	public String getDatePCV3ForCsv() {
+		return formatDateForCsv(datePCV3);
+	}
+
+	public String getBrandPCV3ForCsv() {
+		return brandPCV3 != null ? brandPCV3 : "";
+	}
+
+	public String getDosePCV4ForCsv() {
+		return dosePCV4 != null ? String.valueOf(dosePCV4) : "";
+	}
+
+	public String getDatePCV4ForCsv() {
+		return formatDateForCsv(datePCV4);
+	}
+
+	public String getBrandPCV4ForCsv() {
+		return brandPCV4 != null ? brandPCV4 : "";
+	}
+
+	public String getPcvDosesForCsv() {
+		return pcvDoses != null ? String.valueOf(pcvDoses) : "";
+	}
+
+	public String getDosePPVForCsv() {
+		return dosePPV != null ? String.valueOf(dosePPV) : "";
+	}
+
+	public String getDatePPVForCsv() {
+		return formatDateForCsv(datePPV);
+	}
+
+	public String getPpvDosesForCsv() {
+		return ppvDoses != null ? String.valueOf(ppvDoses) : "";
+	}
+
+	public String getAstMethodForCsv() {
+		return astMethod != null ? astMethod : "";
+	}
+
+	public String getMicSign_CTX_CFXForCsv() {
+		return micSign_CTX_CFX != null ? micSign_CTX_CFX : "";
+	}
+
+	public String getMicValueAST_CTX_CFXForCsv() {
+		return micValueAST_CTX_CFX != null ? String.valueOf(micValueAST_CTX_CFX) : "";
+	}
+
+	public String getSir_CTX_CFXForCsv() {
+		return sir_CTX_CFX != null ? sir_CTX_CFX : "";
+	}
+
+	public String getMicSign_ERYForCsv() {
+		return micSign_ERY != null ? micSign_ERY : "";
+	}
+
+	public String getMicValueAST_ERYForCsv() {
+		return micValueAST_ERY != null ? String.valueOf(micValueAST_ERY) : "";
+	}
+
+	public String getSir_ERYForCsv() {
+		return sir_ERY != null ? sir_ERY : "";
+	}
+
+	public String getMicSign_PENForCsv() {
+		return micSign_PEN != null ? micSign_PEN : "";
+	}
+
+	public String getMicValueAST_PENForCsv() {
+		return micValueAST_PEN != null ? String.valueOf(micValueAST_PEN) : "";
+	}
+
+	public String getSir_PENForCsv() {
+		return sir_PEN != null ? sir_PEN : "";
 	}
 
 	public void calculateAge() {
