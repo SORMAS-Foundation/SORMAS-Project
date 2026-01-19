@@ -25,16 +25,20 @@ import de.symeda.sormas.api.epipulse.EpipulseDiseaseExportResult;
 
 /**
  * CSV export strategy for PNEU (Invasive Pneumococcal Infection) disease.
- * Follows EpiPulse metadata specification exactly with 49 fixed columns (no repeatable fields).
+ * Follows EpiPulse metadata specification with 49 fixed CSV columns (no repeatable fields).
  * <p>
- * Column structure:
- * - 13 common demographic fields
- * - 5 clinical/diagnostic fields (including DateOfDiagnosis, ClinicalCriteria)
+ * CSV column structure:
+ * - 13 common demographic fields (Disease through PlaceOfNotification)
+ * - 5 clinical/diagnostic fields (CaseClassification, DateOfDiagnosis, DateOfNotification, Outcome, ClinicalCriteria)
  * - 2 laboratory fields (PathogenDetectionMethod, Serotype)
- * - 23 vaccination fields (detailed PCV1-4 and PPV tracking)
- * - 9 AST fields (antimicrobial susceptibility for CTX/CFX, ERY, PEN)
+ * - 19 vaccination fields (DateOfLastVaccination, Vaccine, VaccinationStatus, PCV1-4 details, PPV details)
+ * - 10 AST fields (ASTMethod, MIC/SIR for CTX_CFX, ERY, PEN)
  * <p>
- * Total: 49 fixed columns
+ * Total: 49 CSV columns
+ * <p>
+ * Note: The underlying SQL query returns 56 columns (28 common + 28 PNEU-specific) which are
+ * transformed during CSV export (e.g., symptom columns merged into ClinicalCriteria, dose flags
+ * derived from dates).
  */
 @Stateless
 @LocalBean
@@ -42,7 +46,7 @@ public class IpiCsvExportStrategy implements CsvExportStrategy {
 
 	@Override
 	public List<String> buildColumnNames(EpipulseDiseaseExportResult exportResult) {
-		// PNEU has 49 fixed columns - no repeatable fields according to metadata
+		// PNEU has 49 fixed CSV columns - no repeatable fields
 		return List.of(
 			// Common demographic fields (13)
 			"Disease",
@@ -67,7 +71,7 @@ public class IpiCsvExportStrategy implements CsvExportStrategy {
 			// Laboratory fields (2)
 			"PathogenDetectionMethod",
 			"Serotype",
-			// Vaccination fields (23)
+			// Vaccination fields (19)
 			"DateOfLastVaccination",
 			"Vaccine",
 			"VaccinationStatus",
@@ -87,7 +91,7 @@ public class IpiCsvExportStrategy implements CsvExportStrategy {
 			"DosePPV",
 			"DatePPV",
 			"PPVDoses",
-			// AST fields (9)
+			// AST fields (10)
 			"ASTMethod",
 			"MICSign_CTX_CFX",
 			"MICValueAST_CTX_CFX",
@@ -130,7 +134,7 @@ public class IpiCsvExportStrategy implements CsvExportStrategy {
 		exportLine[++index] = dto.getPathogenDetectionMethodForCsv();
 		exportLine[++index] = dto.getSerotypeForCsv();
 
-		// Vaccination fields (23)
+		// Vaccination fields (19)
 		exportLine[++index] = dto.getDateOfLastVaccinationForCsv();
 		exportLine[++index] = dto.getVaccineForCsv();
 		exportLine[++index] = dto.getVaccinationStatusForCsv();
@@ -155,7 +159,7 @@ public class IpiCsvExportStrategy implements CsvExportStrategy {
 		exportLine[++index] = dto.getDatePPVForCsv();
 		exportLine[++index] = dto.getPpvDosesForCsv();
 
-		// AST fields (9)
+		// AST fields (10)
 		exportLine[++index] = dto.getAstMethodForCsv();
 
 		// CTX/CFX (Cefotaxime/Ceftriaxone)

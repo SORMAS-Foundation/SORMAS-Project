@@ -30,14 +30,17 @@ import de.symeda.sormas.api.symptoms.SymptomState;
 
 /**
  * Export strategy for PNEU (Invasive Pneumococcal Infection) disease exports.
- * PNEU follows the EpiPulse metadata specification exactly with 49 fixed columns (no repeatable fields).
+ * PNEU follows the EpiPulse metadata specification with 56 total columns (28 common + 28 PNEU-specific).
  * <p>
- * Metadata specification:
- * - 13 common demographic fields
- * - 5 clinical/diagnostic fields (including DateOfDiagnosis, ClinicalCriteria)
- * - 2 laboratory fields (PathogenDetectionMethod, Serotype)
- * - 23 vaccination fields (detailed PCV1-4 and PPV tracking)
- * - 9 AST fields (antimicrobial susceptibility for CTX/CFX, ERY, PEN)
+ * Column breakdown:
+ * - 28 common fields (demographic, case identification, hospitalization, outcome)
+ * - 28 PNEU-specific fields:
+ *   - 1 NRL field (NRLData)
+ *   - 5 clinical/diagnostic fields (DateOfDiagnosis, meningitis, septicaemia, pneumonia -> ClinicalCriteria)
+ *   - 2 laboratory fields (PathogenDetectionMethod, Serotype)
+ *   - 11 PCV vaccination fields (DatePCV1-4, BrandPCV1-4, DosePCV1-4 derived, PcvDoses)
+ *   - 2 PPV vaccination fields (DatePPV, PpvDoses)
+ *   - 10 AST fields (AstMethod, MicSign/MicValue/SIR for CTX_CFX, ERY, PEN)
  */
 @Stateless
 @LocalBean
@@ -65,15 +68,15 @@ public class IpiExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 		// Note: AST data not currently stored in SORMAS for PNEU - fields will be NULL
 		// query.append(buildPneuAstDataCte());
 
-		// Main SELECT clause with all 49 PNEU fields
+		// Main SELECT clause with all 56 columns (28 common + 28 PNEU-specific)
 		query.append(buildPneuSelectClause());
 
 		return query.toString();
 	}
 
 	/**
-	 * Maps all 21 PNEU-specific fields from SQL result row to DTO
-	 * (Common fields already mapped by parent class - 28 fields)
+	 * Maps all 28 PNEU-specific fields from SQL result row to DTO.
+	 * Common fields (28) are already mapped by parent class, giving 56 total columns.
 	 */
 	@Override
 	protected void mapDiseaseSpecificFields(EpipulseDiseaseExportEntryDto dto, Object[] row, int startIndex) {
@@ -206,8 +209,7 @@ public class IpiExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 
 	@Override
 	protected void calculateDiseaseSpecificMaxCounts(List<EpipulseDiseaseExportEntryDto> entries, EpipulseDiseaseExportResult result) {
-		// PNEU has no repeatable fields according to metadata specification
-		// All 49 columns are fixed - no dynamic column generation needed
+		// PNEU has no repeatable fields - all 56 columns are fixed (no dynamic column generation needed)
 		// Common repeatable fields (pathogenTests, immunizations) are handled by parent class
 	}
 
@@ -269,36 +271,39 @@ public class IpiExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 	 */
 	private String buildPneuVaccinationDetailsCte() {
 		//@formatter:off
-		return "pneu_vaccination_details AS (" +
-			   "    SELECT c.id as case_id," +
-			   "           MAX(CASE WHEN is_pcv AND pcv_row_num = 1 THEN v.vaccinationdate END) as date_pcv1," +
-			   "           MAX(CASE WHEN is_pcv AND pcv_row_num = 1 THEN CAST(v.vaccinename AS text) END) as brand_pcv1," +
-			   "           MAX(CASE WHEN is_pcv AND pcv_row_num = 2 THEN v.vaccinationdate END) as date_pcv2," +
-			   "           MAX(CASE WHEN is_pcv AND pcv_row_num = 2 THEN CAST(v.vaccinename AS text) END) as brand_pcv2," +
-			   "           MAX(CASE WHEN is_pcv AND pcv_row_num = 3 THEN v.vaccinationdate END) as date_pcv3," +
-			   "           MAX(CASE WHEN is_pcv AND pcv_row_num = 3 THEN CAST(v.vaccinename AS text) END) as brand_pcv3," +
-			   "           MAX(CASE WHEN is_pcv AND pcv_row_num = 4 THEN v.vaccinationdate END) as date_pcv4," +
-			   "           MAX(CASE WHEN is_pcv AND pcv_row_num = 4 THEN CAST(v.vaccinename AS text) END) as brand_pcv4," +
-			   "           SUM(CASE WHEN is_pcv THEN 1 ELSE 0 END) as pcv_doses," +
-			   "           MAX(CASE WHEN is_ppv AND ppv_row_num = 1 THEN v.vaccinationdate END) as date_ppv," +
-			   "           SUM(CASE WHEN is_ppv THEN 1 ELSE 0 END) as ppv_doses " +
-			   "    FROM filtered_cases c " +
-			   "    LEFT JOIN vaccination v ON v.immunization_id IN (SELECT i.id FROM immunization i WHERE i.person_id = c.person_id AND i.disease = 'INVASIVE_PNEUMOCOCCAL_INFECTION') " +
-			   "    LEFT JOIN LATERAL (" +
-			   "        SELECT CASE " +
-			   "                 WHEN CAST(v.vaccinename AS text) LIKE '%PCV%' OR CAST(v.vaccinename AS text) LIKE '%CONJUGATE%' THEN true " +
-			   "                 ELSE false " +
-			   "               END as is_pcv," +
-			   "               CASE " +
-			   "                 WHEN CAST(v.vaccinename AS text) LIKE '%PPV%' OR CAST(v.vaccinename AS text) LIKE '%POLYSACCHARIDE%' THEN true " +
-			   "                 ELSE false " +
-			   "               END as is_ppv," +
-               "               SUM(CASE WHEN CAST(v.vaccinename AS text) LIKE '%PCV%' OR CAST(v.vaccinename AS text) LIKE '%CONJUGATE%' THEN 1 ELSE 0 END) " +
-               "                   OVER (PARTITION BY c.id ORDER BY v.vaccinationdate) as pcv_row_num," +
-               "               SUM(CASE WHEN CAST(v.vaccinename AS text) LIKE '%PPV%' OR CAST(v.vaccinename AS text) LIKE '%POLYSACCHARIDE%' THEN 1 ELSE 0 END) " +
-               "                   OVER (PARTITION BY c.id ORDER BY v.vaccinationdate) as ppv_row_num " +
-			   "    ) vax_info ON true " +
-			   "    GROUP BY c.id) ";
+        return "pneu_vaccination_details AS (" +
+                "    SELECT vax.case_id," +
+                "           MAX(CASE WHEN vax.is_pcv AND vax.pcv_row_num = 1 THEN vax.vaccinationdate END) as date_pcv1," +
+                "           MAX(CASE WHEN vax.is_pcv AND vax.pcv_row_num = 1 THEN CAST(vax.vaccinename AS text) END) as brand_pcv1," +
+                "           MAX(CASE WHEN vax.is_pcv AND vax.pcv_row_num = 2 THEN vax.vaccinationdate END) as date_pcv2," +
+                "           MAX(CASE WHEN vax.is_pcv AND vax.pcv_row_num = 2 THEN CAST(vax.vaccinename AS text) END) as brand_pcv2," +
+                "           MAX(CASE WHEN vax.is_pcv AND vax.pcv_row_num = 3 THEN vax.vaccinationdate END) as date_pcv3," +
+                "           MAX(CASE WHEN vax.is_pcv AND vax.pcv_row_num = 3 THEN CAST(vax.vaccinename AS text) END) as brand_pcv3," +
+                "           MAX(CASE WHEN vax.is_pcv AND vax.pcv_row_num = 4 THEN vax.vaccinationdate END) as date_pcv4," +
+                "           MAX(CASE WHEN vax.is_pcv AND vax.pcv_row_num = 4 THEN CAST(vax.vaccinename AS text) END) as brand_pcv4," +
+                "           SUM(CASE WHEN vax.is_pcv THEN 1 ELSE 0 END) as pcv_doses," +
+                "           MAX(CASE WHEN vax.is_ppv AND vax.ppv_row_num = 1 THEN vax.vaccinationdate END) as date_ppv," +
+                "           SUM(CASE WHEN vax.is_ppv THEN 1 ELSE 0 END) as ppv_doses " +
+                "    FROM (" +
+                "        SELECT c.id as case_id," +
+                "               v.vaccinationdate," +
+                "               v.vaccinename," +
+                "               CASE " +
+                "                 WHEN CAST(v.vaccinename AS text) LIKE '%PCV%' OR CAST(v.vaccinename AS text) LIKE '%CONJUGATE%' THEN true " +
+                "                 ELSE false " +
+                "               END as is_pcv," +
+                "               CASE " +
+                "                 WHEN CAST(v.vaccinename AS text) LIKE '%PPV%' OR CAST(v.vaccinename AS text) LIKE '%POLYSACCHARIDE%' THEN true " +
+                "                 ELSE false " +
+                "               END as is_ppv," +
+                "               SUM(CASE WHEN CAST(v.vaccinename AS text) LIKE '%PCV%' OR CAST(v.vaccinename AS text) LIKE '%CONJUGATE%' THEN 1 ELSE 0 END) " +
+                "                   OVER (PARTITION BY c.id ORDER BY v.vaccinationdate) as pcv_row_num," +
+                "               SUM(CASE WHEN CAST(v.vaccinename AS text) LIKE '%PPV%' OR CAST(v.vaccinename AS text) LIKE '%POLYSACCHARIDE%' THEN 1 ELSE 0 END) " +
+                "                   OVER (PARTITION BY c.id ORDER BY v.vaccinationdate) as ppv_row_num " +
+                "        FROM filtered_cases c " +
+                "        LEFT JOIN vaccination v ON v.immunization_id IN (SELECT i.id FROM immunization i WHERE i.person_id = c.person_id AND i.disease = 'INVASIVE_PNEUMOCOCCAL_INFECTION') " +
+                "    ) vax " +
+                "    GROUP BY vax.case_id) ";
 		//@formatter:on
 	}
 
@@ -331,12 +336,12 @@ public class IpiExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 	}
 
 	/**
-	 * Builds SELECT clause with all 49 PNEU fields following metadata specification
+	 * Builds SELECT clause with all 56 columns (28 common + 28 PNEU-specific).
 	 */
 	private String buildPneuSelectClause() {
 		StringBuilder select = new StringBuilder();
 		//@formatter:off
-		// Use common SELECT fields (28 fields) and append PNEU-specific fields (21 fields)
+		// Use common SELECT fields (28 fields) and append PNEU-specific fields (28 fields)
 		select.append("SELECT ")
 		      .append(sqlCteBuilder.buildCommonSelectFields())
 		      .append(",")
