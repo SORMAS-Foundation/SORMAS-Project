@@ -433,7 +433,7 @@ public class ExternalMessageController {
 
 		ExternalMessageDto externalMessageDto = FacadeProvider.getExternalMessageFacade().getByUuid(externalMessageUuid);
 
-		return Optional.ofNullable(externalMessageDto.getExternalMessageDetails().getBytes(StandardCharsets.UTF_8));
+		return Optional.ofNullable(externalMessageDto.getExternalMessageDetails()).map(details -> details.getBytes(StandardCharsets.UTF_8));
 	}
 
 	/**
