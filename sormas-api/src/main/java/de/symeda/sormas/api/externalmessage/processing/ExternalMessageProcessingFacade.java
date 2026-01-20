@@ -53,6 +53,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityFacade;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionFacade;
+import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
@@ -239,6 +240,10 @@ public abstract class ExternalMessageProcessingFacade extends AbstractProcessing
 
 	public PersonDto getPersonByContext(PersonContext personContext, String personUuid) {
 		return personFacade.getByContext(personContext, personUuid);
+	}
+
+	public OccupationType getOccupationTypeOther() {
+		return customizableEnumFacade.getEnumValue(CustomizableEnumType.OCCUPATION_TYPE, null, "OTHER");
 	}
 
 	public CaseDataDto updateAndSetCaseNotifier(String caseUuid, NotifierDto notifierDto) {
