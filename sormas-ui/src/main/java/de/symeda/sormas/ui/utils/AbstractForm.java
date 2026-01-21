@@ -530,7 +530,7 @@ public abstract class AbstractForm<T> extends CustomField<T> implements WithChil
 	}
 
 	protected boolean isConfiguredServer(String countryCode) {
-		return FacadeProvider.getConfigFacade().isConfiguredCountry(countryCode);
+		return FacadeProvider.getSystemConfigFacade().isConfiguredCountry(countryCode);
 	}
 
 	private static class SormasBeanFieldGroup<T> extends BeanFieldGroup<T> {

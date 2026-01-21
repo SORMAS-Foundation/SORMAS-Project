@@ -77,12 +77,12 @@ public class LeafletMap extends AbstractJavaScriptComponent {
 		getState().setTileLayerVisible(true);
 		getState().setTileLayerOpacity(1);
 
-		String tilesUrl = FacadeProvider.getConfigFacade().getMapTilersUrl();
+		String tilesUrl = FacadeProvider.getSystemConfigFacade().getMapTilersUrl();
 		if(StringUtils.isNoneBlank(tilesUrl)) {
 			callFunction(
 					"setTileLayer",
 					tilesUrl,
-					FacadeProvider.getConfigFacade().getMapTilersAttribution());
+				FacadeProvider.getSystemConfigFacade().getMapTilersAttribution());
 		}
 		addFunction("onClick", new JavaScriptFunction() {
 

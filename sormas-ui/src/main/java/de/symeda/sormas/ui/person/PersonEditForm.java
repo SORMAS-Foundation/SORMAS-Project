@@ -238,7 +238,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			false,
 			FieldVisibilityCheckers.withDisease(disease)
 				.add(new OutbreakFieldVisibilityChecker(viewMode))
-				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
+				.add(
+					new CountryFieldVisibilityChecker(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE))),
 			FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized),
 			isEditAllowed);
 
@@ -270,7 +271,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			false,
 			FieldVisibilityCheckers.withDisease(disease)
 				.add(new OutbreakFieldVisibilityChecker(viewMode))
-				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
+				.add(
+					new CountryFieldVisibilityChecker(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE))),
 			FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized));
 
 		this.personContext = personContext;
@@ -294,7 +296,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			PersonDto.I18N_PREFIX,
 			false,
 			new FieldVisibilityCheckers().add(new OutbreakFieldVisibilityChecker(ViewMode.NORMAL))
-				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
+				.add(
+					new CountryFieldVisibilityChecker(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE))),
 			FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized),
 			isEditAllowed);
 
@@ -440,7 +443,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				CountryReferenceDto countryRef = (CountryReferenceDto) e.getProperty().getValue();
 				boolean isForeigner = false;
 				if (countryRef != null) {
-					isForeigner = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+					isForeigner = FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 						&& Arrays.asList(CountryHelper.COUNTRY_CODE_LUXEMBOURG, "LUX")
 							.stream()
 							.filter(Objects::nonNull)
@@ -687,7 +690,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				externalTokenWarningLabel,
 				externalToken -> FacadeProvider.getPersonFacade().doesExternalTokenExist(externalToken, getValue().getUuid()));
 
-			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+			if (FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 				ValidationUtils.initComponentErrorValidator(
 					nationalHealthIdField,
 					nationalHealthIdField.getValue(),
@@ -726,8 +729,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		hasGuardian.setEnabled(false);
 		hasGuardian.setValue(Boolean.TRUE);
 		nameOfGuardians.setVisible(true);
-		minimumAdultAge = FacadeProvider.getConfigFacade().getMinimumAdultAge();
-		minimumEmancipatedAge = FacadeProvider.getConfigFacade().getMinimumEmancipatedAge();
+		minimumAdultAge = FacadeProvider.getSystemConfigFacade().getMinimumAdultAge();
+		minimumEmancipatedAge = FacadeProvider.getSystemConfigFacade().getMinimumEmancipatedAge();
 
 		if (disease != null && !PERINATAL_DISEASES.contains(disease)) {
 			perinatalDetailsHeader.setVisible(false);

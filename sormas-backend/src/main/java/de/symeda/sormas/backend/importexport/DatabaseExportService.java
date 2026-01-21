@@ -42,7 +42,6 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import de.symeda.sormas.api.importexport.DatabaseTable;
-import de.symeda.sormas.api.therapy.Drug;
 import de.symeda.sormas.backend.action.Action;
 import de.symeda.sormas.backend.activityascase.ActivityAsCase;
 import de.symeda.sormas.backend.campaign.Campaign;
@@ -56,7 +55,6 @@ import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisit;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumValue;
 import de.symeda.sormas.backend.deletionconfiguration.DeletionConfiguration;
@@ -225,7 +223,7 @@ public class DatabaseExportService {
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private SystemConfigurationAccessorEjb configFacade;
 
 	public void exportAsCsvFiles(ZipOutputStream zos, List<DatabaseTable> databaseTables) throws IOException {
 

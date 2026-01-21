@@ -72,7 +72,6 @@ import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
@@ -80,6 +79,7 @@ import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
 import de.symeda.sormas.backend.sample.PathogenTestService;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 
 /**
  * Stateless instead of Singleton. It's ok to have multiple instances with an
@@ -97,7 +97,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 	@EJB
 	private PathogenTestService pathogenTestService;
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private SystemConfigurationAccessorEjb configFacade;
 	@EJB
 	private EventService eventService;
 	@EJB

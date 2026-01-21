@@ -85,7 +85,6 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.QueryJoins;
 import de.symeda.sormas.backend.contact.Contact;
@@ -157,7 +156,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 	@EJB
 	private SormasToSormasShareInfoFacadeEjbLocal shareInfoFacade;
 	@EJB
-	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb;
+	private SystemConfigurationAccessorEjb configFacadeEjb;
 	@EJB
 	private ShareDataBuilder shareDataBuilder;
 	@EJB

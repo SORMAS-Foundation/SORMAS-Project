@@ -126,7 +126,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	@EJB
 	private SpecialCaseAccessService specialCaseAccessService;
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private SystemConfigurationAccessorEjb configFacade;
 	@EJB
 	private DrugSusceptibilityMapper drugSusceptibilityMapper;
 

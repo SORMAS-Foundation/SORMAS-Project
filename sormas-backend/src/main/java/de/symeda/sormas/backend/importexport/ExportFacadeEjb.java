@@ -54,7 +54,6 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ExportErrorException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.hospitalization.HospitalizationService;
@@ -78,7 +77,7 @@ public class ExportFacadeEjb implements ExportFacade {
 	private EntityManager em;
 
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private SystemConfigurationAccessorEjb configFacade;
 	@EJB
 	private CaseFacadeEjbLocal caseFacade;
 	@EJB

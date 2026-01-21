@@ -13893,7 +13893,7 @@ CREATE TRIGGER delete_history_trigger
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('systemconfigurationcategory_history', 'id');
 ALTER TABLE systemconfigurationcategory_history OWNER TO sormas_user;
 
-INSERT INTO systemconfigurationcategory(id, uuid, changedate, creationdate, name, caption, description) 
+INSERT INTO systemconfigurationcategory(id, uuid, changedate, creationdate, name, caption, description)
 VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'GENERAL_CATEGORY', 'i18n/General/categoryGeneral', 'i18n/General/categoryGeneral');
 
 CREATE TABLE systemconfigurationvalue (
@@ -15062,4 +15062,40 @@ ALTER TABLE testreport_history ADD COLUMN serotype character varying(255);
 ALTER TABLE testreport_history ADD COLUMN straincallstatus character varying(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (602, 'External message additional fields');
+
+
+-- Migrating sormas.properties to system configurations
+
+ALTER TABLE systemconfigurationvalue
+    ADD COLUMN IF NOT EXISTS default_value TEXT;
+
+DO
+$$
+    DECLARE
+        email_configuration_id bigint; sms_configuration_id bigint; system_configuration_id bigint; general_configuration_id bigint;
+    BEGIN
+
+        SELECT id
+        INTO email_configuration_id
+        FROM systemconfigurationcategory
+        WHERE name = 'EMAIL';
+
+        SELECT id
+        INTO sms_configuration_id
+        FROM systemconfigurationcategory
+        WHERE name = 'SMS';
+
+        INTO general_configuration_id
+            FROM systemconfigurationcategory
+            WHERE
+        name = 'GENERAL_CATEGORY';
+
+
+    END
+$$
+LANGUAGE plpgsql;
+
+
+INSERT INTO schema_version (version_number, comment)
+VALUES (604, 'Migrating sormas.properties to system configurations');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

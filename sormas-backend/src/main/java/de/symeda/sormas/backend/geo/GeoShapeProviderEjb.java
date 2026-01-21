@@ -52,7 +52,6 @@ import de.symeda.sormas.api.geo.GeoLatLon;
 import de.symeda.sormas.api.geo.GeoShapeProvider;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 
@@ -66,7 +65,7 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 	@EJB
 	private DistrictFacadeEjbLocal districtFacade;
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private SystemConfigurationAccessorEjb configFacade;
 
 	private final Map<RegionReferenceDto, MultiPolygon> regionMultiPolygons = new HashMap<>();
 	private final Map<RegionReferenceDto, GeoLatLon[][]> regionShapes = new HashMap<>();

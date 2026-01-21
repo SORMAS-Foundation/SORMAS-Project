@@ -69,7 +69,9 @@ public class TreatmentGrid extends Grid implements V7AbstractGrid<TreatmentCrite
 			setCellStyleGenerator(
 				FieldAccessCellStyleGenerator.withFieldAccessCheckers(
 					TreatmentIndexDto.class,
-					UiFieldAccessCheckers.forSensitiveData(isPseudonymized, FacadeProvider.getConfigFacade().getCountryLocale())));
+					UiFieldAccessCheckers.forSensitiveData(
+						isPseudonymized,
+						FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE))));
 		}
 
 		addItemClickListener(e -> {

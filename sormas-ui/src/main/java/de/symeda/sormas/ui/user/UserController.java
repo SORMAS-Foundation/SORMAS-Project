@@ -213,7 +213,7 @@ public class UserController {
 	}
 
 	public void makeInitialPassword(String userUuid, String userEmail) {
-		if (StringUtils.isBlank(userEmail) || AuthProvider.getProvider(FacadeProvider.getConfigFacade()).isDefaultProvider()) {
+		if (StringUtils.isBlank(userEmail) || AuthProvider.getProvider(FacadeProvider.getSystemConfigFacade()).isDefaultProvider()) {
 			String newPassword = FacadeProvider.getUserFacade().resetPassword(userUuid);
 			showPasswordResetInternalSuccessPopup(newPassword);
 		} else {
@@ -224,7 +224,7 @@ public class UserController {
 	public void makeNewPassword(String userUuid, String userEmail) {
 		String newPassword = FacadeProvider.getUserFacade().resetPassword(userUuid);
 
-		if (StringUtils.isBlank(userEmail) || AuthProvider.getProvider(FacadeProvider.getConfigFacade()).isDefaultProvider()) {
+		if (StringUtils.isBlank(userEmail) || AuthProvider.getProvider(FacadeProvider.getSystemConfigFacade()).isDefaultProvider()) {
 			showPasswordResetInternalSuccessPopup(newPassword);
 		} else {
 			showPasswordResetExternalSuccessPopup();
@@ -347,7 +347,7 @@ public class UserController {
 
 	public void sync() {
 		if (UiUtil.permitted(FeatureType.AUTH_PROVIDER_TO_SORMAS_USER_SYNC)) {
-			if (StringUtils.isBlank(FacadeProvider.getConfigFacade().getAuthenticationProviderSyncedNewUserRole())) {
+			if (StringUtils.isBlank(FacadeProvider.getSystemConfigFacade().getAuthenticationProviderSyncedNewUserRole())) {
 				VaadinUiUtil.showSimplePopupWindow(
 					I18nProperties.getString(Strings.headingSyncUsers),
 					I18nProperties.getString(Strings.messageSyncUsersFromAuthProviderConfigurationError));

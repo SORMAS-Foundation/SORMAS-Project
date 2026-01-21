@@ -52,9 +52,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.adverseeventsfollowingimmunization.components.fields.vaccines.AefiVaccinationsField;
 import de.symeda.sormas.ui.adverseeventsfollowingimmunization.components.form.FormSectionAccordion;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -294,7 +292,7 @@ public class AefiInvestigationDataForm extends AbstractEditForm<AefiInvestigatio
 			AefiInvestigationDto.class,
 			AefiInvestigationDto.I18N_PREFIX,
 			false,
-			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE)),
 			FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized));
 
 		this.isCreateAction = isCreateAction;

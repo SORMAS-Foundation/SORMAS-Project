@@ -73,7 +73,7 @@ public class SormasToSormasEncryptionFacadeEjb implements SormasToSormasEncrypti
 	private final ObjectMapper objectMapper;
 
 	@EJB
-	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb;
+	private SystemConfigurationAccessorEjb configFacadeEjb;
 
 	@Inject
 	private SormasToSormasRestClient restClient;

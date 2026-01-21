@@ -34,7 +34,7 @@ public interface SystemConfigurationValueDataProvider extends Serializable {
      *
      * @return a set of key names.
      */
-    public Set<String> getKeys();
+	Set<String> getKeys();
 
     /**
      * Retrieves the available options for the provided data.
@@ -42,7 +42,7 @@ public interface SystemConfigurationValueDataProvider extends Serializable {
      *
      * @return a map of options where the key is the option name and the value is the option value.
      */
-    public Map<String, String> getOptions();
+	Map<String, String> getOptions();
 
     /**
      * Applies the provided values to the system configuration.
@@ -54,7 +54,7 @@ public interface SystemConfigurationValueDataProvider extends Serializable {
      * @param dto
      *            the data transfer object containing the system configuration values.
      */
-    public void applyValues(@Nonnull Map<String, String> values, @Nonnull SystemConfigurationValueDto dto);
+	void applyValues(@Nonnull Map<String, String> values, @Nonnull SystemConfigurationValueDto dto);
 
     /**
      * Retrieves the current values from the system configuration.
@@ -65,6 +65,6 @@ public interface SystemConfigurationValueDataProvider extends Serializable {
      *            the data transfer object containing the system configuration value.
      * @return a map where the key is the mapped keyname and the value is the corresponding option value.
      */
-    public Map<String, String> getMappedValues(@Nonnull SystemConfigurationValueDto dto);
+	Map<String, String> getMappedValues(@Nonnull SystemConfigurationValueDto dto);
 
 }

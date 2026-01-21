@@ -101,7 +101,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		super(
 			ContactCriteria.class,
 			ContactIndexDto.I18N_PREFIX,
-			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE)),
 			JurisdictionFieldConfig.of(ContactCriteria.REGION, ContactCriteria.DISTRICT, ContactCriteria.COMMUNITY));
 	}
 
@@ -219,7 +219,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				200));
 		followUpUntilTo.removeAllValidators();
 
-		if (FacadeProvider.getConfigFacade().isExternalJournalActive()) {
+		if (FacadeProvider.getSystemConfigFacade().isExternalJournalActive()) {
 			addField(
 				moreFiltersContainer,
 				FieldConfiguration.withCaptionAndPixelSized(

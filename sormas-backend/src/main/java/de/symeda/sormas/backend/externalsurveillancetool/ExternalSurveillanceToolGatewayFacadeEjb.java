@@ -31,6 +31,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Response;
 
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +50,6 @@ import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.user.UserService;
@@ -61,7 +61,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private SystemConfigurationAccessorEjb configFacade;
 
 	@EJB
 	private CaseService caseService;

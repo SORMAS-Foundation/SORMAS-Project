@@ -1669,7 +1669,7 @@ public class CaseController {
 				classificationRulesLayout.addComponent(confirmedContent);
 			}
 
-			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+			if (FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 				if (diseaseCriteria.getConfirmedNoSymptomsCriteria() != null) {
 					Label confirmedNoSymptomsContent = new Label();
 					confirmedNoSymptomsContent.setContentMode(ContentMode.HTML);

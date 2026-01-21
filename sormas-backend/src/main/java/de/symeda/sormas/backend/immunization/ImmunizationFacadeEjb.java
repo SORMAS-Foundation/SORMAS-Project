@@ -41,9 +41,6 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.ConfigFacade;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -115,6 +112,7 @@ import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoSe
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareInfoHelper;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -174,7 +172,7 @@ public class ImmunizationFacadeEjb
 	@EJB
 	private SpecialCaseAccessService specialCaseAccessService;
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private SystemConfigurationAccessorEjb configFacade;
 
 	public ImmunizationFacadeEjb() {
 	}

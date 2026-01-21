@@ -39,7 +39,7 @@ import de.symeda.sormas.api.epipulse.EpipulseDiseaseExportResult;
 import de.symeda.sormas.api.epipulse.EpipulseExportDto;
 import de.symeda.sormas.api.epipulse.EpipulseExportStatus;
 import de.symeda.sormas.api.utils.CSVUtils;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 
 @Stateless(name = "EpipulseDiseaseExportFacade")
 public class EpipulseDiseaseExportFacadeEjb implements EpipulseDiseaseExportFacade {
@@ -56,7 +56,7 @@ public class EpipulseDiseaseExportFacadeEjb implements EpipulseDiseaseExportFaca
 	private EpipulseExportService epipulseExportService;
 
 	@EJB
-	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb;
+	private SystemConfigurationAccessorEjb configFacadeEjb;
 
 	public void startPertussisExport(String uuid) {
 

@@ -61,7 +61,7 @@ public class ShareDataBuilderHelper {
 	@EJB
 	private ContactFacadeEjb.ContactFacadeEjbLocal contactFacade;
 	@EJB
-	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb;
+	private SystemConfigurationAccessorEjb configFacadeEjb;
 	@EJB
 	private ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal externalMessageFacade;
 

@@ -24,6 +24,8 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.systemconfiguration.SystemConfiguration;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +54,7 @@ public class SmsService {
 	public static final String SMS_AUTH_SECRET = "SMS_AUTH_SECRET";
 
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private SystemConfigurationAccessorEjb configFacade;
 
 	@EJB
 	private SystemConfigurationValueFacade systemConfigurationValueEjb;
@@ -60,7 +62,7 @@ public class SmsService {
 	@Asynchronous
 	public void sendSms(String phoneNumber, String content) throws IOException, NexmoClientException, InvalidPhoneNumberException {
 
-		if (!configFacade.isSmsServiceSetUp()) {
+		if (!configFacade.isPresent(SystemConfiguration.SMS_AUTH_SECRET)) {
 			return;
 		}
 

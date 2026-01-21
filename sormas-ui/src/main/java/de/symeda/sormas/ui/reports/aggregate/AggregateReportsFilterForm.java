@@ -57,7 +57,7 @@ public class AggregateReportsFilterForm extends AbstractFilterForm<AggregateRepo
 		super(
 			AggregateReportCriteria.class,
 			AggregateCaseCountDto.I18N_PREFIX,
-			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE)),
 			null);
 	}
 

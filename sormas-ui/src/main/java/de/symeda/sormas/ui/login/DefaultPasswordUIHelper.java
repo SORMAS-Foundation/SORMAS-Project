@@ -44,7 +44,7 @@ public class DefaultPasswordUIHelper {
 	static LoginScreen.LoginListener getInterceptionLoginListener(LoginScreen.LoginListener originalLoginListener, UI vaadinUI) {
 		return () -> {
 			List<UserDto> usersWithDefaultPassword;
-			if (FacadeProvider.getConfigFacade().isSkipDefaultPasswordCheck()
+			if (FacadeProvider.getSystemConfigFacade().isSkipDefaultPasswordCheck()
 				|| (usersWithDefaultPassword = DefaultPasswordUIHelper.getUsersWithDefaultPassword()).isEmpty()) {
 				originalLoginListener.loginSuccessful();
 			} else {

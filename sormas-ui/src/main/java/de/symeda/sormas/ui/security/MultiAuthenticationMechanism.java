@@ -72,7 +72,7 @@ public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism
 		OpenIdAuthenticationMechanism openIdAuthenticationMechanism,
 		CustomFormAuthenticationMechanism customFormAuthenticationMechanism) {
 
-		String authenticationProvider = FacadeProvider.getConfigFacade().getAuthenticationProvider();
+		String authenticationProvider = FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.AUTHENTICATION_PROVIDER);
 		if (authenticationProvider.equalsIgnoreCase(AuthProvider.KEYCLOAK)) {
 			try {
 				authenticationMechanism = openIdAuthenticationMechanism;

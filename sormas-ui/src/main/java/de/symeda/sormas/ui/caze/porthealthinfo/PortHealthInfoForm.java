@@ -81,7 +81,7 @@ public class PortHealthInfoForm extends AbstractEditForm<PortHealthInfoDto> {
 			PortHealthInfoDto.class,
 			PortHealthInfoDto.I18N_PREFIX,
 			false,
-			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE)),
 			FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, pseudonymized));
 		this.pointOfEntry = pointOfEntry;
 		this.pointOfEntryDetails = pointOfEntryDetails;

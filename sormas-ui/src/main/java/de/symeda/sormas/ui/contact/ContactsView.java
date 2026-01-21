@@ -269,7 +269,7 @@ public class ContactsView extends AbstractView implements HasName {
 				exportLayout.addComponent(btnCustomExport);
 			}
 
-			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND)
+			if (FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND)
 				&& UiUtil.permitted(UserRight.BAG_EXPORT)) {
 				StreamResource bagExportResource = DownloadUtil.createCsvExportStreamResource(
 					BAGExportContactDto.class,
@@ -871,7 +871,7 @@ public class ContactsView extends AbstractView implements HasName {
 			ImportExportUtils
 				.getContactExportProperties(
 					ContactDownloadUtil::getPropertyCaption,
-					FacadeProvider.getConfigFacade().getCountryLocale(),
+					FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE),
 					FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations())
 				.stream()
 				.map(ExportPropertyMetaInfo::getPropertyId)

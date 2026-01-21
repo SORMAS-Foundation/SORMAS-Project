@@ -117,7 +117,8 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			EpiDataDto.class,
 			EpiDataDto.I18N_PREFIX,
 			false,
-			FieldVisibilityCheckers.withDisease(disease).andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
+			FieldVisibilityCheckers.withDisease(disease)
+				.andWithCountry(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE)),
 			FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized),
 			isEditAllowed);
 		this.disease = disease;
@@ -141,8 +142,11 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			new ExposuresField(
 				disease,
 				FieldVisibilityCheckers.withDisease(disease)
-					.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
-				UiFieldAccessCheckers.getDefault(false, FacadeProvider.getConfigFacade().getCountryLocale()),
+					.add(
+						new CountryFieldVisibilityChecker(
+							FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE))),
+				UiFieldAccessCheckers
+					.getDefault(false, FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE)),
 				true));
 
 		exposuresField.setEpiDataParentClass(parentClass);

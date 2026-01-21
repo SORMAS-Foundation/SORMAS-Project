@@ -145,7 +145,7 @@ public class DocGenerationController {
 		DocumentTemplateDto template,
 		Boolean shouldUploadGeneratedDoc,
 		Map<ReferenceDto, byte[]> generatedDocumentContents) {
-		long fileSizeLimitMB = FacadeProvider.getConfigFacade().getDocumentUploadSizeLimitMb();
+		long fileSizeLimitMB = FacadeProvider.getSystemConfigFacade().getDocumentUploadSizeLimitMb();
 		List<String> fileSizeLimitExceeded = new ArrayList<>();
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();

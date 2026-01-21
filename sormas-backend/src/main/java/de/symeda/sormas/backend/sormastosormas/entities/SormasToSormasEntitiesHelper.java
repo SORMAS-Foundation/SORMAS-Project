@@ -43,7 +43,7 @@ public class SormasToSormasEntitiesHelper {
 	@EJB
 	private ExternalMessageService externalMessageService;
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private SystemConfigurationAccessorEjb configFacade;
 	@EJB
 	private CustomizableEnumFacadeEjb.CustomizableEnumFacadeEjbLocal customizableEnumFacade;
 

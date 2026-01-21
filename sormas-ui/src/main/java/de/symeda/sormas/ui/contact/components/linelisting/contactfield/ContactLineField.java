@@ -85,7 +85,8 @@ public class ContactLineField extends CustomField<ContactLineFieldDto> {
 	}
 
 	public void updateTypeOfContactValues(Disease disease) {
-		ContactProximity[] values = ContactProximity.getValues(disease, FacadeProvider.getConfigFacade().getCountryLocale());
+		ContactProximity[] values =
+			ContactProximity.getValues(disease, FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE));
 		typeOfContact.setItems(values);
 		if (!Arrays.asList(values).contains(typeOfContact.getValue())) {
 			typeOfContact.setValue(null);

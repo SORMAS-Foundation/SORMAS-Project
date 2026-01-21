@@ -236,7 +236,7 @@ public class GridExportStreamResource {
 		private CSVWriter createCsvWriter(ByteArrayOutputStream byteStream) throws UnsupportedEncodingException {
 			return CSVUtils.createCSVWriter(
 				new OutputStreamWriter(byteStream, StandardCharsets.UTF_8.name()),
-				FacadeProvider.getConfigFacade().getCsvSeparator());
+				FacadeProvider.getSystemConfigFacade().getCsvSeparator());
 		}
 	}
 }

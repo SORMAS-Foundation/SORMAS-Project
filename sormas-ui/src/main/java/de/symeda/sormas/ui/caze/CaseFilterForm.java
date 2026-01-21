@@ -124,7 +124,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		super(
 			CaseCriteria.class,
 			CaseDataDto.I18N_PREFIX,
-			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE)),
 			JurisdictionFieldConfig.of(CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY));
 	}
 

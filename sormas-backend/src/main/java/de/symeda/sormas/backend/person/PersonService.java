@@ -54,6 +54,7 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.CountryHelper;
@@ -140,7 +141,7 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 	@EJB
 	private GeocodingService geocodingService;
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private SystemConfigurationAccessorEjb configFacade;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
@@ -664,7 +665,7 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 		// Find similar persons by permitted associations, optionally limited to active entries
 		Predicate personSimilarityFilter = buildSimilarityCriteriaFilter(criteria, cb, personRoot);
 
-		Predicate associationFilter = buildAssociationFilter(queryContext, configFacade.isDuplicateChecksExcludePersonsOfArchivedEntries());
+		Predicate associationFilter = buildAssociationFilter(queryContext, configFacade.getAsString());
 		personQuery.where(and(cb, personSimilarityFilter, associationFilter));
 		personQuery.distinct(true);
 

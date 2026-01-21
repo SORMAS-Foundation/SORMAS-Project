@@ -36,7 +36,7 @@ public class UserSettingsForm extends AbstractEditForm<UserDto> {
 		CssStyles.style(cbLanguage, CssStyles.COMBO_BOX_WITH_FLAG_ICON);
 		ControllerProvider.getUserController().setFlagIcons(cbLanguage);
 
-		String authenticationProvider = FacadeProvider.getConfigFacade().getAuthenticationProvider();
+		String authenticationProvider = FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.AUTHENTICATION_PROVIDER);
 		if (AuthProvider.KEYCLOAK.equals(authenticationProvider)) {
 			emailTf = addField(UserDto.USER_EMAIL, TextField.class);
 			emailTf.setCaption(I18nProperties.getCaption(Captions.User_userEmail));

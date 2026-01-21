@@ -219,7 +219,7 @@ public class EpiPulseExportController {
 			return;
 		}
 
-		String generatedFilesPath = FacadeProvider.getConfigFacade().getGeneratedFilesPath();
+		String generatedFilesPath = FacadeProvider.getSystemConfigFacade().getGeneratedFilesPath();
 		String exportFilePath = generatedFilesPath + "/" + exportIndexDto.getExportFileName();
 
 		File file = new File(exportFilePath);

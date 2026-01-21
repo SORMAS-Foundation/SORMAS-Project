@@ -126,7 +126,7 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 			TravelEntryDto.class,
 			TravelEntryDto.I18N_PREFIX,
 			false,
-			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE)),
 			createFieldAccessCheckers(isPseudonymized, inJurisdiction, true));
 		this.travelEntryUuid = travelEntryUuid;
 		addFields();

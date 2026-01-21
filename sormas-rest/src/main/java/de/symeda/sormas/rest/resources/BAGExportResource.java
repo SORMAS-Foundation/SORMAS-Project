@@ -52,7 +52,7 @@ public class BAGExportResource {
 				(propertyId, type) -> propertyId,
 				null,
 				null,
-				FacadeProvider.getConfigFacade(),
+				FacadeProvider.getSystemConfigFacade(),
 				output),
 			"sormas_BAG_cases_",
 			"csv");
@@ -68,7 +68,7 @@ public class BAGExportResource {
 				(propertyId, type) -> propertyId,
 				null,
 				null,
-				FacadeProvider.getConfigFacade(),
+				FacadeProvider.getSystemConfigFacade(),
 				output),
 			"sormas_BAG_contacts_",
 			"csv");

@@ -101,7 +101,7 @@ public class CaseEpiDataView extends AbstractCaseView {
 		}
 		layout.addSidePanelComponent(sourceContactsLayout, LOC_SOURCE_CONTACTS);
 
-		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
+		if (FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
 			&& UiUtil.permitted(FeatureType.TRAVEL_ENTRIES, UserRight.TRAVEL_ENTRY_VIEW)) {
 			TravelEntryListCriteria travelEntryListCriteria = new TravelEntryListCriteria.Builder().withCase(getCaseRef()).build();
 			layout.addSidePanelComponent(

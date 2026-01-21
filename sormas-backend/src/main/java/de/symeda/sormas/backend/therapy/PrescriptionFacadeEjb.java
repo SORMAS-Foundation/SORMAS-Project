@@ -58,7 +58,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 	@EJB
 	private CaseService caseService;
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private SystemConfigurationAccessorEjb configFacade;
 
 	@Override
 	public List<PrescriptionIndexDto> getIndexList(PrescriptionCriteria criteria) {

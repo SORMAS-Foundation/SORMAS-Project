@@ -156,7 +156,7 @@ public class TaskFacadeEjb implements TaskFacade {
 	@EJB
 	private MessagingService messagingService;
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private SystemConfigurationAccessorEjb configFacade;
 	@EJB
 	private TravelEntryService travelEntryService;
 	@EJB

@@ -98,7 +98,7 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 		super(
 			TravelEntryDto.class,
 			TravelEntryDto.I18N_PREFIX,
-			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()));
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE)));
 		this.personDto = personDto;
 		setWidth(720, Unit.PIXELS);
 		hideValidationUntilNextCommit();

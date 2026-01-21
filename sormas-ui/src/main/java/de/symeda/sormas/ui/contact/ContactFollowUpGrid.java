@@ -6,11 +6,8 @@ import static de.symeda.sormas.ui.utils.FollowUpUtils.getVisitResultDescription;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import com.vaadin.data.provider.DataProvider;
 import com.vaadin.navigator.View;
-import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.DescriptionGenerator;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.StyleGenerator;
@@ -25,7 +22,6 @@ import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.followup.FollowUpDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.visit.VisitResultDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
@@ -64,7 +60,7 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 		((Column<ContactFollowUpDto, Date>) getColumn(FollowUpDto.REPORT_DATE)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
 		((Column<ContactFollowUpDto, Date>) getColumn(FollowUpDto.FOLLOW_UP_UNTIL)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
 
-		if (!FacadeProvider.getConfigFacade().isExternalJournalActive()) {
+		if (!FacadeProvider.getSystemConfigFacade().isExternalJournalActive()) {
 			getColumn(ContactIndexDto.SYMPTOM_JOURNAL_STATUS).setHidden(true);
 		}
 

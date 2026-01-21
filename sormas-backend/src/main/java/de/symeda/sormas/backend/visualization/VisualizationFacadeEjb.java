@@ -98,7 +98,7 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 	@EJB
 	private ContactService contactService;
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private SystemConfigurationAccessorEjb configFacade;
 
 	@Override
 	public String buildTransmissionChainJson(

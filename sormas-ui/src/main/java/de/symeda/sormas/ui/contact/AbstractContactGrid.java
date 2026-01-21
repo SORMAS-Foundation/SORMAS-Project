@@ -159,11 +159,11 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 		}
 
 		setColumns(getColumnList().toArray(String[]::new));
-		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+		if (!FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			getColumn(ContactIndexDto.CONTACT_CATEGORY).setHidden(true);
 		}
-		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
-			&& !FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND)) {
+		if (!FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
+			&& !FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND)) {
 			getColumn(CaseIndexDto.EXTERNAL_ID).setHidden(true);
 			getColumn(CaseIndexDto.EXTERNAL_TOKEN).setHidden(true);
 		}
@@ -172,7 +172,7 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 		((Column<ContactIndexDto, String>) getColumn(ContactIndexDto.PERSON_UUID)).setRenderer(new UuidRenderer());
 		((Column<ContactIndexDto, Date>) getColumn(ContactIndexDto.FOLLOW_UP_UNTIL)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
 
-		if (!FacadeProvider.getConfigFacade().isExternalJournalActive()) {
+		if (!FacadeProvider.getSystemConfigFacade().isExternalJournalActive()) {
 			getColumn(ContactIndexDto.SYMPTOM_JOURNAL_STATUS).setHidden(true);
 		}
 

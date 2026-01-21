@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.utils.DateFormatHelper;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 
 /**
@@ -50,7 +49,7 @@ public class DocumentStorageService {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private SystemConfigurationAccessorEjb configFacade;
 	@EJB
 	private UserService userService;
 

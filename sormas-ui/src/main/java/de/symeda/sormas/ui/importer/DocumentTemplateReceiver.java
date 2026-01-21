@@ -64,7 +64,7 @@ public class DocumentTemplateReceiver
 		try {
 			String newFileName = ImportExportUtils.TEMP_FILE_PREFIX + "_template_upload" + DateHelper.formatDateForExport(new Date()) + "_"
 				+ DataHelper.getShortUuid(UiUtil.getUserUuid()) + ".docx";
-			file = new File(Paths.get(FacadeProvider.getConfigFacade().getTempFilesPath()).resolve(newFileName).toString());
+			file = new File(Paths.get(FacadeProvider.getSystemConfigFacade().getTempFilesPath()).resolve(newFileName).toString());
 
 			return new FileOutputStream(file);
 		} catch (FileNotFoundException e) {
@@ -81,7 +81,7 @@ public class DocumentTemplateReceiver
 
 	@Override
 	public void uploadStarted(StartedEvent startedEvent) {
-		long fileSizeLimitMb = FacadeProvider.getConfigFacade().getDocumentUploadSizeLimitMb();
+		long fileSizeLimitMb = FacadeProvider.getSystemConfigFacade().getDocumentUploadSizeLimitMb();
 
 		if (isFileSizeLimitExceeded(startedEvent.getContentLength(), fileSizeLimitMb)) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.fileTooBig, fileSizeLimitMb));

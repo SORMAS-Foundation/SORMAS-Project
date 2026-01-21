@@ -10,9 +10,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import com.vaadin.ui.HorizontalLayout;
-import de.symeda.sormas.api.person.SymptomJournalStatus;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -24,6 +21,7 @@ import com.vaadin.server.StreamResource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.BrowserFrame;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
@@ -40,6 +38,8 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.SymptomJournalStatus;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import de.symeda.sormas.ui.SormasUI;
 
 public class ExternalJournalUtil {
@@ -75,13 +75,13 @@ public class ExternalJournalUtil {
 	}
 
 	private static Optional<Button> getExternalJournalUiButton(PersonDto person) {
-		if (FacadeProvider.getConfigFacade().getSymptomJournalConfig().isActive()) {
+		if (FacadeProvider.getSystemConfigFacade().getSymptomJournalConfig().isActive()) {
 			if (person.isEnrolledInExternalJournal()) {
 				return Optional.of(createSymptomJournalOptionsButton(person));
 			} else {
 				return Optional.of(createSymptomJournalRegisterButton(person));
 			}
-		} else if (FacadeProvider.getConfigFacade().getPatientDiaryConfig().isActive()) {
+		} else if (FacadeProvider.getSystemConfigFacade().getPatientDiaryConfig().isActive()) {
 			if (person.isEnrolledInExternalJournal()) {
 				return Optional.of(createPatientDiaryOptionsButton(person));
 			} else {
@@ -173,7 +173,7 @@ public class ExternalJournalUtil {
 	private static void openSymptomJournalWindow(PersonDto person) {
 		String authToken = externalJournalFacade.getSymptomJournalAuthToken();
 		BrowserFrame frame = new BrowserFrame(null, new StreamResource(() -> {
-			String formUrl = FacadeProvider.getConfigFacade().getSymptomJournalConfig().getUrl();
+			String formUrl = FacadeProvider.getSystemConfigFacade().getSymptomJournalConfig().getUrl();
 			Map<String, String> parameters = new LinkedHashMap<>();
 			parameters.put("token", authToken);
 			parameters.put("uuid", person.getUuid());
@@ -239,7 +239,7 @@ public class ExternalJournalUtil {
 	}
 
 	private static void openPatientDiaryPage(String personUuid) {
-		String url = FacadeProvider.getConfigFacade().getPatientDiaryConfig().getUrl();
+		String url = FacadeProvider.getSystemConfigFacade().getPatientDiaryConfig().getUrl();
 		url += "/data?q=" + personUuid + "&queryKey=sicFieldIdentifier";
 		String authToken = externalJournalFacade.getPatientDiaryAuthToken(true);
 		if (StringUtils.isNotEmpty(authToken)) {

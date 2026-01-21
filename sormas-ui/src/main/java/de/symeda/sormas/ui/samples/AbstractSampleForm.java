@@ -118,7 +118,8 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 			type,
 			propertyI18nPrefix,
 			true,
-			FieldVisibilityCheckers.withDisease(disease).andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
+			FieldVisibilityCheckers.withDisease(disease)
+				.andWithCountry(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE)),
 			fieldAccessCheckers);
 		this.disease = disease;
 	}

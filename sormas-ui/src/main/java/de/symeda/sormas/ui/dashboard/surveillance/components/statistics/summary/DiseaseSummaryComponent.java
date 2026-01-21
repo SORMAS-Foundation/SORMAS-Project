@@ -55,7 +55,7 @@ public class DiseaseSummaryComponent extends DashboardStatisticsSubComponent {
 		contactsConvertedToCase = new DiseaseSummaryElementComponent(Strings.headingCasesResultingFromContacts);
 		addComponent(contactsConvertedToCase);
 
-		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+		if (FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			casesWithReferenceDefinitionFulfilled = new DiseaseSummaryElementComponent(Strings.headingcasesWithReferenceDefinitionFulfilled);
 			addComponent(casesWithReferenceDefinitionFulfilled);
 		}
@@ -79,7 +79,7 @@ public class DiseaseSummaryComponent extends DashboardStatisticsSubComponent {
 		casesInQuarantineByDate.updateTotalLabel(dashboardDataProvider.getCasesInQuarantineCount().toString());
 		casesPlacedInQuarantineByDate.updateTotalLabel(dashboardDataProvider.getCasesPlacedInQuarantineCount().toString());
 		contactsConvertedToCase.updateTotalLabel(dashboardDataProvider.getContactsConvertedToCaseCount().toString());
-		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+		if (FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			casesWithReferenceDefinitionFulfilled.updateTotalLabel(dashboardDataProvider.getCaseWithReferenceDefinitionFulfilledCount().toString());
 		}
 	}

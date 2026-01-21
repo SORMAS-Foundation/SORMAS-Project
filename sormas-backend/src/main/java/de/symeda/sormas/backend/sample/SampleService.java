@@ -54,6 +54,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -153,7 +154,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 	@EJB
 	private SpecialCaseAccessService specialCaseAccessService;
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private SystemConfigurationAccessorEjb configFacade;
 
 	public SampleService() {
 		super(Sample.class, DeletableEntityType.SAMPLE);

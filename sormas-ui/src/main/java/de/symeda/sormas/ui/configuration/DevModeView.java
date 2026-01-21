@@ -984,7 +984,8 @@ public class DevModeView extends AbstractConfigurationView {
 			}
 
 			fieldVisibilityCheckers =
-				FieldVisibilityCheckers.withDisease(disease).andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale());
+				FieldVisibilityCheckers.withDisease(disease)
+					.andWithCountry(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE));
 
 			LocalDateTime referenceDateTime =
 				getReferenceDateTime(i, config.getEntityCountAsNumber(), baseOffset, disease, config.getStartDate(), daysBetween);
@@ -1292,7 +1293,8 @@ public class DevModeView extends AbstractConfigurationView {
 
 		for (int i = 0; i < contactGenerationConfig.getEntityCountAsNumber(); i++) {
 			fieldVisibilityCheckers =
-				FieldVisibilityCheckers.withDisease(disease).andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale());
+				FieldVisibilityCheckers.withDisease(disease)
+					.andWithCountry(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE));
 
 			LocalDateTime referenceDateTime = getReferenceDateTime(
 				i,
@@ -1491,7 +1493,8 @@ public class DevModeView extends AbstractConfigurationView {
 					eventGenerationConfig.getStartDate(),
 					daysBetween);
 				fieldVisibilityCheckers =
-					FieldVisibilityCheckers.withDisease(disease).andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale());
+					FieldVisibilityCheckers.withDisease(disease)
+						.andWithCountry(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE));
 			} else {
 				referenceDateTime = getReferenceDateTime(
 					i,
@@ -1501,7 +1504,8 @@ public class DevModeView extends AbstractConfigurationView {
 					eventGenerationConfig.getStartDate(),
 					daysBetween);
 				fieldVisibilityCheckers =
-					FieldVisibilityCheckers.withDisease(Disease.OTHER).andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale());
+					FieldVisibilityCheckers.withDisease(Disease.OTHER)
+						.andWithCountry(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE));
 			}
 
 			// title

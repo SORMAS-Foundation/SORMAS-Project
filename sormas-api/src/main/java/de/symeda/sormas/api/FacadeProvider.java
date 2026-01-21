@@ -14,7 +14,6 @@
  */
 package de.symeda.sormas.api;
 
-import javax.naming.ConfigurationException;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
@@ -108,6 +107,8 @@ import de.symeda.sormas.api.specialcaseaccess.SpecialCaseAccessFacade;
 import de.symeda.sormas.api.survey.SurveyFacade;
 import de.symeda.sormas.api.survey.SurveyTokenFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
+import de.symeda.sormas.api.systemconfiguration.SystemConfiguration;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationAccessorFacade;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationCategoryFacade;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.api.systemevents.SystemEventFacade;
@@ -297,6 +298,10 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(ConfigFacade.class);
 	}
 
+	public static SystemConfigurationAccessorFacade getSystemConfigFacade() {
+		return get().lookupEjbRemote(SystemConfigurationAccessorFacade.class);
+	}
+
 	public static ExportFacade getExportFacade() {
 		return get().lookupEjbRemote(ExportFacade.class);
 	}
@@ -471,13 +476,8 @@ public class FacadeProvider {
 	}
 
 	public static ExternalMessageAdapterFacade getExternalLabResultsFacade() throws NamingException {
-
-		String jndiName = FacadeProvider.getConfigFacade().getExternalMessageAdapterJndiName();
-		if (jndiName == null) {
-			throw new ConfigurationException("No LabResultAdapter JNDI name is configured in the sormas.properties");
-		} else {
-			return (ExternalMessageAdapterFacade) get().ic.lookup(jndiName);
-		}
+		return (ExternalMessageAdapterFacade) get().ic
+			.lookup(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.INTERFACE_EXTERNAL_MESSAGE_ADAPTER_JNDI_NAME));
 	}
 
 	public static SurveillanceReportFacade getSurveillanceReportFacade() {

@@ -40,7 +40,7 @@ public class CaseStatisticsComponent extends DiseaseSectionStatisticsComponent {
 			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardNotACase), CountElementStyle.POSITIVE);
 		caseClassificationNotYetClassified =
 			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardNotYetClassified), CountElementStyle.MINOR);
-		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+		if (FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			buildCountLayout(
 				caseClassificationConfirmed,
 				caseClassificationConfirmedNoSymptoms,
@@ -63,7 +63,7 @@ public class CaseStatisticsComponent extends DiseaseSectionStatisticsComponent {
 		updateTotalLabel(Integer.toString(cases.values().stream().reduce(0, Integer::sum)));
 
 		caseClassificationConfirmed.updateCountLabel(cases.getOrDefault(CaseClassification.CONFIRMED, 0));
-		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+		if (FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			caseClassificationConfirmedNoSymptoms.updateCountLabel(cases.getOrDefault(CaseClassification.CONFIRMED_NO_SYMPTOMS, 0));
 			caseClassificationConfirmedUnknownSymptoms.updateCountLabel(cases.getOrDefault(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS, 0));
 		}

@@ -100,7 +100,7 @@ public class ExternalMessageGrid extends FilteredGrid<ExternalMessageIndexDto, E
 
 		String[] columns = new String[] {
 			SHOW_MESSAGE };
-		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+		if (!FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 			columns = ArrayUtils.add(columns, ExternalMessageIndexDto.UUID);
 		}
 		columns = ArrayUtils.addAll(
@@ -121,7 +121,7 @@ public class ExternalMessageGrid extends FilteredGrid<ExternalMessageIndexDto, E
 			COLUMN_DOWNLOAD);
 		setColumns(columns);
 
-		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+		if (!FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 			((Column<ExternalMessageIndexDto, String>) getColumn(ExternalMessageIndexDto.UUID)).setRenderer(new UuidRenderer());
 		}
 		((Column<ExternalMessageIndexDto, Date>) getColumn(ExternalMessageIndexDto.MESSAGE_DATE_TIME))

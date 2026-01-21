@@ -125,7 +125,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		super(
 			EventCriteria.class,
 			EventIndexDto.I18N_PREFIX,
-			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE)),
 			JurisdictionFieldConfig.of(LocationDto.REGION, LocationDto.DISTRICT, LocationDto.COMMUNITY));
 		this.hideEventStatusFilter = hideEventStatusFilter;
 		this.hideActionFilters = hideActionFilters;

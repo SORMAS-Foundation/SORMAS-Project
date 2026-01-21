@@ -215,14 +215,15 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			ContactDto.I18N_PREFIX,
 			false,
 			FieldVisibilityCheckers.withDisease(disease)
-				.andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale())
+				.andWithCountry(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE))
 				.andWithFeatureType(FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations()),
 			FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized));
 
 		this.viewMode = viewMode;
 		this.disease = disease;
 		this.diseaseHasFollowUp = FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(disease);
-		this.luxMeasles = Disease.MEASLES == disease && FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+		this.luxMeasles =
+			Disease.MEASLES == disease && FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 		addFields();
 	}
 
@@ -543,8 +544,11 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			new HealthConditionsForm(
 				disease,
 				FieldVisibilityCheckers.withDisease(disease)
-					.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
-				UiFieldAccessCheckers.getDefault(true, FacadeProvider.getConfigFacade().getCountryLocale())));
+					.add(
+						new CountryFieldVisibilityChecker(
+							FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE))),
+				UiFieldAccessCheckers
+					.getDefault(true, FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE))));
 		clinicalCourseForm.setCaption(null);
 
 		Label generalCommentLabel = new Label(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.ADDITIONAL_DETAILS));
@@ -914,7 +918,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		FieldHelper.updateEnumData(
 			contactProximity,
-			Arrays.asList(ContactProximity.getValues(disease, FacadeProvider.getConfigFacade().getCountryLocale())));
+			Arrays.asList(
+				ContactProximity.getValues(disease, FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE))));
 	}
 
 	public Disease getSelectedDisease() {

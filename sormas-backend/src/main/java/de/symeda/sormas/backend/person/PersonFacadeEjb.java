@@ -260,7 +260,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	@EJB
 	private SpecialCaseAccessService specialCaseAccessService;
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private SystemConfigurationAccessorEjb configFacade;
 
 	public PersonFacadeEjb() {
 	}

@@ -14,6 +14,8 @@
  */
 package de.symeda.sormas.ui.contact;
 
+import java.util.List;
+
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Button;
@@ -73,8 +75,6 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
 import de.symeda.sormas.ui.vaccination.list.VaccinationListComponent;
-
-import java.util.List;
 
 public class ContactDataView extends AbstractContactView implements HasName {
 
@@ -220,7 +220,8 @@ public class ContactDataView extends AbstractContactView implements HasName {
 			layout.addSidePanelComponent(taskList, TASKS_LOC);
 		}
 
-		if (!(FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && List.of(Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.MEASLES).contains(contactDto.getDisease()))) {
+		if (!(FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+			&& List.of(Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.MEASLES).contains(contactDto.getDisease()))) {
 			if (UiUtil.permitted(UserRight.SAMPLE_VIEW)) {
 				SampleListComponent sampleList = new SampleListComponent(
 						new SampleCriteria().contact(getContactRef()).disease(contactDto.getDisease()).sampleAssociationType(SampleAssociationType.CONTACT),

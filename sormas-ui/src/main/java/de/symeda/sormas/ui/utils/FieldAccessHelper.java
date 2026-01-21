@@ -34,14 +34,14 @@ public class FieldAccessHelper {
 		return UiFieldAccessCheckers.forDataAccessLevel(
 			UiUtil.getPseudonymizableDataAccessLevel(inJurisdiction),
 			isPseudonymized,
-			FacadeProvider.getConfigFacade().getCountryLocale());
+			FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE));
 	}
 
 	public static <T extends PseudonymizableDto> UiFieldAccessCheckers<T> getFieldAccessCheckers(T dto) {
 		return UiFieldAccessCheckers.forDataAccessLevel(
 			UiUtil.getPseudonymizableDataAccessLevel(dto.isInJurisdiction()),
 			dto.isPseudonymized(),
-			FacadeProvider.getConfigFacade().getCountryLocale());
+			FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE));
 	}
 
 }

@@ -64,7 +64,7 @@ public class SormasUI extends UI implements HasUserProvider, HasViewModelProvide
 
 		VaadinSession.getCurrent().setConverterFactory(new SormasDefaultConverterFactory());
 
-		getPage().setTitle(FacadeProvider.getConfigFacade().getSormasInstanceName());
+		getPage().setTitle(FacadeProvider.getSystemConfigFacade().getSormasInstanceName());
 
 		initMainScreen();
 	}

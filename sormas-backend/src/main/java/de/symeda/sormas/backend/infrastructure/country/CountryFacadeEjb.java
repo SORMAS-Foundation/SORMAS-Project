@@ -55,7 +55,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.EmptyValueException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.InfrastructureAdo;
@@ -80,7 +79,7 @@ public class CountryFacadeEjb
 	private SubcontinentService subcontinentService;
 
 	@EJB
-	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb;
+	private SystemConfigurationAccessorEjb configFacadeEjb;
 
 	public CountryFacadeEjb() {
 	}

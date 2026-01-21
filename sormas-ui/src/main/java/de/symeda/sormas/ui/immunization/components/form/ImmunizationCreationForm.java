@@ -114,7 +114,7 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		super(
 			ImmunizationDto.class,
 			ImmunizationDto.I18N_PREFIX,
-			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()));
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE)));
 		this.personDto = personDto;
 		this.disease = disease;
 		setWidth(720, Unit.PIXELS);

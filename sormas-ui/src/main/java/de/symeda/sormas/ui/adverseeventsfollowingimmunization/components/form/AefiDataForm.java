@@ -125,7 +125,7 @@ public class AefiDataForm extends AbstractEditForm<AefiDto> {
 			AefiDto.class,
 			AefiDto.I18N_PREFIX,
 			false,
-			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE)),
 			FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized));
 
 		this.isCreateAction = isCreateAction;

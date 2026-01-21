@@ -60,7 +60,6 @@ import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.event.PasswordResetEvent;
 import de.symeda.sormas.backend.user.event.SyncUsersFromProviderEvent;
 import de.symeda.sormas.backend.user.event.UserCreateEvent;
@@ -79,7 +78,7 @@ public class KeycloakService {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private SystemConfigurationAccessorEjb configFacade;
 
 	private static final String OIDC_REALM = "realm";
 	private static final String OIDC_SERVER_URL = "auth-server-url";

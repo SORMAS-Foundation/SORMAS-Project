@@ -240,7 +240,6 @@ import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditionsMapper;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper.OrderBuilder;
 import de.symeda.sormas.backend.common.NotificationService;
@@ -331,6 +330,7 @@ import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.therapy.Prescription;
@@ -436,7 +436,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@EJB
 	private PersonFacadeEjbLocal personFacade;
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private SystemConfigurationAccessorEjb configFacade;
 	@EJB
 	private TherapyFacadeEjbLocal therapyFacade;
 	@EJB

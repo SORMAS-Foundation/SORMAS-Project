@@ -997,7 +997,7 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 				if (districtCenter != null) {
 					marker.setLatLon(districtCenter.getLat(), districtCenter.getLon());
 				} else {
-					GeoLatLon countryCenter = FacadeProvider.getConfigFacade().getCountryCenter();
+					GeoLatLon countryCenter = FacadeProvider.getSystemConfigFacade().getCountryCenter();
 					marker.setLatLon(countryCenter.getLat(), countryCenter.getLon());
 				}
 			} else {

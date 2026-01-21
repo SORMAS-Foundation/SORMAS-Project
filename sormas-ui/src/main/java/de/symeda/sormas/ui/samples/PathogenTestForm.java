@@ -285,7 +285,8 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			PathogenTestDto.class,
 			PathogenTestDto.I18N_PREFIX,
 			false,
-			FieldVisibilityCheckers.withDisease(disease).andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
+			FieldVisibilityCheckers.withDisease(disease)
+				.andWithCountry(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE)),
 			FieldAccessHelper.getFieldAccessCheckers(create || inJurisdiction, !create && isPseudonymized));// Jurisdiction doesn't matter for creation forms  // Pseudonymization doesn't matter for creation forms
 
 		this.caseSampleCount = caseSampleCount;
@@ -332,7 +333,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		// FIXME: why was this here originally?
 		// TODO: move this to another place, should be in listeners for disease/testType.
 
-		if ((FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG))) {
+		if ((FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG))) {
 
 			// testResult=NOT_APPLICABLE for Tuberculosis diseases, test types BEIJINGGENOTYPING,MIRU_PATTERN_CODE,ANTIBIOTIC_SUSCEPTIBILITY
 			if ((disease == Disease.LATENT_TUBERCULOSIS || disease == Disease.TUBERCULOSIS)
@@ -533,7 +534,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		testResultField = addField(PathogenTestDto.TEST_RESULT, ComboBox.class);
 		testResultField.removeItem(PathogenTestResultType.NOT_DONE);
 
-		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+		if (!FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 			testResultField.removeItem(PathogenTestResultType.NOT_APPLICABLE);
 		}
 		TextField seroTypeTF = addField(PathogenTestDto.SEROTYPE, TextField.class);
@@ -561,12 +562,13 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			PathogenTestDto.DRUG_SUSCEPTIBILITY,
 			new DrugSusceptibilityForm(
 				FieldVisibilityCheckers.getNoop(),
-				UiFieldAccessCheckers.getDefault(true, FacadeProvider.getConfigFacade().getCountryLocale())));
+				UiFieldAccessCheckers
+					.getDefault(true, FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE))));
 		drugSusceptibilityField.setCaption(null);
 		//drugSusceptibilityField.setVisible(false);
 		addToVisibleAllowedFields(drugSusceptibilityField);
 
-		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+		if (FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 			//tuberculosis-pcr test specification
 			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.RIFAMPICIN_RESISTANT, RIFAMPICIN_RESISTANT_VISIBILITY_CONDITIONS, true);
 
@@ -600,7 +602,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		seroGrpSpecTxt = addField(PathogenTestDto.SERO_GROUP_SPECIFICATION_TEXT, TextField.class);
 		
 		TextField cqValueField = addField(FieldConfiguration.withConversionError(PathogenTestDto.CQ_VALUE, Validations.onlyNumbersAllowed));
-		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+		if (!FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 			cqValueField.setVisible(false);
 		}
 
@@ -1132,7 +1134,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				FieldVisibilityCheckers.withDisease(disease),
 				PathogenTestType.class);
 
-			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+			if (FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 				FieldHelper.updateItems(
 					strainCallStatusField,
 					Arrays.asList(PathogenStrainCallStatus.values()),
@@ -1186,7 +1188,8 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				}
 				// Show tube IGRA fields only for IGRA tests and Luxembourg
 				setVisibleClear(
-					PathogenTestType.IGRA == testType && FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG),
+					PathogenTestType.IGRA == testType
+						&& FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG),
 					PathogenTestDto.TUBE_NIL,
 					PathogenTestDto.TUBE_NIL_GT10,
 					PathogenTestDto.TUBE_AG_TB1,

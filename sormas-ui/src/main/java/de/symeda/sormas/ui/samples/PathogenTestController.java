@@ -329,7 +329,7 @@ public class PathogenTestController {
 
 		pathogenTests.forEach(p -> {
 			p.setSample(sampleRef);
-			boolean luxTB = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+			boolean luxTB = FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 				&& Disease.TUBERCULOSIS == p.getTestedDisease();
 			boolean invasiveDisease = DiseaseHelper.checkDiseaseIsInvasiveBacterialDiseases(p.getTestedDisease());
 			//the susceptibility test is applicable only for LUX TB and all-countries invasive disease
@@ -687,7 +687,7 @@ public class PathogenTestController {
 
 	public void showConfirmCaseDialog(CaseDataDto caze) {
 
-		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+		if (FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			return;
 		}
 

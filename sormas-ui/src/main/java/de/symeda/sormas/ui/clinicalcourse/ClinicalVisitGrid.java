@@ -68,7 +68,9 @@ public class ClinicalVisitGrid extends Grid implements V7AbstractGrid<ClinicalVi
 		setCellStyleGenerator(
 			FieldAccessCellStyleGenerator.withFieldAccessCheckers(
 				ClinicalVisitIndexDto.class,
-				UiFieldAccessCheckers.forSensitiveData(isPseudonymized, FacadeProvider.getConfigFacade().getCountryLocale())));
+				UiFieldAccessCheckers.forSensitiveData(
+					isPseudonymized,
+					FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE))));
 
 		addItemClickListener(e -> {
 			if (ACTION_BTN_ID.equals(e.getPropertyId()) || e.isDoubleClick()) {

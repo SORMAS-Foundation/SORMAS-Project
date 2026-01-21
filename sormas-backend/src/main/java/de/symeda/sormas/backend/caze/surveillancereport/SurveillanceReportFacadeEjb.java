@@ -104,7 +104,7 @@ public class SurveillanceReportFacadeEjb
 	@EJB
 	private SpecialCaseAccessService specialCaseAccessService;
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private SystemConfigurationAccessorEjb configFacade;
 
 	public SurveillanceReportFacadeEjb() {
 		super();

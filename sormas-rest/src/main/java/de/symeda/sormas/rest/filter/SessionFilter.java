@@ -50,12 +50,12 @@ public class SessionFilter implements Filter {
 				final RequestContextTO requestContext =
 					new RequestContextTO(isMobileSyncHeader != null ? Boolean.valueOf(isMobileSyncHeader) : false);
 				RequestContextHolder.setRequestContext(requestContext);
-				FacadeProvider.getConfigFacade().setRequestContext(requestContext);
+				FacadeProvider.getSystemConfigFacade().setRequestContext(requestContext);
 				chain.doFilter(req, response);
 			}, request, response);
 		} finally {
 			RequestContextHolder.reset();
-			FacadeProvider.getConfigFacade().resetRequestContext();
+			FacadeProvider.getSystemConfigFacade().resetRequestContext();
 		}
 	}
 

@@ -109,7 +109,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	@EJB
 	private SormasToSormasEncryptionFacadeEjbLocal encryptionService;
 	@Inject
-	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb;
+	private SystemConfigurationAccessorEjb configFacadeEjb;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB

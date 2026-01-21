@@ -193,7 +193,7 @@ public class UserFacadeEjb implements UserFacade {
 	@EJB
 	private PersonService personService;
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private SystemConfigurationAccessorEjb configFacade;
 	@Inject
 	private Event<UserCreateEvent> userCreateEvent;
 	@Inject

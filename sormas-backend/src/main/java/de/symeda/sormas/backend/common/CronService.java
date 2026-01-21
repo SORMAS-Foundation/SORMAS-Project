@@ -37,7 +37,6 @@ import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.deletionconfiguration.CoreEntityDeletionService;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb.DocumentFacadeEjbLocal;
@@ -64,7 +63,7 @@ public class CronService {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private SystemConfigurationAccessorEjb configFacade;
 	@EJB
 	private ContactFacadeEjbLocal contactFacade;
 	@EJB

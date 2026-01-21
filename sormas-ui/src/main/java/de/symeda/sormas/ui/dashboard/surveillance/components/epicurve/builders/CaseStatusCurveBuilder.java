@@ -40,13 +40,13 @@ public class CaseStatusCurveBuilder extends SurveillanceEpiCurveBuilder {
 			suspectNumbers[i] = caseCounts.getOrDefault(CaseClassification.SUSPECT, 0).intValue();
 			notYetClassifiedNumbers[i] = caseCounts.getOrDefault(CaseClassification.NOT_CLASSIFIED, 0).intValue();
 
-			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+			if (FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 				confirmedNoSymptomsNumbers[i] = caseCounts.getOrDefault(CaseClassification.CONFIRMED_NO_SYMPTOMS, 0).intValue();
 				confirmedUnknownSymptomsNumbers[i] = caseCounts.getOrDefault(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS, 0).intValue();
 			}
 		}
 
-		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+		if (FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			return Arrays.asList(
 				new EpiCurveSeriesElement(Captions.dashboardNotYetClassified, "#808080", notYetClassifiedNumbers),
 				new EpiCurveSeriesElement(Captions.dashboardSuspect, "#FFD700", suspectNumbers),

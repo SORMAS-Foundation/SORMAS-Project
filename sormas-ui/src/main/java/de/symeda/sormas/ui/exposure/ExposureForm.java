@@ -454,7 +454,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	protected String createHtmlLayout() {
 		//@formatter:off
 		String HTML_LAYOUT = UUID_REPORTING_USER;
-		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY) && epiDataParentClass == CaseDataDto.class) {
+		if (FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY) && epiDataParentClass == CaseDataDto.class) {
 			HTML_LAYOUT += fluidRowLocs(ExposureDto.PROBABLE_INFECTION_ENVIRONMENT) +
 			(FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()
 				? VaadinIcons.INFO_CIRCLE.getHtml() + " " + (I18nProperties.getString(Strings.infoCheckProbableInfectionEnvironment)) + "<p>   </p>" : "<p>   </p>");

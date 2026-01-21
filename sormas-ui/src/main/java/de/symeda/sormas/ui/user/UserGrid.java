@@ -77,7 +77,8 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 			UserDto.DISTRICT,
 			UserDto.HEALTH_FACILITY));
 
-		if (!AuthProvider.SORMAS.equalsIgnoreCase(FacadeProvider.getConfigFacade().getAuthenticationProvider())) {
+		if (!AuthProvider.SORMAS
+			.equalsIgnoreCase(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.AUTHENTICATION_PROVIDER))) {
 			columns.add(UserDto.EXTERNAL_ID);
 		}
 

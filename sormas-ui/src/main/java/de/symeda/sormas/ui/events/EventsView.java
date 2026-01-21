@@ -752,7 +752,7 @@ public class EventsView extends AbstractView {
 				.getEventExportProperties(
 					EventDownloadUtil::getPropertyCaption,
 					eventGroupFeatureEnabled,
-					FacadeProvider.getConfigFacade().getCountryLocale(),
+					FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE),
 					FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations())
 				.stream()
 				.map(ExportPropertyMetaInfo::getPropertyId)

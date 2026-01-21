@@ -189,7 +189,7 @@ public final class DownloadUtil {
 				try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {
 					try (CSVWriter writer = CSVUtils.createCSVWriter(
 						new OutputStreamWriter(byteStream, StandardCharsets.UTF_8.name()),
-						FacadeProvider.getConfigFacade().getCsvSeparator())) {
+						FacadeProvider.getSystemConfigFacade().getCsvSeparator())) {
 						// Generate and write columns to CSV writer
 						List<String> columnNames = new ArrayList<>();
 						columnNames.add(I18nProperties.getPrefixCaption(PopulationDataDto.I18N_PREFIX, PopulationDataDto.REGION));
@@ -481,7 +481,9 @@ public final class DownloadUtil {
 		String exportFileName = createFileNameWithCurrentDate(entityName, ".csv");
 		StreamResource extendedStreamResource = new StreamResource(() -> new DelayedInputStream((out) -> {
 			try (CSVWriter writer = CSVUtils
-				.createCSVWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8.name()), FacadeProvider.getConfigFacade().getCsvSeparator())) {
+				.createCSVWriter(
+					new OutputStreamWriter(out, StandardCharsets.UTF_8.name()),
+					FacadeProvider.getSystemConfigFacade().getCsvSeparator())) {
 
 				final List<String> columnNames = new ArrayList<>();
 				final List<String> dayColumns = new ArrayList<>();
@@ -573,7 +575,7 @@ public final class DownloadUtil {
 					propertyIdCaptionFunction,
 					exportConfiguration,
 					(o) -> exportType == null || hasExportTarget(exportType, (Method) o),
-					FacadeProvider.getConfigFacade(),
+					FacadeProvider.getSystemConfigFacade(),
 					out);
 			} catch (Exception e) {
 				LoggerFactory.getLogger(DownloadUtil.class).error(e.getMessage(), e);
@@ -656,7 +658,7 @@ public final class DownloadUtil {
 	}
 
 	public static String createFileNameWithCurrentDate(ExportEntityName entityName, String fileExtension) {
-		String instanceName = FacadeProvider.getConfigFacade().getSormasInstanceName().toLowerCase();
+		String instanceName = FacadeProvider.getSystemConfigFacade().getSormasInstanceName().toLowerCase();
 		String processedInstanceName = DataHelper.cleanStringForFileName(instanceName);
 		String processedEntityName = DataHelper.cleanStringForFileName(entityName.getLocalizedNameInSystemLanguage());
 		String exportDate = DateHelper.formatDateForExport(new Date());
