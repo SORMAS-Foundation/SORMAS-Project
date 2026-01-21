@@ -63,6 +63,7 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.task.IsTask;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
@@ -89,7 +90,6 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.CronService;
 import de.symeda.sormas.backend.common.NotificationService;
@@ -116,6 +116,7 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationJoins;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
 import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
@@ -1189,16 +1190,13 @@ public class TaskFacadeEjb implements TaskFacade {
 			return null;
 		}
 
-		String uiUrl = configFacade.getUiUrl();
-		if (uiUrl == null) {
-			return null;
-		}
-
-		StringBuilder uiUrlBuilder = new StringBuilder(uiUrl);
-		if (!uiUrl.endsWith("/")) {
-			uiUrlBuilder.append("/");
-		}
-		return uiUrlBuilder.append("#!").append(taskContext.getUrlPattern()).append("/data/").append(uuid).toString();
+		return configFacade.getAsString(SystemConfigurationType.UI_URL).map(uiUrl -> {
+			StringBuilder uiUrlBuilder = new StringBuilder(uiUrl);
+			if (!uiUrl.endsWith("/")) {
+				uiUrlBuilder.append("/");
+			}
+			return uiUrlBuilder.append("#!").append(taskContext.getUrlPattern()).append("/data/").append(uuid).toString();
+		}).orElse(null);
 	}
 
 	@Override

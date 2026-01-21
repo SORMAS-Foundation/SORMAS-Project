@@ -28,11 +28,11 @@ import de.symeda.sormas.api.sormastosormas.entities.immunization.SormasToSormasI
 import de.symeda.sormas.api.sormastosormas.share.incoming.PreviewNotImplementedDto;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
+import de.symeda.sormas.backend.systemconfiguration.ExternalClientConfigurationEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.vaccination.Vaccination;
 
@@ -52,7 +52,7 @@ public class ReceivedImmunizationProcessor
 	protected ReceivedImmunizationProcessor(
 		ImmunizationService service,
 		UserService userService,
-		ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade,
+		ExternalClientConfigurationEjb configFacade,
 		SormasToSormasImmunizationDtoValidator validator) {
 		super(service, userService, configFacade, validator);
 	}

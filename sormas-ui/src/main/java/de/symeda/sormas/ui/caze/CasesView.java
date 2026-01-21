@@ -77,7 +77,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleExportDto;
-import de.symeda.sormas.api.systemconfiguration.SystemConfiguration;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.UtilDate;
@@ -249,7 +249,7 @@ public class CasesView extends AbstractView implements HasName {
 					caseFollowUpEnabled,
 					hasClinicalCourseRight,
 					hasTherapyRight,
-					FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE),
+					FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfigurationType.COUNTRY_LOCALE),
 					FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations())
 				.stream()
 				.map(ExportPropertyMetaInfo::getPropertyId)
@@ -391,7 +391,7 @@ public class CasesView extends AbstractView implements HasName {
 							caseFollowUpEnabled,
 							hasClinicalCourseRight,
 							hasTherapyRight,
-							FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE),
+							FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfigurationType.COUNTRY_LOCALE),
 							FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations()),
 						customExportWindow::close);
 					customExportsLayout.setExportCallback(
@@ -741,7 +741,7 @@ public class CasesView extends AbstractView implements HasName {
 								true);
 						}, hasBulkOperationsRight && UiUtil.permitted(UserRight.CASE_DELETE)));
 
-						final boolean isSmsServiceSetUp = FacadeProvider.getSystemConfigFacade().isPresent(SystemConfiguration.SMS_AUTH_SECRET);
+						final boolean isSmsServiceSetUp = FacadeProvider.getSystemConfigFacade().isSmsServiceSetUp();
 						if (isSmsServiceSetUp && UiUtil.permitted(FeatureType.MANUAL_EXTERNAL_MESSAGES, UserRight.SEND_MANUAL_EXTERNAL_MESSAGES)) {
 							menuBarItems.add(
 								new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.messagesSendSMS), VaadinIcons.MOBILE_RETRO, mi -> {

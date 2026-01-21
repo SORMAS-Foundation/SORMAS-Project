@@ -27,7 +27,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.RequestContextTO;
 
@@ -50,12 +49,10 @@ public class SessionFilter implements Filter {
 				final RequestContextTO requestContext =
 					new RequestContextTO(isMobileSyncHeader != null ? Boolean.valueOf(isMobileSyncHeader) : false);
 				RequestContextHolder.setRequestContext(requestContext);
-				FacadeProvider.getSystemConfigFacade().setRequestContext(requestContext);
 				chain.doFilter(req, response);
 			}, request, response);
 		} finally {
 			RequestContextHolder.reset();
-			FacadeProvider.getSystemConfigFacade().resetRequestContext();
 		}
 	}
 

@@ -38,6 +38,7 @@ import de.symeda.sormas.api.epipulse.EpipulseDiseaseExportFacade;
 import de.symeda.sormas.api.epipulse.EpipulseDiseaseExportResult;
 import de.symeda.sormas.api.epipulse.EpipulseExportDto;
 import de.symeda.sormas.api.epipulse.EpipulseExportStatus;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 
@@ -89,11 +90,11 @@ public class EpipulseDiseaseExportFacadeEjb implements EpipulseDiseaseExportFaca
 
 			EpipulseExportDto exportDto = epipulseExportEjb.toEpipulseExportDto(epipulseExport);
 
-			String serverCountryLocale = configFacadeEjb.getCountryLocale();
+			String serverCountryLocale = configFacadeEjb.getAsStringOrThrow(SystemConfigurationType.COUNTRY_LOCALE);
 			String serverCountryCode = configFacadeEjb.getCountryCode();
-			String serverCountryName = configFacadeEjb.getCountryName();
+			String serverCountryName = configFacadeEjb.getAsStringOrThrow(SystemConfigurationType.COUNTRY_NAME);
 
-			String generatedFilesPath = configFacadeEjb.getGeneratedFilesPath();
+			String generatedFilesPath = configFacadeEjb.getAsStringOrThrow(SystemConfigurationType.GENERATED_FILES_PATH);
 			exportFileName = diseaseExportService.generateDownloadFileName(exportDto, epipulseExport.getId());
 			exportFilePath = generatedFilesPath + "/" + exportFileName;
 
@@ -104,7 +105,7 @@ public class EpipulseDiseaseExportFacadeEjb implements EpipulseDiseaseExportFaca
 
 			writer = CSVUtils.createCSVWriter(
 				new OutputStreamWriter(new FileOutputStream(exportFilePath), StandardCharsets.UTF_8),
-				configFacadeEjb.getCsvSeparator());
+				configFacadeEjb.getAsCharOrThrow(SystemConfigurationType.CSV_SEPARATOR));
 
 			List<String> columnNames = new ArrayList<>(
 				List.of(

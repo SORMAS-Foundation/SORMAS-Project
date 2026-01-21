@@ -24,7 +24,6 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 import javax.ws.rs.ApplicationPath;
 
-import de.symeda.sormas.api.systemconfiguration.SystemConfiguration;
 import org.apache.commons.collections4.SetUtils;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -33,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.rest.resources.ExternalVisitsResource;
 import de.symeda.sormas.rest.security.KeycloakFilter;
@@ -98,7 +98,8 @@ public class RestConfig extends ResourceConfig {
 		@Override
 		public void contextInitialized(ServletContextEvent sce) {
 			ServletContext ctx = sce.getServletContext();
-			String authenticationProvider = FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.AUTHENTICATION_PROVIDER);
+			String authenticationProvider =
+				FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfigurationType.AUTHENTICATION_PROVIDER);
 			if (authenticationProvider.equalsIgnoreCase(AuthProvider.KEYCLOAK)) {
 				FilterRegistration.Dynamic filterRegistration = ctx.addFilter("KeycloakFilter", KeycloakFilter.class);
 				filterRegistration.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");

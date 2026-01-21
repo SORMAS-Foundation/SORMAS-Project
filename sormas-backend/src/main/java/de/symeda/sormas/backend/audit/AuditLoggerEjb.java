@@ -74,8 +74,9 @@ import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditLoggerFacade;
 import de.symeda.sormas.api.audit.AuditedClass;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 import de.symeda.sormas.backend.user.CurrentUserService;
 import de.symeda.sormas.backend.user.User;
 
@@ -118,7 +119,7 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 	private final Map<Class<?>, List<Method>> cachedAnnotatedMethods = new HashMap<>();
 
 	@EJB
-	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
+	private SystemConfigurationAccessorEjb configFacade;
 	@EJB
 	private LogSink auditLogger;
 	@EJB
@@ -138,14 +139,9 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 
 	@PostConstruct
 	private void setup() {
-		String sourceSite = configFacade.getAuditSourceSite();
-		if (sourceSite.equals("")) {
-			logger.warn("audit.source.site is empty! Please configure it for more expedient audit trail analysis.");
-			sourceSite = "NOT CONFIGURED";
-		}
-		this.auditSourceSite = sourceSite;
+		this.auditSourceSite = configFacade.getAsString(SystemConfigurationType.AUDIT_SOURCE_SITE).orElse("NOT CONFIGURED");
 
-		if (configFacade.getAuditLoggerConfig().equals("")) {
+		if (configFacade.isAbsent(SystemConfigurationType.AUDIT_LOGGER_CONFIG)) {
 			loggingDisabled = true;
 		}
 

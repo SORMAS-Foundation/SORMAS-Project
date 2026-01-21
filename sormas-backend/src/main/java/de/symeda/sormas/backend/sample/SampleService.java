@@ -54,7 +54,6 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 
-import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -83,6 +82,7 @@ import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleJurisdictionFlagsDto;
 import de.symeda.sormas.api.sample.SampleListEntryDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -94,7 +94,6 @@ import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDeletableAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.common.JurisdictionFlagsService;
@@ -116,6 +115,7 @@ import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShar
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.IterableHelper;
@@ -1297,7 +1297,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 	}
 
 	public void cleanupOldCovidSamples() {
-		final Integer maxAgeDays = configFacade.getNegaiveCovidTestsMaxAgeDays();
+		final Integer maxAgeDays = configFacade.getAsIntegerOrThrow(SystemConfigurationType.NEGATIVE_COVID_TESTS_MAX_AGE_DAYS);
 		if (maxAgeDays == null) {
 			return;
 		}

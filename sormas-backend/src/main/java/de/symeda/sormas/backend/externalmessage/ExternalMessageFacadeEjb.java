@@ -85,6 +85,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.systemevents.SystemEventDto;
 import de.symeda.sormas.api.systemevents.SystemEventType;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -95,7 +96,6 @@ import de.symeda.sormas.api.utils.dataprocessing.ProcessingResult;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportFacadeEjb;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportService;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb;
 import de.symeda.sormas.backend.externalmessage.labmessage.AutomaticLabMessageProcessor;
@@ -109,6 +109,7 @@ import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -134,7 +135,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	private ExternalMessageService externalMessageService;
 
 	@EJB
-	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
+	private SystemConfigurationAccessorEjb configFacade;
 	@EJB
 	private SyncFacadeEjb.SyncFacadeEjbLocal syncFacadeEjb;
 	@EJB
@@ -758,13 +759,9 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 	private ExternalMessageAdapterFacade getExternalLabResultsFacade() throws NamingException {
 		InitialContext ic = new InitialContext();
-		String jndiName = configFacade.getExternalMessageAdapterJndiName();
 
-		if (jndiName == null) {
-			throw new CannotProceedException(I18nProperties.getValidationError(Validations.externalMessageConfigError));
-		}
-
-		return (ExternalMessageAdapterFacade) ic.lookup(jndiName);
+		return (ExternalMessageAdapterFacade) ic
+			.lookup(configFacade.getAsStringOrThrow(SystemConfigurationType.INTERFACE_EXTERNAL_MESSAGE_ADAPTER_JNDI_NAME));
 	}
 
 	@Override

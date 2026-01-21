@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import de.symeda.sormas.api.importexport.DatabaseTable;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.backend.action.Action;
 import de.symeda.sormas.backend.activityascase.ActivityAsCase;
 import de.symeda.sormas.backend.campaign.Campaign;
@@ -102,6 +103,7 @@ import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccess;
 import de.symeda.sormas.backend.symptoms.Symptoms;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategory;
 import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationValue;
 import de.symeda.sormas.backend.task.Task;
@@ -249,7 +251,7 @@ public class DatabaseExportService {
 
 	private void addEntityNamesRow(String tableName, Writer writer) throws IOException {
 		final int mainTableColumnCount = getColumnCount(tableName);
-		char csvSeparator = configFacade.getCsvSeparator();
+		char csvSeparator = configFacade.getAsCharOrThrow(SystemConfigurationType.CSV_SEPARATOR);
 		if (mainTableColumnCount > 0) {
 			writer.write(tableName);
 		}
@@ -267,7 +269,7 @@ public class DatabaseExportService {
 
 	private void addDataRows(DatabaseTable databaseTable, String tableName, Writer writer) {
 		long startTime = System.currentTimeMillis();
-		final String sql = String.format(COPY_SINGLE_TABLE, tableName, configFacade.getCsvSeparator());
+		final String sql = String.format(COPY_SINGLE_TABLE, tableName, configFacade.getAsCharOrThrow(SystemConfigurationType.CSV_SEPARATOR));
 
 		writeCsv(writer, sql, databaseTable.getFileName());
 

@@ -23,8 +23,10 @@ import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
@@ -102,7 +104,7 @@ public class DocGenerationHelper {
 	}
 
 	private boolean isFileSizeLimitExceeded(int length) {
-		long fileSizeLimitMb = configFacade.getDocumentUploadSizeLimitMb();
+		long fileSizeLimitMb = configFacade.getAsLongOrThrow(SystemConfigurationType.IMPORT_FILE_SIZE_LIMIT_MB);
 		long fileSizeLimitBytes = fileSizeLimitMb * 1_000_000;
 		return length > fileSizeLimitBytes;
 	}

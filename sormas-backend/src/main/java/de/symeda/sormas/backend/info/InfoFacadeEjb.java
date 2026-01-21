@@ -90,6 +90,7 @@ import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.therapy.PrescriptionDto;
 import de.symeda.sormas.api.therapy.TreatmentDto;
@@ -108,6 +109,7 @@ import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.info.EntityColumns.EntityColumn;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.XssfHelper;
 
@@ -175,7 +177,7 @@ public class InfoFacadeEjb implements InfoFacade {
 
 	@Override
 	public String generateDataDictionary() throws IOException {
-		EntityColumns entityColumns = new EntityColumns(configFacade.getCountryLocale(), false);
+		EntityColumns entityColumns = new EntityColumns(configFacade.getAsStringOrThrow(SystemConfigurationType.COUNTRY_LOCALE), false);
 		return generateDataDictionary(
 			DATA_DICTIONARY_ENTITIES,
 			entityColumns,
@@ -190,7 +192,7 @@ public class InfoFacadeEjb implements InfoFacade {
 		List<FeatureConfigurationDto> featureConfigurations = featureConfigurationFacade.getActiveServerFeatureConfigurations();
 
 		FieldVisibilityCheckers fieldVisibilityCheckers = FieldVisibilityCheckers.withCheckers(
-			new CountryFieldVisibilityChecker(configFacade.getCountryLocale()),
+			new CountryFieldVisibilityChecker(configFacade.getAsStringOrThrow(SystemConfigurationType.COUNTRY_LOCALE)),
 			new DiseaseFieldVisibilityChecker(diseaseConfigurationFacade.getAllActiveDiseases()),
 			new FeatureTypeFieldVisibilityChecker(featureConfigurations));
 
@@ -198,7 +200,7 @@ public class InfoFacadeEjb implements InfoFacade {
 			.filter(e -> isVisibleByFeatureConfiguration(e.getEntityClass(), featureConfigurations))
 			.collect(Collectors.toList());
 
-		EntityColumns entityColumns = new EntityColumns(configFacade.getCountryLocale(), true);
+		EntityColumns entityColumns = new EntityColumns(configFacade.getAsStringOrThrow(SystemConfigurationType.COUNTRY_LOCALE), true);
 
 		try (XSSFWorkbook dataProtectionInputWorkbook = new XSSFWorkbook(getDataProtectionFile())) {
 
@@ -398,7 +400,7 @@ public class InfoFacadeEjb implements InfoFacade {
 	}
 
 	private File getDataProtectionFile() {
-		return new File(configFacade.getCustomFilesPath(), DATA_PROTECTION_FILE_NAME);
+		return new File(configFacade.getAsStringOrThrow(SystemConfigurationType.CUSTOM_PATH), DATA_PROTECTION_FILE_NAME);
 	}
 
 	private Map<String, List<XSSFCell>> getDataProtectionCellData(XSSFSheet dataProtectionSheet) {
@@ -436,7 +438,7 @@ public class InfoFacadeEjb implements InfoFacade {
 
 	private Path generateDocumentTempPath() {
 
-		Path path = Paths.get(configFacade.getTempFilesPath());
+		Path path = Paths.get(configFacade.getAsStringOrThrow(SystemConfigurationType.TEMP_PATH));
 		String fileName = ImportExportUtils.TEMP_FILE_PREFIX + "_datadictionary_" + DateHelper.formatDateForExport(new Date()) + "_"
 			+ new Random().nextInt(Integer.MAX_VALUE) + ".xlsx";
 

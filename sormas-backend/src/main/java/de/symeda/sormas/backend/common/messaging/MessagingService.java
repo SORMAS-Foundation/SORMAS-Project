@@ -35,10 +35,10 @@ import com.nexmo.client.NexmoClientException;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.manualmessagelog.ManualMessageLog;
 import de.symeda.sormas.backend.manualmessagelog.ManualMessageLogService;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 
@@ -62,7 +62,7 @@ public class MessagingService {
 	@EJB
 	private ManualMessageLogService manualMessageLogService;
 	@EJB
-	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
+	private SystemConfigurationAccessorEjb configFacade;
 
 	public void sendEmail(Map<User, String> userMessages, MessageSubject subject, Object[] subjectParameters)
 		throws NotificationDeliveryFailedException {

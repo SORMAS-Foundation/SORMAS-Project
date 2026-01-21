@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import com.vaadin.v7.ui.Grid;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 
 public class CustomizableGrid extends Grid {
@@ -28,7 +29,7 @@ public class CustomizableGrid extends Grid {
 	public void setColumns(Class<?> clazz, List<String> propertyIds) {
 
 		FieldVisibilityCheckers fieldVisibilityCheckers =
-			FieldVisibilityCheckers.withCountry(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE));
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfigurationType.COUNTRY_LOCALE));
 		super.setColumns(
 			propertyIds.stream().filter(propertyId -> fieldVisibilityCheckers.isVisible(clazz, propertyId)).collect(Collectors.toList()).toArray());
 	}
@@ -36,7 +37,7 @@ public class CustomizableGrid extends Grid {
 	public void setColumns(List<CustomizableGridColumn> columns) {
 
 		FieldVisibilityCheckers fieldVisibilityCheckers =
-			FieldVisibilityCheckers.withCountry(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE));
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfigurationType.COUNTRY_LOCALE));
 		super.setColumns(
 			columns.stream()
 				.filter(column -> fieldVisibilityCheckers.isVisible(column.getClazz(), column.getPropertyId()))

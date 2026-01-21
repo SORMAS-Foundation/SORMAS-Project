@@ -27,8 +27,8 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.backend.central.EtcdCentralClient;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb;
+import de.symeda.sormas.backend.systemconfiguration.ExternalClientConfigurationEjb;
 
 public class SormasToSormasDiscoveryService {
 
@@ -36,13 +36,13 @@ public class SormasToSormasDiscoveryService {
 
 	private final SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal sormasToSormasFacadeEjb;
 
-	private final ConfigFacadeEjbLocal configFacadeEjb;
+	private final ExternalClientConfigurationEjb configFacadeEjb;
 
 	private final EtcdCentralClient centralClient;
 
 	public SormasToSormasDiscoveryService(
 		SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal sormasToSormasFacadeEjb,
-		ConfigFacadeEjbLocal configFacadeEjb,
+		ExternalClientConfigurationEjb configFacadeEjb,
 		EtcdCentralClient centralClient) {
 		this.sormasToSormasFacadeEjb = sormasToSormasFacadeEjb;
 		this.configFacadeEjb = configFacadeEjb;

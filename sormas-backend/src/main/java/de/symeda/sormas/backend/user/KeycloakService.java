@@ -58,8 +58,10 @@ import com.jayway.jsonpath.JsonPath;
 
 import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 import de.symeda.sormas.backend.user.event.PasswordResetEvent;
 import de.symeda.sormas.backend.user.event.SyncUsersFromProviderEvent;
 import de.symeda.sormas.backend.user.event.UserCreateEvent;
@@ -94,7 +96,7 @@ public class KeycloakService {
 	@PostConstruct
 	public void init() {
 
-		if (!AuthProvider.KEYCLOAK.equalsIgnoreCase(configFacade.getAuthenticationProvider())) {
+		if (!AuthProvider.KEYCLOAK.equalsIgnoreCase(configFacade.getAsStringOrThrow(SystemConfigurationType.AUTHENTICATION_PROVIDER))) {
 			logger.info("Keycloak Auth Provider not active");
 			return;
 		}
@@ -382,7 +384,8 @@ public class KeycloakService {
 	}
 
 	private void assignSormasStatsRole(Keycloak keycloak, User sormasUser, UserResource userResource) {
-		if (StringUtils.isBlank(configFacade.getSormasStatsUrl())) {
+		Optional<String> sormasStatUrlOpt = configFacade.getAsString(SystemConfigurationType.SORMAS_STATS_URL);
+		if (sormasStatUrlOpt.isEmpty()) {
 			return;
 		}
 

@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend;
 
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
@@ -199,7 +198,7 @@ public class MockProducer implements InitialContextFactory {
 		public SormasToSormasRestClient sormasToSormasClient(
 			SormasToSormasDiscoveryService sormasToSormasDiscoveryService,
 			SormasToSormasEncryptionFacadeEjbLocal sormasToSormasEncryptionEjb,
-			ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb) {
+			SystemConfigurationAccessorEjb configFacadeEjb) {
 			return s2sRestClient;
 		}
 	}
@@ -213,7 +212,7 @@ public class MockProducer implements InitialContextFactory {
 
 		@Override
 		@Produces
-		public EtcdCentralClient etcdCentralClient(ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb) {
+		public EtcdCentralClient etcdCentralClient(SystemConfigurationAccessorEjb configFacadeEjb) {
 			return etcdCentralClient;
 		}
 	}
@@ -236,7 +235,7 @@ public class MockProducer implements InitialContextFactory {
 		@Produces
 		public SormasToSormasDiscoveryService sormasToSormasDiscoveryService(
 			SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal sormasToSormasFacadeEjb,
-			ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb,
+			SystemConfigurationAccessorEjb configFacadeEjb,
 			EtcdCentralClient centralClient) {
 			return sormasToSormasDiscoveryService;
 		}

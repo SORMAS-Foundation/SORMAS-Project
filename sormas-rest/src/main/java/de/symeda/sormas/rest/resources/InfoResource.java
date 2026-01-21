@@ -22,7 +22,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.systemconfiguration.SystemConfiguration;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.api.utils.Tuple;
@@ -44,7 +44,7 @@ public class InfoResource {
 		int[] appVersion = VersionHelper.extractVersion(appVersionString);
 
 		return FacadeProvider.getSystemConfigFacade()
-			.getAsString(SystemConfiguration.APP_LEGACY_URL)
+			.getAsString(SystemConfigurationType.APP_LEGACY_URL)
 			.map(legacyUrl -> new Tuple<>(legacyUrl, VersionHelper.extractVersion(legacyUrl)))
 			.filter(tuple -> VersionHelper.isVersion(tuple.getSecond()))
 			.map(tuple -> {
@@ -61,13 +61,13 @@ public class InfoResource {
 
 				return null;
 			})
-			.orElseGet(() -> FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.APP_URL));
+			.orElseGet(() -> FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfigurationType.APP_URL));
 	}
 
 	@GET
 	@Path("/locale")
 	public String getLocale() {
-		return FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE);
+		return FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfigurationType.COUNTRY_LOCALE);
 	}
 
 	@GET
@@ -79,6 +79,6 @@ public class InfoResource {
 	@GET
 	@Path("/countryname")
 	public String getCountryName() {
-		return FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_NAME);
+		return FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfigurationType.COUNTRY_NAME);
 	}
 }

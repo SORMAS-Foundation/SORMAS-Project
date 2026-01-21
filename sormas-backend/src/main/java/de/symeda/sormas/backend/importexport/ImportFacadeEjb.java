@@ -135,6 +135,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.selfreport.SelfReportDto;
 import de.symeda.sormas.api.survey.SurveyTokenDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.CSVCommentLineValidator;
 import de.symeda.sormas.api.utils.CSVUtils;
@@ -152,6 +153,7 @@ import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb.CountryFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 
 @Stateless(name = "ImportFacade")
 public class ImportFacadeEjb implements ImportFacade {
@@ -232,7 +234,7 @@ public class ImportFacadeEjb implements ImportFacade {
 
 		createExportDirectoryIfNecessary();
 
-		char separator = configFacade.getCsvSeparator();
+		char separator = configFacade.getAsCharOrThrow(SystemConfigurationType.CSV_SEPARATOR);
 
 		List<ImportColumn> importColumns = new ArrayList<>();
 		appendListOfFields(importColumns, CaseDataDto.class, "", separator, featureConfigurations);
@@ -257,7 +259,7 @@ public class ImportFacadeEjb implements ImportFacade {
 
 		createExportDirectoryIfNecessary();
 
-		char separator = configFacade.getCsvSeparator();
+		char separator = configFacade.getAsCharOrThrow(SystemConfigurationType.CSV_SEPARATOR);
 
 		ArrayList<String> columnsToRemove = new ArrayList<>(Arrays.asList(EventDto.SORMAS_TO_SORMAS_ORIGIN_INFO, EventDto.OWNERSHIP_HANDED_OVER));
 		if (featureConfigurationFacade.isFeatureDisabled(FeatureType.EVENT_HIERARCHIES)) {
@@ -287,7 +289,7 @@ public class ImportFacadeEjb implements ImportFacade {
 
 		createExportDirectoryIfNecessary();
 
-		char separator = configFacade.getCsvSeparator();
+		char separator = configFacade.getAsCharOrThrow(SystemConfigurationType.CSV_SEPARATOR);
 
 		List<ImportColumn> importColumns = new ArrayList<>();
 		importColumns.add(ImportColumn.from(EventParticipantDto.class, EventParticipantDto.INVOLVEMENT_DESCRIPTION, String.class, separator));
@@ -314,7 +316,7 @@ public class ImportFacadeEjb implements ImportFacade {
 		createExportDirectoryIfNecessary();
 
 		List<ImportColumn> importColumns = new ArrayList<>();
-		char separator = configFacade.getCsvSeparator();
+		char separator = configFacade.getAsCharOrThrow(SystemConfigurationType.CSV_SEPARATOR);
 
 		/* importColumns.add(ImportColumn.from(CampaignFormDataDto.class, CAMPAIGN, CampaignReferenceDto.class, separator)); */
 		importColumns.add(ImportColumn.from(CampaignFormDataDto.class, FORM_DATE, Date.class, separator));
@@ -338,7 +340,7 @@ public class ImportFacadeEjb implements ImportFacade {
 
 		createExportDirectoryIfNecessary();
 
-		char separator = configFacade.getCsvSeparator();
+		char separator = configFacade.getAsCharOrThrow(SystemConfigurationType.CSV_SEPARATOR);
 
 		List<ImportColumn> importColumns = new ArrayList<>();
 		appendListOfFields(importColumns, ContactDto.class, "", separator, featureConfigurations);
@@ -366,7 +368,7 @@ public class ImportFacadeEjb implements ImportFacade {
 
 		createExportDirectoryIfNecessary();
 
-		char separator = configFacade.getCsvSeparator();
+		char separator = configFacade.getAsCharOrThrow(SystemConfigurationType.CSV_SEPARATOR);
 
 		List<ImportColumn> importColumns = new ArrayList<>();
 		appendListOfFields(importColumns, ContactDto.class, "", separator, featureConfigurations);
@@ -388,7 +390,7 @@ public class ImportFacadeEjb implements ImportFacade {
 
 		createExportDirectoryIfNecessary();
 
-		char separator = configFacade.getCsvSeparator();
+		char separator = configFacade.getAsCharOrThrow(SystemConfigurationType.CSV_SEPARATOR);
 
 		List<ImportColumn> importColumns = new ArrayList<>();
 		importColumns.add(ImportColumn.from(CaseDataDto.class, DISEASE, Disease.class, separator));
@@ -428,7 +430,7 @@ public class ImportFacadeEjb implements ImportFacade {
 
 		createExportDirectoryIfNecessary();
 
-		char separator = configFacade.getCsvSeparator();
+		char separator = configFacade.getAsCharOrThrow(SystemConfigurationType.CSV_SEPARATOR);
 
 		List<ImportColumn> importColumns = new ArrayList<>();
 		importColumns.add(ImportColumn.from(PopulationDataDto.class, PopulationDataDto.REGION, RegionReferenceDto.class, separator));
@@ -452,7 +454,7 @@ public class ImportFacadeEjb implements ImportFacade {
 	private void createExportDirectoryIfNecessary() throws IOException {
 
 		try {
-			Files.createDirectories(Paths.get(configFacade.getGeneratedFilesPath()));
+			Files.createDirectories(Paths.get(configFacade.getAsStringOrThrow(SystemConfigurationType.GENERATED_FILES_PATH)));
 		} catch (IOException e) {
 			logger.error("Generated files directory doesn't exist and creation failed.");
 			throw e;
@@ -504,7 +506,7 @@ public class ImportFacadeEjb implements ImportFacade {
 
 		createExportDirectoryIfNecessary();
 
-		char separator = configFacade.getCsvSeparator();
+		char separator = configFacade.getAsCharOrThrow(SystemConfigurationType.CSV_SEPARATOR);
 
 		List<ImportColumn> importColumns = new ArrayList<>();
 		appendListOfFields(importColumns, clazz, "", separator, featureConfigurations);
@@ -517,7 +519,7 @@ public class ImportFacadeEjb implements ImportFacade {
 
 		createExportDirectoryIfNecessary();
 
-		char separator = configFacade.getCsvSeparator();
+		char separator = configFacade.getAsCharOrThrow(SystemConfigurationType.CSV_SEPARATOR);
 
 		List<ImportColumn> importColumns = new ArrayList<>();
 		appendListOfFields(importColumns, EnvironmentDto.class, "", separator, featureConfigurations);
@@ -530,7 +532,7 @@ public class ImportFacadeEjb implements ImportFacade {
 
 		createExportDirectoryIfNecessary();
 
-		char separator = configFacade.getCsvSeparator();
+		char separator = configFacade.getAsCharOrThrow(SystemConfigurationType.CSV_SEPARATOR);
 		List<ImportColumn> importColumns = new ArrayList<>();
 
 		appendListOfFields(
@@ -553,7 +555,7 @@ public class ImportFacadeEjb implements ImportFacade {
 
 		createExportDirectoryIfNecessary();
 
-		char separator = configFacade.getCsvSeparator();
+		char separator = configFacade.getAsCharOrThrow(SystemConfigurationType.CSV_SEPARATOR);
 		List<ImportColumn> importColumns = new ArrayList<>();
 
 		appendListOfFields(
@@ -578,7 +580,7 @@ public class ImportFacadeEjb implements ImportFacade {
 
 		createExportDirectoryIfNecessary();
 
-		char separator = configFacade.getCsvSeparator();
+		char separator = configFacade.getAsCharOrThrow(SystemConfigurationType.CSV_SEPARATOR);
 		List<ImportColumn> importColumns = new ArrayList<>();
 
 		appendListOfFields(
@@ -768,7 +770,7 @@ public class ImportFacadeEjb implements ImportFacade {
 	}
 
 	private String getImportTemplateFilePath(String baseFilename) {
-		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
+		Path exportDirectory = Paths.get(configFacade.getAsStringOrThrow(SystemConfigurationType.GENERATED_FILES_PATH));
 		return exportDirectory.resolve(getImportTemplateFileName(baseFilename)).toString();
 	}
 
@@ -931,7 +933,7 @@ public class ImportFacadeEjb implements ImportFacade {
 	private void writeTemplate(Path templatePath, List<ImportColumn> importColumns, boolean includeEntityNames) throws IOException {
 		try (CSVWriter writer = CSVUtils.createCSVWriter(
 			new OutputStreamWriter(new FileOutputStream(templatePath.toString()), StandardCharsets.UTF_8.newEncoder()),
-			configFacade.getCsvSeparator())) {
+			configFacade.getAsCharOrThrow(SystemConfigurationType.CSV_SEPARATOR))) {
 			if (includeEntityNames) {
 				writer.writeNext(importColumns.stream().map(ImportColumn::getEntityName).toArray(String[]::new));
 			}
@@ -994,7 +996,7 @@ public class ImportFacadeEjb implements ImportFacade {
 			ImportFacade.ACTIVE_DISEASES_PLACEHOLDER,
 			() -> StringUtils.join(
 				diseaseConfigurationFacade.getAllActiveDiseases().stream().map(Disease::getName).collect(Collectors.toList()),
-				ImportExportUtils.getCSVSeparatorDifferentFromCurrent(configFacade.getCsvSeparator())));
+				ImportExportUtils.getCSVSeparatorDifferentFromCurrent(configFacade.getAsCharOrThrow(SystemConfigurationType.CSV_SEPARATOR))));
 
 		for (Map.Entry<String, Provider<String>> placeholderResolver : placeholderResolvers.entrySet()) {
 			content = content.replace(placeholderResolver.getKey(), placeholderResolver.getValue().get());

@@ -41,6 +41,7 @@ import de.symeda.sormas.api.geo.GeoShapeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardDataProvider;
@@ -273,7 +274,7 @@ public abstract class BaseDashboardMapComponent<C extends BaseDashboardCriteria<
 
 			final GeoLatLon mapCenter;
 			// If map.usecountrycenter=true, use config coordinates. Else try to calculate the center of the user region/country
-			if (FacadeProvider.getSystemConfigFacade().isMapUseCountryCenter()) {
+			if (FacadeProvider.getSystemConfigFacade().getAsBoolean(SystemConfigurationType.MAP_USECOUNTRYCENTER)) {
 				mapCenter = FacadeProvider.getSystemConfigFacade().getCountryCenter();
 				map.setCenter(mapCenter);
 			} else {

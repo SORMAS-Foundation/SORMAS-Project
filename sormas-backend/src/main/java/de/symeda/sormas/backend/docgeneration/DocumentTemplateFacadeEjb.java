@@ -64,6 +64,7 @@ import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -83,6 +84,7 @@ import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb.RegionFaca
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.survey.Survey;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb.TravelEntryFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
@@ -268,7 +270,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		}
 
 		// 3. fill null properties
-		String nullReplacement = configFacade.getDocgenerationNullReplacement();
+		String nullReplacement = configFacade.getAsStringOrThrow(SystemConfigurationType.DOCGENERATION_NULL_REPLACEMENT);
 		if (nullReplacement.isEmpty()) {
 			nullReplacement = " ";
 		}

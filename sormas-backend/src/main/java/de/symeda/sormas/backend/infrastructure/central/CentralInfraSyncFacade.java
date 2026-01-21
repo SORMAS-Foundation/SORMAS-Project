@@ -26,11 +26,11 @@ import de.symeda.sormas.api.infrastructure.country.CountryDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentDto;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.systemevents.SystemEventDto;
 import de.symeda.sormas.api.systemevents.SystemEventType;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.backend.central.EtcdCentralClient;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.area.AreaFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
@@ -39,6 +39,7 @@ import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentFacadeEjb;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
 
 @LocalBean
@@ -74,7 +75,7 @@ public class CentralInfraSyncFacade {
 	@Inject
 	private EtcdCentralClient centralClient;
 	@EJB
-	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
+	private SystemConfigurationAccessorEjb configFacade;
 	@EJB
 	private FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacadeEjb;
 
@@ -114,7 +115,7 @@ public class CentralInfraSyncFacade {
 	}
 
 	public void syncAll() {
-		if (!configFacade.isCentralLocationSync()) {
+		if (!configFacade.getAsBoolean(SystemConfigurationType.CENTRAL_LOCATION_SYNC)) {
 			logger.info("Skipping synchronization with central as feature is disabled.");
 			return;
 		}

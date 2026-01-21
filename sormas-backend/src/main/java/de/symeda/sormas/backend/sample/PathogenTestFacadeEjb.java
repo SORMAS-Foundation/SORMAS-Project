@@ -62,7 +62,6 @@ import de.symeda.sormas.api.utils.fieldaccess.checkers.AnnotationBasedFieldAcces
 import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.NotificationService;
 import de.symeda.sormas.backend.common.messaging.MessageContents;
@@ -81,6 +80,7 @@ import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 import de.symeda.sormas.backend.therapy.DrugSusceptibility;
 import de.symeda.sormas.backend.therapy.DrugSusceptibilityMapper;
 import de.symeda.sormas.backend.user.User;

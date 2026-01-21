@@ -1,52 +1,82 @@
 package de.symeda.sormas.api.systemconfiguration;
 
-import org.apache.commons.lang3.CharUtils;
-
 import java.util.Optional;
+import java.util.Set;
+
+import org.apache.commons.lang3.CharUtils;
 
 public interface SystemConfigurationAccessorFacade {
 
-	boolean isPresent(SystemConfiguration config);
+	boolean isPresent(SystemConfigurationType config);
 
-	default boolean isAbsent(SystemConfiguration config) {
+	default boolean isAbsent(SystemConfigurationType config) {
 		return !isPresent(config);
 	}
 
-	Optional<Integer> getAsInteger(SystemConfiguration config);
+	Optional<Integer> getAsInteger(SystemConfigurationType config);
 
-	Optional<Double> getAsDouble(SystemConfiguration config);
+	Optional<Double> getAsDouble(SystemConfigurationType config);
 
-	Optional<Long> getAsLong(SystemConfiguration config);
+	Optional<Long> getAsLong(SystemConfigurationType config);
 
-	Optional<String> getAsString(SystemConfiguration config);
+	Optional<String> getAsString(SystemConfigurationType config);
 
-	boolean getAsBoolean(SystemConfiguration config);
+	default String getAsStringOrNull(SystemConfigurationType config) {
+		return getAsString(config).orElse(null);
+	}
 
-	default Integer getAsIntegerOrThrow(SystemConfiguration config) {
+	/**
+	 * Precedence Gets value from db, otherwise default and finally defaults to false if missing.
+	 * 
+	 * @param config
+	 *            property
+	 * @return found - default or false
+	 */
+	boolean getAsBoolean(SystemConfigurationType config);
+
+	default Integer getAsIntegerOrThrow(SystemConfigurationType config) {
 		return getAsInteger(config).orElseThrow(() -> buildIllegalStateException(config));
 	}
 
-	private static IllegalStateException buildIllegalStateException(SystemConfiguration config) {
-		return new IllegalStateException(String.format("Required configuration '%s' not found or invalid", config.name()));
+	private static IllegalStateException buildIllegalStateException(SystemConfigurationType config) {
+		return new IllegalStateException(String.format("Required configuration '%s' not found or invalid. \nCheck if ", config.name()));
 	}
 
-	default Double getAsDoubleOrThrow(SystemConfiguration config) {
+	default Double getAsDoubleOrThrow(SystemConfigurationType config) {
 		return getAsDouble(config).orElseThrow(() -> buildIllegalStateException(config));
 	}
 
-	default Long getAsLongOrThrow(SystemConfiguration config) {
+	default Long getAsLongOrThrow(SystemConfigurationType config) {
 		return getAsLong(config).orElseThrow(() -> buildIllegalStateException(config));
 	}
 
-	default String getAsStringOrThrow(SystemConfiguration config) {
+	default String getAsStringOrThrow(SystemConfigurationType config) {
 		return getAsString(config).orElseThrow(() -> buildIllegalStateException(config));
 	}
 
-	default char getAsCharOrThrow(SystemConfiguration config) {
+	default char getAsCharOrThrow(SystemConfigurationType config) {
 		return getAsString(config).map(CharUtils::toChar).orElseThrow(() -> buildIllegalStateException(config));
 	}
 
+	boolean isConfiguredCountry(String countryCode);
+
 	String getCountryCode();
+
+	default boolean isSmsServiceSetUp() {
+		return isPresent(SystemConfigurationType.SMS_AUTH_SECRET) || isPresent(SystemConfigurationType.SMS_AUTH_KEY);
+	}
+
+	default boolean isS2SConfigured() {
+		return isPresent(SystemConfigurationType.SORMAS2SORMAS_PATH);
+	}
+
+	default boolean isExternalSurveillanceToolGatewayConfigured() {
+		return isPresent(SystemConfigurationType.EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL);
+	}
+
+	Set<String> getAllowedFileExtensions();
+
+	String getSormasInstanceName();
 
 //    boolean isConfiguredCountry(String countryCode);
 //

@@ -49,10 +49,11 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.Image;
 import com.lowagie.text.pdf.PdfWriter;
 
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.document.DocumentStorageService;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 import fr.opensagres.poi.xwpf.converter.pdf.PdfOptions;
 
 @Stateless
@@ -70,7 +71,7 @@ public class AttachmentService {
     @EJB
     private DocumentStorageService documentStorageService;
     @EJB
-    private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
+	private SystemConfigurationAccessorEjb configFacade;
 
     // @formatter:off
     private final Map<String, PdfConverter> converters = Map.of(
@@ -136,7 +137,7 @@ public class AttachmentService {
     }
 
     private Path getTmpFilePathForConversion() {
-        Path path = Paths.get(configFacade.getTempFilesPath());
+		Path path = Paths.get(configFacade.getAsStringOrThrow(SystemConfigurationType.TEMP_PATH));
         String fileName = TEMP_FILE_PREFIX + "_converted_" + DateHelper.formatDateForExport(new Date()) + "_" + RANDOM.nextInt(Integer.MAX_VALUE);
 
         return path.resolve(fileName);

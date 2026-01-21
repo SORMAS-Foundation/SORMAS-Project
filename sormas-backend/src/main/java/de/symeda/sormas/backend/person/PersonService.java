@@ -54,7 +54,6 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.CountryHelper;
@@ -74,6 +73,7 @@ import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SimilarPersonDto;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -87,7 +87,6 @@ import de.symeda.sormas.backend.common.AdoAttributes;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.ChangeDateUuidComparator;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.FilterProvider;
@@ -109,6 +108,7 @@ import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.manualmessagelog.ManualMessageLogService;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.TravelEntryJoins;
 import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
@@ -665,7 +665,9 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 		// Find similar persons by permitted associations, optionally limited to active entries
 		Predicate personSimilarityFilter = buildSimilarityCriteriaFilter(criteria, cb, personRoot);
 
-		Predicate associationFilter = buildAssociationFilter(queryContext, configFacade.getAsString());
+		Predicate associationFilter = buildAssociationFilter(
+			queryContext,
+			configFacade.getAsBoolean(SystemConfigurationType.DUPLICATE_CHECKS_EXCLUDE_PERSONS_ONLY_LINKED_TO_ARCHIVED_ENTRIES));
 		personQuery.where(and(cb, personSimilarityFilter, associationFilter));
 		personQuery.distinct(true);
 
@@ -793,7 +795,7 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 	}
 
 	private void setSimilarityThresholdQuery() {
-		double nameSimilarityThreshold = configFacade.getNameSimilarityThreshold();
+		double nameSimilarityThreshold = configFacade.getAsDouble getNameSimilarityThreshold();
 		Query q = em.createNativeQuery("select set_limit(" + nameSimilarityThreshold + ")");
 		q.getSingleResult();
 	}
@@ -937,7 +939,8 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 		}
 
 		if (StringUtils.isNotBlank(criteria.getNationalHealthId())
-			&& (configFacade.isDuplicateChecksNationalHealthIdOverridesCriteria() || criteria.isCheckOnlyForNationalHealthId())) {
+			&& (configFacade.getAsBoolean(SystemConfigurationType.DUPLICATECHECKS_NATIONAL_HEALTH_ID_OVERRIDES_CRITERIA)
+				|| criteria.isCheckOnlyForNationalHealthId())) {
 			filter = or(cb, filter, cb.equal(personFrom.get(Person.NATIONAL_HEALTH_ID), criteria.getNationalHealthId()));
 		}
 

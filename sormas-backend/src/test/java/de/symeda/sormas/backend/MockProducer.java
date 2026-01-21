@@ -56,6 +56,7 @@ import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoverySer
 import de.symeda.sormas.backend.sormastosormas.crypto.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClient;
 import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClientProducer;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 
 /**
  * Creates mocks for resources needed in bean test / external services.
@@ -199,7 +200,7 @@ public class MockProducer implements InitialContextFactory {
 		public SormasToSormasRestClient sormasToSormasClient(
 			SormasToSormasDiscoveryService sormasToSormasDiscoveryService,
 			SormasToSormasEncryptionFacadeEjbLocal sormasToSormasEncryptionEjb,
-			ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb) {
+			SystemConfigurationAccessorEjb configFacadeEjb) {
 			return s2sRestClient;
 		}
 	}
@@ -213,7 +214,7 @@ public class MockProducer implements InitialContextFactory {
 
 		@Override
 		@Produces
-		public EtcdCentralClient etcdCentralClient(ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb) {
+		public EtcdCentralClient etcdCentralClient(SystemConfigurationAccessorEjb configFacadeEjb) {
 			return etcdCentralClient;
 		}
 	}
@@ -236,7 +237,7 @@ public class MockProducer implements InitialContextFactory {
 		@Produces
 		public SormasToSormasDiscoveryService sormasToSormasDiscoveryService(
 			SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal sormasToSormasFacadeEjb,
-			ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb,
+			SystemConfigurationAccessorEjb configFacadeEjb,
 			EtcdCentralClient centralClient) {
 			return sormasToSormasDiscoveryService;
 		}

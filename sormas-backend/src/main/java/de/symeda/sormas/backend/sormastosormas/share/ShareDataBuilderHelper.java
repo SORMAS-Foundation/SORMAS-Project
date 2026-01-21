@@ -38,7 +38,6 @@ import de.symeda.sormas.api.sormastosormas.entities.externalmessage.SormasToSorm
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasPersonPreview;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.PersonalDataFieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.SensitiveDataFieldAccessChecker;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.externalmessage.ExternalMessage;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb;
@@ -47,6 +46,7 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
+import de.symeda.sormas.backend.systemconfiguration.ExternalClientConfigurationEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
@@ -61,7 +61,7 @@ public class ShareDataBuilderHelper {
 	@EJB
 	private ContactFacadeEjb.ContactFacadeEjbLocal contactFacade;
 	@EJB
-	private SystemConfigurationAccessorEjb configFacadeEjb;
+	private ExternalClientConfigurationEjb configFacadeEjb;
 	@EJB
 	private ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal externalMessageFacade;
 

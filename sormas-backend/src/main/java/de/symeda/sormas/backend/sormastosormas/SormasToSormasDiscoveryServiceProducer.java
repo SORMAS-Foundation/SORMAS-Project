@@ -18,15 +18,15 @@ package de.symeda.sormas.backend.sormastosormas;
 import javax.enterprise.inject.Produces;
 
 import de.symeda.sormas.backend.central.EtcdCentralClient;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoveryService;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 
 public class SormasToSormasDiscoveryServiceProducer {
 
 	@Produces
 	public SormasToSormasDiscoveryService sormasToSormasDiscoveryService(
 		SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal sormasToSormasFacadeEjb,
-		ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb,
+		SystemConfigurationAccessorEjb configFacadeEjb,
 		EtcdCentralClient centralClient) {
 		return new SormasToSormasDiscoveryService(sormasToSormasFacadeEjb, configFacadeEjb, centralClient);
 	}

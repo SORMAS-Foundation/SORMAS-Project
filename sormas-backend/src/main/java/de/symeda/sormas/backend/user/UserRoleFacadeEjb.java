@@ -67,6 +67,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.NotificationType;
@@ -79,7 +80,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
@@ -97,7 +98,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 	@EJB
 	private UserService userService;
 	@EJB
-	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
+	private SystemConfigurationAccessorEjb configFacade;
 
 	@Override
 	@PermitAll
@@ -774,7 +775,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 
 	private Path generateUserRolesDocumentTempPath() {
 
-		Path path = Paths.get(configFacade.getTempFilesPath());
+		Path path = Paths.get(configFacade.getAsStringOrNull(SystemConfigurationType.TEMP_PATH));
 		String fileName = ImportExportUtils.TEMP_FILE_PREFIX + "_userroles_" + DateHelper.formatDateForExport(new Date()) + "_"
 			+ new Random().nextInt(Integer.MAX_VALUE) + ".xlsx";
 

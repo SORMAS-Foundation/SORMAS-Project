@@ -16,6 +16,7 @@
 package de.symeda.sormas.backend.audit;
 
 import java.io.File;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -29,7 +30,8 @@ import org.slf4j.helpers.NOPLogger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 
 /**
  * Provides a configurable log sink for the SORMAS audit trail.
@@ -39,7 +41,7 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 public class LogSink {
 
 	@EJB
-	ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
+	SystemConfigurationAccessorEjb configFacade;
 
 	private static final Logger logger = LoggerFactory.getLogger(LogSink.class);
 
@@ -55,14 +57,14 @@ public class LogSink {
 
 	@PostConstruct
 	private void setup() {
-		String fileName = configFacade.getAuditLoggerConfig();
+		Optional<String> fileNameOpt = configFacade.getAsString(SystemConfigurationType.AUDIT_LOGGER_CONFIG);
 
-		if (fileName == null || fileName.equals("")) {
+		if (fileNameOpt.isEmpty()) {
 			setupNopLogger();
 			return;
 		}
 
-		File file = new File(fileName);
+		File file = new File(fileNameOpt.get());
 		JoranConfigurator configurator = new JoranConfigurator();
 		LoggerContext context = new LoggerContext();
 		configurator.setContext(context);

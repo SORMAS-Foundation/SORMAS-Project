@@ -122,6 +122,7 @@ import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfoSe
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.systemconfiguration.ExternalClientConfigurationEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.RightsAllowed;
@@ -156,7 +157,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 	@EJB
 	private SormasToSormasShareInfoFacadeEjbLocal shareInfoFacade;
 	@EJB
-	private SystemConfigurationAccessorEjb configFacadeEjb;
+	private ExternalClientConfigurationEjb configFacadeEjb;
 	@EJB
 	private ShareDataBuilder shareDataBuilder;
 	@EJB

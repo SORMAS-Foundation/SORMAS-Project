@@ -20,6 +20,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.AnnotationBasedFieldAccessChecker.SpecialAccessCheck;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
@@ -36,7 +37,7 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 	protected Class<ADO> adoClass;
 	protected Class<DTO> dtoClass;
 	@Inject
-	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
+	private SystemConfigurationAccessorEjb configFacade;
 
 	protected AbstractBaseEjb() {
 	}

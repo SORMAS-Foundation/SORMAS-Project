@@ -52,8 +52,10 @@ import de.symeda.sormas.api.geo.GeoLatLon;
 import de.symeda.sormas.api.geo.GeoShapeProvider;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb.RegionFacadeEjbLocal;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 
 @Stateless(name = "GeoShapeProvider")
 public class GeoShapeProviderEjb implements GeoShapeProvider {
@@ -170,11 +172,12 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 
 	@PostConstruct
 	private void loadData() {
-		String countryName = configFacade.getCountryName();
-		String wkt = configFacade.getGeocodingEPSG4326_WKT();
-		if (countryName.isEmpty()) {
+		Optional<String> countryNameOpt = configFacade.getAsString(SystemConfigurationType.COUNTRY_NAME);
+		String wkt = configFacade.getAsStringOrThrow(SystemConfigurationType.GEOCODING_EPSG4326_WKT);
+		if (countryNameOpt.isEmpty()) {
 			logger.warn("Shape files couldn't be loaded, because no country name is defined in sormas.properties.");
 		} else {
+			String countryName = countryNameOpt.get();
 			loadRegionData(countryName, wkt);
 			loadDistrictData(countryName, wkt);
 			buildCountryShape();
@@ -436,7 +439,7 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 	 */
 	@Override
 	public String loadShapefileAttributions() {
-		String countryName = configFacade.getCountryName();
+		String countryName = configFacade.getAsStringOrThrow(SystemConfigurationType.COUNTRY_NAME);
 		if (countryName.isEmpty()) {
 			logger.warn("Attribution couldn't be loaded, because no country name is defined in sormas.properties.");
 		} else {

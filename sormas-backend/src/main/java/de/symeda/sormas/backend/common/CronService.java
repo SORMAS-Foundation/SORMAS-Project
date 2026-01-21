@@ -33,6 +33,7 @@ import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -49,6 +50,7 @@ import de.symeda.sormas.backend.infrastructure.central.CentralInfraSyncFacade;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb.WeeklyReportFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessFacadeEjb.SpecialCaseAccessFacadeEjbLocal;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb.SystemEventFacadeEjbLocal;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
@@ -134,7 +136,7 @@ public class CronService {
 	public void cleanUpTemporaryFiles() {
 
 		Date now = new Date();
-		File exportFolder = new File(configFacade.getTempFilesPath());
+		File exportFolder = new File(configFacade.getAsStringOrThrow(SystemConfigurationType.TEMP_PATH));
 
 		int numberOfDeletedFiles = 0;
 		final File[] files = exportFolder.listFiles();
@@ -215,7 +217,7 @@ public class CronService {
 
 	@Schedule(hour = "1", minute = "30", second = "0", persistent = false)
 	public void deleteSystemEvents() {
-		int daysAfterSystemEventGetsDeleted = configFacade.getDaysAfterSystemEventGetsDeleted();
+		int daysAfterSystemEventGetsDeleted = configFacade.getAsIntegerOrThrow(SystemConfigurationType.DAYS_AFTER_SYSTEM_EVENT_GETS_DELETED);
 		if (daysAfterSystemEventGetsDeleted >= 1) {
 			systemEventFacade.deleteAllDeletableSystemEvents(daysAfterSystemEventGetsDeleted);
 		}

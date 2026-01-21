@@ -1,21 +1,27 @@
 package de.symeda.sormas.backend.systemconfiguration;
 
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.ejb.DependsOn;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
+import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.systemconfiguration.SystemConfiguration;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationAccessorFacade;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.util.RightsAllowed;
 
@@ -31,12 +37,12 @@ public class SystemConfigurationAccessorEjb implements SystemConfigurationAccess
 	private SystemConfigurationValueEjb systemConfigurationValueEjb;
 
 	@Override
-	public boolean isPresent(SystemConfiguration config) {
+	public boolean isPresent(SystemConfigurationType config) {
 		return getAsString(config).filter(StringUtils::isNotBlank).isPresent();
 	}
 
 	@Override
-	public Optional<Integer> getAsInteger(SystemConfiguration config) {
+	public Optional<Integer> getAsInteger(SystemConfigurationType config) {
 		return Optional.empty();
 	}
 
@@ -60,28 +66,38 @@ public class SystemConfigurationAccessorEjb implements SystemConfigurationAccess
 	}
 
 	@Override
-	public Optional<Double> getAsDouble(SystemConfiguration config) {
+	public Optional<Double> getAsDouble(SystemConfigurationType config) {
 		return Optional.empty();
 	}
 
 	@Override
-	public Optional<Long> getAsLong(SystemConfiguration config) {
+	public Optional<Long> getAsLong(SystemConfigurationType config) {
 		return Optional.empty();
 	}
 
 	@Override
-	public Optional<String> getAsString(SystemConfiguration config) {
+	public Optional<String> getAsString(SystemConfigurationType config) {
 		return Optional.empty();
 	}
 
 	@Override
-	public boolean getAsBoolean(SystemConfiguration config) {
+	public boolean getAsBoolean(SystemConfigurationType config) {
 		return false;
 	}
 
 	@Override
+	public boolean isConfiguredCountry(String countryCode) {
+		String countryLocale = getAsStringOrThrow(SystemConfigurationType.COUNTRY_LOCALE);
+		if (Pattern.matches(I18nProperties.FULL_COUNTRY_LOCALE_PATTERN, countryLocale)) {
+			return StringUtils.endsWithIgnoreCase(countryLocale, countryCode);
+		} else {
+			return StringUtils.startsWithIgnoreCase(countryLocale, countryCode);
+		}
+	}
+
+	@Override
 	public String getCountryCode() {
-		String locale = getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE);
+		String locale = getAsStringOrThrow(SystemConfigurationType.COUNTRY_LOCALE);
 		String normalizedLocale = normalizeLocaleString(locale);
 
 		if (normalizedLocale.contains("-")) {
@@ -89,6 +105,16 @@ public class SystemConfigurationAccessorEjb implements SystemConfigurationAccess
 		} else {
 			return normalizedLocale;
 		}
+	}
+
+	@Override
+	public Set<String> getAllowedFileExtensions() {
+		return Arrays.stream(getAsStringOrThrow(SystemConfigurationType.ALLOWED_FILE_EXTENSIONS).split(",")).collect(Collectors.toSet());
+	}
+
+	@Override
+	public String getSormasInstanceName() {
+		return getAsBoolean(SystemConfigurationType.CUSTOM_BRANDING) ? getAsStringOrThrow(SystemConfigurationType.CUSTOM_BRANDING_NAME) : "SORMAS";
 	}
 
 	private String normalizeLocaleString(String locale) {
@@ -102,44 +128,9 @@ public class SystemConfigurationAccessorEjb implements SystemConfigurationAccess
 		return locale;
 	}
 
-	public SystemConfigurationValueEjb getSystemConfigurationValueEjb() {
-		return systemConfigurationValueEjb;
-	}
-
+	@Inject
 	public void setSystemConfigurationValueEjb(SystemConfigurationValueEjb systemConfigurationValueEjb) {
 		this.systemConfigurationValueEjb = systemConfigurationValueEjb;
 	}
-
-// more complex configurations
-
-//    @Override
-//    public boolean isConfiguredCountry(String countryCode) {
-//        return false;
-//    }
-//
-//    @Override
-//    public GeoLatLon getCountryCenter() {
-//        return null;
-//    }
-//
-//    @Override
-//    public SymptomJournalConfig getSymptomJournalConfig() {
-//        return null;
-//    }
-//
-//    @Override
-//    public PatientDiaryConfig getPatientDiaryConfig() {
-//        return null;
-//    }
-//
-//    @Override
-//    public SormasToSormasConfig getS2SConfig() {
-//        return null;
-//    }
-//
-//    @Override
-//    public CaseClassificationCalculationMode getCaseClassificationCalculationMode(Disease disease) {
-//        return null;
-//    }
 
 }

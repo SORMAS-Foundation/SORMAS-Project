@@ -40,8 +40,8 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
+import de.symeda.sormas.backend.systemconfiguration.ExternalClientConfigurationEjb;
 import de.symeda.sormas.backend.util.ClientHelper;
 
 /**
@@ -60,7 +60,7 @@ public class ExternalJournalService {
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
-	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
+	private ExternalClientConfigurationEjb configFacade;
 	@EJB
 	private PatientDiaryClient patientDiaryClient;
 	private PersonContactInfoValidator contactInfoValidator;

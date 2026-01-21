@@ -54,7 +54,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
@@ -75,6 +74,7 @@ import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfoService;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.systemconfiguration.ExternalClientConfigurationEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.RightsAllowed;
 
@@ -109,7 +109,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	@EJB
 	private SormasToSormasEncryptionFacadeEjbLocal encryptionService;
 	@Inject
-	private SystemConfigurationAccessorEjb configFacadeEjb;
+	private ExternalClientConfigurationEjb configFacadeEjb;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB

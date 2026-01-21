@@ -80,6 +80,7 @@ import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskContextIndexCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
@@ -105,7 +106,6 @@ import de.symeda.sormas.backend.caze.CaseJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactJoins;
@@ -137,6 +137,7 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 import de.symeda.sormas.backend.task.TaskFacadeEjb;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.TravelEntryJoins;
@@ -1065,7 +1066,7 @@ public class UserFacadeEjb implements UserFacade {
 			throw new ForbiddenException("No default role for new users from authentication provider is configured");
 		}
 
-		String defaultRoleName = configFacade.getAuthenticationProviderSyncedNewUserRole();
+		String defaultRoleName = configFacade.getAsStringOrNull(SystemConfigurationType.AUTHENTICATION_PROVIDER_SYNCED_NEW_USER_ROLE);
 		UserRole defaultRole = userRoleService.getByCaption(defaultRoleName);
 
 		if (defaultRole == null) {

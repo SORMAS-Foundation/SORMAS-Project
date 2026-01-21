@@ -44,6 +44,7 @@ import de.symeda.sormas.api.survey.SurveyTokenDto;
 import de.symeda.sormas.api.survey.SurveyTokenFacade;
 import de.symeda.sormas.api.survey.SurveyTokenIndexDto;
 import de.symeda.sormas.api.survey.SurveyTokenReferenceDto;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -51,13 +52,13 @@ import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.document.Document;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb.DocumentFacadeEjbLocal;
 import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.survey.SurveyFacadeEjb.SurveyFacadeEjbLocal;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -86,7 +87,7 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 	@EJB
 	private DocumentFacadeEjbLocal documentFacade;
 	@EJB
-	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
+	private SystemConfigurationAccessorEjb configFacade;
 	@EJB
 	private DocumentService documentService;
 
@@ -213,7 +214,7 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 	}
 
 	private String getImportTemplateFilePath(String baseFilename) {
-		java.nio.file.Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
+		java.nio.file.Path exportDirectory = Paths.get(configFacade.getAsStringOrNull(SystemConfigurationType.GENERATED_FILES_PATH));
 		return exportDirectory.resolve(getImportTemplateFileName(baseFilename)).toString();
 	}
 

@@ -41,8 +41,8 @@ import de.symeda.sormas.api.importexport.ExportProperty;
 import de.symeda.sormas.api.importexport.format.ExportFormat;
 import de.symeda.sormas.api.importexport.format.FormatterProvider;
 import de.symeda.sormas.api.importexport.format.IExportFormatter;
-import de.symeda.sormas.api.systemconfiguration.SystemConfiguration;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationAccessorFacade;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 
 public class CsvStreamUtils {
@@ -59,7 +59,7 @@ public class CsvStreamUtils {
 		try (
 			CSVWriter writer = CSVUtils.createCSVWriter(
 				new OutputStreamWriter(out, StandardCharsets.UTF_8.name()),
-				configFacade.getAsCharOrThrow(SystemConfiguration.CSV_SEPARATOR))) {
+				configFacade.getAsCharOrThrow(SystemConfigurationType.CSV_SEPARATOR))) {
 
 			// 1. fields in order of declaration - not using Introspector here, because it gives properties in alphabetical order
 			List<Method> readMethods =
@@ -67,7 +67,7 @@ public class CsvStreamUtils {
 					csvRowClass,
 					exportConfiguration,
 					redMethodFilter,
-					configFacade.getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE));
+					configFacade.getAsStringOrThrow(SystemConfigurationType.COUNTRY_LOCALE));
 
 			// 2. replace entity fields with all the columns of the entity
 			Map<Method, SubEntityProvider<T>> subEntityProviders = new HashMap<Method, SubEntityProvider<T>>();
@@ -137,7 +137,7 @@ public class CsvStreamUtils {
 			writer.writeNext(labels, false);
 
 			int startIndex = 0;
-			int stepSize = configFacade.getAsIntegerOrThrow(SystemConfiguration.STEP_SIZE_FOR_CSV_EXPORT);
+			int stepSize = configFacade.getAsIntegerOrThrow(SystemConfigurationType.STEP_SIZE_FOR_CSV_EXPORT);
 
 			List<T> exportRows;
 			do {

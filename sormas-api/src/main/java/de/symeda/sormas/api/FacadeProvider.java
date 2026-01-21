@@ -107,9 +107,10 @@ import de.symeda.sormas.api.specialcaseaccess.SpecialCaseAccessFacade;
 import de.symeda.sormas.api.survey.SurveyFacade;
 import de.symeda.sormas.api.survey.SurveyTokenFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
-import de.symeda.sormas.api.systemconfiguration.SystemConfiguration;
+import de.symeda.sormas.api.systemconfiguration.ExternalClientConfigurationFacade;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationAccessorFacade;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationCategoryFacade;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.api.systemevents.SystemEventFacade;
 import de.symeda.sormas.api.systemevents.sync.SyncFacade;
@@ -302,6 +303,10 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(SystemConfigurationAccessorFacade.class);
 	}
 
+	public static ExternalClientConfigurationFacade getExternalClientConfigurationFacade() {
+		return get().lookupEjbRemote(ExternalClientConfigurationFacade.class);
+	}
+
 	public static ExportFacade getExportFacade() {
 		return get().lookupEjbRemote(ExportFacade.class);
 	}
@@ -477,7 +482,7 @@ public class FacadeProvider {
 
 	public static ExternalMessageAdapterFacade getExternalLabResultsFacade() throws NamingException {
 		return (ExternalMessageAdapterFacade) get().ic
-			.lookup(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.INTERFACE_EXTERNAL_MESSAGE_ADAPTER_JNDI_NAME));
+			.lookup(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfigurationType.INTERFACE_EXTERNAL_MESSAGE_ADAPTER_JNDI_NAME));
 	}
 
 	public static SurveillanceReportFacade getSurveillanceReportFacade() {

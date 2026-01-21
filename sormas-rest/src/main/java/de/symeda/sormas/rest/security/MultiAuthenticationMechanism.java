@@ -40,7 +40,7 @@ import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
-import de.symeda.sormas.api.systemconfiguration.SystemConfiguration;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DefaultEntityHelper;
@@ -93,7 +93,7 @@ public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism
 
 	@Inject
 	public MultiAuthenticationMechanism(KeycloakHttpAuthenticationMechanism keycloakHttpAuthenticationMechanism) {
-		String authenticationProvider = FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.AUTHENTICATION_PROVIDER);
+		String authenticationProvider = FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfigurationType.AUTHENTICATION_PROVIDER);
 		if (authenticationProvider.equals(AuthProvider.KEYCLOAK)) {
 			authenticationMechanism = keycloakHttpAuthenticationMechanism;
 

@@ -21,10 +21,10 @@ import java.util.function.Function;
 
 import org.apache.commons.lang3.ArrayUtils;
 
-import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationAccessorFacade;
 
 public enum DatabaseTable {
 
@@ -125,7 +125,7 @@ public enum DatabaseTable {
 	EXTERNAL_SHARE_INFO(DatabaseTableType.EXTERNAL,
 		null,
 		"external_share_info",
-		dependingOnConfiguration(ConfigFacade::isExternalSurveillanceToolGatewayConfigured)),
+		dependingOnConfiguration(SystemConfigurationAccessorFacade::isExternalSurveillanceToolGatewayConfigured)),
 
 	USERS(DatabaseTableType.SORMAS, "users", null),
 	USER_ROLES(DatabaseTableType.SORMAS, USERS, "userroles"),
@@ -162,29 +162,30 @@ public enum DatabaseTable {
 
 	DRUG_SUSCEPTIBILITY(DatabaseTableType.SORMAS, "drug_susceptibility", null);
 
-	private static BiFunction<List<FeatureConfigurationDto>, ConfigFacade, Boolean> dependingOnFeature(FeatureType... featureTypes) {
+	private static BiFunction<List<FeatureConfigurationDto>, SystemConfigurationAccessorFacade, Boolean> dependingOnFeature(
+		FeatureType... featureTypes) {
 		return (featureConfigurations, configFacade) -> featureConfigurations.stream()
 			.anyMatch(cc -> ArrayUtils.contains(featureTypes, cc.getFeatureType()) && cc.isEnabled());
 	}
 
-	private static BiFunction<List<FeatureConfigurationDto>, ConfigFacade, Boolean> dependingOnS2S() {
+	private static BiFunction<List<FeatureConfigurationDto>, SystemConfigurationAccessorFacade, Boolean> dependingOnS2S() {
 		return (featureConfigurations, configFacade) -> configFacade.isS2SConfigured();
 	}
 
-	private static BiFunction<List<FeatureConfigurationDto>, ConfigFacade, Boolean> dependingOnConfiguration(
-		Function<ConfigFacade, Boolean> isConfigured) {
+	private static BiFunction<List<FeatureConfigurationDto>, SystemConfigurationAccessorFacade, Boolean> dependingOnConfiguration(
+		Function<SystemConfigurationAccessorFacade, Boolean> isConfigured) {
 		return (featureConfigurations, configFacade) -> isConfigured.apply(configFacade);
 	}
 
 	private final DatabaseTableType databaseTableType;
 	private final DatabaseTable parentTable;
 	private final String fileName;
-	private final BiFunction<List<FeatureConfigurationDto>, ConfigFacade, Boolean> enabledSupplier;
+	private final BiFunction<List<FeatureConfigurationDto>, SystemConfigurationAccessorFacade, Boolean> enabledSupplier;
 
 	DatabaseTable(
 		DatabaseTableType databaseTableType,
 		String fileName,
-		BiFunction<List<FeatureConfigurationDto>, ConfigFacade, Boolean> enabledSupplier) {
+		BiFunction<List<FeatureConfigurationDto>, SystemConfigurationAccessorFacade, Boolean> enabledSupplier) {
 		this(databaseTableType, null, fileName, enabledSupplier);
 	}
 
@@ -196,7 +197,7 @@ public enum DatabaseTable {
 		DatabaseTableType databaseTableType,
 		DatabaseTable parentTable,
 		String fileName,
-		BiFunction<List<FeatureConfigurationDto>, ConfigFacade, Boolean> enabledSupplier) {
+		BiFunction<List<FeatureConfigurationDto>, SystemConfigurationAccessorFacade, Boolean> enabledSupplier) {
 		this.databaseTableType = databaseTableType;
 		this.parentTable = parentTable;
 		this.fileName = fileName;
@@ -220,7 +221,7 @@ public enum DatabaseTable {
 		return fileName;
 	}
 
-	public boolean isEnabled(List<FeatureConfigurationDto> featureConfigurations, ConfigFacade configFacade) {
+	public boolean isEnabled(List<FeatureConfigurationDto> featureConfigurations, SystemConfigurationAccessorFacade configFacade) {
 		if (enabledSupplier != null) {
 			return enabledSupplier.apply(featureConfigurations, configFacade);
 		} else if (parentTable != null) {

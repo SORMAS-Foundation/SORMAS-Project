@@ -50,10 +50,10 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasErrorResponse;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoveryService;
 import de.symeda.sormas.backend.sormastosormas.crypto.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.rest.auth.Oidc;
+import de.symeda.sormas.backend.systemconfiguration.ExternalClientConfigurationEjb;
 import de.symeda.sormas.backend.util.ClientHelper;
 
 /**
@@ -68,14 +68,14 @@ public class SormasToSormasRestClient {
 
 	private final SormasToSormasDiscoveryService sormasToSormasDiscoveryService;
 	private final SormasToSormasEncryptionFacadeEjbLocal sormasToSormasEncryptionEjb;
-	private final ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb;
+	private final ExternalClientConfigurationEjb configFacadeEjb;
 
 	private final ObjectMapper mapper;
 
 	public SormasToSormasRestClient(
 		SormasToSormasDiscoveryService sormasToSormasDiscoveryService,
 		SormasToSormasEncryptionFacadeEjbLocal sormasToSormasEncryptionEjb,
-		ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb) {
+		ExternalClientConfigurationEjb configFacadeEjb) {
 		this.sormasToSormasDiscoveryService = sormasToSormasDiscoveryService;
 		this.sormasToSormasEncryptionEjb = sormasToSormasEncryptionEjb;
 		this.configFacadeEjb = configFacadeEjb;

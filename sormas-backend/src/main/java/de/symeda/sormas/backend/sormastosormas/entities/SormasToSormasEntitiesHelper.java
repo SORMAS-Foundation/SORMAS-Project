@@ -21,7 +21,6 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb;
 import de.symeda.sormas.backend.externalmessage.ExternalMessage;
@@ -31,6 +30,7 @@ import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.Distri
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.systemconfiguration.ExternalClientConfigurationEjb;
 
 @Stateless
 @LocalBean
@@ -43,7 +43,7 @@ public class SormasToSormasEntitiesHelper {
 	@EJB
 	private ExternalMessageService externalMessageService;
 	@EJB
-	private SystemConfigurationAccessorEjb configFacade;
+	private ExternalClientConfigurationEjb configFacade;
 	@EJB
 	private CustomizableEnumFacadeEjb.CustomizableEnumFacadeEjbLocal customizableEnumFacade;
 

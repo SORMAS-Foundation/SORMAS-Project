@@ -34,7 +34,6 @@ import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.selfreport.SelfReportCriteria;
 import de.symeda.sormas.api.selfreport.SelfReportType;
-import de.symeda.sormas.api.systemconfiguration.SystemConfiguration;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.vaccination.VaccinationAssociationType;
@@ -151,7 +150,7 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 			layout.addSidePanelComponent(taskList, TASKS_LOC);
 		}
 
-		final boolean isSmsServiceSetUp = FacadeProvider.getSystemConfigFacade().isPresent(SystemConfiguration.SMS_AUTH_SECRET);
+		final boolean isSmsServiceSetUp = FacadeProvider.getSystemConfigFacade().isSmsServiceSetUp();
 		if (isSmsServiceSetUp && UiUtil.permitted(FeatureType.MANUAL_EXTERNAL_MESSAGES, UserRight.SEND_MANUAL_EXTERNAL_MESSAGES)) {
 			SmsListComponent smsList = new SmsListComponent(getCaseRef(), caze.getPerson(), isEditAllowed);
 			smsList.addStyleName(CssStyles.SIDE_COMPONENT);

@@ -33,12 +33,12 @@ import de.symeda.sormas.api.sormastosormas.entities.sample.SormasToSormasSampleD
 import de.symeda.sormas.api.sormastosormas.share.incoming.PreviewNotImplementedDto;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.sample.PathogenTest;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
+import de.symeda.sormas.backend.systemconfiguration.ExternalClientConfigurationEjb;
 import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
@@ -54,7 +54,7 @@ public class ReceivedSampleProcessor
 	protected ReceivedSampleProcessor(
 		SampleService service,
 		UserService userService,
-		ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade,
+		ExternalClientConfigurationEjb configFacade,
 		SormasToSormasSampleDtoValidator validator) {
 		super(service, userService, configFacade, validator);
 	}

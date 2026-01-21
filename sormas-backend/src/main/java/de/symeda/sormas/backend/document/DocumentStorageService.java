@@ -31,7 +31,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.ConfigFacade;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.utils.DateFormatHelper;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 import de.symeda.sormas.backend.user.UserService;
 
 /**
@@ -63,12 +65,12 @@ public class DocumentStorageService {
 
     @NotNull
     private Path getFilePath(String storageReference) {
-        return Paths.get(configFacade.getDocumentFilesPath(), storageReference);
+		return Paths.get(configFacade.getAsStringOrThrow(SystemConfigurationType.DOCUMENTS_PATH), storageReference);
 	}
 
 	public String save(Document document, byte[] content) throws IOException {
 		Path relativePath = computeRelativePath(document);
-		Path filePath = Paths.get(configFacade.getDocumentFilesPath()).resolve(relativePath);
+		Path filePath = Paths.get(configFacade.getAsStringOrThrow(SystemConfigurationType.DOCUMENTS_PATH)).resolve(relativePath);
 		Files.createDirectories(filePath.getParent());
 		Files.write(filePath, content, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
 		setDocumentAttributes(document, filePath);

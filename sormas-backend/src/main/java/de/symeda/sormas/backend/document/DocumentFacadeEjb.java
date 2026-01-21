@@ -14,8 +14,6 @@
  */
 package de.symeda.sormas.backend.document;
 
-import static java.util.Arrays.asList;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -55,11 +53,11 @@ import de.symeda.sormas.api.utils.FileExtensionNotAllowedException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventService;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
@@ -106,7 +104,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 	@EJB
 	private TravelEntryService travelEntryService;
 	@EJB
-	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
+	private SystemConfigurationAccessorEjb configFacade;
 	@EJB
 	private DocumentRelatedEntityFacadeEjb.DocumentRelatedEntityFacadeEjbLocal documentRelatedEntitiesFacade;
 
@@ -169,8 +167,8 @@ public class DocumentFacadeEjb implements DocumentFacade {
 	}
 
 	private void checkFileExtension(String fileExtension) {
-		String[] allowedFileExtensions = configFacade.getAllowedFileExtensions();
-		boolean fileTypeAllowed = asList(allowedFileExtensions).contains(fileExtension);
+		Set<String> allowedFileExtensions = configFacade.getAllowedFileExtensions();
+		boolean fileTypeAllowed = allowedFileExtensions.contains(fileExtension);
 
 		if (!fileTypeAllowed) {
 			throw new FileExtensionNotAllowedException(String.format("File extension %s not allowed", fileExtension));
