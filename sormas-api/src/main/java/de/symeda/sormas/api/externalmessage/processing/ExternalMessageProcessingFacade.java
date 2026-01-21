@@ -242,8 +242,8 @@ public abstract class ExternalMessageProcessingFacade extends AbstractProcessing
 		return personFacade.getByContext(personContext, personUuid);
 	}
 
-	public OccupationType getOccupationTypeOther() {
-		return customizableEnumFacade.getEnumValue(CustomizableEnumType.OCCUPATION_TYPE, null, "OTHER");
+	public OccupationType getOccupationTypeOther() throws CustomEnumNotFoundException {
+		return customizableEnumFacade.getEnumValue(CustomizableEnumType.OCCUPATION_TYPE, "OTHER", null);
 	}
 
 	public CaseDataDto updateAndSetCaseNotifier(String caseUuid, NotifierDto notifierDto) {
@@ -257,10 +257,10 @@ public abstract class ExternalMessageProcessingFacade extends AbstractProcessing
 	}
 
 	public void updatePerson(PersonDto personDto) {
-		if(personFacade == null) {
+		if (personFacade == null) {
 			return;
 		}
-		if(personDto == null) {
+		if (personDto == null) {
 			return;
 		}
 

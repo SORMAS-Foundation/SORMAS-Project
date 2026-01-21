@@ -44,6 +44,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
+import de.symeda.sormas.api.customizableenum.CustomEnumNotFoundException;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -364,6 +365,12 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 				// Additional person processing after case creation (needed for fields that are not visible in the person creation form)
 
 				PersonDto casePerson = getExternalMessageProcessingFacade().getPersonByContext(PersonContext.CASE, result.getUuid());
+
+				if (casePerson == null) {
+					updateNotifierCallback.done(result);
+					return;
+				}
+
 				boolean doUpdate = false;
 
 				final String nameOfGuardian =
@@ -385,7 +392,7 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 				if (externalMessage.getPersonGuardianEmail() != null && !externalMessage.getPersonGuardianEmail().isBlank()) {
 					List<PersonContactDetailDto> contactDetails = casePerson.getPersonContactDetails();
 
-					if (contactDetails.stream().noneMatch(pc -> pc.getContactInformation().contains(externalMessage.getPersonGuardianEmail()))) {
+					if (contactDetails.stream().noneMatch(pc -> externalMessage.getPersonGuardianEmail().equals(pc.getContactInformation()))) {
 						final PersonContactDetailDto pcd = new PersonContactDetailDto();
 						pcd.setPerson(casePerson.toReference());
 						pcd.setPrimaryContact(false);
@@ -403,7 +410,7 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 				if (externalMessage.getPersonGuardianPhone() != null && !externalMessage.getPersonGuardianPhone().isBlank()) {
 					List<PersonContactDetailDto> contactDetails = casePerson.getPersonContactDetails();
 
-					if (contactDetails.stream().noneMatch(pc -> pc.getContactInformation().contains(externalMessage.getPersonGuardianPhone()))) {
+					if (contactDetails.stream().noneMatch(pc -> externalMessage.getPersonGuardianPhone().equals(pc.getContactInformation()))) {
 						final PersonContactDetailDto pcd = new PersonContactDetailDto();
 						pcd.setPerson(casePerson.toReference());
 						pcd.setPrimaryContact(false);
@@ -419,13 +426,17 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 				}
 
 				if (externalMessage.getPersonOccupation() != null && !externalMessage.getPersonOccupation().isBlank()) {
-					final OccupationType occupationTypeOther = getExternalMessageProcessingFacade().getOccupationTypeOther();
-					casePerson.setOccupationType(occupationTypeOther);
-					casePerson.setOccupationDetails(externalMessage.getPersonOccupation());
-					doUpdate = true;
+					try {
+						final OccupationType occupationTypeOther = getExternalMessageProcessingFacade().getOccupationTypeOther();
+						casePerson.setOccupationType(occupationTypeOther);
+						casePerson.setOccupationDetails(externalMessage.getPersonOccupation());
+						doUpdate = true;
+					} catch (CustomEnumNotFoundException e) {
+						// do nothing if OccupationType OTHER custom enum is not found
+					}
 				}
 
-				if (casePerson != null && doUpdate) {
+				if (doUpdate) {
 					getExternalMessageProcessingFacade().updatePerson(casePerson);
 				}
 				// Chain to the notifier callback
