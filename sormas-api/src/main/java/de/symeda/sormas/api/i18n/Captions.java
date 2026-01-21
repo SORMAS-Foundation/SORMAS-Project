@@ -2239,6 +2239,7 @@ public interface Captions {
 	String Notification_noNotification = "Notification.noNotification";
 	String Notification_notificationTypeExternal = "Notification.notificationTypeExternal";
 	String Notification_notificationTypePhone = "Notification.notificationTypePhone";
+	String Notification_notifierInformation = "Notification.notifierInformation";
 	String Notification_registrationNumber = "Notification.registrationNumber";
 	String Notification_reportingAgent = "Notification.reportingAgent";
 	String Notification_viewNotification = "Notification.viewNotification";

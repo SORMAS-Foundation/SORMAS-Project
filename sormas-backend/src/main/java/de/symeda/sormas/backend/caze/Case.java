@@ -255,6 +255,10 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	public static final String RADIOGRAPHY_COMPATIBILITY = "radiographyCompatibility";
 	public static final String OTHER_DIAGNOSTIC_CRITERIA = "otherDiagnosticCriteria";
 
+	public static final String TREATMENT_STARTED = "treatmentStarted";
+	public static final String TREATMENT_NOT_APPLICABLE = "treatmentNotApplicable";
+	public static final String TREATMENT_START_DATE = "treatmentStartDate";
+
 	private Person person;
 	private String description;
 	private Disease disease;
@@ -282,6 +286,9 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	private Hospitalization hospitalization;
 	private EpiData epiData;
 	private Therapy therapy;
+	private YesNoUnknown treatmentStarted;
+	private boolean treatmentNotApplicable;
+	private Date treatmentStartDate;
 	private ClinicalCourse clinicalCourse;
 	private MaternalHistory maternalHistory;
 	private PortHealthInfo portHealthInfo;
@@ -1867,5 +1874,33 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 
 	public void setOtherDiagnosticCriteria(String otherDiagnosticCriteria) {
 		this.otherDiagnosticCriteria = otherDiagnosticCriteria;
+	}
+
+	@Column
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getTreatmentStarted() {
+		return treatmentStarted;
+	}
+
+	public void setTreatmentStarted(YesNoUnknown treatmentStarted) {
+		this.treatmentStarted = treatmentStarted;
+	}
+
+	@Column
+	public boolean isTreatmentNotApplicable() {
+		return treatmentNotApplicable;
+	}
+
+	public void setTreatmentNotApplicable(boolean treatmentNotApplicable) {
+		this.treatmentNotApplicable = treatmentNotApplicable;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getTreatmentStartDate() {
+		return treatmentStartDate;
+	}
+
+	public void setTreatmentStartDate(Date treatmentStartDate) {
+		this.treatmentStartDate = treatmentStartDate;
 	}
 }

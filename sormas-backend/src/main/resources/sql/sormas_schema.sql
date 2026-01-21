@@ -15062,4 +15062,34 @@ ALTER TABLE testreport_history ADD COLUMN serotype character varying(255);
 ALTER TABLE testreport_history ADD COLUMN straincallstatus character varying(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (602, 'External message additional fields');
+
+-- Move treatment fields from therapy to cases #13775
+
+-- Add new columns to cases table
+ALTER TABLE cases ADD COLUMN treatmentstarted varchar(255);
+ALTER TABLE cases ADD COLUMN treatmentnotapplicable boolean DEFAULT false;
+ALTER TABLE cases ADD COLUMN treatmentstartdate timestamp;
+ALTER TABLE cases_history ADD COLUMN treatmentstarted varchar(255);
+ALTER TABLE cases_history ADD COLUMN treatmentnotapplicable boolean DEFAULT false;
+ALTER TABLE cases_history ADD COLUMN treatmentstartdate timestamp;
+-- Migrate data from therapy to cases
+UPDATE cases c
+SET treatmentstarted = t.treatmentstarted,
+    treatmentnotapplicable = t.treatmentnotapplicable,
+    treatmentstartdate = t.treatmentstartdate
+FROM therapy t
+WHERE c.therapy_id = t.id
+  AND (t.treatmentstarted IS NOT NULL 
+       OR t.treatmentnotapplicable IS NOT NULL 
+       OR t.treatmentstartdate IS NOT NULL);
+-- Drop columns from therapy table
+ALTER TABLE therapy DROP COLUMN treatmentstarted;
+ALTER TABLE therapy DROP COLUMN treatmentnotapplicable;
+ALTER TABLE therapy DROP COLUMN treatmentstartdate;
+ALTER TABLE therapy_history DROP COLUMN treatmentstarted;
+ALTER TABLE therapy_history DROP COLUMN treatmentnotapplicable;
+ALTER TABLE therapy_history DROP COLUMN treatmentstartdate;
+
+INSERT INTO schema_version (version_number, comment) VALUES (603, 'Move treatment fields from therapy to cases');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

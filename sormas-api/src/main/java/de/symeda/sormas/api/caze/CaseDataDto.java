@@ -236,6 +236,10 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	public static final String RADIOGRAPHY_COMPATIBILITY = "radiographyCompatibility";
 	public static final String OTHER_DIAGNOSTIC_CRITERIA = "otherDiagnosticCriteria";
 
+	public static final String TREATMENT_STARTED = "treatmentStarted";
+	public static final String TREATMENT_NOT_APPLICABLE = "treatmentNotApplicable";
+	public static final String TREATMENT_START_DATE = "treatmentStartDate";
+
 	// Fields are declared in the order they should appear in the import template
 
 	@Outbreaks
@@ -440,6 +444,9 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	private EpiDataDto epiData;
 	@Valid
 	private TherapyDto therapy;
+	private YesNoUnknown treatmentStarted;
+	private boolean treatmentNotApplicable;
+	private Date treatmentStartDate;
 	@Valid
 	private ClinicalCourseDto clinicalCourse;
 	@Valid
@@ -1842,6 +1849,30 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 
 	public void setOtherDiagnosticCriteria(String otherDiagnosticCriteria) {
 		this.otherDiagnosticCriteria = otherDiagnosticCriteria;
+	}
+
+	public YesNoUnknown getTreatmentStarted() {
+		return treatmentStarted;
+	}
+
+	public void setTreatmentStarted(YesNoUnknown treatmentStarted) {
+		this.treatmentStarted = treatmentStarted;
+	}
+
+	public boolean isTreatmentNotApplicable() {
+		return treatmentNotApplicable;
+	}
+
+	public void setTreatmentNotApplicable(boolean treatmentNotApplicable) {
+		this.treatmentNotApplicable = treatmentNotApplicable;
+	}
+
+	public Date getTreatmentStartDate() {
+		return treatmentStartDate;
+	}
+
+	public void setTreatmentStartDate(Date treatmentStartDate) {
+		this.treatmentStartDate = treatmentStartDate;
 	}
 
 	@JsonIgnore

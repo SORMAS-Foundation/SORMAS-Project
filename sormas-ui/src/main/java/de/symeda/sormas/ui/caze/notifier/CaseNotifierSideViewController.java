@@ -114,9 +114,8 @@ public class CaseNotifierSideViewController {
         }
 
         NotifierDto newNotifier = new NotifierDto();
-        TherapyDto therapy = caze.getTherapy();
-
-        openEditWindow(caze, newNotifier, therapy, I18nProperties.getCaption(Captions.Notification_createNotification), false, callback, true);
+        
+        openEditWindow(caze, newNotifier, I18nProperties.getCaption(Captions.Notification_createNotification), callback, true);
     }
 
     /**
@@ -151,11 +150,9 @@ public class CaseNotifierSideViewController {
         openEditWindow(
             caze,
             notifier,
-            therapy,
             isEditAllowed
                 ? I18nProperties.getCaption(Captions.Notification_editNotification)
                 : I18nProperties.getCaption(Captions.Notification_viewNotification),
-            true,
             callback,
             isEditAllowed);
     }
@@ -190,16 +187,9 @@ public class CaseNotifierSideViewController {
      * @param isEditAllowed
      *            whether editing is allowed
      */
-    private void openEditWindow(
-        CaseDataDto caze,
-        NotifierDto notifier,
-        TherapyDto therapy,
-        String title,
-        boolean canDelete,
-        Runnable callback,
-        boolean isEditAllowed) {
+    private void openEditWindow(CaseDataDto caze, NotifierDto notifier, String title, Runnable callback, boolean isEditAllowed) {
 
-        final CaseNotifierForm notifierForm = new CaseNotifierForm(notifier, therapy);
+        final CaseNotifierForm notifierForm = new CaseNotifierForm(notifier, caze);
 
         final CommitDiscardWrapperComponent<CaseNotifierForm> editView = new CommitDiscardWrapperComponent<>(notifierForm, true);
 
@@ -272,43 +262,35 @@ public class CaseNotifierSideViewController {
             return;
         }
 
-        TherapyDto therapy = caze.getTherapy();
-
-        if (therapy == null) {
-            therapy = TherapyDto.build();
-        }
-
         if (selectedOption.equals(TreatmentOption.YES)) {
-            therapy.setTreatmentStarted(YesNoUnknown.YES);
-            therapy.setTreatmentNotApplicable(false);
-            if (therapy.getTreatmentStartDate() == null) {
-                therapy.setTreatmentStartDate(new java.util.Date());
+            caze.setTreatmentStarted(YesNoUnknown.YES);
+            caze.setTreatmentNotApplicable(false);
+            if (caze.getTreatmentStartDate() == null) {
+                caze.setTreatmentStartDate(new java.util.Date());
             }
             return;
         }
 
         if (selectedOption.equals(TreatmentOption.NO)) {
-            therapy.setTreatmentStarted(YesNoUnknown.NO);
-            therapy.setTreatmentNotApplicable(false);
-            therapy.setTreatmentStartDate(null);
+            caze.setTreatmentStarted(YesNoUnknown.NO);
+            caze.setTreatmentNotApplicable(false);
+            caze.setTreatmentStartDate(null);
             return;
         }
 
         if (selectedOption.equals(TreatmentOption.NOT_APPLICABLE)) {
-            therapy.setTreatmentNotApplicable(true);
-            therapy.setTreatmentStarted(null);
-            therapy.setTreatmentStartDate(null);
+            caze.setTreatmentNotApplicable(true);
+            caze.setTreatmentStarted(null);
+            caze.setTreatmentStartDate(null);
             return;
         }
 
         if (selectedOption.equals(TreatmentOption.UNKNOWN)) {
-            therapy.setTreatmentStarted(YesNoUnknown.UNKNOWN);
-            therapy.setTreatmentNotApplicable(false);
-            therapy.setTreatmentStartDate(null);
-            return;
+            caze.setTreatmentStarted(YesNoUnknown.UNKNOWN);
+            caze.setTreatmentNotApplicable(false);
+            caze.setTreatmentStartDate(null);
         }
 
-        caze.setTherapy(therapy);
     }
 
     /**
