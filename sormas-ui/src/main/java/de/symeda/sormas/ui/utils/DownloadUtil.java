@@ -481,9 +481,7 @@ public final class DownloadUtil {
 		String exportFileName = createFileNameWithCurrentDate(entityName, ".csv");
 		StreamResource extendedStreamResource = new StreamResource(() -> new DelayedInputStream((out) -> {
 			try (CSVWriter writer = CSVUtils
-				.createCSVWriter(
-					new OutputStreamWriter(out, StandardCharsets.UTF_8.name()),
-					FacadeProvider.getConfigFacade().getCsvSeparator())) {
+				.createCSVWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8.name()), FacadeProvider.getConfigFacade().getCsvSeparator())) {
 
 				final List<String> columnNames = new ArrayList<>();
 				final List<String> dayColumns = new ArrayList<>();

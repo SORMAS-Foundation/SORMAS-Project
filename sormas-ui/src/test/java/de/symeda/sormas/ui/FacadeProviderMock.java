@@ -16,6 +16,7 @@ package de.symeda.sormas.ui;
 
 import java.lang.reflect.Field;
 
+import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignFacade;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataFacade;
@@ -67,6 +68,7 @@ import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.caseimport.CaseImportFacadeEjb.CaseImportFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.dashboard.sample.SampleDashboardFacadeEjb;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb.DocumentFacadeEjbLocal;

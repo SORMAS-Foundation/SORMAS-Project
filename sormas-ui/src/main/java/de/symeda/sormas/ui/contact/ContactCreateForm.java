@@ -389,8 +389,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		ContactProximity value = (ContactProximity) contactProximity.getNullableValue();
 		FieldHelper.updateEnumData(
 			contactProximity,
-			Arrays.asList(
-				ContactProximity.getValues(disease, FacadeProvider.getConfigFacade().getCountryLocale())));
+			Arrays.asList(ContactProximity.getValues(disease, FacadeProvider.getConfigFacade().getCountryLocale())));
 		contactProximity.setValue(value);
 	}
 

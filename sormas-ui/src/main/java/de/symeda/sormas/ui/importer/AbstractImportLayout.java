@@ -113,8 +113,8 @@ public class AbstractImportLayout extends VerticalLayout {
 		addComponent(upload);
 	}
 
-	private ComboBox<ValueSeparator> createSeparatorComboBox() {
-		ComboBox<ValueSeparator> comboBox = new ComboBox<>();
+	private ComboBox createSeparatorComboBox() {
+		ComboBox comboBox = new ComboBox();
 		comboBox.setCaption(I18nProperties.getCaption(Captions.importValueSeparator));
 		comboBox.setItems(ValueSeparator.values());
 		comboBox.setValue(ValueSeparator.DEFAULT);

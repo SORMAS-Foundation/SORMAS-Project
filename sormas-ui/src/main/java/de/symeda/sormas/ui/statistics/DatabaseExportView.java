@@ -17,6 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.statistics;
 
+import de.symeda.sormas.api.ConfigFacade;
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -37,9 +40,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.CheckBox;
 
-import de.symeda.sormas.api.ConfigFacade;
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;

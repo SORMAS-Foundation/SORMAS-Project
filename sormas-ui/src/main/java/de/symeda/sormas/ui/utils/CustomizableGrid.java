@@ -27,16 +27,14 @@ public class CustomizableGrid extends Grid {
 
 	public void setColumns(Class<?> clazz, List<String> propertyIds) {
 
-		FieldVisibilityCheckers fieldVisibilityCheckers =
-			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale());
+		FieldVisibilityCheckers fieldVisibilityCheckers = FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale());
 		super.setColumns(
 			propertyIds.stream().filter(propertyId -> fieldVisibilityCheckers.isVisible(clazz, propertyId)).collect(Collectors.toList()).toArray());
 	}
 
 	public void setColumns(List<CustomizableGridColumn> columns) {
 
-		FieldVisibilityCheckers fieldVisibilityCheckers =
-			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale());
+		FieldVisibilityCheckers fieldVisibilityCheckers = FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale());
 		super.setColumns(
 			columns.stream()
 				.filter(column -> fieldVisibilityCheckers.isVisible(column.getClazz(), column.getPropertyId()))

@@ -40,8 +40,7 @@ public class FieldAccessColumnStyleGenerator<T> implements StyleGenerator<T> {
 		return forFieldAccessCheckers(
 			beanType,
 			columnId,
-			UiFieldAccessCheckers
-				.forSensitiveData(true, FacadeProvider.getConfigFacade().getCountryLocale()));
+			UiFieldAccessCheckers.forSensitiveData(true, FacadeProvider.getConfigFacade().getCountryLocale()));
 	}
 
 	private static <T extends Pseudonymizable> FieldAccessColumnStyleGenerator<T> forFieldAccessCheckers(

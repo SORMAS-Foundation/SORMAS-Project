@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import de.symeda.sormas.api.Disease;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -31,7 +32,6 @@ import com.vaadin.v7.shared.ui.label.ContentMode;
 import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.Table;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -119,9 +119,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 		table.setCellStyleGenerator(
 			FieldAccessCellStyleGenerator.withFieldAccessCheckers(
 				ExposureDto.class,
-				UiFieldAccessCheckers.forSensitiveData(
-					isPseudonymized,
-					FacadeProvider.getConfigFacade().getCountryLocale())));
+				UiFieldAccessCheckers.forSensitiveData(isPseudonymized, FacadeProvider.getConfigFacade().getCountryLocale())));
 
 		for (Object columnId : table.getVisibleColumns()) {
 			if (columnId.equals(ACTION_COLUMN_ID)) {

@@ -21,8 +21,6 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.oneOfTwoCol;
 
 import java.util.Collections;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.vaadin.v7.ui.Field;
 
 import de.symeda.sormas.api.Disease;
@@ -37,6 +35,7 @@ import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.UserField;
+import org.apache.commons.lang3.StringUtils;
 
 public class VaccinationEditForm extends AbstractEditForm<VaccinationDto> {
 

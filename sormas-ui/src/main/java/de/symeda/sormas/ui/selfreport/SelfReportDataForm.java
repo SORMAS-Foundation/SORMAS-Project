@@ -93,9 +93,7 @@ public class SelfReportDataForm extends AbstractEditForm<SelfReportDto> {
 			SelfReportDto.class,
 			SelfReportDto.I18N_PREFIX,
 			true,
-			FieldVisibilityCheckers.withDisease(disease)
-				.add(
-					new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
+			FieldVisibilityCheckers.withDisease(disease).add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
 			FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized));
 	}
 
