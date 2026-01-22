@@ -33,7 +33,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.notifier.NotifierDto;
 import de.symeda.sormas.api.person.notifier.NotifierReferenceDto;
-import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -114,7 +113,7 @@ public class CaseNotifierSideViewController {
         }
 
         NotifierDto newNotifier = new NotifierDto();
-        
+
         openEditWindow(caze, newNotifier, I18nProperties.getCaption(Captions.Notification_createNotification), callback, true);
     }
 
@@ -145,7 +144,6 @@ public class CaseNotifierSideViewController {
 
         // We only edit the current version
         NotifierDto notifier = FacadeProvider.getNotifierFacade().getByUuid(caze.getNotifier().getUuid());
-        TherapyDto therapy = caze.getTherapy();
 
         openEditWindow(
             caze,
@@ -196,7 +194,7 @@ public class CaseNotifierSideViewController {
         final Window window = VaadinUiUtil.showModalPopupWindow(editView, title);
 
         if (isEditAllowed) {
-            editView.setPreCommitListener((cb) -> {
+            editView.setPreCommitListener(cb -> {
                 if (!notifierForm.isValid()) {
                     // Form validation failed - errors are already shown on the form
                     return;
