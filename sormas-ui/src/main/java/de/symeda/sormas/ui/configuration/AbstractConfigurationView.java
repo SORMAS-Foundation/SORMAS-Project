@@ -134,7 +134,7 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 			firstAccessibleView = firstAccessibleView != null ? firstAccessibleView : SystemConfigurationView.class;
 		}
 
-		if (FacadeProvider.getSystemConfigFacade().getAsBoolean(SystemConfigurationType.DEV_MODE) && UiUtil.permitted(UserRight.DEV_MODE)) {
+		if (FacadeProvider.getConfigFacade().getAsBoolean(SystemConfigurationType.DEV_MODE) && UiUtil.permitted(UserRight.DEV_MODE)) {
 			navigator.addView(DevModeView.VIEW_NAME, DevModeView.class);
 			firstAccessibleView = firstAccessibleView != null ? firstAccessibleView : DevModeView.class;
 		}
@@ -273,7 +273,7 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 				false);
 		}
 
-		if (FacadeProvider.getSystemConfigFacade().getAsBoolean(SystemConfigurationType.DEV_MODE) && UiUtil.permitted(UserRight.DEV_MODE)) {
+		if (FacadeProvider.getConfigFacade().getAsBoolean(SystemConfigurationType.DEV_MODE) && UiUtil.permitted(UserRight.DEV_MODE)) {
 			menu.addView(
 				DevModeView.VIEW_NAME,
 				I18nProperties.getPrefixCaption("View", DevModeView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),

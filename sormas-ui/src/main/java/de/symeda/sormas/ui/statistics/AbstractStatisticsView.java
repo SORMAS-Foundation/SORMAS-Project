@@ -55,7 +55,7 @@ public class AbstractStatisticsView extends AbstractSubNavigationView<Component>
 			menu.addView(EpipulseExportView.VIEW_NAME, I18nProperties.getCaption(Captions.statisticsEpipulseExport), params);
 		}
 
-		String sormasStatsUrl = FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfigurationType.SORMAS_STATS_URL);
+		String sormasStatsUrl = FacadeProvider.getConfigFacade().getAsStringOrThrow(SystemConfigurationType.SORMAS_STATS_URL);
 		if (StringUtils.isNotBlank(sormasStatsUrl)) {
 			Link sormasStatsLink = new Link(I18nProperties.getCaption(Captions.statisticsOpenSormasStats), new ExternalResource(sormasStatsUrl));
 			sormasStatsLink.addStyleNames(CssStyles.LINK_BUTTON, CssStyles.LINK_BUTTON_PRIMARY);

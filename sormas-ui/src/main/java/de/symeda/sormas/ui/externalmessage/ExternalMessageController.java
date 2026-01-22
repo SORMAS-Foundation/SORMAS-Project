@@ -96,7 +96,7 @@ public class ExternalMessageController {
 	private static ExternalMessageProcessingFacade getExternalMessageProcessingFacade() {
 		return new ExternalMessageProcessingFacade(
 			FacadeProvider.getExternalMessageFacade(),
-			FacadeProvider.getSystemConfigFacade(),
+			FacadeProvider.getConfigFacade(),
 			FacadeProvider.getFeatureConfigurationFacade(),
 			FacadeProvider.getPersonFacade(),
 			FacadeProvider.getCaseFacade(),
@@ -357,7 +357,7 @@ public class ExternalMessageController {
 			buttonsPanel.addComponent(deleteButton);
 		}
 
-		if (!FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 			Button unclearButton = ButtonHelper.createButton(
 				Captions.actionUnclearLabMessage,
 				I18nProperties.getCaption(Captions.actionUnclearLabMessage),

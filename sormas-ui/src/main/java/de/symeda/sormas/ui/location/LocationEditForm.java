@@ -180,7 +180,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 		addressType = addField(LocationDto.ADDRESS_TYPE, ComboBox.class);
 		addressType.setVisible(false);
-		final PersonAddressType[] personAddressTypeValues = PersonAddressType.getValues(FacadeProvider.getSystemConfigFacade().getCountryCode());
+		final PersonAddressType[] personAddressTypeValues = PersonAddressType.getValues(FacadeProvider.getConfigFacade().getCountryCode());
 		if (!isConfiguredServer("ch")) {
 			addressType.removeAllItems();
 			addressType.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ID);

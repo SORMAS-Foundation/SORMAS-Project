@@ -166,7 +166,7 @@ public class PersonContactDetailsField extends AbstractTableField<PersonContactD
 				PersonContactDetailDto.class,
 				UiFieldAccessCheckers.forSensitiveData(
 					isPseudonymized,
-					FacadeProvider.getSystemConfigFacade().getCountryLocale())));
+					FacadeProvider.getConfigFacade().getCountryLocale())));
 
 		table.setColumnExpandRatio(COLUMN_PRIMARY, 0);
 		table.setColumnExpandRatio(COLUMN_OWNER, 0);

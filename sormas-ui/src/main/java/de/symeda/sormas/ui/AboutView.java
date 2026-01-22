@@ -122,7 +122,7 @@ public class AboutView extends VerticalLayout implements View {
 		aboutLabel.addStyleName(CssStyles.H1);
 		infoLayout.addComponent(aboutLabel);
 
-		ConfigFacade configFacade = FacadeProvider.getSystemConfigFacade();
+		ConfigFacade configFacade = FacadeProvider.getConfigFacade();
 		String infoLabelStr = configFacade.getAsBoolean(SystemConfigurationType.CUSTOM_BRANDING)
 			? String.format(
 				I18nProperties.getCaption(Captions.aboutBrandedSormasVersion),
@@ -248,7 +248,7 @@ public class AboutView extends VerticalLayout implements View {
 						FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true),
 						I18nProperties.getUserLanguage(),
 						FacadeProvider.getCaseClassificationFacade(),
-						FacadeProvider.getSystemConfigFacade()),
+						FacadeProvider.getConfigFacade()),
 					"classification_rules.html",
 					"text/html");
 				new FileDownloader(classificationResource).extend(classificationDocumentButton);
@@ -288,7 +288,7 @@ public class AboutView extends VerticalLayout implements View {
 
 		String htmlContentString = "";
 
-		Path customHtmlDirectory = Paths.get(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfigurationType.CUSTOM_PATH));
+		Path customHtmlDirectory = Paths.get(FacadeProvider.getConfigFacade().getAsStringOrThrow(SystemConfigurationType.CUSTOM_PATH));
 		Path customFilePath = customHtmlDirectory.resolve(fileName);
 
 		try {
@@ -335,7 +335,7 @@ public class AboutView extends VerticalLayout implements View {
 	}
 
 	private boolean shouldShowClassificationDocumentLink() {
-		return FacadeProvider.getSystemConfigFacade().isAnyCaseClassificationCalculationEnabled()
+		return FacadeProvider.getConfigFacade().isAnyCaseClassificationCalculationEnabled()
 			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE);
 	}
 
@@ -345,7 +345,7 @@ public class AboutView extends VerticalLayout implements View {
 	}
 
 	private String getCustomDocumentsPath() {
-		return FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfigurationType.CUSTOM_PATH) + "aboutfiles";
+		return FacadeProvider.getConfigFacade().getAsStringOrThrow(SystemConfigurationType.CUSTOM_PATH) + "aboutfiles";
 	}
 
 	public void attachDataProtectionDictionaryDownloader(AbstractComponent target) {

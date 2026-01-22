@@ -99,7 +99,7 @@ public abstract class BaseDashboardMapComponent<C extends BaseDashboardCriteria<
 		Date fromDate = dashboardDataProvider.getFromDate();
 		Date toDate = dashboardDataProvider.getToDate();
 
-		int maxDisplayCount = FacadeProvider.getSystemConfigFacade().getAsIntegerOrThrow(SystemConfigurationType.DASHBOARD_MAP_MARKER_LIMIT);
+		int maxDisplayCount = FacadeProvider.getConfigFacade().getAsIntegerOrThrow(SystemConfigurationType.DASHBOARD_MAP_MARKER_LIMIT);
 		Long count = 0L;
 		if (!forced && maxDisplayCount >= 0) {
 			count = getMarkerCount(fromDate, toDate, maxDisplayCount);
@@ -274,8 +274,8 @@ public abstract class BaseDashboardMapComponent<C extends BaseDashboardCriteria<
 
 			final GeoLatLon mapCenter;
 			// If map.usecountrycenter=true, use config coordinates. Else try to calculate the center of the user region/country
-			if (FacadeProvider.getSystemConfigFacade().getAsBoolean(SystemConfigurationType.MAP_USECOUNTRYCENTER)) {
-				mapCenter = FacadeProvider.getSystemConfigFacade().getCountryCenter();
+			if (FacadeProvider.getConfigFacade().getAsBoolean(SystemConfigurationType.MAP_USECOUNTRYCENTER)) {
+				mapCenter = FacadeProvider.getConfigFacade().getCountryCenter();
 				map.setCenter(mapCenter);
 			} else {
 				UserDto user = UiUtil.getUser();
@@ -285,13 +285,13 @@ public abstract class BaseDashboardMapComponent<C extends BaseDashboardCriteria<
 					mapCenter = geoShapeProvider.getCenterOfAllRegions();
 				}
 
-				GeoLatLon center = Optional.ofNullable(mapCenter).orElseGet(FacadeProvider.getSystemConfigFacade()::getCountryCenter);
+				GeoLatLon center = Optional.ofNullable(mapCenter).orElseGet(FacadeProvider.getConfigFacade()::getCountryCenter);
 				map.setCenter(center);
 			}
 
 		}
 
-		map.setZoom(FacadeProvider.getSystemConfigFacade().getAsIntegerOrThrow(SystemConfigurationType.MAP_ZOOM));
+		map.setZoom(FacadeProvider.getConfigFacade().getAsIntegerOrThrow(SystemConfigurationType.MAP_ZOOM));
 
 		// Add components
 		addComponent(createHeader());

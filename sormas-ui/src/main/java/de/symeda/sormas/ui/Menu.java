@@ -82,13 +82,13 @@ public class Menu extends CssLayout {
 		top.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
 		top.addStyleName(ValoTheme.MENU_TITLE);
 		top.setSpacing(true);
-		Label title = new Label(FacadeProvider.getSystemConfigFacade().getSormasInstanceName());
+		Label title = new Label(FacadeProvider.getConfigFacade().getSormasInstanceName());
 		title.setSizeUndefined();
 
 		Image image;
-		if (FacadeProvider.getSystemConfigFacade().getAsBoolean(SystemConfigurationType.CUSTOM_BRANDING)
-			&& StringUtils.isNotBlank(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfigurationType.CUSTOM_BRANDING_LOGO_PATH))) {
-			Path logoPath = Paths.get(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfigurationType.CUSTOM_BRANDING_LOGO_PATH));
+		if (FacadeProvider.getConfigFacade().getAsBoolean(SystemConfigurationType.CUSTOM_BRANDING)
+			&& StringUtils.isNotBlank(FacadeProvider.getConfigFacade().getAsStringOrThrow(SystemConfigurationType.CUSTOM_BRANDING_LOGO_PATH))) {
+			Path logoPath = Paths.get(FacadeProvider.getConfigFacade().getAsStringOrThrow(SystemConfigurationType.CUSTOM_BRANDING_LOGO_PATH));
 			image = new Image(null, new FileResource(logoPath.toFile()));
 		} else {
 			image = new Image(null, new ThemeResource("img/sormas-logo.png"));

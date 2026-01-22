@@ -169,7 +169,7 @@ public class DatabaseExportView extends AbstractStatisticsView {
 		externalDataLayout.addComponent(externalDataHeadline);
 
 		List<FeatureConfigurationDto> featureConfigurations = FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations();
-		ConfigFacade configFacade = FacadeProvider.getSystemConfigFacade();
+		ConfigFacade configFacade = FacadeProvider.getConfigFacade();
 
 		for (DatabaseTable databaseTable : DatabaseTable.values()) {
 			if(!databaseTable.isEnabled(featureConfigurations, configFacade)) {

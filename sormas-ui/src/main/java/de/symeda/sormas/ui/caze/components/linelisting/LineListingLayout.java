@@ -573,7 +573,7 @@ public class LineListingLayout extends VerticalLayout {
 		}
 
 		private boolean shouldShowEpidNumber() {
-			ConfigFacade configFacade = FacadeProvider.getSystemConfigFacade();
+			ConfigFacade configFacade = FacadeProvider.getConfigFacade();
 			return UiUtil.permitted(UserRight.CASE_CHANGE_EPID_NUMBER)
 				&& !configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
 				&& !configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND);

@@ -91,13 +91,13 @@ public class UserSyncHandler {
 	private CSVWriter errorReportCsvWriter;
 
 	public UserSyncHandler(UserReferenceDto currentUser) {
-		Path exportDirectory = Paths.get(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfigurationType.TEMP_PATH));
+		Path exportDirectory = Paths.get(FacadeProvider.getConfigFacade().getAsStringOrThrow(SystemConfigurationType.TEMP_PATH));
 		Path errorReportFilePath = exportDirectory.resolve(
 			ImportExportUtils.TEMP_FILE_PREFIX + "_error_report_" + DataHelper.getShortUuid(currentUser.getUuid()) + "_"
 				+ DateHelper.formatDateForExport(new Date()) + ".csv");
 		this.errorReportFilePath = errorReportFilePath.toString();
 
-		this.csvSeparator = FacadeProvider.getSystemConfigFacade().getCsvSeparator();
+		this.csvSeparator = FacadeProvider.getConfigFacade().getCsvSeparator();
 	}
 
 	public void startSync(Consumer<StreamResource> errorReportConsumer, UI currentUI) {

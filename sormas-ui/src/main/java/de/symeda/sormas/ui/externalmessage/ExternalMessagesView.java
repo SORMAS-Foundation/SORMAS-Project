@@ -167,7 +167,7 @@ public class ExternalMessagesView extends AbstractView {
 
 		createAndAddStatusButton(ExternalMessageStatus.UNPROCESSED, statusFilterLayout);
 		createAndAddStatusButton(ExternalMessageStatus.PROCESSED, statusFilterLayout);
-		if (!FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 			createAndAddStatusButton(ExternalMessageStatus.UNCLEAR, statusFilterLayout);
 			createAndAddStatusButton(ExternalMessageStatus.FORWARDED, statusFilterLayout);
 		}

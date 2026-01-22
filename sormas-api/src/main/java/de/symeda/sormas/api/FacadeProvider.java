@@ -294,7 +294,7 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(OutbreakFacade.class);
 	}
 
-	public static ConfigFacade getSystemConfigFacade() {
+	public static ConfigFacade getConfigFacade() {
 		return get().lookupEjbRemote(ConfigFacade.class);
 	}
 
@@ -477,7 +477,7 @@ public class FacadeProvider {
 
 	public static ExternalMessageAdapterFacade getExternalLabResultsFacade() throws NamingException {
 		return (ExternalMessageAdapterFacade) get().ic
-			.lookup(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfigurationType.INTERFACE_EXTERNAL_MESSAGE_ADAPTER_JNDI_NAME));
+			.lookup(FacadeProvider.getConfigFacade().getAsStringOrThrow(SystemConfigurationType.INTERFACE_EXTERNAL_MESSAGE_ADAPTER_JNDI_NAME));
 	}
 
 	public static SurveillanceReportFacade getSurveillanceReportFacade() {

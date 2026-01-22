@@ -17,6 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.ui;
 
+import javax.servlet.annotation.HttpConstraint;
+import javax.servlet.annotation.ServletSecurity;
+import javax.servlet.annotation.WebServlet;
+
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.annotations.Viewport;
@@ -27,15 +31,12 @@ import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UserProvider.HasUserProvider;
 import de.symeda.sormas.ui.ViewModelProviders.HasViewModelProviders;
 import de.symeda.sormas.ui.utils.SormasDefaultConverterFactory;
-
-import javax.servlet.annotation.HttpConstraint;
-import javax.servlet.annotation.ServletSecurity;
-import javax.servlet.annotation.WebServlet;
 
 /**
  * Main UI class of the application that shows either the login screen or the
@@ -64,7 +65,7 @@ public class SormasUI extends UI implements HasUserProvider, HasViewModelProvide
 
 		VaadinSession.getCurrent().setConverterFactory(new SormasDefaultConverterFactory());
 
-		getPage().setTitle(FacadeProvider.getSystemConfigFacade().getSormasInstanceName());
+		getPage().setTitle(FacadeProvider.getConfigFacade().getSormasInstanceName());
 
 		initMainScreen();
 	}

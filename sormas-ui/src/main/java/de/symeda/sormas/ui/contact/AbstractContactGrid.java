@@ -159,11 +159,11 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 		}
 
 		setColumns(getColumnList().toArray(String[]::new));
-		if (!FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			getColumn(ContactIndexDto.CONTACT_CATEGORY).setHidden(true);
 		}
-		if (!FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
-			&& !FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND)) {
+		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
+			&& !FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND)) {
 			getColumn(CaseIndexDto.EXTERNAL_ID).setHidden(true);
 			getColumn(CaseIndexDto.EXTERNAL_TOKEN).setHidden(true);
 		}

@@ -119,7 +119,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 			propertyI18nPrefix,
 			true,
 			FieldVisibilityCheckers.withDisease(disease)
-				.andWithCountry(FacadeProvider.getSystemConfigFacade().getCountryLocale()),
+				.andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
 			fieldAccessCheckers);
 		this.disease = disease;
 	}

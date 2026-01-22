@@ -165,7 +165,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			CaseDataDto.class,
 			CaseDataDto.I18N_PREFIX,
 			false,
-			FieldVisibilityCheckers.withCountry(FacadeProvider.getSystemConfigFacade().getCountryLocale())
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale())
 				.andWithFeatureType(FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations()),
 			UiFieldAccessCheckers.getNoop());
 		this.convertedTravelEntry = convertedTravelEntry;

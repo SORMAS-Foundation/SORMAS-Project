@@ -127,7 +127,7 @@ public class TherapyForm extends AbstractEditForm<TherapyDto> {
 			TherapyDto.class,
 			TherapyDto.I18N_PREFIX,
 			false,
-			FieldVisibilityCheckers.withCountry(FacadeProvider.getSystemConfigFacade().getCountryLocale()),
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
 			FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized),
 			isEditAllowed);
 		this.caze = caze;
@@ -148,7 +148,7 @@ public class TherapyForm extends AbstractEditForm<TherapyDto> {
 
 	@Override
 	protected void addFields() {
-		boolean isLuxembourgServer = FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+		boolean isLuxembourgServer = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 
 		CheckBox dotField = addField(TherapyDto.DIRECTLY_OBSERVED_TREATMENT, CheckBox.class);
 		dotField.addStyleName(VSPACE_3);

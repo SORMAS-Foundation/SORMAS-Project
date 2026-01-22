@@ -43,7 +43,7 @@ public class InfoResource {
 	public String getAppUrl(@QueryParam("appVersion") String appVersionString) {
 		int[] appVersion = VersionHelper.extractVersion(appVersionString);
 
-		return FacadeProvider.getSystemConfigFacade()
+		return FacadeProvider.getConfigFacade()
 			.getAsString(SystemConfigurationType.APP_LEGACY_URL)
 			.map(legacyUrl -> new Tuple<>(legacyUrl, VersionHelper.extractVersion(legacyUrl)))
 			.filter(tuple -> VersionHelper.isVersion(tuple.getSecond()))
@@ -61,13 +61,13 @@ public class InfoResource {
 
 				return null;
 			})
-			.orElseGet(() -> FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfigurationType.APP_URL));
+			.orElseGet(() -> FacadeProvider.getConfigFacade().getAsStringOrThrow(SystemConfigurationType.APP_URL));
 	}
 
 	@GET
 	@Path("/locale")
 	public String getLocale() {
-		return FacadeProvider.getSystemConfigFacade().getCountryLocale();
+		return FacadeProvider.getConfigFacade().getCountryLocale();
 	}
 
 	@GET
@@ -79,6 +79,6 @@ public class InfoResource {
 	@GET
 	@Path("/countryname")
 	public String getCountryName() {
-		return FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfigurationType.COUNTRY_NAME);
+		return FacadeProvider.getConfigFacade().getAsStringOrThrow(SystemConfigurationType.COUNTRY_NAME);
 	}
 }

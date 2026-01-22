@@ -183,7 +183,7 @@ public class DocumentUploadFinishedHandler implements UploadFinishedHandler {
 		String relatedEntityUuid,
 		byte[] bytes)
 		throws Exception {
-		long fileSizeLimitMb = FacadeProvider.getSystemConfigFacade().getAsLongOrThrow(SystemConfigurationType.DOCUMENT_UPLOAD_SIZE_LIMIT_MB);
+		long fileSizeLimitMb = FacadeProvider.getConfigFacade().getAsLongOrThrow(SystemConfigurationType.DOCUMENT_UPLOAD_SIZE_LIMIT_MB);
 		if (isFileSizeLimitExceeded(length, fileSizeLimitMb)) {
 			Notification.show(I18nProperties.getValidationError(Validations.fileTooBig, fileSizeLimitMb));
 			return;

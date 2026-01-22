@@ -150,7 +150,7 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 			layout.addSidePanelComponent(taskList, TASKS_LOC);
 		}
 
-		final boolean isSmsServiceSetUp = FacadeProvider.getSystemConfigFacade().isSmsServiceSetUp();
+		final boolean isSmsServiceSetUp = FacadeProvider.getConfigFacade().isSmsServiceSetUp();
 		if (isSmsServiceSetUp && UiUtil.permitted(FeatureType.MANUAL_EXTERNAL_MESSAGES, UserRight.SEND_MANUAL_EXTERNAL_MESSAGES)) {
 			SmsListComponent smsList = new SmsListComponent(getCaseRef(), caze.getPerson(), isEditAllowed);
 			smsList.addStyleName(CssStyles.SIDE_COMPONENT);

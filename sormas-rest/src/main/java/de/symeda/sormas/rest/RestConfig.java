@@ -99,7 +99,7 @@ public class RestConfig extends ResourceConfig {
 		public void contextInitialized(ServletContextEvent sce) {
 			ServletContext ctx = sce.getServletContext();
 			String authenticationProvider =
-				FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfigurationType.AUTHENTICATION_PROVIDER);
+				FacadeProvider.getConfigFacade().getAsStringOrThrow(SystemConfigurationType.AUTHENTICATION_PROVIDER);
 			if (authenticationProvider.equalsIgnoreCase(AuthProvider.KEYCLOAK)) {
 				FilterRegistration.Dynamic filterRegistration = ctx.addFilter("KeycloakFilter", KeycloakFilter.class);
 				filterRegistration.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");

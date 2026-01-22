@@ -167,7 +167,7 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 		getColumn(TaskIndexDto.CONTEXT_REFERENCE).setStyleGenerator(new FieldAccessColumnStyleGenerator<>(task -> {
 			boolean isInJurisdiction = task.getTaskJurisdictionFlagsDto().getInJurisdiction();
 			return UiFieldAccessCheckers
-				.getDefault(!isInJurisdiction, FacadeProvider.getSystemConfigFacade().getCountryLocale())
+				.getDefault(!isInJurisdiction, FacadeProvider.getConfigFacade().getCountryLocale())
 				.hasRight();
 		}));
 

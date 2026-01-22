@@ -89,7 +89,7 @@ public final class LoginHelper {
 	 */
 	public static boolean logout() {
 
-		if (!AuthProvider.getProvider(FacadeProvider.getSystemConfigFacade()).isDefaultProvider()) {
+		if (!AuthProvider.getProvider(FacadeProvider.getConfigFacade()).isDefaultProvider()) {
 			Page.getCurrent().setLocation("logout");
 		} else {
 			try {

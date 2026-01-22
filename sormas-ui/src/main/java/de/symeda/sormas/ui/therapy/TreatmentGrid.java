@@ -71,7 +71,7 @@ public class TreatmentGrid extends Grid implements V7AbstractGrid<TreatmentCrite
 					TreatmentIndexDto.class,
 					UiFieldAccessCheckers.forSensitiveData(
 						isPseudonymized,
-						FacadeProvider.getSystemConfigFacade().getCountryLocale())));
+						FacadeProvider.getConfigFacade().getCountryLocale())));
 		}
 
 		addItemClickListener(e -> {

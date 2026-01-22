@@ -95,7 +95,7 @@ public class SelfReportDataForm extends AbstractEditForm<SelfReportDto> {
 			true,
 			FieldVisibilityCheckers.withDisease(disease)
 				.add(
-					new CountryFieldVisibilityChecker(FacadeProvider.getSystemConfigFacade().getCountryLocale())),
+					new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
 			FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized));
 	}
 
@@ -200,7 +200,7 @@ public class SelfReportDataForm extends AbstractEditForm<SelfReportDto> {
 		setVisible(false, SelfReportDto.DELETION_REASON, SelfReportDto.OTHER_DELETION_REASON);
 
 		addValueChangeListener(e -> {
-			if (FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 				ValidationUtils.initComponentErrorValidator(
 					nationalHealthIdField,
 					nationalHealthIdField.getValue(),

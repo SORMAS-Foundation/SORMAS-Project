@@ -220,7 +220,7 @@ public class ContactDataView extends AbstractContactView implements HasName {
 			layout.addSidePanelComponent(taskList, TASKS_LOC);
 		}
 
-		if (!(FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+		if (!(FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 			&& List.of(Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.MEASLES).contains(contactDto.getDisease()))) {
 			if (UiUtil.permitted(UserRight.SAMPLE_VIEW)) {
 				SampleListComponent sampleList = new SampleListComponent(

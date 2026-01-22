@@ -297,7 +297,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		boolean hasEmail = !StringUtils.isEmpty(user.getUserEmail());
 		boolean hasPhoneNumber = !StringUtils.isEmpty(user.getPhone());
 
-		boolean isSmsServiceSetUp = FacadeProvider.getSystemConfigFacade().isSmsServiceSetUp();
+		boolean isSmsServiceSetUp = FacadeProvider.getConfigFacade().isSmsServiceSetUp();
 
 		if (isSmsServiceSetUp && !hasEmail && !hasPhoneNumber) {
 			getContent().addComponent(getMissingInfoComponent(I18nProperties.getString(missingEmailOrPhoneLabel)), location);

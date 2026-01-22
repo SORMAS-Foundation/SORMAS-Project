@@ -150,7 +150,7 @@ public interface PersonSideComponentsElement {
 			layout.addComponent(sampleListComponentLayout, SAMPLES_LOC);
 		}
 
-		if (FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
+		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
 			&& UiUtil.permitted(FeatureType.TRAVEL_ENTRIES, UserRight.TRAVEL_ENTRY_VIEW)) {
 			TravelEntryListCriteria travelEntryListCriteria = new TravelEntryListCriteria.Builder().withPerson(person).build();
 			layout.addComponent(
@@ -163,7 +163,7 @@ public interface PersonSideComponentsElement {
 				TRAVEL_ENTRIES_LOC);
 		}
 
-		if (!FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 			&& UiUtil.permitted(FeatureType.IMMUNIZATION_MANAGEMENT, UserRight.IMMUNIZATION_VIEW)) {
 			if (!FacadeProvider.getFeatureConfigurationFacade()
 				.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {

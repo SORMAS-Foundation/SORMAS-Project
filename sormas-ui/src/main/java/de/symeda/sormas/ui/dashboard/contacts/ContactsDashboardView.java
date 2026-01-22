@@ -128,7 +128,7 @@ public class ContactsDashboardView extends AbstractDashboardView {
 
 		// add network diagram
 		if (UiUtil.permitted(UserRight.DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS)) {
-			networkDiagramComponent = Optional.of(FacadeProvider.getSystemConfigFacade())
+			networkDiagramComponent = Optional.of(FacadeProvider.getConfigFacade())
 				.map(facade -> facade.getAsStringOrThrow(SystemConfigurationType.RSCRIPT_EXECUTABLE))
 				.map(x -> new DashboardNetworkComponent(dashboardDataProvider));
 

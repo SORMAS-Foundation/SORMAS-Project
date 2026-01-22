@@ -56,7 +56,7 @@ public class DocumentUploadReceiver implements UploadReceiver {
 			String newFileName = ImportExportUtils.TEMP_FILE_PREFIX + "_document_upload" + DateHelper.formatDateForExport(new Date()) + "_"
 				+ DataHelper.getShortUuid(UiUtil.getUserUuid());
 			file =
-				Paths.get(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfigurationType.TEMP_PATH)).resolve(newFileName).toFile();
+				Paths.get(FacadeProvider.getConfigFacade().getAsStringOrThrow(SystemConfigurationType.TEMP_PATH)).resolve(newFileName).toFile();
 			return new BufferedOutputStream(Files.newOutputStream(file.toPath()));
 
 		} catch (IOException e) {

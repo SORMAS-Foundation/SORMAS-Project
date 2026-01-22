@@ -340,7 +340,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			false,
 			FieldVisibilityCheckers.withDisease(disease)
 				.add(new OutbreakFieldVisibilityChecker(viewMode))
-				.add(new CountryFieldVisibilityChecker(FacadeProvider.getSystemConfigFacade().getCountryLocale()))
+				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale()))
 				.add(new UserRightFieldVisibilityChecker(UiUtil::permitted))
 				.add(new FeatureTypeFieldVisibilityChecker(FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations())),
 			FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized));
@@ -1044,13 +1044,13 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				FieldVisibilityCheckers.withDisease(disease)
 					.add(
 						new CountryFieldVisibilityChecker(
-							FacadeProvider.getSystemConfigFacade().getCountryLocale())),
+							FacadeProvider.getConfigFacade().getCountryLocale())),
 				UiFieldAccessCheckers
-					.getDefault(true, FacadeProvider.getSystemConfigFacade().getCountryLocale())))
+					.getDefault(true, FacadeProvider.getConfigFacade().getCountryLocale())))
 			.setCaption(null);
 
 		//diagnosis criteria
-		if ((FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) && disease == Disease.TUBERCULOSIS) {
+		if ((FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) && disease == Disease.TUBERCULOSIS) {
 			Label diagnosisCriteriaHeadingLabel = new Label(I18nProperties.getString(Strings.headingDiagnosisCriteria));
 			diagnosisCriteriaHeadingLabel.addStyleName(H3);
 			getContent().addComponent(diagnosisCriteriaHeadingLabel, DIAGNOSIS_CRITERIA_HEADING_LOC);
@@ -1090,7 +1090,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		setSoftRequired(true, CaseDataDto.INVESTIGATED_DATE, CaseDataDto.OUTCOME_DATE, CaseDataDto.PLAGUE_TYPE, CaseDataDto.SURVEILLANCE_OFFICER);
 
 		if (diseaseClassificationExists()
-			&& FacadeProvider.getSystemConfigFacade().getCaseClassificationCalculationMode(disease).isManualEnabled()
+			&& FacadeProvider.getConfigFacade().getCaseClassificationCalculationMode(disease).isManualEnabled()
 			&& isVisibleAllowed(CaseDataDto.CASE_CLASSIFICATION)) {
 			Button caseClassificationCalculationButton = ButtonHelper.createButton(Captions.caseClassificationCalculationButton, e -> {
 				CaseClassification classification = FacadeProvider.getCaseClassificationFacade().getClassification(getValue());
@@ -1437,7 +1437,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			}
 
 			// Make external ID field read-only when SORMAS is connected to a SurvNet instance
-			if (FacadeProvider.getSystemConfigFacade().isExternalSurveillanceToolGatewayConfigured()) {
+			if (FacadeProvider.getConfigFacade().isExternalSurveillanceToolGatewayConfigured()) {
 				setEnabled(false, CaseDataDto.EXTERNAL_ID);
 				((TextField) getField(CaseDataDto.EXTERNAL_ID))
 					.setInputPrompt(I18nProperties.getString(Strings.promptExternalIdExternalSurveillanceTool));
@@ -1837,9 +1837,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	}
 
 	private boolean shouldHidePaperFormDates() {
-		return FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_FRANCE)
-			|| FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
-			|| FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND);
+		return FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_FRANCE)
+			|| FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
+			|| FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND);
 	}
 
 	private static class DiseaseChangeListener implements ValueChangeListener {
@@ -1869,7 +1869,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					protected void onConfirm() {
 						diseaseField.removeValueChangeListener(DiseaseChangeListener.this);
 						fields.stream().forEach(field -> {
-							if (FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+							if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 								if (diseaseField.getValue().equals(Disease.TUBERCULOSIS) && field.getId().equals(CaseDataDto.POST_MORTEM)) {
 									field.setVisible(true);
 								} else {

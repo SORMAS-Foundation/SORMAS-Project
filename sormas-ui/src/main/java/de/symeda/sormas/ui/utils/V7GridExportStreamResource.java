@@ -68,7 +68,7 @@ public class V7GridExportStreamResource extends StreamResource {
 				try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {
 					try (CSVWriter writer = CSVUtils.createCSVWriter(
 						new OutputStreamWriter(byteStream, StandardCharsets.UTF_8.name()),
-						FacadeProvider.getSystemConfigFacade().getCsvSeparator())) {
+						FacadeProvider.getConfigFacade().getCsvSeparator())) {
 
 						writer.writeNext(headerRow.toArray(new String[headerRow.size()]));
 

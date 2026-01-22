@@ -75,7 +75,7 @@ public class ImportReceiver implements Receiver, StartedListener, SucceededListe
 
 		final FileOutputStream fos;
 		try {
-			Path tempDirectory = Paths.get(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfigurationType.TEMP_PATH));
+			Path tempDirectory = Paths.get(FacadeProvider.getConfigFacade().getAsStringOrThrow(SystemConfigurationType.TEMP_PATH));
 			if (!tempDirectory.toFile().exists() || !tempDirectory.toFile().canWrite()) {
 				throw new FileNotFoundException("Temp directory doesn't exist or cannot be accessed");
 			}
@@ -100,7 +100,7 @@ public class ImportReceiver implements Receiver, StartedListener, SucceededListe
 
 	@Override
 	public void uploadStarted(StartedEvent startedEvent) {
-		long fileSizeLimitMb = FacadeProvider.getSystemConfigFacade().getAsLongOrThrow(SystemConfigurationType.IMPORT_FILE_SIZE_LIMIT_MB);
+		long fileSizeLimitMb = FacadeProvider.getConfigFacade().getAsLongOrThrow(SystemConfigurationType.IMPORT_FILE_SIZE_LIMIT_MB);
 		if (startedEvent.getContentLength() > fileSizeLimitMb * 1_000_000) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.fileTooBig, fileSizeLimitMb));
 		}

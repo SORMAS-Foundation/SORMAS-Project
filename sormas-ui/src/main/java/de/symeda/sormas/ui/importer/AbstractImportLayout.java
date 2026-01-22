@@ -119,7 +119,7 @@ public class AbstractImportLayout extends VerticalLayout {
 		comboBox.setItems(ValueSeparator.values());
 		comboBox.setValue(ValueSeparator.DEFAULT);
 		comboBox.setEmptySelectionAllowed(false);
-		comboBox.setItemCaptionGenerator(item -> ((ValueSeparator) item).getCaption(FacadeProvider.getSystemConfigFacade().getCsvSeparator()));
+		comboBox.setItemCaptionGenerator(item -> ((ValueSeparator) item).getCaption(FacadeProvider.getConfigFacade().getCsvSeparator()));
 		separator = comboBox;
 		return comboBox;
 	}

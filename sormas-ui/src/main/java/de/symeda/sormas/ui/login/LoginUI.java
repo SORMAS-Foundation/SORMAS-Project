@@ -78,7 +78,7 @@ public class LoginUI extends UI {
 
 		VaadinSession.getCurrent().setConverterFactory(new SormasDefaultConverterFactory());
 
-		getPage().setTitle(FacadeProvider.getSystemConfigFacade().getSormasInstanceName());
+		getPage().setTitle(FacadeProvider.getConfigFacade().getSormasInstanceName());
 
 		setContent(
 			new LoginScreen(
@@ -102,7 +102,7 @@ public class LoginUI extends UI {
 
 		@Override
 		protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-			AuthProvider authProvider = AuthProvider.getProvider(FacadeProvider.getSystemConfigFacade());
+			AuthProvider authProvider = AuthProvider.getProvider(FacadeProvider.getConfigFacade());
 			if (AuthProvider.KEYCLOAK.equals(authProvider.getName()) && request != null && response != null) {
 				openIdContext.logout(request, response);
 			}
@@ -118,7 +118,7 @@ public class LoginUI extends UI {
 		public void contextInitialized(ServletContextEvent sce) {
 			ServletContext ctx = sce.getServletContext();
 			String authenticationProvider =
-				FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfigurationType.AUTHENTICATION_PROVIDER);
+				FacadeProvider.getConfigFacade().getAsStringOrThrow(SystemConfigurationType.AUTHENTICATION_PROVIDER);
 			if (authenticationProvider.equalsIgnoreCase(AuthProvider.SORMAS)) {
 				ServletRegistration.Dynamic servletRegistration = ctx.addServlet("SormasLoginServlet", SormasLoginServlet.class);
 				servletRegistration.addMapping("/login/*", "/VAADIN/*");

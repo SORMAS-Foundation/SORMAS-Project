@@ -1377,7 +1377,7 @@ public class GisDashboardMapComponent extends BaseDashboardMapComponent<GisDashb
 				if (districtCenter != null) {
 					marker.setLatLon(districtCenter.getLat(), districtCenter.getLon());
 				} else {
-					GeoLatLon countryCenter = FacadeProvider.getSystemConfigFacade().getCountryCenter();
+					GeoLatLon countryCenter = FacadeProvider.getConfigFacade().getCountryCenter();
 					marker.setLatLon(countryCenter.getLat(), countryCenter.getLon());
 				}
 			} else {

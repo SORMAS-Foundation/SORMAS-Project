@@ -114,8 +114,8 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 			PersonDto.class,
 			PersonDto.I18N_PREFIX,
 			false,
-			FieldVisibilityCheckers.withCountry(FacadeProvider.getSystemConfigFacade().getCountryLocale()),
-			UiFieldAccessCheckers.getDefault(false, FacadeProvider.getSystemConfigFacade().getCountryLocale()));
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
+			UiFieldAccessCheckers.getDefault(false, FacadeProvider.getConfigFacade().getCountryLocale()));
 		this.showHomeAddressForm = showHomeAddressForm;
 		this.showPresentCondition = showPresentCondition;
 		this.showSymptomsOnsetDate = showSymptomsOnsetDate;
@@ -262,7 +262,7 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 		addressHeader.setVisible(false);
 
 		homeAddressForm = new LocationEditForm(
-			FieldVisibilityCheckers.withCountry(FacadeProvider.getSystemConfigFacade().getCountryLocale()),
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
 			UiFieldAccessCheckers.getNoop());
 		homeAddressForm.setValue(new LocationDto());
 		homeAddressForm.setCaption(null);

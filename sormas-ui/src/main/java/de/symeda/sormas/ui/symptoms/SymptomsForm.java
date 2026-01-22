@@ -240,7 +240,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			I18N_PREFIX,
 			false,
 			FieldVisibilityCheckers.withDisease(disease)
-				.andWithCountry(FacadeProvider.getSystemConfigFacade().getCountryLocale())
+				.andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale())
 				.add(new OutbreakFieldVisibilityChecker(viewMode)),
 			fieldAccessCheckers);
 
@@ -1017,7 +1017,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 			FieldHelper.setVisibleWhen(getFieldGroup(), SKIN_RASH_ONSET_DATE, SKIN_RASH, Arrays.asList(SymptomState.YES), true);
 		}
-		if (FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && disease == Disease.TUBERCULOSIS) {
+		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && disease == Disease.TUBERCULOSIS) {
 			Label localisationHeadingLabel = createLabel(I18nProperties.getString(Strings.headingLocalisation), H3, LOCALISATION_HEADING_LOC);
 
 			clinicalPresentationHeadingLabel.setVisible(true);
@@ -1144,7 +1144,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		String FINAL_HTML_LAYOUT = HTML_LAYOUT;
 
-		if (FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && disease == Disease.TUBERCULOSIS) {
+		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && disease == Disease.TUBERCULOSIS) {
 			FINAL_HTML_LAYOUT = FINAL_HTML_LAYOUT.replace(onsetDateLoc, emptyLoc)
 				.replace(tbOnsetDateLoc, onsetDateLoc)
 				.replace(clinicalPresentationDetailsLoc, emptyLoc)

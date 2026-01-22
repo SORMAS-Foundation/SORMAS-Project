@@ -248,7 +248,7 @@ public class CasesView extends AbstractView implements HasName {
 					caseFollowUpEnabled,
 					hasClinicalCourseRight,
 					hasTherapyRight,
-					FacadeProvider.getSystemConfigFacade().getCountryLocale(),
+					FacadeProvider.getConfigFacade().getCountryLocale(),
 					FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations())
 				.stream()
 				.map(ExportPropertyMetaInfo::getPropertyId)
@@ -366,7 +366,7 @@ public class CasesView extends AbstractView implements HasName {
 					Strings.infoSampleExport);
 			}
 
-			if (FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND)
+			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND)
 				&& UiUtil.permitted(UserRight.BAG_EXPORT)) {
 				StreamResource bagExportResource = DownloadUtil.createCsvExportStreamResource(
 					BAGExportCaseDto.class,
@@ -390,7 +390,7 @@ public class CasesView extends AbstractView implements HasName {
 							caseFollowUpEnabled,
 							hasClinicalCourseRight,
 							hasTherapyRight,
-							FacadeProvider.getSystemConfigFacade().getCountryLocale(),
+							FacadeProvider.getConfigFacade().getCountryLocale(),
 							FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations()),
 						customExportWindow::close);
 					customExportsLayout.setExportCallback(
@@ -740,7 +740,7 @@ public class CasesView extends AbstractView implements HasName {
 								true);
 						}, hasBulkOperationsRight && UiUtil.permitted(UserRight.CASE_DELETE)));
 
-						final boolean isSmsServiceSetUp = FacadeProvider.getSystemConfigFacade().isSmsServiceSetUp();
+						final boolean isSmsServiceSetUp = FacadeProvider.getConfigFacade().isSmsServiceSetUp();
 						if (isSmsServiceSetUp && UiUtil.permitted(FeatureType.MANUAL_EXTERNAL_MESSAGES, UserRight.SEND_MANUAL_EXTERNAL_MESSAGES)) {
 							menuBarItems.add(
 								new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.messagesSendSMS), VaadinIcons.MOBILE_RETRO, mi -> {

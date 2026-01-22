@@ -56,7 +56,7 @@ public class VaccinationEditForm extends AbstractEditForm<VaccinationDto> {
 			VaccinationDto.class,
 			VaccinationDto.I18N_PREFIX,
 			false,
-			FieldVisibilityCheckers.withCountry(FacadeProvider.getSystemConfigFacade().getCountryLocale())
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale())
 				.andWithDisease(disease)
 				.andWithFeatureType(FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations()),
 			fieldAccessCheckers);

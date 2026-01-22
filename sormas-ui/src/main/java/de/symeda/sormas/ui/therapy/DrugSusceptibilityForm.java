@@ -315,7 +315,7 @@ public class DrugSusceptibilityForm extends AbstractEditForm<DrugSusceptibilityD
 
 		// TODO: this is kind of temporary as it should be consolidated with the logic in the PathogenTestForm
 		// For other countries if the disease is Tuberculosis/Latent Tuberculosis, drug susceptibility fields should remain hidden
-		if (!FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 			&& (disease == Disease.TUBERCULOSIS || disease == Disease.LATENT_TUBERCULOSIS)) {
 			//quit, we do not want to show the fields if TUBERCULOSIS/LATENT_TUBERCULOSIS and we are not in Luxembourg
 			return;

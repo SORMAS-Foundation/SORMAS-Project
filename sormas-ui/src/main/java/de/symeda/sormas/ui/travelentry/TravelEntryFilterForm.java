@@ -37,7 +37,7 @@ public class TravelEntryFilterForm extends AbstractFilterForm<TravelEntryCriteri
 		super(
 			TravelEntryCriteria.class,
 			TravelEntryDto.I18N_PREFIX,
-			FieldVisibilityCheckers.withCountry(FacadeProvider.getSystemConfigFacade().getCountryLocale()),
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
 			null);
 	}
 

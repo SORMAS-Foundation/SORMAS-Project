@@ -101,7 +101,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		super(
 			ContactCriteria.class,
 			ContactIndexDto.I18N_PREFIX,
-			FieldVisibilityCheckers.withCountry(FacadeProvider.getSystemConfigFacade().getCountryLocale()),
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
 			JurisdictionFieldConfig.of(ContactCriteria.REGION, ContactCriteria.DISTRICT, ContactCriteria.COMMUNITY));
 	}
 

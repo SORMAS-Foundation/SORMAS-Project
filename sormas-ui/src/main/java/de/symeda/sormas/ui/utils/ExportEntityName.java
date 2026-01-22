@@ -59,7 +59,7 @@ public enum ExportEntityName {
 	}
 
 	public String getLocalizedNameInSystemLanguage() {
-		String systemLocale = FacadeProvider.getSystemConfigFacade().getCountryLocale();
+		String systemLocale = FacadeProvider.getConfigFacade().getCountryLocale();
 		Language language = Language.fromLocaleString(systemLocale);
 		String entityName = I18nProperties.getString(language, languageKey);
 		return entityName == null ? defaultName : entityName;

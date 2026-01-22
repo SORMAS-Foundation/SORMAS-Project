@@ -115,7 +115,7 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 
 		super.initColumns();
 
-		if (!FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			getColumn(CaseIndexDetailedDto.RE_INFECTION).setHidden(true);
 		}
 		getColumn(CaseIndexDetailedDto.SEX).setWidth(80);

@@ -204,7 +204,7 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 			if (UiUtil.permitted(FeatureType.VIEW_TAB_CASES_THERAPY, UserRight.THERAPY_VIEW)
 				&& !caze.checkIsUnreferredPortHealthCase()
 				&& UiUtil.enabled(FeatureType.CLINICAL_MANAGEMENT)
-				&& (!(FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+				&& (!(FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 					&& THERAPY_DISABLED_DISEASES.contains(caze.getDisease())))
 				&& Disease.INFLUENZA != caze.getDisease()) {
 				// Therapy view is not available for Luxembourg for Measles, IMI, IPI, Gradiastis & Cryptosporidiosis cases.
@@ -225,7 +225,7 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 				EnumSet.of(FeatureType.VIEW_TAB_CASES_FOLLOW_UP, FeatureType.VIEW_TAB_CASES_CLINICAL_COURSE, FeatureType.CLINICAL_MANAGEMENT),
 				UserRight.CLINICAL_COURSE_VIEW)
 				&& !caze.checkIsUnreferredPortHealthCase()
-				&& !(FacadeProvider.getSystemConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+				&& !(FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 					&& CLINICAL_COURSE_DISABLED_DISEASES.contains(caze.getDisease()))
 				&& Disease.INFLUENZA != caze.getDisease()) {
 				// clinical course view is not available for Luxembourg for Measles, IMI, IPI, GIARDIASIS, Cryptosporidiosis cases,

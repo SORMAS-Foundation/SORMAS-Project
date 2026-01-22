@@ -760,8 +760,9 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	private ExternalMessageAdapterFacade getExternalLabResultsFacade() throws NamingException {
 		InitialContext ic = new InitialContext();
 
-		return (ExternalMessageAdapterFacade) ic
-			.lookup(configFacade.getAsStringOrThrow(SystemConfigurationType.INTERFACE_EXTERNAL_MESSAGE_ADAPTER_JNDI_NAME));
+		return (ExternalMessageAdapterFacade) ic.lookup(
+			configFacade.getAsString(SystemConfigurationType.INTERFACE_EXTERNAL_MESSAGE_ADAPTER_JNDI_NAME)
+				.orElseThrow(() -> new CannotProceedException(I18nProperties.getValidationError(Validations.externalMessageConfigError))));
 	}
 
 	@Override

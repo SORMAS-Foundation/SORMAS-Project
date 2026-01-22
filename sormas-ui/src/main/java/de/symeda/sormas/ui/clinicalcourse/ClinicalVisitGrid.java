@@ -70,7 +70,7 @@ public class ClinicalVisitGrid extends Grid implements V7AbstractGrid<ClinicalVi
 				ClinicalVisitIndexDto.class,
 				UiFieldAccessCheckers.forSensitiveData(
 					isPseudonymized,
-					FacadeProvider.getSystemConfigFacade().getCountryLocale())));
+					FacadeProvider.getConfigFacade().getCountryLocale())));
 
 		addItemClickListener(e -> {
 			if (ACTION_BTN_ID.equals(e.getPropertyId()) || e.isDoubleClick()) {

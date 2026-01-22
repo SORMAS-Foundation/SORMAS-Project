@@ -870,12 +870,12 @@ public class StatisticsView extends AbstractStatisticsView {
 		map.setTileLayerOpacity(0.5f);
 		map.setWidth(100, Unit.PERCENTAGE);
 		map.setHeight(580, Unit.PIXELS);
-		map.setZoom(FacadeProvider.getSystemConfigFacade().getAsIntegerOrThrow(SystemConfigurationType.MAP_ZOOM));
+		map.setZoom(FacadeProvider.getConfigFacade().getAsIntegerOrThrow(SystemConfigurationType.MAP_ZOOM));
 		GeoLatLon mapCenter = FacadeProvider.getGeoShapeProvider().getCenterOfAllRegions();
 		if (mapCenter != null) {
 			map.setCenter(mapCenter);
 		} else {
-			GeoLatLon countryCenter = FacadeProvider.getSystemConfigFacade().getCountryCenter();
+			GeoLatLon countryCenter = FacadeProvider.getConfigFacade().getCountryCenter();
 			map.setCenter(countryCenter);
 		}
 

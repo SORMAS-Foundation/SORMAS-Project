@@ -100,7 +100,7 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 					PrescriptionIndexDto.class,
 					UiFieldAccessCheckers.forSensitiveData(
 						isPseudonymized,
-						FacadeProvider.getSystemConfigFacade().getCountryLocale())));
+						FacadeProvider.getConfigFacade().getCountryLocale())));
 		}
 
 		addItemClickListener(e -> {
