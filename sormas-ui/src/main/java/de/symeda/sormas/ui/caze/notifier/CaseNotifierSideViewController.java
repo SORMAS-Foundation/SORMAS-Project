@@ -108,27 +108,6 @@ public class CaseNotifierSideViewController {
             .orElse(null);
     }
 
-    /**
-     * Retrieves the latest surveillance report for a case reference.
-     * 
-     * @param caze
-     *            the case reference
-     * @return latest report or null if none found
-     */
-    public SurveillanceReportDto getLatestReport(CaseReferenceDto caze) {
-
-        SurveillanceReportCriteria criteria = new SurveillanceReportCriteria();
-        criteria.caze(caze);
-        criteria.setReportingType(ReportingType.DOCTOR);
-
-        List<SurveillanceReportDto> reports = FacadeProvider.getSurveillanceReportFacade().getIndexList(criteria, null, null, null);
-
-        // Filter to get the oldest report
-        return reports.stream()
-            .max(Comparator.comparing(SurveillanceReportDto::getReportDate)) // Assuming getDate() returns the report date
-            .orElse(null);
-    }
-
     public Date getOldestDiagnosisDateFromReports(CaseDataDto caze) {
         return getOldestDiagnosisDateFromReports(caze.toReference());
     }
