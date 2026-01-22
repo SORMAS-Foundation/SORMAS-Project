@@ -239,12 +239,14 @@ public class CaseNotifierForm extends VerticalLayout {
 
         treatmentGroup.clear();
 
-        if (caze.isTreatmentNotApplicable()) {
-            treatmentGroup.setValue(TreatmentOption.NOT_APPLICABLE);
-        } else {
-            final YesNoUnknown treatmentStarted = caze.getTreatmentStarted();
-            if (treatmentStarted != null) {
-                treatmentGroup.setValue(TreatmentOption.forValue(treatmentStarted));
+        if (caze != null) {
+            if (caze.isTreatmentNotApplicable()) {
+                treatmentGroup.setValue(TreatmentOption.NOT_APPLICABLE);
+            } else {
+                final YesNoUnknown treatmentStarted = caze.getTreatmentStarted();
+                if (treatmentStarted != null) {
+                    treatmentGroup.setValue(TreatmentOption.forValue(treatmentStarted));
+                }
             }
         }
 
@@ -291,8 +293,9 @@ public class CaseNotifierForm extends VerticalLayout {
     /**
      * Sets notifier data and populates form fields.
      */
-    public void setValue(NotifierDto notifier) {
+    public void setValue(NotifierDto notifier, CaseDataDto caze) {
         this.notifier = notifier;
+        this.caze = caze;
         populateFields();
     }
 
