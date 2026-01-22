@@ -22,6 +22,7 @@ import java.util.List;
 import com.vaadin.ui.UI;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DefaultEntityHelper;
 
@@ -44,7 +45,7 @@ public class DefaultPasswordUIHelper {
 	static LoginScreen.LoginListener getInterceptionLoginListener(LoginScreen.LoginListener originalLoginListener, UI vaadinUI) {
 		return () -> {
 			List<UserDto> usersWithDefaultPassword;
-			if (FacadeProvider.getSystemConfigFacade().isSkipDefaultPasswordCheck()
+			if (FacadeProvider.getSystemConfigFacade().getAsBoolean(SystemConfigurationType.SKIP_DEFAULT_PASSWORD_CHECK)
 				|| (usersWithDefaultPassword = DefaultPasswordUIHelper.getUsersWithDefaultPassword()).isEmpty()) {
 				originalLoginListener.loginSuccessful();
 			} else {

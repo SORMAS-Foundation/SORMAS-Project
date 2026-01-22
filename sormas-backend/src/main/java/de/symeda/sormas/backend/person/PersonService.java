@@ -795,7 +795,7 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 	}
 
 	private void setSimilarityThresholdQuery() {
-		double nameSimilarityThreshold = configFacade.getAsDouble getNameSimilarityThreshold();
+		double nameSimilarityThreshold = configFacade.getAsDoubleOrThrow(SystemConfigurationType.NAME_SIMILARITY_THRESHOLD);
 		Query q = em.createNativeQuery("select set_limit(" + nameSimilarityThreshold + ")");
 		q.getSingleResult();
 	}

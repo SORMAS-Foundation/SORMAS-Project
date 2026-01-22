@@ -215,7 +215,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			ContactDto.I18N_PREFIX,
 			false,
 			FieldVisibilityCheckers.withDisease(disease)
-				.andWithCountry(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE))
+				.andWithCountry(FacadeProvider.getSystemConfigFacade().getCountryLocale())
 				.andWithFeatureType(FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations()),
 			FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized));
 
@@ -546,9 +546,9 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				FieldVisibilityCheckers.withDisease(disease)
 					.add(
 						new CountryFieldVisibilityChecker(
-							FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE))),
+							FacadeProvider.getSystemConfigFacade().getCountryLocale())),
 				UiFieldAccessCheckers
-					.getDefault(true, FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE))));
+					.getDefault(true, FacadeProvider.getSystemConfigFacade().getCountryLocale())));
 		clinicalCourseForm.setCaption(null);
 
 		Label generalCommentLabel = new Label(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.ADDITIONAL_DETAILS));
@@ -919,7 +919,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		FieldHelper.updateEnumData(
 			contactProximity,
 			Arrays.asList(
-				ContactProximity.getValues(disease, FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE))));
+				ContactProximity.getValues(disease, FacadeProvider.getSystemConfigFacade().getCountryLocale())));
 	}
 
 	public Disease getSelectedDisease() {

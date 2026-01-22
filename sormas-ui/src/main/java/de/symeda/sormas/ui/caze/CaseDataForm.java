@@ -340,7 +340,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			false,
 			FieldVisibilityCheckers.withDisease(disease)
 				.add(new OutbreakFieldVisibilityChecker(viewMode))
-				.add(new CountryFieldVisibilityChecker(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE)))
+				.add(new CountryFieldVisibilityChecker(FacadeProvider.getSystemConfigFacade().getCountryLocale()))
 				.add(new UserRightFieldVisibilityChecker(UiUtil::permitted))
 				.add(new FeatureTypeFieldVisibilityChecker(FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations())),
 			FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized));
@@ -1044,9 +1044,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				FieldVisibilityCheckers.withDisease(disease)
 					.add(
 						new CountryFieldVisibilityChecker(
-							FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE))),
+							FacadeProvider.getSystemConfigFacade().getCountryLocale())),
 				UiFieldAccessCheckers
-					.getDefault(true, FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE))))
+					.getDefault(true, FacadeProvider.getSystemConfigFacade().getCountryLocale())))
 			.setCaption(null);
 
 		//diagnosis criteria
@@ -1437,7 +1437,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			}
 
 			// Make external ID field read-only when SORMAS is connected to a SurvNet instance
-			if (StringUtils.isNotEmpty(FacadeProvider.getSystemConfigFacade().getExternalSurveillanceToolGatewayUrl())) {
+			if (FacadeProvider.getSystemConfigFacade().isExternalSurveillanceToolGatewayConfigured()) {
 				setEnabled(false, CaseDataDto.EXTERNAL_ID);
 				((TextField) getField(CaseDataDto.EXTERNAL_ID))
 					.setInputPrompt(I18nProperties.getString(Strings.promptExternalIdExternalSurveillanceTool));

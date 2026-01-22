@@ -52,12 +52,13 @@ import com.vaadin.ui.Link;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationAccessorFacade;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -121,9 +122,11 @@ public class AboutView extends VerticalLayout implements View {
 		aboutLabel.addStyleName(CssStyles.H1);
 		infoLayout.addComponent(aboutLabel);
 
-		ConfigFacade configFacade = FacadeProvider.getSystemConfigFacade();
-		String infoLabelStr = configFacade.isCustomBranding()
-			? String.format(I18nProperties.getCaption(Captions.aboutBrandedSormasVersion), configFacade.getCustomBrandingName())
+		SystemConfigurationAccessorFacade configFacade = FacadeProvider.getSystemConfigFacade();
+		String infoLabelStr = configFacade.getAsBoolean(SystemConfigurationType.CUSTOM_BRANDING)
+			? String.format(
+				I18nProperties.getCaption(Captions.aboutBrandedSormasVersion),
+				configFacade.getAsString(SystemConfigurationType.CUSTOM_BRANDING_NAME).orElse("-"))
 			: "SORMAS";
 		Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + infoLabelStr, ContentMode.HTML);
 		infoLayout.addComponent(infoLabel);
@@ -285,7 +288,7 @@ public class AboutView extends VerticalLayout implements View {
 
 		String htmlContentString = "";
 
-		Path customHtmlDirectory = Paths.get(FacadeProvider.getSystemConfigFacade().getCustomFilesPath());
+		Path customHtmlDirectory = Paths.get(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfigurationType.CUSTOM_PATH));
 		Path customFilePath = customHtmlDirectory.resolve(fileName);
 
 		try {
@@ -342,7 +345,7 @@ public class AboutView extends VerticalLayout implements View {
 	}
 
 	private String getCustomDocumentsPath() {
-		return FacadeProvider.getSystemConfigFacade().getCustomFilesPath() + "aboutfiles";
+		return FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfigurationType.CUSTOM_PATH) + "aboutfiles";
 	}
 
 	public void attachDataProtectionDictionaryDownloader(AbstractComponent target) {

@@ -32,7 +32,7 @@ public class FieldAccessColumnStyleGenerator<T> implements StyleGenerator<T> {
 		return forFieldAccessCheckers(
 			beanType,
 			columnId,
-			UiFieldAccessCheckers.getDefault(true, FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE)));
+			UiFieldAccessCheckers.getDefault(true, FacadeProvider.getSystemConfigFacade().getCountryLocale()));
 	}
 
 	public static <T extends Pseudonymizable> FieldAccessColumnStyleGenerator<T> forSensitiveData(Class<T> beanType, String columnId) {
@@ -41,7 +41,7 @@ public class FieldAccessColumnStyleGenerator<T> implements StyleGenerator<T> {
 			beanType,
 			columnId,
 			UiFieldAccessCheckers
-				.forSensitiveData(true, FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE)));
+				.forSensitiveData(true, FacadeProvider.getSystemConfigFacade().getCountryLocale()));
 	}
 
 	private static <T extends Pseudonymizable> FieldAccessColumnStyleGenerator<T> forFieldAccessCheckers(

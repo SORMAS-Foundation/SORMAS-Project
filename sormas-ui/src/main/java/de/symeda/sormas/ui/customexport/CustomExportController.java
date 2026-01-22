@@ -49,7 +49,7 @@ public class CustomExportController {
 			ExportType.CONTACT,
 			ImportExportUtils.getContactExportProperties(
 				ContactDownloadUtil::getPropertyCaption,
-				FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE),
+				FacadeProvider.getSystemConfigFacade().getCountryLocale(),
 				FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations()),
 			customExportWindow::close);
 		customExportsLayout.setExportCallback(
@@ -67,7 +67,7 @@ public class CustomExportController {
 			ExportType.TASK,
 			ImportExportUtils.getTaskExportProperties(
 				TaskDownloadUtil::getPropertyCaption,
-				FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE),
+				FacadeProvider.getSystemConfigFacade().getCountryLocale(),
 				FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations()),
 			customExportWindow::close);
 		customExportsLayout.setExportCallback(
@@ -84,7 +84,7 @@ public class CustomExportController {
 			ExportType.PERSON,
 			ImportExportUtils.getPersonExportProperties(
 				PersonDownloadUtil::getPropertyCaption,
-				FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE),
+				FacadeProvider.getSystemConfigFacade().getCountryLocale(),
 				FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations()),
 			customExportWindow::close);
 		customExportsLayout.setExportCallback(

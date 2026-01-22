@@ -1,12 +1,10 @@
 package de.symeda.sormas.backend.systemconfiguration;
 
-import java.util.Arrays;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import javax.ejb.DependsOn;
 import javax.ejb.Singleton;
@@ -15,14 +13,20 @@ import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.CharUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import de.symeda.sormas.api.CaseClassificationCalculationMode;
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationAccessorFacade;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.backend.json.ObjectMapperProvider;
 import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Singleton(name = "SystemConfigurationAccessor")
@@ -32,6 +36,7 @@ import de.symeda.sormas.backend.util.RightsAllowed;
 @RightsAllowed(UserRight._SYSTEM_CONFIGURATION)
 public class SystemConfigurationAccessorEjb implements SystemConfigurationAccessorFacade {
 
+	public static final Class<CaseClassificationCalculationMode> CLASSIFICATION_CALCULATION_MODE_CLASS = CaseClassificationCalculationMode.class;
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private SystemConfigurationValueEjb systemConfigurationValueEjb;
@@ -108,13 +113,9 @@ public class SystemConfigurationAccessorEjb implements SystemConfigurationAccess
 	}
 
 	@Override
-	public Set<String> getAllowedFileExtensions() {
-		return Arrays.stream(getAsStringOrThrow(SystemConfigurationType.ALLOWED_FILE_EXTENSIONS).split(",")).collect(Collectors.toSet());
-	}
-
-	@Override
-	public String getSormasInstanceName() {
-		return getAsBoolean(SystemConfigurationType.CUSTOM_BRANDING) ? getAsStringOrThrow(SystemConfigurationType.CUSTOM_BRANDING_NAME) : "SORMAS";
+	public char getCsvSeparator() {
+		return getAsString(SystemConfigurationType.CSV_SEPARATOR).map(CharUtils::toChar)
+			.orElseThrow(() -> SystemConfigurationAccessorFacade.buildMissingConfigException(SystemConfigurationType.CSV_SEPARATOR));
 	}
 
 	private String normalizeLocaleString(String locale) {
@@ -126,6 +127,52 @@ public class SystemConfigurationAccessorEjb implements SystemConfigurationAccess
 			locale = locale.substring(0, pos).toLowerCase(Locale.ENGLISH) + '-' + locale.substring(pos + 1).toUpperCase(Locale.ENGLISH);
 		}
 		return locale;
+	}
+
+	@Override
+	public CaseClassificationCalculationMode getCaseClassificationCalculationMode(Disease disease) {
+		CaseClassificationCalculationMode defaultCaseClassification = getDefaultCaseClassificationCalculationMode();
+
+		Map<String, CaseClassificationCalculationMode> caseClassificationExceptionsDictionary = getDiseaseClassificationCalculationModeDictionary();
+
+		return caseClassificationExceptionsDictionary.getOrDefault(disease.getName(), defaultCaseClassification);
+	}
+
+	private Map<String, CaseClassificationCalculationMode> getDiseaseClassificationCalculationModeDictionary() {
+		SystemConfigurationType caseClassificationExceptions = SystemConfigurationType.CASE_CLASSIFICATION_CALCULATION_MODE;
+
+		try {
+			return ObjectMapperProvider.getInstance()
+				.readerForMapOf(CLASSIFICATION_CALCULATION_MODE_CLASS)
+				.readValue(getAsStringOrThrow(caseClassificationExceptions));
+		} catch (JsonProcessingException e) {
+			throw new IllegalStateException(
+				String.format(
+					"The property [%s] is not set properly, it must be a valid JSON dictionary: {\"CHOLERA\", \"AUTOMATIC\"}",
+					caseClassificationExceptions),
+				e);
+		}
+	}
+
+	private CaseClassificationCalculationMode getDefaultCaseClassificationCalculationMode() {
+		return getAsEnum(SystemConfigurationType.DEFAULT_CASE_CLASSIFICATION, CLASSIFICATION_CALCULATION_MODE_CLASS);
+	}
+
+	@Override
+	public boolean isAnyCaseClassificationCalculationEnabled() {
+		CaseClassificationCalculationMode defaultCaseClassificationCalculationMode = getDefaultCaseClassificationCalculationMode();
+
+		Map<String, CaseClassificationCalculationMode> diseaseClassificationCalculationModeDictionary =
+			getDiseaseClassificationCalculationModeDictionary();
+
+		return defaultCaseClassificationCalculationMode != CaseClassificationCalculationMode.DISABLED
+			|| diseaseClassificationCalculationModeDictionary.values()
+				.stream()
+				.anyMatch(actual -> actual != CaseClassificationCalculationMode.DISABLED);
+	}
+
+	protected <T extends Enum<T>> T getAsEnum(SystemConfigurationType systemConfigurationType, Class<T> enumType) {
+		return Enum.valueOf(enumType, getAsStringOrThrow(systemConfigurationType));
 	}
 
 	@Inject

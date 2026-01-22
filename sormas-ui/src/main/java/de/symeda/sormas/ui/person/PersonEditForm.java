@@ -84,6 +84,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.person.WorkPlace;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -239,7 +240,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			FieldVisibilityCheckers.withDisease(disease)
 				.add(new OutbreakFieldVisibilityChecker(viewMode))
 				.add(
-					new CountryFieldVisibilityChecker(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE))),
+					new CountryFieldVisibilityChecker(FacadeProvider.getSystemConfigFacade().getCountryLocale())),
 			FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized),
 			isEditAllowed);
 
@@ -272,7 +273,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			FieldVisibilityCheckers.withDisease(disease)
 				.add(new OutbreakFieldVisibilityChecker(viewMode))
 				.add(
-					new CountryFieldVisibilityChecker(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE))),
+					new CountryFieldVisibilityChecker(FacadeProvider.getSystemConfigFacade().getCountryLocale())),
 			FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized));
 
 		this.personContext = personContext;
@@ -297,7 +298,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			false,
 			new FieldVisibilityCheckers().add(new OutbreakFieldVisibilityChecker(ViewMode.NORMAL))
 				.add(
-					new CountryFieldVisibilityChecker(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE))),
+					new CountryFieldVisibilityChecker(FacadeProvider.getSystemConfigFacade().getCountryLocale())),
 			FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized),
 			isEditAllowed);
 
@@ -729,8 +730,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		hasGuardian.setEnabled(false);
 		hasGuardian.setValue(Boolean.TRUE);
 		nameOfGuardians.setVisible(true);
-		minimumAdultAge = FacadeProvider.getSystemConfigFacade().getMinimumAdultAge();
-		minimumEmancipatedAge = FacadeProvider.getSystemConfigFacade().getMinimumEmancipatedAge();
+		minimumAdultAge = FacadeProvider.getSystemConfigFacade().getAsLongOrThrow(SystemConfigurationType.MINIMUM_ADULT_AGE);
+		minimumEmancipatedAge = FacadeProvider.getSystemConfigFacade().getAsLongOrThrow(SystemConfigurationType.MINIMUM_EMANCIPATED_AGE);
 
 		if (disease != null && !PERINATAL_DISEASES.contains(disease)) {
 			perinatalDetailsHeader.setVisible(false);

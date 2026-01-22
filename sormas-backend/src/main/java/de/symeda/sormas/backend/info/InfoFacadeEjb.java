@@ -177,7 +177,7 @@ public class InfoFacadeEjb implements InfoFacade {
 
 	@Override
 	public String generateDataDictionary() throws IOException {
-		EntityColumns entityColumns = new EntityColumns(configFacade.getAsStringOrThrow(SystemConfigurationType.COUNTRY_LOCALE), false);
+		EntityColumns entityColumns = new EntityColumns(configFacade.getCountryLocale(), false);
 		return generateDataDictionary(
 			DATA_DICTIONARY_ENTITIES,
 			entityColumns,
@@ -192,7 +192,7 @@ public class InfoFacadeEjb implements InfoFacade {
 		List<FeatureConfigurationDto> featureConfigurations = featureConfigurationFacade.getActiveServerFeatureConfigurations();
 
 		FieldVisibilityCheckers fieldVisibilityCheckers = FieldVisibilityCheckers.withCheckers(
-			new CountryFieldVisibilityChecker(configFacade.getAsStringOrThrow(SystemConfigurationType.COUNTRY_LOCALE)),
+			new CountryFieldVisibilityChecker(configFacade.getCountryLocale()),
 			new DiseaseFieldVisibilityChecker(diseaseConfigurationFacade.getAllActiveDiseases()),
 			new FeatureTypeFieldVisibilityChecker(featureConfigurations));
 
@@ -200,7 +200,7 @@ public class InfoFacadeEjb implements InfoFacade {
 			.filter(e -> isVisibleByFeatureConfiguration(e.getEntityClass(), featureConfigurations))
 			.collect(Collectors.toList());
 
-		EntityColumns entityColumns = new EntityColumns(configFacade.getAsStringOrThrow(SystemConfigurationType.COUNTRY_LOCALE), true);
+		EntityColumns entityColumns = new EntityColumns(configFacade.getCountryLocale(), true);
 
 		try (XSSFWorkbook dataProtectionInputWorkbook = new XSSFWorkbook(getDataProtectionFile())) {
 

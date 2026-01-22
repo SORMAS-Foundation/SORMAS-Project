@@ -46,6 +46,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.user.UserSettingsForm;
@@ -85,9 +86,9 @@ public class Menu extends CssLayout {
 		title.setSizeUndefined();
 
 		Image image;
-		if (FacadeProvider.getSystemConfigFacade().isCustomBranding()
-			&& StringUtils.isNotBlank(FacadeProvider.getSystemConfigFacade().getCustomBrandingLogoPath())) {
-			Path logoPath = Paths.get(FacadeProvider.getSystemConfigFacade().getCustomBrandingLogoPath());
+		if (FacadeProvider.getSystemConfigFacade().getAsBoolean(SystemConfigurationType.CUSTOM_BRANDING)
+			&& StringUtils.isNotBlank(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfigurationType.CUSTOM_BRANDING_LOGO_PATH))) {
+			Path logoPath = Paths.get(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfigurationType.CUSTOM_BRANDING_LOGO_PATH));
 			image = new Image(null, new FileResource(logoPath.toFile()));
 		} else {
 			image = new Image(null, new ThemeResource("img/sormas-logo.png"));

@@ -295,10 +295,6 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(OutbreakFacade.class);
 	}
 
-	public static ConfigFacade getConfigFacade() {
-		return get().lookupEjbRemote(ConfigFacade.class);
-	}
-
 	public static SystemConfigurationAccessorFacade getSystemConfigFacade() {
 		return get().lookupEjbRemote(SystemConfigurationAccessorFacade.class);
 	}

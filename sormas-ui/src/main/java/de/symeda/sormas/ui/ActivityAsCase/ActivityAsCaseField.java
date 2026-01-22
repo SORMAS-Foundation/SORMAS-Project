@@ -85,7 +85,7 @@ public class ActivityAsCaseField extends AbstractTableField<ActivityAsCaseDto> {
 				ActivityAsCaseDto.class,
 				UiFieldAccessCheckers.forSensitiveData(
 					isPseudonymized,
-					FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE))));
+					FacadeProvider.getSystemConfigFacade().getCountryLocale())));
 
 		for (Object columnId : table.getVisibleColumns()) {
 			if (!columnId.equals(ACTION_COLUMN_ID)) {

@@ -70,7 +70,7 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 			EnvironmentDto.class,
 			EnvironmentDto.I18N_PREFIX,
 			false,
-			FieldVisibilityCheckers.withCountry(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE)),
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getSystemConfigFacade().getCountryLocale()),
 			FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized),
 			isEditAllowed);
 		addFields();

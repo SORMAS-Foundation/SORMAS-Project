@@ -70,7 +70,6 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
@@ -765,14 +764,14 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		return new ClassificationAnyOfSymptomsCriteriaDto(
 			symptomState,
 			disease,
-			configFacade.getAsStringOrThrow(SystemConfigurationType.COUNTRY_LOCALE));
+			configFacade.getCountryLocale());
 	}
 
 	private ClassificationAllSymptomsCriteriaDto allOfSymptoms(SymptomState symptomState, Disease disease) {
 		return new ClassificationAllSymptomsCriteriaDto(
 			symptomState,
 			disease,
-			configFacade.getAsStringOrThrow(SystemConfigurationType.COUNTRY_LOCALE));
+			configFacade.getCountryLocale());
 	}
 
 	private ClassificationEventClusterCriteriaDto partOfEventCluster() {

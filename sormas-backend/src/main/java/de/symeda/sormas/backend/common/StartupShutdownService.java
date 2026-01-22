@@ -76,6 +76,7 @@ import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityCriteria;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.OccupationType;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -111,6 +112,7 @@ import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryService;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb;
+import de.symeda.sormas.backend.systemconfiguration.ExternalClientConfigurationEjb;
 import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserRole;
@@ -193,9 +195,12 @@ public class StartupShutdownService {
 	private CustomizableEnumValueService customizableEnumValueService;
 	@EJB
 	private DocumentTemplateService documentTemplateService;
-
 	@Inject
 	private Event<PasswordResetEvent> passwordResetEvent;
+	@EJB
+	private ExternalClientConfigurationEjb externalClientConfiguration;
+	@EJB
+	private StartupConfigurationValidationService startupConfigurationValidationService;
 
 	static boolean isBlankOrSqlComment(String sqlLine) {
 		return SQL_COMMENT_PATTERN.matcher(sqlLine).matches();
@@ -252,14 +257,14 @@ public class StartupShutdownService {
 
 		deletionConfigurationService.createMissingDeletionConfigurations();
 
-		configFacade.validateAppUrls();
-		configFacade.validateConfigUrls();
+		startupConfigurationValidationService.validateAppUrls();
+		startupConfigurationValidationService.validateConfigUrls();
 
 		centralInfraSync.syncAll();
 	}
 
 	private void createDefaultInfrastructureData() {
-		if (!configFacade.isCreateDefaultEntities()) {
+		if (!configFacade.getAsBoolean(SystemConfigurationType.CREATE_DEFAULT_ENTITIES)) {
 			// return if isCreateDefaultEntities() is false
 			logger.info("Skipping the creation of default infrastructure data");
 			return;
@@ -355,7 +360,7 @@ public class StartupShutdownService {
 				u -> {
 				});
 
-			if (!configFacade.isCreateDefaultEntities()) {
+			if (!configFacade.getAsBoolean(SystemConfigurationType.CREATE_DEFAULT_ENTITIES)) {
 				// return if isCreateDefaultEntities() is false
 				logger.info("Skipping the creation of default entities");
 				return;
@@ -530,7 +535,7 @@ public class StartupShutdownService {
 	}
 
 	private void createOrUpdateSymptomJournalUser() {
-		SymptomJournalConfig symptomJournalConfig = configFacade.getSymptomJournalConfig();
+		SymptomJournalConfig symptomJournalConfig = externalClientConfiguration.getSymptomJournalConfig();
 		UserConfig userConfig = symptomJournalConfig.getDefaultUser();
 		if (userConfig == null) {
 			logger.debug("Symptom journal default user not configured");
@@ -546,7 +551,7 @@ public class StartupShutdownService {
 	}
 
 	private void createOrUpdatePatientDiaryUser() {
-		PatientDiaryConfig patientDiaryConfig = configFacade.getPatientDiaryConfig();
+		PatientDiaryConfig patientDiaryConfig = externalClientConfiguration.getPatientDiaryConfig();
 		UserConfig userConfig = patientDiaryConfig.getDefaultUser();
 		if (userConfig == null) {
 			logger.debug("Patient diary default user not configured");
@@ -616,7 +621,6 @@ public class StartupShutdownService {
 	/**
 	 * Synchronizes all active users with the external Authentication Provider if User Sync at startup is enabled and supported.
 	 *
-	 * @see AuthProvider#isUserSyncSupported()
 	 * @see AuthProvider#isUserSyncAtStartupEnabled()
 	 */
 	private void syncUsers() {

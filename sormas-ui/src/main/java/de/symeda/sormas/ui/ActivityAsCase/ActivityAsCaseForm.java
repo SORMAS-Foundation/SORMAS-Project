@@ -175,7 +175,7 @@ public class ActivityAsCaseForm extends AbstractEditForm<ActivityAsCaseDto> {
 			ActivityAsCaseDto.WORK_ENVIRONMENT);
 
 		if (CountryHelper.isCountry(
-			FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE),
+			FacadeProvider.getSystemConfigFacade().getCountryLocale(),
 			CountryHelper.COUNTRY_CODE_GERMANY)) {
 			AbstractSelect field = getField(ActivityAsCaseDto.TYPE_OF_PLACE);
 			field.setCaption(I18nProperties.getCaption(Captions.ActivityAsCase_typeOfPlaceIfSG));
@@ -267,7 +267,7 @@ public class ActivityAsCaseForm extends AbstractEditForm<ActivityAsCaseDto> {
 			true);
 
 		if (CountryHelper.isCountry(
-			FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE),
+			FacadeProvider.getSystemConfigFacade().getCountryLocale(),
 			CountryHelper.COUNTRY_CODE_GERMANY)) {
 			locationForm
 				.setFacilityFieldsVisibleExceptTypeGroupField(TypeOfPlace.isFacilityType(getField(ActivityAsCaseDto.TYPE_OF_PLACE).getValue()), true);

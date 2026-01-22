@@ -214,7 +214,7 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 	}
 
 	private String getImportTemplateFilePath(String baseFilename) {
-		java.nio.file.Path exportDirectory = Paths.get(configFacade.getAsStringOrNull(SystemConfigurationType.GENERATED_FILES_PATH));
+		java.nio.file.Path exportDirectory = Paths.get(configFacade.getAsStringOrThrow(SystemConfigurationType.GENERATED_FILES_PATH));
 		return exportDirectory.resolve(getImportTemplateFileName(baseFilename)).toString();
 	}
 

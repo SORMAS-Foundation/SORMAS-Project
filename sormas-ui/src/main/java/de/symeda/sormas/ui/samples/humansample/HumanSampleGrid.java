@@ -18,7 +18,6 @@ import java.util.Date;
 
 import com.vaadin.ui.renderers.DateRenderer;
 
-import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
@@ -30,6 +29,7 @@ import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SpecimenCondition;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationAccessorFacade;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
@@ -214,7 +214,7 @@ public class HumanSampleGrid extends ReloadableGrid<SampleIndexDto, SampleCriter
 	}
 
 	private boolean shouldShowEpidNumber() {
-		ConfigFacade configFacade = FacadeProvider.getSystemConfigFacade();
+		SystemConfigurationAccessorFacade configFacade = FacadeProvider.getSystemConfigFacade();
 		return !configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
 			&& !configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND);
 	}

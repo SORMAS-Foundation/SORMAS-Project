@@ -59,7 +59,7 @@ public class CsvStreamUtils {
 		try (
 			CSVWriter writer = CSVUtils.createCSVWriter(
 				new OutputStreamWriter(out, StandardCharsets.UTF_8.name()),
-				configFacade.getAsCharOrThrow(SystemConfigurationType.CSV_SEPARATOR))) {
+				configFacade.getCsvSeparator())) {
 
 			// 1. fields in order of declaration - not using Introspector here, because it gives properties in alphabetical order
 			List<Method> readMethods =
@@ -67,7 +67,7 @@ public class CsvStreamUtils {
 					csvRowClass,
 					exportConfiguration,
 					redMethodFilter,
-					configFacade.getAsStringOrThrow(SystemConfigurationType.COUNTRY_LOCALE));
+					configFacade.getCountryLocale());
 
 			// 2. replace entity fields with all the columns of the entity
 			Map<Method, SubEntityProvider<T>> subEntityProviders = new HashMap<Method, SubEntityProvider<T>>();

@@ -1,9 +1,13 @@
 package de.symeda.sormas.api.systemconfiguration;
 
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.CharUtils;
+import de.symeda.sormas.api.CaseClassificationCalculationMode;
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.geo.GeoLatLon;
 
 public interface SystemConfigurationAccessorFacade {
 
@@ -21,41 +25,26 @@ public interface SystemConfigurationAccessorFacade {
 
 	Optional<String> getAsString(SystemConfigurationType config);
 
-	default String getAsStringOrNull(SystemConfigurationType config) {
-		return getAsString(config).orElse(null);
-	}
-
-	/**
-	 * Precedence Gets value from db, otherwise default and finally defaults to false if missing.
-	 * 
-	 * @param config
-	 *            property
-	 * @return found - default or false
-	 */
 	boolean getAsBoolean(SystemConfigurationType config);
 
 	default Integer getAsIntegerOrThrow(SystemConfigurationType config) {
-		return getAsInteger(config).orElseThrow(() -> buildIllegalStateException(config));
+		return getAsInteger(config).orElseThrow(() -> buildMissingConfigException(config));
 	}
 
-	private static IllegalStateException buildIllegalStateException(SystemConfigurationType config) {
+	static IllegalStateException buildMissingConfigException(SystemConfigurationType config) {
 		return new IllegalStateException(String.format("Required configuration '%s' not found or invalid. \nCheck if ", config.name()));
 	}
 
 	default Double getAsDoubleOrThrow(SystemConfigurationType config) {
-		return getAsDouble(config).orElseThrow(() -> buildIllegalStateException(config));
+		return getAsDouble(config).orElseThrow(() -> buildMissingConfigException(config));
 	}
 
 	default Long getAsLongOrThrow(SystemConfigurationType config) {
-		return getAsLong(config).orElseThrow(() -> buildIllegalStateException(config));
+		return getAsLong(config).orElseThrow(() -> buildMissingConfigException(config));
 	}
 
 	default String getAsStringOrThrow(SystemConfigurationType config) {
-		return getAsString(config).orElseThrow(() -> buildIllegalStateException(config));
-	}
-
-	default char getAsCharOrThrow(SystemConfigurationType config) {
-		return getAsString(config).map(CharUtils::toChar).orElseThrow(() -> buildIllegalStateException(config));
+		return getAsString(config).orElseThrow(() -> buildMissingConfigException(config));
 	}
 
 	boolean isConfiguredCountry(String countryCode);
@@ -66,28 +55,37 @@ public interface SystemConfigurationAccessorFacade {
 		return isPresent(SystemConfigurationType.SMS_AUTH_SECRET) || isPresent(SystemConfigurationType.SMS_AUTH_KEY);
 	}
 
+	char getCsvSeparator();
+
+	@Deprecated
 	default boolean isS2SConfigured() {
 		return isPresent(SystemConfigurationType.SORMAS2SORMAS_PATH);
 	}
 
+	@Deprecated
 	default boolean isExternalSurveillanceToolGatewayConfigured() {
 		return isPresent(SystemConfigurationType.EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL);
 	}
 
-	Set<String> getAllowedFileExtensions();
+	default Set<String> getAllowedFileExtensions() {
+		return Arrays.stream(getAsStringOrThrow(SystemConfigurationType.ALLOWED_FILE_EXTENSIONS).split(",")).collect(Collectors.toSet());
+	}
 
-	String getSormasInstanceName();
+	default String getSormasInstanceName() {
+		return getAsBoolean(SystemConfigurationType.CUSTOM_BRANDING) ? getAsStringOrThrow(SystemConfigurationType.CUSTOM_BRANDING_NAME) : "SORMAS";
+	}
 
-//    boolean isConfiguredCountry(String countryCode);
-//
-//    GeoLatLon getCountryCenter();
-//
-//    SymptomJournalConfig getSymptomJournalConfig();
-//
-//    PatientDiaryConfig getPatientDiaryConfig();
-//
-//    SormasToSormasConfig getS2SConfig();
-//
-//    CaseClassificationCalculationMode getCaseClassificationCalculationMode(Disease disease);
+	CaseClassificationCalculationMode getCaseClassificationCalculationMode(Disease disease);
 
+	default GeoLatLon getCountryCenter() {
+		return new GeoLatLon(
+			getAsDoubleOrThrow(SystemConfigurationType.COUNTRY_CENTER_LATITUDE),
+			getAsDoubleOrThrow(SystemConfigurationType.COUNTRY_CENTER_LATITUDE));
+	}
+
+	default String getCountryLocale() {
+		return getAsStringOrThrow(SystemConfigurationType.COUNTRY_LOCALE);
+	}
+
+	boolean isAnyCaseClassificationCalculationEnabled();
 }

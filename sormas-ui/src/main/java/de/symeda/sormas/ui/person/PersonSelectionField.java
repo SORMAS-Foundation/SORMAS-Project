@@ -78,7 +78,7 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 		this.referencePerson = referencePerson;
 
 		fieldVisibilityCheckers =
-			FieldVisibilityCheckers.withCountry(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE));
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getSystemConfigFacade().getCountryLocale());
 
 		initializeGrid();
 

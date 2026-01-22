@@ -29,10 +29,10 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
-import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
@@ -129,7 +129,7 @@ public class ContactsDashboardView extends AbstractDashboardView {
 		// add network diagram
 		if (UiUtil.permitted(UserRight.DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS)) {
 			networkDiagramComponent = Optional.of(FacadeProvider.getSystemConfigFacade())
-				.map(ConfigFacade::getRScriptExecutable)
+				.map(facade -> facade.getAsStringOrThrow(SystemConfigurationType.RSCRIPT_EXECUTABLE))
 				.map(x -> new DashboardNetworkComponent(dashboardDataProvider));
 
 			networkDiagramRowLayout = createNetworkDiagramRowLayout();

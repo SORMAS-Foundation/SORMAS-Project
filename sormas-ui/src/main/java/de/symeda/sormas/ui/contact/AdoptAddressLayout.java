@@ -47,7 +47,7 @@ public class AdoptAddressLayout extends HorizontalLayout {
 
 	private void showAddressOfCasePerson(CaseReferenceDto caseReference) {
 		LocationEditForm locationForm = new LocationEditForm(
-			FieldVisibilityCheckers.withCountry(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE)),
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getSystemConfigFacade().getCountryLocale()),
 			UiFieldAccessCheckers.getNoop());
 		locationForm.setValue(
 			FacadeProvider.getPersonFacade()

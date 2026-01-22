@@ -775,7 +775,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 
 	private Path generateUserRolesDocumentTempPath() {
 
-		Path path = Paths.get(configFacade.getAsStringOrNull(SystemConfigurationType.TEMP_PATH));
+		Path path = Paths.get(configFacade.getAsStringOrThrow(SystemConfigurationType.TEMP_PATH));
 		String fileName = ImportExportUtils.TEMP_FILE_PREFIX + "_userroles_" + DateHelper.formatDateForExport(new Date()) + "_"
 			+ new Random().nextInt(Integer.MAX_VALUE) + ".xlsx";
 

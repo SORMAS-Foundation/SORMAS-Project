@@ -286,7 +286,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			PathogenTestDto.I18N_PREFIX,
 			false,
 			FieldVisibilityCheckers.withDisease(disease)
-				.andWithCountry(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE)),
+				.andWithCountry(FacadeProvider.getSystemConfigFacade().getCountryLocale()),
 			FieldAccessHelper.getFieldAccessCheckers(create || inJurisdiction, !create && isPseudonymized));// Jurisdiction doesn't matter for creation forms  // Pseudonymization doesn't matter for creation forms
 
 		this.caseSampleCount = caseSampleCount;
@@ -563,7 +563,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			new DrugSusceptibilityForm(
 				FieldVisibilityCheckers.getNoop(),
 				UiFieldAccessCheckers
-					.getDefault(true, FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE))));
+					.getDefault(true, FacadeProvider.getSystemConfigFacade().getCountryLocale())));
 		drugSusceptibilityField.setCaption(null);
 		//drugSusceptibilityField.setVisible(false);
 		addToVisibleAllowedFields(drugSusceptibilityField);

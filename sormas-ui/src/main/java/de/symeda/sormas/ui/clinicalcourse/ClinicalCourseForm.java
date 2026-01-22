@@ -17,7 +17,7 @@ public class ClinicalCourseForm extends AbstractEditForm<ClinicalCourseDto> {
 			ClinicalCourseDto.class,
 			ClinicalCourseDto.I18N_PREFIX,
 			true,
-			FieldVisibilityCheckers.withCountry(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE)),
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getSystemConfigFacade().getCountryLocale()),
 			FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized));
 	}
 

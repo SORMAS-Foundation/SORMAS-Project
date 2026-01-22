@@ -1066,12 +1066,9 @@ public class UserFacadeEjb implements UserFacade {
 			throw new ForbiddenException("No default role for new users from authentication provider is configured");
 		}
 
-		String defaultRoleName = configFacade.getAsStringOrNull(SystemConfigurationType.AUTHENTICATION_PROVIDER_SYNCED_NEW_USER_ROLE);
-		UserRole defaultRole = userRoleService.getByCaption(defaultRoleName);
-
-		if (defaultRole == null) {
-			throw new ForbiddenException("No default role for new users from authentication provider is configured");
-		}
+		UserRole defaultRole = configFacade.getAsString(SystemConfigurationType.AUTHENTICATION_PROVIDER_SYNCED_NEW_USER_ROLE)
+			.map(userRoleService::getByCaption)
+			.orElseThrow(() -> new ForbiddenException("No default role for new users from authentication provider is configured"));
 
 		List<User> existingUsers = userService.getAll();
 

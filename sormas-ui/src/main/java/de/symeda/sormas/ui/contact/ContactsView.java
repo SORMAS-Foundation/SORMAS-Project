@@ -871,7 +871,7 @@ public class ContactsView extends AbstractView implements HasName {
 			ImportExportUtils
 				.getContactExportProperties(
 					ContactDownloadUtil::getPropertyCaption,
-					FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE),
+					FacadeProvider.getSystemConfigFacade().getCountryLocale(),
 					FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations())
 				.stream()
 				.map(ExportPropertyMetaInfo::getPropertyId)

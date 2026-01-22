@@ -40,7 +40,7 @@ public class ClinicalVisitForm extends AbstractEditForm<ClinicalVisitDto> {
 			UiFieldAccessCheckers.forDataAccessLevel(
 				UiUtil.getPseudonymizableDataAccessLevel(inJurisdiction),
 				isPseudonymized,
-				FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE)));
+				FacadeProvider.getSystemConfigFacade().getCountryLocale()));
 		if (create) {
 			hideValidationUntilNextCommit();
 		}

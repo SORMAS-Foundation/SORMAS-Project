@@ -90,7 +90,7 @@ public class EpipulseDiseaseExportFacadeEjb implements EpipulseDiseaseExportFaca
 
 			EpipulseExportDto exportDto = epipulseExportEjb.toEpipulseExportDto(epipulseExport);
 
-			String serverCountryLocale = configFacadeEjb.getAsStringOrThrow(SystemConfigurationType.COUNTRY_LOCALE);
+			String serverCountryLocale = configFacadeEjb.getCountryLocale();
 			String serverCountryCode = configFacadeEjb.getCountryCode();
 			String serverCountryName = configFacadeEjb.getAsStringOrThrow(SystemConfigurationType.COUNTRY_NAME);
 
@@ -105,7 +105,7 @@ public class EpipulseDiseaseExportFacadeEjb implements EpipulseDiseaseExportFaca
 
 			writer = CSVUtils.createCSVWriter(
 				new OutputStreamWriter(new FileOutputStream(exportFilePath), StandardCharsets.UTF_8),
-				configFacadeEjb.getAsCharOrThrow(SystemConfigurationType.CSV_SEPARATOR));
+				configFacadeEjb.getCsvSeparator());
 
 			List<String> columnNames = new ArrayList<>(
 				List.of(

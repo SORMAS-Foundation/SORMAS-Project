@@ -42,7 +42,6 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import de.symeda.sormas.api.importexport.DatabaseTable;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.backend.action.Action;
 import de.symeda.sormas.backend.activityascase.ActivityAsCase;
 import de.symeda.sormas.backend.campaign.Campaign;
@@ -251,7 +250,7 @@ public class DatabaseExportService {
 
 	private void addEntityNamesRow(String tableName, Writer writer) throws IOException {
 		final int mainTableColumnCount = getColumnCount(tableName);
-		char csvSeparator = configFacade.getAsCharOrThrow(SystemConfigurationType.CSV_SEPARATOR);
+		char csvSeparator = configFacade.getCsvSeparator();
 		if (mainTableColumnCount > 0) {
 			writer.write(tableName);
 		}
@@ -269,7 +268,7 @@ public class DatabaseExportService {
 
 	private void addDataRows(DatabaseTable databaseTable, String tableName, Writer writer) {
 		long startTime = System.currentTimeMillis();
-		final String sql = String.format(COPY_SINGLE_TABLE, tableName, configFacade.getAsCharOrThrow(SystemConfigurationType.CSV_SEPARATOR));
+		final String sql = String.format(COPY_SINGLE_TABLE, tableName, configFacade.getCsvSeparator());
 
 		writeCsv(writer, sql, databaseTable.getFileName());
 

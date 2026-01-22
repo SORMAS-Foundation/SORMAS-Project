@@ -34,6 +34,7 @@ import com.vaadin.util.ReflectTools;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.geo.GeoLatLon;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import elemental.json.Json;
 import elemental.json.JsonArray;
 
@@ -77,12 +78,12 @@ public class LeafletMap extends AbstractJavaScriptComponent {
 		getState().setTileLayerVisible(true);
 		getState().setTileLayerOpacity(1);
 
-		String tilesUrl = FacadeProvider.getSystemConfigFacade().getMapTilersUrl();
+		String tilesUrl = FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfigurationType.MAP_TILES_URL);
 		if(StringUtils.isNoneBlank(tilesUrl)) {
 			callFunction(
 					"setTileLayer",
 					tilesUrl,
-				FacadeProvider.getSystemConfigFacade().getMapTilersAttribution());
+				FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfigurationType.MAP_TILES_ATTRIBUTION));
 		}
 		addFunction("onClick", new JavaScriptFunction() {
 

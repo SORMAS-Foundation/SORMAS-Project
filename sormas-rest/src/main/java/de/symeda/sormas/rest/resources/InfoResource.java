@@ -67,7 +67,7 @@ public class InfoResource {
 	@GET
 	@Path("/locale")
 	public String getLocale() {
-		return FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfigurationType.COUNTRY_LOCALE);
+		return FacadeProvider.getSystemConfigFacade().getCountryLocale();
 	}
 
 	@GET

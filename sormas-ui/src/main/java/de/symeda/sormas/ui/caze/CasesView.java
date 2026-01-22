@@ -77,7 +77,6 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleExportDto;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.UtilDate;
@@ -249,7 +248,7 @@ public class CasesView extends AbstractView implements HasName {
 					caseFollowUpEnabled,
 					hasClinicalCourseRight,
 					hasTherapyRight,
-					FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfigurationType.COUNTRY_LOCALE),
+					FacadeProvider.getSystemConfigFacade().getCountryLocale(),
 					FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations())
 				.stream()
 				.map(ExportPropertyMetaInfo::getPropertyId)
@@ -391,7 +390,7 @@ public class CasesView extends AbstractView implements HasName {
 							caseFollowUpEnabled,
 							hasClinicalCourseRight,
 							hasTherapyRight,
-							FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfigurationType.COUNTRY_LOCALE),
+							FacadeProvider.getSystemConfigFacade().getCountryLocale(),
 							FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations()),
 						customExportWindow::close);
 					customExportsLayout.setExportCallback(

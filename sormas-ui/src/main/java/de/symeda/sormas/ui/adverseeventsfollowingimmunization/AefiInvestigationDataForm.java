@@ -292,7 +292,7 @@ public class AefiInvestigationDataForm extends AbstractEditForm<AefiInvestigatio
 			AefiInvestigationDto.class,
 			AefiInvestigationDto.I18N_PREFIX,
 			false,
-			FieldVisibilityCheckers.withCountry(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE)),
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getSystemConfigFacade().getCountryLocale()),
 			FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized));
 
 		this.isCreateAction = isCreateAction;

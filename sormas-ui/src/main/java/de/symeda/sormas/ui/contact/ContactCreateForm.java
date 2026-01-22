@@ -141,7 +141,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			ContactDto.class,
 			ContactDto.I18N_PREFIX,
 			FieldVisibilityCheckers.withDisease(disease)
-				.andWithCountry(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE))
+				.andWithCountry(FacadeProvider.getSystemConfigFacade().getCountryLocale())
 				.andWithFeatureType(FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations()));
 
 		this.disease = disease;
@@ -390,7 +390,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		FieldHelper.updateEnumData(
 			contactProximity,
 			Arrays.asList(
-				ContactProximity.getValues(disease, FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE))));
+				ContactProximity.getValues(disease, FacadeProvider.getSystemConfigFacade().getCountryLocale())));
 		contactProximity.setValue(value);
 	}
 

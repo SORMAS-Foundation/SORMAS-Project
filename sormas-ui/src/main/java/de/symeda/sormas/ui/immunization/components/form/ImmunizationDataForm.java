@@ -141,7 +141,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 			ImmunizationDto.class,
 			ImmunizationDto.I18N_PREFIX,
 			false,
-			FieldVisibilityCheckers.withCountry(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfiguration.COUNTRY_LOCALE)),
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getSystemConfigFacade().getCountryLocale()),
 			FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized));
 		this.relatedCase = relatedCase;
 		this.actionCallback = actionCallback;

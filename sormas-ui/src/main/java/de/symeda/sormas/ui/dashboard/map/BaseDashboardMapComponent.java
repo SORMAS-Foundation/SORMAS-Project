@@ -99,7 +99,7 @@ public abstract class BaseDashboardMapComponent<C extends BaseDashboardCriteria<
 		Date fromDate = dashboardDataProvider.getFromDate();
 		Date toDate = dashboardDataProvider.getToDate();
 
-		int maxDisplayCount = FacadeProvider.getSystemConfigFacade().getDashboardMapMarkerLimit();
+		int maxDisplayCount = FacadeProvider.getSystemConfigFacade().getAsIntegerOrThrow(SystemConfigurationType.DASHBOARD_MAP_MARKER_LIMIT);
 		Long count = 0L;
 		if (!forced && maxDisplayCount >= 0) {
 			count = getMarkerCount(fromDate, toDate, maxDisplayCount);
@@ -291,7 +291,7 @@ public abstract class BaseDashboardMapComponent<C extends BaseDashboardCriteria<
 
 		}
 
-		map.setZoom(FacadeProvider.getSystemConfigFacade().getMapZoom());
+		map.setZoom(FacadeProvider.getSystemConfigFacade().getAsIntegerOrThrow(SystemConfigurationType.MAP_ZOOM));
 
 		// Add components
 		addComponent(createHeader());

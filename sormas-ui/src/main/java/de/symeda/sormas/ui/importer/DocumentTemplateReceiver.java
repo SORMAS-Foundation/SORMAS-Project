@@ -27,6 +27,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -64,7 +65,10 @@ public class DocumentTemplateReceiver
 		try {
 			String newFileName = ImportExportUtils.TEMP_FILE_PREFIX + "_template_upload" + DateHelper.formatDateForExport(new Date()) + "_"
 				+ DataHelper.getShortUuid(UiUtil.getUserUuid()) + ".docx";
-			file = new File(Paths.get(FacadeProvider.getSystemConfigFacade().getTempFilesPath()).resolve(newFileName).toString());
+			file = new File(
+				Paths.get(FacadeProvider.getSystemConfigFacade().getAsStringOrThrow(SystemConfigurationType.TEMP_PATH))
+					.resolve(newFileName)
+					.toString());
 
 			return new FileOutputStream(file);
 		} catch (FileNotFoundException e) {
@@ -81,7 +85,7 @@ public class DocumentTemplateReceiver
 
 	@Override
 	public void uploadStarted(StartedEvent startedEvent) {
-		long fileSizeLimitMb = FacadeProvider.getSystemConfigFacade().getDocumentUploadSizeLimitMb();
+		long fileSizeLimitMb = FacadeProvider.getSystemConfigFacade().getAsLongOrThrow(SystemConfigurationType.DOCUMENT_UPLOAD_SIZE_LIMIT_MB);
 
 		if (isFileSizeLimitExceeded(startedEvent.getContentLength(), fileSizeLimitMb)) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.fileTooBig, fileSizeLimitMb));
