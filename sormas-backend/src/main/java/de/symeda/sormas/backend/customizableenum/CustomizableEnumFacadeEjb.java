@@ -70,7 +70,7 @@ import de.symeda.sormas.api.utils.InvalidCustomizationException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.AbstractBaseEjb;
-import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
+import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.RightsAllowed;
@@ -109,7 +109,7 @@ public class CustomizableEnumFacadeEjb
 	@EJB
 	private CustomizableEnumValueService service;
 	@EJB
-	private SystemConfigurationAccessorEjb configFacade;
+	private ConfigFacadeEjbLocal configFacade;
 
 	public CustomizableEnumFacadeEjb() {
 

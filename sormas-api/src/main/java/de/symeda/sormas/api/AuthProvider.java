@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.api;
 
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationAccessorFacade;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 
 /**
@@ -49,7 +48,7 @@ public class AuthProvider {
 		name = configuredProvider;
 	}
 
-	public static AuthProvider getProvider(SystemConfigurationAccessorFacade configFacade) {
+	public static AuthProvider getProvider(ConfigFacade configFacade) {
 		if (provider == null) {
 			synchronized (AuthProvider.class) {
 				if (provider == null) {

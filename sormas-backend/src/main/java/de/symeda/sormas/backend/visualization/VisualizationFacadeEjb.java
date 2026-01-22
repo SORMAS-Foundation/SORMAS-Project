@@ -77,7 +77,7 @@ import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
-import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
+import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless(name = "VisualizationFacade")
@@ -99,7 +99,7 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 	@EJB
 	private ContactService contactService;
 	@EJB
-	private SystemConfigurationAccessorEjb configFacade;
+	private ConfigFacadeEjbLocal configFacade;
 
 	@Override
 	public String buildTransmissionChainJson(

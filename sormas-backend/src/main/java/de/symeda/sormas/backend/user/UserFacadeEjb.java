@@ -137,7 +137,7 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
-import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
+import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.task.TaskFacadeEjb;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.TravelEntryJoins;
@@ -194,7 +194,7 @@ public class UserFacadeEjb implements UserFacade {
 	@EJB
 	private PersonService personService;
 	@EJB
-	private SystemConfigurationAccessorEjb configFacade;
+	private ConfigFacadeEjbLocal configFacade;
 	@Inject
 	private Event<UserCreateEvent> userCreateEvent;
 	@Inject

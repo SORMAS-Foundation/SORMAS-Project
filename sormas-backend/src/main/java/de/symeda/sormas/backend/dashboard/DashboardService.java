@@ -55,7 +55,7 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
-import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
+import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -75,7 +75,7 @@ public class DashboardService {
 	@EJB
 	private SampleService sampleService;
 	@EJB
-	private SystemConfigurationAccessorEjb configFacade;
+	private ConfigFacadeEjbLocal configFacade;
 
 	public List<DashboardCaseDto> getCases(DashboardCriteria dashboardCriteria) {
 

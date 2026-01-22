@@ -39,7 +39,7 @@ import com.nexmo.client.sms.SmsSubmissionResponseMessage;
 import com.nexmo.client.sms.messages.TextMessage;
 
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
-import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
+import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 
 
 @Stateless(name = "SmsService")
@@ -53,7 +53,7 @@ public class SmsService {
 	public static final String SMS_AUTH_SECRET = "SMS_AUTH_SECRET";
 
 	@EJB
-	private SystemConfigurationAccessorEjb configFacade;
+	private ConfigFacadeEjbLocal configFacade;
 
 	@EJB
 	private SystemConfigurationValueFacade systemConfigurationValueEjb;

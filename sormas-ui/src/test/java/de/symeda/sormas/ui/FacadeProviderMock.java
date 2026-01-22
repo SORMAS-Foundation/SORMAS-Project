@@ -16,7 +16,6 @@ package de.symeda.sormas.ui;
 
 import java.lang.reflect.Field;
 
-import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignFacade;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataFacade;

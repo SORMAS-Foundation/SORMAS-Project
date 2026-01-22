@@ -21,9 +21,9 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import de.symeda.sormas.api.CaseClassificationCalculationMode;
+import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationAccessorFacade;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.json.ObjectMapperProvider;
@@ -34,7 +34,7 @@ import de.symeda.sormas.backend.util.RightsAllowed;
 @DependsOn("StartupShutdownService")
 @TransactionManagement(TransactionManagementType.CONTAINER)
 @RightsAllowed(UserRight._SYSTEM_CONFIGURATION)
-public class SystemConfigurationAccessorEjb implements SystemConfigurationAccessorFacade {
+public class ConfigFacadeEjbLocal implements ConfigFacade {
 
 	public static final Class<CaseClassificationCalculationMode> CLASSIFICATION_CALCULATION_MODE_CLASS = CaseClassificationCalculationMode.class;
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -115,7 +115,7 @@ public class SystemConfigurationAccessorEjb implements SystemConfigurationAccess
 	@Override
 	public char getCsvSeparator() {
 		return getAsString(SystemConfigurationType.CSV_SEPARATOR).map(CharUtils::toChar)
-			.orElseThrow(() -> SystemConfigurationAccessorFacade.buildMissingConfigException(SystemConfigurationType.CSV_SEPARATOR));
+			.orElseThrow(() -> ConfigFacade.buildMissingConfigException(SystemConfigurationType.CSV_SEPARATOR));
 	}
 
 	private String normalizeLocaleString(String locale) {

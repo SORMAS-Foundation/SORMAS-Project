@@ -34,6 +34,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.opencsv.CSVWriter;
 
+import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.importexport.ExportEntity;
@@ -41,7 +42,6 @@ import de.symeda.sormas.api.importexport.ExportProperty;
 import de.symeda.sormas.api.importexport.format.ExportFormat;
 import de.symeda.sormas.api.importexport.format.FormatterProvider;
 import de.symeda.sormas.api.importexport.format.IExportFormatter;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationAccessorFacade;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 
@@ -53,7 +53,7 @@ public class CsvStreamUtils {
 		SupplierBiFunction<String, Class<?>, String> propertyIdCaptionSupplier,
 		ExportConfigurationDto exportConfiguration,
 		final Predicate redMethodFilter,
-		SystemConfigurationAccessorFacade configFacade,
+		ConfigFacade configFacade,
 		OutputStream out) {
 
 		try (

@@ -50,7 +50,7 @@ import de.symeda.sormas.api.geo.GeoLatLon;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
+import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.util.ClientHelper;
 
 @Stateless
@@ -65,7 +65,7 @@ public class GeocodingService {
 	private static final String CITY_PLACEHOLDER = "city";
 
 	@EJB
-	private SystemConfigurationAccessorEjb configFacade;
+	private ConfigFacadeEjbLocal configFacade;
 
 	public boolean isEnabled() {
 		return configFacade.isPresent(SystemConfigurationType.GEOCODING_SERVICE_URL_TEMPLATE);

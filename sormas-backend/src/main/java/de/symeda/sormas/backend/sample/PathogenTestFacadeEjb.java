@@ -80,7 +80,7 @@ import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
-import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
+import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.therapy.DrugSusceptibility;
 import de.symeda.sormas.backend.therapy.DrugSusceptibilityMapper;
 import de.symeda.sormas.backend.user.User;
@@ -126,7 +126,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	@EJB
 	private SpecialCaseAccessService specialCaseAccessService;
 	@EJB
-	private SystemConfigurationAccessorEjb configFacade;
+	private ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private DrugSusceptibilityMapper drugSusceptibilityMapper;
 

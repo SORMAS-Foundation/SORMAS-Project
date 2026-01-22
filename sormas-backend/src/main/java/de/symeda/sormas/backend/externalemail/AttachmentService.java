@@ -53,7 +53,7 @@ import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.document.DocumentStorageService;
-import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
+import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 import fr.opensagres.poi.xwpf.converter.pdf.PdfOptions;
 
 @Stateless
@@ -71,7 +71,7 @@ public class AttachmentService {
     @EJB
     private DocumentStorageService documentStorageService;
     @EJB
-	private SystemConfigurationAccessorEjb configFacade;
+	private ConfigFacadeEjbLocal configFacade;
 
     // @formatter:off
     private final Map<String, PdfConverter> converters = Map.of(

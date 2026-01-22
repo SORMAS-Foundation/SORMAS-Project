@@ -52,12 +52,12 @@ import com.vaadin.ui.Link;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationAccessorFacade;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
@@ -122,7 +122,7 @@ public class AboutView extends VerticalLayout implements View {
 		aboutLabel.addStyleName(CssStyles.H1);
 		infoLayout.addComponent(aboutLabel);
 
-		SystemConfigurationAccessorFacade configFacade = FacadeProvider.getSystemConfigFacade();
+		ConfigFacade configFacade = FacadeProvider.getSystemConfigFacade();
 		String infoLabelStr = configFacade.getAsBoolean(SystemConfigurationType.CUSTOM_BRANDING)
 			? String.format(
 				I18nProperties.getCaption(Captions.aboutBrandedSormasVersion),

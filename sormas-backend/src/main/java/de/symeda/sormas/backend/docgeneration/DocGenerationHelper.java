@@ -26,7 +26,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb;
-import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
+import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
@@ -38,7 +38,7 @@ public class DocGenerationHelper {
 	@EJB
 	private DocumentFacadeEjb.DocumentFacadeEjbLocal documentFacade;
 	@EJB
-	private SystemConfigurationAccessorEjb configFacade;
+	private ConfigFacadeEjbLocal configFacade;
 
 	public DocumentRelatedEntityType getDocumentRelatedEntityType(ReferenceDto rootEntityReference) {
 		if (rootEntityReference instanceof CaseReferenceDto) {

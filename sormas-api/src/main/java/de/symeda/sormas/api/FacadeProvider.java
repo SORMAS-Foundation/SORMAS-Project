@@ -108,7 +108,6 @@ import de.symeda.sormas.api.survey.SurveyFacade;
 import de.symeda.sormas.api.survey.SurveyTokenFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.systemconfiguration.ExternalClientConfigurationFacade;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationAccessorFacade;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationCategoryFacade;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
@@ -295,8 +294,8 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(OutbreakFacade.class);
 	}
 
-	public static SystemConfigurationAccessorFacade getSystemConfigFacade() {
-		return get().lookupEjbRemote(SystemConfigurationAccessorFacade.class);
+	public static ConfigFacade getSystemConfigFacade() {
+		return get().lookupEjbRemote(ConfigFacade.class);
 	}
 
 	public static ExternalClientConfigurationFacade getExternalClientConfigurationFacade() {

@@ -21,6 +21,7 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
@@ -65,13 +66,12 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationAccessorFacade;
 import de.symeda.sormas.api.utils.dataprocessing.AbstractProcessingFacade;
 
 public abstract class ExternalMessageProcessingFacade extends AbstractProcessingFacade {
 
 	protected final ExternalMessageFacade externalMessageFacade;
-	protected final SystemConfigurationAccessorFacade configFacade;
+	protected final ConfigFacade configFacade;
 	protected final PersonFacade personFacade;
 	protected final FacilityFacade facilityFacade;
 	private final EventFacade eventFacade;
@@ -85,7 +85,7 @@ public abstract class ExternalMessageProcessingFacade extends AbstractProcessing
 
 	public ExternalMessageProcessingFacade(
 		ExternalMessageFacade externalMessageFacade,
-		SystemConfigurationAccessorFacade configFacade,
+		ConfigFacade configFacade,
 		FeatureConfigurationFacade featureConfigurationFacade,
 		PersonFacade personFacade,
 		CaseFacade caseFacade,

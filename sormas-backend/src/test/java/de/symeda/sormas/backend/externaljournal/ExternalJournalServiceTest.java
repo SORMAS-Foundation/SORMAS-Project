@@ -57,7 +57,6 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 
 @WireMockTest(httpPort = 7777)
 public class ExternalJournalServiceTest extends AbstractBeanTest {

@@ -42,14 +42,14 @@ import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.survey.Survey;
 import de.symeda.sormas.backend.survey.SurveyService;
-import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
+import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 
 @Stateless
 @LocalBean
 public class DocumentTemplateService extends BaseAdoService<DocumentTemplate> {
 
 	@EJB
-	private SystemConfigurationAccessorEjb configFacade;
+	private ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private SurveyService surveyService;
 

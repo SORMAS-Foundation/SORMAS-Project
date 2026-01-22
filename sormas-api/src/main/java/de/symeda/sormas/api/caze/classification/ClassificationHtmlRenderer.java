@@ -23,13 +23,13 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.safety.Safelist;
 
+import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteriaDto.ClassificationXOfSubCriteriaDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationAccessorFacade;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.HtmlHelper;
@@ -156,7 +156,7 @@ public final class ClassificationHtmlRenderer {
 		List<Disease> diseases,
 		Language language,
 		CaseClassificationFacade caseClassificationFacade,
-		SystemConfigurationAccessorFacade configFacade) {
+		ConfigFacade configFacade) {
 		StringBuilder html = new StringBuilder();
 		html.append("<html><header><style>");
 

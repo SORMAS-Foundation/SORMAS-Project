@@ -33,10 +33,10 @@ public class ExternalClientConfigurationEjb implements ExternalClientConfigurati
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	private SystemConfigurationAccessorEjb systemConfigurationValueEjb;
+	private ConfigFacadeEjbLocal systemConfigurationValueEjb;
 
 	@Inject
-	public void setSystemConfigurationValueEjb(SystemConfigurationAccessorEjb systemConfigurationValueEjb) {
+	public void setSystemConfigurationValueEjb(ConfigFacadeEjbLocal systemConfigurationValueEjb) {
 		this.systemConfigurationValueEjb = systemConfigurationValueEjb;
 	}
 

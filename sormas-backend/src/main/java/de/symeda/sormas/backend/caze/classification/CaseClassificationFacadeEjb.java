@@ -79,7 +79,7 @@ import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
 import de.symeda.sormas.backend.sample.PathogenTestService;
-import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
+import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 
 /**
  * Stateless instead of Singleton. It's ok to have multiple instances with an
@@ -97,7 +97,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 	@EJB
 	private PathogenTestService pathogenTestService;
 	@EJB
-	private SystemConfigurationAccessorEjb configFacade;
+	private ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private EventService eventService;
 	@EJB

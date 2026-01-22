@@ -23,8 +23,8 @@ import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.api.utils.VersionHelper;
+import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.systemconfiguration.ExternalClientConfigurationEjb;
-import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationAccessorEjb;
 
 @Stateless
 @LocalBean
@@ -32,14 +32,14 @@ public class StartupConfigurationValidationService {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	private SystemConfigurationAccessorEjb systemConfigurationAccessor;
+	private ConfigFacadeEjbLocal systemConfigurationAccessor;
 	private ExternalClientConfigurationEjb externalClientConfiguration;
 
 	public StartupConfigurationValidationService() {
 	}
 
 	public StartupConfigurationValidationService(
-		SystemConfigurationAccessorEjb systemConfigurationAccessor,
+		ConfigFacadeEjbLocal systemConfigurationAccessor,
 		ExternalClientConfigurationEjb externalClientConfiguration) {
 		this.systemConfigurationAccessor = systemConfigurationAccessor;
 		this.externalClientConfiguration = externalClientConfiguration;
@@ -160,7 +160,7 @@ public class StartupConfigurationValidationService {
 	}
 
 	@Inject
-	public void setSystemConfigurationAccessor(SystemConfigurationAccessorEjb systemConfigurationAccessor) {
+	public void setSystemConfigurationAccessor(ConfigFacadeEjbLocal systemConfigurationAccessor) {
 		this.systemConfigurationAccessor = systemConfigurationAccessor;
 	}
 
