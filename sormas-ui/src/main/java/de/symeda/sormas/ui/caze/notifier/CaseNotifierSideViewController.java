@@ -58,6 +58,10 @@ public class CaseNotifierSideViewController {
             throw new IllegalArgumentException("Caze is null");
         }
 
+        if (caze.getNotifier() == null) {  
+            throw new IllegalArgumentException("Case Notifier is null");
+        }
+
         final NotifierDto notifier =
             FacadeProvider.getNotifierFacade().getByUuidAndTime(caze.getNotifier().getUuid(), caze.getNotifier().getVersionDate().toInstant());
 
