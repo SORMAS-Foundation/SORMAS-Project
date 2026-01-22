@@ -39,10 +39,10 @@ import de.symeda.sormas.api.docgeneneration.DocumentTemplateCriteria;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateFacade;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.MockProducer;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 
 public class DocumentTemplateFacadeEjbTest extends AbstractDocGenerationTest {
 
@@ -58,7 +58,7 @@ public class DocumentTemplateFacadeEjbTest extends AbstractDocGenerationTest {
 	public void writeAndDeleteTemplateTest() throws IOException, URISyntaxException, DocumentTemplateException {
 		String testDirectory = "target" + File.separator + "doctest";
 		byte[] document = IOUtils.toByteArray(getClass().getResourceAsStream("/docgeneration/quarantine/Quarantine.docx"));
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.CUSTOM_FILES_PATH, testDirectory);
+		MockProducer.getProperties().setProperty(ConfigType.CUSTOM_FILES_PATH, testDirectory);
 
 		DocumentTemplateDto templateDto = DocumentTemplateDto.build(QUARANTINE_ORDER_CASE, "TemplateFileToBeDeleted.docx");
 		documentTemplateFacade.saveDocumentTemplate(templateDto, document);

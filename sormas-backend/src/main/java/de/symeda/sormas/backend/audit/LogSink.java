@@ -30,7 +30,7 @@ import org.slf4j.helpers.NOPLogger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 
 /**
@@ -57,7 +57,7 @@ public class LogSink {
 
 	@PostConstruct
 	private void setup() {
-		Optional<String> fileNameOpt = configFacade.getAsString(SystemConfigurationType.AUDIT_LOGGER_CONFIG);
+		Optional<String> fileNameOpt = configFacade.getAsString(ConfigType.AUDIT_LOGGER_CONFIG);
 
 		if (fileNameOpt.isEmpty()) {
 			setupNopLogger();

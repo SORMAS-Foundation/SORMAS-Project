@@ -43,9 +43,11 @@ import javax.naming.NamingException;
 import javax.naming.spi.InitialContextFactory;
 import javax.transaction.UserTransaction;
 
+import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.RequestContextTO;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.backend.central.EtcdCentralClient;
 import de.symeda.sormas.backend.central.EtcdCentralClientProducer;
@@ -78,6 +80,7 @@ public class MockProducer implements InitialContextFactory {
 	private static SormasToSormasRestClient s2sRestClient = mock(SormasToSormasRestClient.class);
 	private static final EtcdCentralClient etcdCentralClient = mock(EtcdCentralClient.class);
 	private static CustomizableEnumFacade customizableEnumFacadeForConverter = mock(CustomizableEnumFacade.class);
+	private static ConfigFacade configFacade = mock(ConfigFacade.class);
 
 	private static ManagedScheduledExecutorService managedScheduledExecutorService = mock(ManagedScheduledExecutorService.class);
 
@@ -132,10 +135,10 @@ public class MockProducer implements InitialContextFactory {
 	private static void resetProperties() {
 
 		properties.clear();
-		properties.setProperty(ConfigFacadeEjb.COUNTRY_NAME, "nigeria");
-		properties.setProperty(ConfigFacadeEjb.CSV_SEPARATOR, ";");
-		properties.setProperty(ConfigFacadeEjb.TEMP_FILES_PATH, TMP_PATH);
-		properties.setProperty(ConfigFacadeEjb.DOCUMENT_FILES_PATH, TMP_PATH + "/documents");
+		properties.setProperty(ConfigType.COUNTRY_NAME, "nigeria");
+		properties.setProperty(ConfigType.CSV_SEPARATOR, ";");
+		properties.setProperty(ConfigType.TEMP_FILES_PATH, TMP_PATH);
+		properties.setProperty(ConfigType.DOCUMENT_FILES_PATH, TMP_PATH + "/documents");
 	}
 
 	public static void wireMocks() {
@@ -176,6 +179,15 @@ public class MockProducer implements InitialContextFactory {
 	@Produces
 	public static Properties getProperties() {
 		return properties;
+	}
+
+	/**
+	 * Meant as a drop-in for the legacy Properties approach, favor the adequate interface instead of this.
+	 */
+	@Produces
+	@Deprecated
+	public static SystemConfigurationPropertiesFacade getProperties() {
+		This is the code that must be modified to allow a test Config mock environment
 	}
 
 	@Produces

@@ -37,7 +37,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.UiUtil;
@@ -56,7 +56,7 @@ public class DocumentUploadReceiver implements UploadReceiver {
 			String newFileName = ImportExportUtils.TEMP_FILE_PREFIX + "_document_upload" + DateHelper.formatDateForExport(new Date()) + "_"
 				+ DataHelper.getShortUuid(UiUtil.getUserUuid());
 			file =
-				Paths.get(FacadeProvider.getConfigFacade().getAsStringOrThrow(SystemConfigurationType.TEMP_PATH)).resolve(newFileName).toFile();
+				Paths.get(FacadeProvider.getConfigFacade().getAsStringOrThrow(ConfigType.TEMP_PATH)).resolve(newFileName).toFile();
 			return new BufferedOutputStream(Files.newOutputStream(file.toPath()));
 
 		} catch (IOException e) {

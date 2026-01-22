@@ -51,7 +51,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleDto;
@@ -348,7 +348,7 @@ public class UserController {
 
 	public void sync() {
 		if (UiUtil.permitted(FeatureType.AUTH_PROVIDER_TO_SORMAS_USER_SYNC)) {
-			if (FacadeProvider.getConfigFacade().isAbsent(SystemConfigurationType.AUTHENTICATION_PROVIDER_SYNCED_NEW_USER_ROLE)) {
+			if (FacadeProvider.getConfigFacade().isAbsent(ConfigType.AUTHENTICATION_PROVIDER_SYNCED_NEW_USER_ROLE)) {
 				VaadinUiUtil.showSimplePopupWindow(
 					I18nProperties.getString(Strings.headingSyncUsers),
 					I18nProperties.getString(Strings.messageSyncUsersFromAuthProviderConfigurationError));

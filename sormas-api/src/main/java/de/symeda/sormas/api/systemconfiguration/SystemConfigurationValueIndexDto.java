@@ -33,6 +33,7 @@ public class SystemConfigurationValueIndexDto extends EntityDto {
     public static final String CATEGORY_NAME_PROPERTY_NAME = "category";
     public static final String CATEGORY_CAPTION_PROPERTY_NAME = "categoryCaption";
     public static final String CATEGORY_DESCRIPTION_PROPERTY_NAME = "categoryDescription";
+	public static final String DEFAULT_VALUE_PROPERTY_NAME = "categoryDescription";
 
     private String value;
     private String key;
@@ -41,6 +42,7 @@ public class SystemConfigurationValueIndexDto extends EntityDto {
     private String category;
     private String categoryCaption;
     private String categoryDescription;
+	private String defaultValue;
 
     /**
      * Gets the key of the configuration.
@@ -174,6 +176,14 @@ public class SystemConfigurationValueIndexDto extends EntityDto {
     public void setCategoryDescription(String categoryDescription) {
         this.categoryDescription = categoryDescription;
     }
+
+	public String getDefaultValue() {
+		return defaultValue;
+	}
+
+	public void setDefaultValue(String defaultValue) {
+		this.defaultValue = defaultValue;
+	}
 
     @Override
     public boolean equals(Object o) {

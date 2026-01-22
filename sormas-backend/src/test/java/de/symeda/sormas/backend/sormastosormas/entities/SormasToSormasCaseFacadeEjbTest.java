@@ -88,6 +88,7 @@ import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInf
 import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.api.symptoms.SymptomState;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -1501,7 +1502,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 	@Test
 	public void testSetResponsibleDistrictOnAccept() throws SormasToSormasException, SormasToSormasValidationException {
 		TestDataCreator.RDCF s2sRdcf = createRDCF("S2SExtId").centralRdcf;
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.SORMAS2SORMAS_DISTRICT_EXTERNAL_ID, s2sRdcf.district.getExternalId());
+		MockProducer.getProperties().setProperty(ConfigType.SORMAS2SORMAS_DISTRICT_EXTERNAL_ID, s2sRdcf.district.getExternalId());
 
 		// sharing without ownership should not change responsible district
 		PersonDto person = createPersonDto(rdcf);

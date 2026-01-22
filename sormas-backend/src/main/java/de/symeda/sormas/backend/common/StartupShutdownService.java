@@ -76,7 +76,7 @@ import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityCriteria;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.OccupationType;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -264,7 +264,7 @@ public class StartupShutdownService {
 	}
 
 	private void createDefaultInfrastructureData() {
-		if (!configFacade.getAsBoolean(SystemConfigurationType.CREATE_DEFAULT_ENTITIES)) {
+		if (!configFacade.getAsBoolean(ConfigType.CREATE_DEFAULT_ENTITIES)) {
 			// return if isCreateDefaultEntities() is false
 			logger.info("Skipping the creation of default infrastructure data");
 			return;
@@ -360,7 +360,7 @@ public class StartupShutdownService {
 				u -> {
 				});
 
-			if (!configFacade.getAsBoolean(SystemConfigurationType.CREATE_DEFAULT_ENTITIES)) {
+			if (!configFacade.getAsBoolean(ConfigType.CREATE_DEFAULT_ENTITIES)) {
 				// return if isCreateDefaultEntities() is false
 				logger.info("Skipping the creation of default entities");
 				return;

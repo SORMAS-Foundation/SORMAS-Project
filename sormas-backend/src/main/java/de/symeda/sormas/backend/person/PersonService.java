@@ -73,7 +73,7 @@ import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SimilarPersonDto;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -667,7 +667,7 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 
 		Predicate associationFilter = buildAssociationFilter(
 			queryContext,
-			configFacade.getAsBoolean(SystemConfigurationType.DUPLICATE_CHECKS_EXCLUDE_PERSONS_ONLY_LINKED_TO_ARCHIVED_ENTRIES));
+			configFacade.getAsBoolean(ConfigType.DUPLICATE_CHECKS_EXCLUDE_PERSONS_ONLY_LINKED_TO_ARCHIVED_ENTRIES));
 		personQuery.where(and(cb, personSimilarityFilter, associationFilter));
 		personQuery.distinct(true);
 
@@ -795,7 +795,7 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 	}
 
 	private void setSimilarityThresholdQuery() {
-		double nameSimilarityThreshold = configFacade.getAsDoubleOrThrow(SystemConfigurationType.NAME_SIMILARITY_THRESHOLD);
+		double nameSimilarityThreshold = configFacade.getAsDoubleOrThrow(ConfigType.NAME_SIMILARITY_THRESHOLD);
 		Query q = em.createNativeQuery("select set_limit(" + nameSimilarityThreshold + ")");
 		q.getSingleResult();
 	}
@@ -939,7 +939,7 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 		}
 
 		if (StringUtils.isNotBlank(criteria.getNationalHealthId())
-			&& (configFacade.getAsBoolean(SystemConfigurationType.DUPLICATECHECKS_NATIONAL_HEALTH_ID_OVERRIDES_CRITERIA)
+			&& (configFacade.getAsBoolean(ConfigType.DUPLICATECHECKS_NATIONAL_HEALTH_ID_OVERRIDES_CRITERIA)
 				|| criteria.isCheckOnlyForNationalHealthId())) {
 			filter = or(cb, filter, cb.equal(personFrom.get(Person.NATIONAL_HEALTH_ID), criteria.getNationalHealthId()));
 		}

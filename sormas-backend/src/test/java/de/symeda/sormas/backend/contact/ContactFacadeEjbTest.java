@@ -111,6 +111,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -138,7 +139,6 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -2281,7 +2281,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetContactsByPersonNationalHealthId() {
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+		MockProducer.getProperties().setProperty(ConfigType.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 		RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createSurveillanceSupervisor(rdcf);
 

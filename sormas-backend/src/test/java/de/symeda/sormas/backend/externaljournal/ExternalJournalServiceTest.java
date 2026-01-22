@@ -54,10 +54,10 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 
 @WireMockTest(httpPort = 7777)
 public class ExternalJournalServiceTest extends AbstractBeanTest {
@@ -66,10 +66,10 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	public void setup(WireMockRuntimeInfo wireMockRuntime) {
 
 		String wireMockUrl = "http://localhost:" + wireMockRuntime.getHttpPort();
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_PATIENT_DIARY_AUTH_URL, wireMockUrl + "/auth");
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_PATIENT_DIARY_EMAIL, "test@patientdiary.de");
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_PATIENT_DIARY_PASSWORD, "testpass");
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_PATIENT_DIARY_PROBANDS_URL, wireMockUrl);
+		MockProducer.getProperties().setProperty(ConfigType.INTERFACE_PATIENT_DIARY_AUTH_URL, wireMockUrl + "/auth");
+		MockProducer.getProperties().setProperty(ConfigType.INTERFACE_PATIENT_DIARY_EMAIL, "test@patientdiary.de");
+		MockProducer.getProperties().setProperty(ConfigType.INTERFACE_PATIENT_DIARY_PASSWORD, "testpass");
+		MockProducer.getProperties().setProperty(ConfigType.INTERFACE_PATIENT_DIARY_PROBANDS_URL, wireMockUrl);
 		stubFor(post(urlEqualTo("/auth")).willReturn(aResponse().withBody("{\"success\": true, \"token\": \"token\"}").withStatus(HttpStatus.SC_OK)));
 		stubFor(
 			get(urlPathEqualTo("/probands")).atPriority(2)
@@ -123,11 +123,11 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 
 	@AfterEach
 	public void teardown() {
-		MockProducer.getProperties().remove(ConfigFacadeEjb.INTERFACE_PATIENT_DIARY_AUTH_URL);
-		MockProducer.getProperties().remove(ConfigFacadeEjb.INTERFACE_PATIENT_DIARY_EMAIL);
-		MockProducer.getProperties().remove(ConfigFacadeEjb.INTERFACE_PATIENT_DIARY_PASSWORD);
-		MockProducer.getProperties().remove(ConfigFacadeEjb.INTERFACE_PATIENT_DIARY_PROBANDS_URL);
-		MockProducer.getProperties().remove(ConfigFacadeEjb.INTERFACE_PATIENT_DIARY_ACCEPT_PHONE_CONTACT);
+		MockProducer.getProperties().remove(ConfigType.INTERFACE_PATIENT_DIARY_AUTH_URL);
+		MockProducer.getProperties().remove(ConfigType.INTERFACE_PATIENT_DIARY_EMAIL);
+		MockProducer.getProperties().remove(ConfigType.INTERFACE_PATIENT_DIARY_PASSWORD);
+		MockProducer.getProperties().remove(ConfigType.INTERFACE_PATIENT_DIARY_PROBANDS_URL);
+		MockProducer.getProperties().remove(ConfigType.INTERFACE_PATIENT_DIARY_ACCEPT_PHONE_CONTACT);
 	}
 
 	@Test
@@ -202,7 +202,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	 */
 	public void givenValidEmailWithPhoneOnlyNotAccepted() {
 
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_PATIENT_DIARY_ACCEPT_PHONE_CONTACT, Boolean.FALSE.toString());
+		MockProducer.getProperties().setProperty(ConfigType.INTERFACE_PATIENT_DIARY_ACCEPT_PHONE_CONTACT, Boolean.FALSE.toString());
 
 		PatientDiaryQueryResponse response = new PatientDiaryQueryResponse();
 		response.setCount(0);
@@ -331,7 +331,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	 */
 	public void givenNoEmailWithPhoneOnlyNotAccepted() {
 
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_PATIENT_DIARY_ACCEPT_PHONE_CONTACT, Boolean.FALSE.toString());
+		MockProducer.getProperties().setProperty(ConfigType.INTERFACE_PATIENT_DIARY_ACCEPT_PHONE_CONTACT, Boolean.FALSE.toString());
 
 		PatientDiaryQueryResponse response = new PatientDiaryQueryResponse();
 		response.setCount(0);
@@ -469,7 +469,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	 */
 	public void givenMultipleNonPrimaryEmailsWithPhoneOnlyNotAccepted() {
 
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_PATIENT_DIARY_ACCEPT_PHONE_CONTACT, Boolean.FALSE.toString());
+		MockProducer.getProperties().setProperty(ConfigType.INTERFACE_PATIENT_DIARY_ACCEPT_PHONE_CONTACT, Boolean.FALSE.toString());
 
 		PatientDiaryQueryResponse response = new PatientDiaryQueryResponse();
 		response.setCount(0);
@@ -613,7 +613,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	 */
 	public void givenInvalidPrimaryEmailWithPhoneOnlyNotAccepted() {
 
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_PATIENT_DIARY_ACCEPT_PHONE_CONTACT, Boolean.FALSE.toString());
+		MockProducer.getProperties().setProperty(ConfigType.INTERFACE_PATIENT_DIARY_ACCEPT_PHONE_CONTACT, Boolean.FALSE.toString());
 
 		PatientDiaryQueryResponse response = new PatientDiaryQueryResponse();
 		response.setCount(0);
@@ -753,7 +753,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	 */
 	public void givenInvalidNonprimaryEmailWithPhoneOnlyNotAccepted() {
 
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_PATIENT_DIARY_ACCEPT_PHONE_CONTACT, Boolean.FALSE.toString());
+		MockProducer.getProperties().setProperty(ConfigType.INTERFACE_PATIENT_DIARY_ACCEPT_PHONE_CONTACT, Boolean.FALSE.toString());
 
 		PatientDiaryQueryResponse response = new PatientDiaryQueryResponse();
 		response.setCount(0);
@@ -893,7 +893,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	 */
 	public void givenTakenEmailWithPhoneOnlyNotAccepted() {
 
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_PATIENT_DIARY_ACCEPT_PHONE_CONTACT, Boolean.FALSE.toString());
+		MockProducer.getProperties().setProperty(ConfigType.INTERFACE_PATIENT_DIARY_ACCEPT_PHONE_CONTACT, Boolean.FALSE.toString());
 
 		PatientDiaryQueryResponse response = new PatientDiaryQueryResponse();
 		response.setCount(0);

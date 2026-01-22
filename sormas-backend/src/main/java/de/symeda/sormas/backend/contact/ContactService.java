@@ -88,7 +88,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -1550,7 +1550,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 		Predicate nameSimilarityFilter =
 			cb.gt(
 				cb.function("similarity", double.class, nameSimilarityExpr, nameSimilarityExpr2),
-				configFacade.getAsDoubleOrThrow(SystemConfigurationType.NAME_SIMILARITY_THRESHOLD));
+				configFacade.getAsDoubleOrThrow(ConfigType.NAME_SIMILARITY_THRESHOLD));
 		Predicate diseaseFilter = cb.equal(root.get(Contact.DISEASE), root2.get(Contact.DISEASE));
 		Predicate reportDateFilter = cb.lessThanOrEqualTo(
 			cb.abs(

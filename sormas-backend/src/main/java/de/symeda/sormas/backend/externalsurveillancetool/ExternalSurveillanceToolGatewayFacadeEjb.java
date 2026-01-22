@@ -46,7 +46,7 @@ import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRes
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.share.ExternalShareStatus;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -179,7 +179,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 	}
 
 	private void sendRequest(ExportParameters params) throws ExternalSurveillanceToolException {
-		String serviceUrl = configFacade.getAsStringOrThrow(SystemConfigurationType.EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL).trim();
+		String serviceUrl = configFacade.getAsStringOrThrow(ConfigType.EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL).trim();
 
 		Invocation.Builder request =
 			ClientBuilder.newBuilder().connectTimeout(30, TimeUnit.SECONDS).build().target(serviceUrl).path("export").request();
@@ -304,7 +304,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 	}
 
 	private void sendDeleteRequest(DeleteParameters params) throws ExternalSurveillanceToolException {
-		String serviceUrl = configFacade.getAsStringOrThrow(SystemConfigurationType.EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL).trim();
+		String serviceUrl = configFacade.getAsStringOrThrow(ConfigType.EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL).trim();
 
 		Invocation.Builder request =
 			ClientBuilder.newBuilder().connectTimeout(30, TimeUnit.SECONDS).build().target(serviceUrl).path("delete").request();
@@ -334,8 +334,8 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 	@Override
 	@PermitAll
 	public String getVersion() throws ExternalSurveillanceToolException {
-		String serviceUrl = configFacade.getAsStringOrThrow(SystemConfigurationType.EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL).trim();
-		String versionEndpoint = configFacade.getAsStringOrThrow(SystemConfigurationType.EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_VERSION_ENDPOINT).trim();
+		String serviceUrl = configFacade.getAsStringOrThrow(ConfigType.EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL).trim();
+		String versionEndpoint = configFacade.getAsStringOrThrow(ConfigType.EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_VERSION_ENDPOINT).trim();
 
 		try {
 			Response response =

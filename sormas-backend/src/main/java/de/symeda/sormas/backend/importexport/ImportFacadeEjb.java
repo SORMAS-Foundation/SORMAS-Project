@@ -135,7 +135,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.selfreport.SelfReportDto;
 import de.symeda.sormas.api.survey.SurveyTokenDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.CSVCommentLineValidator;
 import de.symeda.sormas.api.utils.CSVUtils;
@@ -454,7 +454,7 @@ public class ImportFacadeEjb implements ImportFacade {
 	private void createExportDirectoryIfNecessary() throws IOException {
 
 		try {
-			Files.createDirectories(Paths.get(configFacade.getAsStringOrThrow(SystemConfigurationType.GENERATED_FILES_PATH)));
+			Files.createDirectories(Paths.get(configFacade.getAsStringOrThrow(ConfigType.GENERATED_FILES_PATH)));
 		} catch (IOException e) {
 			logger.error("Generated files directory doesn't exist and creation failed.");
 			throw e;
@@ -770,7 +770,7 @@ public class ImportFacadeEjb implements ImportFacade {
 	}
 
 	private String getImportTemplateFilePath(String baseFilename) {
-		Path exportDirectory = Paths.get(configFacade.getAsStringOrThrow(SystemConfigurationType.GENERATED_FILES_PATH));
+		Path exportDirectory = Paths.get(configFacade.getAsStringOrThrow(ConfigType.GENERATED_FILES_PATH));
 		return exportDirectory.resolve(getImportTemplateFileName(baseFilename)).toString();
 	}
 

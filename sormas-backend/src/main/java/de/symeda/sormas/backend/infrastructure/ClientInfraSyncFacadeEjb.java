@@ -8,7 +8,7 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.ClientInfraSyncFacade;
 import de.symeda.sormas.api.infrastructure.InfrastructureChangeDatesDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureSyncDto;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.backend.campaign.CampaignFacadeEjb;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
@@ -77,7 +77,7 @@ public class ClientInfraSyncFacadeEjb implements ClientInfraSyncFacade {
 
 		InfrastructureSyncDto sync = new InfrastructureSyncDto();
 
-		Long infractructureThreshold = configFacade.getAsLongOrThrow(SystemConfigurationType.INFRASTRUCTURE_SYNC_THRESHOLD);
+		Long infractructureThreshold = configFacade.getAsLongOrThrow(ConfigType.INFRASTRUCTURE_SYNC_THRESHOLD);
 		if (facilityService.countAfter(changeDates.getFacilityChangeDate()) > infractructureThreshold
 			|| communityService.countAfter(changeDates.getCommunityChangeDate()) > infractructureThreshold) {
 			sync.setInitialSyncRequired(true);

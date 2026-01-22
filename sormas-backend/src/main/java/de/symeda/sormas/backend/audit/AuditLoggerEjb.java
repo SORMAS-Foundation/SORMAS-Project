@@ -74,7 +74,7 @@ import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditLoggerFacade;
 import de.symeda.sormas.api.audit.AuditedClass;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.CurrentUserService;
@@ -139,9 +139,9 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 
 	@PostConstruct
 	private void setup() {
-		this.auditSourceSite = configFacade.getAsString(SystemConfigurationType.AUDIT_SOURCE_SITE).orElse("NOT CONFIGURED");
+		this.auditSourceSite = configFacade.getAsString(ConfigType.AUDIT_SOURCE_SITE).orElse("NOT CONFIGURED");
 
-		if (configFacade.isAbsent(SystemConfigurationType.AUDIT_LOGGER_CONFIG)) {
+		if (configFacade.isAbsent(ConfigType.AUDIT_LOGGER_CONFIG)) {
 			loggingDisabled = true;
 		}
 

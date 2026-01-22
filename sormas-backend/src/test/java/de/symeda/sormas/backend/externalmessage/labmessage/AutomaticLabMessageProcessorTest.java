@@ -60,6 +60,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SpecimenCondition;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -68,7 +69,6 @@ import de.symeda.sormas.api.utils.dataprocessing.ProcessingResult;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb;
 
 public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
@@ -111,7 +111,7 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 	public void testProcessWithNewData(final String countryLocale, final String personalHealthId) throws ExecutionException, InterruptedException {
 
 		if (null != countryLocale && !countryLocale.isBlank()) {
-			MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, countryLocale);
+			MockProducer.getProperties().setProperty(ConfigType.COUNTRY_LOCALE, countryLocale);
 		}
 
 		ExternalMessageDto externalMessage = createExternalMessage(m -> {
@@ -163,7 +163,7 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 		throws ExecutionException, InterruptedException {
 
 		if (null != countryLocale && !countryLocale.isBlank()) {
-			MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, countryLocale);
+			MockProducer.getProperties().setProperty(ConfigType.COUNTRY_LOCALE, countryLocale);
 		}
 
 		ExternalMessageDto externalMessage = createExternalMessage(m -> {
@@ -202,7 +202,7 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 		throws ExecutionException, InterruptedException {
 
 		if (null != countryLocale && !countryLocale.isBlank()) {
-			MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, countryLocale);
+			MockProducer.getProperties().setProperty(ConfigType.COUNTRY_LOCALE, countryLocale);
 		}
 
 		ExternalMessageDto externalMessage = createExternalMessage(m -> {
@@ -306,7 +306,7 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 		throws ExecutionException, InterruptedException {
 
 		if (null != countryLocale && !countryLocale.isBlank()) {
-			MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, countryLocale);
+			MockProducer.getProperties().setProperty(ConfigType.COUNTRY_LOCALE, countryLocale);
 		}
 
 		ExternalMessageDto externalMessage = createExternalMessage(m -> {
@@ -403,7 +403,7 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 		throws ExecutionException, InterruptedException {
 
 		if (null != countryLocale && !countryLocale.isBlank()) {
-			MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, countryLocale);
+			MockProducer.getProperties().setProperty(ConfigType.COUNTRY_LOCALE, countryLocale);
 		}
 
 		ExternalMessageDto externalMessage = createExternalMessage(m -> {
@@ -493,7 +493,7 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 		final String messagePersonHealthId = "2010010100774";
 		final String existingPersonHealthId = "1010010100774";
 
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "lu");
+		MockProducer.getProperties().setProperty(ConfigType.COUNTRY_LOCALE, "lu");
 
 		ExternalMessageDto externalMessage = createExternalMessage(m -> m.setPersonNationalHealthId(messagePersonHealthId));
 
@@ -517,7 +517,7 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 
 		final String healthId = "2010010100774";
 
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "lu");
+		MockProducer.getProperties().setProperty(ConfigType.COUNTRY_LOCALE, "lu");
 
 		ExternalMessageDto externalMessage = createExternalMessage(m -> m.setPersonNationalHealthId(healthId));
 
@@ -543,7 +543,7 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 	public void testProcessMessageWithNoNationalHealthId(final String countryLocale) throws ExecutionException, InterruptedException {
 
 		if (!countryLocale.isBlank()) {
-			MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, countryLocale);
+			MockProducer.getProperties().setProperty(ConfigType.COUNTRY_LOCALE, countryLocale);
 		}
 
 		ExternalMessageDto externalMessage = createExternalMessage(m -> m.setPersonNationalHealthId(null));
@@ -583,7 +583,7 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 
 		final String healthId = "2010010100774";
 
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "lu");
+		MockProducer.getProperties().setProperty(ConfigType.COUNTRY_LOCALE, "lu");
 
 		ExternalMessageDto cultureMessage = createExternalMessage((messageDto) -> {
 			messageDto.setPersonNationalHealthId(healthId);
@@ -608,7 +608,7 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 
 		final String healthId = "2010010100774";
 
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "lu");
+		MockProducer.getProperties().setProperty(ConfigType.COUNTRY_LOCALE, "lu");
 
 		ExternalMessageDto pcrMessage = createExternalMessage((messageDto) -> {
 			messageDto.setPersonNationalHealthId(healthId);

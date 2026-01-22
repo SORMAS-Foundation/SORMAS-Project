@@ -59,6 +59,7 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.share.ExternalShareStatus;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
@@ -72,7 +73,6 @@ import de.symeda.sormas.api.utils.criteria.ExternalShareDateType;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 
@@ -680,7 +680,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetEventsByPersonNationalHealthId() {
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+		MockProducer.getProperties().setProperty(ConfigType.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 		RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createSurveillanceSupervisor(rdcf);
 

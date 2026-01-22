@@ -82,7 +82,7 @@ import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleJurisdictionFlagsDto;
 import de.symeda.sormas.api.sample.SampleListEntryDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -1297,7 +1297,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 	}
 
 	public void cleanupOldCovidSamples() {
-		final Integer maxAgeDays = configFacade.getAsIntegerOrThrow(SystemConfigurationType.NEGATIVE_COVID_TESTS_MAX_AGE_DAYS);
+		final Integer maxAgeDays = configFacade.getAsIntegerOrThrow(ConfigType.NEGATIVE_COVID_TESTS_MAX_AGE_DAYS);
 		if (maxAgeDays == null) {
 			return;
 		}

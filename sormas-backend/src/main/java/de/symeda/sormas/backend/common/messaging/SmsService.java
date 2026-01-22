@@ -24,8 +24,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
-import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationValueEjb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +38,7 @@ import com.nexmo.client.sms.SmsSubmissionResponse;
 import com.nexmo.client.sms.SmsSubmissionResponseMessage;
 import com.nexmo.client.sms.messages.TextMessage;
 
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 
 @Stateless(name = "SmsService")
@@ -55,9 +54,6 @@ public class SmsService {
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
 
-	@EJB
-	private SystemConfigurationValueFacade systemConfigurationValueEjb;
-
 	@Asynchronous
 	public void sendSms(String phoneNumber, String content) throws IOException, NexmoClientException, InvalidPhoneNumberException {
 
@@ -70,7 +66,10 @@ public class SmsService {
 			phoneNumber = phoneNumber.substring(1);
 		}
 
-		NexmoClient client = NexmoClient.builder().apiKey(systemConfigurationValueEjb.getValue(SMS_AUTH_KEY)).apiSecret(systemConfigurationValueEjb.getValue(SMS_AUTH_SECRET)).build();
+		NexmoClient client = NexmoClient.builder()
+			.apiKey(configFacade.getAsStringOrThrow(ConfigType.SMS_AUTH_KEY))
+			.apiSecret(configFacade.getAsStringOrThrow(ConfigType.SMS_AUTH_SECRET))
+			.build();
 
 		// If the phone number is invalid, e.g. because it is a landline number or malformed otherwise, throw an exception
 		InsightClient insightClient = client.getInsightClient();

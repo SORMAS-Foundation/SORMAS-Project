@@ -63,7 +63,7 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.task.IsTask;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
@@ -1190,7 +1190,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			return null;
 		}
 
-		return configFacade.getAsString(SystemConfigurationType.UI_URL).map(uiUrl -> {
+		return configFacade.getAsString(ConfigType.UI_URL).map(uiUrl -> {
 			StringBuilder uiUrlBuilder = new StringBuilder(uiUrl);
 			if (!uiUrl.endsWith("/")) {
 				uiUrlBuilder.append("/");

@@ -11,7 +11,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -37,7 +37,7 @@ public class UserSettingsForm extends AbstractEditForm<UserDto> {
 		CssStyles.style(cbLanguage, CssStyles.COMBO_BOX_WITH_FLAG_ICON);
 		ControllerProvider.getUserController().setFlagIcons(cbLanguage);
 
-		String authenticationProvider = FacadeProvider.getConfigFacade().getAsStringOrThrow(SystemConfigurationType.AUTHENTICATION_PROVIDER);
+		String authenticationProvider = FacadeProvider.getConfigFacade().getAsStringOrThrow(ConfigType.AUTHENTICATION_PROVIDER);
 		if (AuthProvider.KEYCLOAK.equals(authenticationProvider)) {
 			emailTf = addField(UserDto.USER_EMAIL, TextField.class);
 			emailTf.setCaption(I18nProperties.getCaption(Captions.User_userEmail));

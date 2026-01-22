@@ -51,7 +51,7 @@ import de.symeda.sormas.api.infrastructure.country.CountryFacade;
 import de.symeda.sormas.api.infrastructure.country.CountryIndexDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.EmptyValueException;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -307,7 +307,7 @@ public class CountryFacadeEjb
 	@Override
 	@PermitAll
 	public CountryReferenceDto getServerCountry() {
-		String countryName = configFacadeEjb.getAsStringOrThrow(SystemConfigurationType.COUNTRY_NAME);
+		String countryName = configFacadeEjb.getAsStringOrThrow(ConfigType.COUNTRY_NAME);
 		List<CountryReferenceDto> countryReferenceDtos = getByDefaultName(countryName, false);
 		return countryReferenceDtos.isEmpty() ? null : countryReferenceDtos.get(0);
 	}

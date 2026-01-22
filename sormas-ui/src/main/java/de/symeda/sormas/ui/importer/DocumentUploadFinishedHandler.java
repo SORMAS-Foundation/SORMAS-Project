@@ -34,7 +34,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.FileContentsDoNotMatchExtensionException;
 import de.symeda.sormas.api.utils.FileExtensionNotAllowedException;
@@ -183,7 +183,7 @@ public class DocumentUploadFinishedHandler implements UploadFinishedHandler {
 		String relatedEntityUuid,
 		byte[] bytes)
 		throws Exception {
-		long fileSizeLimitMb = FacadeProvider.getConfigFacade().getAsLongOrThrow(SystemConfigurationType.DOCUMENT_UPLOAD_SIZE_LIMIT_MB);
+		long fileSizeLimitMb = FacadeProvider.getConfigFacade().getAsLongOrThrow(ConfigType.DOCUMENT_UPLOAD_SIZE_LIMIT_MB);
 		if (isFileSizeLimitExceeded(length, fileSizeLimitMb)) {
 			Notification.show(I18nProperties.getValidationError(Validations.fileTooBig, fileSizeLimitMb));
 			return;

@@ -34,6 +34,7 @@ import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonIndexDto;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
@@ -132,7 +133,7 @@ public class PersonFacadeEjbUserFilterTest extends AbstractBeanTest {
 
 		PersonCriteria criteria = new PersonCriteria();
 		criteria.setPersonAssociation(PersonAssociation.TRAVEL_ENTRY);
-		MockProducer.mockProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_GERMANY);
+		MockProducer.mockProperty(ConfigType.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_GERMANY);
 		List<PersonIndexDto> travelEntryPersonsFornationalUser = getPersonFacade().getIndexList(criteria, null, null, null);
 		assertEquals(1, travelEntryPersonsFornationalUser.size());
 		assertEquals(person1.getUuid(), travelEntryPersonsFornationalUser.get(0).getUuid());

@@ -84,6 +84,7 @@ import de.symeda.sormas.api.manualmessagelog.ManualMessageLogIndexDto;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -92,7 +93,6 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.messaging.EmailService;
 import de.symeda.sormas.backend.common.messaging.InvalidPhoneNumberException;
 import de.symeda.sormas.backend.common.messaging.SmsService;
@@ -267,7 +267,7 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 
 	@Test
 	public void testIsAttachmentAvailableForLuxembourg() {
-		MockProducer.mockProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+		MockProducer.mockProperty(ConfigType.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 
 		// invalid national health id -> no attachment available
 		PersonDto person = createPerson("1234567890", null);
@@ -371,7 +371,7 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 	@Test
 	public void testSendEmailWithAttachments()
 		throws MessagingException, DocumentTemplateException, ExternalEmailException, IOException, AttachmentException, ValidationException {
-		MockProducer.mockProperty(ConfigFacadeEjb.DOCUMENT_FILES_PATH, MockProducer.TMP_PATH);
+		MockProducer.mockProperty(ConfigType.DOCUMENT_FILES_PATH, MockProducer.TMP_PATH);
 		String personNationalHealthId = "1234567890";
 		PersonDto person = creator.createPerson("Person", "Name", Sex.UNKNOWN, p -> {
 			p.setNationalHealthId(personNationalHealthId);
@@ -437,7 +437,7 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 		ValidationException {
 		setupMockSmsService();
 
-		MockProducer.mockProperty(ConfigFacadeEjb.DOCUMENT_FILES_PATH, MockProducer.TMP_PATH);
+		MockProducer.mockProperty(ConfigType.DOCUMENT_FILES_PATH, MockProducer.TMP_PATH);
 		PersonDto person = creator.createPerson("Person", "Name", Sex.UNKNOWN, p -> {
 			p.setPhone("+49 681 1234");
 		});
@@ -505,7 +505,7 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 
 	@Test
 	public void testSendEmailWithUnsupportedAttachment() throws MessagingException, IOException, InvalidPhoneNumberException {
-		MockProducer.mockProperty(ConfigFacadeEjb.DOCUMENT_FILES_PATH, MockProducer.TMP_PATH);
+		MockProducer.mockProperty(ConfigType.DOCUMENT_FILES_PATH, MockProducer.TMP_PATH);
 		PersonDto person = creator.createPerson("Person", "Name", Sex.UNKNOWN, p -> p.setNationalHealthId("1234567890"));
 
 		CaseDataDto caze = creator.createCase(userDto.toReference(), person.toReference(), rdcf);
@@ -526,7 +526,7 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 
 	@Test
 	public void testSendAttachmentWithUnavailablePassword() throws MessagingException, IOException, InvalidPhoneNumberException {
-		MockProducer.mockProperty(ConfigFacadeEjb.DOCUMENT_FILES_PATH, MockProducer.TMP_PATH);
+		MockProducer.mockProperty(ConfigType.DOCUMENT_FILES_PATH, MockProducer.TMP_PATH);
 		PersonDto person = creator.createPerson("Person", "Name", Sex.UNKNOWN);
 
 		CaseDataDto caze = creator.createCase(userDto.toReference(), person.toReference(), rdcf);
@@ -547,7 +547,7 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 
 	@Test
 	public void testSendAttachmentNotRelatedToEntity() throws MessagingException, IOException, InvalidPhoneNumberException {
-		MockProducer.mockProperty(ConfigFacadeEjb.DOCUMENT_FILES_PATH, MockProducer.TMP_PATH);
+		MockProducer.mockProperty(ConfigType.DOCUMENT_FILES_PATH, MockProducer.TMP_PATH);
 		PersonDto person = creator.createPerson("Person", "Name", Sex.UNKNOWN, p -> {
 			p.setNationalHealthId("1234567890");
 		});
@@ -886,8 +886,8 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 	}
 
 	private static void setupMockSmsService() {
-		MockProducer.mockProperty(ConfigFacadeEjb.SMS_AUTH_KEY, "test");
-		MockProducer.mockProperty(ConfigFacadeEjb.SMS_AUTH_SECRET, "test");
-		MockProducer.mockProperty(ConfigFacadeEjb.SMS_SENDER_NAME, "test");
+		MockProducer.mockProperty(ConfigType.SMS_AUTH_KEY, "test");
+		MockProducer.mockProperty(ConfigType.SMS_AUTH_SECRET, "test");
+		MockProducer.mockProperty(ConfigType.SMS_SENDER_NAME, "test");
 	}
 }

@@ -38,7 +38,7 @@ import de.symeda.sormas.api.epipulse.EpipulseDiseaseExportFacade;
 import de.symeda.sormas.api.epipulse.EpipulseDiseaseExportResult;
 import de.symeda.sormas.api.epipulse.EpipulseExportDto;
 import de.symeda.sormas.api.epipulse.EpipulseExportStatus;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 
@@ -92,9 +92,9 @@ public class EpipulseDiseaseExportFacadeEjb implements EpipulseDiseaseExportFaca
 
 			String serverCountryLocale = configFacadeEjb.getCountryLocale();
 			String serverCountryCode = configFacadeEjb.getCountryCode();
-			String serverCountryName = configFacadeEjb.getAsStringOrThrow(SystemConfigurationType.COUNTRY_NAME);
+			String serverCountryName = configFacadeEjb.getAsStringOrThrow(ConfigType.COUNTRY_NAME);
 
-			String generatedFilesPath = configFacadeEjb.getAsStringOrThrow(SystemConfigurationType.GENERATED_FILES_PATH);
+			String generatedFilesPath = configFacadeEjb.getAsStringOrThrow(ConfigType.GENERATED_FILES_PATH);
 			exportFileName = diseaseExportService.generateDownloadFileName(exportDto, epipulseExport.getId());
 			exportFilePath = generatedFilesPath + "/" + exportFileName;
 

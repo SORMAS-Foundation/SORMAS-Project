@@ -33,6 +33,7 @@ import org.mockito.Mockito;
 import de.symeda.sormas.api.CaseClassificationCalculationMode;
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
@@ -43,56 +44,56 @@ public class ConfigFacadeEjbTest extends AbstractBeanTest {
 	public void testValidateExternalUrls() {
 		final ConfigFacade configFacade = getConfigFacade();
 
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_SYMPTOM_JOURNAL_URL, "https://www.example.com");
+		MockProducer.getProperties().setProperty(ConfigType.INTERFACE_SYMPTOM_JOURNAL_URL, "https://www.example.com");
 		configFacade.validateConfigUrls();
 
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_SYMPTOM_JOURNAL_URL, "https://www.example.com");
+		MockProducer.getProperties().setProperty(ConfigType.INTERFACE_SYMPTOM_JOURNAL_URL, "https://www.example.com");
 		configFacade.validateConfigUrls();
 
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_SYMPTOM_JOURNAL_URL, "https://my-docker-service:12345/route/path");
+		MockProducer.getProperties().setProperty(ConfigType.INTERFACE_SYMPTOM_JOURNAL_URL, "https://my-docker-service:12345/route/path");
 		configFacade.validateConfigUrls();
 
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.SORMAS_STATS_URL, "http://my-stats-service.org:12345/route/path");
+		MockProducer.getProperties().setProperty(ConfigType.SORMAS_STATS_URL, "http://my-stats-service.org:12345/route/path");
 		assertThrows(IllegalArgumentException.class, configFacade::validateConfigUrls);
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.SORMAS_STATS_URL, "https://my-stats-service.org:12345/route/path");
+		MockProducer.getProperties().setProperty(ConfigType.SORMAS_STATS_URL, "https://my-stats-service.org:12345/route/path");
 		configFacade.validateConfigUrls();
 
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_SYMPTOM_JOURNAL_URL, "htps://www.google.com#");
+		MockProducer.getProperties().setProperty(ConfigType.INTERFACE_SYMPTOM_JOURNAL_URL, "htps://www.google.com#");
 		assertThrows(IllegalArgumentException.class, configFacade::validateConfigUrls);
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_SYMPTOM_JOURNAL_URL, "https://www.google.com");
+		MockProducer.getProperties().setProperty(ConfigType.INTERFACE_SYMPTOM_JOURNAL_URL, "https://www.google.com");
 		configFacade.validateConfigUrls();
 
 		String mapTilesUrlWithPlaceholders;
 		mapTilesUrlWithPlaceholders = "http://www.example.com";
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.MAP_TILES_URL, mapTilesUrlWithPlaceholders);
+		MockProducer.getProperties().setProperty(ConfigType.MAP_TILES_URL, mapTilesUrlWithPlaceholders);
 		assertThrows(IllegalArgumentException.class, configFacade::validateConfigUrls);
 
 		mapTilesUrlWithPlaceholders = "https://www.example.com";
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.MAP_TILES_URL, mapTilesUrlWithPlaceholders);
+		MockProducer.getProperties().setProperty(ConfigType.MAP_TILES_URL, mapTilesUrlWithPlaceholders);
 		configFacade.validateConfigUrls();
 
 		mapTilesUrlWithPlaceholders = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.MAP_TILES_URL, mapTilesUrlWithPlaceholders);
+		MockProducer.getProperties().setProperty(ConfigType.MAP_TILES_URL, mapTilesUrlWithPlaceholders);
 		configFacade.validateConfigUrls();
 
 		String geocodingUrlWithPlaceholders;
 		geocodingUrlWithPlaceholders = "http://www.example.com";
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.GEOCODING_SERVICE_URL_TEMPLATE, geocodingUrlWithPlaceholders);
+		MockProducer.getProperties().setProperty(ConfigType.GEOCODING_SERVICE_URL_TEMPLATE, geocodingUrlWithPlaceholders);
 		assertThrows(IllegalArgumentException.class, configFacade::validateConfigUrls);
 
 		geocodingUrlWithPlaceholders = "https://www.example.com";
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.GEOCODING_SERVICE_URL_TEMPLATE, geocodingUrlWithPlaceholders);
+		MockProducer.getProperties().setProperty(ConfigType.GEOCODING_SERVICE_URL_TEMPLATE, geocodingUrlWithPlaceholders);
 		configFacade.validateConfigUrls();
 
 		geocodingUrlWithPlaceholders = String.format(
 			"https://sg.geodatenzentrum.de/gdz_geokodierung_bund__%s/geosearch.json?query=${street}+${houseNumber},${postalCode}+${city}&filter=typ:haus&count1",
 			UUID.randomUUID().toString());
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.GEOCODING_SERVICE_URL_TEMPLATE, geocodingUrlWithPlaceholders);
+		MockProducer.getProperties().setProperty(ConfigType.GEOCODING_SERVICE_URL_TEMPLATE, geocodingUrlWithPlaceholders);
 		configFacade.validateConfigUrls();
 
 		geocodingUrlWithPlaceholders =
 			"https://api-adresse.data.gouv.fr/search?q=${houseNumber}+${street},${postalCode}+${city}&type=housenumber&limit=1";
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.GEOCODING_SERVICE_URL_TEMPLATE, geocodingUrlWithPlaceholders);
+		MockProducer.getProperties().setProperty(ConfigType.GEOCODING_SERVICE_URL_TEMPLATE, geocodingUrlWithPlaceholders);
 		configFacade.validateConfigUrls();
 	}
 
@@ -101,27 +102,27 @@ public class ConfigFacadeEjbTest extends AbstractBeanTest {
 
 		Mockito.when(InfoProvider.get().getVersion()).thenReturn("0.7.0");
 		Mockito.when(InfoProvider.get().getMinimumRequiredVersion()).thenReturn("0.5.0");
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.APP_URL, "https://www.sormas.org/downloads/sormas-0.7.0-release.apk");
+		MockProducer.getProperties().setProperty(ConfigType.APP_URL, "https://www.sormas.org/downloads/sormas-0.7.0-release.apk");
 		getStartupConfigurationValidationService().validateAppUrls();
 
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.APP_URL, "https://www.sormas.org/downloads-0.4.0-test/sormas-0.7.0-release.apk");
+		MockProducer.getProperties().setProperty(ConfigType.APP_URL, "https://www.sormas.org/downloads-0.4.0-test/sormas-0.7.0-release.apk");
 		getStartupConfigurationValidationService().validateAppUrls();
 
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.APP_URL, "https://www.sormas.org/downloads/sormas-release.apk");
+		MockProducer.getProperties().setProperty(ConfigType.APP_URL, "https://www.sormas.org/downloads/sormas-release.apk");
 		try {
 			getStartupConfigurationValidationService().validateAppUrls();
 			fail();
 		} catch (IllegalArgumentException e) {
 		}
 
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.APP_URL, "https://www.sormas.org/downloads/sormas-0.4.0-release.apk");
+		MockProducer.getProperties().setProperty(ConfigType.APP_URL, "https://www.sormas.org/downloads/sormas-0.4.0-release.apk");
 		try {
 			getStartupConfigurationValidationService().validateAppUrls();
 			fail();
 		} catch (IllegalArgumentException e) {
 		}
 
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.APP_URL, "https://www.sormas.org/downloads/sormas-0.8.0-release.apk");
+		MockProducer.getProperties().setProperty(ConfigType.APP_URL, "https://www.sormas.org/downloads/sormas-0.8.0-release.apk");
 		try {
 			getStartupConfigurationValidationService().validateAppUrls();
 			fail();
@@ -131,21 +132,21 @@ public class ConfigFacadeEjbTest extends AbstractBeanTest {
 		Mockito.when(InfoProvider.get().getVersion()).thenReturn("1.0.0");
 		getStartupConfigurationValidationService().validateAppUrls();
 
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.APP_LEGACY_URL, "https://www.sormas.org/downloads/sormas-0.8.0-release.apk");
+		MockProducer.getProperties().setProperty(ConfigType.APP_LEGACY_URL, "https://www.sormas.org/downloads/sormas-0.8.0-release.apk");
 		try {
 			getStartupConfigurationValidationService().validateAppUrls();
 			fail();
 		} catch (IllegalArgumentException e) {
 		}
 
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.APP_LEGACY_URL, "https://www.sormas.org/downloads/sormas-0.7.0-release.apk");
+		MockProducer.getProperties().setProperty(ConfigType.APP_LEGACY_URL, "https://www.sormas.org/downloads/sormas-0.7.0-release.apk");
 		getStartupConfigurationValidationService().validateAppUrls();
 
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.APP_URL, "https://www.sormas.org/downloads/sormas-1.0.0-release.apk");
+		MockProducer.getProperties().setProperty(ConfigType.APP_URL, "https://www.sormas.org/downloads/sormas-1.0.0-release.apk");
 		getStartupConfigurationValidationService().validateAppUrls();
 
 		// below minimum
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.APP_LEGACY_URL, "https://www.sormas.org/downloads/sormas-0.4.0-release.apk");
+		MockProducer.getProperties().setProperty(ConfigType.APP_LEGACY_URL, "https://www.sormas.org/downloads/sormas-0.4.0-release.apk");
 		try {
 			getStartupConfigurationValidationService().validateAppUrls();
 			fail();
@@ -157,11 +158,11 @@ public class ConfigFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testNormalizeLocaleString() {
 
-		assertThat(ConfigFacadeEjb.normalizeLocaleString("  "), isEmptyString());
-		assertThat(ConfigFacadeEjb.normalizeLocaleString("en"), is("en"));
-		assertThat(ConfigFacadeEjb.normalizeLocaleString("En"), is("en"));
-		assertThat(ConfigFacadeEjb.normalizeLocaleString("en-CA"), is("en-CA"));
-		assertThat(ConfigFacadeEjb.normalizeLocaleString("en-cA"), is("en-CA"));
+		assertThat(ConfigType.normalizeLocaleString("  "), isEmptyString());
+		assertThat(ConfigType.normalizeLocaleString("en"), is("en"));
+		assertThat(ConfigType.normalizeLocaleString("En"), is("en"));
+		assertThat(ConfigType.normalizeLocaleString("en-CA"), is("en-CA"));
+		assertThat(ConfigType.normalizeLocaleString("en-cA"), is("en-CA"));
 	}
 
 	@Test
@@ -176,15 +177,15 @@ public class ConfigFacadeEjbTest extends AbstractBeanTest {
 		assertThat(getConfigFacade().getPatientDiaryConfig().getTokenLifetime(), equalTo(Duration.ofSeconds(21600L)));
 
 		// property specifies empty value
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_PATIENT_DIARY_TOKEN_LIFETIME, "");
+		MockProducer.getProperties().setProperty(ConfigType.INTERFACE_PATIENT_DIARY_TOKEN_LIFETIME, "");
 		assertThat(getConfigFacade().getPatientDiaryConfig().getTokenLifetime(), equalTo(Duration.ofSeconds(21600L)));
 
 		// property specifies zero
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_PATIENT_DIARY_TOKEN_LIFETIME, "0");
+		MockProducer.getProperties().setProperty(ConfigType.INTERFACE_PATIENT_DIARY_TOKEN_LIFETIME, "0");
 		assertThat(getConfigFacade().getPatientDiaryConfig().getTokenLifetime(), equalTo(Duration.ofSeconds(0L)));
 
 		// property specifies value > 0
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_PATIENT_DIARY_TOKEN_LIFETIME, "666");
+		MockProducer.getProperties().setProperty(ConfigType.INTERFACE_PATIENT_DIARY_TOKEN_LIFETIME, "666");
 		assertThat(getConfigFacade().getPatientDiaryConfig().getTokenLifetime(), equalTo(Duration.ofSeconds(666L)));
 	}
 
@@ -193,44 +194,44 @@ public class ConfigFacadeEjbTest extends AbstractBeanTest {
 		assertThat(getConfigFacade().isAnyCaseClassificationCalculationEnabled(), is(true));
 
 		MockProducer.getProperties()
-			.setProperty(ConfigFacadeEjb.CASE_CLASSIFICATION_CALCULATION_ALL, CaseClassificationCalculationMode.DISABLED.name());
+			.setProperty(ConfigType.CASE_CLASSIFICATION_CALCULATION_ALL, CaseClassificationCalculationMode.DISABLED.name());
 		assertThat(getConfigFacade().isAnyCaseClassificationCalculationEnabled(), is(false));
 
 		MockProducer.getProperties()
 			.setProperty(
-				ConfigFacadeEjb.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CORONAVIRUS,
+				ConfigType.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CORONAVIRUS,
 				CaseClassificationCalculationMode.MANUAL.name());
 		assertThat(getConfigFacade().isAnyCaseClassificationCalculationEnabled(), is(true));
 
 		MockProducer.getProperties()
 			.setProperty(
-				ConfigFacadeEjb.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CORONAVIRUS,
+				ConfigType.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CORONAVIRUS,
 				CaseClassificationCalculationMode.AUTOMATIC.name());
 		assertThat(getConfigFacade().isAnyCaseClassificationCalculationEnabled(), is(true));
 
 		MockProducer.getProperties()
 			.setProperty(
-				ConfigFacadeEjb.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CORONAVIRUS,
+				ConfigType.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CORONAVIRUS,
 				CaseClassificationCalculationMode.MANUAL_AND_AUTOMATIC.name());
 		assertThat(getConfigFacade().isAnyCaseClassificationCalculationEnabled(), is(true));
 
 		MockProducer.getProperties()
 			.setProperty(
-				ConfigFacadeEjb.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CORONAVIRUS,
+				ConfigType.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CORONAVIRUS,
 				CaseClassificationCalculationMode.DISABLED.name());
 		assertThat(getConfigFacade().isAnyCaseClassificationCalculationEnabled(), is(false));
 
 		MockProducer.getProperties()
 			.setProperty(
-				ConfigFacadeEjb.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CHOLERA,
+				ConfigType.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CHOLERA,
 				CaseClassificationCalculationMode.AUTOMATIC.name());
 		assertThat(getConfigFacade().isAnyCaseClassificationCalculationEnabled(), is(true));
 
-		MockProducer.getProperties().remove(ConfigFacadeEjb.CASE_CLASSIFICATION_CALCULATION_ALL);
-		MockProducer.getProperties().remove(ConfigFacadeEjb.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CHOLERA);
+		MockProducer.getProperties().remove(ConfigType.CASE_CLASSIFICATION_CALCULATION_ALL);
+		MockProducer.getProperties().remove(ConfigType.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CHOLERA);
 		MockProducer.getProperties()
 			.setProperty(
-				ConfigFacadeEjb.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CORONAVIRUS,
+				ConfigType.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CORONAVIRUS,
 				CaseClassificationCalculationMode.DISABLED.name());
 		assertThat(getConfigFacade().isAnyCaseClassificationCalculationEnabled(), is(true));
 	}

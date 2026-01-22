@@ -80,7 +80,7 @@ import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskContextIndexCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
@@ -1066,7 +1066,7 @@ public class UserFacadeEjb implements UserFacade {
 			throw new ForbiddenException("No default role for new users from authentication provider is configured");
 		}
 
-		UserRole defaultRole = configFacade.getAsString(SystemConfigurationType.AUTHENTICATION_PROVIDER_SYNCED_NEW_USER_ROLE)
+		UserRole defaultRole = configFacade.getAsString(ConfigType.AUTHENTICATION_PROVIDER_SYNCED_NEW_USER_ROLE)
 			.map(userRoleService::getByCaption)
 			.orElseThrow(() -> new ForbiddenException("No default role for new users from authentication provider is configured"));
 

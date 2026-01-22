@@ -46,6 +46,7 @@ import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasShareRequestDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -59,7 +60,6 @@ import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
@@ -74,7 +74,7 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 
 	@BeforeEach
 	public void setupConfig() {
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_PATIENT_DIARY_URL, "url");
+		MockProducer.getProperties().setProperty(ConfigType.INTERFACE_PATIENT_DIARY_URL, "url");
 	}
 
 	@Test

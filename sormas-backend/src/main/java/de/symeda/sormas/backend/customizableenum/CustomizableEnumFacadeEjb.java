@@ -64,7 +64,7 @@ import de.symeda.sormas.api.customizableenum.CustomizableEnumValueIndexDto;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumValueReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.InvalidCustomizationException;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -377,7 +377,7 @@ public class CustomizableEnumFacadeEjb
 			return;
 		}
 
-		boolean isCountryLanguage = configFacade.getAsString(SystemConfigurationType.COUNTRY_LOCALE)
+		boolean isCountryLanguage = configFacade.getAsString(ConfigType.COUNTRY_LOCALE)
 			.filter(countryLocale -> StringUtils.equals(countryLocale, language.getLocale().toString()))
 			.isPresent();
 

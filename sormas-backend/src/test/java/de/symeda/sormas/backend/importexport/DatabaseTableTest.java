@@ -29,6 +29,7 @@ import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.importexport.DatabaseTable;
 import de.symeda.sormas.api.importexport.DatabaseTableType;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 
 public class DatabaseTableTest {
@@ -112,7 +113,7 @@ public class DatabaseTableTest {
 	@Test
 	public void testS2sTablesEnabled() {
 
-		ConfigFacadeEjb configFacadeMock = Mockito.mock(ConfigFacadeEjb.class);
+		ConfigFacadeEjb configFacadeMock = Mockito.mock(ConfigType.class);
 		Mockito.when(configFacadeMock.isS2SConfigured()).thenReturn(true);
 		Mockito.when(configFacadeMock.isExternalSurveillanceToolGatewayConfigured()).thenReturn(false);
 

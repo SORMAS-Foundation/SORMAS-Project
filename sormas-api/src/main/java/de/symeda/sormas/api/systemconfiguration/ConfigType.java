@@ -1,6 +1,6 @@
 package de.symeda.sormas.api.systemconfiguration;
 
-public enum SystemConfigurationType {
+public enum ConfigType {
 	AUTHENTICATION_PROVIDER,
 	SMS_AUTH_SECRET,
 	MAP_TILES_URL,

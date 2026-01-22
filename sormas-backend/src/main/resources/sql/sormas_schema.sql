@@ -15069,6 +15069,16 @@ INSERT INTO schema_version (version_number, comment) VALUES (602, 'External mess
 ALTER TABLE systemconfigurationvalue
     ADD COLUMN IF NOT EXISTS default_value TEXT;
 
+-- those configurations are mandatory but previously not set
+
+UPDATE systemconfigurationvalue
+SET default_value = 'noreply@sormas.org'
+WHERE config_key = 'EMAIL_SENDER_ADDRESS';
+
+UPDATE systemconfigurationvalue
+SET default_value = 'SORMAS Support'
+WHERE config_key = 'EMAIL_SENDER_NAME';
+
 DO
 $$
     DECLARE

@@ -90,7 +90,7 @@ import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.therapy.PrescriptionDto;
 import de.symeda.sormas.api.therapy.TreatmentDto;
@@ -400,7 +400,7 @@ public class InfoFacadeEjb implements InfoFacade {
 	}
 
 	private File getDataProtectionFile() {
-		return new File(configFacade.getAsStringOrThrow(SystemConfigurationType.CUSTOM_PATH), DATA_PROTECTION_FILE_NAME);
+		return new File(configFacade.getAsStringOrThrow(ConfigType.CUSTOM_PATH), DATA_PROTECTION_FILE_NAME);
 	}
 
 	private Map<String, List<XSSFCell>> getDataProtectionCellData(XSSFSheet dataProtectionSheet) {
@@ -438,7 +438,7 @@ public class InfoFacadeEjb implements InfoFacade {
 
 	private Path generateDocumentTempPath() {
 
-		Path path = Paths.get(configFacade.getAsStringOrThrow(SystemConfigurationType.TEMP_PATH));
+		Path path = Paths.get(configFacade.getAsStringOrThrow(ConfigType.TEMP_PATH));
 		String fileName = ImportExportUtils.TEMP_FILE_PREFIX + "_datadictionary_" + DateHelper.formatDateForExport(new Date()) + "_"
 			+ new Random().nextInt(Integer.MAX_VALUE) + ".xlsx";
 

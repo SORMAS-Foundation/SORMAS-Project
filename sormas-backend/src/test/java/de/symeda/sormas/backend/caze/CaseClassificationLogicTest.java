@@ -52,13 +52,13 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 
 public class CaseClassificationLogicTest extends AbstractBeanTest {
 
@@ -1319,7 +1319,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 
 	@Test
 	public void testAutomaticClassificationForLuxembourgServerNegativeTestFirst() {
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+		MockProducer.getProperties().setProperty(ConfigType.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 		CaseDataDto caze = creator.createUnclassifiedCase(Disease.CORONAVIRUS);
 		creator.createPathogenTest(caze, Disease.CORONAVIRUS, PathogenTestType.ANTIBODY_DETECTION, PathogenTestResultType.NEGATIVE);
 		creator.createPathogenTest(caze, Disease.CORONAVIRUS, PathogenTestType.PCR_RT_PCR, PathogenTestResultType.POSITIVE);
@@ -1329,7 +1329,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 
 	@Test
 	public void testAutomaticClassificationForLuxembourgServerPositiveTestFirst() {
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+		MockProducer.getProperties().setProperty(ConfigType.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 		CaseDataDto caze = creator.createUnclassifiedCase(Disease.CORONAVIRUS);
 		creator.createPathogenTest(caze, Disease.CORONAVIRUS, PathogenTestType.PCR_RT_PCR, PathogenTestResultType.POSITIVE);
 		creator.createPathogenTest(caze, Disease.CORONAVIRUS, PathogenTestType.ANTIBODY_DETECTION, PathogenTestResultType.NEGATIVE);
@@ -1339,7 +1339,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 
 	@Test
 	public void testAutomaticClassificationForLuxembourgServerNotACase() {
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+		MockProducer.getProperties().setProperty(ConfigType.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 		CaseDataDto caze = creator.createUnclassifiedCase(Disease.CORONAVIRUS);
 		creator.createPathogenTest(caze, Disease.CORONAVIRUS, PathogenTestType.ANTIBODY_DETECTION, PathogenTestResultType.NEGATIVE);
 		creator.createPathogenTest(caze, Disease.CORONAVIRUS, PathogenTestType.PCR_RT_PCR, PathogenTestResultType.NEGATIVE);
@@ -1349,7 +1349,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 
 	@Test
 	public void testFulfilledReferenceDefinitionGermanServer() {
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "de");
+		MockProducer.getProperties().setProperty(ConfigType.COUNTRY_LOCALE, "de");
 		CaseDataDto caze = buildSuspectCase(Disease.CORONAVIRUS);
 		caze = getCaseFacade().save(caze);
 		createSampleTestsForAllTestTypesExcept(caze, Disease.CORONAVIRUS, PathogenTestType.ISOLATION, PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY);
@@ -1359,7 +1359,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 
 	@Test
 	public void testFulfilledReferenceDefinitionGermanServerUnknownSymptoms1() {
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "de");
+		MockProducer.getProperties().setProperty(ConfigType.COUNTRY_LOCALE, "de");
 		CaseDataDto caze = buildSuspectCase(Disease.CORONAVIRUS);
 		caze.getSymptoms().setCough(null);
 		caze.getSymptoms().setChillsSweats(SymptomState.YES);
@@ -1372,7 +1372,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 
 	@Test
 	public void testFulfilledReferenceDefinitionGermanServerUnknownSymptoms2() {
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "de");
+		MockProducer.getProperties().setProperty(ConfigType.COUNTRY_LOCALE, "de");
 		CaseDataDto caze = buildSuspectCase(Disease.CORONAVIRUS);
 		caze.getSymptoms().setCough(SymptomState.UNKNOWN);
 		caze.getSymptoms().setChillsSweats(SymptomState.YES);
@@ -1385,7 +1385,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 
 	@Test
 	public void testFulfilledReferenceDefinitionGermanServerUnknownSymptoms3() {
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "de");
+		MockProducer.getProperties().setProperty(ConfigType.COUNTRY_LOCALE, "de");
 		CaseDataDto caze = buildSuspectCase(Disease.CORONAVIRUS);
 		caze.getSymptoms().setCough(null);
 		caze.getSymptoms().setChillsSweats(SymptomState.YES);
@@ -1399,7 +1399,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 
 	@Test
 	public void testFulfilledReferenceDefinitionGermanServerNoSymptoms1() {
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "de");
+		MockProducer.getProperties().setProperty(ConfigType.COUNTRY_LOCALE, "de");
 		CaseDataDto caze = buildSuspectCase(Disease.CORONAVIRUS);
 		caze.getSymptoms().setCough(null);
 		caze.getSymptoms().setChillsSweats(SymptomState.NO);
@@ -1412,7 +1412,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 
 	@Test
 	public void testFulfilledReferenceDefinitionGermanServerNoSymptoms2() {
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "de");
+		MockProducer.getProperties().setProperty(ConfigType.COUNTRY_LOCALE, "de");
 		CaseDataDto caze = buildSuspectCase(Disease.CORONAVIRUS);
 		caze.getSymptoms().setCough(SymptomState.NO);
 		caze.getSymptoms().setChillsSweats(SymptomState.YES);
@@ -1425,7 +1425,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 
 	@Test
 	public void testNotFulfilledReferenceDefinitionGermanServerCorrectPathogenTestesMissing() {
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "de");
+		MockProducer.getProperties().setProperty(ConfigType.COUNTRY_LOCALE, "de");
 		CaseDataDto caze = buildSuspectCase(Disease.CORONAVIRUS);
 		caze = getCaseFacade().save(caze);
 		createSampleTestsForAllTestTypesExcept(
@@ -1451,7 +1451,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 	@Test
 	public void testCalculationByDisease() {
 		MockProducer.getProperties()
-			.setProperty(ConfigFacadeEjb.CASE_CLASSIFICATION_CALCULATION_ALL, CaseClassificationCalculationMode.DISABLED.name());
+			.setProperty(ConfigType.CASE_CLASSIFICATION_CALCULATION_ALL, CaseClassificationCalculationMode.DISABLED.name());
 		CaseDataDto caze = buildSuspectCase(Disease.CORONAVIRUS);
 		caze = getCaseFacade().save(caze);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
@@ -1459,30 +1459,30 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 
 		MockProducer.getProperties()
 			.setProperty(
-				ConfigFacadeEjb.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CORONAVIRUS.getName(),
+				ConfigType.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CORONAVIRUS.getName(),
 				CaseClassificationCalculationMode.AUTOMATIC.name());
 		caze = getCaseFacade().save(buildSuspectCase(Disease.CORONAVIRUS));
 		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
 
 		MockProducer.getProperties()
 			.setProperty(
-				ConfigFacadeEjb.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CORONAVIRUS.getName(),
+				ConfigType.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CORONAVIRUS.getName(),
 				CaseClassificationCalculationMode.MANUAL_AND_AUTOMATIC.name());
 		caze = getCaseFacade().save(buildSuspectCase(Disease.CORONAVIRUS));
 		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
 
 		MockProducer.getProperties()
 			.setProperty(
-				ConfigFacadeEjb.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CORONAVIRUS.getName(),
+				ConfigType.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CORONAVIRUS.getName(),
 				CaseClassificationCalculationMode.DISABLED.name());
 		caze = getCaseFacade().save(buildSuspectCase(Disease.CORONAVIRUS));
 		assertEquals(CaseClassification.NOT_CLASSIFIED, caze.getCaseClassification());
 
 		MockProducer.getProperties()
-			.setProperty(ConfigFacadeEjb.CASE_CLASSIFICATION_CALCULATION_ALL, CaseClassificationCalculationMode.AUTOMATIC.name());
+			.setProperty(ConfigType.CASE_CLASSIFICATION_CALCULATION_ALL, CaseClassificationCalculationMode.AUTOMATIC.name());
 		MockProducer.getProperties()
 			.setProperty(
-				ConfigFacadeEjb.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CORONAVIRUS.getName(),
+				ConfigType.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CORONAVIRUS.getName(),
 				CaseClassificationCalculationMode.DISABLED.name());
 		caze = getCaseFacade().save(buildSuspectCase(Disease.CORONAVIRUS));
 		assertEquals(CaseClassification.NOT_CLASSIFIED, caze.getCaseClassification());

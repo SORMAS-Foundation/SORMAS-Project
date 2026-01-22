@@ -64,7 +64,7 @@ import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -270,7 +270,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		}
 
 		// 3. fill null properties
-		String nullReplacement = configFacade.getAsStringOrThrow(SystemConfigurationType.DOCGENERATION_NULL_REPLACEMENT);
+		String nullReplacement = configFacade.getAsStringOrThrow(ConfigType.DOCGENERATION_NULL_REPLACEMENT);
 		if (nullReplacement.isEmpty()) {
 			nullReplacement = " ";
 		}

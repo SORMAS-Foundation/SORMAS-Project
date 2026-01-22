@@ -15,7 +15,7 @@
 
 package de.symeda.sormas.api;
 
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 
 /**
  * Authentication provider which can be configured trough the {@link ConfigFacade#getAuthenticationProvider()} property.
@@ -53,8 +53,8 @@ public class AuthProvider {
 			synchronized (AuthProvider.class) {
 				if (provider == null) {
 					provider = new AuthProvider(
-						configFacade.getAsStringOrThrow(SystemConfigurationType.AUTHENTICATION_PROVIDER),
-						configFacade.getAsBoolean(SystemConfigurationType.AUTHENTICATION_PROVIDER_SYNCED_NEW_USER_ROLE));
+						configFacade.getAsStringOrThrow(ConfigType.AUTHENTICATION_PROVIDER),
+						configFacade.getAsBoolean(ConfigType.AUTHENTICATION_PROVIDER_SYNCED_NEW_USER_ROLE));
 				}
 			}
 		}

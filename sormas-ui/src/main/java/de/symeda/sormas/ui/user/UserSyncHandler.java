@@ -42,7 +42,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserSyncResult;
@@ -91,7 +91,7 @@ public class UserSyncHandler {
 	private CSVWriter errorReportCsvWriter;
 
 	public UserSyncHandler(UserReferenceDto currentUser) {
-		Path exportDirectory = Paths.get(FacadeProvider.getConfigFacade().getAsStringOrThrow(SystemConfigurationType.TEMP_PATH));
+		Path exportDirectory = Paths.get(FacadeProvider.getConfigFacade().getAsStringOrThrow(ConfigType.TEMP_PATH));
 		Path errorReportFilePath = exportDirectory.resolve(
 			ImportExportUtils.TEMP_FILE_PREFIX + "_error_report_" + DataHelper.getShortUuid(currentUser.getUuid()) + "_"
 				+ DateHelper.formatDateForExport(new Date()) + ".csv");

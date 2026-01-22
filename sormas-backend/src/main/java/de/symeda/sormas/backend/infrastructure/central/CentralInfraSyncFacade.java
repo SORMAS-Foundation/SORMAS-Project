@@ -26,7 +26,7 @@ import de.symeda.sormas.api.infrastructure.country.CountryDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentDto;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.systemevents.SystemEventDto;
 import de.symeda.sormas.api.systemevents.SystemEventType;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
@@ -115,7 +115,7 @@ public class CentralInfraSyncFacade {
 	}
 
 	public void syncAll() {
-		if (!configFacade.getAsBoolean(SystemConfigurationType.CENTRAL_LOCATION_SYNC)) {
+		if (!configFacade.getAsBoolean(ConfigType.CENTRAL_LOCATION_SYNC)) {
 			logger.info("Skipping synchronization with central as feature is disabled.");
 			return;
 		}

@@ -17,11 +17,14 @@ package de.symeda.sormas.backend.systemconfiguration;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.ColumnDefault;
 
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 @Entity(name = SystemConfigurationValue.TABLE_NAME)
@@ -41,7 +44,8 @@ public class SystemConfigurationValue extends AbstractDomainObject {
     public static final String DESCRIPTION = "description";
 
     private String value;
-    private String key;
+	@Enumerated(EnumType.STRING)
+	private ConfigType key;
     private String description;
     private SystemConfigurationCategory category;
     private Boolean optional;
@@ -49,6 +53,7 @@ public class SystemConfigurationValue extends AbstractDomainObject {
     private Boolean encrypt;
     private String dataProvider;
     private String validationMessage;
+	private String defaultValue;
 
     @Column(nullable = true, name = "config_value")
     public String getValue() {
@@ -60,15 +65,15 @@ public class SystemConfigurationValue extends AbstractDomainObject {
     }
 
     @Column(nullable = false, name = "config_key")
-    public String getKey() {
+	public ConfigType getKey() {
         return key;
     }
 
-    public void setKey(String key) {
+	public void setKey(ConfigType key) {
         this.key = key;
     }
 
-    @Column(nullable = true, name = "value_description")
+	@Column(name = "value_description")
     public String getDescription() {
         return description;
     }
@@ -132,6 +137,15 @@ public class SystemConfigurationValue extends AbstractDomainObject {
     public void setValidationMessage(String validationMessage) {
         this.validationMessage = validationMessage;
     }
+
+	@Column(name = "default_value")
+	public String getDefaultValue() {
+		return defaultValue;
+	}
+
+	public void setDefaultValue(String defaultValue) {
+		this.defaultValue = defaultValue;
+	}
 
     @Override
     public boolean equals(Object o) {

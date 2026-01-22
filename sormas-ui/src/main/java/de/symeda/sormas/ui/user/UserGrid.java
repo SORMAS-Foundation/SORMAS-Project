@@ -31,7 +31,7 @@ import com.vaadin.ui.renderers.TextRenderer;
 import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -79,7 +79,7 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 			UserDto.HEALTH_FACILITY));
 
 		if (!AuthProvider.SORMAS
-			.equalsIgnoreCase(FacadeProvider.getConfigFacade().getAsStringOrThrow(SystemConfigurationType.AUTHENTICATION_PROVIDER))) {
+			.equalsIgnoreCase(FacadeProvider.getConfigFacade().getAsStringOrThrow(ConfigType.AUTHENTICATION_PROVIDER))) {
 			columns.add(UserDto.EXTERNAL_ID);
 		}
 

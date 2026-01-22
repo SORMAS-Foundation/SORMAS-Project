@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.person.PersonAssociation;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 
@@ -33,7 +34,7 @@ public class PersonServiceTest extends AbstractBeanTest {
 				PersonAssociation.IMMUNIZATION));
 
 		// TravelEntry only active for Germany
-		MockProducer.mockProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_GERMANY);
+		MockProducer.mockProperty(ConfigType.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_GERMANY);
 		assertTrue(getPersonService().isPermittedAssociation(PersonAssociation.TRAVEL_ENTRY));
 		assertThat(
 			getPersonService().getPermittedAssociations(),

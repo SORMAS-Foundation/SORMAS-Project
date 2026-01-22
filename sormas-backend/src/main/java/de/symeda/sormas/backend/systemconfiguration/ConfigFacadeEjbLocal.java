@@ -38,7 +38,7 @@ import de.symeda.sormas.api.CaseClassificationCalculationMode;
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.json.ObjectMapperProvider;
 import de.symeda.sormas.backend.util.RightsAllowed;
@@ -56,57 +56,44 @@ public class ConfigFacadeEjbLocal implements ConfigFacade {
 	private SystemConfigurationValueEjb systemConfigurationValueEjb;
 
 	@Override
-	public boolean isPresent(SystemConfigurationType config) {
-		return getAsString(config).filter(StringUtils::isNotBlank).isPresent();
+	public boolean isPresent(ConfigType config) {
+		return getAsString(config).isPresent();
 	}
 
 	@Override
-	public Optional<Integer> getAsInteger(SystemConfigurationType config) {
-		return Optional.empty();
+	public Optional<Integer> getAsInteger(ConfigType config) {
+		return getTypedValueFor(config, Integer::parseInt);
 	}
 
-	private <T> T parseProperty(String propertyName, T defaultValue, Function<String, T> parse) {
-
-		String prop = systemConfigurationValueEjb.getValue(propertyName);
-		if (prop == null) {
-			return defaultValue;
-		}
-
-		try {
-			if (prop.isEmpty()) {
-				logger.debug("The property '" + propertyName + "' is set to empty value");
-			}
-
-			return parse.apply(prop);
-		} catch (Exception e) {
-			logger.error("Could not parse value of property '" + propertyName + "': " + e.getMessage());
-			return defaultValue;
-		}
+	private <T> Optional<T> getTypedValueFor(ConfigType config, Function<String, T> parsingFct) {
+		return systemConfigurationValueEjb.getValue(config).map(parsingFct);
 	}
 
 	@Override
-	public Optional<Double> getAsDouble(SystemConfigurationType config) {
-		return Optional.empty();
+	public Optional<Double> getAsDouble(ConfigType config) {
+		return getTypedValueFor(config, Double::parseDouble);
 	}
 
 	@Override
-	public Optional<Long> getAsLong(SystemConfigurationType config) {
-		return Optional.empty();
+	public Optional<Long> getAsLong(ConfigType config) {
+		return getTypedValueFor(config, Long::parseLong);
 	}
 
 	@Override
-	public Optional<String> getAsString(SystemConfigurationType config) {
-		return Optional.empty();
+	public Optional<String> getAsString(ConfigType config) {
+		return getTypedValueFor(config, Function.identity());
 	}
 
 	@Override
-	public boolean getAsBoolean(SystemConfigurationType config) {
-		return false;
+	public boolean getAsBoolean(ConfigType config) {
+		return getTypedValueFor(config, Boolean::parseBoolean).orElseThrow(
+			() -> new IllegalArgumentException(
+				String.format("Boolean configuration must at least have a default value, was not the case: [{}]", config)));
 	}
 
 	@Override
 	public boolean isConfiguredCountry(String countryCode) {
-		String countryLocale = getAsStringOrThrow(SystemConfigurationType.COUNTRY_LOCALE);
+		String countryLocale = getAsStringOrThrow(ConfigType.COUNTRY_LOCALE);
 		if (Pattern.matches(I18nProperties.FULL_COUNTRY_LOCALE_PATTERN, countryLocale)) {
 			return StringUtils.endsWithIgnoreCase(countryLocale, countryCode);
 		} else {
@@ -116,7 +103,7 @@ public class ConfigFacadeEjbLocal implements ConfigFacade {
 
 	@Override
 	public String getCountryCode() {
-		String locale = getAsStringOrThrow(SystemConfigurationType.COUNTRY_LOCALE);
+		String locale = getAsStringOrThrow(ConfigType.COUNTRY_LOCALE);
 		String normalizedLocale = normalizeLocaleString(locale);
 
 		if (normalizedLocale.contains("-")) {
@@ -128,8 +115,8 @@ public class ConfigFacadeEjbLocal implements ConfigFacade {
 
 	@Override
 	public char getCsvSeparator() {
-		return getAsString(SystemConfigurationType.CSV_SEPARATOR).map(CharUtils::toChar)
-			.orElseThrow(() -> ConfigFacade.buildMissingConfigException(SystemConfigurationType.CSV_SEPARATOR));
+		return getAsString(ConfigType.CSV_SEPARATOR).map(CharUtils::toChar)
+			.orElseThrow(() -> ConfigFacade.buildMissingConfigException(ConfigType.CSV_SEPARATOR));
 	}
 
 	private String normalizeLocaleString(String locale) {
@@ -153,12 +140,14 @@ public class ConfigFacadeEjbLocal implements ConfigFacade {
 	}
 
 	private Map<String, CaseClassificationCalculationMode> getDiseaseClassificationCalculationModeDictionary() {
-		SystemConfigurationType caseClassificationExceptions = SystemConfigurationType.CASE_CLASSIFICATION_CALCULATION_MODE;
+		ConfigType caseClassificationExceptions = ConfigType.CASE_CLASSIFICATION_CALCULATION_MODE;
 
 		try {
+			String caseClassificationCalulcationModeExceptions = getAsStringOrThrow(caseClassificationExceptions);
+			logger.debug("caseClassificationCalulcationModeExceptions: [{}]", caseClassificationCalulcationModeExceptions);
 			return ObjectMapperProvider.getInstance()
 				.readerForMapOf(CLASSIFICATION_CALCULATION_MODE_CLASS)
-				.readValue(getAsStringOrThrow(caseClassificationExceptions));
+				.readValue(caseClassificationCalulcationModeExceptions);
 		} catch (JsonProcessingException e) {
 			throw new IllegalStateException(
 				String.format(
@@ -169,7 +158,12 @@ public class ConfigFacadeEjbLocal implements ConfigFacade {
 	}
 
 	private CaseClassificationCalculationMode getDefaultCaseClassificationCalculationMode() {
-		return getAsEnum(SystemConfigurationType.DEFAULT_CASE_CLASSIFICATION, CLASSIFICATION_CALCULATION_MODE_CLASS);
+		CaseClassificationCalculationMode defaultCaseClassification =
+			CaseClassificationCalculationMode.valueOf(getAsStringOrThrow(ConfigType.DEFAULT_CASE_CLASSIFICATION));
+
+		logger.debug("defaultCaseClassification: [{}]", defaultCaseClassification);
+
+		return defaultCaseClassification;
 	}
 
 	@Override
@@ -185,9 +179,6 @@ public class ConfigFacadeEjbLocal implements ConfigFacade {
 				.anyMatch(actual -> actual != CaseClassificationCalculationMode.DISABLED);
 	}
 
-	protected <T extends Enum<T>> T getAsEnum(SystemConfigurationType systemConfigurationType, Class<T> enumType) {
-		return Enum.valueOf(enumType, getAsStringOrThrow(systemConfigurationType));
-	}
 
 	@Inject
 	public void setSystemConfigurationValueEjb(SystemConfigurationValueEjb systemConfigurationValueEjb) {

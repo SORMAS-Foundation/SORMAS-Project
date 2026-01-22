@@ -44,7 +44,7 @@ import de.symeda.sormas.api.survey.SurveyTokenDto;
 import de.symeda.sormas.api.survey.SurveyTokenFacade;
 import de.symeda.sormas.api.survey.SurveyTokenIndexDto;
 import de.symeda.sormas.api.survey.SurveyTokenReferenceDto;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -214,7 +214,7 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 	}
 
 	private String getImportTemplateFilePath(String baseFilename) {
-		java.nio.file.Path exportDirectory = Paths.get(configFacade.getAsStringOrThrow(SystemConfigurationType.GENERATED_FILES_PATH));
+		java.nio.file.Path exportDirectory = Paths.get(configFacade.getAsStringOrThrow(ConfigType.GENERATED_FILES_PATH));
 		return exportDirectory.resolve(getImportTemplateFileName(baseFilename)).toString();
 	}
 

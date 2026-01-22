@@ -20,43 +20,43 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.geo.GeoLatLon;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 
 public interface ConfigFacade {
 
-	boolean isPresent(SystemConfigurationType config);
+	boolean isPresent(ConfigType config);
 
-	default boolean isAbsent(SystemConfigurationType config) {
+	default boolean isAbsent(ConfigType config) {
 		return !isPresent(config);
 	}
 
-	Optional<Integer> getAsInteger(SystemConfigurationType config);
+	Optional<Integer> getAsInteger(ConfigType config);
 
-	Optional<Double> getAsDouble(SystemConfigurationType config);
+	Optional<Double> getAsDouble(ConfigType config);
 
-	Optional<Long> getAsLong(SystemConfigurationType config);
+	Optional<Long> getAsLong(ConfigType config);
 
-	Optional<String> getAsString(SystemConfigurationType config);
+	Optional<String> getAsString(ConfigType config);
 
-	boolean getAsBoolean(SystemConfigurationType config);
+	boolean getAsBoolean(ConfigType config);
 
-	default Integer getAsIntegerOrThrow(SystemConfigurationType config) {
+	default Integer getAsIntegerOrThrow(ConfigType config) {
 		return getAsInteger(config).orElseThrow(() -> buildMissingConfigException(config));
 	}
 
-	static IllegalStateException buildMissingConfigException(SystemConfigurationType config) {
+	static IllegalStateException buildMissingConfigException(ConfigType config) {
 		return new IllegalStateException(String.format("Required configuration '%s' not found or invalid. \nCheck if ", config.name()));
 	}
 
-	default Double getAsDoubleOrThrow(SystemConfigurationType config) {
+	default Double getAsDoubleOrThrow(ConfigType config) {
 		return getAsDouble(config).orElseThrow(() -> buildMissingConfigException(config));
 	}
 
-	default Long getAsLongOrThrow(SystemConfigurationType config) {
+	default Long getAsLongOrThrow(ConfigType config) {
 		return getAsLong(config).orElseThrow(() -> buildMissingConfigException(config));
 	}
 
-	default String getAsStringOrThrow(SystemConfigurationType config) {
+	default String getAsStringOrThrow(ConfigType config) {
 		return getAsString(config).orElseThrow(() -> buildMissingConfigException(config));
 	}
 
@@ -65,39 +65,39 @@ public interface ConfigFacade {
 	String getCountryCode();
 
 	default boolean isSmsServiceSetUp() {
-		return isPresent(SystemConfigurationType.SMS_AUTH_SECRET) || isPresent(SystemConfigurationType.SMS_AUTH_KEY);
+		return isPresent(ConfigType.SMS_AUTH_SECRET) || isPresent(ConfigType.SMS_AUTH_KEY);
 	}
 
 	char getCsvSeparator();
 
 	@Deprecated
 	default boolean isS2SConfigured() {
-		return isPresent(SystemConfigurationType.SORMAS2SORMAS_PATH);
+		return isPresent(ConfigType.SORMAS2SORMAS_PATH);
 	}
 
 	@Deprecated
 	default boolean isExternalSurveillanceToolGatewayConfigured() {
-		return isPresent(SystemConfigurationType.EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL);
+		return isPresent(ConfigType.EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL);
 	}
 
 	default Set<String> getAllowedFileExtensions() {
-		return Arrays.stream(getAsStringOrThrow(SystemConfigurationType.ALLOWED_FILE_EXTENSIONS).split(",")).collect(Collectors.toSet());
+		return Arrays.stream(getAsStringOrThrow(ConfigType.ALLOWED_FILE_EXTENSIONS).split(",")).collect(Collectors.toSet());
 	}
 
 	default String getSormasInstanceName() {
-		return getAsBoolean(SystemConfigurationType.CUSTOM_BRANDING) ? getAsStringOrThrow(SystemConfigurationType.CUSTOM_BRANDING_NAME) : "SORMAS";
+		return getAsBoolean(ConfigType.CUSTOM_BRANDING) ? getAsStringOrThrow(ConfigType.CUSTOM_BRANDING_NAME) : "SORMAS";
 	}
 
 	CaseClassificationCalculationMode getCaseClassificationCalculationMode(Disease disease);
 
 	default GeoLatLon getCountryCenter() {
 		return new GeoLatLon(
-			getAsDoubleOrThrow(SystemConfigurationType.COUNTRY_CENTER_LATITUDE),
-			getAsDoubleOrThrow(SystemConfigurationType.COUNTRY_CENTER_LATITUDE));
+			getAsDoubleOrThrow(ConfigType.COUNTRY_CENTER_LATITUDE),
+			getAsDoubleOrThrow(ConfigType.COUNTRY_CENTER_LATITUDE));
 	}
 
 	default String getCountryLocale() {
-		return getAsStringOrThrow(SystemConfigurationType.COUNTRY_LOCALE);
+		return getAsStringOrThrow(ConfigType.COUNTRY_LOCALE);
 	}
 
 	boolean isAnyCaseClassificationCalculationEnabled();

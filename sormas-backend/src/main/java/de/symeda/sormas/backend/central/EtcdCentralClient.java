@@ -24,7 +24,7 @@ import com.ibm.etcd.client.EtcdClient;
 import com.ibm.etcd.client.KvStoreClient;
 import com.ibm.etcd.client.kv.KvClient;
 
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 
 public class EtcdCentralClient {
@@ -42,11 +42,11 @@ public class EtcdCentralClient {
 	}
 
 	private KvStoreClient createEtcdClient() {
-		String[] hostPort = configFacadeEjb.getAsStringOrThrow(SystemConfigurationType.CENTRAL_ETCD_HOST).split(":");
+		String[] hostPort = configFacadeEjb.getAsStringOrThrow(ConfigType.CENTRAL_ETCD_HOST).split(":");
 
 		URL truststorePath;
 		try {
-			truststorePath = Paths.get(configFacadeEjb.getAsStringOrThrow(SystemConfigurationType.CENTRAL_ETCD_CA_PATH)).toUri().toURL();
+			truststorePath = Paths.get(configFacadeEjb.getAsStringOrThrow(ConfigType.CENTRAL_ETCD_CA_PATH)).toUri().toURL();
 		} catch (MalformedURLException e) {
 			LOGGER.error("Etcd Url is malformed: %s", e);
 			return null;
@@ -56,8 +56,8 @@ public class EtcdCentralClient {
 		try {
 			client = EtcdClient.forEndpoint(hostPort[0], Integer.parseInt(hostPort[1]))
 				.withCredentials(
-					configFacadeEjb.getAsStringOrThrow(SystemConfigurationType.CENTRAL_ETCD_CLIENT_NAME),
-					configFacadeEjb.getAsStringOrThrow(SystemConfigurationType.CENTRAL_ETCD_CLIENT_PASSWORD))
+					configFacadeEjb.getAsStringOrThrow(ConfigType.CENTRAL_ETCD_CLIENT_NAME),
+					configFacadeEjb.getAsStringOrThrow(ConfigType.CENTRAL_ETCD_CLIENT_PASSWORD))
 				.withCaCert(Resources.asByteSource(truststorePath))
 				.withMaxInboundMessageSize(6291456) // 6 MB, yes we need it
 				.build();

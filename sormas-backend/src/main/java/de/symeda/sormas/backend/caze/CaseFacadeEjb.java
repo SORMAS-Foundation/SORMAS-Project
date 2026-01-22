@@ -187,7 +187,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasRuntimeException;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskHelper;
@@ -1077,7 +1077,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				final boolean inJurisdiction = exportDto.getInJurisdiction();
 
 				if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseExportDto.COUNTRY)) {
-					exportDto.setCountry(configFacade.getAsStringOrThrow(SystemConfigurationType.COUNTRY_EPID_PREFIX));
+					exportDto.setCountry(configFacade.getAsStringOrThrow(ConfigType.COUNTRY_EPID_PREFIX));
 				}
 				if (ExportHelper.shouldExportFields(exportConfiguration, CaseDataDto.SYMPTOMS)) {
 					Optional.ofNullable(symptoms.get(exportDto.getSymptomsId()))
@@ -1455,7 +1455,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				criteria,
 				limit,
 				showDuplicatesWithDifferentRegion,
-				configFacade.getAsDoubleOrThrow(SystemConfigurationType.NAME_SIMILARITY_THRESHOLD));
+				configFacade.getAsDoubleOrThrow(ConfigType.NAME_SIMILARITY_THRESHOLD));
 
 		// pseudonymize cases
 		List<CaseMergeIndexDto> flatCaseList = cases.stream().flatMap(Stream::of).collect(Collectors.toList());

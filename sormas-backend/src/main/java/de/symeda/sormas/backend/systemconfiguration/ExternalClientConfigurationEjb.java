@@ -33,8 +33,8 @@ import de.symeda.sormas.api.externaljournal.PatientDiaryConfig;
 import de.symeda.sormas.api.externaljournal.SymptomJournalConfig;
 import de.symeda.sormas.api.externaljournal.UserConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.systemconfiguration.ExternalClientConfigurationFacade;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.util.RightsAllowed;
 
@@ -54,14 +54,14 @@ public class ExternalClientConfigurationEjb implements ExternalClientConfigurati
 		this.systemConfigurationValueEjb = systemConfigurationValueEjb;
 	}
 
-	private static final Map<SystemConfigurationType, String> SORMAS2SORMAS_IGNORE_PROPERTIES = Map.of(
-		SystemConfigurationType.SORMAS2SORMAS_IGNORE_PROPERTY_ADDITIONAL_DETAILS,
+	private static final Map<ConfigType, String> SORMAS2SORMAS_IGNORE_PROPERTIES = Map.of(
+		ConfigType.SORMAS2SORMAS_IGNORE_PROPERTY_ADDITIONAL_DETAILS,
 		SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS,
-		SystemConfigurationType.SORMAS2SORMAS_IGNORE_PROPERTY_EXTERNAL_ID,
+		ConfigType.SORMAS2SORMAS_IGNORE_PROPERTY_EXTERNAL_ID,
 		SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID,
-		SystemConfigurationType.SORMAS2SORMAS_IGNORE_PROPERTY_EXTERNAL_TOKEN,
+		ConfigType.SORMAS2SORMAS_IGNORE_PROPERTY_EXTERNAL_TOKEN,
 		SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN,
-		SystemConfigurationType.SORMAS2SORMAS_IGNORE_PROPERTY_INTERNAL_TOKEN,
+		ConfigType.SORMAS2SORMAS_IGNORE_PROPERTY_INTERNAL_TOKEN,
 		SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN);
 
 	@Override
@@ -73,23 +73,23 @@ public class ExternalClientConfigurationEjb implements ExternalClientConfigurati
 	public SormasToSormasConfig getS2SConfig() {
 		SormasToSormasConfig config = new SormasToSormasConfig();
 
-		config.setPath(getConfigAsStringOrNull(SystemConfigurationType.SORMAS2SORMAS_PATH));
-		config.setKeystoreName(getConfigAsStringOrNull(SystemConfigurationType.SORMAS2SORMAS_KEYSTORE_NAME));
-		config.setKeystorePass(getConfigAsStringOrNull(SystemConfigurationType.SORMAS2SORMAS_KEYSTORE_PASS));
-		config.setTruststoreName(getConfigAsStringOrNull(SystemConfigurationType.SORMAS2SORMAS_TRUSTSTORE_NAME));
-		config.setTruststorePass(getConfigAsStringOrNull(SystemConfigurationType.SORMAS2SORMAS_TRUSTSTORE_PASS));
-		config.setRootCaAlias(getConfigAsStringOrNull(SystemConfigurationType.SORMAS2SORMAS_ROOT_CA_ALIAS));
-		config.setId(getConfigAsStringOrNull(SystemConfigurationType.SORMAS2SORMAS_ID));
-		config.setOidcServer(getConfigAsStringOrNull(SystemConfigurationType.CENTRAL_OIDC_URL));
-		config.setOidcRealm(getConfigAsStringOrNull(SystemConfigurationType.SORMAS2SORMAS_OIDC_REALM));
-		config.setOidcClientId(getConfigAsStringOrNull(SystemConfigurationType.SORMAS2SORMAS_OIDC_CLIENT_ID));
-		config.setOidcClientSecret(getConfigAsStringOrNull(SystemConfigurationType.SORMAS2SORMAS_OIDC_CLIENT_SECRET));
-		config.setKeyPrefix(getConfigAsStringOrNull(SystemConfigurationType.SORMAS2SORMAS_ETCD_KEY_PREFIX));
+		config.setPath(getConfigAsStringOrNull(ConfigType.SORMAS2SORMAS_PATH));
+		config.setKeystoreName(getConfigAsStringOrNull(ConfigType.SORMAS2SORMAS_KEYSTORE_NAME));
+		config.setKeystorePass(getConfigAsStringOrNull(ConfigType.SORMAS2SORMAS_KEYSTORE_PASS));
+		config.setTruststoreName(getConfigAsStringOrNull(ConfigType.SORMAS2SORMAS_TRUSTSTORE_NAME));
+		config.setTruststorePass(getConfigAsStringOrNull(ConfigType.SORMAS2SORMAS_TRUSTSTORE_PASS));
+		config.setRootCaAlias(getConfigAsStringOrNull(ConfigType.SORMAS2SORMAS_ROOT_CA_ALIAS));
+		config.setId(getConfigAsStringOrNull(ConfigType.SORMAS2SORMAS_ID));
+		config.setOidcServer(getConfigAsStringOrNull(ConfigType.CENTRAL_OIDC_URL));
+		config.setOidcRealm(getConfigAsStringOrNull(ConfigType.SORMAS2SORMAS_OIDC_REALM));
+		config.setOidcClientId(getConfigAsStringOrNull(ConfigType.SORMAS2SORMAS_OIDC_CLIENT_ID));
+		config.setOidcClientSecret(getConfigAsStringOrNull(ConfigType.SORMAS2SORMAS_OIDC_CLIENT_SECRET));
+		config.setKeyPrefix(getConfigAsStringOrNull(ConfigType.SORMAS2SORMAS_ETCD_KEY_PREFIX));
 		config.setIgnoreProperties(
 			SORMAS2SORMAS_IGNORE_PROPERTIES.entrySet()
 				.stream()
 				.collect(Collectors.toMap(Map.Entry::getValue, entry -> systemConfigurationValueEjb.getAsBoolean(entry.getKey()))));
-		config.setDistrictExternalId(getConfigAsStringOrNull(SystemConfigurationType.SORMAS2SORMAS_DISTRICT_EXTERNAL_ID));
+		config.setDistrictExternalId(getConfigAsStringOrNull(ConfigType.SORMAS2SORMAS_DISTRICT_EXTERNAL_ID));
 
 		return config;
 	}
@@ -99,21 +99,21 @@ public class ExternalClientConfigurationEjb implements ExternalClientConfigurati
 		return false;
 	}
 
-	private String getConfigAsStringOrNull(SystemConfigurationType sormas2sormasPath) {
+	private String getConfigAsStringOrNull(ConfigType sormas2sormasPath) {
 		return systemConfigurationValueEjb.getAsString(sormas2sormasPath).orElse(null);
 	}
 
 	@Override
 	public SymptomJournalConfig getSymptomJournalConfig() {
 		SymptomJournalConfig config = new SymptomJournalConfig();
-		config.setUrl(getConfigAsStringOrNull(SystemConfigurationType.INTERFACE_SYMPTOM_JOURNAL_URL));
-		config.setAuthUrl(getConfigAsStringOrNull(SystemConfigurationType.INTERFACE_SYMPTOM_JOURNAL_AUTH_URL));
-		config.setClientId(getConfigAsStringOrNull(SystemConfigurationType.INTERFACE_SYMPTOM_JOURNAL_CLIENTID));
-		config.setSecret(getConfigAsStringOrNull(SystemConfigurationType.INTERFACE_SYMPTOM_JOURNAL_SECRET));
+		config.setUrl(getConfigAsStringOrNull(ConfigType.INTERFACE_SYMPTOM_JOURNAL_URL));
+		config.setAuthUrl(getConfigAsStringOrNull(ConfigType.INTERFACE_SYMPTOM_JOURNAL_AUTH_URL));
+		config.setClientId(getConfigAsStringOrNull(ConfigType.INTERFACE_SYMPTOM_JOURNAL_CLIENTID));
+		config.setSecret(getConfigAsStringOrNull(ConfigType.INTERFACE_SYMPTOM_JOURNAL_SECRET));
 
 		UserConfig userConfig = new UserConfig();
-		userConfig.setUsername(getConfigAsStringOrNull(SystemConfigurationType.INTERFACE_SYMPTOM_JOURNAL_DEFAULTUSER_USERNAME));
-		userConfig.setPassword(getConfigAsStringOrNull(SystemConfigurationType.INTERFACE_SYMPTOM_JOURNAL_DEFAULTUSER_PASSWORD));
+		userConfig.setUsername(getConfigAsStringOrNull(ConfigType.INTERFACE_SYMPTOM_JOURNAL_DEFAULTUSER_USERNAME));
+		userConfig.setPassword(getConfigAsStringOrNull(ConfigType.INTERFACE_SYMPTOM_JOURNAL_DEFAULTUSER_PASSWORD));
 
 		if (StringUtils.isNoneBlank(userConfig.getUsername(), userConfig.getPassword())) {
 			config.setDefaultUser(userConfig);
@@ -125,19 +125,19 @@ public class ExternalClientConfigurationEjb implements ExternalClientConfigurati
 	@Override
 	public PatientDiaryConfig getPatientDiaryConfig() {
 		PatientDiaryConfig config = new PatientDiaryConfig();
-		config.setUrl(getConfigAsStringOrNull(SystemConfigurationType.INTERFACE_PATIENT_DIARY_URL));
-		config.setProbandsUrl(getConfigAsStringOrNull(SystemConfigurationType.INTERFACE_PATIENT_DIARY_PROBANDSURL));
-		config.setAuthUrl(getConfigAsStringOrNull(SystemConfigurationType.INTERFACE_PATIENT_DIARY_AUTHURL));
-		config.setFrontendAuthUrl(getConfigAsStringOrNull(SystemConfigurationType.INTERFACE_PATIENT_DIARY_FRONTEND_AUTHURL));
+		config.setUrl(getConfigAsStringOrNull(ConfigType.INTERFACE_PATIENT_DIARY_URL));
+		config.setProbandsUrl(getConfigAsStringOrNull(ConfigType.INTERFACE_PATIENT_DIARY_PROBANDSURL));
+		config.setAuthUrl(getConfigAsStringOrNull(ConfigType.INTERFACE_PATIENT_DIARY_AUTHURL));
+		config.setFrontendAuthUrl(getConfigAsStringOrNull(ConfigType.INTERFACE_PATIENT_DIARY_FRONTEND_AUTHURL));
 		config.setTokenLifetime(
-			Duration.ofSeconds(systemConfigurationValueEjb.getAsLongOrThrow(SystemConfigurationType.INTERFACE_PATIENT_DIARY_TOKEN_LIFETIME_SECONDS)));
-		config.setEmail(getConfigAsStringOrNull(SystemConfigurationType.INTERFACE_PATIENT_DIARY_EMAIL));
-		config.setPassword(getConfigAsStringOrNull(SystemConfigurationType.INTERFACE_PATIENT_DIARY_PASSWORD));
-		config.setAcceptPhoneContact(systemConfigurationValueEjb.getAsBoolean(SystemConfigurationType.INTERFACE_PATIENT_DIARY_ACCEPT_PHONE_CONTACT));
+			Duration.ofSeconds(systemConfigurationValueEjb.getAsLongOrThrow(ConfigType.INTERFACE_PATIENT_DIARY_TOKEN_LIFETIME_SECONDS)));
+		config.setEmail(getConfigAsStringOrNull(ConfigType.INTERFACE_PATIENT_DIARY_EMAIL));
+		config.setPassword(getConfigAsStringOrNull(ConfigType.INTERFACE_PATIENT_DIARY_PASSWORD));
+		config.setAcceptPhoneContact(systemConfigurationValueEjb.getAsBoolean(ConfigType.INTERFACE_PATIENT_DIARY_ACCEPT_PHONE_CONTACT));
 
 		UserConfig userConfig = new UserConfig();
-		userConfig.setUsername(getConfigAsStringOrNull(SystemConfigurationType.INTERFACE_PATIENT_DIARY_DEFAULTUSER_USERNAME));
-		userConfig.setPassword(getConfigAsStringOrNull(SystemConfigurationType.INTERFACE_PATIENT_DIARY_DEFAULTUSER_PASSWORD));
+		userConfig.setUsername(getConfigAsStringOrNull(ConfigType.INTERFACE_PATIENT_DIARY_DEFAULTUSER_USERNAME));
+		userConfig.setPassword(getConfigAsStringOrNull(ConfigType.INTERFACE_PATIENT_DIARY_DEFAULTUSER_PASSWORD));
 
 		if (StringUtils.isNoneBlank(userConfig.getUsername(), userConfig.getPassword())) {
 			config.setDefaultUser(userConfig);

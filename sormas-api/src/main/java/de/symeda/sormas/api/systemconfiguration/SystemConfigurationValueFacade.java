@@ -17,6 +17,7 @@ package de.symeda.sormas.api.systemconfiguration;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Optional;
 
 import javax.ejb.Remote;
 
@@ -54,7 +55,7 @@ public interface SystemConfigurationValueFacade
      * @param key The key of the configuration value to retrieve.
      * @return the value of the configuration.
      */
-    String getValue(String key);
+	Optional<String> getValue(ConfigType key);
 
     /**
      * Checks if a configuration value exists for the given key.
@@ -62,7 +63,7 @@ public interface SystemConfigurationValueFacade
      * @param key The key to check.
      * @return true if the configuration value exists, false otherwise.
      */
-    boolean exists(String key);
+	boolean exists(ConfigType key);
 
     /**
      * Clears the caches and reloads the system configuration values from the database.

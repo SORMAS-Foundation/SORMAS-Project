@@ -26,7 +26,7 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UiUtil;
@@ -134,7 +134,7 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 			firstAccessibleView = firstAccessibleView != null ? firstAccessibleView : SystemConfigurationView.class;
 		}
 
-		if (FacadeProvider.getConfigFacade().getAsBoolean(SystemConfigurationType.DEV_MODE) && UiUtil.permitted(UserRight.DEV_MODE)) {
+		if (FacadeProvider.getConfigFacade().getAsBoolean(ConfigType.DEV_MODE) && UiUtil.permitted(UserRight.DEV_MODE)) {
 			navigator.addView(DevModeView.VIEW_NAME, DevModeView.class);
 			firstAccessibleView = firstAccessibleView != null ? firstAccessibleView : DevModeView.class;
 		}
@@ -273,7 +273,7 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 				false);
 		}
 
-		if (FacadeProvider.getConfigFacade().getAsBoolean(SystemConfigurationType.DEV_MODE) && UiUtil.permitted(UserRight.DEV_MODE)) {
+		if (FacadeProvider.getConfigFacade().getAsBoolean(ConfigType.DEV_MODE) && UiUtil.permitted(UserRight.DEV_MODE)) {
 			menu.addView(
 				DevModeView.VIEW_NAME,
 				I18nProperties.getPrefixCaption("View", DevModeView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),

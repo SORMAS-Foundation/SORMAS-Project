@@ -65,7 +65,7 @@ import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationType;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.visualization.VisualizationFacade;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -110,11 +110,11 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 		Collection<Disease> diseases,
 		Language language) {
 
-		String rExecutable = configFacade.getAsStringOrThrow(SystemConfigurationType.RSCRIPT_EXECUTABLE);
+		String rExecutable = configFacade.getAsStringOrThrow(ConfigType.RSCRIPT_EXECUTABLE);
 		if (StringUtils.isBlank(rExecutable)) {
 			return null;
 		}
-		Path tempBasePath = new File(configFacade.getAsStringOrThrow(SystemConfigurationType.TEMP_PATH)).toPath();
+		Path tempBasePath = new File(configFacade.getAsStringOrThrow(ConfigType.TEMP_PATH)).toPath();
 
 		Collection<Long> contactIds = getContactIds(fromDate, toDate, region, district, diseases);
 

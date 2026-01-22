@@ -43,9 +43,6 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import de.symeda.sormas.api.caze.CaseOutcome;
-import de.symeda.sormas.backend.MockProducer;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
@@ -57,6 +54,7 @@ import org.mockito.stubbing.Answer;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
@@ -74,12 +72,12 @@ import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult;
+import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEventResult;
+import de.symeda.sormas.api.externalmessage.processing.PickOrCreateSampleResult;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractLabMessageProcessingFlow;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractRelatedLabMessageHandler;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractRelatedLabMessageHandler.HandlerResult;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractRelatedLabMessageHandler.HandlerResultStatus;
-import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEventResult;
-import de.symeda.sormas.api.externalmessage.processing.PickOrCreateSampleResult;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.SampleAndPathogenTests;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
@@ -92,6 +90,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplingReason;
 import de.symeda.sormas.api.sample.SpecimenCondition;
+import de.symeda.sormas.api.systemconfiguration.ConfigType;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.dataprocessing.EntitySelection;
@@ -99,6 +98,7 @@ import de.symeda.sormas.api.utils.dataprocessing.HandlerCallback;
 import de.symeda.sormas.api.utils.dataprocessing.PickOrCreateEntryResult;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResult;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 
 public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
@@ -2823,7 +2823,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 
 	@Test
 	public void testCreateCaseWithPertusisTestTypeCultureForLuServers() throws ExecutionException, InterruptedException {
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "lu");
+		MockProducer.getProperties().setProperty(ConfigType.COUNTRY_LOCALE, "lu");
 		ArgumentCaptor<PersonDto> personCaptor = ArgumentCaptor.forClass(PersonDto.class);
 		doAnswer(invocation -> {
 			HandlerCallback<EntitySelection<PersonDto>> callback = invocation.getArgument(1);
@@ -2918,7 +2918,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 
 	@Test
 	public void testCreateCaseWithPertusisOtherTestTypeForLuServers() throws ExecutionException, InterruptedException {
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "lu");
+		MockProducer.getProperties().setProperty(ConfigType.COUNTRY_LOCALE, "lu");
 		ArgumentCaptor<PersonDto> personCaptor = ArgumentCaptor.forClass(PersonDto.class);
 		doAnswer(invocation -> {
 			HandlerCallback<EntitySelection<PersonDto>> callback = invocation.getArgument(1);
