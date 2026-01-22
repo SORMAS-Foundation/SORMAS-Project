@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.common;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
@@ -30,6 +31,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import de.symeda.sormas.api.CaseClassificationCalculationMode;
+import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.backend.AbstractBeanTest;

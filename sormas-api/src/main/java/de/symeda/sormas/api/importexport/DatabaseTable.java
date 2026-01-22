@@ -162,8 +162,7 @@ public enum DatabaseTable {
 
 	DRUG_SUSCEPTIBILITY(DatabaseTableType.SORMAS, "drug_susceptibility", null);
 
-	private static BiFunction<List<FeatureConfigurationDto>, ConfigFacade, Boolean> dependingOnFeature(
-		FeatureType... featureTypes) {
+	private static BiFunction<List<FeatureConfigurationDto>, ConfigFacade, Boolean> dependingOnFeature(FeatureType... featureTypes) {
 		return (featureConfigurations, configFacade) -> featureConfigurations.stream()
 			.anyMatch(cc -> ArrayUtils.contains(featureTypes, cc.getFeatureType()) && cc.isEnabled());
 	}

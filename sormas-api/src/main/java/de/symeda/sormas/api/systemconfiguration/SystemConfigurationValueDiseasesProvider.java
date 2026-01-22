@@ -52,6 +52,7 @@ public class SystemConfigurationValueDiseasesProvider implements SystemConfigura
      */
     @Override
     public Map<String, String> getOptions() {
+
         return Collections
             .unmodifiableMap(Arrays.stream(Disease.values()).distinct().collect(Collectors.toMap(Disease::getName, Disease::toShortString)));
     }

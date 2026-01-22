@@ -132,7 +132,6 @@ public class SystemConfigurationValueEjb
     }
 
     @PermitAll
-	@Override
     public boolean exists(final String key) {
         return configurationValuesByKey.containsKey(key);
     }

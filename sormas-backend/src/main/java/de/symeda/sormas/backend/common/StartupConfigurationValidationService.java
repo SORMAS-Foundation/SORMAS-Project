@@ -1,3 +1,17 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 package de.symeda.sormas.backend.common;
 
 import java.util.List;
@@ -53,19 +67,19 @@ public class StartupConfigurationValidationService {
 		// must contain version information
 		int[] appVersion = VersionHelper.extractVersion(appUrl);
 		if (!DataHelper.isNullOrEmpty(appUrl) && !VersionHelper.isVersion(appVersion)) {
-			throw new IllegalArgumentException("Property '" + ConfigFacadeEjb.APP_URL + "' must contain a valid version: '" + appUrl + "'");
+			throw new IllegalArgumentException("Property '" + SystemConfigurationType.APP_URL + "' must contain a valid version: '" + appUrl + "'");
 		}
 		int[] appLegacyVersion = VersionHelper.extractVersion(appLegacyUrl);
 		if (!DataHelper.isNullOrEmpty(appLegacyUrl) && !VersionHelper.isVersion(appLegacyVersion)) {
 			throw new IllegalArgumentException(
-				"Property '" + ConfigFacadeEjb.APP_LEGACY_URL + "' must contain a valid version: '" + appLegacyUrl + "'");
+				"Property '" + SystemConfigurationType.APP_LEGACY_URL + "' must contain a valid version: '" + appLegacyUrl + "'");
 		}
 
 		// legacy must be empty or before app version
 		if (appLegacyVersion != null && appVersion != null) {
 			if (!VersionHelper.isBefore(appLegacyVersion, appVersion)) {
 				throw new IllegalArgumentException(
-					"Property '" + ConfigFacadeEjb.APP_LEGACY_URL + "' must have a version smaller " + "than property '" + ConfigFacadeEjb.APP_URL
+					"Property '" + SystemConfigurationType.APP_LEGACY_URL + "' must have a version smaller " + "than property '" + SystemConfigurationType.APP_URL
 						+ "': '" + appLegacyUrl + "' - '" + appUrl + "'");
 			}
 		}
@@ -73,13 +87,13 @@ public class StartupConfigurationValidationService {
 		// both have to be compatible
 		if (appVersion != null && InfoProvider.get().isCompatibleToApi(appVersion) != CompatibilityCheckResponse.COMPATIBLE) {
 			throw new IllegalArgumentException(
-				"Property '" + ConfigFacadeEjb.APP_URL + "' does not point to a compatible app version: '" + appUrl + "'. Minimum is '"
+				"Property '" + SystemConfigurationType.APP_URL + "' does not point to a compatible app version: '" + appUrl + "'. Minimum is '"
 					+ InfoProvider.get().getMinimumRequiredVersion() + "'");
 		}
 
 		if (appLegacyVersion != null && InfoProvider.get().isCompatibleToApi(appLegacyVersion) != CompatibilityCheckResponse.COMPATIBLE) {
 			throw new IllegalArgumentException(
-				"Property '" + ConfigFacadeEjb.APP_LEGACY_URL + "' does not point to a compatible app version: '" + appLegacyUrl + "'. Minimum is '"
+				"Property '" + SystemConfigurationType.APP_LEGACY_URL + "' does not point to a compatible app version: '" + appLegacyUrl + "'. Minimum is '"
 					+ InfoProvider.get().getMinimumRequiredVersion() + "'");
 		}
 	}

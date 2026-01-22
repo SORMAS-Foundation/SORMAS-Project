@@ -39,10 +39,10 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationValueEjb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 
 @Stateless(name = "EmailService")
 @LocalBean

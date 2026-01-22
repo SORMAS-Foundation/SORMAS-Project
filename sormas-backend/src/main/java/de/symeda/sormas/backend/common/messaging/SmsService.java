@@ -24,6 +24,8 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationValueEjb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,9 +40,7 @@ import com.nexmo.client.sms.SmsSubmissionResponse;
 import com.nexmo.client.sms.SmsSubmissionResponseMessage;
 import com.nexmo.client.sms.messages.TextMessage;
 
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
-
 
 @Stateless(name = "SmsService")
 @LocalBean

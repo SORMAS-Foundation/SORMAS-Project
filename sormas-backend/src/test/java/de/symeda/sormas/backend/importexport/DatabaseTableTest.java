@@ -29,6 +29,7 @@ import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.importexport.DatabaseTable;
 import de.symeda.sormas.api.importexport.DatabaseTableType;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 
 public class DatabaseTableTest {
 

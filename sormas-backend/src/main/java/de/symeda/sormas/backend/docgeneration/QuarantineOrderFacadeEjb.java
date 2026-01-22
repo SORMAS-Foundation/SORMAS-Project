@@ -41,6 +41,7 @@ import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.vaccination.VaccinationReferenceDto;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb.DocumentTemplateFacadeEjbLocal;
+import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 
 @Stateless(name = "QuarantineOrderFacade")
 public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
@@ -53,6 +54,9 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 
 	@EJB
 	private DocGenerationHelper helper;
+
+	@EJB
+	private ConfigFacadeEjbLocal configFacade;
 
 	@Override
 	public byte[] getGeneratedDocument(

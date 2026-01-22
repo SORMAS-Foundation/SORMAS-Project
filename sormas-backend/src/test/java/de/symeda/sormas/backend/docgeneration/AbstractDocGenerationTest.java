@@ -11,6 +11,7 @@ import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 
 public abstract class AbstractDocGenerationTest extends AbstractBeanTest {
 
