@@ -15062,4 +15062,16 @@ ALTER TABLE testreport_history ADD COLUMN serotype character varying(255);
 ALTER TABLE testreport_history ADD COLUMN straincallstatus character varying(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (602, 'External message additional fields');
+
+-- Missing date of diagnosis in surveillance reports #13751
+
+UPDATE surveillancereports sr
+SET dateofdiagnosis = em.diagnosticdate
+FROM externalmessage em
+WHERE em.surveillancereport_id = sr.id
+  AND em.diagnosticdate IS NOT NULL
+  AND sr.dateofdiagnosis IS NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (603, 'Update surveillance report diagnosis date');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
