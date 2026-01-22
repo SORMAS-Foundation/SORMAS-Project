@@ -61,7 +61,9 @@ public class CaseNotifierSideViewController {
         final NotifierDto notifier =
             FacadeProvider.getNotifierFacade().getByUuidAndTime(caze.getNotifier().getUuid(), caze.getNotifier().getVersionDate().toInstant());
 
-        final Date notificationDate = getOldestReport(caze) != null ? getOldestReport(caze).getReportDate() : null;
+        final SurveillanceReportDto oldestReport = getOldestReport(caze);
+
+        final Date notificationDate = oldestReport != null ? oldestReport.getReportDate() : null;
 
         // find diagno
 
