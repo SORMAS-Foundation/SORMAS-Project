@@ -102,52 +102,52 @@ public class ConfigFacadeEjbTest extends AbstractBeanTest {
 		Mockito.when(InfoProvider.get().getVersion()).thenReturn("0.7.0");
 		Mockito.when(InfoProvider.get().getMinimumRequiredVersion()).thenReturn("0.5.0");
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.APP_URL, "https://www.sormas.org/downloads/sormas-0.7.0-release.apk");
-		getConfigFacade().validateAppUrls();
+		getStartupConfigurationValidationService().validateAppUrls();
 
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.APP_URL, "https://www.sormas.org/downloads-0.4.0-test/sormas-0.7.0-release.apk");
-		getConfigFacade().validateAppUrls();
+		getStartupConfigurationValidationService().validateAppUrls();
 
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.APP_URL, "https://www.sormas.org/downloads/sormas-release.apk");
 		try {
-			getConfigFacade().validateAppUrls();
+			getStartupConfigurationValidationService().validateAppUrls();
 			fail();
 		} catch (IllegalArgumentException e) {
 		}
 
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.APP_URL, "https://www.sormas.org/downloads/sormas-0.4.0-release.apk");
 		try {
-			getConfigFacade().validateAppUrls();
+			getStartupConfigurationValidationService().validateAppUrls();
 			fail();
 		} catch (IllegalArgumentException e) {
 		}
 
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.APP_URL, "https://www.sormas.org/downloads/sormas-0.8.0-release.apk");
 		try {
-			getConfigFacade().validateAppUrls();
+			getStartupConfigurationValidationService().validateAppUrls();
 			fail();
 		} catch (IllegalArgumentException e) {
 		}
 
 		Mockito.when(InfoProvider.get().getVersion()).thenReturn("1.0.0");
-		getConfigFacade().validateAppUrls();
+		getStartupConfigurationValidationService().validateAppUrls();
 
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.APP_LEGACY_URL, "https://www.sormas.org/downloads/sormas-0.8.0-release.apk");
 		try {
-			getConfigFacade().validateAppUrls();
+			getStartupConfigurationValidationService().validateAppUrls();
 			fail();
 		} catch (IllegalArgumentException e) {
 		}
 
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.APP_LEGACY_URL, "https://www.sormas.org/downloads/sormas-0.7.0-release.apk");
-		getConfigFacade().validateAppUrls();
+		getStartupConfigurationValidationService().validateAppUrls();
 
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.APP_URL, "https://www.sormas.org/downloads/sormas-1.0.0-release.apk");
-		getConfigFacade().validateAppUrls();
+		getStartupConfigurationValidationService().validateAppUrls();
 
 		// below minimum
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.APP_LEGACY_URL, "https://www.sormas.org/downloads/sormas-0.4.0-release.apk");
 		try {
-			getConfigFacade().validateAppUrls();
+			getStartupConfigurationValidationService().validateAppUrls();
 			fail();
 		} catch (IllegalArgumentException e) {
 		}

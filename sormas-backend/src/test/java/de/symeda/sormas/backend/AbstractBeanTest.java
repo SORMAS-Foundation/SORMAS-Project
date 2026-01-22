@@ -45,6 +45,7 @@ import org.mockito.quality.Strictness;
 
 import de.hilling.junit.cdi.CdiTestJunitExtension;
 import de.hilling.junit.cdi.ContextControlWrapper;
+import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.action.ActionFacade;
@@ -144,6 +145,7 @@ import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitFacadeEjb.ClinicalVi
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.DefaultEntitiesCreator;
+import de.symeda.sormas.backend.common.StartupConfigurationValidationService;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb;
@@ -263,6 +265,7 @@ import de.symeda.sormas.backend.survey.SurveyService;
 import de.symeda.sormas.backend.survey.SurveyTokenFacadeEjb.SurveyTokenFacadeEjbLocal;
 import de.symeda.sormas.backend.survey.SurveyTokenService;
 import de.symeda.sormas.backend.symptoms.SymptomsService;
+import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategoryEjb;
 import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategoryService;
 import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationValueEjb;
@@ -475,6 +478,10 @@ public abstract class AbstractBeanTest {
 
 	public ConfigFacade getConfigFacade() {
 		return getBean(ConfigFacadeEjbLocal.class);
+	}
+
+	public StartupConfigurationValidationService getStartupConfigurationValidationService() {
+		return getBean(StartupConfigurationValidationService.class);
 	}
 
 	/**
