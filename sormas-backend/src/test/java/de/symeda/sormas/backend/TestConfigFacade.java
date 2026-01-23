@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend;
 
+import java.util.Optional;
+
 import de.symeda.sormas.api.systemconfiguration.Config;
 
 /**
@@ -7,9 +9,17 @@ import de.symeda.sormas.api.systemconfiguration.Config;
  */
 public interface TestConfigFacade {
 
-	void setProperty(Config config, String value);
+	default void setProperty(Config config, String value) {
+		set(config, value);
+	}
 
-	String getProperty(Config config);
+	void set(Config config, String value);
+
+	Optional<String> get(Config config);
+
+	default String getProperty(Config config) {
+		return get(config).orElse(null);
+	}
 
 	void remove(Config config);
 }

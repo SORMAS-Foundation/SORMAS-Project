@@ -20,11 +20,11 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 
 import javax.ejb.DependsOn;
+import javax.ejb.EJB;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
-import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.systemconfiguration.Config;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.util.RightsAllowed;
 
@@ -46,7 +47,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String COUNTRY_SEPARATION_CHAR = "-";
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	private SystemConfigurationValueEjb systemConfigurationValueEjb;
+	@EJB
+	private SystemConfigurationValueFacade systemConfigurationValueEjb;
 
 	@Override
 	public boolean isPresent(Config config) {
@@ -59,7 +61,14 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	private <T> Optional<T> getTypedValueFor(Config config, Function<String, T> parsingFct) {
-		return systemConfigurationValueEjb.getValue(config).map(parsingFct);
+		return systemConfigurationValueEjb.getValue(config).map(value -> {
+			logger.debug("Value [{}] for config [{}]", value, config);
+			T result = parsingFct.apply(value);
+
+			logger.debug("result [{}]", result);
+
+			return result;
+		});
 	}
 
 	@Override
@@ -105,6 +114,10 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	public String normalizeLocaleString(String locale) {
+		return normalizeLocaleStringStatic(locale);
+	}
+
+	public static String normalizeLocaleStringStatic(String locale) {
 		locale = locale.trim();
 		int pos = Math.max(locale.indexOf('-'), locale.indexOf('_'));
 		if (pos < 0) {
@@ -115,12 +128,6 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		return locale;
 	}
 
-
-
-
-
-
-	@Inject
 	public void setSystemConfigurationValueEjb(SystemConfigurationValueEjb systemConfigurationValueEjb) {
 		this.systemConfigurationValueEjb = systemConfigurationValueEjb;
 	}

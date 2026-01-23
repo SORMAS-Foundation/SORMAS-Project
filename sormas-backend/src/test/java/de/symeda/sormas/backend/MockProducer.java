@@ -85,7 +85,7 @@ public class MockProducer implements InitialContextFactory {
 
 	private static SormasToSormasDiscoveryService sormasToSormasDiscoveryService = mock(SormasToSormasDiscoveryService.class);
 
-	static final TestHelperConfigImpl configurationTestHelper = new TestHelperConfigImpl();
+	static final TestHelperConfigImpl testHelperConfig = ConfigFacadeEjbLocalMock.testHelperConfig;
 
 	// Receiving e-mail server is mocked: org. jvnet. mock_javamail. mailbox
 	private static Session mailSession;
@@ -129,16 +129,24 @@ public class MockProducer implements InitialContextFactory {
 			s2sRestClient,
 			managedScheduledExecutorService);
 		wireMocks();
-		resetProperties();
+		resetConfigs();
 		requestContextTO.setMobileSync(false);
 	}
 
-	private static void resetProperties() {
-		configurationTestHelper.clear();
-		configurationTestHelper.setProperty(Config.COUNTRY_NAME, "nigeria");
-		configurationTestHelper.setProperty(Config.CSV_SEPARATOR, ";");
-		configurationTestHelper.setProperty(Config.TEMP_PATH, TMP_PATH);
-		configurationTestHelper.setProperty(Config.DOCUMENTS_PATH, TMP_PATH + "/documents");
+	private static void resetConfigs() {
+		testHelperConfig.clear();
+		testHelperConfig.setProperty(Config.COUNTRY_NAME, "nigeria");
+		testHelperConfig.set(Config.COUNTRY_LOCALE, "en");
+		testHelperConfig.setProperty(Config.CSV_SEPARATOR, ";");
+
+		testHelperConfig.setProperty(Config.TEMP_PATH, TMP_PATH);
+
+		testHelperConfig.setProperty(Config.DOCUMENTS_PATH, TMP_PATH + "/documents");
+
+		testHelperConfig.set(Config.DEFAULT_CASE_CLASSIFICATION_CALCULATION_MODE, "AUTOMATIC");
+		testHelperConfig.set(Config.CASE_CLASSIFICATION_CALCULATION_MODE_OVERRIDE, "{}");
+		testHelperConfig.set(Config.NAME_SIMILARITY_THRESHOLD, "0.65D");
+
 	}
 
 	public static void wireMocks() {
@@ -182,17 +190,7 @@ public class MockProducer implements InitialContextFactory {
 	@Produces
 	@Deprecated
 	public static TestConfigFacade getProperties() {
-		return getTestConfigFacade();
-	}
-
-	@Produces
-	public static TestConfigFacade getTestConfigFacade() {
-		return configurationTestHelper;
-	}
-
-	@Produces
-	public ConfigFacade getConfigFacade() {
-		return new ConfigFacadeEjbLocalMock();
+		return testHelperConfig;
 	}
 
 	@Produces
@@ -230,7 +228,7 @@ public class MockProducer implements InitialContextFactory {
 
 		@Override
 		@Produces
-		public EtcdCentralClient etcdCentralClient(ConfigFacadeEjb configFacadeEjb) {
+		public EtcdCentralClient etcdCentralClient(ConfigFacade configFacadeEjb) {
 			return etcdCentralClient;
 		}
 	}
@@ -269,7 +267,7 @@ public class MockProducer implements InitialContextFactory {
 	}
 
 	public static void mockConfig(Config config, String value) {
-		configurationTestHelper.setProperty(config, value);
+		testHelperConfig.setProperty(config, value);
 	}
 
 	/**

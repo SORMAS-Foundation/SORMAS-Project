@@ -235,7 +235,6 @@ import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfoSe
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.SymptomsService;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjb;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
 import de.symeda.sormas.backend.task.TaskService;
@@ -425,7 +424,7 @@ public abstract class AbstractBeanTest {
 	}
 
 	public ConfigFacade getConfigFacade() {
-		return getBean(ConfigFacadeEjb.class);
+		return getBean(ConfigFacadeEjbLocalMock.class);
 	}
 
 	/**
@@ -439,6 +438,10 @@ public abstract class AbstractBeanTest {
 
 	public CaseService getCaseService() {
 		return getBean(CaseService.class);
+	}
+
+	public TestConfigFacade testConfigFacade() {
+		return getBean(TestHelperConfigImpl.class);
 	}
 
 	public ImmunizationFacadeEjbLocal getImmunizationFacade() {

@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import de.symeda.sormas.api.systemconfiguration.Config;
@@ -14,13 +15,13 @@ public class TestHelperConfigImpl implements TestConfigFacade {
 	}
 
 	@Override
-	public void setProperty(Config config, String value) {
+	public void set(Config config, String value) {
 		properties.put(config, value);
 	}
 
 	@Override
-	public String getProperty(Config config) {
-		return properties.get(config);
+	public Optional<String> get(Config config) {
+		return Optional.ofNullable(properties.get(config));
 	}
 
 	@Override

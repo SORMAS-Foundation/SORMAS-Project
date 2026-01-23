@@ -19,6 +19,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.CharUtils;
 
 import de.symeda.sormas.api.geo.GeoLatLon;
@@ -42,6 +44,7 @@ public interface ConfigFacade {
 
 	boolean getAsBoolean(Config config);
 
+	@NotNull
 	default Integer getAsIntegerOrThrow(Config config) {
 		return getAsInteger(config).orElseThrow(() -> buildMissingConfigException(config));
 	}
@@ -50,20 +53,24 @@ public interface ConfigFacade {
 		return new IllegalStateException(String.format("Required configuration '%s' not found or invalid. \nCheck if ", config.name()));
 	}
 
+	@NotNull
 	default Double getAsDoubleOrThrow(Config config) {
 		return getAsDouble(config).orElseThrow(() -> buildMissingConfigException(config));
 	}
 
+	@NotNull
 	default Long getAsLongOrThrow(Config config) {
 		return getAsLong(config).orElseThrow(() -> buildMissingConfigException(config));
 	}
 
+	@NotNull
 	default String getAsStringOrThrow(Config config) {
 		return getAsString(config).orElseThrow(() -> buildMissingConfigException(config));
 	}
 
 	boolean isConfiguredCountry(String countryCode);
 
+	@NotNull
 	String getCountryCode();
 
 	default boolean isSmsServiceSetUp() {
@@ -85,18 +92,22 @@ public interface ConfigFacade {
 		return isPresent(Config.EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL);
 	}
 
+	@NotNull
 	default Set<String> getAllowedFileExtensions() {
 		return Arrays.stream(getAsStringOrThrow(Config.ALLOWED_FILE_EXTENSIONS).split(",")).collect(Collectors.toSet());
 	}
 
+	@NotNull
 	default String getSormasInstanceName() {
 		return getAsBoolean(Config.CUSTOM_BRANDING) ? getAsStringOrThrow(Config.CUSTOM_BRANDING_NAME) : "SORMAS";
 	}
 
+	@NotNull
 	default GeoLatLon getCountryCenter() {
 		return new GeoLatLon(getAsDoubleOrThrow(Config.COUNTRY_CENTER_LATITUDE), getAsDoubleOrThrow(Config.COUNTRY_CENTER_LATITUDE));
 	}
 
+	@NotNull
 	default String getCountryLocale() {
 		return getAsStringOrThrow(Config.COUNTRY_LOCALE);
 	}
