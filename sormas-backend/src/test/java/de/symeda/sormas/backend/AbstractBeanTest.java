@@ -487,10 +487,6 @@ public abstract class AbstractBeanTest {
 		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, featureType);
 		if (properties != null) {
 			executeInTransaction(em -> {
-
-				System.out.println("NNNNNNNNNNNNNNNNNNNNNNNNN");
-				System.out.println(em.createNativeQuery("select featuretype from featureconfiguration").getResultList());
-
 				Query query = em.createQuery("select f from featureconfiguration f where featureType = '" + featureType.name() + "'");
 				FeatureConfiguration singleResult = (FeatureConfiguration) query.getSingleResult();
 				singleResult.setProperties(properties);

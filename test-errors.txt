@@ -1,0 +1,453 @@
+Those are the properties that were previoulsy set on startup
+		testHelperConfig.clear();
+		testHelperConfig.set(Config.COUNTRY_NAME, "nigeria");
+		testHelperConfig.set(Config.COUNTRY_LOCALE, "en");
+		testHelperConfig.set(Config.CSV_SEPARATOR, ";");
+		testHelperConfig.set(Config.STEP_SIZE_FOR_CSV_EXPORT, "5000");
+
+		testHelperConfig.set(Config.TEMP_PATH, TMP_PATH);
+
+		testHelperConfig.set(Config.DOCUMENTS_PATH, TMP_PATH + "/documents");
+
+		testHelperConfig.set(Config.DEFAULT_CASE_CLASSIFICATION_CALCULATION_MODE, "AUTOMATIC");
+		testHelperConfig.set(Config.CASE_CLASSIFICATION_CALCULATION_MODE_OVERRIDE, "{}");
+		testHelperConfig.set(Config.NAME_SIMILARITY_THRESHOLD, "0.65D");
+
+
+--------------------------------------------------------------------------------
+
+[ERROR] Failures:
+[ERROR]   ArchitectureTest.testSystemConfigurationValueEjbAuthorization:516->assertFacadeEjbAnnotated:529->assertFacadeEjbAnnotated:568 Architecture Violation [Priority: MEDIUM] - Rule 'methods that are declared in de.symeda.sormas.backend.systemconfiguration.SystemConfigurationValueEjb and are public and are not static should be annotated with @RightsAllowed or should be annotated with @PermitAll or should be annotated with @DenyAll or should have name matching '^(get|count|is|does|has|validate|to|pseudonymize|convertToReferenceDto|fillOrBuild|convertToDto|fromDto|convertToDetailedReferenceDto|exists).*'' was violated (1 times):
+Method <de.symeda.sormas.backend.systemconfiguration.SystemConfigurationValueEjb.loadDataIfEmpty()> does not have name matching '^(get|count|is|does|has|validate|to|pseudonymize|convertToReferenceDto|fillOrBuild|convertToDto|fromDto|convertToDetailedReferenceDto|exists).*' in (SystemConfigurationValueEjb.java:147) and Method <de.symeda.sormas.backend.systemconfiguration.SystemConfigurationValueEjb.loadDataIfEmpty()> is not annotated with @DenyAll in (SystemConfigurationValueEjb.java:147) and Method <de.symeda.sormas.backend.systemconfiguration.SystemConfigurationValueEjb.loadDataIfEmpty()> is not annotated with @PermitAll in (SystemConfigurationValueEjb.java:147) and Method <de.symeda.sormas.backend.systemconfiguration.SystemConfigurationValueEjb.loadDataIfEmpty()> is not annotated with @RightsAllowed in (SystemConfigurationValueEjb.java:147)
+[ERROR]   CaseClassificationLogicTest.ruleOutFalsePositivesForCholera:906 expected: <Possible case> but was: <Not yet classified>
+[ERROR]   CaseClassificationLogicTest.testAutomaticClassificationForCholera:850 expected: <Possible case> but was: <Not yet classified>
+[ERROR]   CaseClassificationLogicTest.testCalculationByDisease:1463 expected: <Not yet classified> but was: <Possible case>
+[ERROR]   EventFacadeEjbTest.testValidateWithNullReportingUser:84 Unexpected exception type thrown, expected: <de.symeda.sormas.api.utils.ValidationRuntimeException> but was: <java.lang.IllegalStateException>
+[ERROR]   ExternalEmailFacadeEjbTest.testSendBulkEmailToCasePerson:646
+Wanted but not invoked:
+emailService.sendEmail(
+    <any>,
+    <any>,
+    <any>,
+    <any>
+);
+-> at de.symeda.sormas.backend.common.messaging.EmailService.sendEmail(EmailService.java:69)
+Actually, there were zero interactions with this mock.
+
+[ERROR]   ExternalEmailFacadeEjbTest.testSendBulkEmailToCasePersonAttachmentsAndTemplateDocument:742
+Wanted but not invoked:
+emailService.sendEmail(
+    <any>,
+    <any>,
+    <any>,
+    <any>
+);
+-> at de.symeda.sormas.backend.common.messaging.EmailService.sendEmail(EmailService.java:69)
+Actually, there were zero interactions with this mock.
+
+[ERROR]   ExternalEmailFacadeEjbTest.testSendBulkEmailToCasePersonTemplateDocument:831
+Wanted but not invoked:
+emailService.sendEmail(
+    <any>,
+    <any>,
+    <any>,
+    <any>
+);
+-> at de.symeda.sormas.backend.common.messaging.EmailService.sendEmail(EmailService.java:69)
+Actually, there were zero interactions with this mock.
+
+[ERROR]   SystemConfigurationValueFacadeEJbTest.testValidateOptionalSystemConfigurationValue:285
+Expected: is <AUDIT_SOURCE_SITE>
+     but: was "AUDIT_SOURCE_SITE"
+[ERROR]   SystemConfigurationValueFacadeEJbTest.testValidateSystemConfigurationValueDigitsOnlyPattern:167
+Expected: is <MINIMUM_ADULT_AGE>
+     but: was "MINIMUM_ADULT_AGE"
+[ERROR]   SystemConfigurationValueFacadeEJbTest.testValidateSystemConfigurationValueIpPattern:101
+Expected: is <CENTRAL_ETCD_CA_PATH>
+     but: was "CENTRAL_ETCD_CA_PATH"
+[ERROR]   SystemConfigurationValueFacadeEJbTest.testValidateSystemConfigurationValuePattern:244
+Expected: is <ALLOWED_FILE_EXTENSIONS>
+     but: was "ALLOWED_FILE_EXTENSIONS"
+[ERROR]   SystemConfigurationValueFacadeEJbTest.testValidateSystemConfigurationValuePattern:244
+Expected: is <ALLOWED_FILE_EXTENSIONS>
+     but: was "ALLOWED_FILE_EXTENSIONS"
+[ERROR]   SystemConfigurationValueFacadeEJbTest.testValidateSystemConfigurationValuePattern:244
+Expected: is <ALLOWED_FILE_EXTENSIONS>
+     but: was "ALLOWED_FILE_EXTENSIONS"
+[ERROR]   SystemConfigurationValueFacadeEJbTest.testValidateSystemConfigurationValuePattern:244
+Expected: is <ALLOWED_FILE_EXTENSIONS>
+     but: was "ALLOWED_FILE_EXTENSIONS"
+[ERROR]   SystemConfigurationValueFacadeEJbTest.testValidateSystemConfigurationValuePattern:244
+Expected: is <ALLOWED_FILE_EXTENSIONS>
+     but: was "ALLOWED_FILE_EXTENSIONS"
+[ERROR]   SystemConfigurationValueFacadeEJbTest.testValidateSystemConfigurationValuePattern:244
+Expected: is <ALLOWED_FILE_EXTENSIONS>
+     but: was "ALLOWED_FILE_EXTENSIONS"
+[ERROR]   SystemConfigurationValueFacadeEJbTest.testValidateSystemConfigurationValuePattern:244
+Expected: is <ALLOWED_FILE_EXTENSIONS>
+     but: was "ALLOWED_FILE_EXTENSIONS"
+[ERROR]   SystemConfigurationValueFacadeEJbTest.testValidateSystemConfigurationValuePattern:244
+Expected: is <ALLOWED_FILE_EXTENSIONS>
+     but: was "ALLOWED_FILE_EXTENSIONS"
+[ERROR]   SystemConfigurationValueFacadeEJbTest.testValidateSystemConfigurationValuePattern:244
+Expected: is <ALLOWED_FILE_EXTENSIONS>
+     but: was "ALLOWED_FILE_EXTENSIONS"
+[ERROR]   SystemConfigurationValueFacadeEJbTest.testValidateSystemConfigurationValuePipeSeparatedWordsPattern:201
+Expected: is <AUDIT_LOGGER_CONFIG>
+     but: was "AUDIT_LOGGER_CONFIG"
+[ERROR]   SystemConfigurationValueFacadeEJbTest.testValidateSystemConfigurationValueUnixDirPattern:134
+Expected: is <TEMP_PATH>
+     but: was "TEMP_PATH"
+[ERROR] Errors:
+[ERROR]   ActionFacadeEjbTest.testGetAllUuids:57 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   ActionFacadeEjbTest.testGetEventActionList:109 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   CaseFacadeEjbPseudonymizationTest.testPseudonymizeCaseExportData:274 » IllegalState Required configuration 'COUNTRY_EPID_PREFIX' not found or invalid.
+Check if
+[ERROR]   CaseFacadeEjbPseudonymizationTest.testSpecialCaseAccessOutsideJurisdiction:460 » IllegalState Required configuration 'COUNTRY_EPID_PREFIX' not found or invalid.
+Check if
+[ERROR]   CaseFacadeEjbTest.testCaseExportWithPrescriptionsTreatmentsVisits:999 » IllegalState Required configuration 'COUNTRY_EPID_PREFIX' not found or invalid.
+Check if
+[ERROR]   CaseFacadeEjbTest.testCaseExportWithSamples:1025 » IllegalState Required configuration 'COUNTRY_EPID_PREFIX' not found or invalid.
+Check if
+[ERROR]   CaseFacadeEjbTest.testGetExportListNoDuplicates:1318 » IllegalState Required configuration 'COUNTRY_EPID_PREFIX' not found or invalid.
+Check if
+[ERROR]   CaseFacadeEjbTest.testGetExportListWithRelevantVaccinations:1163 » IllegalState Required configuration 'COUNTRY_EPID_PREFIX' not found or invalid.
+Check if
+[ERROR]   CaseFacadeEjbTest.testGetExportListWithoutDeletedSamples:1446 » IllegalState Required configuration 'COUNTRY_EPID_PREFIX' not found or invalid.
+Check if
+[ERROR]   CaseFacadeEjbTest.testGetExportListWithoutRelevantVaccinations:1258 » IllegalState Required configuration 'COUNTRY_EPID_PREFIX' not found or invalid.
+Check if
+[ERROR]   CaseFacadeEjbTest.testGetIndexListByEventFreeText:814 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   CaseFacadeEjbTest.testMergeCase:1869 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   ConfigFacadeEjbTest.testValidateAppUrls:133 » NullPointer
+[ERROR]   ConfigFacadeEjbTest.testValidateExternalUrls:46 » IllegalArgument Invalid URLs for which HTTPS is enforced in property file:
+        ;,
+        ;/auth/realms/;/protocol/openid-connect/certs,
+        ;/auth/realms/;/protocol/openid-connect/token,
+        ;/auth/realms/;
+[ERROR]   HistoryTablesTest.testHistoryTablesMatch:53->start:85 » ContainerLaunch Container startup failed for image localhost/testcontainers/nbzcmglkb8tbq1fn:latest
+[ERROR]   ContactFacadeEjbTest.testContactFollowUpStatusWhenConvertedCaseIsDeleted:484 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   ContactFacadeEjbTest.testGetExportListWithRelevantVaccinations:1458 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   ContactFacadeEjbTest.testGetExportListWithoutRelevantVaccinations:1576 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   ContactFacadeEjbTest.testGetIndexDetailedList:987 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   ContactFacadeEjbTest.testGetIndexListByEventFreeText:912 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   DashboardFacadeEjbTest.testDashboardEventListCreation:151 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   DashboardServiceTest.testGetEventCountByStatusWithArchivingAndDeletion:35 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   SampleDashboardFacadeEjbTest.testGetSampleCountsWithNoDiseaseFlag:199 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   CoreEntityDeletionServiceTest.testCaseAutomaticDeletion:128 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   CoreEntityDeletionServiceTest.testEventAutomaticDeletion:340 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   CoreEntityDeletionServiceTest.testEventParticipantWithCaseSampleAutomaticDeletion:421 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   CoreEntityDeletionServiceTest.testEventParticipantWithEventSampleAutomaticDeletion:381 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   CoreEntityDeletionServiceTest.testSormasToSormasShareRequestPermanentDeletion:903 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventDocumentFacadeEjbTest.setup:53 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   QuarantineOrderFacadeEjbTest.setup:141 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   QuarantineOrderFacadeEjbTest.setup:141 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   QuarantineOrderFacadeEjbTest.setup:141 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   QuarantineOrderFacadeEjbTest.setup:141 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   QuarantineOrderFacadeEjbTest.setup:141 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   QuarantineOrderFacadeEjbTest.setup:141 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   QuarantineOrderFacadeEjbTest.setup:141 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   QuarantineOrderFacadeEjbTest.setup:141 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   QuarantineOrderFacadeEjbTest.setup:141 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   DocumentFacadeEjbTest.testDocumentCreation:55 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   DocumentFacadeEjbTest.testDocumentDeletion:95 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   DocumentFacadeEjbTest.testDocumentMimeTypeUnknown:119 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   DocumentFacadeEjbTest.testDuplicate:82 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   DocumentFacadeEjbTest.testExistingDocument:68 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventFacadeEjbPseudonymizationTest.testEventInJurisdiction:85->createEvent:215 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventFacadeEjbPseudonymizationTest.testEventOutsideJurisdiction:92->createEvent:215 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventFacadeEjbPseudonymizationTest.testPseudonymizeGetByUuids:204->createEvent:215 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventFacadeEjbPseudonymizationTest.testPseudonymizedGetByUuidWithLimitedUser:104 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventFacadeEjbPseudonymizationTest.testUpdatePseudonymizedEvent:175->createEvent:215 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventFacadeEjbPseudonymizationTest.testUpdateWithPseudonymizedDto:191->createEvent:215 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventFacadeEjbTest.testArchiveAllArchivableEvents:445 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventFacadeEjbTest.testArchiveOrDearchiveEvent:390 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventFacadeEjbTest.testCreateWithoutUuid:509 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventFacadeEjbTest.testEventCriteriaChangedSinceLastShareWithReportingTool:549 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventFacadeEjbTest.testEventCriteriaLastShareWithReportingToolBetweenDates:576 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventFacadeEjbTest.testEventCriteriaSharedWithReportingTool:520 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventFacadeEjbTest.testEventDeletion:174 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventFacadeEjbTest.testEventUpdate:222 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventFacadeEjbTest.testGetEventByUuidForArchivedEvent:138 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventFacadeEjbTest.testGetEventUsersWithoutUsesLimitedToOthersDiseses:663 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventFacadeEjbTest.testGetEventsByPersonNationalHealthId:687 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventFacadeEjbTest.testGetExportList:362 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventFacadeEjbTest.testGetIndexList:253 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventFacadeEjbTest.testGetIndexListByARestrictedAccessToAssignedEntities:305 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventFacadeEjbTest.testGetSubordinateEventUuids:632 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventFacadeEjbUserFilterTest.testIndexListWhenParticipantIsInJurisdictionButEventIsNot:89 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventGroupFacadeEjbTest.testDeleteEventGroup:65 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventGroupFacadeEjbTest.testEditEventGroupWithEventsOutsideJurisdiction:149 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventGroupFacadeEjbTest.testGetEventGroupByUuidForArchivedGroup:111 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventGroupFacadeEjbTest.testGetIndexListWithNationalUserLimitedToCovid:185 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventParticipantFacadeEjbPseudonymizationTest.testEventParticipantCasePersonWithSpecialAccess:249->createEventParticipant:275->createEventParticipant:279 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventParticipantFacadeEjbPseudonymizationTest.testEventParticipantInJurisdiction:86->createEventParticipant:275->createEventParticipant:279 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventParticipantFacadeEjbPseudonymizationTest.testEventParticipantOutsideJurisdiction:93->createEventParticipant:275->createEventParticipant:279 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventParticipantFacadeEjbPseudonymizationTest.testPseudonymizeGetByUuids:172->createEventParticipant:275->createEventParticipant:279 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventParticipantFacadeEjbPseudonymizationTest.testPseudonymizedGetByUuidWithLimitedUser:103->createEventParticipant:279 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventParticipantFacadeEjbPseudonymizationTest.testUpdateOutsideJurisdiction:184->createEventParticipant:275->createEventParticipant:279 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventParticipantFacadeEjbPseudonymizationTest.testUpdateWithPseudonymizedDto:219->createEventParticipant:275->createEventParticipant:279 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventParticipantFacadeEjbTest.searchEventParticipantsByPersonEmail:614 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventParticipantFacadeEjbTest.searchEventParticipantsByPersonOtherDetail:652 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventParticipantFacadeEjbTest.searchEventParticipantsByPersonPhone:576 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventParticipantFacadeEjbTest.testCreateWithoutUuid:349 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventParticipantFacadeEjbTest.testEventParticipantIndexListSorting:545 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventParticipantFacadeEjbTest.testEventParticipantTestResultWithMultipleSamples:431 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventParticipantFacadeEjbTest.testEventParticipantWithArchivedEvent:487 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventParticipantFacadeEjbTest.testExistEventParticipantWithDeletedFalse:404 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventParticipantFacadeEjbTest.testExistEventParticipantWithDeletedTrue:417 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventParticipantFacadeEjbTest.testGetByEventUuids:364 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventParticipantFacadeEjbTest.testGetByPersonUuids:385 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventParticipantFacadeEjbTest.testGetEventParticipantByUuidForArchivedParticipant:140 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventParticipantFacadeEjbTest.testGetExportListWithRelevantVaccinations:176->createEvent:713 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventParticipantFacadeEjbTest.testGetExportListWithoutRelevantVaccinations:290->createEvent:713 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventParticipantFacadeEjbTest.testGetMatchingEventParticipants:277->createEvent:713 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventParticipantFacadeEjbTest.testSaveEventParticipantWithEventArchiving:679->createEvent:713 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventParticipantFacadeEjbTest.testValidateWithNullReportingUser:95->createEvent:713 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventServiceTest.testGetEventSummaryDetailsByCasesEventArchivingAndDeletion:133 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventServiceTest.testGetEventSummaryDetailsByContactsEventArchivingAndDeletion:98 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventServiceTest.testHasAnyEventParticipantWithoutJurisdiction:77 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   EventServiceTest.testHasRegionAndDistrict:64 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   ExternalEmailFacadeEjbTest.testEncryptAttachmentsWithRandomPassword:500 » Runtime java.io.FileNotFoundException: \opt\sormas\temp\sormas_temp_converted_2026-01-23_24621137.pdf (The system cannot find the path specified)
+[ERROR]   ExternalEmailFacadeEjbTest.testSendEmailWithAttachments:421 » Runtime java.io.FileNotFoundException: \opt\sormas\temp\sormas_temp_converted_2026-01-23_452748649.pdf (The system cannot find the path specified)
+[ERROR]   ExternalMessageFacadeEjbTest.testCountAndIndexListDoesNotReturnMessagesLinkedToDeletedEntities:241 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   ExternalMessageFacadeEjbTest.testExistsLabMessageForEntityEventParticipant:200 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   ExternalMessageServiceTest.testCountForEventParticipant:157 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   AbstractLabMessageProcessingFlowTest.testCreateEvent:1039->runFlow:3134 » Execution java.lang.IllegalStateException: Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   AbstractLabMessageProcessingFlowTest.testCreateEventAndCreateEventParticipant:1160->runFlow:3134 » Execution java.lang.IllegalStateException: Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   AbstractLabMessageProcessingFlowTest.testCreateEventAndCreateEventParticipantAndCreateSample:1251->runFlow:3134 » Execution java.lang.IllegalStateException: Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   AbstractLabMessageProcessingFlowTest.testCreateEventAndCreateEventParticipantAndCreateTwoSamples:1337->runFlow:3134 » Execution java.lang.IllegalStateException: Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   AbstractLabMessageProcessingFlowTest.testCreateEventCancel:1089->runFlow:3134 » Execution java.lang.IllegalStateException: Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   AbstractLabMessageProcessingFlowTest.testCreateEventParticipantCancel:1195->runFlow:3134 » Execution java.lang.IllegalStateException: Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   AbstractLabMessageProcessingFlowTest.testPickExistingEventAndCreateEventParticipant:1382 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   AbstractLabMessageProcessingFlowTest.testPickExistingEventAndPickExistingEventParticipantAndPickExistingSample:1617 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   AbstractLabMessageProcessingFlowTest.testPickExistingEventAndPickExistingEventParticipantPickExistingSampleAndCreateSample:1719 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   AbstractLabMessageProcessingFlowTest.testPickExistingEventParticipantAndCreateSample:2430 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   AbstractLabMessageProcessingFlowTest.testPickExistingEventParticipantAndPickExistingSample:2489 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   AbstractLabMessageProcessingFlowTest.testPickExistingEventWithExistingEventParticipantAndCancelThenCreateEvent:1556 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   AbstractLabMessageProcessingFlowTest.testPickExistingEventWithExistingEventParticipantAndCancelThenPickAgain:1501 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   AbstractLabMessageProcessingFlowTest.testPickExistingEventWithExistingEventParticipantAndCreateSample:1446 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   ExternalSurveillanceToolGatewayFacadeEjbTest.testCaseAutomaticDeletion_WithoutCaseAllowedToBeSharedWithReportingTool:596 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   ExternalSurveillanceToolGatewayFacadeEjbTest.testDeleteEvents:203->createEventDto:797 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   ExternalSurveillanceToolGatewayFacadeEjbTest.testDeleteEventsNotFound:225->createEventDto:797 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   ExternalSurveillanceToolGatewayFacadeEjbTest.testIsSharedEvent:417 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   ExternalSurveillanceToolGatewayFacadeEjbTest.testSendingEventsOk:182->createEventDto:797 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   ExternalSurveillanceToolGatewayFacadeEjbTest.testUpdateArchiveFlagInExternalSurveillanceToolForEvent_Exception:348 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   ExternalSurveillanceToolGatewayFacadeEjbTest.testUpdateArchiveFlagInExternalSurveillanceToolForEvent_WithProperEntity:316 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   InfoFacadeEjbTest.testFieldsAddedBasedOnServerCountryForDataProtectionDictionary:90 » IO java.nio.file.NoSuchFileException: \opt\sormas\temp\sormas_temp_datadictionary_2026-01-23_774654617.xlsx
+[ERROR]   ManualMessageLogFacadeEjbTest.testGetIndexListForEventParticipant:96 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   PersonFacadeEjbPseudonymizationTest.testGetEventParticipantPersonInSameJurisdiction:328 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   PersonFacadeEjbPseudonymizationTest.testGetEventParticipantPersonOutsideJurisdiction:338 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   PersonFacadeEjbPseudonymizationTest.testUpdateEventParticipantPersonInJurisdiction:348 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   PersonFacadeEjbPseudonymizationTest.testUpdateEventParticipantPersonOutsideJurisdiction:359 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   PersonFacadeEjbTest.testGetMatchingNameDtos:391 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   PersonFacadeEjbTest.testGetPersonByContext:1642 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   PersonFacadeEjbTest.testIsEditAllowedLinkedToEventParticipant:2022 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   PersonFacadeEjbTest.testIsEditAllowedLinkedToMultipleObjects:2180 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   PersonFacadeEjbTest.testIsEditAllowedLinkedToNotOwnedCaseAndDeletedAssociatedObject:2227 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   PersonFacadeEjbTest.testIsSharedOrReceived:2295 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   PersonFacadeEjbTest.testMergePersonWithMergeDuplicateEventParticipant:1400 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   PersonFacadeEjbTest.testMergePersonWithPickDuplicateEventParticipant:1474 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   PersonFacadeEjbTest.testMergePersonsAndRemoveDuplication:1026 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   PersonFacadeEjbTest.testMergePersonsSameMainAddress:1130 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   PersonFacadeEjbTest.testPersonAssociatedWithEventParticipant:1759 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   DeleteOldPathogenTestsAndSamplesTest.testNotConfigured:258 » IllegalState Required configuration 'NEGATIVE_COVID_TESTS_MAX_AGE_DAYS' not found or invalid.
+Check if
+[ERROR]   SampleFacadeEjbTest.testCountAndGetSamplesForMap:1146 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   SampleFacadeEjbTest.testGetIndexListBySampleAssociationType:214 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   SampleFacadeEjbTest.testGetSimilarSamples:643 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   SampleFacadeEjbTest.testIsEditAllowedSampleWithActiveEntity:1010 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   SampleFacadeEjbTest.testIsEditAllowedSampleWithInactiveEntity:1033 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   SampleFacadeEjbTest.testIsEditAllowedSampleWithInactiveEntityAndFeaturePropTrue:1065 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   SampleFacadeEjbTest.testSamplesForActiveAndArchiveEventParticipant:928 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   SampleFacadeEjbTest.testSaveSampleWithUnexistingEventParticipant:787 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   ExternalShareInfoFacadeEjbTest.testGetIndexList:53 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   ReceivedEntitiesProcessorTest.testIgnoredPropertiesAreNotOverwrittenWithNewValuesForEvent:176 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   ReceivedEntitiesProcessorTest.testIgnoredPropertiesAreOverwrittenWithNewValuesForEvent:203 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   SormasToSormasEventFacadeEjbTest.testReportingUserIsIncludedButUpdated:896 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   SormasToSormasEventFacadeEjbTest.testReturnEvent:476 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   SormasToSormasEventFacadeEjbTest.testSaveReturnedEvent:523 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   SormasToSormasEventFacadeEjbTest.testSaveSharedEvents:350 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   SormasToSormasEventFacadeEjbTest.testSaveSharedEventsWithParticipants:388 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   SormasToSormasEventFacadeEjbTest.testSaveSharedEventsWithSamples:443 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   SormasToSormasEventFacadeEjbTest.testSaveSyncedEvent:689 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   SormasToSormasEventFacadeEjbTest.testShareEvent:98 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   SormasToSormasEventFacadeEjbTest.testShareEventWithPseudonymizeData:176 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   SormasToSormasEventFacadeEjbTest.testShareEventWithSamples:251 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   SormasToSormasEventFacadeEjbTest.testSyncEvent:594 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   SormasToSormasEventFacadeEjbTest.testSyncNotUpdateOwnedPerson:741 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   SormasToSormasEventFacadeEjbTest.testSyncRecursively:789 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   ShareDataBuilderHelperTest.testClearIgnoredPropertiesForEvent:163 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   ShareDataBuilderHelperTest.testDoNotClearIgnoredPropertiesForEvent:190 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   TaskFacadeEjbTest.testArchivedTaskNotGettingTransfered:351 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   TaskFacadeEjbTest.testGetAllActiveTasksBatched:449 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if                                                                                                                                                                                                                                                                                                            
+[ERROR]   TaskFacadeEjbTest.testGetEditPermissionTypeOnEventTask:1071 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   TaskFacadeEjbTest.testGetIndexListArchived:951 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   TaskFacadeEjbTest.testGetIndexListByARestrictedAccessToAssignedEntitiesUser:274 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   TaskFacadeEjbTest.testGetTaskListForUserWithoutEventViewRight:762 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   TaskFacadeEjbTest.testUserWithoutEventViewRightSeeHisAssignTask:833 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   TaskFacadeEjbTest.testUserWithoutEventViewRightSeeHisObservedTask:891 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[ERROR]   VaccinationFacadeEjbTest.testUpdateVaccinationStatuses:284 » IllegalState Required configuration 'COUNTRY_NAME' not found or invalid.
+Check if
+[INFO]
+[ERROR] Tests run: 1235, Failures: 22, Errors: 176, Skipped: 3

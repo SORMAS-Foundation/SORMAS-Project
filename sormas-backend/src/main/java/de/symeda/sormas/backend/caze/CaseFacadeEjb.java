@@ -1081,7 +1081,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				final boolean inJurisdiction = exportDto.getInJurisdiction();
 
 				if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseExportDto.COUNTRY)) {
-					exportDto.setCountry(configFacade.getAsStringOrThrow(Config.COUNTRY_EPID_PREFIX));
+					exportDto.setCountry(configFacade.getAsString(Config.COUNTRY_EPID_PREFIX).orElse(""));
 				}
 				if (ExportHelper.shouldExportFields(exportConfiguration, CaseDataDto.SYMPTOMS)) {
 					Optional.ofNullable(symptoms.get(exportDto.getSymptomsId()))
