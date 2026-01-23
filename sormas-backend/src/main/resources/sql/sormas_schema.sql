@@ -15296,14 +15296,6 @@ $$
         INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_pattern,
                                              value_encrypt, data_provider, validation_message, changedate, creationdate, id,
                                              uuid, value_description, default_value)
-        VALUES ('CASE_CLASSIFICATION_CALCULATION_MODE_OVERRIDE_CHOLERA', 'DISABLED', general_configuration_id, true,
-                null, false, null,
-                'i18n/systemConfigurationValueValidation.CASE_CLASSIFICATION_CALCULATION_MODE_OVERRIDE_CHOLERA', now(), now(), nextval('entity_seq'),
-                generate_base32_uuid(), 'i18n/systemConfigurationValueDescription.CASE_CLASSIFICATION_CALCULATION_MODE_OVERRIDE_CHOLERA', 'DISABLED') ON CONFLICT DO NOTHING;
-
-        INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_pattern,
-                                             value_encrypt, data_provider, validation_message, changedate, creationdate, id,
-                                             uuid, value_description, default_value)
         VALUES ('DAYS_AFTER_SYSTEM_EVENT_GETS_DELETED', '90', general_configuration_id, true,
                 '^(\d)+$', false, null,
                 'i18n/systemConfigurationValueValidation.DAYS_AFTER_SYSTEM_EVENT_GETS_DELETED', now(), now(), nextval('entity_seq'),

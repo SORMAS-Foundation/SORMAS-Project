@@ -16,9 +16,8 @@
 package de.symeda.sormas.backend.systemconfiguration;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 
@@ -44,7 +43,6 @@ public class SystemConfigurationValue extends AbstractDomainObject {
     public static final String DESCRIPTION = "description";
 
     private String value;
-	@Enumerated(EnumType.STRING)
 	private Config key;
     private String description;
     private SystemConfigurationCategory category;
@@ -55,7 +53,7 @@ public class SystemConfigurationValue extends AbstractDomainObject {
     private String validationMessage;
 	private String defaultValue;
 
-    @Column(nullable = true, name = "config_value")
+	@Column(nullable = true, name = "config_value", columnDefinition = "text")
     public String getValue() {
         return value;
     }
@@ -64,7 +62,8 @@ public class SystemConfigurationValue extends AbstractDomainObject {
         this.value = value;
     }
 
-    @Column(nullable = false, name = "config_key")
+	@Column(nullable = false, name = "config_key", columnDefinition = "text")
+	@Convert(converter = ConfigConverter.class)
 	public Config getKey() {
         return key;
     }
@@ -73,7 +72,7 @@ public class SystemConfigurationValue extends AbstractDomainObject {
         this.key = key;
     }
 
-	@Column(name = "value_description")
+	@Column(name = "value_description", columnDefinition = "text")
     public String getDescription() {
         return description;
     }
@@ -101,7 +100,7 @@ public class SystemConfigurationValue extends AbstractDomainObject {
         this.optional = optional;
     }
 
-    @Column(name = "value_pattern")
+	@Column(name = "value_pattern", columnDefinition = "text")
     public String getPattern() {
         return pattern;
     }
@@ -120,7 +119,7 @@ public class SystemConfigurationValue extends AbstractDomainObject {
         this.encrypt = encrypt;
     }
 
-    @Column(name = "data_provider")
+	@Column(name = "data_provider", columnDefinition = "text")
     public String getDataProvider() {
         return dataProvider;
     }
@@ -129,7 +128,7 @@ public class SystemConfigurationValue extends AbstractDomainObject {
         this.dataProvider = dataProvider;
     }
 
-    @Column(name = "validation_message")
+	@Column(name = "validation_message", columnDefinition = "text")
     public String getValidationMessage() {
         return validationMessage;
     }
@@ -138,7 +137,7 @@ public class SystemConfigurationValue extends AbstractDomainObject {
         this.validationMessage = validationMessage;
     }
 
-	@Column(name = "default_value")
+	@Column(name = "default_value", columnDefinition = "text")
 	public String getDefaultValue() {
 		return defaultValue;
 	}

@@ -22,4 +22,5 @@ public interface TestConfigFacade {
 	}
 
 	void remove(Config config);
+
 }

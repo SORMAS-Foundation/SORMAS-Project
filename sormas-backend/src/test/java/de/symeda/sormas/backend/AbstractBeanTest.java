@@ -19,6 +19,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -34,6 +36,7 @@ import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -265,6 +268,7 @@ import de.symeda.sormas.backend.survey.SurveyService;
 import de.symeda.sormas.backend.survey.SurveyTokenFacadeEjb.SurveyTokenFacadeEjbLocal;
 import de.symeda.sormas.backend.survey.SurveyTokenService;
 import de.symeda.sormas.backend.symptoms.SymptomsService;
+import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjb;
 import de.symeda.sormas.backend.systemconfiguration.ExternalClientConfigurationEjb;
 import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategoryEjb;
 import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategoryService;
@@ -349,6 +353,21 @@ public abstract class AbstractBeanTest {
 		I18nProperties.setUserLanguage(Language.EN);
 
 		createDiseaseConfigurations();
+
+		createSystemConfigurations();
+	}
+
+	private void createSystemConfigurations() {
+		StringWriter writer = new StringWriter();
+		try {
+			IOUtils.copy(getClass().getResourceAsStream("/sql/systemconfigurationvalue-inserts.sql"), writer, "UTF-8");
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
+		executeInTransaction(em -> {
+			getEntityManager().createNativeQuery(writer.toString()).executeUpdate();
+		});
 	}
 
 	protected void initH2Functions() {
@@ -468,6 +487,10 @@ public abstract class AbstractBeanTest {
 		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, featureType);
 		if (properties != null) {
 			executeInTransaction(em -> {
+
+				System.out.println("NNNNNNNNNNNNNNNNNNNNNNNNN");
+				System.out.println(em.createNativeQuery("select featuretype from featureconfiguration").getResultList());
+
 				Query query = em.createQuery("select f from featureconfiguration f where featureType = '" + featureType.name() + "'");
 				FeatureConfiguration singleResult = (FeatureConfiguration) query.getSingleResult();
 				singleResult.setProperties(properties);
@@ -477,7 +500,7 @@ public abstract class AbstractBeanTest {
 	}
 
 	public ConfigFacade getConfigFacade() {
-		return getBean(ConfigFacadeEjbLocalMock.class);
+		return getBean(ConfigFacadeEjb.class);
 	}
 
 	public StartupConfigurationValidationService getStartupConfigurationValidationService() {

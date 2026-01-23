@@ -85,7 +85,7 @@ public class MockProducer implements InitialContextFactory {
 
 	private static SormasToSormasDiscoveryService sormasToSormasDiscoveryService = mock(SormasToSormasDiscoveryService.class);
 
-	static final TestHelperConfigImpl testHelperConfig = ConfigFacadeEjbLocalMock.testHelperConfig;
+	static final TestHelperConfigImpl testHelperConfig = TestHelperConfigImpl.getInstance();
 
 	// Receiving e-mail server is mocked: org. jvnet. mock_javamail. mailbox
 	private static Session mailSession;
@@ -129,25 +129,7 @@ public class MockProducer implements InitialContextFactory {
 			s2sRestClient,
 			managedScheduledExecutorService);
 		wireMocks();
-		resetConfigs();
 		requestContextTO.setMobileSync(false);
-	}
-
-	private static void resetConfigs() {
-		testHelperConfig.clear();
-		testHelperConfig.set(Config.COUNTRY_NAME, "nigeria");
-		testHelperConfig.set(Config.COUNTRY_LOCALE, "en");
-		testHelperConfig.set(Config.CSV_SEPARATOR, ";");
-		testHelperConfig.set(Config.STEP_SIZE_FOR_CSV_EXPORT, "5000");
-
-		testHelperConfig.set(Config.TEMP_PATH, TMP_PATH);
-
-		testHelperConfig.set(Config.DOCUMENTS_PATH, TMP_PATH + "/documents");
-
-		testHelperConfig.set(Config.DEFAULT_CASE_CLASSIFICATION_CALCULATION_MODE, "AUTOMATIC");
-		testHelperConfig.set(Config.CASE_CLASSIFICATION_CALCULATION_MODE_OVERRIDE, "{}");
-		testHelperConfig.set(Config.NAME_SIMILARITY_THRESHOLD, "0.65D");
-
 	}
 
 	public static void wireMocks() {

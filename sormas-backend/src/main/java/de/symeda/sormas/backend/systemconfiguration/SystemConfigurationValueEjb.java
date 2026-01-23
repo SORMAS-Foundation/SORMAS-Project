@@ -141,7 +141,7 @@ public class SystemConfigurationValueEjb
 		return systemConfigurationValueProjection.getActualValue();
 	}
 
-	private void loadDataIfEmpty() {
+	public void loadDataIfEmpty() {
 		if (MapUtils.isEmpty(configurationValuesByKey)) {
 			loadData();
 		}
@@ -379,12 +379,16 @@ public class SystemConfigurationValueEjb
 		configurationValuesByKey.clear();
 
 		// TODO: create a query that only fetches the mandatory fields and not everything
-		service.getAll()
+		getAll()
 			.forEach(
 				value -> configurationValuesByKey
 					.put(value.getKey(), new SystemConfigurationValueProjection(value.getValue(), value.getDefaultValue())));
 
 		LOGGER.info("SystemConfiguration data loaded into cache successfully");
+	}
+
+	public List<SystemConfigurationValue> getAll() {
+		return service.getAll();
 	}
 
 	/**
@@ -559,4 +563,7 @@ public class SystemConfigurationValueEjb
 		return dto;
 	}
 
+	public ConcurrentHashMap<Config, SystemConfigurationValueProjection> getConfigurationValuesByKey() {
+		return configurationValuesByKey;
+	}
 }

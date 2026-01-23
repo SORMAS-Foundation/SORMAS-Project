@@ -95,6 +95,7 @@ public class KeycloakService {
 	@PostConstruct
 	public void init() {
 
+		// TODO: this is the call that fails within test
 		if (!AuthProvider.KEYCLOAK.equalsIgnoreCase(configFacade.getAsStringOrThrow(Config.AUTHENTICATION_PROVIDER))) {
 			logger.info("Keycloak Auth Provider not active");
 			return;
