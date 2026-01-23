@@ -66,7 +66,7 @@ public class DocumentTemplateReceiver
 			String newFileName = ImportExportUtils.TEMP_FILE_PREFIX + "_template_upload" + DateHelper.formatDateForExport(new Date()) + "_"
 				+ DataHelper.getShortUuid(UiUtil.getUserUuid()) + ".docx";
 			file = new File(
-				Paths.get(FacadeProvider.getConfigFacade().getAsStringOrThrow(Config.TEMP_PATH))
+				Paths.get(FacadeProvider.getConfigFacade().getTempFilesPath())
 					.resolve(newFileName)
 					.toString());
 

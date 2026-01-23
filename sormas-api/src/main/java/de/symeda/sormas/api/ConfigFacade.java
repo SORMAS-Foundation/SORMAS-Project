@@ -121,4 +121,8 @@ public interface ConfigFacade {
 	default String getCountryLocale() {
 		return getAsStringOrThrow(Config.COUNTRY_LOCALE);
 	}
+
+	default String getTempFilesPath() {
+		return getAsStringOrThrow(Config.TEMP_PATH);
+	}
 }

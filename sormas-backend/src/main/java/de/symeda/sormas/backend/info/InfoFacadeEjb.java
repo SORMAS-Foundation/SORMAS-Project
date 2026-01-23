@@ -437,7 +437,7 @@ public class InfoFacadeEjb implements InfoFacade {
 
 	private Path generateDocumentTempPath() {
 
-		Path path = Paths.get(configFacade.getAsStringOrThrow(Config.TEMP_PATH));
+		Path path = Paths.get(configFacade.getTempFilesPath());
 		String fileName = ImportExportUtils.TEMP_FILE_PREFIX + "_datadictionary_" + DateHelper.formatDateForExport(new Date()) + "_"
 			+ new Random().nextInt(Integer.MAX_VALUE) + ".xlsx";
 

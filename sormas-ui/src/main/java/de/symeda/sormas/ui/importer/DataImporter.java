@@ -69,7 +69,6 @@ import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.SimilarPersonDto;
-import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.CSVCommentLineValidator;
@@ -757,7 +756,7 @@ public abstract class DataImporter {
 	}
 
 	protected Path getErrorReportFolderPath() {
-		return Paths.get(FacadeProvider.getConfigFacade().getAsStringOrThrow(Config.TEMP_PATH));
+		return Paths.get(FacadeProvider.getConfigFacade().getTempFilesPath());
 	}
 
 	/**

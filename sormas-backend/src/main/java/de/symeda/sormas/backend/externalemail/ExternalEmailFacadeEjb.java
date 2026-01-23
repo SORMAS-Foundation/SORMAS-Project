@@ -76,7 +76,6 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.survey.SurveyTokenCriteria;
-import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.ValidationException;
@@ -315,7 +314,7 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 			// document uploading will be handled in another place 
 			false);
 		String fileName = docGenerationHelper.getDocumentFileName(emailOptions.getRootEntityReference(), documentOptions.getTemplate());
-		File tempTemplateFile = Paths.get(configFacade.getAsStringOrThrow(Config.TEMP_PATH)).resolve(fileName).toFile();
+		File tempTemplateFile = Paths.get(configFacade.getTempFilesPath()).resolve(fileName).toFile();
 		BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(Files.newOutputStream(tempTemplateFile.toPath()));
 		bufferedOutputStream.write(generatedDocument);
 		bufferedOutputStream.close();

@@ -22,8 +22,6 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
@@ -87,7 +85,7 @@ public class Menu extends CssLayout {
 
 		Image image;
 		if (FacadeProvider.getConfigFacade().getAsBoolean(Config.CUSTOM_BRANDING)
-			&& StringUtils.isNotBlank(FacadeProvider.getConfigFacade().getAsStringOrThrow(Config.CUSTOM_BRANDING_LOGO_PATH))) {
+			&& FacadeProvider.getConfigFacade().isPresent(Config.CUSTOM_BRANDING_LOGO_PATH)) {
 			Path logoPath = Paths.get(FacadeProvider.getConfigFacade().getAsStringOrThrow(Config.CUSTOM_BRANDING_LOGO_PATH));
 			image = new Image(null, new FileResource(logoPath.toFile()));
 		} else {

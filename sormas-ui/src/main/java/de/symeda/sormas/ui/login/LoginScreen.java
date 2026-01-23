@@ -22,7 +22,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -146,7 +145,7 @@ public class LoginScreen extends CssLayout {
 
 		Image image;
 		if (isCustomBranding
-			&& StringUtils.isNotBlank(FacadeProvider.getConfigFacade().getAsStringOrThrow(Config.CUSTOM_BRANDING_LOGO_PATH))) {
+			&& FacadeProvider.getConfigFacade().isPresent(Config.CUSTOM_BRANDING_LOGO_PATH)) {
 			Path logoPath = Paths.get(FacadeProvider.getConfigFacade().getAsStringOrThrow(Config.CUSTOM_BRANDING_LOGO_PATH));
 			image = new Image(null, new FileResource(logoPath.toFile()));
 			image.setWidth(50, Unit.PIXELS);

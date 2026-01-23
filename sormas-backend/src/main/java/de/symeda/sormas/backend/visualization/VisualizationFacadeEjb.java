@@ -113,7 +113,7 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 		if (StringUtils.isBlank(rExecutable)) {
 			return null;
 		}
-		Path tempBasePath = new File(configFacade.getAsStringOrThrow(Config.TEMP_PATH)).toPath();
+		Path tempBasePath = new File(configFacade.getTempFilesPath()).toPath();
 
 		Collection<Long> contactIds = getContactIds(fromDate, toDate, region, district, diseases);
 

@@ -135,7 +135,7 @@ public class CronService {
 	public void cleanUpTemporaryFiles() {
 
 		Date now = new Date();
-		File exportFolder = new File(configFacade.getAsStringOrThrow(Config.TEMP_PATH));
+		File exportFolder = new File(configFacade.getTempFilesPath());
 
 		int numberOfDeletedFiles = 0;
 		final File[] files = exportFolder.listFiles();

@@ -174,7 +174,7 @@ public class ConfigFacadeEjbTest extends AbstractBeanTest {
 		assertThat(getExternalClientConfigurationEjb().getPatientDiaryConfig().getTokenLifetime(), equalTo(Duration.ofSeconds(21600L)));
 
 		// property specifies empty value
-		MockProducer.getProperties().setProperty(Config.INTERFACE_PATIENT_DIARY_TOKEN_LIFETIME_SECONDS, "");
+		MockProducer.getProperties().remove(Config.INTERFACE_PATIENT_DIARY_TOKEN_LIFETIME_SECONDS);
 		assertThat(getExternalClientConfigurationEjb().getPatientDiaryConfig().getTokenLifetime(), equalTo(Duration.ofSeconds(21600L)));
 
 		// property specifies zero

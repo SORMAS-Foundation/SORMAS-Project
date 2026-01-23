@@ -75,7 +75,7 @@ public class ImportReceiver implements Receiver, StartedListener, SucceededListe
 
 		final FileOutputStream fos;
 		try {
-			Path tempDirectory = Paths.get(FacadeProvider.getConfigFacade().getAsStringOrThrow(Config.TEMP_PATH));
+			Path tempDirectory = Paths.get(FacadeProvider.getConfigFacade().getTempFilesPath());
 			if (!tempDirectory.toFile().exists() || !tempDirectory.toFile().canWrite()) {
 				throw new FileNotFoundException("Temp directory doesn't exist or cannot be accessed");
 			}
