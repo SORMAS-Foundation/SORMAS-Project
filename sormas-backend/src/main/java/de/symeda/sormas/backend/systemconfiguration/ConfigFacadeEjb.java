@@ -17,7 +17,6 @@ package de.symeda.sormas.backend.systemconfiguration;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.regex.Pattern;
 
 import javax.ejb.DependsOn;
 import javax.ejb.EJB;
@@ -31,7 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.ConfigFacade;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.api.user.UserRight;
@@ -61,7 +59,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	private <T> Optional<T> getTypedValueFor(Config config, Function<String, T> parsingFct) {
-		return systemConfigurationValueEjb.getValue(config).map(value -> {
+		return systemConfigurationValueEjb.getValue(config).filter(StringUtils::isNotBlank).map(value -> {
 			logger.debug("Value [{}] for config [{}]", value, config);
 			T result = parsingFct.apply(value);
 
@@ -91,16 +89,6 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		return getTypedValueFor(config, Boolean::parseBoolean).orElseThrow(
 			() -> new IllegalArgumentException(
 				String.format("Boolean configuration must at least have a default value, was not the case: [%s]", config)));
-	}
-
-	@Override
-	public boolean isConfiguredCountry(String countryCode) {
-		String countryLocale = getAsStringOrThrow(Config.COUNTRY_LOCALE);
-		if (Pattern.matches(I18nProperties.FULL_COUNTRY_LOCALE_PATTERN, countryLocale)) {
-			return StringUtils.endsWithIgnoreCase(countryLocale, countryCode);
-		} else {
-			return StringUtils.startsWithIgnoreCase(countryLocale, countryCode);
-		}
 	}
 
 	@Override

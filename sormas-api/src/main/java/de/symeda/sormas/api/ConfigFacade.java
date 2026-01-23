@@ -17,13 +17,16 @@ package de.symeda.sormas.api;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.CharUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.geo.GeoLatLon;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.systemconfiguration.Config;
 
 public interface ConfigFacade {
@@ -68,7 +71,14 @@ public interface ConfigFacade {
 		return getAsString(config).orElseThrow(() -> buildMissingConfigException(config));
 	}
 
-	boolean isConfiguredCountry(String countryCode);
+	default boolean isConfiguredCountry(String countryCode) {
+		String countryLocale = getAsStringOrThrow(Config.COUNTRY_LOCALE);
+		if (Pattern.matches(I18nProperties.FULL_COUNTRY_LOCALE_PATTERN, countryLocale)) {
+			return StringUtils.endsWithIgnoreCase(countryLocale, countryCode);
+		} else {
+			return StringUtils.startsWithIgnoreCase(countryLocale, countryCode);
+		}
+	}
 
 	@NotNull
 	String getCountryCode();

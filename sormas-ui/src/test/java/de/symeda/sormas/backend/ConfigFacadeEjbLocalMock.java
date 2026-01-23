@@ -2,15 +2,11 @@ package de.symeda.sormas.backend;
 
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.regex.Pattern;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Specializes;
 
-import org.apache.commons.lang3.StringUtils;
-
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjb;
 
@@ -53,16 +49,6 @@ public class ConfigFacadeEjbLocalMock extends ConfigFacadeEjb {
 	@Override
 	public boolean getAsBoolean(Config config) {
 		return getTypedValueFor(config, Boolean::parseBoolean).orElse(false);
-	}
-
-	@Override
-	public boolean isConfiguredCountry(String countryCode) {
-		String countryLocale = getAsStringOrThrow(Config.COUNTRY_LOCALE);
-		if (Pattern.matches(I18nProperties.FULL_COUNTRY_LOCALE_PATTERN, countryLocale)) {
-			return StringUtils.endsWithIgnoreCase(countryLocale, countryCode);
-		} else {
-			return StringUtils.startsWithIgnoreCase(countryLocale, countryCode);
-		}
 	}
 
 	@Override

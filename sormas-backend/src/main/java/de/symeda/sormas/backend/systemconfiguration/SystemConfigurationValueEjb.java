@@ -131,10 +131,11 @@ public class SystemConfigurationValueEjb
 		SystemConfigurationValueProjection systemConfigurationValueProjection = configurationValuesByKey.get(key);
 
 		if (systemConfigurationValueProjection == null) {
-			throw new IllegalStateException(
-				String.format(
-					"No configuration present in DB for key: ['%s']. Make sure sormas_schema.sql was executed successfully against this instance",
-					key));
+			LOGGER.warn(
+				"No configuration present in DB for key: [{}]. Make sure sormas_schema.sql was executed successfully against this instance",
+				key);
+
+			return Optional.empty();
 		}
 
 		return systemConfigurationValueProjection.getActualValue();
