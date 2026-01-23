@@ -84,7 +84,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.person.WorkPlace;
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -730,8 +730,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		hasGuardian.setEnabled(false);
 		hasGuardian.setValue(Boolean.TRUE);
 		nameOfGuardians.setVisible(true);
-		minimumAdultAge = FacadeProvider.getConfigFacade().getAsLongOrThrow(ConfigType.MINIMUM_ADULT_AGE);
-		minimumEmancipatedAge = FacadeProvider.getConfigFacade().getAsLongOrThrow(ConfigType.MINIMUM_EMANCIPATED_AGE);
+		minimumAdultAge = FacadeProvider.getConfigFacade().getAsLongOrThrow(Config.MINIMUM_ADULT_AGE);
+		minimumEmancipatedAge = FacadeProvider.getConfigFacade().getAsLongOrThrow(Config.MINIMUM_EMANCIPATED_AGE);
 
 		if (disease != null && !PERINATAL_DISEASES.contains(disease)) {
 			perinatalDetailsHeader.setVisible(false);

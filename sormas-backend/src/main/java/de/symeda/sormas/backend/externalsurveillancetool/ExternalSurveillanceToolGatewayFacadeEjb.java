@@ -46,13 +46,12 @@ import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRes
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.share.ExternalShareStatus;
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.RightsAllowed;
 
@@ -62,7 +61,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private de.symeda.sormas.api.ConfigFacade configFacade;
 
 	@EJB
 	private CaseService caseService;
@@ -179,7 +178,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 	}
 
 	private void sendRequest(ExportParameters params) throws ExternalSurveillanceToolException {
-		String serviceUrl = configFacade.getAsStringOrThrow(ConfigType.EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL).trim();
+		String serviceUrl = configFacade.getAsStringOrThrow(Config.EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL).trim();
 
 		Invocation.Builder request =
 			ClientBuilder.newBuilder().connectTimeout(30, TimeUnit.SECONDS).build().target(serviceUrl).path("export").request();
@@ -304,7 +303,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 	}
 
 	private void sendDeleteRequest(DeleteParameters params) throws ExternalSurveillanceToolException {
-		String serviceUrl = configFacade.getAsStringOrThrow(ConfigType.EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL).trim();
+		String serviceUrl = configFacade.getAsStringOrThrow(Config.EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL).trim();
 
 		Invocation.Builder request =
 			ClientBuilder.newBuilder().connectTimeout(30, TimeUnit.SECONDS).build().target(serviceUrl).path("delete").request();
@@ -334,8 +333,8 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 	@Override
 	@PermitAll
 	public String getVersion() throws ExternalSurveillanceToolException {
-		String serviceUrl = configFacade.getAsStringOrThrow(ConfigType.EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL).trim();
-		String versionEndpoint = configFacade.getAsStringOrThrow(ConfigType.EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_VERSION_ENDPOINT).trim();
+		String serviceUrl = configFacade.getAsStringOrThrow(Config.EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL).trim();
+		String versionEndpoint = configFacade.getAsStringOrThrow(Config.EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_VERSION_ENDPOINT).trim();
 
 		try {
 			Response response =

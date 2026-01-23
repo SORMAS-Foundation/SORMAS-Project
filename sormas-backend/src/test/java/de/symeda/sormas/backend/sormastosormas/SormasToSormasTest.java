@@ -64,7 +64,7 @@ import de.symeda.sormas.api.sormastosormas.entities.sample.SormasToSormasSampleD
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoDto;
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -308,25 +308,25 @@ public abstract class SormasToSormasTest extends AbstractBeanTest {
 	protected void mockDefaultServerAccess() {
 		File file = new File("src/test/java/de/symeda/sormas/backend/sormastosormas/serveraccessdefault");
 
-		MockProducer.getProperties().setProperty(ConfigType.SORMAS2SORMAS_FILES_PATH, file.getAbsolutePath());
-		MockProducer.getProperties().setProperty(ConfigType.SORMAS2SORMAS_ID, DEFAULT_SERVER_ID);
-		MockProducer.getProperties().setProperty(ConfigType.SORMAS2SORMAS_KEYSTORE_NAME, "sormas_a.sormas2sormas.keystore.p12");
-		MockProducer.getProperties().setProperty(ConfigType.SORMAS2SORMAS_KEYSTORE_PASSWORD, "1234");
-		MockProducer.getProperties().setProperty(ConfigType.SORMAS2SORMAS_TRUSTSTORE_NAME, "sormas2sormas.truststore.p12");
-		MockProducer.getProperties().setProperty(ConfigType.SORMAS2SORMAS_TRUSTSTORE_PASS, "password");
-		MockProducer.getProperties().setProperty(ConfigType.SORMAS2SORMAS_ROOT_CA_ALIAS, "S2SCA");
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_PATH, file.getAbsolutePath());
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_ID, DEFAULT_SERVER_ID);
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_KEYSTORE_NAME, "sormas_a.sormas2sormas.keystore.p12");
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_KEYSTORE_PASS, "1234");
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_TRUSTSTORE_NAME, "sormas2sormas.truststore.p12");
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_TRUSTSTORE_PASS, "password");
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_ROOT_CA_ALIAS, "S2SCA");
 	}
 
 	protected void mockSecondServerAccess() {
 		File file = new File("src/test/java/de/symeda/sormas/backend/sormastosormas/serveraccesssecond");
 
-		MockProducer.getProperties().setProperty(ConfigType.SORMAS2SORMAS_FILES_PATH, file.getAbsolutePath());
-		MockProducer.getProperties().setProperty(ConfigType.SORMAS2SORMAS_ID, SECOND_SERVER_ID);
-		MockProducer.getProperties().setProperty(ConfigType.SORMAS2SORMAS_KEYSTORE_NAME, "sormas_b.sormas2sormas.keystore.p12");
-		MockProducer.getProperties().setProperty(ConfigType.SORMAS2SORMAS_KEYSTORE_PASSWORD, "1234");
-		MockProducer.getProperties().setProperty(ConfigType.SORMAS2SORMAS_TRUSTSTORE_NAME, "sormas2sormas.truststore.p12");
-		MockProducer.getProperties().setProperty(ConfigType.SORMAS2SORMAS_TRUSTSTORE_PASS, "password");
-		MockProducer.getProperties().setProperty(ConfigType.SORMAS2SORMAS_ROOT_CA_ALIAS, "S2SCA");
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_PATH, file.getAbsolutePath());
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_ID, SECOND_SERVER_ID);
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_KEYSTORE_NAME, "sormas_b.sormas2sormas.keystore.p12");
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_KEYSTORE_PASS, "1234");
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_TRUSTSTORE_NAME, "sormas2sormas.truststore.p12");
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_TRUSTSTORE_PASS, "password");
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_ROOT_CA_ALIAS, "S2SCA");
 
 	}
 

@@ -135,7 +135,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.selfreport.SelfReportDto;
 import de.symeda.sormas.api.survey.SurveyTokenDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.CSVCommentLineValidator;
 import de.symeda.sormas.api.utils.CSVUtils;
@@ -153,7 +153,6 @@ import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb.CountryFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 
 @Stateless(name = "ImportFacade")
 public class ImportFacadeEjb implements ImportFacade {
@@ -188,7 +187,7 @@ public class ImportFacadeEjb implements ImportFacade {
 	private static final List<String> VACCINATION_COLUMNS_TO_REMOVE = Collections.singletonList(VaccinationDto.IMMUNIZATION);
 
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private de.symeda.sormas.api.ConfigFacade configFacade;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
@@ -454,7 +453,7 @@ public class ImportFacadeEjb implements ImportFacade {
 	private void createExportDirectoryIfNecessary() throws IOException {
 
 		try {
-			Files.createDirectories(Paths.get(configFacade.getAsStringOrThrow(ConfigType.GENERATED_FILES_PATH)));
+			Files.createDirectories(Paths.get(configFacade.getAsStringOrThrow(Config.GENERATED_FILES_PATH)));
 		} catch (IOException e) {
 			logger.error("Generated files directory doesn't exist and creation failed.");
 			throw e;
@@ -770,7 +769,7 @@ public class ImportFacadeEjb implements ImportFacade {
 	}
 
 	private String getImportTemplateFilePath(String baseFilename) {
-		Path exportDirectory = Paths.get(configFacade.getAsStringOrThrow(ConfigType.GENERATED_FILES_PATH));
+		Path exportDirectory = Paths.get(configFacade.getAsStringOrThrow(Config.GENERATED_FILES_PATH));
 		return exportDirectory.resolve(getImportTemplateFileName(baseFilename)).toString();
 	}
 

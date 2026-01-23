@@ -31,7 +31,7 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -54,7 +54,7 @@ public class DeleteOldPathogenTestsAndSamplesTest extends AbstractBeanTest {
 		user = creator.createUser(rdcf).toReference();
 		caze = creator.createCase(user, creator.createPerson().toReference(), rdcf);
 
-		MockProducer.getProperties().setProperty(ConfigType.NEGATIVE_COVID_TESTS_MAX_AGE_DAYS, String.valueOf(negativeCovidTestMaxAge));
+		MockProducer.getProperties().setProperty(Config.NEGATIVE_COVID_TESTS_MAX_AGE_DAYS, String.valueOf(negativeCovidTestMaxAge));
 	}
 
 	@Test
@@ -242,7 +242,7 @@ public class DeleteOldPathogenTestsAndSamplesTest extends AbstractBeanTest {
 
 	@Test
 	public void testNotConfigured() {
-		MockProducer.getProperties().remove(ConfigType.NEGATIVE_COVID_TESTS_MAX_AGE_DAYS);
+		MockProducer.getProperties().remove(Config.NEGATIVE_COVID_TESTS_MAX_AGE_DAYS);
 
 		SampleDto sample = creator.createSample(caze.toReference(), user, rdcf.facility, s -> {
 			s.setPathogenTestResult(PathogenTestResultType.NEGATIVE);

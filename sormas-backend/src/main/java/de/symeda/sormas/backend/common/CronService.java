@@ -33,7 +33,7 @@ import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -50,7 +50,6 @@ import de.symeda.sormas.backend.infrastructure.central.CentralInfraSyncFacade;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb.WeeklyReportFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessFacadeEjb.SpecialCaseAccessFacadeEjbLocal;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb.SystemEventFacadeEjbLocal;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
@@ -65,7 +64,7 @@ public class CronService {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private de.symeda.sormas.api.ConfigFacade configFacade;
 	@EJB
 	private ContactFacadeEjbLocal contactFacade;
 	@EJB
@@ -136,7 +135,7 @@ public class CronService {
 	public void cleanUpTemporaryFiles() {
 
 		Date now = new Date();
-		File exportFolder = new File(configFacade.getAsStringOrThrow(ConfigType.TEMP_PATH));
+		File exportFolder = new File(configFacade.getAsStringOrThrow(Config.TEMP_PATH));
 
 		int numberOfDeletedFiles = 0;
 		final File[] files = exportFolder.listFiles();
@@ -217,7 +216,7 @@ public class CronService {
 
 	@Schedule(hour = "1", minute = "30", second = "0", persistent = false)
 	public void deleteSystemEvents() {
-		int daysAfterSystemEventGetsDeleted = configFacade.getAsIntegerOrThrow(ConfigType.DAYS_AFTER_SYSTEM_EVENT_GETS_DELETED);
+		int daysAfterSystemEventGetsDeleted = configFacade.getAsIntegerOrThrow(Config.DAYS_AFTER_SYSTEM_EVENT_GETS_DELETED);
 		if (daysAfterSystemEventGetsDeleted >= 1) {
 			systemEventFacade.deleteAllDeletableSystemEvents(daysAfterSystemEventGetsDeleted);
 		}

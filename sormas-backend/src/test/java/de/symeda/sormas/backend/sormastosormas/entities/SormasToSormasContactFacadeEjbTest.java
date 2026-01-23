@@ -54,7 +54,6 @@ import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
@@ -489,7 +488,8 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasTest {
 		calendar.add(Calendar.DAY_OF_MONTH, 1);
 		contact.setChangeDate(calendar.getTime());
 
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, Boolean.FALSE.toString());
+		MockProducer.getProperties()
+			.setProperty(de.symeda.sormas.api.systemconfiguration.Config.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, Boolean.FALSE.toString());
 
 		Mockito
 			.when(

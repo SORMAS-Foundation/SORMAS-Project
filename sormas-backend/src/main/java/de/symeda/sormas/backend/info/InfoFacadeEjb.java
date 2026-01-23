@@ -90,7 +90,7 @@ import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.therapy.PrescriptionDto;
 import de.symeda.sormas.api.therapy.TreatmentDto;
@@ -109,7 +109,6 @@ import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.info.EntityColumns.EntityColumn;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.XssfHelper;
 
@@ -162,7 +161,7 @@ public class InfoFacadeEjb implements InfoFacade {
 	}
 
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private de.symeda.sormas.api.ConfigFacade configFacade;
 	@EJB
 	private UserService userService;
 	@EJB
@@ -400,7 +399,7 @@ public class InfoFacadeEjb implements InfoFacade {
 	}
 
 	private File getDataProtectionFile() {
-		return new File(configFacade.getAsStringOrThrow(ConfigType.CUSTOM_PATH), DATA_PROTECTION_FILE_NAME);
+		return new File(configFacade.getAsStringOrThrow(Config.CUSTOM_FILES_PATH), DATA_PROTECTION_FILE_NAME);
 	}
 
 	private Map<String, List<XSSFCell>> getDataProtectionCellData(XSSFSheet dataProtectionSheet) {
@@ -438,7 +437,7 @@ public class InfoFacadeEjb implements InfoFacade {
 
 	private Path generateDocumentTempPath() {
 
-		Path path = Paths.get(configFacade.getAsStringOrThrow(ConfigType.TEMP_PATH));
+		Path path = Paths.get(configFacade.getAsStringOrThrow(Config.TEMP_PATH));
 		String fileName = ImportExportUtils.TEMP_FILE_PREFIX + "_datadictionary_" + DateHelper.formatDateForExport(new Date()) + "_"
 			+ new Random().nextInt(Integer.MAX_VALUE) + ".xlsx";
 

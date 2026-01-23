@@ -30,6 +30,7 @@ import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import de.symeda.sormas.api.CaseClassificationCalculationMode;
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.Disease;
@@ -236,4 +237,9 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 	Pair<RegionReferenceDto, DistrictReferenceDto> getRegionAndDistrictRefsOf(CaseReferenceDto caze);
 
 	boolean hasCurrentUserSpecialAccess(CaseReferenceDto caze);
+
+	boolean isAnyCaseClassificationCalculationEnabled();
+
+	CaseClassificationCalculationMode getCaseClassificationCalculationMode(Disease disease);
+
 }

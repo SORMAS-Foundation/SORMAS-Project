@@ -55,7 +55,7 @@ public interface SystemConfigurationValueFacade
      * @param key The key of the configuration value to retrieve.
      * @return the value of the configuration.
      */
-	Optional<String> getValue(ConfigType key);
+	Optional<String> getValue(Config key);
 
     /**
      * Checks if a configuration value exists for the given key.
@@ -63,7 +63,7 @@ public interface SystemConfigurationValueFacade
      * @param key The key to check.
      * @return true if the configuration value exists, false otherwise.
      */
-	boolean exists(ConfigType key);
+	boolean exists(Config key);
 
     /**
      * Clears the caches and reloads the system configuration values from the database.

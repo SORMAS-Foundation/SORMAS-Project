@@ -51,7 +51,7 @@ import de.symeda.sormas.api.infrastructure.country.CountryFacade;
 import de.symeda.sormas.api.infrastructure.country.CountryIndexDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.EmptyValueException;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -64,7 +64,6 @@ import de.symeda.sormas.backend.infrastructure.continent.ContinentService;
 import de.symeda.sormas.backend.infrastructure.subcontinent.Subcontinent;
 import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentService;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.util.RightsAllowed;
@@ -81,7 +80,7 @@ public class CountryFacadeEjb
 	private SubcontinentService subcontinentService;
 
 	@EJB
-	private ConfigFacadeEjbLocal configFacadeEjb;
+	private de.symeda.sormas.api.ConfigFacade configFacadeEjb;
 
 	public CountryFacadeEjb() {
 	}
@@ -307,7 +306,7 @@ public class CountryFacadeEjb
 	@Override
 	@PermitAll
 	public CountryReferenceDto getServerCountry() {
-		String countryName = configFacadeEjb.getAsStringOrThrow(ConfigType.COUNTRY_NAME);
+		String countryName = configFacadeEjb.getAsStringOrThrow(Config.COUNTRY_NAME);
 		List<CountryReferenceDto> countryReferenceDtos = getByDefaultName(countryName, false);
 		return countryReferenceDtos.isEmpty() ? null : countryReferenceDtos.get(0);
 	}

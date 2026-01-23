@@ -82,6 +82,7 @@ import de.symeda.sormas.api.sormastosormas.entities.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -123,7 +124,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 
 	@Test
 	public void testFeatureIsDisabledWhenExternalSurvToolUrlIsEmpty() {
-		MockProducer.getProperties().setProperty("survnet.url", "");
+		MockProducer.getProperties().remove(Config.EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL);
 		assertFalse(getExternalSurveillanceToolGatewayFacade().isFeatureEnabled());
 	}
 
@@ -862,10 +863,11 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 	}
 
 	private void configureExternalSurvToolUrlForWireMock(WireMockRuntimeInfo wireMockRuntime) {
-		MockProducer.getProperties().setProperty("survnet.url", String.format("http://localhost:%s", wireMockRuntime.getHttpPort()));
+		MockProducer.getProperties()
+			.setProperty(Config.EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL, String.format("http://localhost:%s", wireMockRuntime.getHttpPort()));
 	}
 
 	private void clearExternalSurvToolUrlForWireMock() {
-		MockProducer.getProperties().setProperty("survnet.url", "");
+		MockProducer.getProperties().remove(Config.EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL);
 	}
 }

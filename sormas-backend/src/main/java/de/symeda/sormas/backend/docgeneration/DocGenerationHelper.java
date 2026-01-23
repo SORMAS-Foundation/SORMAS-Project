@@ -23,10 +23,9 @@ import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
@@ -38,7 +37,7 @@ public class DocGenerationHelper {
 	@EJB
 	private DocumentFacadeEjb.DocumentFacadeEjbLocal documentFacade;
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private de.symeda.sormas.api.ConfigFacade configFacade;
 
 	public DocumentRelatedEntityType getDocumentRelatedEntityType(ReferenceDto rootEntityReference) {
 		if (rootEntityReference instanceof CaseReferenceDto) {
@@ -104,7 +103,7 @@ public class DocGenerationHelper {
 	}
 
 	private boolean isFileSizeLimitExceeded(int length) {
-		long fileSizeLimitMb = configFacade.getAsLongOrThrow(ConfigType.IMPORT_FILE_SIZE_LIMIT_MB);
+		long fileSizeLimitMb = configFacade.getAsLongOrThrow(Config.IMPORT_FILE_SIZE_LIMIT_MB);
 		long fileSizeLimitBytes = fileSizeLimitMb * 1_000_000;
 		return length > fileSizeLimitBytes;
 	}

@@ -90,7 +90,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplingReason;
 import de.symeda.sormas.api.sample.SpecimenCondition;
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.dataprocessing.EntitySelection;
@@ -2823,7 +2823,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 
 	@Test
 	public void testCreateCaseWithPertusisTestTypeCultureForLuServers() throws ExecutionException, InterruptedException {
-		MockProducer.getProperties().setProperty(ConfigType.COUNTRY_LOCALE, "lu");
+		MockProducer.getProperties().setProperty(Config.COUNTRY_LOCALE, "lu");
 		ArgumentCaptor<PersonDto> personCaptor = ArgumentCaptor.forClass(PersonDto.class);
 		doAnswer(invocation -> {
 			HandlerCallback<EntitySelection<PersonDto>> callback = invocation.getArgument(1);
@@ -2918,7 +2918,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 
 	@Test
 	public void testCreateCaseWithPertusisOtherTestTypeForLuServers() throws ExecutionException, InterruptedException {
-		MockProducer.getProperties().setProperty(ConfigType.COUNTRY_LOCALE, "lu");
+		MockProducer.getProperties().setProperty(Config.COUNTRY_LOCALE, "lu");
 		ArgumentCaptor<PersonDto> personCaptor = ArgumentCaptor.forClass(PersonDto.class);
 		doAnswer(invocation -> {
 			HandlerCallback<EntitySelection<PersonDto>> callback = invocation.getArgument(1);

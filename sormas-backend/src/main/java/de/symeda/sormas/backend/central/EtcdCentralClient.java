@@ -24,29 +24,29 @@ import com.ibm.etcd.client.EtcdClient;
 import com.ibm.etcd.client.KvStoreClient;
 import com.ibm.etcd.client.kv.KvClient;
 
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
+import de.symeda.sormas.api.systemconfiguration.Config;
+import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjb;
 
 public class EtcdCentralClient {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EtcdCentralClient.class);
 
-	private final ConfigFacadeEjbLocal configFacadeEjb;
+	private final ConfigFacadeEjb configFacadeEjb;
 
 	private final ObjectMapper mapper = new ObjectMapper();
 
-	public EtcdCentralClient(ConfigFacadeEjbLocal configFacadeEjb) {
+	public EtcdCentralClient(ConfigFacadeEjb configFacadeEjb) {
 		this.configFacadeEjb = configFacadeEjb;
 		mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
 		mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 	}
 
 	private KvStoreClient createEtcdClient() {
-		String[] hostPort = configFacadeEjb.getAsStringOrThrow(ConfigType.CENTRAL_ETCD_HOST).split(":");
+		String[] hostPort = configFacadeEjb.getAsStringOrThrow(Config.CENTRAL_ETCD_HOST).split(":");
 
 		URL truststorePath;
 		try {
-			truststorePath = Paths.get(configFacadeEjb.getAsStringOrThrow(ConfigType.CENTRAL_ETCD_CA_PATH)).toUri().toURL();
+			truststorePath = Paths.get(configFacadeEjb.getAsStringOrThrow(Config.CENTRAL_ETCD_CA_PATH)).toUri().toURL();
 		} catch (MalformedURLException e) {
 			LOGGER.error("Etcd Url is malformed: %s", e);
 			return null;
@@ -56,8 +56,8 @@ public class EtcdCentralClient {
 		try {
 			client = EtcdClient.forEndpoint(hostPort[0], Integer.parseInt(hostPort[1]))
 				.withCredentials(
-					configFacadeEjb.getAsStringOrThrow(ConfigType.CENTRAL_ETCD_CLIENT_NAME),
-					configFacadeEjb.getAsStringOrThrow(ConfigType.CENTRAL_ETCD_CLIENT_PASSWORD))
+					configFacadeEjb.getAsStringOrThrow(Config.CENTRAL_ETCD_CLIENT_NAME),
+					configFacadeEjb.getAsStringOrThrow(Config.CENTRAL_ETCD_CLIENT_PASSWORD))
 				.withCaCert(Resources.asByteSource(truststorePath))
 				.withMaxInboundMessageSize(6291456) // 6 MB, yes we need it
 				.build();

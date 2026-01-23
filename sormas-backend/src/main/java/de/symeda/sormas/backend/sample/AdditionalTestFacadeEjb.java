@@ -20,7 +20,6 @@ import de.symeda.sormas.api.sample.AdditionalTestFacade;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.FacadeHelper;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -40,7 +39,7 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 	@EJB
 	private UserService userService;
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private de.symeda.sormas.api.ConfigFacade configFacade;
 
 	@Override
 	public AdditionalTestDto getByUuid(String uuid) {

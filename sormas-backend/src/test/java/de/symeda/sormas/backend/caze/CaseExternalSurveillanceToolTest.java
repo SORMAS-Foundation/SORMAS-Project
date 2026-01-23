@@ -40,6 +40,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.share.ExternalShareStatus;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -113,11 +114,12 @@ public class CaseExternalSurveillanceToolTest extends AbstractBeanTest {
 	}
 
 	private void configureExternalSurvToolUrlForWireMock(WireMockRuntimeInfo wireMockRuntime) {
-		MockProducer.getProperties().setProperty("survnet.url", String.format("http://localhost:%s", wireMockRuntime.getHttpPort()));
+		MockProducer.getProperties()
+			.setProperty(Config.EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL, String.format("http://localhost:%s", wireMockRuntime.getHttpPort()));
 	}
 
 	private void clearExternalSurvToolUrlForWireMock() {
-		MockProducer.getProperties().setProperty("survnet.url", "");
+		MockProducer.getProperties().remove(Config.EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL);
 	}
 
 }

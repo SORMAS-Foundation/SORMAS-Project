@@ -38,11 +38,11 @@ import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.backend.MockProducer;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.ui.AbstractUiBeanTest;
 import de.symeda.sormas.ui.importer.ImportResultStatus;
 
@@ -122,9 +122,9 @@ public class TravelEntryImporterTest extends AbstractUiBeanTest {
 
 		ImportResultStatus importResult;
 
-		String serverLocale = MockProducer.getProperties().getProperty(ConfigFacadeEjb.COUNTRY_LOCALE);
+		String serverLocale = MockProducer.getProperties().getProperty(Config.COUNTRY_LOCALE);
 		try {
-			MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "de");
+			MockProducer.getProperties().setProperty(Config.COUNTRY_LOCALE, "de");
 
 			File csvFile = new File(getClass().getClassLoader().getResource("sormas_travelentry_import_no_poe.csv").toURI());
 
@@ -133,9 +133,9 @@ public class TravelEntryImporterTest extends AbstractUiBeanTest {
 		} finally {
 			// make sure server locale is reset
 			if (serverLocale == null) {
-				MockProducer.getProperties().remove(ConfigFacadeEjb.COUNTRY_LOCALE);
+				MockProducer.getProperties().remove(Config.COUNTRY_LOCALE);
 			} else {
-				MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, serverLocale);
+				MockProducer.getProperties().setProperty(Config.COUNTRY_LOCALE, serverLocale);
 			}
 		}
 

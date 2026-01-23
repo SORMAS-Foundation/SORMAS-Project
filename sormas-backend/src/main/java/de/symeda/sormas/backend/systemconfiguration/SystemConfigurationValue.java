@@ -24,7 +24,7 @@ import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.ColumnDefault;
 
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 @Entity(name = SystemConfigurationValue.TABLE_NAME)
@@ -45,7 +45,7 @@ public class SystemConfigurationValue extends AbstractDomainObject {
 
     private String value;
 	@Enumerated(EnumType.STRING)
-	private ConfigType key;
+	private Config key;
     private String description;
     private SystemConfigurationCategory category;
     private Boolean optional;
@@ -65,11 +65,11 @@ public class SystemConfigurationValue extends AbstractDomainObject {
     }
 
     @Column(nullable = false, name = "config_key")
-	public ConfigType getKey() {
+	public Config getKey() {
         return key;
     }
 
-	public void setKey(ConfigType key) {
+	public void setKey(Config key) {
         this.key = key;
     }
 

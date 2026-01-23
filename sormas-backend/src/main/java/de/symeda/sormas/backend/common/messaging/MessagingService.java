@@ -38,7 +38,6 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.manualmessagelog.ManualMessageLog;
 import de.symeda.sormas.backend.manualmessagelog.ManualMessageLogService;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 
@@ -62,7 +61,7 @@ public class MessagingService {
 	@EJB
 	private ManualMessageLogService manualMessageLogService;
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private de.symeda.sormas.api.ConfigFacade configFacade;
 
 	public void sendEmail(Map<User, String> userMessages, MessageSubject subject, Object[] subjectParameters)
 		throws NotificationDeliveryFailedException {

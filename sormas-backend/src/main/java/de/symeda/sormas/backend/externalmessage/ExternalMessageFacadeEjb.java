@@ -85,7 +85,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.systemevents.SystemEventDto;
 import de.symeda.sormas.api.systemevents.SystemEventType;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -109,7 +109,6 @@ import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -135,7 +134,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	private ExternalMessageService externalMessageService;
 
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private de.symeda.sormas.api.ConfigFacade configFacade;
 	@EJB
 	private SyncFacadeEjb.SyncFacadeEjbLocal syncFacadeEjb;
 	@EJB
@@ -761,7 +760,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		InitialContext ic = new InitialContext();
 
 		return (ExternalMessageAdapterFacade) ic.lookup(
-			configFacade.getAsString(ConfigType.INTERFACE_EXTERNAL_MESSAGE_ADAPTER_JNDI_NAME)
+			configFacade.getAsString(Config.INTERFACE_EXTERNAL_MESSAGE_ADAPTER_JNDI_NAME)
 				.orElseThrow(() -> new CannotProceedException(I18nProperties.getValidationError(Validations.externalMessageConfigError))));
 	}
 

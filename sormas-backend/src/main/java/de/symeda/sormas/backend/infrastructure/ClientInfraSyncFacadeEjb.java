@@ -8,7 +8,7 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.ClientInfraSyncFacade;
 import de.symeda.sormas.api.infrastructure.InfrastructureChangeDatesDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureSyncDto;
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.backend.campaign.CampaignFacadeEjb;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
@@ -25,7 +25,6 @@ import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentFacadeEjb;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserRoleFacadeEjb.UserRoleFacadeEjbLocal;
 
@@ -63,7 +62,7 @@ public class ClientInfraSyncFacadeEjb implements ClientInfraSyncFacade {
 	@EJB
 	private CommunityService communityService;
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private de.symeda.sormas.api.ConfigFacade configFacade;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
@@ -77,7 +76,7 @@ public class ClientInfraSyncFacadeEjb implements ClientInfraSyncFacade {
 
 		InfrastructureSyncDto sync = new InfrastructureSyncDto();
 
-		Long infractructureThreshold = configFacade.getAsLongOrThrow(ConfigType.INFRASTRUCTURE_SYNC_THRESHOLD);
+		Long infractructureThreshold = configFacade.getAsLongOrThrow(Config.INFRASTRUCTURE_SYNC_THRESHOLD);
 		if (facilityService.countAfter(changeDates.getFacilityChangeDate()) > infractructureThreshold
 			|| communityService.countAfter(changeDates.getCommunityChangeDate()) > infractructureThreshold) {
 			sync.setInitialSyncRequired(true);

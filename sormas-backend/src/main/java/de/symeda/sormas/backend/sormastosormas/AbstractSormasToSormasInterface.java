@@ -78,6 +78,7 @@ import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationEx
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
+import de.symeda.sormas.api.systemconfiguration.ExternalClientConfigurationFacade;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
@@ -122,7 +123,6 @@ import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfoSe
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
-import de.symeda.sormas.backend.systemconfiguration.ExternalClientConfigurationEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.RightsAllowed;
@@ -157,7 +157,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 	@EJB
 	private SormasToSormasShareInfoFacadeEjbLocal shareInfoFacade;
 	@EJB
-	private ExternalClientConfigurationEjb configFacadeEjb;
+	private ExternalClientConfigurationFacade configFacadeEjb;
 	@EJB
 	private ShareDataBuilder shareDataBuilder;
 	@EJB

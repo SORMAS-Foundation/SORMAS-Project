@@ -88,7 +88,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -132,7 +132,6 @@ import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShar
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
@@ -172,7 +171,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 	@EJB
 	private ContactFacadeEjb.ContactFacadeEjbLocal contactFacade;
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private de.symeda.sormas.api.ConfigFacade configFacade;
 	@EJB
 	private ExternalJournalService externalJournalService;
 	@EJB
@@ -1550,7 +1549,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 		Predicate nameSimilarityFilter =
 			cb.gt(
 				cb.function("similarity", double.class, nameSimilarityExpr, nameSimilarityExpr2),
-				configFacade.getAsDoubleOrThrow(ConfigType.NAME_SIMILARITY_THRESHOLD));
+				configFacade.getAsDoubleOrThrow(Config.NAME_SIMILARITY_THRESHOLD));
 		Predicate diseaseFilter = cb.equal(root.get(Contact.DISEASE), root2.get(Contact.DISEASE));
 		Predicate reportDateFilter = cb.lessThanOrEqualTo(
 			cb.abs(

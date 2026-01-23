@@ -38,18 +38,17 @@ import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.survey.Survey;
 import de.symeda.sormas.backend.survey.SurveyService;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 
 @Stateless
 @LocalBean
 public class DocumentTemplateService extends BaseAdoService<DocumentTemplate> {
 
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private de.symeda.sormas.api.ConfigFacade configFacade;
 	@EJB
 	private SurveyService surveyService;
 
@@ -106,7 +105,7 @@ public class DocumentTemplateService extends BaseAdoService<DocumentTemplate> {
 	}
 
 	private Path getTemplateDirPath(DocumentWorkflow documentWorkflow, Disease disease) {
-		Path path = Paths.get(configFacade.getAsStringOrThrow(ConfigType.CUSTOM_PATH))
+		Path path = Paths.get(configFacade.getAsStringOrThrow(Config.CUSTOM_FILES_PATH))
 			.resolve("docgeneration")
 			.resolve(documentWorkflow.getTemplateDirectory());
 

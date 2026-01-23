@@ -45,7 +45,7 @@ import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
@@ -854,7 +854,7 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetCasesByPersonNationalHealthId() {
-		MockProducer.getProperties().setProperty(ConfigType.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+		MockProducer.getProperties().setProperty(Config.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 		PersonReferenceDto person1 = creator.createPerson().toReference();
 		PersonDto personDto1 = getPersonFacade().getByUuid(person1.getUuid());
 		personDto1.setNationalHealthId("firstNationalId");

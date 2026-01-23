@@ -42,8 +42,7 @@ import javax.mail.internet.MimeMultipart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
+import de.symeda.sormas.api.systemconfiguration.Config;
 
 @Stateless(name = "EmailService")
 @LocalBean
@@ -55,7 +54,7 @@ public class EmailService {
 	private Session mailSession;
 
 	@EJB
-	private ConfigFacadeEjbLocal configFacadeEjbLocal;
+	private de.symeda.sormas.api.ConfigFacade configFacadeEjbLocal;
 
 	@Asynchronous
 	public void sendEmailAsync(String recipient, String subject, String content) throws MessagingException {
@@ -92,8 +91,8 @@ public class EmailService {
 
 	private void sendEmailAsync(String recipient, String subject, Object content, String contentType) throws MessagingException {
 		MimeMessage message = new MimeMessage(mailSession);
-		String senderAddress = configFacadeEjbLocal.getAsStringOrThrow(ConfigType.EMAIL_SENDER_ADDRESS);
-		String senderName = configFacadeEjbLocal.getAsStringOrThrow(ConfigType.EMAIL_SENDER_NAME);
+		String senderAddress = configFacadeEjbLocal.getAsStringOrThrow(Config.EMAIL_SENDER_ADDRESS);
+		String senderName = configFacadeEjbLocal.getAsStringOrThrow(Config.EMAIL_SENDER_NAME);
 
 		try {
 			InternetAddress fromAddress = new InternetAddress(senderAddress, senderName);

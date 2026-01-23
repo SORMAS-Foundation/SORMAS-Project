@@ -2,12 +2,12 @@ package de.symeda.sormas.backend.central;
 
 import javax.enterprise.inject.Produces;
 
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjb;
 
 public class EtcdCentralClientProducer {
 
 	@Produces
-	public EtcdCentralClient etcdCentralClient(ConfigFacadeEjbLocal configFacadeEjb) {
+	public EtcdCentralClient etcdCentralClient(ConfigFacadeEjb configFacadeEjb) {
 		return new EtcdCentralClient(configFacadeEjb);
 	}
 }

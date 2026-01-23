@@ -19,44 +19,46 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.CharUtils;
+
 import de.symeda.sormas.api.geo.GeoLatLon;
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 
 public interface ConfigFacade {
 
-	boolean isPresent(ConfigType config);
+	boolean isPresent(Config config);
 
-	default boolean isAbsent(ConfigType config) {
+	default boolean isAbsent(Config config) {
 		return !isPresent(config);
 	}
 
-	Optional<Integer> getAsInteger(ConfigType config);
+	Optional<Integer> getAsInteger(Config config);
 
-	Optional<Double> getAsDouble(ConfigType config);
+	Optional<Double> getAsDouble(Config config);
 
-	Optional<Long> getAsLong(ConfigType config);
+	Optional<Long> getAsLong(Config config);
 
-	Optional<String> getAsString(ConfigType config);
+	Optional<String> getAsString(Config config);
 
-	boolean getAsBoolean(ConfigType config);
+	boolean getAsBoolean(Config config);
 
-	default Integer getAsIntegerOrThrow(ConfigType config) {
+	default Integer getAsIntegerOrThrow(Config config) {
 		return getAsInteger(config).orElseThrow(() -> buildMissingConfigException(config));
 	}
 
-	static IllegalStateException buildMissingConfigException(ConfigType config) {
+	static IllegalStateException buildMissingConfigException(Config config) {
 		return new IllegalStateException(String.format("Required configuration '%s' not found or invalid. \nCheck if ", config.name()));
 	}
 
-	default Double getAsDoubleOrThrow(ConfigType config) {
+	default Double getAsDoubleOrThrow(Config config) {
 		return getAsDouble(config).orElseThrow(() -> buildMissingConfigException(config));
 	}
 
-	default Long getAsLongOrThrow(ConfigType config) {
+	default Long getAsLongOrThrow(Config config) {
 		return getAsLong(config).orElseThrow(() -> buildMissingConfigException(config));
 	}
 
-	default String getAsStringOrThrow(ConfigType config) {
+	default String getAsStringOrThrow(Config config) {
 		return getAsString(config).orElseThrow(() -> buildMissingConfigException(config));
 	}
 
@@ -65,40 +67,37 @@ public interface ConfigFacade {
 	String getCountryCode();
 
 	default boolean isSmsServiceSetUp() {
-		return isPresent(ConfigType.SMS_AUTH_SECRET) || isPresent(ConfigType.SMS_AUTH_KEY);
+		return isPresent(Config.SMS_AUTH_SECRET) || isPresent(Config.SMS_AUTH_KEY);
 	}
 
-	char getCsvSeparator();
+	default char getCsvSeparator() {
+		return getAsString(Config.CSV_SEPARATOR).map(CharUtils::toChar)
+			.orElseThrow(() -> ConfigFacade.buildMissingConfigException(Config.CSV_SEPARATOR));
+	}
 
 	@Deprecated
 	default boolean isS2SConfigured() {
-		return isPresent(ConfigType.SORMAS2SORMAS_PATH);
+		return isPresent(Config.SORMAS2SORMAS_PATH);
 	}
 
 	@Deprecated
 	default boolean isExternalSurveillanceToolGatewayConfigured() {
-		return isPresent(ConfigType.EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL);
+		return isPresent(Config.EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL);
 	}
 
 	default Set<String> getAllowedFileExtensions() {
-		return Arrays.stream(getAsStringOrThrow(ConfigType.ALLOWED_FILE_EXTENSIONS).split(",")).collect(Collectors.toSet());
+		return Arrays.stream(getAsStringOrThrow(Config.ALLOWED_FILE_EXTENSIONS).split(",")).collect(Collectors.toSet());
 	}
 
 	default String getSormasInstanceName() {
-		return getAsBoolean(ConfigType.CUSTOM_BRANDING) ? getAsStringOrThrow(ConfigType.CUSTOM_BRANDING_NAME) : "SORMAS";
+		return getAsBoolean(Config.CUSTOM_BRANDING) ? getAsStringOrThrow(Config.CUSTOM_BRANDING_NAME) : "SORMAS";
 	}
 
-	CaseClassificationCalculationMode getCaseClassificationCalculationMode(Disease disease);
-
 	default GeoLatLon getCountryCenter() {
-		return new GeoLatLon(
-			getAsDoubleOrThrow(ConfigType.COUNTRY_CENTER_LATITUDE),
-			getAsDoubleOrThrow(ConfigType.COUNTRY_CENTER_LATITUDE));
+		return new GeoLatLon(getAsDoubleOrThrow(Config.COUNTRY_CENTER_LATITUDE), getAsDoubleOrThrow(Config.COUNTRY_CENTER_LATITUDE));
 	}
 
 	default String getCountryLocale() {
-		return getAsStringOrThrow(ConfigType.COUNTRY_LOCALE);
+		return getAsStringOrThrow(Config.COUNTRY_LOCALE);
 	}
-
-	boolean isAnyCaseClassificationCalculationEnabled();
 }

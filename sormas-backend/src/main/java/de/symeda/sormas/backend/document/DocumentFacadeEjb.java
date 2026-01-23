@@ -57,7 +57,6 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventService;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
@@ -104,7 +103,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 	@EJB
 	private TravelEntryService travelEntryService;
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private de.symeda.sormas.api.ConfigFacade configFacade;
 	@EJB
 	private DocumentRelatedEntityFacadeEjb.DocumentRelatedEntityFacadeEjbLocal documentRelatedEntitiesFacade;
 

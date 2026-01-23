@@ -7,7 +7,6 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoFacade;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
@@ -20,7 +19,7 @@ public class PortHealthInfoFacadeEjb implements PortHealthInfoFacade {
 	@EJB
 	private UserService userService;
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private de.symeda.sormas.api.ConfigFacade configFacade;
 
 	public static PortHealthInfoDto toDto(PortHealthInfo source) {
 		if (source == null) {

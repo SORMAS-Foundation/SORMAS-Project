@@ -32,12 +32,13 @@ import com.google.common.collect.Lists;
 import de.symeda.sormas.api.externaljournal.PatientDiaryConfig;
 import de.symeda.sormas.api.externaljournal.SymptomJournalConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
+import de.symeda.sormas.api.systemconfiguration.ExternalClientConfigurationFacade;
 import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.api.utils.VersionHelper;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjb;
 import de.symeda.sormas.backend.systemconfiguration.ExternalClientConfigurationEjb;
 
 @Stateless
@@ -46,14 +47,14 @@ public class StartupConfigurationValidationService {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	private ConfigFacadeEjbLocal systemConfigurationAccessor;
-	private ExternalClientConfigurationEjb externalClientConfiguration;
+	private de.symeda.sormas.api.ConfigFacade systemConfigurationAccessor;
+	private ExternalClientConfigurationFacade externalClientConfiguration;
 
 	public StartupConfigurationValidationService() {
 	}
 
 	public StartupConfigurationValidationService(
-		ConfigFacadeEjbLocal systemConfigurationAccessor,
+		ConfigFacadeEjb systemConfigurationAccessor,
 		ExternalClientConfigurationEjb externalClientConfiguration) {
 		this.systemConfigurationAccessor = systemConfigurationAccessor;
 		this.externalClientConfiguration = externalClientConfiguration;
@@ -62,24 +63,24 @@ public class StartupConfigurationValidationService {
 	public void validateAppUrls() {
 		logger.info("Validating app urls");
 		String appUrl = getAppUrl();
-		String appLegacyUrl = systemConfigurationAccessor.getAsString(ConfigType.APP_LEGACY_URL).orElse(null);
+		String appLegacyUrl = systemConfigurationAccessor.getAsString(Config.APP_LEGACY_URL).orElse(null);
 
 		// must contain version information
 		int[] appVersion = VersionHelper.extractVersion(appUrl);
 		if (!DataHelper.isNullOrEmpty(appUrl) && !VersionHelper.isVersion(appVersion)) {
-			throw new IllegalArgumentException("Property '" + ConfigType.APP_URL + "' must contain a valid version: '" + appUrl + "'");
+			throw new IllegalArgumentException("Property '" + Config.APP_URL + "' must contain a valid version: '" + appUrl + "'");
 		}
 		int[] appLegacyVersion = VersionHelper.extractVersion(appLegacyUrl);
 		if (!DataHelper.isNullOrEmpty(appLegacyUrl) && !VersionHelper.isVersion(appLegacyVersion)) {
 			throw new IllegalArgumentException(
-				"Property '" + ConfigType.APP_LEGACY_URL + "' must contain a valid version: '" + appLegacyUrl + "'");
+				"Property '" + Config.APP_LEGACY_URL + "' must contain a valid version: '" + appLegacyUrl + "'");
 		}
 
 		// legacy must be empty or before app version
 		if (appLegacyVersion != null && appVersion != null) {
 			if (!VersionHelper.isBefore(appLegacyVersion, appVersion)) {
 				throw new IllegalArgumentException(
-					"Property '" + ConfigType.APP_LEGACY_URL + "' must have a version smaller " + "than property '" + ConfigType.APP_URL
+					"Property '" + Config.APP_LEGACY_URL + "' must have a version smaller " + "than property '" + Config.APP_URL
 						+ "': '" + appLegacyUrl + "' - '" + appUrl + "'");
 			}
 		}
@@ -87,19 +88,19 @@ public class StartupConfigurationValidationService {
 		// both have to be compatible
 		if (appVersion != null && InfoProvider.get().isCompatibleToApi(appVersion) != CompatibilityCheckResponse.COMPATIBLE) {
 			throw new IllegalArgumentException(
-				"Property '" + ConfigType.APP_URL + "' does not point to a compatible app version: '" + appUrl + "'. Minimum is '"
+				"Property '" + Config.APP_URL + "' does not point to a compatible app version: '" + appUrl + "'. Minimum is '"
 					+ InfoProvider.get().getMinimumRequiredVersion() + "'");
 		}
 
 		if (appLegacyVersion != null && InfoProvider.get().isCompatibleToApi(appLegacyVersion) != CompatibilityCheckResponse.COMPATIBLE) {
 			throw new IllegalArgumentException(
-				"Property '" + ConfigType.APP_LEGACY_URL + "' does not point to a compatible app version: '" + appLegacyUrl + "'. Minimum is '"
+				"Property '" + Config.APP_LEGACY_URL + "' does not point to a compatible app version: '" + appLegacyUrl + "'. Minimum is '"
 					+ InfoProvider.get().getMinimumRequiredVersion() + "'");
 		}
 	}
 
 	private @Nullable String getAppUrl() {
-		return systemConfigurationAccessor.getAsString(ConfigType.APP_URL).orElse(null);
+		return systemConfigurationAccessor.getAsString(Config.APP_URL).orElse(null);
 	}
 
 	public void validateConfigUrls() {
@@ -117,11 +118,11 @@ public class StartupConfigurationValidationService {
 			patientDiaryConfig.getAuthUrl(),
 			patientDiaryConfig.getFrontendAuthUrl(),
 			getAppUrl(),
-			systemConfigurationAccessor.getAsString(ConfigType.UI_URL).orElse(null),
-			systemConfigurationAccessor.getAsString(ConfigType.SORMAS_STATS_URL).orElse(null));
+			systemConfigurationAccessor.getAsString(Config.UI_URL).orElse(null),
+			systemConfigurationAccessor.getAsString(Config.SORMAS_STATS_URL).orElse(null));
 
 		List<String> allowHttp =
-			Lists.newArrayList(systemConfigurationAccessor.getAsString(ConfigType.EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL).orElse(null));
+			Lists.newArrayList(systemConfigurationAccessor.getAsString(Config.EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL).orElse(null));
 
 		// separately as they are interpolated
 		if (!StringUtils.isBlank(s2sConfig.getOidcServer())) {
@@ -162,19 +163,19 @@ public class StartupConfigurationValidationService {
 		// the following two checks cannot be collapsed with the general HTTPS check because they are not valid URLs
 		// as they contain placeholders
 
-		String geocodingUrl = systemConfigurationAccessor.getAsString(ConfigType.GEOCODING_SERVICE_URL_TEMPLATE).orElse(null);
+		String geocodingUrl = systemConfigurationAccessor.getAsString(Config.GEOCODING_SERVICE_URL_TEMPLATE).orElse(null);
 		if (!StringUtils.isBlank(geocodingUrl) && !geocodingUrl.startsWith("https://")) {
 			throw new IllegalArgumentException("geocodingServiceUrlTemplate property is required to be HTTPS");
 		}
 
-		String mapTilersUrl = systemConfigurationAccessor.getAsString(ConfigType.MAP_TILES_URL).orElse(null);
+		String mapTilersUrl = systemConfigurationAccessor.getAsString(Config.MAP_TILES_URL).orElse(null);
 		if (!StringUtils.isBlank(mapTilersUrl) && !mapTilersUrl.startsWith("https://")) {
 			throw new IllegalArgumentException("map.tiles.url property is required to be HTTPS");
 		}
 	}
 
 	@Inject
-	public void setSystemConfigurationAccessor(ConfigFacadeEjbLocal systemConfigurationAccessor) {
+	public void setSystemConfigurationAccessor(ConfigFacadeEjb systemConfigurationAccessor) {
 		this.systemConfigurationAccessor = systemConfigurationAccessor;
 	}
 

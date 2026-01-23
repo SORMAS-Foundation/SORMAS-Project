@@ -47,7 +47,7 @@ import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.RequestContextTO;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.backend.central.EtcdCentralClient;
 import de.symeda.sormas.backend.central.EtcdCentralClientProducer;
@@ -57,7 +57,8 @@ import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoverySer
 import de.symeda.sormas.backend.sormastosormas.crypto.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClient;
 import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClientProducer;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjb;
+import de.symeda.sormas.backend.systemconfiguration.ExternalClientConfigurationEjb;
 
 /**
  * Creates mocks for resources needed in bean test / external services.
@@ -74,17 +75,17 @@ public class MockProducer implements InitialContextFactory {
 	private static Topic topic = mock(Topic.class);
 	private static ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
 	private static TimerService timerService = mock(TimerService.class);
-	private static Properties properties = new Properties();
 	private static UserTransaction userTransaction = mock(UserTransaction.class);
 	private static RequestContextTO requestContextTO = new RequestContextTO(false);
 	private static SormasToSormasRestClient s2sRestClient = mock(SormasToSormasRestClient.class);
 	private static final EtcdCentralClient etcdCentralClient = mock(EtcdCentralClient.class);
 	private static CustomizableEnumFacade customizableEnumFacadeForConverter = mock(CustomizableEnumFacade.class);
-	private static ConfigFacade configFacade = mock(ConfigFacade.class);
 
 	private static ManagedScheduledExecutorService managedScheduledExecutorService = mock(ManagedScheduledExecutorService.class);
 
 	private static SormasToSormasDiscoveryService sormasToSormasDiscoveryService = mock(SormasToSormasDiscoveryService.class);
+
+	static final TestHelperConfigImpl configurationTestHelper = new TestHelperConfigImpl();
 
 	// Receiving e-mail server is mocked: org. jvnet. mock_javamail. mailbox
 	private static Session mailSession;
@@ -133,12 +134,11 @@ public class MockProducer implements InitialContextFactory {
 	}
 
 	private static void resetProperties() {
-
-		properties.clear();
-		properties.setProperty(ConfigType.COUNTRY_NAME, "nigeria");
-		properties.setProperty(ConfigType.CSV_SEPARATOR, ";");
-		properties.setProperty(ConfigType.TEMP_FILES_PATH, TMP_PATH);
-		properties.setProperty(ConfigType.DOCUMENT_FILES_PATH, TMP_PATH + "/documents");
+		configurationTestHelper.clear();
+		configurationTestHelper.setProperty(Config.COUNTRY_NAME, "nigeria");
+		configurationTestHelper.setProperty(Config.CSV_SEPARATOR, ";");
+		configurationTestHelper.setProperty(Config.TEMP_PATH, TMP_PATH);
+		configurationTestHelper.setProperty(Config.DOCUMENTS_PATH, TMP_PATH + "/documents");
 	}
 
 	public static void wireMocks() {
@@ -176,18 +176,23 @@ public class MockProducer implements InitialContextFactory {
 		return mailSession;
 	}
 
-	@Produces
-	public static Properties getProperties() {
-		return properties;
-	}
-
 	/**
 	 * Meant as a drop-in for the legacy Properties approach, favor the adequate interface instead of this.
 	 */
 	@Produces
 	@Deprecated
-	public static SystemConfigurationPropertiesFacade getProperties() {
-		This is the code that must be modified to allow a test Config mock environment
+	public static TestConfigFacade getProperties() {
+		return getTestConfigFacade();
+	}
+
+	@Produces
+	public static TestConfigFacade getTestConfigFacade() {
+		return configurationTestHelper;
+	}
+
+	@Produces
+	public ConfigFacade getConfigFacade() {
+		return new ConfigFacadeEjbLocalMock();
 	}
 
 	@Produces
@@ -211,7 +216,7 @@ public class MockProducer implements InitialContextFactory {
 		public SormasToSormasRestClient sormasToSormasClient(
 			SormasToSormasDiscoveryService sormasToSormasDiscoveryService,
 			SormasToSormasEncryptionFacadeEjbLocal sormasToSormasEncryptionEjb,
-			ConfigFacadeEjbLocal configFacadeEjb) {
+			ConfigFacadeEjb configFacadeEjb) {
 			return s2sRestClient;
 		}
 	}
@@ -225,7 +230,7 @@ public class MockProducer implements InitialContextFactory {
 
 		@Override
 		@Produces
-		public EtcdCentralClient etcdCentralClient(ConfigFacadeEjbLocal configFacadeEjb) {
+		public EtcdCentralClient etcdCentralClient(ConfigFacadeEjb configFacadeEjb) {
 			return etcdCentralClient;
 		}
 	}
@@ -248,7 +253,7 @@ public class MockProducer implements InitialContextFactory {
 		@Produces
 		public SormasToSormasDiscoveryService sormasToSormasDiscoveryService(
 			SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal sormasToSormasFacadeEjb,
-			ConfigFacadeEjbLocal configFacadeEjb,
+			ExternalClientConfigurationEjb configFacadeEjb,
 			EtcdCentralClient centralClient) {
 			return sormasToSormasDiscoveryService;
 		}
@@ -258,8 +263,13 @@ public class MockProducer implements InitialContextFactory {
 		return sormasToSormasDiscoveryService;
 	}
 
-	public static void mockProperty(String property, String value) {
-		properties.setProperty(property, value);
+	@Deprecated
+	public static void mockProperty(Config config, String value) {
+		mockConfig(config, value);
+	}
+
+	public static void mockConfig(Config config, String value) {
+		configurationTestHelper.setProperty(config, value);
 	}
 
 	/**

@@ -68,7 +68,6 @@ import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
@@ -88,7 +87,7 @@ import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInf
 import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.api.symptoms.SymptomState;
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -504,7 +503,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
 		options.setPseudonymizeData(true);
 
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, Boolean.FALSE.toString());
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, Boolean.FALSE.toString());
 
 		Mockito
 			.when(
@@ -857,7 +856,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		calendar.add(Calendar.DAY_OF_MONTH, 1);
 		caze.setChangeDate(calendar.getTime());
 
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, Boolean.FALSE.toString());
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, Boolean.FALSE.toString());
 
 		Mockito
 			.when(
@@ -1502,7 +1501,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 	@Test
 	public void testSetResponsibleDistrictOnAccept() throws SormasToSormasException, SormasToSormasValidationException {
 		TestDataCreator.RDCF s2sRdcf = createRDCF("S2SExtId").centralRdcf;
-		MockProducer.getProperties().setProperty(ConfigType.SORMAS2SORMAS_DISTRICT_EXTERNAL_ID, s2sRdcf.district.getExternalId());
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_DISTRICT_EXTERNAL_ID, s2sRdcf.district.getExternalId());
 
 		// sharing without ownership should not change responsible district
 		PersonDto person = createPersonDto(rdcf);

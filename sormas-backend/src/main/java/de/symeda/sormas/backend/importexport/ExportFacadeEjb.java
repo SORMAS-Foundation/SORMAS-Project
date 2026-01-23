@@ -50,7 +50,7 @@ import de.symeda.sormas.api.importexport.ExportConfigurationCriteria;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.importexport.ExportFacade;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ExportErrorException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
@@ -63,7 +63,6 @@ import de.symeda.sormas.backend.infrastructure.district.DistrictService;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.person.PersonService;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
@@ -79,7 +78,7 @@ public class ExportFacadeEjb implements ExportFacade {
 	private EntityManager em;
 
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private de.symeda.sormas.api.ConfigFacade configFacade;
 	@EJB
 	private CaseFacadeEjbLocal caseFacade;
 	@EJB
@@ -110,7 +109,7 @@ public class ExportFacadeEjb implements ExportFacade {
 
 		// Create the folder if it doesn't exist
 		try {
-			Files.createDirectories(Paths.get(configFacade.getAsStringOrThrow(ConfigType.TEMP_PATH)));
+			Files.createDirectories(Paths.get(configFacade.getAsStringOrThrow(Config.TEMP_PATH)));
 		} catch (IOException e) {
 			logger.error("Temp directory doesn't exist and creation failed.");
 			throw e;
@@ -153,7 +152,7 @@ public class ExportFacadeEjb implements ExportFacade {
 
 	private Path generateZipArchivePath() {
 
-		Path path = Paths.get(configFacade.getAsStringOrThrow(ConfigType.TEMP_PATH));
+		Path path = Paths.get(configFacade.getAsStringOrThrow(Config.TEMP_PATH));
 		String fileName = ImportExportUtils.TEMP_FILE_PREFIX + "_export_" + DateHelper.formatDateForExport(new Date()) + "_"
 			+ new Random().nextInt(Integer.MAX_VALUE) + ".zip";
 		Path filePath = path.resolve(fileName);

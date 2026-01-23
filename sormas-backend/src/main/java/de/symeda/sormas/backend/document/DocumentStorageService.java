@@ -30,9 +30,8 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.utils.DateFormatHelper;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 
 /**
@@ -50,7 +49,7 @@ public class DocumentStorageService {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private de.symeda.sormas.api.ConfigFacade configFacade;
 	@EJB
 	private UserService userService;
 
@@ -64,12 +63,12 @@ public class DocumentStorageService {
 
     @NotNull
     private Path getFilePath(String storageReference) {
-		return Paths.get(configFacade.getAsStringOrThrow(ConfigType.DOCUMENTS_PATH), storageReference);
+		return Paths.get(configFacade.getAsStringOrThrow(Config.DOCUMENTS_PATH), storageReference);
 	}
 
 	public String save(Document document, byte[] content) throws IOException {
 		Path relativePath = computeRelativePath(document);
-		Path filePath = Paths.get(configFacade.getAsStringOrThrow(ConfigType.DOCUMENTS_PATH)).resolve(relativePath);
+		Path filePath = Paths.get(configFacade.getAsStringOrThrow(Config.DOCUMENTS_PATH)).resolve(relativePath);
 		Files.createDirectories(filePath.getParent());
 		Files.write(filePath, content, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
 		setDocumentAttributes(document, filePath);

@@ -82,7 +82,6 @@ import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb.ImmunizationF
 import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -115,7 +114,7 @@ public class VaccinationFacadeEjb
 	@EJB
 	private SpecialCaseAccessService specialCaseAccessService;
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private de.symeda.sormas.api.ConfigFacade configFacade;
 
 	public VaccinationFacadeEjb() {
 	}

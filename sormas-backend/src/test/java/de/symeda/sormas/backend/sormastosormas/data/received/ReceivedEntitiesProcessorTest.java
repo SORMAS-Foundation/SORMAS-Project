@@ -34,7 +34,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.MockProducer;
@@ -82,10 +82,10 @@ public class ReceivedEntitiesProcessorTest extends SormasToSormasTest {
 	@Test
 	public void testIgnoredPropertiesAreOverwrittenWithNewValuesForCase() throws CloneNotSupportedException {
 
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, Boolean.FALSE.toString());
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID, Boolean.FALSE.toString());
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, Boolean.FALSE.toString());
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, Boolean.FALSE.toString());
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_IGNORE_EXTERNAL_ID, Boolean.FALSE.toString());
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, Boolean.FALSE.toString());
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
 
 		PersonDto personDto = creator.createPerson();
 		UserReferenceDto officer = creator.createSurveillanceOfficer(rdcf).toReference();
@@ -142,10 +142,10 @@ public class ReceivedEntitiesProcessorTest extends SormasToSormasTest {
 	@Test
 	public void testIgnoredPropertiesAreOverwrittenWithNewValuesForContact() throws CloneNotSupportedException {
 
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, Boolean.FALSE.toString());
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID, Boolean.FALSE.toString());
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, Boolean.FALSE.toString());
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, Boolean.FALSE.toString());
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_IGNORE_EXTERNAL_ID, Boolean.FALSE.toString());
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, Boolean.FALSE.toString());
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
 
 		PersonReferenceDto personReferenceDto = creator.createPerson().toReference();
 		UserReferenceDto officerReferenceDto = creator.createSurveillanceOfficer(rdcf).toReference();
@@ -194,10 +194,10 @@ public class ReceivedEntitiesProcessorTest extends SormasToSormasTest {
 	@Test
 	public void testIgnoredPropertiesAreOverwrittenWithNewValuesForEvent() throws CloneNotSupportedException {
 
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, Boolean.FALSE.toString());
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID, Boolean.FALSE.toString());
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, Boolean.FALSE.toString());
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, Boolean.FALSE.toString());
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_IGNORE_EXTERNAL_ID, Boolean.FALSE.toString());
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, Boolean.FALSE.toString());
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
 
 		UserReferenceDto officerReferenceDto = creator.createSurveillanceOfficer(rdcf).toReference();
 		EventDto existingEventDto = creator.createEvent(officerReferenceDto);
@@ -245,10 +245,10 @@ public class ReceivedEntitiesProcessorTest extends SormasToSormasTest {
 	@Test
 	public void testIgnoredPropertiesAreOverwrittenWithNewValuesForPerson() throws CloneNotSupportedException {
 
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, Boolean.FALSE.toString());
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID, Boolean.FALSE.toString());
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, Boolean.FALSE.toString());
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, Boolean.FALSE.toString());
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_IGNORE_EXTERNAL_ID, Boolean.FALSE.toString());
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, Boolean.FALSE.toString());
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
 
 		PersonDto existingPersonDto = creator.createPerson();
 		existingPersonDto.setAdditionalDetails("oldAdditionalDetails");
@@ -305,10 +305,10 @@ public class ReceivedEntitiesProcessorTest extends SormasToSormasTest {
 	@Test
 	public void testIgnoredPropertiesAreOverwrittenWithNewValuesForImmunization() throws CloneNotSupportedException {
 
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, Boolean.FALSE.toString());
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID, Boolean.FALSE.toString());
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, Boolean.FALSE.toString());
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, Boolean.FALSE.toString());
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_IGNORE_EXTERNAL_ID, Boolean.FALSE.toString());
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, Boolean.FALSE.toString());
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
 
 		PersonReferenceDto personReferenceDto = creator.createPerson().toReference();
 		UserReferenceDto officerReferenceDto = creator.createSurveillanceOfficer(rdcf).toReference();
@@ -371,10 +371,10 @@ public class ReceivedEntitiesProcessorTest extends SormasToSormasTest {
 	@Test
 	public void testIgnoredPropertiesAreOverwrittenWithNewValuesForPathogenTest() throws CloneNotSupportedException {
 
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, Boolean.FALSE.toString());
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID, Boolean.FALSE.toString());
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, Boolean.FALSE.toString());
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, Boolean.FALSE.toString());
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_IGNORE_EXTERNAL_ID, Boolean.FALSE.toString());
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, Boolean.FALSE.toString());
+		MockProducer.getProperties().setProperty(Config.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
 
 		PersonDto personDto = creator.createPerson();
 		UserReferenceDto officerReferenceDto = creator.createSurveillanceOfficer(rdcf).toReference();

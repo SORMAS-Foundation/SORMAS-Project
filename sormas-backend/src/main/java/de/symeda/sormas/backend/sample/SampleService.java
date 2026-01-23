@@ -82,7 +82,7 @@ import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleJurisdictionFlagsDto;
 import de.symeda.sormas.api.sample.SampleListEntryDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -115,7 +115,6 @@ import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShar
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.IterableHelper;
@@ -154,7 +153,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 	@EJB
 	private SpecialCaseAccessService specialCaseAccessService;
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private de.symeda.sormas.api.ConfigFacade configFacade;
 
 	public SampleService() {
 		super(Sample.class, DeletableEntityType.SAMPLE);
@@ -1297,7 +1296,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 	}
 
 	public void cleanupOldCovidSamples() {
-		final Integer maxAgeDays = configFacade.getAsIntegerOrThrow(ConfigType.NEGATIVE_COVID_TESTS_MAX_AGE_DAYS);
+		final Integer maxAgeDays = configFacade.getAsIntegerOrThrow(Config.NEGATIVE_COVID_TESTS_MAX_AGE_DAYS);
 		if (maxAgeDays == null) {
 			return;
 		}

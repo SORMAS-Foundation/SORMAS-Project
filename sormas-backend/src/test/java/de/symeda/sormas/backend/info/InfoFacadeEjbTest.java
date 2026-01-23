@@ -31,7 +31,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -47,12 +47,12 @@ public class InfoFacadeEjbTest extends AbstractBeanTest {
 	public void init() {
 		super.init();
 
-		originalCustomFilesPath = MockProducer.getProperties().getProperty(ConfigType.CUSTOM_FILES_PATH);
+		originalCustomFilesPath = MockProducer.getProperties().getProperty(Config.CUSTOM_FILES_PATH);
 		if (originalCustomFilesPath == null) {
 			originalCustomFilesPath = "";
 		}
 
-		originalServerCountry = MockProducer.getProperties().getProperty(ConfigType.COUNTRY_LOCALE);
+		originalServerCountry = MockProducer.getProperties().getProperty(Config.COUNTRY_LOCALE);
 		if (originalServerCountry == null) {
 			originalServerCountry = "";
 		}
@@ -60,7 +60,7 @@ public class InfoFacadeEjbTest extends AbstractBeanTest {
 		try {
 			MockProducer.getProperties()
 				.setProperty(
-					ConfigType.CUSTOM_FILES_PATH,
+					Config.CUSTOM_FILES_PATH,
 					Paths.get(getClass().getResource("/").toURI()).toAbsolutePath().toString() + "/dataDictionaryTestCustom");
 		} catch (URISyntaxException e) {
 			throw new RuntimeException("Could not set custom files path", e);
@@ -72,8 +72,8 @@ public class InfoFacadeEjbTest extends AbstractBeanTest {
 
 	@AfterEach
 	public void destroy() {
-		MockProducer.getProperties().setProperty(ConfigType.CUSTOM_FILES_PATH, originalCustomFilesPath);
-		MockProducer.getProperties().setProperty(ConfigType.COUNTRY_LOCALE, originalServerCountry);
+		MockProducer.getProperties().setProperty(Config.CUSTOM_FILES_PATH, originalCustomFilesPath);
+		MockProducer.getProperties().setProperty(Config.COUNTRY_LOCALE, originalServerCountry);
 	}
 
 	@Test
@@ -86,7 +86,7 @@ public class InfoFacadeEjbTest extends AbstractBeanTest {
 		FeatureConfigurationService featureConfigurationService = getBean(FeatureConfigurationService.class);
 		featureConfigurationService.createMissingFeatureConfigurations();
 
-		MockProducer.getProperties().setProperty(ConfigType.COUNTRY_LOCALE, "en");
+		MockProducer.getProperties().setProperty(Config.COUNTRY_LOCALE, "en");
 		XSSFWorkbook workbook = new XSSFWorkbook(new File(getInfoFacade().generateDataProtectionDictionary()));
 
 		assertThat(isFieldAdded(workbook, "Person", "Person.nickname"), is(true));
@@ -95,7 +95,7 @@ public class InfoFacadeEjbTest extends AbstractBeanTest {
 		assertThat(isFieldAdded(workbook, "All fields", "Entity"), is(true));
 		assertThat(isFieldAdded(workbook, "All fields", "Person"), is(true));
 
-		MockProducer.getProperties().setProperty(ConfigType.COUNTRY_LOCALE, "de");
+		MockProducer.getProperties().setProperty(Config.COUNTRY_LOCALE, "de");
 		workbook = new XSSFWorkbook(new File(getInfoFacade().generateDataProtectionDictionary()));
 		assertThat(isFieldAdded(workbook, "Person", "Person.nickname"), is(false));
 		assertThat(isFieldAdded(workbook, "CaseData", "CaseData.epidNumber"), is(false));

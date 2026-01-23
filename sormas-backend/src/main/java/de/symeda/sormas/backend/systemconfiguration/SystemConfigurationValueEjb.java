@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueCriteria;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueDataProvider;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueDto;
@@ -83,8 +83,8 @@ public class SystemConfigurationValueEjb
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SystemConfigurationValueEjb.class);
 
-	private final ConcurrentHashMap<ConfigType, SystemConfigurationValueProjection> configurationValuesByKey =
-		new ConcurrentHashMap<>(ConfigType.values().length);
+	private final ConcurrentHashMap<Config, SystemConfigurationValueProjection> configurationValuesByKey =
+		new ConcurrentHashMap<>(Config.values().length);
 
 	private SystemConfigurationCategoryService categoryService;
 
@@ -125,7 +125,7 @@ public class SystemConfigurationValueEjb
 	 */
 	@PermitAll
 	@Override
-	public Optional<String> getValue(final ConfigType key) {
+	public Optional<String> getValue(final Config key) {
 		loadDataIfEmpty();
 
 		SystemConfigurationValueProjection systemConfigurationValueProjection = configurationValuesByKey.get(key);
@@ -148,7 +148,7 @@ public class SystemConfigurationValueEjb
 
 	@PermitAll
 	@Override
-	public boolean exists(final ConfigType key) {
+	public boolean exists(final Config key) {
 		loadDataIfEmpty();
 
 		return configurationValuesByKey.containsKey(key);
@@ -178,8 +178,8 @@ public class SystemConfigurationValueEjb
         service.ensurePersisted(newValue);
 
 		// Updating only the given system configuration, not the others.
-		ConfigType configType = newValue.getKey();
-		configurationValuesByKey.put(configType, new SystemConfigurationValueProjection(newValue.getValue(), newValue.getDefaultValue()));
+		Config config = newValue.getKey();
+		configurationValuesByKey.put(config, new SystemConfigurationValueProjection(newValue.getValue(), newValue.getDefaultValue()));
 
         return toDto(newValue);
     }
@@ -408,7 +408,7 @@ public class SystemConfigurationValueEjb
 
 		target = DtoHelper.fillOrBuildEntity(source, target, SystemConfigurationValue::new, checkChangeDate);
 
-		target.setKey(ConfigType.valueOf(source.getKey()));
+		target.setKey(Config.valueOf(source.getKey()));
 		target.setValue(source.getValue());
 		target.setDescription(source.getDescription());
 		target.setCategory(categoryService.getByReferenceDto(source.getCategory()));

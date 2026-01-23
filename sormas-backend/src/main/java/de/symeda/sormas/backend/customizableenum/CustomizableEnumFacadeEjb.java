@@ -64,13 +64,12 @@ import de.symeda.sormas.api.customizableenum.CustomizableEnumValueIndexDto;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumValueReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.InvalidCustomizationException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.AbstractBaseEjb;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.RightsAllowed;
@@ -109,7 +108,7 @@ public class CustomizableEnumFacadeEjb
 	@EJB
 	private CustomizableEnumValueService service;
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private de.symeda.sormas.api.ConfigFacade configFacade;
 
 	public CustomizableEnumFacadeEjb() {
 
@@ -377,7 +376,7 @@ public class CustomizableEnumFacadeEjb
 			return;
 		}
 
-		boolean isCountryLanguage = configFacade.getAsString(ConfigType.COUNTRY_LOCALE)
+		boolean isCountryLanguage = configFacade.getAsString(Config.COUNTRY_LOCALE)
 			.filter(countryLocale -> StringUtils.equals(countryLocale, language.getLocale().toString()))
 			.isPresent();
 

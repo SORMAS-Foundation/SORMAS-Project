@@ -75,7 +75,7 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
@@ -136,7 +136,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		loginWith(user);
 
 		// TravelEntry only active for Germany
-		MockProducer.mockProperty(ConfigType.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_GERMANY);
+		MockProducer.mockProperty(Config.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_GERMANY);
 
 		// 1a. Test for all available PersonAssociations
 		for (PersonAssociation pa : PersonAssociation.values()) {
@@ -486,7 +486,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		assertThat(similarPersonUuids, containsInAnyOrder(matchingNameAndHealthIdPerson.getUuid(), sameNameNoHealthIdPerson.getUuid()));
 
-		MockProducer.mockProperty(ConfigType.DUPLICATE_CHECKS_NATIONAL_HEALTH_ID_OVERRIDES_CRITERIA, Boolean.TRUE.toString());
+		MockProducer.mockProperty(Config.DUPLICATECHECKS_NATIONAL_HEALTH_ID_OVERRIDES_CRITERIA, Boolean.TRUE.toString());
 		similarPersonUuids = getPersonFacade().getSimilarPersonDtos(criteria).stream().map(AbstractUuidDto::getUuid).collect(Collectors.toList());
 		assertThat(
 			similarPersonUuids,
@@ -772,7 +772,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			.createTravelEntry(person3.toReference(), nationalUser.toReference(), Disease.CORONAVIRUS, rdcf.region, rdcf.district, rdcf.pointOfEntry);
 
 		// 3a. Found by TravelEntry
-		MockProducer.mockProperty(ConfigType.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_GERMANY);
+		MockProducer.mockProperty(Config.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_GERMANY);
 		assertThat(getPersonFacade().getAllAfter(t1), contains(person1, person2, person3));
 		assertThat(getPersonFacade().getAllAfter(t1, batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person1, person2, person3));
 		assertThat(getPersonFacade().getAllAfter(t3, batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person3));
@@ -1672,7 +1672,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			rdcf.district,
 			rdcf.pointOfEntry);
 
-		MockProducer.mockProperty(ConfigType.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_GERMANY);
+		MockProducer.mockProperty(Config.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_GERMANY);
 
 		//National User with no restrictions can see all the travel entries
 		List<PersonIndexDto> personIndexDtos = getPersonFacade().getIndexList(criteria, 0, 100, null);

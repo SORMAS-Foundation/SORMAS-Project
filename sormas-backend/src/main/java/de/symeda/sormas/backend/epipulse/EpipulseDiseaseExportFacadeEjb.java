@@ -38,9 +38,8 @@ import de.symeda.sormas.api.epipulse.EpipulseDiseaseExportFacade;
 import de.symeda.sormas.api.epipulse.EpipulseDiseaseExportResult;
 import de.symeda.sormas.api.epipulse.EpipulseExportDto;
 import de.symeda.sormas.api.epipulse.EpipulseExportStatus;
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.utils.CSVUtils;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 
 @Stateless(name = "EpipulseDiseaseExportFacade")
 public class EpipulseDiseaseExportFacadeEjb implements EpipulseDiseaseExportFacade {
@@ -57,7 +56,7 @@ public class EpipulseDiseaseExportFacadeEjb implements EpipulseDiseaseExportFaca
 	private EpipulseExportService epipulseExportService;
 
 	@EJB
-	private ConfigFacadeEjbLocal configFacadeEjb;
+	private de.symeda.sormas.api.ConfigFacade configFacadeEjb;
 
 	public void startPertussisExport(String uuid) {
 
@@ -92,9 +91,9 @@ public class EpipulseDiseaseExportFacadeEjb implements EpipulseDiseaseExportFaca
 
 			String serverCountryLocale = configFacadeEjb.getCountryLocale();
 			String serverCountryCode = configFacadeEjb.getCountryCode();
-			String serverCountryName = configFacadeEjb.getAsStringOrThrow(ConfigType.COUNTRY_NAME);
+			String serverCountryName = configFacadeEjb.getAsStringOrThrow(Config.COUNTRY_NAME);
 
-			String generatedFilesPath = configFacadeEjb.getAsStringOrThrow(ConfigType.GENERATED_FILES_PATH);
+			String generatedFilesPath = configFacadeEjb.getAsStringOrThrow(Config.GENERATED_FILES_PATH);
 			exportFileName = diseaseExportService.generateDownloadFileName(exportDto, epipulseExport.getId());
 			exportFilePath = generatedFilesPath + "/" + exportFileName;
 

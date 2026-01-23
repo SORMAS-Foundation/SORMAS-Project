@@ -42,7 +42,7 @@ import de.symeda.sormas.api.importexport.ExportProperty;
 import de.symeda.sormas.api.importexport.format.ExportFormat;
 import de.symeda.sormas.api.importexport.format.FormatterProvider;
 import de.symeda.sormas.api.importexport.format.IExportFormatter;
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 
 public class CsvStreamUtils {
@@ -137,7 +137,7 @@ public class CsvStreamUtils {
 			writer.writeNext(labels, false);
 
 			int startIndex = 0;
-			int stepSize = configFacade.getAsIntegerOrThrow(ConfigType.STEP_SIZE_FOR_CSV_EXPORT);
+			int stepSize = configFacade.getAsIntegerOrThrow(Config.STEP_SIZE_FOR_CSV_EXPORT);
 
 			List<T> exportRows;
 			do {

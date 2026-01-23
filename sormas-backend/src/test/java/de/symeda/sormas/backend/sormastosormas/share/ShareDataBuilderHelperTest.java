@@ -36,7 +36,6 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.MockProducer;
@@ -78,10 +77,14 @@ public class ShareDataBuilderHelperTest extends SormasToSormasTest {
 	@Test
 	public void testDoNotClearIgnoredPropertiesForCase() {
 
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, Boolean.FALSE.toString());
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID, Boolean.FALSE.toString());
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, Boolean.FALSE.toString());
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
+		MockProducer.getProperties()
+			.setProperty(de.symeda.sormas.api.systemconfiguration.Config.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, Boolean.FALSE.toString());
+		MockProducer.getProperties()
+			.setProperty(de.symeda.sormas.api.systemconfiguration.Config.SORMAS2SORMAS_IGNORE_EXTERNAL_ID, Boolean.FALSE.toString());
+		MockProducer.getProperties()
+			.setProperty(de.symeda.sormas.api.systemconfiguration.Config.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, Boolean.FALSE.toString());
+		MockProducer.getProperties()
+			.setProperty(de.symeda.sormas.api.systemconfiguration.Config.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
 
 		PersonDto personDto = creator.createPerson();
 		UserReferenceDto officerReferenceDto = creator.createSurveillanceOfficer(rdcf).toReference();
@@ -127,10 +130,14 @@ public class ShareDataBuilderHelperTest extends SormasToSormasTest {
 	@Test
 	public void testDoNotClearIgnoredPropertiesForContact() {
 
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, Boolean.FALSE.toString());
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID, Boolean.FALSE.toString());
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, Boolean.FALSE.toString());
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
+		MockProducer.getProperties()
+			.setProperty(de.symeda.sormas.api.systemconfiguration.Config.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, Boolean.FALSE.toString());
+		MockProducer.getProperties()
+			.setProperty(de.symeda.sormas.api.systemconfiguration.Config.SORMAS2SORMAS_IGNORE_EXTERNAL_ID, Boolean.FALSE.toString());
+		MockProducer.getProperties()
+			.setProperty(de.symeda.sormas.api.systemconfiguration.Config.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, Boolean.FALSE.toString());
+		MockProducer.getProperties()
+			.setProperty(de.symeda.sormas.api.systemconfiguration.Config.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
 
 		PersonReferenceDto personReferenceDto = creator.createPerson().toReference();
 		UserReferenceDto officerReferenceDto = creator.createSurveillanceOfficer(rdcf).toReference();
@@ -170,10 +177,14 @@ public class ShareDataBuilderHelperTest extends SormasToSormasTest {
 	@Test
 	public void testDoNotClearIgnoredPropertiesForEvent() {
 
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, Boolean.FALSE.toString());
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID, Boolean.FALSE.toString());
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, Boolean.FALSE.toString());
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
+		MockProducer.getProperties()
+			.setProperty(de.symeda.sormas.api.systemconfiguration.Config.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, Boolean.FALSE.toString());
+		MockProducer.getProperties()
+			.setProperty(de.symeda.sormas.api.systemconfiguration.Config.SORMAS2SORMAS_IGNORE_EXTERNAL_ID, Boolean.FALSE.toString());
+		MockProducer.getProperties()
+			.setProperty(de.symeda.sormas.api.systemconfiguration.Config.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, Boolean.FALSE.toString());
+		MockProducer.getProperties()
+			.setProperty(de.symeda.sormas.api.systemconfiguration.Config.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
 
 		UserReferenceDto officerReferenceDto = creator.createSurveillanceOfficer(rdcf).toReference();
 		EventDto eventDto = creator.createEvent(officerReferenceDto);
@@ -210,10 +221,14 @@ public class ShareDataBuilderHelperTest extends SormasToSormasTest {
 	@Test
 	public void testDoNotClearIgnoredPropertiesForPerson() {
 
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, Boolean.FALSE.toString());
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID, Boolean.FALSE.toString());
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, Boolean.FALSE.toString());
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
+		MockProducer.getProperties()
+			.setProperty(de.symeda.sormas.api.systemconfiguration.Config.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, Boolean.FALSE.toString());
+		MockProducer.getProperties()
+			.setProperty(de.symeda.sormas.api.systemconfiguration.Config.SORMAS2SORMAS_IGNORE_EXTERNAL_ID, Boolean.FALSE.toString());
+		MockProducer.getProperties()
+			.setProperty(de.symeda.sormas.api.systemconfiguration.Config.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, Boolean.FALSE.toString());
+		MockProducer.getProperties()
+			.setProperty(de.symeda.sormas.api.systemconfiguration.Config.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
 
 		PersonDto personDto = creator.createPerson();
 		personDto.setAdditionalDetails("additionalDetails");
@@ -261,10 +276,14 @@ public class ShareDataBuilderHelperTest extends SormasToSormasTest {
 	@Test
 	public void testDoNotClearIgnoredPropertiesForImmunization() {
 
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, Boolean.FALSE.toString());
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID, Boolean.FALSE.toString());
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, Boolean.FALSE.toString());
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
+		MockProducer.getProperties()
+			.setProperty(de.symeda.sormas.api.systemconfiguration.Config.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, Boolean.FALSE.toString());
+		MockProducer.getProperties()
+			.setProperty(de.symeda.sormas.api.systemconfiguration.Config.SORMAS2SORMAS_IGNORE_EXTERNAL_ID, Boolean.FALSE.toString());
+		MockProducer.getProperties()
+			.setProperty(de.symeda.sormas.api.systemconfiguration.Config.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, Boolean.FALSE.toString());
+		MockProducer.getProperties()
+			.setProperty(de.symeda.sormas.api.systemconfiguration.Config.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
 
 		PersonReferenceDto personReferenceDto = creator.createPerson().toReference();
 		UserReferenceDto officerReferenceDto = creator.createSurveillanceOfficer(rdcf).toReference();
@@ -320,10 +339,14 @@ public class ShareDataBuilderHelperTest extends SormasToSormasTest {
 	@Test
 	public void testDoNotClearIgnoredPropertiesForPathogenTest() {
 
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, Boolean.FALSE.toString());
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID, Boolean.FALSE.toString());
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, Boolean.FALSE.toString());
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
+		MockProducer.getProperties()
+			.setProperty(de.symeda.sormas.api.systemconfiguration.Config.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, Boolean.FALSE.toString());
+		MockProducer.getProperties()
+			.setProperty(de.symeda.sormas.api.systemconfiguration.Config.SORMAS2SORMAS_IGNORE_EXTERNAL_ID, Boolean.FALSE.toString());
+		MockProducer.getProperties()
+			.setProperty(de.symeda.sormas.api.systemconfiguration.Config.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, Boolean.FALSE.toString());
+		MockProducer.getProperties()
+			.setProperty(de.symeda.sormas.api.systemconfiguration.Config.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
 
 		PersonDto personDto = creator.createPerson();
 		UserReferenceDto officerReferenceDto = creator.createSurveillanceOfficer(rdcf).toReference();

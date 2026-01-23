@@ -76,7 +76,8 @@ import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityCriteria;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.OccupationType;
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
+import de.symeda.sormas.api.systemconfiguration.ExternalClientConfigurationFacade;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -112,8 +113,6 @@ import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryService;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
-import de.symeda.sormas.backend.systemconfiguration.ExternalClientConfigurationEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserRole;
 import de.symeda.sormas.backend.user.UserRoleService;
@@ -144,7 +143,7 @@ public class StartupShutdownService {
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private de.symeda.sormas.api.ConfigFacade configFacade;
 	@EJB
 	private UserService userService;
 	@EJB
@@ -198,7 +197,7 @@ public class StartupShutdownService {
 	@Inject
 	private Event<PasswordResetEvent> passwordResetEvent;
 	@EJB
-	private ExternalClientConfigurationEjb externalClientConfiguration;
+	private ExternalClientConfigurationFacade externalClientConfiguration;
 	@EJB
 	private StartupConfigurationValidationService startupConfigurationValidationService;
 
@@ -264,7 +263,7 @@ public class StartupShutdownService {
 	}
 
 	private void createDefaultInfrastructureData() {
-		if (!configFacade.getAsBoolean(ConfigType.CREATE_DEFAULT_ENTITIES)) {
+		if (!configFacade.getAsBoolean(Config.CREATE_DEFAULT_ENTITIES)) {
 			// return if isCreateDefaultEntities() is false
 			logger.info("Skipping the creation of default infrastructure data");
 			return;
@@ -360,7 +359,7 @@ public class StartupShutdownService {
 				u -> {
 				});
 
-			if (!configFacade.getAsBoolean(ConfigType.CREATE_DEFAULT_ENTITIES)) {
+			if (!configFacade.getAsBoolean(Config.CREATE_DEFAULT_ENTITIES)) {
 				// return if isCreateDefaultEntities() is false
 				logger.info("Skipping the creation of default entities");
 				return;

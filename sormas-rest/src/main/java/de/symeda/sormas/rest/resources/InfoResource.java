@@ -22,7 +22,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.api.utils.Tuple;
@@ -44,7 +44,7 @@ public class InfoResource {
 		int[] appVersion = VersionHelper.extractVersion(appVersionString);
 
 		return FacadeProvider.getConfigFacade()
-			.getAsString(ConfigType.APP_LEGACY_URL)
+			.getAsString(Config.APP_LEGACY_URL)
 			.map(legacyUrl -> new Tuple<>(legacyUrl, VersionHelper.extractVersion(legacyUrl)))
 			.filter(tuple -> VersionHelper.isVersion(tuple.getSecond()))
 			.map(tuple -> {
@@ -61,7 +61,7 @@ public class InfoResource {
 
 				return null;
 			})
-			.orElseGet(() -> FacadeProvider.getConfigFacade().getAsStringOrThrow(ConfigType.APP_URL));
+			.orElseGet(() -> FacadeProvider.getConfigFacade().getAsStringOrThrow(Config.APP_URL));
 	}
 
 	@GET
@@ -79,6 +79,6 @@ public class InfoResource {
 	@GET
 	@Path("/countryname")
 	public String getCountryName() {
-		return FacadeProvider.getConfigFacade().getAsStringOrThrow(ConfigType.COUNTRY_NAME);
+		return FacadeProvider.getConfigFacade().getAsStringOrThrow(Config.COUNTRY_NAME);
 	}
 }

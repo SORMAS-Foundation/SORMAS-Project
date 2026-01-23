@@ -28,7 +28,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -75,7 +75,7 @@ public class ImportReceiver implements Receiver, StartedListener, SucceededListe
 
 		final FileOutputStream fos;
 		try {
-			Path tempDirectory = Paths.get(FacadeProvider.getConfigFacade().getAsStringOrThrow(ConfigType.TEMP_PATH));
+			Path tempDirectory = Paths.get(FacadeProvider.getConfigFacade().getAsStringOrThrow(Config.TEMP_PATH));
 			if (!tempDirectory.toFile().exists() || !tempDirectory.toFile().canWrite()) {
 				throw new FileNotFoundException("Temp directory doesn't exist or cannot be accessed");
 			}
@@ -100,7 +100,7 @@ public class ImportReceiver implements Receiver, StartedListener, SucceededListe
 
 	@Override
 	public void uploadStarted(StartedEvent startedEvent) {
-		long fileSizeLimitMb = FacadeProvider.getConfigFacade().getAsLongOrThrow(ConfigType.IMPORT_FILE_SIZE_LIMIT_MB);
+		long fileSizeLimitMb = FacadeProvider.getConfigFacade().getAsLongOrThrow(Config.IMPORT_FILE_SIZE_LIMIT_MB);
 		if (startedEvent.getContentLength() > fileSizeLimitMb * 1_000_000) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.fileTooBig, fileSizeLimitMb));
 		}

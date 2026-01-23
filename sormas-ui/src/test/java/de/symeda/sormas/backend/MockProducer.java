@@ -46,6 +46,7 @@ import javax.transaction.UserTransaction;
 import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.RequestContextTO;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.backend.central.EtcdCentralClient;
 import de.symeda.sormas.backend.central.EtcdCentralClientProducer;
@@ -55,6 +56,8 @@ import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoverySer
 import de.symeda.sormas.backend.sormastosormas.crypto.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClient;
 import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClientProducer;
+import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjb;
+import de.symeda.sormas.backend.systemconfiguration.ExternalClientConfigurationEjb;
 
 /**
  * Creates mocks for resources needed in bean test / external services.
@@ -71,7 +74,6 @@ public class MockProducer implements InitialContextFactory {
 	private static Topic topic = mock(Topic.class);
 	private static ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
 	private static TimerService timerService = mock(TimerService.class);
-	private static Properties properties = new Properties();
 	private static UserTransaction userTransaction = mock(UserTransaction.class);
 	private static RequestContextTO requestContextTO = new RequestContextTO(false);
 	private static SormasToSormasRestClient s2sRestClient = mock(SormasToSormasRestClient.class);
@@ -81,6 +83,8 @@ public class MockProducer implements InitialContextFactory {
 	private static ManagedScheduledExecutorService managedScheduledExecutorService = mock(ManagedScheduledExecutorService.class);
 
 	private static SormasToSormasDiscoveryService sormasToSormasDiscoveryService = mock(SormasToSormasDiscoveryService.class);
+
+	private static final TestHelperConfigImpl configurationTestHelper = new TestHelperConfigImpl();
 
 	// Receiving e-mail server is mocked: org. jvnet. mock_javamail. mailbox
 	private static Session mailSession;
@@ -130,10 +134,10 @@ public class MockProducer implements InitialContextFactory {
 
 	private static void resetProperties() {
 
-		properties.clear();
-		properties.setProperty(ConfigFacadeEjb.COUNTRY_NAME, "nigeria");
-		properties.setProperty(ConfigFacadeEjb.CSV_SEPARATOR, ";");
-		properties.setProperty(ConfigFacadeEjb.TEMP_FILES_PATH, TMP_PATH);
+		configurationTestHelper.clear();
+		configurationTestHelper.setProperty(Config.COUNTRY_NAME, "nigeria");
+		configurationTestHelper.setProperty(Config.CSV_SEPARATOR, ";");
+		configurationTestHelper.setProperty(Config.TEMP_PATH, TMP_PATH);
 	}
 
 	public static void wireMocks() {
@@ -172,8 +176,9 @@ public class MockProducer implements InitialContextFactory {
 	}
 
 	@Produces
-	public static Properties getProperties() {
-		return properties;
+	@Deprecated
+	public static TestConfigFacade getProperties() {
+		return configurationTestHelper;
 	}
 
 	@Produces
@@ -197,7 +202,7 @@ public class MockProducer implements InitialContextFactory {
 		public SormasToSormasRestClient sormasToSormasClient(
 			SormasToSormasDiscoveryService sormasToSormasDiscoveryService,
 			SormasToSormasEncryptionFacadeEjbLocal sormasToSormasEncryptionEjb,
-			SystemConfigurationAccessorEjb configFacadeEjb) {
+			ConfigFacadeEjb configFacadeEjb) {
 			return s2sRestClient;
 		}
 	}
@@ -211,7 +216,7 @@ public class MockProducer implements InitialContextFactory {
 
 		@Override
 		@Produces
-		public EtcdCentralClient etcdCentralClient(SystemConfigurationAccessorEjb configFacadeEjb) {
+		public EtcdCentralClient etcdCentralClient(ConfigFacadeEjb configFacadeEjb) {
 			return etcdCentralClient;
 		}
 	}
@@ -234,7 +239,7 @@ public class MockProducer implements InitialContextFactory {
 		@Produces
 		public SormasToSormasDiscoveryService sormasToSormasDiscoveryService(
 			SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal sormasToSormasFacadeEjb,
-			SystemConfigurationAccessorEjb configFacadeEjb,
+			ExternalClientConfigurationEjb configFacadeEjb,
 			EtcdCentralClient centralClient) {
 			return sormasToSormasDiscoveryService;
 		}
@@ -244,8 +249,8 @@ public class MockProducer implements InitialContextFactory {
 		return sormasToSormasDiscoveryService;
 	}
 
-	public static void mockProperty(String property, String value) {
-		properties.setProperty(property, value);
+	public static void mockProperty(Config property, String value) {
+		configurationTestHelper.setProperty(property, value);
 	}
 
 	/**

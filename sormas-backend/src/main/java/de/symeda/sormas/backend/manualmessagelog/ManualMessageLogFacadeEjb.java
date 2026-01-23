@@ -36,7 +36,6 @@ import de.symeda.sormas.api.manualmessagelog.ManualMessageLogIndexDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.AnnotationBasedFieldAccessChecker.SpecialAccessCheck;
 import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -57,7 +56,7 @@ public class ManualMessageLogFacadeEjb implements ManualMessageLogFacade {
 	@EJB
 	private SpecialCaseAccessService specialCaseAccessService;
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private de.symeda.sormas.api.ConfigFacade configFacade;
 
 	@RightsAllowed({
 		UserRight._SEND_MANUAL_EXTERNAL_MESSAGES,

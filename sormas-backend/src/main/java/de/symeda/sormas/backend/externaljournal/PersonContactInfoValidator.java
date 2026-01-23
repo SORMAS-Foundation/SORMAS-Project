@@ -49,7 +49,7 @@ import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryPersonDto;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryQueryResponse;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.backend.systemconfiguration.ExternalClientConfigurationEjb;
+import de.symeda.sormas.api.systemconfiguration.ExternalClientConfigurationFacade;
 
 @Stateless
 @LocalBean
@@ -58,7 +58,7 @@ public class PersonContactInfoValidator {
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
-	private ExternalClientConfigurationEjb configFacade;
+	private ExternalClientConfigurationFacade configFacade;
 	@EJB
 	private PatientDiaryClient patientDiaryClient;
 

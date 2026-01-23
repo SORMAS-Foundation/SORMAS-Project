@@ -107,7 +107,7 @@ import de.symeda.sormas.api.specialcaseaccess.SpecialCaseAccessFacade;
 import de.symeda.sormas.api.survey.SurveyFacade;
 import de.symeda.sormas.api.survey.SurveyTokenFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.systemconfiguration.ExternalClientConfigurationFacade;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationCategoryFacade;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
@@ -477,7 +477,7 @@ public class FacadeProvider {
 
 	public static ExternalMessageAdapterFacade getExternalLabResultsFacade() throws NamingException {
 		return (ExternalMessageAdapterFacade) get().ic
-			.lookup(FacadeProvider.getConfigFacade().getAsStringOrThrow(ConfigType.INTERFACE_EXTERNAL_MESSAGE_ADAPTER_JNDI_NAME));
+			.lookup(FacadeProvider.getConfigFacade().getAsStringOrThrow(Config.INTERFACE_EXTERNAL_MESSAGE_ADAPTER_JNDI_NAME));
 	}
 
 	public static SurveillanceReportFacade getSurveillanceReportFacade() {

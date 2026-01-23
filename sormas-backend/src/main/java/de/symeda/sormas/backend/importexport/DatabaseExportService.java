@@ -102,7 +102,6 @@ import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccess;
 import de.symeda.sormas.backend.symptoms.Symptoms;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategory;
 import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationValue;
 import de.symeda.sormas.backend.task.Task;
@@ -224,7 +223,7 @@ public class DatabaseExportService {
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private de.symeda.sormas.api.ConfigFacade configFacade;
 
 	public void exportAsCsvFiles(ZipOutputStream zos, List<DatabaseTable> databaseTables) throws IOException {
 

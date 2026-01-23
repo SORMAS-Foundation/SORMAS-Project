@@ -50,6 +50,7 @@ import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasShareRequestDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
+import de.symeda.sormas.api.systemconfiguration.ExternalClientConfigurationFacade;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.backend.caze.Case;
@@ -74,7 +75,6 @@ import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfoService;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
-import de.symeda.sormas.backend.systemconfiguration.ExternalClientConfigurationEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.RightsAllowed;
 
@@ -108,8 +108,8 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	private SormasToSormasEventFacadeEjbLocal sormasToSormasEventFacade;
 	@EJB
 	private SormasToSormasEncryptionFacadeEjbLocal encryptionService;
-	@Inject
-	private ExternalClientConfigurationEjb configFacadeEjb;
+	@EJB
+	private ExternalClientConfigurationFacade configFacadeEjb;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB

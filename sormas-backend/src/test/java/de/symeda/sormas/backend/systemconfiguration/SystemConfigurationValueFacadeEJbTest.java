@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -42,7 +42,7 @@ class SystemConfigurationValueFacadeEJbTest extends AbstractBeanTest {
     @Test
     void testGetSystemConfigurationValue() {
 
-		final SystemConfigurationValue configValue = createSystemConfigurationValue(ConfigType.CENTRAL_ETCD_CA_PATH);
+		final SystemConfigurationValue configValue = createSystemConfigurationValue(Config.CENTRAL_ETCD_CA_PATH);
         final SystemConfigurationValueDto configValueDto = getSystemConfigurationValueFacade().getByUuid(configValue.getUuid());
 
         assertThat(configValueDto.getValue(), is(configValue.getValue()));
@@ -58,7 +58,7 @@ class SystemConfigurationValueFacadeEJbTest extends AbstractBeanTest {
     @Test
     void testUpdateSystemConfigurationValue() {
 
-		final SystemConfigurationValue configValue = createSystemConfigurationValue(ConfigType.SORMAS2SORMAS_OIDC_CLIENT_ID);
+		final SystemConfigurationValue configValue = createSystemConfigurationValue(Config.SORMAS2SORMAS_OIDC_CLIENT_ID);
 
         SystemConfigurationValueDto configValueDto = getSystemConfigurationValueFacade().getByUuid(configValue.getUuid());
         assertThat(configValueDto.getValue(), is(configValue.getValue()));
@@ -92,13 +92,13 @@ class SystemConfigurationValueFacadeEJbTest extends AbstractBeanTest {
 
         final String ipPattern = "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
 
-		final SystemConfigurationValue configValue = createSystemConfigurationValue(ConfigType.CENTRAL_ETCD_CA_PATH, "192.168.1.1", ipPattern);
+		final SystemConfigurationValue configValue = createSystemConfigurationValue(Config.CENTRAL_ETCD_CA_PATH, "192.168.1.1", ipPattern);
         final SystemConfigurationValueDto configValueDto = getSystemConfigurationValueFacade().getByUuid(configValue.getUuid());
 
         // Validate against IP pattern
         final SystemConfigurationValueDto updatedConfigValue = getSystemConfigurationValueFacade().save(configValueDto);
 
-		assertThat(updatedConfigValue.getKey(), is(ConfigType.CENTRAL_ETCD_CA_PATH));
+		assertThat(updatedConfigValue.getKey(), is(Config.CENTRAL_ETCD_CA_PATH));
         assertThat(updatedConfigValue.getValue(), is("192.168.1.1"));
     }
 
@@ -110,7 +110,7 @@ class SystemConfigurationValueFacadeEJbTest extends AbstractBeanTest {
 
         final String ipPattern = "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
 
-		final SystemConfigurationValue configValue = createSystemConfigurationValue(ConfigType.CENTRAL_ETCD_CA_PATH, "invalid-ip", ipPattern);
+		final SystemConfigurationValue configValue = createSystemConfigurationValue(Config.CENTRAL_ETCD_CA_PATH, "invalid-ip", ipPattern);
         final SystemConfigurationValueDto configValueDto = getSystemConfigurationValueFacade().getByUuid(configValue.getUuid());
 
         // Validate against IP pattern and expect exception
@@ -125,13 +125,13 @@ class SystemConfigurationValueFacadeEJbTest extends AbstractBeanTest {
 
         final String unixDirPattern = "^(/[^/ ]*)+/$";
 
-		final SystemConfigurationValue configValue = createSystemConfigurationValue(ConfigType.TEMP_PATH, "/home/user/", unixDirPattern);
+		final SystemConfigurationValue configValue = createSystemConfigurationValue(Config.TEMP_PATH, "/home/user/", unixDirPattern);
         final SystemConfigurationValueDto configValueDto = getSystemConfigurationValueFacade().getByUuid(configValue.getUuid());
 
         // Validate against Unix directory path pattern
         final SystemConfigurationValueDto updatedConfigValue = getSystemConfigurationValueFacade().save(configValueDto);
 
-		assertThat(updatedConfigValue.getKey(), is(ConfigType.TEMP_PATH));
+		assertThat(updatedConfigValue.getKey(), is(Config.TEMP_PATH));
         assertThat(updatedConfigValue.getValue(), is("/home/user/"));
     }
 
@@ -143,7 +143,7 @@ class SystemConfigurationValueFacadeEJbTest extends AbstractBeanTest {
 
         final String unixDirPattern = "^(/[^/ ]*)+/$";
 
-		final SystemConfigurationValue configValue = createSystemConfigurationValue(ConfigType.TEMP_PATH, "invalid-path", unixDirPattern);
+		final SystemConfigurationValue configValue = createSystemConfigurationValue(Config.TEMP_PATH, "invalid-path", unixDirPattern);
         final SystemConfigurationValueDto configValueDto = getSystemConfigurationValueFacade().getByUuid(configValue.getUuid());
 
         // Validate against Unix directory path pattern and expect exception
@@ -158,13 +158,13 @@ class SystemConfigurationValueFacadeEJbTest extends AbstractBeanTest {
 
         final String digitsOnlyPattern = "^\\d+$";
 
-		final SystemConfigurationValue configValue = createSystemConfigurationValue(ConfigType.MINIMUM_ADULT_AGE, "123456", digitsOnlyPattern);
+		final SystemConfigurationValue configValue = createSystemConfigurationValue(Config.MINIMUM_ADULT_AGE, "123456", digitsOnlyPattern);
         final SystemConfigurationValueDto configValueDto = getSystemConfigurationValueFacade().getByUuid(configValue.getUuid());
 
         // Validate against digits-only pattern
         final SystemConfigurationValueDto updatedConfigValue = getSystemConfigurationValueFacade().save(configValueDto);
 
-		assertThat(updatedConfigValue.getKey(), is(ConfigType.MINIMUM_ADULT_AGE));
+		assertThat(updatedConfigValue.getKey(), is(Config.MINIMUM_ADULT_AGE));
         assertThat(updatedConfigValue.getValue(), is("123456"));
     }
 
@@ -176,7 +176,7 @@ class SystemConfigurationValueFacadeEJbTest extends AbstractBeanTest {
 
         final String digitsOnlyPattern = "^\\d+$";
 
-		final SystemConfigurationValue configValue = createSystemConfigurationValue(ConfigType.MINIMUM_ADULT_AGE, "invalid123", digitsOnlyPattern);
+		final SystemConfigurationValue configValue = createSystemConfigurationValue(Config.MINIMUM_ADULT_AGE, "invalid123", digitsOnlyPattern);
         final SystemConfigurationValueDto configValueDto = getSystemConfigurationValueFacade().getByUuid(configValue.getUuid());
 
         // Validate against digits-only pattern and expect exception
@@ -192,13 +192,13 @@ class SystemConfigurationValueFacadeEJbTest extends AbstractBeanTest {
         final String pipeSeparatedWordsPattern = "^([a-zA-Z]+\\|)*[a-zA-Z]+$";
 
         final SystemConfigurationValue configValue =
-			createSystemConfigurationValue(ConfigType.AUDIT_LOGGER_CONFIG, "word|word|word", pipeSeparatedWordsPattern);
+			createSystemConfigurationValue(Config.AUDIT_LOGGER_CONFIG, "word|word|word", pipeSeparatedWordsPattern);
         final SystemConfigurationValueDto configValueDto = getSystemConfigurationValueFacade().getByUuid(configValue.getUuid());
 
         // Validate against pipe-separated list of words pattern
         final SystemConfigurationValueDto updatedConfigValue = getSystemConfigurationValueFacade().save(configValueDto);
 
-		assertThat(updatedConfigValue.getKey(), is(ConfigType.AUDIT_LOGGER_CONFIG));
+		assertThat(updatedConfigValue.getKey(), is(Config.AUDIT_LOGGER_CONFIG));
         assertThat(updatedConfigValue.getValue(), is("word|word|word"));
     }
 
@@ -211,7 +211,7 @@ class SystemConfigurationValueFacadeEJbTest extends AbstractBeanTest {
         final String pipeSeparatedWordsPattern = "^([a-zA-Z]+\\|)*[a-zA-Z]+$";
 
         final SystemConfigurationValue configValue =
-			createSystemConfigurationValue(ConfigType.AUDIT_LOGGER_CONFIG, "234|678|123", pipeSeparatedWordsPattern);
+			createSystemConfigurationValue(Config.AUDIT_LOGGER_CONFIG, "234|678|123", pipeSeparatedWordsPattern);
         final SystemConfigurationValueDto configValueDto = getSystemConfigurationValueFacade().getByUuid(configValue.getUuid());
 
         // Validate against pipe-separated list of words pattern and expect exception
@@ -235,13 +235,13 @@ class SystemConfigurationValueFacadeEJbTest extends AbstractBeanTest {
     })
     void testValidateSystemConfigurationValuePattern(String pattern, String value) {
 
-		final SystemConfigurationValue configValue = createSystemConfigurationValue(ConfigType.ALLOWED_FILE_EXTENSIONS, value, pattern);
+		final SystemConfigurationValue configValue = createSystemConfigurationValue(Config.ALLOWED_FILE_EXTENSIONS, value, pattern);
         final SystemConfigurationValueDto configValueDto = getSystemConfigurationValueFacade().getByUuid(configValue.getUuid());
 
         // Validate against IP pattern
         final SystemConfigurationValueDto updatedConfigValue = getSystemConfigurationValueFacade().save(configValueDto);
 
-		assertThat(updatedConfigValue.getKey(), is(ConfigType.ALLOWED_FILE_EXTENSIONS));
+		assertThat(updatedConfigValue.getKey(), is(Config.ALLOWED_FILE_EXTENSIONS));
         assertThat(updatedConfigValue.getValue(), is(value));
     }
 
@@ -262,7 +262,7 @@ class SystemConfigurationValueFacadeEJbTest extends AbstractBeanTest {
     })
     void testValidateSystemConfigurationValuePatternFail(String pattern, String value) {
 
-		final SystemConfigurationValue configValue = createSystemConfigurationValue(ConfigType.ALLOWED_FILE_EXTENSIONS, value, pattern);
+		final SystemConfigurationValue configValue = createSystemConfigurationValue(Config.ALLOWED_FILE_EXTENSIONS, value, pattern);
         final SystemConfigurationValueDto configValueDto = getSystemConfigurationValueFacade().getByUuid(configValue.getUuid());
 
         // Validate against pattern and expect exception
@@ -275,14 +275,14 @@ class SystemConfigurationValueFacadeEJbTest extends AbstractBeanTest {
     @Test
     void testValidateOptionalSystemConfigurationValue() {
 
-		final SystemConfigurationValue configValue = createSystemConfigurationValue(ConfigType.AUDIT_SOURCE_SITE, null, null);
+		final SystemConfigurationValue configValue = createSystemConfigurationValue(Config.AUDIT_SOURCE_SITE, null, null);
         final SystemConfigurationValueDto configValueDto = getSystemConfigurationValueFacade().getByUuid(configValue.getUuid());
         configValueDto.setOptional(true);
 
         // Validate optional value
         final SystemConfigurationValueDto updatedConfigValue = getSystemConfigurationValueFacade().save(configValueDto);
 
-		assertThat(updatedConfigValue.getKey(), is(ConfigType.AUDIT_SOURCE_SITE));
+		assertThat(updatedConfigValue.getKey(), is(Config.AUDIT_SOURCE_SITE));
         assertThat(updatedConfigValue.getValue(), is((String) null));
         assertThat(updatedConfigValue.getOptional(), is(Boolean.TRUE));
     }
@@ -294,7 +294,7 @@ class SystemConfigurationValueFacadeEJbTest extends AbstractBeanTest {
      *            the key of the configuration value
      * @return the created SystemConfigurationValue
      */
-	private SystemConfigurationValue createSystemConfigurationValue(final ConfigType key) {
+	private SystemConfigurationValue createSystemConfigurationValue(final Config key) {
 
         final SystemConfigurationValue configValue = new SystemConfigurationValue();
         configValue.setUuid(DataHelper.createUuid());
@@ -318,7 +318,7 @@ class SystemConfigurationValueFacadeEJbTest extends AbstractBeanTest {
      *            the pattern of the configuration value
      * @return the created SystemConfigurationValue
      */
-	private SystemConfigurationValue createSystemConfigurationValue(final ConfigType key, final String value, final String pattern) {
+	private SystemConfigurationValue createSystemConfigurationValue(final Config key, final String value, final String pattern) {
 
         final SystemConfigurationValue configValue = new SystemConfigurationValue();
         configValue.setUuid(DataHelper.createUuid());

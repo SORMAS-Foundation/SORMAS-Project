@@ -34,7 +34,7 @@ import de.symeda.sormas.api.epipulse.EpipulseExportStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.UiUtil;
@@ -220,7 +220,7 @@ public class EpiPulseExportController {
 			return;
 		}
 
-		String generatedFilesPath = FacadeProvider.getConfigFacade().getAsStringOrThrow(ConfigType.GENERATED_FILES_PATH);
+		String generatedFilesPath = FacadeProvider.getConfigFacade().getAsStringOrThrow(Config.GENERATED_FILES_PATH);
 		String exportFilePath = generatedFilesPath + "/" + exportIndexDto.getExportFileName();
 
 		File file = new File(exportFilePath);

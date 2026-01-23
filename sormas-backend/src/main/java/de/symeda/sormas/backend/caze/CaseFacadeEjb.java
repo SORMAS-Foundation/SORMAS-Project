@@ -79,8 +79,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import de.symeda.sormas.api.CaseClassificationCalculationMode;
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
@@ -187,7 +189,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasRuntimeException;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskHelper;
@@ -298,6 +300,7 @@ import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryService;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
+import de.symeda.sormas.backend.json.ObjectMapperProvider;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.manualmessagelog.ManualMessageLogService;
 import de.symeda.sormas.backend.outbreak.Outbreak;
@@ -331,7 +334,6 @@ import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.therapy.Prescription;
@@ -373,6 +375,8 @@ import de.symeda.sormas.backend.visit.VisitService;
 @RightsAllowed(UserRight._CASE_VIEW)
 public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, CaseIndexDto, CaseReferenceDto, CaseService, CaseCriteria>
 	implements CaseFacade {
+
+	private static final Class<CaseClassificationCalculationMode> CLASSIFICATION_CALCULATION_MODE_CLASS = CaseClassificationCalculationMode.class;
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -437,7 +441,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@EJB
 	private PersonFacadeEjbLocal personFacade;
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private de.symeda.sormas.api.ConfigFacade configFacade;
 	@EJB
 	private TherapyFacadeEjbLocal therapyFacade;
 	@EJB
@@ -1077,7 +1081,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				final boolean inJurisdiction = exportDto.getInJurisdiction();
 
 				if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseExportDto.COUNTRY)) {
-					exportDto.setCountry(configFacade.getAsStringOrThrow(ConfigType.COUNTRY_EPID_PREFIX));
+					exportDto.setCountry(configFacade.getAsStringOrThrow(Config.COUNTRY_EPID_PREFIX));
 				}
 				if (ExportHelper.shouldExportFields(exportConfiguration, CaseDataDto.SYMPTOMS)) {
 					Optional.ofNullable(symptoms.get(exportDto.getSymptomsId()))
@@ -1450,12 +1454,11 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		CaseCriteria criteria,
 		@Min(1) Integer limit,
 		boolean showDuplicatesWithDifferentRegion) {
-		List<CaseMergeIndexDto[]> cases =
-			service.getCasesForDuplicateMerging(
-				criteria,
-				limit,
-				showDuplicatesWithDifferentRegion,
-				configFacade.getAsDoubleOrThrow(ConfigType.NAME_SIMILARITY_THRESHOLD));
+		List<CaseMergeIndexDto[]> cases = service.getCasesForDuplicateMerging(
+			criteria,
+			limit,
+			showDuplicatesWithDifferentRegion,
+			configFacade.getAsDoubleOrThrow(Config.NAME_SIMILARITY_THRESHOLD));
 
 		// pseudonymize cases
 		List<CaseMergeIndexDto> flatCaseList = cases.stream().flatMap(Stream::of).collect(Collectors.toList());
@@ -2078,7 +2081,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@PermitAll
 	public void onCaseSampleChanged(Case associatedCase) {
 		// Update case classification if the feature is enabled
-		if (configFacade.getCaseClassificationCalculationMode(associatedCase.getDisease()).isAutomaticEnabled()
+		if (getCaseClassificationCalculationMode(associatedCase.getDisease()).isAutomaticEnabled()
 			& associatedCase.getDisease() != Disease.RESPIRATORY_SYNCYTIAL_VIRUS) {
 			if (associatedCase.getCaseClassification() != CaseClassification.NO_CASE) {
 				Long pathogenTestsCount = pathogenTestService.countByCase(associatedCase);
@@ -2215,12 +2218,13 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			if (contactKnown == YesNoUnknown.YES) {
 				// Check if at least one source case is confirmed
 				// We only check for contacts that have this case as resulting case
-				final boolean hasConfirmedSourceCase = contactService.getAllByResultingCase(caseService.getByUuid(existingCase.getUuid())).stream()
-						.map(Contact::getCaze)
-						.filter(Objects::nonNull)
-						.anyMatch(src ->
-								src.getDisease() == newCase.getDisease()
-										&& CaseClassification.getConfirmedClassifications().contains(src.getCaseClassification()));
+				final boolean hasConfirmedSourceCase = contactService.getAllByResultingCase(caseService.getByUuid(existingCase.getUuid()))
+					.stream()
+					.map(Contact::getCaze)
+					.filter(Objects::nonNull)
+					.anyMatch(
+						src -> src.getDisease() == newCase.getDisease()
+							&& CaseClassification.getConfirmedClassifications().contains(src.getCaseClassification()));
 				newCase.setEpidemiologicalConfirmation(hasConfirmedSourceCase ? YesNoUnknown.YES : YesNoUnknown.NO);
 			} else if (contactKnown == YesNoUnknown.NO) {
 				newCase.setEpidemiologicalConfirmation(YesNoUnknown.NO);
@@ -2302,7 +2306,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		// Update case classification if the feature is enabled
 		CaseClassification classification = null;
 		boolean setClassificationInfo = true;
-		if (configFacade.getCaseClassificationCalculationMode(savedCase.getDisease()).isAutomaticEnabled()
+		if (getCaseClassificationCalculationMode(savedCase.getDisease()).isAutomaticEnabled()
 			& savedCase.getDisease() != Disease.RESPIRATORY_SYNCYTIAL_VIRUS) {
 			if (savedCase.getCaseClassification() != CaseClassification.NO_CASE
 				|| configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
@@ -4545,6 +4549,55 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@Override
 	public boolean hasCurrentUserSpecialAccess(CaseReferenceDto caze) {
 		return specialCaseAccessService.hasCurrentUserSpecialAccess(caze);
+	}
+
+	@Override
+	public CaseClassificationCalculationMode getCaseClassificationCalculationMode(Disease disease) {
+		CaseClassificationCalculationMode defaultCaseClassification = getDefaultCaseClassificationCalculationMode();
+
+		Map<String, CaseClassificationCalculationMode> caseClassificationExceptionsDictionary = getDiseaseClassificationCalculationModeDictionary();
+
+		return caseClassificationExceptionsDictionary.getOrDefault(disease.getName(), defaultCaseClassification);
+	}
+
+	private Map<String, CaseClassificationCalculationMode> getDiseaseClassificationCalculationModeDictionary() {
+		Config caseClassificationExceptions = Config.CASE_CLASSIFICATION_CALCULATION_MODE_OVERRIDE;
+
+		try {
+			String caseClassificationCalulcationModeExceptions = configFacade.getAsStringOrThrow(caseClassificationExceptions);
+			logger.debug("caseClassificationCalulcationModeExceptions: [{}]", caseClassificationCalulcationModeExceptions);
+			return ObjectMapperProvider.getInstance()
+				.readerForMapOf(CLASSIFICATION_CALCULATION_MODE_CLASS)
+				.readValue(caseClassificationCalulcationModeExceptions);
+		} catch (JsonProcessingException e) {
+			throw new IllegalStateException(
+				String.format(
+					"The property [%s] is not set properly, it must be a valid JSON dictionary: {\"CHOLERA\", \"AUTOMATIC\"}",
+					caseClassificationExceptions),
+				e);
+		}
+	}
+
+	@Override
+	public boolean isAnyCaseClassificationCalculationEnabled() {
+		CaseClassificationCalculationMode defaultCaseClassificationCalculationMode = getDefaultCaseClassificationCalculationMode();
+
+		Map<String, CaseClassificationCalculationMode> diseaseClassificationCalculationModeDictionary =
+			getDiseaseClassificationCalculationModeDictionary();
+
+		return defaultCaseClassificationCalculationMode != CaseClassificationCalculationMode.DISABLED
+			|| diseaseClassificationCalculationModeDictionary.values()
+				.stream()
+				.anyMatch(actual -> actual != CaseClassificationCalculationMode.DISABLED);
+	}
+
+	private CaseClassificationCalculationMode getDefaultCaseClassificationCalculationMode() {
+		CaseClassificationCalculationMode defaultCaseClassification =
+			CaseClassificationCalculationMode.valueOf(configFacade.getAsStringOrThrow(Config.DEFAULT_CASE_CLASSIFICATION_CALCULATION_MODE));
+
+		logger.debug("defaultCaseClassification: [{}]", defaultCaseClassification);
+
+		return defaultCaseClassification;
 	}
 
 	@LocalBean

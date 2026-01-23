@@ -33,7 +33,7 @@ import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SpecimenCondition;
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -69,7 +69,7 @@ public class TuberculosisAutomaticLabMessageProcessorTest extends AbstractBeanTe
     @Test
     public void testNegativeLatentTuberculosisNoExistingCase() throws ExecutionException, InterruptedException {
 
-		MockProducer.getProperties().setProperty(ConfigType.COUNTRY_LOCALE, "lu");
+		MockProducer.getProperties().setProperty(Config.COUNTRY_LOCALE, "lu");
 
         final ExternalMessageDto externalMessage = createLatentTuberculosisIgraNegativeExternalMessage(e -> {
             e.getSampleReports().get(0).setSampleDateTime(DateHelper.subtractDays(new Date(), 10));
@@ -95,7 +95,7 @@ public class TuberculosisAutomaticLabMessageProcessorTest extends AbstractBeanTe
     @Test
     public void testPositiveLatentTuberculosisNoExistingCase() throws ExecutionException, InterruptedException {
 
-		MockProducer.getProperties().setProperty(ConfigType.COUNTRY_LOCALE, "lu");
+		MockProducer.getProperties().setProperty(Config.COUNTRY_LOCALE, "lu");
 
         final ExternalMessageDto externalMessage = createLatentTuberculosisIgraPositiveExternalMessage(e -> {
             e.getSampleReports().get(0).setSampleDateTime(DateHelper.subtractDays(new Date(), 10));
@@ -133,7 +133,7 @@ public class TuberculosisAutomaticLabMessageProcessorTest extends AbstractBeanTe
     @Test
     public void testNegativeLatentTuberculosisExistingNegativeCase() throws ExecutionException, InterruptedException {
 
-		MockProducer.getProperties().setProperty(ConfigType.COUNTRY_LOCALE, "lu");
+		MockProducer.getProperties().setProperty(Config.COUNTRY_LOCALE, "lu");
 
         final ExternalMessageDto externalMessage = createLatentTuberculosisIgraNegativeExternalMessage(e -> {
             e.getSampleReports().get(0).setSampleDateTime(DateHelper.subtractDays(new Date(), 10));
@@ -204,7 +204,7 @@ public class TuberculosisAutomaticLabMessageProcessorTest extends AbstractBeanTe
     @Test
     public void testPositiveLatentTuberculosisExistingPositiveCase() throws ExecutionException, InterruptedException {
 
-		MockProducer.getProperties().setProperty(ConfigType.COUNTRY_LOCALE, "lu");
+		MockProducer.getProperties().setProperty(Config.COUNTRY_LOCALE, "lu");
 
         final ExternalMessageDto externalMessage = createLatentTuberculosisIgraPositiveExternalMessage(e -> {
             e.getSampleReports().get(0).setSampleDateTime(DateHelper.subtractDays(new Date(), 10));
@@ -277,7 +277,7 @@ public class TuberculosisAutomaticLabMessageProcessorTest extends AbstractBeanTe
     @Test
     public void testPositiveLatentTuberculosisExistingNegativeCase() throws ExecutionException, InterruptedException {
 
-		MockProducer.getProperties().setProperty(ConfigType.COUNTRY_LOCALE, "lu");
+		MockProducer.getProperties().setProperty(Config.COUNTRY_LOCALE, "lu");
 
         final ExternalMessageDto externalMessage = createLatentTuberculosisIgraPositiveExternalMessage(e -> {
             e.getSampleReports().get(0).setSampleDateTime(DateHelper.subtractDays(new Date(), 10));
@@ -332,7 +332,7 @@ public class TuberculosisAutomaticLabMessageProcessorTest extends AbstractBeanTe
     @Test
     public void testPositiveLatentTuberculosisExistingTuberculosisCase() throws ExecutionException, InterruptedException {
 
-		MockProducer.getProperties().setProperty(ConfigType.COUNTRY_LOCALE, "lu");
+		MockProducer.getProperties().setProperty(Config.COUNTRY_LOCALE, "lu");
 
         final ExternalMessageDto externalMessage = createLatentTuberculosisIgraPositiveExternalMessage(e -> {
             e.getSampleReports().get(0).setSampleDateTime(DateHelper.subtractDays(new Date(), 10));

@@ -51,7 +51,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -72,7 +72,7 @@ public class LoginScreen extends CssLayout {
 
 	public LoginScreen(LoginListener loginListener) {
 		this.loginListener = loginListener;
-		this.isCustomBranding = FacadeProvider.getConfigFacade().getAsBoolean(ConfigType.CUSTOM_BRANDING);
+		this.isCustomBranding = FacadeProvider.getConfigFacade().getAsBoolean(Config.CUSTOM_BRANDING);
 		buildUI();
 	}
 
@@ -80,7 +80,7 @@ public class LoginScreen extends CssLayout {
 		addStyleName(CssStyles.LOGINSCREEN_BACK);
 
 		String customLoginBackgroundPath =
-			FacadeProvider.getConfigFacade().getAsStringOrThrow(ConfigType.CUSTOM_BRANDING_LOGINBACKGROUND_PATH);
+			FacadeProvider.getConfigFacade().getAsStringOrThrow(Config.CUSTOM_BRANDING_LOGINBACKGROUND_PATH);
 		if (isCustomBranding && customLoginBackgroundPath != null) {
 			Page.Styles styles = Page.getCurrent().getStyles();
 			styles.add(
@@ -94,7 +94,7 @@ public class LoginScreen extends CssLayout {
 		layout.addComponent(buildLoginLayout());
 
 		// custom html layout
-		if (!isCustomBranding || FacadeProvider.getConfigFacade().getAsBoolean(ConfigType.CUSTOM_BRANDING_USELOGINSIDEBAR)) {
+		if (!isCustomBranding || FacadeProvider.getConfigFacade().getAsBoolean(Config.CUSTOM_BRANDING_USELOGINSIDEBAR)) {
 			Layout loginSidebarLayout = buildLoginSidebarLayout();
 			layout.addComponent(loginSidebarLayout);
 		}
@@ -102,7 +102,7 @@ public class LoginScreen extends CssLayout {
 
 	private Component buildLoginLayout() {
 
-		Path customHtmlDirectory = Paths.get(FacadeProvider.getConfigFacade().getAsStringOrThrow(ConfigType.CUSTOM_PATH));
+		Path customHtmlDirectory = Paths.get(FacadeProvider.getConfigFacade().getAsStringOrThrow(Config.CUSTOM_FILES_PATH));
 		Path filePath = customHtmlDirectory.resolve("loginmain.html");
 
 		String html;
@@ -146,8 +146,8 @@ public class LoginScreen extends CssLayout {
 
 		Image image;
 		if (isCustomBranding
-			&& StringUtils.isNotBlank(FacadeProvider.getConfigFacade().getAsStringOrThrow(ConfigType.CUSTOM_BRANDING_LOGO_PATH))) {
-			Path logoPath = Paths.get(FacadeProvider.getConfigFacade().getAsStringOrThrow(ConfigType.CUSTOM_BRANDING_LOGO_PATH));
+			&& StringUtils.isNotBlank(FacadeProvider.getConfigFacade().getAsStringOrThrow(Config.CUSTOM_BRANDING_LOGO_PATH))) {
+			Path logoPath = Paths.get(FacadeProvider.getConfigFacade().getAsStringOrThrow(Config.CUSTOM_BRANDING_LOGO_PATH));
 			image = new Image(null, new FileResource(logoPath.toFile()));
 			image.setWidth(50, Unit.PIXELS);
 		} else {
@@ -231,7 +231,7 @@ public class LoginScreen extends CssLayout {
 		htmlLabel.setContentMode(ContentMode.HTML);
 		htmlLabel.setWidth(100, Unit.PERCENTAGE);
 
-		Path customHtmlDirectory = Paths.get(FacadeProvider.getConfigFacade().getAsStringOrThrow(ConfigType.CUSTOM_PATH));
+		Path customHtmlDirectory = Paths.get(FacadeProvider.getConfigFacade().getAsStringOrThrow(Config.CUSTOM_FILES_PATH));
 		Path filePath = customHtmlDirectory.resolve("logindetails.html");
 
 		try {
@@ -255,7 +255,7 @@ public class LoginScreen extends CssLayout {
 		sidebarHeaderLayout.setSizeUndefined();
 		sidebarHeaderLayout.setSpacing(false);
 
-		Path customHtmlDirectory = Paths.get(FacadeProvider.getConfigFacade().getAsStringOrThrow(ConfigType.CUSTOM_PATH));
+		Path customHtmlDirectory = Paths.get(FacadeProvider.getConfigFacade().getAsStringOrThrow(Config.CUSTOM_FILES_PATH));
 
 		if (isCustomBranding) {
 			Path sidebarHeaderPath = customHtmlDirectory.resolve("loginsidebar-header.html");

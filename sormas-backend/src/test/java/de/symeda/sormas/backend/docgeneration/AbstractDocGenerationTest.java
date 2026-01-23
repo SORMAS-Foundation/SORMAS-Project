@@ -8,7 +8,7 @@ import org.junit.jupiter.api.AfterEach;
 
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateReferenceDto;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
@@ -24,15 +24,15 @@ public abstract class AbstractDocGenerationTest extends AbstractBeanTest {
 
 	protected void resetCustomPath() throws URISyntaxException {
 		MockProducer.getProperties()
-			.setProperty(ConfigType.CUSTOM_FILES_PATH, Paths.get(getClass().getResource("/").toURI()).toAbsolutePath().toString());
+			.setProperty(Config.CUSTOM_FILES_PATH, Paths.get(getClass().getResource("/").toURI()).toAbsolutePath().toString());
 	}
 
 	protected void setNullReplacement(String nullReplacement) {
-		MockProducer.getProperties().setProperty(ConfigType.DOCGENERATION_NULL_REPLACEMENT, nullReplacement);
+		MockProducer.getProperties().setProperty(Config.DOCGENERATION_NULL_REPLACEMENT, nullReplacement);
 	}
 
 	protected void resetDefaultNullReplacement() {
-		MockProducer.getProperties().remove(ConfigType.DOCGENERATION_NULL_REPLACEMENT);
+		MockProducer.getProperties().remove(Config.DOCGENERATION_NULL_REPLACEMENT);
 	}
 
 	@AfterEach

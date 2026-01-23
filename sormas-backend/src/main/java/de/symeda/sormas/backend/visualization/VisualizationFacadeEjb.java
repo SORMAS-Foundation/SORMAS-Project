@@ -65,7 +65,7 @@ import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
-import de.symeda.sormas.api.systemconfiguration.ConfigType;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.visualization.VisualizationFacade;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -77,7 +77,6 @@ import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless(name = "VisualizationFacade")
@@ -99,7 +98,7 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 	@EJB
 	private ContactService contactService;
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private de.symeda.sormas.api.ConfigFacade configFacade;
 
 	@Override
 	public String buildTransmissionChainJson(
@@ -110,11 +109,11 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 		Collection<Disease> diseases,
 		Language language) {
 
-		String rExecutable = configFacade.getAsStringOrThrow(ConfigType.RSCRIPT_EXECUTABLE);
+		String rExecutable = configFacade.getAsStringOrThrow(Config.RSCRIPT_EXECUTABLE);
 		if (StringUtils.isBlank(rExecutable)) {
 			return null;
 		}
-		Path tempBasePath = new File(configFacade.getAsStringOrThrow(ConfigType.TEMP_PATH)).toPath();
+		Path tempBasePath = new File(configFacade.getAsStringOrThrow(Config.TEMP_PATH)).toPath();
 
 		Collection<Long> contactIds = getContactIds(fromDate, toDate, region, district, diseases);
 
