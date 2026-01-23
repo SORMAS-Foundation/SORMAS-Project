@@ -172,7 +172,6 @@ public final class FacadeProviderMock extends FacadeProvider {
 		} else if (OutbreakFacade.class == clazz) {
 			return (P) beanTest.getBean(OutbreakFacadeEjbLocal.class);
 		} else if (ConfigFacade.class == clazz) {
-			System.out.println("here ConfigFacadeEjbLocalMock is instanciated");
 			return (P) beanTest.getBean(ConfigFacadeEjbLocalMock.class);
 		} else if (ExportFacade.class == clazz) {
 			return (P) beanTest.getBean(ExportFacadeEjbLocal.class);

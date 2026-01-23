@@ -135,13 +135,14 @@ public class MockProducer implements InitialContextFactory {
 
 	private static void resetConfigs() {
 		testHelperConfig.clear();
-		testHelperConfig.setProperty(Config.COUNTRY_NAME, "nigeria");
+		testHelperConfig.set(Config.COUNTRY_NAME, "nigeria");
 		testHelperConfig.set(Config.COUNTRY_LOCALE, "en");
-		testHelperConfig.setProperty(Config.CSV_SEPARATOR, ";");
+		testHelperConfig.set(Config.CSV_SEPARATOR, ";");
+		testHelperConfig.set(Config.STEP_SIZE_FOR_CSV_EXPORT, "5000");
 
-		testHelperConfig.setProperty(Config.TEMP_PATH, TMP_PATH);
+		testHelperConfig.set(Config.TEMP_PATH, TMP_PATH);
 
-		testHelperConfig.setProperty(Config.DOCUMENTS_PATH, TMP_PATH + "/documents");
+		testHelperConfig.set(Config.DOCUMENTS_PATH, TMP_PATH + "/documents");
 
 		testHelperConfig.set(Config.DEFAULT_CASE_CLASSIFICATION_CALCULATION_MODE, "AUTOMATIC");
 		testHelperConfig.set(Config.CASE_CLASSIFICATION_CALCULATION_MODE_OVERRIDE, "{}");

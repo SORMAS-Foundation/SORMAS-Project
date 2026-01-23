@@ -1,24 +1,23 @@
 package de.symeda.sormas.backend;
 
-import static de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjb.COUNTRY_SEPARATION_CHAR;
-
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.enterprise.inject.Specializes;
 
 import org.apache.commons.lang3.StringUtils;
 
-import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjb;
 
 @Stateless
 @LocalBean
-public class ConfigFacadeEjbLocalMock implements ConfigFacade {
+@Specializes
+public class ConfigFacadeEjbLocalMock extends ConfigFacadeEjb {
 
 	public static final TestHelperConfigImpl testHelperConfig = new TestHelperConfigImpl();
 
