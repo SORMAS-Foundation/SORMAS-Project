@@ -332,7 +332,7 @@ public class AboutView extends VerticalLayout implements View {
 	}
 
 	private boolean shouldShowClassificationDocumentLink() {
-		return FacadeProvider.getConfigFacade().isAnyCaseClassificationCalculationEnabled()
+		return FacadeProvider.getCaseFacade().isAnyCaseClassificationCalculationEnabled()
 			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE);
 	}
 

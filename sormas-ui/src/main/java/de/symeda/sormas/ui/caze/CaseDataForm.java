@@ -1087,7 +1087,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		setSoftRequired(true, CaseDataDto.INVESTIGATED_DATE, CaseDataDto.OUTCOME_DATE, CaseDataDto.PLAGUE_TYPE, CaseDataDto.SURVEILLANCE_OFFICER);
 
 		if (diseaseClassificationExists()
-			&& FacadeProvider.getConfigFacade().getCaseClassificationCalculationMode(disease).isManualEnabled()
+			&& FacadeProvider.getCaseFacade().getCaseClassificationCalculationMode(disease).isManualEnabled()
 			&& isVisibleAllowed(CaseDataDto.CASE_CLASSIFICATION)) {
 			Button caseClassificationCalculationButton = ButtonHelper.createButton(Captions.caseClassificationCalculationButton, e -> {
 				CaseClassification classification = FacadeProvider.getCaseClassificationFacade().getClassification(getValue());

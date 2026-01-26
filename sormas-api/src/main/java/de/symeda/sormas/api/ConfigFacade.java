@@ -46,6 +46,11 @@ public interface ConfigFacade {
 
 	Optional<String> getAsString(Config config);
 
+	@Nullable
+	default String getAsStringOrNull(Config config) {
+		return getAsString(config).orElse(null);
+	}
+
 	boolean getAsBoolean(Config config);
 
 	@NotNull
@@ -133,124 +138,210 @@ public interface ConfigFacade {
 		return getAsStringOrThrow(Config.COUNTRY_NAME);
 	}
 
-	String getEpidPrefix();
+	default String getEpidPrefix() {
+		return getAsStringOrNull(Config.COUNTRY_EPID_PREFIX);
+	}
 
 	@Nullable
-	String getAppUrl();
+	default String getAppUrl() {
+		return getAsStringOrNull(Config.APP_URL);
+	}
 
 	@Nullable
-	String getUiUrl();
+	default String getUiUrl() {
+		return getAsStringOrNull(Config.UI_URL);
+	}
 
 	@Nullable
-	String getSormasStatsUrl();
+	default String getSormasStatsUrl() {
+		return getAsStringOrNull(Config.SORMAS_STATS_URL);
+	}
 
 	@Nullable
-	String getDocumentFilesPath();
+	default String getDocumentFilesPath() {
+		return getAsStringOrNull(Config.DOCUMENTS_PATH);
+	}
 
 	@Nullable
-	String getGeneratedFilesPath();
+	default String getGeneratedFilesPath() {
+		return getAsStringOrNull(Config.GENERATED_FILES_PATH);
+	}
 
 	@Nullable
-	String getCustomFilesPath();
+	default String getCustomFilesPath() {
+		return getAsStringOrNull(Config.CUSTOM_FILES_PATH);
+	}
 
 	@Nullable
-	String getRScriptExecutable();
+	default String getRScriptExecutable() {
+		return getAsStringOrNull(Config.RSCRIPT_EXECUTABLE);
+	}
 
 	@Nullable
-	String getAppLegacyUrl();
+	default String getAppLegacyUrl() {
+		return getAsStringOrNull(Config.APP_LEGACY_URL);
+	}
 
 
-	boolean isDevMode();
+	default boolean isDevMode() {
+		return getAsBoolean(Config.DEV_MODE);
+	}
 
-	boolean isCustomBranding();
+	default boolean isCustomBranding() {
+		return getAsBoolean(Config.CUSTOM_BRANDING);
+	}
 
 
 	@Nullable
-	String getCustomBrandingName();
+	default String getCustomBrandingName() {
+		return getAsStringOrNull(Config.CUSTOM_BRANDING_NAME);
+	}
 
 
 	@Nullable
-	String getCustomBrandingLogoPath();
+	default String getCustomBrandingLogoPath() {
+		return getAsStringOrNull(Config.CUSTOM_BRANDING_LOGO_PATH);
+	}
 
-	boolean isUseLoginSidebar();
-
-	@Nullable
-	String getLoginBackgroundPath();
-
-	boolean isDuplicateChecksExcludePersonsOfArchivedEntries();
-
-	boolean isDuplicateChecksNationalHealthIdOverridesCriteria();
-
-	double getNameSimilarityThreshold();
-
-	int getInfrastructureSyncThreshold();
-
-	int getDaysAfterSystemEventGetsDeleted();
-
-	boolean isMapUseCountryCenter();
+	default boolean isUseLoginSidebar() {
+		return getAsBoolean(Config.CUSTOM_BRANDING_USELOGINSIDEBAR);
+	}
 
 	@Nullable
-	String getMapTilersUrl();
+	default String getLoginBackgroundPath() {
+		return getAsStringOrNull(Config.CUSTOM_BRANDING_LOGINBACKGROUND_PATH);
+	}
+
+	default boolean isDuplicateChecksExcludePersonsOfArchivedEntries() {
+		return getAsBoolean(Config.DUPLICATE_CHECKS_EXCLUDE_PERSONS_ONLY_LINKED_TO_ARCHIVED_ENTRIES);
+	}
+
+	default boolean isDuplicateChecksNationalHealthIdOverridesCriteria() {
+		return getAsBoolean(Config.DUPLICATECHECKS_NATIONAL_HEALTH_ID_OVERRIDES_CRITERIA);
+	}
+
+	default double getNameSimilarityThreshold() {
+		return getAsDoubleOrThrow(Config.NAME_SIMILARITY_THRESHOLD);
+	}
+
+	default int getInfrastructureSyncThreshold() {
+		return getAsIntegerOrThrow(Config.INFRASTRUCTURE_SYNC_THRESHOLD);
+	}
+
+	default int getDaysAfterSystemEventGetsDeleted() {
+		return getAsIntegerOrThrow(Config.DAYS_AFTER_SYSTEM_EVENT_GETS_DELETED);
+	}
+
+	default boolean isMapUseCountryCenter() {
+		return getAsBoolean(Config.MAP_USECOUNTRYCENTER);
+	}
 
 	@Nullable
-	String getMapTilersAttribution();
-
-	int getMapZoom();
-
-	@Nullable
-	String getGeocodingServiceUrlTemplate();
+	default String getMapTilersUrl() {
+		return getAsStringOrNull(Config.MAP_TILES_URL);
+	}
 
 	@Nullable
-	String getGeocodingLongitudeJsonPath();
+	default String getMapTilersAttribution() {
+		return getAsStringOrNull(Config.MAP_TILES_ATTRIBUTION);
+	}
+
+	default int getMapZoom() {
+		return getAsIntegerOrThrow(Config.MAP_ZOOM);
+	}
 
 	@Nullable
-	String getGeocodingLatitudeJsonPath();
+	default String getGeocodingServiceUrlTemplate() {
+		return getAsStringOrNull(Config.GEOCODING_SERVICE_URL_TEMPLATE);
+	}
 
 	@Nullable
-	String getGeocodingEPSG4326_WKT();
+	default String getGeocodingLongitudeJsonPath() {
+		return getAsStringOrNull(Config.GEOCODING_LONGITUDE_JSON_PATH);
+	}
 
 	@Nullable
-	String getExternalSurveillanceToolGatewayUrl();
+	default String getGeocodingLatitudeJsonPath() {
+		return getAsStringOrNull(Config.GEOCODING_LATITUDE_JSON_PATH);
+	}
 
 	@Nullable
-	String getExternalSurveillanceToolVersionEndpoint();
+	default String getGeocodingEPSG4326_WKT() {
+		return getAsStringOrNull(Config.GEOCODING_EPSG4326_WKT);
+	}
 
 	@Nullable
-	String getAuthenticationProvider();
-
-	boolean isAuthenticationProviderUserSyncAtStartupEnabled();
-
-	@Nullable
-	String getAuthenticationProviderSyncedNewUserRole();
-
-	boolean isExternalJournalActive();
-
-	int getDashboardMapMarkerLimit();
+	default String getExternalSurveillanceToolGatewayUrl() {
+		return getAsStringOrNull(Config.EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL);
+	}
 
 	@Nullable
-	String getExternalMessageAdapterJndiName();
-
-	boolean isSkipDefaultPasswordCheck();
-
-	boolean isAuditorAttributeLoggingEnabled();
-
-	int getStepSizeForCsvExport();
-
-	long getDocumentUploadSizeLimitMb();
-
-	long getImportFileSizeLimitMb();
+	default String getExternalSurveillanceToolVersionEndpoint() {
+		return getAsStringOrNull(Config.EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_VERSION_ENDPOINT);
+	}
 
 	@Nullable
-	String getAuditLoggerConfig();
+	default String getAuthenticationProvider() {
+		return getAsStringOrNull(Config.AUTHENTICATION_PROVIDER);
+	}
+
+	default boolean isAuthenticationProviderUserSyncAtStartupEnabled() {
+		return getAsBoolean(Config.AUTHENTICATION_PROVIDER_USER_SYNC_AT_STARTUP);
+	}
 
 	@Nullable
-	String getAuditSourceSite();
+	default String getAuthenticationProviderSyncedNewUserRole() {
+		return getAsStringOrNull(Config.AUTHENTICATION_PROVIDER_SYNCED_NEW_USER_ROLE);
+	}
 
-	boolean isAnyCaseClassificationCalculationEnabled();
+	default int getDashboardMapMarkerLimit() {
+		return getAsIntegerOrThrow(Config.DASHBOARD_MAP_MARKER_LIMIT);
+	}
 
-	Integer getNegaiveCovidTestsMaxAgeDays();
+	@Nullable
+	default String getExternalMessageAdapterJndiName() {
+		return getAsStringOrNull(Config.INTERFACE_EXTERNAL_MESSAGE_ADAPTER_JNDI_NAME);
+	}
 
-	long getMinimumEmancipatedAge();
+	default boolean isSkipDefaultPasswordCheck() {
+		return getAsBoolean(Config.SKIP_DEFAULT_PASSWORD_CHECK);
+	}
 
-	long getMinimumAdultAge();
+	default boolean isAuditorAttributeLoggingEnabled() {
+		return getAsBoolean(Config.AUDITOR_ATTRIBUTE_LOGGING);
+	}
+
+	default int getStepSizeForCsvExport() {
+		return getAsIntegerOrThrow(Config.STEP_SIZE_FOR_CSV_EXPORT);
+	}
+
+	default long getDocumentUploadSizeLimitMb() {
+		return getAsLongOrThrow(Config.DOCUMENT_UPLOAD_SIZE_LIMIT_MB);
+	}
+
+	default long getImportFileSizeLimitMb() {
+		return getAsLongOrThrow(Config.IMPORT_FILE_SIZE_LIMIT_MB);
+	}
+
+	@Nullable
+	default String getAuditLoggerConfig() {
+		return getAsStringOrNull(Config.AUDIT_LOGGER_CONFIG);
+	}
+
+	@Nullable
+	default String getAuditSourceSite() {
+		return getAsStringOrNull(Config.AUDIT_SOURCE_SITE);
+	}
+
+	default Integer getNegaiveCovidTestsMaxAgeDays() {
+		return getAsIntegerOrThrow(Config.NEGATIVE_COVID_TESTS_MAX_AGE_DAYS);
+	}
+
+	default long getMinimumEmancipatedAge() {
+		return getAsLongOrThrow(Config.MINIMUM_EMANCIPATED_AGE);
+	}
+
+	default long getMinimumAdultAge() {
+		return getAsLongOrThrow(Config.MINIMUM_ADULT_AGE);
+	}
 }
