@@ -89,7 +89,7 @@ public class EpipulseCsvExportOrchestrator {
 			epipulseExport = epipulseExportService.getByUuid(uuid);
 
 			if (epipulseExport == null) {
-				logger.error("EpipulseExport with uuid " + uuid + " not found");
+				logger.error("EpipulseExport with uuid {} not found", uuid);
 				return;
 			}
 
@@ -138,7 +138,7 @@ public class EpipulseCsvExportOrchestrator {
 			exportStatus = EpipulseExportStatus.COMPLETED;
 		} catch (Exception e) {
 			exportStatus = EpipulseExportStatus.FAILED;
-			logger.error("Error during export with uuid " + uuid + ": " + e.getMessage(), e);
+			logger.error("Error during export with uuid {}: {}", uuid, e.getMessage(), e);
 		} finally {
 			// Calculate file size after writer is closed
 			if (exportFilePath != null && exportStatus == EpipulseExportStatus.COMPLETED) {
@@ -157,7 +157,7 @@ public class EpipulseCsvExportOrchestrator {
 					diseaseExportService
 						.updateStatusForBackgroundProcess(epipulseExport.getUuid(), exportStatus, totalRecords, exportFileName, exportFileSizeBytes);
 				} catch (Exception e) {
-					logger.error("CRITICAL: Failed to update export status for uuid " + uuid + ": " + e.getMessage(), e);
+					logger.error("CRITICAL: Failed to update export status for uuid {}: {}", uuid, e.getMessage(), e);
 				}
 			}
 		}

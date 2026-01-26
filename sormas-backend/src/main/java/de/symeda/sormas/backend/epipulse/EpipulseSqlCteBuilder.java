@@ -303,4 +303,40 @@ public class EpipulseSqlCteBuilder {
 	public String buildMainSelectClause() {
 		return "SELECT " + buildCommonSelectFields() + buildCommonFromAndJoins() + " ORDER BY c.reportdate";
 	}
+
+	/**
+	 * Builds the NRL data CTE that determines if case data is based on National Reference Laboratory results.
+	 * A case has NRL data (TRUE) if any pathogen test was performed at a facility that:
+	 * 1. Has type = LABORATORY
+	 * 2. Has a name containing NRL-related keywords (national, reference, nrl)
+	 * <p>
+	 * If no NRL lab was involved, returns FALSE (data is based on clinical/non-reference-laboratory data).
+	 *
+	 * @return the NRL data CTE SQL fragment
+	 */
+	public String buildNrlDataCte() {
+		//@formatter:off
+		return ", nrl_data_cte AS (" +
+			   "    SELECT c.id as case_id," +
+			   "           CASE " +
+			   "               WHEN EXISTS (" +
+			   "                   SELECT 1 FROM samples s" +
+			   "                   JOIN pathogentest pt ON pt.sample_id = s.id" +
+			   "                   JOIN facility lab ON pt.lab_id = lab.id" +
+			   "                   WHERE s.associatedcase_id = c.id" +
+			   "                     AND s.deleted = false" +
+			   "                     AND lab.type = 'LABORATORY'" +
+			   "                     AND (LOWER(lab.name) LIKE '%national%reference%'" +
+			   "                          OR LOWER(lab.name) LIKE '%reference%national%'" +
+			   "                          OR LOWER(lab.name) LIKE '%nrl%'" +
+			   "                          OR LOWER(lab.name) LIKE '% nrl %'" +
+			   "                          OR LOWER(lab.name) LIKE 'nrl %'" +
+			   "                          OR LOWER(lab.name) LIKE '% nrl')" +
+			   "               ) THEN TRUE" +
+			   "               ELSE FALSE" +
+			   "           END as nrl_data" +
+			   "    FROM filtered_cases c" +
+			   ") ";
+		//@formatter:on
+	}
 }

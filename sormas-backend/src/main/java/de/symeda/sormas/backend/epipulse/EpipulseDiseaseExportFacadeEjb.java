@@ -22,6 +22,7 @@ import javax.ejb.Stateless;
 import de.symeda.sormas.api.epipulse.EpipulseDiseaseExportFacade;
 import de.symeda.sormas.backend.epipulse.strategy.IpiCsvExportStrategy;
 import de.symeda.sormas.backend.epipulse.strategy.MeaslesCsvExportStrategy;
+import de.symeda.sormas.backend.epipulse.strategy.MeniCsvExportStrategy;
 import de.symeda.sormas.backend.epipulse.strategy.PertussisCsvExportStrategy;
 
 @Stateless(name = "EpipulseDiseaseExportFacade")
@@ -40,6 +41,9 @@ public class EpipulseDiseaseExportFacadeEjb implements EpipulseDiseaseExportFaca
 	private IpiCsvExportStrategy ipiStrategy;
 
 	@EJB
+	private MeniCsvExportStrategy meniStrategy;
+
+	@EJB
 	private EpipulseDiseaseExportService diseaseExportService;
 
 	public void startPertussisExport(String uuid) {
@@ -52,6 +56,10 @@ public class EpipulseDiseaseExportFacadeEjb implements EpipulseDiseaseExportFaca
 
 	public void startIpiExport(String uuid) {
 		orchestrator.orchestrateExport(uuid, diseaseExportService::exportIpiCaseBased, ipiStrategy);
+	}
+
+	public void startMeniExport(String uuid) {
+		orchestrator.orchestrateExport(uuid, diseaseExportService::exportMeniCaseBased, meniStrategy);
 	}
 
 	@LocalBean

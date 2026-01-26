@@ -35,12 +35,12 @@ import de.symeda.sormas.api.symptoms.SymptomState;
  * Column breakdown:
  * - 28 common fields (demographic, case identification, hospitalization, outcome)
  * - 28 PNEU-specific fields:
- *   - 1 NRL field (NRLData)
- *   - 5 clinical/diagnostic fields (DateOfDiagnosis, meningitis, septicaemia, pneumonia -> ClinicalCriteria)
- *   - 2 laboratory fields (PathogenDetectionMethod, Serotype)
- *   - 11 PCV vaccination fields (DatePCV1-4, BrandPCV1-4, DosePCV1-4 derived, PcvDoses)
- *   - 2 PPV vaccination fields (DatePPV, PpvDoses)
- *   - 10 AST fields (AstMethod, MicSign/MicValue/SIR for CTX_CFX, ERY, PEN)
+ * - 1 NRL field (NRLData)
+ * - 5 clinical/diagnostic fields (DateOfDiagnosis, meningitis, septicaemia, pneumonia -> ClinicalCriteria)
+ * - 2 laboratory fields (PathogenDetectionMethod, Serotype)
+ * - 11 PCV vaccination fields (DatePCV1-4, BrandPCV1-4, DosePCV1-4 derived, PcvDoses)
+ * - 2 PPV vaccination fields (DatePPV, PpvDoses)
+ * - 10 AST fields (AstMethod, MicSign/MicValue/SIR for CTX_CFX, ERY, PEN)
  */
 @Stateless
 @LocalBean
@@ -61,12 +61,12 @@ public class IpiExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 		query.append(sqlCteBuilder.buildVaccinationsCte());
 
 		// PNEU-specific CTEs (following metadata specification)
+		query.append(sqlCteBuilder.buildNrlDataCte());
 		query.append(buildPneuSerotypingDataCte());
 		query.append(buildPneuPathogenDetectionMethodCte());
 		query.append(buildPneuClinicalCriteriaCte());
 		query.append(buildPneuVaccinationDetailsCte());
-		// Note: AST data not currently stored in SORMAS for PNEU - fields will be NULL
-		// query.append(buildPneuAstDataCte());
+		query.append(buildPneuAstDataCte());
 
 		// Main SELECT clause with all 56 columns (28 common + 28 PNEU-specific)
 		query.append(buildPneuSelectClause());
@@ -117,38 +117,35 @@ public class IpiExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 		}
 
 		// Fields 36-48: Vaccination details - PCV doses 1-4
+		// DosePCVx is true if either date or brand is present (vaccinationdate can be null)
 		Date datePCV1 = (Date) row[++index];
 		dto.setDatePCV1(datePCV1);
-		dto.setDosePCV1(datePCV1 != null);
-
 		String brandPCV1Raw = (String) row[++index];
+		dto.setDosePCV1(datePCV1 != null || !StringUtils.isBlank(brandPCV1Raw));
 		if (!StringUtils.isBlank(brandPCV1Raw)) {
 			dto.setBrandPCV1(EpipulseLaboratoryMapper.mapVaccineToEpipulseCode(brandPCV1Raw));
 		}
 
 		Date datePCV2 = (Date) row[++index];
 		dto.setDatePCV2(datePCV2);
-		dto.setDosePCV2(datePCV2 != null);
-
 		String brandPCV2Raw = (String) row[++index];
+		dto.setDosePCV2(datePCV2 != null || !StringUtils.isBlank(brandPCV2Raw));
 		if (!StringUtils.isBlank(brandPCV2Raw)) {
 			dto.setBrandPCV2(EpipulseLaboratoryMapper.mapVaccineToEpipulseCode(brandPCV2Raw));
 		}
 
 		Date datePCV3 = (Date) row[++index];
 		dto.setDatePCV3(datePCV3);
-		dto.setDosePCV3(datePCV3 != null);
-
 		String brandPCV3Raw = (String) row[++index];
+		dto.setDosePCV3(datePCV3 != null || !StringUtils.isBlank(brandPCV3Raw));
 		if (!StringUtils.isBlank(brandPCV3Raw)) {
 			dto.setBrandPCV3(EpipulseLaboratoryMapper.mapVaccineToEpipulseCode(brandPCV3Raw));
 		}
 
 		Date datePCV4 = (Date) row[++index];
 		dto.setDatePCV4(datePCV4);
-		dto.setDosePCV4(datePCV4 != null);
-
 		String brandPCV4Raw = (String) row[++index];
+		dto.setDosePCV4(datePCV4 != null || !StringUtils.isBlank(brandPCV4Raw));
 		if (!StringUtils.isBlank(brandPCV4Raw)) {
 			dto.setBrandPCV4(EpipulseLaboratoryMapper.mapVaccineToEpipulseCode(brandPCV4Raw));
 		}
@@ -158,24 +155,30 @@ public class IpiExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 		dto.setPcvDoses(pcvDosesNum != null ? pcvDosesNum.intValue() : null);
 
 		// Fields 49-50: Vaccination details - PPV doses
+		// DosePPV is true if date is present or ppvDoses count > 0
 		Date datePPV = (Date) row[++index];
 		dto.setDatePPV(datePPV);
-		dto.setDosePPV(datePPV != null);
-
 		Number ppvDosesNum = (Number) row[++index];
 		dto.setPpvDoses(ppvDosesNum != null ? ppvDosesNum.intValue() : null);
+		dto.setDosePPV(datePPV != null || (ppvDosesNum != null && ppvDosesNum.intValue() > 0));
 
-		// Fields 51-60: AST (Antimicrobial Susceptibility Testing) data
+		// Set the summary Vaccine field from the most recent vaccine brand (PCV4 > PCV3 > PCV2 > PCV1 > PPV)
+		String vaccineCode = determineVaccineCode(brandPCV4Raw, brandPCV3Raw, brandPCV2Raw, brandPCV1Raw);
+		if (vaccineCode != null) {
+			dto.setVaccine(vaccineCode);
+		}
+
+		// Fields 51-57: AST (Antimicrobial Susceptibility Testing) data
+		// MIC signs are derived from values based on dilution range boundaries
+
 		// AST Method (not stored in SORMAS currently)
 		String astMethod = (String) row[++index];
 		dto.setAstMethod(astMethod);
 
 		// CTX/CFX (Ceftriaxone/Cefotaxime)
-		String micSignCTX = (String) row[++index];
-		dto.setMicSign_CTX_CFX(micSignCTX);
-
-		Double micValueCTX = (Double) row[++index];
-		dto.setMicValueAST_CTX_CFX(micValueCTX);
+		Float micValueCTX = row[++index] != null ? ((Number) row[index]).floatValue() : null;
+		dto.setMicSign_CTX_CFX(EpipulseLaboratoryMapper.mapMicSign(micValueCTX));
+		dto.setMicValueAST_CTX_CFX(micValueCTX != null ? micValueCTX.doubleValue() : null);
 
 		String sirCTXRaw = (String) row[++index];
 		if (!StringUtils.isBlank(sirCTXRaw)) {
@@ -183,11 +186,9 @@ public class IpiExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 		}
 
 		// ERY (Erythromycin)
-		String micSignERY = (String) row[++index];
-		dto.setMicSign_ERY(micSignERY);
-
-		Double micValueERY = (Double) row[++index];
-		dto.setMicValueAST_ERY(micValueERY);
+		Float micValueERY = row[++index] != null ? ((Number) row[index]).floatValue() : null;
+		dto.setMicSign_ERY(EpipulseLaboratoryMapper.mapMicSign(micValueERY));
+		dto.setMicValueAST_ERY(micValueERY != null ? micValueERY.doubleValue() : null);
 
 		String sirERYRaw = (String) row[++index];
 		if (!StringUtils.isBlank(sirERYRaw)) {
@@ -195,11 +196,9 @@ public class IpiExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 		}
 
 		// PEN (Penicillin)
-		String micSignPEN = (String) row[++index];
-		dto.setMicSign_PEN(micSignPEN);
-
-		Double micValuePEN = (Double) row[++index];
-		dto.setMicValueAST_PEN(micValuePEN);
+		Float micValuePEN = row[++index] != null ? ((Number) row[index]).floatValue() : null;
+		dto.setMicSign_PEN(EpipulseLaboratoryMapper.mapMicSign(micValuePEN));
+		dto.setMicValueAST_PEN(micValuePEN != null ? micValuePEN.doubleValue() : null);
 
 		String sirPENRaw = (String) row[++index];
 		if (!StringUtils.isBlank(sirPENRaw)) {
@@ -270,6 +269,8 @@ public class IpiExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 	 * CTE for detailed vaccination data (PCV1-4, PPV doses)
 	 */
 	private String buildPneuVaccinationDetailsCte() {
+		// PCV vaccine name patterns: PCV, CONJUGATE, PREVENAR/PREVNAR, SYNFLORIX, VAXNEUVANCE
+		// PPV vaccine name patterns: PPV, POLYSACCHARIDE, PNEUMOVAX
 		//@formatter:off
         return "pneu_vaccination_details AS (" +
                 "    SELECT vax.case_id," +
@@ -289,16 +290,30 @@ public class IpiExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
                 "               v.vaccinationdate," +
                 "               v.vaccinename," +
                 "               CASE " +
-                "                 WHEN CAST(v.vaccinename AS text) LIKE '%PCV%' OR CAST(v.vaccinename AS text) LIKE '%CONJUGATE%' THEN true " +
+                "                 WHEN CAST(v.vaccinename AS text) LIKE '%PCV%' " +
+                "                   OR CAST(v.vaccinename AS text) LIKE '%CONJUGATE%' " +
+                "                   OR CAST(v.vaccinename AS text) LIKE '%PREVENAR%' " +
+                "                   OR CAST(v.vaccinename AS text) LIKE '%PREVNAR%' " +
+                "                   OR CAST(v.vaccinename AS text) LIKE '%SYNFLORIX%' " +
+                "                   OR CAST(v.vaccinename AS text) LIKE '%VAXNEUVANCE%' THEN true " +
                 "                 ELSE false " +
                 "               END as is_pcv," +
                 "               CASE " +
-                "                 WHEN CAST(v.vaccinename AS text) LIKE '%PPV%' OR CAST(v.vaccinename AS text) LIKE '%POLYSACCHARIDE%' THEN true " +
+                "                 WHEN CAST(v.vaccinename AS text) LIKE '%PPV%' " +
+                "                   OR CAST(v.vaccinename AS text) LIKE '%POLYSACCHARIDE%' " +
+                "                   OR CAST(v.vaccinename AS text) LIKE '%PNEUMOVAX%' THEN true " +
                 "                 ELSE false " +
                 "               END as is_ppv," +
-                "               SUM(CASE WHEN CAST(v.vaccinename AS text) LIKE '%PCV%' OR CAST(v.vaccinename AS text) LIKE '%CONJUGATE%' THEN 1 ELSE 0 END) " +
+                "               SUM(CASE WHEN CAST(v.vaccinename AS text) LIKE '%PCV%' " +
+                "                          OR CAST(v.vaccinename AS text) LIKE '%CONJUGATE%' " +
+                "                          OR CAST(v.vaccinename AS text) LIKE '%PREVENAR%' " +
+                "                          OR CAST(v.vaccinename AS text) LIKE '%PREVNAR%' " +
+                "                          OR CAST(v.vaccinename AS text) LIKE '%SYNFLORIX%' " +
+                "                          OR CAST(v.vaccinename AS text) LIKE '%VAXNEUVANCE%' THEN 1 ELSE 0 END) " +
                 "                   OVER (PARTITION BY c.id ORDER BY v.vaccinationdate) as pcv_row_num," +
-                "               SUM(CASE WHEN CAST(v.vaccinename AS text) LIKE '%PPV%' OR CAST(v.vaccinename AS text) LIKE '%POLYSACCHARIDE%' THEN 1 ELSE 0 END) " +
+                "               SUM(CASE WHEN CAST(v.vaccinename AS text) LIKE '%PPV%' " +
+                "                          OR CAST(v.vaccinename AS text) LIKE '%POLYSACCHARIDE%' " +
+                "                          OR CAST(v.vaccinename AS text) LIKE '%PNEUMOVAX%' THEN 1 ELSE 0 END) " +
                 "                   OVER (PARTITION BY c.id ORDER BY v.vaccinationdate) as ppv_row_num " +
                 "        FROM filtered_cases c " +
                 "        LEFT JOIN vaccination v ON v.immunization_id IN (SELECT i.id FROM immunization i WHERE i.person_id = c.person_id AND i.disease = 'INVASIVE_PNEUMOCOCCAL_INFECTION') " +
@@ -308,30 +323,31 @@ public class IpiExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 	}
 
 	/**
-	 * CTE for antimicrobial susceptibility testing (AST) data
-	 * Maps to CTX/CFX (Ceftriaxone), ERY (Erythromycin), PEN (Penicillin)
+	 * CTE for AST (Antimicrobial Susceptibility Testing) data from DrugSusceptibility.
+	 * Retrieves the most recent antibiotic susceptibility test results for each case.
+	 * <p>
+	 * PNEU uses these antibiotics:
+	 * - CTX/CFX: Ceftriaxone
+	 * - ERY: Erythromycin
+	 * - PEN: Penicillin
 	 */
 	private String buildPneuAstDataCte() {
 		//@formatter:off
-		return "pneu_ast_data AS (" +
-			   "    SELECT c.id as case_id," +
-			   "           MAX(CASE WHEN antibiotic = 'CEFTRIAXONE' THEN mic_value END) as mic_ctx," +
-			   "           MAX(CASE WHEN antibiotic = 'CEFTRIAXONE' THEN CAST(susceptibility AS text) END) as sir_ctx," +
-			   "           MAX(CASE WHEN antibiotic = 'ERYTHROMYCIN' THEN mic_value END) as mic_ery," +
-			   "           MAX(CASE WHEN antibiotic = 'ERYTHROMYCIN' THEN CAST(susceptibility AS text) END) as sir_ery," +
-			   "           MAX(CASE WHEN antibiotic = 'PENICILLIN' THEN mic_value END) as mic_pen," +
-			   "           MAX(CASE WHEN antibiotic = 'PENICILLIN' THEN CAST(susceptibility AS text) END) as sir_pen " +
+		return ", pneu_ast_data AS (" +
+			   "    SELECT DISTINCT ON (c.id) c.id as case_id," +
+			   "           ds.ceftriaxonemic," +
+			   "           CAST(ds.ceftriaxonesusceptibility AS text) as ctx_susceptibility," +
+			   "           ds.erythromycinmic," +
+			   "           CAST(ds.erythromycinsusceptibility AS text) as ery_susceptibility," +
+			   "           ds.penicillinmic," +
+			   "           CAST(ds.penicillinsusceptibility AS text) as pen_susceptibility " +
 			   "    FROM filtered_cases c " +
 			   "    LEFT JOIN samples s ON s.associatedcase_id = c.id AND s.deleted = false " +
-			   "    LEFT JOIN pathogentest pt ON pt.sample_id = s.id AND pt.testtype = 'ANTIBIOTIC_SUSCEPTIBILITY' " +
-			   "    LEFT JOIN LATERAL (" +
-			   "        SELECT 'CEFTRIAXONE' as antibiotic, pt.ceftriaxonemic as mic_value, pt.ceftriaxonesusceptibility as susceptibility " +
-			   "        UNION ALL " +
-			   "        SELECT 'ERYTHROMYCIN', pt.erythromycinmic, pt.erythromycinsusceptibility " +
-			   "        UNION ALL " +
-			   "        SELECT 'PENICILLIN', pt.penicillinmic, pt.penicillinsusceptibility " +
-			   "    ) ast_data ON true " +
-			   "    GROUP BY c.id) ";
+			   "    LEFT JOIN pathogentest pt ON pt.sample_id = s.id " +
+			   "        AND pt.testtype = 'ANTIBIOTIC_SUSCEPTIBILITY' " +
+			   "    LEFT JOIN drugsusceptibility ds ON pt.drugsusceptibility_id = ds.id " +
+			   "    ORDER BY c.id, pt.testdatetime DESC" +
+			   ") ";
 		//@formatter:on
 	}
 
@@ -347,7 +363,7 @@ public class IpiExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 		      .append(",")
 		      // PNEU-specific fields start here
 		      // Demographics: NRLData (field 29)
-		      .append("       NULL as nrl_data,") // Not tracked in SORMAS currently
+		      .append("       nrl.nrl_data,")
 		      // Clinical/Diagnostic: DateOfDiagnosis, ClinicalCriteria (fields 30-31)
 		      .append("       c.reportdate as date_of_diagnosis,") // Using report date as diagnosis date
 		      .append("       pneu_clin.meningitis,")
@@ -371,25 +387,27 @@ public class IpiExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 		      // Vaccination details: PPV doses (fields 49-50)
 		      .append("       pneu_vax.date_ppv,")
 		      .append("       pneu_vax.ppv_doses,")
-		      // AST fields (fields 51-60) - Not currently stored in SORMAS
-		      .append("       NULL as ast_method,")
-		      .append("       NULL as mic_sign_ctx,")
-		      .append("       NULL as mic_ctx,")
-		      .append("       NULL as sir_ctx,")
-		      .append("       NULL as mic_sign_ery,")
-		      .append("       NULL as mic_ery,")
-		      .append("       NULL as sir_ery,")
-		      .append("       NULL as mic_sign_pen,")
-		      .append("       NULL as mic_pen,")
-		      .append("       NULL as sir_pen ");
+		      // AST fields (fields 51-60) - from drugsusceptibility table
+		      // MIC signs are derived in Java using mapMicSign() based on dilution range boundaries
+		      .append("       NULL as ast_method,") // ASTMethod not stored in SORMAS
+		      // CTX/CFX (Ceftriaxone/Cefotaxime)
+		      .append("       pneu_ast.ceftriaxonemic as mic_ctx,")
+		      .append("       pneu_ast.ctx_susceptibility as sir_ctx,")
+		      // ERY (Erythromycin)
+		      .append("       pneu_ast.erythromycinmic as mic_ery,")
+		      .append("       pneu_ast.ery_susceptibility as sir_ery,")
+		      // PEN (Penicillin)
+		      .append("       pneu_ast.penicillinmic as mic_pen,")
+		      .append("       pneu_ast.pen_susceptibility as sir_pen ");
 
 		// Use common FROM and JOINs, then append PNEU-specific joins
 		select.append(sqlCteBuilder.buildCommonFromAndJoins())
+		      .append(" LEFT JOIN nrl_data_cte nrl ON nrl.case_id = c.id")
 		      .append(" LEFT JOIN pneu_serotyping pneu_sero ON pneu_sero.case_id = c.id")
 		      .append(" LEFT JOIN pneu_detection_method pneu_detect ON pneu_detect.case_id = c.id")
 		      .append(" LEFT JOIN pneu_clinical_criteria pneu_clin ON pneu_clin.case_id = c.id")
-		      .append(" LEFT JOIN pneu_vaccination_details pneu_vax ON pneu_vax.case_id = c.id");
-		      // Note: pneu_ast_data CTE not used - AST fields returned as NULL
+		      .append(" LEFT JOIN pneu_vaccination_details pneu_vax ON pneu_vax.case_id = c.id")
+		      .append(" LEFT JOIN pneu_ast_data pneu_ast ON pneu_ast.case_id = c.id");
 
 		select.append(" ORDER BY c.reportdate");
 		//@formatter:on
@@ -404,8 +422,39 @@ public class IpiExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 		try {
 			return SymptomState.valueOf(value);
 		} catch (IllegalArgumentException e) {
-			logger.warn("Invalid SymptomState value '{}', treating as null", value);
-			return null;
+			// Handle integer values (0=NO, 1=YES, 2=UNKNOWN) stored in some databases
+			switch (value) {
+			case "0":
+				return SymptomState.NO;
+			case "1":
+				return SymptomState.YES;
+			case "2":
+				return SymptomState.UNKNOWN;
+			default:
+				logger.warn("Invalid SymptomState value '{}', treating as null", value);
+				return null;
+			}
 		}
+	}
+
+	/**
+	 * Determines the summary Vaccine code from the most recent PCV brand.
+	 * Uses the highest-numbered PCV dose that has a brand value.
+	 */
+	private String determineVaccineCode(String brandPCV4, String brandPCV3, String brandPCV2, String brandPCV1) {
+		// Return the most recent (highest numbered) non-blank vaccine brand
+		if (!StringUtils.isBlank(brandPCV4)) {
+			return EpipulseLaboratoryMapper.mapVaccineToEpipulseCode(brandPCV4);
+		}
+		if (!StringUtils.isBlank(brandPCV3)) {
+			return EpipulseLaboratoryMapper.mapVaccineToEpipulseCode(brandPCV3);
+		}
+		if (!StringUtils.isBlank(brandPCV2)) {
+			return EpipulseLaboratoryMapper.mapVaccineToEpipulseCode(brandPCV2);
+		}
+		if (!StringUtils.isBlank(brandPCV1)) {
+			return EpipulseLaboratoryMapper.mapVaccineToEpipulseCode(brandPCV1);
+		}
+		return null;
 	}
 }

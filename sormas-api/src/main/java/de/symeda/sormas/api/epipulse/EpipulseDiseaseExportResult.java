@@ -30,6 +30,12 @@ public class EpipulseDiseaseExportResult {
 	private int maxSpecimenVirDetect;
 	private int maxSpecimenSero;
 
+	// MENI repeatable field max counts
+	private int maxIsolateIds;
+	private int maxMainPathogenDetectionMethods;
+	private int maxSecondPathogenDetectionMethods;
+	private int maxResultMlst;
+
 	public int getMaxPathogenTests() {
 		return maxPathogenTests;
 	}
@@ -92,5 +98,38 @@ public class EpipulseDiseaseExportResult {
 
 	public void setMaxSpecimenSero(int maxSpecimenSero) {
 		this.maxSpecimenSero = maxSpecimenSero;
+	}
+
+	// MENI max count getters/setters
+	public int getMaxIsolateIds() {
+		return maxIsolateIds;
+	}
+
+	public void setMaxIsolateIds(int maxIsolateIds) {
+		this.maxIsolateIds = maxIsolateIds;
+	}
+
+	public int getMaxMainPathogenDetectionMethods() {
+		return maxMainPathogenDetectionMethods;
+	}
+
+	public void setMaxMainPathogenDetectionMethods(int maxMainPathogenDetectionMethods) {
+		this.maxMainPathogenDetectionMethods = maxMainPathogenDetectionMethods;
+	}
+
+	public int getMaxSecondPathogenDetectionMethods() {
+		return maxSecondPathogenDetectionMethods;
+	}
+
+	public void setMaxSecondPathogenDetectionMethods(int maxSecondPathogenDetectionMethods) {
+		this.maxSecondPathogenDetectionMethods = maxSecondPathogenDetectionMethods;
+	}
+
+	public int getMaxResultMlst() {
+		return maxResultMlst;
+	}
+
+	public void setMaxResultMlst(int maxResultMlst) {
+		this.maxResultMlst = maxResultMlst;
 	}
 }
