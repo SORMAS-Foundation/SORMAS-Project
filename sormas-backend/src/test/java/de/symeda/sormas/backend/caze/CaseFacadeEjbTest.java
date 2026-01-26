@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.caze;
 
+import static de.symeda.sormas.api.systemconfiguration.Config.CASE_CLASSIFICATION_CALCULATION_MODE_OVERRIDE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.empty;
@@ -48,6 +49,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -62,6 +64,9 @@ import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import de.symeda.sormas.api.CaseClassificationCalculationMode;
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
@@ -189,6 +194,7 @@ import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.json.ObjectMapperProvider;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.util.DtoHelper;
 
@@ -1375,23 +1381,27 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(getCaseFacade().getRelevantCasesForVaccination(notRelevantVaccinationForCase1).isEmpty());
 		// IPI vaccination test
 		final Date today = new Date();
-		caze1 = creator.createCase(surveillanceSupervisor.toReference(), cazePerson1.toReference(), Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, CaseClassification.PROBABLE,
-				InvestigationStatus.PENDING,
-				DateUtils.addDays(today, -1),
-				rdcf);
+		caze1 = creator.createCase(
+			surveillanceSupervisor.toReference(),
+			cazePerson1.toReference(),
+			Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			DateUtils.addDays(today, -1),
+			rdcf);
 		cases1.add(caze1);
 		VaccinationDto ipiVaccincation = creator.createVaccinationWithDetails(
-				caze1.getReportingUser(),
-				immunization.toReference(),
-				HealthConditionsDto.build(),
-				DateHelper.subtractDays(new Date(), 7),
-				Vaccine.PNEUMOVAX_23_MERCK,
-				VaccineManufacturer.MERCK,
-				VaccinationInfoSource.UNKNOWN,
-				"inn1",
-				"123",
-				"code123",
-				"1");
+			caze1.getReportingUser(),
+			immunization.toReference(),
+			HealthConditionsDto.build(),
+			DateHelper.subtractDays(new Date(), 7),
+			Vaccine.PNEUMOVAX_23_MERCK,
+			VaccineManufacturer.MERCK,
+			VaccinationInfoSource.UNKNOWN,
+			"inn1",
+			"123",
+			"code123",
+			"1");
 		assertEquals(getCaseFacade().getRelevantCasesForVaccination(ipiVaccincation), cases1);
 	}
 
@@ -3451,5 +3461,57 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		for (int i = 0; i < len; i++)
 			sb.append(AB.charAt(rnd.nextInt(AB.length())));
 		return sb.toString();
+	}
+
+	@Test
+	public void testHasAnyCaseClassificationCalculationEnabled() throws JsonProcessingException {
+		assertThat(getCaseFacade().isAnyCaseClassificationCalculationEnabled(), is(true));
+
+		MockProducer.getProperties()
+			.setProperty(Config.CASE_CLASSIFICATION_CALCULATION_MODE_OVERRIDE, "{}");
+
+		MockProducer.getProperties()
+			.setProperty(Config.DEFAULT_CASE_CLASSIFICATION_CALCULATION_MODE, CaseClassificationCalculationMode.DISABLED.name());
+		assertThat(getCaseFacade().isAnyCaseClassificationCalculationEnabled(), is(false));
+
+		MockProducer.getProperties()
+			.setProperty(
+				CASE_CLASSIFICATION_CALCULATION_MODE_OVERRIDE,
+				ObjectMapperProvider.getInstance().writeValueAsString(Map.of(Disease.CORONAVIRUS, CaseClassificationCalculationMode.MANUAL)));
+
+		assertThat(getCaseFacade().isAnyCaseClassificationCalculationEnabled(), is(true));
+
+		MockProducer.getProperties()
+			.setProperty(
+				CASE_CLASSIFICATION_CALCULATION_MODE_OVERRIDE,
+				ObjectMapperProvider.getInstance().writeValueAsString(Map.of(Disease.CORONAVIRUS, CaseClassificationCalculationMode.AUTOMATIC)));
+		assertThat(getCaseFacade().isAnyCaseClassificationCalculationEnabled(), is(true));
+
+		MockProducer.getProperties()
+			.setProperty(
+				CASE_CLASSIFICATION_CALCULATION_MODE_OVERRIDE,
+				ObjectMapperProvider.getInstance()
+					.writeValueAsString(Map.of(Disease.CORONAVIRUS, CaseClassificationCalculationMode.MANUAL_AND_AUTOMATIC)));
+		assertThat(getCaseFacade().isAnyCaseClassificationCalculationEnabled(), is(true));
+
+		MockProducer.getProperties()
+			.setProperty(
+				CASE_CLASSIFICATION_CALCULATION_MODE_OVERRIDE,
+				ObjectMapperProvider.getInstance().writeValueAsString(Map.of(Disease.CORONAVIRUS, CaseClassificationCalculationMode.DISABLED)));
+		assertThat(getCaseFacade().isAnyCaseClassificationCalculationEnabled(), is(false));
+
+		MockProducer.getProperties()
+			.setProperty(
+				CASE_CLASSIFICATION_CALCULATION_MODE_OVERRIDE,
+				ObjectMapperProvider.getInstance().writeValueAsString(Map.of(Disease.CHOLERA, CaseClassificationCalculationMode.AUTOMATIC)));
+		assertThat(getCaseFacade().isAnyCaseClassificationCalculationEnabled(), is(true));
+
+		MockProducer.getProperties().remove(Config.DEFAULT_CASE_CLASSIFICATION_CALCULATION_MODE);
+		MockProducer.getProperties().remove(CASE_CLASSIFICATION_CALCULATION_MODE_OVERRIDE);
+		MockProducer.getProperties()
+			.setProperty(
+				CASE_CLASSIFICATION_CALCULATION_MODE_OVERRIDE,
+				ObjectMapperProvider.getInstance().writeValueAsString(Map.of(Disease.CORONAVIRUS, CaseClassificationCalculationMode.DISABLED)));
+		assertThat(getCaseFacade().isAnyCaseClassificationCalculationEnabled(), is(true));
 	}
 }

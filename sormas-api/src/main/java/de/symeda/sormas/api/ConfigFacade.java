@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.CharUtils;
@@ -125,4 +126,131 @@ public interface ConfigFacade {
 	default String getTempFilesPath() {
 		return getAsStringOrThrow(Config.TEMP_PATH);
 	}
+
+	// kept for legacy purposes
+
+	default String getCountryName() {
+		return getAsStringOrThrow(Config.COUNTRY_NAME);
+	}
+
+	String getEpidPrefix();
+
+	@Nullable
+	String getAppUrl();
+
+	@Nullable
+	String getUiUrl();
+
+	@Nullable
+	String getSormasStatsUrl();
+
+	@Nullable
+	String getDocumentFilesPath();
+
+	@Nullable
+	String getGeneratedFilesPath();
+
+	@Nullable
+	String getCustomFilesPath();
+
+	@Nullable
+	String getRScriptExecutable();
+
+	@Nullable
+	String getAppLegacyUrl();
+
+
+	boolean isDevMode();
+
+	boolean isCustomBranding();
+
+
+	@Nullable
+	String getCustomBrandingName();
+
+
+	@Nullable
+	String getCustomBrandingLogoPath();
+
+	boolean isUseLoginSidebar();
+
+	@Nullable
+	String getLoginBackgroundPath();
+
+	boolean isDuplicateChecksExcludePersonsOfArchivedEntries();
+
+	boolean isDuplicateChecksNationalHealthIdOverridesCriteria();
+
+	double getNameSimilarityThreshold();
+
+	int getInfrastructureSyncThreshold();
+
+	int getDaysAfterSystemEventGetsDeleted();
+
+	boolean isMapUseCountryCenter();
+
+	@Nullable
+	String getMapTilersUrl();
+
+	@Nullable
+	String getMapTilersAttribution();
+
+	int getMapZoom();
+
+	@Nullable
+	String getGeocodingServiceUrlTemplate();
+
+	@Nullable
+	String getGeocodingLongitudeJsonPath();
+
+	@Nullable
+	String getGeocodingLatitudeJsonPath();
+
+	@Nullable
+	String getGeocodingEPSG4326_WKT();
+
+	@Nullable
+	String getExternalSurveillanceToolGatewayUrl();
+
+	@Nullable
+	String getExternalSurveillanceToolVersionEndpoint();
+
+	@Nullable
+	String getAuthenticationProvider();
+
+	boolean isAuthenticationProviderUserSyncAtStartupEnabled();
+
+	@Nullable
+	String getAuthenticationProviderSyncedNewUserRole();
+
+	boolean isExternalJournalActive();
+
+	int getDashboardMapMarkerLimit();
+
+	@Nullable
+	String getExternalMessageAdapterJndiName();
+
+	boolean isSkipDefaultPasswordCheck();
+
+	boolean isAuditorAttributeLoggingEnabled();
+
+	int getStepSizeForCsvExport();
+
+	long getDocumentUploadSizeLimitMb();
+
+	long getImportFileSizeLimitMb();
+
+	@Nullable
+	String getAuditLoggerConfig();
+
+	@Nullable
+	String getAuditSourceSite();
+
+	boolean isAnyCaseClassificationCalculationEnabled();
+
+	Integer getNegaiveCovidTestsMaxAgeDays();
+
+	long getMinimumEmancipatedAge();
+
+	long getMinimumAdultAge();
 }

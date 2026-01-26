@@ -219,7 +219,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				200));
 		followUpUntilTo.removeAllValidators();
 
-		if (FacadeProvider.getExternalClientConfigurationFacade().isExternalJournalActive()) {
+		if (FacadeProvider.getConfigFacade().isExternalJournalActive()) {
 			addField(
 				moreFiltersContainer,
 				FieldConfiguration.withCaptionAndPixelSized(

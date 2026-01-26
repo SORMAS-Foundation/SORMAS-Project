@@ -15288,10 +15288,10 @@ $$
         INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_pattern,
                                              value_encrypt, data_provider, validation_message, changedate, creationdate, id,
                                              uuid, value_description, default_value)
-        VALUES ('NEGATIVE_COVID_TESTS_MAX_AGE_DAYS', 'AUTOMATIC', general_configuration_id, true,
+        VALUES ('NEGATIVE_COVID_TESTS_MAX_AGE_DAYS', null, general_configuration_id, true,
                 null, false, null,
                 'i18n/systemConfigurationValueValidation.NEGATIVE_COVID_TESTS_MAX_AGE_DAYS', now(), now(), nextval('entity_seq'),
-                generate_base32_uuid(), 'i18n/systemConfigurationValueDescription.NEGATIVE_COVID_TESTS_MAX_AGE_DAYS', '90') ON CONFLICT DO NOTHING;
+                generate_base32_uuid(), 'i18n/systemConfigurationValueDescription.NEGATIVE_COVID_TESTS_MAX_AGE_DAYS', null) ON CONFLICT DO NOTHING;
 
         INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_pattern,
                                              value_encrypt, data_provider, validation_message, changedate, creationdate, id,

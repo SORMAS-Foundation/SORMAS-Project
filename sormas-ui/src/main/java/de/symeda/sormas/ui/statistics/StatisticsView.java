@@ -81,7 +81,6 @@ import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 import de.symeda.sormas.api.statistics.StatisticsHelper;
 import de.symeda.sormas.api.statistics.StatisticsHelper.StatisticsKeyComparator;
-import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -870,7 +869,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		map.setTileLayerOpacity(0.5f);
 		map.setWidth(100, Unit.PERCENTAGE);
 		map.setHeight(580, Unit.PIXELS);
-		map.setZoom(FacadeProvider.getConfigFacade().getAsIntegerOrThrow(Config.MAP_ZOOM));
+		map.setZoom(FacadeProvider.getConfigFacade().getMapZoom());
 		GeoLatLon mapCenter = FacadeProvider.getGeoShapeProvider().getCenterOfAllRegions();
 		if (mapCenter != null) {
 			map.setCenter(mapCenter);

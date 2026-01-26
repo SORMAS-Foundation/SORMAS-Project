@@ -268,7 +268,7 @@ import de.symeda.sormas.backend.survey.SurveyService;
 import de.symeda.sormas.backend.survey.SurveyTokenFacadeEjb.SurveyTokenFacadeEjbLocal;
 import de.symeda.sormas.backend.survey.SurveyTokenService;
 import de.symeda.sormas.backend.symptoms.SymptomsService;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjb;
+import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeBean;
 import de.symeda.sormas.backend.systemconfiguration.ExternalClientConfigurationEjb;
 import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategoryEjb;
 import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategoryService;
@@ -295,6 +295,8 @@ import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
 import de.symeda.sormas.backend.vaccination.VaccinationService;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 import de.symeda.sormas.backend.visit.VisitService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @ExtendWith(CdiTestJunitExtension.class)
 @ExtendWith(MockitoExtension.class)
@@ -304,6 +306,8 @@ public abstract class AbstractBeanTest {
 	protected final TestDataCreator creator = new TestDataCreator(this);
 
 	protected UserDto nationalAdmin;
+
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@BeforeAll
 	public static void beforeAll() {
@@ -354,7 +358,19 @@ public abstract class AbstractBeanTest {
 
 		createDiseaseConfigurations();
 
-		createSystemConfigurations();
+		if (insertConfigurations()) {
+			logger.info("System configurations will be added in the H2 database");
+			createSystemConfigurations();
+		} else {
+			logger.info("All system configurations will be removed as 'insertConfigurations()' was changed to false");
+			executeInTransaction(em -> {
+				getEntityManager().createNativeQuery("DELETE FROM systemconfigurationvalue;").executeUpdate();
+			});
+		}
+	}
+
+	protected boolean insertConfigurations() {
+		return true;
 	}
 
 	private void createSystemConfigurations() {
@@ -496,7 +512,7 @@ public abstract class AbstractBeanTest {
 	}
 
 	public ConfigFacade getConfigFacade() {
-		return getBean(ConfigFacadeEjb.class);
+		return getBean(ConfigFacadeBean.class);
 	}
 
 	public StartupConfigurationValidationService getStartupConfigurationValidationService() {

@@ -50,7 +50,6 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.SampleCriteria;
-import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.vaccination.VaccinationCriteria;
 import de.symeda.sormas.ui.document.DocumentListComponent;
@@ -146,7 +145,7 @@ public class DocGenerationController {
 		DocumentTemplateDto template,
 		Boolean shouldUploadGeneratedDoc,
 		Map<ReferenceDto, byte[]> generatedDocumentContents) {
-		long fileSizeLimitMB = FacadeProvider.getConfigFacade().getAsLongOrThrow(Config.DOCUMENT_UPLOAD_SIZE_LIMIT_MB);
+		long fileSizeLimitMB = FacadeProvider.getConfigFacade().getDocumentUploadSizeLimitMb();
 		List<String> fileSizeLimitExceeded = new ArrayList<>();
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();

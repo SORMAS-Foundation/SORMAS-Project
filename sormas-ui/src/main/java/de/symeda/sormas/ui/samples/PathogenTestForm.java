@@ -285,8 +285,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			PathogenTestDto.class,
 			PathogenTestDto.I18N_PREFIX,
 			false,
-			FieldVisibilityCheckers.withDisease(disease)
-				.andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
+			FieldVisibilityCheckers.withDisease(disease).andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
 			FieldAccessHelper.getFieldAccessCheckers(create || inJurisdiction, !create && isPseudonymized));// Jurisdiction doesn't matter for creation forms  // Pseudonymization doesn't matter for creation forms
 
 		this.caseSampleCount = caseSampleCount;
@@ -562,8 +561,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			PathogenTestDto.DRUG_SUSCEPTIBILITY,
 			new DrugSusceptibilityForm(
 				FieldVisibilityCheckers.getNoop(),
-				UiFieldAccessCheckers
-					.getDefault(true, FacadeProvider.getConfigFacade().getCountryLocale())));
+				UiFieldAccessCheckers.getDefault(true, FacadeProvider.getConfigFacade().getCountryLocale())));
 		drugSusceptibilityField.setCaption(null);
 		//drugSusceptibilityField.setVisible(false);
 		addToVisibleAllowedFields(drugSusceptibilityField);
@@ -1188,8 +1186,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				}
 				// Show tube IGRA fields only for IGRA tests and Luxembourg
 				setVisibleClear(
-					PathogenTestType.IGRA == testType
-						&& FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG),
+					PathogenTestType.IGRA == testType && FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG),
 					PathogenTestDto.TUBE_NIL,
 					PathogenTestDto.TUBE_NIL_GT10,
 					PathogenTestDto.TUBE_AG_TB1,

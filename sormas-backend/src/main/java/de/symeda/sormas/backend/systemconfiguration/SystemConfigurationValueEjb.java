@@ -22,14 +22,12 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.security.PermitAll;
-import javax.ejb.DependsOn;
 import javax.ejb.EJB;
 import javax.ejb.Lock;
 import javax.ejb.LockType;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -69,9 +67,7 @@ import de.symeda.sormas.backend.util.RightsAllowed;
  * Implementation of the {@link SystemConfigurationValueFacade} interface.
  * Provides methods to manage system configuration settings.
  */
-@Singleton(name = "SystemConfigurationValueFacade")
-@Startup
-@DependsOn("StartupShutdownService")
+@ApplicationScoped
 @TransactionManagement(TransactionManagementType.CONTAINER)
 @RightsAllowed(UserRight._SYSTEM_CONFIGURATION)
 public class SystemConfigurationValueEjb
@@ -141,6 +137,7 @@ public class SystemConfigurationValueEjb
 		return systemConfigurationValueProjection.getActualValue();
 	}
 
+	@PermitAll
 	public void loadDataIfEmpty() {
 		if (MapUtils.isEmpty(configurationValuesByKey)) {
 			loadData();
@@ -162,28 +159,28 @@ public class SystemConfigurationValueEjb
 	 *            The {@link SystemConfigurationValueDto} to save.
 	 * @return The saved {@link SystemConfigurationValueDto}.
 	 */
-    @Lock(LockType.READ)
-    @RightsAllowed(UserRight._SYSTEM_CONFIGURATION)
-    @Override
-    public SystemConfigurationValueDto save(final SystemConfigurationValueDto dto) {
+	@Lock(LockType.READ)
+	@RightsAllowed(UserRight._SYSTEM_CONFIGURATION)
+	@Override
+	public SystemConfigurationValueDto save(final SystemConfigurationValueDto dto) {
 
-        if (dto == null) {
-            return null;
-        }
+		if (dto == null) {
+			return null;
+		}
 
-        validate(dto);
+		validate(dto);
 
-        final SystemConfigurationValue existing = service.getByUuid(dto.getUuid());
+		final SystemConfigurationValue existing = service.getByUuid(dto.getUuid());
 
-        final SystemConfigurationValue newValue = fillOrBuildEntity(dto, existing, true);
-        service.ensurePersisted(newValue);
+		final SystemConfigurationValue newValue = fillOrBuildEntity(dto, existing, true);
+		service.ensurePersisted(newValue);
 
 		// Updating only the given system configuration, not the others.
 		Config config = newValue.getKey();
 		configurationValuesByKey.put(config, new SystemConfigurationValueProjection(newValue.getValue(), newValue.getDefaultValue()));
 
-        return toDto(newValue);
-    }
+		return toDto(newValue);
+	}
 
 	/**
 	 * Counts the number of system configuration values matching the given criteria.
@@ -379,10 +376,8 @@ public class SystemConfigurationValueEjb
 		configurationValuesByKey.clear();
 
 		// TODO: create a query that only fetches the mandatory fields and not everything
-		getAll()
-			.forEach(
-				value -> configurationValuesByKey
-					.put(value.getKey(), new SystemConfigurationValueProjection(value.getValue(), value.getDefaultValue())));
+		getAll().forEach(
+			value -> configurationValuesByKey.put(value.getKey(), new SystemConfigurationValueProjection(value.getValue(), value.getDefaultValue())));
 
 		LOGGER.info("SystemConfiguration data loaded into cache successfully");
 	}

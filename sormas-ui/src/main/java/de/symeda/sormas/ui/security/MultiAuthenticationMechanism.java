@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.ui.security.config.DefaultOpenIdAuthenticationDefinition;
 import fish.payara.security.openid.OpenIdAuthenticationMechanism;
 
@@ -73,7 +72,7 @@ public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism
 		OpenIdAuthenticationMechanism openIdAuthenticationMechanism,
 		CustomFormAuthenticationMechanism customFormAuthenticationMechanism) {
 
-		String authenticationProvider = FacadeProvider.getConfigFacade().getAsStringOrThrow(Config.AUTHENTICATION_PROVIDER);
+		String authenticationProvider = FacadeProvider.getConfigFacade().getAuthenticationProvider();
 		if (authenticationProvider.equalsIgnoreCase(AuthProvider.KEYCLOAK)) {
 			try {
 				authenticationMechanism = openIdAuthenticationMechanism;

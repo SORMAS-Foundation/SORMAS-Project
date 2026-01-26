@@ -24,7 +24,6 @@ import com.wcs.wcslib.vaadin.widget.multifileupload.ui.UploadStateWindow;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.ui.SormasUI;
 
 public class DocumentMultiFileUpload extends MultiFileUpload {
@@ -32,7 +31,7 @@ public class DocumentMultiFileUpload extends MultiFileUpload {
 	public DocumentMultiFileUpload(UploadStartedHandler uploadStartedHandler, UploadFinishedHandler uploadFinishedHandler, UploadStateWindow uploadStateWindow, boolean multiple) {
 		super(uploadStartedHandler, uploadFinishedHandler, uploadStateWindow, multiple);
 
-		long fileSizeLimitMb = FacadeProvider.getConfigFacade().getAsLongOrThrow(Config.DOCUMENT_UPLOAD_SIZE_LIMIT_MB);
+		long fileSizeLimitMb = FacadeProvider.getConfigFacade().getDocumentUploadSizeLimitMb();
 		setMaxFileSize(fileSizeLimitMb * 1_000_000);
 		setSizeErrorMsgPattern(I18nProperties.getValidationError(Validations.fileTooBig, fileSizeLimitMb));
 

@@ -41,7 +41,6 @@ import de.symeda.sormas.api.geo.GeoShapeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardDataProvider;
@@ -99,7 +98,7 @@ public abstract class BaseDashboardMapComponent<C extends BaseDashboardCriteria<
 		Date fromDate = dashboardDataProvider.getFromDate();
 		Date toDate = dashboardDataProvider.getToDate();
 
-		int maxDisplayCount = FacadeProvider.getConfigFacade().getAsIntegerOrThrow(Config.DASHBOARD_MAP_MARKER_LIMIT);
+		int maxDisplayCount = FacadeProvider.getConfigFacade().getDashboardMapMarkerLimit();
 		Long count = 0L;
 		if (!forced && maxDisplayCount >= 0) {
 			count = getMarkerCount(fromDate, toDate, maxDisplayCount);
@@ -274,7 +273,7 @@ public abstract class BaseDashboardMapComponent<C extends BaseDashboardCriteria<
 
 			final GeoLatLon mapCenter;
 			// If map.usecountrycenter=true, use config coordinates. Else try to calculate the center of the user region/country
-			if (FacadeProvider.getConfigFacade().getAsBoolean(Config.MAP_USECOUNTRYCENTER)) {
+			if (FacadeProvider.getConfigFacade().isMapUseCountryCenter()) {
 				mapCenter = FacadeProvider.getConfigFacade().getCountryCenter();
 				map.setCenter(mapCenter);
 			} else {
@@ -291,7 +290,7 @@ public abstract class BaseDashboardMapComponent<C extends BaseDashboardCriteria<
 
 		}
 
-		map.setZoom(FacadeProvider.getConfigFacade().getAsIntegerOrThrow(Config.MAP_ZOOM));
+		map.setZoom(FacadeProvider.getConfigFacade().getMapZoom());
 
 		// Add components
 		addComponent(createHeader());

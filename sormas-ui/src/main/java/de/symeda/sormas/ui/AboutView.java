@@ -58,7 +58,6 @@ import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -123,10 +122,8 @@ public class AboutView extends VerticalLayout implements View {
 		infoLayout.addComponent(aboutLabel);
 
 		ConfigFacade configFacade = FacadeProvider.getConfigFacade();
-		String infoLabelStr = configFacade.getAsBoolean(Config.CUSTOM_BRANDING)
-			? String.format(
-				I18nProperties.getCaption(Captions.aboutBrandedSormasVersion),
-				configFacade.getAsString(Config.CUSTOM_BRANDING_NAME).orElse("-"))
+		String infoLabelStr = configFacade.isCustomBranding()
+			? String.format(I18nProperties.getCaption(Captions.aboutBrandedSormasVersion), configFacade.getCustomBrandingName())
 			: "SORMAS";
 		Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + infoLabelStr, ContentMode.HTML);
 		infoLayout.addComponent(infoLabel);
@@ -288,7 +285,7 @@ public class AboutView extends VerticalLayout implements View {
 
 		String htmlContentString = "";
 
-		Path customHtmlDirectory = Paths.get(FacadeProvider.getConfigFacade().getAsStringOrThrow(Config.CUSTOM_FILES_PATH));
+		Path customHtmlDirectory = Paths.get(FacadeProvider.getConfigFacade().getCustomFilesPath());
 		Path customFilePath = customHtmlDirectory.resolve(fileName);
 
 		try {
@@ -335,7 +332,7 @@ public class AboutView extends VerticalLayout implements View {
 	}
 
 	private boolean shouldShowClassificationDocumentLink() {
-		return FacadeProvider.getCaseFacade().isAnyCaseClassificationCalculationEnabled()
+		return FacadeProvider.getConfigFacade().isAnyCaseClassificationCalculationEnabled()
 			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE);
 	}
 
@@ -345,7 +342,7 @@ public class AboutView extends VerticalLayout implements View {
 	}
 
 	private String getCustomDocumentsPath() {
-		return FacadeProvider.getConfigFacade().getAsStringOrThrow(Config.CUSTOM_FILES_PATH) + "aboutfiles";
+		return FacadeProvider.getConfigFacade().getCustomFilesPath() + "aboutfiles";
 	}
 
 	public void attachDataProtectionDictionaryDownloader(AbstractComponent target) {

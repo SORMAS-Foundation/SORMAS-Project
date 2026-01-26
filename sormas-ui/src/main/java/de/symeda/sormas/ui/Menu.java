@@ -22,6 +22,8 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
@@ -44,7 +46,6 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.user.UserSettingsForm;
@@ -84,9 +85,9 @@ public class Menu extends CssLayout {
 		title.setSizeUndefined();
 
 		Image image;
-		if (FacadeProvider.getConfigFacade().getAsBoolean(Config.CUSTOM_BRANDING)
-			&& FacadeProvider.getConfigFacade().isPresent(Config.CUSTOM_BRANDING_LOGO_PATH)) {
-			Path logoPath = Paths.get(FacadeProvider.getConfigFacade().getAsStringOrThrow(Config.CUSTOM_BRANDING_LOGO_PATH));
+		if (FacadeProvider.getConfigFacade().isCustomBranding()
+			&& StringUtils.isNotBlank(FacadeProvider.getConfigFacade().getCustomBrandingLogoPath())) {
+			Path logoPath = Paths.get(FacadeProvider.getConfigFacade().getCustomBrandingLogoPath());
 			image = new Image(null, new FileResource(logoPath.toFile()));
 		} else {
 			image = new Image(null, new ThemeResource("img/sormas-logo.png"));

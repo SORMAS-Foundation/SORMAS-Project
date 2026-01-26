@@ -31,7 +31,7 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 import de.symeda.sormas.api.systemconfiguration.Config;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjb;
+import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeBean;
 
 /**
  * Provides a configurable log sink for the SORMAS audit trail.
@@ -41,7 +41,7 @@ import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjb;
 public class LogSink {
 
 	@EJB
-	ConfigFacadeEjb configFacade;
+    ConfigFacadeBean configFacade;
 
 	private static final Logger logger = LoggerFactory.getLogger(LogSink.class);
 

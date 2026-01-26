@@ -98,7 +98,7 @@ class SystemConfigurationValueFacadeEJbTest extends AbstractBeanTest {
         // Validate against IP pattern
         final SystemConfigurationValueDto updatedConfigValue = getSystemConfigurationValueFacade().save(configValueDto);
 
-		assertThat(updatedConfigValue.getKey(), is(Config.CENTRAL_ETCD_CA_PATH));
+		assertThat(updatedConfigValue.getKey(), is(Config.CENTRAL_ETCD_CA_PATH.name()));
         assertThat(updatedConfigValue.getValue(), is("192.168.1.1"));
     }
 
@@ -131,7 +131,7 @@ class SystemConfigurationValueFacadeEJbTest extends AbstractBeanTest {
         // Validate against Unix directory path pattern
         final SystemConfigurationValueDto updatedConfigValue = getSystemConfigurationValueFacade().save(configValueDto);
 
-		assertThat(updatedConfigValue.getKey(), is(Config.TEMP_PATH));
+		assertThat(updatedConfigValue.getKey(), is(Config.TEMP_PATH.name()));
         assertThat(updatedConfigValue.getValue(), is("/home/user/"));
     }
 
@@ -164,7 +164,7 @@ class SystemConfigurationValueFacadeEJbTest extends AbstractBeanTest {
         // Validate against digits-only pattern
         final SystemConfigurationValueDto updatedConfigValue = getSystemConfigurationValueFacade().save(configValueDto);
 
-		assertThat(updatedConfigValue.getKey(), is(Config.MINIMUM_ADULT_AGE));
+		assertThat(updatedConfigValue.getKey(), is(Config.MINIMUM_ADULT_AGE.name()));
         assertThat(updatedConfigValue.getValue(), is("123456"));
     }
 
@@ -198,7 +198,7 @@ class SystemConfigurationValueFacadeEJbTest extends AbstractBeanTest {
         // Validate against pipe-separated list of words pattern
         final SystemConfigurationValueDto updatedConfigValue = getSystemConfigurationValueFacade().save(configValueDto);
 
-		assertThat(updatedConfigValue.getKey(), is(Config.AUDIT_LOGGER_CONFIG));
+		assertThat(updatedConfigValue.getKey(), is(Config.AUDIT_LOGGER_CONFIG.name()));
         assertThat(updatedConfigValue.getValue(), is("word|word|word"));
     }
 
@@ -241,12 +241,12 @@ class SystemConfigurationValueFacadeEJbTest extends AbstractBeanTest {
         // Validate against IP pattern
         final SystemConfigurationValueDto updatedConfigValue = getSystemConfigurationValueFacade().save(configValueDto);
 
-		assertThat(updatedConfigValue.getKey(), is(Config.ALLOWED_FILE_EXTENSIONS));
+		assertThat(updatedConfigValue.getKey(), is(Config.ALLOWED_FILE_EXTENSIONS.name()));
         assertThat(updatedConfigValue.getValue(), is(value));
     }
 
     /**
-     * Test the validation of a system configuration value against a pattern with an invalid value.
+     * Test the validation of a system configurati on value againsta pattern with an invalid value.
      */
     @ParameterizedTest
     @CsvSource({
@@ -282,7 +282,7 @@ class SystemConfigurationValueFacadeEJbTest extends AbstractBeanTest {
         // Validate optional value
         final SystemConfigurationValueDto updatedConfigValue = getSystemConfigurationValueFacade().save(configValueDto);
 
-		assertThat(updatedConfigValue.getKey(), is(Config.AUDIT_SOURCE_SITE));
+		assertThat(updatedConfigValue.getKey(), is(Config.AUDIT_SOURCE_SITE.name()));
         assertThat(updatedConfigValue.getValue(), is((String) null));
         assertThat(updatedConfigValue.getOptional(), is(Boolean.TRUE));
     }
@@ -356,5 +356,19 @@ class SystemConfigurationValueFacadeEJbTest extends AbstractBeanTest {
         category.setName(SystemConfigurationCategoryService.DEFAULT_CATEGORY_NAME);
         getSystemConfigurationCategoryService().ensurePersisted(category);
         return category;
+    }
+
+    @Override
+    protected boolean insertConfigurations() {
+        logger.info("System configurations will be added manually by this class, not using default mechanism");
+        return false;
+    }
+
+    @Override
+    public void init() {
+        super.init();
+
+        createSystemConfigurationValue(Config.COUNTRY_LOCALE, "en", "[a-z]{2}");
+
     }
 }

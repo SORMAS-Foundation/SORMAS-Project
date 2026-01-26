@@ -47,7 +47,6 @@ import com.vaadin.ui.UI;
 
 import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SormasErrorHandler;
 import de.symeda.sormas.ui.login.LoginScreen.LoginListener;
@@ -117,8 +116,7 @@ public class LoginUI extends UI {
 		@Override
 		public void contextInitialized(ServletContextEvent sce) {
 			ServletContext ctx = sce.getServletContext();
-			String authenticationProvider =
-				FacadeProvider.getConfigFacade().getAsStringOrThrow(Config.AUTHENTICATION_PROVIDER);
+			String authenticationProvider = FacadeProvider.getConfigFacade().getAuthenticationProvider();
 			if (authenticationProvider.equalsIgnoreCase(AuthProvider.SORMAS)) {
 				ServletRegistration.Dynamic servletRegistration = ctx.addServlet("SormasLoginServlet", SormasLoginServlet.class);
 				servletRegistration.addMapping("/login/*", "/VAADIN/*");

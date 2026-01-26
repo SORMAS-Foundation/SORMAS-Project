@@ -103,7 +103,7 @@ public class DocGenerationHelper {
 	}
 
 	private boolean isFileSizeLimitExceeded(int length) {
-		long fileSizeLimitMb = configFacade.getAsLongOrThrow(Config.DOCUMENT_UPLOAD_SIZE_LIMIT_MB);
+		long fileSizeLimitMb = configFacade.getDocumentUploadSizeLimitMb();
 		long fileSizeLimitBytes = fileSizeLimitMb * 1_000_000;
 		return length > fileSizeLimitBytes;
 	}

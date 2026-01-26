@@ -83,9 +83,7 @@ public class ActivityAsCaseField extends AbstractTableField<ActivityAsCaseDto> {
 		table.setCellStyleGenerator(
 			FieldAccessCellStyleGenerator.withFieldAccessCheckers(
 				ActivityAsCaseDto.class,
-				UiFieldAccessCheckers.forSensitiveData(
-					isPseudonymized,
-					FacadeProvider.getConfigFacade().getCountryLocale())));
+				UiFieldAccessCheckers.forSensitiveData(isPseudonymized, FacadeProvider.getConfigFacade().getCountryLocale())));
 
 		for (Object columnId : table.getVisibleColumns()) {
 			if (!columnId.equals(ACTION_COLUMN_ID)) {

@@ -28,7 +28,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
-import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -100,7 +99,7 @@ public class ImportReceiver implements Receiver, StartedListener, SucceededListe
 
 	@Override
 	public void uploadStarted(StartedEvent startedEvent) {
-		long fileSizeLimitMb = FacadeProvider.getConfigFacade().getAsLongOrThrow(Config.IMPORT_FILE_SIZE_LIMIT_MB);
+		long fileSizeLimitMb = FacadeProvider.getConfigFacade().getImportFileSizeLimitMb();
 		if (startedEvent.getContentLength() > fileSizeLimitMb * 1_000_000) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.fileTooBig, fileSizeLimitMb));
 		}

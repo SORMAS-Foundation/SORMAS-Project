@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
@@ -614,7 +615,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			srcMediaName);
 
 		// Make external ID field read-only when SORMAS is connected to a SurvNet instance
-		if (FacadeProvider.getConfigFacade().isExternalSurveillanceToolGatewayConfigured()) {
+		if (StringUtils.isNotEmpty(FacadeProvider.getConfigFacade().getExternalSurveillanceToolGatewayUrl())) {
 			setEnabled(false, EventDto.EXTERNAL_ID);
 			((TextField) getField(EventDto.EXTERNAL_ID)).setInputPrompt(I18nProperties.getString(Strings.promptExternalIdExternalSurveillanceTool));
 		}

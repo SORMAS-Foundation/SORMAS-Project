@@ -38,7 +38,7 @@ import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.api.utils.VersionHelper;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjb;
+import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeBean;
 import de.symeda.sormas.backend.systemconfiguration.ExternalClientConfigurationEjb;
 
 @Stateless
@@ -54,7 +54,7 @@ public class StartupConfigurationValidationService {
 	}
 
 	public StartupConfigurationValidationService(
-		ConfigFacadeEjb systemConfigurationAccessor,
+		ConfigFacadeBean systemConfigurationAccessor,
 		ExternalClientConfigurationEjb externalClientConfiguration) {
 		this.systemConfigurationAccessor = systemConfigurationAccessor;
 		this.externalClientConfiguration = externalClientConfiguration;
@@ -175,7 +175,7 @@ public class StartupConfigurationValidationService {
 	}
 
 	@Inject
-	public void setSystemConfigurationAccessor(ConfigFacadeEjb systemConfigurationAccessor) {
+	public void setSystemConfigurationAccessor(ConfigFacadeBean systemConfigurationAccessor) {
 		this.systemConfigurationAccessor = systemConfigurationAccessor;
 	}
 

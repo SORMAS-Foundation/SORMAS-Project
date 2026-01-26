@@ -34,9 +34,9 @@ import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjb;
+import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeBean;
 
-public class ConfigFacadeEjbTest extends AbstractBeanTest {
+public class ConfigFacadeBeanTest extends AbstractBeanTest {
 
 	@Test
 	public void testValidateExternalUrls() {
@@ -155,11 +155,11 @@ public class ConfigFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testNormalizeLocaleString() {
-		assertThat(ConfigFacadeEjb.normalizeLocaleStringStatic("  "), isEmptyString());
-		assertThat(ConfigFacadeEjb.normalizeLocaleStringStatic("en"), is("en"));
-		assertThat(ConfigFacadeEjb.normalizeLocaleStringStatic("En"), is("en"));
-		assertThat(ConfigFacadeEjb.normalizeLocaleStringStatic("en-CA"), is("en-CA"));
-		assertThat(ConfigFacadeEjb.normalizeLocaleStringStatic("en-cA"), is("en-CA"));
+		assertThat(ConfigFacadeBean.normalizeLocaleStringStatic("  "), isEmptyString());
+		assertThat(ConfigFacadeBean.normalizeLocaleStringStatic("en"), is("en"));
+		assertThat(ConfigFacadeBean.normalizeLocaleStringStatic("En"), is("en"));
+		assertThat(ConfigFacadeBean.normalizeLocaleStringStatic("en-CA"), is("en-CA"));
+		assertThat(ConfigFacadeBean.normalizeLocaleStringStatic("en-cA"), is("en-CA"));
 	}
 
 	@Test
@@ -186,50 +186,5 @@ public class ConfigFacadeEjbTest extends AbstractBeanTest {
 		assertThat(getExternalClientConfigurationEjb().getPatientDiaryConfig().getTokenLifetime(), equalTo(Duration.ofSeconds(666L)));
 	}
 
-//	@Test
-//	public void testHasAnyCaseClassificationCalculationEnabled() {
-//		assertThat(getConfigFacade().isAnyCaseClassificationCalculationEnabled(), is(true));
-//
-//		MockProducer.getProperties()
-//			.setProperty(Config.DEFAULT_CASE_CLASSIFICATION_CALCULATION_MODE, CaseClassificationCalculationMode.DISABLED.name());
-//		assertThat(getConfigFacade().isAnyCaseClassificationCalculationEnabled(), is(false));
-//
-//		MockProducer.getProperties()
-//			.setProperty(
-//				Config.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CORONAVIRUS,
-//				CaseClassificationCalculationMode.MANUAL.name());
-//		assertThat(getConfigFacade().isAnyCaseClassificationCalculationEnabled(), is(true));
-//
-//		MockProducer.getProperties()
-//			.setProperty(
-//				Config.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CORONAVIRUS,
-//				CaseClassificationCalculationMode.AUTOMATIC.name());
-//		assertThat(getConfigFacade().isAnyCaseClassificationCalculationEnabled(), is(true));
-//
-//		MockProducer.getProperties()
-//			.setProperty(
-//				Config.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CORONAVIRUS,
-//				CaseClassificationCalculationMode.MANUAL_AND_AUTOMATIC.name());
-//		assertThat(getConfigFacade().isAnyCaseClassificationCalculationEnabled(), is(true));
-//
-//		MockProducer.getProperties()
-//			.setProperty(
-//				Config.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CORONAVIRUS,
-//				CaseClassificationCalculationMode.DISABLED.name());
-//		assertThat(getConfigFacade().isAnyCaseClassificationCalculationEnabled(), is(false));
-//
-//		MockProducer.getProperties()
-//			.setProperty(
-//				Config.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CHOLERA,
-//				CaseClassificationCalculationMode.AUTOMATIC.name());
-//		assertThat(getConfigFacade().isAnyCaseClassificationCalculationEnabled(), is(true));
-//
-//		MockProducer.getProperties().remove(Config.DEFAULT_CASE_CLASSIFICATION_CALCULATION_MODE);
-//		MockProducer.getProperties().remove(Config.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CHOLERA);
-//		MockProducer.getProperties()
-//			.setProperty(
-//				Config.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CORONAVIRUS,
-//				CaseClassificationCalculationMode.DISABLED.name());
-//		assertThat(getConfigFacade().isAnyCaseClassificationCalculationEnabled(), is(true));
-//	}
+
 }

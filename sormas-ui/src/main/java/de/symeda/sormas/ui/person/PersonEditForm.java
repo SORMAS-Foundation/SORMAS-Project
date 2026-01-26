@@ -84,7 +84,6 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.person.WorkPlace;
-import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -239,8 +238,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			false,
 			FieldVisibilityCheckers.withDisease(disease)
 				.add(new OutbreakFieldVisibilityChecker(viewMode))
-				.add(
-					new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
+				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
 			FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized),
 			isEditAllowed);
 
@@ -272,8 +270,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			false,
 			FieldVisibilityCheckers.withDisease(disease)
 				.add(new OutbreakFieldVisibilityChecker(viewMode))
-				.add(
-					new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
+				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
 			FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized));
 
 		this.personContext = personContext;
@@ -297,8 +294,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			PersonDto.I18N_PREFIX,
 			false,
 			new FieldVisibilityCheckers().add(new OutbreakFieldVisibilityChecker(ViewMode.NORMAL))
-				.add(
-					new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
+				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
 			FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized),
 			isEditAllowed);
 
@@ -730,8 +726,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		hasGuardian.setEnabled(false);
 		hasGuardian.setValue(Boolean.TRUE);
 		nameOfGuardians.setVisible(true);
-		minimumAdultAge = FacadeProvider.getConfigFacade().getAsLongOrThrow(Config.MINIMUM_ADULT_AGE);
-		minimumEmancipatedAge = FacadeProvider.getConfigFacade().getAsLongOrThrow(Config.MINIMUM_EMANCIPATED_AGE);
+		minimumAdultAge = FacadeProvider.getConfigFacade().getMinimumAdultAge();
+		minimumEmancipatedAge = FacadeProvider.getConfigFacade().getMinimumEmancipatedAge();
 
 		if (disease != null && !PERINATAL_DISEASES.contains(disease)) {
 			perinatalDetailsHeader.setVisible(false);

@@ -1296,8 +1296,8 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 	}
 
 	public void cleanupOldCovidSamples() {
-		final Integer maxAgeDays = configFacade.getAsIntegerOrThrow(Config.NEGATIVE_COVID_TESTS_MAX_AGE_DAYS);
-		if (maxAgeDays == null) {
+		final Optional<Integer> maxAgeDays = configFacade.getAsInteger(Config.NEGATIVE_COVID_TESTS_MAX_AGE_DAYS);
+		if (maxAgeDays.isEmpty()) {
 			return;
 		}
 
@@ -1316,7 +1316,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 					from.get(PathogenTest.TEST_DATE_TIME),
 					from.get(PathogenTest.REPORT_DATE),
 					from.get(PathogenTest.CREATION_DATE)),
-				DateHelper.subtractDays(new Date(), maxAgeDays)));
+				DateHelper.subtractDays(new Date(), maxAgeDays.get())));
 		em.createQuery(cq).getResultList().stream().collect(Collectors.groupingBy(PathogenTest::getSample)).forEach((sample, tests) -> {
 			if (pathogenTestService.count(new PathogenTestCriteria().sample(sample.toReference())) == tests.size()) {
 				delete(sample, new DeletionDetails(DeletionReason.OTHER_REASON, I18nProperties.getString(Strings.entityAutomaticSoftDeletion)));

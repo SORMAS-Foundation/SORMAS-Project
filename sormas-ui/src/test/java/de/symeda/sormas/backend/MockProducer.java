@@ -57,7 +57,7 @@ import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoverySer
 import de.symeda.sormas.backend.sormastosormas.crypto.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClient;
 import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClientProducer;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjb;
+import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeBean;
 import de.symeda.sormas.backend.systemconfiguration.ExternalClientConfigurationEjb;
 
 /**
@@ -85,7 +85,7 @@ public class MockProducer implements InitialContextFactory {
 
 	private static SormasToSormasDiscoveryService sormasToSormasDiscoveryService = mock(SormasToSormasDiscoveryService.class);
 
-	static final TestHelperConfigImpl testHelperConfig = ConfigFacadeEjbLocalMock.testHelperConfig;
+	static final TestHelperConfigImpl testHelperConfig = ConfigFacadeBeanLocalMock.testHelperConfig;
 
 	// Receiving e-mail server is mocked: org. jvnet. mock_javamail. mailbox
 	private static Session mailSession;
@@ -134,7 +134,6 @@ public class MockProducer implements InitialContextFactory {
 	}
 
 	private static void resetConfigs() {
-
 		testHelperConfig.clear();
 		testHelperConfig.set(Config.COUNTRY_NAME, "nigeria");
 		testHelperConfig.set(Config.COUNTRY_LOCALE, "en");
@@ -211,7 +210,7 @@ public class MockProducer implements InitialContextFactory {
 		public SormasToSormasRestClient sormasToSormasClient(
 			SormasToSormasDiscoveryService sormasToSormasDiscoveryService,
 			SormasToSormasEncryptionFacadeEjbLocal sormasToSormasEncryptionEjb,
-			ConfigFacadeEjb configFacadeEjb) {
+			ConfigFacadeBean configFacadeEjb) {
 			return s2sRestClient;
 		}
 	}

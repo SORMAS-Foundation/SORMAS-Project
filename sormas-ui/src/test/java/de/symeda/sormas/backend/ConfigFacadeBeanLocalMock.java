@@ -8,12 +8,12 @@ import javax.ejb.Stateless;
 import javax.enterprise.inject.Specializes;
 
 import de.symeda.sormas.api.systemconfiguration.Config;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeEjb;
+import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeBean;
 
 @Stateless
 @LocalBean
 @Specializes
-public class ConfigFacadeEjbLocalMock extends ConfigFacadeEjb {
+public class ConfigFacadeBeanLocalMock extends ConfigFacadeBean {
 
 	public static final TestHelperConfigImpl testHelperConfig = new TestHelperConfigImpl();
 

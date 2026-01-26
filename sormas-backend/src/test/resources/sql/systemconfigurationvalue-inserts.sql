@@ -29,10 +29,11 @@ VALUES ('COUNTRY_LOCALE', 'en', 1, true,
         RANDOM_UUID(), 'i18n/systemConfigurationValueDescription.COUNTRY_LOCALE', 'en')
 ON CONFLICT DO NOTHING;
 
+-- WARN: nigeria is added here instead of null, to avoid breaking tests
 INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_pattern,
                                      value_encrypt, data_provider, validation_message, changedate, creationdate, id,
                                      uuid, value_description, default_value)
-VALUES ('COUNTRY_NAME', null, 1, true,
+VALUES ('COUNTRY_NAME', 'nigeria', 1, true,
         null, false, null,
         'i18n/systemConfigurationValueValidation.COUNTRY_NAME', now(), now(), nextval('entity_seq'),
         RANDOM_UUID(), 'i18n/systemConfigurationValueDescription.COUNTRY_NAME', null)
@@ -122,6 +123,15 @@ ON CONFLICT DO NOTHING;
 INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_pattern,
                                      value_encrypt, data_provider, validation_message, changedate, creationdate, id,
                                      uuid, value_description, default_value)
+VALUES ('APP_LEGACY_URL', null, 1, true,
+        '^https:\/\/(?:www\.)?[-a-zA-Z0-9@%._\+#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.#?&\/\/=]*)$', false, null,
+        'i18n/systemConfigurationValueValidation.APP_LEGACY_URL', now(), now(), nextval('entity_seq'),
+        RANDOM_UUID(), 'i18n/systemConfigurationValueDescription.APP_LEGACY_URL', null)
+ON CONFLICT DO NOTHING;
+
+INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_pattern,
+                                     value_encrypt, data_provider, validation_message, changedate, creationdate, id,
+                                     uuid, value_description, default_value)
 VALUES ('RSCRIPT_EXECUTABLE', null, 1, true,
         '^\/(?:[^\/\0]+\/)*[^\/\0]+$', false, null,
         'i18n/systemConfigurationValueValidation.RSCRIPT_EXECUTABLE', now(), now(), nextval('entity_seq'),
@@ -149,7 +159,7 @@ ON CONFLICT DO NOTHING;
 INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_pattern,
                                      value_encrypt, data_provider, validation_message, changedate, creationdate, id,
                                      uuid, value_description, default_value)
-VALUES ('DOCUMENTS_PATH', '/opt/sormas/documents/', 1, true,
+VALUES ('DOCUMENTS_PATH', 'target/tmp/documents', 1, true,
         '^\/(?:[^\/\0]+\/)+$', false, null,
         'i18n/systemConfigurationValueValidation.DOCUMENTS_PATH', now(), now(), nextval('entity_seq'),
         RANDOM_UUID(), 'i18n/systemConfigurationValueDescription.DOCUMENTS_PATH', '/opt/sormas/documents/')
@@ -158,7 +168,7 @@ ON CONFLICT DO NOTHING;
 INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_pattern,
                                      value_encrypt, data_provider, validation_message, changedate, creationdate, id,
                                      uuid, value_description, default_value)
-VALUES ('TEMP_PATH', '/opt/sormas/temp/', 1, true,
+VALUES ('TEMP_PATH', 'target/tmp', 1, true,
         '^\/(?:[^\/\0]+\/)+$', false, null,
         'i18n/systemConfigurationValueValidation.TEMP_PATH', now(), now(), nextval('entity_seq'),
         RANDOM_UUID(), 'i18n/systemConfigurationValueDescription.TEMP_PATH', '/opt/sormas/temp/')
@@ -235,11 +245,11 @@ ON CONFLICT DO NOTHING;
 INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_pattern,
                                      value_encrypt, data_provider, validation_message, changedate, creationdate, id,
                                      uuid, value_description, default_value)
-VALUES ('NEGATIVE_COVID_TESTS_MAX_AGE_DAYS', 'AUTOMATIC', 1, true,
+VALUES ('NEGATIVE_COVID_TESTS_MAX_AGE_DAYS', null, 1, true,
         null, false, null,
         'i18n/systemConfigurationValueValidation.NEGATIVE_COVID_TESTS_MAX_AGE_DAYS', now(), now(),
         nextval('entity_seq'),
-        RANDOM_UUID(), 'i18n/systemConfigurationValueDescription.NEGATIVE_COVID_TESTS_MAX_AGE_DAYS', '90')
+        RANDOM_UUID(), 'i18n/systemConfigurationValueDescription.NEGATIVE_COVID_TESTS_MAX_AGE_DAYS', null)
 ON CONFLICT DO NOTHING;
 
 INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_pattern,

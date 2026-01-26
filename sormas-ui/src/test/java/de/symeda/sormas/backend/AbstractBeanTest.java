@@ -424,7 +424,7 @@ public abstract class AbstractBeanTest {
 	}
 
 	public ConfigFacade getConfigFacade() {
-		return getBean(ConfigFacadeEjbLocalMock.class);
+		return getBean(ConfigFacadeBeanLocalMock.class);
 	}
 
 	/**

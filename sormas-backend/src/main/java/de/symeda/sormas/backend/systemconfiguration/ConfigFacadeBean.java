@@ -18,12 +18,9 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Function;
 
-import javax.ejb.DependsOn;
-import javax.ejb.EJB;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -35,17 +32,15 @@ import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.util.RightsAllowed;
 
-@Singleton(name = "SystemConfigurationAccessor")
-@Startup
-@DependsOn("StartupShutdownService")
-@TransactionManagement(TransactionManagementType.CONTAINER)
+@ApplicationScoped
+@Transactional(Transactional.TxType.REQUIRED)
 @RightsAllowed(UserRight._SYSTEM_CONFIGURATION)
-public class ConfigFacadeEjb implements ConfigFacade {
+public class ConfigFacadeBean implements ConfigFacade {
 
 	public static final String COUNTRY_SEPARATION_CHAR = "-";
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	@EJB
+	@Inject
 	private SystemConfigurationValueFacade systemConfigurationValueEjb;
 
 	@Override
@@ -59,7 +54,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	private <T> Optional<T> getTypedValueFor(Config config, Function<String, T> parsingFct) {
-		return systemConfigurationValueEjb.getValue(config).filter(StringUtils::isNotBlank).map(value -> {
+		return systemConfigurationValueEjb.getValue(config).map(value -> {
 			logger.debug("Value [{}] for config [{}]", value, config);
 			T result = parsingFct.apply(value);
 
