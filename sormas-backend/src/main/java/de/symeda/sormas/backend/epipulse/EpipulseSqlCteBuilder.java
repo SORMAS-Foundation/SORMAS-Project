@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.backend.epipulse;
 
+import java.util.StringJoiner;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
@@ -22,10 +24,31 @@ import javax.ejb.Stateless;
  * Service for building SQL Common Table Expressions (CTEs) for Epipulse disease exports.
  * This service extracts the common SQL query fragments that are shared between different
  * disease export strategies (Pertussis, Measles, etc.).
+ * <p>
+ * All CTE builder methods return clean SQL fragments without leading or trailing commas.
+ * Use {@link #joinCtes(String...)} to assemble multiple CTEs with proper comma separation.
  */
 @Stateless
 @LocalBean
 public class EpipulseSqlCteBuilder {
+
+	/**
+	 * Joins multiple CTE fragments into a complete WITH clause.
+	 * Each CTE fragment should be a clean SQL expression without leading/trailing commas.
+	 *
+	 * @param ctes
+	 *            the CTE fragments to join
+	 * @return the complete WITH clause with proper comma separation
+	 */
+	public String joinCtes(String... ctes) {
+		StringJoiner joiner = new StringJoiner(", ", "WITH ", " ");
+		for (String cte : ctes) {
+			if (cte != null && !cte.trim().isEmpty()) {
+				joiner.add(cte.trim());
+			}
+		}
+		return joiner.toString();
+	}
 
 	/**
 	 * Builds the variables CTE that defines the export parameters.
@@ -35,11 +58,11 @@ public class EpipulseSqlCteBuilder {
 	 */
 	public String buildVariablesCte() {
 		//@formatter:off
-		return "WITH variables AS (SELECT         :disease         AS disease," +
+		return "variables AS (SELECT         :disease         AS disease," +
 			   "                          :subjectCode     AS subject_code," +
 			   "                          :countryLocale   AS country_locale," +
 			   "                          CAST(:startDate AS date) AS start_date," +
-			   "                          CAST(:endDate AS date)   AS end_date),";
+			   "                          CAST(:endDate AS date)   AS end_date)";
 		//@formatter:on
 	}
 
@@ -50,7 +73,7 @@ public class EpipulseSqlCteBuilder {
 	 */
 	public String buildConfigDataCte() {
 		//@formatter:off
-		return "     config_data AS (SELECT v.subject_code," +
+		return "config_data AS (SELECT v.subject_code," +
 			   "                            (SELECT epl.code" +
 			   "                             FROM epipulse_location_configuration epl" +
 			   "                             WHERE epl.type = 'Country'" +
@@ -59,7 +82,7 @@ public class EpipulseSqlCteBuilder {
 			   "                             FROM epipulse_datasource_configuration epd" +
 			   "                             WHERE epd.country_iso2_code = v.country_locale" +
 			   "                               AND epd.subjectcode = v.subject_code)         as datasource" +
-			   "                     FROM variables v),";
+			   "                     FROM variables v)";
 		//@formatter:on
 	}
 
@@ -74,7 +97,7 @@ public class EpipulseSqlCteBuilder {
 	public String buildFilteredCasesCte(boolean includeEpidataFields) {
 		StringBuilder cte = new StringBuilder();
 		//@formatter:off
-		cte.append("     filtered_cases AS (SELECT c.id,")
+		cte.append("filtered_cases AS (SELECT c.id,")
 		   .append("                               c.uuid,")
 		   .append("                               c.deleted,")
 		   .append("                               c.reportdate,")
@@ -98,7 +121,7 @@ public class EpipulseSqlCteBuilder {
 		   .append("                                 CROSS JOIN variables v")
 		   .append("                        WHERE c.disease = v.disease")
 		   .append("                          AND c.reportdate >= v.start_date")
-		   .append("                          AND c.reportdate < (v.end_date + interval '1 day')),");
+		   .append("                          AND c.reportdate < (v.end_date + interval '1 day'))");
 		//@formatter:on
 
 		return cte.toString();
@@ -111,7 +134,7 @@ public class EpipulseSqlCteBuilder {
 	 */
 	public String buildPreviousHospitalizationsCte() {
 		//@formatter:off
-		return "     case_all_prev_hsp_from_latest AS (SELECT prev_hsp.hospitalization_id," +
+		return "case_all_prev_hsp_from_latest AS (SELECT prev_hsp.hospitalization_id," +
 			   "                                              STRING_AGG(CONCAT_WS('|'," +
 			   "                                                                   COALESCE(prev_hsp.admittedtohealthfacility, '')," +
 			   "                                                                   COALESCE(prev_hsp.hospitalizationreason, '')," +
@@ -127,7 +150,7 @@ public class EpipulseSqlCteBuilder {
 			   "                                       WHERE hospitalization_id IN (SELECT hospitalization_id" +
 			   "                                                                    FROM filtered_cases" +
 			   "                                                                    WHERE hospitalization_id IS NOT NULL)" +
-			   "                                       GROUP BY prev_hsp.hospitalization_id),";
+			   "                                       GROUP BY prev_hsp.hospitalization_id)";
 		//@formatter:on
 	}
 
@@ -138,11 +161,11 @@ public class EpipulseSqlCteBuilder {
 	 */
 	public String buildSamplesCte() {
 		//@formatter:off
-		return "     case_all_samples_from_latest AS (SELECT samples.associatedcase_id," +
+		return "case_all_samples_from_latest AS (SELECT samples.associatedcase_id," +
 			   "                                             ARRAY_AGG(samples.id ORDER BY samples.sampledatetime DESC) as all_sample_ids_from_latest" +
 			   "                                      FROM samples" +
 			   "                                      WHERE samples.associatedcase_id IN (SELECT id FROM filtered_cases)" +
-			   "                                      GROUP BY samples.associatedcase_id),";
+			   "                                      GROUP BY samples.associatedcase_id)";
 		//@formatter:on
 	}
 
@@ -154,7 +177,7 @@ public class EpipulseSqlCteBuilder {
 	 */
 	public String buildPathogenTestsCte() {
 		//@formatter:off
-		return "     sample_all_pathogen_tests_from_latest AS (SELECT case_all_samples_from_latest.associatedcase_id," +
+		return "sample_all_pathogen_tests_from_latest AS (SELECT case_all_samples_from_latest.associatedcase_id," +
 			   "                                                      STRING_AGG(CONCAT_WS('|'," +
 			   "                                                                           pathogentest.testtype," +
 			   "                                                                           pathogentest.testresult" +
@@ -164,7 +187,7 @@ public class EpipulseSqlCteBuilder {
 			   "                                                        INNER JOIN case_all_samples_from_latest" +
 			   "                                                                   ON pathogentest.sample_id = ANY" +
 			   "                                                                      (case_all_samples_from_latest.all_sample_ids_from_latest)" +
-			   "                                               GROUP BY case_all_samples_from_latest.associatedcase_id),";
+			   "                                               GROUP BY case_all_samples_from_latest.associatedcase_id)";
 		//@formatter:on
 	}
 
@@ -187,7 +210,7 @@ public class EpipulseSqlCteBuilder {
 			   "                                where i.person_id IN (SELECT person_id FROM filtered_cases)" +
 			   "                                  and i.disease = v.disease" +
 			   "                                  and i.meansofimmunization IN (:meansOfImmVaccination, :meansOfImmVaccinationRecovery)" +
-			   "                                GROUP BY i.person_id),";
+			   "                                GROUP BY i.person_id)";
 		//@formatter:on
 	}
 
@@ -209,7 +232,7 @@ public class EpipulseSqlCteBuilder {
 			   "                               WHERE i.person_id IN (SELECT person_id FROM filtered_cases)" +
 			   "                                 and i.disease = variables.disease" +
 			   "                                 and i.meansofimmunization IN (:meansOfImmVaccination, :meansOfImmVaccinationRecovery)" +
-			   "                               GROUP BY i.person_id) ";
+			   "                               GROUP BY i.person_id)";
 		//@formatter:on
 	}
 
@@ -316,7 +339,7 @@ public class EpipulseSqlCteBuilder {
 	 */
 	public String buildNrlDataCte() {
 		//@formatter:off
-		return ", nrl_data_cte AS (" +
+		return "nrl_data_cte AS (" +
 			   "    SELECT c.id as case_id," +
 			   "           CASE " +
 			   "               WHEN EXISTS (" +
@@ -336,7 +359,7 @@ public class EpipulseSqlCteBuilder {
 			   "               ELSE FALSE" +
 			   "           END as nrl_data" +
 			   "    FROM filtered_cases c" +
-			   ") ";
+			   ")";
 		//@formatter:on
 	}
 }

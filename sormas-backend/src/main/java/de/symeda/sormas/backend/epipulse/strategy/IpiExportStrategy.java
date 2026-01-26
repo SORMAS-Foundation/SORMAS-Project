@@ -48,30 +48,25 @@ public class IpiExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 
 	@Override
 	protected String buildDiseaseExportQuery() {
-		StringBuilder query = new StringBuilder();
-
-		// Common CTEs (no epidata fields for PNEU metadata)
-		query.append(sqlCteBuilder.buildVariablesCte());
-		query.append(sqlCteBuilder.buildConfigDataCte());
-		query.append(sqlCteBuilder.buildFilteredCasesCte(false)); // No epidata fields needed
-		query.append(sqlCteBuilder.buildPreviousHospitalizationsCte());
-		query.append(sqlCteBuilder.buildSamplesCte());
-		query.append(sqlCteBuilder.buildPathogenTestsCte());
-		query.append(sqlCteBuilder.buildImmunizationsCte());
-		query.append(sqlCteBuilder.buildVaccinationsCte());
-
-		// PNEU-specific CTEs (following metadata specification)
-		query.append(sqlCteBuilder.buildNrlDataCte());
-		query.append(buildPneuSerotypingDataCte());
-		query.append(buildPneuPathogenDetectionMethodCte());
-		query.append(buildPneuClinicalCriteriaCte());
-		query.append(buildPneuVaccinationDetailsCte());
-		query.append(buildPneuAstDataCte());
+		// Common CTEs + PNEU-specific CTEs (no epidata fields needed)
+		String ctes = sqlCteBuilder.joinCtes(
+			sqlCteBuilder.buildVariablesCte(),
+			sqlCteBuilder.buildConfigDataCte(),
+			sqlCteBuilder.buildFilteredCasesCte(false),
+			sqlCteBuilder.buildPreviousHospitalizationsCte(),
+			sqlCteBuilder.buildSamplesCte(),
+			sqlCteBuilder.buildPathogenTestsCte(),
+			sqlCteBuilder.buildImmunizationsCte(),
+			sqlCteBuilder.buildVaccinationsCte(),
+			sqlCteBuilder.buildNrlDataCte(),
+			buildPneuSerotypingDataCte(),
+			buildPneuPathogenDetectionMethodCte(),
+			buildPneuClinicalCriteriaCte(),
+			buildPneuVaccinationDetailsCte(),
+			buildPneuAstDataCte());
 
 		// Main SELECT clause with all 56 columns (28 common + 28 PNEU-specific)
-		query.append(buildPneuSelectClause());
-
-		return query.toString();
+		return ctes + buildPneuSelectClause();
 	}
 
 	/**
@@ -219,7 +214,7 @@ public class IpiExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 	 */
 	private String buildPneuSerotypingDataCte() {
 		//@formatter:off
-		return ", pneu_serotyping AS (SELECT c.id as case_id," +
+		return "pneu_serotyping AS (SELECT c.id as case_id," +
 			   "                             (SELECT pt.typingid " +
 			   "                              FROM samples s " +
 			   "                              JOIN pathogentest pt ON pt.sample_id = s.id " +
@@ -229,7 +224,7 @@ public class IpiExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 			   "                                AND pt.typingid IS NOT NULL " +
 			   "                              ORDER BY pt.testdatetime DESC " +
 			   "                              LIMIT 1) as serotype " +
-			   "                      FROM filtered_cases c), ";
+			   "                      FROM filtered_cases c)";
 		//@formatter:on
 	}
 
@@ -247,7 +242,7 @@ public class IpiExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 			   "                                     AND pt.testresultverified = true " +
 			   "                                   ORDER BY pt.testdatetime DESC " +
 			   "                                   LIMIT 1) as detection_method " +
-			   "                           FROM filtered_cases c), ";
+			   "                           FROM filtered_cases c)";
 		//@formatter:on
 	}
 
@@ -261,7 +256,7 @@ public class IpiExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 			   "                                   CAST(s.septicaemia AS text) as septicaemia," +
 			   "                                   CAST(s.pneumoniaclinicalorradiologic AS text) as pneumonia " +
 			   "                            FROM filtered_cases c " +
-			   "                            JOIN symptoms s ON c.symptoms_id = s.id), ";
+			   "                            JOIN symptoms s ON c.symptoms_id = s.id)";
 		//@formatter:on
 	}
 
@@ -290,35 +285,35 @@ public class IpiExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
                 "               v.vaccinationdate," +
                 "               v.vaccinename," +
                 "               CASE " +
-                "                 WHEN CAST(v.vaccinename AS text) LIKE '%PCV%' " +
-                "                   OR CAST(v.vaccinename AS text) LIKE '%CONJUGATE%' " +
-                "                   OR CAST(v.vaccinename AS text) LIKE '%PREVENAR%' " +
-                "                   OR CAST(v.vaccinename AS text) LIKE '%PREVNAR%' " +
-                "                   OR CAST(v.vaccinename AS text) LIKE '%SYNFLORIX%' " +
-                "                   OR CAST(v.vaccinename AS text) LIKE '%VAXNEUVANCE%' THEN true " +
+                "                 WHEN CAST(v.vaccinename AS text) ILIKE '%PCV%' " +
+                "                   OR CAST(v.vaccinename AS text) ILIKE '%CONJUGATE%' " +
+                "                   OR CAST(v.vaccinename AS text) ILIKE '%PREVENAR%' " +
+                "                   OR CAST(v.vaccinename AS text) ILIKE '%PREVNAR%' " +
+                "                   OR CAST(v.vaccinename AS text) ILIKE '%SYNFLORIX%' " +
+                "                   OR CAST(v.vaccinename AS text) ILIKE '%VAXNEUVANCE%' THEN true " +
                 "                 ELSE false " +
                 "               END as is_pcv," +
                 "               CASE " +
-                "                 WHEN CAST(v.vaccinename AS text) LIKE '%PPV%' " +
-                "                   OR CAST(v.vaccinename AS text) LIKE '%POLYSACCHARIDE%' " +
-                "                   OR CAST(v.vaccinename AS text) LIKE '%PNEUMOVAX%' THEN true " +
+                "                 WHEN CAST(v.vaccinename AS text) ILIKE '%PPV%' " +
+                "                   OR CAST(v.vaccinename AS text) ILIKE '%POLYSACCHARIDE%' " +
+                "                   OR CAST(v.vaccinename AS text) ILIKE '%PNEUMOVAX%' THEN true " +
                 "                 ELSE false " +
                 "               END as is_ppv," +
-                "               SUM(CASE WHEN CAST(v.vaccinename AS text) LIKE '%PCV%' " +
-                "                          OR CAST(v.vaccinename AS text) LIKE '%CONJUGATE%' " +
-                "                          OR CAST(v.vaccinename AS text) LIKE '%PREVENAR%' " +
-                "                          OR CAST(v.vaccinename AS text) LIKE '%PREVNAR%' " +
-                "                          OR CAST(v.vaccinename AS text) LIKE '%SYNFLORIX%' " +
-                "                          OR CAST(v.vaccinename AS text) LIKE '%VAXNEUVANCE%' THEN 1 ELSE 0 END) " +
+                "               SUM(CASE WHEN CAST(v.vaccinename AS text) ILIKE '%PCV%' " +
+                "                          OR CAST(v.vaccinename AS text) ILIKE '%CONJUGATE%' " +
+                "                          OR CAST(v.vaccinename AS text) ILIKE '%PREVENAR%' " +
+                "                          OR CAST(v.vaccinename AS text) ILIKE '%PREVNAR%' " +
+                "                          OR CAST(v.vaccinename AS text) ILIKE '%SYNFLORIX%' " +
+                "                          OR CAST(v.vaccinename AS text) ILIKE '%VAXNEUVANCE%' THEN 1 ELSE 0 END) " +
                 "                   OVER (PARTITION BY c.id ORDER BY v.vaccinationdate) as pcv_row_num," +
-                "               SUM(CASE WHEN CAST(v.vaccinename AS text) LIKE '%PPV%' " +
-                "                          OR CAST(v.vaccinename AS text) LIKE '%POLYSACCHARIDE%' " +
-                "                          OR CAST(v.vaccinename AS text) LIKE '%PNEUMOVAX%' THEN 1 ELSE 0 END) " +
+                "               SUM(CASE WHEN CAST(v.vaccinename AS text) ILIKE '%PPV%' " +
+                "                          OR CAST(v.vaccinename AS text) ILIKE '%POLYSACCHARIDE%' " +
+                "                          OR CAST(v.vaccinename AS text) ILIKE '%PNEUMOVAX%' THEN 1 ELSE 0 END) " +
                 "                   OVER (PARTITION BY c.id ORDER BY v.vaccinationdate) as ppv_row_num " +
                 "        FROM filtered_cases c " +
                 "        LEFT JOIN vaccination v ON v.immunization_id IN (SELECT i.id FROM immunization i WHERE i.person_id = c.person_id AND i.disease = 'INVASIVE_PNEUMOCOCCAL_INFECTION') " +
                 "    ) vax " +
-                "    GROUP BY vax.case_id) ";
+                "    GROUP BY vax.case_id)";
 		//@formatter:on
 	}
 
@@ -333,7 +328,7 @@ public class IpiExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 	 */
 	private String buildPneuAstDataCte() {
 		//@formatter:off
-		return ", pneu_ast_data AS (" +
+		return "pneu_ast_data AS (" +
 			   "    SELECT DISTINCT ON (c.id) c.id as case_id," +
 			   "           ds.ceftriaxonemic," +
 			   "           CAST(ds.ceftriaxonesusceptibility AS text) as ctx_susceptibility," +
@@ -347,7 +342,7 @@ public class IpiExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 			   "        AND pt.testtype = 'ANTIBIOTIC_SUSCEPTIBILITY' " +
 			   "    LEFT JOIN drugsusceptibility ds ON pt.drugsusceptibility_id = ds.id " +
 			   "    ORDER BY c.id, pt.testdatetime DESC" +
-			   ") ";
+			   ")";
 		//@formatter:on
 	}
 

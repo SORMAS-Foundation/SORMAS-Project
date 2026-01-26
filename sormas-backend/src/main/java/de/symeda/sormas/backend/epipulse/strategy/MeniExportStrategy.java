@@ -53,32 +53,27 @@ public class MeniExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 
 	@Override
 	protected String buildDiseaseExportQuery() {
-		StringBuilder query = new StringBuilder();
-
-		// Common CTEs (with epidata fields for ImportedStatus)
-		query.append(sqlCteBuilder.buildVariablesCte());
-		query.append(sqlCteBuilder.buildConfigDataCte());
-		query.append(sqlCteBuilder.buildFilteredCasesCte(true)); // Include epidata fields
-		query.append(sqlCteBuilder.buildPreviousHospitalizationsCte());
-		query.append(sqlCteBuilder.buildSamplesCte());
-		query.append(sqlCteBuilder.buildPathogenTestsCte());
-		query.append(sqlCteBuilder.buildImmunizationsCte());
-		query.append(sqlCteBuilder.buildVaccinationsCte());
-
-		// MENI-specific CTEs
-		query.append(buildMeniSerogroupCte());
-		query.append(buildMeniDetectionMethodsCte());
-		query.append(buildMeniMolecularTypingCte());
-		query.append(buildMeniIsolateIdsCte());
-		query.append(buildMeniClinicalCriteriaCte());
-		query.append(buildMeniEpidataCte());
-		query.append(buildMeniVaccinationDetailsCte());
-		query.append(buildMeniAstDataCte());
+		// Common CTEs + MENI-specific CTEs (include epidata fields for ImportedStatus)
+		String ctes = sqlCteBuilder.joinCtes(
+			sqlCteBuilder.buildVariablesCte(),
+			sqlCteBuilder.buildConfigDataCte(),
+			sqlCteBuilder.buildFilteredCasesCte(true),
+			sqlCteBuilder.buildPreviousHospitalizationsCte(),
+			sqlCteBuilder.buildSamplesCte(),
+			sqlCteBuilder.buildPathogenTestsCte(),
+			sqlCteBuilder.buildImmunizationsCte(),
+			sqlCteBuilder.buildVaccinationsCte(),
+			buildMeniSerogroupCte(),
+			buildMeniDetectionMethodsCte(),
+			buildMeniMolecularTypingCte(),
+			buildMeniIsolateIdsCte(),
+			buildMeniClinicalCriteriaCte(),
+			buildMeniEpidataCte(),
+			buildMeniVaccinationDetailsCte(),
+			buildMeniAstDataCte());
 
 		// Main SELECT clause
-		query.append(buildMeniSelectClause());
-
-		return query.toString();
+		return ctes + buildMeniSelectClause();
 	}
 
 	@Override
@@ -249,7 +244,7 @@ public class MeniExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 	 */
 	private String buildMeniSerogroupCte() {
 		//@formatter:off
-		return ", meni_serogroup AS (" +
+		return "meni_serogroup AS (" +
 			   "    SELECT c.id as case_id," +
 			   "           (SELECT pt.typingid " +
 			   "            FROM samples s " +
@@ -261,7 +256,7 @@ public class MeniExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 			   "            ORDER BY pt.testdatetime DESC " +
 			   "            LIMIT 1) as serogroup " +
 			   "    FROM filtered_cases c" +
-			   ") ";
+			   ")";
 		//@formatter:on
 	}
 
@@ -270,16 +265,17 @@ public class MeniExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 	 */
 	private String buildMeniDetectionMethodsCte() {
 		//@formatter:off
-		return ", meni_detection_methods AS (" +
-			   "    SELECT c.id as case_id," +
-			   "           STRING_AGG(DISTINCT CAST(pt.testtype AS text), '#' ORDER BY CAST(pt.testtype AS text)) as main_detection_methods," +
-			   "           STRING_AGG(DISTINCT CAST(pt2.testtype AS text), '#' ORDER BY CAST(pt2.testtype AS text)) as second_detection_methods " +
-			   "    FROM filtered_cases c " +
-			   "    LEFT JOIN samples s ON s.associatedcase_id = c.id AND s.deleted = false " +
-			   "    LEFT JOIN pathogentest pt ON pt.sample_id = s.id AND pt.testresult = 'POSITIVE' " +
-			   "    LEFT JOIN pathogentest pt2 ON pt2.sample_id = s.id AND pt2.testresult != 'POSITIVE' " +
-			   "    GROUP BY c.id" +
-			   ") ";
+		return "meni_detection_methods AS (" +
+				"    SELECT c.id as case_id," +
+				"           STRING_AGG(DISTINCT CAST(pt.testtype AS text), '#' ORDER BY CAST(pt.testtype AS text)) " +
+				"               FILTER (WHERE pt.testresult = 'POSITIVE') as main_detection_methods," +
+				"           STRING_AGG(DISTINCT CAST(pt.testtype AS text), '#' ORDER BY CAST(pt.testtype AS text)) " +
+				"               FILTER (WHERE pt.testresult IS NOT NULL AND pt.testresult <> 'POSITIVE') as second_detection_methods " +
+				"    FROM filtered_cases c " +
+				"    LEFT JOIN samples s ON s.associatedcase_id = c.id AND s.deleted = false " +
+				"    LEFT JOIN pathogentest pt ON pt.sample_id = s.id " +
+				"    GROUP BY c.id" +
+				")";
 		//@formatter:on
 	}
 
@@ -296,7 +292,7 @@ public class MeniExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 	 */
 	private String buildMeniMolecularTypingCte() {
 		//@formatter:off
-		return ", meni_molecular_typing AS (" +
+		return "meni_molecular_typing AS (" +
 			   "    SELECT c.id as case_id," +
 			   "           STRING_AGG(DISTINCT CASE WHEN pt.testtype = 'MULTILOCUS_SEQUENCE_TYPING' THEN pt.typingid END, '#') as mlst_results," +
 			   // PorA1: actual value if found, NST if test was done but indeterminate
@@ -319,7 +315,7 @@ public class MeniExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 			   "    LEFT JOIN pathogentest pt ON pt.sample_id = s.id " +
 			   "        AND pt.testtype IN ('MULTILOCUS_SEQUENCE_TYPING', 'SEQUENCING', 'WHOLE_GENOME_SEQUENCING') " +
 			   "    GROUP BY c.id" +
-			   ") ";
+			   ")";
 		//@formatter:on
 	}
 
@@ -329,13 +325,13 @@ public class MeniExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 	 */
 	private String buildMeniIsolateIdsCte() {
 		//@formatter:off
-		return ", meni_isolate_ids AS (" +
+		return "meni_isolate_ids AS (" +
 			   "    SELECT c.id as case_id," +
 			   "           STRING_AGG(DISTINCT s.labsampleid, '#' ORDER BY s.labsampleid) as isolate_ids " +
 			   "    FROM filtered_cases c " +
 			   "    LEFT JOIN samples s ON s.associatedcase_id = c.id AND s.deleted = false AND s.labsampleid IS NOT NULL AND TRIM(s.labsampleid) != '' " +
 			   "    GROUP BY c.id" +
-			   ") ";
+			   ")";
 		//@formatter:on
 	}
 
@@ -344,14 +340,14 @@ public class MeniExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 	 */
 	private String buildMeniClinicalCriteriaCte() {
 		//@formatter:off
-		return ", meni_clinical_criteria AS (" +
+		return "meni_clinical_criteria AS (" +
 			   "    SELECT c.id as case_id," +
 			   "           CAST(s.meningitis AS text) as meningitis," +
 			   "           CAST(s.septicaemia AS text) as septicaemia," +
 			   "           CAST(s.pneumoniaclinicalorradiologic AS text) as pneumonia " +
 			   "    FROM filtered_cases c " +
 			   "    JOIN symptoms s ON c.symptoms_id = s.id" +
-			   ") ";
+			   ")";
 		//@formatter:on
 	}
 
@@ -362,7 +358,7 @@ public class MeniExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 	 */
 	private String buildMeniEpidataCte() {
 		//@formatter:off
-		return ", meni_epidata AS (" +
+		return "meni_epidata AS (" +
 			   "    SELECT c.id as case_id," +
 			   "           CAST(e.caseimportedstatus AS text) as imported_status," +
 			   "           EXISTS(SELECT 1 FROM samples s WHERE s.associatedcase_id = c.id AND s.deleted = false AND s.labsampleid IS NOT NULL AND TRIM(s.labsampleid) != '') as reported_emertii," +
@@ -374,7 +370,7 @@ public class MeniExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 			   "    LEFT JOIN region exp_region ON exp_loc.region_id = exp_region.id " +
 			   "    LEFT JOIN country exp_country ON exp_loc.country_id = exp_country.id " +
 			   "    GROUP BY c.id, e.caseimportedstatus" +
-			   ") ";
+			   ")";
 		//@formatter:on
 	}
 
@@ -383,7 +379,7 @@ public class MeniExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 	 */
 	private String buildMeniVaccinationDetailsCte() {
 		//@formatter:off
-		return ", meni_vaccination_details AS (" +
+		return "meni_vaccination_details AS (" +
 			   "    SELECT c.id as case_id," +
 			   "           MAX(v.vaccinationdate) as date_of_last_vaccination " +
 			   "    FROM filtered_cases c " +
@@ -392,7 +388,7 @@ public class MeniExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 			   "        AND i.meansofimmunization IN ('VACCINATION', 'VACCINATION_RECOVERY') " +
 			   "    LEFT JOIN vaccination v ON v.immunization_id = i.id " +
 			   "    GROUP BY c.id" +
-			   ") ";
+			   ")";
 		//@formatter:on
 	}
 
@@ -408,7 +404,7 @@ public class MeniExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 	 */
 	private String buildMeniAstDataCte() {
 		//@formatter:off
-		return ", meni_ast_data AS (" +
+		return "meni_ast_data AS (" +
 			   "    SELECT DISTINCT ON (c.id) c.id as case_id," +
 			   "           ds.ciprofloxacinmic," +
 			   "           CAST(ds.ciprofloxacinsusceptibility AS text) as cip_susceptibility," +
@@ -424,7 +420,7 @@ public class MeniExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 			   "        AND pt.testtype = 'ANTIBIOTIC_SUSCEPTIBILITY' " +
 			   "    LEFT JOIN drugsusceptibility ds ON pt.drugsusceptibility_id = ds.id " +
 			   "    ORDER BY c.id, pt.testdatetime DESC" +
-			   ") ";
+			   ")";
 		//@formatter:on
 	}
 

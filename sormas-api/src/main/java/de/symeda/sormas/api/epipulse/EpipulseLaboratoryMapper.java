@@ -570,9 +570,12 @@ public class EpipulseLaboratoryMapper {
 
 		// Map PCV vaccines (conjugate vaccines)
 		// Brand names: Prevenar/Prevnar (PCV7, PCV13, PCV20), Synflorix (PCV10), Vaxneuvance (PCV15)
-		if (normalized.contains("PCV") || normalized.contains("CONJUGATE")
-			|| normalized.contains("PREVENAR") || normalized.contains("PREVNAR")
-			|| normalized.contains("SYNFLORIX") || normalized.contains("VAXNEUVANCE")) {
+		if (normalized.contains("PCV")
+			|| normalized.contains("CONJUGATE")
+			|| normalized.contains("PREVENAR")
+			|| normalized.contains("PREVNAR")
+			|| normalized.contains("SYNFLORIX")
+			|| normalized.contains("VAXNEUVANCE")) {
 			if (normalized.contains("20")) {
 				return "PCV20";
 			} else if (normalized.contains("15") || normalized.contains("VAXNEUVANCE")) {
@@ -592,8 +595,11 @@ public class EpipulseLaboratoryMapper {
 
 		// Map PPV vaccine (polysaccharide vaccines)
 		// Brand names: Pneumovax 23 (PPV23)
-		if (normalized.contains("PPV") || normalized.contains("POLYSACCHARIDE")
-			|| normalized.contains("PNEUMOVAX") || normalized.contains("23")) {
+		if (normalized.contains("PPV")
+			|| normalized.contains("POLYSACCHARIDE")
+			|| normalized.contains("PNEUMOVAX")
+			|| normalized.contains("PPV23")
+			|| normalized.matches(".*\\bPNEUMO.*23\\b.*")) {
 			return "PPV23";
 		}
 

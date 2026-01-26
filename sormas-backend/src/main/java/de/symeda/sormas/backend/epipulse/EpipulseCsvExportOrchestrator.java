@@ -140,6 +140,14 @@ public class EpipulseCsvExportOrchestrator {
 			exportStatus = EpipulseExportStatus.FAILED;
 			logger.error("Error during export with uuid {}: {}", uuid, e.getMessage(), e);
 		} finally {
+			// Cleanup of partial files when export fails
+			if (exportStatus != EpipulseExportStatus.COMPLETED && exportFilePath != null) {
+				try {
+					Files.deleteIfExists(Paths.get(exportFilePath));
+				} catch (Exception e) {
+					logger.warn("Failed to delete partial export file for uuid {}: {}", uuid, e.getMessage(), e);
+				}
+			}
 			// Calculate file size after writer is closed
 			if (exportFilePath != null && exportStatus == EpipulseExportStatus.COMPLETED) {
 				try {

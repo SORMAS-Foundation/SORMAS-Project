@@ -175,21 +175,27 @@ public class MeniCsvExportStrategy implements CsvExportStrategy {
 		}
 
 		// Repeatable: MainPathogenDetectionMethod
-		List<String> mainDetectionMethods = dto.getMainPathogenDetectionMethodsForCsv(exportResult.getMaxMainPathogenDetectionMethods());
-		for (String method : mainDetectionMethods) {
-			exportLine[++index] = method;
+		if (exportResult.getMaxMainPathogenDetectionMethods() > 0) {
+			List<String> mainDetectionMethods = dto.getMainPathogenDetectionMethodsForCsv(exportResult.getMaxMainPathogenDetectionMethods());
+			for (String method : mainDetectionMethods) {
+				exportLine[++index] = method;
+			}
 		}
 
 		// Repeatable: SecondPathogenDetectionMethod
-		List<String> secondDetectionMethods = dto.getSecondPathogenDetectionMethodsForCsv(exportResult.getMaxSecondPathogenDetectionMethods());
-		for (String method : secondDetectionMethods) {
-			exportLine[++index] = method;
+		if (exportResult.getMaxSecondPathogenDetectionMethods() > 0) {
+			List<String> secondDetectionMethods = dto.getSecondPathogenDetectionMethodsForCsv(exportResult.getMaxSecondPathogenDetectionMethods());
+			for (String method : secondDetectionMethods) {
+				exportLine[++index] = method;
+			}
 		}
 
 		// Repeatable: ResultMLST
-		List<String> mlstResults = dto.getResultMlstForCsv(exportResult.getMaxResultMlst());
-		for (String mlst : mlstResults) {
-			exportLine[++index] = mlst;
+		if (exportResult.getMaxResultMlst() > 0) {
+			List<String> mlstResults = dto.getResultMlstForCsv(exportResult.getMaxResultMlst());
+			for (String mlst : mlstResults) {
+				exportLine[++index] = mlst;
+			}
 		}
 
 		// Fixed molecular typing fields
@@ -202,9 +208,11 @@ public class MeniCsvExportStrategy implements CsvExportStrategy {
 		exportLine[++index] = dto.getReportedEmertiiForCsv();
 
 		// Repeatable: PlaceOfInfection
-		List<String> placesOfInfection = dto.getPlaceOfInfectionForCsv(exportResult.getMaxPlaceOfInfection());
-		for (String place : placesOfInfection) {
-			exportLine[++index] = place;
+		if (exportResult.getMaxPlaceOfInfection() > 0) {
+			List<String> placesOfInfection = dto.getPlaceOfInfectionForCsv(exportResult.getMaxPlaceOfInfection());
+			for (String place : placesOfInfection) {
+				exportLine[++index] = place;
+			}
 		}
 
 		// Geographic fields
