@@ -15063,6 +15063,61 @@ ALTER TABLE testreport_history ADD COLUMN straincallstatus character varying(255
 
 INSERT INTO schema_version (version_number, comment) VALUES (602, 'External message additional fields');
 
+
+ALTER TABLE systemconfigurationvalue ADD CONSTRAINT uk_systemconfigurationvalue_config_key UNIQUE (config_key);
+
+DO
+$$
+    DECLARE
+        general_configuration_id bigint;
+
+    BEGIN
+        -- Check if the category 'GENERAL_CATEGORY' already exists
+        SELECT id
+        INTO general_configuration_id
+        FROM systemconfigurationcategory
+        WHERE name = 'GENERAL_CATEGORY';
+
+        -- Insert the general category if it doesn't exist
+        IF
+            general_configuration_id IS NULL THEN
+            INSERT INTO systemconfigurationcategory(id, uuid, changedate, creationdate, name, caption, description)
+            VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'GENERAL_CATEGORY', 'i18n/General/categoryGeneral',
+                    'i18n/General/categoryGeneral')
+            RETURNING id INTO general_configuration_id;
+        END IF;
+
+        -- Insert new configurations if missing
+        -- Background color
+        INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_pattern,
+                                             value_encrypt, data_provider, validation_message, changedate, creationdate,
+                                             id,
+                                             uuid)
+        VALUES ('MENU_BACKGROUND_COLOR', 'default', general_configuration_id, true,
+                '^(default|red|green|indigo|gray)|(#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3}))$', false,
+                null,
+                'i18n/systemConfigurationValueValidationInvalidBackgroundColor', now(), now(), nextval('entity_seq'),
+                generate_base32_uuid())
+        ON CONFLICT (config_key) DO NOTHING;
+
+        -- Menu Subtitle
+        INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_pattern,
+                                             value_encrypt, data_provider, validation_message, changedate, creationdate,
+                                             id,
+                                             uuid)
+        VALUES ('MENU_SUBTITLE', '', general_configuration_id, true,
+                '^\w{0,16}$', false,
+                null,
+                'i18n/systemConfigurationValueValidationMenuSubtitle', now(), now(), nextval('entity_seq'),
+                generate_base32_uuid())
+        ON CONFLICT (config_key) DO NOTHING;
+
+    END
+$$
+LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (603, 'System configuration: to visually distinguish different system types');
+
 -- Enhance Case Form vaccination status with additional detailed information #13377
 
 ALTER TABLE cases ADD COLUMN vaccinationstatusdetails character varying(255);
@@ -15090,6 +15145,6 @@ VALUES ('USE_DETERMINED_VACCINATION_STATUS', 'false', 'i18n/infoSystemConfigurat
 END $$
 LANGUAGE plpgsql;
 
-INSERT INTO schema_version (version_number, comment) VALUES (603, 'Enhance Case Form vaccination status with additional detailed information #13377');
+INSERT INTO schema_version (version_number, comment) VALUES (604, 'Enhance Case Form vaccination status with additional detailed information #13377');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
