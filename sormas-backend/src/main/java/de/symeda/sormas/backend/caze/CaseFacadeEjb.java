@@ -3228,6 +3228,10 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setRadiographyCompatibility(source.getRadiographyCompatibility());
 		target.setOtherDiagnosticCriteria(source.getOtherDiagnosticCriteria());
 
+		target.setTreatmentStarted(source.getTreatmentStarted());
+		target.setTreatmentNotApplicable(source.isTreatmentNotApplicable());
+		target.setTreatmentStartDate(source.getTreatmentStartDate());
+
 		return target;
 	}
 
@@ -3438,6 +3442,10 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		target.setRadiographyCompatibility(source.getRadiographyCompatibility());
 		target.setOtherDiagnosticCriteria(source.getOtherDiagnosticCriteria());
+
+		target.setTreatmentStarted(source.getTreatmentStarted());
+		target.setTreatmentNotApplicable(source.isTreatmentNotApplicable());
+		target.setTreatmentStartDate(source.getTreatmentStartDate());
 
 		return target;
 	}
