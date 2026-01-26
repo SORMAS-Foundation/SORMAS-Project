@@ -17,26 +17,43 @@
  *******************************************************************************/
 package de.symeda.sormas.api.caze;
 
-import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.Diseases;
-import de.symeda.sormas.api.utils.HideForCountriesExcept;
 
 public enum VaccinationStatus {
 
 	VACCINATED,
+
 	UNVACCINATED,
-	@Diseases(value = {Disease.MEASLES})
+
+	@Diseases(value = {
+		Disease.MEASLES })
 	VACCINATED_ONE_DOSE,
-	@Diseases(value = {Disease.MEASLES})
+
+	@Diseases(value = {
+		Disease.MEASLES })
 	VACCINATED_TWO_DOSE,
-	@Diseases(value = {Disease.MEASLES})
+
+	@Diseases(value = {
+		Disease.MEASLES })
 	RECOVERED,
+
+	OTHER,
+
 	UNKNOWN;
 
 	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
+	}
+
+	/**
+	 * Checks if this vaccination status indicates the person is vaccinated.
+	 * 
+	 * @return true if the status is VACCINATED, VACCINATED_ONE_DOSE, or VACCINATED_TWO_DOSE; false otherwise
+	 */
+	public boolean isVaccinated() {
+		return this == VACCINATED || this == VACCINATED_ONE_DOSE || this == VACCINATED_TWO_DOSE;
 	}
 }
