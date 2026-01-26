@@ -130,7 +130,10 @@ public class EpipulseCsvExportOrchestrator {
 				// Write entries using strategy
 				for (EpipulseDiseaseExportEntryDto dto : exportResult.getExportEntryList()) {
 					String[] exportLine = new String[columnNames.size()];
-					csvStrategy.writeEntryRow(dto, exportLine, exportResult);
+					int lastIndex = csvStrategy.writeEntryRow(dto, exportLine, exportResult);
+					if (lastIndex != columnNames.size() - 1) {
+						logger.warn("Column count mismatch: expected {}, got {}", columnNames.size() - 1, lastIndex);
+					}
 					writer.writeNext(exportLine);
 				}
 			}

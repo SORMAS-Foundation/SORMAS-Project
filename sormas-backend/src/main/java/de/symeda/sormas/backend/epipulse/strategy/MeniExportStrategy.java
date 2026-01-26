@@ -486,8 +486,18 @@ public class MeniExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 		try {
 			return SymptomState.valueOf(value);
 		} catch (IllegalArgumentException e) {
-			logger.warn("Invalid SymptomState value '{}', treating as null", value);
-			return null;
+			// Handle integer values (0=NO, 1=YES, 2=UNKNOWN) stored in some databases
+			switch (value) {
+			case "0":
+				return SymptomState.NO;
+			case "1":
+				return SymptomState.YES;
+			case "2":
+				return SymptomState.UNKNOWN;
+			default:
+				logger.warn("Invalid SymptomState value '{}', treating as null", value);
+				return null;
+			}
 		}
 	}
 
