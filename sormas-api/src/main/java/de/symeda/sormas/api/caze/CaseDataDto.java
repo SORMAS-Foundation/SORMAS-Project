@@ -384,6 +384,7 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.OTHER })
 	@Outbreaks
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private VaccinationStatus vaccinationStatus;
 	@Outbreaks
 	private String vaccinationStatusDetails;

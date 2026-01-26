@@ -956,7 +956,7 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 		this.vaccinationStatus = vaccination;
 	}
 
-	@Column(length = FieldConstraints.CHARACTER_LIMIT_BIG)
+	@Column(length = FieldConstraints.CHARACTER_LIMIT_DEFAULT)
 	public String getVaccinationStatusDetails() {
 		return vaccinationStatusDetails;
 	}
