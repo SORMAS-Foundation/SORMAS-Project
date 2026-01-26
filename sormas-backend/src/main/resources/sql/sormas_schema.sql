@@ -14127,7 +14127,7 @@ INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, valu
                                      uuid)
 VALUES ('EMAIL_SENDER_ADDRESS', 'noreply@sormas.org', email_configuration_id, true,
         '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', false, null,
-        'i18n/systemConfigurationValueValidationNotAEmail', now(), now(), nextval('entity_seq'),
+        'i18n/systemConfigurationValueInvalidValue', now(), now(), nextval('entity_seq'),
         generate_base32_uuid());
 
 DELETE
@@ -15145,5 +15145,11 @@ ALTER TABLE therapy_history DROP COLUMN treatmentnotapplicable;
 ALTER TABLE therapy_history DROP COLUMN treatmentstartdate;
 
 INSERT INTO schema_version (version_number, comment) VALUES (604, 'Move treatment fields from therapy to cases');
+
+-- external message person additional fields
+ALTER TABLE externalmessage ADD COLUMN personoccupation character varying(255);
+ALTER TABLE externalmessage_history ADD COLUMN personoccupation character varying(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (605, 'External message person additional fields');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

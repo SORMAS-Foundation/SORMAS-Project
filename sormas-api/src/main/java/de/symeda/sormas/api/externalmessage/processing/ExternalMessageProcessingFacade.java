@@ -53,6 +53,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityFacade;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionFacade;
+import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
@@ -241,6 +242,10 @@ public abstract class ExternalMessageProcessingFacade extends AbstractProcessing
 		return personFacade.getByContext(personContext, personUuid);
 	}
 
+	public OccupationType getOccupationTypeOther() throws CustomEnumNotFoundException {
+		return customizableEnumFacade.getEnumValue(CustomizableEnumType.OCCUPATION_TYPE, "OTHER", null);
+	}
+
 	public CaseDataDto updateAndSetCaseNotifier(String caseUuid, NotifierDto notifierDto) {
 
 		final CaseDataDto caseDto = caseFacade.getByUuid(caseUuid);
@@ -252,10 +257,10 @@ public abstract class ExternalMessageProcessingFacade extends AbstractProcessing
 	}
 
 	public void updatePerson(PersonDto personDto) {
-		if(personFacade == null) {
+		if (personFacade == null) {
 			return;
 		}
-		if(personDto == null) {
+		if (personDto == null) {
 			return;
 		}
 

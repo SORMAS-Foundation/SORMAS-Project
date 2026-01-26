@@ -202,6 +202,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setPersonGuardianRelationship(source.getPersonGuardianRelationship());
 		target.setPersonGuardianPhone(source.getPersonGuardianPhone());
 		target.setPersonGuardianEmail(source.getPersonGuardianEmail());
+		target.setPersonOccupation(source.getPersonOccupation());
 
 		target.setNotifierFirstName(source.getNotifierFirstName());
 		target.setNotifierLastName(source.getNotifierLastName());
@@ -425,6 +426,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setPersonGuardianRelationship(source.getPersonGuardianRelationship());
 		target.setPersonGuardianPhone(source.getPersonGuardianPhone());
 		target.setPersonGuardianEmail(source.getPersonGuardianEmail());
+		target.setPersonOccupation(source.getPersonOccupation());
 
 		target.setNotifierFirstName(source.getNotifierFirstName());
 		target.setNotifierLastName(source.getNotifierLastName());
