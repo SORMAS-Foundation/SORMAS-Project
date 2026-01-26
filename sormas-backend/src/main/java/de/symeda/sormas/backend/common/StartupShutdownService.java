@@ -697,6 +697,8 @@ public class StartupShutdownService {
 			databaseVersion = null;
 		}
 
+		logger.info("Current databaseVersion: [{}]", databaseVersion);
+
 		try (InputStream schemaStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(schemaFileName);
 			Scanner scanner = new Scanner(schemaStream, StandardCharsets.UTF_8.name())) {
 			StringBuilder nextUpdateBuilder = new StringBuilder();
