@@ -130,6 +130,7 @@ public class SystemConfigurationValueEjb
 		return Optional.ofNullable(configurationValuesByKey.get(key)).flatMap(SystemConfigurationValueProjection::getActualValue);
 	}
 
+	@PermitAll
 	public void loadDataIfEmpty() {
 		if (configurationValuesByKey.isEmpty()) {
 			loadData();
@@ -539,6 +540,7 @@ public class SystemConfigurationValueEjb
 		return dto;
 	}
 
+	@PermitAll
 	public ConcurrentHashMap<Config, SystemConfigurationValueProjection> getConfigurationValuesByKey() {
 		return configurationValuesByKey;
 	}
