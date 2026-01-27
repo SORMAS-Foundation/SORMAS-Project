@@ -61,6 +61,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.AuthProvider;
+import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.InfrastructureDataReferenceDto;
@@ -80,7 +81,6 @@ import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
-import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskContextIndexCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
@@ -193,7 +193,7 @@ public class UserFacadeEjb implements UserFacade {
 	@EJB
 	private PersonService personService;
 	@EJB
-	private de.symeda.sormas.api.ConfigFacade configFacade;
+	private ConfigFacade configFacade;
 	@Inject
 	private Event<UserCreateEvent> userCreateEvent;
 	@Inject
@@ -1065,9 +1065,12 @@ public class UserFacadeEjb implements UserFacade {
 			throw new ForbiddenException("No default role for new users from authentication provider is configured");
 		}
 
-		UserRole defaultRole = configFacade.getAsString(Config.AUTHENTICATION_PROVIDER_SYNCED_NEW_USER_ROLE)
-			.map(userRoleService::getByCaption)
-			.orElseThrow(() -> new ForbiddenException("No default role for new users from authentication provider is configured"));
+		String defaultRoleName = configFacade.getAuthenticationProviderSyncedNewUserRole();
+		UserRole defaultRole = userRoleService.getByCaption(defaultRoleName);
+
+		if (defaultRole == null) {
+			throw new ForbiddenException("No default role for new users from authentication provider is configured");
+		}
 
 		List<User> existingUsers = userService.getAll();
 

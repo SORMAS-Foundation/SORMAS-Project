@@ -1546,10 +1546,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 		nameSimilarityExpr = cb.concat(nameSimilarityExpr, person.get(Person.LAST_NAME));
 		Expression<String> nameSimilarityExpr2 = cb.concat(person2.get(Person.FIRST_NAME), " ");
 		nameSimilarityExpr2 = cb.concat(nameSimilarityExpr2, person2.get(Person.LAST_NAME));
-		Predicate nameSimilarityFilter =
-			cb.gt(
-				cb.function("similarity", double.class, nameSimilarityExpr, nameSimilarityExpr2),
-				configFacade.getAsDoubleOrThrow(Config.NAME_SIMILARITY_THRESHOLD));
+		cb.gt(cb.function("similarity", double.class, nameSimilarityExpr, nameSimilarityExpr2), configFacade.getNameSimilarityThreshold());
 		Predicate diseaseFilter = cb.equal(root.get(Contact.DISEASE), root2.get(Contact.DISEASE));
 		Predicate reportDateFilter = cb.lessThanOrEqualTo(
 			cb.abs(

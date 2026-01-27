@@ -37,6 +37,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status.Family;
 
+import de.symeda.sormas.api.ConfigFacade;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.http.client.utils.URIBuilder;
@@ -47,7 +48,6 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 
 import de.symeda.sormas.api.geo.GeoLatLon;
-import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.util.ClientHelper;
@@ -64,10 +64,10 @@ public class GeocodingService {
 	private static final String CITY_PLACEHOLDER = "city";
 
 	@EJB
-	private de.symeda.sormas.api.ConfigFacade configFacade;
+	private ConfigFacade configFacade;
 
 	public boolean isEnabled() {
-		return configFacade.isPresent(Config.GEOCODING_SERVICE_URL_TEMPLATE);
+		return configFacade.getGeocodingServiceUrlTemplate() != null;
 	}
 
 	public GeoLatLon getLatLon(Location location) {
@@ -83,11 +83,15 @@ public class GeocodingService {
 	}
 
 	public GeoLatLon getLatLon(LocationQuery query) {
-		return configFacade.getAsString(Config.GEOCODING_SERVICE_URL_TEMPLATE)
-			.filter(ignored -> configFacade.isPresent(Config.GEOCODING_LATITUDE_JSON_PATH))
-			.filter(ignored -> configFacade.isPresent(Config.GEOCODING_LONGITUDE_JSON_PATH))
-			.map(urlTemplate -> getLatLon(query, urlTemplate))
-			.orElse(null);
+
+		String urlTemplate = configFacade.getGeocodingServiceUrlTemplate();
+		if (DataHelper.isNullOrEmpty(urlTemplate)
+			|| DataHelper.isNullOrEmpty(configFacade.getGeocodingLatitudeJsonPath())
+			|| DataHelper.isNullOrEmpty(configFacade.getGeocodingLongitudeJsonPath())) {
+			return null;
+		}
+
+		return getLatLon(query, urlTemplate);
 	}
 
 	private GeoLatLon getLatLon(LocationQuery query, String urlTemplate) {
@@ -129,9 +133,9 @@ public class GeocodingService {
 		// read values as object, than parse to double
 		// JsonPath.read sometimes returns Integer that can't be casted to double, @see #6506
 		try {
-			jsonLatitude = JsonPath.read(responseText, configFacade.getAsStringOrThrow(Config.GEOCODING_LATITUDE_JSON_PATH));
+			jsonLatitude = JsonPath.read(responseText, configFacade.getGeocodingLatitudeJsonPath());
 			Double latitude = jsonLatitude != null ? Double.parseDouble(jsonLatitude.toString()) : null;
-			jsonLongitude = JsonPath.read(responseText, configFacade.getAsStringOrThrow(Config.GEOCODING_LONGITUDE_JSON_PATH));
+			jsonLongitude = JsonPath.read(responseText, configFacade.getGeocodingLongitudeJsonPath());
 			Double longitude = jsonLongitude != null ? Double.parseDouble(jsonLongitude.toString()) : null;
 
 			return new GeoLatLon(latitude, longitude);

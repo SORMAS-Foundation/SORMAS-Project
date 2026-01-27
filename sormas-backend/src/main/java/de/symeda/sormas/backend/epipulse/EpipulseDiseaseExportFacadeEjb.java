@@ -91,9 +91,9 @@ public class EpipulseDiseaseExportFacadeEjb implements EpipulseDiseaseExportFaca
 
 			String serverCountryLocale = configFacadeEjb.getCountryLocale();
 			String serverCountryCode = configFacadeEjb.getCountryCode();
-			String serverCountryName = configFacadeEjb.getAsStringOrThrow(Config.COUNTRY_NAME);
+			String serverCountryName = configFacadeEjb.getCountryName();
 
-			String generatedFilesPath = configFacadeEjb.getAsStringOrThrow(Config.GENERATED_FILES_PATH);
+			String generatedFilesPath = configFacadeEjb.getGeneratedFilesPath();
 			exportFileName = diseaseExportService.generateDownloadFileName(exportDto, epipulseExport.getId());
 			exportFilePath = generatedFilesPath + "/" + exportFileName;
 

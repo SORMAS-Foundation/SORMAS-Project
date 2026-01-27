@@ -57,8 +57,8 @@ import com.google.common.base.Functions;
 import com.jayway.jsonpath.JsonPath;
 
 import de.symeda.sormas.api.AuthProvider;
+import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.backend.user.event.PasswordResetEvent;
@@ -79,7 +79,7 @@ public class KeycloakService {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
-	private de.symeda.sormas.api.ConfigFacade configFacade;
+	private ConfigFacade configFacade;
 
 	private static final String OIDC_REALM = "realm";
 	private static final String OIDC_SERVER_URL = "auth-server-url";
@@ -95,8 +95,7 @@ public class KeycloakService {
 	@PostConstruct
 	public void init() {
 
-		// TODO: this is the call that fails within test
-		if (!AuthProvider.KEYCLOAK.equalsIgnoreCase(configFacade.getAsStringOrThrow(Config.AUTHENTICATION_PROVIDER))) {
+		if (!AuthProvider.KEYCLOAK.equalsIgnoreCase(configFacade.getAuthenticationProvider())) {
 			logger.info("Keycloak Auth Provider not active");
 			return;
 		}
@@ -384,8 +383,7 @@ public class KeycloakService {
 	}
 
 	private void assignSormasStatsRole(Keycloak keycloak, User sormasUser, UserResource userResource) {
-		Optional<String> sormasStatUrlOpt = configFacade.getAsString(Config.SORMAS_STATS_URL);
-		if (sormasStatUrlOpt.isEmpty()) {
+		if (StringUtils.isBlank(configFacade.getSormasStatsUrl())) {
 			return;
 		}
 

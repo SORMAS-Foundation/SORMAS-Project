@@ -56,6 +56,7 @@ import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.collections4.CollectionUtils;
 
+import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.RequestContextHolder;
@@ -82,7 +83,6 @@ import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleJurisdictionFlagsDto;
 import de.symeda.sormas.api.sample.SampleListEntryDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
-import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -153,7 +153,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 	@EJB
 	private SpecialCaseAccessService specialCaseAccessService;
 	@EJB
-	private de.symeda.sormas.api.ConfigFacade configFacade;
+	private ConfigFacade configFacade;
 
 	public SampleService() {
 		super(Sample.class, DeletableEntityType.SAMPLE);
@@ -1296,8 +1296,8 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 	}
 
 	public void cleanupOldCovidSamples() {
-		final Optional<Integer> maxAgeDays = configFacade.getAsInteger(Config.NEGATIVE_COVID_TESTS_MAX_AGE_DAYS);
-		if (maxAgeDays.isEmpty()) {
+		final Integer maxAgeDays = configFacade.getNegaiveCovidTestsMaxAgeDays();
+		if (maxAgeDays == null) {
 			return;
 		}
 
@@ -1316,7 +1316,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 					from.get(PathogenTest.TEST_DATE_TIME),
 					from.get(PathogenTest.REPORT_DATE),
 					from.get(PathogenTest.CREATION_DATE)),
-				DateHelper.subtractDays(new Date(), maxAgeDays.get())));
+				DateHelper.subtractDays(new Date(), maxAgeDays)));
 		em.createQuery(cq).getResultList().stream().collect(Collectors.groupingBy(PathogenTest::getSample)).forEach((sample, tests) -> {
 			if (pathogenTestService.count(new PathogenTestCriteria().sample(sample.toReference())) == tests.size()) {
 				delete(sample, new DeletionDetails(DeletionReason.OTHER_REASON, I18nProperties.getString(Strings.entityAutomaticSoftDeletion)));

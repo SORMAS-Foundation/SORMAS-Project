@@ -14,6 +14,7 @@
  */
 package de.symeda.sormas.api;
 
+import javax.naming.ConfigurationException;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
@@ -476,8 +477,12 @@ public class FacadeProvider {
 	}
 
 	public static ExternalMessageAdapterFacade getExternalLabResultsFacade() throws NamingException {
-		return (ExternalMessageAdapterFacade) get().ic
-			.lookup(FacadeProvider.getConfigFacade().getAsStringOrThrow(Config.INTERFACE_EXTERNAL_MESSAGE_ADAPTER_JNDI_NAME));
+		String jndiName = FacadeProvider.getConfigFacade().getExternalMessageAdapterJndiName();
+		if (jndiName == null) {
+			throw new ConfigurationException("No LabResultAdapter JNDI name is configured in the sormas.properties");
+		} else {
+			return (ExternalMessageAdapterFacade) get().ic.lookup(jndiName);
+		}
 	}
 
 	public static SurveillanceReportFacade getSurveillanceReportFacade() {

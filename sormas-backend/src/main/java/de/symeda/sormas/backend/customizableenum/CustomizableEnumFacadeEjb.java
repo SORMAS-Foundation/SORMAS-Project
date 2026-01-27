@@ -376,9 +376,7 @@ public class CustomizableEnumFacadeEjb
 			return;
 		}
 
-		boolean isCountryLanguage = configFacade.getAsString(Config.COUNTRY_LOCALE)
-			.filter(countryLocale -> StringUtils.equals(countryLocale, language.getLocale().toString()))
-			.isPresent();
+		boolean isCountryLanguage = StringUtils.equals(configFacade.getCountryLocale(), language.getLocale().toString());
 
 		Map<String, String> languageEnumValues = new HashMap<>();
 		for (CustomizableEnumValue customizableEnumValue : enumValueEntities.get(type)) {

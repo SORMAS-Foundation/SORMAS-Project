@@ -4,11 +4,11 @@ import javax.annotation.security.PermitAll;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.ClientInfraSyncFacade;
 import de.symeda.sormas.api.infrastructure.InfrastructureChangeDatesDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureSyncDto;
-import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.backend.campaign.CampaignFacadeEjb;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
@@ -62,7 +62,7 @@ public class ClientInfraSyncFacadeEjb implements ClientInfraSyncFacade {
 	@EJB
 	private CommunityService communityService;
 	@EJB
-	private de.symeda.sormas.api.ConfigFacade configFacade;
+	private ConfigFacade configFacade;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
@@ -76,9 +76,8 @@ public class ClientInfraSyncFacadeEjb implements ClientInfraSyncFacade {
 
 		InfrastructureSyncDto sync = new InfrastructureSyncDto();
 
-		Long infractructureThreshold = configFacade.getAsLongOrThrow(Config.INFRASTRUCTURE_SYNC_THRESHOLD);
-		if (facilityService.countAfter(changeDates.getFacilityChangeDate()) > infractructureThreshold
-			|| communityService.countAfter(changeDates.getCommunityChangeDate()) > infractructureThreshold) {
+		if (facilityService.countAfter(changeDates.getFacilityChangeDate()) > configFacade.getInfrastructureSyncThreshold()
+			|| communityService.countAfter(changeDates.getCommunityChangeDate()) > configFacade.getInfrastructureSyncThreshold()) {
 			sync.setInitialSyncRequired(true);
 			return sync;
 		}

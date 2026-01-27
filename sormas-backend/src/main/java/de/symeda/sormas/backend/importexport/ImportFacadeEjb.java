@@ -74,6 +74,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
+import de.symeda.sormas.api.ConfigFacade;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.slf4j.Logger;
@@ -135,7 +136,6 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.selfreport.SelfReportDto;
 import de.symeda.sormas.api.survey.SurveyTokenDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
-import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.CSVCommentLineValidator;
 import de.symeda.sormas.api.utils.CSVUtils;
@@ -187,7 +187,7 @@ public class ImportFacadeEjb implements ImportFacade {
 	private static final List<String> VACCINATION_COLUMNS_TO_REMOVE = Collections.singletonList(VaccinationDto.IMMUNIZATION);
 
 	@EJB
-	private de.symeda.sormas.api.ConfigFacade configFacade;
+	private ConfigFacade configFacade;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
@@ -453,7 +453,7 @@ public class ImportFacadeEjb implements ImportFacade {
 	private void createExportDirectoryIfNecessary() throws IOException {
 
 		try {
-			Files.createDirectories(Paths.get(configFacade.getAsStringOrThrow(Config.GENERATED_FILES_PATH)));
+			Files.createDirectories(Paths.get(configFacade.getGeneratedFilesPath()));
 		} catch (IOException e) {
 			logger.error("Generated files directory doesn't exist and creation failed.");
 			throw e;
@@ -769,7 +769,7 @@ public class ImportFacadeEjb implements ImportFacade {
 	}
 
 	private String getImportTemplateFilePath(String baseFilename) {
-		Path exportDirectory = Paths.get(configFacade.getAsStringOrThrow(Config.GENERATED_FILES_PATH));
+		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
 		return exportDirectory.resolve(getImportTemplateFileName(baseFilename)).toString();
 	}
 

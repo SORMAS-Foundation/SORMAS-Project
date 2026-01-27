@@ -33,6 +33,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.ConfigFacade;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.store.ContentFeatureSource;
 import org.geotools.geometry.jts.JTSFactoryFinder;
@@ -52,7 +53,6 @@ import de.symeda.sormas.api.geo.GeoLatLon;
 import de.symeda.sormas.api.geo.GeoShapeProvider;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
-import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 
@@ -66,7 +66,7 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 	@EJB
 	private DistrictFacadeEjbLocal districtFacade;
 	@EJB
-	private de.symeda.sormas.api.ConfigFacade configFacade;
+	private ConfigFacade configFacade;
 
 	private final Map<RegionReferenceDto, MultiPolygon> regionMultiPolygons = new HashMap<>();
 	private final Map<RegionReferenceDto, GeoLatLon[][]> regionShapes = new HashMap<>();
@@ -171,12 +171,11 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 
 	@PostConstruct
 	private void loadData() {
-		Optional<String> countryNameOpt = configFacade.getAsString(Config.COUNTRY_NAME);
-		String wkt = configFacade.getAsStringOrThrow(Config.GEOCODING_EPSG4326_WKT);
-		if (countryNameOpt.isEmpty()) {
+		String countryName = configFacade.getCountryName();
+		String wkt = configFacade.getGeocodingEPSG4326_WKT();
+		if (countryName.isEmpty()) {
 			logger.warn("Shape files couldn't be loaded, because no country name is defined in sormas.properties.");
 		} else {
-			String countryName = countryNameOpt.get();
 			loadRegionData(countryName, wkt);
 			loadDistrictData(countryName, wkt);
 			buildCountryShape();
@@ -438,7 +437,7 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 	 */
 	@Override
 	public String loadShapefileAttributions() {
-		String countryName = configFacade.getAsStringOrThrow(Config.COUNTRY_NAME);
+		String countryName = configFacade.getCountryName();
 		if (countryName.isEmpty()) {
 			logger.warn("Attribution couldn't be loaded, because no country name is defined in sormas.properties.");
 		} else {

@@ -22,10 +22,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.InfoProvider;
-import de.symeda.sormas.api.utils.Tuple;
 import de.symeda.sormas.api.utils.VersionHelper;
 
 @Path("/info")
@@ -41,27 +39,22 @@ public class InfoResource {
 	@GET
 	@Path("/appurl")
 	public String getAppUrl(@QueryParam("appVersion") String appVersionString) {
+
 		int[] appVersion = VersionHelper.extractVersion(appVersionString);
 
-		return FacadeProvider.getConfigFacade()
-			.getAsString(Config.APP_LEGACY_URL)
-			.map(legacyUrl -> new Tuple<>(legacyUrl, VersionHelper.extractVersion(legacyUrl)))
-			.filter(tuple -> VersionHelper.isVersion(tuple.getSecond()))
-			.map(tuple -> {
-				String appLegacyUrl = tuple.getFirst();
-				int[] appLegacyVersion = tuple.getSecond();
+		String appLegacyUrl = FacadeProvider.getConfigFacade().getAppLegacyUrl();
+		int[] appLegacyVersion = VersionHelper.extractVersion(appLegacyUrl);
+		if (VersionHelper.isVersion(appLegacyVersion)) {
+			if (!VersionHelper.isVersion(appVersion)) {
+				return appLegacyUrl; // no version -> likely old app 0.22.0 or older
+			} else if (VersionHelper.isEqual(appVersion, appLegacyVersion)) {
+				return null; // keep legacy version
+			} else if (VersionHelper.isBefore(appVersion, appLegacyVersion)) {
+				return appLegacyUrl;
+			}
+		}
 
-				if (!VersionHelper.isVersion(appVersion)) {
-					return appLegacyUrl; // no version -> likely old app 0.22.0 or older
-				} else if (VersionHelper.isEqual(appVersion, appLegacyVersion)) {
-					return null; // keep legacy version
-				} else if (VersionHelper.isBefore(appVersion, appLegacyVersion)) {
-					return appLegacyUrl;
-				}
-
-				return null;
-			})
-			.orElseGet(() -> FacadeProvider.getConfigFacade().getAsStringOrThrow(Config.APP_URL));
+		return FacadeProvider.getConfigFacade().getAppUrl();
 	}
 
 	@GET
@@ -79,6 +72,6 @@ public class InfoResource {
 	@GET
 	@Path("/countryname")
 	public String getCountryName() {
-		return FacadeProvider.getConfigFacade().getAsStringOrThrow(Config.COUNTRY_NAME);
+		return FacadeProvider.getConfigFacade().getCountryName();
 	}
 }

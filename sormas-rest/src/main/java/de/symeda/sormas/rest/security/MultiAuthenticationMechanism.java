@@ -24,22 +24,24 @@ import javax.security.enterprise.AuthenticationStatus;
 import javax.security.enterprise.authentication.mechanism.http.BasicAuthenticationMechanismDefinition;
 import javax.security.enterprise.authentication.mechanism.http.HttpAuthenticationMechanism;
 import javax.security.enterprise.authentication.mechanism.http.HttpMessageContext;
+import javax.security.enterprise.credential.CallerOnlyCredential;
+import javax.security.enterprise.credential.Credential;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
+import org.glassfish.soteria.Utils;
 import org.glassfish.soteria.cdi.BasicAuthenticationMechanismDefinitionAnnotationLiteral;
 import org.glassfish.soteria.mechanisms.BasicAuthenticationMechanism;
 import org.keycloak.KeycloakSecurityContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.AuthProvider;
+import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
-import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DefaultEntityHelper;
@@ -48,6 +50,8 @@ import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Mechanism which allows configuration of multiple providers trough a system property.
@@ -92,7 +96,7 @@ public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism
 
 	@Inject
 	public MultiAuthenticationMechanism(KeycloakHttpAuthenticationMechanism keycloakHttpAuthenticationMechanism) {
-		String authenticationProvider = FacadeProvider.getConfigFacade().getAsStringOrThrow(Config.AUTHENTICATION_PROVIDER);
+		String authenticationProvider = FacadeProvider.getConfigFacade().getAuthenticationProvider();
 		if (authenticationProvider.equals(AuthProvider.KEYCLOAK)) {
 			authenticationMechanism = keycloakHttpAuthenticationMechanism;
 

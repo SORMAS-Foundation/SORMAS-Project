@@ -109,7 +109,7 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 		Collection<Disease> diseases,
 		Language language) {
 
-		String rExecutable = configFacade.getAsStringOrThrow(Config.RSCRIPT_EXECUTABLE);
+		String rExecutable = configFacade.getRScriptExecutable();
 		if (StringUtils.isBlank(rExecutable)) {
 			return null;
 		}

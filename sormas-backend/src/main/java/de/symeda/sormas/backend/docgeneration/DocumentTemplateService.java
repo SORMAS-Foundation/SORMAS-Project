@@ -105,9 +105,7 @@ public class DocumentTemplateService extends BaseAdoService<DocumentTemplate> {
 	}
 
 	private Path getTemplateDirPath(DocumentWorkflow documentWorkflow, Disease disease) {
-		Path path = Paths.get(configFacade.getAsStringOrThrow(Config.CUSTOM_FILES_PATH))
-			.resolve("docgeneration")
-			.resolve(documentWorkflow.getTemplateDirectory());
+		Path path = Paths.get(configFacade.getCustomFilesPath()).resolve("docgeneration").resolve(documentWorkflow.getTemplateDirectory());
 
 		if (disease != null) {
 			path = path.resolve(disease.name());

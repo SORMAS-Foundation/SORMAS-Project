@@ -216,7 +216,7 @@ public class CronService {
 
 	@Schedule(hour = "1", minute = "30", second = "0", persistent = false)
 	public void deleteSystemEvents() {
-		int daysAfterSystemEventGetsDeleted = configFacade.getAsIntegerOrThrow(Config.DAYS_AFTER_SYSTEM_EVENT_GETS_DELETED);
+		int daysAfterSystemEventGetsDeleted = configFacade.getDaysAfterSystemEventGetsDeleted();
 		if (daysAfterSystemEventGetsDeleted >= 1) {
 			systemEventFacade.deleteAllDeletableSystemEvents(daysAfterSystemEventGetsDeleted);
 		}

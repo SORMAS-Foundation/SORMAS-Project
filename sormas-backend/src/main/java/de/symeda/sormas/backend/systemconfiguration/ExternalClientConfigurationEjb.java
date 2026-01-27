@@ -97,6 +97,7 @@ public class ExternalClientConfigurationEjb implements ExternalClientConfigurati
 
 	@Override
 	public boolean isExternalJournalActive() {
+		// TODO: fixme
 		return false;
 	}
 

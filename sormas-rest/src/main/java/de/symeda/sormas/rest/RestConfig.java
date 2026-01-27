@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.rest.resources.ExternalVisitsResource;
 import de.symeda.sormas.rest.security.KeycloakFilter;
@@ -98,8 +97,7 @@ public class RestConfig extends ResourceConfig {
 		@Override
 		public void contextInitialized(ServletContextEvent sce) {
 			ServletContext ctx = sce.getServletContext();
-			String authenticationProvider =
-				FacadeProvider.getConfigFacade().getAsStringOrThrow(Config.AUTHENTICATION_PROVIDER);
+			String authenticationProvider = FacadeProvider.getConfigFacade().getAuthenticationProvider();
 			if (authenticationProvider.equalsIgnoreCase(AuthProvider.KEYCLOAK)) {
 				FilterRegistration.Dynamic filterRegistration = ctx.addFilter("KeycloakFilter", KeycloakFilter.class);
 				filterRegistration.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");

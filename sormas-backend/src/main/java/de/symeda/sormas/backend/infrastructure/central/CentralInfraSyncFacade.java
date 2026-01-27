@@ -114,7 +114,7 @@ public class CentralInfraSyncFacade {
 	}
 
 	public void syncAll() {
-		if (!configFacade.getAsBoolean(Config.CENTRAL_LOCATION_SYNC)) {
+		if (!configFacade.isCentralLocationSync()) {
 			logger.info("Skipping synchronization with central as feature is disabled.");
 			return;
 		}

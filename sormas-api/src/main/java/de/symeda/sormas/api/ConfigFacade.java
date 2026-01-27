@@ -32,6 +32,8 @@ import de.symeda.sormas.api.systemconfiguration.Config;
 
 public interface ConfigFacade {
 
+	String SORMAS = "SORMAS";
+
 	boolean isPresent(Config config);
 
 	default boolean isAbsent(Config config) {
@@ -49,6 +51,11 @@ public interface ConfigFacade {
 	@Nullable
 	default String getAsStringOrNull(Config config) {
 		return getAsString(config).orElse(null);
+	}
+
+	@NotNull
+	default String getAsStringOrEmpty(Config config) {
+		return getAsString(config).orElse("");
 	}
 
 	boolean getAsBoolean(Config config);
@@ -115,7 +122,7 @@ public interface ConfigFacade {
 
 	@NotNull
 	default String getSormasInstanceName() {
-		return getAsBoolean(Config.CUSTOM_BRANDING) ? getAsStringOrThrow(Config.CUSTOM_BRANDING_NAME) : "SORMAS";
+		return getAsBoolean(Config.CUSTOM_BRANDING) ? getAsStringOrThrow(Config.CUSTOM_BRANDING_NAME) : SORMAS;
 	}
 
 	@NotNull
@@ -128,18 +135,20 @@ public interface ConfigFacade {
 		return getAsStringOrThrow(Config.COUNTRY_LOCALE);
 	}
 
+	@NotNull
 	default String getTempFilesPath() {
 		return getAsStringOrThrow(Config.TEMP_PATH);
 	}
 
 	// kept for legacy purposes
 
+	@NotNull
 	default String getCountryName() {
 		return getAsStringOrThrow(Config.COUNTRY_NAME);
 	}
 
 	default String getEpidPrefix() {
-		return getAsStringOrNull(Config.COUNTRY_EPID_PREFIX);
+		return getAsStringOrEmpty(Config.COUNTRY_EPID_PREFIX);
 	}
 
 	@Nullable
@@ -157,9 +166,9 @@ public interface ConfigFacade {
 		return getAsStringOrNull(Config.SORMAS_STATS_URL);
 	}
 
-	@Nullable
+	@NotNull
 	default String getDocumentFilesPath() {
-		return getAsStringOrNull(Config.DOCUMENTS_PATH);
+		return getAsStringOrThrow(Config.DOCUMENTS_PATH);
 	}
 
 	@Nullable
@@ -192,9 +201,9 @@ public interface ConfigFacade {
 	}
 
 
-	@Nullable
+	@NotNull
 	default String getCustomBrandingName() {
-		return getAsStringOrNull(Config.CUSTOM_BRANDING_NAME);
+		return getAsString(Config.CUSTOM_BRANDING_NAME).orElse(SORMAS);
 	}
 
 
@@ -280,9 +289,9 @@ public interface ConfigFacade {
 		return getAsStringOrNull(Config.EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_VERSION_ENDPOINT);
 	}
 
-	@Nullable
+	@NotNull
 	default String getAuthenticationProvider() {
-		return getAsStringOrNull(Config.AUTHENTICATION_PROVIDER);
+		return getAsStringOrThrow(Config.AUTHENTICATION_PROVIDER);
 	}
 
 	default boolean isAuthenticationProviderUserSyncAtStartupEnabled() {
@@ -323,14 +332,14 @@ public interface ConfigFacade {
 		return getAsLongOrThrow(Config.IMPORT_FILE_SIZE_LIMIT_MB);
 	}
 
-	@Nullable
+	@NotNull
 	default String getAuditLoggerConfig() {
-		return getAsStringOrNull(Config.AUDIT_LOGGER_CONFIG);
+		return getAsStringOrEmpty(Config.AUDIT_LOGGER_CONFIG);
 	}
 
-	@Nullable
+	@NotNull
 	default String getAuditSourceSite() {
-		return getAsStringOrNull(Config.AUDIT_SOURCE_SITE);
+		return getAsStringOrEmpty(Config.AUDIT_SOURCE_SITE);
 	}
 
 	default Integer getNegaiveCovidTestsMaxAgeDays() {
@@ -343,5 +352,35 @@ public interface ConfigFacade {
 
 	default long getMinimumAdultAge() {
 		return getAsLongOrThrow(Config.MINIMUM_ADULT_AGE);
+	}
+
+	@NotNull
+	default String getDocgenerationNullReplacement() {
+		return getAsStringOrThrow(Config.DOCGENERATION_NULL_REPLACEMENT);
+	}
+
+	@Nullable
+    default String getCentralEtcdClientName() {
+		return getAsStringOrNull(Config.CENTRAL_ETCD_CLIENT_NAME);
+    }
+
+	@Nullable
+	default String getCentralEtcdClientPassword() {
+		return getAsStringOrNull(Config.CENTRAL_ETCD_CLIENT_PASSWORD);
+	}
+
+	@Nullable
+	default String getCentralEtcdCaPath() {
+		return getAsStringOrNull(Config.CENTRAL_ETCD_CA_PATH);
+	}
+
+	@Nullable
+	default String getCentralEtcdHost() {
+		return getAsStringOrNull(Config.CENTRAL_ETCD_HOST);
+	}
+
+
+	default boolean isCentralLocationSync() {
+		return getAsBoolean(Config.CENTRAL_LOCATION_SYNC);
 	}
 }

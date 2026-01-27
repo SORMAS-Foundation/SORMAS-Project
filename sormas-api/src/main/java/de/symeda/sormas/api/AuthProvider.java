@@ -15,8 +15,6 @@
 
 package de.symeda.sormas.api;
 
-import de.symeda.sormas.api.systemconfiguration.Config;
-
 /**
  * Authentication provider which can be configured trough the {@link ConfigFacade#getAuthenticationProvider()} property.
  * Once initialized it provides Auth Provider specific authentication configs like:
@@ -42,9 +40,10 @@ public class AuthProvider {
 
 	private final String name;
 
-	private AuthProvider(String configuredProvider, boolean isAuthenticationProviderUserSyncAtStartupEnabled) {
+	private AuthProvider(ConfigFacade configFacade) {
+		String configuredProvider = configFacade.getAuthenticationProvider();
 		isDefaultProvider = SORMAS.equalsIgnoreCase(configuredProvider);
-		isUserSyncAtStartupEnabled = KEYCLOAK.equalsIgnoreCase(configuredProvider) && isAuthenticationProviderUserSyncAtStartupEnabled;
+		isUserSyncAtStartupEnabled = KEYCLOAK.equalsIgnoreCase(configuredProvider) && configFacade.isAuthenticationProviderUserSyncAtStartupEnabled();
 		name = configuredProvider;
 	}
 
@@ -52,9 +51,7 @@ public class AuthProvider {
 		if (provider == null) {
 			synchronized (AuthProvider.class) {
 				if (provider == null) {
-					provider = new AuthProvider(
-						configFacade.getAsStringOrThrow(Config.AUTHENTICATION_PROVIDER),
-						configFacade.getAsBoolean(Config.AUTHENTICATION_PROVIDER_SYNCED_NEW_USER_ROLE));
+					provider = new AuthProvider(configFacade);
 				}
 			}
 		}

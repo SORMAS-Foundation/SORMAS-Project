@@ -399,7 +399,7 @@ public class InfoFacadeEjb implements InfoFacade {
 	}
 
 	private File getDataProtectionFile() {
-		return new File(configFacade.getAsStringOrThrow(Config.CUSTOM_FILES_PATH), DATA_PROTECTION_FILE_NAME);
+		return new File(configFacade.getCustomFilesPath(), DATA_PROTECTION_FILE_NAME);
 	}
 
 	private Map<String, List<XSSFCell>> getDataProtectionCellData(XSSFSheet dataProtectionSheet) {

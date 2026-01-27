@@ -269,7 +269,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		}
 
 		// 3. fill null properties
-		String nullReplacement = configFacade.getAsStringOrThrow(Config.DOCGENERATION_NULL_REPLACEMENT);
+		String nullReplacement = configFacade.getDocgenerationNullReplacement();
 		if (nullReplacement.isEmpty()) {
 			nullReplacement = " ";
 		}

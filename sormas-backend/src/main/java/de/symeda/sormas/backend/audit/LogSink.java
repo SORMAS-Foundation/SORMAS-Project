@@ -57,14 +57,14 @@ public class LogSink {
 
 	@PostConstruct
 	private void setup() {
-		Optional<String> fileNameOpt = configFacade.getAsString(Config.AUDIT_LOGGER_CONFIG);
+		String fileName = configFacade.getAuditLoggerConfig();
 
-		if (fileNameOpt.isEmpty()) {
+		if (fileName == null || fileName.equals("")) {
 			setupNopLogger();
 			return;
 		}
 
-		File file = new File(fileNameOpt.get());
+		File file = new File(fileName);
 		JoranConfigurator configurator = new JoranConfigurator();
 		LoggerContext context = new LoggerContext();
 		configurator.setContext(context);

@@ -178,7 +178,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 	}
 
 	private void sendRequest(ExportParameters params) throws ExternalSurveillanceToolException {
-		String serviceUrl = configFacade.getAsStringOrThrow(Config.EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL).trim();
+		String serviceUrl = configFacade.getExternalSurveillanceToolGatewayUrl().trim();
 
 		Invocation.Builder request =
 			ClientBuilder.newBuilder().connectTimeout(30, TimeUnit.SECONDS).build().target(serviceUrl).path("export").request();
@@ -303,7 +303,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 	}
 
 	private void sendDeleteRequest(DeleteParameters params) throws ExternalSurveillanceToolException {
-		String serviceUrl = configFacade.getAsStringOrThrow(Config.EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL).trim();
+		String serviceUrl = configFacade.getExternalSurveillanceToolGatewayUrl().trim();
 
 		Invocation.Builder request =
 			ClientBuilder.newBuilder().connectTimeout(30, TimeUnit.SECONDS).build().target(serviceUrl).path("delete").request();
@@ -333,7 +333,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 	@Override
 	@PermitAll
 	public String getVersion() throws ExternalSurveillanceToolException {
-		String serviceUrl = configFacade.getAsStringOrThrow(Config.EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL).trim();
+		String serviceUrl = configFacade.getExternalSurveillanceToolGatewayUrl().trim();
 		String versionEndpoint = configFacade.getAsStringOrThrow(Config.EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_VERSION_ENDPOINT).trim();
 
 		try {

@@ -51,6 +51,7 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.IsCase;
@@ -63,7 +64,6 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.task.IsTask;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
@@ -156,7 +156,7 @@ public class TaskFacadeEjb implements TaskFacade {
 	@EJB
 	private MessagingService messagingService;
 	@EJB
-	private de.symeda.sormas.api.ConfigFacade configFacade;
+	private ConfigFacade configFacade;
 	@EJB
 	private TravelEntryService travelEntryService;
 	@EJB
@@ -1189,13 +1189,16 @@ public class TaskFacadeEjb implements TaskFacade {
 			return null;
 		}
 
-		return configFacade.getAsString(Config.UI_URL).map(uiUrl -> {
-			StringBuilder uiUrlBuilder = new StringBuilder(uiUrl);
-			if (!uiUrl.endsWith("/")) {
-				uiUrlBuilder.append("/");
-			}
-			return uiUrlBuilder.append("#!").append(taskContext.getUrlPattern()).append("/data/").append(uuid).toString();
-		}).orElse(null);
+		String uiUrl = configFacade.getUiUrl();
+		if (uiUrl == null) {
+			return null;
+		}
+
+		StringBuilder uiUrlBuilder = new StringBuilder(uiUrl);
+		if (!uiUrl.endsWith("/")) {
+			uiUrlBuilder.append("/");
+		}
+		return uiUrlBuilder.append("#!").append(taskContext.getUrlPattern()).append("/data/").append(uuid).toString();
 	}
 
 	@Override

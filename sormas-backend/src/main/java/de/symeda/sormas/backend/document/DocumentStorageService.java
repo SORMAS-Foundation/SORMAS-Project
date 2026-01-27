@@ -63,12 +63,12 @@ public class DocumentStorageService {
 
     @NotNull
     private Path getFilePath(String storageReference) {
-		return Paths.get(configFacade.getAsStringOrThrow(Config.DOCUMENTS_PATH), storageReference);
+		return Paths.get(configFacade.getDocumentFilesPath(), storageReference);
 	}
 
 	public String save(Document document, byte[] content) throws IOException {
 		Path relativePath = computeRelativePath(document);
-		Path filePath = Paths.get(configFacade.getAsStringOrThrow(Config.DOCUMENTS_PATH)).resolve(relativePath);
+		Path filePath = Paths.get(configFacade.getDocumentFilesPath()).resolve(relativePath);
 		Files.createDirectories(filePath.getParent());
 		Files.write(filePath, content, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
 		setDocumentAttributes(document, filePath);

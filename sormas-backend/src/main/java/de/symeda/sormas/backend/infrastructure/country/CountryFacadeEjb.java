@@ -306,7 +306,7 @@ public class CountryFacadeEjb
 	@Override
 	@PermitAll
 	public CountryReferenceDto getServerCountry() {
-		String countryName = configFacadeEjb.getAsStringOrThrow(Config.COUNTRY_NAME);
+		String countryName = configFacadeEjb.getCountryName();
 		List<CountryReferenceDto> countryReferenceDtos = getByDefaultName(countryName, false);
 		return countryReferenceDtos.isEmpty() ? null : countryReferenceDtos.get(0);
 	}
