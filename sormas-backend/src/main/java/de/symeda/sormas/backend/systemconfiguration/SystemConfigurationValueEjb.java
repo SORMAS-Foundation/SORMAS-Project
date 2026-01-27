@@ -22,12 +22,14 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.security.PermitAll;
+import javax.ejb.DependsOn;
 import javax.ejb.EJB;
 import javax.ejb.Lock;
 import javax.ejb.LockType;
+import javax.ejb.Singleton;
+import javax.ejb.Startup;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -38,7 +40,6 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,20 +68,21 @@ import de.symeda.sormas.backend.util.RightsAllowed;
  * Implementation of the {@link SystemConfigurationValueFacade} interface.
  * Provides methods to manage system configuration settings.
  */
-@ApplicationScoped
+@Singleton(name = "SystemConfigurationValueFacade")
+@Startup
+@DependsOn("StartupShutdownService")
 @TransactionManagement(TransactionManagementType.CONTAINER)
 @RightsAllowed(UserRight._SYSTEM_CONFIGURATION)
 public class SystemConfigurationValueEjb
-	extends
-	AbstractBaseEjb<SystemConfigurationValue, SystemConfigurationValueDto, SystemConfigurationValueIndexDto, SystemConfigurationValueReferenceDto, SystemConfigurationValueService, SystemConfigurationValueCriteria>
-	implements SystemConfigurationValueFacade {
+		extends
+		AbstractBaseEjb<SystemConfigurationValue, SystemConfigurationValueDto, SystemConfigurationValueIndexDto, SystemConfigurationValueReferenceDto, SystemConfigurationValueService, SystemConfigurationValueCriteria>
+		implements SystemConfigurationValueFacade {
 
 	private static final long serialVersionUID = 1L;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SystemConfigurationValueEjb.class);
 
-	private final ConcurrentHashMap<Config, SystemConfigurationValueProjection> configurationValuesByKey =
-		new ConcurrentHashMap<>(Config.values().length);
+	private final ConcurrentHashMap<Config, SystemConfigurationValueProjection> configurationValuesByKey = new ConcurrentHashMap<>(Config.values().length);
 
 	private SystemConfigurationCategoryService categoryService;
 
@@ -122,33 +124,20 @@ public class SystemConfigurationValueEjb
 	@PermitAll
 	@Override
 	public Optional<String> getValue(final Config key) {
+
 		loadDataIfEmpty();
 
-		SystemConfigurationValueProjection systemConfigurationValueProjection = configurationValuesByKey.get(key);
-
-		if (systemConfigurationValueProjection == null) {
-			LOGGER.warn(
-				"No configuration present in DB for key: [{}]. Make sure sormas_schema.sql was executed successfully against this instance",
-				key);
-
-			return Optional.empty();
-		}
-
-		return systemConfigurationValueProjection.getActualValue();
+		return Optional.ofNullable(configurationValuesByKey.get(key)).flatMap(SystemConfigurationValueProjection::getActualValue);
 	}
 
-	@PermitAll
 	public void loadDataIfEmpty() {
-		if (MapUtils.isEmpty(configurationValuesByKey)) {
+		if (configurationValuesByKey.isEmpty()) {
 			loadData();
 		}
 	}
 
 	@PermitAll
-	@Override
 	public boolean exists(final Config key) {
-		loadDataIfEmpty();
-
 		return configurationValuesByKey.containsKey(key);
 	}
 
@@ -173,16 +162,10 @@ public class SystemConfigurationValueEjb
 		final SystemConfigurationValue existing = service.getByUuid(dto.getUuid());
 
 		final SystemConfigurationValue newValue = fillOrBuildEntity(dto, existing, true);
-
-		System.out.println(newValue.getId());
-		System.out.println(newValue.getValue());
-		System.out.println(newValue.getKey());
-
 		service.ensurePersisted(newValue);
 
-		// Updating only the given system configuration, not the others.
-		Config config = newValue.getKey();
-		configurationValuesByKey.put(config, new SystemConfigurationValueProjection(config, newValue.getValue(), newValue.getDefaultValue()));
+		// Reset cache since values have been changed
+		loadData();
 
 		return toDto(newValue);
 	}
@@ -257,17 +240,17 @@ public class SystemConfigurationValueEjb
 	@RightsAllowed(UserRight._SYSTEM_CONFIGURATION)
 	@Override
 	public List<SystemConfigurationValueIndexDto> getIndexList(
-		final SystemConfigurationValueCriteria criteria,
-		final Integer first,
-		final Integer max,
-		final List<SortProperty> sortProperties) {
+			final SystemConfigurationValueCriteria criteria,
+			final Integer first,
+			final Integer max,
+			final List<SortProperty> sortProperties) {
 
 		LOGGER.debug(
-			"Retrieving SystemConfigurationValueIndexDto list with criteria: {}, first: {}, max: {}, sortProperties: {}",
-			criteria,
-			first,
-			max,
-			sortProperties);
+				"Retrieving SystemConfigurationValueIndexDto list with criteria: {}, first: {}, max: {}, sortProperties: {}",
+				criteria,
+				first,
+				max,
+				sortProperties);
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<SystemConfigurationValue> cq = cb.createQuery(SystemConfigurationValue.class);
 		final Root<SystemConfigurationValue> root = cq.from(SystemConfigurationValue.class);
@@ -285,21 +268,21 @@ public class SystemConfigurationValueEjb
 			final List<Order> order = sortProperties.stream().map(sortProperty -> {
 				final Expression<?> expression;
 				switch (sortProperty.propertyName) {
-				case SystemConfigurationValue.CATEGORY_FIELD_NAME:
-					expression = root.get(sortProperty.propertyName);
-					break;
-				case SystemConfigurationValue.KEY_FIELD_NAME:
-					expression = cb.lower(root.get(sortProperty.propertyName));
-					break;
-				case SystemConfigurationValue.VALUE_FIELD_NAME:
-					expression = root.get(sortProperty.propertyName);
-					break;
-				case SystemConfigurationValue.DESCRIPTION:
-					expression = cb.lower(root.get(sortProperty.propertyName));
-					break;
-				default:
-					LOGGER.error("Invalid sort property {}.", sortProperty.propertyName);
-					throw new IllegalArgumentException(sortProperty.propertyName);
+					case SystemConfigurationValue.CATEGORY_FIELD_NAME:
+						expression = root.get(sortProperty.propertyName);
+						break;
+					case SystemConfigurationValue.KEY_FIELD_NAME:
+						expression = cb.lower(root.get(sortProperty.propertyName));
+						break;
+					case SystemConfigurationValue.VALUE_FIELD_NAME:
+						expression = root.get(sortProperty.propertyName);
+						break;
+					case SystemConfigurationValue.DESCRIPTION:
+						expression = cb.lower(root.get(sortProperty.propertyName));
+						break;
+					default:
+						LOGGER.error("Invalid sort property {}.", sortProperty.propertyName);
+						throw new IllegalArgumentException(sortProperty.propertyName);
 				}
 				return sortProperty.ascending ? cb.asc(expression) : cb.desc(expression);
 			}).collect(Collectors.toList());
@@ -351,8 +334,8 @@ public class SystemConfigurationValueEjb
 		}
 
 		if (dto.getPattern() != null
-			&& !dto.getPattern().isBlank()
-			&& !SystemConfigurationValueHelper.isConfigurationValueMatchingPattern(dto.getValue(), dto.getPattern())) {
+				&& !dto.getPattern().isBlank()
+				&& !SystemConfigurationValueHelper.isConfigurationValueMatchingPattern(dto.getValue(), dto.getPattern())) {
 			LOGGER.warn("Invalid value in SystemConfigurationValueDto: {}", dto);
 
 			String message = null;
@@ -380,33 +363,9 @@ public class SystemConfigurationValueEjb
 		LOGGER.info("Loading SystemConfiguration data into cache");
 		configurationValuesByKey.clear();
 
-		getAll().forEach(
-			value -> configurationValuesByKey
-				.put(value.getKey(), new SystemConfigurationValueProjection(value.getKey(), value.getValue(), value.getDefaultValue())));
+		service.getAll().forEach(value -> configurationValuesByKey.put(value.getKey(), new SystemConfigurationValueProjection(value.getKey(), value.getValue(), value.getDefaultValue())));
 
 		LOGGER.info("SystemConfiguration data loaded into cache successfully");
-	}
-
-	public List<SystemConfigurationValueProjection> getAllProjections() {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<SystemConfigurationValueProjection> cq = cb.createQuery(SystemConfigurationValueProjection.class);
-		Root<SystemConfigurationValue> from = cq.from(SystemConfigurationValue.class);
-
-		cq.select(
-			cb.construct(
-				SystemConfigurationValueProjection.class,
-				from.get(SystemConfigurationValue.KEY_FIELD_NAME),
-				from.get(SystemConfigurationValue.VALUE_FIELD_NAME),
-				from.get(SystemConfigurationValue.DEFAULT_VALUE_FIELD_NAME)));
-
-		cq.orderBy(cb.desc(from.get(AbstractDomainObject.ID)));
-
-		return em.createQuery(cq).getResultList();
-	}
-
-	public List<SystemConfigurationValue> getAll() {
-		return service.getAll();
 	}
 
 	/**
@@ -425,9 +384,9 @@ public class SystemConfigurationValueEjb
 	 */
 	@Override
 	protected SystemConfigurationValue fillOrBuildEntity(
-		@NotNull final SystemConfigurationValueDto source,
-		SystemConfigurationValue target,
-		final boolean checkChangeDate) {
+			@NotNull final SystemConfigurationValueDto source,
+			SystemConfigurationValue target,
+			final boolean checkChangeDate) {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, SystemConfigurationValue::new, checkChangeDate);
 
@@ -468,9 +427,9 @@ public class SystemConfigurationValueEjb
 		target.setValue(source.getValue());
 		target.setDescription(source.getDescription());
 		target.setCategory(
-			source.getCategory() != null
-				? categoryFacade.getReferenceByUuid(source.getCategory().getUuid())
-				: categoryFacade.getDefaultCategoryReferenceDto());
+				source.getCategory() != null
+						? categoryFacade.getReferenceByUuid(source.getCategory().getUuid())
+						: categoryFacade.getDefaultCategoryReferenceDto());
 		target.setOptional(source.getOptional() != null ? source.getOptional() : Boolean.FALSE);
 		target.setPattern(source.getPattern());
 		target.setEncrypt(source.getEncrypt());
@@ -480,7 +439,7 @@ public class SystemConfigurationValueEjb
 			try {
 				final Class<?> clazz = Class.forName(source.getDataProvider());
 				final SystemConfigurationValueDataProvider dataProvider =
-					(SystemConfigurationValueDataProvider) clazz.getDeclaredConstructor().newInstance();
+						(SystemConfigurationValueDataProvider) clazz.getDeclaredConstructor().newInstance();
 				target.setDataProvider(dataProvider);
 			} catch (final Exception e) {
 				LOGGER.error("Failed to instantiate SystemConfigurationValueDataProvider", e);
@@ -524,10 +483,10 @@ public class SystemConfigurationValueEjb
 	 */
 	@Override
 	protected void pseudonymizeDto(
-		final SystemConfigurationValue source,
-		final SystemConfigurationValueDto dto,
-		final Pseudonymizer<SystemConfigurationValueDto> pseudonymizer,
-		final boolean inJurisdiction) {
+			final SystemConfigurationValue source,
+			final SystemConfigurationValueDto dto,
+			final Pseudonymizer<SystemConfigurationValueDto> pseudonymizer,
+			final boolean inJurisdiction) {
 		LOGGER.debug("Pseudonymizing SystemConfigurationValue ignored: {}", source);
 	}
 
@@ -546,10 +505,10 @@ public class SystemConfigurationValueEjb
 	 */
 	@Override
 	protected void restorePseudonymizedDto(
-		final SystemConfigurationValueDto dto,
-		final SystemConfigurationValueDto existingDto,
-		final SystemConfigurationValue entity,
-		final Pseudonymizer<SystemConfigurationValueDto> pseudonymizer) {
+			final SystemConfigurationValueDto dto,
+			final SystemConfigurationValueDto existingDto,
+			final SystemConfigurationValue entity,
+			final Pseudonymizer<SystemConfigurationValueDto> pseudonymizer) {
 		LOGGER.debug("Restoring pseudonymized SystemConfigurationValue ignored: {}", dto);
 	}
 
@@ -576,7 +535,6 @@ public class SystemConfigurationValueEjb
 		dto.setCategory(entity.getCategory() != null ? entity.getCategory().getName() : null);
 		dto.setCategoryCaption(entity.getCategory() != null ? entity.getCategory().getCaption() : null);
 		dto.setCategoryDescription(entity.getCategory() != null ? entity.getCategory().getDescription() : null);
-		dto.setDefaultValue(entity.getDefaultValue());
 
 		return dto;
 	}
@@ -584,4 +542,5 @@ public class SystemConfigurationValueEjb
 	public ConcurrentHashMap<Config, SystemConfigurationValueProjection> getConfigurationValuesByKey() {
 		return configurationValuesByKey;
 	}
+
 }
