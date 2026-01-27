@@ -173,6 +173,11 @@ public class SystemConfigurationValueEjb
 		final SystemConfigurationValue existing = service.getByUuid(dto.getUuid());
 
 		final SystemConfigurationValue newValue = fillOrBuildEntity(dto, existing, true);
+
+		System.out.println(newValue.getId());
+		System.out.println(newValue.getValue());
+		System.out.println(newValue.getKey());
+
 		service.ensurePersisted(newValue);
 
 		// Updating only the given system configuration, not the others.
@@ -376,7 +381,8 @@ public class SystemConfigurationValueEjb
 		configurationValuesByKey.clear();
 
 		getAll().forEach(
-			value -> configurationValuesByKey.put(value.getKey(), new SystemConfigurationValueProjection(value.getKey(), value.getValue(), value.getDefaultValue())));
+			value -> configurationValuesByKey
+				.put(value.getKey(), new SystemConfigurationValueProjection(value.getKey(), value.getValue(), value.getDefaultValue())));
 
 		LOGGER.info("SystemConfiguration data loaded into cache successfully");
 	}
@@ -387,12 +393,12 @@ public class SystemConfigurationValueEjb
 		CriteriaQuery<SystemConfigurationValueProjection> cq = cb.createQuery(SystemConfigurationValueProjection.class);
 		Root<SystemConfigurationValue> from = cq.from(SystemConfigurationValue.class);
 
-		cq.select(cb.construct(
+		cq.select(
+			cb.construct(
 				SystemConfigurationValueProjection.class,
 				from.get(SystemConfigurationValue.KEY_FIELD_NAME),
 				from.get(SystemConfigurationValue.VALUE_FIELD_NAME),
-				from.get(SystemConfigurationValue.DEFAULT_VALUE_FIELD_NAME)
-		));
+				from.get(SystemConfigurationValue.DEFAULT_VALUE_FIELD_NAME)));
 
 		cq.orderBy(cb.desc(from.get(AbstractDomainObject.ID)));
 
