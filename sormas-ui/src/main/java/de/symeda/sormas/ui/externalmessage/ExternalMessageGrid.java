@@ -70,6 +70,7 @@ public class ExternalMessageGrid extends FilteredGrid<ExternalMessageIndexDto, E
 
 	private static final String PLACEHOLDER_SPACE = String.join("", Collections.nCopies(35, "&nbsp"));
 	private static final String PDF_FILENAME_FORMAT = "sormas_lab_message_%s_%s.pdf";
+	private static final String XML_FILENAME_FORMAT = "sormas_lab_message_%s_%s.xml";
 
 	private DataProviderListener<ExternalMessageIndexDto> dataProviderListener;
 
@@ -230,12 +231,15 @@ public class ExternalMessageGrid extends FilteredGrid<ExternalMessageIndexDto, E
 		Button downloadButton = new Button(VaadinIcons.DOWNLOAD);
 		downloadButton.setDescription(I18nProperties.getString(Strings.headingExternalMessageDownload));
 		final String fileName =
-			String.format(PDF_FILENAME_FORMAT, DataHelper.getShortUuid(labMessage.getUuid()), DateHelper.formatDateForExport(new Date()));
+			String.format(XML_FILENAME_FORMAT, DataHelper.getShortUuid(labMessage.getUuid()), DateHelper.formatDateForExport(new Date()));
 
 		StreamResource streamResource = new StreamResource(
-			() -> ControllerProvider.getExternalMessageController().convertToPDF(labMessage.getUuid()).map(ByteArrayInputStream::new).orElse(null),
+			() -> ControllerProvider.getExternalMessageController()
+				.downloadExternalMessageAttachment(labMessage.getUuid())
+				.map(ByteArrayInputStream::new)
+				.orElse(null),
 			fileName);
-		streamResource.setMIMEType("text/pdf");
+		streamResource.setMIMEType("application/xml");
 
 		FileDownloader fileDownloader = new FileDownloader(streamResource);
 		fileDownloader.extend(downloadButton);

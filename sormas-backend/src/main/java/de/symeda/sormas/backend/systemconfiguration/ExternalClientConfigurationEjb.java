@@ -97,8 +97,7 @@ public class ExternalClientConfigurationEjb implements ExternalClientConfigurati
 
 	@Override
 	public boolean isExternalJournalActive() {
-		// TODO: fixme
-		return false;
+		return !StringUtils.isAllBlank(configFacade.getAsStringOrNull(Config.INTERFACE_SYMPTOM_JOURNAL_URL), configFacade.getAsStringOrNull(Config.INTERFACE_PATIENT_DIARY_URL));
 	}
 
 	private String getConfigAsStringOrNull(Config sormas2sormasPath) {

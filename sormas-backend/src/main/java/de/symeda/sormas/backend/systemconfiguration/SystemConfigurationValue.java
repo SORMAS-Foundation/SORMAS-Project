@@ -41,6 +41,7 @@ public class SystemConfigurationValue extends AbstractDomainObject {
     public static final String ENCRYPT_FIELD_NAME = "encrypt";
     public static final String DATA_PROVIDER_FIELD_NAME = "dataProvider";
     public static final String DESCRIPTION = "description";
+    public static final String DEFAULT_VALUE_FIELD_NAME = "defaultValue";
 
     private String value;
 	private Config key;

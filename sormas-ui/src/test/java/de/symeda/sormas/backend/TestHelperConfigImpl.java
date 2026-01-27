@@ -9,8 +9,6 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.systemconfiguration.Config;
 
-@Stateless
-@LocalBean
 public class TestHelperConfigImpl implements TestConfigFacade {
 
 	Map<Config, String> properties = new ConcurrentHashMap<>();

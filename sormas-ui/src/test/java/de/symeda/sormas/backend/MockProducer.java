@@ -146,6 +146,7 @@ public class MockProducer implements InitialContextFactory {
 		testHelperConfig.set(Config.DEFAULT_CASE_CLASSIFICATION_CALCULATION_MODE, "AUTOMATIC");
 		testHelperConfig.set(Config.CASE_CLASSIFICATION_CALCULATION_MODE_OVERRIDE, "{}");
 		testHelperConfig.set(Config.NAME_SIMILARITY_THRESHOLD, "0.65D");
+		testHelperConfig.set(Config.NAME_SIMILARITY_THRESHOLD, "0.65D");
 	}
 
 	public static void wireMocks() {

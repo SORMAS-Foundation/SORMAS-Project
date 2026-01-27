@@ -342,8 +342,9 @@ public interface ConfigFacade {
 		return getAsStringOrEmpty(Config.AUDIT_SOURCE_SITE);
 	}
 
+	@Nullable
 	default Integer getNegaiveCovidTestsMaxAgeDays() {
-		return getAsIntegerOrThrow(Config.NEGATIVE_COVID_TESTS_MAX_AGE_DAYS);
+		return getAsInteger(Config.NEGATIVE_COVID_TESTS_MAX_AGE_DAYS).orElse(null);
 	}
 
 	default long getMinimumEmancipatedAge() {

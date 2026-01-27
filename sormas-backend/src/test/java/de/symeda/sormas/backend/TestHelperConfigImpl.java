@@ -46,6 +46,7 @@ public class TestHelperConfigImpl implements TestConfigFacade {
 		configurationValuesByKey.compute(
 			config,
 			(k, systemConfigurationValueProjection) -> new SystemConfigurationValueProjection(
+				config,
 				value,
 				systemConfigurationValueProjection.getDefaultValue()));
 	}
@@ -70,9 +71,10 @@ public class TestHelperConfigImpl implements TestConfigFacade {
 		ConcurrentHashMap<Config, SystemConfigurationValueProjection> configurationValuesByKey =
 			getSystemConfigurationValueEjb().getConfigurationValuesByKey();
 
-		configurationValuesByKey.compute(
+		configurationValuesByKey.computeIfPresent(
 			config,
 			(k, systemConfigurationValueProjection) -> new SystemConfigurationValueProjection(
+				config,
 				null,
 				systemConfigurationValueProjection.getDefaultValue()));
 	}

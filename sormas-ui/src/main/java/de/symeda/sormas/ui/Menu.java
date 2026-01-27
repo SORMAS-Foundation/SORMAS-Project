@@ -21,13 +21,19 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Predicate;
 
+import javax.validation.constraints.NotNull;
+
+import de.symeda.sormas.api.systemconfiguration.Config;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.server.FileResource;
+import com.vaadin.server.Page;
 import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Alignment;
@@ -39,6 +45,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -57,30 +64,44 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 /**
  * Responsive navigation menu presenting a list of available views to the user.
  */
-@SuppressWarnings("serial")
 public class Menu extends CssLayout {
 
 	private static final String VALO_MENUITEMS = "valo-menuitems";
 	private static final String VALO_MENU_TOGGLE = "valo-menu-toggle";
 	private static final String VALO_MENU_VISIBLE = "valo-menu-visible";
-	private Navigator navigator;
-	private Map<String, Button> viewButtons = new HashMap<String, Button>();
 
-	private CssLayout menuItemsLayout;
-	private CssLayout menuPart;
+	private static final String DEFAULT_BACKGROUND_COLOR_NAME = "default";
+
+	private static final String COLOR_BACKGROUND_STYLE_NAME = "color-background";
+	private static final String MENU_SUBTITLE_STYLE_NAME = "menu-subtitle";
+	private static final String TOP_MENU_CONTAINER_STYLE_NAME = "top-menu-container";
+
+	private final Navigator navigator;
+	private final Map<String, Button> viewButtons = new HashMap<>();
+
+	private final CssLayout menuItemsLayout;
+	private final CssLayout menuPart;
 
 	public Menu(Navigator navigator) {
 
 		this.navigator = navigator;
 		setPrimaryStyleName(ValoTheme.MENU_ROOT);
+
+		defineCustomColorBackgroundIfSystemConfigured();
+
 		menuPart = new CssLayout();
 		menuPart.addStyleName(ValoTheme.MENU_PART);
 
 		// header of the menu
-		final HorizontalLayout top = new HorizontalLayout();
+		VerticalLayout topContainer = new VerticalLayout();
+		topContainer.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+		CssStyles.style(topContainer, ValoTheme.MENU_TITLE, TOP_MENU_CONTAINER_STYLE_NAME);
+		topContainer.setSpacing(false);
+
+		HorizontalLayout top = new HorizontalLayout();
 		top.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-		top.addStyleName(ValoTheme.MENU_TITLE);
 		top.setSpacing(true);
+
 		Label title = new Label(FacadeProvider.getConfigFacade().getSormasInstanceName());
 		title.setSizeUndefined();
 
@@ -95,8 +116,13 @@ public class Menu extends CssLayout {
 		CssStyles.style(image, ValoTheme.MENU_LOGO, ValoTheme.BUTTON_LINK);
 		top.addComponent(image);
 		top.addComponent(title);
-		top.addLayoutClickListener(listener -> SormasUI.get().getNavigator().navigateTo(SurveillanceDashboardView.VIEW_NAME));
-		menuPart.addComponent(top);
+
+		topContainer.addLayoutClickListener(listener -> SormasUI.get().getNavigator().navigateTo(SurveillanceDashboardView.VIEW_NAME));
+		topContainer.addComponent(top);
+
+		defineMenuSubtitleIfSystemConfigured(topContainer);
+
+		menuPart.addComponent(topContainer);
 
 		// button for toggling the visibility of the menu when on a small screen
 		final Button showMenu = ButtonHelper.createIconButton(Captions.menu, VaadinIcons.MENU, event -> {
@@ -136,14 +162,72 @@ public class Menu extends CssLayout {
 		addComponent(menuPart);
 	}
 
+	private void defineCustomColorBackgroundIfSystemConfigured() {
+		Optional<String> backgroundColor = FacadeProvider.getConfigFacade().getAsString(Config.MENU_BACKGROUND_COLOR)
+				.filter(StringUtils::isNotBlank)
+				.filter(Predicate.not(DEFAULT_BACKGROUND_COLOR_NAME::equals));
+
+		if (backgroundColor.isEmpty()) {
+			// no need to configure anything as we can keep the default color.
+			return;
+		}
+
+		addStyleName(COLOR_BACKGROUND_STYLE_NAME);
+
+		String actualColorBackgroundColor = determineActualColor(backgroundColor.get());
+
+		Page.Styles styles = Page.getCurrent().getStyles();
+		// specifying !important as inline CSS has lower precedence
+		styles.add(
+			".valo-menu-color-background {\n" + "  background-color: " + actualColorBackgroundColor + " !important;\n"
+				+ "  background-image: -webkit-linear-gradient(right, " + actualColorBackgroundColor + " 0%, #EEFA5F" + actualColorBackgroundColor
+				+ " 8px) !important;\n" + "  background-image: linear-gradient(to left, " + actualColorBackgroundColor + " 0%, "
+				+ actualColorBackgroundColor + " 8px) !important;" + "  }");
+	}
+
+	private static void defineMenuSubtitleIfSystemConfigured(VerticalLayout topContainer) {
+		Optional<String> menuSubtitle = FacadeProvider.getConfigFacade().getAsString(Config.MENU_SUBTITLE);
+
+		if (menuSubtitle.isEmpty()) {
+			// no need to configure anything as no subtitled must be added
+			return;
+		}
+
+		Label systemConfigurationLabel = new Label(menuSubtitle.get());
+		systemConfigurationLabel.setSizeUndefined();
+		CssStyles.style(systemConfigurationLabel, CssStyles.LABEL_UNDERLINE, MENU_SUBTITLE_STYLE_NAME);
+
+		topContainer.addComponent(systemConfigurationLabel);
+	}
+
+	private static @NotNull String determineActualColor(String backgroundColor) {
+		String actualColorBackgroundColor;
+		switch (backgroundColor) {
+		case "green":
+			actualColorBackgroundColor = "#108548";
+			break;
+		case "red":
+			actualColorBackgroundColor = "#dd2b0e";
+			break;
+		case "indigo":
+			actualColorBackgroundColor = "#7b58cf";
+			break;
+		case "gray":
+			actualColorBackgroundColor = "#737278";
+			break;
+		default:
+			actualColorBackgroundColor = backgroundColor;
+		}
+		return actualColorBackgroundColor;
+	}
+
 	private void showSettingsPopup() {
 
 		Window window = VaadinUiUtil.createPopupWindow();
 		window.setCaption(I18nProperties.getString(Strings.headingUserSettings));
 		window.setModal(true);
 
-		CommitDiscardWrapperComponent<UserSettingsForm> component =
-			ControllerProvider.getUserController().getUserSettingsComponent(() -> window.close());
+		CommitDiscardWrapperComponent<UserSettingsForm> component = ControllerProvider.getUserController().getUserSettingsComponent(window::close);
 
 		window.setContent(component);
 		UI.getCurrent().addWindow(window);

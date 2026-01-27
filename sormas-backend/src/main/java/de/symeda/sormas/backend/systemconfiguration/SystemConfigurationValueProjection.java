@@ -4,9 +4,11 @@ import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import de.symeda.sormas.api.systemconfiguration.Config;
 import net.minidev.json.annotate.JsonIgnore;
 
 public class SystemConfigurationValueProjection {
+	private Config key;
 
 	private String value;
 	private String defaultValue;
@@ -14,9 +16,18 @@ public class SystemConfigurationValueProjection {
 	public SystemConfigurationValueProjection() {
 	}
 
-	public SystemConfigurationValueProjection(String value, String defaultValue) {
+	public SystemConfigurationValueProjection(Config key,
+											  String value, String defaultValue) {
 		this.value = value;
 		this.defaultValue = defaultValue;
+	}
+
+	public Config getKey() {
+		return key;
+	}
+
+	public String getValue() {
+		return value;
 	}
 
 	public String getDefaultValue() {

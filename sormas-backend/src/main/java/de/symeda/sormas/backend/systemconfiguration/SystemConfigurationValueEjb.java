@@ -177,7 +177,7 @@ public class SystemConfigurationValueEjb
 
 		// Updating only the given system configuration, not the others.
 		Config config = newValue.getKey();
-		configurationValuesByKey.put(config, new SystemConfigurationValueProjection(newValue.getValue(), newValue.getDefaultValue()));
+		configurationValuesByKey.put(config, new SystemConfigurationValueProjection(config, newValue.getValue(), newValue.getDefaultValue()));
 
 		return toDto(newValue);
 	}
@@ -375,11 +375,28 @@ public class SystemConfigurationValueEjb
 		LOGGER.info("Loading SystemConfiguration data into cache");
 		configurationValuesByKey.clear();
 
-		// TODO: create a query that only fetches the mandatory fields and not everything
 		getAll().forEach(
-			value -> configurationValuesByKey.put(value.getKey(), new SystemConfigurationValueProjection(value.getValue(), value.getDefaultValue())));
+			value -> configurationValuesByKey.put(value.getKey(), new SystemConfigurationValueProjection(value.getKey(), value.getValue(), value.getDefaultValue())));
 
 		LOGGER.info("SystemConfiguration data loaded into cache successfully");
+	}
+
+	public List<SystemConfigurationValueProjection> getAllProjections() {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<SystemConfigurationValueProjection> cq = cb.createQuery(SystemConfigurationValueProjection.class);
+		Root<SystemConfigurationValue> from = cq.from(SystemConfigurationValue.class);
+
+		cq.select(cb.construct(
+				SystemConfigurationValueProjection.class,
+				from.get(SystemConfigurationValue.KEY_FIELD_NAME),
+				from.get(SystemConfigurationValue.VALUE_FIELD_NAME),
+				from.get(SystemConfigurationValue.DEFAULT_VALUE_FIELD_NAME)
+		));
+
+		cq.orderBy(cb.desc(from.get(AbstractDomainObject.ID)));
+
+		return em.createQuery(cq).getResultList();
 	}
 
 	public List<SystemConfigurationValue> getAll() {

@@ -67,6 +67,16 @@ import de.symeda.sormas.backend.json.ObjectMapperProvider;
 
 public class CaseClassificationLogicTest extends AbstractBeanTest {
 
+
+	@Override
+	public void init() {
+		super.init();
+
+		// TEST defaults were different in the past
+		MockProducer.getProperties()
+				.setProperty(CASE_CLASSIFICATION_CALCULATION_MODE_OVERRIDE, "{}");
+	}
+
 	@Test
 	public void testAutomaticClassificationForEVD() {
 
