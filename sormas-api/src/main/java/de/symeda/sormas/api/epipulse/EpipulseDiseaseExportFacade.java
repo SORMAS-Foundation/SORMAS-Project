@@ -21,4 +21,6 @@ import javax.ejb.Remote;
 public interface EpipulseDiseaseExportFacade {
 
 	public void startPertussisExport(String uuid);
+
+	public void startMeaslesExport(String uuid);
 }

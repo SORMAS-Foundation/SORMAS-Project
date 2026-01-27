@@ -23,7 +23,8 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum EpipulseSubjectCode {
 
-	PERT(true, Disease.PERTUSSIS, false);
+	PERT(true, Disease.PERTUSSIS, false),
+	MEAS(true, Disease.MEASLES, false);
 
 	private final boolean diseaseModel;
 	private final Disease disease;

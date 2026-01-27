@@ -23,6 +23,13 @@ public class EpipulseDiseaseExportResult {
 	private int maxImmunizations;
 	private List<EpipulseDiseaseExportEntryDto> exportEntryList;
 
+	// MEAS repeatable field max counts
+	private int maxComplicationDiagnosis;
+	private int maxClusterSettings;
+	private int maxPlaceOfInfection;
+	private int maxSpecimenVirDetect;
+	private int maxSpecimenSero;
+
 	public int getMaxPathogenTests() {
 		return maxPathogenTests;
 	}
@@ -45,5 +52,45 @@ public class EpipulseDiseaseExportResult {
 
 	public void setExportEntryList(List<EpipulseDiseaseExportEntryDto> exportEntryList) {
 		this.exportEntryList = exportEntryList;
+	}
+
+	public int getMaxComplicationDiagnosis() {
+		return maxComplicationDiagnosis;
+	}
+
+	public void setMaxComplicationDiagnosis(int maxComplicationDiagnosis) {
+		this.maxComplicationDiagnosis = maxComplicationDiagnosis;
+	}
+
+	public int getMaxClusterSettings() {
+		return maxClusterSettings;
+	}
+
+	public void setMaxClusterSettings(int maxClusterSettings) {
+		this.maxClusterSettings = maxClusterSettings;
+	}
+
+	public int getMaxPlaceOfInfection() {
+		return maxPlaceOfInfection;
+	}
+
+	public void setMaxPlaceOfInfection(int maxPlaceOfInfection) {
+		this.maxPlaceOfInfection = maxPlaceOfInfection;
+	}
+
+	public int getMaxSpecimenVirDetect() {
+		return maxSpecimenVirDetect;
+	}
+
+	public void setMaxSpecimenVirDetect(int maxSpecimenVirDetect) {
+		this.maxSpecimenVirDetect = maxSpecimenVirDetect;
+	}
+
+	public int getMaxSpecimenSero() {
+		return maxSpecimenSero;
+	}
+
+	public void setMaxSpecimenSero(int maxSpecimenSero) {
+		this.maxSpecimenSero = maxSpecimenSero;
 	}
 }
