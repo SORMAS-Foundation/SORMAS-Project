@@ -461,6 +461,32 @@ public class VaccinationFacadeEjb
 		UserRight._CASE_EDIT,
 		UserRight._CASE_CREATE })
 	public void updateVaccinationStatuses(Case caze) {
+		if (immunizationFacade.isUseDeterminedVaccinationStatus()) {
+			updateDeterminedVaccinationStatuses(caze);
+			return;
+		}
+		updateSimpleVaccinationStatuses(caze);
+	}
+
+	protected void updateDeterminedVaccinationStatuses(Case caze) {
+
+		// Derive vaccination status from immunization service
+		VaccinationStatus vaccinationStatus =
+			immunizationService.deriveVaccinationStatus(caze.getPerson().getUuid(), caze.getDisease(), caze.getReportDate());
+
+		if (vaccinationStatus != null) {
+			caze.setVaccinationStatus(vaccinationStatus);
+
+			// If status is OTHER, fetch the meansOfImmunizationDetails from the relevant immunization
+			if (vaccinationStatus == VaccinationStatus.OTHER) {
+				String details =
+					immunizationService.getMeansOfImmunizationDetails(caze.getPerson().getUuid(), caze.getDisease(), caze.getReportDate());
+				caze.setVaccinationStatusDetails(details);
+			}
+		}
+	}
+
+	protected void updateSimpleVaccinationStatuses(Case caze) {
 
 		List<Immunization> casePersonImmunizations = immunizationService.getByPersonAndDisease(caze.getPerson().getUuid(), caze.getDisease(), true);
 
