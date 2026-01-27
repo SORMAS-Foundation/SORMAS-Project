@@ -33,22 +33,19 @@ public class PertussisExportStrategy extends AbstractEpipulseDiseaseExportStrate
 
 	@Override
 	protected String buildDiseaseExportQuery() {
-		StringBuilder query = new StringBuilder();
-
-		// Build query using common CTEs only
-		query.append(sqlCteBuilder.buildVariablesCte());
-		query.append(sqlCteBuilder.buildConfigDataCte());
-		query.append(sqlCteBuilder.buildFilteredCasesCte(false)); // No epidata fields needed for Pertussis
-		query.append(sqlCteBuilder.buildPreviousHospitalizationsCte());
-		query.append(sqlCteBuilder.buildSamplesCte());
-		query.append(sqlCteBuilder.buildPathogenTestsCte());
-		query.append(sqlCteBuilder.buildImmunizationsCte());
-		query.append(sqlCteBuilder.buildVaccinationsCte());
+		// Build query using common CTEs only (no epidata fields needed for Pertussis)
+		String ctes = sqlCteBuilder.joinCtes(
+			sqlCteBuilder.buildVariablesCte(),
+			sqlCteBuilder.buildConfigDataCte(),
+			sqlCteBuilder.buildFilteredCasesCte(false),
+			sqlCteBuilder.buildPreviousHospitalizationsCte(),
+			sqlCteBuilder.buildSamplesCte(),
+			sqlCteBuilder.buildPathogenTestsCte(),
+			sqlCteBuilder.buildImmunizationsCte(),
+			sqlCteBuilder.buildVaccinationsCte());
 
 		// Main SELECT clause with common fields only
-		query.append(sqlCteBuilder.buildMainSelectClause());
-
-		return query.toString();
+		return ctes + sqlCteBuilder.buildMainSelectClause();
 	}
 
 	@Override

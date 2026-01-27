@@ -45,31 +45,26 @@ public class MeaslesExportStrategy extends AbstractEpipulseDiseaseExportStrategy
 
 	@Override
 	protected String buildDiseaseExportQuery() {
-		StringBuilder query = new StringBuilder();
-
-		// Common CTEs
-		query.append(sqlCteBuilder.buildVariablesCte());
-		query.append(sqlCteBuilder.buildConfigDataCte());
-		query.append(sqlCteBuilder.buildFilteredCasesCte(true)); // Include epidata fields (epidata_id, investigateddate, clinicalconfirmation)
-		query.append(sqlCteBuilder.buildPreviousHospitalizationsCte());
-		query.append(sqlCteBuilder.buildSamplesCte());
-		query.append(sqlCteBuilder.buildPathogenTestsCte());
-		query.append(sqlCteBuilder.buildImmunizationsCte());
-		query.append(sqlCteBuilder.buildVaccinationsCte());
-
-		// Measles-specific CTEs
-		query.append(buildSampleDataCte());
-		query.append(buildVirusDetectionDataCte());
-		query.append(buildIggSerologyDataCte());
-		query.append(buildIgmSerologyDataCte());
-		query.append(buildEpidataClusterCte());
-		query.append(buildExposureLocationsCte());
-		query.append(buildComplicationsDataCte());
+		// Common CTEs + Measles-specific CTEs (include epidata fields)
+		String ctes = sqlCteBuilder.joinCtes(
+			sqlCteBuilder.buildVariablesCte(),
+			sqlCteBuilder.buildConfigDataCte(),
+			sqlCteBuilder.buildFilteredCasesCte(true),
+			sqlCteBuilder.buildPreviousHospitalizationsCte(),
+			sqlCteBuilder.buildSamplesCte(),
+			sqlCteBuilder.buildPathogenTestsCte(),
+			sqlCteBuilder.buildImmunizationsCte(),
+			sqlCteBuilder.buildVaccinationsCte(),
+			buildSampleDataCte(),
+			buildVirusDetectionDataCte(),
+			buildIggSerologyDataCte(),
+			buildIgmSerologyDataCte(),
+			buildEpidataClusterCte(),
+			buildExposureLocationsCte(),
+			buildComplicationsDataCte());
 
 		// Main SELECT clause with Measles-specific fields
-		query.append(buildMeaslesSelectClause());
-
-		return query.toString();
+		return ctes + buildMeaslesSelectClause();
 	}
 
 	@Override
@@ -217,7 +212,7 @@ public class MeaslesExportStrategy extends AbstractEpipulseDiseaseExportStrategy
 
 	private String buildSampleDataCte() {
 		//@formatter:off
-		return ", sample_data AS (SELECT c.id as case_id," +
+		return "sample_data AS (SELECT c.id as case_id," +
 			   "                       MIN(s.sampledatetime) as first_specimen_date," +
 			   "                       STRING_AGG(DISTINCT CAST(s2.samplematerial AS text), ',' ORDER BY CAST(s2.samplematerial AS text)) as specimen_types_virus," +
 			   "                       STRING_AGG(DISTINCT CAST(s3.samplematerial AS text), ',' ORDER BY CAST(s3.samplematerial AS text)) as specimen_types_serology " +
@@ -236,7 +231,7 @@ public class MeaslesExportStrategy extends AbstractEpipulseDiseaseExportStrategy
 			   "                           WHERE s_sero.deleted = false " +
 			   "                             AND pt_sero.testtype IN ('IGG_SERUM_ANTIBODY', 'IGM_SERUM_ANTIBODY', 'SEROLOGY')) s3 " +
 			   "                          ON s3.associatedcase_id = c.id " +
-			   "                GROUP BY c.id), ";
+			   "                GROUP BY c.id)";
 		//@formatter:on
 	}
 
@@ -266,7 +261,7 @@ public class MeaslesExportStrategy extends AbstractEpipulseDiseaseExportStrategy
 			   "                          LEFT JOIN pathogentest pt ON pt.sample_id = s.id " +
 			   "                              AND pt.testtype IN ('PCR_RT_PCR', 'CULTURE', 'ISOLATION', 'DIRECT_FLUORESCENT_ANTIBODY', 'INDIRECT_FLUORESCENT_ANTIBODY') " +
 			   "                              AND pt.testresultverified = true " +
-			   "                          GROUP BY c.id), ";
+			   "                          GROUP BY c.id)";
 		//@formatter:on
 	}
 
@@ -284,7 +279,7 @@ public class MeaslesExportStrategy extends AbstractEpipulseDiseaseExportStrategy
 			   "                                 AND pt_igg.testtype = 'IGG_SERUM_ANTIBODY' " +
 			   "                               ORDER BY pt_igg.testdatetime ASC " +
 			   "                               LIMIT 1) as igg_result " +
-			   "                      FROM filtered_cases c), ";
+			   "                      FROM filtered_cases c)";
 		//@formatter:on
 	}
 
@@ -299,7 +294,7 @@ public class MeaslesExportStrategy extends AbstractEpipulseDiseaseExportStrategy
 			   "                                 AND pt_igm.testtype = 'IGM_SERUM_ANTIBODY' " +
 			   "                               ORDER BY pt_igm.testdatetime ASC " +
 			   "                               LIMIT 1) as igm_result " +
-			   "                      FROM filtered_cases c), ";
+			   "                      FROM filtered_cases c)";
 		//@formatter:on
 	}
 
@@ -311,7 +306,7 @@ public class MeaslesExportStrategy extends AbstractEpipulseDiseaseExportStrategy
 			   "                            epi.clustertype," +
 			   "                            epi.caseimportedstatus " +
 			   "                     FROM filtered_cases c " +
-			   "                     LEFT JOIN epidata epi ON c.epidata_id = epi.id), ";
+			   "                     LEFT JOIN epidata epi ON c.epidata_id = epi.id)";
 		//@formatter:on
 	}
 
@@ -332,7 +327,7 @@ public class MeaslesExportStrategy extends AbstractEpipulseDiseaseExportStrategy
 			   "                       LEFT JOIN location l ON e.location_id = l.id " +
 			   "                       LEFT JOIN country co ON l.country_id = co.id " +
 			   "                       WHERE e.epidata_id IN (SELECT epidata_id FROM filtered_cases WHERE epidata_id IS NOT NULL) " +
-			   "                       GROUP BY e.epidata_id), ";
+			   "                       GROUP BY e.epidata_id)";
 		//@formatter:on
 	}
 
@@ -344,7 +339,7 @@ public class MeaslesExportStrategy extends AbstractEpipulseDiseaseExportStrategy
 			   "                              s.otitismedia," +
 			   "                              s.othercomplications " +
 			   "                       FROM filtered_cases c " +
-			   "                       LEFT JOIN symptoms s ON c.symptoms_id = s.id) ";
+			   "                       LEFT JOIN symptoms s ON c.symptoms_id = s.id)";
 		//@formatter:on
 	}
 
@@ -400,7 +395,10 @@ public class MeaslesExportStrategy extends AbstractEpipulseDiseaseExportStrategy
 		for (String specimenType : specimenTypesRaw.split(",")) {
 			SampleMaterial material = parseSampleMaterial(specimenType.trim());
 			if (material != null) {
-				specimenTypes.add(EpipulseLaboratoryMapper.mapSampleMaterialToEpipulseCode(material));
+				String mapped = EpipulseLaboratoryMapper.mapSampleMaterialToEpipulseCode(material);
+				if (mapped != null) {
+					specimenTypes.add(mapped);
+				}
 			}
 		}
 		return specimenTypes;

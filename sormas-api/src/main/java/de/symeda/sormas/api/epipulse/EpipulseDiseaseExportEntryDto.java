@@ -166,6 +166,34 @@ public class EpipulseDiseaseExportEntryDto {
 	private Double micValueAST_PEN;
 	private String sir_PEN;
 
+	// MENI-specific fields (Invasive Meningococcal Infection)
+	// Serogroup (NEIMENI_A/B/C/W/X/Y/Z/29E/NGA/OTH)
+	private String serogroup;
+	// Isolate IDs (repeatable)
+	private List<String> isolateIds;
+	// Main pathogen detection methods (repeatable)
+	private List<String> mainPathogenDetectionMethods;
+	// Second pathogen detection methods (repeatable)
+	private List<String> secondPathogenDetectionMethods;
+	// MLST results (repeatable)
+	private List<String> resultMlst;
+	// PorA1 result
+	private String resultPorA1;
+	// PorA2 result
+	private String resultPorA2;
+	// FetA VR result
+	private String resultFetVR;
+	// ReportedEMERTII flag
+	private Boolean reportedEmertii;
+	// CIP (Ciprofloxacin) AST - MENI uses this instead of ERY
+	private String micSign_CIP;
+	private Double micValueAST_CIP;
+	private String sir_CIP;
+	// RIF (Rifampicin) AST - MENI-specific antibiotic
+	private String micSign_RIF;
+	private Double micValueAST_RIF;
+	private String sir_RIF;
+
 	public String getReportingCountry() {
 		return reportingCountry;
 	}
@@ -515,6 +543,7 @@ public class EpipulseDiseaseExportEntryDto {
 		case PERT:
 		case MEAS:
 		case PNEU:
+		case MENI:
 			if (ageYears != null && ageYears < 2) {
 				return ageMonths == null ? null : ageMonths.toString();
 			}
@@ -536,6 +565,7 @@ public class EpipulseDiseaseExportEntryDto {
 		case PERT:
 		case MEAS:
 		case PNEU:
+		case MENI:
 			if (addressCommunityNutsCode != null && !addressCommunityNutsCode.isEmpty()) {
 				return addressCommunityNutsCode;
 			} else if (addressDistrictNutsCode != null && !addressDistrictNutsCode.isEmpty()) {
@@ -554,6 +584,7 @@ public class EpipulseDiseaseExportEntryDto {
 		case PERT:
 		case MEAS:
 		case PNEU:
+		case MENI:
 			if (responsibleCommunityNutsCode != null && !responsibleCommunityNutsCode.isEmpty()) {
 				return responsibleCommunityNutsCode;
 			} else if (responsibleDistrictNutsCode != null && !responsibleDistrictNutsCode.isEmpty()) {
@@ -635,23 +666,55 @@ public class EpipulseDiseaseExportEntryDto {
 	public String getVaccinationStatusForCsv() {
 
 		if (immunizations.isEmpty()) {
+			// Fallback: check if we have PCV/PPV dose counts from actual vaccination records (PNEU)
+			int fallbackDoses = getFallbackDoseCount();
+			if (fallbackDoses > 0) {
+				return mapDoseCountToStatus(fallbackDoses);
+			}
 			return EpipulseVaccinationStatusRef.NOTVACC.getCode();
 		}
 
 		int totalDoses = 0;
+		boolean hasUnknownDoses = false;
 		for (EpipulseImmunizationCheckDto immunizationCheckDto : immunizations) {
 			if (immunizationCheckDto.getNumberOfDoses() == null) {
-				return EpipulseVaccinationStatusRef.UNKDOSE.getCode();
+				hasUnknownDoses = true;
 			} else {
 				totalDoses += immunizationCheckDto.getNumberOfDoses();
 			}
 		}
 
+		// If numberOfDoses is unknown but we have actual vaccination counts, use those
+		if (hasUnknownDoses && totalDoses == 0) {
+			int fallbackDoses = getFallbackDoseCount();
+			if (fallbackDoses > 0) {
+				return mapDoseCountToStatus(fallbackDoses);
+			}
+			return EpipulseVaccinationStatusRef.UNKDOSE.getCode();
+		}
+
+		return mapDoseCountToStatus(totalDoses);
+	}
+
+	private int getFallbackDoseCount() {
+		int fallbackDoses = 0;
+		if (pcvDoses != null) {
+			fallbackDoses += pcvDoses;
+		}
+		if (ppvDoses != null) {
+			fallbackDoses += ppvDoses;
+		}
+		return fallbackDoses;
+	}
+
+	private String mapDoseCountToStatus(int totalDoses) {
 		if (totalDoses > 10) {
 			return EpipulseVaccinationStatusRef.TEN_DOSE.getCode();
 		}
 
 		switch (totalDoses) {
+		case 0:
+			return EpipulseVaccinationStatusRef.NOTVACC.getCode();
 		case 1:
 			return EpipulseVaccinationStatusRef.ONE_DOSE.getCode();
 		case 2:
@@ -670,9 +733,11 @@ public class EpipulseDiseaseExportEntryDto {
 			return EpipulseVaccinationStatusRef.EIGHT_DOSE.getCode();
 		case 9:
 			return EpipulseVaccinationStatusRef.NINE_DOSE.getCode();
+		case 10:
+			return EpipulseVaccinationStatusRef.TEN_DOSE.getCode();
+		default:
+			return null;
 		}
-
-		return null;
 	}
 
 	public String getVaccinationStatusMaternalForCsv() {
@@ -1347,6 +1412,254 @@ public class EpipulseDiseaseExportEntryDto {
 		return sir_PEN != null ? sir_PEN : "";
 	}
 
+	// MENI-specific getters and setters
+	public String getSerogroup() {
+		return serogroup;
+	}
+
+	public void setSerogroup(String serogroup) {
+		this.serogroup = serogroup;
+	}
+
+	public List<String> getIsolateIds() {
+		return isolateIds;
+	}
+
+	public void setIsolateIds(List<String> isolateIds) {
+		this.isolateIds = isolateIds;
+	}
+
+	public List<String> getMainPathogenDetectionMethods() {
+		return mainPathogenDetectionMethods;
+	}
+
+	public void setMainPathogenDetectionMethods(List<String> mainPathogenDetectionMethods) {
+		this.mainPathogenDetectionMethods = mainPathogenDetectionMethods;
+	}
+
+	public List<String> getSecondPathogenDetectionMethods() {
+		return secondPathogenDetectionMethods;
+	}
+
+	public void setSecondPathogenDetectionMethods(List<String> secondPathogenDetectionMethods) {
+		this.secondPathogenDetectionMethods = secondPathogenDetectionMethods;
+	}
+
+	public List<String> getResultMlst() {
+		return resultMlst;
+	}
+
+	public void setResultMlst(List<String> resultMlst) {
+		this.resultMlst = resultMlst;
+	}
+
+	public String getResultPorA1() {
+		return resultPorA1;
+	}
+
+	public void setResultPorA1(String resultPorA1) {
+		this.resultPorA1 = resultPorA1;
+	}
+
+	public String getResultPorA2() {
+		return resultPorA2;
+	}
+
+	public void setResultPorA2(String resultPorA2) {
+		this.resultPorA2 = resultPorA2;
+	}
+
+	public String getResultFetVR() {
+		return resultFetVR;
+	}
+
+	public void setResultFetVR(String resultFetVR) {
+		this.resultFetVR = resultFetVR;
+	}
+
+	public Boolean getReportedEmertii() {
+		return reportedEmertii;
+	}
+
+	public void setReportedEmertii(Boolean reportedEmertii) {
+		this.reportedEmertii = reportedEmertii;
+	}
+
+	public String getMicSign_CIP() {
+		return micSign_CIP;
+	}
+
+	public void setMicSign_CIP(String micSign_CIP) {
+		this.micSign_CIP = micSign_CIP;
+	}
+
+	public Double getMicValueAST_CIP() {
+		return micValueAST_CIP;
+	}
+
+	public void setMicValueAST_CIP(Double micValueAST_CIP) {
+		this.micValueAST_CIP = micValueAST_CIP;
+	}
+
+	public String getSir_CIP() {
+		return sir_CIP;
+	}
+
+	public void setSir_CIP(String sir_CIP) {
+		this.sir_CIP = sir_CIP;
+	}
+
+	public String getMicSign_RIF() {
+		return micSign_RIF;
+	}
+
+	public void setMicSign_RIF(String micSign_RIF) {
+		this.micSign_RIF = micSign_RIF;
+	}
+
+	public Double getMicValueAST_RIF() {
+		return micValueAST_RIF;
+	}
+
+	public void setMicValueAST_RIF(Double micValueAST_RIF) {
+		this.micValueAST_RIF = micValueAST_RIF;
+	}
+
+	public String getSir_RIF() {
+		return sir_RIF;
+	}
+
+	public void setSir_RIF(String sir_RIF) {
+		this.sir_RIF = sir_RIF;
+	}
+
+	// MENI-specific CSV getter methods
+	public String getSerogroupForCsv() {
+		return serogroup != null ? serogroup : "";
+	}
+
+	public List<String> getIsolateIdsForCsv(int maxCount) {
+		List<String> ids = new ArrayList<>();
+		for (int i = 0; i < maxCount; i++) {
+			if (isolateIds != null && i < isolateIds.size()) {
+				ids.add(isolateIds.get(i));
+			} else {
+				ids.add("");
+			}
+		}
+		return ids;
+	}
+
+	public List<String> getMainPathogenDetectionMethodsForCsv(int maxCount) {
+		List<String> methods = new ArrayList<>();
+		for (int i = 0; i < maxCount; i++) {
+			if (mainPathogenDetectionMethods != null && i < mainPathogenDetectionMethods.size()) {
+				methods.add(mainPathogenDetectionMethods.get(i));
+			} else {
+				methods.add("");
+			}
+		}
+		return methods;
+	}
+
+	public List<String> getSecondPathogenDetectionMethodsForCsv(int maxCount) {
+		List<String> methods = new ArrayList<>();
+		for (int i = 0; i < maxCount; i++) {
+			if (secondPathogenDetectionMethods != null && i < secondPathogenDetectionMethods.size()) {
+				methods.add(secondPathogenDetectionMethods.get(i));
+			} else {
+				methods.add("");
+			}
+		}
+		return methods;
+	}
+
+	public List<String> getResultMlstForCsv(int maxCount) {
+		List<String> results = new ArrayList<>();
+		for (int i = 0; i < maxCount; i++) {
+			if (resultMlst != null && i < resultMlst.size()) {
+				results.add(resultMlst.get(i));
+			} else {
+				results.add("");
+			}
+		}
+		return results;
+	}
+
+	public String getResultPorA1ForCsv() {
+		return resultPorA1 != null ? resultPorA1 : "";
+	}
+
+	public String getResultPorA2ForCsv() {
+		return resultPorA2 != null ? resultPorA2 : "";
+	}
+
+	public String getResultFetVRForCsv() {
+		return resultFetVR != null ? resultFetVR : "";
+	}
+
+	public String getReportedEmertiiForCsv() {
+		return reportedEmertii != null ? String.valueOf(reportedEmertii) : "";
+	}
+
+	public String getMicSign_CIPForCsv() {
+		return micSign_CIP != null ? micSign_CIP : "";
+	}
+
+	public String getMicValueAST_CIPForCsv() {
+		return micValueAST_CIP != null ? String.valueOf(micValueAST_CIP) : "";
+	}
+
+	public String getSir_CIPForCsv() {
+		return sir_CIP != null ? sir_CIP : "";
+	}
+
+	public String getMicSign_RIFForCsv() {
+		return micSign_RIF != null ? micSign_RIF : "";
+	}
+
+	public String getMicValueAST_RIFForCsv() {
+		return micValueAST_RIF != null ? String.valueOf(micValueAST_RIF) : "";
+	}
+
+	public String getSir_RIFForCsv() {
+		return sir_RIF != null ? sir_RIF : "";
+	}
+
+	/**
+	 * Gets vaccination status for MENI (max 4 doses instead of 10).
+	 * MENI uses 1DOSE through 4DOSE instead of the standard 10DOSE max.
+	 */
+	public String getVaccinationStatusMeniForCsv() {
+		if (immunizations == null || immunizations.isEmpty()) {
+			return EpipulseVaccinationStatusRef.NOTVACC.getCode();
+		}
+
+		int totalDoses = 0;
+		for (EpipulseImmunizationCheckDto immunizationCheckDto : immunizations) {
+			if (immunizationCheckDto.getNumberOfDoses() == null) {
+				return EpipulseVaccinationStatusRef.UNKDOSE.getCode();
+			} else {
+				totalDoses += immunizationCheckDto.getNumberOfDoses();
+			}
+		}
+
+		if (totalDoses >= 4) {
+			return EpipulseVaccinationStatusRef.FOUR_DOSE.getCode();
+		}
+
+		switch (totalDoses) {
+		case 1:
+			return EpipulseVaccinationStatusRef.ONE_DOSE.getCode();
+		case 2:
+			return EpipulseVaccinationStatusRef.TWO_DOSE.getCode();
+		case 3:
+			return EpipulseVaccinationStatusRef.THREE_DOSE.getCode();
+		}
+
+		return EpipulseVaccinationStatusRef.NOTVACC.getCode();
+	}
+
 	public void calculateAge() {
 		if (symptomOnsetDate == null || yearOfBirth == null || monthOfBirth == null || dayOfBirth == null) {
 			return;
@@ -1505,7 +1818,8 @@ public class EpipulseDiseaseExportEntryDto {
 		List<EpipulseImmunizationCheckDto> immunizations = new ArrayList<>();
 		EpipulseImmunizationCheckDto dto = null;
 		for (String immunizationStr : allImmunizationArr) {
-			String[] immunizationArr = immunizationStr.split(RECORD_SPLIT_CHARACTER);
+			// Use -1 limit to preserve trailing empty strings (e.g., when numberOfDoses is null)
+			String[] immunizationArr = immunizationStr.split(RECORD_SPLIT_CHARACTER, -1);
 			if (immunizationArr.length < 4) {
 				continue;
 			}

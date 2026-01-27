@@ -89,7 +89,7 @@ public class EpipulseCsvExportOrchestrator {
 			epipulseExport = epipulseExportService.getByUuid(uuid);
 
 			if (epipulseExport == null) {
-				logger.error("EpipulseExport with uuid " + uuid + " not found");
+				logger.error("EpipulseExport with uuid {} not found", uuid);
 				return;
 			}
 
@@ -130,7 +130,10 @@ public class EpipulseCsvExportOrchestrator {
 				// Write entries using strategy
 				for (EpipulseDiseaseExportEntryDto dto : exportResult.getExportEntryList()) {
 					String[] exportLine = new String[columnNames.size()];
-					csvStrategy.writeEntryRow(dto, exportLine, exportResult);
+					int lastIndex = csvStrategy.writeEntryRow(dto, exportLine, exportResult);
+					if (lastIndex != columnNames.size() - 1) {
+						logger.warn("Column count mismatch: expected {}, got {}", columnNames.size() - 1, lastIndex);
+					}
 					writer.writeNext(exportLine);
 				}
 			}
@@ -138,8 +141,16 @@ public class EpipulseCsvExportOrchestrator {
 			exportStatus = EpipulseExportStatus.COMPLETED;
 		} catch (Exception e) {
 			exportStatus = EpipulseExportStatus.FAILED;
-			logger.error("Error during export with uuid " + uuid + ": " + e.getMessage(), e);
+			logger.error("Error during export with uuid {}: {}", uuid, e.getMessage(), e);
 		} finally {
+			// Cleanup of partial files when export fails
+			if (exportStatus != EpipulseExportStatus.COMPLETED && exportFilePath != null) {
+				try {
+					Files.deleteIfExists(Paths.get(exportFilePath));
+				} catch (Exception e) {
+					logger.warn("Failed to delete partial export file for uuid {}: {}", uuid, e.getMessage(), e);
+				}
+			}
 			// Calculate file size after writer is closed
 			if (exportFilePath != null && exportStatus == EpipulseExportStatus.COMPLETED) {
 				try {
@@ -157,7 +168,7 @@ public class EpipulseCsvExportOrchestrator {
 					diseaseExportService
 						.updateStatusForBackgroundProcess(epipulseExport.getUuid(), exportStatus, totalRecords, exportFileName, exportFileSizeBytes);
 				} catch (Exception e) {
-					logger.error("CRITICAL: Failed to update export status for uuid " + uuid + ": " + e.getMessage(), e);
+					logger.error("CRITICAL: Failed to update export status for uuid {}: {}", uuid, e.getMessage(), e);
 				}
 			}
 		}

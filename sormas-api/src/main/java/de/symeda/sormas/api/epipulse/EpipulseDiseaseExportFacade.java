@@ -25,4 +25,6 @@ public interface EpipulseDiseaseExportFacade {
 	public void startMeaslesExport(String uuid);
 
 	public void startIpiExport(String uuid);
+
+	public void startMeniExport(String uuid);
 }

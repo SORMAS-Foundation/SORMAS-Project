@@ -38,6 +38,7 @@ import de.symeda.sormas.api.epipulse.EpipulseExportStatus;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.epipulse.strategy.IpiExportStrategy;
 import de.symeda.sormas.backend.epipulse.strategy.MeaslesExportStrategy;
+import de.symeda.sormas.backend.epipulse.strategy.MeniExportStrategy;
 import de.symeda.sormas.backend.epipulse.strategy.PertussisExportStrategy;
 import de.symeda.sormas.backend.util.ModelConstants;
 
@@ -61,6 +62,9 @@ public class EpipulseDiseaseExportService {
 	@EJB
 	private IpiExportStrategy ipiExportStrategy;
 
+	@EJB
+	private MeniExportStrategy meniExportStrategy;
+
 	public EpipulseDiseaseExportResult exportPertussisCaseBased(EpipulseExportDto exportDto, String serverCountryLocale, String serverCountryName)
 		throws SQLException, IllegalStateException, IllegalArgumentException {
 		return pertussisExportStrategy.export(exportDto, serverCountryLocale, serverCountryName);
@@ -74,6 +78,11 @@ public class EpipulseDiseaseExportService {
 	public EpipulseDiseaseExportResult exportIpiCaseBased(EpipulseExportDto exportDto, String serverCountryLocale, String serverCountryName)
 		throws SQLException, IllegalStateException, IllegalArgumentException {
 		return ipiExportStrategy.export(exportDto, serverCountryLocale, serverCountryName);
+	}
+
+	public EpipulseDiseaseExportResult exportMeniCaseBased(EpipulseExportDto exportDto, String serverCountryLocale, String serverCountryName)
+		throws SQLException, IllegalStateException, IllegalArgumentException {
+		return meniExportStrategy.export(exportDto, serverCountryLocale, serverCountryName);
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)

@@ -22,7 +22,8 @@ public enum EpipulseDiseaseRef {
 
 	PERT(EpipulseSubjectCode.PERT),
 	MEAS(EpipulseSubjectCode.MEAS),
-	PNEU(EpipulseSubjectCode.PNEU); // Invasive Pneumococcal Infection
+	PNEU(EpipulseSubjectCode.PNEU), // Invasive Pneumococcal Infection
+	MENI(EpipulseSubjectCode.MENI); // Invasive Meningococcal Infection
 
 	private final EpipulseSubjectCode[] subjectCodes;
 

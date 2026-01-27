@@ -517,15 +517,15 @@ public class EpipulseLaboratoryMapper {
 	 * - OTH = Other
 	 * - SEPTI = Septicaemia
 	 *
-	 * @param meningitis Meningitis symptom state
-	 * @param septicaemia Septicaemia symptom state
-	 * @param pneumonia Pneumonia symptom state (clinical or radiologic)
+	 * @param meningitis
+	 *            Meningitis symptom state
+	 * @param septicaemia
+	 *            Septicaemia symptom state
+	 * @param pneumonia
+	 *            Pneumonia symptom state (clinical or radiologic)
 	 * @return EpiPulse clinical criteria code, or null if no criteria met
 	 */
-	public static String mapSymptomsToClinicalCriteria(
-		SymptomState meningitis,
-		SymptomState septicaemia,
-		SymptomState pneumonia) {
+	public static String mapSymptomsToClinicalCriteria(SymptomState meningitis, SymptomState septicaemia, SymptomState pneumonia) {
 
 		boolean hasMeningitis = meningitis == SymptomState.YES;
 		boolean hasSepticaemia = septicaemia == SymptomState.YES;
@@ -557,7 +557,8 @@ public class EpipulseLaboratoryMapper {
 	 * - PCV3 = Pneumococcal conjugate vaccine - third dose
 	 * - PPV23 = Pneumococcal polysaccharide vaccine
 	 *
-	 * @param vaccineName SORMAS vaccine name/type
+	 * @param vaccineName
+	 *            SORMAS vaccine name/type
 	 * @return EpiPulse vaccine code, or null if not pneumococcal vaccine
 	 */
 	public static String mapVaccineToEpipulseCode(String vaccineName) {
@@ -567,27 +568,38 @@ public class EpipulseLaboratoryMapper {
 
 		String normalized = vaccineName.trim().toUpperCase();
 
-		// Map PCV vaccines
-		if (normalized.contains("PCV") || normalized.contains("CONJUGATE")) {
+		// Map PCV vaccines (conjugate vaccines)
+		// Brand names: Prevenar/Prevnar (PCV7, PCV13, PCV20), Synflorix (PCV10), Vaxneuvance (PCV15)
+		if (normalized.contains("PCV")
+			|| normalized.contains("CONJUGATE")
+			|| normalized.contains("PREVENAR")
+			|| normalized.contains("PREVNAR")
+			|| normalized.contains("SYNFLORIX")
+			|| normalized.contains("VAXNEUVANCE")) {
 			if (normalized.contains("20")) {
 				return "PCV20";
-			} else if (normalized.contains("15")) {
+			} else if (normalized.contains("15") || normalized.contains("VAXNEUVANCE")) {
 				return "PCV15";
 			} else if (normalized.contains("13")) {
 				return "PCV13";
-			} else if (normalized.contains("10")) {
+			} else if (normalized.contains("10") || normalized.contains("SYNFLORIX")) {
 				return "PCV10";
 			} else if (normalized.contains("7")) {
 				return "PCV7";
 			} else if (normalized.contains("3")) {
 				return "PCV3";
 			}
-			// Default PCV if no specific number
-			return "PCV13"; // Most common
+			// Default PCV if no specific number (Prevenar without number is usually PCV13)
+			return "PCV13";
 		}
 
-		// Map PPV vaccine
-		if (normalized.contains("PPV") || normalized.contains("POLYSACCHARIDE") || normalized.contains("23")) {
+		// Map PPV vaccine (polysaccharide vaccines)
+		// Brand names: Pneumovax 23 (PPV23)
+		if (normalized.contains("PPV")
+			|| normalized.contains("POLYSACCHARIDE")
+			|| normalized.contains("PNEUMOVAX")
+			|| normalized.contains("PPV23")
+			|| normalized.matches(".*\\bPNEUMO.*23\\b.*")) {
 			return "PPV23";
 		}
 
@@ -607,7 +619,8 @@ public class EpipulseLaboratoryMapper {
 	 * - I = Intermediate
 	 * - R = Resistant
 	 *
-	 * @param susceptibility SORMAS drug susceptibility enum
+	 * @param susceptibility
+	 *            SORMAS drug susceptibility enum
 	 * @return EpiPulse SIR code (S/I/R), or null if not tested
 	 */
 	public static String mapDrugSusceptibilityToSIR(String susceptibility) {
@@ -640,7 +653,8 @@ public class EpipulseLaboratoryMapper {
 	 * - QUE = Quellung
 	 * - SLAGG = Slide agglutination
 	 *
-	 * @param testType SORMAS pathogen test type
+	 * @param testType
+	 *            SORMAS pathogen test type
 	 * @return EpiPulse detection method code, or null if not mappable
 	 */
 	public static String mapPathogenTestTypeToDetectionMethod(String testType) {
@@ -673,5 +687,306 @@ public class EpipulseLaboratoryMapper {
 		}
 
 		return "OTH"; // Other methods
+	}
+
+	// ==================== MENI-Specific Mappers ====================
+
+	/**
+	 * Maps SORMAS meningococcal serogroup to EpiPulse MENI serogroup codes.
+	 * <p>
+	 * EpiPulse Reference Values for MENI Serogroup:
+	 * - NEIMENI_A = Serogroup A
+	 * - NEIMENI_B = Serogroup B
+	 * - NEIMENI_C = Serogroup C
+	 * - NEIMENI_W = Serogroup W (including W135)
+	 * - NEIMENI_X = Serogroup X
+	 * - NEIMENI_Y = Serogroup Y
+	 * - NEIMENI_Z = Serogroup Z
+	 * - NEIMENI_29E = Serogroup 29E
+	 * - NEIMENI_Z29E = Serogroup Z/29E
+	 * - NEIMENI_NGA = Non-groupable
+	 * - NEIMENI_OTH = Other
+	 *
+	 * @param serogroupText
+	 *            SORMAS serogroup text
+	 * @return EpiPulse MENI serogroup code
+	 */
+	public static String normalizeSerogroupForMeni(String serogroupText) {
+		if (serogroupText == null || serogroupText.trim().isEmpty()) {
+			return null;
+		}
+
+		String normalized = serogroupText.trim().toUpperCase();
+
+		// Remove common prefixes
+		normalized = normalized.replaceAll("^(SEROGROUP|GROUP|NEISSERIA|N\\.?\\s*MENINGITIDIS)\\s*", "");
+
+		// Map specific serogroups
+		if (normalized.matches("^A$|^SEROGROUP\\s*A$")) {
+			return "NEIMENI_A";
+		} else if (normalized.matches("^B$|^SEROGROUP\\s*B$")) {
+			return "NEIMENI_B";
+		} else if (normalized.matches("^C$|^SEROGROUP\\s*C$")) {
+			return "NEIMENI_C";
+		} else if (normalized.matches("^W$|^W135$|^SEROGROUP\\s*W$")) {
+			return "NEIMENI_W";
+		} else if (normalized.matches("^X$|^SEROGROUP\\s*X$")) {
+			return "NEIMENI_X";
+		} else if (normalized.matches("^Y$|^SEROGROUP\\s*Y$")) {
+			return "NEIMENI_Y";
+		} else if (normalized.matches("^Z$|^SEROGROUP\\s*Z$")) {
+			return "NEIMENI_Z";
+		} else if (normalized.matches("^29E$|^SEROGROUP\\s*29E$")) {
+			return "NEIMENI_29E";
+		} else if (normalized.matches("^Z/29E$|^Z29E$")) {
+			return "NEIMENI_Z29E";
+		} else if (normalized.contains("NON") && normalized.contains("GROUP")) {
+			return "NEIMENI_NGA"; // Non-groupable
+		} else if (normalized.contains("NGA") || normalized.contains("NG")) {
+			return "NEIMENI_NGA";
+		}
+
+		return "NEIMENI_OTH"; // Other
+	}
+
+	/**
+	 * Maps SORMAS PathogenTestType to EpiPulse MENI detection method codes.
+	 * <p>
+	 * EpiPulse Reference Values for MENI PathogenDetectionMethod:
+	 * - ANTIGEN = Antigen detection
+	 * - CULT = Culture
+	 * - GENOSEQ = Genome sequencing
+	 * - MICRO = Microscopy
+	 * - NUCLACID = Nucleic acid detection (PCR)
+	 * - OTH = Other
+	 * <p>
+	 * SORMAS PathogenTestType mappings:
+	 * - CULTURE -> CULT
+	 * - PCR_RT_PCR, CQ_VALUE_DETECTION, DNA_MICROARRAY, TMA -> NUCLACID
+	 * - ANTIGEN_DETECTION, RAPID_ANTIGEN_DETECTION, RAPID_TEST -> ANTIGEN
+	 * - MICROSCOPY, GRAM_STAIN -> MICRO
+	 * - WHOLE_GENOME_SEQUENCING, SEQUENCING, MULTILOCUS_SEQUENCE_TYPING, GENOTYPING -> GENOSEQ
+	 *
+	 * @param testType
+	 *            SORMAS pathogen test type string (enum name)
+	 * @return EpiPulse MENI detection method code
+	 */
+	public static String mapToMeniDetectionMethod(String testType) {
+		if (testType == null || testType.trim().isEmpty()) {
+			return null;
+		}
+
+		String normalized = testType.trim().toUpperCase();
+
+		// Direct mapping of SORMAS PathogenTestType enum values
+		switch (normalized) {
+		case "CULTURE":
+			return "CULT";
+
+		case "PCR_RT_PCR":
+		case "CQ_VALUE_DETECTION":
+		case "DNA_MICROARRAY":
+		case "TMA":
+			return "NUCLACID";
+
+		case "ANTIGEN_DETECTION":
+		case "RAPID_ANTIGEN_DETECTION":
+		case "RAPID_TEST":
+			return "ANTIGEN";
+
+		case "MICROSCOPY":
+		case "GRAM_STAIN":
+			return "MICRO";
+
+		case "WHOLE_GENOME_SEQUENCING":
+		case "SEQUENCING":
+		case "MULTILOCUS_SEQUENCE_TYPING":
+		case "GENOTYPING":
+			return "GENOSEQ";
+
+		default:
+			// Fallback pattern matching for flexibility
+			if (normalized.contains("CULTURE")) {
+				return "CULT";
+			} else if (normalized.contains("PCR") || normalized.contains("NUCLEIC")) {
+				return "NUCLACID";
+			} else if (normalized.contains("ANTIGEN")) {
+				return "ANTIGEN";
+			} else if (normalized.contains("MICRO") || normalized.contains("GRAM")) {
+				return "MICRO";
+			} else if (normalized.contains("GENOM") || normalized.contains("SEQUENC")) {
+				return "GENOSEQ";
+			}
+			return "OTH";
+		}
+	}
+
+	/**
+	 * Normalizes MLST (Multi-Locus Sequence Typing) result for MENI.
+	 * <p>
+	 * MLST results should be in ST-* format (e.g., ST-11, ST-32, ST-269).
+	 * EpiPulse accepts 75 different ST complex values.
+	 *
+	 * @param mlstText
+	 *            SORMAS MLST result text
+	 * @return Normalized ST-* format, or null if invalid
+	 */
+	public static String normalizeMlstForMeni(String mlstText) {
+		if (mlstText == null || mlstText.trim().isEmpty()) {
+			return null;
+		}
+
+		String normalized = mlstText.trim().toUpperCase();
+
+		// Already in ST-* format
+		if (normalized.startsWith("ST-")) {
+			return normalized;
+		}
+
+		// Handle "ST " format (with space)
+		if (normalized.startsWith("ST ")) {
+			return "ST-" + normalized.substring(3);
+		}
+
+		// Handle bare number (e.g., "11" -> "ST-11")
+		if (normalized.matches("^\\d+$")) {
+			return "ST-" + normalized;
+		}
+
+		// Handle various formats like "MLST-11", "ST11", etc.
+		String extracted = normalized.replaceAll("^(MLST|ST|SEQUENCE\\s*TYPE)[-\\s]*", "");
+		if (extracted.matches("^\\d+$")) {
+			return "ST-" + extracted;
+		}
+
+		return null; // Unable to normalize
+	}
+
+	/**
+	 * Maps SORMAS CaseImportedStatus to EpiPulse MENI imported status codes.
+	 * <p>
+	 * EpiPulse Reference Values for MENI ImportedStatus:
+	 * - IMP = Imported case
+	 * - IMPREL = Import-related case
+	 * - IMPUNK = Unknown import-relation
+	 * - NOTIMP = Not imported
+	 *
+	 * @param importedStatus
+	 *            SORMAS case imported status
+	 * @return EpiPulse MENI imported status code
+	 */
+	public static String mapMeniImportedStatus(CaseImportedStatus importedStatus) {
+		if (importedStatus == null) {
+			return null;
+		}
+
+		switch (importedStatus) {
+		case IMPORTED_CASE:
+			return "IMP";
+		case IMPORT_RELATED_CASE:
+			return "IMPREL";
+		case UNKNOWN_IMPORTATION_STATUS:
+			return "IMPUNK";
+		case NOT_IMPORTED_CASE:
+			return "NOTIMP";
+		default:
+			return null;
+		}
+	}
+
+	/**
+	 * Maps SORMAS Symptoms to EpiPulse ClinicalCriteria codes for MENI.
+	 * <p>
+	 * EpiPulse Reference Values for MENI ClinicalCriteria:
+	 * - MENI = Meningitis only
+	 * - MENISEPTI = Meningitis and septicaemia
+	 * - SEPTI = Septicaemia only
+	 * - PNEU = Pneumonia
+	 * - OTH = Other
+	 *
+	 * @param meningitis
+	 *            Meningitis symptom state
+	 * @param septicaemia
+	 *            Septicaemia symptom state
+	 * @param pneumonia
+	 *            Pneumonia symptom state
+	 * @return EpiPulse MENI clinical criteria code
+	 */
+	public static String mapSymptomsToClinicalCriteriaMeni(SymptomState meningitis, SymptomState septicaemia, SymptomState pneumonia) {
+
+		boolean hasMeningitis = meningitis == SymptomState.YES;
+		boolean hasSepticaemia = septicaemia == SymptomState.YES;
+		boolean hasPneumonia = pneumonia == SymptomState.YES;
+
+		if (hasMeningitis && hasSepticaemia) {
+			return "MENISEPTI";
+		} else if (hasMeningitis) {
+			return "MENI";
+		} else if (hasSepticaemia) {
+			return "SEPTI";
+		} else if (hasPneumonia) {
+			return "PNEU";
+		}
+
+		return null; // No specific criteria or OTH
+	}
+
+	// ==================== MIC Sign Mapping ====================
+
+	/** Standard lower boundary for MIC dilution series (mg/L) */
+	public static final float MIC_DILUTION_LOWER_BOUND = 0.002f;
+
+	/** Standard upper boundary for MIC dilution series (mg/L) */
+	public static final float MIC_DILUTION_UPPER_BOUND = 32f;
+
+	/**
+	 * Maps MIC value to EpiPulse MIC sign code based on dilution range boundaries.
+	 * <p>
+	 * The MIC sign indicates the relationship between the measured value and the
+	 * laboratory's dilution range. Values at the boundaries indicate the actual MIC
+	 * may be beyond the tested range.
+	 * <p>
+	 * EpiPulse Reference Values for MIC Sign:
+	 * - {@code <} = Less than
+	 * - {@code <=} = Less than or equal (at or below lower dilution boundary)
+	 * - {@code =} = Equal (exact measurement within dilution range)
+	 * - {@code >} = Greater than
+	 * - {@code >=} = Greater than or equal (at or above upper dilution boundary)
+	 *
+	 * @param micValue
+	 *            The MIC value in mg/L
+	 * @param lowerBound
+	 *            The lower boundary of the dilution range (e.g., 0.002 mg/L)
+	 * @param upperBound
+	 *            The upper boundary of the dilution range (e.g., 32 mg/L)
+	 * @return EpiPulse MIC sign code: {@code <=} if at/below lower bound,
+	 *         {@code >=} if at/above upper bound, {@code =} otherwise, or null if micValue is null
+	 */
+	public static String mapMicSign(Float micValue, float lowerBound, float upperBound) {
+		if (micValue == null) {
+			return null;
+		}
+
+		if (micValue <= lowerBound) {
+			return "<=";
+		} else if (micValue >= upperBound) {
+			return ">=";
+		}
+		return " = ";
+	}
+
+	/**
+	 * Maps MIC value to EpiPulse MIC sign code using standard dilution range (0.002 - 32 mg/L).
+	 * <p>
+	 * This is a convenience method that uses the most common dilution range for
+	 * antimicrobial susceptibility testing.
+	 *
+	 * @param micValue
+	 *            The MIC value in mg/L
+	 * @return EpiPulse MIC sign code, or null if micValue is null
+	 * @see #mapMicSign(Float, float, float)
+	 */
+	public static String mapMicSign(Float micValue) {
+		return mapMicSign(micValue, MIC_DILUTION_LOWER_BOUND, MIC_DILUTION_UPPER_BOUND);
 	}
 }
