@@ -21,11 +21,11 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
-import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportFacadeEjb.SurveillanceReportFacadeEjbLocal;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb.CustomizableEnumFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
@@ -52,7 +52,7 @@ public class ExternalMessageProcessingFacadeEjbLocal extends ExternalMessageProc
 	@Inject
 	public ExternalMessageProcessingFacadeEjbLocal(
 		ExternalMessageFacadeEjbLocal externalMessageFacade,
-		ConfigFacade configFacade,
+		ConfigFacadeEjbLocal configFacade,
 		FeatureConfigurationFacadeEjbLocal featureConfigurationFacade,
 		PersonFacadeEjbLocal personFacade,
 		CaseFacadeEjbLocal caseFacade,

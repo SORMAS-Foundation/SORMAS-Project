@@ -71,6 +71,7 @@ import de.symeda.sormas.api.utils.dataprocessing.ProcessingResult;
 import de.symeda.sormas.api.utils.luxembourg.LuxembourgNationalHealthIdValidator;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
@@ -88,7 +89,7 @@ public class AutomaticLabMessageProcessor {
 	private EntityManager em;
 
 	@EJB
-	private de.symeda.sormas.api.ConfigFacade configFacade;
+	private ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private UserFacadeEjbLocal userFacade;
 	@EJB

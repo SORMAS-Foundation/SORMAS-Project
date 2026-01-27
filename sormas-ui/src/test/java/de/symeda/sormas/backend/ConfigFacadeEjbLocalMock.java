@@ -13,7 +13,7 @@ import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeBean;
 @Stateless
 @LocalBean
 @Specializes
-public class ConfigFacadeBeanLocalMock extends ConfigFacadeBean {
+public class ConfigFacadeEjbLocalMock extends ConfigFacadeBean {
 
 	public static final TestHelperConfigImpl testHelperConfig = new TestHelperConfigImpl();
 

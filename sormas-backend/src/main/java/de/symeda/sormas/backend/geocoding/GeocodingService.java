@@ -37,7 +37,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status.Family;
 
-import de.symeda.sormas.api.ConfigFacade;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.http.client.utils.URIBuilder;
@@ -49,6 +48,7 @@ import com.jayway.jsonpath.PathNotFoundException;
 
 import de.symeda.sormas.api.geo.GeoLatLon;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.util.ClientHelper;
 
@@ -64,7 +64,7 @@ public class GeocodingService {
 	private static final String CITY_PLACEHOLDER = "city";
 
 	@EJB
-	private ConfigFacade configFacade;
+	private ConfigFacadeEjbLocal configFacade;
 
 	public boolean isEnabled() {
 		return configFacade.getGeocodingServiceUrlTemplate() != null;

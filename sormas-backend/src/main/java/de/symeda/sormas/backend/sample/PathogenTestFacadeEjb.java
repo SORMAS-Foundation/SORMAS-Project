@@ -62,6 +62,7 @@ import de.symeda.sormas.api.utils.fieldaccess.checkers.AnnotationBasedFieldAcces
 import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.NotificationService;
 import de.symeda.sormas.backend.common.messaging.MessageContents;
@@ -125,7 +126,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	@EJB
 	private SpecialCaseAccessService specialCaseAccessService;
 	@EJB
-	private de.symeda.sormas.api.ConfigFacade configFacade;
+	private ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private DrugSusceptibilityMapper drugSusceptibilityMapper;
 

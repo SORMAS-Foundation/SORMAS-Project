@@ -64,12 +64,12 @@ import de.symeda.sormas.api.customizableenum.CustomizableEnumValueIndexDto;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumValueReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.InvalidCustomizationException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.AbstractBaseEjb;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.RightsAllowed;
@@ -108,7 +108,7 @@ public class CustomizableEnumFacadeEjb
 	@EJB
 	private CustomizableEnumValueService service;
 	@EJB
-	private de.symeda.sormas.api.ConfigFacade configFacade;
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	public CustomizableEnumFacadeEjb() {
 
@@ -278,7 +278,7 @@ public class CustomizableEnumFacadeEjb
 	@SuppressWarnings("unchecked")
 	public <T extends CustomizableEnum> T getEnumValue(CustomizableEnumType type, Disease disease, String value) {
 		//As of today diseases are not applicable for environment.
-		if (disease != null && !enumValues.get(type).getOrDefault(disease, Collections.emptyList()).contains(value)) {
+		if (disease!=null && !enumValues.get(type).getOrDefault(disease, Collections.emptyList()).contains(value)) {
 			throw new IllegalArgumentException(String.format("Invalid enum value %s for customizable enum type %s", value, type.toString()));
 		}
 
@@ -362,7 +362,7 @@ public class CustomizableEnumFacadeEjb
 			enumValue.setValue(value);
 			enumValue.setCaption(enumValuesByLanguage.get(enumClass).get(language).get(value));
 			// set the properties if the disease is not null, this disease check is happening in the getEnumInfo method
-			enumValue.setProperties(getEnumInfo(type, disease, value) != null ? getEnumInfo(type, disease, value).getProperties() : null);
+			enumValue.setProperties(getEnumInfo(type, disease, value)!=null?getEnumInfo(type, disease, value).getProperties():null);
 			return enumValue;
 		} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
 			throw new RuntimeException(e);

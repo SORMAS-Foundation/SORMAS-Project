@@ -24,17 +24,17 @@ import com.ibm.etcd.client.EtcdClient;
 import com.ibm.etcd.client.KvStoreClient;
 import com.ibm.etcd.client.kv.KvClient;
 
-import de.symeda.sormas.api.ConfigFacade;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 
 public class EtcdCentralClient {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EtcdCentralClient.class);
 
-	private final ConfigFacade configFacadeEjb;
+	private final ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb;
 
 	private final ObjectMapper mapper = new ObjectMapper();
 
-	public EtcdCentralClient(ConfigFacade configFacadeEjb) {
+	public EtcdCentralClient(ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb) {
 		this.configFacadeEjb = configFacadeEjb;
 		mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
 		mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);

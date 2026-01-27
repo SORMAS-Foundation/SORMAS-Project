@@ -36,7 +36,7 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 	protected Class<ADO> adoClass;
 	protected Class<DTO> dtoClass;
 	@Inject
-	private de.symeda.sormas.api.ConfigFacade configFacade;
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	protected AbstractBaseEjb() {
 	}

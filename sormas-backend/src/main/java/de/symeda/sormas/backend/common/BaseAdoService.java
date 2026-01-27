@@ -506,7 +506,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		if (ado.getId() == null) {
 			em.persist(ado);
 		} else if (!em.contains(ado)) {
-			throw new EntityExistsException(String.format("Entity not attached: [%s#%s]", getElementClass().getSimpleName(), ado.getUuid()));
+			throw new EntityExistsException("Das Entity ist nicht attacht: " + getElementClass().getSimpleName() + "#" + ado.getUuid());
 		}
 		em.flush();
 	}

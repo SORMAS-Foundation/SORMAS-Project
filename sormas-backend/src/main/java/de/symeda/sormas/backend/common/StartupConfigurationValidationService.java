@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
+import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.externaljournal.PatientDiaryConfig;
 import de.symeda.sormas.api.externaljournal.SymptomJournalConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
@@ -38,7 +39,6 @@ import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.api.utils.VersionHelper;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeBean;
 import de.symeda.sormas.backend.systemconfiguration.ExternalClientConfigurationEjb;
 
 @Stateless
@@ -54,7 +54,7 @@ public class StartupConfigurationValidationService {
 	}
 
 	public StartupConfigurationValidationService(
-		ConfigFacadeBean configFacade,
+		ConfigFacade configFacade,
 		ExternalClientConfigurationEjb externalClientConfiguration) {
 		this.configFacade = configFacade;
 		this.externalClientConfiguration = externalClientConfiguration;
@@ -173,7 +173,7 @@ public class StartupConfigurationValidationService {
 	}
 
 	@Inject
-	public void setConfigFacade(ConfigFacadeBean configFacade) {
+	public void setConfigFacade(ConfigFacade configFacade) {
 		this.configFacade = configFacade;
 	}
 

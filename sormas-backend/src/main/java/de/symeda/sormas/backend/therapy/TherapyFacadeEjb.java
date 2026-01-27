@@ -34,6 +34,9 @@ public class TherapyFacadeEjb implements TherapyFacade {
 		target.setDirectlyObservedTreatment(source.isDirectlyObservedTreatment());
 		target.setMdrXdrTuberculosis(source.isMdrXdrTuberculosis());
 		target.setBeijingLineage(source.isBeijingLineage());
+		target.setTreatmentStarted(source.getTreatmentStarted());
+		target.setTreatmentNotApplicable(source.isTreatmentNotApplicable());
+		target.setTreatmentStartDate(source.getTreatmentStartDate());		
 
 		return target;
 	}
@@ -51,6 +54,9 @@ public class TherapyFacadeEjb implements TherapyFacade {
 		entity.setDirectlyObservedTreatment(source.isDirectlyObservedTreatment());
 		entity.setMdrXdrTuberculosis(source.isMdrXdrTuberculosis());
 		entity.setBeijingLineage(source.isBeijingLineage());
+		entity.setTreatmentStarted(source.getTreatmentStarted());
+		entity.setTreatmentNotApplicable(source.isTreatmentNotApplicable());
+		entity.setTreatmentStartDate(source.getTreatmentStartDate());
 
 		return entity;
 	}

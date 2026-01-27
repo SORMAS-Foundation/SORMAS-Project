@@ -108,7 +108,6 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String PERSON_GUARDIAN_RELATIONSHIP = "personGuardianRelationship";
 	public static final String PERSON_GUARDIAN_PHONE = "personGuardianPhone";
 	public static final String PERSON_GUARDIAN_EMAIL = "personGuardianEmail";
-	public static final String PERSON_OCCUPATION = "personOccupation";
 	public static final String EXTERNAL_MESSAGE_DETAILS = "externalMessageDetails";
 	public static final String STATUS = "status";
 	public static final String REPORT_ID = "reportId";
@@ -172,7 +171,6 @@ public class ExternalMessage extends AbstractDomainObject {
 	private String personGuardianRelationship;
 	private String personGuardianPhone;
 	private String personGuardianEmail;
-	private String personOccupation;
 	private YesNoUnknown treatmentStarted;
 	private Boolean treatmentNotApplicable;
 	private Date treatmentStartedDate;
@@ -552,15 +550,6 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public void setPersonGuardianEmail(String personGuardianEmail) {
 		this.personGuardianEmail = personGuardianEmail;
-	}
-
-	@Column(length = CHARACTER_LIMIT_DEFAULT)
-	public String getPersonOccupation() {
-		return personOccupation;
-	}
-
-	public void setPersonOccupation(String personOccupation) {
-		this.personOccupation = personOccupation;
 	}
 
 	@Column

@@ -34,6 +34,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.systemconfiguration.ExternalClientConfigurationFacade;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.slf4j.Logger;
@@ -49,7 +50,7 @@ import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryPersonDto;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryQueryResponse;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryValidationError;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.systemconfiguration.ExternalClientConfigurationFacade;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 
 @Stateless
 @LocalBean

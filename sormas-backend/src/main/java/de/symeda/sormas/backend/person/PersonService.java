@@ -73,7 +73,6 @@ import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SimilarPersonDto;
-import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -87,6 +86,7 @@ import de.symeda.sormas.backend.common.AdoAttributes;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.ChangeDateUuidComparator;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.FilterProvider;
@@ -140,7 +140,7 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 	@EJB
 	private GeocodingService geocodingService;
 	@EJB
-	private de.symeda.sormas.api.ConfigFacade configFacade;
+	private ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
@@ -664,9 +664,7 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 		// Find similar persons by permitted associations, optionally limited to active entries
 		Predicate personSimilarityFilter = buildSimilarityCriteriaFilter(criteria, cb, personRoot);
 
-		Predicate associationFilter = buildAssociationFilter(
-			queryContext,
-			configFacade.getAsBoolean(Config.DUPLICATE_CHECKS_EXCLUDE_PERSONS_ONLY_LINKED_TO_ARCHIVED_ENTRIES));
+		Predicate associationFilter = buildAssociationFilter(queryContext, configFacade.isDuplicateChecksExcludePersonsOfArchivedEntries());
 		personQuery.where(and(cb, personSimilarityFilter, associationFilter));
 		personQuery.distinct(true);
 
@@ -794,7 +792,7 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 	}
 
 	private void setSimilarityThresholdQuery() {
-		double nameSimilarityThreshold = configFacade.getAsDoubleOrThrow(Config.NAME_SIMILARITY_THRESHOLD);
+		double nameSimilarityThreshold = configFacade.getNameSimilarityThreshold();
 		Query q = em.createNativeQuery("select set_limit(" + nameSimilarityThreshold + ")");
 		q.getSingleResult();
 	}
@@ -938,8 +936,7 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 		}
 
 		if (StringUtils.isNotBlank(criteria.getNationalHealthId())
-			&& (configFacade.getAsBoolean(Config.DUPLICATECHECKS_NATIONAL_HEALTH_ID_OVERRIDES_CRITERIA)
-				|| criteria.isCheckOnlyForNationalHealthId())) {
+			&& (configFacade.isDuplicateChecksNationalHealthIdOverridesCriteria() || criteria.isCheckOnlyForNationalHealthId())) {
 			filter = or(cb, filter, cb.equal(personFrom.get(Person.NATIONAL_HEALTH_ID), criteria.getNationalHealthId()));
 		}
 

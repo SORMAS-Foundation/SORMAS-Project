@@ -58,7 +58,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptionFacade;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
-import de.symeda.sormas.api.systemconfiguration.ExternalClientConfigurationFacade;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.crypt.CmsCertificateConfig;
 import de.symeda.sormas.backend.crypt.CmsCreator;
 import de.symeda.sormas.backend.crypt.CmsPlaintext;
@@ -73,7 +73,7 @@ public class SormasToSormasEncryptionFacadeEjb implements SormasToSormasEncrypti
 	private final ObjectMapper objectMapper;
 
 	@EJB
-	private ExternalClientConfigurationFacade configFacadeEjb;
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb;
 
 	@Inject
 	private SormasToSormasRestClient restClient;

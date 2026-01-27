@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import de.symeda.sormas.api.ConfigFacade;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -29,7 +30,6 @@ import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.importexport.DatabaseTable;
 import de.symeda.sormas.api.importexport.DatabaseTableType;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeBean;
 
 public class DatabaseTableTest {
 
@@ -39,21 +39,21 @@ public class DatabaseTableTest {
 		List<FeatureConfigurationDto> caseFeatureConfigurations =
 			Arrays.asList(getFeatureConfiguration(FeatureType.CASE_SURVEILANCE, true), getFeatureConfiguration(FeatureType.CASE_FOLLOWUP, true));
 
-		assertThat(DatabaseTable.CASES.isEnabled(caseFeatureConfigurations, new ConfigFacadeBean()), is(true));
-		assertThat(DatabaseTable.HOSPITALIZATIONS.isEnabled(caseFeatureConfigurations, new ConfigFacadeBean()), is(true));
-		assertThat(DatabaseTable.PREVIOUSHOSPITALIZATIONS.isEnabled(caseFeatureConfigurations, new ConfigFacadeBean()), is(true));
-		assertThat(DatabaseTable.PORT_HEALTH_INFO.isEnabled(caseFeatureConfigurations, new ConfigFacadeBean()), is(true));
-		assertThat(DatabaseTable.MATERNAL_HISTORIES.isEnabled(caseFeatureConfigurations, new ConfigFacadeBean()), is(true));
-		assertThat(DatabaseTable.EPIDATA.isEnabled(caseFeatureConfigurations, new ConfigFacadeBean()), is(true));
-		assertThat(DatabaseTable.EXPOSURES.isEnabled(caseFeatureConfigurations, new ConfigFacadeBean()), is(true));
-		assertThat(DatabaseTable.ACTIVITIES_AS_CASE.isEnabled(caseFeatureConfigurations, new ConfigFacadeBean()), is(true));
-		assertThat(DatabaseTable.HEALTH_CONDITIONS.isEnabled(caseFeatureConfigurations, new ConfigFacadeBean()), is(true));
-		assertThat(DatabaseTable.SYMPTOMS.isEnabled(caseFeatureConfigurations, new ConfigFacadeBean()), is(true));
-		assertThat(DatabaseTable.VISITS.isEnabled(caseFeatureConfigurations, new ConfigFacadeBean()), is(true));
+		assertThat(DatabaseTable.CASES.isEnabled(caseFeatureConfigurations, Mockito.mock(ConfigFacade.class)), is(true));
+		assertThat(DatabaseTable.HOSPITALIZATIONS.isEnabled(caseFeatureConfigurations, Mockito.mock(ConfigFacade.class)), is(true));
+		assertThat(DatabaseTable.PREVIOUSHOSPITALIZATIONS.isEnabled(caseFeatureConfigurations, Mockito.mock(ConfigFacade.class)), is(true));
+		assertThat(DatabaseTable.PORT_HEALTH_INFO.isEnabled(caseFeatureConfigurations, Mockito.mock(ConfigFacade.class)), is(true));
+		assertThat(DatabaseTable.MATERNAL_HISTORIES.isEnabled(caseFeatureConfigurations, Mockito.mock(ConfigFacade.class)), is(true));
+		assertThat(DatabaseTable.EPIDATA.isEnabled(caseFeatureConfigurations, Mockito.mock(ConfigFacade.class)), is(true));
+		assertThat(DatabaseTable.EXPOSURES.isEnabled(caseFeatureConfigurations, Mockito.mock(ConfigFacade.class)), is(true));
+		assertThat(DatabaseTable.ACTIVITIES_AS_CASE.isEnabled(caseFeatureConfigurations, Mockito.mock(ConfigFacade.class)), is(true));
+		assertThat(DatabaseTable.HEALTH_CONDITIONS.isEnabled(caseFeatureConfigurations, Mockito.mock(ConfigFacade.class)), is(true));
+		assertThat(DatabaseTable.SYMPTOMS.isEnabled(caseFeatureConfigurations, Mockito.mock(ConfigFacade.class)), is(true));
+		assertThat(DatabaseTable.VISITS.isEnabled(caseFeatureConfigurations, Mockito.mock(ConfigFacade.class)), is(true));
 
-		assertThat(DatabaseTable.CONTACTS.isEnabled(caseFeatureConfigurations, new ConfigFacadeBean()), is(false));
-		assertThat(DatabaseTable.IMMUNIZATIONS.isEnabled(caseFeatureConfigurations, new ConfigFacadeBean()), is(false));
-		assertThat(DatabaseTable.SAMPLES.isEnabled(caseFeatureConfigurations, new ConfigFacadeBean()), is(false));
+		assertThat(DatabaseTable.CONTACTS.isEnabled(caseFeatureConfigurations, Mockito.mock(ConfigFacade.class)), is(false));
+		assertThat(DatabaseTable.IMMUNIZATIONS.isEnabled(caseFeatureConfigurations, Mockito.mock(ConfigFacade.class)), is(false));
+		assertThat(DatabaseTable.SAMPLES.isEnabled(caseFeatureConfigurations, Mockito.mock(ConfigFacade.class)), is(false));
 	}
 
 	@Test
@@ -64,9 +64,9 @@ public class DatabaseTableTest {
 			getFeatureConfiguration(FeatureType.EVENT_SURVEILLANCE, true),
 			getFeatureConfiguration(FeatureType.CONTACT_TRACING, true));
 
-		assertThat(DatabaseTable.PERSONS.isEnabled(personFeatureConfigurations, new ConfigFacadeBean()), is(true));
-		assertThat(DatabaseTable.PERSON_CONTACT_DETAILS.isEnabled(personFeatureConfigurations, new ConfigFacadeBean()), is(true));
-		assertThat(DatabaseTable.PERSON_LOCATIONS.isEnabled(personFeatureConfigurations, new ConfigFacadeBean()), is(true));
+		assertThat(DatabaseTable.PERSONS.isEnabled(personFeatureConfigurations, Mockito.mock(ConfigFacade.class)), is(true));
+		assertThat(DatabaseTable.PERSON_CONTACT_DETAILS.isEnabled(personFeatureConfigurations, Mockito.mock(ConfigFacade.class)), is(true));
+		assertThat(DatabaseTable.PERSON_LOCATIONS.isEnabled(personFeatureConfigurations, Mockito.mock(ConfigFacade.class)), is(true));
 	}
 
 	@Test
@@ -74,10 +74,10 @@ public class DatabaseTableTest {
 
 		List<FeatureConfigurationDto> campaignFeatureConfigurations = Collections.singletonList(getFeatureConfiguration(FeatureType.CAMPAIGNS, true));
 
-		assertThat(DatabaseTable.CAMPAIGNS.isEnabled(campaignFeatureConfigurations, new ConfigFacadeBean()), is(true));
-		assertThat(DatabaseTable.CAMPAIGN_FORM_META.isEnabled(campaignFeatureConfigurations, new ConfigFacadeBean()), is(true));
-		assertThat(DatabaseTable.CAMPAIGN_FORM_DATA.isEnabled(campaignFeatureConfigurations, new ConfigFacadeBean()), is(true));
-		assertThat(DatabaseTable.CAMPAIGN_DIAGRAM_DEFINITIONS.isEnabled(campaignFeatureConfigurations, new ConfigFacadeBean()), is(true));
+		assertThat(DatabaseTable.CAMPAIGNS.isEnabled(campaignFeatureConfigurations, Mockito.mock(ConfigFacade.class)), is(true));
+		assertThat(DatabaseTable.CAMPAIGN_FORM_META.isEnabled(campaignFeatureConfigurations, Mockito.mock(ConfigFacade.class)), is(true));
+		assertThat(DatabaseTable.CAMPAIGN_FORM_DATA.isEnabled(campaignFeatureConfigurations, Mockito.mock(ConfigFacade.class)), is(true));
+		assertThat(DatabaseTable.CAMPAIGN_DIAGRAM_DEFINITIONS.isEnabled(campaignFeatureConfigurations, Mockito.mock(ConfigFacade.class)), is(true));
 
 	}
 
@@ -87,8 +87,8 @@ public class DatabaseTableTest {
 		List<FeatureConfigurationDto> taskFeatureConfigurations =
 			Collections.singletonList(getFeatureConfiguration(FeatureType.TASK_MANAGEMENT, true));
 
-		assertThat(DatabaseTable.TASKS.isEnabled(taskFeatureConfigurations, new ConfigFacadeBean()), is(true));
-		assertThat(DatabaseTable.TASK_OBSERVER.isEnabled(taskFeatureConfigurations, new ConfigFacadeBean()), is(true));
+		assertThat(DatabaseTable.TASKS.isEnabled(taskFeatureConfigurations, Mockito.mock(ConfigFacade.class)), is(true));
+		assertThat(DatabaseTable.TASK_OBSERVER.isEnabled(taskFeatureConfigurations, Mockito.mock(ConfigFacade.class)), is(true));
 	}
 
 	@Test
@@ -98,12 +98,12 @@ public class DatabaseTableTest {
 			if (table != DatabaseTable.AREAS) {
 				assertThat(
 					table.name() + " should be enabled without any feature configuration",
-					table.isEnabled(Collections.emptyList(), new ConfigFacadeBean()),
+					table.isEnabled(Collections.emptyList(), Mockito.mock(ConfigFacade.class)),
 					is(true));
 			} else {
 				assertThat(
 					table.name() + " should not be enabled without feature configuration",
-					table.isEnabled(Collections.emptyList(), new ConfigFacadeBean()),
+					table.isEnabled(Collections.emptyList(), Mockito.mock(ConfigFacade.class)),
 					is(false));
 			}
 		});
@@ -112,7 +112,7 @@ public class DatabaseTableTest {
 	@Test
 	public void testS2sTablesEnabled() {
 
-		ConfigFacadeBean configFacadeMock = Mockito.mock(ConfigFacadeBean.class);
+		ConfigFacade configFacadeMock = Mockito.mock(ConfigFacade.class);
 		Mockito.when(configFacadeMock.isS2SConfigured()).thenReturn(true);
 		Mockito.when(configFacadeMock.isExternalSurveillanceToolGatewayConfigured()).thenReturn(false);
 

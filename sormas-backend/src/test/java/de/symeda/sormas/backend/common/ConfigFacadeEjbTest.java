@@ -34,9 +34,8 @@ import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeBean;
 
-public class ConfigFacadeBeanTest extends AbstractBeanTest {
+public class ConfigFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testValidateExternalUrls() {
@@ -155,11 +154,11 @@ public class ConfigFacadeBeanTest extends AbstractBeanTest {
 
 	@Test
 	public void testNormalizeLocaleString() {
-		assertThat(ConfigFacadeBean.normalizeLocaleStringStatic("  "), isEmptyString());
-		assertThat(ConfigFacadeBean.normalizeLocaleStringStatic("en"), is("en"));
-		assertThat(ConfigFacadeBean.normalizeLocaleStringStatic("En"), is("en"));
-		assertThat(ConfigFacadeBean.normalizeLocaleStringStatic("en-CA"), is("en-CA"));
-		assertThat(ConfigFacadeBean.normalizeLocaleStringStatic("en-cA"), is("en-CA"));
+		assertThat(ConfigFacadeEjb.normalizeLocaleStringStatic("  "), isEmptyString());
+		assertThat(ConfigFacadeEjb.normalizeLocaleStringStatic("en"), is("en"));
+		assertThat(ConfigFacadeEjb.normalizeLocaleStringStatic("En"), is("en"));
+		assertThat(ConfigFacadeEjb.normalizeLocaleStringStatic("en-CA"), is("en-CA"));
+		assertThat(ConfigFacadeEjb.normalizeLocaleStringStatic("en-cA"), is("en-CA"));
 	}
 
 	@Test

@@ -30,6 +30,7 @@ import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.user.User;
@@ -57,7 +58,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 	@EJB
 	private CaseService caseService;
 	@EJB
-	private de.symeda.sormas.api.ConfigFacade configFacade;
+	private ConfigFacadeEjbLocal configFacade;
 
 	@Override
 	public List<PrescriptionIndexDto> getIndexList(PrescriptionCriteria criteria) {

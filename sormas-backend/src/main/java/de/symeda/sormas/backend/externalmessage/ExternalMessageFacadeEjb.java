@@ -85,7 +85,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
-import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.systemevents.SystemEventDto;
 import de.symeda.sormas.api.systemevents.SystemEventType;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -96,6 +95,7 @@ import de.symeda.sormas.api.utils.dataprocessing.ProcessingResult;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportFacadeEjb;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportService;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb;
 import de.symeda.sormas.backend.externalmessage.labmessage.AutomaticLabMessageProcessor;
@@ -134,7 +134,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	private ExternalMessageService externalMessageService;
 
 	@EJB
-	private de.symeda.sormas.api.ConfigFacade configFacade;
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private SyncFacadeEjb.SyncFacadeEjbLocal syncFacadeEjb;
 	@EJB
@@ -202,7 +202,6 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setPersonGuardianRelationship(source.getPersonGuardianRelationship());
 		target.setPersonGuardianPhone(source.getPersonGuardianPhone());
 		target.setPersonGuardianEmail(source.getPersonGuardianEmail());
-		target.setPersonOccupation(source.getPersonOccupation());
 
 		target.setNotifierFirstName(source.getNotifierFirstName());
 		target.setNotifierLastName(source.getNotifierLastName());
@@ -426,7 +425,6 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setPersonGuardianRelationship(source.getPersonGuardianRelationship());
 		target.setPersonGuardianPhone(source.getPersonGuardianPhone());
 		target.setPersonGuardianEmail(source.getPersonGuardianEmail());
-		target.setPersonOccupation(source.getPersonOccupation());
 
 		target.setNotifierFirstName(source.getNotifierFirstName());
 		target.setNotifierLastName(source.getNotifierLastName());

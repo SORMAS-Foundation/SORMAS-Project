@@ -12,30 +12,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package de.symeda.sormas.backend.systemconfiguration;
+package de.symeda.sormas.backend.common;
 
 import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Function;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 
-import org.apache.commons.lang3.StringUtils;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationValueEjb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.ConfigFacade;
+import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
-import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.backend.util.RightsAllowed;
 
-@ApplicationScoped
-@Transactional(Transactional.TxType.REQUIRED)
-@RightsAllowed(UserRight._SYSTEM_CONFIGURATION)
-public class ConfigFacadeBean implements ConfigFacade {
+@AuditIgnore
+@Stateless(name = "ConfigFacade")
+public class ConfigFacadeEjb implements ConfigFacade {
 
 	public static final String COUNTRY_SEPARATION_CHAR = "-";
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -82,8 +80,8 @@ public class ConfigFacadeBean implements ConfigFacade {
 	@Override
 	public boolean getAsBoolean(Config config) {
 		return getTypedValueFor(config, Boolean::parseBoolean).orElseThrow(
-			() -> new IllegalArgumentException(
-				String.format("Boolean configuration must at least have a default value, was not the case: [%s]", config)));
+				() -> new IllegalArgumentException(
+						String.format("Boolean configuration must at least have a default value, was not the case: [%s]", config)));
 	}
 
 	@Override
@@ -115,4 +113,9 @@ public class ConfigFacadeBean implements ConfigFacade {
 		this.systemConfigurationValueEjb = systemConfigurationValueEjb;
 	}
 
+	@LocalBean
+	@Stateless
+	public static class ConfigFacadeEjbLocal extends ConfigFacadeEjb {
+
+	}
 }

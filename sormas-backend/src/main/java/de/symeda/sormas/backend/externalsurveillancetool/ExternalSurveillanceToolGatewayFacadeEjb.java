@@ -46,10 +46,10 @@ import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRes
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.share.ExternalShareStatus;
-import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.user.UserService;
@@ -61,7 +61,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
-	private de.symeda.sormas.api.ConfigFacade configFacade;
+	private ConfigFacadeEjbLocal configFacade;
 
 	@EJB
 	private CaseService caseService;
@@ -334,7 +334,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 	@PermitAll
 	public String getVersion() throws ExternalSurveillanceToolException {
 		String serviceUrl = configFacade.getExternalSurveillanceToolGatewayUrl().trim();
-		String versionEndpoint = configFacade.getAsStringOrThrow(Config.EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_VERSION_ENDPOINT).trim();
+		String versionEndpoint = configFacade.getExternalSurveillanceToolVersionEndpoint().trim();
 
 		try {
 			Response response =

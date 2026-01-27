@@ -76,14 +76,13 @@ import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityCriteria;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.OccupationType;
-import de.symeda.sormas.api.systemconfiguration.Config;
-import de.symeda.sormas.api.systemconfiguration.ExternalClientConfigurationFacade;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DefaultEntityHelper;
 import de.symeda.sormas.api.utils.PasswordHelper;
 import de.symeda.sormas.backend.audit.AuditLoggerEjb;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb;
@@ -143,7 +142,7 @@ public class StartupShutdownService {
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
 	@EJB
-	private de.symeda.sormas.api.ConfigFacade configFacade;
+	private ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private UserService userService;
 	@EJB
@@ -194,12 +193,9 @@ public class StartupShutdownService {
 	private CustomizableEnumValueService customizableEnumValueService;
 	@EJB
 	private DocumentTemplateService documentTemplateService;
+
 	@Inject
 	private Event<PasswordResetEvent> passwordResetEvent;
-	@EJB
-	private ExternalClientConfigurationFacade externalClientConfiguration;
-	@EJB
-	private StartupConfigurationValidationService startupConfigurationValidationService;
 
 	static boolean isBlankOrSqlComment(String sqlLine) {
 		return SQL_COMMENT_PATTERN.matcher(sqlLine).matches();
@@ -256,14 +252,14 @@ public class StartupShutdownService {
 
 		deletionConfigurationService.createMissingDeletionConfigurations();
 
-		startupConfigurationValidationService.validateAppUrls();
-		startupConfigurationValidationService.validateConfigUrls();
+		configFacade.validateAppUrls();
+		configFacade.validateConfigUrls();
 
 		centralInfraSync.syncAll();
 	}
 
 	private void createDefaultInfrastructureData() {
-		if (!configFacade.getAsBoolean(Config.CREATE_DEFAULT_ENTITIES)) {
+		if (!configFacade.isCreateDefaultEntities()) {
 			// return if isCreateDefaultEntities() is false
 			logger.info("Skipping the creation of default infrastructure data");
 			return;
@@ -359,7 +355,7 @@ public class StartupShutdownService {
 				u -> {
 				});
 
-			if (!configFacade.getAsBoolean(Config.CREATE_DEFAULT_ENTITIES)) {
+			if (!configFacade.isCreateDefaultEntities()) {
 				// return if isCreateDefaultEntities() is false
 				logger.info("Skipping the creation of default entities");
 				return;
@@ -534,7 +530,7 @@ public class StartupShutdownService {
 	}
 
 	private void createOrUpdateSymptomJournalUser() {
-		SymptomJournalConfig symptomJournalConfig = externalClientConfiguration.getSymptomJournalConfig();
+		SymptomJournalConfig symptomJournalConfig = configFacade.getSymptomJournalConfig();
 		UserConfig userConfig = symptomJournalConfig.getDefaultUser();
 		if (userConfig == null) {
 			logger.debug("Symptom journal default user not configured");
@@ -550,7 +546,7 @@ public class StartupShutdownService {
 	}
 
 	private void createOrUpdatePatientDiaryUser() {
-		PatientDiaryConfig patientDiaryConfig = externalClientConfiguration.getPatientDiaryConfig();
+		PatientDiaryConfig patientDiaryConfig = configFacade.getPatientDiaryConfig();
 		UserConfig userConfig = patientDiaryConfig.getDefaultUser();
 		if (userConfig == null) {
 			logger.debug("Patient diary default user not configured");
@@ -620,6 +616,7 @@ public class StartupShutdownService {
 	/**
 	 * Synchronizes all active users with the external Authentication Provider if User Sync at startup is enabled and supported.
 	 *
+	 * @see AuthProvider#isUserSyncSupported()
 	 * @see AuthProvider#isUserSyncAtStartupEnabled()
 	 */
 	private void syncUsers() {
@@ -699,8 +696,6 @@ public class StartupShutdownService {
 		} else {
 			databaseVersion = null;
 		}
-
-		logger.info("Current databaseVersion: [{}]", databaseVersion);
 
 		try (InputStream schemaStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(schemaFileName);
 			Scanner scanner = new Scanner(schemaStream, StandardCharsets.UTF_8.name())) {

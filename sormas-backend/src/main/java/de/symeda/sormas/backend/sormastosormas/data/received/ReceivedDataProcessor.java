@@ -17,6 +17,7 @@ package de.symeda.sormas.backend.sormastosormas.data.received;
 
 import java.lang.reflect.Field;
 
+import de.symeda.sormas.api.systemconfiguration.ExternalClientConfigurationFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,14 +44,14 @@ public abstract class ReceivedDataProcessor<ADO extends AbstractDomainObject, DT
 
 	protected SRV service;
 	protected UserService userService;
-	protected ExternalClientConfigurationEjb configFacade;
+	protected ExternalClientConfigurationFacade configFacade;
 	protected VALIDATOR validator;
 
 	protected ReceivedDataProcessor() {
 
 	}
 
-	protected ReceivedDataProcessor(SRV service, UserService userService, ExternalClientConfigurationEjb configFacade, VALIDATOR validator) {
+	protected ReceivedDataProcessor(SRV service, UserService userService, ExternalClientConfigurationFacade configFacade, VALIDATOR validator) {
 		this.service = service;
 		this.userService = userService;
 		this.configFacade = configFacade;

@@ -63,6 +63,7 @@ import de.symeda.sormas.api.travelentry.travelentryimport.TravelEntryImportEntit
 import de.symeda.sormas.api.travelentry.travelentryimport.TravelEntryImportFacade;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.EnumService;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
@@ -110,7 +111,7 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 	@EJB
 	private EnumService enumService;
 	@EJB
-	private de.symeda.sormas.api.ConfigFacade configFacade;
+	private ConfigFacadeEjbLocal configFacade;
 
 	@Override
 	public ImportLineResultDto<TravelEntryImportEntities> importData(

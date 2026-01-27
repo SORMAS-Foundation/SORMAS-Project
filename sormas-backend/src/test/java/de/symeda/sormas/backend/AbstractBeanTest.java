@@ -36,6 +36,7 @@ import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -268,7 +269,6 @@ import de.symeda.sormas.backend.survey.SurveyService;
 import de.symeda.sormas.backend.survey.SurveyTokenFacadeEjb.SurveyTokenFacadeEjbLocal;
 import de.symeda.sormas.backend.survey.SurveyTokenService;
 import de.symeda.sormas.backend.symptoms.SymptomsService;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeBean;
 import de.symeda.sormas.backend.systemconfiguration.ExternalClientConfigurationEjb;
 import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategoryEjb;
 import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategoryService;
@@ -512,7 +512,7 @@ public abstract class AbstractBeanTest {
 	}
 
 	public ConfigFacade getConfigFacade() {
-		return getBean(ConfigFacadeBean.class);
+		return getBean(ConfigFacadeEjb.ConfigFacadeEjbLocal.class);
 	}
 
 	public StartupConfigurationValidationService getStartupConfigurationValidationService() {
