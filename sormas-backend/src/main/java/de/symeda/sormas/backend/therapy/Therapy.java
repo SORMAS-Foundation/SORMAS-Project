@@ -1,18 +1,9 @@
 package de.symeda.sormas.backend.therapy;
 
-
-import java.util.Date;
-
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.OneToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
-import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
@@ -32,10 +23,6 @@ public class Therapy extends AbstractDomainObject {
 	private boolean mdrXdrTuberculosis;
 	private boolean beijingLineage;
 	private Case caze;
-
-	private YesNoUnknown treatmentStarted;
-	private boolean treatmentNotApplicable;
-	private Date treatmentStartDate;
 
 	@OneToOne(cascade = CascadeType.ALL, mappedBy = Case.THERAPY)
 	public Case getCaze() {
@@ -68,33 +55,5 @@ public class Therapy extends AbstractDomainObject {
 
 	public void setBeijingLineage(boolean beijingLineage) {
 		this.beijingLineage = beijingLineage;
-	}
-
-	@Column
-	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getTreatmentStarted() {
-		return treatmentStarted;
-	}
-
-	public void setTreatmentStarted(YesNoUnknown treatmentStarted) {
-		this.treatmentStarted = treatmentStarted;
-	}
-
-	@Column
-	public boolean isTreatmentNotApplicable() {
-		return treatmentNotApplicable;
-	}
-
-	public void setTreatmentNotApplicable(boolean treatmentNotApplicable) {
-		this.treatmentNotApplicable = treatmentNotApplicable;
-	}
-
-	@Temporal(TemporalType.TIMESTAMP)
-	public Date getTreatmentStartDate() {
-		return treatmentStartDate;
-	}
-
-	public void setTreatmentStartDate(Date treatmentStartDate) {
-		this.treatmentStartDate = treatmentStartDate;
 	}
 }

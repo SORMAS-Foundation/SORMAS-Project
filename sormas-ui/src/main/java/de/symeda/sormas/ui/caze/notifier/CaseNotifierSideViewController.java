@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import com.vaadin.ui.Window;
 
@@ -33,7 +34,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.notifier.NotifierDto;
 import de.symeda.sormas.api.person.notifier.NotifierReferenceDto;
-import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -53,10 +53,26 @@ public class CaseNotifierSideViewController {
      */
     public CaseNotifierSideViewContent getNotifierComponent(CaseDataDto caze) {
 
-        NotifierDto notifier =
+        if (caze == null) {
+            throw new IllegalArgumentException("Caze is null");
+        }
+
+        if (caze.getNotifier() == null) {  
+            throw new IllegalArgumentException("Case Notifier is null");
+        }
+
+        final NotifierDto notifier =
             FacadeProvider.getNotifierFacade().getByUuidAndTime(caze.getNotifier().getUuid(), caze.getNotifier().getVersionDate().toInstant());
 
-        return new CaseNotifierSideViewContent(caze, notifier, getOldestReport(caze));
+        final SurveillanceReportDto oldestReport = getOldestReport(caze);
+
+        final Date notificationDate = oldestReport != null ? oldestReport.getReportDate() : null;
+
+        // find diagno
+
+        final Date dateOfDiagnosis = getOldestDiagnosisDateFromReports(caze);
+
+        return new CaseNotifierSideViewContent(caze, notifier, dateOfDiagnosis, notificationDate);
     }
 
     /**
@@ -67,10 +83,7 @@ public class CaseNotifierSideViewController {
      * @return oldest report or null if none found
      */
     public SurveillanceReportDto getOldestReport(CaseDataDto caze) {
-
-        CaseReferenceDto cazeRef = new CaseReferenceDto();
-        cazeRef.setUuid(caze.getUuid());
-        return getOldestReport(cazeRef);
+        return getOldestReport(caze.toReference());
     }
 
     /**
@@ -94,6 +107,21 @@ public class CaseNotifierSideViewController {
             .orElse(null);
     }
 
+    public Date getOldestDiagnosisDateFromReports(CaseDataDto caze) {
+        return getOldestDiagnosisDateFromReports(caze.toReference());
+    }
+
+    public Date getOldestDiagnosisDateFromReports(CaseReferenceDto caze) {
+        SurveillanceReportCriteria criteria = new SurveillanceReportCriteria();
+        criteria.caze(caze);
+        criteria.setReportingType(ReportingType.DOCTOR);
+
+        List<SurveillanceReportDto> reports = FacadeProvider.getSurveillanceReportFacade().getIndexList(criteria, null, null, null);
+
+        // Retrieve the oldest diagnosis date
+        return reports.stream().map(SurveillanceReportDto::getDateOfDiagnosis).filter(Objects::nonNull).min(Comparator.naturalOrder()).orElse(null);
+    }
+
     /**
      * Opens a dialog to create a new notifier.
      * Only allowed when no surveillance report exists for the case.
@@ -114,9 +142,8 @@ public class CaseNotifierSideViewController {
         }
 
         NotifierDto newNotifier = new NotifierDto();
-        TherapyDto therapy = caze.getTherapy();
 
-        openEditWindow(caze, newNotifier, therapy, I18nProperties.getCaption(Captions.Notification_createNotification), false, callback, true);
+        openEditWindow(caze, newNotifier, I18nProperties.getCaption(Captions.Notification_createNotification), callback, true);
     }
 
     /**
@@ -146,16 +173,13 @@ public class CaseNotifierSideViewController {
 
         // We only edit the current version
         NotifierDto notifier = FacadeProvider.getNotifierFacade().getByUuid(caze.getNotifier().getUuid());
-        TherapyDto therapy = caze.getTherapy();
 
         openEditWindow(
             caze,
             notifier,
-            therapy,
             isEditAllowed
                 ? I18nProperties.getCaption(Captions.Notification_editNotification)
                 : I18nProperties.getCaption(Captions.Notification_viewNotification),
-            true,
             callback,
             isEditAllowed);
     }
@@ -190,23 +214,16 @@ public class CaseNotifierSideViewController {
      * @param isEditAllowed
      *            whether editing is allowed
      */
-    private void openEditWindow(
-        CaseDataDto caze,
-        NotifierDto notifier,
-        TherapyDto therapy,
-        String title,
-        boolean canDelete,
-        Runnable callback,
-        boolean isEditAllowed) {
+    private void openEditWindow(CaseDataDto caze, NotifierDto notifier, String title, Runnable callback, boolean isEditAllowed) {
 
-        final CaseNotifierForm notifierForm = new CaseNotifierForm(notifier, therapy);
+        final CaseNotifierForm notifierForm = new CaseNotifierForm(notifier, caze);
 
         final CommitDiscardWrapperComponent<CaseNotifierForm> editView = new CommitDiscardWrapperComponent<>(notifierForm, true);
 
         final Window window = VaadinUiUtil.showModalPopupWindow(editView, title);
 
         if (isEditAllowed) {
-            editView.setPreCommitListener((cb) -> {
+            editView.setPreCommitListener(cb -> {
                 if (!notifierForm.isValid()) {
                     // Form validation failed - errors are already shown on the form
                     return;
@@ -272,43 +289,35 @@ public class CaseNotifierSideViewController {
             return;
         }
 
-        TherapyDto therapy = caze.getTherapy();
-
-        if (therapy == null) {
-            therapy = TherapyDto.build();
-        }
-
         if (selectedOption.equals(TreatmentOption.YES)) {
-            therapy.setTreatmentStarted(YesNoUnknown.YES);
-            therapy.setTreatmentNotApplicable(false);
-            if (therapy.getTreatmentStartDate() == null) {
-                therapy.setTreatmentStartDate(new java.util.Date());
+            caze.setTreatmentStarted(YesNoUnknown.YES);
+            caze.setTreatmentNotApplicable(false);
+            if (caze.getTreatmentStartDate() == null) {
+                caze.setTreatmentStartDate(new java.util.Date());
             }
             return;
         }
 
         if (selectedOption.equals(TreatmentOption.NO)) {
-            therapy.setTreatmentStarted(YesNoUnknown.NO);
-            therapy.setTreatmentNotApplicable(false);
-            therapy.setTreatmentStartDate(null);
+            caze.setTreatmentStarted(YesNoUnknown.NO);
+            caze.setTreatmentNotApplicable(false);
+            caze.setTreatmentStartDate(null);
             return;
         }
 
         if (selectedOption.equals(TreatmentOption.NOT_APPLICABLE)) {
-            therapy.setTreatmentNotApplicable(true);
-            therapy.setTreatmentStarted(null);
-            therapy.setTreatmentStartDate(null);
+            caze.setTreatmentNotApplicable(true);
+            caze.setTreatmentStarted(null);
+            caze.setTreatmentStartDate(null);
             return;
         }
 
         if (selectedOption.equals(TreatmentOption.UNKNOWN)) {
-            therapy.setTreatmentStarted(YesNoUnknown.UNKNOWN);
-            therapy.setTreatmentNotApplicable(false);
-            therapy.setTreatmentStartDate(null);
-            return;
+            caze.setTreatmentStarted(YesNoUnknown.UNKNOWN);
+            caze.setTreatmentNotApplicable(false);
+            caze.setTreatmentStartDate(null);
         }
 
-        caze.setTherapy(therapy);
     }
 
     /**

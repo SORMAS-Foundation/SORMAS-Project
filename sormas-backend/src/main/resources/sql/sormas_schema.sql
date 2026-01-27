@@ -14127,7 +14127,7 @@ INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, valu
                                      uuid)
 VALUES ('EMAIL_SENDER_ADDRESS', 'noreply@sormas.org', email_configuration_id, true,
         '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', false, null,
-        'i18n/systemConfigurationValueValidationNotAEmail', now(), now(), nextval('entity_seq'),
+        'i18n/systemConfigurationValueInvalidValue', now(), now(), nextval('entity_seq'),
         generate_base32_uuid());
 
 DELETE
@@ -15118,6 +15118,52 @@ LANGUAGE plpgsql;
 
 INSERT INTO schema_version (version_number, comment) VALUES (603, 'System configuration: to visually distinguish different system types');
 
+-- Move treatment fields from therapy to cases #13775
+
+-- Add new columns to cases table
+ALTER TABLE cases ADD COLUMN treatmentstarted varchar(255);
+ALTER TABLE cases ADD COLUMN treatmentnotapplicable boolean DEFAULT false;
+ALTER TABLE cases ADD COLUMN treatmentstartdate timestamp;
+ALTER TABLE cases_history ADD COLUMN treatmentstarted varchar(255);
+ALTER TABLE cases_history ADD COLUMN treatmentnotapplicable boolean DEFAULT false;
+ALTER TABLE cases_history ADD COLUMN treatmentstartdate timestamp;
+-- Migrate data from therapy to cases
+UPDATE cases c
+SET treatmentstarted = t.treatmentstarted,
+    treatmentnotapplicable = t.treatmentnotapplicable,
+    treatmentstartdate = t.treatmentstartdate
+FROM therapy t
+WHERE c.therapy_id = t.id
+  AND (t.treatmentstarted IS NOT NULL 
+       OR t.treatmentnotapplicable IS NOT NULL 
+       OR t.treatmentstartdate IS NOT NULL);
+-- Drop columns from therapy table
+ALTER TABLE therapy DROP COLUMN treatmentstarted;
+ALTER TABLE therapy DROP COLUMN treatmentnotapplicable;
+ALTER TABLE therapy DROP COLUMN treatmentstartdate;
+ALTER TABLE therapy_history DROP COLUMN treatmentstarted;
+ALTER TABLE therapy_history DROP COLUMN treatmentnotapplicable;
+ALTER TABLE therapy_history DROP COLUMN treatmentstartdate;
+
+INSERT INTO schema_version (version_number, comment) VALUES (604, 'Move treatment fields from therapy to cases');
+
+-- external message person additional fields
+ALTER TABLE externalmessage ADD COLUMN personoccupation character varying(255);
+ALTER TABLE externalmessage_history ADD COLUMN personoccupation character varying(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (605, 'External message person additional fields');
+
+-- Missing date of diagnosis in surveillance reports #13751
+
+UPDATE surveillancereports sr
+SET dateofdiagnosis = em.diagnosticdate
+FROM externalmessage em
+WHERE em.surveillancereport_id = sr.id
+  AND em.diagnosticdate IS NOT NULL
+  AND sr.dateofdiagnosis IS NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (606, 'Update surveillance report diagnosis date');
+
 -- Enhance Case Form vaccination status with additional detailed information #13377
 
 ALTER TABLE cases ADD COLUMN vaccinationstatusdetails character varying(255);
@@ -15145,6 +15191,6 @@ VALUES ('USE_DETERMINED_VACCINATION_STATUS', 'false', 'i18n/infoSystemConfigurat
 END $$
 LANGUAGE plpgsql;
 
-INSERT INTO schema_version (version_number, comment) VALUES (604, 'Enhance Case Form vaccination status with additional detailed information #13377');
+INSERT INTO schema_version (version_number, comment) VALUES (607, 'Enhance Case Form vaccination status with additional detailed information #13377');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
