@@ -1485,14 +1485,14 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 				CASE_CLASSIFICATION_CALCULATION_MODE_OVERRIDE,
 				ObjectMapperProvider.getInstance()
 					.writeValueAsString(Map.of(Disease.CORONAVIRUS, CaseClassificationCalculationMode.MANUAL_AND_AUTOMATIC)));
-
+		caze = getCaseFacade().save(buildSuspectCase(Disease.CORONAVIRUS));
 		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
 
 		MockProducer.getProperties()
 			.setProperty(
 				CASE_CLASSIFICATION_CALCULATION_MODE_OVERRIDE,
 				ObjectMapperProvider.getInstance().writeValueAsString(Map.of(Disease.CORONAVIRUS, CaseClassificationCalculationMode.DISABLED)));
-
+		caze = getCaseFacade().save(buildSuspectCase(Disease.CORONAVIRUS));
 		assertEquals(CaseClassification.NOT_CLASSIFIED, caze.getCaseClassification());
 
 
@@ -1503,7 +1503,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 			.setProperty(
 				CASE_CLASSIFICATION_CALCULATION_MODE_OVERRIDE,
 				ObjectMapperProvider.getInstance().writeValueAsString(Map.of(Disease.CORONAVIRUS, CaseClassificationCalculationMode.DISABLED)));
-
+		caze = getCaseFacade().save(buildSuspectCase(Disease.CORONAVIRUS));
 		assertEquals(CaseClassification.NOT_CLASSIFIED, caze.getCaseClassification());
 	}
 
