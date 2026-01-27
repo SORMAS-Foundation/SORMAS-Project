@@ -20,6 +20,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import de.symeda.sormas.api.systemconfiguration.ExternalClientConfigurationFacade;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
@@ -60,7 +61,7 @@ public class ExternalJournalService {
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
-	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
+	private ExternalClientConfigurationFacade configFacade;
 	@EJB
 	private PatientDiaryClient patientDiaryClient;
 	private PersonContactInfoValidator contactInfoValidator;

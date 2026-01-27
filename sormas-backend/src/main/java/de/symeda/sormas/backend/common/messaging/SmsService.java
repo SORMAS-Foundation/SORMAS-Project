@@ -24,8 +24,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
-import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationValueEjb;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +39,7 @@ import com.nexmo.client.sms.SmsSubmissionResponse;
 import com.nexmo.client.sms.SmsSubmissionResponseMessage;
 import com.nexmo.client.sms.messages.TextMessage;
 
-import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import de.symeda.sormas.api.systemconfiguration.Config;
 
 @Stateless(name = "SmsService")
 @LocalBean
@@ -53,10 +52,7 @@ public class SmsService {
 	public static final String SMS_AUTH_SECRET = "SMS_AUTH_SECRET";
 
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
-
-	@EJB
-	private SystemConfigurationValueFacade systemConfigurationValueEjb;
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	@Asynchronous
 	public void sendSms(String phoneNumber, String content) throws IOException, NexmoClientException, InvalidPhoneNumberException {
@@ -70,7 +66,10 @@ public class SmsService {
 			phoneNumber = phoneNumber.substring(1);
 		}
 
-		NexmoClient client = NexmoClient.builder().apiKey(systemConfigurationValueEjb.getValue(SMS_AUTH_KEY)).apiSecret(systemConfigurationValueEjb.getValue(SMS_AUTH_SECRET)).build();
+		NexmoClient client = NexmoClient.builder()
+				.apiKey(configFacade.getAsStringOrThrow(Config.SMS_AUTH_KEY))
+				.apiSecret(configFacade.getAsStringOrThrow(Config.SMS_AUTH_SECRET))
+				.build();
 
 		// If the phone number is invalid, e.g. because it is a landline number or malformed otherwise, throw an exception
 		InsightClient insightClient = client.getInsightClient();
@@ -80,16 +79,16 @@ public class SmsService {
 		}
 
 		SmsSubmissionResponse response =
-			client.getSmsClient().submitMessage(new TextMessage(configFacade.getSormasInstanceName(), phoneNumber, content));
+				client.getSmsClient().submitMessage(new TextMessage(configFacade.getSormasInstanceName(), phoneNumber, content));
 		for (SmsSubmissionResponseMessage message : response.getMessages()) {
 			if (message.getStatus() == MessageStatus.OK) {
 				logger.info("SMS successfully sent to {}.", phoneNumber);
 			} else if (message.getErrorText() != null) {
 				logger.info(
-					"Error sending SMS to {} with following error: status: {}, text: '{}'.",
-					phoneNumber,
-					message.getStatus(),
-					message.getErrorText());
+						"Error sending SMS to {} with following error: status: {}, text: '{}'.",
+						phoneNumber,
+						message.getStatus(),
+						message.getErrorText());
 			}
 		}
 	}

@@ -27,6 +27,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.mail.MessagingException;
 
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +36,6 @@ import com.nexmo.client.NexmoClientException;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.manualmessagelog.ManualMessageLog;
 import de.symeda.sormas.backend.manualmessagelog.ManualMessageLogService;
 import de.symeda.sormas.backend.person.Person;
@@ -44,7 +44,7 @@ import de.symeda.sormas.backend.user.UserService;
 
 /**
  * Service used to send email and SMS messages to SORMAS users & persons.
- * 
+ *
  * @author Maté Strysewske
  */
 @Stateless(name = "MessagingService")
@@ -65,19 +65,19 @@ public class MessagingService {
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	public void sendEmail(Map<User, String> userMessages, MessageSubject subject, Object[] subjectParameters)
-		throws NotificationDeliveryFailedException {
+			throws NotificationDeliveryFailedException {
 
 		sendMessage(userMessages, subject, subjectParameters, User::getUserEmail, this::sendEmail);
 	}
 
 	public void sendSms(Map<User, String> userMessages, MessageSubject subject, Object[] subjectParameters)
-		throws NotificationDeliveryFailedException {
+			throws NotificationDeliveryFailedException {
 
 		sendMessage(userMessages, subject, subjectParameters, User::getPhone, this::sendSms);
 	}
 
 	public void sendManualMessage(Person recipient, String subject, String messageContent, MessageType... messageTypes)
-		throws NotificationDeliveryFailedException {
+			throws NotificationDeliveryFailedException {
 		final String emailAddress = recipient.getEmailAddress();
 		final String phoneNumber = recipient.getPhone();
 		final String recipientUuid = recipient.getUuid();
@@ -100,12 +100,12 @@ public class MessagingService {
 	}
 
 	private void sendMessage(
-		Map<User, String> userMessages,
-		MessageSubject subject,
-		Object[] subjectParameters,
-		Function<User, String> contactInfoSupplier,
-		Messenger messenger)
-		throws NotificationDeliveryFailedException {
+			Map<User, String> userMessages,
+			MessageSubject subject,
+			Object[] subjectParameters,
+			Function<User, String> contactInfoSupplier,
+			Messenger messenger)
+			throws NotificationDeliveryFailedException {
 
 		for (Map.Entry<User, String> entry : userMessages.entrySet()) {
 			final User recipient = entry.getKey();
@@ -119,16 +119,16 @@ public class MessagingService {
 			final String recipientUuid = recipient.getUuid();
 
 			messenger.send(
-				String.format(I18nProperties.getEnumCaption(subject), subjectParameters),
-				messageContent,
-				contactInfoSupplier.apply(recipient),
-				recipientUuid,
-				"user");
+					String.format(I18nProperties.getEnumCaption(subject), subjectParameters),
+					messageContent,
+					contactInfoSupplier.apply(recipient),
+					recipientUuid,
+					"user");
 		}
 	}
 
 	private void sendEmail(String subject, String messageContent, String emailAddress, String recipientUuid, final String recipientType)
-		throws NotificationDeliveryFailedException {
+			throws NotificationDeliveryFailedException {
 
 		if (DataHelper.isNullOrEmpty(emailAddress)) {
 			logger.info(String.format("Tried to send an email to a %s without an email address (UUID: %s).", recipientType, recipientUuid));
@@ -143,7 +143,7 @@ public class MessagingService {
 	}
 
 	private void sendSms(String subject, String messageContent, String phoneNumber, String recipientUuid, final String recipientType)
-		throws NotificationDeliveryFailedException {
+			throws NotificationDeliveryFailedException {
 
 		boolean isSmsServiceSetUp = configFacade.isSmsServiceSetUp();
 
@@ -171,6 +171,6 @@ public class MessagingService {
 	interface Messenger {
 
 		void send(String subject, String messageContent, String contactInfo, String recipientUuid, String recipientType)
-			throws NotificationDeliveryFailedException;
+				throws NotificationDeliveryFailedException;
 	}
 }

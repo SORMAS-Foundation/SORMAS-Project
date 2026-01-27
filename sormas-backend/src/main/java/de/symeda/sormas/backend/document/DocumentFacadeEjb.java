@@ -34,6 +34,7 @@ import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.metadata.Metadata;
@@ -169,8 +170,8 @@ public class DocumentFacadeEjb implements DocumentFacade {
 	}
 
 	private void checkFileExtension(String fileExtension) {
-		String[] allowedFileExtensions = configFacade.getAllowedFileExtensions();
-		boolean fileTypeAllowed = asList(allowedFileExtensions).contains(fileExtension);
+		Set<String> allowedFileExtensions = configFacade.getAllowedFileExtensions();
+		boolean fileTypeAllowed = allowedFileExtensions.contains(fileExtension);
 
 		if (!fileTypeAllowed) {
 			throw new FileExtensionNotAllowedException(String.format("File extension %s not allowed", fileExtension));
