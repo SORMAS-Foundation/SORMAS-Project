@@ -21,7 +21,8 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 public enum EpipulseDiseaseRef {
 
 	PERT(EpipulseSubjectCode.PERT),
-	MEAS(EpipulseSubjectCode.MEAS);
+	MEAS(EpipulseSubjectCode.MEAS),
+	PNEU(EpipulseSubjectCode.PNEU); // Invasive Pneumococcal Infection
 
 	private final EpipulseSubjectCode[] subjectCodes;
 

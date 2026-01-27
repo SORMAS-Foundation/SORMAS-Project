@@ -26,9 +26,9 @@ import de.symeda.sormas.api.epipulse.EpipulseDiseaseExportResult;
 
 /**
  * CSV export strategy for Measles disease.
- * Handles 41+ columns with 5 repeatable field types:
- * - TypeOfSpecimenCollected (virus detection)
- * - TypeOfSpecimenForSerologicalAnalysis (serology)
+ * Handles 36+ columns with 5 repeatable field types:
+ * - SpecimenVirDetect (virus detection specimen)
+ * - SpecimenSero (serology specimen)
  * - ClusterSetting
  * - ComplicationDiagnosis
  * - PlaceOfInfection
@@ -39,6 +39,7 @@ public class MeaslesCsvExportStrategy implements CsvExportStrategy {
 
 	@Override
 	public List<String> buildColumnNames(EpipulseDiseaseExportResult exportResult) {
+		// Follow exact metadata order for MEAS subject code
 		List<String> columnNames = new ArrayList<>(
 			List.of(
 				"Disease",
@@ -53,40 +54,12 @@ public class MeaslesCsvExportStrategy implements CsvExportStrategy {
 				"Gender",
 				"CaseClassification",
 				"DateOfOnset",
+				"DateOfInvestigation",
 				"DateOfNotification",
 				"Hospitalisation",
 				"Outcome",
-				"PlaceOfNotification",
-				"PlaceOfResidence",
-				"DateOfSpecimen",
-				"DateOfLaboratoryResult"));
-
-		// Repeatable field: TypeOfSpecimenCollected (virus detection)
-		if (exportResult.getMaxSpecimenVirDetect() > 0) {
-			for (int i = 1; i <= exportResult.getMaxSpecimenVirDetect(); i++) {
-				columnNames.add("TypeOfSpecimenCollected");
-			}
-		}
-
-		columnNames.addAll(List.of("ResultOfVirusDetection", "Genotype"));
-
-		// Repeatable field: TypeOfSpecimenForSerologicalAnalysis
-		if (exportResult.getMaxSpecimenSero() > 0) {
-			for (int i = 1; i <= exportResult.getMaxSpecimenSero(); i++) {
-				columnNames.add("TypeOfSpecimenForSerologicalAnalysis");
-			}
-		}
-
-		columnNames.addAll(List.of("ResultIgG", "ResultIgM", "DateOfInvestigation", "ClusterRelated", "ClusterIdentification"));
-
-		// Repeatable field: ClusterSetting
-		if (exportResult.getMaxClusterSettings() > 0) {
-			for (int i = 1; i <= exportResult.getMaxClusterSettings(); i++) {
-				columnNames.add("ClusterSetting");
-			}
-		}
-
-		columnNames.add("ImportedStatus");
+				"CauseOfDeath",
+				"ClinicalCriteriaStatus"));
 
 		// Repeatable field: ComplicationDiagnosis
 		if (exportResult.getMaxComplicationDiagnosis() > 0) {
@@ -95,7 +68,16 @@ public class MeaslesCsvExportStrategy implements CsvExportStrategy {
 			}
 		}
 
-		columnNames.add("ClinicalCriteriaStatus");
+		columnNames.addAll(List.of("ClusterRelated", "ClusterId"));
+
+		// Repeatable field: ClusterSetting
+		if (exportResult.getMaxClusterSettings() > 0) {
+			for (int i = 1; i <= exportResult.getMaxClusterSettings(); i++) {
+				columnNames.add("ClusterSetting");
+			}
+		}
+
+		columnNames.addAll(List.of("DateOfLastVaccination", "VaccinationStatus", "ImportedStatus"));
 
 		// Repeatable field: PlaceOfInfection
 		if (exportResult.getMaxPlaceOfInfection() > 0) {
@@ -104,14 +86,25 @@ public class MeaslesCsvExportStrategy implements CsvExportStrategy {
 			}
 		}
 
-		columnNames.add("CauseOfDeath");
+		columnNames.addAll(List.of("PlaceOfNotification", "PlaceOfResidence", "DateOfSpecimen", "DateOfLabResult"));
 
-		// Add vaccination columns
-		if (exportResult.getMaxImmunizations() > 0) {
-			columnNames.add("DateOfLastVaccination");
+		// Repeatable field: SpecimenVirDetect (virus detection)
+		if (exportResult.getMaxSpecimenVirDetect() > 0) {
+			for (int i = 1; i <= exportResult.getMaxSpecimenVirDetect(); i++) {
+				columnNames.add("SpecimenVirDetect");
+			}
 		}
 
-		columnNames.add("VaccinationStatus");
+		columnNames.addAll(List.of("ResultVirDetect", "Genotype"));
+
+		// Repeatable field: SpecimenSero (specimen for serology)
+		if (exportResult.getMaxSpecimenSero() > 0) {
+			for (int i = 1; i <= exportResult.getMaxSpecimenSero(); i++) {
+				columnNames.add("SpecimenSero");
+			}
+		}
+
+		columnNames.addAll(List.of("ResultIgG", "ResultIgM"));
 
 		return columnNames;
 	}
@@ -120,7 +113,7 @@ public class MeaslesCsvExportStrategy implements CsvExportStrategy {
 	public int writeEntryRow(EpipulseDiseaseExportEntryDto dto, String[] exportLine, EpipulseDiseaseExportResult exportResult) {
 		int index = -1;
 
-		// Write fixed columns
+		// Write fixed columns in metadata order
 		exportLine[++index] = dto.getDiseaseForCsv();
 		exportLine[++index] = dto.getReportingCountryForCsv();
 		exportLine[++index] = dto.getStatusForCsv();
@@ -133,40 +126,21 @@ public class MeaslesCsvExportStrategy implements CsvExportStrategy {
 		exportLine[++index] = dto.getGenderForCsv();
 		exportLine[++index] = dto.getCaseClassificationForCsv();
 		exportLine[++index] = dto.getDateOfOnsetForCsv();
+		exportLine[++index] = dto.getDateOfInvestigationForCsv();
 		exportLine[++index] = dto.getDateOfNotificationForCsv();
 		exportLine[++index] = dto.getHospitalizationForCsv();
 		exportLine[++index] = dto.getOutcomeForCsv();
-		exportLine[++index] = dto.getPlaceOfNotificationForCsv();
-		exportLine[++index] = dto.getPlaceOfResidenceForCsv();
+		exportLine[++index] = dto.getCauseOfDeathForCsv();
+		exportLine[++index] = dto.getClinicalCriteriaStatusForCsv();
 
-		// Laboratory fields
-		exportLine[++index] = dto.getDateOfSpecimenForCsv();
-		exportLine[++index] = dto.getDateOfLaboratoryResultForCsv();
-
-		// Repeatable: TypeOfSpecimenCollected (virus detection)
-		if (exportResult.getMaxSpecimenVirDetect() > 0) {
-			List<String> specimenCollected = dto.getTypeOfSpecimenCollectedForCsv(exportResult.getMaxSpecimenVirDetect());
-			for (String specimen : specimenCollected) {
-				exportLine[++index] = specimen;
+		// Repeatable: ComplicationDiagnosis
+		if (exportResult.getMaxComplicationDiagnosis() > 0) {
+			List<String> complications = dto.getComplicationDiagnosisForCsv(exportResult.getMaxComplicationDiagnosis());
+			for (String complication : complications) {
+				exportLine[++index] = complication;
 			}
 		}
 
-		exportLine[++index] = dto.getResultOfVirusDetectionForCsv();
-		exportLine[++index] = dto.getGenotypeForCsv();
-
-		// Repeatable: TypeOfSpecimenForSerologicalAnalysis
-		if (exportResult.getMaxSpecimenSero() > 0) {
-			List<String> specimenSerology = dto.getTypeOfSpecimenSerologyForCsv(exportResult.getMaxSpecimenSero());
-			for (String specimen : specimenSerology) {
-				exportLine[++index] = specimen;
-			}
-		}
-
-		exportLine[++index] = dto.getResultIgGForCsv();
-		exportLine[++index] = dto.getResultIgMForCsv();
-
-		// Clinical and epidemiology fields
-		exportLine[++index] = dto.getDateOfInvestigationForCsv();
 		exportLine[++index] = dto.getClusterRelatedForCsv();
 		exportLine[++index] = dto.getClusterIdentificationForCsv();
 
@@ -178,17 +152,9 @@ public class MeaslesCsvExportStrategy implements CsvExportStrategy {
 			}
 		}
 
+		exportLine[++index] = dto.getDateOfLastVaccinationForCsv();
+		exportLine[++index] = dto.getVaccinationStatusForCsv();
 		exportLine[++index] = dto.getImportedStatusForCsv();
-
-		// Repeatable: ComplicationDiagnosis
-		if (exportResult.getMaxComplicationDiagnosis() > 0) {
-			List<String> complications = dto.getComplicationDiagnosisForCsv(exportResult.getMaxComplicationDiagnosis());
-			for (String complication : complications) {
-				exportLine[++index] = complication;
-			}
-		}
-
-		exportLine[++index] = dto.getClinicalCriteriaStatusForCsv();
 
 		// Repeatable: PlaceOfInfection
 		if (exportResult.getMaxPlaceOfInfection() > 0) {
@@ -198,14 +164,34 @@ public class MeaslesCsvExportStrategy implements CsvExportStrategy {
 			}
 		}
 
-		exportLine[++index] = dto.getCauseOfDeathForCsv();
+		exportLine[++index] = dto.getPlaceOfNotificationForCsv();
+		exportLine[++index] = dto.getPlaceOfResidenceForCsv();
 
-		// Vaccination columns
-		if (exportResult.getMaxImmunizations() > 0) {
-			exportLine[++index] = dto.getDateOfLastVaccinationForCsv();
+		// Laboratory fields
+		exportLine[++index] = dto.getDateOfSpecimenForCsv();
+		exportLine[++index] = dto.getDateOfLaboratoryResultForCsv();
+
+		// Repeatable: SpecimenVirDetect (virus detection)
+		if (exportResult.getMaxSpecimenVirDetect() > 0) {
+			List<String> specimenCollected = dto.getTypeOfSpecimenCollectedForCsv(exportResult.getMaxSpecimenVirDetect());
+			for (String specimen : specimenCollected) {
+				exportLine[++index] = specimen;
+			}
 		}
 
-		exportLine[++index] = dto.getVaccinationStatusForCsv();
+		exportLine[++index] = dto.getResultOfVirusDetectionForCsv();
+		exportLine[++index] = dto.getGenotypeForCsv();
+
+		// Repeatable: SpecimenSero (serology)
+		if (exportResult.getMaxSpecimenSero() > 0) {
+			List<String> specimenSerology = dto.getTypeOfSpecimenSerologyForCsv(exportResult.getMaxSpecimenSero());
+			for (String specimen : specimenSerology) {
+				exportLine[++index] = specimen;
+			}
+		}
+
+		exportLine[++index] = dto.getResultIgGForCsv();
+		exportLine[++index] = dto.getResultIgMForCsv();
 
 		return index;
 	}

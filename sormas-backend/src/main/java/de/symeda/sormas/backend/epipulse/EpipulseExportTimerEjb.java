@@ -70,6 +70,9 @@ public class EpipulseExportTimerEjb {
 			case MEAS:
 				diseaseExportFacadeEjb.startMeaslesExport(uuid);
 				break;
+			case PNEU:  // Invasive Pneumococcal Infection
+				diseaseExportFacadeEjb.startIpiExport(uuid);
+				break;
 			default:
 				logger.warn("No export for subject code: {}", subjectCodeStr);
 				break;

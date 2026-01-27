@@ -38,7 +38,7 @@ public class PertussisExportStrategy extends AbstractEpipulseDiseaseExportStrate
 		// Build query using common CTEs only
 		query.append(sqlCteBuilder.buildVariablesCte());
 		query.append(sqlCteBuilder.buildConfigDataCte());
-		query.append(sqlCteBuilder.buildFilteredCasesCte(false)); // No Measles-specific fields
+		query.append(sqlCteBuilder.buildFilteredCasesCte(false)); // No epidata fields needed for Pertussis
 		query.append(sqlCteBuilder.buildPreviousHospitalizationsCte());
 		query.append(sqlCteBuilder.buildSamplesCte());
 		query.append(sqlCteBuilder.buildPathogenTestsCte());

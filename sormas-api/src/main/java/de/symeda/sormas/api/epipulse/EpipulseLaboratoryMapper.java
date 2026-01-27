@@ -324,4 +324,354 @@ public class EpipulseLaboratoryMapper {
 		}
 		return clinicalConfirmation == YesNoUnknown.YES;
 	}
+
+	// ==================== IPI-Specific Mappers ====================
+
+	/**
+	 * Maps SORMAS SampleMaterial enum to EpiPulse IPI specimen type codes.
+	 * <p>
+	 * EpiPulse Reference Values for IPI:
+	 * - BLOOD = Blood
+	 * - CSF = Cerebrospinal fluid
+	 * - OTH = Other
+	 * - PLEURAL = Pleural fluid
+	 * - SER = Serum
+	 * - SYNOVIAL = Synovial fluid (joint fluid)
+	 * - THROAT = Throat swab
+	 * - NPSWAB = Nasopharyngeal swab
+	 *
+	 * @param sampleMaterial
+	 *            SORMAS sample material enum
+	 * @return EpiPulse IPI specimen type code, or null if not mappable
+	 */
+	public static String mapSampleMaterialToIpiSpecimenCode(SampleMaterial sampleMaterial) {
+		if (sampleMaterial == null) {
+			return null;
+		}
+
+		switch (sampleMaterial) {
+		case BLOOD:
+			return "BLOOD";
+		case SERA:
+			return "SER"; // Serum
+		case CEREBROSPINAL_FLUID:
+			return "CSF";
+		case PLEURAL_FLUID:
+			return "PLEURAL";
+		case SYNOVIAL_FLUID:
+			return "SYNOVIAL";
+		case THROAT_SWAB:
+			return "THROAT";
+		case NP_SWAB:
+			return "NPSWAB";
+		case OTHER:
+			return "OTH";
+		default:
+			return null;
+		}
+	}
+
+	/**
+	 * Maps SORMAS Symptoms to EpiPulse IPI clinical presentation codes.
+	 * <p>
+	 * EpiPulse Reference Values for IPI:
+	 * - MENING = Meningitis
+	 * - SEPT = Septicaemia
+	 * - PNEUM = Pneumonia
+	 * - OME = Otitis media
+	 * - PERITON = Peritonitis
+	 * - ARTH = Arthritis
+	 * - OTH = Other
+	 * - ASYMP = Asymptomatic
+	 * - NONE = No clinical presentation recorded
+	 *
+	 * @param meningitis
+	 *            Meningitis symptom state (IPI-specific)
+	 * @param septicaemia
+	 *            Septicaemia symptom state (IPI-specific)
+	 * @param pneumonia
+	 *            Pneumonia symptom state
+	 * @param otitisMedia
+	 *            Otitis media symptom state
+	 * @param peritonitis
+	 *            Peritonitis symptom state
+	 * @param arthritis
+	 *            Arthritis symptom state
+	 * @param otherClinical
+	 *            Other clinical presentation symptom state
+	 * @param asymptomatic
+	 *            Asymptomatic symptom state
+	 * @return List of EpiPulse clinical presentation codes (empty list returns "NONE" in CSV)
+	 */
+	public static List<String> mapSymptomsToClinicalPresentation(
+		SymptomState meningitis,
+		SymptomState septicaemia,
+		SymptomState pneumonia,
+		SymptomState otitisMedia,
+		SymptomState peritonitis,
+		SymptomState arthritis,
+		SymptomState otherClinical,
+		SymptomState asymptomatic) {
+
+		List<String> presentations = new ArrayList<>();
+
+		// Priority: IPI-defining symptoms first
+		if (meningitis == SymptomState.YES) {
+			presentations.add("MENING");
+		}
+		if (septicaemia == SymptomState.YES) {
+			presentations.add("SEPT");
+		}
+		if (pneumonia == SymptomState.YES) {
+			presentations.add("PNEUM");
+		}
+		if (otitisMedia == SymptomState.YES) {
+			presentations.add("OME");
+		}
+		if (peritonitis == SymptomState.YES) {
+			presentations.add("PERITON");
+		}
+		if (arthritis == SymptomState.YES) {
+			presentations.add("ARTH");
+		}
+		if (otherClinical == SymptomState.YES) {
+			presentations.add("OTH");
+		}
+		if (asymptomatic == SymptomState.YES) {
+			presentations.add("ASYMP");
+		}
+
+		// If no presentations found, empty list will result in "NONE" in CSV
+		return presentations;
+	}
+
+	/**
+	 * Maps SORMAS drug susceptibility test result to EpiPulse antibiotic resistance codes.
+	 * <p>
+	 * EpiPulse Reference Values:
+	 * - RESIST = Resistant
+	 * - SENS = Sensitive
+	 * - INTER = Intermediate resistance
+	 * - NOTEST = Not tested
+	 *
+	 * @param testResult
+	 *            SORMAS PathogenTestResultType from drug susceptibility test
+	 * @return EpiPulse antibiotic resistance code
+	 */
+	public static String mapDrugSusceptibilityToEpipulseCode(PathogenTestResultType testResult) {
+		if (testResult == null) {
+			return null;
+		}
+
+		switch (testResult) {
+		case POSITIVE:
+			return "RESIST"; // Positive drug susceptibility = Resistant
+		case NEGATIVE:
+			return "SENS"; // Negative drug susceptibility = Sensitive
+		case INDETERMINATE:
+			return "INTER"; // Intermediate resistance
+		case PENDING:
+		case NOT_DONE:
+			return "NOTEST";
+		default:
+			return null;
+		}
+	}
+
+	/**
+	 * Validates and normalizes pneumococcal serotype string for EpiPulse export.
+	 * <p>
+	 * Pneumococcal serotypes include 90+ types: 1, 2, 3, 4, 5, 6A, 6B, 7F, 8, 9N, 9V, 10A, etc.
+	 * Accepts formats like "6A", "19F", "23F", "SEROTYPE 6A", "TYPE 19F", etc.
+	 *
+	 * @param serotypeText
+	 *            SORMAS serotype string (from PathogenTest typingId or serotype field)
+	 * @return Normalized EpiPulse serotype code (e.g., "6A", "19F"), or null if invalid
+	 */
+	public static String normalizeSerotypeForEpipulse(String serotypeText) {
+		if (serotypeText == null || serotypeText.trim().isEmpty()) {
+			return null;
+		}
+
+		String normalized = serotypeText.trim().toUpperCase();
+
+		// Remove common prefixes: "SEROTYPE ", "TYPE ", "S.", "PNEUMOCOCCAL ", etc.
+		normalized = normalized.replaceAll("^(SEROTYPE|TYPE|S\\.|PNEUMOCOCCAL|STREPTOCOCCUS PNEUMONIAE)\\s*", "");
+
+		// Validate format: digit(s) optionally followed by letter(s)
+		// Examples: "1", "6A", "6B", "19F", "23F", "15A", "33F"
+		if (normalized.matches("^\\d{1,2}[A-Z]{0,2}$")) {
+			return normalized;
+		}
+
+		return null; // Invalid format
+	}
+
+	/**
+	 * Maps SORMAS Symptoms to EpiPulse ClinicalCriteria codes for PNEU.
+	 * <p>
+	 * EpiPulse Reference Values for PNEU ClinicalCriteria:
+	 * - BACTERPNEUMO = Bacteraemic pneumonia
+	 * - MENI = Meningitis/Meningeal/Meningoencephalitic
+	 * - MENISEPTI = Meningitis and septicaemia
+	 * - OTH = Other
+	 * - SEPTI = Septicaemia
+	 *
+	 * @param meningitis Meningitis symptom state
+	 * @param septicaemia Septicaemia symptom state
+	 * @param pneumonia Pneumonia symptom state (clinical or radiologic)
+	 * @return EpiPulse clinical criteria code, or null if no criteria met
+	 */
+	public static String mapSymptomsToClinicalCriteria(
+		SymptomState meningitis,
+		SymptomState septicaemia,
+		SymptomState pneumonia) {
+
+		boolean hasMeningitis = meningitis == SymptomState.YES;
+		boolean hasSepticaemia = septicaemia == SymptomState.YES;
+		boolean hasPneumonia = pneumonia == SymptomState.YES;
+
+		// Priority order based on severity/specificity
+		if (hasMeningitis && hasSepticaemia) {
+			return "MENISEPTI"; // Both present
+		} else if (hasMeningitis) {
+			return "MENI"; // Meningitis only
+		} else if (hasSepticaemia) {
+			return "SEPTI"; // Septicaemia only
+		} else if (hasPneumonia) {
+			return "BACTERPNEUMO"; // Bacteraemic pneumonia
+		}
+
+		return null; // No specific clinical criteria met
+	}
+
+	/**
+	 * Maps SORMAS Vaccine enum to EpiPulse vaccine codes for PNEU.
+	 * <p>
+	 * EpiPulse Reference Values for PNEU Vaccine:
+	 * - PCV7 = Pneumococcal conjugate vaccine 7
+	 * - PCV10 = Pneumococcal conjugate vaccine 10
+	 * - PCV13 = Pneumococcal conjugate vaccine 13
+	 * - PCV15 = Pneumococcal conjugate vaccine 15
+	 * - PCV20 = Pneumococcal conjugate vaccine 20
+	 * - PCV3 = Pneumococcal conjugate vaccine - third dose
+	 * - PPV23 = Pneumococcal polysaccharide vaccine
+	 *
+	 * @param vaccineName SORMAS vaccine name/type
+	 * @return EpiPulse vaccine code, or null if not pneumococcal vaccine
+	 */
+	public static String mapVaccineToEpipulseCode(String vaccineName) {
+		if (vaccineName == null || vaccineName.trim().isEmpty()) {
+			return null;
+		}
+
+		String normalized = vaccineName.trim().toUpperCase();
+
+		// Map PCV vaccines
+		if (normalized.contains("PCV") || normalized.contains("CONJUGATE")) {
+			if (normalized.contains("20")) {
+				return "PCV20";
+			} else if (normalized.contains("15")) {
+				return "PCV15";
+			} else if (normalized.contains("13")) {
+				return "PCV13";
+			} else if (normalized.contains("10")) {
+				return "PCV10";
+			} else if (normalized.contains("7")) {
+				return "PCV7";
+			} else if (normalized.contains("3")) {
+				return "PCV3";
+			}
+			// Default PCV if no specific number
+			return "PCV13"; // Most common
+		}
+
+		// Map PPV vaccine
+		if (normalized.contains("PPV") || normalized.contains("POLYSACCHARIDE") || normalized.contains("23")) {
+			return "PPV23";
+		}
+
+		// Check for general pneumococcal terms
+		if (normalized.contains("PNEUMO")) {
+			return "PCV13"; // Default to most common PCV
+		}
+
+		return null; // Not a pneumococcal vaccine
+	}
+
+	/**
+	 * Maps DrugSusceptibilityType enum to EpiPulse SIR codes.
+	 * <p>
+	 * EpiPulse Reference Values for SIR (Susceptible/Intermediate/Resistant):
+	 * - S = Susceptible
+	 * - I = Intermediate
+	 * - R = Resistant
+	 *
+	 * @param susceptibility SORMAS drug susceptibility enum
+	 * @return EpiPulse SIR code (S/I/R), or null if not tested
+	 */
+	public static String mapDrugSusceptibilityToSIR(String susceptibility) {
+		if (susceptibility == null || susceptibility.trim().isEmpty()) {
+			return null;
+		}
+
+		String normalized = susceptibility.trim().toUpperCase();
+
+		if (normalized.equals("SUSCEPTIBLE") || normalized.equals("S")) {
+			return "S";
+		} else if (normalized.equals("INTERMEDIATE") || normalized.equals("I")) {
+			return "I";
+		} else if (normalized.equals("RESISTANT") || normalized.equals("R")) {
+			return "R";
+		}
+
+		return null; // Unknown susceptibility
+	}
+
+	/**
+	 * Maps SORMAS PathogenTestType to EpiPulse PathogenDetectionMethod codes for PNEU.
+	 * <p>
+	 * EpiPulse Reference Values for PNEU PathogenDetectionMethod:
+	 * - COAGG = Coagglutination
+	 * - GDIFF = Gel diffusion
+	 * - MPCR = Multiplex PCR
+	 * - OTH = Other
+	 * - PTEST = Pneumotest
+	 * - QUE = Quellung
+	 * - SLAGG = Slide agglutination
+	 *
+	 * @param testType SORMAS pathogen test type
+	 * @return EpiPulse detection method code, or null if not mappable
+	 */
+	public static String mapPathogenTestTypeToDetectionMethod(String testType) {
+		if (testType == null || testType.trim().isEmpty()) {
+			return null;
+		}
+
+		String normalized = testType.trim().toUpperCase();
+
+		// Map specific test types
+		if (normalized.contains("PCR") || normalized.contains("RT-PCR") || normalized.contains("RTPCR")) {
+			if (normalized.contains("MULTIPLEX")) {
+				return "MPCR"; // Multiplex PCR
+			}
+			return "MPCR"; // Default PCR to multiplex
+		} else if (normalized.contains("QUELLUNG")) {
+			return "QUE";
+		} else if (normalized.contains("COAGG") || normalized.contains("CO-AGGLUTINATION")) {
+			return "COAGG";
+		} else if (normalized.contains("SLIDE") && normalized.contains("AGGLUT")) {
+			return "SLAGG";
+		} else if (normalized.contains("GEL") && normalized.contains("DIFF")) {
+			return "GDIFF";
+		} else if (normalized.contains("PNEUMOTEST")) {
+			return "PTEST";
+		} else if (normalized.contains("CULTURE")) {
+			return "QUE"; // Culture often followed by Quellung
+		} else if (normalized.contains("SEROGROUPING") || normalized.contains("SEROTYPING")) {
+			return "QUE"; // Serotyping typically uses Quellung
+		}
+
+		return "OTH"; // Other methods
+	}
 }

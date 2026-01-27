@@ -66,12 +66,12 @@ public class EpipulseSqlCteBuilder {
 	/**
 	 * Builds the filtered_cases CTE that selects all cases matching the export criteria.
 	 *
-	 * @param includeMeaslesFields
-	 *            if true, includes additional fields required for Measles export
+	 * @param includeEpidataFields
+	 *            if true, includes additional fields required for diseases with epidemiology data
 	 *            (epidata_id, investigateddate, clinicalconfirmation)
 	 * @return the filtered_cases CTE SQL fragment
 	 */
-	public String buildFilteredCasesCte(boolean includeMeaslesFields) {
+	public String buildFilteredCasesCte(boolean includeEpidataFields) {
 		StringBuilder cte = new StringBuilder();
 		//@formatter:off
 		cte.append("     filtered_cases AS (SELECT c.id,")
@@ -87,7 +87,7 @@ public class EpipulseSqlCteBuilder {
 		   .append("                               c.responsibledistrict_id,")
 		   .append("                               c.responsiblecommunity_id");
 
-		if (includeMeaslesFields) {
+		if (includeEpidataFields) {
 			cte.append(",")
 			   .append("                               c.epidata_id,")
 			   .append("                               c.investigateddate,")
