@@ -15063,6 +15063,7 @@ ALTER TABLE testreport_history ADD COLUMN straincallstatus character varying(255
 
 INSERT INTO schema_version (version_number, comment) VALUES (602, 'External message additional fields');
 
+
 ALTER TABLE systemconfigurationvalue ADD CONSTRAINT uk_systemconfigurationvalue_config_key UNIQUE (config_key);
 
 DO
@@ -15151,6 +15152,47 @@ ALTER TABLE externalmessage ADD COLUMN personoccupation character varying(255);
 ALTER TABLE externalmessage_history ADD COLUMN personoccupation character varying(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (605, 'External message person additional fields');
+
+
+-- Missing date of diagnosis in surveillance reports #13751
+
+UPDATE surveillancereports sr
+SET dateofdiagnosis = em.diagnosticdate
+FROM externalmessage em
+WHERE em.surveillancereport_id = sr.id
+  AND em.diagnosticdate IS NOT NULL
+  AND sr.dateofdiagnosis IS NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (606, 'Update surveillance report diagnosis date');
+
+-- Enhance Case Form vaccination status with additional detailed information #13377
+
+ALTER TABLE cases ADD COLUMN vaccinationstatusdetails character varying(255);
+ALTER TABLE cases_history ADD COLUMN vaccinationstatusdetails character varying(255);
+
+DO
+$$ DECLARE
+general_category_id bigint;
+
+BEGIN
+-- Get GENERAL category id
+-- General category should always exist
+SELECT id
+INTO general_category_id
+FROM systemconfigurationcategory
+WHERE name = 'GENERAL_CATEGORY';
+
+INSERT INTO systemconfigurationvalue(config_key, config_value, value_description, category_id, value_optional, value_pattern,
+                                     value_encrypt, data_provider, validation_message, changedate, creationdate, id,
+                                     uuid)
+VALUES ('USE_DETERMINED_VACCINATION_STATUS', 'false', 'i18n/infoSystemConfigurationValueDescriptionUseDeterminedVaccinationStatus', general_category_id, true,
+        '', false, 'de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueBooleanProvider',
+        'i18n/systemConfigurationValueInvalidValue', now(), now(), nextval('entity_seq'), generate_base32_uuid());
+
+END $$
+LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (607, 'Enhance Case Form vaccination status with additional detailed information #13377');
 
 -- Migrating sormas.properties to system configurations
 
@@ -15993,5 +16035,6 @@ LANGUAGE plpgsql;
 
 
 INSERT INTO schema_version (version_number, comment)
-VALUES (606, 'Migrating sormas.properties to system configurations')
+VALUES (608, 'Migrating sormas.properties to system configurations')
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

@@ -18,10 +18,13 @@ package de.symeda.sormas.backend.immunization;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -45,6 +48,7 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -56,6 +60,7 @@ import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
+import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -458,6 +463,24 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 
 	public void updateImmunizationStatusBasedOnVaccinations(Immunization immunization) {
 		ImmunizationStatus immunizationStatus = immunization.getImmunizationStatus();
+
+		// Update validFrom based on earliest vaccination date
+		if (!immunization.getVaccinations().isEmpty()) {
+			Date earliestVaccinationDate = immunization.getVaccinations()
+				.stream()
+				.map(Vaccination::getVaccinationDate)
+				.filter(Objects::nonNull)
+				.min(Date::compareTo)
+				.orElse(null);
+
+			if (earliestVaccinationDate != null) {
+				// Only set validFrom if it's not already set or if the earliest vaccination is earlier
+				if (immunization.getValidFrom() == null || earliestVaccinationDate.before(immunization.getValidFrom())) {
+					immunization.setValidFrom(earliestVaccinationDate);
+				}
+			}
+		}
+
 		if (immunizationStatus != ImmunizationStatus.NOT_ACQUIRED && immunizationStatus != ImmunizationStatus.EXPIRED) {
 			final Integer numberOfDoses = immunization.getNumberOfDoses();
 			final int vaccinationCount = immunization.getVaccinations().size();
@@ -711,5 +734,215 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 		}
 
 		return super.getDeleteReferenceField(deletionReference);
+	}
+
+	/**
+	 * Derives the vaccination status for a case based on related Immunization entities.
+	 * 
+	 * @param personUuid
+	 *            The UUID of the person associated with the case
+	 * @param disease
+	 *            The disease of the case
+	 * @param referenceDate
+	 *            The case report date or other reference date
+	 * @return VaccinationStatus or UNVACCINATED if no relevant immunization found
+	 */
+	public VaccinationStatus deriveVaccinationStatus(String personUuid, Disease disease, Date referenceDate) {
+		if (personUuid == null || disease == null || referenceDate == null) {
+			return VaccinationStatus.UNVACCINATED;
+		}
+
+		// Get all immunizations for the person and disease
+		List<Immunization> immunizations = getByPersonAndDisease(personUuid, disease, false);
+
+		// Filter immunizations with status ACQUIRED
+		List<Immunization> acquiredImmunizations =
+			immunizations.stream().filter(i -> ImmunizationStatus.ACQUIRED.equals(i.getImmunizationStatus())).collect(Collectors.toList());
+
+		if (acquiredImmunizations.isEmpty()) {
+			return VaccinationStatus.UNVACCINATED;
+		}
+
+		// Find the immunization with:
+		// - validFrom closest to reference date but not after it
+		// - validUntil not before the reference date
+		Immunization relevantImmunization = acquiredImmunizations.stream()
+			.filter(i -> i.getValidFrom() != null && !i.getValidFrom().after(referenceDate))
+			.filter(i -> i.getValidUntil() == null || !i.getValidUntil().before(referenceDate))
+			.max(Comparator.comparing(Immunization::getValidFrom))
+			.orElse(null);
+
+		if (relevantImmunization == null) {
+			return VaccinationStatus.UNVACCINATED;
+		}
+
+		return buildVaccinationStatus(relevantImmunization, disease);
+	}
+
+	/**
+	 * Builds the vaccination status from an immunization entity.
+	 * Respects @Diseases annotations on VaccinationStatus enum values.
+	 * 
+	 * @param immunization
+	 *            The immunization entity
+	 * @param disease
+	 *            The disease to check status validity for
+	 * @return VaccinationStatus appropriate for the disease
+	 */
+	public VaccinationStatus buildVaccinationStatus(Immunization immunization, Disease disease) {
+		MeansOfImmunization meansOfImmunization = immunization.getMeansOfImmunization();
+
+		if (meansOfImmunization == null) {
+			return VaccinationStatus.UNKNOWN;
+		}
+
+		switch (meansOfImmunization) {
+		case VACCINATION:
+		case VACCINATION_RECOVERY:
+		case MATERNAL_VACCINATION:
+		case MONOCLONAL_ANTIBODY:
+			return buildVaccinationStatusFromDoses(immunization, disease);
+		case RECOVERY:
+			return VaccinationStatus.RECOVERED;
+		case OTHER:
+			return VaccinationStatus.OTHER;
+		default:
+			return VaccinationStatus.UNKNOWN;
+		}
+	}
+
+	/**
+	 * Builds vaccination status for vaccine-based immunization.
+	 * Checks if disease-specific statuses are valid for the given disease.
+	 * Falls back to generic VACCINATED/UNVACCINATED if not.
+	 * 
+	 * @param immunization
+	 *            The immunization entity
+	 * @param disease
+	 *            The disease to check status validity for
+	 * @return VaccinationStatus appropriate for the disease
+	 */
+	public VaccinationStatus buildVaccinationStatusFromDoses(Immunization immunization, Disease disease) {
+		Integer numberOfDoses = immunization.getNumberOfDoses();
+
+		// If numberOfDoses is explicitly set, use it
+		if (numberOfDoses != null) {
+			if (numberOfDoses == 0) {
+				return VaccinationStatus.UNVACCINATED;
+			} else if (numberOfDoses == 1) {
+				// Check if VACCINATED_ONE_DOSE is valid for this disease
+				if (isVaccinationStatusApplicable(VaccinationStatus.VACCINATED_ONE_DOSE, disease)) {
+					return VaccinationStatus.VACCINATED_ONE_DOSE;
+				} else {
+					// Fall back to generic VACCINATED
+					return VaccinationStatus.VACCINATED;
+				}
+			} else {
+				// Check if VACCINATED_TWO_DOSE is valid for this disease
+				if (isVaccinationStatusApplicable(VaccinationStatus.VACCINATED_TWO_DOSE, disease)) {
+					return VaccinationStatus.VACCINATED_TWO_DOSE;
+				} else {
+					// Fall back to generic VACCINATED
+					return VaccinationStatus.VACCINATED;
+				}
+			}
+		}
+
+		// If numberOfDoses is not set, count vaccination entries
+		int vaccinationCount = immunization.getVaccinations() != null ? immunization.getVaccinations().size() : 0;
+
+		if (vaccinationCount == 0) {
+			return VaccinationStatus.UNVACCINATED;
+		} else if (vaccinationCount == 1) {
+			// Check if VACCINATED_ONE_DOSE is valid for this disease
+			if (isVaccinationStatusApplicable(VaccinationStatus.VACCINATED_ONE_DOSE, disease)) {
+				return VaccinationStatus.VACCINATED_ONE_DOSE;
+			} else {
+				// Fall back to generic VACCINATED
+				return VaccinationStatus.VACCINATED;
+			}
+		} else {
+			// Check if VACCINATED_TWO_DOSE is valid for this disease
+			if (isVaccinationStatusApplicable(VaccinationStatus.VACCINATED_TWO_DOSE, disease)) {
+				return VaccinationStatus.VACCINATED_TWO_DOSE;
+			} else {
+				// Fall back to generic VACCINATED
+				return VaccinationStatus.VACCINATED;
+			}
+		}
+	}
+
+	/**
+	 * Checks if a VaccinationStatus enum value is applicable for a given disease.
+	 * If the enum value has no @Diseases annotation, it's applicable to all diseases.
+	 * If it has the annotation, the disease must be in the list.
+	 * 
+	 * @param status
+	 *            The vaccination status to check
+	 * @param disease
+	 *            The disease to check against
+	 * @return true if the status is applicable for the disease
+	 */
+	private boolean isVaccinationStatusApplicable(VaccinationStatus status, Disease disease) {
+		try {
+			// Get the @Diseases annotation from the enum value
+			Diseases diseasesAnnotation = status.getClass().getField(status.name()).getAnnotation(Diseases.class);
+
+			if (diseasesAnnotation == null) {
+				// If no annotation, it's applicable to all diseases
+				return true;
+			}
+
+			// Check if the disease is in the annotation's disease list
+			return Arrays.asList(diseasesAnnotation.value()).contains(disease);
+		} catch (NoSuchFieldException e) {
+			// If we can't access the field, assume it's not applicable
+			return false;
+		}
+	}
+
+	/**
+	 * Gets the meansOfImmunizationDetails from the relevant immunization record
+	 * used for deriving vaccination status. This is used when the vaccination status
+	 * is OTHER to display the free text description.
+	 * 
+	 * @param personUuid
+	 *            The person UUID
+	 * @param disease
+	 *            The disease
+	 * @param referenceDate
+	 *            The reference date
+	 * @return The meansOfImmunizationDetails or null if not found
+	 */
+	public String getMeansOfImmunizationDetails(String personUuid, Disease disease, Date referenceDate) {
+		if (personUuid == null || disease == null || referenceDate == null) {
+			return null;
+		}
+
+		// Get all immunizations for the person and disease
+		List<Immunization> immunizations = getByPersonAndDisease(personUuid, disease, false);
+
+		// Filter immunizations with status ACQUIRED
+		List<Immunization> acquiredImmunizations =
+			immunizations.stream().filter(i -> ImmunizationStatus.ACQUIRED.equals(i.getImmunizationStatus())).collect(Collectors.toList());
+
+		if (acquiredImmunizations.isEmpty()) {
+			return null;
+		}
+
+		// Find the immunization with:
+		// - validFrom closest to reference date but not after it
+		// - validUntil not before the reference date
+		Immunization relevantImmunization = acquiredImmunizations.stream()
+			.filter(i -> i.getValidFrom() != null && !i.getValidFrom().after(referenceDate))
+			.filter(i -> i.getValidUntil() == null || !i.getValidUntil().before(referenceDate))
+			.max(Comparator.comparing(Immunization::getValidFrom))
+			.orElse(null);
+
+		if (relevantImmunization == null) {
+			return null;
+		}
+
+		return relevantImmunization.getMeansOfImmunizationDetails();
 	}
 }
