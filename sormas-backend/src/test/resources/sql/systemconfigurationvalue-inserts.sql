@@ -549,10 +549,10 @@ ON CONFLICT DO NOTHING;
 INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_pattern,
                                      value_encrypt, data_provider, validation_message, changedate, creationdate, id,
                                      uuid, value_description, default_value)
-VALUES ('CENTRAL_OIDC_URL', ';', 1, true,
+VALUES ('CENTRAL_OIDC_URL', null, 1, true,
         '^https:\/\/(?:www\.)?[-a-zA-Z0-9@%._\+#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.#?&\/\/=]*)$', false, null,
         'i18n/systemConfigurationValueValidation.CENTRAL_OIDC_URL', now(), now(), nextval('entity_seq'),
-        RANDOM_UUID(), 'i18n/systemConfigurationValueDescription.CENTRAL_OIDC_URL', ';')
+        RANDOM_UUID(), 'i18n/systemConfigurationValueDescription.CENTRAL_OIDC_URL', null)
 ON CONFLICT DO NOTHING;
 
 INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_pattern,
@@ -668,28 +668,28 @@ ON CONFLICT DO NOTHING;
 INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_pattern,
                                      value_encrypt, data_provider, validation_message, changedate, creationdate, id,
                                      uuid, value_description, default_value)
-VALUES ('SORMAS2SORMAS_OIDC_REALM', ';', 1, true,
+VALUES ('SORMAS2SORMAS_OIDC_REALM', null, 1, true,
         null, false, null,
         'i18n/systemConfigurationValueValidation.SORMAS2SORMAS_OIDC_REALM', now(), now(), nextval('entity_seq'),
-        RANDOM_UUID(), 'i18n/systemConfigurationValueDescription.SORMAS2SORMAS_OIDC_REALM', ';')
+        RANDOM_UUID(), 'i18n/systemConfigurationValueDescription.SORMAS2SORMAS_OIDC_REALM', null)
 ON CONFLICT DO NOTHING;
 
 INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_pattern,
                                      value_encrypt, data_provider, validation_message, changedate, creationdate, id,
                                      uuid, value_description, default_value)
-VALUES ('SORMAS2SORMAS_OIDC_CLIENT_ID', ';', 1, true,
+VALUES ('SORMAS2SORMAS_OIDC_CLIENT_ID', null, 1, true,
         null, false, null,
         'i18n/systemConfigurationValueValidation.SORMAS2SORMAS_OIDC_CLIENT_ID', now(), now(), nextval('entity_seq'),
-        RANDOM_UUID(), 'i18n/systemConfigurationValueDescription.SORMAS2SORMAS_OIDC_CLIENT_ID', ';')
+        RANDOM_UUID(), 'i18n/systemConfigurationValueDescription.SORMAS2SORMAS_OIDC_CLIENT_ID', null)
 ON CONFLICT DO NOTHING;
 
 INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_pattern,
                                      value_encrypt, data_provider, validation_message, changedate, creationdate, id,
                                      uuid, value_description, default_value)
-VALUES ('SORMAS2SORMAS_OIDC_CLIENT_SECRET', ';', 1, true,
+VALUES ('SORMAS2SORMAS_OIDC_CLIENT_SECRET', null, 1, true,
         null, false, null,
         'i18n/systemConfigurationValueValidation.SORMAS2SORMAS_OIDC_CLIENT_SECRET', now(), now(), nextval('entity_seq'),
-        RANDOM_UUID(), 'i18n/systemConfigurationValueDescription.SORMAS2SORMAS_OIDC_CLIENT_SECRET', ';')
+        RANDOM_UUID(), 'i18n/systemConfigurationValueDescription.SORMAS2SORMAS_OIDC_CLIENT_SECRET', null)
 ON CONFLICT DO NOTHING;
 
 INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_pattern,

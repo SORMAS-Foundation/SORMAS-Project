@@ -15157,6 +15157,9 @@ INSERT INTO schema_version (version_number, comment) VALUES (605, 'External mess
 ALTER TABLE systemconfigurationvalue
     ADD COLUMN IF NOT EXISTS default_value TEXT;
 
+ALTER TABLE systemconfigurationvalue_history
+    ADD COLUMN IF NOT EXISTS default_value TEXT;
+
 -- those configurations are mandatory but previously not set
 
 UPDATE systemconfigurationvalue
@@ -15633,10 +15636,10 @@ $$
         INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_pattern,
                                              value_encrypt, data_provider, validation_message, changedate, creationdate, id,
                                              uuid, value_description, default_value)
-        VALUES ('CENTRAL_OIDC_URL', ';', general_configuration_id, true,
+        VALUES ('CENTRAL_OIDC_URL', null, general_configuration_id, true,
                 '^https:\/\/(?:www\.)?[-a-zA-Z0-9@%._\+#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.#?&\/\/=]*)$', false, null,
                 'i18n/systemConfigurationValueValidation.CENTRAL_OIDC_URL', now(), now(), nextval('entity_seq'),
-                generate_base32_uuid(), 'i18n/systemConfigurationValueDescription.CENTRAL_OIDC_URL', ';') ON CONFLICT DO NOTHING;
+                generate_base32_uuid(), 'i18n/systemConfigurationValueDescription.CENTRAL_OIDC_URL', null) ON CONFLICT DO NOTHING;
 
         INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_pattern,
                                              value_encrypt, data_provider, validation_message, changedate, creationdate, id,
