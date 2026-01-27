@@ -15063,6 +15063,7 @@ ALTER TABLE testreport_history ADD COLUMN straincallstatus character varying(255
 
 INSERT INTO schema_version (version_number, comment) VALUES (602, 'External message additional fields');
 
+
 ALTER TABLE systemconfigurationvalue ADD CONSTRAINT uk_systemconfigurationvalue_config_key UNIQUE (config_key);
 
 DO
@@ -15151,5 +15152,16 @@ ALTER TABLE externalmessage ADD COLUMN personoccupation character varying(255);
 ALTER TABLE externalmessage_history ADD COLUMN personoccupation character varying(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (605, 'External message person additional fields');
+
+-- Missing date of diagnosis in surveillance reports #13751
+
+UPDATE surveillancereports sr
+SET dateofdiagnosis = em.diagnosticdate
+FROM externalmessage em
+WHERE em.surveillancereport_id = sr.id
+  AND em.diagnosticdate IS NOT NULL
+  AND sr.dateofdiagnosis IS NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (606, 'Update surveillance report diagnosis date');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

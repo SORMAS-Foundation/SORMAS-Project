@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import com.vaadin.ui.Window;
 
@@ -52,10 +53,26 @@ public class CaseNotifierSideViewController {
      */
     public CaseNotifierSideViewContent getNotifierComponent(CaseDataDto caze) {
 
-        NotifierDto notifier =
+        if (caze == null) {
+            throw new IllegalArgumentException("Caze is null");
+        }
+
+        if (caze.getNotifier() == null) {  
+            throw new IllegalArgumentException("Case Notifier is null");
+        }
+
+        final NotifierDto notifier =
             FacadeProvider.getNotifierFacade().getByUuidAndTime(caze.getNotifier().getUuid(), caze.getNotifier().getVersionDate().toInstant());
 
-        return new CaseNotifierSideViewContent(caze, notifier, getOldestReport(caze));
+        final SurveillanceReportDto oldestReport = getOldestReport(caze);
+
+        final Date notificationDate = oldestReport != null ? oldestReport.getReportDate() : null;
+
+        // find diagno
+
+        final Date dateOfDiagnosis = getOldestDiagnosisDateFromReports(caze);
+
+        return new CaseNotifierSideViewContent(caze, notifier, dateOfDiagnosis, notificationDate);
     }
 
     /**
@@ -66,10 +83,7 @@ public class CaseNotifierSideViewController {
      * @return oldest report or null if none found
      */
     public SurveillanceReportDto getOldestReport(CaseDataDto caze) {
-
-        CaseReferenceDto cazeRef = new CaseReferenceDto();
-        cazeRef.setUuid(caze.getUuid());
-        return getOldestReport(cazeRef);
+        return getOldestReport(caze.toReference());
     }
 
     /**
@@ -91,6 +105,21 @@ public class CaseNotifierSideViewController {
         return reports.stream()
             .min(Comparator.comparing(SurveillanceReportDto::getReportDate)) // Assuming getDate() returns the report date
             .orElse(null);
+    }
+
+    public Date getOldestDiagnosisDateFromReports(CaseDataDto caze) {
+        return getOldestDiagnosisDateFromReports(caze.toReference());
+    }
+
+    public Date getOldestDiagnosisDateFromReports(CaseReferenceDto caze) {
+        SurveillanceReportCriteria criteria = new SurveillanceReportCriteria();
+        criteria.caze(caze);
+        criteria.setReportingType(ReportingType.DOCTOR);
+
+        List<SurveillanceReportDto> reports = FacadeProvider.getSurveillanceReportFacade().getIndexList(criteria, null, null, null);
+
+        // Retrieve the oldest diagnosis date
+        return reports.stream().map(SurveillanceReportDto::getDateOfDiagnosis).filter(Objects::nonNull).min(Comparator.naturalOrder()).orElse(null);
     }
 
     /**

@@ -662,6 +662,7 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
             CaseDataDto caze = result.getData().getCase();
             if (caze != null) {
                 surveillanceReport = createSurveillanceReport(externalMessage, caze);
+                updateSurveillanceReportAdditionalData(surveillanceReport, externalMessage, caze);
                 getExternalMessageProcessingFacade().saveSurveillanceReport(surveillanceReport);
             }
             markExternalMessageAsProcessed(externalMessage, result, surveillanceReport);
@@ -688,6 +689,20 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
         surveillanceReport.setExternalId(externalMessage.getReportMessageId());
         setSurvReportingType(surveillanceReport, externalMessage);
         return surveillanceReport;
+    }
+
+    /** 
+     * Updates the additional data of the surveillance report.
+     * 
+     * @param surveillanceReport
+     *            the surveillance report
+     * @param externalMessage
+     *            the external message
+     * @param caze
+     *            the case
+     */
+    protected void updateSurveillanceReportAdditionalData(SurveillanceReportDto surveillanceReport, ExternalMessageDto externalMessage, CaseDataDto caze) {
+        surveillanceReport.setDateOfDiagnosis(externalMessage.getDiagnosticDate());
     }
 
     /**
