@@ -32,7 +32,6 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.notifier.NotifierDto;
-import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -56,8 +55,6 @@ public class CaseNotifierSideViewContent extends VerticalLayout {
     /** The notification date. */
     private Date notificationDate;
 
-    private TherapyDto therapy;
-
     /**
      * Creates a new case notifier side view content.
      * 
@@ -71,7 +68,6 @@ public class CaseNotifierSideViewContent extends VerticalLayout {
     public CaseNotifierSideViewContent(CaseDataDto caze, NotifierDto notifier, Date dateOfDiagnosis, Date notificationDate) {
 
         this.caze = caze;
-        this.therapy = caze.getTherapy();
         this.notifier = notifier;
         this.dateOfDiagnosis = dateOfDiagnosis;
         this.notificationDate = notificationDate;
@@ -190,16 +186,12 @@ public class CaseNotifierSideViewContent extends VerticalLayout {
         treatmentGroup.setReadOnly(true);
         treatmentGroup.clear();
 
-        if (therapy == null) {
-            return treatmentGroup;
-        }
-
-        if (therapy.isTreatmentNotApplicable()) {
+        if (caze.isTreatmentNotApplicable()) {
             treatmentGroup.setValue(TreatmentOption.NOT_APPLICABLE);
             return treatmentGroup;
         }
 
-        final YesNoUnknown treatmentStarted = therapy.getTreatmentStarted();
+        final YesNoUnknown treatmentStarted = caze.getTreatmentStarted();
 
         if (treatmentStarted == null) {
             return treatmentGroup;

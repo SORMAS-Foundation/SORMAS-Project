@@ -1679,6 +1679,7 @@ public interface Strings {
 	String notificationContactSymptomatic = "notificationContactSymptomatic";
 	String notificationContactWithoutCaseSymptomatic = "notificationContactWithoutCaseSymptomatic";
 	String notificationCreationNotAllowedWithoutSurveillanceReport = "notificationCreationNotAllowedWithoutSurveillanceReport";
+	String notificationDiagnosisDateInformation = "notificationDiagnosisDateInformation";
 	String notificationDiseaseChanged = "notificationDiseaseChanged";
 	String notificationEventAddedToEventGroup = "notificationEventAddedToEventGroup";
 	String notificationEventGroupCreated = "notificationEventGroupCreated";
@@ -1697,6 +1698,7 @@ public interface Strings {
 	String notificationLabSampleShippedShort = "notificationLabSampleShippedShort";
 	String notificationLabSampleShippedShortForContact = "notificationLabSampleShippedShortForContact";
 	String notificationLabSampleShippedShortForEventParticipant = "notificationLabSampleShippedShortForEventParticipant";
+	String notificationNotificationDateInformation = "notificationNotificationDateInformation";
 	String notificationPersonsUpdated = "notificationPersonsUpdated";
 	String notificationSmsSent = "notificationSmsSent";
 	String notificationTaskAssociatedCaseLink = "notificationTaskAssociatedCaseLink";

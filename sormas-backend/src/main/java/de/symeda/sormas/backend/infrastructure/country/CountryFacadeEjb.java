@@ -69,7 +69,9 @@ import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "CountryFacade")
-@RightsAllowed(UserRight._INFRASTRUCTURE_VIEW)
+@RightsAllowed({
+	UserRight._INFRASTRUCTURE_VIEW,
+	UserRight._SYSTEM })
 public class CountryFacadeEjb
 	extends AbstractInfrastructureFacadeEjb<Country, CountryDto, CountryIndexDto, CountryReferenceDto, CountryService, CountryCriteria>
 	implements CountryFacade {
