@@ -30,10 +30,13 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
@@ -89,7 +92,8 @@ public class VaccinationController {
 		UiFieldAccessCheckers fieldAccessCheckers,
 		boolean doSave,
 		Consumer<VaccinationDto> commitCallback) {
-		VaccinationEditForm form = new VaccinationEditForm(true, disease, fieldAccessCheckers);
+		Sex personSex = getPersonSex(person, immunization);
+		VaccinationEditForm form = new VaccinationEditForm(true, disease, personSex, fieldAccessCheckers);
 		VaccinationDto vaccination = VaccinationDto.build(UiUtil.getUserReference());
 		if (immunization != null) {
 			vaccination.setImmunization(immunization);
@@ -127,7 +131,8 @@ public class VaccinationController {
 		boolean isEditAllowed,
 		boolean isDeleteAllowed) {
 
-		VaccinationEditForm form = new VaccinationEditForm(true, disease, fieldAccessCheckers);
+		Sex personSex = getPersonSexFromVaccination(vaccination);
+		VaccinationEditForm form = new VaccinationEditForm(true, disease, personSex, fieldAccessCheckers);
 		form.setValue(vaccination);
 
 		boolean isEditOrDeleteAllowed = isEditAllowed || isDeleteAllowed;
@@ -187,6 +192,37 @@ public class VaccinationController {
 		getCaseFacade().updateVaccinationStatus(caseDataDto.toReference(), null);
 	}
 
+	private Sex getPersonSex(PersonReferenceDto person, ImmunizationReferenceDto immunization) {
+		if (person != null) {
+			PersonDto personDto = FacadeProvider.getPersonFacade().getByUuid(person.getUuid());
+			if (personDto != null) {
+				return personDto.getSex();
+			}
+		} else if (immunization != null) {
+			ImmunizationDto immunizationDto = FacadeProvider.getImmunizationFacade().getByUuid(immunization.getUuid());
+			if (immunizationDto != null && immunizationDto.getPerson() != null) {
+				PersonDto personDto = FacadeProvider.getPersonFacade().getByUuid(immunizationDto.getPerson().getUuid());
+				if (personDto != null) {
+					return personDto.getSex();
+				}
+			}
+		}
+		return null;
+	}
+
+	private Sex getPersonSexFromVaccination(VaccinationDto vaccination) {
+		if (vaccination != null && vaccination.getImmunization() != null) {
+			ImmunizationDto immunization = FacadeProvider.getImmunizationFacade().getByUuid(vaccination.getImmunization().getUuid());
+			if (immunization != null && immunization.getPerson() != null) {
+				PersonDto person = FacadeProvider.getPersonFacade().getByUuid(immunization.getPerson().getUuid());
+				if (person != null) {
+					return person.getSex();
+				}
+			}
+		}
+		return null;
+	}
+
 	public CommitDiscardWrapperComponent<VaccinationEditForm> getVaccinationEditComponent(
 		VaccinationDto vaccination,
 		Disease disease,
@@ -197,7 +233,8 @@ public class VaccinationController {
 		boolean isDeleteAllowed) {
 
 		boolean isEditOrDeleteAllowed = isEditAllowed || isDeleteAllowed;
-		VaccinationEditForm form = new VaccinationEditForm(true, disease, fieldAccessCheckers);
+		Sex personSex = getPersonSexFromVaccination(vaccination);
+		VaccinationEditForm form = new VaccinationEditForm(true, disease, personSex, fieldAccessCheckers);
 		form.setValue(vaccination);
 
 		final CommitDiscardWrapperComponent<VaccinationEditForm> editComponent =

@@ -39,6 +39,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -116,6 +117,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
@@ -286,7 +288,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(CaseDataDto.FOLLOW_UP_STATUS_CHANGE_DATE, CaseDataDto.FOLLOW_UP_STATUS_CHANGE_USER) +
 					fluidRowLocs(CaseDataDto.FOLLOW_UP_UNTIL, EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC, CaseDataDto.OVERWRITE_FOLLOW_UP_UNTIL) +
 					fluidRowLocs(CaseDataDto.FOLLOW_UP_COMMENT);
-	
+
 	private static final String PAPER_FORM_DATES_AND_HEALTH_CONDITIONS_HTML_LAYOUT =
 			fluidRowLocs(6, CaseDataDto.SURVEILLANCE_OFFICER) +
 					loc(PAPER_FORM_DATES_LOC) +
@@ -971,8 +973,13 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		NullableOptionGroup pregnantField = addField(CaseDataDto.PREGNANT, NullableOptionGroup.class);
 
 		NullableOptionGroup postpartumField = addField(CaseDataDto.POSTPARTUM, NullableOptionGroup.class);
-		addField(CaseDataDto.TRIMESTER, NullableOptionGroup.class);
-		FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.TRIMESTER, CaseDataDto.PREGNANT, Arrays.asList(YesNoUnknown.YES), true);
+		Field<?> trimesterField = addField(CaseDataDto.TRIMESTER, NullableOptionGroup.class);
+		boolean isMale = Sex.MALE.equals(person.getSex());
+		if (!isMale) {
+			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.TRIMESTER, CaseDataDto.PREGNANT, Arrays.asList(YesNoUnknown.YES), true);
+		} else {
+			trimesterField.setVisible(false);
+		}
 
 		// Mutual exclusivity: Pregnancy and Postpartum
 		if (pregnantField != null && postpartumField != null) {
@@ -1500,10 +1507,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			}
 
 		});
+
+		boolean isNotMale = Objects.isNull(person.getSex()) || !Sex.MALE.equals(person.getSex());
+		setVisible(!isLuxTuberculosisDisease() && isNotMale, CaseDataDto.POSTPARTUM, CaseDataDto.PREGNANT, CaseDataDto.TRIMESTER);
 		setVisible(
 			!isLuxTuberculosisDisease(),
-			CaseDataDto.POSTPARTUM,
-			CaseDataDto.PREGNANT,
 			CaseDataDto.SURVEILLANCE_OFFICER,
 			CaseDataDto.CLINICIAN_NAME,
 			CaseDataDto.CLINICIAN_PHONE,
