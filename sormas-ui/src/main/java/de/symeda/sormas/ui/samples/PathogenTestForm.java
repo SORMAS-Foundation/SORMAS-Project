@@ -429,7 +429,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		getContent().addComponent(pathogenTestHeadingLabel, PATHOGEN_TEST_HEADING_LOC);
 
 		addDateField(PathogenTestDto.REPORT_DATE, DateField.class, 0);
-		addField(PathogenTestDto.VIA_LIMS);
+		CheckBox viaLimsField = addField(PathogenTestDto.VIA_LIMS);
 		addField(PathogenTestDto.EXTERNAL_ID);
 		addField(PathogenTestDto.EXTERNAL_ORDER_ID);
 		testTypeField = addField(PathogenTestDto.TEST_TYPE, ComboBox.class);
@@ -951,8 +951,16 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			PathogenTestDto.TUBE_MITOGENE_GT10);
 
 		NullableOptionGroup testResultVerifiedField = addField(PathogenTestDto.TEST_RESULT_VERIFIED, NullableOptionGroup.class);
-		testResultVerifiedField.setRequired(true);
 		addField(PathogenTestDto.PRELIMINARY).addStyleName(CssStyles.VSPACE_4);
+
+		// Make TEST_RESULT_VERIFIED required only when the test comes via LIMS (laboratory is directly connected)
+		viaLimsField.addValueChangeListener(e -> {
+			boolean isViaLims = Boolean.TRUE.equals(e.getProperty().getValue());
+			testResultVerifiedField.setRequired(isViaLims);
+		});
+
+		// Set initial required state based on current viaLims value
+		testResultVerifiedField.setRequired(Boolean.TRUE.equals(viaLimsField.getValue()));
 
 		CheckBox fourFoldIncrease = addField(PathogenTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, CheckBox.class);
 		CssStyles.style(fourFoldIncrease, VSPACE_3, VSPACE_TOP_4);

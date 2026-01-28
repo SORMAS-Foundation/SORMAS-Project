@@ -15134,8 +15134,8 @@ SET treatmentstarted = t.treatmentstarted,
     treatmentstartdate = t.treatmentstartdate
 FROM therapy t
 WHERE c.therapy_id = t.id
-  AND (t.treatmentstarted IS NOT NULL 
-       OR t.treatmentnotapplicable IS NOT NULL 
+  AND (t.treatmentstarted IS NOT NULL
+       OR t.treatmentnotapplicable IS NOT NULL
        OR t.treatmentstartdate IS NOT NULL);
 -- Drop columns from therapy table
 ALTER TABLE therapy DROP COLUMN treatmentstarted;
@@ -15185,7 +15185,7 @@ INSERT INTO systemconfigurationvalue(config_key, config_value, value_description
                                      value_encrypt, data_provider, validation_message, changedate, creationdate, id,
                                      uuid)
 VALUES ('USE_DETERMINED_VACCINATION_STATUS', 'false', 'i18n/infoSystemConfigurationValueDescriptionUseDeterminedVaccinationStatus', general_category_id, true,
-        '', false, 'de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueBooleanProvider', 
+        '', false, 'de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueBooleanProvider',
         'i18n/systemConfigurationValueInvalidValue', now(), now(), nextval('entity_seq'), generate_base32_uuid());
 
 END $$
@@ -15193,4 +15193,9 @@ LANGUAGE plpgsql;
 
 INSERT INTO schema_version (version_number, comment) VALUES (607, 'Enhance Case Form vaccination status with additional detailed information #13377');
 
+-- 2025-12-18 Make testResultVerified optional in pathogentest #13557
+ALTER TABLE pathogentest ALTER COLUMN testresultverified DROP NOT NULL;
+ALTER TABLE pathogentest_history ALTER COLUMN testresultverified DROP NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (608, 'Make testResultVerified optional in pathogentest #13557');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
