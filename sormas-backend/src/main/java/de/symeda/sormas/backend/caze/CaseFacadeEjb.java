@@ -276,6 +276,8 @@ import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb;
 import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb.HospitalizationFacadeEjbLocal;
 import de.symeda.sormas.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.backend.immunization.ImmunizationEntityHelper;
+import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
+import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.importexport.ExportHelper;
 import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
@@ -511,6 +513,10 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	private SpecialCaseAccessService specialCaseAccessService;
 	@EJB
 	private NotifierService notifierService;
+	@EJB
+	private ImmunizationService immunizationService;
+	@EJB
+	private ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal immunizationFacade;
 
 	@Resource
 	private ManagedScheduledExecutorService executorService;
@@ -2210,12 +2216,13 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			if (contactKnown == YesNoUnknown.YES) {
 				// Check if at least one source case is confirmed
 				// We only check for contacts that have this case as resulting case
-				final boolean hasConfirmedSourceCase = contactService.getAllByResultingCase(caseService.getByUuid(existingCase.getUuid())).stream()
-						.map(Contact::getCaze)
-						.filter(Objects::nonNull)
-						.anyMatch(src ->
-								src.getDisease() == newCase.getDisease()
-										&& CaseClassification.getConfirmedClassifications().contains(src.getCaseClassification()));
+				final boolean hasConfirmedSourceCase = contactService.getAllByResultingCase(caseService.getByUuid(existingCase.getUuid()))
+					.stream()
+					.map(Contact::getCaze)
+					.filter(Objects::nonNull)
+					.anyMatch(
+						src -> src.getDisease() == newCase.getDisease()
+							&& CaseClassification.getConfirmedClassifications().contains(src.getCaseClassification()));
 				newCase.setEpidemiologicalConfirmation(hasConfirmedSourceCase ? YesNoUnknown.YES : YesNoUnknown.NO);
 			} else if (contactKnown == YesNoUnknown.NO) {
 				newCase.setEpidemiologicalConfirmation(YesNoUnknown.NO);
@@ -3046,7 +3053,60 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		UserRight._CASE_VIEW,
 		UserRight._EXTERNAL_VISITS })
 	public CaseDataDto toDto(Case source) {
-		return toCaseDto(source);
+		CaseDataDto target = toCaseDto(source);
+		updateDeterminedVaccinationStatus(source, target);
+		return target;
+	}
+
+	/**
+	 * Updates the vaccination status and details for a case DTO based on immunization data.
+	 * 
+	 * <p>
+	 * This method is called during case entity to DTO conversion to ensure the vaccination status
+	 * is correctly derived from immunization records when the determined vaccination status feature is enabled.
+	 * </p>
+	 * 
+	 * <p>
+	 * This is needed because the determined vaccination status can be enabled/disabled at runtime.
+	 * If the system was not configured with the feature, the determined vaccination status will not be set for older entities.
+	 * </p>
+	 * 
+	 * <p>
+	 * Note: Ideally a update should be triggered when the config value is changed, but this is not possible at the moment.
+	 * </p>
+	 * 
+	 * @param source
+	 *            the case entity
+	 * @param target
+	 *            the case DTO to update
+	 */
+	private void updateDeterminedVaccinationStatus(Case source, CaseDataDto target) {
+		if (source == null || target == null) {
+			return;
+		}
+		if (!immunizationFacade.isUseDeterminedVaccinationStatus()) {
+			return;
+		}
+
+		// Derive vaccination status from immunizations if status is null (ie. it was not populated by updates)
+		// Ideally a update should be triggered when the config value is changed, but this is not possible at the moment
+		if (source.getVaccinationStatus() == null) {
+			VaccinationStatus vaccinationStatus =
+				immunizationService.deriveVaccinationStatus(source.getPerson().getUuid(), source.getDisease(), source.getReportDate());
+			// Default to UNVACCINATED if no immunization data found
+			if (vaccinationStatus == null) {
+				vaccinationStatus = VaccinationStatus.UNVACCINATED;
+			}
+			target.setVaccinationStatus(vaccinationStatus);
+		}
+
+		// If we have older vaccination statuses with OTHER but the detail status null,
+		// fetch the meansOfImmunizationDetails from the relevant immunization
+		if (source.getVaccinationStatus() == VaccinationStatus.OTHER && source.getVaccinationStatusDetails() == null) {
+			String details =
+				immunizationService.getMeansOfImmunizationDetails(source.getPerson().getUuid(), source.getDisease(), source.getReportDate());
+			target.setVaccinationStatusDetails(details);
+		}
 	}
 
 	public static CaseDataDto toCaseDto(Case source) {
@@ -3118,6 +3178,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		target.setPregnant(source.getPregnant());
 		target.setVaccinationStatus(source.getVaccinationStatus());
+		target.setVaccinationStatusDetails(source.getVaccinationStatusDetails());
 		target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
 		target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
 		target.setSmallpoxLastVaccinationDate(source.getSmallpoxLastVaccinationDate());
@@ -3228,6 +3289,10 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setRadiographyCompatibility(source.getRadiographyCompatibility());
 		target.setOtherDiagnosticCriteria(source.getOtherDiagnosticCriteria());
 
+		target.setTreatmentStarted(source.getTreatmentStarted());
+		target.setTreatmentNotApplicable(source.isTreatmentNotApplicable());
+		target.setTreatmentStartDate(source.getTreatmentStartDate());
+
 		return target;
 	}
 
@@ -3323,6 +3388,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		target.setPregnant(source.getPregnant());
 		target.setVaccinationStatus(source.getVaccinationStatus());
+		target.setVaccinationStatusDetails(source.getVaccinationStatusDetails());
 		target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
 		target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
 		target.setSmallpoxLastVaccinationDate(source.getSmallpoxLastVaccinationDate());
@@ -3438,6 +3504,10 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		target.setRadiographyCompatibility(source.getRadiographyCompatibility());
 		target.setOtherDiagnosticCriteria(source.getOtherDiagnosticCriteria());
+
+		target.setTreatmentStarted(source.getTreatmentStarted());
+		target.setTreatmentNotApplicable(source.isTreatmentNotApplicable());
+		target.setTreatmentStartDate(source.getTreatmentStartDate());
 
 		return target;
 	}
