@@ -10,9 +10,6 @@ public abstract class AbstractUiBeanTest extends AbstractBeanTest {
 	public void init() {
 		super.init();
 
-		MockProducer.mockProperty(Config.CSV_SEPARATOR, ",");
-		MockProducer.mockProperty(Config.COUNTRY_EPID_PREFIX, "ng");
-
 		FacadeProviderMock.MockFacadeProvider(this);
 	}
 }

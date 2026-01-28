@@ -19,6 +19,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -33,6 +35,7 @@ import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -316,6 +319,9 @@ public abstract class AbstractBeanTest {
 		I18nProperties.setUserLanguage(Language.EN);
 
 		createDiseaseConfigurations();
+
+
+		createSystemConfigurations();
 	}
 
 	protected void initH2Functions() {
@@ -350,6 +356,20 @@ public abstract class AbstractBeanTest {
 			getDiseaseConfigurationService().ensurePersisted(configuration);
 		});
 	}
+
+	private void createSystemConfigurations() {
+		StringWriter writer = new StringWriter();
+		try {
+			IOUtils.copy(getClass().getResourceAsStream("/sql/systemconfigurationvalue-inserts.sql"), writer, "UTF-8");
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
+		executeInTransaction(em -> {
+			getEntityManager().createNativeQuery(writer.toString()).executeUpdate();
+		});
+	}
+
 
 	public <T> T getBean(Class<T> beanClass, Annotation... qualifiers) {
 		return ContextControlWrapper.getInstance().getContextualReference(beanClass, qualifiers);
@@ -427,10 +447,6 @@ public abstract class AbstractBeanTest {
 
 	public ConfigFacade getConfigFacade() {
 		return getBean(ConfigFacadeEjb.ConfigFacadeEjbLocal.class);
-	}
-
-	public SystemConfigurationValueFacade getSystemConfigurationValueFacade() {
-		return getBean(SystemConfigurationValueFacadeMock.class);
 	}
 
 	/**
