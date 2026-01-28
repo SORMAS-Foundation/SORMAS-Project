@@ -490,7 +490,8 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 					Validations.required,
 					I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_RESULT)));
 		}
-		if (pathogenTest.getTestResultVerified() == null) {
+		// Validate testResultVerified is required when test comes via LIMS (laboratory is directly connected)
+		if (pathogenTest.isViaLims() && pathogenTest.getTestResultVerified() == null) {
 			throw new ValidationRuntimeException(
 				I18nProperties.getValidationError(
 					Validations.required,

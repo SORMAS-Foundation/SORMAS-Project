@@ -15135,8 +15135,8 @@ SET treatmentstarted = t.treatmentstarted,
 FROM therapy t
 WHERE c.therapy_id = t.id
   AND (t.treatmentstarted IS NOT NULL
-    OR t.treatmentnotapplicable IS NOT NULL
-    OR t.treatmentstartdate IS NOT NULL);
+       OR t.treatmentnotapplicable IS NOT NULL
+       OR t.treatmentstartdate IS NOT NULL);
 -- Drop columns from therapy table
 ALTER TABLE therapy DROP COLUMN treatmentstarted;
 ALTER TABLE therapy DROP COLUMN treatmentnotapplicable;
@@ -15194,8 +15194,15 @@ LANGUAGE plpgsql;
 
 INSERT INTO schema_version (version_number, comment) VALUES (607, 'Enhance Case Form vaccination status with additional detailed information #13377');
 
--- Migrating sormas.properties to system configurations
 
+
+-- 2025-12-18 Make testResultVerified optional in pathogentest #13557
+ALTER TABLE pathogentest ALTER COLUMN testresultverified DROP NOT NULL;
+ALTER TABLE pathogentest_history ALTER COLUMN testresultverified DROP NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (608, 'Make testResultVerified optional in pathogentest #13557');
+
+-- Migrating sormas.properties to system configurations
 ALTER TABLE systemconfigurationvalue
     ADD COLUMN IF NOT EXISTS default_value TEXT;
 
@@ -16035,6 +16042,6 @@ LANGUAGE plpgsql;
 
 
 INSERT INTO schema_version (version_number, comment)
-VALUES (608, 'Migrating sormas.properties to system configurations')
+VALUES (609, 'Migrating sormas.properties to system configurations')
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

@@ -18,10 +18,13 @@ package de.symeda.sormas.ui.utils;
 import static com.vaadin.v7.data.fieldgroup.DefaultFieldGroupFieldFactory.CAPTION_PROPERTY_ID;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -209,7 +212,7 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 	 * that makes sure the value that is about to be selected is added to the list of allowed values. This is intended
 	 * to be used for Disease fields that might contain a disease that is no longer active in the system and thus will
 	 * not be returned by DiseaseHelper.isActivePrimaryDisease(disease).
-	 * 
+	 *
 	 * @param showNonPrimaryDiseases
 	 *            Whether or not diseases that have been configured as non-primary should be included
 	 * @param setServerDiseaseAsDefault
@@ -621,7 +624,7 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 
 	/**
 	 * List of editable allowed fields,
-	 * 
+	 *
 	 * @return
 	 */
 	public List<Field<?>> editableAllowedFields() {
@@ -684,5 +687,30 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 			return null;
 		}
 		return safeSetFieldValue(field, value);
+	}
+
+	/**
+	 * Sets up mutually exclusive behavior between two YesNoUnknown fields.
+	 * When one field is set to YES, the other is automatically set to NO.
+	 *
+	 * @param field1
+	 *            First field
+	 * @param field2
+	 *            Second field (mutually exclusive with field1)
+	 */
+	@SuppressWarnings("unchecked")
+	protected void setupMutuallyExclusiveFields(NullableOptionGroup field1, NullableOptionGroup field2) {
+		field1.addValueChangeListener(e -> {
+			Set<Object> value = (Set<Object>) e.getProperty().getValue();
+			if (value != null && value.contains(de.symeda.sormas.api.utils.YesNoUnknown.YES)) {
+				field2.setValue(new HashSet<>(Arrays.asList(de.symeda.sormas.api.utils.YesNoUnknown.NO)));
+			}
+		});
+		field2.addValueChangeListener(e -> {
+			Set<Object> value = (Set<Object>) e.getProperty().getValue();
+			if (value != null && value.contains(de.symeda.sormas.api.utils.YesNoUnknown.YES)) {
+				field1.setValue(new HashSet<>(Arrays.asList(de.symeda.sormas.api.utils.YesNoUnknown.NO)));
+			}
+		});
 	}
 }
