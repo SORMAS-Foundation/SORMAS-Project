@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +68,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.CountryHelper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,6 +96,7 @@ import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactJurisdictionFlagsDto;
 import de.symeda.sormas.api.contact.ContactListEntryDto;
 import de.symeda.sormas.api.contact.ContactLogic;
+import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
 import de.symeda.sormas.api.contact.ContactStatus;
@@ -735,7 +736,7 @@ public class ContactFacadeEjb
 			contact.get(Contact.CONTACT_IDENTIFICATION_SOURCE_DETAILS),
 			contact.get(Contact.TRACING_APP),
 			contact.get(Contact.TRACING_APP_DETAILS),
-			contact.get(Contact.CONTACT_PROXIMITY),
+			contact.get(Contact.ID),
 			contact.get(Contact.CONTACT_STATUS),
 			contact.get(Contact.COMPLETENESS),
 			contact.get(Contact.FOLLOW_UP_STATUS),
@@ -815,7 +816,12 @@ public class ContactFacadeEjb
 		List<String> resultContactsUuids = exportContacts.stream().map(ContactExportDto::getUuid).collect(Collectors.toList());
 
 		if (!exportContacts.isEmpty()) {
-			List<Long> exportContactIds = exportContacts.stream().map(e -> e.getId()).collect(Collectors.toList());
+			List<Long> exportContactIds = exportContacts.stream().map(ContactExportDto::getId).collect(Collectors.toList());
+
+			// Populate contactProximities separately (ElementCollection cannot be selected in multiselect)
+			Map<Long, Set<ContactProximity>> contactProximitiesMap = service.getContactProximitiesByContactIds(exportContactIds);
+			exportContacts.forEach(
+				exportContact -> exportContact.setContactProximities(contactProximitiesMap.getOrDefault(exportContact.getId(), new HashSet<>())));
 
 			List<VisitSummaryExportDetails> visitSummaries = null;
 			if (ExportHelper.shouldExportFields(
@@ -1339,6 +1345,13 @@ public class ContactFacadeEjb
 			dtos.addAll(QueryHelper.getResultList(em, cq, new ContactIndexDtoResultTransformer(), null, null));
 		});
 
+		// Populate contactProximities separately (ElementCollection cannot be selected in multiselect)
+		if (!dtos.isEmpty()) {
+			List<Long> contactIds = dtos.stream().map(ContactIndexDto::getId).collect(Collectors.toList());
+			Map<Long, Set<ContactProximity>> contactProximitiesMap = service.getContactProximitiesByContactIds(contactIds);
+			dtos.forEach(dto -> dto.setContactProximities(contactProximitiesMap.getOrDefault(dto.getId(), new HashSet<>())));
+		}
+
 		Pseudonymizer<ContactIndexDto> pseudonymizer = createGenericPlaceholderPseudonymizer(createSpecialAccessChecker(dtos));
 		pseudonymizer.pseudonymizeDtoCollection(ContactIndexDto.class, dtos, ContactIndexDto::getInJurisdiction, (c, isInJurisdiction) -> {
 			if (c.getCaze() != null) {
@@ -1387,6 +1400,13 @@ public class ContactFacadeEjb
 			CriteriaQuery<Tuple> cq = listCriteriaBuilder.buildIndexDetailedCriteria(contactCriteria, sortProperties, batchedIds);
 			dtos.addAll(QueryHelper.getResultList(em, cq, new ContactIndexDetailedDtoResultTransformer(), null, null));
 		});
+
+		// Populate contactProximities separately (ElementCollection cannot be selected in multiselect)
+		if (!dtos.isEmpty()) {
+			List<Long> contactIds = dtos.stream().map(ContactIndexDetailedDto::getId).collect(Collectors.toList());
+			Map<Long, Set<ContactProximity>> contactProximitiesMap = service.getContactProximitiesByContactIds(contactIds);
+			dtos.forEach(dto -> dto.setContactProximities(contactProximitiesMap.getOrDefault(dto.getId(), new HashSet<>())));
+		}
 
 		if (userService.hasRight(UserRight.EVENT_VIEW)) {
 			// Load event count and latest events info per contact
@@ -1543,7 +1563,7 @@ public class ContactFacadeEjb
 		target.setContactIdentificationSourceDetails(source.getContactIdentificationSourceDetails());
 		target.setTracingApp(source.getTracingApp());
 		target.setTracingAppDetails(source.getTracingAppDetails());
-		target.setContactProximity(source.getContactProximity());
+		target.setContactProximities(source.getContactProximities());
 		if (source.getContactClassification() != null) {
 			target.setContactClassification(source.getContactClassification());
 		}
@@ -1895,7 +1915,7 @@ public class ContactFacadeEjb
 		target.setContactIdentificationSourceDetails(source.getContactIdentificationSourceDetails());
 		target.setTracingApp(source.getTracingApp());
 		target.setTracingAppDetails(source.getTracingAppDetails());
-		target.setContactProximity(source.getContactProximity());
+		target.setContactProximities(source.getContactProximities() != null ? new HashSet<>(source.getContactProximities()) : null);
 		target.setContactClassification(source.getContactClassification());
 		target.setContactStatus(source.getContactStatus());
 		target.setFollowUpStatus(source.getFollowUpStatus());
@@ -2121,7 +2141,7 @@ public class ContactFacadeEjb
 				joins.getCasePerson().get(Person.LAST_NAME),
 				contactRoot.get(Contact.CASE_ID_EXTERNAL_SYSTEM),
 				contactRoot.get(Contact.LAST_CONTACT_DATE),
-				contactRoot.get(Contact.CONTACT_PROXIMITY),
+				contactRoot.get(Contact.ID),
 				contactRoot.get(Contact.CONTACT_CLASSIFICATION),
 				contactRoot.get(Contact.CONTACT_STATUS),
 				contactRoot.get(Contact.FOLLOW_UP_STATUS)));
@@ -2132,6 +2152,13 @@ public class ContactFacadeEjb
 		cq.where(getSimilarityFilters(criteria, cb, contactRoot, contactQueryContext));
 
 		List<SimilarContactDto> contacts = em.createQuery(cq).getResultList();
+
+		// Populate contactProximities separately (ElementCollection cannot be selected in multiselect)
+		if (!contacts.isEmpty()) {
+			Map<Long, Set<ContactProximity>> contactProximitiesMap =
+				service.getContactProximitiesByContactIds(contacts.stream().map(c -> c.getId()).collect(Collectors.toList()));
+			contacts.forEach(contact -> contact.setContactProximities(contactProximitiesMap.getOrDefault(contact.getId(), new HashSet<>())));
+		}
 
 		Pseudonymizer<SimilarContactDto> pseudonymizer = createGenericPseudonymizer(createSpecialAccessChecker(contacts));
 		pseudonymizer.pseudonymizeDtoCollection(SimilarContactDto.class, contacts, SimilarContactDto::getInJurisdiction, null, false);
@@ -2396,7 +2423,7 @@ public class ContactFacadeEjb
 		if (contact.getContactCategory() != null) {
 			completeness += 0.1f;
 		}
-		if (contact.getContactProximity() != null) {
+		if (contact.getContactProximities() != null && !contact.getContactProximities().isEmpty()) {
 			completeness += 0.1f;
 		}
 		if (contact.getContactStatus() != null && !ContactStatus.ACTIVE.equals(contact.getContactStatus())) {

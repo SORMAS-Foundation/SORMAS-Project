@@ -224,13 +224,13 @@ public abstract class InfraValidationSoundnessTest extends AbstractBeanTest {
 		}
 
 		if (curType.isInstanceOf(Collection.class)) {
-			if (!curType.isInstanceOf(List.class)) {
-				throw new NotImplementedException("Ping @JonasCir");
-			}
-			// if the current dto field is a list, analyze the list type
-			ResolvedType listParam = curType.getTypeParameters().get(0);
-			if (isNotLeaf(listParam)) {
-				return buildList(rootNode, listParam);
+			// if the current dto field is a collection, analyze the element type
+			ResolvedType collectionParam = curType.getTypeParameters().get(0);
+			if (isNotLeaf(collectionParam)) {
+				if (!curType.isInstanceOf(List.class) && !curType.isInstanceOf(Set.class)) {
+					throw new NotImplementedException("Ping @JonasCir");
+				}
+				return buildList(rootNode, collectionParam);
 			}
 		}
 
@@ -400,21 +400,21 @@ public abstract class InfraValidationSoundnessTest extends AbstractBeanTest {
 			injectionPoint.set(currentObject, childObject);
 		}
 
-		// if the current field is a list we need to descend through the elements of the list, not the list object itself
+		// if the current field is a collection we need to descend through the elements, not the collection object itself
 		if (currentField.getType().isInstanceOf(Collection.class)) {
-			if (!currentField.getType().isInstanceOf(List.class)) {
+			if (!currentField.getType().isInstanceOf(List.class) && !currentField.getType().isInstanceOf(Set.class)) {
 				throw new NotImplementedException("Ping @JonasCir");
 			}
 
-			List list = (List) childObject;
-			if (list.isEmpty()) {
-				// we just created the list, create a new element for the list
+			Collection collection = (Collection) childObject;
+			if (collection.isEmpty()) {
+				// we just created the collection, create a new element for it
 				ResolvedType elementType = currentField.getType().getTypeParameters().get(0);
 				Constructor<?> constructor = elementType.getErasedType().getConstructor();
 				childObject = constructor.newInstance();
-				list.add(childObject);
+				collection.add(childObject);
 			} else {
-				childObject = list.get(0);
+				childObject = collection.iterator().next();
 			}
 		}
 

@@ -27,7 +27,6 @@ import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactIndexDetailedDto;
-import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
@@ -49,7 +48,7 @@ public class ContactIndexDetailedDtoResultTransformer implements ResultTransform
                 (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index],
                 (Disease) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index],
                 (String) tuple[++index], (Date) tuple[++index], (ContactCategory) tuple[++index],
-                (ContactProximity) tuple[++index], (ContactClassification) tuple[++index], (ContactStatus) tuple[++index], (Float) tuple[++index],
+                (Long) tuple[++index], (ContactClassification) tuple[++index], (ContactStatus) tuple[++index], (Float) tuple[++index],
                 (FollowUpStatus) tuple[++index], (Date) tuple[++index], (SymptomJournalStatus) tuple[++index], (VaccinationStatus) tuple[++index], (String) tuple[++index],
                 (String) tuple[++index], (Date) tuple[++index],
                 (CaseClassification) tuple[++index], (String) tuple[++index], (String) tuple[++index],

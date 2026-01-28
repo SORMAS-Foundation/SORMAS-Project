@@ -11639,23 +11639,25 @@ components:
           minLength: 0
         contactOfficer:
           $ref: '#/components/schemas/UserReferenceDto'
-        contactProximity:
-          type: string
-          enum:
-          - TOUCHED_FLUID
-          - PHYSICAL_CONTACT
-          - CLOTHES_OR_OTHER
-          - CLOSE_CONTACT
-          - FACE_TO_FACE_LONG
-          - MEDICAL_UNSAFE
-          - SAME_ROOM
-          - AIRPLANE
-          - FACE_TO_FACE_SHORT
-          - MEDICAL_SAFE
-          - MEDICAL_SAME_ROOM
-          - AEROSOL
-          - MEDICAL_DISTANT
-          - MEDICAL_LIMITED
+        contactProximities:
+          type: array
+          items:
+            type: string
+            enum:
+            - TOUCHED_FLUID
+            - PHYSICAL_CONTACT
+            - CLOTHES_OR_OTHER
+            - CLOSE_CONTACT
+            - FACE_TO_FACE_LONG
+            - MEDICAL_UNSAFE
+            - SAME_ROOM
+            - AIRPLANE
+            - FACE_TO_FACE_SHORT
+            - MEDICAL_SAFE
+            - MEDICAL_SAME_ROOM
+            - AEROSOL
+            - MEDICAL_DISTANT
+            - MEDICAL_LIMITED
         contactProximityDetails:
           type: string
           maxLength: 512
@@ -12041,23 +12043,25 @@ components:
           - NO_CONTACT
         contactOfficerUuid:
           type: string
-        contactProximity:
-          type: string
-          enum:
-          - TOUCHED_FLUID
-          - PHYSICAL_CONTACT
-          - CLOTHES_OR_OTHER
-          - CLOSE_CONTACT
-          - FACE_TO_FACE_LONG
-          - MEDICAL_UNSAFE
-          - SAME_ROOM
-          - AIRPLANE
-          - FACE_TO_FACE_SHORT
-          - MEDICAL_SAFE
-          - MEDICAL_SAME_ROOM
-          - AEROSOL
-          - MEDICAL_DISTANT
-          - MEDICAL_LIMITED
+        contactProximities:
+          type: array
+          items:
+            type: string
+            enum:
+            - TOUCHED_FLUID
+            - PHYSICAL_CONTACT
+            - CLOTHES_OR_OTHER
+            - CLOSE_CONTACT
+            - FACE_TO_FACE_LONG
+            - MEDICAL_UNSAFE
+            - SAME_ROOM
+            - AIRPLANE
+            - FACE_TO_FACE_SHORT
+            - MEDICAL_SAFE
+            - MEDICAL_SAME_ROOM
+            - AEROSOL
+            - MEDICAL_DISTANT
+            - MEDICAL_LIMITED
         contactStatus:
           type: string
           enum:
@@ -12281,23 +12285,25 @@ components:
           - NO_CONTACT
         contactOfficerUuid:
           type: string
-        contactProximity:
-          type: string
-          enum:
-          - TOUCHED_FLUID
-          - PHYSICAL_CONTACT
-          - CLOTHES_OR_OTHER
-          - CLOSE_CONTACT
-          - FACE_TO_FACE_LONG
-          - MEDICAL_UNSAFE
-          - SAME_ROOM
-          - AIRPLANE
-          - FACE_TO_FACE_SHORT
-          - MEDICAL_SAFE
-          - MEDICAL_SAME_ROOM
-          - AEROSOL
-          - MEDICAL_DISTANT
-          - MEDICAL_LIMITED
+        contactProximities:
+          type: array
+          items:
+            type: string
+            enum:
+            - TOUCHED_FLUID
+            - PHYSICAL_CONTACT
+            - CLOTHES_OR_OTHER
+            - CLOSE_CONTACT
+            - FACE_TO_FACE_LONG
+            - MEDICAL_UNSAFE
+            - SAME_ROOM
+            - AIRPLANE
+            - FACE_TO_FACE_SHORT
+            - MEDICAL_SAFE
+            - MEDICAL_SAME_ROOM
+            - AEROSOL
+            - MEDICAL_DISTANT
+            - MEDICAL_LIMITED
         contactStatus:
           type: string
           enum:
