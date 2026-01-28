@@ -84,7 +84,7 @@ public class MockProducer implements InitialContextFactory {
 
 	private static SormasToSormasDiscoveryService sormasToSormasDiscoveryService = mock(SormasToSormasDiscoveryService.class);
 
-	static final TestHelperConfigImpl testHelperConfig = new TestHelperConfigImpl();
+	static final TestHelperConfigImpl testHelperConfig = SystemConfigurationValueFacadeMock.testHelperConfig;
 
 	// Receiving e-mail server is mocked: org. jvnet. mock_javamail. mailbox
 	private static Session mailSession;
@@ -145,7 +145,9 @@ public class MockProducer implements InitialContextFactory {
 		testHelperConfig.set(Config.DEFAULT_CASE_CLASSIFICATION_CALCULATION_MODE, "AUTOMATIC");
 		testHelperConfig.set(Config.CASE_CLASSIFICATION_CALCULATION_MODE_OVERRIDE, "{}");
 		testHelperConfig.set(Config.NAME_SIMILARITY_THRESHOLD, "0.65D");
-		testHelperConfig.set(Config.NAME_SIMILARITY_THRESHOLD, "0.65D");
+		testHelperConfig.set(Config.USE_DETERMINED_VACCINATION_STATUS, "false");
+		testHelperConfig.set(Config.DUPLICATE_CHECKS_EXCLUDE_PERSONS_ONLY_LINKED_TO_ARCHIVED_ENTRIES, "false");
+		testHelperConfig.set(Config.CUSTOM_BRANDING, "false");
 	}
 
 	public static void wireMocks() {

@@ -33,7 +33,6 @@ import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -104,6 +103,7 @@ import de.symeda.sormas.api.sormastosormas.entities.contact.SormasToSormasContac
 import de.symeda.sormas.api.sormastosormas.entities.event.SormasToSormasEventFacade;
 import de.symeda.sormas.api.sormastosormas.entities.externalmessage.SormasToSormasExternalMessageFacade;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasShareRequestFacade;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.api.systemevents.SystemEventFacade;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.therapy.PrescriptionFacade;
@@ -134,6 +134,7 @@ import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb.ClinicalC
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitFacadeEjb.ClinicalVisitFacadeEjbLocal;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.DefaultEntitiesCreator;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -426,6 +427,10 @@ public abstract class AbstractBeanTest {
 
 	public ConfigFacade getConfigFacade() {
 		return getBean(ConfigFacadeEjb.ConfigFacadeEjbLocal.class);
+	}
+
+	public SystemConfigurationValueFacade getSystemConfigurationValueFacade() {
+		return getBean(SystemConfigurationValueFacadeMock.class);
 	}
 
 	/**

@@ -4,14 +4,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-
 import de.symeda.sormas.api.systemconfiguration.Config;
 
 public class TestHelperConfigImpl implements TestConfigFacade {
 
-	Map<Config, String> properties = new ConcurrentHashMap<>();
+	final Map<Config, String> properties = new ConcurrentHashMap<>();
 
 	public boolean isPresent(Config config) {
 		return properties.containsKey(config);
