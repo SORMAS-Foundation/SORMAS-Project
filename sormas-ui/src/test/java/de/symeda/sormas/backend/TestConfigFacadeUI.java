@@ -7,7 +7,7 @@ import de.symeda.sormas.api.systemconfiguration.Config;
 /**
  * Partially matches the {@link java.util.Properties}-API to be a drop-in replacement and avoids to rewrite too much code.
  */
-public interface TestConfigFacade {
+public interface TestConfigFacadeUI {
 
 	default void setProperty(Config config, String value) {
 		set(config, value);
@@ -22,5 +22,4 @@ public interface TestConfigFacade {
 	}
 
 	void remove(Config config);
-
 }

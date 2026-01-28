@@ -9,31 +9,30 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.hilling.junit.cdi.ContextControlWrapper;
-import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.backend.json.ObjectMapperProvider;
 import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationValueEjb;
 import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationValueProjection;
 
-public class TestHelperConfigImpl implements TestConfigFacade {
+public class TestHelperConfigUiImpl implements TestConfigFacadeUI {
 
-	private static final Logger log = LoggerFactory.getLogger(TestHelperConfigImpl.class);
+	private static final Logger log = LoggerFactory.getLogger(TestHelperConfigUiImpl.class);
 
-	private static volatile TestHelperConfigImpl instance;
+	private static volatile TestHelperConfigUiImpl instance;
 
 	private static SystemConfigurationValueEjb systemConfigurationValueEjb;
 
-	private TestHelperConfigImpl() {
+	private TestHelperConfigUiImpl() {
 		if (instance != null) {
 			throw new IllegalStateException("ObjectMapper instance already created");
 		}
 	}
 
-	public static TestHelperConfigImpl getInstance() {
+	public static TestHelperConfigUiImpl getInstance() {
 		if (instance == null) {
 			synchronized (ObjectMapperProvider.class) {
 				if (instance == null) {
-					instance = new TestHelperConfigImpl();
+					instance = new TestHelperConfigUiImpl();
 				}
 			}
 		}
@@ -43,13 +42,13 @@ public class TestHelperConfigImpl implements TestConfigFacade {
 	@Override
 	public void set(Config config, String value) {
 		ConcurrentHashMap<Config, SystemConfigurationValueProjection> configurationValuesByKey =
-			getSystemConfigurationValueEjb().getConfigurationValuesByKey();
+				getSystemConfigurationValueEjb().getConfigurationValuesByKey();
 		configurationValuesByKey.compute(
-			config,
-			(k, systemConfigurationValueProjection) -> new SystemConfigurationValueProjection(
 				config,
-				value,
-				systemConfigurationValueProjection.getDefaultValue()));
+				(k, systemConfigurationValueProjection) -> new SystemConfigurationValueProjection(
+						config,
+						value,
+						systemConfigurationValueProjection.getDefaultValue()));
 	}
 
 	private SystemConfigurationValueEjb getSystemConfigurationValueEjb() {
@@ -70,14 +69,14 @@ public class TestHelperConfigImpl implements TestConfigFacade {
 	@Override
 	public void remove(Config config) {
 		ConcurrentHashMap<Config, SystemConfigurationValueProjection> configurationValuesByKey =
-			getSystemConfigurationValueEjb().getConfigurationValuesByKey();
+				getSystemConfigurationValueEjb().getConfigurationValuesByKey();
 
 		configurationValuesByKey.computeIfPresent(
-			config,
-			(k, systemConfigurationValueProjection) -> new SystemConfigurationValueProjection(
 				config,
-				null,
-				systemConfigurationValueProjection.getDefaultValue()));
+				(k, systemConfigurationValueProjection) -> new SystemConfigurationValueProjection(
+						config,
+						null,
+						systemConfigurationValueProjection.getDefaultValue()));
 	}
 
 	protected <T> T getBean(Class<T> beanClass, Annotation... qualifiers) {

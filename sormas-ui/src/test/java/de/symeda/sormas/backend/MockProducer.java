@@ -84,7 +84,7 @@ public class MockProducer implements InitialContextFactory {
 
 	private static SormasToSormasDiscoveryService sormasToSormasDiscoveryService = mock(SormasToSormasDiscoveryService.class);
 
-	static final TestHelperConfigImpl testHelperConfig = TestHelperConfigImpl.getInstance();
+	static final TestHelperConfigUiImpl testHelperConfig = TestHelperConfigUiImpl.getInstance();
 
 	// Receiving e-mail server is mocked: org. jvnet. mock_javamail. mailbox
 	private static Session mailSession;
@@ -168,7 +168,7 @@ public class MockProducer implements InitialContextFactory {
 
 	@Produces
 	@Deprecated
-	public static TestConfigFacade getProperties() {
+	public static TestConfigFacadeUI getProperties() {
 		return testHelperConfig;
 	}
 

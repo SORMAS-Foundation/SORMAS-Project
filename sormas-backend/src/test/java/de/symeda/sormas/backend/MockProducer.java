@@ -43,7 +43,6 @@ import javax.naming.NamingException;
 import javax.naming.spi.InitialContextFactory;
 import javax.transaction.UserTransaction;
 
-import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.RequestContextTO;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
@@ -85,7 +84,7 @@ public class MockProducer implements InitialContextFactory {
 
 	private static SormasToSormasDiscoveryService sormasToSormasDiscoveryService = mock(SormasToSormasDiscoveryService.class);
 
-	static final TestHelperConfigImpl testHelperConfig = TestHelperConfigImpl.getInstance();
+	static final TestHelperConfigBackendImpl testHelperConfig = TestHelperConfigBackendImpl.getInstance();
 
 	// Receiving e-mail server is mocked: org. jvnet. mock_javamail. mailbox
 	private static Session mailSession;
@@ -172,7 +171,7 @@ public class MockProducer implements InitialContextFactory {
 	 */
 	@Produces
 	@Deprecated
-	public static TestConfigFacade getProperties() {
+	public static TestConfigFacadeBackend getProperties() {
 		return testHelperConfig;
 	}
 

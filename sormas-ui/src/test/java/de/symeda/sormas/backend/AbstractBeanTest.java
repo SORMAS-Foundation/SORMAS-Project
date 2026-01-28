@@ -106,7 +106,6 @@ import de.symeda.sormas.api.sormastosormas.entities.contact.SormasToSormasContac
 import de.symeda.sormas.api.sormastosormas.entities.event.SormasToSormasEventFacade;
 import de.symeda.sormas.api.sormastosormas.entities.externalmessage.SormasToSormasExternalMessageFacade;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasShareRequestFacade;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.api.systemevents.SystemEventFacade;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.therapy.PrescriptionFacade;
@@ -462,8 +461,8 @@ public abstract class AbstractBeanTest {
 		return getBean(CaseService.class);
 	}
 
-	public TestConfigFacade testConfigFacade() {
-		return getBean(TestHelperConfigImpl.class);
+	public TestConfigFacadeUI testConfigFacade() {
+		return getBean(TestHelperConfigUiImpl.class);
 	}
 
 	public ImmunizationFacadeEjbLocal getImmunizationFacade() {
