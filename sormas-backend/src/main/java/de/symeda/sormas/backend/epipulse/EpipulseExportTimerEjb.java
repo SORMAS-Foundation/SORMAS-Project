@@ -67,12 +67,21 @@ public class EpipulseExportTimerEjb {
 			case PERT:
 				diseaseExportFacadeEjb.startPertussisExport(uuid);
 				break;
+			case MEAS:
+				diseaseExportFacadeEjb.startMeaslesExport(uuid);
+				break;
+			case PNEU:  // Invasive Pneumococcal Infection
+				diseaseExportFacadeEjb.startIpiExport(uuid);
+				break;
+			case MENI: // Invasive Meningococcal Infection
+				diseaseExportFacadeEjb.startMeniExport(uuid);
+				break;
 			default:
 				logger.warn("No export for subject code: {}", subjectCodeStr);
 				break;
 			}
 		} catch (Exception e) {
-			logger.error("Error during scheduled export for UUID: {} of type: {}: " + e.getMessage());
+			logger.error("Error during scheduled export for UUID: {} of type: {}: {}", uuid, subjectCodeStr, e.getMessage(), e);
 		} finally {
 			timer.cancel();
 		}

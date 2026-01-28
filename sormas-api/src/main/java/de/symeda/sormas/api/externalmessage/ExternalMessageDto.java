@@ -88,6 +88,7 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	public static final String PERSON_GUARDIAN_RELATIONSHIP = "personGuardianRelationship";
 	public static final String PERSON_GUARDIAN_PHONE = "personGuardianPhone";
 	public static final String PERSON_GUARDIAN_EMAIL = "personGuardianEmail";
+	public static final String PERSON_OCCUPATION = "personOccupation";
 	public static final String EXTERNAL_MESSAGE_DETAILS = "externalMessageDetails";
 	public static final String PROCESSED = "processed";
 	public static final String REPORT_ID = "reportId";
@@ -181,6 +182,8 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private String personGuardianPhone;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String personGuardianEmail;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String personOccupation;
 	private YesNoUnknown treatmentStarted;
 	private Boolean treatmentNotApplicable;
 	private Date treatmentStartedDate;
@@ -537,6 +540,14 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	public void setPersonGuardianEmail(String personGuardianEmail) {
 		this.personGuardianEmail = personGuardianEmail;
+	}
+
+	public String getPersonOccupation() {
+		return personOccupation;
+	}
+
+	public void setPersonOccupation(String personOccupation) {
+		this.personOccupation = personOccupation;
 	}
 
 	public String getExternalMessageDetails() {

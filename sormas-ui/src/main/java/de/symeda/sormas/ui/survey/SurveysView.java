@@ -30,7 +30,10 @@ public class SurveysView extends AbstractView {
 		viewConfiguration = ViewModelProviders.of(getClass()).get(ViewConfiguration.class);
 		criteria = ViewModelProviders.of(SurveysView.class).get(SurveyCriteria.class);
 
-		gridComponent = new SurveyGridComponent(criteria, viewConfiguration, () -> navigateTo(criteria, true), () -> navigateTo(null, true));
+		gridComponent = new SurveyGridComponent(criteria, viewConfiguration, () -> navigateTo(criteria, true), () -> {
+			ViewModelProviders.of(SurveysView.class).remove(SurveyCriteria.class);
+			navigateTo(null, true);
+		});
 		addComponent(gridComponent);
 
 		if (UiUtil.permitted(UserRight.SURVEY_CREATE)) {
@@ -47,6 +50,9 @@ public class SurveysView extends AbstractView {
 		if (params.startsWith("?")) {
 			params = params.substring(1);
 			criteria.fromUrlParams(params);
+		} else {
+			criteria.setFreeText(null);
+			criteria.setDisease(null);
 		}
 		setApplyingCriteria(true);
 		gridComponent.updateFilterComponents(criteria);

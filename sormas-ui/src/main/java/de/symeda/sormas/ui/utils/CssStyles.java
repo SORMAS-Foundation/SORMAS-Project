@@ -116,6 +116,7 @@ public final class CssStyles {
 	public static final String LABEL_BOLD = "bold";
 	public static final String LABEL_UPPERCASE = "uppercase";
 	public static final String LABEL_ITALIC = "italic";
+	public static final String LABEL_UNDERLINE = "underline";
 
 	// Label styles
 	public static final String LABEL_BOTTOM_LINE = "bottom-line";

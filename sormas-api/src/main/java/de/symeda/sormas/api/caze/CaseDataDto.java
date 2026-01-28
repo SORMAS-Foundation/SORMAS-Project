@@ -141,6 +141,7 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	public static final String HEALTH_CONDITIONS = "healthConditions";
 	public static final String PREGNANT = "pregnant";
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
+	public static final String VACCINATION_STATUS_DETAILS = "vaccinationStatusDetails";
 	public static final String SMALLPOX_VACCINATION_SCAR = "smallpoxVaccinationScar";
 	public static final String SMALLPOX_VACCINATION_RECEIVED = "smallpoxVaccinationReceived";
 	public static final String SMALLPOX_LAST_VACCINATION_DATE = "smallpoxLastVaccinationDate";
@@ -235,6 +236,10 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	public static final String NOTIFIER = "notifier";
 	public static final String RADIOGRAPHY_COMPATIBILITY = "radiographyCompatibility";
 	public static final String OTHER_DIAGNOSTIC_CRITERIA = "otherDiagnosticCriteria";
+
+	public static final String TREATMENT_STARTED = "treatmentStarted";
+	public static final String TREATMENT_NOT_APPLICABLE = "treatmentNotApplicable";
+	public static final String TREATMENT_START_DATE = "treatmentStartDate";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -384,6 +389,9 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 		Disease.OTHER })
 	@Outbreaks
 	private VaccinationStatus vaccinationStatus;
+	@Outbreaks
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String vaccinationStatusDetails;
 	@Diseases({
 		Disease.MONKEYPOX })
 	private YesNoUnknown smallpoxVaccinationScar;
@@ -440,6 +448,9 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	private EpiDataDto epiData;
 	@Valid
 	private TherapyDto therapy;
+	private YesNoUnknown treatmentStarted;
+	private boolean treatmentNotApplicable;
+	private Date treatmentStartDate;
 	@Valid
 	private ClinicalCourseDto clinicalCourse;
 	@Valid
@@ -1149,6 +1160,14 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 		this.vaccinationStatus = vaccinationStatus;
 	}
 
+	public String getVaccinationStatusDetails() {
+		return vaccinationStatusDetails;
+	}
+
+	public void setVaccinationStatusDetails(String vaccinationStatusDetails) {
+		this.vaccinationStatusDetails = vaccinationStatusDetails;
+	}
+
 	public YesNoUnknown getSmallpoxVaccinationScar() {
 		return smallpoxVaccinationScar;
 	}
@@ -1842,6 +1861,30 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 
 	public void setOtherDiagnosticCriteria(String otherDiagnosticCriteria) {
 		this.otherDiagnosticCriteria = otherDiagnosticCriteria;
+	}
+
+	public YesNoUnknown getTreatmentStarted() {
+		return treatmentStarted;
+	}
+
+	public void setTreatmentStarted(YesNoUnknown treatmentStarted) {
+		this.treatmentStarted = treatmentStarted;
+	}
+
+	public boolean isTreatmentNotApplicable() {
+		return treatmentNotApplicable;
+	}
+
+	public void setTreatmentNotApplicable(boolean treatmentNotApplicable) {
+		this.treatmentNotApplicable = treatmentNotApplicable;
+	}
+
+	public Date getTreatmentStartDate() {
+		return treatmentStartDate;
+	}
+
+	public void setTreatmentStartDate(Date treatmentStartDate) {
+		this.treatmentStartDate = treatmentStartDate;
 	}
 
 	@JsonIgnore
