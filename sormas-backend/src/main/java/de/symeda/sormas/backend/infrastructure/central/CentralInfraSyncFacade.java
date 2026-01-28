@@ -12,6 +12,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +75,7 @@ public class CentralInfraSyncFacade {
 	@Inject
 	private EtcdCentralClient centralClient;
 	@EJB
-	private de.symeda.sormas.api.ConfigFacade configFacade;
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacadeEjb;
 

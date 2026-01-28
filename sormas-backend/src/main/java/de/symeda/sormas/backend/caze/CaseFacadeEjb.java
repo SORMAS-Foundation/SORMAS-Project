@@ -74,6 +74,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -443,7 +444,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@EJB
 	private PersonFacadeEjbLocal personFacade;
 	@EJB
-	private de.symeda.sormas.api.ConfigFacade configFacade;
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private TherapyFacadeEjbLocal therapyFacade;
 	@EJB

@@ -5,15 +5,14 @@ import java.util.function.Function;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.enterprise.inject.Specializes;
 
+import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.systemconfiguration.Config;
-import de.symeda.sormas.backend.systemconfiguration.ConfigFacadeBean;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 
 @Stateless
 @LocalBean
-@Specializes
-public class ConfigFacadeEjbLocalMock extends ConfigFacadeBean {
+public class ConfigFacadeEjbLocalMock extends ConfigFacadeEjb {
 
 	public static final TestHelperConfigImpl testHelperConfig = new TestHelperConfigImpl();
 

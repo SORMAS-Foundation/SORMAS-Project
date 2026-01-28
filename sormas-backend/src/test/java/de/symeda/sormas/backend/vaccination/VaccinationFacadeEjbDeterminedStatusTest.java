@@ -30,6 +30,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.systemconfiguration.Config;
+import de.symeda.sormas.backend.MockProducer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -106,16 +108,7 @@ class VaccinationFacadeEjbDeterminedStatusTest extends AbstractBeanTest {
      */
     @BeforeEach
     void setUp() {
-        // Enable determined vaccination status for all tests in this class
-        // Note: This needs to be set up before each test to ensure clean state
-        SystemConfigurationCategory category = getOrCreateDefaultCategory();
-        SystemConfigurationValue configValue = new SystemConfigurationValue();
-        configValue.setUuid(DataHelper.createUuid());
-        configValue.setKey("USE_DETERMINED_VACCINATION_STATUS");
-        configValue.setValue("true");
-        configValue.setCategory(category);
-        getSystemConfigurationValueService().ensurePersisted(configValue);
-        getSystemConfigurationValueFacade().loadData();
+        MockProducer.mockConfig(Config.USE_DETERMINED_VACCINATION_STATUS, "true");
     }
 
     private SystemConfigurationCategory getOrCreateDefaultCategory() {

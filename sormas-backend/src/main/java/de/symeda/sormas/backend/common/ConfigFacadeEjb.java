@@ -32,7 +32,6 @@ import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 
 @AuditIgnore
-@Stateless(name = "ConfigFacade")
 public class ConfigFacadeEjb implements ConfigFacade {
 
 	public static final String COUNTRY_SEPARATION_CHAR = "-";

@@ -17,6 +17,7 @@ package de.symeda.sormas.backend.common;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -47,18 +48,10 @@ public class StartupConfigurationValidationService {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	private de.symeda.sormas.api.ConfigFacade configFacade;
+	@EJB
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
+	@Inject
 	private ExternalClientConfigurationFacade externalClientConfiguration;
-
-	public StartupConfigurationValidationService() {
-	}
-
-	public StartupConfigurationValidationService(
-		ConfigFacade configFacade,
-		ExternalClientConfigurationEjb externalClientConfiguration) {
-		this.configFacade = configFacade;
-		this.externalClientConfiguration = externalClientConfiguration;
-	}
 
 	public void validateAppUrls() {
 		logger.info("Validating app urls");
@@ -170,11 +163,6 @@ public class StartupConfigurationValidationService {
 		if (!StringUtils.isBlank(mapTilersUrl) && !mapTilersUrl.startsWith("https://")) {
 			throw new IllegalArgumentException("map.tiles.url property is required to be HTTPS");
 		}
-	}
-
-	@Inject
-	public void setConfigFacade(ConfigFacade configFacade) {
-		this.configFacade = configFacade;
 	}
 
 	@Inject

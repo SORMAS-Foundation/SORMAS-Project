@@ -75,7 +75,7 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -133,7 +133,6 @@ public class ImmunizationFacadeEjb
 
 	private final Logger logger = LoggerFactory.getLogger(ImmunizationFacadeEjb.class);
 
-	private static final String USE_DETERMINED_VACCINATION_STATUS_CONFIG_KEY = "USE_DETERMINED_VACCINATION_STATUS";
 
 	@EJB
 	private DirectoryImmunizationService directoryImmunizationService;
@@ -177,8 +176,6 @@ public class ImmunizationFacadeEjb
 	private SpecialCaseAccessService specialCaseAccessService;
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
-	@EJB
-	private SystemConfigurationValueFacade systemConfigurationValue;
 
 	public ImmunizationFacadeEjb() {
 	}
@@ -815,7 +812,7 @@ public class ImmunizationFacadeEjb
 	@Override
 	@PermitAll
 	public boolean isUseDeterminedVaccinationStatus() {
-		return Boolean.valueOf(systemConfigurationValue.getValue(USE_DETERMINED_VACCINATION_STATUS_CONFIG_KEY));
+		return configFacade.getAsBoolean(Config.USE_DETERMINED_VACCINATION_STATUS);
 	}
 
 	@LocalBean

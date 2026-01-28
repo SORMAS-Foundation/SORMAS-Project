@@ -10,7 +10,6 @@ public interface Strings {
 	 * 1. java:S115: Violation of name convention for constants of this class is accepted: Close as false positive.
 	 */
 
-	String <<<<<<< = "<<<<<<<";
 	String active = "active";
 	String address = "address";
 	String aggregateReportLegend = "aggregateReportLegend";

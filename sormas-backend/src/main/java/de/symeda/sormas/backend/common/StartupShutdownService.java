@@ -143,7 +143,7 @@ public class StartupShutdownService {
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
 	@EJB
-	private de.symeda.sormas.api.ConfigFacade configFacade;
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private UserService userService;
 	@EJB

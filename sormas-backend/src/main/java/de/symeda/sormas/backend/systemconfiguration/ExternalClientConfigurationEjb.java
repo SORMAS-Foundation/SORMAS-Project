@@ -25,6 +25,7 @@ import javax.ejb.Startup;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,10 +49,10 @@ public class ExternalClientConfigurationEjb implements ExternalClientConfigurati
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	private de.symeda.sormas.api.ConfigFacade configFacade;
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	@EJB
-	public void setConfigFacade(ConfigFacade configFacade) {
+	public void setConfigFacade(ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade) {
 		this.configFacade = configFacade;
 	}
 

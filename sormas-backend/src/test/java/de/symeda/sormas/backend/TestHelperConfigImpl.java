@@ -4,6 +4,7 @@ import java.lang.annotation.Annotation;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +64,7 @@ public class TestHelperConfigImpl implements TestConfigFacade {
 
 	@Override
 	public Optional<String> get(Config config) {
-		return getBean(ConfigFacade.class).getAsString(config);
+		return getBean(ConfigFacadeEjb.ConfigFacadeEjbLocal.class).getAsString(config);
 	}
 
 	@Override
