@@ -91,6 +91,7 @@ import de.symeda.sormas.api.caze.PreviousCaseDto;
 import de.symeda.sormas.api.caze.QuarantineReason;
 import de.symeda.sormas.api.caze.ReinfectionDetail;
 import de.symeda.sormas.api.caze.ReinfectionDetailGroup;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
@@ -182,6 +183,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private static final String REINFECTION_INFO_LOC = "reinfectionInfoLoc";
 	private static final String REINFECTION_DETAILS_COL_1_LOC = "reinfectionDetailsCol1Loc";
 	private static final String REINFECTION_DETAILS_COL_2_LOC = "reinfectionDetailsCol2Loc";
+	private static final String VACCINATION_STATUS_INFO_LOC = "vaccinationStatusInfoLoc";
+	private static final String VACCINATION_STATUS_DETAILS_LOC = "vaccinationStatusDetailsLoc";
 	public static final String CASE_REFER_POINT_OF_ENTRY_BTN_LOC = "caseReferFromPointOfEntryBtnLoc";
 	public static final String DIAGNOSIS_CRITERIA_HEADING_LOC = "diagnosisCriteriaHeadingLoc";
 	public static final String DIAGNOSIS_CRITERIA_SUBHEADING_LOC = "diagnosisCriteriaSubheadingLoc";
@@ -266,7 +269,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					loc(MEDICAL_INFORMATION_LOC) +
 					fluidRowLocs(CaseDataDto.BLOOD_ORGAN_OR_TISSUE_DONATED) +
 					fluidRowLocs(CaseDataDto.PREGNANT, CaseDataDto.POSTPARTUM) + fluidRowLocs(CaseDataDto.TRIMESTER, "") +
-					fluidRowLocs(CaseDataDto.VACCINATION_STATUS, "") +
+					inlineLocs(CaseDataDto.VACCINATION_STATUS, VACCINATION_STATUS_INFO_LOC) +
+					fluidRowLocs(VACCINATION_STATUS_DETAILS_LOC) +
 					fluidRowLocs(CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, CaseDataDto.SMALLPOX_VACCINATION_SCAR) +
 					fluidRowLocs(CaseDataDto.SMALLPOX_LAST_VACCINATION_DATE, "") +
 					fluidRowLocs(SMALLPOX_VACCINATION_SCAR_IMG) +
@@ -975,8 +979,57 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			setupMutuallyExclusiveFields(pregnantField, postpartumField);
 		}
 
-		addField(CaseDataDto.VACCINATION_STATUS, TextField.class);
-//		getContent().addComponent(new Label("Debug vaccination"), CaseDataDto.VACCINATION_STATUS);
+		ComboBox vaccinationStatusField = addField(CaseDataDto.VACCINATION_STATUS, ComboBox.class);
+
+		// Add field to display means of immunization details when status is OTHER
+		TextArea vaccinationStatusDetailsField = new TextArea();
+		vaccinationStatusDetailsField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.VACCINATION_STATUS_DETAILS));
+		vaccinationStatusDetailsField.setReadOnly(true);
+		vaccinationStatusDetailsField.setRows(2);
+		vaccinationStatusDetailsField.setWidth(100, Unit.PERCENTAGE);
+		getFieldGroup().bind(vaccinationStatusDetailsField, CaseDataDto.VACCINATION_STATUS_DETAILS);
+		getContent().addComponent(vaccinationStatusDetailsField, VACCINATION_STATUS_DETAILS_LOC);
+
+		// Show details field only when vaccination status is OTHER
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			CaseDataDto.VACCINATION_STATUS_DETAILS,
+			CaseDataDto.VACCINATION_STATUS,
+			Collections.singletonList(VaccinationStatus.OTHER),
+			true);
+
+		// Make vaccination status read-only when determined vaccination status feature is enabled
+		// In that mode, the status is automatically computed from immunization data and no longer needed to be edited by the user
+		if (FacadeProvider.getImmunizationFacade().isUseDeterminedVaccinationStatus()) {
+			vaccinationStatusField.setReadOnly(true);
+			vaccinationStatusField.setDescription(I18nProperties.getString(Strings.infoDeterminedVaccinationStatusReadOnly));
+
+			// Add info icon with explanation of automatic computation
+			final Label vaccinationStatusInfoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+			CssStyles.style(vaccinationStatusInfoLabel, CssStyles.LABEL_XLARGE, CssStyles.VSPACE_TOP_3);
+
+			// Build detailed explanation based on the outline document
+			String infoText = String.format(
+				"<b>%s</b><br/><br/>" + "%s<br/><br/>" + "<b>%s:</b><br/>" + "• %s<br/>" + "• %s<br/>" + "• %s<br/><br/>" + "<b>%s:</b><br/>"
+					+ "• <i>Vaccination</i>: %s<br/>" + "• <i>Recovery</i>: %s<br/>" + "• <i>Other</i>: %s<br/><br/>" + "<b>%s:</b><br/>"
+					+ "• %s<br/>" + "• %s",
+				I18nProperties.getString(Strings.headingAutomaticVaccinationStatusDetermination),
+				I18nProperties.getString(Strings.infoDeterminedVaccinationStatusExplanation),
+				I18nProperties.getString(Strings.headingImmunizationSelection),
+				I18nProperties.getString(Strings.infoImmunizationStatusAcquired),
+				I18nProperties.getString(Strings.infoImmunizationValidFromClosest),
+				I18nProperties.getString(Strings.infoImmunizationValidUntilNotBefore),
+				I18nProperties.getString(Strings.headingStatusDetermination),
+				I18nProperties.getString(Strings.infoVaccinationDoseCount),
+				I18nProperties.getString(Strings.infoRecoveryNaturalImmunity),
+				I18nProperties.getString(Strings.infoOtherImmunization),
+				I18nProperties.getString(Strings.headingDoseCount),
+				I18nProperties.getString(Strings.infoDoseCountFromNumberOfDoses),
+				I18nProperties.getString(Strings.infoDoseCountFromVaccinationEntries));
+
+			vaccinationStatusInfoLabel.setDescription(infoText, ContentMode.HTML);
+			getContent().addComponent(vaccinationStatusInfoLabel, VACCINATION_STATUS_INFO_LOC);
+		}
 		addFields(CaseDataDto.SMALLPOX_VACCINATION_SCAR, CaseDataDto.SMALLPOX_VACCINATION_RECEIVED);
 		addDateField(CaseDataDto.SMALLPOX_LAST_VACCINATION_DATE, DateField.class, 0);
 
@@ -1050,8 +1103,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				disease,
 				FieldVisibilityCheckers.withDisease(disease)
 					.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
-				UiFieldAccessCheckers.getDefault(true, FacadeProvider.getConfigFacade().getCountryLocale())))
-			.setCaption(null);
+				UiFieldAccessCheckers.getDefault(true, FacadeProvider.getConfigFacade().getCountryLocale()))).setCaption(null);
 
 		//diagnosis criteria
 		if ((FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) && disease == Disease.TUBERCULOSIS) {

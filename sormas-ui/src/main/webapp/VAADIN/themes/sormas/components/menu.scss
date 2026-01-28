@@ -63,17 +63,17 @@ $valo-menu-background-color: $s-default-color !default;
 		&::before {
 		  position: absolute;
 		  top: -12px;
-		  right: 0px;
+          right: 0;
 		  width: 4px;
 		  height: 74px;
-		  background-color: $v-selection-color;
+          background-color: $v-selection-color;
 		  content: "";
 		}
 	  }
 	}
 	
     .v-menubar-user-menu {
-    	margin: 8px 0px;
+      margin: 8px 0;
     	text-align: left;
     }
   }
@@ -124,5 +124,13 @@ $valo-menu-background-color: $s-default-color !default;
     .valo-menu .v-menubar-user-menu .v-menubar-menuitem-caption {
       width: auto;
     }
-  }    
+  }
+
+  .top-menu-container {
+    max-height: 115px;
+  }
+
+  .menu-subtitle {
+    font-size: 24px;
+  }
 }

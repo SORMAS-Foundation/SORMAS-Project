@@ -155,7 +155,6 @@ public class PathogenTestDto extends PseudonymizableDto {
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String testResultText;
-	@NotNull(message = Validations.requiredField)
 	private Boolean testResultVerified;
 	private boolean fourFoldIncreaseAntibodyTiter;
 	@SensitiveData
