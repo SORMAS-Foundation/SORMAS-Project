@@ -18,7 +18,7 @@ public class ConfigConverter implements AttributeConverter<Config, String> {
 		if (attribute == null) {
 			return null;
 		}
-		return attribute.name();  // or attribute.toString()
+		return attribute.name();
 	}
 
 	@Override

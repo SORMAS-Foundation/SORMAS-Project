@@ -67,9 +67,9 @@ public class SmsService {
 		}
 
 		NexmoClient client = NexmoClient.builder()
-				.apiKey(configFacade.getAsStringOrThrow(Config.SMS_AUTH_KEY))
-				.apiSecret(configFacade.getAsStringOrThrow(Config.SMS_AUTH_SECRET))
-				.build();
+			.apiKey(configFacade.getAsStringOrThrow(Config.SMS_AUTH_KEY))
+			.apiSecret(configFacade.getAsStringOrThrow(Config.SMS_AUTH_SECRET))
+			.build();
 
 		// If the phone number is invalid, e.g. because it is a landline number or malformed otherwise, throw an exception
 		InsightClient insightClient = client.getInsightClient();
@@ -79,16 +79,16 @@ public class SmsService {
 		}
 
 		SmsSubmissionResponse response =
-				client.getSmsClient().submitMessage(new TextMessage(configFacade.getSormasInstanceName(), phoneNumber, content));
+			client.getSmsClient().submitMessage(new TextMessage(configFacade.getSormasInstanceName(), phoneNumber, content));
 		for (SmsSubmissionResponseMessage message : response.getMessages()) {
 			if (message.getStatus() == MessageStatus.OK) {
 				logger.info("SMS successfully sent to {}.", phoneNumber);
 			} else if (message.getErrorText() != null) {
 				logger.info(
-						"Error sending SMS to {} with following error: status: {}, text: '{}'.",
-						phoneNumber,
-						message.getStatus(),
-						message.getErrorText());
+					"Error sending SMS to {} with following error: status: {}, text: '{}'.",
+					phoneNumber,
+					message.getStatus(),
+					message.getErrorText());
 			}
 		}
 	}

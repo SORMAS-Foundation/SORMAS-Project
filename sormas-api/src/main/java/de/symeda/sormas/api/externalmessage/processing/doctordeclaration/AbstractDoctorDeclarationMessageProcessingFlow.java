@@ -56,6 +56,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DtoCopyHelper;
@@ -74,18 +75,18 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	protected AbstractDoctorDeclarationMessageProcessingFlow(
-			ExternalMessageDto externalMessage,
-			UserDto user,
-			ExternalMessageMapper mapper,
-			ExternalMessageProcessingFacade processingFacade) {
+	public AbstractDoctorDeclarationMessageProcessingFlow(
+		ExternalMessageDto externalMessage,
+		UserDto user,
+		ExternalMessageMapper mapper,
+		ExternalMessageProcessingFacade processingFacade) {
 		super(user, externalMessage, mapper, processingFacade);
 	}
 
 	protected FlowThen<ExternalMessageProcessingResult> doPickOrCreateSamplesFlow(
-			Consumer<SampleSimilarityCriteria> addSampleSearchCriteria,
-			BiFunction<Integer, ExternalMessageProcessingResult, CompletionStage<ProcessingResult<ExternalMessageProcessingResult>>> createSampleAndPathogenTests,
-			FlowThen<ExternalMessageProcessingResult> flow) {
+		Consumer<SampleSimilarityCriteria> addSampleSearchCriteria,
+		BiFunction<Integer, ExternalMessageProcessingResult, CompletionStage<ProcessingResult<ExternalMessageProcessingResult>>> createSampleAndPathogenTests,
+		FlowThen<ExternalMessageProcessingResult> flow) {
 
 		// We use the non null safe sample reports list in case no samples reports were created following DD parsing
 		final List<SampleReportDto> sampleReports = getExternalMessage().getSampleReports();
@@ -117,9 +118,9 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 	 *            The associated surveillance report, if any.
 	 */
 	protected void markExternalMessageAsProcessed(
-			ExternalMessageDto externalMessage,
-			ProcessingResult<ExternalMessageProcessingResult> result,
-			SurveillanceReportDto surveillanceReport) {
+		ExternalMessageDto externalMessage,
+		ProcessingResult<ExternalMessageProcessingResult> result,
+		SurveillanceReportDto surveillanceReport) {
 
 		if (surveillanceReport != null) {
 			externalMessage.setSurveillanceReport(surveillanceReport.toReference());
@@ -145,6 +146,7 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 		postBuildCaseData(caseDto, externalMessageDto);
 		postBuildHealthConditions(caseDto, externalMessageDto);
 		postBuildCaseSymptoms(caseDto, externalMessageDto);
+		postBuildCaseTherapy(caseDto, externalMessageDto);
 		postBuildActivitiesAsCase(caseDto, externalMessageDto);
 		postBuildExposure(caseDto, externalMessageDto);
 		postBuildHospitalization(caseDto, externalMessageDto);
@@ -164,14 +166,9 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 	protected void postBuildCaseData(CaseDataDto caseDto, ExternalMessageDto externalMessageDto) {
 
 		caseDto.setCaseClassification(
-				externalMessageDto.getCaseClassification() != null ? externalMessageDto.getCaseClassification() : caseDto.getCaseClassification());
+			externalMessageDto.getCaseClassification() != null ? externalMessageDto.getCaseClassification() : caseDto.getCaseClassification());
 		caseDto.setRadiographyCompatibility(externalMessageDto.getRadiographyCompatibility());
 		caseDto.setOtherDiagnosticCriteria(externalMessageDto.getOtherDiagnosticCriteria());
-
-		caseDto.setTreatmentStarted(externalMessageDto.getTreatmentStarted());
-		caseDto.setTreatmentStartDate(externalMessageDto.getTreatmentStartedDate());
-		caseDto.setTreatmentNotApplicable(Boolean.TRUE.equals(externalMessageDto.getTreatmentNotApplicable()));
-
 	}
 
 	/**
@@ -184,7 +181,7 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 	 */
 	protected void postBuildHealthConditions(CaseDataDto caseDto, ExternalMessageDto externalMessageDto) {
 		final HealthConditionsDto healthConditionsDto =
-				caseDto.getHealthConditions() != null ? caseDto.getHealthConditions() : HealthConditionsDto.build();
+			caseDto.getHealthConditions() != null ? caseDto.getHealthConditions() : HealthConditionsDto.build();
 
 		if (Disease.TUBERCULOSIS.equals(externalMessageDto.getDisease())) {
 			postBuildTuberculosisHealthConditions(healthConditionsDto, externalMessageDto);
@@ -211,13 +208,13 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 		healthConditionsDto.setComplianceWithTreatment(externalMessageDto.getComplianceWithTreatment());
 
 		logger.debug(
-				"[POST BUILD HEALTH CONDITIONS] Tuberculosis health conditions set for case. Tuberculosis: {}, HIV: {}, HIV ART: {}, Infection Year: {}, Previous Treatment: {}, Compliance: {}",
-				externalMessageDto.getTuberculosis(),
-				externalMessageDto.getHiv(),
-				externalMessageDto.getHivArt(),
-				externalMessageDto.getTuberculosisInfectionYear(),
-				externalMessageDto.getPreviousTuberculosisTreatment(),
-				externalMessageDto.getComplianceWithTreatment());
+			"[POST BUILD HEALTH CONDITIONS] Tuberculosis health conditions set for case. Tuberculosis: {}, HIV: {}, HIV ART: {}, Infection Year: {}, Previous Treatment: {}, Compliance: {}",
+			externalMessageDto.getTuberculosis(),
+			externalMessageDto.getHiv(),
+			externalMessageDto.getHivArt(),
+			externalMessageDto.getTuberculosisInfectionYear(),
+			externalMessageDto.getPreviousTuberculosisTreatment(),
+			externalMessageDto.getComplianceWithTreatment());
 	}
 
 	/**
@@ -236,6 +233,26 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 
 			logger.debug("[POST BUILD CASE] Symptoms set for case with UUID: {}", caseDto.getUuid());
 		}
+	}
+
+	/**
+	 * Sets the therapy information for the case from the external message, if present.
+	 *
+	 * @param caseDto
+	 *            The case data transfer object to update.
+	 * @param externalMessageDto
+	 *            The external message containing therapy data.
+	 */
+	protected void postBuildCaseTherapy(CaseDataDto caseDto, ExternalMessageDto externalMessageDto) {
+
+		TherapyDto therapyDto = caseDto.getTherapy();
+
+		therapyDto.setTreatmentStarted(externalMessageDto.getTreatmentStarted());
+		therapyDto.setTreatmentStartDate(externalMessageDto.getTreatmentStartedDate());
+		therapyDto.setTreatmentNotApplicable(Boolean.TRUE.equals(externalMessageDto.getTreatmentNotApplicable()));
+
+		logger.debug("[POST BUILD CASE] Therapy set for case with UUID: {}", caseDto.getUuid());
+
 	}
 
 	/**
@@ -260,8 +277,8 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 			try {
 				ObjectMapper objectMapper = new ObjectMapper();
 				List<ActivityAsCaseDto> deserialActivityAsCaseDtos =
-						objectMapper.readValue(externalMessageDto.getActivitiesAsCase(), new TypeReference<List<ActivityAsCaseDto>>() {
-						});
+					objectMapper.readValue(externalMessageDto.getActivitiesAsCase(), new TypeReference<List<ActivityAsCaseDto>>() {
+					});
 				for (ActivityAsCaseDto activityAsCaseDto : deserialActivityAsCaseDtos) {
 					ActivityAsCaseDto newActivityAsCase = ActivityAsCaseDto.build(activityAsCaseDto.getActivityAsCaseType());
 					if (newActivityAsCase.getActivityAsCaseType() == null) {
@@ -313,8 +330,8 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 			try {
 				ObjectMapper objectMapper = new ObjectMapper();
 				List<ExposureDto> deserialExposureDtos =
-						objectMapper.readValue(externalMessageDto.getExposures(), new TypeReference<List<ExposureDto>>() {
-						});
+					objectMapper.readValue(externalMessageDto.getExposures(), new TypeReference<List<ExposureDto>>() {
+					});
 				for (ExposureDto exposureDto : deserialExposureDtos) {
 					ExposureDto newExposure = ExposureDto.build(exposureDto.getExposureType());
 					if (newExposure.getExposureType() == null) {
@@ -357,8 +374,8 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 		final FacilityReferenceDto hospitalFacilityReference = getHospitalFacilityReference(externalMessageDto);
 
 		if (externalMessageDto.getHospitalizationFacilityName() == null
-				&& externalMessageDto.getHospitalizationFacilityExternalId() == null
-				&& externalMessageDto.getHospitalizationFacilityDepartment() == null) {
+			&& externalMessageDto.getHospitalizationFacilityExternalId() == null
+			&& externalMessageDto.getHospitalizationFacilityDepartment() == null) {
 			logger.info("[POST BUILD HOSPITALIZATION] No hospitalization information found for case with UUID: {}.", caseDto.getUuid());
 			return;
 		}
@@ -371,7 +388,7 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 		}
 
 		final FacilityDto hospitalFacility =
-				hospitalFacilityReference != null ? getExternalMessageProcessingFacade().getFacilityByUuid(hospitalFacilityReference.getUuid()) : null;
+			hospitalFacilityReference != null ? getExternalMessageProcessingFacade().getFacilityByUuid(hospitalFacilityReference.getUuid()) : null;
 
 		// In case the patient is admitted to a health facility, we need to set the case hospitalization details and quit early
 		if (YesNoUnknown.YES.equals(externalMessageDto.getAdmittedToHealthFacility())) {
@@ -394,11 +411,11 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 			// if for whatever reason the hospital facility is not found, we quit early
 			if (hospitalFacility == null) {
 				logger.warn(
-						"[POST BUILD HOSPITALIZATION] Hospital facility not found for case with UUID: {}. Hospitalization details will not be set.",
-						caseDto.getUuid());
+					"[POST BUILD HOSPITALIZATION] Hospital facility not found for case with UUID: {}. Hospitalization details will not be set.",
+					caseDto.getUuid());
 				return;
 			}
-
+			
 			// we have a facility, so we set the responsible region, district and community
 			caseDto.setResponsibleRegion(hospitalFacility.getRegion());
 			caseDto.setResponsibleDistrict(hospitalFacility.getDistrict());
@@ -456,32 +473,32 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 	 */
 	protected FacilityReferenceDto getHospitalFacilityReference(ExternalMessageDto externalMessageDto) {
 		final String hospitalName =
-				StringUtils.isNotBlank(externalMessageDto.getHospitalizationFacilityName()) ? externalMessageDto.getHospitalizationFacilityName() : "";
+			StringUtils.isNotBlank(externalMessageDto.getHospitalizationFacilityName()) ? externalMessageDto.getHospitalizationFacilityName() : "";
 
 		final String hospitalExternalId = StringUtils.isNotBlank(externalMessageDto.getHospitalizationFacilityExternalId())
-				? externalMessageDto.getHospitalizationFacilityExternalId()
-				: "";
+			? externalMessageDto.getHospitalizationFacilityExternalId()
+			: "";
 
 		FacilityReferenceDto hospitalFacilityReference = StringUtils.isNotBlank(hospitalExternalId)
-				? getExternalMessageProcessingFacade().getHospitalFacilityReferenceByExternalId(hospitalExternalId)
-				: null;
+			? getExternalMessageProcessingFacade().getHospitalFacilityReferenceByExternalId(hospitalExternalId)
+			: null;
 
 		// Search for a hospital facility containing the external ID in name if not found by external ID
 		if (hospitalFacilityReference == null && StringUtils.isNotBlank(hospitalExternalId)) {
 			final Pattern hospitalIdInNamePattern = Pattern.compile(
-					"^(\\b" + Pattern.quote(hospitalExternalId) + "\\b)?.*?(\\b" + Pattern.quote(hospitalExternalId) + "\\b).*?$",
-					Pattern.CASE_INSENSITIVE);
+				"^(\\b" + Pattern.quote(hospitalExternalId) + "\\b)?.*?(\\b" + Pattern.quote(hospitalExternalId) + "\\b).*?$",
+				Pattern.CASE_INSENSITIVE);
 			hospitalFacilityReference = getExternalMessageProcessingFacade().getHospitalFacilityReferenceNameMatching(hospitalIdInNamePattern)
-					.stream()
-					.findFirst()
-					.orElse(null);
+				.stream()
+				.findFirst()
+				.orElse(null);
 		}
 
 		// Search for a hospital facility containing the given name if not found by external ID
 		if (hospitalFacilityReference == null && StringUtils.isNotBlank(hospitalName)) {
 			final Pattern hospitalNamePattern = Pattern.compile(Pattern.quote(hospitalName), Pattern.CASE_INSENSITIVE);
 			hospitalFacilityReference =
-					getExternalMessageProcessingFacade().getHospitalFacilityReferenceNameMatching(hospitalNamePattern).stream().findFirst().orElse(null);
+				getExternalMessageProcessingFacade().getHospitalFacilityReferenceNameMatching(hospitalNamePattern).stream().findFirst().orElse(null);
 		}
 
 		return hospitalFacilityReference;

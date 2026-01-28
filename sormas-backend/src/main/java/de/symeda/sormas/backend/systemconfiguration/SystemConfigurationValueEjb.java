@@ -74,15 +74,16 @@ import de.symeda.sormas.backend.util.RightsAllowed;
 @TransactionManagement(TransactionManagementType.CONTAINER)
 @RightsAllowed(UserRight._SYSTEM_CONFIGURATION)
 public class SystemConfigurationValueEjb
-		extends
-		AbstractBaseEjb<SystemConfigurationValue, SystemConfigurationValueDto, SystemConfigurationValueIndexDto, SystemConfigurationValueReferenceDto, SystemConfigurationValueService, SystemConfigurationValueCriteria>
-		implements SystemConfigurationValueFacade {
+	extends
+	AbstractBaseEjb<SystemConfigurationValue, SystemConfigurationValueDto, SystemConfigurationValueIndexDto, SystemConfigurationValueReferenceDto, SystemConfigurationValueService, SystemConfigurationValueCriteria>
+	implements SystemConfigurationValueFacade {
 
 	private static final long serialVersionUID = 1L;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SystemConfigurationValueEjb.class);
 
-	private final ConcurrentHashMap<Config, SystemConfigurationValueProjection> configurationValuesByKey = new ConcurrentHashMap<>(Config.values().length);
+	private final ConcurrentHashMap<Config, SystemConfigurationValueProjection> configurationValuesByKey =
+		new ConcurrentHashMap<>(Config.values().length);
 
 	private SystemConfigurationCategoryService categoryService;
 
@@ -241,17 +242,17 @@ public class SystemConfigurationValueEjb
 	@RightsAllowed(UserRight._SYSTEM_CONFIGURATION)
 	@Override
 	public List<SystemConfigurationValueIndexDto> getIndexList(
-			final SystemConfigurationValueCriteria criteria,
-			final Integer first,
-			final Integer max,
-			final List<SortProperty> sortProperties) {
+		final SystemConfigurationValueCriteria criteria,
+		final Integer first,
+		final Integer max,
+		final List<SortProperty> sortProperties) {
 
 		LOGGER.debug(
-				"Retrieving SystemConfigurationValueIndexDto list with criteria: {}, first: {}, max: {}, sortProperties: {}",
-				criteria,
-				first,
-				max,
-				sortProperties);
+			"Retrieving SystemConfigurationValueIndexDto list with criteria: {}, first: {}, max: {}, sortProperties: {}",
+			criteria,
+			first,
+			max,
+			sortProperties);
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<SystemConfigurationValue> cq = cb.createQuery(SystemConfigurationValue.class);
 		final Root<SystemConfigurationValue> root = cq.from(SystemConfigurationValue.class);
@@ -269,21 +270,21 @@ public class SystemConfigurationValueEjb
 			final List<Order> order = sortProperties.stream().map(sortProperty -> {
 				final Expression<?> expression;
 				switch (sortProperty.propertyName) {
-					case SystemConfigurationValue.CATEGORY_FIELD_NAME:
-						expression = root.get(sortProperty.propertyName);
-						break;
-					case SystemConfigurationValue.KEY_FIELD_NAME:
-						expression = cb.lower(root.get(sortProperty.propertyName));
-						break;
-					case SystemConfigurationValue.VALUE_FIELD_NAME:
-						expression = root.get(sortProperty.propertyName);
-						break;
-					case SystemConfigurationValue.DESCRIPTION:
-						expression = cb.lower(root.get(sortProperty.propertyName));
-						break;
-					default:
-						LOGGER.error("Invalid sort property {}.", sortProperty.propertyName);
-						throw new IllegalArgumentException(sortProperty.propertyName);
+				case SystemConfigurationValue.CATEGORY_FIELD_NAME:
+					expression = root.get(sortProperty.propertyName);
+					break;
+				case SystemConfigurationValue.KEY_FIELD_NAME:
+					expression = cb.lower(root.get(sortProperty.propertyName));
+					break;
+				case SystemConfigurationValue.VALUE_FIELD_NAME:
+					expression = root.get(sortProperty.propertyName);
+					break;
+				case SystemConfigurationValue.DESCRIPTION:
+					expression = cb.lower(root.get(sortProperty.propertyName));
+					break;
+				default:
+					LOGGER.error("Invalid sort property {}.", sortProperty.propertyName);
+					throw new IllegalArgumentException(sortProperty.propertyName);
 				}
 				return sortProperty.ascending ? cb.asc(expression) : cb.desc(expression);
 			}).collect(Collectors.toList());
@@ -335,8 +336,8 @@ public class SystemConfigurationValueEjb
 		}
 
 		if (dto.getPattern() != null
-				&& !dto.getPattern().isBlank()
-				&& !SystemConfigurationValueHelper.isConfigurationValueMatchingPattern(dto.getValue(), dto.getPattern())) {
+			&& !dto.getPattern().isBlank()
+			&& !SystemConfigurationValueHelper.isConfigurationValueMatchingPattern(dto.getValue(), dto.getPattern())) {
 			LOGGER.warn("Invalid value in SystemConfigurationValueDto: {}", dto);
 
 			String message = null;
@@ -364,7 +365,10 @@ public class SystemConfigurationValueEjb
 		LOGGER.info("Loading SystemConfiguration data into cache");
 		configurationValuesByKey.clear();
 
-		service.getAll().forEach(value -> configurationValuesByKey.put(value.getKey(), new SystemConfigurationValueProjection(value.getKey(), value.getValue(), value.getDefaultValue())));
+		service.getAll()
+			.forEach(
+				value -> configurationValuesByKey
+					.put(value.getKey(), new SystemConfigurationValueProjection(value.getKey(), value.getValue(), value.getDefaultValue())));
 
 		LOGGER.info("SystemConfiguration data loaded into cache successfully");
 	}
@@ -385,9 +389,9 @@ public class SystemConfigurationValueEjb
 	 */
 	@Override
 	protected SystemConfigurationValue fillOrBuildEntity(
-			@NotNull final SystemConfigurationValueDto source,
-			SystemConfigurationValue target,
-			final boolean checkChangeDate) {
+		@NotNull final SystemConfigurationValueDto source,
+		SystemConfigurationValue target,
+		final boolean checkChangeDate) {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, SystemConfigurationValue::new, checkChangeDate);
 
@@ -428,9 +432,9 @@ public class SystemConfigurationValueEjb
 		target.setValue(source.getValue());
 		target.setDescription(source.getDescription());
 		target.setCategory(
-				source.getCategory() != null
-						? categoryFacade.getReferenceByUuid(source.getCategory().getUuid())
-						: categoryFacade.getDefaultCategoryReferenceDto());
+			source.getCategory() != null
+				? categoryFacade.getReferenceByUuid(source.getCategory().getUuid())
+				: categoryFacade.getDefaultCategoryReferenceDto());
 		target.setOptional(source.getOptional() != null ? source.getOptional() : Boolean.FALSE);
 		target.setPattern(source.getPattern());
 		target.setEncrypt(source.getEncrypt());
@@ -440,7 +444,7 @@ public class SystemConfigurationValueEjb
 			try {
 				final Class<?> clazz = Class.forName(source.getDataProvider());
 				final SystemConfigurationValueDataProvider dataProvider =
-						(SystemConfigurationValueDataProvider) clazz.getDeclaredConstructor().newInstance();
+					(SystemConfigurationValueDataProvider) clazz.getDeclaredConstructor().newInstance();
 				target.setDataProvider(dataProvider);
 			} catch (final Exception e) {
 				LOGGER.error("Failed to instantiate SystemConfigurationValueDataProvider", e);
@@ -484,10 +488,10 @@ public class SystemConfigurationValueEjb
 	 */
 	@Override
 	protected void pseudonymizeDto(
-			final SystemConfigurationValue source,
-			final SystemConfigurationValueDto dto,
-			final Pseudonymizer<SystemConfigurationValueDto> pseudonymizer,
-			final boolean inJurisdiction) {
+		final SystemConfigurationValue source,
+		final SystemConfigurationValueDto dto,
+		final Pseudonymizer<SystemConfigurationValueDto> pseudonymizer,
+		final boolean inJurisdiction) {
 		LOGGER.debug("Pseudonymizing SystemConfigurationValue ignored: {}", source);
 	}
 
@@ -506,10 +510,10 @@ public class SystemConfigurationValueEjb
 	 */
 	@Override
 	protected void restorePseudonymizedDto(
-			final SystemConfigurationValueDto dto,
-			final SystemConfigurationValueDto existingDto,
-			final SystemConfigurationValue entity,
-			final Pseudonymizer<SystemConfigurationValueDto> pseudonymizer) {
+		final SystemConfigurationValueDto dto,
+		final SystemConfigurationValueDto existingDto,
+		final SystemConfigurationValue entity,
+		final Pseudonymizer<SystemConfigurationValueDto> pseudonymizer) {
 		LOGGER.debug("Restoring pseudonymized SystemConfigurationValue ignored: {}", dto);
 	}
 
