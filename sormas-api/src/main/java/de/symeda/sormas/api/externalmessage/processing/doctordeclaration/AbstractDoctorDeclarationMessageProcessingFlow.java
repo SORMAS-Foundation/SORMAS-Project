@@ -56,7 +56,6 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
-import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DtoCopyHelper;
@@ -75,7 +74,7 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	public AbstractDoctorDeclarationMessageProcessingFlow(
+	protected AbstractDoctorDeclarationMessageProcessingFlow(
 		ExternalMessageDto externalMessage,
 		UserDto user,
 		ExternalMessageMapper mapper,
@@ -146,7 +145,6 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 		postBuildCaseData(caseDto, externalMessageDto);
 		postBuildHealthConditions(caseDto, externalMessageDto);
 		postBuildCaseSymptoms(caseDto, externalMessageDto);
-		postBuildCaseTherapy(caseDto, externalMessageDto);
 		postBuildActivitiesAsCase(caseDto, externalMessageDto);
 		postBuildExposure(caseDto, externalMessageDto);
 		postBuildHospitalization(caseDto, externalMessageDto);
@@ -169,6 +167,11 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 			externalMessageDto.getCaseClassification() != null ? externalMessageDto.getCaseClassification() : caseDto.getCaseClassification());
 		caseDto.setRadiographyCompatibility(externalMessageDto.getRadiographyCompatibility());
 		caseDto.setOtherDiagnosticCriteria(externalMessageDto.getOtherDiagnosticCriteria());
+
+		caseDto.setTreatmentStarted(externalMessageDto.getTreatmentStarted());
+		caseDto.setTreatmentStartDate(externalMessageDto.getTreatmentStartedDate());
+		caseDto.setTreatmentNotApplicable(Boolean.TRUE.equals(externalMessageDto.getTreatmentNotApplicable()));
+
 	}
 
 	/**
@@ -233,26 +236,6 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 
 			logger.debug("[POST BUILD CASE] Symptoms set for case with UUID: {}", caseDto.getUuid());
 		}
-	}
-
-	/**
-	 * Sets the therapy information for the case from the external message, if present.
-	 *
-	 * @param caseDto
-	 *            The case data transfer object to update.
-	 * @param externalMessageDto
-	 *            The external message containing therapy data.
-	 */
-	protected void postBuildCaseTherapy(CaseDataDto caseDto, ExternalMessageDto externalMessageDto) {
-
-		TherapyDto therapyDto = caseDto.getTherapy();
-
-		therapyDto.setTreatmentStarted(externalMessageDto.getTreatmentStarted());
-		therapyDto.setTreatmentStartDate(externalMessageDto.getTreatmentStartedDate());
-		therapyDto.setTreatmentNotApplicable(Boolean.TRUE.equals(externalMessageDto.getTreatmentNotApplicable()));
-
-		logger.debug("[POST BUILD CASE] Therapy set for case with UUID: {}", caseDto.getUuid());
-
 	}
 
 	/**
@@ -415,7 +398,7 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 					caseDto.getUuid());
 				return;
 			}
-			
+
 			// we have a facility, so we set the responsible region, district and community
 			caseDto.setResponsibleRegion(hospitalFacility.getRegion());
 			caseDto.setResponsibleDistrict(hospitalFacility.getDistrict());
