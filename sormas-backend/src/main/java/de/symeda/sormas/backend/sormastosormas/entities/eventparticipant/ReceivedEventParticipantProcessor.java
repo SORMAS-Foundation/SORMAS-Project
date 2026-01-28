@@ -30,12 +30,12 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.entities.event.SormasToSormasEventParticipantDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasEventParticipantPreview;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasEntitiesHelper;
-import de.symeda.sormas.backend.systemconfiguration.ExternalClientConfigurationEjb;
 import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
@@ -54,7 +54,7 @@ public class ReceivedEventParticipantProcessor
 	protected ReceivedEventParticipantProcessor(
 		EventParticipantService service,
 		UserService userService,
-		ExternalClientConfigurationEjb configFacade,
+		ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade,
 		SormasToSormasEventParticipantDtoValidator validator) {
 		super(service, userService, configFacade, validator);
 	}

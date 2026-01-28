@@ -50,7 +50,7 @@ import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryQueryRespon
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryResult;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.systemconfiguration.ExternalClientConfigurationFacade;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.util.ClientHelper;
 
 @Stateless
@@ -67,7 +67,7 @@ public class PatientDiaryClient {
 	private Cache<String, String> frontendAuthTokenCache;
 
 	@EJB
-	private ExternalClientConfigurationFacade configFacade;
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	@PostConstruct
 	private void init() {

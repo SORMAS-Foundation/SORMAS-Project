@@ -269,7 +269,6 @@ import de.symeda.sormas.backend.survey.SurveyService;
 import de.symeda.sormas.backend.survey.SurveyTokenFacadeEjb.SurveyTokenFacadeEjbLocal;
 import de.symeda.sormas.backend.survey.SurveyTokenService;
 import de.symeda.sormas.backend.symptoms.SymptomsService;
-import de.symeda.sormas.backend.systemconfiguration.ExternalClientConfigurationEjb;
 import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategoryEjb;
 import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategoryService;
 import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationValueEjb;

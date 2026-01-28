@@ -77,7 +77,6 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityCriteria;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.systemconfiguration.Config;
-import de.symeda.sormas.api.systemconfiguration.ExternalClientConfigurationFacade;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -196,8 +195,6 @@ public class StartupShutdownService {
 	private DocumentTemplateService documentTemplateService;
 	@Inject
 	private Event<PasswordResetEvent> passwordResetEvent;
-	@EJB
-	private ExternalClientConfigurationFacade externalClientConfiguration;
 	@EJB
 	private StartupConfigurationValidationService startupConfigurationValidationService;
 
@@ -534,7 +531,7 @@ public class StartupShutdownService {
 	}
 
 	private void createOrUpdateSymptomJournalUser() {
-		SymptomJournalConfig symptomJournalConfig = externalClientConfiguration.getSymptomJournalConfig();
+		SymptomJournalConfig symptomJournalConfig = configFacade.getSymptomJournalConfig();
 		UserConfig userConfig = symptomJournalConfig.getDefaultUser();
 		if (userConfig == null) {
 			logger.debug("Symptom journal default user not configured");
@@ -550,7 +547,7 @@ public class StartupShutdownService {
 	}
 
 	private void createOrUpdatePatientDiaryUser() {
-		PatientDiaryConfig patientDiaryConfig = externalClientConfiguration.getPatientDiaryConfig();
+		PatientDiaryConfig patientDiaryConfig = configFacade.getPatientDiaryConfig();
 		UserConfig userConfig = patientDiaryConfig.getDefaultUser();
 		if (userConfig == null) {
 			logger.debug("Patient diary default user not configured");

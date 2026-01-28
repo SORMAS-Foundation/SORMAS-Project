@@ -27,11 +27,11 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.entities.event.SormasToSormasEventDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasEventPreview;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
-import de.symeda.sormas.backend.systemconfiguration.ExternalClientConfigurationEjb;
 import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
@@ -50,7 +50,7 @@ public class ReceivedEventProcessor
 	protected ReceivedEventProcessor(
 		EventService service,
 		UserService userService,
-		ExternalClientConfigurationEjb configFacade,
+		ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade,
 		SormasToSormasEventDtoValidator validator) {
 		super(service, userService, configFacade, validator);
 	}

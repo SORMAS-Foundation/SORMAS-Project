@@ -17,15 +17,14 @@ package de.symeda.sormas.backend.sormastosormas.data.received;
 
 import java.lang.reflect.Field;
 
-import de.symeda.sormas.api.systemconfiguration.ExternalClientConfigurationFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
+import de.symeda.sormas.api.sormastosormas.entities.SormasToSormasEntityDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
-import de.symeda.sormas.api.sormastosormas.entities.SormasToSormasEntityDto;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
@@ -33,9 +32,9 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.data.validation.SormasToSormasDtoValidator;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
-import de.symeda.sormas.backend.systemconfiguration.ExternalClientConfigurationEjb;
 import de.symeda.sormas.backend.user.UserService;
 
 public abstract class ReceivedDataProcessor<ADO extends AbstractDomainObject, DTO extends SormasToSormasShareableDto, SHARED extends SormasToSormasEntityDto<DTO>, PREVIEW extends PseudonymizableDto, ENTITY extends SormasToSormasShareable, SRV extends AdoServiceWithUserFilterAndJurisdiction<ADO>, VALIDATOR extends SormasToSormasDtoValidator<DTO, SHARED, PREVIEW>> {
@@ -44,14 +43,14 @@ public abstract class ReceivedDataProcessor<ADO extends AbstractDomainObject, DT
 
 	protected SRV service;
 	protected UserService userService;
-	protected ExternalClientConfigurationFacade configFacade;
+	protected ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 	protected VALIDATOR validator;
 
 	protected ReceivedDataProcessor() {
 
 	}
 
-	protected ReceivedDataProcessor(SRV service, UserService userService, ExternalClientConfigurationFacade configFacade, VALIDATOR validator) {
+	protected ReceivedDataProcessor(SRV service, UserService userService, ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade, VALIDATOR validator) {
 		this.service = service;
 		this.userService = userService;
 		this.configFacade = configFacade;

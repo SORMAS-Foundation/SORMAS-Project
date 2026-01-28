@@ -34,7 +34,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
-import de.symeda.sormas.api.systemconfiguration.ExternalClientConfigurationFacade;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.slf4j.Logger;
@@ -59,7 +58,7 @@ public class PersonContactInfoValidator {
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
-	private ExternalClientConfigurationFacade configFacade;
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private PatientDiaryClient patientDiaryClient;
 

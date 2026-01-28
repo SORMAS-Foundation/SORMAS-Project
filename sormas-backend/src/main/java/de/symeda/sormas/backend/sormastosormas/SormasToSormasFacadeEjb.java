@@ -30,7 +30,6 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import de.symeda.sormas.api.systemconfiguration.ExternalClientConfigurationFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,9 +110,6 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	private SormasToSormasEncryptionFacadeEjbLocal encryptionService;
 	@Inject
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb;
-
-	@Inject
-	private ExternalClientConfigurationFacade externalClientConfigurationFacade;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
@@ -126,7 +122,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	@Override
 	@PermitAll
 	public String getOrganizationId() {
-		return externalClientConfigurationFacade.getS2SConfig().getId();
+		return configFacadeEjb.getS2SConfig().getId();
 	}
 
 	@Override

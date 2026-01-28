@@ -30,17 +30,14 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
-import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.externaljournal.PatientDiaryConfig;
 import de.symeda.sormas.api.externaljournal.SymptomJournalConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.systemconfiguration.Config;
-import de.symeda.sormas.api.systemconfiguration.ExternalClientConfigurationFacade;
 import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.api.utils.VersionHelper;
-import de.symeda.sormas.backend.systemconfiguration.ExternalClientConfigurationEjb;
 
 @Stateless
 @LocalBean
@@ -50,7 +47,7 @@ public class StartupConfigurationValidationService {
 
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
-	@Inject
+	@EJB
 	private ExternalClientConfigurationFacade externalClientConfiguration;
 
 	public void validateAppUrls() {
@@ -65,16 +62,15 @@ public class StartupConfigurationValidationService {
 		}
 		int[] appLegacyVersion = VersionHelper.extractVersion(appLegacyUrl);
 		if (!DataHelper.isNullOrEmpty(appLegacyUrl) && !VersionHelper.isVersion(appLegacyVersion)) {
-			throw new IllegalArgumentException(
-				"Property '" + Config.APP_LEGACY_URL + "' must contain a valid version: '" + appLegacyUrl + "'");
+			throw new IllegalArgumentException("Property '" + Config.APP_LEGACY_URL + "' must contain a valid version: '" + appLegacyUrl + "'");
 		}
 
 		// legacy must be empty or before app version
 		if (appLegacyVersion != null && appVersion != null) {
 			if (!VersionHelper.isBefore(appLegacyVersion, appVersion)) {
 				throw new IllegalArgumentException(
-					"Property '" + Config.APP_LEGACY_URL + "' must have a version smaller " + "than property '" + Config.APP_URL
-						+ "': '" + appLegacyUrl + "' - '" + appUrl + "'");
+					"Property '" + Config.APP_LEGACY_URL + "' must have a version smaller " + "than property '" + Config.APP_URL + "': '"
+						+ appLegacyUrl + "' - '" + appUrl + "'");
 			}
 		}
 
@@ -102,16 +98,16 @@ public class StartupConfigurationValidationService {
 		PatientDiaryConfig patientDiaryConfig = externalClientConfiguration.getPatientDiaryConfig();
 
 		List<String> enforceHttps = Lists.newArrayList(
-				s2sConfig.getOidcServer(),
-				symptomJournalConfig.getUrl(),
-				symptomJournalConfig.getAuthUrl(),
-				patientDiaryConfig.getUrl(),
-				patientDiaryConfig.getProbandsUrl(),
-				patientDiaryConfig.getAuthUrl(),
-				patientDiaryConfig.getFrontendAuthUrl(),
-				getAppUrl(),
-				configFacade.getUiUrl(),
-				configFacade.getSormasStatsUrl());
+			s2sConfig.getOidcServer(),
+			symptomJournalConfig.getUrl(),
+			symptomJournalConfig.getAuthUrl(),
+			patientDiaryConfig.getUrl(),
+			patientDiaryConfig.getProbandsUrl(),
+			patientDiaryConfig.getAuthUrl(),
+			patientDiaryConfig.getFrontendAuthUrl(),
+			getAppUrl(),
+			configFacade.getUiUrl(),
+			configFacade.getSormasStatsUrl());
 
 		List<String> allowHttp = Lists.newArrayList(configFacade.getExternalSurveillanceToolGatewayUrl());
 
@@ -127,25 +123,25 @@ public class StartupConfigurationValidationService {
 		}
 
 		UrlValidator enforceHttpsValidator = new UrlValidator(
-				new String[] {
-						"https" },
-				UrlValidator.ALLOW_LOCAL_URLS);
+			new String[] {
+				"https" },
+			UrlValidator.ALLOW_LOCAL_URLS);
 
 		List<String> invalidHttpsUrls =
-				enforceHttps.stream().filter(u -> !StringUtils.isBlank(u)).filter(u -> !enforceHttpsValidator.isValid(u)).collect(Collectors.toList());
+			enforceHttps.stream().filter(u -> !StringUtils.isBlank(u)).filter(u -> !enforceHttpsValidator.isValid(u)).collect(Collectors.toList());
 		if (!invalidHttpsUrls.isEmpty()) {
 			String invalid = String.join(",\n\t", invalidHttpsUrls);
 			throw new IllegalArgumentException(String.format("Invalid URLs for which HTTPS is enforced in property file:\n\t%s", invalid));
 		}
 
 		UrlValidator allowHttpValidator = new UrlValidator(
-				new String[] {
-						"https",
-						"http" },
-				UrlValidator.ALLOW_LOCAL_URLS);
+			new String[] {
+				"https",
+				"http" },
+			UrlValidator.ALLOW_LOCAL_URLS);
 
 		List<String> invalidUrls =
-				allowHttp.stream().filter(u -> !StringUtils.isBlank(u)).filter(u -> !allowHttpValidator.isValid(u)).collect(Collectors.toList());
+			allowHttp.stream().filter(u -> !StringUtils.isBlank(u)).filter(u -> !allowHttpValidator.isValid(u)).collect(Collectors.toList());
 		if (!invalidUrls.isEmpty()) {
 			String invalid = String.join(",\n\t", invalidUrls);
 			throw new IllegalArgumentException(String.format("Invalid URLs in property file:\n\t%s", invalid));

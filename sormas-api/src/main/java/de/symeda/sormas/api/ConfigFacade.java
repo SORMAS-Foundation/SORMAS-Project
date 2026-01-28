@@ -23,6 +23,9 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.externaljournal.PatientDiaryConfig;
+import de.symeda.sormas.api.externaljournal.SymptomJournalConfig;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import org.apache.commons.lang3.CharUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -191,7 +194,6 @@ public interface ConfigFacade {
 		return getAsStringOrNull(Config.APP_LEGACY_URL);
 	}
 
-
 	default boolean isDevMode() {
 		return getAsBoolean(Config.DEV_MODE);
 	}
@@ -200,12 +202,10 @@ public interface ConfigFacade {
 		return getAsBoolean(Config.CUSTOM_BRANDING);
 	}
 
-
 	@NotNull
 	default String getCustomBrandingName() {
 		return getAsString(Config.CUSTOM_BRANDING_NAME).orElse(SORMAS);
 	}
-
 
 	@Nullable
 	default String getCustomBrandingLogoPath() {
@@ -361,9 +361,9 @@ public interface ConfigFacade {
 	}
 
 	@Nullable
-    default String getCentralEtcdClientName() {
+	default String getCentralEtcdClientName() {
 		return getAsStringOrNull(Config.CENTRAL_ETCD_CLIENT_NAME);
-    }
+	}
 
 	@Nullable
 	default String getCentralEtcdClientPassword() {
@@ -380,8 +380,18 @@ public interface ConfigFacade {
 		return getAsStringOrNull(Config.CENTRAL_ETCD_HOST);
 	}
 
-
 	default boolean isCentralLocationSync() {
 		return getAsBoolean(Config.CENTRAL_LOCATION_SYNC);
 	}
+
+	SormasToSormasConfig getS2SConfig();
+
+	@Deprecated
+	boolean isExternalJournalActive();
+
+	@Deprecated
+	SymptomJournalConfig getSymptomJournalConfig();
+
+	@Deprecated
+	PatientDiaryConfig getPatientDiaryConfig();
 }

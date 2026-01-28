@@ -19,7 +19,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.backend.systemconfiguration.ExternalClientConfigurationEjb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,13 +36,13 @@ public class SormasToSormasDiscoveryService {
 
 	private final SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal sormasToSormasFacadeEjb;
 
-	private final ExternalClientConfigurationEjb configFacadeEjb;
+	private final ConfigFacadeEjbLocal configFacadeEjb;
 
 	private final EtcdCentralClient centralClient;
 
 	public SormasToSormasDiscoveryService(
 		SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal sormasToSormasFacadeEjb,
-		ExternalClientConfigurationEjb configFacadeEjb,
+		ConfigFacadeEjbLocal configFacadeEjb,
 		EtcdCentralClient centralClient) {
 		this.sormasToSormasFacadeEjb = sormasToSormasFacadeEjb;
 		this.configFacadeEjb = configFacadeEjb;

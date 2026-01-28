@@ -32,7 +32,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
-import de.symeda.sormas.api.systemconfiguration.ExternalClientConfigurationFacade;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,14 +68,14 @@ public class SormasToSormasRestClient {
 
 	private final SormasToSormasDiscoveryService sormasToSormasDiscoveryService;
 	private final SormasToSormasEncryptionFacadeEjbLocal sormasToSormasEncryptionEjb;
-	private final ExternalClientConfigurationFacade configFacadeEjb;
+	private final ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb;
 
 	private final ObjectMapper mapper;
 
 	public SormasToSormasRestClient(
 		SormasToSormasDiscoveryService sormasToSormasDiscoveryService,
 		SormasToSormasEncryptionFacadeEjbLocal sormasToSormasEncryptionEjb,
-		ExternalClientConfigurationFacade configFacadeEjb) {
+		ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb) {
 		this.sormasToSormasDiscoveryService = sormasToSormasDiscoveryService;
 		this.sormasToSormasEncryptionEjb = sormasToSormasEncryptionEjb;
 		this.configFacadeEjb = configFacadeEjb;

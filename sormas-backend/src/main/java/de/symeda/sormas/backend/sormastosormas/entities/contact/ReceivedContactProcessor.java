@@ -30,7 +30,6 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.entities.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasContactPreview;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
-import de.symeda.sormas.api.systemconfiguration.ExternalClientConfigurationFacade;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
@@ -58,7 +57,7 @@ public class ReceivedContactProcessor
 	protected ReceivedContactProcessor(
 		ContactService service,
 		UserService userService,
-		ExternalClientConfigurationFacade configFacade,
+		ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade,
 		SormasToSormasContactDtoValidator validator) {
 		super(service, userService, configFacade, validator);
 	}
