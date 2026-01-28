@@ -148,6 +148,31 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), HIV_ART, HIV, Arrays.asList(YesNoUnknown.YES), true);
 
+		// Mutual exclusivity: Current smoker and Former smoker
+		NullableOptionGroup currentSmokerField = (NullableOptionGroup) getFieldGroup().getField(CURRENT_SMOKER);
+		NullableOptionGroup formerSmokerField = (NullableOptionGroup) getFieldGroup().getField(FORMER_SMOKER);
+		if (currentSmokerField != null && formerSmokerField != null) {
+			setupMutuallyExclusiveFields(currentSmokerField, formerSmokerField);
+		}
+
+		// Auto-check immunodeficiency when Asplenia is selected
+		NullableOptionGroup aspleniaField = (NullableOptionGroup) getFieldGroup().getField(ASPLENIA);
+		NullableOptionGroup immunodeficiencyField = (NullableOptionGroup) getFieldGroup().getField(IMMUNODEFICIENCY_OTHER_THAN_HIV);
+		if (aspleniaField != null) {
+			aspleniaField.addValueChangeListener(e -> {
+				Object rawValue = e.getProperty().getValue();
+				if (rawValue instanceof Set) {
+					@SuppressWarnings("unchecked")
+					Set<Object> aspleniaValue = (Set<Object>) rawValue;
+					if (aspleniaValue.contains(YesNoUnknown.YES)) {
+						if (immunodeficiencyField != null && immunodeficiencyField.isVisible()) {
+							immunodeficiencyField.setValue(new HashSet<>(Arrays.asList(YesNoUnknown.YES)));
+						}
+					}
+				}
+			});
+		}
+
 		//Below requirement (showing the treatment year and its compliances only applicable for LUX)
 		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 			if (Disease.TUBERCULOSIS.equals(disease)) {

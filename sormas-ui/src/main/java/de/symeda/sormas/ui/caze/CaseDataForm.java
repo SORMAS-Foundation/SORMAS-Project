@@ -37,7 +37,9 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -966,11 +968,16 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				+ I18nProperties.getDescription(Descriptions.descGdpr));
 		CssStyles.style(additionalDetails, CssStyles.CAPTION_HIDDEN);
 
-		addField(CaseDataDto.PREGNANT, NullableOptionGroup.class);
+		NullableOptionGroup pregnantField = addField(CaseDataDto.PREGNANT, NullableOptionGroup.class);
 
-		addField(CaseDataDto.POSTPARTUM, NullableOptionGroup.class);
+		NullableOptionGroup postpartumField = addField(CaseDataDto.POSTPARTUM, NullableOptionGroup.class);
 		addField(CaseDataDto.TRIMESTER, NullableOptionGroup.class);
 		FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.TRIMESTER, CaseDataDto.PREGNANT, Arrays.asList(YesNoUnknown.YES), true);
+
+		// Mutual exclusivity: Pregnancy and Postpartum
+		if (pregnantField != null && postpartumField != null) {
+			setupMutuallyExclusiveFields(pregnantField, postpartumField);
+		}
 
 		ComboBox vaccinationStatusField = addField(CaseDataDto.VACCINATION_STATUS, ComboBox.class);
 
@@ -1023,8 +1030,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			vaccinationStatusInfoLabel.setDescription(infoText, ContentMode.HTML);
 			getContent().addComponent(vaccinationStatusInfoLabel, VACCINATION_STATUS_INFO_LOC);
 		}
-
-		//		getContent().addComponent(new Label("Debug vaccination"), CaseDataDto.VACCINATION_STATUS);
 		addFields(CaseDataDto.SMALLPOX_VACCINATION_SCAR, CaseDataDto.SMALLPOX_VACCINATION_RECEIVED);
 		addDateField(CaseDataDto.SMALLPOX_LAST_VACCINATION_DATE, DateField.class, 0);
 
