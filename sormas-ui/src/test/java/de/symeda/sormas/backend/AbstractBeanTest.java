@@ -33,6 +33,7 @@ import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -424,7 +425,7 @@ public abstract class AbstractBeanTest {
 	}
 
 	public ConfigFacade getConfigFacade() {
-		return getBean(ConfigFacadeEjbLocalMock.class);
+		return getBean(ConfigFacadeEjb.ConfigFacadeEjbLocal.class);
 	}
 
 	/**

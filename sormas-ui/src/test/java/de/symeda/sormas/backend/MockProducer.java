@@ -84,7 +84,7 @@ public class MockProducer implements InitialContextFactory {
 
 	private static SormasToSormasDiscoveryService sormasToSormasDiscoveryService = mock(SormasToSormasDiscoveryService.class);
 
-	static final TestHelperConfigImpl testHelperConfig = ConfigFacadeEjbLocalMock.testHelperConfig;
+	static final TestHelperConfigImpl testHelperConfig = new TestHelperConfigImpl();
 
 	// Receiving e-mail server is mocked: org. jvnet. mock_javamail. mailbox
 	private static Session mailSession;
