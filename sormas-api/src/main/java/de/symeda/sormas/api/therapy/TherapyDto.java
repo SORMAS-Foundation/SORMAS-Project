@@ -17,13 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.api.therapy;
 
-import java.util.Date;
-
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
-import de.symeda.sormas.api.utils.YesNoUnknown;
 
 @DependingOnFeatureType(featureType = FeatureType.CASE_SURVEILANCE)
 public class TherapyDto extends EntityDto {
@@ -36,16 +33,9 @@ public class TherapyDto extends EntityDto {
 	public static final String MDR_XDR_TUBERCULOSIS = "mdrXdrTuberculosis";
 	public static final String BEIJING_LINEAGE = "beijingLineage";
 
-	public static final String TREATMENT_STARTED = "treatmentStarted";
-	public static final String TREATMENT_NOT_APPLICABLE = "treatmentNotApplicable";
-
 	private boolean directlyObservedTreatment;
 	private boolean mdrXdrTuberculosis;
 	private boolean beijingLineage;
-
-	private YesNoUnknown treatmentStarted;
-	private boolean treatmentNotApplicable;
-	private Date treatmentStartDate;
 
 	public static TherapyDto build() {
 
@@ -80,29 +70,5 @@ public class TherapyDto extends EntityDto {
 
 	public void setBeijingLineage(boolean beijingLineage) {
 		this.beijingLineage = beijingLineage;
-	}
-
-	public YesNoUnknown getTreatmentStarted() {
-		return treatmentStarted;
-	}
-
-	public void setTreatmentStarted(YesNoUnknown treatmentStarted) {
-		this.treatmentStarted = treatmentStarted;
-	}
-
-	public boolean isTreatmentNotApplicable() {
-		return treatmentNotApplicable;
-	}
-
-	public void setTreatmentNotApplicable(boolean treatmentNotApplicable) {
-		this.treatmentNotApplicable = treatmentNotApplicable;
-	}
-
-	public Date getTreatmentStartDate() {
-		return treatmentStartDate;
-	}
-
-	public void setTreatmentStartDate(Date treatmentStartDate) {
-		this.treatmentStartDate = treatmentStartDate;
 	}
 }

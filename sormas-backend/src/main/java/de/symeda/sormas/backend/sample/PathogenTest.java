@@ -366,7 +366,7 @@ public class PathogenTest extends DeletableAdo {
 		this.testResultText = testResultText;
 	}
 
-	@Column(nullable = false)
+	@Column
 	public Boolean getTestResultVerified() {
 		return testResultVerified;
 	}

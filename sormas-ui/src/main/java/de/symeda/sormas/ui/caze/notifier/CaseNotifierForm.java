@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 
 import com.vaadin.data.provider.DataProvider;
+import com.vaadin.server.UserError;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -28,11 +29,14 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.notifier.NotifierDto;
-import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -61,7 +65,7 @@ public class CaseNotifierForm extends VerticalLayout {
 
     // Data objects
     private NotifierDto notifier;
-    private TherapyDto therapy;
+    private CaseDataDto caze;
 
     /**
      * Creates a new notifier form.
@@ -77,10 +81,10 @@ public class CaseNotifierForm extends VerticalLayout {
     /**
      * Creates a new notifier form with initial data.
      */
-    public CaseNotifierForm(NotifierDto notifier, TherapyDto therapy) {
+    public CaseNotifierForm(NotifierDto notifier, CaseDataDto caze) {
         this();
         this.notifier = notifier;
-        this.therapy = therapy;
+        this.caze = caze;
         populateFields();
     }
 
@@ -98,11 +102,11 @@ public class CaseNotifierForm extends VerticalLayout {
         nameLayout.setSpacing(true);
         nameLayout.setWidth(100, Unit.PERCENTAGE);
 
-        firstNameField = new TextField(I18nProperties.getPrefixCaption("Person", NotifierDto.FIRST_NAME));
+        firstNameField = new TextField(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, NotifierDto.FIRST_NAME));
         firstNameField.setRequiredIndicatorVisible(true);
         firstNameField.setWidth(100, Unit.PERCENTAGE);
 
-        lastNameField = new TextField(I18nProperties.getPrefixCaption("Person", NotifierDto.LAST_NAME));
+        lastNameField = new TextField(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, NotifierDto.LAST_NAME));
         lastNameField.setRequiredIndicatorVisible(true);
         lastNameField.setWidth(100, Unit.PERCENTAGE);
 
@@ -127,10 +131,10 @@ public class CaseNotifierForm extends VerticalLayout {
         contactLayout.setSpacing(true);
         contactLayout.setWidth(100, Unit.PERCENTAGE);
 
-        phoneField = new TextField(I18nProperties.getPrefixCaption("Person", NotifierDto.PHONE));
+        phoneField = new TextField(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, NotifierDto.PHONE));
         phoneField.setWidth(100, Unit.PERCENTAGE);
 
-        emailField = new TextField(I18nProperties.getPrefixCaption("Person", NotifierDto.EMAIL));
+        emailField = new TextField(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, NotifierDto.EMAIL));
         emailField.setWidth(100, Unit.PERCENTAGE);
 
         contactLayout.addComponents(phoneField, emailField);
@@ -139,13 +143,13 @@ public class CaseNotifierForm extends VerticalLayout {
         addComponent(contactLayout);
 
         // Address
-        addressField = new TextArea(I18nProperties.getPrefixCaption("Location", NotifierDto.ADDRESS));
+        addressField = new TextArea(I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, NotifierDto.ADDRESS));
         addressField.setRows(3);
         addressField.setWidth(100, Unit.PERCENTAGE);
         addComponent(addressField);
 
         // Notification Dates Section
-        Label datesLabel = new Label("Notifier Information");
+        Label datesLabel = new Label(I18nProperties.getCaption(Captions.Notification_notifierInformation));
         CssStyles.style(datesLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_BOTTOM_LINE);
         addComponent(datesLabel);
 
@@ -157,12 +161,12 @@ public class CaseNotifierForm extends VerticalLayout {
         notificationDateField = new DateField(I18nProperties.getCaption(Captions.Notification_dateOfNotification));
         notificationDateField.setWidth(100, Unit.PERCENTAGE);
         notificationDateField.setEnabled(false); // Read-only as it's automatically set
-        notificationDateField.setDescription("This date is automatically set based on when the notifier is created or modified");
+        notificationDateField.setDescription(I18nProperties.getString(Strings.notificationNotificationDateInformation));
 
         diagnosticDateField = new DateField(I18nProperties.getCaption(Captions.SurveillanceReport_dateOfDiagnosis));
         diagnosticDateField.setWidth(100, Unit.PERCENTAGE);
         diagnosticDateField.setEnabled(false); // Disabled as it's only available in surveillance report context
-        diagnosticDateField.setDescription("Diagnostic date is only available when editing surveillance reports, not when editing notifiers");
+        diagnosticDateField.setDescription(I18nProperties.getString(Strings.notificationDiagnosisDateInformation));
 
         dateLayout.addComponents(notificationDateField, diagnosticDateField);
         dateLayout.setExpandRatio(notificationDateField, 1);
@@ -235,16 +239,17 @@ public class CaseNotifierForm extends VerticalLayout {
 
         treatmentGroup.clear();
 
-        if (therapy != null) {
-            if (therapy.isTreatmentNotApplicable()) {
+        if (caze != null) {
+            if (caze.isTreatmentNotApplicable()) {
                 treatmentGroup.setValue(TreatmentOption.NOT_APPLICABLE);
             } else {
-                final YesNoUnknown treatmentStarted = therapy.getTreatmentStarted();
+                final YesNoUnknown treatmentStarted = caze.getTreatmentStarted();
                 if (treatmentStarted != null) {
                     treatmentGroup.setValue(TreatmentOption.forValue(treatmentStarted));
                 }
             }
         }
+
     }
 
     /**
@@ -288,8 +293,9 @@ public class CaseNotifierForm extends VerticalLayout {
     /**
      * Sets notifier data and populates form fields.
      */
-    public void setValue(NotifierDto notifier) {
+    public void setValue(NotifierDto notifier, CaseDataDto caze) {
         this.notifier = notifier;
+        this.caze = caze;
         populateFields();
     }
 
@@ -300,21 +306,21 @@ public class CaseNotifierForm extends VerticalLayout {
         boolean valid = true;
 
         if (firstNameField.getValue() == null || firstNameField.getValue().trim().isEmpty()) {
-            firstNameField.setComponentError(new com.vaadin.server.UserError("Required field"));
+            firstNameField.setComponentError(new UserError(I18nProperties.getValidationError(Validations.requiredField)));
             valid = false;
         } else {
             firstNameField.setComponentError(null);
         }
 
         if (lastNameField.getValue() == null || lastNameField.getValue().trim().isEmpty()) {
-            lastNameField.setComponentError(new com.vaadin.server.UserError("Required field"));
+            lastNameField.setComponentError(new UserError(I18nProperties.getValidationError(Validations.requiredField)));
             valid = false;
         } else {
             lastNameField.setComponentError(null);
         }
 
         if (registrationNumberField.getValue() == null || registrationNumberField.getValue().trim().isEmpty()) {
-            registrationNumberField.setComponentError(new com.vaadin.server.UserError("Required field"));
+            registrationNumberField.setComponentError(new UserError(I18nProperties.getValidationError(Validations.requiredField)));
             valid = false;
         } else {
             registrationNumberField.setComponentError(null);

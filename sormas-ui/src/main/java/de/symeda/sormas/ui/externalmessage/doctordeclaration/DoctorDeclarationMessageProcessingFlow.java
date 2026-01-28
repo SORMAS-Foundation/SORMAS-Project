@@ -44,6 +44,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
+import de.symeda.sormas.api.customizableenum.CustomEnumNotFoundException;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -62,6 +63,10 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.person.OccupationType;
+import de.symeda.sormas.api.person.PersonContactDetailDto;
+import de.symeda.sormas.api.person.PersonContactDetailType;
+import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.notifier.NotifierDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -353,8 +358,100 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 			}
 		};
 
+		HandlerCallback<CaseDataDto> postUpdatePersonCallback = new HandlerCallback<CaseDataDto>() {
+
+			@Override
+			public void done(CaseDataDto result) {
+				// Additional person processing after case creation (needed for fields that are not visible in the person creation form)
+
+				PersonDto casePerson = getExternalMessageProcessingFacade().getPersonByContext(PersonContext.CASE, result.getUuid());
+
+				if (casePerson == null) {
+					updateNotifierCallback.done(result);
+					return;
+				}
+
+				boolean doUpdate = false;
+
+				final String nameOfGuardian =
+					String
+						.format(
+							"%s %s",
+							externalMessage.getPersonGuardianFirstName() != null ? externalMessage.getPersonGuardianFirstName() : "",
+							externalMessage.getPersonGuardianLastName() != null ? externalMessage.getPersonGuardianLastName() : "")
+						.trim();
+
+				if (!nameOfGuardian.isBlank()) {
+					casePerson.setNamesOfGuardians(nameOfGuardian);
+					// we need to set both the incapacitated and emancipated fields, otherwise the person will not be shown in the UI
+					casePerson.setIncapacitated(true);
+					casePerson.setEmancipated(false);
+					doUpdate = true;
+				}
+
+				if (externalMessage.getPersonGuardianEmail() != null && !externalMessage.getPersonGuardianEmail().isBlank()) {
+					List<PersonContactDetailDto> contactDetails = casePerson.getPersonContactDetails();
+
+					if (contactDetails.stream().noneMatch(pc -> externalMessage.getPersonGuardianEmail().equals(pc.getContactInformation()))) {
+						final PersonContactDetailDto pcd = new PersonContactDetailDto();
+						pcd.setPerson(casePerson.toReference());
+						pcd.setPrimaryContact(false);
+						pcd.setPersonContactDetailType(PersonContactDetailType.EMAIL);
+						pcd.setContactInformation(externalMessage.getPersonGuardianEmail());
+						pcd.setThirdParty(true);
+						pcd.setThirdPartyRole(externalMessage.getPersonGuardianRelationship());
+						pcd.setThirdPartyName(nameOfGuardian);
+
+						contactDetails.add(pcd);
+						doUpdate = true;
+					}
+				}
+
+				if (externalMessage.getPersonGuardianPhone() != null && !externalMessage.getPersonGuardianPhone().isBlank()) {
+					List<PersonContactDetailDto> contactDetails = casePerson.getPersonContactDetails();
+
+					if (contactDetails.stream().noneMatch(pc -> externalMessage.getPersonGuardianPhone().equals(pc.getContactInformation()))) {
+						final PersonContactDetailDto pcd = new PersonContactDetailDto();
+						pcd.setPerson(casePerson.toReference());
+						pcd.setPrimaryContact(false);
+						pcd.setPersonContactDetailType(PersonContactDetailType.PHONE);
+						pcd.setContactInformation(externalMessage.getPersonGuardianPhone());
+						pcd.setThirdParty(true);
+						pcd.setThirdPartyRole(externalMessage.getPersonGuardianRelationship());
+						pcd.setThirdPartyName(nameOfGuardian);
+
+						contactDetails.add(pcd);
+						doUpdate = true;
+					}
+				}
+
+				if (externalMessage.getPersonOccupation() != null && !externalMessage.getPersonOccupation().isBlank()) {
+					try {
+						final OccupationType occupationTypeOther = getExternalMessageProcessingFacade().getOccupationTypeOther();
+						casePerson.setOccupationType(occupationTypeOther);
+						casePerson.setOccupationDetails(externalMessage.getPersonOccupation());
+						doUpdate = true;
+					} catch (CustomEnumNotFoundException e) {
+						// do nothing if OccupationType OTHER custom enum is not found
+					}
+				}
+
+				if (doUpdate) {
+					getExternalMessageProcessingFacade().updatePerson(casePerson);
+				}
+				// Chain to the notifier callback
+				updateNotifierCallback.done(result);
+			}
+
+			@Override
+			public void cancel() {
+				// Handle cancellation of the operation
+				updateNotifierCallback.cancel();
+			}
+		};
+
 		// Show the create case window with the provided data and callback
-		ExternalMessageProcessingUIHelper.showCreateCaseWindow(caze, person, externalMessage, getMapper(), updateNotifierCallback);
+		ExternalMessageProcessingUIHelper.showCreateCaseWindow(caze, person, externalMessage, getMapper(), postUpdatePersonCallback);
 	}
 
 	/**

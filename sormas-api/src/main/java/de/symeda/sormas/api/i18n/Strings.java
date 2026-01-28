@@ -462,6 +462,7 @@ public interface Strings {
 	String headingArchiveSelfReport = "headingArchiveSelfReport";
 	String headingArchiveTravelEntry = "headingArchiveTravelEntry";
 	String headingAutomaticDeletionStarted = "headingAutomaticDeletionStarted";
+	String headingAutomaticVaccinationStatusDetermination = "headingAutomaticVaccinationStatusDetermination";
 	String headingBulkEmailMaxAttachedFiles = "headingBulkEmailMaxAttachedFiles";
 	String headingBulkEmailsNoProcessedEntities = "headingBulkEmailsNoProcessedEntities";
 	String headingBulkEmailsSomeNotSent = "headingBulkEmailsSomeNotSent";
@@ -599,6 +600,7 @@ public interface Strings {
 	String headingDisableLineListing = "headingDisableLineListing";
 	String headingDiscardUnsavedChanges = "headingDiscardUnsavedChanges";
 	String headingDocumentCreated = "headingDocumentCreated";
+	String headingDoseCount = "headingDoseCount";
 	String headingDownloadDocumentTemplateGuide = "headingDownloadDocumentTemplateGuide";
 	String headingDownloadEmailTemplateGuide = "headingDownloadEmailTemplateGuide";
 	String headingDownloadErrorReport = "headingDownloadErrorReport";
@@ -696,6 +698,7 @@ public interface Strings {
 	String headingHowToMergeContacts = "headingHowToMergeContacts";
 	String headingImmunizationAdverseEvents = "headingImmunizationAdverseEvents";
 	String headingImmunizationsDeleted = "headingImmunizationsDeleted";
+	String headingImmunizationSelection = "headingImmunizationSelection";
 	String headingImmunizationsNotDeleted = "headingImmunizationsNotDeleted";
 	String headingImmunizationsNotRestored = "headingImmunizationsNotRestored";
 	String headingImmunizationsRestored = "headingImmunizationsRestored";
@@ -879,6 +882,7 @@ public interface Strings {
 	String headingSormasToSormasDuplicateDetection = "headingSormasToSormasDuplicateDetection";
 	String headingSormasToSormasShareRequestNotFound = "headingSormasToSormasShareRequestNotFound";
 	String headingSpecailCaseAccess = "headingSpecailCaseAccess";
+	String headingStatusDetermination = "headingStatusDetermination";
 	String headingStoppedFollowUp = "headingStoppedFollowUp";
 	String headingSurveillanceReports = "headingSurveillanceReports";
 	String headingSurveyGenerateDocument = "headingSurveyGenerateDocument";
@@ -1007,6 +1011,8 @@ public interface Strings {
 	String infoDatabaseExportTables = "infoDatabaseExportTables";
 	String infoDefineOutbreaks = "infoDefineOutbreaks";
 	String infoDetailedExport = "infoDetailedExport";
+	String infoDeterminedVaccinationStatusExplanation = "infoDeterminedVaccinationStatusExplanation";
+	String infoDeterminedVaccinationStatusReadOnly = "infoDeterminedVaccinationStatusReadOnly";
 	String infoDeveloperOptions = "infoDeveloperOptions";
 	String infoDeveloperOptionsContactGeneration = "infoDeveloperOptionsContactGeneration";
 	String infoDeveloperOptionsSeedUsage = "infoDeveloperOptionsSeedUsage";
@@ -1015,6 +1021,8 @@ public interface Strings {
 	String infoDocumentAlreadyExistsCannotUploadAnotherOne = "infoDocumentAlreadyExistsCannotUploadAnotherOne";
 	String infoDocumentOverride = "infoDocumentOverride";
 	String infoDontShareCheckboxAlreadyShared = "infoDontShareCheckboxAlreadyShared";
+	String infoDoseCountFromNumberOfDoses = "infoDoseCountFromNumberOfDoses";
+	String infoDoseCountFromVaccinationEntries = "infoDoseCountFromVaccinationEntries";
 	String infoDownloadCaseImportTemplate = "infoDownloadCaseImportTemplate";
 	String infoDownloadDocumentTemplateImportGuide = "infoDownloadDocumentTemplateImportGuide";
 	String infoDownloadEmailTemplateImportGuide = "infoDownloadEmailTemplateImportGuide";
@@ -1045,6 +1053,9 @@ public interface Strings {
 	String infoHowToMergeCases = "infoHowToMergeCases";
 	String infoHowToMergeContacts = "infoHowToMergeContacts";
 	String infoImmunizationPeriod = "infoImmunizationPeriod";
+	String infoImmunizationStatusAcquired = "infoImmunizationStatusAcquired";
+	String infoImmunizationValidFromClosest = "infoImmunizationValidFromClosest";
+	String infoImmunizationValidUntilNotBefore = "infoImmunizationValidUntilNotBefore";
 	String infoImportAllContinents = "infoImportAllContinents";
 	String infoImportAllCountries = "infoImportAllCountries";
 	String infoImportAllSubcontinents = "infoImportAllSubcontinents";
@@ -1084,6 +1095,7 @@ public interface Strings {
 	String infoNoSurveys = "infoNoSurveys";
 	String infoObserverMissingEmail = "infoObserverMissingEmail";
 	String infoObserverMissingEmailOrPhoneNumber = "infoObserverMissingEmailOrPhoneNumber";
+	String infoOtherImmunization = "infoOtherImmunization";
 	String infoPersonMergeConfirmation = "infoPersonMergeConfirmation";
 	String infoPersonMergeConfirmationBothShared = "infoPersonMergeConfirmationBothShared";
 	String infoPersonMergeConfirmationForNonSimilarPersons = "infoPersonMergeConfirmationForNonSimilarPersons";
@@ -1110,6 +1122,7 @@ public interface Strings {
 	String infoPopulationCollectionDate = "infoPopulationCollectionDate";
 	String infoPopulationDataView = "infoPopulationDataView";
 	String infoPopulationReferenceYear = "infoPopulationReferenceYear";
+	String infoRecoveryNaturalImmunity = "infoRecoveryNaturalImmunity";
 	String infoRestrictDiseasesDescription = "infoRestrictDiseasesDescription";
 	String infoSampleAdditionalTesting = "infoSampleAdditionalTesting";
 	String infoSampleExport = "infoSampleExport";
@@ -1146,12 +1159,14 @@ public interface Strings {
 	String infoSystemConfigurationValueDescriptionSmsAuthKey = "infoSystemConfigurationValueDescriptionSmsAuthKey";
 	String infoSystemConfigurationValueDescriptionSmsAuthSecret = "infoSystemConfigurationValueDescriptionSmsAuthSecret";
 	String infoSystemConfigurationValueDescriptionSmsSenderName = "infoSystemConfigurationValueDescriptionSmsSenderName";
+	String infoSystemConfigurationValueDescriptionUseDeterminedVaccinationStatus = "infoSystemConfigurationValueDescriptionUseDeterminedVaccinationStatus";
 	String infoTasksWithMultipleJurisdictionsSelected = "infoTasksWithMultipleJurisdictionsSelected";
 	String infoUploadDocumentTemplate = "infoUploadDocumentTemplate";
 	String infoUsageOfEditableCampaignGrids = "infoUsageOfEditableCampaignGrids";
 	String infoUserEmail = "infoUserEmail";
 	String infoUserPhoneNumber = "infoUserPhoneNumber";
 	String infoUserSyncProcess = "infoUserSyncProcess";
+	String infoVaccinationDoseCount = "infoVaccinationDoseCount";
 	String infoWeeklyReportsView = "infoWeeklyReportsView";
 	String labelActualLongSeed = "labelActualLongSeed";
 	String labelNoVaccinationDate = "labelNoVaccinationDate";
@@ -1679,6 +1694,7 @@ public interface Strings {
 	String notificationContactSymptomatic = "notificationContactSymptomatic";
 	String notificationContactWithoutCaseSymptomatic = "notificationContactWithoutCaseSymptomatic";
 	String notificationCreationNotAllowedWithoutSurveillanceReport = "notificationCreationNotAllowedWithoutSurveillanceReport";
+	String notificationDiagnosisDateInformation = "notificationDiagnosisDateInformation";
 	String notificationDiseaseChanged = "notificationDiseaseChanged";
 	String notificationEventAddedToEventGroup = "notificationEventAddedToEventGroup";
 	String notificationEventGroupCreated = "notificationEventGroupCreated";
@@ -1697,6 +1713,7 @@ public interface Strings {
 	String notificationLabSampleShippedShort = "notificationLabSampleShippedShort";
 	String notificationLabSampleShippedShortForContact = "notificationLabSampleShippedShortForContact";
 	String notificationLabSampleShippedShortForEventParticipant = "notificationLabSampleShippedShortForEventParticipant";
+	String notificationNotificationDateInformation = "notificationNotificationDateInformation";
 	String notificationPersonsUpdated = "notificationPersonsUpdated";
 	String notificationSmsSent = "notificationSmsSent";
 	String notificationTaskAssociatedCaseLink = "notificationTaskAssociatedCaseLink";

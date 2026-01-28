@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
+import javax.annotation.security.PermitAll;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -41,9 +42,6 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.ConfigFacade;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,6 +75,7 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -89,6 +88,7 @@ import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
@@ -133,6 +133,8 @@ public class ImmunizationFacadeEjb
 
 	private final Logger logger = LoggerFactory.getLogger(ImmunizationFacadeEjb.class);
 
+	private static final String USE_DETERMINED_VACCINATION_STATUS_CONFIG_KEY = "USE_DETERMINED_VACCINATION_STATUS";
+
 	@EJB
 	private DirectoryImmunizationService directoryImmunizationService;
 	@EJB
@@ -175,6 +177,8 @@ public class ImmunizationFacadeEjb
 	private SpecialCaseAccessService specialCaseAccessService;
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
+	@EJB
+	private SystemConfigurationValueFacade systemConfigurationValue;
 
 	public ImmunizationFacadeEjb() {
 	}
@@ -440,6 +444,11 @@ public class ImmunizationFacadeEjb
 		service.ensurePersisted(immunization);
 
 		onImmunizationChanged(immunization, internal);
+
+		// Update vaccination statuses for all cases of this person and disease if determined vaccination status is enabled
+		if (isUseDeterminedVaccinationStatus()) {
+			caseService.updateVaccinationStatuses(immunization.getPerson().getId(), immunization.getDisease(), null);
+		}
 
 		return toPseudonymizedDto(immunization, pseudonymizer);
 	}
@@ -801,6 +810,12 @@ public class ImmunizationFacadeEjb
 		}
 
 		return processedEntities;
+	}
+
+	@Override
+	@PermitAll
+	public boolean isUseDeterminedVaccinationStatus() {
+		return Boolean.valueOf(systemConfigurationValue.getValue(USE_DETERMINED_VACCINATION_STATUS_CONFIG_KEY));
 	}
 
 	@LocalBean

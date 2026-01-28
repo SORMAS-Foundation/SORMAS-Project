@@ -72,6 +72,7 @@ import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.disease.DiseaseVariantConverter;
 import de.symeda.sormas.api.externaldata.HasExternalData;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistory;
@@ -159,6 +160,7 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 
 	public static final String PREGNANT = "pregnant";
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
+	public static final String VACCINATION_STATUS_DETAILS = "vaccinationStatusDetails";
 	public static final String EPID_NUMBER = "epidNumber";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
@@ -255,6 +257,10 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	public static final String RADIOGRAPHY_COMPATIBILITY = "radiographyCompatibility";
 	public static final String OTHER_DIAGNOSTIC_CRITERIA = "otherDiagnosticCriteria";
 
+	public static final String TREATMENT_STARTED = "treatmentStarted";
+	public static final String TREATMENT_NOT_APPLICABLE = "treatmentNotApplicable";
+	public static final String TREATMENT_START_DATE = "treatmentStartDate";
+
 	private Person person;
 	private String description;
 	private Disease disease;
@@ -282,6 +288,9 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	private Hospitalization hospitalization;
 	private EpiData epiData;
 	private Therapy therapy;
+	private YesNoUnknown treatmentStarted;
+	private boolean treatmentNotApplicable;
+	private Date treatmentStartDate;
 	private ClinicalCourse clinicalCourse;
 	private MaternalHistory maternalHistory;
 	private PortHealthInfo portHealthInfo;
@@ -324,6 +333,7 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	private YesNoUnknown pregnant;
 
 	private VaccinationStatus vaccinationStatus;
+	private String vaccinationStatusDetails;
 	private YesNoUnknown smallpoxVaccinationScar;
 	private YesNoUnknown smallpoxVaccinationReceived;
 	private Date smallpoxLastVaccinationDate;
@@ -951,6 +961,15 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 
 	public void setVaccinationStatus(VaccinationStatus vaccination) {
 		this.vaccinationStatus = vaccination;
+	}
+
+	@Column(length = FieldConstraints.CHARACTER_LIMIT_DEFAULT)
+	public String getVaccinationStatusDetails() {
+		return vaccinationStatusDetails;
+	}
+
+	public void setVaccinationStatusDetails(String vaccinationStatusDetails) {
+		this.vaccinationStatusDetails = vaccinationStatusDetails;
 	}
 
 	@Enumerated(EnumType.STRING)
@@ -1867,5 +1886,33 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 
 	public void setOtherDiagnosticCriteria(String otherDiagnosticCriteria) {
 		this.otherDiagnosticCriteria = otherDiagnosticCriteria;
+	}
+
+	@Column
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getTreatmentStarted() {
+		return treatmentStarted;
+	}
+
+	public void setTreatmentStarted(YesNoUnknown treatmentStarted) {
+		this.treatmentStarted = treatmentStarted;
+	}
+
+	@Column
+	public boolean isTreatmentNotApplicable() {
+		return treatmentNotApplicable;
+	}
+
+	public void setTreatmentNotApplicable(boolean treatmentNotApplicable) {
+		this.treatmentNotApplicable = treatmentNotApplicable;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getTreatmentStartDate() {
+		return treatmentStartDate;
+	}
+
+	public void setTreatmentStartDate(Date treatmentStartDate) {
+		this.treatmentStartDate = treatmentStartDate;
 	}
 }
