@@ -124,12 +124,8 @@ public class SystemConfigurationValueEjb
 	@Override
 	public Optional<String> getValue(final Config key) {
 		System.out.println("SystemConfigurationValueEjb.getValue " + key);
-		LOGGER.error("SystemConfigurationValueEjb.getValue " + key);
 
 		loadDataIfEmpty();
-
-		System.out.println(configurationValuesByKey);
-		LOGGER.error("{}", configurationValuesByKey);
 
 		return Optional.ofNullable(configurationValuesByKey.get(key)).flatMap(SystemConfigurationValueProjection::getActualValue);
 	}

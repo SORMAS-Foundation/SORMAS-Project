@@ -35,7 +35,6 @@ import javax.ejb.Stateless;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -122,8 +121,6 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorForbidden));
 		}
 
-
-
 		super.share(entityUuids, options);
 	}
 
@@ -156,10 +153,11 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 			Set<Sample> samples = caze.getSamples();
 			if (samples != null && samples.stream().anyMatch(s -> s.getAssociatedContact() != null)) {
 				validationErrors.add(
-						new ValidationErrors(
-								buildCaseValidationGroupName(caze),
-								ValidationErrors
-										.create(new ValidationErrorGroup(Captions.CaseData), new ValidationErrorMessage(Validations.sormasToSormasCaseSampleHasAssociatedContact))));
+					new ValidationErrors(
+						buildCaseValidationGroupName(caze),
+						ValidationErrors.create(
+							new ValidationErrorGroup(Captions.CaseData),
+							new ValidationErrorMessage(Validations.sormasToSormasCaseSampleHasAssociatedContact))));
 			}
 		}
 

@@ -196,7 +196,7 @@ public class AuditLoggerInterceptor {
 
 		Date end = Calendar.getInstance(TimeZone.getDefault()).getTime();
 
-		auditLogger.logBackendCall(calledMethod, parameters, result, start, end);
+		de.symeda.sormas.api.FacadeProvider.auditLogger.logBackendCall(calledMethod, parameters, result, start, end);
 		return result;
 	}
 

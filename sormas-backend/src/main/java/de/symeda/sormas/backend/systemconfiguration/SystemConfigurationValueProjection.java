@@ -18,6 +18,7 @@ public class SystemConfigurationValueProjection {
 	}
 
 	public SystemConfigurationValueProjection(Config key, String value, String defaultValue) {
+		this.key = key;
 		this.value = value;
 		this.defaultValue = defaultValue;
 	}
