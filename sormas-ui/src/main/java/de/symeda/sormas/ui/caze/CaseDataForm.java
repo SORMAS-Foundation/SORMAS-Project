@@ -332,6 +332,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private FollowUpPeriodDto expectedFollowUpPeriodDto;
 	private boolean ignoreDifferentPlaceOfStayJurisdiction = false;
 	private CheckBox postMortemCB;
+	private Label vaccinationStatusInfoLabel;
 
 	public CaseDataForm(
 		String caseUuid,
@@ -1012,7 +1013,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			vaccinationStatusField.setDescription(I18nProperties.getString(Strings.infoDeterminedVaccinationStatusReadOnly));
 
 			// Add info icon with explanation of automatic computation
-			final Label vaccinationStatusInfoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+			vaccinationStatusInfoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
 			CssStyles.style(vaccinationStatusInfoLabel, CssStyles.LABEL_XLARGE, CssStyles.VSPACE_TOP_3);
 
 			// Build detailed explanation based on the outline document
@@ -1035,7 +1036,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				I18nProperties.getString(Strings.infoDoseCountFromVaccinationEntries));
 
 			vaccinationStatusInfoLabel.setDescription(infoText, ContentMode.HTML);
+			// Set the initial visibility of the info label to false it will be set to true in the medical information section
+			vaccinationStatusInfoLabel.setVisible(false);
 			getContent().addComponent(vaccinationStatusInfoLabel, VACCINATION_STATUS_INFO_LOC);
+			
 		}
 		addFields(CaseDataDto.SMALLPOX_VACCINATION_SCAR, CaseDataDto.SMALLPOX_VACCINATION_RECEIVED);
 		addDateField(CaseDataDto.SMALLPOX_LAST_VACCINATION_DATE, DateField.class, 0);
@@ -1268,6 +1272,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					Collections.singletonList(YesNoUnknown.YES),
 					true);
 			}
+		}
+
+		// Sync visibility of info label with vaccination status field
+		if (vaccinationStatusInfoLabel != null && isVisibleAllowed(CaseDataDto.VACCINATION_STATUS)) {
+			vaccinationStatusInfoLabel.setVisible(true);
 		}
 
 		if (isVisibleAllowed(CaseDataDto.OUTCOME_DATE)) {
