@@ -170,20 +170,19 @@ public class ConfigFacadeEjbTest extends AbstractBeanTest {
 	 */
 	public void testPatientDiaryConfigTokenLifetime() {
 		// property not specified
-		assertThat(getExternalClientConfigurationEjb().getPatientDiaryConfig().getTokenLifetime(), equalTo(Duration.ofSeconds(21600L)));
+		assertThat(getConfigFacade().getPatientDiaryConfig().getTokenLifetime(), equalTo(Duration.ofSeconds(21600L)));
 
 		// property specifies empty value
 		MockProducer.getProperties().remove(Config.INTERFACE_PATIENT_DIARY_TOKEN_LIFETIME_SECONDS);
-		assertThat(getExternalClientConfigurationEjb().getPatientDiaryConfig().getTokenLifetime(), equalTo(Duration.ofSeconds(21600L)));
+		assertThat(getConfigFacade().getPatientDiaryConfig().getTokenLifetime(), equalTo(Duration.ofSeconds(21600L)));
 
 		// property specifies zero
 		MockProducer.getProperties().setProperty(Config.INTERFACE_PATIENT_DIARY_TOKEN_LIFETIME_SECONDS, "0");
-		assertThat(getExternalClientConfigurationEjb().getPatientDiaryConfig().getTokenLifetime(), equalTo(Duration.ofSeconds(0L)));
+		assertThat(getConfigFacade().getPatientDiaryConfig().getTokenLifetime(), equalTo(Duration.ofSeconds(0L)));
 
 		// property specifies value > 0
 		MockProducer.getProperties().setProperty(Config.INTERFACE_PATIENT_DIARY_TOKEN_LIFETIME_SECONDS, "666");
-		assertThat(getExternalClientConfigurationEjb().getPatientDiaryConfig().getTokenLifetime(), equalTo(Duration.ofSeconds(666L)));
+		assertThat(getConfigFacade().getPatientDiaryConfig().getTokenLifetime(), equalTo(Duration.ofSeconds(666L)));
 	}
-
 
 }

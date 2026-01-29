@@ -232,7 +232,7 @@ public class MockProducer implements InitialContextFactory {
 		@Produces
 		public SormasToSormasDiscoveryService sormasToSormasDiscoveryService(
 			SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal sormasToSormasFacadeEjb,
-			ExternalClientConfigurationEjb configFacadeEjb,
+			ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb,
 			EtcdCentralClient centralClient) {
 			return sormasToSormasDiscoveryService;
 		}

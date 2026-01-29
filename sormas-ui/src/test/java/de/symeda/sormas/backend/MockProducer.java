@@ -192,7 +192,7 @@ public class MockProducer implements InitialContextFactory {
 		public SormasToSormasRestClient sormasToSormasClient(
 			SormasToSormasDiscoveryService sormasToSormasDiscoveryService,
 			SormasToSormasEncryptionFacadeEjbLocal sormasToSormasEncryptionEjb,
-			ExternalClientConfigurationEjb configFacadeEjb) {
+			ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb) {
 			return s2sRestClient;
 		}
 	}
@@ -229,7 +229,7 @@ public class MockProducer implements InitialContextFactory {
 		@Produces
 		public SormasToSormasDiscoveryService sormasToSormasDiscoveryService(
 			SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal sormasToSormasFacadeEjb,
-			ExternalClientConfigurationEjb configFacadeEjb,
+			ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb,
 			EtcdCentralClient centralClient) {
 			return sormasToSormasDiscoveryService;
 		}

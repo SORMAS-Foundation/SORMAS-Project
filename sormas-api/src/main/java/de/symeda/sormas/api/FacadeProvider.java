@@ -297,10 +297,6 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(ConfigFacade.class);
 	}
 
-	public static ExternalClientConfigurationFacade getExternalClientConfigurationFacade() {
-		return get().lookupEjbRemote(ExternalClientConfigurationFacade.class);
-	}
-
 	public static ExportFacade getExportFacade() {
 		return get().lookupEjbRemote(ExportFacade.class);
 	}

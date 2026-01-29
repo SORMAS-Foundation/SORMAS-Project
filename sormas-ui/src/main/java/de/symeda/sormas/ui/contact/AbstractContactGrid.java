@@ -172,7 +172,7 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 		((Column<ContactIndexDto, String>) getColumn(ContactIndexDto.PERSON_UUID)).setRenderer(new UuidRenderer());
 		((Column<ContactIndexDto, Date>) getColumn(ContactIndexDto.FOLLOW_UP_UNTIL)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
 
-		if (!FacadeProvider.getExternalClientConfigurationFacade().isExternalJournalActive()) {
+		if (!FacadeProvider.getConfigFacade().isExternalJournalActive()) {
 			getColumn(ContactIndexDto.SYMPTOM_JOURNAL_STATUS).setHidden(true);
 		}
 

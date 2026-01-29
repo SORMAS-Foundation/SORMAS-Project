@@ -39,7 +39,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.api.utils.VersionHelper;
 
-@Stateless
+@Stateless(name = "StartupConfigurationValidationService")
 @LocalBean
 public class StartupConfigurationValidationService {
 
@@ -47,8 +47,6 @@ public class StartupConfigurationValidationService {
 
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
-	@EJB
-	private ExternalClientConfigurationFacade externalClientConfiguration;
 
 	public void validateAppUrls() {
 		logger.info("Validating app urls");
@@ -93,9 +91,9 @@ public class StartupConfigurationValidationService {
 	}
 
 	public void validateConfigUrls() {
-		SormasToSormasConfig s2sConfig = externalClientConfiguration.getS2SConfig();
-		SymptomJournalConfig symptomJournalConfig = externalClientConfiguration.getSymptomJournalConfig();
-		PatientDiaryConfig patientDiaryConfig = externalClientConfiguration.getPatientDiaryConfig();
+		SormasToSormasConfig s2sConfig = configFacade.getS2SConfig();
+		SymptomJournalConfig symptomJournalConfig = configFacade.getSymptomJournalConfig();
+		PatientDiaryConfig patientDiaryConfig = configFacade.getPatientDiaryConfig();
 
 		List<String> enforceHttps = Lists.newArrayList(
 			s2sConfig.getOidcServer(),
@@ -161,8 +159,4 @@ public class StartupConfigurationValidationService {
 		}
 	}
 
-	@Inject
-	public void setExternalClientConfiguration(ExternalClientConfigurationEjb externalClientConfiguration) {
-		this.externalClientConfiguration = externalClientConfiguration;
-	}
 }

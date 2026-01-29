@@ -518,10 +518,6 @@ public abstract class AbstractBeanTest {
 		return getBean(StartupConfigurationValidationService.class);
 	}
 
-	public ExternalClientConfigurationEjb getExternalClientConfigurationEjb() {
-		return getBean(ExternalClientConfigurationEjb.class);
-	}
-
 	/**
 	 * Using local bean here to avoid multiple transactions in test.
 	 * 

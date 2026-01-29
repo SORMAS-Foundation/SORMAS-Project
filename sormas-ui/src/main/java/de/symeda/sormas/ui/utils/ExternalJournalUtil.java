@@ -75,13 +75,13 @@ public class ExternalJournalUtil {
 	}
 
 	private static Optional<Button> getExternalJournalUiButton(PersonDto person) {
-		if (FacadeProvider.getExternalClientConfigurationFacade().getSymptomJournalConfig().isActive()) {
+		if (FacadeProvider.getConfigFacade().getSymptomJournalConfig().isActive()) {
 			if (person.isEnrolledInExternalJournal()) {
 				return Optional.of(createSymptomJournalOptionsButton(person));
 			} else {
 				return Optional.of(createSymptomJournalRegisterButton(person));
 			}
-		} else if (FacadeProvider.getExternalClientConfigurationFacade().getPatientDiaryConfig().isActive()) {
+		} else if (FacadeProvider.getConfigFacade().getPatientDiaryConfig().isActive()) {
 			if (person.isEnrolledInExternalJournal()) {
 				return Optional.of(createPatientDiaryOptionsButton(person));
 			} else {
@@ -173,7 +173,7 @@ public class ExternalJournalUtil {
 	private static void openSymptomJournalWindow(PersonDto person) {
 		String authToken = externalJournalFacade.getSymptomJournalAuthToken();
 		BrowserFrame frame = new BrowserFrame(null, new StreamResource(() -> {
-			String formUrl = FacadeProvider.getExternalClientConfigurationFacade().getSymptomJournalConfig().getUrl();
+			String formUrl = FacadeProvider.getConfigFacade().getSymptomJournalConfig().getUrl();
 			Map<String, String> parameters = new LinkedHashMap<>();
 			parameters.put("token", authToken);
 			parameters.put("uuid", person.getUuid());
@@ -239,7 +239,7 @@ public class ExternalJournalUtil {
 	}
 
 	private static void openPatientDiaryPage(String personUuid) {
-		String url = FacadeProvider.getExternalClientConfigurationFacade().getPatientDiaryConfig().getUrl();
+		String url = FacadeProvider.getConfigFacade().getPatientDiaryConfig().getUrl();
 		url += "/data?q=" + personUuid + "&queryKey=sicFieldIdentifier";
 		String authToken = externalJournalFacade.getPatientDiaryAuthToken(true);
 		if (StringUtils.isNotEmpty(authToken)) {
