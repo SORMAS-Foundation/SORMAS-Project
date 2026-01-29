@@ -27,7 +27,9 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -96,7 +98,7 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 	public static final String CONTACT_IDENTIFICATION_SOURCE = "contactIdentificationSource";
 	public static final String CONTACT_IDENTIFICATION_SOURCE_DETAILS = "contactIdentificationSourceDetails";
 	public static final String CONTACT_OFFICER = "contactOfficer";
-	public static final String CONTACT_PROXIMITY = "contactProximity";
+	public static final String CONTACT_PROXIMITIES = "contactProximities";
 	public static final String CONTACT_PROXIMITY_DETAILS = "contactProximityDetails";
 	public static final String CONTACT_STATUS = "contactStatus";
 	public static final String DESCRIPTION = "description";
@@ -168,12 +170,12 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
 	public static final String VISITS = "visits";
 	public static final String DUPLICATE_OF = "duplicateOf";
-	public static final String SELF_REPORT ="selfReport";
-	public static final String PROPHYLAXIS_PRESCRIBED ="prophylaxisPrescribed";
-	public static final String PRESCRIBED_DRUG ="prescribedDrug";
-	public static final String PRESCRIBED_DRUG_TEXT ="prescribedDrugText";
-	public static final String VACCINATION_DOSE_ONE_DATE ="vaccinationDoseOneDate";
-	public static final String VACCINATION_DOSE_TWO_DATE ="vaccinationDoseTwoDate";
+	public static final String SELF_REPORT = "selfReport";
+	public static final String PROPHYLAXIS_PRESCRIBED = "prophylaxisPrescribed";
+	public static final String PRESCRIBED_DRUG = "prescribedDrug";
+	public static final String PRESCRIBED_DRUG_TEXT = "prescribedDrugText";
+	public static final String VACCINATION_DOSE_ONE_DATE = "vaccinationDoseOneDate";
+	public static final String VACCINATION_DOSE_TWO_DATE = "vaccinationDoseTwoDate";
 
 	private Date reportDateTime;
 	private User reportingUser;
@@ -198,7 +200,7 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 	private String contactIdentificationSourceDetails;
 	private TracingApp tracingApp;
 	private String tracingAppDetails;
-	private ContactProximity contactProximity;
+	private Set<ContactProximity> contactProximities;
 	private ContactClassification contactClassification;
 	private ContactStatus contactStatus;
 	private FollowUpStatus followUpStatus;
@@ -440,13 +442,20 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 		this.tracingAppDetails = tracingAppDetails;
 	}
 
+	@ElementCollection(fetch = FetchType.LAZY)
 	@Enumerated(EnumType.STRING)
-	public ContactProximity getContactProximity() {
-		return contactProximity;
+	@CollectionTable(name = "contact_contactproximities",
+		joinColumns = @JoinColumn(name = "contact_id", referencedColumnName = Contact.ID, nullable = false))
+	@Column(name = "contactproximity", nullable = false)
+	public Set<ContactProximity> getContactProximities() {
+		if (contactProximities == null) {
+			contactProximities = new HashSet<>();
+		}
+		return contactProximities;
 	}
 
-	public void setContactProximity(ContactProximity contactProximity) {
-		this.contactProximity = contactProximity;
+	public void setContactProximities(Set<ContactProximity> contactProximities) {
+		this.contactProximities = contactProximities;
 	}
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)

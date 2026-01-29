@@ -21,12 +21,15 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.oneOfTwoCol;
 
 import java.util.Collections;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.v7.ui.Field;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.caze.VaccineManufacturer;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -35,7 +38,6 @@ import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.UserField;
-import org.apache.commons.lang3.StringUtils;
 
 public class VaccinationEditForm extends AbstractEditForm<VaccinationDto> {
 
@@ -50,7 +52,9 @@ public class VaccinationEditForm extends AbstractEditForm<VaccinationDto> {
 		+ fluidRowLocs(VaccinationDto.PREGNANT, VaccinationDto.TRIMESTER)
 		+ fluidRowLocs(VaccinationDto.HEALTH_CONDITIONS);
 
-	public VaccinationEditForm(boolean create, Disease disease, UiFieldAccessCheckers fieldAccessCheckers) {
+	private final Sex personSex;
+
+	public VaccinationEditForm(boolean create, Disease disease, Sex personSex, UiFieldAccessCheckers fieldAccessCheckers) {
 		super(
 			VaccinationDto.class,
 			VaccinationDto.I18N_PREFIX,
@@ -59,6 +63,8 @@ public class VaccinationEditForm extends AbstractEditForm<VaccinationDto> {
 				.andWithDisease(disease)
 				.andWithFeatureType(FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations()),
 			fieldAccessCheckers);
+
+		this.personSex = personSex;
 
 		setWidth(800, Unit.PIXELS);
 
@@ -119,13 +125,18 @@ public class VaccinationEditForm extends AbstractEditForm<VaccinationDto> {
 			Collections.singletonList(VaccineManufacturer.OTHER),
 			true);
 
-		addField(VaccinationDto.PREGNANT);
-		addField(VaccinationDto.TRIMESTER);
+		Field<?> pregnantField = addField(VaccinationDto.PREGNANT);
+		Field<?> trimesterField = addField(VaccinationDto.TRIMESTER);
 		addField(VaccinationDto.HEALTH_CONDITIONS, HealthConditionsForm.class).setCaption(null);
 
 		initializeVisibilitiesAndAllowedVisibilities();
 
-		if (isVisibleAllowed(VaccinationDto.PREGNANT)) {
+		boolean isMale = Sex.MALE.equals(this.personSex);
+
+		if (isMale) {
+			pregnantField.setVisible(false);
+			trimesterField.setVisible(false);
+		} else if (isVisibleAllowed(VaccinationDto.PREGNANT)) {
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),
 				VaccinationDto.TRIMESTER,

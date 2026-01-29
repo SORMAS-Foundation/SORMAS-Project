@@ -13893,7 +13893,7 @@ CREATE TRIGGER delete_history_trigger
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('systemconfigurationcategory_history', 'id');
 ALTER TABLE systemconfigurationcategory_history OWNER TO sormas_user;
 
-INSERT INTO systemconfigurationcategory(id, uuid, changedate, creationdate, name, caption, description) 
+INSERT INTO systemconfigurationcategory(id, uuid, changedate, creationdate, name, caption, description)
 VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'GENERAL_CATEGORY', 'i18n/General/categoryGeneral', 'i18n/General/categoryGeneral');
 
 CREATE TABLE systemconfigurationvalue (
@@ -15063,7 +15063,6 @@ ALTER TABLE testreport_history ADD COLUMN straincallstatus character varying(255
 
 INSERT INTO schema_version (version_number, comment) VALUES (602, 'External message additional fields');
 
-
 ALTER TABLE systemconfigurationvalue ADD CONSTRAINT uk_systemconfigurationvalue_config_key UNIQUE (config_key);
 
 DO
@@ -15134,8 +15133,8 @@ SET treatmentstarted = t.treatmentstarted,
     treatmentstartdate = t.treatmentstartdate
 FROM therapy t
 WHERE c.therapy_id = t.id
-  AND (t.treatmentstarted IS NOT NULL 
-       OR t.treatmentnotapplicable IS NOT NULL 
+  AND (t.treatmentstarted IS NOT NULL
+       OR t.treatmentnotapplicable IS NOT NULL
        OR t.treatmentstartdate IS NOT NULL);
 -- Drop columns from therapy table
 ALTER TABLE therapy DROP COLUMN treatmentstarted;
@@ -15185,7 +15184,7 @@ INSERT INTO systemconfigurationvalue(config_key, config_value, value_description
                                      value_encrypt, data_provider, validation_message, changedate, creationdate, id,
                                      uuid)
 VALUES ('USE_DETERMINED_VACCINATION_STATUS', 'false', 'i18n/infoSystemConfigurationValueDescriptionUseDeterminedVaccinationStatus', general_category_id, true,
-        '', false, 'de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueBooleanProvider', 
+        '', false, 'de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueBooleanProvider',
         'i18n/systemConfigurationValueInvalidValue', now(), now(), nextval('entity_seq'), generate_base32_uuid());
 
 END $$
@@ -15193,4 +15192,55 @@ LANGUAGE plpgsql;
 
 INSERT INTO schema_version (version_number, comment) VALUES (607, 'Enhance Case Form vaccination status with additional detailed information #13377');
 
+-- 2025-12-18 Make testResultVerified optional in pathogentest #13557
+ALTER TABLE pathogentest ALTER COLUMN testresultverified DROP NOT NULL;
+ALTER TABLE pathogentest_history ALTER COLUMN testresultverified DROP NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (608, 'Make testResultVerified optional in pathogentest #13557');
+
+-- #13711 - Convert contact proximity from single value to multi-select collection
+CREATE TABLE contact_contactproximities (
+    contact_id bigint NOT NULL,
+    contactproximity varchar(255) NOT NULL,
+    sys_period tstzrange NOT NULL
+);
+
+ALTER TABLE contact_contactproximities OWNER TO sormas_user;
+ALTER TABLE contact_contactproximities
+    ADD CONSTRAINT pk_contact_contactproximities PRIMARY KEY (contact_id, contactproximity);
+ALTER TABLE contact_contactproximities
+    ADD CONSTRAINT fk_contact_contactproximities_contact_id
+    FOREIGN KEY (contact_id) REFERENCES contact(id);
+CREATE TABLE contact_contactproximities_history (LIKE contact_contactproximities);
+ALTER TABLE contact_contactproximities_history OWNER TO sormas_user;
+
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE OR DELETE ON contact_contactproximities
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'contact_contactproximities_history', true);
+
+DROP TRIGGER IF EXISTS delete_history_trigger_contact_contactproximities ON contact;
+CREATE TRIGGER delete_history_trigger_contact_contactproximities
+    AFTER DELETE ON contact
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('contact_contactproximities_history', 'contact_id');
+
+DROP TRIGGER IF EXISTS delete_history_trigger ON contact;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON contact
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('contact_history', 'id');
+
+DROP TRIGGER IF EXISTS delete_history_trigger_contacts_visits ON contact;
+CREATE TRIGGER delete_history_trigger_contacts_visits
+    AFTER DELETE ON contact
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('contacts_visits_history', 'contact_id');
+
+INSERT INTO contact_contactproximities (contact_id, contactproximity, sys_period)
+SELECT id, contactproximity, tstzrange(now(), null)
+FROM contact
+WHERE contactproximity IS NOT NULL;
+
+-- Drop old single-value column from both main and history tables (if exists)
+ALTER TABLE contact DROP COLUMN IF EXISTS contactproximity;
+ALTER TABLE contact_history DROP COLUMN IF EXISTS contactproximity;
+
+INSERT INTO schema_version (version_number, comment) VALUES (609, '#13711 - Change contactProximity to multi-select collection');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

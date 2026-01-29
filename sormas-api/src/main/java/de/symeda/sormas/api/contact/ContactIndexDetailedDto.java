@@ -65,7 +65,7 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 								   String cazeUuid,
 								   Disease disease, String diseaseDetails, String caseFirstName, String caseLastName, String regionName,
 								   String districtName, Date lastContactDate, ContactCategory contactCategory,
-								   ContactProximity contactProximity, ContactClassification contactClassification, ContactStatus contactStatus, Float completeness,
+								   Long id, ContactClassification contactClassification, ContactStatus contactStatus, Float completeness,
 								   FollowUpStatus followUpStatus, Date followUpUntil, SymptomJournalStatus symptomJournalStatus, VaccinationStatus vaccinationStatus, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
 								   CaseClassification caseClassification,
 								   String caseRegionName,
@@ -81,7 +81,7 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 
 		//@formatter:off
 		super(uuid, personUuid, nationalHealthId, personFirstName, personLastName, cazeUuid, disease, diseaseDetails, caseFirstName, caseLastName,
-			regionName, districtName, lastContactDate, contactCategory, contactProximity, contactClassification, contactStatus,
+			regionName, districtName, lastContactDate, contactCategory, id, contactClassification, contactStatus,
 				completeness, followUpStatus, followUpUntil, symptomJournalStatus, vaccinationStatus, contactOfficerUuid, reportingUserUuid, reportDateTime, caseClassification,
 			caseRegionName, caseDistrictName, changeDate, externalID, externalToken, internalToken, caseReferenceNumber, deletionReason, otherDeleteReason,isInJurisdiction, isCaseInJurisdiction , visitCount,
 				prophylaxisPrescribed, prescribedDrug, prescribedDrugText);

@@ -108,7 +108,7 @@ public class ContactListCriteriaBuilder {
 			joins.getDistrict().get(District.NAME),
 			contact.get(Contact.LAST_CONTACT_DATE),
 			contact.get(Contact.CONTACT_CATEGORY),
-			contact.get(Contact.CONTACT_PROXIMITY),
+			contact.get(Contact.ID),
 			contact.get(Contact.CONTACT_CLASSIFICATION),
 			contact.get(Contact.CONTACT_STATUS),
 			contact.get(Contact.COMPLETENESS),
@@ -183,7 +183,7 @@ public class ContactListCriteriaBuilder {
 		switch (sortProperty.propertyName) {
 		case ContactIndexDto.UUID:
 		case ContactIndexDto.LAST_CONTACT_DATE:
-		case ContactIndexDto.CONTACT_PROXIMITY:
+		case ContactIndexDto.CONTACT_PROXIMITIES:
 		case ContactIndexDto.CONTACT_CATEGORY:
 		case ContactIndexDto.CONTACT_CLASSIFICATION:
 		case ContactIndexDto.CONTACT_STATUS:

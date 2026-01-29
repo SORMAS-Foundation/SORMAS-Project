@@ -372,12 +372,12 @@ public class PathogenTestController {
 		Map<Disease, List<PathogenTestDto>> testsByDisease = pathogenTests.stream().collect(Collectors.groupingBy(PathogenTestDto::getTestedDisease));
 		Optional<PathogenTestDto> positiveWithSameDisease = testsByDisease.getOrDefault(caze.getDisease(), Collections.emptyList())
 			.stream()
-			.filter(t -> t.getTestResult() == PathogenTestResultType.POSITIVE && t.getTestResultVerified())
+			.filter(t -> t.getTestResult() == PathogenTestResultType.POSITIVE && Boolean.TRUE.equals(t.getTestResultVerified()))
 			.findFirst();
 
 		Optional<PathogenTestDto> negativeWithSameDisease = testsByDisease.getOrDefault(caze.getDisease(), Collections.emptyList())
 			.stream()
-			.filter(t -> t.getTestResult() == PathogenTestResultType.NEGATIVE && t.getTestResultVerified())
+			.filter(t -> t.getTestResult() == PathogenTestResultType.NEGATIVE && Boolean.TRUE.equals(t.getTestResultVerified()))
 			.findFirst();
 
 		PathogenTestDto resultedPathogenTest;
@@ -401,7 +401,7 @@ public class PathogenTestController {
 			List<PathogenTestDto> tests = testsByDisease.get(disease);
 
 			Optional<PathogenTestDto> positiveWithOtherDisease =
-				tests.stream().filter(t -> t.getTestResult() == PathogenTestResultType.POSITIVE && t.getTestResultVerified()).findFirst();
+				tests.stream().filter(t -> t.getTestResult() == PathogenTestResultType.POSITIVE && Boolean.TRUE.equals(t.getTestResultVerified())).findFirst();
 
 			if (positiveWithOtherDisease.isPresent()) {
 				List<CaseDataDto> duplicatedCases =
@@ -441,12 +441,12 @@ public class PathogenTestController {
 		Map<Disease, List<PathogenTestDto>> testsByDisease = pathogenTests.stream().collect(Collectors.groupingBy(PathogenTestDto::getTestedDisease));
 		Optional<PathogenTestDto> positiveWithSameDisease = testsByDisease.getOrDefault(contact.getDisease(), Collections.emptyList())
 			.stream()
-			.filter(t -> t.getTestResult() == PathogenTestResultType.POSITIVE && t.getTestResultVerified())
+			.filter(t -> t.getTestResult() == PathogenTestResultType.POSITIVE && Boolean.TRUE.equals(t.getTestResultVerified()))
 			.findFirst();
 
 		Optional<PathogenTestDto> negativeWithSameDisease = testsByDisease.getOrDefault(contact.getDisease(), Collections.emptyList())
 			.stream()
-			.filter(t -> t.getTestResult() == PathogenTestResultType.NEGATIVE && t.getTestResultVerified())
+			.filter(t -> t.getTestResult() == PathogenTestResultType.NEGATIVE && Boolean.TRUE.equals(t.getTestResultVerified()))
 			.findFirst();
 
 		final boolean caseCreationPossible = UiUtil.permitted(FeatureType.CASE_SURVEILANCE, UserRight.CASE_CREATE);
@@ -467,7 +467,7 @@ public class PathogenTestController {
 				List<PathogenTestDto> tests = testsByDisease.get(disease);
 
 				Optional<PathogenTestDto> positiveWithOtherDisease =
-					tests.stream().filter(t -> t.getTestResult() == PathogenTestResultType.POSITIVE && t.getTestResultVerified()).findFirst();
+					tests.stream().filter(t -> t.getTestResult() == PathogenTestResultType.POSITIVE && Boolean.TRUE.equals(t.getTestResultVerified())).findFirst();
 				if (positiveWithOtherDisease.isPresent()) {
 					List<CaseDataDto> duplicatedCases =
 						FacadeProvider.getCaseFacade().getDuplicatesWithPathogenTest(contact.getPerson(), positiveWithOtherDisease.get());
@@ -504,12 +504,12 @@ public class PathogenTestController {
 		Map<Disease, List<PathogenTestDto>> testsByDisease = pathogenTests.stream().collect(Collectors.groupingBy(PathogenTestDto::getTestedDisease));
 		Optional<PathogenTestDto> positiveWithSameDisease = testsByDisease.getOrDefault(eventDisease, Collections.emptyList())
 			.stream()
-			.filter(t -> t.getTestResult() == PathogenTestResultType.POSITIVE && t.getTestResultVerified())
+			.filter(t -> t.getTestResult() == PathogenTestResultType.POSITIVE && Boolean.TRUE.equals(t.getTestResultVerified()))
 			.findFirst();
 
 		Optional<PathogenTestDto> negativeWithSameDisease = testsByDisease.getOrDefault(eventDisease, Collections.emptyList())
 			.stream()
-			.filter(t -> t.getTestResult() == PathogenTestResultType.NEGATIVE && t.getTestResultVerified())
+			.filter(t -> t.getTestResult() == PathogenTestResultType.NEGATIVE && Boolean.TRUE.equals(t.getTestResultVerified()))
 			.findFirst();
 
 		final boolean caseCreationPossible = UiUtil.permitted(FeatureType.CASE_SURVEILANCE, UserRight.CASE_CREATE);
@@ -531,7 +531,7 @@ public class PathogenTestController {
 				List<PathogenTestDto> tests = testsByDisease.get(disease);
 
 				Optional<PathogenTestDto> positiveWithOtherDisease =
-					tests.stream().filter(t -> t.getTestResult() == PathogenTestResultType.POSITIVE && t.getTestResultVerified()).findFirst();
+					tests.stream().filter(t -> t.getTestResult() == PathogenTestResultType.POSITIVE && Boolean.TRUE.equals(t.getTestResultVerified())).findFirst();
 				if (positiveWithOtherDisease.isPresent() && UiUtil.enabled(FeatureType.CASE_SURVEILANCE)) {
 					List<CaseDataDto> duplicatedCases = FacadeProvider.getCaseFacade()
 						.getDuplicatesWithPathogenTest(eventParticipant.getPerson().toReference(), positiveWithOtherDisease.get());

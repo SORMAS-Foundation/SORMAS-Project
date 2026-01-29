@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -939,8 +940,10 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 		boolean changeStatus = contact.getFollowUpStatus() != FollowUpStatus.CANCELED && contact.getFollowUpStatus() != FollowUpStatus.LOST;
 		boolean statusChangedBySystem = false;
 
-		ContactProximity contactProximity = contact.getContactProximity();
-		if (!diseaseConfigurationFacade.hasFollowUp(disease) || (contactProximity != null && !contactProximity.hasFollowUp())) {
+		Set<ContactProximity> contactProximities = contact.getContactProximities();
+		if (!diseaseConfigurationFacade.hasFollowUp(disease)
+			|| (contactProximities != null && !contactProximities.isEmpty()
+				&& contactProximities.stream().noneMatch(ContactProximity::hasFollowUp))) {
 			contact.setFollowUpUntil(null);
 			contact.setOverwriteFollowUpUntil(false);
 			if (changeStatus) {
@@ -2025,5 +2028,33 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 		}
 
 		return super.getDeleteReferenceField(deletionReference);
+	}
+
+	/**
+	 * Fetches contactProximities for a list of contact IDs.
+	 * This is needed because @ElementCollection fields cannot be directly selected in Criteria API multiselect queries.
+	 *
+	 * @param contactIds List of contact IDs
+	 * @return Map of contact ID to Set of ContactProximity
+	 */
+	public Map<Long, Set<ContactProximity>> getContactProximitiesByContactIds(List<Long> contactIds) {
+		if (contactIds == null || contactIds.isEmpty()) {
+			return new HashMap<>();
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Contact> cq = cb.createQuery(Contact.class);
+		Root<Contact> from = cq.from(Contact.class);
+
+		cq.where(from.get(Contact.ID).in(contactIds));
+		cq.select(from);
+
+		List<Contact> contacts = em.createQuery(cq).getResultList();
+
+		return contacts.stream()
+			.collect(Collectors.toMap(
+				Contact::getId,
+				contact -> contact.getContactProximities() != null ? new HashSet<>(contact.getContactProximities()) : new HashSet<>()
+			));
 	}
 }
