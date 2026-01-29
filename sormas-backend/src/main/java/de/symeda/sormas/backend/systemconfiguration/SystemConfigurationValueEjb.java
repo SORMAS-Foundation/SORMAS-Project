@@ -69,7 +69,6 @@ import de.symeda.sormas.backend.util.RightsAllowed;
  */
 @Singleton(name = "SystemConfigurationValueFacade")
 @TransactionManagement(TransactionManagementType.CONTAINER)
-@RightsAllowed(UserRight._SYSTEM_CONFIGURATION)
 @AuditIgnore
 public class SystemConfigurationValueEjb
 	extends

@@ -17,11 +17,12 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.AroundTimeout;
 import javax.interceptor.InvocationContext;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 import org.apache.commons.collections4.SetUtils;
 import org.hl7.fhir.r4.model.AuditEvent;
@@ -33,9 +34,6 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.BaseAdoService;
 
 public class AuditLoggerInterceptor {
-
-	@EJB
-	AuditLoggerEjb.AuditLoggerEjbLocal auditLogger;
 
 	private static final Reflections reflections;
 
@@ -196,8 +194,18 @@ public class AuditLoggerInterceptor {
 
 		Date end = Calendar.getInstance(TimeZone.getDefault()).getTime();
 
-		de.symeda.sormas.api.FacadeProvider.auditLogger.logBackendCall(calledMethod, parameters, result, start, end);
+		getAuditLogger().logBackendCall(calledMethod, parameters, result, start, end);
 		return result;
+	}
+
+	private AuditLoggerEjb.AuditLoggerEjbLocal getAuditLogger() {
+		try {
+			InitialContext ctx = new InitialContext();
+			// Use java:module for LOCAL lookup within same EJB module
+			return (AuditLoggerEjb.AuditLoggerEjbLocal) ctx.lookup("java:module/AuditLoggerEjb");
+		} catch (NamingException e) {
+			throw new RuntimeException("Failed to lookup AuditLoggerEjb: " + e.getMessage(), e);
+		}
 	}
 
 }
