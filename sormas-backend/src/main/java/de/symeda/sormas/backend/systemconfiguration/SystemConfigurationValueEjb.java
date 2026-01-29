@@ -22,12 +22,10 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.security.PermitAll;
-import javax.ejb.DependsOn;
 import javax.ejb.EJB;
 import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Singleton;
-import javax.ejb.Startup;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
@@ -69,8 +67,6 @@ import de.symeda.sormas.backend.util.RightsAllowed;
  * Provides methods to manage system configuration settings.
  */
 @Singleton(name = "SystemConfigurationValueFacade")
-@Startup
-@DependsOn("StartupShutdownService")
 @TransactionManagement(TransactionManagementType.CONTAINER)
 @RightsAllowed(UserRight._SYSTEM_CONFIGURATION)
 public class SystemConfigurationValueEjb
