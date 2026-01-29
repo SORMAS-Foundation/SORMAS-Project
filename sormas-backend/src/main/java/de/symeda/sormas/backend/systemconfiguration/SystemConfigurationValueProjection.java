@@ -8,6 +8,7 @@ import de.symeda.sormas.api.systemconfiguration.Config;
 import net.minidev.json.annotate.JsonIgnore;
 
 public class SystemConfigurationValueProjection {
+
 	private Config key;
 
 	private String value;
@@ -16,8 +17,7 @@ public class SystemConfigurationValueProjection {
 	public SystemConfigurationValueProjection() {
 	}
 
-	public SystemConfigurationValueProjection(Config key,
-											  String value, String defaultValue) {
+	public SystemConfigurationValueProjection(Config key, String value, String defaultValue) {
 		this.value = value;
 		this.defaultValue = defaultValue;
 	}
@@ -42,5 +42,10 @@ public class SystemConfigurationValueProjection {
 	@JsonProperty("actualValue")
 	String getActualValueAsString() {
 		return getActualValue().orElse(null);
+	}
+
+	@Override
+	public String toString() {
+		return "SystemConfigurationValueProjection{" + "key=" + key + ", value='" + value + '\'' + ", defaultValue='" + defaultValue + '\'' + '}';
 	}
 }

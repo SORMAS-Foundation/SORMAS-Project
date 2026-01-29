@@ -15219,6 +15219,10 @@ UPDATE systemconfigurationvalue
 SET default_value = 'SORMAS Support'
 WHERE config_key = 'EMAIL_SENDER_NAME';
 
+UPDATE systemconfigurationvalue
+SET default_value = 'false'
+WHERE config_key = 'USE_DETERMINED_VACCINATION_STATUS';
+
 DO
 $$
     DECLARE
@@ -16039,7 +16043,6 @@ $$
     END
 $$
 LANGUAGE plpgsql;
-
 
 INSERT INTO schema_version (version_number, comment)
 VALUES (609, 'Migrating sormas.properties to system configurations')

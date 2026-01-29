@@ -24,23 +24,23 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.inject.Inject;
 
-import de.symeda.sormas.api.externaljournal.PatientDiaryConfig;
-import de.symeda.sormas.api.externaljournal.SymptomJournalConfig;
-import de.symeda.sormas.api.externaljournal.UserConfig;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
-import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationValueEjb;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.audit.AuditIgnore;
+import de.symeda.sormas.api.externaljournal.PatientDiaryConfig;
+import de.symeda.sormas.api.externaljournal.SymptomJournalConfig;
+import de.symeda.sormas.api.externaljournal.UserConfig;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationValueEjb;
 
 @AuditIgnore
+@Stateless(name = "ConfigFacade")
 public class ConfigFacadeEjb implements ConfigFacade {
 
 	public static final String COUNTRY_SEPARATION_CHAR = "-";

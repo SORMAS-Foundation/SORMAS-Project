@@ -41,6 +41,7 @@ import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.systemconfiguration.Config;
@@ -69,6 +70,7 @@ import de.symeda.sormas.backend.util.RightsAllowed;
 @Singleton(name = "SystemConfigurationValueFacade")
 @TransactionManagement(TransactionManagementType.CONTAINER)
 @RightsAllowed(UserRight._SYSTEM_CONFIGURATION)
+@AuditIgnore
 public class SystemConfigurationValueEjb
 	extends
 	AbstractBaseEjb<SystemConfigurationValue, SystemConfigurationValueDto, SystemConfigurationValueIndexDto, SystemConfigurationValueReferenceDto, SystemConfigurationValueService, SystemConfigurationValueCriteria>
@@ -121,8 +123,13 @@ public class SystemConfigurationValueEjb
 	@PermitAll
 	@Override
 	public Optional<String> getValue(final Config key) {
+		System.out.println("SystemConfigurationValueEjb.getValue " + key);
+		LOGGER.error("SystemConfigurationValueEjb.getValue " + key);
 
 		loadDataIfEmpty();
+
+		System.out.println(configurationValuesByKey);
+		LOGGER.error("{}", configurationValuesByKey);
 
 		return Optional.ofNullable(configurationValuesByKey.get(key)).flatMap(SystemConfigurationValueProjection::getActualValue);
 	}
