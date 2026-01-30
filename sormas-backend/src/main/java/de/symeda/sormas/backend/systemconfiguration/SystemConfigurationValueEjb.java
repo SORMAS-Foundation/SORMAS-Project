@@ -121,17 +121,24 @@ public class SystemConfigurationValueEjb
 	 */
 	@PermitAll
 	@Override
-	public Optional<String> getValue(final Config key) {
+	public String getValue(final Config key) {
 		System.out.println("SystemConfigurationValueEjb.getValue " + key);
 
 		loadDataIfEmpty();
 
-		return Optional.ofNullable(configurationValuesByKey.get(key)).flatMap(SystemConfigurationValueProjection::getActualValue);
+		SystemConfigurationValueProjection systemConfigurationValueProjection = configurationValuesByKey.get(key);
+
+		if (systemConfigurationValueProjection == null) {
+			return null;
+		}
+
+		return systemConfigurationValueProjection.getActualValueOrNull();
 	}
 
 	@PermitAll
 	public void loadDataIfEmpty() {
-		if (configurationValuesByKey.isEmpty()) {
+		LOGGER.error("ALWAYS LOADED for debugging purposes");
+		if (true || configurationValuesByKey.isEmpty()) {
 			loadData();
 		}
 	}

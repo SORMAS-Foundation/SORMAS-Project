@@ -21,6 +21,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.ejb.DependsOn;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -41,6 +42,7 @@ import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationValueEjb;
 
 @AuditIgnore
 @Stateless(name = "ConfigFacade")
+@DependsOn("SystemConfigurationCategoryFacade")
 public class ConfigFacadeEjb implements ConfigFacade {
 
 	public static final String COUNTRY_SEPARATION_CHAR = "-";
@@ -60,7 +62,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	private <T> Optional<T> getTypedValueFor(Config config, Function<String, T> parsingFct) {
-		return systemConfigurationValueEjb.getValue(config).map(value -> {
+		return Optional.ofNullable(systemConfigurationValueEjb.getValue(config)).map(value -> {
 			logger.debug("Value [{}] for config [{}]", value, config);
 			T result = parsingFct.apply(value);
 

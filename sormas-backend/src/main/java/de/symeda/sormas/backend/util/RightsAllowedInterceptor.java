@@ -17,9 +17,7 @@ package de.symeda.sormas.backend.util;
 
 import java.util.HashMap;
 
-import javax.annotation.Resource;
 import javax.annotation.security.PermitAll;
-import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
@@ -31,15 +29,11 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
-import de.symeda.sormas.backend.user.CurrentUserService;
 
 /**
  * Implementation for @RightsAllowed annotation to mimic @RightsAllowed
  */
 public class RightsAllowedInterceptor {
-
-	@Resource
-	private SessionContext sessionContext;
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -80,6 +74,13 @@ public class RightsAllowedInterceptor {
 			for (String right : rightsAllowed.value()) {
 				if (UserRight._SYSTEM.equals(right)) {
 					// UserRight._SYSTEM is used with @RunAs
+					SessionContext sessionContext = BackendFacadeProvider.getSessionContextSafely();
+
+					if (sessionContext == null) {
+						logger.info("SessionContext is null therefore nothing to check as it is expected during application startup");
+						return context.proceed();
+					}
+
 					if (sessionContext.isCallerInRole(right)) {
 						hasAnyRight = true;
 						break;
@@ -97,7 +98,7 @@ public class RightsAllowedInterceptor {
 			}
 
 			if (!hasAnyRight) {
-				logger.debug("Missing user rights: {}", String.join(", ", rightsAllowed.value()));
+				logger.info("Missing user rights: {}", String.join(", ", rightsAllowed.value()));
 				throw new AccessDeniedException(I18nProperties.getString(Strings.errorForbidden));
 			}
 		}
@@ -108,4 +109,5 @@ public class RightsAllowedInterceptor {
 		 */
 		return context.proceed();
 	}
+
 }

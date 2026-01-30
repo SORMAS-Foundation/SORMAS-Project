@@ -21,18 +21,20 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
+import javax.ejb.Remote;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.externaljournal.PatientDiaryConfig;
-import de.symeda.sormas.api.externaljournal.SymptomJournalConfig;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import org.apache.commons.lang3.CharUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import de.symeda.sormas.api.externaljournal.PatientDiaryConfig;
+import de.symeda.sormas.api.externaljournal.SymptomJournalConfig;
 import de.symeda.sormas.api.geo.GeoLatLon;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.systemconfiguration.Config;
 
+@Remote
 public interface ConfigFacade {
 
 	String SORMAS = "SORMAS";
@@ -125,7 +127,7 @@ public interface ConfigFacade {
 
 	@NotNull
 	default String getSormasInstanceName() {
-		return getAsBoolean(Config.CUSTOM_BRANDING) ? getAsStringOrThrow(Config.CUSTOM_BRANDING_NAME) : SORMAS;
+		return isCustomBranding() ? getAsStringOrThrow(Config.CUSTOM_BRANDING_NAME) : SORMAS;
 	}
 
 	@NotNull
@@ -179,7 +181,7 @@ public interface ConfigFacade {
 		return getAsStringOrNull(Config.GENERATED_FILES_PATH);
 	}
 
-	@Nullable
+	@NotNull
 	default String getCustomFilesPath() {
 		return getAsStringOrNull(Config.CUSTOM_FILES_PATH);
 	}

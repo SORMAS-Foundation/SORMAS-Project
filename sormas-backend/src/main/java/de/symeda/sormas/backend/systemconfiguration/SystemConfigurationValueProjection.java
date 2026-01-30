@@ -41,7 +41,7 @@ public class SystemConfigurationValueProjection {
 	}
 
 	@JsonProperty("actualValue")
-	String getActualValueAsString() {
+	String getActualValueOrNull() {
 		return getActualValue().orElse(null);
 	}
 

@@ -978,3 +978,12 @@ VALUES ('USE_DETERMINED_VACCINATION_STATUS', 'false', 1, true,
         RANDOM_UUID(), 'i18n/systemConfigurationValueDescription.USE_DETERMINED_VACCINATION_STATUS', 'false')
 ON CONFLICT DO NOTHING;
 
+
+INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_pattern,
+                                     value_encrypt, data_provider, validation_message, changedate, creationdate, id,
+                                     uuid, value_description, default_value)
+VALUES ('MENU_BACKGROUND_COLOR', 'default', 1, true,
+        '^(\d)+$', false, null,
+        'i18n/systemConfigurationValueValidation.MENU_BACKGROUND_COLOR', now(), now(), nextval('entity_seq'),
+        RANDOM_UUID(), 'i18n/systemConfigurationValueDescription.MENU_BACKGROUND_COLOR', 'default')
+ON CONFLICT DO NOTHING;

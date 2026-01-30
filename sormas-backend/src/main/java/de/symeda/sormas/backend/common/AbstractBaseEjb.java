@@ -21,6 +21,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.AnnotationBasedFieldAccessChecker.SpecialAccessCheck;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.BackendFacadeProvider;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
@@ -35,8 +36,6 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 	protected UserService userService;
 	protected Class<ADO> adoClass;
 	protected Class<DTO> dtoClass;
-	@Inject
-	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	protected AbstractBaseEjb() {
 	}
@@ -143,24 +142,28 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 	}
 
 	protected Pseudonymizer<DTO> createPseudonymizer(List<ADO> adoList) {
-		return Pseudonymizer.getDefault(userService, configFacade.getCountryCode());
+		return Pseudonymizer.getDefault(userService, BackendFacadeProvider.getConfigFacade().getCountryCode());
 	}
 
 	protected <T> Pseudonymizer<T> createGenericPseudonymizer() {
-		return Pseudonymizer.getDefault(userService, configFacade.getCountryCode());
+		return Pseudonymizer.getDefault(userService, BackendFacadeProvider.getConfigFacade().getCountryCode());
 	}
 
 	protected <T> Pseudonymizer<T> createGenericPseudonymizer(SpecialAccessCheck<T> specialAccessCheck) {
-		return Pseudonymizer.getDefault(userService, specialAccessCheck, configFacade.getCountryCode());
+		return Pseudonymizer.getDefault(userService, specialAccessCheck, BackendFacadeProvider.getConfigFacade().getCountryCode());
 	}
 
 	protected <T> Pseudonymizer<T> createGenericPlaceholderPseudonymizer() {
-		return Pseudonymizer.getDefault(userService, I18nProperties.getCaption(Captions.inaccessibleValue), configFacade.getCountryCode());
+		return Pseudonymizer
+			.getDefault(userService, I18nProperties.getCaption(Captions.inaccessibleValue), BackendFacadeProvider.getConfigFacade().getCountryCode());
 	}
 
 	protected <T> Pseudonymizer<T> createGenericPlaceholderPseudonymizer(SpecialAccessCheck<T> specialAccessCheck) {
-		Pseudonymizer<T> aDefault = Pseudonymizer
-			.getDefault(userService, specialAccessCheck, I18nProperties.getCaption(Captions.inaccessibleValue), configFacade.getCountryCode());
+		Pseudonymizer<T> aDefault = Pseudonymizer.getDefault(
+			userService,
+			specialAccessCheck,
+			I18nProperties.getCaption(Captions.inaccessibleValue),
+			BackendFacadeProvider.getConfigFacade().getCountryCode());
 		return aDefault;
 	}
 

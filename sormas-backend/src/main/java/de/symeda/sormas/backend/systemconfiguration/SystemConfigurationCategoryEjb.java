@@ -58,7 +58,6 @@ import de.symeda.sormas.backend.util.RightsAllowed;
  */
 @Stateless(name = "SystemConfigurationCategoryFacade")
 @PermitAll
-@RightsAllowed(UserRight._SYSTEM_CONFIGURATION)
 @AuditIgnore
 public class SystemConfigurationCategoryEjb
 	extends

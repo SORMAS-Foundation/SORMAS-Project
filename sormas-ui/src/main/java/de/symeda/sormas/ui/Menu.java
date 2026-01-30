@@ -26,7 +26,6 @@ import java.util.function.Predicate;
 
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.systemconfiguration.Config;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -53,6 +52,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.user.UserSettingsForm;
@@ -163,9 +163,9 @@ public class Menu extends CssLayout {
 	}
 
 	private void defineCustomColorBackgroundIfSystemConfigured() {
-		Optional<String> backgroundColor = FacadeProvider.getConfigFacade().getAsString(Config.MENU_BACKGROUND_COLOR)
-				.filter(StringUtils::isNotBlank)
-				.filter(Predicate.not(DEFAULT_BACKGROUND_COLOR_NAME::equals));
+		Optional<String> backgroundColor = Optional.ofNullable(FacadeProvider.getConfigFacade().getAsStringOrNull(Config.MENU_BACKGROUND_COLOR))
+			.filter(StringUtils::isNotBlank)
+			.filter(Predicate.not(DEFAULT_BACKGROUND_COLOR_NAME::equals));
 
 		if (backgroundColor.isEmpty()) {
 			// no need to configure anything as we can keep the default color.
@@ -186,7 +186,7 @@ public class Menu extends CssLayout {
 	}
 
 	private static void defineMenuSubtitleIfSystemConfigured(VerticalLayout topContainer) {
-		Optional<String> menuSubtitle = FacadeProvider.getConfigFacade().getAsString(Config.MENU_SUBTITLE);
+		Optional<String> menuSubtitle = Optional.ofNullable(FacadeProvider.getConfigFacade().getAsStringOrNull(Config.MENU_SUBTITLE));
 
 		if (menuSubtitle.isEmpty()) {
 			// no need to configure anything as no subtitled must be added
