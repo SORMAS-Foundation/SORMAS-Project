@@ -30,7 +30,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.util.ModelConstants;
 
-@Stateless
+@Stateless(name = "CurrentUserService")
 @LocalBean
 @AuditIgnore
 public class CurrentUserService {

@@ -24,6 +24,7 @@ import javax.interceptor.InvocationContext;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import de.symeda.sormas.backend.util.BackendFacadeProvider;
 import org.apache.commons.collections4.SetUtils;
 import org.hl7.fhir.r4.model.AuditEvent;
 import org.reflections.Reflections;
@@ -194,18 +195,8 @@ public class AuditLoggerInterceptor {
 
 		Date end = Calendar.getInstance(TimeZone.getDefault()).getTime();
 
-		getAuditLogger().logBackendCall(calledMethod, parameters, result, start, end);
+		BackendFacadeProvider.getAuditLogger().logBackendCall(calledMethod, parameters, result, start, end);
 		return result;
-	}
-
-	private AuditLoggerEjb.AuditLoggerEjbLocal getAuditLogger() {
-		try {
-			InitialContext ctx = new InitialContext();
-			// Use java:module for LOCAL lookup within same EJB module
-			return (AuditLoggerEjb.AuditLoggerEjbLocal) ctx.lookup("java:module/AuditLoggerEjb");
-		} catch (NamingException e) {
-			throw new RuntimeException("Failed to lookup AuditLoggerEjb: " + e.getMessage(), e);
-		}
 	}
 
 }

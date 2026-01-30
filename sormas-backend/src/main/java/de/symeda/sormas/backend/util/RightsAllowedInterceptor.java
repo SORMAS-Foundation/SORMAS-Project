@@ -40,8 +40,6 @@ public class RightsAllowedInterceptor {
 
 	@Resource
 	private SessionContext sessionContext;
-	@EJB
-	private CurrentUserService currentUserService;
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -92,7 +90,7 @@ public class RightsAllowedInterceptor {
 					 * 1. It's slow due to the same reason that lead us to implementing this
 					 * 2. It wouldn't work anyway, because roles need to be initialized by user any javax annotation (e.g. @DeclareRoles)
 					 */
-				} else if (currentUserService.hasUserRight(userRightValues.get(right))) {
+				} else if (BackendFacadeProvider.getCurrentUserService().hasUserRight(userRightValues.get(right))) {
 					hasAnyRight = true;
 					break;
 				}
