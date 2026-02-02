@@ -57,6 +57,8 @@ import de.symeda.sormas.api.user.UserDto;
 
 public final class VaadinUiUtil {
 
+	public static final String FRONT_ELEMENT_STYLE_NAME = "front-element";
+
 	private VaadinUiUtil() {
 		// Hide Utility Class Constructor
 	}
@@ -69,6 +71,20 @@ public final class VaadinUiUtil {
 		window.center();
 
 		return window;
+	}
+
+	/**
+	 * Enforces the popup to be in front of other modals.
+	 * Internally uses CSS's z-index to make it work.
+	 * 
+	 * @return Window that will stay at front.
+	 */
+	public static Window createForegroundPopupWindow() {
+		Window popupWindow = createPopupWindow();
+
+		popupWindow.setStyleName(FRONT_ELEMENT_STYLE_NAME);
+
+		return popupWindow;
 	}
 
 	public static Window showSimplePopupWindow(String caption, String contentText) {
@@ -640,7 +656,7 @@ public final class VaadinUiUtil {
 
 	public static void addGdprMessageOnClick(TextArea textArea) {
 		AtomicBoolean gdprMessageTriggered = new AtomicBoolean(false);
-		Window subWindowGdpR = VaadinUiUtil.createPopupWindow();
+		Window subWindowGdpR = createForegroundPopupWindow();
 
 		textArea.addFocusListener(i -> {
 			showGdprWindow(textArea, gdprMessageTriggered, subWindowGdpR);
@@ -655,12 +671,11 @@ public final class VaadinUiUtil {
 
 	public static void addGdprMessageOnClick(RichTextArea richTextArea) {
 		AtomicBoolean gdprMessageTriggered = new AtomicBoolean(false);
-		Window subWindowGdpR = VaadinUiUtil.createPopupWindow();
+		Window subWindowGdpR = VaadinUiUtil.createForegroundPopupWindow();
 
 		richTextArea.addValueChangeListener(event -> {
 			if (!gdprMessageTriggered.get()) {
 				showGdprWindow(richTextArea, gdprMessageTriggered, subWindowGdpR);
-				subWindowGdpR.focus();
 				gdprMessageTriggered.set(true);
 			}
 		});
@@ -696,6 +711,7 @@ public final class VaadinUiUtil {
 			buttonLayout.setComponentAlignment(buttonGdpr, Alignment.BOTTOM_RIGHT);
 			buttonLayout.setExpandRatio(buttonGdpr, 0);
 			UI.getCurrent().addWindow(subWindowGdpR);
+			subWindowGdpR.focus();
 		}
 	}
 }
