@@ -15,21 +15,13 @@
 
 package de.symeda.sormas.backend.audit;
 
-import java.io.File;
-
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.NOPLogger;
-
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.core.joran.spi.JoranException;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 
 /**
  * Provides a configurable log sink for the SORMAS audit trail.
@@ -38,8 +30,8 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 @LocalBean
 public class LogSink {
 
-	@EJB
-	ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
+//	@EJB
+//	ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	private static final Logger logger = LoggerFactory.getLogger(LogSink.class);
 
@@ -55,26 +47,27 @@ public class LogSink {
 
 	@PostConstruct
 	private void setup() {
-		String fileName = configFacade.getAuditLoggerConfig();
-
-		if (fileName == null || fileName.equals("")) {
-			setupNopLogger();
-			return;
-		}
-
-		File file = new File(fileName);
-		JoranConfigurator configurator = new JoranConfigurator();
-		LoggerContext context = new LoggerContext();
-		configurator.setContext(context);
-
-		try {
-			configurator.doConfigure(file);
-		} catch (JoranException e) {
-			logger.error("Could not setup audit logger: ", e);
-			setupNopLogger();
-			return;
-		}
-		auditLogger = context.getLogger("Audit");
+		setupNopLogger();
+//		String fileName = configFacade.getAuditLoggerConfig();
+//
+//		if (fileName == null || fileName.equals("")) {
+//			setupNopLogger();
+//			return;
+//		}
+//
+//		File file = new File(fileName);
+//		JoranConfigurator configurator = new JoranConfigurator();
+//		LoggerContext context = new LoggerContext();
+//		configurator.setContext(context);
+//
+//		try {
+//			configurator.doConfigure(file);
+//		} catch (JoranException e) {
+//			logger.error("Could not setup audit logger: ", e);
+//			setupNopLogger();
+//			return;
+//		}
+//		auditLogger = context.getLogger("Audit");
 	}
 
 	public Logger getAuditLogger() {

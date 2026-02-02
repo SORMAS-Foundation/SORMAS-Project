@@ -7,6 +7,7 @@ import javax.naming.NamingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.backend.audit.AuditLoggerEjb;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.user.CurrentUserService;
@@ -64,6 +65,15 @@ public class BackendFacadeProvider {
 		try {
 			// Use java:module for LOCAL lookup within same EJB module
 			return (CurrentUserService) getInstance().ic.lookup("java:module/CurrentUserService");
+		} catch (NamingException e) {
+			throw new RuntimeException("Failed to lookup AuditLoggerEjb: " + e.getMessage(), e);
+		}
+	}
+
+	public static SystemConfigurationValueFacade getSystemConfigurationValueFacade() {
+		try {
+			// Use java:module for LOCAL lookup within same EJB module
+			return (SystemConfigurationValueFacade) getInstance().ic.lookup("java:module/SystemConfigurationValueFacade");
 		} catch (NamingException e) {
 			throw new RuntimeException("Failed to lookup AuditLoggerEjb: " + e.getMessage(), e);
 		}

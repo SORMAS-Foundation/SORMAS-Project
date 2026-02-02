@@ -22,7 +22,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.ejb.DependsOn;
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
@@ -39,6 +38,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.systemconfiguration.Config;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationValueEjb;
+import de.symeda.sormas.backend.util.BackendFacadeProvider;
 
 @AuditIgnore
 @Stateless(name = "ConfigFacade")
@@ -48,7 +48,6 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String COUNTRY_SEPARATION_CHAR = "-";
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	@EJB
 	private SystemConfigurationValueFacade systemConfigurationValueEjb;
 
 	@Override
@@ -62,7 +61,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	private <T> Optional<T> getTypedValueFor(Config config, Function<String, T> parsingFct) {
-		return Optional.ofNullable(systemConfigurationValueEjb.getValue(config)).map(value -> {
+		return Optional.ofNullable(getSystemConfigurationValueEjb().getValue(config)).map(value -> {
 			logger.debug("Value [{}] for config [{}]", value, config);
 			T result = parsingFct.apply(value);
 
@@ -70,6 +69,14 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 			return result;
 		});
+	}
+
+	private SystemConfigurationValueFacade getSystemConfigurationValueEjb() {
+		if (systemConfigurationValueEjb == null) {
+			systemConfigurationValueEjb = BackendFacadeProvider.getSystemConfigurationValueFacade();
+		}
+
+		return systemConfigurationValueEjb;
 	}
 
 	@Override
