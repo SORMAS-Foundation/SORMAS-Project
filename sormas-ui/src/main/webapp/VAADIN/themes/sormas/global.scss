@@ -534,4 +534,8 @@
   .underline {
     text-decoration: underline;
   }
+
+  .front-element {
+    z-index: 99999 !important;
+  }
 }
