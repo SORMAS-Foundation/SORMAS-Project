@@ -33,7 +33,9 @@ public class DiseaseConfigurationGrid extends FilteredGrid<DiseaseConfigurationI
 		super(DiseaseConfigurationIndexDto.class);
 		setSizeFull();
 
-		setLazyDataProvider(FacadeProvider.getDiseaseConfigurationFacade()::getIndexList, FacadeProvider.getDiseaseConfigurationFacade()::count);
+		setEagerDataProvider(FacadeProvider.getDiseaseConfigurationFacade()::getIndexList);
+		setInEagerMode(true);
+
 		setCriteria(criteria);
 
 		setColumns(
@@ -51,6 +53,8 @@ public class DiseaseConfigurationGrid extends FilteredGrid<DiseaseConfigurationI
 			DiseaseConfigurationIndexDto.EXTENDED_CLASSIFICATION_MULTI,
 			DiseaseConfigurationIndexDto.AUTOMATIC_SAMPLE_ASSIGNMENT_THRESHOLD);
 
+		getColumn(DiseaseConfigurationIndexDto.AGE_GROUPS).setSortable(false);
+
 		addEditColumn(e -> ControllerProvider.getDiseaseConfirgurationController().editDiseaseConfiguration(e.getUuid()));
 
 		for (Column<?, ?> column : getColumns()) {
@@ -64,6 +68,7 @@ public class DiseaseConfigurationGrid extends FilteredGrid<DiseaseConfigurationI
 		getColumn(DiseaseConfigurationIndexDto.EXTENDED_CLASSIFICATION).setRenderer(new BooleanRenderer());
 		getColumn(DiseaseConfigurationIndexDto.EXTENDED_CLASSIFICATION_MULTI).setRenderer(new BooleanRenderer());
 		getColumn(DiseaseConfigurationIndexDto.AGGREGATE_REPORTING_ENABLED).setRenderer(new BooleanRenderer());
+
 	}
 
 	public void reload() {

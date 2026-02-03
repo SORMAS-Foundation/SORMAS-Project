@@ -26,6 +26,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -37,6 +38,7 @@ import javax.ejb.LockType;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
@@ -53,6 +55,7 @@ import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
 import de.symeda.sormas.api.disease.DiseaseConfigurationIndexDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.common.entities.EntitySortUtils;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -60,6 +63,21 @@ import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "DiseaseConfigurationFacade")
 public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade {
+
+	public static final Map<String, BiFunction<CriteriaBuilder, Root<DiseaseConfiguration>, Expression<?>>> SORTABLE_FIELDS_DICTIONARY =
+		EntitySortUtils.defaultSort(
+			DiseaseConfiguration.DISEASE,
+			DiseaseConfiguration.ACTIVE,
+			DiseaseConfiguration.PRIMARY_DISEASE,
+			DiseaseConfiguration.CASE_SURVEILLANCE_ENABLED,
+			DiseaseConfiguration.AGGREGATE_REPORTING_ENABLED,
+			DiseaseConfiguration.FOLLOW_UP_ENABLED,
+			DiseaseConfiguration.FOLLOW_UP_DURATION,
+			DiseaseConfiguration.CASE_FOLLOW_UP_DURATION,
+			DiseaseConfiguration.EVENT_PARTICIPANT_FOLLOW_UP_DURATION,
+			DiseaseConfiguration.EXTENDED_CLASSIFICATION,
+			DiseaseConfiguration.EXTENDED_CLASSIFICATION_MULTI,
+			DiseaseConfiguration.AUTOMATIC_SAMPLE_ASSIGNMENT_THRESHOLD);
 
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -135,16 +153,23 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 			cq.where(filter);
 		}
 
-		cq.orderBy(cb.asc(root.get(DiseaseConfiguration.DISEASE)), cb.asc(root.get(DiseaseConfiguration.ACTIVE)));
+		if (!sortProperties.isEmpty()) {
+			cq.orderBy(sortProperties.stream().map(sortProperty -> {
+				String sortPropertyName = sortProperty.propertyName;
+				final Expression<?> expression = SORTABLE_FIELDS_DICTIONARY.get(sortPropertyName).apply(cb, root);
+				if (expression == null) {
+					logger.error("Invalid sort property {}.", sortPropertyName);
+					throw new IllegalArgumentException(sortPropertyName);
+				}
+				return sortProperty.ascending ? cb.asc(expression) : cb.desc(expression);
+			}).collect(Collectors.toList()));
+		} else {
+			cq.orderBy(cb.asc(root.get(DiseaseConfiguration.DISEASE)), cb.asc(root.get(DiseaseConfiguration.ACTIVE)));
+		}
 
 		cq.select(root);
 
-		List<DiseaseConfigurationIndexDto> resultList = getResultList(service.getEntityManager(), cq, first, max, this::toIndexDto);
-		for (DiseaseConfigurationIndexDto dto : resultList) {
-
-		}
-
-		return resultList;
+		return getResultList(service.getEntityManager(), cq, first, max, this::toIndexDto);
 	}
 
 	private DiseaseConfigurationIndexDto toIndexDto(DiseaseConfiguration entity) {
