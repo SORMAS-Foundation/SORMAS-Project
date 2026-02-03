@@ -20,6 +20,6 @@ public class EnumSortUtils {
 	}
 
 	public static <T extends Enum<?>> Comparator<T> enumNameComparator() {
-		return Comparator.comparing(Enum::name, String::compareToIgnoreCase);
+		return Comparator.comparing(Enum::name, String::compareTo);
 	}
 }
