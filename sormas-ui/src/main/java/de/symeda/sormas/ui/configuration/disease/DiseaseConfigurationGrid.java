@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.ui.configuration.disease;
 
+import static de.symeda.sormas.ui.EnumSortUtils.comparingOnEnumField;
+
 import java.util.List;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -71,6 +73,9 @@ public class DiseaseConfigurationGrid extends FilteredGrid<DiseaseConfigurationI
 		getColumn(DiseaseConfigurationIndexDto.EXTENDED_CLASSIFICATION).setRenderer(new BooleanRenderer());
 		getColumn(DiseaseConfigurationIndexDto.EXTENDED_CLASSIFICATION_MULTI).setRenderer(new BooleanRenderer());
 		getColumn(DiseaseConfigurationIndexDto.AGGREGATE_REPORTING_ENABLED).setRenderer(new BooleanRenderer());
+
+		getColumn(DiseaseConfigurationIndexDto.DISEASE)
+			.setComparator((o1, o2) -> comparingOnEnumField(DiseaseConfigurationIndexDto::getDisease).compare(o1, o2));
 
 	}
 

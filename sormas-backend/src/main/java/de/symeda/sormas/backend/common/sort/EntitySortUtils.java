@@ -1,4 +1,4 @@
-package de.symeda.sormas.backend.common.entities;
+package de.symeda.sormas.backend.common.sort;
 
 import java.util.Arrays;
 import java.util.Map;
