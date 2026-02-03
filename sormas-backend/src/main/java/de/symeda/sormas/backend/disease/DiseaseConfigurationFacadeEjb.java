@@ -153,14 +153,16 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 			cq.where(filter);
 		}
 
-		if (!sortProperties.isEmpty()) {
+		if (CollectionUtils.isNotEmpty(sortProperties)) {
 			cq.orderBy(sortProperties.stream().map(sortProperty -> {
 				String sortPropertyName = sortProperty.propertyName;
-				final Expression<?> expression = SORTABLE_FIELDS_DICTIONARY.get(sortPropertyName).apply(cb, root);
-				if (expression == null) {
+				BiFunction<CriteriaBuilder, Root<DiseaseConfiguration>, Expression<?>> fct = SORTABLE_FIELDS_DICTIONARY.get(sortPropertyName);
+				if (fct == null) {
 					logger.error("Invalid sort property {}.", sortPropertyName);
 					throw new IllegalArgumentException(sortPropertyName);
 				}
+
+				final Expression<?> expression = fct.apply(cb, root);
 				return sortProperty.ascending ? cb.asc(expression) : cb.desc(expression);
 			}).collect(Collectors.toList()));
 		} else {
