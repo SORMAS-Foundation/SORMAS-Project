@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.ui.configuration.disease;
 
+import java.util.List;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.disease.DiseaseConfigurationCriteria;
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
@@ -33,10 +35,11 @@ public class DiseaseConfigurationGrid extends FilteredGrid<DiseaseConfigurationI
 		super(DiseaseConfigurationIndexDto.class);
 		setSizeFull();
 
-		setEagerDataProvider(FacadeProvider.getDiseaseConfigurationFacade()::getIndexList);
 		setInEagerMode(true);
 
 		setCriteria(criteria);
+
+		setDataProvider(FacadeProvider.getDiseaseConfigurationFacade().getIndexList(criteria, null, null, List.of()).stream());
 
 		setColumns(
 			DiseaseConfigurationIndexDto.DISEASE,
