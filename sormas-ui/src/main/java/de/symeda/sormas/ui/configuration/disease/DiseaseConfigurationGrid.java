@@ -41,7 +41,7 @@ public class DiseaseConfigurationGrid extends FilteredGrid<DiseaseConfigurationI
 
 		setCriteria(criteria);
 
-		setDataProvider(FacadeProvider.getDiseaseConfigurationFacade().getIndexList(criteria, null, null, List.of()).stream());
+		setEagerDataProvider();
 
 		setColumns(
 			DiseaseConfigurationIndexDto.DISEASE,
@@ -79,7 +79,11 @@ public class DiseaseConfigurationGrid extends FilteredGrid<DiseaseConfigurationI
 
 	}
 
+	private void setEagerDataProvider() {
+		setDataProvider(FacadeProvider.getDiseaseConfigurationFacade().getIndexList(getCriteria(), null, null, List.of()).stream());
+	}
+
 	public void reload() {
-		getDataProvider().refreshAll();
+		setEagerDataProvider();
 	}
 }
