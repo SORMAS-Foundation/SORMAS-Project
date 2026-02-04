@@ -15,6 +15,10 @@
 
 package de.symeda.sormas.ui.configuration.disease;
 
+import static de.symeda.sormas.ui.EnumSortUtils.comparingOnEnumField;
+
+import java.util.List;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.disease.DiseaseConfigurationCriteria;
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
@@ -33,8 +37,11 @@ public class DiseaseConfigurationGrid extends FilteredGrid<DiseaseConfigurationI
 		super(DiseaseConfigurationIndexDto.class);
 		setSizeFull();
 
-		setLazyDataProvider(FacadeProvider.getDiseaseConfigurationFacade()::getIndexList, FacadeProvider.getDiseaseConfigurationFacade()::count);
+		setInEagerMode(true);
+
 		setCriteria(criteria);
+
+		setEagerDataProvider();
 
 		setColumns(
 			DiseaseConfigurationIndexDto.DISEASE,
@@ -51,6 +58,8 @@ public class DiseaseConfigurationGrid extends FilteredGrid<DiseaseConfigurationI
 			DiseaseConfigurationIndexDto.EXTENDED_CLASSIFICATION_MULTI,
 			DiseaseConfigurationIndexDto.AUTOMATIC_SAMPLE_ASSIGNMENT_THRESHOLD);
 
+		getColumn(DiseaseConfigurationIndexDto.AGE_GROUPS).setSortable(false);
+
 		addEditColumn(e -> ControllerProvider.getDiseaseConfirgurationController().editDiseaseConfiguration(e.getUuid()));
 
 		for (Column<?, ?> column : getColumns()) {
@@ -64,9 +73,17 @@ public class DiseaseConfigurationGrid extends FilteredGrid<DiseaseConfigurationI
 		getColumn(DiseaseConfigurationIndexDto.EXTENDED_CLASSIFICATION).setRenderer(new BooleanRenderer());
 		getColumn(DiseaseConfigurationIndexDto.EXTENDED_CLASSIFICATION_MULTI).setRenderer(new BooleanRenderer());
 		getColumn(DiseaseConfigurationIndexDto.AGGREGATE_REPORTING_ENABLED).setRenderer(new BooleanRenderer());
+
+		getColumn(DiseaseConfigurationIndexDto.DISEASE)
+			.setComparator((o1, o2) -> comparingOnEnumField(DiseaseConfigurationIndexDto::getDisease).compare(o1, o2));
+
+	}
+
+	private void setEagerDataProvider() {
+		setDataProvider(FacadeProvider.getDiseaseConfigurationFacade().getIndexList(getCriteria(), null, null, List.of()).stream());
 	}
 
 	public void reload() {
-		getDataProvider().refreshAll();
+		setEagerDataProvider();
 	}
 }

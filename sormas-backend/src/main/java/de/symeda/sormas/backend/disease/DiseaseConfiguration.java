@@ -27,6 +27,13 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 	public static final String PRIMARY_DISEASE = "primaryDisease";
 	public static final String CASE_SURVEILLANCE_ENABLED = "caseSurveillanceEnabled";
 	public static final String AGGREGATE_REPORTING_ENABLED = "aggregateReportingEnabled";
+	public static final String FOLLOW_UP_ENABLED = "followUpEnabled";
+	public static final String FOLLOW_UP_DURATION = "followUpDuration";
+	public static final String CASE_FOLLOW_UP_DURATION = "caseFollowUpDuration";
+	public static final String EVENT_PARTICIPANT_FOLLOW_UP_DURATION = "eventParticipantFollowUpDuration";
+	public static final String EXTENDED_CLASSIFICATION = "extendedClassification";
+	public static final String EXTENDED_CLASSIFICATION_MULTI = "extendedClassificationMulti";
+	public static final String AUTOMATIC_SAMPLE_ASSIGNMENT_THRESHOLD = "automaticSampleAssignmentThreshold";
 
 	private Disease disease;
 	private Boolean active;
