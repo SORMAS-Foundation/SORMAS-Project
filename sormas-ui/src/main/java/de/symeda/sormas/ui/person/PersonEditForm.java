@@ -521,18 +521,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), PersonDto.EDUCATION_DETAILS, PersonDto.EDUCATION_TYPE, Arrays.asList(EducationType.OTHER), true);
 
-		FieldHelper.addSoftRequiredStyle(
-			presentCondition,
-			sex,
-			deathDate,
-			deathPlaceDesc,
-			deathPlaceType,
-			causeOfDeathField,
-			causeOfDeathDiseaseField,
-			causeOfDeathDetailsField,
-			burialDate,
-			burialPlaceDesc,
-			burialConductor);
 		FieldHelper.setVisibleWhen(getFieldGroup(), PersonDto.WORK_PLACE_TEXT, PersonDto.WORK_PLACE, WorkPlace.OTHER, true);
 
 		// Set initial visibilities
