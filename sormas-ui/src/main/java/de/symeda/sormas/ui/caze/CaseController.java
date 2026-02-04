@@ -1423,8 +1423,7 @@ public class CaseController {
 			new TherapyForm(caseDataDto, caseDataDto.getDisease(), caseDataDto.isPseudonymized(), caseDataDto.isInJurisdiction(), isEditAllowed);
 		therapyForm.setValue(caseDataDto.getTherapy());
 
-		CommitDiscardWrapperComponent<TherapyForm> editView =
-			new CommitDiscardWrapperComponent<TherapyForm>(therapyForm, UiUtil.permitted(UserRight.CASE_EDIT), therapyForm.getFieldGroup());
+		CommitDiscardWrapperComponent<TherapyForm> editView = CommitDiscardWrapperComponent.withoutButtons(therapyForm, therapyForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			CaseDataDto cazeDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
@@ -1614,14 +1613,14 @@ public class CaseController {
 			return PresentCondition.UNKNOWN;
 		}
 		switch (outcome) {
-			case DECEASED:
-				return PresentCondition.DEAD;
-			case RECOVERED:
-				return PresentCondition.ALIVE;
-			case NO_OUTCOME:
-			case UNKNOWN:
-			default:
-				return PresentCondition.UNKNOWN;
+		case DECEASED:
+			return PresentCondition.DEAD;
+		case RECOVERED:
+			return PresentCondition.ALIVE;
+		case NO_OUTCOME:
+		case UNKNOWN:
+		default:
+			return PresentCondition.UNKNOWN;
 		}
 	}
 

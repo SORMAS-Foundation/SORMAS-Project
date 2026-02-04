@@ -33,8 +33,9 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 public class PrescriptionGrid extends Grid implements V7AbstractGrid<PrescriptionCriteria> {
 
 	private static final String ACTION_BTN_ID = "edit";
-	private static final String VIEW_BTN_ID = "view";
 	private static final String DOCUMENT_TREATMENT_BTN_ID = "documentTreatment";
+
+	public static final String MIN_ROW_HEIGHT_STYLE_NAME = "min-row-height";
 
 	private PrescriptionCriteria prescriptionCriteria = new PrescriptionCriteria();
 
@@ -115,6 +116,9 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 					.openPrescriptionEditForm((PrescriptionIndexDto) e.getItemId(), this::reload, isEditAllowed, isDeleteAllowed);
 			}
 		});
+
+		// without this the first time new elements are added they will not be correctly displayed
+		setStyleName(MIN_ROW_HEIGHT_STYLE_NAME);
 	}
 
 	@SuppressWarnings("unchecked")
