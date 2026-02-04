@@ -25,6 +25,7 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
@@ -156,14 +157,15 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		if (CollectionUtils.isNotEmpty(sortProperties)) {
 			cq.orderBy(sortProperties.stream().map(sortProperty -> {
 				String sortPropertyName = sortProperty.propertyName;
-				BiFunction<CriteriaBuilder, Root<DiseaseConfiguration>, Expression<?>> fct = SORTABLE_FIELDS_DICTIONARY.get(sortPropertyName);
-				if (fct == null) {
-					logger.error("Invalid sort property {}.", sortPropertyName);
-					throw new IllegalArgumentException(sortPropertyName);
-				}
-
-				final Expression<?> expression = fct.apply(cb, root);
-				return sortProperty.ascending ? cb.asc(expression) : cb.desc(expression);
+				Expression<?> sortExpression = Optional.ofNullable(SORTABLE_FIELDS_DICTIONARY.get(sortPropertyName))
+					.map(fct -> fct.apply(cb, root))
+					.orElseThrow(
+						() -> new IllegalArgumentException(
+							String.format(
+								"Invalid sort property: [%s] for [%s]. If must be sorted, then must be added into SORTABLE_FIELDS_DICTIONARY ",
+								sortPropertyName,
+								DiseaseConfiguration.class.getSimpleName())));
+				return sortProperty.ascending ? cb.asc(sortExpression) : cb.desc(sortExpression);
 			}).collect(Collectors.toList()));
 		} else {
 			cq.orderBy(cb.asc(root.get(DiseaseConfiguration.DISEASE)), cb.asc(root.get(DiseaseConfiguration.ACTIVE)));
