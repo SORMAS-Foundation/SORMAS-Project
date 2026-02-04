@@ -117,7 +117,7 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 			}
 		});
 
-		// without this the first time new elements are added they will not be correctly displayed
+		// without this, the first time new elements are added they will not be correctly displayed as the row is not high enough.
 		setStyleName(MIN_ROW_HEIGHT_STYLE_NAME);
 	}
 
