@@ -3,6 +3,8 @@ package de.symeda.sormas.ui;
 import java.util.Comparator;
 import java.util.function.Function;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * Warning by default Vaadin uses {@link Comparable#compareTo( Object)}
  * By default, enums are sorted using {@link Enum#ordinal()}, see {@link Enum#compareTo( Enum)} which is really a bad pick for sorting,
@@ -16,10 +18,10 @@ public class EnumSortUtils {
 	}
 
 	public static <T, U extends Enum<?>> Comparator<T> comparingOnEnumField(Function<? super T, ? extends U> keyExtractor) {
-		return (o1, o2) -> enumNameComparator().compare(keyExtractor.apply(o1), keyExtractor.apply(o2));
+		return Comparator.nullsLast(Comparator.comparing(keyExtractor, enumNameComparator()));
 	}
 
 	public static <T extends Enum<?>> Comparator<T> enumNameComparator() {
-		return Comparator.comparing(Enum::name, String::compareTo);
+		return Comparator.nullsLast(Comparator.comparing(Enum::name, StringUtils::compare));
 	}
 }
