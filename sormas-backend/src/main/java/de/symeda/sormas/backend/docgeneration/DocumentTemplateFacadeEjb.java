@@ -19,7 +19,11 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -229,6 +233,11 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 					continue;
 				}
 
+				// check if the entity is from a general.
+				if (rootEntityType == RootEntityType.ROOT_GENERAL) {
+					fillGeneralValues(documentVariables, properties, propertyKey);
+				}
+
 				Object entity = entities.getEntity(rootEntityType);
 				if (entity instanceof HasUuid) {
 					if (documentWorkflow.isDocx() || propertyKey.contains(propertySeparator)) {
@@ -282,6 +291,33 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		}
 		properties.put("F", new ObjectFormatter());
 		return properties;
+	}
+
+	private void fillGeneralValues(DocumentVariables documentVariables, Properties properties, String propertyKey) {
+		// finding the general property key. Based on the type, formatStyle is deciding.
+		// general properties are allowed only doc-formatted files.
+		Optional<String> generalPropertyOpt = documentVariables.getVariables()
+			.stream()
+			.filter(e -> e.startsWith(RootEntityType.ROOT_GENERAL.getEntityName() + "."))
+			.filter(e -> e.equals(propertyKey))
+			.findAny();
+
+		if (generalPropertyOpt.isPresent()) {
+			String generalProperty = generalPropertyOpt.get();
+			String dateType = generalProperty.substring(generalProperty.lastIndexOf('.') + 1);
+			FormatStyle formatStyle;
+			switch (dateType) {
+			case "medium":
+				formatStyle = FormatStyle.MEDIUM;
+				break;
+			case "short":
+			default:
+				formatStyle = FormatStyle.SHORT;
+			}
+			String propertyValue =
+				LocalDate.now().format(DateTimeFormatter.ofLocalizedDate(formatStyle).withLocale(I18nProperties.getUserLanguage().getLocale()));
+			properties.setProperty(generalProperty, propertyValue);
+		}
 	}
 
 	private byte[] generateDocumentDocx(File templateFile, Properties properties) throws DocumentTemplateException {
