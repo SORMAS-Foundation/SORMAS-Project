@@ -534,4 +534,12 @@
   .underline {
     text-decoration: underline;
   }
+
+  .front-element {
+    z-index: 99999 !important;
+  }
+
+  .min-row-height {
+    min-height: 79px;
+  }
 }
