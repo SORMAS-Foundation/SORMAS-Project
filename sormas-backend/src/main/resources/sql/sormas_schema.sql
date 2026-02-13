@@ -15243,4 +15243,16 @@ ALTER TABLE contact DROP COLUMN IF EXISTS contactproximity;
 ALTER TABLE contact_history DROP COLUMN IF EXISTS contactproximity;
 
 INSERT INTO schema_version (version_number, comment) VALUES (609, '#13711 - Change contactProximity to multi-select collection');
+
+-- #13754 - Create notification should create a Report - Case - DD
+
+ALTER TABLE surveillancereports ADD COLUMN treatmentstarted varchar(255);
+ALTER TABLE surveillancereports ADD COLUMN treatmentnotapplicable boolean DEFAULT false;
+ALTER TABLE surveillancereports ADD COLUMN treatmentstartdate timestamp;
+ALTER TABLE surveillancereports_history ADD COLUMN treatmentstarted varchar(255);
+ALTER TABLE surveillancereports_history ADD COLUMN treatmentnotapplicable boolean DEFAULT false;
+ALTER TABLE surveillancereports_history ADD COLUMN treatmentstartdate timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (610, '#13754 - Create notification should create a Report - Case - DD');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

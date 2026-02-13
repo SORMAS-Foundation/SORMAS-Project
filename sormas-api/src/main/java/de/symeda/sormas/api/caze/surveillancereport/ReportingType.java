@@ -30,6 +30,8 @@ public enum ReportingType {
 	OWN_DETERMINATION,
 	NOT_DETERMINABLE,
 	NOT_RAISED,
+	@HideForCountriesExcept(countries = "LU")
+	PHONE_NOTIFICATION,
 	OTHER;
 
 	@Override

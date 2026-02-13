@@ -702,7 +702,7 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
      *            the case
      */
     protected void updateSurveillanceReportAdditionalData(SurveillanceReportDto surveillanceReport, ExternalMessageDto externalMessage, CaseDataDto caze) {
-        surveillanceReport.setDateOfDiagnosis(externalMessage.getDiagnosticDate());
+        // no additional data to update for default implementation
     }
 
     /**
