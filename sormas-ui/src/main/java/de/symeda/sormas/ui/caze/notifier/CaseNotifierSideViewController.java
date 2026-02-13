@@ -101,19 +101,23 @@ public class CaseNotifierSideViewController {
     public boolean hasNoNotificationReports(CaseReferenceDto caze) {
         // Get all reports criteria
         SurveillanceReportCriteria caseCriteria = new SurveillanceReportCriteria();
-        caseCriteria.caze(caze);
-        FacadeProvider.getSurveillanceReportFacade().count(caseCriteria);
-
+        caseCriteria.caze(caze);        
         // If any reports exist, return false
         return FacadeProvider.getSurveillanceReportFacade().count(caseCriteria) == 0;
     }
 
     public boolean hasOnlyPhoneNotificationReports(CaseReferenceDto caze) {
         // Get reports with PHONE_NOTIFICATION reporting type
-        SurveillanceReportCriteria phoneCriteria = new SurveillanceReportCriteria();
+        final SurveillanceReportCriteria phoneCriteria = new SurveillanceReportCriteria();
         phoneCriteria.caze(caze);
         phoneCriteria.setReportingType(ReportingType.PHONE_NOTIFICATION);
-        return FacadeProvider.getSurveillanceReportFacade().count(phoneCriteria) == 0;
+        final long phoneRepCount = FacadeProvider.getSurveillanceReportFacade().count(phoneCriteria);
+
+        final SurveillanceReportCriteria caseCriteria = new SurveillanceReportCriteria();
+        caseCriteria.caze(caze);
+        final long caseRepCount = FacadeProvider.getSurveillanceReportFacade().count(caseCriteria);
+
+        return phoneRepCount == caseRepCount;
     }
 
     public boolean hasPhoneNotification(CaseReferenceDto caze) {
@@ -260,8 +264,8 @@ public class CaseNotifierSideViewController {
             surveillanceReport.setReportingType(ReportingType.PHONE_NOTIFICATION);
             surveillanceReport.setReportDate(new Date());
         } else {
-            // Use existing report (first one if multiple exist)
-            surveillanceReport = existingReports.get(0);
+            // Use existing report (newest one if multiple exist)
+            surveillanceReport = getNewestPhoneNotificationReport(caze);
         }
 
         final CaseNotifierForm notifierForm = new CaseNotifierForm(notifier, surveillanceReport);

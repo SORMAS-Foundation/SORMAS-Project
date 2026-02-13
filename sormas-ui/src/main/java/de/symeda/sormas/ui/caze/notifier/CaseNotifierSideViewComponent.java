@@ -62,7 +62,7 @@ public class CaseNotifierSideViewComponent extends SideComponent {
 		setMargin(false);
 		setSpacing(false);
 
-		if (hasNoNotificationReports || !hasNotifier) { // if we do not have any relevant notifications or no notifier add the create button
+		if (hasNoNotificationReports || (!hasNotifier && !hasPhoneNotification)) { // if we do not have any relevant notifications or no notifier add the create button
 			addComponent(new Label(I18nProperties.getCaption(Captions.Notification_noNotification)));
 			// Create a new notification button
 			Button newNotificationButton = ButtonHelper.createIconButton(Captions.Notification_createNotification, VaadinIcons.PHONE, e -> {

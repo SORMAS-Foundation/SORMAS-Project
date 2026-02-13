@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.ui.caze.notifier;
 
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Locale;
 
@@ -111,7 +112,10 @@ public class CaseNotifierSideViewContent extends VerticalLayout {
         if (surveillanceReport != null && surveillanceReport.getReportDate() != null) {
             notificationDateField.setValue(surveillanceReport.getReportDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
         } else {
-            notificationDateField.setValue(notifier.getChangeDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+            notificationDateField.setValue(
+                notifier.getChangeDate() != null
+                    ? notifier.getChangeDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                    : LocalDate.now());
         }
         notificationDateField.setReadOnly(true);
 
