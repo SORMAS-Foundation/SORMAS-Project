@@ -62,12 +62,15 @@ public class EpipulseLaboratoryMapper {
 			return "NASALSWAB";
 		case THROAT_SWAB:
 		case RECTAL_SWAB:
+		case CLINICAL_SAMPLE:
 		case OTHER:
 			return "OTH";
 		case SALIVA:
 			return "SALOR"; // Saliva/oral fluid
 		case EDTA_WHOLE_BLOOD:
 			return "EDTA"; // EDTA whole blood
+		case DRY_BLOOD:
+			return "DRYBLOSP"; // Dry blood spot
 		default:
 			return null;
 		}
@@ -234,10 +237,10 @@ public class EpipulseLaboratoryMapper {
 	 * Maps SORMAS CaseImportedStatus enum to EpiPulse imported status codes.
 	 * <p>
 	 * EpiPulse Reference Values:
-	 * - AUTOCH = Autochthonous (not imported case)
+	 * - NOTIMP = Not imported case
 	 * - IMP = Imported case
-	 * - IMPR = Import-related case
-	 * - UNK = Unknown importation status
+	 * - IMPREL = Import-related case
+	 * - IMPUNK = Unknown importation status
 	 *
 	 * @param importedStatus
 	 *            SORMAS case imported status enum
@@ -252,11 +255,11 @@ public class EpipulseLaboratoryMapper {
 		case IMPORTED_CASE:
 			return "IMP";
 		case IMPORT_RELATED_CASE:
-			return "IMPR";
+			return "IMPREL";
 		case UNKNOWN_IMPORTATION_STATUS:
-			return "UNK";
+			return "IMPUNK";
 		case NOT_IMPORTED_CASE:
-			return "AUTOCH";
+			return "NOTIMP";
 		default:
 			return null;
 		}
@@ -279,6 +282,8 @@ public class EpipulseLaboratoryMapper {
 	 *            Diarrhea symptom state
 	 * @param otitisMedia
 	 *            Otitis media symptom state
+	 * @param pneumonia
+	 *            Pneumonia (clinical or radiologic) symptom state
 	 * @param otherComplications
 	 *            Other complications symptom state
 	 * @return List of EpiPulse complication codes (empty list returns "NONE" in CSV)
@@ -287,6 +292,7 @@ public class EpipulseLaboratoryMapper {
 		SymptomState acuteEncephalitis,
 		SymptomState diarrhea,
 		SymptomState otitisMedia,
+		SymptomState pneumonia,
 		SymptomState otherComplications) {
 
 		List<String> complications = new ArrayList<>();
@@ -300,11 +306,13 @@ public class EpipulseLaboratoryMapper {
 		if (otitisMedia == SymptomState.YES) {
 			complications.add("OME");
 		}
+		if (pneumonia == SymptomState.YES) {
+			complications.add("PNEU");
+		}
 		if (otherComplications == SymptomState.YES) {
 			complications.add("OTH");
 		}
 
-		// Note: PNEU (pneumonia) not currently available in SORMAS Symptoms for MEAS
 		// If no complications found, empty list will result in "NONE" in CSV
 
 		return complications;

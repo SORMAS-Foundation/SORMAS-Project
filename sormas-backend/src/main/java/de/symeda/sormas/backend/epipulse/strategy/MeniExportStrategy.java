@@ -253,7 +253,7 @@ public class MeniExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 			   "              AND s.deleted = false " +
 			   "              AND pt.testtype IN ('SEROGROUPING', 'SLIDE_AGGLUTINATION') " +
 			   "              AND pt.typingid IS NOT NULL " +
-			   "            ORDER BY pt.testdatetime DESC " +
+			   "            ORDER BY COALESCE(pt.testdatetime, pt.reportdate, pt.creationdate) DESC " +
 			   "            LIMIT 1) as serogroup " +
 			   "    FROM filtered_cases c" +
 			   ")";
@@ -419,7 +419,7 @@ public class MeniExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 			   "    LEFT JOIN pathogentest pt ON pt.sample_id = s.id " +
 			   "        AND pt.testtype = 'ANTIBIOTIC_SUSCEPTIBILITY' " +
 			   "    LEFT JOIN drugsusceptibility ds ON pt.drugsusceptibility_id = ds.id " +
-			   "    ORDER BY c.id, pt.testdatetime DESC" +
+			   "    ORDER BY c.id, COALESCE(pt.testdatetime, pt.reportdate, pt.creationdate) DESC" +
 			   ")";
 		//@formatter:on
 	}
