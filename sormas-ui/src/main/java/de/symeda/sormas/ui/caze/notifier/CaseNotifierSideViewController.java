@@ -95,13 +95,16 @@ public class CaseNotifierSideViewController {
         List<SurveillanceReportDto> doctorReports = FacadeProvider.getSurveillanceReportFacade().getIndexList(doctorCriteria, null, null, null);
 
         // Filter to get the oldest report
-        return doctorReports.stream().min(Comparator.comparing(SurveillanceReportDto::getReportDate)).orElse(null);
+        return doctorReports.stream()
+            .filter(r -> r.getReportDate() != null)
+            .min(Comparator.comparing(SurveillanceReportDto::getReportDate))
+            .orElse(null);
     }
 
     public boolean hasNoNotificationReports(CaseReferenceDto caze) {
         // Get all reports criteria
         SurveillanceReportCriteria caseCriteria = new SurveillanceReportCriteria();
-        caseCriteria.caze(caze);        
+        caseCriteria.caze(caze);
         // If any reports exist, return false
         return FacadeProvider.getSurveillanceReportFacade().count(caseCriteria) == 0;
     }
@@ -117,7 +120,7 @@ public class CaseNotifierSideViewController {
         caseCriteria.caze(caze);
         final long caseRepCount = FacadeProvider.getSurveillanceReportFacade().count(caseCriteria);
 
-        return phoneRepCount == caseRepCount;
+        return phoneRepCount > 0 && phoneRepCount == caseRepCount;
     }
 
     public boolean hasPhoneNotification(CaseReferenceDto caze) {
@@ -140,7 +143,10 @@ public class CaseNotifierSideViewController {
         criteria.setReportingType(ReportingType.PHONE_NOTIFICATION);
         List<SurveillanceReportDto> phoneReports = FacadeProvider.getSurveillanceReportFacade().getIndexList(criteria, null, null, null);
 
-        return phoneReports.stream().max(Comparator.comparing(SurveillanceReportDto::getReportDate)).orElse(null);
+        return phoneReports.stream()
+            .filter(r -> r.getReportDate() != null)
+            .max(Comparator.comparing(SurveillanceReportDto::getReportDate))
+            .orElse(null);
     }
 
     /**
@@ -317,11 +323,11 @@ public class CaseNotifierSideViewController {
         } else {
             // For read-only mode, disable all form fields
             notifierForm.setEnabled(false);
-            
+
             // Hide save and discard buttons, add a close button instead
             editView.getCommitButton().setVisible(false);
             editView.getDiscardButton().setVisible(false);
-            
+
             Button closeButton = ButtonHelper.createButton(Captions.actionClose, e -> window.close());
             editView.getButtonsPanel().addComponent(closeButton);
         }
@@ -339,15 +345,11 @@ public class CaseNotifierSideViewController {
     private void updateSurveillanceReportFromForm(SurveillanceReportDto surveillanceReport, CaseNotifierForm notifierForm) {
         // Update report date from notification date
         final LocalDate notificationDate = notifierForm.getNotificationDate();
-        if (notificationDate != null) {
-            surveillanceReport.setReportDate(Date.from(notificationDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
-        }
+        surveillanceReport.setReportDate(Date.from(notificationDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
 
         // Update diagnosis date if provided
         final LocalDate diagnosticDate = notifierForm.getDiagnosticDate();
-        if (diagnosticDate != null) {
-            surveillanceReport.setDateOfDiagnosis(Date.from(diagnosticDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
-        }
+        surveillanceReport.setDateOfDiagnosis(Date.from(diagnosticDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
 
         // Update treatment based on selected option
         final TreatmentOption selectedOption = notifierForm.getSelectedTreatmentOption();
