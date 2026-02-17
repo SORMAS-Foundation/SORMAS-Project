@@ -29,7 +29,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -44,7 +44,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
  * Form for creating and editing notifier information.
  * Provides editable fields for personal info, contact details, and treatment status.
  * 
- * Note: Only valid when no surveillance report exists.
+ * Creates or updates a surveillance report with PHONE_NOTIFICATION reporting type.
  */
 public class CaseNotifierForm extends VerticalLayout {
 
@@ -65,12 +65,12 @@ public class CaseNotifierForm extends VerticalLayout {
 
     // Data objects
     private NotifierDto notifier;
-    private CaseDataDto caze;
+    private SurveillanceReportDto surveillanceReport;
 
     /**
      * Creates a new notifier form.
      */
-    public CaseNotifierForm() {
+    protected CaseNotifierForm() {
         setStyleName("notifier-edit-form");
         setMargin(true);
         setSpacing(true);
@@ -81,10 +81,19 @@ public class CaseNotifierForm extends VerticalLayout {
     /**
      * Creates a new notifier form with initial data.
      */
-    public CaseNotifierForm(NotifierDto notifier, CaseDataDto caze) {
+    public CaseNotifierForm(NotifierDto notifier, SurveillanceReportDto surveillanceReport) {
         this();
+
+        if (notifier == null) {
+            throw new IllegalArgumentException("Notifier is null");
+        }
+
+        if (surveillanceReport == null) {
+            throw new IllegalArgumentException("SurveillanceReport is null");
+        }
+
         this.notifier = notifier;
-        this.caze = caze;
+        this.surveillanceReport = surveillanceReport;
         populateFields();
     }
 
@@ -165,8 +174,6 @@ public class CaseNotifierForm extends VerticalLayout {
 
         diagnosticDateField = new DateField(I18nProperties.getCaption(Captions.SurveillanceReport_dateOfDiagnosis));
         diagnosticDateField.setWidth(100, Unit.PERCENTAGE);
-        diagnosticDateField.setEnabled(false); // Disabled as it's only available in surveillance report context
-        diagnosticDateField.setDescription(I18nProperties.getString(Strings.notificationDiagnosisDateInformation));
 
         dateLayout.addComponents(notificationDateField, diagnosticDateField);
         dateLayout.setExpandRatio(notificationDateField, 1);
@@ -232,6 +239,11 @@ public class CaseNotifierForm extends VerticalLayout {
             } else if (notifier.getChangeDate() != null) {
                 notificationDateField.setValue(notifier.getChangeDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
             }
+
+            // Set diagnostic date if available
+            if (surveillanceReport != null && surveillanceReport.getDateOfDiagnosis() != null) {
+                diagnosticDateField.setValue(surveillanceReport.getDateOfDiagnosis().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+            }
         } else {
             // For new notifier, set notification date to current date
             notificationDateField.setValue(java.time.LocalDate.now());
@@ -239,14 +251,25 @@ public class CaseNotifierForm extends VerticalLayout {
 
         treatmentGroup.clear();
 
-        if (caze != null) {
-            if (caze.isTreatmentNotApplicable()) {
+        if (surveillanceReport != null) {
+            // Read treatment values from surveillance report
+            if (surveillanceReport.isTreatmentNotApplicable()) {
                 treatmentGroup.setValue(TreatmentOption.NOT_APPLICABLE);
             } else {
-                final YesNoUnknown treatmentStarted = caze.getTreatmentStarted();
+                final YesNoUnknown treatmentStarted = surveillanceReport.getTreatmentStarted();
                 if (treatmentStarted != null) {
                     treatmentGroup.setValue(TreatmentOption.forValue(treatmentStarted));
                 }
+            }
+
+            // Set notification date from report date
+            if (surveillanceReport.getReportDate() != null) {
+                notificationDateField.setValue(surveillanceReport.getReportDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+            }
+
+            // Set diagnostic date if available
+            if (surveillanceReport.getDateOfDiagnosis() != null) {
+                diagnosticDateField.setValue(surveillanceReport.getDateOfDiagnosis().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
             }
         }
 
@@ -276,15 +299,21 @@ public class CaseNotifierForm extends VerticalLayout {
     }
 
     /**
-     * Gets diagnostic date from form (always null in notifier context).
+     * Gets the notification date from the form.
      */
-    public LocalDate getDiagnosticDate() {
-        // Always returns null as the field is disabled in notifier context
-        return null; // diagnosticDateField.getValue();
+    public LocalDate getNotificationDate() {
+        return notificationDateField.getValue();
     }
 
     /**
-     * Gets selected treatment option from form.
+     * Gets the diagnostic date from the form.
+     */
+    public LocalDate getDiagnosticDate() {
+        return diagnosticDateField.getValue();
+    }
+
+    /**
+     * Gets the selected treatment option from the form.
      */
     public TreatmentOption getSelectedTreatmentOption() {
         return treatmentGroup.getValue();
@@ -293,9 +322,17 @@ public class CaseNotifierForm extends VerticalLayout {
     /**
      * Sets notifier data and populates form fields.
      */
-    public void setValue(NotifierDto notifier, CaseDataDto caze) {
+    public void setValue(NotifierDto notifier, SurveillanceReportDto surveillanceReport) {
+        if (notifier == null) {
+            throw new IllegalArgumentException("Notifier is null");
+        }
+
+        if (surveillanceReport == null) {
+            throw new IllegalArgumentException("SurveillanceReport is null");
+        }
+
         this.notifier = notifier;
-        this.caze = caze;
+        this.surveillanceReport = surveillanceReport;
         populateFields();
     }
 
