@@ -40,6 +40,8 @@ public class SurveyDto extends EntityDto {
 
 	public static final String NAME = "name";
 
+	public static final String EXTERNAL_ID = "externalId";
+
 	@NotBlank(message = Validations.requiredField)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String name;
@@ -47,6 +49,7 @@ public class SurveyDto extends EntityDto {
 	private Disease disease;
 	private DocumentTemplateReferenceDto documentTemplate;
 	private DocumentTemplateReferenceDto emailTemplate;
+	private String externalId;
 
 	public static SurveyDto build() {
 		SurveyDto survey = new SurveyDto();
@@ -89,5 +92,13 @@ public class SurveyDto extends EntityDto {
 
 	public SurveyReferenceDto toReference() {
 		return new SurveyReferenceDto(getUuid(), getName());
+	}
+
+	public String getExternalId() {
+		return externalId;
+	}
+
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
 	}
 }

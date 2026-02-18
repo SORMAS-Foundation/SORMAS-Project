@@ -5,7 +5,8 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 public enum ExternalMessageType {
 
 	LAB_MESSAGE,
-	PHYSICIANS_REPORT;
+	PHYSICIANS_REPORT,
+	SURVEY_RESPONSE;
 
 	@Override
 	public String toString() {

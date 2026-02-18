@@ -55,6 +55,7 @@ public class SurveyTokenDataForm extends AbstractEditForm<SurveyTokenDto> {
 		addField(SurveyTokenDto.RECIPIENT_EMAIL).setReadOnly(true);
 		addField(SurveyTokenDto.RESPONSE_RECEIVED).addStyleName(CssStyles.FORCE_CAPTION);
 		addField(SurveyTokenDto.RESPONSE_RECEIVED_DATE);
+		addField(SurveyTokenDto.EXTERNAL_RESPONDENT_ID).setReadOnly(true);
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), SurveyTokenDto.RESPONSE_RECEIVED_DATE, SurveyTokenDto.RESPONSE_RECEIVED, true, true);
 	}
