@@ -7,7 +7,12 @@ public enum DataPatchFailureCause {
 	FIELD_DOES_NOT_EXIST,
 
 	/**
-	 * Might occur if following patch config was used: {@link DataReplacementType#IF_NOT_ALREADY_PRESENT}.
+	 * Some fields are not meant to be patched: per example technical fields like UUID.
+	 */
+	FORBIDDEN_FIELD,
+
+	/**
+	 * Can occur if following patch config was set: {@link DataReplacementType#IF_NOT_ALREADY_PRESENT}.
 	 */
 	CURRENT_VALUE_NOT_OVERRIDDEN,
 
