@@ -7,7 +7,7 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.info.InfoFacade;
 
 // TODO: must following be supported: MULTIPLE - FIELD patching ? HOW to behave for that
-public class DataPatchRequest {
+public class CaseDataPatchRequest {
 
 	@NotNull
 	private String caseUuid;
@@ -28,7 +28,7 @@ public class DataPatchRequest {
 		return caseUuid;
 	}
 
-	public DataPatchRequest setCaseUuid(String caseUuid) {
+	public CaseDataPatchRequest setCaseUuid(String caseUuid) {
 		this.caseUuid = caseUuid;
 		return this;
 	}
@@ -37,7 +37,7 @@ public class DataPatchRequest {
 		return replacementType;
 	}
 
-	public DataPatchRequest setReplacementType(DataReplacementType replacementType) {
+	public CaseDataPatchRequest setReplacementType(DataReplacementType replacementType) {
 		this.replacementType = replacementType;
 		return this;
 	}
@@ -46,7 +46,7 @@ public class DataPatchRequest {
 		return patchDictionary;
 	}
 
-	public DataPatchRequest setPatchDictionary(Map<String, Object> patchDictionary) {
+	public CaseDataPatchRequest setPatchDictionary(Map<String, Object> patchDictionary) {
 		this.patchDictionary = patchDictionary;
 		return this;
 	}
@@ -55,7 +55,7 @@ public class DataPatchRequest {
 		return emptyValueBehavior;
 	}
 
-	public DataPatchRequest setEmptyValueBehavior(EmptyValueBehavior emptyValueBehavior) {
+	public CaseDataPatchRequest setEmptyValueBehavior(EmptyValueBehavior emptyValueBehavior) {
 		this.emptyValueBehavior = emptyValueBehavior;
 		return this;
 	}

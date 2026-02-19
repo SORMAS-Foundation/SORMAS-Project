@@ -1,6 +1,6 @@
 package de.symeda.sormas.api.patch;
 
-public interface DataPatcher {
+public interface CaseDataPatcher {
 
 	/**
 	 * Allow patching data for a specific case.
@@ -9,5 +9,5 @@ public interface DataPatcher {
 	 *            instructions for the data patch
 	 * @return response that indicates
 	 */
-	DataPatchResponse patch(DataPatchRequest request);
+	DataPatchResponse patch(CaseDataPatchRequest request);
 }
