@@ -6,6 +6,7 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.info.InfoFacade;
 
+// TODO: must following be supported: MULTIPLE - FIELD patching ? HOW to behave for that
 public class DataPatchRequest {
 
 	@NotNull
