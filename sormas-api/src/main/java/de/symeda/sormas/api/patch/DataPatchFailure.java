@@ -4,8 +4,6 @@ public class DataPatchFailure {
 
 	private DataPatchFailureCause dataPatchFailureCause;
 
-	private String fieldName;
-
 	private Object existingFieldValue;
 	private Object providedFieldValue;
 
@@ -17,15 +15,6 @@ public class DataPatchFailure {
 
 	public DataPatchFailure setDataPatchFailureCause(DataPatchFailureCause dataPatchFailureCause) {
 		this.dataPatchFailureCause = dataPatchFailureCause;
-		return this;
-	}
-
-	public String getFieldName() {
-		return fieldName;
-	}
-
-	public DataPatchFailure setFieldName(String fieldName) {
-		this.fieldName = fieldName;
 		return this;
 	}
 

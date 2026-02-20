@@ -1,6 +1,10 @@
 package de.symeda.sormas.patch;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -9,7 +13,9 @@ import javax.inject.Inject;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.patch.CaseDataPatchRequest;
 import de.symeda.sormas.api.patch.CaseDataPatcher;
+import de.symeda.sormas.api.patch.DataPatchFailure;
 import de.symeda.sormas.api.patch.DataPatchResponse;
+import de.symeda.sormas.api.patch.EmptyValueBehavior;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
@@ -53,6 +59,29 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 			throw new IllegalStateException(String.format("No person found for uuid: [%s]", personUuid));
 		}
 
+		Predicate<Map.Entry<String, Object>> filterPredicate =
+			request.getEmptyValueBehavior() == EmptyValueBehavior.REPLACE ? ignored -> true : buildEmptyValuePredicate();
+
+		Map<String, Object> actualDictionary = request.getPatchDictionary()
+			.entrySet()
+			.stream()
+			.filter(filterPredicate)
+			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+		List<SinglePatchResult> results = actualDictionary.entrySet().stream().map(entry -> {
+			return new SinglePatchResult().setFieldName(entry.getKey());
+		}).collect(Collectors.toList());
+
+		Map<String, Object> patchedValuesDictionary = results.stream()
+			.filter(singlePatchResult -> singlePatchResult.getValue() != null)
+			.collect(Collectors.toMap(SinglePatchResult::getFieldName, SinglePatchResult::getValue));
+
+		Map<String, DataPatchFailure> failuresDictionary = results.stream()
+			.filter(singlePatchResult -> singlePatchResult.getFailure() != null)
+			.collect(Collectors.toMap(SinglePatchResult::getFieldName, SinglePatchResult::getFailure));
+
+		return new DataPatchResponse().setPatchDictionary(patchedValuesDictionary).setFailures(failuresDictionary);
+
 		/*
 		 * Implementation steps:
 		 * - lazily produce list of allowed fields to avoid.
@@ -68,7 +97,22 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 		 * - CaseData
 		 * - Person
 		 */
+	}
 
-		throw new UnsupportedOperationException("Not supported yet.");
+	private Predicate<Map.Entry<String, Object>> buildEmptyValuePredicate() {
+
+		return stringObjectEntry -> {
+			Object value = stringObjectEntry.getValue();
+
+			if (value == null) {
+				return false;
+			}
+
+			if (value instanceof String) {
+				return !((String) value).trim().isEmpty();
+			}
+
+			return true;
+		};
 	}
 }

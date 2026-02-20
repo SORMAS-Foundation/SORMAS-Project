@@ -16,7 +16,19 @@ public interface ValueMapper extends Comparable<ValueMapper> {
 	int ORDER_CHUNK = 20;
 
 	// TODO: check if must return-type must be THE specific type.
-	<T> T map(Object value, Class<T> targetType);
+
+	/**
+	 *
+	 * @param value
+	 * @param targetType
+	 * @return actual value
+	 * @param <T>
+	 *            target type
+	 * @throws RuntimeException
+	 *             in case of the value couldn't be mapped.
+	 */
+	@NotNull
+	<T> T map(Object value, @NotNull Class<T> targetType);
 
 	@NotNull
 	Set<Class<?>> getSupportedTypes();

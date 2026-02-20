@@ -18,10 +18,12 @@
 package de.symeda.sormas.api.utils;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.patch.mapping.ValueMapperDefault;
 
 public enum YesNoUnknown {
 
 	YES,
+	@ValueMapperDefault
 	NO,
 	UNKNOWN;
 
@@ -34,7 +36,7 @@ public enum YesNoUnknown {
 
 		if (value == null) {
 			return null;
-		} else if (Boolean.TRUE.equals(value)) {
+		} else if (value) {
 			return YES;
 		} else {
 			return NO;

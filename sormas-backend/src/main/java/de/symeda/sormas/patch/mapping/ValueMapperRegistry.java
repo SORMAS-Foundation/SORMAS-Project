@@ -25,6 +25,14 @@ public class ValueMapperRegistry {
 	}
 
 	public <T> T map(Object value, Class<T> targetType) {
+		if (value == null) {
+			return null;
+		}
+
+		if (targetType.isInstance(value)) {
+			return targetType.cast(value);
+		}
+
 		for (ValueMapper mapper : orderedInstances) {
 			if (mapper.supports(targetType)) {
 				return mapper.map(value, targetType);
