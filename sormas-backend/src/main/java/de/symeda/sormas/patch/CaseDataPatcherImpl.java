@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -15,12 +16,15 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Suppliers;
+
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.patch.CaseDataPatchRequest;
 import de.symeda.sormas.api.patch.CaseDataPatcher;
 import de.symeda.sormas.api.patch.DataPatchFailure;
 import de.symeda.sormas.api.patch.DataPatchFailureCause;
 import de.symeda.sormas.api.patch.DataPatchResponse;
+import de.symeda.sormas.api.patch.DataReplacementType;
 import de.symeda.sormas.api.patch.EmptyValueBehavior;
 import de.symeda.sormas.api.patch.mapping.FieldCustomMapper;
 import de.symeda.sormas.api.patch.mapping.FieldPatchRequest;
@@ -33,6 +37,7 @@ import de.symeda.sormas.patch.mapping.ValueMapperRegistry;
 @Stateless
 public class CaseDataPatcherImpl implements CaseDataPatcher {
 
+	public static final String PERSON_FIELD_NAME_PREFIX = "Person.";
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	// might be more subtle: person.toto but also *.uuid (or uuid). includes approach ?
@@ -58,16 +63,9 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 		CaseDataDto caseData = getCaseDataDto(request);
 
 		// TODO: only fetch person when needed.
-		PersonDto person = getPersonDto(caseData);
+		Supplier<PersonDto> person = Suppliers.memoize(() -> getPersonDto(caseData));
 
-		Predicate<Map.Entry<String, Object>> filterPredicate =
-			request.getEmptyValueBehavior() == EmptyValueBehavior.REPLACE ? ignored -> true : buildEmptyValuePredicate();
-
-		Map<String, Object> actualDictionary = request.getPatchDictionary()
-			.entrySet()
-			.stream()
-			.filter(filterPredicate)
-			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+		Map<String, Object> actualDictionary = computeActualDictionary(request);
 
 		List<SinglePatchResult> results = actualDictionary.entrySet().stream().map(entry -> {
 			String fieldName = entry.getKey();
@@ -96,6 +94,7 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 						return singlePatchResult.setFailure(dataPatchFailureOpt.get());
 					}
 
+					// TODO: taint the DTO to mark it as dirty
 					return singlePatchResult.setValue(untypedTargetValue);
 				}
 
@@ -108,6 +107,22 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 
 				Object typedValue = valueMapperRegistry.map(untypedTargetValue, targetType);
 
+				if (request.getReplacementType() == DataReplacementType.IF_NOT_ALREADY_PRESENT) {
+					Optional<Object> nestedPropertyValue = PropertyAccessor.getNestedProperty(target, fieldName);
+
+					if (nestedPropertyValue.isPresent()) {
+						Object currentValue = nestedPropertyValue.orElseThrow();
+
+						if (!currentValue.equals(typedValue)) {
+							return singlePatchResult.setFailure(
+								new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.FORBIDDEN_VALUE_OVERRIDE)
+									.setExistingFieldValue(currentValue)
+									.setProvidedFieldValue(typedValue));
+						}
+					}
+				}
+
+				// TODO: taint the DTO to mark it as dirty
 				Optional<Exception> exception = PropertyAccessor.setNestedProperty(target, fieldName, typedValue);
 				if (exception.isPresent()) {
 					return singlePatchResult.setFailure(
@@ -137,8 +152,9 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 		logger.debug("patch results: [{}]", results);
 
 		// TODO: not necessarly both to be saved
+		// TODO: 
 		caseFacade.save(caseData);
-		personFacade.save(person);
+		personFacade.save(person.get());
 
 		return dataPatchResponse;
 
@@ -157,6 +173,21 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 		 * - CaseData
 		 * - Person
 		 */
+	}
+
+	private @NotNull Map<String, Object> computeActualDictionary(CaseDataPatchRequest request) {
+		Predicate<Map.Entry<String, Object>> filterPredicate = buildAdequateDictionaryValuePredicate(request);
+
+		Map<String, Object> actualDictionary = request.getPatchDictionary()
+			.entrySet()
+			.stream()
+			.filter(filterPredicate)
+			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+		return actualDictionary;
+	}
+
+	private @NotNull Predicate<Map.Entry<String, Object>> buildAdequateDictionaryValuePredicate(CaseDataPatchRequest request) {
+		return request.getEmptyValueBehavior() == EmptyValueBehavior.REPLACE ? ignored -> true : buildEmptyValuePredicate();
 	}
 
 	private @NotNull PersonDto getPersonDto(CaseDataDto caseData) {
@@ -179,11 +210,12 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 		return caseData;
 	}
 
-	private Object findAppropriateTarget(String fieldName, CaseDataDto caseData, PersonDto person) {
+	private Object findAppropriateTarget(String fieldName, CaseDataDto caseData, Supplier<PersonDto> person) {
+		if (fieldName.startsWith(PERSON_FIELD_NAME_PREFIX)) {
+			return person.get();
+		}
 
-		fieldName = fieldName;
-
-		return null;
+		return caseData;
 	}
 
 	private Predicate<Map.Entry<String, Object>> buildEmptyValuePredicate() {

@@ -16,6 +16,7 @@ public class PropertyAccessor {
 	}
 
 	public static Optional<Class<?>> getNestedPropertyType(final Object bean, final String name) {
+		// TODO: make nested
 		try {
 			return Optional.ofNullable(PropertyUtils.getPropertyType(bean, name));
 		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
@@ -28,7 +29,7 @@ public class PropertyAccessor {
 		try {
 			return Optional.ofNullable(PropertyUtils.getNestedProperty(bean, name));
 		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-			logger.info("Could not get property type for [{}], [{}]", name, bean, e);
+			logger.info("Could not get property value for [{}], [{}]", name, bean, e);
 			return Optional.empty();
 		}
 	}
@@ -38,7 +39,7 @@ public class PropertyAccessor {
 			PropertyUtils.setNestedProperty(bean, name, value);
 			return Optional.empty();
 		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-			logger.info("Could not set property for bean[{}], name [{}], value [{}]", bean, name, value, e);
+			logger.info("Could not set property for bean [{}], name [{}], value [{}]", bean, name, value, e);
 			return Optional.of(e);
 		}
 	}

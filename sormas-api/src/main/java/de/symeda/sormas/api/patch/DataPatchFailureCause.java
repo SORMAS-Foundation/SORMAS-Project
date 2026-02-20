@@ -13,8 +13,9 @@ public enum DataPatchFailureCause {
 
 	/**
 	 * Can occur if following patch config was set: {@link DataReplacementType#IF_NOT_ALREADY_PRESENT}.
+	 * Occurs only if the value is different of the current. No error if value stays the same.
 	 */
-	CURRENT_VALUE_NOT_OVERRIDDEN,
+	FORBIDDEN_VALUE_OVERRIDE,
 
 	/**
 	 * Example: Expected number but got "a".
