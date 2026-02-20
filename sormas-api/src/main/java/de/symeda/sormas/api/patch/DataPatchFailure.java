@@ -1,12 +1,20 @@
 package de.symeda.sormas.api.patch;
 
+import javax.annotation.Nullable;
+import javax.validation.constraints.NotNull;
+
 public class DataPatchFailure {
 
+	@NotNull
 	private DataPatchFailureCause dataPatchFailureCause;
 
+	@Nullable
 	private Object existingFieldValue;
+
+	@Nullable
 	private Object providedFieldValue;
 
+	@Nullable
 	private String description;
 
 	public DataPatchFailureCause getDataPatchFailureCause() {

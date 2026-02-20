@@ -1,10 +1,10 @@
-package de.symeda.sormas.patch.mapping.impl;
+package de.symeda.sormas.patch.mapping.impl.valuemapper;
 
 import java.util.Set;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import de.symeda.sormas.api.patch.mapping.FieldPatchRequest.ValueMapper;
+import de.symeda.sormas.api.patch.mapping.ValueMapper;
 
 @ApplicationScoped
 public class PrimitiveMapper implements ValueMapper {
@@ -19,7 +19,7 @@ public class PrimitiveMapper implements ValueMapper {
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T map(Object value, Class<T> targetType) {
-		String str = value.toString();
+		String str = value.toString().trim();
 
 		if (targetType == String.class)
 			return (T) str;

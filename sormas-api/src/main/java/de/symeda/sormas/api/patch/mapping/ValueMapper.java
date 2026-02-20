@@ -28,6 +28,7 @@ public interface ValueMapper extends Comparable<ValueMapper> {
 	 *             in case of the value couldn't be mapped.
 	 */
 	// TODO: CHECK if error handling should be done here already. | Multiple return types.
+	// TODO: CHECK shouldn't be string ?
 	@NotNull
 	<T> T map(Object value, @NotNull Class<T> targetType);
 

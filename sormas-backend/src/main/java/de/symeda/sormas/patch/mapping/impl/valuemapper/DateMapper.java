@@ -1,4 +1,4 @@
-package de.symeda.sormas.patch.mapping.impl;
+package de.symeda.sormas.patch.mapping.impl.valuemapper;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -7,7 +7,7 @@ import java.util.Set;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import de.symeda.sormas.api.patch.mapping.FieldPatchRequest.ValueMapper;
+import de.symeda.sormas.api.patch.mapping.ValueMapper;
 
 @ApplicationScoped
 public class DateMapper implements ValueMapper {
@@ -32,4 +32,5 @@ public class DateMapper implements ValueMapper {
 			throw new IllegalArgumentException("DateMapper: cannot parse date value '" + value + "', expected format: " + DATE_FORMAT, e);
 		}
 	}
+
 }

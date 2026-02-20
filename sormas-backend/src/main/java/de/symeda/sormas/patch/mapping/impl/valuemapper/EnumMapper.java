@@ -1,12 +1,12 @@
-package de.symeda.sormas.patch.mapping.impl;
+package de.symeda.sormas.patch.mapping.impl.valuemapper;
 
 import java.lang.reflect.Field;
 import java.util.Set;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import de.symeda.sormas.api.patch.mapping.ValueMapper;
 import de.symeda.sormas.api.patch.mapping.ValueMapperDefault;
-import de.symeda.sormas.api.patch.mapping.FieldPatchRequest.ValueMapper;
 
 @ApplicationScoped
 public class EnumMapper implements ValueMapper {

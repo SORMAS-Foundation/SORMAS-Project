@@ -2,13 +2,19 @@ package de.symeda.sormas.api.patch.mapping;
 
 import java.util.Objects;
 
+import javax.validation.constraints.NotNull;
+
 import de.symeda.sormas.api.patch.DataReplacementType;
 
 public final class FieldPatchRequest {
 
+	@NotNull
 	private String fieldName;
+	@NotNull
 	private Object target;
+	@NotNull
 	private Object value;
+	@NotNull
 	private DataReplacementType replacementType;
 
 	public String getFieldName() {

@@ -105,6 +105,8 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 				}
 				Class<?> targetType = nestedPropertyType.orElseThrow();
 
+				// TODO: handle targetType being a list. TO-Check with business: add / replace 
+
 				Object typedValue = valueMapperRegistry.map(untypedTargetValue, targetType);
 
 				if (request.getReplacementType() == DataReplacementType.IF_NOT_ALREADY_PRESENT) {
@@ -178,12 +180,11 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 	private @NotNull Map<String, Object> computeActualDictionary(CaseDataPatchRequest request) {
 		Predicate<Map.Entry<String, Object>> filterPredicate = buildAdequateDictionaryValuePredicate(request);
 
-		Map<String, Object> actualDictionary = request.getPatchDictionary()
+		return request.getPatchDictionary()
 			.entrySet()
 			.stream()
 			.filter(filterPredicate)
 			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-		return actualDictionary;
 	}
 
 	private @NotNull Predicate<Map.Entry<String, Object>> buildAdequateDictionaryValuePredicate(CaseDataPatchRequest request) {
@@ -233,5 +234,25 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 
 			return true;
 		};
+	}
+
+	public void setForbiddenFields(Set<String> forbiddenFields) {
+		this.forbiddenFields = forbiddenFields;
+	}
+
+	public void setValueMapperRegistry(ValueMapperRegistry valueMapperRegistry) {
+		this.valueMapperRegistry = valueMapperRegistry;
+	}
+
+	public void setFieldCustomMapperRegistry(FieldCustomMapperRegistry fieldCustomMapperRegistry) {
+		this.fieldCustomMapperRegistry = fieldCustomMapperRegistry;
+	}
+
+	public void setCaseFacade(CaseFacadeEjb.CaseFacadeEjbLocal caseFacade) {
+		this.caseFacade = caseFacade;
+	}
+
+	public void setPersonFacade(PersonFacadeEjb.PersonFacadeEjbLocal personFacade) {
+		this.personFacade = personFacade;
 	}
 }
