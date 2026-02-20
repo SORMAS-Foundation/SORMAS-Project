@@ -1,6 +1,7 @@
 package de.symeda.sormas.api.patch.mapping;
 
 import java.util.Optional;
+import java.util.Set;
 
 import de.symeda.sormas.api.patch.DataPatchFailure;
 
@@ -14,6 +15,14 @@ public interface FieldCustomMapper {
 	 * - Phone number - email
 	 * - BirthDate
 	 */
-	Optional<DataPatchFailure> map(String fieldName, Object value);
+	// TODO: missing 'current value' logic: if already exist do nothing.
+	Optional<DataPatchFailure> map(FieldPatchRequest request);
+
+	/**
+	 * Warn each field must be unique among all {@link FieldCustomMapper} implementations.
+	 * 
+	 * @return fields supported by this specific mapper.
+	 */
+	Set<String> supportedFields();
 
 }

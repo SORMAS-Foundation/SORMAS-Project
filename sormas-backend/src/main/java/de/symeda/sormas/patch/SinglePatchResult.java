@@ -10,9 +10,6 @@ public class SinglePatchResult {
 	@NotNull
 	private String fieldName;
 
-	/**
-	 * Actual patch value (after transformation).
-	 */
 	@Nullable
 	private Object value;
 

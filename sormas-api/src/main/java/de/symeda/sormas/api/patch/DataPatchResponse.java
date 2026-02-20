@@ -56,4 +56,9 @@ public class DataPatchResponse {
 	public boolean failed() {
 		return MapUtils.isNotEmpty(failures);
 	}
+
+	@Override
+	public String toString() {
+		return "DataPatchResponse{" + "patchDictionary=" + patchDictionary + ", failures=" + failures + '}';
+	}
 }

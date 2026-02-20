@@ -59,4 +59,10 @@ public class CaseDataPatchRequest {
 		this.emptyValueBehavior = emptyValueBehavior;
 		return this;
 	}
+
+	@Override
+	public String toString() {
+		return "CaseDataPatchRequest{" + "caseUuid='" + caseUuid + '\'' + ", replacementType=" + replacementType + ", emptyValueBehavior="
+			+ emptyValueBehavior + ", patchDictionary=" + patchDictionary + '}';
+	}
 }

@@ -44,4 +44,10 @@ public class DataPatchFailure {
 		this.description = description;
 		return this;
 	}
+
+	@Override
+	public String toString() {
+		return "DataPatchFailure{" + "dataPatchFailureCause=" + dataPatchFailureCause + ", existingFieldValue=" + existingFieldValue
+			+ ", providedFieldValue=" + providedFieldValue + ", description='" + description + '\'' + '}';
+	}
 }

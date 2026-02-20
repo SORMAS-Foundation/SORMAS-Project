@@ -5,8 +5,8 @@ import java.util.Set;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import de.symeda.sormas.api.patch.mapping.ValueMapper;
 import de.symeda.sormas.api.patch.mapping.ValueMapperDefault;
+import de.symeda.sormas.api.patch.mapping.FieldPatchRequest.ValueMapper;
 
 @ApplicationScoped
 public class EnumMapper implements ValueMapper {
@@ -27,11 +27,11 @@ public class EnumMapper implements ValueMapper {
 	public <T> T map(Object value, Class<T> targetType) {
 		Class<? extends Enum> enumType = (Class<? extends Enum>) targetType;
 
-		String name = value.toString().trim().toUpperCase();
+		String memberNameCandidate = value.toString().trim().toUpperCase();
 		Enum<?>[] constants = enumType.getEnumConstants();
 
 		for (Enum constant : constants) {
-			if (constant.name().equalsIgnoreCase(name)) {
+			if (constant.name().equalsIgnoreCase(memberNameCandidate)) {
 				return (T) constant;
 			}
 		}
@@ -47,9 +47,7 @@ public class EnumMapper implements ValueMapper {
 			return (T) annotatedDefault;
 		}
 
-		throw new IllegalArgumentException(
-			"EnumMapper: no constant '" + name + "' in " + enumType.getSimpleName() + ", and no @EnumMapperDefault or '" + FALLBACK_NAME
-				+ "' member found");
+		throw new EnumConstantNotPresentException(enumType, memberNameCandidate);
 	}
 
 	private Enum<?> findAnnotatedDefault(Class<? extends Enum<?>> enumType, Enum<?>[] constants) {

@@ -8,17 +8,27 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class PropertyAccessor {
+	// TODO: perform some caching of the fields
 
 	private static final Logger logger = LoggerFactory.getLogger(PropertyAccessor.class);
 
 	private PropertyAccessor() {
 	}
 
-	public Optional<Class<?>> getNestedPropertyType(final Object bean, final String name) {
+	public static Optional<Class<?>> getNestedPropertyType(final Object bean, final String name) {
 		try {
 			return Optional.ofNullable(PropertyUtils.getPropertyType(bean, name));
 		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-			logger.debug("Could not get property type for [{}], [{}]", name, bean, e);
+			logger.info("Could not get property type for [{}], [{}]", name, bean, e);
+			return Optional.empty();
+		}
+	}
+
+	public static Optional<Object> getNestedProperty(final Object bean, final String name) {
+		try {
+			return Optional.ofNullable(PropertyUtils.getNestedProperty(bean, name));
+		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+			logger.info("Could not get property type for [{}], [{}]", name, bean, e);
 			return Optional.empty();
 		}
 	}
@@ -28,6 +38,7 @@ public class PropertyAccessor {
 			PropertyUtils.setNestedProperty(bean, name, value);
 			return Optional.empty();
 		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+			logger.info("Could not set property for bean[{}], name [{}], value [{}]", bean, name, value, e);
 			return Optional.of(e);
 		}
 	}

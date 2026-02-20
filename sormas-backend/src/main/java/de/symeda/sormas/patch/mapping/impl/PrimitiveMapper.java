@@ -4,7 +4,7 @@ import java.util.Set;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import de.symeda.sormas.api.patch.mapping.ValueMapper;
+import de.symeda.sormas.api.patch.mapping.FieldPatchRequest.ValueMapper;
 
 @ApplicationScoped
 public class PrimitiveMapper implements ValueMapper {

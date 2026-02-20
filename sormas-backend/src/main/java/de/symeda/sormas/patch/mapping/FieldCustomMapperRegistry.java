@@ -1,10 +1,16 @@
 package de.symeda.sormas.patch.mapping;
 
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import de.symeda.sormas.api.patch.mapping.FieldCustomMapper;
+import de.symeda.sormas.api.utils.Tuple;
 
 @ApplicationScoped
 public class FieldCustomMapperRegistry {
@@ -12,8 +18,16 @@ public class FieldCustomMapperRegistry {
 	@Inject
 	private Instance<FieldCustomMapper> instances;
 
-	// TODO: change signature.
-	public <T> T map(Object value, Class<T> targetType) {
-		throw new UnsupportedOperationException();
+	private Map<String, FieldCustomMapper> dictionary;
+
+	@PostConstruct
+	void init() {
+		dictionary = instances.stream()
+			.flatMap(mapperInstance -> mapperInstance.supportedFields().stream().map(field -> new Tuple<>(field, mapperInstance)))
+			.collect(Collectors.toMap(Tuple::getFirst, Tuple::getSecond));
+	}
+
+	public Optional<FieldCustomMapper> getMapper(final String fieldName) {
+		return Optional.ofNullable(dictionary.get(fieldName));
 	}
 }

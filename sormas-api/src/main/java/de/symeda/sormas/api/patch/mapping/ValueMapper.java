@@ -15,18 +15,19 @@ public interface ValueMapper extends Comparable<ValueMapper> {
 	 */
 	int ORDER_CHUNK = 20;
 
-	// TODO: check if must return-type must be THE specific type.
-
 	/**
 	 *
 	 * @param value
+	 *            raw value type, must either by String or the actual type.
 	 * @param targetType
+	 *            type that is expected.
 	 * @return actual value
 	 * @param <T>
 	 *            target type
 	 * @throws RuntimeException
 	 *             in case of the value couldn't be mapped.
 	 */
+	// TODO: CHECK if error handling should be done here already. | Multiple return types.
 	@NotNull
 	<T> T map(Object value, @NotNull Class<T> targetType);
 
