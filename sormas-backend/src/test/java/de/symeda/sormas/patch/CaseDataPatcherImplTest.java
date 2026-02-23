@@ -23,6 +23,9 @@ class CaseDataPatcherImplTest extends AbstractBeanTest {
 		// TODO: try to change language to use the languages names / with without accent and stuff: Pérou
 	}
 
+	// TODO: test different replacement strategy: with/without failure
+	// TODO: test forbidden fields
+
 	@Test
 	void patch_no_errors_alwas_replacement() {
 		// PREPARE
@@ -65,6 +68,6 @@ class CaseDataPatcherImplTest extends AbstractBeanTest {
 			() -> Assertions.assertEquals(Sex.FEMALE, actualPerson.getSex()),
 			// CASE
 			() -> Assertions.assertEquals(newSequelaeDetails, actualCase.getSequelaeDetails()));
-
 	}
+
 }

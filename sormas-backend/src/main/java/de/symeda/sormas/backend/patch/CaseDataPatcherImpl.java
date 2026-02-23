@@ -69,6 +69,8 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 
 		Map<String, Object> actualDictionary = computeActualDictionary(request);
 
+		// TODO: refactor this to create smaller units
+		// TODO: duplicate field patching mechanism
 		List<SinglePatchResult> results = actualDictionary.entrySet().stream().map(entry -> {
 			String fullFieldName = entry.getKey();
 			SinglePatchResult singlePatchResult = new SinglePatchResult().setFieldName(fullFieldName);
