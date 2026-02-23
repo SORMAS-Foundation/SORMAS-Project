@@ -1,4 +1,4 @@
-package de.symeda.sormas.patch.mapping;
+package de.symeda.sormas.backend.patch.mapping;
 
 import java.util.Map;
 import java.util.Optional;

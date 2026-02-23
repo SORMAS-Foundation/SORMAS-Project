@@ -1,6 +1,6 @@
 package de.symeda.sormas.api.patch;
 
-public enum DataReplacementType {
+public enum DataReplacementStrategy {
 	/**
 	 * No matter what the current value is, it will be replaced with the provided value.
 	 */

@@ -12,7 +12,7 @@ public enum DataPatchFailureCause {
 	FORBIDDEN_FIELD,
 
 	/**
-	 * Can occur if following patch config was set: {@link DataReplacementType#IF_NOT_ALREADY_PRESENT}.
+	 * Can occur if following patch config was set: {@link DataReplacementStrategy#IF_NOT_ALREADY_PRESENT}.
 	 * Occurs only if the value is different of the current. No error if value stays the same.
 	 */
 	FORBIDDEN_VALUE_OVERRIDE,

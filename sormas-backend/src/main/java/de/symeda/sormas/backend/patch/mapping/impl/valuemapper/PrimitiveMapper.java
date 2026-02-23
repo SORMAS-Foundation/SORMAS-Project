@@ -1,4 +1,4 @@
-package de.symeda.sormas.patch.mapping.impl.valuemapper;
+package de.symeda.sormas.backend.patch.mapping.impl.valuemapper;
 
 import java.util.Set;
 
@@ -18,7 +18,7 @@ public class PrimitiveMapper implements ValueMapper {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T map(Object value, Class<T> targetType) {
+	public <T> T map(Object value, Class<T> targetType, Set<String> inputLanguageCodes) {
 		String str = value.toString().trim();
 
 		if (targetType == String.class)

@@ -1,4 +1,4 @@
-package de.symeda.sormas.patch.mapping;
+package de.symeda.sormas.backend.patch.mapping;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -7,6 +7,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.patch.mapping.ValueMapper;
 
@@ -24,7 +25,8 @@ public class ValueMapperRegistry {
 		orderedInstances = instances.stream().sorted().collect(Collectors.toList());
 	}
 
-	public <T> T map(Object value, Class<T> targetType) {
+	@NotNull
+	public <T> T map(Object value, @NotNull Class<T> targetType) {
 		if (value == null) {
 			return null;
 		}

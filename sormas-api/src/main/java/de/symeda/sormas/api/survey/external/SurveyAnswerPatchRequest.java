@@ -5,7 +5,7 @@ import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.patch.DataReplacementType;
+import de.symeda.sormas.api.patch.DataReplacementStrategy;
 import de.symeda.sormas.api.patch.EmptyValueBehavior;
 
 /**
@@ -26,7 +26,7 @@ public class SurveyAnswerPatchRequest {
 	private OffsetDateTime answerDate;
 
 	@NotNull
-	private DataReplacementType dataReplacementType = DataReplacementType.IF_NOT_ALREADY_PRESENT;
+	private DataReplacementStrategy dataReplacementStrategy = DataReplacementStrategy.IF_NOT_ALREADY_PRESENT;
 
 	@NotNull
 	private EmptyValueBehavior emptyValueBehavior = EmptyValueBehavior.IGNORE;
@@ -87,12 +87,12 @@ public class SurveyAnswerPatchRequest {
 		return this;
 	}
 
-	public DataReplacementType getDataReplacementType() {
-		return dataReplacementType;
+	public DataReplacementStrategy getDataReplacementType() {
+		return dataReplacementStrategy;
 	}
 
-	public SurveyAnswerPatchRequest setDataReplacementType(DataReplacementType dataReplacementType) {
-		this.dataReplacementType = dataReplacementType;
+	public SurveyAnswerPatchRequest setDataReplacementType(DataReplacementStrategy dataReplacementStrategy) {
+		this.dataReplacementStrategy = dataReplacementStrategy;
 		return this;
 	}
 
@@ -135,7 +135,7 @@ public class SurveyAnswerPatchRequest {
 	@Override
 	public String toString() {
 		return "SurveyAnswerPatchRequest{" + "surveyId='" + surveyId + '\'' + ", token='" + token + '\'' + ", respondentId='" + respondentId + '\''
-			+ ", answerDate=" + answerDate + ", dataReplacementType=" + dataReplacementType + ", emptyValueBehavior=" + emptyValueBehavior
+			+ ", answerDate=" + answerDate + ", dataReplacementType=" + dataReplacementStrategy + ", emptyValueBehavior=" + emptyValueBehavior
 			+ ", patchDictionary=" + patchDictionary + ", skipIfAlreadyProcessed=" + skipIfAlreadyProcessed + ", failOnError=" + failOnError + '}';
 	}
 }

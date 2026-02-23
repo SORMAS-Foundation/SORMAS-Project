@@ -1,4 +1,4 @@
-package de.symeda.sormas.patch;
+package de.symeda.sormas.backend.patch;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
@@ -15,19 +15,38 @@ public class PropertyAccessor {
 
 	private static final Logger logger = LoggerFactory.getLogger(PropertyAccessor.class);
 	private static final PropertyUtilsBean propertyUtils = BeanUtilsBean.getInstance().getPropertyUtils();
+	public static final char PATH_SEPARATOR = '.';
 
 	private PropertyAccessor() {
 	}
 
-	public static Optional<Class<?>> getNestedPropertyType(final Object bean, final String name) {
-		if (bean == null || name == null || name.isEmpty()) {
+	public static Optional<Class<?>> getNestedPropertyType(final Object bean, final String fieldName) {
+		if (bean == null || fieldName == null || fieldName.isEmpty()) {
 			return Optional.empty();
 		}
 
 		try {
-			return Optional.of(getPropertyTypeRecursive(bean.getClass(), name));
+			boolean notNestedPath = fieldName.indexOf(PATH_SEPARATOR) == fieldName.lastIndexOf(PATH_SEPARATOR);
+
+			if (notNestedPath) {
+				return Optional.ofNullable(PropertyUtils.getPropertyType(bean, fieldName));
+			}
+
+			String leafPath = fieldName.substring(fieldName.lastIndexOf('.') + 1);
+
+			return Optional.ofNullable(getNestedProperty(bean, fieldName)).flatMap(leafParent -> getPropertyType(leafParent, leafPath));
+
 		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-			logger.info("Could not get property type for [{}], [{}]", name, bean.getClass().getSimpleName(), e);
+			logger.info("Could not get property type for [{}], [{}]", fieldName, bean.getClass().getSimpleName(), e);
+			return Optional.empty();
+		}
+	}
+
+	public static Optional<Class<?>> getPropertyType(final Object bean, final String fieldName) {
+		try {
+			return Optional.ofNullable(PropertyUtils.getPropertyType(bean, fieldName));
+		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+			logger.info("Could not get property type for [{}], [{}]", fieldName, bean.getClass().getSimpleName(), e);
 			return Optional.empty();
 		}
 	}
@@ -52,13 +71,13 @@ public class PropertyAccessor {
 		Class<?> currentType = PropertyUtils.getPropertyType(beanClass, property);
 
 		if (currentType == null) {
-			throw new IllegalArgumentException("No such property: " + property);
+			throw new IllegalArgumentException(String.format("No such property: [%s] on type: [%s]", property, beanClass));
 		}
 
 		if (resolver.isIndexed(next)) {
 			currentType = getIndexedPropertyType(currentType);
 		} else if (resolver.isMapped(next)) {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("Maps are not supported yet.");
 		}
 
 		String remaining = resolver.remove(propertyName);

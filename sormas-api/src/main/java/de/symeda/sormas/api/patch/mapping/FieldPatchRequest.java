@@ -2,9 +2,10 @@ package de.symeda.sormas.api.patch.mapping;
 
 import java.util.Objects;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.patch.DataReplacementType;
+import de.symeda.sormas.api.patch.DataReplacementStrategy;
 
 public final class FieldPatchRequest {
 
@@ -15,7 +16,10 @@ public final class FieldPatchRequest {
 	@NotNull
 	private Object value;
 	@NotNull
-	private DataReplacementType replacementType;
+	private DataReplacementStrategy replacementType;
+
+	@Nullable
+	private String origin;
 
 	public String getFieldName() {
 		return fieldName;
@@ -44,19 +48,23 @@ public final class FieldPatchRequest {
 		return this;
 	}
 
-	public DataReplacementType getReplacementType() {
+	public DataReplacementStrategy getReplacementType() {
 		return replacementType;
 	}
 
-	public FieldPatchRequest setReplacementType(DataReplacementType replacementType) {
+	public FieldPatchRequest setReplacementType(DataReplacementStrategy replacementType) {
 		this.replacementType = replacementType;
 		return this;
 	}
 
-	@Override
-	public String toString() {
-		return "FieldPatchRequest{" + "fieldName='" + fieldName + '\'' + ", target=" + target + ", value=" + value + ", replacementType="
-			+ replacementType + '}';
+	@Nullable
+	public String getOrigin() {
+		return origin;
+	}
+
+	public FieldPatchRequest setOrigin(@Nullable String origin) {
+		this.origin = origin;
+		return this;
 	}
 
 	@Override
@@ -67,11 +75,18 @@ public final class FieldPatchRequest {
 		return Objects.equals(fieldName, that.fieldName)
 			&& Objects.equals(target, that.target)
 			&& Objects.equals(value, that.value)
-			&& replacementType == that.replacementType;
+			&& replacementType == that.replacementType
+			&& Objects.equals(origin, that.origin);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(fieldName, target, value, replacementType);
+		return Objects.hash(fieldName, target, value, replacementType, origin);
+	}
+
+	@Override
+	public String toString() {
+		return "FieldPatchRequest{" + "fieldName='" + fieldName + '\'' + ", target=" + target + ", value=" + value + ", replacementType="
+			+ replacementType + ", origin='" + origin + '\'' + '}';
 	}
 }

@@ -1,4 +1,4 @@
-package de.symeda.sormas.patch.mapping.impl.fieldmapper;
+package de.symeda.sormas.backend.patch.mapping.impl.fieldmapper;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -10,12 +10,15 @@ import javax.inject.Inject;
 
 import de.symeda.sormas.api.patch.DataPatchFailure;
 import de.symeda.sormas.api.patch.DataPatchFailureCause;
-import de.symeda.sormas.api.patch.DataReplacementType;
+import de.symeda.sormas.api.patch.DataReplacementStrategy;
 import de.symeda.sormas.api.patch.mapping.FieldCustomMapper;
 import de.symeda.sormas.api.patch.mapping.FieldPatchRequest;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.patch.mapping.impl.valuemapper.DateMapper;
+import de.symeda.sormas.backend.patch.mapping.impl.valuemapper.DateMapper;
 
+/**
+ * For now this FieldMapper will not be allowed and "deactivated" through the list of forbidden fields.
+ */
 @ApplicationScoped
 public class PersonBirthDateFieldMapper implements FieldCustomMapper {
 
@@ -43,7 +46,7 @@ public class PersonBirthDateFieldMapper implements FieldCustomMapper {
 		int birthdateMonth = calendar.get(Calendar.MONTH) + 1;
 		int year = calendar.get(Calendar.YEAR);
 
-		if (request.getReplacementType() == DataReplacementType.IF_NOT_ALREADY_PRESENT) {
+		if (request.getReplacementType() == DataReplacementStrategy.IF_NOT_ALREADY_PRESENT) {
 
 			Integer currentDayOfMonth = person.getBirthdateDD();
 			Integer currentBirthdateMonth = person.getBirthdateMM();

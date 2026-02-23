@@ -1,4 +1,4 @@
-package de.symeda.sormas.patch;
+package de.symeda.sormas.backend.patch;
 
 import java.util.List;
 import java.util.Map;
@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
@@ -24,21 +25,23 @@ import de.symeda.sormas.api.patch.CaseDataPatcher;
 import de.symeda.sormas.api.patch.DataPatchFailure;
 import de.symeda.sormas.api.patch.DataPatchFailureCause;
 import de.symeda.sormas.api.patch.DataPatchResponse;
-import de.symeda.sormas.api.patch.DataReplacementType;
+import de.symeda.sormas.api.patch.DataReplacementStrategy;
 import de.symeda.sormas.api.patch.EmptyValueBehavior;
 import de.symeda.sormas.api.patch.mapping.FieldCustomMapper;
 import de.symeda.sormas.api.patch.mapping.FieldPatchRequest;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
+import de.symeda.sormas.backend.json.ObjectMapperProvider;
+import de.symeda.sormas.backend.patch.mapping.FieldCustomMapperRegistry;
+import de.symeda.sormas.backend.patch.mapping.ValueMapperRegistry;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
-import de.symeda.sormas.patch.mapping.FieldCustomMapperRegistry;
-import de.symeda.sormas.patch.mapping.ValueMapperRegistry;
 
 @Stateless
+@LocalBean
 public class CaseDataPatcherImpl implements CaseDataPatcher {
 
 	public static final String PERSON_FIELD_NAME_PREFIX = "Person.";
-	private final Logger logger = LoggerFactory.getLogger(getClass());
+	private final static Logger logger = LoggerFactory.getLogger(CaseDataPatcherImpl.class);
 
 	// might be more subtle: person.toto but also *.uuid (or uuid). includes approach ?
 	// TODO: must be twofold: enforced default fields : technical: uuid, user ... + custom config by admin
@@ -58,35 +61,34 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 
 	@Override
 	public DataPatchResponse patch(CaseDataPatchRequest request) {
-		logger.debug("patch: [{}]", request);
+		logger.info("patch: [{}]", request);
 
 		CaseDataDto caseData = getCaseDataDto(request);
 
-		// TODO: only fetch person when needed.
 		Supplier<PersonDto> person = Suppliers.memoize(() -> getPersonDto(caseData));
 
 		Map<String, Object> actualDictionary = computeActualDictionary(request);
 
 		List<SinglePatchResult> results = actualDictionary.entrySet().stream().map(entry -> {
-			String fieldName = entry.getKey();
-			SinglePatchResult singlePatchResult = new SinglePatchResult().setFieldName(fieldName);
+			String fullFieldName = entry.getKey();
+			SinglePatchResult singlePatchResult = new SinglePatchResult().setFieldName(fullFieldName);
 
-			Object target = findAppropriateTarget(fieldName, caseData, person);
+			Object target = findAppropriateTarget(fullFieldName, caseData, person);
 
 			try { // TODO: patch the same field twice ?
 
-				if (forbiddenFields.contains(fieldName)) {
+				if (forbiddenFields.contains(fullFieldName)) {
 					return singlePatchResult.setFailure(new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.FORBIDDEN_FIELD));
 				}
 
-				Optional<FieldCustomMapper> mapper = fieldCustomMapperRegistry.getMapper(fieldName);
+				Optional<FieldCustomMapper> mapper = fieldCustomMapperRegistry.getMapper(fullFieldName);
 
 				Object untypedTargetValue = entry.getValue();
 				if (mapper.isPresent()) {
 					Optional<DataPatchFailure> dataPatchFailureOpt = mapper.orElseThrow()
 						.map(
-							new FieldPatchRequest().setFieldName(fieldName)
-								.setReplacementType(request.getReplacementType())
+							new FieldPatchRequest().setFieldName(fullFieldName)
+								.setReplacementType(request.getReplacementStrategy())
 								.setTarget(target)
 								.setValue(untypedTargetValue));
 
@@ -98,9 +100,11 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 					return singlePatchResult.setValue(untypedTargetValue);
 				}
 
-				Optional<Class<?>> nestedPropertyType = PropertyAccessor.getNestedPropertyType(target, fieldName);
+				String relativeFieldName = fullFieldName.substring(fullFieldName.indexOf('.') + 1);
+				Optional<Class<?>> nestedPropertyType = PropertyAccessor.getNestedPropertyType(target, relativeFieldName);
 
 				if (nestedPropertyType.isEmpty()) {
+					logger.info("Missing field: [{}] on target: [{}]", relativeFieldName, target);
 					return singlePatchResult.setFailure(new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.FIELD_DOES_NOT_EXIST));
 				}
 				Class<?> targetType = nestedPropertyType.orElseThrow();
@@ -109,8 +113,8 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 
 				Object typedValue = valueMapperRegistry.map(untypedTargetValue, targetType);
 
-				if (request.getReplacementType() == DataReplacementType.IF_NOT_ALREADY_PRESENT) {
-					Optional<Object> nestedPropertyValue = PropertyAccessor.getNestedProperty(target, fieldName);
+				if (request.getReplacementStrategy() == DataReplacementStrategy.IF_NOT_ALREADY_PRESENT) {
+					Optional<Object> nestedPropertyValue = PropertyAccessor.getNestedProperty(target, relativeFieldName);
 
 					if (nestedPropertyValue.isPresent()) {
 						Object currentValue = nestedPropertyValue.orElseThrow();
@@ -125,7 +129,7 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 				}
 
 				// TODO: taint the DTO to mark it as dirty
-				Optional<Exception> exception = PropertyAccessor.setNestedProperty(target, fieldName, typedValue);
+				Optional<Exception> exception = PropertyAccessor.setNestedProperty(target, relativeFieldName, typedValue);
 				if (exception.isPresent()) {
 					return singlePatchResult.setFailure(
 						new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.TECHNICAL)
@@ -151,11 +155,19 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 
 		DataPatchResponse dataPatchResponse = new DataPatchResponse().setPatchDictionary(patchedValuesDictionary).setFailures(failuresDictionary);
 
-		logger.debug("patch results: [{}]", results);
+		logger.info("patch results: [{}]", results);
 
 		// TODO: not necessarly both to be saved
-		// TODO: 
+		// TODO:
+		if (logger.isErrorEnabled()) {
+			logger.error("CaseData: \n{}", ObjectMapperProvider.writeValueAsStringFailSafe(caseData));
+			System.out.println(ObjectMapperProvider.writeValueAsStringFailSafe(caseData));
+		}
 		caseFacade.save(caseData);
+
+		if (logger.isErrorEnabled()) {
+			logger.error("Person: \n{}", ObjectMapperProvider.writeValueAsStringFailSafe(person.get()));
+		}
 		personFacade.save(person.get());
 
 		return dataPatchResponse;

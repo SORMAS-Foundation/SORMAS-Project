@@ -1,4 +1,4 @@
-package de.symeda.sormas.patch;
+package de.symeda.sormas.backend.patch;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;

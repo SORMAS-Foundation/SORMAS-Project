@@ -1,4 +1,4 @@
-package de.symeda.sormas.patch.mapping.exceptions;
+package de.symeda.sormas.backend.patch.mapping.exceptions;
 
 import java.text.ParseException;
 import java.util.Map;

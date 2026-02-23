@@ -1,4 +1,4 @@
-package de.symeda.sormas.patch.mapping.impl.valuemapper;
+package de.symeda.sormas.backend.patch.mapping.impl.valuemapper;
 
 import java.lang.reflect.Field;
 import java.util.Set;
@@ -24,7 +24,8 @@ public class EnumMapper implements ValueMapper {
 	@SuppressWarnings({
 		"unchecked",
 		"rawtypes" })
-	public <T> T map(Object value, Class<T> targetType) {
+	public <T> T map(Object value, Class<T> targetType, Set<String> inputLanguageCodes) {
+		// TODO: check if inputLanguageCodes can be used to use I18N.
 		Class<? extends Enum> enumType = (Class<? extends Enum>) targetType;
 
 		String memberNameCandidate = value.toString().trim().toUpperCase();
@@ -36,6 +37,7 @@ public class EnumMapper implements ValueMapper {
 			}
 		}
 
+		// TODO: check if fallback mechanism is wanted.
 		for (Enum constant : constants) {
 			if (FALLBACK_NAME.equals(constant.name())) {
 				return (T) constant;

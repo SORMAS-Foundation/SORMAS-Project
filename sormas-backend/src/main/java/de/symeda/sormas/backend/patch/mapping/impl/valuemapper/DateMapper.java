@@ -1,4 +1,4 @@
-package de.symeda.sormas.patch.mapping.impl.valuemapper;
+package de.symeda.sormas.backend.patch.mapping.impl.valuemapper;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -23,7 +23,7 @@ public class DateMapper implements ValueMapper {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T map(Object value, Class<T> targetType) {
+	public <T> T map(Object value, Class<T> targetType, Set<String> inputLanguageCodes) {
 		try {
 			SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
 			sdf.setLenient(false);

@@ -42,6 +42,8 @@ import org.junit.jupiter.api.function.Executable;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.hilling.junit.cdi.CdiTestJunitExtension;
 import de.hilling.junit.cdi.ContextControlWrapper;
@@ -96,6 +98,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionFacade;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentFacade;
 import de.symeda.sormas.api.manualmessagelog.ManualMessageLogFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
+import de.symeda.sormas.api.patch.CaseDataPatcher;
 import de.symeda.sormas.api.person.notifier.NotifierFacade;
 import de.symeda.sormas.api.report.AggregateReportFacade;
 import de.symeda.sormas.api.report.WeeklyReportFacade;
@@ -216,6 +219,7 @@ import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentService;
 import de.symeda.sormas.backend.manualmessagelog.ManualMessageLogFacadeEjb.ManualMessageLogFacadeEjbLocal;
 import de.symeda.sormas.backend.manualmessagelog.ManualMessageLogService;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb.OutbreakFacadeEjbLocal;
+import de.symeda.sormas.backend.patch.CaseDataPatcherImpl;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.person.notifier.NotifierEjb;
@@ -295,6 +299,8 @@ import de.symeda.sormas.backend.visit.VisitService;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 public abstract class AbstractBeanTest {
+
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	protected final TestDataCreator creator = new TestDataCreator(this);
 
@@ -1146,5 +1152,9 @@ public abstract class AbstractBeanTest {
 
 	public NotifierService getNotifierService() {
 		return getBean(NotifierService.class);
+	}
+
+	public CaseDataPatcher getCaseDataPatcher() {
+		return getBean(CaseDataPatcherImpl.class);
 	}
 }

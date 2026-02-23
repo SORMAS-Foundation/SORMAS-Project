@@ -30,7 +30,21 @@ public interface ValueMapper extends Comparable<ValueMapper> {
 	// TODO: CHECK if error handling should be done here already. | Multiple return types.
 	// TODO: CHECK shouldn't be string ?
 	@NotNull
-	<T> T map(Object value, @NotNull Class<T> targetType);
+	default <T> T map(Object value, @NotNull Class<T> targetType) {
+		return map(value, targetType, Set.of());
+	}
+
+	/**
+	 *
+	 * @param value
+	 * @param targetType
+	 * @param inputLanguageCodes
+	 *            useful if you input language is not only 'en' for some mappers that
+	 * @return
+	 * @param <T>
+	 */
+	@NotNull
+	<T> T map(Object value, @NotNull Class<T> targetType, Set<String> inputLanguageCodes);
 
 	@NotNull
 	Set<Class<?>> getSupportedTypes();

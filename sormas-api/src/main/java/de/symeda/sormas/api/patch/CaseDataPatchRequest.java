@@ -1,7 +1,9 @@
 package de.symeda.sormas.api.patch;
 
 import java.util.Map;
+import java.util.Objects;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.info.InfoFacade;
@@ -13,7 +15,7 @@ public class CaseDataPatchRequest {
 	private String caseUuid;
 
 	@NotNull
-	private DataReplacementType replacementType = DataReplacementType.IF_NOT_ALREADY_PRESENT;
+	private DataReplacementStrategy replacementStrategy = DataReplacementStrategy.IF_NOT_ALREADY_PRESENT;
 
 	private EmptyValueBehavior emptyValueBehavior = EmptyValueBehavior.IGNORE;
 
@@ -24,6 +26,12 @@ public class CaseDataPatchRequest {
 	@NotNull
 	private Map<String, Object> patchDictionary;
 
+	/**
+	 * Can be used to add some custom descriptions in some fields.
+	 */
+	@Nullable
+	private String origin;
+
 	public String getCaseUuid() {
 		return caseUuid;
 	}
@@ -33,12 +41,12 @@ public class CaseDataPatchRequest {
 		return this;
 	}
 
-	public DataReplacementType getReplacementType() {
-		return replacementType;
+	public DataReplacementStrategy getReplacementStrategy() {
+		return replacementStrategy;
 	}
 
-	public CaseDataPatchRequest setReplacementType(DataReplacementType replacementType) {
-		this.replacementType = replacementType;
+	public CaseDataPatchRequest setReplacementStrategy(DataReplacementStrategy replacementStrategy) {
+		this.replacementStrategy = replacementStrategy;
 		return this;
 	}
 
@@ -60,9 +68,36 @@ public class CaseDataPatchRequest {
 		return this;
 	}
 
+	@Nullable
+	public String getOrigin() {
+		return origin;
+	}
+
+	public CaseDataPatchRequest setOrigin(@Nullable String origin) {
+		this.origin = origin;
+		return this;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == null || getClass() != o.getClass())
+			return false;
+		CaseDataPatchRequest that = (CaseDataPatchRequest) o;
+		return Objects.equals(caseUuid, that.caseUuid)
+			&& replacementStrategy == that.replacementStrategy
+			&& emptyValueBehavior == that.emptyValueBehavior
+			&& Objects.equals(patchDictionary, that.patchDictionary)
+			&& Objects.equals(origin, that.origin);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(caseUuid, replacementStrategy, emptyValueBehavior, patchDictionary, origin);
+	}
+
 	@Override
 	public String toString() {
-		return "CaseDataPatchRequest{" + "caseUuid='" + caseUuid + '\'' + ", replacementType=" + replacementType + ", emptyValueBehavior="
-			+ emptyValueBehavior + ", patchDictionary=" + patchDictionary + '}';
+		return "CaseDataPatchRequest{" + "caseUuid='" + caseUuid + '\'' + ", replacementStrategy=" + replacementStrategy + ", emptyValueBehavior="
+			+ emptyValueBehavior + ", patchDictionary=" + patchDictionary + ", origin='" + origin + '\'' + '}';
 	}
 }

@@ -16,6 +16,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import de.symeda.sormas.backend.patch.PropertyAccessor;
+
 @ExtendWith(MockitoExtension.class)
 class PropertyAccessorTest {
 
@@ -27,7 +29,6 @@ class PropertyAccessorTest {
 		private String[] array;
 		private Map<String, String> map;
 
-		// Getters/setters
 		public String getName() {
 			return name;
 		}
@@ -226,7 +227,6 @@ class PropertyAccessorTest {
 		assertThrows(UnsupportedOperationException.class, () -> PropertyAccessor.getNestedPropertyType(bean, "map[key]"));
 	}
 
-	// Integration test with real reflection errors
 	@Test
 	void getNestedPropertyType_exception_returnsEmpty() {
 		class PrivateBean {
