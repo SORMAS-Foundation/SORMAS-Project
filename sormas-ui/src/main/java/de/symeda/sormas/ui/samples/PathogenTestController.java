@@ -351,6 +351,33 @@ public class PathogenTestController {
 			TRAY_NOTIFICATION);
 	}
 
+	/**
+	 * Handles the association of a pathogen test with a case.
+	 * Based on pathogen test results the following logic is applied:
+	 * 
+	 * <p>Negative test result AND test result verified
+	 * <ol>
+	 * <li>Tested disease == case disease AND test result != sample pathogen test result: Ask user whether to update the sample pathogen test result</li>
+	 * <li>Tested disease != case disease: Do nothing</li>
+	 * </ol>
+	 * </p>
+	 * <p>Positive test result AND test result verified
+	 * <ol>
+	 * <li>Tested disease == case disease: Ask user whether to update the sample pathogen test result
+	 * <ol>
+	 * <li>Tested disease variant != case disease variant: Ask user to change the case disease variant</li>
+	 * <li>Case classification != confirmed: Ask user whether to confirm the case</li>
+	 * </ol>
+	 * </li>
+	 * <li>Tested disease != case disease: Ask user to create a new case for the tested disease</li>
+	 * </ol>
+	 * </p>
+	 * 
+	 * @param pathogenTests the pathogen tests
+	 * @param associatedCase the associated case
+	 * @param suppressNavigateToCase whether to suppress navigation to the case
+	 * 
+	*/
 	private void handleAssociatedCase(List<PathogenTestDto> pathogenTests, CaseReferenceDto associatedCase, boolean suppressNavigateToCase) {
 
 		if (!UiUtil.permitted(UserRight.CASE_EDIT)) {
@@ -367,32 +394,53 @@ public class PathogenTestController {
 		// a.2) Case classification != confirmed: Ask user whether to confirm the case
 		// b) Tested disease != case disease: Ask user to create a new case for the tested disease
 
-		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
+		final CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
 
-		Map<Disease, List<PathogenTestDto>> testsByDisease = pathogenTests.stream().collect(Collectors.groupingBy(PathogenTestDto::getTestedDisease));
-		Optional<PathogenTestDto> positiveWithSameDisease = testsByDisease.getOrDefault(caze.getDisease(), Collections.emptyList())
+		final Map<Disease, List<PathogenTestDto>> testsByDisease =
+			pathogenTests.stream().collect(Collectors.groupingBy(PathogenTestDto::getTestedDisease));
+		final Optional<PathogenTestDto> positiveWithSameDisease = testsByDisease.getOrDefault(caze.getDisease(), Collections.emptyList())
 			.stream()
 			.filter(t -> t.getTestResult() == PathogenTestResultType.POSITIVE && Boolean.TRUE.equals(t.getTestResultVerified()))
 			.findFirst();
 
-		Optional<PathogenTestDto> negativeWithSameDisease = testsByDisease.getOrDefault(caze.getDisease(), Collections.emptyList())
+		final Optional<PathogenTestDto> negativeWithSameDisease = testsByDisease.getOrDefault(caze.getDisease(), Collections.emptyList())
 			.stream()
 			.filter(t -> t.getTestResult() == PathogenTestResultType.NEGATIVE && Boolean.TRUE.equals(t.getTestResultVerified()))
 			.findFirst();
 
-		PathogenTestDto resultedPathogenTest;
-		if (positiveWithSameDisease.isPresent()) {
-			resultedPathogenTest = positiveWithSameDisease.get();
-		} else if (negativeWithSameDisease.isPresent()) {
-			resultedPathogenTest = negativeWithSameDisease.get();
-		} else {
-			resultedPathogenTest = null;
-		}
+		final boolean hasVerifiedPositiveTest = positiveWithSameDisease.isPresent();
+		final boolean hasVerifiedNegativeTest = negativeWithSameDisease.isPresent();
 
-		if (resultedPathogenTest != null) {
-			showChangeAssociatedSampleResultDialog(resultedPathogenTest, (accepted) -> {
-				if (accepted) {
-					checkForDiseaseVariantUpdate(resultedPathogenTest, caze, suppressNavigateToCase, this::showConfirmCaseDialog);
+		final boolean hasVerifiedTests = hasVerifiedPositiveTest || hasVerifiedNegativeTest;
+
+
+		// 1. Ask user to update sample overall result if latest test result is different
+		// 2. Ask user to update disease variant if case variant is different
+		// 3. Ask user if they want to confirm the case only if any of the tests are verified either positive or negative (not pending or other)
+
+		// We need to display popups if any of the tests are verified either positive or negative
+		if (hasVerifiedTests) {
+			// get either the positive or negative test
+			final PathogenTestDto resultedPathogenTest = hasVerifiedPositiveTest ? positiveWithSameDisease.get() : negativeWithSameDisease.get();
+
+			// just a sanity check
+			if (resultedPathogenTest == null) {
+				throw new IllegalStateException("No verified test found for disease " + caze.getDisease());
+			}
+
+			showChangeAssociatedSampleResultDialog(resultedPathogenTest, accepted -> { // Change sample result
+				// Accepted SR may have changed
+				if (Boolean.TRUE.equals(accepted)) {
+					checkForDiseaseVariantUpdate(resultedPathogenTest, caze, suppressNavigateToCase, c -> { // Update disease variant
+						// Only show the confirmation dialog if there are verified positive tests
+						// We decided this based on the intented text in the dialog but based on the test results instead of the sample overall result
+						if (hasVerifiedPositiveTest) {
+							// The final laboratory result of the sample the saved pathogen test belongs to is positive. <-- sample overall result
+							// However, the case cannot be automatically classified as a confirmed case because it is missing some information. 
+							// Do you want to set the case classification to confirmed anyway?
+							this.showConfirmCaseDialog(c); // Case classification
+						}
+					});
 				}
 			});
 		}
@@ -400,13 +448,14 @@ public class PathogenTestController {
 		testsByDisease.keySet().stream().filter(disease -> disease != caze.getDisease()).forEach((disease) -> {
 			List<PathogenTestDto> tests = testsByDisease.get(disease);
 
-			Optional<PathogenTestDto> positiveWithOtherDisease =
-				tests.stream().filter(t -> t.getTestResult() == PathogenTestResultType.POSITIVE && Boolean.TRUE.equals(t.getTestResultVerified())).findFirst();
+			Optional<PathogenTestDto> positiveWithOtherDisease = tests.stream()
+				.filter(t -> t.getTestResult() == PathogenTestResultType.POSITIVE && Boolean.TRUE.equals(t.getTestResultVerified()))
+				.findFirst();
 
 			if (positiveWithOtherDisease.isPresent()) {
 				List<CaseDataDto> duplicatedCases =
 					FacadeProvider.getCaseFacade().getDuplicatesWithPathogenTest(caze.getPerson(), positiveWithOtherDisease.get());
-				if (duplicatedCases == null || duplicatedCases.size() == 0) {
+				if (duplicatedCases == null || duplicatedCases.isEmpty()) {
 					PathogenTestDto positiveTestWithOtherDisease = positiveWithOtherDisease.get();
 
 					showCaseCloningWithNewDiseaseDialog(
@@ -466,8 +515,9 @@ public class PathogenTestController {
 			testsByDisease.keySet().stream().filter(disease -> disease != contact.getDisease()).forEach((disease) -> {
 				List<PathogenTestDto> tests = testsByDisease.get(disease);
 
-				Optional<PathogenTestDto> positiveWithOtherDisease =
-					tests.stream().filter(t -> t.getTestResult() == PathogenTestResultType.POSITIVE && Boolean.TRUE.equals(t.getTestResultVerified())).findFirst();
+				Optional<PathogenTestDto> positiveWithOtherDisease = tests.stream()
+					.filter(t -> t.getTestResult() == PathogenTestResultType.POSITIVE && Boolean.TRUE.equals(t.getTestResultVerified()))
+					.findFirst();
 				if (positiveWithOtherDisease.isPresent()) {
 					List<CaseDataDto> duplicatedCases =
 						FacadeProvider.getCaseFacade().getDuplicatesWithPathogenTest(contact.getPerson(), positiveWithOtherDisease.get());
@@ -530,8 +580,9 @@ public class PathogenTestController {
 			testsByDisease.keySet().stream().filter(disease -> disease != eventDisease).forEach((disease) -> {
 				List<PathogenTestDto> tests = testsByDisease.get(disease);
 
-				Optional<PathogenTestDto> positiveWithOtherDisease =
-					tests.stream().filter(t -> t.getTestResult() == PathogenTestResultType.POSITIVE && Boolean.TRUE.equals(t.getTestResultVerified())).findFirst();
+				Optional<PathogenTestDto> positiveWithOtherDisease = tests.stream()
+					.filter(t -> t.getTestResult() == PathogenTestResultType.POSITIVE && Boolean.TRUE.equals(t.getTestResultVerified()))
+					.findFirst();
 				if (positiveWithOtherDisease.isPresent() && UiUtil.enabled(FeatureType.CASE_SURVEILANCE)) {
 					List<CaseDataDto> duplicatedCases = FacadeProvider.getCaseFacade()
 						.getDuplicatesWithPathogenTest(eventParticipant.getPerson().toReference(), positiveWithOtherDisease.get());
@@ -616,7 +667,7 @@ public class PathogenTestController {
 			I18nProperties.getString(Strings.no),
 			800,
 			confirmed -> {
-				if (confirmed) {
+				if (Boolean.TRUE.equals(confirmed)) {
 					if (differentDiseases) {
 						ControllerProvider.getCaseController().createFromEventParticipantDifferentDisease(eventParticipant, testedDisease);
 					} else {
@@ -635,7 +686,7 @@ public class PathogenTestController {
 			I18nProperties.getString(Strings.no),
 			800,
 			confirmed -> {
-				if (confirmed) {
+				if (Boolean.TRUE.equals(confirmed)) {
 					ControllerProvider.getCaseController().createFromContact(contact);
 				}
 				callback.accept(confirmed);
@@ -650,7 +701,7 @@ public class PathogenTestController {
 			I18nProperties.getString(Strings.no),
 			800,
 			confirmed -> {
-				if (confirmed) {
+				if (Boolean.TRUE.equals(confirmed)) {
 					ControllerProvider.getCaseController().createFromUnrelatedContact(contact, disease);
 				}
 			});
@@ -670,7 +721,7 @@ public class PathogenTestController {
 			I18nProperties.getString(Strings.no),
 			800,
 			confirmed -> {
-				if (confirmed) {
+				if (Boolean.TRUE.equals(confirmed)) {
 					existingCaseDto.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
 					existingCaseDto.setClassificationUser(null);
 					existingCaseDto.setDisease(disease);
@@ -702,7 +753,7 @@ public class PathogenTestController {
 			I18nProperties.getString(Strings.no),
 			800,
 			confirmed -> {
-				if (confirmed) {
+				if (Boolean.TRUE.equals(confirmed)) {
 					CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(caze.getUuid());
 					caseDataByUuid.setCaseClassification(CaseClassification.CONFIRMED);
 					FacadeProvider.getCaseFacade().save(caseDataByUuid);
