@@ -94,7 +94,7 @@ public class PersonContactDetailsFieldMapper implements FieldCustomMapper {
 	@Override
 	public Set<String> supportedFields() {
 		return Stream.of(PersonContactDetailDto.PHONE_NUMBER_TYPE, PersonContactDetailDto.DETAILS)
-			.map(suffix -> PersonDto.I18N_PREFIX + "." + PersonContactDetailDto.I18N_PREFIX + "." + suffix)
+			.map(suffix -> PersonDto.I18N_PREFIX + "." + PersonDto.PERSON_CONTACT_DETAILS + "." + suffix)
 			.collect(Collectors.toSet());
 	}
 }
