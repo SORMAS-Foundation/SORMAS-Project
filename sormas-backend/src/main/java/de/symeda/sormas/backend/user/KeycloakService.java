@@ -326,6 +326,13 @@ public class KeycloakService {
 		user.setLastName(userRepresentation.getLastName());
 		user.setLanguage(getLanguage(userRepresentation));
 		user.setUserEmail(userRepresentation.getEmail());
+
+		Map<String, List<String>> attributes = userRepresentation.getAttributes();
+		attributes.entrySet().stream().filter(entry -> "telephoneNumber".equalsIgnoreCase(entry.getKey())).findAny().ifPresentOrElse(entry -> {
+			String phoneNumber = entry.getValue().get(0);
+			user.setPhone(phoneNumber);
+		}, () -> logger.error("No phone number found in the user's attributes: [{}]", attributes));
+
 	}
 
 	private Optional<UserRepresentation> updateUser(Keycloak keycloak, String existingUsername, User newUser) {
