@@ -16,7 +16,7 @@ import de.symeda.sormas.backend.AbstractUnitTest;
 class EnumMapperTest extends AbstractUnitTest {
 
 	@InjectMocks
-	private EnumMapper victim;
+	private EnumPatchMapper victim;
 
 	// getSupportedTypes
 

@@ -15,7 +15,7 @@ import de.symeda.sormas.backend.AbstractUnitTest;
 class DateMapperTest extends AbstractUnitTest {
 
 	@InjectMocks
-	private DateMapper victim;
+	private DatePatchMapper victim;
 
 	// getSupportedTypes
 

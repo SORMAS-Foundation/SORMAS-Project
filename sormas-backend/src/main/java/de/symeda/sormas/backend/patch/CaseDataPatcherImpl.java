@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -48,21 +47,15 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 
 	public static final String PERSON_FIELD_NAME_PREFIX = "Person.";
 	private final static Logger logger = LoggerFactory.getLogger(CaseDataPatcherImpl.class);
-	public static final String OPENING_PARENTHESIS = "(";
-	public static final String CLOSING_PARENTHESIS = ")";
-	public static final String PIPE = "|";
-
-	// might be more subtle: person.toto but also *.uuid (or uuid). includes approach ?
-	// TODO: must be twofold: enforced default fields : technical: uuid, user ... + custom config by admin
-	private Set<String> forbiddenFields = Set.of("Person.birthdate");
-
-	private Set<String> allowedPrefixes = Set.of("Person.", "CaseData");
 
 	@Inject
 	private ValueMapperRegistry valueMapperRegistry;
 
 	@Inject
 	private FieldCustomMapperRegistry fieldCustomMapperRegistry;
+
+	@Inject
+	private PatchFieldHelper patchFieldHelper;
 
 	@EJB
 	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
@@ -92,7 +85,8 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 			try {
 				DataPatchFailureCause fieldFailureCause = tuple.getSecond();
 				if (fieldFailureCause != null) {
-					return singlePatchResult.setFailure(new DataPatchFailure().setDataPatchFailureCause(fieldFailureCause));
+					return singlePatchResult
+						.setFailure(new DataPatchFailure().setDataPatchFailureCause(fieldFailureCause).setProvidedFieldValue(entry.getValue()));
 				}
 
 				Optional<FieldCustomMapper> mapper = fieldCustomMapperRegistry.getMapper(fullFieldName);
@@ -103,6 +97,7 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 						.map(
 							new FieldPatchRequest().setFieldName(fullFieldName)
 								.setReplacementType(request.getReplacementStrategy())
+								.setOrigin(request.getOrigin())
 								.setTarget(target)
 								.setValue(untypedTargetValue));
 
@@ -169,20 +164,18 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 
 		DataPatchResponse dataPatchResponse = new DataPatchResponse().setPatchDictionary(patchedValuesDictionary).setFailures(failuresDictionary);
 
-		logger.info("patch results: [{}]", results);
-
-		// TODO: not necessarly both to be saved
 		// TODO:
 		if (logger.isErrorEnabled()) {
 			logger.error("CaseData: \n{}", ObjectMapperProvider.writeValueAsStringFailSafe(caseData));
-			System.out.println(ObjectMapperProvider.writeValueAsStringFailSafe(caseData));
 		}
 		caseFacade.save(caseData);
 
-		if (logger.isErrorEnabled()) {
+		if (logger.isDebugEnabled()) {
 			logger.error("Person: \n{}", ObjectMapperProvider.writeValueAsStringFailSafe(person.get()));
 		}
 		personFacade.save(person.get());
+
+		logger.debug("dataPatchResponse: [{}]", dataPatchResponse);
 
 		return dataPatchResponse;
 
@@ -195,7 +188,6 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 		 * - OK: Check for FieldCustomMapper to use custom mapping strategy
 		 * - OK: Check if field exists.
 		 * - Go to the appropriate (sub) field
-		 * - TODO: if appropriate: multiple patching into same field strategy!!
 		 * <p>
 		 * WARN: Root will be either: (breaks trivial check if exists approach).
 		 * - CaseData
@@ -214,13 +206,13 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 			.flatMap(entry -> {
 				String path = entry.getKey();
 
-				DataPatchFailureCause dataPatchFailureCause = checkIfPathIsInvalid(path);
+				DataPatchFailureCause dataPatchFailureCause = patchFieldHelper.checkIfPathIsInvalid(path);
 
 				if (dataPatchFailureCause != null) {
 					return Stream.of(buildMapTupleEntryFrom(entry, dataPatchFailureCause));
 				}
 
-				if (isNotMultipleFieldFormat(path)) {
+				if (!patchFieldHelper.isMultipleFieldFormat(path)) {
 					return Stream.of(buildMapTupleEntryFrom(entry));
 				}
 
@@ -237,71 +229,10 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 
 		int closeParen = path.indexOf(')');
 
+		logger.error(path);
 		String restPath = path.substring(openingParenthesisIndex + 1, closeParen);
 
 		return Arrays.stream(restPath.split("\\|")).map(suffix -> Map.entry(new Tuple<>(prefix + suffix, null), entry.getValue()));
-	}
-
-	private boolean isNotMultipleFieldFormat(String path) {
-		return !(path.contains(OPENING_PARENTHESIS) || path.contains(CLOSING_PARENTHESIS) || path.contains(PIPE));
-	}
-
-	// TODO: could be extracted into another class
-	@Nullable
-	private DataPatchFailureCause checkIfPathIsInvalid(String path) {
-		DataPatchFailureCause dataPatchFailureCause = null;
-
-		if (!startsWithAllowedPrefix(path)) {
-			dataPatchFailureCause = DataPatchFailureCause.UNSUPPORTED_PREFIX;
-		} else if (fieldIsForbidden(path)) {
-			dataPatchFailureCause = DataPatchFailureCause.FORBIDDEN_FIELD;
-		} else if (fieldIsInvalidMultiField(path)) {
-			dataPatchFailureCause = DataPatchFailureCause.INVALID_MULTIPLE_FIELDS_FORMAT;
-		}
-		return dataPatchFailureCause;
-	}
-
-	private boolean fieldIsInvalidMultiField(String path) {
-		if (isNotMultipleFieldFormat(path)) {
-			return false;
-		}
-
-		long openCount = path.chars().filter(c -> c == '(').count();
-		long closeCount = path.chars().filter(c -> c == ')').count();
-		int openIndex = path.indexOf('(');
-		int closeIndex = path.lastIndexOf(')');
-
-		if (openCount != 1 || closeCount != 1) {
-			logger.debug("Path must contain exactly one pair of parentheses: [" + path + "]");
-			return false;
-		}
-
-		if (openIndex > closeIndex) {
-			logger.debug("Closing parenthesis appears before opening parenthesis: [" + path + "]");
-			return false;
-		}
-
-		if (closeIndex != path.length() - 1) {
-			logger.debug("Closing parenthesis must be at the end of the path: [" + path + "]");
-			return false;
-		}
-
-		String alternatives = path.substring(openIndex + 1, closeIndex);
-
-		if (alternatives.isBlank()) {
-			logger.debug("Empty parentheses — nothing between '(' and ')': [" + path + "]");
-			return false;
-		}
-
-		String[] parts = alternatives.split("\\|");
-		for (String part : parts) {
-			if (part.isBlank()) {
-				logger.debug("Empty alternative found — consecutive or leading/trailing pipes: [" + path + "]");
-				return false;
-			}
-		}
-
-		return true;
 	}
 
 	private Map.Entry<Tuple<String, DataPatchFailureCause>, Object> buildMapTupleEntryFrom(
@@ -312,14 +243,6 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 
 	private Map.Entry<Tuple<String, DataPatchFailureCause>, Object> buildMapTupleEntryFrom(Map.Entry<String, Object> entry) {
 		return Map.entry(new Tuple<>(entry.getKey(), null), entry.getValue());
-	}
-
-	private boolean startsWithAllowedPrefix(String path) {
-		return allowedPrefixes.stream().anyMatch(path::startsWith);
-	}
-
-	private boolean fieldIsForbidden(String path) {
-		return forbiddenFields.contains(path);
 	}
 
 	private @NotNull Predicate<Map.Entry<String, Object>> buildAdequateDictionaryValuePredicate(CaseDataPatchRequest request) {
@@ -369,10 +292,6 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 
 			return true;
 		};
-	}
-
-	public void setForbiddenFields(Set<String> forbiddenFields) {
-		this.forbiddenFields = forbiddenFields;
 	}
 
 	public void setValueMapperRegistry(ValueMapperRegistry valueMapperRegistry) {

@@ -100,6 +100,7 @@ import de.symeda.sormas.api.manualmessagelog.ManualMessageLogFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.patch.CaseDataPatcher;
 import de.symeda.sormas.api.person.notifier.NotifierFacade;
+import de.symeda.sormas.api.referencedata.ReferenceDataValueInstanceProvider;
 import de.symeda.sormas.api.report.AggregateReportFacade;
 import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.sample.AdditionalTestFacade;
@@ -1156,5 +1157,9 @@ public abstract class AbstractBeanTest {
 
 	public CaseDataPatcher getCaseDataPatcher() {
 		return getBean(CaseDataPatcherImpl.class);
+	}
+
+	public ReferenceDataValueInstanceProvider getReferenceDataValueInstanceProvider() {
+		return getBean(ReferenceDataValueInstanceProviderImpl.class);
 	}
 }

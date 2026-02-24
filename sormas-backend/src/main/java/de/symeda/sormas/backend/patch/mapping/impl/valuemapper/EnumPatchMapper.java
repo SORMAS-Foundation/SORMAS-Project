@@ -5,11 +5,11 @@ import java.util.Set;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import de.symeda.sormas.api.patch.mapping.ValueMapper;
 import de.symeda.sormas.api.patch.mapping.ValueMapperDefault;
+import de.symeda.sormas.api.patch.mapping.ValuePatchMapper;
 
 @ApplicationScoped
-public class EnumMapper implements ValueMapper {
+public class EnumPatchMapper implements ValuePatchMapper {
 
 	private static final Set<Class<?>> SUPPORTED_TYPES = Set.of(Enum.class);
 

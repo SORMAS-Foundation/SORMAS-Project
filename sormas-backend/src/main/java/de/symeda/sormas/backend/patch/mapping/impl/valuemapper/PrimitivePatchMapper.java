@@ -4,10 +4,10 @@ import java.util.Set;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import de.symeda.sormas.api.patch.mapping.ValueMapper;
+import de.symeda.sormas.api.patch.mapping.ValuePatchMapper;
 
 @ApplicationScoped
-public class PrimitiveMapper implements ValueMapper {
+public class PrimitivePatchMapper implements ValuePatchMapper {
 
 	private static final Set<Class<?>> SUPPORTED_TYPES = Set.of(String.class, Integer.class, Double.class, Float.class, Boolean.class, boolean.class);
 

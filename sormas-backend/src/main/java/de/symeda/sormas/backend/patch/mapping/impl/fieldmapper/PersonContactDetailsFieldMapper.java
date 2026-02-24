@@ -21,6 +21,7 @@ import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PhoneNumberType;
+import de.symeda.sormas.api.utils.DataHelper;
 
 @ApplicationScoped
 public class PersonContactDetailsFieldMapper implements FieldCustomMapper {
@@ -40,11 +41,11 @@ public class PersonContactDetailsFieldMapper implements FieldCustomMapper {
 
 		if (request.getFieldName().contains(PersonContactDetailDto.PHONE_NUMBER_TYPE)) {
 			appropriatePredicate = buildPredicateFor(PersonContactDetailType.PHONE);
-			appropriateSupplier = () -> buildPhoneContactDetail(request);
+			appropriateSupplier = () -> buildPhoneContactDetail(request, personDto);
 
 		} else {
 			appropriatePredicate = buildPredicateFor(PersonContactDetailType.EMAIL);
-			appropriateSupplier = () -> buildEmailContactDetail(request);
+			appropriateSupplier = () -> buildEmailContactDetail(request, personDto);
 		}
 
 		Optional<PersonContactDetailDto> alreadyPresentContactDetail = personDto.getPersonContactDetails()
@@ -68,24 +69,26 @@ public class PersonContactDetailsFieldMapper implements FieldCustomMapper {
 		return contactDetail -> contactDetail.getPersonContactDetailType().equals(email);
 	}
 
-	private PersonContactDetailDto buildGenericContactDetail(FieldPatchRequest request) {
+	private PersonContactDetailDto buildGenericContactDetail(FieldPatchRequest request, PersonDto personDto) {
 		PersonContactDetailDto detail = new PersonContactDetailDto();
+		detail.setUuid(DataHelper.createUuid());
+		detail.setPerson(personDto.toReference());
 		detail.setDetails((String) request.getValue());
 		detail.setAdditionalInformation(request.getOrigin());
 
 		return detail;
 	}
 
-	private PersonContactDetailDto buildPhoneContactDetail(FieldPatchRequest request) {
-		PersonContactDetailDto detail = buildGenericContactDetail(request);
+	private PersonContactDetailDto buildPhoneContactDetail(FieldPatchRequest request, PersonDto personDto) {
+		PersonContactDetailDto detail = buildGenericContactDetail(request, personDto);
 		detail.setPersonContactDetailType(PersonContactDetailType.PHONE);
 		detail.setPhoneNumberType(PhoneNumberType.OTHER);
 
 		return detail;
 	}
 
-	private PersonContactDetailDto buildEmailContactDetail(FieldPatchRequest request) {
-		PersonContactDetailDto detail = buildGenericContactDetail(request);
+	private PersonContactDetailDto buildEmailContactDetail(FieldPatchRequest request, PersonDto personDto) {
+		PersonContactDetailDto detail = buildGenericContactDetail(request, personDto);
 		detail.setPersonContactDetailType(PersonContactDetailType.EMAIL);
 
 		return detail;

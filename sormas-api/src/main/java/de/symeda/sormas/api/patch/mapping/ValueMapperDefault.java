@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks an enum constant as the default fallback value for {@link ValueMapper} for enums.
+ * Marks an enum constant as the default fallback value for {@link ValuePatchMapper} for enums.
  * Takes precedence over the conventional "OTHER" fallback.
  */
 @Target(ElementType.FIELD)

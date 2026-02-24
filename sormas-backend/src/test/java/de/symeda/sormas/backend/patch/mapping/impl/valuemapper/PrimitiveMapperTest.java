@@ -15,7 +15,7 @@ import de.symeda.sormas.backend.AbstractUnitTest;
 class PrimitiveMapperTest extends AbstractUnitTest {
 
 	@InjectMocks
-	private PrimitiveMapper victim;
+	private PrimitivePatchMapper victim;
 
 	@Test
 	void map_string() {

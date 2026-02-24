@@ -9,15 +9,15 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.patch.mapping.ValueMapper;
+import de.symeda.sormas.api.patch.mapping.ValuePatchMapper;
 
 @ApplicationScoped
 public class ValueMapperRegistry {
 
-	private List<ValueMapper> orderedInstances;
+	private List<ValuePatchMapper> orderedInstances;
 
 	@Inject
-	private Instance<ValueMapper> instances;
+	private Instance<ValuePatchMapper> instances;
 
 	@PostConstruct
 	void init() {
@@ -35,7 +35,7 @@ public class ValueMapperRegistry {
 			return targetType.cast(value);
 		}
 
-		for (ValueMapper mapper : orderedInstances) {
+		for (ValuePatchMapper mapper : orderedInstances) {
 			if (mapper.supports(targetType)) {
 				return mapper.map(value, targetType);
 			}

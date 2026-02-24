@@ -6,11 +6,11 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.patch.mapping.ValueMapper;
+import de.symeda.sormas.api.patch.mapping.ValuePatchMapper;
 import de.symeda.sormas.api.referencedata.ReferenceDataValueInstanceProvider;
 
 @ApplicationScoped
-public class ReferenceDtoMapper implements ValueMapper {
+public class ReferenceDtoPatchMapper implements ValuePatchMapper {
 
 	@Inject
 	private ReferenceDataValueInstanceProvider referenceDataValueInstanceProvider;

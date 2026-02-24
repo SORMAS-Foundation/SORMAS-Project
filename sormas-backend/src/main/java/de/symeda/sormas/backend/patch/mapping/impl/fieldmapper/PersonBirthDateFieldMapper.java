@@ -14,7 +14,7 @@ import de.symeda.sormas.api.patch.DataReplacementStrategy;
 import de.symeda.sormas.api.patch.mapping.FieldCustomMapper;
 import de.symeda.sormas.api.patch.mapping.FieldPatchRequest;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.backend.patch.mapping.impl.valuemapper.DateMapper;
+import de.symeda.sormas.backend.patch.mapping.impl.valuemapper.DatePatchMapper;
 
 /**
  * For now this FieldMapper will not be allowed and "deactivated" through the list of forbidden fields.
@@ -23,7 +23,7 @@ import de.symeda.sormas.backend.patch.mapping.impl.valuemapper.DateMapper;
 public class PersonBirthDateFieldMapper implements FieldCustomMapper {
 
 	@Inject
-	private DateMapper dateMapper;
+	private DatePatchMapper dateMapper;
 
 	@Override
 	public Optional<DataPatchFailure> map(FieldPatchRequest request) {

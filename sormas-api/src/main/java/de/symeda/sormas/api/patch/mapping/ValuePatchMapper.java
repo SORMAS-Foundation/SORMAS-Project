@@ -5,7 +5,7 @@ import java.util.Set;
 import javax.validation.constraints.NotNull;
 
 // TODO: check if "in-value-type" must be checked: add self check ?
-public interface ValueMapper extends Comparable<ValueMapper> {
+public interface ValuePatchMapper extends Comparable<ValuePatchMapper> {
 
 	int HIGH_PRECEDENCE = Integer.MIN_VALUE;
 	int LOW_PRECEDENCE = Integer.MAX_VALUE;
@@ -83,7 +83,7 @@ public interface ValueMapper extends Comparable<ValueMapper> {
 	}
 
 	@Override
-	default int compareTo(ValueMapper o) {
+	default int compareTo(ValuePatchMapper o) {
 		return Integer.compare(this.getOrder(), o.getOrder());
 	}
 }

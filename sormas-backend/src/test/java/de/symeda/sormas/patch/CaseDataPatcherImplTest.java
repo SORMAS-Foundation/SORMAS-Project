@@ -1,7 +1,12 @@
 package de.symeda.sormas.patch;
 
+import java.sql.Date;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Map;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,7 +20,10 @@ import de.symeda.sormas.api.patch.DataPatchFailure;
 import de.symeda.sormas.api.patch.DataPatchFailureCause;
 import de.symeda.sormas.api.patch.DataPatchResponse;
 import de.symeda.sormas.api.patch.DataReplacementStrategy;
+import de.symeda.sormas.api.person.PersonContactDetailDto;
+import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.backend.AbstractBeanTest;
 
@@ -28,7 +36,6 @@ class CaseDataPatcherImplTest extends AbstractBeanTest {
 	}
 
 	// TODO: test different replacement strategy: with/without failure
-	// TODO: test forbidden fields
 
 	@Test
 	void patch_noErrorsReplaceAlways() {
@@ -37,6 +44,7 @@ class CaseDataPatcherImplTest extends AbstractBeanTest {
 
 		String newLastname = "toto";
 		String newSequelaeDetails = "Some very interesting sequelaeDetails";
+		String classificationDate = "2030-02-01";
 		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
 			.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
 			.setPatchDictionary(
@@ -47,11 +55,8 @@ class CaseDataPatcherImplTest extends AbstractBeanTest {
 					"Person.sex",
 					Sex.FEMALE.getName(),
 
-					"Person.personContactDetails.details",
-					"name@email.de",
-
-					"Person.personContactDetails.phoneNumberType",
-					"123654687",
+					"CaseData.classificationDate",
+					classificationDate,
 
 					"CaseData.sequelaeDetails",
 					newSequelaeDetails));
@@ -71,11 +76,58 @@ class CaseDataPatcherImplTest extends AbstractBeanTest {
 			() -> Assertions.assertEquals(newLastname, actualPerson.getLastName()),
 			() -> Assertions.assertEquals(Sex.FEMALE, actualPerson.getSex()),
 			// CASE
+			() -> Assertions.assertEquals(
+				Date.from(LocalDate.parse(classificationDate).atStartOfDay(ZoneId.systemDefault()).toInstant()),
+				actualCase.getClassificationDate()),
 			() -> Assertions.assertEquals(newSequelaeDetails, actualCase.getSequelaeDetails()));
 	}
 
-	private CaseDataPatcher victim() {
-		return getCaseDataPatcher();
+	@Test
+	void patch_noErrorsReplaceAlwaysPersonContactDetails() {
+		// PREPARE
+		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.PERTUSSIS);
+
+		String newPhoneNumber = "123654687";
+		String newEmail = "name@email.de";
+		String origin = "ngSurvey";
+		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
+			.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+			.setPatchDictionary(
+				Map.of(
+					"Person.personContactDetails.details",
+					newEmail,
+
+					"Person.personContactDetails.phoneNumberType",
+					newPhoneNumber))
+			.setOrigin(origin);
+
+		// EXECUTE
+		DataPatchResponse response = victim().patch(request);
+
+		// CHECK
+		logger.info("response: [{}]", response);
+
+		PersonDto actualPerson = getPersonFacade().getByUuid(originalCase.getPerson().getUuid());
+
+		Supplier<Stream<PersonContactDetailDto>> contactDetailsStreamProvider = () -> actualPerson.getPersonContactDetails().stream();
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failure found, but should be empty"),
+			// PERSON
+			() -> Assertions
+				.assertTrue(contactDetailsStreamProvider.get().allMatch(contactDetail -> origin.equals(contactDetail.getAdditionalInformation()))),
+
+			() -> Assertions.assertTrue(
+				contactDetailsStreamProvider.get()
+					.anyMatch(
+						contactDetail -> contactDetail.getPersonContactDetailType() == PersonContactDetailType.PHONE
+							&& newPhoneNumber.equals(contactDetail.getDetails())
+							&& contactDetail.getPhoneNumberType() == PhoneNumberType.OTHER)),
+
+			() -> Assertions.assertTrue(
+				contactDetailsStreamProvider.get()
+					.anyMatch(
+						contactDetail -> contactDetail.getPersonContactDetailType() == PersonContactDetailType.EMAIL
+							&& newEmail.equals(contactDetail.getDetails()))));
 	}
 
 	@Test
@@ -101,9 +153,13 @@ class CaseDataPatcherImplTest extends AbstractBeanTest {
 			victim().patch(new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid()).setPatchDictionary(patchDictionary));
 
 		// CHECK
-		Map<String, DataPatchFailure> expectedFailures = patchDictionary.keySet()
+		Map<String, DataPatchFailure> expectedFailures = patchDictionary.entrySet()
 			.stream()
-			.map(path -> Map.entry(path, new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.UNSUPPORTED_PREFIX)))
+			.map(
+				entry -> Map.entry(
+					entry.getKey(),
+					new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.UNSUPPORTED_PREFIX)
+						.setProvidedFieldValue(entry.getValue())))
 			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
 		Assertions.assertAll(
@@ -113,12 +169,150 @@ class CaseDataPatcherImplTest extends AbstractBeanTest {
 	}
 
 	@Test
-	void patch_referenceDataInsertion() {
-		throw new IllegalStateException("toImplement");
+	void patch_forbiddenField() {
+		// PREPARE
+		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.RESPIRATORY_SYNCYTIAL_VIRUS);
+
+		String ignoredValue = "ignoredValue";
+
+		Map<String, Object> patchDictionary = Map.of(
+			"Person.birthdate",
+			ignoredValue,
+
+			"Person.birthdateDD",
+			ignoredValue,
+			"Person.birthdateMM",
+			ignoredValue,
+			"Person.birthdateYYYY",
+			ignoredValue);
+		// EXECUTE
+		DataPatchResponse response =
+			victim().patch(new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid()).setPatchDictionary(patchDictionary));
+
+		// CHECK
+		Map<String, DataPatchFailure> expectedFailures = patchDictionary.entrySet()
+			.stream()
+			.map(
+				entry -> Map.entry(
+					entry.getKey(),
+					new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.FORBIDDEN_FIELD).setProvidedFieldValue(entry.getValue())))
+			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response.getPatchDictionary().isEmpty(), "Nothing should have been patched, should be empty"),
+			// FAILURES
+			() -> Assertions.assertEquals(expectedFailures, response.getFailures()));
+	}
+
+	@Test
+	void patch_invalidMultiFieldFormat() {
+		// PREPARE
+		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.RESPIRATORY_SYNCYTIAL_VIRUS);
+
+		String ignoredValue = "ignoredValue";
+
+		Map<String, Object> patchDictionary = Map.of(
+			"Person.(deathDate",
+			ignoredValue,
+
+			"Person.((deathDate))",
+			ignoredValue,
+
+			"Person.(deathDate)",
+			ignoredValue,
+
+			"Person.(deathDate|)",
+			ignoredValue,
+
+			"Person.(deathDate|wefuiohjwerf",
+			ignoredValue,
+
+			"Person.(deathDate))",
+			ignoredValue,
+
+			"Person.()",
+			ignoredValue,
+
+			"Person.)deathDate(",
+			ignoredValue);
+		// EXECUTE
+		DataPatchResponse response =
+			victim().patch(new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid()).setPatchDictionary(patchDictionary));
+
+		// CHECK
+		Map<String, DataPatchFailure> expectedFailures = patchDictionary.entrySet()
+			.stream()
+			.map(
+				entry -> Map.entry(
+					entry.getKey(),
+					new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.INVALID_MULTIPLE_FIELDS_FORMAT)
+						.setProvidedFieldValue(entry.getValue())))
+			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response.getPatchDictionary().isEmpty(), "Nothing should have been patched, should be empty"),
+			// FAILURES
+			() -> Assertions.assertEquals(expectedFailures, response.getFailures()));
+	}
+
+	@Test
+	void patch_customizableEnumExist() {
+		// PREPARE
+		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.PERTUSSIS);
+
+		String newLastname = "toto";
+		String newSequelaeDetails = "Some very interesting sequelaeDetails";
+		String classificationDate = "2030-02-01";
+		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
+			.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+			.setPatchDictionary(
+				Map.of(
+					"Person.lastName",
+					newLastname,
+
+					"Person.sex",
+					Sex.FEMALE.getName(),
+
+					"Person.personContactDetails.details",
+					"name@email.de",
+
+					"CaseData.classificationDate",
+					classificationDate,
+
+					"Person.personContactDetails.phoneNumberType",
+					"123654687",
+
+					"CaseData.sequelaeDetails",
+					newSequelaeDetails));
+
+		// EXECUTE
+		DataPatchResponse response = victim().patch(request);
+
+		// CHECK
+		logger.info("response: [{}]", response);
+
+		CaseDataDto actualCase = getCaseFacade().getByUuid(originalCase.getUuid());
+		PersonDto actualPerson = getPersonFacade().getByUuid(originalCase.getPerson().getUuid());
+
+		// TODO: contact info.
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failure found, but should be empty"),
+			// PERSON
+			() -> Assertions.assertEquals(newLastname, actualPerson.getLastName()),
+			() -> Assertions.assertEquals(Sex.FEMALE, actualPerson.getSex()),
+			// CASE
+			() -> Assertions.assertEquals(
+				Date.from(LocalDate.parse(classificationDate).atStartOfDay(ZoneId.systemDefault()).toInstant()),
+				actualCase.getClassificationDate()),
+			() -> Assertions.assertEquals(newSequelaeDetails, actualCase.getSequelaeDetails()));
 	}
 
 	@Test
 	void patch_addVaccine() {
 		throw new IllegalStateException("toImplement");
+	}
+
+	private CaseDataPatcher victim() {
+		return getCaseDataPatcher();
 	}
 }
