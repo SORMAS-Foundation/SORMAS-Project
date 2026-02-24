@@ -1,6 +1,17 @@
 package de.symeda.sormas.api.patch;
 
 public enum DataPatchFailureCause {
+
+	/**
+	 * Occurs if input tries to use multiple fields approach: CaseData.(symptoms.onsetDate|hospitalization.admissionDate).
+	 */
+	INVALID_MULTIPLE_FIELDS_FORMAT,
+
+	/**
+	 * Path does not start with the allowed prefixes: example: CaseData or Person.
+	 */
+	UNSUPPORTED_PREFIX,
+
 	/**
 	 * Invalid field name was provided that cannot be matched with an existing field.
 	 */

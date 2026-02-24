@@ -1,5 +1,7 @@
 package de.symeda.sormas.api.patch;
 
+import java.util.Objects;
+
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
@@ -57,5 +59,21 @@ public class DataPatchFailure {
 	public String toString() {
 		return "DataPatchFailure{" + "dataPatchFailureCause=" + dataPatchFailureCause + ", existingFieldValue=" + existingFieldValue
 			+ ", providedFieldValue=" + providedFieldValue + ", description='" + description + '\'' + '}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == null || getClass() != o.getClass())
+			return false;
+		DataPatchFailure that = (DataPatchFailure) o;
+		return dataPatchFailureCause == that.dataPatchFailureCause
+			&& Objects.equals(existingFieldValue, that.existingFieldValue)
+			&& Objects.equals(providedFieldValue, that.providedFieldValue)
+			&& Objects.equals(description, that.description);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(dataPatchFailureCause, existingFieldValue, providedFieldValue, description);
 	}
 }

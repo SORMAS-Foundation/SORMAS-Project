@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.patch;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -7,12 +8,15 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,22 +34,29 @@ import de.symeda.sormas.api.patch.EmptyValueBehavior;
 import de.symeda.sormas.api.patch.mapping.FieldCustomMapper;
 import de.symeda.sormas.api.patch.mapping.FieldPatchRequest;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.utils.Tuple;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.json.ObjectMapperProvider;
 import de.symeda.sormas.backend.patch.mapping.FieldCustomMapperRegistry;
 import de.symeda.sormas.backend.patch.mapping.ValueMapperRegistry;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 
+// TODO: test integration vaccines
 @Stateless
 @LocalBean
 public class CaseDataPatcherImpl implements CaseDataPatcher {
 
 	public static final String PERSON_FIELD_NAME_PREFIX = "Person.";
 	private final static Logger logger = LoggerFactory.getLogger(CaseDataPatcherImpl.class);
+	public static final String OPENING_PARENTHESIS = "(";
+	public static final String CLOSING_PARENTHESIS = ")";
+	public static final String PIPE = "|";
 
 	// might be more subtle: person.toto but also *.uuid (or uuid). includes approach ?
 	// TODO: must be twofold: enforced default fields : technical: uuid, user ... + custom config by admin
-	private Set<String> forbiddenFields = Set.of();
+	private Set<String> forbiddenFields = Set.of("Person.birthdate");
+
+	private Set<String> allowedPrefixes = Set.of("Person.", "CaseData");
 
 	@Inject
 	private ValueMapperRegistry valueMapperRegistry;
@@ -67,20 +78,21 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 
 		Supplier<PersonDto> person = Suppliers.memoize(() -> getPersonDto(caseData));
 
-		Map<String, Object> actualDictionary = computeActualDictionary(request);
+		Map<Tuple<String, DataPatchFailureCause>, Object> actualDictionary = computeActualDictionary(request);
 
 		// TODO: refactor this to create smaller units
 		// TODO: duplicate field patching mechanism
 		List<SinglePatchResult> results = actualDictionary.entrySet().stream().map(entry -> {
-			String fullFieldName = entry.getKey();
+			Tuple<String, DataPatchFailureCause> tuple = entry.getKey();
+			String fullFieldName = tuple.getFirst();
 			SinglePatchResult singlePatchResult = new SinglePatchResult().setFieldName(fullFieldName);
 
 			Object target = findAppropriateTarget(fullFieldName, caseData, person);
 
-			try { // TODO: patch the same field twice ?
-
-				if (forbiddenFields.contains(fullFieldName)) {
-					return singlePatchResult.setFailure(new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.FORBIDDEN_FIELD));
+			try {
+				DataPatchFailureCause fieldFailureCause = tuple.getSecond();
+				if (fieldFailureCause != null) {
+					return singlePatchResult.setFailure(new DataPatchFailure().setDataPatchFailureCause(fieldFailureCause));
 				}
 
 				Optional<FieldCustomMapper> mapper = fieldCustomMapperRegistry.getMapper(fullFieldName);
@@ -191,14 +203,123 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 		 */
 	}
 
-	private @NotNull Map<String, Object> computeActualDictionary(CaseDataPatchRequest request) {
+	private Map<Tuple<String, DataPatchFailureCause>, Object> computeActualDictionary(CaseDataPatchRequest request) {
 		Predicate<Map.Entry<String, Object>> filterPredicate = buildAdequateDictionaryValuePredicate(request);
 
 		return request.getPatchDictionary()
 			.entrySet()
 			.stream()
+			.filter(entry -> StringUtils.isNotBlank(entry.getKey()))
 			.filter(filterPredicate)
+			.flatMap(entry -> {
+				String path = entry.getKey();
+
+				DataPatchFailureCause dataPatchFailureCause = checkIfPathIsInvalid(path);
+
+				if (dataPatchFailureCause != null) {
+					return Stream.of(buildMapTupleEntryFrom(entry, dataPatchFailureCause));
+				}
+
+				if (isNotMultipleFieldFormat(path)) {
+					return Stream.of(buildMapTupleEntryFrom(entry));
+				}
+
+				return splitMultipleFieldsPath(entry);
+			})
 			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+	}
+
+	@NotNull
+	private Stream<Map.Entry<Tuple<String, DataPatchFailureCause>, Object>> splitMultipleFieldsPath(Map.Entry<String, Object> entry) {
+		String path = entry.getKey();
+		int openingParenthesisIndex = path.indexOf("(");
+		String prefix = path.substring(0, openingParenthesisIndex);
+
+		int closeParen = path.indexOf(')');
+
+		String restPath = path.substring(openingParenthesisIndex + 1, closeParen);
+
+		return Arrays.stream(restPath.split("\\|")).map(suffix -> Map.entry(new Tuple<>(prefix + suffix, null), entry.getValue()));
+	}
+
+	private boolean isNotMultipleFieldFormat(String path) {
+		return !(path.contains(OPENING_PARENTHESIS) || path.contains(CLOSING_PARENTHESIS) || path.contains(PIPE));
+	}
+
+	// TODO: could be extracted into another class
+	@Nullable
+	private DataPatchFailureCause checkIfPathIsInvalid(String path) {
+		DataPatchFailureCause dataPatchFailureCause = null;
+
+		if (!startsWithAllowedPrefix(path)) {
+			dataPatchFailureCause = DataPatchFailureCause.UNSUPPORTED_PREFIX;
+		} else if (fieldIsForbidden(path)) {
+			dataPatchFailureCause = DataPatchFailureCause.FORBIDDEN_FIELD;
+		} else if (fieldIsInvalidMultiField(path)) {
+			dataPatchFailureCause = DataPatchFailureCause.INVALID_MULTIPLE_FIELDS_FORMAT;
+		}
+		return dataPatchFailureCause;
+	}
+
+	private boolean fieldIsInvalidMultiField(String path) {
+		if (isNotMultipleFieldFormat(path)) {
+			return false;
+		}
+
+		long openCount = path.chars().filter(c -> c == '(').count();
+		long closeCount = path.chars().filter(c -> c == ')').count();
+		int openIndex = path.indexOf('(');
+		int closeIndex = path.lastIndexOf(')');
+
+		if (openCount != 1 || closeCount != 1) {
+			logger.debug("Path must contain exactly one pair of parentheses: [" + path + "]");
+			return false;
+		}
+
+		if (openIndex > closeIndex) {
+			logger.debug("Closing parenthesis appears before opening parenthesis: [" + path + "]");
+			return false;
+		}
+
+		if (closeIndex != path.length() - 1) {
+			logger.debug("Closing parenthesis must be at the end of the path: [" + path + "]");
+			return false;
+		}
+
+		String alternatives = path.substring(openIndex + 1, closeIndex);
+
+		if (alternatives.isBlank()) {
+			logger.debug("Empty parentheses — nothing between '(' and ')': [" + path + "]");
+			return false;
+		}
+
+		String[] parts = alternatives.split("\\|");
+		for (String part : parts) {
+			if (part.isBlank()) {
+				logger.debug("Empty alternative found — consecutive or leading/trailing pipes: [" + path + "]");
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	private Map.Entry<Tuple<String, DataPatchFailureCause>, Object> buildMapTupleEntryFrom(
+		Map.Entry<String, Object> entry,
+		@Nullable DataPatchFailureCause dataPatchFailureCause) {
+		return Map.entry(new Tuple<>(entry.getKey(), dataPatchFailureCause), entry.getValue());
+	}
+
+	private Map.Entry<Tuple<String, DataPatchFailureCause>, Object> buildMapTupleEntryFrom(Map.Entry<String, Object> entry) {
+		return Map.entry(new Tuple<>(entry.getKey(), null), entry.getValue());
+	}
+
+	private boolean startsWithAllowedPrefix(String path) {
+		return allowedPrefixes.stream().anyMatch(path::startsWith);
+	}
+
+	private boolean fieldIsForbidden(String path) {
+		return forbiddenFields.contains(path);
 	}
 
 	private @NotNull Predicate<Map.Entry<String, Object>> buildAdequateDictionaryValuePredicate(CaseDataPatchRequest request) {
