@@ -3,6 +3,7 @@ package de.symeda.sormas.api.patch.mapping;
 import java.util.Optional;
 import java.util.Set;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.patch.DataPatchFailure;
 
 /**
@@ -24,5 +25,14 @@ public interface FieldCustomMapper {
 	 * @return fields supported by this specific mapper.
 	 */
 	Set<String> supportedFields();
+
+	/**
+	 * Some fields are specific to some diseases.
+	 * 
+	 * @return set of supported diseases.
+	 */
+	default Set<Disease> supportedDisease() {
+		return Disease.ALL_DISEASES;
+	}
 
 }

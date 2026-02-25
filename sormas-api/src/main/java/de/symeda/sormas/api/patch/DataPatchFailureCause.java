@@ -8,6 +8,11 @@ public enum DataPatchFailureCause {
 	INVALID_MULTIPLE_FIELDS_FORMAT,
 
 	/**
+	 * Occurs the field is not supported by the disease.
+	 */
+	UNSUPPORTED_FIELD_FOR_DISEASE,
+
+	/**
 	 * Path does not start with the allowed prefixes: example: CaseData or Person.
 	 */
 	UNSUPPORTED_PREFIX,

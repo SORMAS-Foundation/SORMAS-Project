@@ -17,6 +17,10 @@ package de.symeda.sormas.api;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import com.google.common.collect.ImmutableSet;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
@@ -92,6 +96,9 @@ public enum Disease
 	CRYPTOSPORIDIOSIS(true, true, true, false, true, 14, false, false, false),
 	OTHER(true, true, true, false, true, 21, false, false, false),
 	UNDEFINED(true, true, true, false, true, 0, false, false, false);
+
+	public static final Set<Disease> ALL_DISEASES =
+		Arrays.stream(Disease.values()).collect(Collectors.collectingAndThen(Collectors.toSet(), ImmutableSet::copyOf));
 
 	private final boolean defaultActive;
 	private final boolean defaultPrimary;

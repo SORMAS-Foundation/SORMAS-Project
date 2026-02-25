@@ -9,6 +9,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.patch.mapping.FieldCustomMapper;
 import de.symeda.sormas.api.utils.Tuple;
 
@@ -27,7 +28,7 @@ public class FieldCustomMapperRegistry {
 			.collect(Collectors.toMap(Tuple::getFirst, Tuple::getSecond));
 	}
 
-	public Optional<FieldCustomMapper> getMapper(final String fieldName) {
-		return Optional.ofNullable(dictionary.get(fieldName));
+	public Optional<FieldCustomMapper> getMapper(final String fieldName, Disease disease) {
+		return Optional.ofNullable(dictionary.get(fieldName)).filter(mapper -> mapper.supportedDisease().contains(disease));
 	}
 }

@@ -26,8 +26,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle.Control;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
@@ -53,6 +57,8 @@ public final class I18nProperties {
 	private final ResourceBundle countryProperties;
 	private final ResourceBundle continentProperties;
 	private final ResourceBundle subcontinentProperties;
+
+	private final Map<I18nPropertiesRequest.ResourceBundleType, ResourceBundle> resourceBundlesDictionary;
 
 	private static I18nProperties getInstance(Language language) {
 
@@ -372,6 +378,24 @@ public final class I18nProperties {
 		this.countryProperties = loadProperties("countries", language.getLocale());
 		this.continentProperties = loadProperties("continents", language.getLocale());
 		this.subcontinentProperties = loadProperties("subcontinents", language.getLocale());
+
+		resourceBundlesDictionary = Map.of(
+			I18nPropertiesRequest.ResourceBundleType.CAPTION,
+			captionProperties,
+			I18nPropertiesRequest.ResourceBundleType.DESCRIPTION,
+			descriptionProperties,
+			I18nPropertiesRequest.ResourceBundleType.ENUMS,
+			enumProperties,
+			I18nPropertiesRequest.ResourceBundleType.VALIDATION,
+			validationProperties,
+			I18nPropertiesRequest.ResourceBundleType.STRING,
+			stringProperties,
+			I18nPropertiesRequest.ResourceBundleType.COUNTRY,
+			countryProperties,
+			I18nPropertiesRequest.ResourceBundleType.CONTINENT,
+			continentProperties,
+			I18nPropertiesRequest.ResourceBundleType.SUBCONTINENT,
+			subcontinentProperties);
 	}
 
 	private I18nProperties() {
@@ -405,6 +429,23 @@ public final class I18nProperties {
 
 	public static ResourceBundle loadProperties(String propertiesGroup, Locale locale) {
 		return new ResourceBundle(java.util.ResourceBundle.getBundle(propertiesGroup, locale, new UTF8Control()));
+	}
+
+	public static Map<String, String> buildPropertiesMap(I18nPropertiesRequest request) {
+
+		Language language = request.getLanguage() != null ? request.getLanguage() : Language.EN;
+		I18nProperties instance = getInstance(language);
+
+		I18nPropertiesRequest.ResourceBundleType resourceBundleType = request.getResourceBundleType();
+		ResourceBundle resourceBundle = Optional.of(instance.resourceBundlesDictionary.get(resourceBundleType))
+			.orElseThrow(() -> new IllegalStateException(String.format("Resource bundle type %s not found", resourceBundleType)));
+
+		Map<String, String> propertiesMap =
+			StreamSupport.stream(((Iterable<String>) () -> resourceBundle.getResourceBundle().getKeys().asIterator()).spliterator(), false)
+				.filter(key -> StringUtils.startsWith(key, request.getPrefix()))
+				.collect(Collectors.toMap(Function.identity(), resourceBundle::getString));
+
+		return propertiesMap;
 	}
 
 	public static class UTF8Control extends Control {

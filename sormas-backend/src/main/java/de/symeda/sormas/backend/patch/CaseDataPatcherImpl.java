@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Suppliers;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.patch.CaseDataPatchRequest;
 import de.symeda.sormas.api.patch.CaseDataPatcher;
@@ -69,6 +70,9 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 
 		CaseDataDto caseData = getCaseDataDto(request);
 
+		// TODO: implement disease check for fields
+		Disease disease = caseData.getDisease();
+
 		Supplier<PersonDto> person = Suppliers.memoize(() -> getPersonDto(caseData));
 
 		Map<Tuple<String, DataPatchFailureCause>, Object> actualDictionary = computeActualDictionary(request);
@@ -89,7 +93,7 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 						.setFailure(new DataPatchFailure().setDataPatchFailureCause(fieldFailureCause).setProvidedFieldValue(entry.getValue()));
 				}
 
-				Optional<FieldCustomMapper> mapper = fieldCustomMapperRegistry.getMapper(fullFieldName);
+				Optional<FieldCustomMapper> mapper = fieldCustomMapperRegistry.getMapper(fullFieldName, disease);
 
 				Object untypedTargetValue = entry.getValue();
 				if (mapper.isPresent()) {
