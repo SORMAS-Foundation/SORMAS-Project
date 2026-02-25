@@ -10,7 +10,7 @@ public enum DataPatchFailureCause {
 	/**
 	 * Occurs the field is not supported by the disease.
 	 */
-	UNSUPPORTED_FIELD_FOR_DISEASE,
+	UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY,
 
 	/**
 	 * Path does not start with the allowed prefixes: example: CaseData or Person.

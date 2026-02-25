@@ -1,19 +1,14 @@
 package de.symeda.sormas.backend.patch;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.Tuple;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 
 public class PropertyAccessor {
 	// TODO: perform some caching of the fields
@@ -25,7 +20,10 @@ public class PropertyAccessor {
 	private PropertyAccessor() {
 	}
 
-	public static Optional<Tuple<Class<?>, Set<Disease>>> getNestedPropertyType(final Object bean, final String fieldName) {
+	public static Optional<Tuple<Class<?>, Boolean>> getNestedPropertyType(
+		final Object bean,
+		final String fieldName,
+		FieldVisibilityCheckers fieldVisibilityCheckers) {
 		if (bean == null || fieldName == null || fieldName.isEmpty()) {
 			return Optional.empty();
 		}
@@ -33,29 +31,23 @@ public class PropertyAccessor {
 		boolean notNestedPath = fieldName.indexOf(PATH_SEPARATOR) == fieldName.lastIndexOf(PATH_SEPARATOR);
 
 		if (notNestedPath) {
-			return getPropertyType(bean, fieldName);
+			return getPropertyType(bean, fieldName, fieldVisibilityCheckers);
 		}
 
 		String leafPath = fieldName.substring(fieldName.lastIndexOf(PATH_SEPARATOR) + 1);
 
-		return Optional.ofNullable(getNestedProperty(bean, fieldName)).flatMap(leafParent -> getPropertyType(leafParent, leafPath));
+		return Optional.ofNullable(getNestedProperty(bean, fieldName))
+			.flatMap(leafParent -> getPropertyType(leafParent, leafPath, fieldVisibilityCheckers));
 	}
 
-	public static Optional<Tuple<Class<?>, Set<Disease>>> getPropertyType(final Object bean, final String fieldName) {
+	public static Optional<Tuple<Class<?>, Boolean>> getPropertyType(
+		final Object bean,
+		final String fieldName,
+		FieldVisibilityCheckers fieldVisibilityCheckers) {
 		try {
-			Field declaredField = bean.getClass().getDeclaredField(fieldName);
-			Set<Disease> supportedDiseases = Optional.ofNullable(declaredField.getAnnotation(Diseases.class)).map(a -> {
-				boolean invert = a.hide();
-
-				Set<Disease> annotatedDiseases = Arrays.stream(a.value()).collect(Collectors.toSet());
-				if (invert) {
-					return Disease.ALL_DISEASES.stream().filter(disease -> !annotatedDiseases.contains(disease)).collect(Collectors.toSet());
-				}
-
-				return annotatedDiseases;
-			}).orElse(Disease.ALL_DISEASES);
-			return Optional.of(new Tuple<>(PropertyUtils.getPropertyType(bean, fieldName), supportedDiseases));
-		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | NoSuchFieldException e) {
+			boolean visible = fieldVisibilityCheckers.isVisible(bean.getClass(), fieldName);
+			return Optional.of(new Tuple<>(PropertyUtils.getPropertyType(bean, fieldName), visible));
+		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
 			logger.info("Could not get property type for [{}], [{}]", fieldName, bean.getClass().getSimpleName(), e);
 			return Optional.empty();
 		}

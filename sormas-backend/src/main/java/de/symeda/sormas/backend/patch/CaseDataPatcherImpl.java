@@ -35,7 +35,10 @@ import de.symeda.sormas.api.patch.mapping.FieldCustomMapper;
 import de.symeda.sormas.api.patch.mapping.FieldPatchRequest;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.Tuple;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.json.ObjectMapperProvider;
 import de.symeda.sormas.backend.patch.mapping.FieldCustomMapperRegistry;
 import de.symeda.sormas.backend.patch.mapping.ValueMapperRegistry;
@@ -63,6 +66,14 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 
 	@EJB
 	private PersonFacadeEjb.PersonFacadeEjbLocal personFacade;
+
+	@EJB
+	private FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
+
+	@EJB
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
+
+	private FieldVisibilityCheckers fieldVisibilityCheckers;
 
 	@Override
 	public DataPatchResponse patch(CaseDataPatchRequest request) {
@@ -114,13 +125,22 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 				}
 
 				String relativeFieldName = fullFieldName.substring(fullFieldName.indexOf('.') + 1);
-				Optional<Class<?>> nestedPropertyType = PropertyAccessor.getNestedPropertyType(target, relativeFieldName);
+				Optional<Tuple<Class<?>, Boolean>> nestedPropertyType =
+					PropertyAccessor.getNestedPropertyType(target, relativeFieldName, getFieldVisibilityCheckers(disease));
 
 				if (nestedPropertyType.isEmpty()) {
 					logger.info("Missing field: [{}] on target: [{}]", relativeFieldName, target);
 					return singlePatchResult.setFailure(new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.FIELD_DOES_NOT_EXIST));
 				}
-				Class<?> targetType = nestedPropertyType.orElseThrow();
+				Tuple<Class<?>, Boolean> classSetTuple = nestedPropertyType.orElseThrow();
+				Class<?> targetType = classSetTuple.getFirst();
+
+				if (!Boolean.TRUE.equals(classSetTuple.getSecond())) {
+					logger.info("Field: [{}] on object [{}] cannot be patched for disease: [{}]", relativeFieldName, target, disease);
+					return singlePatchResult.setFailure(
+						new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY)
+							.setProvidedFieldValue(untypedTargetValue));
+				}
 
 				// TODO: handle targetType being a list. TO-Check with business: add / replace 
 
@@ -197,6 +217,10 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 		 * - CaseData
 		 * - Person
 		 */
+	}
+
+	private FieldVisibilityCheckers getFieldVisibilityCheckers(Disease disease) {
+		return FieldVisibilityCheckers.withCountry(configFacade.getCountryLocale()).andWithDisease(disease);
 	}
 
 	private Map<Tuple<String, DataPatchFailureCause>, Object> computeActualDictionary(CaseDataPatchRequest request) {

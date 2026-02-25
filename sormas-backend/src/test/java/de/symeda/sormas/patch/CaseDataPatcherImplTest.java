@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -153,14 +154,7 @@ class CaseDataPatcherImplTest extends AbstractBeanTest {
 			victim().patch(new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid()).setPatchDictionary(patchDictionary));
 
 		// CHECK
-		Map<String, DataPatchFailure> expectedFailures = patchDictionary.entrySet()
-			.stream()
-			.map(
-				entry -> Map.entry(
-					entry.getKey(),
-					new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.UNSUPPORTED_PREFIX)
-						.setProvidedFieldValue(entry.getValue())))
-			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+		Map<String, DataPatchFailure> expectedFailures = buildDictionaryOfFailureType(patchDictionary, DataPatchFailureCause.UNSUPPORTED_PREFIX);
 
 		Assertions.assertAll(
 			() -> Assertions.assertTrue(response.getPatchDictionary().isEmpty(), "Nothing should have been patched, should be empty"),
@@ -190,13 +184,7 @@ class CaseDataPatcherImplTest extends AbstractBeanTest {
 			victim().patch(new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid()).setPatchDictionary(patchDictionary));
 
 		// CHECK
-		Map<String, DataPatchFailure> expectedFailures = patchDictionary.entrySet()
-			.stream()
-			.map(
-				entry -> Map.entry(
-					entry.getKey(),
-					new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.FORBIDDEN_FIELD).setProvidedFieldValue(entry.getValue())))
-			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+		Map<String, DataPatchFailure> expectedFailures = buildDictionaryOfFailureType(patchDictionary, DataPatchFailureCause.FORBIDDEN_FIELD);
 
 		Assertions.assertAll(
 			() -> Assertions.assertTrue(response.getPatchDictionary().isEmpty(), "Nothing should have been patched, should be empty"),
@@ -240,14 +228,8 @@ class CaseDataPatcherImplTest extends AbstractBeanTest {
 			victim().patch(new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid()).setPatchDictionary(patchDictionary));
 
 		// CHECK
-		Map<String, DataPatchFailure> expectedFailures = patchDictionary.entrySet()
-			.stream()
-			.map(
-				entry -> Map.entry(
-					entry.getKey(),
-					new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.INVALID_MULTIPLE_FIELDS_FORMAT)
-						.setProvidedFieldValue(entry.getValue())))
-			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+		Map<String, DataPatchFailure> expectedFailures =
+			buildDictionaryOfFailureType(patchDictionary, DataPatchFailureCause.INVALID_MULTIPLE_FIELDS_FORMAT);
 
 		Assertions.assertAll(
 			() -> Assertions.assertTrue(response.getPatchDictionary().isEmpty(), "Nothing should have been patched, should be empty"),
@@ -305,6 +287,70 @@ class CaseDataPatcherImplTest extends AbstractBeanTest {
 				Date.from(LocalDate.parse(classificationDate).atStartOfDay(ZoneId.systemDefault()).toInstant()),
 				actualCase.getClassificationDate()),
 			() -> Assertions.assertEquals(newSequelaeDetails, actualCase.getSequelaeDetails()));
+	}
+
+	@Test
+	void patch_notSupportedForDisease() {
+		// PREPARE
+		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.RESPIRATORY_SYNCYTIAL_VIRUS);
+
+		String ignoredValue = "ignoredValue";
+
+		Map<String, Object> patchDictionary = Map.of("CaseData.plagueType", ignoredValue);
+
+		// EXECUTE
+		DataPatchResponse response =
+			victim().patch(new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid()).setPatchDictionary(patchDictionary));
+
+		// CHECK
+		Map<String, DataPatchFailure> expectedFailures =
+			buildDictionaryOfFailureType(patchDictionary, DataPatchFailureCause.UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY);
+
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response.getPatchDictionary().isEmpty(), "Nothing should have been patched, should be empty"),
+			// FAILURES
+			() -> Assertions.assertEquals(expectedFailures, response.getFailures()));
+	}
+
+	@Test
+	void patch_notSupportedForCountry() {
+		// PREPARE
+
+		String countryLocale = getConfigFacade().getCountryLocale();
+
+		System.out.println("countryLocale = " + countryLocale);
+
+		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.RESPIRATORY_SYNCYTIAL_VIRUS);
+
+		String ignoredValue = "ignoredValue";
+
+		Map<String, Object> patchDictionary = Map.of("CaseData.quarantineOrderedOfficialDocumentDate", ignoredValue);
+
+		// EXECUTE
+		DataPatchResponse response =
+			victim().patch(new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid()).setPatchDictionary(patchDictionary));
+
+		// CHECK
+		Map<String, DataPatchFailure> expectedFailures =
+			buildDictionaryOfFailureType(patchDictionary, DataPatchFailureCause.UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY);
+
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response.getPatchDictionary().isEmpty(), "Nothing should have been patched, should be empty"),
+			// FAILURES
+			() -> Assertions.assertEquals(expectedFailures, response.getFailures()));
+	}
+
+	private static @NotNull Map<String, DataPatchFailure> buildDictionaryOfFailureType(
+		Map<String, Object> patchDictionary,
+		DataPatchFailureCause unsupportedFieldForDisease) {
+		Map<String, DataPatchFailure> expectedFailures = patchDictionary.entrySet()
+			.stream()
+			.map(
+				entry -> Map.entry(
+					entry.getKey(),
+					new DataPatchFailure().setDataPatchFailureCause(unsupportedFieldForDisease).setProvidedFieldValue(entry.getValue())))
+			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+		return expectedFailures;
 	}
 
 	@Test
