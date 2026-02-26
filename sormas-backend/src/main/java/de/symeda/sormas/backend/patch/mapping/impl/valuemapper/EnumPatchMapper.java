@@ -1,7 +1,6 @@
 package de.symeda.sormas.backend.patch.mapping.impl.valuemapper;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -9,6 +8,7 @@ import java.util.Set;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,8 +33,6 @@ public class EnumPatchMapper implements ValuePatchMapper {
 	private static final String FALLBACK_NAME = "OTHER";
 
 	// TODO: make configurable.
-	private static final List<Language> LANGUAGES = Arrays.asList(Language.EN, Language.FR, Language.DE);
-
 	@Override
 	public Set<Class<?>> getSupportedTypes() {
 		return SUPPORTED_TYPES;
@@ -63,7 +61,13 @@ public class EnumPatchMapper implements ValuePatchMapper {
 			return ValueMappingResult.withData(enumMember);
 		}
 
-		for (Language language : LANGUAGES) {
+		List<Language> inputLanguages = request.getInputLanguages();
+
+		if (CollectionUtils.isEmpty(inputLanguages)) {
+			inputLanguages = List.of(I18nProperties.getUserLanguage());
+		}
+
+		for (Language language : inputLanguages) {
 			I18nPropertiesRequest i18nPropertiesRequest = new I18nPropertiesRequest().setLanguage(language)
 				.setTargetType(enumType)
 				.setResourceBundleType(I18nPropertiesRequest.ResourceBundleType.ENUMS);

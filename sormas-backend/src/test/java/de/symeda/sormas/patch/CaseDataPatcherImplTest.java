@@ -17,6 +17,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumTranslation;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
@@ -214,7 +215,8 @@ class CaseDataPatcherImplTest extends AbstractBeanTest {
 
 		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
 			.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
-			.setPatchDictionary(Map.of("Person.sex", femaleValue));
+			.setPatchDictionary(Map.of("Person.sex", femaleValue))
+			.setInputLanguages(List.of(Language.DE, Language.EN, Language.FR));
 
 		// EXECUTE
 		DataPatchResponse response = victim().patch(request);
@@ -304,7 +306,8 @@ class CaseDataPatcherImplTest extends AbstractBeanTest {
 		Map<String, Object> patchDictionary = Map.of("Person.occupationType", input);
 		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
 			.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
-			.setPatchDictionary(patchDictionary);
+			.setPatchDictionary(patchDictionary)
+			.setInputLanguages(List.of(Language.DE, Language.EN, Language.FR));;
 
 		Mockito.when(MockProducer.getCustomizableEnumFacadeForConverter().getEnumValue(CustomizableEnumType.OCCUPATION_TYPE, null, healthcareWorker))
 			.thenReturn(expectedOccupationType);
@@ -492,7 +495,8 @@ class CaseDataPatcherImplTest extends AbstractBeanTest {
 		Map<String, Object> patchDictionary = Map.of("Person.birthCountry", " Deutschländ    ");
 		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
 			.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
-			.setPatchDictionary(patchDictionary);
+			.setPatchDictionary(patchDictionary)
+			.setInputLanguages(List.of(Language.DE, Language.EN, Language.FR));
 
 		// EXECUTE
 		DataPatchResponse response = victim().patch(request);

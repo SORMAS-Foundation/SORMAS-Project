@@ -1,6 +1,5 @@
 package de.symeda.sormas.backend.patch.mapping.impl.valuemapper;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -9,6 +8,7 @@ import java.util.Set;
 import javax.ejb.EJB;
 import javax.enterprise.context.ApplicationScoped;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,9 +29,6 @@ public class CustomizableEnumPatchMapper implements ValuePatchMapper {
 	private final static Logger logger = LoggerFactory.getLogger(CustomizableEnumPatchMapper.class);
 
 	public static final String FALLBACK_NAME = "OTHER";
-
-	// TODO: make configurable.
-	private static final List<Language> LANGUAGES = Arrays.asList(Language.EN, Language.FR, Language.DE);
 
 	@EJB
 	private CustomizableEnumFacadeEjb.CustomizableEnumFacadeEjbLocal customizableEnumFacade;
@@ -54,13 +51,13 @@ public class CustomizableEnumPatchMapper implements ValuePatchMapper {
 
 		logger.warn("For now only disease-agnostic enum values are retrieved");
 
-		return ValueMappingResult.withData((T) findCustomizableEnum(captionCandidate, enumType));
+		return ValueMappingResult.withData((T) findCustomizableEnum(captionCandidate, enumType, request));
 	}
 
-	private CustomizableEnum findCustomizableEnum(String captionCandidate, CustomizableEnumType type) {
+	private CustomizableEnum findCustomizableEnum(String captionCandidate, CustomizableEnumType type, ValuePatchRequest request) {
 		String normalizedInput = StringNormalizer.normalize(captionCandidate);
 
-		return searchByDefaultLanguage(type, normalizedInput).or(() -> searchByLanguages(normalizedInput, type))
+		return searchByDefaultLanguage(type, normalizedInput).or(() -> searchByLanguages(normalizedInput, type, request))
 			.or(() -> Optional.ofNullable(customizableEnumFacade.getEnumValue(type, null, FALLBACK_NAME)))
 			.orElseThrow(
 				() -> new IllegalStateException(String.format("Could not match value: [%s] to customizableEnumType: [%s]", captionCandidate, type)));
@@ -72,13 +69,20 @@ public class CustomizableEnumPatchMapper implements ValuePatchMapper {
 		return enumValues.stream().filter(enumMember -> matchByValueOrCaption(enumMember, normalizedInput)).findFirst();
 	}
 
-	public Optional<CustomizableEnum> searchByLanguages(String normalizedInput, CustomizableEnumType type) {
-		for (Language language : LANGUAGES) {
+	public Optional<CustomizableEnum> searchByLanguages(String normalizedInput, CustomizableEnumType type, ValuePatchRequest request) {
+
+		List<Language> inputLanguages = request.getInputLanguages();
+
+		if (CollectionUtils.isEmpty(inputLanguages)) {
+			inputLanguages = List.of(I18nProperties.getUserLanguage());
+		}
+
+		for (Language language : inputLanguages) {
 			Class<? extends CustomizableEnum> targetType = type.getEnumClass();
-			I18nPropertiesRequest request = new I18nPropertiesRequest().setTargetType(targetType)
+			I18nPropertiesRequest i18nPropertiesRequest = new I18nPropertiesRequest().setTargetType(targetType)
 				.setResourceBundleType(I18nPropertiesRequest.ResourceBundleType.ENUMS)
 				.setLanguage(language);
-			Map<String, String> resultingMap = I18nProperties.buildKeyValueDictionary(request);
+			Map<String, String> resultingMap = I18nProperties.buildKeyValueDictionary(i18nPropertiesRequest);
 
 			Optional<CustomizableEnum> customizableEnumOpt = resultingMap.entrySet()
 				.stream()

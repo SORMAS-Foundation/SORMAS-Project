@@ -1,6 +1,5 @@
 package de.symeda.sormas.backend.patch.mapping.impl.valuemapper;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -10,6 +9,7 @@ import javax.ejb.EJB;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,8 +37,6 @@ public class ReferenceDtoPatchMapper implements ValuePatchMapper {
 	@EJB
 	private CountryFacadeEjb.CountryFacadeEjbLocal countryFacade;
 
-	private static final List<Language> LANGUAGES = Arrays.asList(Language.EN, Language.FR, Language.DE);
-
 	@Override
 	public <T> ValueMappingResult<T> map(ValuePatchRequest request) {
 		Object value = request.getValue();
@@ -51,7 +49,7 @@ public class ReferenceDtoPatchMapper implements ValuePatchMapper {
 
 		Class<? extends ReferenceDto> referenceType = targetType.asSubclass(ReferenceDto.class);
 
-		return this.<T> findByTranslationKey(value, targetType)
+		return this.<T> findByTranslationKey(value, targetType, request)
 			.or(() -> (Optional<? extends T>) findByCaptionMatch(captionCandidate, referenceType))
 			.map(ValueMappingResult::withData)
 			.orElseGet(() -> {
@@ -64,7 +62,7 @@ public class ReferenceDtoPatchMapper implements ValuePatchMapper {
 		return referenceDataValueInstanceProvider.getOne(captionCandidate, referenceType);
 	}
 
-	private <T> Optional<T> findByTranslationKey(Object value, Class<?> referenceType) {
+	private <T> Optional<T> findByTranslationKey(Object value, Class<?> referenceType, ValuePatchRequest request) {
 
 		if (!referenceType.equals(CountryReferenceDto.class)) {
 			return Optional.empty();
@@ -72,11 +70,18 @@ public class ReferenceDtoPatchMapper implements ValuePatchMapper {
 
 		String normalizedInput = StringNormalizer.normalize(value.toString());
 
-		for (Language language : LANGUAGES) {
-			I18nPropertiesRequest request = new I18nPropertiesRequest().setResourceBundleType(I18nPropertiesRequest.ResourceBundleType.COUNTRY)
-				.setTargetType(referenceType)
-				.setLanguage(language);
-			Map<String, String> stringStringMap = I18nProperties.buildKeyValueDictionary(request);
+		List<Language> inputLanguages = request.getInputLanguages();
+
+		if (CollectionUtils.isEmpty(inputLanguages)) {
+			inputLanguages = List.of(I18nProperties.getUserLanguage());
+		}
+
+		for (Language language : inputLanguages) {
+			I18nPropertiesRequest i18nPropertiesRequest =
+				new I18nPropertiesRequest().setResourceBundleType(I18nPropertiesRequest.ResourceBundleType.COUNTRY)
+					.setTargetType(referenceType)
+					.setLanguage(language);
+			Map<String, String> stringStringMap = I18nProperties.buildKeyValueDictionary(i18nPropertiesRequest);
 
 			Optional<T> enumMemberOpt = stringStringMap.entrySet()
 				.stream()
