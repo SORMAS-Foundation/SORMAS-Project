@@ -1,19 +1,35 @@
 package de.symeda.sormas.backend.patch.mapping.impl.valuemapper;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
+import javax.ejb.EJB;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.I18nPropertiesRequest;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.patch.mapping.ValuePatchMapper;
 import de.symeda.sormas.api.referencedata.ReferenceDataValueInstanceProvider;
+import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
+import de.symeda.sormas.backend.util.StringNormalizer;
 
 @ApplicationScoped
 public class ReferenceDtoPatchMapper implements ValuePatchMapper {
 
 	@Inject
 	private ReferenceDataValueInstanceProvider referenceDataValueInstanceProvider;
+
+	@EJB
+	private CountryFacadeEjb.CountryFacadeEjbLocal countryFacade;
+
+	private static final List<Language> LANGUAGES = Arrays.asList(Language.EN, Language.FR, Language.DE);
 
 	@Override
 	public <T> T map(Object value, Class<T> targetType, Set<String> inputLanguageCodes) {
@@ -25,11 +41,39 @@ public class ReferenceDtoPatchMapper implements ValuePatchMapper {
 
 		Class<? extends ReferenceDto> referenceType = targetType.asSubclass(ReferenceDto.class);
 
-		// TODO: could be nice to produce the error directly here
-		return (T) referenceDataValueInstanceProvider.getOne(captionCandidate, referenceType)
+		return (T) findByTranslationKey(value, targetType).or(() -> referenceDataValueInstanceProvider.getOne(captionCandidate, referenceType))
 			.orElseThrow(
 				() -> new IllegalStateException(
 					String.format("Could not match value: [%s] to referenceType: [%s]", captionCandidate, referenceType)));
+	}
+
+	private <T> Optional<T> findByTranslationKey(Object value, Class<?> referenceType) {
+
+		if (!referenceType.equals(CountryReferenceDto.class)) {
+			return Optional.empty();
+		}
+
+		String normalizedInput = StringNormalizer.normalize(value.toString());
+
+		for (Language language : LANGUAGES) {
+			I18nPropertiesRequest request = new I18nPropertiesRequest().setResourceBundleType(I18nPropertiesRequest.ResourceBundleType.COUNTRY)
+				.setTargetType(referenceType)
+				.setLanguage(language);
+			Map<String, String> stringStringMap = I18nProperties.buildKeyValueDictionary(request);
+
+			Optional<T> enumMemberOpt = stringStringMap.entrySet()
+				.stream()
+				.filter(entry -> StringNormalizer.normalize(entry.getValue()).equals(normalizedInput))
+				.findAny()
+				.map(Map.Entry::getKey)
+				.map(key -> (T) countryFacade.getCountryByIsoCode(key));
+
+			if (enumMemberOpt.isPresent()) {
+				return enumMemberOpt;
+			}
+		}
+
+		return Optional.empty();
 	}
 
 	@Override

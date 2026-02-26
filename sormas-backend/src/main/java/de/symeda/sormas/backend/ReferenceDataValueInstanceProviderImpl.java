@@ -6,17 +6,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.country.CountryFacade;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictFacade;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryFacade;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionFacade;
@@ -39,14 +43,24 @@ public class ReferenceDataValueInstanceProviderImpl implements ReferenceDataValu
 			Map.entry(CountryReferenceDto.class, () -> getInstance(CountryFacade.class).getAllActiveAsReference()),
 			Map.entry(RegionReferenceDto.class, () -> getInstance(RegionFacade.class).getAllActiveAsReference()),
 			Map.entry(DistrictReferenceDto.class, () -> getInstance(DistrictFacade.class).getAllActiveAsReference()),
-			Map.entry(CommunityReferenceDto.class, (Supplier) () -> getInstance(CommunityFacadeEjb.class).getAllAfter(DATE_ALL_VALUES)),
-			Map.entry(FacilityReferenceDto.class, (Supplier) () -> getInstance(FacilityFacadeEjb.class).getAllWithoutRegionAfter(DATE_ALL_VALUES)),
-			Map.entry(PointOfEntryReferenceDto.class, (Supplier) () -> getInstance(PointOfEntryFacade.class).getAllAfter(DATE_ALL_VALUES))
-
-		// TODO: check number of values that are loaded with those calls, otherwise you search by name
-		// TODO: cannot fetch all: FacilityReferenceDto
-
-		);
+			Map.entry(
+				CommunityReferenceDto.class,
+				() -> getInstance(CommunityFacadeEjb.class).getAllAfter(DATE_ALL_VALUES)
+					.stream()
+					.map(CommunityDto::toReference)
+					.collect(Collectors.toList())),
+			Map.entry(
+				FacilityReferenceDto.class,
+				() -> getInstance(FacilityFacadeEjb.class).getAllWithoutRegionAfter(DATE_ALL_VALUES)
+					.stream()
+					.map(FacilityDto::toReference)
+					.collect(Collectors.toList())),
+			Map.entry(
+				PointOfEntryReferenceDto.class,
+				() -> getInstance(PointOfEntryFacade.class).getAllAfter(DATE_ALL_VALUES)
+					.stream()
+					.map(PointOfEntryDto::toReference)
+					.collect(Collectors.toList())));
 	}
 
 	private <T> T getInstance(Class<T> ejb) {

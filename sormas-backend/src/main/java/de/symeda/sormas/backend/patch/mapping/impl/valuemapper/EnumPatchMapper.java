@@ -53,14 +53,13 @@ public class EnumPatchMapper implements ValuePatchMapper {
 			I18nPropertiesRequest request = new I18nPropertiesRequest().setLanguage(language)
 				.setTargetType(enumType)
 				.setResourceBundleType(I18nPropertiesRequest.ResourceBundleType.ENUMS);
-			Map<String, String> stringStringMap = I18nProperties.buildPropertiesMap(request);
+			Map<String, String> stringStringMap = I18nProperties.buildKeyValueDictionary(request);
 
 			Optional<T> enumMemberOpt = stringStringMap.entrySet()
 				.stream()
 				.filter(entry -> StringNormalizer.normalize(entry.getValue()).equals(normalizedInput))
 				.findAny()
 				.map(Map.Entry::getKey)
-				.map(key -> key.replace(I18nProperties.buildPrefix(enumType), ""))
 				.map(key -> searchEnumMemberIgnoringCase(constants, key));
 
 			if (enumMemberOpt.isPresent()) {

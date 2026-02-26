@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle.Control;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -431,7 +430,7 @@ public final class I18nProperties {
 		return new ResourceBundle(java.util.ResourceBundle.getBundle(propertiesGroup, locale, new UTF8Control()));
 	}
 
-	public static Map<String, String> buildPropertiesMap(I18nPropertiesRequest request) {
+	public static Map<String, String> buildKeyValueDictionary(I18nPropertiesRequest request) {
 
 		Language language = request.getLanguage() != null ? request.getLanguage() : Language.EN;
 		I18nProperties instance = getInstance(language);
@@ -443,11 +442,18 @@ public final class I18nProperties {
 		Class<?> targetType = request.getTargetType();
 
 		return StreamSupport.stream(((Iterable<String>) () -> resourceBundle.getResourceBundle().getKeys().asIterator()).spliterator(), false)
-			.filter(key -> StringUtils.startsWith(key, buildPrefix(targetType)))
-			.collect(Collectors.toMap(Function.identity(), resourceBundle::getString));
+			.filter(key -> StringUtils.startsWith(key, buildEnumPrefix(targetType, resourceBundleType)))
+			.collect(
+				Collectors.toMap(
+					key -> key.replace(I18nProperties.buildEnumPrefix(targetType, resourceBundleType), "").replace(".name", ""),
+					resourceBundle::getString));
 	}
 
-	public static String buildPrefix(Class<?> targetType) {
+	private static String buildEnumPrefix(Class<?> targetType, I18nPropertiesRequest.ResourceBundleType resourceBundleType) {
+		if (resourceBundleType == I18nPropertiesRequest.ResourceBundleType.COUNTRY) {
+			return "country.";
+		}
+
 		return targetType.getSimpleName() + ".";
 	}
 
@@ -475,8 +481,8 @@ public final class I18nProperties {
 		 * Converts the given <code>baseName</code> and <code>locale</code>
 		 * to the bundle name. This method is called from the default
 		 * implementation of the {@link #newBundle(String, Locale, String,
-		 * ClassLoader, boolean) newBundle} and {@link #needsReload(String,
-		 * Locale, String, ClassLoader, ResourceBundle, long) needsReload}
+		 * ClassLoader, boolean) newBundle} and {@link java.util.ResourceBundle}#needsReload(String, Locale, String, ClassLoader,
+		 * ResourceBundle, long) needsReload}
 		 * methods.
 		 *
 		 * <p>

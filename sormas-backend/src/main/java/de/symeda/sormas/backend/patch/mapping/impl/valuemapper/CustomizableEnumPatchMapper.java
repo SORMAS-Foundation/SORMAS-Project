@@ -78,14 +78,13 @@ public class CustomizableEnumPatchMapper implements ValuePatchMapper {
 			I18nPropertiesRequest request = new I18nPropertiesRequest().setTargetType(targetType)
 				.setResourceBundleType(I18nPropertiesRequest.ResourceBundleType.ENUMS)
 				.setLanguage(language);
-			Map<String, String> resultingMap = I18nProperties.buildPropertiesMap(request);
+			Map<String, String> resultingMap = I18nProperties.buildKeyValueDictionary(request);
 
 			Optional<CustomizableEnum> customizableEnumOpt = resultingMap.entrySet()
 				.stream()
 				.filter(entry -> StringNormalizer.normalize(entry.getValue()).equals(normalizedInput))
 				.findAny()
 				.map(Map.Entry::getKey)
-				.map(key -> key.replace(I18nProperties.buildPrefix(targetType), ""))
 				.map(key -> customizableEnumFacade.getEnumValue(type, null, key));
 
 			if (customizableEnumOpt.isPresent()) {

@@ -21,6 +21,8 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumTranslation;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
+import de.symeda.sormas.api.infrastructure.country.CountryDto;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.region.RegionFacade;
 import de.symeda.sormas.api.patch.CaseDataPatchRequest;
@@ -37,6 +39,7 @@ import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumValue;
 
 class CaseDataPatcherImplTest extends AbstractBeanTest {
@@ -421,6 +424,42 @@ class CaseDataPatcherImplTest extends AbstractBeanTest {
 			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failure found, but should be empty"),
 
 			() -> Assertions.assertEquals(patchDictionary, response.getPatchDictionary()));
+	}
+
+	@Test
+	void patch_referenceData_country() {
+		// PREPARE
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "lu");
+
+		CountryDto dto = new CountryDto();
+		dto.setIsoCode("DEU");
+		dto.setDefaultName("Germany");
+		CountryDto germanyReferenceDto = getCountryFacade().save(dto);
+
+		List<CountryReferenceDto> allActiveAsReference = getCountryFacade().getAllActiveAsReference();
+		System.out.println("allActiveAsReference = " + allActiveAsReference);
+
+		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.PERTUSSIS);
+
+		// must be able to ignore accents - whitespaces - case
+		Map<String, Object> patchDictionary = Map.of("Person.birthCountry", " Deutschländ    ");
+		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
+			.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+			.setPatchDictionary(patchDictionary);
+
+		// EXECUTE
+		DataPatchResponse response = victim().patch(request);
+
+		PersonDto actualPerson = getPersonFacade().getByUuid(originalCase.getPerson().getUuid());
+
+		// CHECK
+		logger.info("response: [{}]", response);
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failure found, but should be empty"),
+
+			() -> Assertions.assertEquals(
+				new CountryReferenceDto(germanyReferenceDto.getUuid(), germanyReferenceDto.getIsoCode()),
+				actualPerson.getBirthCountry()));
 	}
 
 	@Test
