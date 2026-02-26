@@ -8,9 +8,10 @@ public enum DataPatchFailureCause {
 	INVALID_MULTIPLE_FIELDS_FORMAT,
 
 	/**
-	 * Occurs the field is not supported by the disease.
+	 * Occurs the field is not supported by the disease / country / feature.
+	 * Error message must be somewhat generic to specify the Data Dictionary should be checked.
 	 */
-	UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY,
+	UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY_OR_FEATURE,
 
 	/**
 	 * Path does not start with the allowed prefixes: example: CaseData or Person.

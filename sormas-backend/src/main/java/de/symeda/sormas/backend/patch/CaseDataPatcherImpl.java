@@ -73,8 +73,6 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
-	private FieldVisibilityCheckers fieldVisibilityCheckers;
-
 	@Override
 	public DataPatchResponse patch(CaseDataPatchRequest request) {
 		logger.info("patch: [{}]", request);
@@ -138,7 +136,7 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 				if (!Boolean.TRUE.equals(classSetTuple.getSecond())) {
 					logger.info("Field: [{}] on object [{}] cannot be patched for disease: [{}]", relativeFieldName, target, disease);
 					return singlePatchResult.setFailure(
-						new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY)
+						new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY_OR_FEATURE)
 							.setProvidedFieldValue(untypedTargetValue));
 				}
 
@@ -220,7 +218,9 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 	}
 
 	private FieldVisibilityCheckers getFieldVisibilityCheckers(Disease disease) {
-		return FieldVisibilityCheckers.withCountry(configFacade.getCountryLocale()).andWithDisease(disease);
+		return FieldVisibilityCheckers.withCountry(configFacade.getCountryLocale())
+			.andWithDisease(disease)
+			.andWithFeatureType(featureConfigurationFacade.getActiveServerFeatureConfigurations());
 	}
 
 	private Map<Tuple<String, DataPatchFailureCause>, Object> computeActualDictionary(CaseDataPatchRequest request) {

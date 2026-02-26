@@ -304,7 +304,7 @@ class CaseDataPatcherImplTest extends AbstractBeanTest {
 
 		// CHECK
 		Map<String, DataPatchFailure> expectedFailures =
-			buildDictionaryOfFailureType(patchDictionary, DataPatchFailureCause.UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY);
+			buildDictionaryOfFailureType(patchDictionary, DataPatchFailureCause.UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY_OR_FEATURE);
 
 		Assertions.assertAll(
 			() -> Assertions.assertTrue(response.getPatchDictionary().isEmpty(), "Nothing should have been patched, should be empty"),
@@ -315,11 +315,6 @@ class CaseDataPatcherImplTest extends AbstractBeanTest {
 	@Test
 	void patch_notSupportedForCountry() {
 		// PREPARE
-
-		String countryLocale = getConfigFacade().getCountryLocale();
-
-		System.out.println("countryLocale = " + countryLocale);
-
 		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.RESPIRATORY_SYNCYTIAL_VIRUS);
 
 		String ignoredValue = "ignoredValue";
@@ -332,7 +327,30 @@ class CaseDataPatcherImplTest extends AbstractBeanTest {
 
 		// CHECK
 		Map<String, DataPatchFailure> expectedFailures =
-			buildDictionaryOfFailureType(patchDictionary, DataPatchFailureCause.UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY);
+			buildDictionaryOfFailureType(patchDictionary, DataPatchFailureCause.UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY_OR_FEATURE);
+
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response.getPatchDictionary().isEmpty(), "Nothing should have been patched, should be empty"),
+			// FAILURES
+			() -> Assertions.assertEquals(expectedFailures, response.getFailures()));
+	}
+
+	@Test
+	void patch_notSupportedFeature() {
+		// PREPARE
+		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.RESPIRATORY_SYNCYTIAL_VIRUS);
+
+		String ignoredValue = "ignoredValue";
+
+		Map<String, Object> patchDictionary = Map.of("CaseData.caseReferenceNumber", ignoredValue);
+
+		// EXECUTE
+		DataPatchResponse response =
+			victim().patch(new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid()).setPatchDictionary(patchDictionary));
+
+		// CHECK
+		Map<String, DataPatchFailure> expectedFailures =
+			buildDictionaryOfFailureType(patchDictionary, DataPatchFailureCause.UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY_OR_FEATURE);
 
 		Assertions.assertAll(
 			() -> Assertions.assertTrue(response.getPatchDictionary().isEmpty(), "Nothing should have been patched, should be empty"),
