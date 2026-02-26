@@ -1,7 +1,6 @@
 package de.symeda.sormas.backend.patch.mapping.impl.valuemapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -10,6 +9,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 
+import de.symeda.sormas.api.patch.DataPatchFailureCause;
 import de.symeda.sormas.backend.AbstractUnitTest;
 
 class DateMapperTest extends AbstractUnitTest {
@@ -91,36 +91,30 @@ class DateMapperTest extends AbstractUnitTest {
 	@Test
 	void map_invalidFormat_throwsIllegalArgumentException() {
 		// EXECUTE & CHECK
-		assertThrows(IllegalArgumentException.class, () -> victim.map("15/06/2024", Date.class));
+		assertEquals(DataPatchFailureCause.INVALID_VALUE_TYPE, victim.map("15/06/2024", Date.class).getDataPatchFailureCause());
 	}
 
 	@Test
 	void map_lenientOff_invalidDay_throwsIllegalArgumentException() {
 		// EXECUTE & CHECK
-		assertThrows(IllegalArgumentException.class, () -> victim.map("2024-02-30", Date.class));
+		assertEquals(DataPatchFailureCause.INVALID_VALUE_TYPE, victim.map("2024-02-30", Date.class).getDataPatchFailureCause());
 	}
 
 	@Test
 	void map_lenientOff_invalidMonth_throwsIllegalArgumentException() {
 		// EXECUTE & CHECK
-		assertThrows(IllegalArgumentException.class, () -> victim.map("2024-13-01", Date.class));
+		assertEquals(DataPatchFailureCause.INVALID_VALUE_TYPE, victim.map("2024-13-01", Date.class).getDataPatchFailureCause());
 	}
 
 	@Test
 	void map_emptyString_throwsIllegalArgumentException() {
 		// EXECUTE & CHECK
-		assertThrows(IllegalArgumentException.class, () -> victim.map("", Date.class));
+		assertEquals(DataPatchFailureCause.INVALID_VALUE_TYPE, victim.map("", Date.class).getDataPatchFailureCause());
 	}
 
 	@Test
 	void map_randomString_throwsIllegalArgumentException() {
 		// EXECUTE & CHECK
-		assertThrows(IllegalArgumentException.class, () -> victim.map("notADate", Date.class));
-	}
-
-	@Test
-	void map_nullValue_throwsNullPointerException() {
-		// EXECUTE & CHECK
-		assertThrows(NullPointerException.class, () -> victim.map(null, Date.class));
+		assertEquals(DataPatchFailureCause.INVALID_VALUE_TYPE, victim.map("notADate", Date.class).getDataPatchFailureCause());
 	}
 }

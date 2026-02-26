@@ -44,6 +44,11 @@ public class EnumPatchMapper implements ValuePatchMapper {
 		"unchecked",
 		"rawtypes" })
 	public <T> ValueMappingResult<T> map(Object value, Class<T> targetType, Set<String> inputLanguageCodes) {
+
+		if (!Enum.class.isAssignableFrom(targetType)) {
+			return ValueMappingResult.withCause(DataPatchFailureCause.TECHNICAL);
+		}
+
 		Class<? extends Enum> enumType = (Class<? extends Enum>) targetType;
 
 		String normalizedInput = StringNormalizer.normalize(value.toString());

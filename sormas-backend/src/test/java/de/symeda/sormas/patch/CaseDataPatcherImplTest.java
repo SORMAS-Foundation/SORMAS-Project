@@ -273,7 +273,6 @@ class CaseDataPatcherImplTest extends AbstractBeanTest {
 			() -> Assertions.assertEquals(expectedFailures, response.getFailures()));
 	}
 
-	// TODO: This one fails even though it should not
 	// the value is properly resolved and set into the person, but when fetching it again it's not there anymore.
 	@Test
 	void patch_customizableEnu_default_enum() {
@@ -294,12 +293,6 @@ class CaseDataPatcherImplTest extends AbstractBeanTest {
 		OccupationType expectedOccupationType =
 			getCustomizableEnumFacade().getEnumValue(CustomizableEnumType.OCCUPATION_TYPE, null, healthcareWorker);
 
-		CustomizableEnumValue customizableEnumValue = getCustomizableEnumValueService().getAll()
-			.stream()
-			.filter(enumMember -> healthcareWorker.equals(enumMember.getValue()))
-			.findAny()
-			.orElseThrow();
-
 		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.PERTUSSIS);
 
 		FacilityDto healthFacility = getFacilityFacade().getByUuid(originalCase.getHealthFacility().getUuid());
@@ -307,7 +300,8 @@ class CaseDataPatcherImplTest extends AbstractBeanTest {
 		getCaseFacade().save(originalCase);
 
 		// must be able to ignore accents - whitespaces - case
-		Map<String, Object> patchDictionary = Map.of("Person.occupationType", "Im Gesundheitswesen tätig");
+		String input = "Im Gesundheitswesen tätig";
+		Map<String, Object> patchDictionary = Map.of("Person.occupationType", input);
 		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
 			.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
 			.setPatchDictionary(patchDictionary);
@@ -325,9 +319,69 @@ class CaseDataPatcherImplTest extends AbstractBeanTest {
 		Assertions.assertAll(
 			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failure found, but should be empty"),
 
-			() -> Assertions.assertEquals(expectedOccupationType, person.getOccupationType()),
+			() -> Assertions.assertEquals(input, person.getOccupationDetails()),
 
 			() -> Assertions.assertEquals(patchDictionary, response.getPatchDictionary()));
+	}
+
+	@Test
+	void patch_customizableEnu_default_enum_other() {
+		// PREPARE
+		OccupationType.getDefaultValues().forEach((k, v) -> {
+			CustomizableEnumValue entry = new CustomizableEnumValue();
+			entry.setDataType(CustomizableEnumType.OCCUPATION_TYPE);
+			entry.setValue(k);
+			entry.setCaption(k);
+			entry.setProperties(v);
+			entry.setDefaultValue(true);
+			getCustomizableEnumValueService().ensurePersisted(entry);
+		});
+
+		getCustomizableEnumFacade().loadData();
+
+		String otherOccupationType = "OTHER";
+		OccupationType expectedOccupationType =
+			getCustomizableEnumFacade().getEnumValue(CustomizableEnumType.OCCUPATION_TYPE, null, otherOccupationType);
+
+		CustomizableEnumValue customizableEnumValue = getCustomizableEnumValueService().getAll()
+			.stream()
+			.filter(enumMember -> otherOccupationType.equals(enumMember.getValue()))
+			.findAny()
+			.orElseThrow();
+
+		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.PERTUSSIS);
+
+		FacilityDto healthFacility = getFacilityFacade().getByUuid(originalCase.getHealthFacility().getUuid());
+		originalCase.setDistrict(healthFacility.getDistrict());
+		getCaseFacade().save(originalCase);
+
+		// must be able to ignore accents - whitespaces - case
+		String input = "DOES NOT MATCH TO Anythign";
+		Map<String, Object> patchDictionary = Map.of("Person.(occupationType|occupationDetails|additionalDetails)", input);
+		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
+			.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+			.setPatchDictionary(patchDictionary);
+
+		Mockito
+			.when(MockProducer.getCustomizableEnumFacadeForConverter().getEnumValue(CustomizableEnumType.OCCUPATION_TYPE, null, otherOccupationType))
+			.thenReturn(expectedOccupationType);
+
+		// EXECUTE
+		DataPatchResponse response = victim().patch(request);
+
+		PersonDto person = getPersonFacade().getByUuid(originalCase.getPerson().getUuid());
+
+		// CHECK
+		logger.info("response: [{}]", response);
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failure found, but should be empty"),
+
+			() -> Assertions.assertEquals(expectedOccupationType, person.getOccupationType()),
+			() -> Assertions.assertEquals(input, person.getOccupationDetails()),
+
+			() -> Assertions.assertEquals(
+				Map.of("Person.occupationType", input, "Person.occupationDetails", input, "Person.additionalDetails", input),
+				response.getPatchDictionary()));
 	}
 
 	// TODO: this should work

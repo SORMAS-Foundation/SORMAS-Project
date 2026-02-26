@@ -58,11 +58,7 @@ public class CustomizableEnumPatchMapper implements ValuePatchMapper {
 		String normalizedInput = StringNormalizer.normalize(captionCandidate);
 
 		return searchByDefaultLanguage(type, normalizedInput).or(() -> searchByLanguages(normalizedInput, type))
-			.or(
-				() -> customizableEnumFacade.getEnumValues(type, null)
-					.stream()
-					.filter(customizableEnum -> matchByValueOrCaption(customizableEnum, FALLBACK_NAME))
-					.findAny())
+			.or(() -> Optional.ofNullable(customizableEnumFacade.getEnumValue(type, null, FALLBACK_NAME)))
 			.orElseThrow(
 				() -> new IllegalStateException(String.format("Could not match value: [%s] to customizableEnumType: [%s]", captionCandidate, type)));
 	}

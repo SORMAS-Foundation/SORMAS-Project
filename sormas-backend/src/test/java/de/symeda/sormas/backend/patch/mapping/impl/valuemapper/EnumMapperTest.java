@@ -1,7 +1,6 @@
 package de.symeda.sormas.backend.patch.mapping.impl.valuemapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Set;
 
@@ -10,6 +9,7 @@ import org.mockito.InjectMocks;
 
 import de.symeda.sormas.api.caze.InfectionSetting;
 import de.symeda.sormas.api.caze.Trimester;
+import de.symeda.sormas.api.patch.DataPatchFailureCause;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.backend.AbstractUnitTest;
 
@@ -49,7 +49,7 @@ class EnumMapperTest extends AbstractUnitTest {
 	@Test
 	void map_sex_exactMatch_unknown() {
 		// EXECUTE & CHECK
-		assertEquals(Sex.UNKNOWN, victim.map("UNKNOWN", Sex.class));
+		assertEquals(Sex.UNKNOWN, victim.map("UNKNOWN", Sex.class).getData());
 	}
 
 	@Test
@@ -77,8 +77,6 @@ class EnumMapperTest extends AbstractUnitTest {
 		// EXECUTE & CHECK
 		assertEquals(Sex.OTHER, victim.map("SOMETHING_UNKNOWN", Sex.class).getData());
 	}
-
-	// map - @ValueMapperDefault fallback (InfectionSetting, no OTHER constant)
 
 	@Test
 	void map_infectionSetting_exactMatch_ambulatory() {
@@ -124,23 +122,21 @@ class EnumMapperTest extends AbstractUnitTest {
 		assertEquals(Trimester.UNKNOWN, victim.map("SOMETHING_UNKNOWN", Trimester.class).getData());
 	}
 
-	// map - no match, no OTHER, no @ValueMapperDefault → exception
-
 	@Test
 	void map_noFallback_throwsEnumConstantNotPresentException() {
 		// PREPARE
 		// Direction has no OTHER constant and no @ValueMapperDefault annotation
 
 		// EXECUTE & CHECK
-		assertThrows(EnumConstantNotPresentException.class, () -> victim.map("SOMETHING_UNKNOWN", NoFallbackEnum.class));
+		assertEquals(
+			DataPatchFailureCause.NOT_PRESENT_IN_REFERENCE_DATA_LIST,
+			victim.map("SOMETHING_UNKNOWN", NoFallbackEnum.class).getDataPatchFailureCause());
 	}
 
-	// map - null input
-
 	@Test
-	void map_nullValue_throwsNullPointerException() {
+	void map_noFallback_notAnEnum() {
 		// EXECUTE & CHECK
-		assertThrows(NullPointerException.class, () -> victim.map(null, Sex.class));
+		assertEquals(DataPatchFailureCause.TECHNICAL, victim.map("SOMETHING_UNKNOWN", Long.class).getDataPatchFailureCause());
 	}
 
 	private enum NoFallbackEnum {
