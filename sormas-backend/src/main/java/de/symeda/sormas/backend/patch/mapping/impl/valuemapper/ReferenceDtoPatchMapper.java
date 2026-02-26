@@ -19,8 +19,8 @@ public class ReferenceDtoPatchMapper implements ValuePatchMapper {
 	public <T> T map(Object value, Class<T> targetType, Set<String> inputLanguageCodes) {
 		String captionCandidate = value.toString();
 
-		if (!targetType.isAssignableFrom(ReferenceDto.class)) {
-			throw new IllegalArgumentException(String.format("[%s] is not assignable from [%s].", value, targetType.getName()));
+		if (!ReferenceDto.class.isAssignableFrom(targetType)) {
+			throw new IllegalArgumentException(String.format("[%s] is not assignable from [%s].", targetType, targetType.getName()));
 		}
 
 		Class<? extends ReferenceDto> referenceType = targetType.asSubclass(ReferenceDto.class);

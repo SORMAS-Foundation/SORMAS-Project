@@ -10,14 +10,15 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.infrastructure.country.CountryFacade;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictFacade;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionFacade;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.referencedata.ReferenceDataValueInstanceProvider;
-import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.util.InstanceProvider;
+import de.symeda.sormas.backend.util.StringNormalizer;
 
 @ApplicationScoped
 public class ReferenceDataValueInstanceProviderImpl implements ReferenceDataValueInstanceProvider {
@@ -27,9 +28,9 @@ public class ReferenceDataValueInstanceProviderImpl implements ReferenceDataValu
 	@PostConstruct
 	public void init() {
 		dictionary = Map.ofEntries(
-			Map.entry(CountryReferenceDto.class, () -> getInstance(CountryFacadeEjb.class).getAllActiveAsReference()),
-			Map.entry(RegionReferenceDto.class, () -> getInstance(RegionFacadeEjb.class).getAllActiveAsReference()),
-			Map.entry(DistrictReferenceDto.class, () -> getInstance(DistrictFacadeEjb.class).getAllActiveAsReference())
+			Map.entry(CountryReferenceDto.class, () -> getInstance(CountryFacade.class).getAllActiveAsReference()),
+			Map.entry(RegionReferenceDto.class, () -> getInstance(RegionFacade.class).getAllActiveAsReference()),
+			Map.entry(DistrictReferenceDto.class, () -> getInstance(DistrictFacade.class).getAllActiveAsReference())
 //			Map.entry(CommunityReferenceDto.class, (Supplier) () -> getInstance(CommunityFacadeEjb.class).getAllAfter(new Date()))
 
 		// TODO: check number of values that are loaded with those calls, otherwise you search by name
@@ -50,7 +51,9 @@ public class ReferenceDataValueInstanceProviderImpl implements ReferenceDataValu
 
 	@Override
 	public <T extends ReferenceDto> Optional<T> getOne(String caption, Class<T> referenceType) {
-		// TODO: load properties files of a few language:
-		return getAll(referenceType).stream().filter(referenceDto -> referenceDto.getCaption().equalsIgnoreCase(caption)).findAny();
+		return getAll(referenceType).stream()
+			.filter(referenceDto -> StringNormalizer.normalize(referenceDto.getCaption()).equals(StringNormalizer.normalize(caption)))
+			.findAny();
 	}
+
 }

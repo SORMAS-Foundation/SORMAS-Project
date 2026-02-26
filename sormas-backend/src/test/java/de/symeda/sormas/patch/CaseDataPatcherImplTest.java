@@ -12,9 +12,13 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.region.RegionFacade;
 import de.symeda.sormas.api.patch.CaseDataPatchRequest;
 import de.symeda.sormas.api.patch.CaseDataPatcher;
 import de.symeda.sormas.api.patch.DataPatchFailure;
@@ -52,9 +56,6 @@ class CaseDataPatcherImplTest extends AbstractBeanTest {
 				Map.of(
 					"Person.lastName",
 					newLastname,
-
-					"Person.sex",
-					Sex.FEMALE.getName(),
 
 					"CaseData.classificationDate",
 					classificationDate,
@@ -192,6 +193,42 @@ class CaseDataPatcherImplTest extends AbstractBeanTest {
 			() -> Assertions.assertEquals(expectedFailures, response.getFailures()));
 	}
 
+	@ParameterizedTest
+	@ValueSource(strings = {
+		// DE
+		" weibLiCH ",
+		// 	exact match
+		"Weiblich",
+		"WEIblïch",
+		// FR
+		"Féminin          ",
+		// EN,
+		// ENUM exact match
+		"FEMALE",
+		" femaLe " })
+	void patch_enum(String femaleValue) {
+		// PREPARE
+		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.PERTUSSIS);
+
+		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
+			.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+			.setPatchDictionary(Map.of("Person.sex", femaleValue));
+
+		// EXECUTE
+		DataPatchResponse response = victim().patch(request);
+
+		// CHECK
+		logger.info("response: [{}]", response);
+
+		PersonDto actualPerson = getPersonFacade().getByUuid(originalCase.getPerson().getUuid());
+
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failure found, but should be empty"),
+			// PERSON
+
+			() -> Assertions.assertEquals(Sex.FEMALE, actualPerson.getSex()));
+	}
+
 	@Test
 	void patch_invalidMultiFieldFormat() {
 		// PREPARE
@@ -238,55 +275,31 @@ class CaseDataPatcherImplTest extends AbstractBeanTest {
 	}
 
 	@Test
-	void patch_customizableEnumExist() {
+	void patch_referenceData() {
 		// PREPARE
+		registerBeanForLookup(RegionFacade.class, getRegionFacade());
+
 		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.PERTUSSIS);
 
-		String newLastname = "toto";
-		String newSequelaeDetails = "Some very interesting sequelaeDetails";
-		String classificationDate = "2030-02-01";
+		FacilityDto healthFacility = getFacilityFacade().getByUuid(originalCase.getHealthFacility().getUuid());
+		originalCase.setDistrict(healthFacility.getDistrict());
+		getCaseFacade().save(originalCase);
+
+		// must be able to ignore accents - whitespaces - case
+		Map<String, Object> patchDictionary = Map.of("CaseData.region", " régIoN    ");
 		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
 			.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
-			.setPatchDictionary(
-				Map.of(
-					"Person.lastName",
-					newLastname,
-
-					"Person.sex",
-					Sex.FEMALE.getName(),
-
-					"Person.personContactDetails.details",
-					"name@email.de",
-
-					"CaseData.classificationDate",
-					classificationDate,
-
-					"Person.personContactDetails.phoneNumberType",
-					"123654687",
-
-					"CaseData.sequelaeDetails",
-					newSequelaeDetails));
+			.setPatchDictionary(patchDictionary);
 
 		// EXECUTE
 		DataPatchResponse response = victim().patch(request);
 
 		// CHECK
 		logger.info("response: [{}]", response);
-
-		CaseDataDto actualCase = getCaseFacade().getByUuid(originalCase.getUuid());
-		PersonDto actualPerson = getPersonFacade().getByUuid(originalCase.getPerson().getUuid());
-
-		// TODO: contact info.
 		Assertions.assertAll(
 			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failure found, but should be empty"),
-			// PERSON
-			() -> Assertions.assertEquals(newLastname, actualPerson.getLastName()),
-			() -> Assertions.assertEquals(Sex.FEMALE, actualPerson.getSex()),
-			// CASE
-			() -> Assertions.assertEquals(
-				Date.from(LocalDate.parse(classificationDate).atStartOfDay(ZoneId.systemDefault()).toInstant()),
-				actualCase.getClassificationDate()),
-			() -> Assertions.assertEquals(newSequelaeDetails, actualCase.getSequelaeDetails()));
+
+			() -> Assertions.assertEquals(patchDictionary, response.getPatchDictionary()));
 	}
 
 	@Test

@@ -9,14 +9,17 @@ import de.symeda.sormas.api.Language;
 
 public class I18nPropertiesRequest {
 
+	/**
+	 * If not provided will fallback to default language.
+	 */
 	@Nullable
 	private Language language;
 
 	@NotNull
 	private ResourceBundleType resourceBundleType;
 
-	@Nullable
-	private String prefix;
+	@NotNull
+	private Class<?> targetType;
 
 	@Nullable
 	public Language getLanguage() {
@@ -37,9 +40,9 @@ public class I18nPropertiesRequest {
 		return this;
 	}
 
-	@Nullable
-	public String getPrefix() {
-		return prefix;
+	@NotNull
+	public Class<?> getTargetType() {
+		return targetType;
 	}
 
 	@Override
@@ -47,22 +50,23 @@ public class I18nPropertiesRequest {
 		if (o == null || getClass() != o.getClass())
 			return false;
 		I18nPropertiesRequest that = (I18nPropertiesRequest) o;
-		return language == that.language && resourceBundleType == that.resourceBundleType && Objects.equals(prefix, that.prefix);
+		return language == that.language && resourceBundleType == that.resourceBundleType && Objects.equals(targetType, that.targetType);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(language, resourceBundleType, prefix);
+		return Objects.hash(language, resourceBundleType, targetType);
 	}
 
-	public I18nPropertiesRequest setPrefix(@Nullable String prefix) {
-		this.prefix = prefix;
+	public I18nPropertiesRequest setTargetType(@NotNull Class<?> targetType) {
+		this.targetType = targetType;
 		return this;
 	}
 
 	@Override
 	public String toString() {
-		return "I18nPropertiesRequest{" + "language=" + language + ", resourceBundleType=" + resourceBundleType + ", prefix='" + prefix + '\'' + '}';
+		return "I18nPropertiesRequest{" + "language=" + language + ", resourceBundleType=" + resourceBundleType + ", prefix='" + targetType + '\''
+			+ '}';
 	}
 
 	public enum ResourceBundleType {

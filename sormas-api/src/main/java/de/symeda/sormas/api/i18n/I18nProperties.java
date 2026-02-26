@@ -440,9 +440,11 @@ public final class I18nProperties {
 		ResourceBundle resourceBundle = Optional.of(instance.resourceBundlesDictionary.get(resourceBundleType))
 			.orElseThrow(() -> new IllegalStateException(String.format("Resource bundle type %s not found", resourceBundleType)));
 
+		Class<?> targetType = request.getTargetType();
+
 		Map<String, String> propertiesMap =
 			StreamSupport.stream(((Iterable<String>) () -> resourceBundle.getResourceBundle().getKeys().asIterator()).spliterator(), false)
-				.filter(key -> StringUtils.startsWith(key, request.getPrefix()))
+				.filter(key -> StringUtils.startsWith(key, targetType.getSimpleName()))
 				.collect(Collectors.toMap(Function.identity(), resourceBundle::getString));
 
 		return propertiesMap;

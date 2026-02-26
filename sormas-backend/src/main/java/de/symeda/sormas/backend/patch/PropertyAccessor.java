@@ -45,8 +45,10 @@ public class PropertyAccessor {
 		final String fieldName,
 		FieldVisibilityCheckers fieldVisibilityCheckers) {
 		try {
-			boolean visible = fieldVisibilityCheckers.isVisible(bean.getClass(), fieldName);
-			return Optional.of(new Tuple<>(PropertyUtils.getPropertyType(bean, fieldName), visible));
+			return Optional.ofNullable(PropertyUtils.getPropertyType(bean, fieldName)).map(propertyType -> {
+				boolean visible = fieldVisibilityCheckers.isVisible(bean.getClass(), fieldName);
+				return new Tuple<>(propertyType, visible);
+			});
 		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
 			logger.info("Could not get property type for [{}], [{}]", fieldName, bean.getClass().getSimpleName(), e);
 			return Optional.empty();

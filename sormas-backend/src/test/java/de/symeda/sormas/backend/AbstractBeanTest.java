@@ -1162,4 +1162,21 @@ public abstract class AbstractBeanTest {
 	public ReferenceDataValueInstanceProvider getReferenceDataValueInstanceProvider() {
 		return getBean(ReferenceDataValueInstanceProviderImpl.class);
 	}
+
+	/**
+	 * The context of the {@link AbstractBeanTest} does not possess a proper (Initial)Context, therefore if you want to ma
+	 * 
+	 * @param beanClass
+	 *            must be used with the exact class to work.
+	 * @param instance
+	 *            actual instance that will be returned by the context.
+	 */
+	public <T, S extends T> void registerBeanForLookup(Class<T> beanClass, S instance) {
+		String classSimpleName = beanClass.getSimpleName();
+		try {
+			when(MockProducer.initialContext.lookup("java:module/" + classSimpleName)).thenReturn(instance);
+		} catch (NamingException e) {
+			throw new RuntimeException(e);
+		}
+	}
 }

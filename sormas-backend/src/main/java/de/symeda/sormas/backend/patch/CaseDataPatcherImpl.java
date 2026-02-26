@@ -79,7 +79,6 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 
 		CaseDataDto caseData = getCaseDataDto(request);
 
-		// TODO: implement disease check for fields
 		Disease disease = caseData.getDisease();
 
 		Supplier<PersonDto> person = Suppliers.memoize(() -> getPersonDto(caseData));
@@ -154,7 +153,7 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 							return singlePatchResult.setFailure(
 								new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.FORBIDDEN_VALUE_OVERRIDE)
 									.setExistingFieldValue(currentValue)
-									.setProvidedFieldValue(typedValue));
+									.setProvidedFieldValue(untypedTargetValue));
 						}
 					}
 				}
@@ -166,7 +165,7 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 						new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.TECHNICAL)
 							.setDescription(exception.orElseThrow().getMessage()));
 				} else {
-					return singlePatchResult.setValue(typedValue);
+					return singlePatchResult.setValue(untypedTargetValue);
 				}
 			} catch (RuntimeException e) {
 				logger.error("Failure during patch operation", e);
