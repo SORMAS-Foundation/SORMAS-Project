@@ -37,13 +37,13 @@ class EnumMapperTest extends AbstractUnitTest {
 	@Test
 	void map_sex_exactMatch_male() {
 		// EXECUTE & CHECK
-		assertEquals(Sex.MALE, victim.map("MALE", Sex.class));
+		assertEquals(Sex.MALE, victim.map("MALE", Sex.class).getData());
 	}
 
 	@Test
 	void map_sex_exactMatch_female() {
 		// EXECUTE & CHECK
-		assertEquals(Sex.FEMALE, victim.map("FEMALE", Sex.class));
+		assertEquals(Sex.FEMALE, victim.map("FEMALE", Sex.class).getData());
 	}
 
 	@Test
@@ -55,19 +55,19 @@ class EnumMapperTest extends AbstractUnitTest {
 	@Test
 	void map_sex_caseInsensitive_lowercase() {
 		// EXECUTE & CHECK
-		assertEquals(Sex.MALE, victim.map("male", Sex.class));
+		assertEquals(Sex.MALE, victim.map("male", Sex.class).getData());
 	}
 
 	@Test
 	void map_sex_caseInsensitive_mixedCase() {
 		// EXECUTE & CHECK
-		assertEquals(Sex.FEMALE, victim.map("fEmAlE", Sex.class));
+		assertEquals(Sex.FEMALE, victim.map("fEmAlE", Sex.class).getData());
 	}
 
 	@Test
 	void map_sex_trimsWhitespace() {
 		// EXECUTE & CHECK
-		assertEquals(Sex.MALE, victim.map("  MALE  ", Sex.class));
+		assertEquals(Sex.MALE, victim.map("  MALE  ", Sex.class).getData());
 	}
 
 	// map - OTHER fallback (Sex has OTHER constant)
@@ -75,7 +75,7 @@ class EnumMapperTest extends AbstractUnitTest {
 	@Test
 	void map_sex_unknownValue_fallsBackToOther() {
 		// EXECUTE & CHECK
-		assertEquals(Sex.OTHER, victim.map("SOMETHING_UNKNOWN", Sex.class));
+		assertEquals(Sex.OTHER, victim.map("SOMETHING_UNKNOWN", Sex.class).getData());
 	}
 
 	// map - @ValueMapperDefault fallback (InfectionSetting, no OTHER constant)
@@ -83,19 +83,19 @@ class EnumMapperTest extends AbstractUnitTest {
 	@Test
 	void map_infectionSetting_exactMatch_ambulatory() {
 		// EXECUTE & CHECK
-		assertEquals(InfectionSetting.AMBULATORY, victim.map("AMBULATORY", InfectionSetting.class));
+		assertEquals(InfectionSetting.AMBULATORY, victim.map("AMBULATORY", InfectionSetting.class).getData());
 	}
 
 	@Test
 	void map_infectionSetting_exactMatch_normalWard() {
 		// EXECUTE & CHECK
-		assertEquals(InfectionSetting.NORMAL_WARD, victim.map("NORMAL_WARD", InfectionSetting.class));
+		assertEquals(InfectionSetting.NORMAL_WARD, victim.map("NORMAL_WARD", InfectionSetting.class).getData());
 	}
 
 	@Test
 	void map_infectionSetting_unknownValue_fallsBackToAnnotatedDefault() {
 		// EXECUTE & CHECK
-		assertEquals(InfectionSetting.UNKNOWN, victim.map("SOMETHING_UNKNOWN", InfectionSetting.class));
+		assertEquals(InfectionSetting.UNKNOWN, victim.map("SOMETHING_UNKNOWN", InfectionSetting.class).getData());
 	}
 
 	// map - @ValueMapperDefault fallback (Trimester, no OTHER constant)
@@ -103,25 +103,25 @@ class EnumMapperTest extends AbstractUnitTest {
 	@Test
 	void map_trimester_exactMatch_first() {
 		// EXECUTE & CHECK
-		assertEquals(Trimester.FIRST, victim.map("FIRST", Trimester.class));
+		assertEquals(Trimester.FIRST, victim.map("FIRST", Trimester.class).getData());
 	}
 
 	@Test
 	void map_trimester_exactMatch_second() {
 		// EXECUTE & CHECK
-		assertEquals(Trimester.SECOND, victim.map("SECOND", Trimester.class));
+		assertEquals(Trimester.SECOND, victim.map("SECOND", Trimester.class).getData());
 	}
 
 	@Test
 	void map_trimester_exactMatch_third() {
 		// EXECUTE & CHECK
-		assertEquals(Trimester.THIRD, victim.map("THIRD", Trimester.class));
+		assertEquals(Trimester.THIRD, victim.map("THIRD", Trimester.class).getData());
 	}
 
 	@Test
 	void map_trimester_unknownValue_fallsBackToAnnotatedDefault() {
 		// EXECUTE & CHECK
-		assertEquals(Trimester.UNKNOWN, victim.map("SOMETHING_UNKNOWN", Trimester.class));
+		assertEquals(Trimester.UNKNOWN, victim.map("SOMETHING_UNKNOWN", Trimester.class).getData());
 	}
 
 	// map - no match, no OTHER, no @ValueMapperDefault → exception

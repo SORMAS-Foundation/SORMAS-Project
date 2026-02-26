@@ -1,11 +1,13 @@
 package de.symeda.sormas.api.patch;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.info.InfoFacade;
 
 // TODO: must following be supported: MULTIPLE - FIELD patching ? HOW to behave for that
@@ -31,6 +33,12 @@ public class CaseDataPatchRequest {
 	 */
 	@Nullable
 	private String origin;
+
+	/**
+	 * To be able to support I18n inputs the input languages can be passed, system locale by default.
+	 */
+	@Nullable
+	private List<Language> inputLanguages;
 
 	public String getCaseUuid() {
 		return caseUuid;
@@ -78,6 +86,15 @@ public class CaseDataPatchRequest {
 		return this;
 	}
 
+	public List<Language> getInputLanguages() {
+		return inputLanguages;
+	}
+
+	public CaseDataPatchRequest setInputLanguages(List<Language> inputLanguages) {
+		this.inputLanguages = inputLanguages;
+		return this;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (o == null || getClass() != o.getClass())
@@ -87,17 +104,18 @@ public class CaseDataPatchRequest {
 			&& replacementStrategy == that.replacementStrategy
 			&& emptyValueBehavior == that.emptyValueBehavior
 			&& Objects.equals(patchDictionary, that.patchDictionary)
-			&& Objects.equals(origin, that.origin);
+			&& Objects.equals(origin, that.origin)
+			&& Objects.equals(inputLanguages, that.inputLanguages);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(caseUuid, replacementStrategy, emptyValueBehavior, patchDictionary, origin);
+		return Objects.hash(caseUuid, replacementStrategy, emptyValueBehavior, patchDictionary, origin, inputLanguages);
 	}
 
 	@Override
 	public String toString() {
 		return "CaseDataPatchRequest{" + "caseUuid='" + caseUuid + '\'' + ", replacementStrategy=" + replacementStrategy + ", emptyValueBehavior="
-			+ emptyValueBehavior + ", patchDictionary=" + patchDictionary + ", origin='" + origin + '\'' + '}';
+			+ emptyValueBehavior + ", patchDictionary=" + patchDictionary + ", origin='" + origin + '\'' + ", inputLanguages=" + inputLanguages + '}';
 	}
 }

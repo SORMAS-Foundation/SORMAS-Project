@@ -13,6 +13,7 @@ import de.symeda.sormas.api.patch.DataPatchFailureCause;
 import de.symeda.sormas.api.patch.DataReplacementStrategy;
 import de.symeda.sormas.api.patch.mapping.FieldCustomMapper;
 import de.symeda.sormas.api.patch.mapping.FieldPatchRequest;
+import de.symeda.sormas.api.patch.mapping.ValueMappingResult;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.backend.patch.mapping.impl.valuemapper.DatePatchMapper;
 
@@ -36,7 +37,14 @@ public class PersonBirthDateFieldMapper implements FieldCustomMapper {
 		PersonDto person = (PersonDto) untypedTarget;
 
 		Object untypedValue = request.getValue();
-		Date birthDate = dateMapper.map(untypedValue, Date.class);
+		ValueMappingResult<Date> result = dateMapper.map(untypedValue, Date.class);
+
+		DataPatchFailureCause dataPatchFailureCause = result.getDataPatchFailureCause();
+		if (dataPatchFailureCause != null) {
+			return Optional.of(new DataPatchFailure().setDataPatchFailureCause(dataPatchFailureCause));
+		}
+
+		Date birthDate = result.getData();
 
 		// TODO: remove duplication.
 		Calendar calendar = Calendar.getInstance();

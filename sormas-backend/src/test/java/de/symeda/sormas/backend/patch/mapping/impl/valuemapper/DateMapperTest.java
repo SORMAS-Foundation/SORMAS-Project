@@ -40,7 +40,7 @@ class DateMapperTest extends AbstractUnitTest {
 		Date expected = new SimpleDateFormat("yyyy-MM-dd").parse(input);
 
 		// EXECUTE
-		Date actual = victim.map(input, Date.class);
+		Date actual = victim.map(input, Date.class).getData();
 
 		// CHECK
 		assertEquals(expected, actual);
@@ -53,7 +53,7 @@ class DateMapperTest extends AbstractUnitTest {
 		Date expected = new SimpleDateFormat("yyyy-MM-dd").parse(input);
 
 		// EXECUTE
-		Date actual = victim.map(input, Date.class);
+		Date actual = victim.map(input, Date.class).getData();
 
 		// CHECK
 		assertEquals(expected, actual);
@@ -66,7 +66,7 @@ class DateMapperTest extends AbstractUnitTest {
 		Date expected = new SimpleDateFormat("yyyy-MM-dd").parse(input);
 
 		// EXECUTE
-		Date actual = victim.map(input, Date.class);
+		Date actual = victim.map(input, Date.class).getData();
 
 		// CHECK
 		assertEquals(expected, actual);
@@ -80,7 +80,7 @@ class DateMapperTest extends AbstractUnitTest {
 		Date expected = new SimpleDateFormat("yyyy-MM-dd").parse("2024-06-15");
 
 		// EXECUTE
-		Date actual = victim.map(new StringBuilder("2024-06-15"), Date.class);
+		Date actual = victim.map(new StringBuilder("2024-06-15"), Date.class).getData();
 
 		// CHECK
 		assertEquals(expected, actual);

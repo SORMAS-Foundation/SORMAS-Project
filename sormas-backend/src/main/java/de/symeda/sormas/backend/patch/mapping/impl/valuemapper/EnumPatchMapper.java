@@ -10,16 +10,22 @@ import java.util.Set;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.I18nPropertiesRequest;
+import de.symeda.sormas.api.patch.DataPatchFailureCause;
 import de.symeda.sormas.api.patch.mapping.ValueMapperDefault;
+import de.symeda.sormas.api.patch.mapping.ValueMappingResult;
 import de.symeda.sormas.api.patch.mapping.ValuePatchMapper;
 import de.symeda.sormas.backend.util.StringNormalizer;
 
 @ApplicationScoped
 public class EnumPatchMapper implements ValuePatchMapper {
+
+	private final static Logger logger = LoggerFactory.getLogger(EnumPatchMapper.class);
 
 	private static final Set<Class<?>> SUPPORTED_TYPES = Set.of(Enum.class);
 
@@ -37,7 +43,7 @@ public class EnumPatchMapper implements ValuePatchMapper {
 	@SuppressWarnings({
 		"unchecked",
 		"rawtypes" })
-	public <T> T map(Object value, Class<T> targetType, Set<String> inputLanguageCodes) {
+	public <T> ValueMappingResult<T> map(Object value, Class<T> targetType, Set<String> inputLanguageCodes) {
 		Class<? extends Enum> enumType = (Class<? extends Enum>) targetType;
 
 		String normalizedInput = StringNormalizer.normalize(value.toString());
@@ -46,7 +52,7 @@ public class EnumPatchMapper implements ValuePatchMapper {
 		// default naive search
 		T enumMember = searchEnumMemberIgnoringCase(constants, normalizedInput);
 		if (enumMember != null) {
-			return enumMember;
+			return ValueMappingResult.withData(enumMember);
 		}
 
 		for (Language language : LANGUAGES) {
@@ -63,24 +69,25 @@ public class EnumPatchMapper implements ValuePatchMapper {
 				.map(key -> searchEnumMemberIgnoringCase(constants, key));
 
 			if (enumMemberOpt.isPresent()) {
-				return enumMemberOpt.get();
+				return ValueMappingResult.withData(enumMemberOpt.get());
 			}
 		}
 
 		// overridden fallback
 		Enum annotatedDefault = findAnnotatedDefault((Class<? extends Enum<?>>) enumType, constants);
 		if (annotatedDefault != null) {
-			return (T) annotatedDefault;
+			return ValueMappingResult.withData((T) annotatedDefault);
 		}
 
 		// default fallback
 		for (Enum constant : constants) {
 			if (FALLBACK_NAME.equals(constant.name())) {
-				return (T) constant;
+				return ValueMappingResult.withData((T) constant);
 			}
 		}
 
-		throw new EnumConstantNotPresentException(enumType, normalizedInput);
+		logger.info("Could not match value: [{}] to referenceType: [{}]", normalizedInput, targetType);
+		return ValueMappingResult.withCause(DataPatchFailureCause.NOT_PRESENT_IN_REFERENCE_DATA_LIST);
 	}
 
 	private <T> @Nullable T searchEnumMemberIgnoringCase(Enum<?>[] constants, String normalizedInput) {

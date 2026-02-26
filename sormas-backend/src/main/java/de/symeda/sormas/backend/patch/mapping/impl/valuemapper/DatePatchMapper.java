@@ -7,10 +7,17 @@ import java.util.Set;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.symeda.sormas.api.patch.DataPatchFailureCause;
+import de.symeda.sormas.api.patch.mapping.ValueMappingResult;
 import de.symeda.sormas.api.patch.mapping.ValuePatchMapper;
 
 @ApplicationScoped
 public class DatePatchMapper implements ValuePatchMapper {
+
+	private final static Logger logger = LoggerFactory.getLogger(DatePatchMapper.class);
 
 	private static final Set<Class<?>> SUPPORTED_TYPES = Set.of(Date.class);
 
@@ -23,13 +30,15 @@ public class DatePatchMapper implements ValuePatchMapper {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T map(Object value, Class<T> targetType, Set<String> inputLanguageCodes) {
+	public <T> ValueMappingResult<T> map(Object value, Class<T> targetType, Set<String> inputLanguageCodes) {
 		try {
 			SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
 			sdf.setLenient(false);
-			return (T) sdf.parse(value.toString());
+			return ValueMappingResult.withData((T) sdf.parse(value.toString()));
 		} catch (ParseException e) {
-			throw new IllegalArgumentException("DateMapper: cannot parse date value '" + value + "', expected format: " + DATE_FORMAT, e);
+			logger.info("DateMapper: cannot parse date value [{}], expected format: [{}]", value, DATE_FORMAT, e);
+
+			return ValueMappingResult.withCause(DataPatchFailureCause.INVALID_VALUE_TYPE);
 		}
 	}
 

@@ -10,11 +10,16 @@ import javax.ejb.EJB;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.I18nPropertiesRequest;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
+import de.symeda.sormas.api.patch.DataPatchFailureCause;
+import de.symeda.sormas.api.patch.mapping.ValueMappingResult;
 import de.symeda.sormas.api.patch.mapping.ValuePatchMapper;
 import de.symeda.sormas.api.referencedata.ReferenceDataValueInstanceProvider;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
@@ -22,6 +27,8 @@ import de.symeda.sormas.backend.util.StringNormalizer;
 
 @ApplicationScoped
 public class ReferenceDtoPatchMapper implements ValuePatchMapper {
+
+	private final static Logger logger = LoggerFactory.getLogger(ReferenceDtoPatchMapper.class);
 
 	@Inject
 	private ReferenceDataValueInstanceProvider referenceDataValueInstanceProvider;
@@ -32,7 +39,7 @@ public class ReferenceDtoPatchMapper implements ValuePatchMapper {
 	private static final List<Language> LANGUAGES = Arrays.asList(Language.EN, Language.FR, Language.DE);
 
 	@Override
-	public <T> T map(Object value, Class<T> targetType, Set<String> inputLanguageCodes) {
+	public <T> ValueMappingResult<T> map(Object value, Class<T> targetType, Set<String> inputLanguageCodes) {
 		String captionCandidate = value.toString();
 
 		if (!ReferenceDto.class.isAssignableFrom(targetType)) {
@@ -41,10 +48,17 @@ public class ReferenceDtoPatchMapper implements ValuePatchMapper {
 
 		Class<? extends ReferenceDto> referenceType = targetType.asSubclass(ReferenceDto.class);
 
-		return (T) findByTranslationKey(value, targetType).or(() -> referenceDataValueInstanceProvider.getOne(captionCandidate, referenceType))
-			.orElseThrow(
-				() -> new IllegalStateException(
-					String.format("Could not match value: [%s] to referenceType: [%s]", captionCandidate, referenceType)));
+		return this.<T> findByTranslationKey(value, targetType)
+			.or(() -> (Optional<? extends T>) findByCaptionMatch(captionCandidate, referenceType))
+			.map(ValueMappingResult::withData)
+			.orElseGet(() -> {
+				logger.info("Could not match value: [{}] to referenceType: [{}]", captionCandidate, referenceType);
+				return ValueMappingResult.withCause(DataPatchFailureCause.NOT_PRESENT_IN_REFERENCE_DATA_LIST);
+			});
+	}
+
+	private <T extends ReferenceDto> Optional<T> findByCaptionMatch(String captionCandidate, Class<T> referenceType) {
+		return referenceDataValueInstanceProvider.getOne(captionCandidate, referenceType);
 	}
 
 	private <T> Optional<T> findByTranslationKey(Object value, Class<?> referenceType) {

@@ -9,11 +9,17 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.symeda.sormas.api.patch.DataPatchFailureCause;
+import de.symeda.sormas.api.patch.mapping.ValueMappingResult;
 import de.symeda.sormas.api.patch.mapping.ValuePatchMapper;
 
 @ApplicationScoped
 public class ValueMapperRegistry {
 
+	private final static Logger logger = LoggerFactory.getLogger(ValueMapperRegistry.class);
 	private List<ValuePatchMapper> orderedInstances;
 
 	@Inject
@@ -26,13 +32,13 @@ public class ValueMapperRegistry {
 	}
 
 	@NotNull
-	public <T> T map(Object value, @NotNull Class<T> targetType) {
+	public <T> ValueMappingResult<T> map(Object value, @NotNull Class<T> targetType) {
 		if (value == null) {
 			return null;
 		}
 
 		if (targetType.isInstance(value)) {
-			return targetType.cast(value);
+			return ValueMappingResult.withData(targetType.cast(value));
 		}
 
 		for (ValuePatchMapper mapper : orderedInstances) {
@@ -40,6 +46,9 @@ public class ValueMapperRegistry {
 				return mapper.map(value, targetType);
 			}
 		}
-		throw new IllegalArgumentException(String.format("No mapper found for: [%s]", targetType));
+
+		logger.error("No mapper found for: [{}]", targetType);
+
+		return ValueMappingResult.withCause(DataPatchFailureCause.UNSUPPORTED_TARGET_TYPE);
 	}
 }

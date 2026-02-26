@@ -11,7 +11,6 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -43,12 +42,6 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumValue;
 
 class CaseDataPatcherImplTest extends AbstractBeanTest {
-
-	@BeforeEach
-	void setUp() {
-		// TODO: create reference data: country.
-		// TODO: try to change language to use the languages names / with without accent and stuff: Pérou
-	}
 
 	// TODO: test different replacement strategy: with/without failure
 

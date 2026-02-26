@@ -30,7 +30,7 @@ public interface ValuePatchMapper extends Comparable<ValuePatchMapper> {
 	// TODO: CHECK if error handling should be done here already. | Multiple return types.
 	// TODO: CHECK shouldn't be string ?
 	@NotNull
-	default <T> T map(Object value, @NotNull Class<T> targetType) {
+	default <T> ValueMappingResult<T> map(Object value, @NotNull Class<T> targetType) {
 		return map(value, targetType, Set.of());
 	}
 
@@ -44,7 +44,7 @@ public interface ValuePatchMapper extends Comparable<ValuePatchMapper> {
 	 * @param <T>
 	 */
 	@NotNull
-	<T> T map(Object value, @NotNull Class<T> targetType, Set<String> inputLanguageCodes);
+	<T> ValueMappingResult<T> map(Object value, @NotNull Class<T> targetType, Set<String> inputLanguageCodes);
 
 	@NotNull
 	Set<Class<?>> getSupportedTypes();

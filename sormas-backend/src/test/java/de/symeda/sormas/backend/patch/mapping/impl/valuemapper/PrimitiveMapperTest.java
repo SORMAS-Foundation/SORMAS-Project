@@ -22,7 +22,7 @@ class PrimitiveMapperTest extends AbstractUnitTest {
 		// PREPARE
 		String expected = "toto";
 		// EXECUTE & CHECK
-		assertEquals(expected, victim.map(expected, String.class));
+		assertEquals(expected, victim.map(expected, String.class).getData());
 	}
 
 	@Test
@@ -31,7 +31,7 @@ class PrimitiveMapperTest extends AbstractUnitTest {
 		String input = "50";
 
 		// EXECUTE
-		Integer actual = victim.map(input, Integer.class);
+		Integer actual = victim.map(input, Integer.class).getData();
 
 		// CHECK
 		assertEquals(50, actual);
@@ -54,7 +54,7 @@ class PrimitiveMapperTest extends AbstractUnitTest {
 	@Test
 	void map_string_trimsWhitespace() {
 		// EXECUTE & CHECK
-		assertEquals("hello", victim.map("  hello  ", String.class));
+		assertEquals("hello", victim.map("  hello  ", String.class).getData());
 	}
 
 	@Test
@@ -63,7 +63,7 @@ class PrimitiveMapperTest extends AbstractUnitTest {
 		String input = "42";
 
 		// EXECUTE
-		Integer actual = victim.map(input, Integer.class);
+		Integer actual = victim.map(input, Integer.class).getData();
 
 		// CHECK
 		assertEquals(42, actual);
@@ -75,7 +75,7 @@ class PrimitiveMapperTest extends AbstractUnitTest {
 		String input = "3.14";
 
 		// EXECUTE
-		Double actual = victim.map(input, Double.class);
+		Double actual = victim.map(input, Double.class).getData();
 
 		// CHECK
 		assertEquals(3.14, actual);
@@ -87,7 +87,7 @@ class PrimitiveMapperTest extends AbstractUnitTest {
 		String input = "1.5";
 
 		// EXECUTE
-		Float actual = victim.map(input, Float.class);
+		Float actual = victim.map(input, Float.class).getData();
 
 		// CHECK
 		assertEquals(1.5f, actual);
@@ -99,7 +99,7 @@ class PrimitiveMapperTest extends AbstractUnitTest {
 		String input = "true";
 
 		// EXECUTE
-		Boolean actual = victim.map(input, Boolean.class);
+		Boolean actual = victim.map(input, Boolean.class).getData();
 
 		// CHECK
 		assertTrue(actual);
@@ -111,7 +111,7 @@ class PrimitiveMapperTest extends AbstractUnitTest {
 		String input = "false";
 
 		// EXECUTE
-		Boolean actual = victim.map(input, Boolean.class);
+		Boolean actual = victim.map(input, Boolean.class).getData();
 
 		// CHECK
 		assertFalse(actual);
@@ -123,7 +123,7 @@ class PrimitiveMapperTest extends AbstractUnitTest {
 		String input = "true";
 
 		// EXECUTE
-		Boolean actual = victim.map(input, boolean.class);
+		Boolean actual = victim.map(input, boolean.class).getData();
 
 		// CHECK
 		assertTrue(actual);
@@ -134,13 +134,13 @@ class PrimitiveMapperTest extends AbstractUnitTest {
 	@Test
 	void map_integer_withSurroundingWhitespace() {
 		// EXECUTE & CHECK
-		assertEquals(99, victim.map("  99  ", Integer.class));
+		assertEquals(99, victim.map("  99  ", Integer.class).getData());
 	}
 
 	@Test
 	void map_boolean_invalidString_returnsFalse() {
 		// EXECUTE & CHECK
-		assertFalse(victim.map("notABoolean", Boolean.class));
+		assertFalse(victim.map("notABoolean", Boolean.class).getData());
 	}
 
 	// map - error cases

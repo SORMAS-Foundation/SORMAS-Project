@@ -33,6 +33,7 @@ import de.symeda.sormas.api.patch.DataReplacementStrategy;
 import de.symeda.sormas.api.patch.EmptyValueBehavior;
 import de.symeda.sormas.api.patch.mapping.FieldCustomMapper;
 import de.symeda.sormas.api.patch.mapping.FieldPatchRequest;
+import de.symeda.sormas.api.patch.mapping.ValueMappingResult;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.Tuple;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -141,7 +142,15 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 
 				// TODO: handle targetType being a list. TO-Check with business: add / replace 
 
-				Object typedValue = valueMapperRegistry.map(untypedTargetValue, targetType);
+				ValueMappingResult<?> result = valueMapperRegistry.map(untypedTargetValue, targetType);
+
+				DataPatchFailureCause dataPatchFailureCause = result.getDataPatchFailureCause();
+				if (dataPatchFailureCause != null) {
+					return singlePatchResult
+						.setFailure(new DataPatchFailure().setDataPatchFailureCause(dataPatchFailureCause).setProvidedFieldValue(untypedTargetValue));
+				}
+
+				Object typedValue = result.getData();
 
 				if (request.getReplacementStrategy() == DataReplacementStrategy.IF_NOT_ALREADY_PRESENT) {
 					Optional<Object> nestedPropertyValue = PropertyAccessor.getNestedProperty(target, relativeFieldName);

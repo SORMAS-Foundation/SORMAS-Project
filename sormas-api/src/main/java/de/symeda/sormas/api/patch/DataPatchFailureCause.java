@@ -48,6 +48,11 @@ public enum DataPatchFailureCause {
 	INVALID_VALUE_TYPE,
 
 	/**
+	 * A mapper is missing and must be implemented.
+	 */
+	UNSUPPORTED_TARGET_TYPE,
+
+	/**
 	 * This means there is a hole in the implementation.
 	 */
 	TECHNICAL
