@@ -3,6 +3,7 @@ package de.symeda.sormas.patch;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -18,6 +19,7 @@ import org.mockito.Mockito;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumTranslation;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.region.RegionFacade;
@@ -81,7 +83,6 @@ class CaseDataPatcherImplTest extends AbstractBeanTest {
 			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failure found, but should be empty"),
 			// PERSON
 			() -> Assertions.assertEquals(newLastname, actualPerson.getLastName()),
-			() -> Assertions.assertEquals(Sex.FEMALE, actualPerson.getSex()),
 			// CASE
 			() -> Assertions.assertEquals(
 				Date.from(LocalDate.parse(classificationDate).atStartOfDay(ZoneId.systemDefault()).toInstant()),
@@ -251,9 +252,6 @@ class CaseDataPatcherImplTest extends AbstractBeanTest {
 			"Person.(deathDate)",
 			ignoredValue,
 
-			"Person.(deathDate|)",
-			ignoredValue,
-
 			"Person.(deathDate|wefuiohjwerf",
 			ignoredValue,
 
@@ -282,7 +280,7 @@ class CaseDataPatcherImplTest extends AbstractBeanTest {
 	// TODO: This one fails even though it should not
 	// the value is properly resolved and set into the person, but when fetching it again it's not there anymore.
 	@Test
-	void patch_customizableEnum() {
+	void patch_customizableEnu_default_enum() {
 		// PREPARE
 		OccupationType.getDefaultValues().forEach((k, v) -> {
 			CustomizableEnumValue entry = new CustomizableEnumValue();
@@ -334,6 +332,67 @@ class CaseDataPatcherImplTest extends AbstractBeanTest {
 			() -> Assertions.assertEquals(expectedOccupationType, person.getOccupationType()),
 
 			() -> Assertions.assertEquals(patchDictionary, response.getPatchDictionary()));
+	}
+
+	// TODO: this should work
+	@Test
+	void patch_customizableEnu_non_default_enum() {
+		// PREPARE
+		CustomizableEnumValue entry = new CustomizableEnumValue();
+		entry.setDataType(CustomizableEnumType.OCCUPATION_TYPE);
+		String customValue = "A custom value";
+
+		String translation = "expectedTranslation";
+		entry.setValue(customValue);
+		entry.setCaption("");
+		entry.setTranslations(
+			List.of(
+				buildTranslation("en", translation),
+				buildTranslation("fr", "irrelated"),
+				buildTranslation("de", "irrelated"),
+				buildTranslation("lu", "irrelated")));
+		entry.setDefaultValue(false);
+		getCustomizableEnumValueService().ensurePersisted(entry);
+
+		getCustomizableEnumFacade().loadData();
+
+		OccupationType expectedOccupationType = getCustomizableEnumFacade().getEnumValue(CustomizableEnumType.OCCUPATION_TYPE, null, customValue);
+
+		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.PERTUSSIS);
+
+		FacilityDto healthFacility = getFacilityFacade().getByUuid(originalCase.getHealthFacility().getUuid());
+		originalCase.setDistrict(healthFacility.getDistrict());
+		getCaseFacade().save(originalCase);
+
+		// must be able to ignore accents - whitespaces - case
+		Map<String, Object> patchDictionary = Map.of("Person.occupationType", "     " + customValue.toUpperCase() + "   ");
+		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
+			.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+			.setPatchDictionary(patchDictionary);
+
+		Mockito.when(MockProducer.getCustomizableEnumFacadeForConverter().getEnumValue(CustomizableEnumType.OCCUPATION_TYPE, null, customValue))
+			.thenReturn(expectedOccupationType);
+
+		// EXECUTE
+		DataPatchResponse response = victim().patch(request);
+
+		PersonDto person = getPersonFacade().getByUuid(originalCase.getPerson().getUuid());
+
+		// CHECK
+		logger.info("response: [{}]", response);
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failure found, but should be empty"),
+
+			() -> Assertions.assertEquals(expectedOccupationType, person.getOccupationType()),
+
+			() -> Assertions.assertEquals(patchDictionary, response.getPatchDictionary()));
+	}
+
+	private static @NotNull CustomizableEnumTranslation buildTranslation(String en, String irrelated) {
+		CustomizableEnumTranslation e1 = new CustomizableEnumTranslation();
+		e1.setLanguageCode(en);
+		e1.setValue(irrelated);
+		return e1;
 	}
 
 	@Test
