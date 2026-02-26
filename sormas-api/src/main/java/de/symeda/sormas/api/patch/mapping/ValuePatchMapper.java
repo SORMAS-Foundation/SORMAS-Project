@@ -27,24 +27,13 @@ public interface ValuePatchMapper extends Comparable<ValuePatchMapper> {
 	 * @throws RuntimeException
 	 *             in case of the value couldn't be mapped.
 	 */
-	// TODO: CHECK if error handling should be done here already. | Multiple return types.
-	// TODO: CHECK shouldn't be string ?
 	@NotNull
 	default <T> ValueMappingResult<T> map(Object value, @NotNull Class<T> targetType) {
-		return map(value, targetType, Set.of());
+		return map(new ValuePatchRequest().setValue(value).setTargetType(targetType));
 	}
 
-	/**
-	 *
-	 * @param value
-	 * @param targetType
-	 * @param inputLanguageCodes
-	 *            useful if you input language is not only 'en' for some mappers that
-	 * @return
-	 * @param <T>
-	 */
 	@NotNull
-	<T> ValueMappingResult<T> map(Object value, @NotNull Class<T> targetType, Set<String> inputLanguageCodes);
+	<T> ValueMappingResult<T> map(ValuePatchRequest request);
 
 	@NotNull
 	Set<Class<?>> getSupportedTypes();

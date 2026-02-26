@@ -21,6 +21,7 @@ import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.patch.DataPatchFailureCause;
 import de.symeda.sormas.api.patch.mapping.ValueMappingResult;
 import de.symeda.sormas.api.patch.mapping.ValuePatchMapper;
+import de.symeda.sormas.api.patch.mapping.ValuePatchRequest;
 import de.symeda.sormas.api.referencedata.ReferenceDataValueInstanceProvider;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
 import de.symeda.sormas.backend.util.StringNormalizer;
@@ -39,7 +40,9 @@ public class ReferenceDtoPatchMapper implements ValuePatchMapper {
 	private static final List<Language> LANGUAGES = Arrays.asList(Language.EN, Language.FR, Language.DE);
 
 	@Override
-	public <T> ValueMappingResult<T> map(Object value, Class<T> targetType, Set<String> inputLanguageCodes) {
+	public <T> ValueMappingResult<T> map(ValuePatchRequest request) {
+		Object value = request.getValue();
+		Class<?> targetType = request.getTargetType();
 		String captionCandidate = value.toString();
 
 		if (!ReferenceDto.class.isAssignableFrom(targetType)) {

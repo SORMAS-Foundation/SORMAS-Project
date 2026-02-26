@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.patch.DataPatchFailureCause;
 import de.symeda.sormas.api.patch.mapping.ValueMappingResult;
 import de.symeda.sormas.api.patch.mapping.ValuePatchMapper;
+import de.symeda.sormas.api.patch.mapping.ValuePatchRequest;
 
 @ApplicationScoped
 public class ValueMapperRegistry {
@@ -32,18 +33,21 @@ public class ValueMapperRegistry {
 	}
 
 	@NotNull
-	public <T> ValueMappingResult<T> map(Object value, @NotNull Class<T> targetType) {
+	public <T> ValueMappingResult<T> map(ValuePatchRequest request) {
+		Object value = request.getValue();
 		if (value == null) {
 			return null;
 		}
 
+		Class<?> targetType = request.getTargetType();
+
 		if (targetType.isInstance(value)) {
-			return ValueMappingResult.withData(targetType.cast(value));
+			return ValueMappingResult.withData((T) targetType.cast(value));
 		}
 
 		for (ValuePatchMapper mapper : orderedInstances) {
 			if (mapper.supports(targetType)) {
-				return mapper.map(value, targetType);
+				return mapper.map(request);
 			}
 		}
 

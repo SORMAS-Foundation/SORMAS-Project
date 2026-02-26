@@ -19,6 +19,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.I18nPropertiesRequest;
 import de.symeda.sormas.api.patch.mapping.ValueMappingResult;
 import de.symeda.sormas.api.patch.mapping.ValuePatchMapper;
+import de.symeda.sormas.api.patch.mapping.ValuePatchRequest;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb;
 import de.symeda.sormas.backend.util.StringNormalizer;
 
@@ -36,7 +37,9 @@ public class CustomizableEnumPatchMapper implements ValuePatchMapper {
 	private CustomizableEnumFacadeEjb.CustomizableEnumFacadeEjbLocal customizableEnumFacade;
 
 	@Override
-	public <T> ValueMappingResult<T> map(Object value, Class<T> targetType, Set<String> inputLanguageCodes) {
+	public <T> ValueMappingResult<T> map(ValuePatchRequest request) {
+		Object value = request.getValue();
+		Class<?> targetType = request.getTargetType();
 		String captionCandidate = value.toString();
 
 		if (!CustomizableEnum.class.isAssignableFrom(targetType)) {

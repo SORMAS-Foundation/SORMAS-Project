@@ -20,6 +20,7 @@ import de.symeda.sormas.api.patch.DataPatchFailureCause;
 import de.symeda.sormas.api.patch.mapping.ValueMapperDefault;
 import de.symeda.sormas.api.patch.mapping.ValueMappingResult;
 import de.symeda.sormas.api.patch.mapping.ValuePatchMapper;
+import de.symeda.sormas.api.patch.mapping.ValuePatchRequest;
 import de.symeda.sormas.backend.util.StringNormalizer;
 
 @ApplicationScoped
@@ -43,7 +44,9 @@ public class EnumPatchMapper implements ValuePatchMapper {
 	@SuppressWarnings({
 		"unchecked",
 		"rawtypes" })
-	public <T> ValueMappingResult<T> map(Object value, Class<T> targetType, Set<String> inputLanguageCodes) {
+	public <T> ValueMappingResult<T> map(ValuePatchRequest request) {
+		Object value = request.getValue();
+		Class<?> targetType = request.getTargetType();
 
 		if (!Enum.class.isAssignableFrom(targetType)) {
 			return ValueMappingResult.withCause(DataPatchFailureCause.TECHNICAL);
@@ -61,10 +64,10 @@ public class EnumPatchMapper implements ValuePatchMapper {
 		}
 
 		for (Language language : LANGUAGES) {
-			I18nPropertiesRequest request = new I18nPropertiesRequest().setLanguage(language)
+			I18nPropertiesRequest i18nPropertiesRequest = new I18nPropertiesRequest().setLanguage(language)
 				.setTargetType(enumType)
 				.setResourceBundleType(I18nPropertiesRequest.ResourceBundleType.ENUMS);
-			Map<String, String> stringStringMap = I18nProperties.buildKeyValueDictionary(request);
+			Map<String, String> stringStringMap = I18nProperties.buildKeyValueDictionary(i18nPropertiesRequest);
 
 			Optional<T> enumMemberOpt = stringStringMap.entrySet()
 				.stream()

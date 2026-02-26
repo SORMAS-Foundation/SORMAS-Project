@@ -39,6 +39,8 @@ public class CaseDataPatchRequest {
 	@Nullable
 	private List<Language> inputLanguages;
 
+	private boolean allowDefaultValues = true;
+
 	public String getCaseUuid() {
 		return caseUuid;
 	}
@@ -94,12 +96,22 @@ public class CaseDataPatchRequest {
 		return this;
 	}
 
+	public boolean isAllowDefaultValues() {
+		return allowDefaultValues;
+	}
+
+	public CaseDataPatchRequest setAllowDefaultValues(boolean allowDefaultValues) {
+		this.allowDefaultValues = allowDefaultValues;
+		return this;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (o == null || getClass() != o.getClass())
 			return false;
 		CaseDataPatchRequest that = (CaseDataPatchRequest) o;
-		return Objects.equals(caseUuid, that.caseUuid)
+		return allowDefaultValues == that.allowDefaultValues
+			&& Objects.equals(caseUuid, that.caseUuid)
 			&& replacementStrategy == that.replacementStrategy
 			&& emptyValueBehavior == that.emptyValueBehavior
 			&& Objects.equals(patchDictionary, that.patchDictionary)
@@ -109,12 +121,13 @@ public class CaseDataPatchRequest {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(caseUuid, replacementStrategy, emptyValueBehavior, patchDictionary, origin, inputLanguages);
+		return Objects.hash(caseUuid, replacementStrategy, emptyValueBehavior, patchDictionary, origin, inputLanguages, allowDefaultValues);
 	}
 
 	@Override
 	public String toString() {
 		return "CaseDataPatchRequest{" + "caseUuid='" + caseUuid + '\'' + ", replacementStrategy=" + replacementStrategy + ", emptyValueBehavior="
-			+ emptyValueBehavior + ", patchDictionary=" + patchDictionary + ", origin='" + origin + '\'' + ", inputLanguages=" + inputLanguages + '}';
+			+ emptyValueBehavior + ", patchDictionary=" + patchDictionary + ", origin='" + origin + '\'' + ", inputLanguages=" + inputLanguages
+			+ ", allowDefaultValues=" + allowDefaultValues + '}';
 	}
 }

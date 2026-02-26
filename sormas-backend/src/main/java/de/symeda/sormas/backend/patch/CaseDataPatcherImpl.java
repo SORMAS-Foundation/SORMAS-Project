@@ -34,6 +34,7 @@ import de.symeda.sormas.api.patch.EmptyValueBehavior;
 import de.symeda.sormas.api.patch.mapping.FieldCustomMapper;
 import de.symeda.sormas.api.patch.mapping.FieldPatchRequest;
 import de.symeda.sormas.api.patch.mapping.ValueMappingResult;
+import de.symeda.sormas.api.patch.mapping.ValuePatchRequest;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.Tuple;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -142,7 +143,11 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 
 				// TODO: handle targetType being a list. TO-Check with business: add / replace 
 
-				ValueMappingResult<?> result = valueMapperRegistry.map(untypedTargetValue, targetType);
+				ValueMappingResult<?> result = valueMapperRegistry.map(
+					new ValuePatchRequest().setValue(untypedTargetValue)
+						.setTargetType(targetType)
+						.setInputLanguages(request.getInputLanguages())
+						.setAllowDefaultValues(request.isAllowDefaultValues()));
 
 				DataPatchFailureCause dataPatchFailureCause = result.getDataPatchFailureCause();
 				if (dataPatchFailureCause != null) {

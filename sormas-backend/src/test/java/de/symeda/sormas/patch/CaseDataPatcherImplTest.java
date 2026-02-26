@@ -319,7 +319,7 @@ class CaseDataPatcherImplTest extends AbstractBeanTest {
 		Assertions.assertAll(
 			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failure found, but should be empty"),
 
-			() -> Assertions.assertEquals(input, person.getOccupationDetails()),
+			() -> Assertions.assertEquals(expectedOccupationType, person.getOccupationType()),
 
 			() -> Assertions.assertEquals(patchDictionary, response.getPatchDictionary()));
 	}

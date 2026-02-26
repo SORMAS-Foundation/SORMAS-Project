@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.patch.DataPatchFailureCause;
 import de.symeda.sormas.api.patch.mapping.ValueMappingResult;
 import de.symeda.sormas.api.patch.mapping.ValuePatchMapper;
+import de.symeda.sormas.api.patch.mapping.ValuePatchRequest;
 
 @ApplicationScoped
 public class PrimitivePatchMapper implements ValuePatchMapper {
@@ -20,7 +21,9 @@ public class PrimitivePatchMapper implements ValuePatchMapper {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> ValueMappingResult<T> map(Object value, Class<T> targetType, Set<String> inputLanguageCodes) {
+	public <T> ValueMappingResult<T> map(ValuePatchRequest request) {
+		Object value = request.getValue();
+		Class<?> targetType = request.getTargetType();
 		String str = value.toString().trim();
 
 		T result = null;

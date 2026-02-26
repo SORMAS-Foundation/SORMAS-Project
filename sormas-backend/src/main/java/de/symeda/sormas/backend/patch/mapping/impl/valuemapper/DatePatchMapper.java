@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.patch.DataPatchFailureCause;
 import de.symeda.sormas.api.patch.mapping.ValueMappingResult;
 import de.symeda.sormas.api.patch.mapping.ValuePatchMapper;
+import de.symeda.sormas.api.patch.mapping.ValuePatchRequest;
 
 @ApplicationScoped
 public class DatePatchMapper implements ValuePatchMapper {
@@ -30,7 +31,8 @@ public class DatePatchMapper implements ValuePatchMapper {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> ValueMappingResult<T> map(Object value, Class<T> targetType, Set<String> inputLanguageCodes) {
+	public <T> ValueMappingResult<T> map(ValuePatchRequest request) {
+		Object value = request.getValue();
 		try {
 			SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
 			sdf.setLenient(false);
