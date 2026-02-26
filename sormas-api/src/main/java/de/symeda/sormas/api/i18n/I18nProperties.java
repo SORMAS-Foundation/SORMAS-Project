@@ -442,12 +442,13 @@ public final class I18nProperties {
 
 		Class<?> targetType = request.getTargetType();
 
-		Map<String, String> propertiesMap =
-			StreamSupport.stream(((Iterable<String>) () -> resourceBundle.getResourceBundle().getKeys().asIterator()).spliterator(), false)
-				.filter(key -> StringUtils.startsWith(key, targetType.getSimpleName()))
-				.collect(Collectors.toMap(Function.identity(), resourceBundle::getString));
+		return StreamSupport.stream(((Iterable<String>) () -> resourceBundle.getResourceBundle().getKeys().asIterator()).spliterator(), false)
+			.filter(key -> StringUtils.startsWith(key, buildPrefix(targetType)))
+			.collect(Collectors.toMap(Function.identity(), resourceBundle::getString));
+	}
 
-		return propertiesMap;
+	public static String buildPrefix(Class<?> targetType) {
+		return targetType.getSimpleName() + ".";
 	}
 
 	public static class UTF8Control extends Control {

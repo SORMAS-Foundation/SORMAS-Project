@@ -14,9 +14,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.Mockito;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.region.RegionFacade;
 import de.symeda.sormas.api.patch.CaseDataPatchRequest;
@@ -25,12 +27,15 @@ import de.symeda.sormas.api.patch.DataPatchFailure;
 import de.symeda.sormas.api.patch.DataPatchFailureCause;
 import de.symeda.sormas.api.patch.DataPatchResponse;
 import de.symeda.sormas.api.patch.DataReplacementStrategy;
+import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.MockProducer;
+import de.symeda.sormas.backend.customizableenum.CustomizableEnumValue;
 
 class CaseDataPatcherImplTest extends AbstractBeanTest {
 
@@ -272,6 +277,63 @@ class CaseDataPatcherImplTest extends AbstractBeanTest {
 			() -> Assertions.assertTrue(response.getPatchDictionary().isEmpty(), "Nothing should have been patched, should be empty"),
 			// FAILURES
 			() -> Assertions.assertEquals(expectedFailures, response.getFailures()));
+	}
+
+	// TODO: This one fails even though it should not
+	// the value is properly resolved and set into the person, but when fetching it again it's not there anymore.
+	@Test
+	void patch_customizableEnum() {
+		// PREPARE
+		OccupationType.getDefaultValues().forEach((k, v) -> {
+			CustomizableEnumValue entry = new CustomizableEnumValue();
+			entry.setDataType(CustomizableEnumType.OCCUPATION_TYPE);
+			entry.setValue(k);
+			entry.setCaption(k);
+			entry.setProperties(v);
+			entry.setDefaultValue(true);
+			getCustomizableEnumValueService().ensurePersisted(entry);
+		});
+
+		getCustomizableEnumFacade().loadData();
+
+		String healthcareWorker = "HEALTHCARE_WORKER";
+		OccupationType expectedOccupationType =
+			getCustomizableEnumFacade().getEnumValue(CustomizableEnumType.OCCUPATION_TYPE, null, healthcareWorker);
+
+		CustomizableEnumValue customizableEnumValue = getCustomizableEnumValueService().getAll()
+			.stream()
+			.filter(enumMember -> healthcareWorker.equals(enumMember.getValue()))
+			.findAny()
+			.orElseThrow();
+
+		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.PERTUSSIS);
+
+		FacilityDto healthFacility = getFacilityFacade().getByUuid(originalCase.getHealthFacility().getUuid());
+		originalCase.setDistrict(healthFacility.getDistrict());
+		getCaseFacade().save(originalCase);
+
+		// must be able to ignore accents - whitespaces - case
+		Map<String, Object> patchDictionary = Map.of("Person.occupationType", "Im Gesundheitswesen tätig");
+		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
+			.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+			.setPatchDictionary(patchDictionary);
+
+		Mockito.when(MockProducer.getCustomizableEnumFacadeForConverter().getEnumValue(CustomizableEnumType.OCCUPATION_TYPE, null, healthcareWorker))
+			.thenReturn(expectedOccupationType);
+
+		// EXECUTE
+		DataPatchResponse response = victim().patch(request);
+
+		PersonDto person = getPersonFacade().getByUuid(originalCase.getPerson().getUuid());
+
+		// CHECK
+		logger.info("response: [{}]", response);
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failure found, but should be empty"),
+
+			() -> Assertions.assertEquals(expectedOccupationType, person.getOccupationType()),
+
+			() -> Assertions.assertEquals(patchDictionary, response.getPatchDictionary()));
 	}
 
 	@Test

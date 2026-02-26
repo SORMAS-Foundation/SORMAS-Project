@@ -8,6 +8,14 @@ public enum DataPatchFailureCause {
 	INVALID_MULTIPLE_FIELDS_FORMAT,
 
 	/**
+	 * Some fields have only a specific list of allowed values, if not present and no fallback then fails. Examples:
+	 * - {@link de.symeda.sormas.api.customizableenum.CustomizableEnum}
+	 * - {@link Enum}
+	 * - {@link de.symeda.sormas.api.ReferenceDto}
+	 */
+	NOT_PRESENT_IN_REFERENCE_DATA_LIST,
+
+	/**
 	 * Occurs the field is not supported by the disease / country / feature.
 	 * Error message must be somewhat generic to specify the Data Dictionary should be checked.
 	 */

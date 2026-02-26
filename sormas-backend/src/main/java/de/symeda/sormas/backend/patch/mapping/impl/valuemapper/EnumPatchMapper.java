@@ -38,16 +38,15 @@ public class EnumPatchMapper implements ValuePatchMapper {
 		"unchecked",
 		"rawtypes" })
 	public <T> T map(Object value, Class<T> targetType, Set<String> inputLanguageCodes) {
-		// TODO: check if inputLanguageCodes can be used to use I18N.
 		Class<? extends Enum> enumType = (Class<? extends Enum>) targetType;
 
 		String normalizedInput = StringNormalizer.normalize(value.toString());
 		Enum<?>[] constants = enumType.getEnumConstants();
 
 		// default naive search
-		T matchedMember = searchEnumMemberIgnoringCase(constants, normalizedInput);
-		if (matchedMember != null) {
-			return matchedMember;
+		T enumMember = searchEnumMemberIgnoringCase(constants, normalizedInput);
+		if (enumMember != null) {
+			return enumMember;
 		}
 
 		for (Language language : LANGUAGES) {
@@ -56,20 +55,18 @@ public class EnumPatchMapper implements ValuePatchMapper {
 				.setResourceBundleType(I18nPropertiesRequest.ResourceBundleType.ENUMS);
 			Map<String, String> stringStringMap = I18nProperties.buildPropertiesMap(request);
 
-			Optional<T> o = stringStringMap.entrySet()
+			Optional<T> enumMemberOpt = stringStringMap.entrySet()
 				.stream()
 				.filter(entry -> StringNormalizer.normalize(entry.getValue()).equals(normalizedInput))
 				.findAny()
 				.map(Map.Entry::getKey)
-				.map(a -> a.replace(enumType.getSimpleName() + ".", ""))
-				.map(a -> searchEnumMemberIgnoringCase(constants, a));
+				.map(key -> key.replace(I18nProperties.buildPrefix(enumType), ""))
+				.map(key -> searchEnumMemberIgnoringCase(constants, key));
 
-			if (o.isPresent()) {
-				return o.get();
+			if (enumMemberOpt.isPresent()) {
+				return enumMemberOpt.get();
 			}
 		}
-
-		// matching through enum-values
 
 		// overridden fallback
 		Enum annotatedDefault = findAnnotatedDefault((Class<? extends Enum<?>>) enumType, constants);
