@@ -16,7 +16,6 @@ public interface FieldCustomMapper {
 	 * - Phone number - email
 	 * - BirthDate
 	 */
-	// TODO: missing 'current value' logic: if already exist do nothing.
 	Optional<DataPatchFailure> map(FieldPatchRequest request);
 
 	/**

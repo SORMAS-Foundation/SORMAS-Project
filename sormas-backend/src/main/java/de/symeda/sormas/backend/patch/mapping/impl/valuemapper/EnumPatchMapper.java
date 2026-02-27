@@ -32,7 +32,6 @@ public class EnumPatchMapper implements ValuePatchMapper {
 
 	private static final String FALLBACK_NAME = "OTHER";
 
-	// TODO: make configurable.
 	@Override
 	public Set<Class<?>> getSupportedTypes() {
 		return SUPPORTED_TYPES;
@@ -42,7 +41,7 @@ public class EnumPatchMapper implements ValuePatchMapper {
 	@SuppressWarnings({
 		"unchecked",
 		"rawtypes" })
-	public <T> ValueMappingResult<T> map(ValuePatchRequest request) {
+	public <T> ValueMappingResult<T> map(ValuePatchRequest<T> request) {
 		Object value = request.getValue();
 		Class<?> targetType = request.getTargetType();
 

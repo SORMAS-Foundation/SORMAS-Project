@@ -17,8 +17,6 @@ class DateMapperTest extends AbstractUnitTest {
 	@InjectMocks
 	private DatePatchMapper victim;
 
-	// getSupportedTypes
-
 	@Test
 	void getSupportedTypes_containsDateClass() {
 		// PREPARE
@@ -30,8 +28,6 @@ class DateMapperTest extends AbstractUnitTest {
 		// CHECK
 		assertEquals(expected, actual);
 	}
-
-	// map - happy paths
 
 	@Test
 	void map_validDate() throws Exception {
@@ -72,8 +68,6 @@ class DateMapperTest extends AbstractUnitTest {
 		assertEquals(expected, actual);
 	}
 
-	// map - edge cases
-
 	@Test
 	void map_valueAsNonStringObject_usesToString() throws Exception {
 		// PREPARE
@@ -85,8 +79,6 @@ class DateMapperTest extends AbstractUnitTest {
 		// CHECK
 		assertEquals(expected, actual);
 	}
-
-	// map - error cases
 
 	@Test
 	void map_invalidFormat_throwsIllegalArgumentException() {

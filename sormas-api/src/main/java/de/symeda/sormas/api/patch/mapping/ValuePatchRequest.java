@@ -8,13 +8,16 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Language;
 
-public class ValuePatchRequest {
+/**
+ * Specifies how to patch a single value into a targetType.
+ */
+public class ValuePatchRequest<T> {
 
 	@NotNull
 	private Object value;
 
 	@NotNull
-	private Class<?> targetType;
+	private Class<T> targetType;
 
 	/**
 	 * Languages translations will be fetched in that order, so can have minor performance impact.
@@ -26,13 +29,13 @@ public class ValuePatchRequest {
 	 * If true, for enumeration-like targetTypes the default value will be used.
 	 * Mostly "OTHER".
 	 */
-	private boolean allowDefaultValues = true;
+	private boolean allowFallbackValues = true;
 
 	public Object getValue() {
 		return value;
 	}
 
-	public ValuePatchRequest setValue(Object value) {
+	public ValuePatchRequest<T> setValue(Object value) {
 		this.value = value;
 		return this;
 	}
@@ -41,7 +44,7 @@ public class ValuePatchRequest {
 		return targetType;
 	}
 
-	public ValuePatchRequest setTargetType(Class<?> targetType) {
+	public ValuePatchRequest<T> setTargetType(Class<T> targetType) {
 		this.targetType = targetType;
 		return this;
 	}
@@ -50,17 +53,17 @@ public class ValuePatchRequest {
 		return inputLanguages;
 	}
 
-	public ValuePatchRequest setInputLanguages(List<Language> inputLanguages) {
+	public ValuePatchRequest<T> setInputLanguages(List<Language> inputLanguages) {
 		this.inputLanguages = inputLanguages;
 		return this;
 	}
 
-	public boolean isAllowDefaultValues() {
-		return allowDefaultValues;
+	public boolean isAllowFallbackValues() {
+		return allowFallbackValues;
 	}
 
-	public ValuePatchRequest setAllowDefaultValues(boolean allowDefaultValues) {
-		this.allowDefaultValues = allowDefaultValues;
+	public ValuePatchRequest<T> setAllowFallbackValues(boolean allowDefaultValues) {
+		this.allowFallbackValues = allowDefaultValues;
 		return this;
 	}
 
@@ -68,8 +71,8 @@ public class ValuePatchRequest {
 	public boolean equals(Object o) {
 		if (o == null || getClass() != o.getClass())
 			return false;
-		ValuePatchRequest that = (ValuePatchRequest) o;
-		return allowDefaultValues == that.allowDefaultValues
+		ValuePatchRequest<?> that = (ValuePatchRequest<?>) o;
+		return allowFallbackValues == that.allowFallbackValues
 			&& Objects.equals(value, that.value)
 			&& Objects.equals(targetType, that.targetType)
 			&& Objects.equals(inputLanguages, that.inputLanguages);
@@ -77,12 +80,12 @@ public class ValuePatchRequest {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(value, targetType, inputLanguages, allowDefaultValues);
+		return Objects.hash(value, targetType, inputLanguages, allowFallbackValues);
 	}
 
 	@Override
 	public String toString() {
 		return "ValuePatchRequest{" + "value=" + value + ", targetType=" + targetType + ", inputLanguages=" + inputLanguages + ", allowDefaultValues="
-			+ allowDefaultValues + '}';
+			+ allowFallbackValues + '}';
 	}
 }

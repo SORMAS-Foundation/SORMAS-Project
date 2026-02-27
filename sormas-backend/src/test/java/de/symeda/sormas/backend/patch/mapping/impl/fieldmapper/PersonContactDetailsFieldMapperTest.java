@@ -30,7 +30,7 @@ class PersonContactDetailsFieldMapperTest extends AbstractUnitTest {
 	@Test
 	void supportedFields_containsPhoneNumberTypeAndDetails() {
 		// PREPARE
-		Set<String> expected = Set.of("Person.PersonContactDetail.phoneNumberType", "Person.PersonContactDetail.details");
+		Set<String> expected = Set.of("Person.personContactDetails.details, Person.personContactDetails.phoneNumberType");
 
 		// EXECUTE
 		Set<String> actual = victim.supportedFields();

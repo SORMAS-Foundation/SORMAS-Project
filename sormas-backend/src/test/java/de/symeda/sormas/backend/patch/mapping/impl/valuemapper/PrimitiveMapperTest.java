@@ -2,14 +2,21 @@ package de.symeda.sormas.backend.patch.mapping.impl.valuemapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 
+import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.patch.DataPatchFailureCause;
+import de.symeda.sormas.api.patch.mapping.ValueMappingResult;
+import de.symeda.sormas.api.patch.mapping.ValuePatchRequest;
 import de.symeda.sormas.backend.AbstractUnitTest;
 
 class PrimitiveMapperTest extends AbstractUnitTest {
@@ -40,7 +47,19 @@ class PrimitiveMapperTest extends AbstractUnitTest {
 	@Test
 	void getSupportedTypes_containsAllExpectedTypes() {
 		// PREPARE
-		Set<Class<?>> expected = Set.of(String.class, Integer.class, Double.class, Float.class, Boolean.class, boolean.class);
+		Set<Class<?>> expected = Set.of(
+			String.class,
+			int.class,
+			Integer.class,
+			long.class,
+			Long.class,
+			BigDecimal.class,
+			double.class,
+			Double.class,
+			float.class,
+			Float.class,
+			Boolean.class,
+			boolean.class);
 
 		// EXECUTE
 		Set<Class<?>> actual = victim.getSupportedTypes();
@@ -143,7 +162,29 @@ class PrimitiveMapperTest extends AbstractUnitTest {
 		assertFalse(victim.map("notABoolean", Boolean.class).getData());
 	}
 
-	// map - error cases
+	@ParameterizedTest
+	@ValueSource(strings = {
+		"    yes     ",
+		" JA",
+		"oUi  " })
+	void map_boolean_translation_true(String trueString) {
+		// EXECUTE & CHECK
+		assertTrue(
+			victim
+				.map(
+					new ValuePatchRequest<Boolean>().setInputLanguages(List.of(Language.DE, Language.FR, Language.EN))
+						.setTargetType(Boolean.class)
+						.setValue(trueString))
+				.getData());
+	}
+
+	@Test
+	void map_boolean_translation_true_but_other_language() {
+		// EXECUTE & CHECK
+		assertFalse(
+			victim.map(new ValuePatchRequest<Boolean>().setInputLanguages(List.of(Language.DE)).setTargetType(Boolean.class).setValue("OUI"))
+				.getData());
+	}
 
 	@Test
 	void map_unsupportedType_throwsIllegalArgumentException() {
@@ -151,30 +192,25 @@ class PrimitiveMapperTest extends AbstractUnitTest {
 		String input = "value";
 
 		// EXECUTE & CHECK
-		assertThrows(IllegalArgumentException.class, () -> victim.map(input, Long.class));
-	}
-
-	@Test
-	void map_nullValue_throwsNullPointerException() {
-		// EXECUTE & CHECK
-		assertThrows(NullPointerException.class, () -> victim.map(null, String.class));
+		assertEquals(ValueMappingResult.withCause(DataPatchFailureCause.INVALID_VALUE_TYPE), victim.map(input, Long.class));
 	}
 
 	@Test
 	void map_invalidIntegerFormat_throwsNumberFormatException() {
 		// EXECUTE & CHECK
-		assertThrows(NumberFormatException.class, () -> victim.map("notAnInt", Integer.class));
+		assertEquals(ValueMappingResult.withCause(DataPatchFailureCause.INVALID_VALUE_TYPE), victim.map("notAnInt", Integer.class));
 	}
 
 	@Test
 	void map_invalidDoubleFormat_throwsNumberFormatException() {
 		// EXECUTE & CHECK
-		assertThrows(NumberFormatException.class, () -> victim.map("notADouble", Double.class));
+		assertEquals(ValueMappingResult.withCause(DataPatchFailureCause.INVALID_VALUE_TYPE), victim.map("notADouble", Double.class));
+
 	}
 
 	@Test
 	void map_invalidFloatFormat_throwsNumberFormatException() {
 		// EXECUTE & CHECK
-		assertThrows(NumberFormatException.class, () -> victim.map("notAFloat", Float.class));
+		assertEquals(ValueMappingResult.withCause(DataPatchFailureCause.INVALID_VALUE_TYPE), victim.map("notAFloat", Float.class));
 	}
 }

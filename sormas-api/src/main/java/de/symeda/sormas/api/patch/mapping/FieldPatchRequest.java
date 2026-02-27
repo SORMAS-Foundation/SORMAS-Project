@@ -7,6 +7,9 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.patch.DataReplacementStrategy;
 
+/**
+ * Patching request for a specific field, target type is known by the {@link FieldCustomMapper}.
+ */
 public final class FieldPatchRequest {
 
 	@NotNull

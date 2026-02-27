@@ -4,6 +4,11 @@ import java.util.Objects;
 
 import de.symeda.sormas.api.patch.DataPatchFailureCause;
 
+/**
+ * Result of attempting to patch a value into some target.
+ * 
+ * @param <T>
+ */
 public class ValueMappingResult<T> {
 
 	private T data;

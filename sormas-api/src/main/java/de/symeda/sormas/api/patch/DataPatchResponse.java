@@ -6,7 +6,7 @@ import java.util.Map;
 import org.apache.commons.collections4.MapUtils;
 
 /**
- *
+ * Response to a patch request.
  */
 public class DataPatchResponse {
 

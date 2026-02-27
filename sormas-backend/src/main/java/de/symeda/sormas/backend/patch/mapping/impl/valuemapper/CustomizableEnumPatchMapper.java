@@ -34,7 +34,7 @@ public class CustomizableEnumPatchMapper implements ValuePatchMapper {
 	private CustomizableEnumFacadeEjb.CustomizableEnumFacadeEjbLocal customizableEnumFacade;
 
 	@Override
-	public <T> ValueMappingResult<T> map(ValuePatchRequest request) {
+	public <T> ValueMappingResult<T> map(ValuePatchRequest<T> request) {
 		Object value = request.getValue();
 		Class<?> targetType = request.getTargetType();
 		String captionCandidate = value.toString();

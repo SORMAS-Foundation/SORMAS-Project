@@ -147,7 +147,7 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 					new ValuePatchRequest().setValue(untypedTargetValue)
 						.setTargetType(targetType)
 						.setInputLanguages(request.getInputLanguages())
-						.setAllowDefaultValues(request.isAllowDefaultValues()));
+						.setAllowFallbackValues(request.isAllowFallbackValues()));
 
 				DataPatchFailureCause dataPatchFailureCause = result.getDataPatchFailureCause();
 				if (dataPatchFailureCause != null) {

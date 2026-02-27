@@ -10,6 +10,9 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.info.InfoFacade;
 
+/**
+ * Specifies how the patch operation must be performed.
+ */
 public class CaseDataPatchRequest {
 
 	@NotNull
@@ -18,6 +21,7 @@ public class CaseDataPatchRequest {
 	@NotNull
 	private DataReplacementStrategy replacementStrategy = DataReplacementStrategy.IF_NOT_ALREADY_PRESENT;
 
+	@NotNull
 	private EmptyValueBehavior emptyValueBehavior = EmptyValueBehavior.IGNORE;
 
 	/**
@@ -28,7 +32,8 @@ public class CaseDataPatchRequest {
 	private Map<String, Object> patchDictionary;
 
 	/**
-	 * Can be used to add some custom descriptions in some fields.
+	 * Origin that wants the patch operation.
+	 * Can be used within {@link de.symeda.sormas.api.patch.mapping.FieldCustomMapper}.
 	 */
 	@Nullable
 	private String origin;
@@ -39,7 +44,11 @@ public class CaseDataPatchRequest {
 	@Nullable
 	private List<Language> inputLanguages;
 
-	private boolean allowDefaultValues = true;
+	/**
+	 * If true, for enumeration-like targetTypes the default value will be used.
+	 * Mostly "OTHER".
+	 */
+	private boolean allowFallbackValues = true;
 
 	public String getCaseUuid() {
 		return caseUuid;
@@ -96,12 +105,12 @@ public class CaseDataPatchRequest {
 		return this;
 	}
 
-	public boolean isAllowDefaultValues() {
-		return allowDefaultValues;
+	public boolean isAllowFallbackValues() {
+		return allowFallbackValues;
 	}
 
-	public CaseDataPatchRequest setAllowDefaultValues(boolean allowDefaultValues) {
-		this.allowDefaultValues = allowDefaultValues;
+	public CaseDataPatchRequest setAllowFallbackValues(boolean allowFallbackValues) {
+		this.allowFallbackValues = allowFallbackValues;
 		return this;
 	}
 
@@ -110,7 +119,7 @@ public class CaseDataPatchRequest {
 		if (o == null || getClass() != o.getClass())
 			return false;
 		CaseDataPatchRequest that = (CaseDataPatchRequest) o;
-		return allowDefaultValues == that.allowDefaultValues
+		return allowFallbackValues == that.allowFallbackValues
 			&& Objects.equals(caseUuid, that.caseUuid)
 			&& replacementStrategy == that.replacementStrategy
 			&& emptyValueBehavior == that.emptyValueBehavior
@@ -121,13 +130,13 @@ public class CaseDataPatchRequest {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(caseUuid, replacementStrategy, emptyValueBehavior, patchDictionary, origin, inputLanguages, allowDefaultValues);
+		return Objects.hash(caseUuid, replacementStrategy, emptyValueBehavior, patchDictionary, origin, inputLanguages, allowFallbackValues);
 	}
 
 	@Override
 	public String toString() {
 		return "CaseDataPatchRequest{" + "caseUuid='" + caseUuid + '\'' + ", replacementStrategy=" + replacementStrategy + ", emptyValueBehavior="
 			+ emptyValueBehavior + ", patchDictionary=" + patchDictionary + ", origin='" + origin + '\'' + ", inputLanguages=" + inputLanguages
-			+ ", allowDefaultValues=" + allowDefaultValues + '}';
+			+ ", allowDefaultValues=" + allowFallbackValues + '}';
 	}
 }

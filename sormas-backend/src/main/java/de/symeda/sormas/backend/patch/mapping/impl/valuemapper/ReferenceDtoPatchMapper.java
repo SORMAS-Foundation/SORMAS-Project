@@ -38,7 +38,7 @@ public class ReferenceDtoPatchMapper implements ValuePatchMapper {
 	private CountryFacadeEjb.CountryFacadeEjbLocal countryFacade;
 
 	@Override
-	public <T> ValueMappingResult<T> map(ValuePatchRequest request) {
+	public <T> ValueMappingResult<T> map(ValuePatchRequest<T> request) {
 		Object value = request.getValue();
 		Class<?> targetType = request.getTargetType();
 		String captionCandidate = value.toString();

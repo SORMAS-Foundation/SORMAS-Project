@@ -5,6 +5,10 @@ import java.util.Set;
 import javax.validation.constraints.NotNull;
 
 // TODO: check if "in-value-type" must be checked: add self check ?
+
+/**
+ * Contract to specify how a type must be mapped into a value, NOT field specific.
+ */
 public interface ValuePatchMapper extends Comparable<ValuePatchMapper> {
 
 	int HIGH_PRECEDENCE = Integer.MIN_VALUE;
@@ -29,11 +33,11 @@ public interface ValuePatchMapper extends Comparable<ValuePatchMapper> {
 	 */
 	@NotNull
 	default <T> ValueMappingResult<T> map(Object value, @NotNull Class<T> targetType) {
-		return map(new ValuePatchRequest().setValue(value).setTargetType(targetType));
+		return this.map(new ValuePatchRequest<T>().setValue(value).setTargetType(targetType));
 	}
 
 	@NotNull
-	<T> ValueMappingResult<T> map(ValuePatchRequest request);
+	<T> ValueMappingResult<T> map(ValuePatchRequest<T> request);
 
 	@NotNull
 	Set<Class<?>> getSupportedTypes();
