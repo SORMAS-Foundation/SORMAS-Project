@@ -15,15 +15,18 @@ public class PatchFieldHelper {
 
 	private final static Logger logger = LoggerFactory.getLogger(PatchFieldHelper.class);
 
-	public static final String OPENING_PARENTHESIS = "(";
-	public static final String CLOSING_PARENTHESIS = ")";
-	public static final String PIPE = "|";
+	public static final String CASE_DATA_PREFIX = "CaseData.";
+	public static final String PERSON_PREFIX = "Person.";
+
+	private static final String OPENING_PARENTHESIS = "(";
+	private static final String CLOSING_PARENTHESIS = ")";
+	private static final String PIPE = "|";
 
 	// might be more subtle: person.toto but also *.uuid (or uuid). includes approach ?
 	// TODO: must be twofold: enforced default fields : technical: uuid, user ... + custom config by admin
 	private Set<String> forbiddenFields = Set.of("Person.birthdate", "Person.birthdateDD", "Person.birthdateMM", "Person.birthdateYYYY");
 
-	private Set<String> allowedPrefixes = Set.of("Person.", "CaseData");
+	private Set<String> allowedPrefixes = Set.of(PERSON_PREFIX, CASE_DATA_PREFIX);
 
 	@Nullable
 	public DataPatchFailureCause checkIfPathIsInvalid(String path) {

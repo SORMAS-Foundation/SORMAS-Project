@@ -21,6 +21,8 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Suppliers;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.patch.CaseDataPatchRequest;
@@ -103,7 +105,7 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 
 		Disease disease = caseData.getDisease();
 
-		LazySupplier<PersonDto> personSupplier = LazySupplier.of(() -> getPersonDto(caseData));
+		Supplier<PersonDto> personSupplier = Suppliers.memoize(() -> getPersonDto(caseData));
 
 		List<SinglePatchResult> results = computeActualDictionary(request).entrySet().stream().map(entry -> {
 			Tuple<String, DataPatchFailureCause> tuple = entry.getKey();
@@ -113,7 +115,6 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 			Supplier<Object> target = () -> findAppropriateTarget(fullFieldName, caseData, personSupplier);
 
 			try {
-
 				return invalidFieldResult(entry, tuple).or(() -> fieldMappingResult(entry, disease, request, target))
 					.orElseGet(() -> valueMappingResult(entry, disease, request, target));
 			} catch (RuntimeException e) {
@@ -124,9 +125,11 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 
 		}).collect(Collectors.toList());
 
+		Map<String, Object> validPatchDictionary = buildDictionaryFor(results, SinglePatchResult::getValue);
 		DataPatchResponse response = new DataPatchResponse().setApplied(false)
 			.setFailures(buildDictionaryFor(results, SinglePatchResult::getFailure))
-			.setValidPatchDictionary(buildDictionaryFor(results, SinglePatchResult::getValue));
+			.setValidPatchDictionary(validPatchDictionary);
+
 		if (!request.isPatchedInCaseOfFailures() && response.hasFailures()) {
 			logger.info(
 				"No patch was applied as contained failures AND request doesn't allow patch in case of failures: request: [{}], response: [{}]",
@@ -135,23 +138,38 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 			return response;
 		}
 
-		if (logger.isDebugEnabled()) {
-			logger.debug("CaseData: \n{}", ObjectMapperProvider.writeValueAsStringFailSafe(caseData));
-		}
-		caseFacade.save(caseData);
-
-		if (logger.isDebugEnabled()) {
-			logger.debug("Person: \n{}", ObjectMapperProvider.writeValueAsStringFailSafe(personSupplier.get()));
-		}
-
-		if (personSupplier.isLoaded()) {
-			logger.info("Person was loaded, therefore will be updated");
-			personFacade.save(personSupplier.get());
-		}
+		saveDTOsIfAppropriate(validPatchDictionary, caseData, personSupplier);
 
 		logger.debug("dataPatchResponse: [{}]", response);
 
 		return response.setApplied(true);
+	}
+
+	private void saveDTOsIfAppropriate(Map<String, Object> validPatchDictionary, CaseDataDto caseData, Supplier<PersonDto> personSupplier) {
+		if (anyFieldPatchedWithPrefix(validPatchDictionary, PatchFieldHelper.CASE_DATA_PREFIX)) {
+			logger.info("CaseData was modified will be applied for: [{}]. Enable debug to see fully patched object", caseData);
+
+			if (logger.isDebugEnabled()) {
+				logger.debug("CaseData: \n{}", ObjectMapperProvider.writeValueAsStringFailSafe(caseData));
+			}
+
+			caseFacade.save(caseData);
+		}
+
+		if (anyFieldPatchedWithPrefix(validPatchDictionary, PatchFieldHelper.PERSON_PREFIX)) {
+			PersonDto person = personSupplier.get();
+			logger.info("Person was modified will be applied for: [{}]. Enable debug fully patched object", person);
+
+			if (logger.isDebugEnabled()) {
+				logger.debug("Person: \n{}", ObjectMapperProvider.writeValueAsStringFailSafe(person));
+			}
+
+			personFacade.save(person);
+		}
+	}
+
+	private boolean anyFieldPatchedWithPrefix(Map<String, Object> validPatchDictionary, String caseDataPrefix) {
+		return validPatchDictionary.keySet().stream().anyMatch(key -> key.startsWith(caseDataPrefix));
 	}
 
 	private @NotNull <R> Map<String, R> buildDictionaryFor(List<SinglePatchResult> results, Function<SinglePatchResult, R> fct) {
