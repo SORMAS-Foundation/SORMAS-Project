@@ -26,6 +26,13 @@ public class ValueMapperRegistry {
 	@Inject
 	private Instance<ValuePatchMapper> instances;
 
+	public ValueMapperRegistry() {
+	}
+
+	public ValueMapperRegistry(Instance<ValuePatchMapper> instances) {
+		this.instances = instances;
+	}
+
 	@PostConstruct
 	void init() {
 		// default sort uses CDI sort.
@@ -33,13 +40,18 @@ public class ValueMapperRegistry {
 	}
 
 	@NotNull
-	public <T> ValueMappingResult<T> map(ValuePatchRequest request) {
-		Object value = request.getValue();
-		if (value == null) {
-			return null;
+	public <T> ValueMappingResult<T> map(ValuePatchRequest<T> request) {
+		Class<?> targetType = request.getTargetType();
+
+		if (targetType == Object.class) {
+			logger.error("Object is not a supported targetType");
+			return ValueMappingResult.withCause(DataPatchFailureCause.TECHNICAL);
 		}
 
-		Class<?> targetType = request.getTargetType();
+		Object value = request.getValue();
+		if (value == null) {
+			return ValueMappingResult.withData(null);
+		}
 
 		if (targetType.isInstance(value)) {
 			return ValueMappingResult.withData((T) targetType.cast(value));

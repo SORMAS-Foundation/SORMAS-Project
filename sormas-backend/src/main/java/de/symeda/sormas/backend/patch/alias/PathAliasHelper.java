@@ -1,0 +1,113 @@
+package de.symeda.sormas.backend.patch.alias;
+
+import static de.symeda.sormas.backend.patch.PatchFieldHelper.PATH_SEPARATOR;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.validation.constraints.NotNull;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.patch.DataPatchFailureCause;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.utils.Tuple;
+
+/**
+ * Users want to be able to use multiple root objects, to avoid drilling through properties.
+ * Therefore, this class performs this manual conversion.
+ * <p>
+ * FieldId from Data dictionary to DTO's physical path.
+ */
+@ApplicationScoped
+public class PathAliasHelper {
+
+	private final static Logger logger = LoggerFactory.getLogger(PathAliasHelper.class);
+
+	// TODO: define configurable additional aliases ?
+
+	public static final Map<String, String> DEFAULT_ALIAS_DICTIONARY = buildDefaultAliasDictionary();
+
+	public static final Map<String, Set<String>> DEFAULT_FORBIDDEN_ALIASES_DICTIONARY =
+		Map.of("Location", Set.of("Person.address", "Exposure.location"));
+
+	public static final Map<String, String> REFERENCE_TO_ROOT_DICTIONARY = Map.of("CaseData.person", PersonDto.I18N_PREFIX);
+
+	private static @NotNull HashMap<String, String> buildDefaultAliasDictionary() {
+		HashMap<String, String> dictionary = new HashMap<>();
+
+		dictionary.put("Symptoms", "CaseData.symptoms");
+		dictionary.put("HealthConditions", "CaseData.healthConditions");
+		dictionary.put("Hospitalization", "CaseData.hospitalization");
+		dictionary.put("PreviousHospitalization", "CaseData.hospitalization.previousHospitalizations");
+		dictionary.put("PersonContactDetail", "Person.personContactDetails");
+		dictionary.put("Facility", "CaseData.healthFacility");
+		dictionary.put("PointOfEntry", "CaseData.pointOfEntry");
+		dictionary.put("Region", "CaseData.responsibleRegion");
+		dictionary.put("District", "CaseData.responsibleDistrict");
+		dictionary.put("Community", "CaseData.responsibleCommunity");
+		dictionary.put("Country", "Person.birthCountry");
+		dictionary.put("Subcontinent", "Person.address.subcontinent");
+		dictionary.put("Continent", "Person.address.continent");
+		dictionary.put("User", "CaseData.followUpStatusChangeUser");
+
+		return dictionary;
+	}
+
+	@NotNull
+	public Tuple<String, DataPatchFailureCause> resolveAlias(String pathWithPotentialAlias) {
+		int firstPathSeparatorIndex = pathWithPotentialAlias.indexOf(PATH_SEPARATOR);
+
+		if (firstPathSeparatorIndex == -1) {
+			return tupleWithoutFailure(pathWithPotentialAlias);
+		}
+
+		String aliasCandidate = pathWithPotentialAlias.substring(0, firstPathSeparatorIndex);
+
+		Set<String> collisions = DEFAULT_FORBIDDEN_ALIASES_DICTIONARY.get(aliasCandidate);
+		if (CollectionUtils.isNotEmpty(collisions)) {
+			logger.info("Alias [{}] with collisions: [{}] used for path as [{}]", pathWithPotentialAlias, collisions, aliasCandidate);
+			return tupleWithFailure(DataPatchFailureCause.FORBIDDEN_NON_UNIQUE_ALIAS);
+		}
+
+		String pathWithFixedRootObjectReferences = REFERENCE_TO_ROOT_DICTIONARY.values()
+			.stream()
+			.reduce(
+				pathWithPotentialAlias,
+				(path, replacement) -> path.replace(
+					REFERENCE_TO_ROOT_DICTIONARY.entrySet().stream().filter(e -> replacement.equals(e.getValue())).findFirst().get().getKey(),
+					replacement));
+
+		String physicalPathPrefix = DEFAULT_ALIAS_DICTIONARY.get(aliasCandidate);
+		if (physicalPathPrefix != null) {
+			return tupleWithoutFailure(physicalPathPrefix + pathWithFixedRootObjectReferences.substring(firstPathSeparatorIndex));
+		}
+
+		return tupleWithoutFailure(pathWithFixedRootObjectReferences);
+	}
+
+	private static @NotNull Tuple<String, DataPatchFailureCause> tupleWithFailure(DataPatchFailureCause forbiddenNonUniqueAlias) {
+		return new Tuple<>(null, forbiddenNonUniqueAlias);
+	}
+
+	private static @NotNull Tuple<String, DataPatchFailureCause> tupleWithoutFailure(String pathWithPotentialAlias) {
+		return new Tuple<>(pathWithPotentialAlias, null);
+	}
+
+	public Set<String> supportedPrefixes() {
+		return Stream
+			.concat(
+				Stream.concat(REFERENCE_TO_ROOT_DICTIONARY.values().stream(), Stream.of(CaseDataDto.I18N_PREFIX))
+					.map(prefix -> prefix + PATH_SEPARATOR),
+				DEFAULT_ALIAS_DICTIONARY.keySet().stream())
+			.collect(Collectors.toSet());
+
+	}
+}

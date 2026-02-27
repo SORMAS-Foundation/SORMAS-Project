@@ -4,16 +4,22 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.patch.DataPatchFailureCause;
+import de.symeda.sormas.api.utils.Tuple;
+import de.symeda.sormas.backend.patch.alias.PathAliasHelper;
 
 @ApplicationScoped
 public class PatchFieldHelper {
 
 	private final static Logger logger = LoggerFactory.getLogger(PatchFieldHelper.class);
+
+	public static final String PATH_SEPARATOR = ".";
 
 	public static final String CASE_DATA_PREFIX = "CaseData.";
 	public static final String PERSON_PREFIX = "Person.";
@@ -26,7 +32,15 @@ public class PatchFieldHelper {
 	// TODO: must be twofold: enforced default fields : technical: uuid, user ... + custom config by admin
 	private Set<String> forbiddenFields = Set.of("Person.birthdate", "Person.birthdateDD", "Person.birthdateMM", "Person.birthdateYYYY");
 
-	private Set<String> allowedPrefixes = Set.of(PERSON_PREFIX, CASE_DATA_PREFIX);
+	@Inject
+	private PathAliasHelper pathAliasHelper;
+
+	public PatchFieldHelper() {
+	}
+
+	public PatchFieldHelper(PathAliasHelper pathAliasHelper) {
+		this.pathAliasHelper = pathAliasHelper;
+	}
 
 	@Nullable
 	public DataPatchFailureCause checkIfPathIsInvalid(String path) {
@@ -42,12 +56,17 @@ public class PatchFieldHelper {
 		return dataPatchFailureCause;
 	}
 
+	@NotNull
+	public Tuple<String, DataPatchFailureCause> resolveAlias(String pathWithPotentialAlias) {
+		return pathAliasHelper.resolveAlias(pathWithPotentialAlias);
+	}
+
 	private boolean fieldIsForbidden(String path) {
 		return forbiddenFields.contains(path);
 	}
 
 	private boolean startsWithAllowedPrefix(String path) {
-		return allowedPrefixes.stream().anyMatch(path::startsWith);
+		return pathAliasHelper.supportedPrefixes().stream().anyMatch(path::startsWith);
 	}
 
 	public boolean isMultipleFieldFormat(String path) {

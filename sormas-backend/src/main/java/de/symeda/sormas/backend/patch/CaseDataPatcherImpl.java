@@ -46,6 +46,7 @@ import de.symeda.sormas.backend.json.ObjectMapperProvider;
 import de.symeda.sormas.backend.patch.mapping.FieldCustomMapperRegistry;
 import de.symeda.sormas.backend.patch.mapping.ValueMapperRegistry;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
+import de.symeda.sormas.backend.util.CollectorUtils;
 
 // TODO: test integration vaccines
 @Stateless
@@ -105,10 +106,11 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 
 		Disease disease = caseData.getDisease();
 
+		// make this generic for additional "root"-types
 		Supplier<PersonDto> personSupplier = Suppliers.memoize(() -> getPersonDto(caseData));
 
-		List<SinglePatchResult> results = computeActualDictionary(request).entrySet().stream().map(entry -> {
-			Tuple<String, DataPatchFailureCause> tuple = entry.getKey();
+		List<SinglePatchResult> results = computeActualDictionary(request).map(entry -> {
+			Tuple<String, DataPatchFailureCause> tuple = entry.getFirst();
 			String fullFieldName = tuple.getFirst();
 			SinglePatchResult singlePatchResult = new SinglePatchResult().setFieldName(fullFieldName);
 
@@ -125,12 +127,12 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 
 		}).collect(Collectors.toList());
 
-		Map<String, Object> validPatchDictionary = buildDictionaryFor(results, SinglePatchResult::getValue);
+		Map<String, Object> validPatchDictionary = buildDictionaryFor(results, SinglePatchResult::getValue, true);
 		DataPatchResponse response = new DataPatchResponse().setApplied(false)
-			.setFailures(buildDictionaryFor(results, SinglePatchResult::getFailure))
+			.setFailures(buildDictionaryFor(results, SinglePatchResult::getFailure, false))
 			.setValidPatchDictionary(validPatchDictionary);
 
-		if (!request.isPatchedInCaseOfFailures() && response.hasFailures()) {
+		if (validPatchDictionary.isEmpty() || (!request.isPatchedInCaseOfFailures() && response.hasFailures())) {
 			logger.info(
 				"No patch was applied as contained failures AND request doesn't allow patch in case of failures: request: [{}], response: [{}]",
 				request,
@@ -172,19 +174,25 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 		return validPatchDictionary.keySet().stream().anyMatch(key -> key.startsWith(caseDataPrefix));
 	}
 
-	private @NotNull <R> Map<String, R> buildDictionaryFor(List<SinglePatchResult> results, Function<SinglePatchResult, R> fct) {
+	private @NotNull <R> Map<String, R> buildDictionaryFor(
+		List<SinglePatchResult> results,
+		Function<SinglePatchResult, R> fct,
+		boolean valueContext) {
 		return results.stream()
-			.filter(singlePatchResult -> fct.apply(singlePatchResult) != null)
-			.collect(Collectors.toMap(SinglePatchResult::getFieldName, fct));
+			// edge case were target value is null: this is allowed, which makes both fields null.
+			.filter(
+				singlePatchResult -> fct.apply(singlePatchResult) != null
+					|| (valueContext && singlePatchResult.getFailure() == null && singlePatchResult.getValue() == null))
+			.collect(CollectorUtils.toNullSafeMap(SinglePatchResult::getFieldName, fct));
 	}
 
 	private @NotNull SinglePatchResult valueMappingResult(
-		Map.Entry<Tuple<String, DataPatchFailureCause>, Object> entry,
+		Tuple<Tuple<String, DataPatchFailureCause>, Object> entry,
 		Disease disease,
 		CaseDataPatchRequest request,
 		Supplier<Object> targetOpt) {
 
-		Tuple<String, DataPatchFailureCause> tuple = entry.getKey();
+		Tuple<String, DataPatchFailureCause> tuple = entry.getFirst();
 		String fullFieldName = tuple.getFirst();
 
 		SinglePatchResult singlePatchResult = new SinglePatchResult().setFieldName(fullFieldName);
@@ -193,24 +201,20 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 		String relativeFieldName = fullFieldName.substring(fullFieldName.indexOf('.') + 1);
 		Optional<Tuple<Class<?>, Boolean>> nestedPropertyType =
 			PropertyAccessor.getNestedPropertyType(target, relativeFieldName, getFieldVisibilityCheckers(disease));
+		Object untypedTargetValue = entry.getSecond();
 
 		if (nestedPropertyType.isEmpty()) {
 			logger.info("Missing field: [{}] on target: [{}]", relativeFieldName, target);
-			return singlePatchResult.setFailure(new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.FIELD_DOES_NOT_EXIST));
+			return singlePatchResult.setFailure(buildFailure(DataPatchFailureCause.FIELD_DOES_NOT_EXIST, untypedTargetValue));
 		}
 		Tuple<Class<?>, Boolean> classSetTuple = nestedPropertyType.orElseThrow();
 		Class<?> targetType = classSetTuple.getFirst();
 
-		Object untypedTargetValue = entry.getValue();
-
 		if (!Boolean.TRUE.equals(classSetTuple.getSecond())) {
 			logger.info("Field: [{}] on object [{}] cannot be patched for disease: [{}]", relativeFieldName, target, disease);
-			return singlePatchResult.setFailure(
-				new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY_OR_FEATURE)
-					.setProvidedFieldValue(untypedTargetValue));
+			return singlePatchResult
+				.setFailure(buildFailure(DataPatchFailureCause.UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY_OR_FEATURE, untypedTargetValue));
 		}
-
-		// TODO: handle targetType being a list. TO-Check with business: add / replace
 
 		ValueMappingResult<?> result = valueMapperRegistry.map(
 			new ValuePatchRequest().setValue(untypedTargetValue)
@@ -220,8 +224,7 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 
 		DataPatchFailureCause dataPatchFailureCause = result.getDataPatchFailureCause();
 		if (dataPatchFailureCause != null) {
-			return singlePatchResult
-				.setFailure(new DataPatchFailure().setDataPatchFailureCause(dataPatchFailureCause).setProvidedFieldValue(untypedTargetValue));
+			return singlePatchResult.setFailure(buildFailure(dataPatchFailureCause, untypedTargetValue));
 		}
 
 		Object typedValue = result.getData();
@@ -245,31 +248,36 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 		if (exception.isPresent()) {
 			return singlePatchResult.setFailure(
 				new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.TECHNICAL)
-					.setDescription(exception.orElseThrow().getMessage()));
+					.setDescription(exception.orElseThrow().getMessage())
+					.setProvidedFieldValue(untypedTargetValue));
 		} else {
 			return singlePatchResult.setValue(untypedTargetValue);
 		}
 	}
 
+	private DataPatchFailure buildFailure(DataPatchFailureCause fieldDoesNotExist, Object untypedTargetValue) {
+		return new DataPatchFailure().setDataPatchFailureCause(fieldDoesNotExist).setProvidedFieldValue(untypedTargetValue);
+	}
+
 	private @NotNull Optional<SinglePatchResult> invalidFieldResult(
-		Map.Entry<Tuple<String, DataPatchFailureCause>, Object> entry,
+		Tuple<Tuple<String, DataPatchFailureCause>, Object> entry,
 		Tuple<String, DataPatchFailureCause> tuple) {
 
 		return Optional.ofNullable(tuple.getSecond()).map(invalidFieldFailureCause -> buildFailureFor(entry, tuple.getSecond()));
 	}
 
 	public Optional<SinglePatchResult> fieldMappingResult(
-		Map.Entry<Tuple<String, DataPatchFailureCause>, Object> entry,
+		Tuple<Tuple<String, DataPatchFailureCause>, Object> entry,
 		Disease disease,
 		CaseDataPatchRequest request,
 		Supplier<Object> target) {
 
-		Tuple<String, DataPatchFailureCause> tuple = entry.getKey();
+		Tuple<String, DataPatchFailureCause> tuple = entry.getFirst();
 		String fullFieldName = tuple.getFirst();
 
 		Optional<FieldCustomMapper> mapper = fieldCustomMapperRegistry.getMapper(fullFieldName, disease);
 
-		Object untypedTargetValue = entry.getValue();
+		Object untypedTargetValue = entry.getSecond();
 		if (mapper.isPresent()) {
 			SinglePatchResult singlePatchResult = new SinglePatchResult().setFieldName(fullFieldName);
 
@@ -287,12 +295,9 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 		return Optional.empty();
 	}
 
-	private SinglePatchResult buildFailureFor(
-		Map.Entry<Tuple<String, DataPatchFailureCause>, Object> entry,
-		DataPatchFailureCause fieldFailureCause) {
+	private SinglePatchResult buildFailureFor(Tuple<Tuple<String, DataPatchFailureCause>, Object> entry, DataPatchFailureCause fieldFailureCause) {
 
-		return new SinglePatchResult().setFieldName(entry.getKey().getFirst())
-			.setFailure(new DataPatchFailure().setDataPatchFailureCause(fieldFailureCause).setProvidedFieldValue(entry.getValue()));
+		return new SinglePatchResult().setFieldName(entry.getFirst().getFirst()).setFailure(buildFailure(fieldFailureCause, entry.getSecond()));
 	}
 
 	private FieldVisibilityCheckers getFieldVisibilityCheckers(Disease disease) {
@@ -301,7 +306,7 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 			.andWithFeatureType(featureConfigurationFacade.getActiveServerFeatureConfigurations());
 	}
 
-	private Map<Tuple<String, DataPatchFailureCause>, Object> computeActualDictionary(CaseDataPatchRequest request) {
+	private Stream<Tuple<Tuple<String, DataPatchFailureCause>, Object>> computeActualDictionary(CaseDataPatchRequest request) {
 		Predicate<Map.Entry<String, Object>> filterPredicate = buildAdequateDictionaryValuePredicate(request);
 
 		return request.getPatchDictionary()
@@ -324,31 +329,30 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 
 				return splitMultipleFieldsPath(entry);
 			})
-			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+			.map(tuple -> Tuple.of(tuple.getFirst(), tuple.getSecond()));
 	}
 
 	@NotNull
-	private Stream<Map.Entry<Tuple<String, DataPatchFailureCause>, Object>> splitMultipleFieldsPath(Map.Entry<String, Object> entry) {
+	private Stream<Tuple<Tuple<String, DataPatchFailureCause>, Object>> splitMultipleFieldsPath(Map.Entry<String, Object> entry) {
 		String path = entry.getKey();
 		int openingParenthesisIndex = path.indexOf("(");
 		String prefix = path.substring(0, openingParenthesisIndex);
 
 		int closeParen = path.indexOf(')');
 
-		logger.error(path);
 		String restPath = path.substring(openingParenthesisIndex + 1, closeParen);
 
-		return Arrays.stream(restPath.split("\\|")).map(suffix -> Map.entry(new Tuple<>(prefix + suffix, null), entry.getValue()));
+		return Arrays.stream(restPath.split("\\|")).map(suffix -> Tuple.of(Tuple.of(prefix + suffix, null), entry.getValue()));
 	}
 
-	private Map.Entry<Tuple<String, DataPatchFailureCause>, Object> buildMapTupleEntryFrom(
+	private Tuple<Tuple<String, DataPatchFailureCause>, Object> buildMapTupleEntryFrom(
 		Map.Entry<String, Object> entry,
 		@Nullable DataPatchFailureCause dataPatchFailureCause) {
-		return Map.entry(new Tuple<>(entry.getKey(), dataPatchFailureCause), entry.getValue());
+		return Tuple.of(Tuple.of(entry.getKey(), dataPatchFailureCause), entry.getValue());
 	}
 
-	private Map.Entry<Tuple<String, DataPatchFailureCause>, Object> buildMapTupleEntryFrom(Map.Entry<String, Object> entry) {
-		return Map.entry(new Tuple<>(entry.getKey(), null), entry.getValue());
+	private Tuple<Tuple<String, DataPatchFailureCause>, Object> buildMapTupleEntryFrom(Map.Entry<String, Object> entry) {
+		return Tuple.of(Tuple.of(entry.getKey(), null), entry.getValue());
 	}
 
 	private @NotNull Predicate<Map.Entry<String, Object>> buildAdequateDictionaryValuePredicate(CaseDataPatchRequest request) {

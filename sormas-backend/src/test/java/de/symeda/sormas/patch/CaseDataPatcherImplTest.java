@@ -3,6 +3,7 @@ package de.symeda.sormas.patch;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -31,12 +32,14 @@ import de.symeda.sormas.api.patch.DataPatchFailure;
 import de.symeda.sormas.api.patch.DataPatchFailureCause;
 import de.symeda.sormas.api.patch.DataPatchResponse;
 import de.symeda.sormas.api.patch.DataReplacementStrategy;
+import de.symeda.sormas.api.patch.EmptyValueBehavior;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
@@ -135,22 +138,18 @@ class CaseDataPatcherImplTest extends AbstractBeanTest {
 							&& newEmail.equals(contactDetail.getDetails()))));
 	}
 
-	@Test
-	void patch_invalidPrefix() {
+	@ParameterizedTest
+	@ValueSource(strings = {
+		"Task",
+		"Event",
+		"ExternalMessage" })
+	void patch_invalidPrefix(String prefix) {
 		// PREPARE
 		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.RESPIRATORY_SYNCYTIAL_VIRUS);
 
 		String ignoredValue = "ignoredValue";
 
-		Map<String, Object> patchDictionary = Map.of(
-			"ActivityAsCase.reportingUser",
-			ignoredValue,
-			"PreviousHospitalization.region",
-			ignoredValue,
-			"Symptoms.bedridden",
-			ignoredValue,
-			"EpiData.exposureDetailsKnown",
-			ignoredValue
+		Map<String, Object> patchDictionary = Map.of(prefix + ".reportingUser", ignoredValue
 
 		);
 		// EXECUTE
@@ -528,14 +527,91 @@ class CaseDataPatcherImplTest extends AbstractBeanTest {
 	private static @NotNull Map<String, DataPatchFailure> buildDictionaryOfFailureType(
 		Map<String, Object> patchDictionary,
 		DataPatchFailureCause unsupportedFieldForDisease) {
-		Map<String, DataPatchFailure> expectedFailures = patchDictionary.entrySet()
+		return patchDictionary.entrySet()
 			.stream()
 			.map(
 				entry -> Map.entry(
 					entry.getKey(),
 					new DataPatchFailure().setDataPatchFailureCause(unsupportedFieldForDisease).setProvidedFieldValue(entry.getValue())))
 			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-		return expectedFailures;
+	}
+
+	@Test
+	void patch_patchInCaseOfFailureTrue() {
+		// PREPARE
+		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.RESPIRATORY_SYNCYTIAL_VIRUS);
+
+		String ignoredValue = "ignoredValue";
+
+		String trueString = " ja    ";
+		Map<String, Object> patchDictionary =
+			Map.of("CaseData.symptoms.cough", trueString, "CaseData.quarantineOrderedOfficialDocumentDate", ignoredValue);
+
+		CaseDataPatchRequest request = new CaseDataPatchRequest().setPatchedInCaseOfFailures(true)
+			.setCaseUuid(originalCase.getUuid())
+			.setPatchDictionary(patchDictionary)
+			.setInputLanguages(List.of(Language.DE));
+
+		// EXECUTE
+		DataPatchResponse response = victim().patch(request);
+
+		CaseDataDto actual = getCaseFacade().getByUuid(originalCase.getUuid());
+
+		// CHECK
+		Map<String, DataPatchFailure> expectedFailures = buildDictionaryOfFailureType(
+			Map.of("CaseData.quarantineOrderedOfficialDocumentDate", ignoredValue),
+			DataPatchFailureCause.UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY_OR_FEATURE);
+
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response.isApplied()),
+
+			() -> Assertions.assertEquals(Map.of("CaseData.symptoms.cough", trueString), response.getValidPatchDictionary()),
+
+			() -> Assertions.assertEquals(SymptomState.YES, actual.getSymptoms().getCough()),
+
+			() -> Assertions.assertNull(actual.getQuarantineOrderedOfficialDocumentDate()),
+
+			// FAILURES
+			() -> Assertions.assertEquals(expectedFailures, response.getFailures()));
+	}
+
+	@Test
+	void patch_noPatchInCaseOfFailureFalse() {
+		// PREPARE
+		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.RESPIRATORY_SYNCYTIAL_VIRUS);
+
+		String ignoredValue = "ignoredValue";
+
+		String trueString = " ja    ";
+		Map<String, Object> patchDictionary =
+			Map.of("CaseData.symptoms.cough", trueString, "CaseData.quarantineOrderedOfficialDocumentDate", ignoredValue);
+
+		CaseDataPatchRequest request = new CaseDataPatchRequest().setPatchedInCaseOfFailures(false)
+			.setCaseUuid(originalCase.getUuid())
+			.setPatchDictionary(patchDictionary)
+			.setInputLanguages(List.of(Language.DE));
+
+		// EXECUTE
+		DataPatchResponse response = victim().patch(request);
+
+		CaseDataDto actual = getCaseFacade().getByUuid(originalCase.getUuid());
+
+		// CHECK
+		Map<String, DataPatchFailure> expectedFailures = buildDictionaryOfFailureType(
+			Map.of("CaseData.quarantineOrderedOfficialDocumentDate", ignoredValue),
+			DataPatchFailureCause.UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY_OR_FEATURE);
+
+		Assertions.assertAll(
+			() -> Assertions.assertFalse(response.isApplied()),
+
+			() -> Assertions.assertEquals(Map.of("CaseData.symptoms.cough", trueString), response.getValidPatchDictionary()),
+
+			() -> Assertions.assertNull(actual.getSymptoms().getCough()),
+
+			() -> Assertions.assertNull(actual.getQuarantineOrderedOfficialDocumentDate()),
+
+			// FAILURES
+			() -> Assertions.assertEquals(expectedFailures, response.getFailures()));
 	}
 
 	@Test
@@ -544,8 +620,66 @@ class CaseDataPatcherImplTest extends AbstractBeanTest {
 	}
 
 	@Test
-	void patch_noReplacementMode() {
-		throw new IllegalStateException("toImplement");
+	void patch_replacementMode_null_value() {
+		// PREPARE
+		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.RESPIRATORY_SYNCYTIAL_VIRUS);
+		originalCase.setQuarantineChangeComment("some non empty value");
+
+		getCaseFacade().save(originalCase);
+
+		Assertions.assertFalse(originalCase.getSymptoms().getSymptomatic());
+
+		String ignoredValue = "ignoredValue";
+
+		Map<String, Object> patchDictionary = new HashMap<>();
+		patchDictionary.put("CaseData.quarantineChangeComment", null);
+
+		CaseDataPatchRequest request = new CaseDataPatchRequest().setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+			.setEmptyValueBehavior(EmptyValueBehavior.REPLACE)
+			.setCaseUuid(originalCase.getUuid())
+			.setPatchDictionary(patchDictionary);
+
+		// EXECUTE
+		DataPatchResponse response = victim().patch(request);
+
+		CaseDataDto actual = getCaseFacade().getByUuid(originalCase.getUuid());
+
+		// CHECK
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response.isApplied()),
+
+			() -> Assertions.assertEquals(patchDictionary, response.getValidPatchDictionary()),
+
+			() -> Assertions.assertNull(actual.getQuarantineChangeComment()),
+
+			// FAILURES
+			() -> Assertions.assertEquals(Map.of(), response.getFailures()));
+	}
+
+	@Test
+	void patch_fieldDoesNoExist() {
+		// PREPARE
+		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.RESPIRATORY_SYNCYTIAL_VIRUS);
+
+		String ignoredValue = "ignoredValue";
+
+		Map<String, Object> patchDictionary = new HashMap<>();
+		patchDictionary.put("CaseData.NON_EXISTING_FIELD", "validValue");
+
+		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid()).setPatchDictionary(patchDictionary);
+
+		// EXECUTE
+		DataPatchResponse response = victim().patch(request);
+
+		Map<String, DataPatchFailure> expectedFailures = buildDictionaryOfFailureType(patchDictionary, DataPatchFailureCause.FIELD_DOES_NOT_EXIST);
+
+		// CHECK
+		Assertions.assertAll(
+			() -> Assertions.assertFalse(response.isApplied()),
+
+			() -> Assertions.assertEquals(expectedFailures, response.getFailures()),
+
+			() -> Assertions.assertEquals(Map.of(), response.getValidPatchDictionary()));
 	}
 
 	@Test

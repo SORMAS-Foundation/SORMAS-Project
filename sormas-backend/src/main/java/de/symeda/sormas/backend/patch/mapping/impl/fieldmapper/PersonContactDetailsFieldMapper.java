@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.patch.mapping.impl.fieldmapper;
 
+import static de.symeda.sormas.backend.patch.PatchFieldHelper.PATH_SEPARATOR;
+
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -97,7 +99,7 @@ public class PersonContactDetailsFieldMapper implements FieldCustomMapper {
 	@Override
 	public Set<String> supportedFields() {
 		return Stream.of(PersonContactDetailDto.PHONE_NUMBER_TYPE, PersonContactDetailDto.DETAILS)
-			.map(suffix -> PersonDto.I18N_PREFIX + "." + PersonDto.PERSON_CONTACT_DETAILS + "." + suffix)
+			.map(suffix -> PersonDto.I18N_PREFIX + PATH_SEPARATOR + PersonDto.PERSON_CONTACT_DETAILS + PATH_SEPARATOR + suffix)
 			.collect(Collectors.toSet());
 	}
 }

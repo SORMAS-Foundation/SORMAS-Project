@@ -15,6 +15,7 @@ import de.symeda.sormas.api.patch.mapping.FieldCustomMapper;
 import de.symeda.sormas.api.patch.mapping.FieldPatchRequest;
 import de.symeda.sormas.api.patch.mapping.ValueMappingResult;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.backend.patch.PatchFieldHelper;
 import de.symeda.sormas.backend.patch.mapping.impl.valuemapper.DatePatchMapper;
 
 /**
@@ -77,6 +78,6 @@ public class PersonBirthDateFieldMapper implements FieldCustomMapper {
 
 	@Override
 	public Set<String> supportedFields() {
-		return Set.of(PersonDto.I18N_PREFIX + "." + PersonDto.BIRTH_DATE);
+		return Set.of(PersonDto.I18N_PREFIX + PatchFieldHelper.PATH_SEPARATOR + PersonDto.BIRTH_DATE);
 	}
 }

@@ -2,26 +2,24 @@ package de.symeda.sormas.api.utils;
 
 import java.util.Objects;
 
-import javax.annotation.Nullable;
-
 public class Tuple<F, S> {
 
-	@Nullable
 	private final F first;
-	@Nullable
 	private final S second;
 
-	public Tuple(@Nullable final F first, @Nullable final S second) {
+	public static <F, S> Tuple<F, S> of(final F first, final S second) {
+		return new Tuple<>(first, second);
+	}
+
+	public Tuple(final F first, final S second) {
 		this.first = first;
 		this.second = second;
 	}
 
-	@Nullable
 	public F getFirst() {
 		return first;
 	}
 
-	@Nullable
 	public S getSecond() {
 		return second;
 	}

@@ -8,6 +8,12 @@ public enum DataPatchFailureCause {
 	INVALID_MULTIPLE_FIELDS_FORMAT,
 
 	/**
+	 * Alias cannot be mapped to a single physical path.
+	 * Path aliases base on the "Field ID" field from the generated data dictionary can be used to shorten the physical path.
+	 */
+	FORBIDDEN_NON_UNIQUE_ALIAS,
+
+	/**
 	 * Some fields have only a specific list of allowed values, if not present and no fallback then fails. Examples:
 	 * - {@link de.symeda.sormas.api.customizableenum.CustomizableEnum}
 	 * - {@link Enum}
