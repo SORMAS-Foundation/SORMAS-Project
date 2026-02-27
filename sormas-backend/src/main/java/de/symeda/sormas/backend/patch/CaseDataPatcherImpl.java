@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -19,8 +20,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Suppliers;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -52,6 +51,7 @@ import de.symeda.sormas.backend.person.PersonFacadeEjb;
 public class CaseDataPatcherImpl implements CaseDataPatcher {
 
 	public static final String PERSON_FIELD_NAME_PREFIX = "Person.";
+
 	private final static Logger logger = LoggerFactory.getLogger(CaseDataPatcherImpl.class);
 
 	@Inject
@@ -75,112 +75,47 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
+	public CaseDataPatcherImpl() {
+	}
+
+	public CaseDataPatcherImpl(
+		ValueMapperRegistry valueMapperRegistry,
+		FieldCustomMapperRegistry fieldCustomMapperRegistry,
+		PatchFieldHelper patchFieldHelper,
+		CaseFacadeEjb.CaseFacadeEjbLocal caseFacade,
+		PersonFacadeEjb.PersonFacadeEjbLocal personFacade,
+		FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade,
+		ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade) {
+		this.valueMapperRegistry = valueMapperRegistry;
+		this.fieldCustomMapperRegistry = fieldCustomMapperRegistry;
+		this.patchFieldHelper = patchFieldHelper;
+		this.caseFacade = caseFacade;
+		this.personFacade = personFacade;
+		this.featureConfigurationFacade = featureConfigurationFacade;
+		this.configFacade = configFacade;
+	}
+
 	@Override
 	public DataPatchResponse patch(CaseDataPatchRequest request) {
-		logger.info("patch: [{}]", request);
+		logger.debug("patch: [{}]", request);
 
 		CaseDataDto caseData = getCaseDataDto(request);
 
 		Disease disease = caseData.getDisease();
 
-		Supplier<PersonDto> person = Suppliers.memoize(() -> getPersonDto(caseData));
+		LazySupplier<PersonDto> personSupplier = LazySupplier.of(() -> getPersonDto(caseData));
 
-		Map<Tuple<String, DataPatchFailureCause>, Object> actualDictionary = computeActualDictionary(request);
-
-		// TODO: refactor this to create smaller units
-		// TODO: duplicate field patching mechanism
-		List<SinglePatchResult> results = actualDictionary.entrySet().stream().map(entry -> {
+		List<SinglePatchResult> results = computeActualDictionary(request).entrySet().stream().map(entry -> {
 			Tuple<String, DataPatchFailureCause> tuple = entry.getKey();
 			String fullFieldName = tuple.getFirst();
 			SinglePatchResult singlePatchResult = new SinglePatchResult().setFieldName(fullFieldName);
 
-			Object target = findAppropriateTarget(fullFieldName, caseData, person);
+			Supplier<Object> target = () -> findAppropriateTarget(fullFieldName, caseData, personSupplier);
 
 			try {
-				DataPatchFailureCause fieldFailureCause = tuple.getSecond();
-				if (fieldFailureCause != null) {
-					return singlePatchResult
-						.setFailure(new DataPatchFailure().setDataPatchFailureCause(fieldFailureCause).setProvidedFieldValue(entry.getValue()));
-				}
 
-				Optional<FieldCustomMapper> mapper = fieldCustomMapperRegistry.getMapper(fullFieldName, disease);
-
-				Object untypedTargetValue = entry.getValue();
-				if (mapper.isPresent()) {
-					Optional<DataPatchFailure> dataPatchFailureOpt = mapper.orElseThrow()
-						.map(
-							new FieldPatchRequest().setFieldName(fullFieldName)
-								.setReplacementType(request.getReplacementStrategy())
-								.setOrigin(request.getOrigin())
-								.setTarget(target)
-								.setValue(untypedTargetValue));
-
-					if (dataPatchFailureOpt.isPresent()) {
-						return singlePatchResult.setFailure(dataPatchFailureOpt.get());
-					}
-
-					// TODO: taint the DTO to mark it as dirty
-					return singlePatchResult.setValue(untypedTargetValue);
-				}
-
-				String relativeFieldName = fullFieldName.substring(fullFieldName.indexOf('.') + 1);
-				Optional<Tuple<Class<?>, Boolean>> nestedPropertyType =
-					PropertyAccessor.getNestedPropertyType(target, relativeFieldName, getFieldVisibilityCheckers(disease));
-
-				if (nestedPropertyType.isEmpty()) {
-					logger.info("Missing field: [{}] on target: [{}]", relativeFieldName, target);
-					return singlePatchResult.setFailure(new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.FIELD_DOES_NOT_EXIST));
-				}
-				Tuple<Class<?>, Boolean> classSetTuple = nestedPropertyType.orElseThrow();
-				Class<?> targetType = classSetTuple.getFirst();
-
-				if (!Boolean.TRUE.equals(classSetTuple.getSecond())) {
-					logger.info("Field: [{}] on object [{}] cannot be patched for disease: [{}]", relativeFieldName, target, disease);
-					return singlePatchResult.setFailure(
-						new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY_OR_FEATURE)
-							.setProvidedFieldValue(untypedTargetValue));
-				}
-
-				// TODO: handle targetType being a list. TO-Check with business: add / replace 
-
-				ValueMappingResult<?> result = valueMapperRegistry.map(
-					new ValuePatchRequest().setValue(untypedTargetValue)
-						.setTargetType(targetType)
-						.setInputLanguages(request.getInputLanguages())
-						.setAllowFallbackValues(request.isAllowFallbackValues()));
-
-				DataPatchFailureCause dataPatchFailureCause = result.getDataPatchFailureCause();
-				if (dataPatchFailureCause != null) {
-					return singlePatchResult
-						.setFailure(new DataPatchFailure().setDataPatchFailureCause(dataPatchFailureCause).setProvidedFieldValue(untypedTargetValue));
-				}
-
-				Object typedValue = result.getData();
-
-				if (request.getReplacementStrategy() == DataReplacementStrategy.IF_NOT_ALREADY_PRESENT) {
-					Optional<Object> nestedPropertyValue = PropertyAccessor.getNestedProperty(target, relativeFieldName);
-
-					if (nestedPropertyValue.isPresent()) {
-						Object currentValue = nestedPropertyValue.orElseThrow();
-
-						if (!currentValue.equals(typedValue)) {
-							return singlePatchResult.setFailure(
-								new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.FORBIDDEN_VALUE_OVERRIDE)
-									.setExistingFieldValue(currentValue)
-									.setProvidedFieldValue(untypedTargetValue));
-						}
-					}
-				}
-
-				// TODO: taint the DTO to mark it as dirty
-				Optional<Exception> exception = PropertyAccessor.setNestedProperty(target, relativeFieldName, typedValue);
-				if (exception.isPresent()) {
-					return singlePatchResult.setFailure(
-						new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.TECHNICAL)
-							.setDescription(exception.orElseThrow().getMessage()));
-				} else {
-					return singlePatchResult.setValue(untypedTargetValue);
-				}
+				return invalidFieldResult(entry, tuple).or(() -> fieldMappingResult(entry, disease, request, target))
+					.orElseGet(() -> valueMappingResult(entry, disease, request, target));
 			} catch (RuntimeException e) {
 				logger.error("Failure during patch operation", e);
 				return singlePatchResult
@@ -189,45 +124,157 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 
 		}).collect(Collectors.toList());
 
-		Map<String, Object> patchedValuesDictionary = results.stream()
-			.filter(singlePatchResult -> singlePatchResult.getValue() != null)
-			.collect(Collectors.toMap(SinglePatchResult::getFieldName, SinglePatchResult::getValue));
+		DataPatchResponse response = new DataPatchResponse().setApplied(false)
+			.setFailures(buildDictionaryFor(results, SinglePatchResult::getFailure))
+			.setValidPatchDictionary(buildDictionaryFor(results, SinglePatchResult::getValue));
+		if (!request.isPatchedInCaseOfFailures() && response.hasFailures()) {
+			logger.info(
+				"No patch was applied as contained failures AND request doesn't allow patch in case of failures: request: [{}], response: [{}]",
+				request,
+				response);
+			return response;
+		}
 
-		Map<String, DataPatchFailure> failuresDictionary = results.stream()
-			.filter(singlePatchResult -> singlePatchResult.getFailure() != null)
-			.collect(Collectors.toMap(SinglePatchResult::getFieldName, SinglePatchResult::getFailure));
-
-		DataPatchResponse dataPatchResponse = new DataPatchResponse().setPatchDictionary(patchedValuesDictionary).setFailures(failuresDictionary);
-
-		// TODO:
-		if (logger.isErrorEnabled()) {
-			logger.error("CaseData: \n{}", ObjectMapperProvider.writeValueAsStringFailSafe(caseData));
+		if (logger.isDebugEnabled()) {
+			logger.debug("CaseData: \n{}", ObjectMapperProvider.writeValueAsStringFailSafe(caseData));
 		}
 		caseFacade.save(caseData);
 
 		if (logger.isDebugEnabled()) {
-			logger.error("Person: \n{}", ObjectMapperProvider.writeValueAsStringFailSafe(person.get()));
+			logger.debug("Person: \n{}", ObjectMapperProvider.writeValueAsStringFailSafe(personSupplier.get()));
 		}
-		personFacade.save(person.get());
 
-		logger.debug("dataPatchResponse: [{}]", dataPatchResponse);
+		if (personSupplier.isLoaded()) {
+			logger.info("Person was loaded, therefore will be updated");
+			personFacade.save(personSupplier.get());
+		}
 
-		return dataPatchResponse;
+		logger.debug("dataPatchResponse: [{}]", response);
 
-		/*
-		 * Implementation steps:
-		 * - lazily produce list of allowed fields to avoid.
-		 * - OK: Iterate over patch dictionary
-		 * - OK: Filter out empty values.
-		 * - OK: Check for forbidden fields
-		 * - OK: Check for FieldCustomMapper to use custom mapping strategy
-		 * - OK: Check if field exists.
-		 * - Go to the appropriate (sub) field
-		 * <p>
-		 * WARN: Root will be either: (breaks trivial check if exists approach).
-		 * - CaseData
-		 * - Person
-		 */
+		return response.setApplied(true);
+	}
+
+	private @NotNull <R> Map<String, R> buildDictionaryFor(List<SinglePatchResult> results, Function<SinglePatchResult, R> fct) {
+		return results.stream()
+			.filter(singlePatchResult -> fct.apply(singlePatchResult) != null)
+			.collect(Collectors.toMap(SinglePatchResult::getFieldName, fct));
+	}
+
+	private @NotNull SinglePatchResult valueMappingResult(
+		Map.Entry<Tuple<String, DataPatchFailureCause>, Object> entry,
+		Disease disease,
+		CaseDataPatchRequest request,
+		Supplier<Object> targetOpt) {
+
+		Tuple<String, DataPatchFailureCause> tuple = entry.getKey();
+		String fullFieldName = tuple.getFirst();
+
+		SinglePatchResult singlePatchResult = new SinglePatchResult().setFieldName(fullFieldName);
+
+		Object target = targetOpt.get();
+		String relativeFieldName = fullFieldName.substring(fullFieldName.indexOf('.') + 1);
+		Optional<Tuple<Class<?>, Boolean>> nestedPropertyType =
+			PropertyAccessor.getNestedPropertyType(target, relativeFieldName, getFieldVisibilityCheckers(disease));
+
+		if (nestedPropertyType.isEmpty()) {
+			logger.info("Missing field: [{}] on target: [{}]", relativeFieldName, target);
+			return singlePatchResult.setFailure(new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.FIELD_DOES_NOT_EXIST));
+		}
+		Tuple<Class<?>, Boolean> classSetTuple = nestedPropertyType.orElseThrow();
+		Class<?> targetType = classSetTuple.getFirst();
+
+		Object untypedTargetValue = entry.getValue();
+
+		if (!Boolean.TRUE.equals(classSetTuple.getSecond())) {
+			logger.info("Field: [{}] on object [{}] cannot be patched for disease: [{}]", relativeFieldName, target, disease);
+			return singlePatchResult.setFailure(
+				new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY_OR_FEATURE)
+					.setProvidedFieldValue(untypedTargetValue));
+		}
+
+		// TODO: handle targetType being a list. TO-Check with business: add / replace
+
+		ValueMappingResult<?> result = valueMapperRegistry.map(
+			new ValuePatchRequest().setValue(untypedTargetValue)
+				.setTargetType(targetType)
+				.setInputLanguages(request.getInputLanguages())
+				.setAllowFallbackValues(request.isAllowFallbackValues()));
+
+		DataPatchFailureCause dataPatchFailureCause = result.getDataPatchFailureCause();
+		if (dataPatchFailureCause != null) {
+			return singlePatchResult
+				.setFailure(new DataPatchFailure().setDataPatchFailureCause(dataPatchFailureCause).setProvidedFieldValue(untypedTargetValue));
+		}
+
+		Object typedValue = result.getData();
+
+		if (request.getReplacementStrategy() == DataReplacementStrategy.IF_NOT_ALREADY_PRESENT) {
+			Optional<Object> nestedPropertyValue = PropertyAccessor.getNestedProperty(target, relativeFieldName);
+
+			if (nestedPropertyValue.isPresent()) {
+				Object currentValue = nestedPropertyValue.orElseThrow();
+
+				if (!currentValue.equals(typedValue)) {
+					return singlePatchResult.setFailure(
+						new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.FORBIDDEN_VALUE_OVERRIDE)
+							.setExistingFieldValue(currentValue)
+							.setProvidedFieldValue(untypedTargetValue));
+				}
+			}
+		}
+
+		Optional<Exception> exception = PropertyAccessor.setNestedProperty(target, relativeFieldName, typedValue);
+		if (exception.isPresent()) {
+			return singlePatchResult.setFailure(
+				new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.TECHNICAL)
+					.setDescription(exception.orElseThrow().getMessage()));
+		} else {
+			return singlePatchResult.setValue(untypedTargetValue);
+		}
+	}
+
+	private @NotNull Optional<SinglePatchResult> invalidFieldResult(
+		Map.Entry<Tuple<String, DataPatchFailureCause>, Object> entry,
+		Tuple<String, DataPatchFailureCause> tuple) {
+
+		return Optional.ofNullable(tuple.getSecond()).map(invalidFieldFailureCause -> buildFailureFor(entry, tuple.getSecond()));
+	}
+
+	public Optional<SinglePatchResult> fieldMappingResult(
+		Map.Entry<Tuple<String, DataPatchFailureCause>, Object> entry,
+		Disease disease,
+		CaseDataPatchRequest request,
+		Supplier<Object> target) {
+
+		Tuple<String, DataPatchFailureCause> tuple = entry.getKey();
+		String fullFieldName = tuple.getFirst();
+
+		Optional<FieldCustomMapper> mapper = fieldCustomMapperRegistry.getMapper(fullFieldName, disease);
+
+		Object untypedTargetValue = entry.getValue();
+		if (mapper.isPresent()) {
+			SinglePatchResult singlePatchResult = new SinglePatchResult().setFieldName(fullFieldName);
+
+			Optional<DataPatchFailure> dataPatchFailureOpt = mapper.orElseThrow()
+				.map(
+					new FieldPatchRequest().setFieldName(fullFieldName)
+						.setReplacementType(request.getReplacementStrategy())
+						.setOrigin(request.getOrigin())
+						.setTarget(target.get())
+						.setValue(untypedTargetValue));
+
+			return dataPatchFailureOpt.map(singlePatchResult::setFailure).or(() -> Optional.of(singlePatchResult.setValue(untypedTargetValue)));
+		}
+
+		return Optional.empty();
+	}
+
+	private SinglePatchResult buildFailureFor(
+		Map.Entry<Tuple<String, DataPatchFailureCause>, Object> entry,
+		DataPatchFailureCause fieldFailureCause) {
+
+		return new SinglePatchResult().setFieldName(entry.getKey().getFirst())
+			.setFailure(new DataPatchFailure().setDataPatchFailureCause(fieldFailureCause).setProvidedFieldValue(entry.getValue()));
 	}
 
 	private FieldVisibilityCheckers getFieldVisibilityCheckers(Disease disease) {

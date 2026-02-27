@@ -18,6 +18,8 @@ public class CaseDataPatchRequest {
 	@NotNull
 	private String caseUuid;
 
+	private boolean patchedInCaseOfFailures = false;
+
 	@NotNull
 	private DataReplacementStrategy replacementStrategy = DataReplacementStrategy.IF_NOT_ALREADY_PRESENT;
 
@@ -114,12 +116,22 @@ public class CaseDataPatchRequest {
 		return this;
 	}
 
+	public boolean isPatchedInCaseOfFailures() {
+		return patchedInCaseOfFailures;
+	}
+
+	public CaseDataPatchRequest setPatchedInCaseOfFailures(boolean patchedInCaseOfFailures) {
+		this.patchedInCaseOfFailures = patchedInCaseOfFailures;
+		return this;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (o == null || getClass() != o.getClass())
 			return false;
 		CaseDataPatchRequest that = (CaseDataPatchRequest) o;
-		return allowFallbackValues == that.allowFallbackValues
+		return patchedInCaseOfFailures == that.patchedInCaseOfFailures
+			&& allowFallbackValues == that.allowFallbackValues
 			&& Objects.equals(caseUuid, that.caseUuid)
 			&& replacementStrategy == that.replacementStrategy
 			&& emptyValueBehavior == that.emptyValueBehavior
@@ -130,13 +142,14 @@ public class CaseDataPatchRequest {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(caseUuid, replacementStrategy, emptyValueBehavior, patchDictionary, origin, inputLanguages, allowFallbackValues);
-	}
-
-	@Override
-	public String toString() {
-		return "CaseDataPatchRequest{" + "caseUuid='" + caseUuid + '\'' + ", replacementStrategy=" + replacementStrategy + ", emptyValueBehavior="
-			+ emptyValueBehavior + ", patchDictionary=" + patchDictionary + ", origin='" + origin + '\'' + ", inputLanguages=" + inputLanguages
-			+ ", allowDefaultValues=" + allowFallbackValues + '}';
+		return Objects.hash(
+			caseUuid,
+			patchedInCaseOfFailures,
+			replacementStrategy,
+			emptyValueBehavior,
+			patchDictionary,
+			origin,
+			inputLanguages,
+			allowFallbackValues);
 	}
 }

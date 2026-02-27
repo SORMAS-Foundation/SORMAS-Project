@@ -2,6 +2,7 @@ package de.symeda.sormas.api.patch;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.collections4.MapUtils;
 
@@ -11,22 +12,30 @@ import org.apache.commons.collections4.MapUtils;
 public class DataPatchResponse {
 
 	/**
+	 * True if the dictionary was applied to the specified fields.
+	 * <p>
+	 * Will be false in case of {@link CaseDataPatchRequest#isPatchedInCaseOfFailures()} is false and response contains
+	 * {@link DataPatchResponse#failures}
+	 */
+	private boolean applied = true;
+
+	/**
 	 * Actual patched values for the specified keys.
 	 * Will NOT contain fields that were NOT patched (even though passed in original patchDictionary).
 	 */
-	private Map<String, Object> patchDictionary = new HashMap<>();
+	private Map<String, Object> validPatchDictionary = new HashMap<>();
 
 	/**
 	 * Provides the reason for the failure.
 	 */
 	private Map<String, DataPatchFailure> failures = new HashMap<>();
 
-	public Map<String, Object> getPatchDictionary() {
-		return patchDictionary;
+	public Map<String, Object> getValidPatchDictionary() {
+		return validPatchDictionary;
 	}
 
-	public DataPatchResponse setPatchDictionary(Map<String, Object> patchDictionary) {
-		this.patchDictionary = patchDictionary;
+	public DataPatchResponse setValidPatchDictionary(Map<String, Object> validPatchDictionary) {
+		this.validPatchDictionary = validPatchDictionary;
 		return this;
 	}
 
@@ -39,26 +48,39 @@ public class DataPatchResponse {
 		return this;
 	}
 
-	/**
-	 * True means data was patched on SORMAS entities, false means nothing was changed.
-	 * 
-	 * @return boolean to indicate if data was patched: operation was a success.
-	 */
-	public boolean patched() {
-		return !failed();
+	public boolean isApplied() {
+		return applied;
+	}
+
+	public DataPatchResponse setApplied(boolean applied) {
+		this.applied = applied;
+		return this;
 	}
 
 	/**
 	 * Patch are atomic operations: either fully or not at all.
-	 * 
+	 *
 	 * @return true if operation was NOT applied, else false.
 	 */
-	public boolean failed() {
+	public boolean hasFailures() {
 		return MapUtils.isNotEmpty(failures);
 	}
 
 	@Override
+	public boolean equals(Object o) {
+		if (o == null || getClass() != o.getClass())
+			return false;
+		DataPatchResponse that = (DataPatchResponse) o;
+		return applied == that.applied && Objects.equals(validPatchDictionary, that.validPatchDictionary) && Objects.equals(failures, that.failures);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(applied, validPatchDictionary, failures);
+	}
+
+	@Override
 	public String toString() {
-		return "DataPatchResponse{" + "patchDictionary=" + patchDictionary + ", failures=" + failures + '}';
+		return "DataPatchResponse{" + "applied=" + applied + ", validPatchDictionary=" + validPatchDictionary + ", failures=" + failures + '}';
 	}
 }

@@ -10,8 +10,11 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.utils.Tuple;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 
+/**
+ * SORMAS-opinionated reflection accessing of fields.
+ * Type retrieval caching was not implement due to {@link FieldVisibilityCheckers}.
+ */
 public class PropertyAccessor {
-	// TODO: perform some caching of the fields
 
 	private static final Logger logger = LoggerFactory.getLogger(PropertyAccessor.class);
 
