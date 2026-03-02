@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.patch;
 
+import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +57,16 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 	public static final String PERSON_FIELD_NAME_PREFIX = "Person.";
 
 	private final static Logger logger = LoggerFactory.getLogger(CaseDataPatcherImpl.class);
+
+	private static final Map<PropertyAccessFailure, DataPatchFailureCause> PROPERTY_FAILURE_TO_PATCH_FAILURE = Map.of(
+		PropertyAccessFailure.INVALID_INPUT,
+		DataPatchFailureCause.TECHNICAL,
+
+		PropertyAccessFailure.FIELD_DOES_NOT_EXIST,
+		DataPatchFailureCause.FIELD_DOES_NOT_EXIST,
+
+		PropertyAccessFailure.UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY_OR_FEATURE,
+		DataPatchFailureCause.UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY_OR_FEATURE);
 
 	@Inject
 	private ValueMapperRegistry valueMapperRegistry;
@@ -197,22 +208,19 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 
 		Object target = targetOpt.get();
 		String relativeFieldName = fullFieldName.substring(fullFieldName.indexOf('.') + 1);
-		Optional<Tuple<Class<?>, Boolean>> nestedPropertyType =
+		Tuple<Class<?>, PropertyAccessFailure> nestedPropertyTypeTuple =
 			PropertyAccessor.getNestedPropertyType(target, relativeFieldName, getFieldVisibilityCheckers(disease));
 		Object untypedTargetValue = extractValue(entry);
 
-		if (nestedPropertyType.isEmpty()) {
+		PropertyAccessFailure propertyAccessFailure = nestedPropertyTypeTuple.getSecond();
+		if (propertyAccessFailure != null) {
 			logger.info("Missing field: [{}] on target: [{}]", relativeFieldName, target);
-			return singlePatchResult.setFailure(buildFailure(DataPatchFailureCause.FIELD_DOES_NOT_EXIST, untypedTargetValue));
+			return singlePatchResult.setFailure(
+				buildFailure(
+					PROPERTY_FAILURE_TO_PATCH_FAILURE.getOrDefault(propertyAccessFailure, DataPatchFailureCause.TECHNICAL),
+					untypedTargetValue));
 		}
-		Tuple<Class<?>, Boolean> classSetTuple = nestedPropertyType.orElseThrow();
-		Class<?> targetType = classSetTuple.getFirst();
-
-		if (!Boolean.TRUE.equals(classSetTuple.getSecond())) {
-			logger.info("Field: [{}] on object [{}] cannot be patched for disease: [{}]", relativeFieldName, target, disease);
-			return singlePatchResult
-				.setFailure(buildFailure(DataPatchFailureCause.UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY_OR_FEATURE, untypedTargetValue));
-		}
+		Class<?> targetType = nestedPropertyTypeTuple.getFirst();
 
 		ValueMappingResult<?> result = valueMapperRegistry.map(
 			new ValuePatchRequest().setValue(untypedTargetValue)
@@ -323,7 +331,7 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 				DataPatchFailureCause pathFailureCause = patchFieldHelper.checkIfPathIsInvalid(path);
 
 				Tuple<String, DataPatchFailureCause> unAliasedTuple = patchFieldHelper.resolveAlias(path);
-				Map.Entry<String, Object> entry = Map.entry(unAliasedTuple.getFirst(), originalEntry.getValue());
+				Map.Entry<String, Object> entry = toMapEntry(unAliasedTuple.getFirst(), originalEntry.getValue());
 
 				DataPatchFailureCause dataPatchFailureCause = Optional.ofNullable(pathFailureCause).orElseGet(unAliasedTuple::getSecond);
 
@@ -338,6 +346,10 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 				return splitMultipleFieldsPath(entry);
 			})
 			.map(tuple -> Tuple.of(tuple.getFirst(), tuple.getSecond()));
+	}
+
+	private AbstractMap.@NotNull SimpleEntry<String, Object> toMapEntry(String first, Object value) {
+		return new AbstractMap.SimpleEntry<>(first, value);
 	}
 
 	@NotNull

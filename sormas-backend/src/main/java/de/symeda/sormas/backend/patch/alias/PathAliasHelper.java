@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.patch.alias;
 
 import static de.symeda.sormas.backend.patch.PatchFieldHelper.PATH_SEPARATOR;
 
+import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -77,6 +78,7 @@ public class PathAliasHelper {
 			return tupleWithFailure(DataPatchFailureCause.FORBIDDEN_NON_UNIQUE_ALIAS);
 		}
 
+		// TODO: refactor this
 		String pathWithFixedRootObjectReferences = REFERENCE_TO_ROOT_DICTIONARY.values()
 			.stream()
 			.reduce(
@@ -91,6 +93,31 @@ public class PathAliasHelper {
 		}
 
 		return tupleWithoutFailure(pathWithFixedRootObjectReferences);
+	}
+
+	/**
+	 * Objective is to retrieve a path WITH an alias to get the Field ID as in the data dictionary.
+	 *
+	 * @param pathWithoutAlias
+	 * @return
+	 */
+	public static String toAliasPath(String pathWithoutAlias) {
+		Set<Map.Entry<String, String>> reduce = Stream.concat(
+			DEFAULT_ALIAS_DICTIONARY.entrySet().stream(),
+			DEFAULT_FORBIDDEN_ALIASES_DICTIONARY.entrySet()
+				.stream()
+				.flatMap(entry -> entry.getValue().stream().map(replacementPath -> new AbstractMap.SimpleEntry<>(entry.getKey(), replacementPath))))
+			.collect(Collectors.toSet());
+
+		for (Map.Entry<String, String> entry : reduce) {
+			pathWithoutAlias = pathWithoutAlias.replace(entry.getValue(), entry.getKey());
+		}
+
+		for (Map.Entry<String, String> entry : REFERENCE_TO_ROOT_DICTIONARY.entrySet()) {
+			pathWithoutAlias = pathWithoutAlias.replace(entry.getKey(), entry.getValue());
+		}
+
+		return pathWithoutAlias;
 	}
 
 	private static @NotNull Tuple<String, DataPatchFailureCause> tupleWithFailure(DataPatchFailureCause forbiddenNonUniqueAlias) {

@@ -19,16 +19,43 @@ public class PropertyAccessor {
 	private static final Logger logger = LoggerFactory.getLogger(PropertyAccessor.class);
 
 	public static final char PATH_SEPARATOR = '.';
+	private static final Tuple<Class<?>, PropertyAccessFailure> FIELD_DOES_NOT_EXIST = Tuple.of(null, PropertyAccessFailure.FIELD_DOES_NOT_EXIST);
+
+	private static final Tuple<Class<?>, PropertyAccessFailure> UNSUPPORTED_FIELD =
+		Tuple.of(null, PropertyAccessFailure.UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY_OR_FEATURE);
+
+	private static final Tuple<Class<?>, PropertyAccessFailure> INVALID_INPUT = Tuple.of(null, PropertyAccessFailure.INVALID_INPUT);
 
 	private PropertyAccessor() {
 	}
 
-	public static Optional<Tuple<Class<?>, Boolean>> getNestedPropertyType(
+//	public static Tuple<FieldInfo, PropertyAccessFailure> getNestedPropertyAndType(
+//			final Object bean,
+//			final String fieldName,
+//			FieldVisibilityCheckers fieldVisibilityCheckers) {
+//		if (bean == null || fieldName == null || fieldName.isEmpty()) {
+//			return INVALID_INPUT;
+//		}
+//
+//		boolean notNestedPath = fieldName.indexOf(PATH_SEPARATOR) == fieldName.lastIndexOf(PATH_SEPARATOR);
+//
+//		if (notNestedPath) {
+//			return getPropertyType(bean, fieldName, fieldVisibilityCheckers);
+//		}
+//
+//		String leafPath = fieldName.substring(fieldName.lastIndexOf(PATH_SEPARATOR) + 1);
+//
+//		return Optional.ofNullable(getNestedProperty(bean, fieldName))
+//				.map(leafParent -> getPropertyType(leafParent, leafPath, fieldVisibilityCheckers))
+//				.orElse(FIELD_DOES_NOT_EXIST);
+//	}
+
+	public static Tuple<Class<?>, PropertyAccessFailure> getNestedPropertyType(
 		final Object bean,
 		final String fieldName,
 		FieldVisibilityCheckers fieldVisibilityCheckers) {
 		if (bean == null || fieldName == null || fieldName.isEmpty()) {
-			return Optional.empty();
+			return INVALID_INPUT;
 		}
 
 		boolean notNestedPath = fieldName.indexOf(PATH_SEPARATOR) == fieldName.lastIndexOf(PATH_SEPARATOR);
@@ -40,21 +67,27 @@ public class PropertyAccessor {
 		String leafPath = fieldName.substring(fieldName.lastIndexOf(PATH_SEPARATOR) + 1);
 
 		return Optional.ofNullable(getNestedProperty(bean, fieldName))
-			.flatMap(leafParent -> getPropertyType(leafParent, leafPath, fieldVisibilityCheckers));
+			.map(leafParent -> getPropertyType(leafParent, leafPath, fieldVisibilityCheckers))
+			.orElse(FIELD_DOES_NOT_EXIST);
 	}
 
-	public static Optional<Tuple<Class<?>, Boolean>> getPropertyType(
+	public static Tuple<Class<?>, PropertyAccessFailure> getPropertyType(
 		final Object bean,
 		final String fieldName,
 		FieldVisibilityCheckers fieldVisibilityCheckers) {
 		try {
-			return Optional.ofNullable(PropertyUtils.getPropertyType(bean, fieldName)).map(propertyType -> {
+			return Optional.ofNullable(PropertyUtils.getPropertyType(bean, fieldName)).<Tuple<Class<?>, PropertyAccessFailure>> map(propertyType -> {
 				boolean visible = fieldVisibilityCheckers.isVisible(bean.getClass(), fieldName);
-				return new Tuple<>(propertyType, visible);
-			});
+
+				if (!visible) {
+					return UNSUPPORTED_FIELD;
+				}
+
+				return new Tuple<>(propertyType, null);
+			}).orElse(FIELD_DOES_NOT_EXIST);
 		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
 			logger.info("Could not get property type for [{}], [{}]", fieldName, bean.getClass().getSimpleName(), e);
-			return Optional.empty();
+			return FIELD_DOES_NOT_EXIST;
 		}
 	}
 
