@@ -30,7 +30,7 @@ import de.symeda.sormas.api.utils.Diseases;
 
 public class EntityColumnsTest {
 
-	private static class TestDto {
+	private static class EntityColumnTestObject {
 
 		@Diseases(value = {
 			Disease.GIARDIASIS,
@@ -47,8 +47,8 @@ public class EntityColumnsTest {
 
 	private String invokeGetDiseases(String fieldName) throws Exception {
 		EntityColumns entityColumns = new EntityColumns(null, false);
-		Field field = TestDto.class.getDeclaredField(fieldName);
-		FieldData fieldData = new FieldData(field, TestDto.class, "Test");
+		Field field = EntityColumnTestObject.class.getDeclaredField(fieldName);
+		FieldData fieldData = new FieldData(field, EntityColumnTestObject.class, "Test");
 		Method getDiseases = EntityColumns.class.getDeclaredMethod("getDiseases", FieldData.class);
 		getDiseases.setAccessible(true);
 		return (String) getDiseases.invoke(entityColumns, fieldData);
