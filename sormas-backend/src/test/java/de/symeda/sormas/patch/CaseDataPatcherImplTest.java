@@ -91,6 +91,29 @@ class CaseDataPatcherImplTest extends AbstractBeanTest {
 	}
 
 	@Test
+	void patch_aliasUsage() {
+		// PREPARE
+		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.PERTUSSIS);
+
+		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
+			.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+			.setPatchDictionary(Map.of("Symptoms.cough", "YES"));
+
+		// EXECUTE
+		DataPatchResponse response = victim().patch(request);
+
+		// CHECK
+		logger.info("response: [{}]", response);
+
+		CaseDataDto actual = getCaseFacade().getByUuid(originalCase.getUuid());
+
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failure found, but should be empty"),
+			// PERSON
+			() -> Assertions.assertEquals(SymptomState.YES, actual.getSymptoms().getCough()));
+	}
+
+	@Test
 	void patch_noErrorsReplaceAlwaysPersonContactDetails() {
 		// PREPARE
 		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.PERTUSSIS);

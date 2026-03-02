@@ -82,7 +82,7 @@ public class PathAliasHelper {
 			.reduce(
 				pathWithPotentialAlias,
 				(path, replacement) -> path.replace(
-					REFERENCE_TO_ROOT_DICTIONARY.entrySet().stream().filter(e -> replacement.equals(e.getValue())).findFirst().get().getKey(),
+					REFERENCE_TO_ROOT_DICTIONARY.entrySet().stream().filter(entry -> replacement.equals(entry.getValue())).findFirst().get().getKey(),
 					replacement));
 
 		String physicalPathPrefix = DEFAULT_ALIAS_DICTIONARY.get(aliasCandidate);

@@ -317,10 +317,15 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 			.stream()
 			.filter(entry -> StringUtils.isNotBlank(entry.getKey()))
 			.filter(filterPredicate)
-			.flatMap(entry -> {
-				String path = entry.getKey();
+			.flatMap(originalEntry -> {
+				String path = originalEntry.getKey();
 
-				DataPatchFailureCause dataPatchFailureCause = patchFieldHelper.checkIfPathIsInvalid(path);
+				DataPatchFailureCause pathFailureCause = patchFieldHelper.checkIfPathIsInvalid(path);
+
+				Tuple<String, DataPatchFailureCause> unAliasedTuple = patchFieldHelper.resolveAlias(path);
+				Map.Entry<String, Object> entry = Map.entry(unAliasedTuple.getFirst(), originalEntry.getValue());
+
+				DataPatchFailureCause dataPatchFailureCause = Optional.ofNullable(pathFailureCause).orElseGet(unAliasedTuple::getSecond);
 
 				if (dataPatchFailureCause != null) {
 					return Stream.of(buildMapTupleEntryFrom(entry, dataPatchFailureCause));
