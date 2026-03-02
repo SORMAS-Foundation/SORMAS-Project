@@ -36,16 +36,14 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
-import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
@@ -71,7 +69,6 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SeroGroupSpecification;
 import de.symeda.sormas.api.sample.SerotypingMethod;
-import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.therapy.DrugSusceptibilityForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -89,11 +86,11 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 	private static final long serialVersionUID = -1218707278398543154L;
 
-	private final Logger logger = LoggerFactory.getLogger(getClass());
-
 	private static final String PATHOGEN_TEST_HEADING_LOC = "pathogenTestHeadingLoc";
 
 	private static final String PRESCRIBER_HEADING_LOC = "prescriberHeading";
+
+	private static final String DISEASE_SECTION_LOC = "diseaseSectionLoc";
 
 	//@formatter:off
 	private static final String HTML_LAYOUT =
@@ -109,12 +106,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			fluidRowLocs("", PathogenTestDto.LAB_DETAILS) +
 			fluidRowLocs(6,PathogenTestDto.TEST_RESULT, 4, PathogenTestDto.TEST_RESULT_VERIFIED, 2,PathogenTestDto.PRELIMINARY) +
 			fluidRowLocs(PathogenTestDto.TESTED_DISEASE_VARIANT, PathogenTestDto.TESTED_DISEASE_VARIANT_DETAILS) +
-			fluidRowLocs(PathogenTestDto.RIFAMPICIN_RESISTANT, PathogenTestDto.ISONIAZID_RESISTANT, "", "") +
-			fluidRowLocs(PathogenTestDto.TEST_SCALE, "") +
-			fluidRowLocs(PathogenTestDto.STRAIN_CALL_STATUS, "") +
-			fluidRowLocs(PathogenTestDto.SPECIE, "") +
-			fluidRowLocs(PathogenTestDto.PATTERN_PROFILE, "") +
-			fluidRowLocs(PathogenTestDto.DRUG_SUSCEPTIBILITY) +
+			loc(DISEASE_SECTION_LOC) +
 			fluidRowLocs(4,PathogenTestDto.SEROTYPE, 4,PathogenTestDto.SEROTYPING_METHOD, 4,PathogenTestDto.SERO_TYPING_METHOD_TEXT) +
 			fluidRowLocs(6,PathogenTestDto.SERO_GROUP_SPECIFICATION , 6, PathogenTestDto.SERO_GROUP_SPECIFICATION_TEXT) +
 			fluidRowLocs(4,PathogenTestDto.GENOTYPE_RESULT,6, PathogenTestDto.GENOTYPE_RESULT_TEXT) +
@@ -123,10 +115,6 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			fluidRowLocs(PathogenTestDto.CT_VALUE_E, PathogenTestDto.CT_VALUE_N) +
 			fluidRowLocs(PathogenTestDto.CT_VALUE_RDRP, PathogenTestDto.CT_VALUE_S) +
 			fluidRowLocs(PathogenTestDto.CT_VALUE_ORF_1, PathogenTestDto.CT_VALUE_RDRP_S) +
-			fluidRowLocs(PathogenTestDto.TUBE_NIL, PathogenTestDto.TUBE_NIL_GT10) +
-			fluidRowLocs(PathogenTestDto.TUBE_AG_TB1, PathogenTestDto.TUBE_AG_TB1_GT10) +
-			fluidRowLocs(PathogenTestDto.TUBE_AG_TB2, PathogenTestDto.TUBE_AG_TB2_GT10) +
-			fluidRowLocs(PathogenTestDto.TUBE_MITOGENE, PathogenTestDto.TUBE_MITOGENE_GT10) +
 			fluidRowLocs(PathogenTestDto.TEST_RESULT_TEXT) +
 			fluidRowLocs(PRESCRIBER_HEADING_LOC) +
 			fluidRowLocs(PathogenTestDto.PRESCRIBER_PHYSICIAN_CODE, "") +
@@ -203,14 +191,6 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		}
 	});
 
-	public static final Map<Object, List<Object>> PATTERN_PROFILE_VISIBILITY_CONDITIONS = Collections.unmodifiableMap(new HashMap<>() {
-
-		{
-			put(PathogenTestDto.TESTED_DISEASE, Collections.unmodifiableList(Arrays.asList(Disease.LATENT_TUBERCULOSIS, Disease.TUBERCULOSIS)));
-			put(PathogenTestDto.TEST_TYPE, Collections.unmodifiableList(Arrays.asList(PathogenTestType.MIRU_PATTERN_CODE)));
-		}
-	});
-
 	public static final Map<Object, List<Object>> PCR_TEST_SPECIFICATION_VISIBILITY_CONDITIONS = Collections.unmodifiableMap(new HashMap<>() {
 
 		{
@@ -235,13 +215,15 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 	private ComboBox pcrTestSpecification;
 	private Disease disease;
 	private TextField typingIdField;
-	private ComboBox specieField;
 	private ComboBox genoTypingCB;
 	private TextField genoTypingResultTextTF;
 
 	private ComboBox seroGrpSepcCB;
 	private TextField seroGrpSpecTxt;
 
+	// Disease section swap support
+	private DiseaseSectionLayout activeSection = new DefaultDiseaseSectionLayout();
+	private CustomLayout diseaseSectionPanel;
 
 	public PathogenTestForm(
 		AbstractSampleForm sampleForm,
@@ -399,7 +381,10 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			testResultField.setValue(newFieldValue.getTestResult());
 		}
 		typingIdField.setValue(newFieldValue.getTypingId());
-		specieField.setValue(newFieldValue.getSpecie());
+		ComboBox specieFieldDynamic = getField(PathogenTestDto.SPECIE);
+		if (specieFieldDynamic != null) {
+			specieFieldDynamic.setValue(newFieldValue.getSpecie());
+		}
 		if (!genoTypingCB.isReadOnly()) {
 			genoTypingCB.setValue(newFieldValue.getGenoTypeResult());
 
@@ -417,7 +402,9 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			seroGrpSpecTxt.setValue(newFieldValue.getSeroGroupSpecificationText());
 		}
 
-		drugSusceptibilityField.forceUpdateDrugSusceptibilityFields();
+		if (drugSusceptibilityField != null) {
+			drugSusceptibilityField.forceUpdateDrugSusceptibilityFields();
+		}
 		markAsDirty();
 	}
 
@@ -427,6 +414,12 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		pathogenTestHeadingLabel = new Label();
 		pathogenTestHeadingLabel.addStyleName(H3);
 		getContent().addComponent(pathogenTestHeadingLabel, PATHOGEN_TEST_HEADING_LOC);
+
+		// Install the disease section panel — a nested CustomLayout whose template is swapped on disease change
+		diseaseSectionPanel = new CustomLayout();
+		diseaseSectionPanel.setTemplateContents(activeSection.getHtmlLayout());
+		diseaseSectionPanel.setWidth(100, Unit.PERCENTAGE);
+		getContent().addComponent(diseaseSectionPanel, DISEASE_SECTION_LOC);
 
 		addDateField(PathogenTestDto.REPORT_DATE, DateField.class, 0);
 		CheckBox viaLimsField = addField(PathogenTestDto.VIA_LIMS);
@@ -538,58 +531,10 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		}
 		TextField seroTypeTF = addField(PathogenTestDto.SEROTYPE, TextField.class);
 
-		NullableOptionGroup rifampicinResistantField = addField(PathogenTestDto.RIFAMPICIN_RESISTANT, NullableOptionGroup.class);
-		rifampicinResistantField.setVisible(false);
-
-		NullableOptionGroup isoniazidResistantField = addField(PathogenTestDto.ISONIAZID_RESISTANT, NullableOptionGroup.class);
-		isoniazidResistantField.setVisible(false);
-
-		ComboBox testScaleField = addField(PathogenTestDto.TEST_SCALE, ComboBox.class);
-		testScaleField.setVisible(false);
-
-		ComboBox strainCallStatusField = addField(PathogenTestDto.STRAIN_CALL_STATUS, ComboBox.class);
-		strainCallStatusField.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
-		strainCallStatusField.setVisible(false);
-
-		specieField = addField(PathogenTestDto.SPECIE, ComboBox.class);
-		specieField.setVisible(false);
-
-		TextField patternProfileField = addField(PathogenTestDto.PATTERN_PROFILE, TextField.class);
-		patternProfileField.setVisible(false);
-
-		drugSusceptibilityField = (DrugSusceptibilityForm) addField(
-			PathogenTestDto.DRUG_SUSCEPTIBILITY,
-			new DrugSusceptibilityForm(
-				FieldVisibilityCheckers.getNoop(),
-				UiFieldAccessCheckers.getDefault(true, FacadeProvider.getConfigFacade().getCountryLocale())));
-		drugSusceptibilityField.setCaption(null);
-		//drugSusceptibilityField.setVisible(false);
-		addToVisibleAllowedFields(drugSusceptibilityField);
-
-		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
-			//tuberculosis-pcr test specification
-			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.RIFAMPICIN_RESISTANT, RIFAMPICIN_RESISTANT_VISIBILITY_CONDITIONS, true);
-
-			//tuberculosis-microscopy test specification
-			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.TEST_SCALE, TEST_SCALE_VISIBILITY_CONDITIONS, true);
-
-			//tuberculosis-beijinggenotyping test specification
-			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.STRAIN_CALL_STATUS, STRAIN_CALL_STATUS_VISIBILITY_CONDITIONS, true);
-
-			//tuberculosis-spoligotyping test specification
-			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.SPECIE, SPECIE_VISIBILITY_CONDITIONS, true);
-
-			//tuberculosis-miru-code test specification
-			Map<Object, List<Object>> tuberculosisMiruCodeDependencies = new HashMap<>() {
-
-				{
-					put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.TUBERCULOSIS, Disease.LATENT_TUBERCULOSIS));
-					put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.MIRU_PATTERN_CODE));
-				}
-			};
-			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.PATTERN_PROFILE, tuberculosisMiruCodeDependencies, true);
-			//FieldHelper.setRequiredWhen(getFieldGroup(), PathogenTestDto.PATTERN_PROFILE, tuberculosisMiruCodeDependencies);
-		}
+		// Bind the initial disease section (default = no-op; swapped via swapDiseaseSection() on disease change)
+		activeSection = DiseaseSectionLayout.forDisease(disease);
+		diseaseSectionPanel.setTemplateContents(activeSection.getHtmlLayout());
+		activeSection.bindFields(this);
 
 		seroTypeTF.setVisible(false);
 
@@ -598,7 +543,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		seroGrpSepcCB = addField(PathogenTestDto.SERO_GROUP_SPECIFICATION, ComboBox.class);
 		seroGrpSepcCB.setVisible(false);
 		seroGrpSpecTxt = addField(PathogenTestDto.SERO_GROUP_SPECIFICATION_TEXT, TextField.class);
-		
+
 		TextField cqValueField = addField(FieldConfiguration.withConversionError(PathogenTestDto.CQ_VALUE, Validations.onlyNumbersAllowed));
 		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 			cqValueField.setVisible(false);
@@ -621,334 +566,6 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			PathogenTestDto.CT_VALUE_S,
 			PathogenTestDto.CT_VALUE_ORF_1,
 			PathogenTestDto.CT_VALUE_RDRP_S);
-
-		//@formatter:off
-		addFields(
-			FieldConfiguration.builder(PathogenTestDto.TUBE_NIL)
-				.validationMessageProperty(Validations.onlyNumbersAllowed)
-				.valueChangeListener(e -> {
-					final String tubeNilFieldValue = (String) e.getProperty().getValue();
-					final NullableOptionGroup tubeNilGt10Field = getField(PathogenTestDto.TUBE_NIL_GT10);
-					final Float tubeNilValue = getValue().getTubeNil();
-					final Boolean tubeNilGt10Value = getValue().getTubeNilGT10();
-
-					// we are called for a new entry
-					if(tubeNilValue == null
-						&& tubeNilGt10Value == null
-						&& tubeNilFieldValue == null
-						&& tubeNilGt10Field.getNullableValue() == null) {
-						tubeNilGt10Field.select(false);
-						return;
-					}
-
-					if(tubeNilFieldValue == null) {
-						tubeNilGt10Field.select(false);
-						return;
-					}
-					Float tubeNilNewValue = null;
-					try {
-						tubeNilNewValue = Float.parseFloat(tubeNilFieldValue);
-					} catch (NumberFormatException ex) {
-						// if it is not a number we clear the field
-						getField(PathogenTestDto.TUBE_NIL).clear();
-						tubeNilGt10Field.select(false);
-						return;
-					}
-					// now we have a current and old value
-					if(tubeNilNewValue > 10) {
-						tubeNilGt10Field.select(true);
-					} else {
-						tubeNilGt10Field.select(false);
-					}
-				})
-				.build(),
-			FieldConfiguration.builder(PathogenTestDto.TUBE_AG_TB1)
-				.validationMessageProperty(Validations.onlyNumbersAllowed)
-				.valueChangeListener(e -> {
-					final String tubeAgTb1FieldValue = (String) e.getProperty().getValue();
-					final NullableOptionGroup tubeAgTb1Gt10Field = getField(PathogenTestDto.TUBE_AG_TB1_GT10);
-					final Float tubeAgTb1Value = getValue().getTubeAgTb1();
-					final Boolean tubeAgTb1Gt10Value = getValue().getTubeAgTb1GT10();
-
-					// we are called for a new entry
-					if(tubeAgTb1Value == null
-						&& tubeAgTb1Gt10Value == null
-						&& tubeAgTb1FieldValue == null
-						&& tubeAgTb1Gt10Field.getNullableValue() == null) {
-						tubeAgTb1Gt10Field.select(false);
-						return;
-					}
-
-					if(tubeAgTb1FieldValue == null) {
-						tubeAgTb1Gt10Field.select(false);
-						return;
-					}
-					Float tubeAgTb1NewValue = null;
-					try {
-						tubeAgTb1NewValue = Float.parseFloat(tubeAgTb1FieldValue);
-					} catch (NumberFormatException ex) {
-						// if it is not a number we clear the field
-						getField(PathogenTestDto.TUBE_AG_TB1).clear();
-						tubeAgTb1Gt10Field.select(false);
-						return;
-					}
-					// now we have a current and old value
-					if(tubeAgTb1NewValue > 10) {
-						tubeAgTb1Gt10Field.select(true);
-					} else {
-						tubeAgTb1Gt10Field.select(false);
-					}
-				})
-				.build(),
-			FieldConfiguration.builder(PathogenTestDto.TUBE_AG_TB2)
-				.validationMessageProperty(Validations.onlyNumbersAllowed)
-				.valueChangeListener(e -> {
-					final String tubeAgTb2FieldValue = (String) e.getProperty().getValue();
-					final NullableOptionGroup tubeAgTb2Gt10Field = getField(PathogenTestDto.TUBE_AG_TB2_GT10);
-					final Float tubeAgTb2Value = getValue().getTubeAgTb2();
-					final Boolean tubeAgTb2Gt10Value = getValue().getTubeAgTb2GT10();
-
-					// we are called for a new entry
-					if(tubeAgTb2Value == null
-						&& tubeAgTb2Gt10Value == null
-						&& tubeAgTb2FieldValue == null
-						&& tubeAgTb2Gt10Field.getNullableValue() == null) {
-						tubeAgTb2Gt10Field.select(false);
-						return;
-					}
-
-					if(tubeAgTb2FieldValue == null) {
-						tubeAgTb2Gt10Field.select(false);
-						return;
-					}
-					Float tubeAgTb2NewValue = null;
-					try {
-						tubeAgTb2NewValue = Float.parseFloat(tubeAgTb2FieldValue);
-					} catch (NumberFormatException ex) {
-						// if it is not a number we clear the field
-						getField(PathogenTestDto.TUBE_AG_TB2).clear();
-						tubeAgTb2Gt10Field.select(false);
-						return;
-					}
-					// now we have a current and old value
-					if(tubeAgTb2NewValue > 10) {
-						tubeAgTb2Gt10Field.select(true);
-					} else {
-						tubeAgTb2Gt10Field.select(false);
-					}
-				})
-				.build(),
-			FieldConfiguration.builder(PathogenTestDto.TUBE_MITOGENE)
-				.validationMessageProperty(Validations.onlyNumbersAllowed)
-				.valueChangeListener(e -> {
-					final String tubeMitogeneFieldValue = (String) e.getProperty().getValue();
-					final NullableOptionGroup tubeMitogeneGt10Field = getField(PathogenTestDto.TUBE_MITOGENE_GT10);
-					final Float tubeMitogeneValue = getValue().getTubeMitogene();
-					final Boolean tubeMitogeneGt10Value = getValue().getTubeMitogeneGT10();
-
-					// we are called for a new entry
-					if(tubeMitogeneValue == null
-						&& tubeMitogeneGt10Value == null
-						&& tubeMitogeneFieldValue == null
-						&& tubeMitogeneGt10Field.getNullableValue() == null) {
-						tubeMitogeneGt10Field.select(false);
-						return;
-					}
-
-					if(tubeMitogeneFieldValue == null) {
-						tubeMitogeneGt10Field.select(false);
-						return;
-					}
-					Float tubeMitogeneNewValue = null;
-					try {
-						tubeMitogeneNewValue = Float.parseFloat(tubeMitogeneFieldValue);
-					} catch (NumberFormatException ex) {
-						// if it is not a number we clear the field
-						getField(PathogenTestDto.TUBE_MITOGENE).clear();
-						tubeMitogeneGt10Field.select(false);
-						return;
-					}
-					// now we have a current and old value
-					if(tubeMitogeneNewValue > 10) {
-						tubeMitogeneGt10Field.select(true);
-					} else {
-						tubeMitogeneGt10Field.select(false);
-					}
-				})
-				.build());
-		//@formatter:on
-
-		//@formatter:off
-		addFields(
-			FieldConfiguration.builder(PathogenTestDto.TUBE_NIL_GT10).valueChangeListener(event -> {
-				final Object propertySingleValue = event.getProperty().getValue() instanceof Collection
-					? ((Collection<?>) event.getProperty().getValue()).stream().findFirst().orElse(null)
-					: event.getProperty().getValue();
-				final Float tubeNilValue = getValue().getTubeNil();
-
-				// we are called for a new entry or initial calls
-				if(propertySingleValue == null && tubeNilValue == null) {
-					final NullableOptionGroup tubeNilGt10Field = getField(PathogenTestDto.TUBE_NIL_GT10);
-					tubeNilGt10Field.select(false);
-					return;
-				}
-				final boolean checked = Boolean.TRUE.equals(propertySingleValue);
-				final Field<?> tubeNilField = getField(PathogenTestDto.TUBE_NIL);
-
-				final String tubeNilFieldValue = (String) tubeNilField.getValue();
-				if(tubeNilFieldValue == null) {
-					// if there is no value we don't care about the checkbox value
-					return;
-				}
-				Float tubeNilNewValue = null;
-				try {
-					tubeNilNewValue = Float.valueOf(tubeNilFieldValue);
-				} catch (NumberFormatException ex) {
-					// if it's not a number we don't care about the value
-					tubeNilField.clear();
-					return;
-				}
-				// if the checkbox is checked and the value is less than 10, we clear the field
-				if (checked && tubeNilNewValue < 10) {
-					tubeNilField.clear();
-					return;
-				}
-				// if the checkbox is unchecked and the value is greater than or equal to 10, we clear the field
-				if(!checked && tubeNilNewValue >= 10) {
-					tubeNilField.clear();
-					return;
-				}
-			}).build(),
-			FieldConfiguration.builder(PathogenTestDto.TUBE_AG_TB1_GT10).valueChangeListener(event -> {
-				final Object propertySingleValue = event.getProperty().getValue() instanceof Collection
-					? ((Collection<?>) event.getProperty().getValue()).stream().findFirst().orElse(null)
-					: event.getProperty().getValue();
-				final Float tubeAgTb1Value = getValue().getTubeAgTb1();
-
-				// we are called for a new entry or initial calls
-				if(propertySingleValue == null && tubeAgTb1Value == null) {
-					final NullableOptionGroup tubeAgTb1Gt10Field = getField(PathogenTestDto.TUBE_AG_TB1_GT10);
-					tubeAgTb1Gt10Field.select(false);
-					return;
-				}
-				final boolean checked = Boolean.TRUE.equals(propertySingleValue);
-				final Field<?> tubeAgTb1Field = getField(PathogenTestDto.TUBE_AG_TB1);
-
-				final String tubeAgTb1FieldValue = (String) tubeAgTb1Field.getValue();
-				if(tubeAgTb1FieldValue == null) {
-					// if there is no value we don't care about the checkbox value
-					return;
-				}
-				Float tubeAgTb1NewValue = null;
-				try {
-					tubeAgTb1NewValue = Float.valueOf(tubeAgTb1FieldValue);
-				} catch (NumberFormatException ex) {
-					// if it's not a number we don't care about the value
-					tubeAgTb1Field.clear();
-					return;
-				}
-				// if the checkbox is checked and the value is less than or equal to 10, we clear the field
-				if (checked && tubeAgTb1NewValue <= 10) {
-					tubeAgTb1Field.clear();
-					return;
-				}
-				// if the checkbox is unchecked and the value is greater than 10, we clear the field
-				if(!checked && tubeAgTb1NewValue > 10) {
-					tubeAgTb1Field.clear();
-					return;
-				}
-			}).build(),
-			FieldConfiguration.builder(PathogenTestDto.TUBE_AG_TB2_GT10).valueChangeListener(event -> {
-				final Object propertySingleValue = event.getProperty().getValue() instanceof Collection
-					? ((Collection<?>) event.getProperty().getValue()).stream().findFirst().orElse(null)
-					: event.getProperty().getValue();
-				final Float tubeAgTb2Value = getValue().getTubeAgTb2();
-
-				// we are called for a new entry or initial calls
-				if(propertySingleValue == null && tubeAgTb2Value == null) {
-					final NullableOptionGroup tubeAgTb2Gt10Field = getField(PathogenTestDto.TUBE_AG_TB2_GT10);
-					tubeAgTb2Gt10Field.select(false);
-					return;
-				}
-				final boolean checked = Boolean.TRUE.equals(propertySingleValue);
-				final Field<?> tubeAgTb2Field = getField(PathogenTestDto.TUBE_AG_TB2);
-
-				final String tubeAgTb2FieldValue = (String) tubeAgTb2Field.getValue();
-				if(tubeAgTb2FieldValue == null) {
-					// if there is no value we don't care about the checkbox value
-					return;
-				}
-				Float tubeAgTb2NewValue = null;
-				try {
-					tubeAgTb2NewValue = Float.valueOf(tubeAgTb2FieldValue);
-				} catch (NumberFormatException ex) {
-					// if it's not a number we don't care about the value
-					tubeAgTb2Field.clear();
-					return;
-				}
-				// if the checkbox is checked and the value is less than or equal to 10, we clear the field
-				if (checked && tubeAgTb2NewValue <= 10) {
-					tubeAgTb2Field.clear();
-					return;
-				}
-				// if the checkbox is unchecked and the value is greater than 10, we clear the field
-				if(!checked && tubeAgTb2NewValue > 10) {
-					tubeAgTb2Field.clear();
-					return;
-				}
-			}).build(),
-			FieldConfiguration.builder(PathogenTestDto.TUBE_MITOGENE_GT10).valueChangeListener(event -> {
-				final Object propertySingleValue = event.getProperty().getValue() instanceof Collection
-					? ((Collection<?>) event.getProperty().getValue()).stream().findFirst().orElse(null)
-					: event.getProperty().getValue();
-				final Float tubeMitogeneValue = getValue().getTubeMitogene();
-
-				// we are called for a new entry or initial calls
-				if(propertySingleValue == null && tubeMitogeneValue == null) {
-					final NullableOptionGroup tubeMitogeneGt10Field = getField(PathogenTestDto.TUBE_MITOGENE_GT10);
-					tubeMitogeneGt10Field.select(false);
-					return;
-				}
-				final boolean checked = Boolean.TRUE.equals(propertySingleValue);
-				final Field<?> tubeMitogeneField = getField(PathogenTestDto.TUBE_MITOGENE);
-
-				final String tubeMitogeneFieldValue = (String) tubeMitogeneField.getValue();
-				if(tubeMitogeneFieldValue == null) {
-					// if there is no value we don't care about the checkbox value
-					return;
-				}
-				Float tubeMitogeneNewValue = null;
-				try {
-					tubeMitogeneNewValue = Float.valueOf(tubeMitogeneFieldValue);
-				} catch (NumberFormatException ex) {
-					// if it's not a number we don't care about the value
-					tubeMitogeneField.clear();
-					return;
-				}
-				// if the checkbox is checked and the value is less than or equal to 10, we clear the field
-				if (checked && tubeMitogeneNewValue <= 10) {
-					tubeMitogeneField.clear();
-					return;
-				}
-				// if the checkbox is unchecked and the value is greater than 10, we clear the field
-				if(!checked && tubeMitogeneNewValue > 10) {
-					tubeMitogeneField.clear();
-					return;
-				}
-			}).build()
-		);
-		//@formatter:on
-
-		setVisibleClear(
-			false,
-			PathogenTestDto.TUBE_NIL,
-			PathogenTestDto.TUBE_NIL_GT10,
-			PathogenTestDto.TUBE_AG_TB1,
-			PathogenTestDto.TUBE_AG_TB1_GT10,
-			PathogenTestDto.TUBE_AG_TB2,
-			PathogenTestDto.TUBE_AG_TB2_GT10,
-			PathogenTestDto.TUBE_MITOGENE,
-			PathogenTestDto.TUBE_MITOGENE_GT10);
 
 		NullableOptionGroup testResultVerifiedField = addField(PathogenTestDto.TEST_RESULT_VERIFIED, NullableOptionGroup.class);
 		addField(PathogenTestDto.PRELIMINARY).addStyleName(CssStyles.VSPACE_4);
@@ -1133,6 +750,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			}
 			disease = latestDisease;
 			updateDiseaseVariantField.accept(disease);
+			swapDiseaseSection(latestDisease);
 
 			FieldHelper.updateItems(
 				testTypeField,
@@ -1141,11 +759,14 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				PathogenTestType.class);
 
 			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
-				FieldHelper.updateItems(
-					strainCallStatusField,
-					Arrays.asList(PathogenStrainCallStatus.values()),
-					FieldVisibilityCheckers.withDisease(disease),
-					PathogenStrainCallStatus.class);
+				ComboBox strainCallStatusField = getField(PathogenTestDto.STRAIN_CALL_STATUS);
+				if (strainCallStatusField != null) {
+					FieldHelper.updateItems(
+						strainCallStatusField,
+						Arrays.asList(PathogenStrainCallStatus.values()),
+						FieldVisibilityCheckers.withDisease(disease),
+						PathogenStrainCallStatus.class);
+				}
 
 				updateDrugSusceptibilityFieldSpecifications((PathogenTestType) testTypeField.getValue(), disease);
 			}
@@ -1284,6 +905,209 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		public void valueChange(com.vaadin.v7.data.Property.ValueChangeEvent event) {
 			// TODO Auto-generated method stub
 
+		}
+	}
+
+	// -----------------------------------------------------------------------
+	// Disease section swap support
+	// -----------------------------------------------------------------------
+
+	/** Replaces the active disease section with the one appropriate for the given disease. */
+	private void swapDiseaseSection(Disease newDisease) {
+		DiseaseSectionLayout newSection = DiseaseSectionLayout.forDisease(newDisease);
+		if (newSection.getClass() == activeSection.getClass()) {
+			return; // same section type, nothing to swap
+		}
+
+		activeSection.unbindFields(this);
+		activeSection = newSection;
+		diseaseSectionPanel.setTemplateContents(newSection.getHtmlLayout());
+		newSection.bindFields(this);
+	}
+
+	/** Package-private: adds a disease-section field to the nested diseaseSectionPanel layout. */
+	<F extends com.vaadin.v7.ui.Field> F addSectionField(String propertyId, Class<F> fieldType) {
+		F field = getFieldGroup().buildAndBind(propertyId, (Object) propertyId, fieldType);
+		formatField(field, propertyId);
+		field.setId(propertyId);
+		diseaseSectionPanel.addComponent(field, propertyId);
+		return field;
+	}
+
+	/** Package-private: adds the DrugSusceptibilityForm to the disease section panel. */
+	void addSectionDrugSusceptibilityField() {
+		drugSusceptibilityField = (DrugSusceptibilityForm) addField(
+			diseaseSectionPanel,
+			PathogenTestDto.DRUG_SUSCEPTIBILITY,
+			new DrugSusceptibilityForm(
+				de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers.getNoop(),
+				de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers.getDefault(true, FacadeProvider.getConfigFacade().getCountryLocale())));
+		drugSusceptibilityField.setCaption(null);
+		addToVisibleAllowedFields(drugSusceptibilityField);
+	}
+
+	/** Package-private: adds all tube IGRA fields to the disease section panel. */
+	void addSectionTubeFields() {
+		addFields(
+			diseaseSectionPanel,
+			FieldConfiguration.builder(PathogenTestDto.TUBE_NIL)
+				.validationMessageProperty(de.symeda.sormas.api.i18n.Validations.onlyNumbersAllowed)
+				.valueChangeListener(e -> handleTubeNilChange((String) e.getProperty().getValue()))
+				.build(),
+			FieldConfiguration.builder(PathogenTestDto.TUBE_AG_TB1)
+				.validationMessageProperty(de.symeda.sormas.api.i18n.Validations.onlyNumbersAllowed)
+				.valueChangeListener(e -> handleTubeAgTb1Change((String) e.getProperty().getValue()))
+				.build(),
+			FieldConfiguration.builder(PathogenTestDto.TUBE_AG_TB2)
+				.validationMessageProperty(de.symeda.sormas.api.i18n.Validations.onlyNumbersAllowed)
+				.valueChangeListener(e -> handleTubeAgTb2Change((String) e.getProperty().getValue()))
+				.build(),
+			FieldConfiguration.builder(PathogenTestDto.TUBE_MITOGENE)
+				.validationMessageProperty(de.symeda.sormas.api.i18n.Validations.onlyNumbersAllowed)
+				.valueChangeListener(e -> handleTubeMitogeneChange((String) e.getProperty().getValue()))
+				.build());
+		addFields(
+			diseaseSectionPanel,
+			FieldConfiguration.builder(PathogenTestDto.TUBE_NIL_GT10).valueChangeListener(e -> handleTubeNilGt10Change(e)).build(),
+			FieldConfiguration.builder(PathogenTestDto.TUBE_AG_TB1_GT10).valueChangeListener(e -> handleTubeAgTb1Gt10Change(e)).build(),
+			FieldConfiguration.builder(PathogenTestDto.TUBE_AG_TB2_GT10).valueChangeListener(e -> handleTubeAgTb2Gt10Change(e)).build(),
+			FieldConfiguration.builder(PathogenTestDto.TUBE_MITOGENE_GT10).valueChangeListener(e -> handleTubeMitogeneGt10Change(e)).build());
+
+		setVisibleClear(
+			false,
+			PathogenTestDto.TUBE_NIL,
+			PathogenTestDto.TUBE_NIL_GT10,
+			PathogenTestDto.TUBE_AG_TB1,
+			PathogenTestDto.TUBE_AG_TB1_GT10,
+			PathogenTestDto.TUBE_AG_TB2,
+			PathogenTestDto.TUBE_AG_TB2_GT10,
+			PathogenTestDto.TUBE_MITOGENE,
+			PathogenTestDto.TUBE_MITOGENE_GT10);
+	}
+
+	/** Package-private: removes a field from both the disease section panel and the field group. */
+	void removeSectionField(String propertyId) {
+		com.vaadin.v7.ui.Field<?> field = getField(propertyId);
+		if (field != null) {
+			// Unbind first so listeners on sibling fields don't NPE when they fire during clear()
+			getFieldGroup().unbind(field);
+			diseaseSectionPanel.removeComponent(field);
+		}
+	}
+
+	/** Returns the currently selected disease — used by section implementations. */
+	Disease getCurrentDisease() {
+		return disease;
+	}
+
+	// Tube field helpers — delegates from listeners in the original addFields() block
+	private void handleTubeNilChange(String val) {
+		NullableOptionGroup gt10 = getField(PathogenTestDto.TUBE_NIL_GT10);
+		if (gt10 == null)
+			return;
+		if (val == null) {
+			gt10.select(false);
+			return;
+		}
+		try {
+			gt10.select(Float.parseFloat(val) > 10);
+		} catch (NumberFormatException e) {
+			getField(PathogenTestDto.TUBE_NIL).clear();
+			gt10.select(false);
+		}
+	}
+
+	private void handleTubeAgTb1Change(String val) {
+		NullableOptionGroup gt10 = getField(PathogenTestDto.TUBE_AG_TB1_GT10);
+		if (gt10 == null)
+			return;
+		if (val == null) {
+			gt10.select(false);
+			return;
+		}
+		try {
+			gt10.select(Float.parseFloat(val) > 10);
+		} catch (NumberFormatException e) {
+			getField(PathogenTestDto.TUBE_AG_TB1).clear();
+			gt10.select(false);
+		}
+	}
+
+	private void handleTubeAgTb2Change(String val) {
+		NullableOptionGroup gt10 = getField(PathogenTestDto.TUBE_AG_TB2_GT10);
+		if (gt10 == null)
+			return;
+		if (val == null) {
+			gt10.select(false);
+			return;
+		}
+		try {
+			gt10.select(Float.parseFloat(val) > 10);
+		} catch (NumberFormatException e) {
+			getField(PathogenTestDto.TUBE_AG_TB2).clear();
+			gt10.select(false);
+		}
+	}
+
+	private void handleTubeMitogeneChange(String val) {
+		NullableOptionGroup gt10 = getField(PathogenTestDto.TUBE_MITOGENE_GT10);
+		if (gt10 == null)
+			return;
+		if (val == null) {
+			gt10.select(false);
+			return;
+		}
+		try {
+			gt10.select(Float.parseFloat(val) > 10);
+		} catch (NumberFormatException e) {
+			getField(PathogenTestDto.TUBE_MITOGENE).clear();
+			gt10.select(false);
+		}
+	}
+
+	private void handleTubeNilGt10Change(com.vaadin.v7.data.Property.ValueChangeEvent e) {
+		Object v = e.getProperty().getValue() instanceof Collection
+			? ((Collection<?>) e.getProperty().getValue()).stream().findFirst().orElse(null)
+			: e.getProperty().getValue();
+		handleGt10CheckboxChange(v, getField(PathogenTestDto.TUBE_NIL));
+	}
+
+	private void handleTubeAgTb1Gt10Change(com.vaadin.v7.data.Property.ValueChangeEvent e) {
+		Object v = e.getProperty().getValue() instanceof Collection
+			? ((Collection<?>) e.getProperty().getValue()).stream().findFirst().orElse(null)
+			: e.getProperty().getValue();
+		handleGt10CheckboxChange(v, getField(PathogenTestDto.TUBE_AG_TB1));
+	}
+
+	private void handleTubeAgTb2Gt10Change(com.vaadin.v7.data.Property.ValueChangeEvent e) {
+		Object v = e.getProperty().getValue() instanceof Collection
+			? ((Collection<?>) e.getProperty().getValue()).stream().findFirst().orElse(null)
+			: e.getProperty().getValue();
+		handleGt10CheckboxChange(v, getField(PathogenTestDto.TUBE_AG_TB2));
+	}
+
+	private void handleTubeMitogeneGt10Change(com.vaadin.v7.data.Property.ValueChangeEvent e) {
+		Object v = e.getProperty().getValue() instanceof Collection
+			? ((Collection<?>) e.getProperty().getValue()).stream().findFirst().orElse(null)
+			: e.getProperty().getValue();
+		handleGt10CheckboxChange(v, getField(PathogenTestDto.TUBE_MITOGENE));
+	}
+
+	private void handleGt10CheckboxChange(Object singleValue, com.vaadin.v7.ui.Field<?> numericField) {
+		if (numericField == null)
+			return;
+		String numVal = (String) numericField.getValue();
+		if (singleValue == null || numVal == null)
+			return;
+		boolean checked = Boolean.TRUE.equals(singleValue);
+		try {
+			float f = Float.valueOf(numVal);
+			if (checked && f <= 10)
+				numericField.clear();
+			else if (!checked && f > 10)
+				numericField.clear();
+		} catch (NumberFormatException ex) {
+			numericField.clear();
 		}
 	}
 }

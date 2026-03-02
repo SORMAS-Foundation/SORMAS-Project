@@ -364,6 +364,7 @@ public final class FieldHelper {
 		for (Object targetPropertyId : targetPropertyIds) {
 			@SuppressWarnings("rawtypes")
 			Field targetField = fieldGroup.getField(targetPropertyId);
+			if (targetField == null) continue; // field was unbound (e.g. disease section swap)
 			targetField.setVisible(visible);
 			if (!visible && clearOnHidden && targetField.getValue() != null) {
 				targetField.clear();

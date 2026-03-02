@@ -137,10 +137,10 @@ public class PathogenTestController {
 			ContactDto contact = FacadeProvider.getContactFacade().getByUuid(sampleDto.getAssociatedContact().getUuid());
 			associatedEventOrCaseOrContactDisease = contact.getDisease();
 		}
-		PathogenTestForm createForm = new PathogenTestForm(sampleDto, true, caseSampleCount, false, true, associatedEventOrCaseOrContactDisease); // Valid because jurisdiction doesn't matter for entities that are about to be created
-		// Defaulting the case disease as tested disease
+		PathogenTestForm createForm = new PathogenTestForm(sampleDto, true, caseSampleCount, false, true, associatedEventOrCaseOrContactDisease);
 		pathogenTest.setTestedDisease(associatedEventOrCaseOrContactDisease);
 		createForm.setValue(pathogenTest);
+
 		final CommitDiscardWrapperComponent<PathogenTestForm> editView =
 			new CommitDiscardWrapperComponent<>(createForm, UiUtil.permitted(UserRight.PATHOGEN_TEST_CREATE), createForm.getFieldGroup());
 
@@ -354,14 +354,17 @@ public class PathogenTestController {
 	/**
 	 * Handles the association of a pathogen test with a case.
 	 * Based on pathogen test results the following logic is applied:
-	 * 
-	 * <p>Negative test result AND test result verified
+	 *
+	 * <p>
+	 * Negative test result AND test result verified
 	 * <ol>
-	 * <li>Tested disease == case disease AND test result != sample pathogen test result: Ask user whether to update the sample pathogen test result</li>
+	 * <li>Tested disease == case disease AND test result != sample pathogen test result: Ask user whether to update the sample pathogen
+	 * test result</li>
 	 * <li>Tested disease != case disease: Do nothing</li>
 	 * </ol>
 	 * </p>
-	 * <p>Positive test result AND test result verified
+	 * <p>
+	 * Positive test result AND test result verified
 	 * <ol>
 	 * <li>Tested disease == case disease: Ask user whether to update the sample pathogen test result
 	 * <ol>
@@ -372,12 +375,15 @@ public class PathogenTestController {
 	 * <li>Tested disease != case disease: Ask user to create a new case for the tested disease</li>
 	 * </ol>
 	 * </p>
-	 * 
-	 * @param pathogenTests the pathogen tests
-	 * @param associatedCase the associated case
-	 * @param suppressNavigateToCase whether to suppress navigation to the case
-	 * 
-	*/
+	 *
+	 * @param pathogenTests
+	 *            the pathogen tests
+	 * @param associatedCase
+	 *            the associated case
+	 * @param suppressNavigateToCase
+	 *            whether to suppress navigation to the case
+	 *
+	 */
 	private void handleAssociatedCase(List<PathogenTestDto> pathogenTests, CaseReferenceDto associatedCase, boolean suppressNavigateToCase) {
 
 		if (!UiUtil.permitted(UserRight.CASE_EDIT)) {
@@ -413,7 +419,6 @@ public class PathogenTestController {
 
 		final boolean hasVerifiedTests = hasVerifiedPositiveTest || hasVerifiedNegativeTest;
 
-
 		// 1. Ask user to update sample overall result if latest test result is different
 		// 2. Ask user to update disease variant if case variant is different
 		// 3. Ask user if they want to confirm the case only if any of the tests are verified either positive or negative (not pending or other)
@@ -436,7 +441,7 @@ public class PathogenTestController {
 						// We decided this based on the intented text in the dialog but based on the test results instead of the sample overall result
 						if (hasVerifiedPositiveTest) {
 							// The final laboratory result of the sample the saved pathogen test belongs to is positive. <-- sample overall result
-							// However, the case cannot be automatically classified as a confirmed case because it is missing some information. 
+							// However, the case cannot be automatically classified as a confirmed case because it is missing some information.
 							// Do you want to set the case classification to confirmed anyway?
 							this.showConfirmCaseDialog(c); // Case classification
 						}
