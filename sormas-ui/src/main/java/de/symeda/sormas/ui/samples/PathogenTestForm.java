@@ -534,7 +534,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		// Bind the initial disease section (default = no-op; swapped via swapDiseaseSection() on disease change)
 		activeSection = DiseaseSectionLayout.forDisease(disease);
 		diseaseSectionPanel.setTemplateContents(activeSection.getHtmlLayout());
-		activeSection.bindFields(this);
+		activeSection.bindFields(getFieldGroup(), diseaseSectionPanel, disease);
 
 		seroTypeTF.setVisible(false);
 
@@ -919,10 +919,10 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			return; // same section type, nothing to swap
 		}
 
-		activeSection.unbindFields(this);
+		activeSection.unbindFields(getFieldGroup(), diseaseSectionPanel);
 		activeSection = newSection;
 		diseaseSectionPanel.setTemplateContents(newSection.getHtmlLayout());
-		newSection.bindFields(this);
+		newSection.bindFields(getFieldGroup(), diseaseSectionPanel, newDisease);
 	}
 
 	/** Package-private: adds a disease-section field to the nested diseaseSectionPanel layout. */

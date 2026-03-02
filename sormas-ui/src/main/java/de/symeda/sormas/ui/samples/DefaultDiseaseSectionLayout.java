@@ -17,6 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
+import java.util.Collection;
+import java.util.Collections;
+
+import com.vaadin.ui.CustomLayout;
+import com.vaadin.v7.data.fieldgroup.FieldGroup;
+
 import de.symeda.sormas.api.Disease;
 
 /**
@@ -30,12 +36,17 @@ public class DefaultDiseaseSectionLayout implements DiseaseSectionLayout {
 	}
 
 	@Override
-	public void bindFields(PathogenTestForm form) {
+	public Collection<String> getFieldIds() {
+		return Collections.emptyList();
+	}
+
+	@Override
+	public void bindFields(FieldGroup fieldGroup, CustomLayout panel, Disease disease) {
 		// no disease-specific fields
 	}
 
 	@Override
-	public void unbindFields(PathogenTestForm form) {
+	public void unbindFields(FieldGroup fieldGroup, CustomLayout panel) {
 		// nothing to remove
 	}
 

@@ -17,7 +17,15 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
+import java.util.Collection;
+
+import com.vaadin.ui.CustomLayout;
+import com.vaadin.v7.data.fieldgroup.FieldGroup;
+import com.vaadin.v7.ui.AbstractField;
+
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestType;
 
 /**
  * Encapsulates the disease-specific portion of PathogenTestForm.
@@ -28,8 +36,8 @@ import de.symeda.sormas.api.Disease;
  * Lifecycle:
  * <ol>
  * <li>{@link #getHtmlLayout()} is called once to build the section's CustomLayout template.</li>
- * <li>{@link #bindFields(PathogenTestForm)} is called to add fields to the form.</li>
- * <li>{@link #unbindFields(PathogenTestForm)} is called before a new section replaces this one.</li>
+ * <li>{@link #bindFields(FieldGroup, CustomLayout, Disease)} is called to add fields.</li>
+ * <li>{@link #unbindFields(FieldGroup, CustomLayout)} is called before a new section replaces this one.</li>
  * </ol>
  */
 public interface DiseaseSectionLayout {
@@ -40,20 +48,30 @@ public interface DiseaseSectionLayout {
 	 */
 	String getHtmlLayout();
 
-	/**
-	 * Adds this section's fields to the host form's layout and field group.
-	 * Called once after the section's CustomLayout has been installed.
-	 */
-	void bindFields(PathogenTestForm form);
+	/** Returns the property IDs of all fields bound by {@link #bindFields}. */
+	Collection<String> getFieldIds();
 
 	/**
-	 * Removes this section's fields from the host form's layout and field group,
+	 * Adds this section's fields to the given field group and panel.
+	 * Called once after the section's CustomLayout has been installed.
+	 */
+	void bindFields(FieldGroup fieldGroup, CustomLayout panel, Disease disease);
+
+	/**
+	 * Removes this section's fields from the field group and panel,
 	 * clearing their values so they don't bleed into the saved DTO.
 	 * Called before a new section replaces this one.
 	 */
-	void unbindFields(PathogenTestForm form);
+	void unbindFields(FieldGroup fieldGroup, CustomLayout panel);
 
-	/** Returns the disease(s) this section handles, for logging/debugging. */
+	/**
+	 * Called when the test type changes so sections can update field visibility or
+	 * auto-set the test result. No-op by default.
+	 */
+	default void onTestTypeChanged(PathogenTestType testType, Disease disease, AbstractField<PathogenTestResultType> testResultField) {
+	}
+
+	/** Returns the disease(s) this section handles. */
 	Disease[] getDiseases();
 
 	/** Factory: returns the correct section implementation for the given disease. */
