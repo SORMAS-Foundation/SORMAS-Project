@@ -76,9 +76,27 @@ public interface DiseaseSectionLayout {
 
 	/** Factory: returns the correct section implementation for the given disease. */
 	static DiseaseSectionLayout forDisease(Disease disease) {
-		if (disease == Disease.TUBERCULOSIS || disease == Disease.LATENT_TUBERCULOSIS) {
-			return new TuberculosisDiseaseSectionLayout();
+		if (disease == null) {
+			return new DefaultDiseaseSectionLayout();
 		}
-		return new DefaultDiseaseSectionLayout();
+		switch (disease) {
+		case TUBERCULOSIS:
+		case LATENT_TUBERCULOSIS:
+			return new TuberculosisDiseaseSectionLayout();
+		case MEASLES:
+			return new MeaslesDiseaseSectionLayout();
+		case CRYPTOSPORIDIOSIS:
+			return new CryptosporidiosisDiseaseSectionLayout();
+		case INVASIVE_MENINGOCOCCAL_INFECTION:
+			return new ImiDiseaseSectionLayout();
+		case INVASIVE_PNEUMOCOCCAL_INFECTION:
+			return new IpiDiseaseSectionLayout();
+		case CSM:
+			return new CsmDiseaseSectionLayout();
+		case CORONAVIRUS:
+			return new CoronavirusDiseaseSectionLayout();
+		default:
+			return new DefaultDiseaseSectionLayout();
+		}
 	}
 }
