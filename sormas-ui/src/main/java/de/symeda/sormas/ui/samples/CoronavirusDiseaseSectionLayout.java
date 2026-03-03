@@ -17,27 +17,34 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+
 import java.util.Collection;
 import java.util.Collections;
 
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
+import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.Field;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.ui.utils.FieldHelper;
 
 /**
- * Disease section for CORONAVIRUS: wires PCR_TEST_SPECIFICATION visibility.
- * Field lives in the common layout; this section owns the visibility registration.
+ * Disease section for CORONAVIRUS: owns PCR_TEST_SPECIFICATION field and wires its visibility.
  */
 public class CoronavirusDiseaseSectionLayout implements DiseaseSectionLayout {
+
+	//@formatter:off
+	private static final String HTML = fluidRowLocs(PathogenTestDto.PCR_TEST_SPECIFICATION, "");
+	//@formatter:on
 
 	private static final Collection<String> FIELD_IDS = Collections.singletonList(PathogenTestDto.PCR_TEST_SPECIFICATION);
 
 	@Override
 	public String getHtmlLayout() {
-		return "";
+		return HTML;
 	}
 
 	@Override
@@ -47,15 +54,24 @@ public class CoronavirusDiseaseSectionLayout implements DiseaseSectionLayout {
 
 	@Override
 	public void bindFields(FieldGroup fieldGroup, CustomLayout panel, Disease disease) {
-		FieldHelper
-			.setVisibleWhen(fieldGroup, PathogenTestDto.PCR_TEST_SPECIFICATION, PathogenTestForm.PCR_TEST_SPECIFICATION_VISIBILITY_CONDITIONS, true);
+		ComboBox pcrTestSpecification = fieldGroup.buildAndBind(
+			PathogenTestDto.PCR_TEST_SPECIFICATION,
+			(Object) PathogenTestDto.PCR_TEST_SPECIFICATION,
+			ComboBox.class);
+		pcrTestSpecification.setId(PathogenTestDto.PCR_TEST_SPECIFICATION);
+		pcrTestSpecification.setVisible(false);
+		panel.addComponent(pcrTestSpecification, PathogenTestDto.PCR_TEST_SPECIFICATION);
+
+		FieldHelper.setVisibleWhen(fieldGroup, PathogenTestDto.PCR_TEST_SPECIFICATION, PathogenTestForm.PCR_TEST_SPECIFICATION_VISIBILITY_CONDITIONS, true);
 	}
 
 	@Override
 	public void unbindFields(FieldGroup fieldGroup, CustomLayout panel) {
-		// The PCR_TEST_SPECIFICATION visibility condition is keyed on TESTED_DISEASE=CORONAVIRUS,
-		// so it is inert when any other disease is active. No listener removal needed here;
-		// Phase 5 will consolidate all common-layout registrations.
+		Field<?> field = fieldGroup.getField(PathogenTestDto.PCR_TEST_SPECIFICATION);
+		if (field != null) {
+			fieldGroup.unbind(field);
+			panel.removeComponent(field);
+		}
 	}
 
 	@Override
