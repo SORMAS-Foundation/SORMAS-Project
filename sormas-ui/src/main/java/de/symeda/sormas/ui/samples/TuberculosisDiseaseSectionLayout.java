@@ -121,6 +121,7 @@ public class TuberculosisDiseaseSectionLayout implements DiseaseSectionLayout {
 
 	// Held for onTestTypeChanged and unbindFields
 	private DrugSusceptibilityForm drugSusceptibilityField;
+	private TubeFieldHandler tubeFieldHandler;
 	private List<String> tubeFieldIds;
 
 	// Listeners registered on shared FieldGroup source fields — removed in unbindFields
@@ -166,7 +167,6 @@ public class TuberculosisDiseaseSectionLayout implements DiseaseSectionLayout {
 		fieldGroup.bind(drugSusceptibilityField, PathogenTestDto.DRUG_SUSCEPTIBILITY);
 		panel.addComponent(drugSusceptibilityField, PathogenTestDto.DRUG_SUSCEPTIBILITY);
 
-		// Tube fields — stub: built and added hidden; TubeFieldHandler wired in Phase 6
 		tubeFieldIds = Arrays.asList(
 			PathogenTestDto.TUBE_NIL,
 			PathogenTestDto.TUBE_NIL_GT10,
@@ -177,17 +177,8 @@ public class TuberculosisDiseaseSectionLayout implements DiseaseSectionLayout {
 			PathogenTestDto.TUBE_MITOGENE,
 			PathogenTestDto.TUBE_MITOGENE_GT10);
 
-		for (String tubeId : Arrays
-			.asList(PathogenTestDto.TUBE_NIL, PathogenTestDto.TUBE_AG_TB1, PathogenTestDto.TUBE_AG_TB2, PathogenTestDto.TUBE_MITOGENE)) {
-			buildAndAdd(fieldGroup, panel, tubeId, TextField.class).setVisible(false);
-		}
-		for (String gt10Id : Arrays.asList(
-			PathogenTestDto.TUBE_NIL_GT10,
-			PathogenTestDto.TUBE_AG_TB1_GT10,
-			PathogenTestDto.TUBE_AG_TB2_GT10,
-			PathogenTestDto.TUBE_MITOGENE_GT10)) {
-			buildAndAdd(fieldGroup, panel, gt10Id, NullableOptionGroup.class).setVisible(false);
-		}
+		tubeFieldHandler = new TubeFieldHandler(fieldGroup, panel);
+		tubeFieldHandler.attachTubeFields();
 
 		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 			bindLuxembourgVisibility(fieldGroup, strainCallStatus, disease);
@@ -282,6 +273,11 @@ public class TuberculosisDiseaseSectionLayout implements DiseaseSectionLayout {
 				f.removeValueChangeListener(diseaseListener);
 			}
 			diseaseListener = null;
+		}
+
+		if (tubeFieldHandler != null) {
+			tubeFieldHandler.detachTubeFields();
+			tubeFieldHandler = null;
 		}
 
 		for (String id : FIELD_IDS) {
