@@ -60,17 +60,13 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.sample.GenoTypeResult;
 import de.symeda.sormas.api.sample.PathogenStrainCallStatus;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SamplePurpose;
-import de.symeda.sormas.api.sample.SeroGroupSpecification;
-import de.symeda.sormas.api.sample.SerotypingMethod;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
-import de.symeda.sormas.ui.therapy.DrugSusceptibilityForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
@@ -107,9 +103,6 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			fluidRowLocs(6,PathogenTestDto.TEST_RESULT, 4, PathogenTestDto.TEST_RESULT_VERIFIED, 2,PathogenTestDto.PRELIMINARY) +
 			fluidRowLocs(PathogenTestDto.TESTED_DISEASE_VARIANT, PathogenTestDto.TESTED_DISEASE_VARIANT_DETAILS) +
 			loc(DISEASE_SECTION_LOC) +
-			fluidRowLocs(4,PathogenTestDto.SEROTYPE, 4,PathogenTestDto.SEROTYPING_METHOD, 4,PathogenTestDto.SERO_TYPING_METHOD_TEXT) +
-			fluidRowLocs(6,PathogenTestDto.SERO_GROUP_SPECIFICATION , 6, PathogenTestDto.SERO_GROUP_SPECIFICATION_TEXT) +
-			fluidRowLocs(4,PathogenTestDto.GENOTYPE_RESULT,6, PathogenTestDto.GENOTYPE_RESULT_TEXT) +
 			fluidRowLocs(PathogenTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, "") +
 			fluidRowLocs(PathogenTestDto.CQ_VALUE, "") +
 			fluidRowLocs(PathogenTestDto.CT_VALUE_E, PathogenTestDto.CT_VALUE_N) +
@@ -157,40 +150,6 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		}
 	});
 
-	public static final Map<Object, List<Object>> RIFAMPICIN_RESISTANT_VISIBILITY_CONDITIONS = Collections.unmodifiableMap(new HashMap<>() {
-
-		{
-			put(PathogenTestDto.TESTED_DISEASE, Collections.unmodifiableList(Arrays.asList(Disease.LATENT_TUBERCULOSIS, Disease.TUBERCULOSIS)));
-			put(PathogenTestDto.TEST_TYPE, Collections.unmodifiableList(Arrays.asList(PathogenTestType.PCR_RT_PCR)));
-			put(PathogenTestDto.TEST_RESULT, Collections.unmodifiableList(Arrays.asList(PathogenTestResultType.POSITIVE)));
-		}
-	});
-
-	public static final Map<Object, List<Object>> TEST_SCALE_VISIBILITY_CONDITIONS = Collections.unmodifiableMap(new HashMap<>() {
-
-		{
-			put(PathogenTestDto.TESTED_DISEASE, Collections.unmodifiableList(Arrays.asList(Disease.LATENT_TUBERCULOSIS, Disease.TUBERCULOSIS)));
-			put(PathogenTestDto.TEST_TYPE, Collections.unmodifiableList(Arrays.asList(PathogenTestType.MICROSCOPY)));
-		}
-	});
-
-	public static final Map<Object, List<Object>> STRAIN_CALL_STATUS_VISIBILITY_CONDITIONS = Collections.unmodifiableMap(new HashMap<>() {
-
-		{
-			put(PathogenTestDto.TESTED_DISEASE, Collections.unmodifiableList(Arrays.asList(Disease.LATENT_TUBERCULOSIS, Disease.TUBERCULOSIS)));
-			put(PathogenTestDto.TEST_TYPE, Collections.unmodifiableList(Arrays.asList(PathogenTestType.BEIJINGGENOTYPING)));
-		}
-	});
-
-	public static final Map<Object, List<Object>> SPECIE_VISIBILITY_CONDITIONS = Collections.unmodifiableMap(new HashMap<>() {
-
-		{
-			put(PathogenTestDto.TESTED_DISEASE, Collections.unmodifiableList(Arrays.asList(Disease.LATENT_TUBERCULOSIS, Disease.TUBERCULOSIS)));
-			put(PathogenTestDto.TEST_TYPE, Collections.unmodifiableList(Arrays.asList(PathogenTestType.SPOLIGOTYPING)));
-			put(PathogenTestDto.TEST_RESULT, Collections.unmodifiableList(Arrays.asList(PathogenTestResultType.POSITIVE)));
-		}
-	});
-
 	public static final Map<Object, List<Object>> PCR_TEST_SPECIFICATION_VISIBILITY_CONDITIONS = Collections.unmodifiableMap(new HashMap<>() {
 
 		{
@@ -210,16 +169,10 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 	private ComboBox testTypeField;
 	private ComboBox diseaseField;
 	private ComboBox testResultField;
-	private DrugSusceptibilityForm drugSusceptibilityField;
 	private TextField testTypeTextField;
 	private ComboBox pcrTestSpecification;
 	private Disease disease;
 	private TextField typingIdField;
-	private ComboBox genoTypingCB;
-	private TextField genoTypingResultTextTF;
-
-	private ComboBox seroGrpSepcCB;
-	private TextField seroGrpSpecTxt;
 
 	// Disease section swap support
 	private DiseaseSectionLayout activeSection = new DefaultDiseaseSectionLayout();
@@ -292,52 +245,6 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		}
 	}
 
-	private void updateDrugSusceptibilityFieldSpecifications(PathogenTestType testType, Disease disease) {
-
-		// Hide or show drug susceptibility fields based on the disease and test type (if disease is null then drug susceptibility should be hidden)
-		if (drugSusceptibilityField != null) {
-			drugSusceptibilityField.updateFieldsVisibility(disease, testType);
-		}
-
-		// if the disease is null, means that we are dealing with a environment sample
-		// and we don't need to update the result field
-		if (disease == null) {
-			return;
-		}
-
-		// if the test type is null we just clear the result field
-		if (testType == null) {
-			testResultField.setValue(null);
-			return;
-		}
-
-		// FIXME: why was this here originally?
-		// TODO: move this to another place, should be in listeners for disease/testType.
-
-		if ((FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG))) {
-
-			// testResult=NOT_APPLICABLE for Tuberculosis diseases, test types BEIJINGGENOTYPING,MIRU_PATTERN_CODE,ANTIBIOTIC_SUSCEPTIBILITY
-			if ((disease == Disease.LATENT_TUBERCULOSIS || disease == Disease.TUBERCULOSIS)
-				&& (testType == PathogenTestType.BEIJINGGENOTYPING
-					|| testType == PathogenTestType.MIRU_PATTERN_CODE
-					|| testType == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)) {
-				testResultField.setValue(PathogenTestResultType.NOT_APPLICABLE);
-			}
-
-			// testResult=POSITIVE for Tuberculosis diseases, test type SPOLIGOTYPING
-			if ((disease == Disease.LATENT_TUBERCULOSIS || disease == Disease.TUBERCULOSIS) && (testType == PathogenTestType.SPOLIGOTYPING)) {
-				testResultField.setValue(PathogenTestResultType.POSITIVE);
-			}
-
-			// testResult=POSITIVE for IMI and IPI, test type ANTIBIOTIC_SUSCEPTIBILITY
-			if ((disease == Disease.INVASIVE_MENINGOCOCCAL_INFECTION || disease == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION)
-				&& testType == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY) {
-				testResultField.setValue(PathogenTestResultType.POSITIVE);
-			}
-		}
-
-	}
-
 	private Date getSampleDate() {
 		if (sample != null) {
 			return sample.getSampleDateTime();
@@ -385,26 +292,6 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		if (specieFieldDynamic != null) {
 			specieFieldDynamic.setValue(newFieldValue.getSpecie());
 		}
-		if (!genoTypingCB.isReadOnly()) {
-			genoTypingCB.setValue(newFieldValue.getGenoTypeResult());
-
-		}
-
-		if (!genoTypingResultTextTF.isReadOnly()) {
-			genoTypingResultTextTF.setValue(newFieldValue.getGenoTypeResultText());
-		}
-
-		if (!seroGrpSepcCB.isReadOnly()) {
-			seroGrpSepcCB.setValue(newFieldValue.getSeroGroupSpecification());
-		}
-
-		if (!seroGrpSpecTxt.isReadOnly()) {
-			seroGrpSpecTxt.setValue(newFieldValue.getSeroGroupSpecificationText());
-		}
-
-		if (drugSusceptibilityField != null) {
-			drugSusceptibilityField.forceUpdateDrugSusceptibilityFields();
-		}
 		markAsDirty();
 	}
 
@@ -428,8 +315,6 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		testTypeField = addField(PathogenTestDto.TEST_TYPE, ComboBox.class);
 		testTypeField.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
 		testTypeField.setImmediate(true);
-		TextField seroTypingMethodText = addField(PathogenTestDto.SERO_TYPING_METHOD_TEXT);
-		seroTypingMethodText.setVisible(false);
 		pcrTestSpecification = addField(PathogenTestDto.PCR_TEST_SPECIFICATION, ComboBox.class);
 		testTypeTextField = addField(PathogenTestDto.TEST_TYPE_TEXT, TextField.class);
 		FieldHelper.addSoftRequiredStyle(testTypeTextField);
@@ -489,11 +374,6 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			diseaseVariantField.setCaption(I18nProperties.getCaption(Captions.PathogenTest_rsv_testedDiseaseVariant));
 			diseaseVariantDetailsField.setCaption(I18nProperties.getCaption(Captions.PathogenTest_rsv_testedDiseaseVariantDetails));
 		}
-		genoTypingCB = addField(PathogenTestDto.GENOTYPE_RESULT, ComboBox.class);
-		genoTypingCB.setVisible(true);
-		genoTypingResultTextTF = addField(PathogenTestDto.GENOTYPE_RESULT_TEXT, TextField.class);
-		genoTypingResultTextTF.setVisible(true);
-
 		ComboBox testedPathogenField = addCustomizableEnumField(PathogenTestDto.TESTED_PATHOGEN);
 		TextField testedPathogenDetailsField = addField(PathogenTestDto.TESTED_PATHOGEN_DETAILS, TextField.class);
 		testedPathogenDetailsField.setVisible(false);
@@ -529,20 +409,10 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 			testResultField.removeItem(PathogenTestResultType.NOT_APPLICABLE);
 		}
-		TextField seroTypeTF = addField(PathogenTestDto.SEROTYPE, TextField.class);
-
 		// Bind the initial disease section (default = no-op; swapped via swapDiseaseSection() on disease change)
 		activeSection = DiseaseSectionLayout.forDisease(disease);
 		diseaseSectionPanel.setTemplateContents(activeSection.getHtmlLayout());
 		activeSection.bindFields(getFieldGroup(), diseaseSectionPanel, disease);
-
-		seroTypeTF.setVisible(false);
-
-		ComboBox seroTypeMetCB = addField(PathogenTestDto.SEROTYPING_METHOD, ComboBox.class);
-		seroTypeMetCB.setVisible(false);
-		seroGrpSepcCB = addField(PathogenTestDto.SERO_GROUP_SPECIFICATION, ComboBox.class);
-		seroGrpSepcCB.setVisible(false);
-		seroGrpSpecTxt = addField(PathogenTestDto.SERO_GROUP_SPECIFICATION_TEXT, TextField.class);
 
 		TextField cqValueField = addField(FieldConfiguration.withConversionError(PathogenTestDto.CQ_VALUE, Validations.onlyNumbersAllowed));
 		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
@@ -625,96 +495,6 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			Arrays.asList(PathogenTestType.PCR_RT_PCR, PathogenTestType.DNA_MICROARRAY, PathogenTestType.SEQUENCING),
 			true);
 
-		// Serotype field visibility specification for CSM disease
-		Map<Object, List<Object>> serotypeVisibilityDependencies = new HashMap<Object, List<Object>>() {
-
-			private static final long serialVersionUID = 1967952323596082247L;
-
-			{
-				put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.CSM));
-				put(PathogenTestDto.TEST_RESULT, Arrays.asList(PathogenTestResultType.POSITIVE));
-			}
-		};
-		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(PathogenTestDto.SEROTYPE), serotypeVisibilityDependencies, true);
-		// End of Serotype field visibility specification for CSM disease
-
-		// IPI visibility check with a positive test result, show serotype and serotyping method fields
-		Map<Object, List<Object>> ipiSeroTypeAndMethodVisibilityDependencies = new HashMap<Object, List<Object>>() {
-
-			private static final long serialVersionUID = 1967952323596082247L;
-			{
-				put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
-				put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.SEROGROUPING));
-				put(PathogenTestDto.TEST_RESULT, Arrays.asList(PathogenTestResultType.POSITIVE));
-			}
-		};
-		FieldHelper.setVisibleWhen(
-			getFieldGroup(),
-			Arrays.asList(PathogenTestDto.SEROTYPE, PathogenTestDto.SEROTYPING_METHOD),
-			ipiSeroTypeAndMethodVisibilityDependencies,
-			true);
-		Map<Object, List<Object>> ipiSeroTypeVisibilityDependencies = new HashMap<Object, List<Object>>() {
-
-			private static final long serialVersionUID = 1967952323596082247L;
-			{
-				put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
-				put(
-					PathogenTestDto.TEST_TYPE,
-					Arrays.asList(
-						PathogenTestType.WHOLE_GENOME_SEQUENCING,
-						PathogenTestType.SLIDE_AGGLUTINATION,
-						PathogenTestType.MULTILOCUS_SEQUENCE_TYPING,
-						PathogenTestType.SEROGROUPING));
-				put(PathogenTestDto.TEST_RESULT, Arrays.asList(PathogenTestResultType.POSITIVE));
-			}
-		};
-		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.SEROTYPE, ipiSeroTypeVisibilityDependencies, true);
-
-		FieldHelper.setVisibleWhen(
-			getFieldGroup(),
-			PathogenTestDto.SERO_TYPING_METHOD_TEXT,
-			PathogenTestDto.SEROTYPING_METHOD,
-			SerotypingMethod.OTHER,
-			true);
-		// End of IPI visibility check
-
-		//IMI serogroup specification
-		Map<Object, List<Object>> imiSeroTypingDependencies = new HashMap<>() {
-
-			{
-				put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.INVASIVE_MENINGOCOCCAL_INFECTION));
-				put(PathogenTestDto.TEST_RESULT, Arrays.asList(PathogenTestResultType.POSITIVE));
-				put(
-					PathogenTestDto.TEST_TYPE,
-					Arrays.asList(
-						PathogenTestType.SEROGROUPING,
-						PathogenTestType.MULTILOCUS_SEQUENCE_TYPING,
-						PathogenTestType.SLIDE_AGGLUTINATION,
-						PathogenTestType.WHOLE_GENOME_SEQUENCING));
-			}
-		};
-		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.SERO_GROUP_SPECIFICATION, imiSeroTypingDependencies, true);
-		FieldHelper.setVisibleWhen(
-			getFieldGroup(),
-			PathogenTestDto.SERO_GROUP_SPECIFICATION_TEXT,
-			PathogenTestDto.SERO_GROUP_SPECIFICATION,
-			SeroGroupSpecification.OTHER,
-			true);
-		// End of IMI serogroup specification
-		//Cryptosporidiosis for all countries Genotyping specification
-		Map<Object, List<Object>> cryptoGenoTypingDependencies = new HashMap<>() {
-
-			{
-				put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.MEASLES, Disease.CRYPTOSPORIDIOSIS));
-				put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.GENOTYPING));
-				put(PathogenTestDto.TEST_RESULT, Arrays.asList(PathogenTestResultType.POSITIVE));
-			}
-		};
-		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.GENOTYPE_RESULT, cryptoGenoTypingDependencies, true);
-
-		FieldHelper
-			.setVisibleWhen(getFieldGroup(), PathogenTestDto.GENOTYPE_RESULT_TEXT, PathogenTestDto.GENOTYPE_RESULT, GenoTypeResult.OTHER, true);
-
 		//disease variant specifications for RSV and Influenza
 		Map<Object, List<Object>> diseaseVariantDependencies = new HashMap<>() {
 
@@ -768,7 +548,10 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 						PathogenStrainCallStatus.class);
 				}
 
-				updateDrugSusceptibilityFieldSpecifications((PathogenTestType) testTypeField.getValue(), disease);
+				activeSection.onTestTypeChanged(
+					(PathogenTestType) testTypeField.getValue(),
+					disease,
+					(com.vaadin.v7.ui.AbstractField<PathogenTestResultType>) (Object) testResultField);
 			}
 		});
 		diseaseVariantField.addValueChangeListener(e -> {
@@ -813,35 +596,34 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 						PathogenTestDto.CT_VALUE_ORF_1,
 						PathogenTestDto.CT_VALUE_RDRP_S);
 				}
-				// Show tube IGRA fields only for IGRA tests and Luxembourg
-				setVisibleClear(
-					PathogenTestType.IGRA == testType && FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG),
-					PathogenTestDto.TUBE_NIL,
-					PathogenTestDto.TUBE_NIL_GT10,
-					PathogenTestDto.TUBE_AG_TB1,
-					PathogenTestDto.TUBE_AG_TB1_GT10,
-					PathogenTestDto.TUBE_AG_TB2,
-					PathogenTestDto.TUBE_AG_TB2_GT10,
-					PathogenTestDto.TUBE_MITOGENE,
-					PathogenTestDto.TUBE_MITOGENE_GT10);
-				FieldHelper.updateItems((Disease) diseaseField.getValue(), genoTypingCB, GenoTypeResult.class);
+				// Show tube IGRA fields only for IGRA tests, Luxembourg, and TB section
+				if (activeSection instanceof TuberculosisDiseaseSectionLayout) {
+					setVisibleClear(
+						PathogenTestType.IGRA == testType
+							&& FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG),
+						PathogenTestDto.TUBE_NIL,
+						PathogenTestDto.TUBE_NIL_GT10,
+						PathogenTestDto.TUBE_AG_TB1,
+						PathogenTestDto.TUBE_AG_TB1_GT10,
+						PathogenTestDto.TUBE_AG_TB2,
+						PathogenTestDto.TUBE_AG_TB2_GT10,
+						PathogenTestDto.TUBE_MITOGENE,
+						PathogenTestDto.TUBE_MITOGENE_GT10);
+				}
 			} else {
-				setVisibleClear(
-					testTypeField.getValue() != null,
-					PathogenTestDto.SEROTYPE,
-					PathogenTestDto.SEROTYPING_METHOD,
-					PathogenTestDto.SERO_GROUP_SPECIFICATION);
-				// hide tube fields when no test type selected
-				setVisibleClear(
-					false,
-					PathogenTestDto.TUBE_NIL,
-					PathogenTestDto.TUBE_NIL_GT10,
-					PathogenTestDto.TUBE_AG_TB1,
-					PathogenTestDto.TUBE_AG_TB1_GT10,
-					PathogenTestDto.TUBE_AG_TB2,
-					PathogenTestDto.TUBE_AG_TB2_GT10,
-					PathogenTestDto.TUBE_MITOGENE,
-					PathogenTestDto.TUBE_MITOGENE_GT10);
+				// hide tube fields when no test type selected (TB section only)
+				if (activeSection instanceof TuberculosisDiseaseSectionLayout) {
+					setVisibleClear(
+						false,
+						PathogenTestDto.TUBE_NIL,
+						PathogenTestDto.TUBE_NIL_GT10,
+						PathogenTestDto.TUBE_AG_TB1,
+						PathogenTestDto.TUBE_AG_TB1_GT10,
+						PathogenTestDto.TUBE_AG_TB2,
+						PathogenTestDto.TUBE_AG_TB2_GT10,
+						PathogenTestDto.TUBE_MITOGENE,
+						PathogenTestDto.TUBE_MITOGENE_GT10);
+				}
 				testResultField.clear();
 				testResultField.setEnabled(true);
 			}
@@ -852,7 +634,10 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				testResultField.clear();
 			}
 
-			updateDrugSusceptibilityFieldSpecifications(testType, (Disease) diseaseField.getValue());
+			activeSection.onTestTypeChanged(
+				testType,
+				(Disease) diseaseField.getValue(),
+				(com.vaadin.v7.ui.AbstractField<PathogenTestResultType>) (Object) testResultField);
 		});
 
 		lab.addValueChangeListener(event ->
@@ -899,15 +684,6 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				|| isVisibleAllowed(PathogenTestDto.PRESCRIBER_COUNTRY));
 	}
 
-	static class TestTypeValueChangeListener implements ValueChangeListener {
-
-		@Override
-		public void valueChange(com.vaadin.v7.data.Property.ValueChangeEvent event) {
-			// TODO Auto-generated method stub
-
-		}
-	}
-
 	// -----------------------------------------------------------------------
 	// Disease section swap support
 	// -----------------------------------------------------------------------
@@ -919,195 +695,31 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			return; // same section type, nothing to swap
 		}
 
+		removeFromAllowedLists(activeSection.getFieldIds());
 		activeSection.unbindFields(getFieldGroup(), diseaseSectionPanel);
 		activeSection = newSection;
 		diseaseSectionPanel.setTemplateContents(newSection.getHtmlLayout());
 		newSection.bindFields(getFieldGroup(), diseaseSectionPanel, newDisease);
+		rebuildSectionFieldAllowances(newSection.getFieldIds());
 	}
 
-	/** Package-private: adds a disease-section field to the nested diseaseSectionPanel layout. */
-	<F extends com.vaadin.v7.ui.Field> F addSectionField(String propertyId, Class<F> fieldType) {
-		F field = getFieldGroup().buildAndBind(propertyId, (Object) propertyId, fieldType);
-		formatField(field, propertyId);
-		field.setId(propertyId);
-		diseaseSectionPanel.addComponent(field, propertyId);
-		return field;
-	}
-
-	/** Package-private: adds the DrugSusceptibilityForm to the disease section panel. */
-	void addSectionDrugSusceptibilityField() {
-		drugSusceptibilityField = (DrugSusceptibilityForm) addField(
-			diseaseSectionPanel,
-			PathogenTestDto.DRUG_SUSCEPTIBILITY,
-			new DrugSusceptibilityForm(
-				de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers.getNoop(),
-				de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers.getDefault(true, FacadeProvider.getConfigFacade().getCountryLocale())));
-		drugSusceptibilityField.setCaption(null);
-		addToVisibleAllowedFields(drugSusceptibilityField);
-	}
-
-	/** Package-private: adds all tube IGRA fields to the disease section panel. */
-	void addSectionTubeFields() {
-		addFields(
-			diseaseSectionPanel,
-			FieldConfiguration.builder(PathogenTestDto.TUBE_NIL)
-				.validationMessageProperty(de.symeda.sormas.api.i18n.Validations.onlyNumbersAllowed)
-				.valueChangeListener(e -> handleTubeNilChange((String) e.getProperty().getValue()))
-				.build(),
-			FieldConfiguration.builder(PathogenTestDto.TUBE_AG_TB1)
-				.validationMessageProperty(de.symeda.sormas.api.i18n.Validations.onlyNumbersAllowed)
-				.valueChangeListener(e -> handleTubeAgTb1Change((String) e.getProperty().getValue()))
-				.build(),
-			FieldConfiguration.builder(PathogenTestDto.TUBE_AG_TB2)
-				.validationMessageProperty(de.symeda.sormas.api.i18n.Validations.onlyNumbersAllowed)
-				.valueChangeListener(e -> handleTubeAgTb2Change((String) e.getProperty().getValue()))
-				.build(),
-			FieldConfiguration.builder(PathogenTestDto.TUBE_MITOGENE)
-				.validationMessageProperty(de.symeda.sormas.api.i18n.Validations.onlyNumbersAllowed)
-				.valueChangeListener(e -> handleTubeMitogeneChange((String) e.getProperty().getValue()))
-				.build());
-		addFields(
-			diseaseSectionPanel,
-			FieldConfiguration.builder(PathogenTestDto.TUBE_NIL_GT10).valueChangeListener(e -> handleTubeNilGt10Change(e)).build(),
-			FieldConfiguration.builder(PathogenTestDto.TUBE_AG_TB1_GT10).valueChangeListener(e -> handleTubeAgTb1Gt10Change(e)).build(),
-			FieldConfiguration.builder(PathogenTestDto.TUBE_AG_TB2_GT10).valueChangeListener(e -> handleTubeAgTb2Gt10Change(e)).build(),
-			FieldConfiguration.builder(PathogenTestDto.TUBE_MITOGENE_GT10).valueChangeListener(e -> handleTubeMitogeneGt10Change(e)).build());
-
-		setVisibleClear(
-			false,
-			PathogenTestDto.TUBE_NIL,
-			PathogenTestDto.TUBE_NIL_GT10,
-			PathogenTestDto.TUBE_AG_TB1,
-			PathogenTestDto.TUBE_AG_TB1_GT10,
-			PathogenTestDto.TUBE_AG_TB2,
-			PathogenTestDto.TUBE_AG_TB2_GT10,
-			PathogenTestDto.TUBE_MITOGENE,
-			PathogenTestDto.TUBE_MITOGENE_GT10);
-	}
-
-	/** Package-private: removes a field from both the disease section panel and the field group. */
-	void removeSectionField(String propertyId) {
-		com.vaadin.v7.ui.Field<?> field = getField(propertyId);
-		if (field != null) {
-			// Unbind first so listeners on sibling fields don't NPE when they fire during clear()
-			getFieldGroup().unbind(field);
-			diseaseSectionPanel.removeComponent(field);
+	private void rebuildSectionFieldAllowances(Collection<String> fieldIds) {
+		for (String id : fieldIds) {
+			com.vaadin.v7.ui.Field<?> f = getField(id);
+			if (f != null) {
+				addToVisibleAllowedFields(f);
+			}
 		}
 	}
 
-	/** Returns the currently selected disease — used by section implementations. */
-	Disease getCurrentDisease() {
-		return disease;
-	}
-
-	// Tube field helpers — delegates from listeners in the original addFields() block
-	private void handleTubeNilChange(String val) {
-		NullableOptionGroup gt10 = getField(PathogenTestDto.TUBE_NIL_GT10);
-		if (gt10 == null)
-			return;
-		if (val == null) {
-			gt10.select(false);
-			return;
-		}
-		try {
-			gt10.select(Float.parseFloat(val) > 10);
-		} catch (NumberFormatException e) {
-			getField(PathogenTestDto.TUBE_NIL).clear();
-			gt10.select(false);
+	private void removeFromAllowedLists(Collection<String> fieldIds) {
+		for (String id : fieldIds) {
+			com.vaadin.v7.ui.Field<?> f = getField(id);
+			if (f != null) {
+				removeFromVisibleAllowedFields(f);
+				removeFromEditableAllowedFields(f);
+			}
 		}
 	}
 
-	private void handleTubeAgTb1Change(String val) {
-		NullableOptionGroup gt10 = getField(PathogenTestDto.TUBE_AG_TB1_GT10);
-		if (gt10 == null)
-			return;
-		if (val == null) {
-			gt10.select(false);
-			return;
-		}
-		try {
-			gt10.select(Float.parseFloat(val) > 10);
-		} catch (NumberFormatException e) {
-			getField(PathogenTestDto.TUBE_AG_TB1).clear();
-			gt10.select(false);
-		}
-	}
-
-	private void handleTubeAgTb2Change(String val) {
-		NullableOptionGroup gt10 = getField(PathogenTestDto.TUBE_AG_TB2_GT10);
-		if (gt10 == null)
-			return;
-		if (val == null) {
-			gt10.select(false);
-			return;
-		}
-		try {
-			gt10.select(Float.parseFloat(val) > 10);
-		} catch (NumberFormatException e) {
-			getField(PathogenTestDto.TUBE_AG_TB2).clear();
-			gt10.select(false);
-		}
-	}
-
-	private void handleTubeMitogeneChange(String val) {
-		NullableOptionGroup gt10 = getField(PathogenTestDto.TUBE_MITOGENE_GT10);
-		if (gt10 == null)
-			return;
-		if (val == null) {
-			gt10.select(false);
-			return;
-		}
-		try {
-			gt10.select(Float.parseFloat(val) > 10);
-		} catch (NumberFormatException e) {
-			getField(PathogenTestDto.TUBE_MITOGENE).clear();
-			gt10.select(false);
-		}
-	}
-
-	private void handleTubeNilGt10Change(com.vaadin.v7.data.Property.ValueChangeEvent e) {
-		Object v = e.getProperty().getValue() instanceof Collection
-			? ((Collection<?>) e.getProperty().getValue()).stream().findFirst().orElse(null)
-			: e.getProperty().getValue();
-		handleGt10CheckboxChange(v, getField(PathogenTestDto.TUBE_NIL));
-	}
-
-	private void handleTubeAgTb1Gt10Change(com.vaadin.v7.data.Property.ValueChangeEvent e) {
-		Object v = e.getProperty().getValue() instanceof Collection
-			? ((Collection<?>) e.getProperty().getValue()).stream().findFirst().orElse(null)
-			: e.getProperty().getValue();
-		handleGt10CheckboxChange(v, getField(PathogenTestDto.TUBE_AG_TB1));
-	}
-
-	private void handleTubeAgTb2Gt10Change(com.vaadin.v7.data.Property.ValueChangeEvent e) {
-		Object v = e.getProperty().getValue() instanceof Collection
-			? ((Collection<?>) e.getProperty().getValue()).stream().findFirst().orElse(null)
-			: e.getProperty().getValue();
-		handleGt10CheckboxChange(v, getField(PathogenTestDto.TUBE_AG_TB2));
-	}
-
-	private void handleTubeMitogeneGt10Change(com.vaadin.v7.data.Property.ValueChangeEvent e) {
-		Object v = e.getProperty().getValue() instanceof Collection
-			? ((Collection<?>) e.getProperty().getValue()).stream().findFirst().orElse(null)
-			: e.getProperty().getValue();
-		handleGt10CheckboxChange(v, getField(PathogenTestDto.TUBE_MITOGENE));
-	}
-
-	private void handleGt10CheckboxChange(Object singleValue, com.vaadin.v7.ui.Field<?> numericField) {
-		if (numericField == null)
-			return;
-		String numVal = (String) numericField.getValue();
-		if (singleValue == null || numVal == null)
-			return;
-		boolean checked = Boolean.TRUE.equals(singleValue);
-		try {
-			float f = Float.valueOf(numVal);
-			if (checked && f <= 10)
-				numericField.clear();
-			else if (!checked && f > 10)
-				numericField.clear();
-		} catch (NumberFormatException ex) {
-			numericField.clear();
-		}
-	}
 }

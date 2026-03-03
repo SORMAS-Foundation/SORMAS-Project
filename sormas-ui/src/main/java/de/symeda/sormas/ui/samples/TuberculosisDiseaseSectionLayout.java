@@ -21,6 +21,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,6 +84,40 @@ public class TuberculosisDiseaseSectionLayout implements DiseaseSectionLayout {
 		PathogenTestDto.TUBE_AG_TB2_GT10,
 		PathogenTestDto.TUBE_MITOGENE,
 		PathogenTestDto.TUBE_MITOGENE_GT10);
+
+	public static final Map<Object, List<Object>> RIFAMPICIN_RESISTANT_VISIBILITY_CONDITIONS = Collections.unmodifiableMap(new HashMap<>() {
+
+		{
+			put(PathogenTestDto.TESTED_DISEASE, Collections.unmodifiableList(Arrays.asList(Disease.LATENT_TUBERCULOSIS, Disease.TUBERCULOSIS)));
+			put(PathogenTestDto.TEST_TYPE, Collections.unmodifiableList(Arrays.asList(PathogenTestType.PCR_RT_PCR)));
+			put(PathogenTestDto.TEST_RESULT, Collections.unmodifiableList(Arrays.asList(PathogenTestResultType.POSITIVE)));
+		}
+	});
+
+	public static final Map<Object, List<Object>> TEST_SCALE_VISIBILITY_CONDITIONS = Collections.unmodifiableMap(new HashMap<>() {
+
+		{
+			put(PathogenTestDto.TESTED_DISEASE, Collections.unmodifiableList(Arrays.asList(Disease.LATENT_TUBERCULOSIS, Disease.TUBERCULOSIS)));
+			put(PathogenTestDto.TEST_TYPE, Collections.unmodifiableList(Arrays.asList(PathogenTestType.MICROSCOPY)));
+		}
+	});
+
+	public static final Map<Object, List<Object>> STRAIN_CALL_STATUS_VISIBILITY_CONDITIONS = Collections.unmodifiableMap(new HashMap<>() {
+
+		{
+			put(PathogenTestDto.TESTED_DISEASE, Collections.unmodifiableList(Arrays.asList(Disease.LATENT_TUBERCULOSIS, Disease.TUBERCULOSIS)));
+			put(PathogenTestDto.TEST_TYPE, Collections.unmodifiableList(Arrays.asList(PathogenTestType.BEIJINGGENOTYPING)));
+		}
+	});
+
+	public static final Map<Object, List<Object>> SPECIE_VISIBILITY_CONDITIONS = Collections.unmodifiableMap(new HashMap<>() {
+
+		{
+			put(PathogenTestDto.TESTED_DISEASE, Collections.unmodifiableList(Arrays.asList(Disease.LATENT_TUBERCULOSIS, Disease.TUBERCULOSIS)));
+			put(PathogenTestDto.TEST_TYPE, Collections.unmodifiableList(Arrays.asList(PathogenTestType.SPOLIGOTYPING)));
+			put(PathogenTestDto.TEST_RESULT, Collections.unmodifiableList(Arrays.asList(PathogenTestResultType.POSITIVE)));
+		}
+	});
 
 	// Held for onTestTypeChanged and unbindFields
 	private DrugSusceptibilityForm drugSusceptibilityField;
@@ -189,11 +224,10 @@ public class TuberculosisDiseaseSectionLayout implements DiseaseSectionLayout {
 		fieldGroup.getField(PathogenTestDto.TESTED_DISEASE).addValueChangeListener(diseaseListener);
 
 		// Wire standard multi-source visibility conditions
-		FieldHelper
-			.setVisibleWhen(fieldGroup, PathogenTestDto.RIFAMPICIN_RESISTANT, PathogenTestForm.RIFAMPICIN_RESISTANT_VISIBILITY_CONDITIONS, true);
-		FieldHelper.setVisibleWhen(fieldGroup, PathogenTestDto.TEST_SCALE, PathogenTestForm.TEST_SCALE_VISIBILITY_CONDITIONS, true);
-		FieldHelper.setVisibleWhen(fieldGroup, PathogenTestDto.STRAIN_CALL_STATUS, PathogenTestForm.STRAIN_CALL_STATUS_VISIBILITY_CONDITIONS, true);
-		FieldHelper.setVisibleWhen(fieldGroup, PathogenTestDto.SPECIE, PathogenTestForm.SPECIE_VISIBILITY_CONDITIONS, true);
+		FieldHelper.setVisibleWhen(fieldGroup, PathogenTestDto.RIFAMPICIN_RESISTANT, RIFAMPICIN_RESISTANT_VISIBILITY_CONDITIONS, true);
+		FieldHelper.setVisibleWhen(fieldGroup, PathogenTestDto.TEST_SCALE, TEST_SCALE_VISIBILITY_CONDITIONS, true);
+		FieldHelper.setVisibleWhen(fieldGroup, PathogenTestDto.STRAIN_CALL_STATUS, STRAIN_CALL_STATUS_VISIBILITY_CONDITIONS, true);
+		FieldHelper.setVisibleWhen(fieldGroup, PathogenTestDto.SPECIE, SPECIE_VISIBILITY_CONDITIONS, true);
 
 		Map<Object, List<Object>> miruCode = new HashMap<>();
 		miruCode.put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.TUBERCULOSIS, Disease.LATENT_TUBERCULOSIS));
