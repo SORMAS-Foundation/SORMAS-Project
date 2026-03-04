@@ -128,6 +128,7 @@ import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.specialcaseaccess.SpecialCaseAccessDto;
 import de.symeda.sormas.api.survey.SurveyDto;
+import de.symeda.sormas.api.survey.SurveyTokenDto;
 import de.symeda.sormas.api.systemevents.SystemEventDto;
 import de.symeda.sormas.api.systemevents.SystemEventStatus;
 import de.symeda.sormas.api.systemevents.SystemEventType;
@@ -2474,6 +2475,14 @@ public class TestDataCreator {
 		survey.setDisease(disease);
 
 		return beanTest.getSurveyFacade().save(survey);
+	}
+
+	public SurveyTokenDto createSurveyToken(CaseReferenceDto caze) {
+		SurveyDto survey = this.createSurvey("Malaria-Survey", Disease.MALARIA);
+		SurveyTokenDto token = SurveyTokenDto.build(survey.toReference());
+		token.setToken("MALA01");
+		token.setCaseAssignedTo(caze);
+		return beanTest.getSurveyTokenFacade().save(token);
 	}
 
 	public NotifierDto createNotifier(String firstName, String lastName, String email, String phone, String address, String registrationNumber) {
