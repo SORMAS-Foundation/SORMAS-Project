@@ -1,184 +1,186 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>de.symeda.sormas</groupId>
-		<artifactId>sormas-base</artifactId>
-        <version>1.103.0</version>
-		<relativePath>../sormas-base</relativePath>
-	</parent>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>de.symeda.sormas</groupId>
+        <artifactId>sormas-base</artifactId>
+        <version>1.103.1</version>
+        <relativePath>../sormas-base</relativePath>
+    </parent>
 
-	<properties>
-		<warName>sormas-rest</warName>
-	</properties>
+    <properties>
+        <warName>sormas-rest</warName>
+    </properties>
 
-	<artifactId>sormas-rest</artifactId>
-	<name>${project.artifactId}</name>
-	<packaging>war</packaging>
+    <artifactId>sormas-rest</artifactId>
+    <name>${project.artifactId}</name>
+    <packaging>war</packaging>
 
-	<dependencies>
+    <dependencies>
 
-		<!-- *** Payara modules *** -->
+        <!-- *** Payara modules *** -->
 
-		<dependency>
-			<groupId>javax</groupId>
-			<artifactId>javaee-web-api</artifactId>
-		</dependency>
-	  	<dependency>
-			<groupId>javax.security.enterprise</groupId>
-			<artifactId>javax.security.enterprise-api</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-web-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.security.enterprise</groupId>
+            <artifactId>javax.security.enterprise-api</artifactId>
+        </dependency>
 
-		<dependency>
-			<groupId>fish.payara.api</groupId>
-			<artifactId>payara-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>fish.payara.security.connectors</groupId>
-			<artifactId>security-connector-oidc-client</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>fish.payara.api</groupId>
+            <artifactId>payara-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>fish.payara.security.connectors</groupId>
+            <artifactId>security-connector-oidc-client</artifactId>
+        </dependency>
 
-		<dependency>
-			<groupId>org.eclipse.microprofile.config</groupId>
-			<artifactId>microprofile-config-api</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>org.eclipse.microprofile.config</groupId>
+            <artifactId>microprofile-config-api</artifactId>
+        </dependency>
 
-		<dependency>
-			<groupId>org.glassfish.soteria</groupId>
-			<artifactId>javax.security.enterprise</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>org.glassfish.soteria</groupId>
+            <artifactId>javax.security.enterprise</artifactId>
+        </dependency>
 
-		<dependency>
-			<groupId>org.glassfish.jersey.containers.glassfish</groupId>
-			<artifactId>jersey-gf-ejb</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.core</groupId>
-			<artifactId>jersey-server</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.media</groupId>
-			<artifactId>jersey-media-json-jackson</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.containers.glassfish</groupId>
+            <artifactId>jersey-gf-ejb</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-json-jackson</artifactId>
+        </dependency>
 
-		<!-- *** Payara modules END *** -->
+        <!-- *** Payara modules END *** -->
 
-		<!-- *** Domain libs *** -->
+        <!-- *** Domain libs *** -->
 
-		<dependency>
-			<groupId>commons-codec</groupId>
-			<artifactId>commons-codec</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+        </dependency>
 
-		<dependency>
-			<groupId>io.swagger.core.v3</groupId>
-			<artifactId>swagger-jaxrs2</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.swagger.core.v3</groupId>
-			<artifactId>swagger-jaxrs2-servlet-initializer-v2</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-jaxrs2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-jaxrs2-servlet-initializer-v2</artifactId>
+        </dependency>
 
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-collections4</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
 
-		<dependency>
-			<groupId>org.keycloak</groupId>
-			<artifactId>keycloak-servlet-filter-adapter</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-servlet-filter-adapter</artifactId>
+        </dependency>
 
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
 
-		<!-- *** Domain libs END *** -->
+        <!-- *** Domain libs END *** -->
 
-		<!-- *** Test dependencies *** -->
+        <!-- *** Test dependencies *** -->
 
-		<!-- *** Test dependencies END *** -->
+        <!-- *** Test dependencies END *** -->
 
-		<!-- *** Compile dependencies *** -->
+        <!-- *** Compile dependencies *** -->
 
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>sormas-api</artifactId>
-			<version>${project.version}</version>
-		</dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>sormas-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
-		<!-- *** Compile dependencies END *** -->
+        <!-- *** Compile dependencies END *** -->
 
-	</dependencies>
+    </dependencies>
 
-	<build>
-		<finalName>${project.artifactId}</finalName>
+    <build>
+        <finalName>${project.artifactId}</finalName>
 
-		<plugins>
-			<plugin>
-				<artifactId>maven-war-plugin</artifactId>
-				<configuration>
-					<warName>${warName}</warName>
-					<filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
-					<webResources>
-						<resource>
-							<directory>src/main/webapp</directory>
-							<targetPath>/</targetPath>
-							<filtering>false</filtering>
-						</resource>
-					</webResources>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>templating-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>filter-src</id>
-						<goals>
-							<goal>filter-sources</goal>
-						</goals>
-						<configuration>
-							<sourceDirectory>${basedir}/build/templates/resources</sourceDirectory>
-							<outputDirectory>${basedir}/src/main/resources</outputDirectory>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+        <plugins>
+            <plugin>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <warName>${warName}</warName>
+                    <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
+                    <webResources>
+                        <resource>
+                            <directory>src/main/webapp</directory>
+                            <targetPath>/</targetPath>
+                            <filtering>false</filtering>
+                        </resource>
+                    </webResources>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>templating-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>filter-src</id>
+                        <goals>
+                            <goal>filter-sources</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirectory>${basedir}/build/templates/resources</sourceDirectory>
+                            <outputDirectory>${basedir}/src/main/resources</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 
-			<!-- Generate OpenAPI specification -->
-			<plugin>
-				<groupId>io.swagger.core.v3</groupId>
-				<artifactId>swagger-maven-plugin</artifactId>
-				<configuration>
-					<outputPath>${basedir}/target/</outputPath>
-					<outputFormat>JSONANDYAML</outputFormat>
-					<prettyPrint>true</prettyPrint>
-					<objectMapperProcessorClass>de.symeda.sormas.rest.swagger.SwaggerConfig</objectMapperProcessorClass>
-					<sortOutput>true</sortOutput>
-				</configuration>
-				<executions>
-					<execution>
-					<id>rest api</id>
-					<goals>
-						<goal>resolve</goal>
-					</goals>
-					<configuration>
-						<contextId>rest api</contextId>
-						<resourcePackages>
-							<resourcePackage>de.symeda.sormas.rest.resources</resourcePackage>
-						</resourcePackages>
-					<outputFileName>swagger</outputFileName>
-					<configurationFilePath>${basedir}/src/main/resources/openApiConfig.yml</configurationFilePath>
-					</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
+            <!-- Generate OpenAPI specification -->
+            <plugin>
+                <groupId>io.swagger.core.v3</groupId>
+                <artifactId>swagger-maven-plugin</artifactId>
+                <configuration>
+                    <outputPath>${basedir}/target/</outputPath>
+                    <outputFormat>JSONANDYAML</outputFormat>
+                    <prettyPrint>true</prettyPrint>
+                    <objectMapperProcessorClass>de.symeda.sormas.rest.swagger.SwaggerConfig</objectMapperProcessorClass>
+                    <sortOutput>true</sortOutput>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>rest api</id>
+                        <goals>
+                            <goal>resolve</goal>
+                        </goals>
+                        <configuration>
+                            <contextId>rest api</contextId>
+                            <resourcePackages>
+                                <resourcePackage>de.symeda.sormas.rest.resources</resourcePackage>
+                            </resourcePackages>
+                            <outputFileName>swagger</outputFileName>
+                            <configurationFilePath>${basedir}/src/main/resources/openApiConfig.yml
+                            </configurationFilePath>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

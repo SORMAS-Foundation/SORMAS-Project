@@ -1,76 +1,77 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<parent>
-		<artifactId>sormas-base</artifactId>
-		<groupId>de.symeda.sormas</groupId>
-		<version>1.103.0</version>
-		<relativePath>../sormas-base</relativePath>
-	</parent>
-	<modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>sormas-base</artifactId>
+        <groupId>de.symeda.sormas</groupId>
+        <version>1.103.1</version>
+        <relativePath>../sormas-base</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
 
-	<artifactId>sormas-app</artifactId>
-	<name>sormas-app</name>
-	<packaging>pom</packaging>
+    <artifactId>sormas-app</artifactId>
+    <name>sormas-app</name>
+    <packaging>pom</packaging>
 
-	<properties>
-		<android.manifestFile>${project.basedir}/app/src/main/AndroidManifest.xml</android.manifestFile>
-		<gradle.version>8.0</gradle.version>
-		<maven.compiler.release>17</maven.compiler.release>
-	</properties>
+    <properties>
+        <android.manifestFile>${project.basedir}/app/src/main/AndroidManifest.xml</android.manifestFile>
+        <gradle.version>8.0</gradle.version>
+        <maven.compiler.release>17</maven.compiler.release>
+    </properties>
 
-	<dependencies>
+    <dependencies>
 
-	</dependencies>
+    </dependencies>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.fortasoft</groupId>
-				<artifactId>gradle-maven-plugin</artifactId>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.fortasoft</groupId>
+                <artifactId>gradle-maven-plugin</artifactId>
 
-				<configuration>
-					<gradleVersion>${gradle.version}</gradleVersion>
-					<tasks>
-						<task>build</task>
-					</tasks>
-				</configuration>
-				<executions>
-					<execution>
-						<phase>compile</phase>
-						<goals>
-							<goal>invoke</goal>
-						</goals>
-					</execution>
-				</executions>
-				<dependencies>
-					<dependency>
-						<groupId>org.gradle</groupId>
-						<artifactId>gradle-tooling-api</artifactId>
-						<version>${gradle.version}</version>
-					</dependency>
-				</dependencies>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-enforcer-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>enforce-versions</id>
-						<goals>
-							<goal>enforce</goal>
-						</goals>
-						<configuration>
-							<rules>
-								<requireJavaVersion>
-									<version>${maven.compiler.release}</version>
-								</requireJavaVersion>
-							</rules>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
+                <configuration>
+                    <gradleVersion>${gradle.version}</gradleVersion>
+                    <tasks>
+                        <task>build</task>
+                    </tasks>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>invoke</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.gradle</groupId>
+                        <artifactId>gradle-tooling-api</artifactId>
+                        <version>${gradle.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>enforce-versions</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireJavaVersion>
+                                    <version>${maven.compiler.release}</version>
+                                </requireJavaVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
 
-	</build>
+    </build>
 
 </project>

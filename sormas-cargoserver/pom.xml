@@ -1,9 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>de.symeda.sormas</groupId>
         <artifactId>sormas-base</artifactId>
-        <version>1.103.0</version>
+        <version>1.103.1</version>
         <relativePath>../sormas-base</relativePath>
     </parent>
 
@@ -120,8 +121,8 @@
                         <configuration>
                             <target>
                                 <concat destfile="${basedir}/.env">
-                                    <fileset file="${project.build.directory}/cargoserver.env" />
-                                    <fileset file="${project.build.directory}/custom.env" />
+                                    <fileset file="${project.build.directory}/cargoserver.env"/>
+                                    <fileset file="${project.build.directory}/custom.env"/>
                                 </concat>
                             </target>
                         </configuration>
@@ -135,9 +136,9 @@
                         <configuration>
                             <target>
                                 <concat destfile="${project.build.directory}/sormas.properties">
-                                    <fileset file="${basedir}/../sormas-base/setup/sormas.properties" />
-                                    <fileset file="${project.build.directory}/cargoserver.properties" />
-                                    <fileset file="${project.build.directory}/custom.properties" />
+                                    <fileset file="${basedir}/../sormas-base/setup/sormas.properties"/>
+                                    <fileset file="${project.build.directory}/cargoserver.properties"/>
+                                    <fileset file="${project.build.directory}/custom.properties"/>
                                 </concat>
                             </target>
                         </configuration>
@@ -169,7 +170,9 @@
                             </dependency>
                         </dependencies>
                         <zipUrlInstaller>
-                            <url>https://repo.maven.apache.org/maven2/fish/payara/distributions/payara/${payara.version}/payara-${payara.version}.zip</url>
+                            <url>
+                                https://repo.maven.apache.org/maven2/fish/payara/distributions/payara/${payara.version}/payara-${payara.version}.zip
+                            </url>
                         </zipUrlInstaller>
                     </container>
                     <configuration>
