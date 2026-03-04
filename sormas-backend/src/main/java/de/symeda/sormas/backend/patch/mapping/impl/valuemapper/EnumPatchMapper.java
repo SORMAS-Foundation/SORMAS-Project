@@ -84,6 +84,11 @@ public class EnumPatchMapper implements ValuePatchMapper {
 			}
 		}
 
+		if (!request.isAllowFallbackValues()) {
+			logger.info("Fallback values are not allowed: therefore nothing found for [{}] to referenceType: [{}]", normalizedInput, targetType);
+			return ValueMappingResult.withCause(DataPatchFailureCause.NOT_PRESENT_IN_REFERENCE_DATA_LIST);
+		}
+
 		// overridden fallback
 		Enum annotatedDefault = findAnnotatedDefault((Class<? extends Enum<?>>) enumType, constants);
 		if (annotatedDefault != null) {

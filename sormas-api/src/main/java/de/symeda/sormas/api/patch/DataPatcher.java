@@ -3,7 +3,7 @@ package de.symeda.sormas.api.patch;
 /**
  * Allows to partially patch data from a case.
  */
-public interface CaseDataPatcher {
+public interface DataPatcher {
 
 	/**
 	 * Allow patching data for a specific case.

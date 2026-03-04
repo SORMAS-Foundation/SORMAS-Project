@@ -27,10 +27,10 @@ import com.google.common.base.Suppliers;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.patch.CaseDataPatchRequest;
-import de.symeda.sormas.api.patch.CaseDataPatcher;
 import de.symeda.sormas.api.patch.DataPatchFailure;
 import de.symeda.sormas.api.patch.DataPatchFailureCause;
 import de.symeda.sormas.api.patch.DataPatchResponse;
+import de.symeda.sormas.api.patch.DataPatcher;
 import de.symeda.sormas.api.patch.DataReplacementStrategy;
 import de.symeda.sormas.api.patch.EmptyValueBehavior;
 import de.symeda.sormas.api.patch.mapping.FieldCustomMapper;
@@ -52,11 +52,11 @@ import de.symeda.sormas.backend.util.CollectorUtils;
 // TODO: test integration vaccines
 @Stateless
 @LocalBean
-public class CaseDataPatcherImpl implements CaseDataPatcher {
+public class DataPatcherImpl implements DataPatcher {
 
 	public static final String PERSON_FIELD_NAME_PREFIX = "Person.";
 
-	private final static Logger logger = LoggerFactory.getLogger(CaseDataPatcherImpl.class);
+	private final static Logger logger = LoggerFactory.getLogger(DataPatcherImpl.class);
 
 	private static final Map<PropertyAccessFailure, DataPatchFailureCause> PROPERTY_FAILURE_TO_PATCH_FAILURE = Map.of(
 		PropertyAccessFailure.INVALID_INPUT,
@@ -89,10 +89,10 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
-	public CaseDataPatcherImpl() {
+	public DataPatcherImpl() {
 	}
 
-	public CaseDataPatcherImpl(
+	public DataPatcherImpl(
 		ValueMapperRegistry valueMapperRegistry,
 		FieldCustomMapperRegistry fieldCustomMapperRegistry,
 		PatchFieldHelper patchFieldHelper,
@@ -120,7 +120,12 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 		// make this generic for additional "root"-types
 		Supplier<PersonDto> personSupplier = Suppliers.memoize(() -> getPersonDto(caseData));
 
-		List<SinglePatchResult> results = computeActualDictionary(request).map(entry -> {
+		Stream<Tuple<String, Tuple<DataPatchFailureCause, Object>>> tupleStream = computeActualDictionary(request);
+
+		// TODO: tupleStream (transform to map ?) must be passed to the group field handler so that it can be handled.
+		// TODO: provide only the valid one as simple object ? Once this is done the actual dictionary must be not contain does anymore
+
+		List<SinglePatchResult> results = tupleStream.map(entry -> {
 			String fullFieldName = entry.getFirst();
 			SinglePatchResult singlePatchResult = new SinglePatchResult().setFieldName(fullFieldName);
 
@@ -196,6 +201,7 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 			.collect(CollectorUtils.toNullSafeMap(SinglePatchResult::getFieldName, fct));
 	}
 
+	// TODO: make usable for external use
 	private @NotNull SinglePatchResult valueMappingResult(
 		Tuple<String, Tuple<DataPatchFailureCause, Object>> entry,
 		Disease disease,
@@ -266,7 +272,6 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 	}
 
 	private @NotNull Optional<SinglePatchResult> invalidFieldResult(Tuple<String, Tuple<DataPatchFailureCause, Object>> entry) {
-
 		return Optional.ofNullable(extractFailureCause(entry)).map(invalidFieldFailureCause -> buildFailureFor(entry, invalidFieldFailureCause));
 	}
 
@@ -274,6 +279,7 @@ public class CaseDataPatcherImpl implements CaseDataPatcher {
 		return entry.getSecond().getFirst();
 	}
 
+	// TODO: make usable for external use
 	public Optional<SinglePatchResult> fieldMappingResult(
 		Tuple<String, Tuple<DataPatchFailureCause, Object>> entry,
 		Disease disease,

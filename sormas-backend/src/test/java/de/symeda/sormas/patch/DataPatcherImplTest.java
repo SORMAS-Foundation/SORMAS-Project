@@ -27,10 +27,10 @@ import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.region.RegionFacade;
 import de.symeda.sormas.api.patch.CaseDataPatchRequest;
-import de.symeda.sormas.api.patch.CaseDataPatcher;
 import de.symeda.sormas.api.patch.DataPatchFailure;
 import de.symeda.sormas.api.patch.DataPatchFailureCause;
 import de.symeda.sormas.api.patch.DataPatchResponse;
+import de.symeda.sormas.api.patch.DataPatcher;
 import de.symeda.sormas.api.patch.DataReplacementStrategy;
 import de.symeda.sormas.api.patch.EmptyValueBehavior;
 import de.symeda.sormas.api.person.OccupationType;
@@ -45,7 +45,7 @@ import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumValue;
 
-class CaseDataPatcherImplTest extends AbstractBeanTest {
+class DataPatcherImplTest extends AbstractBeanTest {
 
 	// TODO: test different replacement strategy: with/without failure
 
@@ -710,7 +710,7 @@ class CaseDataPatcherImplTest extends AbstractBeanTest {
 		throw new IllegalStateException("toImplement");
 	}
 
-	private CaseDataPatcher victim() {
+	private DataPatcher victim() {
 		return getCaseDataPatcher();
 	}
 }
