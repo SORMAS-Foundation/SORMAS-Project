@@ -29,13 +29,13 @@ public class GroupedFieldMapperRegistry {
 	private final static Logger logger = LoggerFactory.getLogger(GroupedFieldMapperRegistry.class);
 
 	@Inject
-	private Instance<GroupedFieldsMapper> instances;
+	private Instance<GroupedFieldsMapper<?>> instances;
 
-	private Set<Tuple<String, GroupedFieldsMapper>> prefixMapperTuples;
+	private Set<Tuple<String, ? extends GroupedFieldsMapper<?>>> prefixMapperTuples;
 
 	@PostConstruct
 	void init() {
-		Map<String, List<GroupedFieldsMapper>> mappersByPrefixDictionary = instances.stream()
+		Map<String, List<GroupedFieldsMapper<?>>> mappersByPrefixDictionary = instances.stream()
 			.flatMap(mapper -> mapper.aggregatedPrefixes().stream().map(prefix -> Tuple.of(mapper, prefix)))
 			.collect(Collectors.groupingBy(Tuple::getSecond, Collectors.mapping(Tuple::getFirst, Collectors.toList())));
 
@@ -61,7 +61,7 @@ public class GroupedFieldMapperRegistry {
 	@NotNull
 	public List<SinglePatchResult> aggregatedPatch(@NotNull GroupedFieldsRequest request) {
 
-		Map<GroupedFieldsMapper, Map<String, Object>> dictionary = request.getPartialPatchDictionary()
+		Map<GroupedFieldsMapper<?>, Map<String, Object>> dictionary = request.getPartialPatchDictionary()
 			.entrySet()
 			.stream()
 			.map(
