@@ -7,6 +7,8 @@ public enum DataPatchFailureCause {
 	 */
 	INVALID_MULTIPLE_FIELDS_FORMAT,
 
+	MISSING_MANDATORY_FIELD_FOR_GROUP,
+
 	/**
 	 * Alias cannot be mapped to a single physical path.
 	 * Path aliases base on the "Field ID" field from the generated data dictionary can be used to shorten the physical path.

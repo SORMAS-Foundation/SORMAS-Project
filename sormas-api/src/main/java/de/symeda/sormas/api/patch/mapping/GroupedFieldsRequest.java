@@ -7,14 +7,26 @@ import java.util.Objects;
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.patch.DataReplacementStrategy;
 import de.symeda.sormas.api.patch.EmptyValueBehavior;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 
 /**
  * Request object to patch more complex objects together will all fields belonging to that object.
  */
 public class GroupedFieldsRequest {
+
+	@NotNull
+	private Disease disease;
+
+	@NotNull
+	private CaseReferenceDto caseData;
+
+	@NotNull
+	private PersonReferenceDto person;
 
 	private boolean patchedInCaseOfFailures = false;
 
@@ -113,6 +125,33 @@ public class GroupedFieldsRequest {
 		return this;
 	}
 
+	public CaseReferenceDto getCaseData() {
+		return caseData;
+	}
+
+	public GroupedFieldsRequest setCaseData(CaseReferenceDto caseData) {
+		this.caseData = caseData;
+		return this;
+	}
+
+	public PersonReferenceDto getPerson() {
+		return person;
+	}
+
+	public GroupedFieldsRequest setPerson(PersonReferenceDto person) {
+		this.person = person;
+		return this;
+	}
+
+	public Disease getDisease() {
+		return disease;
+	}
+
+	public GroupedFieldsRequest setDisease(Disease disease) {
+		this.disease = disease;
+		return this;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (o == null || getClass() != o.getClass())
@@ -120,6 +159,9 @@ public class GroupedFieldsRequest {
 		GroupedFieldsRequest that = (GroupedFieldsRequest) o;
 		return patchedInCaseOfFailures == that.patchedInCaseOfFailures
 			&& allowFallbackValues == that.allowFallbackValues
+			&& disease == that.disease
+			&& Objects.equals(caseData, that.caseData)
+			&& Objects.equals(person, that.person)
 			&& replacementStrategy == that.replacementStrategy
 			&& emptyValueBehavior == that.emptyValueBehavior
 			&& Objects.equals(partialPatchDictionary, that.partialPatchDictionary)
@@ -130,6 +172,9 @@ public class GroupedFieldsRequest {
 	@Override
 	public int hashCode() {
 		return Objects.hash(
+			disease,
+			caseData,
+			person,
 			patchedInCaseOfFailures,
 			replacementStrategy,
 			emptyValueBehavior,
@@ -141,8 +186,9 @@ public class GroupedFieldsRequest {
 
 	@Override
 	public String toString() {
-		return "GroupedFieldsRequest{" + "patchedInCaseOfFailures=" + patchedInCaseOfFailures + ", replacementStrategy=" + replacementStrategy
-			+ ", emptyValueBehavior=" + emptyValueBehavior + ", partialPatchDictionary=" + partialPatchDictionary + ", origin='" + origin + '\''
-			+ ", inputLanguages=" + inputLanguages + ", allowFallbackValues=" + allowFallbackValues + '}';
+		return "GroupedFieldsRequest{" + "disease=" + disease + ", caseData=" + caseData + ", person=" + person + ", patchedInCaseOfFailures="
+			+ patchedInCaseOfFailures + ", replacementStrategy=" + replacementStrategy + ", emptyValueBehavior=" + emptyValueBehavior
+			+ ", partialPatchDictionary=" + partialPatchDictionary + ", origin='" + origin + '\'' + ", inputLanguages=" + inputLanguages
+			+ ", allowFallbackValues=" + allowFallbackValues + '}';
 	}
 }

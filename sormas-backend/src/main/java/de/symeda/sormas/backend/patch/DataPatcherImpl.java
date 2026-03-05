@@ -62,7 +62,7 @@ public class DataPatcherImpl implements DataPatcher {
 
 	private final static Logger logger = LoggerFactory.getLogger(DataPatcherImpl.class);
 
-	private static final Map<PropertyAccessFailure, DataPatchFailureCause> PROPERTY_FAILURE_TO_PATCH_FAILURE = Map.of(
+	private static final Map<PropertyAccessFailure, DataPatchFailureCause> PROPERTY_FAILURE_TO_DATA_PATCH_FAILURE = Map.of(
 		PropertyAccessFailure.INVALID_INPUT,
 		DataPatchFailureCause.TECHNICAL,
 
@@ -247,7 +247,7 @@ public class DataPatcherImpl implements DataPatcher {
 			logger.info("Missing field: [{}] on target: [{}]", relativeFieldName, target);
 			return singlePatchResult.setFailure(
 				buildFailure(
-					PROPERTY_FAILURE_TO_PATCH_FAILURE.getOrDefault(propertyAccessFailure, DataPatchFailureCause.TECHNICAL),
+					PROPERTY_FAILURE_TO_DATA_PATCH_FAILURE.getOrDefault(propertyAccessFailure, DataPatchFailureCause.TECHNICAL),
 					untypedTargetValue));
 		}
 		Class<?> targetType = nestedPropertyTypeTuple.getFirst();

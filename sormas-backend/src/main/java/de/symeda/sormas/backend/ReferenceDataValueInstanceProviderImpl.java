@@ -38,7 +38,7 @@ public class ReferenceDataValueInstanceProviderImpl implements ReferenceDataValu
 	private Map<Class<? extends ReferenceDto>, Supplier<List<? extends ReferenceDto>>> dictionary;
 
 	@PostConstruct
-	public void init() {
+	private void init() {
 		dictionary = Map.ofEntries(
 			Map.entry(CountryReferenceDto.class, () -> getInstance(CountryFacade.class).getAllActiveAsReference()),
 			Map.entry(RegionReferenceDto.class, () -> getInstance(RegionFacade.class).getAllActiveAsReference()),
