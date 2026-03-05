@@ -45,6 +45,7 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.json.ObjectMapperProvider;
 import de.symeda.sormas.backend.patch.mapping.FieldCustomMapperRegistry;
+import de.symeda.sormas.backend.patch.mapping.GroupedFieldMapperRegistry;
 import de.symeda.sormas.backend.patch.mapping.ValueMapperRegistry;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.util.CollectorUtils;
@@ -89,6 +90,9 @@ public class DataPatcherImpl implements DataPatcher {
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
+	@Inject
+	private GroupedFieldMapperRegistry groupedFieldMapperRegistry;
+
 	public DataPatcherImpl() {
 	}
 
@@ -120,14 +124,16 @@ public class DataPatcherImpl implements DataPatcher {
 		// make this generic for additional "root"-types
 		Supplier<PersonDto> personSupplier = Suppliers.memoize(() -> getPersonDto(caseData));
 
-		Stream<Tuple<String, Tuple<DataPatchFailureCause, Object>>> tupleStream = computeActualDictionary(request);
+		List<Tuple<String, Tuple<DataPatchFailureCause, Object>>> patchingTuples = computePatchingTuples(request);
 
-		// TODO: tupleStream (transform to map ?) must be passed to the group field handler so that it can be handled.
+		groupedFieldMapperRegistry.aggregatedPatch()
+
+		// TODO: patchingTuples (transform to map ?) must be passed to the group field handler so that it can be handled.
 		// TODO: provide only the valid one as simple object ? Once this is done the actual dictionary must be not contain does anymore
 
-		List<SinglePatchResult> results = tupleStream.map(entry -> {
+		List<de.symeda.sormas.api.patch.SinglePatchResult> results = patchingTuples.stream().map(entry -> {
 			String fullFieldName = entry.getFirst();
-			SinglePatchResult singlePatchResult = new SinglePatchResult().setFieldName(fullFieldName);
+			de.symeda.sormas.api.patch.SinglePatchResult singlePatchResult = new de.symeda.sormas.api.patch.SinglePatchResult().setFieldName(fullFieldName);
 
 			Supplier<Object> target = () -> findAppropriateTarget(fullFieldName, caseData, personSupplier);
 
@@ -142,9 +148,9 @@ public class DataPatcherImpl implements DataPatcher {
 
 		}).collect(Collectors.toList());
 
-		Map<String, Object> validPatchDictionary = buildDictionaryFor(results, SinglePatchResult::getValue, true);
+		Map<String, Object> validPatchDictionary = buildDictionaryFor(results, de.symeda.sormas.api.patch.SinglePatchResult::getValue, true);
 		DataPatchResponse response = new DataPatchResponse().setApplied(false)
-			.setFailures(buildDictionaryFor(results, SinglePatchResult::getFailure, false))
+			.setFailures(buildDictionaryFor(results, de.symeda.sormas.api.patch.SinglePatchResult::getFailure, false))
 			.setValidPatchDictionary(validPatchDictionary);
 
 		if (validPatchDictionary.isEmpty() || (!request.isPatchedInCaseOfFailures() && response.hasFailures())) {
@@ -190,19 +196,19 @@ public class DataPatcherImpl implements DataPatcher {
 	}
 
 	private @NotNull <R> Map<String, R> buildDictionaryFor(
-		List<SinglePatchResult> results,
-		Function<SinglePatchResult, R> fct,
+		List<de.symeda.sormas.api.patch.SinglePatchResult> results,
+		Function<de.symeda.sormas.api.patch.SinglePatchResult, R> fct,
 		boolean valueContext) {
 		return results.stream()
 			// edge case were target value is null: this is allowed, which makes both fields null.
 			.filter(
 				singlePatchResult -> fct.apply(singlePatchResult) != null
 					|| (valueContext && singlePatchResult.getFailure() == null && singlePatchResult.getValue() == null))
-			.collect(CollectorUtils.toNullSafeMap(SinglePatchResult::getFieldName, fct));
+			.collect(CollectorUtils.toNullSafeMap(de.symeda.sormas.api.patch.SinglePatchResult::getFieldName, fct));
 	}
 
 	// TODO: make usable for external use
-	private @NotNull SinglePatchResult valueMappingResult(
+	private @NotNull de.symeda.sormas.api.patch.SinglePatchResult valueMappingResult(
 		Tuple<String, Tuple<DataPatchFailureCause, Object>> entry,
 		Disease disease,
 		CaseDataPatchRequest request,
@@ -210,7 +216,8 @@ public class DataPatcherImpl implements DataPatcher {
 
 		String fullFieldName = entry.getFirst();
 
-		SinglePatchResult singlePatchResult = new SinglePatchResult().setFieldName(fullFieldName);
+		de.symeda.sormas.api.patch.SinglePatchResult singlePatchResult =
+			new de.symeda.sormas.api.patch.SinglePatchResult().setFieldName(fullFieldName);
 
 		Object target = targetOpt.get();
 		String relativeFieldName = fullFieldName.substring(fullFieldName.indexOf('.') + 1);
@@ -271,7 +278,8 @@ public class DataPatcherImpl implements DataPatcher {
 		return new DataPatchFailure().setDataPatchFailureCause(fieldDoesNotExist).setProvidedFieldValue(untypedTargetValue);
 	}
 
-	private @NotNull Optional<SinglePatchResult> invalidFieldResult(Tuple<String, Tuple<DataPatchFailureCause, Object>> entry) {
+	private @NotNull Optional<de.symeda.sormas.api.patch.SinglePatchResult> invalidFieldResult(
+		Tuple<String, Tuple<DataPatchFailureCause, Object>> entry) {
 		return Optional.ofNullable(extractFailureCause(entry)).map(invalidFieldFailureCause -> buildFailureFor(entry, invalidFieldFailureCause));
 	}
 
@@ -280,7 +288,7 @@ public class DataPatcherImpl implements DataPatcher {
 	}
 
 	// TODO: make usable for external use
-	public Optional<SinglePatchResult> fieldMappingResult(
+	public Optional<de.symeda.sormas.api.patch.SinglePatchResult> fieldMappingResult(
 		Tuple<String, Tuple<DataPatchFailureCause, Object>> entry,
 		Disease disease,
 		CaseDataPatchRequest request,
@@ -292,7 +300,8 @@ public class DataPatcherImpl implements DataPatcher {
 
 		Object untypedTargetValue = extractValue(entry);
 		if (mapper.isPresent()) {
-			SinglePatchResult singlePatchResult = new SinglePatchResult().setFieldName(fullFieldName);
+			de.symeda.sormas.api.patch.SinglePatchResult singlePatchResult =
+				new de.symeda.sormas.api.patch.SinglePatchResult().setFieldName(fullFieldName);
 
 			Optional<DataPatchFailure> dataPatchFailureOpt = mapper.orElseThrow()
 				.map(
@@ -308,9 +317,12 @@ public class DataPatcherImpl implements DataPatcher {
 		return Optional.empty();
 	}
 
-	private SinglePatchResult buildFailureFor(Tuple<String, Tuple<DataPatchFailureCause, Object>> entry, DataPatchFailureCause fieldFailureCause) {
+	private de.symeda.sormas.api.patch.SinglePatchResult buildFailureFor(
+		Tuple<String, Tuple<DataPatchFailureCause, Object>> entry,
+		DataPatchFailureCause fieldFailureCause) {
 
-		return new SinglePatchResult().setFieldName(entry.getFirst()).setFailure(buildFailure(fieldFailureCause, extractValue(entry)));
+		return new de.symeda.sormas.api.patch.SinglePatchResult().setFieldName(entry.getFirst())
+			.setFailure(buildFailure(fieldFailureCause, extractValue(entry)));
 	}
 
 	private Object extractValue(Tuple<String, Tuple<DataPatchFailureCause, Object>> entry) {
@@ -323,7 +335,7 @@ public class DataPatcherImpl implements DataPatcher {
 			.andWithFeatureType(featureConfigurationFacade.getActiveServerFeatureConfigurations());
 	}
 
-	private Stream<Tuple<String, Tuple<DataPatchFailureCause, Object>>> computeActualDictionary(CaseDataPatchRequest request) {
+	private List<Tuple<String, Tuple<DataPatchFailureCause, Object>>> computePatchingTuples(CaseDataPatchRequest request) {
 		Predicate<Map.Entry<String, Object>> filterPredicate = buildAdequateDictionaryValuePredicate(request);
 
 		return request.getPatchDictionary()
@@ -351,7 +363,8 @@ public class DataPatcherImpl implements DataPatcher {
 
 				return splitMultipleFieldsPath(entry);
 			})
-			.map(tuple -> Tuple.of(tuple.getFirst(), tuple.getSecond()));
+			.map(tuple -> Tuple.of(tuple.getFirst(), tuple.getSecond()))
+			.collect(Collectors.toList());
 	}
 
 	private AbstractMap.@NotNull SimpleEntry<String, Object> toMapEntry(String first, Object value) {

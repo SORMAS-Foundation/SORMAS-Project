@@ -1,9 +1,7 @@
-package de.symeda.sormas.backend.patch;
+package de.symeda.sormas.api.patch;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
-
-import de.symeda.sormas.api.patch.DataPatchFailure;
 
 public class SinglePatchResult {
 

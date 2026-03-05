@@ -2,15 +2,24 @@ package de.symeda.sormas.backend.patch.mapping.impl.groupedfieldmapper;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.patch.mapping.GroupedFieldsMapper;
 import de.symeda.sormas.api.patch.mapping.GroupedFieldsRequest;
 import de.symeda.sormas.api.patch.mapping.ValueMappingResult;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
+import de.symeda.sormas.backend.patch.PatchFieldHelper;
 
 @ApplicationScoped
 public class ImmunizationGroupedFieldMapper implements GroupedFieldsMapper {
+
+	private static final Set<String> SUPPORTED_PREFIXES = Stream.of(ImmunizationDto.I18N_PREFIX, VaccinationDto.I18N_PREFIX)
+		.map(prefix -> prefix + PatchFieldHelper.PATH_SEPARATOR)
+		.collect(Collectors.toSet());
 
 	@Override
 	public Map<String, ValueMappingResult<Object>> aggregatedPatch(GroupedFieldsRequest request) {
@@ -37,10 +46,6 @@ public class ImmunizationGroupedFieldMapper implements GroupedFieldsMapper {
 
 	@Override
 	public Set<String> aggregatedPrefixes() {
-		if (true) {
-			// TODO: specifiy adequate fields.
-			throw new IllegalStateException();
-		}
-		return Set.of();
+		return SUPPORTED_PREFIXES;
 	}
 }
