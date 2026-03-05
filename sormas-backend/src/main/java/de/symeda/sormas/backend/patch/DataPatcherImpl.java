@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -33,8 +34,10 @@ import de.symeda.sormas.api.patch.DataPatchResponse;
 import de.symeda.sormas.api.patch.DataPatcher;
 import de.symeda.sormas.api.patch.DataReplacementStrategy;
 import de.symeda.sormas.api.patch.EmptyValueBehavior;
+import de.symeda.sormas.api.patch.SinglePatchResult;
 import de.symeda.sormas.api.patch.mapping.FieldCustomMapper;
 import de.symeda.sormas.api.patch.mapping.FieldPatchRequest;
+import de.symeda.sormas.api.patch.mapping.GroupedFieldsRequest;
 import de.symeda.sormas.api.patch.mapping.ValueMappingResult;
 import de.symeda.sormas.api.patch.mapping.ValuePatchRequest;
 import de.symeda.sormas.api.person.PersonDto;
@@ -126,27 +129,31 @@ public class DataPatcherImpl implements DataPatcher {
 
 		List<Tuple<String, Tuple<DataPatchFailureCause, Object>>> patchingTuples = computePatchingTuples(request);
 
-		groupedFieldMapperRegistry.aggregatedPatch()
+		List<SinglePatchResult> groupedFieldsSinglePatchResults = groupedFieldMapperRegistry.aggregatedPatch(from(request));
+		Set<String> alreadyProcessedFields =
+			groupedFieldsSinglePatchResults.stream().map(SinglePatchResult::getFieldName).collect(Collectors.toSet());
 
 		// TODO: patchingTuples (transform to map ?) must be passed to the group field handler so that it can be handled.
 		// TODO: provide only the valid one as simple object ? Once this is done the actual dictionary must be not contain does anymore
 
-		List<de.symeda.sormas.api.patch.SinglePatchResult> results = patchingTuples.stream().map(entry -> {
-			String fullFieldName = entry.getFirst();
-			de.symeda.sormas.api.patch.SinglePatchResult singlePatchResult = new de.symeda.sormas.api.patch.SinglePatchResult().setFieldName(fullFieldName);
+		List<de.symeda.sormas.api.patch.SinglePatchResult> results =
+			Stream.concat(patchingTuples.stream().filter(tuple -> !alreadyProcessedFields.contains(tuple.getFirst())).map(entry -> {
+				String fullFieldName = entry.getFirst();
+				de.symeda.sormas.api.patch.SinglePatchResult singlePatchResult =
+					new de.symeda.sormas.api.patch.SinglePatchResult().setFieldName(fullFieldName);
 
-			Supplier<Object> target = () -> findAppropriateTarget(fullFieldName, caseData, personSupplier);
+				Supplier<Object> target = () -> findAppropriateTarget(fullFieldName, caseData, personSupplier);
 
-			try {
-				return invalidFieldResult(entry).or(() -> fieldMappingResult(entry, disease, request, target))
-					.orElseGet(() -> valueMappingResult(entry, disease, request, target));
-			} catch (RuntimeException e) {
-				logger.error("Failure during patch operation", e);
-				return singlePatchResult
-					.setFailure(new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.TECHNICAL).setDescription(e.getMessage()));
-			}
+				try {
+					return invalidFieldResult(entry).or(() -> fieldMappingResult(entry, disease, request, target))
+						.orElseGet(() -> valueMappingResult(entry, disease, request, target));
+				} catch (RuntimeException e) {
+					logger.error("Failure during patch operation", e);
+					return singlePatchResult
+						.setFailure(new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.TECHNICAL).setDescription(e.getMessage()));
+				}
 
-		}).collect(Collectors.toList());
+			}), groupedFieldsSinglePatchResults.stream()).collect(Collectors.toList());
 
 		Map<String, Object> validPatchDictionary = buildDictionaryFor(results, de.symeda.sormas.api.patch.SinglePatchResult::getValue, true);
 		DataPatchResponse response = new DataPatchResponse().setApplied(false)
@@ -166,6 +173,16 @@ public class DataPatcherImpl implements DataPatcher {
 		logger.debug("dataPatchResponse: [{}]", response);
 
 		return response.setApplied(true);
+	}
+
+	private GroupedFieldsRequest from(CaseDataPatchRequest request) {
+		return new GroupedFieldsRequest().setPartialPatchDictionary(request.getPatchDictionary())
+			.setInputLanguages(request.getInputLanguages())
+			.setOrigin(request.getOrigin())
+			.setAllowFallbackValues(request.isAllowFallbackValues())
+			.setPatchedInCaseOfFailures(request.isPatchedInCaseOfFailures())
+			.setReplacementStrategy(request.getReplacementStrategy())
+			.setEmptyValueBehavior(request.getEmptyValueBehavior());
 	}
 
 	private void saveDTOsIfAppropriate(Map<String, Object> validPatchDictionary, CaseDataDto caseData, Supplier<PersonDto> personSupplier) {

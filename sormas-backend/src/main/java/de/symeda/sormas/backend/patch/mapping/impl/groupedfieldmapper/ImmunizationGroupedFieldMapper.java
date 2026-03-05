@@ -1,6 +1,6 @@
 package de.symeda.sormas.backend.patch.mapping.impl.groupedfieldmapper;
 
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -8,9 +8,9 @@ import java.util.stream.Stream;
 import javax.enterprise.context.ApplicationScoped;
 
 import de.symeda.sormas.api.immunization.ImmunizationDto;
+import de.symeda.sormas.api.patch.SinglePatchResult;
 import de.symeda.sormas.api.patch.mapping.GroupedFieldsMapper;
 import de.symeda.sormas.api.patch.mapping.GroupedFieldsRequest;
-import de.symeda.sormas.api.patch.mapping.ValueMappingResult;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.patch.PatchFieldHelper;
 
@@ -22,7 +22,7 @@ public class ImmunizationGroupedFieldMapper implements GroupedFieldsMapper {
 		.collect(Collectors.toSet());
 
 	@Override
-	public Map<String, ValueMappingResult<Object>> aggregatedPatch(GroupedFieldsRequest request) {
+	public List<SinglePatchResult> aggregatedPatch(GroupedFieldsRequest request) {
 		// TODO: use a field as reference to trigger one or another logic: Immunization.immunizationStatus
 
 		/*
@@ -41,7 +41,7 @@ public class ImmunizationGroupedFieldMapper implements GroupedFieldsMapper {
 		 * - Can use the DataPatcher again to be able to set all single field values: values or exact fields. (focus on values now)
 		 */
 
-		return Map.of();
+		return List.of();
 	}
 
 	@Override
