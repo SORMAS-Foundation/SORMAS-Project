@@ -17,7 +17,6 @@ package de.symeda.sormas.ui.caze;
 
 import static de.symeda.sormas.ui.utils.CssStyles.ERROR_COLOR_PRIMARY;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
-import static de.symeda.sormas.ui.utils.CssStyles.SOFT_REQUIRED;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.CssStyles.style;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
@@ -236,7 +235,6 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		responsibleDistrictCombo.setRequired(true);
 		responsibleCommunityCombo = addInfrastructureField(CaseDataDto.RESPONSIBLE_COMMUNITY);
 		responsibleCommunityCombo.setNullSelectionAllowed(true);
-		responsibleCommunityCombo.addStyleName(SOFT_REQUIRED);
 
 		InfrastructureFieldsHelper.initInfrastructureFields(responsibleRegionCombo, responsibleDistrictCombo, responsibleCommunityCombo);
 
@@ -484,7 +482,6 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		initializeVisibilitiesAndAllowedVisibilities();
 
 		setRequired(true, CaseDataDto.REPORT_DATE, CaseDataDto.DISEASE, FACILITY_TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE);
-		FieldHelper.addSoftRequiredStyle(plagueType, communityCombo);
 
 		FieldHelper
 			.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.DISEASE_DETAILS), CaseDataDto.DISEASE, Arrays.asList(Disease.OTHER), true);

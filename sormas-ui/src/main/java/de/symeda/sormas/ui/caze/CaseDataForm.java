@@ -19,7 +19,6 @@ import static de.symeda.sormas.ui.utils.CssStyles.FORCE_CAPTION;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.CssStyles.LABEL_WHITE_SPACE_NORMAL;
 import static de.symeda.sormas.ui.utils.CssStyles.LAYOUT_COL_HIDE_INVSIBLE;
-import static de.symeda.sormas.ui.utils.CssStyles.SOFT_REQUIRED;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_2;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.CssStyles.style;
@@ -37,10 +36,8 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -774,7 +771,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		districtCombo = addInfrastructureField(CaseDataDto.DISTRICT);
 		communityCombo = addInfrastructureField(CaseDataDto.COMMUNITY);
 		communityCombo.setNullSelectionAllowed(true);
-		communityCombo.addStyleName(SOFT_REQUIRED);
 
 		FieldHelper.setVisibleWhen(
 			differentPlaceOfStayJurisdiction,
@@ -1039,7 +1035,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			// Set the initial visibility of the info label to false it will be set to true in the medical information section
 			vaccinationStatusInfoLabel.setVisible(false);
 			getContent().addComponent(vaccinationStatusInfoLabel, VACCINATION_STATUS_INFO_LOC);
-			
+
 		}
 		addFields(CaseDataDto.SMALLPOX_VACCINATION_SCAR, CaseDataDto.SMALLPOX_VACCINATION_RECEIVED);
 		addDateField(CaseDataDto.SMALLPOX_LAST_VACCINATION_DATE, DateField.class, 0);
@@ -1084,7 +1080,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		responsibleDistrict.setRequired(true);
 		responsibleCommunity = addInfrastructureField(CaseDataDto.RESPONSIBLE_COMMUNITY);
 		responsibleCommunity.setNullSelectionAllowed(true);
-		responsibleCommunity.addStyleName(SOFT_REQUIRED);
 
 		InfrastructureFieldsHelper.initInfrastructureFields(responsibleRegion, responsibleDistrict, responsibleCommunity);
 		InfrastructureFieldsHelper.initPointOfEntry(responsibleDistrict, pointOfEntry);
@@ -1114,7 +1109,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				disease,
 				FieldVisibilityCheckers.withDisease(disease)
 					.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
-				UiFieldAccessCheckers.getDefault(true, FacadeProvider.getConfigFacade().getCountryLocale()))).setCaption(null);
+				UiFieldAccessCheckers.getDefault(true, FacadeProvider.getConfigFacade().getCountryLocale())))
+			.setCaption(null);
 
 		//diagnosis criteria
 		if ((FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) && disease == Disease.TUBERCULOSIS) {
@@ -1154,7 +1150,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			CaseDataDto.INVESTIGATION_STATUS,
 			CaseDataDto.OUTCOME,
 			CaseDataDto.DISEASE);
-		setSoftRequired(true, CaseDataDto.INVESTIGATED_DATE, CaseDataDto.OUTCOME_DATE, CaseDataDto.PLAGUE_TYPE, CaseDataDto.SURVEILLANCE_OFFICER);
 
 		if (diseaseClassificationExists()
 			&& FacadeProvider.getConfigFacade().getCaseClassificationCalculationMode(disease).isManualEnabled()

@@ -90,8 +90,8 @@ public class PersonField extends CustomField<PersonFieldDto> {
 	}
 
 	public void hideCaptions() {
-		CssStyles.style(firstname, CssStyles.SOFT_REQUIRED, CssStyles.CAPTION_HIDDEN);
-		CssStyles.style(lastname, CssStyles.SOFT_REQUIRED, CssStyles.CAPTION_HIDDEN);
-		CssStyles.style(sex, CssStyles.SOFT_REQUIRED, CssStyles.CAPTION_HIDDEN);
+		CssStyles.style(firstname, CssStyles.CAPTION_HIDDEN);
+		CssStyles.style(lastname, CssStyles.CAPTION_HIDDEN);
+		CssStyles.style(sex, CssStyles.CAPTION_HIDDEN);
 	}
 }

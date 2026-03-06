@@ -70,7 +70,10 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 			PreviousHospitalizationDto.INTENSIVE_CARE_UNIT,
 			PreviousHospitalizationDto.INTENSIVE_CARE_UNIT_START,
 			PreviousHospitalizationDto.INTENSIVE_CARE_UNIT_END)
-		+ fluidRowLocs(PreviousHospitalizationDto.ICU_LENGTH_OF_STAY, PreviousHospitalizationDto.OXYGEN_PRESCRIBED, PreviousHospitalizationDto.STILL_HOSPITALIZED)
+		+ fluidRowLocs(
+			PreviousHospitalizationDto.ICU_LENGTH_OF_STAY,
+			PreviousHospitalizationDto.OXYGEN_PRESCRIBED,
+			PreviousHospitalizationDto.STILL_HOSPITALIZED)
 		+ fluidRowLocs(PreviousHospitalizationDto.DESCRIPTION);
 
 	private NullableOptionGroup intensiveCareUnit;
@@ -289,8 +292,6 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 
 		// Show icuLengthOfStay when ICU dates are not available but survey has length information
 		FieldHelper.setVisibleWhen(intensiveCareUnit, Collections.singletonList(icuLengthOfStayField), Arrays.asList(YesNoUnknown.YES), true);
-
-		FieldHelper.addSoftRequiredStyle(admissionDate, dischargeDate, facilityCommunity, healthFacilityDetails);
 
 		if (isEditableAllowed(PreviousHospitalizationDto.HEALTH_FACILITY)) {
 			setRequired(true, PreviousHospitalizationDto.REGION, PreviousHospitalizationDto.DISTRICT, PreviousHospitalizationDto.HEALTH_FACILITY);
