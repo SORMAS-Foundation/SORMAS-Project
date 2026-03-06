@@ -484,7 +484,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		initializeVisibilitiesAndAllowedVisibilities();
 
 		setRequired(true, CaseDataDto.REPORT_DATE, CaseDataDto.DISEASE, FACILITY_TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE);
-		FieldHelper.addSoftRequiredStyle(plagueType, communityCombo, facilityDetails);
+		FieldHelper.addSoftRequiredStyle(plagueType, communityCombo);
 
 		FieldHelper
 			.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.DISEASE_DETAILS), CaseDataDto.DISEASE, Arrays.asList(Disease.OTHER), true);
@@ -757,7 +757,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		PersonDto personByUuid = personUuid == null ? null : FacadeProvider.getPersonFacade().getByUuid(personUuid);
 		personCreateForm.setPerson(personByUuid);
 
-		if(caseDataDto.getSymptoms() != null) {
+		if (caseDataDto.getSymptoms() != null) {
 			personCreateForm.setSymptoms(caseDataDto.getSymptoms());
 		}
 

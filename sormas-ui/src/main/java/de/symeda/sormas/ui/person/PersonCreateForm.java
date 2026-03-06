@@ -196,7 +196,7 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 
 		ComboBox presentCondition = addField(PersonDto.PRESENT_CONDITION, ComboBox.class);
 		presentCondition.setVisible(showPresentCondition);
-		FieldHelper.addSoftRequiredStyle(presentCondition, sex);
+		FieldHelper.addSoftRequiredStyle(sex);
 
 		if (showSymptomsOnsetDate) {
 			addCustomField(
