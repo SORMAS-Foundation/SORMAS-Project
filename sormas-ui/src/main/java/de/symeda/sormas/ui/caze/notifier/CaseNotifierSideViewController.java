@@ -343,13 +343,20 @@ public class CaseNotifierSideViewController {
      *            the form containing the values
      */
     private void updateSurveillanceReportFromForm(SurveillanceReportDto surveillanceReport, CaseNotifierForm notifierForm) {
-        // Update report date from notification date
-        final LocalDate notificationDate = notifierForm.getNotificationDate() == null ? LocalDate.now() : notifierForm.getNotificationDate();
-        surveillanceReport.setReportDate(Date.from(notificationDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+
+        // Update report date from notification date if provided
+        if (notifierForm.getNotificationDate() != null) {
+            surveillanceReport.setReportDate(Date.from(notifierForm.getNotificationDate().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        } else {
+            // if no notification date is provided, use the current date as long as the report date is not set
+            if (surveillanceReport.getReportDate() == null) {
+                surveillanceReport.setReportDate(new Date());
+            }
+        }
 
         // Update diagnosis date if provided
         final LocalDate diagnosticDate = notifierForm.getDiagnosticDate();
-        if(diagnosticDate != null) {
+        if (diagnosticDate != null) {
             surveillanceReport.setDateOfDiagnosis(Date.from(diagnosticDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
         } else {
             surveillanceReport.setDateOfDiagnosis(null);
