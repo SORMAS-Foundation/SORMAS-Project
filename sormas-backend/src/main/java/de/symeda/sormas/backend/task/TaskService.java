@@ -493,6 +493,7 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 				filter,
 				CriteriaBuilderHelper.or(
 					cb,
+					cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.GENERAL),
 					cb.equal(joins.getCaseRegion().get(Region.UUID), regionUuid),
 					cb.equal(joins.getCaseResponsibleRegion().get(Region.UUID), regionUuid),
 					cb.equal(joins.getContactRegion().get(Region.UUID), regionUuid),
@@ -508,6 +509,7 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 				filter,
 				CriteriaBuilderHelper.or(
 					cb,
+					cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.GENERAL),
 					cb.equal(joins.getCaseDistrict().get(District.UUID), districtUuid),
 					cb.equal(joins.getCaseResponsibleDistrict().get(District.UUID), districtUuid),
 					cb.equal(joins.getContactDistrict().get(District.UUID), districtUuid),

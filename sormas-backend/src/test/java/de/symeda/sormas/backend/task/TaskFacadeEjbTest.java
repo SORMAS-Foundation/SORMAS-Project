@@ -121,6 +121,34 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testTaskDirectoryForGeneralTasks() {
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.userRoleDtoMap.get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+
+		TaskDto task = creator.createTask(
+			TaskContext.GENERAL,
+			TaskType.DAILY_REPORT_GENERATION,
+			TaskStatus.DONE,
+			null,
+			null,
+			null,
+			null,
+			DateHelper.addDays(new Date(), 1),
+			user.toReference());
+
+		List<TaskIndexDto> tasks =
+			getTaskFacade().getIndexList(new TaskCriteria().taskContext(TaskContext.GENERAL).taskStatus(TaskStatus.DONE), 0, 100, null);
+		assertEquals(1, tasks.size());
+		assertEquals(task.getUuid(), tasks.get(0).getUuid());
+	}
+
+	@Test
 	public void testGetByUuidForArchivedTask() {
 		UserDto user1 = creator.createUser(
 			null,
