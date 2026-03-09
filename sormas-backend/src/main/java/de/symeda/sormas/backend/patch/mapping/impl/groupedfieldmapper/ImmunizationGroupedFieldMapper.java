@@ -15,6 +15,7 @@ import de.symeda.sormas.api.patch.SinglePatchResult;
 import de.symeda.sormas.api.patch.mapping.GroupedFieldsMapper;
 import de.symeda.sormas.api.patch.mapping.GroupedFieldsRequest;
 import de.symeda.sormas.api.patch.mapping.GroupedFieldsResponse;
+import de.symeda.sormas.api.patch.mapping.ValueMappingResult;
 import de.symeda.sormas.api.patch.mapping.ValuePatchRequest;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.patch.PatchFieldHelper;
@@ -52,9 +53,13 @@ public class ImmunizationGroupedFieldMapper implements GroupedFieldsMapper<Immun
 					.collect(Collectors.toList()));
 		}
 
-		String immunizationStatusString = immunizationStatus.toString();
+		ValueMappingResult<Boolean> booleanResult = getValueAsTarget(request, immunizationStatus, Boolean.class);
 
-		valueMapperRegistry.map(new ValuePatchRequest<Boolean>().setValue(immunizationStatus).setTargetType(Boolean.class));
+		if (Boolean.TRUE.equals(booleanResult.getData())) {
+			return new GroupedFieldsResponse<ImmunizationDto>();
+		}
+
+		ValueMappingResult<String> stringResult = getValueAsTarget(request, immunizationStatus, String.class);
 
 		// TODO: use (Field ID) Vaccination.vaccineType: to determine if it is a vaccine for the mother.
 
@@ -64,9 +69,9 @@ public class ImmunizationGroupedFieldMapper implements GroupedFieldsMapper<Immun
 		 * - Try to detect what is it:
 		 * - Yes: must be a vaccine that will be specified in the rest of the object
 		 * - No OR don't know: create "dummy-object" that says:
-		 * result.setImmunizationStatus(ImmunizationStatus.NOT_ACQUIRED).setMeansOfImmunization(MeansOfImmunization.OTHER);
-		 * - no: result.setMeansOfImmunizationDetails("NOT_VACCINATED")
-		 * - don't know: result.setMeansOfImmunizationDetails("DON'T KNOW")
+		 * booleanResult.setImmunizationStatus(ImmunizationStatus.NOT_ACQUIRED).setMeansOfImmunization(MeansOfImmunization.OTHER);
+		 * - no: booleanResult.setMeansOfImmunizationDetails("NOT_VACCINATED")
+		 * - don't know: booleanResult.setMeansOfImmunizationDetails("DON'T KNOW")
 		 * YES detailed explanation:
 		 * - create ImmunizationDto
 		 * - create VaccineDto
@@ -76,7 +81,16 @@ public class ImmunizationGroupedFieldMapper implements GroupedFieldsMapper<Immun
 
 		GroupedFieldsResponse<ImmunizationDto> groupedFieldsResponse =
 			new GroupedFieldsResponse<ImmunizationDto>().setEntityDto(build).setPatchingResults(null);
+
 		return groupedFieldsResponse;
+	}
+
+	private <T> ValueMappingResult<T> getValueAsTarget(GroupedFieldsRequest request, Object immunizationStatus, Class<T> targetType) {
+		return valueMapperRegistry.map(
+			new ValuePatchRequest<T>().setValue(immunizationStatus)
+				.setInputLanguages(request.getInputLanguages())
+				.setAllowFallbackValues(request.isAllowFallbackValues())
+				.setTargetType(targetType));
 	}
 
 	@Override

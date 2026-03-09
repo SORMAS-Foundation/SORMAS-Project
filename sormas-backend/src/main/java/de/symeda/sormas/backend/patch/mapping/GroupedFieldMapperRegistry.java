@@ -17,9 +17,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.patch.SinglePatchResult;
 import de.symeda.sormas.api.patch.mapping.GroupedFieldsMapper;
 import de.symeda.sormas.api.patch.mapping.GroupedFieldsRequest;
+import de.symeda.sormas.api.patch.mapping.GroupedFieldsResponse;
 import de.symeda.sormas.api.utils.Tuple;
 import de.symeda.sormas.backend.util.CollectorUtils;
 
@@ -59,8 +59,7 @@ public class GroupedFieldMapperRegistry {
 	}
 
 	@NotNull
-	public List<SinglePatchResult> aggregatedPatch(@NotNull GroupedFieldsRequest request) {
-
+	public List<GroupedFieldsResponse<?>> aggregatedPatch(@NotNull GroupedFieldsRequest request) {
 		Map<GroupedFieldsMapper<?>, Map<String, Object>> dictionary = request.getPartialPatchDictionary()
 			.entrySet()
 			.stream()
@@ -75,9 +74,11 @@ public class GroupedFieldMapperRegistry {
 					Tuple::getFirst,
 					CollectorUtils.toNullSafeMap(tuple -> tuple.getSecond().getKey(), tuple -> tuple.getSecond().getValue())));
 
+		logger.debug("GroupedFieldsMapper dictionary: [{}] for request: [{}]", dictionary, request);
+
 		return dictionary.entrySet()
 			.stream()
-			.flatMap(entry -> entry.getKey().aggregatedPatch(buildCopy(request).setPartialPatchDictionary(entry.getValue())).stream())
+			.map(entry -> entry.getKey().aggregatedPatch(buildCopy(request).setPartialPatchDictionary(entry.getValue())))
 			.collect(Collectors.toList());
 	}
 

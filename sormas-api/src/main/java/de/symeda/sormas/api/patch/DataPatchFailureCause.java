@@ -7,6 +7,9 @@ public enum DataPatchFailureCause {
 	 */
 	INVALID_MULTIPLE_FIELDS_FORMAT,
 
+	/**
+	 * Some fields require a particular handling and are handled as group, to trigger the handling some fields are mandatory.
+	 */
 	MISSING_MANDATORY_FIELD_FOR_GROUP,
 
 	/**

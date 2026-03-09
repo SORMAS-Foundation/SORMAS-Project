@@ -38,19 +38,18 @@ import de.symeda.sormas.api.patch.SinglePatchResult;
 import de.symeda.sormas.api.patch.mapping.FieldCustomMapper;
 import de.symeda.sormas.api.patch.mapping.FieldPatchRequest;
 import de.symeda.sormas.api.patch.mapping.GroupedFieldsRequest;
+import de.symeda.sormas.api.patch.mapping.GroupedFieldsResponse;
 import de.symeda.sormas.api.patch.mapping.ValueMappingResult;
 import de.symeda.sormas.api.patch.mapping.ValuePatchRequest;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.Tuple;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
-import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.json.ObjectMapperProvider;
 import de.symeda.sormas.backend.patch.mapping.FieldCustomMapperRegistry;
 import de.symeda.sormas.backend.patch.mapping.GroupedFieldMapperRegistry;
 import de.symeda.sormas.backend.patch.mapping.ValueMapperRegistry;
-import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.util.CollectorUtils;
 
 // TODO: test integration vaccines
@@ -73,19 +72,19 @@ public class DataPatcherImpl implements DataPatcher {
 		DataPatchFailureCause.UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY_OR_FEATURE);
 
 	@Inject
+	private PatchFieldHelper patchFieldHelper;
+
+	@Inject
 	private ValueMapperRegistry valueMapperRegistry;
 
 	@Inject
 	private FieldCustomMapperRegistry fieldCustomMapperRegistry;
 
 	@Inject
-	private PatchFieldHelper patchFieldHelper;
+	private GroupedFieldMapperRegistry groupedFieldMapperRegistry;
 
-	@EJB
-	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
-
-	@EJB
-	private PersonFacadeEjb.PersonFacadeEjbLocal personFacade;
+	@Inject
+	private BusinessDtoFacade businessDtoFacade;
 
 	@EJB
 	private FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
@@ -93,25 +92,22 @@ public class DataPatcherImpl implements DataPatcher {
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
-	@Inject
-	private GroupedFieldMapperRegistry groupedFieldMapperRegistry;
-
 	public DataPatcherImpl() {
 	}
 
 	public DataPatcherImpl(
+		PatchFieldHelper patchFieldHelper,
 		ValueMapperRegistry valueMapperRegistry,
 		FieldCustomMapperRegistry fieldCustomMapperRegistry,
-		PatchFieldHelper patchFieldHelper,
-		CaseFacadeEjb.CaseFacadeEjbLocal caseFacade,
-		PersonFacadeEjb.PersonFacadeEjbLocal personFacade,
+		GroupedFieldMapperRegistry groupedFieldMapperRegistry,
+		BusinessDtoFacade businessDtoFacade,
 		FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade,
 		ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade) {
+		this.patchFieldHelper = patchFieldHelper;
 		this.valueMapperRegistry = valueMapperRegistry;
 		this.fieldCustomMapperRegistry = fieldCustomMapperRegistry;
-		this.patchFieldHelper = patchFieldHelper;
-		this.caseFacade = caseFacade;
-		this.personFacade = personFacade;
+		this.groupedFieldMapperRegistry = groupedFieldMapperRegistry;
+		this.businessDtoFacade = businessDtoFacade;
 		this.featureConfigurationFacade = featureConfigurationFacade;
 		this.configFacade = configFacade;
 	}
@@ -129,9 +125,10 @@ public class DataPatcherImpl implements DataPatcher {
 
 		List<Tuple<String, Tuple<DataPatchFailureCause, Object>>> patchingTuples = computePatchingTuples(request);
 
-		List<SinglePatchResult> groupedFieldsSinglePatchResults = groupedFieldMapperRegistry.aggregatedPatch(from(request));
-		Set<String> alreadyProcessedFields =
-			groupedFieldsSinglePatchResults.stream().map(SinglePatchResult::getFieldName).collect(Collectors.toSet());
+		List<GroupedFieldsResponse<?>> groupedFieldsSinglePatchResults = groupedFieldMapperRegistry.aggregatedPatch(from(request));
+		Set<String> alreadyProcessedFields = groupedFieldsSinglePatchResults.stream()
+			.flatMap(response -> response.getPatchingResults().stream().map(SinglePatchResult::getFieldName))
+			.collect(Collectors.toSet());
 
 		// TODO: patchingTuples (transform to map ?) must be passed to the group field handler so that it can be handled.
 		// TODO: provide only the valid one as simple object ? Once this is done the actual dictionary must be not contain does anymore
@@ -153,7 +150,8 @@ public class DataPatcherImpl implements DataPatcher {
 						.setFailure(new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.TECHNICAL).setDescription(e.getMessage()));
 				}
 
-			}), groupedFieldsSinglePatchResults.stream()).collect(Collectors.toList());
+			}), groupedFieldsSinglePatchResults.stream().flatMap(groupedFieldResponse -> groupedFieldResponse.getPatchingResults().stream()))
+				.collect(Collectors.toList());
 
 		Map<String, Object> validPatchDictionary = buildDictionaryFor(results, de.symeda.sormas.api.patch.SinglePatchResult::getValue, true);
 		DataPatchResponse response = new DataPatchResponse().setApplied(false)
@@ -193,7 +191,7 @@ public class DataPatcherImpl implements DataPatcher {
 				logger.debug("CaseData: \n{}", ObjectMapperProvider.writeValueAsStringFailSafe(caseData));
 			}
 
-			caseFacade.save(caseData);
+			businessDtoFacade.save(caseData);
 		}
 
 		if (anyFieldPatchedWithPrefix(validPatchDictionary, PatchFieldHelper.PERSON_PREFIX)) {
@@ -204,7 +202,7 @@ public class DataPatcherImpl implements DataPatcher {
 				logger.debug("Person: \n{}", ObjectMapperProvider.writeValueAsStringFailSafe(person));
 			}
 
-			personFacade.save(person);
+			businessDtoFacade.save(person);
 		}
 	}
 
@@ -417,7 +415,7 @@ public class DataPatcherImpl implements DataPatcher {
 
 	private @NotNull PersonDto getPersonDto(CaseDataDto caseData) {
 		String personUuid = caseData.getPerson().getUuid();
-		PersonDto person = personFacade.getByUuid(personUuid);
+		PersonDto person = businessDtoFacade.fetch(PersonDto.class, caseData);
 
 		if (person == null) {
 			throw new IllegalStateException(String.format("No person found for uuid: [%s]", personUuid));
@@ -427,7 +425,7 @@ public class DataPatcherImpl implements DataPatcher {
 
 	private @NotNull CaseDataDto getCaseDataDto(CaseDataPatchRequest request) {
 		String caseUuid = request.getCaseUuid();
-		CaseDataDto caseData = caseFacade.getCaseDataByUuid(caseUuid);
+		CaseDataDto caseData = businessDtoFacade.getCaseDataDto(caseUuid);
 
 		if (caseData == null) {
 			throw new IllegalStateException(String.format("No case found for uuid: [%s]", caseUuid));
@@ -460,19 +458,4 @@ public class DataPatcherImpl implements DataPatcher {
 		};
 	}
 
-	public void setValueMapperRegistry(ValueMapperRegistry valueMapperRegistry) {
-		this.valueMapperRegistry = valueMapperRegistry;
-	}
-
-	public void setFieldCustomMapperRegistry(FieldCustomMapperRegistry fieldCustomMapperRegistry) {
-		this.fieldCustomMapperRegistry = fieldCustomMapperRegistry;
-	}
-
-	public void setCaseFacade(CaseFacadeEjb.CaseFacadeEjbLocal caseFacade) {
-		this.caseFacade = caseFacade;
-	}
-
-	public void setPersonFacade(PersonFacadeEjb.PersonFacadeEjbLocal personFacade) {
-		this.personFacade = personFacade;
-	}
 }

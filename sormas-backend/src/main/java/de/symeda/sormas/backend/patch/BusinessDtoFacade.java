@@ -3,9 +3,9 @@ package de.symeda.sormas.backend.patch;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
+import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.ApplicationScoped;
@@ -31,7 +31,7 @@ public class BusinessDtoFacade {
 	@EJB
 	private ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal immunizationFacade;
 
-	private final Map<Class<? extends EntityDto>, Consumer<? extends EntityDto>> dtoSaveDictionary = new HashMap<>();
+	private final Map<Class<? extends EntityDto>, Function<? extends EntityDto, ? extends EntityDto>> dtoSaveDictionary = new HashMap<>();
 
 	private final Map<Class<? extends EntityDto>, Function<CaseDataDto, ? extends EntityDto>> dtoRetrieverDictionary = new HashMap<>();
 
@@ -50,11 +50,12 @@ public class BusinessDtoFacade {
 	}
 
 	private void registerSaveOperations() {
+		registerSave(CaseDataDto.class, caseDataDto -> caseFacade.save(caseDataDto));
 		registerSave(PersonDto.class, personDto -> personFacade.save(personDto));
 		registerSave(ImmunizationDto.class, immunizationDto -> immunizationFacade.save(immunizationDto));
 	}
 
-	private <T extends EntityDto> void registerSave(Class<T> dtoClass, Consumer<T> consumer) {
+	private <T extends EntityDto> void registerSave(Class<T> dtoClass, Function<T, T> consumer) {
 		dtoSaveDictionary.put(dtoClass, consumer);
 	}
 
@@ -62,11 +63,18 @@ public class BusinessDtoFacade {
 		return caseFacade.getByUuid(caseUuid);
 	}
 
-	public <T extends EntityDto> Optional<Function<CaseDataDto, T>> fetch(@NotNull Class<T> entity) {
-		return Optional.ofNullable((Function<CaseDataDto, T>) dtoRetrieverDictionary.get(entity));
+	@Nullable
+	public <T extends EntityDto> T fetch(@NotNull Class<T> entityClass, CaseDataDto caseDataDto) {
+		return Optional.ofNullable((Function<CaseDataDto, T>) dtoRetrieverDictionary.get(entityClass))
+			.orElseThrow(() -> new IllegalStateException(String.format("No fetch function defined for: [%s]", entityClass)))
+			.apply(caseDataDto);
 	}
 
-	public <T extends EntityDto> Optional<Consumer<T>> save(@NotNull EntityDto entityDto) {
-		return Optional.ofNullable((Consumer<T>) dtoSaveDictionary.get(entityDto));
+	public <T extends EntityDto> T save(@NotNull EntityDto entityDto) {
+		Class<? extends EntityDto> entityDtoClass = entityDto.getClass();
+
+		return Optional.ofNullable((Function<T, T>) dtoSaveDictionary.get(entityDtoClass))
+			.orElseThrow(() -> new IllegalStateException(String.format("No save function defined for: [%s]", entityDtoClass)))
+			.apply((T) entityDto);
 	}
 }
