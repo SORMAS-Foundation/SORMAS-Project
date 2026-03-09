@@ -60,6 +60,8 @@ import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.community.CommunityDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
@@ -123,9 +125,11 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testTaskDirectoryForGeneralTasks() {
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		RegionReferenceDto region = rdcf.region;
+		DistrictReferenceDto district = rdcf.district;
 		UserDto user = creator.createUser(
-			rdcf.region.getUuid(),
-			rdcf.district.getUuid(),
+			region.getUuid(),
+			district.getUuid(),
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
@@ -142,8 +146,11 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 			DateHelper.addDays(new Date(), 1),
 			user.toReference());
 
-		List<TaskIndexDto> tasks =
-			getTaskFacade().getIndexList(new TaskCriteria().taskContext(TaskContext.GENERAL).taskStatus(TaskStatus.DONE), 0, 100, null);
+		TaskCriteria taskCriteria = new TaskCriteria().taskContext(TaskContext.GENERAL).taskStatus(TaskStatus.DONE);
+		taskCriteria.setRegion(region);
+		taskCriteria.setDistrict(district);
+
+		List<TaskIndexDto> tasks = getTaskFacade().getIndexList(taskCriteria, 0, 100, null);
 		assertEquals(1, tasks.size());
 		assertEquals(task.getUuid(), tasks.get(0).getUuid());
 	}
