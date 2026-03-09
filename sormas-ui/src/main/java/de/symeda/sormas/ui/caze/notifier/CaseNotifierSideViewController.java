@@ -344,12 +344,16 @@ public class CaseNotifierSideViewController {
      */
     private void updateSurveillanceReportFromForm(SurveillanceReportDto surveillanceReport, CaseNotifierForm notifierForm) {
         // Update report date from notification date
-        final LocalDate notificationDate = notifierForm.getNotificationDate();
+        final LocalDate notificationDate = notifierForm.getNotificationDate() == null ? LocalDate.now() : notifierForm.getNotificationDate();
         surveillanceReport.setReportDate(Date.from(notificationDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
 
         // Update diagnosis date if provided
         final LocalDate diagnosticDate = notifierForm.getDiagnosticDate();
-        surveillanceReport.setDateOfDiagnosis(Date.from(diagnosticDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        if(diagnosticDate != null) {
+            surveillanceReport.setDateOfDiagnosis(Date.from(diagnosticDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        } else {
+            surveillanceReport.setDateOfDiagnosis(null);
+        }
 
         // Update treatment based on selected option
         final TreatmentOption selectedOption = notifierForm.getSelectedTreatmentOption();
