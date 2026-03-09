@@ -44,7 +44,6 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
-import de.symeda.sormas.api.customizableenum.CustomEnumNotFoundException;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -63,9 +62,6 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.person.OccupationType;
-import de.symeda.sormas.api.person.PersonContactDetailDto;
-import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.notifier.NotifierDto;
@@ -176,7 +172,6 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 				commitDiscardWrapperComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionDone));
 				commitDiscardWrapperComponent.getDiscardButton().setVisible(false); // No discard button
 
-				//commitDiscardWrapperComponent.addCommitListener(() -> ret.complete(true));
 				commitDiscardWrapperComponent.addDiscardListener(() -> ret.complete(false));
 
 				VaadinUiUtil.showModalPopupWindow(commitDiscardWrapperComponent, I18nProperties.getCaption(Captions.info), true);
@@ -322,136 +317,79 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 	protected void handleCreateCase(CaseDataDto caze, PersonDto person, ExternalMessageDto externalMessage, HandlerCallback<CaseDataDto> callback) {
 		LOGGER.debug("Handling create case for case: {}, person: {}, externalMessage: {}", caze, person, externalMessage);
 
-		HandlerCallback<CaseDataDto> updateNotifierCallback = new HandlerCallback<CaseDataDto>() {
+		ExternalMessageProcessingUIHelper.showCreateCaseWindow(caze, person, externalMessage, getMapper(), new HandlerCallback<CaseDataDto>() {
 
 			@Override
 			public void done(CaseDataDto result) {
-				// If the external message contains notifier information, update the case with notifier details
-				if (externalMessage.getNotifierRegistrationNumber() != null) {
-					NotifierDto notifierDto = new NotifierDto();
-					notifierDto.setRegistrationNumber(externalMessage.getNotifierRegistrationNumber());
-					notifierDto.setFirstName(externalMessage.getNotifierFirstName());
-					notifierDto.setLastName(externalMessage.getNotifierLastName());
-					notifierDto.setAddress(externalMessage.getNotifierAddress());
-					notifierDto.setPhone(externalMessage.getNotifierPhone());
-					notifierDto.setEmail(externalMessage.getNotifierEmail());
-					if (externalMessage.getReporterName() != null && externalMessage.getReporterName().contains("-")) {
-						// Split the reporter name into first and last names if it contains a hyphen
-						// Some names may already contain hyphens, assume first parts are the first name and last parts are the last name
-						final String[] nameParts = externalMessage.getReporterName().split("-");
-						notifierDto.setAgentFirstName(
-							Arrays.stream(nameParts).limit(nameParts.length - 1).map(String::trim).collect(Collectors.joining(" ")));
-						notifierDto.setAgentLastName(nameParts.length > 0 ? nameParts[nameParts.length - 1].trim() : "");
-					}
-					// Update the case with notifier details and complete the callback
-					callback.done(getExternalMessageProcessingFacade().updateAndSetCaseNotifier(result.getUuid(), notifierDto));
-					return;
-				}
-				// If no notifier information is present, complete the callback with the result
-				callback.done(result);
+				applyPersonUpdates(PersonContext.CASE, result.getUuid());
+				callback.done(applyNotifierUpdate(result, externalMessage));
 			}
 
 			@Override
 			public void cancel() {
-				// Handle cancellation of the operation
 				callback.cancel();
 			}
-		};
+		});
+	}
 
-		HandlerCallback<CaseDataDto> postUpdatePersonCallback = new HandlerCallback<CaseDataDto>() {
+	/**
+	 * Fetches the person associated with the given entity, applies all relevant external message data
+	 * (address, contact details, guardian, occupation), then persists the person in a single save.
+	 *
+	 * @param personContext
+	 *            The context used to look up the person (e.g. CASE, CONTACT).
+	 * @param entityUuid
+	 *            The UUID of the owning entity.
+	 */
+	private void applyPersonUpdates(PersonContext personContext, String entityUuid) {
 
-			@Override
-			public void done(CaseDataDto result) {
-				// Additional person processing after case creation (needed for fields that are not visible in the person creation form)
+		PersonDto person = getExternalMessageProcessingFacade().getPersonByContext(personContext, entityUuid);
 
-				PersonDto casePerson = getExternalMessageProcessingFacade().getPersonByContext(PersonContext.CASE, result.getUuid());
+		if (person == null) {
+			return;
+		}
 
-				if (casePerson == null) {
-					updateNotifierCallback.done(result);
-					return;
-				}
+		getMapper().mergePersonAddress(person);
+		getMapper().mergePersonContactDetails(person);
+		getMapper().mapGuardianData(person);
+		getMapper().mapOccupationData(person);
 
-				boolean doUpdate = false;
+		getExternalMessageProcessingFacade().updatePerson(person);
+	}
 
-				final String nameOfGuardian =
-					String
-						.format(
-							"%s %s",
-							externalMessage.getPersonGuardianFirstName() != null ? externalMessage.getPersonGuardianFirstName() : "",
-							externalMessage.getPersonGuardianLastName() != null ? externalMessage.getPersonGuardianLastName() : "")
-						.trim();
+	/**
+	 * Applies notifier information from the external message to the case.
+	 * If no notifier registration number is present, the original case is returned unchanged.
+	 *
+	 * @param result
+	 *            The case to update.
+	 * @param externalMessage
+	 *            The external message carrying the notifier data.
+	 * @return The updated case, or {@code result} as-is when no notifier data is present.
+	 */
+	private CaseDataDto applyNotifierUpdate(CaseDataDto result, ExternalMessageDto externalMessage) {
 
-				if (!nameOfGuardian.isBlank()) {
-					casePerson.setNamesOfGuardians(nameOfGuardian);
-					// we need to set both the incapacitated and emancipated fields, otherwise the person will not be shown in the UI
-					casePerson.setIncapacitated(true);
-					casePerson.setEmancipated(false);
-					doUpdate = true;
-				}
+		if (externalMessage.getNotifierRegistrationNumber() == null) {
+			return result;
+		}
 
-				if (externalMessage.getPersonGuardianEmail() != null && !externalMessage.getPersonGuardianEmail().isBlank()) {
-					List<PersonContactDetailDto> contactDetails = casePerson.getPersonContactDetails();
+		NotifierDto notifierDto = new NotifierDto();
+		notifierDto.setRegistrationNumber(externalMessage.getNotifierRegistrationNumber());
+		notifierDto.setFirstName(externalMessage.getNotifierFirstName());
+		notifierDto.setLastName(externalMessage.getNotifierLastName());
+		notifierDto.setAddress(externalMessage.getNotifierAddress());
+		notifierDto.setPhone(externalMessage.getNotifierPhone());
+		notifierDto.setEmail(externalMessage.getNotifierEmail());
 
-					if (contactDetails.stream().noneMatch(pc -> externalMessage.getPersonGuardianEmail().equals(pc.getContactInformation()))) {
-						final PersonContactDetailDto pcd = new PersonContactDetailDto();
-						pcd.setPerson(casePerson.toReference());
-						pcd.setPrimaryContact(false);
-						pcd.setPersonContactDetailType(PersonContactDetailType.EMAIL);
-						pcd.setContactInformation(externalMessage.getPersonGuardianEmail());
-						pcd.setThirdParty(true);
-						pcd.setThirdPartyRole(externalMessage.getPersonGuardianRelationship());
-						pcd.setThirdPartyName(nameOfGuardian);
+		if (externalMessage.getReporterName() != null && externalMessage.getReporterName().contains("-")) {
+			// Split the reporter name into first and last names if it contains a hyphen
+			// Some names may already contain hyphens, assume first parts are the first name and last parts are the last name
+			final String[] nameParts = externalMessage.getReporterName().split("-");
+			notifierDto.setAgentFirstName(Arrays.stream(nameParts).limit(nameParts.length - 1).map(String::trim).collect(Collectors.joining(" ")));
+			notifierDto.setAgentLastName(nameParts.length > 0 ? nameParts[nameParts.length - 1].trim() : "");
+		}
 
-						contactDetails.add(pcd);
-						doUpdate = true;
-					}
-				}
-
-				if (externalMessage.getPersonGuardianPhone() != null && !externalMessage.getPersonGuardianPhone().isBlank()) {
-					List<PersonContactDetailDto> contactDetails = casePerson.getPersonContactDetails();
-
-					if (contactDetails.stream().noneMatch(pc -> externalMessage.getPersonGuardianPhone().equals(pc.getContactInformation()))) {
-						final PersonContactDetailDto pcd = new PersonContactDetailDto();
-						pcd.setPerson(casePerson.toReference());
-						pcd.setPrimaryContact(false);
-						pcd.setPersonContactDetailType(PersonContactDetailType.PHONE);
-						pcd.setContactInformation(externalMessage.getPersonGuardianPhone());
-						pcd.setThirdParty(true);
-						pcd.setThirdPartyRole(externalMessage.getPersonGuardianRelationship());
-						pcd.setThirdPartyName(nameOfGuardian);
-
-						contactDetails.add(pcd);
-						doUpdate = true;
-					}
-				}
-
-				if (externalMessage.getPersonOccupation() != null && !externalMessage.getPersonOccupation().isBlank()) {
-					try {
-						final OccupationType occupationTypeOther = getExternalMessageProcessingFacade().getOccupationTypeOther();
-						casePerson.setOccupationType(occupationTypeOther);
-						casePerson.setOccupationDetails(externalMessage.getPersonOccupation());
-						doUpdate = true;
-					} catch (CustomEnumNotFoundException e) {
-						// do nothing if OccupationType OTHER custom enum is not found
-					}
-				}
-
-				if (doUpdate) {
-					getExternalMessageProcessingFacade().updatePerson(casePerson);
-				}
-				// Chain to the notifier callback
-				updateNotifierCallback.done(result);
-			}
-
-			@Override
-			public void cancel() {
-				// Handle cancellation of the operation
-				updateNotifierCallback.cancel();
-			}
-		};
-
-		// Show the create case window with the provided data and callback
-		ExternalMessageProcessingUIHelper.showCreateCaseWindow(caze, person, externalMessage, getMapper(), postUpdatePersonCallback);
+		return getExternalMessageProcessingFacade().updateAndSetCaseNotifier(result.getUuid(), notifierDto);
 	}
 
 	/**
@@ -480,11 +418,9 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 			ControllerProvider.getContactController().getContactCreateComponent(null, false, null, true);
 
 		contactCreateComponent.addCommitListener(() -> {
-			ExternalMessageProcessingUIHelper.updateAddressAndSavePerson(
-				FacadeProvider.getPersonFacade().getByUuid(contactCreateComponent.getWrappedComponent().getValue().getPerson().getUuid()),
-				getMapper());
-
-			callback.done(contactCreateComponent.getWrappedComponent().getValue());
+			ContactDto createdContact = contactCreateComponent.getWrappedComponent().getValue();
+			applyPersonUpdates(PersonContext.CONTACT, createdContact.getUuid());
+			callback.done(createdContact);
 		});
 		contactCreateComponent.addDiscardListener(callback::cancel);
 

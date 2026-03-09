@@ -15255,4 +15255,15 @@ ALTER TABLE surveillancereports_history ADD COLUMN treatmentstartdate timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (610, '#13754 - Create notification should create a Report - Case - DD');
 
+
+-- #13625 - Add handling for multiple person contacts and addresses
+
+ALTER TABLE externalmessage ADD COLUMN additionalPersonContactDetails jsonb;
+ALTER TABLE externalmessage ADD COLUMN additionalPersonAddresses jsonb;
+
+ALTER TABLE externalmessage_history ADD COLUMN additionalPersonContactDetails jsonb;
+ALTER TABLE externalmessage_history ADD COLUMN additionalPersonAddresses jsonb;
+
+INSERT INTO schema_version (version_number, comment) VALUES (611, '#13754 - Multiple person contacts and addresses');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

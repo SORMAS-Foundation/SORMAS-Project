@@ -140,7 +140,28 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 
 	@Override
 	protected void handleCreateCase(CaseDataDto caze, PersonDto person, ExternalMessageDto labMessage, HandlerCallback<CaseDataDto> callback) {
-		ExternalMessageProcessingUIHelper.showCreateCaseWindow(caze, person, labMessage, getMapper(), callback);
+
+		HandlerCallback<CaseDataDto> postUpdateCallback = new HandlerCallback<>() {
+
+			@Override
+			public void done(CaseDataDto result) {
+				// we need to call again the updates here
+				// compared to automatic processing the person is processed by the case controller
+				// @see{CaseController#getCaseCreateComponent} methods
+				// we need to load the person again from the database to get the updates following case form changes
+				final PersonDto processedPerson = FacadeProvider.getPersonFacade().getByUuid(result.getPerson().getUuid());
+				ExternalMessageProcessingUIHelper.updateAddressAndSavePerson(processedPerson, getMapper());
+
+				callback.done(result);
+			}
+
+			@Override
+			public void cancel() {
+				callback.cancel();
+			}
+		};
+
+		ExternalMessageProcessingUIHelper.showCreateCaseWindow(caze, person, labMessage, getMapper(), postUpdateCallback);
 	}
 
 	@Override
@@ -186,11 +207,16 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 			ControllerProvider.getContactController().getContactCreateComponent(null, false, null, true);
 
 		contactCreateComponent.addCommitListener(() -> {
-			ExternalMessageProcessingUIHelper.updateAddressAndSavePerson(
-				FacadeProvider.getPersonFacade().getByUuid(contactCreateComponent.getWrappedComponent().getValue().getPerson().getUuid()),
-				getMapper());
+			// we need to call again the updates here
+			// compared to automatic processing the person is processed by the case controller
+			// @see{ContactController#getContactCreateComponent} methods
+			// we need to load the person again from the database to get the updates following case form changes
+			// ofc. here we have another way to do it because whoever did it was too lazy to fix the contact controller
+			final ContactDto processedContact = contactCreateComponent.getWrappedComponent().getValue();
+			final PersonDto processedPerson = FacadeProvider.getPersonFacade().getByUuid(processedContact.getPerson().getUuid());
+			ExternalMessageProcessingUIHelper.updateAddressAndSavePerson(processedPerson, getMapper());
 
-			callback.done(contactCreateComponent.getWrappedComponent().getValue());
+			callback.done(processedContact);
 		});
 		contactCreateComponent.addDiscardListener(callback::cancel);
 

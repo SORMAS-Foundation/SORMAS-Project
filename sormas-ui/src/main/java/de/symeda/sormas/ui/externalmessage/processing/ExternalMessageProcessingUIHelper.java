@@ -146,13 +146,9 @@ public class ExternalMessageProcessingUIHelper {
 		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent =
 			ControllerProvider.getCaseController().getCaseCreateComponent(null, null, null, null, null, true);
 		caseCreateComponent.addCommitListener(() -> {
-			updateAddressAndSavePerson(
-				FacadeProvider.getPersonFacade().getByUuid(caseCreateComponent.getWrappedComponent().getValue().getPerson().getUuid()),
-				mapper);
-
 			callback.done(caseCreateComponent.getWrappedComponent().getValue());
-
 		});
+
 		caseCreateComponent.addDiscardListener(callback::cancel);
 
 		caseCreateComponent.getWrappedComponent().setValue(caze);
@@ -164,14 +160,21 @@ public class ExternalMessageProcessingUIHelper {
 		showFormWithLabMessage(labMessage, caseCreateComponent, window, I18nProperties.getString(Strings.headingCreateNewCase), false);
 	}
 
-	public static void updateAddressAndSavePerson(PersonDto personDto, ExternalMessageMapper mapper) {
-		if (personDto.getAddress().getCity() == null
-			&& personDto.getAddress().getHouseNumber() == null
-			&& personDto.getAddress().getPostalCode() == null
-			&& personDto.getAddress().getStreet() == null) {
-			mapper.mapToLocation(personDto.getAddress());
-		}
-		FacadeProvider.getPersonFacade().save(personDto);
+	/**
+	 * Merges person address and contact details from the external message mapper and saves the person.
+	 * This should be called after a case or contact is created, because the case/contact controller
+	 * processes the person data independently and we need to ensure the external message data is applied.
+	 *
+	 * @param person
+	 *            the person to update (should be freshly loaded from the database)
+	 * @param mapper
+	 *            the external message mapper providing the address/contact data
+	 */
+	public static void updateAddressAndSavePerson(PersonDto person, ExternalMessageMapper mapper) {
+		mapper.mergePersonAddress(person);
+		mapper.mergePersonContactDetails(person);
+		// finally it is safe to save even if no changes were actually made
+		FacadeProvider.getPersonFacade().save(person);
 	}
 
 	public static void showEditSampleWindow(
