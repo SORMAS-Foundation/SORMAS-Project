@@ -886,6 +886,44 @@ class DataPatcherImplTest extends AbstractBeanTest {
 	}
 
 	@Test
+	void patch_replacementMode_null_value_error() {
+		// PREPARE
+		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.RESPIRATORY_SYNCYTIAL_VIRUS);
+		String expectedQuarantineChangeComment = "some non empty value";
+		originalCase.setQuarantineChangeComment(expectedQuarantineChangeComment);
+
+		getCaseFacade().save(originalCase);
+
+		Assertions.assertFalse(originalCase.getSymptoms().getSymptomatic());
+
+		String ignoredValue = "ignoredValue";
+
+		Map<String, Object> patchDictionary = new HashMap<>();
+		patchDictionary.put("CaseData.quarantineChangeComment", null);
+
+		CaseDataPatchRequest request = new CaseDataPatchRequest().setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+			.setEmptyValueBehavior(EmptyValueBehavior.IGNORE)
+			.setCaseUuid(originalCase.getUuid())
+			.setPatchDictionary(patchDictionary);
+
+		// EXECUTE
+		DataPatchResponse response = victim().patch(request);
+
+		CaseDataDto actual = getCaseFacade().getByUuid(originalCase.getUuid());
+
+		// CHECK
+		Assertions.assertAll(
+			() -> Assertions.assertFalse(response.isApplied()),
+
+			() -> Assertions.assertEquals(Map.of(), response.getValidPatchDictionary()),
+
+			() -> Assertions.assertEquals(expectedQuarantineChangeComment, actual.getQuarantineChangeComment()),
+
+			// FAILURES
+			() -> Assertions.assertEquals(Map.of(), response.getFailures()));
+	}
+
+	@Test
 	void patch_fieldDoesNoExist() {
 		// PREPARE
 		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.RESPIRATORY_SYNCYTIAL_VIRUS);
