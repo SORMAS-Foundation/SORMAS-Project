@@ -2477,6 +2477,11 @@ public class TestDataCreator {
 		return beanTest.getSurveyFacade().save(survey);
 	}
 
+	/**
+	 * 
+	 * @param caze
+	 * @return
+	 */
 	public SurveyTokenDto createSurveyToken(CaseReferenceDto caze) {
 		SurveyDto survey = this.createSurvey("Malaria-Survey", Disease.MALARIA);
 		SurveyTokenDto token = SurveyTokenDto.build(survey.toReference());

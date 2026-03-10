@@ -4087,6 +4087,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			travelEntryService.ensurePersisted(t);
 		});
 
+		// Including survey token for merge case.
 //		11. servey token reference
 		if (!cloning) {
 			List<SurveyToken> tokens = surveyService.findBy(new SurveyTokenCriteria().caseAssignedTo(otherCase.toReference()));
