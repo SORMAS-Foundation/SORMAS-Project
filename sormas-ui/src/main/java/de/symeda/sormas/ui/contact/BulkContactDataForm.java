@@ -91,12 +91,6 @@ public class BulkContactDataForm extends AbstractEditForm<ContactBulkEditData> {
 			getContent().addComponent(contactOfficerCheckBox, CONTACT_OFFICER_CHECKBOX);
 			ComboBox contactOfficer = addField(ContactBulkEditData.CONTACT_OFFICER, ComboBox.class);
 			contactOfficer.setEnabled(false);
-			FieldHelper.addSoftRequiredStyleWhen(
-				getFieldGroup(),
-				contactOfficerCheckBox,
-				Arrays.asList(ContactBulkEditData.CONTACT_OFFICER),
-				Arrays.asList(true),
-				null);
 
 			Set<Disease> selectedDiseases = this.selectedContacts.stream().map(c -> c.getDisease()).collect(Collectors.toSet());
 			List<UserReferenceDto> assignableContactOfficers = null;

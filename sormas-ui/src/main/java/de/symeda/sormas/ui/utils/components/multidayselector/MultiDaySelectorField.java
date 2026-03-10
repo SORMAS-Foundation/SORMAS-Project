@@ -144,7 +144,6 @@ public class MultiDaySelectorField extends CustomField<MultiDaySelectorDto> {
 		startDate.removeStyleName(CssStyles.CAPTION_HIDDEN);
 		endDate.setCaption(I18nProperties.getPrefixCaption(prefix, properties.getProperty("lastDate")));
 		endDate.removeStyleName(CssStyles.CAPTION_HIDDEN);
-		endDate.addStyleName(CssStyles.SOFT_REQUIRED);
 	}
 
 	private void enableValidationForEndDate(boolean enable) {

@@ -95,7 +95,6 @@ import de.symeda.sormas.api.utils.SymptomGrouping;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
-import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.caze.CaseSymptomSideViewComponent;
 import de.symeda.sormas.ui.hospitalization.HospitalizationView;
@@ -927,8 +926,6 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			FieldHelper.setVisibleWhen(getFieldGroup(), JAUNDICE_WITHIN_24_HOURS_OF_BIRTH, JAUNDICE, Arrays.asList(SymptomState.YES), true);
 		}
 
-		FieldHelper.addSoftRequiredStyle(getField(LESIONS_ONSET_DATE));
-
 		boolean isInfant = person != null
 			&& person.getApproximateAge() != null
 			&& ((person.getApproximateAge() <= 12 && person.getApproximateAgeType() == ApproximateAgeType.MONTHS) || person.getApproximateAge() <= 1);
@@ -1221,12 +1218,6 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	}
 
 	public void initializeSymptomRequirementsForVisit(NullableOptionGroup visitStatus) {
-		FieldHelper.addSoftRequiredStyleWhen(
-			getFieldGroup(),
-			visitStatus,
-			Arrays.asList(TEMPERATURE, TEMPERATURE_SOURCE),
-			Arrays.asList(VisitStatus.COOPERATIVE),
-			disease);
 		addSoftRequiredStyleWhenSymptomaticAndCooperative(
 			getFieldGroup(),
 			ONSET_DATE,
@@ -1293,54 +1284,6 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		final Field targetField = fieldGroup.getField(targetPropertyId);
 		if (!targetField.isVisible()) {
 			return;
-		}
-
-		if (visitStatusField != null) {
-			if (isAnySymptomSetToYes(fieldGroup, sourcePropertyIds, sourceValues) && visitStatusField.getNullableValue() == VisitStatus.COOPERATIVE) {
-				FieldHelper.addSoftRequiredStyle(targetField);
-			} else {
-				FieldHelper.removeSoftRequiredStyle(targetField);
-			}
-		} else {
-			if (isAnySymptomSetToYes(fieldGroup, sourcePropertyIds, sourceValues)) {
-				FieldHelper.addSoftRequiredStyle(targetField);
-			} else {
-				FieldHelper.removeSoftRequiredStyle(targetField);
-			}
-		}
-
-		// Add listeners
-		for (Object sourcePropertyId : sourcePropertyIds) {
-			Field sourceField = fieldGroup.getField(sourcePropertyId);
-			sourceField.addValueChangeListener(event -> {
-				if (visitStatusField != null) {
-					if (isAnySymptomSetToYes(fieldGroup, sourcePropertyIds, sourceValues) && visitStatusField.getValue() == VisitStatus.COOPERATIVE) {
-						FieldHelper.addSoftRequiredStyle(targetField);
-					} else {
-						FieldHelper.removeSoftRequiredStyle(targetField);
-					}
-				} else {
-					if (isAnySymptomSetToYes(fieldGroup, sourcePropertyIds, sourceValues)) {
-						FieldHelper.addSoftRequiredStyle(targetField);
-					} else {
-						FieldHelper.removeSoftRequiredStyle(targetField);
-					}
-				}
-			});
-		}
-
-		if (visitStatusField != null) {
-			visitStatusField.addValueChangeListener(new ValueChangeListener() {
-
-				@Override
-				public void valueChange(com.vaadin.v7.data.Property.ValueChangeEvent event) {
-					if (isAnySymptomSetToYes(fieldGroup, sourcePropertyIds, sourceValues) && visitStatusField.getValue() == VisitStatus.COOPERATIVE) {
-						FieldHelper.addSoftRequiredStyle(targetField);
-					} else {
-						FieldHelper.removeSoftRequiredStyle(targetField);
-					}
-				}
-			});
 		}
 	}
 

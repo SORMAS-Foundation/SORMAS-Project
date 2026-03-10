@@ -19,7 +19,6 @@ import static de.symeda.sormas.ui.utils.CssStyles.FORCE_CAPTION;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.CssStyles.LABEL_WHITE_SPACE_NORMAL;
 import static de.symeda.sormas.ui.utils.CssStyles.LAYOUT_COL_HIDE_INVSIBLE;
-import static de.symeda.sormas.ui.utils.CssStyles.SOFT_REQUIRED;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_2;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.CssStyles.style;
@@ -41,6 +40,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -69,9 +69,7 @@ import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
-import com.vaadin.v7.ui.VerticalLayout;
 
-import de.symeda.sormas.api.CaseClassificationCalculationMode;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
@@ -117,7 +115,6 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
@@ -219,6 +216,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 							fluidColumn(6, 0, locs(
 									CaseDataDto.DISEASE_DETAILS,
 									CaseDataDto.PLAGUE_TYPE,
+									CaseDataDto.DENGUE_FEVER_TYPE,
 									CaseDataDto.RABIES_TYPE))) +
 					fluidRowLocs(CaseDataDto.DISEASE_VARIANT, CaseDataDto.DISEASE_VARIANT_DETAILS) +
 					fluidRow(
@@ -774,7 +772,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		districtCombo = addInfrastructureField(CaseDataDto.DISTRICT);
 		communityCombo = addInfrastructureField(CaseDataDto.COMMUNITY);
 		communityCombo.setNullSelectionAllowed(true);
-		communityCombo.addStyleName(SOFT_REQUIRED);
 
 		FieldHelper.setVisibleWhen(
 			differentPlaceOfStayJurisdiction,
@@ -1084,7 +1081,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		responsibleDistrict.setRequired(true);
 		responsibleCommunity = addInfrastructureField(CaseDataDto.RESPONSIBLE_COMMUNITY);
 		responsibleCommunity.setNullSelectionAllowed(true);
-		responsibleCommunity.addStyleName(SOFT_REQUIRED);
 
 		InfrastructureFieldsHelper.initInfrastructureFields(responsibleRegion, responsibleDistrict, responsibleCommunity);
 		InfrastructureFieldsHelper.initPointOfEntry(responsibleDistrict, pointOfEntry);
@@ -1156,7 +1152,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			CaseDataDto.INVESTIGATION_STATUS,
 			CaseDataDto.OUTCOME,
 			CaseDataDto.DISEASE);
-		setSoftRequired(true, CaseDataDto.INVESTIGATED_DATE, CaseDataDto.OUTCOME_DATE, CaseDataDto.PLAGUE_TYPE, CaseDataDto.SURVEILLANCE_OFFICER);
 
 		if (diseaseClassificationExists()
 			&& FacadeProvider.getConfigFacade().getCaseClassificationCalculationMode(disease).isManualEnabled()
@@ -1366,25 +1361,15 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		// Automatic case classification rules button - invisible for other diseases
 		DiseaseClassificationCriteriaDto diseaseClassificationCriteria = FacadeProvider.getCaseClassificationFacade().getByDisease(disease);
+		if (diseaseClassificationExists()) {
+			Button classificationRulesButton = ButtonHelper.createIconButton(
+				Captions.info,
+				VaadinIcons.INFO_CIRCLE,
+				e -> ControllerProvider.getCaseController().openClassificationRulesPopup(diseaseClassificationCriteria),
+				ValoTheme.BUTTON_PRIMARY,
+				FORCE_CAPTION);
 
-		CaseClassificationCalculationMode caseClassificationCalculationMode =
-			FacadeProvider.getConfigFacade().getCaseClassificationCalculationMode(disease);
-
-		if (CaseClassificationCalculationMode.DISABLED != caseClassificationCalculationMode) {
-
-			if (FacadeProvider.getConfigFacade().getCaseClassificationCalculationMode(disease).isAutomaticEnabled()
-				&& diseaseClassificationExists()) {
-				Button classificationRulesButton = ButtonHelper.createIconButton(
-					Captions.info,
-					VaadinIcons.INFO_CIRCLE,
-					e -> ControllerProvider.getCaseController().openClassificationRulesPopup(diseaseClassificationCriteria),
-					ValoTheme.BUTTON_PRIMARY,
-					FORCE_CAPTION);
-
-				getContent().addComponent(classificationRulesButton, CLASSIFICATION_RULES_LOC);
-			} else {
-				getCustomCaseDefinition();
-			}
+			getContent().addComponent(classificationRulesButton, CLASSIFICATION_RULES_LOC);
 		}
 
 		addField(CaseDataDto.DELETION_REASON);
@@ -1538,36 +1523,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			CaseDataDto.CLINICIAN_PHONE,
 			CaseDataDto.CLINICIAN_EMAIL,
 			CaseDataDto.ADDITIONAL_DETAILS);
-	}
-
-	/**
-	 * If custom case definition is configured in Disease configuration, system should display it.
-	 */
-	private void getCustomCaseDefinition() {
-		// If a disease has caseDefinitionText, it should display; otherwise criteria will display as it is.
-		String caseDefinitionText = FacadeProvider.getDiseaseConfigurationFacade().getCaseDefinitionText(disease);
-		if (caseDefinitionText == null) {
-			return;
-		}
-
-		Button caseDefinitionButton = ButtonHelper.createIconButton(Captions.info, VaadinIcons.INFO_CIRCLE, e -> {
-			VerticalLayout classificationRulesLayout = new VerticalLayout();
-			classificationRulesLayout.setMargin(true);
-			Label suspectContent = new Label();
-			suspectContent.setContentMode(ContentMode.HTML);
-			suspectContent.setWidth(100, Unit.PERCENTAGE);
-			suspectContent.setValue(caseDefinitionText);
-			classificationRulesLayout.addComponent(suspectContent);
-			Window popupWindow = VaadinUiUtil.showPopupWindow(classificationRulesLayout);
-			popupWindow.addCloseListener(e1 -> {
-				popupWindow.close();
-			});
-			popupWindow.setWidth(860, Unit.PIXELS);
-			popupWindow.setHeight(80, Unit.PERCENTAGE);
-			popupWindow.setCaption(I18nProperties.getString(Strings.classificationRulesFor) + " " + disease);
-		}, ValoTheme.BUTTON_PRIMARY, FORCE_CAPTION);
-
-		getContent().addComponent(caseDefinitionButton, CLASSIFICATION_RULES_LOC);
 	}
 
 	private void hideJurisdictionFields() {

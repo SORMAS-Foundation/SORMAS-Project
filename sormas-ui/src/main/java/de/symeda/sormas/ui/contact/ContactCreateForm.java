@@ -236,8 +236,6 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 
 		initializeVisibilitiesAndAllowedVisibilities();
 
-		CssStyles.style(CssStyles.SOFT_REQUIRED, firstContactDate, lastContactDate, contactProximities, relationToCase);
-
 		region.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
 			FieldHelper
