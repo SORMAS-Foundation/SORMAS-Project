@@ -447,18 +447,6 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 		}
 	}
 
-	protected void setSoftRequired(boolean required, String... fieldOrPropertyIds) {
-
-		for (String propertyId : fieldOrPropertyIds) {
-			Field<?> field = getField(propertyId);
-			if (required) {
-				FieldHelper.addSoftRequiredStyle(field);
-			} else {
-				FieldHelper.removeSoftRequiredStyle(field);
-			}
-		}
-	}
-
 	protected void addFieldListeners(String fieldOrPropertyId, ValueChangeListener... listeners) {
 
 		for (ValueChangeListener listener : listeners) {

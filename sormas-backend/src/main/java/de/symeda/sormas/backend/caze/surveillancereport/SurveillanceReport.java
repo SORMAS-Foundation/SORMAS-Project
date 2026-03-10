@@ -33,6 +33,7 @@ import javax.persistence.TemporalType;
 
 import de.symeda.sormas.api.caze.surveillancereport.ReportingType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.externalmessage.ExternalMessage;
@@ -61,6 +62,9 @@ public class SurveillanceReport extends AbstractDomainObject implements SormasTo
 	public static final String FACILITY = "facility";
 	public static final String FACILITY_DETAILS = "facilityDetails";
 	public static final String NOTIFICATION_DETAILS = "notificationDetails";
+	public static final String TREATMENT_STARTED = "treatmentStarted";
+	public static final String TREATMENT_NOT_APPLICABLE = "treatmentNotApplicable";
+	public static final String TREATMENT_START_DATE = "treatmentStartDate";
 	public static final String CAZE = "caze";
 	public static final String SORMAS_TO_SORMAS_ORIGIN_INFO = "sormasToSormasOriginInfo";
 	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
@@ -86,6 +90,12 @@ public class SurveillanceReport extends AbstractDomainObject implements SormasTo
 	private String facilityDetails;
 
 	private String notificationDetails;
+
+	private YesNoUnknown treatmentStarted;
+
+	private boolean treatmentNotApplicable;
+
+	private Date treatmentStartDate;
 
 	private Case caze;
 
@@ -193,6 +203,34 @@ public class SurveillanceReport extends AbstractDomainObject implements SormasTo
 
 	public void setNotificationDetails(String notificationDetails) {
 		this.notificationDetails = notificationDetails;
+	}
+
+	@Column
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getTreatmentStarted() {
+		return treatmentStarted;
+	}
+
+	public void setTreatmentStarted(YesNoUnknown treatmentStarted) {
+		this.treatmentStarted = treatmentStarted;
+	}
+
+	@Column
+	public boolean isTreatmentNotApplicable() {
+		return treatmentNotApplicable;
+	}
+
+	public void setTreatmentNotApplicable(boolean treatmentNotApplicable) {
+		this.treatmentNotApplicable = treatmentNotApplicable;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getTreatmentStartDate() {
+		return treatmentStartDate;
+	}
+
+	public void setTreatmentStartDate(Date treatmentStartDate) {
+		this.treatmentStartDate = treatmentStartDate;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)

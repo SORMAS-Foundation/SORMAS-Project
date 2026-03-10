@@ -737,7 +737,6 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		});
 
 		setRequired(true, ContactDto.CONTACT_CLASSIFICATION, ContactDto.CONTACT_STATUS, ContactDto.REPORT_DATE_TIME);
-		FieldHelper.addSoftRequiredStyle(firstContactDate, lastContactDate, contactProximities, relationToCase);
 		// Prophylaxis details for IMI
 		CheckBox prophylaxisPrescribed = addField(ContactDto.PROPHYLAXIS_PRESCRIBED, CheckBox.class);
 		prophylaxisPrescribed.setCaption(I18nProperties.getCaption(Captions.Contact_prophylaxisPrescribed));

@@ -242,7 +242,6 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 	private ComboBox seroGrpSepcCB;
 	private TextField seroGrpSpecTxt;
 
-
 	public PathogenTestForm(
 		AbstractSampleForm sampleForm,
 		boolean create,
@@ -439,7 +438,6 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		seroTypingMethodText.setVisible(false);
 		pcrTestSpecification = addField(PathogenTestDto.PCR_TEST_SPECIFICATION, ComboBox.class);
 		testTypeTextField = addField(PathogenTestDto.TEST_TYPE_TEXT, TextField.class);
-		FieldHelper.addSoftRequiredStyle(testTypeTextField);
 		DateTimeField testDateField = addField(PathogenTestDto.TEST_DATE_TIME, DateTimeField.class);
 		testDateField.removeAllValidators();
 		testDateField.addValidator(
@@ -598,7 +596,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		seroGrpSepcCB = addField(PathogenTestDto.SERO_GROUP_SPECIFICATION, ComboBox.class);
 		seroGrpSepcCB.setVisible(false);
 		seroGrpSpecTxt = addField(PathogenTestDto.SERO_GROUP_SPECIFICATION_TEXT, TextField.class);
-		
+
 		TextField cqValueField = addField(FieldConfiguration.withConversionError(PathogenTestDto.CQ_VALUE, Validations.onlyNumbersAllowed));
 		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 			cqValueField.setVisible(false);

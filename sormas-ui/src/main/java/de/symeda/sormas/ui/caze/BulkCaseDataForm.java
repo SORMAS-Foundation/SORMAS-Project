@@ -268,12 +268,6 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 			getContent().addComponent(surveillanceOfficerCheckBox, SURVEILLANCE_OFFICER_CHECKBOX);
 			ComboBox surveillanceOfficer = addField(CaseBulkEditData.SURVEILLANCE_OFFICER, ComboBox.class);
 			surveillanceOfficer.setEnabled(false);
-			FieldHelper.addSoftRequiredStyleWhen(
-				getFieldGroup(),
-				surveillanceOfficerCheckBox,
-				Arrays.asList(CaseBulkEditData.SURVEILLANCE_OFFICER),
-				Arrays.asList(true),
-				null);
 			Set<Disease> selectedDiseases = this.selectedCases.stream().map(c -> c.getDisease()).collect(Collectors.toSet());
 			List<UserReferenceDto> assignableCaseResponsibles = null;
 
@@ -458,12 +452,6 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 		}
 
 		FieldHelper.setRequiredWhen(getFieldGroup(), diseaseCheckBox, Arrays.asList(CaseBulkEditData.DISEASE), Arrays.asList(true));
-		FieldHelper.addSoftRequiredStyleWhen(
-			getFieldGroup(),
-			diseaseVariantCheckBox,
-			Arrays.asList(CaseBulkEditData.DISEASE_VARIANT),
-			Arrays.asList(true),
-			null);
 		FieldHelper
 			.setRequiredWhen(getFieldGroup(), classificationCheckBox, Arrays.asList(CaseBulkEditData.CASE_CLASSIFICATION), Arrays.asList(true));
 		FieldHelper
@@ -527,11 +515,6 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 			healthFacilityDetails.setEnabled((boolean) e.getProperty().getValue());
 			facilityType.setEnabled((boolean) e.getProperty().getValue());
 			facility.setEnabled((boolean) e.getProperty().getValue());
-			if ((boolean) e.getProperty().getValue()) {
-				FieldHelper.addSoftRequiredStyle(community);
-			} else {
-				FieldHelper.removeSoftRequiredStyle(community);
-			}
 		});
 
 		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {

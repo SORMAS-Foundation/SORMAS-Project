@@ -68,7 +68,6 @@ public class UserRoleCreateForm extends AbstractEditForm<UserRoleDto> {
 		getContent().addComponent(infoLabel, TEMPLATE_INFO_LOC);
 
 		ComboBox templateRoleCombo = addCustomField(TEMPLATE_USER_ROLE, UserRoleDto.class, ComboBox.class);
-		setSoftRequired(true, TEMPLATE_USER_ROLE);
 		UserRoleFormHelper.setTemplateRoleItems(templateRoleCombo);
 		templateRoleCombo.addValueChangeListener(e -> applyTemplateData((UserRoleDto) e.getProperty().getValue()));
 

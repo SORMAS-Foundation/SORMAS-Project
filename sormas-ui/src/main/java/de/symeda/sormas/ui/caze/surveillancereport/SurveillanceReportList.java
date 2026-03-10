@@ -54,12 +54,14 @@ import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentField;
 public class SurveillanceReportList extends PaginationList<SurveillanceReportDto> {
 
 	private final SurveillanceReportCriteria criteria = new SurveillanceReportCriteria();
+	private final CaseReferenceDto caseRef;
 	private final boolean isEditAllowed;
 	private final UserRight editRight;
 
 	public SurveillanceReportList(CaseReferenceDto caze, UserRight editRight, boolean isEditAllowed) {
 		super(5);
 		criteria.caze(caze);
+		this.caseRef = caze;
 		this.editRight = editRight;
 		this.isEditAllowed = isEditAllowed;
 	}
@@ -138,6 +140,11 @@ public class SurveillanceReportList extends PaginationList<SurveillanceReportDto
 				continue;
 			}
 
+			// Skip entry if the user doesn't have the permission to view the report
+			if (ReportingType.PHONE_NOTIFICATION.equals(report.getReportingType()) && !userHasDoctorDeclarationView) {
+				continue;
+			}
+
 			SurveillanceReportListEntry listEntry = new SurveillanceReportListEntry(report);
 
 			// Only allow editing if the user has the permission to edit the case
@@ -149,13 +156,24 @@ public class SurveillanceReportList extends PaginationList<SurveillanceReportDto
 				&& !report.isOwnershipHandedOver()
 				&& (report.getSormasToSormasOriginInfo() == null || report.getSormasToSormasOriginInfo().isOwnershipHandedOver())
 				&& ((ReportingType.LABORATORY.equals(report.getReportingType()) && userHasLaboratoryProcessing)
-					|| (ReportingType.DOCTOR.equals(report.getReportingType()) && userHasDoctorDeclarationProcessing));
+					|| (ReportingType.DOCTOR.equals(report.getReportingType()) && userHasDoctorDeclarationProcessing)
+					|| (ReportingType.PHONE_NOTIFICATION.equals(report.getReportingType()) && userHasDoctorDeclarationProcessing));
 
-			listEntry.addActionButton(
-				report.getUuid(),
-				(Button.ClickListener) event -> ControllerProvider.getSurveillanceReportController()
-					.editSurveillanceReport(listEntry.getReport(), this::reload, isEditable),
-				isEditable);
+			if (ReportingType.PHONE_NOTIFICATION.equals(report.getReportingType())) {
+				// we do not allow editing frome the side view because we cannot reload the case page
+				// phone notifications are only editable from the case page notification box
+				listEntry.addActionButton(
+					report.getUuid(),
+					(Button.ClickListener) event -> ControllerProvider.getCaseNotifierSideViewController()
+						.editPhoneNotification(caseRef, this::reload, false),
+					false);
+			} else {
+				listEntry.addActionButton(
+					report.getUuid(),
+					(Button.ClickListener) event -> ControllerProvider.getSurveillanceReportController()
+						.editSurveillanceReport(listEntry.getReport(), this::reload, isEditable),
+					isEditable);
+			}
 
 			listEntry.setEnabled(isEditable);
 
