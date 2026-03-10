@@ -54,6 +54,10 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	public static final String PREVIOUS_TUBERCULOSIS_TREATMENT = "previousTuberculosisTreatment";
 	public static final String COMPLIANCE_WITH_TREATMENT = "complianceWithTreatment";
 	public static final String RECURRENT_BRONCHIOLITIS = "recurrentBronchiolitis";
+	public static final String IMMUNODEFICIENCY_OTHER_THAN_HIV_TEXT = "immunodeficiencyOtherThanHivText";
+	public static final String EXPOSED_TO_MOSQUITO_BORNE_VIRUSES = "exposedToMosquitoBorneViruses";
+	public static final String EXPOSED_TO_MOSQUITO_BORNE_VIRUSES_TEXT = "exposedToMosquitoBorneVirusesText";
+	public static final String VACCINATED_AGAINST_MOSQUITO_BORNE_VIRUSES = "vaccinatedAgainstMosquitoBorneViruses";
 
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
@@ -97,6 +101,11 @@ public class HealthConditionsDto extends PseudonymizableDto {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
 	private YesNoUnknown immunodeficiencyOtherThanHiv;
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	@Diseases(value = {
+		Disease.DENGUE })
+	private String immunodeficiencyOtherThanHivText;
 	private YesNoUnknown cardiovascularDiseaseIncludingHypertension;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
@@ -144,6 +153,22 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	@Diseases(value = {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	private YesNoUnknown recurrentBronchiolitis;
+
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	@Diseases(value = {
+		Disease.DENGUE })
+	private YesNoUnknown exposedToMosquitoBorneViruses;
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	@Diseases(value = {
+		Disease.DENGUE })
+	private String exposedToMosquitoBorneVirusesText;
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	@Diseases(value = {
+		Disease.DENGUE })
+	private YesNoUnknown vaccinatedAgainstMosquitoBorneViruses;
 
 	public static HealthConditionsDto build() {
 		HealthConditionsDto healthConditions = new HealthConditionsDto();
@@ -389,5 +414,37 @@ public class HealthConditionsDto extends PseudonymizableDto {
 
 	public void setRecurrentBronchiolitis(YesNoUnknown recurrentBronchiolitis) {
 		this.recurrentBronchiolitis = recurrentBronchiolitis;
+	}
+
+	public String getImmunodeficiencyOtherThanHivText() {
+		return immunodeficiencyOtherThanHivText;
+	}
+
+	public void setImmunodeficiencyOtherThanHivText(String immunodeficiencyOtherThanHivText) {
+		this.immunodeficiencyOtherThanHivText = immunodeficiencyOtherThanHivText;
+	}
+
+	public YesNoUnknown getExposedToMosquitoBorneViruses() {
+		return exposedToMosquitoBorneViruses;
+	}
+
+	public void setExposedToMosquitoBorneViruses(YesNoUnknown exposedToMosquitoBorneViruses) {
+		this.exposedToMosquitoBorneViruses = exposedToMosquitoBorneViruses;
+	}
+
+	public String getExposedToMosquitoBorneVirusesText() {
+		return exposedToMosquitoBorneVirusesText;
+	}
+
+	public void setExposedToMosquitoBorneVirusesText(String exposedToMosquitoBorneVirusesText) {
+		this.exposedToMosquitoBorneVirusesText = exposedToMosquitoBorneVirusesText;
+	}
+
+	public YesNoUnknown getVaccinatedAgainstMosquitoBorneViruses() {
+		return vaccinatedAgainstMosquitoBorneViruses;
+	}
+
+	public void setVaccinatedAgainstMosquitoBorneViruses(YesNoUnknown vaccinatedAgainstMosquitoBorneViruses) {
+		this.vaccinatedAgainstMosquitoBorneViruses = vaccinatedAgainstMosquitoBorneViruses;
 	}
 }

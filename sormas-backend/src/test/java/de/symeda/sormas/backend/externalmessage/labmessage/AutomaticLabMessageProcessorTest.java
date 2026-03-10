@@ -225,7 +225,7 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 		assertThat(externalMessage.getStatus(), is(ExternalMessageStatus.UNPROCESSED));
 
 		// set the threshold
-		creator.updateDiseaseConfiguration(externalMessage.getDisease(), true, true, true, true, null, 10);
+		creator.updateDiseaseConfiguration(externalMessage.getDisease(), true, true, true, true, null, 10, false, 0, 0);
 		getBean(DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal.class).loadData();
 
 		// set the case report date back before the threshold
@@ -287,7 +287,7 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 		});
 
 		// set the threshold
-		creator.updateDiseaseConfiguration(externalMessage.getDisease(), true, true, true, true, null, 10);
+		creator.updateDiseaseConfiguration(externalMessage.getDisease(), true, true, true, true, null, 10, false, 0, 0);
 		getBean(DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal.class).loadData();
 
 		ProcessingResult<ExternalMessageProcessingResult> result = runFlow(externalMessage);
@@ -337,7 +337,7 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 		assertThat("Sample count should have remained the same.", sampleCountAfterStep1, is(sampleCountBeforeStep1));
 
 		// set the threshold
-		creator.updateDiseaseConfiguration(externalMessage.getDisease(), true, true, true, true, null, 10);
+		creator.updateDiseaseConfiguration(externalMessage.getDisease(), true, true, true, true, null, 10, false, 0, 0);
 		getBean(DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal.class).loadData();
 
 		// set the sample date time back before the threshold

@@ -1348,7 +1348,11 @@ public class CaseController {
 		return component;
 	}
 
-	public CommitDiscardWrapperComponent<SymptomsForm> getSymptomsEditComponent(final String caseUuid, ViewMode viewMode) {
+	// Adding a symptom side view component as parameter to display the selected symptoms as complicated, dynamically in the side view
+	public CommitDiscardWrapperComponent<SymptomsForm> getSymptomsEditComponent(
+		final String caseUuid,
+		ViewMode viewMode,
+		CaseSymptomSideViewComponent caseSymptomSideViewComponent) {
 
 		CaseDataDto caseDataDto = findCase(caseUuid);
 		PersonDto person = FacadeProvider.getPersonFacade().getByUuid(caseDataDto.getPerson().getUuid());
@@ -1360,6 +1364,7 @@ public class CaseController {
 			SymptomsContext.CASE,
 			viewMode,
 			FieldAccessHelper.getFieldAccessCheckers(caseDataDto));
+		symptomsForm.setCaseSymptomSideViewComponent(caseSymptomSideViewComponent);
 		symptomsForm.setValue(caseDataDto.getSymptoms());
 
 		CommitDiscardWrapperComponent<SymptomsForm> editView =

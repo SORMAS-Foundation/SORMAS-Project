@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.api.caze;
 
+import static de.symeda.sormas.api.caze.Vaccine.VaccineCodes.Builder;
+
 import javax.annotation.Nullable;
 
 import de.symeda.sormas.api.Disease;
@@ -68,24 +70,60 @@ public enum Vaccine {
 	@Diseases(value = {
 		Disease.MONKEYPOX })
 	LC_16(VaccineManufacturer.KM_BIOLOGICS),
-	@Diseases(value = {Disease.INVASIVE_PNEUMOCOCCAL_INFECTION})
-	PREVENAR_13_PFIZER(VaccineManufacturer.PFIZER, "PCV13"),
-	@Diseases(value = {Disease.INVASIVE_PNEUMOCOCCAL_INFECTION})
-	VAXNEUVANCE_MERCK(VaccineManufacturer.MERCK,"PCV15"),
-	@Diseases(value = {Disease.INVASIVE_PNEUMOCOCCAL_INFECTION})
-	PREVNAR_20_PFIZER(VaccineManufacturer.PFIZER, "PCV20"),
-	@Diseases(value = {Disease.INVASIVE_PNEUMOCOCCAL_INFECTION})
-	PNEUMOVAX_23_MERCK(VaccineManufacturer.MERCK,"PPV23"),
+	@Diseases(value = {
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
+	PREVENAR_13_PFIZER(VaccineManufacturer.PFIZER, new Builder().withVaccineType("PCV13").build()),
+	@Diseases(value = {
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
+	VAXNEUVANCE_MERCK(VaccineManufacturer.MERCK, new Builder().withVaccineType("PCV15").build()),
+	@Diseases(value = {
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
+	PREVNAR_20_PFIZER(VaccineManufacturer.PFIZER, new Builder().withVaccineType("PCV20").build()),
+	@Diseases(value = {
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
+	PNEUMOVAX_23_MERCK(VaccineManufacturer.MERCK, new Builder().withVaccineType("PPV23").build()),
 	@Diseases(value = {
 		Disease.MONKEYPOX })
 	MVA_BN(VaccineManufacturer.BAVARIAN_NORDIC),
+	@Diseases(value = {
+		Disease.DENGUE })
+	DENGVAXIA(VaccineManufacturer.SANOFI_PASTEUR,
+		new Builder().withVaccineType("Live attenuated")
+			.withInn("Chimeric yellow fever dengue tetravalent vaccine (live, attenuated)")
+			.withAtcCode("J07BF06")
+			.withUniiCode("39V92P2S5S")
+			.build()),
+	@Diseases(value = {
+		Disease.DENGUE })
+	QDENGA(VaccineManufacturer.TAKEDA,
+		new VaccineCodes.Builder().withVaccineType("Live attenuated")
+			.withInn("Live attenuated tetravalent dengue vaccine")
+			.withAtcCode("J07BF07")
+			.withUniiCode("N/A (not yet assigned)")
+			.build()),
+	@Diseases(value = {
+		Disease.MALARIA })
+	RTS_S_AS01(VaccineManufacturer.GSK,
+		new Builder().withVaccineType("Subunit")
+			.withInn("Mosquirix (recombinant protein)")
+			.withAtcCode("J07BX03")
+			.withUniiCode("7C2S4M6X1H")
+			.build()),
+	@Diseases(value = {
+		Disease.MALARIA })
+	R21_MATRIX_M(VaccineManufacturer.OXFORD,
+		new Builder().withVaccineType("Subunit")
+			.withInn("Recombinant protein vaccine")
+			.withAtcCode("N/A (not yet assigned)")
+			.withUniiCode("N/A (not yet assigned)")
+			.build()),
 	UNKNOWN,
 	OTHER;
 
 	@Nullable
 	private VaccineManufacturer manufacturer;
 	@Nullable
-	private String vaccineType;
+	private VaccineCodes vaccineCodes;
 
 	Vaccine() {
 	}
@@ -99,25 +137,88 @@ public enum Vaccine {
 	 *
 	 * @param manufacturer
 	 *            the manufacturer of the vaccine
-	 * @param vaccineType
 	 *            the type of the vaccine (e.g. "PCV13")
 	 */
-	Vaccine(@Nullable VaccineManufacturer manufacturer, @Nullable String vaccineType) {
+	Vaccine(@Nullable VaccineManufacturer manufacturer, @Nullable VaccineCodes vaccineCodes) {
 		this.manufacturer = manufacturer;
-		this.vaccineType = vaccineType;
+		this.vaccineCodes = vaccineCodes;
 	}
 
 	public VaccineManufacturer getManufacturer() {
 		return manufacturer;
 	}
 
-	@Nullable
-	public String getVaccineType() {
-		return vaccineType;
+	public VaccineCodes getVaccineCodes() {
+		return vaccineCodes;
 	}
 
 	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
+
+	public static class VaccineCodes {
+
+		private final String inn;
+		private final String atcCode;
+		private final String uniiCode;
+		private final String vaccineType;
+
+		public VaccineCodes(Builder builder) {
+			this.inn = builder.inn;
+			this.atcCode = builder.atcCode;
+			this.uniiCode = builder.uniiCode;
+			this.vaccineType = builder.vaccineType;
+		}
+
+		static final class Builder {
+
+			private String inn;
+			private String atcCode;
+			private String uniiCode;
+			private String vaccineType;
+
+			public Builder withInn(String inn) {
+				this.inn = inn;
+				return this;
+			}
+
+			public Builder withAtcCode(String atcCode) {
+				this.atcCode = atcCode;
+				return this;
+			}
+
+			public Builder withUniiCode(String uniiCode) {
+				this.uniiCode = uniiCode;
+				return this;
+			}
+
+			public Builder withVaccineType(String vaccineType) {
+				this.vaccineType = vaccineType;
+				return this;
+			}
+
+			public VaccineCodes build() {
+				return new VaccineCodes(this);
+			}
+
+		}
+
+		public String getInn() {
+			return inn;
+		}
+
+		public String getAtcCode() {
+			return atcCode;
+		}
+
+		public String getUniiCode() {
+			return uniiCode;
+		}
+
+		public String getVaccineType() {
+			return vaccineType;
+		}
+	}
+
 }

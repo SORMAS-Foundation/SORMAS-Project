@@ -20,6 +20,10 @@ public class DiseaseConfigurationDto extends EntityDto {
 	public static final String FOLLOW_UP_DURATION = "followUpDuration";
 	public static final String CASE_FOLLOW_UP_DURATION = "caseFollowUpDuration";
 	public static final String EVENT_PARTICIPANT_FOLLOW_UP_DURATION = "eventParticipantFollowUpDuration";
+	public static final String INCUBATION_PERIOD_ENABLED = "incubationPeriodEnabled";
+	public static final String MAX_INCUBATION_PERIOD = "maxIncubationPeriod";
+	public static final String MIN_INCUBATION_PERIOD = "minIncubationPeriod";
+	public static final String CASE_DEFINITION_TEXT = "caseDefinitionText";
 	public static final String EXTENDED_CLASSIFICATION = "extendedClassification";
 	public static final String EXTENDED_CLASSIFICATION_MULTI = "extendedClassificationMulti";
 	public static final String AGE_GROUPS = "ageGroups";
@@ -34,6 +38,10 @@ public class DiseaseConfigurationDto extends EntityDto {
 	private Integer followUpDuration;
 	private Integer caseFollowUpDuration;
 	private Integer eventParticipantFollowUpDuration;
+	private Boolean incubationPeriodEnabled;
+	private Integer maxIncubationPeriod;
+	private Integer minIncubationPeriod;
+	private String caseDefinitionText;
 	private Boolean extendedClassification;
 	private Boolean extendedClassificationMulti;
 	private List<String> ageGroups;
@@ -109,6 +117,38 @@ public class DiseaseConfigurationDto extends EntityDto {
 
 	public void setEventParticipantFollowUpDuration(Integer eventParticipantFollowUpDuration) {
 		this.eventParticipantFollowUpDuration = eventParticipantFollowUpDuration;
+	}
+
+	public Boolean getIncubationPeriodEnabled() {
+		return incubationPeriodEnabled;
+	}
+
+	public void setIncubationPeriodEnabled(Boolean incubationPeriodEnabled) {
+		this.incubationPeriodEnabled = incubationPeriodEnabled;
+	}
+
+	public Integer getMaxIncubationPeriod() {
+		return maxIncubationPeriod;
+	}
+
+	public void setMaxIncubationPeriod(Integer maxIncubationPeriod) {
+		this.maxIncubationPeriod = maxIncubationPeriod;
+	}
+
+	public Integer getMinIncubationPeriod() {
+		return minIncubationPeriod;
+	}
+
+	public void setMinIncubationPeriod(Integer minIncubationPeriod) {
+		this.minIncubationPeriod = minIncubationPeriod;
+	}
+
+	public String getCaseDefinitionText() {
+		return caseDefinitionText;
+	}
+
+	public void setCaseDefinitionText(String caseDefinitionText) {
+		this.caseDefinitionText = caseDefinitionText;
 	}
 
 	public Boolean getExtendedClassification() {

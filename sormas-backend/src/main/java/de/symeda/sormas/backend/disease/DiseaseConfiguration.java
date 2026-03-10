@@ -43,7 +43,11 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 	private Boolean followUpEnabled;
 	private Integer followUpDuration;
 	private Integer caseFollowUpDuration;
+	private Boolean incubationPeriodEnabled;
 	private Integer eventParticipantFollowUpDuration;
+	private Integer maxIncubationPeriod;
+	private Integer minIncubationPeriod;
+	private String caseDefinitionText;
 	private Boolean extendedClassification;
 	private Boolean extendedClassificationMulti;
 	private List<String> ageGroups;
@@ -136,6 +140,42 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 
 	public void setEventParticipantFollowUpDuration(Integer eventParticipantFollowUpDuration) {
 		this.eventParticipantFollowUpDuration = eventParticipantFollowUpDuration;
+	}
+
+	@Column
+	public Boolean getIncubationPeriodEnabled() {
+		return incubationPeriodEnabled;
+	}
+
+	public void setIncubationPeriodEnabled(Boolean incubationPeriodEnabled) {
+		this.incubationPeriodEnabled = incubationPeriodEnabled;
+	}
+
+	@Column
+	public Integer getMaxIncubationPeriod() {
+		return maxIncubationPeriod;
+	}
+
+	public void setMaxIncubationPeriod(Integer maxIncubationPeriod) {
+		this.maxIncubationPeriod = maxIncubationPeriod;
+	}
+
+	@Column
+	public Integer getMinIncubationPeriod() {
+		return minIncubationPeriod;
+	}
+
+	public void setMinIncubationPeriod(Integer minIncubationPeriod) {
+		this.minIncubationPeriod = minIncubationPeriod;
+	}
+
+	@Column
+	public String getCaseDefinitionText() {
+		return caseDefinitionText;
+	}
+
+	public void setCaseDefinitionText(String caseDefinitionText) {
+		this.caseDefinitionText = caseDefinitionText;
 	}
 
 	@Column

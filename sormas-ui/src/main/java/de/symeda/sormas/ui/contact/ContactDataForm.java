@@ -182,7 +182,6 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private final ViewMode viewMode;
 	private final Disease disease;
 	private final boolean diseaseHasFollowUp;
-	private final boolean luxMeasles;
 	private OptionGroup contactProximities;
 	private ComboBox region;
 	private ComboBox district;
@@ -223,7 +222,6 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		this.viewMode = viewMode;
 		this.disease = disease;
 		this.diseaseHasFollowUp = FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(disease);
-		this.luxMeasles = Disease.MEASLES == disease && FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 		addFields();
 	}
 

@@ -613,6 +613,15 @@ public final class FieldHelper {
 		Arrays.asList(fields).forEach(field -> field.setEnabled(enabled));
 	}
 
+	public static void setClearEnabled(boolean enabled, Field... fields) {
+		Arrays.asList(fields).forEach(field -> {
+			field.setEnabled(enabled);
+			if (enabled) {
+				field.clear();
+			}
+		});
+	}
+
 	public static void setFirstVisibleClearOthers(Field<?> first, Field<?>... others) {
 		if (first != null) {
 			first.setVisible(true);

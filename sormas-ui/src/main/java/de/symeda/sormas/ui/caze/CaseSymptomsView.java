@@ -17,15 +17,22 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
+import de.symeda.sormas.ui.utils.LayoutWithSidePanel;
 
 public class CaseSymptomsView extends AbstractCaseView {
 
 	private static final long serialVersionUID = -1L;
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/symptoms";
+	public static final String COMPLICATIONS_LOC = "Complications";
+	public CommitDiscardWrapperComponent<SymptomsForm> caseSymptomsComponent;
 
 	public CaseSymptomsView() {
 		super(VIEW_NAME, true);
@@ -33,10 +40,23 @@ public class CaseSymptomsView extends AbstractCaseView {
 
 	@Override
 	protected void initView(String params) {
+		setHeightUndefined();
+		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> caseSymptomsComponent);
+		container.setWidth(100, Unit.PERCENTAGE);
+		container.setMargin(true);
+		setSubComponent(container);
+		container.setEnabled(true);
 
-		CommitDiscardWrapperComponent<SymptomsForm> caseSymptomsComponent =
-			ControllerProvider.getCaseController().getSymptomsEditComponent(getCaseRef().getUuid(), getViewMode());
-		setSubComponent(caseSymptomsComponent);
+		CaseDataDto caseDataDto = FacadeProvider.getCaseFacade().getByUuid(getCaseRef().getUuid());
+		CaseSymptomSideViewComponent symptomSideViewComponent = new CaseSymptomSideViewComponent(caseDataDto.getDisease());
+		caseSymptomsComponent =
+			ControllerProvider.getCaseController().getSymptomsEditComponent(getCaseRef().getUuid(), getViewMode(), symptomSideViewComponent);
+		LayoutWithSidePanel layout = new LayoutWithSidePanel(caseSymptomsComponent, COMPLICATIONS_LOC);
+		container.addComponent(layout);
+		layout.addSidePanelComponent(symptomSideViewComponent, COMPLICATIONS_LOC);
+		symptomSideViewComponent.addStyleNames(CssStyles.SIDE_COMPONENT);
+
+		setSubComponent(container);
 		setEditPermission(caseSymptomsComponent);
 	}
 }

@@ -50,7 +50,9 @@ public enum SampleMaterial {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-		Disease.MEASLES }, hide = true)
+		Disease.MEASLES,
+		Disease.MALARIA,
+		Disease.DENGUE }, hide = true)
 	STOOL,
 
 	@Diseases(value = {
@@ -58,7 +60,9 @@ public enum SampleMaterial {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MALARIA,
+		Disease.DENGUE }, hide = true)
 	THROAT_ASPIRATE,
 
 	@Diseases(value = {
@@ -67,7 +71,9 @@ public enum SampleMaterial {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MALARIA,
+		Disease.DENGUE }, hide = true)
 	NASAL_SWAB,
 
 	@Diseases(value = {
@@ -75,14 +81,18 @@ public enum SampleMaterial {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MALARIA,
+		Disease.DENGUE }, hide = true)
 	THROAT_SWAB,
 
 	@Diseases(value = {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MALARIA,
+		Disease.DENGUE }, hide = true)
 	NP_SWAB,
 
 	@Diseases(value = {
@@ -92,14 +102,18 @@ public enum SampleMaterial {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MALARIA,
+		Disease.DENGUE }, hide = true)
 	RECTAL_SWAB,
 
 	@Diseases(value = {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MALARIA,
+		Disease.DENGUE }, hide = true)
 	CEREBROSPINAL_FLUID,
 
 	@Diseases(value = {
@@ -109,7 +123,9 @@ public enum SampleMaterial {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MALARIA,
+		Disease.DENGUE }, hide = true)
 	CRUST,
 
 	@Diseases(value = {
@@ -118,7 +134,8 @@ public enum SampleMaterial {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MALARIA }, hide = true)
 	TISSUE,
 
 	@Diseases(value = {
@@ -126,7 +143,8 @@ public enum SampleMaterial {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MALARIA }, hide = true)
 	URINE,
 
 	@Diseases(value = {
@@ -136,7 +154,9 @@ public enum SampleMaterial {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MALARIA,
+		Disease.DENGUE }, hide = true)
 	CORNEA_PM,
 
 	@Diseases(value = {
@@ -144,7 +164,8 @@ public enum SampleMaterial {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MALARIA }, hide = true)
 	SALIVA,
 
 	@Diseases(value = {
@@ -154,7 +175,9 @@ public enum SampleMaterial {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MALARIA,
+		Disease.DENGUE }, hide = true)
 	URINE_PM,
 
 	@Diseases(value = {
@@ -164,7 +187,9 @@ public enum SampleMaterial {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MALARIA,
+		Disease.DENGUE }, hide = true)
 	NUCHAL_SKIN_BIOPSY,
 
 	@Diseases({
@@ -177,7 +202,9 @@ public enum SampleMaterial {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MALARIA,
+		Disease.DENGUE }, hide = true)
 	SPUTUM,
 
 	@Diseases(value = {
@@ -186,7 +213,9 @@ public enum SampleMaterial {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MALARIA,
+		Disease.DENGUE }, hide = true)
 	ENDOTRACHEAL_ASPIRATE,
 
 	@Diseases(value = {
@@ -194,7 +223,9 @@ public enum SampleMaterial {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MALARIA,
+		Disease.DENGUE }, hide = true)
 	BRONCHOALVEOLAR_LAVAGE,
 
 	@Diseases(value = {
@@ -204,7 +235,9 @@ public enum SampleMaterial {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MALARIA,
+		Disease.DENGUE }, hide = true)
 	BRAIN_TISSUE,
 
 	@Diseases(value = {
@@ -213,7 +246,9 @@ public enum SampleMaterial {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MALARIA,
+		Disease.DENGUE }, hide = true)
 	ANTERIOR_NARES_SWAB,
 
 	@Diseases(value = {
@@ -222,14 +257,18 @@ public enum SampleMaterial {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MALARIA,
+		Disease.DENGUE }, hide = true)
 	OP_ASPIRATE,
 
 	@Diseases(value = {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MALARIA,
+		Disease.DENGUE }, hide = true)
 	NP_ASPIRATE,
 
 	@Diseases(value = {
@@ -237,7 +276,9 @@ public enum SampleMaterial {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MALARIA,
+		Disease.DENGUE }, hide = true)
 	PLEURAL_FLUID,
 
 	@Diseases(value = {
@@ -252,7 +293,9 @@ public enum SampleMaterial {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MALARIA,
+		Disease.DENGUE }, hide = true)
 	AMNIOTIC_FLUID,
 
 	@Diseases(value = {
@@ -265,14 +308,18 @@ public enum SampleMaterial {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MALARIA,
+		Disease.DENGUE }, hide = true)
 	PERITONEAL_FLUID,
 
 	@Diseases(value = {
 		Disease.MEASLES,
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MALARIA,
+		Disease.DENGUE }, hide = true)
 	SYNOVIAL_FLUID,
 
 	@Diseases(value = {

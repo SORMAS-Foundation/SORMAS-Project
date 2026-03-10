@@ -494,6 +494,8 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	private boolean nosocomialOutbreak;
 	@HideForCountriesExcept
 	private InfectionSetting infectionSetting;
+	@Diseases(value = {
+		Disease.MALARIA }, hide = true)
 	private QuarantineType quarantine;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)

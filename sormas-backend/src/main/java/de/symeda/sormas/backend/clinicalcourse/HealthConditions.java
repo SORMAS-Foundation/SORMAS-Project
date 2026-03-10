@@ -33,6 +33,7 @@ public class HealthConditions extends AbstractDomainObject {
 	private YesNoUnknown downSyndrome;
 	private YesNoUnknown congenitalSyphilis;
 	private YesNoUnknown immunodeficiencyOtherThanHiv;
+	private String immunodeficiencyOtherThanHivText;
 	private YesNoUnknown cardiovascularDiseaseIncludingHypertension;
 	private YesNoUnknown obesity;
 	private YesNoUnknown currentSmoker;
@@ -41,6 +42,9 @@ public class HealthConditions extends AbstractDomainObject {
 	private YesNoUnknown sickleCellDisease;
 	private YesNoUnknown immunodeficiencyIncludingHiv;
 	private String otherConditions;
+	private YesNoUnknown exposedToMosquitoBorneViruses;
+	private String exposedToMosquitoBorneVirusesText;
+	private YesNoUnknown vaccinatedAgainstMosquitoBorneViruses;
 
 	private Integer tuberculosisInfectionYear;
 	private YesNoUnknown previousTuberculosisTreatment;
@@ -288,5 +292,39 @@ public class HealthConditions extends AbstractDomainObject {
 
 	public void setRecurrentBronchiolitis(YesNoUnknown recurrentBronchiolitis) {
 		this.recurrentBronchiolitis = recurrentBronchiolitis;
+	}
+
+	public String getImmunodeficiencyOtherThanHivText() {
+		return immunodeficiencyOtherThanHivText;
+	}
+
+	public void setImmunodeficiencyOtherThanHivText(String immunodeficiencyOtherThanHivText) {
+		this.immunodeficiencyOtherThanHivText = immunodeficiencyOtherThanHivText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getExposedToMosquitoBorneViruses() {
+		return exposedToMosquitoBorneViruses;
+	}
+
+	public void setExposedToMosquitoBorneViruses(YesNoUnknown exposedToMosquitoBorneViruses) {
+		this.exposedToMosquitoBorneViruses = exposedToMosquitoBorneViruses;
+	}
+
+	public String getExposedToMosquitoBorneVirusesText() {
+		return exposedToMosquitoBorneVirusesText;
+	}
+
+	public void setExposedToMosquitoBorneVirusesText(String exposedToMosquitoBorneVirusesText) {
+		this.exposedToMosquitoBorneVirusesText = exposedToMosquitoBorneVirusesText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getVaccinatedAgainstMosquitoBorneViruses() {
+		return vaccinatedAgainstMosquitoBorneViruses;
+	}
+
+	public void setVaccinatedAgainstMosquitoBorneViruses(YesNoUnknown vaccinatedAgainstMosquitoBorneViruses) {
+		this.vaccinatedAgainstMosquitoBorneViruses = vaccinatedAgainstMosquitoBorneViruses;
 	}
 }

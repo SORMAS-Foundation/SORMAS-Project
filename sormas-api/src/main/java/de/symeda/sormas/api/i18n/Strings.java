@@ -1041,6 +1041,7 @@ public interface Strings {
 	String infoExportNoFilters = "infoExportNoFilters";
 	String infoExposureInvestigation = "infoExposureInvestigation";
 	String infoExposureInvestigationContacts = "infoExposureInvestigationContacts";
+	String infoExposurePeriodHeading = "infoExposurePeriodHeading";
 	String infoExposuresInfectionEnvironmentHint = "infoExposuresInfectionEnvironmentHint";
 	String infoExposuresRiskAreaHint = "infoExposuresRiskAreaHint";
 	String infoExternalMessageHospitalizationFacilityMissing = "infoExternalMessageHospitalizationFacilityMissing";

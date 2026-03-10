@@ -121,7 +121,17 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	public static final String HAS_GUARDIAN = "hasGuardian";
 	public static final Set<Disease> PERINATAL_DISEASES =
 		Collections.unmodifiableSet(new HashSet<>(Arrays.asList(Disease.CONGENITAL_RUBELLA, Disease.RESPIRATORY_SYNCYTIAL_VIRUS)));
-
+	public static final Set<Disease> ENTRY_DATE_DISEASE = Collections.unmodifiableSet(
+		new HashSet<>(
+			Arrays.asList(
+				Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+				Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+				Disease.TUBERCULOSIS,
+				Disease.MEASLES,
+				Disease.GIARDIASIS,
+				Disease.CRYPTOSPORIDIOSIS,
+				Disease.MALARIA,
+				Disease.DENGUE)));
 	//@formatter:off
     private static final String HTML_LAYOUT =
             loc(PERSON_INFORMATION_HEADING_LOC) +
@@ -426,16 +436,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		entryDateDF.setVisible(false);
 		// Entry date is only required for foreigners in Luxembourg with the TB+IMI+IPI diseases only.
 		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
-			boolean isEntryDateAllowedDisease =
-				Arrays
-					.asList(
-						Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-						Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-						Disease.TUBERCULOSIS,
-						Disease.MEASLES,
-						Disease.GIARDIASIS,
-						Disease.CRYPTOSPORIDIOSIS)
-					.contains(disease);
+			boolean isEntryDateAllowedDisease = ENTRY_DATE_DISEASE.contains(disease);
 			birthCountryCB.addValueChangeListener(e -> {
 				CountryReferenceDto countryRef = (CountryReferenceDto) e.getProperty().getValue();
 				boolean isForeigner = false;
