@@ -15264,6 +15264,6 @@ ALTER TABLE externalmessage ADD COLUMN additionalPersonAddresses jsonb;
 ALTER TABLE externalmessage_history ADD COLUMN additionalPersonContactDetails jsonb;
 ALTER TABLE externalmessage_history ADD COLUMN additionalPersonAddresses jsonb;
 
-INSERT INTO schema_version (version_number, comment) VALUES (611, '#13754 - Multiple person contacts and addresses');
+INSERT INTO schema_version (version_number, comment) VALUES (611, '#13625 - Multiple person contacts and addresses');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

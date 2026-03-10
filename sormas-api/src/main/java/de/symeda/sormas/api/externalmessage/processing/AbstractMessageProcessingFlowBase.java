@@ -1063,9 +1063,8 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
         }
 
         if (personSelection.isNew()) {
-            // no merges for new person but we still need to update the additional conta
-            getMapper().mapAdditionalPersonAddresses(person);
-            getMapper().mapAdditionalPersonContactDetails(person);
+            // no merges for new person
+            // additional contacts will be handled by {@link AbstractProcessingFlow#buildPerson()}
             return;
         }
 

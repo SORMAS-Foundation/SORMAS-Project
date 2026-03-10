@@ -293,8 +293,33 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 
 		// If multiple options are available, show a selection window
 		if (optionsBuilder.size() > 1) {
+			HandlerCallback<PickOrCreateEntryResult> postUpdateCallback = new HandlerCallback<>() {
+
+				@Override
+				public void done(PickOrCreateEntryResult result) {
+					if (result.getCaze() != null) {
+						applyPersonUpdates(PersonContext.CASE, result.getCaze().getUuid());
+						CaseDataDto caze = FacadeProvider.getCaseFacade().getByUuid(result.getCaze().getUuid());
+						if (caze != null) {
+							applyNotifierUpdate(caze, externalMessage);
+						}
+					} else if (result.getContact() != null) {
+						applyPersonUpdates(PersonContext.CONTACT, result.getContact().getUuid());
+					} else if (result.getEventParticipant() != null) {
+						applyPersonUpdates(PersonContext.EVENT_PARTICIPANT, result.getEventParticipant().getUuid());
+					}
+
+					callback.done(result);
+				}
+
+				@Override
+				public void cancel() {
+					callback.cancel();
+				}
+			};
+
 			ProcessingUiHelper
-				.showPickOrCreateEntryWindow(new EntrySelectionComponentForExternalMessage(externalMessage, optionsBuilder.build()), callback);
+				.showPickOrCreateEntryWindow(new EntrySelectionComponentForExternalMessage(externalMessage, optionsBuilder.build()), postUpdateCallback);
 		} else {
 			// If only one option is available, directly proceed with it
 			callback.done(optionsBuilder.getSingleAvailableCreateResult());

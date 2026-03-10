@@ -327,6 +327,7 @@ public final class ExternalMessageMapper {
 			// just to be safe for whatever reason if address is null, create a new one
 			final LocationDto location = LocationDto.build();
 			// in this case we no longer need to merge the address, so we can just return the new location
+			person.setAddress(location);
 			return mapToLocation(location);
 		}
 
@@ -400,6 +401,7 @@ public final class ExternalMessageMapper {
 			} else {
 				// Create a new primary entry and demote the old primary
 				final PersonContactDetailDto personContactDetail = new PersonContactDetailDto();
+				personContactDetail.setUuid(DataHelper.createUuid());
 				personContactDetail.setPerson(person.toReference());
 				personContactDetail.setPrimaryContact(true);
 				personContactDetail.setPersonContactDetailType(PersonContactDetailType.PHONE);
@@ -440,6 +442,7 @@ public final class ExternalMessageMapper {
 			} else {
 				// Create a new primary entry and demote the old primary
 				final PersonContactDetailDto personContactDetail = new PersonContactDetailDto();
+				personContactDetail.setUuid(DataHelper.createUuid());
 				personContactDetail.setPerson(person.toReference());
 				personContactDetail.setPrimaryContact(true);
 				personContactDetail.setPersonContactDetailType(PersonContactDetailType.EMAIL);

@@ -131,8 +131,58 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 				UserRight.EVENTPARTICIPANT_EDIT);
 
 		if (optionsBuilder.size() > 1) {
+			HandlerCallback<PickOrCreateEntryResult> postUpdateCallback = new HandlerCallback<>() {
+
+				@Override
+				public void done(PickOrCreateEntryResult result) {
+
+					String personUuid = null;
+
+					if (result.getCaze() != null) {
+						// we need to get the person from the case
+						final CaseDataDto caze = FacadeProvider.getCaseFacade().getByUuid(result.getCaze().getUuid());
+						personUuid = caze != null && caze.getPerson() != null ? caze.getPerson().getUuid() : null;
+					}
+
+					if (result.getContact() != null) {
+						// sanity check
+						if (personUuid != null) {
+							throw new IllegalStateException("Multiple selections should not happen at the same time");
+						}
+						final ContactDto contact = FacadeProvider.getContactFacade().getByUuid(result.getContact().getUuid());
+						personUuid = contact != null && contact.getPerson() != null ? contact.getPerson().getUuid() : null;
+					}
+
+					if (result.getEventParticipant() != null) {
+						// sanity check
+						if (personUuid != null) {
+							throw new IllegalStateException("Multiple selections should not happen at the same time");
+						}
+						final EventParticipantDto eventParticipant =
+							FacadeProvider.getEventParticipantFacade().getByUuid(result.getEventParticipant().getUuid());
+						personUuid = eventParticipant != null && eventParticipant.getPerson() != null ? eventParticipant.getPerson().getUuid() : null;
+					}
+
+					final PersonDto processedPerson = FacadeProvider.getPersonFacade().getByUuid(personUuid);
+
+					if (processedPerson == null) {
+						callback.done(result);
+						return;
+					}
+
+					ExternalMessageProcessingUIHelper.updateAddressAndSavePerson(processedPerson, getMapper());
+
+					callback.done(result);
+				}
+
+				@Override
+				public void cancel() {
+					callback.cancel();
+				}
+			};
+
 			ProcessingUiHelper
-				.showPickOrCreateEntryWindow(new EntrySelectionComponentForExternalMessage(labMessage, optionsBuilder.build()), callback);
+				.showPickOrCreateEntryWindow(new EntrySelectionComponentForExternalMessage(labMessage, optionsBuilder.build()), postUpdateCallback);
 		} else {
 			callback.done(optionsBuilder.getSingleAvailableCreateResult());
 		}
