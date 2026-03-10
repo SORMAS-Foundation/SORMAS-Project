@@ -318,6 +318,12 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 			String dateType = generalProperty.substring(generalProperty.lastIndexOf('.') + 1);
 			FormatStyle formatStyle;
 			switch (dateType) {
+			case "long":
+				formatStyle = FormatStyle.LONG;
+				break;
+			case "full":
+				formatStyle = FormatStyle.FULL;
+				break;
 			case "medium":
 				formatStyle = FormatStyle.MEDIUM;
 				break;
