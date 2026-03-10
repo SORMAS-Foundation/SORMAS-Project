@@ -134,8 +134,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	private static final String TUBERCULOSIS_ONSET_DATE_LOC = "tuberculosisOnsetDateLoc";
 	private static final String TUBERCULOSIS_CLINICAL_PRESENTATION_DETAILS_LOC = "tuberculosisClinicalPresentationDetailsLoc";
 
-	private static final List<String> YES_NO_UNKNOWN_SYMPTOM_FIELD_IDS = Collections.unmodifiableList(
-		Arrays.asList(PARENT_TIME_OFF_WORK, JAUNDICE_WITHIN_24_HOURS_OF_BIRTH, DATE_OF_ONSET_KNOWN, CLINICALLY_EVIDENT, OTHER_NEUROLOCAL_SYMPTOM));
+	private static final List<String> YES_NO_UNKNOWN_SYMPTOM_FIELD_IDS = Collections
+		.unmodifiableList(Arrays.asList(PARENT_TIME_OFF_WORK, JAUNDICE_WITHIN_24_HOURS_OF_BIRTH, DATE_OF_ONSET_KNOWN, OTHER_NEUROLOCAL_SYMPTOM));
 	private static final List<String> COMBO_BOX_FIELDS = Collections.unmodifiableList(Arrays.asList(CLINICAL_MANIFESTATION));
 
 	private static Map<String, List<String>> symptomGroupMap = new HashMap<>();
@@ -182,7 +182,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 					fluidRowLocsCss(VSPACE_3, SYMPTOM_CURRENT_STATUS, DURATION_OF_SYMPTOMS) +
 					locsCss(VSPACE_3, PATIENT_ILL_LOCATION, SYMPTOMS_COMMENTS) +
 					fluidRowLocsCss(VSPACE_3, ONSET_SYMPTOM, ONSET_DATE) +
-					fluidRowLocsCss(VSPACE_3, OFFSET_DATE, CLINICALLY_EVIDENT) +
+					fluidRowLocsCss(VSPACE_3, OFFSET_DATE,"") +
 					fluidRowLocsCss(VSPACE_3, CLINICAL_MANIFESTATION,CLINICAL_MANIFESTATION_TEXT) ;
 	//@formatter:on
 
@@ -544,7 +544,6 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			DISSEMINATED_INTRA_VASCULAR_COAGULATION,
 			OFFSET_DATE,
 			CLINICAL_MANIFESTATION_TEXT,
-			CLINICALLY_EVIDENT,
 			CEREBRAL_MALARIA,
 			SCANT_HEMORRHAGE,
 			OTHER_NEUROLOCAL_SYMPTOM,
@@ -876,7 +875,6 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			ACUTE_KIDNEY_FAILURE,
 			METABOLIC_ACIDOSIS,
 			DISSEMINATED_INTRA_VASCULAR_COAGULATION,
-			CLINICALLY_EVIDENT,
 			CEREBRAL_MALARIA,
 			SCANT_HEMORRHAGE);
 

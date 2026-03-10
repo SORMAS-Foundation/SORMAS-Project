@@ -15311,7 +15311,6 @@ ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS severeanemia character varying(255
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS metabolicacidosis character varying(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS acutekidneyfailure character varying(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS offsetdate timestamp;
-ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS clinicallyevident character varying(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS clinicalmanifestation character varying(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS clinicalmanifestationtext character varying(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS lethargy character varying(255);
@@ -15340,7 +15339,6 @@ ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS severeanemia character var
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS metabolicacidosis character varying(255);
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS acutekidneyfailure character varying(255);
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS offsetdate timestamp;
-ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS clinicallyevident character varying(255);
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS clinicalmanifestation character varying(255);
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS clinicalmanifestationtext character varying(255);
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS lethargy character varying(255);

@@ -269,7 +269,6 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setAcuteKidneyFailure(source.getAcuteKidneyFailure());
 		target.setClinicalManifestation(source.getClinicalManifestation());
 		target.setClinicalManifestationText(source.getClinicalManifestationText());
-		target.setClinicallyEvident(source.getClinicallyEvident());
 		target.setCerebralMalaria(source.getCerebralMalaria());
 		target.setScantHemorrhage(source.getScantHemorrhage());
 		target.setOtherNeurolocalSymptom(source.getOtherNeurolocalSymptom());
@@ -526,7 +525,6 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setAcuteKidneyFailure(source.getAcuteKidneyFailure());
 		target.setClinicalManifestation(source.getClinicalManifestation());
 		target.setClinicalManifestationText(source.getClinicalManifestationText());
-		target.setClinicallyEvident(source.getClinicallyEvident());
 		target.setCerebralMalaria(source.getCerebralMalaria());
 		target.setScantHemorrhage(source.getScantHemorrhage());
 		target.setOtherNeurolocalSymptom(source.getOtherNeurolocalSymptom());

@@ -369,7 +369,6 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String OFFSET_DATE = "offsetDate";
 	public static final String CLINICAL_MANIFESTATION = "clinicalManifestation";
 	public static final String CLINICAL_MANIFESTATION_TEXT = "clinicalManifestationText";
-	public static final String CLINICALLY_EVIDENT = "clinicallyEvident";
 	public static final String CEREBRAL_MALARIA = "cerebralMalaria";
 	public static final String SCANT_HEMORRHAGE = "scantHemorrhage";
 	public static final String OTHER_NEUROLOCAL_SYMPTOM = "otherNeurolocalSymptom";
@@ -3036,14 +3035,6 @@ public class SymptomsDto extends PseudonymizableDto {
 	private SymptomState cerebralMalaria;
 
 	@Diseases({
-		MALARIA,
-		DENGUE })
-	@Outbreaks
-	@HideForCountriesExcept(countries = {
-		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
-	private YesNoUnknown clinicallyEvident;
-
-	@Diseases({
 		DENGUE })
 	@Outbreaks
 	@HideForCountriesExcept(countries = {
@@ -3097,10 +3088,6 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	public ClinicalManifestation getClinicalManifestation() {
 		return clinicalManifestation;
-	}
-
-	public YesNoUnknown getClinicallyEvident() {
-		return clinicallyEvident;
 	}
 
 	public String getClinicalManifestationText() {
@@ -4181,10 +4168,6 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	public void setClinicalManifestation(ClinicalManifestation clinicalManifestation) {
 		this.clinicalManifestation = clinicalManifestation;
-	}
-
-	public void setClinicallyEvident(YesNoUnknown clinicallyEvident) {
-		this.clinicallyEvident = clinicallyEvident;
 	}
 
 	public void setClinicalManifestationText(String clinicalManifestationText) {

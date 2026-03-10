@@ -91,7 +91,7 @@ public class CaseSymptomSideViewComponent extends SideComponent {
 		layout.setSpacing(false);
 		componentMap.keySet().forEach(symptom -> {
 			Component comp = componentMap.get(symptom);
-			comp.addStyleNames(CssStyles.LABEL_CRITICAL, CssStyles.LABEL_BOLD);
+			comp.addStyleNames(CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD);
 			layout.addComponent(comp);
 		});
 		if (componentMap.isEmpty()) {

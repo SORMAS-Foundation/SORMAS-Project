@@ -303,7 +303,6 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState metabolicAcidosis;
 	private SymptomState acuteKidneyFailure;
 	private Date offsetDate;
-	private YesNoUnknown clinicallyEvident;
 	private ClinicalManifestation clinicalManifestation;
 	private String clinicalManifestationText;
 	private SymptomState cerebralMalaria;
@@ -2394,15 +2393,6 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setAcuteKidneyFailure(SymptomState acuteKidneyFailure) {
 		this.acuteKidneyFailure = acuteKidneyFailure;
-	}
-
-	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getClinicallyEvident() {
-		return clinicallyEvident;
-	}
-
-	public void setClinicallyEvident(YesNoUnknown clinicallyEvident) {
-		this.clinicallyEvident = clinicallyEvident;
 	}
 
 	@Enumerated(EnumType.STRING)
