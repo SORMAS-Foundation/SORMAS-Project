@@ -163,14 +163,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 						personUuid = eventParticipant != null && eventParticipant.getPerson() != null ? eventParticipant.getPerson().getUuid() : null;
 					}
 
-					final PersonDto processedPerson = FacadeProvider.getPersonFacade().getByUuid(personUuid);
-
-					if (processedPerson == null) {
-						callback.done(result);
-						return;
-					}
-
-					ExternalMessageProcessingUIHelper.updateAddressAndSavePerson(processedPerson, getMapper());
+					ExternalMessageProcessingUIHelper.updateAddressAndSavePerson(personUuid, getMapper());
 
 					callback.done(result);
 				}
@@ -199,8 +192,9 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 				// compared to automatic processing the person is processed by the case controller
 				// @see{CaseController#getCaseCreateComponent} methods
 				// we need to load the person again from the database to get the updates following case form changes
-				final PersonDto processedPerson = FacadeProvider.getPersonFacade().getByUuid(result.getPerson().getUuid());
-				ExternalMessageProcessingUIHelper.updateAddressAndSavePerson(processedPerson, getMapper());
+				ExternalMessageProcessingUIHelper.updateAddressAndSavePerson(
+					result.getPerson() != null ? result.getPerson().getUuid() : null,
+					getMapper());
 
 				callback.done(result);
 			}
@@ -263,8 +257,9 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 			// we need to load the person again from the database to get the updates following contact form changes
 			// ofc. here we have another way to do it because whoever did it was too lazy to fix the contact controller
 			final ContactDto processedContact = contactCreateComponent.getWrappedComponent().getValue();
-			final PersonDto processedPerson = FacadeProvider.getPersonFacade().getByUuid(processedContact.getPerson().getUuid());
-			ExternalMessageProcessingUIHelper.updateAddressAndSavePerson(processedPerson, getMapper());
+			ExternalMessageProcessingUIHelper.updateAddressAndSavePerson(
+				processedContact.getPerson() != null ? processedContact.getPerson().getUuid() : null,
+				getMapper());
 
 			callback.done(processedContact);
 		});
@@ -364,6 +359,10 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 				FacadeProvider.getPersonFacade().save(dto.getPerson());
 				EventParticipantDto savedDto = FacadeProvider.getEventParticipantFacade().save(dto);
 				Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Notification.Type.ASSISTIVE_NOTIFICATION);
+
+				ExternalMessageProcessingUIHelper.updateAddressAndSavePerson(
+					savedDto.getPerson() != null ? savedDto.getPerson().getUuid() : null,
+					getMapper());
 
 				callback.done(savedDto);
 			}

@@ -62,7 +62,6 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.notifier.NotifierDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -298,15 +297,21 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 				@Override
 				public void done(PickOrCreateEntryResult result) {
 					if (result.getCaze() != null) {
-						applyPersonUpdates(PersonContext.CASE, result.getCaze().getUuid());
 						CaseDataDto caze = FacadeProvider.getCaseFacade().getByUuid(result.getCaze().getUuid());
-						if (caze != null) {
+						if (caze != null && caze.getPerson() != null) {
+							applyPersonUpdates(caze.getPerson().getUuid());
 							applyNotifierUpdate(caze, externalMessage);
 						}
 					} else if (result.getContact() != null) {
-						applyPersonUpdates(PersonContext.CONTACT, result.getContact().getUuid());
+						ContactDto contact = FacadeProvider.getContactFacade().getByUuid(result.getContact().getUuid());
+						if (contact != null && contact.getPerson() != null) {
+							applyPersonUpdates(contact.getPerson().getUuid());
+						}
 					} else if (result.getEventParticipant() != null) {
-						applyPersonUpdates(PersonContext.EVENT_PARTICIPANT, result.getEventParticipant().getUuid());
+						EventParticipantDto ep = FacadeProvider.getEventParticipantFacade().getByUuid(result.getEventParticipant().getUuid());
+						if (ep != null && ep.getPerson() != null) {
+							applyPersonUpdates(ep.getPerson().getUuid());
+						}
 					}
 
 					callback.done(result);
@@ -318,8 +323,9 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 				}
 			};
 
-			ProcessingUiHelper
-				.showPickOrCreateEntryWindow(new EntrySelectionComponentForExternalMessage(externalMessage, optionsBuilder.build()), postUpdateCallback);
+			ProcessingUiHelper.showPickOrCreateEntryWindow(
+				new EntrySelectionComponentForExternalMessage(externalMessage, optionsBuilder.build()),
+				postUpdateCallback);
 		} else {
 			// If only one option is available, directly proceed with it
 			callback.done(optionsBuilder.getSingleAvailableCreateResult());
@@ -346,7 +352,9 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 
 			@Override
 			public void done(CaseDataDto result) {
-				applyPersonUpdates(PersonContext.CASE, result.getUuid());
+				if (result.getPerson() != null) {
+					applyPersonUpdates(result.getPerson().getUuid());
+				}
 				callback.done(applyNotifierUpdate(result, externalMessage));
 			}
 
@@ -358,17 +366,19 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 	}
 
 	/**
-	 * Fetches the person associated with the given entity, applies all relevant external message data
+	 * Fetches the person by UUID, applies all relevant external message data
 	 * (address, contact details, guardian, occupation), then persists the person in a single save.
 	 *
-	 * @param personContext
-	 *            The context used to look up the person (e.g. CASE, CONTACT).
-	 * @param entityUuid
-	 *            The UUID of the owning entity.
+	 * @param personUuid
+	 *            The UUID of the person to update.
 	 */
-	private void applyPersonUpdates(PersonContext personContext, String entityUuid) {
+	private void applyPersonUpdates(String personUuid) {
 
-		PersonDto person = getExternalMessageProcessingFacade().getPersonByContext(personContext, entityUuid);
+		if (personUuid == null) {
+			return;
+		}
+
+		final PersonDto person = FacadeProvider.getPersonFacade().getByUuid(personUuid);
 
 		if (person == null) {
 			return;
@@ -444,7 +454,9 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 
 		contactCreateComponent.addCommitListener(() -> {
 			ContactDto createdContact = contactCreateComponent.getWrappedComponent().getValue();
-			applyPersonUpdates(PersonContext.CONTACT, createdContact.getUuid());
+			if (createdContact.getPerson() != null) {
+				applyPersonUpdates(createdContact.getPerson().getUuid());
+			}
 			callback.done(createdContact);
 		});
 		contactCreateComponent.addDiscardListener(callback::cancel);
@@ -585,6 +597,10 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 				FacadeProvider.getPersonFacade().save(dto.getPerson());
 				EventParticipantDto savedDto = FacadeProvider.getEventParticipantFacade().save(dto);
 				Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Notification.Type.ASSISTIVE_NOTIFICATION);
+
+				if (savedDto.getPerson() != null) {
+					applyPersonUpdates(savedDto.getPerson().getUuid());
+				}
 
 				callback.done(savedDto);
 			}

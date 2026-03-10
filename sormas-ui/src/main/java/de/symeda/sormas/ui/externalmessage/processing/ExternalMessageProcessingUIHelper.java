@@ -161,16 +161,26 @@ public class ExternalMessageProcessingUIHelper {
 	}
 
 	/**
-	 * Merges person address and contact details from the external message mapper and saves the person.
-	 * This should be called after a case or contact is created, because the case/contact controller
-	 * processes the person data independently and we need to ensure the external message data is applied.
+	 * Loads the person by UUID, merges address and contact details from the external message mapper, and saves the person.
+	 * This should be called after a case, contact or event participant is created, because the respective controllers
+	 * process the person data independently and we need to ensure the external message data is applied.
+	 * Does nothing if {@code personUuid} is {@code null} or no person with that UUID exists.
 	 *
-	 * @param person
-	 *            the person to update (should be freshly loaded from the database)
+	 * @param personUuid
+	 *            the UUID of the person to update
 	 * @param mapper
 	 *            the external message mapper providing the address/contact data
 	 */
-	public static void updateAddressAndSavePerson(PersonDto person, ExternalMessageMapper mapper) {
+	public static void updateAddressAndSavePerson(String personUuid, ExternalMessageMapper mapper) {
+		if (personUuid == null) {
+			return;
+		}
+
+		final PersonDto person = FacadeProvider.getPersonFacade().getByUuid(personUuid);
+		if (person == null) {
+			return;
+		}
+
 		mapper.mergePersonAddress(person);
 		mapper.mergePersonContactDetails(person);
 		// finally it is safe to save even if no changes were actually made
