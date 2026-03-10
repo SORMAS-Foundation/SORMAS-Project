@@ -23,8 +23,8 @@ import de.symeda.sormas.api.patch.mapping.ValueMapperDefault;
 public enum YesNoUnknown {
 
 	YES,
-	@ValueMapperDefault
 	NO,
+	@ValueMapperDefault
 	UNKNOWN;
 
 	@Override

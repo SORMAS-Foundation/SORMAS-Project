@@ -14,7 +14,7 @@ public class GroupedFieldsResponse<T extends EntityDto> {
 	 * In case of errors this might be null, otherwise should always be present to be stored at the very end of the patching processing.
 	 */
 	@Nullable
-	private T entityDto;
+	private List<T> entityDto;
 
 	/**
 	 * Actual results from the original {@link GroupedFieldsRequest}.
@@ -22,11 +22,11 @@ public class GroupedFieldsResponse<T extends EntityDto> {
 	private List<SinglePatchResult> patchingResults;
 
 	@Nullable
-	public T getEntityDto() {
+	public List<T> getEntityDto() {
 		return entityDto;
 	}
 
-	public GroupedFieldsResponse<T> setEntityDto(@Nullable T entityDto) {
+	public GroupedFieldsResponse<T> setEntityDto(@Nullable List<T> entityDto) {
 		this.entityDto = entityDto;
 		return this;
 	}

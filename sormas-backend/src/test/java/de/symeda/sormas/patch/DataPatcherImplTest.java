@@ -643,8 +643,12 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			() -> Assertions.assertEquals(expectedFailures, response.getFailures()));
 	}
 
-	@Test
-	void patch_addVaccine_unknown() {
+	@ParameterizedTest
+	@ValueSource(strings = {
+		"NO",
+		" nein ",
+		" unknown " })
+	void patch_addVaccine_unknown_or_no(String unknownOrNo) {
 		// PREPARE
 		Disease disease = Disease.RESPIRATORY_SYNCYTIAL_VIRUS;
 		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
@@ -654,9 +658,11 @@ class DataPatcherImplTest extends AbstractBeanTest {
 		Assertions.assertFalse(originalCase.getSymptoms().getSymptomatic());
 
 		Map<String, Object> patchDictionary = new HashMap<>();
-		patchDictionary.put("Immunization.immunizationStatus", "UNKNOWN");
+		patchDictionary.put("Immunization.immunizationStatus", unknownOrNo);
 
-		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid()).setPatchDictionary(patchDictionary);
+		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
+			.setPatchDictionary(patchDictionary)
+			.setInputLanguages(List.of(Language.EN, Language.DE_CH));
 
 		// EXECUTE
 		DataPatchResponse response = victim().patch(request);
@@ -674,11 +680,62 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			() -> Assertions.assertEquals(1, immunizationDtos.size()),
 
 			() -> Assertions.assertEquals(ImmunizationStatus.NOT_ACQUIRED, createdImmunizationDto.getImmunizationStatus()),
+			() -> Assertions.assertEquals(0, createdImmunizationDto.getVaccinations().size()),
 			() -> Assertions.assertEquals(disease, createdImmunizationDto.getDisease()),
 
 			() -> Assertions.assertNotNull(createdImmunizationDto.getReportDate()),
 
 			() -> Assertions.assertNotNull(createdImmunizationDto.getReportingUser()),
+
+			// FAILURES
+			() -> Assertions.assertEquals(Map.of(), response.getFailures()));
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = {
+		"Maternal vaccination" })
+	void patch_addVaccine_true_and_mother_vaccine(String matternalVaccination) {
+		// PREPARE
+		Disease disease = Disease.DENGUE;
+		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
+
+		getCaseFacade().save(originalCase);
+
+		Assertions.assertFalse(originalCase.getSymptoms().getSymptomatic());
+
+		Map<String, Object> patchDictionary = new HashMap<>();
+		patchDictionary.put("Immunization.immunizationStatus", " ja ");
+		patchDictionary.put("Immunization.meansOfImmunization", matternalVaccination);
+
+		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
+			.setPatchDictionary(patchDictionary)
+			.setInputLanguages(List.of(Language.DE, Language.EN));
+
+		// EXECUTE
+		DataPatchResponse response = victim().patch(request);
+
+		// CHECK
+		List<ImmunizationDto> immunizationDtos = getImmunizationFacade().getByPersonUuids(List.of(originalCase.getPerson().getUuid()));
+
+		ImmunizationDto matternalImmunizationDto = immunizationDtos.get(1);
+
+		Assertions.assertAll(() -> Assertions.assertTrue(response.isApplied()),
+
+// TODO: check what about patch dictionary for those values.
+//			() -> Assertions.assertEquals(patchDictionary, response.getValidPatchDictionary()),
+
+			() -> Assertions.assertEquals(2, immunizationDtos.size()),
+
+			() -> Assertions.assertEquals(ImmunizationStatus.ACQUIRED, matternalImmunizationDto.getImmunizationStatus()),
+			() -> Assertions.assertEquals(MeansOfImmunization.MATERNAL_VACCINATION, matternalImmunizationDto.getMeansOfImmunization()),
+
+			() -> Assertions.assertEquals(disease, matternalImmunizationDto.getDisease()),
+
+			() -> Assertions.assertEquals(0, matternalImmunizationDto.getVaccinations().size()),
+
+			() -> Assertions.assertNotNull(matternalImmunizationDto.getReportDate()),
+
+			() -> Assertions.assertNotNull(matternalImmunizationDto.getReportingUser()),
 
 			// FAILURES
 			() -> Assertions.assertEquals(Map.of(), response.getFailures()));
@@ -696,6 +753,8 @@ class DataPatcherImplTest extends AbstractBeanTest {
 
 		Map<String, Object> patchDictionary = new HashMap<>();
 		patchDictionary.put("Immunization.immunizationStatus", " ja ");
+		patchDictionary.put("Immunization.country", "France");
+		patchDictionary.put("Vaccination.country", "France");
 
 		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
 			.setPatchDictionary(patchDictionary)
@@ -730,7 +789,8 @@ class DataPatcherImplTest extends AbstractBeanTest {
 
 			() -> Assertions.assertEquals(1, vaccinations.size()),
 
-			() -> Assertions.assertEquals(Vaccine.UNKNOWN, vaccinationDto.getVaccineName()),
+			() -> Assertions.assertEquals(Vaccine.OTHER, vaccinationDto.getVaccineName()),
+			() -> Assertions.assertNull(vaccinationDto.getOtherVaccineName()),
 
 			// FAILURES
 			() -> Assertions.assertEquals(Map.of(), response.getFailures()));
@@ -849,11 +909,6 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			() -> Assertions.assertEquals(expectedFailures, response.getFailures()),
 
 			() -> Assertions.assertEquals(Map.of(), response.getValidPatchDictionary()));
-	}
-
-	@Test
-	void patch_emptyValueBehavior() {
-		throw new IllegalStateException("toImplement");
 	}
 
 	private DataPatcher victim() {

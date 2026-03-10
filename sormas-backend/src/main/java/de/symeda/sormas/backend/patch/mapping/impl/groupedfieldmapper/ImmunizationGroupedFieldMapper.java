@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.patch.mapping.impl.groupedfieldmapper;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -20,7 +21,6 @@ import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
-import de.symeda.sormas.api.patch.CaseDataPatchRequest;
 import de.symeda.sormas.api.patch.DataPatchFailure;
 import de.symeda.sormas.api.patch.DataPatchFailureCause;
 import de.symeda.sormas.api.patch.SinglePatchResult;
@@ -29,7 +29,7 @@ import de.symeda.sormas.api.patch.mapping.GroupedFieldsRequest;
 import de.symeda.sormas.api.patch.mapping.GroupedFieldsResponse;
 import de.symeda.sormas.api.patch.mapping.ValueMappingResult;
 import de.symeda.sormas.api.patch.mapping.ValuePatchRequest;
-import de.symeda.sormas.api.utils.Tuple;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.patch.DataPatcherImpl;
 import de.symeda.sormas.backend.patch.PatchFieldHelper;
@@ -44,6 +44,7 @@ public class ImmunizationGroupedFieldMapper implements GroupedFieldsMapper<Immun
 	private final static Logger logger = LoggerFactory.getLogger(ImmunizationGroupedFieldMapper.class);
 
 	public static final String IMMUNIZATION_STATUS_KEY = ImmunizationDto.I18N_PREFIX + "." + ImmunizationDto.IMMUNIZATION_STATUS;
+	public static final String MEANS_IMMUNIZATION_KEY = ImmunizationDto.I18N_PREFIX + "." + ImmunizationDto.MEANS_OF_IMMUNIZATION;
 	private static final Set<String> SUPPORTED_PREFIXES = Stream.of(ImmunizationDto.I18N_PREFIX, VaccinationDto.I18N_PREFIX)
 		.map(prefix -> prefix + PatchFieldHelper.PATH_SEPARATOR)
 		.collect(Collectors.toSet());
@@ -58,6 +59,9 @@ public class ImmunizationGroupedFieldMapper implements GroupedFieldsMapper<Immun
 	@EJB
 	private UserFacadeEjb.UserFacadeEjbLocal userFacade;
 
+	@Inject
+	private DataPatcherImpl dataPatcher;
+
 	@Override
 	public GroupedFieldsResponse<ImmunizationDto> aggregatedPatch(GroupedFieldsRequest request) {
 		// TODO: use a field as reference to trigger one or another logic: Immunization.immunizationStatus
@@ -67,6 +71,8 @@ public class ImmunizationGroupedFieldMapper implements GroupedFieldsMapper<Immun
 		ImmunizationDto build = ImmunizationDto.build(request.getPerson().get());
 		build.setDisease(request.getDisease());
 
+		// TODO: mother vaccine
+		// TODO: case for NO.
 		// TODO: some additional hack could be added for mother vaccine: RSV: could be another ImmunizationDto
 
 		Object immunizationStatus = originalPatchDictionary.get(IMMUNIZATION_STATUS_KEY);
@@ -82,6 +88,25 @@ public class ImmunizationGroupedFieldMapper implements GroupedFieldsMapper<Immun
 					.collect(Collectors.toList()));
 		}
 
+		// TODO: add check for vaccination.
+		Object meansOfImmunization = originalPatchDictionary.get(ImmunizationDto.I18N_PREFIX + "." + ImmunizationDto.MEANS_OF_IMMUNIZATION);
+
+		// TODO: also mother
+		Optional<ImmunizationDto> maternalImmunization = Optional.empty();
+		if (meansOfImmunization != null) {
+			ValueMappingResult<MeansOfImmunization> meansOfImmunizationValueMappingResult =
+				getValueAsTarget(request, meansOfImmunization, MeansOfImmunization.class);
+
+			if (meansOfImmunizationValueMappingResult.getData() == MeansOfImmunization.MATERNAL_VACCINATION) {
+				ImmunizationDto immunizationDto = buildImmunizationFrom(request);
+				immunizationDto.setImmunizationStatus(ImmunizationStatus.ACQUIRED);
+				immunizationDto.setMeansOfImmunization(MeansOfImmunization.MATERNAL_VACCINATION);
+
+				maternalImmunization = Optional.of(immunizationDto);
+			}
+		}
+
+		// TODO: remove this, use YesNoUnknow enum instead.
 		ValueMappingResult<Boolean> booleanResult = getValueAsTarget(request, immunizationStatus, Boolean.class);
 
 		if (Boolean.TRUE.equals(booleanResult.getData())) {
@@ -91,12 +116,14 @@ public class ImmunizationGroupedFieldMapper implements GroupedFieldsMapper<Immun
 			VaccinationDto vaccinationDto = buildVaccine();
 			immunizationDto.setVaccinations(List.of(vaccinationDto));
 
-			return new GroupedFieldsResponse<ImmunizationDto>().setEntityDto(immunizationDto)
+			return new GroupedFieldsResponse<ImmunizationDto>().setEntityDto(buildEntityList(immunizationDto, maternalImmunization))
 				.setPatchingResults(
 					Stream.concat(patch(request, immunizationDto).stream(), patch(request, vaccinationDto).stream()).collect(Collectors.toList()));
 		}
 
 		ValueMappingResult<String> stringResult = getValueAsTarget(request, immunizationStatus, String.class);
+
+		ValueMappingResult<YesNoUnknown> enumYesNoUnknown = getValueAsTarget(request, immunizationStatus, YesNoUnknown.class);
 
 		String dataAsString = stringResult.getData();
 		if (YES_UNKNOWN_VACCINE_STATE.equals(StringNormalizer.normalize(dataAsString))) {
@@ -109,15 +136,16 @@ public class ImmunizationGroupedFieldMapper implements GroupedFieldsMapper<Immun
 
 			immunizationDto.setVaccinations(List.of(vaccinationDto));
 
-			return new GroupedFieldsResponse<ImmunizationDto>().setEntityDto(immunizationDto)
+			return new GroupedFieldsResponse<ImmunizationDto>().setEntityDto(buildEntityList(immunizationDto, maternalImmunization))
 				.setPatchingResults(
 					Stream.concat(patch(request, immunizationDto).stream(), patch(request, vaccinationDto).stream()).collect(Collectors.toList()));
 
-		} else if (UNKNOWN_STATE.equals(StringNormalizer.normalize(dataAsString))) {
+		} else if (UNKNOWN_STATE.equals(StringNormalizer.normalize(dataAsString)) || enumYesNoUnknown.getData() == YesNoUnknown.NO) {
 			ImmunizationDto immunizationDto = buildImmunizationFrom(request);
 			immunizationDto.setImmunizationStatus(ImmunizationStatus.NOT_ACQUIRED);
 
-			return new GroupedFieldsResponse<ImmunizationDto>().setEntityDto(immunizationDto).setPatchingResults(patch(request, immunizationDto));
+			return new GroupedFieldsResponse<ImmunizationDto>().setEntityDto(buildEntityList(immunizationDto, maternalImmunization))
+				.setPatchingResults(patch(request, immunizationDto));
 		} else {
 			ImmunizationDto immunizationDto = buildImmunizationFrom(request);
 			immunizationDto.setImmunizationStatus(ImmunizationStatus.ACQUIRED);
@@ -130,7 +158,7 @@ public class ImmunizationGroupedFieldMapper implements GroupedFieldsMapper<Immun
 
 			immunizationDto.setVaccinations(List.of(vaccinationDto));
 
-			return new GroupedFieldsResponse<ImmunizationDto>().setEntityDto(immunizationDto)
+			return new GroupedFieldsResponse<ImmunizationDto>().setEntityDto(buildEntityList(immunizationDto, maternalImmunization))
 				.setPatchingResults(
 					Stream.concat(patch(request, immunizationDto).stream(), patch(request, vaccinationDto).stream()).collect(Collectors.toList()));
 		}
@@ -153,6 +181,10 @@ public class ImmunizationGroupedFieldMapper implements GroupedFieldsMapper<Immun
 		 * - Can use the DataPatcher again to be able to set all single field values: values or exact fields. (focus on values now)
 		 */
 
+	}
+
+	private static @NotNull List<ImmunizationDto> buildEntityList(ImmunizationDto immunizationDto, Optional<ImmunizationDto> maternalImmunization) {
+		return Stream.of(Optional.of(immunizationDto), maternalImmunization).flatMap(Optional::stream).collect(Collectors.toList());
 	}
 
 	@NotNull
@@ -184,41 +216,42 @@ public class ImmunizationGroupedFieldMapper implements GroupedFieldsMapper<Immun
 		return immunizationDto;
 	}
 
-	private static @NotNull List<SinglePatchResult> patch(GroupedFieldsRequest request, ImmunizationDto immunizationDto) {
-		DataPatcherImpl dataPatcher = InstanceProvider.getInstanceFor(DataPatcherImpl.class);
-		return Stream
-			.concat(
-				request.getPartialPatchDictionary()
-					.entrySet()
-					.stream()
-					.filter(entry -> !IMMUNIZATION_STATUS_KEY.equals(entry.getKey()))
-					.filter(entry -> entry.getKey().startsWith(ImmunizationDto.I18N_PREFIX))
-					.map(
-						entry -> dataPatcher.produceSinglePatchResult(
-							new CaseDataPatchRequest().setReplacementStrategy(request.getReplacementStrategy()),
-							new Tuple<>(entry.getKey(), new Tuple<>(null, entry.getValue())),
-							request.getDisease(),
-							() -> immunizationDto)),
-				Stream.of(new SinglePatchResult().setFieldName(IMMUNIZATION_STATUS_KEY).setValue(immunizationDto.getImmunizationStatus())))
+	private @NotNull List<SinglePatchResult> patch(GroupedFieldsRequest request, ImmunizationDto immunizationDto) {
+		return Stream.concat(
+			request.getPartialPatchDictionary()
+				.entrySet()
+				.stream()
+				.filter(entry -> !IMMUNIZATION_STATUS_KEY.equals(entry.getKey()))
+				.filter(entry -> entry.getKey().startsWith(ImmunizationDto.I18N_PREFIX))
+				// TODO: if needed put back single mapping
+//					.map(
+//						entry -> dataPatcher.produceSinglePatchResult(
+//							new CaseDataPatchRequest().setReplacementStrategy(request.getReplacementStrategy()),
+//							new Tuple<>(entry.getKey(), new Tuple<>(null, entry.getValue())),
+//							request.getDisease(),
+//							() -> immunizationDto)),
+				.map(a -> new SinglePatchResult().setFieldName(a.getKey()).setValue(a.getValue())),
+			Stream.of(new SinglePatchResult().setFieldName(IMMUNIZATION_STATUS_KEY).setValue(immunizationDto.getImmunizationStatus())))
 			.collect(Collectors.toList());
 	}
 
 	private static @NotNull List<SinglePatchResult> patch(GroupedFieldsRequest request, VaccinationDto vaccineDto) {
 		DataPatcherImpl dataPatcher = InstanceProvider.getInstanceFor(DataPatcherImpl.class);
-		return Stream
-			.concat(
-				request.getPartialPatchDictionary()
-					.entrySet()
-					.stream()
-					.filter(entry -> !VACCINATION_VACCINE_NAME_KEY.equals(entry.getKey()))
-					.filter(entry -> entry.getKey().startsWith(VaccinationDto.I18N_PREFIX))
-					.map(
-						entry -> dataPatcher.produceSinglePatchResult(
-							new CaseDataPatchRequest().setReplacementStrategy(request.getReplacementStrategy()),
-							new Tuple<>(entry.getKey(), new Tuple<>(null, entry.getValue())),
-							request.getDisease(),
-							() -> vaccineDto)),
-				Stream.of(new SinglePatchResult().setFieldName(VACCINATION_VACCINE_NAME_KEY).setValue(vaccineDto.getVaccineName())))
+		return Stream.concat(
+			request.getPartialPatchDictionary()
+				.entrySet()
+				.stream()
+				.filter(entry -> !VACCINATION_VACCINE_NAME_KEY.equals(entry.getKey()))
+				.filter(entry -> entry.getKey().startsWith(VaccinationDto.I18N_PREFIX))
+//					.map(
+//						entry -> dataPatcher.produceSinglePatchResult(
+//							new CaseDataPatchRequest().setReplacementStrategy(request.getReplacementStrategy()),
+//							new Tuple<>(entry.getKey(), new Tuple<>(null, entry.getValue())),
+//							request.getDisease(),
+//							() -> vaccineDto)),
+				.map(a -> new SinglePatchResult().setFieldName(a.getKey()).setValue(a.getValue())),
+
+			Stream.of(new SinglePatchResult().setFieldName(VACCINATION_VACCINE_NAME_KEY).setValue(vaccineDto.getVaccineName())))
 			.collect(Collectors.toList());
 	}
 

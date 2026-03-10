@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.patch;
 
 import java.util.AbstractMap;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -171,7 +172,9 @@ public class DataPatcherImpl implements DataPatcher {
 			validPatchDictionary,
 			caseData,
 			personSupplier,
-			groupedFieldsSinglePatchResults.stream().map(GroupedFieldsResponse::getEntityDto).collect(Collectors.toList()));
+			groupedFieldsSinglePatchResults.stream()
+				.flatMap(groupedFieldsResponse -> Stream.ofNullable(groupedFieldsResponse.getEntityDto()).flatMap(Collection::stream))
+				.collect(Collectors.toList()));
 
 		logger.debug("dataPatchResponse: [{}]", response);
 
@@ -206,7 +209,7 @@ public class DataPatcherImpl implements DataPatcher {
 		Map<String, Object> validPatchDictionary,
 		CaseDataDto caseData,
 		Supplier<PersonDto> personSupplier,
-		List<? extends EntityDto> additionalEntityDtos) {
+		List<? extends EntityDto> additionalEntityDTOs) {
 		if (anyFieldPatchedWithPrefix(validPatchDictionary, PatchFieldHelper.CASE_DATA_PREFIX)) {
 			logger.info("CaseData was modified will be applied for: [{}]. Enable debug to see fully patched object", caseData);
 
@@ -228,7 +231,7 @@ public class DataPatcherImpl implements DataPatcher {
 			businessDtoFacade.save(person);
 		}
 
-		additionalEntityDtos.forEach(entityDto -> businessDtoFacade.save(entityDto));
+		additionalEntityDTOs.forEach(entityDto -> businessDtoFacade.save(entityDto));
 	}
 
 	private boolean anyFieldPatchedWithPrefix(Map<String, Object> validPatchDictionary, String caseDataPrefix) {
