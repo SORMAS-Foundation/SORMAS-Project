@@ -1057,6 +1057,10 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
     }
 
     protected void mergePerson(EntitySelection<PersonDto> personSelection) {
+        if (personSelection == null) {
+            return;
+        }
+
         final PersonDto person = personSelection.getEntity();
         if (person == null) {
             return;

@@ -258,9 +258,9 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 
 		contactCreateComponent.addCommitListener(() -> {
 			// we need to call again the updates here
-			// compared to automatic processing the person is processed by the case controller
+			// compared to automatic processing the person is processed by the contact controller
 			// @see{ContactController#getContactCreateComponent} methods
-			// we need to load the person again from the database to get the updates following case form changes
+			// we need to load the person again from the database to get the updates following contact form changes
 			// ofc. here we have another way to do it because whoever did it was too lazy to fix the contact controller
 			final ContactDto processedContact = contactCreateComponent.getWrappedComponent().getValue();
 			final PersonDto processedPerson = FacadeProvider.getPersonFacade().getByUuid(processedContact.getPerson().getUuid());
