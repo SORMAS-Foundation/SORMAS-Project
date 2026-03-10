@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Suppliers;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.patch.CaseDataPatchRequest;
 import de.symeda.sormas.api.patch.DataPatchFailure;
@@ -125,7 +126,8 @@ public class DataPatcherImpl implements DataPatcher {
 
 		List<Tuple<String, Tuple<DataPatchFailureCause, Object>>> patchingTuples = computePatchingTuples(request);
 
-		List<GroupedFieldsResponse<?>> groupedFieldsSinglePatchResults = groupedFieldMapperRegistry.aggregatedPatch(from(request));
+		List<GroupedFieldsResponse<?>> groupedFieldsSinglePatchResults =
+			groupedFieldMapperRegistry.aggregatedPatch(from(request, personSupplier, caseData));
 		Set<String> alreadyProcessedFields = groupedFieldsSinglePatchResults.stream()
 			.flatMap(response -> response.getPatchingResults().stream().map(SinglePatchResult::getFieldName))
 			.collect(Collectors.toSet());
@@ -142,8 +144,7 @@ public class DataPatcherImpl implements DataPatcher {
 				Supplier<Object> target = () -> findAppropriateTarget(fullFieldName, caseData, personSupplier);
 
 				try {
-					return invalidFieldResult(entry).or(() -> fieldMappingResult(entry, disease, request, target))
-						.orElseGet(() -> valueMappingResult(entry, disease, request, target));
+					return produceSinglePatchResult(request, entry, disease, target);
 				} catch (RuntimeException e) {
 					logger.error("Failure during patch operation", e);
 					return singlePatchResult
@@ -166,15 +167,33 @@ public class DataPatcherImpl implements DataPatcher {
 			return response;
 		}
 
-		saveDTOsIfAppropriate(validPatchDictionary, caseData, personSupplier);
+		saveDTOsIfAppropriate(
+			validPatchDictionary,
+			caseData,
+			personSupplier,
+			groupedFieldsSinglePatchResults.stream().map(GroupedFieldsResponse::getEntityDto).collect(Collectors.toList()));
 
 		logger.debug("dataPatchResponse: [{}]", response);
 
 		return response.setApplied(true);
 	}
 
-	private GroupedFieldsRequest from(CaseDataPatchRequest request) {
-		return new GroupedFieldsRequest().setPartialPatchDictionary(request.getPatchDictionary())
+	@NotNull
+	public SinglePatchResult produceSinglePatchResult(
+		CaseDataPatchRequest request,
+		Tuple<String, Tuple<DataPatchFailureCause, Object>> entry,
+		Disease disease,
+		Supplier<Object> target) {
+
+		return invalidFieldResult(entry).or(() -> fieldMappingResult(entry, disease, request, target))
+			.orElseGet(() -> valueMappingResult(entry, disease, request, target));
+	}
+
+	private GroupedFieldsRequest from(CaseDataPatchRequest request, Supplier<PersonDto> personSupplier, CaseDataDto caseData) {
+		return new GroupedFieldsRequest().setDisease(caseData.getDisease())
+			.setCaseData(caseData.toReference())
+			.setPerson(() -> personSupplier.get().toReference())
+			.setPartialPatchDictionary(request.getPatchDictionary())
 			.setInputLanguages(request.getInputLanguages())
 			.setOrigin(request.getOrigin())
 			.setAllowFallbackValues(request.isAllowFallbackValues())
@@ -183,7 +202,11 @@ public class DataPatcherImpl implements DataPatcher {
 			.setEmptyValueBehavior(request.getEmptyValueBehavior());
 	}
 
-	private void saveDTOsIfAppropriate(Map<String, Object> validPatchDictionary, CaseDataDto caseData, Supplier<PersonDto> personSupplier) {
+	private void saveDTOsIfAppropriate(
+		Map<String, Object> validPatchDictionary,
+		CaseDataDto caseData,
+		Supplier<PersonDto> personSupplier,
+		List<? extends EntityDto> additionalEntityDtos) {
 		if (anyFieldPatchedWithPrefix(validPatchDictionary, PatchFieldHelper.CASE_DATA_PREFIX)) {
 			logger.info("CaseData was modified will be applied for: [{}]. Enable debug to see fully patched object", caseData);
 
@@ -204,6 +227,8 @@ public class DataPatcherImpl implements DataPatcher {
 
 			businessDtoFacade.save(person);
 		}
+
+		additionalEntityDtos.forEach(entityDto -> businessDtoFacade.save(entityDto));
 	}
 
 	private boolean anyFieldPatchedWithPrefix(Map<String, Object> validPatchDictionary, String caseDataPrefix) {
@@ -303,7 +328,7 @@ public class DataPatcherImpl implements DataPatcher {
 	}
 
 	// TODO: make usable for external use
-	public Optional<de.symeda.sormas.api.patch.SinglePatchResult> fieldMappingResult(
+	private Optional<de.symeda.sormas.api.patch.SinglePatchResult> fieldMappingResult(
 		Tuple<String, Tuple<DataPatchFailureCause, Object>> entry,
 		Disease disease,
 		CaseDataPatchRequest request,

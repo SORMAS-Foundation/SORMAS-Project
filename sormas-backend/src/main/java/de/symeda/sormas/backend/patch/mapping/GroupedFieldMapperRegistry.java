@@ -83,7 +83,10 @@ public class GroupedFieldMapperRegistry {
 	}
 
 	private static GroupedFieldsRequest buildCopy(GroupedFieldsRequest request) {
-		return new GroupedFieldsRequest().setAllowFallbackValues(request.isAllowFallbackValues())
+		return new GroupedFieldsRequest().setDisease(request.getDisease())
+			.setCaseData(request.getCaseData())
+			.setPerson(request.getPerson())
+			.setAllowFallbackValues(request.isAllowFallbackValues())
 			.setEmptyValueBehavior(request.getEmptyValueBehavior())
 			.setOrigin(request.getOrigin())
 			.setInputLanguages(request.getInputLanguages())

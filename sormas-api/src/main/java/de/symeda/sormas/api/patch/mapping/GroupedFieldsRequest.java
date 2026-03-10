@@ -3,6 +3,7 @@ package de.symeda.sormas.api.patch.mapping;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
@@ -26,7 +27,7 @@ public class GroupedFieldsRequest {
 	private CaseReferenceDto caseData;
 
 	@NotNull
-	private PersonReferenceDto person;
+	private Supplier<PersonReferenceDto> person;
 
 	private boolean patchedInCaseOfFailures = false;
 
@@ -134,11 +135,11 @@ public class GroupedFieldsRequest {
 		return this;
 	}
 
-	public PersonReferenceDto getPerson() {
+	public Supplier<PersonReferenceDto> getPerson() {
 		return person;
 	}
 
-	public GroupedFieldsRequest setPerson(PersonReferenceDto person) {
+	public GroupedFieldsRequest setPerson(Supplier<PersonReferenceDto> person) {
 		this.person = person;
 		return this;
 	}

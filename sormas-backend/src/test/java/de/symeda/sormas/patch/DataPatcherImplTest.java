@@ -3,6 +3,7 @@ package de.symeda.sormas.patch;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,8 +21,12 @@ import org.mockito.Mockito;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumTranslation;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
+import de.symeda.sormas.api.immunization.ImmunizationDto;
+import de.symeda.sormas.api.immunization.ImmunizationStatus;
+import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.infrastructure.country.CountryDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
@@ -40,6 +45,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.symptoms.SymptomState;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
@@ -638,8 +644,148 @@ class DataPatcherImplTest extends AbstractBeanTest {
 	}
 
 	@Test
-	void patch_addVaccine() {
-		throw new IllegalStateException("toImplement");
+	void patch_addVaccine_unknown() {
+		// PREPARE
+		Disease disease = Disease.RESPIRATORY_SYNCYTIAL_VIRUS;
+		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
+
+		getCaseFacade().save(originalCase);
+
+		Assertions.assertFalse(originalCase.getSymptoms().getSymptomatic());
+
+		Map<String, Object> patchDictionary = new HashMap<>();
+		patchDictionary.put("Immunization.immunizationStatus", "UNKNOWN");
+
+		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid()).setPatchDictionary(patchDictionary);
+
+		// EXECUTE
+		DataPatchResponse response = victim().patch(request);
+
+		List<ImmunizationDto> immunizationDtos = getImmunizationFacade().getByPersonUuids(List.of(originalCase.getPerson().getUuid()));
+
+		ImmunizationDto createdImmunizationDto = immunizationDtos.get(0);
+
+		// CHECK
+		Assertions.assertAll(() -> Assertions.assertTrue(response.isApplied()),
+
+// TODO: check what about patch dictionary for those values.
+//			() -> Assertions.assertEquals(patchDictionary, response.getValidPatchDictionary()),
+
+			() -> Assertions.assertEquals(1, immunizationDtos.size()),
+
+			() -> Assertions.assertEquals(ImmunizationStatus.NOT_ACQUIRED, createdImmunizationDto.getImmunizationStatus()),
+			() -> Assertions.assertEquals(disease, createdImmunizationDto.getDisease()),
+
+			() -> Assertions.assertNotNull(createdImmunizationDto.getReportDate()),
+
+			() -> Assertions.assertNotNull(createdImmunizationDto.getReportingUser()),
+
+			// FAILURES
+			() -> Assertions.assertEquals(Map.of(), response.getFailures()));
+	}
+
+	@Test
+	void patch_addVaccine_true() {
+		// PREPARE
+		Disease disease = Disease.DENGUE;
+		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
+
+		getCaseFacade().save(originalCase);
+
+		Assertions.assertFalse(originalCase.getSymptoms().getSymptomatic());
+
+		Map<String, Object> patchDictionary = new HashMap<>();
+		patchDictionary.put("Immunization.immunizationStatus", " ja ");
+
+		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
+			.setPatchDictionary(patchDictionary)
+			.setInputLanguages(Collections.singletonList(Language.DE));
+
+		// EXECUTE
+		DataPatchResponse response = victim().patch(request);
+
+		// CHECK
+		List<ImmunizationDto> immunizationDtos = getImmunizationFacade().getByPersonUuids(List.of(originalCase.getPerson().getUuid()));
+
+		ImmunizationDto createdImmunizationDto = immunizationDtos.get(0);
+
+		List<VaccinationDto> vaccinations = createdImmunizationDto.getVaccinations();
+		VaccinationDto vaccinationDto = vaccinations.get(0);
+
+		Assertions.assertAll(() -> Assertions.assertTrue(response.isApplied()),
+
+// TODO: check what about patch dictionary for those values.
+//			() -> Assertions.assertEquals(patchDictionary, response.getValidPatchDictionary()),
+
+			() -> Assertions.assertEquals(1, immunizationDtos.size()),
+
+			() -> Assertions.assertEquals(ImmunizationStatus.ACQUIRED, createdImmunizationDto.getImmunizationStatus()),
+			() -> Assertions.assertEquals(MeansOfImmunization.VACCINATION, createdImmunizationDto.getMeansOfImmunization()),
+
+			() -> Assertions.assertEquals(disease, createdImmunizationDto.getDisease()),
+
+			() -> Assertions.assertNotNull(createdImmunizationDto.getReportDate()),
+
+			() -> Assertions.assertNotNull(createdImmunizationDto.getReportingUser()),
+
+			() -> Assertions.assertEquals(1, vaccinations.size()),
+
+			() -> Assertions.assertEquals(Vaccine.UNKNOWN, vaccinationDto.getVaccineName()),
+
+			// FAILURES
+			() -> Assertions.assertEquals(Map.of(), response.getFailures()));
+	}
+
+	@Test
+	void patch_addVaccine_vaccine_name() {
+		// PREPARE
+		Disease disease = Disease.DENGUE;
+		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
+
+		getCaseFacade().save(originalCase);
+
+		Assertions.assertFalse(originalCase.getSymptoms().getSymptomatic());
+
+		Map<String, Object> patchDictionary = new HashMap<>();
+		String vaccineName = "Beyfortus";
+		patchDictionary.put("Immunization.immunizationStatus", vaccineName);
+
+		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
+			.setPatchDictionary(patchDictionary)
+			.setInputLanguages(Collections.singletonList(Language.DE));
+
+		// EXECUTE
+		DataPatchResponse response = victim().patch(request);
+
+		List<ImmunizationDto> immunizationDtos = getImmunizationFacade().getByPersonUuids(List.of(originalCase.getPerson().getUuid()));
+
+		ImmunizationDto createdImmunizationDto = immunizationDtos.get(0);
+
+		// CHECK
+		List<VaccinationDto> vaccinations = createdImmunizationDto.getVaccinations();
+		VaccinationDto vaccinationDto = vaccinations.get(0);
+		Assertions.assertAll(() -> Assertions.assertTrue(response.isApplied()),
+
+// TODO: check what about patch dictionary for those values.
+//			() -> Assertions.assertEquals(patchDictionary, response.getValidPatchDictionary()),
+
+			() -> Assertions.assertEquals(1, immunizationDtos.size()),
+
+			() -> Assertions.assertEquals(ImmunizationStatus.ACQUIRED, createdImmunizationDto.getImmunizationStatus()),
+			() -> Assertions.assertEquals(MeansOfImmunization.VACCINATION, createdImmunizationDto.getMeansOfImmunization()),
+			() -> Assertions.assertEquals(disease, createdImmunizationDto.getDisease()),
+
+			() -> Assertions.assertNotNull(createdImmunizationDto.getReportDate()),
+
+			() -> Assertions.assertNotNull(createdImmunizationDto.getReportingUser()),
+
+			() -> Assertions.assertEquals(1, vaccinations.size()),
+
+			() -> Assertions.assertEquals(Vaccine.OTHER, vaccinationDto.getVaccineName()),
+			() -> Assertions.assertEquals(vaccineName, vaccinationDto.getOtherVaccineName()),
+
+			// FAILURES
+			() -> Assertions.assertEquals(Map.of(), response.getFailures()));
 	}
 
 	@Test
