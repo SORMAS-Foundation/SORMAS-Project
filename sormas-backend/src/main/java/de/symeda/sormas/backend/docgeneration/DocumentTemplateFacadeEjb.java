@@ -234,6 +234,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 				}
 
 				// check if the entity is from a general.
+				// General entities are used for common and dynamic data that can be referenced across different entities.
 				if (rootEntityType == RootEntityType.ROOT_GENERAL) {
 					fillGeneralValues(documentVariables, properties, propertyKey);
 				}
@@ -293,6 +294,16 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		return properties;
 	}
 
+	/**
+	 * Fills general values into the properties based on the provided document variables and properties.
+	 * 
+	 * @param documentVariables
+	 *            The document variables to use for filling general values.
+	 * @param properties
+	 *            The properties to fill with general values.
+	 * @param propertyKey
+	 *            The property key to use for general value retrieval.
+	 */
 	private void fillGeneralValues(DocumentVariables documentVariables, Properties properties, String propertyKey) {
 		// finding the general property key. Based on the type, formatStyle is deciding.
 		// general properties are allowed only doc-formatted files.
