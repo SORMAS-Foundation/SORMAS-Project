@@ -15,9 +15,9 @@
 
 package de.symeda.sormas.ui.caze;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -42,7 +42,7 @@ public class CaseSymptomSideViewComponent extends SideComponent {
 	private HorizontalLayout topLayout = new HorizontalLayout();
 	private final Label noComplicationsLabel;
 	private VerticalLayout layout = new VerticalLayout();
-	private Map<String, Component> componentMap = new HashMap<>();
+	private Map<String, Component> componentMap = new TreeMap<>();
 	private final List<String> complicatedSymptoms;
 
 	public CaseSymptomSideViewComponent(Disease disease) {
@@ -52,8 +52,7 @@ public class CaseSymptomSideViewComponent extends SideComponent {
 		topLayout.setSpacing(false);
 		addComponent(topLayout);
 		noComplicationsLabel = new Label(I18nProperties.getCaption(Captions.titleNoComplications));
-		topLayout.addComponents(noComplicationsLabel);
-		topLayout.addComponent(layout);
+		topLayout.addComponents(noComplicationsLabel, layout);
 		complicatedSymptoms = AnnotationFieldHelper.getComplicatedSymptomsWithDiseases(SymptomsDto.class, disease);
 	}
 
@@ -67,20 +66,22 @@ public class CaseSymptomSideViewComponent extends SideComponent {
 		if (symptomName == null) {
 			return;
 		}
+		// if the selected symptom is NO or UNKNOWN and componentMap has that symptom, remove it from the layout and map
+		if (!validComplication && componentMap.containsKey(symptomName)) {
+			layout.removeComponent(componentMap.get(symptomName));
+			componentMap.entrySet().removeIf(entry -> entry.getKey().equals(symptomName));
+		}
+		// if the selected symptom is NO or UNKNOWN
+		if (!validComplication) {
+			return;
+		}
 		// find the symptom in the complicated symptoms list, if it exists, update the map
-		complicatedSymptoms.stream().filter(symptom -> symptom.equals(symptomName)).findFirst().ifPresent(symptom -> {
-			if (validComplication) {
+		if (validComplication) {
+			complicatedSymptoms.stream().filter(symptom -> symptom.equals(symptomName)).findFirst().ifPresent(symptom -> {
 				Label label = new Label(I18nProperties.getCaption(Captions.Symptoms + "." + symptomName));
 				componentMap.put(symptomName, label);
-			}
-			if (componentMap.isEmpty()) {
-				return;
-			}
-			if (!validComplication && componentMap.containsKey(symptomName)) {
-				layout.removeComponent(componentMap.get(symptomName));
-				componentMap.entrySet().removeIf(entry -> entry.getKey().equals(symptomName));
-			}
-		});
+			});
+		}
 	}
 
 	/**
@@ -99,6 +100,5 @@ public class CaseSymptomSideViewComponent extends SideComponent {
 		} else {
 			noComplicationsLabel.setVisible(false);
 		}
-		topLayout.addComponent(layout);
 	}
 }

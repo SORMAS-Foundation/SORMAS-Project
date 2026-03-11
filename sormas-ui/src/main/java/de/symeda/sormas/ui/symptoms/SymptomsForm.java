@@ -160,8 +160,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 							fluidColumn(8, 0, loc(SYMPTOMS_HINT_LOC))) +
 					fluidRow(fluidColumn(8,4, locCss(CssStyles.ALIGN_RIGHT,BUTTONS_LOC)))+
                     loc(CLINICAL_PRESENTATION_HEADING)+
-					fluidRow(fluidColumn(6, 0, locsCss(VSPACE_3, ASYMPTOMATIC)))+
-                    fluidRowLocs(DATE_OF_ONSET_KNOWN, TUBERCULOSIS_ONSET_DATE_LOC, "") +
+					fluidRow(fluidColumn(6, 0, locsCss(VSPACE_3, ASYMPTOMATIC)), fluidColumn(6, 0, locsCss(VSPACE_3, UNEXPLAINED_BLEEDING))) +
+					                    fluidRowLocs(DATE_OF_ONSET_KNOWN, TUBERCULOSIS_ONSET_DATE_LOC, "") +
                     fluidRowLocs(CLINICAL_PRESENTATION_STATUS, TUBERCULOSIS_CLINICAL_PRESENTATION_DETAILS_LOC) +
                     fluidRow(
                             fluidColumn(6, 0,
@@ -176,8 +176,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 					createSymptomGroupLayout(SymptomGroup.URINARY, URINARY_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
 					createSymptomGroupLayout(SymptomGroup.NERVOUS_SYSTEM, NERVOUS_SYSTEM_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
 					createSymptomGroupLayout(SymptomGroup.SKIN, SKIN_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
+                    fluidRow(fluidColumn(6, 0, loc("LAYOUT_SKIN_RASH_ONSET_DATE"))) +
 					createSymptomGroupLayout(SymptomGroup.OTHER, OTHER_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
-					fluidRow(fluidColumn(6, 0, loc("LAYOUT_SKIN_RASH_ONSET_DATE"))) +
 					fluidRowLocs(PARENT_TIME_OFF_WORK, TIME_OFF_WORK_DAYS) +
 					fluidRowLocsCss(VSPACE_3, SYMPTOM_CURRENT_STATUS, DURATION_OF_SYMPTOMS) +
 					locsCss(VSPACE_3, PATIENT_ILL_LOCATION, SYMPTOMS_COMMENTS) +
@@ -357,6 +357,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		ComboBox glasgowComaScale = addField(GLASGOW_COMA_SCALE, ComboBox.class);
 		glasgowComaScale.addItems(SymptomsHelper.getGlasgowComaScaleValues());
 
+		NullableOptionGroup unexpectedBleeding = addField(UNEXPLAINED_BLEEDING);
+
 		addFields(
 			VOMITING,
 			DIARRHEA,
@@ -393,7 +395,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			STOMACH_BLEEDING,
 			RAPID_BREATHING,
 			SWOLLEN_GLANDS,
-			UNEXPLAINED_BLEEDING,
+
 			GUMS_BLEEDING,
 			INJECTION_SITE_BLEEDING,
 			NOSE_BLEEDING,
@@ -616,7 +618,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		skinRashDateLabel.setVisible(
 			isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
-				&& FieldHelper.getNullableSourceFieldValue(getField(SKIN_RASH)) == YesNoUnknown.YES);
+				&& FieldHelper.getNullableSourceFieldValue(getField(SKIN_RASH)) == YesNoUnknown.YES
+				&& isVisibleAllowed(SKIN_RASH_ONSET_DATE));
 		DateField skinRashOnsetDate = addField(skinRashDateLayout, SKIN_RASH_ONSET_DATE, DateField.class);
 		skinRashOnsetDate.setId(SKIN_RASH_ONSET_DATE);
 		skinRashOnsetDate.addStyleNames(ValoTheme.DATEFIELD_BORDERLESS, CssStyles.VIEW_SECTION_WIDTH_AUTO, VSPACE_3);
@@ -626,7 +629,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		getField(SKIN_RASH).addValueChangeListener(e -> {
 			// Show skin rash onset date field only if skin rash is set to YES
-			if (isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+			if (isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && isVisibleAllowed(SKIN_RASH_ONSET_DATE)) {
 				Object v = FieldHelper.getNullableSourceFieldValue((Field) e.getProperty());
 				boolean isVisible = v == SymptomState.YES || (v instanceof java.util.Set && ((java.util.Set<?>) v).contains(SymptomState.YES));
 				skinRashDateLabel.setVisible(isVisible);
@@ -686,6 +689,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			SKIN_BRUISING,
 			STOMACH_BLEEDING,
 			BLOOD_URINE,
+			ACUTE_BLEEDING,
 			OTHER_HEMORRHAGIC_SYMPTOMS);
 
 		lesionsFieldIds = Arrays.asList(LESIONS_SAME_STATE, LESIONS_SAME_SIZE, LESIONS_DEEP_PROFOUND, LESIONS_THAT_ITCH);
@@ -864,7 +868,6 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			CONVULSIONS,
 			PERSISTENT_VOMITING,
 			RESTLESSNESS,
-			ACUTE_BLEEDING,
 			SEVERE_ORGAN_IMPAIRMENT,
 			PLASMA_LEAKAGE_SIGN,
 			POLYDIPSIA,
@@ -957,13 +960,13 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			getFieldGroup().getField(PATIENT_ILL_LOCATION).setVisible(false);
 		}
 
-		symptomGroupMap.forEach((location, strings) -> {
-			final Component groupLabel = getContent().getComponent(location);
-			final Optional<String> groupHasVisibleSymptom =
-				strings.stream().filter(s -> getFieldGroup().getField(s) != null && getFieldGroup().getField(s).isVisible()).findAny();
-			if (!groupHasVisibleSymptom.isPresent()) {
-				groupLabel.setVisible(false);
-			}
+		symptomGroupVisibility();
+
+		unexpectedBleeding.addValueChangeListener(e -> {
+			// check the group items' visibility
+			// based on unexpectedBleeding selection; depended symptoms should display, according to their group.
+			// To update their group this is required here.
+			symptomGroupVisibility();
 		});
 
 		if (isEditableAllowed(OTHER_HEMORRHAGIC_SYMPTOMS_TEXT)) {
@@ -1066,7 +1069,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			getField(CHEST_PAIN).setVisible(PlagueType.PNEUMONIC == caze.getPlagueType());
 		}
 
-		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && isVisibleAllowed(SKIN_RASH_ONSET_DATE)) {
 			FieldHelper.setVisibleWhen(getFieldGroup(), SKIN_RASH_ONSET_DATE, SKIN_RASH, Arrays.asList(SymptomState.YES), true);
 		}
 		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && disease == Disease.TUBERCULOSIS) {
@@ -1153,6 +1156,19 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		FieldHelper.setVisibleWhen(getFieldGroup(), OTHER_NEUROLOCAL_SYMPTOM_TEXT, OTHER_NEUROLOCAL_SYMPTOM, Arrays.asList(YesNoUnknown.YES), true);
 		FieldHelper
 			.setVisibleWhen(getFieldGroup(), CLINICAL_MANIFESTATION_TEXT, CLINICAL_MANIFESTATION, Arrays.asList(ClinicalManifestation.OTHER), true);
+	}
+
+	private void symptomGroupVisibility() {
+		symptomGroupMap.forEach((location, strings) -> {
+			final Component groupLabel = getContent().getComponent(location);
+			final Optional<String> groupHasVisibleSymptom =
+				strings.stream().filter(s -> getFieldGroup().getField(s) != null && getFieldGroup().getField(s).isVisible()).findAny();
+			if (!groupHasVisibleSymptom.isPresent()) {
+				groupLabel.setVisible(false);
+			} else {
+				groupLabel.setVisible(true);
+			}
+		});
 	}
 
 	private void toggleFeverComponentError(NullableOptionGroup feverField, ComboBox temperatureField) {
