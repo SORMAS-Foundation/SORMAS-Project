@@ -1479,7 +1479,16 @@ public enum DefaultUserRole {
 					EXTERNAL_EMAIL_SEND,
 					EXTERNAL_EMAIL_ATTACH_DOCUMENTS,
 					SORMAS_REST,
-					SORMAS_UI));
+					SORMAS_UI,
+					SURVEY_VIEW,
+					SURVEY_CREATE,
+					SURVEY_EDIT,
+					SURVEY_DELETE,
+					SURVEY_TOKEN_VIEW,
+					SURVEY_TOKEN_CREATE,
+					SURVEY_TOKEN_EDIT,
+					SURVEY_TOKEN_DELETE,
+					SURVEY_TOKEN_IMPORT));
 			break;
 		case POE_INFORMANT:
 			userRights.addAll(
@@ -1813,6 +1822,7 @@ public enum DefaultUserRole {
 					CONTACT_CONVERT,
 					CONTACT_EXPORT,
 					CONTACT_REASSIGN_CASE,
+					DOCUMENT_DELETE,
 					MANAGE_EXTERNAL_SYMPTOM_JOURNAL,
 					VISIT_EXPORT,
 					VISIT_DELETE,
@@ -1891,7 +1901,16 @@ public enum DefaultUserRole {
 					EXTERNAL_EMAIL_SEND,
 					EXTERNAL_EMAIL_ATTACH_DOCUMENTS,
 					SORMAS_REST,
-					SORMAS_UI));
+					SORMAS_UI,
+					SURVEY_VIEW,
+					SURVEY_CREATE,
+					SURVEY_EDIT,
+					SURVEY_DELETE,
+					SURVEY_TOKEN_VIEW,
+					SURVEY_TOKEN_CREATE,
+					SURVEY_TOKEN_EDIT,
+					SURVEY_TOKEN_DELETE,
+					SURVEY_TOKEN_IMPORT));
 			break;
 		default:
 			throw new IllegalArgumentException(this.toString());
