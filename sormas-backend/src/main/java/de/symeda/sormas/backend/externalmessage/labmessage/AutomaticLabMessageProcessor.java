@@ -68,6 +68,7 @@ import de.symeda.sormas.api.utils.dataprocessing.EntitySelection;
 import de.symeda.sormas.api.utils.dataprocessing.HandlerCallback;
 import de.symeda.sormas.api.utils.dataprocessing.PickOrCreateEntryResult;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResult;
+import de.symeda.sormas.api.utils.dataprocessing.flow.FlowThen;
 import de.symeda.sormas.api.utils.luxembourg.LuxembourgNationalHealthIdValidator;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -397,8 +398,32 @@ public class AutomaticLabMessageProcessor {
 		}
 
 		@Override
+		protected FlowThen<ExternalMessageProcessingResult> doCaseSelectedFlow(
+			CaseSelectionDto caseSelection,
+			FlowThen<ExternalMessageProcessingResult> flow) {
+
+			// When reusing an existing case, the person's in-memory changes made by mergePerson()
+			// (address, contact details, additional addresses/contacts) are not persisted automatically,
+			// unlike the new-case path where handleCreateCase explicitly saves the person.
+			// We inject a step here to persist those changes before continuing the flow.
+			FlowThen<ExternalMessageProcessingResult> flowWithPersonSaved = flow.then(previousResult -> {
+				PersonDto person = previousResult.getData().getPerson();
+				if (person != null) {
+					personFacade.save(person);
+				}
+				return ProcessingResult.continueWith(previousResult.getData()).asCompletedFuture();
+			});
+
+			return super.doCaseSelectedFlow(caseSelection, flowWithPersonSaved);
+		}
+
+		@Override
 		protected void handleCreateCase(CaseDataDto caze, PersonDto person, ExternalMessageDto labMessage, HandlerCallback<CaseDataDto> callback) {
-			callback.done(caseFacade.save(caze));
+			CaseDataDto savedCase = caseFacade.save(caze);
+			// the person was already merged in-memory by mergePerson() in the base class
+			// (address, contact details, additional addresses/contacts), but not yet persisted
+			personFacade.save(person);
+			callback.done(savedCase);
 		}
 
 		@Override
