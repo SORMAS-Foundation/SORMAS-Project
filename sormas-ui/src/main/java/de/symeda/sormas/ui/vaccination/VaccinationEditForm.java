@@ -21,6 +21,8 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.oneOfTwoCol;
 
 import java.util.Collections;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.v7.ui.Field;
 
 import de.symeda.sormas.api.Disease;
@@ -94,21 +96,21 @@ public class VaccinationEditForm extends AbstractEditForm<VaccinationDto> {
 		addField(VaccinationDto.OTHER_VACCINE_MANUFACTURER);
 		Field atcCode = addField(VaccinationDto.VACCINE_ATC_CODE);
 		Field inn = addField(VaccinationDto.VACCINE_INN);
-		Field uniCode = addField(VaccinationDto.VACCINE_UNII_CODE);
+		Field uniiCode = addField(VaccinationDto.VACCINE_UNII_CODE);
 
 		// Disable the manufacturer and type fields if the vaccine has its values.
 		vaccineName.addValueChangeListener(e -> {
 			Vaccine vaccine = (Vaccine) e.getProperty().getValue();
 			if (vaccine != null) {
 				vaccineManufacturer.setValue(vaccine.getManufacturer());
-				Vaccine.VaccineCodes codes = vaccine.getVaccineCodes();
-				if (codes != null) {
-					vaccineType.setValue(vaccine.getVaccineCodes().getVaccineType());
-					atcCode.setValue(vaccine.getVaccineCodes().getAtcCode());
-					inn.setValue(vaccine.getVaccineCodes().getInn());
-					uniCode.setValue(vaccine.getVaccineCodes().getUniiCode());
-				}
-				FieldHelper.setClearEnabled(codes == null, vaccineType, atcCode, inn, uniCode);
+				vaccineType.setValue(vaccine.getVaccineType());
+				atcCode.setValue(vaccine.getAtcCode());
+				inn.setValue(vaccine.getInn());
+				uniiCode.setValue(vaccine.getUniiCode());
+				vaccineType.setEnabled(StringUtils.isBlank(vaccine.getVaccineType()));
+				atcCode.setEnabled(StringUtils.isBlank(vaccine.getAtcCode()));
+				inn.setEnabled(StringUtils.isBlank(vaccine.getInn()));
+				uniiCode.setEnabled(StringUtils.isBlank(vaccine.getUniiCode()));
 			}
 		});
 		addField(VaccinationDto.VACCINATION_INFO_SOURCE);
