@@ -18,7 +18,9 @@ package de.symeda.sormas.api.externalmessage;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.CountryHelper;
@@ -32,6 +34,7 @@ import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceD
 import de.symeda.sormas.api.clinicalcourse.ComplianceWithTreatment;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
+import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseWrapper;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
@@ -261,6 +264,9 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private Boolean tuberculosisDirectlyObservedTreatment;
 	private Boolean tuberculosisMdrXdrTuberculosis;
 	private Boolean tuberculosisBeijingLineage;
+
+	@Nullable
+	private ExternalMessageSurveyResponseWrapper surveyResponseWrapper;
 
 	public ExternalMessageType getType() {
 		return type;
@@ -938,5 +944,187 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	public void setTuberculosisBeijingLineage(Boolean tuberculosisBeijingLineage) {
 		this.tuberculosisBeijingLineage = tuberculosisBeijingLineage;
+	}
+
+	public ExternalMessageSurveyResponseWrapper getSurveyResponseWrapper() {
+		return surveyResponseWrapper;
+	}
+
+	public ExternalMessageDto setSurveyResponseWrapper(ExternalMessageSurveyResponseWrapper surveyResponseWrapper) {
+		this.surveyResponseWrapper = surveyResponseWrapper;
+		return this;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == null || getClass() != o.getClass())
+			return false;
+		if (!super.equals(o))
+			return false;
+		ExternalMessageDto that = (ExternalMessageDto) o;
+		return automaticProcessingPossible == that.automaticProcessingPossible
+			&& type == that.type
+			&& disease == that.disease
+			&& Objects.equals(diseaseVariant, that.diseaseVariant)
+			&& Objects.equals(diseaseVariantDetails, that.diseaseVariantDetails)
+			&& Objects.equals(messageDateTime, that.messageDateTime)
+			&& caseClassification == that.caseClassification
+			&& Objects.equals(caseReportDate, that.caseReportDate)
+			&& Objects.equals(caseSymptoms, that.caseSymptoms)
+			&& Objects.equals(reporterName, that.reporterName)
+			&& Objects.equals(reporterExternalIds, that.reporterExternalIds)
+			&& Objects.equals(reporterPostalCode, that.reporterPostalCode)
+			&& Objects.equals(reporterCity, that.reporterCity)
+			&& Objects.equals(personFirstName, that.personFirstName)
+			&& Objects.equals(personLastName, that.personLastName)
+			&& Objects.equals(personExternalId, that.personExternalId)
+			&& Objects.equals(personNationalHealthId, that.personNationalHealthId)
+			&& personSex == that.personSex
+			&& personPresentCondition == that.personPresentCondition
+			&& Objects.equals(personBirthDateDD, that.personBirthDateDD)
+			&& Objects.equals(personBirthDateMM, that.personBirthDateMM)
+			&& Objects.equals(personBirthDateYYYY, that.personBirthDateYYYY)
+			&& Objects.equals(personPostalCode, that.personPostalCode)
+			&& Objects.equals(personCity, that.personCity)
+			&& Objects.equals(personStreet, that.personStreet)
+			&& Objects.equals(personHouseNumber, that.personHouseNumber)
+			&& Objects.equals(personCountry, that.personCountry)
+			&& Objects.equals(personFacility, that.personFacility)
+			&& Objects.equals(personPhone, that.personPhone)
+			&& personPhoneNumberType == that.personPhoneNumberType
+			&& Objects.equals(personEmail, that.personEmail)
+			&& Objects.equals(personGuardianFirstName, that.personGuardianFirstName)
+			&& Objects.equals(personGuardianLastName, that.personGuardianLastName)
+			&& Objects.equals(personGuardianRelationship, that.personGuardianRelationship)
+			&& Objects.equals(personGuardianPhone, that.personGuardianPhone)
+			&& Objects.equals(personGuardianEmail, that.personGuardianEmail)
+			&& Objects.equals(personOccupation, that.personOccupation)
+			&& treatmentStarted == that.treatmentStarted
+			&& Objects.equals(treatmentNotApplicable, that.treatmentNotApplicable)
+			&& Objects.equals(treatmentStartedDate, that.treatmentStartedDate)
+			&& Objects.equals(diagnosticDate, that.diagnosticDate)
+			&& Objects.equals(deceasedDate, that.deceasedDate)
+			&& Objects.equals(sampleReports, that.sampleReports)
+			&& Objects.equals(surveillanceReport, that.surveillanceReport)
+			&& Objects.equals(externalMessageDetails, that.externalMessageDetails)
+			&& Objects.equals(caseComments, that.caseComments)
+			&& Objects.equals(reportId, that.reportId)
+			&& Objects.equals(reportMessageId, that.reportMessageId)
+			&& status == that.status
+			&& Objects.equals(assignee, that.assignee)
+			&& Objects.equals(reportingUser, that.reportingUser)
+			&& Objects.equals(personAdditionalDetails, that.personAdditionalDetails)
+			&& vaccinationStatus == that.vaccinationStatus
+			&& admittedToHealthFacility == that.admittedToHealthFacility
+			&& Objects.equals(hospitalizationFacilityName, that.hospitalizationFacilityName)
+			&& Objects.equals(hospitalizationFacilityExternalId, that.hospitalizationFacilityExternalId)
+			&& Objects.equals(hospitalizationFacilityDepartment, that.hospitalizationFacilityDepartment)
+			&& Objects.equals(hospitalizationAdmissionDate, that.hospitalizationAdmissionDate)
+			&& Objects.equals(hospitalizationDischargeDate, that.hospitalizationDischargeDate)
+			&& Objects.equals(notifierFirstName, that.notifierFirstName)
+			&& Objects.equals(notifierLastName, that.notifierLastName)
+			&& Objects.equals(notifierRegistrationNumber, that.notifierRegistrationNumber)
+			&& Objects.equals(notifierAddress, that.notifierAddress)
+			&& Objects.equals(notifierEmail, that.notifierEmail)
+			&& Objects.equals(notifierPhone, that.notifierPhone)
+			&& Objects.equals(activitiesAsCase, that.activitiesAsCase)
+			&& Objects.equals(exposures, that.exposures)
+			&& radiographyCompatibility == that.radiographyCompatibility
+			&& Objects.equals(otherDiagnosticCriteria, that.otherDiagnosticCriteria)
+			&& tuberculosis == that.tuberculosis
+			&& hiv == that.hiv
+			&& hivArt == that.hivArt
+			&& Objects.equals(tuberculosisInfectionYear, that.tuberculosisInfectionYear)
+			&& previousTuberculosisTreatment == that.previousTuberculosisTreatment
+			&& complianceWithTreatment == that.complianceWithTreatment
+			&& Objects.equals(tuberculosisDirectlyObservedTreatment, that.tuberculosisDirectlyObservedTreatment)
+			&& Objects.equals(tuberculosisMdrXdrTuberculosis, that.tuberculosisMdrXdrTuberculosis)
+			&& Objects.equals(tuberculosisBeijingLineage, that.tuberculosisBeijingLineage)
+			&& Objects.equals(surveyResponseWrapper, that.surveyResponseWrapper);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(
+			super.hashCode(),
+			type,
+			disease,
+			diseaseVariant,
+			diseaseVariantDetails,
+			messageDateTime,
+			caseClassification,
+			caseReportDate,
+			caseSymptoms,
+			reporterName,
+			reporterExternalIds,
+			reporterPostalCode,
+			reporterCity,
+			personFirstName,
+			personLastName,
+			personExternalId,
+			personNationalHealthId,
+			personSex,
+			personPresentCondition,
+			personBirthDateDD,
+			personBirthDateMM,
+			personBirthDateYYYY,
+			personPostalCode,
+			personCity,
+			personStreet,
+			personHouseNumber,
+			personCountry,
+			personFacility,
+			personPhone,
+			personPhoneNumberType,
+			personEmail,
+			personGuardianFirstName,
+			personGuardianLastName,
+			personGuardianRelationship,
+			personGuardianPhone,
+			personGuardianEmail,
+			personOccupation,
+			treatmentStarted,
+			treatmentNotApplicable,
+			treatmentStartedDate,
+			diagnosticDate,
+			deceasedDate,
+			sampleReports,
+			surveillanceReport,
+			externalMessageDetails,
+			caseComments,
+			reportId,
+			reportMessageId,
+			status,
+			assignee,
+			reportingUser,
+			automaticProcessingPossible,
+			personAdditionalDetails,
+			vaccinationStatus,
+			admittedToHealthFacility,
+			hospitalizationFacilityName,
+			hospitalizationFacilityExternalId,
+			hospitalizationFacilityDepartment,
+			hospitalizationAdmissionDate,
+			hospitalizationDischargeDate,
+			notifierFirstName,
+			notifierLastName,
+			notifierRegistrationNumber,
+			notifierAddress,
+			notifierEmail,
+			notifierPhone,
+			activitiesAsCase,
+			exposures,
+			radiographyCompatibility,
+			otherDiagnosticCriteria,
+			tuberculosis,
+			hiv,
+			hivArt,
+			tuberculosisInfectionYear,
+			previousTuberculosisTreatment,
+			complianceWithTreatment,
+			tuberculosisDirectlyObservedTreatment,
+			tuberculosisMdrXdrTuberculosis,
+			tuberculosisBeijingLineage,
+			surveyResponseWrapper);
 	}
 }

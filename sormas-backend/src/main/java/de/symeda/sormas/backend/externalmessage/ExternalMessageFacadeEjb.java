@@ -31,6 +31,7 @@ import javax.annotation.security.PermitAll;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.naming.CannotProceedException;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -54,6 +55,9 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
@@ -77,6 +81,7 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageType;
 import de.symeda.sormas.api.externalmessage.NewMessagesState;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult;
+import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseWrapper;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
@@ -102,11 +107,14 @@ import de.symeda.sormas.backend.externalmessage.labmessage.AutomaticLabMessagePr
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportFacadeEjb;
 import de.symeda.sormas.backend.externalmessage.labmessage.TestReport;
+import de.symeda.sormas.backend.externalmessage.survey.AutomaticSurveyResponseProcessor;
+import de.symeda.sormas.backend.externalmessage.survey.SurveyResponseProcessingResultWrapper;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.country.CountryService;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
+import de.symeda.sormas.backend.json.ObjectMapperProvider;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
@@ -157,6 +165,8 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	private AutomaticLabMessageProcessor automaticLabMessageProcessor;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
+	@Inject
+	private AutomaticSurveyResponseProcessor automaticSurveyResponseProcessor;
 
 	ExternalMessage fillOrBuildEntity(@NotNull ExternalMessageDto source, ExternalMessage target, boolean checkChangeDate) {
 
@@ -306,6 +316,33 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		return getByUuid(labMessage.getUuid());
 	}
 
+	@Override
+	public List<ExternalMessageDto> saveAndProcessSurveyResponses(List<ExternalMessageDto> dtos) {
+		try {
+			List<SurveyResponseProcessingResultWrapper> processingResults = automaticSurveyResponseProcessor.processSurveyResponses(dtos);
+
+			processingResults.forEach(wrapper -> {
+				ProcessingResult<ExternalMessageProcessingResult> result = wrapper.getResult();
+				if (result.getStatus().isCanceled()) {
+					logger.error("Processing of surveyResponse with UUID {} has been canceled", wrapper.getExternalMessage().getUuid());
+				}
+			});
+		} catch (InterruptedException e) {
+			logger.error("Could not process lab message with UUID [{}]", extractUuids(dtos), e);
+			Thread.currentThread().interrupt();
+		} catch (ExecutionException e) {
+			logger.error("Could not process survey responses with UUID [{}]", extractUuids(dtos), e);
+		} finally {
+			dtos.forEach(this::save);
+		}
+
+		return externalMessageService.getByUuids(dtos.stream().map(EntityDto::getUuid).collect(toList())).stream().map(this::toDto).collect(toList());
+	}
+
+	private List<String> extractUuids(List<ExternalMessageDto> dtos) {
+		return dtos.stream().map(EntityDto::getUuid).filter(Objects::nonNull).collect(toList());
+	}
+
 	private boolean checkAutomaticProcessingAllowed() {
 		return featureConfigurationFacade.isPropertyValueTrue(FeatureType.EXTERNAL_MESSAGES, FeatureTypeProperty.FORCE_AUTOMATIC_PROCESSING)
 			|| !featureConfigurationFacade.isAnyFeatureEnabled(FeatureType.CONTACT_TRACING, FeatureType.EVENT_SURVEILLANCE);
@@ -315,6 +352,10 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		ExternalMessage externalMessage = externalMessageService.getByUuid(dto.getUuid());
 
 		validate(dto);
+
+		if (ExternalMessageType.SURVEY_RESPONSE.equals(externalMessage.getType())) {
+			// TODO: fill missing holes from person: fetch the entities: case -> person 
+		}
 
 		externalMessage = fillOrBuildEntity(dto, externalMessage, checkChangeDate);
 
@@ -473,6 +514,25 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setTuberculosisDirectlyObservedTreatment(source.getTuberculosisDirectlyObservedTreatment());
 		target.setTuberculosisMdrXdrTuberculosis(source.getTuberculosisMdrXdrTuberculosis());
 		target.setTuberculosisBeijingLineage(source.getTuberculosisBeijingLineage());
+
+		ExternalMessageAdditionalDataType additionalDataType = source.getAdditionalDataType();
+		String additionalData = source.getAdditionalData();
+		if (additionalDataType != null && additionalData != null) {
+			try {
+				Object additionalDataInstance = ObjectMapperProvider.getInstance().readValue(additionalData, additionalDataType.getDataClass());
+				if (additionalDataInstance instanceof ExternalMessageSurveyResponseWrapper) {
+					target.setSurveyResponseWrapper((ExternalMessageSurveyResponseWrapper) additionalDataInstance);
+				} else {
+					throw new IllegalStateException(
+						String.format(
+							"Unexpected additionalDataType: [%s], cannot be mapped into the DTO",
+							additionalDataInstance.getClass().getName()));
+				}
+			} catch (JsonProcessingException e) {
+				throw new RuntimeException(e);
+			}
+		}
+
 		return target;
 	}
 
@@ -484,7 +544,8 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	@Override
 	@RightsAllowed({
 		UserRight._EXTERNAL_MESSAGE_LABORATORY_DELETE,
-		UserRight._EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE })
+		UserRight._EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE,
+		UserRight._EXTERNAL_MESSAGE_SURVEY_RESPONSE_DELETE, })
 	public void delete(String uuid) {
 		externalMessageService.deletePermanent(externalMessageService.getByUuid(uuid));
 	}
@@ -492,7 +553,8 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	@Override
 	@RightsAllowed({
 		UserRight._EXTERNAL_MESSAGE_LABORATORY_DELETE,
-		UserRight._EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE })
+		UserRight._EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE,
+		UserRight._EXTERNAL_MESSAGE_SURVEY_RESPONSE_DELETE, })
 	public List<ProcessedEntity> delete(List<String> uuids) {
 		List<ProcessedEntity> processedExternalMessages = new ArrayList<>();
 		List<ExternalMessage> externalMessagesToBeDeleted = externalMessageService.getByUuids(uuids);
@@ -718,7 +780,8 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		UserRight._SYSTEM,
 		UserRight._EXTERNAL_MESSAGE_ACCESS,
 		UserRight._EXTERNAL_MESSAGE_LABORATORY_VIEW,
-		UserRight._EXTERNAL_MESSAGE_DOCTOR_DECLARATION_VIEW })
+		UserRight._EXTERNAL_MESSAGE_DOCTOR_DECLARATION_VIEW,
+		UserRight._EXTERNAL_MESSAGE_SURVEY_RESPONSE_VIEW })
 	public ExternalMessageFetchResult fetchAndSaveExternalMessages(Date since) {
 
 		SystemEventDto currentSync = syncFacadeEjb.startSyncFor(SystemEventType.FETCH_EXTERNAL_MESSAGES);
@@ -738,6 +801,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	}
 
 	protected ExternalMessageFetchResult fetchAndSaveExternalMessages(SystemEventDto currentSync, Date since) throws NamingException {
+		// TODO: survey responses should be added here.
 		if (since == null) {
 			since = syncFacadeEjb.findLastSyncDateFor(SystemEventType.FETCH_EXTERNAL_MESSAGES);
 		}

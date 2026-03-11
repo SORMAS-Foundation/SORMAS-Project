@@ -151,6 +151,36 @@ public class ExternalMessageController {
 		form.setValue(newDto);
 	}
 
+	public void processSurveyResponse(String surveyResponseMessageUuid) {
+		ExternalMessageDto labMessage = FacadeProvider.getExternalMessageFacade().getByUuid(surveyResponseMessageUuid);
+		ExternalMessageProcessingFacade processingFacade = getExternalMessageProcessingFacade();
+		ExternalMessageMapper mapper = new ExternalMessageMapper(labMessage, processingFacade);
+		RelatedLabMessageHandler relatedLabMessageHandler = new RelatedLabMessageHandler(UiUtil.getUser(), processingFacade, mapper);
+		LabMessageProcessingFlow flow = new LabMessageProcessingFlow(labMessage, mapper, processingFacade, relatedLabMessageHandler);
+
+		flow.run().handle((BiFunction<? super ProcessingResult<ExternalMessageProcessingResult>, Throwable, Void>) (result, exception) -> {
+			if (exception != null) {
+				logger.error("Unexpected exception while processing lab message", exception);
+
+				Notification.show(
+					I18nProperties.getString(Strings.errorOccurred, I18nProperties.getString(Strings.errorOccurred)),
+					I18nProperties.getString(Strings.errorWasReported),
+					Notification.Type.ERROR_MESSAGE);
+
+				return null;
+			}
+
+			ProcessingResultStatus status = result.getStatus();
+			if (status == ProcessingResultStatus.CANCELED_WITH_CORRECTIONS) {
+				showCorrectionsSavedPopup();
+			} else if (status == ProcessingResultStatus.DONE) {
+				SormasUI.get().getNavigator().navigateTo(ExternalMessagesView.VIEW_NAME);
+			}
+
+			return null;
+		});
+	}
+
 	public void processLabMessage(String labMessageUuid) {
 		ExternalMessageDto labMessage = FacadeProvider.getExternalMessageFacade().getByUuid(labMessageUuid);
 		ExternalMessageProcessingFacade processingFacade = getExternalMessageProcessingFacade();
@@ -509,6 +539,9 @@ public class ExternalMessageController {
 		}
 		if (UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS)) {
 			types.add(ExternalMessageType.PHYSICIANS_REPORT);
+		}
+		if (UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_SURVEY_RESPONSE_PROCESS)) {
+			types.add(ExternalMessageType.SURVEY_RESPONSE);
 		}
 		components.syncUsersForMessageType(types);
 

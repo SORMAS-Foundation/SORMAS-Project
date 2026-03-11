@@ -227,6 +227,10 @@ public class ExternalMessage extends AbstractDomainObject {
 	private Boolean tuberculosisMdrXdrTuberculosis;
 	private Boolean tuberculosisBeijingLineage;
 
+	private ExternalMessageAdditionalDataType additionalDataType;
+
+	private String additionalData;
+
 	@Enumerated(EnumType.STRING)
 	public ExternalMessageType getType() {
 		return type;
@@ -930,5 +934,26 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public void setTuberculosisBeijingLineage(Boolean tuberculosisBeijingLineage) {
 		this.tuberculosisBeijingLineage = tuberculosisBeijingLineage;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ExternalMessageAdditionalDataType getAdditionalDataType() {
+		return additionalDataType;
+	}
+
+	public ExternalMessage setAdditionalDataType(ExternalMessageAdditionalDataType additionalDataType) {
+		this.additionalDataType = additionalDataType;
+		return this;
+	}
+
+	@Column(columnDefinition = "jsonb")
+	@Type(type = "jsonb")
+	public String getAdditionalData() {
+		return additionalData;
+	}
+
+	public ExternalMessage setAdditionalData(String additionalData) {
+		this.additionalData = additionalData;
+		return this;
 	}
 }
