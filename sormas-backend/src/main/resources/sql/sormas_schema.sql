@@ -15256,6 +15256,17 @@ ALTER TABLE surveillancereports_history ADD COLUMN treatmentstartdate timestamp;
 INSERT INTO schema_version (version_number, comment) VALUES (610, '#13754 - Create notification should create a Report - Case - DD');
 
 
+-- #13625 - Add handling for multiple person contacts and addresses
+
+ALTER TABLE externalmessage ADD COLUMN additionalPersonContactDetails jsonb;
+ALTER TABLE externalmessage ADD COLUMN additionalPersonAddresses jsonb;
+
+ALTER TABLE externalmessage_history ADD COLUMN additionalPersonContactDetails jsonb;
+ALTER TABLE externalmessage_history ADD COLUMN additionalPersonAddresses jsonb;
+
+INSERT INTO schema_version (version_number, comment) VALUES (611, '#13625 - Multiple person contacts and addresses');
+
+
 
 -- 2026-02-04 - Malaria and Dengue requirements #13797
 ALTER TABLE diseaseconfiguration ADD COLUMN IF NOT EXISTS incubationPeriodEnabled boolean default false;
@@ -15347,6 +15358,6 @@ ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS scantHemorrhage character 
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS otherNeurolocalSymptom character varying(255);
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS otherNeurolocalSymptomText varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (611, '#13797 - Malaria and Dengue requirements');
+INSERT INTO schema_version (version_number, comment) VALUES (612, '#13797 - Malaria and Dengue requirements');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
