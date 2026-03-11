@@ -231,7 +231,7 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		dto.setIncubationPeriodEnabled(entity.getIncubationPeriodEnabled());
 		dto.setMaxIncubationPeriod(entity.getMaxIncubationPeriod());
 		dto.setMinIncubationPeriod(entity.getMinIncubationPeriod());
-		dto.setCaseDefinitionText(dto.getCaseDefinitionText());
+		dto.setCaseDefinitionText(entity.getCaseDefinitionText());
 
 		if (entity.getExtendedClassification() != null) {
 			dto.setExtendedClassification(entity.getExtendedClassification());

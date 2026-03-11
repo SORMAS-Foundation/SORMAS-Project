@@ -111,6 +111,8 @@ public class VaccinationEditForm extends AbstractEditForm<VaccinationDto> {
 				atcCode.setEnabled(StringUtils.isBlank(vaccine.getAtcCode()));
 				inn.setEnabled(StringUtils.isBlank(vaccine.getInn()));
 				uniiCode.setEnabled(StringUtils.isBlank(vaccine.getUniiCode()));
+			} else {
+				FieldHelper.setClearEnabled(true, vaccineManufacturer, vaccineType, atcCode, inn, uniiCode);
 			}
 		});
 		addField(VaccinationDto.VACCINATION_INFO_SOURCE);

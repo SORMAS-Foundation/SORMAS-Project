@@ -15313,7 +15313,7 @@ ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS persistentvomiting character varyi
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS restlessness character varying(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS acutebleeding character varying(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS severeorganimpairment character varying(255);
-ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS plasmaLeakagesign character varying(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS plasmaleakagesign character varying(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS polydipsia character varying(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS syndromicflu character varying(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS anemia character varying(255);
@@ -15326,9 +15326,10 @@ ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS clinicalmanifestation character va
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS clinicalmanifestationtext character varying(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS lethargy character varying(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS cerebralmalaria character varying(255);
-ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS scantHemorrhage character varying(255);
-ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS otherNeurolocalSymptom character varying(255);
-ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS otherNeurolocalSymptomText varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS scanthemorrhage character varying(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS disseminatedintravascularcoagulation character varying(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS otherneurolocalsymptom character varying(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS otherneurolocalsymptomtext varchar(255);
 
 -- Add the same columns to symptoms_history table
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS clammyskin character varying(255);
@@ -15341,7 +15342,7 @@ ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS persistentvomiting charact
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS restlessness character varying(255);
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS acutebleeding character varying(255);
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS severeorganimpairment character varying(255);
-ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS plasmaLeakagesign character varying(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS plasmaleakagesign character varying(255);
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS polydipsia character varying(255);
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS syndromicflu character varying(255);
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS anemia character varying(255);
@@ -15354,9 +15355,10 @@ ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS clinicalmanifestation char
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS clinicalmanifestationtext character varying(255);
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS lethargy character varying(255);
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS cerebralmalaria character varying(255);
-ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS scantHemorrhage character varying(255);
-ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS otherNeurolocalSymptom character varying(255);
-ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS otherNeurolocalSymptomText varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS scanthemorrhage character varying(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS disseminatedintravascularcoagulation character varying(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS otherneurolocalsymptom character varying(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS otherneurolocalsymptomtext varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (612, '#13797 - Malaria and Dengue requirements');
 

@@ -19,6 +19,7 @@ import javax.annotation.Nullable;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.Diseases;
 
 public enum Vaccine {
@@ -86,10 +87,10 @@ public enum Vaccine {
 	@Diseases(value = {
 		Disease.DENGUE })
 	DENGVAXIA(VaccineManufacturer.SANOFI_PASTEUR,
-		"Live attenuated",
-		"Chimeric yellow fever dengue tetravalent vaccine (live, attenuated)",
-		"J07BF06",
-		"39V92P2S5S"),
+		I18nProperties.getString(Strings.dengvaxiaVaccineType),
+		I18nProperties.getString(Strings.dengvaxiaInn),
+		I18nProperties.getString(Strings.dengvaxiaAtcCode),
+		I18nProperties.getString(Strings.dengvaxiaUniicCode)),
 	@Diseases(value = {
 		Disease.DENGUE })
 	QDENGA(VaccineManufacturer.TAKEDA, "Live attenuated", "Live attenuated tetravalent dengue vaccine", "J07BF07", "N/A (not yet assigned)"),

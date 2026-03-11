@@ -169,7 +169,7 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 		this.minIncubationPeriod = minIncubationPeriod;
 	}
 
-	@Column
+	@Column(length = CHARACTER_LIMIT_TEXT)
 	public String getCaseDefinitionText() {
 		return caseDefinitionText;
 	}

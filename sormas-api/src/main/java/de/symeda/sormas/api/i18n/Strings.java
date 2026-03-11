@@ -208,6 +208,10 @@ public interface Strings {
 	String DefaultPassword_ownUserIntroduction = "DefaultPassword.ownUserIntroduction";
 	String DefaultPassword_ownUserNewPasswordSetHints = "DefaultPassword.ownUserNewPasswordSetHints";
 	String DefaultPassword_unchanged = "DefaultPassword.unchanged";
+	String dengvaxiaAtcCode = "dengvaxiaAtcCode";
+	String dengvaxiaInn = "dengvaxiaInn";
+	String dengvaxiaUniicCode = "dengvaxiaUniicCode";
+	String dengvaxiaVaccineType = "dengvaxiaVaccineType";
 	String disabled = "disabled";
 	String DiseaseNetworkDiagram_Classification_HEALTHY = "DiseaseNetworkDiagram.Classification.HEALTHY";
 	String DiseaseNetworkDiagram_heading = "DiseaseNetworkDiagram.heading";

@@ -1363,10 +1363,13 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				// and offset date should be enabled based on onset symptom visibility.
 				ComboBox cmCb = getField(CLINICAL_MANIFESTATION);
 				DateField offsetDate = getField(OFFSET_DATE);
-				offsetDate.setEnabled(onsetSymptom.isEnabled());
-				offsetDate.clear();
-				if (onsetSymptom.isEnabled()) {
+
+				boolean hasOnsetSymptoms = onsetSymptom.isEnabled();
+				offsetDate.setEnabled(hasOnsetSymptoms);
+				if (!hasOnsetSymptoms) {
+					offsetDate.clear();
 					cmCb.clear();
+				} else if (cmCb.getValue() == null) {
 					cmCb.setValue(ClinicalManifestation.SIGN_OF_SEVERITY);
 				}
 			});
