@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.action;
 
-import static de.symeda.sormas.ui.utils.CssStyles.SOFT_REQUIRED;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
@@ -99,7 +98,6 @@ public class ActionEditForm extends AbstractEditForm<ActionDto> {
 
 		addField(ActionDto.ACTION_MEASURE, TextField.class);
 		TextField title = addField(ActionDto.TITLE, TextField.class);
-		title.addStyleName(SOFT_REQUIRED);
 		RichTextArea description = addField(ActionDto.DESCRIPTION, RichTextArea.class);
 
 		description.setNullRepresentation("");

@@ -332,7 +332,6 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		testTypeField.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
 		testTypeField.setImmediate(true);
 		testTypeTextField = addField(PathogenTestDto.TEST_TYPE_TEXT, TextField.class);
-		FieldHelper.addSoftRequiredStyle(testTypeTextField);
 	}
 
 	private DateTimeField addTestDateField() {

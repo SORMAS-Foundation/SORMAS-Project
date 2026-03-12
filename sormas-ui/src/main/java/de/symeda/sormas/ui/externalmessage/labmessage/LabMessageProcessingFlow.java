@@ -131,8 +131,51 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 				UserRight.EVENTPARTICIPANT_EDIT);
 
 		if (optionsBuilder.size() > 1) {
+			HandlerCallback<PickOrCreateEntryResult> postUpdateCallback = new HandlerCallback<>() {
+
+				@Override
+				public void done(PickOrCreateEntryResult result) {
+
+					String personUuid = null;
+
+					if (result.getCaze() != null) {
+						// we need to get the person from the case
+						final CaseDataDto caze = FacadeProvider.getCaseFacade().getByUuid(result.getCaze().getUuid());
+						personUuid = caze != null && caze.getPerson() != null ? caze.getPerson().getUuid() : null;
+					}
+
+					if (result.getContact() != null) {
+						// sanity check
+						if (personUuid != null) {
+							throw new IllegalStateException("Multiple selections should not happen at the same time");
+						}
+						final ContactDto contact = FacadeProvider.getContactFacade().getByUuid(result.getContact().getUuid());
+						personUuid = contact != null && contact.getPerson() != null ? contact.getPerson().getUuid() : null;
+					}
+
+					if (result.getEventParticipant() != null) {
+						// sanity check
+						if (personUuid != null) {
+							throw new IllegalStateException("Multiple selections should not happen at the same time");
+						}
+						final EventParticipantDto eventParticipant =
+							FacadeProvider.getEventParticipantFacade().getByUuid(result.getEventParticipant().getUuid());
+						personUuid = eventParticipant != null && eventParticipant.getPerson() != null ? eventParticipant.getPerson().getUuid() : null;
+					}
+
+					ExternalMessageProcessingUIHelper.updateAddressAndSavePerson(personUuid, getMapper());
+
+					callback.done(result);
+				}
+
+				@Override
+				public void cancel() {
+					callback.cancel();
+				}
+			};
+
 			ProcessingUiHelper
-				.showPickOrCreateEntryWindow(new EntrySelectionComponentForExternalMessage(labMessage, optionsBuilder.build()), callback);
+				.showPickOrCreateEntryWindow(new EntrySelectionComponentForExternalMessage(labMessage, optionsBuilder.build()), postUpdateCallback);
 		} else {
 			callback.done(optionsBuilder.getSingleAvailableCreateResult());
 		}
@@ -140,7 +183,29 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 
 	@Override
 	protected void handleCreateCase(CaseDataDto caze, PersonDto person, ExternalMessageDto labMessage, HandlerCallback<CaseDataDto> callback) {
-		ExternalMessageProcessingUIHelper.showCreateCaseWindow(caze, person, labMessage, getMapper(), callback);
+
+		HandlerCallback<CaseDataDto> postUpdateCallback = new HandlerCallback<>() {
+
+			@Override
+			public void done(CaseDataDto result) {
+				// we need to call again the updates here
+				// compared to automatic processing the person is processed by the case controller
+				// @see{CaseController#getCaseCreateComponent} methods
+				// we need to load the person again from the database to get the updates following case form changes
+				ExternalMessageProcessingUIHelper.updateAddressAndSavePerson(
+					result.getPerson() != null ? result.getPerson().getUuid() : null,
+					getMapper());
+
+				callback.done(result);
+			}
+
+			@Override
+			public void cancel() {
+				callback.cancel();
+			}
+		};
+
+		ExternalMessageProcessingUIHelper.showCreateCaseWindow(caze, person, labMessage, getMapper(), postUpdateCallback);
 	}
 
 	@Override
@@ -186,11 +251,17 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 			ControllerProvider.getContactController().getContactCreateComponent(null, false, null, true);
 
 		contactCreateComponent.addCommitListener(() -> {
+			// we need to call again the updates here
+			// compared to automatic processing the person is processed by the contact controller
+			// @see{ContactController#getContactCreateComponent} methods
+			// we need to load the person again from the database to get the updates following contact form changes
+			// ofc. here we have another way to do it because whoever did it was too lazy to fix the contact controller
+			final ContactDto processedContact = contactCreateComponent.getWrappedComponent().getValue();
 			ExternalMessageProcessingUIHelper.updateAddressAndSavePerson(
-				FacadeProvider.getPersonFacade().getByUuid(contactCreateComponent.getWrappedComponent().getValue().getPerson().getUuid()),
+				processedContact.getPerson() != null ? processedContact.getPerson().getUuid() : null,
 				getMapper());
 
-			callback.done(contactCreateComponent.getWrappedComponent().getValue());
+			callback.done(processedContact);
 		});
 		contactCreateComponent.addDiscardListener(callback::cancel);
 
@@ -288,6 +359,10 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 				FacadeProvider.getPersonFacade().save(dto.getPerson());
 				EventParticipantDto savedDto = FacadeProvider.getEventParticipantFacade().save(dto);
 				Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Notification.Type.ASSISTIVE_NOTIFICATION);
+
+				ExternalMessageProcessingUIHelper.updateAddressAndSavePerson(
+					savedDto.getPerson() != null ? savedDto.getPerson().getUuid() : null,
+					getMapper());
 
 				callback.done(savedDto);
 			}

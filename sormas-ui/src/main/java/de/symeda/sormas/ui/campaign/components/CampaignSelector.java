@@ -37,7 +37,6 @@ public class CampaignSelector extends HorizontalLayout {
 		if (lastStartedCampaign != null) {
 			campaignCombo.setValue(lastStartedCampaign);
 		}
-		CssStyles.style(campaignCombo, CssStyles.SOFT_REQUIRED);
 		addComponent(campaignCombo);
 	}
 

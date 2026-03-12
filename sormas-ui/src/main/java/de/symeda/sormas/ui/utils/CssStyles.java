@@ -200,7 +200,6 @@ public final class CssStyles {
 	public static final String CAPTION_OVERFLOW = "caption-overflow";
 	public static final String CAPTION_FIXED_WIDTH_100 = "caption-fixed-width-100";
 
-	public static final String SOFT_REQUIRED = "soft-required";
 	public static final String ERROR_COLOR_PRIMARY = "error-color-primary";
 
 	public static final String ALIGN_CENTER = "align-center";

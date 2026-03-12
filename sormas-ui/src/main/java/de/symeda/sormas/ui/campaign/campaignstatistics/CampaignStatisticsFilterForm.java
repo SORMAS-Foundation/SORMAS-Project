@@ -22,7 +22,6 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
-import de.symeda.sormas.ui.utils.FieldHelper;
 
 public class CampaignStatisticsFilterForm extends AbstractFilterForm<CampaignStatisticsCriteria> {
 
@@ -34,8 +33,7 @@ public class CampaignStatisticsFilterForm extends AbstractFilterForm<CampaignSta
 		super(
 			CampaignStatisticsCriteria.class,
 			CampaignStatisticsDto.I18N_PREFIX,
-			JurisdictionFieldConfig
-				.of(CampaignStatisticsCriteria.REGION, CampaignStatisticsCriteria.DISTRICT, CampaignStatisticsCriteria.COMMUNITY));
+			JurisdictionFieldConfig.of(CampaignStatisticsCriteria.REGION, CampaignStatisticsCriteria.DISTRICT, CampaignStatisticsCriteria.COMMUNITY));
 		formActionButtonsComponent.style(CssStyles.FORCE_CAPTION);
 		formActionButtonsComponent.setSpacing(false);
 		formActionButtonsComponent.setSizeFull();
@@ -60,8 +58,6 @@ public class CampaignStatisticsFilterForm extends AbstractFilterForm<CampaignSta
 				I18nProperties.getPrefixCaption(CampaignFormDataDto.I18N_PREFIX, CampaignFormDataDto.CAMPAIGN_FORM_META),
 				200));
 		cbCampaignForm.addItems(FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferences());
-
-		FieldHelper.addSoftRequiredStyle(cbCampaignForm);
 
 		if (formMetaChangedCallback != null) {
 			cbCampaignForm.addValueChangeListener(e -> {

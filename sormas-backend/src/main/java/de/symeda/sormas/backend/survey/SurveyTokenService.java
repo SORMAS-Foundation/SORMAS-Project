@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.backend.survey;
 
+import java.util.List;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -99,6 +101,26 @@ public class SurveyTokenService extends BaseAdoService<SurveyToken> {
 		cq.orderBy(cb.desc(root.get(SurveyToken.ASSIGNMENT_DATE)));
 
 		return QueryHelper.getFirstResult(em, cq);
+	}
+
+	/**
+	 * Finds survey tokens based on the provided criteria. The results are ordered by assignment date in descending order.
+	 *
+	 * @param criteria
+	 * @return List<SurveyToken>
+	 */
+	public List<SurveyToken> findBy(SurveyTokenCriteria criteria) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<SurveyToken> cq = cb.createQuery(SurveyToken.class);
+		Root<SurveyToken> root = cq.from(SurveyToken.class);
+		cq.select(root);
+		Predicate filter = CriteriaBuilderHelper.and(cb, this.buildCriteriaFilter(criteria, cb, root, new SurveyTokenJoins(root)));
+		if (filter != null) {
+			cq.where(filter);
+		}
+		cq.orderBy(cb.desc(root.get(SurveyToken.ASSIGNMENT_DATE)));
+
+		return em.createQuery(cq).getResultList();
 	}
 
 	public SurveyToken getBySurveyAndToken(SurveyReferenceDto survey, String token) {

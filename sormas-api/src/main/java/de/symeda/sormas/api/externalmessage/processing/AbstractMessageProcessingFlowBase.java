@@ -46,16 +46,11 @@ import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.LabMessageProcessingHelper;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.SampleAndPathogenTests;
 import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
-import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.person.PersonContactDetailDto;
-import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
@@ -1051,12 +1046,18 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
         ProcessingResult<ExternalMessageProcessingResult> result,
         SurveillanceReportDto surveillanceReport);
 
-    protected void doPersonUpdates(EntitySelection<PersonDto> personSelection) {
-        // requested for #13589
-        // TODO: we need to find a better way to handle this
+    @Override
+    protected CompletionStage<ProcessingResult<ExternalMessageProcessingResult>> pickOrCreatePerson(ExternalMessageProcessingResult previousResult) {
+        return super.pickOrCreatePerson(previousResult).thenCompose(result -> {
+            if (!result.getStatus().isCanceled() && result.getData() != null) {
+                mergePerson(result.getData().getSelectedPerson());
+            }
+            return result.asCompletedFuture();
+        });
+    }
 
-        if (personSelection.isNew()) {
-            // no updates for new persons
+    protected void mergePerson(EntitySelection<PersonDto> personSelection) {
+        if (personSelection == null) {
             return;
         }
 
@@ -1065,124 +1066,14 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
             return;
         }
 
-        boolean doUpdate = false;
-
-        final LocationDto personAddress = person.getAddress();
-
-        if (personAddress != null) {
-            final String houseNumber = getExternalMessage().getPersonHouseNumber();
-            if (houseNumber != null) {
-                personAddress.setHouseNumber(houseNumber);
-            }
-            final String street = getExternalMessage().getPersonStreet();
-            if (street != null) {
-                personAddress.setStreet(street);
-            }
-            final String city = getExternalMessage().getPersonCity();
-            if (city != null) {
-                personAddress.setCity(city);
-            }
-            final String postalCode = getExternalMessage().getPersonPostalCode();
-            if (postalCode != null) {
-                personAddress.setPostalCode(postalCode);
-            }
-            final CountryReferenceDto country = getExternalMessage().getPersonCountry();
-            if (country != null) {
-                personAddress.setCountry(country);
-            }
-
-            doUpdate = true;
+        if (personSelection.isNew()) {
+            // no merges for new person
+            // additional contacts will be handled by {@link AbstractProcessingFlow#buildPerson()}
+            return;
         }
 
-        final List<PersonContactDetailDto> personContactDetails = person.getPersonContactDetails();
-
-        final String phoneNumber = getExternalMessage().getPersonPhone();
-        final PhoneNumberType phoneNumberType = getExternalMessage().getPersonPhoneNumberType();
-
-        if (phoneNumber != null && !phoneNumber.isBlank()) {
-            final PersonContactDetailDto primaryPhone = personContactDetails.stream()
-                .filter(pdc -> pdc.getPersonContactDetailType() == PersonContactDetailType.PHONE && !pdc.isThirdParty() && pdc.isPrimaryContact())
-                .findFirst()
-                .orElse(null);
-
-            final PersonContactDetailDto existingPhone = personContactDetails.stream()
-                .filter(pdc -> pdc.getPersonContactDetailType() == PersonContactDetailType.PHONE && !pdc.isThirdParty() && phoneNumber.equals(pdc.getContactInformation()))
-                .findFirst()
-                .orElse(null);
-
-            if(existingPhone != null) {
-                // if we have a existing phone number maybe it is not the new one
-                // make the primary phone not primary anymore and set the primary on the existing one
-                // coincidentally the existing one may be the primary one so set it to false first just in case
-                if(primaryPhone != null) {
-                    primaryPhone.setPrimaryContact(false);
-                }
-                existingPhone.setPrimaryContact(true);
-            } else {
-                // we do not have the new phone number in the list so we need to create a new one
-                final PersonContactDetailDto personContactDetail = new PersonContactDetailDto();
-                personContactDetail.setPerson(person.toReference());
-                personContactDetail.setPrimaryContact(true);
-                personContactDetail.setPersonContactDetailType(PersonContactDetailType.PHONE);
-                personContactDetail.setPrimaryContact(true);
-                personContactDetail.setPhoneNumberType(phoneNumberType);
-                personContactDetail.setContactInformation(phoneNumber);
-                personContactDetail.setThirdParty(false);
-                personContactDetails.add(personContactDetail);
-
-                // we need to set the old primary to false
-                if(primaryPhone != null) {
-                    primaryPhone.setPrimaryContact(false);
-                }
-            }
-
-            doUpdate = true;
-        }
-
-        final String emailAddress = getExternalMessage().getPersonEmail();
-
-        if (emailAddress != null && !emailAddress.isBlank()) {
-            final PersonContactDetailDto primaryEmail = personContactDetails.stream()
-                .filter(pdc -> pdc.getPersonContactDetailType() == PersonContactDetailType.EMAIL && !pdc.isThirdParty() && pdc.isPrimaryContact())
-                .findFirst()
-                .orElse(null);
-
-            final PersonContactDetailDto existingEmail = personContactDetails.stream()
-                .filter(pdc -> pdc.getPersonContactDetailType() == PersonContactDetailType.EMAIL && !pdc.isThirdParty() && emailAddress.equals(pdc.getContactInformation()))
-                .findFirst()
-                .orElse(null);
-
-            if(existingEmail != null) {
-                // if we have a existing email address maybe it is not the new one
-                // make the primary email not primary anymore and set the primary on the existing one
-                // coincidentally the existing one may be the primary one so set it to false first just in case
-                if(primaryEmail != null) {
-                    primaryEmail.setPrimaryContact(false);
-                }
-                existingEmail.setPrimaryContact(true);
-            } else {
-                // we do not have the new email address in the list so we need to create a new one
-                final PersonContactDetailDto personContactDetail = new PersonContactDetailDto();
-                personContactDetail.setPerson(person.toReference());
-                personContactDetail.setPrimaryContact(true);
-                personContactDetail.setPersonContactDetailType(PersonContactDetailType.EMAIL);
-                personContactDetail.setPrimaryContact(true);
-                personContactDetail.setContactInformation(emailAddress);
-                personContactDetail.setThirdParty(false);
-                personContactDetails.add(personContactDetail);
-
-                // we need to set the old primary to false
-                if(primaryEmail != null) {
-                    primaryEmail.setPrimaryContact(false);
-                }
-            }
-
-            doUpdate = true;
-        }
-
-        if (doUpdate) {
-            getExternalMessageProcessingFacade().updatePerson(person);
-        }
+        getMapper().mergePersonAddress(person);
+        getMapper().mergePersonContactDetails(person);
     }
 
     /**

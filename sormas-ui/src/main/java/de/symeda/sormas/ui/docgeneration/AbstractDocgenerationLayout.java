@@ -138,7 +138,6 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 		diseaseSelector.setPlaceholder(I18nProperties.getString(Strings.all));
 		diseaseSelector.setEmptySelectionAllowed(true);
 		diseaseSelector.setWidth(100F, Unit.PERCENTAGE);
-		diseaseSelector.addStyleName(CssStyles.SOFT_REQUIRED);
 		diseaseSelector.setValue(defaultDisease);
 
 		diseaseSelector.addValueChangeListener(e -> {
@@ -185,7 +184,6 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 				}
 			}
 		});
-		templateSelector.addStyleName(CssStyles.SOFT_REQUIRED);
 
 		addComponent(templateSelector);
 	}
