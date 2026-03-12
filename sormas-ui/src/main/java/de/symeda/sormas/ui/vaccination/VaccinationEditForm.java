@@ -29,6 +29,8 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.caze.VaccineManufacturer;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
@@ -104,13 +106,40 @@ public class VaccinationEditForm extends AbstractEditForm<VaccinationDto> {
 			if (vaccine != null) {
 				vaccineManufacturer.setValue(vaccine.getManufacturer());
 				vaccineType.setValue(vaccine.getVaccineType());
-				atcCode.setValue(vaccine.getAtcCode());
-				inn.setValue(vaccine.getInn());
-				uniiCode.setValue(vaccine.getUniiCode());
+
+				// FIXME: use optionals
+				if(vaccine.getAtcCode() == null) {
+					inn.setValue(I18nProperties.getString(Strings.Vaccine_atcCode_notAvailable));
+				} else {
+					atcCode.setValue(vaccine.getAtcCode());	
+				}
+				
+				// FIXME: use optionals
+				if(vaccine.getInn() == null) {
+					inn.setValue(I18nProperties.getString(Strings.Vaccine_inn_notAvailable));
+				} else {
+					inn.setValue(vaccine.getInn());
+				}
+
+				// FIXME: use optionals
 				vaccineType.setEnabled(StringUtils.isBlank(vaccine.getVaccineType()));
 				atcCode.setEnabled(StringUtils.isBlank(vaccine.getAtcCode()));
 				inn.setEnabled(StringUtils.isBlank(vaccine.getInn()));
-				uniiCode.setEnabled(StringUtils.isBlank(vaccine.getUniiCode()));
+
+
+				if(vaccine.getUniiCode().isPresent()) {
+					if(vaccine.getUniiCode().get().isBlank()) {
+						uniiCode.setValue(I18nProperties.getString(Strings.Vaccine_uniiCode_notAvailable));
+					} else {
+						uniiCode.setValue(vaccine.getUniiCode());
+					}
+					uniiCode.setEnabled(false);
+				} else {
+					uniiCode.setEnabled(true);
+				}
+				
+
+				
 			} else {
 				FieldHelper.setClearEnabled(true, vaccineManufacturer, vaccineType, atcCode, inn, uniiCode);
 			}

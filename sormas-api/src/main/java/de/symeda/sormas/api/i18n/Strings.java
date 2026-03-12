@@ -208,10 +208,6 @@ public interface Strings {
 	String DefaultPassword_ownUserIntroduction = "DefaultPassword.ownUserIntroduction";
 	String DefaultPassword_ownUserNewPasswordSetHints = "DefaultPassword.ownUserNewPasswordSetHints";
 	String DefaultPassword_unchanged = "DefaultPassword.unchanged";
-	String dengvaxiaAtcCode = "dengvaxiaAtcCode";
-	String dengvaxiaInn = "dengvaxiaInn";
-	String dengvaxiaUniicCode = "dengvaxiaUniicCode";
-	String dengvaxiaVaccineType = "dengvaxiaVaccineType";
 	String disabled = "disabled";
 	String DiseaseNetworkDiagram_Classification_HEALTHY = "DiseaseNetworkDiagram.Classification.HEALTHY";
 	String DiseaseNetworkDiagram_heading = "DiseaseNetworkDiagram.heading";
@@ -1943,6 +1939,11 @@ public interface Strings {
 	String unsavedChanges_warningTitle = "unsavedChanges.warningTitle";
 	String until = "until";
 	String uuidOf = "uuidOf";
+	String Vaccine_atcCode_notAvailable = "Vaccine.atcCode_notAvailable";
+	String Vaccine_inn_notAvailable = "Vaccine.inn_notAvailable";
+	String Vaccine_uniiCode_notAvailable = "Vaccine.uniiCode_notAvailable";
+	String Vaccine_vaccineType_liveAttenuated = "Vaccine.vaccineType.liveAttenuated";
+	String Vaccine_vaccineType_subunit = "Vaccine.vaccineType.subunit";
 	String warning = "warning";
 	String warningDashboardMapTooManyMarkers = "warningDashboardMapTooManyMarkers";
 	String warningNetworkDiagramTooManyContacts = "warningNetworkDiagramTooManyContacts";
