@@ -104,7 +104,7 @@ public class VaccinationEditForm extends AbstractEditForm<VaccinationDto> {
 		vaccineName.addValueChangeListener(e -> {
 			Vaccine vaccine = (Vaccine) e.getProperty().getValue();
 			if (vaccine != null) {
-				vaccineManufacturer.setValue(vaccine.getManufacturer());
+				vaccineManufacturer.setValue(vaccine.getManufacturer().get());
 
 				// VaccineType
 				if (vaccine.getVaccineType().isPresent()) {
