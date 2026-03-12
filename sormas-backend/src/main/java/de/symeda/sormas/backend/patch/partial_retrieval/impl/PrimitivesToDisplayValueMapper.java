@@ -10,7 +10,7 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.patch.partial_retrieval.TypeToDisplayValueMapper;
 
 @ApplicationScoped
-public class PrimitiveTypeToDisplayValueMapper implements TypeToDisplayValueMapper {
+public class PrimitivesToDisplayValueMapper implements TypeToDisplayValueMapper {
 
 	private static final Set<Class<?>> SUPPORTED_TYPES = Set.of(
 		String.class,
@@ -54,5 +54,10 @@ public class PrimitiveTypeToDisplayValueMapper implements TypeToDisplayValueMapp
 			return num.toString();
 		}
 		return String.valueOf(num.longValue());
+	}
+
+	@Override
+	public int getOrder() {
+		return 0;
 	}
 }

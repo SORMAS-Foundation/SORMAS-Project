@@ -7,7 +7,7 @@ import javax.enterprise.context.ApplicationScoped;
 import de.symeda.sormas.backend.patch.partial_retrieval.TypeToDisplayValueMapper;
 
 @ApplicationScoped
-public class ObjectTypeToDisplayValueMapper implements TypeToDisplayValueMapper {
+public class ObjectToDisplayValueMapper implements TypeToDisplayValueMapper {
 
 	public static final Set<Class<?>> SUPPORTED_TYPES = Set.of(Object.class);
 
@@ -19,10 +19,5 @@ public class ObjectTypeToDisplayValueMapper implements TypeToDisplayValueMapper 
 	@Override
 	public Set<Class<?>> supportedTypes() {
 		return SUPPORTED_TYPES;
-	}
-
-	@Override
-	public int getOrder() {
-		return TypeToDisplayValueMapper.super.getOrder();
 	}
 }
