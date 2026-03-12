@@ -212,6 +212,12 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 		return toDto(surveyTokenService.getBySurveyAndToken(survey, token));
 	}
 
+	@Override
+	public List<SurveyTokenDto> getBySurveyReferenceTokenTuples(
+		List<de.symeda.sormas.api.utils.Tuple<SurveyReferenceDto, String>> surveyReferenceTokenTuples) {
+		return surveyTokenService.getBySurveyReferenceTokenTuples(surveyReferenceTokenTuples).stream().map(this::toDto).collect(Collectors.toList());
+	}
+
 	private String getImportTemplateFilePath(String baseFilename) {
 		java.nio.file.Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
 		return exportDirectory.resolve(getImportTemplateFileName(baseFilename)).toString();
@@ -222,7 +228,12 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 		return instanceName + "_" + baseFilename;
 	}
 
-	private List<Selection<?>> sortBy(List<SortProperty> sortProperties, Root<SurveyToken> root, CriteriaBuilder cb, CriteriaQuery<?> cq, SurveyTokenJoins joins) {
+	private List<Selection<?>> sortBy(
+		List<SortProperty> sortProperties,
+		Root<SurveyToken> root,
+		CriteriaBuilder cb,
+		CriteriaQuery<?> cq,
+		SurveyTokenJoins joins) {
 
 		List<Selection<?>> selections = new ArrayList<>();
 

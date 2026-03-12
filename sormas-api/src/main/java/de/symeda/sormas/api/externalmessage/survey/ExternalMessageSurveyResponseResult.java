@@ -8,8 +8,6 @@ public class ExternalMessageSurveyResponseResult {
 
 	private String caseUuid;
 
-	private String surveyTokenUuid;
-
 	private DataPatchResponse patchResponse;
 
 	public String getCaseUuid() {
@@ -18,15 +16,6 @@ public class ExternalMessageSurveyResponseResult {
 
 	public ExternalMessageSurveyResponseResult setCaseUuid(String caseUuid) {
 		this.caseUuid = caseUuid;
-		return this;
-	}
-
-	public String getSurveyTokenUuid() {
-		return surveyTokenUuid;
-	}
-
-	public ExternalMessageSurveyResponseResult setSurveyTokenUuid(String surveyTokenUuid) {
-		this.surveyTokenUuid = surveyTokenUuid;
 		return this;
 	}
 
@@ -44,19 +33,16 @@ public class ExternalMessageSurveyResponseResult {
 		if (o == null || getClass() != o.getClass())
 			return false;
 		ExternalMessageSurveyResponseResult that = (ExternalMessageSurveyResponseResult) o;
-		return Objects.equals(caseUuid, that.caseUuid)
-			&& Objects.equals(surveyTokenUuid, that.surveyTokenUuid)
-			&& Objects.equals(patchResponse, that.patchResponse);
+		return Objects.equals(caseUuid, that.caseUuid) && Objects.equals(patchResponse, that.patchResponse);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(caseUuid, surveyTokenUuid, patchResponse);
+		return Objects.hash(caseUuid, patchResponse);
 	}
 
 	@Override
 	public String toString() {
-		return "ExternalMessageSurveyResponseResult{" + "caseUuid='" + caseUuid + '\'' + ", surveyTokenUuid='" + surveyTokenUuid + '\''
-			+ ", patchResponse=" + patchResponse + '}';
+		return "ExternalMessageSurveyResponseResult{" + "caseUuid='" + caseUuid + '\'' + ", patchResponse=" + patchResponse + '}';
 	}
 }

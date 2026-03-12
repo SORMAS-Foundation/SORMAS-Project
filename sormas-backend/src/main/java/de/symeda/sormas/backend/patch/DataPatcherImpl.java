@@ -389,12 +389,15 @@ public class DataPatcherImpl implements DataPatcher {
 			.flatMap(originalEntry -> {
 				String path = originalEntry.getKey();
 
-				DataPatchFailureCause pathFailureCause = patchFieldHelper.checkIfPathIsInvalid(path);
+				PathFailureCause pathFailureCause = patchFieldHelper.checkIfPathIsInvalid(path);
 
-				Tuple<String, DataPatchFailureCause> unAliasedTuple = patchFieldHelper.resolveAlias(path);
+				Tuple<String, PathFailureCause> unAliasedTuple = patchFieldHelper.resolveAlias(path);
 				Map.Entry<String, Object> entry = toMapEntry(unAliasedTuple.getFirst(), originalEntry.getValue());
 
-				DataPatchFailureCause dataPatchFailureCause = Optional.ofNullable(pathFailureCause).orElseGet(unAliasedTuple::getSecond);
+				DataPatchFailureCause dataPatchFailureCause = Optional.ofNullable(pathFailureCause)
+					.map(PathFailureCause::getRelatedPatchFailureCause)
+					.or(() -> Optional.ofNullable(unAliasedTuple.getSecond()).map(PathFailureCause::getRelatedPatchFailureCause))
+					.orElse(null);
 
 				if (dataPatchFailureCause != null) {
 					return Stream.of(buildMapTupleEntryFrom(entry, dataPatchFailureCause));
@@ -453,7 +456,7 @@ public class DataPatcherImpl implements DataPatcher {
 
 	private @NotNull CaseDataDto getCaseDataDto(CaseDataPatchRequest request) {
 		String caseUuid = request.getCaseUuid();
-		CaseDataDto caseData = businessDtoFacade.getCaseDataDto(caseUuid);
+		CaseDataDto caseData = businessDtoFacade.getCaseDataDtoNullable(caseUuid);
 
 		if (caseData == null) {
 			throw new IllegalStateException(String.format("No case found for uuid: [%s]", caseUuid));

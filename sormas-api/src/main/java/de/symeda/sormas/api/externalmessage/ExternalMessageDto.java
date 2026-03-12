@@ -34,7 +34,7 @@ import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceD
 import de.symeda.sormas.api.clinicalcourse.ComplianceWithTreatment;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
-import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseWrapper;
+import de.symeda.sormas.api.externalmessage.survey.ExternalSurveyResponseData;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
@@ -266,7 +266,7 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private Boolean tuberculosisBeijingLineage;
 
 	@Nullable
-	private ExternalMessageSurveyResponseWrapper surveyResponseWrapper;
+	private ExternalSurveyResponseData surveyResponseData;
 
 	public ExternalMessageType getType() {
 		return type;
@@ -946,12 +946,12 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 		this.tuberculosisBeijingLineage = tuberculosisBeijingLineage;
 	}
 
-	public ExternalMessageSurveyResponseWrapper getSurveyResponseWrapper() {
-		return surveyResponseWrapper;
+	public ExternalSurveyResponseData getSurveyResponseData() {
+		return surveyResponseData;
 	}
 
-	public ExternalMessageDto setSurveyResponseWrapper(ExternalMessageSurveyResponseWrapper surveyResponseWrapper) {
-		this.surveyResponseWrapper = surveyResponseWrapper;
+	public ExternalMessageDto setSurveyResponseData(ExternalSurveyResponseData surveyResponseData) {
+		this.surveyResponseData = surveyResponseData;
 		return this;
 	}
 
@@ -1040,7 +1040,7 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 			&& Objects.equals(tuberculosisDirectlyObservedTreatment, that.tuberculosisDirectlyObservedTreatment)
 			&& Objects.equals(tuberculosisMdrXdrTuberculosis, that.tuberculosisMdrXdrTuberculosis)
 			&& Objects.equals(tuberculosisBeijingLineage, that.tuberculosisBeijingLineage)
-			&& Objects.equals(surveyResponseWrapper, that.surveyResponseWrapper);
+			&& Objects.equals(surveyResponseData, that.surveyResponseData);
 	}
 
 	@Override
@@ -1125,6 +1125,6 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 			tuberculosisDirectlyObservedTreatment,
 			tuberculosisMdrXdrTuberculosis,
 			tuberculosisBeijingLineage,
-			surveyResponseWrapper);
+			surveyResponseData);
 	}
 }

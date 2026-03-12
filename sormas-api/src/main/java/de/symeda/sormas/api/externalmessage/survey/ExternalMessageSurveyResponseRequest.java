@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.externalmessage.survey;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -21,6 +22,10 @@ public class ExternalMessageSurveyResponseRequest {
 
 	private String token;
 	private String externalSurveyId;
+
+	private String externalRespondentId;
+
+	private Date responseReceivedDate;
 
 	private boolean patchedInCaseOfFailures = false;
 
@@ -50,6 +55,12 @@ public class ExternalMessageSurveyResponseRequest {
 	@Nullable
 	private List<Language> inputLanguages;
 
+	/**
+	 * If true, for enumeration-like targetTypes the default value will be used.
+	 * Mostly "OTHER".
+	 */
+	private boolean allowFallbackValues = true;
+
 	public String getToken() {
 		return token;
 	}
@@ -65,6 +76,24 @@ public class ExternalMessageSurveyResponseRequest {
 
 	public ExternalMessageSurveyResponseRequest setExternalSurveyId(String externalSurveyId) {
 		this.externalSurveyId = externalSurveyId;
+		return this;
+	}
+
+	public String getExternalRespondentId() {
+		return externalRespondentId;
+	}
+
+	public ExternalMessageSurveyResponseRequest setExternalRespondentId(String externalRespondentId) {
+		this.externalRespondentId = externalRespondentId;
+		return this;
+	}
+
+	public Date getResponseReceivedDate() {
+		return responseReceivedDate;
+	}
+
+	public ExternalMessageSurveyResponseRequest setResponseReceivedDate(Date responseReceivedDate) {
+		this.responseReceivedDate = responseReceivedDate;
 		return this;
 	}
 
@@ -124,14 +153,26 @@ public class ExternalMessageSurveyResponseRequest {
 		return this;
 	}
 
+	public boolean isAllowFallbackValues() {
+		return allowFallbackValues;
+	}
+
+	public ExternalMessageSurveyResponseRequest setAllowFallbackValues(boolean allowFallbackValues) {
+		this.allowFallbackValues = allowFallbackValues;
+		return this;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (o == null || getClass() != o.getClass())
 			return false;
 		ExternalMessageSurveyResponseRequest that = (ExternalMessageSurveyResponseRequest) o;
 		return patchedInCaseOfFailures == that.patchedInCaseOfFailures
+			&& allowFallbackValues == that.allowFallbackValues
 			&& Objects.equals(token, that.token)
 			&& Objects.equals(externalSurveyId, that.externalSurveyId)
+			&& Objects.equals(externalRespondentId, that.externalRespondentId)
+			&& Objects.equals(responseReceivedDate, that.responseReceivedDate)
 			&& replacementStrategy == that.replacementStrategy
 			&& emptyValueBehavior == that.emptyValueBehavior
 			&& Objects.equals(patchDictionary, that.patchDictionary)
@@ -141,7 +182,26 @@ public class ExternalMessageSurveyResponseRequest {
 
 	@Override
 	public int hashCode() {
-		return Objects
-			.hash(token, externalSurveyId, patchedInCaseOfFailures, replacementStrategy, emptyValueBehavior, patchDictionary, origin, inputLanguages);
+		return Objects.hash(
+			token,
+			externalSurveyId,
+			externalRespondentId,
+			responseReceivedDate,
+			patchedInCaseOfFailures,
+			replacementStrategy,
+			emptyValueBehavior,
+			patchDictionary,
+			origin,
+			inputLanguages,
+			allowFallbackValues);
+	}
+
+	@Override
+	public String toString() {
+		return "ExternalMessageSurveyResponseRequest{" + "token='" + token + '\'' + ", externalSurveyId='" + externalSurveyId + '\''
+			+ ", externalRespondentId='" + externalRespondentId + '\'' + ", responseReceivedDate=" + responseReceivedDate
+			+ ", patchedInCaseOfFailures=" + patchedInCaseOfFailures + ", replacementStrategy=" + replacementStrategy + ", emptyValueBehavior="
+			+ emptyValueBehavior + ", patchDictionary=" + patchDictionary + ", origin='" + origin + '\'' + ", inputLanguages=" + inputLanguages
+			+ ", allowFallbackValues=" + allowFallbackValues + '}';
 	}
 }

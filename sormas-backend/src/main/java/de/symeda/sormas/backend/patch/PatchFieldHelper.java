@@ -10,7 +10,6 @@ import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.patch.DataPatchFailureCause;
 import de.symeda.sormas.api.utils.Tuple;
 import de.symeda.sormas.backend.patch.alias.PathAliasHelper;
 
@@ -43,21 +42,21 @@ public class PatchFieldHelper {
 	}
 
 	@Nullable
-	public DataPatchFailureCause checkIfPathIsInvalid(String path) {
-		DataPatchFailureCause dataPatchFailureCause = null;
+	public PathFailureCause checkIfPathIsInvalid(String path) {
+		PathFailureCause dataPatchFailureCause = null;
 
 		if (!startsWithAllowedPrefix(path)) {
-			dataPatchFailureCause = DataPatchFailureCause.UNSUPPORTED_PREFIX;
+			dataPatchFailureCause = PathFailureCause.UNSUPPORTED_PREFIX;
 		} else if (fieldIsForbidden(path)) {
-			dataPatchFailureCause = DataPatchFailureCause.FORBIDDEN_FIELD;
+			dataPatchFailureCause = PathFailureCause.FORBIDDEN_FIELD;
 		} else if (fieldIsInvalidMultiField(path)) {
-			dataPatchFailureCause = DataPatchFailureCause.INVALID_MULTIPLE_FIELDS_FORMAT;
+			dataPatchFailureCause = PathFailureCause.INVALID_MULTIPLE_FIELDS_FORMAT;
 		}
 		return dataPatchFailureCause;
 	}
 
 	@NotNull
-	public Tuple<String, DataPatchFailureCause> resolveAlias(String pathWithPotentialAlias) {
+	public Tuple<String, PathFailureCause> resolveAlias(String pathWithPotentialAlias) {
 		return pathAliasHelper.resolveAlias(pathWithPotentialAlias);
 	}
 

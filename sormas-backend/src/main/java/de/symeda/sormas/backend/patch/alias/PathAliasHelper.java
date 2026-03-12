@@ -17,9 +17,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.patch.DataPatchFailureCause;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.Tuple;
+import de.symeda.sormas.backend.patch.PathFailureCause;
 
 /**
  * Users want to be able to use multiple root objects, to avoid drilling through properties.
@@ -63,7 +63,7 @@ public class PathAliasHelper {
 	}
 
 	@NotNull
-	public Tuple<String, DataPatchFailureCause> resolveAlias(String pathWithPotentialAlias) {
+	public Tuple<String, PathFailureCause> resolveAlias(String pathWithPotentialAlias) {
 		int firstPathSeparatorIndex = pathWithPotentialAlias.indexOf(PATH_SEPARATOR);
 
 		if (firstPathSeparatorIndex == -1) {
@@ -75,7 +75,7 @@ public class PathAliasHelper {
 		Set<String> collisions = DEFAULT_FORBIDDEN_ALIASES_DICTIONARY.get(aliasCandidate);
 		if (CollectionUtils.isNotEmpty(collisions)) {
 			logger.info("Alias [{}] with collisions: [{}] used for path as [{}]", pathWithPotentialAlias, collisions, aliasCandidate);
-			return tupleWithFailure(DataPatchFailureCause.FORBIDDEN_NON_UNIQUE_ALIAS);
+			return tupleWithFailure(PathFailureCause.FORBIDDEN_NON_UNIQUE_ALIAS);
 		}
 
 		// TODO: refactor this
@@ -120,11 +120,11 @@ public class PathAliasHelper {
 		return pathWithoutAlias;
 	}
 
-	private static @NotNull Tuple<String, DataPatchFailureCause> tupleWithFailure(DataPatchFailureCause forbiddenNonUniqueAlias) {
+	private static @NotNull Tuple<String, PathFailureCause> tupleWithFailure(PathFailureCause forbiddenNonUniqueAlias) {
 		return new Tuple<>(null, forbiddenNonUniqueAlias);
 	}
 
-	private static @NotNull Tuple<String, DataPatchFailureCause> tupleWithoutFailure(String pathWithPotentialAlias) {
+	private static @NotNull Tuple<String, PathFailureCause> tupleWithoutFailure(String pathWithPotentialAlias) {
 		return new Tuple<>(pathWithPotentialAlias, null);
 	}
 

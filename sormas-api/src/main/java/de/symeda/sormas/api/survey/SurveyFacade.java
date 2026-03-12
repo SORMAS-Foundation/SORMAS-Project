@@ -34,37 +34,40 @@ import de.symeda.sormas.api.utils.ValidationException;
 @Remote
 public interface SurveyFacade {
 
-    SurveyDto save(@Valid SurveyDto dto);
+	SurveyDto save(@Valid SurveyDto dto);
 
 	void uploadDocumentTemplate(@NotNull SurveyReferenceDto surveyRef, DocumentTemplateDto uploadedDocumentTemplate, byte[] fileContent)
 		throws DocumentTemplateException;
 
 	SurveyDto getByUuid(String uuid);
 
-    long count(SurveyCriteria criteria);
+	List<SurveyDto> getByExternalIdsAsReference(List<String> externalId);
 
-    List<SurveyIndexDto> getIndexList(SurveyCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
+	long count(SurveyCriteria criteria);
 
-    void deletePermanent(String uuid);
+	List<SurveyIndexDto> getIndexList(SurveyCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
-    boolean exists(String uuid);
+	void deletePermanent(String uuid);
 
-    SurveyReferenceDto getReferenceByUuid(String uuid);
+	boolean exists(String uuid);
+
+	SurveyReferenceDto getReferenceByUuid(String uuid);
 
 	Boolean isEditAllowed(String uuid);
 
 	void uploadEmailTemplate(@NotNull SurveyReferenceDto surveyReference, DocumentTemplateDto uploadedDocumentTemplateDto, byte[] fileContent)
 		throws DocumentTemplateException;
 
-    List<SurveyDto> getAllByDisease(Disease disease);
+	List<SurveyDto> getAllByDisease(Disease disease);
 
-    void generateDocument(SurveyDocumentOptionsDto surveyOptions) throws DocumentTemplateException, ValidationException;
+	void generateDocument(SurveyDocumentOptionsDto surveyOptions) throws DocumentTemplateException, ValidationException;
 
-    void sendDocument(SurveyDocumentOptionsDto surveyOptions) throws DocumentTemplateException, ValidationException, AttachmentException, IOException, ExternalEmailException;
+	void sendDocument(SurveyDocumentOptionsDto surveyOptions)
+		throws DocumentTemplateException, ValidationException, AttachmentException, IOException, ExternalEmailException;
 
-    boolean hasUnassignedTokens(SurveyReferenceDto survey);
+	boolean hasUnassignedTokens(SurveyReferenceDto survey);
 
-    DocumentVariables getDocumentVariables(SurveyReferenceDto surveyRef) throws DocumentTemplateException;
+	DocumentVariables getDocumentVariables(SurveyReferenceDto surveyRef) throws DocumentTemplateException;
 
-    List<SurveyReferenceDto> getAllAsReference();
+	List<SurveyReferenceDto> getAllAsReference();
 }

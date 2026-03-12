@@ -21,6 +21,7 @@ import javax.ejb.Remote;
 import javax.validation.Valid;
 
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.Tuple;
 
 @Remote
 public interface SurveyTokenFacade {
@@ -44,6 +45,8 @@ public interface SurveyTokenFacade {
 	String getSurveyTokenResponsesImportTemplateFileName();
 
 	SurveyTokenDto getBySurveyAndToken(SurveyReferenceDto survey, String token);
+
+	List<SurveyTokenDto> getBySurveyReferenceTokenTuples(List<Tuple<SurveyReferenceDto, String>> surveyReferenceTokenTuples);
 
 	boolean exists(String uuid);
 

@@ -7,6 +7,8 @@ import javax.ejb.Remote;
 import javax.naming.NamingException;
 import javax.validation.Valid;
 
+import org.apache.commons.collections4.CollectionUtils;
+
 import de.symeda.sormas.api.PermanentlyDeletableFacade;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
@@ -21,6 +23,16 @@ public interface ExternalMessageFacade extends PermanentlyDeletableFacade {
 	ExternalMessageDto save(@Valid ExternalMessageDto dto);
 
 	ExternalMessageDto saveAndProcessLabmessage(@Valid ExternalMessageDto dto);
+
+	default ExternalMessageDto saveAndProcessSurveyResponse(@Valid ExternalMessageDto dto) {
+		List<ExternalMessageDto> dtos = saveAndProcessSurveyResponses(List.of(dto));
+
+		if (CollectionUtils.size(dtos) != 1) {
+			throw new IllegalStateException(String.format("Expecting a single response but got [%s]", dtos));
+		}
+
+		return dtos.get(0);
+	}
 
 	List<ExternalMessageDto> saveAndProcessSurveyResponses(@Valid List<ExternalMessageDto> dtos);
 

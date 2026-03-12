@@ -1,6 +1,8 @@
 package de.symeda.sormas.backend.patch;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -35,18 +37,13 @@ public class BusinessDtoFacade {
 
 	private final Map<Class<? extends EntityDto>, Function<CaseDataDto, ? extends EntityDto>> dtoRetrieverDictionary = new HashMap<>();
 
+	private final Map<String, Function<CaseDataDto, List<? extends EntityDto>>> dtoRetrieverByI18nDictionary = new HashMap<>();
+
 	@PostConstruct
 	private void init() {
 		registerSaveOperations();
-		getRegisterFetchOperations();
-	}
-
-	private void getRegisterFetchOperations() {
-		registerFetch(PersonDto.class, caseDataDto -> personFacade.getByUuid(caseDataDto.getPerson().getUuid()));
-	}
-
-	private <T extends EntityDto> void registerFetch(Class<T> dtoClass, Function<CaseDataDto, T> fct) {
-		dtoRetrieverDictionary.put(dtoClass, fct);
+		registerFetchOperations();
+		registerFetchByI18nOperations();
 	}
 
 	private void registerSaveOperations() {
@@ -59,14 +56,50 @@ public class BusinessDtoFacade {
 		dtoSaveDictionary.put(dtoClass, consumer);
 	}
 
-	public CaseDataDto getCaseDataDto(String caseUuid) {
+	private void registerFetchOperations() {
+		registerFetch(PersonDto.class, caseDataDto -> personFacade.getByUuid(caseDataDto.getPerson().getUuid()));
+	}
+
+	private <T extends EntityDto> void registerFetch(Class<T> dtoClass, Function<CaseDataDto, T> fct) {
+		dtoRetrieverDictionary.put(dtoClass, fct);
+	}
+
+	private void registerFetchByI18nOperations() {
+		registerFetchByI18n(
+			PersonDto.I18N_PREFIX,
+			caseDataDto -> Collections.singletonList(personFacade.getByUuid(caseDataDto.getPerson().getUuid())));
+		registerFetchByI18n(
+			ImmunizationDto.I18N_PREFIX,
+			caseDataDto -> immunizationFacade.getByPersonUuids(Collections.singletonList(caseDataDto.getPerson().getUuid())));
+
+	}
+
+	private void registerFetchByI18n(String i18nName, Function<CaseDataDto, List<? extends EntityDto>> fct) {
+		dtoRetrieverByI18nDictionary.put(i18nName, fct);
+	}
+
+	@Nullable
+	public CaseDataDto getCaseDataDtoNullable(String caseUuid) {
 		return caseFacade.getByUuid(caseUuid);
+	}
+
+	@NotNull
+	public CaseDataDto getCaseDataDto(String caseUuid) {
+		return Optional.ofNullable(getCaseDataDtoNullable(caseUuid))
+			.orElseThrow(() -> new IllegalStateException(String.format("No CaseDataDto found for [%s]", caseUuid)));
 	}
 
 	@Nullable
 	public <T extends EntityDto> T fetch(@NotNull Class<T> entityClass, CaseDataDto caseDataDto) {
 		return Optional.ofNullable((Function<CaseDataDto, T>) dtoRetrieverDictionary.get(entityClass))
 			.orElseThrow(() -> new IllegalStateException(String.format("No fetch function defined for: [%s]", entityClass)))
+			.apply(caseDataDto);
+	}
+
+	@Nullable
+	public List<? extends EntityDto> fetchByI18nName(@NotNull String i18nName, CaseDataDto caseDataDto) {
+		return Optional.ofNullable(dtoRetrieverByI18nDictionary.get(i18nName))
+			.orElseThrow(() -> new IllegalStateException(String.format("No fetch function defined for: [%s]", i18nName)))
 			.apply(caseDataDto);
 	}
 

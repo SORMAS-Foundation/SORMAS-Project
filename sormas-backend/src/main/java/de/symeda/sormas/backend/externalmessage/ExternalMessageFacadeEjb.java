@@ -81,7 +81,7 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageType;
 import de.symeda.sormas.api.externalmessage.NewMessagesState;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult;
-import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseWrapper;
+import de.symeda.sormas.api.externalmessage.survey.ExternalSurveyResponseData;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
@@ -97,6 +97,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResult;
+import de.symeda.sormas.api.utils.dataprocessing.ProcessingResultStatus;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportFacadeEjb;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportService;
@@ -108,7 +109,7 @@ import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportFacadeEjb;
 import de.symeda.sormas.backend.externalmessage.labmessage.TestReport;
 import de.symeda.sormas.backend.externalmessage.survey.AutomaticSurveyResponseProcessor;
-import de.symeda.sormas.backend.externalmessage.survey.SurveyResponseProcessingResultWrapper;
+import de.symeda.sormas.backend.externalmessage.survey.SurveyResponseProcessingResult;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.country.CountryService;
@@ -318,12 +319,13 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 	@Override
 	public List<ExternalMessageDto> saveAndProcessSurveyResponses(List<ExternalMessageDto> dtos) {
+		List<ExternalMessageDto> savedDtos;
 		try {
-			List<SurveyResponseProcessingResultWrapper> processingResults = automaticSurveyResponseProcessor.processSurveyResponses(dtos);
+			List<SurveyResponseProcessingResult> processingResults = automaticSurveyResponseProcessor.processSurveyResponses(dtos);
 
 			processingResults.forEach(wrapper -> {
-				ProcessingResult<ExternalMessageProcessingResult> result = wrapper.getResult();
-				if (result.getStatus().isCanceled()) {
+				ProcessingResultStatus result = wrapper.getResultStatus();
+				if (result.isCanceled()) {
 					logger.error("Processing of surveyResponse with UUID {} has been canceled", wrapper.getExternalMessage().getUuid());
 				}
 			});
@@ -333,10 +335,10 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		} catch (ExecutionException e) {
 			logger.error("Could not process survey responses with UUID [{}]", extractUuids(dtos), e);
 		} finally {
-			dtos.forEach(this::save);
+			savedDtos = dtos.stream().map(this::save).collect(toList());
 		}
 
-		return externalMessageService.getByUuids(dtos.stream().map(EntityDto::getUuid).collect(toList())).stream().map(this::toDto).collect(toList());
+		return savedDtos;
 	}
 
 	private List<String> extractUuids(List<ExternalMessageDto> dtos) {
@@ -520,8 +522,8 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		if (additionalDataType != null && additionalData != null) {
 			try {
 				Object additionalDataInstance = ObjectMapperProvider.getInstance().readValue(additionalData, additionalDataType.getDataClass());
-				if (additionalDataInstance instanceof ExternalMessageSurveyResponseWrapper) {
-					target.setSurveyResponseWrapper((ExternalMessageSurveyResponseWrapper) additionalDataInstance);
+				if (additionalDataInstance instanceof ExternalSurveyResponseData) {
+					target.setSurveyResponseData((ExternalSurveyResponseData) additionalDataInstance);
 				} else {
 					throw new IllegalStateException(
 						String.format(

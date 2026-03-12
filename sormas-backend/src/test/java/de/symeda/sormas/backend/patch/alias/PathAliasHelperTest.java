@@ -5,9 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.Test;
 
-import de.symeda.sormas.api.patch.DataPatchFailureCause;
 import de.symeda.sormas.api.utils.Tuple;
 import de.symeda.sormas.backend.AbstractUnitTest;
+import de.symeda.sormas.backend.patch.PathFailureCause;
 
 class PathAliasHelperTest extends AbstractUnitTest {
 
@@ -19,7 +19,7 @@ class PathAliasHelperTest extends AbstractUnitTest {
 		String path = "some.field";
 
 		// EXECUTE
-		Tuple<String, DataPatchFailureCause> result = victim.resolveAlias(path);
+		Tuple<String, PathFailureCause> result = victim.resolveAlias(path);
 
 		// CHECK
 		assertEquals(path, result.getFirst());
@@ -32,7 +32,7 @@ class PathAliasHelperTest extends AbstractUnitTest {
 		String aliasPath = "CaseData.person.firstName";
 
 		// EXECUTE
-		Tuple<String, DataPatchFailureCause> result = victim.resolveAlias(aliasPath);
+		Tuple<String, PathFailureCause> result = victim.resolveAlias(aliasPath);
 
 		// CHECK
 		assertEquals("Person.firstName", result.getFirst());
@@ -45,7 +45,7 @@ class PathAliasHelperTest extends AbstractUnitTest {
 		String aliasPath = "Symptoms.cough";
 
 		// EXECUTE
-		Tuple<String, DataPatchFailureCause> result = victim.resolveAlias(aliasPath);
+		Tuple<String, PathFailureCause> result = victim.resolveAlias(aliasPath);
 
 		// CHECK
 		assertEquals("CaseData.symptoms.cough", result.getFirst());
@@ -58,7 +58,7 @@ class PathAliasHelperTest extends AbstractUnitTest {
 		String aliasPath = "PreviousHospitalization.admissionDate";
 
 		// EXECUTE
-		Tuple<String, DataPatchFailureCause> result = victim.resolveAlias(aliasPath);
+		Tuple<String, PathFailureCause> result = victim.resolveAlias(aliasPath);
 
 		// CHECK
 		assertEquals("CaseData.hospitalization.previousHospitalizations.admissionDate", result.getFirst());
@@ -71,7 +71,7 @@ class PathAliasHelperTest extends AbstractUnitTest {
 		String aliasPath = "UnknownAlias.field";
 
 		// EXECUTE
-		Tuple<String, DataPatchFailureCause> result = victim.resolveAlias(aliasPath);
+		Tuple<String, PathFailureCause> result = victim.resolveAlias(aliasPath);
 
 		// CHECK
 		assertEquals(aliasPath, result.getFirst());
@@ -84,11 +84,11 @@ class PathAliasHelperTest extends AbstractUnitTest {
 		String aliasPath = "Location.region";
 
 		// EXECUTE
-		Tuple<String, DataPatchFailureCause> result = victim.resolveAlias(aliasPath);
+		Tuple<String, PathFailureCause> result = victim.resolveAlias(aliasPath);
 
 		// CHECK
 		assertNull(result.getFirst());
-		assertEquals(DataPatchFailureCause.FORBIDDEN_NON_UNIQUE_ALIAS, result.getSecond());
+		assertEquals(PathFailureCause.FORBIDDEN_NON_UNIQUE_ALIAS, result.getSecond());
 	}
 
 	@Test
@@ -97,11 +97,11 @@ class PathAliasHelperTest extends AbstractUnitTest {
 		String aliasPath = "Location.street";
 
 		// EXECUTE
-		Tuple<String, DataPatchFailureCause> result = victim.resolveAlias(aliasPath);
+		Tuple<String, PathFailureCause> result = victim.resolveAlias(aliasPath);
 
 		// CHECK
 		assertNull(result.getFirst());
-		assertEquals(DataPatchFailureCause.FORBIDDEN_NON_UNIQUE_ALIAS, result.getSecond());
+		assertEquals(PathFailureCause.FORBIDDEN_NON_UNIQUE_ALIAS, result.getSecond());
 	}
 
 	@Test
@@ -110,7 +110,7 @@ class PathAliasHelperTest extends AbstractUnitTest {
 		String path = "justAlias";
 
 		// EXECUTE
-		Tuple<String, DataPatchFailureCause> result = victim.resolveAlias(path);
+		Tuple<String, PathFailureCause> result = victim.resolveAlias(path);
 
 		// CHECK
 		assertEquals(path, result.getFirst());
@@ -123,10 +123,109 @@ class PathAliasHelperTest extends AbstractUnitTest {
 		String aliasPath = "Facility.name.somethingElse";
 
 		// EXECUTE
-		Tuple<String, DataPatchFailureCause> result = victim.resolveAlias(aliasPath);
+		Tuple<String, PathFailureCause> result = victim.resolveAlias(aliasPath);
 
 		// CHECK
 		assertEquals("CaseData.healthFacility.name.somethingElse", result.getFirst());
 		assertNull(result.getSecond());
+	}
+
+	@Test
+	void toAliasPath_symptomsPath_isMappedToSymptomsAlias() {
+		// PREPARE
+		String pathWithoutAlias = "CaseData.symptoms.cough";
+
+		// EXECUTE
+		String result = PathAliasHelper.toAliasPath(pathWithoutAlias);
+
+		// CHECK
+		assertEquals("Symptoms.cough", result);
+	}
+
+	@Test
+	void toAliasPath_nestedPreviousHospitalization_isMappedToAlias() {
+		// PREPARE
+		String pathWithoutAlias = "CaseData.hospitalization.previousHospitalizations.admissionDate";
+
+		// EXECUTE
+		String result = PathAliasHelper.toAliasPath(pathWithoutAlias);
+
+		// CHECK
+		assertEquals("PreviousHospitalization.admissionDate", result);
+	}
+
+	@Test
+	void toAliasPath_healthFacility_isMappedToFacilityAlias() {
+		// PREPARE
+		String pathWithoutAlias = "CaseData.healthFacility.name";
+
+		// EXECUTE
+		String result = PathAliasHelper.toAliasPath(pathWithoutAlias);
+
+		// CHECK
+		assertEquals("Facility.name", result);
+	}
+
+	@Test
+	void toAliasPath_birthCountry_isMappedToCountryAlias() {
+		// PREPARE
+		String pathWithoutAlias = "Person.birthCountry.name";
+
+		// EXECUTE
+		String result = PathAliasHelper.toAliasPath(pathWithoutAlias);
+
+		// CHECK
+		assertEquals("Country.name", result);
+	}
+
+	@Test
+	void toAliasPath_addressSubcontinent_isMappedToSubcontinentAlias() {
+		// PREPARE
+		String pathWithoutAlias = "Person.address.subcontinent";
+
+		// EXECUTE
+		String result = PathAliasHelper.toAliasPath(pathWithoutAlias);
+
+		// CHECK
+		assertEquals("Location.subcontinent", result);
+	}
+
+	@Test
+	void toAliasPath_addressContinent_isMappedToContinentAlias() {
+		// PREPARE
+		String pathWithoutAlias = "Person.address.continent";
+
+		// EXECUTE
+		String result = PathAliasHelper.toAliasPath(pathWithoutAlias);
+
+		// CHECK
+		assertEquals("Location.continent", result);
+	}
+
+	@Test
+	void toAliasPath_locationForbiddenAliases_areMappedToLocationAlias() {
+		// PREPARE
+		String personAddressPath = "Person.address";
+		String exposureLocationPath = "Exposure.location";
+
+		// EXECUTE
+		String personResult = PathAliasHelper.toAliasPath(personAddressPath);
+		String exposureResult = PathAliasHelper.toAliasPath(exposureLocationPath);
+
+		// CHECK
+		assertEquals("Location", personResult);
+		assertEquals("Location", exposureResult);
+	}
+
+	@Test
+	void toAliasPath_unknownPath_isReturnedUnchanged() {
+		// PREPARE
+		String pathWithoutAlias = "SomeUnknown.path";
+
+		// EXECUTE
+		String result = PathAliasHelper.toAliasPath(pathWithoutAlias);
+
+		// CHECK
+		assertEquals(pathWithoutAlias, result);
 	}
 }

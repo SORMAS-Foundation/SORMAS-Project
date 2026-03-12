@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.backend.survey;
 
+import java.util.List;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -26,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.survey.SurveyReferenceDto;
 import de.symeda.sormas.api.survey.SurveyTokenCriteria;
+import de.symeda.sormas.api.utils.Tuple;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -113,4 +116,25 @@ public class SurveyTokenService extends BaseAdoService<SurveyToken> {
 		return QueryHelper.getFirstResult(em, cq);
 	}
 
+	public List<SurveyToken> getBySurveyReferenceTokenTuples(List<Tuple<SurveyReferenceDto, String>> surveyReferenceTokenTuples) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<SurveyToken> cq = cb.createQuery(SurveyToken.class);
+		Root<SurveyToken> root = cq.from(SurveyToken.class);
+		SurveyTokenJoins joins = new SurveyTokenJoins(root);
+
+		cq.select(root);
+
+		cq.where(
+			CriteriaBuilderHelper.or(
+				cb,
+				surveyReferenceTokenTuples.stream()
+					.map(
+						tuple -> CriteriaBuilderHelper.and(
+							cb,
+							cb.equal(joins.getSurvey().get(Survey.UUID), tuple.getFirst().getUuid()),
+							cb.equal(root.get(SurveyToken.TOKEN), tuple.getSecond())))
+					.toArray(Predicate[]::new)));
+
+		return QueryHelper.getResultList(em, cq, 0, 500);
+	}
 }

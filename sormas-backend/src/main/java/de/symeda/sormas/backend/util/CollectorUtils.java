@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.util;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collector;
@@ -17,6 +18,18 @@ public class CollectorUtils {
 		@NotNull Function<? super T, ? extends U> valueMapper) {
 		return Collector.of(
 			HashMap::new,
+			(m, item) -> m.put(keyMapper.apply(item), valueMapper.apply(item)),  // handles nulls
+			(map1, map2) -> {
+				map1.putAll(map2);
+				return map1;
+			});
+	}
+
+	public static <T, K, U> Collector<T, ?, Map<K, U>> toOrderedNullSafeMap(
+		@NotNull Function<? super T, ? extends K> keyMapper,
+		@NotNull Function<? super T, ? extends U> valueMapper) {
+		return Collector.of(
+			LinkedHashMap::new,
 			(m, item) -> m.put(keyMapper.apply(item), valueMapper.apply(item)),  // handles nulls
 			(map1, map2) -> {
 				map1.putAll(map2);
