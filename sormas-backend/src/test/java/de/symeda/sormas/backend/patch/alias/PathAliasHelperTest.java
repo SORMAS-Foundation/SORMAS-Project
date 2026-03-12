@@ -136,7 +136,7 @@ class PathAliasHelperTest extends AbstractUnitTest {
 		String pathWithoutAlias = "CaseData.symptoms.cough";
 
 		// EXECUTE
-		String result = PathAliasHelper.toAliasPath(pathWithoutAlias);
+		String result = victim.toAliasPath(pathWithoutAlias);
 
 		// CHECK
 		assertEquals("Symptoms.cough", result);
@@ -148,7 +148,7 @@ class PathAliasHelperTest extends AbstractUnitTest {
 		String pathWithoutAlias = "CaseData.hospitalization.previousHospitalizations.admissionDate";
 
 		// EXECUTE
-		String result = PathAliasHelper.toAliasPath(pathWithoutAlias);
+		String result = victim.toAliasPath(pathWithoutAlias);
 
 		// CHECK
 		assertEquals("PreviousHospitalization.admissionDate", result);
@@ -160,7 +160,7 @@ class PathAliasHelperTest extends AbstractUnitTest {
 		String pathWithoutAlias = "CaseData.healthFacility.name";
 
 		// EXECUTE
-		String result = PathAliasHelper.toAliasPath(pathWithoutAlias);
+		String result = victim.toAliasPath(pathWithoutAlias);
 
 		// CHECK
 		assertEquals("Facility.name", result);
@@ -172,7 +172,7 @@ class PathAliasHelperTest extends AbstractUnitTest {
 		String pathWithoutAlias = "Person.birthCountry.name";
 
 		// EXECUTE
-		String result = PathAliasHelper.toAliasPath(pathWithoutAlias);
+		String result = victim.toAliasPath(pathWithoutAlias);
 
 		// CHECK
 		assertEquals("Country.name", result);
@@ -184,7 +184,7 @@ class PathAliasHelperTest extends AbstractUnitTest {
 		String pathWithoutAlias = "Person.address.subcontinent";
 
 		// EXECUTE
-		String result = PathAliasHelper.toAliasPath(pathWithoutAlias);
+		String result = victim.toAliasPath(pathWithoutAlias);
 
 		// CHECK
 		assertEquals("Location.subcontinent", result);
@@ -196,7 +196,7 @@ class PathAliasHelperTest extends AbstractUnitTest {
 		String pathWithoutAlias = "Person.address.continent";
 
 		// EXECUTE
-		String result = PathAliasHelper.toAliasPath(pathWithoutAlias);
+		String result = victim.toAliasPath(pathWithoutAlias);
 
 		// CHECK
 		assertEquals("Location.continent", result);
@@ -209,8 +209,8 @@ class PathAliasHelperTest extends AbstractUnitTest {
 		String exposureLocationPath = "Exposure.location";
 
 		// EXECUTE
-		String personResult = PathAliasHelper.toAliasPath(personAddressPath);
-		String exposureResult = PathAliasHelper.toAliasPath(exposureLocationPath);
+		String personResult = victim.toAliasPath(personAddressPath);
+		String exposureResult = victim.toAliasPath(exposureLocationPath);
 
 		// CHECK
 		assertEquals("Location", personResult);
@@ -223,7 +223,7 @@ class PathAliasHelperTest extends AbstractUnitTest {
 		String pathWithoutAlias = "SomeUnknown.path";
 
 		// EXECUTE
-		String result = PathAliasHelper.toAliasPath(pathWithoutAlias);
+		String result = victim.toAliasPath(pathWithoutAlias);
 
 		// CHECK
 		assertEquals(pathWithoutAlias, result);

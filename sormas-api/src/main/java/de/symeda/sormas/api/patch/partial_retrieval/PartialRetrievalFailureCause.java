@@ -1,6 +1,9 @@
 package de.symeda.sormas.api.patch.partial_retrieval;
 
 public enum PartialRetrievalFailureCause {
+
+	ENTITY_COULD_NOT_BE_FOUND,
+
 	/**
 	 * Occurs if input tries to use multiple fields approach: CaseData.(symptoms.onsetDate|hospitalization.admissionDate).
 	 */

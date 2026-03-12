@@ -101,7 +101,7 @@ public class PathAliasHelper {
 	 * @param pathWithoutAlias
 	 * @return
 	 */
-	public static String toAliasPath(String pathWithoutAlias) {
+	public String toAliasPath(String pathWithoutAlias) {
 		Set<Map.Entry<String, String>> reduce = Stream.concat(
 			DEFAULT_ALIAS_DICTIONARY.entrySet().stream(),
 			DEFAULT_FORBIDDEN_ALIASES_DICTIONARY.entrySet()

@@ -3,6 +3,8 @@ package de.symeda.sormas.backend.patch;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
 
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.beanutils.PropertyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,6 +72,7 @@ public class PropertyAccessor {
 			.orElse(FIELD_DOES_NOT_EXIST);
 	}
 
+	@NotNull
 	public static Tuple<Tuple<Class<?>, Object>, PropertyAccessFailure> getPropertyTypeAndValue(
 		final Object bean,
 		final String fieldName,

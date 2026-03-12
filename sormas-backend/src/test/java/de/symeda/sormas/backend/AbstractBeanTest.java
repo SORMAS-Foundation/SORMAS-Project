@@ -99,6 +99,7 @@ import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentFacade;
 import de.symeda.sormas.api.manualmessagelog.ManualMessageLogFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.patch.DataPatcher;
+import de.symeda.sormas.api.patch.partial_retrieval.PartialRetriever;
 import de.symeda.sormas.api.person.notifier.NotifierFacade;
 import de.symeda.sormas.api.referencedata.ReferenceDataValueInstanceProvider;
 import de.symeda.sormas.api.report.AggregateReportFacade;
@@ -221,6 +222,7 @@ import de.symeda.sormas.backend.manualmessagelog.ManualMessageLogFacadeEjb.Manua
 import de.symeda.sormas.backend.manualmessagelog.ManualMessageLogService;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb.OutbreakFacadeEjbLocal;
 import de.symeda.sormas.backend.patch.DataPatcherImpl;
+import de.symeda.sormas.backend.patch.partial_retrieval.PartialRetrieverImpl;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.person.notifier.NotifierEjb;
@@ -1157,6 +1159,10 @@ public abstract class AbstractBeanTest {
 
 	public DataPatcher getCaseDataPatcher() {
 		return getBean(DataPatcherImpl.class);
+	}
+
+	public PartialRetriever getPartialRetriever() {
+		return getBean(PartialRetrieverImpl.class);
 	}
 
 	public ReferenceDataValueInstanceProvider getReferenceDataValueInstanceProvider() {

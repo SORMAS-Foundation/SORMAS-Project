@@ -13,4 +13,6 @@ public interface PartialRetriever {
 	 * @return
 	 */
 	PartialRetrievalResponse retrievePartial(PartialRetrievalRequest request);
+
+	DisplayablePartialRetrievalResponse retrievePartialForDisplay(PartialRetrievalRequest request);
 }
