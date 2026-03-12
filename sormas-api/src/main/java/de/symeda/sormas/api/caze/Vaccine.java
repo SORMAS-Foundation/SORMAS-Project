@@ -24,7 +24,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.Diseases;
 
-
 /**
  * This enum contains all vaccines that are currently used in SORMAS.
  * If you want to add a new vaccine, please add it to the enum and add the corresponding translations to the
@@ -42,8 +41,8 @@ public enum Vaccine {
 	COMIRNATY {
 
 		@Override
-		public VaccineManufacturer getManufacturer() {
-			return VaccineManufacturer.BIONTECH_PFIZER;
+		public Optional<VaccineManufacturer> getManufacturer() {
+			return Optional.of(VaccineManufacturer.BIONTECH_PFIZER);
 		}
 	},
 
@@ -52,8 +51,8 @@ public enum Vaccine {
 	MRNA_BIVALENT_BA_1_BIONTECH_PFIZER {
 
 		@Override
-		public VaccineManufacturer getManufacturer() {
-			return VaccineManufacturer.BIONTECH_PFIZER;
+		public Optional<VaccineManufacturer> getManufacturer() {
+			return Optional.of(VaccineManufacturer.BIONTECH_PFIZER);
 		}
 	},
 
@@ -62,8 +61,8 @@ public enum Vaccine {
 	MRNA_BIVALENT_BA_4_5_BIONTECH_PFIZER {
 
 		@Override
-		public VaccineManufacturer getManufacturer() {
-			return VaccineManufacturer.BIONTECH_PFIZER;
+		public Optional<VaccineManufacturer> getManufacturer() {
+			return Optional.of(VaccineManufacturer.BIONTECH_PFIZER);
 		}
 	},
 
@@ -72,8 +71,8 @@ public enum Vaccine {
 	MRNA_1273 {
 
 		@Override
-		public VaccineManufacturer getManufacturer() {
-			return VaccineManufacturer.MODERNA;
+		public Optional<VaccineManufacturer> getManufacturer() {
+			return Optional.of(VaccineManufacturer.MODERNA);
 		}
 	},
 
@@ -82,8 +81,8 @@ public enum Vaccine {
 	MRNA_BIVALENT_BA_1_MODERNA {
 
 		@Override
-		public VaccineManufacturer getManufacturer() {
-			return VaccineManufacturer.MODERNA;
+		public Optional<VaccineManufacturer> getManufacturer() {
+			return Optional.of(VaccineManufacturer.MODERNA);
 		}
 	},
 
@@ -92,8 +91,8 @@ public enum Vaccine {
 	MRNA_BIVALENT_BA_4_5_MODERNA {
 
 		@Override
-		public VaccineManufacturer getManufacturer() {
-			return VaccineManufacturer.MODERNA;
+		public Optional<VaccineManufacturer> getManufacturer() {
+			return Optional.of(VaccineManufacturer.MODERNA);
 		}
 	},
 
@@ -102,8 +101,8 @@ public enum Vaccine {
 	VALNEVA {
 
 		@Override
-		public VaccineManufacturer getManufacturer() {
-			return VaccineManufacturer.VALNEVA;
+		public Optional<VaccineManufacturer> getManufacturer() {
+			return Optional.of(VaccineManufacturer.VALNEVA);
 		}
 	},
 
@@ -112,8 +111,8 @@ public enum Vaccine {
 	NVX_COV_2373 {
 
 		@Override
-		public VaccineManufacturer getManufacturer() {
-			return VaccineManufacturer.NOVAVAX;
+		public Optional<VaccineManufacturer> getManufacturer() {
+			return Optional.of(VaccineManufacturer.NOVAVAX);
 		}
 	},
 
@@ -122,8 +121,8 @@ public enum Vaccine {
 	NUVAXOVID {
 
 		@Override
-		public VaccineManufacturer getManufacturer() {
-			return VaccineManufacturer.NOVAVAX;
+		public Optional<VaccineManufacturer> getManufacturer() {
+			return Optional.of(VaccineManufacturer.NOVAVAX);
 		}
 	},
 
@@ -132,8 +131,8 @@ public enum Vaccine {
 	OXFORD_ASTRA_ZENECA {
 
 		@Override
-		public VaccineManufacturer getManufacturer() {
-			return VaccineManufacturer.ASTRA_ZENECA;
+		public Optional<VaccineManufacturer> getManufacturer() {
+			return Optional.of(VaccineManufacturer.ASTRA_ZENECA);
 		}
 	},
 
@@ -142,8 +141,8 @@ public enum Vaccine {
 	AD26_COV2_S {
 
 		@Override
-		public VaccineManufacturer getManufacturer() {
-			return VaccineManufacturer.JOHNSON_JOHNSON;
+		public Optional<VaccineManufacturer> getManufacturer() {
+			return Optional.of(VaccineManufacturer.JOHNSON_JOHNSON);
 		}
 	},
 
@@ -152,8 +151,8 @@ public enum Vaccine {
 	SANOFI_GSK {
 
 		@Override
-		public VaccineManufacturer getManufacturer() {
-			return VaccineManufacturer.SANOFI_GSK;
+		public Optional<VaccineManufacturer> getManufacturer() {
+			return Optional.of(VaccineManufacturer.SANOFI_GSK);
 		}
 	},
 
@@ -162,8 +161,8 @@ public enum Vaccine {
 	MENABCWY {
 
 		@Override
-		public VaccineManufacturer getManufacturer() {
-			return VaccineManufacturer.PFIZER;
+		public Optional<VaccineManufacturer> getManufacturer() {
+			return Optional.of(VaccineManufacturer.PFIZER);
 		}
 	},
 
@@ -172,8 +171,8 @@ public enum Vaccine {
 	ACAM2000 {
 
 		@Override
-		public VaccineManufacturer getManufacturer() {
-			return VaccineManufacturer.SANOFI_PASTEUR_BIOLOGICS;
+		public Optional<VaccineManufacturer> getManufacturer() {
+			return Optional.of(VaccineManufacturer.SANOFI_PASTEUR_BIOLOGICS);
 		}
 	},
 
@@ -182,8 +181,8 @@ public enum Vaccine {
 	LC_16 {
 
 		@Override
-		public VaccineManufacturer getManufacturer() {
-			return VaccineManufacturer.KM_BIOLOGICS;
+		public Optional<VaccineManufacturer> getManufacturer() {
+			return Optional.of(VaccineManufacturer.KM_BIOLOGICS);
 		}
 	},
 
@@ -192,13 +191,13 @@ public enum Vaccine {
 	PREVENAR_13_PFIZER {
 
 		@Override
-		public VaccineManufacturer getManufacturer() {
-			return VaccineManufacturer.PFIZER;
+		public Optional<VaccineManufacturer> getManufacturer() {
+			return Optional.of(VaccineManufacturer.PFIZER);
 		}
 
 		@Override
-		public String getVaccineType() {
-			return "PCV13";
+		public Optional<String> getVaccineType() {
+			return Optional.of("PCV13");
 		}
 	},
 
@@ -207,13 +206,13 @@ public enum Vaccine {
 	VAXNEUVANCE_MERCK {
 
 		@Override
-		public VaccineManufacturer getManufacturer() {
-			return VaccineManufacturer.MERCK;
+		public Optional<VaccineManufacturer> getManufacturer() {
+			return Optional.of(VaccineManufacturer.MERCK);
 		}
 
 		@Override
-		public String getVaccineType() {
-			return "PCV15";
+		public Optional<String> getVaccineType() {
+			return Optional.of("PCV15");
 		}
 	},
 
@@ -222,13 +221,13 @@ public enum Vaccine {
 	PREVNAR_20_PFIZER {
 
 		@Override
-		public VaccineManufacturer getManufacturer() {
-			return VaccineManufacturer.PFIZER;
+		public Optional<VaccineManufacturer> getManufacturer() {
+			return Optional.of(VaccineManufacturer.PFIZER);
 		}
 
 		@Override
-		public String getVaccineType() {
-			return "PCV20";
+		public Optional<String> getVaccineType() {
+			return Optional.of("PCV20");
 		}
 	},
 
@@ -237,13 +236,13 @@ public enum Vaccine {
 	PNEUMOVAX_23_MERCK {
 
 		@Override
-		public VaccineManufacturer getManufacturer() {
-			return VaccineManufacturer.MERCK;
+		public Optional<VaccineManufacturer> getManufacturer() {
+			return Optional.of(VaccineManufacturer.MERCK);
 		}
 
 		@Override
-		public String getVaccineType() {
-			return "PPV23";
+		public Optional<String> getVaccineType() {
+			return Optional.of("PPV23");
 		}
 	},
 
@@ -252,8 +251,8 @@ public enum Vaccine {
 	MVA_BN {
 
 		@Override
-		public VaccineManufacturer getManufacturer() {
-			return VaccineManufacturer.BAVARIAN_NORDIC;
+		public Optional<VaccineManufacturer> getManufacturer() {
+			return Optional.of(VaccineManufacturer.BAVARIAN_NORDIC);
 		}
 	},
 
@@ -262,27 +261,28 @@ public enum Vaccine {
 	DENGVAXIA {
 
 		@Override
-		public VaccineManufacturer getManufacturer() {
-			return VaccineManufacturer.SANOFI_PASTEUR;
+		public Optional<VaccineManufacturer> getManufacturer() {
+			return Optional.of(VaccineManufacturer.SANOFI_PASTEUR);
 		}
 
 		@Override
-		public String getVaccineType() {
-			return I18nProperties.getString(Strings.Vaccine_vaccineType_liveAttenuated);
+		public Optional<String> getVaccineType() {
+			return Optional.of(I18nProperties.getString(Strings.Vaccine_vaccineType_liveAttenuated));
 		}
 
 		@Override
-		public String getInn() {
-			return "";
+		public Optional<String> getInn() {
+			return Optional.of(I18nProperties.getString(Strings.Vaccine_dengvaxia_inn));
 		}
 
 		@Override
-		public String getAtcCode() {
-			return "";
+		public Optional<String> getAtcCode() {
+			return Optional.of(I18nProperties.getString(Strings.Vaccine_dengvaxia_atcCode));
 		}
 
-		@Override public Optional<String> getUniiCode() {
-			return Optional.of("");
+		@Override
+		public Optional<String> getUniiCode() {
+			return Optional.of(I18nProperties.getString(Strings.Vaccine_dengvaxia_uniiCode));
 		}
 	},
 
@@ -291,26 +291,27 @@ public enum Vaccine {
 	QDENGA {
 
 		@Override
-		public VaccineManufacturer getManufacturer() {
-			return VaccineManufacturer.TAKEDA;
+		public Optional<VaccineManufacturer> getManufacturer() {
+			return Optional.of(VaccineManufacturer.TAKEDA);
 		}
 
 		@Override
-		public String getVaccineType() {
-			return "Live attenuated";
+		public Optional<String> getVaccineType() {
+			return Optional.of(I18nProperties.getString(Strings.Vaccine_vaccineType_liveAttenuated));
 		}
 
 		@Override
-		public String getInn() {
-			return "Live attenuated tetravalent dengue vaccine";
+		public Optional<String> getInn() {
+			return Optional.of(I18nProperties.getString(Strings.Vaccine_qdenga_inn));
 		}
 
 		@Override
-		public String getAtcCode() {
-			return "J07BF07";
+		public Optional<String> getAtcCode() {
+			return Optional.of("J07BF07");
 		}
 
-		@Override public Optional<String> getUniiCode() {
+		@Override
+		public Optional<String> getUniiCode() {
 			return Optional.of("");
 		}
 	},
@@ -320,23 +321,23 @@ public enum Vaccine {
 	RTS_S_AS01 {
 
 		@Override
-		public VaccineManufacturer getManufacturer() {
-			return VaccineManufacturer.GSK;
+		public Optional<VaccineManufacturer> getManufacturer() {
+			return Optional.of(VaccineManufacturer.GSK);
 		}
 
 		@Override
-		public String getVaccineType() {
-			return I18nProperties.getString(Strings.Vaccine_vaccineType_subunit);
+		public Optional<String> getVaccineType() {
+			return Optional.of(I18nProperties.getString(Strings.Vaccine_vaccineType_subunit));
 		}
 
 		@Override
-		public String getInn() {
-			return "Mosquirix (recombinant protein)";
+		public Optional<String> getInn() {
+			return Optional.of(I18nProperties.getString(Strings.Vaccine_rts_s_as01_inn));
 		}
 
 		@Override
-		public String getAtcCode() {
-			return "J07BX03";
+		public Optional<String> getAtcCode() {
+			return Optional.of("J07BX03");
 		}
 
 		@Override
@@ -350,24 +351,24 @@ public enum Vaccine {
 	R21_MATRIX_M {
 
 		@Override
-		public VaccineManufacturer getManufacturer() {
-			return VaccineManufacturer.OXFORD;
+		public Optional<VaccineManufacturer> getManufacturer() {
+			return Optional.of(VaccineManufacturer.OXFORD);
 		}
 
 		@Override
-		public String getVaccineType() {
-			return "Subunit";
+		public Optional<String> getVaccineType() {
+			return Optional.of(I18nProperties.getString(Strings.Vaccine_vaccineType_subunit));
 		}
 
 		@Override
-		public String getInn() {
-			return "Recombinant protein vaccine";
+		public Optional<String> getInn() {
+			return Optional.of(I18nProperties.getString(Strings.Vaccine_r21_matrix_m_inn));
 		}
 
 		@Override
 
-		public String getAtcCode() {
-			return "N/A (not yet assigned)";
+		public Optional<String> getAtcCode() {
+			return Optional.of("");
 		}
 
 		@Override
@@ -382,25 +383,24 @@ public enum Vaccine {
 	Vaccine() {
 	}
 
-	public VaccineManufacturer getManufacturer() {
-		return null;
+	public Optional<VaccineManufacturer> getManufacturer() {
+		return Optional.empty();
 	}
 
 	@Nullable
-	public String getVaccineType() {
-		return null;
+	public Optional<String> getVaccineType() {
+		return Optional.empty();
 	}
 
 	@Nullable
-	public String getInn() {
-		return null;
+	public Optional<String> getInn() {
+		return Optional.empty();
 	}
 
 	@Nullable
-	public String getAtcCode() {
-		return null;
+	public Optional<String> getAtcCode() {
+		return Optional.empty();
 	}
-
 
 	public Optional<String> getUniiCode() {
 		return Optional.empty();

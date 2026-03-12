@@ -105,41 +105,46 @@ public class VaccinationEditForm extends AbstractEditForm<VaccinationDto> {
 			Vaccine vaccine = (Vaccine) e.getProperty().getValue();
 			if (vaccine != null) {
 				vaccineManufacturer.setValue(vaccine.getManufacturer());
-				vaccineType.setValue(vaccine.getVaccineType());
 
-				// FIXME: use optionals
-				if(vaccine.getAtcCode() == null) {
-					inn.setValue(I18nProperties.getString(Strings.Vaccine_atcCode_notAvailable));
+				// VaccineType
+				if (vaccine.getVaccineType().isPresent()) {
+					String vacTypeVal = vaccine.getVaccineType().get();
+					vaccineType
+						.setValue(StringUtils.isBlank(vacTypeVal) ? I18nProperties.getString(Strings.Vaccine_vaccineType_notAvailable) : vacTypeVal);
+					vaccineType.setEnabled(false);
 				} else {
-					atcCode.setValue(vaccine.getAtcCode());	
+					vaccineType.setEnabled(true);
+					vaccineType.setValue(null);
 				}
-				
-				// FIXME: use optionals
-				if(vaccine.getInn() == null) {
-					inn.setValue(I18nProperties.getString(Strings.Vaccine_inn_notAvailable));
+				// AtcCode
+				if (vaccine.getAtcCode().isPresent()) {
+					String atcCodeVal = vaccine.getAtcCode().get();
+					atcCode.setValue(StringUtils.isBlank(atcCodeVal) ? I18nProperties.getString(Strings.Vaccine_atcCode_notAvailable) : atcCodeVal);
+					atcCode.setEnabled(false);
 				} else {
-					inn.setValue(vaccine.getInn());
+					atcCode.setEnabled(true);
+					atcCode.setValue(null);
 				}
-
-				// FIXME: use optionals
-				vaccineType.setEnabled(StringUtils.isBlank(vaccine.getVaccineType()));
-				atcCode.setEnabled(StringUtils.isBlank(vaccine.getAtcCode()));
-				inn.setEnabled(StringUtils.isBlank(vaccine.getInn()));
-
-
-				if(vaccine.getUniiCode().isPresent()) {
-					if(vaccine.getUniiCode().get().isBlank()) {
-						uniiCode.setValue(I18nProperties.getString(Strings.Vaccine_uniiCode_notAvailable));
-					} else {
-						uniiCode.setValue(vaccine.getUniiCode());
-					}
+				// inn
+				if (vaccine.getInn().isPresent()) {
+					String innVal = vaccine.getInn().get();
+					inn.setValue(StringUtils.isBlank(innVal) ? I18nProperties.getString(Strings.Vaccine_inn_notAvailable) : innVal);
+					inn.setEnabled(false);
+				} else {
+					inn.setEnabled(true);
+					inn.setValue(null);
+				}
+				// Uniicode
+				if (vaccine.getUniiCode().isPresent()) {
+					String uniiCodeVal = vaccine.getUniiCode().get();
+					uniiCode
+						.setValue((StringUtils.isBlank(uniiCodeVal)) ? I18nProperties.getString(Strings.Vaccine_uniiCode_notAvailable) : uniiCodeVal);
 					uniiCode.setEnabled(false);
 				} else {
 					uniiCode.setEnabled(true);
+					uniiCode.setValue(null);
 				}
-				
 
-				
 			} else {
 				FieldHelper.setClearEnabled(true, vaccineManufacturer, vaccineType, atcCode, inn, uniiCode);
 			}
