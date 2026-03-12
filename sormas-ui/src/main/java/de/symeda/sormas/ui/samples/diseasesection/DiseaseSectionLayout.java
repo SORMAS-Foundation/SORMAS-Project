@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.ui.samples;
+package de.symeda.sormas.ui.samples.diseasesection;
 
 import java.util.Collection;
 
@@ -36,7 +36,7 @@ import de.symeda.sormas.api.sample.PathogenTestType;
  * Lifecycle:
  * <ol>
  * <li>{@link #getHtmlLayout()} is called once to build the section's CustomLayout template.</li>
- * <li>{@link #bindFields(FieldGroup, CustomLayout, Disease)} is called to add fields.</li>
+ * <li>{@link #bindFields(FieldGroup, CustomLayout, Disease, PathogenTestFormConfig)} is called to add fields.</li>
  * <li>{@link #unbindFields(FieldGroup, CustomLayout)} is called before a new section replaces this one.</li>
  * </ol>
  */
@@ -55,7 +55,7 @@ public interface DiseaseSectionLayout {
 	 * Adds this section's fields to the given field group and panel.
 	 * Called once after the section's CustomLayout has been installed.
 	 */
-	void bindFields(FieldGroup fieldGroup, CustomLayout panel, Disease disease);
+	void bindFields(FieldGroup fieldGroup, CustomLayout panel, Disease disease, PathogenTestFormConfig config);
 
 	/**
 	 * Removes this section's fields from the field group and panel,
@@ -68,11 +68,12 @@ public interface DiseaseSectionLayout {
 	 * Called when the test type changes so sections can update field visibility or
 	 * auto-set the test result. No-op by default.
 	 */
-	default void onTestTypeChanged(PathogenTestType testType, Disease disease, AbstractField<PathogenTestResultType> testResultField) {
+	default void onTestTypeChanged(
+		PathogenTestType testType,
+		Disease disease,
+		AbstractField<PathogenTestResultType> testResultField,
+		PathogenTestFormConfig config) {
 	}
-
-	/** Returns the disease(s) this section handles. */
-	Disease[] getDiseases();
 
 	/** Factory: returns the correct section implementation for the given disease. */
 	static DiseaseSectionLayout forDisease(Disease disease) {

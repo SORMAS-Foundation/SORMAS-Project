@@ -15,12 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.ui.samples;
+package de.symeda.sormas.ui.samples.diseasesection;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
@@ -29,6 +33,7 @@ import com.vaadin.v7.ui.Field;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.ui.utils.FieldHelper;
 
 /**
@@ -42,6 +47,14 @@ public class CoronavirusDiseaseSectionLayout implements DiseaseSectionLayout {
 
 	private static final Collection<String> FIELD_IDS = Collections.singletonList(PathogenTestDto.PCR_TEST_SPECIFICATION);
 
+	static final Map<Object, List<Object>> PCR_TEST_SPECIFICATION_VISIBILITY_CONDITIONS = Collections.unmodifiableMap(new HashMap<>() {
+
+		{
+			put(PathogenTestDto.TESTED_DISEASE, Collections.unmodifiableList(Arrays.asList(Disease.CORONAVIRUS)));
+			put(PathogenTestDto.TEST_TYPE, Collections.unmodifiableList(Arrays.asList(PathogenTestType.PCR_RT_PCR)));
+		}
+	});
+
 	@Override
 	public String getHtmlLayout() {
 		return HTML;
@@ -53,16 +66,14 @@ public class CoronavirusDiseaseSectionLayout implements DiseaseSectionLayout {
 	}
 
 	@Override
-	public void bindFields(FieldGroup fieldGroup, CustomLayout panel, Disease disease) {
-		ComboBox pcrTestSpecification = fieldGroup.buildAndBind(
-			PathogenTestDto.PCR_TEST_SPECIFICATION,
-			(Object) PathogenTestDto.PCR_TEST_SPECIFICATION,
-			ComboBox.class);
+	public void bindFields(FieldGroup fieldGroup, CustomLayout panel, Disease disease, PathogenTestFormConfig config) {
+		ComboBox pcrTestSpecification =
+			fieldGroup.buildAndBind(PathogenTestDto.PCR_TEST_SPECIFICATION, (Object) PathogenTestDto.PCR_TEST_SPECIFICATION, ComboBox.class);
 		pcrTestSpecification.setId(PathogenTestDto.PCR_TEST_SPECIFICATION);
 		pcrTestSpecification.setVisible(false);
 		panel.addComponent(pcrTestSpecification, PathogenTestDto.PCR_TEST_SPECIFICATION);
 
-		FieldHelper.setVisibleWhen(fieldGroup, PathogenTestDto.PCR_TEST_SPECIFICATION, PathogenTestForm.PCR_TEST_SPECIFICATION_VISIBILITY_CONDITIONS, true);
+		FieldHelper.setVisibleWhen(fieldGroup, PathogenTestDto.PCR_TEST_SPECIFICATION, PCR_TEST_SPECIFICATION_VISIBILITY_CONDITIONS, true);
 	}
 
 	@Override
@@ -72,11 +83,5 @@ public class CoronavirusDiseaseSectionLayout implements DiseaseSectionLayout {
 			fieldGroup.unbind(field);
 			panel.removeComponent(field);
 		}
-	}
-
-	@Override
-	public Disease[] getDiseases() {
-		return new Disease[] {
-			Disease.CORONAVIRUS };
 	}
 }

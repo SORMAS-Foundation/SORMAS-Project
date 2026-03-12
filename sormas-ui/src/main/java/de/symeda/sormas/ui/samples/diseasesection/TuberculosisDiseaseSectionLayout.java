@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.ui.samples;
+package de.symeda.sormas.ui.samples.diseasesection;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
@@ -35,7 +35,6 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
-import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.sample.PathogenStrainCallStatus;
@@ -123,6 +122,7 @@ public class TuberculosisDiseaseSectionLayout implements DiseaseSectionLayout {
 	private DrugSusceptibilityForm drugSusceptibilityField;
 	private TubeFieldHandler tubeFieldHandler;
 	private List<String> tubeFieldIds;
+	private FieldGroup boundFieldGroup;
 
 	// Listeners registered on shared FieldGroup source fields — removed in unbindFields
 	private Property.ValueChangeListener testTypeListener;
@@ -140,7 +140,7 @@ public class TuberculosisDiseaseSectionLayout implements DiseaseSectionLayout {
 	}
 
 	@Override
-	public void bindFields(FieldGroup fieldGroup, CustomLayout panel, Disease disease) {
+	public void bindFields(FieldGroup fieldGroup, CustomLayout panel, Disease disease, PathogenTestFormConfig config) {
 		NullableOptionGroup rifampicinResistant = buildAndAdd(fieldGroup, panel, PathogenTestDto.RIFAMPICIN_RESISTANT, NullableOptionGroup.class);
 		rifampicinResistant.setVisible(false);
 
@@ -180,27 +180,20 @@ public class TuberculosisDiseaseSectionLayout implements DiseaseSectionLayout {
 		tubeFieldHandler = new TubeFieldHandler(fieldGroup, panel);
 		tubeFieldHandler.attachTubeFields();
 
-		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
-			bindLuxembourgVisibility(fieldGroup, strainCallStatus, disease);
+		boundFieldGroup = fieldGroup;
+
+		if (config.isLuxembourg) {
+			bindLuxembourgVisibility(fieldGroup, strainCallStatus, disease, config.isLuxembourg);
 		}
 	}
 
-	private void bindLuxembourgVisibility(FieldGroup fieldGroup, ComboBox strainCallStatus, Disease disease) {
+	private void bindLuxembourgVisibility(FieldGroup fieldGroup, ComboBox strainCallStatus, Disease disease, boolean isLuxembourg) {
 		// Named listeners so they can be removed in unbindFields
-		testTypeListener = e -> {
-			Field<?> testTypeField = fieldGroup.getField(PathogenTestDto.TEST_TYPE);
-			Field<?> testResultField = fieldGroup.getField(PathogenTestDto.TEST_RESULT);
-			onValueChangedSetVisible(fieldGroup, testTypeField, testResultField);
-		};
-		testResultListener = e -> {
-			Field<?> testTypeField = fieldGroup.getField(PathogenTestDto.TEST_TYPE);
-			Field<?> testResultField = fieldGroup.getField(PathogenTestDto.TEST_RESULT);
-			onValueChangedSetVisible(fieldGroup, testTypeField, testResultField);
-		};
+		testTypeListener = e -> setTubeFieldsVisible(fieldGroup, (PathogenTestType) e.getProperty().getValue(), isLuxembourg);
+		testResultListener =
+			e -> setTubeFieldsVisible(fieldGroup, (PathogenTestType) fieldGroup.getField(PathogenTestDto.TEST_TYPE).getValue(), isLuxembourg);
 		diseaseListener = e -> {
-			Field<?> testTypeField = fieldGroup.getField(PathogenTestDto.TEST_TYPE);
-			Field<?> testResultField = fieldGroup.getField(PathogenTestDto.TEST_RESULT);
-			onValueChangedSetVisible(fieldGroup, testTypeField, testResultField);
+			setTubeFieldsVisible(fieldGroup, (PathogenTestType) fieldGroup.getField(PathogenTestDto.TEST_TYPE).getValue(), isLuxembourg);
 
 			Disease newDisease = (Disease) e.getProperty().getValue();
 			FieldHelper.updateItems(
@@ -232,13 +225,14 @@ public class TuberculosisDiseaseSectionLayout implements DiseaseSectionLayout {
 			PathogenStrainCallStatus.class);
 
 		// Apply initial visibility
-		onValueChangedSetVisible(fieldGroup, fieldGroup.getField(PathogenTestDto.TEST_TYPE), fieldGroup.getField(PathogenTestDto.TEST_RESULT));
+		setTubeFieldsVisible(fieldGroup, (PathogenTestType) fieldGroup.getField(PathogenTestDto.TEST_TYPE).getValue(), isLuxembourg);
 	}
 
-	private void onValueChangedSetVisible(FieldGroup fieldGroup, Field<?> testTypeField, Field<?> testResultField) {
-		PathogenTestType testType = testTypeField != null ? (PathogenTestType) testTypeField.getValue() : null;
-		boolean showTubes =
-			testType == PathogenTestType.IGRA && FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+	private void setTubeFieldsVisible(FieldGroup fieldGroup, PathogenTestType testType, boolean isLuxembourg) {
+		if (tubeFieldIds == null) {
+			return;
+		}
+		boolean showTubes = testType == PathogenTestType.IGRA && isLuxembourg;
 		for (String tubeId : tubeFieldIds) {
 			Field<?> f = fieldGroup.getField(tubeId);
 			if (f != null) {
@@ -290,15 +284,24 @@ public class TuberculosisDiseaseSectionLayout implements DiseaseSectionLayout {
 
 		drugSusceptibilityField = null;
 		tubeFieldIds = null;
+		boundFieldGroup = null;
 	}
 
 	@Override
-	public void onTestTypeChanged(PathogenTestType testType, Disease disease, AbstractField<PathogenTestResultType> testResultField) {
+	public void onTestTypeChanged(
+		PathogenTestType testType,
+		Disease disease,
+		AbstractField<PathogenTestResultType> testResultField,
+		PathogenTestFormConfig config) {
 		if (drugSusceptibilityField != null) {
 			drugSusceptibilityField.updateFieldsVisibility(disease, testType);
 		}
 
-		if (testType == null || !FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+		if (boundFieldGroup != null && tubeFieldIds != null) {
+			setTubeFieldsVisible(boundFieldGroup, testType, config.isLuxembourg);
+		}
+
+		if (testType == null || !config.isLuxembourg) {
 			return;
 		}
 
@@ -314,13 +317,6 @@ public class TuberculosisDiseaseSectionLayout implements DiseaseSectionLayout {
 		} else if (testType == PathogenTestType.SPOLIGOTYPING) {
 			testResultField.setValue(PathogenTestResultType.POSITIVE);
 		}
-	}
-
-	@Override
-	public Disease[] getDiseases() {
-		return new Disease[] {
-			Disease.TUBERCULOSIS,
-			Disease.LATENT_TUBERCULOSIS };
 	}
 
 	private <F extends Field<?>> F buildAndAdd(FieldGroup fieldGroup, CustomLayout panel, String propertyId, Class<F> fieldType) {

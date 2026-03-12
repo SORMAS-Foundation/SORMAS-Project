@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.ui.samples;
+package de.symeda.sormas.ui.samples.diseasesection;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -41,7 +41,7 @@ public class DefaultDiseaseSectionLayout implements DiseaseSectionLayout {
 	}
 
 	@Override
-	public void bindFields(FieldGroup fieldGroup, CustomLayout panel, Disease disease) {
+	public void bindFields(FieldGroup fieldGroup, CustomLayout panel, Disease disease, PathogenTestFormConfig config) {
 		// no disease-specific fields
 	}
 
@@ -50,8 +50,4 @@ public class DefaultDiseaseSectionLayout implements DiseaseSectionLayout {
 		// nothing to remove
 	}
 
-	@Override
-	public Disease[] getDiseases() {
-		return new Disease[0];
-	}
 }

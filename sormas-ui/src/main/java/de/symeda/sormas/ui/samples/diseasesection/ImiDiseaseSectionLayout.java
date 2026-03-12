@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.ui.samples;
+package de.symeda.sormas.ui.samples.diseasesection;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -28,7 +28,6 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.ui.AbstractField;
 
-import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -64,7 +63,7 @@ public class ImiDiseaseSectionLayout implements DiseaseSectionLayout {
 	}
 
 	@Override
-	public void bindFields(FieldGroup fieldGroup, CustomLayout panel, Disease disease) {
+	public void bindFields(FieldGroup fieldGroup, CustomLayout panel, Disease disease, PathogenTestFormConfig config) {
 		Map<Object, List<Object>> imiSeroTypingDependencies = new HashMap<>();
 		imiSeroTypingDependencies.put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.INVASIVE_MENINGOCOCCAL_INFECTION));
 		imiSeroTypingDependencies.put(PathogenTestDto.TEST_RESULT, Arrays.asList(PathogenTestResultType.POSITIVE));
@@ -100,23 +99,21 @@ public class ImiDiseaseSectionLayout implements DiseaseSectionLayout {
 	}
 
 	@Override
-	public void onTestTypeChanged(PathogenTestType testType, Disease disease, AbstractField<PathogenTestResultType> testResultField) {
+	public void onTestTypeChanged(
+		PathogenTestType testType,
+		Disease disease,
+		AbstractField<PathogenTestResultType> testResultField,
+		PathogenTestFormConfig config) {
 		if (drugSusceptibilityField != null) {
 			drugSusceptibilityField.updateFieldsVisibility(disease, testType);
 		}
 
-		if (testType == null || !FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+		if (testType == null || !config.isLuxembourg) {
 			return;
 		}
 
 		if (disease == Disease.INVASIVE_MENINGOCOCCAL_INFECTION && testType == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY) {
 			testResultField.setValue(PathogenTestResultType.POSITIVE);
 		}
-	}
-
-	@Override
-	public Disease[] getDiseases() {
-		return new Disease[] {
-			Disease.INVASIVE_MENINGOCOCCAL_INFECTION };
 	}
 }

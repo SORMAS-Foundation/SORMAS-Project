@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.ui.samples;
+package de.symeda.sormas.ui.samples.diseasesection;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -39,10 +39,10 @@ import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.ui.utils.FieldHelper;
 
 /**
- * Disease section for CRYPTOSPORIDIOSIS: same genotype result pattern as Measles.
+ * Disease section for MEASLES: wires genotype result + genotype result text visibility.
  * Fields live in the common layout; this section owns the visibility registrations.
  */
-public class CryptosporidiosisDiseaseSectionLayout implements DiseaseSectionLayout {
+public class MeaslesDiseaseSectionLayout implements DiseaseSectionLayout {
 
 	private static final List<String> FIELD_IDS =
 		Collections.unmodifiableList(Arrays.asList(PathogenTestDto.GENOTYPE_RESULT, PathogenTestDto.GENOTYPE_RESULT_TEXT));
@@ -60,7 +60,7 @@ public class CryptosporidiosisDiseaseSectionLayout implements DiseaseSectionLayo
 	}
 
 	@Override
-	public void bindFields(FieldGroup fieldGroup, CustomLayout panel, Disease disease) {
+	public void bindFields(FieldGroup fieldGroup, CustomLayout panel, Disease disease, PathogenTestFormConfig config) {
 		Map<Object, List<Object>> genoTypingDependencies = new HashMap<>();
 		genoTypingDependencies.put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.MEASLES, Disease.CRYPTOSPORIDIOSIS));
 		genoTypingDependencies.put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.GENOTYPING));
@@ -68,6 +68,7 @@ public class CryptosporidiosisDiseaseSectionLayout implements DiseaseSectionLayo
 		FieldHelper.setVisibleWhen(fieldGroup, PathogenTestDto.GENOTYPE_RESULT, genoTypingDependencies, true);
 		FieldHelper.setVisibleWhen(fieldGroup, PathogenTestDto.GENOTYPE_RESULT_TEXT, PathogenTestDto.GENOTYPE_RESULT, GenoTypeResult.OTHER, true);
 
+		// Update genotype items when test type changes
 		testTypeListener = e -> {
 			Field<?> genoTypingCB = fieldGroup.getField(PathogenTestDto.GENOTYPE_RESULT);
 			if (genoTypingCB instanceof ComboBox) {
@@ -93,13 +94,11 @@ public class CryptosporidiosisDiseaseSectionLayout implements DiseaseSectionLayo
 	}
 
 	@Override
-	public void onTestTypeChanged(PathogenTestType testType, Disease disease, AbstractField<PathogenTestResultType> testResultField) {
+	public void onTestTypeChanged(
+		PathogenTestType testType,
+		Disease disease,
+		AbstractField<PathogenTestResultType> testResultField,
+		PathogenTestFormConfig config) {
 		// genotype item update is handled by the registered testTypeListener
-	}
-
-	@Override
-	public Disease[] getDiseases() {
-		return new Disease[] {
-			Disease.CRYPTOSPORIDIOSIS };
 	}
 }

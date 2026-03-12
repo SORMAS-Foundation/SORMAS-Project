@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.ui.samples;
+package de.symeda.sormas.ui.samples.diseasesection;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -51,7 +51,7 @@ public class CsmDiseaseSectionLayout implements DiseaseSectionLayout {
 	}
 
 	@Override
-	public void bindFields(FieldGroup fieldGroup, CustomLayout panel, Disease disease) {
+	public void bindFields(FieldGroup fieldGroup, CustomLayout panel, Disease disease, PathogenTestFormConfig config) {
 		Map<Object, List<Object>> serotypeVisibilityDependencies = new HashMap<>();
 		serotypeVisibilityDependencies.put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.CSM));
 		serotypeVisibilityDependencies.put(PathogenTestDto.TEST_RESULT, Arrays.asList(PathogenTestResultType.POSITIVE));
@@ -64,11 +64,5 @@ public class CsmDiseaseSectionLayout implements DiseaseSectionLayout {
 		// Those source fields remain in the FieldGroup across section swaps and their
 		// multi-condition visibility logic is harmless when this disease is not active,
 		// because the TESTED_DISEASE condition will never match CSM for another section.
-	}
-
-	@Override
-	public Disease[] getDiseases() {
-		return new Disease[] {
-			Disease.CSM };
 	}
 }

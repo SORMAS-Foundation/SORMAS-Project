@@ -47,7 +47,6 @@ import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
-import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
@@ -60,13 +59,15 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.sample.PathogenStrainCallStatus;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.samples.diseasesection.DefaultDiseaseSectionLayout;
+import de.symeda.sormas.ui.samples.diseasesection.DiseaseSectionLayout;
+import de.symeda.sormas.ui.samples.diseasesection.PathogenTestFormConfig;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
@@ -149,14 +150,6 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		}
 	});
 
-	public static final Map<Object, List<Object>> PCR_TEST_SPECIFICATION_VISIBILITY_CONDITIONS = Collections.unmodifiableMap(new HashMap<>() {
-
-		{
-			put(PathogenTestDto.TESTED_DISEASE, Collections.unmodifiableList(Arrays.asList(Disease.CORONAVIRUS)));
-			put(PathogenTestDto.TEST_TYPE, Collections.unmodifiableList(Arrays.asList(PathogenTestType.PCR_RT_PCR)));
-		}
-	});
-
 	private SampleDto sample;
 	private EnvironmentSampleDto environmentSample;
 	private AbstractSampleForm sampleForm;
@@ -172,9 +165,22 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 	private Disease disease;
 	private TextField typingIdField;
 
+	// New instance fields promoted from addFields() locals
+	private CheckBox viaLimsField;
+	private ComboBox lab;
+	private TextField labDetails;
+	private TextField cqValueField;
+	private NullableOptionGroup testResultVerifiedField;
+	private CheckBox fourFoldIncrease;
+	private Label prescriberHeadingLabel;
+	private ComboBox diseaseVariantField;
+	private TextField diseaseVariantDetailsField;
+	private Consumer<Disease> updateDiseaseVariantField;
+
 	// Disease section swap support
 	private DiseaseSectionLayout activeSection = new DefaultDiseaseSectionLayout();
 	private CustomLayout diseaseSectionPanel;
+	private PathogenTestFormConfig formConfig;
 
 	public PathogenTestForm(
 		AbstractSampleForm sampleForm,
@@ -294,6 +300,19 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 	@Override
 	protected void addFields() {
+		addHeaderAndLayoutFields();
+		addTestDateField();
+		addLabFields();
+		addDiseaseAndResultFields();
+		addCtValueFields();
+		addPrescriberFields();
+		bindVisibilityRules();
+		bindValueChangeListeners();
+		finalizeForm();
+	}
+
+	private void addHeaderAndLayoutFields() {
+		formConfig = PathogenTestFormConfig.fromCurrentConfig();
 
 		pathogenTestHeadingLabel = new Label();
 		pathogenTestHeadingLabel.addStyleName(H3);
@@ -306,7 +325,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		getContent().addComponent(diseaseSectionPanel, DISEASE_SECTION_LOC);
 
 		addDateField(PathogenTestDto.REPORT_DATE, DateField.class, 0);
-		CheckBox viaLimsField = addField(PathogenTestDto.VIA_LIMS);
+		viaLimsField = addField(PathogenTestDto.VIA_LIMS);
 		addField(PathogenTestDto.EXTERNAL_ID);
 		addField(PathogenTestDto.EXTERNAL_ORDER_ID);
 		testTypeField = addField(PathogenTestDto.TEST_TYPE, ComboBox.class);
@@ -314,6 +333,9 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		testTypeField.setImmediate(true);
 		testTypeTextField = addField(PathogenTestDto.TEST_TYPE_TEXT, TextField.class);
 		FieldHelper.addSoftRequiredStyle(testTypeTextField);
+	}
+
+	private DateTimeField addTestDateField() {
 		DateTimeField testDateField = addField(PathogenTestDto.TEST_DATE_TIME, DateTimeField.class);
 		testDateField.removeAllValidators();
 		testDateField.addValidator(
@@ -351,20 +373,26 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 						DateFormatHelper.formatLocalDateTime(getSampleDate()))));
 
 		});
-		ComboBox lab = addInfrastructureField(PathogenTestDto.LAB);
+		return testDateField;
+	}
+
+	private void addLabFields() {
+		lab = addInfrastructureField(PathogenTestDto.LAB);
 		lab.addItems(FacadeProvider.getFacilityFacade().getAllActiveLaboratories(true));
-		TextField labDetails = addField(PathogenTestDto.LAB_DETAILS, TextField.class);
+		labDetails = addField(PathogenTestDto.LAB_DETAILS, TextField.class);
 		labDetails.setVisible(false);
 		typingIdField = addField(PathogenTestDto.TYPING_ID, TextField.class);
 		typingIdField.setVisible(false);
+	}
 
-		// Tested Desease or Tested Pathogen, depending on sample type
+	private void addDiseaseAndResultFields() {
+		// Tested Disease or Tested Pathogen, depending on sample type
 		diseaseField = addDiseaseField(PathogenTestDto.TESTED_DISEASE, true, create, false);
 		addField(PathogenTestDto.TESTED_DISEASE_DETAILS, TextField.class);
-		ComboBox diseaseVariantField = addCustomizableEnumField(PathogenTestDto.TESTED_DISEASE_VARIANT);
+		diseaseVariantField = addCustomizableEnumField(PathogenTestDto.TESTED_DISEASE_VARIANT);
 		diseaseVariantField.setNullSelectionAllowed(true);
 		diseaseVariantField.setVisible(false);
-		TextField diseaseVariantDetailsField = addField(PathogenTestDto.TESTED_DISEASE_VARIANT_DETAILS, TextField.class);
+		diseaseVariantDetailsField = addField(PathogenTestDto.TESTED_DISEASE_VARIANT_DETAILS, TextField.class);
 		diseaseVariantDetailsField.setVisible(false);
 		if (DiseaseHelper.SUBTYPE_ALLOWED_DISEASES.contains(disease)) {
 			diseaseVariantField.setCaption(I18nProperties.getCaption(Captions.PathogenTest_rsv_testedDiseaseVariant));
@@ -402,16 +430,18 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		testResultField = addField(PathogenTestDto.TEST_RESULT, ComboBox.class);
 		testResultField.removeItem(PathogenTestResultType.NOT_DONE);
 
-		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+		if (!formConfig.isLuxembourg) {
 			testResultField.removeItem(PathogenTestResultType.NOT_APPLICABLE);
 		}
 		// Bind the initial disease section (default = no-op; swapped via swapDiseaseSection() on disease change)
 		activeSection = DiseaseSectionLayout.forDisease(disease);
 		diseaseSectionPanel.setTemplateContents(activeSection.getHtmlLayout());
-		activeSection.bindFields(getFieldGroup(), diseaseSectionPanel, disease);
+		activeSection.bindFields(getFieldGroup(), diseaseSectionPanel, disease, formConfig);
+	}
 
-		TextField cqValueField = addField(FieldConfiguration.withConversionError(PathogenTestDto.CQ_VALUE, Validations.onlyNumbersAllowed));
-		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+	private void addCtValueFields() {
+		cqValueField = addField(FieldConfiguration.withConversionError(PathogenTestDto.CQ_VALUE, Validations.onlyNumbersAllowed));
+		if (!formConfig.isLuxembourg) {
 			cqValueField.setVisible(false);
 		}
 
@@ -432,8 +462,10 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			PathogenTestDto.CT_VALUE_S,
 			PathogenTestDto.CT_VALUE_ORF_1,
 			PathogenTestDto.CT_VALUE_RDRP_S);
+	}
 
-		NullableOptionGroup testResultVerifiedField = addField(PathogenTestDto.TEST_RESULT_VERIFIED, NullableOptionGroup.class);
+	private void addPrescriberFields() {
+		testResultVerifiedField = addField(PathogenTestDto.TEST_RESULT_VERIFIED, NullableOptionGroup.class);
 		addField(PathogenTestDto.PRELIMINARY).addStyleName(CssStyles.VSPACE_4);
 
 		// Make TEST_RESULT_VERIFIED required only when the test comes via LIMS (laboratory is directly connected)
@@ -445,7 +477,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		// Set initial required state based on current viaLims value
 		testResultVerifiedField.setRequired(Boolean.TRUE.equals(viaLimsField.getValue()));
 
-		CheckBox fourFoldIncrease = addField(PathogenTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, CheckBox.class);
+		fourFoldIncrease = addField(PathogenTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, CheckBox.class);
 		CssStyles.style(fourFoldIncrease, VSPACE_3, VSPACE_TOP_4);
 		fourFoldIncrease.setVisible(false);
 		fourFoldIncrease.setEnabled(false);
@@ -465,10 +497,12 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		addField(PathogenTestDto.OTHER_DELETION_REASON, TextArea.class).setRows(3);
 		setVisible(false, PathogenTestDto.DELETION_REASON, PathogenTestDto.OTHER_DELETION_REASON);
 
-		Label prescriberHeadingLabel = new Label(I18nProperties.getCaption(Captions.PathogenTest_prescriber));
+		prescriberHeadingLabel = new Label(I18nProperties.getCaption(Captions.PathogenTest_prescriber));
 		prescriberHeadingLabel.addStyleName(H3);
 		getContent().addComponent(prescriberHeadingLabel, PRESCRIBER_HEADING_LOC);
+	}
 
+	private void bindVisibilityRules() {
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
 			PathogenTestDto.TEST_TYPE_TEXT,
@@ -505,17 +539,18 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		};
 		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.TESTED_DISEASE_VARIANT, diseaseVariantDependencies, true);
 
-		Consumer<Disease> updateDiseaseVariantField = disease -> {
-			List<DiseaseVariant> diseaseVariants =
-				FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
+		updateDiseaseVariantField = d -> {
+			List<DiseaseVariant> diseaseVariants = FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, d);
 			FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
-			diseaseVariantField.setVisible(
-				disease != null && isVisibleAllowed(PathogenTestDto.TESTED_DISEASE_VARIANT) && CollectionUtils.isNotEmpty(diseaseVariants));
+			diseaseVariantField
+				.setVisible(d != null && isVisibleAllowed(PathogenTestDto.TESTED_DISEASE_VARIANT) && CollectionUtils.isNotEmpty(diseaseVariants));
 		};
 
 		updateDiseaseVariantField.accept((Disease) diseaseField.getValue());
+	}
 
-		diseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> {
+	private void bindValueChangeListeners() {
+		diseaseField.addValueChangeListener(valueChangeEvent -> {
 			Disease latestDisease = (Disease) valueChangeEvent.getProperty().getValue();
 			// If the disease changed, test type field should be updated with its respective test types
 			if (latestDisease != disease) {
@@ -530,22 +565,6 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				Arrays.asList(PathogenTestType.values()),
 				FieldVisibilityCheckers.withDisease(disease),
 				PathogenTestType.class);
-
-			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
-				ComboBox strainCallStatusField = getField(PathogenTestDto.STRAIN_CALL_STATUS);
-				if (strainCallStatusField != null) {
-					FieldHelper.updateItems(
-						strainCallStatusField,
-						Arrays.asList(PathogenStrainCallStatus.values()),
-						FieldVisibilityCheckers.withDisease(disease),
-						PathogenStrainCallStatus.class);
-				}
-
-				activeSection.onTestTypeChanged(
-					(PathogenTestType) testTypeField.getValue(),
-					disease,
-					(com.vaadin.v7.ui.AbstractField<PathogenTestResultType>) (Object) testResultField);
-			}
 		});
 		diseaseVariantField.addValueChangeListener(e -> {
 			DiseaseVariant diseaseVariant = (DiseaseVariant) e.getProperty().getValue();
@@ -589,34 +608,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 						PathogenTestDto.CT_VALUE_ORF_1,
 						PathogenTestDto.CT_VALUE_RDRP_S);
 				}
-				// Show tube IGRA fields only for IGRA tests, Luxembourg, and TB section
-				if (activeSection instanceof TuberculosisDiseaseSectionLayout) {
-					setVisibleClear(
-						PathogenTestType.IGRA == testType
-							&& FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG),
-						PathogenTestDto.TUBE_NIL,
-						PathogenTestDto.TUBE_NIL_GT10,
-						PathogenTestDto.TUBE_AG_TB1,
-						PathogenTestDto.TUBE_AG_TB1_GT10,
-						PathogenTestDto.TUBE_AG_TB2,
-						PathogenTestDto.TUBE_AG_TB2_GT10,
-						PathogenTestDto.TUBE_MITOGENE,
-						PathogenTestDto.TUBE_MITOGENE_GT10);
-				}
 			} else {
-				// hide tube fields when no test type selected (TB section only)
-				if (activeSection instanceof TuberculosisDiseaseSectionLayout) {
-					setVisibleClear(
-						false,
-						PathogenTestDto.TUBE_NIL,
-						PathogenTestDto.TUBE_NIL_GT10,
-						PathogenTestDto.TUBE_AG_TB1,
-						PathogenTestDto.TUBE_AG_TB1_GT10,
-						PathogenTestDto.TUBE_AG_TB2,
-						PathogenTestDto.TUBE_AG_TB2_GT10,
-						PathogenTestDto.TUBE_MITOGENE,
-						PathogenTestDto.TUBE_MITOGENE_GT10);
-				}
 				testResultField.clear();
 				testResultField.setEnabled(true);
 			}
@@ -630,12 +622,11 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			activeSection.onTestTypeChanged(
 				testType,
 				(Disease) diseaseField.getValue(),
-				(com.vaadin.v7.ui.AbstractField<PathogenTestResultType>) (Object) testResultField);
+				(com.vaadin.v7.ui.AbstractField<PathogenTestResultType>) (Object) testResultField,
+				formConfig);
 		});
 
-		lab.addValueChangeListener(event ->
-
-		{
+		lab.addValueChangeListener(event -> {
 			if (event.getProperty().getValue() != null
 				&& ((FacilityReferenceDto) event.getProperty().getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
 				labDetails.setVisible(true);
@@ -656,7 +647,9 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			PathogenTestResultType testResult = (PathogenTestResultType) e.getProperty().getValue();
 			setCqValueVisibility(diseaseField, cqValueField, (PathogenTestType) testTypeField.getValue(), testResult);
 		});
+	}
 
+	private void finalizeForm() {
 		if (SamplePurpose.INTERNAL.equals(getSamplePurpose())) { // this only works for already saved samples
 			setRequired(true, PathogenTestDto.LAB);
 		}
@@ -677,10 +670,6 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				|| isVisibleAllowed(PathogenTestDto.PRESCRIBER_COUNTRY));
 	}
 
-	// -----------------------------------------------------------------------
-	// Disease section swap support
-	// -----------------------------------------------------------------------
-
 	/** Replaces the active disease section with the one appropriate for the given disease. */
 	private void swapDiseaseSection(Disease newDisease) {
 		DiseaseSectionLayout newSection = DiseaseSectionLayout.forDisease(newDisease);
@@ -692,7 +681,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		activeSection.unbindFields(getFieldGroup(), diseaseSectionPanel);
 		activeSection = newSection;
 		diseaseSectionPanel.setTemplateContents(newSection.getHtmlLayout());
-		newSection.bindFields(getFieldGroup(), diseaseSectionPanel, newDisease);
+		newSection.bindFields(getFieldGroup(), diseaseSectionPanel, newDisease, formConfig);
 		rebuildSectionFieldAllowances(newSection.getFieldIds());
 	}
 
