@@ -219,6 +219,8 @@ public abstract class AbstractProcessingFlow {
 		caseDto.setVaccinationStatus(externalMessageDto.getVaccinationStatus());
 		caseDto.getHospitalization().setAdmittedToHealthFacility(externalMessageDto.getAdmittedToHealthFacility());
 
+		caseDto.setAdditionalDetails(externalMessageDto.getCaseComments());
+
 		postBuildCase(caseDto, externalMessageDto);
 
 		return caseDto;
