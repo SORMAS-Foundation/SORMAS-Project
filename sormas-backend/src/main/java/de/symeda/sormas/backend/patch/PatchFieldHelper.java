@@ -81,7 +81,7 @@ public class PatchFieldHelper {
 		// TODO: check it would be required to distinguish read / write: per example Immunization can be read and write but write does not reach this code.
 		if (!path.contains(PATH_SEPARATOR)) {
 			dataPatchFailureCause = PathFailureCause.INVALID_PATH_FORMAT;
-		} else if (!startsWithAllowedPrefix(path) || pathStartsWithPrefix(path, additionalSupportedPrefixes)) {
+		} else if (!(startsWithAllowedPrefix(path) || pathStartsWithAllowedPrefix(path, additionalSupportedPrefixes))) {
 			dataPatchFailureCause = PathFailureCause.UNSUPPORTED_PREFIX;
 		} else if (fieldIsForbidden(path)) {
 			dataPatchFailureCause = PathFailureCause.FORBIDDEN_FIELD;
@@ -101,10 +101,10 @@ public class PatchFieldHelper {
 	}
 
 	private boolean startsWithAllowedPrefix(String path) {
-		return pathStartsWithPrefix(path, pathAliasHelper.supportedPrefixes());
+		return pathStartsWithAllowedPrefix(path, pathAliasHelper.supportedPrefixes());
 	}
 
-	private static boolean pathStartsWithPrefix(String path, Set<String> strings) {
+	private static boolean pathStartsWithAllowedPrefix(String path, Set<String> strings) {
 		return strings.stream().anyMatch(path::startsWith);
 	}
 

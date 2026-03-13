@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.patch.partial_retrieval;
 
+import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.Assertions;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
@@ -20,41 +22,58 @@ import de.symeda.sormas.api.patch.partial_retrieval.PartialRetriever;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 
 class PartialRetrieverImplTest extends AbstractBeanTest {
 
 	@Test
-	void immunization_and_vaccine() {
+	void retrievePartialForDisplay_immunization_and_vaccine() {
 		// PREPARE
 		Disease disease = Disease.RESPIRATORY_SYNCYTIAL_VIRUS;
 		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
+		UserReferenceDto reportingUser = originalCase.getReportingUser();
 
 		ImmunizationDto immunizationDto = ImmunizationDto.build(originalCase.getPerson());
 		immunizationDto.setRelatedCase(originalCase.toReference());
 		immunizationDto.setImmunizationStatus(ImmunizationStatus.ACQUIRED);
-		immunizationDto.setReportingUser(originalCase.getReportingUser());
+		immunizationDto.setReportingUser(reportingUser);
+		VaccinationDto vaccination = VaccinationDto.build(reportingUser);
+		vaccination.setVaccineName(Vaccine.COMIRNATY);
+		vaccination.setOtherVaccineName("actual vaccine name");
+		immunizationDto.setVaccinations(List.of(vaccination));
 		getImmunizationFacade().save(immunizationDto);
 
 		String immunizationStatusFieldName = toFieldName(ImmunizationDto.I18N_PREFIX, ImmunizationDto.IMMUNIZATION_STATUS);
+		String vaccineCombinedFieldName =
+			toFieldName(VaccinationDto.I18N_PREFIX, String.format("(%s|%s)", VaccinationDto.VACCINE_NAME, VaccinationDto.OTHER_VACCINE_NAME));
 
 		// EXECUTE
 		DisplayablePartialRetrievalResponse actual = victim().retrievePartialForDisplay(
-			new PartialRetrievalRequest().setCaseUuid(originalCase.getUuid()).setFieldsToRetrieve(Set.of(immunizationStatusFieldName)));
+			new PartialRetrievalRequest().setCaseUuid(originalCase.getUuid())
+				.setFieldsToRetrieve(Set.of(immunizationStatusFieldName, vaccineCombinedFieldName)));
 
 		// CHECK
 		DisplayableFieldInfo immunizationStatusFieldInfo = actual.getFieldInfoDictionary().get(immunizationStatusFieldName);
+		DisplayableFieldInfo vaccineNameFieldInfo = actual.getFieldInfoDictionary().get("Vaccination.vaccineName");
+		DisplayableFieldInfo otherVaccineNameFieldInfo = actual.getFieldInfoDictionary().get("Vaccination.otherVaccineName");
 		Assertions.assertAll(
 			() -> Assertions.assertTrue(actual.getFailuresDescriptions().isEmpty()),
 
 			() -> Assertions.assertNotNull(immunizationStatusFieldInfo),
 
 			() -> Assertions.assertEquals("Immunization status", immunizationStatusFieldInfo.getTranslatedFieldName()),
-			() -> Assertions.assertEquals("Acquired", immunizationStatusFieldInfo.getTranslatedFieldValue()));
+			() -> Assertions.assertEquals("Acquired", immunizationStatusFieldInfo.getTranslatedFieldValue()),
+
+			() -> Assertions.assertEquals("Pfizer-BioNTech COVID-19 vaccine", vaccineNameFieldInfo.getTranslatedFieldValue()),
+			() -> Assertions.assertEquals("actual vaccine name", otherVaccineNameFieldInfo.getTranslatedFieldValue()),
+
+			() -> Assertions.assertEquals(3, actual.getFieldInfoDictionary().size()));
 	}
 
 	@Test
-	void displayable_partial_retrieve() {
+	void retrievePartialForDisplay() {
 		// PREPARE
 		I18nProperties.setUserLanguage(Language.DE);
 		Disease disease = Disease.ANTHRAX;

@@ -59,10 +59,6 @@ public class PathAliasHelper {
 		dictionary.put("Continent", "Person.address.continent");
 		dictionary.put("User", "CaseData.followUpStatusChangeUser");
 
-		logger.error("Immunization was added here, this is wrong. TODO: FIX-ME");
-		// TODO:
-		dictionary.put("Immunization", "Immunization");
-
 		return dictionary;
 	}
 

@@ -5,7 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
@@ -17,6 +19,7 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
@@ -72,6 +75,13 @@ public class BusinessDtoFacade {
 			ImmunizationDto.I18N_PREFIX,
 			caseDataDto -> immunizationFacade.getByPersonUuids(Collections.singletonList(caseDataDto.getPerson().getUuid())));
 
+		registerFetchByI18n(
+			VaccinationDto.I18N_PREFIX,
+			caseDataDto -> immunizationFacade.getByPersonUuids(Collections.singletonList(caseDataDto.getPerson().getUuid()))
+				.stream()
+				.flatMap(immunization -> immunization.getVaccinations().stream())
+				.collect(Collectors.toList()));
+
 	}
 
 	private void registerFetchByI18n(String i18nName, Function<CaseDataDto, List<? extends EntityDto>> fct) {
@@ -101,6 +111,10 @@ public class BusinessDtoFacade {
 		return Optional.ofNullable(dtoRetrieverByI18nDictionary.get(i18nName))
 			.orElseThrow(() -> new IllegalStateException(String.format("No fetch function defined for: [%s]", i18nName)))
 			.apply(caseDataDto);
+	}
+
+	public Set<String> fetchablePrefixes() {
+		return dtoRetrieverByI18nDictionary.keySet();
 	}
 
 	public <T extends EntityDto> T save(@NotNull EntityDto entityDto) {

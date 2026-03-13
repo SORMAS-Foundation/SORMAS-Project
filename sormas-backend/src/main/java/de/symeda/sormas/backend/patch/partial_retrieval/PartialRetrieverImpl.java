@@ -3,9 +3,7 @@ package de.symeda.sormas.backend.patch.partial_retrieval;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.ejb.EJB;
 import javax.enterprise.context.ApplicationScoped;
@@ -67,76 +65,59 @@ public class PartialRetrieverImpl implements PartialRetriever {
 
 		CaseDataDto caseData = businessDtoFacade.getCaseDataDto(request.getCaseUuid());
 
-		/*
-		 * Implementation steps:
-		 * - Iterate over fields
-		 * - Validate if allowed
-		 * - Un-alias to get physical for Reflection
-		 * - Alias to get Field ID for I18N
-		 * - Get type
-		 * - Get value
-		 */
+		List<Tuple<String, Tuple<FieldInfo, PartialRetrievalFailureCause>>> results =
+			patchFieldHelper.extractFieldTuples(request.getFieldsToRetrieve(), businessDtoFacade.fetchablePrefixes()).stream().map(tuple -> {
 
-		Set<String> fieldsToRetrieve = request.getFieldsToRetrieve();
+				String originalFieldName = tuple.getFirst();
+				PathFailureCause pathFailureCause = tuple.getSecond();
 
-		List<Tuple<String, Tuple<FieldInfo, PartialRetrievalFailureCause>>> results = fieldsToRetrieve.stream().flatMap(originalFieldName -> {
+				Tuple<String, PathFailureCause> unAliasedTuple = patchFieldHelper.resolveAlias(originalFieldName);
 
-			PathFailureCause pathFailureCause = patchFieldHelper.checkIfPathIsInvalid(originalFieldName);
+				PartialRetrievalFailureCause failureCause = Optional.ofNullable(pathFailureCause)
+					.map(PathFailureCause::getRelatedRetrieveFailureCause)
+					.or(() -> Optional.ofNullable(unAliasedTuple.getSecond()).map(PathFailureCause::getRelatedRetrieveFailureCause))
+					.orElse(null);
 
-			Tuple<String, PathFailureCause> unAliasedTuple = patchFieldHelper.resolveAlias(originalFieldName);
+				if (failureCause != null) {
+					return Tuple.of(originalFieldName, new Tuple<>((FieldInfo) null, failureCause));
+				}
 
-			PartialRetrievalFailureCause failureCause = Optional.ofNullable(pathFailureCause)
-				.map(PathFailureCause::getRelatedRetrieveFailureCause)
-				.or(() -> Optional.ofNullable(unAliasedTuple.getSecond()).map(PathFailureCause::getRelatedRetrieveFailureCause))
-				.orElse(null);
+				String pathWithoutAlias = unAliasedTuple.getFirst();
+				String physicalPathName = pathWithoutAlias.substring(pathWithoutAlias.indexOf('.') + 1);
 
-			if (failureCause != null) {
-				return Stream.of(Tuple.of(originalFieldName, new Tuple<>((FieldInfo) null, failureCause)));
-			}
+				String aliasPath = pathAliasHelper.toAliasPath(pathWithoutAlias);
+				Optional<EntityDto> adequateBean = getAdequateBean(pathWithoutAlias, caseData);
 
-			String pathWithoutAlias = unAliasedTuple.getFirst();
-			String physicalPathName = pathWithoutAlias.substring(pathWithoutAlias.indexOf('.') + 1);
+				if (adequateBean.isEmpty()) {
+					return Tuple.of(originalFieldName, new Tuple<>((FieldInfo) null, PartialRetrievalFailureCause.ENTITY_COULD_NOT_BE_FOUND));
+				}
 
-			// TODO: handle multiple path format.
-//			if (!patchFieldHelper.isMultipleFieldFormat(physicalPathName)) {
+				Tuple<Tuple<Class<?>, Object>, PropertyAccessFailure> propertyType = PropertyAccessor
+					.getPropertyTypeAndValue(adequateBean.orElseThrow(), physicalPathName, getFieldVisibilityCheckers(caseData.getDisease()));
 
-			String aliasPath = pathAliasHelper.toAliasPath(pathWithoutAlias);
-			Optional<EntityDto> adequateBean = getAdequateBean(pathWithoutAlias, caseData);
+				PropertyAccessFailure propertyAccessFailure = propertyType.getSecond();
+				if (propertyAccessFailure != null) {
+					return Tuple.of(originalFieldName, new Tuple<>((FieldInfo) null, propertyAccessFailure.getRelatedRetrieveFailureCause()));
+				}
 
-			if (adequateBean.isEmpty()) {
-				return Stream.of(Tuple.of(originalFieldName, new Tuple<>((FieldInfo) null, PartialRetrievalFailureCause.ENTITY_COULD_NOT_BE_FOUND)));
-			}
+				Tuple<Class<?>, Object> fieldInfo = propertyType.getFirst();
 
-			Tuple<Tuple<Class<?>, Object>, PropertyAccessFailure> propertyType = PropertyAccessor
-				.getPropertyTypeAndValue(adequateBean.orElseThrow(), physicalPathName, getFieldVisibilityCheckers(caseData.getDisease()));
+				// Some fields are translated only by there "physical-path" from root level
+				// example: Person.firstName has translation key "firstName"
+				// example: CaseData.disease has translation key "firstName"
+				String translatedFieldName = Optional.ofNullable(I18nProperties.getCaption(aliasPath, null))
+					.or(() -> Optional.ofNullable(I18nProperties.getCaption(physicalPathName, null)))
+					.orElseGet(() -> I18nProperties.getDescription(aliasPath, aliasPath));
 
-			PropertyAccessFailure propertyAccessFailure = propertyType.getSecond();
-			if (propertyAccessFailure != null) {
-				return Stream.of(Tuple.of(originalFieldName, new Tuple<>((FieldInfo) null, propertyAccessFailure.getRelatedRetrieveFailureCause())));
-			}
-
-			Tuple<Class<?>, Object> fieldInfo = propertyType.getFirst();
-
-			// Some fields are translated only by there "physical-path" from root level
-			// example: Person.firstName has translation key "firstName"
-			// example: CaseData.disease has translation key "firstName"
-			String translatedFieldName = Optional.ofNullable(I18nProperties.getCaption(aliasPath, null))
-				.or(() -> Optional.ofNullable(I18nProperties.getCaption(physicalPathName, null)))
-				.orElseGet(() -> I18nProperties.getDescription(aliasPath, aliasPath));
-
-			return Stream.of(
-				Tuple.of(
+				return Tuple.of(
 					originalFieldName,
 					new Tuple<>(
 						new FieldInfo().setFieldType(fieldInfo.getFirst())
 							.setFieldValue(fieldInfo.getSecond())
 							.setTranslatedFieldName(translatedFieldName),
-						(PartialRetrievalFailureCause) null)));
-//			}
-//
-//			return splitMultipleFieldsPath(physicalPathName).map(a -> );
+						(PartialRetrievalFailureCause) null));
 
-		}).collect(Collectors.toList());
+			}).collect(Collectors.toList());
 
 		Map<String, FieldInfo> successes = results.stream()
 			.filter(tuple -> tuple.getSecond().getSecond() == null)
@@ -153,7 +134,6 @@ public class PartialRetrieverImpl implements PartialRetriever {
 	public DisplayablePartialRetrievalResponse retrievePartialForDisplay(PartialRetrievalRequest request) {
 		PartialRetrievalResponse partialRetrievalResponse = retrievePartial(request);
 
-		// TODO: translate failures.
 		return new DisplayablePartialRetrievalResponse().setFieldInfoDictionary(
 			partialRetrievalResponse.getFieldInfoDictionary().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> {
 				FieldInfo fieldInfo = entry.getValue();
