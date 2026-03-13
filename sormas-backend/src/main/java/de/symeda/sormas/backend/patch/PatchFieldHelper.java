@@ -1,6 +1,9 @@
 package de.symeda.sormas.backend.patch;
 
+import java.util.Arrays;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 import javax.enterprise.context.ApplicationScoped;
@@ -41,14 +44,44 @@ public class PatchFieldHelper {
 		this.pathAliasHelper = pathAliasHelper;
 	}
 
+	public Set<Tuple<String, PathFailureCause>> extractFieldTuples(Set<String> fields, Set<String> additionalSupportedPrefixes) {
+		return fields.stream().map(path -> Tuple.of(path, checkIfPathIsInvalidImpl(path, additionalSupportedPrefixes))).flatMap(tuple -> {
+
+			String originalPath = tuple.getFirst();
+
+			if (tuple.getSecond() != null || !isMultipleFieldFormat(originalPath)) {
+				return Stream.of(tuple);
+			}
+
+			return splitMultipleFieldsPath(originalPath).map(splitPath -> Tuple.of(splitPath, (PathFailureCause) null));
+
+		}).collect(Collectors.toSet());
+	}
+
+	@NotNull
+	private Stream<String> splitMultipleFieldsPath(String path) {
+		int openingParenthesisIndex = path.indexOf("(");
+		String prefix = path.substring(0, openingParenthesisIndex);
+
+		int closeParen = path.indexOf(')');
+
+		String restPath = path.substring(openingParenthesisIndex + 1, closeParen);
+
+		return Arrays.stream(restPath.split("\\|")).map(suffix -> prefix + suffix);
+	}
+
 	@Nullable
 	public PathFailureCause checkIfPathIsInvalid(String path) {
+		return checkIfPathIsInvalidImpl(path, Set.of());
+	}
+
+	private PathFailureCause checkIfPathIsInvalidImpl(String path, Set<String> additionalSupportedPrefixes) {
 		PathFailureCause dataPatchFailureCause = null;
 
 		// TODO: check it would be required to distinguish read / write: per example Immunization can be read and write but write does not reach this code.
 		if (!path.contains(PATH_SEPARATOR)) {
 			dataPatchFailureCause = PathFailureCause.INVALID_PATH_FORMAT;
-		} else if (!startsWithAllowedPrefix(path)) {
+		} else if (!startsWithAllowedPrefix(path) || pathStartsWithPrefix(path, additionalSupportedPrefixes)) {
 			dataPatchFailureCause = PathFailureCause.UNSUPPORTED_PREFIX;
 		} else if (fieldIsForbidden(path)) {
 			dataPatchFailureCause = PathFailureCause.FORBIDDEN_FIELD;
@@ -68,7 +101,11 @@ public class PatchFieldHelper {
 	}
 
 	private boolean startsWithAllowedPrefix(String path) {
-		return pathAliasHelper.supportedPrefixes().stream().anyMatch(path::startsWith);
+		return pathStartsWithPrefix(path, pathAliasHelper.supportedPrefixes());
+	}
+
+	private static boolean pathStartsWithPrefix(String path, Set<String> strings) {
+		return strings.stream().anyMatch(path::startsWith);
 	}
 
 	public boolean isMultipleFieldFormat(String path) {

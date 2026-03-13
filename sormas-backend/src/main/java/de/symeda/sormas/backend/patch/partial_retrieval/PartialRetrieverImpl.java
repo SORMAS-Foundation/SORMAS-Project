@@ -1,6 +1,5 @@
 package de.symeda.sormas.backend.patch.partial_retrieval;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -66,7 +65,7 @@ public class PartialRetrieverImpl implements PartialRetriever {
 	@Override
 	public PartialRetrievalResponse retrievePartial(PartialRetrievalRequest request) {
 
-		CaseDataDto caseData = businessDtoFacade.getCaseDataDtoNullable(request.getCaseUuid());
+		CaseDataDto caseData = businessDtoFacade.getCaseDataDto(request.getCaseUuid());
 
 		/*
 		 * Implementation steps:
@@ -141,11 +140,11 @@ public class PartialRetrieverImpl implements PartialRetriever {
 
 		Map<String, FieldInfo> successes = results.stream()
 			.filter(tuple -> tuple.getSecond().getSecond() == null)
-			.collect(Collectors.toMap(Tuple::getFirst, a -> a.getSecond().getFirst()));
+			.collect(Collectors.toMap(Tuple::getFirst, tuple -> tuple.getSecond().getFirst()));
 
 		Map<String, PartialRetrievalFailureCause> failures = results.stream()
 			.filter(tuple -> tuple.getSecond().getSecond() != null)
-			.collect(Collectors.toMap(Tuple::getFirst, a -> a.getSecond().getSecond()));
+			.collect(Collectors.toMap(Tuple::getFirst, tuple -> tuple.getSecond().getSecond()));
 
 		return new PartialRetrievalResponse().setFailuresDictionary(failures).setFieldInfoDictionary(successes);
 	}
@@ -160,7 +159,12 @@ public class PartialRetrieverImpl implements PartialRetriever {
 				FieldInfo fieldInfo = entry.getValue();
 				return new DisplayableFieldInfo().setTranslatedFieldName(fieldInfo.getTranslatedFieldName())
 					.setTranslatedFieldValue(typeToDisplayRegistry.toDisplayValue(fieldInfo.getFieldValue()));
-			})));
+			})))
+			.setFailuresDescriptions(
+				partialRetrievalResponse.getFailuresDictionary()
+					.entrySet()
+					.stream()
+					.collect(Collectors.toMap(Map.Entry::getKey, entry -> I18nProperties.getEnumCaption(entry.getValue()))));
 	}
 
 	private Optional<EntityDto> getAdequateBean(@NotNull String aliasPath, @NotNull CaseDataDto caseData) {
@@ -186,18 +190,6 @@ public class PartialRetrieverImpl implements PartialRetriever {
 
 			return Optional.ofNullable(entityDtos).map(actualEntities -> actualEntities.get(0));
 		}
-	}
-
-	@NotNull
-	private Stream<String> splitMultipleFieldsPath(String path) {
-		int openingParenthesisIndex = path.indexOf("(");
-		String prefix = path.substring(0, openingParenthesisIndex);
-
-		int closeParen = path.indexOf(')');
-
-		String restPath = path.substring(openingParenthesisIndex + 1, closeParen);
-
-		return Arrays.stream(restPath.split("\\|")).map(suffix -> prefix + suffix);
 	}
 
 	private FieldVisibilityCheckers getFieldVisibilityCheckers(Disease disease) {

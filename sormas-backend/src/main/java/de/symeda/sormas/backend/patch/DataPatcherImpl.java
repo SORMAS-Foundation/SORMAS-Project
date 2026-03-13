@@ -15,8 +15,7 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
@@ -54,9 +53,7 @@ import de.symeda.sormas.backend.patch.mapping.GroupedFieldMapperRegistry;
 import de.symeda.sormas.backend.patch.mapping.ValueMapperRegistry;
 import de.symeda.sormas.backend.util.CollectorUtils;
 
-// TODO: test integration vaccines
-@Stateless
-@LocalBean
+@ApplicationScoped
 public class DataPatcherImpl implements DataPatcher {
 
 	public static final String PERSON_FIELD_NAME_PREFIX = "Person.";
