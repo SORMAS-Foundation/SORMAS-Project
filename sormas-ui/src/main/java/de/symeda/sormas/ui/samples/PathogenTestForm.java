@@ -89,6 +89,16 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 	private static final String DISEASE_SECTION_LOC = "diseaseSectionLoc";
 
+	private static final String[] CT_CQ_FIELD_IDS = {
+		PathogenTestDto.CQ_VALUE,
+		PathogenTestDto.CT_VALUE_E,
+		PathogenTestDto.CT_VALUE_N,
+		PathogenTestDto.CT_VALUE_RDRP,
+		PathogenTestDto.CT_VALUE_S,
+		PathogenTestDto.CT_VALUE_ORF_1,
+		PathogenTestDto.CT_VALUE_RDRP_S
+	};
+
 	//@formatter:off
 	private static final String HTML_LAYOUT =
 			loc(PATHOGEN_TEST_HEADING_LOC) +
@@ -452,15 +462,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			FieldConfiguration.withConversionError(PathogenTestDto.CT_VALUE_ORF_1, Validations.onlyNumbersAllowed),
 			FieldConfiguration.withConversionError(PathogenTestDto.CT_VALUE_RDRP_S, Validations.onlyNumbersAllowed));
 
-		setVisibleClear(
-			false,
-			PathogenTestDto.CQ_VALUE,
-			PathogenTestDto.CT_VALUE_E,
-			PathogenTestDto.CT_VALUE_N,
-			PathogenTestDto.CT_VALUE_RDRP,
-			PathogenTestDto.CT_VALUE_S,
-			PathogenTestDto.CT_VALUE_ORF_1,
-			PathogenTestDto.CT_VALUE_RDRP_S);
+		setVisibleClear(false, CT_CQ_FIELD_IDS);
 	}
 
 	private void addPrescriberFields() {
@@ -587,29 +589,14 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				}
 
 				if (diseaseField.getValue() == null || !List.of(Disease.TUBERCULOSIS).contains((Disease) diseaseField.getValue())) {
-					setVisibleClear(
-						PathogenTestType.PCR_RT_PCR == testType,
-						PathogenTestDto.CQ_VALUE,
-						PathogenTestDto.CT_VALUE_E,
-						PathogenTestDto.CT_VALUE_N,
-						PathogenTestDto.CT_VALUE_RDRP,
-						PathogenTestDto.CT_VALUE_S,
-						PathogenTestDto.CT_VALUE_ORF_1,
-						PathogenTestDto.CT_VALUE_RDRP_S);
+					setVisibleClear(PathogenTestType.PCR_RT_PCR == testType, CT_CQ_FIELD_IDS);
 				} else {
-					setVisibleClear(
-						false,
-						PathogenTestDto.CQ_VALUE,
-						PathogenTestDto.CT_VALUE_E,
-						PathogenTestDto.CT_VALUE_N,
-						PathogenTestDto.CT_VALUE_RDRP,
-						PathogenTestDto.CT_VALUE_S,
-						PathogenTestDto.CT_VALUE_ORF_1,
-						PathogenTestDto.CT_VALUE_RDRP_S);
+					setVisibleClear(false, CT_CQ_FIELD_IDS);
 				}
 			} else {
 				testResultField.clear();
 				testResultField.setEnabled(true);
+				setVisibleClear(false, CT_CQ_FIELD_IDS);
 			}
 
 			if (RESULT_FIELD_DECISION_MAP.containsKey(disease) && RESULT_FIELD_DECISION_MAP.get(disease).contains(testType)) {
