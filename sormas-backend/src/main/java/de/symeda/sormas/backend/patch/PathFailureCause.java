@@ -7,6 +7,7 @@ import de.symeda.sormas.api.patch.partial_retrieval.PartialRetrievalFailureCause
 
 public enum PathFailureCause {
 
+	INVALID_PATH_FORMAT(DataPatchFailureCause.INVALID_PATH_FORMAT, PartialRetrievalFailureCause.INVALID_PATH_FORMAT),
 	FORBIDDEN_NON_UNIQUE_ALIAS(DataPatchFailureCause.FORBIDDEN_NON_UNIQUE_ALIAS, PartialRetrievalFailureCause.FORBIDDEN_NON_UNIQUE_ALIAS),
 	UNSUPPORTED_PREFIX(DataPatchFailureCause.UNSUPPORTED_PREFIX, PartialRetrievalFailureCause.UNSUPPORTED_PREFIX),
 	FORBIDDEN_FIELD(DataPatchFailureCause.FORBIDDEN_FIELD, PartialRetrievalFailureCause.FORBIDDEN_FIELD),

@@ -144,7 +144,7 @@ public class PartialRetrieverImpl implements PartialRetriever {
 			.collect(Collectors.toMap(Tuple::getFirst, a -> a.getSecond().getFirst()));
 
 		Map<String, PartialRetrievalFailureCause> failures = results.stream()
-			.filter(a -> a.getSecond().getSecond() != null)
+			.filter(tuple -> tuple.getSecond().getSecond() != null)
 			.collect(Collectors.toMap(Tuple::getFirst, a -> a.getSecond().getSecond()));
 
 		return new PartialRetrievalResponse().setFailuresDictionary(failures).setFieldInfoDictionary(successes);

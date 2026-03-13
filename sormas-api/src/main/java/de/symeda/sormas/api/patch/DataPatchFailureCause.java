@@ -63,6 +63,7 @@ public enum DataPatchFailureCause {
 	 */
 	UNSUPPORTED_TARGET_TYPE,
 
+	INVALID_PATH_FORMAT,
 	/**
 	 * This means there is a hole in the implementation.
 	 */

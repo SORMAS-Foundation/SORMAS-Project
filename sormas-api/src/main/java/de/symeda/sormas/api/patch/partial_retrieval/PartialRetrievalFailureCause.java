@@ -36,6 +36,7 @@ public enum PartialRetrievalFailureCause {
 	 */
 	FORBIDDEN_FIELD,
 
+	INVALID_PATH_FORMAT,
 	/**
 	 * This means there is a hole in the implementation.
 	 */
