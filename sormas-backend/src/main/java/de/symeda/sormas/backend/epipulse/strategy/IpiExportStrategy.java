@@ -222,7 +222,7 @@ public class IpiExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 			   "                                AND s.deleted = false " +
 			   "                                AND pt.testtype IN ('SEROGROUPING', 'GENOTYPING', 'WHOLE_GENOME_SEQUENCING') " +
 			   "                                AND pt.typingid IS NOT NULL " +
-			   "                              ORDER BY pt.testdatetime DESC " +
+			   "                              ORDER BY COALESCE(pt.testdatetime, pt.reportdate, pt.creationdate) DESC NULLS LAST, pt.id DESC " +
 			   "                              LIMIT 1) as serotype " +
 			   "                      FROM filtered_cases c)";
 		//@formatter:on
@@ -240,7 +240,7 @@ public class IpiExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 			   "                                   WHERE s.associatedcase_id = c.id " +
 			   "                                     AND s.deleted = false " +
 			   "                                     AND pt.testresultverified = true " +
-			   "                                   ORDER BY pt.testdatetime DESC " +
+			   "                                   ORDER BY COALESCE(pt.testdatetime, pt.reportdate, pt.creationdate) DESC NULLS LAST, pt.id DESC " +
 			   "                                   LIMIT 1) as detection_method " +
 			   "                           FROM filtered_cases c)";
 		//@formatter:on
@@ -341,7 +341,7 @@ public class IpiExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 			   "    LEFT JOIN pathogentest pt ON pt.sample_id = s.id " +
 			   "        AND pt.testtype = 'ANTIBIOTIC_SUSCEPTIBILITY' " +
 			   "    LEFT JOIN drugsusceptibility ds ON pt.drugsusceptibility_id = ds.id " +
-			   "    ORDER BY c.id, pt.testdatetime DESC" +
+			   "    ORDER BY c.id, COALESCE(pt.testdatetime, pt.reportdate, pt.creationdate) DESC NULLS LAST, pt.id DESC" +
 			   ")";
 		//@formatter:on
 	}
