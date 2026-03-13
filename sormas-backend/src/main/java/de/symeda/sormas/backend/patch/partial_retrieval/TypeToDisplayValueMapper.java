@@ -12,7 +12,29 @@ public interface TypeToDisplayValueMapper extends Comparable<TypeToDisplayValueM
 
 	String toDisplayValue(@NotNull Object value);
 
-	Set<Class<?>> supportedTypes();
+	Set<Class<?>> getSupportedTypes();
+
+	/**
+	 * Specifies if the targetType is supported by this mapper.
+	 *
+	 * @param targetType
+	 * @return
+	 */
+	default boolean supports(@NotNull Class<?> targetType) {
+
+		boolean directlySupportedType = getSupportedTypes().contains(targetType);
+
+		if (directlySupportedType) {
+			return true;
+		}
+
+		for (Class<?> supported : getSupportedTypes()) {
+			if (supported.isAssignableFrom(targetType)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	/**
 	 * Allows you to override default mappers.

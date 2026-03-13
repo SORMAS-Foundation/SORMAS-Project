@@ -18,7 +18,7 @@ public class ReferenceDtoToDisplayValueMapper implements TypeToDisplayValueMappe
 	}
 
 	@Override
-	public Set<Class<?>> supportedTypes() {
+	public Set<Class<?>> getSupportedTypes() {
 		return SUPPORTED_TYPES;
 	}
 

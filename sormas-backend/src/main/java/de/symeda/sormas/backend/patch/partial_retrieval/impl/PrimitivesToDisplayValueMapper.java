@@ -27,7 +27,7 @@ public class PrimitivesToDisplayValueMapper implements TypeToDisplayValueMapper 
 		boolean.class);
 
 	@Override
-	public Set<Class<?>> supportedTypes() {
+	public Set<Class<?>> getSupportedTypes() {
 		return SUPPORTED_TYPES;
 	}
 

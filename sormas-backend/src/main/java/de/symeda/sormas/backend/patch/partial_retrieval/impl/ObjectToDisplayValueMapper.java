@@ -17,7 +17,7 @@ public class ObjectToDisplayValueMapper implements TypeToDisplayValueMapper {
 	}
 
 	@Override
-	public Set<Class<?>> supportedTypes() {
+	public Set<Class<?>> getSupportedTypes() {
 		return SUPPORTED_TYPES;
 	}
 }

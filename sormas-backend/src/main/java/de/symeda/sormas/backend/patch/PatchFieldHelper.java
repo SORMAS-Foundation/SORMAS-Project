@@ -45,6 +45,7 @@ public class PatchFieldHelper {
 	public PathFailureCause checkIfPathIsInvalid(String path) {
 		PathFailureCause dataPatchFailureCause = null;
 
+		// TODO: check it would be required to distinguish read / write: per example Immunization can be read and write but write does not reach this code.
 		if (!startsWithAllowedPrefix(path)) {
 			dataPatchFailureCause = PathFailureCause.UNSUPPORTED_PREFIX;
 		} else if (fieldIsForbidden(path)) {

@@ -18,7 +18,7 @@ public class CustomizableEnumToDisplayValueMapper implements TypeToDisplayValueM
 	}
 
 	@Override
-	public Set<Class<?>> supportedTypes() {
+	public Set<Class<?>> getSupportedTypes() {
 		return SUPPORTED_TYPES;
 	}
 

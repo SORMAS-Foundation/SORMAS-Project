@@ -9,6 +9,10 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.immunization.ImmunizationDto;
+import de.symeda.sormas.api.immunization.ImmunizationStatus;
+import de.symeda.sormas.api.patch.partial_retrieval.DisplayableFieldInfo;
+import de.symeda.sormas.api.patch.partial_retrieval.DisplayablePartialRetrievalResponse;
 import de.symeda.sormas.api.patch.partial_retrieval.FieldInfo;
 import de.symeda.sormas.api.patch.partial_retrieval.PartialRetrievalRequest;
 import de.symeda.sormas.api.patch.partial_retrieval.PartialRetrievalResponse;
@@ -19,6 +23,59 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 
 class PartialRetrieverImplTest extends AbstractBeanTest {
+
+	@Test
+	void immunization_and_vaccine() {
+		// PREPARE
+		Disease disease = Disease.RESPIRATORY_SYNCYTIAL_VIRUS;
+		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
+
+		ImmunizationDto immunizationDto = ImmunizationDto.build(originalCase.getPerson());
+		immunizationDto.setRelatedCase(originalCase.toReference());
+		immunizationDto.setImmunizationStatus(ImmunizationStatus.ACQUIRED);
+		immunizationDto.setReportingUser(originalCase.getReportingUser());
+		getImmunizationFacade().save(immunizationDto);
+
+		String immunizationStatusFieldName = toFieldName(ImmunizationDto.I18N_PREFIX, ImmunizationDto.IMMUNIZATION_STATUS);
+
+		// EXECUTE
+		DisplayablePartialRetrievalResponse actual = victim().retrievePartialForDisplay(
+			new PartialRetrievalRequest().setCaseUuid(originalCase.getUuid()).setFieldsToRetrieve(Set.of(immunizationStatusFieldName)));
+
+		// CHECK
+		DisplayableFieldInfo immunizationStatusFieldInfo = actual.getFieldInfoDictionary().get(immunizationStatusFieldName);
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(actual.getFailuresDescriptions().isEmpty()),
+
+			() -> Assertions.assertNotNull(immunizationStatusFieldInfo),
+
+			() -> Assertions.assertEquals("Immunization status", immunizationStatusFieldInfo.getTranslatedFieldName()),
+			() -> Assertions.assertEquals("Acquired", immunizationStatusFieldInfo.getTranslatedFieldValue()));
+	}
+
+	@Test
+	void displayable_partial_retrieve() {
+		// PREPARE
+		I18nProperties.setUserLanguage(Language.DE);
+		Disease disease = Disease.ANTHRAX;
+		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
+
+		String caseDiseaseFieldName = toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE);
+
+		// EXECUTE
+		DisplayablePartialRetrievalResponse actual = victim().retrievePartialForDisplay(
+			new PartialRetrievalRequest().setCaseUuid(originalCase.getUuid()).setFieldsToRetrieve(Set.of(caseDiseaseFieldName)));
+
+		// CHECK
+		DisplayableFieldInfo caseDiseaseFieldInfo = actual.getFieldInfoDictionary().get(caseDiseaseFieldName);
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(actual.getFailuresDescriptions().isEmpty()),
+
+			() -> Assertions.assertNotNull(caseDiseaseFieldInfo),
+
+			() -> Assertions.assertEquals("Krankheit", caseDiseaseFieldInfo.getTranslatedFieldName()),
+			() -> Assertions.assertEquals("Milzbrand", caseDiseaseFieldInfo.getTranslatedFieldValue()));
+	}
 
 	@Test
 	void retrievePartial_german() {
@@ -48,7 +105,7 @@ class PartialRetrieverImplTest extends AbstractBeanTest {
 			() -> Assertions.assertEquals(disease, caseDiseaseFieldInfo.getFieldValue()),
 
 			() -> Assertions.assertTrue(actual.getFieldInfoDictionary().containsKey(symptomsAbdominalPain)),
-			() -> Assertions.assertEquals("Krankheit", symptomsAbdominalPainFieldInfo.getTranslatedFieldName()),
+			() -> Assertions.assertEquals("Abdominalschmerzen", symptomsAbdominalPainFieldInfo.getTranslatedFieldName()),
 			() -> Assertions.assertEquals(originalCase.getSymptoms().getAbdominalPain(), symptomsAbdominalPainFieldInfo.getFieldValue()));
 	}
 

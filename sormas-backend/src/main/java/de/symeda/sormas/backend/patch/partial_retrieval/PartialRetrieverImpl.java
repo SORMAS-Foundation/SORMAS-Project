@@ -80,7 +80,6 @@ public class PartialRetrieverImpl implements PartialRetriever {
 
 		Set<String> fieldsToRetrieve = request.getFieldsToRetrieve();
 
-		Tuple<String, Tuple<FieldInfo, PartialRetrievalFailureCause>> targetType = Tuple.of(null, new Tuple<>(null, null));
 		List<Tuple<String, Tuple<FieldInfo, PartialRetrievalFailureCause>>> results = fieldsToRetrieve.stream().flatMap(originalFieldName -> {
 
 			PathFailureCause pathFailureCause = patchFieldHelper.checkIfPathIsInvalid(originalFieldName);
@@ -102,7 +101,7 @@ public class PartialRetrieverImpl implements PartialRetriever {
 			// TODO: handle multiple path format.
 //			if (!patchFieldHelper.isMultipleFieldFormat(physicalPathName)) {
 
-			String aliasPath = pathAliasHelper.toAliasPath(physicalPathName);
+			String aliasPath = pathAliasHelper.toAliasPath(pathWithoutAlias);
 			Optional<EntityDto> adequateBean = getAdequateBean(pathWithoutAlias, caseData);
 
 			if (adequateBean.isEmpty()) {
@@ -119,7 +118,12 @@ public class PartialRetrieverImpl implements PartialRetriever {
 
 			Tuple<Class<?>, Object> fieldInfo = propertyType.getFirst();
 
-			String translatedFieldName = I18nProperties.getCaption(pathWithoutAlias, physicalPathName);
+			// Some fields are translated only by there "physical-path" from root level
+			// example: Person.firstName has translation key "firstName"
+			// example: CaseData.disease has translation key "firstName"
+			String translatedFieldName = Optional.ofNullable(I18nProperties.getCaption(aliasPath, null))
+				.or(() -> Optional.ofNullable(I18nProperties.getCaption(physicalPathName, null)))
+				.orElseGet(() -> I18nProperties.getDescription(aliasPath, aliasPath));
 
 			return Stream.of(
 				Tuple.of(

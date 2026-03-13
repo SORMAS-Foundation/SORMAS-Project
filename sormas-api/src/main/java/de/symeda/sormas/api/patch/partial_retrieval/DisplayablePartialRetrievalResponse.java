@@ -1,13 +1,14 @@
 package de.symeda.sormas.api.patch.partial_retrieval;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 public class DisplayablePartialRetrievalResponse {
 
-	private Map<String, DisplayableFieldInfo> fieldInfoDictionary;
+	private Map<String, DisplayableFieldInfo> fieldInfoDictionary = new HashMap<>();
 
-	private Map<String, String> failuresDescriptions;
+	private Map<String, String> failuresDescriptions = new HashMap<>();
 
 	public Map<String, DisplayableFieldInfo> getFieldInfoDictionary() {
 		return fieldInfoDictionary;
