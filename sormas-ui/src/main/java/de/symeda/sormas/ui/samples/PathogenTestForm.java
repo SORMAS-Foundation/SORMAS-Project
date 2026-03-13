@@ -679,16 +679,28 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		removeFromAllowedLists(activeSection.getFieldIds());
 		activeSection.unbindFields(getFieldGroup(), diseaseSectionPanel);
 		activeSection = newSection;
-		diseaseSectionPanel.setTemplateContents(newSection.getHtmlLayout());
+
+		// Vaadin's CustomLayout.setTemplateContents() only works before the component
+		// is attached. Replace the entire panel so the new template renders correctly.
+		CustomLayout newPanel = new CustomLayout();
+		newPanel.setTemplateContents(newSection.getHtmlLayout());
+		newPanel.setWidth(100, Unit.PERCENTAGE);
+		getContent().addComponent(newPanel, DISEASE_SECTION_LOC);
+		diseaseSectionPanel = newPanel;
+
 		newSection.bindFields(getFieldGroup(), diseaseSectionPanel, newDisease, formConfig);
 		rebuildSectionFieldAllowances(newSection.getFieldIds());
 	}
 
+	@SuppressWarnings("unchecked")
 	private void rebuildSectionFieldAllowances(Collection<String> fieldIds) {
 		for (String id : fieldIds) {
 			com.vaadin.v7.ui.Field<?> f = getField(id);
 			if (f != null) {
 				addToVisibleAllowedFields(f);
+				if (fieldAccessCheckers == null || fieldAccessCheckers.isAccessible(getType(), id)) {
+					addToEditableAllowedFields(f);
+				}
 			}
 		}
 	}

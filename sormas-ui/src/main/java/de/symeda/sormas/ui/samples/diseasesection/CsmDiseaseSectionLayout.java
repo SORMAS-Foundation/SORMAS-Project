@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples.diseasesection;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,11 +28,14 @@ import java.util.Map;
 
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
+import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.Registration;
 
 /**
  * Disease section for CSM: wires serotype visibility (positive result only).
@@ -38,11 +43,17 @@ import de.symeda.sormas.ui.utils.FieldHelper;
  */
 public class CsmDiseaseSectionLayout implements DiseaseSectionLayout {
 
+	//@formatter:off
+	private static final String HTML = fluidRowLocs(PathogenTestDto.SEROTYPE, "");
+	//@formatter:on
+
 	private static final List<String> FIELD_IDS = Collections.singletonList(PathogenTestDto.SEROTYPE);
+
+	private Registration visibilityRegistration;
 
 	@Override
 	public String getHtmlLayout() {
-		return "";
+		return HTML;
 	}
 
 	@Override
@@ -52,17 +63,26 @@ public class CsmDiseaseSectionLayout implements DiseaseSectionLayout {
 
 	@Override
 	public void bindFields(FieldGroup fieldGroup, CustomLayout panel, Disease disease, PathogenTestFormConfig config) {
+		TextField serotype = buildAndAdd(fieldGroup, panel, PathogenTestDto.SEROTYPE, TextField.class);
+		serotype.setVisible(false);
+
 		Map<Object, List<Object>> serotypeVisibilityDependencies = new HashMap<>();
 		serotypeVisibilityDependencies.put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.CSM));
 		serotypeVisibilityDependencies.put(PathogenTestDto.TEST_RESULT, Arrays.asList(PathogenTestResultType.POSITIVE));
-		FieldHelper.setVisibleWhen(fieldGroup, Arrays.asList(PathogenTestDto.SEROTYPE), serotypeVisibilityDependencies, true);
+		visibilityRegistration =
+			FieldHelper.setVisibleWhen(fieldGroup, Arrays.asList(PathogenTestDto.SEROTYPE), serotypeVisibilityDependencies, true);
 	}
 
 	@Override
 	public void unbindFields(FieldGroup fieldGroup, CustomLayout panel) {
-		// setVisibleWhen listeners are attached to TESTED_DISEASE and TEST_RESULT source fields.
-		// Those source fields remain in the FieldGroup across section swaps and their
-		// multi-condition visibility logic is harmless when this disease is not active,
-		// because the TESTED_DISEASE condition will never match CSM for another section.
+		if (visibilityRegistration != null) {
+			visibilityRegistration.remove();
+			visibilityRegistration = null;
+		}
+		Field<?> field = fieldGroup.getField(PathogenTestDto.SEROTYPE);
+		if (field != null) {
+			fieldGroup.unbind(field);
+			panel.removeComponent(field);
+		}
 	}
 }

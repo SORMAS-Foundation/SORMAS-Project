@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples.diseasesection;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,6 +29,9 @@ import java.util.Map;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.ui.AbstractField;
+import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -38,14 +43,21 @@ import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.therapy.DrugSusceptibilityForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.Registration;
 
 /**
  * Disease section for INVASIVE_PNEUMOCOCCAL_INFECTION (IPI):
  * wires serotype + serotypingMethod + serotypingMethodText visibility,
  * and owns the DrugSusceptibilityForm for IPI.
- * Fields live in the common layout; this section owns the visibility registrations.
  */
 public class IpiDiseaseSectionLayout implements DiseaseSectionLayout {
+
+	//@formatter:off
+	private static final String HTML =
+			fluidRowLocs(PathogenTestDto.SEROTYPE, PathogenTestDto.SEROTYPING_METHOD) +
+			fluidRowLocs(PathogenTestDto.SERO_TYPING_METHOD_TEXT, "") +
+			fluidRowLocs(PathogenTestDto.DRUG_SUSCEPTIBILITY);
+	//@formatter:on
 
 	private static final List<String> FIELD_IDS = Collections.unmodifiableList(
 		Arrays.asList(
@@ -55,10 +67,11 @@ public class IpiDiseaseSectionLayout implements DiseaseSectionLayout {
 			PathogenTestDto.DRUG_SUSCEPTIBILITY));
 
 	private DrugSusceptibilityForm drugSusceptibilityField;
+	private Registration visibilityRegistration;
 
 	@Override
 	public String getHtmlLayout() {
-		return "";
+		return HTML;
 	}
 
 	@Override
@@ -68,12 +81,21 @@ public class IpiDiseaseSectionLayout implements DiseaseSectionLayout {
 
 	@Override
 	public void bindFields(FieldGroup fieldGroup, CustomLayout panel, Disease disease, PathogenTestFormConfig config) {
+		TextField serotype = buildAndAdd(fieldGroup, panel, PathogenTestDto.SEROTYPE, TextField.class);
+		serotype.setVisible(false);
+
+		ComboBox serotypingMethod = buildAndAdd(fieldGroup, panel, PathogenTestDto.SEROTYPING_METHOD, ComboBox.class);
+		serotypingMethod.setVisible(false);
+
+		TextField serotypingMethodText = buildAndAdd(fieldGroup, panel, PathogenTestDto.SERO_TYPING_METHOD_TEXT, TextField.class);
+		serotypingMethodText.setVisible(false);
+
 		// serotype + serotypingMethod visible on SEROGROUPING + POSITIVE
 		Map<Object, List<Object>> serotypeAndMethodDependencies = new HashMap<>();
 		serotypeAndMethodDependencies.put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
 		serotypeAndMethodDependencies.put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.SEROGROUPING));
 		serotypeAndMethodDependencies.put(PathogenTestDto.TEST_RESULT, Arrays.asList(PathogenTestResultType.POSITIVE));
-		FieldHelper.setVisibleWhen(
+		Registration r1 = FieldHelper.setVisibleWhen(
 			fieldGroup,
 			Arrays.asList(PathogenTestDto.SEROTYPE, PathogenTestDto.SEROTYPING_METHOD),
 			serotypeAndMethodDependencies,
@@ -90,21 +112,39 @@ public class IpiDiseaseSectionLayout implements DiseaseSectionLayout {
 				PathogenTestType.MULTILOCUS_SEQUENCE_TYPING,
 				PathogenTestType.SEROGROUPING));
 		serotypeExtendedDependencies.put(PathogenTestDto.TEST_RESULT, Arrays.asList(PathogenTestResultType.POSITIVE));
-		FieldHelper.setVisibleWhen(fieldGroup, PathogenTestDto.SEROTYPE, serotypeExtendedDependencies, true);
+		Registration r2 = FieldHelper.setVisibleWhen(fieldGroup, PathogenTestDto.SEROTYPE, serotypeExtendedDependencies, true);
 
 		// serotypingMethodText visible when method = OTHER
-		FieldHelper
+		Registration r3 = FieldHelper
 			.setVisibleWhen(fieldGroup, PathogenTestDto.SERO_TYPING_METHOD_TEXT, PathogenTestDto.SEROTYPING_METHOD, SerotypingMethod.OTHER, true);
+		visibilityRegistration = Registration.combine(r1, r2, r3);
 
 		drugSusceptibilityField = new DrugSusceptibilityForm(
 			FieldVisibilityCheckers.getNoop(),
 			UiFieldAccessCheckers.getDefault(true, FacadeProvider.getConfigFacade().getCountryLocale()));
 		drugSusceptibilityField.setCaption(null);
 		fieldGroup.bind(drugSusceptibilityField, PathogenTestDto.DRUG_SUSCEPTIBILITY);
+		panel.addComponent(drugSusceptibilityField, PathogenTestDto.DRUG_SUSCEPTIBILITY);
 	}
 
 	@Override
 	public void unbindFields(FieldGroup fieldGroup, CustomLayout panel) {
+		if (visibilityRegistration != null) {
+			visibilityRegistration.remove();
+			visibilityRegistration = null;
+		}
+
+		for (String id : FIELD_IDS) {
+			if (PathogenTestDto.DRUG_SUSCEPTIBILITY.equals(id)) {
+				continue;
+			}
+			Field<?> field = fieldGroup.getField(id);
+			if (field != null) {
+				fieldGroup.unbind(field);
+				panel.removeComponent(field);
+			}
+		}
+
 		if (drugSusceptibilityField != null) {
 			fieldGroup.unbind(drugSusceptibilityField);
 			panel.removeComponent(drugSusceptibilityField);
@@ -130,4 +170,5 @@ public class IpiDiseaseSectionLayout implements DiseaseSectionLayout {
 			testResultField.setValue(PathogenTestResultType.POSITIVE);
 		}
 	}
+
 }

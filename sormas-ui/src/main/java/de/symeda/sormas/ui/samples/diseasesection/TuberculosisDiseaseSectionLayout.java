@@ -21,8 +21,6 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,6 +44,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.therapy.DrugSusceptibilityForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
+import de.symeda.sormas.ui.utils.Registration;
 
 /**
  * Disease-specific section for TUBERCULOSIS and LATENT_TUBERCULOSIS.
@@ -84,39 +83,33 @@ public class TuberculosisDiseaseSectionLayout implements DiseaseSectionLayout {
 		PathogenTestDto.TUBE_MITOGENE,
 		PathogenTestDto.TUBE_MITOGENE_GT10);
 
-	public static final Map<Object, List<Object>> RIFAMPICIN_RESISTANT_VISIBILITY_CONDITIONS = Collections.unmodifiableMap(new HashMap<>() {
+	public static final Map<Object, List<Object>> RIFAMPICIN_RESISTANT_VISIBILITY_CONDITIONS = DiseaseSectionLayout.conditionsOf(
+		PathogenTestDto.TESTED_DISEASE,
+		Arrays.asList(Disease.LATENT_TUBERCULOSIS, Disease.TUBERCULOSIS),
+		PathogenTestDto.TEST_TYPE,
+		Arrays.asList(PathogenTestType.PCR_RT_PCR),
+		PathogenTestDto.TEST_RESULT,
+		Arrays.asList(PathogenTestResultType.POSITIVE));
 
-		{
-			put(PathogenTestDto.TESTED_DISEASE, Collections.unmodifiableList(Arrays.asList(Disease.LATENT_TUBERCULOSIS, Disease.TUBERCULOSIS)));
-			put(PathogenTestDto.TEST_TYPE, Collections.unmodifiableList(Arrays.asList(PathogenTestType.PCR_RT_PCR)));
-			put(PathogenTestDto.TEST_RESULT, Collections.unmodifiableList(Arrays.asList(PathogenTestResultType.POSITIVE)));
-		}
-	});
+	public static final Map<Object, List<Object>> TEST_SCALE_VISIBILITY_CONDITIONS = DiseaseSectionLayout.conditionsOf(
+		PathogenTestDto.TESTED_DISEASE,
+		Arrays.asList(Disease.LATENT_TUBERCULOSIS, Disease.TUBERCULOSIS),
+		PathogenTestDto.TEST_TYPE,
+		Arrays.asList(PathogenTestType.MICROSCOPY));
 
-	public static final Map<Object, List<Object>> TEST_SCALE_VISIBILITY_CONDITIONS = Collections.unmodifiableMap(new HashMap<>() {
+	public static final Map<Object, List<Object>> STRAIN_CALL_STATUS_VISIBILITY_CONDITIONS = DiseaseSectionLayout.conditionsOf(
+		PathogenTestDto.TESTED_DISEASE,
+		Arrays.asList(Disease.LATENT_TUBERCULOSIS, Disease.TUBERCULOSIS),
+		PathogenTestDto.TEST_TYPE,
+		Arrays.asList(PathogenTestType.BEIJINGGENOTYPING));
 
-		{
-			put(PathogenTestDto.TESTED_DISEASE, Collections.unmodifiableList(Arrays.asList(Disease.LATENT_TUBERCULOSIS, Disease.TUBERCULOSIS)));
-			put(PathogenTestDto.TEST_TYPE, Collections.unmodifiableList(Arrays.asList(PathogenTestType.MICROSCOPY)));
-		}
-	});
-
-	public static final Map<Object, List<Object>> STRAIN_CALL_STATUS_VISIBILITY_CONDITIONS = Collections.unmodifiableMap(new HashMap<>() {
-
-		{
-			put(PathogenTestDto.TESTED_DISEASE, Collections.unmodifiableList(Arrays.asList(Disease.LATENT_TUBERCULOSIS, Disease.TUBERCULOSIS)));
-			put(PathogenTestDto.TEST_TYPE, Collections.unmodifiableList(Arrays.asList(PathogenTestType.BEIJINGGENOTYPING)));
-		}
-	});
-
-	public static final Map<Object, List<Object>> SPECIE_VISIBILITY_CONDITIONS = Collections.unmodifiableMap(new HashMap<>() {
-
-		{
-			put(PathogenTestDto.TESTED_DISEASE, Collections.unmodifiableList(Arrays.asList(Disease.LATENT_TUBERCULOSIS, Disease.TUBERCULOSIS)));
-			put(PathogenTestDto.TEST_TYPE, Collections.unmodifiableList(Arrays.asList(PathogenTestType.SPOLIGOTYPING)));
-			put(PathogenTestDto.TEST_RESULT, Collections.unmodifiableList(Arrays.asList(PathogenTestResultType.POSITIVE)));
-		}
-	});
+	public static final Map<Object, List<Object>> SPECIE_VISIBILITY_CONDITIONS = DiseaseSectionLayout.conditionsOf(
+		PathogenTestDto.TESTED_DISEASE,
+		Arrays.asList(Disease.LATENT_TUBERCULOSIS, Disease.TUBERCULOSIS),
+		PathogenTestDto.TEST_TYPE,
+		Arrays.asList(PathogenTestType.SPOLIGOTYPING),
+		PathogenTestDto.TEST_RESULT,
+		Arrays.asList(PathogenTestResultType.POSITIVE));
 
 	// Held for onTestTypeChanged and unbindFields
 	private DrugSusceptibilityForm drugSusceptibilityField;
@@ -128,6 +121,7 @@ public class TuberculosisDiseaseSectionLayout implements DiseaseSectionLayout {
 	private Property.ValueChangeListener testTypeListener;
 	private Property.ValueChangeListener testResultListener;
 	private Property.ValueChangeListener diseaseListener;
+	private Registration visibilityRegistration;
 
 	@Override
 	public String getHtmlLayout() {
@@ -193,9 +187,15 @@ public class TuberculosisDiseaseSectionLayout implements DiseaseSectionLayout {
 		testResultListener =
 			e -> setTubeFieldsVisible(fieldGroup, (PathogenTestType) fieldGroup.getField(PathogenTestDto.TEST_TYPE).getValue(), isLuxembourg);
 		diseaseListener = e -> {
-			setTubeFieldsVisible(fieldGroup, (PathogenTestType) fieldGroup.getField(PathogenTestDto.TEST_TYPE).getValue(), isLuxembourg);
-
+			PathogenTestType currentTestType = (PathogenTestType) fieldGroup.getField(PathogenTestDto.TEST_TYPE).getValue();
 			Disease newDisease = (Disease) e.getProperty().getValue();
+
+			setTubeFieldsVisible(fieldGroup, currentTestType, isLuxembourg);
+
+			if (drugSusceptibilityField != null) {
+				drugSusceptibilityField.updateFieldsVisibility(newDisease, currentTestType);
+			}
+
 			FieldHelper.updateItems(
 				strainCallStatus,
 				Arrays.asList(PathogenStrainCallStatus.values()),
@@ -208,15 +208,22 @@ public class TuberculosisDiseaseSectionLayout implements DiseaseSectionLayout {
 		fieldGroup.getField(PathogenTestDto.TESTED_DISEASE).addValueChangeListener(diseaseListener);
 
 		// Wire standard multi-source visibility conditions
-		FieldHelper.setVisibleWhen(fieldGroup, PathogenTestDto.RIFAMPICIN_RESISTANT, RIFAMPICIN_RESISTANT_VISIBILITY_CONDITIONS, true);
-		FieldHelper.setVisibleWhen(fieldGroup, PathogenTestDto.TEST_SCALE, TEST_SCALE_VISIBILITY_CONDITIONS, true);
-		FieldHelper.setVisibleWhen(fieldGroup, PathogenTestDto.STRAIN_CALL_STATUS, STRAIN_CALL_STATUS_VISIBILITY_CONDITIONS, true);
-		FieldHelper.setVisibleWhen(fieldGroup, PathogenTestDto.SPECIE, SPECIE_VISIBILITY_CONDITIONS, true);
+		Registration r1 =
+			FieldHelper.setVisibleWhen(fieldGroup, PathogenTestDto.RIFAMPICIN_RESISTANT, RIFAMPICIN_RESISTANT_VISIBILITY_CONDITIONS, true);
+		Registration r2 = FieldHelper.setVisibleWhen(fieldGroup, PathogenTestDto.TEST_SCALE, TEST_SCALE_VISIBILITY_CONDITIONS, true);
+		Registration r3 = FieldHelper.setVisibleWhen(fieldGroup, PathogenTestDto.STRAIN_CALL_STATUS, STRAIN_CALL_STATUS_VISIBILITY_CONDITIONS, true);
+		Registration r4 = FieldHelper.setVisibleWhen(fieldGroup, PathogenTestDto.SPECIE, SPECIE_VISIBILITY_CONDITIONS, true);
 
-		Map<Object, List<Object>> miruCode = new HashMap<>();
-		miruCode.put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.TUBERCULOSIS, Disease.LATENT_TUBERCULOSIS));
-		miruCode.put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.MIRU_PATTERN_CODE));
-		FieldHelper.setVisibleWhen(fieldGroup, PathogenTestDto.PATTERN_PROFILE, miruCode, true);
+		Registration r5 = FieldHelper.setVisibleWhen(
+			fieldGroup,
+			PathogenTestDto.PATTERN_PROFILE,
+			DiseaseSectionLayout.conditionsOf(
+				PathogenTestDto.TESTED_DISEASE,
+				Arrays.asList(Disease.TUBERCULOSIS, Disease.LATENT_TUBERCULOSIS),
+				PathogenTestDto.TEST_TYPE,
+				Arrays.asList(PathogenTestType.MIRU_PATTERN_CODE)),
+			true);
+		visibilityRegistration = Registration.combine(r1, r2, r3, r4, r5);
 
 		FieldHelper.updateItems(
 			strainCallStatus,
@@ -246,6 +253,11 @@ public class TuberculosisDiseaseSectionLayout implements DiseaseSectionLayout {
 
 	@Override
 	public void unbindFields(FieldGroup fieldGroup, CustomLayout panel) {
+		if (visibilityRegistration != null) {
+			visibilityRegistration.remove();
+			visibilityRegistration = null;
+		}
+
 		// Remove named listeners from shared source fields before unbinding section fields
 		if (testTypeListener != null) {
 			Field<?> f = fieldGroup.getField(PathogenTestDto.TEST_TYPE);
@@ -319,10 +331,4 @@ public class TuberculosisDiseaseSectionLayout implements DiseaseSectionLayout {
 		}
 	}
 
-	private <F extends Field<?>> F buildAndAdd(FieldGroup fieldGroup, CustomLayout panel, String propertyId, Class<F> fieldType) {
-		F field = fieldGroup.buildAndBind(propertyId, (Object) propertyId, fieldType);
-		field.setId(propertyId);
-		panel.addComponent(field, propertyId);
-		return field;
-	}
 }

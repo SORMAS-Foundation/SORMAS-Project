@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples.diseasesection;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,6 +32,7 @@ import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.sample.GenoTypeResult;
@@ -37,21 +40,27 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.Registration;
 
 /**
  * Disease section for CRYPTOSPORIDIOSIS: same genotype result pattern as Measles.
- * Fields live in the common layout; this section owns the visibility registrations.
  */
 public class CryptosporidiosisDiseaseSectionLayout implements DiseaseSectionLayout {
+
+	//@formatter:off
+	private static final String HTML =
+			fluidRowLocs(4, PathogenTestDto.GENOTYPE_RESULT, 6, PathogenTestDto.GENOTYPE_RESULT_TEXT);
+	//@formatter:on
 
 	private static final List<String> FIELD_IDS =
 		Collections.unmodifiableList(Arrays.asList(PathogenTestDto.GENOTYPE_RESULT, PathogenTestDto.GENOTYPE_RESULT_TEXT));
 
 	private Property.ValueChangeListener testTypeListener;
+	private Registration visibilityRegistration;
 
 	@Override
 	public String getHtmlLayout() {
-		return "";
+		return HTML;
 	}
 
 	@Override
@@ -61,12 +70,23 @@ public class CryptosporidiosisDiseaseSectionLayout implements DiseaseSectionLayo
 
 	@Override
 	public void bindFields(FieldGroup fieldGroup, CustomLayout panel, Disease disease, PathogenTestFormConfig config) {
+		ComboBox genoTypeResult = buildAndAdd(fieldGroup, panel, PathogenTestDto.GENOTYPE_RESULT, ComboBox.class);
+		genoTypeResult.setVisible(false);
+
+		TextField genoTypeResultText = buildAndAdd(fieldGroup, panel, PathogenTestDto.GENOTYPE_RESULT_TEXT, TextField.class);
+		genoTypeResultText.setVisible(false);
+
 		Map<Object, List<Object>> genoTypingDependencies = new HashMap<>();
 		genoTypingDependencies.put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.MEASLES, Disease.CRYPTOSPORIDIOSIS));
 		genoTypingDependencies.put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.GENOTYPING));
 		genoTypingDependencies.put(PathogenTestDto.TEST_RESULT, Arrays.asList(PathogenTestResultType.POSITIVE));
-		FieldHelper.setVisibleWhen(fieldGroup, PathogenTestDto.GENOTYPE_RESULT, genoTypingDependencies, true);
-		FieldHelper.setVisibleWhen(fieldGroup, PathogenTestDto.GENOTYPE_RESULT_TEXT, PathogenTestDto.GENOTYPE_RESULT, GenoTypeResult.OTHER, true);
+		Registration r1 = FieldHelper.setVisibleWhen(fieldGroup, PathogenTestDto.GENOTYPE_RESULT, genoTypingDependencies, true);
+		Registration r2 =
+			FieldHelper.setVisibleWhen(fieldGroup, PathogenTestDto.GENOTYPE_RESULT_TEXT, PathogenTestDto.GENOTYPE_RESULT, GenoTypeResult.OTHER, true);
+		visibilityRegistration = Registration.combine(r1, r2);
+
+		// Populate genotype items for the current disease
+		FieldHelper.updateItems(disease, genoTypeResult, GenoTypeResult.class);
 
 		testTypeListener = e -> {
 			Field<?> genoTypingCB = fieldGroup.getField(PathogenTestDto.GENOTYPE_RESULT);
@@ -83,12 +103,24 @@ public class CryptosporidiosisDiseaseSectionLayout implements DiseaseSectionLayo
 
 	@Override
 	public void unbindFields(FieldGroup fieldGroup, CustomLayout panel) {
+		if (visibilityRegistration != null) {
+			visibilityRegistration.remove();
+			visibilityRegistration = null;
+		}
 		if (testTypeListener != null) {
 			Field<?> testTypeField = fieldGroup.getField(PathogenTestDto.TEST_TYPE);
 			if (testTypeField != null) {
 				testTypeField.removeValueChangeListener(testTypeListener);
 			}
 			testTypeListener = null;
+		}
+
+		for (String id : FIELD_IDS) {
+			Field<?> field = fieldGroup.getField(id);
+			if (field != null) {
+				fieldGroup.unbind(field);
+				panel.removeComponent(field);
+			}
 		}
 	}
 
@@ -100,4 +132,5 @@ public class CryptosporidiosisDiseaseSectionLayout implements DiseaseSectionLayo
 		PathogenTestFormConfig config) {
 		// genotype item update is handled by the registered testTypeListener
 	}
+
 }

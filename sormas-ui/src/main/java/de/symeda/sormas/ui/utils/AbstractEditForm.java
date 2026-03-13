@@ -557,11 +557,15 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 	}
 
 	protected void removeFromVisibleAllowedFields(Field<?> field) {
-		visibleAllowedFields.remove(field);
+		visibleAllowedFields.removeIf(f -> f == field);
+	}
+
+	protected void addToEditableAllowedFields(Field<?> field) {
+		editableAllowedFields.add(field);
 	}
 
 	protected void removeFromEditableAllowedFields(Field<?> field) {
-		editableAllowedFields.remove(field);
+		editableAllowedFields.removeIf(f -> f == field);
 	}
 
 	/**

@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples.diseasesection;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,6 +29,9 @@ import java.util.Map;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.ui.AbstractField;
+import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -38,23 +43,30 @@ import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.therapy.DrugSusceptibilityForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.Registration;
 
 /**
  * Disease section for INVASIVE_MENINGOCOCCAL_INFECTION (IMI):
  * wires seroGroupSpecification + seroGroupSpecificationText visibility,
  * and owns the DrugSusceptibilityForm for IMI.
- * Fields live in the common layout; this section owns the visibility registrations.
  */
 public class ImiDiseaseSectionLayout implements DiseaseSectionLayout {
+
+	//@formatter:off
+	private static final String HTML =
+			fluidRowLocs(PathogenTestDto.SERO_GROUP_SPECIFICATION, PathogenTestDto.SERO_GROUP_SPECIFICATION_TEXT) +
+			fluidRowLocs(PathogenTestDto.DRUG_SUSCEPTIBILITY);
+	//@formatter:on
 
 	private static final List<String> FIELD_IDS = Collections.unmodifiableList(
 		Arrays.asList(PathogenTestDto.SERO_GROUP_SPECIFICATION, PathogenTestDto.SERO_GROUP_SPECIFICATION_TEXT, PathogenTestDto.DRUG_SUSCEPTIBILITY));
 
 	private DrugSusceptibilityForm drugSusceptibilityField;
+	private Registration visibilityRegistration;
 
 	@Override
 	public String getHtmlLayout() {
-		return "";
+		return HTML;
 	}
 
 	@Override
@@ -64,6 +76,12 @@ public class ImiDiseaseSectionLayout implements DiseaseSectionLayout {
 
 	@Override
 	public void bindFields(FieldGroup fieldGroup, CustomLayout panel, Disease disease, PathogenTestFormConfig config) {
+		ComboBox seroGroupSpecification = buildAndAdd(fieldGroup, panel, PathogenTestDto.SERO_GROUP_SPECIFICATION, ComboBox.class);
+		seroGroupSpecification.setVisible(false);
+
+		TextField seroGroupSpecificationText = buildAndAdd(fieldGroup, panel, PathogenTestDto.SERO_GROUP_SPECIFICATION_TEXT, TextField.class);
+		seroGroupSpecificationText.setVisible(false);
+
 		Map<Object, List<Object>> imiSeroTypingDependencies = new HashMap<>();
 		imiSeroTypingDependencies.put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.INVASIVE_MENINGOCOCCAL_INFECTION));
 		imiSeroTypingDependencies.put(PathogenTestDto.TEST_RESULT, Arrays.asList(PathogenTestResultType.POSITIVE));
@@ -74,23 +92,41 @@ public class ImiDiseaseSectionLayout implements DiseaseSectionLayout {
 				PathogenTestType.MULTILOCUS_SEQUENCE_TYPING,
 				PathogenTestType.SLIDE_AGGLUTINATION,
 				PathogenTestType.WHOLE_GENOME_SEQUENCING));
-		FieldHelper.setVisibleWhen(fieldGroup, PathogenTestDto.SERO_GROUP_SPECIFICATION, imiSeroTypingDependencies, true);
-		FieldHelper.setVisibleWhen(
+		Registration r1 = FieldHelper.setVisibleWhen(fieldGroup, PathogenTestDto.SERO_GROUP_SPECIFICATION, imiSeroTypingDependencies, true);
+		Registration r2 = FieldHelper.setVisibleWhen(
 			fieldGroup,
 			PathogenTestDto.SERO_GROUP_SPECIFICATION_TEXT,
 			PathogenTestDto.SERO_GROUP_SPECIFICATION,
 			SeroGroupSpecification.OTHER,
 			true);
+		visibilityRegistration = Registration.combine(r1, r2);
 
 		drugSusceptibilityField = new DrugSusceptibilityForm(
 			FieldVisibilityCheckers.getNoop(),
 			UiFieldAccessCheckers.getDefault(true, FacadeProvider.getConfigFacade().getCountryLocale()));
 		drugSusceptibilityField.setCaption(null);
 		fieldGroup.bind(drugSusceptibilityField, PathogenTestDto.DRUG_SUSCEPTIBILITY);
+		panel.addComponent(drugSusceptibilityField, PathogenTestDto.DRUG_SUSCEPTIBILITY);
 	}
 
 	@Override
 	public void unbindFields(FieldGroup fieldGroup, CustomLayout panel) {
+		if (visibilityRegistration != null) {
+			visibilityRegistration.remove();
+			visibilityRegistration = null;
+		}
+
+		for (String id : FIELD_IDS) {
+			if (PathogenTestDto.DRUG_SUSCEPTIBILITY.equals(id)) {
+				continue;
+			}
+			Field<?> field = fieldGroup.getField(id);
+			if (field != null) {
+				fieldGroup.unbind(field);
+				panel.removeComponent(field);
+			}
+		}
+
 		if (drugSusceptibilityField != null) {
 			fieldGroup.unbind(drugSusceptibilityField);
 			panel.removeComponent(drugSusceptibilityField);
@@ -116,4 +152,5 @@ public class ImiDiseaseSectionLayout implements DiseaseSectionLayout {
 			testResultField.setValue(PathogenTestResultType.POSITIVE);
 		}
 	}
+
 }

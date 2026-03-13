@@ -22,12 +22,14 @@ import java.util.Collection;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
+import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 
 /**
@@ -65,17 +67,23 @@ public class TubeFieldHandler {
 	private void addTubePair(String numericId, String gt10Id) {
 		TextField numericField = fieldGroup.buildAndBind(numericId, (Object) numericId, TextField.class);
 		numericField.setId(numericId);
+		numericField.setCaption(I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, numericId, numericField.getCaption()));
 		numericField.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, numericField.getCaption()));
+		CssStyles.style(numericField, CssStyles.CAPTION_ON_TOP);
+		numericField.setWidth("100%");
 		numericField.setVisible(false);
 		panel.addComponent(numericField, numericId);
 
 		NullableOptionGroup gt10Field = fieldGroup.buildAndBind(gt10Id, (Object) gt10Id, NullableOptionGroup.class);
 		gt10Field.setId(gt10Id);
+		gt10Field.setCaption(I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, gt10Id, gt10Field.getCaption()));
+		CssStyles.style(gt10Field, CssStyles.CAPTION_ON_TOP);
+		gt10Field.setWidth("100%");
 		gt10Field.setVisible(false);
 		panel.addComponent(gt10Field, gt10Id);
 
 		// numeric → auto-check GT10 when value > 10
-		numericField.addValueChangeListener(e -> handleNumericChange((String) e.getProperty().getValue(), numericId, gt10Id));
+		numericField.addValueChangeListener(e -> handleNumericChange(numericId, gt10Id));
 
 		// GT10 checkbox → clear numeric if value contradicts the checkbox
 		gt10Field.addValueChangeListener(e -> handleGt10Change(e, numericId));
@@ -94,21 +102,21 @@ public class TubeFieldHandler {
 		}
 	}
 
-	private void handleNumericChange(String val, String numericId, String gt10Id) {
+	private void handleNumericChange(String numericId, String gt10Id) {
 		NullableOptionGroup gt10 = (NullableOptionGroup) fieldGroup.getField(gt10Id);
 		if (gt10 == null) {
 			return;
 		}
-		if (val == null) {
+		TextField numericField = (TextField) fieldGroup.getField(numericId);
+		if (numericField == null) {
+			return;
+		}
+		Float converted = getConvertedFloat(numericField);
+		if (converted == null) {
 			gt10.select(false);
 			return;
 		}
-		try {
-			gt10.select(Float.parseFloat(val) > 10);
-		} catch (NumberFormatException e) {
-			fieldGroup.getField(numericId).clear();
-			gt10.select(false);
-		}
+		gt10.select(converted > 10);
 	}
 
 	private void handleGt10Change(Property.ValueChangeEvent e, String numericId) {
@@ -116,24 +124,28 @@ public class TubeFieldHandler {
 			? ((Collection<?>) e.getProperty().getValue()).stream().findFirst().orElse(null)
 			: e.getProperty().getValue();
 
-		Field<?> numericField = fieldGroup.getField(numericId);
+		TextField numericField = (TextField) fieldGroup.getField(numericId);
 		if (numericField == null) {
 			return;
 		}
-		String numVal = (String) numericField.getValue();
-		if (raw == null || numVal == null) {
+		Float converted = getConvertedFloat(numericField);
+		if (raw == null || converted == null) {
 			return;
 		}
 		boolean checked = Boolean.TRUE.equals(raw);
-		try {
-			float f = Float.parseFloat(numVal);
-			if (checked && f <= 10) {
-				numericField.clear();
-			} else if (!checked && f > 10) {
-				numericField.clear();
-			}
-		} catch (NumberFormatException ex) {
+		if (checked && converted <= 10) {
 			numericField.clear();
+		} else if (!checked && converted > 10) {
+			numericField.clear();
+		}
+	}
+
+	/** Locale-aware conversion; returns null for empty or unparseable input (e.g. trailing comma). */
+	private static Float getConvertedFloat(TextField field) {
+		try {
+			return (Float) field.getConvertedValue();
+		} catch (Converter.ConversionException e) {
+			return null;
 		}
 	}
 }

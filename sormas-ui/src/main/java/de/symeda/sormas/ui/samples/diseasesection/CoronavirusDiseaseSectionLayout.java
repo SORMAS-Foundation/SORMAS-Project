@@ -22,7 +22,6 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +34,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.Registration;
 
 /**
  * Disease section for CORONAVIRUS: owns PCR_TEST_SPECIFICATION field and wires its visibility.
@@ -47,13 +47,13 @@ public class CoronavirusDiseaseSectionLayout implements DiseaseSectionLayout {
 
 	private static final Collection<String> FIELD_IDS = Collections.singletonList(PathogenTestDto.PCR_TEST_SPECIFICATION);
 
-	static final Map<Object, List<Object>> PCR_TEST_SPECIFICATION_VISIBILITY_CONDITIONS = Collections.unmodifiableMap(new HashMap<>() {
+	private Registration visibilityRegistration;
 
-		{
-			put(PathogenTestDto.TESTED_DISEASE, Collections.unmodifiableList(Arrays.asList(Disease.CORONAVIRUS)));
-			put(PathogenTestDto.TEST_TYPE, Collections.unmodifiableList(Arrays.asList(PathogenTestType.PCR_RT_PCR)));
-		}
-	});
+	static final Map<Object, List<Object>> PCR_TEST_SPECIFICATION_VISIBILITY_CONDITIONS = DiseaseSectionLayout.conditionsOf(
+		PathogenTestDto.TESTED_DISEASE,
+		Arrays.asList(Disease.CORONAVIRUS),
+		PathogenTestDto.TEST_TYPE,
+		Arrays.asList(PathogenTestType.PCR_RT_PCR));
 
 	@Override
 	public String getHtmlLayout() {
@@ -67,17 +67,19 @@ public class CoronavirusDiseaseSectionLayout implements DiseaseSectionLayout {
 
 	@Override
 	public void bindFields(FieldGroup fieldGroup, CustomLayout panel, Disease disease, PathogenTestFormConfig config) {
-		ComboBox pcrTestSpecification =
-			fieldGroup.buildAndBind(PathogenTestDto.PCR_TEST_SPECIFICATION, (Object) PathogenTestDto.PCR_TEST_SPECIFICATION, ComboBox.class);
-		pcrTestSpecification.setId(PathogenTestDto.PCR_TEST_SPECIFICATION);
+		ComboBox pcrTestSpecification = buildAndAdd(fieldGroup, panel, PathogenTestDto.PCR_TEST_SPECIFICATION, ComboBox.class);
 		pcrTestSpecification.setVisible(false);
-		panel.addComponent(pcrTestSpecification, PathogenTestDto.PCR_TEST_SPECIFICATION);
 
-		FieldHelper.setVisibleWhen(fieldGroup, PathogenTestDto.PCR_TEST_SPECIFICATION, PCR_TEST_SPECIFICATION_VISIBILITY_CONDITIONS, true);
+		visibilityRegistration =
+			FieldHelper.setVisibleWhen(fieldGroup, PathogenTestDto.PCR_TEST_SPECIFICATION, PCR_TEST_SPECIFICATION_VISIBILITY_CONDITIONS, true);
 	}
 
 	@Override
 	public void unbindFields(FieldGroup fieldGroup, CustomLayout panel) {
+		if (visibilityRegistration != null) {
+			visibilityRegistration.remove();
+			visibilityRegistration = null;
+		}
 		Field<?> field = fieldGroup.getField(PathogenTestDto.PCR_TEST_SPECIFICATION);
 		if (field != null) {
 			fieldGroup.unbind(field);
