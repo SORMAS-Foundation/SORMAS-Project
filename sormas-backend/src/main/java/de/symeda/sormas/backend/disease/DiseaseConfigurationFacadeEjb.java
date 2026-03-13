@@ -444,7 +444,7 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	}
 
 	public String getCaseDefinitionText(Disease disease) {
-		return service.getDiseaseConfiguration(disease).getCaseDefinitionText();
+		return service.getDiseaseConfiguration(disease) == null ? null : service.getDiseaseConfiguration(disease).getCaseDefinitionText();
 	}
 
 	@Override
