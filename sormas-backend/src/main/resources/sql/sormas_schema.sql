@@ -15362,4 +15362,9 @@ ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS otherneurolocalsymptomtext
 
 INSERT INTO schema_version (version_number, comment) VALUES (612, '#13797 - Malaria and Dengue requirements');
 
+ALTER TABLE externalmessage ALTER COLUMN casecomments TYPE text;
+ALTER TABLE externalmessage_history ALTER COLUMN casecomments TYPE text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (613, '#13879 - Increased length of case comments');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
