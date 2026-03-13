@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.person.PersonReferenceDto;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -54,6 +53,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.themes.ValoTheme;
@@ -70,6 +70,7 @@ import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.CaseClassificationCalculationMode;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
@@ -115,6 +116,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
@@ -1361,15 +1363,26 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		// Automatic case classification rules button - invisible for other diseases
 		DiseaseClassificationCriteriaDto diseaseClassificationCriteria = FacadeProvider.getCaseClassificationFacade().getByDisease(disease);
-		if (diseaseClassificationExists()) {
-			Button classificationRulesButton = ButtonHelper.createIconButton(
-				Captions.info,
-				VaadinIcons.INFO_CIRCLE,
-				e -> ControllerProvider.getCaseController().openClassificationRulesPopup(diseaseClassificationCriteria),
-				ValoTheme.BUTTON_PRIMARY,
-				FORCE_CAPTION);
 
-			getContent().addComponent(classificationRulesButton, CLASSIFICATION_RULES_LOC);
+		CaseClassificationCalculationMode caseClassificationCalculationMode =
+			FacadeProvider.getConfigFacade().getCaseClassificationCalculationMode(disease);
+		// If case classification is not disabled for the disease.
+		if (CaseClassificationCalculationMode.DISABLED != caseClassificationCalculationMode) {
+			// If automatic classification is enabled for the disease and it has the classification criteria.
+			if (FacadeProvider.getConfigFacade().getCaseClassificationCalculationMode(disease).isAutomaticEnabled()
+				&& diseaseClassificationExists()) {
+				Button classificationRulesButton = ButtonHelper.createIconButton(
+					Captions.info,
+					VaadinIcons.INFO_CIRCLE,
+					e -> ControllerProvider.getCaseController().openClassificationRulesPopup(diseaseClassificationCriteria),
+					ValoTheme.BUTTON_PRIMARY,
+					FORCE_CAPTION);
+
+				getContent().addComponent(classificationRulesButton, CLASSIFICATION_RULES_LOC);
+			} else {
+				// If Manual classification is enabled for the disease.
+				getManualCaseDefinition();
+			}
 		}
 
 		addField(CaseDataDto.DELETION_REASON);
@@ -1523,6 +1536,37 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			CaseDataDto.CLINICIAN_PHONE,
 			CaseDataDto.CLINICIAN_EMAIL,
 			CaseDataDto.ADDITIONAL_DETAILS);
+	}
+
+	/**
+	 * If a manual case definition is configured in the properties files and has the case definition in the disease configuration,
+	 * then display the button with case definition.
+	 */
+	private void getManualCaseDefinition() {
+		// If a disease has caseDefinitionText, it should display; otherwise criteria will display as it is.
+		String caseDefinitionText = FacadeProvider.getDiseaseConfigurationFacade().getCaseDefinitionText(disease);
+		if (caseDefinitionText == null) {
+			return;
+		}
+
+		Button caseDefinitionButton = ButtonHelper.createIconButton(Captions.info, VaadinIcons.INFO_CIRCLE, e -> {
+			VerticalLayout classificationRulesLayout = new VerticalLayout();
+			classificationRulesLayout.setMargin(true);
+			Label suspectContent = new Label();
+			suspectContent.setContentMode(ContentMode.HTML);
+			suspectContent.setWidth(100, Unit.PERCENTAGE);
+			suspectContent.setValue(caseDefinitionText);
+			classificationRulesLayout.addComponent(suspectContent);
+			Window popupWindow = VaadinUiUtil.showPopupWindow(classificationRulesLayout);
+			popupWindow.addCloseListener(e1 -> {
+				popupWindow.close();
+			});
+			popupWindow.setWidth(860, Unit.PIXELS);
+			popupWindow.setHeight(80, Unit.PERCENTAGE);
+			popupWindow.setCaption(I18nProperties.getString(Strings.classificationRulesFor) + " " + disease);
+		}, ValoTheme.BUTTON_PRIMARY, FORCE_CAPTION);
+
+		getContent().addComponent(caseDefinitionButton, CLASSIFICATION_RULES_LOC);
 	}
 
 	private void hideJurisdictionFields() {
