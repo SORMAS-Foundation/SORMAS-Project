@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -1109,7 +1110,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				disease,
 				FieldVisibilityCheckers.withDisease(disease)
 					.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
-				UiFieldAccessCheckers.getDefault(true, FacadeProvider.getConfigFacade().getCountryLocale())))
+				UiFieldAccessCheckers.getDefault(true, FacadeProvider.getConfigFacade().getCountryLocale()),
+				new PersonReferenceDto(person.getUuid())))
 			.setCaption(null);
 
 		//diagnosis criteria

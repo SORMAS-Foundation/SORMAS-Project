@@ -76,7 +76,7 @@ public class TuberculosisAutomaticLabMessageProcessorTest extends AbstractBeanTe
         });
 
         // set the threshold
-        creator.updateDiseaseConfiguration(Disease.LATENT_TUBERCULOSIS, true, true, true, true, null, 30);
+        creator.updateDiseaseConfiguration(Disease.LATENT_TUBERCULOSIS, true, true, true, true, null, 30, false, 0, 0);
         getBean(DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal.class).loadData();
 
         ProcessingResult<ExternalMessageProcessingResult> result = runFlow(externalMessage);
@@ -102,7 +102,7 @@ public class TuberculosisAutomaticLabMessageProcessorTest extends AbstractBeanTe
         });
 
         // set the threshold
-        creator.updateDiseaseConfiguration(Disease.LATENT_TUBERCULOSIS, true, true, true, true, null, 30);
+        creator.updateDiseaseConfiguration(Disease.LATENT_TUBERCULOSIS, true, true, true, true, null, 30, false, 0, 0);
         getBean(DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal.class).loadData();
 
         ProcessingResult<ExternalMessageProcessingResult> result = runFlow(externalMessage);
@@ -163,7 +163,7 @@ public class TuberculosisAutomaticLabMessageProcessorTest extends AbstractBeanTe
         pathogenTest.setTestResult(PathogenTestResultType.NEGATIVE);
 
         // set the threshold
-        creator.updateDiseaseConfiguration(Disease.LATENT_TUBERCULOSIS, true, true, true, true, null, 30);
+        creator.updateDiseaseConfiguration(Disease.LATENT_TUBERCULOSIS, true, true, true, true, null, 30, false, 0, 0);
         getBean(DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal.class).loadData();
 
         ProcessingResult<ExternalMessageProcessingResult> result = runFlow(externalMessage);
@@ -234,7 +234,7 @@ public class TuberculosisAutomaticLabMessageProcessorTest extends AbstractBeanTe
         pathogenTest.setTestResult(PathogenTestResultType.POSITIVE);
 
         // set the threshold
-        creator.updateDiseaseConfiguration(Disease.LATENT_TUBERCULOSIS, true, true, true, true, null, 30);
+        creator.updateDiseaseConfiguration(Disease.LATENT_TUBERCULOSIS, true, true, true, true, null, 30, false, 0, 0);
         getBean(DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal.class).loadData();
 
         ProcessingResult<ExternalMessageProcessingResult> result = runFlow(externalMessage);
@@ -306,7 +306,7 @@ public class TuberculosisAutomaticLabMessageProcessorTest extends AbstractBeanTe
         pathogenTest.setTestResult(PathogenTestResultType.NEGATIVE);
 
         // set the threshold
-        creator.updateDiseaseConfiguration(Disease.LATENT_TUBERCULOSIS, true, true, true, true, null, 30);
+        creator.updateDiseaseConfiguration(Disease.LATENT_TUBERCULOSIS, true, true, true, true, null, 30, false, 0, 0);
         getBean(DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal.class).loadData();
 
         ProcessingResult<ExternalMessageProcessingResult> result = runFlow(externalMessage);
@@ -362,10 +362,10 @@ public class TuberculosisAutomaticLabMessageProcessorTest extends AbstractBeanTe
         pathogenTest.setTestResult(PathogenTestResultType.POSITIVE);
 
         // set the threshold
-        creator.updateDiseaseConfiguration(Disease.LATENT_TUBERCULOSIS, true, true, true, true, null, 30);
+        creator.updateDiseaseConfiguration(Disease.LATENT_TUBERCULOSIS, true, true, true, true, null, 30, false, 0, 0);
 
         // We need to set the threshold to 30 days because the LT samples should be added to the TUBE case, so both need to have the same threshold
-        creator.updateDiseaseConfiguration(Disease.TUBERCULOSIS, true, true, true, true, null, 30);
+        creator.updateDiseaseConfiguration(Disease.TUBERCULOSIS, true, true, true, true, null, 30, true, 30, 730);
         getBean(DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal.class).loadData();
 
         ProcessingResult<ExternalMessageProcessingResult> result = runFlow(externalMessage);

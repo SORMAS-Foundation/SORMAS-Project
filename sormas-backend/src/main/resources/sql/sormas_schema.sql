@@ -15266,4 +15266,100 @@ ALTER TABLE externalmessage_history ADD COLUMN additionalPersonAddresses jsonb;
 
 INSERT INTO schema_version (version_number, comment) VALUES (611, '#13625 - Multiple person contacts and addresses');
 
+
+
+-- 2026-02-04 - Malaria and Dengue requirements #13797
+ALTER TABLE diseaseconfiguration ADD COLUMN IF NOT EXISTS incubationPeriodEnabled boolean default false;
+ALTER TABLE diseaseconfiguration ADD COLUMN IF NOT EXISTS minIncubationPeriod integer;
+ALTER TABLE diseaseconfiguration ADD COLUMN IF NOT EXISTS maxIncubationPeriod integer;
+ALTER TABLE diseaseconfiguration ADD COLUMN IF NOT EXISTS caseDefinitionText text;
+
+ALTER TABLE diseaseconfiguration_history ADD COLUMN IF NOT EXISTS incubationPeriodEnabled boolean default false;
+ALTER TABLE diseaseconfiguration_history ADD COLUMN IF NOT EXISTS minIncubationPeriod integer;
+ALTER TABLE diseaseconfiguration_history ADD COLUMN IF NOT EXISTS maxIncubationPeriod integer;
+ALTER TABLE diseaseconfiguration_history ADD COLUMN IF NOT EXISTS caseDefinitionText text;
+
+-- Work in an airport - applicable for MALARIA and DENGUE
+
+INSERT INTO customizableenumvalue (id, uuid, changedate, creationdate, datatype, value, caption, diseases, defaultvalue, properties)
+VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'OCCUPATION_TYPE', 'WORK_IN_AIRPORT', 'Work in an airport', 'DENGUE,MALARIA',true,jsonb_build_object('hasDetails', false));
+
+-- Livestock farmer - applicable only for DENGUE
+INSERT INTO customizableenumvalue (id, uuid, changedate, creationdate, datatype, value, caption, diseases, defaultvalue,properties)
+VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'OCCUPATION_TYPE', 'LIVESTOCK_FARMER', 'Livestock farmer', 'DENGUE',true,jsonb_build_object('hasDetails', false));
+
+-- Veterinarian - applicable only for DENGUE
+INSERT INTO customizableenumvalue (id, uuid, changedate, creationdate, datatype, value, caption, diseases, defaultvalue,properties)
+VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'OCCUPATION_TYPE', 'VETERINARIAN', 'Veterinarian', 'DENGUE', true,jsonb_build_object('hasDetails', false));
+
+-- healthcondition table
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS immunodeficiencyOtherThanHivText varchar(255);
+ALTER TABLE healthconditions ADD COLUMN IF NOT exists exposedToMosquitoBorneViruses varchar(255);
+ALTER TABLE healthconditions ADD COLUMN IF NOT exists exposedToMosquitoBorneVirusesText varchar(255);
+ALTER TABLE healthconditions ADD COLUMN IF NOT exists vaccinatedAgainstMosquitoBorneViruses varchar(255);
+
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS immunodeficiencyOtherThanHivText varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT exists exposedToMosquitoBorneViruses varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT exists exposedToMosquitoBorneVirusesText varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT exists vaccinatedAgainstMosquitoBorneViruses varchar(255);
+-- Add new symptom columns
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS clammyskin character varying(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS coldskin character varying(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS encephalitis character varying(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS guillainbarresyndrome character varying(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS confusion character varying(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS convulsions character varying(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS persistentvomiting character varying(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS restlessness character varying(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS acutebleeding character varying(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS severeorganimpairment character varying(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS plasmaleakagesign character varying(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS polydipsia character varying(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS syndromicflu character varying(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS anemia character varying(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS alteredlevelofconsciousness character varying(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS severeanemia character varying(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS metabolicacidosis character varying(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS acutekidneyfailure character varying(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS offsetdate timestamp;
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS clinicalmanifestation character varying(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS clinicalmanifestationtext character varying(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS lethargy character varying(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS cerebralmalaria character varying(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS scanthemorrhage character varying(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS disseminatedintravascularcoagulation character varying(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS otherneurolocalsymptom character varying(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS otherneurolocalsymptomtext varchar(255);
+
+-- Add the same columns to symptoms_history table
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS clammyskin character varying(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS coldskin character varying(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS encephalitis character varying(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS guillainbarresyndrome character varying(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS confusion character varying(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS convulsions character varying(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS persistentvomiting character varying(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS restlessness character varying(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS acutebleeding character varying(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS severeorganimpairment character varying(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS plasmaleakagesign character varying(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS polydipsia character varying(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS syndromicflu character varying(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS anemia character varying(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS alteredlevelofconsciousness character varying(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS severeanemia character varying(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS metabolicacidosis character varying(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS acutekidneyfailure character varying(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS offsetdate timestamp;
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS clinicalmanifestation character varying(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS clinicalmanifestationtext character varying(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS lethargy character varying(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS cerebralmalaria character varying(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS scanthemorrhage character varying(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS disseminatedintravascularcoagulation character varying(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS otherneurolocalsymptom character varying(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS otherneurolocalsymptomtext varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (612, '#13797 - Malaria and Dengue requirements');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

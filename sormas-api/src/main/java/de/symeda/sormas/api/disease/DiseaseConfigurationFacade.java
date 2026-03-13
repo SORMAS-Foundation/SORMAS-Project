@@ -48,6 +48,14 @@ public interface DiseaseConfigurationFacade {
 
 	int getEventParticipantFollowUpDuration(Disease disease);
 
+	boolean isIncubationPeriodEnabled(Disease disease);
+
+	int getMaxIncubationPeriod(Disease disease);
+
+	int getMinIncubationPeriod(Disease disease);
+
+	String getCaseDefinitionText(Disease disease);
+
 	Integer getAutomaticSampleAssignmentThreshold(Disease disease);
 
 	void saveDiseaseConfiguration(DiseaseConfigurationDto configuration);
