@@ -18,6 +18,8 @@
 package de.symeda.sormas.ui.samples.diseasesection;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.v7.data.Property;
@@ -42,6 +44,8 @@ public class TubeFieldHandler {
 
 	private final FieldGroup fieldGroup;
 	private final CustomLayout panel;
+	private final Map<String, Property.ValueChangeListener> numericListeners = new HashMap<>();
+	private final Map<String, Property.ValueChangeListener> gt10Listeners = new HashMap<>();
 
 	public TubeFieldHandler(FieldGroup fieldGroup, CustomLayout panel) {
 		this.fieldGroup = fieldGroup;
@@ -82,21 +86,31 @@ public class TubeFieldHandler {
 		gt10Field.setVisible(false);
 		panel.addComponent(gt10Field, gt10Id);
 
-		// numeric → auto-check GT10 when value > 10
-		numericField.addValueChangeListener(e -> handleNumericChange(numericId, gt10Id));
+		Property.ValueChangeListener numericListener = e -> handleNumericChange(numericId, gt10Id);
+		numericField.addValueChangeListener(numericListener);
+		numericListeners.put(numericId, numericListener);
 
-		// GT10 checkbox → clear numeric if value contradicts the checkbox
-		gt10Field.addValueChangeListener(e -> handleGt10Change(e, numericId));
+		Property.ValueChangeListener gt10Listener = e -> handleGt10Change(e, numericId);
+		gt10Field.addValueChangeListener(gt10Listener);
+		gt10Listeners.put(gt10Id, gt10Listener);
 	}
 
 	private void detachTubePair(String numericId, String gt10Id) {
 		Field<?> numericField = fieldGroup.getField(numericId);
 		if (numericField != null) {
+			Property.ValueChangeListener listener = numericListeners.remove(numericId);
+			if (listener != null) {
+				numericField.removeValueChangeListener(listener);
+			}
 			fieldGroup.unbind(numericField);
 			panel.removeComponent(numericField);
 		}
 		Field<?> gt10Field = fieldGroup.getField(gt10Id);
 		if (gt10Field != null) {
+			Property.ValueChangeListener listener = gt10Listeners.remove(gt10Id);
+			if (listener != null) {
+				gt10Field.removeValueChangeListener(listener);
+			}
 			fieldGroup.unbind(gt10Field);
 			panel.removeComponent(gt10Field);
 		}
