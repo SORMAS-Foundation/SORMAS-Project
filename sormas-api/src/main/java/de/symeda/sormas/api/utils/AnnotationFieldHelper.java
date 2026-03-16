@@ -92,4 +92,38 @@ public final class AnnotationFieldHelper {
 	public static List<String> getFieldNamesWithPathogenTestTypes(Class<?> clazz, List<PathogenTestType> pathogenTestTypes) {
 		return getFieldNamesWithMatchingDiseaseAndTestAnnotations(clazz, null, pathogenTestTypes);
 	}
+
+	/**
+	 * Retrieves the names of the fields in the given class which are annotated with
+	 * 
+	 * @Diseases and @Complication annotations and contain the given disease.
+	 *
+	 * @param clazz
+	 *            the class to search in
+	 * @param disease
+	 *            the disease to search for
+	 * @return a list of field names that match the given criteria
+	 */
+	public static List<String> getComplicatedSymptomsWithDiseases(Class<?> clazz, Disease disease) {
+
+		if (clazz == null) {
+			return new ArrayList<>();
+		}
+
+		List<String> matchingFieldNames = new ArrayList<>();
+		Field[] fields = clazz.getDeclaredFields();
+
+		for (Field field : fields) {
+			boolean diseaseMatches = false;
+			Diseases diseasesAnnotation = field.getAnnotation(Diseases.class);
+			if (diseasesAnnotation != null && Arrays.asList(diseasesAnnotation.value()).contains(disease)) {
+				diseaseMatches = true;
+			}
+			Complication complicationAnnotation = field.getAnnotation(Complication.class);
+			if (diseaseMatches && complicationAnnotation != null && Arrays.asList(complicationAnnotation.value()).contains(disease)) {
+				matchingFieldNames.add(field.getName());
+			}
+		}
+		return matchingFieldNames;
+	}
 }

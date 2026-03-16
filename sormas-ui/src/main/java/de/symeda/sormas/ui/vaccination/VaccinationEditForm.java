@@ -29,6 +29,8 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.caze.VaccineManufacturer;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
@@ -94,22 +96,63 @@ public class VaccinationEditForm extends AbstractEditForm<VaccinationDto> {
 		Field vaccineManufacturer = addField(VaccinationDto.VACCINE_MANUFACTURER);
 		Field vaccineType = addField(VaccinationDto.VACCINE_TYPE);
 		addField(VaccinationDto.OTHER_VACCINE_MANUFACTURER);
+		Field atcCode = addField(VaccinationDto.VACCINE_ATC_CODE);
+		Field inn = addField(VaccinationDto.VACCINE_INN);
+		Field uniiCode = addField(VaccinationDto.VACCINE_UNII_CODE);
+
 		// Disable the manufacturer and type fields if the vaccine has its values.
 		vaccineName.addValueChangeListener(e -> {
 			Vaccine vaccine = (Vaccine) e.getProperty().getValue();
 			if (vaccine != null) {
-				vaccineManufacturer.setValue(vaccine.getManufacturer());
-				vaccineType.setValue(vaccine.getVaccineType());
-				vaccineType.setEnabled(StringUtils.isBlank(vaccine.getVaccineType()));
+				vaccineManufacturer.setValue(vaccine.getManufacturer().isEmpty() ? null : vaccine.getManufacturer().get());
 
+				// VaccineType
+				if (vaccine.getVaccineType().isPresent()) {
+					String vacTypeVal = vaccine.getVaccineType().get();
+					vaccineType
+						.setValue(StringUtils.isBlank(vacTypeVal) ? I18nProperties.getString(Strings.Vaccine_vaccineType_notAvailable) : vacTypeVal);
+					vaccineType.setEnabled(false);
+				} else {
+					vaccineType.setEnabled(true);
+					vaccineType.setValue(null);
+				}
+				// AtcCode
+				if (vaccine.getAtcCode().isPresent()) {
+					String atcCodeVal = vaccine.getAtcCode().get();
+					atcCode.setValue(StringUtils.isBlank(atcCodeVal) ? I18nProperties.getString(Strings.Vaccine_atcCode_notAvailable) : atcCodeVal);
+					atcCode.setEnabled(false);
+				} else {
+					atcCode.setEnabled(true);
+					atcCode.setValue(null);
+				}
+				// inn
+				if (vaccine.getInn().isPresent()) {
+					String innVal = vaccine.getInn().get();
+					inn.setValue(StringUtils.isBlank(innVal) ? I18nProperties.getString(Strings.Vaccine_inn_notAvailable) : innVal);
+					inn.setEnabled(false);
+				} else {
+					inn.setEnabled(true);
+					inn.setValue(null);
+				}
+				// Uniicode
+				if (vaccine.getUniiCode().isPresent()) {
+					String uniiCodeVal = vaccine.getUniiCode().get();
+					uniiCode
+						.setValue((StringUtils.isBlank(uniiCodeVal)) ? I18nProperties.getString(Strings.Vaccine_uniiCode_notAvailable) : uniiCodeVal);
+					uniiCode.setEnabled(false);
+				} else {
+					uniiCode.setEnabled(true);
+					uniiCode.setValue(null);
+				}
+
+			} else {
+				FieldHelper.setClearEnabled(true, vaccineManufacturer, vaccineType, atcCode, inn, uniiCode);
 			}
 		});
 		addField(VaccinationDto.VACCINATION_INFO_SOURCE);
 		addField(VaccinationDto.VACCINE_DOSE);
-		addField(VaccinationDto.VACCINE_INN);
-		addField(VaccinationDto.VACCINE_UNII_CODE);
+
 		addField(VaccinationDto.VACCINE_BATCH_NUMBER);
-		addField(VaccinationDto.VACCINE_ATC_CODE);
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),

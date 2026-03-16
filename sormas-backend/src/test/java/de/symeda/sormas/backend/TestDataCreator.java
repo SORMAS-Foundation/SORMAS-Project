@@ -2073,8 +2073,21 @@ public class TestDataCreator {
 		Boolean primary,
 		Boolean caseSurveillance,
 		Boolean aggregateReporting,
-		List<String> ageGroups) {
-		updateDiseaseConfiguration(disease, active, primary, caseSurveillance, aggregateReporting, ageGroups, null);
+		List<String> ageGroups,
+		Boolean incubationPeriodEnabled,
+		int minIncubationPeriod,
+		int maxIncubationPeriod) {
+		updateDiseaseConfiguration(
+			disease,
+			active,
+			primary,
+			caseSurveillance,
+			aggregateReporting,
+			ageGroups,
+			null,
+			incubationPeriodEnabled,
+			minIncubationPeriod,
+			maxIncubationPeriod);
 	}
 
 	public void updateDiseaseConfiguration(
@@ -2084,7 +2097,10 @@ public class TestDataCreator {
 		Boolean caseSurveillance,
 		Boolean aggregateReporting,
 		List<String> ageGroups,
-		Integer automaticSampleAssignmentThreshold) {
+		Integer automaticSampleAssignmentThreshold,
+		Boolean incubationPeriodEnabled,
+		int minIncubationPeriod,
+		int maxIncubationPeriod) {
 		DiseaseConfigurationDto config =
 			DiseaseConfigurationFacadeEjbLocal.toDto(beanTest.getDiseaseConfigurationService().getDiseaseConfiguration(disease));
 		config.setActive(active);
@@ -2092,6 +2108,9 @@ public class TestDataCreator {
 		config.setCaseSurveillanceEnabled(caseSurveillance);
 		config.setAggregateReportingEnabled(aggregateReporting);
 		config.setAgeGroups(ageGroups);
+		config.setMaxIncubationPeriod(maxIncubationPeriod);
+		config.setMinIncubationPeriod(minIncubationPeriod);
+		config.setIncubationPeriodEnabled(incubationPeriodEnabled);
 		config.setAutomaticSampleAssignmentThreshold(automaticSampleAssignmentThreshold);
 		beanTest.getDiseaseConfigurationFacade().saveDiseaseConfiguration(config);
 	}

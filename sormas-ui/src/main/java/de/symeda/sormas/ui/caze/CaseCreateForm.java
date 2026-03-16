@@ -131,8 +131,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
         + fluidRow(
         fluidColumnLoc(6, 0, CaseDataDto.DISEASE),
         fluidColumn(6, 0,
-            locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE, CaseDataDto.DENGUE_FEVER_TYPE,
-                CaseDataDto.RABIES_TYPE)))
+            locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE, CaseDataDto.RABIES_TYPE)))
         + fluidRowLocs(CaseDataDto.DISEASE_VARIANT, CaseDataDto.DISEASE_VARIANT_DETAILS)
 		+ fluidRowLocs(CaseDataDto.RE_INFECTION)
         + fluidRowLocs(RESPONSIBLE_JURISDICTION_HEADING_LOC)

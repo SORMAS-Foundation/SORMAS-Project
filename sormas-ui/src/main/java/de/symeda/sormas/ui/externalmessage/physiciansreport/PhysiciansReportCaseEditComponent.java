@@ -167,27 +167,19 @@ public class PhysiciansReportCaseEditComponent extends CommitDiscardWrapperCompo
 			caseDataForm.getWrappedComponent().getField(CaseDataDto.DISEASE).setEnabled(false);
 			return caseDataForm;
 		}));
-		configs.add(
-			TabConfig.of(
-				Captions.CaseData_person,
-				() -> {
-					PersonDto person = FacadeProvider.getPersonFacade().getByUuid(caze.getPerson().getUuid());
-					return ControllerProvider.getPersonController()
-						.getPersonEditComponent(
-							PersonContext.CASE,
-							person,
-							caze.getDisease(),
-							caze.getDiseaseDetails(),
-							UserRight.PERSON_EDIT,
-							viewMode);
-				}));
+		configs.add(TabConfig.of(Captions.CaseData_person, () -> {
+			PersonDto person = FacadeProvider.getPersonFacade().getByUuid(caze.getPerson().getUuid());
+			return ControllerProvider.getPersonController()
+				.getPersonEditComponent(PersonContext.CASE, person, caze.getDisease(), caze.getDiseaseDetails(), UserRight.PERSON_EDIT, viewMode);
+		}));
 		configs.add(
 			TabConfig.of(
 				Captions.CaseData_hospitalization,
 				() -> ControllerProvider.getCaseController().getHospitalizationComponent(caze.getUuid(), viewMode, true)));
 		configs.add(
-			TabConfig
-				.of(Captions.CaseData_symptoms, () -> ControllerProvider.getCaseController().getSymptomsEditComponent(caze.getUuid(), viewMode)));
+			TabConfig.of(
+				Captions.CaseData_symptoms,
+				() -> ControllerProvider.getCaseController().getSymptomsEditComponent(caze.getUuid(), viewMode, null)));
 		configs.add(TabConfig.of(Captions.CaseData_epiData, () -> ControllerProvider.getCaseController().getEpiDataComponent(caze.getUuid(), null)));
 		configs.add(TabConfig.of(Captions.physiciansReportCaseImmunizations, () -> new PhysiciansReportCaseImmunizationsComponent(caze)));
 

@@ -28,6 +28,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import de.symeda.sormas.api.symptoms.ClinicalManifestation;
 import de.symeda.sormas.api.symptoms.ClinicalPresentationStatus;
 import de.symeda.sormas.api.symptoms.CongenitalHeartDiseaseType;
 import de.symeda.sormas.api.symptoms.DiagnosisType;
@@ -281,6 +282,34 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState reoccurrence;
 	private SymptomState overnightStayRequired;
 	private SymptomState bloating;
+	// Malaria and Dengue-specific symptoms
+	private SymptomState clammySkin;
+	private SymptomState coldSkin;
+	private SymptomState encephalitis;
+	private SymptomState guillainBarreSyndrome;
+	private SymptomState lethargy;
+	private SymptomState confusion;
+	private SymptomState convulsions;
+	private SymptomState persistentVomiting;
+	private SymptomState restlessness;
+	private SymptomState acuteBleeding;
+	private SymptomState severeOrganImpairment;
+	private SymptomState plasmaLeakageSign;
+	private SymptomState polydipsia;
+	private SymptomState syndromicFlu;
+	private SymptomState anemia;
+	private SymptomState alteredLevelOfConsciousness;
+	private SymptomState severeAnemia;
+	private SymptomState metabolicAcidosis;
+	private SymptomState acuteKidneyFailure;
+	private Date offsetDate;
+	private ClinicalManifestation clinicalManifestation;
+	private String clinicalManifestationText;
+	private SymptomState cerebralMalaria;
+	private SymptomState scantHemorrhage;
+	private YesNoUnknown otherNeurolocalSymptom;
+	private String otherNeurolocalSymptomText;
+	private SymptomState disseminatedIntraVascularCoagulation;
 
 	// when adding new fields make sure to extend toHumanString
 
@@ -291,6 +320,15 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setOnsetDate(Date onsetDate) {
 		this.onsetDate = onsetDate;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getOffsetDate() {
+		return offsetDate;
+	}
+
+	public void setOffsetDate(Date offsetDate) {
+		this.offsetDate = offsetDate;
 	}
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
@@ -2185,5 +2223,238 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setBloating(SymptomState bloating) {
 		this.bloating = bloating;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getClammySkin() {
+		return clammySkin;
+	}
+
+	public void setClammySkin(SymptomState clammySkin) {
+		this.clammySkin = clammySkin;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getColdSkin() {
+		return coldSkin;
+	}
+
+	public void setColdSkin(SymptomState coldSkin) {
+		this.coldSkin = coldSkin;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getEncephalitis() {
+		return encephalitis;
+	}
+
+	public void setEncephalitis(SymptomState encephalitis) {
+		this.encephalitis = encephalitis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getGuillainBarreSyndrome() {
+		return guillainBarreSyndrome;
+	}
+
+	public void setGuillainBarreSyndrome(SymptomState guillainBarreSyndrome) {
+		this.guillainBarreSyndrome = guillainBarreSyndrome;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getLethargy() {
+		return lethargy;
+	}
+
+	public void setLethargy(SymptomState lethargy) {
+		this.lethargy = lethargy;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getConfusion() {
+		return confusion;
+	}
+
+	public void setConfusion(SymptomState confusion) {
+		this.confusion = confusion;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getConvulsions() {
+		return convulsions;
+	}
+
+	public void setConvulsions(SymptomState convulsions) {
+		this.convulsions = convulsions;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getPersistentVomiting() {
+		return persistentVomiting;
+	}
+
+	public void setPersistentVomiting(SymptomState persistentVomiting) {
+		this.persistentVomiting = persistentVomiting;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getRestlessness() {
+		return restlessness;
+	}
+
+	public void setRestlessness(SymptomState restlessness) {
+		this.restlessness = restlessness;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getAcuteBleeding() {
+		return acuteBleeding;
+	}
+
+	public void setAcuteBleeding(SymptomState acuteBleeding) {
+		this.acuteBleeding = acuteBleeding;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getSevereOrganImpairment() {
+		return severeOrganImpairment;
+	}
+
+	public void setSevereOrganImpairment(SymptomState severeOrganImpairment) {
+		this.severeOrganImpairment = severeOrganImpairment;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getPlasmaLeakageSign() {
+		return plasmaLeakageSign;
+	}
+
+	public void setPlasmaLeakageSign(SymptomState plasmaLeakageSign) {
+		this.plasmaLeakageSign = plasmaLeakageSign;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getPolydipsia() {
+		return polydipsia;
+	}
+
+	public void setPolydipsia(SymptomState polydipsia) {
+		this.polydipsia = polydipsia;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getSyndromicFlu() {
+		return syndromicFlu;
+	}
+
+	public void setSyndromicFlu(SymptomState syndromicFlu) {
+		this.syndromicFlu = syndromicFlu;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getAnemia() {
+		return anemia;
+	}
+
+	public void setAnemia(SymptomState anemia) {
+		this.anemia = anemia;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getAlteredLevelOfConsciousness() {
+		return alteredLevelOfConsciousness;
+	}
+
+	public void setAlteredLevelOfConsciousness(SymptomState alteredLevelOfConsciousness) {
+		this.alteredLevelOfConsciousness = alteredLevelOfConsciousness;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getSevereAnemia() {
+		return severeAnemia;
+	}
+
+	public void setSevereAnemia(SymptomState severeAnemia) {
+		this.severeAnemia = severeAnemia;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getMetabolicAcidosis() {
+		return metabolicAcidosis;
+	}
+
+	public void setMetabolicAcidosis(SymptomState metabolicAcidosis) {
+		this.metabolicAcidosis = metabolicAcidosis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getAcuteKidneyFailure() {
+		return acuteKidneyFailure;
+	}
+
+	public void setAcuteKidneyFailure(SymptomState acuteKidneyFailure) {
+		this.acuteKidneyFailure = acuteKidneyFailure;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ClinicalManifestation getClinicalManifestation() {
+		return clinicalManifestation;
+	}
+
+	public void setClinicalManifestation(ClinicalManifestation clinicalManifestation) {
+		this.clinicalManifestation = clinicalManifestation;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getClinicalManifestationText() {
+		return clinicalManifestationText;
+	}
+
+	public void setClinicalManifestationText(String clinicalManifestationText) {
+		this.clinicalManifestationText = clinicalManifestationText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getCerebralMalaria() {
+		return cerebralMalaria;
+	}
+
+	public void setCerebralMalaria(SymptomState cerebralMalaria) {
+		this.cerebralMalaria = cerebralMalaria;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getScantHemorrhage() {
+		return scantHemorrhage;
+	}
+
+	public void setScantHemorrhage(SymptomState scantHemorrhage) {
+		this.scantHemorrhage = scantHemorrhage;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getOtherNeurolocalSymptom() {
+		return otherNeurolocalSymptom;
+	}
+
+	public void setOtherNeurolocalSymptom(YesNoUnknown otherNeurolocalSymptom) {
+		this.otherNeurolocalSymptom = otherNeurolocalSymptom;
+	}
+
+	public String getOtherNeurolocalSymptomText() {
+		return otherNeurolocalSymptomText;
+	}
+
+	public void setOtherNeurolocalSymptomText(String otherNeurolocalSymptomText) {
+		this.otherNeurolocalSymptomText = otherNeurolocalSymptomText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getDisseminatedIntraVascularCoagulation() {
+		return disseminatedIntraVascularCoagulation;
+	}
+
+	public void setDisseminatedIntraVascularCoagulation(SymptomState disseminatedIntraVascularCoagulation) {
+		this.disseminatedIntraVascularCoagulation = disseminatedIntraVascularCoagulation;
 	}
 }

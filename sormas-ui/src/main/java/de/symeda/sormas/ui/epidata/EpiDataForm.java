@@ -75,10 +75,13 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	private static final String LOC_ACTIVITY_AS_CASE_INVESTIGATION_HEADING = "locActivityAsCaseInvestigationHeading";
 	private static final String LOC_SOURCE_CASE_CONTACTS_HEADING = "locSourceCaseContactsHeading";
 	private static final String LOC_EPI_DATA_FIELDS_HINT = "locEpiDataFieldsHint";
+	private static final String LOC_EXP_PERIOD_HEADING = "locExpPeriodHeading";
 
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT = 
 			loc(LOC_EXPOSURE_INVESTIGATION_HEADING) +
+					fluidRowLocs(6,EpiDataDto.CASE_IMPORTED_STATUS,6,"") +
+			loc(LOC_EXP_PERIOD_HEADING) +
 			loc(EpiDataDto.EXPOSURE_DETAILS_KNOWN) +
 			loc(EpiDataDto.EXPOSURES) +
 			loc(LOC_CONCLUSION_HEADING) +

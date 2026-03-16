@@ -182,7 +182,7 @@ public class EpipulseSqlCteBuilder {
 			   "                                                                           pathogentest.testtype," +
 			   "                                                                           pathogentest.testresult" +
 			   "                                                                 ), '#'" +
-			   "                                                                 ORDER BY pathogentest.testdatetime DESC) AS all_pathogen_tests_from_latest" +
+			   "                                                                 ORDER BY COALESCE(pathogentest.testdatetime, pathogentest.reportdate, pathogentest.creationdate) DESC) AS all_pathogen_tests_from_latest" +
 			   "                                               FROM pathogentest" +
 			   "                                                        INNER JOIN case_all_samples_from_latest" +
 			   "                                                                   ON pathogentest.sample_id = ANY" +
