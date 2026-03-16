@@ -319,30 +319,33 @@ public final class FieldHelper {
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
 	public static Registration setVisibleWhen(
 		final FieldGroup fieldGroup,
 		List<String> targetPropertyIds,
 		Map<?, ? extends List<?>> sourcePropertyIdsAndValues,
 		final boolean clearOnHidden) {
 
-		onValueChangedSetVisible(fieldGroup, targetPropertyIds, sourcePropertyIdsAndValues, clearOnHidden);
+		// Resolve target fields eagerly so the listener holds direct references
+		List<Field> targetFields =
+			targetPropertyIds.stream().map(id -> fieldGroup.getField(id)).filter(Objects::nonNull).collect(Collectors.toList());
+
+		onValueChangedSetVisible(fieldGroup, targetFields, sourcePropertyIdsAndValues, clearOnHidden);
 
 		// Map from source property ID to the listener added to it (only for fields present in the fieldGroup)
 		Map<Object, Property.ValueChangeListener> listenerMap = new HashMap<>();
 		sourcePropertyIdsAndValues.forEach((sourcePropertyId, sourceValues) -> {
-			@SuppressWarnings("rawtypes")
 			Field sourceField = fieldGroup.getField(sourcePropertyId);
 			if (sourceField == null) {
 				return; // source field not yet bound — skip listener registration
 			}
 			Property.ValueChangeListener listener =
-				event -> onValueChangedSetVisible(fieldGroup, targetPropertyIds, sourcePropertyIdsAndValues, clearOnHidden);
+				event -> onValueChangedSetVisible(fieldGroup, targetFields, sourcePropertyIdsAndValues, clearOnHidden);
 			sourceField.addValueChangeListener(listener);
 			listenerMap.put(sourcePropertyId, listener);
 		});
 
 		return () -> listenerMap.forEach((sourcePropertyId, listener) -> {
-			@SuppressWarnings("rawtypes")
 			Field sourceField = fieldGroup.getField(sourcePropertyId);
 			if (sourceField != null) {
 				sourceField.removeValueChangeListener(listener);
@@ -367,30 +370,19 @@ public final class FieldHelper {
 				.addValueChangeListener(event -> onValueChangedSetVisible(targetField, sourceFieldsAndValues, clearOnHidden)));
 	}
 
+	@SuppressWarnings("rawtypes")
 	private static void onValueChangedSetVisible(
 		final FieldGroup fieldGroup,
-		List<String> targetPropertyIds,
+		List<Field> targetFields,
 		Map<?, ? extends List<?>> sourcePropertyIdsAndValues,
 		final boolean clearOnHidden) {
 
-		//a workaround variable to be modified in the forEach lambda
-		boolean[] visibleArray = {
-			true };
-
-		sourcePropertyIdsAndValues.forEach((sourcePropertyId, sourceValues) -> {
-			@SuppressWarnings("rawtypes")
-			Field sourceField = fieldGroup.getField(sourcePropertyId);
-			if (sourceField == null || !sourceValues.contains(sourceField.getValue()))
-				visibleArray[0] = false;
+		boolean visible = sourcePropertyIdsAndValues.entrySet().stream().allMatch(entry -> {
+			Field sourceField = fieldGroup.getField(entry.getKey());
+			return sourceField != null && entry.getValue().contains(sourceField.getValue());
 		});
 
-		boolean visible = visibleArray[0];
-
-		for (Object targetPropertyId : targetPropertyIds) {
-			@SuppressWarnings("rawtypes")
-			Field targetField = fieldGroup.getField(targetPropertyId);
-			if (targetField == null)
-				continue; // defensive: field may have been unbound by a caller that did not remove its Registration
+		for (Field targetField : targetFields) {
 			targetField.setVisible(visible);
 			if (!visible && clearOnHidden && targetField.getValue() != null) {
 				targetField.clear();
