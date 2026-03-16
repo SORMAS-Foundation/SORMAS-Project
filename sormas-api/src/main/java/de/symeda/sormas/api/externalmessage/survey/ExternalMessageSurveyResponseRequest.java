@@ -61,6 +61,12 @@ public class ExternalMessageSurveyResponseRequest {
 	 */
 	private boolean allowFallbackValues = true;
 
+	/**
+	 * Could imagine that the cron in addition to the webhook could process elements twice.
+	 * Set false to force a refresh: data etc.
+	 */
+	private boolean skipIfAlreadyProcessed = true;
+
 	public String getToken() {
 		return token;
 	}
@@ -162,6 +168,15 @@ public class ExternalMessageSurveyResponseRequest {
 		return this;
 	}
 
+	public boolean isSkipIfAlreadyProcessed() {
+		return skipIfAlreadyProcessed;
+	}
+
+	public ExternalMessageSurveyResponseRequest setSkipIfAlreadyProcessed(boolean skipIfAlreadyProcessed) {
+		this.skipIfAlreadyProcessed = skipIfAlreadyProcessed;
+		return this;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (o == null || getClass() != o.getClass())
@@ -169,6 +184,7 @@ public class ExternalMessageSurveyResponseRequest {
 		ExternalMessageSurveyResponseRequest that = (ExternalMessageSurveyResponseRequest) o;
 		return patchedInCaseOfFailures == that.patchedInCaseOfFailures
 			&& allowFallbackValues == that.allowFallbackValues
+			&& skipIfAlreadyProcessed == that.skipIfAlreadyProcessed
 			&& Objects.equals(token, that.token)
 			&& Objects.equals(externalSurveyId, that.externalSurveyId)
 			&& Objects.equals(externalRespondentId, that.externalRespondentId)
@@ -193,7 +209,8 @@ public class ExternalMessageSurveyResponseRequest {
 			patchDictionary,
 			origin,
 			inputLanguages,
-			allowFallbackValues);
+			allowFallbackValues,
+			skipIfAlreadyProcessed);
 	}
 
 	@Override
@@ -202,6 +219,6 @@ public class ExternalMessageSurveyResponseRequest {
 			+ ", externalRespondentId='" + externalRespondentId + '\'' + ", responseReceivedDate=" + responseReceivedDate
 			+ ", patchedInCaseOfFailures=" + patchedInCaseOfFailures + ", replacementStrategy=" + replacementStrategy + ", emptyValueBehavior="
 			+ emptyValueBehavior + ", patchDictionary=" + patchDictionary + ", origin='" + origin + '\'' + ", inputLanguages=" + inputLanguages
-			+ ", allowFallbackValues=" + allowFallbackValues + '}';
+			+ ", allowFallbackValues=" + allowFallbackValues + ", skipIfAlreadyProcessed=" + skipIfAlreadyProcessed + '}';
 	}
 }

@@ -207,12 +207,25 @@ public class SurveyFacadeEjb implements SurveyFacade {
 
 	@Override
 	public List<SurveyReferenceDto> getAllAsReference() {
+		return getAllOrderedByName().map(SurveyFacadeEjb::toReferenceDto).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<SurveyDto> getAll() {
+		return getAllOrderedByName().map(this::toDto).collect(Collectors.toList());
+	}
+
+	private Stream<Survey> getAllOrderedByName() {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Survey> cq = cb.createQuery(Survey.class);
 		Root<Survey> from = cq.from(Survey.class);
 		cq.orderBy(cb.desc(from.get(Survey.NAME)));
 
-		return em.createQuery(cq).getResultList().stream().map(SurveyFacadeEjb::toReferenceDto).collect(Collectors.toList());
+		return getAsStream(cq);
+	}
+
+	private @org.jetbrains.annotations.NotNull Stream<Survey> getAsStream(CriteriaQuery<Survey> cq) {
+		return em.createQuery(cq).getResultList().stream();
 	}
 
 	@Override
@@ -229,7 +242,7 @@ public class SurveyFacadeEjb implements SurveyFacade {
 		cq.where(cb.equal(from.get(Survey.EXTERNAL_ID), externalId));
 		cq.orderBy(cb.desc(from.get(Survey.NAME)));
 
-		return em.createQuery(cq).getResultList().stream().map(this::toDto).collect(Collectors.toList());
+		return getAsStream(cq).map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override

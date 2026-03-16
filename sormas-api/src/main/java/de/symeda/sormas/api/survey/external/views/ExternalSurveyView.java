@@ -2,9 +2,12 @@ package de.symeda.sormas.api.survey.external.views;
 
 import java.util.List;
 
+import de.symeda.sormas.api.audit.AuditedClass;
+
 /**
  * View used to display an external Survey in an tool-agnostic manner.
  */
+@AuditedClass
 public class ExternalSurveyView {
 
 	private List<QuestionAnswersView> questionAnswersViews;

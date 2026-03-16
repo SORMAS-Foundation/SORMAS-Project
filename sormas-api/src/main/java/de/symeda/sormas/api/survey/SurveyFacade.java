@@ -70,4 +70,6 @@ public interface SurveyFacade {
 	DocumentVariables getDocumentVariables(SurveyReferenceDto surveyRef) throws DocumentTemplateException;
 
 	List<SurveyReferenceDto> getAllAsReference();
+
+	List<SurveyDto> getAll();
 }

@@ -20,7 +20,7 @@ public class ExternalSurveyResponseData {
 	private ExternalMessageSurveyResponseWrapper original;
 
 	/**
-	 * May be present in case the original had failures and a new request-response was specified using
+	 * May be present in case the original had failures and a new request-response was specified by some user.
 	 */
 	@Nullable
 	private ExternalMessageSurveyResponseWrapper updated;
