@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -41,7 +42,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.ui.Label;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.fieldgroup.BeanFieldGroup;
+import com.vaadin.v7.data.util.BeanItem;
 import com.vaadin.v7.data.util.converter.Converter;
+import com.vaadin.v7.data.util.converter.ConverterUtil;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
@@ -657,317 +662,25 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		addFields(
 			FieldConfiguration.builder(PathogenTestDto.TUBE_NIL)
 				.validationMessageProperty(Validations.onlyNumbersAllowed)
-				.valueChangeListener(e -> {
-					final String tubeNilFieldValue = (String) e.getProperty().getValue();
-					final NullableOptionGroup tubeNilGt10Field = getField(PathogenTestDto.TUBE_NIL_GT10);
-					final Float tubeNilValue = getValue().getTubeNil();
-					final Boolean tubeNilGt10Value = getValue().getTubeNilGT10();
-
-					// we are called for a new entry
-					if(tubeNilValue == null
-						&& tubeNilGt10Value == null
-						&& tubeNilFieldValue == null
-						&& tubeNilGt10Field.getNullableValue() == null) {
-						tubeNilGt10Field.select(false);
-						return;
-					}
-
-					if(tubeNilFieldValue == null) {
-						tubeNilGt10Field.select(false);
-						return;
-					}
-					Float tubeNilNewValue = null;
-					try {
-						tubeNilNewValue = Float.parseFloat(tubeNilFieldValue);
-					} catch (NumberFormatException ex) {
-						// if it is not a number we clear the field
-						getField(PathogenTestDto.TUBE_NIL).clear();
-						tubeNilGt10Field.select(false);
-						return;
-					}
-					// now we have a current and old value
-					if(tubeNilNewValue > 10) {
-						tubeNilGt10Field.select(true);
-					} else {
-						tubeNilGt10Field.select(false);
-					}
-				})
+				.valueChangeListener(new TuberculosisIGRAInputValueChangeListener(getFieldGroup(), PathogenTestDto.TUBE_NIL,PathogenTestDto.TUBE_NIL_GT10))
 				.build(),
 			FieldConfiguration.builder(PathogenTestDto.TUBE_AG_TB1)
 				.validationMessageProperty(Validations.onlyNumbersAllowed)
-				.valueChangeListener(e -> {
-					final String tubeAgTb1FieldValue = (String) e.getProperty().getValue();
-					final NullableOptionGroup tubeAgTb1Gt10Field = getField(PathogenTestDto.TUBE_AG_TB1_GT10);
-					final Float tubeAgTb1Value = getValue().getTubeAgTb1();
-					final Boolean tubeAgTb1Gt10Value = getValue().getTubeAgTb1GT10();
-
-					// we are called for a new entry
-					if(tubeAgTb1Value == null
-						&& tubeAgTb1Gt10Value == null
-						&& tubeAgTb1FieldValue == null
-						&& tubeAgTb1Gt10Field.getNullableValue() == null) {
-						tubeAgTb1Gt10Field.select(false);
-						return;
-					}
-
-					if(tubeAgTb1FieldValue == null) {
-						tubeAgTb1Gt10Field.select(false);
-						return;
-					}
-					Float tubeAgTb1NewValue = null;
-					try {
-						tubeAgTb1NewValue = Float.parseFloat(tubeAgTb1FieldValue);
-					} catch (NumberFormatException ex) {
-						// if it is not a number we clear the field
-						getField(PathogenTestDto.TUBE_AG_TB1).clear();
-						tubeAgTb1Gt10Field.select(false);
-						return;
-					}
-					// now we have a current and old value
-					if(tubeAgTb1NewValue > 10) {
-						tubeAgTb1Gt10Field.select(true);
-					} else {
-						tubeAgTb1Gt10Field.select(false);
-					}
-				})
-				.build(),
+				.valueChangeListener(new TuberculosisIGRAInputValueChangeListener(getFieldGroup(), PathogenTestDto.TUBE_AG_TB1,PathogenTestDto.TUBE_AG_TB1_GT10)).build(),
 			FieldConfiguration.builder(PathogenTestDto.TUBE_AG_TB2)
 				.validationMessageProperty(Validations.onlyNumbersAllowed)
-				.valueChangeListener(e -> {
-					final String tubeAgTb2FieldValue = (String) e.getProperty().getValue();
-					final NullableOptionGroup tubeAgTb2Gt10Field = getField(PathogenTestDto.TUBE_AG_TB2_GT10);
-					final Float tubeAgTb2Value = getValue().getTubeAgTb2();
-					final Boolean tubeAgTb2Gt10Value = getValue().getTubeAgTb2GT10();
-
-					// we are called for a new entry
-					if(tubeAgTb2Value == null
-						&& tubeAgTb2Gt10Value == null
-						&& tubeAgTb2FieldValue == null
-						&& tubeAgTb2Gt10Field.getNullableValue() == null) {
-						tubeAgTb2Gt10Field.select(false);
-						return;
-					}
-
-					if(tubeAgTb2FieldValue == null) {
-						tubeAgTb2Gt10Field.select(false);
-						return;
-					}
-					Float tubeAgTb2NewValue = null;
-					try {
-						tubeAgTb2NewValue = Float.parseFloat(tubeAgTb2FieldValue);
-					} catch (NumberFormatException ex) {
-						// if it is not a number we clear the field
-						getField(PathogenTestDto.TUBE_AG_TB2).clear();
-						tubeAgTb2Gt10Field.select(false);
-						return;
-					}
-					// now we have a current and old value
-					if(tubeAgTb2NewValue > 10) {
-						tubeAgTb2Gt10Field.select(true);
-					} else {
-						tubeAgTb2Gt10Field.select(false);
-					}
-				})
-				.build(),
+				.valueChangeListener(new TuberculosisIGRAInputValueChangeListener(getFieldGroup(), PathogenTestDto.TUBE_AG_TB2,PathogenTestDto.TUBE_AG_TB2_GT10)).build(),
 			FieldConfiguration.builder(PathogenTestDto.TUBE_MITOGENE)
 				.validationMessageProperty(Validations.onlyNumbersAllowed)
-				.valueChangeListener(e -> {
-					final String tubeMitogeneFieldValue = (String) e.getProperty().getValue();
-					final NullableOptionGroup tubeMitogeneGt10Field = getField(PathogenTestDto.TUBE_MITOGENE_GT10);
-					final Float tubeMitogeneValue = getValue().getTubeMitogene();
-					final Boolean tubeMitogeneGt10Value = getValue().getTubeMitogeneGT10();
-
-					// we are called for a new entry
-					if(tubeMitogeneValue == null
-						&& tubeMitogeneGt10Value == null
-						&& tubeMitogeneFieldValue == null
-						&& tubeMitogeneGt10Field.getNullableValue() == null) {
-						tubeMitogeneGt10Field.select(false);
-						return;
-					}
-
-					if(tubeMitogeneFieldValue == null) {
-						tubeMitogeneGt10Field.select(false);
-						return;
-					}
-					Float tubeMitogeneNewValue = null;
-					try {
-						tubeMitogeneNewValue = Float.parseFloat(tubeMitogeneFieldValue);
-					} catch (NumberFormatException ex) {
-						// if it is not a number we clear the field
-						getField(PathogenTestDto.TUBE_MITOGENE).clear();
-						tubeMitogeneGt10Field.select(false);
-						return;
-					}
-					// now we have a current and old value
-					if(tubeMitogeneNewValue > 10) {
-						tubeMitogeneGt10Field.select(true);
-					} else {
-						tubeMitogeneGt10Field.select(false);
-					}
-				})
-				.build());
+				.valueChangeListener(new TuberculosisIGRAInputValueChangeListener(getFieldGroup(), PathogenTestDto.TUBE_MITOGENE,PathogenTestDto.TUBE_MITOGENE_GT10)).build());
 		//@formatter:on
 
 		//@formatter:off
 		addFields(
-			FieldConfiguration.builder(PathogenTestDto.TUBE_NIL_GT10).valueChangeListener(event -> {
-				final Object propertySingleValue = event.getProperty().getValue() instanceof Collection
-					? ((Collection<?>) event.getProperty().getValue()).stream().findFirst().orElse(null)
-					: event.getProperty().getValue();
-				final Float tubeNilValue = getValue().getTubeNil();
-
-				// we are called for a new entry or initial calls
-				if(propertySingleValue == null && tubeNilValue == null) {
-					final NullableOptionGroup tubeNilGt10Field = getField(PathogenTestDto.TUBE_NIL_GT10);
-					tubeNilGt10Field.select(false);
-					return;
-				}
-				final boolean checked = Boolean.TRUE.equals(propertySingleValue);
-				final Field<?> tubeNilField = getField(PathogenTestDto.TUBE_NIL);
-
-				final String tubeNilFieldValue = (String) tubeNilField.getValue();
-				if(tubeNilFieldValue == null) {
-					// if there is no value we don't care about the checkbox value
-					return;
-				}
-				Float tubeNilNewValue = null;
-				try {
-					tubeNilNewValue = Float.valueOf(tubeNilFieldValue);
-				} catch (NumberFormatException ex) {
-					// if it's not a number we don't care about the value
-					tubeNilField.clear();
-					return;
-				}
-				// if the checkbox is checked and the value is less than 10, we clear the field
-				if (checked && tubeNilNewValue < 10) {
-					tubeNilField.clear();
-					return;
-				}
-				// if the checkbox is unchecked and the value is greater than or equal to 10, we clear the field
-				if(!checked && tubeNilNewValue >= 10) {
-					tubeNilField.clear();
-					return;
-				}
-			}).build(),
-			FieldConfiguration.builder(PathogenTestDto.TUBE_AG_TB1_GT10).valueChangeListener(event -> {
-				final Object propertySingleValue = event.getProperty().getValue() instanceof Collection
-					? ((Collection<?>) event.getProperty().getValue()).stream().findFirst().orElse(null)
-					: event.getProperty().getValue();
-				final Float tubeAgTb1Value = getValue().getTubeAgTb1();
-
-				// we are called for a new entry or initial calls
-				if(propertySingleValue == null && tubeAgTb1Value == null) {
-					final NullableOptionGroup tubeAgTb1Gt10Field = getField(PathogenTestDto.TUBE_AG_TB1_GT10);
-					tubeAgTb1Gt10Field.select(false);
-					return;
-				}
-				final boolean checked = Boolean.TRUE.equals(propertySingleValue);
-				final Field<?> tubeAgTb1Field = getField(PathogenTestDto.TUBE_AG_TB1);
-
-				final String tubeAgTb1FieldValue = (String) tubeAgTb1Field.getValue();
-				if(tubeAgTb1FieldValue == null) {
-					// if there is no value we don't care about the checkbox value
-					return;
-				}
-				Float tubeAgTb1NewValue = null;
-				try {
-					tubeAgTb1NewValue = Float.valueOf(tubeAgTb1FieldValue);
-				} catch (NumberFormatException ex) {
-					// if it's not a number we don't care about the value
-					tubeAgTb1Field.clear();
-					return;
-				}
-				// if the checkbox is checked and the value is less than or equal to 10, we clear the field
-				if (checked && tubeAgTb1NewValue <= 10) {
-					tubeAgTb1Field.clear();
-					return;
-				}
-				// if the checkbox is unchecked and the value is greater than 10, we clear the field
-				if(!checked && tubeAgTb1NewValue > 10) {
-					tubeAgTb1Field.clear();
-					return;
-				}
-			}).build(),
-			FieldConfiguration.builder(PathogenTestDto.TUBE_AG_TB2_GT10).valueChangeListener(event -> {
-				final Object propertySingleValue = event.getProperty().getValue() instanceof Collection
-					? ((Collection<?>) event.getProperty().getValue()).stream().findFirst().orElse(null)
-					: event.getProperty().getValue();
-				final Float tubeAgTb2Value = getValue().getTubeAgTb2();
-
-				// we are called for a new entry or initial calls
-				if(propertySingleValue == null && tubeAgTb2Value == null) {
-					final NullableOptionGroup tubeAgTb2Gt10Field = getField(PathogenTestDto.TUBE_AG_TB2_GT10);
-					tubeAgTb2Gt10Field.select(false);
-					return;
-				}
-				final boolean checked = Boolean.TRUE.equals(propertySingleValue);
-				final Field<?> tubeAgTb2Field = getField(PathogenTestDto.TUBE_AG_TB2);
-
-				final String tubeAgTb2FieldValue = (String) tubeAgTb2Field.getValue();
-				if(tubeAgTb2FieldValue == null) {
-					// if there is no value we don't care about the checkbox value
-					return;
-				}
-				Float tubeAgTb2NewValue = null;
-				try {
-					tubeAgTb2NewValue = Float.valueOf(tubeAgTb2FieldValue);
-				} catch (NumberFormatException ex) {
-					// if it's not a number we don't care about the value
-					tubeAgTb2Field.clear();
-					return;
-				}
-				// if the checkbox is checked and the value is less than or equal to 10, we clear the field
-				if (checked && tubeAgTb2NewValue <= 10) {
-					tubeAgTb2Field.clear();
-					return;
-				}
-				// if the checkbox is unchecked and the value is greater than 10, we clear the field
-				if(!checked && tubeAgTb2NewValue > 10) {
-					tubeAgTb2Field.clear();
-					return;
-				}
-			}).build(),
-			FieldConfiguration.builder(PathogenTestDto.TUBE_MITOGENE_GT10).valueChangeListener(event -> {
-				final Object propertySingleValue = event.getProperty().getValue() instanceof Collection
-					? ((Collection<?>) event.getProperty().getValue()).stream().findFirst().orElse(null)
-					: event.getProperty().getValue();
-				final Float tubeMitogeneValue = getValue().getTubeMitogene();
-
-				// we are called for a new entry or initial calls
-				if(propertySingleValue == null && tubeMitogeneValue == null) {
-					final NullableOptionGroup tubeMitogeneGt10Field = getField(PathogenTestDto.TUBE_MITOGENE_GT10);
-					tubeMitogeneGt10Field.select(false);
-					return;
-				}
-				final boolean checked = Boolean.TRUE.equals(propertySingleValue);
-				final Field<?> tubeMitogeneField = getField(PathogenTestDto.TUBE_MITOGENE);
-
-				final String tubeMitogeneFieldValue = (String) tubeMitogeneField.getValue();
-				if(tubeMitogeneFieldValue == null) {
-					// if there is no value we don't care about the checkbox value
-					return;
-				}
-				Float tubeMitogeneNewValue = null;
-				try {
-					tubeMitogeneNewValue = Float.valueOf(tubeMitogeneFieldValue);
-				} catch (NumberFormatException ex) {
-					// if it's not a number we don't care about the value
-					tubeMitogeneField.clear();
-					return;
-				}
-				// if the checkbox is checked and the value is less than or equal to 10, we clear the field
-				if (checked && tubeMitogeneNewValue <= 10) {
-					tubeMitogeneField.clear();
-					return;
-				}
-				// if the checkbox is unchecked and the value is greater than 10, we clear the field
-				if(!checked && tubeMitogeneNewValue > 10) {
-					tubeMitogeneField.clear();
-					return;
-				}
-			}).build()
-		);
+			FieldConfiguration.builder(PathogenTestDto.TUBE_NIL_GT10).valueChangeListener(new TuberculosisIGRAGT10InputValueChangeListener(getFieldGroup(), PathogenTestDto.TUBE_NIL_GT10,PathogenTestDto.TUBE_NIL)).build(),
+			FieldConfiguration.builder(PathogenTestDto.TUBE_AG_TB1_GT10).valueChangeListener(new TuberculosisIGRAGT10InputValueChangeListener(getFieldGroup(), PathogenTestDto.TUBE_AG_TB1_GT10,PathogenTestDto.TUBE_AG_TB1)).build(),
+			FieldConfiguration.builder(PathogenTestDto.TUBE_AG_TB2_GT10).valueChangeListener(new TuberculosisIGRAGT10InputValueChangeListener(getFieldGroup(), PathogenTestDto.TUBE_AG_TB2_GT10,PathogenTestDto.TUBE_AG_TB2)).build(),
+			FieldConfiguration.builder(PathogenTestDto.TUBE_MITOGENE_GT10).valueChangeListener(new TuberculosisIGRAGT10InputValueChangeListener(getFieldGroup(), PathogenTestDto.TUBE_MITOGENE_GT10,PathogenTestDto.TUBE_MITOGENE)).build());			
 		//@formatter:on
 
 		setVisibleClear(
@@ -1314,11 +1027,197 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				|| isVisibleAllowed(PathogenTestDto.PRESCRIBER_COUNTRY));
 	}
 
-	static class TestTypeValueChangeListener implements ValueChangeListener {
+	/**
+	 * This class is to be used for the Tuberculosis IGRA input value change listeners.
+	 * It will check/uncheck the Tuberculosis IGRA greater than 10 checkbox dependiong on the value of the input field.
+	 * <p>
+	 * Note: ideally a custom component should be used for both fields, to avoid potential race conditions between the two listeners.
+	 */
+	protected static class TuberculosisIGRAInputValueChangeListener implements ValueChangeListener {
+
+		private final String igraInputFieldId;
+		private final String igraGT10FieldId;
+		private final BeanFieldGroup<PathogenTestDto> fieldGroup;
+
+		public TuberculosisIGRAInputValueChangeListener(BeanFieldGroup<PathogenTestDto> fg, String igraInputFieldId, String igraGT10FieldId) {
+			this.igraInputFieldId = igraInputFieldId;
+			this.igraGT10FieldId = igraGT10FieldId;
+			this.fieldGroup = fg;
+		}
 
 		@Override
 		public void valueChange(com.vaadin.v7.data.Property.ValueChangeEvent event) {
-			// TODO Auto-generated method stub
+
+			final Field<?> igraInputField = fieldGroup.getField(igraInputFieldId);
+
+			if (igraInputField == null) {
+				return;
+			}
+
+			final BeanItem<?> beanItemDataSource = fieldGroup.getItemDataSource();
+
+			// the input field is always a TextField with a String as value
+			// we need to make a hard assumtion that the input field value is a Float
+
+			// we check to see if the model property is numeric
+			// the model at this point will not be updated, so we only check type
+			final Property<?> igraValueProp = beanItemDataSource.getItemProperty(igraInputFieldId);
+
+			if (!Number.class.isAssignableFrom(igraValueProp.getType())) {
+				// we will not deal with non-numeric values
+				return;
+			}
+
+			// we know that the model property is numeric
+			// we could get the original value with: igraValueProp.getValue();
+
+			// we need to convert the value to number
+			// and we need to do it locale aware and need to finagle with types
+			@SuppressWarnings({
+				"unchecked",
+				"rawtypes" })
+			final Number igraNewValue = igraInputField.getValue() == null
+				? null
+				: (Number) ConverterUtil.getConverter(igraInputField.getType(), (Class) igraValueProp.getType(), null /* current session */)
+					.convertToModel(igraInputField.getValue(), igraValueProp.getType(), null /* current locale */);
+
+			final Boolean checked = igraNewValue == null ? null : igraNewValue.floatValue() > 10;
+
+			// now we need to set the value of the GT10 field
+			@SuppressWarnings("unchecked")
+			final Field<Object> igraGT10Field = (Field<Object>) fieldGroup.getField(igraGT10FieldId);
+			if (igraGT10Field == null) {
+				// if we can't find the field, we don't care
+				return;
+			}
+
+			// lets make sure the property is a boolean
+			final Property<?> igraGT10Prop = beanItemDataSource.getItemProperty(igraGT10FieldId);
+			if (igraGT10Prop == null || !Boolean.class.isAssignableFrom(igraGT10Prop.getType())) {
+				// if we can't find the property, or we can't set it we don't care
+				return;
+			}
+
+			// now field is supposed to be a boolean
+			// booleans come in two flavors: collection based and primitive
+			final boolean isCollection = Collection.class.isAssignableFrom(igraGT10Field.getType());
+
+			if (!isCollection) {
+				// primitive booleans are easy
+				final boolean currentChecked = Boolean.TRUE.equals(igraGT10Field.getValue());
+				if (checked != null && checked != currentChecked) {
+					igraGT10Field.setValue(checked);
+				}
+			} else {
+				// well have to do it the hard way
+				final Collection<?> currentSet = (Collection<?>) igraGT10Field.getValue();
+				final boolean currentChecked = currentSet != null && !currentSet.isEmpty() && currentSet.contains(Boolean.TRUE);
+				if (checked != null && checked != currentChecked) {
+					final HashSet<Boolean> set = new HashSet<>();
+					set.add(checked);
+					igraGT10Field.setValue(set);
+				}
+			}
+		}
+	}
+
+	/**
+	 * This class is to be used for the Tuberculosis IGRA greater than 10 checkboxes value change listeners.
+	 * It will clear the associated input field if the checkbox is checked and the
+	 * value is less than or equal to 10.
+	 * In reverse if the value is greater than 10 and the checkbox is not checked it will clear the input field.
+	 * <p>
+	 * Note: ideally a custom component should be used for both fields, to avoid potential race conditions between the two listeners.
+	 */
+	protected static class TuberculosisIGRAGT10InputValueChangeListener implements ValueChangeListener {
+
+		private final String igraInputFieldId;
+		private final String igraGT10FieldId;
+		private final BeanFieldGroup<PathogenTestDto> fieldGroup;
+
+		public TuberculosisIGRAGT10InputValueChangeListener(BeanFieldGroup<PathogenTestDto> fg, String igraGT10FieldId, String igraInputFieldId) {
+			this.igraInputFieldId = igraInputFieldId;
+			this.igraGT10FieldId = igraGT10FieldId;
+			this.fieldGroup = fg;
+		}
+
+		@Override
+		public void valueChange(com.vaadin.v7.data.Property.ValueChangeEvent event) {
+			final BeanItem<?> beanItemDataSource = fieldGroup.getItemDataSource();
+
+			final Property<?> igraValueProp = beanItemDataSource.getItemProperty(igraInputFieldId);
+			if (igraValueProp == null || !Number.class.isAssignableFrom(igraValueProp.getType())) {
+				return;
+			}
+
+			// lets make sure the GT10 property is a boolean
+			final Property<?> igraGT10Prop = beanItemDataSource.getItemProperty(igraGT10FieldId);
+			if (igraGT10Prop == null || !Boolean.class.isAssignableFrom(igraGT10Prop.getType())) {
+				// if we can't find the property, or we can't set it we don't care
+				return;
+			}
+
+			// let's try to get the numeric input field and converted value
+			final Field<?> igraInputField = fieldGroup.getField(igraInputFieldId);
+			if (igraInputField == null) {
+				return;
+			}
+
+			@SuppressWarnings({
+				"unchecked",
+				"rawtypes" })
+			final Number igraNewValue = igraInputField.getValue() == null
+				? null
+				: (Number) ConverterUtil.getConverter(igraInputField.getType(), (Class) igraValueProp.getType(), null /* current session */)
+					.convertToModel(igraInputField.getValue(), igraValueProp.getType(), null /* current locale */);
+
+			// now let's try to determine if the checkbox is checked (we know it's a boolean)
+			@SuppressWarnings("unchecked")
+			final Field<Object> igraGT10Field = (Field<Object>) fieldGroup.getField(igraGT10FieldId);
+			if (igraGT10Field == null) {
+				// if we can't find the field, we don't care
+				return;
+			}
+
+			// booleans come in two flavors: collection based and primitive
+			final boolean isCollection = Collection.class.isAssignableFrom(igraGT10Field.getType());
+
+			Boolean checked = false;
+
+			// value can be true or false/null(presumed false)
+			if (!isCollection) {
+				// primitive booleans are easy
+				checked = igraGT10Field.getValue() == null ? null : Boolean.TRUE.equals(igraGT10Field.getValue());
+			} else {
+				Collection<?> set = (Collection<?>) igraGT10Field.getValue();
+				checked = set == null || set.isEmpty() ? null : set.contains(Boolean.TRUE);
+			}
+
+			if (checked == null) { // the checbox is neither checked nor unchecked
+				checked = igraNewValue != null && igraNewValue.floatValue() > 10;
+
+				if (!isCollection) {
+					// primitive booleans are easy
+					igraGT10Field.setValue(checked);
+				} else {
+					final HashSet<Boolean> set = new HashSet<>();
+					set.add(checked);
+					igraGT10Field.setValue(set);
+				}
+
+				// don't need to clear anything else because there was no check/uncheck before
+				return;
+			}
+
+			if ((checked && igraNewValue != null && igraNewValue.floatValue() <= 10) // checked but value is filled in and less than 10
+				|| (!checked && igraNewValue != null && igraNewValue.floatValue() > 10) // not checked but value is filled in an greater than 10
+			) {
+				try {
+					igraInputField.clear();
+				} catch (ReadOnlyException ex) {
+					// ignore read-only
+				}
+			}
 
 		}
 	}
