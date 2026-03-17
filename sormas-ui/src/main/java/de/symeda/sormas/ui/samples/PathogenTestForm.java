@@ -41,11 +41,14 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.vaadin.server.UserError;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.v7.data.util.BeanItem;
 import com.vaadin.v7.data.util.converter.Converter;
+import com.vaadin.v7.data.util.converter.Converter.ConversionException;
 import com.vaadin.v7.data.util.converter.ConverterUtil;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.CheckBox;
@@ -65,6 +68,7 @@ import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleDto;
 import de.symeda.sormas.api.environment.environmentsample.Pathogen;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
@@ -1045,6 +1049,9 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			this.fieldGroup = fg;
 		}
 
+		@SuppressWarnings({
+			"unchecked",
+			"rawtypes" })
 		@Override
 		public void valueChange(com.vaadin.v7.data.Property.ValueChangeEvent event) {
 
@@ -1052,6 +1059,10 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 			if (igraInputField == null) {
 				return;
+			}
+
+			if (igraInputField instanceof AbstractComponent) {
+				((AbstractComponent) igraInputField).setComponentError(null);
 			}
 
 			final BeanItem<?> beanItemDataSource = fieldGroup.getItemDataSource();
@@ -1073,13 +1084,21 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 			// we need to convert the value to number
 			// and we need to do it locale aware and need to finagle with types
-			@SuppressWarnings({
-				"unchecked",
-				"rawtypes" })
-			final Number igraNewValue = igraInputField.getValue() == null
-				? null
-				: (Number) ConverterUtil.getConverter(igraInputField.getType(), (Class) igraValueProp.getType(), null /* current session */)
-					.convertToModel(igraInputField.getValue(), igraValueProp.getType(), null /* current locale */);
+
+			Number igraNewValue = null;
+
+			try {
+				igraNewValue = igraInputField.getValue() == null
+					? null
+					: (Number) ConverterUtil
+						.getConverter(igraInputField.getType(), (Class) igraValueProp.getType(), null /* current session */)
+						.convertToModel(igraInputField.getValue(), igraValueProp.getType(), igraInputField.getLocale());
+			} catch (ConversionException e) {
+				if (igraInputField instanceof AbstractComponent) {
+					((AbstractComponent) igraInputField).setComponentError(new UserError(I18nProperties.getString(Strings.errorInvalidValue)));
+				}
+				return;
+			}
 
 			final Boolean checked = igraNewValue == null ? null : igraNewValue.floatValue() > 10;
 
@@ -1105,17 +1124,17 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			if (!isCollection) {
 				// primitive booleans are easy
 				final boolean currentChecked = Boolean.TRUE.equals(igraGT10Field.getValue());
-				if (checked != null && checked != currentChecked) {
+				if (checked != null && checked.booleanValue() != currentChecked) {
 					igraGT10Field.setValue(checked);
 				}
 			} else {
 				// well have to do it the hard way
 				final Collection<?> currentSet = (Collection<?>) igraGT10Field.getValue();
 				final boolean currentChecked = currentSet != null && !currentSet.isEmpty() && currentSet.contains(Boolean.TRUE);
-				if (checked != null && checked != currentChecked) {
+				if (checked != null && checked.booleanValue() != currentChecked) {
 					final HashSet<Boolean> set = new HashSet<>();
 					set.add(checked);
-					igraGT10Field.setValue(set);
+					igraGT10Field.setValue(Collections.unmodifiableSet(set));
 				}
 			}
 		}
@@ -1141,8 +1160,22 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			this.fieldGroup = fg;
 		}
 
+		@SuppressWarnings({
+			"rawtypes",
+			"unchecked" })
 		@Override
 		public void valueChange(com.vaadin.v7.data.Property.ValueChangeEvent event) {
+
+			// let's try to get the numeric input field and converted value
+			final Field<?> igraInputField = fieldGroup.getField(igraInputFieldId);
+			if (igraInputField == null) {
+				return;
+			}
+
+			if (igraInputField instanceof AbstractComponent) {
+				((AbstractComponent) igraInputField).setComponentError(null);
+			}
+
 			final BeanItem<?> beanItemDataSource = fieldGroup.getItemDataSource();
 
 			final Property<?> igraValueProp = beanItemDataSource.getItemProperty(igraInputFieldId);
@@ -1157,19 +1190,20 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				return;
 			}
 
-			// let's try to get the numeric input field and converted value
-			final Field<?> igraInputField = fieldGroup.getField(igraInputFieldId);
-			if (igraInputField == null) {
+			Number igraNewValue = null;
+
+			try {
+				igraNewValue = igraInputField.getValue() == null
+					? null
+					: (Number) ConverterUtil
+						.getConverter(igraInputField.getType(), (Class) igraValueProp.getType(), null /* current session */)
+						.convertToModel(igraInputField.getValue(), igraValueProp.getType(), igraInputField.getLocale() /* current locale */);
+			} catch (ConversionException e) {
+				if (igraInputField instanceof AbstractComponent) {
+					((AbstractComponent) igraInputField).setComponentError(new UserError(I18nProperties.getString(Strings.errorInvalidValue)));
+				}
 				return;
 			}
-
-			@SuppressWarnings({
-				"unchecked",
-				"rawtypes" })
-			final Number igraNewValue = igraInputField.getValue() == null
-				? null
-				: (Number) ConverterUtil.getConverter(igraInputField.getType(), (Class) igraValueProp.getType(), null /* current session */)
-					.convertToModel(igraInputField.getValue(), igraValueProp.getType(), null /* current locale */);
 
 			// now let's try to determine if the checkbox is checked (we know it's a boolean)
 			@SuppressWarnings("unchecked")
@@ -1202,7 +1236,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				} else {
 					final HashSet<Boolean> set = new HashSet<>();
 					set.add(checked);
-					igraGT10Field.setValue(set);
+					igraGT10Field.setValue(Collections.unmodifiableSet(set));
 				}
 
 				// don't need to clear anything else because there was no check/uncheck before
