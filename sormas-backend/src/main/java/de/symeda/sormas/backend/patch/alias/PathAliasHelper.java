@@ -32,8 +32,6 @@ public class PathAliasHelper {
 
 	private final static Logger logger = LoggerFactory.getLogger(PathAliasHelper.class);
 
-	// TODO: define configurable additional aliases ?
-
 	public static final Map<String, String> DEFAULT_ALIAS_DICTIONARY = buildDefaultAliasDictionary();
 
 	public static final Map<String, Set<String>> DEFAULT_FORBIDDEN_ALIASES_DICTIONARY =
@@ -78,7 +76,6 @@ public class PathAliasHelper {
 			return tupleWithFailure(PathFailureCause.FORBIDDEN_NON_UNIQUE_ALIAS);
 		}
 
-		// TODO: refactor this
 		String pathWithFixedRootObjectReferences = REFERENCE_TO_ROOT_DICTIONARY.values()
 			.stream()
 			.reduce(

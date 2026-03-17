@@ -3,13 +3,7 @@ package de.symeda.sormas.backend.util;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-// TODO: check if caching is required
 public class InstanceProvider {
-
-	private static final Logger logger = LoggerFactory.getLogger(InstanceProvider.class);
 
 	private final InitialContext ic;
 

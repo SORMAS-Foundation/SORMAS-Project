@@ -25,6 +25,9 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.utils.DataHelper;
 
+/**
+ * Allows to set the phone number or email contact info of a person with within a single mapper.
+ */
 @ApplicationScoped
 public class PersonContactDetailsFieldMapper implements FieldCustomMapper {
 

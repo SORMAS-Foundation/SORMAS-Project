@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -135,6 +136,8 @@ import de.symeda.sormas.backend.util.RightsAllowed;
 	UserRight._EXTERNAL_MESSAGE_LABORATORY_VIEW,
 	UserRight._EXTERNAL_MESSAGE_DOCTOR_DECLARATION_VIEW })
 public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
+
+	public static final String SURVEY_PERIOD_INTERVAL_HOURS = "SURVEY_PERIOD_INTERVAL_HOURS";
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -327,9 +330,10 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	public List<ExternalMessageDto> saveAndProcessSurveyResponses(Date since) {
 
 		if (since == null) {
-			// TODO: configurable date value.
-			logger.error("Since date should be configurable");
-			since = DateHelper.addDays(new Date(), -7);
+			int hoursRange =
+				Integer.parseInt(Optional.ofNullable(systemConfigurationValueFacade.getValue(SURVEY_PERIOD_INTERVAL_HOURS)).orElse("168"));
+
+			since = DateHelper.addSeconds(new Date(), -(hoursRange * 3600));
 		}
 
 		ExternalMessageAdapterFacade externalLabResultsFacade = getSurveyExternalMessageFacade();

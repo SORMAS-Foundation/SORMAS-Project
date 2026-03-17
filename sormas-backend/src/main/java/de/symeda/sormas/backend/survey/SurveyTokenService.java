@@ -38,6 +38,8 @@ import de.symeda.sormas.backend.util.QueryHelper;
 @LocalBean
 public class SurveyTokenService extends BaseAdoService<SurveyToken> {
 
+	public static final int MAX_SURVEY_TOKEN_RESULTS_SIZE = 1000;
+
 	public SurveyTokenService() {
 		super(SurveyToken.class);
 	}
@@ -135,6 +137,6 @@ public class SurveyTokenService extends BaseAdoService<SurveyToken> {
 							cb.equal(root.get(SurveyToken.TOKEN), tuple.getSecond())))
 					.toArray(Predicate[]::new)));
 
-		return QueryHelper.getResultList(em, cq, 0, 500);
+		return QueryHelper.getResultList(em, cq, 0, MAX_SURVEY_TOKEN_RESULTS_SIZE);
 	}
 }

@@ -110,54 +110,6 @@ class PropertyAccessorTest {
 			"b" };
 		bean.map = Map.of("key", "value");
 	}
-//
-//	@Test
-//	void getNestedPropertyType_simpleProperty_returnsCorrectType() {
-//		Optional<Tuple<Class<?>, Set<Disease>>> type = PropertyAccessor.getNestedPropertyType(bean, "name");
-//		assertTrue(type.isPresent());
-//		assertEquals(String.class, type.get());
-//	}
-//
-//	@Test
-//	void getNestedPropertyType_nestedProperty_returnsCorrectType() {
-//		Optional<Tuple<Class<?>, Set<Disease>>> type = PropertyAccessor.getNestedPropertyType(bean, "address.city");
-//		assertTrue(type.isPresent());
-//		assertEquals(String.class, type.get());
-//	}
-//
-//	@Test
-//	void getNestedPropertyType_indexedProperty_returnsElementType() {
-//		Optional<Tuple<Class<?>, Set<Disease>>> type = PropertyAccessor.getNestedPropertyType(bean, "items[0].name");
-//		assertTrue(type.isPresent());
-//		assertEquals(String.class, type.get());
-//	}
-//
-//	@Test
-//	void getNestedPropertyType_array_returnsComponentType() {
-//		Optional<Tuple<Class<?>, Set<Disease>>> type = PropertyAccessor.getNestedPropertyType(bean, "array[0]");
-//		assertTrue(type.isPresent());
-//		assertEquals(String.class, type.get());
-//	}
-//
-//	@Test
-//	void getNestedPropertyType_iterable_returnsObjectClass() {
-//		Optional<Tuple<Class<?>, Set<Disease>>> type = PropertyAccessor.getNestedPropertyType(bean, "items[0]");
-//		assertTrue(type.isPresent());
-//		assertEquals(Object.class, type.get());
-//	}
-//
-//	@Test
-//	void getNestedPropertyType_invalidProperty_returnsEmpty() {
-//		Optional<Tuple<Class<?>, Set<Disease>>> type = PropertyAccessor.getNestedPropertyType(bean, "nonexistent");
-//		assertFalse(type.isPresent());
-//	}
-//
-//	@Test
-//	void getNestedPropertyType_nullInputs_returnsEmpty() {
-//		assertFalse(PropertyAccessor.getNestedPropertyType(null, "name").isPresent());
-//		assertFalse(PropertyAccessor.getNestedPropertyType(bean, null).isPresent());
-//		assertFalse(PropertyAccessor.getNestedPropertyType(bean, "").isPresent());
-//	}
 
 	@Test
 	void getNestedProperty_readsSimpleProperty() {

@@ -24,6 +24,9 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 
+/**
+ * Meant as single entry point for usages were multiple Business DTOs must be fetched or saved.
+ */
 @ApplicationScoped
 public class BusinessDtoFacade {
 
@@ -99,6 +102,17 @@ public class BusinessDtoFacade {
 			.orElseThrow(() -> new IllegalStateException(String.format("No CaseDataDto found for [%s]", caseUuid)));
 	}
 
+	/**
+	 * Meant for creational purposes.
+	 * 
+	 * @param entityClass
+	 *            target class
+	 * @param caseDataDto
+	 *            linked case
+	 * @return DTO if found.
+	 * @param <T>
+	 *            types
+	 */
 	@Nullable
 	public <T extends EntityDto> T fetch(@NotNull Class<T> entityClass, CaseDataDto caseDataDto) {
 		return Optional.ofNullable((Function<CaseDataDto, T>) dtoRetrieverDictionary.get(entityClass))
@@ -106,6 +120,15 @@ public class BusinessDtoFacade {
 			.apply(caseDataDto);
 	}
 
+	/**
+	 * Meant for display purposes.
+	 * 
+	 * @param i18nName
+	 *            DtoPrefix per example {@link PersonDto#I18N_PREFIX}.
+	 * @param caseDataDto
+	 *            linked case.
+	 * @return entity dto if found.
+	 */
 	@Nullable
 	public List<? extends EntityDto> fetchByI18nName(@NotNull String i18nName, CaseDataDto caseDataDto) {
 		return Optional.ofNullable(dtoRetrieverByI18nDictionary.get(i18nName))
@@ -113,10 +136,24 @@ public class BusinessDtoFacade {
 			.apply(caseDataDto);
 	}
 
+	/**
+	 * For displaying purposes what purposes can be retrieved.
+	 * 
+	 * @return prefixes that can be fetched through their I18n Prefix.
+	 */
 	public Set<String> fetchablePrefixes() {
 		return dtoRetrieverByI18nDictionary.keySet();
 	}
 
+	/**
+	 * Single entry for saving a business DTO.
+	 * 
+	 * @param entityDto
+	 *            business DTO
+	 * @return saved DTO.
+	 * @param <T>
+	 *            type
+	 */
 	public <T extends EntityDto> T save(@NotNull EntityDto entityDto) {
 		Class<? extends EntityDto> entityDtoClass = entityDto.getClass();
 

@@ -24,6 +24,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+/**
+ * Permits unified access to a pre-configured {@link ObjectMapper} instance.
+ */
 public final class ObjectMapperProvider {
 
 	private static final Logger logger = LoggerFactory.getLogger(ObjectMapperProvider.class);

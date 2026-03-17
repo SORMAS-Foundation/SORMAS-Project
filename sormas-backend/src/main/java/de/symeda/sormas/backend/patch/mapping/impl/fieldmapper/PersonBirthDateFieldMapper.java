@@ -47,11 +47,9 @@ public class PersonBirthDateFieldMapper implements FieldCustomMapper {
 
 		Date birthDate = result.getData();
 
-		// TODO: remove duplication.
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(birthDate);
 		int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
-		// In calendar API months are indexed from 0 @see https://docs.oracle.com/javase/7/docs/api/java/util/Calendar.html#MONTH
 		int birthdateMonth = calendar.get(Calendar.MONTH) + 1;
 		int year = calendar.get(Calendar.YEAR);
 

@@ -5,6 +5,9 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.patch.DataPatchFailureCause;
 import de.symeda.sormas.api.patch.partial_retrieval.PartialRetrievalFailureCause;
 
+/**
+ * Occurs when trying to access path.
+ */
 public enum PathFailureCause {
 
 	INVALID_PATH_FORMAT(DataPatchFailureCause.INVALID_PATH_FORMAT, PartialRetrievalFailureCause.INVALID_PATH_FORMAT),

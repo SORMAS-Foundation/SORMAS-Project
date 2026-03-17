@@ -237,7 +237,6 @@ public class DataPatcherImpl implements DataPatcher {
 			.collect(CollectorUtils.toNullSafeMap(de.symeda.sormas.api.patch.SinglePatchResult::getFieldName, fct));
 	}
 
-	// TODO: make usable for external use
 	private @NotNull de.symeda.sormas.api.patch.SinglePatchResult valueMappingResult(
 		Tuple<String, Tuple<DataPatchFailureCause, Object>> entry,
 		Disease disease,
@@ -314,7 +313,6 @@ public class DataPatcherImpl implements DataPatcher {
 		return entry.getSecond().getFirst();
 	}
 
-	// TODO: make usable for external use
 	private Optional<de.symeda.sormas.api.patch.SinglePatchResult> fieldMappingResult(
 		Tuple<String, Tuple<DataPatchFailureCause, Object>> entry,
 		Disease disease,

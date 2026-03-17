@@ -20,13 +20,15 @@ import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.inject.Inject;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Tuple;
@@ -39,6 +41,9 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.symeda.sormas.api.survey.SurveyReferenceDto;
 import de.symeda.sormas.api.survey.SurveyTokenCriteria;
 import de.symeda.sormas.api.survey.SurveyTokenDto;
@@ -47,6 +52,7 @@ import de.symeda.sormas.api.survey.SurveyTokenIndexDto;
 import de.symeda.sormas.api.survey.SurveyTokenReferenceDto;
 import de.symeda.sormas.api.survey.external.ExternalSurveyProviderFacade;
 import de.symeda.sormas.api.survey.external.views.ExternalSurveyView;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -71,6 +77,8 @@ import de.symeda.sormas.backend.util.RightsAllowed;
 @RightsAllowed(UserRight._SURVEY_TOKEN_VIEW)
 public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
 
@@ -92,8 +100,10 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private DocumentService documentService;
-	@Inject
-	private ExternalSurveyProviderFacade externalSurveyProviderFacade;
+	@EJB
+	private SystemConfigurationValueFacade systemConfigurationValueFacade;
+
+	public static final String EXTERNAL_SURVEY_PROVIDER_JNDI_KEY = "EXTERNAL_SURVEY_PROVIDER_JNDI_NAME";
 
 	private static final String SURVEY_TOKEN_IMPORT_TEMPLATE_FILE_NAME = "import_survey_tokens_template.csv";
 
@@ -319,12 +329,9 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 
 	@Override
 	public ExternalSurveyView getExternalSurveyView(String surveyTokenUuid) {
-		if (externalSurveyProviderFacade == null) {
-			return null;
-		}
-
 		SurveyToken surveyToken = surveyTokenService.getByUuid(surveyTokenUuid);
 		if (surveyToken == null) {
+			logger.error("SurveyToken with uuid [{}] not found", surveyTokenUuid);
 			return null;
 		}
 
@@ -332,13 +339,32 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 		String externalSurveyId = surveyToken.getSurvey() != null ? surveyToken.getSurvey().getExternalId() : null;
 
 		if (externalSurveyId == null || externalRespondentId == null) {
+			logger.error("SurveyToken with uuid [{}] had no externalSurveyId [{}] or [{}]", surveyTokenUuid, externalSurveyId, externalRespondentId);
 			return null;
 		}
 
-		return externalSurveyProviderFacade.getExternalSurveyView(externalSurveyId, externalRespondentId);
+		ExternalSurveyProviderFacade facade = getExternalSurveyProviderFacade();
+		if (facade == null) {
+			logger.error("Facade not found");
+			return null;
+		}
+
+		return facade.getExternalSurveyView(externalSurveyId, externalRespondentId);
 	}
 
-	public static SurveyTokenReferenceDto toReferenceDto(SurveyToken entity) {
+	private ExternalSurveyProviderFacade getExternalSurveyProviderFacade() {
+		String jndiName = Optional.ofNullable(systemConfigurationValueFacade.getValue(EXTERNAL_SURVEY_PROVIDER_JNDI_KEY)).orElseGet(() -> {
+			logger.info("External Survey Provider JNDI Key not found, using default");
+			return "interface.externalMessageAdapter.jndiName=java:global/sormas-esante-adapter/NgSurveyMessageFacade";
+		});
+		try {
+			return (ExternalSurveyProviderFacade) new InitialContext().lookup(jndiName);
+		} catch (NamingException e) {
+			throw new RuntimeException("Could not look up ExternalSurveyProviderFacade via JNDI: " + jndiName, e);
+		}
+	}
+
+	public SurveyTokenReferenceDto toReferenceDto(SurveyToken entity) {
 
 		if (entity == null) {
 			return null;
