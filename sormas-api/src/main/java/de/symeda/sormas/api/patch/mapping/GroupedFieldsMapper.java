@@ -27,7 +27,7 @@ public interface GroupedFieldsMapper<T extends EntityDto> {
 	GroupedFieldsResponse<T> aggregatedPatch(@NotNull GroupedFieldsRequest request);
 
 	/**
-	 * Specifies the prefixes that are supported by this grouped mapper.
+	 * Specifies the prefixes that are supported by this mapper instance.
 	 * 
 	 * @return supported prefixes.
 	 */

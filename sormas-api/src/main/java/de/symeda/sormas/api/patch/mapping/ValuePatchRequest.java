@@ -20,7 +20,7 @@ public class ValuePatchRequest<T> {
 	private Class<T> targetType;
 
 	/**
-	 * Languages translations will be fetched in that order, so can have minor performance impact.
+	 * To be able to support I18n inputs the input languages can be passed, system locale by default.
 	 */
 	@Nullable
 	private List<Language> inputLanguages;

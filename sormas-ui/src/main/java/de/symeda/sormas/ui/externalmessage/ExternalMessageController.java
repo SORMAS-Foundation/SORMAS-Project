@@ -84,6 +84,8 @@ import de.symeda.sormas.ui.externalmessage.labmessage.LabMessageProcessingFlow;
 import de.symeda.sormas.ui.externalmessage.labmessage.LabMessageSlider;
 import de.symeda.sormas.ui.externalmessage.labmessage.RelatedLabMessageHandler;
 import de.symeda.sormas.ui.externalmessage.physiciansreport.PhysiciansReportProcessingFlow;
+import de.symeda.sormas.ui.externalmessage.surveyresponse.SurveyResponseDetailsWindow;
+import de.symeda.sormas.ui.externalmessage.surveyresponse.SurveyResponseFailureEditor;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DeleteRestoreHandlers;
@@ -129,6 +131,13 @@ public class ExternalMessageController {
 	public void showExternalMessage(String messageUuid, boolean withActions, Runnable onFormActionPerformed) {
 
 		ExternalMessageDto newDto = FacadeProvider.getExternalMessageFacade().getByUuid(messageUuid);
+
+		if (ExternalMessageType.SURVEY_RESPONSE.equals(newDto.getType())) {
+			// Side effect: window will be added to the current window.
+			new SurveyResponseDetailsWindow(newDto, onFormActionPerformed);
+			return;
+		}
+
 		VerticalLayout layout = new VerticalLayout();
 		layout.setMargin(true);
 
@@ -152,33 +161,35 @@ public class ExternalMessageController {
 	}
 
 	public void processSurveyResponse(String surveyResponseMessageUuid) {
-		ExternalMessageDto labMessage = FacadeProvider.getExternalMessageFacade().getByUuid(surveyResponseMessageUuid);
-		ExternalMessageProcessingFacade processingFacade = getExternalMessageProcessingFacade();
-		ExternalMessageMapper mapper = new ExternalMessageMapper(labMessage, processingFacade);
-		RelatedLabMessageHandler relatedLabMessageHandler = new RelatedLabMessageHandler(UiUtil.getUser(), processingFacade, mapper);
-		LabMessageProcessingFlow flow = new LabMessageProcessingFlow(labMessage, mapper, processingFacade, relatedLabMessageHandler);
+		ExternalMessageDto externalMessage = FacadeProvider.getExternalMessageFacade().getByUuid(surveyResponseMessageUuid);
 
-		flow.run().handle((BiFunction<? super ProcessingResult<ExternalMessageProcessingResult>, Throwable, Void>) (result, exception) -> {
-			if (exception != null) {
-				logger.error("Unexpected exception while processing lab message", exception);
+		de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseResult result =
+			externalMessage.getSurveyResponseData() != null && externalMessage.getSurveyResponseData().getLatest() != null
+				? externalMessage.getSurveyResponseData().getLatest().getResult()
+				: null;
 
-				Notification.show(
-					I18nProperties.getString(Strings.errorOccurred, I18nProperties.getString(Strings.errorOccurred)),
-					I18nProperties.getString(Strings.errorWasReported),
-					Notification.Type.ERROR_MESSAGE);
+		if (result == null) {
+			Notification.show(I18nProperties.getString(Strings.messageSurveyResponseNotYetProcessed), Notification.Type.HUMANIZED_MESSAGE);
+			return;
+		}
 
-				return null;
+		if (result.getPatchResponse() != null && result.getPatchResponse().hasFailures()) {
+			de.symeda.sormas.api.patch.partial_retrieval.DisplayablePartialRetrievalResponse displayData;
+			try {
+				displayData = FacadeProvider.getExternalMessageFacade().retrieveSurveyResponseFieldsForDisplay(surveyResponseMessageUuid);
+			} catch (Exception e) {
+				logger.error("Error retrieving survey response fields for display", e);
+				displayData = new de.symeda.sormas.api.patch.partial_retrieval.DisplayablePartialRetrievalResponse();
 			}
 
-			ProcessingResultStatus status = result.getStatus();
-			if (status == ProcessingResultStatus.CANCELED_WITH_CORRECTIONS) {
-				showCorrectionsSavedPopup();
-			} else if (status == ProcessingResultStatus.DONE) {
+			final de.symeda.sormas.api.patch.partial_retrieval.DisplayablePartialRetrievalResponse finalDisplayData = displayData;
+			SurveyResponseFailureEditor editor = new SurveyResponseFailureEditor(externalMessage, finalDisplayData, () -> {
 				SormasUI.get().getNavigator().navigateTo(ExternalMessagesView.VIEW_NAME);
-			}
-
-			return null;
-		});
+			});
+			UI.getCurrent().addWindow(editor);
+		} else {
+			Notification.show(I18nProperties.getString(Strings.messageSurveyResponseAllFieldsApplied), Notification.Type.HUMANIZED_MESSAGE);
+		}
 	}
 
 	public void processLabMessage(String labMessageUuid) {

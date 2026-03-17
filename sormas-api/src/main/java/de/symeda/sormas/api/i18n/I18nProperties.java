@@ -57,6 +57,9 @@ public final class I18nProperties {
 	private final ResourceBundle continentProperties;
 	private final ResourceBundle subcontinentProperties;
 
+	/**
+	 * Used internally when bundle type is specified so extract the value from the adequate properties file.
+	 */
 	private final Map<I18nPropertiesRequest.ResourceBundleType, ResourceBundle> resourceBundlesDictionary;
 
 	private static I18nProperties getInstance(Language language) {
@@ -430,6 +433,15 @@ public final class I18nProperties {
 		return new ResourceBundle(java.util.ResourceBundle.getBundle(propertiesGroup, locale, new UTF8Control()));
 	}
 
+	/**
+	 * Meant to be used for "matching purposes", you have a value, but you don't know which value it belongs to.
+	 * 
+	 * @param request
+	 *            to return the adequate dictionary.
+	 * @return dictionary with key being the "physical value" of the property key and value the
+	 *         translated value in the specified language.
+	 *         Example: (key: value) continent.AUSTRALIA.name: Australia (Continent) -> AUSTRALIA: Australia (Continent)
+	 */
 	public static Map<String, String> buildKeyValueDictionary(I18nPropertiesRequest request) {
 
 		Language language = request.getLanguage() != null ? request.getLanguage() : Language.EN;

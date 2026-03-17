@@ -2,6 +2,9 @@ package de.symeda.sormas.api.patch.partial_retrieval;
 
 public enum PartialRetrievalFailureCause {
 
+	/**
+	 * More specific technical error but similar {@link this#TECHNICAL}.
+	 */
 	ENTITY_COULD_NOT_BE_FOUND,
 
 	/**

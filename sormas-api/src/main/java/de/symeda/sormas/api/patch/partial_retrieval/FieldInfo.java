@@ -2,6 +2,9 @@ package de.symeda.sormas.api.patch.partial_retrieval;
 
 import java.util.Objects;
 
+/**
+ * Half technical and half user-friendly representation of a field.
+ */
 public class FieldInfo {
 
 	private String translatedFieldName;

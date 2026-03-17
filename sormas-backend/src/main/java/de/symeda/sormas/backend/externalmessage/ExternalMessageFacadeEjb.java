@@ -170,6 +170,8 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@Inject
 	private AutomaticSurveyResponseProcessor automaticSurveyResponseProcessor;
+	@Inject
+	private de.symeda.sormas.backend.patch.partial_retrieval.PartialRetrieverImpl partialRetriever;
 	@EJB
 	private SystemConfigurationValueFacade systemConfigurationValueFacade;
 
@@ -938,6 +940,70 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	@Override
 	public ExternalMessageDto getForSurveillanceReport(SurveillanceReportReferenceDto surveillanceReport) {
 		return toDto(externalMessageService.getForSurveillanceReport(surveillanceReport));
+	}
+
+	@Override
+	@RightsAllowed(UserRight._EXTERNAL_MESSAGE_SURVEY_RESPONSE_PROCESS)
+	public ExternalMessageDto reprocessSurveyResponse(String uuid, java.util.Map<String, Object> correctedDictionary) {
+		ExternalMessageDto externalMessage = getByUuid(uuid);
+		de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseRequest latestRequest =
+			externalMessage.getSurveyResponseData().getLatest().getRequest();
+
+		de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseRequest correctedRequest =
+			new de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseRequest().setToken(latestRequest.getToken())
+				.setExternalSurveyId(latestRequest.getExternalSurveyId())
+				.setExternalRespondentId(latestRequest.getExternalRespondentId())
+				.setResponseReceivedDate(latestRequest.getResponseReceivedDate())
+				.setReplacementStrategy(latestRequest.getReplacementStrategy())
+				.setEmptyValueBehavior(latestRequest.getEmptyValueBehavior())
+				.setOrigin(latestRequest.getOrigin())
+				.setInputLanguages(latestRequest.getInputLanguages())
+				.setAllowFallbackValues(latestRequest.isAllowFallbackValues())
+				.setSkipIfAlreadyProcessed(false)
+				.setPatchedInCaseOfFailures(true)
+				.setPatchDictionary(correctedDictionary);
+
+		de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseWrapper updatedWrapper =
+			new de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseWrapper().setRequest(correctedRequest);
+		externalMessage.getSurveyResponseData().setUpdated(updatedWrapper);
+
+		try {
+			automaticSurveyResponseProcessor.processSurveyResponses(java.util.List.of(externalMessage));
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException("Interrupted while reprocessing survey response", e);
+		} catch (java.util.concurrent.ExecutionException e) {
+			throw new RuntimeException("Error while reprocessing survey response", e);
+		}
+
+		return save(externalMessage);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._EXTERNAL_MESSAGE_SURVEY_RESPONSE_PROCESS)
+	public de.symeda.sormas.api.patch.partial_retrieval.DisplayablePartialRetrievalResponse retrieveSurveyResponseFieldsForDisplay(
+		String externalMessageUuid) {
+
+		ExternalMessageDto externalMessage = getByUuid(externalMessageUuid);
+		de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseWrapper latest = externalMessage.getSurveyResponseData().getLatest();
+		de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseResult result = latest.getResult();
+
+		if (result == null || result.getCaseUuid() == null) {
+			return new de.symeda.sormas.api.patch.partial_retrieval.DisplayablePartialRetrievalResponse();
+		}
+
+		java.util.Map<String, Object> patchDictionary = latest.getRequest().getPatchDictionary();
+		if (patchDictionary == null || patchDictionary.isEmpty()) {
+			return new de.symeda.sormas.api.patch.partial_retrieval.DisplayablePartialRetrievalResponse();
+		}
+
+		java.util.Set<String> fieldPaths = patchDictionary.keySet();
+
+		de.symeda.sormas.api.patch.partial_retrieval.PartialRetrievalRequest request =
+			new de.symeda.sormas.api.patch.partial_retrieval.PartialRetrievalRequest().setCaseUuid(result.getCaseUuid())
+				.setFieldsToRetrieve(fieldPaths);
+
+		return partialRetriever.retrievePartialForDisplay(request);
 	}
 
 	public static ExternalMessageReferenceDto toReferenceDto(ExternalMessage entity) {

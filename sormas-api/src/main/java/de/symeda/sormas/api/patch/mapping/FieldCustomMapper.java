@@ -7,14 +7,13 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.patch.DataPatchFailure;
 
 /**
- * The patch logic was designed to be generic, nevertheless some SORMAS - fields require specific adaptions.
+ * Allows to patch a single SORMAS fields in a specific manner, because default type mapping doesn't fit.
+ * Example: a field is displayed a single field in UI but is stored as multiple values in DTO / entities.
  */
 public interface FieldCustomMapper {
 
 	/*
-	 * Implement for:
-	 * - Phone number - email
-	 * - BirthDate
+	 * In case of failure returns the triggered failure otherwise successfully patch the value on the specific object.
 	 */
 	Optional<DataPatchFailure> map(FieldPatchRequest request);
 

@@ -14,10 +14,13 @@ public final class FieldPatchRequest {
 
 	@NotNull
 	private String fieldName;
+
 	@NotNull
 	private Object target;
+
 	@NotNull
 	private Object value;
+
 	@NotNull
 	private DataReplacementStrategy replacementType;
 

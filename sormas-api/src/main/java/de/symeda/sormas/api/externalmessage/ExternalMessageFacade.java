@@ -2,6 +2,7 @@ package de.symeda.sormas.api.externalmessage;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 import javax.ejb.Remote;
@@ -12,6 +13,7 @@ import de.symeda.sormas.api.PermanentlyDeletableFacade;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.patch.partial_retrieval.DisplayablePartialRetrievalResponse;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -84,4 +86,25 @@ public interface ExternalMessageFacade extends PermanentlyDeletableFacade {
 	boolean existsForwardedExternalMessageWith(String reportId);
 
 	ExternalMessageDto getForSurveillanceReport(SurveillanceReportReferenceDto surveillanceReport);
+
+	/**
+	 * Re-submits a survey response with a corrected patch dictionary after previous processing failures.
+	 *
+	 * @param uuid
+	 *            UUID of the external message (must be of type SURVEY_RESPONSE)
+	 * @param correctedDictionary
+	 *            the corrected field path -> value map to apply
+	 * @return updated ExternalMessageDto after reprocessing
+	 */
+	ExternalMessageDto reprocessSurveyResponse(String uuid, Map<String, Object> correctedDictionary);
+
+	/**
+	 * Retrieves display-ready field information (translated names and current case values) for all fields
+	 * in the survey response patch dictionary. Used by the UI to render the detail/editor windows.
+	 *
+	 * @param externalMessageUuid
+	 *            UUID of the external message (must be of type SURVEY_RESPONSE with a processed result)
+	 * @return displayable field info keyed by field path
+	 */
+	DisplayablePartialRetrievalResponse retrieveSurveyResponseFieldsForDisplay(String externalMessageUuid);
 }
