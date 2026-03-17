@@ -35,6 +35,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -123,6 +124,7 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
+@LocalBean
 public class SampleService extends AbstractDeletableAdoService<Sample>
 	implements JurisdictionFlagsService<Sample, SampleJurisdictionFlagsDto, SampleJoins, SampleQueryContext> {
 

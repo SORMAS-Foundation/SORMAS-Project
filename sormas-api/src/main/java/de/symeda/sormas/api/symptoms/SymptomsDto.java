@@ -2723,6 +2723,29 @@ public class SymptomsDto extends PseudonymizableDto {
 	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
 	private SymptomState bloating;
 
+	// TODO: newly added fields for ngSurvey
+	private SymptomState lossOfAppetite;
+
+	@Diseases({
+		GIARDIASIS })
+	private SymptomState flatulence;
+
+	@Diseases({
+		GIARDIASIS })
+	private SymptomState smellyBurps;
+
+	@Diseases({
+		PERTUSSIS })
+	private SymptomState coughingAttacks;
+
+	@Diseases({
+		PERTUSSIS })
+	private SymptomState coughingAtNight;
+
+	@Diseases({
+		CRYPTOSPORIDIOSIS })
+	private SymptomState abdominalCramps;
+
 	private DiagnosisType diagnosis;
 	private InfectionSite majorSite;
 	private String otherMajorSiteDetails;
@@ -4626,5 +4649,59 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	public void setBloating(SymptomState bloating) {
 		this.bloating = bloating;
+	}
+
+	public SymptomState getLossOfAppetite() {
+		return lossOfAppetite;
+	}
+
+	public SymptomsDto setLossOfAppetite(SymptomState lossOfAppetite) {
+		this.lossOfAppetite = lossOfAppetite;
+		return this;
+	}
+
+	public SymptomState getFlatulence() {
+		return flatulence;
+	}
+
+	public SymptomsDto setFlatulence(SymptomState flatulence) {
+		this.flatulence = flatulence;
+		return this;
+	}
+
+	public SymptomState getSmellyBurps() {
+		return smellyBurps;
+	}
+
+	public SymptomsDto setSmellyBurps(SymptomState smellyBurps) {
+		this.smellyBurps = smellyBurps;
+		return this;
+	}
+
+	public SymptomState getCoughingAttacks() {
+		return coughingAttacks;
+	}
+
+	public SymptomsDto setCoughingAttacks(SymptomState coughingAttacks) {
+		this.coughingAttacks = coughingAttacks;
+		return this;
+	}
+
+	public SymptomState getCoughingAtNight() {
+		return coughingAtNight;
+	}
+
+	public SymptomsDto setCoughingAtNight(SymptomState coughingAtNight) {
+		this.coughingAtNight = coughingAtNight;
+		return this;
+	}
+
+	public SymptomState getAbdominalCramps() {
+		return abdominalCramps;
+	}
+
+	public SymptomsDto setAbdominalCramps(SymptomState abdominalCramps) {
+		this.abdominalCramps = abdominalCramps;
+		return this;
 	}
 }

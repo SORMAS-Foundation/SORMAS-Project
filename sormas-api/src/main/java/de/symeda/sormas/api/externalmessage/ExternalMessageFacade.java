@@ -3,11 +3,10 @@ package de.symeda.sormas.api.externalmessage;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.Nullable;
 import javax.ejb.Remote;
 import javax.naming.NamingException;
 import javax.validation.Valid;
-
-import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.PermanentlyDeletableFacade;
 import de.symeda.sormas.api.ReferenceDto;
@@ -24,17 +23,18 @@ public interface ExternalMessageFacade extends PermanentlyDeletableFacade {
 
 	ExternalMessageDto saveAndProcessLabmessage(@Valid ExternalMessageDto dto);
 
-	default ExternalMessageDto saveAndProcessSurveyResponse(@Valid ExternalMessageDto dto) {
-		List<ExternalMessageDto> dtos = saveAndProcessSurveyResponses(List.of(dto));
+	/**
+	 * Will attempt to fetch and refresh.
+	 * 
+	 * @param since
+	 *            if not specified
+	 * @return external messages that have been saved.
+	 */
+	List<ExternalMessageDto> saveAndProcessSurveyResponses(@Nullable Date since);
 
-		if (CollectionUtils.size(dtos) != 1) {
-			throw new IllegalStateException(String.format("Expecting a single response but got [%s]", dtos));
-		}
-
-		return dtos.get(0);
+	default List<ExternalMessageDto> saveAndProcessSurveyResponses() {
+		return saveAndProcessSurveyResponses(null);
 	}
-
-	List<ExternalMessageDto> saveAndProcessSurveyResponses(@Valid List<ExternalMessageDto> dtos);
 
 	void validate(ExternalMessageDto dto);
 

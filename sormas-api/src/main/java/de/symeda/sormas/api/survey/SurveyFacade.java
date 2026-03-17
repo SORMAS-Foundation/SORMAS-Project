@@ -41,7 +41,7 @@ public interface SurveyFacade {
 
 	SurveyDto getByUuid(String uuid);
 
-	List<SurveyDto> getByExternalIdsAsReference(List<String> externalId);
+	List<SurveyDto> getByExternalIds(List<String> externalId);
 
 	long count(SurveyCriteria criteria);
 
@@ -71,5 +71,5 @@ public interface SurveyFacade {
 
 	List<SurveyReferenceDto> getAllAsReference();
 
-	List<SurveyDto> getAll();
+	List<SurveyDto> getAllWithExternalSurveyId();
 }

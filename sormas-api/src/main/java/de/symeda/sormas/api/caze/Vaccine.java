@@ -68,19 +68,25 @@ public enum Vaccine {
 	@Diseases(value = {
 		Disease.MONKEYPOX })
 	LC_16(VaccineManufacturer.KM_BIOLOGICS),
-	@Diseases(value = {Disease.INVASIVE_PNEUMOCOCCAL_INFECTION})
+	@Diseases(value = {
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
 	PREVENAR_13_PFIZER(VaccineManufacturer.PFIZER, "PCV13"),
-	@Diseases(value = {Disease.INVASIVE_PNEUMOCOCCAL_INFECTION})
-	VAXNEUVANCE_MERCK(VaccineManufacturer.MERCK,"PCV15"),
-	@Diseases(value = {Disease.INVASIVE_PNEUMOCOCCAL_INFECTION})
+	@Diseases(value = {
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
+	VAXNEUVANCE_MERCK(VaccineManufacturer.MERCK, "PCV15"),
+	@Diseases(value = {
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
 	PREVNAR_20_PFIZER(VaccineManufacturer.PFIZER, "PCV20"),
-	@Diseases(value = {Disease.INVASIVE_PNEUMOCOCCAL_INFECTION})
-	PNEUMOVAX_23_MERCK(VaccineManufacturer.MERCK,"PPV23"),
+	@Diseases(value = {
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
+	PNEUMOVAX_23_MERCK(VaccineManufacturer.MERCK, "PPV23"),
 	@Diseases(value = {
 		Disease.MONKEYPOX })
 	MVA_BN(VaccineManufacturer.BAVARIAN_NORDIC),
 	UNKNOWN,
 	OTHER;
+
+	// TODO: add RSV and Pertusis members + "ALL" check Chris and or Wikipedia.
 
 	@Nullable
 	private VaccineManufacturer manufacturer;

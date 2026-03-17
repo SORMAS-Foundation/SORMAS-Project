@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.security.RunAs;
 import javax.ejb.EJB;
@@ -30,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.common.DeletableEntityType;
+import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
@@ -226,6 +229,21 @@ public class CronService {
 	public void fetchExternalMessages() {
 		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.EXTERNAL_MESSAGES)) {
 			externalMessageFacade.fetchAndSaveExternalMessages(null);
+		}
+	}
+
+	@Schedule(hour = "*", minute = "*/5", persistent = false)
+	public void fetchSurveyResponses() {
+		if (!featureConfigurationFacade.isFeatureEnabled(FeatureType.EXTERNAL_MESSAGES)) {
+			logger.info("External messages are disabled, survey responses will not be fetched");
+			return;
+		}
+
+		List<ExternalMessageDto> externalMessageDtos = externalMessageFacade.saveAndProcessSurveyResponses();
+
+		if (logger.isInfoEnabled()) {
+			List<String> reportIds = externalMessageDtos.stream().map(ExternalMessageDto::getReportId).collect(Collectors.toList());
+			logger.info("Following response ids were saved: [{}]", reportIds);
 		}
 	}
 

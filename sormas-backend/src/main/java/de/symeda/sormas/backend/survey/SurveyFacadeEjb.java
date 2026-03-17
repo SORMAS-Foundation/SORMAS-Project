@@ -207,24 +207,26 @@ public class SurveyFacadeEjb implements SurveyFacade {
 
 	@Override
 	public List<SurveyReferenceDto> getAllAsReference() {
-		return getAllOrderedByName().map(SurveyFacadeEjb::toReferenceDto).collect(Collectors.toList());
-	}
-
-	@Override
-	public List<SurveyDto> getAll() {
-		return getAllOrderedByName().map(this::toDto).collect(Collectors.toList());
-	}
-
-	private Stream<Survey> getAllOrderedByName() {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Survey> cq = cb.createQuery(Survey.class);
 		Root<Survey> from = cq.from(Survey.class);
 		cq.orderBy(cb.desc(from.get(Survey.NAME)));
 
-		return getAsStream(cq);
+		return getAsStream(cq).map(SurveyFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
-	private @org.jetbrains.annotations.NotNull Stream<Survey> getAsStream(CriteriaQuery<Survey> cq) {
+	@Override
+	public List<SurveyDto> getAllWithExternalSurveyId() {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Survey> cq = cb.createQuery(Survey.class);
+		Root<Survey> from = cq.from(Survey.class);
+		cq.where(cb.isNotNull(from.get(Survey.EXTERNAL_ID)));
+		cq.orderBy(cb.desc(from.get(Survey.ID)));
+
+		return getAsStream(cq).map(this::toDto).collect(Collectors.toList());
+	}
+
+	private Stream<Survey> getAsStream(CriteriaQuery<Survey> cq) {
 		return em.createQuery(cq).getResultList().stream();
 	}
 
@@ -235,7 +237,7 @@ public class SurveyFacadeEjb implements SurveyFacade {
 	}
 
 	@Override
-	public List<SurveyDto> getByExternalIdsAsReference(List<String> externalId) {
+	public List<SurveyDto> getByExternalIds(List<String> externalId) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Survey> cq = cb.createQuery(Survey.class);
 		Root<Survey> from = cq.from(Survey.class);

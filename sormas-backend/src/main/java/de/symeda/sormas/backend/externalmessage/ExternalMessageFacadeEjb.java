@@ -90,10 +90,12 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.api.systemevents.SystemEventDto;
 import de.symeda.sormas.api.systemevents.SystemEventType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResult;
@@ -168,6 +170,8 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@Inject
 	private AutomaticSurveyResponseProcessor automaticSurveyResponseProcessor;
+	@EJB
+	private SystemConfigurationValueFacade systemConfigurationValueFacade;
 
 	ExternalMessage fillOrBuildEntity(@NotNull ExternalMessageDto source, ExternalMessage target, boolean checkChangeDate) {
 
@@ -318,10 +322,20 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	}
 
 	@Override
-	public List<ExternalMessageDto> saveAndProcessSurveyResponses(List<ExternalMessageDto> dtos) {
+	public List<ExternalMessageDto> saveAndProcessSurveyResponses(Date since) {
+
+		if (since == null) {
+			// TODO: configurable date value.
+			logger.error("Since date should be configurable");
+			since = DateHelper.addDays(new Date(), -7);
+		}
+
+		ExternalMessageAdapterFacade externalLabResultsFacade = getSurveyExternalMessageFacade();
+		ExternalMessageResult<List<ExternalMessageDto>> externalMessagesResult = externalLabResultsFacade.getExternalMessages(since);
+		List<ExternalMessageDto> surveyResponses = externalMessagesResult.getValue();
 		List<ExternalMessageDto> savedDtos;
 		try {
-			List<SurveyResponseProcessingResult> processingResults = automaticSurveyResponseProcessor.processSurveyResponses(dtos);
+			List<SurveyResponseProcessingResult> processingResults = automaticSurveyResponseProcessor.processSurveyResponses(surveyResponses);
 
 			processingResults.forEach(wrapper -> {
 				ProcessingResultStatus result = wrapper.getResultStatus();
@@ -330,12 +344,12 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 				}
 			});
 		} catch (InterruptedException e) {
-			logger.error("Could not process lab message with UUID [{}]", extractUuids(dtos), e);
+			logger.error("Could not process lab message with UUID [{}]", extractUuids(surveyResponses), e);
 			Thread.currentThread().interrupt();
 		} catch (ExecutionException e) {
-			logger.error("Could not process survey responses with UUID [{}]", extractUuids(dtos), e);
+			logger.error("Could not process survey responses with UUID [{}]", extractUuids(surveyResponses), e);
 		} finally {
-			savedDtos = dtos.stream().map(this::save).collect(toList());
+			savedDtos = surveyResponses.stream().map(this::save).collect(toList());
 		}
 
 		return savedDtos;
@@ -833,6 +847,21 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		}
 
 		return (ExternalMessageAdapterFacade) ic.lookup(jndiName);
+	}
+
+	private ExternalMessageAdapterFacade getSurveyExternalMessageFacade() {
+		try {
+			InitialContext ic = new InitialContext();
+			String jndiName = configFacade.getExternalMessageAdapterJndiName();
+
+			if (jndiName == null) {
+				throw new CannotProceedException(I18nProperties.getValidationError(Validations.externalMessageConfigError));
+			}
+
+			return (ExternalMessageAdapterFacade) ic.lookup(jndiName);
+		} catch (NamingException e) {
+			throw new RuntimeException("Could not create of instance of SurveyExternalMessageFacade", e);
+		}
 	}
 
 	@Override

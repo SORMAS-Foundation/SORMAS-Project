@@ -50,22 +50,26 @@ public class AutomaticSurveyResponseProcessor {
 	public List<SurveyResponseProcessingResult> processSurveyResponses(List<ExternalMessageDto> externalMessages)
 		throws InterruptedException, ExecutionException {
 
+		// TODO: check if already processed + flag to determine if something should be done about it.
+		logger.error("TODO: check if already processed + flag to determine if something should be done about it");
+
 		List<ExternalSurveyResponseData> surveyResponseWrappers =
 			externalMessages.stream().map(ExternalMessageDto::getSurveyResponseData).collect(Collectors.toList());
 
-		Map<String, String> tokenByExternalTokenIdDictionary = surveyResponseWrappers.stream().map(responseData -> {
-			ExternalMessageSurveyResponseRequest request = responseData.getLatest().getRequest();
-			return new Tuple<>(request.getExternalSurveyId(), request.getToken());
-		}).collect(CollectorUtils.toOrderedNullSafeMap(Tuple::getFirst, Tuple::getSecond));
+		Map<String, String> tokenByExternalTokenIdDictionary =
+			externalMessages.stream().map(ExternalMessageDto::getSurveyResponseData).map(responseData -> {
+				ExternalMessageSurveyResponseRequest request = responseData.getLatest().getRequest();
+				return new Tuple<>(request.getExternalSurveyId(), request.getToken());
+			}).collect(CollectorUtils.toOrderedNullSafeMap(Tuple::getFirst, Tuple::getSecond));
 
 		List<String> externalSurveyIds = new ArrayList<>(tokenByExternalTokenIdDictionary.keySet());
 
-		List<Tuple<SurveyReferenceDto, String>> collect = surveyFacade.getByExternalIdsAsReference(externalSurveyIds)
+		List<Tuple<SurveyReferenceDto, String>> tokenBySurveyReferenceTuples = surveyFacade.getByExternalIds(externalSurveyIds)
 			.stream()
 			.map(survey -> new Tuple<>(survey.toReference(), tokenByExternalTokenIdDictionary.get(survey.getExternalId())))
 			.collect(Collectors.toList());
 
-		List<SurveyTokenDto> surveyTokens = surveyTokenFacade.getBySurveyReferenceTokenTuples(collect);
+		List<SurveyTokenDto> surveyTokens = surveyTokenFacade.getBySurveyReferenceTokenTuples(tokenBySurveyReferenceTuples);
 
 		return externalMessages.stream()
 			.map((ExternalMessageDto externalMessage) -> tryProcessExternalMessage(externalMessage, surveyTokens))
