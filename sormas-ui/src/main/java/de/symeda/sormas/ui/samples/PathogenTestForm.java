@@ -1053,7 +1053,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			"unchecked",
 			"rawtypes" })
 		@Override
-		public void valueChange(com.vaadin.v7.data.Property.ValueChangeEvent event) {
+		public void valueChange(Property.ValueChangeEvent event) {
 
 			final Field<?> igraInputField = fieldGroup.getField(igraInputFieldId);
 
@@ -1164,7 +1164,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			"rawtypes",
 			"unchecked" })
 		@Override
-		public void valueChange(com.vaadin.v7.data.Property.ValueChangeEvent event) {
+		public void valueChange(Property.ValueChangeEvent event) {
 
 			// let's try to get the numeric input field and converted value
 			final Field<?> igraInputField = fieldGroup.getField(igraInputFieldId);
