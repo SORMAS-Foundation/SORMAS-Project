@@ -5,6 +5,9 @@ import java.util.Objects;
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
+/**
+ * Resulting object that is built in case some field couldn't be mapped during data patching.
+ */
 public class DataPatchFailure {
 
 	@NotNull

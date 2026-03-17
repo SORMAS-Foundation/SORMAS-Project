@@ -6,11 +6,20 @@ import java.util.Set;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+/**
+ * Allows to retrieve field values and their respective field names.
+ */
 public class PartialRetrievalRequest {
 
+	/**
+	 * Root object for retrieval is the case.
+	 */
 	@NotNull
 	private String caseUuid;
 
+	/**
+	 * Example: CaseData.hospitalization. Must be the physical path of the DTO.
+	 */
 	@NotNull
 	@NotEmpty
 	private Set<String> fieldsToRetrieve;

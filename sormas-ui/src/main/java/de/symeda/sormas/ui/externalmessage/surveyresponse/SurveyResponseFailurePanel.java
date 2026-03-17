@@ -51,7 +51,10 @@ public class SurveyResponseFailurePanel extends VerticalLayout {
 			.setId("field")
 			.setExpandRatio(2);
 
-		grid.addColumn(entry -> entry.getValue().getDataPatchFailureCause() != null ? entry.getValue().getDataPatchFailureCause().name() : "")
+		grid.addColumn(
+			entry -> entry.getValue().getDataPatchFailureCause() != null
+				? I18nProperties.getEnumCaption(entry.getValue().getDataPatchFailureCause())
+				: "")
 			.setCaption(I18nProperties.getCaption(Captions.surveyResponseFailureCause))
 			.setId("cause")
 			.setExpandRatio(2);

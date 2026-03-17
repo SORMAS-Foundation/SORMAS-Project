@@ -84,7 +84,8 @@ public class SurveyResponseFailureEditor extends Window {
 
 				String fieldLabel = resolveFieldName(fieldPath, displayData);
 				String currentValue = resolveCurrentValue(fieldPath, displayData);
-				String causeName = failure.getDataPatchFailureCause() != null ? failure.getDataPatchFailureCause().name() : "";
+				String causeName =
+					failure.getDataPatchFailureCause() != null ? I18nProperties.getEnumCaption(failure.getDataPatchFailureCause()) : "";
 
 				VerticalLayout fieldContainer = new VerticalLayout();
 				fieldContainer.setMargin(false);

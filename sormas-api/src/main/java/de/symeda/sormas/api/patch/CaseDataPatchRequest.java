@@ -152,4 +152,11 @@ public class CaseDataPatchRequest {
 			inputLanguages,
 			allowFallbackValues);
 	}
+
+	@Override
+	public String toString() {
+		return "CaseDataPatchRequest{" + "caseUuid='" + caseUuid + '\'' + ", patchedInCaseOfFailures=" + patchedInCaseOfFailures
+			+ ", replacementStrategy=" + replacementStrategy + ", emptyValueBehavior=" + emptyValueBehavior + ", patchDictionary=" + patchDictionary
+			+ ", origin='" + origin + '\'' + ", inputLanguages=" + inputLanguages + ", allowFallbackValues=" + allowFallbackValues + '}';
+	}
 }

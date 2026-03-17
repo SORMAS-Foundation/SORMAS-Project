@@ -26,7 +26,7 @@ public class DataPatchResponse {
 	private Map<String, Object> validPatchDictionary = new HashMap<>();
 
 	/**
-	 * Provides the reason for the failure.
+	 * Provides the reason for the failure for the impacted fields.
 	 */
 	private Map<String, DataPatchFailure> failures = new HashMap<>();
 
