@@ -2,6 +2,9 @@ package de.symeda.sormas.api.patch.partial_retrieval;
 
 import java.util.Objects;
 
+/**
+ * Type to display a specific value to the user with its field name and its value.
+ */
 public class DisplayableFieldInfo {
 
 	private String translatedFieldName;
