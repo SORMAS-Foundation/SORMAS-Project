@@ -239,6 +239,8 @@ public class CronService {
 			return;
 		}
 
+		logger.error("fetchSurveyResponses is triggered");
+
 		List<ExternalMessageDto> externalMessageDtos = externalMessageFacade.saveAndProcessSurveyResponses();
 
 		if (logger.isInfoEnabled()) {

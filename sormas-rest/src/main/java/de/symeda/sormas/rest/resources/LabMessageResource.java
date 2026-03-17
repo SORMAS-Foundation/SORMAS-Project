@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.rest.resources;
 
+import java.util.List;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -39,6 +41,12 @@ public class LabMessageResource {
 	@Path("/{uuid}")
 	public ExternalMessageDto getByUuid(@PathParam("uuid") String uuid) {
 		return FacadeProvider.getExternalMessageFacade().getByUuid(uuid);
+	}
+
+	@POST
+	@Path("/surveyResponses/process")
+	public List<ExternalMessageDto> saveAndProcessSurveyResponses() {
+		return FacadeProvider.getExternalMessageFacade().saveAndProcessSurveyResponses();
 	}
 
 	@POST

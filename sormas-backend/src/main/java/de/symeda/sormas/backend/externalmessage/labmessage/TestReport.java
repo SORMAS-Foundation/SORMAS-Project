@@ -128,7 +128,6 @@ public class TestReport extends AbstractDomainObject {
 	private RsvSubtype rsvSubtype;
 
 	private PathogenSpecie specie;
-
 	private Float tubeNil;
 	private Boolean tubeNilGT10;
 	private Float tubeAgTb1;
