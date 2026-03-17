@@ -50,9 +50,6 @@ public class AutomaticSurveyResponseProcessor {
 	public List<SurveyResponseProcessingResult> processSurveyResponses(List<ExternalMessageDto> externalMessages)
 		throws InterruptedException, ExecutionException {
 
-		// TODO: check if already processed + flag to determine if something should be done about it.
-		logger.error("TODO: check if already processed + flag to determine if something should be done about it");
-
 		List<ExternalSurveyResponseData> surveyResponseWrappers =
 			externalMessages.stream().map(ExternalMessageDto::getSurveyResponseData).collect(Collectors.toList());
 
@@ -81,6 +78,13 @@ public class AutomaticSurveyResponseProcessor {
 
 		ExternalMessageSurveyResponseWrapper latestResponseWrapper = externalMessage.getSurveyResponseData().getLatest();
 		ExternalMessageSurveyResponseRequest request = latestResponseWrapper.getRequest();
+
+		if (latestResponseWrapper.getResult() != null && request.isSkipIfAlreadyProcessed()) {
+			logger.info(
+				"Skipping survey response for external message [{}]: already processed and skipIfAlreadyProcessed=true",
+				externalMessage.getUuid());
+			return surveyResponseProcessingResult.setResultStatus(ProcessingResultStatus.CANCELED);
+		}
 
 		Optional<SurveyTokenDto> surveyToken =
 			surveyTokens.stream().filter(tokenCandidate -> tokenCandidate.getToken().equals(request.getToken())).findAny();
