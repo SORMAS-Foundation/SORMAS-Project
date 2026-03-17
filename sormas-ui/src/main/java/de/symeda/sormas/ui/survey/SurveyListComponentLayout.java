@@ -179,6 +179,15 @@ public class SurveyListComponentLayout extends SideComponentLayout {
 				listEntry.setComponentAlignment(downloadButton, Alignment.TOP_RIGHT);
 				listEntry.setExpandRatio(downloadButton, 0);
 
+				if (Boolean.TRUE.equals(token.getResponseReceived())) {
+					Button eyeButton = ButtonHelper.createIconButton(null, VaadinIcons.EYE, e -> {
+						new SurveyQuestionnaireWindow(listEntry.getToken().toReference());
+					}, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
+					listEntry.addComponent(eyeButton);
+					listEntry.setComponentAlignment(eyeButton, Alignment.TOP_RIGHT);
+					listEntry.setExpandRatio(eyeButton, 0);
+				}
+
 				listEntry.addActionButton(String.valueOf(i), (Button.ClickListener) clickEvent -> {
 					ControllerProvider.getSurveyTokenController().showCaseSurveyDetails(listEntry.getToken().toReference(), this::reload);
 				}, UiUtil.permitted(isEditAllowed, UserRight.SURVEY_EDIT));

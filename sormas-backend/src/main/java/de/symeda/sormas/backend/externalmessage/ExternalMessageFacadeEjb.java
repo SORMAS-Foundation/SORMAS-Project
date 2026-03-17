@@ -534,10 +534,10 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setTuberculosisBeijingLineage(source.getTuberculosisBeijingLineage());
 
 		ExternalMessageAdditionalDataType additionalDataType = source.getAdditionalDataType();
-		String additionalData = source.getAdditionalData();
-		if (additionalDataType != null && additionalData != null) {
+		String additionalDataJson = source.getAdditionalDataJson();
+		if (additionalDataType != null && additionalDataJson != null) {
 			try {
-				Object additionalDataInstance = ObjectMapperProvider.getInstance().readValue(additionalData, additionalDataType.getDataClass());
+				Object additionalDataInstance = ObjectMapperProvider.getInstance().readValue(additionalDataJson, additionalDataType.getDataClass());
 				if (additionalDataInstance instanceof ExternalSurveyResponseData) {
 					target.setSurveyResponseData((ExternalSurveyResponseData) additionalDataInstance);
 				} else {

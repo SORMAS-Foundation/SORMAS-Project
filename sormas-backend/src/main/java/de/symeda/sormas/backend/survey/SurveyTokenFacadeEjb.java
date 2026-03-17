@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Tuple;
@@ -44,6 +45,8 @@ import de.symeda.sormas.api.survey.SurveyTokenDto;
 import de.symeda.sormas.api.survey.SurveyTokenFacade;
 import de.symeda.sormas.api.survey.SurveyTokenIndexDto;
 import de.symeda.sormas.api.survey.SurveyTokenReferenceDto;
+import de.symeda.sormas.api.survey.external.ExternalSurveyProviderFacade;
+import de.symeda.sormas.api.survey.external.views.ExternalSurveyView;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -89,6 +92,8 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private DocumentService documentService;
+	@Inject
+	private ExternalSurveyProviderFacade externalSurveyProviderFacade;
 
 	private static final String SURVEY_TOKEN_IMPORT_TEMPLATE_FILE_NAME = "import_survey_tokens_template.csv";
 
@@ -307,8 +312,30 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 		target.setGeneratedDocument(DocumentFacadeEjb.toReferenceDto(source.getGeneratedDocument()));
 		target.setResponseReceived(source.isResponseReceived());
 		target.setResponseReceivedDate(source.getResponseReceivedDate());
+		target.setExternalRespondentId(source.getExternalRespondentId());
 
 		return target;
+	}
+
+	@Override
+	public ExternalSurveyView getExternalSurveyView(String surveyTokenUuid) {
+		if (externalSurveyProviderFacade == null) {
+			return null;
+		}
+
+		SurveyToken surveyToken = surveyTokenService.getByUuid(surveyTokenUuid);
+		if (surveyToken == null) {
+			return null;
+		}
+
+		String externalRespondentId = surveyToken.getExternalRespondentId();
+		String externalSurveyId = surveyToken.getSurvey() != null ? surveyToken.getSurvey().getExternalId() : null;
+
+		if (externalSurveyId == null || externalRespondentId == null) {
+			return null;
+		}
+
+		return externalSurveyProviderFacade.getExternalSurveyView(externalSurveyId, externalRespondentId);
 	}
 
 	public static SurveyTokenReferenceDto toReferenceDto(SurveyToken entity) {

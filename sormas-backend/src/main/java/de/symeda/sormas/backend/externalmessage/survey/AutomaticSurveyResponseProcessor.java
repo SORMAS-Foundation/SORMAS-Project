@@ -20,7 +20,6 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseRequest;
 import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseResult;
 import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseWrapper;
-import de.symeda.sormas.api.externalmessage.survey.ExternalSurveyResponseData;
 import de.symeda.sormas.api.patch.CaseDataPatchRequest;
 import de.symeda.sormas.api.patch.DataPatchResponse;
 import de.symeda.sormas.api.patch.DataPatcher;
@@ -50,20 +49,17 @@ public class AutomaticSurveyResponseProcessor {
 	public List<SurveyResponseProcessingResult> processSurveyResponses(List<ExternalMessageDto> externalMessages)
 		throws InterruptedException, ExecutionException {
 
-		List<ExternalSurveyResponseData> surveyResponseWrappers =
-			externalMessages.stream().map(ExternalMessageDto::getSurveyResponseData).collect(Collectors.toList());
-
-		Map<String, String> tokenByExternalTokenIdDictionary =
+		Map<String, String> tokenByExternalSurveyIdDictionary =
 			externalMessages.stream().map(ExternalMessageDto::getSurveyResponseData).map(responseData -> {
 				ExternalMessageSurveyResponseRequest request = responseData.getLatest().getRequest();
 				return new Tuple<>(request.getExternalSurveyId(), request.getToken());
 			}).collect(CollectorUtils.toOrderedNullSafeMap(Tuple::getFirst, Tuple::getSecond));
 
-		List<String> externalSurveyIds = new ArrayList<>(tokenByExternalTokenIdDictionary.keySet());
+		List<String> externalSurveyIds = new ArrayList<>(tokenByExternalSurveyIdDictionary.keySet());
 
 		List<Tuple<SurveyReferenceDto, String>> tokenBySurveyReferenceTuples = surveyFacade.getByExternalIds(externalSurveyIds)
 			.stream()
-			.map(survey -> new Tuple<>(survey.toReference(), tokenByExternalTokenIdDictionary.get(survey.getExternalId())))
+			.map(survey -> new Tuple<>(survey.toReference(), tokenByExternalSurveyIdDictionary.get(survey.getExternalId())))
 			.collect(Collectors.toList());
 
 		List<SurveyTokenDto> surveyTokens = surveyTokenFacade.getBySurveyReferenceTokenTuples(tokenBySurveyReferenceTuples);
@@ -86,10 +82,12 @@ public class AutomaticSurveyResponseProcessor {
 			return surveyResponseProcessingResult.setResultStatus(ProcessingResultStatus.CANCELED);
 		}
 
+		String requestToken = request.getToken();
 		Optional<SurveyTokenDto> surveyToken =
-			surveyTokens.stream().filter(tokenCandidate -> tokenCandidate.getToken().equals(request.getToken())).findAny();
+			surveyTokens.stream().filter(tokenCandidate -> tokenCandidate.getToken().equals(requestToken)).findAny();
 
 		if (surveyToken.isEmpty()) {
+			logger.error("Token could not be found within available survey token DTOs: [{}]. Survey response processing is cancelled.", requestToken);
 			return surveyResponseProcessingResult.setResultStatus(ProcessingResultStatus.CANCELED);
 		}
 

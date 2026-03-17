@@ -5,6 +5,10 @@ import java.util.Objects;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResultStatus;
 
+/**
+ * Wrapper object once a SurveyResponse external message was processed.
+ * Exceptions are caught to be able to continue with the next message from the list.
+ */
 public class SurveyResponseProcessingResult {
 
 	private ExternalMessageDto externalMessage;

@@ -229,7 +229,7 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	private ExternalMessageAdditionalDataType additionalDataType;
 
-	private String additionalData;
+	private String additionalDataJson;
 
 	@Enumerated(EnumType.STRING)
 	public ExternalMessageType getType() {
@@ -948,12 +948,12 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	@Column(columnDefinition = "jsonb")
 	@Type(type = "jsonb")
-	public String getAdditionalData() {
-		return additionalData;
+	public String getAdditionalDataJson() {
+		return additionalDataJson;
 	}
 
-	public ExternalMessage setAdditionalData(String additionalData) {
-		this.additionalData = additionalData;
+	public ExternalMessage setAdditionalDataJson(String additionalData) {
+		this.additionalDataJson = additionalData;
 		return this;
 	}
 }
