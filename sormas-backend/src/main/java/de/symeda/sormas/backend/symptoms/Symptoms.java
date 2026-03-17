@@ -281,6 +281,12 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState reoccurrence;
 	private SymptomState overnightStayRequired;
 	private SymptomState bloating;
+	private SymptomState lossOfAppetite;
+	private SymptomState flatulence;
+	private SymptomState smellyBurps;
+	private SymptomState coughingAttacks;
+	private SymptomState coughingAtNight;
+	private SymptomState abdominalCramps;
 
 	// when adding new fields make sure to extend toHumanString
 
@@ -2185,5 +2191,59 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setBloating(SymptomState bloating) {
 		this.bloating = bloating;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getLossOfAppetite() {
+		return lossOfAppetite;
+	}
+
+	public void setLossOfAppetite(SymptomState lossOfAppetite) {
+		this.lossOfAppetite = lossOfAppetite;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getFlatulence() {
+		return flatulence;
+	}
+
+	public void setFlatulence(SymptomState flatulence) {
+		this.flatulence = flatulence;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getSmellyBurps() {
+		return smellyBurps;
+	}
+
+	public void setSmellyBurps(SymptomState smellyBurps) {
+		this.smellyBurps = smellyBurps;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getCoughingAttacks() {
+		return coughingAttacks;
+	}
+
+	public void setCoughingAttacks(SymptomState coughingAttacks) {
+		this.coughingAttacks = coughingAttacks;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getCoughingAtNight() {
+		return coughingAtNight;
+	}
+
+	public void setCoughingAtNight(SymptomState coughingAtNight) {
+		this.coughingAtNight = coughingAtNight;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getAbdominalCramps() {
+		return abdominalCramps;
+	}
+
+	public void setAbdominalCramps(SymptomState abdominalCramps) {
+		this.abdominalCramps = abdominalCramps;
 	}
 }

@@ -247,6 +247,12 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setWeightLossAmount(source.getWeightLossAmount());
 		target.setBloating(source.getBloating());
 		target.setOvernightStayRequired(source.getOvernightStayRequired());
+		target.setLossOfAppetite(source.getLossOfAppetite());
+		target.setFlatulence(source.getFlatulence());
+		target.setSmellyBurps(source.getSmellyBurps());
+		target.setCoughingAttacks(source.getCoughingAttacks());
+		target.setCoughingAtNight(source.getCoughingAtNight());
+		target.setAbdominalCramps(source.getAbdominalCramps());
 
 		return target;
 	}
@@ -478,6 +484,12 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setDurationOfSymptoms(source.getDurationOfSymptoms());
 		target.setWeightLoss(source.getWeightLoss());
 		target.setWeightLossAmount(source.getWeightLossAmount());
+		target.setLossOfAppetite(source.getLossOfAppetite());
+		target.setFlatulence(source.getFlatulence());
+		target.setSmellyBurps(source.getSmellyBurps());
+		target.setCoughingAttacks(source.getCoughingAttacks());
+		target.setCoughingAtNight(source.getCoughingAtNight());
+		target.setAbdominalCramps(source.getAbdominalCramps());
 		return target;
 	}
 

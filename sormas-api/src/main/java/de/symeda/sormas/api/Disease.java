@@ -97,6 +97,9 @@ public enum Disease
 	OTHER(true, true, true, false, true, 21, false, false, false),
 	UNDEFINED(true, true, true, false, true, 0, false, false, false);
 
+	/**
+	 * Immutable that eager loads all available diseases.
+	 */
 	public static final Set<Disease> ALL_DISEASES =
 		Arrays.stream(Disease.values()).collect(Collectors.collectingAndThen(Collectors.toSet(), ImmutableSet::copyOf));
 
