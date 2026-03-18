@@ -23,6 +23,9 @@ import de.symeda.sormas.api.patch.mapping.ValuePatchRequest;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb;
 import de.symeda.sormas.backend.util.StringNormalizer;
 
+/**
+ * Allows to find the adequate value for customizable enum values.
+ */
 @ApplicationScoped
 public class CustomizableEnumPatchMapper implements ValuePatchMapper {
 
