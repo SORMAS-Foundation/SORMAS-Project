@@ -18,6 +18,7 @@
 package de.symeda.sormas.api.symptoms;
 
 import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_GERMANY;
+import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_LUXEMBOURG;
 import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_SWITZERLAND;
 import static de.symeda.sormas.api.Disease.ACUTE_VIRAL_HEPATITIS;
 import static de.symeda.sormas.api.Disease.ADENOVIRUS;
@@ -119,7 +120,7 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	public static final String I18N_PREFIX = "Symptoms";
 
-	//Symptoms
+	// Symptoms
 	public static final String ABDOMINAL_PAIN = "abdominalPain";
 	public static final String ABNORMAL_LUNG_XRAY_FINDINGS = "abnormalLungXrayFindings";
 	public static final String ACUTE_RESPIRATORY_DISTRESS_SYNDROME = "acuteRespiratoryDistressSyndrome";
@@ -344,6 +345,35 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String SYMPTOM_CURRENT_STATUS = "symptomCurrentStatus";
 	public static final String DURATION_OF_SYMPTOMS = "durationOfSymptoms";
 
+	// Malaria and Dengue specific symptoms
+	public static final String CLAMMY_SKIN = "clammySkin";
+	public static final String COLD_SKIN = "coldSkin";
+	public static final String ENCEPHALITIS = "encephalitis";
+	public static final String GUILLAIN_BARRE_SYNDROME = "guillainBarreSyndrome";
+	public static final String LETHARGY = "lethargy";
+	public static final String CONFUSION = "confusion";
+	public static final String CONVULSIONS = "convulsions";
+	public static final String PERSISTENT_VOMITING = "persistentVomiting";
+	public static final String RESTLESSNESS = "restlessness";
+	public static final String ACUTE_BLEEDING = "acuteBleeding";
+	public static final String SEVERE_ORGAN_IMPAIRMENT = "severeOrganImpairment";
+	public static final String PLASMA_LEAKAGE_SIGN = "plasmaLeakageSign";
+	public static final String POLYDIPSIA = "polydipsia";
+	public static final String SYNDROMIC_FLU = "syndromicFlu";
+	public static final String ANEMIA = "anemia";
+	public static final String ALTERED_LEVEL_OF_CONSCIOUSNESS = "alteredLevelOfConsciousness";
+	public static final String SEVERE_ANEMIA = "severeAnemia";
+	public static final String ACUTE_KIDNEY_FAILURE = "acuteKidneyFailure";
+	public static final String METABOLIC_ACIDOSIS = "metabolicAcidosis";
+	public static final String DISSEMINATED_INTRA_VASCULAR_COAGULATION = "disseminatedIntraVascularCoagulation";
+	public static final String OFFSET_DATE = "offsetDate";
+	public static final String CLINICAL_MANIFESTATION = "clinicalManifestation";
+	public static final String CLINICAL_MANIFESTATION_TEXT = "clinicalManifestationText";
+	public static final String CEREBRAL_MALARIA = "cerebralMalaria";
+	public static final String SCANT_HEMORRHAGE = "scantHemorrhage";
+	public static final String OTHER_NEUROLOCAL_SYMPTOM = "otherNeurolocalSymptom";
+	public static final String OTHER_NEUROLOCAL_SYMPTOM_TEXT = "otherNeurolocalSymptomText";
+
 	// Fields are declared in the order they should appear in the import template
 
 	public static SymptomsDto build() {
@@ -369,9 +399,12 @@ public class SymptomsDto extends PseudonymizableDto {
 		GIARDIASIS,
 		CRYPTOSPORIDIOSIS,
 		UNDEFINED,
+		DENGUE,
 		OTHER })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
+	@Complication({
+		DENGUE })
 	private SymptomState abdominalPain;
 
 	@Diseases({
@@ -387,11 +420,12 @@ public class SymptomsDto extends PseudonymizableDto {
 		UNSPECIFIED_VHF,
 		GIARDIASIS,
 		CRYPTOSPORIDIOSIS,
+		MALARIA,
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
 	@HideForCountries
-	@SymptomGrouping(SymptomGroup.GENERAL)
+	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
 	private SymptomState anorexiaAppetiteLoss;
 
 	@Diseases({
@@ -466,6 +500,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		GUINEA_WORM,
 		LASSA,
 		POLIO,
+		DENGUE,
 		UNSPECIFIED_VHF,
 		UNDEFINED,
 		OTHER })
@@ -480,6 +515,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		GUINEA_WORM,
 		LASSA,
 		POLIO,
+		DENGUE,
 		UNSPECIFIED_VHF,
 		UNDEFINED,
 		OTHER })
@@ -537,6 +573,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		ANTHRAX,
 		POLIO,
 		CORONAVIRUS,
+		MALARIA,
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
@@ -552,6 +589,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		MEASLES,
 		MONKEYPOX,
 		POLIO,
+		DENGUE,
 		UNSPECIFIED_VHF,
 		UNDEFINED,
 		OTHER })
@@ -574,6 +612,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		ANTHRAX,
 		UNSPECIFIED_VHF,
 		CORONAVIRUS,
+		PERTUSSIS,
 		RESPIRATORY_SYNCYTIAL_VIRUS,
 		UNDEFINED,
 		OTHER })
@@ -616,6 +655,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		GUINEA_WORM,
 		POLIO,
 		YELLOW_FEVER,
+		MALARIA,
 		UNSPECIFIED_VHF,
 		UNDEFINED,
 		OTHER })
@@ -655,6 +695,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		UNSPECIFIED_VHF,
 		GIARDIASIS,
 		CRYPTOSPORIDIOSIS,
+		MALARIA,
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
@@ -775,6 +816,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		PERTUSSIS,
 		GIARDIASIS,
 		CRYPTOSPORIDIOSIS,
+		MALARIA,
+		DENGUE,
 		OTHER })
 	@Outbreaks
 	@SymptomGrouping(SymptomGroup.GENERAL)
@@ -810,7 +853,9 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@DependantOn(UNEXPLAINED_BLEEDING)
 	@HideForCountries
-	@SymptomGrouping(SymptomGroup.OTHER)
+	@SymptomGrouping(SymptomGroup.GENERAL)
+	@Complication({
+		DENGUE })
 	private SymptomState gumsBleeding;
 
 	@Diseases({
@@ -829,6 +874,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		RABIES,
 		ANTHRAX,
 		CORONAVIRUS,
+		MALARIA,
+		DENGUE,
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
@@ -887,10 +934,14 @@ public class SymptomsDto extends PseudonymizableDto {
 		POLIO,
 		UNSPECIFIED_VHF,
 		CONGENITAL_RUBELLA,
+		MALARIA,
+		DENGUE,
 		UNDEFINED,
 		OTHER })
 	@HideForCountries
-	@SymptomGrouping(SymptomGroup.OTHER)
+	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
+	@Complication({
+		DENGUE })
 	private SymptomState jaundice;
 
 	@Diseases({
@@ -911,6 +962,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		DENGUE,
 		CORONAVIRUS,
 		UNSPECIFIED_VHF,
+		MALARIA,
+		DENGUE,
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
@@ -1141,6 +1194,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CORONAVIRUS,
 		UNDEFINED,
 		MEASLES,
+		DENGUE,
 		OTHER })
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
@@ -1211,6 +1265,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		POLIO,
 		CORONAVIRUS,
 		UNSPECIFIED_VHF,
+		MALARIA,
+		DENGUE,
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
@@ -1236,10 +1292,14 @@ public class SymptomsDto extends PseudonymizableDto {
 		CORONAVIRUS,
 		CRYPTOSPORIDIOSIS,
 		GIARDIASIS,
+		MALARIA,
+		DENGUE,
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
 	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
+	@Complication({
+		DENGUE })
 	private SymptomState nausea;
 
 	@Diseases({
@@ -1261,12 +1321,15 @@ public class SymptomsDto extends PseudonymizableDto {
 		LASSA,
 		POLIO,
 		YELLOW_FEVER,
+		DENGUE,
 		UNSPECIFIED_VHF,
 		UNDEFINED,
 		OTHER })
 	@DependantOn(UNEXPLAINED_BLEEDING)
 	@HideForCountries
-	@SymptomGrouping(SymptomGroup.OTHER)
+	@SymptomGrouping(SymptomGroup.GENERAL)
+	@Complication({
+		DENGUE })
 	private SymptomState noseBleeding;
 
 	@Diseases({
@@ -1489,6 +1552,9 @@ public class SymptomsDto extends PseudonymizableDto {
 		PLAGUE,
 		UNSPECIFIED_VHF,
 		CONGENITAL_RUBELLA,
+		CRYPTOSPORIDIOSIS,
+		GIARDIASIS,
+		RESPIRATORY_SYNCYTIAL_VIRUS,
 		POLIO,
 		RABIES,
 		CORONAVIRUS,
@@ -1554,11 +1620,14 @@ public class SymptomsDto extends PseudonymizableDto {
 		GUINEA_WORM,
 		LASSA,
 		POLIO,
+		DENGUE,
 		UNSPECIFIED_VHF,
 		UNDEFINED,
 		OTHER })
 	@HideForCountries
-	@SymptomGrouping(SymptomGroup.OTHER)
+	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
+	@Complication({
+		DENGUE })
 	private SymptomState palpableLiver;
 
 	@Diseases({
@@ -1567,10 +1636,11 @@ public class SymptomsDto extends PseudonymizableDto {
 		LASSA,
 		POLIO,
 		UNSPECIFIED_VHF,
+		MALARIA,
 		UNDEFINED,
 		OTHER })
 	@HideForCountries
-	@SymptomGrouping(SymptomGroup.OTHER)
+	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
 	private SymptomState palpableSpleen;
 
 	@Diseases({
@@ -1615,10 +1685,14 @@ public class SymptomsDto extends PseudonymizableDto {
 		GUINEA_WORM,
 		POLIO,
 		RESPIRATORY_SYNCYTIAL_VIRUS,
+		MALARIA,
+		DENGUE,
 		UNSPECIFIED_VHF,
 		UNDEFINED,
 		OTHER })
-	@SymptomGrouping(SymptomGroup.RESPIRATORY)
+	@SymptomGrouping(SymptomGroup.CARDIOVASCULAR)
+	@Complication({
+		DENGUE })
 	private SymptomState rapidBreathing;
 
 	@Diseases({
@@ -1629,11 +1703,14 @@ public class SymptomsDto extends PseudonymizableDto {
 		DENGUE,
 		POLIO,
 		UNSPECIFIED_VHF,
+		DENGUE,
 		UNDEFINED,
 		OTHER })
 	@DependantOn(UNEXPLAINED_BLEEDING)
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
+	@Complication({
+		DENGUE })
 	private SymptomState redBloodVomit;
 
 	@Diseases({
@@ -1685,6 +1762,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		GUINEA_WORM,
 		LASSA,
 		POLIO,
+		DENGUE,
 		UNSPECIFIED_VHF,
 		UNDEFINED,
 		OTHER })
@@ -1692,6 +1770,9 @@ public class SymptomsDto extends PseudonymizableDto {
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+	@SymptomGrouping(SymptomGroup.SKIN)
+	@Complication({
+		DENGUE })
 	private SymptomState skinBruising;
 
 	@Diseases({
@@ -1710,7 +1791,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CORONAVIRUS })
 	@Outbreaks
 	@HideForCountries
-	@SymptomGrouping(SymptomGroup.OTHER)
+	@SymptomGrouping(SymptomGroup.SKIN)
 	/** Maculopapular rash */
 	private SymptomState skinRash;
 
@@ -1718,6 +1799,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		MEASLES })
 	@Outbreaks
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@SymptomGrouping(SymptomGroup.SKIN)
 	private Date skinRashOnsetDate;
 
 	@Diseases({
@@ -1764,7 +1846,6 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	@Diseases({
 		AFP,
-		DENGUE,
 		GUINEA_WORM,
 		POLIO,
 		UNSPECIFIED_VHF,
@@ -1794,6 +1875,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CORONAVIRUS,
 		GIARDIASIS,
 		CRYPTOSPORIDIOSIS,
+		MALARIA,
 		UNDEFINED,
 		OTHER })
 	@SensitiveData
@@ -1964,7 +2046,6 @@ public class SymptomsDto extends PseudonymizableDto {
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
-	@SymptomGrouping(SymptomGroup.OTHER)
 	private SymptomState unexplainedBleeding;
 
 	@Diseases({
@@ -1987,6 +2068,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		CORONAVIRUS,
 		CRYPTOSPORIDIOSIS,
 		GIARDIASIS,
+		MALARIA,
+		DENGUE,
 		OTHER })
 	@Outbreaks
 	@HideForCountries
@@ -2042,8 +2125,12 @@ public class SymptomsDto extends PseudonymizableDto {
 	private SymptomState insomnia;
 
 	@Diseases({
-		RABIES })
+		RABIES,
+		DENGUE })
 	@HideForCountries
+	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
+	@Complication({
+		DENGUE })
 	private SymptomState paralysis;
 
 	@Diseases({
@@ -2076,9 +2163,14 @@ public class SymptomsDto extends PseudonymizableDto {
 	private SymptomState paresis;
 
 	@Diseases({
-		RABIES })
+		RABIES,
+		MALARIA,
+		DENGUE })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
+	// Irritability and restlessness
+	@Complication({
+		DENGUE })
 	private SymptomState agitation;
 
 	@Diseases({
@@ -2103,7 +2195,8 @@ public class SymptomsDto extends PseudonymizableDto {
 	private SymptomState coma;
 
 	@Diseases({
-		ANTHRAX })
+		ANTHRAX,
+		DENGUE })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
 	private SymptomState convulsion;
@@ -2167,10 +2260,13 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	@Diseases({
 		CORONAVIRUS,
+		MALARIA,
 		UNDEFINED,
 		OTHER })
 	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
 	@SymptomGrouping(SymptomGroup.RESPIRATORY)
+	@Complication({
+		MALARIA })
 	private SymptomState acuteRespiratoryDistressSyndrome;
 
 	@Diseases({
@@ -2271,11 +2367,13 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	@Diseases({
 		CORONAVIRUS,
+		DENGUE,
 		UNDEFINED,
 		OTHER })
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
-		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+		CountryHelper.COUNTRY_CODE_SWITZERLAND,
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@SymptomGrouping(SymptomGroup.CARDIOVASCULAR)
 	private SymptomState fastHeartRate;
 
@@ -2306,7 +2404,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
-	@Complication
+
 	@HideForCountries
 	private SymptomState alteredConsciousness;
 
@@ -2324,11 +2422,15 @@ public class SymptomsDto extends PseudonymizableDto {
 		UNSPECIFIED_VHF,
 		RABIES,
 		CORONAVIRUS,
+		DENGUE,
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
-	@Complication
+
 	@HideForCountries
+	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
+	@Complication({
+		DENGUE })
 	private SymptomState confusedDisoriented;
 
 	@Diseases({
@@ -2344,7 +2446,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
-	@Complication
+
 	@HideForCountries
 	private SymptomState hemorrhagicSyndrome;
 
@@ -2358,7 +2460,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
-	@Complication
+	@Complication({
+		MALARIA })
 	@HideForCountries
 	private SymptomState hyperglycemia;
 
@@ -2368,12 +2471,16 @@ public class SymptomsDto extends PseudonymizableDto {
 		GUINEA_WORM,
 		LASSA,
 		POLIO,
+		MALARIA,
 		UNSPECIFIED_VHF,
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
-	@Complication
+	@SymptomGrouping(SymptomGroup.OTHER)
 	@HideForCountries
+	// Hypoglycaemia (low blood sugar)
+	@Complication({
+		MALARIA })
 	private SymptomState hypoglycemia;
 
 	@Diseases({
@@ -2388,7 +2495,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
-	@Complication
+
 	@HideForCountries
 	private SymptomState meningealSigns;
 
@@ -2407,6 +2514,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		RABIES,
 		YELLOW_FEVER,
 		DENGUE,
+		MALARIA,
 		PLAGUE,
 		ANTHRAX,
 		CORONAVIRUS,
@@ -2414,7 +2522,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CRYPTOSPORIDIOSIS,
 		UNDEFINED,
 		OTHER })
-	@Complication
+	@SymptomGrouping(SymptomGroup.OTHER)
 	@HideForCountries
 	private SymptomState otherComplications;
 
@@ -2433,16 +2541,20 @@ public class SymptomsDto extends PseudonymizableDto {
 		RABIES,
 		YELLOW_FEVER,
 		DENGUE,
+		MALARIA,
 		PLAGUE,
 		ANTHRAX,
 		CORONAVIRUS,
 		UNDEFINED,
 		OTHER })
 	@DependantOn(OTHER_COMPLICATIONS)
-	@Complication
+	@SymptomGrouping(SymptomGroup.OTHER)
 	@HideForCountries
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Complication({
+		DENGUE,
+		MALARIA })
 	private String otherComplicationsText;
 
 	@Diseases({
@@ -2458,11 +2570,12 @@ public class SymptomsDto extends PseudonymizableDto {
 		UNSPECIFIED_VHF,
 		RABIES,
 		CORONAVIRUS,
+		MALARIA,
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
-	@Complication
 	@HideForCountries
+	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
 	private SymptomState seizures;
 
 	@Diseases({
@@ -2479,7 +2592,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
-	@Complication
+
 	@HideForCountries
 	private SymptomState sepsis;
 
@@ -2497,11 +2610,16 @@ public class SymptomsDto extends PseudonymizableDto {
 		POLIO,
 		UNSPECIFIED_VHF,
 		INVASIVE_MENINGOCOCCAL_INFECTION,
+		MALARIA,
+		DENGUE,
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
-	@Complication
 	@HideForCountries
+	@SymptomGrouping(SymptomGroup.CARDIOVASCULAR)
+	@Complication({
+		MALARIA,
+		DENGUE })
 	private SymptomState shock;
 
 	@Diseases({
@@ -2513,15 +2631,19 @@ public class SymptomsDto extends PseudonymizableDto {
 	private SymptomState feverishFeeling;
 	@Diseases({
 		CORONAVIRUS,
+		DENGUE,
 		UNDEFINED,
 		OTHER })
-	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_SWITZERLAND,
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@SymptomGrouping(SymptomGroup.GENERAL)
 	private SymptomState weakness;
 	@Diseases({
 		CORONAVIRUS,
 		GIARDIASIS,
 		CRYPTOSPORIDIOSIS,
+		MALARIA,
 		UNDEFINED,
 		OTHER })
 	@SymptomGrouping(SymptomGroup.GENERAL)
@@ -2609,7 +2731,9 @@ public class SymptomsDto extends PseudonymizableDto {
 		MEASLES,
 		GIARDIASIS,
 		CRYPTOSPORIDIOSIS,
-		RESPIRATORY_SYNCYTIAL_VIRUS })
+		RESPIRATORY_SYNCYTIAL_VIRUS,
+		MALARIA,
+		DENGUE })
 	private SymptomState asymptomatic;
 	@Diseases({
 		INVASIVE_MENINGOCOCCAL_INFECTION })
@@ -2620,7 +2744,11 @@ public class SymptomsDto extends PseudonymizableDto {
 	private SymptomState arthritis;
 
 	@Diseases({
-		INVASIVE_PNEUMOCOCCAL_INFECTION })
+		INVASIVE_PNEUMOCOCCAL_INFECTION,
+		DENGUE })
+	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
+	@Complication({
+		DENGUE })
 	private SymptomState meningitis;
 
 	@Diseases({
@@ -2632,7 +2760,9 @@ public class SymptomsDto extends PseudonymizableDto {
 		INVASIVE_MENINGOCOCCAL_INFECTION,
 		MEASLES,
 		GIARDIASIS,
-		CRYPTOSPORIDIOSIS })
+		CRYPTOSPORIDIOSIS,
+		MALARIA,
+		DENGUE })
 	@SymptomGrouping(SymptomGroup.OTHER)
 	private SymptomState otherClinicalPresentation;
 
@@ -2641,7 +2771,9 @@ public class SymptomsDto extends PseudonymizableDto {
 		INVASIVE_MENINGOCOCCAL_INFECTION,
 		MEASLES,
 		GIARDIASIS,
-		CRYPTOSPORIDIOSIS })
+		CRYPTOSPORIDIOSIS,
+		MALARIA,
+		DENGUE })
 	@SymptomGrouping(SymptomGroup.OTHER)
 	private String otherClinicalPresentationText;
 
@@ -2649,7 +2781,10 @@ public class SymptomsDto extends PseudonymizableDto {
 		PERTUSSIS,
 		INVASIVE_PNEUMOCOCCAL_INFECTION,
 		INVASIVE_MENINGOCOCCAL_INFECTION,
-		MEASLES })
+		MEASLES,
+		DENGUE,
+		MALARIA })
+	@SymptomGrouping(SymptomGroup.OTHER)
 	private SymptomState unknownSymptom;
 
 	// RSV-specific symptoms
@@ -2681,6 +2816,9 @@ public class SymptomsDto extends PseudonymizableDto {
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	@Diseases({
 		MEASLES })
+	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
+	@Complication({
+		MEASLES })
 	private SymptomState acuteEncephalitis;
 	@Diseases({
 		GIARDIASIS })
@@ -2701,12 +2839,16 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	@Diseases({
 		GIARDIASIS,
-		CRYPTOSPORIDIOSIS })
+		CRYPTOSPORIDIOSIS,
+		MALARIA,
+		DENGUE })
 	private SymptomState symptomCurrentStatus;
 
 	@Diseases({
 		GIARDIASIS,
-		CRYPTOSPORIDIOSIS })
+		CRYPTOSPORIDIOSIS,
+		MALARIA,
+		DENGUE })
 	@DependantOn(SYMPTOM_CURRENT_STATUS)
 	private Integer durationOfSymptoms;
 
@@ -2723,7 +2865,10 @@ public class SymptomsDto extends PseudonymizableDto {
 	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
 	private SymptomState bloating;
 
-	// TODO: newly added fields for ngSurvey
+	@Diseases({
+		CRYPTOSPORIDIOSIS,
+		GIARDIASIS,
+		RESPIRATORY_SYNCYTIAL_VIRUS })
 	private SymptomState lossOfAppetite;
 
 	@Diseases({
@@ -2743,7 +2888,8 @@ public class SymptomsDto extends PseudonymizableDto {
 	private SymptomState coughingAtNight;
 
 	@Diseases({
-		CRYPTOSPORIDIOSIS })
+		CRYPTOSPORIDIOSIS,
+		GIARDIASIS })
 	private SymptomState abdominalCramps;
 
 	private DiagnosisType diagnosis;
@@ -2753,6 +2899,193 @@ public class SymptomsDto extends PseudonymizableDto {
 	private String otherMinorSiteDetails;
 	private YesNoUnknown dateOfOnsetKnown;
 	private ClinicalPresentationStatus clinicalPresentationStatus;
+	@Diseases({
+		DENGUE })
+	@SymptomGrouping(SymptomGroup.SKIN)
+	@Complication({
+		DENGUE })
+	private SymptomState clammySkin;
+	@Diseases({
+		DENGUE })
+	@SymptomGrouping(SymptomGroup.SKIN)
+	@Complication({
+		DENGUE })
+	private SymptomState coldSkin;
+	@Diseases({
+		DENGUE })
+	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
+	@Complication({
+		DENGUE })
+	private SymptomState encephalitis;
+	@Diseases({
+		DENGUE })
+	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
+	@Complication({
+		DENGUE })
+	private SymptomState guillainBarreSyndrome;
+
+	@Diseases({
+		DENGUE })
+	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
+	@Complication({
+		DENGUE })
+	private SymptomState lethargy;
+
+	@Diseases({
+		DENGUE })
+
+	private SymptomState confusion;
+
+	@Diseases({
+		DENGUE })
+	@Complication({
+		DENGUE })
+	private SymptomState convulsions;
+
+	@Diseases({
+		DENGUE })
+	@SymptomGrouping(SymptomGroup.OTHER)
+	@Complication({
+		DENGUE })
+	@DependantOn(UNEXPLAINED_BLEEDING)
+	private SymptomState scantHemorrhage;
+
+	@Diseases({
+		DENGUE })
+	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
+	@Complication({
+		DENGUE })
+	private SymptomState persistentVomiting;
+
+	@Diseases({
+		DENGUE })
+	@Complication({
+		DENGUE })
+	private SymptomState restlessness;
+
+	@Diseases({
+		DENGUE })
+	@SymptomGrouping(SymptomGroup.GENERAL)
+	@Complication({
+		DENGUE })
+	@DependantOn(UNEXPLAINED_BLEEDING)
+	private SymptomState acuteBleeding;
+
+	@Diseases({
+		DENGUE })
+
+	@SymptomGrouping(SymptomGroup.GENERAL)
+	@Complication({
+		DENGUE })
+	private SymptomState severeOrganImpairment;
+
+	@Diseases({
+		DENGUE })
+
+	@SymptomGrouping(SymptomGroup.CARDIOVASCULAR)
+	@Complication({
+		DENGUE })
+	private SymptomState plasmaLeakageSign;
+
+	// unusual thirst
+	@Diseases({
+		DENGUE })
+	@Complication({
+		DENGUE })
+	@SymptomGrouping(SymptomGroup.GENERAL)
+	private SymptomState polydipsia;
+
+	@Diseases({
+		MALARIA })
+	// Flu-like syndrome
+	@SymptomGrouping(SymptomGroup.GENERAL)
+	private SymptomState syndromicFlu;
+
+	@Diseases({
+		MALARIA })
+	@SymptomGrouping(SymptomGroup.GENERAL)
+	private SymptomState anemia;
+
+	@Diseases({
+		MALARIA })
+	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
+	//Impaired consciousness
+	private SymptomState alteredLevelOfConsciousness;
+	@Diseases({
+		MALARIA })
+	@SymptomGrouping(SymptomGroup.OTHER)
+	//Severe anaemia, leading to pale skin and weakness
+	@Complication({
+		MALARIA })
+	private SymptomState severeAnemia;
+
+	@Diseases({
+		MALARIA })
+	@SymptomGrouping(SymptomGroup.OTHER)
+	@Complication({
+		MALARIA })
+	private SymptomState metabolicAcidosis;
+
+	@Diseases({
+		MALARIA })
+	@SymptomGrouping(SymptomGroup.OTHER)
+	@Complication({
+		MALARIA })
+	private SymptomState acuteKidneyFailure;
+
+	@Diseases({
+		MALARIA })
+	@SymptomGrouping(SymptomGroup.CARDIOVASCULAR)
+	//Disseminated intravascular coagulation (DIC)
+	@Complication({
+		MALARIA })
+	private SymptomState disseminatedIntraVascularCoagulation;
+
+	@Diseases({
+		MALARIA,
+		DENGUE })
+	@Outbreaks
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	private Date offsetDate;
+
+	@Diseases({
+		DENGUE })
+	@Outbreaks
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	private ClinicalManifestation clinicalManifestation;
+
+	@Diseases({
+		DENGUE })
+	@Outbreaks
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	private String clinicalManifestationText;
+
+	@Diseases({
+		MALARIA })
+	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
+	@Complication({
+		MALARIA })
+	private SymptomState cerebralMalaria;
+
+	@Diseases({
+		DENGUE })
+	@Outbreaks
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_LUXEMBOURG })
+	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
+	private YesNoUnknown otherNeurolocalSymptom;
+
+	@Diseases({
+		DENGUE })
+	@Outbreaks
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_LUXEMBOURG })
+	@DependantOn(OTHER_NEUROLOCAL_SYMPTOM)
+	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
+	private String otherNeurolocalSymptomText;
 
 	@Order(0)
 	public Float getTemperature() {
@@ -2783,6 +3116,18 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Order(23)
 	public String getOnsetSymptom() {
 		return onsetSymptom;
+	}
+
+	public Date getOffsetDate() {
+		return offsetDate;
+	}
+
+	public ClinicalManifestation getClinicalManifestation() {
+		return clinicalManifestation;
+	}
+
+	public String getClinicalManifestationText() {
+		return clinicalManifestationText;
 	}
 
 	@ImportIgnore
@@ -3853,6 +4198,18 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.onsetSymptom = onsetSymptom;
 	}
 
+	public void setOffsetDate(Date offsetDate) {
+		this.offsetDate = offsetDate;
+	}
+
+	public void setClinicalManifestation(ClinicalManifestation clinicalManifestation) {
+		this.clinicalManifestation = clinicalManifestation;
+	}
+
+	public void setClinicalManifestationText(String clinicalManifestationText) {
+		this.clinicalManifestationText = clinicalManifestationText;
+	}
+
 	public void setOralUlcers(SymptomState oralUlcers) {
 		this.oralUlcers = oralUlcers;
 	}
@@ -4649,6 +5006,198 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	public void setBloating(SymptomState bloating) {
 		this.bloating = bloating;
+	}
+
+	public SymptomState getClammySkin() {
+		return clammySkin;
+	}
+
+	public void setClammySkin(SymptomState clammySkin) {
+		this.clammySkin = clammySkin;
+	}
+
+	public SymptomState getColdSkin() {
+		return coldSkin;
+	}
+
+	public void setColdSkin(SymptomState coldSkin) {
+		this.coldSkin = coldSkin;
+	}
+
+	public SymptomState getEncephalitis() {
+		return encephalitis;
+	}
+
+	public void setEncephalitis(SymptomState encephalitis) {
+		this.encephalitis = encephalitis;
+	}
+
+	public SymptomState getGuillainBarreSyndrome() {
+		return guillainBarreSyndrome;
+	}
+
+	public void setGuillainBarreSyndrome(SymptomState guillainBarreSyndrome) {
+		this.guillainBarreSyndrome = guillainBarreSyndrome;
+	}
+
+	public SymptomState getLethargy() {
+		return lethargy;
+	}
+
+	public void setLethargy(SymptomState lethargy) {
+		this.lethargy = lethargy;
+	}
+
+	public SymptomState getConfusion() {
+		return confusion;
+	}
+
+	public void setConfusion(SymptomState confusion) {
+		this.confusion = confusion;
+	}
+
+	public SymptomState getConvulsions() {
+		return convulsions;
+	}
+
+	public void setConvulsions(SymptomState convulsions) {
+		this.convulsions = convulsions;
+	}
+
+	public SymptomState getPersistentVomiting() {
+		return persistentVomiting;
+	}
+
+	public void setPersistentVomiting(SymptomState persistentVomiting) {
+		this.persistentVomiting = persistentVomiting;
+	}
+
+	public SymptomState getRestlessness() {
+		return restlessness;
+	}
+
+	public void setRestlessness(SymptomState restlessness) {
+		this.restlessness = restlessness;
+	}
+
+	public SymptomState getAcuteBleeding() {
+		return acuteBleeding;
+	}
+
+	public void setAcuteBleeding(SymptomState acuteBleeding) {
+		this.acuteBleeding = acuteBleeding;
+	}
+
+	public SymptomState getSevereOrganImpairment() {
+		return severeOrganImpairment;
+	}
+
+	public void setSevereOrganImpairment(SymptomState severeOrganImpairment) {
+		this.severeOrganImpairment = severeOrganImpairment;
+	}
+
+	public SymptomState getPlasmaLeakageSign() {
+		return plasmaLeakageSign;
+	}
+
+	public void setPlasmaLeakageSign(SymptomState plasmaLeakageSign) {
+		this.plasmaLeakageSign = plasmaLeakageSign;
+	}
+
+	public SymptomState getPolydipsia() {
+		return polydipsia;
+	}
+
+	public void setPolydipsia(SymptomState polydipsia) {
+		this.polydipsia = polydipsia;
+	}
+
+	public SymptomState getSyndromicFlu() {
+		return syndromicFlu;
+	}
+
+	public void setSyndromicFlu(SymptomState syndromicFlu) {
+		this.syndromicFlu = syndromicFlu;
+	}
+
+	public SymptomState getAnemia() {
+		return anemia;
+	}
+
+	public void setAnemia(SymptomState anemia) {
+		this.anemia = anemia;
+	}
+
+	public SymptomState getAlteredLevelOfConsciousness() {
+		return alteredLevelOfConsciousness;
+	}
+
+	public void setAlteredLevelOfConsciousness(SymptomState alteredLevelOfConsciousness) {
+		this.alteredLevelOfConsciousness = alteredLevelOfConsciousness;
+	}
+
+	public SymptomState getSevereAnemia() {
+		return severeAnemia;
+	}
+
+	public void setSevereAnemia(SymptomState severeAnemia) {
+		this.severeAnemia = severeAnemia;
+	}
+
+	public SymptomState getMetabolicAcidosis() {
+		return metabolicAcidosis;
+	}
+
+	public void setMetabolicAcidosis(SymptomState metabolicAcidosis) {
+		this.metabolicAcidosis = metabolicAcidosis;
+	}
+
+	public SymptomState getAcuteKidneyFailure() {
+		return acuteKidneyFailure;
+	}
+
+	public void setAcuteKidneyFailure(SymptomState acuteKidneyFailure) {
+		this.acuteKidneyFailure = acuteKidneyFailure;
+	}
+
+	public SymptomState getDisseminatedIntraVascularCoagulation() {
+		return disseminatedIntraVascularCoagulation;
+	}
+
+	public void setDisseminatedIntraVascularCoagulation(SymptomState disseminatedIntraVascularCoagulation) {
+		this.disseminatedIntraVascularCoagulation = disseminatedIntraVascularCoagulation;
+	}
+
+	public SymptomState getCerebralMalaria() {
+		return cerebralMalaria;
+	}
+
+	public void setCerebralMalaria(SymptomState cerebralMalaria) {
+		this.cerebralMalaria = cerebralMalaria;
+	}
+
+	public SymptomState getScantHemorrhage() {
+		return scantHemorrhage;
+	}
+
+	public void setScantHemorrhage(SymptomState scantHemorrhage) {
+		this.scantHemorrhage = scantHemorrhage;
+	}
+
+	public YesNoUnknown getOtherNeurolocalSymptom() {
+		return otherNeurolocalSymptom;
+	}
+
+	public void setOtherNeurolocalSymptom(YesNoUnknown otherNeurolocalSymptom) {
+		this.otherNeurolocalSymptom = otherNeurolocalSymptom;
+	}
+
+	public String getOtherNeurolocalSymptomText() {
+		return otherNeurolocalSymptomText;
+	}
+
+	public void setOtherNeurolocalSymptomText(String otherNeurolocalSymptomText) {
+		this.otherNeurolocalSymptomText = otherNeurolocalSymptomText;
 	}
 
 	public SymptomState getLossOfAppetite() {

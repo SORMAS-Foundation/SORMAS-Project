@@ -136,19 +136,21 @@ public class MeaslesExportStrategy extends AbstractEpipulseDiseaseExportStrategy
 			}
 		}
 
-		// Complications mapping (4 fields)
+		// Complications mapping (5 fields)
 		String acuteEncephalitisRaw = (String) row[++index];
 		String diarrheaRaw = (String) row[++index];
 		String otitisMediaRaw = (String) row[++index];
+		String pneumoniaRaw = (String) row[++index];
 		String otherComplicationsRaw = (String) row[++index];
 
 		SymptomState acuteEncephalitis = parseSymptomState(acuteEncephalitisRaw);
 		SymptomState diarrhea = parseSymptomState(diarrheaRaw);
 		SymptomState otitisMedia = parseSymptomState(otitisMediaRaw);
+		SymptomState pneumonia = parseSymptomState(pneumoniaRaw);
 		SymptomState otherComplications = parseSymptomState(otherComplicationsRaw);
 
 		dto.setComplicationDiagnosis(
-			EpipulseLaboratoryMapper.mapSymptomsToComplicationCodes(acuteEncephalitis, diarrhea, otitisMedia, otherComplications));
+			EpipulseLaboratoryMapper.mapSymptomsToComplicationCodes(acuteEncephalitis, diarrhea, otitisMedia, pneumonia, otherComplications));
 
 		// Clinical criteria status
 		String clinicalConfirmationRaw = (String) row[++index];
@@ -218,18 +220,22 @@ public class MeaslesExportStrategy extends AbstractEpipulseDiseaseExportStrategy
 			   "                       STRING_AGG(DISTINCT CAST(s3.samplematerial AS text), ',' ORDER BY CAST(s3.samplematerial AS text)) as specimen_types_serology " +
 			   "                FROM filtered_cases c " +
 			   "                LEFT JOIN samples s ON s.associatedcase_id = c.id AND s.deleted = false " +
-			   "                LEFT JOIN (SELECT DISTINCT s_vir.id, s_vir.associatedcase_id, s_vir.samplematerial " +
+			   "                LEFT JOIN (SELECT DISTINCT s_vir.associatedcase_id, s_vir.samplematerial " +
 			   "                           FROM samples s_vir " +
-			   "                           JOIN pathogentest pt_vir ON pt_vir.sample_id = s_vir.id " +
 			   "                           WHERE s_vir.deleted = false " +
 			   "                             AND s_vir.samplematerial IS NOT NULL " +
-			   "                             AND pt_vir.testtype IN ('PCR_RT_PCR', 'CULTURE', 'ISOLATION', 'DIRECT_FLUORESCENT_ANTIBODY', 'INDIRECT_FLUORESCENT_ANTIBODY')) s2 " +
+			   "                             AND s_vir.associatedcase_id IN (SELECT id FROM filtered_cases)) s2 " +
 			   "                          ON s2.associatedcase_id = c.id " +
-			   "                LEFT JOIN (SELECT DISTINCT s_sero.id, s_sero.associatedcase_id, s_sero.samplematerial " +
+			   "                LEFT JOIN (SELECT DISTINCT s_sero.associatedcase_id, s_sero.samplematerial " +
 			   "                           FROM samples s_sero " +
-			   "                           JOIN pathogentest pt_sero ON pt_sero.sample_id = s_sero.id " +
+			   "                           LEFT JOIN pathogentest pt_sero ON pt_sero.sample_id = s_sero.id " +
+			   "                               AND pt_sero.testtype IN ('IGG_SERUM_ANTIBODY', 'IGM_SERUM_ANTIBODY') " +
 			   "                           WHERE s_sero.deleted = false " +
-			   "                             AND pt_sero.testtype IN ('IGG_SERUM_ANTIBODY', 'IGM_SERUM_ANTIBODY', 'SEROLOGY')) s3 " +
+			   "                             AND s_sero.samplematerial IS NOT NULL " +
+			   "                             AND s_sero.associatedcase_id IN (SELECT id FROM filtered_cases) " +
+			   "                             AND (pt_sero.id IS NOT NULL OR NOT EXISTS ( " +
+			   "                                 SELECT 1 FROM pathogentest pt_any WHERE pt_any.sample_id = s_sero.id " +
+			   "                             ))) s3 " +
 			   "                          ON s3.associatedcase_id = c.id " +
 			   "                GROUP BY c.id)";
 		//@formatter:on
@@ -238,15 +244,14 @@ public class MeaslesExportStrategy extends AbstractEpipulseDiseaseExportStrategy
 	private String buildVirusDetectionDataCte() {
 		//@formatter:off
 		return "virus_detection_data AS (SELECT c.id as case_id," +
-			   "                                 MIN(pt.testdatetime) as lab_result_date," +
+			   "                                 MIN(COALESCE(pt.testdatetime, pt.reportdate, pt.creationdate)) as lab_result_date," +
 			   "                                 (SELECT pt2.testresult " +
 			   "                                  FROM samples s2 " +
 			   "                                  JOIN pathogentest pt2 ON pt2.sample_id = s2.id " +
 			   "                                  WHERE s2.associatedcase_id = c.id " +
 			   "                                    AND s2.deleted = false " +
-			   "                                    AND pt2.testtype IN ('PCR_RT_PCR', 'CULTURE', 'ISOLATION', 'DIRECT_FLUORESCENT_ANTIBODY', 'INDIRECT_FLUORESCENT_ANTIBODY') " +
-			   "                                    AND pt2.testresultverified = true " +
-			   "                                  ORDER BY pt2.testdatetime ASC " +
+			   "                                    AND pt2.testtype IN ('PCR_RT_PCR', 'CULTURE', 'ISOLATION', 'DIRECT_FLUORESCENT_ANTIBODY', 'INDIRECT_FLUORESCENT_ANTIBODY', 'SEQUENCING', 'GENOTYPING') " +
+			   "                                  ORDER BY pt2.testresultverified DESC, COALESCE(pt2.testdatetime, pt2.reportdate, pt2.creationdate) ASC " +
 			   "                                  LIMIT 1) as virus_detection_result," +
 			   "                                 (SELECT COALESCE(pt3.typingid, pt3.genotyperesult) " +
 			   "                                  FROM samples s3 " +
@@ -254,13 +259,12 @@ public class MeaslesExportStrategy extends AbstractEpipulseDiseaseExportStrategy
 			   "                                  WHERE s3.associatedcase_id = c.id " +
 			   "                                    AND s3.deleted = false " +
 			   "                                    AND (pt3.typingid IS NOT NULL OR pt3.genotyperesult IS NOT NULL) " +
-			   "                                  ORDER BY pt3.testdatetime ASC " +
+			   "                                  ORDER BY COALESCE(pt3.testdatetime, pt3.reportdate, pt3.creationdate) ASC " +
 			   "                                  LIMIT 1) as genotype_raw " +
 			   "                          FROM filtered_cases c " +
 			   "                          LEFT JOIN samples s ON s.associatedcase_id = c.id AND s.deleted = false " +
 			   "                          LEFT JOIN pathogentest pt ON pt.sample_id = s.id " +
-			   "                              AND pt.testtype IN ('PCR_RT_PCR', 'CULTURE', 'ISOLATION', 'DIRECT_FLUORESCENT_ANTIBODY', 'INDIRECT_FLUORESCENT_ANTIBODY') " +
-			   "                              AND pt.testresultverified = true " +
+			   "                              AND pt.testtype IN ('PCR_RT_PCR', 'CULTURE', 'ISOLATION', 'DIRECT_FLUORESCENT_ANTIBODY', 'INDIRECT_FLUORESCENT_ANTIBODY', 'SEQUENCING', 'GENOTYPING') " +
 			   "                          GROUP BY c.id)";
 		//@formatter:on
 	}
@@ -277,7 +281,7 @@ public class MeaslesExportStrategy extends AbstractEpipulseDiseaseExportStrategy
 			   "                               WHERE s_igg.associatedcase_id = c.id " +
 			   "                                 AND s_igg.deleted = false " +
 			   "                                 AND pt_igg.testtype = 'IGG_SERUM_ANTIBODY' " +
-			   "                               ORDER BY pt_igg.testdatetime ASC " +
+			   "                               ORDER BY COALESCE(pt_igg.testdatetime, pt_igg.reportdate, pt_igg.creationdate) ASC " +
 			   "                               LIMIT 1) as igg_result " +
 			   "                      FROM filtered_cases c)";
 		//@formatter:on
@@ -292,7 +296,7 @@ public class MeaslesExportStrategy extends AbstractEpipulseDiseaseExportStrategy
 			   "                               WHERE s_igm.associatedcase_id = c.id " +
 			   "                                 AND s_igm.deleted = false " +
 			   "                                 AND pt_igm.testtype = 'IGM_SERUM_ANTIBODY' " +
-			   "                               ORDER BY pt_igm.testdatetime ASC " +
+			   "                               ORDER BY COALESCE(pt_igm.testdatetime, pt_igm.reportdate, pt_igm.creationdate) ASC " +
 			   "                               LIMIT 1) as igm_result " +
 			   "                      FROM filtered_cases c)";
 		//@formatter:on
@@ -337,6 +341,7 @@ public class MeaslesExportStrategy extends AbstractEpipulseDiseaseExportStrategy
 			   "                              s.acuteencephalitis," +
 			   "                              s.diarrhea," +
 			   "                              s.otitismedia," +
+			   "                              s.pneumoniaclinicalorradiologic," +
 			   "                              s.othercomplications " +
 			   "                       FROM filtered_cases c " +
 			   "                       LEFT JOIN symptoms s ON c.symptoms_id = s.id)";
@@ -366,6 +371,7 @@ public class MeaslesExportStrategy extends AbstractEpipulseDiseaseExportStrategy
 		      .append("       comp.acuteencephalitis,")
 		      .append("       comp.diarrhea,")
 		      .append("       comp.otitismedia,")
+		      .append("       comp.pneumoniaclinicalorradiologic,")
 		      .append("       comp.othercomplications,")
 		      .append("       c.clinicalconfirmation,")
 		      .append("       el.infection_locations,")

@@ -18,7 +18,6 @@ package de.symeda.sormas.ui.immunization.components.form;
 import static de.symeda.sormas.ui.utils.CssStyles.ERROR_COLOR_PRIMARY;
 import static de.symeda.sormas.ui.utils.CssStyles.FORCE_CAPTION;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
-import static de.symeda.sormas.ui.utils.CssStyles.SOFT_REQUIRED;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.CssStyles.style;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
@@ -205,7 +204,6 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		responsibleDistrict.setRequired(true);
 		responsibleCommunity = addInfrastructureField(ImmunizationDto.RESPONSIBLE_COMMUNITY);
 		responsibleCommunity.setNullSelectionAllowed(true);
-		responsibleCommunity.addStyleName(SOFT_REQUIRED);
 
 		InfrastructureFieldsHelper.initInfrastructureFields(responsibleRegion, responsibleDistrict, responsibleCommunity);
 
@@ -659,7 +657,8 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 	 * Updates the means of immunization field with disease-specific filtering.
 	 * Uses {@link Diseases} annotations on enum values to determine visibility.
 	 *
-	 * @param disease The selected disease to filter means of immunization options.
+	 * @param disease
+	 *            The selected disease to filter means of immunization options.
 	 */
 	private void updateMeansOfImmunizationField(Disease disease) {
 		List<MeansOfImmunization> filteredValues = Arrays.stream(MeansOfImmunization.values()).filter(value -> {

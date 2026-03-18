@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,25 +13,16 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.caze.surveillancereport;
+package de.symeda.sormas.api.symptoms;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.utils.HideForCountriesExcept;
 
-public enum ReportingType {
+public enum ClinicalManifestation {
 
-	DOCTOR,
-	LABORATORY,
-	FORWARDING,
-	HOSPITAL_OR_STATIONARY_CARE,
-	COMMUNITY_FACILITY,
-	@HideForCountriesExcept
-	COMMUNITY_FACILITY_IFSG_ARTICLE_34,
-	OWN_DETERMINATION,
-	NOT_DETERMINABLE,
-	NOT_RAISED,
-	@HideForCountriesExcept(countries = "LU")
-	PHONE_NOTIFICATION,
+	ASYMPTOMATIC,
+	NO_SIGN_OF_SEVERITY,
+	SIGN_OF_SEVERITY,
+	UNKNOWN,
 	OTHER;
 
 	@Override

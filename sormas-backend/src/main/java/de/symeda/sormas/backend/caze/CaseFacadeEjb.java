@@ -185,6 +185,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasRuntimeException;
+import de.symeda.sormas.api.survey.SurveyTokenCriteria;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.task.TaskContext;
@@ -330,6 +331,8 @@ import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareInfoHelper;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfoService;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
+import de.symeda.sormas.backend.survey.SurveyToken;
+import de.symeda.sormas.backend.survey.SurveyTokenService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
@@ -517,6 +520,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	private ImmunizationService immunizationService;
 	@EJB
 	private ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal immunizationFacade;
+	@EJB
+	private SurveyTokenService surveyService;
 
 	@Resource
 	private ManagedScheduledExecutorService executorService;
@@ -4081,6 +4086,16 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			t.setPerson(leadCase.getPerson());
 			travelEntryService.ensurePersisted(t);
 		});
+
+		// Including survey token for merge case.
+//		11. servey token reference
+		if (!cloning) {
+			List<SurveyToken> tokens = surveyService.findBy(new SurveyTokenCriteria().caseAssignedTo(otherCase.toReference()));
+			tokens.forEach(s -> {
+				s.setCaseAssignedTo(leadCase);
+				surveyService.ensurePersisted(s);
+			});
+		}
 	}
 
 	private void copyDtoValues(CaseDataDto leadCaseData, CaseDataDto otherCaseData, boolean cloning) {

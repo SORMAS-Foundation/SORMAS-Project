@@ -130,6 +130,33 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 	}
 
 	/**
+	 * Additional logic for updating the surveillance report in case of a doctor declaration.
+	 * Updates the date of diagnosis and treatment fields.
+	 * 
+	 * @param surveillanceReport
+	 *            The surveillance report to update.
+	 * @param externalMessage
+	 *            The external message containing the additional data.
+	 * @param caze
+	 *            The case containing the additional data.
+	 */
+	@Override
+	protected void updateSurveillanceReportAdditionalData(
+		SurveillanceReportDto surveillanceReport,
+		ExternalMessageDto externalMessage,
+		CaseDataDto caze) {
+		super.updateSurveillanceReportAdditionalData(surveillanceReport, externalMessage, caze);
+
+		// Make sure we update the date of diagnosis which is relevant for doctor declarations
+		surveillanceReport.setDateOfDiagnosis(externalMessage.getDiagnosticDate());
+
+		// Make sure we update the treatment fields which is relevant for doctor declarations
+		surveillanceReport.setTreatmentStarted(externalMessage.getTreatmentStarted());
+		surveillanceReport.setTreatmentStartDate(externalMessage.getTreatmentStartedDate());
+		surveillanceReport.setTreatmentNotApplicable(Boolean.TRUE.equals(externalMessage.getTreatmentNotApplicable()));
+	}
+
+	/**
 	 * Custom logic to execute after building a case.
 	 *
 	 * @param caseDto

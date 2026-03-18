@@ -151,10 +151,6 @@ public abstract class AbstractProcessingFlow {
 
 		return mapHandlerResult(callback, previousResult, personSelection -> {
 			logger.debug("[MESSAGE PROCESSING] Continue processing with person: {}", personSelection);
-
-			// requested for #13589
-			doPersonUpdates(personSelection);
-
 			return previousResult.withPerson(personSelection.getEntity(), personSelection.isNew());
 		});
 	}
@@ -175,14 +171,14 @@ public abstract class AbstractProcessingFlow {
 
 	protected abstract void handlePickOrCreatePerson(PersonDto person, HandlerCallback<EntitySelection<PersonDto>> callback);
 
-	protected abstract void doPersonUpdates(EntitySelection<PersonDto> personSelection);
-
 	private PersonDto buildPerson() {
 
 		final PersonDto personDto = PersonDto.build();
 
 		mapper.mapToPerson(personDto);
 		mapper.mapToLocation(personDto.getAddress());
+		mapper.mapAdditionalPersonContactDetails(personDto);
+		mapper.mapAdditionalPersonAddresses(personDto);
 
 		return personDto;
 	}
@@ -222,6 +218,8 @@ public abstract class AbstractProcessingFlow {
 
 		caseDto.setVaccinationStatus(externalMessageDto.getVaccinationStatus());
 		caseDto.getHospitalization().setAdmittedToHealthFacility(externalMessageDto.getAdmittedToHealthFacility());
+
+		caseDto.setAdditionalDetails(externalMessageDto.getCaseComments());
 
 		postBuildCase(caseDto, externalMessageDto);
 

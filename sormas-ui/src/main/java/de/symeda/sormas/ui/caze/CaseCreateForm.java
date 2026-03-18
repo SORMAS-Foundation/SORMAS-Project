@@ -17,7 +17,6 @@ package de.symeda.sormas.ui.caze;
 
 import static de.symeda.sormas.ui.utils.CssStyles.ERROR_COLOR_PRIMARY;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
-import static de.symeda.sormas.ui.utils.CssStyles.SOFT_REQUIRED;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.CssStyles.style;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
@@ -132,8 +131,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
         + fluidRow(
         fluidColumnLoc(6, 0, CaseDataDto.DISEASE),
         fluidColumn(6, 0,
-            locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE, CaseDataDto.DENGUE_FEVER_TYPE,
-                CaseDataDto.RABIES_TYPE)))
+            locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE, CaseDataDto.RABIES_TYPE)))
         + fluidRowLocs(CaseDataDto.DISEASE_VARIANT, CaseDataDto.DISEASE_VARIANT_DETAILS)
 		+ fluidRowLocs(CaseDataDto.RE_INFECTION)
         + fluidRowLocs(RESPONSIBLE_JURISDICTION_HEADING_LOC)
@@ -236,7 +234,6 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		responsibleDistrictCombo.setRequired(true);
 		responsibleCommunityCombo = addInfrastructureField(CaseDataDto.RESPONSIBLE_COMMUNITY);
 		responsibleCommunityCombo.setNullSelectionAllowed(true);
-		responsibleCommunityCombo.addStyleName(SOFT_REQUIRED);
 
 		InfrastructureFieldsHelper.initInfrastructureFields(responsibleRegionCombo, responsibleDistrictCombo, responsibleCommunityCombo);
 
@@ -484,7 +481,6 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		initializeVisibilitiesAndAllowedVisibilities();
 
 		setRequired(true, CaseDataDto.REPORT_DATE, CaseDataDto.DISEASE, FACILITY_TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE);
-		FieldHelper.addSoftRequiredStyle(plagueType, communityCombo, facilityDetails);
 
 		FieldHelper
 			.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.DISEASE_DETAILS), CaseDataDto.DISEASE, Arrays.asList(Disease.OTHER), true);
@@ -757,7 +753,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		PersonDto personByUuid = personUuid == null ? null : FacadeProvider.getPersonFacade().getByUuid(personUuid);
 		personCreateForm.setPerson(personByUuid);
 
-		if(caseDataDto.getSymptoms() != null) {
+		if (caseDataDto.getSymptoms() != null) {
 			personCreateForm.setSymptoms(caseDataDto.getSymptoms());
 		}
 

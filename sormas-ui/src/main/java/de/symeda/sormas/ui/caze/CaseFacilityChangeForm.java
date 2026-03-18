@@ -218,7 +218,6 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 		});
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
-		FieldHelper.addSoftRequiredStyle(community, facilityDetails, officer);
 		setRequired(true, CaseDataDto.REGION, CaseDataDto.DISTRICT, FACILITY_OR_HOME_LOC, TYPE_GROUP_LOC, TYPE_LOC);
 		officer.setNullSelectionAllowed(true);
 	}

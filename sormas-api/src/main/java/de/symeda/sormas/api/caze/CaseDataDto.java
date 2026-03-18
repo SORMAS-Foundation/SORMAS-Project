@@ -494,52 +494,86 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	private boolean nosocomialOutbreak;
 	@HideForCountriesExcept
 	private InfectionSetting infectionSetting;
+	@Diseases(value = {
+		Disease.MALARIA }, hide = true)
 	private QuarantineType quarantine;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Diseases(value = {
+		Disease.MALARIA }, hide = true)
 	private String quarantineTypeDetails;
+	@Diseases(value = {
+		Disease.MALARIA }, hide = true)
 	private Date quarantineFrom;
+	@Diseases(value = {
+		Disease.MALARIA }, hide = true)
 	private Date quarantineTo;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Diseases(value = {
+		Disease.MALARIA }, hide = true)
 	private String quarantineHelpNeeded;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
+	@Diseases(value = {
+		Disease.MALARIA }, hide = true)
 	private boolean quarantineOrderedVerbally;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
+	@Diseases(value = {
+		Disease.MALARIA }, hide = true)
 	private boolean quarantineOrderedOfficialDocument;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
+	@Diseases(value = {
+		Disease.MALARIA }, hide = true)
 	private Date quarantineOrderedVerballyDate;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
+	@Diseases(value = {
+		Disease.MALARIA }, hide = true)
 	private Date quarantineOrderedOfficialDocumentDate;
 	@HideForCountriesExcept
+	@Diseases(value = {
+		Disease.MALARIA }, hide = true)
 	private YesNoUnknown quarantineHomePossible;
 	@HideForCountriesExcept
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Diseases(value = {
+		Disease.MALARIA }, hide = true)
 	private String quarantineHomePossibleComment;
 	@HideForCountriesExcept
+	@Diseases(value = {
+		Disease.MALARIA }, hide = true)
 	private YesNoUnknown quarantineHomeSupplyEnsured;
 	@HideForCountriesExcept
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Diseases(value = {
+		Disease.MALARIA }, hide = true)
 	private String quarantineHomeSupplyEnsuredComment;
+	@Diseases(value = {
+		Disease.MALARIA }, hide = true)
 	private boolean quarantineExtended;
+	@Diseases(value = {
+		Disease.MALARIA }, hide = true)
 	private boolean quarantineReduced;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
+	@Diseases(value = {
+		Disease.MALARIA }, hide = true)
 	private boolean quarantineOfficialOrderSent;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
+	@Diseases(value = {
+		Disease.MALARIA }, hide = true)
 	private Date quarantineOfficialOrderSentDate;
 	@SensitiveData
 	private YesNoUnknown postpartum;
@@ -638,6 +672,8 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	private Date previousQuarantineTo;
 	@SensitiveData
 	@Size(max = CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	@Diseases(value = {
+		Disease.MALARIA }, hide = true)
 	private String quarantineChangeComment;
 
 	private Map<String, String> externalData;

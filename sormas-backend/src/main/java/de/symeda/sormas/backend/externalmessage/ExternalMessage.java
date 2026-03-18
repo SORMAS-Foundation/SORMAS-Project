@@ -131,6 +131,8 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public static final String ACTIVITIES_AS_CASE = "activitiesAsCase";
 	public static final String EXPOSURES = "exposures";
+	public static final String ADDITIONAL_PERSON_CONTACT_DETAILS = "additionalPersonContactDetails";
+	public static final String ADDITIONAL_PERSON_ADDRESSES = "additionalPersonAddresses";
 
 	public static final String RADIOGRAPHY_COMPATIBILITY = "radiographyCompatibility";
 	public static final String OTHER_DIAGNOSTIC_CRITERIA = "otherDiagnosticCriteria";
@@ -212,6 +214,8 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	private String activitiesAsCase;
 	private String exposures;
+	private String additionalPersonContactDetails;
+	private String additionalPersonAddresses;
 
 	private RadiographyCompatibility radiographyCompatibility;
 	private String otherDiagnosticCriteria;
@@ -822,6 +826,26 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public void setActivitiesAsCase(String activitiesAsCase) {
 		this.activitiesAsCase = activitiesAsCase;
+	}
+
+	@Column(columnDefinition = "jsonb")
+	@Type(type = "jsonb")
+	public String getAdditionalPersonContactDetails() {
+		return additionalPersonContactDetails;
+	}
+
+	public void setAdditionalPersonContactDetails(String additionalPersonContactDetails) {
+		this.additionalPersonContactDetails = additionalPersonContactDetails;
+	}
+
+	@Column(columnDefinition = "jsonb")
+	@Type(type = "jsonb")
+	public String getAdditionalPersonAddresses() {
+		return additionalPersonAddresses;
+	}
+
+	public void setAdditionalPersonAddresses(String additionalPersonAddresses) {
+		this.additionalPersonAddresses = additionalPersonAddresses;
 	}
 
 	@Column(columnDefinition = "jsonb")

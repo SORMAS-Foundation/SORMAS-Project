@@ -182,7 +182,6 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private final ViewMode viewMode;
 	private final Disease disease;
 	private final boolean diseaseHasFollowUp;
-	private final boolean luxMeasles;
 	private OptionGroup contactProximities;
 	private ComboBox region;
 	private ComboBox district;
@@ -223,7 +222,6 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		this.viewMode = viewMode;
 		this.disease = disease;
 		this.diseaseHasFollowUp = FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(disease);
-		this.luxMeasles = Disease.MEASLES == disease && FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 		addFields();
 	}
 
@@ -737,7 +735,6 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		});
 
 		setRequired(true, ContactDto.CONTACT_CLASSIFICATION, ContactDto.CONTACT_STATUS, ContactDto.REPORT_DATE_TIME);
-		FieldHelper.addSoftRequiredStyle(firstContactDate, lastContactDate, contactProximities, relationToCase);
 		// Prophylaxis details for IMI
 		CheckBox prophylaxisPrescribed = addField(ContactDto.PROPHYLAXIS_PRESCRIBED, CheckBox.class);
 		prophylaxisPrescribed.setCaption(I18nProperties.getCaption(Captions.Contact_prophylaxisPrescribed));
