@@ -41,7 +41,8 @@ public class SurveyTokenIndexDtoResultTransformer implements ResultTransformer {
 			(String) tuple[++index],
 			(String) tuple[++index],
 			(String) tuple[++index],
-			(Date) tuple[++index]);
+			(Date) tuple[++index],
+			(String) tuple[++index]);
 	}
 
 	@Override

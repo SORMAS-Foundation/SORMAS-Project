@@ -168,7 +168,8 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 						joins.getGeneratedDocument().get(Document.UUID),
 						joins.getGeneratedDocument().get(Document.NAME),
 						joins.getGeneratedDocument().get(Document.MIME_TYPE),
-						root.get(SurveyToken.RESPONSE_RECEIVED_DATE)),
+						root.get(SurveyToken.RESPONSE_RECEIVED_DATE),
+						root.get(SurveyToken.EXTERNAL_RESPONDENT_ID)),
 					// add sort properties to select
 					sortBy(sortProperties, root, cb, cq, joins).stream())
 				.collect(Collectors.toList()));
