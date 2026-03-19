@@ -15465,6 +15465,101 @@ ALTER TABLE exposures_protectivemeasures_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (614, '#13887 - Exposure form redesign');
 
+-- 23-03-2026 new fields related to Malaria and Dengue samples and pathogenform.
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS serotypetext varchar(255);
+UPDATE pathogentest  SET serotypetext = serotype, serotype = 'OTHER' WHERE serotype IS NOT null   and serotypetext is null;
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'pathogentest' AND column_name = 'genotyperesult') THEN
+        ALTER TABLE pathogentest RENAME COLUMN genotyperesult TO genotype;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'pathogentest' AND column_name = 'genotyperesulttext') THEN
+        ALTER TABLE pathogentest RENAME COLUMN genotyperesulttext TO genotypetext;
+    END IF;
+END $$;
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS antibodyTitre varchar(255);
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS performedByReferenceLaboratory boolean;
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS retestRequested boolean default false;
+ALTER TABLE pathogentest add column IF NOT EXISTS resultdetails varchar(255);
+ALTER TABLE pathogentest add column IF NOT EXISTS specietext varchar(255);
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS malaria varchar(255);
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS malariainfectedyear integer ;
+
+
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS serotypetext varchar(255);
+UPDATE pathogentest_history  SET serotypetext = serotype, serotype = 'OTHER' WHERE serotype IS NOT null   and serotypetext is null;
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'pathogentest_history' AND column_name = 'genotyperesult') THEN
+        ALTER TABLE pathogentest_history RENAME COLUMN genotyperesult TO genotype;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'pathogentest_history' AND column_name = 'genotyperesulttext') THEN
+        ALTER TABLE pathogentest_history RENAME COLUMN genotyperesulttext TO genotypetext;
+    END IF;
+END $$;
+
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS antibodyTitre varchar(255);
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS performedByReferenceLaboratory boolean;
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS retestRequested boolean default false;
+ALTER TABLE pathogentest_history add column IF NOT EXISTS resultdetails varchar(255);
+ALTER TABLE pathogentest_history add column IF NOT EXISTS specietext varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS malaria varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS malariainfectedyear integer ;
+
+INSERT INTO schema_version (version_number, comment) VALUES (615, '#13801, #13814 - Malaria and Dengue sampel changes');
+
+-- 07-04-2026 Test report new fields related to Malaria and Dengue samples and pathogenform.
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS serotypetext varchar(255);
+UPDATE testreport  SET serotypetext = serotype, serotype = 'OTHER' WHERE serotype IS NOT null   and serotypetext is null;
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport' AND column_name = 'genotyperesult') 
+        AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport' AND column_name = 'genotype') THEN
+        ALTER TABLE testreport RENAME COLUMN genotyperesult TO genotype;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport' AND column_name = 'genotyperesulttext') 
+        AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport' AND column_name = 'genotypetext') THEN
+        ALTER TABLE testreport RENAME COLUMN genotyperesulttext TO genotypetext;
+    END IF;
+END $$;
+
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS serotypetext varchar(255);
+UPDATE testreport_history  SET serotypetext = serotype, serotype = 'OTHER' WHERE serotype IS NOT null   and serotypetext is null;
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport_history' AND column_name = 'genotyperesult') 
+        AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport_history' AND column_name = 'genotype') THEN
+        ALTER TABLE testreport_history RENAME COLUMN genotyperesult TO genotype;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport_history' AND column_name = 'genotyperesulttext') 
+        AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport_history' AND column_name = 'genotypetext') THEN
+        ALTER TABLE testreport_history RENAME COLUMN genotyperesulttext TO genotypetext;
+    END IF;
+END $$;
+
+INSERT INTO schema_version (version_number, comment) VALUES (616, '#13801, #13814 - Malaria and Dengue TestReport columns renames');
+
+-- update delete triggers for exposure related tables
+
+alter table exposures_subsettings drop constraint unq_exposures_subsettings_0;
+alter table exposures_subsettings add constraint exposures_subsettings_pk primary key (exposure_id, subsetting);
+DROP TRIGGER IF EXISTS delete_history_trigger ON exposures_subsettings;
+
+alter table exposures_contactfactors drop constraint unq_exposures_contactfactors_0;
+alter table exposures_contactfactors add constraint exposures_contactfactors_pk primary key (exposure_id, contactfactor);
+DROP TRIGGER IF EXISTS delete_history_trigger ON exposures_contactfactors;
+
+alter table exposures_protectivemeasures drop constraint unq_exposures_protectivemeasures_0;
+alter table exposures_protectivemeasures add constraint exposures_protectivemeasures_pk primary key (exposure_id, protectivemeasure);	
+DROP TRIGGER IF EXISTS delete_history_trigger ON exposures_protectivemeasures;
+
+INSERT INTO schema_version (version_number, comment) VALUES (617, '#13887 update keys and drop delete history triggers for new exposures tables');
+
+alter table diseaseconfiguration add exposurecategories varchar(255);
+alter table diseaseconfiguration_history add exposurecategories varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (618, '#13887 add exposure categories to disease configuration');
+
 -- #13828 - Customizable Fields
 
 CREATE TABLE IF NOT EXISTS customizablefieldmetadata (
@@ -15603,102 +15698,7 @@ CREATE TRIGGER delete_history_trigger_customizablefieldvalue
 
 ALTER TABLE customizablefieldvalue_history OWNER TO sormas_user;
 
-INSERT INTO schema_version (version_number, comment) VALUES (615, '#13828 - Add history tables for customizable fields');
-
--- 23-03-2026 new fields related to Malaria and Dengue samples and pathogenform.
-ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS serotypetext varchar(255);
-UPDATE pathogentest  SET serotypetext = serotype, serotype = 'OTHER' WHERE serotype IS NOT null   and serotypetext is null;
-DO $$
-BEGIN
-    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'pathogentest' AND column_name = 'genotyperesult') THEN
-        ALTER TABLE pathogentest RENAME COLUMN genotyperesult TO genotype;
-    END IF;
-    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'pathogentest' AND column_name = 'genotyperesulttext') THEN
-        ALTER TABLE pathogentest RENAME COLUMN genotyperesulttext TO genotypetext;
-    END IF;
-END $$;
-ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS antibodyTitre varchar(255);
-ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS performedByReferenceLaboratory boolean;
-ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS retestRequested boolean default false;
-ALTER TABLE pathogentest add column IF NOT EXISTS resultdetails varchar(255);
-ALTER TABLE pathogentest add column IF NOT EXISTS specietext varchar(255);
-ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS malaria varchar(255);
-ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS malariainfectedyear integer ;
-
-
-ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS serotypetext varchar(255);
-UPDATE pathogentest_history  SET serotypetext = serotype, serotype = 'OTHER' WHERE serotype IS NOT null   and serotypetext is null;
-DO $$
-BEGIN
-    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'pathogentest_history' AND column_name = 'genotyperesult') THEN
-        ALTER TABLE pathogentest_history RENAME COLUMN genotyperesult TO genotype;
-    END IF;
-    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'pathogentest_history' AND column_name = 'genotyperesulttext') THEN
-        ALTER TABLE pathogentest_history RENAME COLUMN genotyperesulttext TO genotypetext;
-    END IF;
-END $$;
-
-ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS antibodyTitre varchar(255);
-ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS performedByReferenceLaboratory boolean;
-ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS retestRequested boolean default false;
-ALTER TABLE pathogentest_history add column IF NOT EXISTS resultdetails varchar(255);
-ALTER TABLE pathogentest_history add column IF NOT EXISTS specietext varchar(255);
-ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS malaria varchar(255);
-ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS malariainfectedyear integer ;
-
-INSERT INTO schema_version (version_number, comment) VALUES (615, '#13801, #13814 - Malaria and Dengue sampel changes');
-
--- 07-04-2026 Test report new fields related to Malaria and Dengue samples and pathogenform.
-ALTER TABLE testreport ADD COLUMN IF NOT EXISTS serotypetext varchar(255);
-UPDATE testreport  SET serotypetext = serotype, serotype = 'OTHER' WHERE serotype IS NOT null   and serotypetext is null;
-DO $$
-BEGIN
-    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport' AND column_name = 'genotyperesult') 
-        AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport' AND column_name = 'genotype') THEN
-        ALTER TABLE testreport RENAME COLUMN genotyperesult TO genotype;
-    END IF;
-    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport' AND column_name = 'genotyperesulttext') 
-        AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport' AND column_name = 'genotypetext') THEN
-        ALTER TABLE testreport RENAME COLUMN genotyperesulttext TO genotypetext;
-    END IF;
-END $$;
-
-ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS serotypetext varchar(255);
-UPDATE testreport_history  SET serotypetext = serotype, serotype = 'OTHER' WHERE serotype IS NOT null   and serotypetext is null;
-DO $$
-BEGIN
-    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport_history' AND column_name = 'genotyperesult') 
-        AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport_history' AND column_name = 'genotype') THEN
-        ALTER TABLE testreport_history RENAME COLUMN genotyperesult TO genotype;
-    END IF;
-    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport_history' AND column_name = 'genotyperesulttext') 
-        AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport_history' AND column_name = 'genotypetext') THEN
-        ALTER TABLE testreport_history RENAME COLUMN genotyperesulttext TO genotypetext;
-    END IF;
-END $$;
-
-INSERT INTO schema_version (version_number, comment) VALUES (616, '#13801, #13814 - Malaria and Dengue TestReport columns renames');
-
--- update delete triggers for exposure related tables
-
-alter table exposures_subsettings drop constraint unq_exposures_subsettings_0;
-alter table exposures_subsettings add constraint exposures_subsettings_pk primary key (exposure_id, subsetting);
-DROP TRIGGER IF EXISTS delete_history_trigger ON exposures_subsettings;
-
-alter table exposures_contactfactors drop constraint unq_exposures_contactfactors_0;
-alter table exposures_contactfactors add constraint exposures_contactfactors_pk primary key (exposure_id, contactfactor);
-DROP TRIGGER IF EXISTS delete_history_trigger ON exposures_contactfactors;
-
-alter table exposures_protectivemeasures drop constraint unq_exposures_protectivemeasures_0;
-alter table exposures_protectivemeasures add constraint exposures_protectivemeasures_pk primary key (exposure_id, protectivemeasure);	
-DROP TRIGGER IF EXISTS delete_history_trigger ON exposures_protectivemeasures;
-
-INSERT INTO schema_version (version_number, comment) VALUES (617, '#13887 update keys and drop delete history triggers for new exposures tables');
-
-alter table diseaseconfiguration add exposurecategories varchar(255);
-alter table diseaseconfiguration_history add exposurecategories varchar(255);
-
-INSERT INTO schema_version (version_number, comment) VALUES (618, '#13887 add exposure categories to disease configuration');
+INSERT INTO schema_version (version_number, comment) VALUES (619, '#13828 - Add history tables for customizable fields');
 
 
 -- #13828 - Customizable Fields
