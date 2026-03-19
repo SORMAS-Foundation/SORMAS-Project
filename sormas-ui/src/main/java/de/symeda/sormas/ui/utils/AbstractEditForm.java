@@ -21,8 +21,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -46,6 +48,8 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.InfrastructureDataReferenceDto;
 import de.symeda.sormas.api.customizableenum.CustomizableEnum;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataDto;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -69,6 +73,9 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 
 	private ComboBox diseaseField;
 	private boolean setServerDiseaseAsDefault;
+
+	private List<CustomizableFieldMetadataDto> customizableFieldsMetadata;
+	private Map<String, CustomizableFieldValueDto> customizableFieldsValues;
 
 	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix) {
 		this(type, propertyI18nPrefix, true, null, null);
@@ -132,6 +139,48 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 		if (diseaseField != null && diseaseField.getValue() == null && setServerDiseaseAsDefault) {
 			setDefaultDiseaseValue();
 		}
+	}
+
+	/**
+	 * Set customizable field metadata for this form.
+	 * This data should be pre-loaded by the controller and passed to the form.
+	 * The form will use this metadata to create and configure customizable field components.
+	 * 
+	 * @param metadata
+	 *            List of customizable field metadata DTOs pre-loaded by the controller
+	 */
+	public void setCustomizableFieldsMetadata(List<CustomizableFieldMetadataDto> metadata) {
+		this.customizableFieldsMetadata = metadata;
+	}
+
+	/**
+	 * Get customizable field metadata.
+	 * 
+	 * @return List of customizable field metadata, or null if not set
+	 */
+	protected List<CustomizableFieldMetadataDto> getCustomizableFieldsMetadata() {
+		return customizableFieldsMetadata;
+	}
+
+	/**
+	 * Set customizable field values for this form.
+	 * This data should be pre-loaded by the controller and passed to the form.
+	 * The form will use this data to populate customizable field components.
+	 * 
+	 * @param values
+	 *            Map of customizable field values keyed by field metadata UUID, pre-loaded by the controller
+	 */
+	public void setCustomizableFieldsValues(Map<String, CustomizableFieldValueDto> values) {
+		this.customizableFieldsValues = values;
+	}
+
+	/**
+	 * Get customizable field values.
+	 * 
+	 * @return Map of customizable field values, or empty map if not set
+	 */
+	protected Map<String, CustomizableFieldValueDto> getCustomizableFieldsValues() {
+		return customizableFieldsValues != null ? customizableFieldsValues : new HashMap<>();
 	}
 
 	@Override
