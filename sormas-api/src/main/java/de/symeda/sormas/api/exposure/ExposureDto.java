@@ -16,6 +16,8 @@
 package de.symeda.sormas.api.exposure;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -120,6 +122,19 @@ public class ExposureDto extends PseudonymizableDto {
 	public static final String RAW_FOOD_CONTACT = "rawFoodContact";
 	public static final String RAW_FOOD_CONTACT_TEXT = "rawFoodContactText";
 	public static final String SYMPTOMATIC_INDIVIDUAL_TEXT = "symptomaticIndividualText";
+	public static final String EXPOSURE_CATEGORY = "exposureCategory";
+	public static final String EXPOSURE_SETTING = "exposureSetting";
+	public static final String EXPOSURE_SETTING_DETAILS = "exposureSettingDetails";
+	public static final String EXPOSURE_SUB_SETTING_DETAILS = "exposureSubSettingDetails";
+	public static final String CONTACT_FACTOR_DETAILS = "contactFactorDetails";
+	public static final String PROTECTIVE_MEASURE_DETAILS = "protectiveMeasureDetails";
+	public static final String EXPOSURE_COMMENT = "exposureComment";
+	public static final String ANIMAL_CATEGORY = "animalCategory";
+	public static final String ANIMAL_CATEGORY_DETAILS = "animalCategoryDetails";
+	public static final String FOMITE_TRANSMISSION_LOCATION = "fomiteTransmissionLocation";
+	public static final String SUB_SETTINGS = "subSettings";
+	public static final String CONTACT_FACTORS = "contactFactors";
+	public static final String PROTECTIVE_MEASURES = "protectiveMeasures";
 
 	@SensitiveData
 	private UserReferenceDto reportingUser;
@@ -401,6 +416,24 @@ public class ExposureDto extends PseudonymizableDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String symptomaticIndividualText;
 
+	private ExposureCategory exposureCategory;
+	private ExposureSetting exposureSetting;
+	private String exposureSettingDetails;
+	private String exposureSubSettingDetails;
+	private String contactFactorDetails;
+	private String protectiveMeasureDetails;
+	private String exposureComment;
+
+	private AnimalCondition conditionOfAnimal;
+	private AnimalCategory animalCategory;
+	private String animalCategoryDetails;
+
+	private FomiteTransmissionLocation fomiteTransmissionLocation;
+
+	private Set<ExposureSubSetting> subSettings;
+	private Set<ExposureContactFactor> contactFactors;
+	private Set<ExposureProtectiveMeasure> protectiveMeasures;
+
 	public static ExposureDto build(ExposureType exposureType) {
 
 		ExposureDto exposure = new ExposureDto();
@@ -408,6 +441,11 @@ public class ExposureDto extends PseudonymizableDto {
 		exposure.setExposureType(exposureType);
 		LocationDto location = LocationDto.build();
 		exposure.setLocation(location);
+
+		exposure.setSubSettings(new HashSet<>());
+		exposure.setContactFactors(new HashSet<>());
+		exposure.setProtectiveMeasures(new HashSet<>());
+
 		return exposure;
 	}
 
@@ -945,6 +983,118 @@ public class ExposureDto extends PseudonymizableDto {
 
 	public void setSymptomaticIndividualText(String symptomaticIndividualText) {
 		this.symptomaticIndividualText = symptomaticIndividualText;
+	}
+
+	public ExposureCategory getExposureCategory() {
+		return exposureCategory;
+	}
+
+	public void setExposureCategory(ExposureCategory exposureCategory) {
+		this.exposureCategory = exposureCategory;
+	}
+
+	public ExposureSetting getExposureSetting() {
+		return exposureSetting;
+	}
+
+	public void setExposureSetting(ExposureSetting exposureSetting) {
+		this.exposureSetting = exposureSetting;
+	}
+
+	public String getExposureSettingDetails() {
+		return exposureSettingDetails;
+	}
+
+	public void setExposureSettingDetails(String exposureSettingDetails) {
+		this.exposureSettingDetails = exposureSettingDetails;
+	}
+
+	public String getExposureSubSettingDetails() {
+		return exposureSubSettingDetails;
+	}
+
+	public void setExposureSubSettingDetails(String exposureSubSettingDetails) {
+		this.exposureSubSettingDetails = exposureSubSettingDetails;
+	}
+
+	public String getContactFactorDetails() {
+		return contactFactorDetails;
+	}
+
+	public void setContactFactorDetails(String contactFactorDetails) {
+		this.contactFactorDetails = contactFactorDetails;
+	}
+
+	public String getProtectiveMeasureDetails() {
+		return protectiveMeasureDetails;
+	}
+
+	public void setProtectiveMeasureDetails(String protectiveMeasureDetails) {
+		this.protectiveMeasureDetails = protectiveMeasureDetails;
+	}
+
+	public String getExposureComment() {
+		return exposureComment;
+	}
+
+	public void setExposureComment(String exposureComment) {
+		this.exposureComment = exposureComment;
+	}
+
+	public AnimalCondition getConditionOfAnimal() {
+		return conditionOfAnimal;
+	}
+
+	public void setConditionOfAnimal(AnimalCondition conditionOfAnimal) {
+		this.conditionOfAnimal = conditionOfAnimal;
+	}
+
+	public AnimalCategory getAnimalCategory() {
+		return animalCategory;
+	}
+
+	public void setAnimalCategory(AnimalCategory animalCategory) {
+		this.animalCategory = animalCategory;
+	}
+
+	public String getAnimalCategoryDetails() {
+		return animalCategoryDetails;
+	}
+
+	public void setAnimalCategoryDetails(String animalCategoryDetails) {
+		this.animalCategoryDetails = animalCategoryDetails;
+	}
+
+	public FomiteTransmissionLocation getFomiteTransmissionLocation() {
+		return fomiteTransmissionLocation;
+	}
+
+	public void setFomiteTransmissionLocation(FomiteTransmissionLocation fomiteTransmissionLocation) {
+		this.fomiteTransmissionLocation = fomiteTransmissionLocation;
+	}
+
+	public Set<ExposureSubSetting> getSubSettings() {
+		return subSettings;
+	}
+
+	public void setSubSettings(Set<ExposureSubSetting> subSettings) {
+		this.subSettings = subSettings;
+	}
+
+	public Set<ExposureContactFactor> getContactFactors() {
+		return contactFactors;
+	}
+
+	public void setContactFactors(Set<ExposureContactFactor> contactFactors) {
+		this.contactFactors = contactFactors;
+	}
+
+	public Set<ExposureProtectiveMeasure> getProtectiveMeasures() {
+		return protectiveMeasures;
+	}
+
+	public void setProtectiveMeasures(Set<ExposureProtectiveMeasure> protectiveMeasures) {
+		this.protectiveMeasures = protectiveMeasures;
 	}
 
 	@Override

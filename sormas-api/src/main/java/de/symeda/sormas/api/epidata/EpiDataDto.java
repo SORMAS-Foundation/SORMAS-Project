@@ -68,6 +68,7 @@ public class EpiDataDto extends PseudonymizableDto {
 	public static final String INFECTION_SOURCE_TEXT = "infectionSourceText";
 	public static final String IMPORTED_CASE = "importedCase";
 	public static final String COUNTRY = "country";
+	public static final String OTHER_DETAILS = "otherDetails";
 
 	private YesNoUnknown exposureDetailsKnown;
 	private YesNoUnknown activityAsCaseDetailsKnown;
@@ -139,6 +140,8 @@ public class EpiDataDto extends PseudonymizableDto {
 
 	@Valid
 	private List<ActivityAsCaseDto> activitiesAsCase = new ArrayList<>();
+
+	private String otherDetails;
 
 	public YesNoUnknown getExposureDetailsKnown() {
 		return exposureDetailsKnown;
@@ -291,6 +294,14 @@ public class EpiDataDto extends PseudonymizableDto {
 
 	public void setCountry(CountryReferenceDto country) {
 		this.country = country;
+	}
+
+	public String getOtherDetails() {
+		return otherDetails;
+	}
+
+	public void setOtherDetails(String otherDetails) {
+		this.otherDetails = otherDetails;
 	}
 
 	@Override

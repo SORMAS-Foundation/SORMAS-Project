@@ -18,9 +18,13 @@ package de.symeda.sormas.backend.exposure;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -30,15 +34,23 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.UniqueConstraint;
 
 import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.exposure.AnimalCategory;
 import de.symeda.sormas.api.exposure.AnimalContactType;
 import de.symeda.sormas.api.exposure.AnimalLocation;
+import de.symeda.sormas.api.exposure.ExposureCategory;
+import de.symeda.sormas.api.exposure.ExposureContactFactor;
+import de.symeda.sormas.api.exposure.ExposureProtectiveMeasure;
 import de.symeda.sormas.api.exposure.ExposureRole;
+import de.symeda.sormas.api.exposure.ExposureSetting;
+import de.symeda.sormas.api.exposure.ExposureSubSetting;
 import de.symeda.sormas.api.exposure.ExposureType;
+import de.symeda.sormas.api.exposure.FomiteTransmissionLocation;
 import de.symeda.sormas.api.exposure.GatheringType;
 import de.symeda.sormas.api.exposure.HabitationType;
 import de.symeda.sormas.api.exposure.SwimmingLocation;
@@ -64,6 +76,19 @@ public class Exposure extends AbstractDomainObject {
 	public static final String LOCATION = "location";
 	public static final String EXPOSURE_TYPE = "exposureType";
 	public static final String CONTACT_TO_CASE = "contactToCase";
+	public static final String EXPOSURE_CATEGORY = "exposureCategory";
+	public static final String EXPOSURE_SETTING = "exposureSetting";
+	public static final String EXPOSURE_SETTING_DETAILS = "exposureSettingDetails";
+	public static final String EXPOSURE_SUB_SETTING_DETAILS = "exposureSubSettingDetails";
+	public static final String CONTACT_FACTOR_DETAILS = "contactFactorDetails";
+	public static final String PROTECTIVE_MEASURE_DETAILS = "protectiveMeasureDetails";
+	public static final String EXPOSURE_COMMENT = "exposureComment";
+	public static final String ANIMAL_CATEGORY = "animalCategory";
+	public static final String ANIMAL_CATEGORY_DETAILS = "animalCategoryDetails";
+	public static final String FOMITE_TRANSMISSION_LOCATION = "fomiteTransmissionLocation";
+	public static final String SUB_SETTINGS = "subSettings";
+	public static final String CONTACT_FACTORS = "contactFactors";
+	public static final String PROTECTIVE_MEASURES = "protectiveMeasures";
 
 	private EpiData epiData;
 	private User reportingUser;
@@ -146,6 +171,24 @@ public class Exposure extends AbstractDomainObject {
 	private YesNoUnknown rawFoodContact;
 	private String rawFoodContactText;
 	private String symptomaticIndividualText;
+
+	private ExposureCategory exposureCategory;
+	private ExposureSetting exposureSetting;
+	private String exposureSettingDetails;
+	private String exposureSubSettingDetails;
+	private String contactFactorDetails;
+	private String protectiveMeasureDetails;
+	private String exposureComment;
+
+	private AnimalCondition conditionOfAnimal;
+	private AnimalCategory animalCategory;
+	private String animalCategoryDetails;
+
+	private FomiteTransmissionLocation fomiteTransmissionLocation;
+
+	private Set<ExposureSubSetting> subSettings = new HashSet<>();
+	private Set<ExposureContactFactor> contactFactors = new HashSet<>();
+	private Set<ExposureProtectiveMeasure> protectiveMeasures = new HashSet<>();
 
 	@ManyToOne
 	@JoinColumn(nullable = false)
@@ -759,5 +802,152 @@ public class Exposure extends AbstractDomainObject {
 
 	public void setSymptomaticIndividualText(String symptomaticIndividualText) {
 		this.symptomaticIndividualText = symptomaticIndividualText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ExposureCategory getExposureCategory() {
+		return exposureCategory;
+	}
+
+	public void setExposureCategory(ExposureCategory exposureCategory) {
+		this.exposureCategory = exposureCategory;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ExposureSetting getExposureSetting() {
+		return exposureSetting;
+	}
+
+	public void setExposureSetting(ExposureSetting exposureSetting) {
+		this.exposureSetting = exposureSetting;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getExposureSettingDetails() {
+		return exposureSettingDetails;
+	}
+
+	public void setExposureSettingDetails(String exposureSettingDetails) {
+		this.exposureSettingDetails = exposureSettingDetails;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getExposureSubSettingDetails() {
+		return exposureSubSettingDetails;
+	}
+
+	public void setExposureSubSettingDetails(String exposureSubSettingDetails) {
+		this.exposureSubSettingDetails = exposureSubSettingDetails;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getContactFactorDetails() {
+		return contactFactorDetails;
+	}
+
+	public void setContactFactorDetails(String contactFactorDetails) {
+		this.contactFactorDetails = contactFactorDetails;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getProtectiveMeasureDetails() {
+		return protectiveMeasureDetails;
+	}
+
+	public void setProtectiveMeasureDetails(String protectiveMeasureDetails) {
+		this.protectiveMeasureDetails = protectiveMeasureDetails;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getExposureComment() {
+		return exposureComment;
+	}
+
+	public void setExposureComment(String exposureComment) {
+		this.exposureComment = exposureComment;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public AnimalCondition getConditionOfAnimal() {
+		return conditionOfAnimal;
+	}
+
+	public void setConditionOfAnimal(AnimalCondition conditionOfAnimal) {
+		this.conditionOfAnimal = conditionOfAnimal;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public AnimalCategory getAnimalCategory() {
+		return animalCategory;
+	}
+
+	public void setAnimalCategory(AnimalCategory animalCategory) {
+		this.animalCategory = animalCategory;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getAnimalCategoryDetails() {
+		return animalCategoryDetails;
+	}
+
+	public void setAnimalCategoryDetails(String animalCategoryDetails) {
+		this.animalCategoryDetails = animalCategoryDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public FomiteTransmissionLocation getFomiteTransmissionLocation() {
+		return fomiteTransmissionLocation;
+	}
+
+	public void setFomiteTransmissionLocation(FomiteTransmissionLocation fomiteTransmissionLocation) {
+		this.fomiteTransmissionLocation = fomiteTransmissionLocation;
+	}
+
+	@ElementCollection(fetch = FetchType.EAGER)
+	@Enumerated(EnumType.STRING)
+	@CollectionTable(name = "exposures_subsettings",
+		joinColumns = @JoinColumn(name = "exposure_id", referencedColumnName = Exposure.ID, nullable = false),
+		uniqueConstraints = @UniqueConstraint(columnNames = {
+			"exposure_id",
+			"subsetting" }))
+	@Column(name = "subsetting", nullable = false)
+	public Set<ExposureSubSetting> getSubSettings() {
+		return subSettings;
+	}
+
+	public void setSubSettings(Set<ExposureSubSetting> subSettings) {
+		this.subSettings = subSettings;
+	}
+
+	@ElementCollection(fetch = FetchType.EAGER)
+	@Enumerated(EnumType.STRING)
+	@CollectionTable(name = "exposures_contactfactors",
+		joinColumns = @JoinColumn(name = "exposure_id", referencedColumnName = Exposure.ID, nullable = false),
+		uniqueConstraints = @UniqueConstraint(columnNames = {
+			"exposure_id",
+			"contactfactor" }))
+	@Column(name = "contactfactor", nullable = false)
+	public Set<ExposureContactFactor> getContactFactors() {
+		return contactFactors;
+	}
+
+	public void setContactFactors(Set<ExposureContactFactor> contactFactors) {
+		this.contactFactors = contactFactors;
+	}
+
+	@ElementCollection(fetch = FetchType.EAGER)
+	@Enumerated(EnumType.STRING)
+	@CollectionTable(name = "exposures_protectivemeasures",
+		joinColumns = @JoinColumn(name = "exposure_id", referencedColumnName = Exposure.ID, nullable = false),
+		uniqueConstraints = @UniqueConstraint(columnNames = {
+			"exposure_id",
+			"protectivemeasure" }))
+	@Column(name = "protectivemeasure", nullable = false)
+	public Set<ExposureProtectiveMeasure> getProtectiveMeasures() {
+		return protectiveMeasures;
+	}
+
+	public void setProtectiveMeasures(Set<ExposureProtectiveMeasure> protectiveMeasures) {
+		this.protectiveMeasures = protectiveMeasures;
 	}
 }
