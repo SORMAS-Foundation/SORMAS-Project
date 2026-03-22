@@ -15367,4 +15367,104 @@ ALTER TABLE externalmessage_history ALTER COLUMN casecomments TYPE text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (613, '#13879 - Increased length of case comments');
 
+-- epidata table update
+ALTER TABLE epidata ADD COLUMN otherdetails TEXT;
+ALTER TABLE epidata_history ADD COLUMN otherdetails TEXT;
+
+-- exposure table update
+ALTER TABLE exposures ADD COLUMN exposurecategory VARCHAR(255);
+ALTER TABLE exposures ADD COLUMN exposuresetting VARCHAR(255);
+ALTER TABLE exposures ADD COLUMN exposuresettingdetails TEXT;
+ALTER TABLE exposures ADD COLUMN exposuresubsettingdetails TEXT;
+ALTER TABLE exposures ADD COLUMN contactfactordetails TEXT;
+ALTER TABLE exposures ADD COLUMN protectivemeasuredetails TEXT;
+ALTER TABLE exposures ADD COLUMN conditionofanimal VARCHAR(255);
+ALTER TABLE exposures ADD COLUMN animalcategory VARCHAR(255);
+ALTER TABLE exposures ADD COLUMN animalcategorydetails TEXT;
+ALTER TABLE exposures ADD COLUMN fomitetransmissionlocation VARCHAR(255);
+ALTER TABLE exposures ADD COLUMN exposurecomment TEXT;
+
+ALTER TABLE exposures_history ADD COLUMN exposurecategory VARCHAR(255);
+ALTER TABLE exposures_history ADD COLUMN exposuresetting VARCHAR(255);
+ALTER TABLE exposures_history ADD COLUMN exposuresettingdetails TEXT;
+ALTER TABLE exposures_history ADD COLUMN exposuresubsettingdetails TEXT;
+ALTER TABLE exposures_history ADD COLUMN contactfactordetails TEXT;
+ALTER TABLE exposures_history ADD COLUMN protectivemeasuredetails TEXT;
+ALTER TABLE exposures_history ADD COLUMN conditionofanimal VARCHAR(255);
+ALTER TABLE exposures_history ADD COLUMN animalcategory VARCHAR(255);
+ALTER TABLE exposures_history ADD COLUMN animalcategorydetails TEXT;
+ALTER TABLE exposures_history ADD COLUMN fomitetransmissionlocation VARCHAR(255);
+ALTER TABLE exposures_history ADD COLUMN exposurecomment TEXT;
+
+-- exposures_subsettings
+CREATE TABLE exposures_subsettings (
+       exposure_id     BIGINT NOT NULL,
+       subsetting      VARCHAR(255) NOT NULL,
+       sys_period      TSTZRANGE NOT NULL
+);
+
+ALTER TABLE exposures_subsettings OWNER TO sormas_user;
+ALTER TABLE exposures_subsettings ADD CONSTRAINT fk_exposures_subsettings_exposure_id FOREIGN KEY (exposure_id) REFERENCES exposures;
+ALTER TABLE exposures_subsettings ADD CONSTRAINT unq_exposures_subsettings_0 UNIQUE (exposure_id, subsetting);
+
+-- exposures_subsettings history
+CREATE TABLE exposures_subsettings_history (LIKE exposures_subsettings);
+DROP TRIGGER IF EXISTS versioning_trigger ON exposures_subsettings;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE OR DELETE ON exposures_subsettings
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'exposures_subsettings_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON exposures_subsettings;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON exposures_subsettings
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('exposures_subsettings_history', 'id');
+ALTER TABLE exposures_subsettings_history OWNER TO sormas_user;
+
+-- exposures_contactfactors
+CREATE TABLE exposures_contactfactors (
+      exposure_id     BIGINT NOT NULL,
+      contactfactor   VARCHAR(255) NOT NULL,
+      sys_period      TSTZRANGE NOT NULL
+);
+
+ALTER TABLE exposures_contactfactors OWNER TO sormas_user;
+ALTER TABLE exposures_contactfactors ADD CONSTRAINT fk_exposures_contactfactors_exposure_id FOREIGN KEY (exposure_id) REFERENCES exposures;
+ALTER TABLE exposures_contactfactors ADD CONSTRAINT unq_exposures_contactfactors_0 UNIQUE (exposure_id, contactfactor);
+
+-- exposures_contactfactors history
+CREATE TABLE exposures_contactfactors_history (LIKE exposures_contactfactors);
+DROP TRIGGER IF EXISTS versioning_trigger ON exposures_contactfactors;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE OR DELETE ON exposures_contactfactors
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'exposures_contactfactors_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON exposures_contactfactors;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON exposures_contactfactors
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('exposures_contactfactors_history', 'id');
+ALTER TABLE exposures_contactfactors_history OWNER TO sormas_user;
+
+-- exposures_protectivemeasures
+CREATE TABLE exposures_protectivemeasures (
+      exposure_id         BIGINT NOT NULL,
+      protectivemeasure   VARCHAR(255) NOT NULL,
+      sys_period          TSTZRANGE NOT NULL
+);
+
+ALTER TABLE exposures_protectivemeasures OWNER TO sormas_user;
+ALTER TABLE exposures_protectivemeasures ADD CONSTRAINT fk_exposures_protectivemeasures_exposure_id FOREIGN KEY (exposure_id) REFERENCES exposures;
+ALTER TABLE exposures_protectivemeasures ADD CONSTRAINT unq_exposures_protectivemeasures_0 UNIQUE (exposure_id, protectivemeasure);
+
+-- exposures_protectivemeasures history
+CREATE TABLE exposures_protectivemeasures_history (LIKE exposures_protectivemeasures);
+DROP TRIGGER IF EXISTS versioning_trigger ON exposures_protectivemeasures;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE OR DELETE ON exposures_protectivemeasures
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'exposures_protectivemeasures_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON exposures_protectivemeasures;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON exposures_protectivemeasures
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('exposures_protectivemeasures_history', 'id');
+ALTER TABLE exposures_protectivemeasures_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (614, '#13887 - Exposure form redesign');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
