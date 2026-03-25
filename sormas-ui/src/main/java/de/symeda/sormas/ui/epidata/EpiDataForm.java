@@ -36,6 +36,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
@@ -80,7 +81,8 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT = 
 			loc(LOC_EXPOSURE_INVESTIGATION_HEADING) +
-					fluidRowLocs(6,EpiDataDto.CASE_IMPORTED_STATUS,6,"") +
+			fluidRowLocs(6, EpiDataDto.EXPOSURE_START_DATE, 6, EpiDataDto.EXPOSURE_END_DATE)+
+			fluidRowLocs(6,EpiDataDto.CASE_IMPORTED_STATUS,6,"") +
 			loc(LOC_EXP_PERIOD_HEADING) +
 			loc(EpiDataDto.EXPOSURE_DETAILS_KNOWN) +
 			loc(EpiDataDto.EXPOSURES) +
@@ -176,6 +178,12 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		addField(EpiDataDto.MODE_OF_TRANSMISSION_TYPE);
 		addField(EpiDataDto.INFECTION_SOURCE);
 		addField(EpiDataDto.INFECTION_SOURCE_TEXT);
+		DateField exposureStartDate = addField(EpiDataDto.EXPOSURE_START_DATE);
+		exposureStartDate.setCaption(I18nProperties.getString(Strings.exposureStartDate));
+		exposureStartDate.setEnabled(false);
+		DateField exposureEndDate = addField(EpiDataDto.EXPOSURE_END_DATE);
+		exposureEndDate.setCaption(I18nProperties.getString(Strings.exposureEndDate));
+		exposureEndDate.setEnabled(false);
 		addField(EpiDataDto.IMPORTED_CASE, NullableOptionGroup.class);
 		List<CountryReferenceDto> countries = FacadeProvider.getCountryFacade().getAllActiveAsReference();
 		ComboBox country = addInfrastructureField(EpiDataDto.COUNTRY);

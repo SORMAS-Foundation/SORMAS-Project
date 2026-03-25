@@ -14,6 +14,8 @@
  */
 package de.symeda.sormas.ui.samples.sampleLink;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -23,6 +25,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
@@ -39,6 +42,7 @@ import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.UiUtil;
+import de.symeda.sormas.ui.samples.pathogentestlink.PathogenTestListEntry;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
@@ -153,6 +157,24 @@ public class SampleListEntry extends SideComponentField {
 						I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.CQ_VALUE) + ": " + latestTest.getCqValue());
 					cqValue.addStyleName(CssStyles.ALIGN_RIGHT);
 					bottomLayout.addComponent(cqValue);
+				}
+				// Need to include the variants
+				String variant = null;
+				if (latestTest.getTestedDisease() == Disease.MALARIA
+					&& PathogenTestListEntry.VARIANT_MAP.get(latestTest.getTestedDisease()).stream().anyMatch(latestTest.getTestType()::equals)) {
+					variant = StringUtils.abbreviate((latestTest.getSpecie() != null ? latestTest.getSpecie().toString() : ""), 125);
+				} else if (latestTest.getTestedDisease() == Disease.DENGUE
+					&& PathogenTestListEntry.VARIANT_MAP.get(latestTest.getTestedDisease()).stream().anyMatch(latestTest.getTestType()::equals)) {
+					variant = StringUtils.abbreviate((latestTest.getSerotype() != null ? latestTest.getSerotype().toString() : ""), 125);
+				} else if (latestTest.getTestedDisease() == Disease.MEASLES) {
+					variant = StringUtils.abbreviate((latestTest.getGenoType() != null ? latestTest.getGenoType().toString() : ""), 125);
+				} else {
+					variant = "";
+				}
+				if (StringUtils.isNotBlank(variant)) {
+					Label variantLabel = new Label(DataHelper.toStringNullable(variant));
+					CssStyles.style(variantLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_CRITICAL);
+					bottomLayout.addComponent(variantLabel);
 				}
 				latestTestLayout.addComponents(heading, testDate, bottomLayout);
 				topLeftLayout.addComponent(latestTestLayout);

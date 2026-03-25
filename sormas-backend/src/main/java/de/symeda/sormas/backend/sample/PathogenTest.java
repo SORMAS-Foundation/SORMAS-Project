@@ -40,7 +40,7 @@ import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.disease.DiseaseVariantConverter;
 import de.symeda.sormas.api.disease.PathogenConverter;
 import de.symeda.sormas.api.environment.environmentsample.Pathogen;
-import de.symeda.sormas.api.sample.GenoTypeResult;
+import de.symeda.sormas.api.sample.GenoType;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenSpecie;
 import de.symeda.sormas.api.sample.PathogenStrainCallStatus;
@@ -50,6 +50,7 @@ import de.symeda.sormas.api.sample.PathogenTestScale;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.RsvSubtype;
 import de.symeda.sormas.api.sample.SeroGroupSpecification;
+import de.symeda.sormas.api.sample.Serotype;
 import de.symeda.sormas.api.sample.SerotypingMethod;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.DeletableAdo;
@@ -133,7 +134,7 @@ public class PathogenTest extends DeletableAdo {
 	private String testResultText;
 	private Boolean testResultVerified;
 	private boolean fourFoldIncreaseAntibodyTiter;
-	private String serotype;
+
 	private Float cqValue;
 	private Float ctValueE;
 	private Float ctValueN;
@@ -157,15 +158,19 @@ public class PathogenTest extends DeletableAdo {
 	private YesNoUnknown rifampicinResistant;
 	private YesNoUnknown isoniazidResistant;
 	private PathogenSpecie specie;
+	private String specieText;
 	private String patternProfile;
 	private PathogenStrainCallStatus strainCallStatus;
 	private PathogenTestScale testScale;
 	private DrugSusceptibility drugSusceptibility;
 	private String miruPatternProfile;
+	private Serotype serotype;
+	// serotypeText to capture the custom values and to display the existing string values.
+	private String serotypeText;
 	private SerotypingMethod seroTypingMethod;
 	private String seroTypingMethodText;
-	private GenoTypeResult genoTypeResult;
-	private String genoTypeResultText;
+	private GenoType genoType;
+	private String genoTypeText;
 	private SeroGroupSpecification seroGroupSpecification;
 	private String seroGroupSpecificationText;
 	private RsvSubtype rsvSubtype;
@@ -177,6 +182,11 @@ public class PathogenTest extends DeletableAdo {
 	private Boolean tubeAgTb2GT10;
 	private Float tubeMitogene;
 	private Boolean tubeMitogeneGT10;
+	// Dengue and Malaria changes
+	private String antibodyTitre;
+	private Boolean performedByReferenceLaboratory;
+	private Boolean retestRequested;
+	private String resultDetails;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	public Sample getSample() {
@@ -384,13 +394,22 @@ public class PathogenTest extends DeletableAdo {
 		this.fourFoldIncreaseAntibodyTiter = fourFoldIncreaseAntibodyTiter;
 	}
 
-	@Column(length = CHARACTER_LIMIT_DEFAULT)
-	public String getSerotype() {
+	@Enumerated(EnumType.STRING)
+	public Serotype getSerotype() {
 		return serotype;
 	}
 
-	public void setSerotype(String serotype) {
+	public void setSerotype(Serotype serotype) {
 		this.serotype = serotype;
+	}
+
+	@Column
+	public String getSerotypeText() {
+		return serotypeText;
+	}
+
+	public void setSerotypeText(String serotypeText) {
+		this.serotypeText = serotypeText;
 	}
 
 	@Column
@@ -649,20 +668,20 @@ public class PathogenTest extends DeletableAdo {
 	}
 
 	@Enumerated(EnumType.STRING)
-	public GenoTypeResult getGenoTypeResult() {
-		return genoTypeResult;
+	public GenoType getGenoType() {
+		return genoType;
 	}
 
-	public void setGenoTypeResult(GenoTypeResult genoTypeResult) {
-		this.genoTypeResult = genoTypeResult;
+	public void setGenoType(GenoType genoType) {
+		this.genoType = genoType;
 	}
 
-	public String getGenoTypeResultText() {
-		return genoTypeResultText;
+	public String getGenoTypeText() {
+		return genoTypeText;
 	}
 
-	public void setGenoTypeResultText(String genoTypeResultText) {
-		this.genoTypeResultText = genoTypeResultText;
+	public void setGenoTypeText(String genoTypeText) {
+		this.genoTypeText = genoTypeText;
 	}
 
 	public String getSeroTypingMethodText() {
@@ -761,6 +780,46 @@ public class PathogenTest extends DeletableAdo {
 
 	public void setTubeMitogeneGT10(Boolean tubeMitogeneGT10) {
 		this.tubeMitogeneGT10 = tubeMitogeneGT10;
+	}
+
+	public String getAntibodyTitre() {
+		return antibodyTitre;
+	}
+
+	public void setAntibodyTitre(String antibodyTitre) {
+		this.antibodyTitre = antibodyTitre;
+	}
+
+	public Boolean getPerformedByReferenceLaboratory() {
+		return performedByReferenceLaboratory;
+	}
+
+	public void setPerformedByReferenceLaboratory(Boolean performedByReferenceLaboratory) {
+		this.performedByReferenceLaboratory = performedByReferenceLaboratory;
+	}
+
+	public Boolean getRetestRequested() {
+		return retestRequested;
+	}
+
+	public void setRetestRequested(Boolean retestRequested) {
+		this.retestRequested = retestRequested;
+	}
+
+	public String getResultDetails() {
+		return resultDetails;
+	}
+
+	public void setResultDetails(String resultDetails) {
+		this.resultDetails = resultDetails;
+	}
+
+	public String getSpecieText() {
+		return specieText;
+	}
+
+	public void setSpecieText(String specieText) {
+		this.specieText = specieText;
 	}
 
 }

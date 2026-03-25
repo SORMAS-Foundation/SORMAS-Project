@@ -104,7 +104,7 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setPrescriberPostalCode(source.getPrescriberPostalCode());
 		target.setPrescriberCity(source.getPrescriberCity());
 		target.setPrescriberCountry(CountryFacadeEjb.toReferenceDto(source.getPrescriberCountry()));
-		target.setGenoTypeResult(source.getGenoTypeResult());
+		target.setGenoType(source.getGenoType());
 		target.setRsvSubtype(source.getRsvSubtype());
 		target.setSpecie(source.getSpecie());
 		target.setTubeNil(source.getTubeNil());
@@ -199,7 +199,7 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setPrescriberPostalCode(source.getPrescriberPostalCode());
 		target.setPrescriberCity(source.getPrescriberCity());
 		target.setPrescriberCountry(countryService.getByReferenceDto(source.getPrescriberCountry()));
-		target.setGenoTypeResult(source.getGenoTypeResult());
+		target.setGenoType(source.getGenoType());
 		target.setRsvSubtype(source.getRsvSubtype());
 		target.setSpecie(source.getSpecie());
 		target.setTubeNil(source.getTubeNil());
