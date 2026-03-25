@@ -253,12 +253,12 @@ public class MeaslesExportStrategy extends AbstractEpipulseDiseaseExportStrategy
 			   "                                    AND pt2.testtype IN ('PCR_RT_PCR', 'CULTURE', 'ISOLATION', 'DIRECT_FLUORESCENT_ANTIBODY', 'INDIRECT_FLUORESCENT_ANTIBODY', 'SEQUENCING', 'GENOTYPING') " +
 			   "                                  ORDER BY pt2.testresultverified DESC, COALESCE(pt2.testdatetime, pt2.reportdate, pt2.creationdate) ASC " +
 			   "                                  LIMIT 1) as virus_detection_result," +
-			   "                                 (SELECT COALESCE(pt3.typingid, pt3.genotyperesult) " +
+			   "                                 (SELECT COALESCE(pt3.typingid, pt3.genotype) " +
 			   "                                  FROM samples s3 " +
 			   "                                  JOIN pathogentest pt3 ON pt3.sample_id = s3.id " +
 			   "                                  WHERE s3.associatedcase_id = c.id " +
 			   "                                    AND s3.deleted = false " +
-			   "                                    AND (pt3.typingid IS NOT NULL OR pt3.genotyperesult IS NOT NULL) " +
+			   "                                    AND (pt3.typingid IS NOT NULL OR pt3.genotype IS NOT NULL) " +
 			   "                                  ORDER BY COALESCE(pt3.testdatetime, pt3.reportdate, pt3.creationdate) ASC " +
 			   "                                  LIMIT 1) as genotype_raw " +
 			   "                          FROM filtered_cases c " +

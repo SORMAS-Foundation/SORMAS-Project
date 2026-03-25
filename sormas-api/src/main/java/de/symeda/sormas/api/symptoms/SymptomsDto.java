@@ -697,6 +697,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		MALARIA,
 		UNDEFINED,
 		OTHER })
+	@Complication({
+		MEASLES })
 	@Outbreaks
 	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
 	private SymptomState diarrhea;
@@ -1595,8 +1597,10 @@ public class SymptomsDto extends PseudonymizableDto {
 		POLIO,
 		UNDEFINED,
 		OTHER })
+	@Complication({
+		MEASLES })
 	@HideForCountries
-	@SymptomGrouping(SymptomGroup.OTHER)
+	@SymptomGrouping(SymptomGroup.GENERAL)
 	private SymptomState otitisMedia;
 
 	@Diseases({
@@ -2272,6 +2276,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		MEASLES,
 		UNDEFINED,
 		OTHER })
+	@Complication({
+		MEASLES })
 	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
 	@SymptomGrouping(SymptomGroup.RESPIRATORY)
 	private SymptomState pneumoniaClinicalOrRadiologic;
@@ -2541,6 +2547,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		PLAGUE,
 		ANTHRAX,
 		CORONAVIRUS,
+		CRYPTOSPORIDIOSIS,
+		GIARDIASIS,
 		UNDEFINED,
 		OTHER })
 	@DependantOn(OTHER_COMPLICATIONS)
@@ -2550,7 +2558,9 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	@Complication({
 		DENGUE,
-		MALARIA })
+		MALARIA,
+		CRYPTOSPORIDIOSIS,
+		GIARDIASIS })
 	private String otherComplicationsText;
 
 	@Diseases({
@@ -2780,6 +2790,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		MEASLES,
 		DENGUE,
 		MALARIA })
+	@Complication({
+		MEASLES })
 	@SymptomGrouping(SymptomGroup.OTHER)
 	private SymptomState unknownSymptom;
 
@@ -2807,14 +2819,15 @@ public class SymptomsDto extends PseudonymizableDto {
 		GIARDIASIS,
 		CRYPTOSPORIDIOSIS })
 	@DependantOn("parentTimeOffWork")
+	@SymptomGrouping(SymptomGroup.OTHER)
 	private Float timeOffWorkDays;
 
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	@Diseases({
 		MEASLES })
-	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
 	@Complication({
 		MEASLES })
+	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
 	private SymptomState acuteEncephalitis;
 	@Diseases({
 		GIARDIASIS })
@@ -2851,10 +2864,14 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Diseases({
 		GIARDIASIS,
 		CRYPTOSPORIDIOSIS })
+	@Complication()
+	@SymptomGrouping(SymptomGroup.OTHER)
 	private SymptomState reoccurrence;
 	@Diseases({
 		GIARDIASIS,
 		CRYPTOSPORIDIOSIS })
+	@Complication()
+	@SymptomGrouping(SymptomGroup.OTHER)
 	private SymptomState overnightStayRequired;
 	@Diseases({
 		GIARDIASIS })

@@ -15467,4 +15467,31 @@ ALTER TABLE exposures_protectivemeasures_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (614, '#13887 - Exposure form redesign');
 
+-- 23-03-2026 new fields related to Malaria and Dengue samples and pathogenform.
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS serotypetext varchar(255);
+UPDATE pathogentest  SET serotypetext = serotype, serotype = 'OTHER' WHERE serotype IS NOT null   and serotypetext is null;
+ALTER TABLE pathogentest rename column genotyperesult to genotype;
+ALTER TABLE pathogentest rename column genotyperesulttext to genotypetext;
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS antibodyTitre varchar(255);
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS performedByReferenceLaboratory boolean;
+ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS retestRequested boolean default false;
+ALTER TABLE pathogentest add column IF NOT EXISTS resultdetails varchar(255);
+ALTER TABLE pathogentest add column IF NOT EXISTS specietext varchar(255);
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS malaria varchar(255);
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS malariainfectedyear integer ;
+
+
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS serotypetext varchar(255);
+UPDATE pathogentest_history  SET serotypetext = serotype, serotype = 'OTHER' WHERE serotype IS NOT null   and serotypetext is null;
+ALTER TABLE pathogentest_history rename column genotyperesult to genotype;
+ALTER TABLE pathogentest_history rename column genotyperesulttext to genotypetext;
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS antibodyTitre varchar(255);
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS performedByReferenceLaboratory boolean;
+ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS retestRequested boolean default false;
+ALTER TABLE pathogentest_history add column IF NOT EXISTS resultdetails varchar(255);
+ALTER TABLE pathogentest_history add column IF NOT EXISTS specietext varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS malaria varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS malariainfectedyear integer ;
+
+INSERT INTO schema_version (version_number, comment) VALUES (615, '#13801, #13814 - Malaria and Dengue sampel changes');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

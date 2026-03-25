@@ -112,8 +112,7 @@ public enum SampleMaterial {
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
-		Disease.MALARIA,
-		Disease.DENGUE }, hide = true)
+		Disease.MALARIA }, hide = true)
 	CEREBROSPINAL_FLUID,
 
 	@Diseases(value = {

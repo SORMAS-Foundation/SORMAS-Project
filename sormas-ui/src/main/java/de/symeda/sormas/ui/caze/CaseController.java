@@ -78,9 +78,11 @@ import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
+import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
+import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -1392,6 +1394,11 @@ public class CaseController {
 		boolean isEditAllowed) {
 
 		CaseDataDto caze = findCase(caseUuid);
+		EpiDataDto epiDataDto = caze.getEpiData();
+		// Exposure start date and end date should be calculated based on symptom onsetDate and incubation start periods
+		Date symptomOnsetDate = caze.getSymptoms().getOnsetDate();
+
+		includeExposureDates(symptomOnsetDate, epiDataDto, caze.getDisease());
 		EpiDataForm epiDataForm = new EpiDataForm(
 			caze.getDisease(),
 			CaseDataDto.class,
@@ -1399,7 +1406,7 @@ public class CaseController {
 			caze.isInJurisdiction(),
 			sourceContactsToggleCallback,
 			isEditAllowed);
-		epiDataForm.setValue(caze.getEpiData());
+		epiDataForm.setValue(epiDataDto);
 
 		final CommitDiscardWrapperComponent<EpiDataForm> editView =
 			new CommitDiscardWrapperComponent<EpiDataForm>(epiDataForm, epiDataForm.getFieldGroup());
@@ -1418,6 +1425,30 @@ public class CaseController {
 		}
 
 		return editView;
+	}
+
+	// include the exposure dates.
+	private void includeExposureDates(Date symptomOnsetDate, EpiDataDto epiDataDto, Disease disease) {
+		//  if symptomOnsetDate is null, return;
+		if (symptomOnsetDate == null) {
+			return;
+		}
+		DiseaseConfigurationDto diseaseConfigurationDto = FacadeProvider.getDiseaseConfigurationFacade().getDiseaseConfiguration(disease);
+		if (diseaseConfigurationDto == null) {
+			return;
+		}
+		if (!diseaseConfigurationDto.getIncubationPeriodEnabled()) {
+			return;
+		}
+		if (diseaseConfigurationDto.getMaxIncubationPeriod() == 0 || diseaseConfigurationDto.getMaxIncubationPeriod() == null) {
+			return;
+		}
+		if (diseaseConfigurationDto.getMinIncubationPeriod() == null) {
+			return;
+		}
+
+		epiDataDto.setExposureStartDate(DateHelper.subtractDays(symptomOnsetDate, diseaseConfigurationDto.getMaxIncubationPeriod()));
+		epiDataDto.setExposureEndDate(DateHelper.subtractDays(symptomOnsetDate, diseaseConfigurationDto.getMinIncubationPeriod()));
 	}
 
 	public CommitDiscardWrapperComponent<TherapyForm> getTherapyEditComponent(final String caseUuid, boolean isEditAllowed) {
