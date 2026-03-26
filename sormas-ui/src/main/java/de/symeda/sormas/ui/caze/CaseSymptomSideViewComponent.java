@@ -95,15 +95,26 @@ public class CaseSymptomSideViewComponent extends SideComponent {
 			componentMap.put(sourceField.getId(), label);
 			return;
 		}
-		// if the source field value is String type, and it's value is not empty, and a map does not have that symptom, and its a complicated symptom, add it to the layout and map
-		// This is to set the entered value as a caption.
-		if (sourceFieldObj instanceof String
-			&& StringUtils.isNotBlank((String) sourceFieldObj)
-			&& !componentMap.containsKey(sourceField.getId())
-			&& complicatedSymptoms.contains(sourceField.getId())) {
-			Label label = new Label(sourceField.getValue().toString());
-			componentMap.put(sourceField.getId(), label);
+
+		// if the source field value is String type
+		if (sourceFieldObj instanceof String && StringUtils.isNotBlank((String) sourceFieldObj)) {
+			Label label;
+			if (componentMap.containsKey(sourceField.getId())) {
+				// if the map has a different value, then remove the old value from the layout and add the new value.
+				layout.removeComponent(componentMap.get(sourceField.getId()));
+				label = new Label(sourceField.getValue().toString());
+			} else if (!componentMap.containsKey(sourceField.getId()) && complicatedSymptoms.contains(sourceField.getId())) {
+				// If the map not has a key, and it's a complicated symptom, then add it to the layout.
+				label = new Label(sourceField.getValue().toString());
+			} else {
+				label = null;
+			}
+			if (label != null) {
+				componentMap.put(sourceField.getId(), label);
+			}
 		}
+		// , and it's value is not empty, and a map does not have that symptom, and its a complicated symptom, add it to the layout and map
+		// This is to set the entered value as a caption.
 	}
 
 	/**
