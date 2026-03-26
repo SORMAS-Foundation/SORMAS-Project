@@ -1440,7 +1440,7 @@ public class CaseController {
 		if (!diseaseConfigurationDto.getIncubationPeriodEnabled()) {
 			return;
 		}
-		if (diseaseConfigurationDto.getMaxIncubationPeriod() == 0 || diseaseConfigurationDto.getMaxIncubationPeriod() == null) {
+		if (diseaseConfigurationDto.getMaxIncubationPeriod() == null || diseaseConfigurationDto.getMaxIncubationPeriod() == 0) {
 			return;
 		}
 		if (diseaseConfigurationDto.getMinIncubationPeriod() == null) {

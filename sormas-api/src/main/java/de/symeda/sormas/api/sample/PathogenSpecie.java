@@ -52,6 +52,8 @@ public enum PathogenSpecie {
 		PathogenTestType.OTHER_MOLECULAR_ASSAY,
 		PathogenTestType.OTHER_SEROLOGICAL_TEST })
 	SPP,
+	@Diseases({
+		Disease.MALARIA })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.THIN_BLOOD_SMEAR,
 		PathogenTestType.RAPID_TEST,

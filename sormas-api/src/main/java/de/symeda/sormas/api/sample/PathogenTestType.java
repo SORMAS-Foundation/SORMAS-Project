@@ -111,7 +111,8 @@ public enum PathogenTestType {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-		Disease.MEASLES })
+		Disease.MEASLES,
+		Disease.MALARIA })
 	INDIRECT_FLUORESCENT_ANTIBODY,
 
 	@Diseases(value = {
@@ -295,10 +296,6 @@ public enum PathogenTestType {
 	@Diseases({
 		Disease.MALARIA })
 	OTHER_SEROLOGICAL_TEST,
-	// Indirect Fluorescent Antibody Test
-	@Diseases({
-		Disease.MALARIA })
-	IFAT,
 	OTHER;
 
 	@Override

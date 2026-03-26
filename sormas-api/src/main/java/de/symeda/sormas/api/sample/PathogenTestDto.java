@@ -19,6 +19,7 @@ import java.util.Date;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.symeda.sormas.api.CountryHelper;
@@ -229,6 +230,7 @@ public class PathogenTestDto extends PseudonymizableDto {
 	private YesNoUnknown rifampicinResistant;
 	private YesNoUnknown isoniazidResistant;
 	private PathogenSpecie specie;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String specieText;
 	private String patternProfile;
 	private PathogenStrainCallStatus strainCallStatus;
@@ -322,12 +324,14 @@ public class PathogenTestDto extends PseudonymizableDto {
 	// Dengue and Malaria changes
 	@Diseases(value = {
 		Disease.DENGUE })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String antibodyTitre;
 	private Boolean performedByReferenceLaboratory;
 	// defaulting this test to false.
 	private Boolean retestRequested = false;
 	@Diseases({
 		Disease.MALARIA })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String resultDetails;
 
 	public static PathogenTestDto build(SampleDto sample, UserDto currentUser) {
@@ -813,6 +817,7 @@ public class PathogenTestDto extends PseudonymizableDto {
 		this.seroTypingMethod = seroTypingMethod;
 	}
 
+	@JsonAlias("genoTypeResult")
 	public GenoType getGenoType() {
 		return genoType;
 	}
@@ -821,6 +826,7 @@ public class PathogenTestDto extends PseudonymizableDto {
 		this.genoType = genoType;
 	}
 
+	@JsonAlias("genoTypeResultText")
 	public String getGenoTypeText() {
 		return genoTypeText;
 	}

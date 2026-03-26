@@ -57,7 +57,7 @@ public class PathogenTestListEntry extends SideComponentField {
 	public static final Map<Disease, List<PathogenTestType>> VARIANT_MAP = Collections.unmodifiableMap(new HashMap<>() {
 		{
 			put(Disease.MALARIA, Collections.unmodifiableList(Arrays.asList(PathogenTestType.THIN_BLOOD_SMEAR, PathogenTestType.RAPID_TEST, PathogenTestType.PCR_RT_PCR,
-					PathogenTestType.Q_PCR, PathogenTestType.LAMP, PathogenTestType.IFAT)));
+					PathogenTestType.Q_PCR, PathogenTestType.LAMP, PathogenTestType.INDIRECT_FLUORESCENT_ANTIBODY)));
 			put(Disease.DENGUE, Collections.unmodifiableList(Arrays.asList(PathogenTestType.NAAT, PathogenTestType.NEUTRALIZING_ANTIBODIES, PathogenTestType.PCR_RT_PCR)));
 			put(Disease.MEASLES, Collections.unmodifiableList(Arrays.asList(PathogenTestType.GENOTYPING)));
 			put(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, Collections.unmodifiableList(Arrays.asList(PathogenTestType.SEROGROUPING, PathogenTestType.MULTILOCUS_SEQUENCE_TYPING,

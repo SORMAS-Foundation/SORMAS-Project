@@ -159,8 +159,8 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			put(Disease.CRYPTOSPORIDIOSIS, new ArrayList<>(List.of(PathogenTestType.GENOTYPING)));
 			put(Disease.DENGUE, new ArrayList<>(List.of(PathogenTestType.NAAT, PathogenTestType.NEUTRALIZING_ANTIBODIES, PathogenTestType.PCR_RT_PCR)));
 			put(Disease.MALARIA, new ArrayList<>(List.of( PathogenTestType.ANTIGEN_DETECTION, PathogenTestType.THIN_BLOOD_SMEAR, PathogenTestType.RAPID_TEST,
-					PathogenTestType.PCR_RT_PCR, PathogenTestType.Q_PCR, PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY, PathogenTestType.LAMP,
-					PathogenTestType.IFAT, PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST, PathogenTestType.OTHER_SEROLOGICAL_TEST, PathogenTestType.OTHER_MOLECULAR_ASSAY)));
+					PathogenTestType.INDIRECT_FLUORESCENT_ANTIBODY,PathogenTestType.PCR_RT_PCR, PathogenTestType.Q_PCR, PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY, PathogenTestType.LAMP,
+					PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST, PathogenTestType.OTHER_SEROLOGICAL_TEST, PathogenTestType.OTHER_MOLECULAR_ASSAY)));
 		}
 	});
 
@@ -207,7 +207,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			put(Disease.LATENT_TUBERCULOSIS, Collections.unmodifiableList(Arrays.asList(PathogenTestType.SPOLIGOTYPING)));
 			put(Disease.TUBERCULOSIS, Collections.unmodifiableList(Arrays.asList(PathogenTestType.SPOLIGOTYPING)));
 			put(Disease.MALARIA, Collections.unmodifiableList(Arrays.asList(PathogenTestType.THIN_BLOOD_SMEAR, PathogenTestType.ANTIGEN_DETECTION,
-						PathogenTestType.RAPID_TEST, PathogenTestType.PCR_RT_PCR, PathogenTestType.Q_PCR, PathogenTestType.LAMP, PathogenTestType.IFAT,
+						PathogenTestType.RAPID_TEST, PathogenTestType.PCR_RT_PCR, PathogenTestType.Q_PCR, PathogenTestType.LAMP,PathogenTestType.INDIRECT_FLUORESCENT_ANTIBODY,
 						PathogenTestType.OTHER_MOLECULAR_ASSAY, PathogenTestType.OTHER_SEROLOGICAL_TEST, PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
 						PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY)));
 		}

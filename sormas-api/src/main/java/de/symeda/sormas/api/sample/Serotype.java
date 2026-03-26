@@ -19,6 +19,7 @@
 package de.symeda.sormas.api.sample;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -51,7 +52,7 @@ public enum Serotype {
 		if (StringUtils.isBlank(serotype)) {
 			return null;
 		}
-		String serotypeEnumVal = serotype.toUpperCase().replaceAll("[-_]", "_");
+		String serotypeEnumVal = StringUtils.trim(serotype).toUpperCase(Locale.ROOT).replaceAll("[-_\\s]+", "_");
 
 		return Arrays.asList(Serotype.values()).stream().noneMatch(s -> s.name().equals(serotypeEnumVal)) ? OTHER : Serotype.valueOf(serotypeEnumVal);
 	}
