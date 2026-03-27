@@ -181,6 +181,10 @@ public enum PathogenSpecie {
 		PathogenTestType.OTHER_MOLECULAR_ASSAY,
 		PathogenTestType.OTHER_SEROLOGICAL_TEST })
 	OTHER,
+	@Diseases({
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.MALARIA })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.SPOLIGOTYPING,
 		PathogenTestType.THIN_BLOOD_SMEAR,
@@ -193,6 +197,9 @@ public enum PathogenSpecie {
 		PathogenTestType.OTHER_MOLECULAR_ASSAY,
 		PathogenTestType.OTHER_SEROLOGICAL_TEST })
 	UNKNOWN,
+	@Diseases({
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.SPOLIGOTYPING })
 	NOT_APPLICABLE;
