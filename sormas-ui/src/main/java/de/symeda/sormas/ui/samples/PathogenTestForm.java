@@ -1225,9 +1225,12 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 				updateSpecieField.accept(disease, testType);
 				// Result details should be visible for Malaria and test-types with PathogenTestType.THIN_BLOOD_SMEAR, PathogenTestType.Q_PCR
-				resultDetailsField.setVisible(
-					Disease.MALARIA == disease && Arrays.asList(PathogenTestType.THIN_BLOOD_SMEAR, PathogenTestType.Q_PCR).contains(testType));
-				seroTypeMetCB.setVisible(testType == PathogenTestType.SEROGROUPING && Disease.INVASIVE_PNEUMOCOCCAL_INFECTION == disease);
+				setVisibleClear(
+					Disease.MALARIA == disease && Arrays.asList(PathogenTestType.THIN_BLOOD_SMEAR, PathogenTestType.Q_PCR).contains(testType),
+					PathogenTestDto.RESULT_DETAILS);
+				setVisibleClear(
+					testType == PathogenTestType.SEROGROUPING && Disease.INVASIVE_PNEUMOCOCCAL_INFECTION == disease,
+					PathogenTestDto.SEROTYPING_METHOD);
 			} else {
 				setVisibleClear(
 					testTypeField.getValue() != null,
