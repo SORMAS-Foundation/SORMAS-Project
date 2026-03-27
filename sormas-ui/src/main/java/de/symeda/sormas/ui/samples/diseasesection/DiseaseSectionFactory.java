@@ -4,7 +4,6 @@ import de.symeda.sormas.api.Disease;
 
 /**
  * Factory for component-based disease sections.
- * Replaces {@link DiseaseSectionLayout#forDisease(Disease)}.
  */
 public final class DiseaseSectionFactory {
 
