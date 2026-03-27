@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import com.vaadin.data.Binder;
 import com.vaadin.data.BinderValidationStatus;
+import com.vaadin.data.BindingValidationStatus;
 import com.vaadin.data.ValidationResult;
 import com.vaadin.shared.Registration;
 import com.vaadin.shared.ui.ValueChangeMode;
@@ -345,11 +346,32 @@ public abstract class FormComponent<T> extends VerticalLayout {
 
 	/**
 	 * Validates a Binder and throws an {@link InvalidValueException} if validation fails.
+	 * Creates a structured exception hierarchy so that field captions appear in the error notification.
 	 */
 	public static <T> void validateBinder(BinderValidationStatus<T> status) {
 		if (status.hasErrors()) {
-			String message = status.getValidationErrors().stream().map(ValidationResult::getErrorMessage).collect(Collectors.joining("; "));
-			throw new InvalidValueException(message);
+			List<InvalidValueException> fieldCauses = new ArrayList<>();
+
+			for (BindingValidationStatus<?> fieldStatus : status.getFieldValidationErrors()) {
+				String caption = null;
+				if (fieldStatus.getField() instanceof Component) {
+					caption = ((Component) fieldStatus.getField()).getCaption();
+				}
+				String errorMsg = fieldStatus.getMessage().orElse(caption != null ? caption : "");
+				fieldCauses.add(new InvalidValueException(caption != null ? caption : errorMsg));
+			}
+
+			for (ValidationResult beanError : status.getBeanValidationErrors()) {
+				fieldCauses.add(new InvalidValueException(beanError.getErrorMessage()));
+			}
+
+			if (fieldCauses.isEmpty()) {
+				String message = status.getValidationErrors().stream().map(ValidationResult::getErrorMessage).collect(Collectors.joining("; "));
+				throw new InvalidValueException(message);
+			}
+
+			String joinedCaptions = fieldCauses.stream().map(InvalidValueException::getMessage).collect(Collectors.joining(", "));
+			throw new InvalidValueException(joinedCaptions, fieldCauses.toArray(new InvalidValueException[0]));
 		}
 	}
 

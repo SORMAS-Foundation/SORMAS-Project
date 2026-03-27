@@ -21,13 +21,16 @@ import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.vaadin.shared.Registration;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.data.Validator.InvalidValueException;
 import com.vaadin.v7.data.fieldgroup.FieldGroup.CommitEvent;
 import com.vaadin.v7.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.v7.data.util.converter.Converter;
@@ -321,12 +324,35 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 	public void preCommit(CommitEvent commitEvent) throws CommitException {
 		super.preCommit(commitEvent);
 
+		List<InvalidValueException> allCauses = new ArrayList<>();
+
 		for (FormComponent<PathogenTestDto> comp : formComponents) {
-			comp.validate();
+			try {
+				comp.validate();
+			} catch (InvalidValueException e) {
+				collectCauses(e, allCauses);
+			}
 		}
 
 		if (activeSection != null) {
-			activeSection.validate();
+			try {
+				activeSection.validate();
+			} catch (InvalidValueException e) {
+				collectCauses(e, allCauses);
+			}
+		}
+
+		if (!allCauses.isEmpty()) {
+			String joinedCaptions = allCauses.stream().map(InvalidValueException::getMessage).collect(Collectors.joining(", "));
+			throw new InvalidValueException(joinedCaptions, allCauses.toArray(new InvalidValueException[0]));
+		}
+	}
+
+	private static void collectCauses(InvalidValueException e, List<InvalidValueException> target) {
+		if (e.getCauses().length > 0) {
+			Collections.addAll(target, e.getCauses());
+		} else {
+			target.add(e);
 		}
 	}
 
