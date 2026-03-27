@@ -1,0 +1,381 @@
+package de.symeda.sormas.ui.utils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.vaadin.data.Binder;
+import com.vaadin.data.BinderValidationStatus;
+import com.vaadin.data.ValidationResult;
+import com.vaadin.shared.Registration;
+import com.vaadin.shared.ui.ValueChangeMode;
+import com.vaadin.ui.AbstractOrderedLayout;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.DateField;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.RadioButtonGroup;
+import com.vaadin.ui.TextArea;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.Validator.InvalidValueException;
+
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+
+/**
+ * Base class for composable form components that participate in the parent form lifecycle.
+ * Extends {@link VerticalLayout} so that Vaadin's {@link #detach()} is called automatically
+ * when the parent form is removed — ensuring binder unbinding and listener cleanup.
+ * <p>
+ * Provides optional field factory methods ({@link #createComboBox}, {@link #createTextField}, etc.)
+ * that auto-track fields for visibility/access application. Subclasses that build fields manually
+ * can override {@link #applyVisibility} and {@link #applyAccess} directly.
+ *
+ * @param <T>
+ *            the DTO type managed by the parent form
+ */
+public abstract class FormComponent<T> extends VerticalLayout {
+
+	private static final long serialVersionUID = 1L;
+
+	protected final Binder<T> binder;
+
+	private final List<Registration> registrations = new ArrayList<>();
+	private final List<Component> trackedFields = new ArrayList<>();
+	private final List<HorizontalLayout> trackedRows = new ArrayList<>();
+
+	protected FormComponent(Class<T> dtoClass) {
+		binder = new Binder<>(dtoClass);
+		setWidth(100, Unit.PERCENTAGE);
+		setMargin(false);
+		setSpacing(true);
+	}
+
+	/** Tracks a registration for automatic removal on detach. */
+	protected void track(Registration registration) {
+		registrations.add(registration);
+	}
+
+	/** Removes all tracked registrations. Called by detach() automatically, but can also be called explicitly for mid-lifecycle cleanup. */
+	protected void removeRegistrations() {
+		for (Registration reg : registrations) {
+			reg.remove();
+		}
+		registrations.clear();
+	}
+
+	/** Tracks a field for automatic visibility/access application. */
+	protected void trackField(Component field) {
+		trackedFields.add(field);
+	}
+
+	// ---- Field factory methods (auto-track) ----
+
+	protected DateField createDateField(String propertyId, String i18nPrefix) {
+		DateField field = new DateField();
+		field.setId(propertyId);
+		field.setCaption(I18nProperties.getPrefixCaption(i18nPrefix, propertyId));
+		CssStyles.style(field, CssStyles.CAPTION_ON_TOP);
+		field.setWidth(100, Unit.PERCENTAGE);
+		trackField(field);
+		return field;
+	}
+
+	protected <V> ComboBox<V> createComboBox(String propertyId, String i18nPrefix) {
+		ComboBox<V> field = new ComboBox<>();
+		field.setId(propertyId);
+		field.setCaption(I18nProperties.getPrefixCaption(i18nPrefix, propertyId));
+		CssStyles.style(field, CssStyles.CAPTION_ON_TOP);
+		field.setWidth(100, Unit.PERCENTAGE);
+		trackField(field);
+		return field;
+	}
+
+	protected TextField createTextField(String propertyId, String i18nPrefix) {
+		TextField field = new TextField();
+		field.setId(propertyId);
+		field.setCaption(I18nProperties.getPrefixCaption(i18nPrefix, propertyId));
+		CssStyles.style(field, CssStyles.CAPTION_ON_TOP);
+		field.setWidth(100, Unit.PERCENTAGE);
+		trackField(field);
+		return field;
+	}
+
+	protected TextField createTextField(String propertyId, String i18nPrefix, ValueChangeMode mode) {
+		TextField field = createTextField(propertyId, i18nPrefix);
+		field.setValueChangeMode(mode);
+		return field;
+	}
+
+	protected TextArea createTextArea(String propertyId, String i18nPrefix) {
+		TextArea field = new TextArea();
+		field.setId(propertyId);
+		field.setCaption(I18nProperties.getPrefixCaption(i18nPrefix, propertyId));
+		CssStyles.style(field, CssStyles.CAPTION_ON_TOP);
+		field.setWidth(100, Unit.PERCENTAGE);
+		trackField(field);
+		return field;
+	}
+
+	protected CheckBox createCheckBox(String propertyId, String i18nPrefix) {
+		CheckBox field = new CheckBox();
+		field.setId(propertyId);
+		field.setCaption(I18nProperties.getPrefixCaption(i18nPrefix, propertyId));
+		CssStyles.style(field, CssStyles.CAPTION_ON_TOP);
+		field.setWidth(100, Unit.PERCENTAGE);
+		trackField(field);
+		return field;
+	}
+
+	protected RadioButtonGroup<Boolean> createBooleanRadioGroup(String propertyId, String i18nPrefix) {
+		RadioButtonGroup<Boolean> field = new RadioButtonGroup<>();
+		field.setId(propertyId);
+		field.setCaption(I18nProperties.getPrefixCaption(i18nPrefix, propertyId));
+		CssStyles.style(field, CssStyles.CAPTION_ON_TOP, ValoTheme.OPTIONGROUP_HORIZONTAL);
+		field.setItems(Boolean.TRUE, Boolean.FALSE);
+		field.setItemCaptionGenerator(
+			b -> b
+				? I18nProperties.getEnumCaption(de.symeda.sormas.api.utils.YesNoUnknown.YES)
+				: I18nProperties.getEnumCaption(de.symeda.sormas.api.utils.YesNoUnknown.NO));
+		trackField(field);
+		return field;
+	}
+
+	protected <E extends Enum<E>> RadioButtonGroup<E> createEnumRadioGroup(String propertyId, String i18nPrefix, Class<E> enumClass) {
+		RadioButtonGroup<E> field = new RadioButtonGroup<>();
+		field.setId(propertyId);
+		field.setCaption(I18nProperties.getPrefixCaption(i18nPrefix, propertyId));
+		CssStyles.style(field, CssStyles.CAPTION_ON_TOP, ValoTheme.OPTIONGROUP_HORIZONTAL);
+		field.setItems(enumClass.getEnumConstants());
+		field.setItemCaptionGenerator(I18nProperties::getEnumCaption);
+		field.setWidth(100, Unit.PERCENTAGE);
+		trackField(field);
+		return field;
+	}
+
+	/**
+	 * Creates a row layout with the given fields, adds it to this component, and tracks it.
+	 * If only one field (or two with the second null), a spacer is added for alignment.
+	 */
+	protected HorizontalLayout addRow(Component... fields) {
+		HorizontalLayout row = new HorizontalLayout();
+		row.setWidth(100, Unit.PERCENTAGE);
+		row.setSpacing(true);
+		for (Component field : fields) {
+			if (field != null) {
+				row.addComponent(field);
+				row.setExpandRatio(field, 1);
+			}
+		}
+		if (fields.length == 1 || (fields.length == 2 && fields[1] == null)) {
+			Label spacer = new Label();
+			spacer.setWidth(100, Unit.PERCENTAGE);
+			row.addComponent(spacer);
+			row.setExpandRatio(spacer, 1);
+		}
+		addComponent(row);
+		trackedRows.add(row);
+		return row;
+	}
+
+	/** Creates a row with custom expand ratios per field. */
+	protected HorizontalLayout addRow(float[] expandRatios, Component... fields) {
+		HorizontalLayout row = new HorizontalLayout();
+		row.setWidth(100, Unit.PERCENTAGE);
+		row.setSpacing(true);
+		for (int i = 0; i < fields.length; i++) {
+			if (fields[i] != null) {
+				row.addComponent(fields[i]);
+				row.setExpandRatio(fields[i], expandRatios[i]);
+			}
+		}
+		addComponent(row);
+		trackedRows.add(row);
+		return row;
+	}
+
+	/** Creates a 3-component row for field + detail + spacer toggle pattern. */
+	protected HorizontalLayout addToggleRow(Component main, Component detail, Label spacer) {
+		HorizontalLayout row = new HorizontalLayout();
+		row.setWidth(100, Unit.PERCENTAGE);
+		row.setSpacing(true);
+		row.addComponent(main);
+		row.setExpandRatio(main, 1);
+		row.addComponent(detail);
+		row.setExpandRatio(detail, 1);
+		row.addComponent(spacer);
+		row.setExpandRatio(spacer, 1);
+		addComponent(row);
+		trackedRows.add(row);
+		return row;
+	}
+
+	/** Creates a row with a leading spacer for right-alignment. */
+	protected HorizontalLayout addRowWithLeadingSpacer(Component field) {
+		HorizontalLayout row = new HorizontalLayout();
+		row.setWidth(100, Unit.PERCENTAGE);
+		row.setSpacing(true);
+		Label spacer = new Label();
+		spacer.setWidth(100, Unit.PERCENTAGE);
+		row.addComponent(spacer);
+		row.setExpandRatio(spacer, 1);
+		row.addComponent(field);
+		row.setExpandRatio(field, 1);
+		addComponent(row);
+		trackedRows.add(row);
+		return row;
+	}
+
+	/** Creates a single-field row without spacer (full width). */
+	protected HorizontalLayout addFullWidthRow(Component field) {
+		HorizontalLayout row = new HorizontalLayout();
+		row.setWidth(100, Unit.PERCENTAGE);
+		row.setSpacing(true);
+		row.addComponent(field);
+		row.setExpandRatio(field, 1);
+		addComponent(row);
+		trackedRows.add(row);
+		return row;
+	}
+
+	/**
+	 * Updates a ComboBox's items to only those enum values visible for the given disease
+	 * (based on {@link Diseases} annotations). Preserves the current selection if still valid.
+	 */
+	protected static <E extends Enum<E>> void updateComboBoxByDisease(ComboBox<E> comboBox, Class<E> enumClass, Disease disease) {
+		E currentValue = comboBox.getValue();
+		List<E> filtered = Diseases.DiseasesConfiguration.getVisibleValues(enumClass, disease);
+		comboBox.setItems(filtered);
+		if (currentValue != null && filtered.contains(currentValue)) {
+			comboBox.setValue(currentValue);
+		}
+	}
+
+	protected Label createSpacer() {
+		Label spacer = new Label();
+		spacer.setWidth(100, Unit.PERCENTAGE);
+		return spacer;
+	}
+
+	// ---- Lifecycle ----
+
+	/** Called when the parent form receives a new DTO value. */
+	public void setDto(T dto) {
+		binder.setBean(dto);
+	}
+
+	/** Validates this component's fields; throws {@link InvalidValueException} on failure. */
+	public void validate() {
+		validateBinder(binder.validate());
+	}
+
+	/**
+	 * Applies annotation-based field visibility rules.
+	 * Default implementation uses tracked fields; subclasses may override for manual control.
+	 */
+	public void applyVisibility(FieldVisibilityCheckers checkers, Class<?> dtoClass) {
+		for (Component field : trackedFields) {
+			String id = field.getId();
+			if (id != null && !checkers.isVisible(dtoClass, id)) {
+				field.setVisible(false);
+			}
+		}
+		updateRowAndSelfVisibility();
+	}
+
+	/**
+	 * Applies annotation-based field access/editability rules.
+	 * Default implementation uses tracked fields; subclasses may override for manual control.
+	 */
+	public void applyAccess(UiFieldAccessCheckers checkers, Class<?> dtoClass) {
+		for (Component field : trackedFields) {
+			String id = field.getId();
+			if (id != null && !checkers.isAccessible(dtoClass, id)) {
+				field.setEnabled(false);
+				field.addStyleName(CssStyles.INACCESSIBLE_FIELD);
+			}
+		}
+	}
+
+	/** Subclasses perform any additional cleanup beyond binder unbinding. */
+	protected void onCleanup() {
+	}
+
+	@Override
+	public void detach() {
+		for (Registration reg : registrations) {
+			reg.remove();
+		}
+		registrations.clear();
+		binder.removeBean();
+		onCleanup();
+		super.detach();
+	}
+
+	/**
+	 * Updates visibility of tracked rows and this component itself.
+	 * Hides rows where all fields are hidden, and hides this section entirely
+	 * if no rows are visible.
+	 */
+	protected void updateRowAndSelfVisibility() {
+		for (HorizontalLayout row : trackedRows) {
+			updateRowVisibility(row);
+		}
+
+		boolean anyVisible = hasVisibleContent();
+		for (HorizontalLayout row : trackedRows) {
+			if (row.isVisible()) {
+				anyVisible = true;
+				break;
+			}
+		}
+		setVisible(anyVisible);
+	}
+
+	/**
+	 * Subclasses override to indicate additional visible content beyond tracked rows
+	 * (e.g. drug susceptibility fields). Default returns false.
+	 */
+	protected boolean hasVisibleContent() {
+		return false;
+	}
+
+	// ---- Static utilities ----
+
+	/**
+	 * Validates a Binder and throws an {@link InvalidValueException} if validation fails.
+	 */
+	public static <T> void validateBinder(BinderValidationStatus<T> status) {
+		if (status.hasErrors()) {
+			String message = status.getValidationErrors().stream().map(ValidationResult::getErrorMessage).collect(Collectors.joining("; "));
+			throw new InvalidValueException(message);
+		}
+	}
+
+	/**
+	 * Hides a layout row if none of its actual field children are visible (ignores spacer Labels).
+	 */
+	public static void updateRowVisibility(AbstractOrderedLayout row) {
+		boolean anyChildVisible = false;
+		for (int i = 0; i < row.getComponentCount(); i++) {
+			Component child = row.getComponent(i);
+			if (child instanceof Label) {
+				continue;
+			}
+			if (child instanceof AbstractOrderedLayout) {
+				updateRowVisibility((AbstractOrderedLayout) child);
+			}
+			if (child.isVisible()) {
+				anyChildVisible = true;
+			}
+		}
+		row.setVisible(anyChildVisible);
+	}
+}
