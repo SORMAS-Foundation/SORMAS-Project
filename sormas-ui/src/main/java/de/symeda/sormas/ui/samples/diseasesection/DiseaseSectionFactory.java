@@ -28,8 +28,6 @@ public final class DiseaseSectionFactory {
 			return new IpiSectionComponent();
 		case CSM:
 			return new CsmSectionComponent();
-		case CORONAVIRUS:
-			return new CoronavirusSectionComponent();
 		default:
 			return new DefaultSectionComponent();
 		}

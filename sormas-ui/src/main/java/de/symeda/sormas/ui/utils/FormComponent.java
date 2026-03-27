@@ -76,8 +76,6 @@ public abstract class FormComponent<T> extends VerticalLayout {
 		trackedFields.add(field);
 	}
 
-	// ---- Field factory methods (auto-track) ----
-
 	protected DateField createDateField(String propertyId, String i18nPrefix) {
 		DateField field = new DateField();
 		field.setId(propertyId);
@@ -264,8 +262,6 @@ public abstract class FormComponent<T> extends VerticalLayout {
 		return spacer;
 	}
 
-	// ---- Lifecycle ----
-
 	/** Called when the parent form receives a new DTO value. */
 	public void setDto(T dto) {
 		binder.setBean(dto);
@@ -346,8 +342,6 @@ public abstract class FormComponent<T> extends VerticalLayout {
 	protected boolean hasVisibleContent() {
 		return false;
 	}
-
-	// ---- Static utilities ----
 
 	/**
 	 * Validates a Binder and throws an {@link InvalidValueException} if validation fails.

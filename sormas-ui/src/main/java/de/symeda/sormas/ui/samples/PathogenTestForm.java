@@ -43,7 +43,10 @@ import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.samples.components.DeletionComponent;
 import de.symeda.sormas.ui.samples.components.DiseaseSelectionComponent;
+import de.symeda.sormas.ui.samples.components.DiseaseVariantComponent;
+import de.symeda.sormas.ui.samples.components.FourFoldCtCqComponent;
 import de.symeda.sormas.ui.samples.components.PrescriberComponent;
+import de.symeda.sormas.ui.samples.components.ResultTextComponent;
 import de.symeda.sormas.ui.samples.components.TestIdentificationComponent;
 import de.symeda.sormas.ui.samples.components.TestMethodComponent;
 import de.symeda.sormas.ui.samples.components.TestResultComponent;
@@ -88,9 +91,9 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 	private final List<Registration> eventRegistrations = new ArrayList<>();
 
 	private Label headingLabel;
-	private DiseaseSelectionComponent diseaseSelectionComponent;
 	private TestMethodComponent testMethodComponent;
 	private TestResultComponent testResultComponent;
+	private DiseaseVariantComponent diseaseVariantComponent;
 
 	private AbstractDiseaseSectionComponent activeSection;
 	private VerticalLayout diseaseSectionSlot;
@@ -168,13 +171,25 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		formComponents.add(identificationComponent);
 		container.addComponent(identificationComponent);
 
-		diseaseSelectionComponent = new DiseaseSelectionComponent(eventBus, disease, create, environmentSample != null);
+		DiseaseSelectionComponent diseaseSelectionComponent = new DiseaseSelectionComponent(eventBus, disease, create, environmentSample != null);
 		formComponents.add(diseaseSelectionComponent);
 		container.addComponent(diseaseSelectionComponent);
 
-		testMethodComponent = new TestMethodComponent(eventBus, this::getSampleDate);
+		testMethodComponent = new TestMethodComponent(eventBus, this::getSampleDate, disease);
 		formComponents.add(testMethodComponent);
 		container.addComponent(testMethodComponent);
+
+		testResultComponent = new TestResultComponent(eventBus, formConfig.isLuxembourg, disease);
+		formComponents.add(testResultComponent);
+		container.addComponent(testResultComponent);
+
+		diseaseVariantComponent = new DiseaseVariantComponent(eventBus, disease);
+		formComponents.add(diseaseVariantComponent);
+		container.addComponent(diseaseVariantComponent);
+
+		FourFoldCtCqComponent fourFoldCtCqComponent = new FourFoldCtCqComponent(eventBus, caseSampleCount, formConfig.isLuxembourg, disease);
+		formComponents.add(fourFoldCtCqComponent);
+		container.addComponent(fourFoldCtCqComponent);
 
 		diseaseSectionSlot = new VerticalLayout();
 		diseaseSectionSlot.setWidth(100, Unit.PERCENTAGE);
@@ -187,9 +202,9 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		activeSection.setVisibilityCallback(visible -> diseaseSectionSlot.setVisible(visible));
 		diseaseSectionSlot.addComponent(activeSection);
 
-		testResultComponent = new TestResultComponent(eventBus, caseSampleCount, formConfig.isLuxembourg, disease);
-		formComponents.add(testResultComponent);
-		container.addComponent(testResultComponent);
+		ResultTextComponent resultTextComponent = new ResultTextComponent();
+		formComponents.add(resultTextComponent);
+		container.addComponent(resultTextComponent);
 
 		PrescriberComponent prescriberComponent = new PrescriberComponent();
 		formComponents.add(prescriberComponent);
@@ -216,14 +231,14 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		}));
 
 		// Disease variant → auto-set test result
-		diseaseSelectionComponent.getDiseaseVariantField().addValueChangeListener(e -> {
+		eventRegistrations.add(diseaseVariantComponent.getDiseaseVariantField().addValueChangeListener(e -> {
 			DiseaseVariant variant = e.getValue();
 			if (variant != null) {
 				testResultComponent.getTestResultField().setValue(PathogenTestResultType.POSITIVE);
 			} else {
 				testResultComponent.getTestResultField().clear();
 			}
-		});
+		}));
 	}
 
 	private void finalizeForm() {

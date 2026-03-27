@@ -22,6 +22,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
@@ -47,6 +48,8 @@ public class TestMethodComponent extends FormComponent<PathogenTestDto> {
 	private ComboBox<PathogenTestType> testTypeField;
 	private TextField testTypeTextField;
 	private Label testTypeTextSpacer;
+	private ComboBox<PCRTestSpecification> pcrTestSpecField;
+	private HorizontalLayout pcrTestSpecRow;
 	private TextField typingIdField;
 	private DateField testDateField;
 	private ComboBox<Integer> testTimeField;
@@ -54,14 +57,16 @@ public class TestMethodComponent extends FormComponent<PathogenTestDto> {
 	private TextField labDetailsField;
 
 	private PathogenTestDto currentDto;
+	private Disease currentDisease;
 
 	private HorizontalLayout typingIdRow;
 	private HorizontalLayout labDetailsRow;
 
-	public TestMethodComponent(FormEventBus eventBus, Supplier<Date> sampleDateSupplier) {
+	public TestMethodComponent(FormEventBus eventBus, Supplier<Date> sampleDateSupplier, Disease initialDisease) {
 		super(PathogenTestDto.class);
 		this.eventBus = eventBus;
 		this.sampleDateSupplier = sampleDateSupplier;
+		this.currentDisease = initialDisease;
 		buildLayout();
 		bindFields();
 		wireEvents();
@@ -78,6 +83,13 @@ public class TestMethodComponent extends FormComponent<PathogenTestDto> {
 
 		testTypeTextSpacer = createSpacer();
 		addToggleRow(testTypeField, testTypeTextField, testTypeTextSpacer);
+
+		// PCR test specification (Coronavirus-specific, below test type)
+		pcrTestSpecField = createComboBox(PathogenTestDto.PCR_TEST_SPECIFICATION, PathogenTestDto.I18N_PREFIX);
+		pcrTestSpecField.setItems(PCRTestSpecification.values());
+		pcrTestSpecField.setItemCaptionGenerator(PCRTestSpecification::toString);
+		pcrTestSpecField.setVisible(false);
+		pcrTestSpecRow = addRow(pcrTestSpecField);
 
 		// Typing ID
 		typingIdField = createTextField(PathogenTestDto.TYPING_ID, PathogenTestDto.I18N_PREFIX, ValueChangeMode.BLUR);
@@ -130,6 +142,7 @@ public class TestMethodComponent extends FormComponent<PathogenTestDto> {
 	private void bindFields() {
 		binder.forField(testTypeField).asRequired().bind(PathogenTestDto::getTestType, PathogenTestDto::setTestType);
 		binder.forField(testTypeTextField).bind(PathogenTestDto::getTestTypeText, PathogenTestDto::setTestTypeText);
+		binder.forField(pcrTestSpecField).bind(PathogenTestDto::getPcrTestSpecification, PathogenTestDto::setPcrTestSpecification);
 		binder.forField(typingIdField).bind(PathogenTestDto::getTypingId, PathogenTestDto::setTypingId);
 		// testDateField and testTimeField are managed manually (both map to testDateTime)
 		binder.forField(labField).bind(PathogenTestDto::getLab, PathogenTestDto::setLab);
@@ -156,6 +169,8 @@ public class TestMethodComponent extends FormComponent<PathogenTestDto> {
 			}
 			updateRowVisibility(typingIdRow);
 
+			updatePcrTestSpecVisibility(type);
+
 			eventBus.fire(new TestTypeChangedEvent(type));
 		}));
 
@@ -174,8 +189,12 @@ public class TestMethodComponent extends FormComponent<PathogenTestDto> {
 		track(testDateField.addValueChangeListener(e -> syncTestDateTimeToDto()));
 		track(testTimeField.addValueChangeListener(e -> syncTestDateTimeToDto()));
 
-		// Listen for disease changes to update test type items
-		track(eventBus.on(DiseaseChangedEvent.class, event -> updateTestTypeItems(event.getDisease())));
+		// Listen for disease changes to update test type items and PCR spec visibility
+		track(eventBus.on(DiseaseChangedEvent.class, event -> {
+			currentDisease = event.getDisease();
+			updateTestTypeItems(currentDisease);
+			updatePcrTestSpecVisibility(testTypeField.getValue());
+		}));
 	}
 
 	private void syncTestDateTimeToDto() {
@@ -218,6 +237,15 @@ public class TestMethodComponent extends FormComponent<PathogenTestDto> {
 
 	private void updateTestTypeItems(Disease disease) {
 		updateComboBoxByDisease(testTypeField, PathogenTestType.class, disease);
+	}
+
+	private void updatePcrTestSpecVisibility(PathogenTestType testType) {
+		boolean visible = currentDisease == Disease.CORONAVIRUS && testType == PathogenTestType.PCR_RT_PCR;
+		pcrTestSpecField.setVisible(visible);
+		if (!visible) {
+			pcrTestSpecField.clear();
+		}
+		updateRowVisibility(pcrTestSpecRow);
 	}
 
 	public ComboBox<PathogenTestType> getTestTypeField() {
