@@ -27,15 +27,27 @@ import de.symeda.sormas.api.utils.Diseases;
 
 public enum PathogenSpecie {
 
+	@Diseases({
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.SPOLIGOTYPING })
 	MYCOBATERIUM_AFRICANUM,
+	@Diseases({
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.SPOLIGOTYPING })
 	MYCOBATERIUM_BOVIS,
+	@Diseases({
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.SPOLIGOTYPING })
 	MYCOBATERIUM_TUBERCULOSIS,
+	@Diseases({
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.SPOLIGOTYPING })
 	OTHER_MTBC_MEMBER,
@@ -130,19 +142,6 @@ public enum PathogenSpecie {
 		PathogenTestType.OTHER_MOLECULAR_ASSAY,
 		PathogenTestType.OTHER_SEROLOGICAL_TEST })
 	CYNOMOLGI,
-	@Diseases({
-		Disease.MALARIA })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.THIN_BLOOD_SMEAR,
-		PathogenTestType.RAPID_TEST,
-		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
-		PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
-		PathogenTestType.PCR_RT_PCR,
-		PathogenTestType.Q_PCR,
-		PathogenTestType.LAMP,
-		PathogenTestType.OTHER_MOLECULAR_ASSAY,
-		PathogenTestType.OTHER_SEROLOGICAL_TEST })
-	SPECIES,
 	@Diseases({
 		Disease.MALARIA })
 	@ApplicableToPathogenTests(value = {

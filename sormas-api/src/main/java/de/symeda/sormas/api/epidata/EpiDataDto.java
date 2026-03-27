@@ -69,8 +69,6 @@ public class EpiDataDto extends PseudonymizableDto {
 	public static final String INFECTION_SOURCE_TEXT = "infectionSourceText";
 	public static final String IMPORTED_CASE = "importedCase";
 	public static final String COUNTRY = "country";
-	public static final String EXPOSURE_START_DATE = "exposureStartDate";
-	public static final String EXPOSURE_END_DATE = "exposureEndDate";
 	public static final String OTHER_DETAILS = "otherDetails";
 
 	private YesNoUnknown exposureDetailsKnown;
@@ -133,17 +131,6 @@ public class EpiDataDto extends PseudonymizableDto {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS })
 	private String infectionSourceText;
-
-	// this values only for display the data from UI.
-
-	@Diseases({
-		Disease.DENGUE,
-		Disease.MALARIA })
-	private Date exposureStartDate;
-	@Diseases({
-		Disease.DENGUE,
-		Disease.MALARIA })
-	private Date exposureEndDate;
 
 	@Diseases({
 		Disease.GIARDIASIS })
@@ -300,22 +287,6 @@ public class EpiDataDto extends PseudonymizableDto {
 
 	public void setImportedCase(YesNoUnknown importedCase) {
 		this.importedCase = importedCase;
-	}
-
-	public Date getExposureStartDate() {
-		return exposureStartDate;
-	}
-
-	public void setExposureStartDate(Date exposureStartDate) {
-		this.exposureStartDate = exposureStartDate;
-	}
-
-	public Date getExposureEndDate() {
-		return exposureEndDate;
-	}
-
-	public void setExposureEndDate(Date exposureEndDate) {
-		this.exposureEndDate = exposureEndDate;
 	}
 
 	public CountryReferenceDto getCountry() {

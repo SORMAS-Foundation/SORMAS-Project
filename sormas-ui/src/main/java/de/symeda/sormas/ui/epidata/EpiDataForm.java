@@ -27,6 +27,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -35,6 +36,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
@@ -47,6 +50,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.epidata.ClusterType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.exposure.InfectionSource;
@@ -54,6 +58,7 @@ import de.symeda.sormas.api.exposure.ModeOfTransmission;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -61,6 +66,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilit
 import de.symeda.sormas.ui.ActivityAsCase.ActivityAsCaseField;
 import de.symeda.sormas.ui.exposure.ExposuresField;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldAccessHelper;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
@@ -77,11 +83,13 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	private static final String LOC_SOURCE_CASE_CONTACTS_HEADING = "locSourceCaseContactsHeading";
 	private static final String LOC_EPI_DATA_FIELDS_HINT = "locEpiDataFieldsHint";
 	private static final String LOC_EXP_PERIOD_HEADING = "locExpPeriodHeading";
+	private static final String EXPOSURE_DATES_LAYOUT =
+		fluidRowLocs(3, "EXPOSURE_START_DATE_LABEL", 3, "EXPOSURE_START_DATE_VALUE", 3, "EXPOSURE_END_DATE_LABEL", 3, "EXPOSURE_END_DATE_VALUE");
 
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT = 
 			loc(LOC_EXPOSURE_INVESTIGATION_HEADING) +
-			fluidRowLocs(6, EpiDataDto.EXPOSURE_START_DATE, 6, EpiDataDto.EXPOSURE_END_DATE)+
+			fluidRowLocs("EXP_DATES_LAYOUT") +
 			fluidRowLocs(6,EpiDataDto.CASE_IMPORTED_STATUS,6,"") +
 			loc(LOC_EXP_PERIOD_HEADING) +
 			loc(EpiDataDto.EXPOSURE_DETAILS_KNOWN) +
@@ -110,6 +118,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	private final Class<? extends EntityDto> parentClass;
 	private final Consumer<Boolean> sourceContactsToggleCallback;
 	private final boolean isPseudonymized;
+	private final Date symptomOnsetDate;
 
 	public EpiDataForm(
 		Disease disease,
@@ -117,7 +126,8 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		boolean isPseudonymized,
 		boolean inJurisdiction,
 		Consumer<Boolean> sourceContactsToggleCallback,
-		boolean isEditAllowed) {
+		boolean isEditAllowed,
+		Date date) {
 		super(
 			EpiDataDto.class,
 			EpiDataDto.I18N_PREFIX,
@@ -129,6 +139,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		this.parentClass = parentClass;
 		this.sourceContactsToggleCallback = sourceContactsToggleCallback;
 		this.isPseudonymized = isPseudonymized;
+		this.symptomOnsetDate = date;
 		addFields();
 	}
 
@@ -178,16 +189,12 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		addField(EpiDataDto.MODE_OF_TRANSMISSION_TYPE);
 		addField(EpiDataDto.INFECTION_SOURCE);
 		addField(EpiDataDto.INFECTION_SOURCE_TEXT);
-		DateField exposureStartDate = addField(EpiDataDto.EXPOSURE_START_DATE);
-		exposureStartDate.setCaption(I18nProperties.getString(Strings.exposureStartDate));
-		exposureStartDate.setEnabled(false);
-		DateField exposureEndDate = addField(EpiDataDto.EXPOSURE_END_DATE);
-		exposureEndDate.setCaption(I18nProperties.getString(Strings.exposureEndDate));
-		exposureEndDate.setEnabled(false);
 		addField(EpiDataDto.IMPORTED_CASE, NullableOptionGroup.class);
 		List<CountryReferenceDto> countries = FacadeProvider.getCountryFacade().getAllActiveAsReference();
 		ComboBox country = addInfrastructureField(EpiDataDto.COUNTRY);
 		country.addItems(countries);
+
+		includeExposureDates(symptomOnsetDate, disease);
 
 		TextField clusterTypeTF = addField(EpiDataDto.CLUSTER_TYPE_TEXT);
 		FieldHelper
@@ -209,6 +216,54 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		exposuresField.addValueChangeListener(e -> {
 			ogExposureDetailsKnown.setEnabled(CollectionUtils.isEmpty(exposuresField.getValue()));
 		});
+	}
+
+	/**
+	 * Include the exposire start and dates when symptomOnsetDate is present.
+	 * Disease incubation period is enabled with valid values.
+	 * 
+	 * @param symptomOnsetDate
+	 * @param disease
+	 */
+	private void includeExposureDates(Date symptomOnsetDate, Disease disease) {
+		//  if symptomOnsetDate is null, return;
+		if (symptomOnsetDate == null) {
+			return;
+		}
+		DiseaseConfigurationDto diseaseConfigurationDto = FacadeProvider.getDiseaseConfigurationFacade().getDiseaseConfiguration(disease);
+		if (diseaseConfigurationDto == null) {
+			return;
+		}
+		if (!diseaseConfigurationDto.getIncubationPeriodEnabled()) {
+			return;
+		}
+		if (diseaseConfigurationDto.getMaxIncubationPeriod() == null || diseaseConfigurationDto.getMaxIncubationPeriod() == 0) {
+			return;
+		}
+		if (diseaseConfigurationDto.getMinIncubationPeriod() == null) {
+			return;
+		}
+
+		CustomLayout exposureDatesLayout = new CustomLayout();
+		exposureDatesLayout.setTemplateContents(EXPOSURE_DATES_LAYOUT);
+		Label exposureStartLabel = new Label(I18nProperties.getString(Strings.exposureStartDate));
+		exposureStartLabel.addStyleNames(CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
+		exposureDatesLayout.addComponent(exposureStartLabel, "EXPOSURE_START_DATE_LABEL");
+
+		DateField exposureStartDateValue = new DateField();
+		exposureStartDateValue.setValue(DateHelper.subtractDays(symptomOnsetDate, diseaseConfigurationDto.getMaxIncubationPeriod()));
+		exposureStartDateValue.setReadOnly(true);
+		exposureDatesLayout.addComponent(exposureStartDateValue, "EXPOSURE_START_DATE_VALUE");
+
+		Label exposureEndLabel = new Label(I18nProperties.getString(Strings.exposureEndDate));
+		exposureEndLabel.addStyleNames(CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
+		exposureDatesLayout.addComponent(exposureEndLabel, "EXPOSURE_END_DATE_LABEL");
+		DateField exposureEndDateValue = new DateField();
+		exposureEndDateValue.setValue(DateHelper.subtractDays(symptomOnsetDate, diseaseConfigurationDto.getMinIncubationPeriod()));
+		exposureEndDateValue.setReadOnly(true);
+		exposureDatesLayout.addComponent(exposureEndDateValue, "EXPOSURE_END_DATE_VALUE");
+
+		getContent().addComponent(exposureDatesLayout, "EXP_DATES_LAYOUT");
 	}
 
 	private void addActivityAsCaseFields() {
