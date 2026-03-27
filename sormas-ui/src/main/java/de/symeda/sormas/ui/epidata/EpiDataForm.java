@@ -219,7 +219,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	}
 
 	/**
-	 * Include the exposire start and dates when symptomOnsetDate is present.
+	 * Include the exposure start and dates when symptomOnsetDate is present.
 	 * Disease incubation period is enabled with valid values.
 	 * 
 	 * @param symptomOnsetDate
@@ -234,7 +234,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		if (diseaseConfigurationDto == null) {
 			return;
 		}
-		if (!diseaseConfigurationDto.getIncubationPeriodEnabled()) {
+		if (diseaseConfigurationDto.getIncubationPeriodEnabled() == null || !diseaseConfigurationDto.getIncubationPeriodEnabled()) {
 			return;
 		}
 		if (diseaseConfigurationDto.getMaxIncubationPeriod() == null || diseaseConfigurationDto.getMaxIncubationPeriod() == 0) {
