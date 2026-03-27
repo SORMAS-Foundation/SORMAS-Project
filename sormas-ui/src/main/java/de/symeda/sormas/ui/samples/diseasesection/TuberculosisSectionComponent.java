@@ -1,5 +1,7 @@
 package de.symeda.sormas.ui.samples.diseasesection;
 
+import java.util.Locale;
+
 import com.vaadin.data.ValueProvider;
 import com.vaadin.server.Setter;
 import com.vaadin.ui.ComboBox;
@@ -333,12 +335,17 @@ public class TuberculosisSectionComponent extends AbstractDiseaseSectionComponen
 		binder.forField(tubeField).withConverter(new StringToFloatNullableConverter(tubeField.getCaption())).bind(tubeGetter, tubeSetter);
 		binder.forField(gt10Field).bind(gt10Getter, gt10Setter);
 
-		tubeField
-			.addValueChangeListener(e -> StringToFloatNullableConverter.parseLocaleAware(e.getValue()).ifPresent(f -> gt10Field.setValue(f > 10)));
+		tubeField.addValueChangeListener(e -> {
+			Locale locale = tubeField.getLocale() != null ? tubeField.getLocale() : Locale.getDefault();
+			StringToFloatNullableConverter.parseLocaleAware(e.getValue(), locale).ifPresent(f -> gt10Field.setValue(f > 10));
+		});
 
 		gt10Field.addValueChangeListener(e -> {
+			Locale locale = tubeField.getLocale() != null ? tubeField.getLocale() : Locale.getDefault();
 			if (Boolean.TRUE.equals(e.getValue())) {
-				StringToFloatNullableConverter.parseLocaleAware(tubeField.getValue()).filter(f -> f <= 10).ifPresent(f -> tubeField.clear());
+				StringToFloatNullableConverter.parseLocaleAware(tubeField.getValue(), locale).filter(f -> f <= 10).ifPresent(f -> tubeField.clear());
+			} else if (Boolean.FALSE.equals(e.getValue())) {
+				StringToFloatNullableConverter.parseLocaleAware(tubeField.getValue(), locale).filter(f -> f > 10).ifPresent(f -> tubeField.clear());
 			}
 		});
 	}

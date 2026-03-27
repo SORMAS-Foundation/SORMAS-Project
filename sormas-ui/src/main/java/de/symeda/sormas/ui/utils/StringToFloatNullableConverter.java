@@ -35,15 +35,15 @@ public class StringToFloatNullableConverter implements Converter<String, Float> 
 	}
 
 	/**
-	 * Parses a string to a float using the default locale's number format.
+	 * Parses a string to a float using the given locale's number format.
 	 * Returns empty if the value is null, blank, or not a valid number.
 	 */
-	public static Optional<Float> parseLocaleAware(String value) {
+	public static Optional<Float> parseLocaleAware(String value, Locale locale) {
 		if (value == null || value.trim().isEmpty()) {
 			return Optional.empty();
 		}
 		try {
-			NumberFormat numberFormat = NumberFormat.getInstance(Locale.getDefault());
+			NumberFormat numberFormat = NumberFormat.getInstance(locale);
 			Number number = numberFormat.parse(value.trim());
 			return Optional.of(number.floatValue());
 		} catch (ParseException e) {
