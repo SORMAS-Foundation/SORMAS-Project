@@ -31,7 +31,7 @@ jobs:
         # The token is only needed for privileged actions from within the repo, so no need
         # to make it available on 3rd party PRs
         if: ${{ fromJSON(env.PRIVILEGED_RUN) }}
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           token: ${{ secrets.SORMAS_VITAGROUP_CI_TOKEN }}
 
@@ -40,7 +40,7 @@ jobs:
         # The token is only needed for privileged actions from within the
         # repo, so no need to make it available on 3rd party PRs
         if: ${{ !fromJSON(env.PRIVILEGED_RUN) }}
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v2
