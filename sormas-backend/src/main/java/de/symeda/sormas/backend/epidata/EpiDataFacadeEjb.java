@@ -21,7 +21,10 @@ import static java.util.Objects.isNull;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -30,7 +33,10 @@ import javax.ejb.Stateless;
 import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
+import de.symeda.sormas.api.exposure.ExposureContactFactor;
 import de.symeda.sormas.api.exposure.ExposureDto;
+import de.symeda.sormas.api.exposure.ExposureProtectiveMeasure;
+import de.symeda.sormas.api.exposure.ExposureSubSetting;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.activityascase.ActivityAsCase;
@@ -114,6 +120,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setInfectionSourceText(source.getInfectionSourceText());
 		target.setCountry(countryService.getByReferenceDto(source.getCountry()));
 		target.setImportedCase(source.getImportedCase());
+		target.setOtherDetails(source.getOtherDetails());
 
 		return target;
 	}
@@ -200,6 +207,39 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setRawFoodContactText(source.getRawFoodContactText());
 		target.setSymptomaticIndividualText(source.getSymptomaticIndividualText());
 
+		target.setExposureCategory(source.getExposureCategory());
+		target.setExposureSetting(source.getExposureSetting());
+		target.setExposureSettingDetails(source.getExposureSettingDetails());
+		target.setExposureSubSettingDetails(source.getExposureSubSettingDetails());
+		target.setContactFactorDetails(source.getContactFactorDetails());
+		target.setProtectiveMeasureDetails(source.getProtectiveMeasureDetails());
+		target.setExposureComment(source.getExposureComment());
+		target.setConditionOfAnimal(source.getConditionOfAnimal());
+		target.setAnimalCategory(source.getAnimalCategory());
+		target.setAnimalCategoryDetails(source.getAnimalCategoryDetails());
+		target.setFomiteTransmissionLocation(source.getFomiteTransmissionLocation());
+
+		Set<ExposureSubSetting> subSettings = Optional.of(target).map(Exposure::getSubSettings).orElseGet(HashSet::new);
+		subSettings.clear();
+		if (source.getSubSettings() != null) {
+			subSettings.addAll(source.getSubSettings());
+		}
+		target.setSubSettings(subSettings);
+
+		Set<ExposureContactFactor> contactFactors = Optional.of(target).map(Exposure::getContactFactors).orElseGet(HashSet::new);
+		contactFactors.clear();
+		if (source.getContactFactors() != null) {
+			contactFactors.addAll(source.getContactFactors());
+		}
+		target.setContactFactors(contactFactors);
+
+		Set<ExposureProtectiveMeasure> protectiveMeasures = Optional.of(target).map(Exposure::getProtectiveMeasures).orElseGet(HashSet::new);
+		protectiveMeasures.clear();
+		if (source.getProtectiveMeasures() != null) {
+			protectiveMeasures.addAll(source.getProtectiveMeasures());
+		}
+		target.setProtectiveMeasures(protectiveMeasures);
+
 		return target;
 	}
 
@@ -281,6 +321,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setInfectionSourceText(source.getInfectionSourceText());
 		target.setCountry(CountryFacadeEjb.toReferenceDto(source.getCountry()));
 		target.setImportedCase(source.getImportedCase());
+		target.setOtherDetails(source.getOtherDetails());
 		return target;
 	}
 
@@ -361,6 +402,22 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setRawFoodContact(source.getRawFoodContact());
 		target.setRawFoodContactText(source.getRawFoodContactText());
 		target.setSymptomaticIndividualText(source.getSymptomaticIndividualText());
+
+		target.setExposureCategory(source.getExposureCategory());
+		target.setExposureSetting(source.getExposureSetting());
+		target.setExposureSettingDetails(source.getExposureSettingDetails());
+		target.setExposureSubSettingDetails(source.getExposureSubSettingDetails());
+		target.setContactFactorDetails(source.getContactFactorDetails());
+		target.setProtectiveMeasureDetails(source.getProtectiveMeasureDetails());
+		target.setExposureComment(source.getExposureComment());
+		target.setConditionOfAnimal(source.getConditionOfAnimal());
+		target.setAnimalCategory(source.getAnimalCategory());
+		target.setAnimalCategoryDetails(source.getAnimalCategoryDetails());
+		target.setFomiteTransmissionLocation(source.getFomiteTransmissionLocation());
+
+		target.setSubSettings(new HashSet<>(source.getSubSettings()));
+		target.setContactFactors(new HashSet<>(source.getContactFactors()));
+		target.setProtectiveMeasures(new HashSet<>(source.getProtectiveMeasures()));
 
 		return target;
 	}

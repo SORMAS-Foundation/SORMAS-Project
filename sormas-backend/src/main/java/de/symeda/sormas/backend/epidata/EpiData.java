@@ -51,6 +51,7 @@ public class EpiData extends AbstractDomainObject {
 	public static final String CONTACT_WITH_SOURCE_CASE_KNOWN = "contactWithSourceCaseKnown";
 	public static final String EXPOSURES = "exposures";
 	public static final String ACTIVITIES_AS_CASE = "activitiesAsCase";
+	public static final String OTHER_DETAILS = "otherDetails";
 
 	private YesNoUnknown exposureDetailsKnown;
 	private YesNoUnknown activityAsCaseDetailsKnown;
@@ -77,6 +78,8 @@ public class EpiData extends AbstractDomainObject {
 	private List<ActivityAsCase> activitiesAsCase = new ArrayList<>();
 	@NotExposedToApi
 	private Date changeDateOfEmbeddedLists;
+
+	private String otherDetails;
 
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getExposureDetailsKnown() {
@@ -246,5 +249,14 @@ public class EpiData extends AbstractDomainObject {
 
 	public void setCountry(Country country) {
 		this.country = country;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getOtherDetails() {
+		return otherDetails;
+	}
+
+	public void setOtherDetails(String otherDetails) {
+		this.otherDetails = otherDetails;
 	}
 }
