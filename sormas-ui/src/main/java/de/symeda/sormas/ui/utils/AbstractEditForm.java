@@ -556,18 +556,6 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 		visibleAllowedFields.add(field);
 	}
 
-	protected void removeFromVisibleAllowedFields(Field<?> field) {
-		visibleAllowedFields.removeIf(f -> f == field);
-	}
-
-	protected void addToEditableAllowedFields(Field<?> field) {
-		editableAllowedFields.add(field);
-	}
-
-	protected void removeFromEditableAllowedFields(Field<?> field) {
-		editableAllowedFields.removeIf(f -> f == field);
-	}
-
 	/**
 	 * Sets the initial enabled states based on annotations and builds a list of all fields in a form
 	 * that are allowed to be enabled based on access rights

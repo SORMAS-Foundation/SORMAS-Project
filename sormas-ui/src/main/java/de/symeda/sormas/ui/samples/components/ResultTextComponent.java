@@ -15,23 +15,36 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.ui.utils;
+package de.symeda.sormas.ui.samples.components;
 
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
+import com.vaadin.ui.TextArea;
+
+import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.ui.utils.FormComponent;
 
 /**
- * Handle returned by FieldHelper listener-registration methods.
- * Call {@link #remove()} to deregister all listeners that were added during that call.
+ * Test result free-text field.
+ * Vaadin 8 components with own Binder, self-managed visibility.
  */
-@FunctionalInterface
-public interface Registration extends Serializable {
+public class ResultTextComponent extends FormComponent<PathogenTestDto> {
 
-	void remove();
+	private static final long serialVersionUID = 1L;
 
-	static Registration combine(Registration... registrations) {
-		List<Registration> list = Arrays.asList(registrations);
-		return () -> list.forEach(Registration::remove);
+	private TextArea resultText;
+
+	public ResultTextComponent() {
+		super(PathogenTestDto.class);
+		buildLayout();
+		bindFields();
+	}
+
+	private void buildLayout() {
+		resultText = createTextArea(PathogenTestDto.TEST_RESULT_TEXT, PathogenTestDto.I18N_PREFIX);
+		resultText.setRows(6);
+		addFullWidthRow(resultText);
+	}
+
+	private void bindFields() {
+		binder.forField(resultText).bind(PathogenTestDto::getTestResultText, PathogenTestDto::setTestResultText);
 	}
 }

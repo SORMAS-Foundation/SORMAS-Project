@@ -17,37 +17,36 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples.diseasesection;
 
-import java.util.Collection;
-import java.util.Collections;
-
-import com.vaadin.ui.CustomLayout;
-import com.vaadin.v7.data.fieldgroup.FieldGroup;
-
 import de.symeda.sormas.api.Disease;
 
 /**
- * No-op section for diseases that have no extra fields beyond the common layout.
+ * Factory for component-based disease sections.
  */
-public class DefaultDiseaseSectionLayout implements DiseaseSectionLayout {
+public final class DiseaseSectionFactory {
 
-	@Override
-	public String getHtmlLayout() {
-		return "";
+	private DiseaseSectionFactory() {
 	}
 
-	@Override
-	public Collection<String> getFieldIds() {
-		return Collections.emptyList();
+	public static AbstractDiseaseSectionComponent forDisease(Disease disease) {
+		if (disease == null) {
+			return new DefaultSectionComponent();
+		}
+		switch (disease) {
+		case TUBERCULOSIS:
+		case LATENT_TUBERCULOSIS:
+			return new TuberculosisSectionComponent();
+		case MEASLES:
+			return new MeaslesSectionComponent();
+		case CRYPTOSPORIDIOSIS:
+			return new CryptosporidiosisSectionComponent();
+		case INVASIVE_MENINGOCOCCAL_INFECTION:
+			return new ImiSectionComponent();
+		case INVASIVE_PNEUMOCOCCAL_INFECTION:
+			return new IpiSectionComponent();
+		case CSM:
+			return new CsmSectionComponent();
+		default:
+			return new DefaultSectionComponent();
+		}
 	}
-
-	@Override
-	public void bindFields(FieldGroup fieldGroup, CustomLayout panel, Disease disease, PathogenTestFormConfig config) {
-		// no disease-specific fields
-	}
-
-	@Override
-	public void unbindFields(FieldGroup fieldGroup, CustomLayout panel) {
-		// nothing to remove
-	}
-
 }

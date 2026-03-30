@@ -558,29 +558,5 @@ public abstract class AbstractForm<T> extends CustomField<T> implements WithChil
 				field.setReadOnly(true);
 			}
 		}
-
-		/**
-		 * Iterates a snapshot of the field collection so that value-change listeners triggered
-		 * during discard (e.g. disease-section swap that binds/unbinds fields) cannot cause a
-		 * ConcurrentModificationException on the underlying LinkedHashMap.
-		 * All fields are attempted even if one fails; the first failure is rethrown after all discards complete.
-		 */
-		@Override
-		public void discard() {
-			Exception firstFailure = null;
-			for (Field<?> f : new ArrayList<>(getFields())) {
-				try {
-					f.discard();
-				} catch (Exception e) {
-					if (firstFailure == null) {
-						firstFailure = e;
-					}
-					logger.warn("Discard failed for field {}", f.getId(), e);
-				}
-			}
-			if (firstFailure != null) {
-				throw (RuntimeException) firstFailure;
-			}
-		}
 	}
 }
