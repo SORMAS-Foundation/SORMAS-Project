@@ -15470,8 +15470,15 @@ INSERT INTO schema_version (version_number, comment) VALUES (614, '#13887 - Expo
 -- 23-03-2026 new fields related to Malaria and Dengue samples and pathogenform.
 ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS serotypetext varchar(255);
 UPDATE pathogentest  SET serotypetext = serotype, serotype = 'OTHER' WHERE serotype IS NOT null   and serotypetext is null;
-ALTER TABLE pathogentest rename column genotyperesult to genotype;
-ALTER TABLE pathogentest rename column genotyperesulttext to genotypetext;
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'pathogentest' AND column_name = 'genotyperesult') THEN
+        ALTER TABLE pathogentest RENAME COLUMN genotyperesult TO genotype;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'pathogentest' AND column_name = 'genotyperesulttext') THEN
+        ALTER TABLE pathogentest RENAME COLUMN genotyperesulttext TO genotypetext;
+    END IF;
+END $$;
 ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS antibodyTitre varchar(255);
 ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS performedByReferenceLaboratory boolean;
 ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS retestRequested boolean default false;
@@ -15483,8 +15490,16 @@ ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS malariainfectedyear intege
 
 ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS serotypetext varchar(255);
 UPDATE pathogentest_history  SET serotypetext = serotype, serotype = 'OTHER' WHERE serotype IS NOT null   and serotypetext is null;
-ALTER TABLE pathogentest_history rename column genotyperesult to genotype;
-ALTER TABLE pathogentest_history rename column genotyperesulttext to genotypetext;
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'pathogentest_history' AND column_name = 'genotyperesult') THEN
+        ALTER TABLE pathogentest_history RENAME COLUMN genotyperesult TO genotype;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'pathogentest_history' AND column_name = 'genotyperesulttext') THEN
+        ALTER TABLE pathogentest_history RENAME COLUMN genotyperesulttext TO genotypetext;
+    END IF;
+END $$;
+
 ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS antibodyTitre varchar(255);
 ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS performedByReferenceLaboratory boolean;
 ALTER TABLE pathogentest_history ADD COLUMN IF NOT EXISTS retestRequested boolean default false;
