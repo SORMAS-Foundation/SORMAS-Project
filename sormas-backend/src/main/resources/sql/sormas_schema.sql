@@ -15467,4 +15467,18 @@ ALTER TABLE exposures_protectivemeasures_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (614, '#13887 - Exposure form redesign');
 
+-- updated regexes for MENU system config values
+UPDATE systemconfigurationvalue
+SET value_pattern = '^(default|red|green|indigo|gray)|(#?([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3}))$'
+WHERE config_key = 'MENU_BACKGROUND_COLOR';
+
+UPDATE systemconfigurationvalue
+SET value_pattern = '^[\w\s]{0,16}$'
+WHERE config_key = 'MENU_SUBTITLE';
+
+INSERT INTO schema_version (version_number, comment) VALUES (615, '#13552 - FIX menu regexes');
+
+
+
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
