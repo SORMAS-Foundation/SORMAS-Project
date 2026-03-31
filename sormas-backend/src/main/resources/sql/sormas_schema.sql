@@ -15469,7 +15469,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (614, '#13887 - Expo
 
 -- updated regexes for MENU system config values
 UPDATE systemconfigurationvalue
-SET value_pattern = '^(default|red|green|indigo|gray)|(#?([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3}))$'
+SET value_pattern = '^(default|red|green|indigo|gray)$|^(#?([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3}))$'
 WHERE config_key = 'MENU_BACKGROUND_COLOR';
 
 UPDATE systemconfigurationvalue
