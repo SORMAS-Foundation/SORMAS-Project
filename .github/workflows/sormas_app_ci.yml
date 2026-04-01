@@ -11,6 +11,7 @@ env:
   PRIVILEGED_RUN: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/development') || github.event.pull_request.head.repo.full_name == github.repository }}
 
 on:
+  workflow_dispatch:
   push:
     branches: [ development, master, hotfix* ]
     paths:
