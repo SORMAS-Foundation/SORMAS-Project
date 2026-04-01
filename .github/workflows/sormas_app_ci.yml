@@ -26,7 +26,7 @@ on:
 jobs:
   test:
     name: android app test
-    runs-on: macos-13
+    runs-on: macos-15-intel
     strategy:
       matrix:
         # Even though we are using macos machines which should be faster thanks to hardware accelerations
@@ -107,6 +107,7 @@ jobs:
         with:
           api-level: ${{ matrix.api-level }}
           force-avd-creation: false
+          arch: x86
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
           script: echo "Generated AVD snapshot for caching."
@@ -116,6 +117,9 @@ jobs:
         with:
           api-level: ${{ matrix.api-level }}
           force-avd-creation: false
+          arch: x86
+          ram-size: 4096M
+          heap-size: 512M
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
           working-directory: ./sormas-app
