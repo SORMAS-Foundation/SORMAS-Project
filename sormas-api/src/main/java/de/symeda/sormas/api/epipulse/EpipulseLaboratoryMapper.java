@@ -116,7 +116,7 @@ public class EpipulseLaboratoryMapper {
 	 * MEASV_C1, MEASV_C2, MEASV_D1-D11, MEASV_E, MEASV_F, MEASV_G1-G3, MEASV_H1-H2, etc.
 	 *
 	 * @param genotypeText
-	 *            SORMAS genotype string (from typingId or genoTypeResult)
+	 *            SORMAS genotype string (from typingId or genoType)
 	 * @return Normalized EpiPulse genotype code, or null if not a valid measles genotype
 	 */
 	public static String normalizeGenotypeForEpipulse(String genotypeText) {

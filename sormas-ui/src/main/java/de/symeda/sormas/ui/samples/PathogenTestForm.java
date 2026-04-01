@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -62,7 +63,8 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.sample.GenoTypeResult;
+import de.symeda.sormas.api.sample.GenoType;
+import de.symeda.sormas.api.sample.PathogenSpecie;
 import de.symeda.sormas.api.sample.PathogenStrainCallStatus;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -70,6 +72,7 @@ import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SeroGroupSpecification;
+import de.symeda.sormas.api.sample.Serotype;
 import de.symeda.sormas.api.sample.SerotypingMethod;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -106,18 +109,21 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			fluidRowLocs(PathogenTestDto.TESTED_PATHOGEN, PathogenTestDto.TESTED_PATHOGEN_DETAILS) +
 			fluidRowLocs(PathogenTestDto.TYPING_ID, "") +
 			fluidRowLocs(PathogenTestDto.TEST_DATE_TIME, PathogenTestDto.LAB) +
-			fluidRowLocs("", PathogenTestDto.LAB_DETAILS) +
+			fluidRowLocs(6, "",6, PathogenTestDto.LAB_DETAILS) +
 			fluidRowLocs(6,PathogenTestDto.TEST_RESULT, 4, PathogenTestDto.TEST_RESULT_VERIFIED, 2,PathogenTestDto.PRELIMINARY) +
+			fluidRowLocs(6, PathogenTestDto.RESULT_DETAILS,3,PathogenTestDto.PERFORMED_BY_REFERENCE_LABORATORY,3, PathogenTestDto.RETEST_REQUESTED) +
 			fluidRowLocs(PathogenTestDto.TESTED_DISEASE_VARIANT, PathogenTestDto.TESTED_DISEASE_VARIANT_DETAILS) +
 			fluidRowLocs(PathogenTestDto.RIFAMPICIN_RESISTANT, PathogenTestDto.ISONIAZID_RESISTANT, "", "") +
 			fluidRowLocs(PathogenTestDto.TEST_SCALE, "") +
 			fluidRowLocs(PathogenTestDto.STRAIN_CALL_STATUS, "") +
-			fluidRowLocs(PathogenTestDto.SPECIE, "") +
+			fluidRowLocs(PathogenTestDto.SPECIE, PathogenTestDto.SPECIE_TEXT) +
 			fluidRowLocs(PathogenTestDto.PATTERN_PROFILE, "") +
 			fluidRowLocs(PathogenTestDto.DRUG_SUSCEPTIBILITY) +
-			fluidRowLocs(4,PathogenTestDto.SEROTYPE, 4,PathogenTestDto.SEROTYPING_METHOD, 4,PathogenTestDto.SERO_TYPING_METHOD_TEXT) +
+			fluidRowLocs(6,PathogenTestDto.SEROTYPE, 6,PathogenTestDto.SEROTYPE_TEXT) +
+			fluidRowLocs(6,PathogenTestDto.SEROTYPING_METHOD, 6,PathogenTestDto.SERO_TYPING_METHOD_TEXT) +
 			fluidRowLocs(6,PathogenTestDto.SERO_GROUP_SPECIFICATION , 6, PathogenTestDto.SERO_GROUP_SPECIFICATION_TEXT) +
-			fluidRowLocs(4,PathogenTestDto.GENOTYPE_RESULT,6, PathogenTestDto.GENOTYPE_RESULT_TEXT) +
+			fluidRowLocs(6,PathogenTestDto.GENOTYPE,6, PathogenTestDto.GENOTYPE_TEXT) +
+			fluidRowLocs(6,PathogenTestDto.ANTIBODY_TITRE) +
 			fluidRowLocs(PathogenTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, "") +
 			fluidRowLocs(PathogenTestDto.CQ_VALUE, "") +
 			fluidRowLocs(PathogenTestDto.CT_VALUE_E, PathogenTestDto.CT_VALUE_N) +
@@ -138,37 +144,36 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			fluidRowLocs(PathogenTestDto.OTHER_DELETION_REASON);
 	//@formatter:on
 
+	//@formatter:off
 	// map to decide the result type field value and enable/disable state
 	public static final Map<Disease, ArrayList<PathogenTestType>> RESULT_FIELD_DECISION_MAP = Collections.unmodifiableMap(new HashMap<>() {
-
 		{
-			put(
-				Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-				new ArrayList<>(
-					List.of(
-						PathogenTestType.SEROGROUPING,
-						PathogenTestType.MULTILOCUS_SEQUENCE_TYPING,
-						PathogenTestType.SLIDE_AGGLUTINATION,
-						PathogenTestType.WHOLE_GENOME_SEQUENCING,
-						PathogenTestType.SEQUENCING,
-						PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)));
-			put(
-				Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-				new ArrayList<>(
-					List.of(
-						PathogenTestType.SEROGROUPING,
-						PathogenTestType.MULTILOCUS_SEQUENCE_TYPING,
-						PathogenTestType.SLIDE_AGGLUTINATION,
-						PathogenTestType.WHOLE_GENOME_SEQUENCING,
-						PathogenTestType.SEQUENCING,
-						PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)));
+			put(Disease.INVASIVE_MENINGOCOCCAL_INFECTION, new ArrayList<>(List.of(PathogenTestType.SEROGROUPING,
+						PathogenTestType.MULTILOCUS_SEQUENCE_TYPING, PathogenTestType.SLIDE_AGGLUTINATION, PathogenTestType.WHOLE_GENOME_SEQUENCING,
+						PathogenTestType.SEQUENCING, PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)));
+			put(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, new ArrayList<>(List.of(PathogenTestType.SEROGROUPING, PathogenTestType.MULTILOCUS_SEQUENCE_TYPING,
+						PathogenTestType.SLIDE_AGGLUTINATION, PathogenTestType.WHOLE_GENOME_SEQUENCING, PathogenTestType.SEQUENCING, PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)));
 			put(Disease.MEASLES, new ArrayList<>(List.of(PathogenTestType.GENOTYPING)));
 			put(Disease.RESPIRATORY_SYNCYTIAL_VIRUS, new ArrayList<>(List.of(PathogenTestType.SEQUENCING, PathogenTestType.WHOLE_GENOME_SEQUENCING)));
 			put(Disease.INFLUENZA, new ArrayList<>(List.of(PathogenTestType.ISOLATION)));
 			put(Disease.CRYPTOSPORIDIOSIS, new ArrayList<>(List.of(PathogenTestType.GENOTYPING)));
+			put(Disease.DENGUE, new ArrayList<>(List.of(PathogenTestType.NAAT, PathogenTestType.NEUTRALIZING_ANTIBODIES, PathogenTestType.PCR_RT_PCR)));
+			put(Disease.MALARIA, new ArrayList<>(List.of( PathogenTestType.ANTIGEN_DETECTION, PathogenTestType.THIN_BLOOD_SMEAR, PathogenTestType.RAPID_TEST,
+					PathogenTestType.INDIRECT_FLUORESCENT_ANTIBODY,PathogenTestType.PCR_RT_PCR, PathogenTestType.Q_PCR, PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY, PathogenTestType.LAMP,
+					PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST, PathogenTestType.OTHER_SEROLOGICAL_TEST, PathogenTestType.OTHER_MOLECULAR_ASSAY)));
 		}
 	});
 
+	// map to decide the serotype field value and enable/disable state
+	// Serotype should display, with @Herold code refactor, it should be removed from here.
+	public static final Map<Disease, List<PathogenTestType>> SEROTYPE_VISIBILITY_MAP = Collections.unmodifiableMap(new HashMap<>() {
+		{
+			put(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, Collections.unmodifiableList(Arrays.asList(PathogenTestType.WHOLE_GENOME_SEQUENCING,
+						PathogenTestType.SLIDE_AGGLUTINATION, PathogenTestType.MULTILOCUS_SEQUENCE_TYPING, PathogenTestType.SEROGROUPING)));
+			put(Disease.DENGUE, Collections.unmodifiableList(Arrays.asList(PathogenTestType.NAAT, PathogenTestType.PCR_RT_PCR, PathogenTestType.NEUTRALIZING_ANTIBODIES)));
+		}
+	});
+	//@formatter:off
 	public static final Map<Object, List<Object>> RIFAMPICIN_RESISTANT_VISIBILITY_CONDITIONS = Collections.unmodifiableMap(new HashMap<>() {
 
 		{
@@ -193,7 +198,21 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			put(PathogenTestDto.TEST_TYPE, Collections.unmodifiableList(Arrays.asList(PathogenTestType.BEIJINGGENOTYPING)));
 		}
 	});
+	//@formatter:off
+	// this map is to decide the species field value and enable/disable state.
+	// this suppose to refactored with @Harold changes
+	public static final Map<Disease, List<PathogenTestType>> SPECIE_VISIBILITY_MAP = Collections.unmodifiableMap(new HashMap<>() {
 
+		{
+			put(Disease.LATENT_TUBERCULOSIS, Collections.unmodifiableList(Arrays.asList(PathogenTestType.SPOLIGOTYPING)));
+			put(Disease.TUBERCULOSIS, Collections.unmodifiableList(Arrays.asList(PathogenTestType.SPOLIGOTYPING)));
+			put(Disease.MALARIA, Collections.unmodifiableList(Arrays.asList(PathogenTestType.THIN_BLOOD_SMEAR, PathogenTestType.ANTIGEN_DETECTION,
+						PathogenTestType.RAPID_TEST, PathogenTestType.PCR_RT_PCR, PathogenTestType.Q_PCR, PathogenTestType.LAMP,PathogenTestType.INDIRECT_FLUORESCENT_ANTIBODY,
+						PathogenTestType.OTHER_MOLECULAR_ASSAY, PathogenTestType.OTHER_SEROLOGICAL_TEST, PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
+						PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY)));
+		}
+	});
+	//@formatter:on
 	public static final Map<Object, List<Object>> SPECIE_VISIBILITY_CONDITIONS = Collections.unmodifiableMap(new HashMap<>() {
 
 		{
@@ -241,6 +260,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 	private ComboBox seroGrpSepcCB;
 	private TextField seroGrpSpecTxt;
+	private ComboBox seroTypeField;
 
 	public PathogenTestForm(
 		AbstractSampleForm sampleForm,
@@ -301,6 +321,9 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		if (diseaseField.getValue() == null || !List.of(Disease.TUBERCULOSIS).contains((Disease) diseaseField.getValue())) {
 			if (((testType == PathogenTestType.PCR_RT_PCR && testResultType == PathogenTestResultType.POSITIVE))
 				|| testType == PathogenTestType.CQ_VALUE_DETECTION) {
+				cqValueField.setVisible(true);
+			} else if (Disease.MALARIA == (Disease) diseaseField.getValue() && testType == PathogenTestType.Q_PCR) {
+				// CT value should be visible for Malaria, QPCR test.
 				cqValueField.setVisible(true);
 			} else {
 				cqValueField.setVisible(false);
@@ -400,12 +423,12 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		typingIdField.setValue(newFieldValue.getTypingId());
 		specieField.setValue(newFieldValue.getSpecie());
 		if (!genoTypingCB.isReadOnly()) {
-			genoTypingCB.setValue(newFieldValue.getGenoTypeResult());
+			genoTypingCB.setValue(newFieldValue.getGenoType());
 
 		}
 
 		if (!genoTypingResultTextTF.isReadOnly()) {
-			genoTypingResultTextTF.setValue(newFieldValue.getGenoTypeResultText());
+			genoTypingResultTextTF.setValue(newFieldValue.getGenoTypeText());
 		}
 
 		if (!seroGrpSepcCB.isReadOnly()) {
@@ -494,9 +517,9 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			diseaseVariantField.setCaption(I18nProperties.getCaption(Captions.PathogenTest_rsv_testedDiseaseVariant));
 			diseaseVariantDetailsField.setCaption(I18nProperties.getCaption(Captions.PathogenTest_rsv_testedDiseaseVariantDetails));
 		}
-		genoTypingCB = addField(PathogenTestDto.GENOTYPE_RESULT, ComboBox.class);
+		genoTypingCB = addField(PathogenTestDto.GENOTYPE, ComboBox.class);
 		genoTypingCB.setVisible(true);
-		genoTypingResultTextTF = addField(PathogenTestDto.GENOTYPE_RESULT_TEXT, TextField.class);
+		genoTypingResultTextTF = addField(PathogenTestDto.GENOTYPE_TEXT, TextField.class);
 		genoTypingResultTextTF.setVisible(true);
 
 		ComboBox testedPathogenField = addCustomizableEnumField(PathogenTestDto.TESTED_PATHOGEN);
@@ -534,7 +557,8 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 			testResultField.removeItem(PathogenTestResultType.NOT_APPLICABLE);
 		}
-		TextField seroTypeTF = addField(PathogenTestDto.SEROTYPE, TextField.class);
+		seroTypeField = addField(PathogenTestDto.SEROTYPE, ComboBox.class);
+		addField(PathogenTestDto.SEROTYPE_TEXT, TextField.class);
 
 		NullableOptionGroup rifampicinResistantField = addField(PathogenTestDto.RIFAMPICIN_RESISTANT, NullableOptionGroup.class);
 		rifampicinResistantField.setVisible(false);
@@ -552,6 +576,8 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		specieField = addField(PathogenTestDto.SPECIE, ComboBox.class);
 		specieField.setVisible(false);
 
+		addField(PathogenTestDto.SPECIE_TEXT, TextField.class);
+
 		TextField patternProfileField = addField(PathogenTestDto.PATTERN_PROFILE, TextField.class);
 		patternProfileField.setVisible(false);
 
@@ -564,6 +590,13 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		//drugSusceptibilityField.setVisible(false);
 		addToVisibleAllowedFields(drugSusceptibilityField);
 
+		// Malaria and Dengue fields
+		addField(PathogenTestDto.ANTIBODY_TITRE, TextField.class);
+		addField(PathogenTestDto.PERFORMED_BY_REFERENCE_LABORATORY, NullableOptionGroup.class);
+		addField(PathogenTestDto.RETEST_REQUESTED, NullableOptionGroup.class);
+		Field<?> resultDetailsField = addField(PathogenTestDto.RESULT_DETAILS);
+		resultDetailsField.setVisible(false);
+
 		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 			//tuberculosis-pcr test specification
 			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.RIFAMPICIN_RESISTANT, RIFAMPICIN_RESISTANT_VISIBILITY_CONDITIONS, true);
@@ -575,7 +608,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.STRAIN_CALL_STATUS, STRAIN_CALL_STATUS_VISIBILITY_CONDITIONS, true);
 
 			//tuberculosis-spoligotyping test specification
-			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.SPECIE, SPECIE_VISIBILITY_CONDITIONS, true);
+			// FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.SPECIE, SPECIE_VISIBILITY_CONDITIONS, true);
 
 			//tuberculosis-miru-code test specification
 			Map<Object, List<Object>> tuberculosisMiruCodeDependencies = new HashMap<>() {
@@ -589,7 +622,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			//FieldHelper.setRequiredWhen(getFieldGroup(), PathogenTestDto.PATTERN_PROFILE, tuberculosisMiruCodeDependencies);
 		}
 
-		seroTypeTF.setVisible(false);
+		seroTypeField.setVisible(false);
 
 		ComboBox seroTypeMetCB = addField(PathogenTestDto.SEROTYPING_METHOD, ComboBox.class);
 		seroTypeMetCB.setVisible(false);
@@ -1006,51 +1039,6 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			Arrays.asList(PathogenTestType.PCR_RT_PCR, PathogenTestType.DNA_MICROARRAY, PathogenTestType.SEQUENCING),
 			true);
 
-		// Serotype field visibility specification for CSM disease
-		Map<Object, List<Object>> serotypeVisibilityDependencies = new HashMap<Object, List<Object>>() {
-
-			private static final long serialVersionUID = 1967952323596082247L;
-
-			{
-				put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.CSM));
-				put(PathogenTestDto.TEST_RESULT, Arrays.asList(PathogenTestResultType.POSITIVE));
-			}
-		};
-		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(PathogenTestDto.SEROTYPE), serotypeVisibilityDependencies, true);
-		// End of Serotype field visibility specification for CSM disease
-
-		// IPI visibility check with a positive test result, show serotype and serotyping method fields
-		Map<Object, List<Object>> ipiSeroTypeAndMethodVisibilityDependencies = new HashMap<Object, List<Object>>() {
-
-			private static final long serialVersionUID = 1967952323596082247L;
-			{
-				put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
-				put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.SEROGROUPING));
-				put(PathogenTestDto.TEST_RESULT, Arrays.asList(PathogenTestResultType.POSITIVE));
-			}
-		};
-		FieldHelper.setVisibleWhen(
-			getFieldGroup(),
-			Arrays.asList(PathogenTestDto.SEROTYPE, PathogenTestDto.SEROTYPING_METHOD),
-			ipiSeroTypeAndMethodVisibilityDependencies,
-			true);
-		Map<Object, List<Object>> ipiSeroTypeVisibilityDependencies = new HashMap<Object, List<Object>>() {
-
-			private static final long serialVersionUID = 1967952323596082247L;
-			{
-				put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
-				put(
-					PathogenTestDto.TEST_TYPE,
-					Arrays.asList(
-						PathogenTestType.WHOLE_GENOME_SEQUENCING,
-						PathogenTestType.SLIDE_AGGLUTINATION,
-						PathogenTestType.MULTILOCUS_SEQUENCE_TYPING,
-						PathogenTestType.SEROGROUPING));
-				put(PathogenTestDto.TEST_RESULT, Arrays.asList(PathogenTestResultType.POSITIVE));
-			}
-		};
-		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.SEROTYPE, ipiSeroTypeVisibilityDependencies, true);
-
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
 			PathogenTestDto.SERO_TYPING_METHOD_TEXT,
@@ -1081,6 +1069,14 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			PathogenTestDto.SERO_GROUP_SPECIFICATION,
 			SeroGroupSpecification.OTHER,
 			true);
+
+		// antibody titre visibility
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			PathogenTestDto.ANTIBODY_TITRE,
+			PathogenTestDto.TEST_TYPE,
+			PathogenTestType.NEUTRALIZING_ANTIBODIES,
+			true);
 		// End of IMI serogroup specification
 		//Cryptosporidiosis for all countries Genotyping specification
 		Map<Object, List<Object>> cryptoGenoTypingDependencies = new HashMap<>() {
@@ -1091,10 +1087,9 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				put(PathogenTestDto.TEST_RESULT, Arrays.asList(PathogenTestResultType.POSITIVE));
 			}
 		};
-		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.GENOTYPE_RESULT, cryptoGenoTypingDependencies, true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.GENOTYPE, cryptoGenoTypingDependencies, true);
 
-		FieldHelper
-			.setVisibleWhen(getFieldGroup(), PathogenTestDto.GENOTYPE_RESULT_TEXT, PathogenTestDto.GENOTYPE_RESULT, GenoTypeResult.OTHER, true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.GENOTYPE_TEXT, PathogenTestDto.GENOTYPE, GenoType.OTHER, true);
 
 		//disease variant specifications for RSV and Influenza
 		Map<Object, List<Object>> diseaseVariantDependencies = new HashMap<>() {
@@ -1123,6 +1118,20 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 		updateDiseaseVariantField.accept((Disease) diseaseField.getValue());
 
+		// Need to address these visibility issues
+		// @Herold
+		BiConsumer<Disease, PathogenTestType> updateSerotypeField = (Disease disease, PathogenTestType testType) -> {
+			setVisibleClear(
+				SEROTYPE_VISIBILITY_MAP.containsKey(disease) && SEROTYPE_VISIBILITY_MAP.get(disease).contains(testType),
+				PathogenTestDto.SEROTYPE);
+		};
+
+		BiConsumer<Disease, PathogenTestType> updateSpecieField = (Disease disease, PathogenTestType testType) -> {
+			setVisibleClear(
+				SPECIE_VISIBILITY_MAP.containsKey(disease) && SPECIE_VISIBILITY_MAP.get(disease).contains(testType),
+				PathogenTestDto.SPECIE);
+		};
+
 		diseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> {
 			Disease latestDisease = (Disease) valueChangeEvent.getProperty().getValue();
 			// If the disease changed, test type field should be updated with its respective test types
@@ -1137,7 +1146,10 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				Arrays.asList(PathogenTestType.values()),
 				FieldVisibilityCheckers.withDisease(disease),
 				PathogenTestType.class);
-
+			// serotype values should be changed based on the disease
+			//			FieldHelper.updateItems(seroTypeField, Arrays.asList(Serotype.values()), FieldVisibilityCheckers.withDisease(disease), Serotype.class);
+			FieldHelper.updateItems(disease, seroTypeField, Serotype.class);
+			FieldHelper.updateItems(disease, specieField, PathogenSpecie.class);
 			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 				FieldHelper.updateItems(
 					strainCallStatusField,
@@ -1161,7 +1173,13 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		testTypeField.addValueChangeListener(e -> {
 			PathogenTestType testType = (PathogenTestType) e.getProperty().getValue();
 			if (testType != null) {
-				if (testType == PathogenTestType.IGM_SERUM_ANTIBODY || testType == PathogenTestType.IGG_SERUM_ANTIBODY) {
+				// For Dengue IGG serum antibody, fourFoldIncrease fild should be visible.
+				// and its caption will be renamed with the caption as Seroconversion/ 4-fold increase
+				if (Disease.DENGUE == (Disease) diseaseField.getValue() && testType == PathogenTestType.IGG_SERUM_ANTIBODY) {
+					fourFoldIncrease.setCaption(I18nProperties.getCaption(Captions.PathogenTest_fourFoldIncreaseAntibodyTiter_DENGUE));
+					fourFoldIncrease.setVisible(true);
+					fourFoldIncrease.setEnabled(true);
+				} else if (testType == PathogenTestType.IGM_SERUM_ANTIBODY || testType == PathogenTestType.IGG_SERUM_ANTIBODY) {
 					fourFoldIncrease.setVisible(true);
 					fourFoldIncrease.setEnabled(caseSampleCount >= 2);
 				} else {
@@ -1201,7 +1219,18 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 					PathogenTestDto.TUBE_AG_TB2_GT10,
 					PathogenTestDto.TUBE_MITOGENE,
 					PathogenTestDto.TUBE_MITOGENE_GT10);
-				FieldHelper.updateItems((Disease) diseaseField.getValue(), genoTypingCB, GenoTypeResult.class);
+				FieldHelper.updateItems((Disease) diseaseField.getValue(), genoTypingCB, GenoType.class);
+				// verifying the serotype field visibility. reason for this pattern is that, this should display disease+pathogentest combination.
+				updateSerotypeField.accept(disease, testType);
+
+				updateSpecieField.accept(disease, testType);
+				// Result details should be visible for Malaria and test-types with PathogenTestType.THIN_BLOOD_SMEAR, PathogenTestType.Q_PCR
+				setVisibleClear(
+					Disease.MALARIA == disease && Arrays.asList(PathogenTestType.THIN_BLOOD_SMEAR, PathogenTestType.Q_PCR).contains(testType),
+					PathogenTestDto.RESULT_DETAILS);
+				setVisibleClear(
+					testType == PathogenTestType.SEROGROUPING && Disease.INVASIVE_PNEUMOCOCCAL_INFECTION == disease,
+					PathogenTestDto.SEROTYPING_METHOD);
 			} else {
 				setVisibleClear(
 					testTypeField.getValue() != null,
@@ -1263,6 +1292,15 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 		initializeAccessAndAllowedAccesses();
 		initializeVisibilitiesAndAllowedVisibilities();
+
+		// displaying the serotype text field only if the serotype is "other" and it has the visibility
+		if (isVisibleAllowed(PathogenTestDto.SEROTYPE)) {
+			//			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.SEROTYPE, SEROTYPE_VISIBILITY_MAP, true);
+			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.SEROTYPE_TEXT, PathogenTestDto.SEROTYPE, Serotype.OTHER, true);
+		}
+		if (isVisibleAllowed(PathogenTestDto.SPECIE)) {
+			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.SPECIE_TEXT, PathogenTestDto.SPECIE, PathogenSpecie.OTHER, true);
+		}
 
 		// Hide/show prescriber heading after the visibilities have been initialized
 		prescriberHeadingLabel.setVisible(

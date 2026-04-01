@@ -36,7 +36,7 @@ import org.hibernate.annotations.TypeDef;
 
 import com.vladmihalcea.hibernate.type.array.ListArrayType;
 
-import de.symeda.sormas.api.sample.GenoTypeResult;
+import de.symeda.sormas.api.sample.GenoType;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenSpecie;
 import de.symeda.sormas.api.sample.PathogenStrainCallStatus;
@@ -124,7 +124,7 @@ public class TestReport extends AbstractDomainObject {
 	private String prescriberPostalCode;
 	private String prescriberCity;
 	private Country prescriberCountry;
-	private GenoTypeResult genoTypeResult;
+	private GenoType genoType;
 	private RsvSubtype rsvSubtype;
 
 	private PathogenSpecie specie;
@@ -486,12 +486,12 @@ public class TestReport extends AbstractDomainObject {
 	}
 
 	@Enumerated(EnumType.STRING)
-	public GenoTypeResult getGenoTypeResult() {
-		return genoTypeResult;
+	public GenoType getGenoType() {
+		return genoType;
 	}
 
-	public void setGenoTypeResult(GenoTypeResult genoTypeResult) {
-		this.genoTypeResult = genoTypeResult;
+	public void setGenoType(GenoType genoType) {
+		this.genoType = genoType;
 	}
 
 	@Enumerated(EnumType.STRING)

@@ -1113,8 +1113,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				FieldVisibilityCheckers.withDisease(disease)
 					.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
 				UiFieldAccessCheckers.getDefault(true, FacadeProvider.getConfigFacade().getCountryLocale()),
-				new PersonReferenceDto(person.getUuid())))
-			.setCaption(null);
+				new PersonReferenceDto(person.getUuid()))).setCaption(null);
 
 		//diagnosis criteria
 		if ((FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) && disease == Disease.TUBERCULOSIS) {
@@ -1545,7 +1544,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private void getManualCaseDefinition() {
 		// If a disease has caseDefinitionText, it should display; otherwise criteria will display as it is.
 		String caseDefinitionText = FacadeProvider.getDiseaseConfigurationFacade().getCaseDefinitionText(disease);
-		if (caseDefinitionText == null) {
+		if (StringUtils.isBlank(caseDefinitionText)) {
 			return;
 		}
 

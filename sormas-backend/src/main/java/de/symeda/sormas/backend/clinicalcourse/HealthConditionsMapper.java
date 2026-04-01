@@ -66,6 +66,8 @@ public class HealthConditionsMapper {
 		target.setExposedToMosquitoBorneViruses(source.getExposedToMosquitoBorneViruses());
 		target.setVaccinatedAgainstMosquitoBorneViruses(source.getVaccinatedAgainstMosquitoBorneViruses());
 		target.setImmunodeficiencyOtherThanHivText(source.getImmunodeficiencyOtherThanHivText());
+		target.setMalaria(source.getMalaria());
+		target.setMalariaInfectedYear(source.getMalariaInfectedYear());
 		return target;
 	}
 
@@ -107,7 +109,8 @@ public class HealthConditionsMapper {
 		target.setExposedToMosquitoBorneViruses(source.getExposedToMosquitoBorneViruses());
 		target.setVaccinatedAgainstMosquitoBorneViruses(source.getVaccinatedAgainstMosquitoBorneViruses());
 		target.setImmunodeficiencyOtherThanHivText(source.getImmunodeficiencyOtherThanHivText());
-
+		target.setMalaria(source.getMalaria());
+		target.setMalariaInfectedYear(source.getMalariaInfectedYear());
 		return target;
 	}
 }
