@@ -552,11 +552,12 @@ public class ControlTextReadField extends ControlPropertyField<String> {
 		"value",
 		"defaultValue" }, requireAll = false)
 	public static void setValue(ControlTextReadField textField, Set<? extends Enum<?>> enumSet, String defaultValue) {
-		if (enumSet == null || enumSet.isEmpty()) {
-			textField.setValue(textField.getDefaultValue(defaultValue));
-			textField.applyDefaultValueStyle();
-		} else {
-			textField.setValue(enumSet.stream().map(Enum::toString).collect(Collectors.joining(", ")));
-		}
+		setValue(
+			textField,
+			enumSet == null || enumSet.isEmpty() ? null : enumSet.stream().map(Enum::toString).collect(Collectors.joining(", ")),
+			null,
+			null,
+			defaultValue,
+			enumSet);
 	}
 }

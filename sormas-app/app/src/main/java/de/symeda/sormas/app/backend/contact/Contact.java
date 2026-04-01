@@ -28,6 +28,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Transient;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -146,6 +147,7 @@ public class Contact extends PseudonymizableAdo {
 	private String tracingAppDetails;
 	@Column(name = "contactProximities", length = CHARACTER_LIMIT_DEFAULT)
 	private String contactProximitiesJson;
+	@Transient
 	private Set<ContactProximity> contactProximities;
 	@Enumerated(EnumType.STRING)
 	private ContactClassification contactClassification;
@@ -360,6 +362,7 @@ public class Contact extends PseudonymizableAdo {
 
 	public void setContactProximitiesJson(String contactProximitiesJson) {
 		this.contactProximitiesJson = contactProximitiesJson;
+		this.contactProximities = null;
 	}
 
 	public Set<ContactProximity> getContactProximities() {
