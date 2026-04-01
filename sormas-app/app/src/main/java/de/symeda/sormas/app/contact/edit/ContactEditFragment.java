@@ -21,6 +21,7 @@ import static android.view.View.VISIBLE;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
@@ -207,16 +208,16 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 			record.getCommunity());
 		contentBinding.contactDisease.initializeSpinner(diseaseList);
 		contentBinding.contactDisease.addValueChangedListener(e -> {
-			contentBinding.contactContactProximity.setVisibility(e.getValue() == null ? GONE : VISIBLE);
-			contentBinding.contactContactProximity.clear(true);
-			contentBinding.contactContactProximity
-				.setItems(DataUtils.toItems(Arrays.asList(ContactProximity.getValues((Disease) e.getValue(), ConfigProvider.getServerLocale()))));
+			contentBinding.contactContactProximities.setVisibility(e.getValue() == null ? GONE : VISIBLE);
+			contentBinding.contactContactProximities.setValue(null);
+			contentBinding.contactContactProximities
+				.setItems(Arrays.asList(ContactProximity.getValues((Disease) e.getValue(), ConfigProvider.getServerLocale())));
 		});
 
 		contentBinding.contactFirstContactDate.addValueChangedListener(e -> contentBinding.contactLastContactDate.setRequired(e.getValue() != null));
 
-		contentBinding.contactContactProximity
-			.setItems(DataUtils.toItems(Arrays.asList(ContactProximity.getValues(record.getDisease(), ConfigProvider.getServerLocale()))));
+		contentBinding.contactContactProximities
+			.setItems(Arrays.asList(ContactProximity.getValues(record.getDisease(), ConfigProvider.getServerLocale())));
 
 		contentBinding.contactQuarantine.addValueChangedListener(e -> {
 			boolean visible = QuarantineType.HOME.equals(contentBinding.contactQuarantine.getValue())
@@ -338,8 +339,8 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 			}
 		});
 		if (ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
-			contentBinding.contactContactProximity.addValueChangedListener(
-				e -> updateContactCategory(contentBinding, (ContactProximity) contentBinding.contactContactProximity.getValue()));
+			contentBinding.contactContactProximities.addValueChangedListener(
+				e -> updateContactCategory(contentBinding, (Set<ContactProximity>) contentBinding.contactContactProximities.getValue()));
 		} else {
 			contentBinding.contactContactIdentificationSource.setVisibility(GONE);
 			contentBinding.contactContactProximityDetails.setVisibility(GONE);
@@ -370,31 +371,40 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 	/*
 	 * Only used for Systems in Germany. Follows specific rules for german systems.
 	 */
-	private void updateContactCategory(FragmentContactEditLayoutBinding contentBinding, ContactProximity proximity) {
-		if (proximity != null) {
-			switch (proximity) {
-			case FACE_TO_FACE_LONG:
-			case TOUCHED_FLUID:
-			case AEROSOL:
-				contentBinding.contactContactCategory.setValue(ContactCategory.HIGH_RISK);
-				break;
-			case MEDICAL_UNSAFE:
-				contentBinding.contactContactCategory.setValue(ContactCategory.HIGH_RISK_MED);
-				break;
-			case MEDICAL_LIMITED:
-				contentBinding.contactContactCategory.setValue(ContactCategory.MEDIUM_RISK_MED);
-				break;
-			case SAME_ROOM:
-			case FACE_TO_FACE_SHORT:
-			case MEDICAL_SAME_ROOM:
-				contentBinding.contactContactCategory.setValue(ContactCategory.LOW_RISK);
-				break;
-			case MEDICAL_DISTANT:
-			case MEDICAL_SAFE:
-				contentBinding.contactContactCategory.setValue(ContactCategory.NO_RISK);
-				break;
-			default:
+	private void updateContactCategory(FragmentContactEditLayoutBinding contentBinding, Set<ContactProximity> proximities) {
+		if (proximities != null && !proximities.isEmpty()) {
+			ContactCategory highestCategory = null;
+			for (ContactProximity proximity : proximities) {
+				ContactCategory category = getContactCategoryForProximity(proximity);
+				if (category != null && (highestCategory == null || category.ordinal() < highestCategory.ordinal())) {
+					highestCategory = category;
+				}
 			}
+			if (highestCategory != null) {
+				contentBinding.contactContactCategory.setValue(highestCategory);
+			}
+		}
+	}
+
+	private ContactCategory getContactCategoryForProximity(ContactProximity proximity) {
+		switch (proximity) {
+		case FACE_TO_FACE_LONG:
+		case TOUCHED_FLUID:
+		case AEROSOL:
+			return ContactCategory.HIGH_RISK;
+		case MEDICAL_UNSAFE:
+			return ContactCategory.HIGH_RISK_MED;
+		case MEDICAL_LIMITED:
+			return ContactCategory.MEDIUM_RISK_MED;
+		case SAME_ROOM:
+		case FACE_TO_FACE_SHORT:
+		case MEDICAL_SAME_ROOM:
+			return ContactCategory.LOW_RISK;
+		case MEDICAL_DISTANT:
+		case MEDICAL_SAFE:
+			return ContactCategory.NO_RISK;
+		default:
+			return null;
 		}
 	}
 
