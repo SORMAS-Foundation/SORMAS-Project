@@ -39,6 +39,7 @@ import de.symeda.sormas.api.environment.environmentsample.Pathogen;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.sample.Serotype;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.environment.environmentsample.EnvironmentSample;
@@ -117,7 +118,7 @@ public class PathogenTest extends PseudonymizableAdo {
 	private boolean fourFoldIncreaseAntibodyTiter;
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
-	private String serotype;
+	private Serotype serotype;
 
 	@DatabaseField
 	private Float cqValue;
@@ -333,11 +334,11 @@ public class PathogenTest extends PseudonymizableAdo {
 		this.testTypeText = testTypeText;
 	}
 
-	public String getSerotype() {
+	public Serotype getSerotype() {
 		return serotype;
 	}
 
-	public void setSerotype(String serotype) {
+	public void setSerotype(Serotype serotype) {
 		this.serotype = serotype;
 	}
 
