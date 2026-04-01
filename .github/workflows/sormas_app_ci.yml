@@ -109,7 +109,7 @@ jobs:
           api-level: ${{ matrix.api-level }}
           arch: arm64-v8a
           force-avd-creation: false
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          emulator-options: -no-window -noaudio -no-boot-anim -camera-back none
           disable-animations: false
           script: echo "Generated AVD snapshot for caching."
 
@@ -119,7 +119,7 @@ jobs:
           api-level: ${{ matrix.api-level }}
           arch: arm64-v8a
           force-avd-creation: false
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          emulator-options: -no-snapshot-save -no-window -noaudio -no-boot-anim -camera-back none
           disable-animations: true
           working-directory: ./sormas-app
           script: ./gradlew connectedAndroidTest
