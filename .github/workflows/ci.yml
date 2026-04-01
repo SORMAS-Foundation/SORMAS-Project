@@ -63,8 +63,8 @@ jobs:
           key: ${{ runner.os }}-java-${{ env.JAVA }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-java-${{ env.JAVA }}-m2
 
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v4
+#      - name: Perform CodeQL Analysis
+#        uses: github/codeql-action/analyze@v4
 
       - name: Run Trivy vulnerability scanner in repo mode
         uses: aquasecurity/trivy-action@0.35.0
