@@ -1238,7 +1238,7 @@ public class TextViewBindingAdapters {
 		if (enumSet == null || enumSet.isEmpty()) {
 			textField.setText(defaultValue != null ? defaultValue : textField.getContext().getResources().getString(R.string.notAnswered));
 		} else {
-			textField.setText(enumSet.stream().map(Enum::toString).collect(Collectors.joining(", ")));
+			textField.setText(enumSet.stream().map(Enum::toString).sorted().collect(Collectors.joining(", ")));
 		}
 	}
 
