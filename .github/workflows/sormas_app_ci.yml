@@ -41,7 +41,7 @@ jobs:
         # The token is only needed for privileged actions from within the repo, so no need
         # to make it available on 3rd party PRs
         if: ${{ fromJSON(env.PRIVILEGED_RUN) }}
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           token: ${{ secrets.SORMAS_VITAGROUP_CI_TOKEN }}
 
@@ -50,10 +50,10 @@ jobs:
         # The token is only needed for privileged actions from within the repo, so no need
         # to make it available on 3rd party PRs
         if: ${{ !fromJSON(env.PRIVILEGED_RUN) }}
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Set up JDK ${{ env.JAVA }}
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v5
         with:
           java-version: ${{ env.JAVA }}
           distribution: 'zulu'
@@ -62,7 +62,7 @@ jobs:
         # Check if PR results from the repository: if yes, it is safe to cache dependencies.
         # This is to keep us safe from cache poisoning through 3rd party PRs.
         if: ${{ fromJSON(env.PRIVILEGED_RUN) }}
-        uses: actions/cache@v3
+        uses: actions/cache@v5
         with:
           path: ~/.m2
           key: ${{ runner.os }}-java-${{ env.JAVA }}-m2-${{ hashFiles('**/pom.xml') }}
@@ -73,7 +73,7 @@ jobs:
         run: mvn install -pl :sormas-api -am -DskipTests=true
 
       - name: Cache Gradle packages
-        uses: actions/cache@v3
+        uses: actions/cache@v5
         # Check if PR results from the repository: if yes, it is safe to cache dependencies.
         # This is to keep us safe from cache poisoning through 3rd party PRs.
         if: ${{ fromJSON(env.PRIVILEGED_RUN) }}
@@ -93,7 +93,7 @@ jobs:
         # Check if PR results from the repository: if yes, it is safe to cache dependencies.
         # This is to keep us safe from cache poisoning through 3rd party PRs.
         if: ${{ fromJSON(env.PRIVILEGED_RUN) }}
-        uses: actions/cache@v3
+        uses: actions/cache@v5
         id: avd-cache
         with:
           path: |
@@ -122,12 +122,12 @@ jobs:
           script: ./gradlew connectedAndroidTest
 
       - name: mobsfscan
-        uses: MobSF/mobsfscan@0.2.0
+        uses: MobSF/mobsfscan@main
         with:
           args: '. --sarif --output mobsf-results.sarif || true'
 
       - name: Upload mobsfscan report
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: 'mobsf-results.sarif'
           # needed as codeQL also performs an upload, and they clash otherwise
