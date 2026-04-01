@@ -42,10 +42,10 @@ jobs:
         if: ${{ !fromJSON(env.PRIVILEGED_RUN) }}
         uses: actions/checkout@v6
 
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v4
-        with:
-          languages: ${{ env.CODEQL_LANGUAGES }}
+#      - name: Initialize CodeQL
+#        uses: github/codeql-action/init@v4
+#        with:
+#          languages: ${{ env.CODEQL_LANGUAGES }}
 
       - name: Set up JDK ${{ env.JAVA }}
         uses: actions/setup-java@v5
