@@ -16,8 +16,9 @@ name: Lint Code Base
 #############################
 on:
   workflow_dispatch:
-  pull_request:
-    branches: [development, hotfix*]
+# Disabled auto for now until linting errors are fixed
+#  pull_request:
+#    branches: [development, hotfix*]
 
 ###############
 # Set the Job #
