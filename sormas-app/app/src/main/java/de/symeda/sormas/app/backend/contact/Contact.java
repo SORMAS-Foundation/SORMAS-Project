@@ -375,7 +375,7 @@ public class Contact extends PseudonymizableAdo {
 		if (contactProximities == null) {
 			contactProximities = new HashSet<>();
 		}
-		return contactProximities;
+		return Collections.unmodifiableSet(contactProximities);
 	}
 
 	public void setContactProximities(Set<ContactProximity> contactProximities) {
@@ -383,9 +383,9 @@ public class Contact extends PseudonymizableAdo {
 			this.contactProximities = null;
 			this.contactProximitiesJson = null;
 		} else {
-			this.contactProximities = contactProximities;
+			this.contactProximities = new HashSet<>(contactProximities);
 			Gson gson = new Gson();
-			contactProximitiesJson = gson.toJson(contactProximities.stream().map(ContactProximity::name).collect(Collectors.toSet()));
+			contactProximitiesJson = gson.toJson(contactProximities.stream().map(ContactProximity::name).sorted().collect(Collectors.toSet()));
 		}
 	}
 

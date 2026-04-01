@@ -375,6 +375,9 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 		ContactCategory highestCategory = null;
 		if (proximities != null) {
 			for (ContactProximity proximity : proximities) {
+				if (proximity == null) {
+					continue;
+				}
 				ContactCategory category = getContactCategoryForProximity(proximity);
 				if (category != null && (highestCategory == null || category.ordinal() < highestCategory.ordinal())) {
 					highestCategory = category;
@@ -385,6 +388,9 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 	}
 
 	private ContactCategory getContactCategoryForProximity(ContactProximity proximity) {
+		if (proximity == null) {
+			return null;
+		}
 		switch (proximity) {
 		case FACE_TO_FACE_LONG:
 		case TOUCHED_FLUID:
