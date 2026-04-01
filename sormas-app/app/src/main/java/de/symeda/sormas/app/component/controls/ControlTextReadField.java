@@ -19,6 +19,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -543,6 +544,19 @@ public class ControlTextReadField extends ControlPropertyField<String> {
 			textField.setValue(defaultValue);
 		} else {
 			textField.setValue(pathogen.getCaption() + (StringUtils.isNotBlank(pathogenDetails) ? " (" + pathogenDetails + ")" : ""));
+		}
+	}
+
+	// Set of Enums
+	@BindingAdapter(value = {
+		"value",
+		"defaultValue" }, requireAll = false)
+	public static void setValue(ControlTextReadField textField, Set<? extends Enum<?>> enumSet, String defaultValue) {
+		if (enumSet == null || enumSet.isEmpty()) {
+			textField.setValue(textField.getDefaultValue(defaultValue));
+			textField.applyDefaultValueStyle();
+		} else {
+			textField.setValue(enumSet.stream().map(Enum::toString).collect(Collectors.joining(", ")));
 		}
 	}
 }

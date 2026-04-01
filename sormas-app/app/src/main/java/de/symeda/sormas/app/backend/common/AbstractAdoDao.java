@@ -50,6 +50,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.environment.Environment;
 import de.symeda.sormas.app.backend.environment.environmentsample.EnvironmentSample;
 import de.symeda.sormas.app.backend.feature.FeatureConfiguration;
@@ -684,7 +685,8 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 					|| Environment.WATER_USE.equals(property.getName())
 					|| EnvironmentSample.REQUESTED_PATHOGEN_TESTS.equals(property.getName())
 					|| EnvironmentSample.WEATHER_CONDITIONS.equals(property.getName())
-					|| User.LIMITED_DISEASES.equals(property.getName()))
+					|| User.LIMITED_DISEASES.equals(property.getName())
+					|| Contact.CONTACT_PROXIMITIES.equals(property.getName()))
 					continue;
 
 				// we now have to write the value from source into target and base
