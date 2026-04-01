@@ -3222,9 +3222,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 361:
 				currentVersion = 361;
-				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN contactProximities varchar(512);");
+				if (columnDoesNotExist("contacts", "contactProximities")) {
+					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN contactProximities varchar(512);");
+				}
 				getDao(Contact.class).executeRaw(
-					"UPDATE contacts SET contactProximities = '[\"' || contactProximity || '\"]' WHERE contactProximity IS NOT NULL AND contactProximity != '';");
+					"UPDATE contacts SET contactProximities = '[\"' || contactProximity || '\"]' "
+						+ "WHERE (contactProximities IS NULL OR contactProximities = '') "
+						+ "AND contactProximity IS NOT NULL AND contactProximity != '';");
 
 				// ATTENTION: break should only be done after last version
 				break;

@@ -159,18 +159,16 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
 	 * Only used for Systems in Germany. Follows specific rules for german systems.
 	 */
 	private void updateContactCategory(FragmentContactNewLayoutBinding contentBinding, Set<ContactProximity> proximities) {
-		if (proximities != null && !proximities.isEmpty()) {
-			ContactCategory highestCategory = null;
+		ContactCategory highestCategory = null;
+		if (proximities != null) {
 			for (ContactProximity proximity : proximities) {
 				ContactCategory category = getContactCategoryForProximity(proximity);
 				if (category != null && (highestCategory == null || category.ordinal() < highestCategory.ordinal())) {
 					highestCategory = category;
 				}
 			}
-			if (highestCategory != null) {
-				contentBinding.contactContactCategory.setValue(highestCategory);
-			}
 		}
+		contentBinding.contactContactCategory.setValue(highestCategory);
 	}
 
 	private ContactCategory getContactCategoryForProximity(ContactProximity proximity) {
