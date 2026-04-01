@@ -15,6 +15,12 @@ on:
   pull_request:
     branches: [ development, hotfix* ]
   workflow_dispatch: # run it manually from the GH Actions web console
+    inputs:
+      skip_tests:
+        description: 'Skip Maven tests during build'
+        required: false
+        default: true
+        type: boolean
   schedule:
     - cron: '35 1 * * 0'
 jobs:
@@ -62,6 +68,15 @@ jobs:
           key: ${{ runner.os }}-java-${{ env.JAVA }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-java-${{ env.JAVA }}-m2
 
+      - name: Build with Maven
+        working-directory: ./sormas-base
+        run: |
+          MAVEN_OPTS="-B -ntp clean install"
+          if [ "${{ inputs.skip_tests }}" = "true" ]; then
+            MAVEN_OPTS="$MAVEN_OPTS -DskipTests"
+          fi
+          mvn $MAVEN_OPTS
+
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v4
 
@@ -84,8 +99,7 @@ jobs:
       - name: Commit openAPI spec to development
         # Privileged action needing a secret token. Since this only runs on development in our own repo
         # the token will be available through a privileged checkout.
-        if: github.event_name == 'push' && github.ref == 'refs/heads/development' 
-         && hashFiles('sormas-rest/target/swagger.yaml') != hashFiles('sormas-rest/swagger.yaml')
+        if: github.event_name == 'push' && github.ref == 'refs/heads/development' && hashFiles('sormas-rest/target/swagger.yaml') != hashFiles('sormas-rest/swagger.yaml')
         # https://stackoverflow.com/questions/59604922/authorize-bash-to-access-github-protected-branch
         run: |
             git config --global user.name "sormas-robot"
