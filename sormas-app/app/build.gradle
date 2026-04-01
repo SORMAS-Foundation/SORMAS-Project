@@ -155,7 +155,7 @@ dependencies {
 apply plugin: "jacoco"
 
 jacoco {
-    toolVersion = "0.8.5"
+    toolVersion = "0.8.14"
     reportsDirectory = file("$buildDir/reports")
 }
 task jacocoUnitTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) {
