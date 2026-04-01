@@ -2,16 +2,9 @@
 name: OpenAPI Canary
 
 on:
-  workflow_dispatch:
-    inputs:
-      reason:
-        description: 'Reason for manual run'
-        required: false
-        default: 'Testing on specific branch'
-# Disabled until fixing the issue with the diff tool
-#  schedule:
+  schedule:
     # 2.30 UTC
-#    - cron: '30 2 * * *'
+    - cron: '30 2 * * *'
 
 jobs:
   canary:
@@ -31,9 +24,9 @@ jobs:
           ref: master
           path: base
 
-      # --fail-on-incompatible is also possible
+      # --fail-on-changed is also possible (fails on any change, including backward-compatible)
       - name: Run OpenAPI Diff for external journal API
         run: |
-          java -jar /app/openapi-diff.jar --fail-on-changed base/sormas-rest/swagger.yaml \
+          java -jar /app/openapi-diff.jar --fail-on-incompatible base/sormas-rest/swagger.yaml \
           head/sormas-rest/swagger.yaml
           
