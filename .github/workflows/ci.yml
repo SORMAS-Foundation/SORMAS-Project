@@ -7,9 +7,8 @@ name: Java CI with Maven
 
 env:
   JAVA: 17
-  PRIVILEGED_RUN: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/development') 
-   || github.event.pull_request.head.repo.full_name == github.repository }}
-  CODEQL_LANGUAGES: 'java' # FIXME(@JonasCir) add 'javascript'
+  PRIVILEGED_RUN: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/development') || github.event.pull_request.head.repo.full_name == github.repository }}
+  CODEQL_LANGUAGES: 'java'
 on:
   push:
     branches: [ development, master, hotfix* ]
@@ -42,10 +41,10 @@ jobs:
         if: ${{ !fromJSON(env.PRIVILEGED_RUN) }}
         uses: actions/checkout@v6
 
-#      - name: Initialize CodeQL
-#        uses: github/codeql-action/init@v4
-#        with:
-#          languages: ${{ env.CODEQL_LANGUAGES }}
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: ${{ env.CODEQL_LANGUAGES }}
 
       - name: Set up JDK ${{ env.JAVA }}
         uses: actions/setup-java@v5
@@ -63,8 +62,8 @@ jobs:
           key: ${{ runner.os }}-java-${{ env.JAVA }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-java-${{ env.JAVA }}-m2
 
-#      - name: Perform CodeQL Analysis
-#        uses: github/codeql-action/analyze@v4
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v4
 
       - name: Run Trivy vulnerability scanner in repo mode
         uses: aquasecurity/trivy-action@0.35.0
