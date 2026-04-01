@@ -12,12 +12,6 @@ env:
    || github.event.pull_request.head.repo.full_name == github.repository }}
 
 on:
-  workflow_dispatch:
-    inputs:
-      reason:
-        description: 'Reason for manual run'
-        required: false
-        default: 'Testing on specific branch'
   push:
     branches: [ development, master, hotfix* ]
     paths:
