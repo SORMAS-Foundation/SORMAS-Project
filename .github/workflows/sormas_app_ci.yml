@@ -11,7 +11,6 @@ env:
   PRIVILEGED_RUN: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/development') || github.event.pull_request.head.repo.full_name == github.repository }}
 
 on:
-  workflow_dispatch:
   push:
     branches: [ development, master, hotfix* ]
     paths:
@@ -26,7 +25,7 @@ on:
 jobs:
   test:
     name: android app test
-    runs-on: macos-latest
+    runs-on: macos-15-intel
     strategy:
       matrix:
         # Even though we are using macos machines which should be faster thanks to hardware accelerations
@@ -34,7 +33,6 @@ jobs:
         # The memory footprint of newer android versions (>= 29) and the limitations of the GitHub provided machines
         # is usually resulting in timeout when starting the emulator
         api-level: [26, 27, 28]
-        arch: [arm64-v8a]
 
     steps:
       - name: Checkout repository (with token)
@@ -100,16 +98,15 @@ jobs:
           path: |
             ~/.android/avd/*
             ~/.android/adb*
-          key: avd-${{ matrix.api-level }}-arm64
+          key: avd-${{ matrix.api-level }}
       
       - name: Create AVD and generate snapshot for caching
         if: steps.avd-cache.outputs.cache-hit != 'true'
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
-          arch: arm64-v8a
           force-avd-creation: false
-          emulator-options: -no-window -noaudio -no-boot-anim -camera-back none
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
           script: echo "Generated AVD snapshot for caching."
 
@@ -117,9 +114,8 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
-          arch: arm64-v8a
           force-avd-creation: false
-          emulator-options: -no-snapshot-save -no-window -noaudio -no-boot-anim -camera-back none
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
           working-directory: ./sormas-app
           script: ./gradlew connectedAndroidTest
