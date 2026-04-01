@@ -19,7 +19,7 @@ on:
       skip_tests:
         description: 'Skip Maven tests during build'
         required: false
-        default: true
+        default: false
         type: boolean
   schedule:
     - cron: '35 1 * * 0'
