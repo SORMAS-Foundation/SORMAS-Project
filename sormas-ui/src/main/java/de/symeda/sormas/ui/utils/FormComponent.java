@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.utils;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -253,6 +254,7 @@ public abstract class FormComponent<T> extends VerticalLayout {
 	protected static <E extends Enum<E>> void updateComboBoxByDisease(ComboBox<E> comboBox, Class<E> enumClass, Disease disease) {
 		E currentValue = comboBox.getValue();
 		List<E> filtered = Diseases.DiseasesConfiguration.getVisibleValues(enumClass, disease);
+		filtered.sort(Comparator.comparing(Object::toString));
 		comboBox.setItems(filtered);
 		if (currentValue != null && filtered.contains(currentValue)) {
 			comboBox.setValue(currentValue);
@@ -282,7 +284,7 @@ public abstract class FormComponent<T> extends VerticalLayout {
 			} catch (NoSuchFieldException e) {
 				return true;
 			}
-		}).collect(Collectors.toList());
+		}).sorted(Comparator.comparing(Object::toString)).collect(Collectors.toList());
 		comboBox.setItems(filtered);
 		if (currentValue != null && filtered.contains(currentValue)) {
 			comboBox.setValue(currentValue);
