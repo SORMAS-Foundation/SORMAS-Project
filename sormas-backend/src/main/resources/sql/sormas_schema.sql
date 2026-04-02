@@ -15509,4 +15509,20 @@ ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS malaria varchar(25
 ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS malariainfectedyear integer ;
 
 INSERT INTO schema_version (version_number, comment) VALUES (615, '#13801, #13814 - Malaria and Dengue sampel changes');
+
+-- Rename testreport genotyperesult to genotype (matching pathogentest rename done in schema version 615)
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'testreport' AND column_name = 'genotyperesult') THEN
+        ALTER TABLE testreport RENAME COLUMN genotyperesult TO genotype;
+    END IF;
+END $$;
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'testreport_history' AND column_name = 'genotyperesult') THEN
+        ALTER TABLE testreport_history RENAME COLUMN genotyperesult TO genotype;
+    END IF;
+END $$;
+
+INSERT INTO schema_version (version_number, comment) VALUES (616, '#13858 - Rename testreport genotyperesult to genotype');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
