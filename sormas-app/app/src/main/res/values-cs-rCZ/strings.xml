@@ -121,9 +121,9 @@
     <string name="action_save_pathogen_test">Uložit test patogenu</string>
     <string name="action_edit_pathogen_test">Upravit test patogenu</string>
     <string name="action_submit_case_numbers">Odeslat čísla případů</string>
-    <string name="action_kex_lbds">LBDS Key Exchange</string>
-    <string name="action_sync_person_lbds">LBDS Sync Persons</string>
-    <string name="action_sync_case_lbds">LBDS Sync Cases</string>
+    <string name="action_kex_lbds">Výměna klíčů LBDS</string>
+    <string name="action_sync_person_lbds">LBDS synchronizace osob</string>
+    <string name="action_sync_case_lbds">LBDS synchronizační bedny</string>
     <string name="action_save_vaccination">Uložit vakcínu</string>
     <string name="action_edit_vaccination">Upravit vakcínu</string>
     <string name="caption_address">Adresa</string>
@@ -172,8 +172,8 @@
     <string name="caption_email">E-mail:</string>
     <string name="caption_environment_information">Informace o prostředí</string>
     <string name="caption_environment_samples">Vzorky prostředí</string>
-    <string name="caption_environment_tasks">Environment Tasks</string>
-    <string name="caption_environment_sample_information">Environment Sample Information</string>
+    <string name="caption_environment_tasks">Úkoly prostředí</string>
+    <string name="caption_environment_sample_information">Ukázkové informace prostředí</string>
     <string name="caption_event_description">Popis</string>
     <string name="caption_event_information">Informace o události</string>
     <string name="caption_event_location">Poloha</string>
@@ -699,6 +699,6 @@
     <string name="value_vaccine_name_unknown">Očkovací látka N/A</string>
     <string name="value_vaccine_manufacturer_unknown">Výrobce N/A</string>
     <string name="value_environment_name_unknown">Název prostředí není k dispozici</string>
-    <string name="rapidEntry">Use rapid event participant entry</string>
-    <string name="value_environment_media_unknown">Environment Media N/A</string>
+    <string name="rapidEntry">Použít rychlý vstup účastníka události</string>
+    <string name="value_environment_media_unknown">Životní prostředí N/A</string>
 </resources>
