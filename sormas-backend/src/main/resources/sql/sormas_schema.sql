@@ -15308,7 +15308,6 @@ ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS coldskin character varying(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS encephalitis character varying(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS guillainbarresyndrome character varying(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS confusion character varying(255);
-ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS convulsions character varying(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS persistentvomiting character varying(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS restlessness character varying(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS acutebleeding character varying(255);
@@ -15337,7 +15336,6 @@ ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS coldskin character varying
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS encephalitis character varying(255);
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS guillainbarresyndrome character varying(255);
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS confusion character varying(255);
-ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS convulsions character varying(255);
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS persistentvomiting character varying(255);
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS restlessness character varying(255);
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS acutebleeding character varying(255);

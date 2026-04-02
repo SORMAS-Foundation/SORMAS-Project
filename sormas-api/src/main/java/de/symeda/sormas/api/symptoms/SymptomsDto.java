@@ -352,7 +352,6 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String GUILLAIN_BARRE_SYNDROME = "guillainBarreSyndrome";
 	public static final String LETHARGY = "lethargy";
 	public static final String CONFUSION = "confusion";
-	public static final String CONVULSIONS = "convulsions";
 	public static final String PERSISTENT_VOMITING = "persistentVomiting";
 	public static final String RESTLESSNESS = "restlessness";
 	public static final String ACUTE_BLEEDING = "acuteBleeding";
@@ -483,9 +482,12 @@ public class SymptomsDto extends PseudonymizableDto {
 		POLIO,
 		YELLOW_FEVER,
 		ANTHRAX,
+		DENGUE,
 		UNSPECIFIED_VHF,
 		UNDEFINED,
 		OTHER })
+	@Complication(value = {
+		DENGUE })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
 	private SymptomState bloodInStool;
@@ -2197,6 +2199,8 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Diseases({
 		ANTHRAX,
 		DENGUE })
+	@Complication({
+		DENGUE })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
 	private SymptomState convulsion;
@@ -2921,12 +2925,6 @@ public class SymptomsDto extends PseudonymizableDto {
 		DENGUE })
 
 	private SymptomState confusion;
-
-	@Diseases({
-		DENGUE })
-	@Complication({
-		DENGUE })
-	private SymptomState convulsions;
 
 	@Diseases({
 		DENGUE })
@@ -5040,14 +5038,6 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	public void setConfusion(SymptomState confusion) {
 		this.confusion = confusion;
-	}
-
-	public SymptomState getConvulsions() {
-		return convulsions;
-	}
-
-	public void setConvulsions(SymptomState convulsions) {
-		this.convulsions = convulsions;
 	}
 
 	public SymptomState getPersistentVomiting() {

@@ -1113,7 +1113,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				FieldVisibilityCheckers.withDisease(disease)
 					.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
 				UiFieldAccessCheckers.getDefault(true, FacadeProvider.getConfigFacade().getCountryLocale()),
-				new PersonReferenceDto(person.getUuid()))).setCaption(null);
+				new PersonReferenceDto(person.getUuid())))
+			.setCaption(null);
 
 		//diagnosis criteria
 		if ((FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) && disease == Disease.TUBERCULOSIS) {
@@ -1562,7 +1563,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			});
 			popupWindow.setWidth(860, Unit.PIXELS);
 			popupWindow.setHeight(80, Unit.PERCENTAGE);
-			popupWindow.setCaption(I18nProperties.getString(Strings.classificationRulesFor) + " " + disease);
+			popupWindow.setCaption(I18nProperties.getString(Strings.caseDefinitionForDisease) + " " + disease);
 		}, ValoTheme.BUTTON_PRIMARY, FORCE_CAPTION);
 
 		getContent().addComponent(caseDefinitionButton, CLASSIFICATION_RULES_LOC);
