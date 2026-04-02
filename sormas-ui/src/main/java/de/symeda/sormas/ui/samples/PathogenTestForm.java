@@ -44,6 +44,7 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.samples.components.AdditionalTestInfoComponent;
 import de.symeda.sormas.ui.samples.components.DeletionComponent;
 import de.symeda.sormas.ui.samples.components.DiseaseSelectionComponent;
 import de.symeda.sormas.ui.samples.components.DiseaseVariantComponent;
@@ -204,6 +205,10 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		activeSection.initialize(getFieldGroup(), eventBus, formConfig, disease);
 		activeSection.setVisibilityCallback(visible -> diseaseSectionSlot.setVisible(visible));
 		diseaseSectionSlot.addComponent(activeSection);
+
+		AdditionalTestInfoComponent additionalTestInfoComponent = new AdditionalTestInfoComponent();
+		formComponents.add(additionalTestInfoComponent);
+		container.addComponent(additionalTestInfoComponent);
 
 		ResultTextComponent resultTextComponent = new ResultTextComponent();
 		formComponents.add(resultTextComponent);

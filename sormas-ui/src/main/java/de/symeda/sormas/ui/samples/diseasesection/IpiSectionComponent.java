@@ -61,8 +61,7 @@ public class IpiSectionComponent extends AbstractDiseaseSectionComponent {
 
 	@Override
 	protected void buildLayout() {
-
-		serotypeField = createTextField(PathogenTestDto.SEROTYPE);
+		serotypeField = createTextField(PathogenTestDto.SEROTYPE_TEXT);
 		serotypeField.setVisible(false);
 
 		serotypingMethodField = createComboBox(PathogenTestDto.SEROTYPING_METHOD);
@@ -76,7 +75,7 @@ public class IpiSectionComponent extends AbstractDiseaseSectionComponent {
 		serotypingMethodTextField.setVisible(false);
 		addRow(serotypingMethodTextField);
 
-		binder.forField(serotypeField).bind(PathogenTestDto::getSerotype, PathogenTestDto::setSerotype);
+		binder.forField(serotypeField).bind(PathogenTestDto::getSerotypeText, PathogenTestDto::setSerotypeText);
 		binder.forField(serotypingMethodField).bind(PathogenTestDto::getSeroTypingMethod, PathogenTestDto::setSeroTypingMethod);
 		binder.forField(serotypingMethodTextField).bind(PathogenTestDto::getSeroTypingMethodText, PathogenTestDto::setSeroTypingMethodText);
 
@@ -151,7 +150,7 @@ public class IpiSectionComponent extends AbstractDiseaseSectionComponent {
 		if (dto == null) {
 			return;
 		}
-		dto.setSerotype(null);
+		dto.setSerotypeText(null);
 		dto.setSeroTypingMethod(null);
 		dto.setSeroTypingMethodText(null);
 	}

@@ -33,11 +33,11 @@ public class CsmSectionComponent extends AbstractDiseaseSectionComponent {
 
 	@Override
 	protected void buildLayout() {
-		serotypeField = createTextField(PathogenTestDto.SEROTYPE);
+		serotypeField = createTextField(PathogenTestDto.SEROTYPE_TEXT);
 		serotypeField.setVisible(false);
 		addRow(serotypeField, createSpacer());
 
-		binder.forField(serotypeField).bind(PathogenTestDto::getSerotype, PathogenTestDto::setSerotype);
+		binder.forField(serotypeField).bind(PathogenTestDto::getSerotypeText, PathogenTestDto::setSerotypeText);
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class CsmSectionComponent extends AbstractDiseaseSectionComponent {
 		if (dto == null) {
 			return;
 		}
-		dto.setSerotype(null);
+		dto.setSerotypeText(null);
 	}
 
 	private void updateVisibility() {

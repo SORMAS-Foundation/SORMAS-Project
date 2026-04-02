@@ -95,9 +95,9 @@ public class TuberculosisSectionComponent extends AbstractDiseaseSectionComponen
 
 		// Specie
 		specie = createComboBox(PathogenTestDto.SPECIE);
-		specie.setItems(PathogenSpecie.values());
 		specie.setItemCaptionGenerator(PathogenSpecie::toString);
 		specie.setVisible(false);
+		updateComboBoxByDiseaseAndTestType(specie, PathogenSpecie.class, disease, currentTestType);
 		addRow(specie);
 
 		// Pattern profile
@@ -195,6 +195,7 @@ public class TuberculosisSectionComponent extends AbstractDiseaseSectionComponen
 				updateFieldVisibility();
 			}
 
+			updateComboBoxByDiseaseAndTestType(specie, PathogenSpecie.class, disease, currentTestType);
 			updateDrugSusceptibility(currentTestType);
 			setTubeFieldsVisible(currentTestType);
 

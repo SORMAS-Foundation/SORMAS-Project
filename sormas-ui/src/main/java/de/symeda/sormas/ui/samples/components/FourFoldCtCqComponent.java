@@ -20,6 +20,8 @@ package de.symeda.sormas.ui.samples.components;
 import com.vaadin.ui.CheckBox;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -82,13 +84,8 @@ public class FourFoldCtCqComponent extends FormComponent<PathogenTestDto> {
 			currentTestType = testType;
 
 			if (testType != null) {
-				if (testType == PathogenTestType.IGM_SERUM_ANTIBODY || testType == PathogenTestType.IGG_SERUM_ANTIBODY) {
-					fourFoldIncrease.setVisible(true);
-					fourFoldIncrease.setEnabled(caseSampleCount >= 2);
-				} else {
-					fourFoldIncrease.setVisible(false);
-					fourFoldIncrease.setEnabled(false);
-				}
+				updateFourFoldIncrease(testType);
+
 				ctCqValueComponent.updateCtVisibility(currentDisease, testType);
 			} else {
 				ctCqValueComponent.updateCtVisibility(currentDisease, null);
@@ -108,10 +105,31 @@ public class FourFoldCtCqComponent extends FormComponent<PathogenTestDto> {
 		// Listen for disease changes
 		track(eventBus.on(DiseaseChangedEvent.class, event -> {
 			currentDisease = event.getDisease();
+			if (currentTestType != null) {
+				updateFourFoldIncrease(currentTestType);
+			}
 			ctCqValueComponent.updateCtVisibility(currentDisease, currentTestType);
 			ctCqValueComponent.updateCqVisibility(currentDisease, currentTestType, currentTestResult);
 			syncSelfVisibility();
 		}));
+	}
+
+	private void updateFourFoldIncrease(PathogenTestType testType) {
+		if (currentDisease == Disease.DENGUE && testType == PathogenTestType.IGG_SERUM_ANTIBODY) {
+			fourFoldIncrease.setCaption(I18nProperties.getCaption(Captions.PathogenTest_fourFoldIncreaseAntibodyTiter_DENGUE));
+			fourFoldIncrease.setVisible(true);
+			fourFoldIncrease.setEnabled(true);
+		} else if (testType == PathogenTestType.IGM_SERUM_ANTIBODY || testType == PathogenTestType.IGG_SERUM_ANTIBODY) {
+			fourFoldIncrease.setCaption(
+				I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER));
+			fourFoldIncrease.setVisible(true);
+			fourFoldIncrease.setEnabled(caseSampleCount >= 2);
+		} else {
+			fourFoldIncrease.setCaption(
+				I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER));
+			fourFoldIncrease.setVisible(false);
+			fourFoldIncrease.setEnabled(false);
+		}
 	}
 
 	private void syncSelfVisibility() {

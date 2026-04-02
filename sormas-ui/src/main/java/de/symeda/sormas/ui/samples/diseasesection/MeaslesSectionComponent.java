@@ -21,8 +21,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.sample.GenoTypeResult;
+import de.symeda.sormas.api.sample.GenoType;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -32,46 +31,46 @@ import de.symeda.sormas.ui.samples.events.TestTypeChangedEvent;
 
 public class MeaslesSectionComponent extends AbstractDiseaseSectionComponent {
 
-	private ComboBox<GenoTypeResult> genoTypeResultField;
-	private TextField genoTypeResultTextField;
-	private Label genoTypeResultTextSpacer;
+	private ComboBox<GenoType> genoTypeField;
+	private TextField genoTypeTextField;
+	private Label genoTypeTextSpacer;
 
 	private PathogenTestType currentTestType;
 	private PathogenTestResultType currentResult;
 
 	@Override
 	protected void buildLayout() {
-		genoTypeResultField = createComboBox(PathogenTestDto.GENOTYPE_RESULT);
-		genoTypeResultField.setItemCaptionGenerator(GenoTypeResult::toString);
-		genoTypeResultField.setVisible(false);
-		updateGenoTypeItems(disease);
+		genoTypeField = createComboBox(PathogenTestDto.GENOTYPE);
+		genoTypeField.setItemCaptionGenerator(GenoType::toString);
+		genoTypeField.setVisible(false);
+		updateGenoTypeItems();
 
-		genoTypeResultTextField = createTextField(PathogenTestDto.GENOTYPE_RESULT_TEXT);
-		genoTypeResultTextField.setVisible(false);
+		genoTypeTextField = createTextField(PathogenTestDto.GENOTYPE_TEXT);
+		genoTypeTextField.setVisible(false);
 
-		genoTypeResultTextSpacer = createSpacer();
-		addToggleRow(genoTypeResultField, genoTypeResultTextField, genoTypeResultTextSpacer);
+		genoTypeTextSpacer = createSpacer();
+		addToggleRow(genoTypeField, genoTypeTextField, genoTypeTextSpacer);
 
-		binder.forField(genoTypeResultField).bind(PathogenTestDto::getGenoTypeResult, PathogenTestDto::setGenoTypeResult);
-		binder.forField(genoTypeResultTextField).bind(PathogenTestDto::getGenoTypeResultText, PathogenTestDto::setGenoTypeResultText);
+		binder.forField(genoTypeField).bind(PathogenTestDto::getGenoType, PathogenTestDto::setGenoType);
+		binder.forField(genoTypeTextField).bind(PathogenTestDto::getGenoTypeText, PathogenTestDto::setGenoTypeText);
 	}
 
 	@Override
 	protected void wireVisibility() {
 		// genoTypeResultText visible only when OTHER selected
-		track(genoTypeResultField.addValueChangeListener(e -> {
-			boolean showText = e.getValue() == GenoTypeResult.OTHER && genoTypeResultField.isVisible();
-			genoTypeResultTextField.setVisible(showText);
-			genoTypeResultTextSpacer.setVisible(!showText);
+		track(genoTypeField.addValueChangeListener(e -> {
+			boolean showText = e.getValue() == GenoType.OTHER && genoTypeField.isVisible();
+			genoTypeTextField.setVisible(showText);
+			genoTypeTextSpacer.setVisible(!showText);
 			if (!showText) {
-				genoTypeResultTextField.clear();
+				genoTypeTextField.clear();
 			}
 		}));
 
 		track(eventBus.on(TestTypeChangedEvent.class, event -> {
 			currentTestType = event.getTestType();
 			updateVisibility();
-			updateGenoTypeItems(disease);
+			updateGenoTypeItems();
 
 			// Auto-set test result
 			if (currentTestType == PathogenTestType.GENOTYPING) {
@@ -90,11 +89,11 @@ public class MeaslesSectionComponent extends AbstractDiseaseSectionComponent {
 
 	private void updateVisibility() {
 		boolean visible = currentTestType == PathogenTestType.GENOTYPING && currentResult == PathogenTestResultType.POSITIVE;
-		genoTypeResultField.setVisible(visible);
+		genoTypeField.setVisible(visible);
 		if (!visible) {
-			genoTypeResultField.clear();
-			genoTypeResultTextField.setVisible(false);
-			genoTypeResultTextField.clear();
+			genoTypeField.clear();
+			genoTypeTextField.setVisible(false);
+			genoTypeTextField.clear();
 		}
 		updateRowAndSelfVisibility();
 	}
@@ -105,12 +104,12 @@ public class MeaslesSectionComponent extends AbstractDiseaseSectionComponent {
 		if (dto == null) {
 			return;
 		}
-		dto.setGenoTypeResult(null);
-		dto.setGenoTypeResultText(null);
+		dto.setGenoType(null);
+		dto.setGenoTypeText(null);
 	}
 
-	private void updateGenoTypeItems(Disease disease) {
-		updateComboBoxByDisease(genoTypeResultField, GenoTypeResult.class, disease);
+	private void updateGenoTypeItems() {
+		updateComboBoxByDisease(genoTypeField, GenoType.class, disease);
 	}
 
 }

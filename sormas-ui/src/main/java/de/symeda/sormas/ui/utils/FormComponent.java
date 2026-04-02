@@ -26,6 +26,8 @@ import com.vaadin.v7.data.Validator.InvalidValueException;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.utils.ApplicableToPathogenTests;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -251,6 +253,36 @@ public abstract class FormComponent<T> extends VerticalLayout {
 	protected static <E extends Enum<E>> void updateComboBoxByDisease(ComboBox<E> comboBox, Class<E> enumClass, Disease disease) {
 		E currentValue = comboBox.getValue();
 		List<E> filtered = Diseases.DiseasesConfiguration.getVisibleValues(enumClass, disease);
+		comboBox.setItems(filtered);
+		if (currentValue != null && filtered.contains(currentValue)) {
+			comboBox.setValue(currentValue);
+		}
+	}
+
+	/**
+	 * Updates a ComboBox's items to only those enum values visible for the given disease
+	 * AND applicable to the given pathogen test type (based on {@link Diseases} and
+	 * {@link ApplicableToPathogenTests} annotations). Preserves the current selection if still valid.
+	 */
+	protected static <E extends Enum<E>> void updateComboBoxByDiseaseAndTestType(
+		ComboBox<E> comboBox,
+		Class<E> enumClass,
+		Disease disease,
+		PathogenTestType testType) {
+
+		E currentValue = comboBox.getValue();
+		List<E> filtered = Diseases.DiseasesConfiguration.getVisibleValues(enumClass, disease).stream().filter(value -> {
+			if (testType == null) {
+				return true;
+			}
+			try {
+				java.lang.reflect.Field enumField = enumClass.getField(value.name());
+				ApplicableToPathogenTests ann = enumField.getAnnotation(ApplicableToPathogenTests.class);
+				return ann == null || java.util.Arrays.asList(ann.value()).contains(testType);
+			} catch (NoSuchFieldException e) {
+				return true;
+			}
+		}).collect(Collectors.toList());
 		comboBox.setItems(filtered);
 		if (currentValue != null && filtered.contains(currentValue)) {
 			comboBox.setValue(currentValue);

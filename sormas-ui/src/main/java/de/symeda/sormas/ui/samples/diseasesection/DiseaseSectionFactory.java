@@ -45,6 +45,10 @@ public final class DiseaseSectionFactory {
 			return new IpiSectionComponent();
 		case CSM:
 			return new CsmSectionComponent();
+		case DENGUE:
+			return new DengueSectionComponent();
+		case MALARIA:
+			return new MalariaSectionComponent();
 		default:
 			return new DefaultSectionComponent();
 		}
