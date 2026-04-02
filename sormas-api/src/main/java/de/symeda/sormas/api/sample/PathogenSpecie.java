@@ -20,26 +20,186 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.ApplicableToPathogenTests;
+import de.symeda.sormas.api.utils.Diseases;
 
 public enum PathogenSpecie {
 
+	@Diseases({
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.SPOLIGOTYPING })
 	MYCOBATERIUM_AFRICANUM,
+	@Diseases({
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.SPOLIGOTYPING })
 	MYCOBATERIUM_BOVIS,
+	@Diseases({
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.SPOLIGOTYPING })
 	MYCOBATERIUM_TUBERCULOSIS,
+	@Diseases({
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.SPOLIGOTYPING })
 	OTHER_MTBC_MEMBER,
+	@Diseases({
+		Disease.MALARIA })
 	@ApplicableToPathogenTests(value = {
-		PathogenTestType.SPOLIGOTYPING })
+		PathogenTestType.THIN_BLOOD_SMEAR,
+		PathogenTestType.RAPID_TEST,
+		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
+		PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
+		PathogenTestType.PCR_RT_PCR,
+		PathogenTestType.Q_PCR,
+		PathogenTestType.LAMP,
+		PathogenTestType.OTHER_MOLECULAR_ASSAY,
+		PathogenTestType.OTHER_SEROLOGICAL_TEST })
+	SPP,
+	@Diseases({
+		Disease.MALARIA })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.THIN_BLOOD_SMEAR,
+		PathogenTestType.RAPID_TEST,
+		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
+		PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
+		PathogenTestType.PCR_RT_PCR,
+		PathogenTestType.Q_PCR,
+		PathogenTestType.LAMP,
+		PathogenTestType.OTHER_MOLECULAR_ASSAY,
+		PathogenTestType.OTHER_SEROLOGICAL_TEST })
+	FALCIPARUM,
+	@Diseases({
+		Disease.MALARIA })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.THIN_BLOOD_SMEAR,
+		PathogenTestType.RAPID_TEST,
+		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
+		PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
+		PathogenTestType.PCR_RT_PCR,
+		PathogenTestType.Q_PCR,
+		PathogenTestType.LAMP,
+		PathogenTestType.OTHER_MOLECULAR_ASSAY,
+		PathogenTestType.OTHER_SEROLOGICAL_TEST })
+	VIVAX,
+	@Diseases({
+		Disease.MALARIA })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.THIN_BLOOD_SMEAR,
+		PathogenTestType.RAPID_TEST,
+		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
+		PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
+		PathogenTestType.PCR_RT_PCR,
+		PathogenTestType.Q_PCR,
+		PathogenTestType.LAMP,
+		PathogenTestType.OTHER_MOLECULAR_ASSAY,
+		PathogenTestType.OTHER_SEROLOGICAL_TEST })
+	MALARIAE,
+	@Diseases({
+		Disease.MALARIA })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.THIN_BLOOD_SMEAR,
+		PathogenTestType.RAPID_TEST,
+		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
+		PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
+		PathogenTestType.PCR_RT_PCR,
+		PathogenTestType.Q_PCR,
+		PathogenTestType.LAMP,
+		PathogenTestType.OTHER_MOLECULAR_ASSAY,
+		PathogenTestType.OTHER_SEROLOGICAL_TEST })
+	OVALE,
+	@Diseases({
+		Disease.MALARIA })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.THIN_BLOOD_SMEAR,
+		PathogenTestType.RAPID_TEST,
+		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
+		PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
+		PathogenTestType.PCR_RT_PCR,
+		PathogenTestType.Q_PCR,
+		PathogenTestType.LAMP,
+		PathogenTestType.OTHER_MOLECULAR_ASSAY,
+		PathogenTestType.OTHER_SEROLOGICAL_TEST })
+	KNOWLESI,
+	@Diseases({
+		Disease.MALARIA })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.THIN_BLOOD_SMEAR,
+		PathogenTestType.RAPID_TEST,
+		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
+		PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
+		PathogenTestType.PCR_RT_PCR,
+		PathogenTestType.Q_PCR,
+		PathogenTestType.LAMP,
+		PathogenTestType.OTHER_MOLECULAR_ASSAY,
+		PathogenTestType.OTHER_SEROLOGICAL_TEST })
+	CYNOMOLGI,
+	@Diseases({
+		Disease.MALARIA })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.THIN_BLOOD_SMEAR,
+		PathogenTestType.RAPID_TEST,
+		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
+		PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
+		PathogenTestType.PCR_RT_PCR,
+		PathogenTestType.Q_PCR,
+		PathogenTestType.LAMP,
+		PathogenTestType.OTHER_MOLECULAR_ASSAY,
+		PathogenTestType.OTHER_SEROLOGICAL_TEST })
+	NOT_SPECIFIED,
+	@Diseases({
+		Disease.MALARIA })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.THIN_BLOOD_SMEAR,
+		PathogenTestType.RAPID_TEST,
+		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
+		PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
+		PathogenTestType.PCR_RT_PCR,
+		PathogenTestType.Q_PCR,
+		PathogenTestType.LAMP,
+		PathogenTestType.OTHER_MOLECULAR_ASSAY,
+		PathogenTestType.OTHER_SEROLOGICAL_TEST })
+	COINFECTION,
+	@Diseases({
+		Disease.MALARIA })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.THIN_BLOOD_SMEAR,
+		PathogenTestType.RAPID_TEST,
+		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
+		PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
+		PathogenTestType.PCR_RT_PCR,
+		PathogenTestType.Q_PCR,
+		PathogenTestType.LAMP,
+		PathogenTestType.OTHER_MOLECULAR_ASSAY,
+		PathogenTestType.OTHER_SEROLOGICAL_TEST })
+	OTHER,
+	@Diseases({
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.MALARIA })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.SPOLIGOTYPING,
+		PathogenTestType.THIN_BLOOD_SMEAR,
+		PathogenTestType.RAPID_TEST,
+		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
+		PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
+		PathogenTestType.PCR_RT_PCR,
+		PathogenTestType.Q_PCR,
+		PathogenTestType.LAMP,
+		PathogenTestType.OTHER_MOLECULAR_ASSAY,
+		PathogenTestType.OTHER_SEROLOGICAL_TEST })
 	UNKNOWN,
+	@Diseases({
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.SPOLIGOTYPING })
 	NOT_APPLICABLE;

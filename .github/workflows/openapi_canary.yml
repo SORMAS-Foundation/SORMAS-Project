@@ -2,9 +2,16 @@
 name: OpenAPI Canary
 
 on:
-  schedule:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Reason for manual run'
+        required: false
+        default: 'Testing on specific branch'
+# Disabled until fixing the issue with the diff tool
+#  schedule:
     # 2.30 UTC
-    - cron: '30 2 * * *'
+#    - cron: '30 2 * * *'
 
 jobs:
   canary:
@@ -14,12 +21,12 @@ jobs:
 
     steps:
       - name: Checkout development branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           path: head
 
       - name: Checkout master branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           ref: master
           path: base

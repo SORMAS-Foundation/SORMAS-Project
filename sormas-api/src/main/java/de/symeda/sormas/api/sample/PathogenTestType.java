@@ -28,7 +28,9 @@ public enum PathogenTestType {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.DENGUE,
+		Disease.MALARIA }, hide = true)
 	ANTIBODY_DETECTION,
 
 	ANTIGEN_DETECTION,
@@ -40,7 +42,9 @@ public enum PathogenTestType {
 	RAPID_TEST,
 
 	@Diseases(value = {
-		Disease.GIARDIASIS }, hide = true)
+		Disease.GIARDIASIS,
+		Disease.DENGUE,
+		Disease.MALARIA }, hide = true)
 	CULTURE,
 
 	@Diseases(value = {
@@ -49,13 +53,16 @@ public enum PathogenTestType {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.DENGUE,
+		Disease.MALARIA }, hide = true)
 	HISTOPATHOLOGY,
 
 	@Diseases(value = {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MALARIA }, hide = true)
 	ISOLATION,
 
 	@Diseases(value = {
@@ -63,7 +70,8 @@ public enum PathogenTestType {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MALARIA }, hide = true)
 	IGM_SERUM_ANTIBODY,
 
 	@Diseases(value = {
@@ -71,7 +79,8 @@ public enum PathogenTestType {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MALARIA }, hide = true)
 	IGG_SERUM_ANTIBODY,
 
 	@Diseases(value = {
@@ -80,7 +89,9 @@ public enum PathogenTestType {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.DENGUE,
+		Disease.MALARIA }, hide = true)
 	IGA_SERUM_ANTIBODY,
 
 	@Diseases(value = {
@@ -90,7 +101,9 @@ public enum PathogenTestType {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.DENGUE,
+		Disease.MALARIA }, hide = true)
 	INCUBATION_TIME,
 
 	@Diseases(value = {
@@ -98,7 +111,8 @@ public enum PathogenTestType {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-		Disease.MEASLES })
+		Disease.MEASLES,
+		Disease.MALARIA })
 	INDIRECT_FLUORESCENT_ANTIBODY,
 
 	@Diseases(value = {
@@ -112,7 +126,9 @@ public enum PathogenTestType {
 	@Diseases(value = {
 		Disease.CORONAVIRUS,
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
-		Disease.MEASLES }, hide = true)
+		Disease.MEASLES,
+		Disease.DENGUE,
+		Disease.MALARIA }, hide = true)
 	MICROSCOPY,
 
 	@Diseases(value = {
@@ -120,11 +136,13 @@ public enum PathogenTestType {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MALARIA }, hide = true)
 	NEUTRALIZING_ANTIBODIES,
 
 	@Diseases(value = {
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.MALARIA })
 	ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
 
 	PCR_RT_PCR,
@@ -134,7 +152,9 @@ public enum PathogenTestType {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.DENGUE,
+		Disease.MALARIA }, hide = true)
 	GRAM_STAIN,
 
 	@Diseases(value = {
@@ -144,7 +164,9 @@ public enum PathogenTestType {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.DENGUE,
+		Disease.MALARIA }, hide = true)
 	LATEX_AGGLUTINATION,
 
 	@Diseases(value = {
@@ -153,7 +175,9 @@ public enum PathogenTestType {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.DENGUE,
+		Disease.MALARIA }, hide = true)
 	CQ_VALUE_DETECTION,
 
 	@Diseases(value = {
@@ -169,7 +193,9 @@ public enum PathogenTestType {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.DENGUE,
+		Disease.MALARIA }, hide = true)
 	DNA_MICROARRAY,
 
 	@Diseases(value = {
@@ -178,7 +204,9 @@ public enum PathogenTestType {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.DENGUE,
+		Disease.MALARIA }, hide = true)
 	TMA,
 
 	@Diseases(value = {
@@ -239,6 +267,35 @@ public enum PathogenTestType {
 		Disease.CRYPTOSPORIDIOSIS })
 	GENOTYPING,
 
+	@Diseases(value = {
+		Disease.DENGUE })
+	NAAT,
+	@Diseases({
+		Disease.MALARIA })
+	THICK_BLOOD_SMEAR,
+	@Diseases({
+		Disease.MALARIA })
+	THIN_BLOOD_SMEAR,
+	@Diseases({
+		Disease.MALARIA })
+	Q_PCR,
+	@Diseases({
+		Disease.MALARIA })
+	LAMP,
+
+	// @Herold need to refactor this as part of the test categories.
+	// Antigen detection test is a test category. To create tests for the below categories, decided to use as OTHER_<<category>>
+	@Diseases({
+		Disease.MALARIA })
+	OTHER_ANTIGEN_DETECTION_TEST,
+	// Test for category
+	@Diseases({
+		Disease.MALARIA })
+	OTHER_MOLECULAR_ASSAY,
+	// Test for category
+	@Diseases({
+		Disease.MALARIA })
+	OTHER_SEROLOGICAL_TEST,
 	OTHER;
 
 	@Override

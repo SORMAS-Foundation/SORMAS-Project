@@ -87,7 +87,7 @@ public class EpipulseDiseaseExportEntryDto {
 	private Date dateOfLaboratoryResult;
 	private List<String> typeOfSpecimenCollected; // SampleMaterial mapped to EpiPulse codes (repeatable)
 	private String resultOfVirusDetection; // PathogenTestResultType mapped to POS/NEG/EQUI/NOTEST
-	private String genotype; // PathogenTest typingId/genoTypeResult
+	private String genotype; // PathogenTest typingId/genoType
 	private List<String> typeOfSpecimenSerology; // SampleMaterial for serology tests (repeatable)
 	private String resultIgG; // IgG test result
 	private String resultIgM; // IgM test result

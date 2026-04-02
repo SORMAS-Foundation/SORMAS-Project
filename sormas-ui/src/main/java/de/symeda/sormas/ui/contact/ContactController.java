@@ -1028,7 +1028,7 @@ public class ContactController {
 		ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactUuid);
 		EpiDataDto epiData = contact.getEpiData();
 		EpiDataForm epiDataForm =
-			new EpiDataForm(contact.getDisease(), ContactDto.class, epiData.isPseudonymized(), epiData.isInJurisdiction(), null, isEditAllowed);
+			new EpiDataForm(contact.getDisease(), ContactDto.class, epiData.isPseudonymized(), epiData.isInJurisdiction(), null, isEditAllowed, null);
 		epiDataForm.setValue(epiData);
 
 		final CommitDiscardWrapperComponent<EpiDataForm> editView =
