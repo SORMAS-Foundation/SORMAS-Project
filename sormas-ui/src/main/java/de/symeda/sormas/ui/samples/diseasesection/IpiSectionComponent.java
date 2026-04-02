@@ -153,6 +153,7 @@ public class IpiSectionComponent extends AbstractDiseaseSectionComponent {
 		dto.setSerotypeText(null);
 		dto.setSeroTypingMethod(null);
 		dto.setSeroTypingMethodText(null);
+		dto.setDrugSusceptibility(null);
 	}
 
 	@Override

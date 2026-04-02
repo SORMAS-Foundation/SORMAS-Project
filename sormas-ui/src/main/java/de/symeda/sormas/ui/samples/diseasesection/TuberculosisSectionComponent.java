@@ -333,6 +333,7 @@ public class TuberculosisSectionComponent extends AbstractDiseaseSectionComponen
 		dto.setTubeAgTb2GT10(null);
 		dto.setTubeMitogene(null);
 		dto.setTubeMitogeneGT10(null);
+		dto.setDrugSusceptibility(null);
 	}
 
 	@Override
@@ -354,18 +355,18 @@ public class TuberculosisSectionComponent extends AbstractDiseaseSectionComponen
 		binder.forField(tubeField).withConverter(new StringToFloatNullableConverter(tubeField.getCaption())).bind(tubeGetter, tubeSetter);
 		binder.forField(gt10Field).bind(gt10Getter, gt10Setter);
 
-		tubeField.addValueChangeListener(e -> {
+		track(tubeField.addValueChangeListener(e -> {
 			Locale locale = tubeField.getLocale() != null ? tubeField.getLocale() : Locale.getDefault();
 			StringToFloatNullableConverter.parseLocaleAware(e.getValue(), locale).ifPresent(f -> gt10Field.setValue(f > 10));
-		});
+		}));
 
-		gt10Field.addValueChangeListener(e -> {
+		track(gt10Field.addValueChangeListener(e -> {
 			Locale locale = tubeField.getLocale() != null ? tubeField.getLocale() : Locale.getDefault();
 			if (Boolean.TRUE.equals(e.getValue())) {
 				StringToFloatNullableConverter.parseLocaleAware(tubeField.getValue(), locale).filter(f -> f <= 10).ifPresent(f -> tubeField.clear());
 			} else if (Boolean.FALSE.equals(e.getValue())) {
 				StringToFloatNullableConverter.parseLocaleAware(tubeField.getValue(), locale).filter(f -> f > 10).ifPresent(f -> tubeField.clear());
 			}
-		});
+		}));
 	}
 }

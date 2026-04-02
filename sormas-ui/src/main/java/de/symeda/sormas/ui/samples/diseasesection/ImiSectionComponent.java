@@ -141,6 +141,7 @@ public class ImiSectionComponent extends AbstractDiseaseSectionComponent {
 		}
 		dto.setSeroGroupSpecification(null);
 		dto.setSeroGroupSpecificationText(null);
+		dto.setDrugSusceptibility(null);
 	}
 
 	@Override
