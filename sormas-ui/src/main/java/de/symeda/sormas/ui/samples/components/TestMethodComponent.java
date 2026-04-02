@@ -21,7 +21,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -92,7 +91,7 @@ public class TestMethodComponent extends FormComponent<PathogenTestDto> {
 	private void buildLayout() {
 		// Test type
 		testTypeField = createComboBox(PathogenTestDto.TEST_TYPE, PathogenTestDto.I18N_PREFIX);
-		testTypeField.setItems(Arrays.asList(PathogenTestType.values()));
+		updateComboBoxByDisease(testTypeField, PathogenTestType.class, currentDisease);
 		testTypeField.setItemCaptionGenerator(PathogenTestType::toString);
 
 		testTypeTextField = createTextField(PathogenTestDto.TEST_TYPE_TEXT, PathogenTestDto.I18N_PREFIX, ValueChangeMode.BLUR);
