@@ -85,7 +85,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 		try {
 
 			List<ADO> results = queryBuilder().where().eq(AbstractDomainObject.UUID, uuid).and().eq(AbstractDomainObject.SNAPSHOT, false).query();
-			if (results.size() == 0) {
+			if (results.isEmpty()) {
 				return null;
 			} else if (results.size() == 1) {
 				return results.get(0);
@@ -111,13 +111,13 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 	public ADO queryUuidReference(String uuid) {
 		try {
 			List<ADO> results = queryBuilder()
-				.selectColumns(AbstractDomainObject.ID, AbstractDomainObject.UUID, AbstractDomainObject.MODIFIED, AbstractDomainObject.SNAPSHOT)
-				.where()
-				.eq(AbstractDomainObject.UUID, uuid)
-				.and()
-				.eq(AbstractDomainObject.SNAPSHOT, false)
-				.query();
-			if (results.size() == 0) {
+					.selectColumns(AbstractDomainObject.ID, AbstractDomainObject.UUID, AbstractDomainObject.MODIFIED, AbstractDomainObject.SNAPSHOT)
+					.where()
+					.eq(AbstractDomainObject.UUID, uuid)
+					.and()
+					.eq(AbstractDomainObject.SNAPSHOT, false)
+					.query();
+			if (results.isEmpty()) {
 				return null;
 			} else if (results.size() == 1) {
 				return results.get(0);
@@ -189,7 +189,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 
 		try {
 			List<ADO> results = queryBuilder().where().eq(AbstractDomainObject.UUID, uuid).and().eq(AbstractDomainObject.SNAPSHOT, true).query();
-			if (results.size() == 0) {
+			if (results.isEmpty()) {
 				return null;
 			} else if (results.size() == 1) {
 				return results.get(0);
@@ -296,16 +296,16 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 
 		if (DatabaseHelper.getFeatureConfigurationDao().isFeatureEnabled(FeatureType.LIMITED_SYNCHRONIZATION)) {
 			Integer maxChangeDatePeriod = DatabaseHelper.getFeatureConfigurationDao()
-				.getIntegerPropertyValue(FeatureType.LIMITED_SYNCHRONIZATION, FeatureTypeProperty.MAX_CHANGE_DATE_PERIOD);
+					.getIntegerPropertyValue(FeatureType.LIMITED_SYNCHRONIZATION, FeatureTypeProperty.MAX_CHANGE_DATE_PERIOD);
 			if (maxChangeDatePeriod != null && maxChangeDatePeriod >= 0) {
 				Date maxChangeDate = DateHelper.getStartOfDay(DateHelper.subtractDays(new Date(), maxChangeDatePeriod));
 				try {
 					QueryBuilder<ADO, Long> builder = queryBuilder();
 					Where<ADO, Long> where = builder.where();
 					where.and(
-						where.isNotNull(AbstractDomainObject.CHANGE_DATE),
-						where.eq(ADO.MODIFIED, false),
-						where.lt(AbstractDomainObject.CHANGE_DATE, maxChangeDate));
+							where.isNotNull(AbstractDomainObject.CHANGE_DATE),
+							where.eq(ADO.MODIFIED, false),
+							where.lt(AbstractDomainObject.CHANGE_DATE, maxChangeDate));
 					return builder.query();
 				} catch (SQLException e) {
 					throw new RuntimeException(e);
@@ -331,12 +331,12 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 
 		String query = "SELECT MAX(" + AbstractDomainObject.CHANGE_DATE + ") FROM " + getTableName();
 		GenericRawResults<Object[]> maxChangeDateResult = queryRaw(
-			query,
-			new DataType[] {
-				DataType.DATE_LONG });
+				query,
+				new DataType[] {
+						DataType.DATE_LONG });
 		try {
 			List<Object[]> dateResults = maxChangeDateResult.getResults();
-			if (dateResults.size() > 0) {
+			if (!dateResults.isEmpty()) {
 				return (Date) dateResults.get(0)[0];
 			}
 		} catch (SQLException e) {
@@ -351,7 +351,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 	 */
 	protected Date getLatestChangeDateJoin(String joinTableName, String joinColumnName) {
 		String query = "SELECT MAX(jo." + AbstractDomainObject.CHANGE_DATE + ") FROM " + getTableName() + " AS ta" + " LEFT JOIN " + joinTableName
-			+ " AS jo ON jo." + AbstractDomainObject.ID + " = ta." + joinColumnName + "_ID";
+				+ " AS jo ON jo." + AbstractDomainObject.ID + " = ta." + joinColumnName + "_ID";
 		return getLatestChangeDateJoinFromQuery(query);
 	}
 
@@ -360,8 +360,8 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 	 */
 	protected Date getLatestChangeDateSubJoin(String joinTableName, String joinColumnName, String subJoinTableName) {
 		String query = "SELECT MAX(sjo." + AbstractDomainObject.CHANGE_DATE + ") FROM " + getTableName() + " AS ta" + " LEFT JOIN " + joinTableName
-			+ " AS jo ON jo." + AbstractDomainObject.ID + " = ta." + joinColumnName + "_id" + " LEFT JOIN " + subJoinTableName + " AS sjo ON jo."
-			+ AbstractDomainObject.ID + " = sjo." + joinColumnName + "_id";
+				+ " AS jo ON jo." + AbstractDomainObject.ID + " = ta." + joinColumnName + "_id" + " LEFT JOIN " + subJoinTableName + " AS sjo ON jo."
+				+ AbstractDomainObject.ID + " = sjo." + joinColumnName + "_id";
 		return getLatestChangeDateJoinFromQuery(query);
 	}
 
@@ -370,19 +370,19 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 	 */
 	protected Date getLatestChangeDateSubJoinReverse(String joinTableName, String joinColumnName, String subJoinTableName, String subJoinColumnName) {
 		String query = "SELECT MAX(sjo." + AbstractDomainObject.CHANGE_DATE + ") FROM " + getTableName() + " AS ta" + " LEFT JOIN " + joinTableName
-			+ " AS jo ON jo." + AbstractDomainObject.ID + " = ta." + joinColumnName + "_id" + " LEFT JOIN " + subJoinTableName + " AS sjo ON jo."
-			+ subJoinColumnName + "_id = sjo." + AbstractDomainObject.ID;
+				+ " AS jo ON jo." + AbstractDomainObject.ID + " = ta." + joinColumnName + "_id" + " LEFT JOIN " + subJoinTableName + " AS sjo ON jo."
+				+ subJoinColumnName + "_id = sjo." + AbstractDomainObject.ID;
 		return getLatestChangeDateJoinFromQuery(query);
 	}
 
 	protected Date getLatestChangeDateJoinFromQuery(String query) {
 		GenericRawResults<Object[]> maxChangeDateResult = queryRaw(
-			query,
-			new DataType[] {
-				DataType.DATE_LONG });
+				query,
+				new DataType[] {
+						DataType.DATE_LONG });
 		try {
 			List<Object[]> dateResults = maxChangeDateResult.getResults();
-			if (dateResults.size() > 0) {
+			if (!dateResults.isEmpty()) {
 				return (Date) dateResults.get(0)[0];
 			}
 		} catch (SQLException e) {
@@ -494,7 +494,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 	}
 
 	public void saveCollectionWithSnapshot(Collection<ADO> existingCollection, Collection<ADO> modifiedCollection, AbstractDomainObject parent)
-		throws DaoException {
+			throws DaoException {
 
 		// delete no longer existing elements
 		existingCollection.removeAll(modifiedCollection); // ignore kept
@@ -678,15 +678,15 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 			for (PropertyDescriptor property : AdoPropertyHelper.getPropertyDescriptors(source.getClass())) {
 				// ignore some types and specific properties
 				if (!AdoPropertyHelper.isModifiableProperty(property)
-					|| parentProperty.equals(property.getName())
-					|| property.getReadMethod().isAnnotationPresent(JoinTableReference.class)
-					|| Case.COMPLETENESS.equals(property.getName())
-					|| FeatureConfiguration.PROPERTIES_MAP.equals(property.getName())
-					|| Environment.WATER_USE.equals(property.getName())
-					|| EnvironmentSample.REQUESTED_PATHOGEN_TESTS.equals(property.getName())
-					|| EnvironmentSample.WEATHER_CONDITIONS.equals(property.getName())
-					|| User.LIMITED_DISEASES.equals(property.getName())
-					|| Contact.CONTACT_PROXIMITIES.equals(property.getName()))
+						|| parentProperty.equals(property.getName())
+						|| property.getReadMethod().isAnnotationPresent(JoinTableReference.class)
+						|| Case.COMPLETENESS.equals(property.getName())
+						|| FeatureConfiguration.PROPERTIES_MAP.equals(property.getName())
+						|| Environment.WATER_USE.equals(property.getName())
+						|| EnvironmentSample.REQUESTED_PATHOGEN_TESTS.equals(property.getName())
+						|| EnvironmentSample.WEATHER_CONDITIONS.equals(property.getName())
+						|| User.LIMITED_DISEASES.equals(property.getName())
+						|| Contact.CONTACT_PROXIMITIES.equals(property.getName()))
 					continue;
 
 				// we now have to write the value from source into target and base
@@ -705,7 +705,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 					if (embeddedSource != null) {
 						// merge it - will return the merged result
 						AbstractDomainObject embeddedCurrent =
-							DatabaseHelper.getAdoDao(embeddedSource.getClass()).mergeOrCreateWithCast(embeddedSource);
+								DatabaseHelper.getAdoDao(embeddedSource.getClass()).mergeOrCreateWithCast(embeddedSource);
 
 						if (embeddedCurrent == null) {
 							throw new IllegalArgumentException("No merge result was created for " + embeddedSource);
@@ -719,7 +719,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 				// 4. reference domain objects like a reference to a Person or a District
 				// -> just copy reference value from source into target and base
 				else if (DataHelper.isValueType(property.getPropertyType())
-					|| AbstractDomainObject.class.isAssignableFrom(property.getPropertyType())) {
+						|| AbstractDomainObject.class.isAssignableFrom(property.getPropertyType())) {
 
 					Object sourceFieldValue = property.getReadMethod().invoke(source);
 
@@ -736,10 +736,10 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 						if (!DataHelper.equal(snapshotFieldValue, currentFieldValue) && !DataHelper.equal(currentFieldValue, sourceFieldValue)) {
 							// we have a conflict
 							Log.i(
-								source.getClass().getName(),
-								"Overriding " + property.getName() + "; Snapshot '" + DataHelper.toStringNullable(snapshotFieldValue) + "'; Yours: '"
-									+ DataHelper.toStringNullable(currentFieldValue) + "'; Server: '" + DataHelper.toStringNullable(sourceFieldValue)
-									+ "'");
+									source.getClass().getName(),
+									"Overriding " + property.getName() + "; Snapshot '" + DataHelper.toStringNullable(snapshotFieldValue) + "'; Yours: '"
+											+ DataHelper.toStringNullable(currentFieldValue) + "'; Server: '" + DataHelper.toStringNullable(sourceFieldValue)
+											+ "'");
 
 							conflictStringBuilder.append(I18nProperties.getCaption(source.getI18nPrefix() + "." + property.getName()));
 
@@ -828,7 +828,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 	}
 
 	private void mergeCollection(Collection<AbstractDomainObject> existingCollection, Collection<AbstractDomainObject> sourceCollection, ADO parent)
-		throws DaoException {
+			throws DaoException {
 
 		try {
 
@@ -839,14 +839,14 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 			for (AbstractDomainObject existingEntry : existingCollection) {
 				if (existingEntry.isModified()) {
 					AbstractDomainObject existingSnapshot =
-						DatabaseHelper.getAdoDao(existingEntry.getClass()).querySnapshotByUuid(existingEntry.getUuid());
+							DatabaseHelper.getAdoDao(existingEntry.getClass()).querySnapshotByUuid(existingEntry.getUuid());
 					if (existingSnapshot == null) {
 						// entry is new (not yet sent to the server) -> keep it
 						continue;
 					} else if (AdoPropertyHelper.hasModifiedProperty(existingEntry, existingSnapshot, true)) {
 						// entry exists and is modified -> inform the user that the changes are deleted
 						conflictStringBuilder
-							.append(DatabaseHelper.getContext().getResources().getString(R.string.error_modified_list_entry_deleted));
+								.append(DatabaseHelper.getContext().getResources().getString(R.string.error_modified_list_entry_deleted));
 						conflictStringBuilder.append("<br/><i>");
 						conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.synclog_yours));
 						conflictStringBuilder.append("</i>");
@@ -881,7 +881,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 							// Explicitely used for location-person relation because locations don't have a distinct parent accessor;
 							// This only works if the field has the same name as its class (e.g. Person person)
 							methodName = "set" + parent.getClass().getSimpleName().substring(0, 1).toUpperCase()
-								+ parent.getClass().getSimpleName().substring(1);
+									+ parent.getClass().getSimpleName().substring(1);
 						}
 						parentSetter = resultElement.getClass().getMethod(methodName, parent.getClass());
 					}
@@ -943,18 +943,33 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 
 				try {
 					// accept all collection elements
-					Collection<AbstractDomainObject> sourceCollection = (Collection<AbstractDomainObject>) property.getReadMethod().invoke(ado);
-					for (AbstractDomainObject sourceElement : sourceCollection) {
-						DatabaseHelper.getAdoDao(sourceElement.getClass()).acceptWithCast(sourceElement);
-					}
+					Collection<?> sourceCollection = (Collection<?>) property.getReadMethod().invoke(ado);
+					if(sourceCollection != null && !sourceCollection.isEmpty()) {
+						for (Object sourceElement : sourceCollection) {
+							if(!(sourceElement instanceof AbstractDomainObject)) {
+								continue;
+							}
+							AbstractDomainObject e = (AbstractDomainObject) sourceElement;
+							DatabaseHelper.getAdoDao(e.getClass()).acceptWithCast(e);
+						}
 
-					if (snapshot != null) {
-						// delete remaining snapshots
-						Collection<AbstractDomainObject> snapshotCollection =
-							(Collection<AbstractDomainObject>) property.getReadMethod().invoke(snapshot);
-						snapshotCollection.removeAll(sourceCollection);
-						for (AbstractDomainObject snapshotElement : snapshotCollection) {
-							DatabaseHelper.getAdoDao(snapshotElement.getClass()).deleteCascadeWithCast(snapshotElement);
+						if (snapshot != null) {
+							// delete remaining snapshots
+							Collection<?> snapshotCollection =
+									(Collection<?>) property.getReadMethod().invoke(snapshot);
+							if (snapshotCollection != null && !snapshotCollection.isEmpty()) {
+								for (Object snapshotElement : snapshotCollection) {
+									if (!(snapshotElement instanceof AbstractDomainObject)) {
+										continue;
+									}
+									if(sourceCollection.contains(snapshotElement)) {
+										continue;
+									}
+									final AbstractDomainObject e = (AbstractDomainObject) snapshotElement;
+
+									DatabaseHelper.getAdoDao(e.getClass()).deleteCascadeWithCast(e);
+								}
+							}
 						}
 					}
 				} catch (ClassCastException e) {
@@ -1013,7 +1028,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 			if (ado.isModified() && ado.getClass().getAnnotation(EmbeddedAdo.class) == null) {
 				// let user know if changes are lost (not for embedded entities)
 				DatabaseHelper.getSyncLogDao()
-					.createWithParentStack(ado.toString(), DatabaseHelper.getString(R.string.error_changes_dropped_no_access));
+						.createWithParentStack(ado.toString(), DatabaseHelper.getString(R.string.error_changes_dropped_no_access));
 				// TODO include JSON backup
 			}
 			delete(ado);
@@ -1070,7 +1085,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 				}
 			}
 
-			if (invalidEntities.size() > 0) {
+			if (!invalidEntities.isEmpty()) {
 				Log.d(getTableName(), "Deleted invalid entities: " + deletionCounter + " of " + invalidEntities.size());
 			}
 
@@ -1097,7 +1112,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 					deletionCounter++;
 				}
 
-				if (entities.size() > 0) {
+				if (!entities.isEmpty()) {
 					Log.d(getTableName(), "Deleted entities: " + deletionCounter + " of " + entities.size());
 				}
 				return null;
@@ -1108,10 +1123,10 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 	public List<String> filterMissing(List<String> uuids) {
 		try {
 			GenericRawResults<Object[]> existingUuids = dao.queryRaw(
-				"SELECT uuid FROM " + getTableName(),
-				new DataType[] {
-					DataType.STRING });
-			List<String> results = new ArrayList<String>(uuids);
+					"SELECT uuid FROM " + getTableName(),
+					new DataType[] {
+							DataType.STRING });
+			List<String> results = new ArrayList<>(uuids);
 			for (Object[] existingUuid : existingUuids) {
 				results.remove(existingUuid[0]);
 			}
@@ -1140,9 +1155,9 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 
 				Class<?> propertyType = property.getPropertyType();
 				if (parentProperty.equals(property.getName()) // ignore parent property
-					|| property.getReadMethod().isAnnotationPresent(JoinTableReference.class)
-					// ignore nullable properties
-					|| (propertyType.isAnnotationPresent(EmbeddedAdo.class) && propertyType.getAnnotation(EmbeddedAdo.class).nullable()))
+						|| property.getReadMethod().isAnnotationPresent(JoinTableReference.class)
+						// ignore nullable properties
+						|| (propertyType.isAnnotationPresent(EmbeddedAdo.class) && propertyType.getAnnotation(EmbeddedAdo.class).nullable()))
 					continue;
 
 				// build embedded
@@ -1286,8 +1301,8 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 		int resultRowCount = dao.create(data);
 		if (resultRowCount < 1)
 			throw new SQLException(
-				"Database entry was not created. Go back and try again.\n" + "Type: " + data.getClass().getSimpleName() + ", UUID: "
-					+ data.getUuid());
+					"Database entry was not created. Go back and try again.\n" + "Type: " + data.getClass().getSimpleName() + ", UUID: "
+							+ data.getUuid());
 //        } catch (SQLException e) {
 //            throw new RuntimeException(e);
 //        }
@@ -1329,8 +1344,8 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 		int resultRowCount = dao.delete(data);
 		if (resultRowCount < 1)
 			throw new SQLException(
-				"Database entry was not deleted - go back and try again.\n" + "Type: " + data.getClass().getSimpleName() + ", UUID: "
-					+ data.getUuid());
+					"Database entry was not deleted - go back and try again.\n" + "Type: " + data.getClass().getSimpleName() + ", UUID: "
+							+ data.getUuid());
 //        } catch (SQLException e) {
 //            throw new RuntimeException(e);
 //        }
@@ -1383,33 +1398,33 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 	// dao utilities
 
 	protected <T extends AbstractDomainObject> void addDateFromCriteria(
-		List<Where<T, Long>> whereStatements,
-		Where<T, Long> where,
-		Date dateFrom,
-		String date)
-		throws SQLException {
+			List<Where<T, Long>> whereStatements,
+			Where<T, Long> where,
+			Date dateFrom,
+			String date)
+			throws SQLException {
 		if (dateFrom != null) {
 			whereStatements.add(where.ge(date, DateHelper.getStartOfDay(dateFrom)));
 		}
 	}
 
 	protected <T extends AbstractDomainObject> void addDateToCriteria(
-		List<Where<T, Long>> whereStatements,
-		Where<T, Long> where,
-		Date dateTo,
-		String date)
-		throws SQLException {
+			List<Where<T, Long>> whereStatements,
+			Where<T, Long> where,
+			Date dateTo,
+			String date)
+			throws SQLException {
 		if (dateTo != null) {
 			whereStatements.add(where.le(date, DateHelper.getEndOfDay(dateTo)));
 		}
 	}
 
 	protected <T extends AbstractDomainObject> void addEqualsCriteria(
-		List<Where<T, Long>> whereStatements,
-		Where<T, Long> where,
-		Object criteriaValue,
-		String columnName)
-		throws SQLException {
+			List<Where<T, Long>> whereStatements,
+			Where<T, Long> where,
+			Object criteriaValue,
+			String columnName)
+			throws SQLException {
 		if (criteriaValue != null) {
 			whereStatements.add(where.eq(columnName, criteriaValue));
 		}
