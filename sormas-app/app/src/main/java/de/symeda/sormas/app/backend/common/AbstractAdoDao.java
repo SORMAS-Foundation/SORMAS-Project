@@ -332,8 +332,8 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 		String query = "SELECT MAX(" + AbstractDomainObject.CHANGE_DATE + ") FROM " + getTableName();
 		GenericRawResults<Object[]> maxChangeDateResult = queryRaw(
 				query,
-				new DataType[] {
-						DataType.DATE_LONG });
+				new DataType[]{
+						DataType.DATE_LONG});
 		try {
 			List<Object[]> dateResults = maxChangeDateResult.getResults();
 			if (!dateResults.isEmpty()) {
@@ -378,8 +378,8 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 	protected Date getLatestChangeDateJoinFromQuery(String query) {
 		GenericRawResults<Object[]> maxChangeDateResult = queryRaw(
 				query,
-				new DataType[] {
-						DataType.DATE_LONG });
+				new DataType[]{
+						DataType.DATE_LONG});
 		try {
 			List<Object[]> dateResults = maxChangeDateResult.getResults();
 			if (!dateResults.isEmpty()) {
@@ -943,35 +943,37 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 
 				try {
 					// accept all collection elements
-					Collection<?> sourceCollection = (Collection<?>) property.getReadMethod().invoke(ado);
-					if(sourceCollection != null && !sourceCollection.isEmpty()) {
+					final Collection<?> sourceCollection = (Collection<?>) property.getReadMethod().invoke(ado);
+					if (sourceCollection != null && !sourceCollection.isEmpty()) {
 						for (Object sourceElement : sourceCollection) {
-							if(!(sourceElement instanceof AbstractDomainObject)) {
+							if (!(sourceElement instanceof AbstractDomainObject)) {
 								continue;
 							}
-							AbstractDomainObject e = (AbstractDomainObject) sourceElement;
+							final AbstractDomainObject e = (AbstractDomainObject) sourceElement;
 							DatabaseHelper.getAdoDao(e.getClass()).acceptWithCast(e);
 						}
+					}
 
-						if (snapshot != null) {
-							// delete remaining snapshots
-							Collection<?> snapshotCollection =
-									(Collection<?>) property.getReadMethod().invoke(snapshot);
-							if (snapshotCollection != null && !snapshotCollection.isEmpty()) {
-								for (Object snapshotElement : snapshotCollection) {
-									if (!(snapshotElement instanceof AbstractDomainObject)) {
-										continue;
-									}
-									if(sourceCollection.contains(snapshotElement)) {
-										continue;
-									}
-									final AbstractDomainObject e = (AbstractDomainObject) snapshotElement;
-
-									DatabaseHelper.getAdoDao(e.getClass()).deleteCascadeWithCast(e);
+					if (snapshot != null) {
+						// delete remaining snapshots
+						final Collection<?> snapshotCollection =
+								(Collection<?>) property.getReadMethod().invoke(snapshot);
+						if (snapshotCollection != null && !snapshotCollection.isEmpty()) {
+							for (Object snapshotElement : snapshotCollection) {
+								if (!(snapshotElement instanceof AbstractDomainObject)) {
+									continue;
 								}
+								if (sourceCollection != null && sourceCollection.contains(snapshotElement)) {
+									continue;
+								}
+								final AbstractDomainObject e = (AbstractDomainObject) snapshotElement;
+
+								DatabaseHelper.getAdoDao(e.getClass()).deleteCascadeWithCast(e);
 							}
 						}
+
 					}
+
 				} catch (ClassCastException e) {
 					// Collection does not contain ADOs and doesn't have to be handled
 				}
@@ -1124,8 +1126,8 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 		try {
 			GenericRawResults<Object[]> existingUuids = dao.queryRaw(
 					"SELECT uuid FROM " + getTableName(),
-					new DataType[] {
-							DataType.STRING });
+					new DataType[]{
+							DataType.STRING});
 			List<String> results = new ArrayList<>(uuids);
 			for (Object[] existingUuid : existingUuids) {
 				results.remove(existingUuid[0]);
