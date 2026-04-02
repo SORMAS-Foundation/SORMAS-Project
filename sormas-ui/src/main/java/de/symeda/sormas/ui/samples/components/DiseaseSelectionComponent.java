@@ -101,6 +101,14 @@ public class DiseaseSelectionComponent extends FormComponent<PathogenTestDto> {
 			diseaseField.setVisible(true);
 			testedPathogenField.setVisible(false);
 		}
+
+		// Auto-select default disease on creation when server has a single active disease
+		if (create && !isEnvironmentSample) {
+			Disease defaultDisease = FacadeProvider.getDiseaseConfigurationFacade().getDefaultDisease();
+			if (defaultDisease != null) {
+				diseaseField.setValue(defaultDisease);
+			}
+		}
 	}
 
 	private void bindFields() {
