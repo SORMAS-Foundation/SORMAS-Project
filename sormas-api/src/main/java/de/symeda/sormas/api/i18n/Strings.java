@@ -675,6 +675,7 @@ public interface Strings {
 	String headingExportUserRightsFailed = "headingExportUserRightsFailed";
 	String headingExposureDetails = "headingExposureDetails";
 	String headingExposureInvestigation = "headingExposureInvestigation";
+	String headingExposures = "headingExposures";
 	String headingExtendFollowUp = "headingExtendFollowUp";
 	String headingExtendQuarantine = "headingExtendQuarantine";
 	String headingExternalEmailDetails = "headingExternalEmailDetails";
