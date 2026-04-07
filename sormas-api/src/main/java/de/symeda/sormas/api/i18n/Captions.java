@@ -2943,7 +2943,6 @@ public interface Captions {
 	String Symptoms_conjunctivalInjection = "Symptoms.conjunctivalInjection";
 	String Symptoms_conjunctivitis = "Symptoms.conjunctivitis";
 	String Symptoms_convulsion = "Symptoms.convulsion";
-	String Symptoms_convulsions = "Symptoms.convulsions";
 	String Symptoms_cough = "Symptoms.cough";
 	String Symptoms_coughingBlood = "Symptoms.coughingBlood";
 	String Symptoms_coughingBouts = "Symptoms.coughingBouts";

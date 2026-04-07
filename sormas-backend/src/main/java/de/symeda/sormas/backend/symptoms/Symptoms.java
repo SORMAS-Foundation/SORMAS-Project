@@ -289,7 +289,6 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState guillainBarreSyndrome;
 	private SymptomState lethargy;
 	private SymptomState confusion;
-	private SymptomState convulsions;
 	private SymptomState persistentVomiting;
 	private SymptomState restlessness;
 	private SymptomState acuteBleeding;
@@ -2277,15 +2276,6 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setConfusion(SymptomState confusion) {
 		this.confusion = confusion;
-	}
-
-	@Enumerated(EnumType.STRING)
-	public SymptomState getConvulsions() {
-		return convulsions;
-	}
-
-	public void setConvulsions(SymptomState convulsions) {
-		this.convulsions = convulsions;
 	}
 
 	@Enumerated(EnumType.STRING)
