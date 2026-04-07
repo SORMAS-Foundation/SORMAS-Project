@@ -116,5 +116,9 @@ jobs:
             cp /tmp/openapi/swagger.* sormas-rest/
 
             git add sormas-rest/swagger.*
-            git commit -m "[GitHub Actions] Update openAPI spec files"
-            git push
+            if ! git diff --cached --quiet; then
+              git commit -m "[GitHub Actions] Update openAPI spec files"
+              git push
+            else
+              echo "swagger files are already up to date, nothing to commit"
+            fi
