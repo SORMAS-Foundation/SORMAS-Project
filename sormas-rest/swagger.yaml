@@ -10,7 +10,7 @@ info:
     name: GPL v3
     url: https://www.gnu.org/licenses/gpl-3.0.html
   title: SORMAS REST API
-  version: 1.98.0-SNAPSHOT
+  version: 1.104.0-SNAPSHOT
 servers:
 - url: /sormas-rest
 paths:
@@ -2427,6 +2427,7 @@ paths:
                   - SNAKE_BITE
                   - RUBELLA
                   - TUBERCULOSIS
+                  - LATENT_TUBERCULOSIS
                   - LEPROSY
                   - LYMPHATIC_FILARIASIS
                   - BURULI_ULCER
@@ -2438,6 +2439,7 @@ paths:
                   - YAWS_ENDEMIC_SYPHILIS
                   - MATERNAL_DEATHS
                   - PERINATAL_DEATHS
+                  - INFLUENZA
                   - INFLUENZA_A
                   - INFLUENZA_B
                   - H_METAPNEUMOVIRUS
@@ -2453,6 +2455,10 @@ paths:
                   - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
                   - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
                   - FHA
+                  - INVASIVE_PNEUMOCOCCAL_INFECTION
+                  - INVASIVE_MENINGOCOCCAL_INFECTION
+                  - GIARDIASIS
+                  - CRYPTOSPORIDIOSIS
                   - OTHER
                   - UNDEFINED
           description: default response
@@ -4099,6 +4105,7 @@ paths:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -4110,6 +4117,7 @@ paths:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -4125,6 +4133,10 @@ paths:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
       requestBody:
@@ -4424,6 +4436,7 @@ paths:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -4435,6 +4448,7 @@ paths:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -4450,6 +4464,10 @@ paths:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
       responses:
@@ -7041,6 +7059,12 @@ paths:
                   - IMMUNIZATION_DELETE
                   - IMMUNIZATION_ARCHIVE
                   - IMMUNIZATION_VIEW_ARCHIVED
+                  - ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW
+                  - ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_CREATE
+                  - ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_EDIT
+                  - ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_ARCHIVE
+                  - ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_DELETE
+                  - ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_EXPORT
                   - PERSON_VIEW
                   - PERSON_EDIT
                   - PERSON_DELETE
@@ -7131,6 +7155,7 @@ paths:
                   - DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS
                   - DASHBOARD_CAMPAIGNS_VIEW
                   - DASHBOARD_SAMPLES_VIEW
+                  - DASHBOARD_ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW
                   - CASE_CLINICIAN_VIEW
                   - THERAPY_VIEW
                   - PRESCRIPTION_CREATE
@@ -7181,6 +7206,7 @@ paths:
                   - ENVIRONMENT_DELETE
                   - ENVIRONMENT_IMPORT
                   - ENVIRONMENT_EXPORT
+                  - ENVIRONMENT_LINK
                   - ENVIRONMENT_SAMPLE_VIEW
                   - ENVIRONMENT_SAMPLE_CREATE
                   - ENVIRONMENT_SAMPLE_EDIT
@@ -7219,10 +7245,23 @@ paths:
                   - SORMAS_TO_SORMAS_PROCESS
                   - EXTERNAL_SURVEILLANCE_SHARE
                   - EXTERNAL_SURVEILLANCE_DELETE
-                  - EXTERNAL_MESSAGE_VIEW
-                  - EXTERNAL_MESSAGE_PROCESS
                   - EXTERNAL_MESSAGE_PUSH
-                  - EXTERNAL_MESSAGE_DELETE
+                  - EXTERNAL_MESSAGE_ACCESS
+                  - EXTERNAL_MESSAGE_LABORATORY_VIEW
+                  - EXTERNAL_MESSAGE_DOCTOR_DECLARATION_VIEW
+                  - EXTERNAL_MESSAGE_LABORATORY_PROCESS
+                  - EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS
+                  - EXTERNAL_MESSAGE_LABORATORY_DELETE
+                  - EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE
+                  - SURVEY_VIEW
+                  - SURVEY_CREATE
+                  - SURVEY_EDIT
+                  - SURVEY_DELETE
+                  - SURVEY_TOKEN_VIEW
+                  - SURVEY_TOKEN_CREATE
+                  - SURVEY_TOKEN_EDIT
+                  - SURVEY_TOKEN_DELETE
+                  - SURVEY_TOKEN_IMPORT
                   - OUTBREAK_VIEW
                   - OUTBREAK_EDIT
                   - MANAGE_PUBLIC_EXPORT_CONFIGURATION
@@ -7233,6 +7272,12 @@ paths:
                   - EXTERNAL_EMAIL_SEND
                   - EXTERNAL_EMAIL_ATTACH_DOCUMENTS
                   - CUSTOMIZABLE_ENUM_MANAGEMENT
+                  - SYSTEM_CONFIGURATION
+                  - DISEASE_MANAGEMENT
+                  - EPIPULSE_EXPORT_VIEW
+                  - EPIPULSE_EXPORT_CREATE
+                  - EPIPULSE_EXPORT_DOWNLOAD
+                  - EPIPULSE_EXPORT_DELETE
           description: default response
       tags:
       - User Controller
@@ -7278,6 +7323,12 @@ paths:
                   - IMMUNIZATION_DELETE
                   - IMMUNIZATION_ARCHIVE
                   - IMMUNIZATION_VIEW_ARCHIVED
+                  - ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW
+                  - ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_CREATE
+                  - ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_EDIT
+                  - ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_ARCHIVE
+                  - ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_DELETE
+                  - ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_EXPORT
                   - PERSON_VIEW
                   - PERSON_EDIT
                   - PERSON_DELETE
@@ -7368,6 +7419,7 @@ paths:
                   - DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS
                   - DASHBOARD_CAMPAIGNS_VIEW
                   - DASHBOARD_SAMPLES_VIEW
+                  - DASHBOARD_ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW
                   - CASE_CLINICIAN_VIEW
                   - THERAPY_VIEW
                   - PRESCRIPTION_CREATE
@@ -7418,6 +7470,7 @@ paths:
                   - ENVIRONMENT_DELETE
                   - ENVIRONMENT_IMPORT
                   - ENVIRONMENT_EXPORT
+                  - ENVIRONMENT_LINK
                   - ENVIRONMENT_SAMPLE_VIEW
                   - ENVIRONMENT_SAMPLE_CREATE
                   - ENVIRONMENT_SAMPLE_EDIT
@@ -7456,10 +7509,23 @@ paths:
                   - SORMAS_TO_SORMAS_PROCESS
                   - EXTERNAL_SURVEILLANCE_SHARE
                   - EXTERNAL_SURVEILLANCE_DELETE
-                  - EXTERNAL_MESSAGE_VIEW
-                  - EXTERNAL_MESSAGE_PROCESS
                   - EXTERNAL_MESSAGE_PUSH
-                  - EXTERNAL_MESSAGE_DELETE
+                  - EXTERNAL_MESSAGE_ACCESS
+                  - EXTERNAL_MESSAGE_LABORATORY_VIEW
+                  - EXTERNAL_MESSAGE_DOCTOR_DECLARATION_VIEW
+                  - EXTERNAL_MESSAGE_LABORATORY_PROCESS
+                  - EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS
+                  - EXTERNAL_MESSAGE_LABORATORY_DELETE
+                  - EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE
+                  - SURVEY_VIEW
+                  - SURVEY_CREATE
+                  - SURVEY_EDIT
+                  - SURVEY_DELETE
+                  - SURVEY_TOKEN_VIEW
+                  - SURVEY_TOKEN_CREATE
+                  - SURVEY_TOKEN_EDIT
+                  - SURVEY_TOKEN_DELETE
+                  - SURVEY_TOKEN_IMPORT
                   - OUTBREAK_VIEW
                   - OUTBREAK_EDIT
                   - MANAGE_PUBLIC_EXPORT_CONFIGURATION
@@ -7470,6 +7536,12 @@ paths:
                   - EXTERNAL_EMAIL_SEND
                   - EXTERNAL_EMAIL_ATTACH_DOCUMENTS
                   - CUSTOMIZABLE_ENUM_MANAGEMENT
+                  - SYSTEM_CONFIGURATION
+                  - DISEASE_MANAGEMENT
+                  - EPIPULSE_EXPORT_VIEW
+                  - EPIPULSE_EXPORT_CREATE
+                  - EPIPULSE_EXPORT_DOWNLOAD
+                  - EPIPULSE_EXPORT_DELETE
           description: default response
       tags:
       - User Controller
@@ -8164,6 +8236,10 @@ components:
           - MEANS_OF_TRANSPORT
           - PUBLIC_PLACE
           - SCATTERED
+          - SCHOOL
+          - EDUCATION_AND_CHILDCARE
+          - NURSING_HOME
+          - ASYLUM_SEEKERS_SHELTER
           - UNKNOWN
           - OTHER
         typeOfPlaceDetails:
@@ -8348,6 +8424,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -8359,6 +8436,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -8374,6 +8452,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         districtId:
@@ -8470,6 +8552,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -8481,6 +8564,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -8496,6 +8580,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         district:
@@ -8566,6 +8654,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -8577,6 +8666,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -8592,6 +8682,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         district:
@@ -8887,9 +8981,15 @@ components:
         birthdateDD:
           type: integer
           format: int32
+        birthdateFrom:
+          type: string
+          format: date-time
         birthdateMM:
           type: integer
           format: int32
+        birthdateTo:
+          type: string
+          format: date-time
         birthdateYYYY:
           type: integer
           format: int32
@@ -8966,6 +9066,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -8977,6 +9078,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -8992,6 +9094,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -9102,6 +9208,8 @@ components:
           $ref: '#/components/schemas/FacilityReferenceDto'
         includeCasesFromOtherJurisdictions:
           type: boolean
+        includePartialMatch:
+          type: boolean
         investigationStatus:
           type: string
           enum:
@@ -9206,6 +9314,19 @@ components:
           type: string
         surveillanceOfficer:
           $ref: '#/components/schemas/UserReferenceDto'
+        survey:
+          $ref: '#/components/schemas/SurveyReferenceDto'
+        surveyAssignedFrom:
+          type: string
+          format: date-time
+        surveyAssignedTo:
+          type: string
+          format: date-time
+        surveyResponseStatus:
+          type: string
+          enum:
+          - RECEIVED
+          - NOT_RECEIVED
         symptomJournalStatus:
           type: string
           enum:
@@ -9219,6 +9340,10 @@ components:
           enum:
           - VACCINATED
           - UNVACCINATED
+          - VACCINATED_ONE_DOSE
+          - VACCINATED_TWO_DOSE
+          - RECOVERED
+          - OTHER
           - UNKNOWN
         withExtendedQuarantine:
           type: boolean
@@ -9347,6 +9472,8 @@ components:
           - DENGUE_FEVER
           - DENGUE_HEMORRHAGIC_FEVER
           - DENUGE_SHOCK_SYNDROME
+        department:
+          type: string
         disease:
           type: string
           enum:
@@ -9383,6 +9510,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -9394,6 +9522,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -9409,6 +9538,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -9618,6 +9751,8 @@ components:
           type: boolean
         notACaseReasonPhysicianInformation:
           type: boolean
+        notifier:
+          $ref: '#/components/schemas/NotifierReferenceDto'
         notifyingClinic:
           type: string
           enum:
@@ -9638,6 +9773,8 @@ components:
           type: string
           maxLength: 1000000
           minLength: 0
+        otherDiagnosticCriteria:
+          type: string
         outcome:
           type: string
           enum:
@@ -9668,6 +9805,8 @@ components:
           minLength: 0
         portHealthInfo:
           $ref: '#/components/schemas/PortHealthInfoDto'
+        postMortem:
+          type: boolean
         postpartum:
           type: string
           enum:
@@ -9785,6 +9924,11 @@ components:
           enum:
           - FURIOUS_RABIES
           - PARALYTIC_RABIES
+        radiographyCompatibility:
+          type: string
+          enum:
+          - COMPATIBLE_WITH_TB
+          - NOT_COMPATIBLE_WITH_TB
         reInfection:
           type: string
           enum:
@@ -9877,6 +10021,17 @@ components:
           $ref: '#/components/schemas/SymptomsDto'
         therapy:
           $ref: '#/components/schemas/TherapyDto'
+        treatmentNotApplicable:
+          type: boolean
+        treatmentStartDate:
+          type: string
+          format: date-time
+        treatmentStarted:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         trimester:
           type: string
           enum:
@@ -9894,7 +10049,15 @@ components:
           enum:
           - VACCINATED
           - UNVACCINATED
+          - VACCINATED_ONE_DOSE
+          - VACCINATED_TWO_DOSE
+          - RECOVERED
+          - OTHER
           - UNKNOWN
+        vaccinationStatusDetails:
+          type: string
+          maxLength: 512
+          minLength: 0
         wasInQuarantineBeforeIsolation:
           type: string
           enum:
@@ -9913,9 +10076,15 @@ components:
         birthdateDD:
           type: integer
           format: int32
+        birthdateFrom:
+          type: string
+          format: date-time
         birthdateMM:
           type: integer
           format: int32
+        birthdateTo:
+          type: string
+          format: date-time
         birthdateYYYY:
           type: integer
           format: int32
@@ -9992,6 +10161,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -10003,6 +10173,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -10018,6 +10189,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -10127,6 +10302,8 @@ components:
         healthFacility:
           $ref: '#/components/schemas/FacilityReferenceDto'
         includeCasesFromOtherJurisdictions:
+          type: boolean
+        includePartialMatch:
           type: boolean
         interval:
           type: integer
@@ -10238,6 +10415,19 @@ components:
           type: string
         surveillanceOfficer:
           $ref: '#/components/schemas/UserReferenceDto'
+        survey:
+          $ref: '#/components/schemas/SurveyReferenceDto'
+        surveyAssignedFrom:
+          type: string
+          format: date-time
+        surveyAssignedTo:
+          type: string
+          format: date-time
+        surveyResponseStatus:
+          type: string
+          enum:
+          - RECEIVED
+          - NOT_RECEIVED
         symptomJournalStatus:
           type: string
           enum:
@@ -10251,6 +10441,10 @@ components:
           enum:
           - VACCINATED
           - UNVACCINATED
+          - VACCINATED_ONE_DOSE
+          - VACCINATED_TWO_DOSE
+          - RECOVERED
+          - OTHER
           - UNKNOWN
         withExtendedQuarantine:
           type: boolean
@@ -10301,6 +10495,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -10312,6 +10507,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -10327,6 +10523,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         firstName:
@@ -10437,6 +10637,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -10448,6 +10649,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -10463,6 +10665,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -10526,6 +10732,8 @@ components:
         missedVisitsCount:
           type: integer
           format: int32
+        nationalHealthId:
+          type: string
         otherDeletionReason:
           type: string
         outcome:
@@ -10628,6 +10836,10 @@ components:
           enum:
           - VACCINATED
           - UNVACCINATED
+          - VACCINATED_ONE_DOSE
+          - VACCINATED_TWO_DOSE
+          - RECOVERED
+          - OTHER
           - UNKNOWN
         visitCount:
           type: integer
@@ -10702,6 +10914,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -10713,6 +10926,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -10728,6 +10942,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -10771,6 +10989,8 @@ components:
         missedVisitsCount:
           type: integer
           format: int32
+        nationalHealthId:
+          type: string
         otherDeletionReason:
           type: string
         outcome:
@@ -10849,6 +11069,10 @@ components:
           enum:
           - VACCINATED
           - UNVACCINATED
+          - VACCINATED_ONE_DOSE
+          - VACCINATED_TWO_DOSE
+          - RECOVERED
+          - OTHER
           - UNKNOWN
         visitCount:
           type: integer
@@ -10950,6 +11174,7 @@ components:
               enum:
               - ANTIBODY_DETECTION
               - ANTIGEN_DETECTION
+              - RAPID_ANTIGEN_DETECTION
               - RAPID_TEST
               - CULTURE
               - HISTOPATHOLOGY
@@ -10962,6 +11187,7 @@ components:
               - DIRECT_FLUORESCENT_ANTIBODY
               - MICROSCOPY
               - NEUTRALIZING_ANTIBODIES
+              - ENZYME_LINKED_IMMUNOSORBENT_ASSAY
               - PCR_RT_PCR
               - GRAM_STAIN
               - LATEX_AGGLUTINATION
@@ -10969,6 +11195,25 @@ components:
               - SEQUENCING
               - DNA_MICROARRAY
               - TMA
+              - IGRA
+              - TST
+              - BEIJINGGENOTYPING
+              - SPOLIGOTYPING
+              - MIRU_PATTERN_CODE
+              - ANTIBIOTIC_SUSCEPTIBILITY
+              - MULTILOCUS_SEQUENCE_TYPING
+              - SLIDE_AGGLUTINATION
+              - WHOLE_GENOME_SEQUENCING
+              - SEROGROUPING
+              - GENOTYPING
+              - NAAT
+              - THICK_BLOOD_SMEAR
+              - THIN_BLOOD_SMEAR
+              - Q_PCR
+              - LAMP
+              - OTHER_ANTIGEN_DETECTION_TEST
+              - OTHER_MOLECULAR_ASSAY
+              - OTHER_SEROLOGICAL_TEST
               - OTHER
     ClassificationPathogenTestNegativeResultCriteriaDto:
       type: object
@@ -10991,6 +11236,7 @@ components:
               enum:
               - ANTIBODY_DETECTION
               - ANTIGEN_DETECTION
+              - RAPID_ANTIGEN_DETECTION
               - RAPID_TEST
               - CULTURE
               - HISTOPATHOLOGY
@@ -11003,6 +11249,7 @@ components:
               - DIRECT_FLUORESCENT_ANTIBODY
               - MICROSCOPY
               - NEUTRALIZING_ANTIBODIES
+              - ENZYME_LINKED_IMMUNOSORBENT_ASSAY
               - PCR_RT_PCR
               - GRAM_STAIN
               - LATEX_AGGLUTINATION
@@ -11010,6 +11257,25 @@ components:
               - SEQUENCING
               - DNA_MICROARRAY
               - TMA
+              - IGRA
+              - TST
+              - BEIJINGGENOTYPING
+              - SPOLIGOTYPING
+              - MIRU_PATTERN_CODE
+              - ANTIBIOTIC_SUSCEPTIBILITY
+              - MULTILOCUS_SEQUENCE_TYPING
+              - SLIDE_AGGLUTINATION
+              - WHOLE_GENOME_SEQUENCING
+              - SEROGROUPING
+              - GENOTYPING
+              - NAAT
+              - THICK_BLOOD_SMEAR
+              - THIN_BLOOD_SMEAR
+              - Q_PCR
+              - LAMP
+              - OTHER_ANTIGEN_DETECTION_TEST
+              - OTHER_MOLECULAR_ASSAY
+              - OTHER_SEROLOGICAL_TEST
               - OTHER
           sampleTestTypes:
             type: array
@@ -11018,6 +11284,7 @@ components:
               enum:
               - ANTIBODY_DETECTION
               - ANTIGEN_DETECTION
+              - RAPID_ANTIGEN_DETECTION
               - RAPID_TEST
               - CULTURE
               - HISTOPATHOLOGY
@@ -11030,6 +11297,7 @@ components:
               - DIRECT_FLUORESCENT_ANTIBODY
               - MICROSCOPY
               - NEUTRALIZING_ANTIBODIES
+              - ENZYME_LINKED_IMMUNOSORBENT_ASSAY
               - PCR_RT_PCR
               - GRAM_STAIN
               - LATEX_AGGLUTINATION
@@ -11037,6 +11305,25 @@ components:
               - SEQUENCING
               - DNA_MICROARRAY
               - TMA
+              - IGRA
+              - TST
+              - BEIJINGGENOTYPING
+              - SPOLIGOTYPING
+              - MIRU_PATTERN_CODE
+              - ANTIBIOTIC_SUSCEPTIBILITY
+              - MULTILOCUS_SEQUENCE_TYPING
+              - SLIDE_AGGLUTINATION
+              - WHOLE_GENOME_SEQUENCING
+              - SEROGROUPING
+              - GENOTYPING
+              - NAAT
+              - THICK_BLOOD_SMEAR
+              - THIN_BLOOD_SMEAR
+              - Q_PCR
+              - LAMP
+              - OTHER_ANTIGEN_DETECTION_TEST
+              - OTHER_MOLECULAR_ASSAY
+              - OTHER_SEROLOGICAL_TEST
               - OTHER
             writeOnly: true
     ClassificationPersonAgeBetweenYearsCriteriaDto:
@@ -11159,6 +11446,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -11170,6 +11458,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -11185,6 +11474,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         inJurisdiction:
@@ -11284,6 +11577,8 @@ components:
           type: string
           maxLength: 255
           minLength: 0
+        nutsCode:
+          type: string
         region:
           $ref: '#/components/schemas/RegionReferenceDto'
         uuid:
@@ -11309,9 +11604,15 @@ components:
         birthdateDD:
           type: integer
           format: int32
+        birthdateFrom:
+          type: string
+          format: date-time
         birthdateMM:
           type: integer
           format: int32
+        birthdateTo:
+          type: string
+          format: date-time
         birthdateYYYY:
           type: integer
           format: int32
@@ -11407,6 +11708,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -11418,6 +11720,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -11433,6 +11736,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -11474,6 +11781,8 @@ components:
           format: date-time
         includeContactsFromOtherJurisdictions:
           type: boolean
+        includePartialMatch:
+          type: boolean
         lastContactDateFrom:
           type: string
           format: date-time
@@ -11494,6 +11803,31 @@ components:
           $ref: '#/components/schemas/PersonReferenceDto'
         personLike:
           type: string
+        prescribedDrug:
+          type: string
+          enum:
+          - AMIKACIN
+          - BEDAQUILINE
+          - CAPREOMYCIN
+          - CIPROFLOXACIN
+          - DELAMANID
+          - ETHAMBUTOL
+          - GATIFLOXACIN
+          - ISONIAZID
+          - KANAMYCIN
+          - LEVOFLOXACIN
+          - MOXIFLOXACIN
+          - OFLOXACIN
+          - RIFAMPICIN
+          - STREPTOMYCIN
+          - CEFTRIAXONE
+          - PENICILLIN
+          - ERYTHROMYCIN
+          - OTHER
+        prescribedDrugText:
+          type: string
+        prophylaxisPrescribed:
+          type: boolean
         quarantineFrom:
           type: string
           format: date-time
@@ -11570,6 +11904,10 @@ components:
           enum:
           - VACCINATED
           - UNVACCINATED
+          - VACCINATED_ONE_DOSE
+          - VACCINATED_TWO_DOSE
+          - RECOVERED
+          - OTHER
           - UNKNOWN
         withCase:
           type: boolean
@@ -11658,6 +11996,7 @@ components:
             - AEROSOL
             - MEDICAL_DISTANT
             - MEDICAL_LIMITED
+          uniqueItems: true
         contactProximityDetails:
           type: string
           maxLength: 512
@@ -11722,6 +12061,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -11733,6 +12073,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -11748,6 +12089,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -11806,6 +12151,8 @@ components:
           $ref: '#/components/schemas/HealthConditionsDto'
         highPriority:
           type: boolean
+        immuneGlobulinProposed:
+          type: boolean
         immunosuppressiveTherapyBasicDisease:
           type: string
           enum:
@@ -11837,6 +12184,29 @@ components:
           type: boolean
         person:
           $ref: '#/components/schemas/PersonReferenceDto'
+        prescribedDrug:
+          type: string
+          enum:
+          - AMIKACIN
+          - BEDAQUILINE
+          - CAPREOMYCIN
+          - CIPROFLOXACIN
+          - DELAMANID
+          - ETHAMBUTOL
+          - GATIFLOXACIN
+          - ISONIAZID
+          - KANAMYCIN
+          - LEVOFLOXACIN
+          - MOXIFLOXACIN
+          - OFLOXACIN
+          - RIFAMPICIN
+          - STREPTOMYCIN
+          - CEFTRIAXONE
+          - PENICILLIN
+          - ERYTHROMYCIN
+          - OTHER
+        prescribedDrugText:
+          type: string
         previousQuarantineTo:
           type: string
           format: date-time
@@ -11852,6 +12222,8 @@ components:
         prohibitionToWorkUntil:
           type: string
           format: date-time
+        prophylaxisPrescribed:
+          type: boolean
         pseudonymized:
           type: boolean
         quarantine:
@@ -11983,11 +12355,23 @@ components:
           maxLength: 36
           minLength: 20
           pattern: "^[0-9a-zA-Z-]*$"
+        vaccinationDoseOneDate:
+          type: string
+          format: date-time
+        vaccinationDoseTwoDate:
+          type: string
+          format: date-time
+        vaccinationProposed:
+          type: boolean
         vaccinationStatus:
           type: string
           enum:
           - VACCINATED
           - UNVACCINATED
+          - VACCINATED_ONE_DOSE
+          - VACCINATED_TWO_DOSE
+          - RECOVERED
+          - OTHER
           - UNKNOWN
       required:
       - disease
@@ -12062,6 +12446,7 @@ components:
             - AEROSOL
             - MEDICAL_DISTANT
             - MEDICAL_LIMITED
+          uniqueItems: true
         contactStatus:
           type: string
           enum:
@@ -12113,6 +12498,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -12124,6 +12510,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -12139,6 +12526,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -12169,6 +12560,9 @@ components:
           format: date-time
         houseNumber:
           type: string
+        id:
+          type: integer
+          format: int64
         inJurisdiction:
           type: boolean
         internalToken:
@@ -12185,6 +12579,8 @@ components:
         missedVisitsCount:
           type: integer
           format: int32
+        nationalHealthId:
+          type: string
         otherDeletionReason:
           type: string
         personUuid:
@@ -12193,6 +12589,31 @@ components:
           type: string
         postalCode:
           type: string
+        prescribedDrug:
+          type: string
+          enum:
+          - AMIKACIN
+          - BEDAQUILINE
+          - CAPREOMYCIN
+          - CIPROFLOXACIN
+          - DELAMANID
+          - ETHAMBUTOL
+          - GATIFLOXACIN
+          - ISONIAZID
+          - KANAMYCIN
+          - LEVOFLOXACIN
+          - MOXIFLOXACIN
+          - OFLOXACIN
+          - RIFAMPICIN
+          - STREPTOMYCIN
+          - CEFTRIAXONE
+          - PENICILLIN
+          - ERYTHROMYCIN
+          - OTHER
+        prescribedDrugText:
+          type: string
+        prophylaxisPrescribed:
+          type: boolean
         pseudonymized:
           type: boolean
         regionName:
@@ -12237,6 +12658,10 @@ components:
           enum:
           - VACCINATED
           - UNVACCINATED
+          - VACCINATED_ONE_DOSE
+          - VACCINATED_TWO_DOSE
+          - RECOVERED
+          - OTHER
           - UNKNOWN
         visitCount:
           type: integer
@@ -12304,6 +12729,7 @@ components:
             - AEROSOL
             - MEDICAL_DISTANT
             - MEDICAL_LIMITED
+          uniqueItems: true
         contactStatus:
           type: string
           enum:
@@ -12355,6 +12781,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -12366,6 +12793,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -12381,6 +12809,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -12406,6 +12838,9 @@ components:
         followUpUntil:
           type: string
           format: date-time
+        id:
+          type: integer
+          format: int64
         inJurisdiction:
           type: boolean
         internalToken:
@@ -12418,10 +12853,37 @@ components:
         missedVisitsCount:
           type: integer
           format: int32
+        nationalHealthId:
+          type: string
         otherDeletionReason:
           type: string
         personUuid:
           type: string
+        prescribedDrug:
+          type: string
+          enum:
+          - AMIKACIN
+          - BEDAQUILINE
+          - CAPREOMYCIN
+          - CIPROFLOXACIN
+          - DELAMANID
+          - ETHAMBUTOL
+          - GATIFLOXACIN
+          - ISONIAZID
+          - KANAMYCIN
+          - LEVOFLOXACIN
+          - MOXIFLOXACIN
+          - OFLOXACIN
+          - RIFAMPICIN
+          - STREPTOMYCIN
+          - CEFTRIAXONE
+          - PENICILLIN
+          - ERYTHROMYCIN
+          - OTHER
+        prescribedDrugText:
+          type: string
+        prophylaxisPrescribed:
+          type: boolean
         pseudonymized:
           type: boolean
         regionName:
@@ -12447,6 +12909,10 @@ components:
           enum:
           - VACCINATED
           - UNVACCINATED
+          - VACCINATED_ONE_DOSE
+          - VACCINATED_TWO_DOSE
+          - RECOVERED
+          - OTHER
           - UNKNOWN
         visitCount:
           type: integer
@@ -12626,6 +13092,8 @@ components:
           type: string
           maxLength: 3
           minLength: 2
+        nutsCode:
+          type: string
         subcontinent:
           $ref: '#/components/schemas/SubcontinentReferenceDto'
         unoCode:
@@ -12655,6 +13123,8 @@ components:
         externalId:
           type: string
         isoCode:
+          type: string
+        nutsCode:
           type: string
         subcontinent:
           $ref: '#/components/schemas/SubcontinentReferenceDto'
@@ -13128,6 +13598,7 @@ components:
             - SNAKE_BITE
             - RUBELLA
             - TUBERCULOSIS
+            - LATENT_TUBERCULOSIS
             - LEPROSY
             - LYMPHATIC_FILARIASIS
             - BURULI_ULCER
@@ -13139,6 +13610,7 @@ components:
             - YAWS_ENDEMIC_SYPHILIS
             - MATERNAL_DEATHS
             - PERINATAL_DEATHS
+            - INFLUENZA
             - INFLUENZA_A
             - INFLUENZA_B
             - H_METAPNEUMOVIRUS
@@ -13154,6 +13626,10 @@ components:
             - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
             - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
             - FHA
+            - INVASIVE_PNEUMOCOCCAL_INFECTION
+            - INVASIVE_MENINGOCOCCAL_INFECTION
+            - GIARDIASIS
+            - CRYPTOSPORIDIOSIS
             - OTHER
             - UNDEFINED
           uniqueItems: true
@@ -13438,6 +13914,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -13449,6 +13926,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -13464,6 +13942,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         district:
@@ -13527,6 +14009,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -13538,6 +14021,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -13553,6 +14037,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -13661,6 +14149,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -13672,6 +14161,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -13687,6 +14177,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         eventCount:
@@ -13751,6 +14245,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -13762,6 +14257,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -13777,6 +14273,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         notACaseCriteria:
@@ -13804,6 +14304,8 @@ components:
         automaticSampleAssignmentThreshold:
           type: integer
           format: int32
+        caseDefinitionText:
+          type: string
         caseFollowUpDuration:
           type: integer
           format: int32
@@ -13851,6 +14353,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -13862,6 +14365,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -13877,6 +14381,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         eventParticipantFollowUpDuration:
@@ -13891,6 +14399,14 @@ components:
           format: int32
         followUpEnabled:
           type: boolean
+        incubationPeriodEnabled:
+          type: boolean
+        maxIncubationPeriod:
+          type: integer
+          format: int32
+        minIncubationPeriod:
+          type: integer
+          format: int32
         primaryDisease:
           type: boolean
         uuid:
@@ -13960,6 +14476,8 @@ components:
           type: string
           maxLength: 255
           minLength: 0
+        nutsCode:
+          type: string
         region:
           $ref: '#/components/schemas/RegionReferenceDto'
         uuid:
@@ -13986,6 +14504,8 @@ components:
           type: number
           format: float
         name:
+          type: string
+        nutsCode:
           type: string
         population:
           type: integer
@@ -14020,6 +14540,7 @@ components:
           - ACTION
           - EVENT
           - TRAVEL_ENTRY
+          - SURVEY
         entityUuids:
           type: array
           items:
@@ -14063,6 +14584,211 @@ components:
       - name
       - size
       - uploadingUser
+    DrugSusceptibilityDto:
+      type: object
+      properties:
+        amikacinMic:
+          type: number
+          format: float
+        amikacinSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
+        bedaquilineMic:
+          type: number
+          format: float
+        bedaquilineSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
+        capreomycinMic:
+          type: number
+          format: float
+        capreomycinSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
+        ceftriaxoneMic:
+          type: number
+          format: float
+        ceftriaxoneSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
+        changeDate:
+          type: string
+          format: date-time
+        ciprofloxacinMic:
+          type: number
+          format: float
+        ciprofloxacinSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
+        creationDate:
+          type: string
+          format: date-time
+        delamanidMic:
+          type: number
+          format: float
+        delamanidSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
+        erythromycinMic:
+          type: number
+          format: float
+        erythromycinSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
+        ethambutolMic:
+          type: number
+          format: float
+        ethambutolSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
+        gatifloxacinMic:
+          type: number
+          format: float
+        gatifloxacinSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
+        inJurisdiction:
+          type: boolean
+        isoniazidMic:
+          type: number
+          format: float
+        isoniazidSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
+        kanamycinMic:
+          type: number
+          format: float
+        kanamycinSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
+        levofloxacinMic:
+          type: number
+          format: float
+        levofloxacinSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
+        moxifloxacinMic:
+          type: number
+          format: float
+        moxifloxacinSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
+        ofloxacinMic:
+          type: number
+          format: float
+        ofloxacinSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
+        penicillinMic:
+          type: number
+          format: float
+        penicillinSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
+        pseudonymized:
+          type: boolean
+        rifampicinMic:
+          type: number
+          format: float
+        rifampicinSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
+        streptomycinMic:
+          type: number
+          format: float
+        streptomycinSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
+        uuid:
+          type: string
+          maxLength: 36
+          minLength: 20
+          pattern: "^[0-9a-zA-Z-]*$"
     EnvironmentDto:
       type: object
       properties:
@@ -14094,10 +14820,15 @@ components:
           - SOIL_ROCK
           - AIR
           - BIOTA
+          - VECTORS
         environmentName:
           type: string
           maxLength: 1000000
           minLength: 0
+        eventReferenceDtos:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventReferenceDto'
         externalId:
           type: string
           maxLength: 512
@@ -14154,6 +14885,11 @@ components:
           maxLength: 36
           minLength: 20
           pattern: "^[0-9a-zA-Z-]*$"
+        vectorType:
+          type: string
+          enum:
+          - MOSQUITOS
+          - TICKS
         waterType:
           type: string
           enum:
@@ -14314,6 +15050,11 @@ components:
           maxLength: 36
           minLength: 20
           pattern: "^[0-9a-zA-Z-]*$"
+        vectorType:
+          type: string
+          enum:
+          - MOSQUITOS
+          - TICKS
         weatherConditions:
           type: object
           additionalProperties:
@@ -14354,15 +15095,39 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        caseImportedStatus:
+          type: string
+          enum:
+          - IMPORTED_CASE
+          - IMPORT_RELATED_CASE
+          - UNKNOWN_IMPORTATION_STATUS
+          - NOT_IMPORTED_CASE
         changeDate:
           type: string
           format: date-time
+        clusterRelated:
+          type: boolean
+        clusterType:
+          type: string
+          enum:
+          - KINDERGARTEN_OR_CHILDCARE
+          - FAMILY
+          - MILITARY
+          - NOSOCOMIAL
+          - SCHOOL
+          - SPORTS_TEAM
+          - UNIVERSITY
+          - OTHER
+        clusterTypeText:
+          type: string
         contactWithSourceCaseKnown:
           type: string
           enum:
           - "YES"
           - "NO"
           - UNKNOWN
+        country:
+          $ref: '#/components/schemas/CountryReferenceDto'
         creationDate:
           type: string
           format: date-time
@@ -14382,14 +15147,51 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        importedCase:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         inJurisdiction:
           type: boolean
+        infectionSource:
+          type: string
+          enum:
+          - FOOD
+          - ANIMAL
+          - NOT_APPLICABLE
+          - OTHER
+        infectionSourceText:
+          type: string
         largeOutbreaksArea:
           type: string
           enum:
           - "YES"
           - "NO"
           - UNKNOWN
+        modeOfTransmission:
+          type: string
+          enum:
+          - ANIMAL_TO_HUMAN
+          - FOOD_OR_WATER
+          - PERSON_TO_PERSON
+          - RECREATIONAL_WATER
+          - HEALTHCARE_ASSOCIATED
+          - INJECTING_DRUG_USERS
+          - LAB_OCCUPATIONAL_EXPOSURE
+          - MOTHER_TO_CHILD
+          - SEXUAL
+          - TRANSFUSION_RECIPIENT
+          - ORGAN_RECIPIENT
+          - UNKNOWN
+          - OTHER
+        modeOfTransmissionType:
+          type: string
+          maxLength: 512
+          minLength: 0
+        otherDetails:
+          type: string
         pseudonymized:
           type: boolean
         uuid:
@@ -14481,6 +15283,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -14492,6 +15295,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -14507,6 +15311,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         eventDiseaseDetails:
@@ -14645,6 +15453,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -14656,6 +15465,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -14671,12 +15481,18 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         diseaseVariant:
           $ref: '#/components/schemas/DiseaseVariant'
         district:
           $ref: '#/components/schemas/DistrictReferenceDto'
+        environment:
+          $ref: '#/components/schemas/EnvironmentReferenceDto'
         eventDateFrom:
           type: string
           format: date-time
@@ -14856,6 +15672,10 @@ components:
           - MEANS_OF_TRANSPORT
           - PUBLIC_PLACE
           - SCATTERED
+          - SCHOOL
+          - EDUCATION_AND_CHILDCARE
+          - NURSING_HOME
+          - ASYLUM_SEEKERS_SHELTER
           - UNKNOWN
           - OTHER
         userFilterIncluded:
@@ -14920,6 +15740,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -14931,6 +15752,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -14946,6 +15768,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -14970,6 +15796,10 @@ components:
         endDate:
           type: string
           format: date-time
+        environmentReferenceDtos:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnvironmentReferenceDto'
         epidemiologicalEvidence:
           type: string
           enum:
@@ -15224,6 +16054,10 @@ components:
           - MEANS_OF_TRANSPORT
           - PUBLIC_PLACE
           - SCATTERED
+          - SCHOOL
+          - EDUCATION_AND_CHILDCARE
+          - NURSING_HOME
+          - ASYLUM_SEEKERS_SHELTER
           - UNKNOWN
           - OTHER
         typeOfPlaceText:
@@ -15406,6 +16240,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -15417,6 +16252,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -15432,6 +16268,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -15616,6 +16456,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -15627,6 +16468,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -15642,6 +16484,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         event:
@@ -15662,6 +16508,7 @@ components:
           - NEGATIVE
           - POSITIVE
           - NOT_DONE
+          - NOT_APPLICABLE
         person:
           $ref: '#/components/schemas/PersonReferenceDto'
         relevanceStatus:
@@ -15679,6 +16526,10 @@ components:
           enum:
           - VACCINATED
           - UNVACCINATED
+          - VACCINATED_ONE_DOSE
+          - VACCINATED_TWO_DOSE
+          - RECOVERED
+          - OTHER
           - UNKNOWN
     EventParticipantDto:
       type: object
@@ -15738,6 +16589,10 @@ components:
           enum:
           - VACCINATED
           - UNVACCINATED
+          - VACCINATED_ONE_DOSE
+          - VACCINATED_TWO_DOSE
+          - RECOVERED
+          - OTHER
           - UNKNOWN
       required:
       - event
@@ -15786,6 +16641,7 @@ components:
           - NEGATIVE
           - POSITIVE
           - NOT_DONE
+          - NOT_APPLICABLE
         personUuid:
           type: string
         pseudonymized:
@@ -15810,6 +16666,10 @@ components:
           enum:
           - VACCINATED
           - UNVACCINATED
+          - VACCINATED_ONE_DOSE
+          - VACCINATED_TWO_DOSE
+          - RECOVERED
+          - OTHER
           - UNKNOWN
     EventParticipantReferenceDto:
       type: object
@@ -15838,6 +16698,13 @@ components:
     ExposureDto:
       type: object
       properties:
+        animalCategory:
+          type: string
+          enum:
+          - DOMESTIC
+          - WILD
+        animalCategoryDetails:
+          type: string
         animalCondition:
           type: string
           enum:
@@ -15854,6 +16721,18 @@ components:
           - LICK
           - OTHER
         animalContactTypeDetails:
+          type: string
+          maxLength: 1000000
+          minLength: 0
+        animalLocation:
+          type: string
+          enum:
+          - ZOO
+          - FARM
+          - PARK
+          - FOREST
+          - OTHER
+        animalLocationText:
           type: string
           maxLength: 1000000
           minLength: 0
@@ -15878,10 +16757,63 @@ components:
         changeDate:
           type: string
           format: date-time
+        childcareFacilityDetails:
+          type: string
+          maxLength: 1000000
+          minLength: 0
+        conditionOfAnimal:
+          type: string
+          enum:
+          - ALIVE
+          - DEAD
+          - PROCESSED
+          - UNKNOWN
         connectionNumber:
           type: string
           maxLength: 512
           minLength: 0
+        contactFactorDetails:
+          type: string
+        contactFactors:
+          type: array
+          items:
+            type: string
+            enum:
+            - DURATION_OF_EXPOSURE
+            - PROXIMITY_TO_SOURCE
+            - TYPE_OF_ACTIVITY
+            - POOR_VENTILATION
+            - PROXIMITY_AND_DURATION
+            - WIND_AND_AIRFLOW
+            - DENSITY_OF_PEOPLE
+            - SKIN_CONTACT
+            - BODY_FLUIDS
+            - BUTCHERING
+            - COOKING
+            - TOUCHING_CONTACT_WITH_FLUIDS
+            - SCRATCHES_BITES_LICKING
+            - SHARED_SURFACES
+            - OUTDOOR_ACTIVITIES
+            - STANDING_WATER_PROXIMITY
+            - HIGH_MOSQUITO_ACTIVITY_REGIONS
+            - UNPROTECTED_HOUSEHOLD
+            - MOSQUITO_ACTIVITY_TIME_OF_DAY
+            - CLOTHING_COVERAGE
+            - DURATION_OUTDOORS
+            - EXPOSED_SKIN
+            - DRINKING_CONTAMINATED_WATER
+            - ICE_AND_FOOD_PREPARATION
+            - SWALLOWING_WATER
+            - CONTACT_WITH_OPEN_WOUNDS
+            - EGG
+            - MEAT
+            - FISH_SEAFOOD
+            - DAIRY
+            - FRUIT
+            - RAW_VEGETABLES
+            - UNKNOWN
+            - OTHER
+          uniqueItems: true
         contactToBodyFluids:
           type: string
           enum:
@@ -15911,6 +16843,12 @@ components:
           type: string
           maxLength: 1000000
           minLength: 0
+        domesticSwimming:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         eatingRawAnimalProducts:
           type: string
           enum:
@@ -15920,6 +16858,19 @@ components:
         endDate:
           type: string
           format: date-time
+        exposureCategory:
+          type: string
+          enum:
+          - AIR_BORNE
+          - ANIMAL_CONTACT
+          - DIRECT_CONTACT
+          - FOMITE_TRANSMISSION
+          - FOOD_BORNE
+          - VECTOR_BORNE
+          - VERTICAL_TRANSMISSION
+          - WATER_BORNE
+        exposureComment:
+          type: string
         exposureRole:
           type: string
           enum:
@@ -15940,6 +16891,23 @@ components:
           - TEACHER
           - UNKNOWN
           - OTHER
+        exposureSetting:
+          type: string
+          enum:
+          - INDOOR
+          - OUTDOOR
+          - PERSON_TO_PERSON
+          - MOSQUITO_BORNE
+          - TICK_BORNE
+          - DRINKING_WATER
+          - RECREATIONAL_WATER
+          - PREGNANCY_OR_DELIVERY
+          - OTHER
+          - UNKNOWN
+        exposureSettingDetails:
+          type: string
+        exposureSubSettingDetails:
+          type: string
         exposureType:
           type: string
           enum:
@@ -15950,14 +16918,25 @@ components:
           - GATHERING
           - HABITATION
           - PERSONAL_SERVICES
+          - CHILDCARE_FACILITY
           - BURIAL
           - ANIMAL_CONTACT
+          - RECREATIONAL_WATER
+          - FOOD
+          - SEXUAL_CONTACT
+          - SYMPTOMATIC_CONTACT
+          - FLOOD_EXPOSURE
           - OTHER
           - UNKNOWN
         exposureTypeDetails:
           type: string
           maxLength: 1000000
           minLength: 0
+        fomiteTransmissionLocation:
+          type: string
+          enum:
+          - INSIDE_HOME
+          - OUTSIDE
         gatheringDetails:
           type: string
           maxLength: 1000000
@@ -15998,6 +16977,12 @@ components:
         inJurisdiction:
           type: boolean
         indoors:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        internationalSwimming:
           type: string
           enum:
           - "YES"
@@ -16071,12 +17056,64 @@ components:
         prophylaxisDate:
           type: string
           format: date-time
+        protectiveMeasureDetails:
+          type: string
+        protectiveMeasures:
+          type: array
+          items:
+            type: string
+            enum:
+            - WEARING_MASK
+            - DISTANCE_1_5M
+            - FACE_TO_FACE_15MIN
+            - VENTILATION_HEPA
+            - HAND_HYGIENE
+            - AVOID_TOUCHING_FACE
+            - SAFE_SEX
+            - WEARING_PPE
+            - VACCINATION
+            - HAND_WASHING
+            - WOUND_WASHING
+            - INSECT_REPELLENT
+            - HERBS
+            - COILS
+            - SLEEPING_UNDER_BEDNET
+            - INDOOR_SPRAYING
+            - AIR_CONDITION
+            - PROTECTIVE_CLOTHING
+            - ENVIRONMENTAL_CONTROL
+            - TICK_PREVENTION
+            - REGULAR_CHECKS
+            - WATER_PURIFICATION
+            - SAFE_WATER_SOURCES
+            - AVOID_RAW_FOODS
+            - NO_SWIMMING_CONTAMINATED
+            - SHOWER_AFTER_SWIMMING
+            - WOUND_COVERAGE
+            - BATHING_CONTAMINATED_WATER
+            - WELL_COOKED
+            - COLD_HOT_CHAIN
+            - WASHED
+            - MEDICATION
+            - C_SECTION
+            - OTHER
+          uniqueItems: true
         protectiveMeasuresDetails:
           type: string
           maxLength: 1000000
           minLength: 0
         pseudonymized:
           type: boolean
+        rawFoodContact:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        rawFoodContactText:
+          type: string
+          maxLength: 1000000
+          minLength: 0
         reportingUser:
           $ref: '#/components/schemas/UserReferenceDto'
         riskArea:
@@ -16089,6 +17126,10 @@ components:
           type: string
           maxLength: 512
           minLength: 0
+        sexualExposureText:
+          type: string
+          maxLength: 1000000
+          minLength: 0
         shortDistance:
           type: string
           enum:
@@ -16098,6 +17139,60 @@ components:
         startDate:
           type: string
           format: date-time
+        subSettings:
+          type: array
+          items:
+            type: string
+            enum:
+            - CLOSED_POORLY_VENTILATED
+            - SHARED_HIGH_OCCUPANCY
+            - ENCLOSED_LIMITED_CIRCULATION
+            - VEHICLES
+            - HEALTHCARE_SETTINGS
+            - TEMPORARY_SHELTERS
+            - CROWDED_OUTDOOR_LIMITED_AIRFLOW
+            - CLOSE_PHYSICAL_CONTACT
+            - HIGH_TOUCH_ENVIRONMENTS
+            - SEXUAL_ACTIVITY
+            - STANDING_WATER_AREAS
+            - HIGH_MOSQUITO_ACTIVITY_REGIONS
+            - FORESTED_GRASSY_RURAL
+            - WILDLIFE_RESERVOIR_AREAS
+            - EATING_AT_HOME
+            - EATING_OUTSIDE
+            - UNKNOWN
+            - OTHER
+          uniqueItems: true
+        swimmingLocation:
+          type: string
+          enum:
+          - PUBLIC
+          - PRIVATE
+          - LAKE
+          - RIVER
+          - OCEAN
+          - WATER_PARK
+          - OTHER
+        swimmingLocationType:
+          type: string
+          maxLength: 512
+          minLength: 0
+        symptomaticIndividualText:
+          type: string
+          maxLength: 1000000
+          minLength: 0
+        travelAccommodation:
+          type: string
+          enum:
+          - HOTEL
+          - CAMPING
+          - RENTED_APARTMENT_OR_HOUSE
+          - FRIENDS_OR_FAMILY
+          - OTHER
+        travelAccommodationType:
+          type: string
+          maxLength: 512
+          minLength: 0
         typeOfAnimal:
           type: string
           enum:
@@ -16115,11 +17210,24 @@ components:
           - RODENT
           - TICK
           - FLEA
+          - BIRDS
+          - GOAT
+          - HORSE
+          - SHEEP
           - OTHER
         typeOfAnimalDetails:
           type: string
           maxLength: 1000000
           minLength: 0
+        typeOfChildcareFacility:
+          type: string
+          enum:
+          - NURSERY_CRECHE
+          - NURSERY_SCHOOL
+          - CHILDMINDER_CENTER
+          - CHILDCARE_CENTER
+          - SCHOOL
+          - OTHER
         typeOfPlace:
           type: string
           enum:
@@ -16132,6 +17240,10 @@ components:
           - MEANS_OF_TRANSPORT
           - PUBLIC_PLACE
           - SCATTERED
+          - SCHOOL
+          - EDUCATION_AND_CHILDCARE
+          - NURSING_HOME
+          - ASYLUM_SEEKERS_SHELTER
           - UNKNOWN
           - OTHER
         typeOfPlaceDetails:
@@ -16239,6 +17351,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -16250,6 +17363,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -16265,6 +17379,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -16300,17 +17418,60 @@ components:
     ExternalMessageDto:
       type: object
       properties:
+        activitiesAsCase:
+          type: string
+        additionalPersonAddresses:
+          type: string
+        additionalPersonContactDetails:
+          type: string
+        admittedToHealthFacility:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         assignee:
           $ref: '#/components/schemas/UserReferenceDto'
         automaticProcessingPossible:
           type: boolean
+        caseClassification:
+          type: string
+          enum:
+          - NOT_CLASSIFIED
+          - SUSPECT
+          - PROBABLE
+          - CONFIRMED
+          - CONFIRMED_NO_SYMPTOMS
+          - CONFIRMED_UNKNOWN_SYMPTOMS
+          - NO_CASE
+        caseComments:
+          type: string
+          maxLength: 1000000
+          minLength: 0
         caseReportDate:
           type: string
           format: date-time
+        caseSymptoms:
+          $ref: '#/components/schemas/SymptomsDto'
         changeDate:
           type: string
           format: date-time
+        complianceWithTreatment:
+          type: string
+          enum:
+          - NO_COMPLIANCE
+          - TREATMENT_COMPLETED
+          - TREATMENT_FAILED
+          - TREATMENT_NOT_COMPLETED
+          - UNKNOWN
+          - NOT_APPLICABLE
         creationDate:
+          type: string
+          format: date-time
+        deceasedDate:
+          type: string
+          format: date-time
+        diagnosticDate:
           type: string
           format: date-time
         disease:
@@ -16349,6 +17510,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -16360,6 +17522,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -16375,6 +17538,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -16383,17 +17550,81 @@ components:
           type: string
           maxLength: 512
           minLength: 0
+        exposures:
+          type: string
         externalMessageDetails:
           type: string
           maxLength: 1000000
+          minLength: 0
+        hiv:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        hivArt:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        hospitalizationAdmissionDate:
+          type: string
+          format: date-time
+        hospitalizationDischargeDate:
+          type: string
+          format: date-time
+        hospitalizationFacilityDepartment:
+          type: string
+          maxLength: 512
+          minLength: 0
+        hospitalizationFacilityExternalId:
+          type: string
+          maxLength: 512
+          minLength: 0
+        hospitalizationFacilityName:
+          type: string
+          maxLength: 512
           minLength: 0
         inJurisdiction:
           type: boolean
         messageDateTime:
           type: string
           format: date-time
+        notifierAddress:
+          type: string
+          maxLength: 1000000
+          minLength: 0
+        notifierEmail:
+          type: string
+          maxLength: 255
+          minLength: 0
+        notifierFirstName:
+          type: string
+          maxLength: 255
+          minLength: 0
+        notifierLastName:
+          type: string
+          maxLength: 255
+          minLength: 0
+        notifierPhone:
+          type: string
+          maxLength: 255
+          minLength: 0
+        notifierRegistrationNumber:
+          type: string
+          maxLength: 255
+          minLength: 0
+        otherDiagnosticCriteria:
+          type: string
+          maxLength: 512
+          minLength: 0
         ownershipHandedOver:
           type: boolean
+        personAdditionalDetails:
+          type: string
+          maxLength: 1000000
+          minLength: 0
         personBirthDateDD:
           type: integer
           format: int32
@@ -16423,6 +17654,26 @@ components:
           type: string
           maxLength: 255
           minLength: 0
+        personGuardianEmail:
+          type: string
+          maxLength: 255
+          minLength: 0
+        personGuardianFirstName:
+          type: string
+          maxLength: 255
+          minLength: 0
+        personGuardianLastName:
+          type: string
+          maxLength: 255
+          minLength: 0
+        personGuardianPhone:
+          type: string
+          maxLength: 255
+          minLength: 0
+        personGuardianRelationship:
+          type: string
+          maxLength: 255
+          minLength: 0
         personHouseNumber:
           type: string
           maxLength: 255
@@ -16434,6 +17685,10 @@ components:
         personNationalHealthId:
           type: string
           maxLength: 255
+          minLength: 0
+        personOccupation:
+          type: string
+          maxLength: 512
           minLength: 0
         personPhone:
           type: string
@@ -16468,8 +17723,19 @@ components:
           type: string
           maxLength: 255
           minLength: 0
+        previousTuberculosisTreatment:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         pseudonymized:
           type: boolean
+        radiographyCompatibility:
+          type: string
+          enum:
+          - COMPATIBLE_WITH_TB
+          - NOT_COMPATIBLE_WITH_TB
         reportId:
           type: string
           maxLength: 512
@@ -16515,6 +17781,32 @@ components:
           - UNCLEAR
         surveillanceReport:
           $ref: '#/components/schemas/SurveillanceReportReferenceDto'
+        treatmentNotApplicable:
+          type: boolean
+        treatmentStarted:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        treatmentStartedDate:
+          type: string
+          format: date-time
+        tuberculosis:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        tuberculosisBeijingLineage:
+          type: boolean
+        tuberculosisDirectlyObservedTreatment:
+          type: boolean
+        tuberculosisInfectionYear:
+          type: integer
+          format: int32
+        tuberculosisMdrXdrTuberculosis:
+          type: boolean
         type:
           type: string
           enum:
@@ -16525,6 +17817,16 @@ components:
           maxLength: 36
           minLength: 20
           pattern: "^[0-9a-zA-Z-]*$"
+        vaccinationStatus:
+          type: string
+          enum:
+          - VACCINATED
+          - UNVACCINATED
+          - VACCINATED_ONE_DOSE
+          - VACCINATED_TWO_DOSE
+          - RECOVERED
+          - OTHER
+          - UNKNOWN
     ExternalMessageIndexDto:
       type: object
       properties:
@@ -16566,6 +17868,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -16577,6 +17880,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -16592,6 +17896,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -16678,6 +17986,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -16689,6 +17998,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -16704,6 +18014,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         personUuid:
@@ -17138,6 +18452,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -17149,6 +18464,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -17164,6 +18480,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         district:
@@ -17186,6 +18506,7 @@ components:
             - TASK_MANAGEMENT
             - WEEKLY_REPORTING
             - IMMUNIZATION_MANAGEMENT
+            - ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_MANAGEMENT
             - TRAVEL_ENTRIES
             - DASHBOARD_SURVEILLANCE
             - DASHBOARD_CONTACTS
@@ -17194,6 +18515,7 @@ components:
             - LIMITED_SYNCHRONIZATION
             - ENVIRONMENT_MANAGEMENT
             - SELF_REPORTING
+            - SURVEYS
             - ASSIGN_TASKS_TO_HIGHER_LEVEL
             - CASE_FOLLOWUP
             - DOCUMENTS
@@ -17240,6 +18562,7 @@ components:
             - TASK_GENERATION_EVENT_SURVEILLANCE
             - TASK_GENERATION_GENERAL
             - CASE_AND_CONTACT_BULK_ACTIONS
+            - EPIPULSE_EXPORT
         region:
           $ref: '#/components/schemas/RegionReferenceDto'
         searchText:
@@ -17289,6 +18612,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -17300,6 +18624,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -17315,6 +18640,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         district:
@@ -17338,6 +18667,7 @@ components:
           - TASK_MANAGEMENT
           - WEEKLY_REPORTING
           - IMMUNIZATION_MANAGEMENT
+          - ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_MANAGEMENT
           - TRAVEL_ENTRIES
           - DASHBOARD_SURVEILLANCE
           - DASHBOARD_CONTACTS
@@ -17346,6 +18676,7 @@ components:
           - LIMITED_SYNCHRONIZATION
           - ENVIRONMENT_MANAGEMENT
           - SELF_REPORTING
+          - SURVEYS
           - ASSIGN_TASKS_TO_HIGHER_LEVEL
           - CASE_FOLLOWUP
           - DOCUMENTS
@@ -17392,6 +18723,7 @@ components:
           - TASK_GENERATION_EVENT_SURVEILLANCE
           - TASK_GENERATION_GENERAL
           - CASE_AND_CONTACT_BULK_ACTIONS
+          - EPIPULSE_EXPORT
         properties:
           type: object
           additionalProperties:
@@ -17442,6 +18774,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -17453,6 +18786,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -17468,6 +18802,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         districtName:
@@ -17548,6 +18886,15 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        complianceWithTreatment:
+          type: string
+          enum:
+          - NO_COMPLIANCE
+          - TREATMENT_COMPLETED
+          - TREATMENT_FAILED
+          - TREATMENT_NOT_COMPLETED
+          - UNKNOWN
+          - NOT_APPLICABLE
         congenitalSyphilis:
           type: string
           enum:
@@ -17575,6 +18922,14 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        exposedToMosquitoBorneViruses:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        exposedToMosquitoBorneVirusesText:
+          type: string
         formerSmoker:
           type: string
           enum:
@@ -17611,8 +18966,19 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        immunodeficiencyOtherThanHivText:
+          type: string
         inJurisdiction:
           type: boolean
+        malaria:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        malariaInfectedYear:
+          type: integer
+          format: int32
         malignancyChemotherapy:
           type: string
           enum:
@@ -17629,8 +18995,20 @@ components:
           type: string
           maxLength: 4096
           minLength: 0
+        previousTuberculosisTreatment:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         pseudonymized:
           type: boolean
+        recurrentBronchiolitis:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         sickleCellDisease:
           type: string
           enum:
@@ -17643,11 +19021,20 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        tuberculosisInfectionYear:
+          type: integer
+          format: int32
         uuid:
           type: string
           maxLength: 36
           minLength: 20
           pattern: "^[0-9a-zA-Z-]*$"
+        vaccinatedAgainstMosquitoBorneViruses:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
     HospitalizationDto:
       type: object
       properties:
@@ -17666,6 +19053,12 @@ components:
         creationDate:
           type: string
           format: date-time
+        currentlyHospitalized:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         description:
           type: string
           maxLength: 4096
@@ -17673,6 +19066,9 @@ components:
         dischargeDate:
           type: string
           format: date-time
+        durationOfHospitalization:
+          type: integer
+          format: int32
         hospitalizationReason:
           type: string
           enum:
@@ -17686,6 +19082,9 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        icuLengthOfStay:
+          type: integer
+          format: int32
         intensiveCareUnit:
           type: string
           enum:
@@ -17717,10 +19116,22 @@ components:
           type: string
           maxLength: 1000000
           minLength: 0
+        oxygenPrescribed:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         previousHospitalizations:
           type: array
           items:
             $ref: '#/components/schemas/PreviousHospitalizationDto'
+        stillHospitalized:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         uuid:
           type: string
           maxLength: 36
@@ -17781,6 +19192,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -17792,6 +19204,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -17807,6 +19220,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         district:
@@ -17920,6 +19337,8 @@ components:
           - VACCINATION
           - RECOVERY
           - VACCINATION_RECOVERY
+          - MATERNAL_VACCINATION
+          - MONOCLONAL_ANTIBODY
           - OTHER
         nameAddressPhoneEmailLike:
           type: string
@@ -18005,6 +19424,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -18016,6 +19436,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -18031,6 +19452,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -18129,6 +19554,12 @@ components:
           - EXPIRED
         inJurisdiction:
           type: boolean
+        injectionFacility:
+          type: string
+          enum:
+          - MATERNITY_WARD
+          - PAEDIATRIC_PRACTICE
+          - HOSPITAL
         lastInfectionDate:
           type: string
           format: date-time
@@ -18138,6 +19569,8 @@ components:
           - VACCINATION
           - RECOVERY
           - VACCINATION_RECOVERY
+          - MATERNAL_VACCINATION
+          - MONOCLONAL_ANTIBODY
           - OTHER
         meansOfImmunizationDetails:
           type: string
@@ -18262,6 +19695,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -18273,6 +19707,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -18288,6 +19723,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         district:
@@ -18319,6 +19758,8 @@ components:
           - VACCINATION
           - RECOVERY
           - VACCINATION_RECOVERY
+          - MATERNAL_VACCINATION
+          - MONOCLONAL_ANTIBODY
           - OTHER
         otherDeletionReason:
           type: string
@@ -18748,6 +20189,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -18759,6 +20201,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -18774,6 +20217,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         healthFacilityLat:
@@ -18963,6 +20410,23 @@ components:
           maxLength: 36
           minLength: 20
           pattern: "^[0-9a-zA-Z-]*$"
+    NotifierReferenceDto:
+      type: object
+      properties:
+        caption:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        uuid:
+          type: string
+          pattern: "^[0-9a-zA-Z-]*$"
+        versionDate:
+          type: string
+          format: date-time
+      required:
+      - uuid
     OccupationType:
       type: object
       properties:
@@ -19031,6 +20495,7 @@ components:
             - SNAKE_BITE
             - RUBELLA
             - TUBERCULOSIS
+            - LATENT_TUBERCULOSIS
             - LEPROSY
             - LYMPHATIC_FILARIASIS
             - BURULI_ULCER
@@ -19042,6 +20507,7 @@ components:
             - YAWS_ENDEMIC_SYPHILIS
             - MATERNAL_DEATHS
             - PERINATAL_DEATHS
+            - INFLUENZA
             - INFLUENZA_A
             - INFLUENZA_B
             - H_METAPNEUMOVIRUS
@@ -19057,6 +20523,10 @@ components:
             - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
             - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
             - FHA
+            - INVASIVE_PNEUMOCOCCAL_INFECTION
+            - INVASIVE_MENINGOCOCCAL_INFECTION
+            - GIARDIASIS
+            - CRYPTOSPORIDIOSIS
             - OTHER
             - UNDEFINED
           uniqueItems: true
@@ -19115,6 +20585,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -19126,6 +20597,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -19141,6 +20613,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         district:
@@ -19761,6 +21237,10 @@ components:
     PathogenTestDto:
       type: object
       properties:
+        antibodyTitre:
+          type: string
+          maxLength: 512
+          minLength: 0
         changeDate:
           type: string
           format: date-time
@@ -19799,6 +21279,8 @@ components:
           - TRANSFERRED_RESPONSIBILITY
           - DUPLICATE_ENTRIES
           - OTHER_REASON
+        drugSusceptibility:
+          $ref: '#/components/schemas/DrugSusceptibilityDto'
         environmentSample:
           $ref: '#/components/schemas/EnvironmentSampleReferenceDto'
         externalId:
@@ -19811,8 +21293,48 @@ components:
           minLength: 0
         fourFoldIncreaseAntibodyTiter:
           type: boolean
+        genoType:
+          type: string
+          enum:
+          - GENOTYPE_A
+          - GENOTYPE_B
+          - GENOTYPE_B2
+          - GENOTYPE_B3
+          - GENOTYPE_C1
+          - GENOTYPE_C2
+          - GENOTYPE_D1
+          - GENOTYPE_D10
+          - GENOTYPE_D11
+          - GENOTYPE_D2
+          - GENOTYPE_D3
+          - GENOTYPE_D4
+          - GENOTYPE_D5
+          - GENOTYPE_D6
+          - GENOTYPE_D7
+          - GENOTYPE_D8
+          - GENOTYPE_D9
+          - GENOTYPE_E
+          - GENOTYPE_F
+          - GENOTYPE_G1
+          - GENOTYPE_G2
+          - GENOTYPE_G3
+          - GENOTYPE_H1
+          - GENOTYPE_H2
+          - CRYPTOSPORIDIUM_HOMINIS
+          - CRYPTOSPORIDIUM_PARVUM
+          - CRYPTOSPORIDIUM_SPECIES
+          - OTHER
+          - UNKNOWN
+        genoTypeText:
+          type: string
         inJurisdiction:
           type: boolean
+        isoniazidResistant:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         lab:
           $ref: '#/components/schemas/FacilityReferenceDto'
         labDetails:
@@ -19825,11 +21347,15 @@ components:
           type: string
           maxLength: 1000000
           minLength: 0
+        patternProfile:
+          type: string
         pcrTestSpecification:
           type: string
           enum:
           - VARIANT_SPECIFIC
           - N501Y_MUTATION_DETECTION
+        performedByReferenceLaboratory:
+          type: boolean
         preliminary:
           type: boolean
         prescriberAddress:
@@ -19867,12 +21393,98 @@ components:
         reportDate:
           type: string
           format: date-time
-        sample:
-          $ref: '#/components/schemas/SampleReferenceDto'
-        serotype:
+        resultDetails:
           type: string
           maxLength: 512
           minLength: 0
+        retestRequested:
+          type: boolean
+        rifampicinResistant:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        rsvSubtype:
+          type: string
+          enum:
+          - RSV_A
+          - RSV_B
+          - RSV_A_AND_B
+          - INDETERMINATE
+        sample:
+          $ref: '#/components/schemas/SampleReferenceDto'
+        seroGroupSpecification:
+          type: string
+          enum:
+          - SEROGROUP_A
+          - SEROGROUP_B
+          - SEROGROUP_C
+          - SEROGROUP_W
+          - SEROGROUP_X
+          - SEROGROUP_Y
+          - SEROGROUP_Z
+          - SEROGROUP_29E
+          - NOT_GROUPABLE
+          - NOT_UNDER_SURVEILLANCE
+          - OTHER
+          - UNKNOWN
+        seroGroupSpecificationText:
+          type: string
+        seroTypingMethod:
+          type: string
+          enum:
+          - MULTIPLEX_PCR
+          - QUELLUNG_REACTION
+          - COAGGLUTINATION
+          - GEL_DIFFUSION
+          - PNEUMOTEST
+          - SLIDE_AGGLUTINATION
+          - OTHER
+        seroTypingMethodText:
+          type: string
+        serotype:
+          type: string
+          enum:
+          - DENV_1
+          - DENV_2
+          - DENV_3
+          - DENV_4
+          - OTHER
+        serotypeText:
+          type: string
+          maxLength: 512
+          minLength: 0
+        specie:
+          type: string
+          enum:
+          - MYCOBATERIUM_AFRICANUM
+          - MYCOBATERIUM_BOVIS
+          - MYCOBATERIUM_TUBERCULOSIS
+          - OTHER_MTBC_MEMBER
+          - SPP
+          - FALCIPARUM
+          - VIVAX
+          - MALARIAE
+          - OVALE
+          - KNOWLESI
+          - CYNOMOLGI
+          - NOT_SPECIFIED
+          - COINFECTION
+          - OTHER
+          - UNKNOWN
+          - NOT_APPLICABLE
+        specieText:
+          type: string
+          maxLength: 512
+          minLength: 0
+        strainCallStatus:
+          type: string
+          enum:
+          - BEIJING
+          - NOBEIJING
+          - POSSBEIJING
+          - UNKNOWN
         testDateTime:
           type: string
           format: date-time
@@ -19884,17 +21496,25 @@ components:
           - NEGATIVE
           - POSITIVE
           - NOT_DONE
+          - NOT_APPLICABLE
         testResultText:
           type: string
           maxLength: 4096
           minLength: 0
         testResultVerified:
           type: boolean
+        testScale:
+          type: string
+          enum:
+          - ONE_PLUS
+          - TWO_PLUS
+          - THREE_PLUS
         testType:
           type: string
           enum:
           - ANTIBODY_DETECTION
           - ANTIGEN_DETECTION
+          - RAPID_ANTIGEN_DETECTION
           - RAPID_TEST
           - CULTURE
           - HISTOPATHOLOGY
@@ -19907,6 +21527,7 @@ components:
           - DIRECT_FLUORESCENT_ANTIBODY
           - MICROSCOPY
           - NEUTRALIZING_ANTIBODIES
+          - ENZYME_LINKED_IMMUNOSORBENT_ASSAY
           - PCR_RT_PCR
           - GRAM_STAIN
           - LATEX_AGGLUTINATION
@@ -19914,6 +21535,25 @@ components:
           - SEQUENCING
           - DNA_MICROARRAY
           - TMA
+          - IGRA
+          - TST
+          - BEIJINGGENOTYPING
+          - SPOLIGOTYPING
+          - MIRU_PATTERN_CODE
+          - ANTIBIOTIC_SUSCEPTIBILITY
+          - MULTILOCUS_SEQUENCE_TYPING
+          - SLIDE_AGGLUTINATION
+          - WHOLE_GENOME_SEQUENCING
+          - SEROGROUPING
+          - GENOTYPING
+          - NAAT
+          - THICK_BLOOD_SMEAR
+          - THIN_BLOOD_SMEAR
+          - Q_PCR
+          - LAMP
+          - OTHER_ANTIGEN_DETECTION_TEST
+          - OTHER_MOLECULAR_ASSAY
+          - OTHER_SEROLOGICAL_TEST
           - OTHER
         testTypeText:
           type: string
@@ -19955,6 +21595,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -19966,6 +21607,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -19981,6 +21623,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         testedDiseaseDetails:
@@ -19999,6 +21645,26 @@ components:
           type: string
           maxLength: 512
           minLength: 0
+        tubeAgTb1:
+          type: number
+          format: float
+        tubeAgTb1GT10:
+          type: boolean
+        tubeAgTb2:
+          type: number
+          format: float
+        tubeAgTb2GT10:
+          type: boolean
+        tubeMitogene:
+          type: number
+          format: float
+        tubeMitogeneGT10:
+          type: boolean
+        tubeNil:
+          type: number
+          format: float
+        tubeNilGT10:
+          type: boolean
         typingId:
           type: string
           maxLength: 1000000
@@ -20013,7 +21679,6 @@ components:
       required:
       - lab
       - testResult
-      - testResultVerified
       - testType
     PeriodDto:
       type: object
@@ -20087,9 +21752,15 @@ components:
         birthdateDD:
           type: integer
           format: int32
+        birthdateFrom:
+          type: string
+          format: date-time
         birthdateMM:
           type: integer
           format: int32
+        birthdateTo:
+          type: string
+          format: date-time
         birthdateYYYY:
           type: integer
           format: int32
@@ -20097,6 +21768,8 @@ components:
           $ref: '#/components/schemas/CommunityReferenceDto'
         district:
           $ref: '#/components/schemas/DistrictReferenceDto'
+        includePartialMatch:
+          type: boolean
         nameAddressPhoneEmailLike:
           type: string
         personAssociation:
@@ -20163,6 +21836,11 @@ components:
         birthWeight:
           type: integer
           format: int32
+        birthWeightCategory:
+          type: string
+          enum:
+          - NORMAL
+          - LOW_BIRTH_WEIGHT
         birthdateDD:
           type: integer
           format: int32
@@ -20229,6 +21907,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -20240,6 +21919,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -20255,6 +21935,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         changeDate:
@@ -20296,6 +21980,11 @@ components:
         emailAddress:
           type: string
           readOnly: true
+        emancipated:
+          type: boolean
+        entryDate:
+          type: string
+          format: date-time
         externalId:
           type: string
           maxLength: 512
@@ -20315,9 +22004,17 @@ components:
         gestationAgeAtBirth:
           type: integer
           format: int32
+        gestationalAgeCategory:
+          type: string
+          enum:
+          - AT_TERM
+          - PREMATURE_BEFORE_32
+          - PREMATURE_32_TO_38
         hasCovidApp:
           type: boolean
         inJurisdiction:
+          type: boolean
+        incapacitated:
           type: boolean
         internalToken:
           type: string
@@ -20327,6 +22024,13 @@ components:
           type: string
           maxLength: 512
           minLength: 0
+        livingStatus:
+          type: string
+          enum:
+          - MIGRANT
+          - FOREIGNER
+          - HOMELESS
+          - REGISTERED_AT_A_RESIDENCE
         mothersMaidenName:
           type: string
           maxLength: 255
@@ -20335,6 +22039,12 @@ components:
           type: string
           maxLength: 512
           minLength: 0
+        multipleBirth:
+          type: string
+          enum:
+          - SINGLE
+          - TWINS
+          - MULTIPLE
         namesOfGuardians:
           type: string
           maxLength: 512
@@ -20481,6 +22191,15 @@ components:
           maxLength: 36
           minLength: 20
           pattern: "^[0-9a-zA-Z-]*$"
+        workPlace:
+          type: string
+          enum:
+          - SCHOOL
+          - NURSERY
+          - UNKNOWN
+          - OTHER
+        workPlaceText:
+          type: string
       required:
       - firstName
       - lastName
@@ -20570,6 +22289,8 @@ components:
         birthdateYYYY:
           type: integer
           format: int32
+        checkOnlyForNationalHealthId:
+          type: boolean
         firstName:
           type: string
         lastName:
@@ -20911,6 +22632,7 @@ components:
           enum:
           - ANTIMICROBIAL
           - ANTIVIRAL
+          - ANTIBIOTIC
           - OTHER
         uuid:
           type: string
@@ -20969,6 +22691,7 @@ components:
           enum:
           - ANTIMICROBIAL
           - ANTIVIRAL
+          - ANTIBIOTIC
           - OTHER
     PrescriptionReferenceDto:
       type: object
@@ -21011,6 +22734,10 @@ components:
           $ref: '#/components/schemas/DistrictReferenceDto'
         healthFacility:
           $ref: '#/components/schemas/FacilityReferenceDto'
+        healthFacilityDepartment:
+          type: string
+          maxLength: 512
+          minLength: 0
         healthFacilityDetails:
           type: string
           maxLength: 512
@@ -21022,6 +22749,9 @@ components:
           - ISOLATION
           - OTHER
           - UNKNOWN
+        icuLengthOfStay:
+          type: integer
+          format: int32
         inJurisdiction:
           type: boolean
         intensiveCareUnit:
@@ -21049,10 +22779,22 @@ components:
           type: string
           maxLength: 1000000
           minLength: 0
+        oxygenPrescribed:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         pseudonymized:
           type: boolean
         region:
           $ref: '#/components/schemas/RegionReferenceDto'
+        stillHospitalized:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         uuid:
           type: string
           maxLength: 36
@@ -21116,6 +22858,8 @@ components:
           type: string
           maxLength: 255
           minLength: 0
+        nutsCode:
+          type: string
         uuid:
           type: string
           maxLength: 36
@@ -21144,6 +22888,8 @@ components:
           type: number
           format: float
         name:
+          type: string
+        nutsCode:
           type: string
         population:
           type: integer
@@ -21233,6 +22979,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -21244,6 +22991,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -21259,6 +23007,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         district:
@@ -21279,6 +23031,7 @@ components:
           - NEGATIVE
           - POSITIVE
           - NOT_DONE
+          - NOT_APPLICABLE
         received:
           type: boolean
         referred:
@@ -21379,6 +23132,7 @@ components:
           - NEGATIVE
           - POSITIVE
           - NOT_DONE
+          - NOT_APPLICABLE
         pathogenTestingRequested:
           type: boolean
         pseudonymized:
@@ -21444,6 +23198,7 @@ components:
             enum:
             - ANTIBODY_DETECTION
             - ANTIGEN_DETECTION
+            - RAPID_ANTIGEN_DETECTION
             - RAPID_TEST
             - CULTURE
             - HISTOPATHOLOGY
@@ -21456,6 +23211,7 @@ components:
             - DIRECT_FLUORESCENT_ANTIBODY
             - MICROSCOPY
             - NEUTRALIZING_ANTIBODIES
+            - ENZYME_LINKED_IMMUNOSORBENT_ASSAY
             - PCR_RT_PCR
             - GRAM_STAIN
             - LATEX_AGGLUTINATION
@@ -21463,6 +23219,25 @@ components:
             - SEQUENCING
             - DNA_MICROARRAY
             - TMA
+            - IGRA
+            - TST
+            - BEIJINGGENOTYPING
+            - SPOLIGOTYPING
+            - MIRU_PATTERN_CODE
+            - ANTIBIOTIC_SUSCEPTIBILITY
+            - MULTILOCUS_SEQUENCE_TYPING
+            - SLIDE_AGGLUTINATION
+            - WHOLE_GENOME_SEQUENCING
+            - SEROGROUPING
+            - GENOTYPING
+            - NAAT
+            - THICK_BLOOD_SMEAR
+            - THIN_BLOOD_SMEAR
+            - Q_PCR
+            - LAMP
+            - OTHER_ANTIGEN_DETECTION_TEST
+            - OTHER_MOLECULAR_ASSAY
+            - OTHER_SEROLOGICAL_TEST
             - OTHER
           uniqueItems: true
         sampleDateTime:
@@ -21472,8 +23247,10 @@ components:
           type: string
           enum:
           - BLOOD
+          - DRY_BLOOD
           - SERA
           - STOOL
+          - THROAT_ASPIRATE
           - NASAL_SWAB
           - THROAT_SWAB
           - NP_SWAB
@@ -21486,6 +23263,7 @@ components:
           - SALIVA
           - URINE_PM
           - NUCHAL_SKIN_BIOPSY
+          - BIOPSY
           - SPUTUM
           - ENDOTRACHEAL_ASPIRATE
           - BRONCHOALVEOLAR_LAVAGE
@@ -21494,6 +23272,15 @@ components:
           - OP_ASPIRATE
           - NP_ASPIRATE
           - PLEURAL_FLUID
+          - NASOPHARYNGEAL_LAVAGE
+          - OROPHARYNGEAL_SWAB
+          - AMNIOTIC_FLUID
+          - CLINICAL_SAMPLE
+          - PERITONEAL_FLUID
+          - SYNOVIAL_FLUID
+          - EDTA_WHOLE_BLOOD
+          - INTESTINAL_FLUID
+          - DUODENUM_FLUID
           - OTHER
         sampleMaterialText:
           type: string
@@ -21619,6 +23406,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -21630,6 +23418,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -21645,6 +23434,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -21675,6 +23468,7 @@ components:
           - NEGATIVE
           - POSITIVE
           - NOT_DONE
+          - NOT_APPLICABLE
         pseudonymized:
           type: boolean
         received:
@@ -21693,8 +23487,10 @@ components:
           type: string
           enum:
           - BLOOD
+          - DRY_BLOOD
           - SERA
           - STOOL
+          - THROAT_ASPIRATE
           - NASAL_SWAB
           - THROAT_SWAB
           - NP_SWAB
@@ -21707,6 +23503,7 @@ components:
           - SALIVA
           - URINE_PM
           - NUCHAL_SKIN_BIOPSY
+          - BIOPSY
           - SPUTUM
           - ENDOTRACHEAL_ASPIRATE
           - BRONCHOALVEOLAR_LAVAGE
@@ -21715,6 +23512,15 @@ components:
           - OP_ASPIRATE
           - NP_ASPIRATE
           - PLEURAL_FLUID
+          - NASOPHARYNGEAL_LAVAGE
+          - OROPHARYNGEAL_SWAB
+          - AMNIOTIC_FLUID
+          - CLINICAL_SAMPLE
+          - PERITONEAL_FLUID
+          - SYNOVIAL_FLUID
+          - EDTA_WHOLE_BLOOD
+          - INTESTINAL_FLUID
+          - DUODENUM_FLUID
           - OTHER
         samplePurpose:
           type: string
@@ -21755,6 +23561,7 @@ components:
           enum:
           - ANTIBODY_DETECTION
           - ANTIGEN_DETECTION
+          - RAPID_ANTIGEN_DETECTION
           - RAPID_TEST
           - CULTURE
           - HISTOPATHOLOGY
@@ -21767,6 +23574,7 @@ components:
           - DIRECT_FLUORESCENT_ANTIBODY
           - MICROSCOPY
           - NEUTRALIZING_ANTIBODIES
+          - ENZYME_LINKED_IMMUNOSORBENT_ASSAY
           - PCR_RT_PCR
           - GRAM_STAIN
           - LATEX_AGGLUTINATION
@@ -21774,6 +23582,25 @@ components:
           - SEQUENCING
           - DNA_MICROARRAY
           - TMA
+          - IGRA
+          - TST
+          - BEIJINGGENOTYPING
+          - SPOLIGOTYPING
+          - MIRU_PATTERN_CODE
+          - ANTIBIOTIC_SUSCEPTIBILITY
+          - MULTILOCUS_SEQUENCE_TYPING
+          - SLIDE_AGGLUTINATION
+          - WHOLE_GENOME_SEQUENCING
+          - SEROGROUPING
+          - GENOTYPING
+          - NAAT
+          - THICK_BLOOD_SMEAR
+          - THIN_BLOOD_SMEAR
+          - Q_PCR
+          - LAMP
+          - OTHER_ANTIGEN_DETECTION_TEST
+          - OTHER_MOLECULAR_ASSAY
+          - OTHER_SEROLOGICAL_TEST
           - OTHER
         uuid:
           type: string
@@ -21829,8 +23656,10 @@ components:
           type: string
           enum:
           - BLOOD
+          - DRY_BLOOD
           - SERA
           - STOOL
+          - THROAT_ASPIRATE
           - NASAL_SWAB
           - THROAT_SWAB
           - NP_SWAB
@@ -21843,6 +23672,7 @@ components:
           - SALIVA
           - URINE_PM
           - NUCHAL_SKIN_BIOPSY
+          - BIOPSY
           - SPUTUM
           - ENDOTRACHEAL_ASPIRATE
           - BRONCHOALVEOLAR_LAVAGE
@@ -21851,6 +23681,15 @@ components:
           - OP_ASPIRATE
           - NP_ASPIRATE
           - PLEURAL_FLUID
+          - NASOPHARYNGEAL_LAVAGE
+          - OROPHARYNGEAL_SWAB
+          - AMNIOTIC_FLUID
+          - CLINICAL_SAMPLE
+          - PERITONEAL_FLUID
+          - SYNOVIAL_FLUID
+          - EDTA_WHOLE_BLOOD
+          - INTESTINAL_FLUID
+          - DUODENUM_FLUID
           - OTHER
         sampleMaterialText:
           type: string
@@ -21864,6 +23703,7 @@ components:
           - NEGATIVE
           - POSITIVE
           - NOT_DONE
+          - NOT_APPLICABLE
         sampleReceivedDate:
           type: string
           format: date-time
@@ -22049,6 +23889,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -22060,6 +23901,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -22075,6 +23917,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -22261,6 +24107,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -22272,6 +24119,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -22287,6 +24135,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -22393,6 +24245,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -22404,6 +24257,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -22419,6 +24273,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -22745,6 +24603,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -22756,6 +24615,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -22771,6 +24631,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         district:
@@ -22913,11 +24777,23 @@ components:
           - OWN_DETERMINATION
           - NOT_DETERMINABLE
           - NOT_RAISED
+          - PHONE_NOTIFICATION
           - OTHER
         reportingUser:
           $ref: '#/components/schemas/UserReferenceDto'
         sormasToSormasOriginInfo:
           $ref: '#/components/schemas/SormasToSormasOriginInfoDto'
+        treatmentNotApplicable:
+          type: boolean
+        treatmentStartDate:
+          type: string
+          format: date-time
+        treatmentStarted:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         uuid:
           type: string
           maxLength: 36
@@ -22927,6 +24803,16 @@ components:
       - reportDate
       - reportingType
     SurveillanceReportReferenceDto:
+      type: object
+      properties:
+        caption:
+          type: string
+        uuid:
+          type: string
+          pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
+    SurveyReferenceDto:
       type: object
       properties:
         caption:
@@ -22946,6 +24832,24 @@ components:
           - "NO"
           - UNKNOWN
         abnormalLungXrayFindings:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        acuteBleeding:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        acuteEncephalitis:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        acuteKidneyFailure:
           type: string
           enum:
           - "YES"
@@ -22975,6 +24879,18 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        alteredLevelOfConsciousness:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        anemia:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         anorexiaAppetiteLoss:
           type: string
           enum:
@@ -22987,7 +24903,25 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        apnoea:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        arthritis:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         ascendingFlaccidParalysis:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        asymptomatic:
           type: string
           enum:
           - "YES"
@@ -23018,6 +24952,12 @@ components:
           - "NO"
           - UNKNOWN
         bleedingVagina:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        bloating:
           type: string
           enum:
           - "YES"
@@ -23077,6 +25017,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        cerebralMalaria:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         changeDate:
           type: string
           format: date-time
@@ -23098,6 +25044,34 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        clammySkin:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        clinicalManifestation:
+          type: string
+          enum:
+          - ASYMPTOMATIC
+          - NO_SIGN_OF_SEVERITY
+          - SIGN_OF_SEVERITY
+          - UNKNOWN
+          - OTHER
+        clinicalManifestationText:
+          type: string
+        clinicalPresentationStatus:
+          type: string
+          enum:
+          - ASYMPTOMATIC
+          - COMPATIBLE
+          - UNKNOWN
+        coldSkin:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         coma:
           type: string
           enum:
@@ -23105,6 +25079,12 @@ components:
           - "NO"
           - UNKNOWN
         confusedDisoriented:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        confusion:
           type: string
           enum:
           - "YES"
@@ -23151,6 +25131,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        convulsions:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         cough:
           type: string
           enum:
@@ -23181,10 +25167,28 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        coughingBouts:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        coughsProvokeVomiting:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         creationDate:
           type: string
           format: date-time
         darkUrine:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        dateOfOnsetKnown:
           type: string
           enum:
           - "YES"
@@ -23208,6 +25212,11 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        diagnosis:
+          type: string
+          enum:
+          - PULMONARY
+          - EXTRAPULMONARY
         diarrhea:
           type: string
           enum:
@@ -23220,7 +25229,19 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        difficultyBreathingDuringMeals:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         digestedBloodVomit:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        disseminatedIntraVascularCoagulation:
           type: string
           enum:
           - "YES"
@@ -23232,7 +25253,22 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        durationOfSymptoms:
+          type: integer
+          format: int32
         dysphagia:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        eggyBurps:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        encephalitis:
           type: string
           enum:
           - "YES"
@@ -23325,6 +25361,12 @@ components:
         glasgowComaScale:
           type: integer
           format: int32
+        guillainBarreSyndrome:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         gumsBleeding:
           type: string
           enum:
@@ -23349,6 +25391,12 @@ components:
         height:
           type: integer
           format: int32
+        hemorrhagicRash:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         hemorrhagicSyndrome:
           type: string
           enum:
@@ -23514,6 +25562,12 @@ components:
           - UNKNOWN
         lesionsThorax:
           type: boolean
+        lethargy:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         lossOfSmell:
           type: string
           enum:
@@ -23556,6 +25610,25 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        majorSite:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - BONES_JOINTS_OTHER_THAN_VERTEBRAE
+          - CNS_EXCEPT_MENINGES
+          - DISSEMINATED_FORM
+          - EXTRAPULMONARY_UNKNOWN_SITE
+          - EXTRA_THORACIC_LYMPH_NODES
+          - GENITO_URINARY
+          - INTRATHORACIC_LYMPH_NODES
+          - LUNG
+          - MENINGES
+          - PERITONEUM_DIGESTIVE_TRACT
+          - PLEURA
+          - UROGENITAL_SYSTEM
+          - VERTEBRAE
+          - UNKNOWN
+          - OTHER
         malaise:
           type: string
           enum:
@@ -23568,7 +25641,19 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        meningitis:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         meningoencephalitis:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        metabolicAcidosis:
           type: string
           enum:
           - "YES"
@@ -23583,6 +25668,25 @@ components:
         midUpperArmCircumference:
           type: integer
           format: int32
+        minorSite:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - BONES_JOINTS_OTHER_THAN_VERTEBRAE
+          - CNS_EXCEPT_MENINGES
+          - DISSEMINATED_FORM
+          - EXTRAPULMONARY_UNKNOWN_SITE
+          - EXTRA_THORACIC_LYMPH_NODES
+          - GENITO_URINARY
+          - INTRATHORACIC_LYMPH_NODES
+          - LUNG
+          - MENINGES
+          - PERITONEUM_DIGESTIVE_TRACT
+          - PLEURA
+          - UROGENITAL_SYSTEM
+          - VERTEBRAE
+          - UNKNOWN
+          - OTHER
         musclePain:
           type: string
           enum:
@@ -23596,6 +25700,12 @@ components:
           - "NO"
           - UNKNOWN
         neckStiffness:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        nocturnalCough:
           type: string
           enum:
           - "YES"
@@ -23619,6 +25729,9 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        offsetDate:
+          type: string
+          format: date-time
         onsetDate:
           type: string
           format: date-time
@@ -23638,6 +25751,14 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        otherClinicalPresentation:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        otherClinicalPresentationText:
+          type: string
         otherComplications:
           type: string
           enum:
@@ -23658,6 +25779,18 @@ components:
           type: string
           maxLength: 512
           minLength: 0
+        otherMajorSiteDetails:
+          type: string
+        otherMinorSiteDetails:
+          type: string
+        otherNeurolocalSymptom:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        otherNeurolocalSymptomText:
+          type: string
         otherNonHemorrhagicSymptoms:
           type: string
           enum:
@@ -23669,6 +25802,12 @@ components:
           maxLength: 512
           minLength: 0
         otitisMedia:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        overnightStayRequired:
           type: string
           enum:
           - "YES"
@@ -23704,7 +25843,19 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        paradoxicalBreathing:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         paralysis:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        parentTimeOffWork:
           type: string
           enum:
           - "YES"
@@ -23726,6 +25877,12 @@ components:
           type: string
           maxLength: 512
           minLength: 0
+        persistentVomiting:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         pharyngealErythema:
           type: string
           enum:
@@ -23744,7 +25901,19 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        plasmaLeakageSign:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         pneumoniaClinicalOrRadiologic:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        polydipsia:
           type: string
           enum:
           - "YES"
@@ -23782,7 +25951,19 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        reoccurrence:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         respiratoryDiseaseVentilation:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        respiratoryFatigue:
           type: string
           enum:
           - "YES"
@@ -23791,7 +25972,19 @@ components:
         respiratoryRate:
           type: integer
           format: int32
+        restlessness:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         runnyNose:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        scantHemorrhage:
           type: string
           enum:
           - "YES"
@@ -23804,6 +25997,24 @@ components:
           - "NO"
           - UNKNOWN
         sepsis:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        septicaemia:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        severeAnemia:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        severeOrganImpairment:
           type: string
           enum:
           - "YES"
@@ -23839,6 +26050,9 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        skinRashOnsetDate:
+          type: string
+          format: date-time
         skinUlcers:
           type: string
           enum:
@@ -23875,12 +26089,24 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        symptomCurrentStatus:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         symptomatic:
           type: boolean
         symptomsComments:
           type: string
           maxLength: 512
           minLength: 0
+        syndromicFlu:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         temperature:
           type: number
           format: float
@@ -23897,6 +26123,9 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        timeOffWorkDays:
+          type: number
+          format: float
         tremor:
           type: string
           enum:
@@ -23910,6 +26139,12 @@ components:
           - "NO"
           - UNKNOWN
         unilateralCataracts:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        unknownSymptom:
           type: string
           enum:
           - "YES"
@@ -23947,7 +26182,22 @@ components:
         weight:
           type: integer
           format: int32
+        weightLoss:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        weightLossAmount:
+          type: number
+          format: float
         wheezing:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        whoopSound:
           type: string
           enum:
           - "YES"
@@ -24266,6 +26516,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -24277,6 +26528,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -24292,6 +26544,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         district:
@@ -24399,9 +26655,64 @@ components:
     TestReportDto:
       type: object
       properties:
+        amikacinMic:
+          type: number
+          format: float
+        amikacinSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
+        bedaquilineMic:
+          type: number
+          format: float
+        bedaquilineSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
+        capreomycinMic:
+          type: number
+          format: float
+        capreomycinSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
+        ceftriaxoneMic:
+          type: number
+          format: float
+        ceftriaxoneSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
         changeDate:
           type: string
           format: date-time
+        ciprofloxacinMic:
+          type: number
+          format: float
+        ciprofloxacinSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
         cqValue:
           type: number
           format: float
@@ -24429,6 +26740,39 @@ components:
         dateOfResult:
           type: string
           format: date-time
+        delamanidMic:
+          type: number
+          format: float
+        delamanidSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
+        erythromycinMic:
+          type: number
+          format: float
+        erythromycinSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
+        ethambutolMic:
+          type: number
+          format: float
+        ethambutolSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
         externalId:
           type: string
           maxLength: 512
@@ -24437,6 +26781,115 @@ components:
           type: string
           maxLength: 512
           minLength: 0
+        gatifloxacinMic:
+          type: number
+          format: float
+        gatifloxacinSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
+        genoType:
+          type: string
+          enum:
+          - GENOTYPE_A
+          - GENOTYPE_B
+          - GENOTYPE_B2
+          - GENOTYPE_B3
+          - GENOTYPE_C1
+          - GENOTYPE_C2
+          - GENOTYPE_D1
+          - GENOTYPE_D10
+          - GENOTYPE_D11
+          - GENOTYPE_D2
+          - GENOTYPE_D3
+          - GENOTYPE_D4
+          - GENOTYPE_D5
+          - GENOTYPE_D6
+          - GENOTYPE_D7
+          - GENOTYPE_D8
+          - GENOTYPE_D9
+          - GENOTYPE_E
+          - GENOTYPE_F
+          - GENOTYPE_G1
+          - GENOTYPE_G2
+          - GENOTYPE_G3
+          - GENOTYPE_H1
+          - GENOTYPE_H2
+          - CRYPTOSPORIDIUM_HOMINIS
+          - CRYPTOSPORIDIUM_PARVUM
+          - CRYPTOSPORIDIUM_SPECIES
+          - OTHER
+          - UNKNOWN
+        isoniazidMic:
+          type: number
+          format: float
+        isoniazidSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
+        kanamycinMic:
+          type: number
+          format: float
+        kanamycinSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
+        levofloxacinMic:
+          type: number
+          format: float
+        levofloxacinSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
+        moxifloxacinMic:
+          type: number
+          format: float
+        moxifloxacinSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
+        ofloxacinMic:
+          type: number
+          format: float
+        ofloxacinSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
+        penicillinMic:
+          type: number
+          format: float
+        penicillinSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
         preliminary:
           type: boolean
         prescriberAddress:
@@ -24469,8 +26922,94 @@ components:
           type: string
           maxLength: 1000000
           minLength: 0
+        rifampicinMic:
+          type: number
+          format: float
+        rifampicinSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
+        rsvSubtype:
+          type: string
+          enum:
+          - RSV_A
+          - RSV_B
+          - RSV_A_AND_B
+          - INDETERMINATE
         sampleReport:
           $ref: '#/components/schemas/SampleReportReferenceDto'
+        seroGroupSpecification:
+          type: string
+          enum:
+          - SEROGROUP_A
+          - SEROGROUP_B
+          - SEROGROUP_C
+          - SEROGROUP_W
+          - SEROGROUP_X
+          - SEROGROUP_Y
+          - SEROGROUP_Z
+          - SEROGROUP_29E
+          - NOT_GROUPABLE
+          - NOT_UNDER_SURVEILLANCE
+          - OTHER
+          - UNKNOWN
+        seroGroupSpecificationText:
+          type: string
+        seroTypingMethod:
+          type: string
+          enum:
+          - MULTIPLEX_PCR
+          - QUELLUNG_REACTION
+          - COAGGLUTINATION
+          - GEL_DIFFUSION
+          - PNEUMOTEST
+          - SLIDE_AGGLUTINATION
+          - OTHER
+        seroTypingMethodText:
+          type: string
+        serotype:
+          type: string
+        specie:
+          type: string
+          enum:
+          - MYCOBATERIUM_AFRICANUM
+          - MYCOBATERIUM_BOVIS
+          - MYCOBATERIUM_TUBERCULOSIS
+          - OTHER_MTBC_MEMBER
+          - SPP
+          - FALCIPARUM
+          - VIVAX
+          - MALARIAE
+          - OVALE
+          - KNOWLESI
+          - CYNOMOLGI
+          - NOT_SPECIFIED
+          - COINFECTION
+          - OTHER
+          - UNKNOWN
+          - NOT_APPLICABLE
+        strainCallStatus:
+          type: string
+          enum:
+          - BEIJING
+          - NOBEIJING
+          - POSSBEIJING
+          - UNKNOWN
+        streptomycinMic:
+          type: number
+          format: float
+        streptomycinSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
         testDateTime:
           type: string
           format: date-time
@@ -24503,6 +27042,7 @@ components:
           - NEGATIVE
           - POSITIVE
           - NOT_DONE
+          - NOT_APPLICABLE
         testResultText:
           type: string
           maxLength: 1000000
@@ -24514,6 +27054,7 @@ components:
           enum:
           - ANTIBODY_DETECTION
           - ANTIGEN_DETECTION
+          - RAPID_ANTIGEN_DETECTION
           - RAPID_TEST
           - CULTURE
           - HISTOPATHOLOGY
@@ -24526,6 +27067,7 @@ components:
           - DIRECT_FLUORESCENT_ANTIBODY
           - MICROSCOPY
           - NEUTRALIZING_ANTIBODIES
+          - ENZYME_LINKED_IMMUNOSORBENT_ASSAY
           - PCR_RT_PCR
           - GRAM_STAIN
           - LATEX_AGGLUTINATION
@@ -24533,7 +27075,30 @@ components:
           - SEQUENCING
           - DNA_MICROARRAY
           - TMA
+          - IGRA
+          - TST
+          - BEIJINGGENOTYPING
+          - SPOLIGOTYPING
+          - MIRU_PATTERN_CODE
+          - ANTIBIOTIC_SUSCEPTIBILITY
+          - MULTILOCUS_SEQUENCE_TYPING
+          - SLIDE_AGGLUTINATION
+          - WHOLE_GENOME_SEQUENCING
+          - SEROGROUPING
+          - GENOTYPING
+          - NAAT
+          - THICK_BLOOD_SMEAR
+          - THIN_BLOOD_SMEAR
+          - Q_PCR
+          - LAMP
+          - OTHER_ANTIGEN_DETECTION_TEST
+          - OTHER_MOLECULAR_ASSAY
+          - OTHER_SEROLOGICAL_TEST
           - OTHER
+        testTypeDetails:
+          type: string
+          maxLength: 1000000
+          minLength: 0
         testedDiseaseVariant:
           type: string
           maxLength: 255
@@ -24542,6 +27107,26 @@ components:
           type: string
           maxLength: 255
           minLength: 0
+        tubeAgTb1:
+          type: number
+          format: float
+        tubeAgTb1GT10:
+          type: boolean
+        tubeAgTb2:
+          type: number
+          format: float
+        tubeAgTb2GT10:
+          type: boolean
+        tubeMitogene:
+          type: number
+          format: float
+        tubeMitogeneGT10:
+          type: boolean
+        tubeNil:
+          type: number
+          format: float
+        tubeNilGT10:
+          type: boolean
         typingId:
           type: string
           maxLength: 1000000
@@ -24556,12 +27141,18 @@ components:
     TherapyDto:
       type: object
       properties:
+        beijingLineage:
+          type: boolean
         changeDate:
           type: string
           format: date-time
         creationDate:
           type: string
           format: date-time
+        directlyObservedTreatment:
+          type: boolean
+        mdrXdrTuberculosis:
+          type: boolean
         uuid:
           type: string
           maxLength: 36
@@ -24688,6 +27279,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -24699,6 +27291,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -24714,6 +27307,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -24980,6 +27577,7 @@ components:
           enum:
           - ANTIMICROBIAL
           - ANTIVIRAL
+          - ANTIBIOTIC
           - OTHER
         uuid:
           type: string
@@ -25034,6 +27632,7 @@ components:
           enum:
           - ANTIMICROBIAL
           - ANTIVIRAL
+          - ANTIBIOTIC
           - OTHER
     UserCriteria:
       type: object
@@ -25069,6 +27668,8 @@ components:
           format: date-time
         district:
           $ref: '#/components/schemas/DistrictReferenceDto'
+        externalId:
+          type: string
         firstName:
           type: string
           maxLength: 512
@@ -25096,13 +27697,17 @@ components:
           enum:
           - EN
           - EN_NG
+          - EN_GM
+          - EN_LR
           - EN_GH
+          - EN_KE
           - EN_AF
           - FR
           - FR_CH
           - FR_TN
           - DE
           - DE_CH
+          - PT_CV
           - ES_BO
           - ES_EC
           - ES_CU
@@ -25155,6 +27760,7 @@ components:
             - SNAKE_BITE
             - RUBELLA
             - TUBERCULOSIS
+            - LATENT_TUBERCULOSIS
             - LEPROSY
             - LYMPHATIC_FILARIASIS
             - BURULI_ULCER
@@ -25166,6 +27772,7 @@ components:
             - YAWS_ENDEMIC_SYPHILIS
             - MATERNAL_DEATHS
             - PERINATAL_DEATHS
+            - INFLUENZA
             - INFLUENZA_A
             - INFLUENZA_B
             - H_METAPNEUMOVIRUS
@@ -25181,6 +27788,10 @@ components:
             - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
             - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
             - FHA
+            - INVASIVE_PNEUMOCOCCAL_INFECTION
+            - INVASIVE_MENINGOCOCCAL_INFECTION
+            - GIARDIASIS
+            - CRYPTOSPORIDIOSIS
             - OTHER
             - UNDEFINED
           uniqueItems: true
@@ -25387,6 +27998,12 @@ components:
             - IMMUNIZATION_DELETE
             - IMMUNIZATION_ARCHIVE
             - IMMUNIZATION_VIEW_ARCHIVED
+            - ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW
+            - ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_CREATE
+            - ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_EDIT
+            - ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_ARCHIVE
+            - ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_DELETE
+            - ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_EXPORT
             - PERSON_VIEW
             - PERSON_EDIT
             - PERSON_DELETE
@@ -25477,6 +28094,7 @@ components:
             - DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS
             - DASHBOARD_CAMPAIGNS_VIEW
             - DASHBOARD_SAMPLES_VIEW
+            - DASHBOARD_ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW
             - CASE_CLINICIAN_VIEW
             - THERAPY_VIEW
             - PRESCRIPTION_CREATE
@@ -25527,6 +28145,7 @@ components:
             - ENVIRONMENT_DELETE
             - ENVIRONMENT_IMPORT
             - ENVIRONMENT_EXPORT
+            - ENVIRONMENT_LINK
             - ENVIRONMENT_SAMPLE_VIEW
             - ENVIRONMENT_SAMPLE_CREATE
             - ENVIRONMENT_SAMPLE_EDIT
@@ -25565,10 +28184,23 @@ components:
             - SORMAS_TO_SORMAS_PROCESS
             - EXTERNAL_SURVEILLANCE_SHARE
             - EXTERNAL_SURVEILLANCE_DELETE
-            - EXTERNAL_MESSAGE_VIEW
-            - EXTERNAL_MESSAGE_PROCESS
             - EXTERNAL_MESSAGE_PUSH
-            - EXTERNAL_MESSAGE_DELETE
+            - EXTERNAL_MESSAGE_ACCESS
+            - EXTERNAL_MESSAGE_LABORATORY_VIEW
+            - EXTERNAL_MESSAGE_DOCTOR_DECLARATION_VIEW
+            - EXTERNAL_MESSAGE_LABORATORY_PROCESS
+            - EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS
+            - EXTERNAL_MESSAGE_LABORATORY_DELETE
+            - EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE
+            - SURVEY_VIEW
+            - SURVEY_CREATE
+            - SURVEY_EDIT
+            - SURVEY_DELETE
+            - SURVEY_TOKEN_VIEW
+            - SURVEY_TOKEN_CREATE
+            - SURVEY_TOKEN_EDIT
+            - SURVEY_TOKEN_DELETE
+            - SURVEY_TOKEN_IMPORT
             - OUTBREAK_VIEW
             - OUTBREAK_EDIT
             - MANAGE_PUBLIC_EXPORT_CONFIGURATION
@@ -25579,6 +28211,12 @@ components:
             - EXTERNAL_EMAIL_SEND
             - EXTERNAL_EMAIL_ATTACH_DOCUMENTS
             - CUSTOMIZABLE_ENUM_MANAGEMENT
+            - SYSTEM_CONFIGURATION
+            - DISEASE_MANAGEMENT
+            - EPIPULSE_EXPORT_VIEW
+            - EPIPULSE_EXPORT_CREATE
+            - EPIPULSE_EXPORT_DOWNLOAD
+            - EPIPULSE_EXPORT_DELETE
           uniqueItems: true
         uuid:
           type: string
@@ -25673,12 +28311,21 @@ components:
           type: string
           enum:
           - BIONTECH_PFIZER
+          - PFIZER
+          - BAVARIAN_NORDIC
           - MODERNA
           - ASTRA_ZENECA
           - JOHNSON_JOHNSON
+          - KM_BIOLOGICS
           - NOVAVAX
           - SANOFI_GSK
+          - SANOFI_PASTEUR_BIOLOGICS
           - VALNEVA
+          - MERCK
+          - SANOFI_PASTEUR
+          - TAKEDA
+          - GSK
+          - OXFORD
           - UNKNOWN
           - OTHER
         vaccineName:
@@ -25696,6 +28343,18 @@ components:
           - OXFORD_ASTRA_ZENECA
           - AD26_COV2_S
           - SANOFI_GSK
+          - MENABCWY
+          - ACAM2000
+          - LC_16
+          - PREVENAR_13_PFIZER
+          - VAXNEUVANCE_MERCK
+          - PREVNAR_20_PFIZER
+          - PNEUMOVAX_23_MERCK
+          - MVA_BN
+          - DENGVAXIA
+          - QDENGA
+          - RTS_S_AS01
+          - R21_MATRIX_M
           - UNKNOWN
           - OTHER
         vaccineType:
@@ -25762,6 +28421,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -25773,6 +28433,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -25788,6 +28449,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         inJurisdiction:
@@ -25880,6 +28545,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -25891,6 +28557,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -25906,6 +28573,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         id:
@@ -26051,6 +28722,7 @@ components:
           - SNAKE_BITE
           - RUBELLA
           - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
           - LEPROSY
           - LYMPHATIC_FILARIASIS
           - BURULI_ULCER
@@ -26062,6 +28734,7 @@ components:
           - YAWS_ENDEMIC_SYPHILIS
           - MATERNAL_DEATHS
           - PERINATAL_DEATHS
+          - INFLUENZA
           - INFLUENZA_A
           - INFLUENZA_B
           - H_METAPNEUMOVIRUS
@@ -26077,6 +28750,10 @@ components:
           - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
           - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
           - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
           - OTHER
           - UNDEFINED
         numberOfCases:
