@@ -25131,12 +25131,6 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
-        convulsions:
-          type: string
-          enum:
-          - "YES"
-          - "NO"
-          - UNKNOWN
         cough:
           type: string
           enum:
