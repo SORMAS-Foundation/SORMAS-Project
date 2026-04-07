@@ -15507,4 +15507,31 @@ ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS malaria varchar(25
 ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS malariainfectedyear integer ;
 
 INSERT INTO schema_version (version_number, comment) VALUES (615, '#13801, #13814 - Malaria and Dengue sampel changes');
+
+-- 07-04-2026 Test report new fields related to Malaria and Dengue samples and pathogenform.
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS serotypetext varchar(255);
+UPDATE testreport  SET serotypetext = serotype, serotype = 'OTHER' WHERE serotype IS NOT null   and serotypetext is null;
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'testreport' AND column_name = 'genotyperesult') THEN
+        ALTER TABLE testreport RENAME COLUMN genotyperesult TO genotype;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'testreport' AND column_name = 'genotyperesulttext') THEN
+        ALTER TABLE testreport RENAME COLUMN genotyperesulttext TO genotypetext;
+    END IF;
+END $$;
+
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS serotypetext varchar(255);
+UPDATE testreport_history  SET serotypetext = serotype, serotype = 'OTHER' WHERE serotype IS NOT null   and serotypetext is null;
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'testreport_history' AND column_name = 'genotyperesult') THEN
+        ALTER TABLE testreport_history RENAME COLUMN genotyperesult TO genotype;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'testreport_history' AND column_name = 'genotyperesulttext') THEN
+        ALTER TABLE testreport_history RENAME COLUMN genotyperesulttext TO genotypetext;
+    END IF;
+END $$;
+
+INSERT INTO schema_version (version_number, comment) VALUES (616, '#13801, #13814 - Malaria and Dengue TestReport columns renames');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
