@@ -3230,9 +3230,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 						+ "WHERE (contactProximities IS NULL OR contactProximities = '') "
 						+ "AND contactProximity IS NOT NULL AND contactProximity != '';");
 
+
+			case 362:
+				currentVersion = 362;
+				getDao(PathogenTest.class).executeRaw("ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS serotypetext varchar(255);");
+				getDao(PathogenTest.class).executeRaw("UPDATE pathogentest  SET serotypetext = serotype, serotype = \"'OTHER\"' WHERE serotype IS NOT null   and serotypetext is null;");
 				// ATTENTION: break should only be done after last version
 				break;
-
 			default:
 				throw new IllegalStateException("onUpgrade() with unknown oldVersion " + oldVersion);
 			}
