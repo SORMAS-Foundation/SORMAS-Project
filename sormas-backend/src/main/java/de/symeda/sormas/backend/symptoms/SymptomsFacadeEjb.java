@@ -254,7 +254,6 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setGuillainBarreSyndrome(source.getGuillainBarreSyndrome());
 		target.setLethargy(source.getLethargy());
 		target.setConfusion(source.getConfusion());
-		target.setConvulsions(source.getConvulsions());
 		target.setPersistentVomiting(source.getPersistentVomiting());
 		target.setRestlessness(source.getRestlessness());
 		target.setAcuteBleeding(source.getAcuteBleeding());
@@ -511,7 +510,6 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setGuillainBarreSyndrome(source.getGuillainBarreSyndrome());
 		target.setLethargy(source.getLethargy());
 		target.setConfusion(source.getConfusion());
-		target.setConvulsions(source.getConvulsions());
 		target.setPersistentVomiting(source.getPersistentVomiting());
 		target.setRestlessness(source.getRestlessness());
 		target.setAcuteBleeding(source.getAcuteBleeding());

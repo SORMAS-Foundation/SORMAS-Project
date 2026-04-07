@@ -1021,6 +1021,7 @@ public interface Captions {
 	String Contact_contactIdentificationSourceDetails = "Contact.contactIdentificationSourceDetails";
 	String Contact_contactOfficer = "Contact.contactOfficer";
 	String Contact_contactOfficerUuid = "Contact.contactOfficerUuid";
+	String Contact_contactProximities = "Contact.contactProximities";
 	String Contact_contactProximity = "Contact.contactProximity";
 	String Contact_contactProximityDetails = "Contact.contactProximityDetails";
 	String Contact_contactProximityLongForm = "Contact.contactProximityLongForm";
@@ -2942,7 +2943,6 @@ public interface Captions {
 	String Symptoms_conjunctivalInjection = "Symptoms.conjunctivalInjection";
 	String Symptoms_conjunctivitis = "Symptoms.conjunctivitis";
 	String Symptoms_convulsion = "Symptoms.convulsion";
-	String Symptoms_convulsions = "Symptoms.convulsions";
 	String Symptoms_cough = "Symptoms.cough";
 	String Symptoms_coughingBlood = "Symptoms.coughingBlood";
 	String Symptoms_coughingBouts = "Symptoms.coughingBouts";
