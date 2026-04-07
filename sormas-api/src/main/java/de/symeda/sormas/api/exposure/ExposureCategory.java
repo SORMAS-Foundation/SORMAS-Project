@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.api.exposure;
 
+import java.util.EnumSet;
+
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum ExposureCategory {
@@ -27,6 +29,14 @@ public enum ExposureCategory {
 	VECTOR_BORNE,
 	VERTICAL_TRANSMISSION,
 	WATER_BORNE;
+
+	public boolean hasNoSetting() {
+		return EnumSet.of(ANIMAL_CONTACT, FOMITE_TRANSMISSION, FOOD_BORNE).contains(this);
+	}
+
+	public boolean hasNoSubSetting() {
+		return EnumSet.of(ANIMAL_CONTACT, FOMITE_TRANSMISSION).contains(this);
+	}
 
 	@Override
 	public String toString() {

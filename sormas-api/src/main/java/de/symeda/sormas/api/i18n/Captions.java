@@ -1827,6 +1827,8 @@ public interface Captions {
 	String exportSormasData = "exportSormasData";
 	String exportUserRoles = "exportUserRoles";
 	String Exposure = "Exposure";
+	String Exposure_animalCategory = "Exposure.animalCategory";
+	String Exposure_animalCategoryDetails = "Exposure.animalCategoryDetails";
 	String Exposure_animalCondition = "Exposure.animalCondition";
 	String Exposure_animalContactType = "Exposure.animalContactType";
 	String Exposure_animalContactTypeDetails = "Exposure.animalContactTypeDetails";
@@ -1837,6 +1839,8 @@ public interface Captions {
 	String Exposure_bodyOfWater = "Exposure.bodyOfWater";
 	String Exposure_childcareFacilityDetails = "Exposure.childcareFacilityDetails";
 	String Exposure_connectionNumber = "Exposure.connectionNumber";
+	String Exposure_contactFactorDetails = "Exposure.contactFactorDetails";
+	String Exposure_contactFactors = "Exposure.contactFactors";
 	String Exposure_contactToBodyFluids = "Exposure.contactToBodyFluids";
 	String Exposure_contactToCase = "Exposure.contactToCase";
 	String Exposure_deceasedPersonIll = "Exposure.deceasedPersonIll";
@@ -1845,10 +1849,16 @@ public interface Captions {
 	String Exposure_domesticSwimming = "Exposure.domesticSwimming";
 	String Exposure_eatingRawAnimalProducts = "Exposure.eatingRawAnimalProducts";
 	String Exposure_endDate = "Exposure.endDate";
+	String Exposure_exposureCategory = "Exposure.exposureCategory";
+	String Exposure_exposureComment = "Exposure.exposureComment";
 	String Exposure_exposureDate = "Exposure.exposureDate";
 	String Exposure_exposureRole = "Exposure.exposureRole";
+	String Exposure_exposureSetting = "Exposure.exposureSetting";
+	String Exposure_exposureSettingDetails = "Exposure.exposureSettingDetails";
+	String Exposure_exposureSubSettingDetails = "Exposure.exposureSubSettingDetails";
 	String Exposure_exposureType = "Exposure.exposureType";
 	String Exposure_exposureTypeDetails = "Exposure.exposureTypeDetails";
+	String Exposure_fomiteTransmissionLocation = "Exposure.fomiteTransmissionLocation";
 	String Exposure_gatheringDetails = "Exposure.gatheringDetails";
 	String Exposure_gatheringType = "Exposure.gatheringType";
 	String Exposure_habitationDetails = "Exposure.habitationDetails";
@@ -1872,6 +1882,8 @@ public interface Captions {
 	String Exposure_probableInfectionEnvironment = "Exposure.probableInfectionEnvironment";
 	String Exposure_prophylaxis = "Exposure.prophylaxis";
 	String Exposure_prophylaxisDate = "Exposure.prophylaxisDate";
+	String Exposure_protectiveMeasureDetails = "Exposure.protectiveMeasureDetails";
+	String Exposure_protectiveMeasures = "Exposure.protectiveMeasures";
 	String Exposure_protectiveMeasuresDetails = "Exposure.protectiveMeasuresDetails";
 	String Exposure_rawFoodContact = "Exposure.rawFoodContact";
 	String Exposure_rawFoodContactText = "Exposure.rawFoodContactText";
@@ -1880,6 +1892,7 @@ public interface Captions {
 	String Exposure_sexualExposureText = "Exposure.sexualExposureText";
 	String Exposure_shortDistance = "Exposure.shortDistance";
 	String Exposure_startDate = "Exposure.startDate";
+	String Exposure_subSettings = "Exposure.subSettings";
 	String Exposure_swimmingLocation = "Exposure.swimmingLocation";
 	String Exposure_swimmingLocationType = "Exposure.swimmingLocationType";
 	String Exposure_symptomaticIndividualText = "Exposure.symptomaticIndividualText";

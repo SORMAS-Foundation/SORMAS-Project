@@ -26,13 +26,16 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.util.converter.Converter;
+import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
@@ -46,7 +49,12 @@ import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.AnimalContactType;
 import de.symeda.sormas.api.exposure.AnimalLocation;
+import de.symeda.sormas.api.exposure.ExposureCategory;
+import de.symeda.sormas.api.exposure.ExposureContactFactor;
 import de.symeda.sormas.api.exposure.ExposureDto;
+import de.symeda.sormas.api.exposure.ExposureProtectiveMeasure;
+import de.symeda.sormas.api.exposure.ExposureSetting;
+import de.symeda.sormas.api.exposure.ExposureSubSetting;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.GatheringType;
 import de.symeda.sormas.api.exposure.HabitationType;
@@ -74,6 +82,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 
 	private static final long serialVersionUID = 8262753698264714832L;
 
+	private static final String LOC_EXPOSURES_HEADING = "locExposuresHeading";
 	private static final String LOC_EXPOSURE_DETAILS_HEADING = "locExposureDetailsHeading";
 	private static final String LOC_LOCATION_HEADING = "locLocationHeading";
 	private static final String LOC_ANIMAL_CONTACT_DETAILS_HEADING = "locAnimalContactDetailsHeading";
@@ -84,6 +93,35 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	private static final String UUID_REPORTING_USER = fluidRowLocs(ExposureDto.UUID, ExposureDto.REPORTING_USER);
 	private static final String OTHER_STANDARD_FIELDS =
 			fluidRowLocs(ExposureDto.START_DATE, ExposureDto.END_DATE) +
+			loc(LOC_EXPOSURES_HEADING) +
+			fluidRowLocs(ExposureDto.EXPOSURE_CATEGORY, null, null) +
+			fluidRow(
+					fluidColumn(4, 0, locs(
+							ExposureDto.EXPOSURE_SETTING,
+							ExposureDto.SUB_SETTINGS,
+							ExposureDto.ANIMAL_CATEGORY,
+							ExposureDto.FOMITE_TRANSMISSION_LOCATION
+					)),
+					fluidColumn(4, 0, locs(
+							ExposureDto.CONTACT_FACTORS
+					)),
+					fluidColumn(4, 0, locs(
+							ExposureDto.PROTECTIVE_MEASURES
+					))
+			) +
+			fluidRow(
+					fluidColumn(4, 0, locs(
+							ExposureDto.EXPOSURE_SETTING_DETAILS,
+							ExposureDto.EXPOSURE_SUB_SETTING_DETAILS,
+							ExposureDto.ANIMAL_CATEGORY_DETAILS
+					)),
+					fluidColumn(4, 0, locs(
+							ExposureDto.CONTACT_FACTOR_DETAILS
+					)),
+					fluidColumn(4, 0, locs(
+							ExposureDto.PROTECTIVE_MEASURE_DETAILS
+					))
+			) +
 			loc(ExposureDto.DESCRIPTION) +
 			fluidRow(
 					fluidColumnLoc(6, 0, ExposureDto.EXPOSURE_TYPE),
@@ -158,6 +196,20 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	private LocationEditForm locationForm;
 	private Disease disease;
 
+	private ComboBox categoryField;
+	private ComboBox settingField;
+	private TextField settingDetailsField;
+	private OptionGroup subSettingsField;
+	private TextField subSettingsDetailsField;
+	private OptionGroup contactFactorsField;
+	private TextField contactFactorDetailsField;
+	private OptionGroup protectiveMeasuresField;
+	private TextField protectiveMeasureDetailsField;
+	private NullableOptionGroup animalConditionField;
+	private NullableOptionGroup animalCategoryField;
+	private TextField animalCategoryDetailsField;
+	private NullableOptionGroup fomiteTransmissionLocationField;
+
 	public ExposureForm(
 		boolean create,
 		Class<? extends EntityDto> epiDataParentClass,
@@ -214,6 +266,8 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	}
 
 	private void addHeadingsAndInfoTexts() {
+		getContent().addComponent(new Label(h3(I18nProperties.getString(Strings.headingExposures)), ContentMode.HTML), LOC_EXPOSURES_HEADING);
+
 		getContent()
 			.addComponent(new Label(h3(I18nProperties.getString(Strings.headingExposureDetails)), ContentMode.HTML), LOC_EXPOSURE_DETAILS_HEADING);
 
@@ -238,6 +292,92 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		DateTimeField endDate = addField(ExposureDto.END_DATE, DateTimeField.class);
 
 		DateComparisonValidator.addStartEndValidators(startDate, endDate, false);
+
+		List<ExposureCategory> categories = Arrays.asList(ExposureCategory.values());
+		categoryField = addField(ExposureDto.EXPOSURE_CATEGORY, ComboBox.class);
+		categoryField.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
+		categoryField.setRequired(true);
+		FieldHelper.updateItems(categoryField, categories);
+
+		settingField = addField(ExposureDto.EXPOSURE_SETTING, ComboBox.class);
+		settingField.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
+		settingField.setRequired(true);
+
+		settingDetailsField = addField(ExposureDto.EXPOSURE_SETTING_DETAILS, TextField.class);
+		settingDetailsField.setVisible(false);
+
+		subSettingsField = addField(ExposureDto.SUB_SETTINGS, OptionGroup.class);
+		subSettingsField.setMultiSelect(true);
+		CssStyles.style(subSettingsField, CssStyles.CAPTION_ON_TOP);
+
+		subSettingsDetailsField = addField(ExposureDto.EXPOSURE_SUB_SETTING_DETAILS, TextField.class);
+		subSettingsDetailsField.setVisible(false);
+
+		//animalConditionField = addField(ExposureDto.ANIMAL_CONDITION, NullableOptionGroup.class);
+		animalCategoryField = addField(ExposureDto.ANIMAL_CATEGORY, NullableOptionGroup.class);
+
+		contactFactorsField = addField(ExposureDto.CONTACT_FACTORS, OptionGroup.class);
+		contactFactorsField.setMultiSelect(true);
+		CssStyles.style(contactFactorsField, CssStyles.CAPTION_ON_TOP);
+
+		contactFactorDetailsField = addField(ExposureDto.CONTACT_FACTOR_DETAILS, TextField.class);
+		contactFactorDetailsField.setVisible(false);
+
+		protectiveMeasuresField = addField(ExposureDto.PROTECTIVE_MEASURES, OptionGroup.class);
+		protectiveMeasuresField.setMultiSelect(true);
+		CssStyles.style(protectiveMeasuresField, CssStyles.CAPTION_ON_TOP);
+
+		protectiveMeasureDetailsField = addField(ExposureDto.PROTECTIVE_MEASURE_DETAILS, TextField.class);
+		protectiveMeasureDetailsField.setVisible(false);
+
+		categoryField.addValueChangeListener(e -> {
+			ExposureCategory selectedCategory = (ExposureCategory) e.getProperty().getValue();
+			updateSettingFieldItems(selectedCategory);
+
+			// Also update subSettings when category changes (setting will be null/cleared)
+			updateSubSettingsFieldItems(selectedCategory, (ExposureSetting) settingField.getValue());
+
+			// Update contact factors and protective measures when category changes
+			updateContactFactorsFieldItems(selectedCategory, (ExposureSetting) settingField.getValue());
+			updateProtectiveMeasuresFieldItems(selectedCategory, (ExposureSetting) settingField.getValue());
+		});
+
+		settingField.addValueChangeListener(e -> {
+			ExposureSetting selectedSetting = (ExposureSetting) e.getProperty().getValue();
+
+			// 1. Show/hide settingDetailsField if setting is OTHER
+			settingDetailsField.setVisible(selectedSetting == ExposureSetting.OTHER);
+
+			// 2. Update subSettings based on category and setting
+			ExposureCategory selectedCategory = (ExposureCategory) categoryField.getValue();
+			updateSubSettingsFieldItems(selectedCategory, selectedSetting);
+
+			// 3. Update contact factors and protective measures based on category and setting
+			updateContactFactorsFieldItems(selectedCategory, selectedSetting);
+			updateProtectiveMeasuresFieldItems(selectedCategory, selectedSetting);
+		});
+
+		subSettingsField.addValueChangeListener(e -> {
+			// 3. Show/hide subSettingsDetailsField if subSettings contains OTHER
+			@SuppressWarnings("unchecked")
+			Set<ExposureSubSetting> selectedSubSettings = (Set<ExposureSubSetting>) e.getProperty().getValue();
+			boolean containsOther = selectedSubSettings != null && selectedSubSettings.contains(ExposureSubSetting.OTHER);
+			subSettingsDetailsField.setVisible(containsOther);
+		});
+
+		contactFactorsField.addValueChangeListener(e -> {
+			@SuppressWarnings("unchecked")
+			Set<ExposureContactFactor> selectedContactFactors = (Set<ExposureContactFactor>) e.getProperty().getValue();
+			boolean containsOther = selectedContactFactors != null && selectedContactFactors.contains(ExposureContactFactor.OTHER);
+			contactFactorDetailsField.setVisible(containsOther);
+		});
+
+		protectiveMeasuresField.addValueChangeListener(e -> {
+			@SuppressWarnings("unchecked")
+			Set<ExposureProtectiveMeasure> selectedProtectiveMeasures = (Set<ExposureProtectiveMeasure>) e.getProperty().getValue();
+			boolean containsOther = selectedProtectiveMeasures != null && selectedProtectiveMeasures.contains(ExposureProtectiveMeasure.OTHER);
+			protectiveMeasureDetailsField.setVisible(containsOther);
+		});
 
 		addFields(
 			ExposureDto.EXPOSURE_TYPE,
@@ -430,6 +570,74 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			Collections.singletonList(ExposureType.OTHER));
 	}
 
+	private void updateSettingFieldItems(ExposureCategory category) {
+		List<ExposureSetting> settings = ExposureSetting.getValues(category);
+		FieldHelper.updateItems(settingField, settings);
+
+		// Clear the field and its dependent details field
+		settingField.setValue(null);
+		settingDetailsField.setValue(null);
+		settingDetailsField.setVisible(false);
+
+		if (category != null) {
+			if (category.hasNoSetting()) {
+				settingField.setVisible(false);
+				settingField.setRequired(false);
+			} else {
+				settingField.setVisible(true);
+				settingField.setRequired(true);
+			}
+		}
+	}
+
+	private void updateSubSettingsFieldItems(ExposureCategory category, ExposureSetting setting) {
+		List<ExposureSubSetting> subSettings;
+
+		// For categories that have no setting but do have subsettings (e.g., FOOD_BORNE),
+		// we need to get subsettings based only on category
+		if (category != null && category.hasNoSetting()) {
+			subSettings = ExposureSubSetting.getValuesForCategoryOnly(category);
+		} else {
+			subSettings = ExposureSubSetting.getValues(category, setting);
+		}
+
+		FieldHelper.updateItems(subSettingsField, subSettings);
+
+		// Clear the field and its dependent details field
+		subSettingsField.setValue(null);
+		subSettingsDetailsField.setValue(null);
+		subSettingsDetailsField.setVisible(false);
+
+		// Hide subSettings field if no options available
+		subSettingsField.setVisible(!subSettings.isEmpty());
+	}
+
+	private void updateContactFactorsFieldItems(ExposureCategory category, ExposureSetting setting) {
+		List<ExposureContactFactor> contactFactors = ExposureContactFactor.getValues(category, setting);
+		FieldHelper.updateItems(contactFactorsField, contactFactors);
+
+		// Clear the field and its dependent details field
+		contactFactorsField.setValue(null);
+		contactFactorDetailsField.setValue(null);
+		contactFactorDetailsField.setVisible(false);
+
+		// Hide contactFactors field if no options available
+		contactFactorsField.setVisible(!contactFactors.isEmpty());
+	}
+
+	private void updateProtectiveMeasuresFieldItems(ExposureCategory category, ExposureSetting setting) {
+		List<ExposureProtectiveMeasure> protectiveMeasures = ExposureProtectiveMeasure.getValues(category, setting);
+		FieldHelper.updateItems(protectiveMeasuresField, protectiveMeasures);
+
+		// Clear the field and its dependent details field
+		protectiveMeasuresField.setValue(null);
+		protectiveMeasureDetailsField.setValue(null);
+		protectiveMeasureDetailsField.setVisible(false);
+
+		// Hide protectiveMeasures field if no options available
+		protectiveMeasuresField.setVisible(!protectiveMeasures.isEmpty());
+	}
+
 	@Override
 	public void setValue(ExposureDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		super.setValue(newFieldValue);
@@ -443,6 +651,28 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 				.stream()
 				.filter(i -> !(i instanceof ComboBoxWithPlaceholder.PlaceholderReferenceDto))
 				.forEach(i -> cbContactToCase.setItemCaption(i, ((ContactReferenceDto) i).getCaptionAlwaysWithUuid()));
+		}
+
+		if (newFieldValue != null) {
+			ExposureCategory category = newFieldValue.getExposureCategory();
+			ExposureSetting setting = newFieldValue.getExposureSetting();
+
+			updateSettingFieldItems(category);
+			updateSubSettingsFieldItems(category, setting);
+			updateContactFactorsFieldItems(category, setting);
+			updateProtectiveMeasuresFieldItems(category, setting);
+
+			// Initialize visibility for details fields
+			settingDetailsField.setVisible(setting == ExposureSetting.OTHER);
+
+			Set<ExposureSubSetting> subSettings = newFieldValue.getSubSettings();
+			subSettingsDetailsField.setVisible(subSettings != null && subSettings.contains(ExposureSubSetting.OTHER));
+
+			Set<ExposureContactFactor> contactFactors = newFieldValue.getContactFactors();
+			contactFactorDetailsField.setVisible(contactFactors != null && contactFactors.contains(ExposureContactFactor.OTHER));
+
+			Set<ExposureProtectiveMeasure> protectiveMeasures = newFieldValue.getProtectiveMeasures();
+			protectiveMeasureDetailsField.setVisible(protectiveMeasures != null && protectiveMeasures.contains(ExposureProtectiveMeasure.OTHER));
 		}
 
 		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
