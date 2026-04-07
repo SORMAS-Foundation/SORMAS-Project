@@ -15513,10 +15513,12 @@ ALTER TABLE testreport ADD COLUMN IF NOT EXISTS serotypetext varchar(255);
 UPDATE testreport  SET serotypetext = serotype, serotype = 'OTHER' WHERE serotype IS NOT null   and serotypetext is null;
 DO $$
 BEGIN
-    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'testreport' AND column_name = 'genotyperesult') THEN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport' AND column_name = 'genotyperesult') 
+        AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport' AND column_name = 'genotype') THEN
         ALTER TABLE testreport RENAME COLUMN genotyperesult TO genotype;
     END IF;
-    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'testreport' AND column_name = 'genotyperesulttext') THEN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport' AND column_name = 'genotyperesulttext') 
+        AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport' AND column_name = 'genotypetext') THEN
         ALTER TABLE testreport RENAME COLUMN genotyperesulttext TO genotypetext;
     END IF;
 END $$;
@@ -15525,10 +15527,12 @@ ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS serotypetext varchar(255
 UPDATE testreport_history  SET serotypetext = serotype, serotype = 'OTHER' WHERE serotype IS NOT null   and serotypetext is null;
 DO $$
 BEGIN
-    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'testreport_history' AND column_name = 'genotyperesult') THEN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport_history' AND column_name = 'genotyperesult') 
+        AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport_history' AND column_name = 'genotype') THEN
         ALTER TABLE testreport_history RENAME COLUMN genotyperesult TO genotype;
     END IF;
-    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'testreport_history' AND column_name = 'genotyperesulttext') THEN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport_history' AND column_name = 'genotyperesulttext') 
+        AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport_history' AND column_name = 'genotypetext') THEN
         ALTER TABLE testreport_history RENAME COLUMN genotyperesulttext TO genotypetext;
     END IF;
 END $$;
