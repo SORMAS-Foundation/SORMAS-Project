@@ -8,8 +8,7 @@ name: Java CI with Gradle
 
 env:
   JAVA: 17
-  PRIVILEGED_RUN: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/development') 
-   || github.event.pull_request.head.repo.full_name == github.repository }}
+  PRIVILEGED_RUN: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/development') || github.event.pull_request.head.repo.full_name == github.repository }}
 
 on:
   push:
@@ -36,6 +35,11 @@ jobs:
         api-level: [26, 27, 28]
 
     steps:
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules && sudo udevadm trigger --name-match=kvm
+
       - name: Checkout repository (with token)
         # Check if PR results from the repository: if yes, we have access to the secrets.
         # The token is only needed for privileged actions from within the repo, so no need
@@ -56,7 +60,7 @@ jobs:
         uses: actions/setup-java@v5
         with:
           java-version: ${{ env.JAVA }}
-          distribution: 'zulu'
+          distribution: "zulu"
 
       - name: Cache Maven packages
         # Check if PR results from the repository: if yes, it is safe to cache dependencies.
@@ -99,13 +103,14 @@ jobs:
           path: |
             ~/.android/avd/*
             ~/.android/adb*
-          key: avd-${{ matrix.api-level }}
-      
+          key: avd-${{ matrix.api-level }}-x86_64
+
       - name: Create AVD and generate snapshot for caching
         if: steps.avd-cache.outputs.cache-hit != 'true'
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
+          arch: x86_64
           force-avd-creation: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
@@ -115,20 +120,20 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
+          arch: x86_64
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
           working-directory: ./sormas-app
           script: ./gradlew connectedAndroidTest
-
       - name: mobsfscan
         uses: MobSF/mobsfscan@main
         with:
-          args: '. --sarif --output mobsf-results.sarif || true'
+          args: ". --sarif --output mobsf-results.sarif || true"
 
       - name: Upload mobsfscan report
         uses: github/codeql-action/upload-sarif@v4
         with:
-          sarif_file: 'mobsf-results.sarif'
+          sarif_file: "mobsf-results.sarif"
           # needed as codeQL also performs an upload, and they clash otherwise
-          category: 'code-scanning/mobsfscan'
+          category: "code-scanning/mobsfscan"
