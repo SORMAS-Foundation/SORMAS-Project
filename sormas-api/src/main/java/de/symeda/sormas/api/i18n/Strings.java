@@ -650,6 +650,7 @@ public interface Strings {
 	String headingEnvironmentSamplesRestored = "headingEnvironmentSamplesRestored";
 	String headingEpiConclusion = "headingEpiConclusion";
 	String headingEpiCurve = "headingEpiCurve";
+	String headingEpiDataOtherInformation = "headingEpiDataOtherInformation";
 	String headingEpiDataSourceCaseContacts = "headingEpiDataSourceCaseContacts";
 	String headingEpipulseExportCreated = "headingEpipulseExportCreated";
 	String headingErrorReportNotAvailable = "headingErrorReportNotAvailable";
@@ -675,6 +676,7 @@ public interface Strings {
 	String headingExportUserRightsFailed = "headingExportUserRightsFailed";
 	String headingExposureDetails = "headingExposureDetails";
 	String headingExposureInvestigation = "headingExposureInvestigation";
+	String headingExposures = "headingExposures";
 	String headingExtendFollowUp = "headingExtendFollowUp";
 	String headingExtendQuarantine = "headingExtendQuarantine";
 	String headingExternalEmailDetails = "headingExternalEmailDetails";

@@ -43,6 +43,7 @@ public class DiseaseConfigurationIndexDto extends EntityDto {
 	public static final String EXTENDED_CLASSIFICATION_MULTI = "extendedClassificationMulti";
 	public static final String AGE_GROUPS = "ageGroups";
 	public static final String AUTOMATIC_SAMPLE_ASSIGNMENT_THRESHOLD = "automaticSampleAssignmentThreshold";
+	public static final String EXPOSURE_CATEGORY_NAMES = "exposureCategoryNames";
 
 	private Disease disease;
 	private Boolean active;
@@ -61,6 +62,7 @@ public class DiseaseConfigurationIndexDto extends EntityDto {
 	private Boolean extendedClassificationMulti;
 	private List<String> ageGroups;
 	private Integer automaticSampleAssignmentThreshold;
+	private String exposureCategoryNames;
 
 	public Disease getDisease() {
 		return disease;
@@ -196,5 +198,13 @@ public class DiseaseConfigurationIndexDto extends EntityDto {
 
 	public void setAutomaticSampleAssignmentThreshold(Integer automaticSampleAssignmentThreshold) {
 		this.automaticSampleAssignmentThreshold = automaticSampleAssignmentThreshold;
+	}
+
+	public String getExposureCategoryNames() {
+		return exposureCategoryNames;
+	}
+
+	public void setExposureCategoryNames(String exposureCategoryNames) {
+		this.exposureCategoryNames = exposureCategoryNames;
 	}
 }

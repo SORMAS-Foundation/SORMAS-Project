@@ -28,6 +28,7 @@ import com.vaadin.v7.ui.RichTextArea;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
+import de.symeda.sormas.api.exposure.ExposureCategory;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
@@ -36,6 +37,7 @@ import de.symeda.sormas.ui.adverseeventsfollowingimmunization.components.form.Fo
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.components.CheckboxSet;
 import de.symeda.sormas.ui.utils.components.DiseaseConfigurationAgeGroupComponent;
 
 public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfigurationDto> {
@@ -53,7 +55,8 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 			+ fluidRowLocsCss(CssStyles.VSPACE_3, DiseaseConfigurationDto.FOLLOW_UP_ENABLED)
 			+ fluidRowLocsCss(CssStyles.VSPACE_3,DiseaseConfigurationDto.FOLLOW_UP_DURATION,DiseaseConfigurationDto.CASE_FOLLOW_UP_DURATION,DiseaseConfigurationDto.EVENT_PARTICIPANT_FOLLOW_UP_DURATION)
 			+ fluidRowLocsCss(CssStyles.VSPACE_3, DiseaseConfigurationDto.INCUBATION_PERIOD_ENABLED)
-			+ fluidRowLocsCss(CssStyles.VSPACE_3, DiseaseConfigurationDto.MIN_INCUBATION_PERIOD, DiseaseConfigurationDto.MAX_INCUBATION_PERIOD,"");
+			+ fluidRowLocsCss(CssStyles.VSPACE_3, DiseaseConfigurationDto.MIN_INCUBATION_PERIOD, DiseaseConfigurationDto.MAX_INCUBATION_PERIOD,"")
+			+ fluidRowLocs(DiseaseConfigurationDto.EXPOSURE_CATEGORIES);
 	//@formatter:on
 	public static final String MAIN_ACCORDION_LOC = "mainAccordionLoc";
 
@@ -71,6 +74,8 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 	private CheckBox cbExtendedClassification;
 	private CheckBox cbExtendedClassificationMulti;
 	private TextField tfAutomaticSampleAssignmentThreshold;
+
+	private CheckboxSet<ExposureCategory> exposureCategoriesField;
 
 	public DiseaseConfigurationEditForm() {
 
@@ -115,6 +120,10 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 		tfMinIncubationPeriod = addField(generalLayout, DiseaseConfigurationDto.MIN_INCUBATION_PERIOD, TextField.class);
 		cbExtendedClassification = addField(generalLayout, DiseaseConfigurationDto.EXTENDED_CLASSIFICATION, CheckBox.class);
 		cbExtendedClassificationMulti = addField(generalLayout, DiseaseConfigurationDto.EXTENDED_CLASSIFICATION_MULTI, CheckBox.class);
+
+		exposureCategoriesField = addField(generalLayout, DiseaseConfigurationDto.EXPOSURE_CATEGORIES, CheckboxSet.class);
+		exposureCategoriesField.setColumnCount(3);
+		exposureCategoriesField.setItems(Arrays.asList(ExposureCategory.values()), null, null);
 
 		ageGroupsComponent = addField(ageGroupLayout, DiseaseConfigurationDto.AGE_GROUPS, DiseaseConfigurationAgeGroupComponent.class);
 		ageGroupsComponent.setCaption(I18nProperties.getPrefixCaption(DiseaseConfigurationDto.I18N_PREFIX, DiseaseConfigurationDto.AGE_GROUPS));
