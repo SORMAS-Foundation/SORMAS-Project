@@ -78,6 +78,9 @@ public class TestMethodComponent extends FormComponent<PathogenTestDto> {
 	private HorizontalLayout typingIdRow;
 	private HorizontalLayout labDetailsRow;
 
+	private Supplier<Date> testDateSampleDateSupplier;
+	private String testDateValidationError;
+
 	public TestMethodComponent(FormEventBus eventBus, Supplier<Date> sampleDateSupplier, Disease initialDisease) {
 		super(PathogenTestDto.class);
 		this.eventBus = eventBus;
@@ -262,6 +265,41 @@ public class TestMethodComponent extends FormComponent<PathogenTestDto> {
 			pcrTestSpecField.clear();
 		}
 		updateRowVisibility(pcrTestSpecRow);
+	}
+
+	/** Forces typingId field visible when a preset value exists, regardless of current test type. */
+	public void showTypingIdIfPreset(String typingId) {
+		if (typingId != null && !typingId.trim().isEmpty()) {
+			typingIdField.setVisible(true);
+			updateRowVisibility(typingIdRow);
+		}
+	}
+
+	/**
+	 * Registers a validator ensuring test date is not before sample date.
+	 * Evaluated during {@link #validate()}.
+	 */
+	public void addTestDateAfterSampleDateValidator(Supplier<Date> sampleDateSupplier, String errorMessage) {
+		this.testDateSampleDateSupplier = sampleDateSupplier;
+		this.testDateValidationError = errorMessage;
+	}
+
+	@Override
+	public void validate() {
+		super.validate();
+		if (testDateSampleDateSupplier != null && testDateField.getValue() != null) {
+			Date sampleDate = testDateSampleDateSupplier.get();
+			if (sampleDate != null) {
+				Integer totalMinutes = testTimeField.getValue();
+				LocalDateTime ldt = totalMinutes != null
+					? testDateField.getValue().atTime(totalMinutes / 60, totalMinutes % 60)
+					: testDateField.getValue().atStartOfDay();
+				Date testDate = Date.from(ldt.atZone(ZoneId.systemDefault()).toInstant());
+				if (testDate.before(sampleDate)) {
+					throw new com.vaadin.v7.data.Validator.InvalidValueException(testDateValidationError);
+				}
+			}
+		}
 	}
 
 	public ComboBox<PathogenTestType> getTestTypeField() {

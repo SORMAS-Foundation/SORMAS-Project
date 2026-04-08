@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.vaadin.shared.Registration;
@@ -37,6 +38,7 @@ import com.vaadin.v7.data.util.converter.Converter;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -95,9 +97,12 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 	private final List<Registration> eventRegistrations = new ArrayList<>();
 
 	private Label headingLabel;
+	private TestIdentificationComponent testIdentificationComponent;
 	private TestMethodComponent testMethodComponent;
 	private TestResultComponent testResultComponent;
 	private DiseaseVariantComponent diseaseVariantComponent;
+	private DiseaseSelectionComponent diseaseSelectionComponent;
+	private DeletionComponent deletionComponent;
 
 	private AbstractDiseaseSectionComponent activeSection;
 	private VerticalLayout diseaseSectionSlot;
@@ -171,11 +176,11 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		headingLabel.addStyleName(H3);
 		container.addComponent(headingLabel);
 
-		TestIdentificationComponent identificationComponent = new TestIdentificationComponent(eventBus);
-		formComponents.add(identificationComponent);
-		container.addComponent(identificationComponent);
+		testIdentificationComponent = new TestIdentificationComponent(eventBus);
+		formComponents.add(testIdentificationComponent);
+		container.addComponent(testIdentificationComponent);
 
-		DiseaseSelectionComponent diseaseSelectionComponent = new DiseaseSelectionComponent(eventBus, disease, create, environmentSample != null);
+		diseaseSelectionComponent = new DiseaseSelectionComponent(eventBus, disease, create, environmentSample != null);
 		formComponents.add(diseaseSelectionComponent);
 		container.addComponent(diseaseSelectionComponent);
 
@@ -218,7 +223,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		formComponents.add(prescriberComponent);
 		container.addComponent(prescriberComponent);
 
-		DeletionComponent deletionComponent = new DeletionComponent();
+		deletionComponent = new DeletionComponent();
 		formComponents.add(deletionComponent);
 		container.addComponent(deletionComponent);
 
@@ -379,6 +384,42 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		}
 
 		markAsDirty();
+	}
+
+	/** Reveals the typingId field if the existing test has a preset value. */
+	public void showTypingIdIfPreset(String typingId) {
+		testMethodComponent.showTypingIdIfPreset(typingId);
+	}
+
+	/** Sets initial field values for a newly created pathogen test. */
+	public void initializeForNewTest(Disease disease) {
+		testResultComponent.getTestResultField().setValue(PathogenTestResultType.PENDING);
+		if (disease != null) {
+			diseaseSelectionComponent.getDiseaseField().setValue(disease);
+		}
+	}
+
+	/** Updates lab field required state (e.g. when sample purpose changes). */
+	public void setLabRequired(boolean required) {
+		testMethodComponent.setLabRequired(required);
+	}
+
+	/**
+	 * Registers a validator ensuring test date is not before sample date.
+	 * Evaluated during form commit via {@link de.symeda.sormas.ui.utils.FormComponent#validate()}.
+	 */
+	public void addTestDateAfterSampleDateValidator(Supplier<Date> sampleDateSupplier, String errorMessage) {
+		testMethodComponent.addTestDateAfterSampleDateValidator(sampleDateSupplier, errorMessage);
+	}
+
+	/** Sets the VIA_LIMS checkbox value. */
+	public void setViaLims(boolean checked) {
+		testIdentificationComponent.getViaLimsField().setValue(checked);
+	}
+
+	/** Shows deletion reason fields for a deleted record. */
+	public void showDeletionInfo(DeletionReason reason) {
+		deletionComponent.showForDeletedRecord(reason);
 	}
 
 	@Override

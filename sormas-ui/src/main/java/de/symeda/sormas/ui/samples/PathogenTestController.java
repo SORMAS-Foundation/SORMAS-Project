@@ -42,7 +42,6 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactStatus;
@@ -254,10 +253,7 @@ public class PathogenTestController {
 			});
 
 			if (pathogenTest.isDeleted()) {
-				editView.getWrappedComponent().getField(PathogenTestDto.DELETION_REASON).setVisible(true);
-				if (editView.getWrappedComponent().getField(PathogenTestDto.DELETION_REASON).getValue() == DeletionReason.OTHER_REASON) {
-					editView.getWrappedComponent().getField(PathogenTestDto.OTHER_DELETION_REASON).setVisible(true);
-				}
+				editView.getWrappedComponent().showDeletionInfo(pathogenTest.getDeletionReason());
 			}
 			editView.restrictEditableComponentsOnEditView(
 				forHumanSample ? UserRight.SAMPLE_EDIT : UserRight.ENVIRONMENT_SAMPLE_EDIT,

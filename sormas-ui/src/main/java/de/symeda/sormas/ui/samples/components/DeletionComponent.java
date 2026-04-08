@@ -70,4 +70,11 @@ public class DeletionComponent extends FormComponent<PathogenTestDto> {
 		binder.forField(deletionReasonField).bind(PathogenTestDto::getDeletionReason, PathogenTestDto::setDeletionReason);
 		binder.forField(otherReasonField).bind(PathogenTestDto::getOtherDeletionReason, PathogenTestDto::setOtherDeletionReason);
 	}
+
+	/** Shows the deletion reason field (and other reason if applicable) for a deleted record. */
+	public void showForDeletedRecord(DeletionReason reason) {
+		deletionReasonField.setVisible(true);
+		otherReasonField.setVisible(reason == DeletionReason.OTHER_REASON);
+		updateRowAndSelfVisibility();
+	}
 }
