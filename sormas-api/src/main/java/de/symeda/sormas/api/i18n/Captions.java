@@ -1427,6 +1427,8 @@ public interface Captions {
 	String DiseaseConfiguration_caseSurveillanceEnabled = "DiseaseConfiguration.caseSurveillanceEnabled";
 	String DiseaseConfiguration_disease = "DiseaseConfiguration.disease";
 	String DiseaseConfiguration_eventParticipantFollowUpDuration = "DiseaseConfiguration.eventParticipantFollowUpDuration";
+	String DiseaseConfiguration_exposureCategories = "DiseaseConfiguration.exposureCategories";
+	String DiseaseConfiguration_exposureCategoryNames = "DiseaseConfiguration.exposureCategoryNames";
 	String DiseaseConfiguration_extendedClassification = "DiseaseConfiguration.extendedClassification";
 	String DiseaseConfiguration_extendedClassificationMulti = "DiseaseConfiguration.extendedClassificationMulti";
 	String DiseaseConfiguration_followUpDuration = "DiseaseConfiguration.followUpDuration";
@@ -1584,6 +1586,7 @@ public interface Captions {
 	String EpiData_largeOutbreaksArea = "EpiData.largeOutbreaksArea";
 	String EpiData_modeOfTransmission = "EpiData.modeOfTransmission";
 	String EpiData_modeOfTransmissionType = "EpiData.modeOfTransmissionType";
+	String EpiData_otherDetails = "EpiData.otherDetails";
 	String epiDataNoSourceContacts = "epiDataNoSourceContacts";
 	String epipulseActiveExports = "epipulseActiveExports";
 	String epipulseAllExports = "epipulseAllExports";
@@ -3286,6 +3289,9 @@ public interface Captions {
 	String titleDiseaseConfigurationAgeGroup = "titleDiseaseConfigurationAgeGroup";
 	String titleDiseaseConfigurationCaseDefinition = "titleDiseaseConfigurationCaseDefinition";
 	String titleDiseaseConfigurationGeneral = "titleDiseaseConfigurationGeneral";
+	String titleExposureActivitySection = "titleExposureActivitySection";
+	String titleExposureLocationSection = "titleExposureLocationSection";
+	String titleExposuresSection = "titleExposuresSection";
 	String titleNoComplications = "titleNoComplications";
 	String to = "to";
 	String total = "total";

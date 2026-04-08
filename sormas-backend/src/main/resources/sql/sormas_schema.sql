@@ -15679,6 +15679,28 @@ END $$;
 
 INSERT INTO schema_version (version_number, comment) VALUES (616, '#13801, #13814 - Malaria and Dengue TestReport columns renames');
 
+-- update delete triggers for exposure related tables
+
+alter table exposures_subsettings drop constraint unq_exposures_subsettings_0;
+alter table exposures_subsettings add constraint exposures_subsettings_pk primary key (exposure_id, subsetting);
+DROP TRIGGER IF EXISTS delete_history_trigger ON exposures_subsettings;
+
+alter table exposures_contactfactors drop constraint unq_exposures_contactfactors_0;
+alter table exposures_contactfactors add constraint exposures_contactfactors_pk primary key (exposure_id, contactfactor);
+DROP TRIGGER IF EXISTS delete_history_trigger ON exposures_contactfactors;
+
+alter table exposures_protectivemeasures drop constraint unq_exposures_protectivemeasures_0;
+alter table exposures_protectivemeasures add constraint exposures_protectivemeasures_pk primary key (exposure_id, protectivemeasure);	
+DROP TRIGGER IF EXISTS delete_history_trigger ON exposures_protectivemeasures;
+
+INSERT INTO schema_version (version_number, comment) VALUES (617, '#13887 update keys and drop delete history triggers for new exposures tables');
+
+alter table public.diseaseconfiguration add exposurecategories varchar(255);
+alter table public.diseaseconfiguration_history add exposurecategories varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (618, '#13887 add exposure categories to disease configuration');
+
+
 -- #13828 - Customizable Fields
 
 CREATE TABLE IF NOT EXISTS customizablefieldmetadata (
@@ -15817,6 +15839,6 @@ CREATE TRIGGER delete_history_trigger_customizablefieldvalue
 
 ALTER TABLE customizablefieldvalue_history OWNER TO sormas_user;
 
-INSERT INTO schema_version (version_number, comment) VALUES (617, '#13828 - Add history tables for customizable fields');
+INSERT INTO schema_version (version_number, comment) VALUES (619, '#13828 - Add history tables for customizable fields');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

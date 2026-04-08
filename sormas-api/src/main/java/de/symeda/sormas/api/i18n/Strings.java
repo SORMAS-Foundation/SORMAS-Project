@@ -650,6 +650,7 @@ public interface Strings {
 	String headingEnvironmentSamplesRestored = "headingEnvironmentSamplesRestored";
 	String headingEpiConclusion = "headingEpiConclusion";
 	String headingEpiCurve = "headingEpiCurve";
+	String headingEpiDataOtherInformation = "headingEpiDataOtherInformation";
 	String headingEpiDataSourceCaseContacts = "headingEpiDataSourceCaseContacts";
 	String headingEpipulseExportCreated = "headingEpipulseExportCreated";
 	String headingErrorReportNotAvailable = "headingErrorReportNotAvailable";

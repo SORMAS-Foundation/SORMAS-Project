@@ -129,6 +129,7 @@ public class ExposureDto extends PseudonymizableDto {
 	public static final String CONTACT_FACTOR_DETAILS = "contactFactorDetails";
 	public static final String PROTECTIVE_MEASURE_DETAILS = "protectiveMeasureDetails";
 	public static final String EXPOSURE_COMMENT = "exposureComment";
+	public static final String CONDITION_OF_ANIMAL = "conditionOfAnimal";
 	public static final String ANIMAL_CATEGORY = "animalCategory";
 	public static final String ANIMAL_CATEGORY_DETAILS = "animalCategoryDetails";
 	public static final String FOMITE_TRANSMISSION_LOCATION = "fomiteTransmissionLocation";

@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.epidata;
 
+import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.divsCss;
@@ -41,6 +42,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.CountryHelper;
@@ -55,6 +57,7 @@ import de.symeda.sormas.api.epidata.ClusterType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.exposure.InfectionSource;
 import de.symeda.sormas.api.exposure.ModeOfTransmission;
+import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
@@ -85,6 +88,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	private static final String LOC_EXP_PERIOD_HEADING = "locExpPeriodHeading";
 	private static final String EXPOSURE_DATES_LAYOUT =
 		fluidRowLocs(3, "EXPOSURE_START_DATE_LABEL", 3, "EXPOSURE_START_DATE_VALUE", 3, "EXPOSURE_END_DATE_LABEL", 3, "EXPOSURE_END_DATE_VALUE");
+	private static final String LOC_OTHER_INFORMATION_HEADING = "locOtherInformationHeading";
 
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT = 
@@ -112,6 +116,9 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	private static final String SOURCE_CONTACTS_HTML_LAYOUT =
 			locCss(VSPACE_TOP_3, LOC_SOURCE_CASE_CONTACTS_HEADING) +
 			loc(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN);
+
+	private static final String OTHER_INFORMATION_HTML_LAYOUT =
+			loc(LOC_OTHER_INFORMATION_HEADING) + fluidRowLocs(EpiDataDto.OTHER_DETAILS);
 	//@formatter:on
 
 	private final Disease disease;
@@ -216,6 +223,12 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		exposuresField.addValueChangeListener(e -> {
 			ogExposureDetailsKnown.setEnabled(CollectionUtils.isEmpty(exposuresField.getValue()));
 		});
+
+		TextArea additionalDetails = addField(EpiDataDto.OTHER_DETAILS, TextArea.class);
+		additionalDetails.setRows(6);
+		additionalDetails.setDescription(
+			I18nProperties.getPrefixDescription(EpiDataDto.I18N_PREFIX, EpiDataDto.OTHER_DETAILS, "") + "\n"
+				+ I18nProperties.getDescription(Descriptions.descGdpr));
 	}
 
 	/**
@@ -325,6 +338,10 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 					+ divsCss(VSPACE_3, I18nProperties.getString(Strings.infoEpiDataSourceCaseContacts)),
 				ContentMode.HTML),
 			LOC_SOURCE_CASE_CONTACTS_HEADING);
+
+		Label otherInformationLabel = new Label(I18nProperties.getString(Strings.headingEpiDataOtherInformation));
+		otherInformationLabel.addStyleName(H3);
+		getContent().addComponent(otherInformationLabel, LOC_OTHER_INFORMATION_HEADING);
 	}
 
 	public void disableContactWithSourceCaseKnownField() {
@@ -337,6 +354,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 
 	@Override
 	protected String createHtmlLayout() {
-		return parentClass == CaseDataDto.class ? MAIN_HTML_LAYOUT + SOURCE_CONTACTS_HTML_LAYOUT : MAIN_HTML_LAYOUT;
+		String layout = parentClass == CaseDataDto.class ? MAIN_HTML_LAYOUT + SOURCE_CONTACTS_HTML_LAYOUT : MAIN_HTML_LAYOUT;
+		return layout + OTHER_INFORMATION_HTML_LAYOUT;
 	}
 }
