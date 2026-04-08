@@ -15555,8 +15555,8 @@ DROP TRIGGER IF EXISTS delete_history_trigger ON exposures_protectivemeasures;
 
 INSERT INTO schema_version (version_number, comment) VALUES (617, '#13887 update keys and drop delete history triggers for new exposures tables');
 
-alter table public.diseaseconfiguration add exposurecategories varchar(255);
-alter table public.diseaseconfiguration_history add exposurecategories varchar(255);
+alter table diseaseconfiguration add exposurecategories varchar(255);
+alter table diseaseconfiguration_history add exposurecategories varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (618, '#13887 add exposure categories to disease configuration');
 
