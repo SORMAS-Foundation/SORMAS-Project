@@ -22,6 +22,7 @@ import java.util.Locale;
 
 import com.vaadin.data.ValueProvider;
 import com.vaadin.server.Setter;
+import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.RadioButtonGroup;
 import com.vaadin.ui.TextField;
@@ -182,7 +183,10 @@ public class TuberculosisSectionComponent extends AbstractDiseaseSectionComponen
 	}
 
 	private TextField createTubeTextField(String propertyId) {
-		return createTextField(propertyId);
+		TextField field = createTextField(propertyId);
+		field.setValueChangeMode(ValueChangeMode.LAZY);
+		field.setValueChangeTimeout(1000);
+		return field;
 	}
 
 	@Override
