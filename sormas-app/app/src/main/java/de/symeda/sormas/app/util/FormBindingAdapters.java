@@ -29,6 +29,7 @@ import android.widget.TextView;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.BindingAdapter;
 
+import java.util.Collection;
 import java.util.List;
 
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -227,6 +228,8 @@ public class FormBindingAdapters {
 		if (o == null) {
 			return true;
 		} else if (o instanceof String && DataHelper.isNullOrEmpty((String) o)) {
+			return true;
+		} else if (o instanceof Collection && ((Collection<?>) o).isEmpty()) {
 			return true;
 		} else if (o instanceof YesNoUnknown && YesNoUnknown.NO.equals(o)) {
 			return true;

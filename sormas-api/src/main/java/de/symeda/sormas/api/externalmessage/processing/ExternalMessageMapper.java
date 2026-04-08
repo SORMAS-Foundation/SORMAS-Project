@@ -55,6 +55,7 @@ import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.Serotype;
 import de.symeda.sormas.api.therapy.DrugSusceptibilityDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -705,11 +706,7 @@ public final class ExternalMessageMapper {
 							pathogenTest.getPrescriberCountry(),
 							sourceTestReport.getPrescriberCountry(),
 							PathogenTestDto.PRESCRIBER_COUNTRY),
-						Mapping.of(
-							pathogenTest::setGenoTypeResult,
-							pathogenTest.getGenoTypeResult(),
-							sourceTestReport.getGenoTypeResult(),
-							PathogenTestDto.GENOTYPE_RESULT),
+						Mapping.of(pathogenTest::setGenoType, pathogenTest.getGenoType(), sourceTestReport.getGenoType(), PathogenTestDto.GENOTYPE),
 						Mapping.of(
 							pathogenTest::setSeroGroupSpecification,
 							pathogenTest.getSeroGroupSpecification(),
@@ -720,7 +717,11 @@ public final class ExternalMessageMapper {
 							pathogenTest.getSeroGroupSpecificationText(),
 							sourceTestReport.getSeroGroupSpecificationText(),
 							PathogenTestDto.SERO_GROUP_SPECIFICATION),
-						Mapping.of(pathogenTest::setSerotype, pathogenTest.getSerotype(), sourceTestReport.getSerotype(), PathogenTestDto.SEROTYPE),
+						Mapping.of(
+							pathogenTest::setSerotype,
+							pathogenTest.getSerotype(),
+							Serotype.fromString(sourceTestReport.getSerotype()),
+							PathogenTestDto.SEROTYPE),
 						Mapping.of(
 							pathogenTest::setSeroTypingMethod,
 							pathogenTest.getSeroTypingMethod(),

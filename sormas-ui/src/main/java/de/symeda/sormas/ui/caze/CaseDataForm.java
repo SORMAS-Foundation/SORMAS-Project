@@ -1545,7 +1545,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private void getManualCaseDefinition() {
 		// If a disease has caseDefinitionText, it should display; otherwise criteria will display as it is.
 		String caseDefinitionText = FacadeProvider.getDiseaseConfigurationFacade().getCaseDefinitionText(disease);
-		if (caseDefinitionText == null) {
+		if (StringUtils.isBlank(caseDefinitionText)) {
 			return;
 		}
 
@@ -1563,7 +1563,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			});
 			popupWindow.setWidth(860, Unit.PIXELS);
 			popupWindow.setHeight(80, Unit.PERCENTAGE);
-			popupWindow.setCaption(I18nProperties.getString(Strings.classificationRulesFor) + " " + disease);
+			popupWindow.setCaption(I18nProperties.getString(Strings.caseDefinitionForDisease) + " " + disease);
 		}, ValoTheme.BUTTON_PRIMARY, FORCE_CAPTION);
 
 		getContent().addComponent(caseDefinitionButton, CLASSIFICATION_RULES_LOC);

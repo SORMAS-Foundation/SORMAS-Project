@@ -179,6 +179,10 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		return getResultList(service.getEntityManager(), cq, first, max, this::toIndexDto);
 	}
 
+	public DiseaseConfigurationDto getDiseaseConfiguration(Disease disease) {
+		return toDto(service.getDiseaseConfiguration(disease));
+	}
+
 	private DiseaseConfigurationIndexDto toIndexDto(DiseaseConfiguration entity) {
 
 		if (entity == null) {

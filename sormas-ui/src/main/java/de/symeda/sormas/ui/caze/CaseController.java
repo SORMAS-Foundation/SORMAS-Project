@@ -81,6 +81,7 @@ import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
+import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -1392,14 +1393,19 @@ public class CaseController {
 		boolean isEditAllowed) {
 
 		CaseDataDto caze = findCase(caseUuid);
+		EpiDataDto epiDataDto = caze.getEpiData();
+		// Exposure start date and end date should be calculated based on symptom onsetDate and incubation start periods
+		Date symptomOnsetDate = caze.getSymptoms().getOnsetDate();
+
 		EpiDataForm epiDataForm = new EpiDataForm(
 			caze.getDisease(),
 			CaseDataDto.class,
 			caze.isPseudonymized(),
 			caze.isInJurisdiction(),
 			sourceContactsToggleCallback,
-			isEditAllowed);
-		epiDataForm.setValue(caze.getEpiData());
+			isEditAllowed,
+			symptomOnsetDate);
+		epiDataForm.setValue(epiDataDto);
 
 		final CommitDiscardWrapperComponent<EpiDataForm> editView =
 			new CommitDiscardWrapperComponent<EpiDataForm>(epiDataForm, epiDataForm.getFieldGroup());

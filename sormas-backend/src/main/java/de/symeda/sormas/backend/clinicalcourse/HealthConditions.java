@@ -45,6 +45,8 @@ public class HealthConditions extends AbstractDomainObject {
 	private YesNoUnknown exposedToMosquitoBorneViruses;
 	private String exposedToMosquitoBorneVirusesText;
 	private YesNoUnknown vaccinatedAgainstMosquitoBorneViruses;
+	private YesNoUnknown malaria;
+	private Integer malariaInfectedYear;
 
 	private Integer tuberculosisInfectionYear;
 	private YesNoUnknown previousTuberculosisTreatment;
@@ -326,5 +328,21 @@ public class HealthConditions extends AbstractDomainObject {
 
 	public void setVaccinatedAgainstMosquitoBorneViruses(YesNoUnknown vaccinatedAgainstMosquitoBorneViruses) {
 		this.vaccinatedAgainstMosquitoBorneViruses = vaccinatedAgainstMosquitoBorneViruses;
+	}
+
+	public Integer getMalariaInfectedYear() {
+		return malariaInfectedYear;
+	}
+
+	public void setMalariaInfectedYear(Integer malariaInfectedYear) {
+		this.malariaInfectedYear = malariaInfectedYear;
+	}
+
+	public YesNoUnknown getMalaria() {
+		return malaria;
+	}
+
+	public void setMalaria(YesNoUnknown malaria) {
+		this.malaria = malaria;
 	}
 }

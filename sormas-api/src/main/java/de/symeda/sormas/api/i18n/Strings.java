@@ -20,6 +20,7 @@ public interface Strings {
 	String between = "between";
 	String bpm = "bpm";
 	String by = "by";
+	String caseDefinitionForDisease = "caseDefinitionForDisease";
 	String checkboxSetTickAnAnswerForAll = "checkboxSetTickAnAnswerForAll";
 	String classificationAllOf = "classificationAllOf";
 	String classificationClassificationRules = "classificationClassificationRules";
@@ -402,6 +403,8 @@ public interface Strings {
 	String errorViewNotFound = "errorViewNotFound";
 	String errorWasReported = "errorWasReported";
 	String errorWritingTemplate = "errorWritingTemplate";
+	String exposureEndDate = "exposureEndDate";
+	String exposureStartDate = "exposureStartDate";
 	String externalMessageMultipleSampleReports = "externalMessageMultipleSampleReports";
 	String ExternalSurveillanceToolGateway_confirmDeleteCase = "ExternalSurveillanceToolGateway.confirmDeleteCase";
 	String ExternalSurveillanceToolGateway_confirmDeleteEvent = "ExternalSurveillanceToolGateway.confirmDeleteEvent";

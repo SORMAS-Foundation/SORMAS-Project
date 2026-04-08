@@ -31,16 +31,25 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.vaadin.server.UserError;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Label;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.fieldgroup.BeanFieldGroup;
+import com.vaadin.v7.data.util.BeanItem;
 import com.vaadin.v7.data.util.converter.Converter;
+import com.vaadin.v7.data.util.converter.Converter.ConversionException;
+import com.vaadin.v7.data.util.converter.ConverterUtil;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
@@ -59,10 +68,12 @@ import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleDto;
 import de.symeda.sormas.api.environment.environmentsample.Pathogen;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.sample.GenoTypeResult;
+import de.symeda.sormas.api.sample.GenoType;
+import de.symeda.sormas.api.sample.PathogenSpecie;
 import de.symeda.sormas.api.sample.PathogenStrainCallStatus;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -70,6 +81,7 @@ import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SeroGroupSpecification;
+import de.symeda.sormas.api.sample.Serotype;
 import de.symeda.sormas.api.sample.SerotypingMethod;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -106,18 +118,21 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			fluidRowLocs(PathogenTestDto.TESTED_PATHOGEN, PathogenTestDto.TESTED_PATHOGEN_DETAILS) +
 			fluidRowLocs(PathogenTestDto.TYPING_ID, "") +
 			fluidRowLocs(PathogenTestDto.TEST_DATE_TIME, PathogenTestDto.LAB) +
-			fluidRowLocs("", PathogenTestDto.LAB_DETAILS) +
+			fluidRowLocs(6, "",6, PathogenTestDto.LAB_DETAILS) +
 			fluidRowLocs(6,PathogenTestDto.TEST_RESULT, 4, PathogenTestDto.TEST_RESULT_VERIFIED, 2,PathogenTestDto.PRELIMINARY) +
+			fluidRowLocs(6, PathogenTestDto.RESULT_DETAILS,3,PathogenTestDto.PERFORMED_BY_REFERENCE_LABORATORY,3, PathogenTestDto.RETEST_REQUESTED) +
 			fluidRowLocs(PathogenTestDto.TESTED_DISEASE_VARIANT, PathogenTestDto.TESTED_DISEASE_VARIANT_DETAILS) +
 			fluidRowLocs(PathogenTestDto.RIFAMPICIN_RESISTANT, PathogenTestDto.ISONIAZID_RESISTANT, "", "") +
 			fluidRowLocs(PathogenTestDto.TEST_SCALE, "") +
 			fluidRowLocs(PathogenTestDto.STRAIN_CALL_STATUS, "") +
-			fluidRowLocs(PathogenTestDto.SPECIE, "") +
+			fluidRowLocs(PathogenTestDto.SPECIE, PathogenTestDto.SPECIE_TEXT) +
 			fluidRowLocs(PathogenTestDto.PATTERN_PROFILE, "") +
 			fluidRowLocs(PathogenTestDto.DRUG_SUSCEPTIBILITY) +
-			fluidRowLocs(4,PathogenTestDto.SEROTYPE, 4,PathogenTestDto.SEROTYPING_METHOD, 4,PathogenTestDto.SERO_TYPING_METHOD_TEXT) +
+			fluidRowLocs(6,PathogenTestDto.SEROTYPE, 6,PathogenTestDto.SEROTYPE_TEXT) +
+			fluidRowLocs(6,PathogenTestDto.SEROTYPING_METHOD, 6,PathogenTestDto.SERO_TYPING_METHOD_TEXT) +
 			fluidRowLocs(6,PathogenTestDto.SERO_GROUP_SPECIFICATION , 6, PathogenTestDto.SERO_GROUP_SPECIFICATION_TEXT) +
-			fluidRowLocs(4,PathogenTestDto.GENOTYPE_RESULT,6, PathogenTestDto.GENOTYPE_RESULT_TEXT) +
+			fluidRowLocs(6,PathogenTestDto.GENOTYPE,6, PathogenTestDto.GENOTYPE_TEXT) +
+			fluidRowLocs(6,PathogenTestDto.ANTIBODY_TITRE) +
 			fluidRowLocs(PathogenTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, "") +
 			fluidRowLocs(PathogenTestDto.CQ_VALUE, "") +
 			fluidRowLocs(PathogenTestDto.CT_VALUE_E, PathogenTestDto.CT_VALUE_N) +
@@ -138,37 +153,36 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			fluidRowLocs(PathogenTestDto.OTHER_DELETION_REASON);
 	//@formatter:on
 
+	//@formatter:off
 	// map to decide the result type field value and enable/disable state
 	public static final Map<Disease, ArrayList<PathogenTestType>> RESULT_FIELD_DECISION_MAP = Collections.unmodifiableMap(new HashMap<>() {
-
 		{
-			put(
-				Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-				new ArrayList<>(
-					List.of(
-						PathogenTestType.SEROGROUPING,
-						PathogenTestType.MULTILOCUS_SEQUENCE_TYPING,
-						PathogenTestType.SLIDE_AGGLUTINATION,
-						PathogenTestType.WHOLE_GENOME_SEQUENCING,
-						PathogenTestType.SEQUENCING,
-						PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)));
-			put(
-				Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-				new ArrayList<>(
-					List.of(
-						PathogenTestType.SEROGROUPING,
-						PathogenTestType.MULTILOCUS_SEQUENCE_TYPING,
-						PathogenTestType.SLIDE_AGGLUTINATION,
-						PathogenTestType.WHOLE_GENOME_SEQUENCING,
-						PathogenTestType.SEQUENCING,
-						PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)));
+			put(Disease.INVASIVE_MENINGOCOCCAL_INFECTION, new ArrayList<>(List.of(PathogenTestType.SEROGROUPING,
+						PathogenTestType.MULTILOCUS_SEQUENCE_TYPING, PathogenTestType.SLIDE_AGGLUTINATION, PathogenTestType.WHOLE_GENOME_SEQUENCING,
+						PathogenTestType.SEQUENCING, PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)));
+			put(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, new ArrayList<>(List.of(PathogenTestType.SEROGROUPING, PathogenTestType.MULTILOCUS_SEQUENCE_TYPING,
+						PathogenTestType.SLIDE_AGGLUTINATION, PathogenTestType.WHOLE_GENOME_SEQUENCING, PathogenTestType.SEQUENCING, PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)));
 			put(Disease.MEASLES, new ArrayList<>(List.of(PathogenTestType.GENOTYPING)));
 			put(Disease.RESPIRATORY_SYNCYTIAL_VIRUS, new ArrayList<>(List.of(PathogenTestType.SEQUENCING, PathogenTestType.WHOLE_GENOME_SEQUENCING)));
 			put(Disease.INFLUENZA, new ArrayList<>(List.of(PathogenTestType.ISOLATION)));
 			put(Disease.CRYPTOSPORIDIOSIS, new ArrayList<>(List.of(PathogenTestType.GENOTYPING)));
+			put(Disease.DENGUE, new ArrayList<>(List.of(PathogenTestType.NAAT, PathogenTestType.NEUTRALIZING_ANTIBODIES, PathogenTestType.PCR_RT_PCR)));
+			put(Disease.MALARIA, new ArrayList<>(List.of( PathogenTestType.ANTIGEN_DETECTION, PathogenTestType.THIN_BLOOD_SMEAR, PathogenTestType.RAPID_TEST,
+					PathogenTestType.INDIRECT_FLUORESCENT_ANTIBODY,PathogenTestType.PCR_RT_PCR, PathogenTestType.Q_PCR, PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY, PathogenTestType.LAMP,
+					PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST, PathogenTestType.OTHER_SEROLOGICAL_TEST, PathogenTestType.OTHER_MOLECULAR_ASSAY)));
 		}
 	});
 
+	// map to decide the serotype field value and enable/disable state
+	// Serotype should display, with @Herold code refactor, it should be removed from here.
+	public static final Map<Disease, List<PathogenTestType>> SEROTYPE_VISIBILITY_MAP = Collections.unmodifiableMap(new HashMap<>() {
+		{
+			put(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, Collections.unmodifiableList(Arrays.asList(PathogenTestType.WHOLE_GENOME_SEQUENCING,
+						PathogenTestType.SLIDE_AGGLUTINATION, PathogenTestType.MULTILOCUS_SEQUENCE_TYPING, PathogenTestType.SEROGROUPING)));
+			put(Disease.DENGUE, Collections.unmodifiableList(Arrays.asList(PathogenTestType.NAAT, PathogenTestType.PCR_RT_PCR, PathogenTestType.NEUTRALIZING_ANTIBODIES)));
+		}
+	});
+	//@formatter:off
 	public static final Map<Object, List<Object>> RIFAMPICIN_RESISTANT_VISIBILITY_CONDITIONS = Collections.unmodifiableMap(new HashMap<>() {
 
 		{
@@ -193,7 +207,21 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			put(PathogenTestDto.TEST_TYPE, Collections.unmodifiableList(Arrays.asList(PathogenTestType.BEIJINGGENOTYPING)));
 		}
 	});
+	//@formatter:off
+	// this map is to decide the species field value and enable/disable state.
+	// this suppose to refactored with @Harold changes
+	public static final Map<Disease, List<PathogenTestType>> SPECIE_VISIBILITY_MAP = Collections.unmodifiableMap(new HashMap<>() {
 
+		{
+			put(Disease.LATENT_TUBERCULOSIS, Collections.unmodifiableList(Arrays.asList(PathogenTestType.SPOLIGOTYPING)));
+			put(Disease.TUBERCULOSIS, Collections.unmodifiableList(Arrays.asList(PathogenTestType.SPOLIGOTYPING)));
+			put(Disease.MALARIA, Collections.unmodifiableList(Arrays.asList(PathogenTestType.THIN_BLOOD_SMEAR, PathogenTestType.ANTIGEN_DETECTION,
+						PathogenTestType.RAPID_TEST, PathogenTestType.PCR_RT_PCR, PathogenTestType.Q_PCR, PathogenTestType.LAMP,PathogenTestType.INDIRECT_FLUORESCENT_ANTIBODY,
+						PathogenTestType.OTHER_MOLECULAR_ASSAY, PathogenTestType.OTHER_SEROLOGICAL_TEST, PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
+						PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY)));
+		}
+	});
+	//@formatter:on
 	public static final Map<Object, List<Object>> SPECIE_VISIBILITY_CONDITIONS = Collections.unmodifiableMap(new HashMap<>() {
 
 		{
@@ -241,6 +269,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 	private ComboBox seroGrpSepcCB;
 	private TextField seroGrpSpecTxt;
+	private ComboBox seroTypeField;
 
 	public PathogenTestForm(
 		AbstractSampleForm sampleForm,
@@ -301,6 +330,9 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		if (diseaseField.getValue() == null || !List.of(Disease.TUBERCULOSIS).contains((Disease) diseaseField.getValue())) {
 			if (((testType == PathogenTestType.PCR_RT_PCR && testResultType == PathogenTestResultType.POSITIVE))
 				|| testType == PathogenTestType.CQ_VALUE_DETECTION) {
+				cqValueField.setVisible(true);
+			} else if (Disease.MALARIA == (Disease) diseaseField.getValue() && testType == PathogenTestType.Q_PCR) {
+				// CT value should be visible for Malaria, QPCR test.
 				cqValueField.setVisible(true);
 			} else {
 				cqValueField.setVisible(false);
@@ -400,12 +432,12 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		typingIdField.setValue(newFieldValue.getTypingId());
 		specieField.setValue(newFieldValue.getSpecie());
 		if (!genoTypingCB.isReadOnly()) {
-			genoTypingCB.setValue(newFieldValue.getGenoTypeResult());
+			genoTypingCB.setValue(newFieldValue.getGenoType());
 
 		}
 
 		if (!genoTypingResultTextTF.isReadOnly()) {
-			genoTypingResultTextTF.setValue(newFieldValue.getGenoTypeResultText());
+			genoTypingResultTextTF.setValue(newFieldValue.getGenoTypeText());
 		}
 
 		if (!seroGrpSepcCB.isReadOnly()) {
@@ -494,9 +526,9 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			diseaseVariantField.setCaption(I18nProperties.getCaption(Captions.PathogenTest_rsv_testedDiseaseVariant));
 			diseaseVariantDetailsField.setCaption(I18nProperties.getCaption(Captions.PathogenTest_rsv_testedDiseaseVariantDetails));
 		}
-		genoTypingCB = addField(PathogenTestDto.GENOTYPE_RESULT, ComboBox.class);
+		genoTypingCB = addField(PathogenTestDto.GENOTYPE, ComboBox.class);
 		genoTypingCB.setVisible(true);
-		genoTypingResultTextTF = addField(PathogenTestDto.GENOTYPE_RESULT_TEXT, TextField.class);
+		genoTypingResultTextTF = addField(PathogenTestDto.GENOTYPE_TEXT, TextField.class);
 		genoTypingResultTextTF.setVisible(true);
 
 		ComboBox testedPathogenField = addCustomizableEnumField(PathogenTestDto.TESTED_PATHOGEN);
@@ -534,7 +566,8 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 			testResultField.removeItem(PathogenTestResultType.NOT_APPLICABLE);
 		}
-		TextField seroTypeTF = addField(PathogenTestDto.SEROTYPE, TextField.class);
+		seroTypeField = addField(PathogenTestDto.SEROTYPE, ComboBox.class);
+		addField(PathogenTestDto.SEROTYPE_TEXT, TextField.class);
 
 		NullableOptionGroup rifampicinResistantField = addField(PathogenTestDto.RIFAMPICIN_RESISTANT, NullableOptionGroup.class);
 		rifampicinResistantField.setVisible(false);
@@ -552,6 +585,8 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		specieField = addField(PathogenTestDto.SPECIE, ComboBox.class);
 		specieField.setVisible(false);
 
+		addField(PathogenTestDto.SPECIE_TEXT, TextField.class);
+
 		TextField patternProfileField = addField(PathogenTestDto.PATTERN_PROFILE, TextField.class);
 		patternProfileField.setVisible(false);
 
@@ -564,6 +599,13 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		//drugSusceptibilityField.setVisible(false);
 		addToVisibleAllowedFields(drugSusceptibilityField);
 
+		// Malaria and Dengue fields
+		addField(PathogenTestDto.ANTIBODY_TITRE, TextField.class);
+		addField(PathogenTestDto.PERFORMED_BY_REFERENCE_LABORATORY, NullableOptionGroup.class);
+		addField(PathogenTestDto.RETEST_REQUESTED, NullableOptionGroup.class);
+		Field<?> resultDetailsField = addField(PathogenTestDto.RESULT_DETAILS);
+		resultDetailsField.setVisible(false);
+
 		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 			//tuberculosis-pcr test specification
 			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.RIFAMPICIN_RESISTANT, RIFAMPICIN_RESISTANT_VISIBILITY_CONDITIONS, true);
@@ -575,7 +617,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.STRAIN_CALL_STATUS, STRAIN_CALL_STATUS_VISIBILITY_CONDITIONS, true);
 
 			//tuberculosis-spoligotyping test specification
-			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.SPECIE, SPECIE_VISIBILITY_CONDITIONS, true);
+			// FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.SPECIE, SPECIE_VISIBILITY_CONDITIONS, true);
 
 			//tuberculosis-miru-code test specification
 			Map<Object, List<Object>> tuberculosisMiruCodeDependencies = new HashMap<>() {
@@ -589,7 +631,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			//FieldHelper.setRequiredWhen(getFieldGroup(), PathogenTestDto.PATTERN_PROFILE, tuberculosisMiruCodeDependencies);
 		}
 
-		seroTypeTF.setVisible(false);
+		seroTypeField.setVisible(false);
 
 		ComboBox seroTypeMetCB = addField(PathogenTestDto.SEROTYPING_METHOD, ComboBox.class);
 		seroTypeMetCB.setVisible(false);
@@ -624,317 +666,25 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		addFields(
 			FieldConfiguration.builder(PathogenTestDto.TUBE_NIL)
 				.validationMessageProperty(Validations.onlyNumbersAllowed)
-				.valueChangeListener(e -> {
-					final String tubeNilFieldValue = (String) e.getProperty().getValue();
-					final NullableOptionGroup tubeNilGt10Field = getField(PathogenTestDto.TUBE_NIL_GT10);
-					final Float tubeNilValue = getValue().getTubeNil();
-					final Boolean tubeNilGt10Value = getValue().getTubeNilGT10();
-
-					// we are called for a new entry
-					if(tubeNilValue == null
-						&& tubeNilGt10Value == null
-						&& tubeNilFieldValue == null
-						&& tubeNilGt10Field.getNullableValue() == null) {
-						tubeNilGt10Field.select(false);
-						return;
-					}
-
-					if(tubeNilFieldValue == null) {
-						tubeNilGt10Field.select(false);
-						return;
-					}
-					Float tubeNilNewValue = null;
-					try {
-						tubeNilNewValue = Float.parseFloat(tubeNilFieldValue);
-					} catch (NumberFormatException ex) {
-						// if it is not a number we clear the field
-						getField(PathogenTestDto.TUBE_NIL).clear();
-						tubeNilGt10Field.select(false);
-						return;
-					}
-					// now we have a current and old value
-					if(tubeNilNewValue > 10) {
-						tubeNilGt10Field.select(true);
-					} else {
-						tubeNilGt10Field.select(false);
-					}
-				})
+				.valueChangeListener(new TuberculosisIGRAInputValueChangeListener(getFieldGroup(), PathogenTestDto.TUBE_NIL,PathogenTestDto.TUBE_NIL_GT10))
 				.build(),
 			FieldConfiguration.builder(PathogenTestDto.TUBE_AG_TB1)
 				.validationMessageProperty(Validations.onlyNumbersAllowed)
-				.valueChangeListener(e -> {
-					final String tubeAgTb1FieldValue = (String) e.getProperty().getValue();
-					final NullableOptionGroup tubeAgTb1Gt10Field = getField(PathogenTestDto.TUBE_AG_TB1_GT10);
-					final Float tubeAgTb1Value = getValue().getTubeAgTb1();
-					final Boolean tubeAgTb1Gt10Value = getValue().getTubeAgTb1GT10();
-
-					// we are called for a new entry
-					if(tubeAgTb1Value == null
-						&& tubeAgTb1Gt10Value == null
-						&& tubeAgTb1FieldValue == null
-						&& tubeAgTb1Gt10Field.getNullableValue() == null) {
-						tubeAgTb1Gt10Field.select(false);
-						return;
-					}
-
-					if(tubeAgTb1FieldValue == null) {
-						tubeAgTb1Gt10Field.select(false);
-						return;
-					}
-					Float tubeAgTb1NewValue = null;
-					try {
-						tubeAgTb1NewValue = Float.parseFloat(tubeAgTb1FieldValue);
-					} catch (NumberFormatException ex) {
-						// if it is not a number we clear the field
-						getField(PathogenTestDto.TUBE_AG_TB1).clear();
-						tubeAgTb1Gt10Field.select(false);
-						return;
-					}
-					// now we have a current and old value
-					if(tubeAgTb1NewValue > 10) {
-						tubeAgTb1Gt10Field.select(true);
-					} else {
-						tubeAgTb1Gt10Field.select(false);
-					}
-				})
-				.build(),
+				.valueChangeListener(new TuberculosisIGRAInputValueChangeListener(getFieldGroup(), PathogenTestDto.TUBE_AG_TB1,PathogenTestDto.TUBE_AG_TB1_GT10)).build(),
 			FieldConfiguration.builder(PathogenTestDto.TUBE_AG_TB2)
 				.validationMessageProperty(Validations.onlyNumbersAllowed)
-				.valueChangeListener(e -> {
-					final String tubeAgTb2FieldValue = (String) e.getProperty().getValue();
-					final NullableOptionGroup tubeAgTb2Gt10Field = getField(PathogenTestDto.TUBE_AG_TB2_GT10);
-					final Float tubeAgTb2Value = getValue().getTubeAgTb2();
-					final Boolean tubeAgTb2Gt10Value = getValue().getTubeAgTb2GT10();
-
-					// we are called for a new entry
-					if(tubeAgTb2Value == null
-						&& tubeAgTb2Gt10Value == null
-						&& tubeAgTb2FieldValue == null
-						&& tubeAgTb2Gt10Field.getNullableValue() == null) {
-						tubeAgTb2Gt10Field.select(false);
-						return;
-					}
-
-					if(tubeAgTb2FieldValue == null) {
-						tubeAgTb2Gt10Field.select(false);
-						return;
-					}
-					Float tubeAgTb2NewValue = null;
-					try {
-						tubeAgTb2NewValue = Float.parseFloat(tubeAgTb2FieldValue);
-					} catch (NumberFormatException ex) {
-						// if it is not a number we clear the field
-						getField(PathogenTestDto.TUBE_AG_TB2).clear();
-						tubeAgTb2Gt10Field.select(false);
-						return;
-					}
-					// now we have a current and old value
-					if(tubeAgTb2NewValue > 10) {
-						tubeAgTb2Gt10Field.select(true);
-					} else {
-						tubeAgTb2Gt10Field.select(false);
-					}
-				})
-				.build(),
+				.valueChangeListener(new TuberculosisIGRAInputValueChangeListener(getFieldGroup(), PathogenTestDto.TUBE_AG_TB2,PathogenTestDto.TUBE_AG_TB2_GT10)).build(),
 			FieldConfiguration.builder(PathogenTestDto.TUBE_MITOGENE)
 				.validationMessageProperty(Validations.onlyNumbersAllowed)
-				.valueChangeListener(e -> {
-					final String tubeMitogeneFieldValue = (String) e.getProperty().getValue();
-					final NullableOptionGroup tubeMitogeneGt10Field = getField(PathogenTestDto.TUBE_MITOGENE_GT10);
-					final Float tubeMitogeneValue = getValue().getTubeMitogene();
-					final Boolean tubeMitogeneGt10Value = getValue().getTubeMitogeneGT10();
-
-					// we are called for a new entry
-					if(tubeMitogeneValue == null
-						&& tubeMitogeneGt10Value == null
-						&& tubeMitogeneFieldValue == null
-						&& tubeMitogeneGt10Field.getNullableValue() == null) {
-						tubeMitogeneGt10Field.select(false);
-						return;
-					}
-
-					if(tubeMitogeneFieldValue == null) {
-						tubeMitogeneGt10Field.select(false);
-						return;
-					}
-					Float tubeMitogeneNewValue = null;
-					try {
-						tubeMitogeneNewValue = Float.parseFloat(tubeMitogeneFieldValue);
-					} catch (NumberFormatException ex) {
-						// if it is not a number we clear the field
-						getField(PathogenTestDto.TUBE_MITOGENE).clear();
-						tubeMitogeneGt10Field.select(false);
-						return;
-					}
-					// now we have a current and old value
-					if(tubeMitogeneNewValue > 10) {
-						tubeMitogeneGt10Field.select(true);
-					} else {
-						tubeMitogeneGt10Field.select(false);
-					}
-				})
-				.build());
+				.valueChangeListener(new TuberculosisIGRAInputValueChangeListener(getFieldGroup(), PathogenTestDto.TUBE_MITOGENE,PathogenTestDto.TUBE_MITOGENE_GT10)).build());
 		//@formatter:on
 
 		//@formatter:off
 		addFields(
-			FieldConfiguration.builder(PathogenTestDto.TUBE_NIL_GT10).valueChangeListener(event -> {
-				final Object propertySingleValue = event.getProperty().getValue() instanceof Collection
-					? ((Collection<?>) event.getProperty().getValue()).stream().findFirst().orElse(null)
-					: event.getProperty().getValue();
-				final Float tubeNilValue = getValue().getTubeNil();
-
-				// we are called for a new entry or initial calls
-				if(propertySingleValue == null && tubeNilValue == null) {
-					final NullableOptionGroup tubeNilGt10Field = getField(PathogenTestDto.TUBE_NIL_GT10);
-					tubeNilGt10Field.select(false);
-					return;
-				}
-				final boolean checked = Boolean.TRUE.equals(propertySingleValue);
-				final Field<?> tubeNilField = getField(PathogenTestDto.TUBE_NIL);
-
-				final String tubeNilFieldValue = (String) tubeNilField.getValue();
-				if(tubeNilFieldValue == null) {
-					// if there is no value we don't care about the checkbox value
-					return;
-				}
-				Float tubeNilNewValue = null;
-				try {
-					tubeNilNewValue = Float.valueOf(tubeNilFieldValue);
-				} catch (NumberFormatException ex) {
-					// if it's not a number we don't care about the value
-					tubeNilField.clear();
-					return;
-				}
-				// if the checkbox is checked and the value is less than 10, we clear the field
-				if (checked && tubeNilNewValue < 10) {
-					tubeNilField.clear();
-					return;
-				}
-				// if the checkbox is unchecked and the value is greater than or equal to 10, we clear the field
-				if(!checked && tubeNilNewValue >= 10) {
-					tubeNilField.clear();
-					return;
-				}
-			}).build(),
-			FieldConfiguration.builder(PathogenTestDto.TUBE_AG_TB1_GT10).valueChangeListener(event -> {
-				final Object propertySingleValue = event.getProperty().getValue() instanceof Collection
-					? ((Collection<?>) event.getProperty().getValue()).stream().findFirst().orElse(null)
-					: event.getProperty().getValue();
-				final Float tubeAgTb1Value = getValue().getTubeAgTb1();
-
-				// we are called for a new entry or initial calls
-				if(propertySingleValue == null && tubeAgTb1Value == null) {
-					final NullableOptionGroup tubeAgTb1Gt10Field = getField(PathogenTestDto.TUBE_AG_TB1_GT10);
-					tubeAgTb1Gt10Field.select(false);
-					return;
-				}
-				final boolean checked = Boolean.TRUE.equals(propertySingleValue);
-				final Field<?> tubeAgTb1Field = getField(PathogenTestDto.TUBE_AG_TB1);
-
-				final String tubeAgTb1FieldValue = (String) tubeAgTb1Field.getValue();
-				if(tubeAgTb1FieldValue == null) {
-					// if there is no value we don't care about the checkbox value
-					return;
-				}
-				Float tubeAgTb1NewValue = null;
-				try {
-					tubeAgTb1NewValue = Float.valueOf(tubeAgTb1FieldValue);
-				} catch (NumberFormatException ex) {
-					// if it's not a number we don't care about the value
-					tubeAgTb1Field.clear();
-					return;
-				}
-				// if the checkbox is checked and the value is less than or equal to 10, we clear the field
-				if (checked && tubeAgTb1NewValue <= 10) {
-					tubeAgTb1Field.clear();
-					return;
-				}
-				// if the checkbox is unchecked and the value is greater than 10, we clear the field
-				if(!checked && tubeAgTb1NewValue > 10) {
-					tubeAgTb1Field.clear();
-					return;
-				}
-			}).build(),
-			FieldConfiguration.builder(PathogenTestDto.TUBE_AG_TB2_GT10).valueChangeListener(event -> {
-				final Object propertySingleValue = event.getProperty().getValue() instanceof Collection
-					? ((Collection<?>) event.getProperty().getValue()).stream().findFirst().orElse(null)
-					: event.getProperty().getValue();
-				final Float tubeAgTb2Value = getValue().getTubeAgTb2();
-
-				// we are called for a new entry or initial calls
-				if(propertySingleValue == null && tubeAgTb2Value == null) {
-					final NullableOptionGroup tubeAgTb2Gt10Field = getField(PathogenTestDto.TUBE_AG_TB2_GT10);
-					tubeAgTb2Gt10Field.select(false);
-					return;
-				}
-				final boolean checked = Boolean.TRUE.equals(propertySingleValue);
-				final Field<?> tubeAgTb2Field = getField(PathogenTestDto.TUBE_AG_TB2);
-
-				final String tubeAgTb2FieldValue = (String) tubeAgTb2Field.getValue();
-				if(tubeAgTb2FieldValue == null) {
-					// if there is no value we don't care about the checkbox value
-					return;
-				}
-				Float tubeAgTb2NewValue = null;
-				try {
-					tubeAgTb2NewValue = Float.valueOf(tubeAgTb2FieldValue);
-				} catch (NumberFormatException ex) {
-					// if it's not a number we don't care about the value
-					tubeAgTb2Field.clear();
-					return;
-				}
-				// if the checkbox is checked and the value is less than or equal to 10, we clear the field
-				if (checked && tubeAgTb2NewValue <= 10) {
-					tubeAgTb2Field.clear();
-					return;
-				}
-				// if the checkbox is unchecked and the value is greater than 10, we clear the field
-				if(!checked && tubeAgTb2NewValue > 10) {
-					tubeAgTb2Field.clear();
-					return;
-				}
-			}).build(),
-			FieldConfiguration.builder(PathogenTestDto.TUBE_MITOGENE_GT10).valueChangeListener(event -> {
-				final Object propertySingleValue = event.getProperty().getValue() instanceof Collection
-					? ((Collection<?>) event.getProperty().getValue()).stream().findFirst().orElse(null)
-					: event.getProperty().getValue();
-				final Float tubeMitogeneValue = getValue().getTubeMitogene();
-
-				// we are called for a new entry or initial calls
-				if(propertySingleValue == null && tubeMitogeneValue == null) {
-					final NullableOptionGroup tubeMitogeneGt10Field = getField(PathogenTestDto.TUBE_MITOGENE_GT10);
-					tubeMitogeneGt10Field.select(false);
-					return;
-				}
-				final boolean checked = Boolean.TRUE.equals(propertySingleValue);
-				final Field<?> tubeMitogeneField = getField(PathogenTestDto.TUBE_MITOGENE);
-
-				final String tubeMitogeneFieldValue = (String) tubeMitogeneField.getValue();
-				if(tubeMitogeneFieldValue == null) {
-					// if there is no value we don't care about the checkbox value
-					return;
-				}
-				Float tubeMitogeneNewValue = null;
-				try {
-					tubeMitogeneNewValue = Float.valueOf(tubeMitogeneFieldValue);
-				} catch (NumberFormatException ex) {
-					// if it's not a number we don't care about the value
-					tubeMitogeneField.clear();
-					return;
-				}
-				// if the checkbox is checked and the value is less than or equal to 10, we clear the field
-				if (checked && tubeMitogeneNewValue <= 10) {
-					tubeMitogeneField.clear();
-					return;
-				}
-				// if the checkbox is unchecked and the value is greater than 10, we clear the field
-				if(!checked && tubeMitogeneNewValue > 10) {
-					tubeMitogeneField.clear();
-					return;
-				}
-			}).build()
-		);
+			FieldConfiguration.builder(PathogenTestDto.TUBE_NIL_GT10).valueChangeListener(new TuberculosisIGRAGT10InputValueChangeListener(getFieldGroup(), PathogenTestDto.TUBE_NIL_GT10,PathogenTestDto.TUBE_NIL)).build(),
+			FieldConfiguration.builder(PathogenTestDto.TUBE_AG_TB1_GT10).valueChangeListener(new TuberculosisIGRAGT10InputValueChangeListener(getFieldGroup(), PathogenTestDto.TUBE_AG_TB1_GT10,PathogenTestDto.TUBE_AG_TB1)).build(),
+			FieldConfiguration.builder(PathogenTestDto.TUBE_AG_TB2_GT10).valueChangeListener(new TuberculosisIGRAGT10InputValueChangeListener(getFieldGroup(), PathogenTestDto.TUBE_AG_TB2_GT10,PathogenTestDto.TUBE_AG_TB2)).build(),
+			FieldConfiguration.builder(PathogenTestDto.TUBE_MITOGENE_GT10).valueChangeListener(new TuberculosisIGRAGT10InputValueChangeListener(getFieldGroup(), PathogenTestDto.TUBE_MITOGENE_GT10,PathogenTestDto.TUBE_MITOGENE)).build());			
 		//@formatter:on
 
 		setVisibleClear(
@@ -1006,51 +756,6 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			Arrays.asList(PathogenTestType.PCR_RT_PCR, PathogenTestType.DNA_MICROARRAY, PathogenTestType.SEQUENCING),
 			true);
 
-		// Serotype field visibility specification for CSM disease
-		Map<Object, List<Object>> serotypeVisibilityDependencies = new HashMap<Object, List<Object>>() {
-
-			private static final long serialVersionUID = 1967952323596082247L;
-
-			{
-				put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.CSM));
-				put(PathogenTestDto.TEST_RESULT, Arrays.asList(PathogenTestResultType.POSITIVE));
-			}
-		};
-		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(PathogenTestDto.SEROTYPE), serotypeVisibilityDependencies, true);
-		// End of Serotype field visibility specification for CSM disease
-
-		// IPI visibility check with a positive test result, show serotype and serotyping method fields
-		Map<Object, List<Object>> ipiSeroTypeAndMethodVisibilityDependencies = new HashMap<Object, List<Object>>() {
-
-			private static final long serialVersionUID = 1967952323596082247L;
-			{
-				put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
-				put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.SEROGROUPING));
-				put(PathogenTestDto.TEST_RESULT, Arrays.asList(PathogenTestResultType.POSITIVE));
-			}
-		};
-		FieldHelper.setVisibleWhen(
-			getFieldGroup(),
-			Arrays.asList(PathogenTestDto.SEROTYPE, PathogenTestDto.SEROTYPING_METHOD),
-			ipiSeroTypeAndMethodVisibilityDependencies,
-			true);
-		Map<Object, List<Object>> ipiSeroTypeVisibilityDependencies = new HashMap<Object, List<Object>>() {
-
-			private static final long serialVersionUID = 1967952323596082247L;
-			{
-				put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
-				put(
-					PathogenTestDto.TEST_TYPE,
-					Arrays.asList(
-						PathogenTestType.WHOLE_GENOME_SEQUENCING,
-						PathogenTestType.SLIDE_AGGLUTINATION,
-						PathogenTestType.MULTILOCUS_SEQUENCE_TYPING,
-						PathogenTestType.SEROGROUPING));
-				put(PathogenTestDto.TEST_RESULT, Arrays.asList(PathogenTestResultType.POSITIVE));
-			}
-		};
-		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.SEROTYPE, ipiSeroTypeVisibilityDependencies, true);
-
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
 			PathogenTestDto.SERO_TYPING_METHOD_TEXT,
@@ -1081,6 +786,14 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			PathogenTestDto.SERO_GROUP_SPECIFICATION,
 			SeroGroupSpecification.OTHER,
 			true);
+
+		// antibody titre visibility
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			PathogenTestDto.ANTIBODY_TITRE,
+			PathogenTestDto.TEST_TYPE,
+			PathogenTestType.NEUTRALIZING_ANTIBODIES,
+			true);
 		// End of IMI serogroup specification
 		//Cryptosporidiosis for all countries Genotyping specification
 		Map<Object, List<Object>> cryptoGenoTypingDependencies = new HashMap<>() {
@@ -1091,10 +804,9 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				put(PathogenTestDto.TEST_RESULT, Arrays.asList(PathogenTestResultType.POSITIVE));
 			}
 		};
-		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.GENOTYPE_RESULT, cryptoGenoTypingDependencies, true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.GENOTYPE, cryptoGenoTypingDependencies, true);
 
-		FieldHelper
-			.setVisibleWhen(getFieldGroup(), PathogenTestDto.GENOTYPE_RESULT_TEXT, PathogenTestDto.GENOTYPE_RESULT, GenoTypeResult.OTHER, true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.GENOTYPE_TEXT, PathogenTestDto.GENOTYPE, GenoType.OTHER, true);
 
 		//disease variant specifications for RSV and Influenza
 		Map<Object, List<Object>> diseaseVariantDependencies = new HashMap<>() {
@@ -1123,6 +835,20 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 		updateDiseaseVariantField.accept((Disease) diseaseField.getValue());
 
+		// Need to address these visibility issues
+		// @Herold
+		BiConsumer<Disease, PathogenTestType> updateSerotypeField = (Disease disease, PathogenTestType testType) -> {
+			setVisibleClear(
+				SEROTYPE_VISIBILITY_MAP.containsKey(disease) && SEROTYPE_VISIBILITY_MAP.get(disease).contains(testType),
+				PathogenTestDto.SEROTYPE);
+		};
+
+		BiConsumer<Disease, PathogenTestType> updateSpecieField = (Disease disease, PathogenTestType testType) -> {
+			setVisibleClear(
+				SPECIE_VISIBILITY_MAP.containsKey(disease) && SPECIE_VISIBILITY_MAP.get(disease).contains(testType),
+				PathogenTestDto.SPECIE);
+		};
+
 		diseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> {
 			Disease latestDisease = (Disease) valueChangeEvent.getProperty().getValue();
 			// If the disease changed, test type field should be updated with its respective test types
@@ -1137,7 +863,10 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				Arrays.asList(PathogenTestType.values()),
 				FieldVisibilityCheckers.withDisease(disease),
 				PathogenTestType.class);
-
+			// serotype values should be changed based on the disease
+			//			FieldHelper.updateItems(seroTypeField, Arrays.asList(Serotype.values()), FieldVisibilityCheckers.withDisease(disease), Serotype.class);
+			FieldHelper.updateItems(disease, seroTypeField, Serotype.class);
+			FieldHelper.updateItems(disease, specieField, PathogenSpecie.class);
 			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 				FieldHelper.updateItems(
 					strainCallStatusField,
@@ -1161,7 +890,13 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		testTypeField.addValueChangeListener(e -> {
 			PathogenTestType testType = (PathogenTestType) e.getProperty().getValue();
 			if (testType != null) {
-				if (testType == PathogenTestType.IGM_SERUM_ANTIBODY || testType == PathogenTestType.IGG_SERUM_ANTIBODY) {
+				// For Dengue IGG serum antibody, fourFoldIncrease fild should be visible.
+				// and its caption will be renamed with the caption as Seroconversion/ 4-fold increase
+				if (Disease.DENGUE == (Disease) diseaseField.getValue() && testType == PathogenTestType.IGG_SERUM_ANTIBODY) {
+					fourFoldIncrease.setCaption(I18nProperties.getCaption(Captions.PathogenTest_fourFoldIncreaseAntibodyTiter_DENGUE));
+					fourFoldIncrease.setVisible(true);
+					fourFoldIncrease.setEnabled(true);
+				} else if (testType == PathogenTestType.IGM_SERUM_ANTIBODY || testType == PathogenTestType.IGG_SERUM_ANTIBODY) {
 					fourFoldIncrease.setVisible(true);
 					fourFoldIncrease.setEnabled(caseSampleCount >= 2);
 				} else {
@@ -1201,7 +936,18 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 					PathogenTestDto.TUBE_AG_TB2_GT10,
 					PathogenTestDto.TUBE_MITOGENE,
 					PathogenTestDto.TUBE_MITOGENE_GT10);
-				FieldHelper.updateItems((Disease) diseaseField.getValue(), genoTypingCB, GenoTypeResult.class);
+				FieldHelper.updateItems((Disease) diseaseField.getValue(), genoTypingCB, GenoType.class);
+				// verifying the serotype field visibility. reason for this pattern is that, this should display disease+pathogentest combination.
+				updateSerotypeField.accept(disease, testType);
+
+				updateSpecieField.accept(disease, testType);
+				// Result details should be visible for Malaria and test-types with PathogenTestType.THIN_BLOOD_SMEAR, PathogenTestType.Q_PCR
+				setVisibleClear(
+					Disease.MALARIA == disease && Arrays.asList(PathogenTestType.THIN_BLOOD_SMEAR, PathogenTestType.Q_PCR).contains(testType),
+					PathogenTestDto.RESULT_DETAILS);
+				setVisibleClear(
+					testType == PathogenTestType.SEROGROUPING && Disease.INVASIVE_PNEUMOCOCCAL_INFECTION == disease,
+					PathogenTestDto.SEROTYPING_METHOD);
 			} else {
 				setVisibleClear(
 					testTypeField.getValue() != null,
@@ -1264,6 +1010,15 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		initializeAccessAndAllowedAccesses();
 		initializeVisibilitiesAndAllowedVisibilities();
 
+		// displaying the serotype text field only if the serotype is "other" and it has the visibility
+		if (isVisibleAllowed(PathogenTestDto.SEROTYPE)) {
+			//			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.SEROTYPE, SEROTYPE_VISIBILITY_MAP, true);
+			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.SEROTYPE_TEXT, PathogenTestDto.SEROTYPE, Serotype.OTHER, true);
+		}
+		if (isVisibleAllowed(PathogenTestDto.SPECIE)) {
+			FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.SPECIE_TEXT, PathogenTestDto.SPECIE, PathogenSpecie.OTHER, true);
+		}
+
 		// Hide/show prescriber heading after the visibilities have been initialized
 		prescriberHeadingLabel.setVisible(
 			isVisibleAllowed(PathogenTestDto.PRESCRIBER_PHYSICIAN_CODE)
@@ -1276,11 +1031,227 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				|| isVisibleAllowed(PathogenTestDto.PRESCRIBER_COUNTRY));
 	}
 
-	static class TestTypeValueChangeListener implements ValueChangeListener {
+	/**
+	 * This class is to be used for the Tuberculosis IGRA input value change listeners.
+	 * It will check/uncheck the Tuberculosis IGRA greater than 10 checkbox dependiong on the value of the input field.
+	 * <p>
+	 * Note: ideally a custom component should be used for both fields, to avoid potential race conditions between the two listeners.
+	 */
+	protected static class TuberculosisIGRAInputValueChangeListener implements ValueChangeListener {
 
+		private final String igraInputFieldId;
+		private final String igraGT10FieldId;
+		private final BeanFieldGroup<PathogenTestDto> fieldGroup;
+
+		public TuberculosisIGRAInputValueChangeListener(BeanFieldGroup<PathogenTestDto> fg, String igraInputFieldId, String igraGT10FieldId) {
+			this.igraInputFieldId = igraInputFieldId;
+			this.igraGT10FieldId = igraGT10FieldId;
+			this.fieldGroup = fg;
+		}
+
+		@SuppressWarnings({
+			"unchecked",
+			"rawtypes" })
 		@Override
-		public void valueChange(com.vaadin.v7.data.Property.ValueChangeEvent event) {
-			// TODO Auto-generated method stub
+		public void valueChange(Property.ValueChangeEvent event) {
+
+			final Field<?> igraInputField = fieldGroup.getField(igraInputFieldId);
+
+			if (igraInputField == null) {
+				return;
+			}
+
+			if (igraInputField instanceof AbstractComponent) {
+				((AbstractComponent) igraInputField).setComponentError(null);
+			}
+
+			final BeanItem<?> beanItemDataSource = fieldGroup.getItemDataSource();
+
+			// the input field is always a TextField with a String as value
+			// we need to make a hard assumtion that the input field value is a Float
+
+			// we check to see if the model property is numeric
+			// the model at this point will not be updated, so we only check type
+			final Property<?> igraValueProp = beanItemDataSource.getItemProperty(igraInputFieldId);
+
+			if (!Number.class.isAssignableFrom(igraValueProp.getType())) {
+				// we will not deal with non-numeric values
+				return;
+			}
+
+			// we know that the model property is numeric
+			// we could get the original value with: igraValueProp.getValue();
+
+			// we need to convert the value to number
+			// and we need to do it locale aware and need to finagle with types
+
+			Number igraNewValue = null;
+
+			try {
+				igraNewValue = igraInputField.getValue() == null
+					? null
+					: (Number) ConverterUtil
+						.getConverter(igraInputField.getType(), (Class) igraValueProp.getType(), null /* current session */)
+						.convertToModel(igraInputField.getValue(), igraValueProp.getType(), igraInputField.getLocale());
+			} catch (ConversionException e) {
+				if (igraInputField instanceof AbstractComponent) {
+					((AbstractComponent) igraInputField).setComponentError(new UserError(I18nProperties.getString(Strings.errorInvalidValue)));
+				}
+				return;
+			}
+
+			final Boolean checked = igraNewValue == null ? null : igraNewValue.floatValue() > 10;
+
+			// now we need to set the value of the GT10 field
+			@SuppressWarnings("unchecked")
+			final Field<Object> igraGT10Field = (Field<Object>) fieldGroup.getField(igraGT10FieldId);
+			if (igraGT10Field == null) {
+				// if we can't find the field, we don't care
+				return;
+			}
+
+			// lets make sure the property is a boolean
+			final Property<?> igraGT10Prop = beanItemDataSource.getItemProperty(igraGT10FieldId);
+			if (igraGT10Prop == null || !Boolean.class.isAssignableFrom(igraGT10Prop.getType())) {
+				// if we can't find the property, or we can't set it we don't care
+				return;
+			}
+
+			// now field is supposed to be a boolean
+			// booleans come in two flavors: collection based and primitive
+			final boolean isCollection = Collection.class.isAssignableFrom(igraGT10Field.getType());
+
+			if (!isCollection) {
+				// primitive booleans are easy
+				final boolean currentChecked = Boolean.TRUE.equals(igraGT10Field.getValue());
+				if (checked != null && checked.booleanValue() != currentChecked) {
+					igraGT10Field.setValue(checked);
+				}
+			} else {
+				// well have to do it the hard way
+				final Collection<?> currentSet = (Collection<?>) igraGT10Field.getValue();
+				final boolean currentChecked = currentSet != null && !currentSet.isEmpty() && currentSet.contains(Boolean.TRUE);
+				if (checked != null && checked.booleanValue() != currentChecked) {
+					final HashSet<Boolean> set = new HashSet<>();
+					set.add(checked);
+					igraGT10Field.setValue(Collections.unmodifiableSet(set));
+				}
+			}
+		}
+	}
+
+	/**
+	 * This class is to be used for the Tuberculosis IGRA greater than 10 checkboxes value change listeners.
+	 * It will clear the associated input field if the checkbox is checked and the
+	 * value is less than or equal to 10.
+	 * In reverse if the value is greater than 10 and the checkbox is not checked it will clear the input field.
+	 * <p>
+	 * Note: ideally a custom component should be used for both fields, to avoid potential race conditions between the two listeners.
+	 */
+	protected static class TuberculosisIGRAGT10InputValueChangeListener implements ValueChangeListener {
+
+		private final String igraInputFieldId;
+		private final String igraGT10FieldId;
+		private final BeanFieldGroup<PathogenTestDto> fieldGroup;
+
+		public TuberculosisIGRAGT10InputValueChangeListener(BeanFieldGroup<PathogenTestDto> fg, String igraGT10FieldId, String igraInputFieldId) {
+			this.igraInputFieldId = igraInputFieldId;
+			this.igraGT10FieldId = igraGT10FieldId;
+			this.fieldGroup = fg;
+		}
+
+		@SuppressWarnings({
+			"rawtypes",
+			"unchecked" })
+		@Override
+		public void valueChange(Property.ValueChangeEvent event) {
+
+			// let's try to get the numeric input field and converted value
+			final Field<?> igraInputField = fieldGroup.getField(igraInputFieldId);
+			if (igraInputField == null) {
+				return;
+			}
+
+			if (igraInputField instanceof AbstractComponent) {
+				((AbstractComponent) igraInputField).setComponentError(null);
+			}
+
+			final BeanItem<?> beanItemDataSource = fieldGroup.getItemDataSource();
+
+			final Property<?> igraValueProp = beanItemDataSource.getItemProperty(igraInputFieldId);
+			if (igraValueProp == null || !Number.class.isAssignableFrom(igraValueProp.getType())) {
+				return;
+			}
+
+			// lets make sure the GT10 property is a boolean
+			final Property<?> igraGT10Prop = beanItemDataSource.getItemProperty(igraGT10FieldId);
+			if (igraGT10Prop == null || !Boolean.class.isAssignableFrom(igraGT10Prop.getType())) {
+				// if we can't find the property, or we can't set it we don't care
+				return;
+			}
+
+			Number igraNewValue = null;
+
+			try {
+				igraNewValue = igraInputField.getValue() == null
+					? null
+					: (Number) ConverterUtil
+						.getConverter(igraInputField.getType(), (Class) igraValueProp.getType(), null /* current session */)
+						.convertToModel(igraInputField.getValue(), igraValueProp.getType(), igraInputField.getLocale() /* current locale */);
+			} catch (ConversionException e) {
+				if (igraInputField instanceof AbstractComponent) {
+					((AbstractComponent) igraInputField).setComponentError(new UserError(I18nProperties.getString(Strings.errorInvalidValue)));
+				}
+				return;
+			}
+
+			// now let's try to determine if the checkbox is checked (we know it's a boolean)
+			@SuppressWarnings("unchecked")
+			final Field<Object> igraGT10Field = (Field<Object>) fieldGroup.getField(igraGT10FieldId);
+			if (igraGT10Field == null) {
+				// if we can't find the field, we don't care
+				return;
+			}
+
+			// booleans come in two flavors: collection based and primitive
+			final boolean isCollection = Collection.class.isAssignableFrom(igraGT10Field.getType());
+
+			Boolean checked = false;
+
+			// value can be true or false/null(presumed false)
+			if (!isCollection) {
+				// primitive booleans are easy
+				checked = igraGT10Field.getValue() == null ? null : Boolean.TRUE.equals(igraGT10Field.getValue());
+			} else {
+				Collection<?> set = (Collection<?>) igraGT10Field.getValue();
+				checked = set == null || set.isEmpty() ? null : set.contains(Boolean.TRUE);
+			}
+
+			if (checked == null) { // the checbox is neither checked nor unchecked
+				checked = igraNewValue != null && igraNewValue.floatValue() > 10;
+
+				if (!isCollection) {
+					// primitive booleans are easy
+					igraGT10Field.setValue(checked);
+				} else {
+					final HashSet<Boolean> set = new HashSet<>();
+					set.add(checked);
+					igraGT10Field.setValue(Collections.unmodifiableSet(set));
+				}
+
+				// don't need to clear anything else because there was no check/uncheck before
+				return;
+			}
+
+			if ((checked && igraNewValue != null && igraNewValue.floatValue() <= 10) // checked but value is filled in and less than 10
+				|| (!checked && igraNewValue != null && igraNewValue.floatValue() > 10) // not checked but value is filled in an greater than 10
+			) {
+				try {
+					igraInputField.clear();
+				} catch (ReadOnlyException ex) {
+					// ignore read-only
+				}
+			}
 
 		}
 	}

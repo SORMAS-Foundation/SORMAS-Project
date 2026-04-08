@@ -7,15 +7,20 @@ name: Java CI with Maven
 
 env:
   JAVA: 17
-  PRIVILEGED_RUN: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/development') 
-   || github.event.pull_request.head.repo.full_name == github.repository }}
-  CODEQL_LANGUAGES: 'java' # FIXME(@JonasCir) add 'javascript'
+  PRIVILEGED_RUN: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/development') || github.event.pull_request.head.repo.full_name == github.repository }}
+  CODEQL_LANGUAGES: 'java'
 on:
   push:
     branches: [ development, master, hotfix* ]
   pull_request:
     branches: [ development, hotfix* ]
   workflow_dispatch: # run it manually from the GH Actions web console
+    inputs:
+      skip_tests:
+        description: 'Skip Maven tests during build'
+        required: false
+        default: false
+        type: boolean
   schedule:
     - cron: '35 1 * * 0'
 jobs:
@@ -31,24 +36,24 @@ jobs:
         # The token is only needed for privileged actions from within the repo, so no need
         # to make it available on 3rd party PRs
         if: ${{ fromJSON(env.PRIVILEGED_RUN) }}
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
-          token: ${{ secrets.SORMAS_VITAGROUP_CI_TOKEN }}
+          token: ${{ secrets.MAVEN_ACTIONS_TOKEN }}
 
       - name: Checkout repository (without token)
         # Check if PR results from a fork: if yes, we cannot access the token.
         # The token is only needed for privileged actions from within the
         # repo, so no need to make it available on 3rd party PRs
         if: ${{ !fromJSON(env.PRIVILEGED_RUN) }}
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
+        uses: github/codeql-action/init@v4
         with:
           languages: ${{ env.CODEQL_LANGUAGES }}
 
       - name: Set up JDK ${{ env.JAVA }}
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v5
         with:
           java-version: ${{ env.JAVA }}
           distribution: 'zulu'
@@ -57,47 +62,26 @@ jobs:
         # Check if PR results from the repository: if yes, it is safe to cache dependencies.
         # This is to keep us safe from cache poisoning through 3rd party PRs.
         if: ${{ fromJSON(env.PRIVILEGED_RUN) }}
-        uses: actions/cache@v3
+        uses: actions/cache@v5
         with:
           path: ~/.m2
           key: ${{ runner.os }}-java-${{ env.JAVA }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-java-${{ env.JAVA }}-m2
 
-      - name: Cache SonarCloud packages
-        # Check if PR results from the repository: if yes, it is safe to cache dependencies.
-        # This is to keep us safe from cache poisoning through 3rd party PRs.
-        if: ${{ fromJSON(env.PRIVILEGED_RUN) }}
-        uses: actions/cache@v3
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-      - name: Run mvn verify and sonar analysis
-        # FIXME(@JonasCir) see https://github.com/sormas-foundation/SORMAS-Project/issues/3730#issuecomment-745165678
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: Build with Maven
         working-directory: ./sormas-base
-        run: mvn -B -ntp verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=SORMAS-Project
-
-      - name: Comment with SonarCloud analysis
-        uses: actions/github-script@v6
-        if: github.event_name == 'pull_request'
-        with:
-          github-token: ${{ secrets.SORMAS_VITAGROUP_CI_TOKEN }}
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `SonarCloud analysis: https://sonarcloud.io/dashboard?id=SORMAS-Project&pullRequest=${{ github.event.pull_request.number }}`
-            })
+        run: |
+          MAVEN_OPTS="-B -ntp clean install"
+          if [ "${{ inputs.skip_tests }}" = "true" ]; then
+            MAVEN_OPTS="$MAVEN_OPTS -DskipTests"
+          fi
+          mvn $MAVEN_OPTS
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
+        uses: github/codeql-action/analyze@v4
 
       - name: Run Trivy vulnerability scanner in repo mode
-        uses: aquasecurity/trivy-action@0.11.2
+        uses: aquasecurity/trivy-action@0.35.0
         with:
           scan-type: 'fs'
           ignore-unfixed: true
@@ -106,7 +90,7 @@ jobs:
           scanners: 'vuln,secret,config'
 
       - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: 'trivy-results.sarif'
           # needed as codeQL also performs an upload, and they clash otherwise
@@ -115,12 +99,11 @@ jobs:
       - name: Commit openAPI spec to development
         # Privileged action needing a secret token. Since this only runs on development in our own repo
         # the token will be available through a privileged checkout.
-        if: github.event_name == 'push' && github.ref == 'refs/heads/development' 
-         && hashFiles('sormas-rest/target/swagger.yaml') != hashFiles('sormas-rest/swagger.yaml')
+        if: github.event_name == 'push' && github.ref == 'refs/heads/development' && hashFiles('sormas-rest/target/swagger.yaml') != hashFiles('sormas-rest/swagger.yaml')
         # https://stackoverflow.com/questions/59604922/authorize-bash-to-access-github-protected-branch
         run: |
-            git config --global user.name "sormas-vitagroup"
-            git config --global user.email "support.sormas@helpdesk.symeda.de"
+            git config --global user.name "sormas-robot"
+            git config --global user.email "accounts@sormas.org"
           
             mkdir /tmp/openapi
             cp sormas-rest/target/swagger.* /tmp/openapi
@@ -133,5 +116,9 @@ jobs:
             cp /tmp/openapi/swagger.* sormas-rest/
 
             git add sormas-rest/swagger.*
-            git commit -m "[GitHub Actions] Update openAPI spec files"
-            git push
+            if ! git diff --cached --quiet; then
+              git commit -m "[GitHub Actions] Update openAPI spec files"
+              git push
+            else
+              echo "swagger files are already up to date, nothing to commit"
+            fi

@@ -19,6 +19,7 @@ import java.util.Date;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.symeda.sormas.api.CountryHelper;
@@ -77,6 +78,7 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String TEST_RESULT_VERIFIED = "testResultVerified";
 	public static final String FOUR_FOLD_INCREASE_ANTIBODY_TITER = "fourFoldIncreaseAntibodyTiter";
 	public static final String SEROTYPE = "serotype";
+	public static final String SEROTYPE_TEXT = "serotypeText";
 	public static final String CQ_VALUE = "cqValue";
 	public static final String CT_VALUE_E = "ctValueE";
 	public static final String CT_VALUE_N = "ctValueN";
@@ -103,6 +105,7 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String RIFAMPICIN_RESISTANT = "rifampicinResistant";
 	public static final String ISONIAZID_RESISTANT = "isoniazidResistant";
 	public static final String SPECIE = "specie";
+	public static final String SPECIE_TEXT = "specieText";
 	public static final String PATTERN_PROFILE = "patternProfile";
 	public static final String STRAIN_CALL_STATUS = "strainCallStatus";
 	public static final String TEST_SCALE = "testScale";
@@ -111,8 +114,8 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String SERO_TYPING_METHOD_TEXT = "seroTypingMethodText";
 	public static final String SERO_GROUP_SPECIFICATION = "seroGroupSpecification";
 	public static final String SERO_GROUP_SPECIFICATION_TEXT = "seroGroupSpecificationText";
-	public static final String GENOTYPE_RESULT = "genoTypeResult";
-	public static final String GENOTYPE_RESULT_TEXT = "genoTypeResultText";
+	public static final String GENOTYPE = "genoType";
+	public static final String GENOTYPE_TEXT = "genoTypeText";
 	public static final String RSV_SUBTYPE = "rsvSubtype";
 	public static final String TUBE_NIL = "tubeNil";
 	public static final String TUBE_NIL_GT10 = "tubeNilGT10";
@@ -122,6 +125,10 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String TUBE_AG_TB2_GT10 = "tubeAgTb2GT10";
 	public static final String TUBE_MITOGENE = "tubeMitogene";
 	public static final String TUBE_MITOGENE_GT10 = "tubeMitogeneGT10";
+	public static final String ANTIBODY_TITRE = "antibodyTitre";
+	public static final String PERFORMED_BY_REFERENCE_LABORATORY = "performedByReferenceLaboratory";
+	public static final String RETEST_REQUESTED = "retestRequested";
+	public static final String RESULT_DETAILS = "resultDetails";
 
 	private SampleReferenceDto sample;
 	private EnvironmentSampleReferenceDto environmentSample;
@@ -158,8 +165,9 @@ public class PathogenTestDto extends PseudonymizableDto {
 	private Boolean testResultVerified;
 	private boolean fourFoldIncreaseAntibodyTiter;
 	@SensitiveData
+	private Serotype serotype;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
-	private String serotype;
+	private String serotypeText;
 	private Float cqValue;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	private Float ctValueE;
@@ -222,6 +230,8 @@ public class PathogenTestDto extends PseudonymizableDto {
 	private YesNoUnknown rifampicinResistant;
 	private YesNoUnknown isoniazidResistant;
 	private PathogenSpecie specie;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String specieText;
 	private String patternProfile;
 	private PathogenStrainCallStatus strainCallStatus;
 	private PathogenTestScale testScale;
@@ -242,13 +252,13 @@ public class PathogenTestDto extends PseudonymizableDto {
 	@Diseases(value = {
 		Disease.MEASLES,
 		Disease.CRYPTOSPORIDIOSIS })
-	private GenoTypeResult genoTypeResult;
+	private GenoType genoType;
 
 	@SensitiveData
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	@Diseases(value = {
 		Disease.MEASLES })
-	private String genoTypeResultText;
+	private String genoTypeText;
 
 	@SensitiveData
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
@@ -311,6 +321,18 @@ public class PathogenTestDto extends PseudonymizableDto {
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS })
 	private Boolean tubeMitogeneGT10;
+	// Dengue and Malaria changes
+	@Diseases(value = {
+		Disease.DENGUE })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String antibodyTitre;
+	private Boolean performedByReferenceLaboratory;
+	// defaulting this test to false.
+	private Boolean retestRequested = false;
+	@Diseases({
+		Disease.MALARIA })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String resultDetails;
 
 	public static PathogenTestDto build(SampleDto sample, UserDto currentUser) {
 
@@ -529,11 +551,11 @@ public class PathogenTestDto extends PseudonymizableDto {
 		return new PathogenTestReferenceDto(getUuid());
 	}
 
-	public String getSerotype() {
+	public Serotype getSerotype() {
 		return serotype;
 	}
 
-	public void setSerotype(String serotype) {
+	public void setSerotype(Serotype serotype) {
 		this.serotype = serotype;
 	}
 
@@ -795,20 +817,22 @@ public class PathogenTestDto extends PseudonymizableDto {
 		this.seroTypingMethod = seroTypingMethod;
 	}
 
-	public GenoTypeResult getGenoTypeResult() {
-		return genoTypeResult;
+	@JsonAlias("genoTypeResult")
+	public GenoType getGenoType() {
+		return genoType;
 	}
 
-	public void setGenoTypeResult(GenoTypeResult genoTypeResult) {
-		this.genoTypeResult = genoTypeResult;
+	public void setGenoType(GenoType genoType) {
+		this.genoType = genoType;
 	}
 
-	public String getGenoTypeResultText() {
-		return genoTypeResultText;
+	@JsonAlias("genoTypeResultText")
+	public String getGenoTypeText() {
+		return genoTypeText;
 	}
 
-	public void setGenoTypeResultText(String genoTypeResultText) {
-		this.genoTypeResultText = genoTypeResultText;
+	public void setGenoTypeText(String genoTypeText) {
+		this.genoTypeText = genoTypeText;
 	}
 
 	public String getSeroTypingMethodText() {
@@ -905,6 +929,54 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	public void setTubeMitogeneGT10(Boolean tubeMitogeneGT10) {
 		this.tubeMitogeneGT10 = tubeMitogeneGT10;
+	}
+
+	public String getAntibodyTitre() {
+		return antibodyTitre;
+	}
+
+	public void setAntibodyTitre(String antibodyTitre) {
+		this.antibodyTitre = antibodyTitre;
+	}
+
+	public Boolean getPerformedByReferenceLaboratory() {
+		return performedByReferenceLaboratory;
+	}
+
+	public void setPerformedByReferenceLaboratory(Boolean performedByReferenceLaboratory) {
+		this.performedByReferenceLaboratory = performedByReferenceLaboratory;
+	}
+
+	public Boolean getRetestRequested() {
+		return retestRequested;
+	}
+
+	public void setRetestRequested(Boolean retestRequested) {
+		this.retestRequested = retestRequested;
+	}
+
+	public String getResultDetails() {
+		return resultDetails;
+	}
+
+	public void setResultDetails(String resultDetails) {
+		this.resultDetails = resultDetails;
+	}
+
+	public String getSerotypeText() {
+		return serotypeText;
+	}
+
+	public void setSerotypeText(String serotypeText) {
+		this.serotypeText = serotypeText;
+	}
+
+	public String getSpecieText() {
+		return specieText;
+	}
+
+	public void setSpecieText(String specieText) {
+		this.specieText = specieText;
 	}
 
 	@Override

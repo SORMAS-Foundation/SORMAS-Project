@@ -11,7 +11,7 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
-import de.symeda.sormas.api.sample.GenoTypeResult;
+import de.symeda.sormas.api.sample.GenoType;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenSpecie;
 import de.symeda.sormas.api.sample.PathogenStrainCallStatus;
@@ -168,7 +168,7 @@ public class TestReportDto extends EntityDto {
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	private CountryReferenceDto prescriberCountry;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
-	private GenoTypeResult genoTypeResult;
+	private GenoType genoType;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	private RsvSubtype rsvSubtype;
 
@@ -572,12 +572,12 @@ public class TestReportDto extends EntityDto {
 		this.prescriberCountry = prescriberCountry;
 	}
 
-	public GenoTypeResult getGenoTypeResult() {
-		return genoTypeResult;
+	public GenoType getGenoType() {
+		return genoType;
 	}
 
-	public void setGenoTypeResult(GenoTypeResult genoTypeResult) {
-		this.genoTypeResult = genoTypeResult;
+	public void setGenoType(GenoType genoType) {
+		this.genoType = genoType;
 	}
 
 	public RsvSubtype getRsvSubtype() {
