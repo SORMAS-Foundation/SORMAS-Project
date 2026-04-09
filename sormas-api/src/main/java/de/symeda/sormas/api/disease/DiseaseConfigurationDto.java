@@ -1,9 +1,11 @@
 package de.symeda.sormas.api.disease;
 
 import java.util.List;
+import java.util.Set;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.exposure.ExposureCategory;
 
 public class DiseaseConfigurationDto extends EntityDto {
 
@@ -28,6 +30,7 @@ public class DiseaseConfigurationDto extends EntityDto {
 	public static final String EXTENDED_CLASSIFICATION_MULTI = "extendedClassificationMulti";
 	public static final String AGE_GROUPS = "ageGroups";
 	public static final String AUTOMATIC_SAMPLE_ASSIGNMENT_THRESHOLD = "automaticSampleAssignmentThreshold";
+	public static final String EXPOSURE_CATEGORIES = "exposureCategories";
 
 	private Disease disease;
 	private Boolean active;
@@ -46,6 +49,8 @@ public class DiseaseConfigurationDto extends EntityDto {
 	private Boolean extendedClassificationMulti;
 	private List<String> ageGroups;
 	private Integer automaticSampleAssignmentThreshold;
+
+	private Set<ExposureCategory> exposureCategories;
 
 	public Disease getDisease() {
 		return disease;
@@ -181,5 +186,13 @@ public class DiseaseConfigurationDto extends EntityDto {
 
 	public void setAutomaticSampleAssignmentThreshold(Integer automaticSampleAssignmentThreshold) {
 		this.automaticSampleAssignmentThreshold = automaticSampleAssignmentThreshold;
+	}
+
+	public Set<ExposureCategory> getExposureCategories() {
+		return exposureCategories;
+	}
+
+	public void setExposureCategories(Set<ExposureCategory> exposureCategories) {
+		this.exposureCategories = exposureCategories;
 	}
 }

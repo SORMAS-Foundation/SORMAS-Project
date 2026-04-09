@@ -54,6 +54,7 @@ import de.symeda.sormas.api.disease.DiseaseConfigurationCriteria;
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
 import de.symeda.sormas.api.disease.DiseaseConfigurationIndexDto;
+import de.symeda.sormas.api.exposure.ExposureCategory;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.sort.EntitySortUtils;
@@ -252,6 +253,10 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		dto.setAgeGroups(entity.getAgeGroups());
 		dto.setAutomaticSampleAssignmentThreshold(entity.getAutomaticSampleAssignmentThreshold());
 
+		if (entity.getExposureCategories() != null && !entity.getExposureCategories().isEmpty()) {
+			dto.setExposureCategoryNames(entity.getExposureCategories().stream().map(ExposureCategory::toString).collect(Collectors.joining(", ")));
+		}
+
 		return dto;
 	}
 
@@ -419,6 +424,7 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		target.setExtendedClassificationMulti(source.getExtendedClassificationMulti());
 		target.setAgeGroups(source.getAgeGroups());
 		target.setAutomaticSampleAssignmentThreshold(source.getAutomaticSampleAssignmentThreshold());
+		target.setExposureCategories(source.getExposureCategories());
 
 		return target;
 	}
@@ -509,6 +515,8 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		target.setMinIncubationPeriod(source.getMinIncubationPeriod());
 		target.setIncubationPeriodEnabled(source.getIncubationPeriodEnabled());
 		target.setCaseDefinitionText(source.getCaseDefinitionText());
+		target.setExposureCategories(source.getExposureCategories());
+
 		//update changedate: required for mobile app to be aware of changes
 		target.setChangeDate(new Timestamp((new Date()).getTime()));
 
