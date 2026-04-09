@@ -107,7 +107,7 @@ public class CtCqValueComponent extends FormComponent<PathogenTestDto> {
 		if (disease == null || !java.util.Arrays.asList(Disease.TUBERCULOSIS).contains(disease)) {
 			if ((testType == PathogenTestType.PCR_RT_PCR && testResult == PathogenTestResultType.POSITIVE)
 				|| testType == PathogenTestType.CQ_VALUE_DETECTION
-				|| testType == PathogenTestType.Q_PCR) {
+				|| (disease == Disease.MALARIA && testType == PathogenTestType.Q_PCR)) {
 				cqValueField.setVisible(true);
 			} else {
 				cqValueField.setVisible(false);

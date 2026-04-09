@@ -140,6 +140,15 @@ public class FourFoldCtCqComponent extends FormComponent<PathogenTestDto> {
 	public void setDto(PathogenTestDto dto) {
 		super.setDto(dto);
 		ctCqValueComponent.setDto(dto);
+		// Sync visibility to the loaded DTO values, since events are not fired on initial load
+		currentTestType = dto != null ? dto.getTestType() : null;
+		currentTestResult = dto != null ? dto.getTestResult() : null;
+		ctCqValueComponent.updateCtVisibility(currentDisease, currentTestType);
+		ctCqValueComponent.updateCqVisibility(currentDisease, currentTestType, currentTestResult);
+		if (currentTestType != null) {
+			updateFourFoldIncrease(currentTestType);
+		}
+		syncSelfVisibility();
 	}
 
 	@Override
