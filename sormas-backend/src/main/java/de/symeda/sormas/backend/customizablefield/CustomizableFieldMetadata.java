@@ -23,11 +23,11 @@ import javax.persistence.Enumerated;
 
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
 
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 
 import de.symeda.sormas.api.customizablefield.CustomizableFieldContext;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldGroup;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldType;
 import de.symeda.sormas.backend.common.DeletableAdo;
 
@@ -36,8 +36,11 @@ import de.symeda.sormas.backend.common.DeletableAdo;
  * Stores the configuration for custom fields that can be added to entities.
  */
 @Entity(name = "customizablefieldmetadata")
-@TypeDefs({
-	@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class) })
+@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
+@SuppressWarnings({
+	"java:S1845", // suppress sonar field name clash warning
+	"java:S2160" // suppress missing equals handled in AbstractDomainObject
+})
 public class CustomizableFieldMetadata extends DeletableAdo {
 
 	private static final long serialVersionUID = 1L;
@@ -60,7 +63,7 @@ public class CustomizableFieldMetadata extends DeletableAdo {
 	private String description;
 	private CustomizableFieldType fieldType;
 	private CustomizableFieldContext contextClass;
-	private String uiGroup;
+	private CustomizableFieldGroup uiGroup;
 	private Integer uiLinePosition;
 	private Float uiLineWeight;
 	private boolean active = true;
@@ -112,11 +115,12 @@ public class CustomizableFieldMetadata extends DeletableAdo {
 	}
 
 	@Column(length = 256)
-	public String getUiGroup() {
+	@Convert(converter = CustomizableFieldGroupConverter.class)
+	public CustomizableFieldGroup getUiGroup() {
 		return uiGroup;
 	}
 
-	public void setUiGroup(String uiGroup) {
+	public void setUiGroup(CustomizableFieldGroup uiGroup) {
 		this.uiGroup = uiGroup;
 	}
 

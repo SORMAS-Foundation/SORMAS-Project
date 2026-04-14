@@ -29,6 +29,10 @@ import de.symeda.sormas.api.utils.FieldConstraints;
  * DTO for customizable field metadata.
  * Contains configuration for a custom field that can be added to entities.
  */
+@SuppressWarnings({
+    "java:S1845", // suppress sonar field name clash warning
+    "java:S2160" // suppress missing equals handled in EnityDto
+})
 public class CustomizableFieldMetadataDto extends EntityDto {
 
     private static final long serialVersionUID = 1L;
@@ -63,8 +67,7 @@ public class CustomizableFieldMetadataDto extends EntityDto {
     @NotNull(message = Validations.required)
     private CustomizableFieldContext contextClass;
 
-    @Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL)
-    private String uiGroup;
+    private CustomizableFieldGroup uiGroup;
 
     private Integer uiLinePosition;
     private Float uiLineWeight;
@@ -116,11 +119,11 @@ public class CustomizableFieldMetadataDto extends EntityDto {
         this.contextClass = contextClass;
     }
 
-    public String getUiGroup() {
+    public CustomizableFieldGroup getUiGroup() {
         return uiGroup;
     }
 
-    public void setUiGroup(String uiGroup) {
+    public void setUiGroup(CustomizableFieldGroup uiGroup) {
         this.uiGroup = uiGroup;
     }
 

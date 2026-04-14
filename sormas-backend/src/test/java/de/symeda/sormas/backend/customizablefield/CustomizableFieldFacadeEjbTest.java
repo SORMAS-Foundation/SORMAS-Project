@@ -33,6 +33,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldContext;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldGroup;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataFacade;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldType;
@@ -66,7 +67,7 @@ class CustomizableFieldFacadeEjbTest extends AbstractBeanTest {
         metadata.setName("customField_" + context.name().toLowerCase());
         metadata.setFieldType(CustomizableFieldType.TEXT);
         metadata.setContextClass(context);
-        metadata.setUiGroup(context.name().toLowerCase());
+        metadata.setUiGroup(CustomizableFieldGroup.getGroupsForContext(context).stream().findFirst().orElse(null));
         metadata.setUiLinePosition(1);
 
         CustomizableFieldMetadataDto savedMetadata = metadataFacade.save(metadata);

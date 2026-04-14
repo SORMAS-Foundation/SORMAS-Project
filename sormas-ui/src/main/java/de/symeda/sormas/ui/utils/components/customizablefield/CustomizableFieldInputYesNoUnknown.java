@@ -15,36 +15,44 @@
 
 package de.symeda.sormas.ui.utils.components.customizablefield;
 
-import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.Map;
 
 import com.vaadin.data.ValueProvider;
 import com.vaadin.server.Setter;
-import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
 
 import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.ui.utils.CssStyles;
 
 /**
  * Concrete {@link CustomizableFieldInput} for
  * {@link de.symeda.sormas.api.customizablefield.CustomizableFieldType#YES_NO_UNKNOWN}.
  * <p>
- * Renders a Vaadin v8 {@link ComboBox} populated with all {@link YesNoUnknown} constants.
- * The selected value is serialised to/from the DTO's {@code value} field as the enum name
- * ({@code "YES"}, {@code "NO"}, {@code "UNKNOWN"}) via
+ * Renders three horizontal toggle {@link Button}s (Yes / No / Unknown). Clicking the active
+ * button deselects it (nullable); clicking another button selects it. The selected value is
+ * serialised to/from the DTO's {@code value} field as the enum name via
  * {@link CustomizableFieldValueDto#getValueAsYesNoUnknown()} and
  * {@link CustomizableFieldValueDto#setValueAsYesNoUnknown(YesNoUnknown)}.
  */
+@SuppressWarnings({
+	"java:S110", // suppress sonar too many parents warning
+	"java:S2160" // suppress missing equals
+})
 public class CustomizableFieldInputYesNoUnknown extends CustomizableFieldInput<YesNoUnknown> {
 
 	private static final long serialVersionUID = 1L;
 
-	private ComboBox<YesNoUnknown> comboBox;
+	private final Map<YesNoUnknown, Button> buttons = new EnumMap<>(YesNoUnknown.class);
 	/**
 	 * Holds a value that was pushed via {@link #doSetValue(YesNoUnknown)} before
-	 * {@link #buildInputComponent()} had a chance to create the {@link ComboBox}.
-	 * Applied to the combo box on first render.
+	 * {@link #buildInputComponent()} had a chance to create the buttons.
+	 * Applied on first render.
 	 */
 	private YesNoUnknown pendingValue;
 
@@ -68,36 +76,50 @@ public class CustomizableFieldInputYesNoUnknown extends CustomizableFieldInput<Y
 
 	@Override
 	protected Component buildInputComponent() {
-		comboBox = new ComboBox<>();
-		comboBox.setWidth(100, Unit.PERCENTAGE);
-		comboBox.setItems(Arrays.asList(YesNoUnknown.values()));
-		comboBox.setItemCaptionGenerator(YesNoUnknown::toString);
-		comboBox.setEmptySelectionAllowed(true);
+		HorizontalLayout layout = new HorizontalLayout();
+		layout.setSpacing(false);
+		layout.setMargin(false);
+		CssStyles.style(layout, CssStyles.YES_NO_UNKNOWN_GROUP);
 
-		// Apply any value that arrived before the component was first rendered.
+		for (YesNoUnknown option : YesNoUnknown.values()) {
+			Button btn = new Button(I18nProperties.getEnumCaption(option));
+			btn.addClickListener(e -> {
+				YesNoUnknown current = getValue();
+				setValue(option == current ? null : option);
+			});
+			buttons.put(option, btn);
+			layout.addComponent(btn);
+		}
+
 		if (pendingValue != null) {
-			comboBox.setValue(pendingValue);
+			applyButtonStyles(pendingValue);
 			pendingValue = null;
 		}
 
-		// Propagate user edits back to the field's internal value state.
-		comboBox.addValueChangeListener(e -> setValue(e.getValue()));
-
-		return comboBox;
+		return layout;
 	}
 
 	/**
 	 * Called by Vaadin when {@link #setValue(Object)} is invoked programmatically.
-	 * Pushes the value into the {@link ComboBox}; {@code null} clears the selection.
-	 * If the {@link ComboBox} has not been created yet (component not yet rendered),
-	 * the value is stored as a pending value and applied in {@link #buildInputComponent()}.
+	 * Updates button highlighting to reflect the new selection.
+	 * If the buttons have not been created yet, stores the value as pending.
 	 */
 	@Override
 	protected void applyValueToWidget(YesNoUnknown value) {
-		if (comboBox != null) {
-			comboBox.setValue(value);
-		} else {
+		if (buttons.isEmpty()) {
 			pendingValue = value;
+		} else {
+			applyButtonStyles(value);
+		}
+	}
+
+	private void applyButtonStyles(YesNoUnknown selected) {
+		for (Map.Entry<YesNoUnknown, Button> entry : buttons.entrySet()) {
+			if (entry.getKey() == selected) {
+				entry.getValue().addStyleName(CssStyles.YES_NO_UNKNOWN_OPTION_SELECTED);
+			} else {
+				entry.getValue().removeStyleName(CssStyles.YES_NO_UNKNOWN_OPTION_SELECTED);
+			}
 		}
 	}
 }

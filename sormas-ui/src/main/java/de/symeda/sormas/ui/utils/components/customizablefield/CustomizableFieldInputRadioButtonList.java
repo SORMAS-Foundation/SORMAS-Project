@@ -38,6 +38,10 @@ import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
  * The selected value is stored directly as a {@link String} in
  * {@link CustomizableFieldValueDto#getValue()}.
  */
+@SuppressWarnings({
+    "java:S110", // suppress sonar too many parents warning
+    "java:S2160" // suppress missing equals
+})
 public class CustomizableFieldInputRadioButtonList extends CustomizableFieldInput<String> {
 
     private static final long serialVersionUID = 1L;

@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.api.customizablefield;
 
+import java.io.Serializable;
+import java.util.Objects;
 import java.util.Optional;
 
 import de.symeda.sormas.api.Disease;
@@ -37,24 +39,44 @@ import de.symeda.sormas.api.Disease;
  * CustomizableFieldVisibilityContext ctx = new CustomizableFieldVisibilityContext().withDisease(caze.getDisease());
  * </pre>
  */
-public class CustomizableFieldVisibilityContext {
+public class CustomizableFieldVisibilityContext implements Serializable {
 
-	private Optional<Disease> disease = Optional.empty();
+	private static final long serialVersionUID = 1L;
+
+	private Disease disease;
 
 	public CustomizableFieldVisibilityContext() {
 		// no-arg constructor required by deserialization frameworks
 	}
 
 	public Optional<Disease> getDisease() {
-		return disease;
+		return Optional.ofNullable(disease);
 	}
 
-	public void setDisease(Optional<Disease> disease) {
+	public void setDisease(Disease disease) {
 		this.disease = disease;
 	}
 
 	public CustomizableFieldVisibilityContext withDisease(Disease disease) {
-		this.disease = Optional.ofNullable(disease);
+		this.disease = disease;
 		return this;
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		CustomizableFieldVisibilityContext that = (CustomizableFieldVisibilityContext) o;
+		return Objects.equals(disease, that.disease);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(disease);
+	}
+
 }

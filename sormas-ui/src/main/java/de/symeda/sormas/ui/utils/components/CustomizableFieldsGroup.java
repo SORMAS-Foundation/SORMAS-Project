@@ -26,6 +26,7 @@ import com.vaadin.data.HasValue;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.customizablefield.CustomizableFieldGroup;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldVisibilityContext;
@@ -42,55 +43,61 @@ import de.symeda.sormas.ui.utils.components.customizablefield.CustomizableFieldI
  * Usage:
  * 
  * <pre>
- * CustomizableFieldsGroup group = new CustomizableFieldsGroup("myGroup");
- * group.setFieldsMetadata(fieldsList);   // full list – group filters by its own uiGroup
+ * CustomizableFieldsGroup group = new CustomizableFieldsGroup(CustomizableFieldGroup.EPIDATA_EXPOSURE_INVESTIGATION);
+ * group.setFieldsMetadata(fieldsList);   // full list – group filters by its own group
  * group.setFieldsValues(valuesMap);
  * group.updateFieldsDisplay();
- * form.addComponent(group, "myGroup");   // use the uiGroup as the layout location ID
+ * form.addComponent(group, CustomizableFieldGroup.EPIDATA_EXPOSURE_INVESTIGATION.getKey());
  * </pre>
  */
+@SuppressWarnings({
+	"java:S110", // suppress sonar too many parents warning
+	"java:S2160", // suppress sonar missing equals
+})
 public class CustomizableFieldsGroup extends VerticalLayout {
 
 	private static final long serialVersionUID = 1L;
 
 	private static final String STYLE_NAME_CUSTOMIZABLE_FIELDS_GROUP = "customizable-fields-group";
 
-	private final String uiGroup;
+	private final CustomizableFieldGroup group;
 	private final Map<String, CustomizableFieldInput<?>> fieldComponents;
 	private final List<HasValue.ValueChangeListener<Object>> valueChangeListeners = new ArrayList<>();
 	private List<CustomizableFieldMetadataDto> fieldsMetadata;
 	private Map<String, CustomizableFieldValueDto> fieldsValues;
+
+	@SuppressWarnings("java:S1948") // CustomizableFieldVisibilityContext implements Serializable; Sonar can't verify it
 	private CustomizableFieldVisibilityContext visibilityContext;
 
 	/**
 	 * Creates a group scoped to the given UI group.
-	 * Only fields whose metadata {@code uiGroup} equals this value will be rendered.
+	 * Only fields whose metadata {@code uiGroup} equals this group will be rendered.
 	 *
-	 * @param uiGroup
-	 *            the UI group identifier, must not be null
+	 * @param group
+	 *            the UI group, must not be null
 	 */
-	public CustomizableFieldsGroup(String uiGroup) {
-		if (uiGroup == null) {
-			throw new IllegalArgumentException("uiGroup must not be null");
+	public CustomizableFieldsGroup(CustomizableFieldGroup group) {
+		if (group == null) {
+			throw new IllegalArgumentException("group must not be null");
 		}
-		this.uiGroup = uiGroup;
+		this.group = group;
 		this.fieldComponents = new HashMap<>();
 		this.setSpacing(true);
 		this.setMargin(false);
 		this.setWidth(100, Unit.PERCENTAGE);
 		this.addStyleName(STYLE_NAME_CUSTOMIZABLE_FIELDS_GROUP);
-		this.addStyleName(uiGroup);
+		this.addStyleName(group.getKey());
 
-		this.setId(uiGroup);
+		this.setId(group.getKey());
 	}
 
 	/**
 	 * Returns the UI group this group is scoped to.
 	 *
-	 * @return the UI group identifier
+	 * @return the UI group
 	 */
-	public String getUiGroup() {
-		return uiGroup;
+	public CustomizableFieldGroup getGroup() {
+		return group;
 	}
 
 	/**
@@ -172,7 +179,7 @@ public class CustomizableFieldsGroup extends VerticalLayout {
 			boolean visibilityContextMatch = visibilityContext == null
 				|| metadata.getVisibilityRestrictions() == null
 				|| metadata.getVisibilityRestrictions().matches(visibilityContext);
-			if (metadata.isActive() && uiGroup.equals(metadata.getUiGroup()) && visibilityContextMatch) {
+			if (metadata.isActive() && metadata.getUiGroup() == group && visibilityContextMatch) {
 				groupFields.add(metadata);
 			}
 		}
@@ -207,6 +214,7 @@ public class CustomizableFieldsGroup extends VerticalLayout {
 	 * @param lineFields
 	 *            fields to place side-by-side on this row
 	 */
+	@SuppressWarnings("unchecked")
 	private void addLineRow(List<CustomizableFieldMetadataDto> lineFields) {
 		HorizontalLayout row = new HorizontalLayout();
 		row.setWidth(100, Unit.PERCENTAGE);
@@ -227,8 +235,7 @@ public class CustomizableFieldsGroup extends VerticalLayout {
 			float expandRatio = metadata.getUiLineWeight() != null ? metadata.getUiLineWeight() : 1.0f;
 			row.setExpandRatio(field, expandRatio);
 
-			for (@SuppressWarnings("unchecked")
-			HasValue.ValueChangeListener<Object> listener : valueChangeListeners) {
+			for (HasValue.ValueChangeListener<Object> listener : valueChangeListeners) {
 				((CustomizableFieldInput<Object>) field).addValueChangeListener(listener);
 			}
 
@@ -245,6 +252,7 @@ public class CustomizableFieldsGroup extends VerticalLayout {
 	 *            the UUID of the field metadata
 	 * @return the field component, or null if not found
 	 */
+	@SuppressWarnings("java:S1452") // wildcard return type is intentional for CustomizableFieldInput<?>
 	public CustomizableFieldInput<?> getFieldByMetadataUuid(String metadataUuid) {
 		return fieldComponents.get(metadataUuid);
 	}

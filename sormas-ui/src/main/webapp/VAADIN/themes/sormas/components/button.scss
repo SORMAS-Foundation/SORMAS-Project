@@ -93,4 +93,54 @@
       vertical-align: top;
     }
   }
+
+  // Segmented button group used for YesNoUnknown fields — matches the NullableOptionGroup horizontal style.
+  .v-horizontallayout.yes-no-unknown-group {
+    line-height: 0;
+
+    .v-slot {
+      margin-right: -2px;
+    }
+
+    .v-button {
+      border: $v-border;
+      border-radius: 0;
+      background: $v-app-background-color;
+      box-shadow: none;
+      font-size: 11px;
+      text-transform: uppercase;
+      height: 28px;
+      padding: 0;
+      min-width: 0;
+
+      .v-button-wrap {
+        padding: 4px 8px;
+        height: 28px;
+        line-height: 20px;
+      }
+
+      &:first-child {
+        border-radius: 4px 0 0 4px;
+      }
+      &:last-child {
+        border-radius: 0 4px 4px 0;
+      }
+
+      &.yes-no-unknown-selected {
+        background: $v-focus-color;
+
+        .v-button-wrap {
+          padding: 4px 8px;
+        }
+      }
+
+      &:hover:not(.v-disabled) {
+        background: darken($v-focus-color, 8%);
+      }
+
+      &.v-disabled {
+        opacity: $v-disabled-opacity;
+      }
+    }
+  }
 }

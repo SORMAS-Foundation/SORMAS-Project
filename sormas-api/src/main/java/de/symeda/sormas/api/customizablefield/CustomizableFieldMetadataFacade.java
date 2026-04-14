@@ -22,6 +22,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.utils.SortProperty;
 
 /**
  * Facade interface for managing customizable field metadata.
@@ -37,12 +38,12 @@ public interface CustomizableFieldMetadataFacade {
     /**
      * Get custom fields grouped in a specific UI group
      */
-    List<CustomizableFieldMetadataDto> getFieldsForUIGroup(String uiGroup);
+    List<CustomizableFieldMetadataDto> getFieldsForUIGroup(CustomizableFieldGroup uiGroup);
 
     /**
      * Get custom fields ordered by UI line position
      */
-    List<CustomizableFieldMetadataDto> getFieldsOrderedByUIPosition(String uiGroup);
+    List<CustomizableFieldMetadataDto> getFieldsOrderedByUIPosition(CustomizableFieldGroup uiGroup);
 
     /**
      * Find field by name within a specific context
@@ -73,6 +74,20 @@ public interface CustomizableFieldMetadataFacade {
      * Get all field metadata
      */
     List<CustomizableFieldMetadataDto> getAll();
+
+    /**
+     * Get a paged and filtered list of field metadata for admin views.
+     */
+    List<CustomizableFieldMetadataDto> getIndexList(
+        CustomizableFieldMetadataCriteria criteria,
+        Integer first,
+        Integer max,
+        List<SortProperty> sortProperties);
+
+    /**
+     * Count field metadata matching the given criteria.
+     */
+    long count(CustomizableFieldMetadataCriteria criteria);
 
     /**
      * Save a customizable field metadata

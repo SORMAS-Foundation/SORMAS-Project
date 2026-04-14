@@ -34,9 +34,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldContext;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldCustomProperties;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldGroup;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataCriteria;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataFacade;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldVisibilityRestrictions;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 /**
@@ -59,7 +62,7 @@ public class CustomizableFieldMetadataFacadeEjb implements CustomizableFieldMeta
 	}
 
 	@Override
-	public List<CustomizableFieldMetadataDto> getFieldsForUIGroup(String uiGroup) {
+	public List<CustomizableFieldMetadataDto> getFieldsForUIGroup(CustomizableFieldGroup uiGroup) {
 		return customizableFieldMetadataService.getFieldsForUIGroup(uiGroup)
 			.stream()
 			.map(CustomizableFieldMetadataFacadeEjb::toDto)
@@ -67,8 +70,8 @@ public class CustomizableFieldMetadataFacadeEjb implements CustomizableFieldMeta
 	}
 
 	@Override
-	public List<CustomizableFieldMetadataDto> getFieldsOrderedByUIPosition(String uiGroup) {
-		return getFieldsForUIGroup(uiGroup);  // Already ordered in service
+	public List<CustomizableFieldMetadataDto> getFieldsOrderedByUIPosition(CustomizableFieldGroup uiGroup) {
+		return getFieldsForUIGroup(uiGroup);	// Already ordered in service
 	}
 
 	@Override
@@ -110,6 +113,24 @@ public class CustomizableFieldMetadataFacadeEjb implements CustomizableFieldMeta
 	@Override
 	public List<CustomizableFieldMetadataDto> getAll() {
 		return customizableFieldMetadataService.getAll().stream().map(CustomizableFieldMetadataFacadeEjb::toDto).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<CustomizableFieldMetadataDto> getIndexList(
+		CustomizableFieldMetadataCriteria criteria,
+		Integer first,
+		Integer max,
+		List<SortProperty> sortProperties) {
+
+		return customizableFieldMetadataService.getIndexList(criteria, first, max, sortProperties)
+			.stream()
+			.map(CustomizableFieldMetadataFacadeEjb::toDto)
+			.collect(Collectors.toList());
+	}
+
+	@Override
+	public long count(CustomizableFieldMetadataCriteria criteria) {
+		return customizableFieldMetadataService.count(criteria);
 	}
 
 	@Override

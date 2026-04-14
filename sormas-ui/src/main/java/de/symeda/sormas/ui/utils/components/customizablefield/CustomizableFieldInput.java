@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.ui.utils.components.customizablefield;
 
+import java.util.Map;
 import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
@@ -25,8 +26,10 @@ import com.vaadin.server.Setter;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
 
 /**
  * Abstract base for editable customizable field input components (Vaadin v8).
@@ -53,6 +56,7 @@ import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
  * {@link com.vaadin.data.Validator}s to the binding before it is finalised.</li>
  * </ul>
  */
+@SuppressWarnings("java:S2160") // sonar missing equals, ok for Vaadin UI components
 public abstract class CustomizableFieldInput<T> extends CustomField<T> {
 
 	private static final long serialVersionUID = 1L;
@@ -214,13 +218,59 @@ public abstract class CustomizableFieldInput<T> extends CustomField<T> {
 
 	/**
 	 * Applies caption, mandatory indicator and read-only state from metadata.
+	 * The caption and description are resolved from the translations map for the current user language,
+	 * falling back to the stored name/description when no matching translation exists.
 	 * Called once in the constructor, before the inner component is built.
 	 */
 	private void applyMetadata() {
-		if (StringUtils.isNotBlank(fieldMetadata.getName())) {
-			setCaption(fieldMetadata.getName());
+		String caption = resolveTranslation(CustomizableFieldMetadataDto.NAME, fieldMetadata.getName());
+		if (StringUtils.isNotBlank(caption)) {
+			setCaption(caption);
+		}
+		String description = resolveTranslation(CustomizableFieldMetadataDto.DESCRIPTION, fieldMetadata.getDescription());
+		if (StringUtils.isNotBlank(description)) {
+			setDescription(description);
 		}
 		setRequiredIndicatorVisible(fieldMetadata.isMandatory());
 		setReadOnly(fieldMetadata.isReadOnly());
+	}
+
+	/**
+	 * Looks up {@code key} (e.g. "name" or "description") in the metadata's translations map
+	 * for the current user language. Tries the full locale string first (e.g. "de_DE"), then
+	 * falls back to the language-only prefix (e.g. "de"), then to {@code fallback}.
+	 */
+	private String resolveTranslation(String key, String fallback) {
+		Map<String, Map<String, String>> translations = fieldMetadata.getTranslations();
+		if (translations != null) {
+			Language userLanguage = I18nProperties.getUserLanguage();
+			if (userLanguage != null) {
+				String localeStr = userLanguage.getLocale().toString();
+				String translated = getTranslationFromMap(translations, localeStr, key);
+				if (translated != null) {
+					return translated;
+				}
+				// Try language-only prefix (e.g. "en" from "en_GB")
+				int underscore = localeStr.indexOf('_');
+				if (underscore > 0) {
+					translated = getTranslationFromMap(translations, localeStr.substring(0, underscore), key);
+					if (translated != null) {
+						return translated;
+					}
+				}
+			}
+		}
+		return fallback;
+	}
+
+	private static String getTranslationFromMap(Map<String, Map<String, String>> translations, String localeKey, String key) {
+		Map<String, String> langMap = translations.get(localeKey);
+		if (langMap != null) {
+			String value = langMap.get(key);
+			if (StringUtils.isNotBlank(value)) {
+				return value;
+			}
+		}
+		return null;
 	}
 }

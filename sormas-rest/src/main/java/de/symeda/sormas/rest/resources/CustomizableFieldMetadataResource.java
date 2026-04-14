@@ -32,6 +32,7 @@ import javax.ws.rs.core.Response;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldContext;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldGroup;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataFacade;
 
@@ -67,7 +68,11 @@ public class CustomizableFieldMetadataResource {
 
 	@GET
 	@Path("/uigroup/{uiGroup}")
-	public List<CustomizableFieldMetadataDto> getFieldsForUIGroup(@PathParam("uiGroup") String uiGroup) {
+	public List<CustomizableFieldMetadataDto> getFieldsForUIGroup(@PathParam("uiGroup") String uiGroupKey) {
+		CustomizableFieldGroup uiGroup = CustomizableFieldGroup.fromKey(uiGroupKey);
+		if (uiGroup == null) {
+			return java.util.Collections.emptyList();
+		}
 		return getFacade().getFieldsOrderedByUIPosition(uiGroup);
 	}
 
