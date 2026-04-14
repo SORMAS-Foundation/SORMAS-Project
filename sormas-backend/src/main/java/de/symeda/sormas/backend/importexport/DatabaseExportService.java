@@ -42,9 +42,11 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import de.symeda.sormas.api.importexport.DatabaseTable;
-import de.symeda.sormas.api.therapy.Drug;
 import de.symeda.sormas.backend.action.Action;
 import de.symeda.sormas.backend.activityascase.ActivityAsCase;
+import de.symeda.sormas.backend.adverseeventsfollowingimmunization.entity.AdverseEvents;
+import de.symeda.sormas.backend.adverseeventsfollowingimmunization.entity.Aefi;
+import de.symeda.sormas.backend.adverseeventsfollowingimmunization.entity.AefiInvestigation;
 import de.symeda.sormas.backend.campaign.Campaign;
 import de.symeda.sormas.backend.campaign.data.CampaignFormData;
 import de.symeda.sormas.backend.campaign.diagram.CampaignDiagramDefinition;
@@ -119,7 +121,7 @@ import de.symeda.sormas.backend.visit.Visit;
 
 /**
  * Exporting data directly from the PostgreSQL database with COPY commands as .csv files.
- * 
+ *
  * @author Stefan Kock
  */
 @Stateless
@@ -127,7 +129,8 @@ import de.symeda.sormas.backend.visit.Visit;
 public class DatabaseExportService {
 
 	private static final String COPY_SINGLE_TABLE = "COPY (SELECT * FROM %s) TO STDOUT WITH (FORMAT CSV, DELIMITER '%s', HEADER)";
-	public static final String COUNT_TABLE_COLUMNS = "SELECT COUNT(column_name) FROM information_schema.columns WHERE table_name=:tableName";
+	public static final String COUNT_TABLE_COLUMNS =
+		"SELECT COUNT(column_name) FROM information_schema.columns WHERE table_name=CAST(:tableName AS text)";
 
 	static final Map<DatabaseTable, String> EXPORT_CONFIGS = new LinkedHashMap<>();
 
@@ -159,6 +162,9 @@ public class DatabaseExportService {
 		EXPORT_CONFIGS.put(DatabaseTable.TRAVEL_ENTRIES, TravelEntry.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.IMMUNIZATIONS, Immunization.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.VACCINATIONS, Vaccination.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.ADVERSE_EVENTS_FOLLOWING_IMMUNIZATIONS, Aefi.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_INVESTIGATIONS, AefiInvestigation.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.ADVERSE_EVENTS, AdverseEvents.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.SAMPLES, Sample.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.PATHOGEN_TESTS, PathogenTest.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.ADDITIONAL_TESTS, AdditionalTest.TABLE_NAME);
@@ -280,7 +286,7 @@ public class DatabaseExportService {
 
 	/**
 	 * Run an export command and write the result directly into a Writer
-	 * 
+	 *
 	 * @param writer
 	 * @param sql
 	 *            Actual native sql command to copy data to CSV.
