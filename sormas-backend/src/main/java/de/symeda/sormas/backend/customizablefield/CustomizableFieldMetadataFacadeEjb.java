@@ -17,6 +17,7 @@ package de.symeda.sormas.backend.customizablefield;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -24,95 +25,95 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldContext;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldCustomProperties;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldGroup;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataCriteria;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataFacade;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataReferenceDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldVisibilityRestrictions;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.Pseudonymizer;
 
 /**
  * Facade EJB implementation for customizable field metadata.
  */
 @Stateless(name = "CustomizableFieldMetadataFacade")
-public class CustomizableFieldMetadataFacadeEjb implements CustomizableFieldMetadataFacade {
+public class CustomizableFieldMetadataFacadeEjb
+	extends
+	AbstractCoreFacadeEjb<CustomizableFieldMetadata, CustomizableFieldMetadataDto, CustomizableFieldMetadataDto, CustomizableFieldMetadataReferenceDto, CustomizableFieldMetadataService, CustomizableFieldMetadataCriteria>
+	implements CustomizableFieldMetadataFacade {
 
 	private static final ObjectMapper mapper = new ObjectMapper();
 
 	@EJB
-	private CustomizableFieldMetadataService customizableFieldMetadataService;
+	private CustomizableFieldValueService customizableFieldValueService;
+
+	public CustomizableFieldMetadataFacadeEjb() {
+	}
+
+	@Inject
+	public CustomizableFieldMetadataFacadeEjb(CustomizableFieldMetadataService service) {
+		super(CustomizableFieldMetadata.class, CustomizableFieldMetadataDto.class, service);
+	}
 
 	@Override
 	public List<CustomizableFieldMetadataDto> getActiveFieldsForContext(CustomizableFieldContext contextClass) {
-		return customizableFieldMetadataService.getActiveFieldsForContext(contextClass)
-			.stream()
-			.map(CustomizableFieldMetadataFacadeEjb::toDto)
-			.collect(Collectors.toList());
+		return service.getActiveFieldsForContext(contextClass).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<CustomizableFieldMetadataDto> getFieldsForUIGroup(CustomizableFieldGroup uiGroup) {
-		return customizableFieldMetadataService.getFieldsForUIGroup(uiGroup)
-			.stream()
-			.map(CustomizableFieldMetadataFacadeEjb::toDto)
-			.collect(Collectors.toList());
+		return service.getFieldsForUIGroup(uiGroup).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<CustomizableFieldMetadataDto> getFieldsOrderedByUIPosition(CustomizableFieldGroup uiGroup) {
-		return getFieldsForUIGroup(uiGroup);	// Already ordered in service
+		return getFieldsForUIGroup(uiGroup); // Already ordered in service
 	}
 
 	@Override
 	public CustomizableFieldMetadataDto getByNameAndContext(String name, CustomizableFieldContext contextClass) {
-		CustomizableFieldMetadata entity = customizableFieldMetadataService.getByNameAndContext(name, contextClass);
+		CustomizableFieldMetadata entity = service.getByNameAndContext(name, contextClass);
 		return entity != null ? toDto(entity) : null;
 	}
 
 	@Override
 	public CustomizableFieldMetadataDto cloneField(String sourceUuid, String newName) {
-		CustomizableFieldMetadata cloned = customizableFieldMetadataService.cloneField(sourceUuid, newName);
+		CustomizableFieldMetadata cloned = service.cloneField(sourceUuid, newName);
 		return toDto(cloned);
 	}
 
 	@Override
-	public void activateField(String uuid) {
-		CustomizableFieldMetadata field = customizableFieldMetadataService.getByUuid(uuid);
+	public void setFieldActive(String uuid, boolean active) {
+		CustomizableFieldMetadata field = service.getByUuid(uuid);
 		if (field != null) {
-			field.setActive(true);
-			customizableFieldMetadataService.ensurePersisted(field);
+			field.setActive(active);
+			service.ensurePersisted(field);
 		}
-	}
-
-	@Override
-	public void deactivateField(String uuid) {
-		CustomizableFieldMetadata field = customizableFieldMetadataService.getByUuid(uuid);
-		if (field != null) {
-			field.setActive(false);
-			customizableFieldMetadataService.ensurePersisted(field);
-		}
-	}
-
-	@Override
-	public CustomizableFieldMetadataDto getByUuid(String uuid) {
-		CustomizableFieldMetadata entity = customizableFieldMetadataService.getByUuid(uuid);
-		return entity != null ? toDto(entity) : null;
 	}
 
 	@Override
 	public List<CustomizableFieldMetadataDto> getAll() {
-		return customizableFieldMetadataService.getAll().stream().map(CustomizableFieldMetadataFacadeEjb::toDto).collect(Collectors.toList());
+		return service.getAll().stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -122,40 +123,87 @@ public class CustomizableFieldMetadataFacadeEjb implements CustomizableFieldMeta
 		Integer max,
 		List<SortProperty> sortProperties) {
 
-		return customizableFieldMetadataService.getIndexList(criteria, first, max, sortProperties)
-			.stream()
-			.map(CustomizableFieldMetadataFacadeEjb::toDto)
-			.collect(Collectors.toList());
+		return service.getIndexList(criteria, first, max, sortProperties).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override
 	public long count(CustomizableFieldMetadataCriteria criteria) {
-		return customizableFieldMetadataService.count(criteria);
+		return service.count(criteria);
 	}
 
 	@Override
-	public CustomizableFieldMetadataDto save(CustomizableFieldMetadataDto dto) {
-		CustomizableFieldMetadata entity = customizableFieldMetadataService.getByUuid(dto.getUuid());
+	public CustomizableFieldMetadataDto save(@Valid @NotNull CustomizableFieldMetadataDto dto) {
+		CustomizableFieldMetadata entity = service.getByUuid(dto.getUuid());
 		entity = fillOrBuildEntity(dto, entity, true);
-		customizableFieldMetadataService.ensurePersisted(entity);
+		service.ensurePersisted(entity);
 		return toDto(entity);
 	}
 
 	@Override
 	public void delete(String uuid, DeletionDetails deletionDetails) {
-		CustomizableFieldMetadata entity = customizableFieldMetadataService.getByUuid(uuid);
+		CustomizableFieldMetadata entity = service.getByUuid(uuid);
 		if (entity != null) {
-			customizableFieldMetadataService.deletePermanent(entity);
+			customizableFieldValueService.softDeleteValuesForMetadata(uuid, deletionDetails);
+			service.delete(entity, deletionDetails);
 		}
 	}
 
 	@Override
-	public boolean exists(String uuid) {
-		return customizableFieldMetadataService.exists(uuid);
+	public List<ProcessedEntity> delete(List<String> uuids, DeletionDetails deletionDetails) {
+		throw new NotImplementedException();
 	}
 
-	public CustomizableFieldMetadata fillOrBuildEntity(
-		CustomizableFieldMetadataDto source,
+	@Override
+	public void restore(String uuid) {
+		super.restore(uuid);
+	}
+
+	@Override
+	public List<ProcessedEntity> restore(List<String> uuids) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public List<String> getArchivedUuidsSince(Date since) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public void validate(@Valid CustomizableFieldMetadataDto dto) throws ValidationRuntimeException {
+		// no validation required for customizable field metadata
+	}
+
+	@Override
+	protected DeletableEntityType getDeletableEntityType() {
+		return DeletableEntityType.CUSTOMIZABLE_FIELD_METADATA;
+	}
+
+	@Override
+	protected CustomizableFieldMetadataReferenceDto toRefDto(CustomizableFieldMetadata entity) {
+		return new CustomizableFieldMetadataReferenceDto(entity.getUuid());
+	}
+
+	@Override
+	protected void pseudonymizeDto(
+		CustomizableFieldMetadata source,
+		CustomizableFieldMetadataDto dto,
+		Pseudonymizer<CustomizableFieldMetadataDto> pseudonymizer,
+		boolean inJurisdiction) {
+		// no sensitive fields to pseudonymize
+	}
+
+	@Override
+	protected void restorePseudonymizedDto(
+		CustomizableFieldMetadataDto dto,
+		CustomizableFieldMetadataDto existingDto,
+		CustomizableFieldMetadata entity,
+		Pseudonymizer<CustomizableFieldMetadataDto> pseudonymizer) {
+		// no sensitive fields to restore
+	}
+
+	@Override
+	protected CustomizableFieldMetadata fillOrBuildEntity(
+		@NotNull CustomizableFieldMetadataDto source,
 		CustomizableFieldMetadata target,
 		boolean checkChangeDate) {
 		if (source == null) {
@@ -196,6 +244,7 @@ public class CustomizableFieldMetadataFacadeEjb implements CustomizableFieldMeta
 		} else {
 			target.setCustomProperties(null);
 		}
+
 		if (source.getTranslations() != null) {
 			try {
 				target.setTranslations(mapper.writeValueAsString(source.getTranslations()));
@@ -209,7 +258,8 @@ public class CustomizableFieldMetadataFacadeEjb implements CustomizableFieldMeta
 		return target;
 	}
 
-	public static CustomizableFieldMetadataDto toDto(CustomizableFieldMetadata source) {
+	@Override
+	protected CustomizableFieldMetadataDto toDto(CustomizableFieldMetadata source) {
 		if (source == null) {
 			return null;
 		}
@@ -229,7 +279,7 @@ public class CustomizableFieldMetadataFacadeEjb implements CustomizableFieldMeta
 		target.setReadOnly(source.isReadOnly());
 		target.setDefaultValue(source.getDefaultValue());
 
-		// Deserialize JSON to maps
+		// Deserialize JSON to objects
 		target.setVisibilityRestrictions(parseVisibilityRestrictions(source.getVisibilityRestrictions()));
 		target.setCustomProperties(parseCustomProperties(source.getCustomProperties()));
 		target.setTranslations(parseTranslations(source.getTranslations()));
@@ -261,7 +311,7 @@ public class CustomizableFieldMetadataFacadeEjb implements CustomizableFieldMeta
 
 	private static Map<String, Map<String, String>> parseTranslations(String json) {
 		if (StringUtils.isBlank(json)) {
-			// we could return a empty map but it might be interpreted as no translaton and postgres might create a '{}' jsonb entry
+			// we could return an empty map but it might be interpreted as no translation and postgres might create a '{}' jsonb entry
 			return Collections.emptyMap();
 		}
 		try {
@@ -275,5 +325,13 @@ public class CustomizableFieldMetadataFacadeEjb implements CustomizableFieldMeta
 	@LocalBean
 	@Stateless
 	public static class CustomizableFieldMetadataFacadeEjbLocal extends CustomizableFieldMetadataFacadeEjb {
+
+		public CustomizableFieldMetadataFacadeEjbLocal() {
+		}
+
+		@Inject
+		public CustomizableFieldMetadataFacadeEjbLocal(CustomizableFieldMetadataService service) {
+			super(service);
+		}
 	}
 }

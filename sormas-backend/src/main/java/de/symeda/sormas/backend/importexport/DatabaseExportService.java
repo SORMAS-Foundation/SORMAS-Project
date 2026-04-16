@@ -42,7 +42,6 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import de.symeda.sormas.api.importexport.DatabaseTable;
-import de.symeda.sormas.api.therapy.Drug;
 import de.symeda.sormas.backend.action.Action;
 import de.symeda.sormas.backend.activityascase.ActivityAsCase;
 import de.symeda.sormas.backend.campaign.Campaign;
@@ -59,6 +58,8 @@ import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumValue;
+import de.symeda.sormas.backend.customizablefield.CustomizableFieldMetadata;
+import de.symeda.sormas.backend.customizablefield.CustomizableFieldValue;
 import de.symeda.sormas.backend.deletionconfiguration.DeletionConfiguration;
 import de.symeda.sormas.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.backend.document.Document;
@@ -179,6 +180,8 @@ public class DatabaseExportService {
 		EXPORT_CONFIGS.put(DatabaseTable.POINTS_OF_ENTRY, PointOfEntry.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.OUTBREAKS, Outbreak.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.CUSTOMIZABLE_ENUM_VALUES, CustomizableEnumValue.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.CUSTOMIZABLE_FIELD_METADATA, CustomizableFieldMetadata.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.CUSTOMIZABLE_FIELD_VALUE, CustomizableFieldValue.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.SYMPTOMS, Symptoms.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.CAMPAIGNS, Campaign.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.CAMPAIGN_CAMPAIGNFORMMETA, Campaign.CAMPAIGN_CAMPAIGNFORMMETA_TABLE_NAME);

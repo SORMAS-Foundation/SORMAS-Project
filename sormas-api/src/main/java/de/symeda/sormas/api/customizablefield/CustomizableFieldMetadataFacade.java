@@ -18,17 +18,16 @@ package de.symeda.sormas.api.customizablefield;
 import java.util.List;
 
 import javax.ejb.Remote;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.common.DeletionDetails;
-import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.CoreFacade;
 
 /**
  * Facade interface for managing customizable field metadata.
  */
 @Remote
-public interface CustomizableFieldMetadataFacade {
+public interface CustomizableFieldMetadataFacade
+    extends
+    CoreFacade<CustomizableFieldMetadataDto, CustomizableFieldMetadataDto, CustomizableFieldMetadataReferenceDto, CustomizableFieldMetadataCriteria> {
 
     /**
      * Get all active custom fields for a specific context class
@@ -56,51 +55,12 @@ public interface CustomizableFieldMetadataFacade {
     CustomizableFieldMetadataDto cloneField(String sourceUuid, String newName);
 
     /**
-     * Activate a field
+     * Set the active state of a field
      */
-    void activateField(String uuid);
-
-    /**
-     * Deactivate a field
-     */
-    void deactivateField(String uuid);
-
-    /**
-     * Get a field by UUID
-     */
-    CustomizableFieldMetadataDto getByUuid(String uuid);
+    void setFieldActive(String uuid, boolean active);
 
     /**
      * Get all field metadata
      */
     List<CustomizableFieldMetadataDto> getAll();
-
-    /**
-     * Get a paged and filtered list of field metadata for admin views.
-     */
-    List<CustomizableFieldMetadataDto> getIndexList(
-        CustomizableFieldMetadataCriteria criteria,
-        Integer first,
-        Integer max,
-        List<SortProperty> sortProperties);
-
-    /**
-     * Count field metadata matching the given criteria.
-     */
-    long count(CustomizableFieldMetadataCriteria criteria);
-
-    /**
-     * Save a customizable field metadata
-     */
-    CustomizableFieldMetadataDto save(@Valid @NotNull CustomizableFieldMetadataDto dto);
-
-    /**
-     * Delete a customizable field metadata
-     */
-    void delete(String uuid, DeletionDetails deletionDetails);
-
-    /**
-     * Check if a field with the given UUID exists
-     */
-    boolean exists(String uuid);
 }

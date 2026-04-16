@@ -23,14 +23,18 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import de.symeda.sormas.api.customizablefield.CustomizableFieldContext;
-import de.symeda.sormas.backend.common.DeletableAdo;
+import de.symeda.sormas.backend.common.CoreAdo;
 
 /**
  * Entity class for customizable field values.
  * Stores the actual value for a custom field for a specific entity instance.
  */
 @Entity(name = "customizablefieldvalue")
-public class CustomizableFieldValue extends DeletableAdo {
+@SuppressWarnings({
+	"java:S1845", // suppress sonar field name clash warning
+	"java:S2160" // suppress missing equals handled in AbstractDomainObject
+})
+public class CustomizableFieldValue extends CoreAdo {
 
 	private static final long serialVersionUID = 1L;
 

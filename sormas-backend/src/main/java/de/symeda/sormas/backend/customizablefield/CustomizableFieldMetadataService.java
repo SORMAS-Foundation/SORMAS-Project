@@ -30,28 +30,40 @@ import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
 
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldContext;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldGroup;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataCriteria;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
+import de.symeda.sormas.backend.common.AbstractCoreAdoService;
+import de.symeda.sormas.backend.common.DeletableAdo;
 
 /**
  * Service class for customizable field metadata.
  */
 @Stateless
 @LocalBean
-public class CustomizableFieldMetadataService extends AdoServiceWithUserFilterAndJurisdiction<CustomizableFieldMetadata> {
+public class CustomizableFieldMetadataService extends AbstractCoreAdoService<CustomizableFieldMetadata, CustomizableFieldMetadataJoins> {
 
 	public CustomizableFieldMetadataService() {
-		super(CustomizableFieldMetadata.class);
+		super(CustomizableFieldMetadata.class, DeletableEntityType.CUSTOMIZABLE_FIELD_METADATA);
 	}
 
 	@Override
 	@SuppressWarnings("rawtypes")
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, CustomizableFieldMetadata> from) {
+	protected Predicate createUserFilterInternal(CriteriaBuilder cb, CriteriaQuery cq, From<?, CustomizableFieldMetadata> from) {
 		// No jurisdiction filtering for customizable fields
 		return null;
+	}
+
+	@Override
+	protected CustomizableFieldMetadataJoins toJoins(From<?, CustomizableFieldMetadata> adoPath) {
+		return new CustomizableFieldMetadataJoins(adoPath);
+	}
+
+	@Override
+	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, CustomizableFieldMetadata> from) {
+		return cb.conjunction();
 	}
 
 	public List<CustomizableFieldMetadata> getActiveFieldsForContext(CustomizableFieldContext contextClass) {
@@ -61,7 +73,8 @@ public class CustomizableFieldMetadataService extends AdoServiceWithUserFilterAn
 
 		Predicate predicate = cb.and(
 			cb.equal(root.get(CustomizableFieldMetadata.CONTEXT_CLASS), contextClass),
-			cb.equal(root.get(CustomizableFieldMetadata.ACTIVE), true));
+			cb.equal(root.get(CustomizableFieldMetadata.ACTIVE), true),
+			cb.isFalse(root.get(DeletableAdo.DELETED)));
 
 		cq.where(predicate);
 		cq.orderBy(cb.asc(root.get(CustomizableFieldMetadata.UI_LINE_POSITION)));
@@ -74,7 +87,7 @@ public class CustomizableFieldMetadataService extends AdoServiceWithUserFilterAn
 		CriteriaQuery<CustomizableFieldMetadata> cq = cb.createQuery(CustomizableFieldMetadata.class);
 		Root<CustomizableFieldMetadata> root = cq.from(CustomizableFieldMetadata.class);
 
-		Predicate predicate = cb.equal(root.get(CustomizableFieldMetadata.UI_GROUP), uiGroup);
+		Predicate predicate = cb.and(cb.equal(root.get(CustomizableFieldMetadata.UI_GROUP), uiGroup), cb.isFalse(root.get(DeletableAdo.DELETED)));
 
 		cq.where(predicate);
 		cq.orderBy(cb.asc(root.get(CustomizableFieldMetadata.UI_LINE_POSITION)));
@@ -87,8 +100,10 @@ public class CustomizableFieldMetadataService extends AdoServiceWithUserFilterAn
 		CriteriaQuery<CustomizableFieldMetadata> cq = cb.createQuery(CustomizableFieldMetadata.class);
 		Root<CustomizableFieldMetadata> root = cq.from(CustomizableFieldMetadata.class);
 
-		Predicate predicate = cb
-			.and(cb.equal(root.get(CustomizableFieldMetadata.NAME), name), cb.equal(root.get(CustomizableFieldMetadata.CONTEXT_CLASS), contextClass));
+		Predicate predicate = cb.and(
+			cb.equal(root.get(CustomizableFieldMetadata.NAME), name),
+			cb.equal(root.get(CustomizableFieldMetadata.CONTEXT_CLASS), contextClass),
+			cb.isFalse(root.get(DeletableAdo.DELETED)));
 
 		cq.where(predicate);
 
@@ -195,6 +210,8 @@ public class CustomizableFieldMetadataService extends AdoServiceWithUserFilterAn
 		if (criteria.getActive() != null) {
 			predicates.add(cb.equal(root.get(CustomizableFieldMetadata.ACTIVE), criteria.getActive()));
 		}
+
+		predicates.add(cb.isFalse(root.get(DeletableAdo.DELETED)));
 
 		if (!StringUtils.isBlank(criteria.getFreeTextFilter())) {
 			String likePattern = "%" + criteria.getFreeTextFilter().toLowerCase() + "%";

@@ -29,7 +29,7 @@ import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldContext;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldGroup;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldType;
-import de.symeda.sormas.backend.common.DeletableAdo;
+import de.symeda.sormas.backend.common.CoreAdo;
 
 /**
  * Entity class for customizable field metadata.
@@ -41,7 +41,7 @@ import de.symeda.sormas.backend.common.DeletableAdo;
 	"java:S1845", // suppress sonar field name clash warning
 	"java:S2160" // suppress missing equals handled in AbstractDomainObject
 })
-public class CustomizableFieldMetadata extends DeletableAdo {
+public class CustomizableFieldMetadata extends CoreAdo {
 
 	private static final long serialVersionUID = 1L;
 

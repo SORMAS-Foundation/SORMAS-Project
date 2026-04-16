@@ -39,6 +39,8 @@ import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataFacade;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldType;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueFacade;
+import de.symeda.sormas.api.exposure.ExposureDto;
+import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserDto;
@@ -58,8 +60,12 @@ class CustomizableFieldFacadeEjbTest extends AbstractBeanTest {
     }
 
     @ParameterizedTest
-    @EnumSource(CustomizableFieldContext.class)
-    void testRenderCustomizableFields(CustomizableFieldContext context) {
+    @EnumSource(value = CustomizableFieldContext.class,
+        names = {
+            "CASE",
+            "EPIDATA",
+            "EXPOSURE" })
+    void testCaseRelatedCustomizableFields(CustomizableFieldContext context) {
         CustomizableFieldMetadataFacade metadataFacade = getBean(CustomizableFieldMetadataFacadeEjb.CustomizableFieldMetadataFacadeEjbLocal.class);
         CustomizableFieldValueFacade valueFacade = getBean(CustomizableFieldValueFacadeEjb.CustomizableFieldValueFacadeEjbLocal.class);
 
@@ -83,7 +89,15 @@ class CustomizableFieldFacadeEjbTest extends AbstractBeanTest {
             new java.util.Date(),
             rdcf);
 
+        caze.getEpiData().getExposures().add(ExposureDto.build(ExposureType.TRAVEL));
+        caze = getCaseFacade().save(caze);
+
         String entityUuid = getEntityUuidForContext(context, caze);
+
+        // in case other contexts are added and no corresponding case data is created this should fail
+        // in case of failure update the creation of the case and add the aditional necessary data
+        assertThat("Unexpected entity UUID null for context " + context, entityUuid, notNullValue());
+
         CustomizableFieldValueDto valueDto = new CustomizableFieldValueDto();
         valueDto.setValue("custom-value");
         Map<String, CustomizableFieldValueDto> fieldValues = Map.of(savedMetadata.getUuid(), valueDto);
@@ -106,6 +120,10 @@ class CustomizableFieldFacadeEjbTest extends AbstractBeanTest {
             return caze.getUuid();
         case EPIDATA:
             return caze.getEpiData().getUuid();
+        case EXPOSURE:
+            return caze.getEpiData().getExposures() != null && !caze.getEpiData().getExposures().isEmpty()
+                ? caze.getEpiData().getExposures().get(0).getUuid()
+                : null;
         default:
             throw new IllegalArgumentException("Unhandled context: " + context);
         }

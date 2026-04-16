@@ -18,6 +18,7 @@ package de.symeda.sormas.api.customizablefield;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.exposure.ExposureDto;
 
 /**
  * Defines supported customizable field contexts and links them to existing
@@ -27,7 +28,8 @@ import de.symeda.sormas.api.epidata.EpiDataDto;
 public enum CustomizableFieldContext {
 
 	CASE(CaseDataDto.class),
-	EPIDATA(EpiDataDto.class);
+	EPIDATA(EpiDataDto.class),
+	EXPOSURE(ExposureDto.class);
 
 	// add other contexts here
 

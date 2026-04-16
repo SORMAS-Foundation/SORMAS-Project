@@ -15626,8 +15626,8 @@ BEFORE INSERT OR UPDATE OR DELETE ON customizablefieldmetadata
 FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'customizablefieldmetadata_history', true);
 ALTER TABLE customizablefieldmetadata_history OWNER TO sormas_user;
 
-DROP TRIGGER IF EXISTS delete_history_trigger_customizablefieldmetadata ON customizablefieldmetadata;
-CREATE TRIGGER delete_history_trigger_customizablefieldmetadata
+DROP TRIGGER IF EXISTS delete_history_trigger ON customizablefieldmetadata;
+CREATE TRIGGER delete_history_trigger
     AFTER DELETE ON customizablefieldmetadata
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('customizablefieldmetadata_history', 'id');
 
@@ -15691,8 +15691,8 @@ CREATE TRIGGER versioning_trigger
 BEFORE INSERT OR UPDATE OR DELETE ON customizablefieldvalue
 FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'customizablefieldvalue_history', true);
 
-DROP TRIGGER IF EXISTS delete_history_trigger_customizablefieldvalue ON customizablefieldvalue;
-CREATE TRIGGER delete_history_trigger_customizablefieldvalue
+DROP TRIGGER IF EXISTS delete_history_trigger ON customizablefieldvalue;
+CREATE TRIGGER delete_history_trigger
     AFTER DELETE ON customizablefieldvalue
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('customizablefieldvalue_history', 'id');
 

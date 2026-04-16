@@ -19,16 +19,15 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ejb.Remote;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.CoreFacade;
 
 /**
  * Facade interface for managing customizable field values.
  */
 @Remote
-public interface CustomizableFieldValueFacade {
+public interface CustomizableFieldValueFacade
+    extends CoreFacade<CustomizableFieldValueDto, CustomizableFieldValueDto, CustomizableFieldValueReferenceDto, CustomizableFieldValueCriteria> {
 
     /**
      * Load all custom field values for a specific entity
@@ -59,22 +58,7 @@ public interface CustomizableFieldValueFacade {
     void deleteValuesForEntity(String entityUuid, CustomizableFieldContext contextClass);
 
     /**
-     * Get a field value by UUID
-     */
-    CustomizableFieldValueDto getByUuid(String uuid);
-
-    /**
      * Get all field values
      */
     List<CustomizableFieldValueDto> getAll();
-
-    /**
-     * Save a single customizable field value
-     */
-    CustomizableFieldValueDto save(@Valid @NotNull CustomizableFieldValueDto dto);
-
-    /**
-     * Delete a customizable field value
-     */
-    void delete(String uuid, DeletionDetails deletionDetails);
 }

@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,24 +13,15 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.common;
+package de.symeda.sormas.api.customizablefield;
 
-public enum DeletableEntityType {
+import de.symeda.sormas.api.ReferenceDto;
 
-	//ENTITY LIST
-	CASE,
-	CONTACT,
-	EVENT,
-	EVENT_PARTICIPANT,
-	IMMUNIZATION,
-	ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION,
-	TRAVEL_ENTRY,
-	CAMPAIGN,
-	SAMPLE,
-	PATHOGEN_TEST,
-	ENVIRONMENT,
-	ENVIRONMENT_SAMPLE,
-	SELF_REPORT,
-	CUSTOMIZABLE_FIELD_METADATA,
-	CUSTOMIZABLE_FIELD_VALUE;
+public class CustomizableFieldMetadataReferenceDto extends ReferenceDto {
+
+    private static final long serialVersionUID = 1L;
+
+    public CustomizableFieldMetadataReferenceDto(String uuid) {
+        super(uuid);
+    }
 }

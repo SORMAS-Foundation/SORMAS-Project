@@ -113,14 +113,14 @@ public class CustomizableFieldMetadataResource {
 	@POST
 	@Path("/{uuid}/activate")
 	public Response activate(@PathParam("uuid") String uuid) {
-		getFacade().activateField(uuid);
+		getFacade().setFieldActive(uuid, true);
 		return Response.ok().build();
 	}
 
 	@POST
 	@Path("/{uuid}/deactivate")
 	public Response deactivate(@PathParam("uuid") String uuid) {
-		getFacade().deactivateField(uuid);
+		getFacade().setFieldActive(uuid, false);
 		return Response.ok().build();
 	}
 

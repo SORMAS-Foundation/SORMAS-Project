@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.customizablefield;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,28 +24,48 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.NotImplementedException;
+
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldContext;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldValueCriteria;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueFacade;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldValueReferenceDto;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.Pseudonymizer;
 
 /**
  * Facade EJB implementation for customizable field values.
  */
 @Stateless(name = "CustomizableFieldValueFacade")
-public class CustomizableFieldValueFacadeEjb implements CustomizableFieldValueFacade {
-
-	@EJB
-	private CustomizableFieldValueService customizableFieldValueService;
+public class CustomizableFieldValueFacadeEjb
+	extends
+	AbstractCoreFacadeEjb<CustomizableFieldValue, CustomizableFieldValueDto, CustomizableFieldValueDto, CustomizableFieldValueReferenceDto, CustomizableFieldValueService, CustomizableFieldValueCriteria>
+	implements CustomizableFieldValueFacade {
 
 	@EJB
 	private CustomizableFieldMetadataService customizableFieldMetadataService;
 
+	public CustomizableFieldValueFacadeEjb() {
+	}
+
+	@Inject
+	public CustomizableFieldValueFacadeEjb(CustomizableFieldValueService service) {
+		super(CustomizableFieldValue.class, CustomizableFieldValueDto.class, service);
+	}
+
 	@Override
 	public Map<String, CustomizableFieldValueDto> getValuesForEntity(String entityUuid, CustomizableFieldContext contextClass) {
-		Map<String, CustomizableFieldValue> entities = customizableFieldValueService.getValuesForEntity(entityUuid, contextClass);
+		Map<String, CustomizableFieldValue> entities = service.getValuesForEntity(entityUuid, contextClass);
 
 		Map<String, CustomizableFieldValueDto> result = new HashMap<>();
 		for (Map.Entry<String, CustomizableFieldValue> entry : entities.entrySet()) {
@@ -55,42 +76,107 @@ public class CustomizableFieldValueFacadeEjb implements CustomizableFieldValueFa
 
 	@Override
 	public void saveEntityCustomFields(String entityUuid, Map<CustomizableFieldContext, Map<String, CustomizableFieldValueDto>> fieldsByContext) {
-		fieldsByContext.forEach((context, fields) -> customizableFieldValueService.saveEntityValues(entityUuid, context, fields));
+		fieldsByContext.forEach((context, fields) -> service.saveEntityValues(entityUuid, context, fields));
 	}
 
 	@Override
 	public void deleteValuesForEntity(String entityUuid, CustomizableFieldContext contextClass) {
-		customizableFieldValueService.deleteValuesForEntity(entityUuid, contextClass);
-	}
-
-	@Override
-	public CustomizableFieldValueDto getByUuid(String uuid) {
-		CustomizableFieldValue entity = customizableFieldValueService.getByUuid(uuid);
-		return entity != null ? toDto(entity) : null;
+		service.deleteValuesForEntity(entityUuid, contextClass);
 	}
 
 	@Override
 	public List<CustomizableFieldValueDto> getAll() {
-		return customizableFieldValueService.getAll().stream().map(CustomizableFieldValueFacadeEjb::toDto).collect(Collectors.toList());
+		return service.getAll().stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override
-	public CustomizableFieldValueDto save(CustomizableFieldValueDto dto) {
-		CustomizableFieldValue entity = customizableFieldValueService.getByUuid(dto.getUuid());
+	public CustomizableFieldValueDto save(@Valid @NotNull CustomizableFieldValueDto dto) {
+		CustomizableFieldValue entity = service.getByUuid(dto.getUuid());
 		entity = fillOrBuildEntity(dto, entity, true);
-		customizableFieldValueService.ensurePersisted(entity);
+		service.ensurePersisted(entity);
 		return toDto(entity);
 	}
 
 	@Override
 	public void delete(String uuid, DeletionDetails deletionDetails) {
-		CustomizableFieldValue entity = customizableFieldValueService.getByUuid(uuid);
+		CustomizableFieldValue entity = service.getByUuid(uuid);
 		if (entity != null) {
-			customizableFieldValueService.deletePermanent(entity);
+			service.delete(entity, deletionDetails);
 		}
 	}
 
-	public CustomizableFieldValue fillOrBuildEntity(CustomizableFieldValueDto source, CustomizableFieldValue target, boolean checkChangeDate) {
+	@Override
+	public List<ProcessedEntity> delete(List<String> uuids, DeletionDetails deletionDetails) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public void restore(String uuid) {
+		super.restore(uuid);
+	}
+
+	@Override
+	public List<ProcessedEntity> restore(List<String> uuids) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public List<String> getArchivedUuidsSince(Date since) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public long count(CustomizableFieldValueCriteria criteria) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public List<CustomizableFieldValueDto> getIndexList(
+		CustomizableFieldValueCriteria criteria,
+		Integer first,
+		Integer max,
+		List<de.symeda.sormas.api.utils.SortProperty> sortProperties) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public void validate(@Valid CustomizableFieldValueDto dto) throws ValidationRuntimeException {
+		// no validation required for customizable field values
+	}
+
+	@Override
+	protected DeletableEntityType getDeletableEntityType() {
+		return DeletableEntityType.CUSTOMIZABLE_FIELD_VALUE;
+	}
+
+	@Override
+	protected CustomizableFieldValueReferenceDto toRefDto(CustomizableFieldValue entity) {
+		return new CustomizableFieldValueReferenceDto(entity.getUuid());
+	}
+
+	@Override
+	protected void pseudonymizeDto(
+		CustomizableFieldValue source,
+		CustomizableFieldValueDto dto,
+		Pseudonymizer<CustomizableFieldValueDto> pseudonymizer,
+		boolean inJurisdiction) {
+		// no sensitive fields to pseudonymize
+	}
+
+	@Override
+	protected void restorePseudonymizedDto(
+		CustomizableFieldValueDto dto,
+		CustomizableFieldValueDto existingDto,
+		CustomizableFieldValue entity,
+		Pseudonymizer<CustomizableFieldValueDto> pseudonymizer) {
+		// no sensitive fields to restore
+	}
+
+	@Override
+	protected CustomizableFieldValue fillOrBuildEntity(
+		@NotNull CustomizableFieldValueDto source,
+		CustomizableFieldValue target,
+		boolean checkChangeDate) {
 		if (source == null) {
 			return null;
 		}
@@ -111,7 +197,8 @@ public class CustomizableFieldValueFacadeEjb implements CustomizableFieldValueFa
 		return target;
 	}
 
-	public static CustomizableFieldValueDto toDto(CustomizableFieldValue source) {
+	@Override
+	protected CustomizableFieldValueDto toDto(CustomizableFieldValue source) {
 		if (source == null) {
 			return null;
 		}
@@ -130,5 +217,13 @@ public class CustomizableFieldValueFacadeEjb implements CustomizableFieldValueFa
 	@LocalBean
 	@Stateless
 	public static class CustomizableFieldValueFacadeEjbLocal extends CustomizableFieldValueFacadeEjb {
+
+		public CustomizableFieldValueFacadeEjbLocal() {
+		}
+
+		@Inject
+		public CustomizableFieldValueFacadeEjbLocal(CustomizableFieldValueService service) {
+			super(service);
+		}
 	}
 }
