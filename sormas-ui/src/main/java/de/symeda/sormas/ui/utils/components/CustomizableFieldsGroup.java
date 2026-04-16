@@ -61,10 +61,10 @@ public class CustomizableFieldsGroup extends VerticalLayout {
 	private static final String STYLE_NAME_CUSTOMIZABLE_FIELDS_GROUP = "customizable-fields-group";
 
 	private final CustomizableFieldGroup group;
-	private final Map<String, CustomizableFieldInput<?>> fieldComponents;
+	private final Map<CustomizableFieldMetadataDto, CustomizableFieldInput<?>> fieldComponents;
 	private final List<HasValue.ValueChangeListener<Object>> valueChangeListeners = new ArrayList<>();
 	private List<CustomizableFieldMetadataDto> fieldsMetadata;
-	private Map<String, CustomizableFieldValueDto> fieldsValues;
+	private Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> fieldsValues;
 
 	@SuppressWarnings("java:S1948") // CustomizableFieldVisibilityContext implements Serializable; Sonar can't verify it
 	private CustomizableFieldVisibilityContext visibilityContext;
@@ -147,7 +147,7 @@ public class CustomizableFieldsGroup extends VerticalLayout {
 	 * @param values
 	 *            map of field values keyed by metadata UUID
 	 */
-	public void setFieldsValues(Map<String, CustomizableFieldValueDto> values) {
+	public void setFieldsValues(Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> values) {
 		this.fieldsValues = values;
 	}
 
@@ -224,9 +224,8 @@ public class CustomizableFieldsGroup extends VerticalLayout {
 		for (CustomizableFieldMetadataDto metadata : lineFields) {
 			CustomizableFieldInput<?> field = CustomizableFieldInputFactory.create(metadata);
 
-			CustomizableFieldValueDto dto = (fieldsValues != null && fieldsValues.containsKey(metadata.getUuid()))
-				? fieldsValues.get(metadata.getUuid())
-				: new CustomizableFieldValueDto();
+			CustomizableFieldValueDto dto =
+				(fieldsValues != null && fieldsValues.containsKey(metadata)) ? fieldsValues.get(metadata) : new CustomizableFieldValueDto();
 			field.setFieldValue(dto);
 
 			field.setWidth(100, Unit.PERCENTAGE);
@@ -239,7 +238,7 @@ public class CustomizableFieldsGroup extends VerticalLayout {
 				((CustomizableFieldInput<Object>) field).addValueChangeListener(listener);
 			}
 
-			fieldComponents.put(metadata.getUuid(), field);
+			fieldComponents.put(metadata, field);
 		}
 
 		addComponent(row);
@@ -254,7 +253,12 @@ public class CustomizableFieldsGroup extends VerticalLayout {
 	 */
 	@SuppressWarnings("java:S1452") // wildcard return type is intentional for CustomizableFieldInput<?>
 	public CustomizableFieldInput<?> getFieldByMetadataUuid(String metadataUuid) {
-		return fieldComponents.get(metadataUuid);
+		return fieldComponents.entrySet()
+			.stream()
+			.filter(e -> metadataUuid.equals(e.getKey().getUuid()))
+			.map(Map.Entry::getValue)
+			.findFirst()
+			.orElse(null);
 	}
 
 	/**
@@ -262,7 +266,7 @@ public class CustomizableFieldsGroup extends VerticalLayout {
 	 *
 	 * @return map of field components keyed by metadata UUID
 	 */
-	public Map<String, CustomizableFieldInput<?>> getAllFields() {
+	public Map<CustomizableFieldMetadataDto, CustomizableFieldInput<?>> getAllFields() {
 		return new HashMap<>(fieldComponents);
 	}
 
@@ -272,9 +276,9 @@ public class CustomizableFieldsGroup extends VerticalLayout {
 	 *
 	 * @return map of all current field values
 	 */
-	public Map<String, CustomizableFieldValueDto> getFieldsValues() {
-		Map<String, CustomizableFieldValueDto> result = new HashMap<>();
-		for (Map.Entry<String, CustomizableFieldInput<?>> entry : fieldComponents.entrySet()) {
+	public Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> getFieldsValues() {
+		Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> result = new HashMap<>();
+		for (Map.Entry<CustomizableFieldMetadataDto, CustomizableFieldInput<?>> entry : fieldComponents.entrySet()) {
 			CustomizableFieldValueDto value = entry.getValue().getFieldValue();
 			if (value != null && value.getValue() != null) {
 				result.put(entry.getKey(), value);

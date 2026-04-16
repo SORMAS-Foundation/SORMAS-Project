@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.rest.resources;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +34,7 @@ import javax.ws.rs.core.Response;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldContext;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueFacade;
 
@@ -65,7 +67,10 @@ public class CustomizableFieldValueResource {
 	public Map<String, CustomizableFieldValueDto> getValuesForEntity(
 		@PathParam("entityUuid") String entityUuid,
 		@QueryParam("contextClass") CustomizableFieldContext contextClass) {
-		return getFacade().getValuesForEntity(entityUuid, contextClass);
+		Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> typed = getFacade().getValuesForEntity(entityUuid, contextClass);
+		Map<String, CustomizableFieldValueDto> result = new HashMap<>();
+		typed.forEach((metadata, value) -> result.put(metadata.getUuid(), value));
+		return result;
 	}
 
 	@POST
@@ -74,7 +79,14 @@ public class CustomizableFieldValueResource {
 		@PathParam("entityUuid") String entityUuid,
 		@QueryParam("contextClass") CustomizableFieldContext contextClass,
 		Map<String, CustomizableFieldValueDto> fieldValues) {
-		getFacade().saveEntityCustomFields(entityUuid, contextClass, fieldValues);
+		Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> typed = new HashMap<>();
+		fieldValues.forEach((metadataUuid, value) -> {
+			CustomizableFieldMetadataDto metadataDto = FacadeProvider.getCustomizableFieldMetadataFacade().getByUuid(metadataUuid);
+			if (metadataDto != null) {
+				typed.put(metadataDto, value);
+			}
+		});
+		getFacade().saveEntityCustomFields(entityUuid, contextClass, typed);
 		return Response.ok().build();
 	}
 

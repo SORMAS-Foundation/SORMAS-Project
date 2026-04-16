@@ -100,18 +100,18 @@ class CustomizableFieldFacadeEjbTest extends AbstractBeanTest {
 
         CustomizableFieldValueDto valueDto = new CustomizableFieldValueDto();
         valueDto.setValue("custom-value");
-        Map<String, CustomizableFieldValueDto> fieldValues = Map.of(savedMetadata.getUuid(), valueDto);
+        Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> fieldValues = Map.of(savedMetadata, valueDto);
         valueFacade.saveEntityCustomFields(entityUuid, context, fieldValues);
 
         List<CustomizableFieldMetadataDto> activeFields = metadataFacade.getActiveFieldsForContext(context);
-        Map<String, CustomizableFieldValueDto> values = valueFacade.getValuesForEntity(entityUuid, context);
+        Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> values = valueFacade.getValuesForEntity(entityUuid, context);
 
         assertThat(activeFields, hasSize(1));
         assertThat(activeFields.get(0).getUuid(), is(savedMetadata.getUuid()));
         assertThat(activeFields.get(0).getName(), is(equalTo("customField_" + context.name().toLowerCase())));
 
-        assertThat(values, hasKey(savedMetadata.getUuid()));
-        assertThat(values.get(savedMetadata.getUuid()).getValue(), is(equalTo("custom-value")));
+        assertThat(values, hasKey(savedMetadata));
+        assertThat(values.get(savedMetadata).getValue(), is(equalTo("custom-value")));
     }
 
     private String getEntityUuidForContext(CustomizableFieldContext context, CaseDataDto caze) {

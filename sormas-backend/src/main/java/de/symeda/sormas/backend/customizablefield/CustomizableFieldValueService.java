@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -43,9 +42,6 @@ import de.symeda.sormas.backend.common.DeletableAdo;
 @LocalBean
 public class CustomizableFieldValueService extends AbstractCoreAdoService<CustomizableFieldValue, CustomizableFieldValueJoins> {
 
-	@EJB
-	private CustomizableFieldMetadataService customizableFieldMetadataService;
-
 	public CustomizableFieldValueService() {
 		super(CustomizableFieldValue.class, DeletableEntityType.CUSTOMIZABLE_FIELD_VALUE);
 	}
@@ -67,7 +63,7 @@ public class CustomizableFieldValueService extends AbstractCoreAdoService<Custom
 		return cb.conjunction();
 	}
 
-	public Map<String, CustomizableFieldValue> getValuesForEntity(String entityUuid, CustomizableFieldContext contextClass) {
+	public Map<CustomizableFieldMetadata, CustomizableFieldValue> getValuesForEntity(String entityUuid, CustomizableFieldContext contextClass) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CustomizableFieldValue> cq = cb.createQuery(CustomizableFieldValue.class);
 		Root<CustomizableFieldValue> root = cq.from(CustomizableFieldValue.class);
@@ -81,42 +77,36 @@ public class CustomizableFieldValueService extends AbstractCoreAdoService<Custom
 
 		List<CustomizableFieldValue> values = em.createQuery(cq).getResultList();
 
-		// Convert to map for easier access by field metadata UUID
-		Map<String, CustomizableFieldValue> result = new HashMap<>();
+		Map<CustomizableFieldMetadata, CustomizableFieldValue> result = new HashMap<>();
 		for (CustomizableFieldValue value : values) {
-			result.put(value.getCustomizableFieldMetadata().getUuid(), value);
+			result.put(value.getCustomizableFieldMetadata(), value);
 		}
 		return result;
 	}
 
-	public void saveEntityValues(String entityUuid, CustomizableFieldContext contextClass, Map<String, CustomizableFieldValueDto> fieldUuidToValue) {
-		// Get existing values
-		Map<String, CustomizableFieldValue> existing = getValuesForEntity(entityUuid, contextClass);
+	public void saveEntityValues(
+		String entityUuid,
+		CustomizableFieldContext contextClass,
+		Map<CustomizableFieldMetadata, CustomizableFieldValueDto> metadataToValue) {
+		Map<CustomizableFieldMetadata, CustomizableFieldValue> existing = getValuesForEntity(entityUuid, contextClass);
 
-		// Update or create values
-		for (Map.Entry<String, CustomizableFieldValueDto> entry : fieldUuidToValue.entrySet()) {
-			String fieldMetadataUuid = entry.getKey();
-			CustomizableFieldMetadata metadata = customizableFieldMetadataService.getByUuid(fieldMetadataUuid);
-
-			if (metadata == null) {
-				throw new IllegalArgumentException("Field metadata not found: " + fieldMetadataUuid);
-			}
-
-			CustomizableFieldValue value = existing.getOrDefault(fieldMetadataUuid, createNewValue(metadata, entityUuid, contextClass));
+		for (Map.Entry<CustomizableFieldMetadata, CustomizableFieldValueDto> entry : metadataToValue.entrySet()) {
+			CustomizableFieldMetadata metadata = entry.getKey();
+			CustomizableFieldValue value = existing.getOrDefault(metadata, createNewValue(metadata, entityUuid, contextClass));
 			value.setValue(entry.getValue().getValue());
 			ensurePersisted(value);
 		}
 	}
 
 	public void deleteValuesForEntity(String entityUuid, CustomizableFieldContext contextClass) {
-		Map<String, CustomizableFieldValue> values = getValuesForEntity(entityUuid, contextClass);
+		Map<CustomizableFieldMetadata, CustomizableFieldValue> values = getValuesForEntity(entityUuid, contextClass);
 		for (CustomizableFieldValue value : values.values()) {
 			em.remove(value);
 		}
 	}
 
 	public void softDeleteValuesForEntity(String entityUuid, CustomizableFieldContext contextClass, DeletionDetails deletionDetails) {
-		Map<String, CustomizableFieldValue> values = getValuesForEntity(entityUuid, contextClass);
+		Map<CustomizableFieldMetadata, CustomizableFieldValue> values = getValuesForEntity(entityUuid, contextClass);
 		for (CustomizableFieldValue value : values.values()) {
 			delete(value, deletionDetails);
 		}

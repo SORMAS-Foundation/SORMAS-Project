@@ -75,7 +75,7 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 	private boolean setServerDiseaseAsDefault;
 
 	private List<CustomizableFieldMetadataDto> customizableFieldsMetadata;
-	private Map<String, CustomizableFieldValueDto> customizableFieldsValues;
+	private Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> customizableFieldsValues;
 
 	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix) {
 		this(type, propertyI18nPrefix, true, null, null);
@@ -168,9 +168,9 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 	 * The form will use this data to populate customizable field components.
 	 * 
 	 * @param values
-	 *            Map of customizable field values keyed by field metadata UUID, pre-loaded by the controller
+	 *            Map of customizable field values keyed by field metadata DTO, pre-loaded by the controller
 	 */
-	public void setCustomizableFieldsValues(Map<String, CustomizableFieldValueDto> values) {
+	public void setCustomizableFieldsValues(Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> values) {
 		this.customizableFieldsValues = values;
 	}
 
@@ -179,7 +179,7 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 	 * 
 	 * @return Map of customizable field values, or empty map if not set
 	 */
-	protected Map<String, CustomizableFieldValueDto> getCustomizableFieldsValues() {
+	protected Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> getCustomizableFieldsValues() {
 		return customizableFieldsValues != null ? customizableFieldsValues : new HashMap<>();
 	}
 

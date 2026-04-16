@@ -34,6 +34,8 @@ import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldContext;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataDto;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataFacade;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueCriteria;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueFacade;
@@ -54,6 +56,8 @@ public class CustomizableFieldValueFacadeEjb
 
 	@EJB
 	private CustomizableFieldMetadataService customizableFieldMetadataService;
+	@EJB
+	private CustomizableFieldMetadataFacade customizableFieldMetadataFacade;
 
 	public CustomizableFieldValueFacadeEjb() {
 	}
@@ -64,19 +68,40 @@ public class CustomizableFieldValueFacadeEjb
 	}
 
 	@Override
-	public Map<String, CustomizableFieldValueDto> getValuesForEntity(String entityUuid, CustomizableFieldContext contextClass) {
-		Map<String, CustomizableFieldValue> entities = service.getValuesForEntity(entityUuid, contextClass);
+	public void saveEntityCustomFields(
+		String entityUuid,
+		CustomizableFieldContext contextClass,
+		Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> fieldValues) {
+		saveEntityCustomFields(entityUuid, Map.of(contextClass, fieldValues));
+	}
 
-		Map<String, CustomizableFieldValueDto> result = new HashMap<>();
-		for (Map.Entry<String, CustomizableFieldValue> entry : entities.entrySet()) {
-			result.put(entry.getKey(), toDto(entry.getValue()));
+	@Override
+	public Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> getValuesForEntity(String entityUuid, CustomizableFieldContext contextClass) {
+		Map<CustomizableFieldMetadata, CustomizableFieldValue> entities = service.getValuesForEntity(entityUuid, contextClass);
+
+		Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> result = new HashMap<>();
+		for (Map.Entry<CustomizableFieldMetadata, CustomizableFieldValue> entry : entities.entrySet()) {
+			CustomizableFieldMetadataDto metadataDto = customizableFieldMetadataFacade.getByUuid(entry.getKey().getUuid());
+			result.put(metadataDto, toDto(entry.getValue()));
 		}
 		return result;
 	}
 
 	@Override
-	public void saveEntityCustomFields(String entityUuid, Map<CustomizableFieldContext, Map<String, CustomizableFieldValueDto>> fieldsByContext) {
-		fieldsByContext.forEach((context, fields) -> service.saveEntityValues(entityUuid, context, fields));
+	public void saveEntityCustomFields(
+		String entityUuid,
+		Map<CustomizableFieldContext, Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto>> fieldsByContext) {
+		fieldsByContext.forEach((context, fields) -> {
+			Map<CustomizableFieldMetadata, CustomizableFieldValueDto> entityFields = new HashMap<>();
+			for (Map.Entry<CustomizableFieldMetadataDto, CustomizableFieldValueDto> entry : fields.entrySet()) {
+				CustomizableFieldMetadata metadataEntity = customizableFieldMetadataService.getByUuid(entry.getKey().getUuid());
+				if (metadataEntity == null) {
+					throw new IllegalArgumentException("Field metadata not found: " + entry.getKey().getUuid());
+				}
+				entityFields.put(metadataEntity, entry.getValue());
+			}
+			service.saveEntityValues(entityUuid, context, entityFields);
+		});
 	}
 
 	@Override

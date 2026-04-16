@@ -30,27 +30,25 @@ public interface CustomizableFieldValueFacade
     extends CoreFacade<CustomizableFieldValueDto, CustomizableFieldValueDto, CustomizableFieldValueReferenceDto, CustomizableFieldValueCriteria> {
 
     /**
-     * Load all custom field values for a specific entity
-     * Returns a map of field metadata UUID -> field value DTO
+     * Load all custom field values for a specific entity.
+     * Returns a map of field metadata DTO -> field value DTO.
      */
-    Map<String, CustomizableFieldValueDto> getValuesForEntity(String entityUuid, CustomizableFieldContext contextClass);
+    Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> getValuesForEntity(String entityUuid, CustomizableFieldContext contextClass);
 
     /**
      * Save all custom field values for an entity in a single context.
-     * fieldValues: map of field metadata UUID -> value DTO (the raw string is read from {@link CustomizableFieldValueDto#getValue()})
+     * fieldValues: map of field metadata DTO -> value DTO (the raw string is read from {@link CustomizableFieldValueDto#getValue()})
      */
-    default void saveEntityCustomFields(
+    void saveEntityCustomFields(
         String entityUuid,
         CustomizableFieldContext contextClass,
-        Map<String, CustomizableFieldValueDto> fieldValues) {
-        saveEntityCustomFields(entityUuid, Map.of(contextClass, fieldValues));
-    }
+        Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> fieldValues);
 
     /**
      * Save all custom field values for an entity across multiple contexts in one call.
-     * fieldsByContext: map of context -> (field metadata UUID -> value DTO)
+     * fieldsByContext: map of context -> (field metadata DTO -> value DTO)
      */
-    void saveEntityCustomFields(String entityUuid, Map<CustomizableFieldContext, Map<String, CustomizableFieldValueDto>> fieldsByContext);
+    void saveEntityCustomFields(String entityUuid, Map<CustomizableFieldContext, Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto>> fieldsByContext);
 
     /**
      * Delete all custom field values for an entity
