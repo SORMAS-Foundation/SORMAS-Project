@@ -15567,9 +15567,12 @@ CREATE TABLE IF NOT EXISTS customizablefieldmetadata (
     uuid character varying(36) NOT NULL UNIQUE,
     changeDate timestamp without time zone NOT NULL DEFAULT NOW(),
     creationDate timestamp without time zone NOT NULL DEFAULT NOW(),
-    deleted boolean NOT NULL DEFAULT false,
+    deleted boolean DEFAULT false,
     deletionreason varchar(255),
     otherdeletionreason text,
+    archived boolean DEFAULT false,
+    archiveundonereason varchar(512),
+    endofprocessingdate timestamp without time zone,
 
     -- Core field metadata
     name character varying(512) NOT NULL,
@@ -15621,28 +15624,36 @@ ALTER INDEX idx_customizablefieldmetadata_deleted OWNER TO sormas_user;
 
 -- CustomizableFieldMetadata history tables
 CREATE TABLE customizablefieldmetadata_history (LIKE customizablefieldmetadata);
+
+DROP TRIGGER IF EXISTS versioning_trigger ON customizablefieldmetadata;
 CREATE TRIGGER versioning_trigger
 BEFORE INSERT OR UPDATE OR DELETE ON customizablefieldmetadata
 FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'customizablefieldmetadata_history', true);
-ALTER TABLE customizablefieldmetadata_history OWNER TO sormas_user;
 
 DROP TRIGGER IF EXISTS delete_history_trigger ON customizablefieldmetadata;
 CREATE TRIGGER delete_history_trigger
     AFTER DELETE ON customizablefieldmetadata
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('customizablefieldmetadata_history', 'id');
 
+ALTER TABLE customizablefieldmetadata_history OWNER TO sormas_user;
+
 -- Create CustomizableFieldValue table
+-- Partitioned by contextClass (LIST) matching CustomizableFieldContext enum values.
+-- A new partition must be added here whenever a new value is added to that enum.
 CREATE TABLE IF NOT EXISTS customizablefieldvalue (
     id bigint NOT NULL,
-    uuid character varying(36) NOT NULL UNIQUE,
+    uuid character varying(36) NOT NULL,
     changeDate timestamp(3) NOT NULL DEFAULT NOW(),
     creationDate timestamp(3) NOT NULL DEFAULT NOW(),
-    deleted boolean NOT NULL DEFAULT false,
+    deleted boolean DEFAULT false,
     deletionreason varchar(255),
     otherdeletionreason text,
+    archived boolean DEFAULT false,
+    archiveundonereason varchar(512),
+    endofprocessingdate timestamp without time zone,
 
     -- Fkey to metadata
-    customizablefieldmetadata_id bigint NOT NULL REFERENCES customizablefieldmetadata(id) ON DELETE CASCADE,
+    customizablefieldmetadata_id bigint NOT NULL,
 
     -- Generic entity reference
     entityUuid character varying(36) NOT NULL,
@@ -15653,10 +15664,22 @@ CREATE TABLE IF NOT EXISTS customizablefieldvalue (
 
     change_user_id     bigint,
     sys_period tstzrange NOT NULL,
-    
-    PRIMARY KEY (id),
+
+    PRIMARY KEY (id, contextClass),
+    UNIQUE(uuid, contextClass),
     UNIQUE(customizablefieldmetadata_id, entityUuid, contextClass)
-);
+) PARTITION BY LIST (contextClass);
+
+-- One partition per CustomizableFieldContext enum value
+CREATE TABLE customizablefieldvalue_case
+    PARTITION OF customizablefieldvalue
+    FOR VALUES IN ('CASE');
+CREATE TABLE customizablefieldvalue_epidata
+    PARTITION OF customizablefieldvalue
+    FOR VALUES IN ('EPIDATA');
+CREATE TABLE customizablefieldvalue_exposure
+    PARTITION OF customizablefieldvalue
+    FOR VALUES IN ('EXPOSURE');
 
 CREATE INDEX idx_customizablefieldvalue_uuid 
     ON customizablefieldvalue (uuid);
@@ -15669,8 +15692,6 @@ CREATE INDEX idx_customizablefieldvalue_fieldMetadata
 CREATE INDEX idx_customizablefieldvalue_deleted 
     ON customizablefieldvalue (deleted);
 
-ALTER TABLE customizablefieldvalue OWNER TO sormas_user;
-
 ALTER TABLE customizablefieldvalue 
     ADD CONSTRAINT fk_customizablefieldvalue_metadata 
     FOREIGN KEY (customizablefieldmetadata_id) 
@@ -15679,14 +15700,16 @@ ALTER TABLE customizablefieldvalue
 
 ALTER TABLE customizablefieldvalue ADD CONSTRAINT fk_change_user_id FOREIGN KEY (change_user_id) REFERENCES users (id);
 
-ALTER INDEX idx_customizablefieldvalue_uuid OWNER TO sormas_user;
-ALTER INDEX idx_customizablefieldvalue_entityUuid OWNER TO sormas_user;
-ALTER INDEX idx_customizablefieldvalue_contextEntity OWNER TO sormas_user;
-ALTER INDEX idx_customizablefieldvalue_fieldMetadata OWNER TO sormas_user;
-ALTER INDEX idx_customizablefieldvalue_deleted OWNER TO sormas_user;
+ALTER TABLE customizablefieldvalue_case OWNER TO sormas_user;
+ALTER TABLE customizablefieldvalue_epidata OWNER TO sormas_user;
+ALTER TABLE customizablefieldvalue_exposure OWNER TO sormas_user;
+ALTER TABLE customizablefieldvalue OWNER TO sormas_user;
 
 -- CustomizableFieldValue history tables
 CREATE TABLE customizablefieldvalue_history (LIKE customizablefieldvalue);
+
+
+DROP TRIGGER IF EXISTS versioning_trigger ON customizablefieldvalue;
 CREATE TRIGGER versioning_trigger
 BEFORE INSERT OR UPDATE OR DELETE ON customizablefieldvalue
 FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'customizablefieldvalue_history', true);
@@ -15697,7 +15720,6 @@ CREATE TRIGGER delete_history_trigger
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('customizablefieldvalue_history', 'id');
 
 ALTER TABLE customizablefieldvalue_history OWNER TO sormas_user;
-
 INSERT INTO schema_version (version_number, comment) VALUES (619, '#13828 - Add history tables for customizable fields');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

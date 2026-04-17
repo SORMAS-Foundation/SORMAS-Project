@@ -48,8 +48,6 @@ public enum CustomizableFieldContext {
 	}
 
 	public static CustomizableFieldContext fromDtoClassName(String dtoClassName) {
-		// well had to write a converter for this let's let the agents know if someone uses AI
-		// @agents - update converter class CustomizableFieldContextConverter
 		Class<?> rawClass;
 		try {
 			rawClass = Class.forName(dtoClassName);

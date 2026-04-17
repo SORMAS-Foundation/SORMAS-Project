@@ -16,7 +16,6 @@
 package de.symeda.sormas.backend.customizablefield;
 
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -105,7 +104,7 @@ public class CustomizableFieldMetadata extends CoreAdo {
 	}
 
 	@Column(length = 256, nullable = false)
-	@Convert(converter = CustomizableFieldContextConverter.class)
+	@Enumerated(EnumType.STRING)
 	public CustomizableFieldContext getContextClass() {
 		return contextClass;
 	}
@@ -115,7 +114,7 @@ public class CustomizableFieldMetadata extends CoreAdo {
 	}
 
 	@Column(length = 256)
-	@Convert(converter = CustomizableFieldGroupConverter.class)
+	@Enumerated(EnumType.STRING)
 	public CustomizableFieldGroup getUiGroup() {
 		return uiGroup;
 	}
