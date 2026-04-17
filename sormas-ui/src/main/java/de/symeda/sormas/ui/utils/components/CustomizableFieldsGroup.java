@@ -24,6 +24,7 @@ import java.util.Map;
 
 import com.vaadin.data.HasValue;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.customizablefield.CustomizableFieldGroup;
@@ -170,6 +171,7 @@ public class CustomizableFieldsGroup extends VerticalLayout {
 		fieldComponents.clear();
 
 		if (fieldsMetadata == null || fieldsMetadata.isEmpty()) {
+			setVisible(false);
 			return;
 		}
 
@@ -185,8 +187,11 @@ public class CustomizableFieldsGroup extends VerticalLayout {
 		}
 
 		if (groupFields.isEmpty()) {
+			setVisible(false);
 			return;
 		}
+
+		setVisible(true);
 
 		// Sort: non-null positions first (ascending), null positions last (stable)
 		groupFields.sort(Comparator.comparing(CustomizableFieldMetadataDto::getUiLinePosition, Comparator.nullsLast(Comparator.naturalOrder())));
@@ -239,6 +244,17 @@ public class CustomizableFieldsGroup extends VerticalLayout {
 			}
 
 			fieldComponents.put(metadata, field);
+		}
+
+		// When a single field has a weight < 1.0, expand ratio has no effect on a lone component.
+		// Add an invisible filler with the complementary ratio so the field takes only its proportional share.
+		if (lineFields.size() == 1) {
+			CustomizableFieldMetadataDto sole = lineFields.get(0);
+			if (sole.getUiLineWeight() != null && sole.getUiLineWeight() < 1.0f) {
+				Label filler = new Label();
+				row.addComponent(filler);
+				row.setExpandRatio(filler, 1.0f - sole.getUiLineWeight());
+			}
 		}
 
 		addComponent(row);
