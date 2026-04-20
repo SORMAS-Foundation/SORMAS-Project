@@ -29,6 +29,8 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldContext;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.exposure.ExposureDto;
@@ -38,6 +40,7 @@ import de.symeda.sormas.backend.activityascase.ActivityAsCase;
 import de.symeda.sormas.backend.activityascase.ActivityAsCaseService;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.customizablefield.CustomizableFieldValueService;
 import de.symeda.sormas.backend.exposure.Exposure;
 import de.symeda.sormas.backend.exposure.ExposureService;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
@@ -63,6 +66,18 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 	private UserService userService;
 	@EJB
 	private CountryService countryService;
+	@EJB
+	private CustomizableFieldValueService customizableFieldValueService;
+
+	public void softDeleteCustomizableFieldValues(EpiData epiData, DeletionDetails deletionDetails) {
+		if (epiData == null || epiData.getUuid() == null) {
+			return;
+		}
+		customizableFieldValueService.softDeleteValuesForEntity(epiData.getUuid(), CustomizableFieldContext.EPIDATA, deletionDetails);
+		for (Exposure exposure : epiData.getExposures()) {
+			customizableFieldValueService.softDeleteValuesForEntity(exposure.getUuid(), CustomizableFieldContext.EXPOSURE, deletionDetails);
+		}
+	}
 
 	public EpiData fillOrBuildEntity(EpiDataDto source, EpiData target, boolean checkChangeDate) {
 		if (source == null) {

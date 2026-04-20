@@ -1194,6 +1194,11 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>CUSTOMIZABLE_FIELD_MANAGEMENT</role-name>
+        <group-name>CUSTOMIZABLE_FIELD_MANAGEMENT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>SYSTEM_CONFIGURATION</role-name>
         <group-name>SYSTEM_CONFIGURATION</group-name>
     </security-role-mapping>
@@ -1218,12 +1223,12 @@
         <group-name>EPIPULSE_EXPORT_DELETE</group-name>
     </security-role-mapping>
 
-	<!-- SYSTEM ROLE -->
-	<security-role-mapping>
-		<role-name>SYSTEM</role-name>
-		<principal-name>SYSTEM</principal-name>
-	</security-role-mapping>
+    <!-- SYSTEM ROLE -->
+    <security-role-mapping>
+        <role-name>SYSTEM</role-name>
+        <principal-name>SYSTEM</principal-name>
+    </security-role-mapping>
 
-	<enterprise-beans></enterprise-beans>
-	<disable-nonportable-jndi-names>true</disable-nonportable-jndi-names>
+    <enterprise-beans></enterprise-beans>
+    <disable-nonportable-jndi-names>true</disable-nonportable-jndi-names>
 </glassfish-ejb-jar>

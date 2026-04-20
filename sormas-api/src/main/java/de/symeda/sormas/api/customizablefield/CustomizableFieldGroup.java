@@ -33,13 +33,34 @@ import java.util.List;
 public enum CustomizableFieldGroup {
 
 	// ---- CASE groups --------------------------------------------------------
-	CASE_TEST_GROUP_1(CustomizableFieldContext.CASE, "caseTestGroup1"),
-	CASE_TEST_GROUP_2(CustomizableFieldContext.CASE, "caseTestGroup2"),
+	CASE_DATA_GENERAL(CustomizableFieldContext.CASE, "caseDataGeneral"),
+	CASE_DATA_CLASSIFICATION(CustomizableFieldContext.CASE, "caseDataClassification"),
+	CASE_DATA_INVESTIGATION(CustomizableFieldContext.CASE, "caseDataInvestigation"),
+	CASE_DATA_IDENTIFIERS(CustomizableFieldContext.CASE, "caseDataIdentifiers"),
+	CASE_DATA_DISEASE(CustomizableFieldContext.CASE, "caseDataDisease"),
+	CASE_DATA_REINFECTION(CustomizableFieldContext.CASE, "caseDataReinfection"),
+	CASE_DATA_OUTCOME(CustomizableFieldContext.CASE, "caseDataOutcome"),
+	CASE_DATA_SEQUELAE(CustomizableFieldContext.CASE, "caseDataSequelae"),
+	CASE_DATA_JURISDICTION(CustomizableFieldContext.CASE, "caseDataJurisdiction"),
+	CASE_DATA_PLACE_OF_STAY(CustomizableFieldContext.CASE, "caseDataPlaceOfStay"),
+	CASE_DATA_QUARANTINE(CustomizableFieldContext.CASE, "caseDataQuarantine"),
+	CASE_DATA_REPORT_GEO(CustomizableFieldContext.CASE, "caseDataReportGeo"),
+	CASE_DATA_HEALTH_CONDITIONS(CustomizableFieldContext.CASE, "caseDataHealthConditions"),
+	CASE_DATA_DIAGNOSTIC(CustomizableFieldContext.CASE, "caseDataDiagnostic"),
+	CASE_DATA_MEDICAL_INFORMATION(CustomizableFieldContext.CASE, "caseDataMedicalInformation"),
+	CASE_DATA_VACCINATION(CustomizableFieldContext.CASE, "caseDataVaccination"),
+	CASE_DATA_CLINICIAN_NOTIFICATION(CustomizableFieldContext.CASE, "caseDataClinicianNotification"),
+	CASE_DATA_CONTACT_TRACING(CustomizableFieldContext.CASE, "caseDataContactTracing"),
 
 	// ---- EPIDATA groups -----------------------------------------------------
 	EPIDATA_EXPOSURE_INVESTIGATION(CustomizableFieldContext.EPIDATA, "exposureInvestigation"),
 	EPIDATA_ACTIVITY_AS_CASE(CustomizableFieldContext.EPIDATA, "activityAsCase"),
-	EPIDATA_CONTACT_WITH_SOURCE_CASE(CustomizableFieldContext.EPIDATA, "contactWithSourceCase");
+	EPIDATA_CONTACT_WITH_SOURCE_CASE(CustomizableFieldContext.EPIDATA, "contactWithSourceCase"),
+
+	// ---- EXPOSURE groups ----------------------------------------------------
+	EXPOSURE_DETAILS(CustomizableFieldContext.EXPOSURE, "exposureDetails"),
+	EXPOSURES_GENERAL(CustomizableFieldContext.EXPOSURE, "exposuresGeneral"),
+	LOCATION_GENERAL(CustomizableFieldContext.EXPOSURE, "locationGeneral");
 
 	private final CustomizableFieldContext context;
 	/**

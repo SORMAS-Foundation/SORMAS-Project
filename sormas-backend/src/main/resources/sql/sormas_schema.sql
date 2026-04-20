@@ -15722,4 +15722,9 @@ CREATE TRIGGER delete_history_trigger
 ALTER TABLE customizablefieldvalue_history OWNER TO sormas_user;
 INSERT INTO schema_version (version_number, comment) VALUES (619, '#13828 - Add history tables for customizable fields');
 
+-- #13828 - Customizable Fields - Admin user rights
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'CUSTOMIZABLE_FIELD_MANAGEMENT' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN');
+
+INSERT INTO schema_version (version_number, comment) VALUES (620, '#13828 - Add system configuration rights for admin user');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
