@@ -15638,11 +15638,9 @@ CREATE TRIGGER delete_history_trigger
 ALTER TABLE customizablefieldmetadata_history OWNER TO sormas_user;
 
 -- Create CustomizableFieldValue table
--- Partitioned by contextClass (LIST) matching CustomizableFieldContext enum values.
--- A new partition must be added here whenever a new value is added to that enum.
 CREATE TABLE IF NOT EXISTS customizablefieldvalue (
     id bigint NOT NULL,
-    uuid character varying(36) NOT NULL,
+    uuid character varying(36) NOT NULL UNIQUE,
     changeDate timestamp(3) NOT NULL DEFAULT NOW(),
     creationDate timestamp(3) NOT NULL DEFAULT NOW(),
     deleted boolean DEFAULT false,
@@ -15664,22 +15662,10 @@ CREATE TABLE IF NOT EXISTS customizablefieldvalue (
 
     change_user_id     bigint,
     sys_period tstzrange NOT NULL,
-
-    PRIMARY KEY (id, contextClass),
-    UNIQUE(uuid, contextClass),
+    
+    PRIMARY KEY (id),
     UNIQUE(customizablefieldmetadata_id, entityUuid, contextClass)
-) PARTITION BY LIST (contextClass);
-
--- One partition per CustomizableFieldContext enum value
-CREATE TABLE customizablefieldvalue_case
-    PARTITION OF customizablefieldvalue
-    FOR VALUES IN ('CASE');
-CREATE TABLE customizablefieldvalue_epidata
-    PARTITION OF customizablefieldvalue
-    FOR VALUES IN ('EPIDATA');
-CREATE TABLE customizablefieldvalue_exposure
-    PARTITION OF customizablefieldvalue
-    FOR VALUES IN ('EXPOSURE');
+);
 
 CREATE INDEX idx_customizablefieldvalue_uuid 
     ON customizablefieldvalue (uuid);
@@ -15692,22 +15678,11 @@ CREATE INDEX idx_customizablefieldvalue_fieldMetadata
 CREATE INDEX idx_customizablefieldvalue_deleted 
     ON customizablefieldvalue (deleted);
 
-ALTER TABLE customizablefieldvalue 
-    ADD CONSTRAINT fk_customizablefieldvalue_metadata 
-    FOREIGN KEY (customizablefieldmetadata_id) 
-    REFERENCES customizablefieldmetadata(id) 
-    ON DELETE CASCADE;
-
 ALTER TABLE customizablefieldvalue ADD CONSTRAINT fk_change_user_id FOREIGN KEY (change_user_id) REFERENCES users (id);
-
-ALTER TABLE customizablefieldvalue_case OWNER TO sormas_user;
-ALTER TABLE customizablefieldvalue_epidata OWNER TO sormas_user;
-ALTER TABLE customizablefieldvalue_exposure OWNER TO sormas_user;
 ALTER TABLE customizablefieldvalue OWNER TO sormas_user;
 
 -- CustomizableFieldValue history tables
 CREATE TABLE customizablefieldvalue_history (LIKE customizablefieldvalue);
-
 
 DROP TRIGGER IF EXISTS versioning_trigger ON customizablefieldvalue;
 CREATE TRIGGER versioning_trigger
