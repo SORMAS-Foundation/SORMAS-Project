@@ -15627,7 +15627,7 @@ CREATE TABLE customizablefieldmetadata_history (LIKE customizablefieldmetadata);
 
 DROP TRIGGER IF EXISTS versioning_trigger ON customizablefieldmetadata;
 CREATE TRIGGER versioning_trigger
-BEFORE INSERT OR UPDATE OR DELETE ON customizablefieldmetadata
+BEFORE INSERT OR UPDATE ON customizablefieldmetadata
 FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'customizablefieldmetadata_history', true);
 
 DROP TRIGGER IF EXISTS delete_history_trigger ON customizablefieldmetadata;
@@ -15686,7 +15686,7 @@ CREATE TABLE customizablefieldvalue_history (LIKE customizablefieldvalue);
 
 DROP TRIGGER IF EXISTS versioning_trigger ON customizablefieldvalue;
 CREATE TRIGGER versioning_trigger
-BEFORE INSERT OR UPDATE OR DELETE ON customizablefieldvalue
+BEFORE INSERT OR UPDATE ON customizablefieldvalue
 FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'customizablefieldvalue_history', true);
 
 DROP TRIGGER IF EXISTS delete_history_trigger ON customizablefieldvalue;
