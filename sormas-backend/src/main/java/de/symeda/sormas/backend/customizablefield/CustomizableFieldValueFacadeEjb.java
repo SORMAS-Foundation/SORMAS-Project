@@ -35,13 +35,13 @@ import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldContext;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataDto;
-import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataFacade;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueCriteria;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueFacade;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueReferenceDto;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
+import de.symeda.sormas.backend.customizablefield.CustomizableFieldMetadataFacadeEjb.CustomizableFieldMetadataFacadeEjbLocal;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
@@ -57,7 +57,7 @@ public class CustomizableFieldValueFacadeEjb
 	@EJB
 	private CustomizableFieldMetadataService customizableFieldMetadataService;
 	@EJB
-	private CustomizableFieldMetadataFacade customizableFieldMetadataFacade;
+	private CustomizableFieldMetadataFacadeEjbLocal customizableFieldMetadataFacade;
 
 	public CustomizableFieldValueFacadeEjb() {
 	}
