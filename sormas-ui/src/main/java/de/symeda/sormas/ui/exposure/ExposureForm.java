@@ -27,8 +27,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.vaadin.icons.VaadinIcons;
@@ -50,6 +52,10 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldGroup;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataDto;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldVisibilityContext;
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.event.MeansOfTransport;
@@ -87,12 +93,16 @@ import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
+import de.symeda.sormas.ui.utils.components.CustomizableFieldsGroup;
 
 public class ExposureForm extends AbstractEditForm<ExposureDto> {
 
 	private static final long serialVersionUID = 8262753698264714832L;
 
 	public static final String MAIN_ACCORDION_LOC = "mainAccordionLoc";
+	private static final String LOC_CUSTOMIZABLE_FIELDS_EXPOSURE_DETAILS = CustomizableFieldGroup.EXPOSURE_DETAILS.getKey();
+	private static final String LOC_CUSTOMIZABLE_FIELDS_EXPOSURES_GENERAL = CustomizableFieldGroup.EXPOSURES_GENERAL.getKey();
+	private static final String LOC_CUSTOMIZABLE_FIELDS_LOCATION_GENERAL = CustomizableFieldGroup.LOCATION_GENERAL.getKey();
 	private static final String LOC_EXPOSURES_HEADING = "locExposuresHeading";
 	private static final String LOC_EXPOSURE_DETAILS_HEADING = "locExposureDetailsHeading";
 	private static final String LOC_LOCATION_HEADING = "locLocationHeading";
@@ -100,13 +110,14 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	private static final String LOC_BURIAL_DETAILS_HEADING = "locBurialDetailsHeading";
 	private static final String LOC_CONCLUSION_HEADING = "locConclusionHeading";
 
-	//@formatter:off
 	public static final String MAIN_ACCORDION_LAYOUT = fluidRowLocs(MAIN_ACCORDION_LOC);
 
 	private static final String UUID_REPORTING_USER = fluidRowLocs(ExposureDto.UUID, ExposureDto.REPORTING_USER);
 
+	//@formatter:off
 	private static final String EXPOSURE_DETAILS_LAYOUT =
 			fluidRowLocs(ExposureDto.START_DATE, ExposureDto.END_DATE) +
+					loc(LOC_CUSTOMIZABLE_FIELDS_EXPOSURE_DETAILS) +
 					loc(LOC_EXPOSURES_HEADING) +
 					fluidRowLocs(ExposureDto.EXPOSURE_CATEGORY, ExposureDto.EXPOSURE_SETTING, ExposureDto.EXPOSURE_SETTING_DETAILS) +
 					fluidRow(
@@ -135,6 +146,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 									ExposureDto.PROTECTIVE_MEASURE_DETAILS
 							))
 					) +
+					loc(LOC_CUSTOMIZABLE_FIELDS_EXPOSURES_GENERAL) +
 					loc(ExposureDto.DESCRIPTION);
 	
 	private static final String ACTIVITY_DETAILS_LAYOUT =
@@ -203,7 +215,8 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			) +
 			loc(ExposureDto.MEANS_OF_TRANSPORT_DETAILS) +
 			fluidRowLocs(ExposureDto.CONNECTION_NUMBER, ExposureDto.SEAT_NUMBER) +
-			loc(ExposureDto.LOCATION);
+			loc(ExposureDto.LOCATION)+
+			loc(LOC_CUSTOMIZABLE_FIELDS_LOCATION_GENERAL);
 	//@formatter:on
 
 	private final Class<? extends EntityDto> epiDataParentClass;
@@ -237,13 +250,19 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	private TextField animalCategoryDetailsField;
 	private NullableOptionGroup fomiteTransmissionLocationField;
 
+	private CustomizableFieldsGroup exposureDetailsPanel;
+	private CustomizableFieldsGroup exposuresGeneralPanel;
+	private CustomizableFieldsGroup locationGeneralPanel;
+
 	public ExposureForm(
 		boolean create,
 		Class<? extends EntityDto> epiDataParentClass,
 		List<ContactReferenceDto> sourceContacts,
 		FieldVisibilityCheckers fieldVisibilityCheckers,
-		UiFieldAccessCheckers fieldAccessCheckers,
-		Disease disease) {
+		UiFieldAccessCheckers<?> fieldAccessCheckers,
+		Disease disease,
+		List<CustomizableFieldMetadataDto> customizableFieldsMetadata,
+		Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> customizableFieldsValues) {
 		super(ExposureDto.class, ExposureDto.I18N_PREFIX, false, fieldVisibilityCheckers, fieldAccessCheckers);
 
 		setWidth(960, Unit.PIXELS);
@@ -251,6 +270,9 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		this.sourceContacts = sourceContacts;
 		this.epiDataParentClass = epiDataParentClass;
 		this.disease = disease;
+
+		setCustomizableFieldsMetadata(customizableFieldsMetadata);
+		setCustomizableFieldsValues(customizableFieldsValues);
 
 		if (create) {
 			hideValidationUntilNextCommit();
@@ -275,13 +297,35 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		locationDetailsLayout.setTemplateContents(LOCATION_DETAILS_LAYOUT);
 
 		addHeadingsAndInfoTexts();
+
+		exposureDetailsPanel = new CustomizableFieldsGroup(CustomizableFieldGroup.EXPOSURE_DETAILS);
+		exposureDetailsPanel.setVisibilityContext(new CustomizableFieldVisibilityContext().withDisease(disease));
+		exposureDetailsPanel.setFieldsMetadata(getCustomizableFieldsMetadata());
+		exposureDetailsPanel.setFieldsValues(getCustomizableFieldsValues());
+		exposureDetailsPanel.updateFieldsDisplay();
+		exposureDetailsLayout.addComponent(exposureDetailsPanel, LOC_CUSTOMIZABLE_FIELDS_EXPOSURE_DETAILS);
+
 		addBasicFields();
+
+		exposuresGeneralPanel = new CustomizableFieldsGroup(CustomizableFieldGroup.EXPOSURES_GENERAL);
+		exposuresGeneralPanel.setVisibilityContext(new CustomizableFieldVisibilityContext().withDisease(disease));
+		exposuresGeneralPanel.setFieldsMetadata(getCustomizableFieldsMetadata());
+		exposuresGeneralPanel.setFieldsValues(getCustomizableFieldsValues());
+		exposuresGeneralPanel.updateFieldsDisplay();
+		exposureDetailsLayout.addComponent(exposuresGeneralPanel, LOC_CUSTOMIZABLE_FIELDS_EXPOSURES_GENERAL);
 
 		addField(exposureDetailsLayout, ExposureDto.DESCRIPTION, TextArea.class).setRows(5);
 
 		locationForm = addField(locationDetailsLayout, ExposureDto.LOCATION, LocationEditForm.class);
 		locationForm.setCaption(null);
 		addField(locationDetailsLayout, ExposureDto.CONNECTION_NUMBER, TextField.class);
+
+		locationGeneralPanel = new CustomizableFieldsGroup(CustomizableFieldGroup.LOCATION_GENERAL);
+		locationGeneralPanel.setVisibilityContext(new CustomizableFieldVisibilityContext().withDisease(disease));
+		locationGeneralPanel.setFieldsMetadata(getCustomizableFieldsMetadata());
+		locationGeneralPanel.setFieldsValues(getCustomizableFieldsValues());
+		locationGeneralPanel.updateFieldsDisplay();
+		locationDetailsLayout.addComponent(locationGeneralPanel, LOC_CUSTOMIZABLE_FIELDS_LOCATION_GENERAL);
 		getField(ExposureDto.MEANS_OF_TRANSPORT).addValueChangeListener(e -> {
 			if (e.getProperty().getValue() == MeansOfTransport.PLANE) {
 				getField(ExposureDto.CONNECTION_NUMBER).setCaption(I18nProperties.getCaption(Captions.exposureFlightNumber));
@@ -913,6 +957,23 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			Field<?> field = addField(layout, propertyId, fieldType);
 			CssStyles.style(field, styles);
 		}
+	}
+
+	public Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> collectCurrentFieldValues() {
+		Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> result = new HashMap<>();
+		for (CustomizableFieldsGroup panel : new CustomizableFieldsGroup[] {
+			exposureDetailsPanel,
+			exposuresGeneralPanel,
+			locationGeneralPanel }) {
+			if (panel != null) {
+				panel.getFieldsValues().forEach((metadata, valueDto) -> {
+					if (valueDto != null) {
+						result.put(metadata, valueDto);
+					}
+				});
+			}
+		}
+		return result;
 	}
 
 	@Override

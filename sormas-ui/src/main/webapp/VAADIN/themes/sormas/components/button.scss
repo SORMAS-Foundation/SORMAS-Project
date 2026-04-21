@@ -1,96 +1,150 @@
-
 @mixin sormas-button {
 
   .v-button {
     text-transform: uppercase;
     border-color: $v-selection-color;
     box-shadow: none;
-  
-  	&.v-button-link {
-  	  text-transform: none;
-  	}
+
+    &.v-button-link {
+      text-transform: none;
+    }
 
     &.v-button-caption-overflow-label {
       text-overflow: ellipsis;
       overflow: hidden;
     }
-  
-  	&.v-button-font-size-large {
-  	  font-size: 1.5em;
-  	}  
-  
-    &.v-button-subtle {
-  	  background-color: inherit;
+
+    &.v-button-font-size-large {
+      font-size: 1.5em;
     }
- 
+
+    &.v-button-subtle {
+      background-color: inherit;
+    }
+
     &.v-button-border-neutral {
-  	  border-color: #000000;
+      border-color: #000000;
     }
 
     &.v-button-compact {
-  	  padding: 0px;
-  	  height: auto;
+      padding: 0px;
+      height: auto;
     }
- 
+
     &.v-button-danger,
     &.v-button-critical {
       @include valo-button-style($background-color: $s-critical-color);
       border-color: darken($s-critical-color, 25%)
     }
- 
+
     &.v-button-warning {
       @include valo-button-style($background-color: $s-warning-color);
       border-color: darken($s-warning-color, 25%)
     }
-   
+
     &.v-button-filter {
       background-color: $v-focus-color;
       text-decoration: none;
       text-transform: none;
-  	  font-weight: bold;
+      font-weight: bold;
       color: $v-font-color;
-      
+
       &.v-button-filter-light {
         background-color: $v-focus-light-color;
-        
+
         &:hover {
           background-color: $v-focus-color;
         }
-       
+
         &.v-disabled {
-          background-color: $v-focus-light-color;	
+          background-color: $v-focus-light-color;
         }
       }
-     
+
       &.v-button-filter-dark {
-      	background-color: $s-primary-color;
-      	color: #FFFFFF;
+        background-color: $s-primary-color;
+        color: #FFFFFF;
       }
-     
+
       &.v-button-filter-enabled {
-      	background-color: #2eb82e;
-      	  color: #FFFFFF;
-      	
-      	&:hover {
-      	  background-color: #248f24;
-      	}
+        background-color: #2eb82e;
+        color: #FFFFFF;
+
+        &:hover {
+          background-color: #248f24;
+        }
       }
-     
+
       &.v-button-filter-disabled {
-      	background-color: #C8C8C8;
-      	
-      	&:hover {
-      	  background-color: #B8B8B8;
-      	}
+        background-color: #C8C8C8;
+
+        &:hover {
+          background-color: #B8B8B8;
+        }
       }
-     
+
       &.v-button-filter-small {
-      	height: 26px;
-      	padding: 0px 7px;
+        height: 26px;
+        padding: 0px 7px;
       }
     }
-    &.v-button-vertical-align-top, .vertical-align-top {
+
+    &.v-button-vertical-align-top,
+    .vertical-align-top {
       vertical-align: top;
+    }
+  }
+
+  // Segmented button group used for YesNoUnknown fields — matches the NullableOptionGroup horizontal style.
+  .v-horizontallayout.yes-no-unknown-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    .v-slot {
+      margin-right: -2px;
+    }
+
+    .v-button {
+      border: $v-border;
+      border-radius: 0;
+      background: $v-app-background-color;
+      box-shadow: none;
+      font-size: 11px;
+      text-transform: uppercase;
+      height: 28px;
+      padding: 0;
+      min-width: 0;
+
+      .v-button-wrap {
+        padding: 4px 8px;
+        height: 28px;
+        line-height: 20px;
+      }
+
+      &:first-child {
+        border-radius: 4px 0 0 4px;
+      }
+
+      &:last-child {
+        border-radius: 0 4px 4px 0;
+      }
+
+      &.yes-no-unknown-selected {
+        background: $v-focus-color;
+
+        .v-button-wrap {
+          padding: 4px 8px;
+        }
+      }
+
+      &:hover:not(.v-disabled) {
+        background: darken($v-focus-color, 8%);
+      }
+
+      &.v-disabled {
+        opacity: $v-disabled-opacity;
+      }
     }
   }
 }
