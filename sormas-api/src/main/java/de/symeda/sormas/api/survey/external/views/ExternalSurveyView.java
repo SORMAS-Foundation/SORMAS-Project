@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.survey.external.views;
 
+import java.io.Serializable;
 import java.util.List;
 
 import de.symeda.sormas.api.audit.AuditedClass;
@@ -8,7 +9,9 @@ import de.symeda.sormas.api.audit.AuditedClass;
  * View used to display an external Survey in an tool-agnostic manner.
  */
 @AuditedClass
-public class ExternalSurveyView {
+public class ExternalSurveyView implements Serializable {
+
+	private static final long serialVersionUID = 1448651469231018412L;
 
 	private List<QuestionAnswersView> questionAnswersViews;
 

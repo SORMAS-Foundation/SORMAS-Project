@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.survey.external.views;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -9,7 +10,9 @@ import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class QuestionAnswersView {
+public class QuestionAnswersView implements Serializable {
+
+	private static final long serialVersionUID = -1635618566991671402L;
 
 	@NotNull
 	private String question;

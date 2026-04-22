@@ -83,6 +83,7 @@ import de.symeda.sormas.api.externalmessage.NewMessagesState;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult;
 import de.symeda.sormas.api.externalmessage.survey.ExternalSurveyResponseData;
+import de.symeda.sormas.api.externalmessage.survey.SurveyAsExternalMessageAdapterFacade;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
@@ -138,6 +139,7 @@ import de.symeda.sormas.backend.util.RightsAllowed;
 public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 	public static final String SURVEY_PERIOD_INTERVAL_HOURS = "SURVEY_PERIOD_INTERVAL_HOURS";
+	private static final String SURVEY_AS_EXTERNAL_MESSAGE_ADAPTER_JNDI_KEY = "SURVEY_AS_EXTERNAL_MESSAGE_ADAPTER_JNDI_KEY";
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -338,7 +340,9 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 			since = DateHelper.addSeconds(new Date(), -(hoursRange * 3600));
 		}
 
-		ExternalMessageAdapterFacade externalLabResultsFacade = getSurveyExternalMessageFacade();
+		logger.error("Since date: [{}]", since);
+
+		ExternalMessageAdapterFacade externalLabResultsFacade = getExternalSurveyProviderFacade();
 		ExternalMessageResult<List<ExternalMessageDto>> externalMessagesResult = externalLabResultsFacade.getExternalMessages(since);
 		List<ExternalMessageDto> surveyResponses = externalMessagesResult.getValue();
 		List<ExternalMessageDto> savedDtos;
@@ -871,6 +875,18 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 			return (ExternalMessageAdapterFacade) ic.lookup(jndiName);
 		} catch (NamingException e) {
 			throw new RuntimeException("Could not create of instance of SurveyExternalMessageFacade", e);
+		}
+	}
+
+	private SurveyAsExternalMessageAdapterFacade getExternalSurveyProviderFacade() {
+		String jndiName = Optional.ofNullable(systemConfigurationValueFacade.getValue(SURVEY_AS_EXTERNAL_MESSAGE_ADAPTER_JNDI_KEY)).orElseGet(() -> {
+			logger.info("External Survey Provider JNDI Key not found, using default");
+			return "java:global/sormas-esante-adapter/NgSurveyProviderFacade";
+		});
+		try {
+			return (SurveyAsExternalMessageAdapterFacade) new InitialContext().lookup(jndiName);
+		} catch (NamingException e) {
+			throw new RuntimeException("Could not look up SurveyAsExternalMessageAdapterFacade via JNDI: " + jndiName, e);
 		}
 	}
 

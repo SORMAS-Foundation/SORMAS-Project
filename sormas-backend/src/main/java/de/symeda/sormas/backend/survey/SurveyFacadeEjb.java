@@ -441,6 +441,7 @@ public class SurveyFacadeEjb implements SurveyFacade {
 
 		target.setName(source.getName());
 		target.setDisease(source.getDisease());
+		target.setExternalId(source.getExternalId());
 
 		return target;
 	}
@@ -457,6 +458,7 @@ public class SurveyFacadeEjb implements SurveyFacade {
 		target.setDisease(source.getDisease());
 		target.setDocumentTemplate(DocumentTemplateFacadeEjb.toReferenceDto(source.getDocumentTemplate()));
 		target.setEmailTemplate(DocumentTemplateFacadeEjb.toReferenceDto(source.getEmailTemplate()));
+		target.setExternalId(source.getExternalId());
 
 		return target;
 	}

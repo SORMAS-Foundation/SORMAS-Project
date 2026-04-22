@@ -26,9 +26,8 @@ import com.vaadin.v7.data.Validator;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.externalmessage.ExternalMessageCriteria;
-import de.symeda.sormas.api.externalmessage.ExternalMessageFetchResult;
+import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
-import de.symeda.sormas.api.externalmessage.NewMessagesState;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
@@ -295,11 +294,18 @@ public class ExternalMessagesView extends AbstractView {
 	}
 
 	private void fetchExternalMessages(Date since) {
-		ExternalMessageFetchResult fetchResult = FacadeProvider.getExternalMessageFacade().fetchAndSaveExternalMessages(since);
-		if (!fetchResult.isSuccess()) {
-			VaadinUiUtil.showWarningPopup(fetchResult.getError());
-		} else if (NewMessagesState.NO_NEW_MESSAGES.equals(fetchResult.getNewMessagesState())) {
-			VaadinUiUtil.showWarningPopup(I18nProperties.getCaption(Captions.externalMessageNoNewMessages));
+//		ExternalMessageFetchResult fetchResult = FacadeProvider.getExternalMessageFacade().saveAndProcessSurveyResponses();
+//		if (!fetchResult.isSuccess()) {
+//			VaadinUiUtil.showWarningPopup(fetchResult.getError());
+//		} else if (NewMessagesState.NO_NEW_MESSAGES.equals(fetchResult.getNewMessagesState())) {
+//			VaadinUiUtil.showWarningPopup(I18nProperties.getCaption(Captions.externalMessageNoNewMessages));
+//		} else {
+//			grid.reload();
+//		}
+
+		List<ExternalMessageDto> fetchResult = FacadeProvider.getExternalMessageFacade().saveAndProcessSurveyResponses();
+		if (!fetchResult.isEmpty()) {
+			VaadinUiUtil.showWarningPopup(String.format("No new messages: [%s]", fetchResult));
 		} else {
 			grid.reload();
 		}

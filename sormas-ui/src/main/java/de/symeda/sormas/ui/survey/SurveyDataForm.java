@@ -20,6 +20,7 @@ public class SurveyDataForm extends AbstractEditForm<SurveyDto> {
 	//@formatter:off
 	private static final String HTML_LAYOUT =
 			fluidRowLocs(SurveyDto.SURVEY_NAME, "") + fluidRowLocs(SurveyDto.DISEASE, "")
+			+ fluidRowLocs(SurveyDto.EXTERNAL_ID, "")
 			+ fluidRowLocs(SURVEY_DOCUMENT_SECTION, "");
 	//@formatter:on
 

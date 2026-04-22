@@ -15,10 +15,13 @@
 
 package de.symeda.sormas.ui.configuration.infrastructure;
 
+import java.io.IOException;
+
 import com.opencsv.exceptions.CsvValidationException;
 import com.vaadin.server.ClassResource;
 import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -30,10 +33,8 @@ import de.symeda.sormas.ui.importer.DataImporter;
 import de.symeda.sormas.ui.importer.ImportReceiver;
 import de.symeda.sormas.ui.importer.SurveyTokenImporter;
 
-import java.io.IOException;
-
+// TODO: this is entry point to understand
 public class ImportSurveyTokensLayout extends AbstractImportLayout {
-
 
 	public ImportSurveyTokensLayout(SurveyDto survey) {
 		super();
@@ -48,18 +49,14 @@ public class ImportSurveyTokensLayout extends AbstractImportLayout {
 		addImportCsvComponent(3, new ImportReceiver(fileNameAddition, file -> {
 			resetDownloadErrorReportButton();
 			try {
-				DataImporter importer = new SurveyTokenImporter(
-						file,
-						currentUser,
-						survey,
-						(ValueSeparator) separator.getValue());
+				DataImporter importer = new SurveyTokenImporter(file, currentUser, survey, (ValueSeparator) separator.getValue());
 				importer.startImport(this::extendDownloadErrorReportButton, currentUI, false);
 			} catch (IOException | CsvValidationException e) {
 				new Notification(
-						I18nProperties.getString(Strings.headingImportFailed),
-						I18nProperties.getString(Strings.messageImportFailed),
-						Notification.Type.ERROR_MESSAGE,
-						false).show(Page.getCurrent());
+					I18nProperties.getString(Strings.headingImportFailed),
+					I18nProperties.getString(Strings.messageImportFailed),
+					Notification.Type.ERROR_MESSAGE,
+					false).show(Page.getCurrent());
 			}
 		}));
 		addDownloadErrorReportComponent(4);

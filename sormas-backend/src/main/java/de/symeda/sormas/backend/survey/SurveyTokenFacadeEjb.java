@@ -303,6 +303,7 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 		target.setRecipientEmail(source.getRecipientEmail());
 		target.setResponseReceived(source.isResponseReceived());
 		target.setResponseReceivedDate(source.getResponseReceivedDate());
+		target.setExternalRespondentId(source.getExternalRespondentId());
 
 		return target;
 	}
@@ -356,7 +357,7 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 	private ExternalSurveyProviderFacade getExternalSurveyProviderFacade() {
 		String jndiName = Optional.ofNullable(systemConfigurationValueFacade.getValue(EXTERNAL_SURVEY_PROVIDER_JNDI_KEY)).orElseGet(() -> {
 			logger.info("External Survey Provider JNDI Key not found, using default");
-			return "interface.externalMessageAdapter.jndiName=java:global/sormas-esante-adapter/NgSurveyMessageFacade";
+			return "java:global/sormas-esante-adapter/NgSurveyProviderFacade";
 		});
 		try {
 			return (ExternalSurveyProviderFacade) new InitialContext().lookup(jndiName);

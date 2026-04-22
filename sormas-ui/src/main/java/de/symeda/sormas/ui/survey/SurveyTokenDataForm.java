@@ -28,7 +28,8 @@ public class SurveyTokenDataForm extends AbstractEditForm<SurveyTokenDto> {
 	private static final String HTML_LAYOUT = fluidRowLocs(SurveyTokenDto.UUID, SurveyTokenDto.TOKEN)
 		+ fluidRowLocs(SurveyTokenDto.SURVEY, "")
 		+ fluidRowLocs(SurveyTokenDto.ASSIGNMENT_DATE, SurveyTokenDto.RECIPIENT_EMAIL)
-		+ fluidRowLocs(SurveyTokenDto.RESPONSE_RECEIVED, SurveyTokenDto.RESPONSE_RECEIVED_DATE);
+		+ fluidRowLocs(SurveyTokenDto.RESPONSE_RECEIVED, SurveyTokenDto.RESPONSE_RECEIVED_DATE)
+		+ fluidRowLocs(SurveyTokenDto.EXTERNAL_RESPONDENT_ID);
 
 	private SurveyTokenReferenceDto surveyTokenReference;
 
