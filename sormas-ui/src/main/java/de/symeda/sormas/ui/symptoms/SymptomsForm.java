@@ -530,7 +530,6 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			GUILLAIN_BARRE_SYNDROME,
 			LETHARGY,
 			CONFUSION,
-			CONVULSIONS,
 			PERSISTENT_VOMITING,
 			RESTLESSNESS,
 			ACUTE_BLEEDING,
@@ -865,7 +864,6 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			GUILLAIN_BARRE_SYNDROME,
 			LETHARGY,
 			CONFUSION,
-			CONVULSIONS,
 			PERSISTENT_VOMITING,
 			RESTLESSNESS,
 			SEVERE_ORGAN_IMPAIRMENT,
@@ -1332,7 +1330,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		List<String> allPropertyIds =
 			Stream.concat(unconditionalSymptomFieldIds.stream(), conditionalBleedingSymptomFieldIds.stream()).collect(Collectors.toList());
 		allPropertyIds.add(LESIONS_THAT_ITCH);
-
+		allPropertyIds.add(OTHER_COMPLICATIONS_TEXT);
 		for (Object sourcePropertyId : allPropertyIds) {
 			Field sourceField = getFieldGroup().getField(sourcePropertyId);
 			sourceField.addValueChangeListener(event -> {
@@ -1355,8 +1353,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				// If the symptom status set to Yes, it should be updated in the complications section,
 				// otherwise delete it from the complications section.
 				if (caseSymptomSideViewComponent != null) {
-					caseSymptomSideViewComponent
-						.toggleComplicationSymptom(sourceField.getId(), FieldHelper.getNullableSourceFieldValue(sourceField) == SymptomState.YES);
+					caseSymptomSideViewComponent.toggleComplicationSymptom(sourceField);
 					caseSymptomSideViewComponent.refreshLayout();
 				}
 				// If any one of the symptoms is set to yes, then the ClinicalManifestation field should be defaulting to "Disease with sign of severity (WHO definition)"

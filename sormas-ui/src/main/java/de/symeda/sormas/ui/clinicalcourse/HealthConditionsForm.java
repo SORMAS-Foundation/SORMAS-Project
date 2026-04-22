@@ -21,8 +21,10 @@ import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.HIV;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.HIV_ART;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.I18N_PREFIX;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.IMMUNODEFICIENCY_INCLUDING_HIV;
-import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.IMMUNODEFICIENCY_OTHER_THAN_HIV_TEXT;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.IMMUNODEFICIENCY_OTHER_THAN_HIV;
+import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.IMMUNODEFICIENCY_OTHER_THAN_HIV_TEXT;
+import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.MALARIA;
+import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.MALARIA_INFECTED_YEAR;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.MALIGNANCY_CHEMOTHERAPY;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.OBESITY;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.OTHER_CONDITIONS;
@@ -49,7 +51,6 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.ui.AbstractSelect;
-import com.vaadin.v7.ui.AbstractTextField;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextArea;
@@ -64,13 +65,11 @@ import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -87,6 +86,7 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 
 	//@formatter:off
 	public static final String TB_INFECTION_YEAR_LAYOUT = fluidRowLocs(6, "LBL_TUBERCULOSIS_INFECTION_YEAR", 6, TUBERCULOSIS_INFECTION_YEAR);
+	public static final String MALARIA_YEAR_LAYOUT = fluidRowLocs(7, "LBL_MALARIA_INFECTED_YEAR", 5, MALARIA_INFECTED_YEAR);
 	public static final String TBA_LAYOUT = fluidRowLocs(6, "LBL_COMPLIANCE_WITH_TREATMENT", 6, COMPLIANCE_WITH_TREATMENT);
 	public static final String IMMUNODEFICIENCY_LAYOUT = fluidRowLocs(7, "LBL_IMMUNODEFICIENCY", 5, IMMUNODEFICIENCY_OTHER_THAN_HIV_TEXT);
 	public static final String EXPOSED_TO_MOSQUITO_BORNE_VIRUSES_LAYOUT = fluidRowLocs(7, "LBL_EXPOSED_TO_BORNE_VIRUSES", 5, EXPOSED_TO_MOSQUITO_BORNE_VIRUSES_TEXT);
@@ -96,7 +96,7 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 							fluidColumn(6, 0, locs(
 									TUBERCULOSIS, PREVIOUS_TUBERCULOSIS_TREATMENT, ASPLENIA, HEPATITIS, DIABETES, IMMUNODEFICIENCY_OTHER_THAN_HIV,"IMMUNODEFICIENCY_INCLUDING_HIV_LAYOUT",
 									 HIV, HIV_ART, CONGENITAL_SYPHILIS, DOWN_SYNDROME,
-									CHRONIC_LIVER_DISEASE, MALIGNANCY_CHEMOTHERAPY, RECURRENT_BRONCHIOLITIS)),
+									CHRONIC_LIVER_DISEASE, MALIGNANCY_CHEMOTHERAPY, RECURRENT_BRONCHIOLITIS, MALARIA, "MALARIA_INFECTED_YEAR_LAYOUT")),
 							fluidColumn(6, 0, locs(
 									"TUBERCULOSIS_INFECTION_YEAR_LAYOUT","COMPLIANCE_WITH_TREATMENT_LAYOUT",CHRONIC_HEART_FAILURE, CHRONIC_PULMONARY_DISEASE, CHRONIC_KIDNEY_DISEASE,
 									CHRONIC_NEUROLOGIC_CONDITION, CARDIOVASCULAR_DISEASE_INCLUDING_HYPERTENSION,
@@ -130,7 +130,8 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 		IMMUNODEFICIENCY_INCLUDING_HIV,
 		EXPOSED_TO_MOSQUITO_BORNE_VIRUSES,
 		VACCINATED_AGAINST_MOSQUITO_BORNE_VIRUSES,
-		RECURRENT_BRONCHIOLITIS);
+		RECURRENT_BRONCHIOLITIS,
+		MALARIA);
 
 	private boolean vaccinationListener = false;
 
@@ -303,15 +304,26 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
 
-		if (UiUtil.permitted(UserRight.SEE_SENSITIVE_DATA_IN_JURISDICTION, UserRight.SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION)) {
-			Field<?> other = getField(OTHER_CONDITIONS);
-			if (other != null) {
-				other.setReadOnly(false);
-				other.setEnabled(true);
-				if (other instanceof AbstractTextField) {
-					((AbstractTextField) other).setInputPrompt("");
-				}
-			}
+		if (isVisibleAllowed(MALARIA)) {
+			// Malaria infected year visibility.
+			CustomLayout malariaInfectedYearLayout = new CustomLayout();
+			malariaInfectedYearLayout.setTemplateContents(MALARIA_YEAR_LAYOUT);
+
+			// infected year label
+			Label lblInfectedYear = new Label(I18nProperties.getCaption(Captions.HealthConditions_malariaInfectedYear));
+			malariaInfectedYearLayout.addComponent(lblInfectedYear, "LBL_MALARIA_INFECTED_YEAR");
+			getContent().addComponent(malariaInfectedYearLayout, "MALARIA_INFECTED_YEAR_LAYOUT");
+
+			// infection year combobox
+			ComboBox malInfectedYearCB = addField(malariaInfectedYearLayout, MALARIA_INFECTED_YEAR, ComboBox.class);
+			malInfectedYearCB.setInputPrompt(I18nProperties.getString(Strings.year));
+			malInfectedYearCB.setNullSelectionAllowed(true);
+			malInfectedYearCB.setCaption(null);
+			malInfectedYearCB.addItems(DateHelper.getYearsToNow());
+			malInfectedYearCB.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ID_TOSTRING);
+			malariaInfectedYearLayout.addComponent(malInfectedYearCB, MALARIA_INFECTED_YEAR);
+
+			FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(MALARIA_INFECTED_YEAR), MALARIA, Arrays.asList(YesNoUnknown.YES), true);
 		}
 	}
 

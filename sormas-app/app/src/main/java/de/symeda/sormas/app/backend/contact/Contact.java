@@ -18,13 +18,21 @@ package de.symeda.sormas.app.backend.contact;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
+import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Transient;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -76,7 +84,8 @@ public class Contact extends PseudonymizableAdo {
 	public static final String CONTACT_IDENTIFICATION_SOURCE_DETAILS = "contactIdentificationSourceDetails";
 	public static final String TRACING_APP = "tracingApp";
 	public static final String TRACING_APP_DETAILS = "tracingAppDetails";
-	public static final String CONTACT_PROXIMITY = "contactProximity";
+	public static final String CONTACT_PROXIMITIES = "contactProximities";
+	public static final String CONTACT_PROXIMITIES_JSON = "contactProximitiesJson";
 	public static final String CONTACT_CLASSIFICATION = "contactClassification";
 	public static final String FOLLOW_UP_STATUS = "followUpStatus";
 	public static final String FOLLOW_UP_COMMENT = "followUpComment";
@@ -137,8 +146,10 @@ public class Contact extends PseudonymizableAdo {
 	private TracingApp tracingApp;
 	@DatabaseField
 	private String tracingAppDetails;
-	@Enumerated(EnumType.STRING)
-	private ContactProximity contactProximity;
+	@Column(name = "contactProximities", length = CHARACTER_LIMIT_DEFAULT)
+	private String contactProximitiesJson;
+	@Transient
+	private Set<ContactProximity> contactProximities;
 	@Enumerated(EnumType.STRING)
 	private ContactClassification contactClassification;
 	@Enumerated(EnumType.STRING)
@@ -346,12 +357,37 @@ public class Contact extends PseudonymizableAdo {
 		this.tracingAppDetails = tracingAppDetails;
 	}
 
-	public ContactProximity getContactProximity() {
-		return contactProximity;
+	public String getContactProximitiesJson() {
+		return contactProximitiesJson;
 	}
 
-	public void setContactProximity(ContactProximity contactProximity) {
-		this.contactProximity = contactProximity;
+	public void setContactProximitiesJson(String contactProximitiesJson) {
+		this.contactProximitiesJson = contactProximitiesJson;
+		this.contactProximities = null;
+	}
+
+	public Set<ContactProximity> getContactProximities() {
+		if (contactProximities == null) {
+			Gson gson = new Gson();
+			Type type = new TypeToken<Set<ContactProximity>>() {
+			}.getType();
+			contactProximities = gson.fromJson(contactProximitiesJson, type);
+		}
+		if (contactProximities == null) {
+			contactProximities = new HashSet<>();
+		}
+		return Collections.unmodifiableSet(contactProximities);
+	}
+
+	public void setContactProximities(Set<ContactProximity> contactProximities) {
+		if (contactProximities == null) {
+			this.contactProximities = null;
+			this.contactProximitiesJson = null;
+		} else {
+			this.contactProximities = new HashSet<>(contactProximities);
+			Gson gson = new Gson();
+			contactProximitiesJson = gson.toJson(contactProximities.stream().map(ContactProximity::name).sorted().collect(Collectors.toSet()));
+		}
 	}
 
 	public FollowUpStatus getFollowUpStatus() {

@@ -58,6 +58,8 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	public static final String EXPOSED_TO_MOSQUITO_BORNE_VIRUSES = "exposedToMosquitoBorneViruses";
 	public static final String EXPOSED_TO_MOSQUITO_BORNE_VIRUSES_TEXT = "exposedToMosquitoBorneVirusesText";
 	public static final String VACCINATED_AGAINST_MOSQUITO_BORNE_VIRUSES = "vaccinatedAgainstMosquitoBorneViruses";
+	public static final String MALARIA = "malaria";
+	public static final String MALARIA_INFECTED_YEAR = "malariaInfectedYear";
 
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
@@ -171,6 +173,14 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	@Diseases(value = {
 		Disease.DENGUE })
 	private YesNoUnknown vaccinatedAgainstMosquitoBorneViruses;
+
+	@Diseases(value = {
+		Disease.MALARIA })
+	private YesNoUnknown malaria;
+
+	@Diseases(value = {
+		Disease.MALARIA })
+	private Integer malariaInfectedYear;
 
 	public static HealthConditionsDto build() {
 		HealthConditionsDto healthConditions = new HealthConditionsDto();
@@ -448,5 +458,21 @@ public class HealthConditionsDto extends PseudonymizableDto {
 
 	public void setVaccinatedAgainstMosquitoBorneViruses(YesNoUnknown vaccinatedAgainstMosquitoBorneViruses) {
 		this.vaccinatedAgainstMosquitoBorneViruses = vaccinatedAgainstMosquitoBorneViruses;
+	}
+
+	public YesNoUnknown getMalaria() {
+		return malaria;
+	}
+
+	public void setMalaria(YesNoUnknown malaria) {
+		this.malaria = malaria;
+	}
+
+	public Integer getMalariaInfectedYear() {
+		return malariaInfectedYear;
+	}
+
+	public void setMalariaInfectedYear(Integer malariaInfectedYear) {
+		this.malariaInfectedYear = malariaInfectedYear;
 	}
 }

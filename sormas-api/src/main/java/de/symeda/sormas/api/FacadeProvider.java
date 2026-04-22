@@ -39,6 +39,8 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalCourseFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitFacade;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataFacade;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldValueFacade;
 import de.symeda.sormas.api.dashboard.DashboardFacade;
 import de.symeda.sormas.api.dashboard.adverseeventsfollowingimmunization.AefiDashboardFacade;
 import de.symeda.sormas.api.dashboard.sample.SampleDashboardFacade;
@@ -506,6 +508,14 @@ public class FacadeProvider {
 
 	public static CustomizableEnumFacade getCustomizableEnumFacade() {
 		return get().lookupEjbRemote(CustomizableEnumFacade.class);
+	}
+
+	public static CustomizableFieldMetadataFacade getCustomizableFieldMetadataFacade() {
+		return get().lookupEjbRemote(CustomizableFieldMetadataFacade.class);
+	}
+
+	public static CustomizableFieldValueFacade getCustomizableFieldValueFacade() {
+		return get().lookupEjbRemote(CustomizableFieldValueFacade.class);
 	}
 
 	public static InfoFacade getInfoFacade() {

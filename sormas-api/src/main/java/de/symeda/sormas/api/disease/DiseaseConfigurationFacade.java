@@ -54,6 +54,8 @@ public interface DiseaseConfigurationFacade {
 
 	int getMinIncubationPeriod(Disease disease);
 
+	DiseaseConfigurationDto getDiseaseConfiguration(Disease disease);
+
 	String getCaseDefinitionText(Disease disease);
 
 	Integer getAutomaticSampleAssignmentThreshold(Disease disease);

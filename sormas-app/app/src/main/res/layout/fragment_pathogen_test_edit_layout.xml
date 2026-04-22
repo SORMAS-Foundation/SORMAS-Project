@@ -29,6 +29,7 @@
         <import type="de.symeda.sormas.api.sample.SampleMaterial" />
         <import type="de.symeda.sormas.api.sample.PathogenTestType" />
         <import type="de.symeda.sormas.api.sample.PathogenTestResultType" />
+        <import type="de.symeda.sormas.api.sample.Serotype" />
         <import type="de.symeda.sormas.api.Disease" />
         <import type="de.symeda.sormas.api.disease.DiseaseVariant" />
 
@@ -172,13 +173,13 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    <de.symeda.sormas.app.component.controls.ControlCheckBoxField
                         android:id="@+id/pathogenTest_serotype"
                         app:dependencyParentField="@{pathogenTestTestedDisease}"
                         app:dependencyParentValue="@{Disease.CSM}"
                         app:dependencyParent2Field="@{pathogenTestTestResult}"
                         app:dependencyParent2Value="@{PathogenTestResultType.POSITIVE}"
-                        app:value="@={data.serotype}"
+                        app:value="@{data.serotype!=null}"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextEditField

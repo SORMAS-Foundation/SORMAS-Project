@@ -21,6 +21,7 @@ import static java.util.Objects.isNull;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -28,6 +29,8 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldContext;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.exposure.ExposureDto;
@@ -37,6 +40,7 @@ import de.symeda.sormas.backend.activityascase.ActivityAsCase;
 import de.symeda.sormas.backend.activityascase.ActivityAsCaseService;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.customizablefield.CustomizableFieldValueService;
 import de.symeda.sormas.backend.exposure.Exposure;
 import de.symeda.sormas.backend.exposure.ExposureService;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
@@ -62,6 +66,18 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 	private UserService userService;
 	@EJB
 	private CountryService countryService;
+	@EJB
+	private CustomizableFieldValueService customizableFieldValueService;
+
+	public void softDeleteCustomizableFieldValues(EpiData epiData, DeletionDetails deletionDetails) {
+		if (epiData == null || epiData.getUuid() == null) {
+			return;
+		}
+		customizableFieldValueService.softDeleteValuesForEntity(epiData.getUuid(), CustomizableFieldContext.EPIDATA, deletionDetails);
+		for (Exposure exposure : epiData.getExposures()) {
+			customizableFieldValueService.softDeleteValuesForEntity(exposure.getUuid(), CustomizableFieldContext.EXPOSURE, deletionDetails);
+		}
+	}
 
 	public EpiData fillOrBuildEntity(EpiDataDto source, EpiData target, boolean checkChangeDate) {
 		if (source == null) {
@@ -114,6 +130,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setInfectionSourceText(source.getInfectionSourceText());
 		target.setCountry(countryService.getByReferenceDto(source.getCountry()));
 		target.setImportedCase(source.getImportedCase());
+		target.setOtherDetails(source.getOtherDetails());
 
 		return target;
 	}
@@ -200,6 +217,22 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setRawFoodContactText(source.getRawFoodContactText());
 		target.setSymptomaticIndividualText(source.getSymptomaticIndividualText());
 
+		target.setExposureCategory(source.getExposureCategory());
+		target.setExposureSetting(source.getExposureSetting());
+		target.setExposureSettingDetails(source.getExposureSettingDetails());
+		target.setExposureSubSettingDetails(source.getExposureSubSettingDetails());
+		target.setContactFactorDetails(source.getContactFactorDetails());
+		target.setProtectiveMeasureDetails(source.getProtectiveMeasureDetails());
+		target.setExposureComment(source.getExposureComment());
+		target.setConditionOfAnimal(source.getConditionOfAnimal());
+		target.setAnimalCategory(source.getAnimalCategory());
+		target.setAnimalCategoryDetails(source.getAnimalCategoryDetails());
+		target.setFomiteTransmissionLocation(source.getFomiteTransmissionLocation());
+
+		target.setSubSettings(source.getSubSettings() != null ? source.getSubSettings() : new HashSet<>());
+		target.setContactFactors(source.getContactFactors() != null ? source.getContactFactors() : new HashSet<>());
+		target.setProtectiveMeasures(source.getProtectiveMeasures() != null ? source.getProtectiveMeasures() : new HashSet<>());
+
 		return target;
 	}
 
@@ -281,6 +314,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setInfectionSourceText(source.getInfectionSourceText());
 		target.setCountry(CountryFacadeEjb.toReferenceDto(source.getCountry()));
 		target.setImportedCase(source.getImportedCase());
+		target.setOtherDetails(source.getOtherDetails());
 		return target;
 	}
 
@@ -361,6 +395,22 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setRawFoodContact(source.getRawFoodContact());
 		target.setRawFoodContactText(source.getRawFoodContactText());
 		target.setSymptomaticIndividualText(source.getSymptomaticIndividualText());
+
+		target.setExposureCategory(source.getExposureCategory());
+		target.setExposureSetting(source.getExposureSetting());
+		target.setExposureSettingDetails(source.getExposureSettingDetails());
+		target.setExposureSubSettingDetails(source.getExposureSubSettingDetails());
+		target.setContactFactorDetails(source.getContactFactorDetails());
+		target.setProtectiveMeasureDetails(source.getProtectiveMeasureDetails());
+		target.setExposureComment(source.getExposureComment());
+		target.setConditionOfAnimal(source.getConditionOfAnimal());
+		target.setAnimalCategory(source.getAnimalCategory());
+		target.setAnimalCategoryDetails(source.getAnimalCategoryDetails());
+		target.setFomiteTransmissionLocation(source.getFomiteTransmissionLocation());
+
+		target.setSubSettings(new HashSet<>(source.getSubSettings()));
+		target.setContactFactors(new HashSet<>(source.getContactFactors()));
+		target.setProtectiveMeasures(new HashSet<>(source.getProtectiveMeasures()));
 
 		return target;
 	}

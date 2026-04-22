@@ -169,6 +169,9 @@ public final class CssStyles {
 	public static final String BUTTON_CAPTION_OVERFLOW = "caption-overflow-label";
 	public static final String GEOCODE_BUTTON_HIGHLIGHT = "geocode-button-highlight";
 
+	public static final String YES_NO_UNKNOWN_GROUP = "yes-no-unknown-group";
+	public static final String YES_NO_UNKNOWN_OPTION_SELECTED = "yes-no-unknown-selected";
+
 	// Link styles
 	public static final String LINK_BUTTON = "button";
 	public static final String LINK_BUTTON_PRIMARY = "button-primary";

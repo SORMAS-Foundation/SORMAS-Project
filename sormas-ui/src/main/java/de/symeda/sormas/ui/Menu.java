@@ -75,6 +75,8 @@ public class Menu extends CssLayout {
 	private static final String COLOR_BACKGROUND_STYLE_NAME = "color-background";
 	private static final String MENU_SUBTITLE_STYLE_NAME = "menu-subtitle";
 	private static final String TOP_MENU_CONTAINER_STYLE_NAME = "top-menu-container";
+	private static final String HASH = "#";
+
 
 	private final Navigator navigator;
 	private final Map<String, Button> viewButtons = new HashMap<>();
@@ -214,9 +216,16 @@ public class Menu extends CssLayout {
 			actualColorBackgroundColor = "#737278";
 			break;
 		default:
-			actualColorBackgroundColor = backgroundColor;
+			actualColorBackgroundColor = addHashIfMissing(backgroundColor);
 		}
 		return actualColorBackgroundColor;
+	}
+
+	private static String addHashIfMissing(String backgroundColor) {
+		if (!StringUtils.startsWith(backgroundColor, HASH)) {
+			return HASH + backgroundColor;
+		}
+		return backgroundColor;
 	}
 
 	private void showSettingsPopup() {

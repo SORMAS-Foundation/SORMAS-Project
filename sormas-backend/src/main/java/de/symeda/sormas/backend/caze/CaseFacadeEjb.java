@@ -137,6 +137,7 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldContext;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
@@ -254,6 +255,7 @@ import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.contact.VisitSummaryExportDetails;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb.CustomizableEnumFacadeEjbLocal;
+import de.symeda.sormas.backend.customizablefield.CustomizableFieldValueService;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.document.Document;
 import de.symeda.sormas.backend.document.DocumentRelatedEntityService;
@@ -490,6 +492,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	private SurveillanceReportService surveillanceReportService;
 	@EJB
 	private EpiDataService epiDataService;
+	@EJB
+	private CustomizableFieldValueService customizableFieldValueService;
 	@EJB
 	private SurveillanceReportFacadeEjb.SurveillanceReportFacadeEjbLocal surveillanceReportFacade;
 	@EJB
@@ -2841,6 +2845,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 
 		service.delete(caze, deletionDetails);
+
+		customizableFieldValueService.softDeleteValuesForEntity(caze.getUuid(), CustomizableFieldContext.CASE, deletionDetails);
+		epiDataFacade.softDeleteCustomizableFieldValues(caze.getEpiData(), deletionDetails);
 	}
 
 	@Override
@@ -4088,7 +4095,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		});
 
 		// Including survey token for merge case.
-//		11. servey token reference
+		//		11. servey token reference
 		if (!cloning) {
 			List<SurveyToken> tokens = surveyService.findBy(new SurveyTokenCriteria().caseAssignedTo(otherCase.toReference()));
 			tokens.forEach(s -> {

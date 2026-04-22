@@ -352,7 +352,6 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String GUILLAIN_BARRE_SYNDROME = "guillainBarreSyndrome";
 	public static final String LETHARGY = "lethargy";
 	public static final String CONFUSION = "confusion";
-	public static final String CONVULSIONS = "convulsions";
 	public static final String PERSISTENT_VOMITING = "persistentVomiting";
 	public static final String RESTLESSNESS = "restlessness";
 	public static final String ACUTE_BLEEDING = "acuteBleeding";
@@ -483,9 +482,12 @@ public class SymptomsDto extends PseudonymizableDto {
 		POLIO,
 		YELLOW_FEVER,
 		ANTHRAX,
+		DENGUE,
 		UNSPECIFIED_VHF,
 		UNDEFINED,
 		OTHER })
+	@Complication(value = {
+		DENGUE })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
 	private SymptomState bloodInStool;
@@ -698,6 +700,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		MALARIA,
 		UNDEFINED,
 		OTHER })
+	@Complication({
+		MEASLES })
 	@Outbreaks
 	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
 	private SymptomState diarrhea;
@@ -1599,8 +1603,10 @@ public class SymptomsDto extends PseudonymizableDto {
 		POLIO,
 		UNDEFINED,
 		OTHER })
+	@Complication({
+		MEASLES })
 	@HideForCountries
-	@SymptomGrouping(SymptomGroup.OTHER)
+	@SymptomGrouping(SymptomGroup.GENERAL)
 	private SymptomState otitisMedia;
 
 	@Diseases({
@@ -2197,6 +2203,8 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Diseases({
 		ANTHRAX,
 		DENGUE })
+	@Complication({
+		DENGUE })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
 	private SymptomState convulsion;
@@ -2276,6 +2284,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		MEASLES,
 		UNDEFINED,
 		OTHER })
+	@Complication({
+		MEASLES })
 	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
 	@SymptomGrouping(SymptomGroup.RESPIRATORY)
 	private SymptomState pneumoniaClinicalOrRadiologic;
@@ -2545,6 +2555,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		PLAGUE,
 		ANTHRAX,
 		CORONAVIRUS,
+		CRYPTOSPORIDIOSIS,
+		GIARDIASIS,
 		UNDEFINED,
 		OTHER })
 	@DependantOn(OTHER_COMPLICATIONS)
@@ -2554,7 +2566,9 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	@Complication({
 		DENGUE,
-		MALARIA })
+		MALARIA,
+		CRYPTOSPORIDIOSIS,
+		GIARDIASIS })
 	private String otherComplicationsText;
 
 	@Diseases({
@@ -2784,6 +2798,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		MEASLES,
 		DENGUE,
 		MALARIA })
+	@Complication({
+		MEASLES })
 	@SymptomGrouping(SymptomGroup.OTHER)
 	private SymptomState unknownSymptom;
 
@@ -2811,14 +2827,15 @@ public class SymptomsDto extends PseudonymizableDto {
 		GIARDIASIS,
 		CRYPTOSPORIDIOSIS })
 	@DependantOn("parentTimeOffWork")
+	@SymptomGrouping(SymptomGroup.OTHER)
 	private Float timeOffWorkDays;
 
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	@Diseases({
 		MEASLES })
-	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
 	@Complication({
 		MEASLES })
+	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
 	private SymptomState acuteEncephalitis;
 	@Diseases({
 		GIARDIASIS })
@@ -2855,10 +2872,14 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Diseases({
 		GIARDIASIS,
 		CRYPTOSPORIDIOSIS })
+	@Complication()
+	@SymptomGrouping(SymptomGroup.OTHER)
 	private SymptomState reoccurrence;
 	@Diseases({
 		GIARDIASIS,
 		CRYPTOSPORIDIOSIS })
+	@Complication()
+	@SymptomGrouping(SymptomGroup.OTHER)
 	private SymptomState overnightStayRequired;
 	@Diseases({
 		GIARDIASIS })
@@ -2935,12 +2956,6 @@ public class SymptomsDto extends PseudonymizableDto {
 		DENGUE })
 
 	private SymptomState confusion;
-
-	@Diseases({
-		DENGUE })
-	@Complication({
-		DENGUE })
-	private SymptomState convulsions;
 
 	@Diseases({
 		DENGUE })
@@ -5054,14 +5069,6 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	public void setConfusion(SymptomState confusion) {
 		this.confusion = confusion;
-	}
-
-	public SymptomState getConvulsions() {
-		return convulsions;
-	}
-
-	public void setConvulsions(SymptomState convulsions) {
-		this.convulsions = convulsions;
 	}
 
 	public SymptomState getPersistentVomiting() {
