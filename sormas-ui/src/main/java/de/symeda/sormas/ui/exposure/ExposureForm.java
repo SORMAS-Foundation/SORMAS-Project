@@ -16,7 +16,6 @@
 package de.symeda.sormas.ui.exposure;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
@@ -37,7 +36,6 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
@@ -61,33 +59,22 @@ import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.AnimalCategory;
-import de.symeda.sormas.api.exposure.AnimalContactType;
-import de.symeda.sormas.api.exposure.AnimalLocation;
 import de.symeda.sormas.api.exposure.ExposureCategory;
 import de.symeda.sormas.api.exposure.ExposureContactFactor;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureProtectiveMeasure;
 import de.symeda.sormas.api.exposure.ExposureSetting;
 import de.symeda.sormas.api.exposure.ExposureSubSetting;
-import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.FomiteTransmissionLocation;
-import de.symeda.sormas.api.exposure.GatheringType;
-import de.symeda.sormas.api.exposure.HabitationType;
-import de.symeda.sormas.api.exposure.SwimmingLocation;
-import de.symeda.sormas.api.exposure.TravelAccommodation;
-import de.symeda.sormas.api.exposure.TypeOfAnimal;
-import de.symeda.sormas.api.exposure.TypeOfChildcareFacility;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
-import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.adverseeventsfollowingimmunization.components.form.FormSectionAccordion;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
-import de.symeda.sormas.ui.utils.ComboBoxWithPlaceholder;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
@@ -104,10 +91,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	private static final String LOC_CUSTOMIZABLE_FIELDS_EXPOSURES_GENERAL = CustomizableFieldGroup.EXPOSURES_GENERAL.getKey();
 	private static final String LOC_CUSTOMIZABLE_FIELDS_LOCATION_GENERAL = CustomizableFieldGroup.LOCATION_GENERAL.getKey();
 	private static final String LOC_EXPOSURES_HEADING = "locExposuresHeading";
-	private static final String LOC_EXPOSURE_DETAILS_HEADING = "locExposureDetailsHeading";
 	private static final String LOC_LOCATION_HEADING = "locLocationHeading";
-	private static final String LOC_ANIMAL_CONTACT_DETAILS_HEADING = "locAnimalContactDetailsHeading";
-	private static final String LOC_BURIAL_DETAILS_HEADING = "locBurialDetailsHeading";
 	private static final String LOC_CONCLUSION_HEADING = "locConclusionHeading";
 
 	public static final String MAIN_ACCORDION_LAYOUT = fluidRowLocs(MAIN_ACCORDION_LOC);
@@ -148,60 +132,6 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 					) +
 					loc(LOC_CUSTOMIZABLE_FIELDS_EXPOSURES_GENERAL) +
 					loc(ExposureDto.DESCRIPTION);
-	
-	private static final String ACTIVITY_DETAILS_LAYOUT =
-			fluidRow(
-					fluidColumnLoc(6, 0, ExposureDto.EXPOSURE_TYPE),
-					fluidColumn(6, 0, locs(
-							ExposureDto.EXPOSURE_TYPE_DETAILS,
-							ExposureDto.GATHERING_TYPE,
-							ExposureDto.HABITATION_TYPE,
-							ExposureDto.TYPE_OF_ANIMAL,
-							ExposureDto.TYPE_OF_CHILDCARE_FACILITY
-					))
-			) +
-					fluidRow(
-							fluidColumn(12, 0, locs(
-									ExposureDto.GATHERING_DETAILS,
-									ExposureDto.HABITATION_DETAILS,
-									ExposureDto.TYPE_OF_ANIMAL_DETAILS,
-									ExposureDto.CHILDCARE_FACILITY_DETAILS
-							))
-					) +
-					loc(LOC_EXPOSURE_DETAILS_HEADING) +
-					loc(ExposureDto.EXPOSURE_ROLE) +
-					loc(ExposureDto.RISK_AREA) +
-					loc(ExposureDto.LARGE_ATTENDANCE_NUMBER) +
-					loc(ExposureDto.INDOORS) +
-					loc(ExposureDto.OUTDOORS) +
-					loc(ExposureDto.WEARING_MASK) +
-					loc(ExposureDto.WEARING_PPE) +
-					loc(ExposureDto.OTHER_PROTECTIVE_MEASURES) +
-					loc(ExposureDto.PROTECTIVE_MEASURES_DETAILS) +
-					loc(ExposureDto.SHORT_DISTANCE) +
-					loc(ExposureDto.LONG_FACE_TO_FACE_CONTACT) +
-					loc(ExposureDto.ANIMAL_MARKET) +
-					loc(ExposureDto.PERCUTANEOUS) +
-					loc(ExposureDto.CONTACT_TO_BODY_FLUIDS) +
-					loc(ExposureDto.HANDLING_SAMPLES) +
-					loc(ExposureDto.EATING_RAW_ANIMAL_PRODUCTS) +
-					loc(ExposureDto.HANDLING_ANIMALS) +
-					fluidRowLocs(ExposureDto.TRAVEL_ACCOMMODATION, ExposureDto.TRAVEL_ACCOMMODATION_TYPE) +
-					fluidRowLocs(ExposureDto.DOMESTIC_SWIMMING, ExposureDto.INTERNATIONAL_SWIMMING) +
-					fluidRowLocs(ExposureDto.RAW_FOOD_CONTACT, ExposureDto.RAW_FOOD_CONTACT_TEXT) +
-					fluidRowLocs(ExposureDto.SWIMMING_LOCATION, ExposureDto.SWIMMING_LOCATION_TYPE) +
-					fluidRow(fluidColumnLoc(6,0,ExposureDto.SEXUAL_EXPOSURE_TEXT)) +
-					fluidRow(fluidColumnLoc(6,0,ExposureDto.SYMPTOMATIC_INDIVIDUAL_TEXT)) +
-					loc(ExposureDto.CONTACT_TO_CASE) +
-					loc(LOC_ANIMAL_CONTACT_DETAILS_HEADING) +
-					loc(ExposureDto.ANIMAL_CONDITION) +
-					fluidRowLocs(ExposureDto.ANIMAL_CONTACT_TYPE, ExposureDto.ANIMAL_CONTACT_TYPE_DETAILS) +
-					fluidRowLocs(ExposureDto.ANIMAL_LOCATION, ExposureDto.ANIMAL_LOCATION_TEXT) +
-					loc(ExposureDto.ANIMAL_VACCINATED) +
-					loc(LOC_BURIAL_DETAILS_HEADING) +
-					loc(ExposureDto.PHYSICAL_CONTACT_DURING_PREPARATION) +
-					loc(ExposureDto.PHYSICAL_CONTACT_WITH_BODY) +
-					fluidRowLocs(ExposureDto.DECEASED_PERSON_NAME, ExposureDto.DECEASED_PERSON_RELATION);
 
 	private static final String LOCATION_DETAILS_LAYOUT = 
 			loc(LOC_LOCATION_HEADING) +
@@ -223,14 +153,10 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	private final List<ContactReferenceDto> sourceContacts;
 
 	private CustomLayout exposureDetailsLayout;
-	private CustomLayout activityDetailsLayout;
 	private CustomLayout locationDetailsLayout;
 
 	private Label exposuresHeading;
-	private Label activityDetailsHeading;
 	private Label locationHeading;
-	private Label animalContactDetailsHeading;
-	private Label burialDetailsHeading;
 	private Label conclusionHeading;
 
 	private LocationEditForm locationForm;
@@ -290,9 +216,6 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		exposureDetailsLayout = new CustomLayout();
 		exposureDetailsLayout.setTemplateContents(EXPOSURE_DETAILS_LAYOUT);
 
-		activityDetailsLayout = new CustomLayout();
-		activityDetailsLayout.setTemplateContents(ACTIVITY_DETAILS_LAYOUT);
-
 		locationDetailsLayout = new CustomLayout();
 		locationDetailsLayout.setTemplateContents(LOCATION_DETAILS_LAYOUT);
 
@@ -335,12 +258,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			}
 		});
 
-		if (epiDataParentClass == CaseDataDto.class) {
-			addField(activityDetailsLayout, ExposureDto.CONTACT_TO_CASE, ComboBox.class);
-		}
-
 		accordion.addFormSectionPanel(Captions.titleExposuresSection, true, exposureDetailsLayout);
-		accordion.addFormSectionPanel(Captions.titleExposureActivitySection, false, activityDetailsLayout);
 		accordion.addFormSectionPanel(Captions.titleExposureLocationSection, false, locationDetailsLayout);
 
 		getContent().addComponent(accordion, MAIN_ACCORDION_LOC);
@@ -350,7 +268,6 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
 
-		setUpRequirements();
 		setReadOnly(true, ExposureDto.UUID, ExposureDto.REPORTING_USER);
 	}
 
@@ -359,17 +276,8 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		exposuresHeading = new Label(h3(I18nProperties.getString(Strings.headingExposures)), ContentMode.HTML);
 		exposureDetailsLayout.addComponent(exposuresHeading, LOC_EXPOSURES_HEADING);
 
-		activityDetailsHeading = new Label(h3(I18nProperties.getString(Strings.headingExposureDetails)), ContentMode.HTML);
-		activityDetailsLayout.addComponent(activityDetailsHeading, LOC_EXPOSURE_DETAILS_HEADING);
-
 		locationHeading = new Label(h3(I18nProperties.getPrefixCaption(ExposureDto.I18N_PREFIX, ExposureDto.LOCATION)), ContentMode.HTML);
 		locationDetailsLayout.addComponent(locationHeading, LOC_LOCATION_HEADING);
-
-		animalContactDetailsHeading = new Label(h3(I18nProperties.getString(Strings.headingAnimalContactDetails)), ContentMode.HTML);
-		activityDetailsLayout.addComponent(animalContactDetailsHeading, LOC_ANIMAL_CONTACT_DETAILS_HEADING);
-
-		burialDetailsHeading = new Label(h3(I18nProperties.getString(Strings.headingBurialDetails)), ContentMode.HTML);
-		activityDetailsLayout.addComponent(burialDetailsHeading, LOC_BURIAL_DETAILS_HEADING);
 
 		conclusionHeading = new Label(h3(I18nProperties.getString(Strings.headingEpiConclusion)), ContentMode.HTML);
 		getContent().addComponent(conclusionHeading, LOC_CONCLUSION_HEADING);
@@ -516,123 +424,12 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		addField(locationDetailsLayout, ExposureDto.MEANS_OF_TRANSPORT, ComboBox.class);
 		addField(locationDetailsLayout, ExposureDto.MEANS_OF_TRANSPORT_DETAILS, TextField.class);
 
+		addField(locationDetailsLayout, ExposureDto.SEAT_NUMBER, TextField.class);
+
 		addField(locationDetailsLayout, ExposureDto.WORK_ENVIRONMENT, ComboBox.class);
-
-		addFieldsToLayout(
-			activityDetailsLayout,
-			ExposureDto.EXPOSURE_TYPE,
-			ExposureDto.EXPOSURE_TYPE_DETAILS,
-			ExposureDto.GATHERING_TYPE,
-			ExposureDto.HABITATION_TYPE,
-			ExposureDto.TYPE_OF_ANIMAL,
-			ExposureDto.TYPE_OF_CHILDCARE_FACILITY,
-			ExposureDto.GATHERING_DETAILS,
-			ExposureDto.HABITATION_DETAILS,
-			ExposureDto.TYPE_OF_ANIMAL_DETAILS,
-			ExposureDto.CHILDCARE_FACILITY_DETAILS,
-			ExposureDto.PHYSICAL_CONTACT_DURING_PREPARATION,
-			ExposureDto.PHYSICAL_CONTACT_WITH_BODY,
-			ExposureDto.DECEASED_PERSON_NAME,
-			ExposureDto.DECEASED_PERSON_RELATION,
-			ExposureDto.PROTECTIVE_MEASURES_DETAILS,
-			ExposureDto.ANIMAL_CONDITION,
-			ExposureDto.ANIMAL_CONTACT_TYPE,
-			ExposureDto.ANIMAL_CONTACT_TYPE_DETAILS,
-			ExposureDto.SEAT_NUMBER,
-			ExposureDto.EXPOSURE_ROLE,
-			ExposureDto.TRAVEL_ACCOMMODATION,
-			ExposureDto.TRAVEL_ACCOMMODATION_TYPE,
-			ExposureDto.DOMESTIC_SWIMMING,
-			ExposureDto.INTERNATIONAL_SWIMMING,
-			ExposureDto.SWIMMING_LOCATION,
-			ExposureDto.SWIMMING_LOCATION_TYPE,
-			ExposureDto.RAW_FOOD_CONTACT,
-			ExposureDto.RAW_FOOD_CONTACT_TEXT,
-			ExposureDto.SYMPTOMATIC_INDIVIDUAL_TEXT,
-			ExposureDto.ANIMAL_LOCATION,
-			ExposureDto.ANIMAL_LOCATION_TEXT,
-			ExposureDto.SEXUAL_EXPOSURE_TEXT);
-
-		addFieldsWithCssToLayout(
-			activityDetailsLayout,
-			NullableOptionGroup.class,
-			Arrays.asList(
-				ExposureDto.LARGE_ATTENDANCE_NUMBER,
-				ExposureDto.INDOORS,
-				ExposureDto.OUTDOORS,
-				ExposureDto.WEARING_MASK,
-				ExposureDto.WEARING_PPE,
-				ExposureDto.OTHER_PROTECTIVE_MEASURES,
-				ExposureDto.SHORT_DISTANCE,
-				ExposureDto.LONG_FACE_TO_FACE_CONTACT,
-				ExposureDto.ANIMAL_MARKET,
-				ExposureDto.PERCUTANEOUS,
-				ExposureDto.CONTACT_TO_BODY_FLUIDS,
-				ExposureDto.HANDLING_SAMPLES,
-				ExposureDto.EATING_RAW_ANIMAL_PRODUCTS,
-				ExposureDto.HANDLING_ANIMALS,
-				ExposureDto.ANIMAL_VACCINATED,
-				ExposureDto.RISK_AREA),
-			ValoTheme.OPTIONGROUP_HORIZONTAL,
-			CssStyles.OPTIONGROUP_CAPTION_INLINE);
-		// Changing the distance and contact label for IMI
-		if (Disease.INVASIVE_MENINGOCOCCAL_INFECTION.equals(disease)) {
-			getField(ExposureDto.SHORT_DISTANCE).setCaption(I18nProperties.getCaption(Captions.Exposure_imi_shortDistance));
-			getField(ExposureDto.LONG_FACE_TO_FACE_CONTACT).setCaption(I18nProperties.getCaption(Captions.Exposure_imi_longFaceToFaceContact));
-		}
 	}
 
 	private void setUpVisibilityDependencies() {
-		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.EXPOSURE_TYPE_DETAILS, ExposureDto.EXPOSURE_TYPE, ExposureType.OTHER, true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.GATHERING_TYPE, ExposureDto.EXPOSURE_TYPE, ExposureType.GATHERING, true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.HABITATION_TYPE, ExposureDto.EXPOSURE_TYPE, ExposureType.HABITATION, true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.TYPE_OF_ANIMAL, ExposureDto.EXPOSURE_TYPE, ExposureType.ANIMAL_CONTACT, true);
-		FieldHelper.setVisibleWhen(
-			getFieldGroup(),
-			List.of(ExposureDto.DOMESTIC_SWIMMING, ExposureDto.INTERNATIONAL_SWIMMING),
-			ExposureDto.EXPOSURE_TYPE,
-			ExposureType.RECREATIONAL_WATER,
-			true);
-		FieldHelper.setVisibleWhen(
-			getFieldGroup(),
-			ExposureDto.TYPE_OF_CHILDCARE_FACILITY,
-			ExposureDto.EXPOSURE_TYPE,
-			ExposureType.CHILDCARE_FACILITY,
-			true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.GATHERING_DETAILS, ExposureDto.GATHERING_TYPE, GatheringType.OTHER, true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.HABITATION_DETAILS, ExposureDto.HABITATION_TYPE, HabitationType.OTHER, true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.TYPE_OF_ANIMAL_DETAILS, ExposureDto.TYPE_OF_ANIMAL, TypeOfAnimal.OTHER, true);
-		FieldHelper.setVisibleWhen(
-			getFieldGroup(),
-			ExposureDto.CHILDCARE_FACILITY_DETAILS,
-			ExposureDto.TYPE_OF_CHILDCARE_FACILITY,
-			TypeOfChildcareFacility.OTHER,
-			true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.LARGE_ATTENDANCE_NUMBER, ExposureDto.EXPOSURE_TYPE, ExposureType.GATHERING, true);
-		FieldHelper.setVisibleWhen(
-			getFieldGroup(),
-			Arrays.asList(
-				ExposureDto.PHYSICAL_CONTACT_DURING_PREPARATION,
-				ExposureDto.PHYSICAL_CONTACT_WITH_BODY,
-				ExposureDto.DECEASED_PERSON_NAME,
-				ExposureDto.DECEASED_PERSON_RELATION),
-			ExposureDto.EXPOSURE_TYPE,
-			ExposureType.BURIAL,
-			true);
-		FieldHelper
-			.setVisibleWhen(getFieldGroup(), ExposureDto.PROTECTIVE_MEASURES_DETAILS, ExposureDto.OTHER_PROTECTIVE_MEASURES, YesNoUnknown.YES, true);
-		// Animal-contact-related fields are not relevant for Giardiasis and Cryptosporidiosis
-		if (!List.of(Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS).contains(disease)) {
-			FieldHelper.setVisibleWhen(
-				getFieldGroup(),
-				Arrays.asList(ExposureDto.ANIMAL_CONDITION, ExposureDto.ANIMAL_VACCINATED, ExposureDto.ANIMAL_CONTACT_TYPE),
-				ExposureDto.EXPOSURE_TYPE,
-				ExposureType.ANIMAL_CONTACT,
-				true);
-		}
-		FieldHelper
-			.setVisibleWhen(getFieldGroup(), ExposureDto.ANIMAL_CONTACT_TYPE_DETAILS, ExposureDto.ANIMAL_CONTACT_TYPE, AnimalContactType.OTHER, true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.ANIMAL_LOCATION_TEXT, ExposureDto.ANIMAL_LOCATION, AnimalLocation.OTHER, true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.TYPE_OF_PLACE_DETAILS, ExposureDto.TYPE_OF_PLACE, TypeOfPlace.OTHER, true);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
@@ -656,53 +453,11 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			Collections.singletonList(FacilityTypeGroup.WORKING_PLACE),
 			true);
 
-		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.TRAVEL_ACCOMMODATION, ExposureDto.EXPOSURE_TYPE, ExposureType.TRAVEL, true);
-		FieldHelper.setVisibleWhen(
-			getFieldGroup(),
-			ExposureDto.TRAVEL_ACCOMMODATION_TYPE,
-			ExposureDto.TRAVEL_ACCOMMODATION,
-			TravelAccommodation.OTHER,
-			true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.SWIMMING_LOCATION, ExposureDto.INTERNATIONAL_SWIMMING, YesNoUnknown.YES, true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.SWIMMING_LOCATION_TYPE, ExposureDto.SWIMMING_LOCATION, SwimmingLocation.OTHER, true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.ANIMAL_LOCATION, ExposureDto.EXPOSURE_TYPE, ExposureType.ANIMAL_CONTACT, true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.SEXUAL_EXPOSURE_TEXT, ExposureDto.EXPOSURE_TYPE, ExposureType.SEXUAL_CONTACT, true);
-		if (Disease.CRYPTOSPORIDIOSIS == disease) {
-			FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.RAW_FOOD_CONTACT, ExposureDto.EXPOSURE_TYPE, ExposureType.ANIMAL_CONTACT, true);
-			FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.RAW_FOOD_CONTACT_TEXT, ExposureDto.RAW_FOOD_CONTACT, YesNoUnknown.YES, true);
-			FieldHelper.setVisibleWhen(
-				getFieldGroup(),
-				ExposureDto.SYMPTOMATIC_INDIVIDUAL_TEXT,
-				ExposureDto.EXPOSURE_TYPE,
-				ExposureType.SYMPTOMATIC_CONTACT,
-				true);
-		}
-
-		animalContactDetailsHeading.setVisible(false);
-		burialDetailsHeading.setVisible(false);
-		getField(ExposureDto.EXPOSURE_TYPE).addValueChangeListener(e -> {
-			ExposureType selectedExposureType = (ExposureType) e.getProperty().getValue();
-			if (selectedExposureType != null) {
-				animalContactDetailsHeading.setVisible(selectedExposureType == ExposureType.ANIMAL_CONTACT);
-				// Exposure details heading is hidden if an exposure type is Animal Contact or Other (there are no relevant fields)
-				activityDetailsHeading.setVisible(!List.of(ExposureType.ANIMAL_CONTACT, ExposureType.OTHER).contains(selectedExposureType));
-				burialDetailsHeading.setVisible(selectedExposureType == ExposureType.BURIAL);
-			}
-		});
 		conclusionHeading.setVisible(List.of(Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS).contains(disease));
 		locationForm.setFacilityFieldsVisible(getField(ExposureDto.TYPE_OF_PLACE).getValue() == TypeOfPlace.FACILITY, true);
 		getField(ExposureDto.TYPE_OF_PLACE)
 			.addValueChangeListener(e -> locationForm.setFacilityFieldsVisible(e.getProperty().getValue() == TypeOfPlace.FACILITY, true));
 		locationForm.setContinentFieldsVisibility();
-	}
-
-	private void setUpRequirements() {
-		setRequired(true, ExposureDto.EXPOSURE_TYPE);
-		FieldHelper.setRequiredWhen(
-			getFieldGroup(),
-			ExposureDto.EXPOSURE_TYPE,
-			Collections.singletonList(ExposureDto.EXPOSURE_TYPE_DETAILS),
-			Collections.singletonList(ExposureType.OTHER));
 	}
 
 	private void updateSettingFieldItems(ExposureCategory category) {
@@ -807,17 +562,6 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	@Override
 	public void setValue(ExposureDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		super.setValue(newFieldValue);
-
-		if (epiDataParentClass == CaseDataDto.class) {
-			ComboBox cbContactToCase = getField(ExposureDto.CONTACT_TO_CASE);
-			if (sourceContacts != null && !cbContactToCase.isReadOnly()) {
-				cbContactToCase.addItems(sourceContacts);
-			}
-			cbContactToCase.getItemIds()
-				.stream()
-				.filter(i -> !(i instanceof ComboBoxWithPlaceholder.PlaceholderReferenceDto))
-				.forEach(i -> cbContactToCase.setItemCaption(i, ((ContactReferenceDto) i).getCaptionAlwaysWithUuid()));
-		}
 
 		populateExposureCategories(newFieldValue);
 
