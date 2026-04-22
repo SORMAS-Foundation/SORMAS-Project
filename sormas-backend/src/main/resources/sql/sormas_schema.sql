@@ -15705,7 +15705,8 @@ INSERT INTO schema_version (version_number, comment) VALUES (620, '#13828 - Add 
 
 -- updated regexes for MENU system config values
 UPDATE systemconfigurationvalue
-SET value_pattern = '^(default|red|green|indigo|gray)$|^(#?([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3}))$'
+SET value_pattern     = '^(default|red|green|indigo|gray)$|^(#?([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3}))$',
+    value_description = 'i18n/systemConfigurationValueValidation.systemConfigurationValueValidationInvalidBackgroundColor',
 WHERE config_key = 'MENU_BACKGROUND_COLOR';
 
 UPDATE systemconfigurationvalue
