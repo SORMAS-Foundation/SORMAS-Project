@@ -15513,11 +15513,11 @@ ALTER TABLE testreport ADD COLUMN IF NOT EXISTS serotypetext varchar(255);
 UPDATE testreport  SET serotypetext = serotype, serotype = 'OTHER' WHERE serotype IS NOT null   and serotypetext is null;
 DO $$
 BEGIN
-    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport' AND column_name = 'genotyperesult') 
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport' AND column_name = 'genotyperesult')
         AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport' AND column_name = 'genotype') THEN
         ALTER TABLE testreport RENAME COLUMN genotyperesult TO genotype;
     END IF;
-    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport' AND column_name = 'genotyperesulttext') 
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport' AND column_name = 'genotyperesulttext')
         AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport' AND column_name = 'genotypetext') THEN
         ALTER TABLE testreport RENAME COLUMN genotyperesulttext TO genotypetext;
     END IF;
@@ -15527,11 +15527,11 @@ ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS serotypetext varchar(255
 UPDATE testreport_history  SET serotypetext = serotype, serotype = 'OTHER' WHERE serotype IS NOT null   and serotypetext is null;
 DO $$
 BEGIN
-    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport_history' AND column_name = 'genotyperesult') 
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport_history' AND column_name = 'genotyperesult')
         AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport_history' AND column_name = 'genotype') THEN
         ALTER TABLE testreport_history RENAME COLUMN genotyperesult TO genotype;
     END IF;
-    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport_history' AND column_name = 'genotyperesulttext') 
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport_history' AND column_name = 'genotyperesulttext')
         AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport_history' AND column_name = 'genotypetext') THEN
         ALTER TABLE testreport_history RENAME COLUMN genotyperesulttext TO genotypetext;
     END IF;
@@ -15769,5 +15769,18 @@ UPDATE diseaseconfiguration SET exposurecategories = 'DIRECT_CONTACT' WHERE dise
 UPDATE diseaseconfiguration SET exposurecategories = 'VECTOR_BORNE' WHERE disease = 'YELLOW_FEVER';
 
 INSERT INTO schema_version (version_number, comment) VALUES (622, '#13887 default disease exposure category configuration');
+
+-- updated regexes for MENU system config values
+UPDATE systemconfigurationvalue
+SET value_pattern = '^(default|red|green|indigo|gray)$|^(#?([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3}))$',
+value_description = 'i18n/infoSystemConfigurationValueDescriptionMenuBackgroundColor',
+validation_message = 'i18n/systemConfigurationValueValidationInvalidBackgroundColor'
+WHERE config_key = 'MENU_BACKGROUND_COLOR';
+
+UPDATE systemconfigurationvalue
+SET value_pattern = '^[\w\s]{0,16}$'
+WHERE config_key = 'MENU_SUBTITLE';
+
+INSERT INTO schema_version (version_number, comment) VALUES (623, '#13552 - FIX menu regexes');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
