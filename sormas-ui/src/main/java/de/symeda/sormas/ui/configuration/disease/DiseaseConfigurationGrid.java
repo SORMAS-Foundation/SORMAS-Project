@@ -59,9 +59,11 @@ public class DiseaseConfigurationGrid extends FilteredGrid<DiseaseConfigurationI
 			DiseaseConfigurationIndexDto.EVENT_PARTICIPANT_FOLLOW_UP_DURATION,
 			DiseaseConfigurationIndexDto.EXTENDED_CLASSIFICATION,
 			DiseaseConfigurationIndexDto.EXTENDED_CLASSIFICATION_MULTI,
-			DiseaseConfigurationIndexDto.AUTOMATIC_SAMPLE_ASSIGNMENT_THRESHOLD);
+			DiseaseConfigurationIndexDto.AUTOMATIC_SAMPLE_ASSIGNMENT_THRESHOLD,
+			DiseaseConfigurationIndexDto.EXPOSURE_CATEGORY_NAMES);
 
 		getColumn(DiseaseConfigurationIndexDto.AGE_GROUPS).setSortable(false);
+		getColumn(DiseaseConfigurationIndexDto.EXPOSURE_CATEGORY_NAMES).setSortable(false);
 
 		addEditColumn(e -> ControllerProvider.getDiseaseConfirgurationController().editDiseaseConfiguration(e.getUuid()));
 

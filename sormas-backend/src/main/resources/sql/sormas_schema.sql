@@ -15465,8 +15465,6 @@ ALTER TABLE exposures_protectivemeasures_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (614, '#13887 - Exposure form redesign');
 
-
--- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
 -- 23-03-2026 new fields related to Malaria and Dengue samples and pathogenform.
 ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS serotypetext varchar(255);
 UPDATE pathogentest  SET serotypetext = serotype, serotype = 'OTHER' WHERE serotype IS NOT null   and serotypetext is null;
@@ -15541,6 +15539,170 @@ END $$;
 
 INSERT INTO schema_version (version_number, comment) VALUES (616, '#13801, #13814 - Malaria and Dengue TestReport columns renames');
 
+-- update delete triggers for exposure related tables
+
+alter table exposures_subsettings drop constraint unq_exposures_subsettings_0;
+alter table exposures_subsettings add constraint exposures_subsettings_pk primary key (exposure_id, subsetting);
+DROP TRIGGER IF EXISTS delete_history_trigger ON exposures_subsettings;
+
+alter table exposures_contactfactors drop constraint unq_exposures_contactfactors_0;
+alter table exposures_contactfactors add constraint exposures_contactfactors_pk primary key (exposure_id, contactfactor);
+DROP TRIGGER IF EXISTS delete_history_trigger ON exposures_contactfactors;
+
+alter table exposures_protectivemeasures drop constraint unq_exposures_protectivemeasures_0;
+alter table exposures_protectivemeasures add constraint exposures_protectivemeasures_pk primary key (exposure_id, protectivemeasure);
+DROP TRIGGER IF EXISTS delete_history_trigger ON exposures_protectivemeasures;
+
+INSERT INTO schema_version (version_number, comment) VALUES (617, '#13887 update keys and drop delete history triggers for new exposures tables');
+
+alter table diseaseconfiguration add exposurecategories varchar(255);
+alter table diseaseconfiguration_history add exposurecategories varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (618, '#13887 add exposure categories to disease configuration');
+
+-- #13828 - Customizable Fields
+
+CREATE TABLE IF NOT EXISTS customizablefieldmetadata (
+    id bigint NOT NULL,
+    uuid character varying(36) NOT NULL UNIQUE,
+    changeDate timestamp without time zone NOT NULL DEFAULT NOW(),
+    creationDate timestamp without time zone NOT NULL DEFAULT NOW(),
+    deleted boolean DEFAULT false,
+    deletionreason varchar(255),
+    otherdeletionreason text,
+    archived boolean DEFAULT false,
+    archiveundonereason varchar(512),
+    endofprocessingdate timestamp without time zone,
+
+    -- Core field metadata
+    name character varying(512) NOT NULL,
+    description text,
+    fieldType character varying(50) NOT NULL,  -- TEXT, DATE, COMBOBOX, YES_NO_UNKNOWN, CHECKBOX_LIST, RADIO_BUTTON_LIST
+    defaultValue text,
+
+    -- Constraints
+    mandatory boolean NOT NULL DEFAULT false,
+    readOnly boolean NOT NULL DEFAULT false,
+    active boolean NOT NULL DEFAULT true,
+
+    -- Context and UI placement
+    contextClass character varying(256) NOT NULL,
+    uiGroup character varying(256),
+    uiLinePosition integer,
+    uiLineWeight float4,
+
+    -- Complex JSON-serialized properties
+    visibilityRestrictions jsonb,
+    customProperties jsonb,
+    translations jsonb,
+
+    change_user_id     bigint,
+    sys_period tstzrange NOT NULL,
+
+    PRIMARY KEY (id),
+    UNIQUE(name, contextClass)
+);
+
+CREATE INDEX idx_customizablefieldmetadata_uuid
+    ON customizablefieldmetadata (uuid);
+CREATE INDEX idx_customizablefieldmetadata_contextClass
+    ON customizablefieldmetadata (contextClass);
+CREATE INDEX idx_customizablefieldmetadata_uiGroup
+    ON customizablefieldmetadata (uiGroup);
+CREATE INDEX idx_customizablefieldmetadata_active
+    ON customizablefieldmetadata (active);
+CREATE INDEX idx_customizablefieldmetadata_deleted
+    ON customizablefieldmetadata (deleted);
+
+ALTER TABLE customizablefieldmetadata OWNER TO sormas_user;
+ALTER TABLE customizablefieldmetadata ADD CONSTRAINT fk_change_user_id FOREIGN KEY (change_user_id) REFERENCES users (id);
+ALTER INDEX idx_customizablefieldmetadata_uuid OWNER TO sormas_user;
+ALTER INDEX idx_customizablefieldmetadata_contextClass OWNER TO sormas_user;
+ALTER INDEX idx_customizablefieldmetadata_uiGroup OWNER TO sormas_user;
+ALTER INDEX idx_customizablefieldmetadata_active OWNER TO sormas_user;
+ALTER INDEX idx_customizablefieldmetadata_deleted OWNER TO sormas_user;
+
+-- CustomizableFieldMetadata history tables
+CREATE TABLE customizablefieldmetadata_history (LIKE customizablefieldmetadata);
+
+DROP TRIGGER IF EXISTS versioning_trigger ON customizablefieldmetadata;
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE ON customizablefieldmetadata
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'customizablefieldmetadata_history', true);
+
+DROP TRIGGER IF EXISTS delete_history_trigger ON customizablefieldmetadata;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON customizablefieldmetadata
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('customizablefieldmetadata_history', 'id');
+
+ALTER TABLE customizablefieldmetadata_history OWNER TO sormas_user;
+
+-- Create CustomizableFieldValue table
+CREATE TABLE IF NOT EXISTS customizablefieldvalue (
+    id bigint NOT NULL,
+    uuid character varying(36) NOT NULL UNIQUE,
+    changeDate timestamp(3) NOT NULL DEFAULT NOW(),
+    creationDate timestamp(3) NOT NULL DEFAULT NOW(),
+    deleted boolean DEFAULT false,
+    deletionreason varchar(255),
+    otherdeletionreason text,
+    archived boolean DEFAULT false,
+    archiveundonereason varchar(512),
+    endofprocessingdate timestamp without time zone,
+
+    -- Fkey to metadata
+    customizablefieldmetadata_id bigint NOT NULL,
+
+    -- Generic entity reference
+    entityUuid character varying(36) NOT NULL,
+    contextClass character varying(256) NOT NULL,
+
+    -- Value storage (text for all types, type conversion happens in service)
+    value text,
+
+    change_user_id     bigint,
+    sys_period tstzrange NOT NULL,
+
+    PRIMARY KEY (id),
+    UNIQUE(customizablefieldmetadata_id, entityUuid, contextClass)
+);
+
+CREATE INDEX idx_customizablefieldvalue_uuid
+    ON customizablefieldvalue (uuid);
+CREATE INDEX idx_customizablefieldvalue_entityUuid
+    ON customizablefieldvalue (entityUuid);
+CREATE INDEX idx_customizablefieldvalue_contextEntity
+    ON customizablefieldvalue (contextClass, entityUuid);
+CREATE INDEX idx_customizablefieldvalue_fieldMetadata
+    ON customizablefieldvalue (customizablefieldmetadata_id);
+CREATE INDEX idx_customizablefieldvalue_deleted
+    ON customizablefieldvalue (deleted);
+
+ALTER TABLE customizablefieldvalue ADD CONSTRAINT fk_change_user_id FOREIGN KEY (change_user_id) REFERENCES users (id);
+ALTER TABLE customizablefieldvalue OWNER TO sormas_user;
+
+-- CustomizableFieldValue history tables
+CREATE TABLE customizablefieldvalue_history (LIKE customizablefieldvalue);
+
+DROP TRIGGER IF EXISTS versioning_trigger ON customizablefieldvalue;
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE ON customizablefieldvalue
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'customizablefieldvalue_history', true);
+
+DROP TRIGGER IF EXISTS delete_history_trigger ON customizablefieldvalue;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON customizablefieldvalue
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('customizablefieldvalue_history', 'id');
+
+ALTER TABLE customizablefieldvalue_history OWNER TO sormas_user;
+INSERT INTO schema_version (version_number, comment) VALUES (619, '#13828 - Add history tables for customizable fields');
+
+-- #13828 - Customizable Fields - Admin user rights
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'CUSTOMIZABLE_FIELD_MANAGEMENT' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN');
+
+INSERT INTO schema_version (version_number, comment) VALUES (620, '#13828 - Add system configuration rights for admin user');
+
+
 -- updated regexes for MENU system config values
 UPDATE systemconfigurationvalue
 SET value_pattern = '^(default|red|green|indigo|gray)$|^(#?([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3}))$'
@@ -15550,6 +15712,6 @@ UPDATE systemconfigurationvalue
 SET value_pattern = '^[\w\s]{0,16}$'
 WHERE config_key = 'MENU_SUBTITLE';
 
-INSERT INTO schema_version (version_number, comment) VALUES (617, '#13552 - FIX menu regexes');
+INSERT INTO schema_version (version_number, comment) VALUES (621, '#13552 - FIX menu regexes');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

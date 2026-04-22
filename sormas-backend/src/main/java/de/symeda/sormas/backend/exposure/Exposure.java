@@ -34,7 +34,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.UniqueConstraint;
 
 import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.epidata.WaterSource;
@@ -83,6 +82,7 @@ public class Exposure extends AbstractDomainObject {
 	public static final String CONTACT_FACTOR_DETAILS = "contactFactorDetails";
 	public static final String PROTECTIVE_MEASURE_DETAILS = "protectiveMeasureDetails";
 	public static final String EXPOSURE_COMMENT = "exposureComment";
+	public static final String CONDITION_OF_ANIMAL = "conditionOfAnimal";
 	public static final String ANIMAL_CATEGORY = "animalCategory";
 	public static final String ANIMAL_CATEGORY_DETAILS = "animalCategoryDetails";
 	public static final String FOMITE_TRANSMISSION_LOCATION = "fomiteTransmissionLocation";
@@ -906,10 +906,7 @@ public class Exposure extends AbstractDomainObject {
 	@ElementCollection(fetch = FetchType.EAGER)
 	@Enumerated(EnumType.STRING)
 	@CollectionTable(name = "exposures_subsettings",
-		joinColumns = @JoinColumn(name = "exposure_id", referencedColumnName = Exposure.ID, nullable = false),
-		uniqueConstraints = @UniqueConstraint(columnNames = {
-			"exposure_id",
-			"subsetting" }))
+		joinColumns = @JoinColumn(name = "exposure_id", referencedColumnName = Exposure.ID, nullable = false))
 	@Column(name = "subsetting", nullable = false)
 	public Set<ExposureSubSetting> getSubSettings() {
 		return subSettings;
@@ -922,10 +919,7 @@ public class Exposure extends AbstractDomainObject {
 	@ElementCollection(fetch = FetchType.EAGER)
 	@Enumerated(EnumType.STRING)
 	@CollectionTable(name = "exposures_contactfactors",
-		joinColumns = @JoinColumn(name = "exposure_id", referencedColumnName = Exposure.ID, nullable = false),
-		uniqueConstraints = @UniqueConstraint(columnNames = {
-			"exposure_id",
-			"contactfactor" }))
+		joinColumns = @JoinColumn(name = "exposure_id", referencedColumnName = Exposure.ID, nullable = false))
 	@Column(name = "contactfactor", nullable = false)
 	public Set<ExposureContactFactor> getContactFactors() {
 		return contactFactors;
@@ -938,10 +932,7 @@ public class Exposure extends AbstractDomainObject {
 	@ElementCollection(fetch = FetchType.EAGER)
 	@Enumerated(EnumType.STRING)
 	@CollectionTable(name = "exposures_protectivemeasures",
-		joinColumns = @JoinColumn(name = "exposure_id", referencedColumnName = Exposure.ID, nullable = false),
-		uniqueConstraints = @UniqueConstraint(columnNames = {
-			"exposure_id",
-			"protectivemeasure" }))
+		joinColumns = @JoinColumn(name = "exposure_id", referencedColumnName = Exposure.ID, nullable = false))
 	@Column(name = "protectivemeasure", nullable = false)
 	public Set<ExposureProtectiveMeasure> getProtectiveMeasures() {
 		return protectiveMeasures;

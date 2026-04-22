@@ -65,13 +65,15 @@ public enum ExposureSubSetting {
 		return setting;
 	}
 
-	/**
-	 * Returns sub-settings for a given category and setting combination.
-	 * UNKNOWN and OTHER are included when the combination has specific sub-settings.
-	 * Returns empty list if no specific sub-settings exist for the combination.
-	 */
 	public static List<ExposureSubSetting> getValues(ExposureCategory category, ExposureSetting setting) {
-		if (category == null || setting == null) {
+		if (category == null) {
+			return Collections.emptyList();
+		}
+
+		if (category.hasNoSubSetting()) {
+			return Collections.emptyList();
+		}
+		if (setting == null) {
 			return Collections.emptyList();
 		}
 		boolean hasSpecific = Arrays.stream(values()).anyMatch(s -> s.category == category && s.setting == setting);
@@ -81,6 +83,25 @@ public enum ExposureSubSetting {
 		return Arrays.stream(values())
 			.filter(s -> (s.category == category && s.setting == setting) || s.category == null)
 			.collect(Collectors.toList());
+	}
+
+	public static List<ExposureSubSetting> getValuesForCategoryOnly(ExposureCategory category) {
+		if (category == null) {
+			return Collections.emptyList();
+		}
+
+		if (category.hasNoSubSetting()) {
+			return Collections.emptyList();
+		}
+
+		// Check if this category has subsettings with null setting
+		boolean hasCategoryOnlySubSettings = Arrays.stream(values()).anyMatch(s -> s.category == category && s.setting == null);
+
+		if (!hasCategoryOnlySubSettings) {
+			return Collections.emptyList();
+		}
+
+		return Arrays.stream(values()).filter(s -> (s.category == category && s.setting == null) || s.category == null).collect(Collectors.toList());
 	}
 
 	@Override

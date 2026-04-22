@@ -23,26 +23,24 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldContext;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
-import de.symeda.sormas.api.exposure.ExposureContactFactor;
 import de.symeda.sormas.api.exposure.ExposureDto;
-import de.symeda.sormas.api.exposure.ExposureProtectiveMeasure;
-import de.symeda.sormas.api.exposure.ExposureSubSetting;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.activityascase.ActivityAsCase;
 import de.symeda.sormas.backend.activityascase.ActivityAsCaseService;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.customizablefield.CustomizableFieldValueService;
 import de.symeda.sormas.backend.exposure.Exposure;
 import de.symeda.sormas.backend.exposure.ExposureService;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
@@ -68,6 +66,18 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 	private UserService userService;
 	@EJB
 	private CountryService countryService;
+	@EJB
+	private CustomizableFieldValueService customizableFieldValueService;
+
+	public void softDeleteCustomizableFieldValues(EpiData epiData, DeletionDetails deletionDetails) {
+		if (epiData == null || epiData.getUuid() == null) {
+			return;
+		}
+		customizableFieldValueService.softDeleteValuesForEntity(epiData.getUuid(), CustomizableFieldContext.EPIDATA, deletionDetails);
+		for (Exposure exposure : epiData.getExposures()) {
+			customizableFieldValueService.softDeleteValuesForEntity(exposure.getUuid(), CustomizableFieldContext.EXPOSURE, deletionDetails);
+		}
+	}
 
 	public EpiData fillOrBuildEntity(EpiDataDto source, EpiData target, boolean checkChangeDate) {
 		if (source == null) {
@@ -219,26 +229,9 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setAnimalCategoryDetails(source.getAnimalCategoryDetails());
 		target.setFomiteTransmissionLocation(source.getFomiteTransmissionLocation());
 
-		Set<ExposureSubSetting> subSettings = Optional.of(target).map(Exposure::getSubSettings).orElseGet(HashSet::new);
-		subSettings.clear();
-		if (source.getSubSettings() != null) {
-			subSettings.addAll(source.getSubSettings());
-		}
-		target.setSubSettings(subSettings);
-
-		Set<ExposureContactFactor> contactFactors = Optional.of(target).map(Exposure::getContactFactors).orElseGet(HashSet::new);
-		contactFactors.clear();
-		if (source.getContactFactors() != null) {
-			contactFactors.addAll(source.getContactFactors());
-		}
-		target.setContactFactors(contactFactors);
-
-		Set<ExposureProtectiveMeasure> protectiveMeasures = Optional.of(target).map(Exposure::getProtectiveMeasures).orElseGet(HashSet::new);
-		protectiveMeasures.clear();
-		if (source.getProtectiveMeasures() != null) {
-			protectiveMeasures.addAll(source.getProtectiveMeasures());
-		}
-		target.setProtectiveMeasures(protectiveMeasures);
+		target.setSubSettings(source.getSubSettings() != null ? source.getSubSettings() : new HashSet<>());
+		target.setContactFactors(source.getContactFactors() != null ? source.getContactFactors() : new HashSet<>());
+		target.setProtectiveMeasures(source.getProtectiveMeasures() != null ? source.getProtectiveMeasures() : new HashSet<>());
 
 		return target;
 	}

@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.disease;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_TEXT;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -12,7 +13,9 @@ import javax.persistence.Enumerated;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.audit.AuditIgnore;
+import de.symeda.sormas.api.exposure.ExposureCategory;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.exposure.ExposureCategorySetConverter;
 
 @Entity(name = DiseaseConfiguration.TABLE_NAME)
 @AuditIgnore(retainWrites = true)
@@ -53,6 +56,8 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 	private List<String> ageGroups;
 
 	private Integer automaticSampleAssignmentThreshold;
+
+	private Set<ExposureCategory> exposureCategories;
 
 	public static DiseaseConfiguration build(Disease disease) {
 		DiseaseConfiguration configuration = new DiseaseConfiguration();
@@ -213,5 +218,15 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 
 	public void setAutomaticSampleAssignmentThreshold(Integer automaticSampleAssignmentThreshold) {
 		this.automaticSampleAssignmentThreshold = automaticSampleAssignmentThreshold;
+	}
+
+	@Column
+	@Convert(converter = ExposureCategorySetConverter.class)
+	public Set<ExposureCategory> getExposureCategories() {
+		return exposureCategories;
+	}
+
+	public void setExposureCategories(Set<ExposureCategory> exposureCategories) {
+		this.exposureCategories = exposureCategories;
 	}
 }

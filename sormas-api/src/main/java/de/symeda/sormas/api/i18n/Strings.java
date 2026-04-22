@@ -506,6 +506,7 @@ public interface Strings {
 	String headingClinicalMeasurements = "headingClinicalMeasurements";
 	String headingClinicalPresentation = "headingClinicalPresentation";
 	String headingClinicalVisitsDeleted = "headingClinicalVisitsDeleted";
+	String headingCloneCustomizableField = "headingCloneCustomizableField";
 	String headingClusterType = "headingClusterType";
 	String headingComparisonCase = "headingComparisonCase";
 	String headingCompleteness = "headingCompleteness";
@@ -514,6 +515,7 @@ public interface Strings {
 	String headingConfirmBulkGrantSpecialAccess = "headingConfirmBulkGrantSpecialAccess";
 	String headingConfirmChoice = "headingConfirmChoice";
 	String headingConfirmDearchiving = "headingConfirmDearchiving";
+	String headingConfirmDeleteCustomizableField = "headingConfirmDeleteCustomizableField";
 	String headingConfirmDeletion = "headingConfirmDeletion";
 	String headingConfirmDisabling = "headingConfirmDisabling";
 	String headingConfirmEnabling = "headingConfirmEnabling";
@@ -546,6 +548,7 @@ public interface Strings {
 	String headingCorrectSample = "headingCorrectSample";
 	String headingCreateAdditionalTest = "headingCreateAdditionalTest";
 	String headingCreateCampaignDataForm = "headingCreateCampaignDataForm";
+	String headingCreateCustomizableField = "headingCreateCustomizableField";
 	String headingCreateEntry = "headingCreateEntry";
 	String headingCreateNewAction = "headingCreateNewAction";
 	String headingCreateNewAggregateReport = "headingCreateNewAggregateReport";
@@ -579,6 +582,11 @@ public interface Strings {
 	String headingCreateSurveillanceReport = "headingCreateSurveillanceReport";
 	String headingCurrentHospitalization = "headingCurrentHospitalization";
 	String headingCustomizableEnumConfigurationInfo = "headingCustomizableEnumConfigurationInfo";
+	String headingCustomizableFieldBasics = "headingCustomizableFieldBasics";
+	String headingCustomizableFieldBehavior = "headingCustomizableFieldBehavior";
+	String headingCustomizableFieldPlacement = "headingCustomizableFieldPlacement";
+	String headingCustomizableFieldTranslations = "headingCustomizableFieldTranslations";
+	String headingCustomizableFieldVisibility = "headingCustomizableFieldVisibility";
 	String headingDatabaseExportFailed = "headingDatabaseExportFailed";
 	String headingDataImport = "headingDataImport";
 	String headingDearchiveAdverseEvent = "headingDearchiveAdverseEvent";
@@ -620,6 +628,7 @@ public interface Strings {
 	String headingEditContacts = "headingEditContacts";
 	String headingEditContinent = "headingEditContinent";
 	String headingEditCountry = "headingEditCountry";
+	String headingEditCustomizableField = "headingEditCustomizableField";
 	String headingEditEventParticipant = "headingEditEventParticipant";
 	String headingEditEvents = "headingEditEvents";
 	String headingEditLineListing = "headingEditLineListing";
@@ -650,6 +659,7 @@ public interface Strings {
 	String headingEnvironmentSamplesRestored = "headingEnvironmentSamplesRestored";
 	String headingEpiConclusion = "headingEpiConclusion";
 	String headingEpiCurve = "headingEpiCurve";
+	String headingEpiDataOtherInformation = "headingEpiDataOtherInformation";
 	String headingEpiDataSourceCaseContacts = "headingEpiDataSourceCaseContacts";
 	String headingEpipulseExportCreated = "headingEpipulseExportCreated";
 	String headingErrorReportNotAvailable = "headingErrorReportNotAvailable";
@@ -675,6 +685,7 @@ public interface Strings {
 	String headingExportUserRightsFailed = "headingExportUserRightsFailed";
 	String headingExposureDetails = "headingExposureDetails";
 	String headingExposureInvestigation = "headingExposureInvestigation";
+	String headingExposures = "headingExposures";
 	String headingExtendFollowUp = "headingExtendFollowUp";
 	String headingExtendQuarantine = "headingExtendQuarantine";
 	String headingExternalEmailDetails = "headingExternalEmailDetails";
@@ -1084,6 +1095,8 @@ public interface Strings {
 	String infoNoAefiInvestigations = "infoNoAefiInvestigations";
 	String infoNoCasesFoundStatistics = "infoNoCasesFoundStatistics";
 	String infoNoCustomizableEnumTranslations = "infoNoCustomizableEnumTranslations";
+	String infoNoCustomizableFieldOptions = "infoNoCustomizableFieldOptions";
+	String infoNoCustomizableFieldTranslations = "infoNoCustomizableFieldTranslations";
 	String infoNoDiseaseConfigurationAgeGroups = "infoNoDiseaseConfigurationAgeGroups";
 	String infoNoDiseaseSelected = "infoNoDiseaseSelected";
 	String infoNoEnvironmentSamples = "infoNoEnvironmentSamples";
@@ -1173,6 +1186,7 @@ public interface Strings {
 	String infoVaccinationDoseCount = "infoVaccinationDoseCount";
 	String infoWeeklyReportsView = "infoWeeklyReportsView";
 	String labelActualLongSeed = "labelActualLongSeed";
+	String labelCustomizableFieldOptions = "labelCustomizableFieldOptions";
 	String labelNoVaccinationDate = "labelNoVaccinationDate";
 	String labelNoVaccineName = "labelNoVaccineName";
 	String labelNumberOfAreas = "labelNumberOfAreas";
@@ -1381,6 +1395,10 @@ public interface Strings {
 	String messageCountVisitsNotSetToLostAccessDeniedReason = "messageCountVisitsNotSetToLostAccessDeniedReason";
 	String messageCreateCollectionTask = "messageCreateCollectionTask";
 	String messageCustomizableEnumValueSaved = "messageCustomizableEnumValueSaved";
+	String messageCustomizableFieldCloned = "messageCustomizableFieldCloned";
+	String messageCustomizableFieldCreated = "messageCustomizableFieldCreated";
+	String messageCustomizableFieldDeleted = "messageCustomizableFieldDeleted";
+	String messageCustomizableFieldSaved = "messageCustomizableFieldSaved";
 	String messageDatabaseExportFailed = "messageDatabaseExportFailed";
 	String messageDeleteImmunizationVaccinations = "messageDeleteImmunizationVaccinations";
 	String messageDeleteReasonNotFilled = "messageDeleteReasonNotFilled";
@@ -1795,6 +1813,7 @@ public interface Strings {
 	String promptCasesEpiWeekTo = "promptCasesEpiWeekTo";
 	String promptCaseSex = "promptCaseSex";
 	String promptCasesSearchField = "promptCasesSearchField";
+	String promptConfirmDeleteCustomizableField = "promptConfirmDeleteCustomizableField";
 	String promptContactDateFrom = "promptContactDateFrom";
 	String promptContactDateTo = "promptContactDateTo";
 	String promptContactDateType = "promptContactDateType";
@@ -1805,6 +1824,8 @@ public interface Strings {
 	String promptCustomizableEnumSearchField = "promptCustomizableEnumSearchField";
 	String promptCustomizableEnumTranslationCaption = "promptCustomizableEnumTranslationCaption";
 	String promptCustomizableEnumTranslationLanguage = "promptCustomizableEnumTranslationLanguage";
+	String promptCustomizableFieldOption = "promptCustomizableFieldOption";
+	String promptCustomizableFieldSearchField = "promptCustomizableFieldSearchField";
 	String promptDateTo = "promptDateTo";
 	String promptDisease = "promptDisease";
 	String promptDiseaseConfigurationAgeFrom = "promptDiseaseConfigurationAgeFrom";
