@@ -15513,11 +15513,11 @@ ALTER TABLE testreport ADD COLUMN IF NOT EXISTS serotypetext varchar(255);
 UPDATE testreport  SET serotypetext = serotype, serotype = 'OTHER' WHERE serotype IS NOT null   and serotypetext is null;
 DO $$
 BEGIN
-    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport' AND column_name = 'genotyperesult')
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport' AND column_name = 'genotyperesult') 
         AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport' AND column_name = 'genotype') THEN
         ALTER TABLE testreport RENAME COLUMN genotyperesult TO genotype;
     END IF;
-    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport' AND column_name = 'genotyperesulttext')
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport' AND column_name = 'genotyperesulttext') 
         AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport' AND column_name = 'genotypetext') THEN
         ALTER TABLE testreport RENAME COLUMN genotyperesulttext TO genotypetext;
     END IF;
@@ -15527,11 +15527,11 @@ ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS serotypetext varchar(255
 UPDATE testreport_history  SET serotypetext = serotype, serotype = 'OTHER' WHERE serotype IS NOT null   and serotypetext is null;
 DO $$
 BEGIN
-    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport_history' AND column_name = 'genotyperesult')
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport_history' AND column_name = 'genotyperesult') 
         AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport_history' AND column_name = 'genotype') THEN
         ALTER TABLE testreport_history RENAME COLUMN genotyperesult TO genotype;
     END IF;
-    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport_history' AND column_name = 'genotyperesulttext')
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport_history' AND column_name = 'genotyperesulttext') 
         AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport_history' AND column_name = 'genotypetext') THEN
         ALTER TABLE testreport_history RENAME COLUMN genotyperesulttext TO genotypetext;
     END IF;
@@ -15550,7 +15550,7 @@ alter table exposures_contactfactors add constraint exposures_contactfactors_pk 
 DROP TRIGGER IF EXISTS delete_history_trigger ON exposures_contactfactors;
 
 alter table exposures_protectivemeasures drop constraint unq_exposures_protectivemeasures_0;
-alter table exposures_protectivemeasures add constraint exposures_protectivemeasures_pk primary key (exposure_id, protectivemeasure);
+alter table exposures_protectivemeasures add constraint exposures_protectivemeasures_pk primary key (exposure_id, protectivemeasure);	
 DROP TRIGGER IF EXISTS delete_history_trigger ON exposures_protectivemeasures;
 
 INSERT INTO schema_version (version_number, comment) VALUES (617, '#13887 update keys and drop delete history triggers for new exposures tables');
@@ -15598,20 +15598,20 @@ CREATE TABLE IF NOT EXISTS customizablefieldmetadata (
 
     change_user_id     bigint,
     sys_period tstzrange NOT NULL,
-
+    
     PRIMARY KEY (id),
     UNIQUE(name, contextClass)
 );
 
-CREATE INDEX idx_customizablefieldmetadata_uuid
+CREATE INDEX idx_customizablefieldmetadata_uuid 
     ON customizablefieldmetadata (uuid);
-CREATE INDEX idx_customizablefieldmetadata_contextClass
+CREATE INDEX idx_customizablefieldmetadata_contextClass 
     ON customizablefieldmetadata (contextClass);
-CREATE INDEX idx_customizablefieldmetadata_uiGroup
+CREATE INDEX idx_customizablefieldmetadata_uiGroup 
     ON customizablefieldmetadata (uiGroup);
-CREATE INDEX idx_customizablefieldmetadata_active
+CREATE INDEX idx_customizablefieldmetadata_active 
     ON customizablefieldmetadata (active);
-CREATE INDEX idx_customizablefieldmetadata_deleted
+CREATE INDEX idx_customizablefieldmetadata_deleted 
     ON customizablefieldmetadata (deleted);
 
 ALTER TABLE customizablefieldmetadata OWNER TO sormas_user;
@@ -15662,20 +15662,20 @@ CREATE TABLE IF NOT EXISTS customizablefieldvalue (
 
     change_user_id     bigint,
     sys_period tstzrange NOT NULL,
-
+    
     PRIMARY KEY (id),
     UNIQUE(customizablefieldmetadata_id, entityUuid, contextClass)
 );
 
-CREATE INDEX idx_customizablefieldvalue_uuid
+CREATE INDEX idx_customizablefieldvalue_uuid 
     ON customizablefieldvalue (uuid);
-CREATE INDEX idx_customizablefieldvalue_entityUuid
+CREATE INDEX idx_customizablefieldvalue_entityUuid 
     ON customizablefieldvalue (entityUuid);
-CREATE INDEX idx_customizablefieldvalue_contextEntity
+CREATE INDEX idx_customizablefieldvalue_contextEntity 
     ON customizablefieldvalue (contextClass, entityUuid);
-CREATE INDEX idx_customizablefieldvalue_fieldMetadata
+CREATE INDEX idx_customizablefieldvalue_fieldMetadata 
     ON customizablefieldvalue (customizablefieldmetadata_id);
-CREATE INDEX idx_customizablefieldvalue_deleted
+CREATE INDEX idx_customizablefieldvalue_deleted 
     ON customizablefieldvalue (deleted);
 
 ALTER TABLE customizablefieldvalue ADD CONSTRAINT fk_change_user_id FOREIGN KEY (change_user_id) REFERENCES users (id);
