@@ -105,6 +105,8 @@ public enum DatabaseTable {
 	FACILITIES(DatabaseTableType.INFRASTRUCTURE, "facilities", null),
 	POINTS_OF_ENTRY(DatabaseTableType.INFRASTRUCTURE, "points_of_entry", null),
 	CUSTOMIZABLE_ENUM_VALUES(DatabaseTableType.CONFIGURATION, "customizable_enum_values", null),
+	CUSTOMIZABLE_FIELD_METADATA(DatabaseTableType.CONFIGURATION, "customizable_field_metadata", null),
+	CUSTOMIZABLE_FIELD_VALUE(DatabaseTableType.CONFIGURATION, CUSTOMIZABLE_FIELD_METADATA, "customizable_field_value"),
 
 	CAMPAIGNS(DatabaseTableType.SORMAS, "campaigns", dependingOnFeature(FeatureType.CAMPAIGNS)),
 	CAMPAIGN_CAMPAIGNFORMMETA(DatabaseTableType.SORMAS, CAMPAIGNS, "campaign_campaignformmeta"),

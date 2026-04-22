@@ -455,7 +455,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(isExternalShareEnabled), WEEK_AND_DATE_FILTER);
 
 		moreFiltersContainer.addComponent(buildBirthdayRangeFilter(), BIRTHDATE_RANGE_FILTER);
-		if (UiUtil.enabled(FeatureType.SURVEYS)) {
+		if (UiUtil.enabled(FeatureType.SURVEYS) && UiUtil.permitted(UserRight.SURVEY_VIEW)) {
 			buildSurveyFilters(moreFiltersContainer);
 		}
 	}
@@ -862,15 +862,19 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 	private void buildSurveyFilters(CustomLayout layout) {
 
-		ComboBox surveyCombo = addField(layout, FieldConfiguration.withCaptionAndPixelSized(CaseCriteria.SURVEY, I18nProperties.getString(Strings.promptSurvey), 200));
+		ComboBox surveyCombo =
+			addField(layout, FieldConfiguration.withCaptionAndPixelSized(CaseCriteria.SURVEY, I18nProperties.getString(Strings.promptSurvey), 200));
 		FieldHelper.updateItems(surveyCombo, FacadeProvider.getSurveyFacade().getAllAsReference());
-		addField(layout,
+		addField(
+			layout,
 			FieldConfiguration
 				.withCaptionAndPixelSized(CaseCriteria.SURVEY_RESPONSE_STATUS, I18nProperties.getString(Strings.promptSurveyResponseStatus), 200));
-		addField(layout,
+		addField(
+			layout,
 			FieldConfiguration
 				.withCaptionAndPixelSized(CaseCriteria.SURVEY_ASSIGNED_FROM, I18nProperties.getString(Strings.promptSurveyAssignedFrom), 200));
-		addField(layout,
+		addField(
+			layout,
 			FieldConfiguration
 				.withCaptionAndPixelSized(CaseCriteria.SURVEY_ASSIGNED_TO, I18nProperties.getString(Strings.promptSurveyAssignedTo), 200));
 
