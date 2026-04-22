@@ -1173,6 +1173,7 @@ public interface Strings {
 	String infoSyncUsers = "infoSyncUsers";
 	String infoSystemConfigurationValueDescriptionEmailSenderAddress = "infoSystemConfigurationValueDescriptionEmailSenderAddress";
 	String infoSystemConfigurationValueDescriptionEmailSenderName = "infoSystemConfigurationValueDescriptionEmailSenderName";
+	String infoSystemConfigurationValueDescriptionMenuBackgroundColor = "infoSystemConfigurationValueDescriptionMenuBackgroundColor";
 	String infoSystemConfigurationValueDescriptionSmsAuthKey = "infoSystemConfigurationValueDescriptionSmsAuthKey";
 	String infoSystemConfigurationValueDescriptionSmsAuthSecret = "infoSystemConfigurationValueDescriptionSmsAuthSecret";
 	String infoSystemConfigurationValueDescriptionSmsSenderName = "infoSystemConfigurationValueDescriptionSmsSenderName";

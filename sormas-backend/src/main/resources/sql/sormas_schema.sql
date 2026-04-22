@@ -15770,4 +15770,17 @@ UPDATE diseaseconfiguration SET exposurecategories = 'VECTOR_BORNE' WHERE diseas
 
 INSERT INTO schema_version (version_number, comment) VALUES (622, '#13887 default disease exposure category configuration');
 
+-- updated regexes for MENU system config values
+UPDATE systemconfigurationvalue
+SET value_pattern = '^(default|red|green|indigo|gray)$|^(#?([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3}))$',
+value_description = 'i18n/infoSystemConfigurationValueDescriptionMenuBackgroundColor',
+validation_message = 'i18n/systemConfigurationValueValidationInvalidBackgroundColor'
+WHERE config_key = 'MENU_BACKGROUND_COLOR';
+
+UPDATE systemconfigurationvalue
+SET value_pattern = '^[\w\s]{0,16}$'
+WHERE config_key = 'MENU_SUBTITLE';
+
+INSERT INTO schema_version (version_number, comment) VALUES (623, '#13552 - FIX menu regexes');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
