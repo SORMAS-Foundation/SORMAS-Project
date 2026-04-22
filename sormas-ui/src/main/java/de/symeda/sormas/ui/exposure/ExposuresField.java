@@ -15,7 +15,10 @@
 
 package de.symeda.sormas.ui.exposure;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -36,6 +39,9 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldContext;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataDto;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
 import de.symeda.sormas.api.exposure.ExposureCategory;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -57,7 +63,10 @@ import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FieldAccessCellStyleGenerator;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
-@SuppressWarnings("serial")
+@SuppressWarnings({
+	"java:S110", // suppress sonar too many parents warning
+	"java:S2160" // suppress missing equals not relevant for Vaadin components
+})
 public class ExposuresField extends AbstractTableField<ExposureDto> {
 
 	private static final String COLUMN_EXPOSURE_CATEGORY = ExposureDto.EXPOSURE_CATEGORY;
@@ -72,11 +81,12 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 	private boolean isPseudonymized;
 	private boolean isEditAllowed;
 	private Disease disease;
+	private final Map<String, Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto>> pendingCustomizableFieldValues = new HashMap<>();
 
 	public ExposuresField(
 		Disease disease,
 		FieldVisibilityCheckers fieldVisibilityCheckers,
-		UiFieldAccessCheckers fieldAccessCheckers,
+		UiFieldAccessCheckers<?> fieldAccessCheckers,
 		boolean isEditAllowed) {
 
 		super(fieldAccessCheckers, isEditAllowed);
@@ -215,13 +225,21 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 			entry.setUuid(DataHelper.createUuid());
 		}
 
+		List<CustomizableFieldMetadataDto> exposureMetadata =
+			FacadeProvider.getCustomizableFieldMetadataFacade().getActiveFieldsForContext(CustomizableFieldContext.EXPOSURE);
+		Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> exposureFieldValues = pendingCustomizableFieldValues.containsKey(entry.getUuid())
+			? pendingCustomizableFieldValues.get(entry.getUuid())
+			: FacadeProvider.getCustomizableFieldValueFacade().getValuesForEntity(entry.getUuid(), CustomizableFieldContext.EXPOSURE);
+
 		ExposureForm exposureForm = new ExposureForm(
 			create,
 			epiDataParentClass,
 			getSourceContactsCallback != null ? getSourceContactsCallback.get() : null,
 			fieldVisibilityCheckers,
 			fieldAccessCheckers,
-			disease);
+			disease,
+			exposureMetadata,
+			exposureFieldValues);
 		exposureForm.setValue(entry);
 
 		final CommitDiscardWrapperComponent<ExposureForm> component =
@@ -245,6 +263,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 
 			component.addCommitListener(() -> {
 				if (!exposureForm.getFieldGroup().isModified()) {
+					pendingCustomizableFieldValues.put(entry.getUuid(), exposureForm.collectCurrentFieldValues());
 					commitCallback.accept(exposureForm.getValue());
 
 					updateAddButtonVisibility(getValue().size());
@@ -255,6 +274,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 				component.addDeleteListener(() -> {
 					popupWindow.close();
 					ExposuresField.this.removeEntry(entry);
+					pendingCustomizableFieldValues.remove(entry.getUuid());
 
 					updateAddButtonVisibility(getValue().size());
 				}, I18nProperties.getCaption(ExposureDto.I18N_PREFIX));
@@ -283,6 +303,10 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 		if (getValue() != null) {
 			updateAddButtonVisibility(getValue().size());
 		}
+	}
+
+	public Map<String, Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto>> collectCustomizableFieldValues() {
+		return Collections.unmodifiableMap(pendingCustomizableFieldValues);
 	}
 
 	public void setGetSourceContactsCallback(Supplier<List<ContactReferenceDto>> callback) {

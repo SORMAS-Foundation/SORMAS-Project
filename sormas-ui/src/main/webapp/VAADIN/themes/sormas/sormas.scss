@@ -50,7 +50,7 @@ $v-gradient: false;
 $v-border: 2px solid $v-focus-color;
 $v-border-subtle: 2px solid $v-selection-color;
 $v-border-primary: 2px solid $v-primary-color;
-$v-caption-font-weight: 600 !default; 
+$v-caption-font-weight: 600 !default;
 
 $v-layout-margin-top: round($v-unit-size / 1.5) !default;
 $v-layout-margin-right: $v-layout-margin-top !default;
@@ -60,7 +60,7 @@ $v-layout-spacing-vertical: round($v-unit-size / 1.8) !default;
 $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
 
 
-$editor-shadow: 0 0 10px 10px rgba(0,0,0,.1) !default;
+$editor-shadow: 0 0 10px 10px rgba(0, 0, 0, .1) !default;
 $editor-background-color: #6691C4 !default;
 $editor-embed-background-color: darken($editor-background-color, 5%) !default;
 $editor-raised-background-color: lighten($editor-background-color, 10%) !default;
@@ -75,6 +75,7 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
 @import "components/combobox.scss";
 @import "components/countelement.scss";
 @import "components/customcomponent.scss";
+@import "components/customizablefields.scss";
 @import "components/datefield.scss";
 @import "components/exttokenfield.scss";
 @import "components/grid.scss";
@@ -119,13 +120,16 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
 }
 
 @function valo-font-color ($bg-color, $contrast: $v-font-color-contrast) {
-  @if type-of($bg-color) == color {
+  @if type-of($bg-color)==color {
     @if is-dark-color($bg-color) {
       @return $v-background-color;
-    } @else {
+    }
+
+    @else {
       @return #374B59;
     }
   }
+
   @return #374B59;
 }
 
@@ -133,12 +137,13 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
   @include valo;
 
   @include sormas-global;
-  
+
   @include sormas-button;
-  @include sormas-checkbox;		
+  @include sormas-checkbox;
   @include sormas-combobox;
   @include sormas-countelement;
   @include sormas-customcomponent;
+  @include sormas-customizablefields;
   @include sormas-datefield;
   @include sormas-exttokenfield;
   @include sormas-grid;
@@ -172,10 +177,10 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
   @include sormas-login-view;
   @include sormas-statistics-view;
   @include sormas-view;
-  
+
   @include sormas-bootstrap-grid;
   @include sormas-deprecated;
-  
+
   .sormas-content {
     overflow: auto;
   }

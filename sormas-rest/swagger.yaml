@@ -2143,6 +2143,401 @@ paths:
           description: default response
       tags:
       - Customizable Enum Value Controller
+  /customizablefieldmetadata/all:
+    get:
+      operationId: getAll_6
+      responses:
+        default:
+          content:
+            application/json; charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CustomizableFieldMetadataDto'
+          description: default response
+      tags:
+      - Customizable Field Metadata Controller
+  /customizablefieldmetadata/byname:
+    get:
+      operationId: getByNameAndContext
+      parameters:
+      - in: query
+        name: name
+        schema:
+          type: string
+      - in: query
+        name: contextClass
+        schema:
+          type: string
+          enum:
+          - CASE
+          - EPIDATA
+          - EXPOSURE
+      responses:
+        default:
+          content:
+            application/json; charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/CustomizableFieldMetadataDto'
+          description: default response
+      tags:
+      - Customizable Field Metadata Controller
+  /customizablefieldmetadata/context/{contextClass}:
+    get:
+      operationId: getActiveFieldsForContext
+      parameters:
+      - in: path
+        name: contextClass
+        required: true
+        schema:
+          type: string
+          enum:
+          - CASE
+          - EPIDATA
+          - EXPOSURE
+      responses:
+        default:
+          content:
+            application/json; charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CustomizableFieldMetadataDto'
+          description: default response
+      tags:
+      - Customizable Field Metadata Controller
+  /customizablefieldmetadata/save:
+    post:
+      operationId: save
+      requestBody:
+        content:
+          application/json; charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CustomizableFieldMetadataDto'
+      responses:
+        default:
+          content:
+            application/json; charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/CustomizableFieldMetadataDto'
+          description: default response
+      tags:
+      - Customizable Field Metadata Controller
+  /customizablefieldmetadata/uigroup/{uiGroup}:
+    get:
+      operationId: getFieldsForUIGroup
+      parameters:
+      - in: path
+        name: uiGroup
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          content:
+            application/json; charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CustomizableFieldMetadataDto'
+          description: default response
+      tags:
+      - Customizable Field Metadata Controller
+  /customizablefieldmetadata/{uuid}:
+    delete:
+      operationId: delete_2
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          content:
+            application/json; charset=UTF-8: {}
+          description: default response
+      tags:
+      - Customizable Field Metadata Controller
+    get:
+      operationId: getByUuid_2
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          content:
+            application/json; charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/CustomizableFieldMetadataDto'
+          description: default response
+      tags:
+      - Customizable Field Metadata Controller
+    put:
+      operationId: update
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json; charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CustomizableFieldMetadataDto'
+      responses:
+        default:
+          content:
+            application/json; charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/CustomizableFieldMetadataDto'
+          description: default response
+      tags:
+      - Customizable Field Metadata Controller
+  /customizablefieldmetadata/{uuid}/activate:
+    post:
+      operationId: activate
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          content:
+            application/json; charset=UTF-8: {}
+          description: default response
+      tags:
+      - Customizable Field Metadata Controller
+  /customizablefieldmetadata/{uuid}/clone:
+    post:
+      operationId: cloneField
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: newName
+        schema:
+          type: string
+      responses:
+        default:
+          content:
+            application/json; charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/CustomizableFieldMetadataDto'
+          description: default response
+      tags:
+      - Customizable Field Metadata Controller
+  /customizablefieldmetadata/{uuid}/deactivate:
+    post:
+      operationId: deactivate
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          content:
+            application/json; charset=UTF-8: {}
+          description: default response
+      tags:
+      - Customizable Field Metadata Controller
+  /customizablefieldmetadata/{uuid}/exists:
+    get:
+      operationId: exists
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          content:
+            application/json; charset=UTF-8:
+              schema:
+                type: boolean
+          description: default response
+      tags:
+      - Customizable Field Metadata Controller
+  /customizablefieldvalue/all:
+    get:
+      operationId: getAll_7
+      responses:
+        default:
+          content:
+            application/json; charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CustomizableFieldValueDto'
+          description: default response
+      tags:
+      - Customizable Field Value Controller
+  /customizablefieldvalue/entity/{entityUuid}:
+    delete:
+      operationId: deleteValuesForEntity
+      parameters:
+      - in: path
+        name: entityUuid
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: contextClass
+        schema:
+          type: string
+          enum:
+          - CASE
+          - EPIDATA
+          - EXPOSURE
+      responses:
+        default:
+          content:
+            application/json; charset=UTF-8: {}
+          description: default response
+      tags:
+      - Customizable Field Value Controller
+    get:
+      operationId: getValuesForEntity
+      parameters:
+      - in: path
+        name: entityUuid
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: contextClass
+        schema:
+          type: string
+          enum:
+          - CASE
+          - EPIDATA
+          - EXPOSURE
+      responses:
+        default:
+          content:
+            application/json; charset=UTF-8:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/CustomizableFieldValueDto'
+          description: default response
+      tags:
+      - Customizable Field Value Controller
+  /customizablefieldvalue/entity/{entityUuid}/save:
+    post:
+      operationId: saveEntityCustomFields
+      parameters:
+      - in: path
+        name: entityUuid
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: contextClass
+        schema:
+          type: string
+          enum:
+          - CASE
+          - EPIDATA
+          - EXPOSURE
+      requestBody:
+        content:
+          application/json; charset=UTF-8:
+            schema:
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/CustomizableFieldValueDto'
+      responses:
+        default:
+          content:
+            application/json; charset=UTF-8: {}
+          description: default response
+      tags:
+      - Customizable Field Value Controller
+  /customizablefieldvalue/save:
+    post:
+      operationId: save_1
+      requestBody:
+        content:
+          application/json; charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CustomizableFieldValueDto'
+      responses:
+        default:
+          content:
+            application/json; charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/CustomizableFieldValueDto'
+          description: default response
+      tags:
+      - Customizable Field Value Controller
+  /customizablefieldvalue/{uuid}:
+    delete:
+      operationId: delete_3
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          content:
+            application/json; charset=UTF-8: {}
+          description: default response
+      tags:
+      - Customizable Field Value Controller
+    get:
+      operationId: getByUuid_3
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          content:
+            application/json; charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/CustomizableFieldValueDto'
+          description: default response
+      tags:
+      - Customizable Field Value Controller
+    put:
+      operationId: update_1
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json; charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CustomizableFieldValueDto'
+      responses:
+        default:
+          content:
+            application/json; charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/CustomizableFieldValueDto'
+          description: default response
+      tags:
+      - Customizable Field Value Controller
   /dashboard/caseMeasurePerDistrict:
     post:
       operationId: getCaseMeasurePerDistrict
@@ -2169,7 +2564,7 @@ paths:
       - Dashboard Controller
   /dashboard/diseaseBurden:
     post:
-      operationId: getAll_6
+      operationId: getAll_8
       responses:
         default:
           content:
@@ -2520,7 +2915,7 @@ paths:
       - Disease Configuration Controller
   /districts/all/{since}:
     get:
-      operationId: getAll_7
+      operationId: getAll_9
       parameters:
       - in: path
         name: since
@@ -2685,7 +3080,7 @@ paths:
       - Document Controller
   /documents/{uuid}:
     get:
-      operationId: getByUuid_2
+      operationId: getByUuid_4
       parameters:
       - in: path
         name: uuid
@@ -2849,7 +3244,7 @@ paths:
       - Environment Controller
   /environments/{uuid}:
     get:
-      operationId: getByUuid_3
+      operationId: getByUuid_5
       parameters:
       - in: path
         name: uuid
@@ -3052,7 +3447,7 @@ paths:
       - Event Group Controller
   /eventGroups/{uuid}:
     delete:
-      operationId: delete_2
+      operationId: delete_4
       parameters:
       - in: path
         name: uuid
@@ -3067,7 +3462,7 @@ paths:
       tags:
       - Event Group Controller
     get:
-      operationId: getByUuid_4
+      operationId: getByUuid_6
       parameters:
       - in: path
         name: uuid
@@ -3374,7 +3769,7 @@ paths:
       - Event Participant Controller
   /eventparticipants/{uuid}:
     get:
-      operationId: getByUuid_5
+      operationId: getByUuid_7
       parameters:
       - in: path
         name: uuid
@@ -3487,7 +3882,7 @@ paths:
       - Event Controller
   /events/delete:
     post:
-      operationId: delete_3
+      operationId: delete_5
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -3680,7 +4075,7 @@ paths:
       - Event Controller
   /events/{uuid}:
     get:
-      operationId: getByUuid_6
+      operationId: getByUuid_8
       parameters:
       - in: path
         name: uuid
@@ -4155,7 +4550,7 @@ paths:
       - Immunization Controller
   /immunizations/delete:
     post:
-      operationId: delete_4
+      operationId: delete_6
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -4483,7 +4878,7 @@ paths:
       - Immunization Controller
   /immunizations/{uuid}:
     get:
-      operationId: getByUuid_7
+      operationId: getByUuid_9
       parameters:
       - in: path
         name: uuid
@@ -4615,7 +5010,7 @@ paths:
       - Lab Message Controller
   /labmessages/{uuid}:
     get:
-      operationId: getByUuid_8
+      operationId: getByUuid_10
       parameters:
       - in: path
         name: uuid
@@ -5210,7 +5605,7 @@ paths:
       - Person Controller
   /persons/{uuid}:
     get:
-      operationId: getByUuid_9
+      operationId: getByUuid_11
       parameters:
       - in: path
         name: uuid
@@ -5228,7 +5623,7 @@ paths:
       - Person Controller
   /pointsofentry/all/{since}:
     get:
-      operationId: getAll_8
+      operationId: getAll_10
       parameters:
       - in: path
         name: since
@@ -5511,7 +5906,7 @@ paths:
       - Prescription Controller
   /regions/all/{since}:
     get:
-      operationId: getAll_9
+      operationId: getAll_11
       parameters:
       - in: path
         name: since
@@ -5708,7 +6103,7 @@ paths:
       - Sample Controller
   /samples/delete:
     post:
-      operationId: delete_5
+      operationId: delete_7
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -5887,7 +6282,7 @@ paths:
       - Sample Controller
   /samples/{uuid}:
     get:
-      operationId: getByUuid_10
+      operationId: getByUuid_12
       parameters:
       - in: path
         name: uuid
@@ -5928,7 +6323,7 @@ paths:
       - Share Request Controller
   /sharerequests/{uuid}:
     get:
-      operationId: getByUuid_11
+      operationId: getByUuid_13
       parameters:
       - in: path
         name: uuid
@@ -6241,7 +6636,7 @@ paths:
       - Sormas To Sormas Controller
   /subcontinents/all/{since}:
     get:
-      operationId: getAll_10
+      operationId: getAll_12
       parameters:
       - in: path
         name: since
@@ -6443,7 +6838,7 @@ paths:
       - Surveillance Report Controller
   /tasks/all/{since}:
     get:
-      operationId: getAll_11
+      operationId: getAll_13
       parameters:
       - in: path
         name: since
@@ -6464,7 +6859,7 @@ paths:
       - Task Controller
   /tasks/all/{since}/{size}/{lastSynchronizedUuid}:
     get:
-      operationId: getAll_12
+      operationId: getAll_14
       parameters:
       - in: path
         name: since
@@ -6517,7 +6912,7 @@ paths:
       - Task Controller
   /tasks/delete:
     post:
-      operationId: delete_6
+      operationId: delete_8
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -6654,7 +7049,7 @@ paths:
       - Task Controller
   /tasks/{uuid}:
     get:
-      operationId: getByUuid_12
+      operationId: getByUuid_14
       parameters:
       - in: path
         name: uuid
@@ -6732,7 +7127,7 @@ paths:
       - Travel Entry Controller
   /travelentries/{uuid}:
     delete:
-      operationId: delete_7
+      operationId: delete_9
       parameters:
       - in: path
         name: uuid
@@ -6747,7 +7142,7 @@ paths:
       tags:
       - Travel Entry Controller
     get:
-      operationId: getByUuid_13
+      operationId: getByUuid_15
       parameters:
       - in: path
         name: uuid
@@ -6904,7 +7299,7 @@ paths:
       - Treatment Controller
   /userroles/all/{since}:
     get:
-      operationId: getAll_14
+      operationId: getAll_16
       parameters:
       - in: path
         name: since
@@ -6960,7 +7355,7 @@ paths:
       - User Role Controller
   /users/all/{since}:
     get:
-      operationId: getAll_13
+      operationId: getAll_15
       parameters:
       - in: path
         name: since
@@ -7272,6 +7667,7 @@ paths:
                   - EXTERNAL_EMAIL_SEND
                   - EXTERNAL_EMAIL_ATTACH_DOCUMENTS
                   - CUSTOMIZABLE_ENUM_MANAGEMENT
+                  - CUSTOMIZABLE_FIELD_MANAGEMENT
                   - SYSTEM_CONFIGURATION
                   - DISEASE_MANAGEMENT
                   - EPIPULSE_EXPORT_VIEW
@@ -7536,6 +7932,7 @@ paths:
                   - EXTERNAL_EMAIL_SEND
                   - EXTERNAL_EMAIL_ATTACH_DOCUMENTS
                   - CUSTOMIZABLE_ENUM_MANAGEMENT
+                  - CUSTOMIZABLE_FIELD_MANAGEMENT
                   - SYSTEM_CONFIGURATION
                   - DISEASE_MANAGEMENT
                   - EPIPULSE_EXPORT_VIEW
@@ -7575,7 +7972,7 @@ paths:
       - User Controller
   /users/{uuid}:
     get:
-      operationId: getByUuid_14
+      operationId: getByUuid_16
       parameters:
       - in: path
         name: uuid
@@ -13654,6 +14051,241 @@ components:
       - caption
       - dataType
       - value
+    CustomizableFieldCustomProperties:
+      type: object
+      properties:
+        options:
+          type: array
+          items:
+            type: string
+    CustomizableFieldMetadataDto:
+      type: object
+      properties:
+        active:
+          type: boolean
+        changeDate:
+          type: string
+          format: date-time
+        contextClass:
+          type: string
+          enum:
+          - CASE
+          - EPIDATA
+          - EXPOSURE
+        creationDate:
+          type: string
+          format: date-time
+        customProperties:
+          $ref: '#/components/schemas/CustomizableFieldCustomProperties'
+        defaultValue:
+          type: string
+          maxLength: 512
+          minLength: 0
+        description:
+          type: string
+          maxLength: 512
+          minLength: 0
+        fieldType:
+          type: string
+          enum:
+          - TEXT
+          - TEXTAREA
+          - NUMBER
+          - DECIMAL
+          - DATE
+          - DATE_TIME
+          - COMBOBOX
+          - CHECKBOX
+          - YES_NO_UNKNOWN
+          - CHECKBOX_LIST
+          - RADIO_BUTTON_LIST
+        mandatory:
+          type: boolean
+        name:
+          type: string
+          maxLength: 255
+          minLength: 0
+        readOnly:
+          type: boolean
+        translations:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: string
+        uiGroup:
+          type: string
+          enum:
+          - CASE_DATA_GENERAL
+          - CASE_DATA_CLASSIFICATION
+          - CASE_DATA_INVESTIGATION
+          - CASE_DATA_IDENTIFIERS
+          - CASE_DATA_DISEASE
+          - CASE_DATA_REINFECTION
+          - CASE_DATA_OUTCOME
+          - CASE_DATA_SEQUELAE
+          - CASE_DATA_JURISDICTION
+          - CASE_DATA_PLACE_OF_STAY
+          - CASE_DATA_QUARANTINE
+          - CASE_DATA_REPORT_GEO
+          - CASE_DATA_HEALTH_CONDITIONS
+          - CASE_DATA_DIAGNOSTIC
+          - CASE_DATA_MEDICAL_INFORMATION
+          - CASE_DATA_VACCINATION
+          - CASE_DATA_CLINICIAN_NOTIFICATION
+          - CASE_DATA_CONTACT_TRACING
+          - EPIDATA_EXPOSURE_INVESTIGATION
+          - EPIDATA_ACTIVITY_AS_CASE
+          - EPIDATA_CONTACT_WITH_SOURCE_CASE
+          - EXPOSURE_DETAILS
+          - EXPOSURES_GENERAL
+          - LOCATION_GENERAL
+        uiLinePosition:
+          type: integer
+          format: int32
+        uiLineWeight:
+          type: number
+          format: float
+        uuid:
+          type: string
+          maxLength: 36
+          minLength: 20
+          pattern: "^[0-9a-zA-Z-]*$"
+        visibilityRestrictions:
+          $ref: '#/components/schemas/CustomizableFieldVisibilityRestrictions'
+      required:
+      - contextClass
+      - fieldType
+      - name
+    CustomizableFieldValueDto:
+      type: object
+      properties:
+        changeDate:
+          type: string
+          format: date-time
+        contextClass:
+          type: string
+          enum:
+          - CASE
+          - EPIDATA
+          - EXPOSURE
+        creationDate:
+          type: string
+          format: date-time
+        customizableFieldMetadataUuid:
+          type: string
+        entityUuid:
+          type: string
+        uuid:
+          type: string
+          maxLength: 36
+          minLength: 20
+          pattern: "^[0-9a-zA-Z-]*$"
+        value:
+          type: string
+        valueAsBoolean:
+          type: boolean
+        valueAsDate:
+          type: string
+          format: date
+        valueAsDateTime:
+          type: string
+          format: date-time
+        valueAsDecimal:
+          type: number
+        valueAsInteger:
+          type: integer
+          format: int32
+        valueAsStringSet:
+          type: array
+          items:
+            type: string
+          uniqueItems: true
+        valueAsYesNoUnknown:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+      required:
+      - contextClass
+      - customizableFieldMetadataUuid
+      - entityUuid
+    CustomizableFieldVisibilityRestrictions:
+      type: object
+      properties:
+        diseases:
+          type: array
+          items:
+            type: string
+            enum:
+            - AFP
+            - CHOLERA
+            - CONGENITAL_RUBELLA
+            - CSM
+            - DENGUE
+            - EVD
+            - GUINEA_WORM
+            - LASSA
+            - MEASLES
+            - MONKEYPOX
+            - NEW_INFLUENZA
+            - PLAGUE
+            - POLIO
+            - UNSPECIFIED_VHF
+            - WEST_NILE_FEVER
+            - YELLOW_FEVER
+            - RABIES
+            - ANTHRAX
+            - CORONAVIRUS
+            - PNEUMONIA
+            - MALARIA
+            - TYPHOID_FEVER
+            - ACUTE_VIRAL_HEPATITIS
+            - NON_NEONATAL_TETANUS
+            - HIV
+            - SCHISTOSOMIASIS
+            - SOIL_TRANSMITTED_HELMINTHS
+            - TRYPANOSOMIASIS
+            - DIARRHEA_DEHYDRATION
+            - DIARRHEA_BLOOD
+            - SNAKE_BITE
+            - RUBELLA
+            - TUBERCULOSIS
+            - LATENT_TUBERCULOSIS
+            - LEPROSY
+            - LYMPHATIC_FILARIASIS
+            - BURULI_ULCER
+            - PERTUSSIS
+            - NEONATAL_TETANUS
+            - ONCHOCERCIASIS
+            - DIPHTERIA
+            - TRACHOMA
+            - YAWS_ENDEMIC_SYPHILIS
+            - MATERNAL_DEATHS
+            - PERINATAL_DEATHS
+            - INFLUENZA
+            - INFLUENZA_A
+            - INFLUENZA_B
+            - H_METAPNEUMOVIRUS
+            - RESPIRATORY_SYNCYTIAL_VIRUS
+            - PARAINFLUENZA_1_4
+            - ADENOVIRUS
+            - RHINOVIRUS
+            - ENTEROVIRUS
+            - M_PNEUMONIAE
+            - C_PNEUMONIAE
+            - ARI
+            - CHIKUNGUNYA
+            - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
+            - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
+            - FHA
+            - INVASIVE_PNEUMOCOCCAL_INFECTION
+            - INVASIVE_MENINGOCOCCAL_INFECTION
+            - GIARDIASIS
+            - CRYPTOSPORIDIOSIS
+            - OTHER
+            - UNDEFINED
     DashboardCaseMeasureDto:
       type: object
       properties:
@@ -14390,6 +15022,20 @@ components:
         eventParticipantFollowUpDuration:
           type: integer
           format: int32
+        exposureCategories:
+          type: array
+          items:
+            type: string
+            enum:
+            - AIR_BORNE
+            - ANIMAL_CONTACT
+            - DIRECT_CONTACT
+            - FOMITE_TRANSMISSION
+            - FOOD_BORNE
+            - VECTOR_BORNE
+            - VERTICAL_TRANSMISSION
+            - WATER_BORNE
+          uniqueItems: true
         extendedClassification:
           type: boolean
         extendedClassificationMulti:
@@ -17288,8 +17934,6 @@ components:
           - BUILDING_SECTOR
           - LOGISTICS_CENTER
           - OTHER
-      required:
-      - exposureType
     ExternalDataDto:
       type: object
       properties:
@@ -28205,6 +28849,7 @@ components:
             - EXTERNAL_EMAIL_SEND
             - EXTERNAL_EMAIL_ATTACH_DOCUMENTS
             - CUSTOMIZABLE_ENUM_MANAGEMENT
+            - CUSTOMIZABLE_FIELD_MANAGEMENT
             - SYSTEM_CONFIGURATION
             - DISEASE_MANAGEMENT
             - EPIPULSE_EXPORT_VIEW

@@ -3103,6 +3103,557 @@
         "tags" : [ "Customizable Enum Value Controller" ]
       }
     },
+    "/customizablefieldmetadata/all" : {
+      "get" : {
+        "operationId" : "getAll_6",
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/CustomizableFieldMetadataDto"
+                  }
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "Customizable Field Metadata Controller" ]
+      }
+    },
+    "/customizablefieldmetadata/byname" : {
+      "get" : {
+        "operationId" : "getByNameAndContext",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "name",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "contextClass",
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "CASE", "EPIDATA", "EXPOSURE" ]
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CustomizableFieldMetadataDto"
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "Customizable Field Metadata Controller" ]
+      }
+    },
+    "/customizablefieldmetadata/context/{contextClass}" : {
+      "get" : {
+        "operationId" : "getActiveFieldsForContext",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "contextClass",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "CASE", "EPIDATA", "EXPOSURE" ]
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/CustomizableFieldMetadataDto"
+                  }
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "Customizable Field Metadata Controller" ]
+      }
+    },
+    "/customizablefieldmetadata/save" : {
+      "post" : {
+        "operationId" : "save",
+        "requestBody" : {
+          "content" : {
+            "application/json; charset=UTF-8" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CustomizableFieldMetadataDto"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CustomizableFieldMetadataDto"
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "Customizable Field Metadata Controller" ]
+      }
+    },
+    "/customizablefieldmetadata/uigroup/{uiGroup}" : {
+      "get" : {
+        "operationId" : "getFieldsForUIGroup",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "uiGroup",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/CustomizableFieldMetadataDto"
+                  }
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "Customizable Field Metadata Controller" ]
+      }
+    },
+    "/customizablefieldmetadata/{uuid}" : {
+      "delete" : {
+        "operationId" : "delete_2",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "uuid",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json; charset=UTF-8" : { }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "Customizable Field Metadata Controller" ]
+      },
+      "get" : {
+        "operationId" : "getByUuid_2",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "uuid",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CustomizableFieldMetadataDto"
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "Customizable Field Metadata Controller" ]
+      },
+      "put" : {
+        "operationId" : "update",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "uuid",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json; charset=UTF-8" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CustomizableFieldMetadataDto"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CustomizableFieldMetadataDto"
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "Customizable Field Metadata Controller" ]
+      }
+    },
+    "/customizablefieldmetadata/{uuid}/activate" : {
+      "post" : {
+        "operationId" : "activate",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "uuid",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json; charset=UTF-8" : { }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "Customizable Field Metadata Controller" ]
+      }
+    },
+    "/customizablefieldmetadata/{uuid}/clone" : {
+      "post" : {
+        "operationId" : "cloneField",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "uuid",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "newName",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CustomizableFieldMetadataDto"
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "Customizable Field Metadata Controller" ]
+      }
+    },
+    "/customizablefieldmetadata/{uuid}/deactivate" : {
+      "post" : {
+        "operationId" : "deactivate",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "uuid",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json; charset=UTF-8" : { }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "Customizable Field Metadata Controller" ]
+      }
+    },
+    "/customizablefieldmetadata/{uuid}/exists" : {
+      "get" : {
+        "operationId" : "exists",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "uuid",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "boolean"
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "Customizable Field Metadata Controller" ]
+      }
+    },
+    "/customizablefieldvalue/all" : {
+      "get" : {
+        "operationId" : "getAll_7",
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/CustomizableFieldValueDto"
+                  }
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "Customizable Field Value Controller" ]
+      }
+    },
+    "/customizablefieldvalue/entity/{entityUuid}" : {
+      "delete" : {
+        "operationId" : "deleteValuesForEntity",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "entityUuid",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "contextClass",
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "CASE", "EPIDATA", "EXPOSURE" ]
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json; charset=UTF-8" : { }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "Customizable Field Value Controller" ]
+      },
+      "get" : {
+        "operationId" : "getValuesForEntity",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "entityUuid",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "contextClass",
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "CASE", "EPIDATA", "EXPOSURE" ]
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "type" : "object",
+                  "additionalProperties" : {
+                    "$ref" : "#/components/schemas/CustomizableFieldValueDto"
+                  }
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "Customizable Field Value Controller" ]
+      }
+    },
+    "/customizablefieldvalue/entity/{entityUuid}/save" : {
+      "post" : {
+        "operationId" : "saveEntityCustomFields",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "entityUuid",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "contextClass",
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "CASE", "EPIDATA", "EXPOSURE" ]
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json; charset=UTF-8" : {
+              "schema" : {
+                "type" : "object",
+                "additionalProperties" : {
+                  "$ref" : "#/components/schemas/CustomizableFieldValueDto"
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json; charset=UTF-8" : { }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "Customizable Field Value Controller" ]
+      }
+    },
+    "/customizablefieldvalue/save" : {
+      "post" : {
+        "operationId" : "save_1",
+        "requestBody" : {
+          "content" : {
+            "application/json; charset=UTF-8" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CustomizableFieldValueDto"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CustomizableFieldValueDto"
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "Customizable Field Value Controller" ]
+      }
+    },
+    "/customizablefieldvalue/{uuid}" : {
+      "delete" : {
+        "operationId" : "delete_3",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "uuid",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json; charset=UTF-8" : { }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "Customizable Field Value Controller" ]
+      },
+      "get" : {
+        "operationId" : "getByUuid_3",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "uuid",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CustomizableFieldValueDto"
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "Customizable Field Value Controller" ]
+      },
+      "put" : {
+        "operationId" : "update_1",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "uuid",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json; charset=UTF-8" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CustomizableFieldValueDto"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json; charset=UTF-8" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CustomizableFieldValueDto"
+                }
+              }
+            },
+            "description" : "default response"
+          }
+        },
+        "tags" : [ "Customizable Field Value Controller" ]
+      }
+    },
     "/dashboard/caseMeasurePerDistrict" : {
       "post" : {
         "operationId" : "getCaseMeasurePerDistrict",
@@ -3141,7 +3692,7 @@
     },
     "/dashboard/diseaseBurden" : {
       "post" : {
-        "operationId" : "getAll_6",
+        "operationId" : "getAll_8",
         "responses" : {
           "default" : {
             "content" : {
@@ -3562,7 +4113,7 @@
     },
     "/districts/all/{since}" : {
       "get" : {
-        "operationId" : "getAll_7",
+        "operationId" : "getAll_9",
         "parameters" : [ {
           "in" : "path",
           "name" : "since",
@@ -3802,7 +4353,7 @@
     },
     "/documents/{uuid}" : {
       "get" : {
-        "operationId" : "getByUuid_2",
+        "operationId" : "getByUuid_4",
         "parameters" : [ {
           "in" : "path",
           "name" : "uuid",
@@ -4035,7 +4586,7 @@
     },
     "/environments/{uuid}" : {
       "get" : {
-        "operationId" : "getByUuid_3",
+        "operationId" : "getByUuid_5",
         "parameters" : [ {
           "in" : "path",
           "name" : "uuid",
@@ -4319,7 +4870,7 @@
     },
     "/eventGroups/{uuid}" : {
       "delete" : {
-        "operationId" : "delete_2",
+        "operationId" : "delete_4",
         "parameters" : [ {
           "in" : "path",
           "name" : "uuid",
@@ -4339,7 +4890,7 @@
         "tags" : [ "Event Group Controller" ]
       },
       "get" : {
-        "operationId" : "getByUuid_4",
+        "operationId" : "getByUuid_6",
         "parameters" : [ {
           "in" : "path",
           "name" : "uuid",
@@ -4781,7 +5332,7 @@
     },
     "/eventparticipants/{uuid}" : {
       "get" : {
-        "operationId" : "getByUuid_5",
+        "operationId" : "getByUuid_7",
         "parameters" : [ {
           "in" : "path",
           "name" : "uuid",
@@ -4945,7 +5496,7 @@
     },
     "/events/delete" : {
       "post" : {
-        "operationId" : "delete_3",
+        "operationId" : "delete_5",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -5225,7 +5776,7 @@
     },
     "/events/{uuid}" : {
       "get" : {
-        "operationId" : "getByUuid_6",
+        "operationId" : "getByUuid_8",
         "parameters" : [ {
           "in" : "path",
           "name" : "uuid",
@@ -5819,7 +6370,7 @@
     },
     "/immunizations/delete" : {
       "post" : {
-        "operationId" : "delete_4",
+        "operationId" : "delete_6",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -6203,7 +6754,7 @@
     },
     "/immunizations/{uuid}" : {
       "get" : {
-        "operationId" : "getByUuid_7",
+        "operationId" : "getByUuid_9",
         "parameters" : [ {
           "in" : "path",
           "name" : "uuid",
@@ -6394,7 +6945,7 @@
     },
     "/labmessages/{uuid}" : {
       "get" : {
-        "operationId" : "getByUuid_8",
+        "operationId" : "getByUuid_10",
         "parameters" : [ {
           "in" : "path",
           "name" : "uuid",
@@ -7251,7 +7802,7 @@
     },
     "/persons/{uuid}" : {
       "get" : {
-        "operationId" : "getByUuid_9",
+        "operationId" : "getByUuid_11",
         "parameters" : [ {
           "in" : "path",
           "name" : "uuid",
@@ -7277,7 +7828,7 @@
     },
     "/pointsofentry/all/{since}" : {
       "get" : {
-        "operationId" : "getAll_8",
+        "operationId" : "getAll_10",
         "parameters" : [ {
           "in" : "path",
           "name" : "since",
@@ -7682,7 +8233,7 @@
     },
     "/regions/all/{since}" : {
       "get" : {
-        "operationId" : "getAll_9",
+        "operationId" : "getAll_11",
         "parameters" : [ {
           "in" : "path",
           "name" : "since",
@@ -7964,7 +8515,7 @@
     },
     "/samples/delete" : {
       "post" : {
-        "operationId" : "delete_5",
+        "operationId" : "delete_7",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -8225,7 +8776,7 @@
     },
     "/samples/{uuid}" : {
       "get" : {
-        "operationId" : "getByUuid_10",
+        "operationId" : "getByUuid_12",
         "parameters" : [ {
           "in" : "path",
           "name" : "uuid",
@@ -8284,7 +8835,7 @@
     },
     "/sharerequests/{uuid}" : {
       "get" : {
-        "operationId" : "getByUuid_11",
+        "operationId" : "getByUuid_13",
         "parameters" : [ {
           "in" : "path",
           "name" : "uuid",
@@ -8761,7 +9312,7 @@
     },
     "/subcontinents/all/{since}" : {
       "get" : {
-        "operationId" : "getAll_10",
+        "operationId" : "getAll_12",
         "parameters" : [ {
           "in" : "path",
           "name" : "since",
@@ -9049,7 +9600,7 @@
     },
     "/tasks/all/{since}" : {
       "get" : {
-        "operationId" : "getAll_11",
+        "operationId" : "getAll_13",
         "parameters" : [ {
           "in" : "path",
           "name" : "since",
@@ -9079,7 +9630,7 @@
     },
     "/tasks/all/{since}/{size}/{lastSynchronizedUuid}" : {
       "get" : {
-        "operationId" : "getAll_12",
+        "operationId" : "getAll_14",
         "parameters" : [ {
           "in" : "path",
           "name" : "since",
@@ -9154,7 +9705,7 @@
     },
     "/tasks/delete" : {
       "post" : {
-        "operationId" : "delete_6",
+        "operationId" : "delete_8",
         "requestBody" : {
           "content" : {
             "application/json; charset=UTF-8" : {
@@ -9352,7 +9903,7 @@
     },
     "/tasks/{uuid}" : {
       "get" : {
-        "operationId" : "getByUuid_12",
+        "operationId" : "getByUuid_14",
         "parameters" : [ {
           "in" : "path",
           "name" : "uuid",
@@ -9459,7 +10010,7 @@
     },
     "/travelentries/{uuid}" : {
       "delete" : {
-        "operationId" : "delete_7",
+        "operationId" : "delete_9",
         "parameters" : [ {
           "in" : "path",
           "name" : "uuid",
@@ -9479,7 +10030,7 @@
         "tags" : [ "Travel Entry Controller" ]
       },
       "get" : {
-        "operationId" : "getByUuid_13",
+        "operationId" : "getByUuid_15",
         "parameters" : [ {
           "in" : "path",
           "name" : "uuid",
@@ -9703,7 +10254,7 @@
     },
     "/userroles/all/{since}" : {
       "get" : {
-        "operationId" : "getAll_14",
+        "operationId" : "getAll_16",
         "parameters" : [ {
           "in" : "path",
           "name" : "since",
@@ -9784,7 +10335,7 @@
     },
     "/users/all/{since}" : {
       "get" : {
-        "operationId" : "getAll_13",
+        "operationId" : "getAll_15",
         "parameters" : [ {
           "in" : "path",
           "name" : "since",
@@ -9889,7 +10440,7 @@
                   "type" : "array",
                   "items" : {
                     "type" : "string",
-                    "enum" : [ "CASE_VIEW", "CASE_CREATE", "CASE_EDIT", "CASE_DELETE", "CASE_ARCHIVE", "CASE_VIEW_ARCHIVED", "CASE_IMPORT", "CASE_EXPORT", "CASE_INVESTIGATE", "CASE_CLASSIFY", "CASE_CHANGE_DISEASE", "CASE_CHANGE_EPID_NUMBER", "CASE_TRANSFER", "CASE_REFER_FROM_POE", "CASE_MERGE", "CASE_SHARE", "CASE_RESPONSIBLE", "GRANT_SPECIAL_CASE_ACCESS", "IMMUNIZATION_VIEW", "IMMUNIZATION_CREATE", "IMMUNIZATION_EDIT", "IMMUNIZATION_DELETE", "IMMUNIZATION_ARCHIVE", "IMMUNIZATION_VIEW_ARCHIVED", "ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW", "ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_CREATE", "ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_EDIT", "ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_ARCHIVE", "ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_DELETE", "ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_EXPORT", "PERSON_VIEW", "PERSON_EDIT", "PERSON_DELETE", "PERSON_EXPORT", "PERSON_CONTACT_DETAILS_DELETE", "PERSON_MERGE", "SAMPLE_VIEW", "SAMPLE_CREATE", "SAMPLE_EDIT", "SAMPLE_DELETE", "SAMPLE_EXPORT", "SAMPLE_TRANSFER", "SAMPLE_EDIT_NOT_OWNED", "PATHOGEN_TEST_CREATE", "PATHOGEN_TEST_EDIT", "PATHOGEN_TEST_DELETE", "ADDITIONAL_TEST_VIEW", "ADDITIONAL_TEST_CREATE", "ADDITIONAL_TEST_EDIT", "ADDITIONAL_TEST_DELETE", "CONTACT_VIEW", "CONTACT_CREATE", "CONTACT_EDIT", "CONTACT_DELETE", "CONTACT_ARCHIVE", "CONTACT_VIEW_ARCHIVED", "CONTACT_IMPORT", "CONTACT_EXPORT", "CONTACT_CONVERT", "CONTACT_REASSIGN_CASE", "CONTACT_MERGE", "CONTACT_RESPONSIBLE", "VISIT_CREATE", "VISIT_EDIT", "VISIT_DELETE", "VISIT_EXPORT", "TASK_VIEW", "TASK_CREATE", "TASK_EDIT", "TASK_DELETE", "TASK_EXPORT", "TASK_ASSIGN", "TASK_ARCHIVE", "TASK_VIEW_ARCHIVED", "ACTION_CREATE", "ACTION_DELETE", "ACTION_EDIT", "EVENT_VIEW", "EVENT_CREATE", "EVENT_EDIT", "EVENT_DELETE", "EVENT_ARCHIVE", "EVENT_VIEW_ARCHIVED", "EVENT_IMPORT", "EVENT_EXPORT", "EVENT_RESPONSIBLE", "EVENTPARTICIPANT_VIEW", "EVENTPARTICIPANT_CREATE", "EVENTPARTICIPANT_EDIT", "EVENTPARTICIPANT_DELETE", "EVENTPARTICIPANT_ARCHIVE", "EVENTPARTICIPANT_VIEW_ARCHIVED", "EVENTPARTICIPANT_IMPORT", "EVENTGROUP_CREATE", "EVENTGROUP_EDIT", "EVENTGROUP_ARCHIVE", "EVENTGROUP_VIEW_ARCHIVED", "EVENTGROUP_DELETE", "EVENTGROUP_LINK", "USER_VIEW", "USER_CREATE", "USER_EDIT", "USER_ROLE_VIEW", "USER_ROLE_EDIT", "USER_ROLE_DELETE", "STATISTICS_ACCESS", "STATISTICS_EXPORT", "INFRASTRUCTURE_VIEW", "INFRASTRUCTURE_CREATE", "INFRASTRUCTURE_EDIT", "INFRASTRUCTURE_IMPORT", "INFRASTRUCTURE_ARCHIVE", "INFRASTRUCTURE_VIEW_ARCHIVED", "INFRASTRUCTURE_EXPORT", "POPULATION_MANAGE", "DASHBOARD_SURVEILLANCE_VIEW", "DASHBOARD_CONTACT_VIEW", "DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS", "DASHBOARD_CAMPAIGNS_VIEW", "DASHBOARD_SAMPLES_VIEW", "DASHBOARD_ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW", "CASE_CLINICIAN_VIEW", "THERAPY_VIEW", "PRESCRIPTION_CREATE", "PRESCRIPTION_EDIT", "PRESCRIPTION_DELETE", "TREATMENT_CREATE", "TREATMENT_EDIT", "TREATMENT_DELETE", "CLINICAL_COURSE_VIEW", "CLINICAL_COURSE_EDIT", "CLINICAL_VISIT_CREATE", "CLINICAL_VISIT_EDIT", "CLINICAL_VISIT_DELETE", "PORT_HEALTH_INFO_VIEW", "PORT_HEALTH_INFO_EDIT", "WEEKLYREPORT_VIEW", "WEEKLYREPORT_CREATE", "AGGREGATE_REPORT_VIEW", "AGGREGATE_REPORT_EDIT", "AGGREGATE_REPORT_EXPORT", "SEE_PERSONAL_DATA_IN_JURISDICTION", "SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION", "SEE_SENSITIVE_DATA_IN_JURISDICTION", "SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION", "CAMPAIGN_VIEW", "CAMPAIGN_EDIT", "CAMPAIGN_ARCHIVE", "CAMPAIGN_VIEW_ARCHIVED", "CAMPAIGN_DELETE", "CAMPAIGN_FORM_DATA_VIEW", "CAMPAIGN_FORM_DATA_EDIT", "CAMPAIGN_FORM_DATA_ARCHIVE", "CAMPAIGN_FORM_DATA_DELETE", "CAMPAIGN_FORM_DATA_VIEW_ARCHIVED", "CAMPAIGN_FORM_DATA_EXPORT", "TRAVEL_ENTRY_MANAGEMENT_ACCESS", "TRAVEL_ENTRY_VIEW", "TRAVEL_ENTRY_CREATE", "TRAVEL_ENTRY_EDIT", "TRAVEL_ENTRY_ARCHIVE", "TRAVEL_ENTRY_VIEW_ARCHIVED", "TRAVEL_ENTRY_DELETE", "ENVIRONMENT_VIEW", "ENVIRONMENT_CREATE", "ENVIRONMENT_EDIT", "ENVIRONMENT_ARCHIVE", "ENVIRONMENT_VIEW_ARCHIVED", "ENVIRONMENT_DELETE", "ENVIRONMENT_IMPORT", "ENVIRONMENT_EXPORT", "ENVIRONMENT_LINK", "ENVIRONMENT_SAMPLE_VIEW", "ENVIRONMENT_SAMPLE_CREATE", "ENVIRONMENT_SAMPLE_EDIT", "ENVIRONMENT_SAMPLE_EDIT_DISPATCH", "ENVIRONMENT_SAMPLE_EDIT_RECEIVAL", "ENVIRONMENT_SAMPLE_DELETE", "ENVIRONMENT_SAMPLE_IMPORT", "ENVIRONMENT_SAMPLE_EXPORT", "ENVIRONMENT_PATHOGEN_TEST_CREATE", "ENVIRONMENT_PATHOGEN_TEST_EDIT", "ENVIRONMENT_PATHOGEN_TEST_DELETE", "SELF_REPORT_VIEW", "SELF_REPORT_CREATE", "SELF_REPORT_EDIT", "SELF_REPORT_DELETE", "SELF_REPORT_ARCHIVE", "SELF_REPORT_PROCESS", "SELF_REPORT_IMPORT", "SELF_REPORT_EXPORT", "DOCUMENT_VIEW", "DOCUMENT_UPLOAD", "DOCUMENT_DELETE", "PERFORM_BULK_OPERATIONS", "PERFORM_BULK_OPERATIONS_PSEUDONYM", "QUARANTINE_ORDER_CREATE", "SORMAS_REST", "SORMAS_UI", "DATABASE_EXPORT_ACCESS", "EXPORT_DATA_PROTECTION_DATA", "BAG_EXPORT", "SEND_MANUAL_EXTERNAL_MESSAGES", "MANAGE_EXTERNAL_SYMPTOM_JOURNAL", "EXTERNAL_VISITS", "SORMAS_TO_SORMAS_CLIENT", "SORMAS_TO_SORMAS_SHARE", "SORMAS_TO_SORMAS_PROCESS", "EXTERNAL_SURVEILLANCE_SHARE", "EXTERNAL_SURVEILLANCE_DELETE", "EXTERNAL_MESSAGE_PUSH", "EXTERNAL_MESSAGE_ACCESS", "EXTERNAL_MESSAGE_LABORATORY_VIEW", "EXTERNAL_MESSAGE_DOCTOR_DECLARATION_VIEW", "EXTERNAL_MESSAGE_LABORATORY_PROCESS", "EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS", "EXTERNAL_MESSAGE_LABORATORY_DELETE", "EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE", "SURVEY_VIEW", "SURVEY_CREATE", "SURVEY_EDIT", "SURVEY_DELETE", "SURVEY_TOKEN_VIEW", "SURVEY_TOKEN_CREATE", "SURVEY_TOKEN_EDIT", "SURVEY_TOKEN_DELETE", "SURVEY_TOKEN_IMPORT", "OUTBREAK_VIEW", "OUTBREAK_EDIT", "MANAGE_PUBLIC_EXPORT_CONFIGURATION", "DOCUMENT_TEMPLATE_MANAGEMENT", "LINE_LISTING_CONFIGURE", "DEV_MODE", "EMAIL_TEMPLATE_MANAGEMENT", "EXTERNAL_EMAIL_SEND", "EXTERNAL_EMAIL_ATTACH_DOCUMENTS", "CUSTOMIZABLE_ENUM_MANAGEMENT", "SYSTEM_CONFIGURATION", "DISEASE_MANAGEMENT", "EPIPULSE_EXPORT_VIEW", "EPIPULSE_EXPORT_CREATE", "EPIPULSE_EXPORT_DOWNLOAD", "EPIPULSE_EXPORT_DELETE" ]
+                    "enum" : [ "CASE_VIEW", "CASE_CREATE", "CASE_EDIT", "CASE_DELETE", "CASE_ARCHIVE", "CASE_VIEW_ARCHIVED", "CASE_IMPORT", "CASE_EXPORT", "CASE_INVESTIGATE", "CASE_CLASSIFY", "CASE_CHANGE_DISEASE", "CASE_CHANGE_EPID_NUMBER", "CASE_TRANSFER", "CASE_REFER_FROM_POE", "CASE_MERGE", "CASE_SHARE", "CASE_RESPONSIBLE", "GRANT_SPECIAL_CASE_ACCESS", "IMMUNIZATION_VIEW", "IMMUNIZATION_CREATE", "IMMUNIZATION_EDIT", "IMMUNIZATION_DELETE", "IMMUNIZATION_ARCHIVE", "IMMUNIZATION_VIEW_ARCHIVED", "ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW", "ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_CREATE", "ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_EDIT", "ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_ARCHIVE", "ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_DELETE", "ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_EXPORT", "PERSON_VIEW", "PERSON_EDIT", "PERSON_DELETE", "PERSON_EXPORT", "PERSON_CONTACT_DETAILS_DELETE", "PERSON_MERGE", "SAMPLE_VIEW", "SAMPLE_CREATE", "SAMPLE_EDIT", "SAMPLE_DELETE", "SAMPLE_EXPORT", "SAMPLE_TRANSFER", "SAMPLE_EDIT_NOT_OWNED", "PATHOGEN_TEST_CREATE", "PATHOGEN_TEST_EDIT", "PATHOGEN_TEST_DELETE", "ADDITIONAL_TEST_VIEW", "ADDITIONAL_TEST_CREATE", "ADDITIONAL_TEST_EDIT", "ADDITIONAL_TEST_DELETE", "CONTACT_VIEW", "CONTACT_CREATE", "CONTACT_EDIT", "CONTACT_DELETE", "CONTACT_ARCHIVE", "CONTACT_VIEW_ARCHIVED", "CONTACT_IMPORT", "CONTACT_EXPORT", "CONTACT_CONVERT", "CONTACT_REASSIGN_CASE", "CONTACT_MERGE", "CONTACT_RESPONSIBLE", "VISIT_CREATE", "VISIT_EDIT", "VISIT_DELETE", "VISIT_EXPORT", "TASK_VIEW", "TASK_CREATE", "TASK_EDIT", "TASK_DELETE", "TASK_EXPORT", "TASK_ASSIGN", "TASK_ARCHIVE", "TASK_VIEW_ARCHIVED", "ACTION_CREATE", "ACTION_DELETE", "ACTION_EDIT", "EVENT_VIEW", "EVENT_CREATE", "EVENT_EDIT", "EVENT_DELETE", "EVENT_ARCHIVE", "EVENT_VIEW_ARCHIVED", "EVENT_IMPORT", "EVENT_EXPORT", "EVENT_RESPONSIBLE", "EVENTPARTICIPANT_VIEW", "EVENTPARTICIPANT_CREATE", "EVENTPARTICIPANT_EDIT", "EVENTPARTICIPANT_DELETE", "EVENTPARTICIPANT_ARCHIVE", "EVENTPARTICIPANT_VIEW_ARCHIVED", "EVENTPARTICIPANT_IMPORT", "EVENTGROUP_CREATE", "EVENTGROUP_EDIT", "EVENTGROUP_ARCHIVE", "EVENTGROUP_VIEW_ARCHIVED", "EVENTGROUP_DELETE", "EVENTGROUP_LINK", "USER_VIEW", "USER_CREATE", "USER_EDIT", "USER_ROLE_VIEW", "USER_ROLE_EDIT", "USER_ROLE_DELETE", "STATISTICS_ACCESS", "STATISTICS_EXPORT", "INFRASTRUCTURE_VIEW", "INFRASTRUCTURE_CREATE", "INFRASTRUCTURE_EDIT", "INFRASTRUCTURE_IMPORT", "INFRASTRUCTURE_ARCHIVE", "INFRASTRUCTURE_VIEW_ARCHIVED", "INFRASTRUCTURE_EXPORT", "POPULATION_MANAGE", "DASHBOARD_SURVEILLANCE_VIEW", "DASHBOARD_CONTACT_VIEW", "DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS", "DASHBOARD_CAMPAIGNS_VIEW", "DASHBOARD_SAMPLES_VIEW", "DASHBOARD_ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW", "CASE_CLINICIAN_VIEW", "THERAPY_VIEW", "PRESCRIPTION_CREATE", "PRESCRIPTION_EDIT", "PRESCRIPTION_DELETE", "TREATMENT_CREATE", "TREATMENT_EDIT", "TREATMENT_DELETE", "CLINICAL_COURSE_VIEW", "CLINICAL_COURSE_EDIT", "CLINICAL_VISIT_CREATE", "CLINICAL_VISIT_EDIT", "CLINICAL_VISIT_DELETE", "PORT_HEALTH_INFO_VIEW", "PORT_HEALTH_INFO_EDIT", "WEEKLYREPORT_VIEW", "WEEKLYREPORT_CREATE", "AGGREGATE_REPORT_VIEW", "AGGREGATE_REPORT_EDIT", "AGGREGATE_REPORT_EXPORT", "SEE_PERSONAL_DATA_IN_JURISDICTION", "SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION", "SEE_SENSITIVE_DATA_IN_JURISDICTION", "SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION", "CAMPAIGN_VIEW", "CAMPAIGN_EDIT", "CAMPAIGN_ARCHIVE", "CAMPAIGN_VIEW_ARCHIVED", "CAMPAIGN_DELETE", "CAMPAIGN_FORM_DATA_VIEW", "CAMPAIGN_FORM_DATA_EDIT", "CAMPAIGN_FORM_DATA_ARCHIVE", "CAMPAIGN_FORM_DATA_DELETE", "CAMPAIGN_FORM_DATA_VIEW_ARCHIVED", "CAMPAIGN_FORM_DATA_EXPORT", "TRAVEL_ENTRY_MANAGEMENT_ACCESS", "TRAVEL_ENTRY_VIEW", "TRAVEL_ENTRY_CREATE", "TRAVEL_ENTRY_EDIT", "TRAVEL_ENTRY_ARCHIVE", "TRAVEL_ENTRY_VIEW_ARCHIVED", "TRAVEL_ENTRY_DELETE", "ENVIRONMENT_VIEW", "ENVIRONMENT_CREATE", "ENVIRONMENT_EDIT", "ENVIRONMENT_ARCHIVE", "ENVIRONMENT_VIEW_ARCHIVED", "ENVIRONMENT_DELETE", "ENVIRONMENT_IMPORT", "ENVIRONMENT_EXPORT", "ENVIRONMENT_LINK", "ENVIRONMENT_SAMPLE_VIEW", "ENVIRONMENT_SAMPLE_CREATE", "ENVIRONMENT_SAMPLE_EDIT", "ENVIRONMENT_SAMPLE_EDIT_DISPATCH", "ENVIRONMENT_SAMPLE_EDIT_RECEIVAL", "ENVIRONMENT_SAMPLE_DELETE", "ENVIRONMENT_SAMPLE_IMPORT", "ENVIRONMENT_SAMPLE_EXPORT", "ENVIRONMENT_PATHOGEN_TEST_CREATE", "ENVIRONMENT_PATHOGEN_TEST_EDIT", "ENVIRONMENT_PATHOGEN_TEST_DELETE", "SELF_REPORT_VIEW", "SELF_REPORT_CREATE", "SELF_REPORT_EDIT", "SELF_REPORT_DELETE", "SELF_REPORT_ARCHIVE", "SELF_REPORT_PROCESS", "SELF_REPORT_IMPORT", "SELF_REPORT_EXPORT", "DOCUMENT_VIEW", "DOCUMENT_UPLOAD", "DOCUMENT_DELETE", "PERFORM_BULK_OPERATIONS", "PERFORM_BULK_OPERATIONS_PSEUDONYM", "QUARANTINE_ORDER_CREATE", "SORMAS_REST", "SORMAS_UI", "DATABASE_EXPORT_ACCESS", "EXPORT_DATA_PROTECTION_DATA", "BAG_EXPORT", "SEND_MANUAL_EXTERNAL_MESSAGES", "MANAGE_EXTERNAL_SYMPTOM_JOURNAL", "EXTERNAL_VISITS", "SORMAS_TO_SORMAS_CLIENT", "SORMAS_TO_SORMAS_SHARE", "SORMAS_TO_SORMAS_PROCESS", "EXTERNAL_SURVEILLANCE_SHARE", "EXTERNAL_SURVEILLANCE_DELETE", "EXTERNAL_MESSAGE_PUSH", "EXTERNAL_MESSAGE_ACCESS", "EXTERNAL_MESSAGE_LABORATORY_VIEW", "EXTERNAL_MESSAGE_DOCTOR_DECLARATION_VIEW", "EXTERNAL_MESSAGE_LABORATORY_PROCESS", "EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS", "EXTERNAL_MESSAGE_LABORATORY_DELETE", "EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE", "SURVEY_VIEW", "SURVEY_CREATE", "SURVEY_EDIT", "SURVEY_DELETE", "SURVEY_TOKEN_VIEW", "SURVEY_TOKEN_CREATE", "SURVEY_TOKEN_EDIT", "SURVEY_TOKEN_DELETE", "SURVEY_TOKEN_IMPORT", "OUTBREAK_VIEW", "OUTBREAK_EDIT", "MANAGE_PUBLIC_EXPORT_CONFIGURATION", "DOCUMENT_TEMPLATE_MANAGEMENT", "LINE_LISTING_CONFIGURE", "DEV_MODE", "EMAIL_TEMPLATE_MANAGEMENT", "EXTERNAL_EMAIL_SEND", "EXTERNAL_EMAIL_ATTACH_DOCUMENTS", "CUSTOMIZABLE_ENUM_MANAGEMENT", "CUSTOMIZABLE_FIELD_MANAGEMENT", "SYSTEM_CONFIGURATION", "DISEASE_MANAGEMENT", "EPIPULSE_EXPORT_VIEW", "EPIPULSE_EXPORT_CREATE", "EPIPULSE_EXPORT_DOWNLOAD", "EPIPULSE_EXPORT_DELETE" ]
                   }
                 }
               }
@@ -9919,7 +10470,7 @@
                   "type" : "array",
                   "items" : {
                     "type" : "string",
-                    "enum" : [ "CASE_VIEW", "CASE_CREATE", "CASE_EDIT", "CASE_DELETE", "CASE_ARCHIVE", "CASE_VIEW_ARCHIVED", "CASE_IMPORT", "CASE_EXPORT", "CASE_INVESTIGATE", "CASE_CLASSIFY", "CASE_CHANGE_DISEASE", "CASE_CHANGE_EPID_NUMBER", "CASE_TRANSFER", "CASE_REFER_FROM_POE", "CASE_MERGE", "CASE_SHARE", "CASE_RESPONSIBLE", "GRANT_SPECIAL_CASE_ACCESS", "IMMUNIZATION_VIEW", "IMMUNIZATION_CREATE", "IMMUNIZATION_EDIT", "IMMUNIZATION_DELETE", "IMMUNIZATION_ARCHIVE", "IMMUNIZATION_VIEW_ARCHIVED", "ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW", "ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_CREATE", "ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_EDIT", "ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_ARCHIVE", "ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_DELETE", "ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_EXPORT", "PERSON_VIEW", "PERSON_EDIT", "PERSON_DELETE", "PERSON_EXPORT", "PERSON_CONTACT_DETAILS_DELETE", "PERSON_MERGE", "SAMPLE_VIEW", "SAMPLE_CREATE", "SAMPLE_EDIT", "SAMPLE_DELETE", "SAMPLE_EXPORT", "SAMPLE_TRANSFER", "SAMPLE_EDIT_NOT_OWNED", "PATHOGEN_TEST_CREATE", "PATHOGEN_TEST_EDIT", "PATHOGEN_TEST_DELETE", "ADDITIONAL_TEST_VIEW", "ADDITIONAL_TEST_CREATE", "ADDITIONAL_TEST_EDIT", "ADDITIONAL_TEST_DELETE", "CONTACT_VIEW", "CONTACT_CREATE", "CONTACT_EDIT", "CONTACT_DELETE", "CONTACT_ARCHIVE", "CONTACT_VIEW_ARCHIVED", "CONTACT_IMPORT", "CONTACT_EXPORT", "CONTACT_CONVERT", "CONTACT_REASSIGN_CASE", "CONTACT_MERGE", "CONTACT_RESPONSIBLE", "VISIT_CREATE", "VISIT_EDIT", "VISIT_DELETE", "VISIT_EXPORT", "TASK_VIEW", "TASK_CREATE", "TASK_EDIT", "TASK_DELETE", "TASK_EXPORT", "TASK_ASSIGN", "TASK_ARCHIVE", "TASK_VIEW_ARCHIVED", "ACTION_CREATE", "ACTION_DELETE", "ACTION_EDIT", "EVENT_VIEW", "EVENT_CREATE", "EVENT_EDIT", "EVENT_DELETE", "EVENT_ARCHIVE", "EVENT_VIEW_ARCHIVED", "EVENT_IMPORT", "EVENT_EXPORT", "EVENT_RESPONSIBLE", "EVENTPARTICIPANT_VIEW", "EVENTPARTICIPANT_CREATE", "EVENTPARTICIPANT_EDIT", "EVENTPARTICIPANT_DELETE", "EVENTPARTICIPANT_ARCHIVE", "EVENTPARTICIPANT_VIEW_ARCHIVED", "EVENTPARTICIPANT_IMPORT", "EVENTGROUP_CREATE", "EVENTGROUP_EDIT", "EVENTGROUP_ARCHIVE", "EVENTGROUP_VIEW_ARCHIVED", "EVENTGROUP_DELETE", "EVENTGROUP_LINK", "USER_VIEW", "USER_CREATE", "USER_EDIT", "USER_ROLE_VIEW", "USER_ROLE_EDIT", "USER_ROLE_DELETE", "STATISTICS_ACCESS", "STATISTICS_EXPORT", "INFRASTRUCTURE_VIEW", "INFRASTRUCTURE_CREATE", "INFRASTRUCTURE_EDIT", "INFRASTRUCTURE_IMPORT", "INFRASTRUCTURE_ARCHIVE", "INFRASTRUCTURE_VIEW_ARCHIVED", "INFRASTRUCTURE_EXPORT", "POPULATION_MANAGE", "DASHBOARD_SURVEILLANCE_VIEW", "DASHBOARD_CONTACT_VIEW", "DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS", "DASHBOARD_CAMPAIGNS_VIEW", "DASHBOARD_SAMPLES_VIEW", "DASHBOARD_ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW", "CASE_CLINICIAN_VIEW", "THERAPY_VIEW", "PRESCRIPTION_CREATE", "PRESCRIPTION_EDIT", "PRESCRIPTION_DELETE", "TREATMENT_CREATE", "TREATMENT_EDIT", "TREATMENT_DELETE", "CLINICAL_COURSE_VIEW", "CLINICAL_COURSE_EDIT", "CLINICAL_VISIT_CREATE", "CLINICAL_VISIT_EDIT", "CLINICAL_VISIT_DELETE", "PORT_HEALTH_INFO_VIEW", "PORT_HEALTH_INFO_EDIT", "WEEKLYREPORT_VIEW", "WEEKLYREPORT_CREATE", "AGGREGATE_REPORT_VIEW", "AGGREGATE_REPORT_EDIT", "AGGREGATE_REPORT_EXPORT", "SEE_PERSONAL_DATA_IN_JURISDICTION", "SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION", "SEE_SENSITIVE_DATA_IN_JURISDICTION", "SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION", "CAMPAIGN_VIEW", "CAMPAIGN_EDIT", "CAMPAIGN_ARCHIVE", "CAMPAIGN_VIEW_ARCHIVED", "CAMPAIGN_DELETE", "CAMPAIGN_FORM_DATA_VIEW", "CAMPAIGN_FORM_DATA_EDIT", "CAMPAIGN_FORM_DATA_ARCHIVE", "CAMPAIGN_FORM_DATA_DELETE", "CAMPAIGN_FORM_DATA_VIEW_ARCHIVED", "CAMPAIGN_FORM_DATA_EXPORT", "TRAVEL_ENTRY_MANAGEMENT_ACCESS", "TRAVEL_ENTRY_VIEW", "TRAVEL_ENTRY_CREATE", "TRAVEL_ENTRY_EDIT", "TRAVEL_ENTRY_ARCHIVE", "TRAVEL_ENTRY_VIEW_ARCHIVED", "TRAVEL_ENTRY_DELETE", "ENVIRONMENT_VIEW", "ENVIRONMENT_CREATE", "ENVIRONMENT_EDIT", "ENVIRONMENT_ARCHIVE", "ENVIRONMENT_VIEW_ARCHIVED", "ENVIRONMENT_DELETE", "ENVIRONMENT_IMPORT", "ENVIRONMENT_EXPORT", "ENVIRONMENT_LINK", "ENVIRONMENT_SAMPLE_VIEW", "ENVIRONMENT_SAMPLE_CREATE", "ENVIRONMENT_SAMPLE_EDIT", "ENVIRONMENT_SAMPLE_EDIT_DISPATCH", "ENVIRONMENT_SAMPLE_EDIT_RECEIVAL", "ENVIRONMENT_SAMPLE_DELETE", "ENVIRONMENT_SAMPLE_IMPORT", "ENVIRONMENT_SAMPLE_EXPORT", "ENVIRONMENT_PATHOGEN_TEST_CREATE", "ENVIRONMENT_PATHOGEN_TEST_EDIT", "ENVIRONMENT_PATHOGEN_TEST_DELETE", "SELF_REPORT_VIEW", "SELF_REPORT_CREATE", "SELF_REPORT_EDIT", "SELF_REPORT_DELETE", "SELF_REPORT_ARCHIVE", "SELF_REPORT_PROCESS", "SELF_REPORT_IMPORT", "SELF_REPORT_EXPORT", "DOCUMENT_VIEW", "DOCUMENT_UPLOAD", "DOCUMENT_DELETE", "PERFORM_BULK_OPERATIONS", "PERFORM_BULK_OPERATIONS_PSEUDONYM", "QUARANTINE_ORDER_CREATE", "SORMAS_REST", "SORMAS_UI", "DATABASE_EXPORT_ACCESS", "EXPORT_DATA_PROTECTION_DATA", "BAG_EXPORT", "SEND_MANUAL_EXTERNAL_MESSAGES", "MANAGE_EXTERNAL_SYMPTOM_JOURNAL", "EXTERNAL_VISITS", "SORMAS_TO_SORMAS_CLIENT", "SORMAS_TO_SORMAS_SHARE", "SORMAS_TO_SORMAS_PROCESS", "EXTERNAL_SURVEILLANCE_SHARE", "EXTERNAL_SURVEILLANCE_DELETE", "EXTERNAL_MESSAGE_PUSH", "EXTERNAL_MESSAGE_ACCESS", "EXTERNAL_MESSAGE_LABORATORY_VIEW", "EXTERNAL_MESSAGE_DOCTOR_DECLARATION_VIEW", "EXTERNAL_MESSAGE_LABORATORY_PROCESS", "EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS", "EXTERNAL_MESSAGE_LABORATORY_DELETE", "EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE", "SURVEY_VIEW", "SURVEY_CREATE", "SURVEY_EDIT", "SURVEY_DELETE", "SURVEY_TOKEN_VIEW", "SURVEY_TOKEN_CREATE", "SURVEY_TOKEN_EDIT", "SURVEY_TOKEN_DELETE", "SURVEY_TOKEN_IMPORT", "OUTBREAK_VIEW", "OUTBREAK_EDIT", "MANAGE_PUBLIC_EXPORT_CONFIGURATION", "DOCUMENT_TEMPLATE_MANAGEMENT", "LINE_LISTING_CONFIGURE", "DEV_MODE", "EMAIL_TEMPLATE_MANAGEMENT", "EXTERNAL_EMAIL_SEND", "EXTERNAL_EMAIL_ATTACH_DOCUMENTS", "CUSTOMIZABLE_ENUM_MANAGEMENT", "SYSTEM_CONFIGURATION", "DISEASE_MANAGEMENT", "EPIPULSE_EXPORT_VIEW", "EPIPULSE_EXPORT_CREATE", "EPIPULSE_EXPORT_DOWNLOAD", "EPIPULSE_EXPORT_DELETE" ]
+                    "enum" : [ "CASE_VIEW", "CASE_CREATE", "CASE_EDIT", "CASE_DELETE", "CASE_ARCHIVE", "CASE_VIEW_ARCHIVED", "CASE_IMPORT", "CASE_EXPORT", "CASE_INVESTIGATE", "CASE_CLASSIFY", "CASE_CHANGE_DISEASE", "CASE_CHANGE_EPID_NUMBER", "CASE_TRANSFER", "CASE_REFER_FROM_POE", "CASE_MERGE", "CASE_SHARE", "CASE_RESPONSIBLE", "GRANT_SPECIAL_CASE_ACCESS", "IMMUNIZATION_VIEW", "IMMUNIZATION_CREATE", "IMMUNIZATION_EDIT", "IMMUNIZATION_DELETE", "IMMUNIZATION_ARCHIVE", "IMMUNIZATION_VIEW_ARCHIVED", "ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW", "ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_CREATE", "ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_EDIT", "ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_ARCHIVE", "ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_DELETE", "ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_EXPORT", "PERSON_VIEW", "PERSON_EDIT", "PERSON_DELETE", "PERSON_EXPORT", "PERSON_CONTACT_DETAILS_DELETE", "PERSON_MERGE", "SAMPLE_VIEW", "SAMPLE_CREATE", "SAMPLE_EDIT", "SAMPLE_DELETE", "SAMPLE_EXPORT", "SAMPLE_TRANSFER", "SAMPLE_EDIT_NOT_OWNED", "PATHOGEN_TEST_CREATE", "PATHOGEN_TEST_EDIT", "PATHOGEN_TEST_DELETE", "ADDITIONAL_TEST_VIEW", "ADDITIONAL_TEST_CREATE", "ADDITIONAL_TEST_EDIT", "ADDITIONAL_TEST_DELETE", "CONTACT_VIEW", "CONTACT_CREATE", "CONTACT_EDIT", "CONTACT_DELETE", "CONTACT_ARCHIVE", "CONTACT_VIEW_ARCHIVED", "CONTACT_IMPORT", "CONTACT_EXPORT", "CONTACT_CONVERT", "CONTACT_REASSIGN_CASE", "CONTACT_MERGE", "CONTACT_RESPONSIBLE", "VISIT_CREATE", "VISIT_EDIT", "VISIT_DELETE", "VISIT_EXPORT", "TASK_VIEW", "TASK_CREATE", "TASK_EDIT", "TASK_DELETE", "TASK_EXPORT", "TASK_ASSIGN", "TASK_ARCHIVE", "TASK_VIEW_ARCHIVED", "ACTION_CREATE", "ACTION_DELETE", "ACTION_EDIT", "EVENT_VIEW", "EVENT_CREATE", "EVENT_EDIT", "EVENT_DELETE", "EVENT_ARCHIVE", "EVENT_VIEW_ARCHIVED", "EVENT_IMPORT", "EVENT_EXPORT", "EVENT_RESPONSIBLE", "EVENTPARTICIPANT_VIEW", "EVENTPARTICIPANT_CREATE", "EVENTPARTICIPANT_EDIT", "EVENTPARTICIPANT_DELETE", "EVENTPARTICIPANT_ARCHIVE", "EVENTPARTICIPANT_VIEW_ARCHIVED", "EVENTPARTICIPANT_IMPORT", "EVENTGROUP_CREATE", "EVENTGROUP_EDIT", "EVENTGROUP_ARCHIVE", "EVENTGROUP_VIEW_ARCHIVED", "EVENTGROUP_DELETE", "EVENTGROUP_LINK", "USER_VIEW", "USER_CREATE", "USER_EDIT", "USER_ROLE_VIEW", "USER_ROLE_EDIT", "USER_ROLE_DELETE", "STATISTICS_ACCESS", "STATISTICS_EXPORT", "INFRASTRUCTURE_VIEW", "INFRASTRUCTURE_CREATE", "INFRASTRUCTURE_EDIT", "INFRASTRUCTURE_IMPORT", "INFRASTRUCTURE_ARCHIVE", "INFRASTRUCTURE_VIEW_ARCHIVED", "INFRASTRUCTURE_EXPORT", "POPULATION_MANAGE", "DASHBOARD_SURVEILLANCE_VIEW", "DASHBOARD_CONTACT_VIEW", "DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS", "DASHBOARD_CAMPAIGNS_VIEW", "DASHBOARD_SAMPLES_VIEW", "DASHBOARD_ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW", "CASE_CLINICIAN_VIEW", "THERAPY_VIEW", "PRESCRIPTION_CREATE", "PRESCRIPTION_EDIT", "PRESCRIPTION_DELETE", "TREATMENT_CREATE", "TREATMENT_EDIT", "TREATMENT_DELETE", "CLINICAL_COURSE_VIEW", "CLINICAL_COURSE_EDIT", "CLINICAL_VISIT_CREATE", "CLINICAL_VISIT_EDIT", "CLINICAL_VISIT_DELETE", "PORT_HEALTH_INFO_VIEW", "PORT_HEALTH_INFO_EDIT", "WEEKLYREPORT_VIEW", "WEEKLYREPORT_CREATE", "AGGREGATE_REPORT_VIEW", "AGGREGATE_REPORT_EDIT", "AGGREGATE_REPORT_EXPORT", "SEE_PERSONAL_DATA_IN_JURISDICTION", "SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION", "SEE_SENSITIVE_DATA_IN_JURISDICTION", "SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION", "CAMPAIGN_VIEW", "CAMPAIGN_EDIT", "CAMPAIGN_ARCHIVE", "CAMPAIGN_VIEW_ARCHIVED", "CAMPAIGN_DELETE", "CAMPAIGN_FORM_DATA_VIEW", "CAMPAIGN_FORM_DATA_EDIT", "CAMPAIGN_FORM_DATA_ARCHIVE", "CAMPAIGN_FORM_DATA_DELETE", "CAMPAIGN_FORM_DATA_VIEW_ARCHIVED", "CAMPAIGN_FORM_DATA_EXPORT", "TRAVEL_ENTRY_MANAGEMENT_ACCESS", "TRAVEL_ENTRY_VIEW", "TRAVEL_ENTRY_CREATE", "TRAVEL_ENTRY_EDIT", "TRAVEL_ENTRY_ARCHIVE", "TRAVEL_ENTRY_VIEW_ARCHIVED", "TRAVEL_ENTRY_DELETE", "ENVIRONMENT_VIEW", "ENVIRONMENT_CREATE", "ENVIRONMENT_EDIT", "ENVIRONMENT_ARCHIVE", "ENVIRONMENT_VIEW_ARCHIVED", "ENVIRONMENT_DELETE", "ENVIRONMENT_IMPORT", "ENVIRONMENT_EXPORT", "ENVIRONMENT_LINK", "ENVIRONMENT_SAMPLE_VIEW", "ENVIRONMENT_SAMPLE_CREATE", "ENVIRONMENT_SAMPLE_EDIT", "ENVIRONMENT_SAMPLE_EDIT_DISPATCH", "ENVIRONMENT_SAMPLE_EDIT_RECEIVAL", "ENVIRONMENT_SAMPLE_DELETE", "ENVIRONMENT_SAMPLE_IMPORT", "ENVIRONMENT_SAMPLE_EXPORT", "ENVIRONMENT_PATHOGEN_TEST_CREATE", "ENVIRONMENT_PATHOGEN_TEST_EDIT", "ENVIRONMENT_PATHOGEN_TEST_DELETE", "SELF_REPORT_VIEW", "SELF_REPORT_CREATE", "SELF_REPORT_EDIT", "SELF_REPORT_DELETE", "SELF_REPORT_ARCHIVE", "SELF_REPORT_PROCESS", "SELF_REPORT_IMPORT", "SELF_REPORT_EXPORT", "DOCUMENT_VIEW", "DOCUMENT_UPLOAD", "DOCUMENT_DELETE", "PERFORM_BULK_OPERATIONS", "PERFORM_BULK_OPERATIONS_PSEUDONYM", "QUARANTINE_ORDER_CREATE", "SORMAS_REST", "SORMAS_UI", "DATABASE_EXPORT_ACCESS", "EXPORT_DATA_PROTECTION_DATA", "BAG_EXPORT", "SEND_MANUAL_EXTERNAL_MESSAGES", "MANAGE_EXTERNAL_SYMPTOM_JOURNAL", "EXTERNAL_VISITS", "SORMAS_TO_SORMAS_CLIENT", "SORMAS_TO_SORMAS_SHARE", "SORMAS_TO_SORMAS_PROCESS", "EXTERNAL_SURVEILLANCE_SHARE", "EXTERNAL_SURVEILLANCE_DELETE", "EXTERNAL_MESSAGE_PUSH", "EXTERNAL_MESSAGE_ACCESS", "EXTERNAL_MESSAGE_LABORATORY_VIEW", "EXTERNAL_MESSAGE_DOCTOR_DECLARATION_VIEW", "EXTERNAL_MESSAGE_LABORATORY_PROCESS", "EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS", "EXTERNAL_MESSAGE_LABORATORY_DELETE", "EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE", "SURVEY_VIEW", "SURVEY_CREATE", "SURVEY_EDIT", "SURVEY_DELETE", "SURVEY_TOKEN_VIEW", "SURVEY_TOKEN_CREATE", "SURVEY_TOKEN_EDIT", "SURVEY_TOKEN_DELETE", "SURVEY_TOKEN_IMPORT", "OUTBREAK_VIEW", "OUTBREAK_EDIT", "MANAGE_PUBLIC_EXPORT_CONFIGURATION", "DOCUMENT_TEMPLATE_MANAGEMENT", "LINE_LISTING_CONFIGURE", "DEV_MODE", "EMAIL_TEMPLATE_MANAGEMENT", "EXTERNAL_EMAIL_SEND", "EXTERNAL_EMAIL_ATTACH_DOCUMENTS", "CUSTOMIZABLE_ENUM_MANAGEMENT", "CUSTOMIZABLE_FIELD_MANAGEMENT", "SYSTEM_CONFIGURATION", "DISEASE_MANAGEMENT", "EPIPULSE_EXPORT_VIEW", "EPIPULSE_EXPORT_CREATE", "EPIPULSE_EXPORT_DOWNLOAD", "EPIPULSE_EXPORT_DELETE" ]
                   }
                 }
               }
@@ -9974,7 +10525,7 @@
     },
     "/users/{uuid}" : {
       "get" : {
-        "operationId" : "getByUuid_14",
+        "operationId" : "getByUuid_16",
         "parameters" : [ {
           "in" : "path",
           "name" : "uuid",
@@ -15388,6 +15939,170 @@
         },
         "required" : [ "caption", "dataType", "value" ]
       },
+      "CustomizableFieldCustomProperties" : {
+        "type" : "object",
+        "properties" : {
+          "options" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      },
+      "CustomizableFieldMetadataDto" : {
+        "type" : "object",
+        "properties" : {
+          "active" : {
+            "type" : "boolean"
+          },
+          "changeDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "contextClass" : {
+            "type" : "string",
+            "enum" : [ "CASE", "EPIDATA", "EXPOSURE" ]
+          },
+          "creationDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "customProperties" : {
+            "$ref" : "#/components/schemas/CustomizableFieldCustomProperties"
+          },
+          "defaultValue" : {
+            "type" : "string",
+            "maxLength" : 512,
+            "minLength" : 0
+          },
+          "description" : {
+            "type" : "string",
+            "maxLength" : 512,
+            "minLength" : 0
+          },
+          "fieldType" : {
+            "type" : "string",
+            "enum" : [ "TEXT", "TEXTAREA", "NUMBER", "DECIMAL", "DATE", "DATE_TIME", "COMBOBOX", "CHECKBOX", "YES_NO_UNKNOWN", "CHECKBOX_LIST", "RADIO_BUTTON_LIST" ]
+          },
+          "mandatory" : {
+            "type" : "boolean"
+          },
+          "name" : {
+            "type" : "string",
+            "maxLength" : 255,
+            "minLength" : 0
+          },
+          "readOnly" : {
+            "type" : "boolean"
+          },
+          "translations" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string"
+              }
+            }
+          },
+          "uiGroup" : {
+            "type" : "string",
+            "enum" : [ "CASE_DATA_GENERAL", "CASE_DATA_CLASSIFICATION", "CASE_DATA_INVESTIGATION", "CASE_DATA_IDENTIFIERS", "CASE_DATA_DISEASE", "CASE_DATA_REINFECTION", "CASE_DATA_OUTCOME", "CASE_DATA_SEQUELAE", "CASE_DATA_JURISDICTION", "CASE_DATA_PLACE_OF_STAY", "CASE_DATA_QUARANTINE", "CASE_DATA_REPORT_GEO", "CASE_DATA_HEALTH_CONDITIONS", "CASE_DATA_DIAGNOSTIC", "CASE_DATA_MEDICAL_INFORMATION", "CASE_DATA_VACCINATION", "CASE_DATA_CLINICIAN_NOTIFICATION", "CASE_DATA_CONTACT_TRACING", "EPIDATA_EXPOSURE_INVESTIGATION", "EPIDATA_ACTIVITY_AS_CASE", "EPIDATA_CONTACT_WITH_SOURCE_CASE", "EXPOSURE_DETAILS", "EXPOSURES_GENERAL", "LOCATION_GENERAL" ]
+          },
+          "uiLinePosition" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "uiLineWeight" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "uuid" : {
+            "type" : "string",
+            "maxLength" : 36,
+            "minLength" : 20,
+            "pattern" : "^[0-9a-zA-Z-]*$"
+          },
+          "visibilityRestrictions" : {
+            "$ref" : "#/components/schemas/CustomizableFieldVisibilityRestrictions"
+          }
+        },
+        "required" : [ "contextClass", "fieldType", "name" ]
+      },
+      "CustomizableFieldValueDto" : {
+        "type" : "object",
+        "properties" : {
+          "changeDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "contextClass" : {
+            "type" : "string",
+            "enum" : [ "CASE", "EPIDATA", "EXPOSURE" ]
+          },
+          "creationDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "customizableFieldMetadataUuid" : {
+            "type" : "string"
+          },
+          "entityUuid" : {
+            "type" : "string"
+          },
+          "uuid" : {
+            "type" : "string",
+            "maxLength" : 36,
+            "minLength" : 20,
+            "pattern" : "^[0-9a-zA-Z-]*$"
+          },
+          "value" : {
+            "type" : "string"
+          },
+          "valueAsBoolean" : {
+            "type" : "boolean"
+          },
+          "valueAsDate" : {
+            "type" : "string",
+            "format" : "date"
+          },
+          "valueAsDateTime" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "valueAsDecimal" : {
+            "type" : "number"
+          },
+          "valueAsInteger" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "valueAsStringSet" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            },
+            "uniqueItems" : true
+          },
+          "valueAsYesNoUnknown" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          }
+        },
+        "required" : [ "contextClass", "customizableFieldMetadataUuid", "entityUuid" ]
+      },
+      "CustomizableFieldVisibilityRestrictions" : {
+        "type" : "object",
+        "properties" : {
+          "diseases" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string",
+              "enum" : [ "AFP", "CHOLERA", "CONGENITAL_RUBELLA", "CSM", "DENGUE", "EVD", "GUINEA_WORM", "LASSA", "MEASLES", "MONKEYPOX", "NEW_INFLUENZA", "PLAGUE", "POLIO", "UNSPECIFIED_VHF", "WEST_NILE_FEVER", "YELLOW_FEVER", "RABIES", "ANTHRAX", "CORONAVIRUS", "PNEUMONIA", "MALARIA", "TYPHOID_FEVER", "ACUTE_VIRAL_HEPATITIS", "NON_NEONATAL_TETANUS", "HIV", "SCHISTOSOMIASIS", "SOIL_TRANSMITTED_HELMINTHS", "TRYPANOSOMIASIS", "DIARRHEA_DEHYDRATION", "DIARRHEA_BLOOD", "SNAKE_BITE", "RUBELLA", "TUBERCULOSIS", "LATENT_TUBERCULOSIS", "LEPROSY", "LYMPHATIC_FILARIASIS", "BURULI_ULCER", "PERTUSSIS", "NEONATAL_TETANUS", "ONCHOCERCIASIS", "DIPHTERIA", "TRACHOMA", "YAWS_ENDEMIC_SYPHILIS", "MATERNAL_DEATHS", "PERINATAL_DEATHS", "INFLUENZA", "INFLUENZA_A", "INFLUENZA_B", "H_METAPNEUMOVIRUS", "RESPIRATORY_SYNCYTIAL_VIRUS", "PARAINFLUENZA_1_4", "ADENOVIRUS", "RHINOVIRUS", "ENTEROVIRUS", "M_PNEUMONIAE", "C_PNEUMONIAE", "ARI", "CHIKUNGUNYA", "POST_IMMUNIZATION_ADVERSE_EVENTS_MILD", "POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE", "FHA", "INVASIVE_PNEUMOCOCCAL_INFECTION", "INVASIVE_MENINGOCOCCAL_INFECTION", "GIARDIASIS", "CRYPTOSPORIDIOSIS", "OTHER", "UNDEFINED" ]
+            }
+          }
+        }
+      },
       "DashboardCaseMeasureDto" : {
         "type" : "object",
         "properties" : {
@@ -15922,6 +16637,14 @@
           "eventParticipantFollowUpDuration" : {
             "type" : "integer",
             "format" : "int32"
+          },
+          "exposureCategories" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string",
+              "enum" : [ "AIR_BORNE", "ANIMAL_CONTACT", "DIRECT_CONTACT", "FOMITE_TRANSMISSION", "FOOD_BORNE", "VECTOR_BORNE", "VERTICAL_TRANSMISSION", "WATER_BORNE" ]
+            },
+            "uniqueItems" : true
           },
           "extendedClassification" : {
             "type" : "boolean"
@@ -18228,8 +18951,7 @@
             "type" : "string",
             "enum" : [ "UNKNOWN", "OPEN_SPACE_OFFICE", "FOOD_SECTOR", "BUILDING_SECTOR", "LOGISTICS_CENTER", "OTHER" ]
           }
-        },
-        "required" : [ "exposureType" ]
+        }
       },
       "ExternalDataDto" : {
         "type" : "object",
@@ -26693,7 +27415,7 @@
             "type" : "array",
             "items" : {
               "type" : "string",
-              "enum" : [ "CASE_VIEW", "CASE_CREATE", "CASE_EDIT", "CASE_DELETE", "CASE_ARCHIVE", "CASE_VIEW_ARCHIVED", "CASE_IMPORT", "CASE_EXPORT", "CASE_INVESTIGATE", "CASE_CLASSIFY", "CASE_CHANGE_DISEASE", "CASE_CHANGE_EPID_NUMBER", "CASE_TRANSFER", "CASE_REFER_FROM_POE", "CASE_MERGE", "CASE_SHARE", "CASE_RESPONSIBLE", "GRANT_SPECIAL_CASE_ACCESS", "IMMUNIZATION_VIEW", "IMMUNIZATION_CREATE", "IMMUNIZATION_EDIT", "IMMUNIZATION_DELETE", "IMMUNIZATION_ARCHIVE", "IMMUNIZATION_VIEW_ARCHIVED", "ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW", "ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_CREATE", "ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_EDIT", "ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_ARCHIVE", "ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_DELETE", "ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_EXPORT", "PERSON_VIEW", "PERSON_EDIT", "PERSON_DELETE", "PERSON_EXPORT", "PERSON_CONTACT_DETAILS_DELETE", "PERSON_MERGE", "SAMPLE_VIEW", "SAMPLE_CREATE", "SAMPLE_EDIT", "SAMPLE_DELETE", "SAMPLE_EXPORT", "SAMPLE_TRANSFER", "SAMPLE_EDIT_NOT_OWNED", "PATHOGEN_TEST_CREATE", "PATHOGEN_TEST_EDIT", "PATHOGEN_TEST_DELETE", "ADDITIONAL_TEST_VIEW", "ADDITIONAL_TEST_CREATE", "ADDITIONAL_TEST_EDIT", "ADDITIONAL_TEST_DELETE", "CONTACT_VIEW", "CONTACT_CREATE", "CONTACT_EDIT", "CONTACT_DELETE", "CONTACT_ARCHIVE", "CONTACT_VIEW_ARCHIVED", "CONTACT_IMPORT", "CONTACT_EXPORT", "CONTACT_CONVERT", "CONTACT_REASSIGN_CASE", "CONTACT_MERGE", "CONTACT_RESPONSIBLE", "VISIT_CREATE", "VISIT_EDIT", "VISIT_DELETE", "VISIT_EXPORT", "TASK_VIEW", "TASK_CREATE", "TASK_EDIT", "TASK_DELETE", "TASK_EXPORT", "TASK_ASSIGN", "TASK_ARCHIVE", "TASK_VIEW_ARCHIVED", "ACTION_CREATE", "ACTION_DELETE", "ACTION_EDIT", "EVENT_VIEW", "EVENT_CREATE", "EVENT_EDIT", "EVENT_DELETE", "EVENT_ARCHIVE", "EVENT_VIEW_ARCHIVED", "EVENT_IMPORT", "EVENT_EXPORT", "EVENT_RESPONSIBLE", "EVENTPARTICIPANT_VIEW", "EVENTPARTICIPANT_CREATE", "EVENTPARTICIPANT_EDIT", "EVENTPARTICIPANT_DELETE", "EVENTPARTICIPANT_ARCHIVE", "EVENTPARTICIPANT_VIEW_ARCHIVED", "EVENTPARTICIPANT_IMPORT", "EVENTGROUP_CREATE", "EVENTGROUP_EDIT", "EVENTGROUP_ARCHIVE", "EVENTGROUP_VIEW_ARCHIVED", "EVENTGROUP_DELETE", "EVENTGROUP_LINK", "USER_VIEW", "USER_CREATE", "USER_EDIT", "USER_ROLE_VIEW", "USER_ROLE_EDIT", "USER_ROLE_DELETE", "STATISTICS_ACCESS", "STATISTICS_EXPORT", "INFRASTRUCTURE_VIEW", "INFRASTRUCTURE_CREATE", "INFRASTRUCTURE_EDIT", "INFRASTRUCTURE_IMPORT", "INFRASTRUCTURE_ARCHIVE", "INFRASTRUCTURE_VIEW_ARCHIVED", "INFRASTRUCTURE_EXPORT", "POPULATION_MANAGE", "DASHBOARD_SURVEILLANCE_VIEW", "DASHBOARD_CONTACT_VIEW", "DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS", "DASHBOARD_CAMPAIGNS_VIEW", "DASHBOARD_SAMPLES_VIEW", "DASHBOARD_ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW", "CASE_CLINICIAN_VIEW", "THERAPY_VIEW", "PRESCRIPTION_CREATE", "PRESCRIPTION_EDIT", "PRESCRIPTION_DELETE", "TREATMENT_CREATE", "TREATMENT_EDIT", "TREATMENT_DELETE", "CLINICAL_COURSE_VIEW", "CLINICAL_COURSE_EDIT", "CLINICAL_VISIT_CREATE", "CLINICAL_VISIT_EDIT", "CLINICAL_VISIT_DELETE", "PORT_HEALTH_INFO_VIEW", "PORT_HEALTH_INFO_EDIT", "WEEKLYREPORT_VIEW", "WEEKLYREPORT_CREATE", "AGGREGATE_REPORT_VIEW", "AGGREGATE_REPORT_EDIT", "AGGREGATE_REPORT_EXPORT", "SEE_PERSONAL_DATA_IN_JURISDICTION", "SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION", "SEE_SENSITIVE_DATA_IN_JURISDICTION", "SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION", "CAMPAIGN_VIEW", "CAMPAIGN_EDIT", "CAMPAIGN_ARCHIVE", "CAMPAIGN_VIEW_ARCHIVED", "CAMPAIGN_DELETE", "CAMPAIGN_FORM_DATA_VIEW", "CAMPAIGN_FORM_DATA_EDIT", "CAMPAIGN_FORM_DATA_ARCHIVE", "CAMPAIGN_FORM_DATA_DELETE", "CAMPAIGN_FORM_DATA_VIEW_ARCHIVED", "CAMPAIGN_FORM_DATA_EXPORT", "TRAVEL_ENTRY_MANAGEMENT_ACCESS", "TRAVEL_ENTRY_VIEW", "TRAVEL_ENTRY_CREATE", "TRAVEL_ENTRY_EDIT", "TRAVEL_ENTRY_ARCHIVE", "TRAVEL_ENTRY_VIEW_ARCHIVED", "TRAVEL_ENTRY_DELETE", "ENVIRONMENT_VIEW", "ENVIRONMENT_CREATE", "ENVIRONMENT_EDIT", "ENVIRONMENT_ARCHIVE", "ENVIRONMENT_VIEW_ARCHIVED", "ENVIRONMENT_DELETE", "ENVIRONMENT_IMPORT", "ENVIRONMENT_EXPORT", "ENVIRONMENT_LINK", "ENVIRONMENT_SAMPLE_VIEW", "ENVIRONMENT_SAMPLE_CREATE", "ENVIRONMENT_SAMPLE_EDIT", "ENVIRONMENT_SAMPLE_EDIT_DISPATCH", "ENVIRONMENT_SAMPLE_EDIT_RECEIVAL", "ENVIRONMENT_SAMPLE_DELETE", "ENVIRONMENT_SAMPLE_IMPORT", "ENVIRONMENT_SAMPLE_EXPORT", "ENVIRONMENT_PATHOGEN_TEST_CREATE", "ENVIRONMENT_PATHOGEN_TEST_EDIT", "ENVIRONMENT_PATHOGEN_TEST_DELETE", "SELF_REPORT_VIEW", "SELF_REPORT_CREATE", "SELF_REPORT_EDIT", "SELF_REPORT_DELETE", "SELF_REPORT_ARCHIVE", "SELF_REPORT_PROCESS", "SELF_REPORT_IMPORT", "SELF_REPORT_EXPORT", "DOCUMENT_VIEW", "DOCUMENT_UPLOAD", "DOCUMENT_DELETE", "PERFORM_BULK_OPERATIONS", "PERFORM_BULK_OPERATIONS_PSEUDONYM", "QUARANTINE_ORDER_CREATE", "SORMAS_REST", "SORMAS_UI", "DATABASE_EXPORT_ACCESS", "EXPORT_DATA_PROTECTION_DATA", "BAG_EXPORT", "SEND_MANUAL_EXTERNAL_MESSAGES", "MANAGE_EXTERNAL_SYMPTOM_JOURNAL", "EXTERNAL_VISITS", "SORMAS_TO_SORMAS_CLIENT", "SORMAS_TO_SORMAS_SHARE", "SORMAS_TO_SORMAS_PROCESS", "EXTERNAL_SURVEILLANCE_SHARE", "EXTERNAL_SURVEILLANCE_DELETE", "EXTERNAL_MESSAGE_PUSH", "EXTERNAL_MESSAGE_ACCESS", "EXTERNAL_MESSAGE_LABORATORY_VIEW", "EXTERNAL_MESSAGE_DOCTOR_DECLARATION_VIEW", "EXTERNAL_MESSAGE_LABORATORY_PROCESS", "EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS", "EXTERNAL_MESSAGE_LABORATORY_DELETE", "EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE", "SURVEY_VIEW", "SURVEY_CREATE", "SURVEY_EDIT", "SURVEY_DELETE", "SURVEY_TOKEN_VIEW", "SURVEY_TOKEN_CREATE", "SURVEY_TOKEN_EDIT", "SURVEY_TOKEN_DELETE", "SURVEY_TOKEN_IMPORT", "OUTBREAK_VIEW", "OUTBREAK_EDIT", "MANAGE_PUBLIC_EXPORT_CONFIGURATION", "DOCUMENT_TEMPLATE_MANAGEMENT", "LINE_LISTING_CONFIGURE", "DEV_MODE", "EMAIL_TEMPLATE_MANAGEMENT", "EXTERNAL_EMAIL_SEND", "EXTERNAL_EMAIL_ATTACH_DOCUMENTS", "CUSTOMIZABLE_ENUM_MANAGEMENT", "SYSTEM_CONFIGURATION", "DISEASE_MANAGEMENT", "EPIPULSE_EXPORT_VIEW", "EPIPULSE_EXPORT_CREATE", "EPIPULSE_EXPORT_DOWNLOAD", "EPIPULSE_EXPORT_DELETE" ]
+              "enum" : [ "CASE_VIEW", "CASE_CREATE", "CASE_EDIT", "CASE_DELETE", "CASE_ARCHIVE", "CASE_VIEW_ARCHIVED", "CASE_IMPORT", "CASE_EXPORT", "CASE_INVESTIGATE", "CASE_CLASSIFY", "CASE_CHANGE_DISEASE", "CASE_CHANGE_EPID_NUMBER", "CASE_TRANSFER", "CASE_REFER_FROM_POE", "CASE_MERGE", "CASE_SHARE", "CASE_RESPONSIBLE", "GRANT_SPECIAL_CASE_ACCESS", "IMMUNIZATION_VIEW", "IMMUNIZATION_CREATE", "IMMUNIZATION_EDIT", "IMMUNIZATION_DELETE", "IMMUNIZATION_ARCHIVE", "IMMUNIZATION_VIEW_ARCHIVED", "ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW", "ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_CREATE", "ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_EDIT", "ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_ARCHIVE", "ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_DELETE", "ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_EXPORT", "PERSON_VIEW", "PERSON_EDIT", "PERSON_DELETE", "PERSON_EXPORT", "PERSON_CONTACT_DETAILS_DELETE", "PERSON_MERGE", "SAMPLE_VIEW", "SAMPLE_CREATE", "SAMPLE_EDIT", "SAMPLE_DELETE", "SAMPLE_EXPORT", "SAMPLE_TRANSFER", "SAMPLE_EDIT_NOT_OWNED", "PATHOGEN_TEST_CREATE", "PATHOGEN_TEST_EDIT", "PATHOGEN_TEST_DELETE", "ADDITIONAL_TEST_VIEW", "ADDITIONAL_TEST_CREATE", "ADDITIONAL_TEST_EDIT", "ADDITIONAL_TEST_DELETE", "CONTACT_VIEW", "CONTACT_CREATE", "CONTACT_EDIT", "CONTACT_DELETE", "CONTACT_ARCHIVE", "CONTACT_VIEW_ARCHIVED", "CONTACT_IMPORT", "CONTACT_EXPORT", "CONTACT_CONVERT", "CONTACT_REASSIGN_CASE", "CONTACT_MERGE", "CONTACT_RESPONSIBLE", "VISIT_CREATE", "VISIT_EDIT", "VISIT_DELETE", "VISIT_EXPORT", "TASK_VIEW", "TASK_CREATE", "TASK_EDIT", "TASK_DELETE", "TASK_EXPORT", "TASK_ASSIGN", "TASK_ARCHIVE", "TASK_VIEW_ARCHIVED", "ACTION_CREATE", "ACTION_DELETE", "ACTION_EDIT", "EVENT_VIEW", "EVENT_CREATE", "EVENT_EDIT", "EVENT_DELETE", "EVENT_ARCHIVE", "EVENT_VIEW_ARCHIVED", "EVENT_IMPORT", "EVENT_EXPORT", "EVENT_RESPONSIBLE", "EVENTPARTICIPANT_VIEW", "EVENTPARTICIPANT_CREATE", "EVENTPARTICIPANT_EDIT", "EVENTPARTICIPANT_DELETE", "EVENTPARTICIPANT_ARCHIVE", "EVENTPARTICIPANT_VIEW_ARCHIVED", "EVENTPARTICIPANT_IMPORT", "EVENTGROUP_CREATE", "EVENTGROUP_EDIT", "EVENTGROUP_ARCHIVE", "EVENTGROUP_VIEW_ARCHIVED", "EVENTGROUP_DELETE", "EVENTGROUP_LINK", "USER_VIEW", "USER_CREATE", "USER_EDIT", "USER_ROLE_VIEW", "USER_ROLE_EDIT", "USER_ROLE_DELETE", "STATISTICS_ACCESS", "STATISTICS_EXPORT", "INFRASTRUCTURE_VIEW", "INFRASTRUCTURE_CREATE", "INFRASTRUCTURE_EDIT", "INFRASTRUCTURE_IMPORT", "INFRASTRUCTURE_ARCHIVE", "INFRASTRUCTURE_VIEW_ARCHIVED", "INFRASTRUCTURE_EXPORT", "POPULATION_MANAGE", "DASHBOARD_SURVEILLANCE_VIEW", "DASHBOARD_CONTACT_VIEW", "DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS", "DASHBOARD_CAMPAIGNS_VIEW", "DASHBOARD_SAMPLES_VIEW", "DASHBOARD_ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW", "CASE_CLINICIAN_VIEW", "THERAPY_VIEW", "PRESCRIPTION_CREATE", "PRESCRIPTION_EDIT", "PRESCRIPTION_DELETE", "TREATMENT_CREATE", "TREATMENT_EDIT", "TREATMENT_DELETE", "CLINICAL_COURSE_VIEW", "CLINICAL_COURSE_EDIT", "CLINICAL_VISIT_CREATE", "CLINICAL_VISIT_EDIT", "CLINICAL_VISIT_DELETE", "PORT_HEALTH_INFO_VIEW", "PORT_HEALTH_INFO_EDIT", "WEEKLYREPORT_VIEW", "WEEKLYREPORT_CREATE", "AGGREGATE_REPORT_VIEW", "AGGREGATE_REPORT_EDIT", "AGGREGATE_REPORT_EXPORT", "SEE_PERSONAL_DATA_IN_JURISDICTION", "SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION", "SEE_SENSITIVE_DATA_IN_JURISDICTION", "SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION", "CAMPAIGN_VIEW", "CAMPAIGN_EDIT", "CAMPAIGN_ARCHIVE", "CAMPAIGN_VIEW_ARCHIVED", "CAMPAIGN_DELETE", "CAMPAIGN_FORM_DATA_VIEW", "CAMPAIGN_FORM_DATA_EDIT", "CAMPAIGN_FORM_DATA_ARCHIVE", "CAMPAIGN_FORM_DATA_DELETE", "CAMPAIGN_FORM_DATA_VIEW_ARCHIVED", "CAMPAIGN_FORM_DATA_EXPORT", "TRAVEL_ENTRY_MANAGEMENT_ACCESS", "TRAVEL_ENTRY_VIEW", "TRAVEL_ENTRY_CREATE", "TRAVEL_ENTRY_EDIT", "TRAVEL_ENTRY_ARCHIVE", "TRAVEL_ENTRY_VIEW_ARCHIVED", "TRAVEL_ENTRY_DELETE", "ENVIRONMENT_VIEW", "ENVIRONMENT_CREATE", "ENVIRONMENT_EDIT", "ENVIRONMENT_ARCHIVE", "ENVIRONMENT_VIEW_ARCHIVED", "ENVIRONMENT_DELETE", "ENVIRONMENT_IMPORT", "ENVIRONMENT_EXPORT", "ENVIRONMENT_LINK", "ENVIRONMENT_SAMPLE_VIEW", "ENVIRONMENT_SAMPLE_CREATE", "ENVIRONMENT_SAMPLE_EDIT", "ENVIRONMENT_SAMPLE_EDIT_DISPATCH", "ENVIRONMENT_SAMPLE_EDIT_RECEIVAL", "ENVIRONMENT_SAMPLE_DELETE", "ENVIRONMENT_SAMPLE_IMPORT", "ENVIRONMENT_SAMPLE_EXPORT", "ENVIRONMENT_PATHOGEN_TEST_CREATE", "ENVIRONMENT_PATHOGEN_TEST_EDIT", "ENVIRONMENT_PATHOGEN_TEST_DELETE", "SELF_REPORT_VIEW", "SELF_REPORT_CREATE", "SELF_REPORT_EDIT", "SELF_REPORT_DELETE", "SELF_REPORT_ARCHIVE", "SELF_REPORT_PROCESS", "SELF_REPORT_IMPORT", "SELF_REPORT_EXPORT", "DOCUMENT_VIEW", "DOCUMENT_UPLOAD", "DOCUMENT_DELETE", "PERFORM_BULK_OPERATIONS", "PERFORM_BULK_OPERATIONS_PSEUDONYM", "QUARANTINE_ORDER_CREATE", "SORMAS_REST", "SORMAS_UI", "DATABASE_EXPORT_ACCESS", "EXPORT_DATA_PROTECTION_DATA", "BAG_EXPORT", "SEND_MANUAL_EXTERNAL_MESSAGES", "MANAGE_EXTERNAL_SYMPTOM_JOURNAL", "EXTERNAL_VISITS", "SORMAS_TO_SORMAS_CLIENT", "SORMAS_TO_SORMAS_SHARE", "SORMAS_TO_SORMAS_PROCESS", "EXTERNAL_SURVEILLANCE_SHARE", "EXTERNAL_SURVEILLANCE_DELETE", "EXTERNAL_MESSAGE_PUSH", "EXTERNAL_MESSAGE_ACCESS", "EXTERNAL_MESSAGE_LABORATORY_VIEW", "EXTERNAL_MESSAGE_DOCTOR_DECLARATION_VIEW", "EXTERNAL_MESSAGE_LABORATORY_PROCESS", "EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS", "EXTERNAL_MESSAGE_LABORATORY_DELETE", "EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE", "SURVEY_VIEW", "SURVEY_CREATE", "SURVEY_EDIT", "SURVEY_DELETE", "SURVEY_TOKEN_VIEW", "SURVEY_TOKEN_CREATE", "SURVEY_TOKEN_EDIT", "SURVEY_TOKEN_DELETE", "SURVEY_TOKEN_IMPORT", "OUTBREAK_VIEW", "OUTBREAK_EDIT", "MANAGE_PUBLIC_EXPORT_CONFIGURATION", "DOCUMENT_TEMPLATE_MANAGEMENT", "LINE_LISTING_CONFIGURE", "DEV_MODE", "EMAIL_TEMPLATE_MANAGEMENT", "EXTERNAL_EMAIL_SEND", "EXTERNAL_EMAIL_ATTACH_DOCUMENTS", "CUSTOMIZABLE_ENUM_MANAGEMENT", "CUSTOMIZABLE_FIELD_MANAGEMENT", "SYSTEM_CONFIGURATION", "DISEASE_MANAGEMENT", "EPIPULSE_EXPORT_VIEW", "EPIPULSE_EXPORT_CREATE", "EPIPULSE_EXPORT_DOWNLOAD", "EPIPULSE_EXPORT_DELETE" ]
             },
             "uniqueItems" : true
           },

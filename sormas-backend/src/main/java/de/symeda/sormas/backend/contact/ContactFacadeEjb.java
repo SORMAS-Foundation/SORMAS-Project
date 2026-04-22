@@ -659,6 +659,7 @@ public class ContactFacadeEjb
 		}
 
 		service.delete(contact, deletionDetails);
+		epiDataFacade.softDeleteCustomizableFieldValues(contact.getEpiData(), deletionDetails);
 		if (contact.getCaze() != null) {
 			caseFacade.onCaseChanged(caseFacade.toDto(contact.getCaze()), contact.getCaze());
 		}

@@ -23,7 +23,6 @@ import com.tngtech.archunit.core.domain.JavaMethod;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 
 import de.symeda.sormas.api.importexport.DatabaseTable;
-import de.symeda.sormas.backend.adverseeventsfollowingimmunization.entity.AdverseEvents;
 import de.symeda.sormas.backend.adverseeventsfollowingimmunization.entity.Aefi;
 import de.symeda.sormas.backend.adverseeventsfollowingimmunization.entity.AefiInvestigation;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplate;
@@ -75,9 +74,6 @@ public class DatabaseExportServiceTest {
 		Environment.class,
 		EnvironmentSample.class,
 		SelfReport.class,
-		Aefi.class,
-		AdverseEvents.class,
-		AefiInvestigation.class,
 		DocumentTemplate.class,
 		Survey.class,
 		SurveyToken.class,
