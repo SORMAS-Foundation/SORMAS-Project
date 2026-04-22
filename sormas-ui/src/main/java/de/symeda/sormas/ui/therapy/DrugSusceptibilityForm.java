@@ -185,8 +185,9 @@ public class DrugSusceptibilityForm extends AbstractEditForm<DrugSusceptibilityD
 		return field;
 	}
 
+	@Override
 	public void markAsDirty() {
-
+		super.markAsDirty();
 	}
 
 	public void forceUpdateDrugSusceptibilityFields() {
@@ -297,38 +298,43 @@ public class DrugSusceptibilityForm extends AbstractEditForm<DrugSusceptibilityD
 		field.setValue(drugSusceptibilityMic.get().toString());
 	}
 
-	public void updateFieldsVisibility(Disease disease, PathogenTestType pathogenTestType) {
-		FieldHelper.hideFieldsNotInList(getFieldGroup(), List.of(), true);
+	/**
+	 * @return true if the form has visible fields after the update
+	 */
+	public boolean updateFieldsVisibility(Disease disease, PathogenTestType pathogenTestType) {
 		formHeadingLabel.setVisible(false);
 
-		// we hide if we don't have a disease
-		if (disease == null) {
-			return;
+		// Null disease or test type means we don't know yet (e.g. during init before
+		// all fields are populated). Hide fields but preserve values.
+		if (disease == null || pathogenTestType == null) {
+			FieldHelper.hideFieldsNotInList(getFieldGroup(), List.of(), false);
+			return false;
 		}
 
-		// we hide if we have another test type than antibiotic susceptibility
+		// Actively switching to a non-applicable test type — clear stale values
 		if (pathogenTestType != PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY) {
-			return;
+			FieldHelper.hideFieldsNotInList(getFieldGroup(), List.of(), true);
+			return false;
 		}
 
-		// we have a disease and a ANTIBIOTIC_SUSCEPTIBILITY test type, so we can proceed
-
-		// TODO: this is kind of temporary as it should be consolidated with the logic in the PathogenTestForm
-		// For other countries if the disease is Tuberculosis/Latent Tuberculosis, drug susceptibility fields should remain hidden
+		// Non-Luxembourg TB/Latent TB exclusion — clear stale values
 		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 			&& (disease == Disease.TUBERCULOSIS || disease == Disease.LATENT_TUBERCULOSIS)) {
-			//quit, we do not want to show the fields if TUBERCULOSIS/LATENT_TUBERCULOSIS and we are not in Luxembourg
-			return;
+			FieldHelper.hideFieldsNotInList(getFieldGroup(), List.of(), true);
+			return false;
 		}
 
-		// if we passed the exclusions, we show or hide the fields based on annotations
+		// Show applicable fields, hide non-applicable without clearing
 		List<String> applicableFieldIds =
 			AnnotationFieldHelper.getFieldNamesWithMatchingDiseaseAndTestAnnotations(DrugSusceptibilityDto.class, disease, pathogenTestType);
 
-		formHeadingLabel.setVisible(!applicableFieldIds.isEmpty());
+		boolean hasVisibleFields = !applicableFieldIds.isEmpty();
+		formHeadingLabel.setVisible(hasVisibleFields);
 
-		if (!applicableFieldIds.isEmpty()) {
-			FieldHelper.showOnlyFields(getFieldGroup(), applicableFieldIds, true);
+		if (hasVisibleFields) {
+			FieldHelper.showOnlyFields(getFieldGroup(), applicableFieldIds, false);
 		}
+
+		return hasVisibleFields;
 	}
 }
