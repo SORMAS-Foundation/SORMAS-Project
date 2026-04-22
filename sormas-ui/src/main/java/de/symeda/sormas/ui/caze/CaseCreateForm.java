@@ -549,8 +549,10 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		getContent().getComponent(PLACE_OF_STAY_HEADING_LOC).setVisible(false);
 		differentPlaceOfStayJurisdiction.setVisible(false);
 		responsibleRegionCombo.setVisible(false);
+		responsibleRegionCombo.setRequired(false);
 		responsibleRegionCombo.setValue(FacadeProvider.getRegionFacade().getDefaultInfrastructureReference());
 		responsibleDistrictCombo.setVisible(false);
+		responsibleDistrictCombo.setRequired(false);
 		responsibleDistrictCombo.setValue(FacadeProvider.getDistrictFacade().getDefaultInfrastructureReference());
 		responsibleCommunityCombo.setVisible(false);
 		responsibleCommunityCombo.setValue(FacadeProvider.getCommunityFacade().getDefaultInfrastructureReference());

@@ -15702,17 +15702,72 @@ INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'CUSTOMIZAB
 
 INSERT INTO schema_version (version_number, comment) VALUES (620, '#13828 - Add system configuration rights for admin user');
 
+alter table exposures alter column exposuretype drop not null;
+alter table exposures_history alter column exposuretype drop not null;
 
--- updated regexes for MENU system config values
-UPDATE systemconfigurationvalue
-SET value_pattern     = '^(default|red|green|indigo|gray)$|^(#?([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3}))$',
-    value_description = 'i18n/systemConfigurationValueValidation.systemConfigurationValueValidationInvalidBackgroundColor',
-WHERE config_key = 'MENU_BACKGROUND_COLOR';
+INSERT INTO schema_version (version_number, comment) VALUES (621, '#13887 make exposuretype nullable');
 
-UPDATE systemconfigurationvalue
-SET value_pattern = '^[\w\s]{0,16}$'
-WHERE config_key = 'MENU_SUBTITLE';
+UPDATE diseaseconfiguration SET exposurecategories = 'WATER_BORNE,FOOD_BORNE,DIRECT_CONTACT,VERTICAL_TRANSMISSION' WHERE disease = 'ACUTE_VIRAL_HEPATITIS';
+UPDATE diseaseconfiguration SET exposurecategories = 'WATER_BORNE,FOOD_BORNE,FOMITE_TRANSMISSION' WHERE disease = 'AFP';
+UPDATE diseaseconfiguration SET exposurecategories = 'AIR_BORNE,DIRECT_CONTACT,FOMITE_TRANSMISSION' WHERE disease = 'ARI';
+UPDATE diseaseconfiguration SET exposurecategories = 'AIR_BORNE,DIRECT_CONTACT,FOMITE_TRANSMISSION' WHERE disease = 'ADENOVIRUS';
+UPDATE diseaseconfiguration SET exposurecategories = 'DIRECT_CONTACT,FOOD_BORNE,AIR_BORNE' WHERE disease = 'ANTHRAX';
+UPDATE diseaseconfiguration SET exposurecategories = 'DIRECT_CONTACT,WATER_BORNE' WHERE disease = 'BURULI_ULCER';
+UPDATE diseaseconfiguration SET exposurecategories = 'AIR_BORNE,DIRECT_CONTACT' WHERE disease = 'CSM';
+UPDATE diseaseconfiguration SET exposurecategories = 'VECTOR_BORNE,DIRECT_CONTACT' WHERE disease = 'CHIKUNGUNYA';
+UPDATE diseaseconfiguration SET exposurecategories = 'WATER_BORNE,FOOD_BORNE' WHERE disease = 'CHOLERA';
+UPDATE diseaseconfiguration SET exposurecategories = 'VERTICAL_TRANSMISSION' WHERE disease = 'CONGENITAL_RUBELLA';
+UPDATE diseaseconfiguration SET exposurecategories = 'AIR_BORNE,DIRECT_CONTACT,FOMITE_TRANSMISSION' WHERE disease = 'CORONAVIRUS';
+UPDATE diseaseconfiguration SET exposurecategories = 'AIR_BORNE,DIRECT_CONTACT' WHERE disease = 'C_PNEUMONIAE';
+UPDATE diseaseconfiguration SET exposurecategories = 'WATER_BORNE,FOOD_BORNE,DIRECT_CONTACT' WHERE disease = 'CRYPTOSPORIDIOSIS';
+UPDATE diseaseconfiguration SET exposurecategories = 'VECTOR_BORNE' WHERE disease = 'DENGUE';
+UPDATE diseaseconfiguration SET exposurecategories = 'WATER_BORNE,FOOD_BORNE,DIRECT_CONTACT' WHERE disease = 'DIARRHEA_BLOOD';
+UPDATE diseaseconfiguration SET exposurecategories = 'WATER_BORNE,FOOD_BORNE' WHERE disease = 'DIARRHEA_DEHYDRATION';
+UPDATE diseaseconfiguration SET exposurecategories = 'AIR_BORNE,DIRECT_CONTACT' WHERE disease = 'DIPHTERIA';
+UPDATE diseaseconfiguration SET exposurecategories = 'DIRECT_CONTACT,FOMITE_TRANSMISSION,VERTICAL_TRANSMISSION' WHERE disease = 'EVD';
+UPDATE diseaseconfiguration SET exposurecategories = 'WATER_BORNE,FOOD_BORNE,DIRECT_CONTACT,FOMITE_TRANSMISSION' WHERE disease = 'ENTEROVIRUS';
+UPDATE diseaseconfiguration SET exposurecategories = 'WATER_BORNE,FOOD_BORNE' WHERE disease = 'GIARDIASIS';
+UPDATE diseaseconfiguration SET exposurecategories = 'WATER_BORNE' WHERE disease = 'GUINEA_WORM';
+UPDATE diseaseconfiguration SET exposurecategories = 'AIR_BORNE,DIRECT_CONTACT,FOMITE_TRANSMISSION' WHERE disease = 'H_METAPNEUMOVIRUS';
+UPDATE diseaseconfiguration SET exposurecategories = 'DIRECT_CONTACT,VERTICAL_TRANSMISSION' WHERE disease = 'HIV';
+UPDATE diseaseconfiguration SET exposurecategories = 'AIR_BORNE,DIRECT_CONTACT,FOMITE_TRANSMISSION' WHERE disease = 'INFLUENZA';
+UPDATE diseaseconfiguration SET exposurecategories = 'AIR_BORNE,DIRECT_CONTACT,FOMITE_TRANSMISSION' WHERE disease = 'INFLUENZA_A';
+UPDATE diseaseconfiguration SET exposurecategories = 'AIR_BORNE,DIRECT_CONTACT,FOMITE_TRANSMISSION' WHERE disease = 'INFLUENZA_B';
+UPDATE diseaseconfiguration SET exposurecategories = 'AIR_BORNE,DIRECT_CONTACT' WHERE disease = 'INVASIVE_MENINGOCOCCAL_INFECTION';
+UPDATE diseaseconfiguration SET exposurecategories = 'AIR_BORNE,DIRECT_CONTACT' WHERE disease = 'INVASIVE_PNEUMOCOCCAL_INFECTION';
+UPDATE diseaseconfiguration SET exposurecategories = 'DIRECT_CONTACT,FOMITE_TRANSMISSION,ANIMAL_CONTACT,FOOD_BORNE' WHERE disease = 'LASSA';
+UPDATE diseaseconfiguration SET exposurecategories = 'DIRECT_CONTACT,AIR_BORNE' WHERE disease = 'LEPROSY';
+UPDATE diseaseconfiguration SET exposurecategories = 'VECTOR_BORNE' WHERE disease = 'LYMPHATIC_FILARIASIS';
+UPDATE diseaseconfiguration SET exposurecategories = 'VECTOR_BORNE' WHERE disease = 'MALARIA';
+UPDATE diseaseconfiguration SET exposurecategories = 'AIR_BORNE' WHERE disease = 'MEASLES';
+UPDATE diseaseconfiguration SET exposurecategories = 'DIRECT_CONTACT,FOMITE_TRANSMISSION,AIR_BORNE,ANIMAL_CONTACT,VERTICAL_TRANSMISSION' WHERE disease = 'MONKEYPOX';
+UPDATE diseaseconfiguration SET exposurecategories = 'AIR_BORNE' WHERE disease = 'M_PNEUMONIAE';
+UPDATE diseaseconfiguration SET exposurecategories = 'VERTICAL_TRANSMISSION' WHERE disease = 'NEONATAL_TETANUS';
+UPDATE diseaseconfiguration SET exposurecategories = 'AIR_BORNE,DIRECT_CONTACT,FOMITE_TRANSMISSION' WHERE disease = 'NEW_INFLUENZA';
+UPDATE diseaseconfiguration SET exposurecategories = 'FOMITE_TRANSMISSION' WHERE disease = 'NON_NEONATAL_TETANUS';
+UPDATE diseaseconfiguration SET exposurecategories = 'VECTOR_BORNE' WHERE disease = 'ONCHOCERCIASIS';
+UPDATE diseaseconfiguration SET exposurecategories = 'AIR_BORNE,ANIMAL_CONTACT,DIRECT_CONTACT,FOMITE_TRANSMISSION,FOOD_BORNE,VECTOR_BORNE,VERTICAL_TRANSMISSION,WATER_BORNE' WHERE disease = 'OTHER';
+UPDATE diseaseconfiguration SET exposurecategories = 'AIR_BORNE,DIRECT_CONTACT,FOMITE_TRANSMISSION' WHERE disease = 'PARAINFLUENZA_1_4';
+UPDATE diseaseconfiguration SET exposurecategories = 'AIR_BORNE,DIRECT_CONTACT' WHERE disease = 'PERTUSSIS';
+UPDATE diseaseconfiguration SET exposurecategories = 'VECTOR_BORNE,AIR_BORNE,DIRECT_CONTACT' WHERE disease = 'PLAGUE';
+UPDATE diseaseconfiguration SET exposurecategories = 'AIR_BORNE,DIRECT_CONTACT' WHERE disease = 'PNEUMONIA';
+UPDATE diseaseconfiguration SET exposurecategories = 'WATER_BORNE,FOOD_BORNE,FOMITE_TRANSMISSION' WHERE disease = 'POLIO';
+UPDATE diseaseconfiguration SET exposurecategories = 'DIRECT_CONTACT,ANIMAL_CONTACT' WHERE disease = 'RABIES';
+UPDATE diseaseconfiguration SET exposurecategories = 'AIR_BORNE,DIRECT_CONTACT,FOMITE_TRANSMISSION' WHERE disease = 'RESPIRATORY_SYNCYTIAL_VIRUS';
+UPDATE diseaseconfiguration SET exposurecategories = 'AIR_BORNE,DIRECT_CONTACT,FOMITE_TRANSMISSION' WHERE disease = 'RHINOVIRUS';
+UPDATE diseaseconfiguration SET exposurecategories = 'AIR_BORNE,VERTICAL_TRANSMISSION' WHERE disease = 'RUBELLA';
+UPDATE diseaseconfiguration SET exposurecategories = 'WATER_BORNE' WHERE disease = 'SCHISTOSOMIASIS';
+UPDATE diseaseconfiguration SET exposurecategories = 'FOOD_BORNE,WATER_BORNE' WHERE disease = 'SOIL_TRANSMITTED_HELMINTHS';
+UPDATE diseaseconfiguration SET exposurecategories = 'VECTOR_BORNE,DIRECT_CONTACT,FOMITE_TRANSMISSION' WHERE disease = 'TRACHOMA';
+UPDATE diseaseconfiguration SET exposurecategories = 'VECTOR_BORNE' WHERE disease = 'TRYPANOSOMIASIS';
+UPDATE diseaseconfiguration SET exposurecategories = 'AIR_BORNE' WHERE disease = 'TUBERCULOSIS';
+UPDATE diseaseconfiguration SET exposurecategories = 'WATER_BORNE,FOOD_BORNE' WHERE disease = 'TYPHOID_FEVER';
+UPDATE diseaseconfiguration SET exposurecategories = 'AIR_BORNE,ANIMAL_CONTACT,DIRECT_CONTACT,FOMITE_TRANSMISSION,FOOD_BORNE,VECTOR_BORNE,VERTICAL_TRANSMISSION,WATER_BORNE' WHERE disease = 'UNDEFINED';
+UPDATE diseaseconfiguration SET exposurecategories = 'DIRECT_CONTACT,FOMITE_TRANSMISSION' WHERE disease = 'UNSPECIFIED_VHF';
+UPDATE diseaseconfiguration SET exposurecategories = 'VECTOR_BORNE' WHERE disease = 'WEST_NILE_FEVER';
+UPDATE diseaseconfiguration SET exposurecategories = 'DIRECT_CONTACT' WHERE disease = 'YAWS_ENDEMIC_SYPHILIS';
+UPDATE diseaseconfiguration SET exposurecategories = 'VECTOR_BORNE' WHERE disease = 'YELLOW_FEVER';
 
-INSERT INTO schema_version (version_number, comment) VALUES (621, '#13552 - FIX menu regexes');
+INSERT INTO schema_version (version_number, comment) VALUES (622, '#13887 default disease exposure category configuration');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

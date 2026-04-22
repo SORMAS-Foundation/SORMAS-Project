@@ -313,6 +313,7 @@ public final class FieldHelper {
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
 	public static void setVisibleWhen(
 		final FieldGroup fieldGroup,
 		List<String> targetPropertyIds,
@@ -344,6 +345,7 @@ public final class FieldHelper {
 				.addValueChangeListener(event -> onValueChangedSetVisible(targetField, sourceFieldsAndValues, clearOnHidden)));
 	}
 
+	@SuppressWarnings("rawtypes")
 	private static void onValueChangedSetVisible(
 		final FieldGroup fieldGroup,
 		List<String> targetPropertyIds,
@@ -907,7 +909,8 @@ public final class FieldHelper {
 			true };
 
 		sourcePropertyIdsAndValues.forEach((sourcePropertyId, sourceValues) -> {
-			if (!sourceValues.contains(fieldGroup.getField(sourcePropertyId).getValue()))
+			Field sourceField = fieldGroup.getField(sourcePropertyId);
+			if (sourceField == null || !sourceValues.contains(sourceField.getValue()))
 				requiredArray[0] = false;
 		});
 
@@ -1039,7 +1042,8 @@ public final class FieldHelper {
 			true };
 
 		sourcePropertyIdsAndValues.forEach((sourcePropertyId, sourceValues) -> {
-			if (!sourceValues.contains(fieldGroup.getField(sourcePropertyId).getValue()))
+			Field sourceField = fieldGroup.getField(sourcePropertyId);
+			if (sourceField == null || !sourceValues.contains(sourceField.getValue()))
 				shouldSetValueArray[0] = false;
 		});
 
@@ -1110,6 +1114,10 @@ public final class FieldHelper {
 
 		sourcePropertyIdsAndValues.forEach((sourcePropertyId, sourceValues) -> {
 			Field sourceField = fieldGroup.getField(sourcePropertyId);
+			if (sourceField == null) {
+				readOnlyArray[0] = false;
+				return;
+			}
 			Object sourceValue = getNullableSourceFieldValue(sourceField);
 
 			boolean matches;

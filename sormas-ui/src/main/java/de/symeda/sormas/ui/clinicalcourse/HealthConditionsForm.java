@@ -51,7 +51,6 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.ui.AbstractSelect;
-import com.vaadin.v7.ui.AbstractTextField;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextArea;
@@ -66,13 +65,11 @@ import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -327,16 +324,6 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 			malariaInfectedYearLayout.addComponent(malInfectedYearCB, MALARIA_INFECTED_YEAR);
 
 			FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(MALARIA_INFECTED_YEAR), MALARIA, Arrays.asList(YesNoUnknown.YES), true);
-		}
-		if (UiUtil.permitted(UserRight.SEE_SENSITIVE_DATA_IN_JURISDICTION, UserRight.SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION)) {
-			Field<?> other = getField(OTHER_CONDITIONS);
-			if (other != null) {
-				other.setReadOnly(false);
-				other.setEnabled(true);
-				if (other instanceof AbstractTextField) {
-					((AbstractTextField) other).setInputPrompt("");
-				}
-			}
 		}
 	}
 
