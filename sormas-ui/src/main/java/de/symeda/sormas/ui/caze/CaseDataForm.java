@@ -133,7 +133,6 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ExtendedReduced;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.FeatureTypeFieldVisibilityChecker;
@@ -369,6 +368,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private final Disease disease;
 	private final SymptomsDto symptoms;
 	private final boolean caseFollowUpEnabled;
+	private final boolean isPseudonymized;
+	private final boolean inJurisdiction;
 	private DateField dfFollowUpUntil;
 	private CheckBox cbOverwriteFollowUpUntil;
 	private Field<?> quarantine;
@@ -425,6 +426,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		this.disease = disease;
 		this.symptoms = symptoms;
 		this.caseFollowUpEnabled = UiUtil.enabled(FeatureType.CASE_FOLLOWUP);
+		this.isPseudonymized = isPseudonymized;
+		this.inJurisdiction = inJurisdiction;
 		setCustomizableFieldsMetadata(customizableFieldsMetadata);
 		setCustomizableFieldsValues(customizableFieldsValues);
 
@@ -1119,8 +1122,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				disease,
 				FieldVisibilityCheckers.withDisease(disease)
 					.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
-				UiFieldAccessCheckers.getDefault(true, FacadeProvider.getConfigFacade().getCountryLocale()),
-				new PersonReferenceDto(person.getUuid()))).setCaption(null);
+				FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized),
+				new PersonReferenceDto(person.getUuid())))
+			.setCaption(null);
 
 		//diagnosis criteria
 		if ((FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) && disease == Disease.TUBERCULOSIS) {
