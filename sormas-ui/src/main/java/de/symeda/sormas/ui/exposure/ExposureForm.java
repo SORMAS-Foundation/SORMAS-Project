@@ -649,22 +649,33 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 				subSettingsDetailsField.setValue(subSettingDetails);
 			}
 
-			prophylaxisAdherenceField.setVisible(subSettings != null && subSettings.contains(ExposureSubSetting.TRAVELED_ABROAD));
-			if (prophylaxisAdherence != null) {
-				prophylaxisAdherenceField.setValue(prophylaxisAdherence);
-			}
-			prophylaxisAdherenceDetailsField.setVisible(prophylaxisAdherence == ProphylaxisAdherence.OTHER);
-			if (prophylaxisAdherenceDetails != null) {
-				prophylaxisAdherenceDetailsField.setValue(prophylaxisAdherenceDetails);
-			}
+			boolean hasTraveledAbroad = subSettings != null && subSettings.contains(ExposureSubSetting.TRAVELED_ABROAD);
+			prophylaxisAdherenceField.setVisible(hasTraveledAbroad);
+			travelPurposeField.setVisible(hasTraveledAbroad);
+			// If the person has traveled abroad, show the prophylaxis adherence and travel purpose fields
+			if (hasTraveledAbroad) {
+				if (prophylaxisAdherence != null) {
+					prophylaxisAdherenceField.setValue(prophylaxisAdherence);
+				}
+				prophylaxisAdherenceDetailsField.setVisible(prophylaxisAdherence == ProphylaxisAdherence.OTHER);
+				if (prophylaxisAdherenceDetails != null) {
+					prophylaxisAdherenceDetailsField.setValue(prophylaxisAdherenceDetails);
+				}
 
-			travelPurposeField.setVisible(subSettings != null && subSettings.contains(ExposureSubSetting.TRAVELED_ABROAD));
-			if (travelPurpose != null) {
-				travelPurposeField.setValue(travelPurpose);
-			}
-			travelPurposeDetailsField.setVisible(travelPurpose == TravelPurpose.OTHER);
-			if (travelPurposeDetails != null) {
-				travelPurposeDetailsField.setValue(travelPurposeDetails);
+				if (travelPurpose != null) {
+					travelPurposeField.setValue(travelPurpose);
+				}
+				travelPurposeDetailsField.setVisible(travelPurpose == TravelPurpose.OTHER);
+				if (travelPurposeDetails != null) {
+					travelPurposeDetailsField.setValue(travelPurposeDetails);
+				}
+			} else {
+				prophylaxisAdherenceField.setValue(null);
+				prophylaxisAdherenceDetailsField.setValue(null);
+				prophylaxisAdherenceDetailsField.setVisible(false);
+				travelPurposeField.setValue(null);
+				travelPurposeDetailsField.setValue(null);
+				travelPurposeDetailsField.setVisible(false);
 			}
 
 			// Restore contactFactors field value and visibility

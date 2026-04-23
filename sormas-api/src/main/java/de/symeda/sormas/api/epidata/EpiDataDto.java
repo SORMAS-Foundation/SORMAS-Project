@@ -162,12 +162,14 @@ public class EpiDataDto extends PseudonymizableDto {
 		Disease.DENGUE })
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	@Size(max = 255, message = Validations.textTooLong)
 	private String placeOfInfection;
 
 	@Diseases({
 		Disease.DENGUE })
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	@Size(max = 255, message = Validations.textTooLong)
 	private String residenceAtOnset;
 
 	public YesNoUnknown getExposureDetailsKnown() {
