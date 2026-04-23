@@ -29,7 +29,6 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageCriteria;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -79,11 +78,11 @@ public class ExternalMessagesView extends AbstractView {
 			ViewModelProviders.of(ExternalMessagesView.class).get(ExternalMessageCriteria.class, criteria);
 		}
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isPropertyValueTrue(FeatureType.EXTERNAL_MESSAGES, FeatureTypeProperty.FETCH_MODE)) {
-			addHeaderComponent(ButtonHelper.createIconButton(Captions.externalMessageFetch, VaadinIcons.REFRESH, e -> {
-				checkForConcurrentEventsAndFetch();
-			}, ValoTheme.BUTTON_PRIMARY));
-		}
+		//if (FacadeProvider.getFeatureConfigurationFacade().isPropertyValueTrue(FeatureType.EXTERNAL_MESSAGES, FeatureTypeProperty.FETCH_MODE)) {
+		addHeaderComponent(ButtonHelper.createIconButton(Captions.externalMessageFetch, VaadinIcons.REFRESH, e -> {
+			checkForConcurrentEventsAndFetch();
+		}, ValoTheme.BUTTON_PRIMARY));
+		//}
 
 		if (isBulkEditAllowed()) {
 			btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, e -> {

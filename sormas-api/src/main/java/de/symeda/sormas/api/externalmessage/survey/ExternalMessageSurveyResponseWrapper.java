@@ -1,8 +1,11 @@
 package de.symeda.sormas.api.externalmessage.survey;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class ExternalMessageSurveyResponseWrapper {
+public class ExternalMessageSurveyResponseWrapper implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private ExternalMessageSurveyResponseRequest request;
 	private ExternalMessageSurveyResponseResult result;

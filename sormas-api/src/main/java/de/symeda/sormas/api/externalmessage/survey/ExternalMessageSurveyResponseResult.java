@@ -1,10 +1,13 @@
 package de.symeda.sormas.api.externalmessage.survey;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 import de.symeda.sormas.api.patch.DataPatchResponse;
 
-public class ExternalMessageSurveyResponseResult {
+public class ExternalMessageSurveyResponseResult implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private String caseUuid;
 

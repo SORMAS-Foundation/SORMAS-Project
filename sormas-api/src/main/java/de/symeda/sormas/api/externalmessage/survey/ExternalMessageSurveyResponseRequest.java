@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.externalmessage.survey;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +19,9 @@ import de.symeda.sormas.api.patch.EmptyValueBehavior;
  * Mandatory fields that require
  * Will be present for {@link ExternalMessageType#SURVEY_RESPONSE}.
  */
-public class ExternalMessageSurveyResponseRequest {
+public class ExternalMessageSurveyResponseRequest implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private String token;
 	private String externalSurveyId;

@@ -333,9 +333,9 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	@Override
 	public List<ExternalMessageDto> saveAndProcessSurveyResponses(Date since) {
 
-		if (since == null) {
+		if (since == null) { // TODO: use shorter default range
 			int hoursRange =
-				Integer.parseInt(Optional.ofNullable(systemConfigurationValueFacade.getValue(SURVEY_PERIOD_INTERVAL_HOURS)).orElse("168"));
+				Integer.parseInt(Optional.ofNullable(systemConfigurationValueFacade.getValue(SURVEY_PERIOD_INTERVAL_HOURS)).orElse("1680"));
 
 			since = DateHelper.addSeconds(new Date(), -(hoursRange * 3600));
 		}
@@ -381,7 +381,8 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 		validate(dto);
 
-		if (ExternalMessageType.SURVEY_RESPONSE.equals(externalMessage.getType())) {
+		// TODO: is null but should not
+		if (ExternalMessageType.SURVEY_RESPONSE.equals(dto.getType())) {
 			// TODO: fill missing holes from person: fetch the entities: case -> person 
 		}
 
@@ -881,7 +882,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	private SurveyAsExternalMessageAdapterFacade getExternalSurveyProviderFacade() {
 		String jndiName = Optional.ofNullable(systemConfigurationValueFacade.getValue(SURVEY_AS_EXTERNAL_MESSAGE_ADAPTER_JNDI_KEY)).orElseGet(() -> {
 			logger.info("External Survey Provider JNDI Key not found, using default");
-			return "java:global/sormas-esante-adapter/NgSurveyProviderFacade";
+			return "java:global/sormas-esante-adapter/SurveyExternalMessageAdapterFacadeEjb";
 		});
 		try {
 			return (SurveyAsExternalMessageAdapterFacade) new InitialContext().lookup(jndiName);

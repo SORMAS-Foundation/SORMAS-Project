@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.externalmessage.survey;
 
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -11,7 +12,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 /**
  * Some survey mapping might be valid and processed on first try, but for others another attempt might be required.
  */
-public class ExternalSurveyResponseData {
+public class ExternalSurveyResponseData implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Represents the original mapping contract (request) and response for the survey mapping.
