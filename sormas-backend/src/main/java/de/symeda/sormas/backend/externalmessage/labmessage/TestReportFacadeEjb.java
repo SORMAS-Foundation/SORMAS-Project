@@ -23,6 +23,7 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportFacade;
+import de.symeda.sormas.api.sample.Serotype;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.country.CountryService;
@@ -157,7 +158,12 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setSeroGroupSpecificationText(source.getSeroGroupSpecificationText());
 		target.setSeroTypingMethod(source.getSeroTypingMethod());
 		target.setSeroTypingMethodText(source.getSeroTypingMethodText());
-		target.setSerotype(source.getSerotype());
+		if (source.getSerotypeText() != null && !source.getSerotypeText().trim().isEmpty()) {
+			target.setSerotype(Serotype.fromString(source.getSerotypeText()));
+		} else {
+			target.setSerotype(source.getSerotype());
+		}
+		target.setSerotypeText(source.getSerotypeText());
 
 		return target;
 	}
@@ -252,7 +258,12 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setSeroGroupSpecificationText(source.getSeroGroupSpecificationText());
 		target.setSeroTypingMethod(source.getSeroTypingMethod());
 		target.setSeroTypingMethodText(source.getSeroTypingMethodText());
-		target.setSerotype(source.getSerotype());
+		if (source.getSerotypeText() != null && !source.getSerotypeText().trim().isEmpty()) {
+			target.setSerotype(Serotype.fromString(source.getSerotypeText()));
+		} else {
+			target.setSerotype(source.getSerotype());
+		}
+		target.setSerotypeText(source.getSerotypeText());
 
 		return target;
 	}

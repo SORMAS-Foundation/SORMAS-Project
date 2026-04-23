@@ -40,6 +40,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -218,6 +220,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	public static final String DIAGNOSIS_CRITERIA_HEADING_LOC = "diagnosisCriteriaHeadingLoc";
 	public static final String DIAGNOSIS_CRITERIA_SUBHEADING_LOC = "diagnosisCriteriaSubheadingLoc";
 	public static final String DIAGNOSIS_CRITERIA_LAB_TEST_PANEL_LOC = "diagnosisCriteriaLoc";
+	private static final Pattern URL_PATTERN = Pattern.compile("((https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])");
 
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT =
@@ -249,7 +252,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 							fluidColumn(6, 0, locs(
 									CaseDataDto.DISEASE_DETAILS,
 									CaseDataDto.PLAGUE_TYPE,
-									CaseDataDto.DENGUE_FEVER_TYPE,
 									CaseDataDto.RABIES_TYPE))) +
 					fluidRowLocs(CaseDataDto.DISEASE_VARIANT, CaseDataDto.DISEASE_VARIANT_DETAILS) +
 					loc(LOC_CUSTOMIZABLE_FIELDS_CASE_DATA_DISEASE) +
@@ -980,20 +982,15 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				+ I18nProperties.getDescription(Descriptions.descGdpr));
 		CssStyles.style(additionalDetails, CssStyles.CAPTION_HIDDEN);
 
-		NullableOptionGroup pregnantField = addField(CaseDataDto.PREGNANT, NullableOptionGroup.class);
+		addField(CaseDataDto.PREGNANT, NullableOptionGroup.class);
 
-		NullableOptionGroup postpartumField = addField(CaseDataDto.POSTPARTUM, NullableOptionGroup.class);
+		addField(CaseDataDto.POSTPARTUM, NullableOptionGroup.class);
 		Field<?> trimesterField = addField(CaseDataDto.TRIMESTER, NullableOptionGroup.class);
 		boolean isMale = Sex.MALE.equals(person.getSex());
 		if (!isMale) {
 			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.TRIMESTER, CaseDataDto.PREGNANT, Arrays.asList(YesNoUnknown.YES), true);
 		} else {
 			trimesterField.setVisible(false);
-		}
-
-		// Mutual exclusivity: Pregnancy and Postpartum
-		if (pregnantField != null && postpartumField != null) {
-			setupMutuallyExclusiveFields(pregnantField, postpartumField);
 		}
 
 		ComboBox vaccinationStatusField = addField(CaseDataDto.VACCINATION_STATUS, ComboBox.class);
@@ -1627,11 +1624,12 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		Button caseDefinitionButton = ButtonHelper.createIconButton(Captions.info, VaadinIcons.INFO_CIRCLE, e -> {
 			VerticalLayout classificationRulesLayout = new VerticalLayout();
 			classificationRulesLayout.setMargin(true);
-			Label suspectContent = new Label();
-			suspectContent.setContentMode(ContentMode.HTML);
-			suspectContent.setWidth(100, Unit.PERCENTAGE);
-			suspectContent.setValue(caseDefinitionText);
-			classificationRulesLayout.addComponent(suspectContent);
+			String processedCaseDefinition = sanitizeAndLinkify(caseDefinitionText);
+			Label caseDefinitionLabel = new Label();
+			caseDefinitionLabel.setContentMode(ContentMode.HTML);
+			caseDefinitionLabel.setWidth(100, Unit.PERCENTAGE);
+			caseDefinitionLabel.setValue(processedCaseDefinition);
+			classificationRulesLayout.addComponent(caseDefinitionLabel);
 			Window popupWindow = VaadinUiUtil.showPopupWindow(classificationRulesLayout);
 			popupWindow.addCloseListener(e1 -> popupWindow.close());
 			popupWindow.setWidth(860, Unit.PIXELS);
@@ -1640,6 +1638,38 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		}, ValoTheme.BUTTON_PRIMARY, FORCE_CAPTION);
 
 		getContent().addComponent(caseDefinitionButton, CLASSIFICATION_RULES_LOC);
+	}
+
+	/**
+	 * sanitizing the url
+	 * 
+	 * @param text
+	 * @return sanitized url
+	 */
+	private String sanitizeAndLinkify(String text) {
+		Matcher matcher = URL_PATTERN.matcher(text);
+		StringBuilder result = new StringBuilder();
+		int last = 0;
+
+		while (matcher.find()) {
+			result.append(escapeHtml(text.substring(last, matcher.start())));
+
+			String escapedUrl = escapeHtml(matcher.group(1));
+			result.append("<a href=\"")
+				.append(escapedUrl)
+				.append("\" target=\"_blank\" rel=\"noopener noreferrer\" style=\"color: `#197de1`; text-decoration: underline;\">")
+				.append(escapedUrl)
+				.append("</a>");
+
+			last = matcher.end();
+		}
+
+		result.append(escapeHtml(text.substring(last)));
+		return result.toString();
+	}
+
+	private static String escapeHtml(String value) {
+		return value.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;").replace("'", "&#39;");
 	}
 
 	private void hideJurisdictionFields() {

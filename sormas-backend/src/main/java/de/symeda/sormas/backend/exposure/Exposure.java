@@ -52,8 +52,10 @@ import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.FomiteTransmissionLocation;
 import de.symeda.sormas.api.exposure.GatheringType;
 import de.symeda.sormas.api.exposure.HabitationType;
+import de.symeda.sormas.api.exposure.ProphylaxisAdherence;
 import de.symeda.sormas.api.exposure.SwimmingLocation;
 import de.symeda.sormas.api.exposure.TravelAccommodation;
+import de.symeda.sormas.api.exposure.TravelPurpose;
 import de.symeda.sormas.api.exposure.TypeOfAnimal;
 import de.symeda.sormas.api.exposure.TypeOfChildcareFacility;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
@@ -183,6 +185,11 @@ public class Exposure extends AbstractDomainObject {
 	private AnimalCondition conditionOfAnimal;
 	private AnimalCategory animalCategory;
 	private String animalCategoryDetails;
+
+	private ProphylaxisAdherence prophylaxisAdherence;
+	private String prophylaxisAdherenceDetails;
+	private TravelPurpose travelPurpose;
+	private String travelPurposeDetails;
 
 	private FomiteTransmissionLocation fomiteTransmissionLocation;
 
@@ -940,4 +947,41 @@ public class Exposure extends AbstractDomainObject {
 	public void setProtectiveMeasures(Set<ExposureProtectiveMeasure> protectiveMeasures) {
 		this.protectiveMeasures = protectiveMeasures;
 	}
+
+	@Enumerated(EnumType.STRING)
+	public TravelPurpose getTravelPurpose() {
+		return travelPurpose;
+	}
+
+	public void setTravelPurpose(TravelPurpose travelPurpose) {
+		this.travelPurpose = travelPurpose;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getTravelPurposeDetails() {
+		return travelPurposeDetails;
+	}
+
+	public void setTravelPurposeDetails(String travelPurposeDetails) {
+		this.travelPurposeDetails = travelPurposeDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ProphylaxisAdherence getProphylaxisAdherence() {
+		return prophylaxisAdherence;
+	}
+
+	public void setProphylaxisAdherence(ProphylaxisAdherence prophylaxisAdherence) {
+		this.prophylaxisAdherence = prophylaxisAdherence;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getProphylaxisAdherenceDetails() {
+		return prophylaxisAdherenceDetails;
+	}
+
+	public void setProphylaxisAdherenceDetails(String prophylaxisAdherenceDetails) {
+		this.prophylaxisAdherenceDetails = prophylaxisAdherenceDetails;
+	}
+
 }

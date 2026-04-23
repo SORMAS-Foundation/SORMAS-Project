@@ -135,6 +135,10 @@ public class ExposureDto extends PseudonymizableDto {
 	public static final String SUB_SETTINGS = "subSettings";
 	public static final String CONTACT_FACTORS = "contactFactors";
 	public static final String PROTECTIVE_MEASURES = "protectiveMeasures";
+	public static final String PROPHYLAXIS_ADHERENCE = "prophylaxisAdherence";
+	public static final String PROPHYLAXIS_ADHERENCE_DETAILS = "prophylaxisAdherenceDetails";
+	public static final String TRAVEL_PURPOSE = "travelPurpose";
+	public static final String TRAVEL_PURPOSE_DETAILS = "travelPurposeDetails";
 
 	@SensitiveData
 	private UserReferenceDto reportingUser;
@@ -432,6 +436,24 @@ public class ExposureDto extends PseudonymizableDto {
 	private Set<ExposureSubSetting> subSettings;
 	private Set<ExposureContactFactor> contactFactors;
 	private Set<ExposureProtectiveMeasure> protectiveMeasures;
+	@Diseases({
+		Disease.MALARIA,
+		Disease.DENGUE })
+	private ProphylaxisAdherence prophylaxisAdherence;
+	@Diseases({
+		Disease.MALARIA,
+		Disease.DENGUE })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String prophylaxisAdherenceDetails;
+	@Diseases({
+		Disease.MALARIA,
+		Disease.DENGUE })
+	private TravelPurpose travelPurpose;
+	@Diseases({
+		Disease.MALARIA,
+		Disease.DENGUE })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String travelPurposeDetails;
 
 	public static ExposureDto build(ExposureType exposureType) {
 
@@ -1094,6 +1116,38 @@ public class ExposureDto extends PseudonymizableDto {
 
 	public void setProtectiveMeasures(Set<ExposureProtectiveMeasure> protectiveMeasures) {
 		this.protectiveMeasures = protectiveMeasures;
+	}
+
+	public TravelPurpose getTravelPurpose() {
+		return travelPurpose;
+	}
+
+	public void setTravelPurpose(TravelPurpose travelPurpose) {
+		this.travelPurpose = travelPurpose;
+	}
+
+	public String getTravelPurposeDetails() {
+		return travelPurposeDetails;
+	}
+
+	public void setTravelPurposeDetails(String travelPurposeDetails) {
+		this.travelPurposeDetails = travelPurposeDetails;
+	}
+
+	public ProphylaxisAdherence getProphylaxisAdherence() {
+		return prophylaxisAdherence;
+	}
+
+	public void setProphylaxisAdherence(ProphylaxisAdherence prophylaxisAdherence) {
+		this.prophylaxisAdherence = prophylaxisAdherence;
+	}
+
+	public String getProphylaxisAdherenceDetails() {
+		return prophylaxisAdherenceDetails;
+	}
+
+	public void setProphylaxisAdherenceDetails(String prophylaxisAdherenceDetails) {
+		this.prophylaxisAdherenceDetails = prophylaxisAdherenceDetails;
 	}
 
 	@Override

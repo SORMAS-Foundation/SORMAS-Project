@@ -548,7 +548,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			CEREBRAL_MALARIA,
 			SCANT_HEMORRHAGE,
 			OTHER_NEUROLOCAL_SYMPTOM,
-			OTHER_NEUROLOCAL_SYMPTOM_TEXT);
+			OTHER_NEUROLOCAL_SYMPTOM_TEXT,
+			FATAL_RISK);
 
 		addField(SYMPTOMS_COMMENTS, TextField.class).setDescription(
 			I18nProperties.getPrefixDescription(I18N_PREFIX, SYMPTOMS_COMMENTS, "") + "\n" + I18nProperties.getDescription(Descriptions.descGdpr));
@@ -877,7 +878,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			METABOLIC_ACIDOSIS,
 			DISSEMINATED_INTRA_VASCULAR_COAGULATION,
 			CEREBRAL_MALARIA,
-			SCANT_HEMORRHAGE);
+			SCANT_HEMORRHAGE,
+			FATAL_RISK);
 
 		// Set visibilities
 

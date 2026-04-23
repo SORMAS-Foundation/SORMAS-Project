@@ -1611,6 +1611,7 @@ public interface Captions {
 	String EpiData = "EpiData";
 	String EpiData_activitiesAsCase = "EpiData.activitiesAsCase";
 	String EpiData_activityAsCaseDetailsKnown = "EpiData.activityAsCaseDetailsKnown";
+	String EpiData_airportWorker = "EpiData.airportWorker";
 	String EpiData_areaInfectedAnimals = "EpiData.areaInfectedAnimals";
 	String EpiData_caseImportedStatus = "EpiData.caseImportedStatus";
 	String EpiData_clusterRelated = "EpiData.clusterRelated";
@@ -1620,6 +1621,7 @@ public interface Captions {
 	String EpiData_country = "EpiData.country";
 	String EpiData_exposureDetailsKnown = "EpiData.exposureDetailsKnown";
 	String EpiData_exposures = "EpiData.exposures";
+	String EpiData_healthcareProfessional = "EpiData.healthcareProfessional";
 	String EpiData_highTransmissionRiskArea = "EpiData.highTransmissionRiskArea";
 	String EpiData_importedCase = "EpiData.importedCase";
 	String EpiData_infectionSource = "EpiData.infectionSource";
@@ -1628,6 +1630,8 @@ public interface Captions {
 	String EpiData_modeOfTransmission = "EpiData.modeOfTransmission";
 	String EpiData_modeOfTransmissionType = "EpiData.modeOfTransmissionType";
 	String EpiData_otherDetails = "EpiData.otherDetails";
+	String EpiData_placeOfInfection = "EpiData.placeOfInfection";
+	String EpiData_residenceAtOnset = "EpiData.residenceAtOnset";
 	String epiDataNoSourceContacts = "epiDataNoSourceContacts";
 	String epipulseActiveExports = "epipulseActiveExports";
 	String epipulseAllExports = "epipulseAllExports";
@@ -1926,6 +1930,8 @@ public interface Captions {
 	String Exposure_physicalContactWithBody = "Exposure.physicalContactWithBody";
 	String Exposure_probableInfectionEnvironment = "Exposure.probableInfectionEnvironment";
 	String Exposure_prophylaxis = "Exposure.prophylaxis";
+	String Exposure_prophylaxisAdherence = "Exposure.prophylaxisAdherence";
+	String Exposure_prophylaxisAdherenceDetails = "Exposure.prophylaxisAdherenceDetails";
 	String Exposure_prophylaxisDate = "Exposure.prophylaxisDate";
 	String Exposure_protectiveMeasureDetails = "Exposure.protectiveMeasureDetails";
 	String Exposure_protectiveMeasures = "Exposure.protectiveMeasures";
@@ -1943,6 +1949,8 @@ public interface Captions {
 	String Exposure_symptomaticIndividualText = "Exposure.symptomaticIndividualText";
 	String Exposure_travelAccommodation = "Exposure.travelAccommodation";
 	String Exposure_travelAccommodationType = "Exposure.travelAccommodationType";
+	String Exposure_travelPurpose = "Exposure.travelPurpose";
+	String Exposure_travelPurposeDetails = "Exposure.travelPurposeDetails";
 	String Exposure_typeOfAnimal = "Exposure.typeOfAnimal";
 	String Exposure_typeOfAnimalDetails = "Exposure.typeOfAnimalDetails";
 	String Exposure_typeOfChildcareFacility = "Exposure.typeOfChildcareFacility";
@@ -3031,6 +3039,7 @@ public interface Captions {
 	String Symptoms_eyePainLightSensitive = "Symptoms.eyePainLightSensitive";
 	String Symptoms_eyesBleeding = "Symptoms.eyesBleeding";
 	String Symptoms_fastHeartRate = "Symptoms.fastHeartRate";
+	String Symptoms_fatalRisk = "Symptoms.fatalRisk";
 	String Symptoms_fatigue = "Symptoms.fatigue";
 	String Symptoms_fatigueWeakness = "Symptoms.fatigueWeakness";
 	String Symptoms_feelingIll = "Symptoms.feelingIll";

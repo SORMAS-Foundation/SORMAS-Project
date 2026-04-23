@@ -309,6 +309,7 @@ public class Symptoms extends AbstractDomainObject {
 	private YesNoUnknown otherNeurolocalSymptom;
 	private String otherNeurolocalSymptomText;
 	private SymptomState disseminatedIntraVascularCoagulation;
+	private SymptomState fatalRisk;
 
 	// when adding new fields make sure to extend toHumanString
 
@@ -2447,4 +2448,14 @@ public class Symptoms extends AbstractDomainObject {
 	public void setDisseminatedIntraVascularCoagulation(SymptomState disseminatedIntraVascularCoagulation) {
 		this.disseminatedIntraVascularCoagulation = disseminatedIntraVascularCoagulation;
 	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getFatalRisk() {
+		return fatalRisk;
+	}
+
+	public void setFatalRisk(SymptomState fatalRisk) {
+		this.fatalRisk = fatalRisk;
+	}
+
 }

@@ -81,6 +81,11 @@ public class EpiData extends AbstractDomainObject {
 
 	private String otherDetails;
 
+	private YesNoUnknown airportWorker;
+	private YesNoUnknown healthcareProfessional;
+	private String placeOfInfection;
+	private String residenceAtOnset;
+
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getExposureDetailsKnown() {
 		return exposureDetailsKnown;
@@ -259,4 +264,41 @@ public class EpiData extends AbstractDomainObject {
 	public void setOtherDetails(String otherDetails) {
 		this.otherDetails = otherDetails;
 	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getAirportWorker() {
+		return airportWorker;
+	}
+
+	public void setAirportWorker(YesNoUnknown airportWorker) {
+		this.airportWorker = airportWorker;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getHealthcareProfessional() {
+		return healthcareProfessional;
+	}
+
+	public void setHealthcareProfessional(YesNoUnknown healthcareProfessional) {
+		this.healthcareProfessional = healthcareProfessional;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getPlaceOfInfection() {
+		return placeOfInfection;
+	}
+
+	public void setPlaceOfInfection(String placeOfInfection) {
+		this.placeOfInfection = placeOfInfection;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getResidenceAtOnset() {
+		return residenceAtOnset;
+	}
+
+	public void setResidenceAtOnset(String residenceAtOnset) {
+		this.residenceAtOnset = residenceAtOnset;
+	}
+
 }
