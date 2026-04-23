@@ -255,7 +255,12 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setTuberculosisDirectlyObservedTreatment(source.getTuberculosisDirectlyObservedTreatment());
 		target.setTuberculosisMdrXdrTuberculosis(source.getTuberculosisMdrXdrTuberculosis());
 		target.setTuberculosisBeijingLineage(source.getTuberculosisBeijingLineage());
-
+		target.setMalaria(source.getMalaria());
+		target.setMalariaInfectedYear(source.getMalariaInfectedYear());
+		target.setAirportWorker(source.getAirportWorker());
+		target.setHealthcareProfessional(source.getHealthcareProfessional());
+		target.setModeOfTransmission(source.getModeOfTransmission());
+		target.setModeOfTransmissionType(source.getModeOfTransmissionType());
 		return target;
 	}
 
@@ -477,6 +482,12 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setTuberculosisDirectlyObservedTreatment(source.getTuberculosisDirectlyObservedTreatment());
 		target.setTuberculosisMdrXdrTuberculosis(source.getTuberculosisMdrXdrTuberculosis());
 		target.setTuberculosisBeijingLineage(source.getTuberculosisBeijingLineage());
+		target.setMalaria(source.getMalaria());
+		target.setMalariaInfectedYear(source.getMalariaInfectedYear());
+		target.setAirportWorker(source.getAirportWorker());
+		target.setHealthcareProfessional(source.getHealthcareProfessional());
+		target.setModeOfTransmission(source.getModeOfTransmission());
+		target.setModeOfTransmissionType(source.getModeOfTransmissionType());
 		return target;
 	}
 

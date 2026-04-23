@@ -31,6 +31,7 @@ import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ComplianceWithTreatment;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.exposure.ModeOfTransmission;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
@@ -119,6 +120,10 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	public static final String TUBERCULOSIS_INFECTION_YEAR = "tuberculosisInfectionYear";
 	public static final String PREVIOUS_TUBERCULOSIS_TREATMENT = "previousTuberculosisTreatment";
 	public static final String COMPLIANCE_WITH_TREATMENT = "complianceWithTreatment";
+	public static final String MALARIA = "malaria";
+	public static final String MALARIA_INFECTED_YEAR = "malariaInfectedYear";
+	public static final String AIRPORT_WORKER = "airportWorker";
+	public static final String HEALTHCARE_PROFESSIONAL = "healthcareProfessional";
 
 	@AuditIncludeProperty
 	private ExternalMessageType type;
@@ -265,6 +270,14 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private Boolean tuberculosisDirectlyObservedTreatment;
 	private Boolean tuberculosisMdrXdrTuberculosis;
 	private Boolean tuberculosisBeijingLineage;
+
+	// Malaria and Dengue changes
+	private YesNoUnknown malaria;
+	private Integer malariaInfectedYear;
+	private YesNoUnknown airportWorker;
+	private YesNoUnknown healthcareProfessional;
+	private ModeOfTransmission modeOfTransmission;
+	private String modeOfTransmissionType;
 
 	public ExternalMessageType getType() {
 		return type;
@@ -958,5 +971,53 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	public void setTuberculosisBeijingLineage(Boolean tuberculosisBeijingLineage) {
 		this.tuberculosisBeijingLineage = tuberculosisBeijingLineage;
+	}
+
+	public YesNoUnknown getMalaria() {
+		return malaria;
+	}
+
+	public void setMalaria(YesNoUnknown malaria) {
+		this.malaria = malaria;
+	}
+
+	public Integer getMalariaInfectedYear() {
+		return malariaInfectedYear;
+	}
+
+	public void setMalariaInfectedYear(Integer malariaInfectedYear) {
+		this.malariaInfectedYear = malariaInfectedYear;
+	}
+
+	public YesNoUnknown getAirportWorker() {
+		return airportWorker;
+	}
+
+	public void setAirportWorker(YesNoUnknown airportWorker) {
+		this.airportWorker = airportWorker;
+	}
+
+	public YesNoUnknown getHealthcareProfessional() {
+		return healthcareProfessional;
+	}
+
+	public void setHealthcareProfessional(YesNoUnknown healthcareProfessional) {
+		this.healthcareProfessional = healthcareProfessional;
+	}
+
+	public ModeOfTransmission getModeOfTransmission() {
+		return modeOfTransmission;
+	}
+
+	public void setModeOfTransmission(ModeOfTransmission modeOfTransmission) {
+		this.modeOfTransmission = modeOfTransmission;
+	}
+
+	public String getModeOfTransmissionType() {
+		return modeOfTransmissionType;
+	}
+
+	public void setModeOfTransmissionType(String modeOfTransmissionType) {
+		this.modeOfTransmissionType = modeOfTransmissionType;
 	}
 }

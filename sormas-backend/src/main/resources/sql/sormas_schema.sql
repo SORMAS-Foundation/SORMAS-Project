@@ -15550,7 +15550,7 @@ alter table exposures_contactfactors add constraint exposures_contactfactors_pk 
 DROP TRIGGER IF EXISTS delete_history_trigger ON exposures_contactfactors;
 
 alter table exposures_protectivemeasures drop constraint unq_exposures_protectivemeasures_0;
-alter table exposures_protectivemeasures add constraint exposures_protectivemeasures_pk primary key (exposure_id, protectivemeasure);	
+alter table exposures_protectivemeasures add constraint exposures_protectivemeasures_pk primary key (exposure_id, protectivemeasure);
 DROP TRIGGER IF EXISTS delete_history_trigger ON exposures_protectivemeasures;
 
 INSERT INTO schema_version (version_number, comment) VALUES (617, '#13887 update keys and drop delete history triggers for new exposures tables');
@@ -15783,4 +15783,43 @@ WHERE config_key = 'MENU_SUBTITLE';
 
 INSERT INTO schema_version (version_number, comment) VALUES (623, '#13552 - FIX menu regexes');
 
+
+-- 22-04-2026 Malaria and Dengue Doctors declaration and lab messages changes #13838, 13837, 13835, 13836
+ALTER TABLE epidata  ADD COLUMN airportworker character varying(255);
+ALTER TABLE epidata  ADD COLUMN healthcareprofessional character varying(255);
+ALTER TABLE epidata  ADD COLUMN placeOfInfection character varying(255);
+ALTER TABLE epidata  ADD COLUMN residenceAtOnset character varying(255);
+
+ALTER TABLE exposures ADD COLUMN prophylaxisadherence character varying(255);
+ALTER TABLE exposures ADD COLUMN prophylaxisadherencedetails character varying(255);
+ALTER TABLE exposures ADD COLUMN travelpurpose character varying(255);
+ALTER TABLE exposures ADD COLUMN travelpurposedetails character varying(255);
+
+ALTER TABLE symptoms ADD COLUMN fatalrisk character varying(255);
+ALTER TABLE externalmessage ADD COLUMN malaria varchar(255);
+ALTER TABLE externalmessage ADD COLUMN malariainfectedyear integer;
+ALTER TABLE externalmessage   ADD COLUMN airportworker character varying(255);
+ALTER TABLE externalmessage  ADD COLUMN healthcareprofessional character varying(255);
+ALTER TABLE externalmessage ADD COLUMN modeoftransmission varchar(255);
+ALTER TABLE externalmessage ADD column modeoftransmissiontype varchar(255);
+
+ALTER TABLE epidata_history  ADD COLUMN airportworker character varying(255);
+ALTER TABLE epidata_history  ADD COLUMN healthcareprofessional character varying(255);
+ALTER TABLE epidata_history  ADD COLUMN placeOfInfection character varying(255);
+ALTER TABLE epidata_history  ADD COLUMN residenceAtOnset character varying(255);
+
+ALTER TABLE exposures_history ADD COLUMN prophylaxisadherence character varying(255);
+ALTER TABLE exposures_history ADD COLUMN prophylaxisadherencedetails character varying(255);
+ALTER TABLE exposures_history ADD COLUMN travelpurpose character varying(255);
+ALTER TABLE exposures_history ADD COLUMN travelpurposedetails character varying(255);
+
+ALTER TABLE symptoms_history ADD COLUMN fatalrisk character varying(255);
+
+ALTER TABLE externalmessage_history ADD COLUMN malaria varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN malariainfectedyear integer;
+ALTER TABLE externalmessage_history   ADD COLUMN airportworker character varying(255);
+ALTER TABLE externalmessage_history  ADD COLUMN healthcareprofessional character varying(255);
+ALTER TABLE externalmessage_history ADD COLUMN modeoftransmission varchar(255);
+ALTER TABLE externalmessage_history ADD column modeoftransmissiontype varchar(255);
+INSERT INTO schema_version (version_number, comment) VALUES (624, '##13838, #13837, #13835, #13836  - Malaria and Dengue Doctors declaration and lab messages changes');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

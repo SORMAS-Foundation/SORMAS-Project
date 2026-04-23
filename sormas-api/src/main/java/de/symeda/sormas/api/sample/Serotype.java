@@ -18,8 +18,8 @@
 
 package de.symeda.sormas.api.sample;
 
-import java.util.Arrays;
 import java.util.Locale;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -45,6 +45,7 @@ public enum Serotype {
 	@Diseases({
 		Disease.DENGUE })
 	DENV_4,
+	UNKNOWN,
 	OTHER;
 
 	// if a serotype is not in the list (existing serotypes) -> will be displayed with OTHER along with its value in the serotypetext.
@@ -54,7 +55,7 @@ public enum Serotype {
 		}
 		String serotypeEnumVal = StringUtils.trim(serotype).toUpperCase(Locale.ROOT).replaceAll("[-_\\s]+", "_");
 
-		return Arrays.asList(Serotype.values()).stream().noneMatch(s -> s.name().equals(serotypeEnumVal)) ? OTHER : Serotype.valueOf(serotypeEnumVal);
+		return Stream.of(Serotype.values()).noneMatch(s -> s.name().equals(serotypeEnumVal)) ? OTHER : Serotype.valueOf(serotypeEnumVal);
 	}
 
 	@Override

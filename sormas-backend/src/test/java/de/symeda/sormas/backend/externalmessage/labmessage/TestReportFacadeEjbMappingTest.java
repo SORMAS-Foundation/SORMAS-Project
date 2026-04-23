@@ -22,6 +22,7 @@ import de.symeda.sormas.api.sample.PathogenStrainCallStatus;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SeroGroupSpecification;
+import de.symeda.sormas.api.sample.Serotype;
 import de.symeda.sormas.api.sample.SerotypingMethod;
 import de.symeda.sormas.api.therapy.DrugSusceptibilityType;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -272,7 +273,7 @@ public class TestReportFacadeEjbMappingTest {
 		source.setSeroGroupSpecificationText("SeroGroup A");
 		source.setSeroTypingMethod(SerotypingMethod.MULTIPLEX_PCR);
 		source.setSeroTypingMethodText("Multiplex PCR Method");
-		source.setSerotype("Test serotype");
+		source.setSerotype(Serotype.OTHER);
 
 		TestReportDto result = TestReportFacadeEjb.toDto(source);
 

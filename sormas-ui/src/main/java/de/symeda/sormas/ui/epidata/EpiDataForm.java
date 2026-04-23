@@ -91,6 +91,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	private static final long serialVersionUID = 1L;
 
 	private static final String LOC_EXPOSURE_INVESTIGATION_HEADING = "locExposureInvestigationHeading";
+	private static final String LOC_EXPOSURE_PERIOD_CONSIDER_HEADING = "locExposurePeriodConsiderHeading";
 	private static final String LOC_CONCLUSION_HEADING = "locConclusionHeading";
 	private static final String LOC_CLUSTER_TYPE_HEADING = "locClusterTypeHeading";
 	private static final String LOC_ACTIVITY_AS_CASE_INVESTIGATION_HEADING = "locActivityAsCaseInvestigationHeading";
@@ -105,10 +106,14 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		fluidRowLocs(3, "EXPOSURE_START_DATE_LABEL", 3, "EXPOSURE_START_DATE_VALUE", 3, "EXPOSURE_END_DATE_LABEL", 3, "EXPOSURE_END_DATE_VALUE");
 	private static final String LOC_OTHER_INFORMATION_HEADING = "locOtherInformationHeading";
 
+	private static final List<Disease> CONCLUSION_ALLOWED_DISEASES =
+		Collections.unmodifiableList(Arrays.asList(Disease.CRYPTOSPORIDIOSIS, Disease.GIARDIASIS, Disease.MALARIA, Disease.DENGUE));
+
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT = 
-			loc(LOC_EXPOSURE_INVESTIGATION_HEADING) +
+			loc(LOC_EXPOSURE_PERIOD_CONSIDER_HEADING) +
 			fluidRowLocs("EXP_DATES_LAYOUT") +
+			loc(LOC_EXPOSURE_INVESTIGATION_HEADING) +
 			fluidRowLocs(6,EpiDataDto.CASE_IMPORTED_STATUS,6,"") +
 			loc(LOC_EXP_PERIOD_HEADING) +
 			loc(EpiDataDto.EXPOSURE_DETAILS_KNOWN) +
@@ -119,6 +124,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			fluidRowLocs(6, EpiDataDto.IMPORTED_CASE, 6, EpiDataDto.COUNTRY)+
 			fluidRowLocs(EpiDataDto.MODE_OF_TRANSMISSION, EpiDataDto.MODE_OF_TRANSMISSION_TYPE) +
 			fluidRowLocs(EpiDataDto.INFECTION_SOURCE, EpiDataDto.INFECTION_SOURCE_TEXT) +
+			fluidRowLocs(EpiDataDto.PLACE_OF_INFECTION, EpiDataDto.RESIDENCE_AT_ONSET) +
 			loc(LOC_ACTIVITY_AS_CASE_INVESTIGATION_HEADING) +
 			loc(EpiDataDto.ACTIVITY_AS_CASE_DETAILS_KNOWN)+
 			loc(EpiDataDto.ACTIVITIES_AS_CASE) +
@@ -128,6 +134,8 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			locCss(VSPACE_TOP_3, LOC_EPI_DATA_FIELDS_HINT) +
 			loc(EpiDataDto.HIGH_TRANSMISSION_RISK_AREA) +
 			loc(EpiDataDto.LARGE_OUTBREAKS_AREA) + 
+			loc(EpiDataDto.AIRPORT_WORKER) +
+			loc(EpiDataDto.HEALTHCARE_PROFESSIONAL) +
 			loc(EpiDataDto.AREA_INFECTED_ANIMALS);
 	
 	private static final String SOURCE_CONTACTS_HTML_LAYOUT =
@@ -144,6 +152,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	private final transient Consumer<Boolean> sourceContactsToggleCallback;
 	private final boolean isPseudonymized;
 	private final Date symptomOnsetDate;
+	private final boolean caseFollowUpEnabled;
 
 	private CustomizableFieldsGroup exposureInvestigationPanel;
 	private CustomizableFieldsGroup activityAsCasePanel;
@@ -171,6 +180,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		this.sourceContactsToggleCallback = sourceContactsToggleCallback;
 		this.isPseudonymized = isPseudonymized;
 		this.symptomOnsetDate = date;
+		this.caseFollowUpEnabled = FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(disease);
 		setCustomizableFieldsMetadata(customizableFieldsMetadata);
 		setCustomizableFieldsValues(customizableFieldsValues);
 		addFields();
@@ -242,6 +252,10 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		country.addItems(countries);
 
 		includeExposureDates(symptomOnsetDate, disease);
+		addField(EpiDataDto.AIRPORT_WORKER, NullableOptionGroup.class);
+		addField(EpiDataDto.HEALTHCARE_PROFESSIONAL, NullableOptionGroup.class);
+		addField(EpiDataDto.PLACE_OF_INFECTION);
+		addField(EpiDataDto.RESIDENCE_AT_ONSET);
 
 		TextField clusterTypeTF = addField(EpiDataDto.CLUSTER_TYPE_TEXT);
 		FieldHelper
@@ -268,9 +282,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
 
-		exposuresField.addValueChangeListener(e -> {
-			ogExposureDetailsKnown.setEnabled(CollectionUtils.isEmpty(exposuresField.getValue()));
-		});
+		exposuresField.addValueChangeListener(e -> ogExposureDetailsKnown.setEnabled(CollectionUtils.isEmpty(exposuresField.getValue())));
 
 		TextArea additionalDetails = addField(EpiDataDto.OTHER_DETAILS, TextArea.class);
 		additionalDetails.setRows(6);
@@ -287,6 +299,9 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	 * @param disease
 	 */
 	private void includeExposureDates(Date symptomOnsetDate, Disease disease) {
+		// By default, hiding the exposure period to consider heading,
+		// it will be visible only when all the conditions are met to show the exposure start and end dates.
+		getContent().getComponent(LOC_EXPOSURE_PERIOD_CONSIDER_HEADING).setVisible(false);
 		//  if symptomOnsetDate is null, return;
 		if (symptomOnsetDate == null) {
 			return;
@@ -325,6 +340,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		exposureDatesLayout.addComponent(exposureEndDateValue, "EXPOSURE_END_DATE_VALUE");
 
 		getContent().addComponent(exposureDatesLayout, "EXP_DATES_LAYOUT");
+		getContent().getComponent(LOC_EXPOSURE_PERIOD_CONSIDER_HEADING).setVisible(true);
 	}
 
 	private void addActivityAsCaseFields() {
@@ -373,11 +389,16 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 				new MultilineLabel(h3(I18nProperties.getString(Strings.headingClusterType)) + divsCss(VSPACE_3), ContentMode.HTML),
 				LOC_CLUSTER_TYPE_HEADING);
 		}
+
+		getContent().addComponent(
+			new MultilineLabel(h3(I18nProperties.getString(Strings.headingExposurePeriodConsider)) + divsCss(VSPACE_3), ContentMode.HTML),
+			LOC_EXPOSURE_PERIOD_CONSIDER_HEADING);
+
 		// Conclusion heading should be visible for all countries Giardiasis & Cryptosporidiosis specific fields
 		getContent().addComponent(
 			new MultilineLabel(h3(I18nProperties.getString(Strings.headingEpiConclusion)) + divsCss(VSPACE_3), ContentMode.HTML),
 			LOC_CONCLUSION_HEADING);
-		getContent().getComponent(LOC_CONCLUSION_HEADING).setVisible(Arrays.asList(Disease.CRYPTOSPORIDIOSIS, Disease.GIARDIASIS).contains(disease));
+		getContent().getComponent(LOC_CONCLUSION_HEADING).setVisible(CONCLUSION_ALLOWED_DISEASES.contains(disease));
 
 		getContent().addComponent(
 			new MultilineLabel(
@@ -465,7 +486,14 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 
 	@Override
 	protected String createHtmlLayout() {
-		String layout = parentClass == CaseDataDto.class ? MAIN_HTML_LAYOUT + SOURCE_CONTACTS_HTML_LAYOUT : MAIN_HTML_LAYOUT;
+		// Source contacts YESNOUnknown field should be visible only the diseases which are follow-up enabled,
+		// else normal layout without source contacts fields should be visible.
+		String layout;
+		if (parentClass == CaseDataDto.class && caseFollowUpEnabled) {
+			layout = MAIN_HTML_LAYOUT + SOURCE_CONTACTS_HTML_LAYOUT;
+		} else {
+			layout = MAIN_HTML_LAYOUT;
+		}
 		return layout + OTHER_INFORMATION_HTML_LAYOUT;
 	}
 }

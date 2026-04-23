@@ -372,6 +372,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String SCANT_HEMORRHAGE = "scantHemorrhage";
 	public static final String OTHER_NEUROLOCAL_SYMPTOM = "otherNeurolocalSymptom";
 	public static final String OTHER_NEUROLOCAL_SYMPTOM_TEXT = "otherNeurolocalSymptomText";
+	public static final String FATAL_RISK = "fatalRisk";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -3071,6 +3072,14 @@ public class SymptomsDto extends PseudonymizableDto {
 	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
 	private String otherNeurolocalSymptomText;
 
+	@Diseases({
+		DENGUE })
+	@SymptomGrouping(SymptomGroup.GENERAL)
+	@Complication({
+		DENGUE })
+	// mCComplicationsPotentiellementMortelles to map the life threatening complications of dengue
+	private SymptomState fatalRisk;
+
 	@Order(0)
 	public Float getTemperature() {
 		return temperature;
@@ -5175,4 +5184,13 @@ public class SymptomsDto extends PseudonymizableDto {
 	public void setOtherNeurolocalSymptomText(String otherNeurolocalSymptomText) {
 		this.otherNeurolocalSymptomText = otherNeurolocalSymptomText;
 	}
+
+	public SymptomState getFatalRisk() {
+		return fatalRisk;
+	}
+
+	public void setFatalRisk(SymptomState fatalRisk) {
+		this.fatalRisk = fatalRisk;
+	}
+
 }

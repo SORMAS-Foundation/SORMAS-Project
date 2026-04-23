@@ -30,6 +30,7 @@ public enum ExposureSetting {
 	OUTDOOR(ExposureCategory.AIR_BORNE, ExposureCategory.VECTOR_BORNE),
 
 	PERSON_TO_PERSON(ExposureCategory.DIRECT_CONTACT),
+	OTHER_DIRECT_CONTACT(ExposureCategory.DIRECT_CONTACT),
 
 	MOSQUITO_BORNE(ExposureCategory.VECTOR_BORNE),
 	TICK_BORNE(ExposureCategory.VECTOR_BORNE),

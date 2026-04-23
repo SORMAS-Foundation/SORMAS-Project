@@ -14,23 +14,84 @@
  */
 package de.symeda.sormas.api.exposure;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.utils.Diseases;
 
 public enum ModeOfTransmission {
 
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
 	ANIMAL_TO_HUMAN,
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
 	FOOD_OR_WATER,
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
 	PERSON_TO_PERSON,
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
 	RECREATIONAL_WATER,
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
 	HEALTHCARE_ASSOCIATED,
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
 	INJECTING_DRUG_USERS,
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
 	LAB_OCCUPATIONAL_EXPOSURE,
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
 	MOTHER_TO_CHILD,
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
 	SEXUAL,
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
 	TRANSFUSION_RECIPIENT,
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
 	ORGAN_RECIPIENT,
-	UNKNOWN,
-	OTHER;
+
+	@Diseases(value = {
+		Disease.MALARIA })
+	MOSQUITOES_FROM_ENDEMIC_COUNTRY,
+	@Diseases(value = {
+		Disease.MALARIA })
+	MOSQUITOES_BY_AIR,
+	@Diseases(value = {
+		Disease.MALARIA })
+	MEDICAL_CARE,
+	@Diseases(value = {
+		Disease.MALARIA })
+	MOSQUITOES_WITH_STRONG_EPI_EVIDENCE,
+	@Diseases(value = {
+		Disease.MALARIA })
+	MOSQUITOES_WITHOUT_EVIDENCE,
+	@Diseases(value = {
+		Disease.MALARIA })
+	FROM_MOTHER_TO_CHILD,
+	@Diseases(value = {
+		Disease.MALARIA })
+	BY_LAB,
+	@Diseases(value = {
+		Disease.MALARIA })
+	TRANSFUSION_TRANSPLANT_RECIPIENT,
+
+	OTHER,
+	UNKNOWN;
 
 	@Override
 	public String toString() {

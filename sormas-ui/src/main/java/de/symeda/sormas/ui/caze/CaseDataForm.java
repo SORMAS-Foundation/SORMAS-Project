@@ -218,6 +218,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	public static final String DIAGNOSIS_CRITERIA_HEADING_LOC = "diagnosisCriteriaHeadingLoc";
 	public static final String DIAGNOSIS_CRITERIA_SUBHEADING_LOC = "diagnosisCriteriaSubheadingLoc";
 	public static final String DIAGNOSIS_CRITERIA_LAB_TEST_PANEL_LOC = "diagnosisCriteriaLoc";
+	private static final String EMAIL_REGEX = "((https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])";
 
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT =
@@ -249,7 +250,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 							fluidColumn(6, 0, locs(
 									CaseDataDto.DISEASE_DETAILS,
 									CaseDataDto.PLAGUE_TYPE,
-									CaseDataDto.DENGUE_FEVER_TYPE,
 									CaseDataDto.RABIES_TYPE))) +
 					fluidRowLocs(CaseDataDto.DISEASE_VARIANT, CaseDataDto.DISEASE_VARIANT_DETAILS) +
 					loc(LOC_CUSTOMIZABLE_FIELDS_CASE_DATA_DISEASE) +
@@ -1627,11 +1627,13 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		Button caseDefinitionButton = ButtonHelper.createIconButton(Captions.info, VaadinIcons.INFO_CIRCLE, e -> {
 			VerticalLayout classificationRulesLayout = new VerticalLayout();
 			classificationRulesLayout.setMargin(true);
-			Label suspectContent = new Label();
-			suspectContent.setContentMode(ContentMode.HTML);
-			suspectContent.setWidth(100, Unit.PERCENTAGE);
-			suspectContent.setValue(caseDefinitionText);
-			classificationRulesLayout.addComponent(suspectContent);
+			String processedCaseDefinition = caseDefinitionText
+				.replaceAll(EMAIL_REGEX, "<a href=\"$1\" target=\"_blank\" style=\"color: #197de1; text-decoration: underline;\">$1</a>");
+			Label caseDefinitionLabel = new Label();
+			caseDefinitionLabel.setContentMode(ContentMode.HTML);
+			caseDefinitionLabel.setWidth(100, Unit.PERCENTAGE);
+			caseDefinitionLabel.setValue(processedCaseDefinition);
+			classificationRulesLayout.addComponent(caseDefinitionLabel);
 			Window popupWindow = VaadinUiUtil.showPopupWindow(classificationRulesLayout);
 			popupWindow.addCloseListener(e1 -> popupWindow.close());
 			popupWindow.setWidth(860, Unit.PIXELS);

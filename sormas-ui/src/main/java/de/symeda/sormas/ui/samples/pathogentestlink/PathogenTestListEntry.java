@@ -49,12 +49,6 @@ import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentField;
 public class PathogenTestListEntry extends SideComponentField {
 
 	private final PathogenTestDto pathogenTest;
-	List<PathogenTestType> seroGrpTests = Arrays.asList(
-		PathogenTestType.SEROGROUPING,
-		PathogenTestType.MULTILOCUS_SEQUENCE_TYPING,
-		PathogenTestType.SLIDE_AGGLUTINATION,
-		PathogenTestType.WHOLE_GENOME_SEQUENCING,
-		PathogenTestType.SEQUENCING);
 	//@formatter:off
 	public static final Map<Disease, List<PathogenTestType>> VARIANT_MAP = Collections.unmodifiableMap(new HashMap<>() {
 		{
@@ -137,44 +131,8 @@ public class PathogenTestListEntry extends SideComponentField {
 			}
 		}
 
-		Object resultText = "";
 		PathogenTestType testType = pathogenTest.getTestType();
-		if (seroGrpTests.contains(pathogenTest.getTestType())) {
-			resultText = pathogenTest.getSeroGroupSpecification() != null ? pathogenTest.getSeroGroupSpecification() : pathogenTest.getSerotype();
-		} else if (pathogenTest.getTestedDisease() == Disease.TUBERCULOSIS && VARIANT_MAP.get(pathogenTest.getTestedDisease()).contains(testType)) {
-			if (testType == PathogenTestType.MICROSCOPY) {
-				resultText = StringUtils.abbreviate((pathogenTest.getTestScale() != null ? pathogenTest.getTestScale().toString() : ""), 125);
-			} else if (testType == PathogenTestType.BEIJINGGENOTYPING) {
-				resultText =
-					StringUtils.abbreviate((pathogenTest.getStrainCallStatus() != null ? pathogenTest.getStrainCallStatus().toString() : ""), 125);
-			} else if (testType == PathogenTestType.SPOLIGOTYPING) {
-				resultText = StringUtils.abbreviate((pathogenTest.getSpecie() != null ? pathogenTest.getSpecie().toString() : ""), 125);
-			} else if (testType == PathogenTestType.MIRU_PATTERN_CODE) {
-				resultText = StringUtils.abbreviate(pathogenTest.getPatternProfile(), 125);
-			}
-		} else if (testType == PathogenTestType.GENOTYPING) {
-			resultText = StringUtils.abbreviate((pathogenTest.getGenoType() != null ? pathogenTest.getGenoType().toString() : ""), 125);
-		} else if (pathogenTest.getTestedDisease() == Disease.MALARIA
-			&& VARIANT_MAP.get(pathogenTest.getTestedDisease()).stream().anyMatch(testType::equals)) {
-			// handling other specie
-			if (pathogenTest.getSpecie() == PathogenSpecie.OTHER) {
-				resultText = StringUtils.abbreviate((pathogenTest.getSpecieText() != null ? pathogenTest.getSpecieText().toString() : ""), 125);
-			} else {
-				resultText = StringUtils.abbreviate((pathogenTest.getSpecie() != null ? pathogenTest.getSpecie().toString() : ""), 125);
-			}
-
-		} else if (pathogenTest.getTestedDisease() == Disease.DENGUE
-			&& VARIANT_MAP.get(pathogenTest.getTestedDisease()).stream().anyMatch(testType::equals)) {
-			// handling other serotypes
-			if (pathogenTest.getSerotype() == Serotype.OTHER) {
-				resultText = StringUtils.abbreviate((pathogenTest.getSerotypeText() != null ? pathogenTest.getSerotypeText().toString() : ""), 125);
-			} else {
-				resultText = StringUtils.abbreviate((pathogenTest.getSerotype() != null ? pathogenTest.getSerotype().toString() : ""), 125);
-			}
-
-		} else {
-			resultText = pathogenTest.getTestResult();
-		}
+		Object resultText = getResultText(pathogenTest, testType);
 
 		Label labelResult = new Label(DataHelper.toStringNullable(resultText));
 		CssStyles.style(labelResult, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
@@ -202,6 +160,48 @@ public class PathogenTestListEntry extends SideComponentField {
 				labelResult.setVisible(false);
 			}
 		}
+	}
+
+	private Object getResultText(PathogenTestDto pathogenTest, PathogenTestType testType) {
+		if (testType == null) {
+			return "";
+		}
+		Object resultText = "";
+		if (pathogenTest.getTestedDisease() == Disease.TUBERCULOSIS && VARIANT_MAP.get(pathogenTest.getTestedDisease()).contains(testType)) {
+			if (testType == PathogenTestType.MICROSCOPY) {
+				resultText = StringUtils.abbreviate((pathogenTest.getTestScale() != null ? pathogenTest.getTestScale().toString() : ""), 125);
+			} else if (testType == PathogenTestType.BEIJINGGENOTYPING) {
+				resultText =
+					StringUtils.abbreviate((pathogenTest.getStrainCallStatus() != null ? pathogenTest.getStrainCallStatus().toString() : ""), 125);
+			} else if (testType == PathogenTestType.SPOLIGOTYPING) {
+				resultText = StringUtils.abbreviate((pathogenTest.getSpecie() != null ? pathogenTest.getSpecie().toString() : ""), 125);
+			} else if (testType == PathogenTestType.MIRU_PATTERN_CODE) {
+				resultText = StringUtils.abbreviate(pathogenTest.getPatternProfile(), 125);
+			}
+		} else if (testType == PathogenTestType.GENOTYPING) {
+			resultText = StringUtils.abbreviate((pathogenTest.getGenoType() != null ? pathogenTest.getGenoType().toString() : ""), 125);
+		} else if (pathogenTest.getTestedDisease() == Disease.MALARIA
+			&& VARIANT_MAP.get(pathogenTest.getTestedDisease()).stream().anyMatch(testType::equals)) {
+			// handling other specie
+			if (pathogenTest.getSpecie() == PathogenSpecie.OTHER) {
+				resultText = StringUtils.abbreviate((pathogenTest.getSpecieText() != null ? pathogenTest.getSpecieText().toString() : ""), 125);
+			} else {
+				resultText = StringUtils.abbreviate((pathogenTest.getSpecie() != null ? pathogenTest.getSpecie().toString() : ""), 125);
+			}
+
+		} else if ((pathogenTest.getTestedDisease() == Disease.DENGUE || pathogenTest.getTestedDisease() == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION)
+			&& VARIANT_MAP.get(pathogenTest.getTestedDisease()).stream().anyMatch(testType::equals)) {
+			// handling other serotypes
+			if (pathogenTest.getSerotype() == Serotype.OTHER) {
+				resultText = StringUtils.abbreviate((pathogenTest.getSerotypeText() != null ? pathogenTest.getSerotypeText().toString() : ""), 125);
+			} else {
+				resultText = StringUtils.abbreviate((pathogenTest.getSerotype() != null ? pathogenTest.getSerotype().toString() : ""), 125);
+			}
+
+		} else {
+			resultText = pathogenTest.getTestResult();
+		}
+		return resultText;
 	}
 
 	@Nullable

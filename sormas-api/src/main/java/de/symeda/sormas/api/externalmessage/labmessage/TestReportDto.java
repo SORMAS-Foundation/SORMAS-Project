@@ -19,6 +19,7 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.RsvSubtype;
 import de.symeda.sormas.api.sample.SeroGroupSpecification;
+import de.symeda.sormas.api.sample.Serotype;
 import de.symeda.sormas.api.sample.SerotypingMethod;
 import de.symeda.sormas.api.therapy.DrugSusceptibilityType;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -212,7 +213,8 @@ public class TestReportDto extends EntityDto {
 	private String seroGroupSpecificationText;
 	private SerotypingMethod seroTypingMethod;
 	private String seroTypingMethodText;
-	private String serotype;
+	private Serotype serotype;
+	private String serotypeText;
 
 	public SampleReportReferenceDto getSampleReport() {
 		return sampleReport;
@@ -893,11 +895,20 @@ public class TestReportDto extends EntityDto {
 		this.seroTypingMethodText = seroTypingMethodText;
 	}
 
-	public String getSerotype() {
+	public Serotype getSerotype() {
 		return serotype;
 	}
 
-	public void setSerotype(String serotype) {
+	public void setSerotype(Serotype serotype) {
 		this.serotype = serotype;
 	}
+
+	public String getSerotypeText() {
+		return serotypeText;
+	}
+
+	public void setSerotypeText(String serotypeText) {
+		this.serotypeText = serotypeText;
+	}
+
 }

@@ -66,6 +66,10 @@ import de.symeda.sormas.api.exposure.ExposureProtectiveMeasure;
 import de.symeda.sormas.api.exposure.ExposureSetting;
 import de.symeda.sormas.api.exposure.ExposureSubSetting;
 import de.symeda.sormas.api.exposure.FomiteTransmissionLocation;
+import de.symeda.sormas.api.exposure.ProphylaxisAdherence;
+import de.symeda.sormas.api.exposure.SwimmingLocation;
+import de.symeda.sormas.api.exposure.TravelAccommodation;
+import de.symeda.sormas.api.exposure.TravelPurpose;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -118,6 +122,10 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 									ExposureDto.PROTECTIVE_MEASURES
 							))
 					) +
+					fluidRow(fluidColumn(4, 0, locs(ExposureDto.PROPHYLAXIS_ADHERENCE))) +
+					fluidRow(fluidColumn(4, 0, locs(ExposureDto.PROPHYLAXIS_ADHERENCE_DETAILS))) +
+					fluidRow(fluidColumn(4, 0, locs(ExposureDto.TRAVEL_PURPOSE))) +
+					fluidRow(fluidColumn(4, 0, locs(ExposureDto.TRAVEL_PURPOSE_DETAILS))) +
 					fluidRow(
 							fluidColumn(4, 0, locs(
 									ExposureDto.EXPOSURE_SUB_SETTING_DETAILS,
@@ -175,6 +183,10 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	private NullableOptionGroup animalCategoryField;
 	private TextField animalCategoryDetailsField;
 	private NullableOptionGroup fomiteTransmissionLocationField;
+	private ComboBox prophylaxisAdherenceField;
+	private ComboBox travelPurposeField;
+	private TextField prophylaxisAdherenceDetailsField;
+	private TextField travelPurposeDetailsField;
 
 	private CustomizableFieldsGroup exposureDetailsPanel;
 	private CustomizableFieldsGroup exposuresGeneralPanel;
@@ -334,6 +346,13 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		protectiveMeasureDetailsField = addField(exposureDetailsLayout, ExposureDto.PROTECTIVE_MEASURE_DETAILS, TextField.class);
 		protectiveMeasureDetailsField.setVisible(false);
 
+		prophylaxisAdherenceField = addField(exposureDetailsLayout, ExposureDto.PROPHYLAXIS_ADHERENCE, ComboBox.class);
+		prophylaxisAdherenceField.setVisible(false);
+		prophylaxisAdherenceDetailsField = addField(exposureDetailsLayout, ExposureDto.PROPHYLAXIS_ADHERENCE_DETAILS, TextField.class);
+		travelPurposeField = addField(exposureDetailsLayout, ExposureDto.TRAVEL_PURPOSE, ComboBox.class);
+		travelPurposeField.setVisible(false);
+		travelPurposeDetailsField = addField(exposureDetailsLayout, ExposureDto.TRAVEL_PURPOSE_DETAILS, TextField.class);
+
 		categoryField.addValueChangeListener(e -> {
 			ExposureCategory selectedCategory = (ExposureCategory) e.getProperty().getValue();
 			updateSettingFieldItems(selectedCategory);
@@ -373,6 +392,8 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			Set<ExposureSubSetting> selectedSubSettings = (Set<ExposureSubSetting>) e.getProperty().getValue();
 			boolean containsOther = selectedSubSettings != null && selectedSubSettings.contains(ExposureSubSetting.OTHER);
 			subSettingsDetailsField.setVisible(containsOther);
+			boolean isProphylaxis = selectedSubSettings != null && selectedSubSettings.contains(ExposureSubSetting.TRAVELED_ABROAD);
+			setVisibleClear(isProphylaxis, ExposureDto.PROPHYLAXIS_ADHERENCE, ExposureDto.TRAVEL_PURPOSE);
 		});
 
 		contactFactorsField.addValueChangeListener(e -> {
@@ -452,7 +473,26 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			locationForm.getFacilityTypeGroup(),
 			Collections.singletonList(FacilityTypeGroup.WORKING_PLACE),
 			true);
-
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			ExposureDto.PROPHYLAXIS_ADHERENCE_DETAILS,
+			ExposureDto.PROPHYLAXIS_ADHERENCE,
+			ProphylaxisAdherence.OTHER,
+			true);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			ExposureDto.TRAVEL_ACCOMMODATION_TYPE,
+			ExposureDto.TRAVEL_ACCOMMODATION,
+			TravelAccommodation.OTHER,
+			true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.SWIMMING_LOCATION_TYPE, ExposureDto.SWIMMING_LOCATION, SwimmingLocation.OTHER, true);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			ExposureDto.PROPHYLAXIS_ADHERENCE_DETAILS,
+			ExposureDto.PROPHYLAXIS_ADHERENCE,
+			ProphylaxisAdherence.OTHER,
+			true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.TRAVEL_PURPOSE_DETAILS, ExposureDto.TRAVEL_PURPOSE, TravelPurpose.OTHER, true);
 		conclusionHeading.setVisible(List.of(Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS).contains(disease));
 		locationForm.setFacilityFieldsVisible(getField(ExposureDto.TYPE_OF_PLACE).getValue() == TypeOfPlace.FACILITY, true);
 		getField(ExposureDto.TYPE_OF_PLACE)
@@ -581,6 +621,10 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			AnimalCategory animalCategory = newFieldValue.getAnimalCategory();
 			String animalCategoryDetails = newFieldValue.getAnimalCategoryDetails();
 			FomiteTransmissionLocation fomiteTransmissionLocation = newFieldValue.getFomiteTransmissionLocation();
+			ProphylaxisAdherence prophylaxisAdherence = newFieldValue.getProphylaxisAdherence();
+			String prophylaxisAdherenceDetails = newFieldValue.getProphylaxisAdherenceDetails();
+			TravelPurpose travelPurpose = newFieldValue.getTravelPurpose();
+			String travelPurposeDetails = newFieldValue.getTravelPurposeDetails();
 
 			// Update field items (these methods clear the field values)
 			updateSettingFieldItems(category);
@@ -604,6 +648,24 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			subSettingsDetailsField.setVisible(subSettings != null && subSettings.contains(ExposureSubSetting.OTHER));
 			if (subSettingDetails != null) {
 				subSettingsDetailsField.setValue(subSettingDetails);
+			}
+
+			prophylaxisAdherenceField.setVisible(subSettings != null && subSettings.contains(ExposureSubSetting.TRAVELED_ABROAD));
+			if (prophylaxisAdherence != null) {
+				prophylaxisAdherenceField.setValue(prophylaxisAdherence);
+			}
+			prophylaxisAdherenceDetailsField.setVisible(prophylaxisAdherence == ProphylaxisAdherence.OTHER);
+			if (prophylaxisAdherenceDetails != null) {
+				prophylaxisAdherenceDetailsField.setValue(prophylaxisAdherenceDetails);
+			}
+
+			travelPurposeField.setVisible(subSettings != null && subSettings.contains(ExposureSubSetting.TRAVELED_ABROAD));
+			if (travelPurpose != null) {
+				travelPurposeField.setValue(travelPurpose);
+			}
+			travelPurposeDetailsField.setVisible(travelPurpose == TravelPurpose.OTHER);
+			if (travelPurposeDetails != null) {
+				travelPurposeDetailsField.setValue(travelPurposeDetails);
 			}
 
 			// Restore contactFactors field value and visibility

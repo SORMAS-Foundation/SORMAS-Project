@@ -158,6 +158,7 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setSeroTypingMethod(source.getSeroTypingMethod());
 		target.setSeroTypingMethodText(source.getSeroTypingMethodText());
 		target.setSerotype(source.getSerotype());
+		target.setSerotypeText(source.getSerotypeText());
 
 		return target;
 	}
@@ -253,6 +254,7 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setSeroTypingMethod(source.getSeroTypingMethod());
 		target.setSeroTypingMethodText(source.getSeroTypingMethodText());
 		target.setSerotype(source.getSerotype());
+		target.setSerotypeText(source.getSerotypeText());
 
 		return target;
 	}

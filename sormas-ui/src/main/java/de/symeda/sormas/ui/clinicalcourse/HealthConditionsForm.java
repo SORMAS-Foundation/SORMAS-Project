@@ -322,8 +322,7 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 			malInfectedYearCB.addItems(DateHelper.getYearsToNow());
 			malInfectedYearCB.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ID_TOSTRING);
 			malariaInfectedYearLayout.addComponent(malInfectedYearCB, MALARIA_INFECTED_YEAR);
-
-			FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(MALARIA_INFECTED_YEAR), MALARIA, Arrays.asList(YesNoUnknown.YES), true);
+			fieldVisibilityCheck(getField(MALARIA), malInfectedYearCB, lblInfectedYear);
 		}
 	}
 

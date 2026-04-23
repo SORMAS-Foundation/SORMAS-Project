@@ -215,10 +215,30 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 
 		if (Disease.TUBERCULOSIS.equals(externalMessageDto.getDisease())) {
 			postBuildTuberculosisHealthConditions(healthConditionsDto, externalMessageDto);
+		} else if (Disease.MALARIA.equals(externalMessageDto.getDisease())) {
+			postBuildMalariaHealthConditions(healthConditionsDto, externalMessageDto);
+		} else {
+			logger.debug("[POST BUILD HEALTH CONDITIONS] Health conditions not set for case. Disease: {}", externalMessageDto.getDisease());
 		}
 
 		// we need to set it in case it is newly created
 		caseDto.setHealthConditions(healthConditionsDto);
+	}
+
+	/**
+	 * Sets malaria-specific health conditions for the case from the external message.
+	 * 
+	 * @param healthConditionsDto
+	 * 
+	 * @param externalMessageDto
+	 */
+	private void postBuildMalariaHealthConditions(HealthConditionsDto healthConditionsDto, ExternalMessageDto externalMessageDto) {
+		healthConditionsDto.setMalaria(externalMessageDto.getMalaria());
+		healthConditionsDto.setMalariaInfectedYear(externalMessageDto.getMalariaInfectedYear());
+		logger.debug(
+			"[POST BUILD HEALTH CONDITIONS] Malaria health conditions set for case. Malaria: {}, Malaria Infected Year: {}",
+			externalMessageDto.getMalaria(),
+			externalMessageDto.getMalariaInfectedYear());
 	}
 
 	/**
@@ -364,6 +384,10 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 
 				epiData.setExposureDetailsKnown(YesNoUnknown.YES);
 				epiData.setExposures(exposures);
+				epiData.setAirportWorker(externalMessageDto.getAirportWorker());
+				epiData.setHealthcareProfessional(externalMessageDto.getHealthcareProfessional());
+				epiData.setModeOfTransmission(externalMessageDto.getModeOfTransmission());
+				epiData.setModeOfTransmissionType(externalMessageDto.getModeOfTransmissionType());
 			}
 
 		} else {
