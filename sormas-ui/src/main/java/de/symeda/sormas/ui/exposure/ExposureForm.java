@@ -39,7 +39,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
@@ -66,6 +65,7 @@ import de.symeda.sormas.api.exposure.ExposureProtectiveMeasure;
 import de.symeda.sormas.api.exposure.ExposureSetting;
 import de.symeda.sormas.api.exposure.ExposureSubSetting;
 import de.symeda.sormas.api.exposure.FomiteTransmissionLocation;
+import de.symeda.sormas.api.exposure.TypeOfAnimal;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -109,6 +109,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 									ExposureDto.SUB_SETTINGS,
 									ExposureDto.CONDITION_OF_ANIMAL,
 									ExposureDto.ANIMAL_CATEGORY,
+									ExposureDto.TYPE_OF_ANIMAL,
 									ExposureDto.FOMITE_TRANSMISSION_LOCATION
 							)),
 							fluidColumn(4, 0, locs(
@@ -173,6 +174,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	private TextField protectiveMeasureDetailsField;
 	private NullableOptionGroup conditionOfAnimalField;
 	private NullableOptionGroup animalCategoryField;
+	private ComboBox typeOfAnimalField;
 	private TextField animalCategoryDetailsField;
 	private NullableOptionGroup fomiteTransmissionLocationField;
 
@@ -314,6 +316,9 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		animalCategoryField = addField(exposureDetailsLayout, ExposureDto.ANIMAL_CATEGORY, NullableOptionGroup.class);
 		animalCategoryField.setVisible(false);
 
+		typeOfAnimalField = addField(exposureDetailsLayout, ExposureDto.TYPE_OF_ANIMAL, ComboBox.class);
+		typeOfAnimalField.setVisible(false);
+
 		animalCategoryDetailsField = addField(exposureDetailsLayout, ExposureDto.ANIMAL_CATEGORY_DETAILS, TextField.class);
 		animalCategoryDetailsField.setVisible(false);
 
@@ -400,6 +405,9 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			// Clear dependent fields when conditionOfAnimal becomes null
 			if (!hasValue) {
 				animalCategoryField.setValue(null);
+
+				typeOfAnimalField.setValue(null);
+				typeOfAnimalField.setVisible(false);
 				animalCategoryDetailsField.setValue(null);
 				animalCategoryDetailsField.setVisible(false);
 			}
@@ -409,11 +417,13 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			Object value = e.getProperty().getValue();
 			boolean hasValue = value != null;
 
-			// Show/hide animalCategoryDetailsField
+			// Show/hide typeOfAnimal, animalCategoryDetailsField
+			typeOfAnimalField.setVisible(hasValue);
 			animalCategoryDetailsField.setVisible(hasValue);
 
 			// Clear details field when animalCategory becomes null
 			if (!hasValue) {
+				typeOfAnimalField.setValue(null);
 				animalCategoryDetailsField.setValue(null);
 			}
 		});
@@ -541,6 +551,9 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			animalCategoryField.setValue(null);
 			animalCategoryField.setVisible(false);
 			animalCategoryField.setRequired(false);
+
+			typeOfAnimalField.setValue(null);
+			typeOfAnimalField.setVisible(false);
 			animalCategoryDetailsField.setValue(null);
 			animalCategoryDetailsField.setVisible(false);
 		}
@@ -579,6 +592,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			String protectiveMeasureDetails = newFieldValue.getProtectiveMeasureDetails();
 			AnimalCondition conditionOfAnimal = newFieldValue.getConditionOfAnimal();
 			AnimalCategory animalCategory = newFieldValue.getAnimalCategory();
+			TypeOfAnimal typeOfAnimal = newFieldValue.getTypeOfAnimal();
 			String animalCategoryDetails = newFieldValue.getAnimalCategoryDetails();
 			FomiteTransmissionLocation fomiteTransmissionLocation = newFieldValue.getFomiteTransmissionLocation();
 
@@ -640,6 +654,12 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			}
 
 			boolean hasAnimalCategory = animalCategory != null;
+
+			typeOfAnimalField.setVisible(isAnimalContact && hasConditionOfAnimal && hasAnimalCategory);
+			if (isAnimalContact && hasConditionOfAnimal && hasAnimalCategory && typeOfAnimal != null) {
+				typeOfAnimalField.setValue(typeOfAnimal);
+			}
+
 			animalCategoryDetailsField.setVisible(isAnimalContact && hasConditionOfAnimal && hasAnimalCategory);
 			if (isAnimalContact && hasConditionOfAnimal && hasAnimalCategory && animalCategoryDetails != null) {
 				animalCategoryDetailsField.setValue(animalCategoryDetails);
@@ -687,20 +707,6 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 
 		// Update the category field items
 		FieldHelper.updateItems(categoryField, new ArrayList<>(categories));
-	}
-
-	private void addFieldsToLayout(CustomLayout layout, String... propertyIds) {
-		for (String propertyId : propertyIds) {
-			addField(layout, propertyId);
-		}
-	}
-
-	private void addFieldsWithCssToLayout(CustomLayout layout, Class<? extends Field> fieldType, List<String> propertyIds, String... styles) {
-
-		for (String propertyId : propertyIds) {
-			Field<?> field = addField(layout, propertyId, fieldType);
-			CssStyles.style(field, styles);
-		}
 	}
 
 	public Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> collectCurrentFieldValues() {
