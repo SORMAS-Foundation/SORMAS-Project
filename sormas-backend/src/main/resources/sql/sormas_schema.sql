@@ -15785,41 +15785,41 @@ INSERT INTO schema_version (version_number, comment) VALUES (623, '#13552 - FIX 
 
 
 -- 22-04-2026 Malaria and Dengue Doctors declaration and lab messages changes #13838, 13837, 13835, 13836
-ALTER TABLE epidata  ADD COLUMN airportworker character varying(255);
-ALTER TABLE epidata  ADD COLUMN healthcareprofessional character varying(255);
-ALTER TABLE epidata  ADD COLUMN placeOfInfection character varying(255);
-ALTER TABLE epidata  ADD COLUMN residenceAtOnset character varying(255);
+ALTER TABLE epidata  ADD COLUMN airportworker varchar(255);
+ALTER TABLE epidata  ADD COLUMN healthcareprofessional varchar(255);
+ALTER TABLE epidata  ADD COLUMN placeofinfection varchar(255);
+ALTER TABLE epidata  ADD COLUMN residenceatonset varchar(255);
 
-ALTER TABLE exposures ADD COLUMN prophylaxisadherence character varying(255);
-ALTER TABLE exposures ADD COLUMN prophylaxisadherencedetails character varying(512);
-ALTER TABLE exposures ADD COLUMN travelpurpose character varying(255);
-ALTER TABLE exposures ADD COLUMN travelpurposedetails character varying(512);
+ALTER TABLE exposures ADD COLUMN prophylaxisadherence varchar(255);
+ALTER TABLE exposures ADD COLUMN prophylaxisadherencedetails varchar(512);
+ALTER TABLE exposures ADD COLUMN travelpurpose varchar(255);
+ALTER TABLE exposures ADD COLUMN travelpurposedetails varchar(512);
 
-ALTER TABLE symptoms ADD COLUMN fatalrisk character varying(255);
+ALTER TABLE symptoms ADD COLUMN fatalrisk varchar(255);
 ALTER TABLE externalmessage ADD COLUMN malaria varchar(255);
 ALTER TABLE externalmessage ADD COLUMN malariainfectedyear integer;
-ALTER TABLE externalmessage   ADD COLUMN airportworker character varying(255);
-ALTER TABLE externalmessage  ADD COLUMN healthcareprofessional character varying(255);
+ALTER TABLE externalmessage ADD COLUMN airportworker varchar(255);
+ALTER TABLE externalmessage ADD COLUMN healthcareprofessional varchar(255);
 ALTER TABLE externalmessage ADD COLUMN modeoftransmission varchar(255);
 ALTER TABLE externalmessage ADD column modeoftransmissiontype varchar(255);
 
-ALTER TABLE epidata_history  ADD COLUMN airportworker character varying(255);
-ALTER TABLE epidata_history  ADD COLUMN healthcareprofessional character varying(255);
-ALTER TABLE epidata_history  ADD COLUMN placeOfInfection character varying(255);
-ALTER TABLE epidata_history  ADD COLUMN residenceAtOnset character varying(255);
+ALTER TABLE epidata_history ADD COLUMN airportworker varchar(255);
+ALTER TABLE epidata_history ADD COLUMN healthcareprofessional varchar(255);
+ALTER TABLE epidata_history ADD COLUMN placeofinfection varchar(255);
+ALTER TABLE epidata_history ADD COLUMN residenceatonset varchar(255);
 
-ALTER TABLE exposures_history ADD COLUMN prophylaxisadherence character varying(255);
-ALTER TABLE exposures_history ADD COLUMN prophylaxisadherencedetails character varying(512);
-ALTER TABLE exposures_history ADD COLUMN travelpurpose character varying(255);
-ALTER TABLE exposures_history ADD COLUMN travelpurposedetails character varying(512);
+ALTER TABLE exposures_history ADD COLUMN prophylaxisadherence varchar(255);
+ALTER TABLE exposures_history ADD COLUMN prophylaxisadherencedetails varchar(512);
+ALTER TABLE exposures_history ADD COLUMN travelpurpose varchar(255);
+ALTER TABLE exposures_history ADD COLUMN travelpurposedetails varchar(512);
 
 ALTER TABLE symptoms_history ADD COLUMN fatalrisk character varying(255);
 
 ALTER TABLE externalmessage_history ADD COLUMN malaria varchar(255);
 ALTER TABLE externalmessage_history ADD COLUMN malariainfectedyear integer;
-ALTER TABLE externalmessage_history   ADD COLUMN airportworker character varying(255);
-ALTER TABLE externalmessage_history  ADD COLUMN healthcareprofessional character varying(255);
+ALTER TABLE externalmessage_history ADD COLUMN airportworker varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN healthcareprofessional varchar(255);
 ALTER TABLE externalmessage_history ADD COLUMN modeoftransmission varchar(255);
 ALTER TABLE externalmessage_history ADD column modeoftransmissiontype varchar(255);
-INSERT INTO schema_version (version_number, comment) VALUES (624, '##13838, #13837, #13835, #13836  - Malaria and Dengue Doctors declaration and lab messages changes');
+INSERT INTO schema_version (version_number, comment) VALUES (624, '#13838, #13837, #13835, #13836  - Malaria and Dengue Doctors declaration and lab messages changes');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
