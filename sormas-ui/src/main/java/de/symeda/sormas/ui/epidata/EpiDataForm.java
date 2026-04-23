@@ -180,7 +180,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		this.sourceContactsToggleCallback = sourceContactsToggleCallback;
 		this.isPseudonymized = isPseudonymized;
 		this.symptomOnsetDate = date;
-		this.caseFollowUpEnabled = FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(disease);
+		this.caseFollowUpEnabled = disease != null && FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(disease);
 		setCustomizableFieldsMetadata(customizableFieldsMetadata);
 		setCustomizableFieldsValues(customizableFieldsValues);
 		addFields();

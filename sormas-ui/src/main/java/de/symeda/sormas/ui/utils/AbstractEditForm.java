@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.Validator;
@@ -53,6 +54,7 @@ import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
@@ -750,4 +752,23 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 			}
 		});
 	}
+
+	/**
+	 * To hide the field and its custom label when the input is set to NO or UNKNOWN.
+	 * NullableOptionGroup input
+	 * 
+	 * @param field
+	 *            input field
+	 * @param label
+	 *            custom label
+	 */
+	protected void updateFieldVisibility(NullableOptionGroup input, Field field, Label label) {
+		boolean visible = YesNoUnknown.YES.equals(FieldHelper.getNullableSourceFieldValue(input));
+		field.setVisible(visible);
+		label.setVisible(visible);
+		if (!visible) {
+			field.clear();
+		}
+	}
+
 }

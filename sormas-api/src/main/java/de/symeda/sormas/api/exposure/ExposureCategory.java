@@ -34,7 +34,7 @@ public enum ExposureCategory {
 	OTHER;
 
 	public boolean hasNoSetting() {
-		return EnumSet.of(ANIMAL_CONTACT, FOMITE_TRANSMISSION, FOOD_BORNE, MEDICAL_CARE, LAB).contains(this);
+		return EnumSet.of(ANIMAL_CONTACT, FOMITE_TRANSMISSION, FOOD_BORNE, MEDICAL_CARE, LAB, OTHER).contains(this);
 	}
 
 	public boolean hasNoSubSetting() {

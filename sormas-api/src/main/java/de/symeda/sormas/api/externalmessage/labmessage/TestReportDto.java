@@ -214,6 +214,7 @@ public class TestReportDto extends EntityDto {
 	private SerotypingMethod seroTypingMethod;
 	private String seroTypingMethodText;
 	private Serotype serotype;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String serotypeText;
 
 	public SampleReportReferenceDto getSampleReport() {

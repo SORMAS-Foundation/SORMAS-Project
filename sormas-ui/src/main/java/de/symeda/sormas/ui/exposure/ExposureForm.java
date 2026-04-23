@@ -65,11 +65,9 @@ import de.symeda.sormas.api.exposure.ExposureProtectiveMeasure;
 import de.symeda.sormas.api.exposure.ExposureSetting;
 import de.symeda.sormas.api.exposure.ExposureSubSetting;
 import de.symeda.sormas.api.exposure.FomiteTransmissionLocation;
-import de.symeda.sormas.api.exposure.TypeOfAnimal;
 import de.symeda.sormas.api.exposure.ProphylaxisAdherence;
-import de.symeda.sormas.api.exposure.SwimmingLocation;
-import de.symeda.sormas.api.exposure.TravelAccommodation;
 import de.symeda.sormas.api.exposure.TravelPurpose;
+import de.symeda.sormas.api.exposure.TypeOfAnimal;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -483,19 +481,6 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			locationForm.getFacilityTypeGroup(),
 			Collections.singletonList(FacilityTypeGroup.WORKING_PLACE),
 			true);
-		FieldHelper.setVisibleWhen(
-			getFieldGroup(),
-			ExposureDto.PROPHYLAXIS_ADHERENCE_DETAILS,
-			ExposureDto.PROPHYLAXIS_ADHERENCE,
-			ProphylaxisAdherence.OTHER,
-			true);
-		FieldHelper.setVisibleWhen(
-			getFieldGroup(),
-			ExposureDto.TRAVEL_ACCOMMODATION_TYPE,
-			ExposureDto.TRAVEL_ACCOMMODATION,
-			TravelAccommodation.OTHER,
-			true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.SWIMMING_LOCATION_TYPE, ExposureDto.SWIMMING_LOCATION, SwimmingLocation.OTHER, true);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
 			ExposureDto.PROPHYLAXIS_ADHERENCE_DETAILS,

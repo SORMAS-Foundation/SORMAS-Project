@@ -15791,9 +15791,9 @@ ALTER TABLE epidata  ADD COLUMN placeOfInfection character varying(255);
 ALTER TABLE epidata  ADD COLUMN residenceAtOnset character varying(255);
 
 ALTER TABLE exposures ADD COLUMN prophylaxisadherence character varying(255);
-ALTER TABLE exposures ADD COLUMN prophylaxisadherencedetails character varying(255);
+ALTER TABLE exposures ADD COLUMN prophylaxisadherencedetails character varying(512);
 ALTER TABLE exposures ADD COLUMN travelpurpose character varying(255);
-ALTER TABLE exposures ADD COLUMN travelpurposedetails character varying(255);
+ALTER TABLE exposures ADD COLUMN travelpurposedetails character varying(512);
 
 ALTER TABLE symptoms ADD COLUMN fatalrisk character varying(255);
 ALTER TABLE externalmessage ADD COLUMN malaria varchar(255);
@@ -15809,9 +15809,9 @@ ALTER TABLE epidata_history  ADD COLUMN placeOfInfection character varying(255);
 ALTER TABLE epidata_history  ADD COLUMN residenceAtOnset character varying(255);
 
 ALTER TABLE exposures_history ADD COLUMN prophylaxisadherence character varying(255);
-ALTER TABLE exposures_history ADD COLUMN prophylaxisadherencedetails character varying(255);
+ALTER TABLE exposures_history ADD COLUMN prophylaxisadherencedetails character varying(512);
 ALTER TABLE exposures_history ADD COLUMN travelpurpose character varying(255);
-ALTER TABLE exposures_history ADD COLUMN travelpurposedetails character varying(255);
+ALTER TABLE exposures_history ADD COLUMN travelpurposedetails character varying(512);
 
 ALTER TABLE symptoms_history ADD COLUMN fatalrisk character varying(255);
 

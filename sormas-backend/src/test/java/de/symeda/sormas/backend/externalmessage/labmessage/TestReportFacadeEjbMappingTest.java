@@ -274,6 +274,7 @@ public class TestReportFacadeEjbMappingTest {
 		source.setSeroTypingMethod(SerotypingMethod.MULTIPLEX_PCR);
 		source.setSeroTypingMethodText("Multiplex PCR Method");
 		source.setSerotype(Serotype.OTHER);
+		source.setSerotypeText("Other Serotype");
 
 		TestReportDto result = TestReportFacadeEjb.toDto(source);
 
@@ -344,6 +345,7 @@ public class TestReportFacadeEjbMappingTest {
 		assertEquals(source.getSeroGroupSpecificationText(), result.getSeroGroupSpecificationText());
 		assertEquals(source.getSeroTypingMethod(), result.getSeroTypingMethod());
 		assertEquals(source.getSeroTypingMethodText(), result.getSeroTypingMethodText());
-
+		assertEquals(source.getSerotype(), result.getSerotype());
+		assertEquals(source.getSerotypeText(), result.getSerotypeText());
 	}
 }

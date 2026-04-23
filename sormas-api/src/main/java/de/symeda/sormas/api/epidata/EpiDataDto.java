@@ -148,7 +148,9 @@ public class EpiDataDto extends PseudonymizableDto {
 	private List<ActivityAsCaseDto> activitiesAsCase = new ArrayList<>();
 
 	private String otherDetails;
-
+	// airport worker should be applicable for all countries and diseases.
+	@Diseases
+	@HideForCountriesExcept
 	private YesNoUnknown airportWorker;
 	@Diseases({
 		Disease.MALARIA })

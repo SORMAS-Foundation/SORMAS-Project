@@ -52,10 +52,10 @@ import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.FomiteTransmissionLocation;
 import de.symeda.sormas.api.exposure.GatheringType;
 import de.symeda.sormas.api.exposure.HabitationType;
+import de.symeda.sormas.api.exposure.ProphylaxisAdherence;
 import de.symeda.sormas.api.exposure.SwimmingLocation;
 import de.symeda.sormas.api.exposure.TravelAccommodation;
 import de.symeda.sormas.api.exposure.TravelPurpose;
-import de.symeda.sormas.api.exposure.ProphylaxisAdherence;
 import de.symeda.sormas.api.exposure.TypeOfAnimal;
 import de.symeda.sormas.api.exposure.TypeOfChildcareFacility;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
@@ -957,7 +957,7 @@ public class Exposure extends AbstractDomainObject {
 		this.travelPurpose = travelPurpose;
 	}
 
-	@Column(columnDefinition = "text")
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getTravelPurposeDetails() {
 		return travelPurposeDetails;
 	}
@@ -975,6 +975,7 @@ public class Exposure extends AbstractDomainObject {
 		this.prophylaxisAdherence = prophylaxisAdherence;
 	}
 
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getProphylaxisAdherenceDetails() {
 		return prophylaxisAdherenceDetails;
 	}

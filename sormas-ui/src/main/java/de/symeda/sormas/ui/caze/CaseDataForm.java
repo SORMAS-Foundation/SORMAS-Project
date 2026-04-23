@@ -40,6 +40,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -218,7 +220,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	public static final String DIAGNOSIS_CRITERIA_HEADING_LOC = "diagnosisCriteriaHeadingLoc";
 	public static final String DIAGNOSIS_CRITERIA_SUBHEADING_LOC = "diagnosisCriteriaSubheadingLoc";
 	public static final String DIAGNOSIS_CRITERIA_LAB_TEST_PANEL_LOC = "diagnosisCriteriaLoc";
-	private static final String EMAIL_REGEX = "((https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])";
+	private static final Pattern URL_PATTERN = Pattern.compile("((https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])");
 
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT =
@@ -1627,8 +1629,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		Button caseDefinitionButton = ButtonHelper.createIconButton(Captions.info, VaadinIcons.INFO_CIRCLE, e -> {
 			VerticalLayout classificationRulesLayout = new VerticalLayout();
 			classificationRulesLayout.setMargin(true);
-			String processedCaseDefinition = caseDefinitionText
-				.replaceAll(EMAIL_REGEX, "<a href=\"$1\" target=\"_blank\" style=\"color: #197de1; text-decoration: underline;\">$1</a>");
+			String processedCaseDefinition = sanitizeAndLinkify(caseDefinitionText);
 			Label caseDefinitionLabel = new Label();
 			caseDefinitionLabel.setContentMode(ContentMode.HTML);
 			caseDefinitionLabel.setWidth(100, Unit.PERCENTAGE);
@@ -1642,6 +1643,38 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		}, ValoTheme.BUTTON_PRIMARY, FORCE_CAPTION);
 
 		getContent().addComponent(caseDefinitionButton, CLASSIFICATION_RULES_LOC);
+	}
+
+	/**
+	 * sanitizing the url
+	 * 
+	 * @param text
+	 * @return sanitized url
+	 */
+	private String sanitizeAndLinkify(String text) {
+		Matcher matcher = URL_PATTERN.matcher(text);
+		StringBuilder result = new StringBuilder();
+		int last = 0;
+
+		while (matcher.find()) {
+			result.append(escapeHtml(text.substring(last, matcher.start())));
+
+			String escapedUrl = escapeHtml(matcher.group(1));
+			result.append("<a href=\"")
+				.append(escapedUrl)
+				.append("\" target=\"_blank\" rel=\"noopener noreferrer\" style=\"color: `#197de1`; text-decoration: underline;\">")
+				.append(escapedUrl)
+				.append("</a>");
+
+			last = matcher.end();
+		}
+
+		result.append(escapeHtml(text.substring(last)));
+		return result.toString();
+	}
+
+	private static String escapeHtml(String value) {
+		return value.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;").replace("'", "&#39;");
 	}
 
 	private void hideJurisdictionFields() {
