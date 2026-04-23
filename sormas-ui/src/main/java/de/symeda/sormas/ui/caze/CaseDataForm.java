@@ -982,20 +982,15 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				+ I18nProperties.getDescription(Descriptions.descGdpr));
 		CssStyles.style(additionalDetails, CssStyles.CAPTION_HIDDEN);
 
-		NullableOptionGroup pregnantField = addField(CaseDataDto.PREGNANT, NullableOptionGroup.class);
+		addField(CaseDataDto.PREGNANT, NullableOptionGroup.class);
 
-		NullableOptionGroup postpartumField = addField(CaseDataDto.POSTPARTUM, NullableOptionGroup.class);
+		addField(CaseDataDto.POSTPARTUM, NullableOptionGroup.class);
 		Field<?> trimesterField = addField(CaseDataDto.TRIMESTER, NullableOptionGroup.class);
 		boolean isMale = Sex.MALE.equals(person.getSex());
 		if (!isMale) {
 			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.TRIMESTER, CaseDataDto.PREGNANT, Arrays.asList(YesNoUnknown.YES), true);
 		} else {
 			trimesterField.setVisible(false);
-		}
-
-		// Mutual exclusivity: Pregnancy and Postpartum
-		if (pregnantField != null && postpartumField != null) {
-			setupMutuallyExclusiveFields(pregnantField, postpartumField);
 		}
 
 		ComboBox vaccinationStatusField = addField(CaseDataDto.VACCINATION_STATUS, ComboBox.class);
