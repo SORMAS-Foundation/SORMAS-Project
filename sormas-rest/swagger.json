@@ -11222,7 +11222,7 @@
         "properties" : {
           "activityAsCaseType" : {
             "type" : "string",
-            "enum" : [ "WORK", "TRAVEL", "SPORT", "VISIT", "GATHERING", "HABITATION", "PERSONAL_SERVICES", "CARED_FOR", "OTHER", "UNKNOWN" ]
+            "enum" : [ "WORK", "TRAVEL", "SPORT", "VISIT", "GATHERING", "HABITATION", "PERSONAL_SERVICES", "CARED_FOR", "OTHER", "BLOOD_DONATION", "BONE_MARROW_DONATION", "UNKNOWN" ]
           },
           "activityAsCaseTypeDetails" : {
             "type" : "string",
@@ -16642,7 +16642,7 @@
             "type" : "array",
             "items" : {
               "type" : "string",
-              "enum" : [ "AIR_BORNE", "ANIMAL_CONTACT", "DIRECT_CONTACT", "FOMITE_TRANSMISSION", "FOOD_BORNE", "VECTOR_BORNE", "VERTICAL_TRANSMISSION", "WATER_BORNE" ]
+              "enum" : [ "AIR_BORNE", "ANIMAL_CONTACT", "DIRECT_CONTACT", "FOMITE_TRANSMISSION", "FOOD_BORNE", "VECTOR_BORNE", "VERTICAL_TRANSMISSION", "WATER_BORNE", "MEDICAL_CARE", "LAB", "OTHER" ]
             },
             "uniqueItems" : true
           },
@@ -17373,6 +17373,10 @@
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
+          "airportWorker" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
           "areaInfectedAnimals" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
@@ -17416,6 +17420,10 @@
               "$ref" : "#/components/schemas/ExposureDto"
             }
           },
+          "healthcareProfessional" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
           "highTransmissionRiskArea" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
@@ -17440,7 +17448,7 @@
           },
           "modeOfTransmission" : {
             "type" : "string",
-            "enum" : [ "ANIMAL_TO_HUMAN", "FOOD_OR_WATER", "PERSON_TO_PERSON", "RECREATIONAL_WATER", "HEALTHCARE_ASSOCIATED", "INJECTING_DRUG_USERS", "LAB_OCCUPATIONAL_EXPOSURE", "MOTHER_TO_CHILD", "SEXUAL", "TRANSFUSION_RECIPIENT", "ORGAN_RECIPIENT", "UNKNOWN", "OTHER" ]
+            "enum" : [ "ANIMAL_TO_HUMAN", "FOOD_OR_WATER", "PERSON_TO_PERSON", "RECREATIONAL_WATER", "HEALTHCARE_ASSOCIATED", "INJECTING_DRUG_USERS", "LAB_OCCUPATIONAL_EXPOSURE", "MOTHER_TO_CHILD", "SEXUAL", "TRANSFUSION_RECIPIENT", "ORGAN_RECIPIENT", "MOSQUITOES_FROM_ENDEMIC_COUNTRY", "MOSQUITOES_BY_AIR", "MEDICAL_CARE", "MOSQUITOES_WITH_STRONG_EPI_EVIDENCE", "MOSQUITOES_WITHOUT_EVIDENCE", "FROM_MOTHER_TO_CHILD", "BY_LAB", "TRANSFUSION_TRANSPLANT_RECIPIENT", "OTHER", "UNKNOWN" ]
           },
           "modeOfTransmissionType" : {
             "type" : "string",
@@ -17450,8 +17458,18 @@
           "otherDetails" : {
             "type" : "string"
           },
+          "placeOfInfection" : {
+            "type" : "string",
+            "maxLength" : 255,
+            "minLength" : 0
+          },
           "pseudonymized" : {
             "type" : "boolean"
+          },
+          "residenceAtOnset" : {
+            "type" : "string",
+            "maxLength" : 255,
+            "minLength" : 0
           },
           "uuid" : {
             "type" : "string",
@@ -18698,7 +18716,7 @@
           },
           "exposureCategory" : {
             "type" : "string",
-            "enum" : [ "AIR_BORNE", "ANIMAL_CONTACT", "DIRECT_CONTACT", "FOMITE_TRANSMISSION", "FOOD_BORNE", "VECTOR_BORNE", "VERTICAL_TRANSMISSION", "WATER_BORNE" ]
+            "enum" : [ "AIR_BORNE", "ANIMAL_CONTACT", "DIRECT_CONTACT", "FOMITE_TRANSMISSION", "FOOD_BORNE", "VECTOR_BORNE", "VERTICAL_TRANSMISSION", "WATER_BORNE", "MEDICAL_CARE", "LAB", "OTHER" ]
           },
           "exposureComment" : {
             "type" : "string"
@@ -18709,7 +18727,7 @@
           },
           "exposureSetting" : {
             "type" : "string",
-            "enum" : [ "INDOOR", "OUTDOOR", "PERSON_TO_PERSON", "MOSQUITO_BORNE", "TICK_BORNE", "DRINKING_WATER", "RECREATIONAL_WATER", "PREGNANCY_OR_DELIVERY", "OTHER", "UNKNOWN" ]
+            "enum" : [ "INDOOR", "OUTDOOR", "PERSON_TO_PERSON", "OTHER_DIRECT_CONTACT", "MOSQUITO_BORNE", "TICK_BORNE", "DRINKING_WATER", "RECREATIONAL_WATER", "PREGNANCY_OR_DELIVERY", "OTHER", "UNKNOWN" ]
           },
           "exposureSettingDetails" : {
             "type" : "string"
@@ -18814,6 +18832,15 @@
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
+          "prophylaxisAdherence" : {
+            "type" : "string",
+            "enum" : [ "PROPHYLAXIS_COMPLETED", "PROPHYLAXIS_PARTIAL", "PROPHYLAXIS_NOT_STARTED", "PROPHYLAXIS_NOT_PRESCRIBED", "OTHER", "UNKNOWN" ]
+          },
+          "prophylaxisAdherenceDetails" : {
+            "type" : "string",
+            "maxLength" : 1000000,
+            "minLength" : 0
+          },
           "prophylaxisDate" : {
             "type" : "string",
             "format" : "date-time"
@@ -18875,7 +18902,7 @@
             "type" : "array",
             "items" : {
               "type" : "string",
-              "enum" : [ "CLOSED_POORLY_VENTILATED", "SHARED_HIGH_OCCUPANCY", "ENCLOSED_LIMITED_CIRCULATION", "VEHICLES", "HEALTHCARE_SETTINGS", "TEMPORARY_SHELTERS", "CROWDED_OUTDOOR_LIMITED_AIRFLOW", "CLOSE_PHYSICAL_CONTACT", "HIGH_TOUCH_ENVIRONMENTS", "SEXUAL_ACTIVITY", "STANDING_WATER_AREAS", "HIGH_MOSQUITO_ACTIVITY_REGIONS", "FORESTED_GRASSY_RURAL", "WILDLIFE_RESERVOIR_AREAS", "EATING_AT_HOME", "EATING_OUTSIDE", "UNKNOWN", "OTHER" ]
+              "enum" : [ "CLOSED_POORLY_VENTILATED", "SHARED_HIGH_OCCUPANCY", "ENCLOSED_LIMITED_CIRCULATION", "VEHICLES", "HEALTHCARE_SETTINGS", "TEMPORARY_SHELTERS", "CROWDED_OUTDOOR_LIMITED_AIRFLOW", "CLOSE_PHYSICAL_CONTACT", "HIGH_TOUCH_ENVIRONMENTS", "SEXUAL_ACTIVITY", "BLOOD_TRANSFUSION_RECIPIENT", "BONE_MARROW_TRANSPLANT_RECIPIENT", "STANDING_WATER_AREAS", "HIGH_MOSQUITO_ACTIVITY_REGIONS", "TRAVELED_ABROAD", "FORESTED_GRASSY_RURAL", "WILDLIFE_RESERVOIR_AREAS", "EATING_AT_HOME", "EATING_OUTSIDE", "UNKNOWN", "OTHER" ]
             },
             "uniqueItems" : true
           },
@@ -18900,6 +18927,15 @@
           "travelAccommodationType" : {
             "type" : "string",
             "maxLength" : 512,
+            "minLength" : 0
+          },
+          "travelPurpose" : {
+            "type" : "string",
+            "enum" : [ "BUSINESS", "VISITING_FAMILY_FRIENDS", "MIGRATION", "MILITARY", "HUMANITARIAN_MISSION", "TRAVELER_FROM_ENDEMIC_COUNTRY", "STUDENT", "TOURISM", "OTHER", "UNKNOWN" ]
+          },
+          "travelPurposeDetails" : {
+            "type" : "string",
+            "maxLength" : 1000000,
             "minLength" : 0
           },
           "typeOfAnimal" : {
@@ -19042,6 +19078,10 @@
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
+          "airportWorker" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
           "assignee" : {
             "$ref" : "#/components/schemas/UserReferenceDto"
           },
@@ -19104,6 +19144,10 @@
             "maxLength" : 1000000,
             "minLength" : 0
           },
+          "healthcareProfessional" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
           "hiv" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
@@ -19138,9 +19182,24 @@
           "inJurisdiction" : {
             "type" : "boolean"
           },
+          "malaria" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
+          "malariaInfectedYear" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
           "messageDateTime" : {
             "type" : "string",
             "format" : "date-time"
+          },
+          "modeOfTransmission" : {
+            "type" : "string",
+            "enum" : [ "ANIMAL_TO_HUMAN", "FOOD_OR_WATER", "PERSON_TO_PERSON", "RECREATIONAL_WATER", "HEALTHCARE_ASSOCIATED", "INJECTING_DRUG_USERS", "LAB_OCCUPATIONAL_EXPOSURE", "MOTHER_TO_CHILD", "SEXUAL", "TRANSFUSION_RECIPIENT", "ORGAN_RECIPIENT", "MOSQUITOES_FROM_ENDEMIC_COUNTRY", "MOSQUITOES_BY_AIR", "MEDICAL_CARE", "MOSQUITOES_WITH_STRONG_EPI_EVIDENCE", "MOSQUITOES_WITHOUT_EVIDENCE", "FROM_MOTHER_TO_CHILD", "BY_LAB", "TRANSFUSION_TRANSPLANT_RECIPIENT", "OTHER", "UNKNOWN" ]
+          },
+          "modeOfTransmissionType" : {
+            "type" : "string"
           },
           "notifierAddress" : {
             "type" : "string",
@@ -22232,7 +22291,7 @@
           },
           "serotype" : {
             "type" : "string",
-            "enum" : [ "DENV_1", "DENV_2", "DENV_3", "DENV_4", "OTHER" ]
+            "enum" : [ "DENV_1", "DENV_2", "DENV_3", "DENV_4", "UNKNOWN", "OTHER" ]
           },
           "serotypeText" : {
             "type" : "string",
@@ -25324,6 +25383,10 @@
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
+          "fatalRisk" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
           "fatigue" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
@@ -26562,7 +26625,13 @@
             "type" : "string"
           },
           "serotype" : {
-            "type" : "string"
+            "type" : "string",
+            "enum" : [ "DENV_1", "DENV_2", "DENV_3", "DENV_4", "UNKNOWN", "OTHER" ]
+          },
+          "serotypeText" : {
+            "type" : "string",
+            "maxLength" : 255,
+            "minLength" : 0
           },
           "specie" : {
             "type" : "string",

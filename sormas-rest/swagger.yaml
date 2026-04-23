@@ -8526,6 +8526,8 @@ components:
           - PERSONAL_SERVICES
           - CARED_FOR
           - OTHER
+          - BLOOD_DONATION
+          - BONE_MARROW_DONATION
           - UNKNOWN
         activityAsCaseTypeDetails:
           type: string
@@ -15035,6 +15037,9 @@ components:
             - VECTOR_BORNE
             - VERTICAL_TRANSMISSION
             - WATER_BORNE
+            - MEDICAL_CARE
+            - LAB
+            - OTHER
           uniqueItems: true
         extendedClassification:
           type: boolean
@@ -15735,6 +15740,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        airportWorker:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         areaInfectedAnimals:
           type: string
           enum:
@@ -15787,6 +15798,12 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ExposureDto'
+        healthcareProfessional:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         highTransmissionRiskArea:
           type: string
           enum:
@@ -15830,16 +15847,32 @@ components:
           - SEXUAL
           - TRANSFUSION_RECIPIENT
           - ORGAN_RECIPIENT
-          - UNKNOWN
+          - MOSQUITOES_FROM_ENDEMIC_COUNTRY
+          - MOSQUITOES_BY_AIR
+          - MEDICAL_CARE
+          - MOSQUITOES_WITH_STRONG_EPI_EVIDENCE
+          - MOSQUITOES_WITHOUT_EVIDENCE
+          - FROM_MOTHER_TO_CHILD
+          - BY_LAB
+          - TRANSFUSION_TRANSPLANT_RECIPIENT
           - OTHER
+          - UNKNOWN
         modeOfTransmissionType:
           type: string
           maxLength: 512
           minLength: 0
         otherDetails:
           type: string
+        placeOfInfection:
+          type: string
+          maxLength: 255
+          minLength: 0
         pseudonymized:
           type: boolean
+        residenceAtOnset:
+          type: string
+          maxLength: 255
+          minLength: 0
         uuid:
           type: string
           maxLength: 36
@@ -17515,6 +17548,9 @@ components:
           - VECTOR_BORNE
           - VERTICAL_TRANSMISSION
           - WATER_BORNE
+          - MEDICAL_CARE
+          - LAB
+          - OTHER
         exposureComment:
           type: string
         exposureRole:
@@ -17543,6 +17579,7 @@ components:
           - INDOOR
           - OUTDOOR
           - PERSON_TO_PERSON
+          - OTHER_DIRECT_CONTACT
           - MOSQUITO_BORNE
           - TICK_BORNE
           - DRINKING_WATER
@@ -17699,6 +17736,19 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        prophylaxisAdherence:
+          type: string
+          enum:
+          - PROPHYLAXIS_COMPLETED
+          - PROPHYLAXIS_PARTIAL
+          - PROPHYLAXIS_NOT_STARTED
+          - PROPHYLAXIS_NOT_PRESCRIBED
+          - OTHER
+          - UNKNOWN
+        prophylaxisAdherenceDetails:
+          type: string
+          maxLength: 1000000
+          minLength: 0
         prophylaxisDate:
           type: string
           format: date-time
@@ -17800,8 +17850,11 @@ components:
             - CLOSE_PHYSICAL_CONTACT
             - HIGH_TOUCH_ENVIRONMENTS
             - SEXUAL_ACTIVITY
+            - BLOOD_TRANSFUSION_RECIPIENT
+            - BONE_MARROW_TRANSPLANT_RECIPIENT
             - STANDING_WATER_AREAS
             - HIGH_MOSQUITO_ACTIVITY_REGIONS
+            - TRAVELED_ABROAD
             - FORESTED_GRASSY_RURAL
             - WILDLIFE_RESERVOIR_AREAS
             - EATING_AT_HOME
@@ -17838,6 +17891,23 @@ components:
         travelAccommodationType:
           type: string
           maxLength: 512
+          minLength: 0
+        travelPurpose:
+          type: string
+          enum:
+          - BUSINESS
+          - VISITING_FAMILY_FRIENDS
+          - MIGRATION
+          - MILITARY
+          - HUMANITARIAN_MISSION
+          - TRAVELER_FROM_ENDEMIC_COUNTRY
+          - STUDENT
+          - TOURISM
+          - OTHER
+          - UNKNOWN
+        travelPurposeDetails:
+          type: string
+          maxLength: 1000000
           minLength: 0
         typeOfAnimal:
           type: string
@@ -18074,6 +18144,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        airportWorker:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         assignee:
           $ref: '#/components/schemas/UserReferenceDto'
         automaticProcessingPossible:
@@ -18200,6 +18276,12 @@ components:
           type: string
           maxLength: 1000000
           minLength: 0
+        healthcareProfessional:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         hiv:
           type: string
           enum:
@@ -18232,9 +18314,44 @@ components:
           minLength: 0
         inJurisdiction:
           type: boolean
+        malaria:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        malariaInfectedYear:
+          type: integer
+          format: int32
         messageDateTime:
           type: string
           format: date-time
+        modeOfTransmission:
+          type: string
+          enum:
+          - ANIMAL_TO_HUMAN
+          - FOOD_OR_WATER
+          - PERSON_TO_PERSON
+          - RECREATIONAL_WATER
+          - HEALTHCARE_ASSOCIATED
+          - INJECTING_DRUG_USERS
+          - LAB_OCCUPATIONAL_EXPOSURE
+          - MOTHER_TO_CHILD
+          - SEXUAL
+          - TRANSFUSION_RECIPIENT
+          - ORGAN_RECIPIENT
+          - MOSQUITOES_FROM_ENDEMIC_COUNTRY
+          - MOSQUITOES_BY_AIR
+          - MEDICAL_CARE
+          - MOSQUITOES_WITH_STRONG_EPI_EVIDENCE
+          - MOSQUITOES_WITHOUT_EVIDENCE
+          - FROM_MOTHER_TO_CHILD
+          - BY_LAB
+          - TRANSFUSION_TRANSPLANT_RECIPIENT
+          - OTHER
+          - UNKNOWN
+        modeOfTransmissionType:
+          type: string
         notifierAddress:
           type: string
           maxLength: 1000000
@@ -22094,6 +22211,7 @@ components:
           - DENV_2
           - DENV_3
           - DENV_4
+          - UNKNOWN
           - OTHER
         serotypeText:
           type: string
@@ -25948,6 +26066,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        fatalRisk:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         fatigue:
           type: string
           enum:
@@ -27611,6 +27735,17 @@ components:
           type: string
         serotype:
           type: string
+          enum:
+          - DENV_1
+          - DENV_2
+          - DENV_3
+          - DENV_4
+          - UNKNOWN
+          - OTHER
+        serotypeText:
+          type: string
+          maxLength: 255
+          minLength: 0
         specie:
           type: string
           enum:
