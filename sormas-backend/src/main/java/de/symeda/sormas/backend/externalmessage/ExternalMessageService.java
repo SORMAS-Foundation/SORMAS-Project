@@ -108,6 +108,10 @@ public class ExternalMessageService extends AdoServiceWithUserFilterAndJurisdict
 			messageTypes.add(ExternalMessageType.PHYSICIANS_REPORT);
 		}
 
+		if (userService.hasRight(UserRight.EXTERNAL_MESSAGE_SURVEY_RESPONSE_VIEW)) {
+			messageTypes.add(ExternalMessageType.SURVEY_RESPONSE);
+		}
+
 		if (messageTypes.isEmpty()) {
 			return cb.disjunction();
 		}
