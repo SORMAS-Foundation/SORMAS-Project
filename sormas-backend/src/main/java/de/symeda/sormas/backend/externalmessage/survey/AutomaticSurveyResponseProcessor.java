@@ -75,6 +75,7 @@ public class AutomaticSurveyResponseProcessor {
 		ExternalMessageSurveyResponseWrapper latestResponseWrapper = externalMessage.getSurveyResponseData().getLatest();
 		ExternalMessageSurveyResponseRequest request = latestResponseWrapper.getRequest();
 
+		// TODO: check this
 		if (latestResponseWrapper.getResult() != null && request.isSkipIfAlreadyProcessed()) {
 			logger.info(
 				"Skipping survey response for external message [{}]: already processed and skipIfAlreadyProcessed=true",
@@ -107,9 +108,10 @@ public class AutomaticSurveyResponseProcessor {
 			latestResponseWrapper
 				.setResult(new ExternalMessageSurveyResponseResult().setPatchResponse(response).setCaseUuid(dataPatchRequest.getCaseUuid()));
 
-			if (response.isApplied()) {
+			if (!response.isApplied()) {
 				return surveyResponseProcessingResult.setResultStatus(ProcessingResultStatus.CANCELED);
 			}
+			return surveyResponseProcessingResult.setResultStatus(ProcessingResultStatus.DONE);
 
 		} catch (RuntimeException e) {
 			logger.error(

@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.patch;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 import javax.annotation.Nullable;
@@ -8,7 +9,9 @@ import javax.validation.constraints.NotNull;
 /**
  * Resulting object that is built in case some field couldn't be mapped during data patching.
  */
-public class DataPatchFailure {
+public class DataPatchFailure implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	@NotNull
 	private DataPatchFailureCause dataPatchFailureCause;

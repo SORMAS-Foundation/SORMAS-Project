@@ -278,6 +278,13 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setTuberculosisMdrXdrTuberculosis(source.getTuberculosisMdrXdrTuberculosis());
 		target.setTuberculosisBeijingLineage(source.getTuberculosisBeijingLineage());
 
+		ExternalSurveyResponseData surveyResponseData = source.getSurveyResponseData();
+
+		if (surveyResponseData != null) {
+			target.setAdditionalDataType(ExternalMessageAdditionalDataType.SURVEY_RESPONSE_DATA);
+			target.setAdditionalDataJson(ObjectMapperProvider.writeValueAsStringFailSafe(surveyResponseData));
+		}
+
 		return target;
 	}
 

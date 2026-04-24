@@ -1,5 +1,8 @@
 package de.symeda.sormas.backend.externalmessage;
 
+import java.util.Arrays;
+import java.util.Optional;
+
 import de.symeda.sormas.api.externalmessage.survey.ExternalSurveyResponseData;
 
 /**
@@ -10,7 +13,7 @@ import de.symeda.sormas.api.externalmessage.survey.ExternalSurveyResponseData;
  */
 public enum ExternalMessageAdditionalDataType {
 
-	SURVEY_RESPONSE_WRAPPER(ExternalSurveyResponseData.class);
+	SURVEY_RESPONSE_DATA(ExternalSurveyResponseData.class);
 
 	private final Class<?> dataClass;
 
@@ -20,5 +23,9 @@ public enum ExternalMessageAdditionalDataType {
 
 	public Class<?> getDataClass() {
 		return dataClass;
+	}
+
+	public static Optional<ExternalMessageAdditionalDataType> from(Class<?> dataClass) {
+		return Arrays.stream(values()).filter(type -> type.dataClass.equals(dataClass)).findFirst();
 	}
 }

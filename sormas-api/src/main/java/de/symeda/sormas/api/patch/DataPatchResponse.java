@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.patch;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -9,7 +10,9 @@ import org.apache.commons.collections4.MapUtils;
 /**
  * Response to a patch request.
  */
-public class DataPatchResponse {
+public class DataPatchResponse implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * True if the dictionary was applied to the specified fields.
