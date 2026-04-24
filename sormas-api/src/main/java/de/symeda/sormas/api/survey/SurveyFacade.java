@@ -17,10 +17,13 @@ package de.symeda.sormas.api.survey;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
+import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateDto;
@@ -41,7 +44,11 @@ public interface SurveyFacade {
 
 	SurveyDto getByUuid(String uuid);
 
-	List<SurveyDto> getByExternalIds(List<String> externalId);
+	List<SurveyDto> getByExternalIds(List<String> externalIds);
+
+	default Optional<SurveyDto> getByExternalId(@NotNull String externalId) {
+		return Optional.ofNullable(getByExternalIds(List.of(externalId))).filter(CollectionUtils::isNotEmpty).map(surveys -> surveys.get(0));
+	}
 
 	long count(SurveyCriteria criteria);
 

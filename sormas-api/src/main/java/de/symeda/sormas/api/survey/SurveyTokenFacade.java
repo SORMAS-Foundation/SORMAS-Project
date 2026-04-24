@@ -47,6 +47,8 @@ public interface SurveyTokenFacade {
 
 	SurveyTokenDto getBySurveyAndToken(SurveyReferenceDto survey, String token);
 
+	SurveyTokenDto getBySurveyExternalIdAndToken(String externalSurveyId, String token);
+
 	List<SurveyTokenDto> getBySurveyReferenceTokenTuples(List<Tuple<SurveyReferenceDto, String>> surveyReferenceTokenTuples);
 
 	boolean exists(String uuid);

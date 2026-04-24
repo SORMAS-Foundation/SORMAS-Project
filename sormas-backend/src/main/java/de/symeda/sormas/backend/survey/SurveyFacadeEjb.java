@@ -237,11 +237,11 @@ public class SurveyFacadeEjb implements SurveyFacade {
 	}
 
 	@Override
-	public List<SurveyDto> getByExternalIds(List<String> externalId) {
+	public List<SurveyDto> getByExternalIds(List<String> externalIds) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Survey> cq = cb.createQuery(Survey.class);
 		Root<Survey> from = cq.from(Survey.class);
-		cq.where(cb.equal(from.get(Survey.EXTERNAL_ID), externalId));
+		cq.where(cb.equal(from.get(Survey.EXTERNAL_ID), externalIds));
 		cq.orderBy(cb.desc(from.get(Survey.NAME)));
 
 		return getAsStream(cq).map(this::toDto).collect(Collectors.toList());

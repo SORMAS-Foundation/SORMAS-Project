@@ -44,6 +44,7 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.survey.SurveyDto;
 import de.symeda.sormas.api.survey.SurveyReferenceDto;
 import de.symeda.sormas.api.survey.SurveyTokenCriteria;
 import de.symeda.sormas.api.survey.SurveyTokenDto;
@@ -226,6 +227,14 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 	@Override
 	public SurveyTokenDto getBySurveyAndToken(SurveyReferenceDto survey, String token) {
 		return toDto(surveyTokenService.getBySurveyAndToken(survey, token));
+	}
+
+	@Override
+	public SurveyTokenDto getBySurveyExternalIdAndToken(String externalSurveyId, String token) {
+		SurveyDto surveyDto = surveyFacade.getByExternalId(externalSurveyId)
+			.orElseThrow(() -> new RuntimeException(String.format("Survey with external id: [%s] not found", externalSurveyId)));
+
+		return toDto(surveyTokenService.getBySurveyAndToken(surveyDto.toReference(), token));
 	}
 
 	@Override

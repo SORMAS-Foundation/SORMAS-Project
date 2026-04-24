@@ -388,11 +388,6 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 		validate(dto);
 
-		// TODO: is null but should not
-		if (ExternalMessageType.SURVEY_RESPONSE.equals(dto.getType())) {
-			// TODO: fill missing holes from person: fetch the entities: case -> person 
-		}
-
 		externalMessage = fillOrBuildEntity(dto, externalMessage, checkChangeDate);
 
 		// If it is a LabMessage and it has not set a DiseaseVariant, an attempt is made to determine this from the attached TestReports.
