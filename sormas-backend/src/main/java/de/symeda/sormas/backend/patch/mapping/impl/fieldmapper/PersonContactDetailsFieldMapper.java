@@ -78,7 +78,7 @@ public class PersonContactDetailsFieldMapper implements FieldCustomMapper {
 		PersonContactDetailDto detail = new PersonContactDetailDto();
 		detail.setUuid(DataHelper.createUuid());
 		detail.setPerson(personDto.toReference());
-		detail.setDetails((String) request.getValue());
+		detail.setContactInformation((String) request.getValue());
 		detail.setAdditionalInformation(request.getOrigin());
 
 		return detail;
@@ -101,7 +101,7 @@ public class PersonContactDetailsFieldMapper implements FieldCustomMapper {
 
 	@Override
 	public Set<String> supportedFields() {
-		return Stream.of(PersonContactDetailDto.PHONE_NUMBER_TYPE, PersonContactDetailDto.DETAILS)
+		return Stream.of(PersonContactDetailDto.PHONE_NUMBER_TYPE, PersonContactDetailDto.CONTACT_INFORMATION)
 			.map(suffix -> PersonDto.I18N_PREFIX + PATH_SEPARATOR + PersonDto.PERSON_CONTACT_DETAILS + PATH_SEPARATOR + suffix)
 			.collect(Collectors.toSet());
 	}

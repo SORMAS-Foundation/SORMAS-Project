@@ -61,7 +61,7 @@ public class SurveyResponseDetailsWindow {
 		VerticalLayout layout = new VerticalLayout();
 		layout.setMargin(true);
 		layout.setSpacing(true);
-		layout.setWidth(800, Sizeable.Unit.PIXELS);
+		layout.setWidth(100, Sizeable.Unit.PERCENTAGE);
 
 		Window window = new Window(I18nProperties.getString(Strings.headingSurveyResponseDetails));
 		window.setModal(true);

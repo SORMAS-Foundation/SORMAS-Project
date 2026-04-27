@@ -131,7 +131,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
 			.setPatchDictionary(
 				Map.of(
-					"Person.personContactDetails.details",
+					"Person.personContactDetails.contactInformation",
 					newEmail,
 
 					"Person.personContactDetails.phoneNumberType",
@@ -157,14 +157,14 @@ class DataPatcherImplTest extends AbstractBeanTest {
 				contactDetailsStreamProvider.get()
 					.anyMatch(
 						contactDetail -> contactDetail.getPersonContactDetailType() == PersonContactDetailType.PHONE
-							&& newPhoneNumber.equals(contactDetail.getDetails())
+							&& newPhoneNumber.equals(contactDetail.getContactInformation())
 							&& contactDetail.getPhoneNumberType() == PhoneNumberType.OTHER)),
 
 			() -> Assertions.assertTrue(
 				contactDetailsStreamProvider.get()
 					.anyMatch(
 						contactDetail -> contactDetail.getPersonContactDetailType() == PersonContactDetailType.EMAIL
-							&& newEmail.equals(contactDetail.getDetails()))));
+							&& newEmail.equals(contactDetail.getContactInformation()))));
 	}
 
 	@ParameterizedTest

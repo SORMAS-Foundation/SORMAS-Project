@@ -30,7 +30,7 @@ class PersonContactDetailsFieldMapperTest extends AbstractUnitTest {
 	@Test
 	void supportedFields_containsPhoneNumberTypeAndDetails() {
 		// PREPARE
-		Set<String> expected = Set.of("Person.personContactDetails.details, Person.personContactDetails.phoneNumberType");
+		Set<String> expected = Set.of("Person.personContactDetails.contactInformation", "Person.personContactDetails.phoneNumberType");
 
 		// EXECUTE
 		Set<String> actual = victim.supportedFields();
@@ -75,7 +75,7 @@ class PersonContactDetailsFieldMapperTest extends AbstractUnitTest {
 		assertEquals(1, personDto.getPersonContactDetails().size());
 		PersonContactDetailDto added = personDto.getPersonContactDetails().get(0);
 		assertEquals(PersonContactDetailType.PHONE, added.getPersonContactDetailType());
-		assertEquals("0123456789", added.getDetails());
+		assertEquals("0123456789", added.getContactInformation());
 		assertEquals(PhoneNumberType.OTHER, added.getPhoneNumberType());
 		assertEquals("someOrigin", added.getAdditionalInformation());
 	}
@@ -147,7 +147,7 @@ class PersonContactDetailsFieldMapperTest extends AbstractUnitTest {
 		assertEquals(1, personDto.getPersonContactDetails().size());
 		PersonContactDetailDto added = personDto.getPersonContactDetails().get(0);
 		assertEquals(PersonContactDetailType.EMAIL, added.getPersonContactDetailType());
-		assertEquals("test@example.com", added.getDetails());
+		assertEquals("test@example.com", added.getContactInformation());
 		assertEquals("someOrigin", added.getAdditionalInformation());
 	}
 

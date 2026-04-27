@@ -82,6 +82,8 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageType;
 import de.symeda.sormas.api.externalmessage.NewMessagesState;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult;
+import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseRequest;
+import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseWrapper;
 import de.symeda.sormas.api.externalmessage.survey.ExternalSurveyResponseData;
 import de.symeda.sormas.api.externalmessage.survey.SurveyAsExternalMessageAdapterFacade;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -974,25 +976,22 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	@RightsAllowed(UserRight._EXTERNAL_MESSAGE_SURVEY_RESPONSE_PROCESS)
 	public ExternalMessageDto reprocessSurveyResponse(String uuid, java.util.Map<String, Object> correctedDictionary) {
 		ExternalMessageDto externalMessage = getByUuid(uuid);
-		de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseRequest latestRequest =
-			externalMessage.getSurveyResponseData().getLatest().getRequest();
+		ExternalMessageSurveyResponseRequest latestRequest = externalMessage.getSurveyResponseData().getLatest().getRequest();
 
-		de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseRequest correctedRequest =
-			new de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseRequest().setToken(latestRequest.getToken())
-				.setExternalSurveyId(latestRequest.getExternalSurveyId())
-				.setExternalRespondentId(latestRequest.getExternalRespondentId())
-				.setResponseReceivedDate(latestRequest.getResponseReceivedDate())
-				.setReplacementStrategy(latestRequest.getReplacementStrategy())
-				.setEmptyValueBehavior(latestRequest.getEmptyValueBehavior())
-				.setOrigin(latestRequest.getOrigin())
-				.setInputLanguages(latestRequest.getInputLanguages())
-				.setAllowFallbackValues(latestRequest.isAllowFallbackValues())
-				.setSkipIfAlreadyProcessed(false)
-				.setPatchedInCaseOfFailures(true)
-				.setPatchDictionary(correctedDictionary);
+		ExternalMessageSurveyResponseRequest correctedRequest = new ExternalMessageSurveyResponseRequest().setToken(latestRequest.getToken())
+			.setExternalSurveyId(latestRequest.getExternalSurveyId())
+			.setExternalRespondentId(latestRequest.getExternalRespondentId())
+			.setResponseReceivedDate(latestRequest.getResponseReceivedDate())
+			.setReplacementStrategy(latestRequest.getReplacementStrategy())
+			.setEmptyValueBehavior(latestRequest.getEmptyValueBehavior())
+			.setOrigin(latestRequest.getOrigin())
+			.setInputLanguages(latestRequest.getInputLanguages())
+			.setAllowFallbackValues(latestRequest.isAllowFallbackValues())
+			.setSkipIfAlreadyProcessed(latestRequest.isSkipIfAlreadyProcessed())
+			.setPatchedInCaseOfFailures(latestRequest.isPatchedInCaseOfFailures())
+			.setPatchDictionary(correctedDictionary);
 
-		de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseWrapper updatedWrapper =
-			new de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseWrapper().setRequest(correctedRequest);
+		ExternalMessageSurveyResponseWrapper updatedWrapper = new ExternalMessageSurveyResponseWrapper().setRequest(correctedRequest);
 		externalMessage.getSurveyResponseData().setUpdated(updatedWrapper);
 
 		try {
