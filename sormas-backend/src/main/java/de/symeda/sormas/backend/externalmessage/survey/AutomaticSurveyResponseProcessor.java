@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseRequest;
 import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseResult;
 import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseWrapper;
@@ -27,6 +28,7 @@ import de.symeda.sormas.api.survey.SurveyReferenceDto;
 import de.symeda.sormas.api.survey.SurveyTokenDto;
 import de.symeda.sormas.api.utils.Tuple;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResultStatus;
+import de.symeda.sormas.backend.externalmessage.labmessage.ExternalMessageProcessingFacadeEjbLocal;
 import de.symeda.sormas.backend.survey.SurveyFacadeEjb;
 import de.symeda.sormas.backend.survey.SurveyTokenFacadeEjb;
 import de.symeda.sormas.backend.util.CollectorUtils;
@@ -44,6 +46,9 @@ public class AutomaticSurveyResponseProcessor {
 
 	@EJB
 	private SurveyTokenFacadeEjb.SurveyTokenFacadeEjbLocal surveyTokenFacade;
+
+	@EJB
+	private ExternalMessageProcessingFacadeEjbLocal processingFacade;
 
 	@Transactional(Transactional.TxType.REQUIRES_NEW)
 	public List<SurveyResponseProcessingResult> processSurveyResponses(List<ExternalMessageDto> externalMessages)
@@ -111,6 +116,10 @@ public class AutomaticSurveyResponseProcessor {
 			if (!response.isApplied()) {
 				return surveyResponseProcessingResult.setResultStatus(ProcessingResultStatus.CANCELED);
 			}
+
+			externalMessage.setStatus(ExternalMessageStatus.PROCESSED);
+			processingFacade.saveExternalMessage(externalMessage);
+
 			return surveyResponseProcessingResult.setResultStatus(ProcessingResultStatus.DONE);
 
 		} catch (RuntimeException e) {

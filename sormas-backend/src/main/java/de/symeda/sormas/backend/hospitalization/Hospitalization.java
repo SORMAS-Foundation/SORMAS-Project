@@ -82,6 +82,9 @@ public class Hospitalization extends AbstractDomainObject {
 	private YesNoUnknown currentlyHospitalized;
 	private Integer durationOfHospitalization;
 
+	// TODO: add-UI + DB
+	private YesNoUnknown oxygenTherapy;
+
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getAdmissionDate() {
 		return admissionDate;
@@ -261,5 +264,13 @@ public class Hospitalization extends AbstractDomainObject {
 
 	public void setDurationOfHospitalization(Integer durationOfHospitalization) {
 		this.durationOfHospitalization = durationOfHospitalization;
+	}
+
+	public YesNoUnknown getOxygenTherapy() {
+		return oxygenTherapy;
+	}
+
+	public void setOxygenTherapy(YesNoUnknown oxygenTherapy) {
+		this.oxygenTherapy = oxygenTherapy;
 	}
 }

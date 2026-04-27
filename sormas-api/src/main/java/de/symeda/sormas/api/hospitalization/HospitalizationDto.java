@@ -119,6 +119,8 @@ public class HospitalizationDto extends EntityDto {
 		Disease.CRYPTOSPORIDIOSIS })
 	private Integer durationOfHospitalization;
 
+	private YesNoUnknown oxygenTherapy;
+
 	public static HospitalizationDto build() {
 		HospitalizationDto hospitalization = new HospitalizationDto();
 		hospitalization.setUuid(DataHelper.createUuid());
@@ -277,5 +279,13 @@ public class HospitalizationDto extends EntityDto {
 
 	public void setDurationOfHospitalization(Integer durationOfHospitalization) {
 		this.durationOfHospitalization = durationOfHospitalization;
+	}
+
+	public YesNoUnknown getOxygenTherapy() {
+		return oxygenTherapy;
+	}
+
+	public void setOxygenTherapy(YesNoUnknown oxygenTherapy) {
+		this.oxygenTherapy = oxygenTherapy;
 	}
 }

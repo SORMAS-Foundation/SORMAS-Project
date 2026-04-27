@@ -204,6 +204,8 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private String externalMessageDetails;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String caseComments;
+
+	// TODO: reportId can be used as dedup - idempotency key
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String reportId;
 
