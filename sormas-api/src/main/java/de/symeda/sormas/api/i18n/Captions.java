@@ -2040,6 +2040,8 @@ public interface Captions {
 	String surveyResponsePatchDictionary = "surveyResponsePatchDictionary";
 	String surveyResponseProcessingResult = "surveyResponseProcessingResult";
 	String surveyResponseValidFields = "surveyResponseValidFields";
+	String surveyResponseIgnoreField = "surveyResponseIgnoreField";
+	String surveyResponseKeyName = "surveyResponseKeyName";
 	String actionCorrectAndReprocess = "actionCorrectAndReprocess";
 	String actionSaveAndReprocess = "actionSaveAndReprocess";
 	String externalMessageRelatedEntriesFound = "externalMessageRelatedEntriesFound";
