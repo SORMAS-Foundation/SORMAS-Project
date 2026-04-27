@@ -90,6 +90,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.patch.partial_retrieval.DisplayablePartialRetrievalResponse;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
@@ -1030,7 +1031,10 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 			new de.symeda.sormas.api.patch.partial_retrieval.PartialRetrievalRequest().setCaseUuid(result.getCaseUuid())
 				.setFieldsToRetrieve(fieldPaths);
 
-		return partialRetriever.retrievePartialForDisplay(request);
+		DisplayablePartialRetrievalResponse response = partialRetriever.retrievePartialForDisplay(request);
+		logger.error("retrieveSurveyResponseFieldsForDisplay: [{}]", response);
+
+		return response;
 	}
 
 	public static ExternalMessageReferenceDto toReferenceDto(ExternalMessage entity) {

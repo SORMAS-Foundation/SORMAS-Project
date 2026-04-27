@@ -1,10 +1,13 @@
 package de.symeda.sormas.api.patch.partial_retrieval;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class DisplayablePartialRetrievalResponse {
+public class DisplayablePartialRetrievalResponse implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private Map<String, DisplayableFieldInfo> fieldInfoDictionary = new HashMap<>();
 

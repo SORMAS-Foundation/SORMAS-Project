@@ -1,11 +1,14 @@
 package de.symeda.sormas.api.patch.partial_retrieval;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
  * Type to display a specific value to the user with its field name and its value.
  */
-public class DisplayableFieldInfo {
+public class DisplayableFieldInfo implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private String translatedFieldName;
 	private String translatedFieldValue;
