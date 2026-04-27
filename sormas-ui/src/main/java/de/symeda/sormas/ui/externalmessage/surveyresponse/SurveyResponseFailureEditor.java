@@ -15,15 +15,17 @@
 package de.symeda.sormas.ui.externalmessage.surveyresponse;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -41,7 +43,6 @@ import de.symeda.sormas.api.patch.partial_retrieval.DisplayableFieldInfo;
 import de.symeda.sormas.api.patch.partial_retrieval.DisplayablePartialRetrievalResponse;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 /**
  * Modal editor window allowing users to correct failed survey response fields and reprocess.
@@ -58,7 +59,6 @@ public class SurveyResponseFailureEditor extends Window {
 		setWidth(700, Unit.PIXELS);
 
 		ExternalMessageSurveyResponseWrapper latest = externalMessage.getSurveyResponseData().getLatest();
-		Map<String, Object> patchDictionary = latest.getRequest().getPatchDictionary();
 
 		ExternalMessageSurveyResponseResult result = latest.getResult();
 		Map<String, DataPatchFailure> failures =
@@ -138,29 +138,32 @@ public class SurveyResponseFailureEditor extends Window {
 
 			mainLayout.addComponent(failuresForm);
 
-			// --- Valid fields (read-only context) ---
+			// --- Valid fields (read-only context) ---§
 			if (!validValues.isEmpty()) {
 				Label validHeading = new Label(I18nProperties.getCaption(Captions.surveyResponseValidFields));
 				CssStyles.style(validHeading, CssStyles.H4);
 				mainLayout.addComponent(validHeading);
 
-				Panel validPanel = new Panel();
-				FormLayout validForm = new FormLayout();
-				validForm.setMargin(true);
+				List<Map.Entry<String, Object>> validEntries = validValues.entrySet().stream().collect(Collectors.toList());
 
-				VaadinUiUtil.showWarningPopup(String.format("validValues: [%s]", validValues));
+				Grid<Map.Entry<String, Object>> validGrid = new Grid<>();
+				validGrid.setSizeFull();
+				validGrid.setItems(validEntries);
+				validGrid.setHeightByRows(Math.max(validEntries.size(), 1));
 
-				for (Map.Entry<String, Object> validEntry : validValues.entrySet()) {
-					String fieldPath = validEntry.getKey();
-					String fieldLabel = resolveFieldName(fieldPath, displayData);
-					Label label = new Label(validEntry.getValue() != null ? validEntry.getValue().toString() : "");
-					label.setCaption(fieldLabel);
-					validForm.addComponent(label);
-				}
+				validGrid.addColumn(entry -> resolveFieldName(entry.getKey(), displayData))
+					.setCaption(I18nProperties.getCaption(Captions.surveyResponseField))
+					.setExpandRatio(2);
 
-				validPanel.setContent(validForm);
-				validPanel.setHeight(120, Unit.PIXELS);
-				mainLayout.addComponent(validPanel);
+				validGrid.addColumn(entry -> entry.getValue() != null ? entry.getValue().toString() : "")
+					.setCaption(I18nProperties.getCaption(Captions.surveyResponseSubmittedValue))
+					.setExpandRatio(2);
+
+				validGrid.addColumn(entry -> resolveCurrentValue(entry.getKey(), displayData))
+					.setCaption(I18nProperties.getCaption(Captions.surveyResponseCurrentCaseValue))
+					.setExpandRatio(2);
+
+				mainLayout.addComponent(validGrid);
 			}
 
 			// --- Buttons ---
