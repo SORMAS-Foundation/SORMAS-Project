@@ -45,7 +45,6 @@ import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.caze.CaseDataView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 /**
  * Popup window displaying full details of a SURVEY_RESPONSE external message.
@@ -101,8 +100,8 @@ public class SurveyResponseDetailsWindow {
 			dictionaryGrid.setItems(entries);
 			dictionaryGrid.setHeightByRows(Math.max(entries.size(), 1));
 
-			VaadinUiUtil.showWarningPopup(String.format("Entries: [%s]", entries));
-			VaadinUiUtil.showWarningPopup(String.format("finalDisplayData: [%s]", finalDisplayData));
+			// VaadinUiUtil.showWarningPopup(String.format("Entries: [%s]", entries));
+			// VaadinUiUtil.showWarningPopup(String.format("finalDisplayData: [%s]", finalDisplayData));
 
 			dictionaryGrid.addColumn(entry -> resolveFieldName(entry.getKey(), finalDisplayData))
 				.setCaption(I18nProperties.getCaption(Captions.surveyResponseField))

@@ -304,7 +304,7 @@ public class ExternalMessagesView extends AbstractView {
 
 		List<ExternalMessageDto> fetchResult = FacadeProvider.getExternalMessageFacade().saveAndProcessSurveyResponses();
 		if (!fetchResult.isEmpty()) {
-			VaadinUiUtil.showWarningPopup(String.format("No new messages: [%s]", fetchResult));
+			VaadinUiUtil.showWarningPopup(String.format("New messages: [%s]", fetchResult));
 			grid.reload();
 		} else {
 			grid.reload();
