@@ -71,6 +71,7 @@ public class ExternalMessageGrid extends FilteredGrid<ExternalMessageIndexDto, E
 	private static final String PLACEHOLDER_SPACE = String.join("", Collections.nCopies(35, "&nbsp"));
 	private static final String PDF_FILENAME_FORMAT = "sormas_lab_message_%s_%s.pdf";
 	private static final String XML_FILENAME_FORMAT = "sormas_lab_message_%s_%s.xml";
+	private static final String SURVEY_FILENAME_FORMAT = "sormas_survey_%s_%s.json";
 
 	private DataProviderListener<ExternalMessageIndexDto> dataProviderListener;
 
@@ -236,19 +237,30 @@ public class ExternalMessageGrid extends FilteredGrid<ExternalMessageIndexDto, E
 		}
 	}
 
-	private Button buildDownloadButton(ExternalMessageIndexDto labMessage) {
+	private Button buildDownloadButton(ExternalMessageIndexDto externalMessageIndex) {
 		Button downloadButton = new Button(VaadinIcons.DOWNLOAD);
 		downloadButton.setDescription(I18nProperties.getString(Strings.headingExternalMessageDownload));
-		final String fileName =
-			String.format(XML_FILENAME_FORMAT, DataHelper.getShortUuid(labMessage.getUuid()), DateHelper.formatDateForExport(new Date()));
+
+		String fileName;
+		String mimeType;
+		if (externalMessageIndex.getType() == ExternalMessageType.SURVEY_RESPONSE) {
+			fileName = String
+				.format(SURVEY_FILENAME_FORMAT, DataHelper.getShortUuid(externalMessageIndex.getUuid()), DateHelper.formatDateForExport(new Date()));
+
+			mimeType = "application/json";
+		} else {
+			fileName = String
+				.format(XML_FILENAME_FORMAT, DataHelper.getShortUuid(externalMessageIndex.getUuid()), DateHelper.formatDateForExport(new Date()));
+			mimeType = "application/xml";
+		}
 
 		StreamResource streamResource = new StreamResource(
 			() -> ControllerProvider.getExternalMessageController()
-				.downloadExternalMessageAttachment(labMessage.getUuid())
+				.downloadExternalMessageAttachment(externalMessageIndex.getUuid())
 				.map(ByteArrayInputStream::new)
 				.orElse(null),
 			fileName);
-		streamResource.setMIMEType("application/xml");
+		streamResource.setMIMEType(mimeType);
 
 		FileDownloader fileDownloader = new FileDownloader(streamResource);
 		fileDownloader.extend(downloadButton);

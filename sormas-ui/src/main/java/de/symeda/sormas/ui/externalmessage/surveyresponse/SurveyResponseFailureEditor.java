@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -40,9 +41,11 @@ import de.symeda.sormas.api.patch.partial_retrieval.DisplayableFieldInfo;
 import de.symeda.sormas.api.patch.partial_retrieval.DisplayablePartialRetrievalResponse;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 /**
  * Modal editor window allowing users to correct failed survey response fields and reprocess.
+ * Each failed field can be ignored (excluded from reprocessing) or have its key renamed.
  */
 public class SurveyResponseFailureEditor extends Window {
 
@@ -76,7 +79,9 @@ public class SurveyResponseFailureEditor extends Window {
 			FormLayout failuresForm = new FormLayout();
 			failuresForm.setMargin(false);
 
-			Map<String, TextField> fieldEditors = new HashMap<>();
+			Map<String, CheckBox> ignoreCheckboxes = new HashMap<>();
+			Map<String, TextField> keyEditors = new HashMap<>();
+			Map<String, TextField> valueEditors = new HashMap<>();
 
 			for (Map.Entry<String, DataPatchFailure> entry : failures.entrySet()) {
 				String fieldPath = entry.getKey();
@@ -91,6 +96,11 @@ public class SurveyResponseFailureEditor extends Window {
 				fieldContainer.setMargin(false);
 				fieldContainer.setSpacing(false);
 
+				// Ignore checkbox
+				CheckBox ignoreCheckbox = new CheckBox(I18nProperties.getCaption(Captions.surveyResponseIgnoreField));
+				ignoreCheckboxes.put(fieldPath, ignoreCheckbox);
+				fieldContainer.addComponent(ignoreCheckbox);
+
 				Label causeLabel = new Label(I18nProperties.getCaption(Captions.surveyResponseFailureCause) + ": " + causeName);
 				CssStyles.style(causeLabel, CssStyles.LABEL_SMALL, CssStyles.LABEL_SECONDARY);
 				fieldContainer.addComponent(causeLabel);
@@ -100,14 +110,28 @@ public class SurveyResponseFailureEditor extends Window {
 				CssStyles.style(currentValueLabel, CssStyles.LABEL_SMALL, CssStyles.LABEL_SECONDARY);
 				fieldContainer.addComponent(currentValueLabel);
 
-				TextField valueField = new TextField();
-				valueField.setCaption(fieldLabel);
+				// Key rename field
+				TextField keyField = new TextField(I18nProperties.getCaption(Captions.surveyResponseKeyName));
+				keyField.setValue(fieldPath);
+				keyField.setWidth(100, Unit.PERCENTAGE);
+				keyEditors.put(fieldPath, keyField);
+				fieldContainer.addComponent(keyField);
+
+				// Value field
+				TextField valueField = new TextField(fieldLabel);
 				valueField.setWidth(100, Unit.PERCENTAGE);
 				if (failure.getProvidedFieldValue() != null) {
 					valueField.setValue(failure.getProvidedFieldValue().toString());
 				}
+				valueEditors.put(fieldPath, valueField);
 				fieldContainer.addComponent(valueField);
-				fieldEditors.put(fieldPath, valueField);
+
+				// Wire ignore checkbox to disable key/value fields
+				ignoreCheckbox.addValueChangeListener(event -> {
+					boolean ignored = Boolean.TRUE.equals(event.getValue());
+					keyField.setEnabled(!ignored);
+					valueField.setEnabled(!ignored);
+				});
 
 				failuresForm.addComponent(fieldContainer);
 			}
@@ -124,10 +148,12 @@ public class SurveyResponseFailureEditor extends Window {
 				FormLayout validForm = new FormLayout();
 				validForm.setMargin(true);
 
-				for (Map.Entry<String, Object> entry : validValues.entrySet()) {
-					String fieldPath = entry.getKey();
+				VaadinUiUtil.showWarningPopup(String.format("validValues: [%s]", validValues));
+
+				for (Map.Entry<String, Object> validEntry : validValues.entrySet()) {
+					String fieldPath = validEntry.getKey();
 					String fieldLabel = resolveFieldName(fieldPath, displayData);
-					Label label = new Label(entry.getValue() != null ? entry.getValue().toString() : "");
+					Label label = new Label(validEntry.getValue() != null ? validEntry.getValue().toString() : "");
 					label.setCaption(fieldLabel);
 					validForm.addComponent(label);
 				}
@@ -144,9 +170,16 @@ public class SurveyResponseFailureEditor extends Window {
 			Button saveAndReprocessButton =
 				ButtonHelper.createButton(Captions.actionSaveAndReprocess, I18nProperties.getCaption(Captions.actionSaveAndReprocess), e -> {
 					Map<String, Object> correctedDictionary = new HashMap<>(validValues);
-					for (Map.Entry<String, TextField> editorEntry : fieldEditors.entrySet()) {
-						String value = editorEntry.getValue().getValue();
-						correctedDictionary.put(editorEntry.getKey(), value);
+					for (String fieldPath : valueEditors.keySet()) {
+						CheckBox ignoreCheckbox = ignoreCheckboxes.get(fieldPath);
+						if (ignoreCheckbox != null && Boolean.TRUE.equals(ignoreCheckbox.getValue())) {
+							continue;
+						}
+						String key = keyEditors.get(fieldPath).getValue();
+						if (key == null || key.trim().isEmpty()) {
+							key = fieldPath;
+						}
+						correctedDictionary.put(key, valueEditors.get(fieldPath).getValue());
 					}
 
 					FacadeProvider.getExternalMessageFacade().reprocessSurveyResponse(externalMessage.getUuid(), correctedDictionary);

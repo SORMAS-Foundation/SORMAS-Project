@@ -5207,57 +5207,51 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.otherNeurolocalSymptomText = otherNeurolocalSymptomText;
 	}
 
+	public SymptomState getCoughingAtNight() {
+		return coughingAtNight;
+	}
+
+	public void setCoughingAtNight(SymptomState coughingAtNight) {
+		this.coughingAtNight = coughingAtNight;
+	}
+
 	public SymptomState getLossOfAppetite() {
 		return lossOfAppetite;
 	}
 
-	public SymptomsDto setLossOfAppetite(SymptomState lossOfAppetite) {
+	public void setLossOfAppetite(SymptomState lossOfAppetite) {
 		this.lossOfAppetite = lossOfAppetite;
-		return this;
 	}
 
 	public SymptomState getFlatulence() {
 		return flatulence;
 	}
 
-	public SymptomsDto setFlatulence(SymptomState flatulence) {
+	public void setFlatulence(SymptomState flatulence) {
 		this.flatulence = flatulence;
-		return this;
 	}
 
 	public SymptomState getSmellyBurps() {
 		return smellyBurps;
 	}
 
-	public SymptomsDto setSmellyBurps(SymptomState smellyBurps) {
+	public void setSmellyBurps(SymptomState smellyBurps) {
 		this.smellyBurps = smellyBurps;
-		return this;
 	}
 
 	public SymptomState getCoughingAttacks() {
 		return coughingAttacks;
 	}
 
-	public SymptomsDto setCoughingAttacks(SymptomState coughingAttacks) {
+	public void setCoughingAttacks(SymptomState coughingAttacks) {
 		this.coughingAttacks = coughingAttacks;
-		return this;
-	}
-
-	public SymptomState getCoughingAtNight() {
-		return coughingAtNight;
-	}
-
-	public SymptomsDto setCoughingAtNight(SymptomState coughingAtNight) {
-		this.coughingAtNight = coughingAtNight;
-		return this;
 	}
 
 	public SymptomState getAbdominalCramps() {
 		return abdominalCramps;
 	}
 
-	public SymptomsDto setAbdominalCramps(SymptomState abdominalCramps) {
+	public void setAbdominalCramps(SymptomState abdominalCramps) {
 		this.abdominalCramps = abdominalCramps;
-		return this;
 	}
 }
