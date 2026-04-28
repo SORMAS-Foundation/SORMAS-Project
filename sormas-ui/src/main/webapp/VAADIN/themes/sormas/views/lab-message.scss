@@ -5,6 +5,14 @@
     user-select: text;
   }
 
+  .lab-message-structured-view .v-customlayout {
+    min-width: 500px;
+  }
+
+  .lab-message-detailed-view .v-customlayout {
+    min-width: max-content;
+  }
+
   .lab-message-processable,
   .lab-message-slider {
     .lab-message-details {
@@ -20,6 +28,7 @@
   }
 
   .no-required-border {
+
     .v-textfield.v-required,
     .v-filterselect.v-required .v-filterselect-input,
     .v-customcomponent.v-required .v-datefield-textfield,
