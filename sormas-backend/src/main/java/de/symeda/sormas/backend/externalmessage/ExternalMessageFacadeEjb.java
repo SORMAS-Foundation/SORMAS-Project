@@ -318,7 +318,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 		if (since == null) { // TODO: use shorter default range
 			int hoursRange =
-				Integer.parseInt(Optional.ofNullable(systemConfigurationValueFacade.getValue(SURVEY_PERIOD_INTERVAL_HOURS)).orElse("1680"));
+				Integer.parseInt(Optional.ofNullable(systemConfigurationValueFacade.getValue(SURVEY_PERIOD_INTERVAL_HOURS)).orElse("50000"));
 
 			since = DateHelper.addSeconds(new Date(), -(hoursRange * 3600));
 		}

@@ -20,13 +20,7 @@ import java.util.stream.Collectors;
 
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Sizeable;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Grid;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Link;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
+import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -100,9 +94,6 @@ public class SurveyResponseDetailsWindow {
 			dictionaryGrid.setItems(entries);
 			dictionaryGrid.setHeightByRows(Math.max(entries.size(), 1));
 
-			// VaadinUiUtil.showWarningPopup(String.format("Entries: [%s]", entries));
-			// VaadinUiUtil.showWarningPopup(String.format("finalDisplayData: [%s]", finalDisplayData));
-
 			dictionaryGrid.addColumn(entry -> resolveFieldName(entry.getKey(), finalDisplayData))
 				.setCaption(I18nProperties.getCaption(Captions.surveyResponseField))
 				.setExpandRatio(2);
@@ -113,6 +104,33 @@ public class SurveyResponseDetailsWindow {
 
 			dictionaryGrid.addColumn(entry -> resolveCurrentValue(entry.getKey(), finalDisplayData))
 				.setCaption(I18nProperties.getCaption(Captions.surveyResponseCurrentCaseValue))
+				.setExpandRatio(2);
+
+			layout.addComponent(dictionaryGrid);
+		}
+
+		// --- Ignored patch dictionary Patch Dictionary section ---
+		Label excludedFieldsDictionaryLabel = new Label(I18nProperties.getCaption(Captions.surveyResponseExcludedFieldsDictionary));
+		CssStyles.style(excludedFieldsDictionaryLabel, CssStyles.H3);
+		layout.addComponent(excludedFieldsDictionaryLabel);
+
+		Map<String, Object> excludedFieldsDictionary = request.getExcludedPatchDictionary();
+		if (excludedFieldsDictionary != null && !excludedFieldsDictionary.isEmpty()) {
+			List<Map.Entry<String, Object>> entries = excludedFieldsDictionary.entrySet().stream().collect(Collectors.toList());
+
+			final DisplayablePartialRetrievalResponse finalDisplayData = displayData;
+
+			Grid<Map.Entry<String, Object>> dictionaryGrid = new Grid<>();
+			dictionaryGrid.setSizeFull();
+			dictionaryGrid.setItems(entries);
+			dictionaryGrid.setHeightByRows(Math.max(entries.size(), 1));
+
+			dictionaryGrid.addColumn(entry -> resolveFieldName(entry.getKey(), finalDisplayData))
+				.setCaption(I18nProperties.getCaption(Captions.surveyResponseField))
+				.setExpandRatio(2);
+
+			dictionaryGrid.addColumn(entry -> entry.getValue() != null ? entry.getValue().toString() : "")
+				.setCaption(I18nProperties.getCaption(Captions.surveyResponseSubmittedValue))
 				.setExpandRatio(2);
 
 			layout.addComponent(dictionaryGrid);

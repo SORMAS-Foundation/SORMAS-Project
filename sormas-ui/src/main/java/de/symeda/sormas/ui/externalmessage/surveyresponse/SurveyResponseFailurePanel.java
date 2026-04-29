@@ -59,14 +59,14 @@ public class SurveyResponseFailurePanel extends VerticalLayout {
 			.setId("cause")
 			.setExpandRatio(2);
 
-		grid.addColumn(entry -> resolveCurrentValue(entry.getKey(), displayData))
-			.setCaption(I18nProperties.getCaption(Captions.surveyResponseCurrentCaseValue))
-			.setId("currentValue")
-			.setExpandRatio(2);
-
 		grid.addColumn(entry -> entry.getValue().getProvidedFieldValue() != null ? entry.getValue().getProvidedFieldValue().toString() : "")
 			.setCaption(I18nProperties.getCaption(Captions.surveyResponseSubmittedValue))
 			.setId("submittedValue")
+			.setExpandRatio(2);
+
+		grid.addColumn(entry -> resolveCurrentValue(entry.getKey(), displayData))
+			.setCaption(I18nProperties.getCaption(Captions.surveyResponseCurrentCaseValue))
+			.setId("currentValue")
 			.setExpandRatio(2);
 
 		grid.addColumn(entry -> entry.getValue().getDescription() != null ? entry.getValue().getDescription() : "")

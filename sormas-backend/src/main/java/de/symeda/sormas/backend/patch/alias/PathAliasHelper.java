@@ -34,6 +34,9 @@ public class PathAliasHelper {
 
 	public static final Map<String, String> DEFAULT_ALIAS_DICTIONARY = buildDefaultAliasDictionary();
 
+	/**
+	 * Can be used as OUT: for displaying purposes but not for in.
+	 */
 	public static final Map<String, Set<String>> DEFAULT_FORBIDDEN_ALIASES_DICTIONARY =
 		Map.of("Location", Set.of("Person.address", "Exposure.location"));
 
@@ -96,7 +99,8 @@ public class PathAliasHelper {
 	 * Objective is to retrieve a path WITH an alias to get the Field ID as in the data dictionary.
 	 *
 	 * @param pathWithoutAlias
-	 * @return
+	 *            field that may or may not contain a "physical-path" that must be "shortened" to the Field ID.
+	 * @return path that is "shortened" to a path using the Field ID (alias).
 	 */
 	public String toAliasPath(String pathWithoutAlias) {
 		Set<Map.Entry<String, String>> reduce = Stream.concat(

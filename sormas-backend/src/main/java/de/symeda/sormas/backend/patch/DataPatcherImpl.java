@@ -1,12 +1,6 @@
 package de.symeda.sormas.backend.patch;
 
-import java.util.AbstractMap;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -28,20 +22,8 @@ import com.google.common.base.Suppliers;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.patch.CaseDataPatchRequest;
-import de.symeda.sormas.api.patch.DataPatchFailure;
-import de.symeda.sormas.api.patch.DataPatchFailureCause;
-import de.symeda.sormas.api.patch.DataPatchResponse;
-import de.symeda.sormas.api.patch.DataPatcher;
-import de.symeda.sormas.api.patch.DataReplacementStrategy;
-import de.symeda.sormas.api.patch.EmptyValueBehavior;
-import de.symeda.sormas.api.patch.SinglePatchResult;
-import de.symeda.sormas.api.patch.mapping.FieldCustomMapper;
-import de.symeda.sormas.api.patch.mapping.FieldPatchRequest;
-import de.symeda.sormas.api.patch.mapping.GroupedFieldsRequest;
-import de.symeda.sormas.api.patch.mapping.GroupedFieldsResponse;
-import de.symeda.sormas.api.patch.mapping.ValueMappingResult;
-import de.symeda.sormas.api.patch.mapping.ValuePatchRequest;
+import de.symeda.sormas.api.patch.*;
+import de.symeda.sormas.api.patch.mapping.*;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.Tuple;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -291,9 +273,11 @@ public class DataPatcherImpl implements DataPatcher {
 
 		Optional<Exception> exception = PropertyAccessor.setNestedProperty(target, relativeFieldName, typedValue);
 		if (exception.isPresent()) {
+			Exception e = exception.orElseThrow();
+			logger.error("Setting nested property failed", e);
 			return singlePatchResult.setFailure(
 				new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.TECHNICAL)
-					.setDescription(exception.orElseThrow().getMessage())
+					.setDescription(e.getMessage())
 					.setProvidedFieldValue(untypedTargetValue));
 		} else {
 			return singlePatchResult.setValue(untypedTargetValue);

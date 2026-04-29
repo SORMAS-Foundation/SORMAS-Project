@@ -2038,6 +2038,7 @@ public interface Captions {
 	String surveyResponseApplied = "surveyResponseApplied";
 	String surveyResponseMetadata = "surveyResponseMetadata";
 	String surveyResponsePatchDictionary = "surveyResponsePatchDictionary";
+	String surveyResponseExcludedFieldsDictionary = "surveyResponseExcludedFieldsDictionary";
 	String surveyResponseProcessingResult = "surveyResponseProcessingResult";
 	String surveyResponseValidFields = "surveyResponseValidFields";
 	String surveyResponseIgnoreField = "surveyResponseIgnoreField";

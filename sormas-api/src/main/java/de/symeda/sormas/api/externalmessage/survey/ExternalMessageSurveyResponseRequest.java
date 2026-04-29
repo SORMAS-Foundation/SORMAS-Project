@@ -46,6 +46,13 @@ public class ExternalMessageSurveyResponseRequest implements Serializable {
 	private Map<String, Object> patchDictionary;
 
 	/**
+	 * Contains fields that were excluded from the patch dictionary, meant for fields that may not start with the prefix.
+	 * The prefix allows to safely exclude fields that are not meant to be mapped into SORMAS.
+	 */
+	@NotNull
+	private Map<String, Object> excludedPatchDictionary;
+
+	/**
 	 * Origin that wants the patch operation.
 	 * Can be used within {@link de.symeda.sormas.api.patch.mapping.FieldCustomMapper}.
 	 */
@@ -180,6 +187,15 @@ public class ExternalMessageSurveyResponseRequest implements Serializable {
 		return this;
 	}
 
+	public Map<String, Object> getExcludedPatchDictionary() {
+		return excludedPatchDictionary;
+	}
+
+	public ExternalMessageSurveyResponseRequest setExcludedPatchDictionary(Map<String, Object> excludedPatchDictionary) {
+		this.excludedPatchDictionary = excludedPatchDictionary;
+		return this;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (o == null || getClass() != o.getClass())
@@ -195,6 +211,7 @@ public class ExternalMessageSurveyResponseRequest implements Serializable {
 			&& replacementStrategy == that.replacementStrategy
 			&& emptyValueBehavior == that.emptyValueBehavior
 			&& Objects.equals(patchDictionary, that.patchDictionary)
+			&& Objects.equals(excludedPatchDictionary, that.excludedPatchDictionary)
 			&& Objects.equals(origin, that.origin)
 			&& Objects.equals(inputLanguages, that.inputLanguages);
 	}
@@ -210,6 +227,7 @@ public class ExternalMessageSurveyResponseRequest implements Serializable {
 			replacementStrategy,
 			emptyValueBehavior,
 			patchDictionary,
+			excludedPatchDictionary,
 			origin,
 			inputLanguages,
 			allowFallbackValues,
@@ -221,7 +239,8 @@ public class ExternalMessageSurveyResponseRequest implements Serializable {
 		return "ExternalMessageSurveyResponseRequest{" + "token='" + token + '\'' + ", externalSurveyId='" + externalSurveyId + '\''
 			+ ", externalRespondentId='" + externalRespondentId + '\'' + ", responseReceivedDate=" + responseReceivedDate
 			+ ", patchedInCaseOfFailures=" + patchedInCaseOfFailures + ", replacementStrategy=" + replacementStrategy + ", emptyValueBehavior="
-			+ emptyValueBehavior + ", patchDictionary=" + patchDictionary + ", origin='" + origin + '\'' + ", inputLanguages=" + inputLanguages
-			+ ", allowFallbackValues=" + allowFallbackValues + ", skipIfAlreadyProcessed=" + skipIfAlreadyProcessed + '}';
+			+ emptyValueBehavior + ", patchDictionary=" + patchDictionary + ", excludedPatchDictionary=" + excludedPatchDictionary + ", origin='"
+			+ origin + '\'' + ", inputLanguages=" + inputLanguages + ", allowFallbackValues=" + allowFallbackValues + ", skipIfAlreadyProcessed="
+			+ skipIfAlreadyProcessed + '}';
 	}
 }
