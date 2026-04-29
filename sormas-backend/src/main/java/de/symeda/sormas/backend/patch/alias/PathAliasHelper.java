@@ -98,11 +98,11 @@ public class PathAliasHelper {
 	/**
 	 * Objective is to retrieve a path WITH an alias to get the Field ID as in the data dictionary.
 	 *
-	 * @param pathWithoutAlias
+	 * @param path
 	 *            field that may or may not contain a "physical-path" that must be "shortened" to the Field ID.
 	 * @return path that is "shortened" to a path using the Field ID (alias).
 	 */
-	public String toAliasPath(String pathWithoutAlias) {
+	public String toAliasPath(String path) {
 		Set<Map.Entry<String, String>> reduce = Stream.concat(
 			DEFAULT_ALIAS_DICTIONARY.entrySet().stream(),
 			DEFAULT_FORBIDDEN_ALIASES_DICTIONARY.entrySet()
@@ -111,14 +111,14 @@ public class PathAliasHelper {
 			.collect(Collectors.toSet());
 
 		for (Map.Entry<String, String> entry : reduce) {
-			pathWithoutAlias = pathWithoutAlias.replace(entry.getValue(), entry.getKey());
+			path = path.replace(entry.getValue(), entry.getKey());
 		}
 
 		for (Map.Entry<String, String> entry : REFERENCE_TO_ROOT_DICTIONARY.entrySet()) {
-			pathWithoutAlias = pathWithoutAlias.replace(entry.getKey(), entry.getValue());
+			path = path.replace(entry.getKey(), entry.getValue());
 		}
 
-		return pathWithoutAlias;
+		return path;
 	}
 
 	private static @NotNull Tuple<String, PathFailureCause> tupleWithFailure(PathFailureCause forbiddenNonUniqueAlias) {

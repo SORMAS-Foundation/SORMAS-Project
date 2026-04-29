@@ -19,16 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.Grid;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
+import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -202,22 +193,22 @@ public class SurveyResponseFailureEditor extends Window {
 		setContent(mainLayout);
 	}
 
-	private String resolveFieldName(String fieldPath, DisplayablePartialRetrievalResponse displayData) {
-		if (displayData != null) {
-			DisplayableFieldInfo info = displayData.getFieldInfoDictionary().get(fieldPath);
-			if (info != null && info.getTranslatedFieldName() != null) {
-				return info.getTranslatedFieldName();
+	public String resolveFieldName(String fieldPath, DisplayablePartialRetrievalResponse displayData) {
+		DisplayableFieldInfo info = displayData.getFieldInfoDictionary().get(fieldPath);
+		String aliasPath = FacadeProvider.getPathAliasFacade().toAliasPath(fieldPath);
+		if (info != null) {
+			String translatedFieldName = info.getTranslatedFieldName();
+			if (translatedFieldName != null) {
+				return String.format("%s (%s)", translatedFieldName, aliasPath);
 			}
 		}
-		return fieldPath;
+		return aliasPath;
 	}
 
 	private String resolveCurrentValue(String fieldPath, DisplayablePartialRetrievalResponse displayData) {
-		if (displayData != null) {
-			DisplayableFieldInfo info = displayData.getFieldInfoDictionary().get(fieldPath);
-			if (info != null) {
-				return info.getTranslatedFieldValue();
-			}
+		DisplayableFieldInfo info = displayData.getFieldInfoDictionary().get(fieldPath);
+		if (info != null) {
+			return info.getTranslatedFieldValue();
 		}
 		return null;
 	}

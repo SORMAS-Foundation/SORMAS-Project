@@ -202,21 +202,24 @@ public class SurveyResponseDetailsWindow {
 		layout.addComponent(label);
 	}
 
-	private String resolveFieldName(String fieldPath, DisplayablePartialRetrievalResponse displayData) {
-		if (displayData != null) {
-			DisplayableFieldInfo info = displayData.getFieldInfoDictionary().get(fieldPath);
-			if (info != null && info.getTranslatedFieldName() != null) {
-				return info.getTranslatedFieldName();
+	public String resolveFieldName(String fieldPath, DisplayablePartialRetrievalResponse displayData) {
+		DisplayableFieldInfo info = displayData.getFieldInfoDictionary().get(fieldPath);
+		String aliasPath = FacadeProvider.getPathAliasFacade().toAliasPath(fieldPath);
+		if (info != null) {
+			String translatedFieldName = info.getTranslatedFieldName();
+			if (translatedFieldName != null) {
+				return String.format("%s (%s)", translatedFieldName, aliasPath);
 			}
 		}
-		return fieldPath;
+		return aliasPath;
 	}
 
 	private String resolveCurrentValue(String fieldPath, DisplayablePartialRetrievalResponse displayData) {
-		if (displayData != null) {
-			DisplayableFieldInfo info = displayData.getFieldInfoDictionary().get(fieldPath);
-			if (info != null && info.getTranslatedFieldValue() != null) {
-				return info.getTranslatedFieldValue();
+		DisplayableFieldInfo info = displayData.getFieldInfoDictionary().get(fieldPath);
+		if (info != null) {
+			String translatedFieldValue = info.getTranslatedFieldValue();
+			if (translatedFieldValue != null) {
+				return translatedFieldValue;
 			}
 		}
 		return "";
