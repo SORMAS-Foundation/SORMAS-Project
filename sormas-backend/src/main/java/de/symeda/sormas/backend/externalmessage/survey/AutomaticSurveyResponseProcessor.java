@@ -118,7 +118,6 @@ public class AutomaticSurveyResponseProcessor {
 			}
 
 			externalMessage.setStatus(ExternalMessageStatus.PROCESSED);
-			processingFacade.saveExternalMessage(externalMessage);
 
 			return surveyResponseProcessingResult.setResultStatus(ProcessingResultStatus.DONE);
 
