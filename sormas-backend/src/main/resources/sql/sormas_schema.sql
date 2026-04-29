@@ -15513,11 +15513,11 @@ ALTER TABLE testreport ADD COLUMN IF NOT EXISTS serotypetext varchar(255);
 UPDATE testreport  SET serotypetext = serotype, serotype = 'OTHER' WHERE serotype IS NOT null   and serotypetext is null;
 DO $$
 BEGIN
-    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport' AND column_name = 'genotyperesult') 
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport' AND column_name = 'genotyperesult')
         AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport' AND column_name = 'genotype') THEN
         ALTER TABLE testreport RENAME COLUMN genotyperesult TO genotype;
     END IF;
-    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport' AND column_name = 'genotyperesulttext') 
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport' AND column_name = 'genotyperesulttext')
         AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport' AND column_name = 'genotypetext') THEN
         ALTER TABLE testreport RENAME COLUMN genotyperesulttext TO genotypetext;
     END IF;
@@ -15527,11 +15527,11 @@ ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS serotypetext varchar(255
 UPDATE testreport_history  SET serotypetext = serotype, serotype = 'OTHER' WHERE serotype IS NOT null   and serotypetext is null;
 DO $$
 BEGIN
-    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport_history' AND column_name = 'genotyperesult') 
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport_history' AND column_name = 'genotyperesult')
         AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport_history' AND column_name = 'genotype') THEN
         ALTER TABLE testreport_history RENAME COLUMN genotyperesult TO genotype;
     END IF;
-    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport_history' AND column_name = 'genotyperesulttext') 
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport_history' AND column_name = 'genotyperesulttext')
         AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport_history' AND column_name = 'genotypetext') THEN
         ALTER TABLE testreport_history RENAME COLUMN genotyperesulttext TO genotypetext;
     END IF;
@@ -15598,20 +15598,20 @@ CREATE TABLE IF NOT EXISTS customizablefieldmetadata (
 
     change_user_id     bigint,
     sys_period tstzrange NOT NULL,
-    
+
     PRIMARY KEY (id),
     UNIQUE(name, contextClass)
 );
 
-CREATE INDEX idx_customizablefieldmetadata_uuid 
+CREATE INDEX idx_customizablefieldmetadata_uuid
     ON customizablefieldmetadata (uuid);
-CREATE INDEX idx_customizablefieldmetadata_contextClass 
+CREATE INDEX idx_customizablefieldmetadata_contextClass
     ON customizablefieldmetadata (contextClass);
-CREATE INDEX idx_customizablefieldmetadata_uiGroup 
+CREATE INDEX idx_customizablefieldmetadata_uiGroup
     ON customizablefieldmetadata (uiGroup);
-CREATE INDEX idx_customizablefieldmetadata_active 
+CREATE INDEX idx_customizablefieldmetadata_active
     ON customizablefieldmetadata (active);
-CREATE INDEX idx_customizablefieldmetadata_deleted 
+CREATE INDEX idx_customizablefieldmetadata_deleted
     ON customizablefieldmetadata (deleted);
 
 ALTER TABLE customizablefieldmetadata OWNER TO sormas_user;
@@ -15662,20 +15662,20 @@ CREATE TABLE IF NOT EXISTS customizablefieldvalue (
 
     change_user_id     bigint,
     sys_period tstzrange NOT NULL,
-    
+
     PRIMARY KEY (id),
     UNIQUE(customizablefieldmetadata_id, entityUuid, contextClass)
 );
 
-CREATE INDEX idx_customizablefieldvalue_uuid 
+CREATE INDEX idx_customizablefieldvalue_uuid
     ON customizablefieldvalue (uuid);
-CREATE INDEX idx_customizablefieldvalue_entityUuid 
+CREATE INDEX idx_customizablefieldvalue_entityUuid
     ON customizablefieldvalue (entityUuid);
-CREATE INDEX idx_customizablefieldvalue_contextEntity 
+CREATE INDEX idx_customizablefieldvalue_contextEntity
     ON customizablefieldvalue (contextClass, entityUuid);
-CREATE INDEX idx_customizablefieldvalue_fieldMetadata 
+CREATE INDEX idx_customizablefieldvalue_fieldMetadata
     ON customizablefieldvalue (customizablefieldmetadata_id);
-CREATE INDEX idx_customizablefieldvalue_deleted 
+CREATE INDEX idx_customizablefieldvalue_deleted
     ON customizablefieldvalue (deleted);
 
 ALTER TABLE customizablefieldvalue ADD CONSTRAINT fk_change_user_id FOREIGN KEY (change_user_id) REFERENCES users (id);
@@ -15822,4 +15822,19 @@ ALTER TABLE externalmessage_history ADD COLUMN healthcareprofessional varchar(25
 ALTER TABLE externalmessage_history ADD COLUMN modeoftransmission varchar(255);
 ALTER TABLE externalmessage_history ADD column modeoftransmissiontype varchar(255);
 INSERT INTO schema_version (version_number, comment) VALUES (624, '#13838, #13837, #13835, #13836  - Malaria and Dengue Doctors declaration and lab messages changes');
+
+-- 2026-04-27 Salmonellosis disease configuration (Luxembourg) #13915
+-- The diseaseconfiguration row for SALMONELLOSIS is created by createMissingDiseaseConfigurations() at startup,
+-- which runs after this migration. Insert a row up-front so the UPDATE applies on the first deployment.
+INSERT INTO diseaseconfiguration (id, uuid, changedate, creationdate, disease)
+SELECT nextval('entity_seq'),
+       upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)),
+       now(), now(), 'SALMONELLOSIS'
+WHERE NOT EXISTS (SELECT 1 FROM diseaseconfiguration WHERE disease = 'SALMONELLOSIS');
+
+UPDATE diseaseconfiguration
+   SET exposurecategories = 'FOOD_BORNE,WATER_BORNE,ANIMAL_CONTACT,DIRECT_CONTACT'
+ WHERE disease = 'SALMONELLOSIS';
+
+INSERT INTO schema_version (version_number, comment) VALUES (625, '#13915 - Salmonellosis disease configuration');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
