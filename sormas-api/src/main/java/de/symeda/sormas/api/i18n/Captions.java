@@ -336,9 +336,11 @@ public interface Captions {
 	String AefiInvestigation_aefiClassificationDetails = "AefiInvestigation.aefiClassificationDetails";
 	String AefiInvestigation_aefiClassificationSubType = "AefiInvestigation.aefiClassificationSubType";
 	String AefiInvestigation_allCasesInClusterReceivedVaccineFromSameVial = "AefiInvestigation.allCasesInClusterReceivedVaccineFromSameVial";
-	String AefiInvestigation_allCasesInClusterReceivedVaccineFromSameVialDetails = "AefiInvestigation.allCasesInClusterReceivedVaccineFromSameVialDetails";
+	String AefiInvestigation_allCasesInClusterReceivedVaccineFromSameVialDetails =
+		"AefiInvestigation.allCasesInClusterReceivedVaccineFromSameVialDetails";
 	String AefiInvestigation_anyOtherItemInRefrigerator = "AefiInvestigation.anyOtherItemInRefrigerator";
-	String AefiInvestigation_anyStorageTemperatureDeviationOutsideTwoToEightDegrees = "AefiInvestigation.anyStorageTemperatureDeviationOutsideTwoToEightDegrees";
+	String AefiInvestigation_anyStorageTemperatureDeviationOutsideTwoToEightDegrees =
+		"AefiInvestigation.anyStorageTemperatureDeviationOutsideTwoToEightDegrees";
 	String AefiInvestigation_autopsyDate = "AefiInvestigation.autopsyDate";
 	String AefiInvestigation_autopsyDone = "AefiInvestigation.autopsyDone";
 	String AefiInvestigation_autopsyPlannedDateTime = "AefiInvestigation.autopsyPlannedDateTime";
@@ -374,7 +376,8 @@ public interface Captions {
 	String AefiInvestigation_errorPrescribingVaccine = "AefiInvestigation.errorPrescribingVaccine";
 	String AefiInvestigation_errorPrescribingVaccineDetails = "AefiInvestigation.errorPrescribingVaccineDetails";
 	String AefiInvestigation_eventIsAStressResponseRelatedToImmunization = "AefiInvestigation.eventIsAStressResponseRelatedToImmunization";
-	String AefiInvestigation_eventIsAStressResponseRelatedToImmunizationDetails = "AefiInvestigation.eventIsAStressResponseRelatedToImmunizationDetails";
+	String AefiInvestigation_eventIsAStressResponseRelatedToImmunizationDetails =
+		"AefiInvestigation.eventIsAStressResponseRelatedToImmunizationDetails";
 	String AefiInvestigation_externalId = "AefiInvestigation.externalId";
 	String AefiInvestigation_familyHistoryOfDiseaseOrAllergy = "AefiInvestigation.familyHistoryOfDiseaseOrAllergy";
 	String AefiInvestigation_familyHistoryOfDiseaseOrAllergyDetails = "AefiInvestigation.familyHistoryOfDiseaseOrAllergyDetails";
@@ -382,8 +385,10 @@ public interface Captions {
 	String AefiInvestigation_formCompletionDate = "AefiInvestigation.formCompletionDate";
 	String AefiInvestigation_historyOfAllergyToVaccineDrugOrFood = "AefiInvestigation.historyOfAllergyToVaccineDrugOrFood";
 	String AefiInvestigation_historyOfAllergyToVaccineDrugOrFoodDetails = "AefiInvestigation.historyOfAllergyToVaccineDrugOrFoodDetails";
-	String AefiInvestigation_historyOfHospitalizationInLastThirtyDaysWithCause = "AefiInvestigation.historyOfHospitalizationInLastThirtyDaysWithCause";
-	String AefiInvestigation_historyOfHospitalizationInLastThirtyDaysWithCauseDetails = "AefiInvestigation.historyOfHospitalizationInLastThirtyDaysWithCauseDetails";
+	String AefiInvestigation_historyOfHospitalizationInLastThirtyDaysWithCause =
+		"AefiInvestigation.historyOfHospitalizationInLastThirtyDaysWithCause";
+	String AefiInvestigation_historyOfHospitalizationInLastThirtyDaysWithCauseDetails =
+		"AefiInvestigation.historyOfHospitalizationInLastThirtyDaysWithCauseDetails";
 	String AefiInvestigation_hospitalizationDate = "AefiInvestigation.hospitalizationDate";
 	String AefiInvestigation_injectionTechniqueAdditionalDetails = "AefiInvestigation.injectionTechniqueAdditionalDetails";
 	String AefiInvestigation_investigationCaseId = "AefiInvestigation.investigationCaseId";
@@ -395,13 +400,17 @@ public interface Captions {
 	String AefiInvestigation_keySymptomDateTime = "AefiInvestigation.keySymptomDateTime";
 	String AefiInvestigation_lastTrainingReceivedByVaccinatorDate = "AefiInvestigation.lastTrainingReceivedByVaccinatorDate";
 	String AefiInvestigation_nonTouchTechniqueFollowed = "AefiInvestigation.nonTouchTechniqueFollowed";
-	String AefiInvestigation_numberImmunizedConcernedVaccineSameBatchNumberLocationDetails = "AefiInvestigation.numberImmunizedConcernedVaccineSameBatchNumberLocationDetails";
-	String AefiInvestigation_numberImmunizedConcernedVaccineSameBatchNumberOtherLocations = "AefiInvestigation.numberImmunizedConcernedVaccineSameBatchNumberOtherLocations";
+	String AefiInvestigation_numberImmunizedConcernedVaccineSameBatchNumberLocationDetails =
+		"AefiInvestigation.numberImmunizedConcernedVaccineSameBatchNumberLocationDetails";
+	String AefiInvestigation_numberImmunizedConcernedVaccineSameBatchNumberOtherLocations =
+		"AefiInvestigation.numberImmunizedConcernedVaccineSameBatchNumberOtherLocations";
 	String AefiInvestigation_numberImmunizedFromConcernedVaccineVial = "AefiInvestigation.numberImmunizedFromConcernedVaccineVial";
 	String AefiInvestigation_numberImmunizedWithConcernedVaccineInSameSession = "AefiInvestigation.numberImmunizedWithConcernedVaccineInSameSession";
-	String AefiInvestigation_numberOfAefiReportedFromVaccineDistributionCenterLastThirtyDays = "AefiInvestigation.numberOfAefiReportedFromVaccineDistributionCenterLastThirtyDays";
+	String AefiInvestigation_numberOfAefiReportedFromVaccineDistributionCenterLastThirtyDays =
+		"AefiInvestigation.numberOfAefiReportedFromVaccineDistributionCenterLastThirtyDays";
 	String AefiInvestigation_numberOfCasesDetectedInCluster = "AefiInvestigation.numberOfCasesDetectedInCluster";
-	String AefiInvestigation_numberOfSimilarEventsReportedSamePeriodAndLocality = "AefiInvestigation.numberOfSimilarEventsReportedSamePeriodAndLocality";
+	String AefiInvestigation_numberOfSimilarEventsReportedSamePeriodAndLocality =
+		"AefiInvestigation.numberOfSimilarEventsReportedSamePeriodAndLocality";
 	String AefiInvestigation_numberOfThoseAffectedNotVaccinated = "AefiInvestigation.numberOfThoseAffectedNotVaccinated";
 	String AefiInvestigation_numberOfThoseAffectedVaccinated = "AefiInvestigation.numberOfThoseAffectedVaccinated";
 	String AefiInvestigation_numberOfThoseAffectedVaccinatedUnknown = "AefiInvestigation.numberOfThoseAffectedVaccinatedUnknown";
@@ -422,7 +431,8 @@ public interface Captions {
 	String AefiInvestigation_placeOfVaccination = "AefiInvestigation.placeOfVaccination";
 	String AefiInvestigation_placeOfVaccinationDetails = "AefiInvestigation.placeOfVaccinationDetails";
 	String AefiInvestigation_preExistingIllnessThirtyDaysOrCongenitalDisorder = "AefiInvestigation.preExistingIllnessThirtyDaysOrCongenitalDisorder";
-	String AefiInvestigation_preExistingIllnessThirtyDaysOrCongenitalDisorderDetails = "AefiInvestigation.preExistingIllnessThirtyDaysOrCongenitalDisorderDetails";
+	String AefiInvestigation_preExistingIllnessThirtyDaysOrCongenitalDisorderDetails =
+		"AefiInvestigation.preExistingIllnessThirtyDaysOrCongenitalDisorderDetails";
 	String AefiInvestigation_provisionalOrFinalDiagnosis = "AefiInvestigation.provisionalOrFinalDiagnosis";
 	String AefiInvestigation_reconstitutionAdditionalDetails = "AefiInvestigation.reconstitutionAdditionalDetails";
 	String AefiInvestigation_reportDate = "AefiInvestigation.reportDate";
@@ -442,14 +452,17 @@ public interface Captions {
 	String AefiInvestigation_responsibleRegion = "AefiInvestigation.responsibleRegion";
 	String AefiInvestigation_sameReconstitutionSyringeForEachVaccination = "AefiInvestigation.sameReconstitutionSyringeForEachVaccination";
 	String AefiInvestigation_sameReconstitutionSyringeForEachVaccineVial = "AefiInvestigation.sameReconstitutionSyringeForEachVaccineVial";
-	String AefiInvestigation_sameReconstitutionSyringeUsedForMultipleVialsOfSameVaccine = "AefiInvestigation.sameReconstitutionSyringeUsedForMultipleVialsOfSameVaccine";
-	String AefiInvestigation_sameReconstitutionSyringeUsedForReconstitutingDifferentVaccines = "AefiInvestigation.sameReconstitutionSyringeUsedForReconstitutingDifferentVaccines";
+	String AefiInvestigation_sameReconstitutionSyringeUsedForMultipleVialsOfSameVaccine =
+		"AefiInvestigation.sameReconstitutionSyringeUsedForMultipleVialsOfSameVaccine";
+	String AefiInvestigation_sameReconstitutionSyringeUsedForReconstitutingDifferentVaccines =
+		"AefiInvestigation.sameReconstitutionSyringeUsedForReconstitutingDifferentVaccines";
 	String AefiInvestigation_seriousAefiInfoSource = "AefiInvestigation.seriousAefiInfoSource";
 	String AefiInvestigation_seriousAefiInfoSourceDetails = "AefiInvestigation.seriousAefiInfoSourceDetails";
 	String AefiInvestigation_seriousAefiVerbalAutopsyInfoSourceDetails = "AefiInvestigation.seriousAefiVerbalAutopsyInfoSourceDetails";
 	String AefiInvestigation_signsAndSymptomsFromTimeOfVaccination = "AefiInvestigation.signsAndSymptomsFromTimeOfVaccination";
 	String AefiInvestigation_similarEventsReportedSamePeriodAndLocality = "AefiInvestigation.similarEventsReportedSamePeriodAndLocality";
-	String AefiInvestigation_similarEventsReportedSamePeriodAndLocalityDetails = "AefiInvestigation.similarEventsReportedSamePeriodAndLocalityDetails";
+	String AefiInvestigation_similarEventsReportedSamePeriodAndLocalityDetails =
+		"AefiInvestigation.similarEventsReportedSamePeriodAndLocalityDetails";
 	String AefiInvestigation_statusOnDateOfInvestigation = "AefiInvestigation.statusOnDateOfInvestigation";
 	String AefiInvestigation_storageTemperatureMonitoringAdditionalDetails = "AefiInvestigation.storageTemperatureMonitoringAdditionalDetails";
 	String AefiInvestigation_syringesUsedAdditionalDetails = "AefiInvestigation.syringesUsedAdditionalDetails";
@@ -468,7 +481,8 @@ public interface Captions {
 	String AefiInvestigation_vaccinationFacilityDetails = "AefiInvestigation.vaccinationFacilityDetails";
 	String AefiInvestigation_vaccineAdministeredIncorrectly = "AefiInvestigation.vaccineAdministeredIncorrectly";
 	String AefiInvestigation_vaccineAdministeredIncorrectlyDetails = "AefiInvestigation.vaccineAdministeredIncorrectlyDetails";
-	String AefiInvestigation_vaccineCarrierReturnedFromSiteOnSameDateAsVaccination = "AefiInvestigation.vaccineCarrierReturnedFromSiteOnSameDateAsVaccination";
+	String AefiInvestigation_vaccineCarrierReturnedFromSiteOnSameDateAsVaccination =
+		"AefiInvestigation.vaccineCarrierReturnedFromSiteOnSameDateAsVaccination";
 	String AefiInvestigation_vaccineCarrierSentToSiteOnSameDateAsVaccination = "AefiInvestigation.vaccineCarrierSentToSiteOnSameDateAsVaccination";
 	String AefiInvestigation_vaccineCarrierType = "AefiInvestigation.vaccineCarrierType";
 	String AefiInvestigation_vaccineCarrierTypeDetails = "AefiInvestigation.vaccineCarrierTypeDetails";
@@ -1611,6 +1625,8 @@ public interface Captions {
 	String EpiData = "EpiData";
 	String EpiData_activitiesAsCase = "EpiData.activitiesAsCase";
 	String EpiData_activityAsCaseDetailsKnown = "EpiData.activityAsCaseDetailsKnown";
+	String EpiData_activityAsCaseFromDate = "EpiData.activityAsCaseFromDate";
+	String EpiData_activityAsCaseToDate = "EpiData.activityAsCaseToDate";
 	String EpiData_airportWorker = "EpiData.airportWorker";
 	String EpiData_areaInfectedAnimals = "EpiData.areaInfectedAnimals";
 	String EpiData_caseImportedStatus = "EpiData.caseImportedStatus";
@@ -1620,6 +1636,8 @@ public interface Captions {
 	String EpiData_contactWithSourceCaseKnown = "EpiData.contactWithSourceCaseKnown";
 	String EpiData_country = "EpiData.country";
 	String EpiData_exposureDetailsKnown = "EpiData.exposureDetailsKnown";
+	String EpiData_exposureInvestigationFromDate = "EpiData.exposureInvestigationFromDate";
+	String EpiData_exposureInvestigationToDate = "EpiData.exposureInvestigationToDate";
 	String EpiData_exposures = "EpiData.exposures";
 	String EpiData_healthcareProfessional = "EpiData.healthcareProfessional";
 	String EpiData_highTransmissionRiskArea = "EpiData.highTransmissionRiskArea";

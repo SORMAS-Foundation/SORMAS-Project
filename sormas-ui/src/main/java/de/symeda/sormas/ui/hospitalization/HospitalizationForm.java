@@ -173,7 +173,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		final NullableOptionGroup oxygenPrescribedField = addField(HospitalizationDto.OXYGEN_PRESCRIBED, NullableOptionGroup.class);
 		final NullableOptionGroup stillHospitalizedField = addField(HospitalizationDto.STILL_HOSPITALIZED, NullableOptionGroup.class);
 
-		if (!List.of(Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS).contains(caze.getDisease())) {
+		if (!List.of(Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS, Disease.SALMONELLOSIS).contains(caze.getDisease())) {
 			icuLengthOfStayField.setVisible(false);
 			oxygenPrescribedField.setVisible(false);
 			stillHospitalizedField.setVisible(false);
@@ -328,7 +328,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		dischargeDateField.addValueChangeListener(event -> admissionDateField.markAsDirty()); // re-evaluate admission date for consistent validation of all fields
 
 		// RSV specific logic
-		if (List.of(Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.CRYPTOSPORIDIOSIS, Disease.GIARDIASIS).contains(caze.getDisease())) {
+		if (List.of(Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.CRYPTOSPORIDIOSIS, Disease.GIARDIASIS, Disease.SALMONELLOSIS).contains(caze.getDisease())) {
 			intensiveCareUnitStart.addValidator(
 				new DateComparisonValidator(
 					intensiveCareUnitStart,

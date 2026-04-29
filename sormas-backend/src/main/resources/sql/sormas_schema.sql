@@ -15837,4 +15837,17 @@ UPDATE diseaseconfiguration
  WHERE disease = 'SALMONELLOSIS';
 
 INSERT INTO schema_version (version_number, comment) VALUES (625, '#13915 - Salmonellosis disease configuration');
+
+-- 2026-04-29 Salmonellosis EpiData investigation/activity windows #13915
+ALTER TABLE epidata         ADD COLUMN IF NOT EXISTS exposureinvestigationfromdate timestamp;
+ALTER TABLE epidata         ADD COLUMN IF NOT EXISTS exposureinvestigationtodate   timestamp;
+ALTER TABLE epidata         ADD COLUMN IF NOT EXISTS activityascasefromdate        timestamp;
+ALTER TABLE epidata         ADD COLUMN IF NOT EXISTS activityascasetodate          timestamp;
+
+ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS exposureinvestigationfromdate timestamp;
+ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS exposureinvestigationtodate   timestamp;
+ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS activityascasefromdate        timestamp;
+ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS activityascasetodate          timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (626, '#13915 - Salmonellosis EpiData investigation/activity windows');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

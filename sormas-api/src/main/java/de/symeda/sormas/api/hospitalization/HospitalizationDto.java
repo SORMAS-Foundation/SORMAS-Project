@@ -99,7 +99,8 @@ public class HospitalizationDto extends EntityDto {
 	@Diseases({
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS })
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.SALMONELLOSIS })
 	private YesNoUnknown stillHospitalized;
 	@Diseases({
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,

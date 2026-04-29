@@ -18,6 +18,7 @@
 package de.symeda.sormas.api.epidata;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -73,6 +74,10 @@ public class EpiDataDto extends PseudonymizableDto {
 	public static final String HEALTHCARE_PROFESSIONAL = "healthcareProfessional";
 	public static final String PLACE_OF_INFECTION = "placeOfInfection";
 	public static final String RESIDENCE_AT_ONSET = "residenceAtOnset";
+	public static final String EXPOSURE_INVESTIGATION_FROM_DATE = "exposureInvestigationFromDate";
+	public static final String EXPOSURE_INVESTIGATION_TO_DATE = "exposureInvestigationToDate";
+	public static final String ACTIVITY_AS_CASE_FROM_DATE = "activityAsCaseFromDate";
+	public static final String ACTIVITY_AS_CASE_TO_DATE = "activityAsCaseToDate";
 
 	private YesNoUnknown exposureDetailsKnown;
 	private YesNoUnknown activityAsCaseDetailsKnown;
@@ -84,7 +89,8 @@ public class EpiDataDto extends PseudonymizableDto {
 	private CaseImportedStatus caseImportedStatus;
 
 	@Diseases({
-		Disease.GIARDIASIS })
+		Disease.GIARDIASIS,
+		Disease.SALMONELLOSIS })
 	private YesNoUnknown importedCase;
 
 	@HideForCountriesExcept(countries = {
@@ -138,7 +144,8 @@ public class EpiDataDto extends PseudonymizableDto {
 	private String infectionSourceText;
 
 	@Diseases({
-		Disease.GIARDIASIS })
+		Disease.GIARDIASIS,
+		Disease.SALMONELLOSIS })
 	private CountryReferenceDto country;
 
 	@Valid
@@ -171,6 +178,27 @@ public class EpiDataDto extends PseudonymizableDto {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@Size(max = 255, message = Validations.textTooLong)
 	private String residenceAtOnset;
+
+	@Diseases({
+		Disease.SALMONELLOSIS })
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	private Date exposureInvestigationFromDate;
+	@Diseases({
+		Disease.SALMONELLOSIS })
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	private Date exposureInvestigationToDate;
+	@Diseases({
+		Disease.SALMONELLOSIS })
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	private Date activityAsCaseFromDate;
+	@Diseases({
+		Disease.SALMONELLOSIS })
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	private Date activityAsCaseToDate;
 
 	public YesNoUnknown getExposureDetailsKnown() {
 		return exposureDetailsKnown;
@@ -363,6 +391,38 @@ public class EpiDataDto extends PseudonymizableDto {
 
 	public void setResidenceAtOnset(String residenceAtOnset) {
 		this.residenceAtOnset = residenceAtOnset;
+	}
+
+	public Date getExposureInvestigationFromDate() {
+		return exposureInvestigationFromDate;
+	}
+
+	public void setExposureInvestigationFromDate(Date exposureInvestigationFromDate) {
+		this.exposureInvestigationFromDate = exposureInvestigationFromDate;
+	}
+
+	public Date getExposureInvestigationToDate() {
+		return exposureInvestigationToDate;
+	}
+
+	public void setExposureInvestigationToDate(Date exposureInvestigationToDate) {
+		this.exposureInvestigationToDate = exposureInvestigationToDate;
+	}
+
+	public Date getActivityAsCaseFromDate() {
+		return activityAsCaseFromDate;
+	}
+
+	public void setActivityAsCaseFromDate(Date activityAsCaseFromDate) {
+		this.activityAsCaseFromDate = activityAsCaseFromDate;
+	}
+
+	public Date getActivityAsCaseToDate() {
+		return activityAsCaseToDate;
+	}
+
+	public void setActivityAsCaseToDate(Date activityAsCaseToDate) {
+		this.activityAsCaseToDate = activityAsCaseToDate;
 	}
 
 	@Override

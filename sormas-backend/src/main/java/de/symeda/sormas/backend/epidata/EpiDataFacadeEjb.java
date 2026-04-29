@@ -135,6 +135,10 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setHealthcareProfessional(source.getHealthcareProfessional());
 		target.setPlaceOfInfection(source.getPlaceOfInfection());
 		target.setResidenceAtOnset(source.getResidenceAtOnset());
+		target.setExposureInvestigationFromDate(source.getExposureInvestigationFromDate());
+		target.setExposureInvestigationToDate(source.getExposureInvestigationToDate());
+		target.setActivityAsCaseFromDate(source.getActivityAsCaseFromDate());
+		target.setActivityAsCaseToDate(source.getActivityAsCaseToDate());
 		return target;
 	}
 
@@ -325,6 +329,10 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setHealthcareProfessional(source.getHealthcareProfessional());
 		target.setPlaceOfInfection(source.getPlaceOfInfection());
 		target.setResidenceAtOnset(source.getResidenceAtOnset());
+		target.setExposureInvestigationFromDate(source.getExposureInvestigationFromDate());
+		target.setExposureInvestigationToDate(source.getExposureInvestigationToDate());
+		target.setActivityAsCaseFromDate(source.getActivityAsCaseFromDate());
+		target.setActivityAsCaseToDate(source.getActivityAsCaseToDate());
 		return target;
 	}
 

@@ -115,6 +115,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			fluidRowLocs("EXP_DATES_LAYOUT") +
 			loc(LOC_EXPOSURE_INVESTIGATION_HEADING) +
 			fluidRowLocs(6,EpiDataDto.CASE_IMPORTED_STATUS,6,"") +
+			fluidRowLocs(6, EpiDataDto.EXPOSURE_INVESTIGATION_FROM_DATE, 6, EpiDataDto.EXPOSURE_INVESTIGATION_TO_DATE) +
 			loc(LOC_EXP_PERIOD_HEADING) +
 			loc(EpiDataDto.EXPOSURE_DETAILS_KNOWN) +
 			loc(EpiDataDto.EXPOSURES) +
@@ -126,6 +127,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			fluidRowLocs(EpiDataDto.INFECTION_SOURCE, EpiDataDto.INFECTION_SOURCE_TEXT) +
 			fluidRowLocs(EpiDataDto.PLACE_OF_INFECTION, EpiDataDto.RESIDENCE_AT_ONSET) +
 			loc(LOC_ACTIVITY_AS_CASE_INVESTIGATION_HEADING) +
+			fluidRowLocs(6, EpiDataDto.ACTIVITY_AS_CASE_FROM_DATE, 6, EpiDataDto.ACTIVITY_AS_CASE_TO_DATE) +
 			loc(EpiDataDto.ACTIVITY_AS_CASE_DETAILS_KNOWN)+
 			loc(EpiDataDto.ACTIVITIES_AS_CASE) +
 			loc(LOC_CUSTOMIZABLE_FIELDS_ACTIVITY_AS_CASE) +
@@ -250,6 +252,11 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		List<CountryReferenceDto> countries = FacadeProvider.getCountryFacade().getAllActiveAsReference();
 		ComboBox country = addInfrastructureField(EpiDataDto.COUNTRY);
 		country.addItems(countries);
+
+		addField(EpiDataDto.EXPOSURE_INVESTIGATION_FROM_DATE, DateField.class);
+		addField(EpiDataDto.EXPOSURE_INVESTIGATION_TO_DATE, DateField.class);
+		addField(EpiDataDto.ACTIVITY_AS_CASE_FROM_DATE, DateField.class);
+		addField(EpiDataDto.ACTIVITY_AS_CASE_TO_DATE, DateField.class);
 
 		includeExposureDates(symptomOnsetDate, disease);
 		addField(EpiDataDto.AIRPORT_WORKER, NullableOptionGroup.class);
