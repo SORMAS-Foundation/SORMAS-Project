@@ -23,14 +23,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.OneToMany;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 
 import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -81,9 +74,6 @@ public class Hospitalization extends AbstractDomainObject {
 	private String description;
 	private YesNoUnknown currentlyHospitalized;
 	private Integer durationOfHospitalization;
-
-	// TODO: add-UI + DB
-	private YesNoUnknown oxygenTherapy;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getAdmissionDate() {
@@ -264,13 +254,5 @@ public class Hospitalization extends AbstractDomainObject {
 
 	public void setDurationOfHospitalization(Integer durationOfHospitalization) {
 		this.durationOfHospitalization = durationOfHospitalization;
-	}
-
-	public YesNoUnknown getOxygenTherapy() {
-		return oxygenTherapy;
-	}
-
-	public void setOxygenTherapy(YesNoUnknown oxygenTherapy) {
-		this.oxygenTherapy = oxygenTherapy;
 	}
 }

@@ -17,13 +17,7 @@ package de.symeda.sormas.backend.externalmessage;
 
 import static java.util.stream.Collectors.toList;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -39,15 +33,7 @@ import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Tuple;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Selection;
+import javax.persistence.criteria.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -69,17 +55,7 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.customizableenum.CustomEnumNotFoundException;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
-import de.symeda.sormas.api.externalmessage.ExternalMessageAdapterFacade;
-import de.symeda.sormas.api.externalmessage.ExternalMessageCriteria;
-import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
-import de.symeda.sormas.api.externalmessage.ExternalMessageFacade;
-import de.symeda.sormas.api.externalmessage.ExternalMessageFetchResult;
-import de.symeda.sormas.api.externalmessage.ExternalMessageIndexDto;
-import de.symeda.sormas.api.externalmessage.ExternalMessageReferenceDto;
-import de.symeda.sormas.api.externalmessage.ExternalMessageResult;
-import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
-import de.symeda.sormas.api.externalmessage.ExternalMessageType;
-import de.symeda.sormas.api.externalmessage.NewMessagesState;
+import de.symeda.sormas.api.externalmessage.*;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult;
 import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseRequest;
@@ -92,6 +68,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.patch.DataReplacementStrategy;
 import de.symeda.sormas.api.patch.partial_retrieval.DisplayablePartialRetrievalResponse;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
@@ -128,11 +105,7 @@ import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
-import de.symeda.sormas.backend.util.DtoHelper;
-import de.symeda.sormas.backend.util.IterableHelper;
-import de.symeda.sormas.backend.util.ModelConstants;
-import de.symeda.sormas.backend.util.QueryHelper;
-import de.symeda.sormas.backend.util.RightsAllowed;
+import de.symeda.sormas.backend.util.*;
 
 @Stateless(name = "ExternalMessageFacade")
 @RightsAllowed({
@@ -978,11 +951,12 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		ExternalMessageDto externalMessage = getByUuid(uuid);
 		ExternalMessageSurveyResponseRequest latestRequest = externalMessage.getSurveyResponseData().getLatest().getRequest();
 
+		logger.info("On reprocessing replacement strategy is set to ALWAYS to allow override values");
 		ExternalMessageSurveyResponseRequest correctedRequest = new ExternalMessageSurveyResponseRequest().setToken(latestRequest.getToken())
 			.setExternalSurveyId(latestRequest.getExternalSurveyId())
 			.setExternalRespondentId(latestRequest.getExternalRespondentId())
 			.setResponseReceivedDate(latestRequest.getResponseReceivedDate())
-			.setReplacementStrategy(latestRequest.getReplacementStrategy())
+			.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
 			.setEmptyValueBehavior(latestRequest.getEmptyValueBehavior())
 			.setOrigin(latestRequest.getOrigin())
 			.setInputLanguages(latestRequest.getInputLanguages())

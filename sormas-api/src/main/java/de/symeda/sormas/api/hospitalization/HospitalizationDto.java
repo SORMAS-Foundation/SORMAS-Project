@@ -29,12 +29,7 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DependingOnFeatureType;
-import de.symeda.sormas.api.utils.Diseases;
-import de.symeda.sormas.api.utils.FieldConstraints;
-import de.symeda.sormas.api.utils.Outbreaks;
-import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.*;
 
 @DependingOnFeatureType(featureType = FeatureType.CASE_SURVEILANCE)
 public class HospitalizationDto extends EntityDto {
@@ -118,8 +113,6 @@ public class HospitalizationDto extends EntityDto {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS })
 	private Integer durationOfHospitalization;
-
-	private YesNoUnknown oxygenTherapy;
 
 	public static HospitalizationDto build() {
 		HospitalizationDto hospitalization = new HospitalizationDto();
@@ -279,13 +272,5 @@ public class HospitalizationDto extends EntityDto {
 
 	public void setDurationOfHospitalization(Integer durationOfHospitalization) {
 		this.durationOfHospitalization = durationOfHospitalization;
-	}
-
-	public YesNoUnknown getOxygenTherapy() {
-		return oxygenTherapy;
-	}
-
-	public void setOxygenTherapy(YesNoUnknown oxygenTherapy) {
-		this.oxygenTherapy = oxygenTherapy;
 	}
 }
