@@ -49,6 +49,7 @@ public enum ExposureSubSetting {
 
 	EATING_AT_HOME(ExposureCategory.FOOD_BORNE, null),
 	EATING_OUTSIDE(ExposureCategory.FOOD_BORNE, null),
+	SHOPPING_FOR_FOOD(ExposureCategory.FOOD_BORNE, null),
 
 	UNKNOWN(null, null),
 	OTHER(null, null);

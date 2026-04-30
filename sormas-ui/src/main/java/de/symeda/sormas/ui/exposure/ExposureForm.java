@@ -58,6 +58,7 @@ import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.AnimalCategory;
+import de.symeda.sormas.api.exposure.EatingOutVenue;
 import de.symeda.sormas.api.exposure.ExposureCategory;
 import de.symeda.sormas.api.exposure.ExposureContactFactor;
 import de.symeda.sormas.api.exposure.ExposureDto;
@@ -109,6 +110,9 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 					fluidRow(
 							fluidColumn(4, 0, locs(
 									ExposureDto.SUB_SETTINGS,
+									ExposureDto.EATING_OUT_VENUES,
+									ExposureDto.EATING_OUT_VENUE_OTHER,
+									ExposureDto.SHOPPING_FOR_FOOD_DETAILS,
 									ExposureDto.CONDITION_OF_ANIMAL,
 									ExposureDto.ANIMAL_CATEGORY,
 									ExposureDto.TYPE_OF_ANIMAL,
@@ -140,7 +144,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 					loc(LOC_CUSTOMIZABLE_FIELDS_EXPOSURES_GENERAL) +
 					loc(ExposureDto.DESCRIPTION);
 
-	private static final String LOCATION_DETAILS_LAYOUT = 
+	private static final String LOCATION_DETAILS_LAYOUT =
 			loc(LOC_LOCATION_HEADING) +
 			fluidRow(
 					fluidColumn(6, 0, locs(ExposureDto.TYPE_OF_PLACE)),
@@ -320,6 +324,18 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		subSettingsDetailsField = addField(exposureDetailsLayout, ExposureDto.EXPOSURE_SUB_SETTING_DETAILS, TextField.class);
 		subSettingsDetailsField.setVisible(false);
 
+		OptionGroup eatingOutVenuesField = addField(exposureDetailsLayout, ExposureDto.EATING_OUT_VENUES, OptionGroup.class);
+		eatingOutVenuesField.setMultiSelect(true);
+		CssStyles.style(eatingOutVenuesField, CssStyles.CAPTION_ON_TOP);
+		FieldHelper.updateItems(eatingOutVenuesField, Arrays.asList(EatingOutVenue.values()));
+		eatingOutVenuesField.setVisible(false);
+
+		TextField eatingOutVenueOtherField = addField(exposureDetailsLayout, ExposureDto.EATING_OUT_VENUE_OTHER, TextField.class);
+		eatingOutVenueOtherField.setVisible(false);
+
+		TextField shoppingForFoodDetailsField = addField(exposureDetailsLayout, ExposureDto.SHOPPING_FOR_FOOD_DETAILS, TextField.class);
+		shoppingForFoodDetailsField.setVisible(false);
+
 		conditionOfAnimalField = addField(exposureDetailsLayout, ExposureDto.CONDITION_OF_ANIMAL, NullableOptionGroup.class);
 		conditionOfAnimalField.setVisible(false);
 
@@ -397,6 +413,30 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			subSettingsDetailsField.setVisible(containsOther);
 			boolean isProphylaxis = selectedSubSettings != null && selectedSubSettings.contains(ExposureSubSetting.TRAVELED_ABROAD);
 			setVisibleClear(isProphylaxis, ExposureDto.PROPHYLAXIS_ADHERENCE, ExposureDto.TRAVEL_PURPOSE);
+
+			// Salmonellosis Lu: Eating out venues + shopping-for-food details follow sub-setting selection
+			boolean showEatingOutVenues = selectedSubSettings != null && selectedSubSettings.contains(ExposureSubSetting.EATING_OUTSIDE);
+			eatingOutVenuesField.setVisible(showEatingOutVenues);
+			if (!showEatingOutVenues) {
+				eatingOutVenuesField.setValue(null);
+				eatingOutVenueOtherField.setVisible(false);
+				eatingOutVenueOtherField.setValue(null);
+			}
+			boolean showShoppingForFood = selectedSubSettings != null && selectedSubSettings.contains(ExposureSubSetting.SHOPPING_FOR_FOOD);
+			shoppingForFoodDetailsField.setVisible(showShoppingForFood);
+			if (!showShoppingForFood) {
+				shoppingForFoodDetailsField.setValue(null);
+			}
+		});
+
+		eatingOutVenuesField.addValueChangeListener(e -> {
+			@SuppressWarnings("unchecked")
+			Set<EatingOutVenue> selectedVenues = (Set<EatingOutVenue>) e.getProperty().getValue();
+			boolean containsOther = selectedVenues != null && selectedVenues.contains(EatingOutVenue.OTHER);
+			eatingOutVenueOtherField.setVisible(eatingOutVenuesField.isVisible() && containsOther);
+			if (!containsOther) {
+				eatingOutVenueOtherField.setValue(null);
+			}
 		});
 
 		contactFactorsField.addValueChangeListener(e -> {

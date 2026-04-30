@@ -310,6 +310,9 @@ public class Symptoms extends AbstractDomainObject {
 	private String otherNeurolocalSymptomText;
 	private SymptomState disseminatedIntraVascularCoagulation;
 	private SymptomState fatalRisk;
+	private SymptomState constipation;
+	private SymptomState dysuria;
+	private SymptomState eyeIrritation;
 
 	// when adding new fields make sure to extend toHumanString
 
@@ -2447,6 +2450,33 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setDisseminatedIntraVascularCoagulation(SymptomState disseminatedIntraVascularCoagulation) {
 		this.disseminatedIntraVascularCoagulation = disseminatedIntraVascularCoagulation;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getConstipation() {
+		return constipation;
+	}
+
+	public void setConstipation(SymptomState constipation) {
+		this.constipation = constipation;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getDysuria() {
+		return dysuria;
+	}
+
+	public void setDysuria(SymptomState dysuria) {
+		this.dysuria = dysuria;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getEyeIrritation() {
+		return eyeIrritation;
+	}
+
+	public void setEyeIrritation(SymptomState eyeIrritation) {
+		this.eyeIrritation = eyeIrritation;
 	}
 
 	@Enumerated(EnumType.STRING)

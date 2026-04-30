@@ -15849,5 +15849,45 @@ ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS exposureinvestigationtodate
 ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS activityascasefromdate        timestamp;
 ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS activityascasetodate          timestamp;
 
-INSERT INTO schema_version (version_number, comment) VALUES (626, '#13915 - Salmonellosis EpiData investigation/activity windows');
+INSERT INTO schema_version (version_number, comment) VALUES (626, '#13916 - Salmonellosis EpiData investigation/activity windows');
+
+-- 2026-04-29 Salmonellosis Exposure eating-out venues + shopping details #13915
+ALTER TABLE exposures         ADD COLUMN IF NOT EXISTS eatingoutvenueother    varchar(512);
+ALTER TABLE exposures         ADD COLUMN IF NOT EXISTS shoppingforfooddetails varchar(512);
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS eatingoutvenueother    varchar(512);
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS shoppingforfooddetails varchar(512);
+
+-- exposures_eatingoutvenues join table (matches exposures_subsettings precedent)
+CREATE TABLE IF NOT EXISTS exposures_eatingoutvenues (
+       exposure_id      BIGINT NOT NULL,
+       eatingoutvenue   VARCHAR(255) NOT NULL,
+       sys_period       TSTZRANGE NOT NULL
+);
+
+ALTER TABLE exposures_eatingoutvenues OWNER TO sormas_user;
+ALTER TABLE exposures_eatingoutvenues ADD CONSTRAINT fk_exposures_eatingoutvenues_exposure_id FOREIGN KEY (exposure_id) REFERENCES exposures;
+ALTER TABLE exposures_eatingoutvenues ADD CONSTRAINT unq_exposures_eatingoutvenues_0 UNIQUE (exposure_id, eatingoutvenue);
+
+CREATE TABLE IF NOT EXISTS exposures_eatingoutvenues_history (LIKE exposures_eatingoutvenues);
+DROP TRIGGER IF EXISTS versioning_trigger ON exposures_eatingoutvenues;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE OR DELETE ON exposures_eatingoutvenues
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'exposures_eatingoutvenues_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON exposures_eatingoutvenues;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON exposures_eatingoutvenues
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('exposures_eatingoutvenues_history', 'id');
+ALTER TABLE exposures_eatingoutvenues_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (627, '#13917 - Salmonellosis Exposure eating-out venues + shopping details');
+
+-- 2026-04-29 Salmonellosis Symptoms: constipation, dysuria, eye irritation #13915
+ALTER TABLE symptoms         ADD COLUMN IF NOT EXISTS constipation   varchar(255);
+ALTER TABLE symptoms         ADD COLUMN IF NOT EXISTS dysuria        varchar(255);
+ALTER TABLE symptoms         ADD COLUMN IF NOT EXISTS eyeirritation  varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS constipation   varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS dysuria        varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS eyeirritation  varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (628, '#13917 - Salmonellosis Symptoms: constipation, dysuria, eye irritation');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
