@@ -398,6 +398,11 @@ public class EpiDataDto extends PseudonymizableDto {
 	}
 
 	public void setExposureInvestigationFromDate(Date exposureInvestigationFromDate) {
+		validateDateRange(
+			exposureInvestigationFromDate,
+			this.exposureInvestigationToDate,
+			"exposureInvestigationFromDate",
+			"exposureInvestigationToDate");
 		this.exposureInvestigationFromDate = exposureInvestigationFromDate;
 	}
 
@@ -406,6 +411,11 @@ public class EpiDataDto extends PseudonymizableDto {
 	}
 
 	public void setExposureInvestigationToDate(Date exposureInvestigationToDate) {
+		validateDateRange(
+			this.exposureInvestigationFromDate,
+			exposureInvestigationToDate,
+			"exposureInvestigationFromDate",
+			"exposureInvestigationToDate");
 		this.exposureInvestigationToDate = exposureInvestigationToDate;
 	}
 
@@ -414,6 +424,7 @@ public class EpiDataDto extends PseudonymizableDto {
 	}
 
 	public void setActivityAsCaseFromDate(Date activityAsCaseFromDate) {
+		validateDateRange(activityAsCaseFromDate, this.activityAsCaseToDate, "activityAsCaseFromDate", "activityAsCaseToDate");
 		this.activityAsCaseFromDate = activityAsCaseFromDate;
 	}
 
@@ -422,7 +433,14 @@ public class EpiDataDto extends PseudonymizableDto {
 	}
 
 	public void setActivityAsCaseToDate(Date activityAsCaseToDate) {
+		validateDateRange(this.activityAsCaseFromDate, activityAsCaseToDate, "activityAsCaseFromDate", "activityAsCaseToDate");
 		this.activityAsCaseToDate = activityAsCaseToDate;
+	}
+
+	private static void validateDateRange(Date from, Date to, String fromName, String toName) {
+		if (from != null && to != null && from.after(to)) {
+			throw new IllegalArgumentException(fromName + " must be before or equal to " + toName);
+		}
 	}
 
 	@Override
