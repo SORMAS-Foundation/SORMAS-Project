@@ -594,4 +594,13 @@
       fill: #4b066a;
     }
   }
+  .background-disease-salmonellosis {
+    background-color: #d35400;
+    fill: #d35400;
+
+    &.background-darker {
+      background-color: #a04000;
+      fill: #a04000;
+    }
+  }
 }
