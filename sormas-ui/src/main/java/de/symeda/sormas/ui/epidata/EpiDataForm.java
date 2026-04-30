@@ -219,6 +219,8 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 
 		if (parentClass == CaseDataDto.class) {
 			addActivityAsCaseFields();
+			addField(EpiDataDto.ACTIVITY_AS_CASE_FROM_DATE, DateField.class);
+			addField(EpiDataDto.ACTIVITY_AS_CASE_TO_DATE, DateField.class);
 		}
 
 		activityAsCasePanel = new CustomizableFieldsGroup(CustomizableFieldGroup.EPIDATA_ACTIVITY_AS_CASE);
@@ -255,8 +257,6 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 
 		addField(EpiDataDto.EXPOSURE_INVESTIGATION_FROM_DATE, DateField.class);
 		addField(EpiDataDto.EXPOSURE_INVESTIGATION_TO_DATE, DateField.class);
-		addField(EpiDataDto.ACTIVITY_AS_CASE_FROM_DATE, DateField.class);
-		addField(EpiDataDto.ACTIVITY_AS_CASE_TO_DATE, DateField.class);
 
 		includeExposureDates(symptomOnsetDate, disease);
 		addField(EpiDataDto.AIRPORT_WORKER, NullableOptionGroup.class);
