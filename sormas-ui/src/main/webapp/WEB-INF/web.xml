@@ -702,6 +702,10 @@
 	</security-role>
 
 	<security-role>
+		<role-name>EXTERNAL_MESSAGE_SURVEY_RESPONSE_VIEW</role-name>
+	</security-role>
+
+	<security-role>
 		<role-name>EXTERNAL_MESSAGE_LABORATORY_PROCESS</role-name>
 	</security-role>
 
@@ -710,7 +714,19 @@
 	</security-role>
 
 	<security-role>
+		<role-name>EXTERNAL_MESSAGE_SURVEY_RESPONSE_PROCESS</role-name>
+	</security-role>
+
+	<security-role>
 		<role-name>EXTERNAL_MESSAGE_LABORATORY_DELETE</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EXTERNAL_MESSAGE_SURVEY_RESPONSE_DELETE</role-name>
 	</security-role>
 
 	<security-role>

@@ -314,6 +314,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	}
 
 	@Override
+	@RightsAllowed(UserRight._EXTERNAL_MESSAGE_SURVEY_RESPONSE_VIEW)
 	public List<ExternalMessageDto> saveAndProcessSurveyResponses(Date since) {
 
 		if (since == null) { // TODO: use shorter default range
@@ -817,8 +818,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		UserRight._SYSTEM,
 		UserRight._EXTERNAL_MESSAGE_ACCESS,
 		UserRight._EXTERNAL_MESSAGE_LABORATORY_VIEW,
-		UserRight._EXTERNAL_MESSAGE_DOCTOR_DECLARATION_VIEW,
-		UserRight._EXTERNAL_MESSAGE_SURVEY_RESPONSE_VIEW })
+		UserRight._EXTERNAL_MESSAGE_DOCTOR_DECLARATION_VIEW })
 	public ExternalMessageFetchResult fetchAndSaveExternalMessages(Date since) {
 
 		SystemEventDto currentSync = syncFacadeEjb.startSyncFor(SystemEventType.FETCH_EXTERNAL_MESSAGES);
@@ -975,7 +975,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 	@Override
 	@RightsAllowed(UserRight._EXTERNAL_MESSAGE_SURVEY_RESPONSE_PROCESS)
-	public ExternalMessageDto reprocessSurveyResponse(String uuid, java.util.Map<String, Object> correctedDictionary) {
+	public ExternalMessageDto overwriteSurveyResponse(String uuid, java.util.Map<String, Object> correctedDictionary) {
 		ExternalMessageDto externalMessage = getByUuid(uuid);
 		ExternalMessageSurveyResponseRequest latestRequest = externalMessage.getSurveyResponseData().getLatest().getRequest();
 
@@ -1009,8 +1009,8 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	}
 
 	@Override
-	@RightsAllowed(UserRight._EXTERNAL_MESSAGE_SURVEY_RESPONSE_PROCESS)
-	public de.symeda.sormas.api.patch.partial_retrieval.DisplayablePartialRetrievalResponse retrieveSurveyResponseFieldsForDisplay(
+	@RightsAllowed(UserRight._EXTERNAL_MESSAGE_SURVEY_RESPONSE_VIEW)
+	public de.symeda.sormas.api.patch.partial_retrieval.DisplayablePartialRetrievalResponse fetchSurveyResponseFieldsForDisplay(
 		String externalMessageUuid) {
 
 		ExternalMessageDto externalMessage = getByUuid(externalMessageUuid);

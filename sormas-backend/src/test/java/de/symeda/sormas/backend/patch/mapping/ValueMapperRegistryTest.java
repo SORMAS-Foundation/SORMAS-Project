@@ -41,8 +41,8 @@ class ValueMapperRegistryTest extends AbstractUnitTest {
 
 	@BeforeEach
 	void setUp() {
-		victim.init();
 		Mockito.lenient().when(instances.stream()).thenAnswer(ignored -> Stream.of(mapperA, mapperB));
+		victim.init();
 	}
 
 	@Test
@@ -117,9 +117,6 @@ class ValueMapperRegistryTest extends AbstractUnitTest {
 		ValuePatchRequest<ObjectMapper> request = new ValuePatchRequest<>();
 		request.setValue("unsupported");
 		request.setTargetType(ObjectMapper.class);
-
-		when(mapperA.supports(Object.class)).thenReturn(false);
-		when(mapperB.supports(Object.class)).thenReturn(false);
 
 		// EXECUTE
 		ValueMappingResult<ObjectMapper> result = victim.map(request);

@@ -1,10 +1,13 @@
 package de.symeda.sormas.api.patch.partial_retrieval;
 
+import de.symeda.sormas.api.audit.AuditedClass;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+@AuditedClass
 public class DisplayablePartialRetrievalResponse implements Serializable {
 
 	private static final long serialVersionUID = 1L;

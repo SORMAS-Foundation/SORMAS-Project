@@ -80,7 +80,7 @@ public class Survey extends AbstractDomainObject {
 		this.emailTemplate = emailTemplate;
 	}
 
-	@Column(nullable = false, length = FieldConstraints.CHARACTER_LIMIT_DEFAULT)
+	@Column(length = FieldConstraints.CHARACTER_LIMIT_DEFAULT)
 	public String getExternalId() {
 		return externalId;
 	}

@@ -49,7 +49,7 @@ public class SurveyResponseDetailsWindow {
 		String uuid = externalMessage.getUuid();
 
 		DisplayablePartialRetrievalResponse displayData;
-		displayData = FacadeProvider.getExternalMessageFacade().retrieveSurveyResponseFieldsForDisplay(uuid);
+		displayData = FacadeProvider.getExternalMessageFacade().fetchSurveyResponseFieldsForDisplay(uuid);
 
 		VerticalLayout layout = new VerticalLayout();
 		layout.setMargin(true);
@@ -205,7 +205,7 @@ public class SurveyResponseDetailsWindow {
 
 	public String resolveFieldName(String fieldPath, DisplayablePartialRetrievalResponse displayData) {
 		DisplayableFieldInfo info = displayData.getFieldInfoDictionary().get(fieldPath);
-		String aliasPath = FacadeProvider.getPathAliasFacade().toAliasPath(fieldPath);
+		String aliasPath = FacadeProvider.getPathAliasFacade().fetchAliasPath(fieldPath);
 		if (info != null) {
 			String translatedFieldName = info.getTranslatedFieldName();
 			if (translatedFieldName != null) {

@@ -2,7 +2,7 @@
 
 -- Surveys
 ALTER TABLE surveys
-    ADD COLUMN external_survey_id TEXT;
+    ADD COLUMN externalid TEXT;
 
 -- Survey tokens
 ALTER TABLE surveytokens

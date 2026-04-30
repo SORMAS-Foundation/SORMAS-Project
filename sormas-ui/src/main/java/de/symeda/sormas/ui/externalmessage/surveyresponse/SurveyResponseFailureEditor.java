@@ -176,7 +176,7 @@ public class SurveyResponseFailureEditor extends Window {
 						correctedDictionary.put(key, valueEditors.get(fieldPath).getValue());
 					}
 
-					FacadeProvider.getExternalMessageFacade().reprocessSurveyResponse(externalMessage.getUuid(), correctedDictionary);
+					FacadeProvider.getExternalMessageFacade().overwriteSurveyResponse(externalMessage.getUuid(), correctedDictionary);
 
 					Notification.show(I18nProperties.getString(Strings.messageSurveyResponseReprocessed), Notification.Type.HUMANIZED_MESSAGE);
 					close();
@@ -195,7 +195,7 @@ public class SurveyResponseFailureEditor extends Window {
 
 	public String resolveFieldName(String fieldPath, DisplayablePartialRetrievalResponse displayData) {
 		DisplayableFieldInfo info = displayData.getFieldInfoDictionary().get(fieldPath);
-		String aliasPath = FacadeProvider.getPathAliasFacade().toAliasPath(fieldPath);
+		String aliasPath = FacadeProvider.getPathAliasFacade().fetchAliasPath(fieldPath);
 		if (info != null) {
 			String translatedFieldName = info.getTranslatedFieldName();
 			if (translatedFieldName != null) {

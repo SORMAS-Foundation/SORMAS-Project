@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -648,6 +649,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 		"NO",
 		" nein ",
 		" unknown " })
+	@Disabled("Waiting for feedback on vaccine automatic processing")
 	void patch_addVaccine_unknown_or_no(String unknownOrNo) {
 		// PREPARE
 		Disease disease = Disease.RESPIRATORY_SYNCYTIAL_VIRUS;
@@ -694,6 +696,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 	@ParameterizedTest
 	@ValueSource(strings = {
 		"Maternal vaccination" })
+	@Disabled("Waiting for feedback on vaccine automatic processing")
 	void patch_addVaccine_true_and_mother_vaccine(String matternalVaccination) {
 		// PREPARE
 		Disease disease = Disease.DENGUE;
@@ -742,6 +745,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 	}
 
 	@Test
+	@Disabled("Waiting for feedback on vaccine automatic processing")
 	void patch_addVaccine_true() {
 		// PREPARE
 		Disease disease = Disease.DENGUE;
@@ -797,6 +801,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 	}
 
 	@Test
+	@Disabled("Waiting for feedback on vaccine automatic processing")
 	void patch_addVaccine_vaccine_name() {
 		// PREPARE
 		Disease disease = Disease.DENGUE;

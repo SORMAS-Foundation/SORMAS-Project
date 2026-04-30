@@ -12,5 +12,5 @@ public interface PathAliasFacade {
 	 *            that may (or may not) contain physical paths.
 	 * @return shortened path.
 	 */
-	String toAliasPath(String path);
+	String fetchAliasPath(String path);
 }

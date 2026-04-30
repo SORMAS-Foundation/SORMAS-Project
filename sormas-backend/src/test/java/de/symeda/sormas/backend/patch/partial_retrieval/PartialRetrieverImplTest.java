@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.patch.partial_retrieval;
 import java.util.List;
 import java.util.Set;
 
+import de.symeda.sormas.api.person.PersonContactDetailDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -174,6 +175,32 @@ class PartialRetrieverImplTest extends AbstractBeanTest {
 			() -> Assertions.assertTrue(actual.getFieldInfoDictionary().containsKey(caseClassificationDateFieldName)),
 			() -> Assertions.assertEquals("Date of classification", classificationDateFieldInfo.getTranslatedFieldName()),
 			() -> Assertions.assertNull(classificationDateFieldInfo.getFieldValue()));
+	}
+
+	@Test
+	void retrieve_contact_details_phone() {
+		// PREPARE
+		Disease disease = Disease.PERTUSSIS;
+		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
+
+		PersonReferenceDto personRef = originalCase.getPerson();
+
+		PersonDto person = getPersonFacade().getByUuid(personRef.getUuid());
+
+		// EXECUTE
+		String personContactDetails = toFieldName(PersonContactDetailDto.I18N_PREFIX, PersonContactDetailDto.PHONE_NUMBER_TYPE);
+		PartialRetrievalResponse actual = victim()
+				.retrievePartial(new PartialRetrievalRequest().setCaseUuid(originalCase.getUuid()).setFieldsToRetrieve(Set.of(personContactDetails)));
+
+		// CHECK
+		System.out.println("actual = " + actual);
+
+		FieldInfo personFirstNameFieldInfo = actual.getFieldInfoDictionary().get(personContactDetails);
+		Assertions.assertAll(
+				() -> Assertions.assertTrue(actual.getFailuresDictionary().isEmpty()),
+				() -> Assertions.assertTrue(actual.getFieldInfoDictionary().containsKey(personContactDetails)),
+				() -> Assertions.assertEquals("First name", personFirstNameFieldInfo.getTranslatedFieldName()),
+				() -> Assertions.assertEquals(person.getFirstName(), personFirstNameFieldInfo.getFieldValue()));
 	}
 
 	private static String toFieldName(String prefix, String fieldName) {

@@ -13,7 +13,7 @@ public class PathAliasFacadeEjb implements PathAliasFacade {
 	private PathAliasHelper pathAliasHelper;
 
 	@Override
-	public String toAliasPath(String path) {
+	public String fetchAliasPath(String path) {
 		return pathAliasHelper.toAliasPath(path);
 	}
 

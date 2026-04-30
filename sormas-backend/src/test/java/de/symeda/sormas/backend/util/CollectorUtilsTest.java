@@ -5,10 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.backend.AbstractUnitTest;
@@ -29,7 +31,7 @@ class CollectorUtilsTest extends AbstractUnitTest {
 		Map<String, String> result = items.stream().collect(CollectorUtils.toNullSafeMap(Item::getKey, Item::getValue));
 
 		// CHECK
-		assertEquals(Map.of("key1", "value1"), result);
+		assertEquals(mapOf("key1", "value1"), result);
 	}
 
 	@Test
@@ -41,7 +43,7 @@ class CollectorUtilsTest extends AbstractUnitTest {
 		Map<String, String> result = items.stream().collect(CollectorUtils.toNullSafeMap(Item::getKey, Item::getValue));
 
 		// CHECK
-		assertEquals(Map.of("key2", null), result);
+		assertEquals(mapOf("key2", null), result);
 	}
 
 	@Test
@@ -53,7 +55,7 @@ class CollectorUtilsTest extends AbstractUnitTest {
 		Map<String, String> result = items.stream().collect(CollectorUtils.toNullSafeMap(Item::getKey, Item::getValue));
 
 		// CHECK
-		assertEquals(Map.of(null, "value3"), result);
+		assertEquals(mapOf(null, "value3"), result);
 	}
 
 	@Test
@@ -65,7 +67,15 @@ class CollectorUtilsTest extends AbstractUnitTest {
 		Map<String, String> result = items.stream().collect(CollectorUtils.toNullSafeMap(Item::getKey, Item::getValue));
 
 		// CHECK
-		assertEquals(Map.of(null, null), result);
+		Object v1 = null;
+		Object k1 = null;
+		assertEquals(mapOf(k1, v1), result);
+	}
+
+	private static @NotNull Map<Object, Object> mapOf(Object key, Object value) {
+		HashMap<Object, Object> hashMap = new HashMap<>();
+		hashMap.put(key, value);
+		return hashMap;
 	}
 
 	@Test
@@ -89,7 +99,7 @@ class CollectorUtilsTest extends AbstractUnitTest {
 	@Test
 	void toNullSafeMap_parallelStream_preservesNulls() {
 		// PREPARE
-		List<Item> items = List.of(item1, item2, item3, item4);
+		List<Item> items = List.of(item1, item2, item3);
 
 		// EXECUTE
 		Map<String, String> result = items.parallelStream().collect(CollectorUtils.toNullSafeMap(Item::getKey, Item::getValue));
@@ -98,7 +108,6 @@ class CollectorUtilsTest extends AbstractUnitTest {
 		assertEquals("value1", result.get("key1"));
 		assertNull(result.get("key2"));
 		assertEquals("value3", result.get(null));
-		assertNull(result.get(null));
 	}
 
 	@Test
@@ -122,7 +131,7 @@ class CollectorUtilsTest extends AbstractUnitTest {
 		Map<String, String> nullSafeResult = items.stream().collect(CollectorUtils.toNullSafeMap(Item::getKey, Item::getValue));
 
 		// CHECK
-		assertEquals(Map.of("key2", null), nullSafeResult);
+		assertEquals(mapOf("key2", null), nullSafeResult);
 
 		assertThrows(NullPointerException.class, () -> items.stream().collect(Collectors.toMap(Item::getKey, Item::getValue)));
 	}

@@ -176,7 +176,7 @@ public class ExternalMessageController {
 		if (result.getPatchResponse() != null && result.getPatchResponse().hasFailures()) {
 			de.symeda.sormas.api.patch.partial_retrieval.DisplayablePartialRetrievalResponse displayData;
 			try {
-				displayData = FacadeProvider.getExternalMessageFacade().retrieveSurveyResponseFieldsForDisplay(surveyResponseMessageUuid);
+				displayData = FacadeProvider.getExternalMessageFacade().fetchSurveyResponseFieldsForDisplay(surveyResponseMessageUuid);
 			} catch (Exception e) {
 				logger.error("Error retrieving survey response fields for display", e);
 				displayData = new de.symeda.sormas.api.patch.partial_retrieval.DisplayablePartialRetrievalResponse();

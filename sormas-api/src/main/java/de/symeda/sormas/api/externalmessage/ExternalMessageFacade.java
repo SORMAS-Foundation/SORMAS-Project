@@ -96,7 +96,7 @@ public interface ExternalMessageFacade extends PermanentlyDeletableFacade {
 	 *            the corrected field path -> value map to apply
 	 * @return updated ExternalMessageDto after reprocessing
 	 */
-	ExternalMessageDto reprocessSurveyResponse(String uuid, Map<String, Object> correctedDictionary);
+	ExternalMessageDto overwriteSurveyResponse(String uuid, Map<String, Object> correctedDictionary);
 
 	/**
 	 * Retrieves display-ready field information (translated names and current case values) for all fields
@@ -106,5 +106,5 @@ public interface ExternalMessageFacade extends PermanentlyDeletableFacade {
 	 *            UUID of the external message (must be of type SURVEY_RESPONSE with a processed result)
 	 * @return displayable field info keyed by field path
 	 */
-	DisplayablePartialRetrievalResponse retrieveSurveyResponseFieldsForDisplay(String externalMessageUuid);
+	DisplayablePartialRetrievalResponse fetchSurveyResponseFieldsForDisplay(String externalMessageUuid);
 }

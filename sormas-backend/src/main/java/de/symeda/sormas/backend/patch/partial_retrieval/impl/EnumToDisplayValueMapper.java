@@ -8,7 +8,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.backend.patch.partial_retrieval.TypeToDisplayValueMapper;
 
 @ApplicationScoped
-public class EnumToDisplayValueMapperImpl implements TypeToDisplayValueMapper {
+public class EnumToDisplayValueMapper implements TypeToDisplayValueMapper {
 
 	public static final Set<Class<?>> SUPPORTED_TYPES = Set.of(Enum.class);
 
