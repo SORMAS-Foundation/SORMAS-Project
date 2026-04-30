@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.patch.partial_retrieval;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -65,6 +66,8 @@ public class PartialRetrieverImpl implements PartialRetriever {
 
 		CaseDataDto caseData = businessDtoFacade.getCaseDataDto(request.getCaseUuid());
 
+		Map<String, Optional<EntityDto>> beanCache = new HashMap<>();
+
 		List<Tuple<String, Tuple<FieldInfo, PartialRetrievalFailureCause>>> results =
 			patchFieldHelper.extractFieldTuples(request.getFieldsToRetrieve(), businessDtoFacade.fetchablePrefixes()).stream().map(tuple -> {
 
@@ -86,7 +89,7 @@ public class PartialRetrieverImpl implements PartialRetriever {
 				String physicalPathName = pathWithoutAlias.substring(pathWithoutAlias.indexOf('.') + 1);
 
 				String aliasPath = pathAliasHelper.toAliasPath(pathWithoutAlias);
-				Optional<EntityDto> adequateBean = getAdequateBean(pathWithoutAlias, caseData);
+				Optional<EntityDto> adequateBean = getAdequateBean(pathWithoutAlias, caseData, beanCache);
 
 				if (adequateBean.isEmpty()) {
 					return Tuple.of(originalFieldName, new Tuple<>((FieldInfo) null, PartialRetrievalFailureCause.ENTITY_COULD_NOT_BE_FOUND));
@@ -147,7 +150,10 @@ public class PartialRetrieverImpl implements PartialRetriever {
 					.collect(Collectors.toMap(Map.Entry::getKey, entry -> I18nProperties.getEnumCaption(entry.getValue()))));
 	}
 
-	private Optional<EntityDto> getAdequateBean(@NotNull String aliasPath, @NotNull CaseDataDto caseData) {
+	private Optional<EntityDto> getAdequateBean(
+		@NotNull String aliasPath,
+		@NotNull CaseDataDto caseData,
+		@NotNull Map<String, Optional<EntityDto>> beanCache) {
 
 		int i = aliasPath.indexOf(".");
 
@@ -156,19 +162,21 @@ public class PartialRetrieverImpl implements PartialRetriever {
 		if (CaseDataDto.I18N_PREFIX.equals(prefix)) {
 			return Optional.of(caseData);
 		} else {
-			List<? extends EntityDto> entityDtos = businessDtoFacade.fetchByI18nName(prefix, caseData);
+			return beanCache.computeIfAbsent(prefix, prefixCandidate -> {
+				List<? extends EntityDto> entityDtos = businessDtoFacade.fetchByI18nName(prefixCandidate, caseData);
 
-			int entitiesSize = CollectionUtils.size(entityDtos);
+				int entitiesSize = CollectionUtils.size(entityDtos);
 
-			if (entitiesSize == 0) {
-				return Optional.empty();
-			}
+				if (entitiesSize == 0) {
+					return Optional.empty();
+				}
 
-			if (entitiesSize != 1) {
-				logger.warn("Only first element is supported for now: [{}], was: [{}]", aliasPath, entitiesSize);
-			}
+				if (entitiesSize != 1) {
+					logger.warn("Only first element is supported for now: [{}], was: [{}]", aliasPath, entitiesSize);
+				}
 
-			return Optional.ofNullable(entityDtos).map(actualEntities -> actualEntities.get(0));
+				return Optional.ofNullable(entityDtos).map(actualEntities -> actualEntities.get(0));
+			});
 		}
 	}
 

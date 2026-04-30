@@ -1,14 +1,24 @@
 package de.symeda.sormas.backend.patch.partial_retrieval;
 
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.patch.partial_retrieval.FieldInfo;
 import de.symeda.sormas.api.utils.OrderedRegisterable;
 
 import javax.validation.constraints.NotNull;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 
+// TODO: check for adequate entityDto / generics usage to make it nicer.
 public interface SpecificFieldValueRetriever {
 
-    FieldInfo getFieldInfo(String fieldName);
+    /**
+     *
+     * @param fieldName
+     * @param entityDto
+     * @return
+     */
+    FieldInfo getFieldInfo(String fieldName, EntityDto entityDto);
 
     /**
      * Meant to be implemented by classes implementing this {@link OrderedRegisterable} contract but to be used.
