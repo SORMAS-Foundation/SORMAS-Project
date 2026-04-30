@@ -15866,17 +15866,13 @@ CREATE TABLE IF NOT EXISTS exposures_eatingoutvenues (
 
 ALTER TABLE exposures_eatingoutvenues OWNER TO sormas_user;
 ALTER TABLE exposures_eatingoutvenues ADD CONSTRAINT fk_exposures_eatingoutvenues_exposure_id FOREIGN KEY (exposure_id) REFERENCES exposures;
-ALTER TABLE exposures_eatingoutvenues ADD CONSTRAINT unq_exposures_eatingoutvenues_0 UNIQUE (exposure_id, eatingoutvenue);
+ALTER TABLE exposures_eatingoutvenues ADD CONSTRAINT exposures_eatingoutvenues_pk PRIMARY KEY (exposure_id, eatingoutvenue);
 
 CREATE TABLE IF NOT EXISTS exposures_eatingoutvenues_history (LIKE exposures_eatingoutvenues);
 DROP TRIGGER IF EXISTS versioning_trigger ON exposures_eatingoutvenues;
 CREATE TRIGGER versioning_trigger
     BEFORE INSERT OR UPDATE OR DELETE ON exposures_eatingoutvenues
     FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'exposures_eatingoutvenues_history', true);
-DROP TRIGGER IF EXISTS delete_history_trigger ON exposures_eatingoutvenues;
-CREATE TRIGGER delete_history_trigger
-    AFTER DELETE ON exposures_eatingoutvenues
-    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('exposures_eatingoutvenues_history', 'id');
 ALTER TABLE exposures_eatingoutvenues_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (627, '#13917 - Salmonellosis Exposure eating-out venues + shopping details');
