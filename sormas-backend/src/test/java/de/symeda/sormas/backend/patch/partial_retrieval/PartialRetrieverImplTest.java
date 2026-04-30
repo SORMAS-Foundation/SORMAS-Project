@@ -66,7 +66,7 @@ class PartialRetrieverImplTest extends AbstractBeanTest {
 			() -> Assertions.assertEquals("Immunization status", immunizationStatusFieldInfo.getTranslatedFieldName()),
 			() -> Assertions.assertEquals("Acquired", immunizationStatusFieldInfo.getTranslatedFieldValue()),
 
-			() -> Assertions.assertEquals("Pfizer-BioNTech COVID-19 vaccine", vaccineNameFieldInfo.getTranslatedFieldValue()),
+			() -> Assertions.assertEquals("COMIRNATY", vaccineNameFieldInfo.getTranslatedFieldValue()),
 			() -> Assertions.assertEquals("actual vaccine name", otherVaccineNameFieldInfo.getTranslatedFieldValue()),
 
 			() -> Assertions.assertEquals(3, actual.getFieldInfoDictionary().size()));
@@ -75,8 +75,8 @@ class PartialRetrieverImplTest extends AbstractBeanTest {
 	@Test
 	void retrievePartialForDisplay() {
 		// PREPARE
-		I18nProperties.setUserLanguage(Language.DE);
-		Disease disease = Disease.ANTHRAX;
+		I18nProperties.setUserLanguage(Language.FR);
+		Disease disease = Disease.AFP;
 		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
 
 		String caseDiseaseFieldName = toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE);
@@ -92,8 +92,8 @@ class PartialRetrieverImplTest extends AbstractBeanTest {
 
 			() -> Assertions.assertNotNull(caseDiseaseFieldInfo),
 
-			() -> Assertions.assertEquals("Krankheit", caseDiseaseFieldInfo.getTranslatedFieldName()),
-			() -> Assertions.assertEquals("Milzbrand", caseDiseaseFieldInfo.getTranslatedFieldValue()));
+			() -> Assertions.assertEquals("Disease", caseDiseaseFieldInfo.getTranslatedFieldName()),
+			() -> Assertions.assertEquals("Paralysie Flasque Aiguë", caseDiseaseFieldInfo.getTranslatedFieldValue()));
 	}
 
 	@Test
@@ -105,23 +105,23 @@ class PartialRetrieverImplTest extends AbstractBeanTest {
 		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
 
 		// EXECUTE
-		String caseDiseaseFieldName = toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE);
+		String clinicalConfirmation = toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.CLINICAL_CONFIRMATION);
 		String symptomsAbdominalPain = toFieldName(SymptomsDto.I18N_PREFIX, SymptomsDto.ABDOMINAL_PAIN);
 		PartialRetrievalResponse actual = victim().retrievePartial(
 			new PartialRetrievalRequest().setCaseUuid(originalCase.getUuid())
-				.setFieldsToRetrieve(Set.of(caseDiseaseFieldName, symptomsAbdominalPain)));
+				.setFieldsToRetrieve(Set.of(clinicalConfirmation, symptomsAbdominalPain)));
 
 		// CHECK
 		System.out.println("actual = " + actual);
 
-		FieldInfo caseDiseaseFieldInfo = actual.getFieldInfoDictionary().get(caseDiseaseFieldName);
+		FieldInfo caseDiseaseFieldInfo = actual.getFieldInfoDictionary().get(clinicalConfirmation);
 		FieldInfo symptomsAbdominalPainFieldInfo = actual.getFieldInfoDictionary().get(symptomsAbdominalPain);
 		Assertions.assertAll(
 			() -> Assertions.assertTrue(actual.getFailuresDictionary().isEmpty()),
 
-			() -> Assertions.assertTrue(actual.getFieldInfoDictionary().containsKey(caseDiseaseFieldName)),
-			() -> Assertions.assertEquals("Krankheit", caseDiseaseFieldInfo.getTranslatedFieldName()),
-			() -> Assertions.assertEquals(disease, caseDiseaseFieldInfo.getFieldValue()),
+			() -> Assertions.assertTrue(actual.getFieldInfoDictionary().containsKey(clinicalConfirmation)),
+			() -> Assertions.assertEquals("Klinische Bestätigung", caseDiseaseFieldInfo.getTranslatedFieldName()),
+			() -> Assertions.assertEquals(originalCase.getClinicalConfirmation(), caseDiseaseFieldInfo.getFieldValue()),
 
 			() -> Assertions.assertTrue(actual.getFieldInfoDictionary().containsKey(symptomsAbdominalPain)),
 			() -> Assertions.assertEquals("Abdominalschmerzen", symptomsAbdominalPainFieldInfo.getTranslatedFieldName()),
