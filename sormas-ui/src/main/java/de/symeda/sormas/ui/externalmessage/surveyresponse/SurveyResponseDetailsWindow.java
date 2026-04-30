@@ -146,6 +146,7 @@ public class SurveyResponseDetailsWindow {
 				Link caseLink = new Link(
 					I18nProperties.getCaption(Captions.surveyResponseCaseLink) + ": " + result.getCaseUuid(),
 					new ExternalResource("#!" + CaseDataView.VIEW_NAME + "/" + result.getCaseUuid()));
+				caseLink.setTargetName("_blank");
 				layout.addComponent(caseLink);
 			}
 

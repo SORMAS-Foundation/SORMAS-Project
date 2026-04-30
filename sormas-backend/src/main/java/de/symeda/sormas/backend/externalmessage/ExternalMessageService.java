@@ -1,29 +1,18 @@
 package de.symeda.sormas.backend.externalmessage;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.ejb.*;
+import javax.persistence.Tuple;
+import javax.persistence.criteria.*;
 
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageCriteria;
+import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.ExternalMessageType;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -322,5 +311,32 @@ public class ExternalMessageService extends AdoServiceWithUserFilterAndJurisdict
 		cq.where(filter);
 
 		return em.createQuery(cq).getResultStream().findFirst().orElse(null);
+	}
+
+	/**
+	 * Allows to only update (refresh with latest survey data) for messages that are not yet processed:
+	 * {@link ExternalMessageStatus#UNPROCESSED}.
+	 * 
+	 * @param reportIds
+	 *            dedup / idempotency key composed of the survey id and response id.
+	 * @return UUIds that must be updated / refreshed.
+	 */
+	public Map<String, de.symeda.sormas.api.utils.Tuple<ExternalMessageStatus, String>> getUuidsByReportIds(Collection<String> reportIds) {
+		if (reportIds == null || reportIds.isEmpty()) {
+			return Collections.emptyMap();
+		}
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Tuple> cq = cb.createTupleQuery();
+		Root<ExternalMessage> root = cq.from(ExternalMessage.class);
+		cq.multiselect(root.get(AbstractDomainObject.UUID), root.get(ExternalMessage.REPORT_ID), root.get(ExternalMessage.STATUS));
+		cq.where(root.get(ExternalMessage.REPORT_ID).in(reportIds));
+		return em.createQuery(cq)
+			.getResultList()
+			.stream()
+			.collect(
+				Collectors.toMap(
+					t -> t.get(1, String.class),
+					t -> new de.symeda.sormas.api.utils.Tuple<>(t.get(2, ExternalMessageStatus.class), t.get(0, String.class)),
+					(a, b) -> a));
 	}
 }

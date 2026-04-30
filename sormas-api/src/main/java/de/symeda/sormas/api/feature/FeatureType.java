@@ -14,18 +14,9 @@
  */
 package de.symeda.sormas.api.feature;
 
-import static de.symeda.sormas.api.common.DeletableEntityType.CASE;
-import static de.symeda.sormas.api.common.DeletableEntityType.CONTACT;
-import static de.symeda.sormas.api.common.DeletableEntityType.EVENT;
-import static de.symeda.sormas.api.common.DeletableEntityType.EVENT_PARTICIPANT;
-import static de.symeda.sormas.api.common.DeletableEntityType.IMMUNIZATION;
-import static de.symeda.sormas.api.common.DeletableEntityType.TRAVEL_ENTRY;
+import static de.symeda.sormas.api.common.DeletableEntityType.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -128,7 +119,13 @@ public enum FeatureType {
 		new FeatureType[] {
 			SAMPLES_LAB },
 		null,
-		ImmutableMap.of(FeatureTypeProperty.FETCH_MODE, Boolean.FALSE, FeatureTypeProperty.FORCE_AUTOMATIC_PROCESSING, false)),
+		ImmutableMap.of(
+			FeatureTypeProperty.FETCH_MODE,
+			Boolean.FALSE,
+			FeatureTypeProperty.FORCE_AUTOMATIC_PROCESSING,
+			false,
+			FeatureTypeProperty.SURVEY_FETCH_ENABLED,
+			false)),
 	MANUAL_EXTERNAL_MESSAGES(true,
 		true,
 		new FeatureType[] {

@@ -225,7 +225,7 @@ public class CronService {
 		}
 	}
 
-	@Schedule(hour = "*", minute = "*/30", persistent = false)
+	@Schedule(hour = "*", minute = "0", second = "0", persistent = false)
 	public void fetchExternalMessages() {
 		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.EXTERNAL_MESSAGES)) {
 			externalMessageFacade.fetchAndSaveExternalMessages(null);
@@ -234,18 +234,19 @@ public class CronService {
 
 	@Schedule(hour = "*", minute = "*/5", persistent = false)
 	public void fetchSurveyResponses() {
-		if (!featureConfigurationFacade.isFeatureEnabled(FeatureType.EXTERNAL_MESSAGES)) {
+		if (!featureConfigurationFacade.isFeatureEnabled(FeatureType.EXTERNAL_MESSAGES)
+			|| featureConfigurationFacade.isPropertyValueTrue(FeatureType.EXTERNAL_MESSAGES, FeatureTypeProperty.SURVEY_FETCH_ENABLED)) {
 			logger.info("External messages are disabled, survey responses will not be fetched");
 			return;
 		}
 
-		logger.error("fetchSurveyResponses is triggered");
-
-		List<ExternalMessageDto> externalMessageDtos = externalMessageFacade.saveAndProcessSurveyResponses();
+		List<ExternalMessageDto> surveyExternalMessages = externalMessageFacade.saveAndProcessSurveyResponses();
 
 		if (logger.isInfoEnabled()) {
-			List<String> reportIds = externalMessageDtos.stream().map(ExternalMessageDto::getReportId).collect(Collectors.toList());
-			logger.info("Following response ids were saved: [{}]", reportIds);
+			List<String> reportIds = surveyExternalMessages.stream().map(ExternalMessageDto::getReportId).collect(Collectors.toList());
+			if (!reportIds.isEmpty()) {
+				logger.info("Survey responses with following reportIds were saved: [{}]", reportIds);
+			}
 		}
 	}
 

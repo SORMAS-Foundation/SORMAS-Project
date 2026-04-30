@@ -1,10 +1,6 @@
 package de.symeda.sormas.ui.externalmessage;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
@@ -12,23 +8,18 @@ import javax.annotation.Nullable;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Page;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
+import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Validator;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.externalmessage.ExternalMessageCriteria;
-import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.externalmessage.ExternalMessageFetchResult;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
+import de.symeda.sormas.api.externalmessage.NewMessagesState;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -38,17 +29,12 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.ViewModelProviders;
-import de.symeda.sormas.ui.utils.AbstractView;
-import de.symeda.sormas.ui.utils.ButtonHelper;
-import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.*;
 import de.symeda.sormas.ui.utils.DateTimeField;
-import de.symeda.sormas.ui.utils.FutureDateValidator;
-import de.symeda.sormas.ui.utils.LayoutUtil;
-import de.symeda.sormas.ui.utils.MenuBarHelper;
-import de.symeda.sormas.ui.utils.VaadinUiUtil;
-import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 public class ExternalMessagesView extends AbstractView {
+
+	private static final String SURVEY_FETCH_BUTTON_ENABLED = "SURVEY_FETCH_BUTTON_ENABLED";
 
 	public static final String VIEW_NAME = "messages";
 
@@ -78,11 +64,21 @@ public class ExternalMessagesView extends AbstractView {
 			ViewModelProviders.of(ExternalMessagesView.class).get(ExternalMessageCriteria.class, criteria);
 		}
 
-		//if (FacadeProvider.getFeatureConfigurationFacade().isPropertyValueTrue(FeatureType.EXTERNAL_MESSAGES, FeatureTypeProperty.FETCH_MODE)) {
-		addHeaderComponent(ButtonHelper.createIconButton(Captions.externalMessageFetch, VaadinIcons.REFRESH, e -> {
-			checkForConcurrentEventsAndFetch();
-		}, ValoTheme.BUTTON_PRIMARY));
-		//}
+		if (FacadeProvider.getFeatureConfigurationFacade().isPropertyValueTrue(FeatureType.EXTERNAL_MESSAGES, FeatureTypeProperty.FETCH_MODE)) {
+			addHeaderComponent(ButtonHelper.createIconButton(Captions.externalMessageFetch, VaadinIcons.REFRESH, e -> {
+				checkForConcurrentEventsAndFetch(false);
+			}, ValoTheme.BUTTON_PRIMARY));
+		}
+
+		if (FacadeProvider.getFeatureConfigurationFacade()
+			.isPropertyValueTrue(FeatureType.EXTERNAL_MESSAGES, FeatureTypeProperty.SURVEY_FETCH_ENABLED)) {
+			addHeaderComponent(
+				ButtonHelper.createIconButton(
+					Captions.surveyFetch,
+					VaadinIcons.REFRESH,
+					e -> checkForConcurrentEventsAndFetch(true),
+					ValoTheme.BUTTON_PRIMARY));
+		}
 
 		if (isBulkEditAllowed()) {
 			btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, e -> {
@@ -264,7 +260,7 @@ public class ExternalMessagesView extends AbstractView {
 		return button;
 	}
 
-	private void checkForConcurrentEventsAndFetch() {
+	private void checkForConcurrentEventsAndFetch(boolean surveyMode) {
 		boolean fetchAlreadyStarted = FacadeProvider.getSystemEventFacade().existsStartedEvent(SystemEventType.FETCH_EXTERNAL_MESSAGES);
 		if (fetchAlreadyStarted) {
 			VaadinUiUtil.showConfirmationPopup(
@@ -275,40 +271,47 @@ public class ExternalMessagesView extends AbstractView {
 				480,
 				confirmed -> {
 					if (confirmed) {
-						askForSinceDateAndFetch();
+						askForSinceDateAndFetch(surveyMode);
 					}
 				});
 		} else {
-			askForSinceDateAndFetch();
+			askForSinceDateAndFetch(surveyMode);
 		}
 	}
 
-	private void askForSinceDateAndFetch() {
+	private void askForSinceDateAndFetch(boolean surveyMode) {
 		boolean atLeastOneFetchExecuted = FacadeProvider.getSyncFacade().hasAtLeastOneSuccessfullSyncOf(SystemEventType.FETCH_EXTERNAL_MESSAGES);
 		if (atLeastOneFetchExecuted) {
-			fetchExternalMessages(null);
+			if (surveyMode) {
+				fetchSurveyMessages(null);
+			} else {
+				fetchExternalMessages(null);
+			}
 		} else {
-			showSinceDateSelectionWindow(this::fetchExternalMessages);
+			showSinceDateSelectionWindow(since -> {
+				if (surveyMode) {
+					fetchSurveyMessages(since);
+				} else {
+					fetchExternalMessages(since);
+				}
+			});
 		}
 	}
 
 	private void fetchExternalMessages(Date since) {
-//		ExternalMessageFetchResult fetchResult = FacadeProvider.getExternalMessageFacade().saveAndProcessSurveyResponses();
-//		if (!fetchResult.isSuccess()) {
-//			VaadinUiUtil.showWarningPopup(fetchResult.getError());
-//		} else if (NewMessagesState.NO_NEW_MESSAGES.equals(fetchResult.getNewMessagesState())) {
-//			VaadinUiUtil.showWarningPopup(I18nProperties.getCaption(Captions.externalMessageNoNewMessages));
-//		} else {
-//			grid.reload();
-//		}
-
-		List<ExternalMessageDto> fetchResult = FacadeProvider.getExternalMessageFacade().saveAndProcessSurveyResponses();
-		if (!fetchResult.isEmpty()) {
-			VaadinUiUtil.showWarningPopup(String.format("New messages: [%s]", fetchResult));
-			grid.reload();
+		ExternalMessageFetchResult fetchResult = FacadeProvider.getExternalMessageFacade().fetchAndSaveExternalMessages(since);
+		if (!fetchResult.isSuccess()) {
+			VaadinUiUtil.showWarningPopup(fetchResult.getError());
+		} else if (NewMessagesState.NO_NEW_MESSAGES.equals(fetchResult.getNewMessagesState())) {
+			VaadinUiUtil.showWarningPopup(I18nProperties.getCaption(Captions.externalMessageNoNewMessages));
 		} else {
 			grid.reload();
 		}
+	}
+
+	private void fetchSurveyMessages(Date since) {
+		FacadeProvider.getExternalMessageFacade().saveAndProcessSurveyResponses(since);
+		grid.reload();
 	}
 
 	private void showSinceDateSelectionWindow(Consumer<Date> dateConsumer) {

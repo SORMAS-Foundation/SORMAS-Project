@@ -28,7 +28,6 @@ import de.symeda.sormas.api.survey.SurveyReferenceDto;
 import de.symeda.sormas.api.survey.SurveyTokenDto;
 import de.symeda.sormas.api.utils.Tuple;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResultStatus;
-import de.symeda.sormas.backend.externalmessage.labmessage.ExternalMessageProcessingFacadeEjbLocal;
 import de.symeda.sormas.backend.survey.SurveyFacadeEjb;
 import de.symeda.sormas.backend.survey.SurveyTokenFacadeEjb;
 import de.symeda.sormas.backend.util.CollectorUtils;
@@ -46,9 +45,6 @@ public class AutomaticSurveyResponseProcessor {
 
 	@EJB
 	private SurveyTokenFacadeEjb.SurveyTokenFacadeEjbLocal surveyTokenFacade;
-
-	@EJB
-	private ExternalMessageProcessingFacadeEjbLocal processingFacade;
 
 	@Transactional(Transactional.TxType.REQUIRES_NEW)
 	public List<SurveyResponseProcessingResult> processSurveyResponses(List<ExternalMessageDto> externalMessages)

@@ -114,7 +114,7 @@ import de.symeda.sormas.backend.util.*;
 	UserRight._EXTERNAL_MESSAGE_DOCTOR_DECLARATION_VIEW })
 public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
-	public static final String SURVEY_PERIOD_INTERVAL_HOURS = "SURVEY_PERIOD_INTERVAL_HOURS";
+	public static final String SURVEY_PERIOD_INTERVAL_DAYS = "SURVEY_PERIOD_INTERVAL_DAYS";
 	private static final String SURVEY_AS_EXTERNAL_MESSAGE_ADAPTER_JNDI_KEY = "SURVEY_AS_EXTERNAL_MESSAGE_ADAPTER_JNDI_KEY";
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -317,10 +317,9 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	public List<ExternalMessageDto> saveAndProcessSurveyResponses(Date since) {
 
 		if (since == null) { // TODO: use shorter default range
-			int hoursRange =
-				Integer.parseInt(Optional.ofNullable(systemConfigurationValueFacade.getValue(SURVEY_PERIOD_INTERVAL_HOURS)).orElse("50000"));
+			int dateRange = Integer.parseInt(Optional.ofNullable(systemConfigurationValueFacade.getValue(SURVEY_PERIOD_INTERVAL_DAYS)).orElse("350"));
 
-			since = DateHelper.addSeconds(new Date(), -(hoursRange * 3600));
+			since = DateHelper.addDays(new Date(), -dateRange);
 		}
 
 		logger.error("Since date: [{}]", since);
@@ -328,6 +327,35 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		ExternalMessageAdapterFacade externalLabResultsFacade = getExternalSurveyProviderFacade();
 		ExternalMessageResult<List<ExternalMessageDto>> externalMessagesResult = externalLabResultsFacade.getExternalMessages(since);
 		List<ExternalMessageDto> surveyResponses = externalMessagesResult.getValue();
+
+		List<String> reportIds = surveyResponses.stream().map(ExternalMessageDto::getReportId).filter(Objects::nonNull).collect(toList());
+
+		if (!reportIds.isEmpty()) {
+			Map<String, de.symeda.sormas.api.utils.Tuple<ExternalMessageStatus, String>> statusUuidTuplesByReportId =
+				externalMessageService.getUuidsByReportIds(reportIds);
+
+			Set<String> unProcessedMessagesReportIds = statusUuidTuplesByReportId.entrySet()
+				.stream()
+				.filter(tuple -> tuple.getValue().getFirst() == ExternalMessageStatus.UNPROCESSED)
+				.map(Map.Entry::getKey)
+				.collect(Collectors.toSet());
+
+			Set<String> alreadyPresentReportIds = statusUuidTuplesByReportId.keySet();
+
+			surveyResponses.forEach(dto -> {
+				de.symeda.sormas.api.utils.Tuple<ExternalMessageStatus, String> tuple = statusUuidTuplesByReportId.get(dto.getReportId());
+				if (tuple != null && tuple.getFirst() == ExternalMessageStatus.UNPROCESSED) {
+					dto.setUuid(tuple.getSecond());
+				}
+			});
+
+			surveyResponses = surveyResponses.stream()
+				.filter(
+					externalMessage -> !alreadyPresentReportIds.contains(externalMessage.getReportId())
+						|| unProcessedMessagesReportIds.contains(externalMessage.getReportId()))
+				.collect(toList());
+		}
+
 		List<ExternalMessageDto> savedDtos;
 		try {
 			List<SurveyResponseProcessingResult> processingResults = automaticSurveyResponseProcessor.processSurveyResponses(surveyResponses);
