@@ -327,8 +327,8 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 				I18nProperties.getValidationError(Validations.afterDate, dischargeDateField.getCaption(), admissionDateField.getCaption())));
 		dischargeDateField.addValueChangeListener(event -> admissionDateField.markAsDirty()); // re-evaluate admission date for consistent validation of all fields
 
-		// RSV specific logic
-		if (List.of(Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.CRYPTOSPORIDIOSIS, Disease.GIARDIASIS, Disease.SALMONELLOSIS).contains(caze.getDisease())) {
+		// ICU validators + length-of-stay derivation: only diseases that actually render the ICU fields
+		if (List.of(Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.CRYPTOSPORIDIOSIS, Disease.GIARDIASIS).contains(caze.getDisease())) {
 			intensiveCareUnitStart.addValidator(
 				new DateComparisonValidator(
 					intensiveCareUnitStart,
@@ -373,9 +373,17 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 					icuLengthOfStayField.setValue("" + DateHelper.getDaysBetween(intensiveCareUnitStart.getValue(), intensiveCareUnitEnd.getValue()));
 				}
 			});
-			// RSV-specific conditional visibility logic
-			// stillHospitalized should not be visible/writable if discharge date is filled
+			// Show icuLengthOfStay when ICU dates are not available but survey has length information
+			FieldHelper.setVisibleWhen(intensiveCareUnit, Collections.singletonList(icuLengthOfStayField), Arrays.asList(YesNoUnknown.YES), true);
+		}
 
+		// stillHospitalized should not be visible/writable if discharge date is filled.
+		// Applies to every disease that renders the stillHospitalized field (RSV, Giardiasis, Cryptosporidiosis, Salmonellosis).
+		if (List.of(
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+			Disease.CRYPTOSPORIDIOSIS,
+			Disease.GIARDIASIS,
+			Disease.SALMONELLOSIS).contains(caze.getDisease())) {
 			dischargeDateField.addValueChangeListener(event -> {
 				boolean hasDischargeDate = dischargeDateField.getValue() != null;
 				stillHospitalizedField.setVisible(!hasDischargeDate);
@@ -388,8 +396,6 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 					durationOfHospitalization.setValue("" + DateHelper.getDaysBetween(admissionDateField.getValue(), dischargeDateField.getValue()));
 				}
 			});
-			// Show icuLengthOfStay when ICU dates are not available but survey has length information
-			FieldHelper.setVisibleWhen(intensiveCareUnit, Collections.singletonList(icuLengthOfStayField), Arrays.asList(YesNoUnknown.YES), true);
 		}
 
 		hospitalizedPreviouslyField.addValueChangeListener(e -> updatePrevHospHint(hospitalizedPreviouslyField, previousHospitalizationsField));

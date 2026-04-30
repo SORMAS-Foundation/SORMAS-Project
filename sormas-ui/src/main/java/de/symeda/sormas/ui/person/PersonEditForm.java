@@ -527,7 +527,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		// other diseases keep the existing dependent-visibility binding.
 		boolean isLuxSalmonellosis = disease == Disease.SALMONELLOSIS && isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 		if (isLuxSalmonellosis) {
-			setVisible(false, PersonDto.WORK_PLACE);
+			setVisibleClear(false, PersonDto.WORK_PLACE);
 			getField(PersonDto.WORK_PLACE_TEXT).setVisible(true);
 		} else {
 			FieldHelper.setVisibleWhen(getFieldGroup(), PersonDto.WORK_PLACE_TEXT, PersonDto.WORK_PLACE, WorkPlace.OTHER, true);
