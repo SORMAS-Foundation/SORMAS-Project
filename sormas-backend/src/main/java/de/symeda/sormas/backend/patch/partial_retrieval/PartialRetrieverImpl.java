@@ -55,6 +55,9 @@ public class PartialRetrieverImpl implements PartialRetriever {
 	@Inject
 	private TypeToDisplayRegistry typeToDisplayRegistry;
 
+	@Inject
+	private SpecificFieldValueRetrieverRegistry specificFieldValueRetrieverRegistry;
+
 	@EJB
 	private FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
@@ -89,14 +92,21 @@ public class PartialRetrieverImpl implements PartialRetriever {
 				String physicalPathName = pathWithoutAlias.substring(pathWithoutAlias.indexOf('.') + 1);
 
 				String aliasPath = pathAliasHelper.toAliasPath(pathWithoutAlias);
-				Optional<EntityDto> adequateBean = getAdequateBean(pathWithoutAlias, caseData, beanCache);
+				Optional<EntityDto> adequateBeanOpt = getAdequateBean(pathWithoutAlias, caseData, beanCache);
 
-				if (adequateBean.isEmpty()) {
+				if (adequateBeanOpt.isEmpty()) {
 					return Tuple.of(originalFieldName, new Tuple<>((FieldInfo) null, PartialRetrievalFailureCause.ENTITY_COULD_NOT_BE_FOUND));
 				}
 
+				EntityDto adequateBean = adequateBeanOpt.orElseThrow();
+				Optional<FieldInfo> specificFieldInfo = specificFieldValueRetrieverRegistry.getFieldInfo(aliasPath, adequateBean);
+
+				if (specificFieldInfo.isPresent()) {
+					return Tuple.of(originalFieldName, new Tuple<>(specificFieldInfo.get(), (PartialRetrievalFailureCause) null));
+				}
+
 				Tuple<Tuple<Class<?>, Object>, PropertyAccessFailure> propertyType = PropertyAccessor
-					.getPropertyTypeAndValue(adequateBean.orElseThrow(), physicalPathName, getFieldVisibilityCheckers(caseData.getDisease()));
+					.getPropertyTypeAndValue(adequateBean, physicalPathName, getFieldVisibilityCheckers(caseData.getDisease()));
 
 				PropertyAccessFailure propertyAccessFailure = propertyType.getSecond();
 				if (propertyAccessFailure != null) {

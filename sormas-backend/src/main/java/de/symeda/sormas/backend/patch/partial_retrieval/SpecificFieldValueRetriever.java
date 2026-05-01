@@ -39,8 +39,4 @@ public interface SpecificFieldValueRetriever {
     default boolean supports(@NotNull String targetFieldName) {
         return getSupportedFields().contains(targetFieldName);
     }
-
-    default String toFieldName(String prefix, String fieldName) {
-        return prefix + '.' + fieldName;
-    }
 }

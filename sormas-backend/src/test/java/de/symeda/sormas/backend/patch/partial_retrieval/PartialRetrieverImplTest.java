@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import de.symeda.sormas.api.person.PersonContactDetailDto;
+import de.symeda.sormas.api.person.PersonContactDetailType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -113,8 +114,6 @@ class PartialRetrieverImplTest extends AbstractBeanTest {
 				.setFieldsToRetrieve(Set.of(clinicalConfirmation, symptomsAbdominalPain)));
 
 		// CHECK
-		System.out.println("actual = " + actual);
-
 		FieldInfo caseDiseaseFieldInfo = actual.getFieldInfoDictionary().get(clinicalConfirmation);
 		FieldInfo symptomsAbdominalPainFieldInfo = actual.getFieldInfoDictionary().get(symptomsAbdominalPain);
 		Assertions.assertAll(
@@ -145,8 +144,6 @@ class PartialRetrieverImplTest extends AbstractBeanTest {
 			.retrievePartial(new PartialRetrievalRequest().setCaseUuid(originalCase.getUuid()).setFieldsToRetrieve(Set.of(personFirstNameFieldName)));
 
 		// CHECK
-		System.out.println("actual = " + actual);
-
 		FieldInfo personFirstNameFieldInfo = actual.getFieldInfoDictionary().get(personFirstNameFieldName);
 		Assertions.assertAll(
 			() -> Assertions.assertTrue(actual.getFailuresDictionary().isEmpty()),
@@ -167,8 +164,6 @@ class PartialRetrieverImplTest extends AbstractBeanTest {
 			new PartialRetrievalRequest().setCaseUuid(originalCase.getUuid()).setFieldsToRetrieve(Set.of(caseClassificationDateFieldName)));
 
 		// CHECK
-		System.out.println("actual = " + actual);
-
 		FieldInfo classificationDateFieldInfo = actual.getFieldInfoDictionary().get(caseClassificationDateFieldName);
 		Assertions.assertAll(
 			() -> Assertions.assertTrue(actual.getFailuresDictionary().isEmpty()),
@@ -186,6 +181,20 @@ class PartialRetrieverImplTest extends AbstractBeanTest {
 		PersonReferenceDto personRef = originalCase.getPerson();
 
 		PersonDto person = getPersonFacade().getByUuid(personRef.getUuid());
+		List<PersonContactDetailDto> contactDetails = person.getPersonContactDetails();
+
+		PersonContactDetailDto primaryPhoneNumber = new PersonContactDetailDto();
+		primaryPhoneNumber.setContactInformation("09876543");
+		primaryPhoneNumber.setPersonContactDetailType(PersonContactDetailType.PHONE);
+		primaryPhoneNumber.setPrimaryContact(true);
+		contactDetails.add(primaryPhoneNumber);
+
+		PersonContactDetailDto secondaryPhoneNumber = new PersonContactDetailDto();
+		secondaryPhoneNumber.setContactInformation("12345678");
+		secondaryPhoneNumber.setPersonContactDetailType(PersonContactDetailType.PHONE);
+		contactDetails.add(secondaryPhoneNumber);
+
+		getPersonFacade().save(person);
 
 		// EXECUTE
 		String personContactDetails = toFieldName(PersonContactDetailDto.I18N_PREFIX, PersonContactDetailDto.PHONE_NUMBER_TYPE);
@@ -193,14 +202,49 @@ class PartialRetrieverImplTest extends AbstractBeanTest {
 				.retrievePartial(new PartialRetrievalRequest().setCaseUuid(originalCase.getUuid()).setFieldsToRetrieve(Set.of(personContactDetails)));
 
 		// CHECK
-		System.out.println("actual = " + actual);
-
 		FieldInfo personFirstNameFieldInfo = actual.getFieldInfoDictionary().get(personContactDetails);
 		Assertions.assertAll(
 				() -> Assertions.assertTrue(actual.getFailuresDictionary().isEmpty()),
 				() -> Assertions.assertTrue(actual.getFieldInfoDictionary().containsKey(personContactDetails)),
-				() -> Assertions.assertEquals("First name", personFirstNameFieldInfo.getTranslatedFieldName()),
-				() -> Assertions.assertEquals(person.getFirstName(), personFirstNameFieldInfo.getFieldValue()));
+				() -> Assertions.assertEquals("Phone number type", personFirstNameFieldInfo.getTranslatedFieldName()),
+				() -> Assertions.assertEquals("09876543; 12345678", personFirstNameFieldInfo.getFieldValue()));
+	}
+
+	@Test
+	void retrieve_contact_details_email() {
+		// PREPARE
+		Disease disease = Disease.RUBELLA;
+		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
+
+		PersonReferenceDto personRef = originalCase.getPerson();
+
+		PersonDto person = getPersonFacade().getByUuid(personRef.getUuid());
+		List<PersonContactDetailDto> contactDetails = person.getPersonContactDetails();
+
+		PersonContactDetailDto emailContactDetail = new PersonContactDetailDto();
+		emailContactDetail.setContactInformation("mail@mail.ch");
+		emailContactDetail.setPersonContactDetailType(PersonContactDetailType.EMAIL);
+		contactDetails.add(emailContactDetail);
+
+		PersonContactDetailDto phoneContactDetail = new PersonContactDetailDto();
+		phoneContactDetail.setContactInformation("MUST_NOT_BE_RETRIEVED");
+		phoneContactDetail.setPersonContactDetailType(PersonContactDetailType.PHONE);
+		contactDetails.add(phoneContactDetail);
+
+		getPersonFacade().save(person);
+
+		// EXECUTE
+		String personContactDetails = toFieldName(PersonContactDetailDto.I18N_PREFIX, PersonContactDetailDto.CONTACT_INFORMATION);
+		PartialRetrievalResponse actual = victim()
+				.retrievePartial(new PartialRetrievalRequest().setCaseUuid(originalCase.getUuid()).setFieldsToRetrieve(Set.of(personContactDetails)));
+
+		// CHECK
+		FieldInfo personFirstNameFieldInfo = actual.getFieldInfoDictionary().get(personContactDetails);
+		Assertions.assertAll(
+				() -> Assertions.assertTrue(actual.getFailuresDictionary().isEmpty()),
+				() -> Assertions.assertTrue(actual.getFieldInfoDictionary().containsKey(personContactDetails)),
+				() -> Assertions.assertEquals("Contact information", personFirstNameFieldInfo.getTranslatedFieldName()),
+				() -> Assertions.assertEquals("mail@mail.ch", personFirstNameFieldInfo.getFieldValue()));
 	}
 
 	private static String toFieldName(String prefix, String fieldName) {
