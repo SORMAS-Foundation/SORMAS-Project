@@ -848,6 +848,15 @@
         <group-name>EXTERNAL_MESSAGE_ACCESS</group-name>
     </security-role-mapping>
 
+    <security-role-mapping>
+        <role-name>EXTERNAL_MESSAGE_LABORATORY_VIEW</role-name>
+        <group-name>EXTERNAL_MESSAGE_LABORATORY_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EXTERNAL_MESSAGE_DOCTOR_DECLARATION_VIEW</role-name>
+        <group-name>EXTERNAL_MESSAGE_DOCTOR_DECLARATION_VIEW</group-name>
+    </security-role-mapping>
 
     <security-role-mapping>
         <role-name>EXTERNAL_MESSAGE_SURVEY_RESPONSE_VIEW</role-name>
