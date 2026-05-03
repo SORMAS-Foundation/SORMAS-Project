@@ -35,6 +35,7 @@ public class PersonContactDetailsFieldMapper implements FieldCustomMapper {
 
 	@Override
 	public Optional<DataPatchFailure> map(FieldPatchRequest request) {
+		// TODO: logic to not add in case of the value is already present? To avoid adding the same value X-times
 		Object untypedTarget = request.getTarget();
 		if (!(untypedTarget instanceof PersonDto)) {
 			return Optional.of(new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.TECHNICAL));
