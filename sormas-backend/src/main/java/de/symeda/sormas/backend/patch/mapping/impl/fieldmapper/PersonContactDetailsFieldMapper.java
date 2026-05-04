@@ -103,7 +103,7 @@ public class PersonContactDetailsFieldMapper implements FieldCustomMapper {
 	@Override
 	public Set<String> supportedFields() {
 		return Stream.of(PersonContactDetailDto.PHONE_NUMBER_TYPE, PersonContactDetailDto.CONTACT_INFORMATION)
-			.map(suffix -> PersonContactDetailDto.I18N_PREFIX + PATH_SEPARATOR + suffix)
+			.map(suffix -> PersonDto.I18N_PREFIX + PATH_SEPARATOR + PersonDto.PERSON_CONTACT_DETAILS + PATH_SEPARATOR + suffix)
 			.collect(Collectors.toSet());
 	}
 }
