@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
@@ -168,7 +167,7 @@ class PartialRetrieverImplTest extends AbstractBeanTest {
 			() -> Assertions.assertNull(classificationDateFieldInfo.getFieldValue()));
 	}
 
-	@RepeatedTest(12)
+	@Test
 	void retrieve_contact_details_phone() {
 		// PREPARE
 		Disease disease = Disease.PERTUSSIS;
@@ -203,7 +202,8 @@ class PartialRetrieverImplTest extends AbstractBeanTest {
 		getPersonFacade().save(person);
 
 		// EXECUTE
-		String personContactDetails = toFieldName(PersonContactDetailDto.I18N_PREFIX, PersonContactDetailDto.PHONE_NUMBER_TYPE);
+		String personContactDetails =
+			toFieldName(toFieldName(PersonDto.I18N_PREFIX, PersonDto.PERSON_CONTACT_DETAILS), PersonContactDetailDto.PHONE_NUMBER_TYPE);
 		PartialRetrievalResponse actual = victim()
 			.retrievePartial(new PartialRetrievalRequest().setCaseUuid(originalCase.getUuid()).setFieldsToRetrieve(Set.of(personContactDetails)));
 

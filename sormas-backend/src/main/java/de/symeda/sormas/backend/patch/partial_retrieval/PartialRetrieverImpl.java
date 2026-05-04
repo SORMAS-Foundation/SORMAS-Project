@@ -20,22 +20,12 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.patch.partial_retrieval.DisplayableFieldInfo;
-import de.symeda.sormas.api.patch.partial_retrieval.DisplayablePartialRetrievalResponse;
-import de.symeda.sormas.api.patch.partial_retrieval.FieldInfo;
-import de.symeda.sormas.api.patch.partial_retrieval.PartialRetrievalFailureCause;
-import de.symeda.sormas.api.patch.partial_retrieval.PartialRetrievalRequest;
-import de.symeda.sormas.api.patch.partial_retrieval.PartialRetrievalResponse;
-import de.symeda.sormas.api.patch.partial_retrieval.PartialRetriever;
+import de.symeda.sormas.api.patch.partial_retrieval.*;
 import de.symeda.sormas.api.utils.Tuple;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
-import de.symeda.sormas.backend.patch.BusinessDtoFacade;
-import de.symeda.sormas.backend.patch.PatchFieldHelper;
-import de.symeda.sormas.backend.patch.PathFailureCause;
-import de.symeda.sormas.backend.patch.PropertyAccessFailure;
-import de.symeda.sormas.backend.patch.PropertyAccessor;
+import de.symeda.sormas.backend.patch.*;
 import de.symeda.sormas.backend.patch.alias.PathAliasHelper;
 
 @ApplicationScoped
@@ -105,8 +95,8 @@ public class PartialRetrieverImpl implements PartialRetriever {
 					return Tuple.of(originalFieldName, new Tuple<>(specificFieldInfo.get(), (PartialRetrievalFailureCause) null));
 				}
 
-				Tuple<Tuple<Class<?>, Object>, PropertyAccessFailure> propertyType = PropertyAccessor
-					.getPropertyTypeAndValue(adequateBean, physicalPathName, getFieldVisibilityCheckers(caseData.getDisease()));
+				Tuple<Tuple<Class<?>, Object>, PropertyAccessFailure> propertyType =
+					PropertyAccessor.getPropertyTypeAndValue(adequateBean, physicalPathName, getFieldVisibilityCheckers(caseData.getDisease()));
 
 				PropertyAccessFailure propertyAccessFailure = propertyType.getSecond();
 				if (propertyAccessFailure != null) {
@@ -161,13 +151,13 @@ public class PartialRetrieverImpl implements PartialRetriever {
 	}
 
 	private Optional<EntityDto> getAdequateBean(
-		@NotNull String aliasPath,
+		@NotNull String path,
 		@NotNull CaseDataDto caseData,
 		@NotNull Map<String, Optional<EntityDto>> beanCache) {
 
-		int i = aliasPath.indexOf(".");
+		int i = path.indexOf(".");
 
-		String prefix = StringUtils.substring(aliasPath, 0, i);
+		String prefix = StringUtils.substring(path, 0, i);
 
 		if (CaseDataDto.I18N_PREFIX.equals(prefix)) {
 			return Optional.of(caseData);
@@ -182,7 +172,7 @@ public class PartialRetrieverImpl implements PartialRetriever {
 				}
 
 				if (entitiesSize != 1) {
-					logger.warn("Only first element is supported for now: [{}], was: [{}]", aliasPath, entitiesSize);
+					logger.warn("Only first element is supported for now: [{}], was: [{}]", path, entitiesSize);
 				}
 
 				return Optional.ofNullable(entityDtos).map(actualEntities -> actualEntities.get(0));
