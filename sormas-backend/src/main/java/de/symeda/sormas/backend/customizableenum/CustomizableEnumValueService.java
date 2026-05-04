@@ -15,6 +15,10 @@
 
 package de.symeda.sormas.backend.customizableenum;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -23,14 +27,22 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumCriteria;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 
 @Stateless
 @LocalBean
 public class CustomizableEnumValueService extends AdoServiceWithUserFilterAndJurisdiction<CustomizableEnumValue> {
+
+	@EJB
+	private CaseService caseService;
 
 	public CustomizableEnumValueService() {
 		super(CustomizableEnumValue.class);
@@ -68,6 +80,22 @@ public class CustomizableEnumValueService extends AdoServiceWithUserFilterAndJur
 		}
 
 		return filter;
+	}
+
+	/**
+	 * Get all cases for a specific disease and disease variant that are using a customizable enum value. This is used to determine whether
+	 * a customizable enum value can be deleted or not.
+	 * 
+	 * @param disease
+	 * @param diseaseVariant
+	 * @return
+	 */
+	public List<String> areCasesUsingCustomizableEnumValue(Disease disease, DiseaseVariant diseaseVariant) {
+		CaseCriteria caseCriteria = new CaseCriteria();
+		caseCriteria.setDisease(disease);
+		caseCriteria.setDiseaseVariant(diseaseVariant);
+		List<Case> result = caseService.findBy(caseCriteria, false);
+		return result.stream().map(Case::getUuid).collect(Collectors.toList());
 	}
 
 }

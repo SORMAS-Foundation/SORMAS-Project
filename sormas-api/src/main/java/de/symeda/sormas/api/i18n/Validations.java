@@ -51,6 +51,7 @@ public interface Validations {
 	String contactFollowUpUntilDateSoftValidation = "contactFollowUpUntilDateSoftValidation";
 	String contactWithoutInfrastructureData = "contactWithoutInfrastructureData";
 	String customizableEnumValueAllowedCharacters = "customizableEnumValueAllowedCharacters";
+	String customizableEnumValueAlreadyInUse = "customizableEnumValueAlreadyInUse";
 	String customizableEnumValueDuplicateLanguage = "customizableEnumValueDuplicateLanguage";
 	String customizableEnumValueDuplicateValue = "customizableEnumValueDuplicateValue";
 	String customizableEnumValueEmptyTranslations = "customizableEnumValueEmptyTranslations";
