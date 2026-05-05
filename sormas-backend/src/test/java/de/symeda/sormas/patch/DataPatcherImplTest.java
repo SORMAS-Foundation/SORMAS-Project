@@ -32,19 +32,8 @@ import de.symeda.sormas.api.infrastructure.country.CountryDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.region.RegionFacade;
-import de.symeda.sormas.api.patch.CaseDataPatchRequest;
-import de.symeda.sormas.api.patch.DataPatchFailure;
-import de.symeda.sormas.api.patch.DataPatchFailureCause;
-import de.symeda.sormas.api.patch.DataPatchResponse;
-import de.symeda.sormas.api.patch.DataPatcher;
-import de.symeda.sormas.api.patch.DataReplacementStrategy;
-import de.symeda.sormas.api.patch.EmptyValueBehavior;
-import de.symeda.sormas.api.person.OccupationType;
-import de.symeda.sormas.api.person.PersonContactDetailDto;
-import de.symeda.sormas.api.person.PersonContactDetailType;
-import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PhoneNumberType;
-import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.patch.*;
+import de.symeda.sormas.api.person.*;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -132,7 +121,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
 			.setPatchDictionary(
 				Map.of(
-					"Person.personContactDetails.contactInformation",
+					"PersonContactDetail.contactInformation",
 					newEmail,
 
 					"Person.personContactDetails.phoneNumberType",

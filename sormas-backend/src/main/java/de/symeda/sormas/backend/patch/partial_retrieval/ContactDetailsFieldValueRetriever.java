@@ -9,6 +9,8 @@ import java.util.stream.Stream;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.patch.partial_retrieval.FieldInfo;
@@ -30,12 +32,12 @@ public class ContactDetailsFieldValueRetriever implements SpecificFieldValueRetr
 			.stream()
 			.filter(detail -> targetType.equals(detail.getPersonContactDetailType()))
 			.map(PersonContactDetailDto::getContactInformation)
+			.filter(StringUtils::isNotBlank)
+			.sorted()
 			.collect(Collectors.joining("; "));
 
 		String captionKey = isPhone ? PersonContactDetailDto.PHONE_NUMBER_TYPE : PersonContactDetailDto.CONTACT_INFORMATION;
-		String translatedFieldName = I18nProperties.getCaption(
-			PersonContactDetailDto.I18N_PREFIX + PATH_SEPARATOR + captionKey,
-			captionKey);
+		String translatedFieldName = I18nProperties.getCaption(PersonContactDetailDto.I18N_PREFIX + PATH_SEPARATOR + captionKey, captionKey);
 
 		return new FieldInfo().setFieldType(List.class).setFieldValue(contactValues).setTranslatedFieldName(translatedFieldName);
 	}

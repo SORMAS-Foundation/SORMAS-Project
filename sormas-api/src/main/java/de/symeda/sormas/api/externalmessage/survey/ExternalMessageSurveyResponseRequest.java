@@ -19,7 +19,7 @@ import de.symeda.sormas.api.patch.EmptyValueBehavior;
  * Mandatory fields that require
  * Will be present for {@link ExternalMessageType#SURVEY_RESPONSE}.
  */
-public class ExternalMessageSurveyResponseRequest implements Serializable {
+public class ExternalMessageSurveyResponseRequest implements Serializable, Comparable<ExternalMessageSurveyResponseRequest> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -242,5 +242,20 @@ public class ExternalMessageSurveyResponseRequest implements Serializable {
 			+ emptyValueBehavior + ", patchDictionary=" + patchDictionary + ", excludedPatchDictionary=" + excludedPatchDictionary + ", origin='"
 			+ origin + '\'' + ", inputLanguages=" + inputLanguages + ", allowFallbackValues=" + allowFallbackValues + ", skipIfAlreadyProcessed="
 			+ skipIfAlreadyProcessed + '}';
+	}
+
+	@Override
+	public int compareTo(ExternalMessageSurveyResponseRequest o) {
+
+		if (this.responseReceivedDate == null && o.responseReceivedDate == null) {
+			return 0;
+		}
+		if (this.responseReceivedDate == null) {
+			return -1;
+		}
+		if (o.responseReceivedDate == null) {
+			return 1;
+		}
+		return this.responseReceivedDate.compareTo(o.responseReceivedDate);
 	}
 }

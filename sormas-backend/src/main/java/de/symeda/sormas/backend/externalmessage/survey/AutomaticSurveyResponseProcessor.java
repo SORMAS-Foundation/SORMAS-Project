@@ -104,7 +104,7 @@ public class AutomaticSurveyResponseProcessor {
 			CaseDataPatchRequest dataPatchRequest = from(request, surveyTokenDto);
 
 			DataPatchResponse response = dataPatcher.patch(dataPatchRequest);
-			logger.debug("Patch: request: [{}], response: [{}]", request, response);
+			logger.info("Patch: request: [{}], response: [{}]", request, response);
 
 			latestResponseWrapper
 				.setResult(new ExternalMessageSurveyResponseResult().setPatchResponse(response).setCaseUuid(dataPatchRequest.getCaseUuid()));
