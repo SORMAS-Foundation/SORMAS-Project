@@ -57,7 +57,7 @@ public class PersonContactDetailsFieldMapper implements FieldCustomMapper {
 		Optional<PersonContactDetailDto> alreadyPresentContactDetail = personDto.getPersonContactDetails()
 			.stream()
 			.filter(appropriatePredicate)
-			.filter(contactDetail -> contactDetail.getDetails().equals(request.getValue()))
+			.filter(contactDetail -> request.getValue().equals(contactDetail.getDetails()))
 			.findAny();
 
 		if (alreadyPresentContactDetail.isPresent()) {
