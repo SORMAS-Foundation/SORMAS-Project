@@ -65,6 +65,21 @@ public class SurveyResponseDetailsWindow {
 		ExternalMessageSurveyResponseRequest request = latest.getRequest();
 		ExternalMessageSurveyResponseResult result = latest.getResult();
 
+		// --- External Message General Info section ---
+		Label generalInfoHeading = new Label(I18nProperties.getCaption(Captions.surveyResponseGeneralInfo));
+		CssStyles.style(generalInfoHeading, CssStyles.H3);
+		layout.addComponent(generalInfoHeading);
+
+		addReadOnlyField(layout, "UUID", externalMessage.getUuid());
+		addReadOnlyField(
+			layout,
+			I18nProperties.getPrefixCaption(ExternalMessageDto.I18N_PREFIX, ExternalMessageDto.DISEASE),
+			toStringOrEmpty(externalMessage.getDisease()));
+		addReadOnlyField(
+			layout,
+			I18nProperties.getPrefixCaption(ExternalMessageDto.I18N_PREFIX, ExternalMessageDto.STATUS),
+			toStringOrEmpty(externalMessage.getStatus()));
+
 		// --- Metadata section ---
 		Label metadataHeading = new Label(I18nProperties.getCaption(Captions.surveyResponseMetadata));
 		CssStyles.style(metadataHeading, CssStyles.H3);
@@ -73,9 +88,9 @@ public class SurveyResponseDetailsWindow {
 		addReadOnlyField(layout, "External Survey ID", request.getExternalSurveyId());
 		addReadOnlyField(layout, "Token", request.getToken());
 		addReadOnlyField(layout, "Respondent ID", request.getExternalRespondentId());
-		addReadOnlyField(layout, "Response Received", request.getResponseReceivedDate() != null ? request.getResponseReceivedDate().toString() : "");
-		addReadOnlyField(layout, "Replacement Strategy", request.getReplacementStrategy() != null ? request.getReplacementStrategy().name() : "");
-		addReadOnlyField(layout, "Empty Value Behavior", request.getEmptyValueBehavior() != null ? request.getEmptyValueBehavior().name() : "");
+		addReadOnlyField(layout, "Response Received", toStringOrEmpty(request.getResponseReceivedDate()));
+		addReadOnlyField(layout, "Replacement Strategy", toStringOrEmpty(request.getReplacementStrategy()));
+		addReadOnlyField(layout, "Empty Value Behavior", toStringOrEmpty(request.getEmptyValueBehavior()));
 		addReadOnlyField(layout, "Patched in Case of Failures", String.valueOf(request.isPatchedInCaseOfFailures()));
 
 		// --- Patch Dictionary section ---
@@ -195,6 +210,10 @@ public class SurveyResponseDetailsWindow {
 
 		window.setContent(layout);
 		UI.getCurrent().addWindow(window);
+	}
+
+	private static String toStringOrEmpty(Object value) {
+		return value != null ? value.toString() : "";
 	}
 
 	private void addReadOnlyField(VerticalLayout layout, String caption, String value) {
