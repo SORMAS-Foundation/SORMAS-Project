@@ -12,12 +12,29 @@ import java.util.stream.Stream;
 import javax.enterprise.context.ApplicationScoped;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.epidata.EpiDataDto;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
+import de.symeda.sormas.api.exposure.ExposureDto;
+import de.symeda.sormas.api.hospitalization.HospitalizationDto;
+import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityDto;
+import de.symeda.sormas.api.infrastructure.continent.ContinentDto;
+import de.symeda.sormas.api.infrastructure.country.CountryDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
+import de.symeda.sormas.api.infrastructure.region.RegionDto;
+import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentDto;
+import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.Tuple;
 import de.symeda.sormas.backend.patch.PathFailureCause;
 
@@ -37,30 +54,41 @@ public class PathAliasHelper {
 	/**
 	 * Can be used as OUT: for displaying purposes but not for in.
 	 */
-	public static final Map<String, Set<String>> DEFAULT_FORBIDDEN_ALIASES_DICTIONARY =
-		Map.of("Location", Set.of("Person.address", "Exposure.location"));
+	public static final Map<String, Set<String>> DEFAULT_FORBIDDEN_ALIASES_DICTIONARY = Map.of(
+		"Location",
+		Set.of(toFieldName(PersonDto.I18N_PREFIX, PersonDto.ADDRESS), toFieldName(ExposureDto.I18N_PREFIX, ExposureDto.LOCATION)));
 
-	public static final Map<String, String> REFERENCE_TO_ROOT_DICTIONARY = Map.of("CaseData.person", PersonDto.I18N_PREFIX);
+	public static final Map<String, String> REFERENCE_TO_ROOT_DICTIONARY = Map.of(
+		toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.PERSON),
+		PersonDto.I18N_PREFIX,
+		toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.EPI_DATA),
+		EpiDataDto.I18N_PREFIX);
 
 	private static @NotNull HashMap<String, String> buildDefaultAliasDictionary() {
 		HashMap<String, String> dictionary = new HashMap<>();
 
-		dictionary.put("Symptoms", "CaseData.symptoms");
-		dictionary.put("HealthConditions", "CaseData.healthConditions");
-		dictionary.put("Hospitalization", "CaseData.hospitalization");
-		dictionary.put("PreviousHospitalization", "CaseData.hospitalization.previousHospitalizations");
-		dictionary.put("PersonContactDetail", "Person.personContactDetails");
-		dictionary.put("Facility", "CaseData.healthFacility");
-		dictionary.put("PointOfEntry", "CaseData.pointOfEntry");
-		dictionary.put("Region", "CaseData.responsibleRegion");
-		dictionary.put("District", "CaseData.responsibleDistrict");
-		dictionary.put("Community", "CaseData.responsibleCommunity");
-		dictionary.put("Country", "Person.birthCountry");
-		dictionary.put("Subcontinent", "Person.address.subcontinent");
-		dictionary.put("Continent", "Person.address.continent");
-		dictionary.put("User", "CaseData.followUpStatusChangeUser");
+		dictionary.put(SymptomsDto.I18N_PREFIX, toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.SYMPTOMS));
+		dictionary.put(HealthConditionsDto.I18N_PREFIX, toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_CONDITIONS));
+		dictionary.put(HospitalizationDto.I18N_PREFIX, toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.HOSPITALIZATION));
+		dictionary.put(
+			PreviousHospitalizationDto.I18N_PREFIX,
+			toFieldName(toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.HOSPITALIZATION), HospitalizationDto.PREVIOUS_HOSPITALIZATIONS));
+		dictionary.put(PersonContactDetailDto.I18N_PREFIX, toFieldName(PersonDto.I18N_PREFIX, PersonDto.PERSON_CONTACT_DETAILS));
+		dictionary.put(FacilityDto.I18N_PREFIX, toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY));
+		dictionary.put(PointOfEntryDto.I18N_PREFIX, toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.POINT_OF_ENTRY));
+		dictionary.put(RegionDto.I18N_PREFIX, toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.RESPONSIBLE_REGION));
+		dictionary.put(DistrictDto.I18N_PREFIX, toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.RESPONSIBLE_DISTRICT));
+		dictionary.put(CommunityDto.I18N_PREFIX, toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.RESPONSIBLE_COMMUNITY));
+		dictionary.put(CountryDto.I18N_PREFIX, toFieldName(PersonDto.I18N_PREFIX, PersonDto.BIRTH_COUNTRY));
+		dictionary.put(SubcontinentDto.I18N_PREFIX, toFieldName(toFieldName(PersonDto.I18N_PREFIX, PersonDto.ADDRESS), LocationDto.SUB_CONTINENT));
+		dictionary.put(ContinentDto.I18N_PREFIX, toFieldName(toFieldName(PersonDto.I18N_PREFIX, PersonDto.ADDRESS), LocationDto.CONTINENT));
+		dictionary.put(UserDto.I18N_PREFIX, toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.FOLLOW_UP_STATUS_CHANGE_USER));
 
 		return dictionary;
+	}
+
+	private static String toFieldName(String prefix, String fieldName) {
+		return prefix + '.' + fieldName;
 	}
 
 	@NotNull
