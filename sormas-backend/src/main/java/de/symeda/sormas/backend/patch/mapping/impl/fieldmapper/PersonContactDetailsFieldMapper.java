@@ -11,6 +11,8 @@ import java.util.stream.Stream;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +58,7 @@ public class PersonContactDetailsFieldMapper implements FieldCustomMapper {
 		Optional<PersonContactDetailDto> alreadyPresentContactDetail = personDto.getPersonContactDetails()
 			.stream()
 			.filter(appropriatePredicate)
-			.filter(contactDetail -> contactDetail.getDetails().equals(request.getValue()))
+			.filter(contactDetail -> request.getValue().equals(contactDetail.getContactInformation()))
 			.findAny();
 
 		if (alreadyPresentContactDetail.isPresent()) {

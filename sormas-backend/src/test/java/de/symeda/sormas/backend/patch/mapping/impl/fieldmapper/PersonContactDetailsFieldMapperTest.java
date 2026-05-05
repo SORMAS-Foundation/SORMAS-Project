@@ -85,7 +85,7 @@ class PersonContactDetailsFieldMapperTest extends AbstractUnitTest {
 		// PREPARE
 		PersonContactDetailDto existing = new PersonContactDetailDto();
 		existing.setPersonContactDetailType(PersonContactDetailType.PHONE);
-		existing.setDetails("0123456789");
+		existing.setContactInformation("0123456789");
 
 		PersonDto personDto = new PersonDto();
 		personDto.setPersonContactDetails(new ArrayList<>(List.of(existing)));
@@ -135,7 +135,7 @@ class PersonContactDetailsFieldMapperTest extends AbstractUnitTest {
 
 		FieldPatchRequest request = mock(FieldPatchRequest.class);
 		when(request.getTarget()).thenReturn(personDto);
-		when(request.getFieldName()).thenReturn("Person.PersonContactDetail.details");
+		when(request.getFieldName()).thenReturn("Person.PersonContactDetail.contactInformation");
 		when(request.getValue()).thenReturn("test@example.com");
 		when(request.getOrigin()).thenReturn("someOrigin");
 
@@ -156,14 +156,37 @@ class PersonContactDetailsFieldMapperTest extends AbstractUnitTest {
 		// PREPARE
 		PersonContactDetailDto existing = new PersonContactDetailDto();
 		existing.setPersonContactDetailType(PersonContactDetailType.EMAIL);
-		existing.setDetails("test@example.com");
+		existing.setContactInformation("test@example.com");
 
 		PersonDto personDto = new PersonDto();
 		personDto.setPersonContactDetails(new ArrayList<>(List.of(existing)));
 
 		FieldPatchRequest request = mock(FieldPatchRequest.class);
 		when(request.getTarget()).thenReturn(personDto);
-		when(request.getFieldName()).thenReturn("Person.PersonContactDetail.details");
+		when(request.getFieldName()).thenReturn("Person.PersonContactDetail.contactInformation");
+		when(request.getValue()).thenReturn("test@example.com");
+
+		// EXECUTE
+		Optional<DataPatchFailure> actual = victim.map(request);
+
+		// CHECK
+		assertTrue(actual.isEmpty());
+		assertEquals(1, personDto.getPersonContactDetails().size());
+	}
+
+	@Test
+	void map_emailField_contactInformationAlreadyPresent_doesNotAddDuplicate() {
+		// PREPARE
+		PersonContactDetailDto existing = new PersonContactDetailDto();
+		existing.setPersonContactDetailType(PersonContactDetailType.EMAIL);
+		existing.setContactInformation("test@example.com");
+
+		PersonDto personDto = new PersonDto();
+		personDto.setPersonContactDetails(new ArrayList<>(List.of(existing)));
+
+		FieldPatchRequest request = mock(FieldPatchRequest.class);
+		when(request.getTarget()).thenReturn(personDto);
+		when(request.getFieldName()).thenReturn("PersonContactDetail.contactInformation");
 		when(request.getValue()).thenReturn("test@example.com");
 
 		// EXECUTE
@@ -186,7 +209,7 @@ class PersonContactDetailsFieldMapperTest extends AbstractUnitTest {
 
 		FieldPatchRequest request = mock(FieldPatchRequest.class);
 		when(request.getTarget()).thenReturn(personDto);
-		when(request.getFieldName()).thenReturn("Person.PersonContactDetail.details");
+		when(request.getFieldName()).thenReturn("Person.PersonContactDetail.contactInformation");
 		when(request.getValue()).thenReturn("test@example.com");
 		when(request.getOrigin()).thenReturn("someOrigin");
 
@@ -234,7 +257,7 @@ class PersonContactDetailsFieldMapperTest extends AbstractUnitTest {
 
 		FieldPatchRequest request = mock(FieldPatchRequest.class);
 		when(request.getTarget()).thenReturn(personDto);
-		when(request.getFieldName()).thenReturn("Person.PersonContactDetail.details");
+		when(request.getFieldName()).thenReturn("Person.PersonContactDetail.contactInformation");
 		when(request.getValue()).thenReturn("test@example.com");
 		when(request.getOrigin()).thenReturn("someOrigin");
 
