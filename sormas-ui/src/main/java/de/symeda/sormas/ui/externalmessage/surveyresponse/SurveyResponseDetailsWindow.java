@@ -23,8 +23,10 @@ import com.vaadin.server.Sizeable;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseRequest;
 import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseResult;
 import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseWrapper;
@@ -74,11 +76,12 @@ public class SurveyResponseDetailsWindow {
 		addReadOnlyField(
 			layout,
 			I18nProperties.getPrefixCaption(ExternalMessageDto.I18N_PREFIX, ExternalMessageDto.DISEASE),
-			toStringOrEmpty(externalMessage.getDisease()));
+			DiseaseHelper.toString(externalMessage.getDisease(), null));
+		ExternalMessageStatus status = externalMessage.getStatus();
 		addReadOnlyField(
 			layout,
 			I18nProperties.getPrefixCaption(ExternalMessageDto.I18N_PREFIX, ExternalMessageDto.STATUS),
-			toStringOrEmpty(externalMessage.getStatus()));
+			status != null ? I18nProperties.getEnumCaption(status) : "");
 
 		// --- Metadata section ---
 		Label metadataHeading = new Label(I18nProperties.getCaption(Captions.surveyResponseMetadata));
