@@ -30,6 +30,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.json.ObjectMapperProvider;
+import de.symeda.sormas.backend.patch.mapping.EqualityCheckerRegistry;
 import de.symeda.sormas.backend.patch.mapping.FieldCustomMapperRegistry;
 import de.symeda.sormas.backend.patch.mapping.GroupedFieldMapperRegistry;
 import de.symeda.sormas.backend.patch.mapping.ValueMapperRegistry;
@@ -55,6 +56,9 @@ public class DataPatcherImpl implements DataPatcher {
 	private GroupedFieldMapperRegistry groupedFieldMapperRegistry;
 
 	@Inject
+	private EqualityCheckerRegistry equalityCheckerRegistry;
+
+	@Inject
 	private BusinessDtoFacade businessDtoFacade;
 
 	@EJB
@@ -71,6 +75,7 @@ public class DataPatcherImpl implements DataPatcher {
 		ValueMapperRegistry valueMapperRegistry,
 		FieldCustomMapperRegistry fieldCustomMapperRegistry,
 		GroupedFieldMapperRegistry groupedFieldMapperRegistry,
+		EqualityCheckerRegistry equalityCheckerRegistry,
 		BusinessDtoFacade businessDtoFacade,
 		FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade,
 		ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade) {
@@ -78,6 +83,7 @@ public class DataPatcherImpl implements DataPatcher {
 		this.valueMapperRegistry = valueMapperRegistry;
 		this.fieldCustomMapperRegistry = fieldCustomMapperRegistry;
 		this.groupedFieldMapperRegistry = groupedFieldMapperRegistry;
+		this.equalityCheckerRegistry = equalityCheckerRegistry;
 		this.businessDtoFacade = businessDtoFacade;
 		this.featureConfigurationFacade = featureConfigurationFacade;
 		this.configFacade = configFacade;
@@ -262,7 +268,7 @@ public class DataPatcherImpl implements DataPatcher {
 			if (nestedPropertyValue.isPresent()) {
 				Object currentValue = nestedPropertyValue.orElseThrow();
 
-				if (!currentValue.equals(typedValue)) {
+				if (!equalityCheckerRegistry.areEqual(currentValue, typedValue)) {
 					return singlePatchResult.setFailure(
 						new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.FORBIDDEN_VALUE_OVERRIDE)
 							.setExistingFieldValue(currentValue)
