@@ -94,7 +94,7 @@ public class CustomizableEnumValueService extends AdoServiceWithUserFilterAndJur
 		CaseCriteria caseCriteria = new CaseCriteria();
 		caseCriteria.setDisease(disease);
 		caseCriteria.setDiseaseVariant(diseaseVariant);
-		List<Case> result = caseService.findBy(caseCriteria, false);
+		List<Case> result = caseService.findBy(caseCriteria, true);
 		return result.stream().map(Case::getUuid).collect(Collectors.toList());
 	}
 

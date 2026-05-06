@@ -170,18 +170,25 @@ public class CustomizableEnumFacadeEjb
 
 		CustomizableEnumValue existingEntity = service.getByUuid(dto.getUuid());
 		// if existingEntity disease removed and it is mapped to the cases, shouldn't allow to save the entity
-		if (existingEntity != null && CollectionUtils.isNotEmpty(existingEntity.getDiseases()) && CollectionUtils.isNotEmpty(dto.getDiseases())) {
-			existingEntity.getDiseases().stream().filter(disease -> !dto.getDiseases().contains(disease)).findAny().ifPresent(disease -> {
-				List<String> uuids = service.areCasesUsingCustomizableEnumValue(disease, getEnumValue(dto.getDataType(), disease, dto.getValue()));
-				if (!uuids.isEmpty()) {
-					throw new ValidationRuntimeException(
-						I18nProperties.getValidationError(
-							Validations.customizableEnumValueAlreadyInUse,
-							disease.getName(),
-							uuids.stream().filter(Objects::nonNull).collect(Collectors.joining(", "))));
+		
+		if (existingEntity != null && CollectionUtils.isNotEmpty(existingEntity.getDiseases())) {
+			Set<Disease> incomingDiseases = dto.getDiseases() != null ? dto.getDiseases() : Collections.emptySet();
+			for (Disease removedDisease : existingEntity.getDiseases()) {
+				if (!incomingDiseases.contains(removedDisease)) {
+					List<String> uuids = service.areCasesUsingCustomizableEnumValue(
+						removedDisease,
+						getEnumValue(dto.getDataType(), removedDisease, existingEntity.getValue()));
+					if (!uuids.isEmpty()) {
+						throw new ValidationRuntimeException(
+							I18nProperties.getValidationError(
+								Validations.customizableEnumValueAlreadyInUse,
+								removedDisease.getName(),
+								uuids.stream().filter(Objects::nonNull).collect(Collectors.joining(", "))));
+					}
 				}
-			});
+			}
 		}
+
 		for (Disease disease : dto.getDiseases()) {
 			List<String> dataTypeValues = enumValues.get(dto.getDataType()).getOrDefault(disease, Collections.emptyList());
 			if (existingEntity == null && dataTypeValues != null && dataTypeValues.contains(dto.getValue())) {
