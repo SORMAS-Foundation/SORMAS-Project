@@ -27,6 +27,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.survey.SurveyTokenReferenceDto;
 import de.symeda.sormas.api.survey.external.views.ExternalSurveyView;
 import de.symeda.sormas.api.survey.external.views.QuestionAnswersView;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Modal window displaying a survey questionnaire as a structured HTML view.
@@ -97,7 +98,7 @@ public class SurveyQuestionnaireWindow {
 			.append(indent)
 			.append(questionStyle)
 			.append("\">")
-			.append(escapeHtml(q.getQuestion()))
+			.append(q.getQuestion())
 			.append("</td>")
 			.append("<td style=\"padding:5px 8px;color:#555;\">")
 			.append(resolveAnswer(q))
@@ -113,19 +114,15 @@ public class SurveyQuestionnaireWindow {
 
 	private String resolveAnswer(QuestionAnswersView q) {
 		// Prefer human-readable answerText, fall back to raw answer
-		if (q.getAnswerText() != null && !q.getAnswerText().isEmpty()) {
-			return escapeHtml(q.getAnswerText());
+		String answerText = q.getAnswerText();
+		if (StringUtils.isNotBlank(answerText)) {
+			return answerText;
 		}
-		if (q.getAnswer() != null && !q.getAnswer().isEmpty()) {
-			return escapeHtml(q.getAnswer());
+		String answer = q.getAnswer();
+		if (StringUtils.isNotBlank(answer)) {
+			return answer;
 		}
-		return "<span style=\"color:#bbb;\">—</span>";
+		return "<span>—</span>";
 	}
 
-	private String escapeHtml(String text) {
-		if (text == null) {
-			return "";
-		}
-		return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
-	}
 }

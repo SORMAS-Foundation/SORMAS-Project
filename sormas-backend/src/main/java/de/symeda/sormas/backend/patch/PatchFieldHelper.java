@@ -1,11 +1,13 @@
 package de.symeda.sormas.backend.patch;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
+import javax.ejb.EJB;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
@@ -13,6 +15,7 @@ import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.api.utils.Tuple;
 import de.symeda.sormas.backend.patch.alias.PathAliasHelper;
 
@@ -30,12 +33,16 @@ public class PatchFieldHelper {
 	private static final String CLOSING_PARENTHESIS = ")";
 	private static final String PIPE = "|";
 
-	// might be more subtle: person.toto but also *.uuid (or uuid). includes approach ?
-	// TODO: must be twofold: enforced default fields : technical: uuid, user ... + custom config by admin
-	private Set<String> forbiddenFields = Set.of("Person.birthdate", "Person.birthdateDD", "Person.birthdateMM", "Person.birthdateYYYY");
+	public static final String PATCH_FORBIDDEN_FIELDS_CONFIG_KEY = "PATCH_FORBIDDEN_FIELDS";
+
+	private static final Set<String> DEFAULT_FORBIDDEN_FIELDS =
+		Set.of("Person.birthdate", "Person.birthdateDD", "Person.birthdateMM", "Person.birthdateYYYY");
 
 	@Inject
 	private PathAliasHelper pathAliasHelper;
+
+	@EJB
+	private SystemConfigurationValueFacade systemConfigurationValueFacade;
 
 	public PatchFieldHelper() {
 	}
@@ -78,7 +85,6 @@ public class PatchFieldHelper {
 	private PathFailureCause checkIfPathIsInvalidImpl(String path, Set<String> additionalSupportedPrefixes) {
 		PathFailureCause dataPatchFailureCause = null;
 
-		// TODO: check it would be required to distinguish read / write: per example Immunization can be read and write but write does not reach this code.
 		if (!path.contains(PATH_SEPARATOR)) {
 			dataPatchFailureCause = PathFailureCause.INVALID_PATH_FORMAT;
 		} else if (!(startsWithAllowedPrefix(path) || pathStartsWithAllowedPrefix(path, additionalSupportedPrefixes))) {
@@ -97,7 +103,18 @@ public class PatchFieldHelper {
 	}
 
 	private boolean fieldIsForbidden(String path) {
-		return forbiddenFields.contains(path);
+		Set<String> configured = resolveConfiguredForbiddenFields();
+		return configured.contains(path);
+	}
+
+	private Set<String> resolveConfiguredForbiddenFields() {
+		String configValue = systemConfigurationValueFacade != null
+			? systemConfigurationValueFacade.getValue(PATCH_FORBIDDEN_FIELDS_CONFIG_KEY)
+			: null;
+		return Optional.ofNullable(configValue)
+			.filter(v -> !v.isBlank())
+			.map(v -> Arrays.stream(v.split(",")).map(String::trim).filter(s -> !s.isEmpty()).collect(Collectors.toSet()))
+			.orElse(DEFAULT_FORBIDDEN_FIELDS);
 	}
 
 	private boolean startsWithAllowedPrefix(String path) {
