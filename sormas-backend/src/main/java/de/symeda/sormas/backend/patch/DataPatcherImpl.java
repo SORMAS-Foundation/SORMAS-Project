@@ -93,6 +93,8 @@ public class DataPatcherImpl implements DataPatcher {
 
 		Disease disease = caseData.getDisease();
 
+		// TODO: modify to make more "agnostic": person is any other entity.
+		// TODO: only case is different as it is the root.
 		// make this generic for additional "root"-types
 		Supplier<PersonDto> personSupplier = Suppliers.memoize(() -> getPersonDto(caseData));
 

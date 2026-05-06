@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 import javax.enterprise.context.ApplicationScoped;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
@@ -83,6 +84,10 @@ public class PathAliasHelper {
 		dictionary.put(SubcontinentDto.I18N_PREFIX, toFieldName(toFieldName(PersonDto.I18N_PREFIX, PersonDto.ADDRESS), LocationDto.SUB_CONTINENT));
 		dictionary.put(ContinentDto.I18N_PREFIX, toFieldName(toFieldName(PersonDto.I18N_PREFIX, PersonDto.ADDRESS), LocationDto.CONTINENT));
 		dictionary.put(UserDto.I18N_PREFIX, toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.FOLLOW_UP_STATUS_CHANGE_USER));
+		dictionary.put(EpiDataDto.I18N_PREFIX, toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.EPI_DATA));
+		// TODO: check if required
+		// dictionary.put(ExposureDto.I18N_PREFIX, toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.EPI_DATA));
+		// dictionary.put(ActivityAsCaseDto.I18N_PREFIX, toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.EPI_DATA));
 
 		return dictionary;
 	}

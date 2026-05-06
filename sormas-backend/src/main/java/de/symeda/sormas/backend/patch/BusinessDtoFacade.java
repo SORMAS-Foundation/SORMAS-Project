@@ -49,6 +49,14 @@ public class BusinessDtoFacade {
 	private void init() {
 		registerSaveOperations();
 		registerFetchOperations();
+
+		// TODO: add fetch for "list elements":
+		// TODO: probably start fetch from highest-level element and drill down to retrive.
+		// Quite unsure if drill always work: Add exception: "missing parent entity".
+		// - Exposure
+		// - Activity as a case
+		// for save: List elements must be added to the parent
+		// TODO: issue with saving in order ?
 		registerFetchByI18nOperations();
 	}
 
