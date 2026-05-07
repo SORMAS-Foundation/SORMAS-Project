@@ -17,16 +17,14 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Suppliers;
-
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.patch.*;
 import de.symeda.sormas.api.patch.mapping.FieldCustomMapper;
 import de.symeda.sormas.api.patch.mapping.FieldPatchRequest;
 import de.symeda.sormas.api.patch.mapping.ValueMappingResult;
 import de.symeda.sormas.api.patch.mapping.ValuePatchRequest;
-import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.Tuple;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
@@ -39,8 +37,6 @@ import de.symeda.sormas.backend.util.CollectorUtils;
 
 @ApplicationScoped
 public class DataPatcherImpl implements DataPatcher {
-
-	public static final String PERSON_FIELD_NAME_PREFIX = "Person.";
 
 	private final static Logger logger = LoggerFactory.getLogger(DataPatcherImpl.class);
 
@@ -93,10 +89,8 @@ public class DataPatcherImpl implements DataPatcher {
 
 		Disease disease = caseData.getDisease();
 
-		// TODO: modify to make more "agnostic": person is any other entity.
-		// TODO: only case is different as it is the root.
-		// make this generic for additional "root"-types
-		Supplier<PersonDto> personSupplier = Suppliers.memoize(() -> getPersonDto(caseData));
+		Map<String, EntityDto> entityCache = new HashMap<>();
+		entityCache.put(CaseDataDto.I18N_PREFIX, caseData);
 
 		List<Tuple<String, Tuple<DataPatchFailureCause, Object>>> patchingTuples = computePatchingTuples(request);
 
@@ -105,7 +99,7 @@ public class DataPatcherImpl implements DataPatcher {
 			de.symeda.sormas.api.patch.SinglePatchResult singlePatchResult =
 				new de.symeda.sormas.api.patch.SinglePatchResult().setFieldName(fullFieldName);
 
-			Supplier<Object> target = () -> findAppropriateTarget(fullFieldName, caseData, personSupplier);
+			Supplier<Object> target = () -> findAppropriateTarget(fullFieldName, caseData, entityCache);
 
 			try {
 				return produceSinglePatchResult(request, entry, disease, target);
@@ -130,7 +124,7 @@ public class DataPatcherImpl implements DataPatcher {
 			return response;
 		}
 
-		saveDTOsIfAppropriate(validPatchDictionary, caseData, personSupplier);
+		saveDTOsIfAppropriate(entityCache);
 
 		logger.debug("dataPatchResponse: [{}]", response);
 
@@ -148,31 +142,21 @@ public class DataPatcherImpl implements DataPatcher {
 			.orElseGet(() -> valueMappingResult(entry, disease, request, target));
 	}
 
-	private void saveDTOsIfAppropriate(Map<String, Object> validPatchDictionary, CaseDataDto caseData, Supplier<PersonDto> personSupplier) {
-		if (anyFieldPatchedWithPrefix(validPatchDictionary, PatchFieldHelper.CASE_DATA_PREFIX)) {
-			logger.info("CaseData was modified will be applied for: [{}]. Enable debug to see fully patched object", caseData);
+	private void saveDTOsIfAppropriate(Map<String, EntityDto> entityCache) {
+		List<EntityDto> toSave = new ArrayList<>(entityCache.values());
 
-			if (logger.isDebugEnabled()) {
-				logger.debug("CaseData: \n{}", ObjectMapperProvider.writeValueAsStringFailSafe(caseData));
-			}
-
-			businessDtoFacade.save(caseData);
+		if (toSave.isEmpty()) {
+			return;
 		}
 
-		if (anyFieldPatchedWithPrefix(validPatchDictionary, PatchFieldHelper.PERSON_PREFIX)) {
-			PersonDto person = personSupplier.get();
-			logger.info("Person was modified will be applied for: [{}]. Enable debug fully patched object", person);
-
+		toSave.forEach(entity -> {
+			logger.info("{} was modified, will be saved. Enable debug to see fully patched object", entity.getClass().getSimpleName());
 			if (logger.isDebugEnabled()) {
-				logger.debug("Person: \n{}", ObjectMapperProvider.writeValueAsStringFailSafe(person));
+				logger.debug("{}: \n{}", entity.getClass().getSimpleName(), ObjectMapperProvider.writeValueAsStringFailSafe(entity));
 			}
+		});
 
-			businessDtoFacade.save(person);
-		}
-	}
-
-	private boolean anyFieldPatchedWithPrefix(Map<String, Object> validPatchDictionary, String caseDataPrefix) {
-		return validPatchDictionary.keySet().stream().anyMatch(key -> key.startsWith(caseDataPrefix));
+		businessDtoFacade.save(toSave);
 	}
 
 	private @NotNull <R> Map<String, R> buildDictionaryFor(
@@ -378,16 +362,6 @@ public class DataPatcherImpl implements DataPatcher {
 		return request.getEmptyValueBehavior() == EmptyValueBehavior.REPLACE ? ignored -> true : buildEmptyValuePredicate();
 	}
 
-	private @NotNull PersonDto getPersonDto(CaseDataDto caseData) {
-		String personUuid = caseData.getPerson().getUuid();
-		PersonDto person = businessDtoFacade.fetch(PersonDto.class, caseData);
-
-		if (person == null) {
-			throw new IllegalStateException(String.format("No person found for uuid: [%s]", personUuid));
-		}
-		return person;
-	}
-
 	private @NotNull CaseDataDto getCaseDataDto(CaseDataPatchRequest request) {
 		String caseUuid = request.getCaseUuid();
 		CaseDataDto caseData = businessDtoFacade.getCaseDataDtoNullable(caseUuid);
@@ -398,12 +372,25 @@ public class DataPatcherImpl implements DataPatcher {
 		return caseData;
 	}
 
-	private Object findAppropriateTarget(String fieldName, CaseDataDto caseData, Supplier<PersonDto> person) {
-		if (fieldName.startsWith(PERSON_FIELD_NAME_PREFIX)) {
-			return person.get();
+	private EntityDto findAppropriateTarget(String resolvedPath, CaseDataDto caseData, Map<String, EntityDto> entityCache) {
+		String prefix = extractPrefix(resolvedPath);
+
+		if (entityCache.containsKey(prefix)) {
+			return entityCache.get(prefix);
+		}
+
+		Optional<EntityDto> fetched = businessDtoFacade.tryFetchByI18nNameForCreateUpdate(prefix, caseData);
+		if (fetched.isPresent()) {
+			entityCache.put(prefix, fetched.get());
+			return fetched.get();
 		}
 
 		return caseData;
+	}
+
+	private String extractPrefix(String fieldName) {
+		int dotIndex = fieldName.indexOf('.');
+		return dotIndex == -1 ? fieldName : fieldName.substring(0, dotIndex);
 	}
 
 	private Predicate<Map.Entry<String, Object>> buildEmptyValuePredicate() {

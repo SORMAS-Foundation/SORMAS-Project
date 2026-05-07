@@ -193,6 +193,11 @@ public class BusinessDtoFacade {
 				.apply(caseDataDto);
 	}
 
+	public Optional<EntityDto> tryFetchByI18nNameForCreateUpdate(@NotNull String i18nName, CaseDataDto caseDataDto) {
+		return Optional.ofNullable(dtoRetrieverByI18nDictionaryCreateUpdate.get(i18nName))
+			.map(fct -> fct.apply(caseDataDto));
+	}
+
 	/**
 	 * For displaying purposes what purposes can be retrieved.
 	 * 
@@ -219,4 +224,9 @@ public class BusinessDtoFacade {
 				.orElseThrow(() -> new IllegalStateException(String.format("No save function defined for: [%s]", entityDtoClass)))
 				.apply((T) entityDto);
 	}
+
+	public void save(@NotNull List<EntityDto> entityDtos) {
+		entityDtos.forEach(this::save);
+	}
+
 }
