@@ -1,11 +1,6 @@
 package de.symeda.sormas.backend.patch;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -122,10 +117,15 @@ public class BusinessDtoFacade {
 
 	private static Function<CaseDataDto, EntityDto> createImmunizationDtoFromCaseFct() {
 		return caseDataDto -> {
-			ImmunizationDto build = ImmunizationDto.build(caseDataDto.getPerson());
-			build.setRelatedCase(caseDataDto.toReference());
-			build.setPerson(caseDataDto.getPerson());
-			return build;
+			ImmunizationDto immunization = ImmunizationDto.build(caseDataDto.getPerson());
+
+			immunization.setRelatedCase(caseDataDto.toReference());
+			immunization.setPerson(caseDataDto.getPerson());
+			immunization.setDisease(caseDataDto.getDisease());
+			immunization.setResponsibleRegion(caseDataDto.getResponsibleRegion());
+			immunization.setResponsibleDistrict(caseDataDto.getResponsibleDistrict());
+
+			return immunization;
 		};
 	}
 
@@ -218,8 +218,7 @@ public class BusinessDtoFacade {
 	 * @param <T>
 	 *            type
 	 */
-
-	public <T extends EntityDto> T save(@NotNull EntityDto entityDto) {
+	private  <T extends EntityDto> T saveDirectEntity(@NotNull EntityDto entityDto) {
 		Class<? extends EntityDto> entityDtoClass = entityDto.getClass();
 
 		return Optional.ofNullable((Function<T, T>) directDtoSaveDictionary.get(entityDtoClass))
@@ -228,24 +227,30 @@ public class BusinessDtoFacade {
 	}
 
 	public void save(@NotNull List<EntityDto> entityDtos) {
+		ArrayList<EntityDto> dtosToSave = new ArrayList<>(entityDtos);
 
-        Optional<ImmunizationDto> immunizationDto = fetchType(entityDtos, ImmunizationDto.class);
-        Optional<VaccinationDto> vaccinationDto = fetchType(entityDtos, VaccinationDto.class);
+		Optional<ImmunizationDto> immunizationDtoOpt = fetchType(entityDtos, ImmunizationDto.class);
+        Optional<VaccinationDto> vaccinationDtoOpt = fetchType(entityDtos, VaccinationDto.class);
+
         Optional<CaseDataDto> caseDataDtoOpt = fetchType(entityDtos, CaseDataDto.class);
 
-		if (vaccinationDto.isPresent()) {
+		if (vaccinationDtoOpt.isPresent()) {
 			ImmunizationDto actualImmunizationDto;
-			if (immunizationDto.isPresent()) {
-				actualImmunizationDto = immunizationDto.orElseThrow();
+			if (immunizationDtoOpt.isPresent()) {
+				actualImmunizationDto = immunizationDtoOpt.orElseThrow();
 			} else {
-				actualImmunizationDto = (ImmunizationDto) createImmunizationDtoFromCaseFct().apply(caseDataDtoOpt.orElseThrow());
+				actualImmunizationDto = (ImmunizationDto) createImmunizationDtoFromCaseFct()
+						.apply(caseDataDtoOpt.orElseThrow(() -> new IllegalStateException(String.format("When saving child leaf entities the caseData must be present, but was not: [%s]", entityDtos))));
 			}
 
-			actualImmunizationDto.getVaccinations().add(vaccinationDto.orElseThrow());
+			VaccinationDto vaccinationDto = vaccinationDtoOpt.orElseThrow();
+			actualImmunizationDto.getVaccinations().add(vaccinationDto);
+
+			dtosToSave.remove(actualImmunizationDto);
+			dtosToSave.remove(vaccinationDto);
 		}
 
-		// TODO: filter out those that are already done through "case-drilling"
-		entityDtos.forEach(this::save);
+		dtosToSave.forEach(this::saveDirectEntity);
 	}
 
 	private static @NotNull <T> Optional<T> fetchType(List<EntityDto> entityDtos, Class<T> targetClass) {
