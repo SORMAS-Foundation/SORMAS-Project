@@ -2,6 +2,7 @@ package de.symeda.sormas.patch;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Collections;
 import java.util.HashMap;
@@ -939,6 +940,34 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			() -> Assertions.assertEquals(expectedFailures, response.getFailures()),
 
 			() -> Assertions.assertEquals(Map.of(), response.getValidPatchDictionary()));
+	}
+
+	@Test
+	void patch_ifNotAlreadyPresent_sameDayDifferentTime_noForbiddenValueOverride() {
+		// PREPARE
+		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.PERTUSSIS);
+
+		// Set classificationDate to 08:30 on 2024-06-15 — a non-midnight timestamp on the same calendar day that will be patched
+		java.util.Date existingDate =
+			java.util.Date.from(LocalDateTime.of(2024, 6, 15, 8, 30, 0).atZone(ZoneId.systemDefault()).toInstant());
+		originalCase.setClassificationDate(existingDate);
+		getCaseFacade().save(originalCase);
+
+		// Patch with the same calendar day as a plain date string — DatePatchMapper resolves this to midnight (00:00:00),
+		// which differs in time from existingDate. Without DateEqualityChecker this would trigger FORBIDDEN_VALUE_OVERRIDE.
+		String patchDate = "2024-06-15";
+		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
+			.setPatchDictionary(Map.of("CaseData.classificationDate", patchDate));
+
+		// EXECUTE
+		DataPatchResponse response = victim().patch(request);
+
+		// CHECK
+		logger.info("response: [{}]", response);
+
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "FORBIDDEN_VALUE_OVERRIDE must not fire for same-day dates"),
+			() -> Assertions.assertTrue(response.isApplied()));
 	}
 
 	private DataPatcher victim() {

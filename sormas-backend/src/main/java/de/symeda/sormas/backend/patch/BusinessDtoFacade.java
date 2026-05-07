@@ -43,7 +43,7 @@ public class BusinessDtoFacade {
 	@EJB
 	private UserFacadeEjb.UserFacadeEjbLocal userFacade;
 
-	private final Map<Class<? extends EntityDto>, Function<? extends EntityDto, ? extends EntityDto>> dtoSaveDictionary = new HashMap<>();
+	private final Map<Class<? extends EntityDto>, Function<? extends EntityDto, ? extends EntityDto>> directDtoSaveDictionary = new HashMap<>();
 
 	private final Map<Class<? extends EntityDto>, Function<CaseDataDto, ? extends EntityDto>> dtoRetrieverDictionary = new HashMap<>();
 
@@ -76,7 +76,7 @@ public class BusinessDtoFacade {
 	}
 
 	private <T extends EntityDto> void registerSave(Class<T> dtoClass, Function<T, T> consumer) {
-		dtoSaveDictionary.put(dtoClass, consumer);
+		directDtoSaveDictionary.put(dtoClass, consumer);
 	}
 
 	private void registerFetchOperations() {
@@ -110,15 +110,19 @@ public class BusinessDtoFacade {
 				caseDataDto -> personFacade.getByUuid(caseDataDto.getPerson().getUuid()));
 		registerFetchByI18nCreateUpdate(
 				ImmunizationDto.I18N_PREFIX,
-				caseDataDto -> {
-					ImmunizationDto build = ImmunizationDto.build(caseDataDto.getPerson());
-					build.setRelatedCase(caseDataDto.toReference());
-					return build;
-                });
+				createImmunizationDtoFromCaseFct());
 
 		registerFetchByI18nCreateUpdate(
 				VaccinationDto.I18N_PREFIX,
 				caseDataDto -> VaccinationDto.build(userFacade.getCurrentUserAsReference()));
+	}
+
+	private static Function<CaseDataDto, EntityDto> createImmunizationDtoFromCaseFct() {
+		return caseDataDto -> {
+			ImmunizationDto build = ImmunizationDto.build(caseDataDto.getPerson());
+			build.setRelatedCase(caseDataDto.toReference());
+			return build;
+		};
 	}
 
 	private void registerFetchByI18nRead(String i18nName, Function<CaseDataDto, List<? extends EntityDto>> fct) {
@@ -208,7 +212,7 @@ public class BusinessDtoFacade {
 	public <T extends EntityDto> T save(@NotNull EntityDto entityDto) {
 		Class<? extends EntityDto> entityDtoClass = entityDto.getClass();
 
-		return Optional.ofNullable((Function<T, T>) dtoSaveDictionary.get(entityDtoClass))
+		return Optional.ofNullable((Function<T, T>) directDtoSaveDictionary.get(entityDtoClass))
 			.orElseThrow(() -> new IllegalStateException(String.format("No save function defined for: [%s]", entityDtoClass)))
 			.apply((T) entityDto);
 	}
