@@ -27,6 +27,7 @@ import de.symeda.sormas.api.activityascase.ActivityAsCaseType;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
+import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
 import de.symeda.sormas.api.caze.Vaccine;
@@ -1179,6 +1180,42 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			() -> Assertions.assertEquals(1, exposures.size()),
 			() -> Assertions.assertEquals(ExposureType.WORK, exposures.get(0).getExposureType()),
 			() -> Assertions.assertEquals("market visit", exposures.get(0).getDescription()));
+	}
+
+	@Test
+	void patch_previousHospitalization() {
+		// PREPARE
+		Disease disease = Disease.DENGUE;
+		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
+		String facilityCaption = originalCase.getHealthFacility().getCaption();
+
+		// EXECUTE
+		DataPatchResponse response = victim().patch(
+			new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
+				.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+				.setPatchDictionary(
+					Map.of(
+						toFieldName(PreviousHospitalizationDto.I18N_PREFIX, PreviousHospitalizationDto.ADMITTED_TO_HEALTH_FACILITY),
+						"YES",
+
+						toFieldName(PreviousHospitalizationDto.I18N_PREFIX, PreviousHospitalizationDto.ADMISSION_DATE),
+						"2024-03-15",
+
+						toFieldName(PreviousHospitalizationDto.I18N_PREFIX, PreviousHospitalizationDto.ICU_LENGTH_OF_STAY),
+						"7")));
+
+		// CHECK
+		CaseDataDto actualCase = getCaseFacade().getByUuid(originalCase.getUuid());
+		List<PreviousHospitalizationDto> previousHospitalizations = actualCase.getHospitalization().getPreviousHospitalizations();
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failures: " + response.getFailures()),
+			() -> Assertions.assertTrue(response.isApplied()),
+			() -> Assertions.assertEquals(1, previousHospitalizations.size()),
+			() -> Assertions.assertEquals(YesNoUnknown.YES, previousHospitalizations.get(0).getAdmittedToHealthFacility()),
+			() -> Assertions.assertEquals(
+				Date.from(LocalDate.parse("2024-03-15").atStartOfDay(ZoneId.systemDefault()).toInstant()),
+				previousHospitalizations.get(0).getAdmissionDate()),
+			() -> Assertions.assertEquals(7, previousHospitalizations.get(0).getIcuLengthOfStay()));
 	}
 
 	@Test

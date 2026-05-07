@@ -74,9 +74,6 @@ public class PathAliasHelper {
 		dictionary.put(SymptomsDto.I18N_PREFIX, toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.SYMPTOMS));
 		dictionary.put(HealthConditionsDto.I18N_PREFIX, toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_CONDITIONS));
 		dictionary.put(HospitalizationDto.I18N_PREFIX, toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.HOSPITALIZATION));
-		dictionary.put(
-			PreviousHospitalizationDto.I18N_PREFIX,
-			toFieldName(toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.HOSPITALIZATION), HospitalizationDto.PREVIOUS_HOSPITALIZATIONS));
 		dictionary.put(PersonContactDetailDto.I18N_PREFIX, toFieldName(PersonDto.I18N_PREFIX, PersonDto.PERSON_CONTACT_DETAILS));
 		dictionary.put(FacilityDto.I18N_PREFIX, toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY));
 		dictionary.put(PointOfEntryDto.I18N_PREFIX, toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.POINT_OF_ENTRY));

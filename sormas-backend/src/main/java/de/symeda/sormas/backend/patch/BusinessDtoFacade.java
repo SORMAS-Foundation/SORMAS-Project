@@ -16,6 +16,7 @@ import de.symeda.sormas.api.activityascase.ActivityAsCaseType;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
+import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
@@ -104,6 +105,10 @@ public class BusinessDtoFacade {
 		registerFetchByI18nRead(ExposureDto.I18N_PREFIX, caseDataDto -> caseDataDto.getEpiData().getExposures());
 
 		registerFetchByI18nRead(ActivityAsCaseDto.I18N_PREFIX, caseDataDto -> caseDataDto.getEpiData().getActivitiesAsCase());
+
+		registerFetchByI18nRead(
+			PreviousHospitalizationDto.I18N_PREFIX,
+			caseDataDto -> caseDataDto.getHospitalization().getPreviousHospitalizations());
 	}
 
 
@@ -123,6 +128,8 @@ public class BusinessDtoFacade {
 		registerFetchByI18nCreateUpdate(ExposureDto.I18N_PREFIX, caseDataDto -> ExposureDto.build(ExposureType.UNKNOWN));
 
 		registerFetchByI18nCreateUpdate(ActivityAsCaseDto.I18N_PREFIX, caseDataDto -> ActivityAsCaseDto.build(ActivityAsCaseType.UNKNOWN));
+
+		registerFetchByI18nCreateUpdate(PreviousHospitalizationDto.I18N_PREFIX, PreviousHospitalizationDto::build);
 	}
 
 	private Function<CaseDataDto, EntityDto> createImmunizationDtoFromCaseFct() {
@@ -163,6 +170,11 @@ public class BusinessDtoFacade {
 		registerLeafAttacher(ActivityAsCaseDto.class, (leaf, list) -> {
 			CaseDataDto caseData = requireCaseData(list);
 			caseData.getEpiData().getActivitiesAsCase().add((ActivityAsCaseDto) leaf);
+			return caseData;
+		});
+		registerLeafAttacher(PreviousHospitalizationDto.class, (leaf, list) -> {
+			CaseDataDto caseData = requireCaseData(list);
+			caseData.getHospitalization().getPreviousHospitalizations().add((PreviousHospitalizationDto) leaf);
 			return caseData;
 		});
 	}
