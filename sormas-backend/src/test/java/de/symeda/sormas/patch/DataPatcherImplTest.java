@@ -36,6 +36,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionFacade;
 import de.symeda.sormas.api.patch.*;
 import de.symeda.sormas.api.person.*;
 import de.symeda.sormas.api.symptoms.SymptomState;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
@@ -940,6 +941,35 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			() -> Assertions.assertEquals(expectedFailures, response.getFailures()),
 
 			() -> Assertions.assertEquals(Map.of(), response.getValidPatchDictionary()));
+	}
+
+	@Test
+	void patch_epiData() {
+		// PREPARE
+		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.PERTUSSIS);
+
+		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
+			.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+			.setPatchDictionary(
+				Map.of(
+					"EpiData.exposureDetailsKnown",
+					"YES",
+
+					"EpiData.contactWithSourceCaseKnown",
+					"NO"));
+
+		// EXECUTE
+		DataPatchResponse response = victim().patch(request);
+
+		// CHECK
+		logger.info("response: [{}]", response);
+
+		CaseDataDto actualCase = getCaseFacade().getByUuid(originalCase.getUuid());
+
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failure found, but should be empty"),
+			() -> Assertions.assertEquals(YesNoUnknown.YES, actualCase.getEpiData().getExposureDetailsKnown()),
+			() -> Assertions.assertEquals(YesNoUnknown.NO, actualCase.getEpiData().getContactWithSourceCaseKnown()));
 	}
 
 	@Test

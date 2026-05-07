@@ -99,7 +99,7 @@ public class PartialRetrieverImpl implements PartialRetriever {
 			.orElse(null);
 
 		if (failureCause != null) {
-			return Tuple.of(originalFieldName, new Tuple<>((FieldInfo) null, failureCause));
+			return Tuple.of(originalFieldName, new Tuple<>(null, failureCause));
 		}
 
 		String pathWithoutAlias = unAliasedTuple.getFirst();
@@ -109,22 +109,22 @@ public class PartialRetrieverImpl implements PartialRetriever {
 		Optional<EntityDto> adequateBeanOpt = getAdequateBean(pathWithoutAlias, caseData, beanCache);
 
 		if (adequateBeanOpt.isEmpty()) {
-			return Tuple.of(originalFieldName, new Tuple<>((FieldInfo) null, PartialRetrievalFailureCause.ENTITY_COULD_NOT_BE_FOUND));
+			return Tuple.of(originalFieldName, new Tuple<>(null, PartialRetrievalFailureCause.ENTITY_COULD_NOT_BE_FOUND));
 		}
 
 		EntityDto adequateBean = adequateBeanOpt.orElseThrow();
 		Optional<FieldInfo> specificFieldInfo = specificFieldValueRetrieverRegistry.getFieldInfo(aliasPath, adequateBean);
 
 		if (specificFieldInfo.isPresent()) {
-			return Tuple.of(originalFieldName, new Tuple<>(specificFieldInfo.get(), (PartialRetrievalFailureCause) null));
+			return Tuple.of(originalFieldName, new Tuple<>(specificFieldInfo.get(), null));
 		}
 
-		Tuple<Tuple<Class<?>, Object>, PropertyAccessFailure> propertyType =
+		@NotNull Tuple<Tuple<Class<?>, Object>, PropertyAccessFailure> propertyType =
 			PropertyAccessor.getPropertyTypeAndValue(adequateBean, physicalPathName, getFieldVisibilityCheckers(caseData.getDisease()));
 
 		PropertyAccessFailure propertyAccessFailure = propertyType.getSecond();
 		if (propertyAccessFailure != null) {
-			return Tuple.of(originalFieldName, new Tuple<>((FieldInfo) null, propertyAccessFailure.getRelatedRetrieveFailureCause()));
+			return Tuple.of(originalFieldName, new Tuple<>(null, propertyAccessFailure.getRelatedRetrieveFailureCause()));
 		}
 
 		Tuple<Class<?>, Object> fieldInfo = propertyType.getFirst();
@@ -140,7 +140,7 @@ public class PartialRetrieverImpl implements PartialRetriever {
 			originalFieldName,
 			new Tuple<>(
 				new FieldInfo().setFieldType(fieldInfo.getFirst()).setFieldValue(fieldInfo.getSecond()).setTranslatedFieldName(translatedFieldName),
-				(PartialRetrievalFailureCause) null));
+                    null));
 	}
 
 	@Override
@@ -161,13 +161,13 @@ public class PartialRetrieverImpl implements PartialRetriever {
 	}
 
 	private Optional<EntityDto> getAdequateBean(
-		@NotNull String path,
+		@NotNull String pathWithoutAlias,
 		@NotNull CaseDataDto caseData,
 		@NotNull Map<String, Optional<EntityDto>> beanCache) {
 
-		int i = path.indexOf(".");
+		int i = pathWithoutAlias.indexOf(".");
 
-		String prefix = StringUtils.substring(path, 0, i);
+		String prefix = StringUtils.substring(pathWithoutAlias, 0, i);
 
 		if (CaseDataDto.I18N_PREFIX.equals(prefix)) {
 			return Optional.of(caseData);
@@ -182,7 +182,7 @@ public class PartialRetrieverImpl implements PartialRetriever {
 				}
 
 				if (entitiesSize != 1) {
-					logger.warn("Only first element is supported for now: [{}], was: [{}]", path, entitiesSize);
+					logger.warn("Only first element is supported for now: [{}], was: [{}]", pathWithoutAlias, entitiesSize);
 				}
 
 				return Optional.ofNullable(entityDtos).map(actualEntities -> actualEntities.get(0));

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -44,6 +45,7 @@ public class BusinessDtoFacade {
 	private UserFacadeEjb.UserFacadeEjbLocal userFacade;
 
 	private final Map<Class<? extends EntityDto>, Function<? extends EntityDto, ? extends EntityDto>> directDtoSaveDictionary = new HashMap<>();
+	private final Map<Class<? extends EntityDto>, BiFunction<CaseDataDto, ? extends EntityDto, ? extends EntityDto>> saveFromCaseDictionary = new HashMap<>();
 
 	private final Map<Class<? extends EntityDto>, Function<CaseDataDto, ? extends EntityDto>> dtoRetrieverDictionary = new HashMap<>();
 
@@ -209,11 +211,12 @@ public class BusinessDtoFacade {
 	 * @param <T>
 	 *            type
 	 */
+
 	public <T extends EntityDto> T save(@NotNull EntityDto entityDto) {
 		Class<? extends EntityDto> entityDtoClass = entityDto.getClass();
 
 		return Optional.ofNullable((Function<T, T>) directDtoSaveDictionary.get(entityDtoClass))
-			.orElseThrow(() -> new IllegalStateException(String.format("No save function defined for: [%s]", entityDtoClass)))
-			.apply((T) entityDto);
+				.orElseThrow(() -> new IllegalStateException(String.format("No save function defined for: [%s]", entityDtoClass)))
+				.apply((T) entityDto);
 	}
 }

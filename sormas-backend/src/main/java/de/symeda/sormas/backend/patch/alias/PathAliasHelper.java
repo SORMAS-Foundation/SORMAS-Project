@@ -59,11 +59,12 @@ public class PathAliasHelper {
 		"Location",
 		Set.of(toFieldName(PersonDto.I18N_PREFIX, PersonDto.ADDRESS), toFieldName(ExposureDto.I18N_PREFIX, ExposureDto.LOCATION)));
 
+	/**
+	 * Meant for fields that are only references from another entity.
+	 */
 	public static final Map<String, String> REFERENCE_TO_ROOT_DICTIONARY = Map.of(
 		toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.PERSON),
-		PersonDto.I18N_PREFIX,
-		toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.EPI_DATA),
-		EpiDataDto.I18N_PREFIX);
+		PersonDto.I18N_PREFIX);
 
 	private static @NotNull HashMap<String, String> buildDefaultAliasDictionary() {
 		HashMap<String, String> dictionary = new HashMap<>();
@@ -84,10 +85,10 @@ public class PathAliasHelper {
 		dictionary.put(SubcontinentDto.I18N_PREFIX, toFieldName(toFieldName(PersonDto.I18N_PREFIX, PersonDto.ADDRESS), LocationDto.SUB_CONTINENT));
 		dictionary.put(ContinentDto.I18N_PREFIX, toFieldName(toFieldName(PersonDto.I18N_PREFIX, PersonDto.ADDRESS), LocationDto.CONTINENT));
 		dictionary.put(UserDto.I18N_PREFIX, toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.FOLLOW_UP_STATUS_CHANGE_USER));
+
 		dictionary.put(EpiDataDto.I18N_PREFIX, toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.EPI_DATA));
-		// TODO: check if required
-		// dictionary.put(ExposureDto.I18N_PREFIX, toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.EPI_DATA));
-		// dictionary.put(ActivityAsCaseDto.I18N_PREFIX, toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.EPI_DATA));
+		dictionary.put(ExposureDto.I18N_PREFIX, toFieldName(toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.EPI_DATA), EpiDataDto.EXPOSURES));
+		dictionary.put(ActivityAsCaseDto.I18N_PREFIX, toFieldName(toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.EPI_DATA), EpiDataDto.ACTIVITIES_AS_CASE));
 
 		return dictionary;
 	}

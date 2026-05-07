@@ -10,6 +10,8 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.Vaccine;
+import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
@@ -251,6 +253,39 @@ class PartialRetrieverImplTest extends AbstractBeanTest {
 			() -> Assertions.assertTrue(actual.getFieldInfoDictionary().containsKey(personContactDetails)),
 			() -> Assertions.assertEquals("Contact information", personFirstNameFieldInfo.getTranslatedFieldName()),
 			() -> Assertions.assertEquals("mail@mail.ch", personFirstNameFieldInfo.getFieldValue()));
+	}
+
+	@Test
+	void retrievePartial_epiData_twoFields() {
+		// PREPARE
+		Disease disease = Disease.PERTUSSIS;
+		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
+
+		originalCase.getEpiData().setExposureDetailsKnown(YesNoUnknown.YES);
+		originalCase.getEpiData().setContactWithSourceCaseKnown(YesNoUnknown.NO);
+		getCaseFacade().save(originalCase);
+
+		String exposureDetailsKnownFieldName = toFieldName(EpiDataDto.I18N_PREFIX, EpiDataDto.EXPOSURE_DETAILS_KNOWN);
+		String contactWithSourceCaseKnownFieldName = toFieldName(EpiDataDto.I18N_PREFIX, EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN);
+
+		// EXECUTE
+		PartialRetrievalResponse actual = victim().retrievePartial(
+			new PartialRetrievalRequest().setCaseUuid(originalCase.getUuid())
+				.setFieldsToRetrieve(Set.of(exposureDetailsKnownFieldName, contactWithSourceCaseKnownFieldName)));
+
+		// CHECK
+		FieldInfo exposureDetailsKnownFieldInfo = actual.getFieldInfoDictionary().get(exposureDetailsKnownFieldName);
+		FieldInfo contactWithSourceCaseKnownFieldInfo = actual.getFieldInfoDictionary().get(contactWithSourceCaseKnownFieldName);
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(actual.getFailuresDictionary().isEmpty()),
+
+			() -> Assertions.assertTrue(actual.getFieldInfoDictionary().containsKey(exposureDetailsKnownFieldName)),
+			() -> Assertions.assertEquals("Exposure details known", exposureDetailsKnownFieldInfo.getTranslatedFieldName()),
+			() -> Assertions.assertEquals(YesNoUnknown.YES, exposureDetailsKnownFieldInfo.getFieldValue()),
+
+			() -> Assertions.assertTrue(actual.getFieldInfoDictionary().containsKey(contactWithSourceCaseKnownFieldName)),
+			() -> Assertions.assertEquals("Contacts with source case known", contactWithSourceCaseKnownFieldInfo.getTranslatedFieldName()),
+			() -> Assertions.assertEquals(YesNoUnknown.NO, contactWithSourceCaseKnownFieldInfo.getFieldValue()));
 	}
 
 	private static String toFieldName(String prefix, String fieldName) {
