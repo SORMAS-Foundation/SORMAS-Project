@@ -90,10 +90,6 @@ public class PathAliasHelper {
 
 		dictionary.put(EpiDataDto.I18N_PREFIX, toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.EPI_DATA));
 
-		// TODO: list seem to not work well | will probably be removed to only match singular and covered by businessDtoFacade
-		dictionary.put(ExposureDto.I18N_PREFIX, toFieldName(toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.EPI_DATA), EpiDataDto.EXPOSURES));
-		dictionary.put(ActivityAsCaseDto.I18N_PREFIX, toFieldName(toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.EPI_DATA), EpiDataDto.ACTIVITIES_AS_CASE));
-
 		return dictionary;
 	}
 

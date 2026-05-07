@@ -22,7 +22,11 @@ import org.mockito.Mockito;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
+import de.symeda.sormas.api.activityascase.ActivityAsCaseType;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.exposure.ExposureDto;
+import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
 import de.symeda.sormas.api.caze.Vaccine;
@@ -1149,6 +1153,58 @@ class DataPatcherImplTest extends AbstractBeanTest {
 				immunizations.stream()
 					.flatMap(imm -> imm.getVaccinations().stream())
 					.anyMatch(vac -> Vaccine.MRNA_1273.equals(vac.getVaccineName()))));
+	}
+
+	@Test
+	void patch_exposure() {
+		// PREPARE
+		Disease disease = Disease.DENGUE;
+		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
+
+		// EXECUTE
+		DataPatchResponse response = victim().patch(
+			new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
+				.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+				.setPatchDictionary(
+					Map.of(
+						toFieldName(ExposureDto.I18N_PREFIX, ExposureDto.EXPOSURE_TYPE), "WORK",
+						toFieldName(ExposureDto.I18N_PREFIX, ExposureDto.DESCRIPTION), "market visit")));
+
+		// CHECK
+		CaseDataDto actualCase = getCaseFacade().getByUuid(originalCase.getUuid());
+		List<ExposureDto> exposures = actualCase.getEpiData().getExposures();
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failures: " + response.getFailures()),
+			() -> Assertions.assertTrue(response.isApplied()),
+			() -> Assertions.assertEquals(1, exposures.size()),
+			() -> Assertions.assertEquals(ExposureType.WORK, exposures.get(0).getExposureType()),
+			() -> Assertions.assertEquals("market visit", exposures.get(0).getDescription()));
+	}
+
+	@Test
+	void patch_activityAsCase() {
+		// PREPARE
+		Disease disease = Disease.PERTUSSIS;
+		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
+
+		// EXECUTE
+		DataPatchResponse response = victim().patch(
+			new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
+				.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+				.setPatchDictionary(
+					Map.of(
+						toFieldName(ActivityAsCaseDto.I18N_PREFIX, ActivityAsCaseDto.ACTIVITY_AS_CASE_TYPE), "WORK",
+						toFieldName(ActivityAsCaseDto.I18N_PREFIX, ActivityAsCaseDto.DESCRIPTION), "office work")));
+
+		// CHECK
+		CaseDataDto actualCase = getCaseFacade().getByUuid(originalCase.getUuid());
+		List<ActivityAsCaseDto> activities = actualCase.getEpiData().getActivitiesAsCase();
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failures: " + response.getFailures()),
+			() -> Assertions.assertTrue(response.isApplied()),
+			() -> Assertions.assertEquals(1, activities.size()),
+			() -> Assertions.assertEquals(ActivityAsCaseType.WORK, activities.get(0).getActivityAsCaseType()),
+			() -> Assertions.assertEquals("office work", activities.get(0).getDescription()));
 	}
 
 	private static String toFieldName(String prefix, String field) {
