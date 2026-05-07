@@ -110,6 +110,7 @@ public class BusinessDtoFacade {
 		registerFetchByI18nCreateUpdate(
 				PersonDto.I18N_PREFIX,
 				caseDataDto -> personFacade.getByUuid(caseDataDto.getPerson().getUuid()));
+
 		registerFetchByI18nCreateUpdate(
 				ImmunizationDto.I18N_PREFIX,
 				createImmunizationDtoFromCaseFct());
@@ -123,6 +124,7 @@ public class BusinessDtoFacade {
 		return caseDataDto -> {
 			ImmunizationDto build = ImmunizationDto.build(caseDataDto.getPerson());
 			build.setRelatedCase(caseDataDto.toReference());
+			build.setPerson(caseDataDto.getPerson());
 			return build;
 		};
 	}
@@ -226,7 +228,28 @@ public class BusinessDtoFacade {
 	}
 
 	public void save(@NotNull List<EntityDto> entityDtos) {
+
+        Optional<ImmunizationDto> immunizationDto = fetchType(entityDtos, ImmunizationDto.class);
+        Optional<VaccinationDto> vaccinationDto = fetchType(entityDtos, VaccinationDto.class);
+        Optional<CaseDataDto> caseDataDtoOpt = fetchType(entityDtos, CaseDataDto.class);
+
+		if (vaccinationDto.isPresent()) {
+			ImmunizationDto actualImmunizationDto;
+			if (immunizationDto.isPresent()) {
+				actualImmunizationDto = immunizationDto.orElseThrow();
+			} else {
+				actualImmunizationDto = (ImmunizationDto) createImmunizationDtoFromCaseFct().apply(caseDataDtoOpt.orElseThrow());
+			}
+
+			actualImmunizationDto.getVaccinations().add(vaccinationDto.orElseThrow());
+		}
+
+		// TODO: filter out those that are already done through "case-drilling"
 		entityDtos.forEach(this::save);
+	}
+
+	private static @NotNull <T> Optional<T> fetchType(List<EntityDto> entityDtos, Class<T> targetClass) {
+		return entityDtos.stream().filter(targetClass::isInstance).map(targetClass::cast).findAny();
 	}
 
 }
