@@ -43,8 +43,6 @@ import de.symeda.sormas.backend.customizableenum.CustomizableEnumValue;
 
 class DataPatcherImplTest extends AbstractBeanTest {
 
-	// TODO: test different replacement strategy: with/without failure
-
 	@Test
 	void patch_noErrorsReplaceAlways() {
 		// PREPARE

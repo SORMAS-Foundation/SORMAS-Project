@@ -23,6 +23,7 @@ import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
+import de.symeda.sormas.backend.user.UserFacadeEjb;
 
 /**
  * Meant as single entry point for usages were multiple Business DTOs must be fetched or saved.
@@ -39,11 +40,16 @@ public class BusinessDtoFacade {
 	@EJB
 	private ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal immunizationFacade;
 
+	@EJB
+	private UserFacadeEjb.UserFacadeEjbLocal userFacade;
+
 	private final Map<Class<? extends EntityDto>, Function<? extends EntityDto, ? extends EntityDto>> dtoSaveDictionary = new HashMap<>();
 
 	private final Map<Class<? extends EntityDto>, Function<CaseDataDto, ? extends EntityDto>> dtoRetrieverDictionary = new HashMap<>();
 
-	private final Map<String, Function<CaseDataDto, List<? extends EntityDto>>> dtoRetrieverByI18nDictionary = new HashMap<>();
+	private final Map<String, Function<CaseDataDto, List<? extends EntityDto>>> dtoRetrieverByI18nDictionaryRead = new HashMap<>();
+
+	private final Map<String, Function<CaseDataDto, EntityDto>> dtoRetrieverByI18nDictionaryCreateUpdate = new HashMap<>();
 
 	@PostConstruct
 	private void init() {
@@ -57,8 +63,11 @@ public class BusinessDtoFacade {
 		// - Activity as a case
 		// for save: List elements must be added to the parent
 		// TODO: issue with saving in order ?
-		registerFetchByI18nOperations();
+		registerFetchByI18nOperationsRead();
+
+		registerFetchByI18nOperationsCreateUpdate();
 	}
+
 
 	private void registerSaveOperations() {
 		registerSave(CaseDataDto.class, caseDataDto -> caseFacade.save(caseDataDto));
@@ -78,25 +87,46 @@ public class BusinessDtoFacade {
 		dtoRetrieverDictionary.put(dtoClass, fct);
 	}
 
-	private void registerFetchByI18nOperations() {
-		registerFetchByI18n(
+	private void registerFetchByI18nOperationsRead() {
+		registerFetchByI18nRead(
 			PersonDto.I18N_PREFIX,
 			caseDataDto -> Collections.singletonList(personFacade.getByUuid(caseDataDto.getPerson().getUuid())));
-		registerFetchByI18n(
+		registerFetchByI18nRead(
 			ImmunizationDto.I18N_PREFIX,
 			caseDataDto -> immunizationFacade.getByPersonUuids(Collections.singletonList(caseDataDto.getPerson().getUuid())));
 
-		registerFetchByI18n(
+		registerFetchByI18nRead(
 			VaccinationDto.I18N_PREFIX,
 			caseDataDto -> immunizationFacade.getByPersonUuids(Collections.singletonList(caseDataDto.getPerson().getUuid()))
 				.stream()
 				.flatMap(immunization -> immunization.getVaccinations().stream())
 				.collect(Collectors.toList()));
-
 	}
 
-	private void registerFetchByI18n(String i18nName, Function<CaseDataDto, List<? extends EntityDto>> fct) {
-		dtoRetrieverByI18nDictionary.put(i18nName, fct);
+
+	private void registerFetchByI18nOperationsCreateUpdate() {
+		registerFetchByI18nCreateUpdate(
+				PersonDto.I18N_PREFIX,
+				caseDataDto -> personFacade.getByUuid(caseDataDto.getPerson().getUuid()));
+		registerFetchByI18nCreateUpdate(
+				ImmunizationDto.I18N_PREFIX,
+				caseDataDto -> {
+					ImmunizationDto build = ImmunizationDto.build(caseDataDto.getPerson());
+					build.setRelatedCase(caseDataDto.toReference());
+					return build;
+                });
+
+		registerFetchByI18nCreateUpdate(
+				VaccinationDto.I18N_PREFIX,
+				caseDataDto -> VaccinationDto.build(userFacade.getCurrentUserAsReference()));
+	}
+
+	private void registerFetchByI18nRead(String i18nName, Function<CaseDataDto, List<? extends EntityDto>> fct) {
+		dtoRetrieverByI18nDictionaryRead.put(i18nName, fct);
+	}
+
+	private void registerFetchByI18nCreateUpdate(String i18nName, Function<CaseDataDto, EntityDto> fct) {
+		dtoRetrieverByI18nDictionaryCreateUpdate.put(i18nName, fct);
 	}
 
 	@Nullable
@@ -138,10 +168,23 @@ public class BusinessDtoFacade {
 	 * @return entity dto if found.
 	 */
 	@Nullable
-	public List<? extends EntityDto> fetchByI18nName(@NotNull String i18nName, CaseDataDto caseDataDto) {
-		return Optional.ofNullable(dtoRetrieverByI18nDictionary.get(i18nName))
+	public List<? extends EntityDto> fetchByI18nNameForDisplay(@NotNull String i18nName, CaseDataDto caseDataDto) {
+		return Optional.ofNullable(dtoRetrieverByI18nDictionaryRead.get(i18nName))
 			.orElseThrow(() -> new IllegalStateException(String.format("No fetch function defined for: [%s]", i18nName)))
 			.apply(caseDataDto);
+	}
+
+	/**
+	 * Warning: Will retrieve a new instance on every fetch, MUST be cached within a single patch operation.
+	 * @param i18nName I18N translation key
+	 * @param caseDataDto root/reference entity
+	 * @return "un-attached" DTO that will be thrown away if not saved.
+	 */
+	@Nullable
+	public EntityDto fetchByI18nNameForCreateUpdate(@NotNull String i18nName, CaseDataDto caseDataDto) {
+		return Optional.ofNullable(dtoRetrieverByI18nDictionaryCreateUpdate.get(i18nName))
+				.orElseThrow(() -> new IllegalStateException(String.format("No fetch function defined for: [%s]", i18nName)))
+				.apply(caseDataDto);
 	}
 
 	/**
@@ -150,7 +193,7 @@ public class BusinessDtoFacade {
 	 * @return prefixes that can be fetched through their I18n Prefix.
 	 */
 	public Set<String> fetchablePrefixes() {
-		return dtoRetrieverByI18nDictionary.keySet();
+		return dtoRetrieverByI18nDictionaryRead.keySet();
 	}
 
 	/**

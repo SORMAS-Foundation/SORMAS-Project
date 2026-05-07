@@ -173,7 +173,7 @@ public class PartialRetrieverImpl implements PartialRetriever {
 			return Optional.of(caseData);
 		} else {
 			return beanCache.computeIfAbsent(prefix, prefixCandidate -> {
-				List<? extends EntityDto> entityDtos = businessDtoFacade.fetchByI18nName(prefixCandidate, caseData);
+				List<? extends EntityDto> entityDtos = businessDtoFacade.fetchByI18nNameForDisplay(prefixCandidate, caseData);
 
 				int entitiesSize = CollectionUtils.size(entityDtos);
 
