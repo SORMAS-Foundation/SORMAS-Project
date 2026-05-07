@@ -1000,6 +1000,114 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			() -> Assertions.assertTrue(response.isApplied()));
 	}
 
+	@Test
+	void patch_vaccination_only() {
+		// PREPARE
+		Disease disease = Disease.RESPIRATORY_SYNCYTIAL_VIRUS;
+		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
+
+		// EXECUTE
+		DataPatchResponse response = victim().patch(
+			new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
+				.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+				.setPatchDictionary(Map.of("Vaccination.vaccineName", "COMIRNATY")));
+
+		// CHECK
+		List<ImmunizationDto> immunizations = getImmunizationFacade().getByPersonUuids(List.of(originalCase.getPerson().getUuid()));
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failures: " + response.getFailures()),
+			() -> Assertions.assertTrue(response.isApplied()),
+			() -> Assertions.assertEquals(1, immunizations.size()),
+			() -> Assertions.assertEquals(1, immunizations.get(0).getVaccinations().size()),
+			() -> Assertions.assertEquals(Vaccine.COMIRNATY, immunizations.get(0).getVaccinations().get(0).getVaccineName()));
+	}
+
+	@Test
+	void patch_vaccination_and_immunization() {
+		// PREPARE
+		Disease disease = Disease.DENGUE;
+		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
+
+		// EXECUTE
+		DataPatchResponse response = victim().patch(
+			new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
+				.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+				.setPatchDictionary(
+					Map.of(
+						"Vaccination.vaccineName",
+						"COMIRNATY",
+
+						"Immunization.immunizationStatus",
+						"ACQUIRED")));
+
+		// CHECK
+		List<ImmunizationDto> immunizations = getImmunizationFacade().getByPersonUuids(List.of(originalCase.getPerson().getUuid()));
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failures: " + response.getFailures()),
+			() -> Assertions.assertTrue(response.isApplied()),
+			() -> Assertions.assertEquals(1, immunizations.size()),
+			() -> Assertions.assertEquals(ImmunizationStatus.ACQUIRED, immunizations.get(0).getImmunizationStatus()),
+			() -> Assertions.assertEquals(1, immunizations.get(0).getVaccinations().size()),
+			() -> Assertions.assertEquals(Vaccine.COMIRNATY, immunizations.get(0).getVaccinations().get(0).getVaccineName()));
+	}
+
+	@Test
+	void patch_vaccination_and_immunization_with_existing_creates_new_without_override() {
+		// PREPARE
+		Disease disease = Disease.PERTUSSIS;
+		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
+
+		ImmunizationDto existingImmunization = ImmunizationDto.build(originalCase.getPerson());
+		existingImmunization.setRelatedCase(originalCase.toReference());
+		existingImmunization.setImmunizationStatus(ImmunizationStatus.NOT_ACQUIRED);
+		existingImmunization.setReportingUser(originalCase.getReportingUser());
+		VaccinationDto existingVaccination = VaccinationDto.build(originalCase.getReportingUser());
+		existingVaccination.setVaccineName(Vaccine.COMIRNATY);
+		existingImmunization.setVaccinations(List.of(existingVaccination));
+		getImmunizationFacade().save(existingImmunization);
+
+		// EXECUTE — patch with ALWAYS strategy creates new immunization + vaccination, never modifies existing ones
+		DataPatchResponse response = victim().patch(
+			new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
+				.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+				.setPatchDictionary(
+					Map.of(
+						"Vaccination.vaccineName",
+						"MRNA_1273",
+
+						"Immunization.immunizationStatus",
+						"ACQUIRED")));
+
+		// CHECK
+		List<ImmunizationDto> immunizations = getImmunizationFacade().getByPersonUuids(List.of(originalCase.getPerson().getUuid()));
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failures: " + response.getFailures()),
+			() -> Assertions.assertTrue(response.isApplied()),
+
+			// Two immunizations: original unchanged + new one from patch
+			() -> Assertions.assertEquals(2, immunizations.size()),
+
+			// Original immunization is untouched
+			() -> Assertions.assertTrue(
+				immunizations.stream().anyMatch(imm -> ImmunizationStatus.NOT_ACQUIRED.equals(imm.getImmunizationStatus()))),
+
+			// New immunization was created with the patched status
+			() -> Assertions.assertTrue(
+				immunizations.stream().anyMatch(imm -> ImmunizationStatus.ACQUIRED.equals(imm.getImmunizationStatus()))),
+
+			// Original vaccination (COMIRNATY) is still there
+			() -> Assertions.assertTrue(
+				immunizations.stream()
+					.flatMap(imm -> imm.getVaccinations().stream())
+					.anyMatch(vac -> Vaccine.COMIRNATY.equals(vac.getVaccineName()))),
+
+			// New vaccination (MRNA_1273) was created by the patch
+			() -> Assertions.assertTrue(
+				immunizations.stream()
+					.flatMap(imm -> imm.getVaccinations().stream())
+					.anyMatch(vac -> Vaccine.MRNA_1273.equals(vac.getVaccineName()))));
+	}
+
 	private DataPatcher victim() {
 		return getCaseDataPatcher();
 	}

@@ -26,9 +26,6 @@ public class PatchFieldHelper {
 
 	public static final String PATH_SEPARATOR = ".";
 
-	public static final String CASE_DATA_PREFIX = "CaseData.";
-	public static final String PERSON_PREFIX = "Person.";
-
 	private static final String OPENING_PARENTHESIS = "(";
 	private static final String CLOSING_PARENTHESIS = ")";
 	private static final String PIPE = "|";
@@ -43,6 +40,9 @@ public class PatchFieldHelper {
 
 	@EJB
 	private SystemConfigurationValueFacade systemConfigurationValueFacade;
+
+	@Inject
+	private BusinessDtoFacade businessDtoFacade;
 
 	public PatchFieldHelper() {
 	}
@@ -118,11 +118,11 @@ public class PatchFieldHelper {
 	}
 
 	private boolean startsWithAllowedPrefix(String path) {
-		return pathStartsWithAllowedPrefix(path, pathAliasHelper.supportedPrefixes());
+		return pathStartsWithAllowedPrefix(path, pathAliasHelper.supportedPrefixes()) || pathStartsWithAllowedPrefix(path, businessDtoFacade.fetchablePrefixes());
 	}
 
-	private static boolean pathStartsWithAllowedPrefix(String path, Set<String> strings) {
-		return strings.stream().anyMatch(path::startsWith);
+	private static boolean pathStartsWithAllowedPrefix(String path, Set<String> prefixes) {
+		return prefixes.stream().anyMatch(path::startsWith);
 	}
 
 	public boolean isMultipleFieldFormat(String path) {

@@ -1,7 +1,6 @@
 package de.symeda.sormas.backend.patch;
 
 import java.util.*;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -40,7 +39,6 @@ public class BusinessDtoFacade {
 	private UserFacadeEjb.UserFacadeEjbLocal userFacade;
 
 	private final Map<Class<? extends EntityDto>, Function<? extends EntityDto, ? extends EntityDto>> directDtoSaveDictionary = new HashMap<>();
-	private final Map<Class<? extends EntityDto>, BiFunction<CaseDataDto, ? extends EntityDto, ? extends EntityDto>> saveFromCaseDictionary = new HashMap<>();
 
 	private final Map<Class<? extends EntityDto>, Function<CaseDataDto, ? extends EntityDto>> dtoRetrieverDictionary = new HashMap<>();
 
@@ -50,7 +48,7 @@ public class BusinessDtoFacade {
 
 	@PostConstruct
 	private void init() {
-		registerSaveOperations();
+		registerDirectSaveOperations();
 		registerFetchOperations();
 
 		// TODO: add fetch for "list elements":
@@ -66,7 +64,7 @@ public class BusinessDtoFacade {
 	}
 
 
-	private void registerSaveOperations() {
+	private void registerDirectSaveOperations() {
 		registerSave(CaseDataDto.class, caseDataDto -> caseFacade.save(caseDataDto));
 		registerSave(PersonDto.class, personDto -> personFacade.save(personDto));
 		registerSave(ImmunizationDto.class, immunizationDto -> immunizationFacade.save(immunizationDto));
@@ -115,7 +113,7 @@ public class BusinessDtoFacade {
 				caseDataDto -> VaccinationDto.build(userFacade.getCurrentUserAsReference()));
 	}
 
-	private static Function<CaseDataDto, EntityDto> createImmunizationDtoFromCaseFct() {
+	private Function<CaseDataDto, EntityDto> createImmunizationDtoFromCaseFct() {
 		return caseDataDto -> {
 			ImmunizationDto immunization = ImmunizationDto.build(caseDataDto.getPerson());
 
@@ -124,6 +122,7 @@ public class BusinessDtoFacade {
 			immunization.setDisease(caseDataDto.getDisease());
 			immunization.setResponsibleRegion(caseDataDto.getResponsibleRegion());
 			immunization.setResponsibleDistrict(caseDataDto.getResponsibleDistrict());
+			immunization.setReportingUser(userFacade.getCurrentUserAsReference());
 
 			return immunization;
 		};
@@ -188,25 +187,30 @@ public class BusinessDtoFacade {
 	 * @param caseDataDto root/reference entity
 	 * @return "un-attached" DTO that will be thrown away if not saved.
 	 */
-	@Nullable
-	public EntityDto fetchByI18nNameForCreateUpdate(@NotNull String i18nName, CaseDataDto caseDataDto) {
-		return Optional.ofNullable(dtoRetrieverByI18nDictionaryCreateUpdate.get(i18nName))
-				.orElseThrow(() -> new IllegalStateException(String.format("No fetch function defined for: [%s]", i18nName)))
-				.apply(caseDataDto);
-	}
-
 	public Optional<EntityDto> tryFetchByI18nNameForCreateUpdate(@NotNull String i18nName, CaseDataDto caseDataDto) {
 		return Optional.ofNullable(dtoRetrieverByI18nDictionaryCreateUpdate.get(i18nName))
 			.map(fct -> fct.apply(caseDataDto));
 	}
 
 	/**
-	 * For displaying purposes what purposes can be retrieved.
-	 * 
-	 * @return prefixes that can be fetched through their I18n Prefix.
+	 * @return I18n prefixes registered for display retrieval.
 	 */
 	public Set<String> fetchablePrefixes() {
 		return dtoRetrieverByI18nDictionaryRead.keySet();
+	}
+
+	/**
+	 * @return I18n prefixes registered for create/update retrieval.
+	 */
+	public Set<String> createUpdatePrefixes() {
+		return Collections.unmodifiableSet(dtoRetrieverByI18nDictionaryCreateUpdate.keySet());
+	}
+
+	/**
+	 * @return DTO classes that have a direct save function registered.
+	 */
+	public Set<Class<? extends EntityDto>> savableDtoClasses() {
+		return Collections.unmodifiableSet(directDtoSaveDictionary.keySet());
 	}
 
 	/**
@@ -235,19 +239,23 @@ public class BusinessDtoFacade {
         Optional<CaseDataDto> caseDataDtoOpt = fetchType(entityDtos, CaseDataDto.class);
 
 		if (vaccinationDtoOpt.isPresent()) {
+			VaccinationDto vaccinationDto = vaccinationDtoOpt.orElseThrow();
 			ImmunizationDto actualImmunizationDto;
 			if (immunizationDtoOpt.isPresent()) {
 				actualImmunizationDto = immunizationDtoOpt.orElseThrow();
 			} else {
 				actualImmunizationDto = (ImmunizationDto) createImmunizationDtoFromCaseFct()
-						.apply(caseDataDtoOpt.orElseThrow(() -> new IllegalStateException(String.format("When saving child leaf entities the caseData must be present, but was not: [%s]", entityDtos))));
+					.apply(
+						caseDataDtoOpt.orElseThrow(
+							() -> new IllegalStateException(
+								String.format("When saving child leaf entities the caseData must be present, but was not: [%s]", entityDtos))));
 			}
 
-			VaccinationDto vaccinationDto = vaccinationDtoOpt.orElseThrow();
 			actualImmunizationDto.getVaccinations().add(vaccinationDto);
-
-			dtosToSave.remove(actualImmunizationDto);
 			dtosToSave.remove(vaccinationDto);
+			if (!dtosToSave.contains(actualImmunizationDto)) {
+				dtosToSave.add(actualImmunizationDto);
+			}
 		}
 
 		dtosToSave.forEach(this::saveDirectEntity);

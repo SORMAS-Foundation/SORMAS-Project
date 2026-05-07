@@ -20,7 +20,9 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.patch.*;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.patch.mapping.FieldCustomMapper;
 import de.symeda.sormas.api.patch.mapping.FieldPatchRequest;
 import de.symeda.sormas.api.patch.mapping.ValueMappingResult;
@@ -146,6 +148,7 @@ public class DataPatcherImpl implements DataPatcher {
 		List<EntityDto> toSave = new ArrayList<>(entityCache.values());
 
 		if (toSave.isEmpty()) {
+			logger.warn("Nothing to save in entity cache");
 			return;
 		}
 
@@ -157,6 +160,16 @@ public class DataPatcherImpl implements DataPatcher {
 		});
 
 		businessDtoFacade.save(toSave);
+	}
+
+	private void attachVaccinationToImmunization(Map<String, EntityDto> entityCache) {
+		VaccinationDto vaccination = (VaccinationDto) entityCache.get(VaccinationDto.I18N_PREFIX);
+		entityCache.computeIfAbsent(ImmunizationDto.I18N_PREFIX, prefix -> {
+			CaseDataDto caseData = (CaseDataDto) entityCache.get(CaseDataDto.I18N_PREFIX);
+			return businessDtoFacade.tryFetchByI18nNameForCreateUpdate(prefix, caseData)
+				.orElseThrow(() -> new IllegalStateException("No immunization factory registered for vaccination attachment"));
+		});
+		((ImmunizationDto) entityCache.get(ImmunizationDto.I18N_PREFIX)).getVaccinations().add(vaccination);
 	}
 
 	private @NotNull <R> Map<String, R> buildDictionaryFor(

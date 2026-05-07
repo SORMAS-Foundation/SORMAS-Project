@@ -14,6 +14,8 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.immunization.ImmunizationDto;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,6 +89,8 @@ public class PathAliasHelper {
 		dictionary.put(UserDto.I18N_PREFIX, toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.FOLLOW_UP_STATUS_CHANGE_USER));
 
 		dictionary.put(EpiDataDto.I18N_PREFIX, toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.EPI_DATA));
+
+		// TODO: list seem to not work well | will probably be removed to only match singular and covered by businessDtoFacade
 		dictionary.put(ExposureDto.I18N_PREFIX, toFieldName(toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.EPI_DATA), EpiDataDto.EXPOSURES));
 		dictionary.put(ActivityAsCaseDto.I18N_PREFIX, toFieldName(toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.EPI_DATA), EpiDataDto.ACTIVITIES_AS_CASE));
 
