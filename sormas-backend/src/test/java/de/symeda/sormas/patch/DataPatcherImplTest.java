@@ -23,6 +23,8 @@ import org.mockito.Mockito;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.hospitalization.HospitalizationDto;
+import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumTranslation;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
@@ -1001,6 +1003,47 @@ class DataPatcherImplTest extends AbstractBeanTest {
 	}
 
 	@Test
+	void patch_hospitalization() {
+		// PREPARE
+		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.DENGUE);
+
+		// EXECUTE
+		DataPatchResponse response = victim().patch(
+			new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
+				.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+				.setPatchDictionary(
+					Map.of(
+						// YesNoUnknown enum
+						toFieldName(HospitalizationDto.I18N_PREFIX, HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY),
+						"YES",
+
+						// Date
+						toFieldName(HospitalizationDto.I18N_PREFIX, HospitalizationDto.ADMISSION_DATE),
+						"2024-05-10",
+
+						// String
+						toFieldName(HospitalizationDto.I18N_PREFIX, HospitalizationDto.DESCRIPTION),
+						"patient admitted urgently",
+
+						// HospitalizationReasonType enum
+						toFieldName(HospitalizationDto.I18N_PREFIX, HospitalizationDto.HOSPITALIZATION_REASON),
+						"ISOLATION")));
+
+		// CHECK
+		logger.info("response: [{}]", response);
+
+		CaseDataDto actualCase = getCaseFacade().getByUuid(originalCase.getUuid());
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failures: " + response.getFailures()),
+			() -> Assertions.assertEquals(YesNoUnknown.YES, actualCase.getHospitalization().getAdmittedToHealthFacility()),
+			() -> Assertions.assertEquals(
+				Date.from(LocalDate.parse("2024-05-10").atStartOfDay(ZoneId.systemDefault()).toInstant()),
+				actualCase.getHospitalization().getAdmissionDate()),
+			() -> Assertions.assertEquals("patient admitted urgently", actualCase.getHospitalization().getDescription()),
+			() -> Assertions.assertEquals(HospitalizationReasonType.ISOLATION, actualCase.getHospitalization().getHospitalizationReason()));
+	}
+
+	@Test
 	void patch_vaccination_only() {
 		// PREPARE
 		Disease disease = Disease.RESPIRATORY_SYNCYTIAL_VIRUS;
@@ -1106,6 +1149,10 @@ class DataPatcherImplTest extends AbstractBeanTest {
 				immunizations.stream()
 					.flatMap(imm -> imm.getVaccinations().stream())
 					.anyMatch(vac -> Vaccine.MRNA_1273.equals(vac.getVaccineName()))));
+	}
+
+	private static String toFieldName(String prefix, String field) {
+		return prefix + '.' + field;
 	}
 
 	private DataPatcher victim() {
