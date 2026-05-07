@@ -11,7 +11,11 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
+import de.symeda.sormas.api.activityascase.ActivityAsCaseType;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.exposure.ExposureDto;
+import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
@@ -46,21 +50,21 @@ public class BusinessDtoFacade {
 
 	private final Map<String, Function<CaseDataDto, EntityDto>> dtoRetrieverByI18nDictionaryCreateUpdate = new HashMap<>();
 
+	/**
+	 * Some {@link EntityDto} must be attached to a "parent" to be saved.
+	 */
+	private final Map<Class<? extends EntityDto>, LeafAttacher> leafAttacherRegistry = new LinkedHashMap<>();
+
 	@PostConstruct
 	private void init() {
 		registerDirectSaveOperations();
 		registerFetchOperations();
 
-		// TODO: add fetch for "list elements":
-		// TODO: probably start fetch from highest-level element and drill down to retrive.
-		// Quite unsure if drill always work: Add exception: "missing parent entity".
-		// - Exposure
-		// - Activity as a case
-		// for save: List elements must be added to the parent
-		// TODO: issue with saving in order ?
 		registerFetchByI18nOperationsRead();
 
 		registerFetchByI18nOperationsCreateUpdate();
+
+		registerLeafAttacherOperations();
 	}
 
 
@@ -96,6 +100,10 @@ public class BusinessDtoFacade {
 				.stream()
 				.flatMap(immunization -> immunization.getVaccinations().stream())
 				.collect(Collectors.toList()));
+
+		registerFetchByI18nRead(ExposureDto.I18N_PREFIX, caseDataDto -> caseDataDto.getEpiData().getExposures());
+
+		registerFetchByI18nRead(ActivityAsCaseDto.I18N_PREFIX, caseDataDto -> caseDataDto.getEpiData().getActivitiesAsCase());
 	}
 
 
@@ -111,6 +119,10 @@ public class BusinessDtoFacade {
 		registerFetchByI18nCreateUpdate(
 				VaccinationDto.I18N_PREFIX,
 				caseDataDto -> VaccinationDto.build(userFacade.getCurrentUserAsReference()));
+
+		registerFetchByI18nCreateUpdate(ExposureDto.I18N_PREFIX, caseDataDto -> ExposureDto.build(ExposureType.UNKNOWN));
+
+		registerFetchByI18nCreateUpdate(ActivityAsCaseDto.I18N_PREFIX, caseDataDto -> ActivityAsCaseDto.build(ActivityAsCaseType.UNKNOWN));
 	}
 
 	private Function<CaseDataDto, EntityDto> createImmunizationDtoFromCaseFct() {
@@ -134,6 +146,36 @@ public class BusinessDtoFacade {
 
 	private void registerFetchByI18nCreateUpdate(String i18nName, Function<CaseDataDto, EntityDto> fct) {
 		dtoRetrieverByI18nDictionaryCreateUpdate.put(i18nName, fct);
+	}
+
+	private void registerLeafAttacherOperations() {
+		registerLeafAttacher(VaccinationDto.class, (leaf, list) -> {
+			ImmunizationDto immunization = fetchType(list, ImmunizationDto.class)
+				.orElseGet(() -> (ImmunizationDto) createImmunizationDtoFromCaseFct().apply(requireCaseData(list)));
+			immunization.getVaccinations().add((VaccinationDto) leaf);
+			return immunization;
+		});
+		registerLeafAttacher(ExposureDto.class, (leaf, list) -> {
+			CaseDataDto caseData = requireCaseData(list);
+			caseData.getEpiData().getExposures().add((ExposureDto) leaf);
+			return caseData;
+		});
+		registerLeafAttacher(ActivityAsCaseDto.class, (leaf, list) -> {
+			CaseDataDto caseData = requireCaseData(list);
+			caseData.getEpiData().getActivitiesAsCase().add((ActivityAsCaseDto) leaf);
+			return caseData;
+		});
+	}
+
+	private <T extends EntityDto> void registerLeafAttacher(Class<T> leafClass, LeafAttacher attacher) {
+		leafAttacherRegistry.put(leafClass, attacher);
+	}
+
+	private CaseDataDto requireCaseData(List<EntityDto> dtosInProgress) {
+		return fetchType(dtosInProgress, CaseDataDto.class)
+			.orElseThrow(
+				() -> new IllegalStateException(
+					String.format("When saving child leaf entities the caseData must be present, but was not: [%s]", dtosInProgress)));
 	}
 
 	@Nullable
@@ -233,36 +275,26 @@ public class BusinessDtoFacade {
 	public void save(@NotNull List<EntityDto> entityDtos) {
 		ArrayList<EntityDto> dtosToSave = new ArrayList<>(entityDtos);
 
-		Optional<ImmunizationDto> immunizationDtoOpt = fetchType(entityDtos, ImmunizationDto.class);
-        Optional<VaccinationDto> vaccinationDtoOpt = fetchType(entityDtos, VaccinationDto.class);
-
-        Optional<CaseDataDto> caseDataDtoOpt = fetchType(entityDtos, CaseDataDto.class);
-
-		if (vaccinationDtoOpt.isPresent()) {
-			VaccinationDto vaccinationDto = vaccinationDtoOpt.orElseThrow();
-			ImmunizationDto actualImmunizationDto;
-			if (immunizationDtoOpt.isPresent()) {
-				actualImmunizationDto = immunizationDtoOpt.orElseThrow();
-			} else {
-				actualImmunizationDto = (ImmunizationDto) createImmunizationDtoFromCaseFct()
-					.apply(
-						caseDataDtoOpt.orElseThrow(
-							() -> new IllegalStateException(
-								String.format("When saving child leaf entities the caseData must be present, but was not: [%s]", entityDtos))));
-			}
-
-			actualImmunizationDto.getVaccinations().add(vaccinationDto);
-			dtosToSave.remove(vaccinationDto);
-			if (!dtosToSave.contains(actualImmunizationDto)) {
-				dtosToSave.add(actualImmunizationDto);
-			}
-		}
+		leafAttacherRegistry.forEach((leafClass, attacher) ->
+			dtosToSave.stream().filter(leafClass::isInstance).findAny().ifPresent(leaf -> {
+				EntityDto parent = attacher.attachAndReturnParent(leaf, dtosToSave);
+				dtosToSave.remove(leaf);
+				if (!dtosToSave.contains(parent)) {
+					dtosToSave.add(parent);
+				}
+			}));
 
 		dtosToSave.forEach(this::saveDirectEntity);
 	}
 
 	private static @NotNull <T> Optional<T> fetchType(List<EntityDto> entityDtos, Class<T> targetClass) {
 		return entityDtos.stream().filter(targetClass::isInstance).map(targetClass::cast).findAny();
+	}
+
+
+	@FunctionalInterface
+	private interface LeafAttacher {
+		EntityDto attachAndReturnParent(EntityDto leaf, List<EntityDto> dtosInProgress);
 	}
 
 }

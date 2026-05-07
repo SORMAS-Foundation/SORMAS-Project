@@ -11,6 +11,8 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.exposure.ExposureDto;
+import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
@@ -286,6 +288,31 @@ class PartialRetrieverImplTest extends AbstractBeanTest {
 			() -> Assertions.assertTrue(actual.getFieldInfoDictionary().containsKey(contactWithSourceCaseKnownFieldName)),
 			() -> Assertions.assertEquals("Contacts with source case known", contactWithSourceCaseKnownFieldInfo.getTranslatedFieldName()),
 			() -> Assertions.assertEquals(YesNoUnknown.NO, contactWithSourceCaseKnownFieldInfo.getFieldValue()));
+	}
+
+	@Test
+	void retrievePartial_epiData_exposureType() {
+		// PREPARE
+		Disease disease = Disease.PERTUSSIS;
+		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
+
+		ExposureDto exposure = ExposureDto.build(ExposureType.WORK);
+		originalCase.getEpiData().getExposures().add(exposure);
+		getCaseFacade().save(originalCase);
+
+		String exposureTypeFieldName = toFieldName(ExposureDto.I18N_PREFIX, ExposureDto.EXPOSURE_TYPE);
+
+		// EXECUTE
+		PartialRetrievalResponse actual = victim()
+			.retrievePartial(new PartialRetrievalRequest().setCaseUuid(originalCase.getUuid()).setFieldsToRetrieve(Set.of(exposureTypeFieldName)));
+
+		// CHECK
+		FieldInfo exposureTypeFieldInfo = actual.getFieldInfoDictionary().get(exposureTypeFieldName);
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(actual.getFailuresDictionary().isEmpty()),
+			() -> Assertions.assertTrue(actual.getFieldInfoDictionary().containsKey(exposureTypeFieldName)),
+			() -> Assertions.assertEquals("Type of activity", exposureTypeFieldInfo.getTranslatedFieldName()),
+			() -> Assertions.assertEquals(ExposureType.WORK, exposureTypeFieldInfo.getFieldValue()));
 	}
 
 	private static String toFieldName(String prefix, String fieldName) {
