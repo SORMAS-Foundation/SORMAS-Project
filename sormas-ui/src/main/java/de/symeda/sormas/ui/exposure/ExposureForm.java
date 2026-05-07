@@ -31,6 +31,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
@@ -500,7 +501,12 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		FieldHelper.updateItems(settingField, settings);
 
 		// Clear the field and its dependent details field
-		settingField.setValue(null);
+		// if the disease is Malaria or Dengue and the category is VECTOR_BORNE, preselect MOSQUITO_BORNE as setting (since it's the only valid option in this case)
+		ExposureSetting defaultSetting =
+			Stream.of(Disease.MALARIA, Disease.DENGUE).anyMatch(d -> d == disease) && category == ExposureCategory.VECTOR_BORNE
+				? ExposureSetting.MOSQUITO_BORNE
+				: null;
+		settingField.setValue(defaultSetting);
 		settingDetailsField.setValue(null);
 		settingDetailsField.setVisible(false);
 
