@@ -20,9 +20,7 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.patch.*;
-import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.patch.mapping.FieldCustomMapper;
 import de.symeda.sormas.api.patch.mapping.FieldPatchRequest;
 import de.symeda.sormas.api.patch.mapping.ValueMappingResult;
@@ -96,10 +94,10 @@ public class DataPatcherImpl implements DataPatcher {
 
 		List<Tuple<String, Tuple<DataPatchFailureCause, Object>>> patchingTuples = computePatchingTuples(request);
 
-		List<de.symeda.sormas.api.patch.SinglePatchResult> results = patchingTuples.stream().map(entry -> {
+		List<SinglePatchResult> results = patchingTuples.stream().map(entry -> {
 			String fullFieldName = entry.getFirst();
-			de.symeda.sormas.api.patch.SinglePatchResult singlePatchResult =
-				new de.symeda.sormas.api.patch.SinglePatchResult().setFieldName(fullFieldName);
+			SinglePatchResult singlePatchResult =
+				new SinglePatchResult().setFieldName(fullFieldName);
 
 			Supplier<Object> target = () -> findAppropriateTarget(fullFieldName, caseData, entityCache);
 
@@ -113,9 +111,9 @@ public class DataPatcherImpl implements DataPatcher {
 
 		}).collect(Collectors.toList());
 
-		Map<String, Object> validPatchDictionary = buildDictionaryFor(results, de.symeda.sormas.api.patch.SinglePatchResult::getValue, true);
+		Map<String, Object> validPatchDictionary = buildDictionaryFor(results, SinglePatchResult::getValue, true);
 		DataPatchResponse response = new DataPatchResponse().setApplied(false)
-			.setFailures(buildDictionaryFor(results, de.symeda.sormas.api.patch.SinglePatchResult::getFailure, false))
+			.setFailures(buildDictionaryFor(results, SinglePatchResult::getFailure, false))
 			.setValidPatchDictionary(validPatchDictionary);
 
 		if (validPatchDictionary.isEmpty() || (!request.isPatchedInCaseOfFailures() && response.hasFailures())) {
@@ -162,29 +160,19 @@ public class DataPatcherImpl implements DataPatcher {
 		businessDtoFacade.save(toSave);
 	}
 
-	private void attachVaccinationToImmunization(Map<String, EntityDto> entityCache) {
-		VaccinationDto vaccination = (VaccinationDto) entityCache.get(VaccinationDto.I18N_PREFIX);
-		entityCache.computeIfAbsent(ImmunizationDto.I18N_PREFIX, prefix -> {
-			CaseDataDto caseData = (CaseDataDto) entityCache.get(CaseDataDto.I18N_PREFIX);
-			return businessDtoFacade.tryFetchByI18nNameForCreateUpdate(prefix, caseData)
-				.orElseThrow(() -> new IllegalStateException("No immunization factory registered for vaccination attachment"));
-		});
-		((ImmunizationDto) entityCache.get(ImmunizationDto.I18N_PREFIX)).getVaccinations().add(vaccination);
-	}
-
 	private @NotNull <R> Map<String, R> buildDictionaryFor(
-		List<de.symeda.sormas.api.patch.SinglePatchResult> results,
-		Function<de.symeda.sormas.api.patch.SinglePatchResult, R> fct,
+		List<SinglePatchResult> results,
+		Function<SinglePatchResult, R> fct,
 		boolean valueContext) {
 		return results.stream()
 			// edge case were target value is null: this is allowed, which makes both fields null.
 			.filter(
 				singlePatchResult -> fct.apply(singlePatchResult) != null
 					|| (valueContext && singlePatchResult.getFailure() == null && singlePatchResult.getValue() == null))
-			.collect(CollectorUtils.toNullSafeMap(de.symeda.sormas.api.patch.SinglePatchResult::getFieldName, fct));
+			.collect(CollectorUtils.toNullSafeMap(SinglePatchResult::getFieldName, fct));
 	}
 
-	private @NotNull de.symeda.sormas.api.patch.SinglePatchResult valueMappingResult(
+	private @NotNull SinglePatchResult valueMappingResult(
 		Tuple<String, Tuple<DataPatchFailureCause, Object>> entry,
 		Disease disease,
 		CaseDataPatchRequest request,
@@ -192,8 +180,8 @@ public class DataPatcherImpl implements DataPatcher {
 
 		String fullFieldName = entry.getFirst();
 
-		de.symeda.sormas.api.patch.SinglePatchResult singlePatchResult =
-			new de.symeda.sormas.api.patch.SinglePatchResult().setFieldName(fullFieldName);
+		SinglePatchResult singlePatchResult =
+			new SinglePatchResult().setFieldName(fullFieldName);
 
 		Object target = targetOpt.get();
 		String relativeFieldName = fullFieldName.substring(fullFieldName.indexOf('.') + 1);
@@ -253,7 +241,7 @@ public class DataPatcherImpl implements DataPatcher {
 		return new DataPatchFailure().setDataPatchFailureCause(fieldDoesNotExist).setProvidedFieldValue(untypedTargetValue);
 	}
 
-	private @NotNull Optional<de.symeda.sormas.api.patch.SinglePatchResult> invalidFieldResult(
+	private @NotNull Optional<SinglePatchResult> invalidFieldResult(
 		Tuple<String, Tuple<DataPatchFailureCause, Object>> entry) {
 		return Optional.ofNullable(extractFailureCause(entry)).map(invalidFieldFailureCause -> buildFailureFor(entry, invalidFieldFailureCause));
 	}
@@ -262,7 +250,7 @@ public class DataPatcherImpl implements DataPatcher {
 		return entry.getSecond().getFirst();
 	}
 
-	private Optional<de.symeda.sormas.api.patch.SinglePatchResult> fieldMappingResult(
+	private Optional<SinglePatchResult> fieldMappingResult(
 		Tuple<String, Tuple<DataPatchFailureCause, Object>> entry,
 		Disease disease,
 		CaseDataPatchRequest request,
@@ -274,8 +262,8 @@ public class DataPatcherImpl implements DataPatcher {
 
 		Object untypedTargetValue = extractValue(entry);
 		if (mapper.isPresent()) {
-			de.symeda.sormas.api.patch.SinglePatchResult singlePatchResult =
-				new de.symeda.sormas.api.patch.SinglePatchResult().setFieldName(fullFieldName);
+			SinglePatchResult singlePatchResult =
+				new SinglePatchResult().setFieldName(fullFieldName);
 
 			Optional<DataPatchFailure> dataPatchFailureOpt = mapper.orElseThrow()
 				.map(
@@ -291,11 +279,11 @@ public class DataPatcherImpl implements DataPatcher {
 		return Optional.empty();
 	}
 
-	private de.symeda.sormas.api.patch.SinglePatchResult buildFailureFor(
+	private SinglePatchResult buildFailureFor(
 		Tuple<String, Tuple<DataPatchFailureCause, Object>> entry,
 		DataPatchFailureCause fieldFailureCause) {
 
-		return new de.symeda.sormas.api.patch.SinglePatchResult().setFieldName(entry.getFirst())
+		return new SinglePatchResult().setFieldName(entry.getFirst())
 			.setFailure(buildFailure(fieldFailureCause, extractValue(entry)));
 	}
 

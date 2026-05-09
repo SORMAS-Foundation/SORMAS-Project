@@ -16,6 +16,11 @@ public class DateEqualityChecker implements EqualityChecker {
 
 	@Override
 	public boolean areEqual(Object a, Object b) {
+		if (a == null && b == null) {
+			return true;
+		} else if (a == null || b == null) {
+			return false;
+		}
 		return toLocalDate((Date) a).equals(toLocalDate((Date) b));
 	}
 

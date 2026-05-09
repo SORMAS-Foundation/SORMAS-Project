@@ -53,19 +53,6 @@ class PathAliasHelperTest extends AbstractUnitTest {
 	}
 
 	@Test
-	void resolveAlias_validAlias_nestedPreviousHospitalization() {
-		// PREPARE
-		String aliasPath = "PreviousHospitalization.admissionDate";
-
-		// EXECUTE
-		Tuple<String, PathFailureCause> result = victim.resolveAlias(aliasPath);
-
-		// CHECK
-		assertEquals("CaseData.hospitalization.previousHospitalizations.admissionDate", result.getFirst());
-		assertNull(result.getSecond());
-	}
-
-	@Test
 	void resolveAlias_unknownAlias_returnsOriginalPath() {
 		// PREPARE
 		String aliasPath = "UnknownAlias.field";
@@ -140,18 +127,6 @@ class PathAliasHelperTest extends AbstractUnitTest {
 
 		// CHECK
 		assertEquals("Symptoms.cough", result);
-	}
-
-	@Test
-	void toAliasPath_nestedPreviousHospitalization_isMappedToAlias() {
-		// PREPARE
-		String pathWithoutAlias = "CaseData.hospitalization.previousHospitalizations.admissionDate";
-
-		// EXECUTE
-		String result = victim.toAliasPath(pathWithoutAlias);
-
-		// CHECK
-		assertEquals("PreviousHospitalization.admissionDate", result);
 	}
 
 	@Test

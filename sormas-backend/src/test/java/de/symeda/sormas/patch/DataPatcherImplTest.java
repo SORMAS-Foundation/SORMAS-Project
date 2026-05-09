@@ -610,12 +610,12 @@ class DataPatcherImplTest extends AbstractBeanTest {
 
 		String trueString = " ja    ";
 		Map<String, Object> patchDictionary =
-			Map.of("CaseData.symptoms.cough", trueString, "CaseData.quarantineOrderedOfficialDocumentDate", ignoredValue);
+				Map.of("CaseData.symptoms.cough", trueString, "CaseData.quarantineOrderedOfficialDocumentDate", ignoredValue);
 
 		CaseDataPatchRequest request = new CaseDataPatchRequest().setPatchedInCaseOfFailures(false)
-			.setCaseUuid(originalCase.getUuid())
-			.setPatchDictionary(patchDictionary)
-			.setInputLanguages(List.of(Language.DE));
+				.setCaseUuid(originalCase.getUuid())
+				.setPatchDictionary(patchDictionary)
+				.setInputLanguages(List.of(Language.DE));
 
 		// EXECUTE
 		DataPatchResponse response = victim().patch(request);
@@ -624,120 +624,20 @@ class DataPatcherImplTest extends AbstractBeanTest {
 
 		// CHECK
 		Map<String, DataPatchFailure> expectedFailures = buildDictionaryOfFailureType(
-			Map.of("CaseData.quarantineOrderedOfficialDocumentDate", ignoredValue),
-			DataPatchFailureCause.UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY_OR_FEATURE);
+				Map.of("CaseData.quarantineOrderedOfficialDocumentDate", ignoredValue),
+				DataPatchFailureCause.UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY_OR_FEATURE);
 
 		Assertions.assertAll(
-			() -> Assertions.assertFalse(response.isApplied()),
+				() -> Assertions.assertFalse(response.isApplied()),
 
-			() -> Assertions.assertEquals(Map.of("CaseData.symptoms.cough", trueString), response.getValidPatchDictionary()),
+				() -> Assertions.assertEquals(Map.of("CaseData.symptoms.cough", trueString), response.getValidPatchDictionary()),
 
-			() -> Assertions.assertNull(actual.getSymptoms().getCough()),
+				() -> Assertions.assertNull(actual.getSymptoms().getCough()),
 
-			() -> Assertions.assertNull(actual.getQuarantineOrderedOfficialDocumentDate()),
+				() -> Assertions.assertNull(actual.getQuarantineOrderedOfficialDocumentDate()),
 
-			// FAILURES
-			() -> Assertions.assertEquals(expectedFailures, response.getFailures()));
-	}
-
-	@ParameterizedTest
-	@ValueSource(strings = {
-		"NO",
-		" nein ",
-		" unknown " })
-	@Disabled("Waiting for feedback on vaccine automatic processing")
-	void patch_addVaccine_unknown_or_no(String unknownOrNo) {
-		// PREPARE
-		Disease disease = Disease.RESPIRATORY_SYNCYTIAL_VIRUS;
-		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
-
-		getCaseFacade().save(originalCase);
-
-		Assertions.assertFalse(originalCase.getSymptoms().getSymptomatic());
-
-		Map<String, Object> patchDictionary = new HashMap<>();
-		patchDictionary.put("Immunization.immunizationStatus", unknownOrNo);
-
-		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
-			.setPatchDictionary(patchDictionary)
-			.setInputLanguages(List.of(Language.EN, Language.DE_CH));
-
-		// EXECUTE
-		DataPatchResponse response = victim().patch(request);
-
-		List<ImmunizationDto> immunizationDtos = getImmunizationFacade().getByPersonUuids(List.of(originalCase.getPerson().getUuid()));
-
-		ImmunizationDto createdImmunizationDto = immunizationDtos.get(0);
-
-		// CHECK
-		Assertions.assertAll(() -> Assertions.assertTrue(response.isApplied()),
-
-// TODO: check what about patch dictionary for those values.
-//			() -> Assertions.assertEquals(patchDictionary, response.getValidPatchDictionary()),
-
-			() -> Assertions.assertEquals(1, immunizationDtos.size()),
-
-			() -> Assertions.assertEquals(ImmunizationStatus.NOT_ACQUIRED, createdImmunizationDto.getImmunizationStatus()),
-			() -> Assertions.assertEquals(0, createdImmunizationDto.getVaccinations().size()),
-			() -> Assertions.assertEquals(disease, createdImmunizationDto.getDisease()),
-
-			() -> Assertions.assertNotNull(createdImmunizationDto.getReportDate()),
-
-			() -> Assertions.assertNotNull(createdImmunizationDto.getReportingUser()),
-
-			// FAILURES
-			() -> Assertions.assertEquals(Map.of(), response.getFailures()));
-	}
-
-	@ParameterizedTest
-	@ValueSource(strings = {
-		"Maternal vaccination" })
-	@Disabled("Waiting for feedback on vaccine automatic processing")
-	void patch_addVaccine_true_and_mother_vaccine(String matternalVaccination) {
-		// PREPARE
-		Disease disease = Disease.DENGUE;
-		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
-
-		getCaseFacade().save(originalCase);
-
-		Assertions.assertFalse(originalCase.getSymptoms().getSymptomatic());
-
-		Map<String, Object> patchDictionary = new HashMap<>();
-		patchDictionary.put("Immunization.immunizationStatus", " ja ");
-		patchDictionary.put("Immunization.meansOfImmunization", matternalVaccination);
-
-		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
-			.setPatchDictionary(patchDictionary)
-			.setInputLanguages(List.of(Language.DE, Language.EN));
-
-		// EXECUTE
-		DataPatchResponse response = victim().patch(request);
-
-		// CHECK
-		List<ImmunizationDto> immunizationDtos = getImmunizationFacade().getByPersonUuids(List.of(originalCase.getPerson().getUuid()));
-
-		ImmunizationDto matternalImmunizationDto = immunizationDtos.get(1);
-
-		Assertions.assertAll(() -> Assertions.assertTrue(response.isApplied()),
-
-// TODO: check what about patch dictionary for those values.
-//			() -> Assertions.assertEquals(patchDictionary, response.getValidPatchDictionary()),
-
-			() -> Assertions.assertEquals(2, immunizationDtos.size()),
-
-			() -> Assertions.assertEquals(ImmunizationStatus.ACQUIRED, matternalImmunizationDto.getImmunizationStatus()),
-			() -> Assertions.assertEquals(MeansOfImmunization.MATERNAL_VACCINATION, matternalImmunizationDto.getMeansOfImmunization()),
-
-			() -> Assertions.assertEquals(disease, matternalImmunizationDto.getDisease()),
-
-			() -> Assertions.assertEquals(0, matternalImmunizationDto.getVaccinations().size()),
-
-			() -> Assertions.assertNotNull(matternalImmunizationDto.getReportDate()),
-
-			() -> Assertions.assertNotNull(matternalImmunizationDto.getReportingUser()),
-
-			// FAILURES
-			() -> Assertions.assertEquals(Map.of(), response.getFailures()));
+				// FAILURES
+				() -> Assertions.assertEquals(expectedFailures, response.getFailures()));
 	}
 
 	@Test
@@ -791,59 +691,6 @@ class DataPatcherImplTest extends AbstractBeanTest {
 
 			() -> Assertions.assertEquals(Vaccine.OTHER, vaccinationDto.getVaccineName()),
 			() -> Assertions.assertNull(vaccinationDto.getOtherVaccineName()),
-
-			// FAILURES
-			() -> Assertions.assertEquals(Map.of(), response.getFailures()));
-	}
-
-	@Test
-	@Disabled("Waiting for feedback on vaccine automatic processing")
-	void patch_addVaccine_vaccine_name() {
-		// PREPARE
-		Disease disease = Disease.DENGUE;
-		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
-
-		getCaseFacade().save(originalCase);
-
-		Assertions.assertFalse(originalCase.getSymptoms().getSymptomatic());
-
-		Map<String, Object> patchDictionary = new HashMap<>();
-		String vaccineName = "Beyfortus";
-		patchDictionary.put("Immunization.immunizationStatus", vaccineName);
-
-		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
-			.setPatchDictionary(patchDictionary)
-			.setInputLanguages(Collections.singletonList(Language.DE));
-
-		// EXECUTE
-		DataPatchResponse response = victim().patch(request);
-
-		List<ImmunizationDto> immunizationDtos = getImmunizationFacade().getByPersonUuids(List.of(originalCase.getPerson().getUuid()));
-
-		ImmunizationDto createdImmunizationDto = immunizationDtos.get(0);
-
-		// CHECK
-		List<VaccinationDto> vaccinations = createdImmunizationDto.getVaccinations();
-		VaccinationDto vaccinationDto = vaccinations.get(0);
-		Assertions.assertAll(() -> Assertions.assertTrue(response.isApplied()),
-
-// TODO: check what about patch dictionary for those values.
-//			() -> Assertions.assertEquals(patchDictionary, response.getValidPatchDictionary()),
-
-			() -> Assertions.assertEquals(1, immunizationDtos.size()),
-
-			() -> Assertions.assertEquals(ImmunizationStatus.ACQUIRED, createdImmunizationDto.getImmunizationStatus()),
-			() -> Assertions.assertEquals(MeansOfImmunization.VACCINATION, createdImmunizationDto.getMeansOfImmunization()),
-			() -> Assertions.assertEquals(disease, createdImmunizationDto.getDisease()),
-
-			() -> Assertions.assertNotNull(createdImmunizationDto.getReportDate()),
-
-			() -> Assertions.assertNotNull(createdImmunizationDto.getReportingUser()),
-
-			() -> Assertions.assertEquals(1, vaccinations.size()),
-
-			() -> Assertions.assertEquals(Vaccine.OTHER, vaccinationDto.getVaccineName()),
-			() -> Assertions.assertEquals(vaccineName, vaccinationDto.getOtherVaccineName()),
 
 			// FAILURES
 			() -> Assertions.assertEquals(Map.of(), response.getFailures()));
