@@ -135,6 +135,10 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setHealthcareProfessional(source.getHealthcareProfessional());
 		target.setPlaceOfInfection(source.getPlaceOfInfection());
 		target.setResidenceAtOnset(source.getResidenceAtOnset());
+		target.setExposureInvestigationFromDate(source.getExposureInvestigationFromDate());
+		target.setExposureInvestigationToDate(source.getExposureInvestigationToDate());
+		target.setActivityAsCaseFromDate(source.getActivityAsCaseFromDate());
+		target.setActivityAsCaseToDate(source.getActivityAsCaseToDate());
 		return target;
 	}
 
@@ -239,6 +243,9 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setProphylaxisAdherenceDetails(source.getProphylaxisAdherenceDetails());
 		target.setTravelPurpose(source.getTravelPurpose());
 		target.setTravelPurposeDetails(source.getTravelPurposeDetails());
+		target.setEatingOutVenues(source.getEatingOutVenues() != null ? source.getEatingOutVenues() : new HashSet<>());
+		target.setEatingOutVenueOther(source.getEatingOutVenueOther());
+		target.setShoppingForFoodDetails(source.getShoppingForFoodDetails());
 		return target;
 	}
 
@@ -325,6 +332,10 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setHealthcareProfessional(source.getHealthcareProfessional());
 		target.setPlaceOfInfection(source.getPlaceOfInfection());
 		target.setResidenceAtOnset(source.getResidenceAtOnset());
+		target.setExposureInvestigationFromDate(source.getExposureInvestigationFromDate());
+		target.setExposureInvestigationToDate(source.getExposureInvestigationToDate());
+		target.setActivityAsCaseFromDate(source.getActivityAsCaseFromDate());
+		target.setActivityAsCaseToDate(source.getActivityAsCaseToDate());
 		return target;
 	}
 
@@ -425,6 +436,9 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setProphylaxisAdherenceDetails(source.getProphylaxisAdherenceDetails());
 		target.setTravelPurpose(source.getTravelPurpose());
 		target.setTravelPurposeDetails(source.getTravelPurposeDetails());
+		target.setEatingOutVenues(new HashSet<>(source.getEatingOutVenues()));
+		target.setEatingOutVenueOther(source.getEatingOutVenueOther());
+		target.setShoppingForFoodDetails(source.getShoppingForFoodDetails());
 		return target;
 	}
 

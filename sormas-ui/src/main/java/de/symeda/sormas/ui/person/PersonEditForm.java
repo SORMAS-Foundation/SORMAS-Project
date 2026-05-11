@@ -523,7 +523,15 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), PersonDto.EDUCATION_DETAILS, PersonDto.EDUCATION_TYPE, Arrays.asList(EducationType.OTHER), true);
 
-		FieldHelper.setVisibleWhen(getFieldGroup(), PersonDto.WORK_PLACE_TEXT, PersonDto.WORK_PLACE, WorkPlace.OTHER, true);
+		// Lu Salmonellosis renders the place-of-work text field unconditionally and hides the WorkPlace enum;
+		// other diseases keep the existing dependent-visibility binding.
+		boolean isLuxSalmonellosis = disease == Disease.SALMONELLOSIS && isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+		if (isLuxSalmonellosis) {
+			setVisibleClear(false, PersonDto.WORK_PLACE);
+			getField(PersonDto.WORK_PLACE_TEXT).setVisible(true);
+		} else {
+			FieldHelper.setVisibleWhen(getFieldGroup(), PersonDto.WORK_PLACE_TEXT, PersonDto.WORK_PLACE, WorkPlace.OTHER, true);
+		}
 
 		// Set initial visibilities
 

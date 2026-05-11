@@ -274,6 +274,9 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setOtherNeurolocalSymptomText(source.getOtherNeurolocalSymptomText());
 		target.setDisseminatedIntraVascularCoagulation(source.getDisseminatedIntraVascularCoagulation());
 		target.setFatalRisk(source.getFatalRisk());
+		target.setConstipation(source.getConstipation());
+		target.setDysuria(source.getDysuria());
+		target.setEyeIrritation(source.getEyeIrritation());
 		return target;
 	}
 
@@ -531,6 +534,9 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setOtherNeurolocalSymptomText(source.getOtherNeurolocalSymptomText());
 		target.setDisseminatedIntraVascularCoagulation(source.getDisseminatedIntraVascularCoagulation());
 		target.setFatalRisk(source.getFatalRisk());
+		target.setConstipation(source.getConstipation());
+		target.setDysuria(source.getDysuria());
+		target.setEyeIrritation(source.getEyeIrritation());
 		return target;
 	}
 
