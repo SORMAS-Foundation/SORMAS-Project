@@ -4,7 +4,6 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +13,6 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -25,17 +23,16 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
 import de.symeda.sormas.api.activityascase.ActivityAsCaseType;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.exposure.ExposureDto;
-import de.symeda.sormas.api.exposure.ExposureType;
-import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
-import de.symeda.sormas.api.hospitalization.HospitalizationDto;
-import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumTranslation;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
+import de.symeda.sormas.api.exposure.ExposureDto;
+import de.symeda.sormas.api.exposure.ExposureType;
+import de.symeda.sormas.api.hospitalization.HospitalizationDto;
+import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
+import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
-import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.infrastructure.country.CountryDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
@@ -66,7 +63,6 @@ class DataPatcherImplTest extends AbstractBeanTest {
 				Map.of(
 					"Person.lastName",
 					newLastname,
-
 					"CaseData.classificationDate",
 					classificationDate,
 
@@ -610,12 +606,12 @@ class DataPatcherImplTest extends AbstractBeanTest {
 
 		String trueString = " ja    ";
 		Map<String, Object> patchDictionary =
-				Map.of("CaseData.symptoms.cough", trueString, "CaseData.quarantineOrderedOfficialDocumentDate", ignoredValue);
+			Map.of("CaseData.symptoms.cough", trueString, "CaseData.quarantineOrderedOfficialDocumentDate", ignoredValue);
 
 		CaseDataPatchRequest request = new CaseDataPatchRequest().setPatchedInCaseOfFailures(false)
-				.setCaseUuid(originalCase.getUuid())
-				.setPatchDictionary(patchDictionary)
-				.setInputLanguages(List.of(Language.DE));
+			.setCaseUuid(originalCase.getUuid())
+			.setPatchDictionary(patchDictionary)
+			.setInputLanguages(List.of(Language.DE));
 
 		// EXECUTE
 		DataPatchResponse response = victim().patch(request);
@@ -624,76 +620,20 @@ class DataPatcherImplTest extends AbstractBeanTest {
 
 		// CHECK
 		Map<String, DataPatchFailure> expectedFailures = buildDictionaryOfFailureType(
-				Map.of("CaseData.quarantineOrderedOfficialDocumentDate", ignoredValue),
-				DataPatchFailureCause.UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY_OR_FEATURE);
+			Map.of("CaseData.quarantineOrderedOfficialDocumentDate", ignoredValue),
+			DataPatchFailureCause.UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY_OR_FEATURE);
 
 		Assertions.assertAll(
-				() -> Assertions.assertFalse(response.isApplied()),
+			() -> Assertions.assertFalse(response.isApplied()),
 
-				() -> Assertions.assertEquals(Map.of("CaseData.symptoms.cough", trueString), response.getValidPatchDictionary()),
+			() -> Assertions.assertEquals(Map.of("CaseData.symptoms.cough", trueString), response.getValidPatchDictionary()),
 
-				() -> Assertions.assertNull(actual.getSymptoms().getCough()),
+			() -> Assertions.assertNull(actual.getSymptoms().getCough()),
 
-				() -> Assertions.assertNull(actual.getQuarantineOrderedOfficialDocumentDate()),
-
-				// FAILURES
-				() -> Assertions.assertEquals(expectedFailures, response.getFailures()));
-	}
-
-	@Test
-	@Disabled("Waiting for feedback on vaccine automatic processing")
-	void patch_addVaccine_true() {
-		// PREPARE
-		Disease disease = Disease.DENGUE;
-		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
-
-		getCaseFacade().save(originalCase);
-
-		Assertions.assertFalse(originalCase.getSymptoms().getSymptomatic());
-
-		Map<String, Object> patchDictionary = new HashMap<>();
-		patchDictionary.put("Immunization.immunizationStatus", " ja ");
-		patchDictionary.put("Immunization.country", "France");
-		patchDictionary.put("Vaccination.country", "France");
-
-		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
-			.setPatchDictionary(patchDictionary)
-			.setInputLanguages(Collections.singletonList(Language.DE));
-
-		// EXECUTE
-		DataPatchResponse response = victim().patch(request);
-
-		// CHECK
-		List<ImmunizationDto> immunizationDtos = getImmunizationFacade().getByPersonUuids(List.of(originalCase.getPerson().getUuid()));
-
-		ImmunizationDto createdImmunizationDto = immunizationDtos.get(0);
-
-		List<VaccinationDto> vaccinations = createdImmunizationDto.getVaccinations();
-		VaccinationDto vaccinationDto = vaccinations.get(0);
-
-		Assertions.assertAll(() -> Assertions.assertTrue(response.isApplied()),
-
-// TODO: check what about patch dictionary for those values.
-//			() -> Assertions.assertEquals(patchDictionary, response.getValidPatchDictionary()),
-
-			() -> Assertions.assertEquals(1, immunizationDtos.size()),
-
-			() -> Assertions.assertEquals(ImmunizationStatus.ACQUIRED, createdImmunizationDto.getImmunizationStatus()),
-			() -> Assertions.assertEquals(MeansOfImmunization.VACCINATION, createdImmunizationDto.getMeansOfImmunization()),
-
-			() -> Assertions.assertEquals(disease, createdImmunizationDto.getDisease()),
-
-			() -> Assertions.assertNotNull(createdImmunizationDto.getReportDate()),
-
-			() -> Assertions.assertNotNull(createdImmunizationDto.getReportingUser()),
-
-			() -> Assertions.assertEquals(1, vaccinations.size()),
-
-			() -> Assertions.assertEquals(Vaccine.OTHER, vaccinationDto.getVaccineName()),
-			() -> Assertions.assertNull(vaccinationDto.getOtherVaccineName()),
+			() -> Assertions.assertNull(actual.getQuarantineOrderedOfficialDocumentDate()),
 
 			// FAILURES
-			() -> Assertions.assertEquals(Map.of(), response.getFailures()));
+			() -> Assertions.assertEquals(expectedFailures, response.getFailures()));
 	}
 
 	@Test
@@ -832,16 +772,15 @@ class DataPatcherImplTest extends AbstractBeanTest {
 		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.PERTUSSIS);
 
 		// Set classificationDate to 08:30 on 2024-06-15 — a non-midnight timestamp on the same calendar day that will be patched
-		java.util.Date existingDate =
-			java.util.Date.from(LocalDateTime.of(2024, 6, 15, 8, 30, 0).atZone(ZoneId.systemDefault()).toInstant());
+		java.util.Date existingDate = java.util.Date.from(LocalDateTime.of(2024, 6, 15, 8, 30, 0).atZone(ZoneId.systemDefault()).toInstant());
 		originalCase.setClassificationDate(existingDate);
 		getCaseFacade().save(originalCase);
 
 		// Patch with the same calendar day as a plain date string — DatePatchMapper resolves this to midnight (00:00:00),
 		// which differs in time from existingDate. Without DateEqualityChecker this would trigger FORBIDDEN_VALUE_OVERRIDE.
 		String patchDate = "2024-06-15";
-		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
-			.setPatchDictionary(Map.of("CaseData.classificationDate", patchDate));
+		CaseDataPatchRequest request =
+			new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid()).setPatchDictionary(Map.of("CaseData.classificationDate", patchDate));
 
 		// EXECUTE
 		DataPatchResponse response = victim().patch(request);
@@ -983,12 +922,10 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			() -> Assertions.assertEquals(2, immunizations.size()),
 
 			// Original immunization is untouched
-			() -> Assertions.assertTrue(
-				immunizations.stream().anyMatch(imm -> ImmunizationStatus.NOT_ACQUIRED.equals(imm.getImmunizationStatus()))),
+			() -> Assertions.assertTrue(immunizations.stream().anyMatch(imm -> ImmunizationStatus.NOT_ACQUIRED.equals(imm.getImmunizationStatus()))),
 
 			// New immunization was created with the patched status
-			() -> Assertions.assertTrue(
-				immunizations.stream().anyMatch(imm -> ImmunizationStatus.ACQUIRED.equals(imm.getImmunizationStatus()))),
+			() -> Assertions.assertTrue(immunizations.stream().anyMatch(imm -> ImmunizationStatus.ACQUIRED.equals(imm.getImmunizationStatus()))),
 
 			// Original vaccination (COMIRNATY) is still there
 			() -> Assertions.assertTrue(
@@ -1015,8 +952,10 @@ class DataPatcherImplTest extends AbstractBeanTest {
 				.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
 				.setPatchDictionary(
 					Map.of(
-						toFieldName(ExposureDto.I18N_PREFIX, ExposureDto.EXPOSURE_TYPE), "WORK",
-						toFieldName(ExposureDto.I18N_PREFIX, ExposureDto.DESCRIPTION), "market visit")));
+						toFieldName(ExposureDto.I18N_PREFIX, ExposureDto.EXPOSURE_TYPE),
+						"WORK",
+						toFieldName(ExposureDto.I18N_PREFIX, ExposureDto.DESCRIPTION),
+						"market visit")));
 
 		// CHECK
 		CaseDataDto actualCase = getCaseFacade().getByUuid(originalCase.getUuid());
@@ -1066,6 +1005,43 @@ class DataPatcherImplTest extends AbstractBeanTest {
 	}
 
 	@Test
+	void patch_previousHospitalization_admissionAndDischargeDates() {
+		// PREPARE
+		Disease disease = Disease.DENGUE;
+		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
+
+		String admissionDate = "2026-02-02";
+		String dischargeDate = "2026-02-04";
+
+		// EXECUTE
+		DataPatchResponse response = victim().patch(
+			new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
+				.setPatchDictionary(
+					Map.of(
+						toFieldName(PreviousHospitalizationDto.I18N_PREFIX, PreviousHospitalizationDto.ADMISSION_DATE),
+						admissionDate,
+
+						toFieldName(PreviousHospitalizationDto.I18N_PREFIX, PreviousHospitalizationDto.DISCHARGE_DATE),
+						dischargeDate)));
+
+		// CHECK
+		logger.info("response: [{}]", response);
+
+		CaseDataDto actualCase = getCaseFacade().getByUuid(originalCase.getUuid());
+		List<PreviousHospitalizationDto> previousHospitalizations = actualCase.getHospitalization().getPreviousHospitalizations();
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failures: " + response.getFailures()),
+			() -> Assertions.assertTrue(response.isApplied()),
+			() -> Assertions.assertEquals(1, previousHospitalizations.size()),
+			() -> Assertions.assertEquals(
+				Date.from(LocalDate.parse(admissionDate).atStartOfDay(ZoneId.systemDefault()).toInstant()),
+				previousHospitalizations.get(0).getAdmissionDate()),
+			() -> Assertions.assertEquals(
+				Date.from(LocalDate.parse(dischargeDate).atStartOfDay(ZoneId.systemDefault()).toInstant()),
+				previousHospitalizations.get(0).getDischargeDate()));
+	}
+
+	@Test
 	void patch_activityAsCase() {
 		// PREPARE
 		Disease disease = Disease.PERTUSSIS;
@@ -1077,8 +1053,10 @@ class DataPatcherImplTest extends AbstractBeanTest {
 				.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
 				.setPatchDictionary(
 					Map.of(
-						toFieldName(ActivityAsCaseDto.I18N_PREFIX, ActivityAsCaseDto.ACTIVITY_AS_CASE_TYPE), "WORK",
-						toFieldName(ActivityAsCaseDto.I18N_PREFIX, ActivityAsCaseDto.DESCRIPTION), "office work")));
+						toFieldName(ActivityAsCaseDto.I18N_PREFIX, ActivityAsCaseDto.ACTIVITY_AS_CASE_TYPE),
+						"WORK",
+						toFieldName(ActivityAsCaseDto.I18N_PREFIX, ActivityAsCaseDto.DESCRIPTION),
+						"office work")));
 
 		// CHECK
 		CaseDataDto actualCase = getCaseFacade().getByUuid(originalCase.getUuid());

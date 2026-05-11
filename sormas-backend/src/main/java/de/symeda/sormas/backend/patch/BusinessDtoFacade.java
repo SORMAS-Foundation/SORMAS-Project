@@ -49,7 +49,7 @@ public class BusinessDtoFacade {
 
 	private final Map<String, Function<CaseDataDto, List<? extends EntityDto>>> dtoRetrieverByI18nDictionaryRead = new HashMap<>();
 
-	private final Map<String, Function<CaseDataDto, EntityDto>> dtoRetrieverByI18nDictionaryCreateUpdate = new HashMap<>();
+	private final Map<String, Function<CaseDataDto, AttachedEntityWrapper>> dtoRetrieverByI18nDictionaryCreateUpdate = new HashMap<>();
 
 	/**
 	 * Some {@link EntityDto} must be attached to a "parent" to be saved.
@@ -67,7 +67,6 @@ public class BusinessDtoFacade {
 
 		registerLeafAttacherOperations();
 	}
-
 
 	private void registerDirectSaveOperations() {
 		registerSave(CaseDataDto.class, caseDataDto -> caseFacade.save(caseDataDto));
@@ -111,25 +110,30 @@ public class BusinessDtoFacade {
 			caseDataDto -> caseDataDto.getHospitalization().getPreviousHospitalizations());
 	}
 
-
 	private void registerFetchByI18nOperationsCreateUpdate() {
 		registerFetchByI18nCreateUpdate(
-				PersonDto.I18N_PREFIX,
-				caseDataDto -> personFacade.getByUuid(caseDataDto.getPerson().getUuid()));
+			PersonDto.I18N_PREFIX,
+			caseDataDto -> AttachedEntityWrapper.attached(personFacade.getByUuid(caseDataDto.getPerson().getUuid())));
 
 		registerFetchByI18nCreateUpdate(
-				ImmunizationDto.I18N_PREFIX,
-				createImmunizationDtoFromCaseFct());
+			ImmunizationDto.I18N_PREFIX,
+			createImmunizationDtoFromCaseFct().andThen(AttachedEntityWrapper::notYetAttached));
 
 		registerFetchByI18nCreateUpdate(
-				VaccinationDto.I18N_PREFIX,
-				caseDataDto -> VaccinationDto.build(userFacade.getCurrentUserAsReference()));
+			VaccinationDto.I18N_PREFIX,
+			caseDataDto -> AttachedEntityWrapper.notYetAttached(VaccinationDto.build(userFacade.getCurrentUserAsReference())));
 
-		registerFetchByI18nCreateUpdate(ExposureDto.I18N_PREFIX, caseDataDto -> ExposureDto.build(ExposureType.UNKNOWN));
+		registerFetchByI18nCreateUpdate(
+			ExposureDto.I18N_PREFIX,
+			caseDataDto -> AttachedEntityWrapper.notYetAttached(ExposureDto.build(ExposureType.UNKNOWN)));
 
-		registerFetchByI18nCreateUpdate(ActivityAsCaseDto.I18N_PREFIX, caseDataDto -> ActivityAsCaseDto.build(ActivityAsCaseType.UNKNOWN));
+		registerFetchByI18nCreateUpdate(
+			ActivityAsCaseDto.I18N_PREFIX,
+			caseDataDto -> AttachedEntityWrapper.notYetAttached(ActivityAsCaseDto.build(ActivityAsCaseType.UNKNOWN)));
 
-		registerFetchByI18nCreateUpdate(PreviousHospitalizationDto.I18N_PREFIX, PreviousHospitalizationDto::build);
+		registerFetchByI18nCreateUpdate(
+			PreviousHospitalizationDto.I18N_PREFIX,
+			caze -> AttachedEntityWrapper.notYetAttached(PreviousHospitalizationDto.build(caze)));
 	}
 
 	private Function<CaseDataDto, EntityDto> createImmunizationDtoFromCaseFct() {
@@ -151,7 +155,7 @@ public class BusinessDtoFacade {
 		dtoRetrieverByI18nDictionaryRead.put(i18nName, fct);
 	}
 
-	private void registerFetchByI18nCreateUpdate(String i18nName, Function<CaseDataDto, EntityDto> fct) {
+	private void registerFetchByI18nCreateUpdate(String i18nName, Function<CaseDataDto, AttachedEntityWrapper> fct) {
 		dtoRetrieverByI18nDictionaryCreateUpdate.put(i18nName, fct);
 	}
 
@@ -184,10 +188,9 @@ public class BusinessDtoFacade {
 	}
 
 	private CaseDataDto requireCaseData(List<EntityDto> dtosInProgress) {
-		return fetchType(dtosInProgress, CaseDataDto.class)
-			.orElseThrow(
-				() -> new IllegalStateException(
-					String.format("When saving child leaf entities the caseData must be present, but was not: [%s]", dtosInProgress)));
+		return fetchType(dtosInProgress, CaseDataDto.class).orElseThrow(
+			() -> new IllegalStateException(
+				String.format("When saving child leaf entities the caseData must be present, but was not: [%s]", dtosInProgress)));
 	}
 
 	@Nullable
@@ -237,13 +240,15 @@ public class BusinessDtoFacade {
 
 	/**
 	 * Warning: Will retrieve a new instance on every fetch, MUST be cached within a single patch operation.
-	 * @param i18nName I18N translation key
-	 * @param caseDataDto root/reference entity
+	 * 
+	 * @param i18nName
+	 *            I18N translation key
+	 * @param caseDataDto
+	 *            root/reference entity
 	 * @return "un-attached" DTO that will be thrown away if not saved.
 	 */
-	public Optional<EntityDto> tryFetchByI18nNameForCreateUpdate(@NotNull String i18nName, CaseDataDto caseDataDto) {
-		return Optional.ofNullable(dtoRetrieverByI18nDictionaryCreateUpdate.get(i18nName))
-			.map(fct -> fct.apply(caseDataDto));
+	public Optional<AttachedEntityWrapper> tryFetchByI18nNameForCreateUpdate(@NotNull String i18nName, CaseDataDto caseDataDto) {
+		return Optional.ofNullable(dtoRetrieverByI18nDictionaryCreateUpdate.get(i18nName)).map(fct -> fct.apply(caseDataDto));
 	}
 
 	/**
@@ -276,25 +281,24 @@ public class BusinessDtoFacade {
 	 * @param <T>
 	 *            type
 	 */
-	private  <T extends EntityDto> T saveDirectEntity(@NotNull EntityDto entityDto) {
+	private <T extends EntityDto> T saveDirectEntity(@NotNull EntityDto entityDto) {
 		Class<? extends EntityDto> entityDtoClass = entityDto.getClass();
 
 		return Optional.ofNullable((Function<T, T>) directDtoSaveDictionary.get(entityDtoClass))
-				.orElseThrow(() -> new IllegalStateException(String.format("No save function defined for: [%s]", entityDtoClass)))
-				.apply((T) entityDto);
+			.orElseThrow(() -> new IllegalStateException(String.format("No save function defined for: [%s]", entityDtoClass)))
+			.apply((T) entityDto);
 	}
 
 	public void save(@NotNull List<EntityDto> entityDtos) {
 		ArrayList<EntityDto> dtosToSave = new ArrayList<>(entityDtos);
 
-		leafAttacherRegistry.forEach((leafClass, attacher) ->
-			dtosToSave.stream().filter(leafClass::isInstance).findAny().ifPresent(leaf -> {
-				EntityDto parent = attacher.attachAndReturnParent(leaf, dtosToSave);
-				dtosToSave.remove(leaf);
-				if (!dtosToSave.contains(parent)) {
-					dtosToSave.add(parent);
-				}
-			}));
+		leafAttacherRegistry.forEach((leafClass, attacher) -> dtosToSave.stream().filter(leafClass::isInstance).findAny().ifPresent(leaf -> {
+			EntityDto parent = attacher.attachAndReturnParent(leaf, dtosToSave);
+			dtosToSave.remove(leaf);
+			if (!dtosToSave.contains(parent)) {
+				dtosToSave.add(parent);
+			}
+		}));
 
 		dtosToSave.forEach(this::saveDirectEntity);
 	}
@@ -303,9 +307,9 @@ public class BusinessDtoFacade {
 		return entityDtos.stream().filter(targetClass::isInstance).map(targetClass::cast).findAny();
 	}
 
-
 	@FunctionalInterface
 	private interface LeafAttacher {
+
 		EntityDto attachAndReturnParent(EntityDto leaf, List<EntityDto> dtosInProgress);
 	}
 

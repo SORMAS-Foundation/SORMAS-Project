@@ -232,7 +232,7 @@ public class CronService {
 		}
 	}
 
-	@Schedule(hour = "*", minute = "*/5", persistent = false)
+	@Schedule(hour = "*", persistent = false)
 	public void fetchSurveyResponses() {
 		if (!featureConfigurationFacade.isFeatureEnabled(FeatureType.EXTERNAL_MESSAGES)
 			|| featureConfigurationFacade.isPropertyValueTrue(FeatureType.EXTERNAL_MESSAGES, FeatureTypeProperty.SURVEY_FETCH_ENABLED)) {

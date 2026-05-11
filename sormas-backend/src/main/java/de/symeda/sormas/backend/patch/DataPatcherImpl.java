@@ -88,8 +88,8 @@ public class DataPatcherImpl implements DataPatcher {
 
 		Disease disease = caseData.getDisease();
 
-		Map<String, EntityDto> entityCache = new HashMap<>();
-		entityCache.put(CaseDataDto.I18N_PREFIX, caseData);
+		Map<String, AttachedEntityWrapper> entityCache = new HashMap<>();
+		entityCache.put(CaseDataDto.I18N_PREFIX, AttachedEntityWrapper.attached(caseData));
 
 		List<SingleFieldPatchResult> patchingTuples = computePatchingTuples(request);
 
@@ -97,7 +97,7 @@ public class DataPatcherImpl implements DataPatcher {
 			String fullFieldName = singleFieldPatchResult.path;
 			SinglePatchResult singlePatchResult = new SinglePatchResult().setFieldName(fullFieldName);
 
-			Supplier<Object> target = () -> findAppropriateTarget(fullFieldName, caseData, entityCache);
+			Supplier<AttachedEntityWrapper> target = () -> findAppropriateTarget(fullFieldName, caseData, entityCache);
 
 			try {
 				return produceSinglePatchResult(request, singleFieldPatchResult, disease, target);
@@ -134,14 +134,14 @@ public class DataPatcherImpl implements DataPatcher {
 		CaseDataPatchRequest request,
 		SingleFieldPatchResult singleFieldPatchResult,
 		Disease disease,
-		Supplier<Object> target) {
+		Supplier<AttachedEntityWrapper> target) {
 
 		return invalidFieldResult(singleFieldPatchResult).or(() -> fieldMappingResult(singleFieldPatchResult, disease, request, target))
 			.orElseGet(() -> valueMappingResult(singleFieldPatchResult, disease, request, target));
 	}
 
-	private void saveDTOsIfAppropriate(Map<String, EntityDto> entityCache) {
-		List<EntityDto> toSave = new ArrayList<>(entityCache.values());
+	private void saveDTOsIfAppropriate(Map<String, AttachedEntityWrapper> entityCache) {
+		List<EntityDto> toSave = new ArrayList<>(entityCache.values().stream().map(AttachedEntityWrapper::getEntityDto).collect(Collectors.toList()));
 
 		if (toSave.isEmpty()) {
 			logger.warn("Nothing to save in entity cache");
@@ -174,13 +174,14 @@ public class DataPatcherImpl implements DataPatcher {
 		SingleFieldPatchResult singleFieldPatchResult,
 		Disease disease,
 		CaseDataPatchRequest request,
-		Supplier<Object> targetOpt) {
+		Supplier<AttachedEntityWrapper> targetOpt) {
 
 		String fullFieldName = singleFieldPatchResult.path;
 
 		SinglePatchResult singlePatchResult = new SinglePatchResult().setFieldName(fullFieldName);
 
-		Object target = targetOpt.get();
+		AttachedEntityWrapper attachedEntityWrapper = targetOpt.get();
+		Object target = attachedEntityWrapper.getEntityDto();
 		String relativeFieldName = fullFieldName.substring(fullFieldName.indexOf('.') + 1);
 		Tuple<Class<?>, PropertyAccessFailure> nestedPropertyTypeTuple =
 			PropertyAccessor.getNestedPropertyType(target, relativeFieldName, getFieldVisibilityCheckers(disease));
@@ -206,7 +207,12 @@ public class DataPatcherImpl implements DataPatcher {
 
 		Object typedValue = result.getData();
 
-		if (request.getReplacementStrategy() == DataReplacementStrategy.IF_NOT_ALREADY_PRESENT) {
+		if (!attachedEntityWrapper.isAttached() && !StringUtils.contains(relativeFieldName, ".")) {
+			logger.debug(
+				"Entity was not yet attached and relative field name: [{}] is not for sub-Objects, therefore overwrite is allowed and ignored for this target only: [{}]",
+				relativeFieldName,
+				target.getClass());
+		} else if (request.getReplacementStrategy() == DataReplacementStrategy.IF_NOT_ALREADY_PRESENT) {
 			Optional<Object> nestedPropertyValue = PropertyAccessor.getNestedProperty(target, relativeFieldName);
 
 			if (nestedPropertyValue.isPresent()) {
@@ -247,7 +253,7 @@ public class DataPatcherImpl implements DataPatcher {
 		SingleFieldPatchResult singleFieldPatchResult,
 		Disease disease,
 		CaseDataPatchRequest request,
-		Supplier<Object> target) {
+		Supplier<AttachedEntityWrapper> target) {
 
 		String fullFieldName = singleFieldPatchResult.path;
 
@@ -262,7 +268,7 @@ public class DataPatcherImpl implements DataPatcher {
 					new FieldPatchRequest().setFieldName(fullFieldName)
 						.setReplacementType(request.getReplacementStrategy())
 						.setOrigin(request.getOrigin())
-						.setTarget(target.get())
+						.setTarget(target.get().getEntityDto())
 						.setValue(untypedTargetValue));
 
 			return dataPatchFailureOpt.map(singlePatchResult::setFailure).or(() -> Optional.of(singlePatchResult.setValue(untypedTargetValue)));
@@ -347,20 +353,21 @@ public class DataPatcherImpl implements DataPatcher {
 		return caseData;
 	}
 
-	private EntityDto findAppropriateTarget(String resolvedPath, CaseDataDto caseData, Map<String, EntityDto> entityCache) {
+	private AttachedEntityWrapper findAppropriateTarget(String resolvedPath, CaseDataDto caseData, Map<String, AttachedEntityWrapper> entityCache) {
 		String prefix = extractPrefix(resolvedPath);
 
 		if (entityCache.containsKey(prefix)) {
 			return entityCache.get(prefix);
 		}
 
-		Optional<EntityDto> fetched = businessDtoFacade.tryFetchByI18nNameForCreateUpdate(prefix, caseData);
+		Optional<AttachedEntityWrapper> fetched = businessDtoFacade.tryFetchByI18nNameForCreateUpdate(prefix, caseData);
 		if (fetched.isPresent()) {
 			entityCache.put(prefix, fetched.get());
 			return fetched.get();
 		}
 
-		return caseData;
+		logger.error("Fallbacked to entity for resolved path: [{}]. This should not occur as CaseData is already in entityCache", resolvedPath);
+		return AttachedEntityWrapper.attached(caseData);
 	}
 
 	private String extractPrefix(String fieldName) {
@@ -384,7 +391,6 @@ public class DataPatcherImpl implements DataPatcher {
 			return true;
 		};
 	}
-
 
 	private static final class SingleFieldPatchResult {
 

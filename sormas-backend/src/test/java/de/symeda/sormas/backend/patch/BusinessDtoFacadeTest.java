@@ -1,21 +1,15 @@
 package de.symeda.sormas.backend.patch;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,9 +29,6 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 class BusinessDtoFacadeTest extends AbstractUnitTest {
 
@@ -103,10 +94,9 @@ class BusinessDtoFacadeTest extends AbstractUnitTest {
 		assertThrows(IllegalStateException.class, () -> victim.getCaseDataDto("unknown"));
 	}
 
-
 	@Test
 	void tryFetchByI18nNameForCreateUpdate_returnsEmpty_forUnknownPrefix() {
-		Optional<EntityDto> result = victim.tryFetchByI18nNameForCreateUpdate("UnknownPrefix", new CaseDataDto());
+		Optional<AttachedEntityWrapper> result = victim.tryFetchByI18nNameForCreateUpdate("UnknownPrefix", new CaseDataDto());
 
 		assertTrue(result.isEmpty());
 	}
@@ -117,21 +107,19 @@ class BusinessDtoFacadeTest extends AbstractUnitTest {
 		CaseDataDto caseData = buildCaseDataWithPerson("person-uuid");
 		when(personFacade.getByUuid("person-uuid")).thenReturn(personDto);
 
-		Optional<EntityDto> result = victim.tryFetchByI18nNameForCreateUpdate(PersonDto.I18N_PREFIX, caseData);
+		Optional<AttachedEntityWrapper> result = victim.tryFetchByI18nNameForCreateUpdate(PersonDto.I18N_PREFIX, caseData);
 
-		assertAll(
-			() -> assertTrue(result.isPresent()),
-			() -> assertSame(personDto, result.get()));
+		assertAll(() -> assertTrue(result.isPresent()), () -> assertSame(personDto, result.get().getEntityDto()));
 	}
 
 	@Test
 	void tryFetchByI18nNameForCreateUpdate_returnsNewImmunization_forImmunizationPrefix() {
 		CaseDataDto caseData = buildCaseDataWithPerson("person-uuid");
 
-		Optional<EntityDto> result = victim.tryFetchByI18nNameForCreateUpdate(ImmunizationDto.I18N_PREFIX, caseData);
+		Optional<AttachedEntityWrapper> result = victim.tryFetchByI18nNameForCreateUpdate(ImmunizationDto.I18N_PREFIX, caseData);
 
 		assertTrue(result.isPresent());
-		assertTrue(result.get() instanceof ImmunizationDto);
+		assertTrue(result.get().getEntityDto() instanceof ImmunizationDto);
 	}
 
 	// — save(List) —
@@ -171,9 +159,7 @@ class BusinessDtoFacadeTest extends AbstractUnitTest {
 		victim.save(List.of(immunization, vaccination));
 
 		verify(immunizationFacade).save(immunization);
-		assertAll(
-			() -> assertEquals(1, immunization.getVaccinations().size()),
-			() -> assertSame(vaccination, immunization.getVaccinations().get(0)));
+		assertAll(() -> assertEquals(1, immunization.getVaccinations().size()), () -> assertSame(vaccination, immunization.getVaccinations().get(0)));
 	}
 
 	@Test
@@ -205,7 +191,7 @@ class BusinessDtoFacadeTest extends AbstractUnitTest {
 
 		victim.save(List.of(immunization, vaccination));
 
-		verify(caseFacade, never()).save(ArgumentMatchers.<@Valid @NotNull CaseDataDto>any());
+		verify(caseFacade, never()).save(ArgumentMatchers.<@Valid @NotNull CaseDataDto> any());
 	}
 
 	private static CaseDataDto buildCaseDataWithPerson(String personUuid) {
