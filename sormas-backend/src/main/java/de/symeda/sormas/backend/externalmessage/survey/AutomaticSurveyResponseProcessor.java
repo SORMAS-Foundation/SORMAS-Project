@@ -1,9 +1,6 @@
 package de.symeda.sormas.backend.externalmessage.survey;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -12,6 +9,9 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import de.symeda.sormas.backend.survey.SurveyFacadeEjb;
+import de.symeda.sormas.backend.survey.SurveyTokenFacadeEjb;
+import org.apache.commons.collections4.CollectionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,12 +24,12 @@ import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponse
 import de.symeda.sormas.api.patch.CaseDataPatchRequest;
 import de.symeda.sormas.api.patch.DataPatchResponse;
 import de.symeda.sormas.api.patch.DataPatcher;
+import de.symeda.sormas.api.survey.SurveyFacade;
 import de.symeda.sormas.api.survey.SurveyReferenceDto;
 import de.symeda.sormas.api.survey.SurveyTokenDto;
+import de.symeda.sormas.api.survey.SurveyTokenFacade;
 import de.symeda.sormas.api.utils.Tuple;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResultStatus;
-import de.symeda.sormas.backend.survey.SurveyFacadeEjb;
-import de.symeda.sormas.backend.survey.SurveyTokenFacadeEjb;
 import de.symeda.sormas.backend.util.CollectorUtils;
 
 @ApplicationScoped
@@ -49,6 +49,10 @@ public class AutomaticSurveyResponseProcessor {
 	@Transactional(Transactional.TxType.REQUIRES_NEW)
 	public List<SurveyResponseProcessingResult> processSurveyResponses(List<ExternalMessageDto> externalMessages)
 		throws InterruptedException, ExecutionException {
+
+		if  (CollectionUtils.isEmpty(externalMessages)) {
+			return Collections.emptyList();
+		}
 
 		Map<String, String> tokenByExternalSurveyIdDictionary =
 			externalMessages.stream().map(ExternalMessageDto::getSurveyResponseData).map(responseData -> {
@@ -76,7 +80,6 @@ public class AutomaticSurveyResponseProcessor {
 		ExternalMessageSurveyResponseWrapper latestResponseWrapper = externalMessage.getSurveyResponseData().getLatest();
 		ExternalMessageSurveyResponseRequest request = latestResponseWrapper.getRequest();
 
-		// TODO: check this
 		if (latestResponseWrapper.getResult() != null && request.isSkipIfAlreadyProcessed()) {
 			logger.info(
 				"Skipping survey response for external message [{}]: already processed and skipIfAlreadyProcessed=true",

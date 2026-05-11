@@ -8,19 +8,21 @@ import java.util.Set;
 import javax.ejb.EJB;
 import javax.enterprise.context.ApplicationScoped;
 
+import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.customizableenum.CustomizableEnum;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.I18nPropertiesRequest;
+import de.symeda.sormas.api.patch.DataPatchFailureCause;
 import de.symeda.sormas.api.patch.mapping.ValueMappingResult;
 import de.symeda.sormas.api.patch.mapping.ValuePatchMapper;
 import de.symeda.sormas.api.patch.mapping.ValuePatchRequest;
-import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb;
 import de.symeda.sormas.backend.util.StringNormalizer;
 
 /**
@@ -54,16 +56,23 @@ public class CustomizableEnumPatchMapper implements ValuePatchMapper {
 
 		logger.warn("For now only disease-agnostic enum values are retrieved");
 
-		return ValueMappingResult.withData((T) findCustomizableEnum(captionCandidate, enumType, request));
+		return ((Optional<T>) findCustomizableEnum(captionCandidate, enumType, request)).map(ValueMappingResult::withData).orElseGet(() -> {
+			logger.warn("Could not match value: [{}] to customizableEnumType: [{}]", captionCandidate, enumType);
+
+			return ValueMappingResult.withCause(DataPatchFailureCause.NOT_PRESENT_IN_REFERENCE_DATA_LIST);
+		});
 	}
 
-	private CustomizableEnum findCustomizableEnum(String captionCandidate, CustomizableEnumType type, ValuePatchRequest request) {
+	private Optional<CustomizableEnum> findCustomizableEnum(String captionCandidate, CustomizableEnumType type, ValuePatchRequest<?> request) {
 		String normalizedInput = StringNormalizer.normalize(captionCandidate);
 
-		return searchByDefaultLanguage(type, normalizedInput).or(() -> searchByLanguages(normalizedInput, type, request))
-			.or(() -> Optional.ofNullable(customizableEnumFacade.getEnumValue(type, null, FALLBACK_NAME)))
-			.orElseThrow(
-				() -> new IllegalStateException(String.format("Could not match value: [%s] to customizableEnumType: [%s]", captionCandidate, type)));
+		return searchByDefaultLanguage(type, normalizedInput).or(() -> searchByLanguages(normalizedInput, type, request)).or(() -> {
+			if (request.isAllowFallbackValues()) {
+				return Optional.ofNullable(customizableEnumFacade.getEnumValue(type, null, FALLBACK_NAME));
+			}
+
+			return Optional.empty();
+		});
 	}
 
 	private Optional<CustomizableEnum> searchByDefaultLanguage(CustomizableEnumType type, String normalizedInput) {

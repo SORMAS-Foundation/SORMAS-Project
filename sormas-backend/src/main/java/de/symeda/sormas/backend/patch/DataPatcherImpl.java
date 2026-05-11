@@ -7,7 +7,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.annotation.Nullable;
 import javax.ejb.EJB;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -20,9 +19,7 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.patch.*;
-import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.patch.mapping.FieldCustomMapper;
 import de.symeda.sormas.api.patch.mapping.FieldPatchRequest;
 import de.symeda.sormas.api.patch.mapping.ValueMappingResult;
@@ -94,17 +91,16 @@ public class DataPatcherImpl implements DataPatcher {
 		Map<String, EntityDto> entityCache = new HashMap<>();
 		entityCache.put(CaseDataDto.I18N_PREFIX, caseData);
 
-		List<Tuple<String, Tuple<DataPatchFailureCause, Object>>> patchingTuples = computePatchingTuples(request);
+		List<SingleFieldPatchResult> patchingTuples = computePatchingTuples(request);
 
-		List<de.symeda.sormas.api.patch.SinglePatchResult> results = patchingTuples.stream().map(entry -> {
-			String fullFieldName = entry.getFirst();
-			de.symeda.sormas.api.patch.SinglePatchResult singlePatchResult =
-				new de.symeda.sormas.api.patch.SinglePatchResult().setFieldName(fullFieldName);
+		List<SinglePatchResult> results = patchingTuples.stream().map(singleFieldPatchResult -> {
+			String fullFieldName = singleFieldPatchResult.path;
+			SinglePatchResult singlePatchResult = new SinglePatchResult().setFieldName(fullFieldName);
 
 			Supplier<Object> target = () -> findAppropriateTarget(fullFieldName, caseData, entityCache);
 
 			try {
-				return produceSinglePatchResult(request, entry, disease, target);
+				return produceSinglePatchResult(request, singleFieldPatchResult, disease, target);
 			} catch (RuntimeException e) {
 				logger.error("Failure during patch operation", e);
 				return singlePatchResult
@@ -113,9 +109,9 @@ public class DataPatcherImpl implements DataPatcher {
 
 		}).collect(Collectors.toList());
 
-		Map<String, Object> validPatchDictionary = buildDictionaryFor(results, de.symeda.sormas.api.patch.SinglePatchResult::getValue, true);
+		Map<String, Object> validPatchDictionary = buildDictionaryFor(results, SinglePatchResult::getValue, true);
 		DataPatchResponse response = new DataPatchResponse().setApplied(false)
-			.setFailures(buildDictionaryFor(results, de.symeda.sormas.api.patch.SinglePatchResult::getFailure, false))
+			.setFailures(buildDictionaryFor(results, SinglePatchResult::getFailure, false))
 			.setValidPatchDictionary(validPatchDictionary);
 
 		if (validPatchDictionary.isEmpty() || (!request.isPatchedInCaseOfFailures() && response.hasFailures())) {
@@ -134,14 +130,14 @@ public class DataPatcherImpl implements DataPatcher {
 	}
 
 	@NotNull
-	public SinglePatchResult produceSinglePatchResult(
+	private SinglePatchResult produceSinglePatchResult(
 		CaseDataPatchRequest request,
-		Tuple<String, Tuple<DataPatchFailureCause, Object>> entry,
+		SingleFieldPatchResult singleFieldPatchResult,
 		Disease disease,
 		Supplier<Object> target) {
 
-		return invalidFieldResult(entry).or(() -> fieldMappingResult(entry, disease, request, target))
-			.orElseGet(() -> valueMappingResult(entry, disease, request, target));
+		return invalidFieldResult(singleFieldPatchResult).or(() -> fieldMappingResult(singleFieldPatchResult, disease, request, target))
+			.orElseGet(() -> valueMappingResult(singleFieldPatchResult, disease, request, target));
 	}
 
 	private void saveDTOsIfAppropriate(Map<String, EntityDto> entityCache) {
@@ -162,44 +158,33 @@ public class DataPatcherImpl implements DataPatcher {
 		businessDtoFacade.save(toSave);
 	}
 
-	private void attachVaccinationToImmunization(Map<String, EntityDto> entityCache) {
-		VaccinationDto vaccination = (VaccinationDto) entityCache.get(VaccinationDto.I18N_PREFIX);
-		entityCache.computeIfAbsent(ImmunizationDto.I18N_PREFIX, prefix -> {
-			CaseDataDto caseData = (CaseDataDto) entityCache.get(CaseDataDto.I18N_PREFIX);
-			return businessDtoFacade.tryFetchByI18nNameForCreateUpdate(prefix, caseData)
-				.orElseThrow(() -> new IllegalStateException("No immunization factory registered for vaccination attachment"));
-		});
-		((ImmunizationDto) entityCache.get(ImmunizationDto.I18N_PREFIX)).getVaccinations().add(vaccination);
-	}
-
 	private @NotNull <R> Map<String, R> buildDictionaryFor(
-		List<de.symeda.sormas.api.patch.SinglePatchResult> results,
-		Function<de.symeda.sormas.api.patch.SinglePatchResult, R> fct,
+		List<SinglePatchResult> results,
+		Function<SinglePatchResult, R> fct,
 		boolean valueContext) {
 		return results.stream()
 			// edge case were target value is null: this is allowed, which makes both fields null.
 			.filter(
 				singlePatchResult -> fct.apply(singlePatchResult) != null
 					|| (valueContext && singlePatchResult.getFailure() == null && singlePatchResult.getValue() == null))
-			.collect(CollectorUtils.toNullSafeMap(de.symeda.sormas.api.patch.SinglePatchResult::getFieldName, fct));
+			.collect(CollectorUtils.toNullSafeMap(SinglePatchResult::getFieldName, fct));
 	}
 
-	private @NotNull de.symeda.sormas.api.patch.SinglePatchResult valueMappingResult(
-		Tuple<String, Tuple<DataPatchFailureCause, Object>> entry,
+	private @NotNull SinglePatchResult valueMappingResult(
+		SingleFieldPatchResult singleFieldPatchResult,
 		Disease disease,
 		CaseDataPatchRequest request,
 		Supplier<Object> targetOpt) {
 
-		String fullFieldName = entry.getFirst();
+		String fullFieldName = singleFieldPatchResult.path;
 
-		de.symeda.sormas.api.patch.SinglePatchResult singlePatchResult =
-			new de.symeda.sormas.api.patch.SinglePatchResult().setFieldName(fullFieldName);
+		SinglePatchResult singlePatchResult = new SinglePatchResult().setFieldName(fullFieldName);
 
 		Object target = targetOpt.get();
 		String relativeFieldName = fullFieldName.substring(fullFieldName.indexOf('.') + 1);
 		Tuple<Class<?>, PropertyAccessFailure> nestedPropertyTypeTuple =
 			PropertyAccessor.getNestedPropertyType(target, relativeFieldName, getFieldVisibilityCheckers(disease));
-		Object untypedTargetValue = extractValue(entry);
+		Object untypedTargetValue = singleFieldPatchResult.value;
 
 		PropertyAccessFailure propertyAccessFailure = nestedPropertyTypeTuple.getSecond();
 		if (propertyAccessFailure != null) {
@@ -253,29 +238,24 @@ public class DataPatcherImpl implements DataPatcher {
 		return new DataPatchFailure().setDataPatchFailureCause(fieldDoesNotExist).setProvidedFieldValue(untypedTargetValue);
 	}
 
-	private @NotNull Optional<de.symeda.sormas.api.patch.SinglePatchResult> invalidFieldResult(
-		Tuple<String, Tuple<DataPatchFailureCause, Object>> entry) {
-		return Optional.ofNullable(extractFailureCause(entry)).map(invalidFieldFailureCause -> buildFailureFor(entry, invalidFieldFailureCause));
+	private @NotNull Optional<SinglePatchResult> invalidFieldResult(SingleFieldPatchResult singleFieldPatchResult) {
+		return Optional.ofNullable(singleFieldPatchResult.failureCause)
+			.map(invalidFieldFailureCause -> buildFailureFor(singleFieldPatchResult, invalidFieldFailureCause));
 	}
 
-	private DataPatchFailureCause extractFailureCause(Tuple<String, Tuple<DataPatchFailureCause, Object>> entry) {
-		return entry.getSecond().getFirst();
-	}
-
-	private Optional<de.symeda.sormas.api.patch.SinglePatchResult> fieldMappingResult(
-		Tuple<String, Tuple<DataPatchFailureCause, Object>> entry,
+	private Optional<SinglePatchResult> fieldMappingResult(
+		SingleFieldPatchResult singleFieldPatchResult,
 		Disease disease,
 		CaseDataPatchRequest request,
 		Supplier<Object> target) {
 
-		String fullFieldName = entry.getFirst();
+		String fullFieldName = singleFieldPatchResult.path;
 
 		Optional<FieldCustomMapper> mapper = fieldCustomMapperRegistry.getMapper(fullFieldName, disease);
 
-		Object untypedTargetValue = extractValue(entry);
+		Object untypedTargetValue = singleFieldPatchResult.value;
 		if (mapper.isPresent()) {
-			de.symeda.sormas.api.patch.SinglePatchResult singlePatchResult =
-				new de.symeda.sormas.api.patch.SinglePatchResult().setFieldName(fullFieldName);
+			SinglePatchResult singlePatchResult = new SinglePatchResult().setFieldName(fullFieldName);
 
 			Optional<DataPatchFailure> dataPatchFailureOpt = mapper.orElseThrow()
 				.map(
@@ -291,16 +271,9 @@ public class DataPatcherImpl implements DataPatcher {
 		return Optional.empty();
 	}
 
-	private de.symeda.sormas.api.patch.SinglePatchResult buildFailureFor(
-		Tuple<String, Tuple<DataPatchFailureCause, Object>> entry,
-		DataPatchFailureCause fieldFailureCause) {
-
-		return new de.symeda.sormas.api.patch.SinglePatchResult().setFieldName(entry.getFirst())
-			.setFailure(buildFailure(fieldFailureCause, extractValue(entry)));
-	}
-
-	private Object extractValue(Tuple<String, Tuple<DataPatchFailureCause, Object>> entry) {
-		return entry.getSecond().getSecond();
+	private SinglePatchResult buildFailureFor(SingleFieldPatchResult singleFieldPatchResult, DataPatchFailureCause fieldFailureCause) {
+		return new SinglePatchResult().setFieldName(singleFieldPatchResult.path)
+			.setFailure(buildFailure(fieldFailureCause, singleFieldPatchResult.value));
 	}
 
 	private FieldVisibilityCheckers getFieldVisibilityCheckers(Disease disease) {
@@ -309,7 +282,7 @@ public class DataPatcherImpl implements DataPatcher {
 			.andWithFeatureType(featureConfigurationFacade.getActiveServerFeatureConfigurations());
 	}
 
-	private List<Tuple<String, Tuple<DataPatchFailureCause, Object>>> computePatchingTuples(CaseDataPatchRequest request) {
+	private List<SingleFieldPatchResult> computePatchingTuples(CaseDataPatchRequest request) {
 		Predicate<Map.Entry<String, Object>> filterPredicate = buildAdequateDictionaryValuePredicate(request);
 
 		return request.getPatchDictionary()
@@ -331,16 +304,15 @@ public class DataPatcherImpl implements DataPatcher {
 					.orElse(null);
 
 				if (dataPatchFailureCause != null) {
-					return Stream.of(buildMapTupleEntryFrom(entry, dataPatchFailureCause));
+					return Stream.of(new SingleFieldPatchResult(entry.getKey(), dataPatchFailureCause, entry.getValue()));
 				}
 
 				if (!patchFieldHelper.isMultipleFieldFormat(path)) {
-					return Stream.of(buildMapTupleEntryFrom(entry));
+					return Stream.of(new SingleFieldPatchResult(entry.getKey(), null, entry.getValue()));
 				}
 
 				return splitMultipleFieldsPath(entry);
 			})
-			.map(tuple -> Tuple.of(tuple.getFirst(), tuple.getSecond()))
 			.collect(Collectors.toList());
 	}
 
@@ -349,7 +321,7 @@ public class DataPatcherImpl implements DataPatcher {
 	}
 
 	@NotNull
-	private Stream<Tuple<String, Tuple<DataPatchFailureCause, Object>>> splitMultipleFieldsPath(Map.Entry<String, Object> entry) {
+	private Stream<SingleFieldPatchResult> splitMultipleFieldsPath(Map.Entry<String, Object> entry) {
 		String path = entry.getKey();
 		int openingParenthesisIndex = path.indexOf("(");
 		String prefix = path.substring(0, openingParenthesisIndex);
@@ -358,17 +330,7 @@ public class DataPatcherImpl implements DataPatcher {
 
 		String restPath = path.substring(openingParenthesisIndex + 1, closeParen);
 
-		return Arrays.stream(restPath.split("\\|")).map(suffix -> Tuple.of(prefix + suffix, Tuple.of(null, entry.getValue())));
-	}
-
-	private Tuple<String, Tuple<DataPatchFailureCause, Object>> buildMapTupleEntryFrom(
-		Map.Entry<String, Object> entry,
-		@Nullable DataPatchFailureCause dataPatchFailureCause) {
-		return Tuple.of(entry.getKey(), Tuple.of(dataPatchFailureCause, entry.getValue()));
-	}
-
-	private Tuple<String, Tuple<DataPatchFailureCause, Object>> buildMapTupleEntryFrom(Map.Entry<String, Object> entry) {
-		return Tuple.of(entry.getKey(), Tuple.of(null, entry.getValue()));
+		return Arrays.stream(restPath.split("\\|")).map(suffix -> new SingleFieldPatchResult(prefix + suffix, null, entry.getValue()));
 	}
 
 	private @NotNull Predicate<Map.Entry<String, Object>> buildAdequateDictionaryValuePredicate(CaseDataPatchRequest request) {
@@ -421,6 +383,20 @@ public class DataPatcherImpl implements DataPatcher {
 
 			return true;
 		};
+	}
+
+
+	private static final class SingleFieldPatchResult {
+
+		final String path;
+		final DataPatchFailureCause failureCause;
+		final Object value;
+
+		SingleFieldPatchResult(String fieldPath, DataPatchFailureCause cause, Object value) {
+			this.path = fieldPath;
+			this.failureCause = cause;
+			this.value = value;
+		}
 	}
 
 }

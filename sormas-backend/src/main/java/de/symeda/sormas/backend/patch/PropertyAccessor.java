@@ -67,8 +67,7 @@ public class PropertyAccessor {
 
 		String leafPath = fieldName.substring(fieldName.lastIndexOf(PATH_SEPARATOR) + 1);
 
-		return Optional.ofNullable(getNestedProperty(bean, fieldName))
-			.map(leafParent -> getPropertyType(leafParent, leafPath, fieldVisibilityCheckers))
+		return getNestedProperty(bean, fieldName).map(leafParent -> getPropertyType(leafParent, leafPath, fieldVisibilityCheckers))
 			.orElse(FIELD_DOES_NOT_EXIST);
 	}
 
