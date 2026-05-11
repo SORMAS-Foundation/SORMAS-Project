@@ -5,6 +5,9 @@ import java.util.Objects;
 
 import de.symeda.sormas.api.patch.DataPatchResponse;
 
+/**
+ * Used to represent a patching response from a survey response for a specific case.
+ */
 public class ExternalMessageSurveyResponseResult implements Serializable {
 
 	private static final long serialVersionUID = 1L;

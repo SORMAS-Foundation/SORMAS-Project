@@ -434,7 +434,8 @@ public final class I18nProperties {
 	}
 
 	/**
-	 * Meant to be used for "matching purposes", you have a value, but you don't know which value it belongs to.
+	 * Meant to be used for "matching purposes", you have a value, but you don't know which ResourceBundle / translationType it belongs to.
+	 * Implemented on a best-effort basis.
 	 * 
 	 * @param request
 	 *            to return the adequate dictionary.
@@ -449,7 +450,7 @@ public final class I18nProperties {
 
 		I18nPropertiesRequest.ResourceBundleType resourceBundleType = request.getResourceBundleType();
 		ResourceBundle resourceBundle = Optional.of(instance.resourceBundlesDictionary.get(resourceBundleType))
-			.orElseThrow(() -> new IllegalStateException(String.format("Resource bundle type %s not found", resourceBundleType)));
+			.orElseThrow(() -> new IllegalStateException(String.format("Resource bundle type [%s] not found", resourceBundleType)));
 
 		Class<?> targetType = request.getTargetType();
 

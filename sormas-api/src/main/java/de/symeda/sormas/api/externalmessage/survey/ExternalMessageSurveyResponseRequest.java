@@ -16,7 +16,7 @@ import de.symeda.sormas.api.patch.DataReplacementStrategy;
 import de.symeda.sormas.api.patch.EmptyValueBehavior;
 
 /**
- * Mandatory fields that require
+ * Request object that represents a Patching request from a survey response.
  * Will be present for {@link ExternalMessageType#SURVEY_RESPONSE}.
  */
 public class ExternalMessageSurveyResponseRequest implements Serializable, Comparable<ExternalMessageSurveyResponseRequest> {

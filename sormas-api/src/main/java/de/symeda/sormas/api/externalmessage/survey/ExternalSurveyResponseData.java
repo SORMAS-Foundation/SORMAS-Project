@@ -10,7 +10,8 @@ import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
- * Some survey mapping might be valid and processed on first try, but for others another attempt might be required.
+ * Some survey mapping might be valid and processed on first try, but for others X-attempts might be required.
+ * Original will not be mutated but updated will change on each attempt for the give survey-response - case combination.
  */
 public class ExternalSurveyResponseData implements Serializable {
 

@@ -335,8 +335,8 @@ public class ExternalMessageService extends AdoServiceWithUserFilterAndJurisdict
 			.stream()
 			.collect(
 				Collectors.toMap(
-					t -> t.get(1, String.class),
-					t -> new de.symeda.sormas.api.utils.Tuple<>(t.get(2, ExternalMessageStatus.class), t.get(0, String.class)),
+					tuple -> tuple.get(1, String.class),
+					tuple -> new de.symeda.sormas.api.utils.Tuple<>(tuple.get(2, ExternalMessageStatus.class), tuple.get(0, String.class)),
 					(a, b) -> a));
 	}
 }

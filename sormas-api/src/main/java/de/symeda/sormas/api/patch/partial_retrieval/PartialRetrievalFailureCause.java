@@ -1,5 +1,8 @@
 package de.symeda.sormas.api.patch.partial_retrieval;
 
+/**
+ * Reason for partial retrieval of a field to fail.
+ */
 public enum PartialRetrievalFailureCause {
 
 	/**

@@ -3,6 +3,9 @@ package de.symeda.sormas.api.externalmessage.survey;
 import java.io.Serializable;
 import java.util.Objects;
 
+/**
+ * A survey response creates a request(from the response) -result(from patch-attempt) pair, this wraps this pair.
+ */
 public class ExternalMessageSurveyResponseWrapper implements Serializable {
 
 	private static final long serialVersionUID = 1L;

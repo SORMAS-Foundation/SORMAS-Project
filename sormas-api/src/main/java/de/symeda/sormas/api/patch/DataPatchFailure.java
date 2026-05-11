@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 /**
- * Resulting object that is built in case some field couldn't be mapped during data patching.
+ * Resulting object that is built in case a single field couldn't be mapped during data patching.
  */
 public class DataPatchFailure implements Serializable {
 

@@ -7,6 +7,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * In symmetry to the partial patching / partial retrieval is also possible, this represents an attempt to partially retrieve some fields.
+ * <p>
+ * Implementation is inspired from patching.
+ */
 @AuditedClass
 public class DisplayablePartialRetrievalResponse implements Serializable {
 

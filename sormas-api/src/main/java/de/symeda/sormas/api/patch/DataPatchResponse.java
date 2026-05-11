@@ -15,7 +15,7 @@ public class DataPatchResponse implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * True if the dictionary was applied to the specified fields.
+	 * True if the dictionary was applied to the specified fields on the given entities.
 	 * <p>
 	 * Will be false in case of {@link CaseDataPatchRequest#isPatchedInCaseOfFailures()} is false and response contains
 	 * {@link DataPatchResponse#failures}

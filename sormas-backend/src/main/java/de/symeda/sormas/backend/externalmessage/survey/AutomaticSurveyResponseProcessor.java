@@ -32,6 +32,9 @@ import de.symeda.sormas.api.utils.Tuple;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResultStatus;
 import de.symeda.sormas.backend.util.CollectorUtils;
 
+/**
+ * Performs the coordinating for patch operations out of Survey-responses.
+ */
 @ApplicationScoped
 public class AutomaticSurveyResponseProcessor {
 
@@ -50,7 +53,8 @@ public class AutomaticSurveyResponseProcessor {
 	public List<SurveyResponseProcessingResult> processSurveyResponses(List<ExternalMessageDto> externalMessages)
 		throws InterruptedException, ExecutionException {
 
-		if  (CollectionUtils.isEmpty(externalMessages)) {
+		if (CollectionUtils.isEmpty(externalMessages)) {
+			logger.info("processSurveyResponses: no external messages, nothing to process");
 			return Collections.emptyList();
 		}
 
@@ -75,6 +79,7 @@ public class AutomaticSurveyResponseProcessor {
 	}
 
 	private @NotNull SurveyResponseProcessingResult tryProcessExternalMessage(ExternalMessageDto externalMessage, List<SurveyTokenDto> surveyTokens) {
+		logger.trace("tryProcessExternalMessage: [{}], [{}]", externalMessage, surveyTokens);
 		SurveyResponseProcessingResult surveyResponseProcessingResult = new SurveyResponseProcessingResult().setExternalMessage(externalMessage);
 
 		ExternalMessageSurveyResponseWrapper latestResponseWrapper = externalMessage.getSurveyResponseData().getLatest();
@@ -107,7 +112,7 @@ public class AutomaticSurveyResponseProcessor {
 			CaseDataPatchRequest dataPatchRequest = from(request, surveyTokenDto);
 
 			DataPatchResponse response = dataPatcher.patch(dataPatchRequest);
-			logger.info("Patch: request: [{}], response: [{}]", request, response);
+			logger.debug("Patch: request: [{}], response: [{}]", request, response);
 
 			latestResponseWrapper
 				.setResult(new ExternalMessageSurveyResponseResult().setPatchResponse(response).setCaseUuid(dataPatchRequest.getCaseUuid()));
@@ -118,7 +123,11 @@ public class AutomaticSurveyResponseProcessor {
 
 			externalMessage.setStatus(ExternalMessageStatus.PROCESSED);
 
-			return surveyResponseProcessingResult.setResultStatus(ProcessingResultStatus.DONE);
+			SurveyResponseProcessingResult result = surveyResponseProcessingResult.setResultStatus(ProcessingResultStatus.DONE);
+
+			logger.trace("result: [{}]", result);
+
+			return result;
 
 		} catch (RuntimeException e) {
 			logger.error(
@@ -128,6 +137,7 @@ public class AutomaticSurveyResponseProcessor {
 			surveyResponseProcessingResult.setRuntimeException(e);
 		}
 
+		logger.trace("result: [{}]", surveyResponseProcessingResult);
 		return surveyResponseProcessingResult;
 	}
 

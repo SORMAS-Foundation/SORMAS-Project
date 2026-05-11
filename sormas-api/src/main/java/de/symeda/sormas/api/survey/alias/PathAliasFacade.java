@@ -2,6 +2,9 @@ package de.symeda.sormas.api.survey.alias;
 
 import javax.ejb.Remote;
 
+/**
+ * Alias can be (but not exclusively) used for Field ids.
+ */
 @Remote
 public interface PathAliasFacade {
 
@@ -10,7 +13,7 @@ public interface PathAliasFacade {
 	 * 
 	 * @param path
 	 *            that may (or may not) contain physical paths.
-	 * @return shortened path.
+	 * @return shortened path with aliases.
 	 */
 	String fetchAliasPath(String path);
 }

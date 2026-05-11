@@ -205,7 +205,9 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String caseComments;
 
-	// TODO: reportId can be used as dedup - idempotency key
+	/**
+	 * Used as deduplication key for {@link ExternalMessageType#SURVEY_RESPONSE}.
+	 */
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String reportId;
 
@@ -271,6 +273,9 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private Boolean tuberculosisMdrXdrTuberculosis;
 	private Boolean tuberculosisBeijingLineage;
 
+	/**
+	 * Will only be present for: {@link ExternalMessageType#SURVEY_RESPONSE} to represent the pair.
+	 */
 	@Nullable
 	private ExternalSurveyResponseData surveyResponseData;
 

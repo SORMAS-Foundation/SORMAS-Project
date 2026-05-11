@@ -10,6 +10,9 @@ import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+/**
+ * Agnostic-Wrapper to display a survey result in SORMAS from an external tool.
+ */
 public class QuestionAnswersView implements Serializable {
 
 	private static final long serialVersionUID = -1635618566991671402L;

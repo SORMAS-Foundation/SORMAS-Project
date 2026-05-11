@@ -1,5 +1,8 @@
 package de.symeda.sormas.api.patch;
 
+/**
+ * Reason a specific field couldn't be patched.
+ */
 public enum DataPatchFailureCause {
 
 	/**
