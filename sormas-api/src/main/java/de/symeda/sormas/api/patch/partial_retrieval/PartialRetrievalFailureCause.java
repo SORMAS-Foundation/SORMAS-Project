@@ -40,6 +40,14 @@ public enum PartialRetrievalFailureCause {
 	FORBIDDEN_FIELD,
 
 	INVALID_PATH_FORMAT,
+
+	/**
+	 * The path contains the {@code _duplicate_} marker, meaning the key appeared more than once in the input and this is the duplicate
+	 * occurrence.
+	 * Duplicate entries cannot be processed because their intended target is ambiguous.
+	 */
+	DUPLICATE_FIELD,
+
 	/**
 	 * This means there is a hole in the implementation.
 	 */

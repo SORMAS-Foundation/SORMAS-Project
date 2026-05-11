@@ -14,7 +14,8 @@ public enum PathFailureCause {
 	FORBIDDEN_NON_UNIQUE_ALIAS(DataPatchFailureCause.FORBIDDEN_NON_UNIQUE_ALIAS, PartialRetrievalFailureCause.FORBIDDEN_NON_UNIQUE_ALIAS),
 	UNSUPPORTED_PREFIX(DataPatchFailureCause.UNSUPPORTED_PREFIX, PartialRetrievalFailureCause.UNSUPPORTED_PREFIX),
 	FORBIDDEN_FIELD(DataPatchFailureCause.FORBIDDEN_FIELD, PartialRetrievalFailureCause.FORBIDDEN_FIELD),
-	INVALID_MULTIPLE_FIELDS_FORMAT(DataPatchFailureCause.INVALID_MULTIPLE_FIELDS_FORMAT, PartialRetrievalFailureCause.INVALID_MULTIPLE_FIELDS_FORMAT);
+	INVALID_MULTIPLE_FIELDS_FORMAT(DataPatchFailureCause.INVALID_MULTIPLE_FIELDS_FORMAT, PartialRetrievalFailureCause.INVALID_MULTIPLE_FIELDS_FORMAT),
+	DUPLICATE_FIELD(DataPatchFailureCause.DUPLICATE_FIELD, PartialRetrievalFailureCause.DUPLICATE_FIELD);
 
 	@NotNull
 	private final DataPatchFailureCause relatedPatchFailureCause;

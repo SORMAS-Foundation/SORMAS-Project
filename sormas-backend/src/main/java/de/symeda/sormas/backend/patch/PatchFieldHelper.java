@@ -25,6 +25,7 @@ public class PatchFieldHelper {
 	private final static Logger logger = LoggerFactory.getLogger(PatchFieldHelper.class);
 
 	public static final String PATH_SEPARATOR = ".";
+	public static final String DUPLICATE_MARKER = "_duplicate_";
 
 	private static final String OPENING_PARENTHESIS = "(";
 	private static final String CLOSING_PARENTHESIS = ")";
@@ -87,6 +88,8 @@ public class PatchFieldHelper {
 
 		if (!path.contains(PATH_SEPARATOR)) {
 			dataPatchFailureCause = PathFailureCause.INVALID_PATH_FORMAT;
+		} else if (path.contains(DUPLICATE_MARKER)) {
+			dataPatchFailureCause = PathFailureCause.DUPLICATE_FIELD;
 		} else if (!(startsWithAllowedPrefix(path) || pathStartsWithAllowedPrefix(path, additionalSupportedPrefixes))) {
 			dataPatchFailureCause = PathFailureCause.UNSUPPORTED_PREFIX;
 		} else if (fieldIsForbidden(path)) {
@@ -108,9 +111,8 @@ public class PatchFieldHelper {
 	}
 
 	private Set<String> resolveConfiguredForbiddenFields() {
-		String configValue = systemConfigurationValueFacade != null
-			? systemConfigurationValueFacade.getValue(PATCH_FORBIDDEN_FIELDS_CONFIG_KEY)
-			: null;
+		String configValue =
+			systemConfigurationValueFacade != null ? systemConfigurationValueFacade.getValue(PATCH_FORBIDDEN_FIELDS_CONFIG_KEY) : null;
 		return Optional.ofNullable(configValue)
 			.filter(v -> !v.isBlank())
 			.map(v -> Arrays.stream(v.split(",")).map(String::trim).filter(s -> !s.isEmpty()).collect(Collectors.toSet()))
@@ -118,7 +120,8 @@ public class PatchFieldHelper {
 	}
 
 	private boolean startsWithAllowedPrefix(String path) {
-		return pathStartsWithAllowedPrefix(path, pathAliasHelper.supportedPrefixes()) || pathStartsWithAllowedPrefix(path, businessDtoFacade.fetchablePrefixes());
+		return pathStartsWithAllowedPrefix(path, pathAliasHelper.supportedPrefixes())
+			|| pathStartsWithAllowedPrefix(path, businessDtoFacade.fetchablePrefixes());
 	}
 
 	private static boolean pathStartsWithAllowedPrefix(String path, Set<String> prefixes) {

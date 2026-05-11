@@ -54,7 +54,7 @@ VALUES ('NG_SUVEY_BASE_URI', null, 'i18n/infoSystemConfigurationValueDescription
 INSERT INTO systemconfigurationvalue(config_key, config_value, value_description, category_id, value_optional, value_pattern,
                                      value_encrypt, data_provider, validation_message, changedate, creationdate, id,
                                      uuid)
-VALUES ('NG_SUVEY_CRYPTED_TOKEN', null, 'i18n/infoSystemConfigurationValueDescriptionNgSurveyCryptedToken', general_category_id, true,
+VALUES ('NG_SUVEY_ENCRYPTED_TOKEN', null, 'i18n/infoSystemConfigurationValueDescriptionNgSurveyEncryptedToken', general_category_id, true,
         '', true, null,
         'i18n/systemConfigurationValueInvalidValue', now(), now(), nextval('entity_seq'), generate_base32_uuid());
 
@@ -89,6 +89,11 @@ LANGUAGE plpgsql;
 -- index to avoid full table scan when checking for survey duplicates
 CREATE INDEX idx_externalmessage_report_id
     ON externalmessage (reportid);
+
+UPDATE featureconfiguration
+SET properties = '{"FETCH_MODE":false,"FORCE_AUTOMATIC_PROCESSING":true,"SURVEY_FETCH_ENABLED":true}'
+where featuretype = 'EXTERNAL_MESSAGES'
+
 
 INSERT INTO schema_version (version_number, comment)
 VALUES (609, '#13832 - External Survey facade');
