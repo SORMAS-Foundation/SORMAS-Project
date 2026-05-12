@@ -9,6 +9,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import de.symeda.sormas.backend.survey.SurveyFacadeEjb;
+import de.symeda.sormas.backend.survey.SurveyTokenFacadeEjb;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
@@ -37,10 +41,10 @@ class AutomaticSurveyResponseProcessorTest extends AbstractUnitTest {
 	private DataPatcher dataPatcher;
 
 	@Mock
-	private SurveyFacade surveyFacade;
+	private SurveyFacadeEjb.SurveyFacadeEjbLocal surveyFacade;
 
 	@Mock
-	private SurveyTokenFacade surveyTokenFacade;
+	private SurveyTokenFacadeEjb.SurveyTokenFacadeEjbLocal surveyTokenFacade;
 
 	@InjectMocks
 	private AutomaticSurveyResponseProcessor victim;

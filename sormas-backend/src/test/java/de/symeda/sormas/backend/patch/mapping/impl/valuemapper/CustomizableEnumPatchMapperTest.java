@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -29,7 +30,7 @@ import de.symeda.sormas.backend.AbstractUnitTest;
 class CustomizableEnumPatchMapperTest extends AbstractUnitTest {
 
 	@Mock
-	private CustomizableEnumFacade customizableEnumFacade;
+	private CustomizableEnumFacadeEjb.CustomizableEnumFacadeEjbLocal customizableEnumFacade;
 
 	@InjectMocks
 	private CustomizableEnumPatchMapper victim;

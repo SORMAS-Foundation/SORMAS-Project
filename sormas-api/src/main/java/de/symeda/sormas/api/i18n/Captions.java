@@ -2954,7 +2954,9 @@ public interface Captions {
 	String surveyResponseCaseLink = "surveyResponseCaseLink";
 	String surveyResponseCurrentCaseValue = "surveyResponseCurrentCaseValue";
 	String surveyResponseDescription = "surveyResponseDescription";
+	String surveyResponseEmptyValueBehavior = "surveyResponseEmptyValueBehavior";
 	String surveyResponseExcludedFieldsDictionary = "surveyResponseExcludedFieldsDictionary";
+	String surveyResponseExternalSurveyId = "surveyResponseExternalSurveyId";
 	String surveyResponseFailureCause = "surveyResponseFailureCause";
 	String surveyResponseField = "surveyResponseField";
 	String surveyResponseGeneralInfo = "surveyResponseGeneralInfo";
@@ -2962,8 +2964,13 @@ public interface Captions {
 	String surveyResponseKeyName = "surveyResponseKeyName";
 	String surveyResponseMetadata = "surveyResponseMetadata";
 	String surveyResponsePatchDictionary = "surveyResponsePatchDictionary";
+	String surveyResponsePatchedInCaseOfFailures = "surveyResponsePatchedInCaseOfFailures";
 	String surveyResponseProcessingResult = "surveyResponseProcessingResult";
+	String surveyResponseReplacementStrategy = "surveyResponseReplacementStrategy";
+	String surveyResponseRespondentId = "surveyResponseRespondentId";
+	String surveyResponseResponseReceivedDate = "surveyResponseResponseReceivedDate";
 	String surveyResponseSubmittedValue = "surveyResponseSubmittedValue";
+	String surveyResponseToken = "surveyResponseToken";
 	String surveyResponseUuid = "surveyResponseUuid";
 	String surveyResponseValidFields = "surveyResponseValidFields";
 	String surveySend = "surveySend";

@@ -49,6 +49,18 @@ public class AutomaticSurveyResponseProcessor {
 	@EJB
 	private SurveyTokenFacadeEjb.SurveyTokenFacadeEjbLocal surveyTokenFacade;
 
+	public AutomaticSurveyResponseProcessor() {
+	}
+
+	public AutomaticSurveyResponseProcessor(
+		DataPatcher dataPatcher,
+		SurveyFacadeEjb.SurveyFacadeEjbLocal surveyFacade,
+		SurveyTokenFacadeEjb.SurveyTokenFacadeEjbLocal surveyTokenFacade) {
+		this.dataPatcher = dataPatcher;
+		this.surveyFacade = surveyFacade;
+		this.surveyTokenFacade = surveyTokenFacade;
+	}
+
 	@Transactional(Transactional.TxType.REQUIRES_NEW)
 	public List<SurveyResponseProcessingResult> processSurveyResponses(List<ExternalMessageDto> externalMessages)
 		throws InterruptedException, ExecutionException {
