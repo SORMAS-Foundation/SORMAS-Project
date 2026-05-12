@@ -72,7 +72,7 @@ public class SurveyResponseDetailsWindow {
 		CssStyles.style(generalInfoHeading, CssStyles.H3);
 		layout.addComponent(generalInfoHeading);
 
-		addReadOnlyField(layout, "UUID", externalMessage.getUuid());
+		addReadOnlyField(layout, I18nProperties.getCaption(Captions.surveyResponseUuid), externalMessage.getUuid());
 		addReadOnlyField(
 			layout,
 			I18nProperties.getPrefixCaption(ExternalMessageDto.I18N_PREFIX, ExternalMessageDto.DISEASE),
@@ -88,13 +88,13 @@ public class SurveyResponseDetailsWindow {
 		CssStyles.style(metadataHeading, CssStyles.H3);
 		layout.addComponent(metadataHeading);
 
-		addReadOnlyField(layout, "External Survey ID", request.getExternalSurveyId());
-		addReadOnlyField(layout, "Token", request.getToken());
-		addReadOnlyField(layout, "Respondent ID", request.getExternalRespondentId());
-		addReadOnlyField(layout, "Response Received", toStringOrEmpty(request.getResponseReceivedDate()));
-		addReadOnlyField(layout, "Replacement Strategy", toStringOrEmpty(request.getReplacementStrategy()));
-		addReadOnlyField(layout, "Empty Value Behavior", toStringOrEmpty(request.getEmptyValueBehavior()));
-		addReadOnlyField(layout, "Patched in Case of Failures", String.valueOf(request.isPatchedInCaseOfFailures()));
+		addReadOnlyField(layout, I18nProperties.getCaption(Captions.surveyResponseExternalSurveyId), request.getExternalSurveyId());
+		addReadOnlyField(layout, I18nProperties.getCaption(Captions.surveyResponseToken), request.getToken());
+		addReadOnlyField(layout, I18nProperties.getCaption(Captions.surveyResponseRespondentId), request.getExternalRespondentId());
+		addReadOnlyField(layout, I18nProperties.getCaption(Captions.surveyResponseResponseReceivedDate), toStringOrEmpty(request.getResponseReceivedDate()));
+		addReadOnlyField(layout, I18nProperties.getCaption(Captions.surveyResponseReplacementStrategy), toStringOrEmpty(request.getReplacementStrategy()));
+		addReadOnlyField(layout, I18nProperties.getCaption(Captions.surveyResponseEmptyValueBehavior), toStringOrEmpty(request.getEmptyValueBehavior()));
+		addReadOnlyField(layout, I18nProperties.getCaption(Captions.surveyResponsePatchedInCaseOfFailures), String.valueOf(request.isPatchedInCaseOfFailures()));
 
 		// --- Patch Dictionary section ---
 		Label dictionaryHeading = new Label(I18nProperties.getCaption(Captions.surveyResponsePatchDictionary));
@@ -170,7 +170,10 @@ public class SurveyResponseDetailsWindow {
 
 			DataPatchResponse patchResponse = result.getPatchResponse();
 			if (patchResponse != null) {
-				addReadOnlyField(layout, I18nProperties.getCaption(Captions.surveyResponseApplied), patchResponse.isApplied() ? "Yes" : "No");
+				addReadOnlyField(
+					layout,
+					I18nProperties.getCaption(Captions.surveyResponseApplied),
+					patchResponse.isApplied() ? I18nProperties.getCaption(Captions.actionYes) : I18nProperties.getCaption(Captions.actionNo));
 
 				if (patchResponse.hasFailures()) {
 					Label failuresHeading = new Label(I18nProperties.getString(Strings.headingSurveyResponseFailures));

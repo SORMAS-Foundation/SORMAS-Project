@@ -32,6 +32,8 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * Modal window displaying a survey questionnaire as a structured HTML view.
  * Shows questions, their answers and nested subquestions.
+ * 
+ * @implNote this was inspired from a survey tool's simplified view within EMAL.
  */
 public class SurveyQuestionnaireWindow {
 

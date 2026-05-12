@@ -40,7 +40,6 @@ import com.vaadin.server.UserError;
 import com.vaadin.shared.ui.ErrorLevel;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
 import com.vaadin.v7.data.Buffered;
 import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.ui.AbstractField;
@@ -76,8 +75,6 @@ public class SormasErrorHandler implements ErrorHandler {
 			logger.info("SocketException in CommunicationManager." + " Most likely client (browser) closed socket.");
 			return;
 		}
-
-		UI.getCurrent().getPage().getJavaScript().execute("Java exception: " + ExceptionUtils.getRootCauseMessage(t));
 
 		ErrorMessage errorMessage = getErrorMessageForException(t);
 
