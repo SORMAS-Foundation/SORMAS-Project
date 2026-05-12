@@ -45,8 +45,6 @@ class AutomaticSurveyResponseProcessorTest extends AbstractUnitTest {
 	@InjectMocks
 	private AutomaticSurveyResponseProcessor victim;
 
-	// processSurveyResponses - happy path
-
 	@Test
 	void processSurveyResponses_singleMessage_patchApplied_returnsDone() throws Exception {
 		// PREPARE
@@ -108,8 +106,6 @@ class AutomaticSurveyResponseProcessorTest extends AbstractUnitTest {
 		assertEquals(ProcessingResultStatus.DONE, results.get(1).getResultStatus());
 		verify(dataPatcher, times(2)).patch(any());
 	}
-
-	// processSurveyResponses - skipIfAlreadyProcessed
 
 	@Test
 	void processSurveyResponses_skipIfAlreadyProcessed_resultAlreadySet_returnsCanceled() throws Exception {
@@ -173,8 +169,6 @@ class AutomaticSurveyResponseProcessorTest extends AbstractUnitTest {
 		assertEquals(ProcessingResultStatus.DONE, results.get(0).getResultStatus());
 	}
 
-	// processSurveyResponses - token not found
-
 	@Test
 	void processSurveyResponses_tokenNotInAvailableTokens_returnsCanceled() throws Exception {
 		// PREPARE - token in message doesn't match any fetched survey token
@@ -208,8 +202,6 @@ class AutomaticSurveyResponseProcessorTest extends AbstractUnitTest {
 		assertEquals(ProcessingResultStatus.CANCELED, results.get(0).getResultStatus());
 	}
 
-	// processSurveyResponses - patch not applied
-
 	@Test
 	void processSurveyResponses_patchNotApplied_resultSetOnWrapper_statusCanceled() throws Exception {
 		// PREPARE
@@ -234,9 +226,6 @@ class AutomaticSurveyResponseProcessorTest extends AbstractUnitTest {
 		// Message is NOT marked as processed when patch fails
 		assertEquals(ExternalMessageStatus.UNPROCESSED, message.getStatus());
 	}
-
-	// processSurveyResponses - runtime exception
-	// BUG: resultStatus is left null when a RuntimeException is caught
 
 	@Test
 	void processSurveyResponses_runtimeException_exceptionCaptured_resultStatusIsNull() throws Exception {
@@ -284,8 +273,6 @@ class AutomaticSurveyResponseProcessorTest extends AbstractUnitTest {
 		assertNotNull(results.get(0).getRuntimeException());
 		assertEquals(ProcessingResultStatus.DONE, results.get(1).getResultStatus());
 	}
-
-	// processSurveyResponses - survey token is updated before patching
 
 	@Test
 	void processSurveyResponses_surveyTokenUpdatedWithResponseData() throws Exception {
@@ -335,8 +322,6 @@ class AutomaticSurveyResponseProcessorTest extends AbstractUnitTest {
 		verify(surveyTokenFacade).save(any());
 	}
 
-	// processSurveyResponses - CaseDataPatchRequest is built correctly from the survey request
-
 	@Test
 	void processSurveyResponses_patchRequestBuiltCorrectlyFromSurveyRequest() throws Exception {
 		// PREPARE
@@ -381,8 +366,6 @@ class AutomaticSurveyResponseProcessorTest extends AbstractUnitTest {
 		assertEquals(List.of(Language.FR), builtRequest.getInputLanguages());
 	}
 
-	// processSurveyResponses - result is stored on the response wrapper
-
 	@Test
 	void processSurveyResponses_patchApplied_resultContainsCaseUuidAndResponse() throws Exception {
 		// PREPARE
@@ -405,10 +388,6 @@ class AutomaticSurveyResponseProcessorTest extends AbstractUnitTest {
 		assertEquals(caseUuid, result.getCaseUuid());
 		assertEquals(patchResponse, result.getPatchResponse());
 	}
-
-	// processSurveyResponses - duplicate externalSurveyId BUG
-	// BUG: when two messages share the same externalSurveyId but have different tokens,
-	// the first token is overwritten in the map, causing the first message to be canceled.
 
 	@Test
 	void processSurveyResponses_duplicateExternalSurveyId_differentTokens_firstMessageCanceled() throws Exception {
@@ -434,8 +413,6 @@ class AutomaticSurveyResponseProcessorTest extends AbstractUnitTest {
 		assertEquals(ProcessingResultStatus.CANCELED, results.get(0).getResultStatus());
 		assertEquals(ProcessingResultStatus.DONE, results.get(1).getResultStatus());
 	}
-
-	// helpers
 
 	private static ExternalMessageDto buildMessage(String externalSurveyId, String token, ExternalMessageSurveyResponseResult result) {
 		ExternalMessageSurveyResponseRequest request = new ExternalMessageSurveyResponseRequest().setExternalSurveyId(externalSurveyId)

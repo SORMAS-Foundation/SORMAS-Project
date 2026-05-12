@@ -73,7 +73,6 @@ class DataPatcherImplTest extends AbstractBeanTest {
 		DataPatchResponse response = victim().patch(request);
 
 		// CHECK
-		logger.info("response: [{}]", response);
 
 		CaseDataDto actualCase = getCaseFacade().getByUuid(originalCase.getUuid());
 		PersonDto actualPerson = getPersonFacade().getByUuid(originalCase.getPerson().getUuid());
@@ -102,7 +101,6 @@ class DataPatcherImplTest extends AbstractBeanTest {
 		DataPatchResponse response = victim().patch(request);
 
 		// CHECK
-		logger.info("response: [{}]", response);
 
 		CaseDataDto actual = getCaseFacade().getByUuid(originalCase.getUuid());
 
@@ -135,7 +133,6 @@ class DataPatcherImplTest extends AbstractBeanTest {
 		DataPatchResponse response = victim().patch(request);
 
 		// CHECK
-		logger.info("response: [{}]", response);
 
 		PersonDto actualPerson = getPersonFacade().getByUuid(originalCase.getPerson().getUuid());
 
@@ -243,7 +240,6 @@ class DataPatcherImplTest extends AbstractBeanTest {
 		DataPatchResponse response = victim().patch(request);
 
 		// CHECK
-		logger.info("response: [{}]", response);
 
 		PersonDto actualPerson = getPersonFacade().getByUuid(originalCase.getPerson().getUuid());
 
@@ -339,7 +335,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 		PersonDto person = getPersonFacade().getByUuid(originalCase.getPerson().getUuid());
 
 		// CHECK
-		logger.info("response: [{}]", response);
+
 		Assertions.assertAll(
 			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failure found, but should be empty"),
 
@@ -396,7 +392,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 		PersonDto person = getPersonFacade().getByUuid(originalCase.getPerson().getUuid());
 
 		// CHECK
-		logger.info("response: [{}]", response);
+
 		Assertions.assertAll(
 			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failure found, but should be empty"),
 
@@ -436,7 +432,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 		DataPatchResponse response = victim().patch(request);
 
 		// CHECK
-		logger.info("response: [{}]", response);
+
 		Assertions.assertAll(
 			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failure found, but should be empty"),
 
@@ -468,7 +464,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 		PersonDto actualPerson = getPersonFacade().getByUuid(originalCase.getPerson().getUuid());
 
 		// CHECK
-		logger.info("response: [{}]", response);
+
 		Assertions.assertAll(
 			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failure found, but should be empty"),
 
@@ -756,7 +752,6 @@ class DataPatcherImplTest extends AbstractBeanTest {
 		DataPatchResponse response = victim().patch(request);
 
 		// CHECK
-		logger.info("response: [{}]", response);
 
 		CaseDataDto actualCase = getCaseFacade().getByUuid(originalCase.getUuid());
 
@@ -786,7 +781,6 @@ class DataPatcherImplTest extends AbstractBeanTest {
 		DataPatchResponse response = victim().patch(request);
 
 		// CHECK
-		logger.info("response: [{}]", response);
 
 		Assertions.assertAll(
 			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "FORBIDDEN_VALUE_OVERRIDE must not fire for same-day dates"),
@@ -821,7 +815,6 @@ class DataPatcherImplTest extends AbstractBeanTest {
 						"ISOLATION")));
 
 		// CHECK
-		logger.info("response: [{}]", response);
 
 		CaseDataDto actualCase = getCaseFacade().getByUuid(originalCase.getUuid());
 		Assertions.assertAll(
@@ -1025,7 +1018,6 @@ class DataPatcherImplTest extends AbstractBeanTest {
 						dischargeDate)));
 
 		// CHECK
-		logger.info("response: [{}]", response);
 
 		CaseDataDto actualCase = getCaseFacade().getByUuid(originalCase.getUuid());
 		List<PreviousHospitalizationDto> previousHospitalizations = actualCase.getHospitalization().getPreviousHospitalizations();

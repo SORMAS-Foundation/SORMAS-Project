@@ -1,5 +1,4 @@
 #!/bin/bash
-#!/bin/bash
 #*******************************************************************************
 # SORMAS® - Surveillance Outbreak Response Management & Analysis System
 # Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
@@ -41,7 +40,12 @@ else
 fi
 
 
-
+if [ -x "$(command -v docker)" ]; then
+  echo "Found docker"
+else
+  echo "Docker not installed. Please install before setting up Keycloak"
+  exit 2
+fi
 
 echo "# Checking if the Payara server is up and running"
 
@@ -55,14 +59,12 @@ if [[ -z "$PORT_ADMIN" ]]; then
   PORT_ADMIN=6048
   echo "Using default Payara PORT_ADMIN ${PORT_ADMIN}"
 fi
-
-PAYARA_HOME=/c/Users/VRJ736/opt/payara5
 if [[ -z "$PAYARA_HOME" ]]; then
-  PAYARA_HOME=/c/Users/VRJ736/opt/payara5
+  PAYARA_HOME=${ROOT_PREFIX}/opt/payara5
   echo "Using default PAYARA_HOME ${PAYARA_HOME}"
 fi
 if [[ -z "$DOMAINS_HOME" ]]; then
-  DOMAINS_HOME=/c/Users/VRJ736/opt/domains
+  DOMAINS_HOME=${ROOT_PREFIX}/opt/domains
   echo "Using default DOMAINS_HOME ${DOMAINS_HOME}"
 fi
 if [[ -z "$DOMAIN_NAME" ]]; then
@@ -80,15 +82,15 @@ if [[ ! -d ${PAYARA_HOME} ]];then
   echo "Payara not found ${PAYARA_HOME}"
   exit 2
 fi
-#
-#${PAYARA_HOME}/bin/asadmin restart-domain --domaindir ${DOMAINS_HOME} ${DOMAIN_NAME}
-#PAYARA_STATUS=$?
-#if [[ 0 != $PAYARA_STATUS ]]; then
-#	echo "ERROR: Cannot start payara. Status ${PAYARA_STATUS}"
-#	exit 2
-#fi
 
-ASADMIN="${PAYARA_HOME}/bin/asadmin.bat --port ${PORT_ADMIN}"
+${PAYARA_HOME}/bin/asadmin restart-domain --domaindir ${DOMAINS_HOME} ${DOMAIN_NAME}
+PAYARA_STATUS=$?
+if [[ 0 != $PAYARA_STATUS ]]; then
+	echo "ERROR: Cannot start payara. Status ${PAYARA_STATUS}"
+	exit 2
+fi
+
+ASADMIN="${PAYARA_HOME}/bin/asadmin --port ${PORT_ADMIN}"
 
 # Keycloak settings
 if [[ -z "$KEYCLOAK_PORT" ]]; then

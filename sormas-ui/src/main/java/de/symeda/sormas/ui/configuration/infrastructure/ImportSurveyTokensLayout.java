@@ -15,13 +15,10 @@
 
 package de.symeda.sormas.ui.configuration.infrastructure;
 
-import java.io.IOException;
-
 import com.opencsv.exceptions.CsvValidationException;
 import com.vaadin.server.ClassResource;
 import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
-
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -33,7 +30,8 @@ import de.symeda.sormas.ui.importer.DataImporter;
 import de.symeda.sormas.ui.importer.ImportReceiver;
 import de.symeda.sormas.ui.importer.SurveyTokenImporter;
 
-// TODO: this is entry point to understand
+import java.io.IOException;
+
 public class ImportSurveyTokensLayout extends AbstractImportLayout {
 
 	public ImportSurveyTokensLayout(SurveyDto survey) {

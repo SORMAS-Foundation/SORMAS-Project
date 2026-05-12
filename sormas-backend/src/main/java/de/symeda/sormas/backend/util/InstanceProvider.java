@@ -3,6 +3,9 @@ package de.symeda.sormas.backend.util;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+/**
+ * Equivalent of {@link de.symeda.sormas.api.FacadeProvider} for backend code.
+ */
 public class InstanceProvider {
 
 	private final InitialContext ic;

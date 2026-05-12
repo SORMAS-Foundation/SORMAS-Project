@@ -315,6 +315,17 @@ class PartialRetrieverImplTest extends AbstractBeanTest {
 			() -> Assertions.assertEquals(ExposureType.WORK, exposureTypeFieldInfo.getFieldValue()));
 	}
 
+	@org.junit.jupiter.params.ParameterizedTest
+	@org.junit.jupiter.params.provider.CsvSource({
+		"bats,                  Bats",
+		"exposureDetailsKnown,  Exposure details known",
+		"admissionDate,         Admission date",
+		"firstName,             First name",
+		"myUntranslatedField,   My untranslated field" })
+	void humanizeCamelCase_variousInputs_returnsHumanReadableLabel(String input, String expected) {
+		Assertions.assertEquals(expected.strip(), PartialRetrieverImpl.humanizeCamelCase(input));
+	}
+
 	private static String toFieldName(String prefix, String fieldName) {
 		return prefix + '.' + fieldName;
 	}

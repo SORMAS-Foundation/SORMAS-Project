@@ -15,14 +15,7 @@
 
 package de.symeda.sormas.rest.resources;
 
-import java.util.List;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -41,12 +34,6 @@ public class LabMessageResource {
 	@Path("/{uuid}")
 	public ExternalMessageDto getByUuid(@PathParam("uuid") String uuid) {
 		return FacadeProvider.getExternalMessageFacade().getByUuid(uuid);
-	}
-
-	@POST
-	@Path("/surveyResponses/process")
-	public List<ExternalMessageDto> saveAndProcessSurveyResponses() {
-		return FacadeProvider.getExternalMessageFacade().saveAndProcessSurveyResponses();
 	}
 
 	@POST

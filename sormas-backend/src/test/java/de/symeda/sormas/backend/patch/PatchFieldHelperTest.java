@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.backend.AbstractUnitTest;
 import de.symeda.sormas.backend.patch.alias.PathAliasHelper;
+import org.mockito.Mockito;
 
 class PatchFieldHelperTest extends AbstractUnitTest {
 
@@ -33,11 +34,13 @@ class PatchFieldHelperTest extends AbstractUnitTest {
 
 	@BeforeEach
 	void setUp() {
-		when(pathAliasHelper.supportedPrefixes()).thenReturn(Set.of("CaseData", "Person", "Symptoms"));
-		when(businessDtoFacade.fetchablePrefixes()).thenReturn(Set.of("CaseData", "Person", "Symptoms"));
+		Mockito.lenient()
+			.when(pathAliasHelper.supportedPrefixes())
+			.thenReturn(Set.of("CaseData", "Person", "Symptoms", "Immunization", "Vaccination"));
+		Mockito.lenient()
+			.when(businessDtoFacade.fetchablePrefixes())
+			.thenReturn(Set.of("CaseData", "Person", "Symptoms", "Immunization", "Vaccination"));
 	}
-
-	// -- DUPLICATE_FIELD --
 
 	@ParameterizedTest
 	@ValueSource(strings = {
@@ -73,8 +76,6 @@ class PatchFieldHelperTest extends AbstractUnitTest {
 			cause.getRelatedRetrieveFailureCause());
 	}
 
-	// -- valid path —- no failure expected --
-
 	@Test
 	void checkIfPathIsInvalid_validPath_returnsNull() {
 		// PREPARE
@@ -87,8 +88,6 @@ class PatchFieldHelperTest extends AbstractUnitTest {
 		assertNull(result);
 	}
 
-	// -- INVALID_PATH_FORMAT takes precedence over DUPLICATE_FIELD --
-
 	@Test
 	void checkIfPathIsInvalid_noDotAndDuplicateMarker_returnsInvalidPathFormat() {
 		// PREPARE
@@ -99,5 +98,19 @@ class PatchFieldHelperTest extends AbstractUnitTest {
 
 		// CHECK
 		assertEquals(PathFailureCause.INVALID_PATH_FORMAT, result);
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = {
+		"CaseData.uuid",
+		"Person.deleted",
+		"CaseData.reportingUser",
+		"Immunization.relatedCase" })
+	void checkIfPathIsInvalid_forbiddenField_returnsForbiddenField(String path) {
+		// EXECUTE
+		PathFailureCause result = victim.checkIfPathIsInvalid(path);
+
+		// CHECK
+		assertEquals(PathFailureCause.FORBIDDEN_FIELD, result);
 	}
 }

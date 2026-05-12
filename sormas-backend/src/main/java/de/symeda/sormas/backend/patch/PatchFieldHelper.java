@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.patch;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -32,9 +33,6 @@ public class PatchFieldHelper {
 	private static final String PIPE = "|";
 
 	public static final String PATCH_FORBIDDEN_FIELDS_CONFIG_KEY = "PATCH_FORBIDDEN_FIELDS";
-
-	private static final Set<String> DEFAULT_FORBIDDEN_FIELDS =
-		Set.of("Person.birthdate", "Person.birthdateDD", "Person.birthdateMM", "Person.birthdateYYYY");
 
 	@Inject
 	private PathAliasHelper pathAliasHelper;
@@ -106,8 +104,11 @@ public class PatchFieldHelper {
 	}
 
 	private boolean fieldIsForbidden(String path) {
-		Set<String> configured = resolveConfiguredForbiddenFields();
-		return configured.contains(path);
+		Set<String> configuredForbiddenFields = resolveConfiguredForbiddenFields();
+		return configuredForbiddenFields.contains(path)
+			|| configuredForbiddenFields.stream()
+				.anyMatch(
+					forbiddenField -> forbiddenField.startsWith(".") ? path.endsWith(forbiddenField) : configuredForbiddenFields.contains(path));
 	}
 
 	private Set<String> resolveConfiguredForbiddenFields() {
@@ -116,7 +117,7 @@ public class PatchFieldHelper {
 		return Optional.ofNullable(configValue)
 			.filter(v -> !v.isBlank())
 			.map(v -> Arrays.stream(v.split(",")).map(String::trim).filter(s -> !s.isEmpty()).collect(Collectors.toSet()))
-			.orElse(DEFAULT_FORBIDDEN_FIELDS);
+			.orElseGet(DefaultForbiddenFields::getDefaultForbiddenFields);
 	}
 
 	private boolean startsWithAllowedPrefix(String path) {

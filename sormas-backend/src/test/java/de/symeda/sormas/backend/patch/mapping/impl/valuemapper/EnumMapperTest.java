@@ -18,8 +18,6 @@ class EnumMapperTest extends AbstractUnitTest {
 	@InjectMocks
 	private EnumPatchMapper victim;
 
-	// getSupportedTypes
-
 	@Test
 	void getSupportedTypes_containsEnumClass() {
 		// PREPARE
@@ -31,8 +29,6 @@ class EnumMapperTest extends AbstractUnitTest {
 		// CHECK
 		assertEquals(expected, actual);
 	}
-
-	// map - exact match (Sex enum, no OTHER/fallback ambiguity)
 
 	@Test
 	void map_sex_exactMatch_male() {
@@ -70,8 +66,6 @@ class EnumMapperTest extends AbstractUnitTest {
 		assertEquals(Sex.MALE, victim.map("  MALE  ", Sex.class).getData());
 	}
 
-	// map - OTHER fallback (Sex has OTHER constant)
-
 	@Test
 	void map_sex_unknownValue_fallsBackToOther() {
 		// EXECUTE & CHECK
@@ -95,8 +89,6 @@ class EnumMapperTest extends AbstractUnitTest {
 		// EXECUTE & CHECK
 		assertEquals(InfectionSetting.UNKNOWN, victim.map("SOMETHING_UNKNOWN", InfectionSetting.class).getData());
 	}
-
-	// map - @ValueMapperDefault fallback (Trimester, no OTHER constant)
 
 	@Test
 	void map_trimester_exactMatch_first() {

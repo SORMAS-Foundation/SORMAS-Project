@@ -92,7 +92,12 @@ CREATE INDEX idx_externalmessage_report_id
 
 UPDATE featureconfiguration
 SET properties = '{"FETCH_MODE":false,"FORCE_AUTOMATIC_PROCESSING":true,"SURVEY_FETCH_ENABLED":true}'
-where featuretype = 'EXTERNAL_MESSAGES'
+where featuretype = 'EXTERNAL_MESSAGES';
+
+
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'EXTERNAL_MESSAGE_SURVEY_RESPONSE_VIEW' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN');
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'EXTERNAL_MESSAGE_SURVEY_RESPONSE_PROCESS' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN');
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'EXTERNAL_MESSAGE_SURVEY_RESPONSE_DELETE' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN');
 
 
 INSERT INTO schema_version (version_number, comment)

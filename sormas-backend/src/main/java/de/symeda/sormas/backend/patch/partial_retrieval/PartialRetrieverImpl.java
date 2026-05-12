@@ -137,10 +137,10 @@ public class PartialRetrieverImpl implements PartialRetriever {
 
 		// Some fields are translated only by there "physical-path" from root level
 		// example: Person.firstName has translation key "firstName", CaseData.disease has translation key "Disease"
-		// best effort: UI falls-back to 
+		// best effort: UI falls-back to humanized last segment of aliasPath
 		String translatedFieldName = Optional.ofNullable(I18nProperties.getCaption(aliasPath, null))
 			.or(() -> Optional.ofNullable(I18nProperties.getCaption(physicalPathName, null)))
-			.orElseGet(() -> I18nProperties.getDescription(aliasPath, aliasPath));
+			.orElseGet(() -> humanizeCamelCase(physicalPathName));
 
 		return Tuple.of(
 			originalFieldName,
@@ -194,6 +194,11 @@ public class PartialRetrieverImpl implements PartialRetriever {
 				return Optional.ofNullable(entityDtos).map(actualEntities -> actualEntities.get(0));
 			});
 		}
+	}
+
+	static String humanizeCamelCase(String camelCase) {
+		String spaced = camelCase.replaceAll("([A-Z])", " $1").toLowerCase();
+		return Character.toUpperCase(spaced.charAt(0)) + spaced.substring(1);
 	}
 
 	private FieldVisibilityCheckers getFieldVisibilityCheckers(Disease disease) {

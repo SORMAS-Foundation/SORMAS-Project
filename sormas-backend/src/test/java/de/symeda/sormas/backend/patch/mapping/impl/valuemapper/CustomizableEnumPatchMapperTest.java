@@ -34,14 +34,10 @@ class CustomizableEnumPatchMapperTest extends AbstractUnitTest {
 	@InjectMocks
 	private CustomizableEnumPatchMapper victim;
 
-	// getSupportedTypes
-
 	@Test
 	void getSupportedTypes_containsCustomizableEnumClass() {
 		assertEquals(Set.of(CustomizableEnum.class), victim.getSupportedTypes());
 	}
-
-	// map - illegal argument scenarios
 
 	@Test
 	void map_nonCustomizableEnumTargetType_throwsIllegalArgumentException() {
@@ -54,7 +50,6 @@ class CustomizableEnumPatchMapperTest extends AbstractUnitTest {
 			IllegalArgumentException.class,
 			() -> victim.map(new ValuePatchRequest<UnregisteredEnum>().setValue("VALUE").setTargetType(UnregisteredEnum.class)));
 	}
-
 
 	@Test
 	void map_matchByValue_returnsEnumValue() {
@@ -108,7 +103,6 @@ class CustomizableEnumPatchMapperTest extends AbstractUnitTest {
 		assertEquals(expected, actual);
 	}
 
-
 	@Test
 	void map_notFoundInDefaultLanguage_foundByInputLanguage_returnsEnumValue() {
 		// PREPARE
@@ -154,7 +148,6 @@ class CustomizableEnumPatchMapperTest extends AbstractUnitTest {
 			assertEquals(expected, actual);
 		}
 	}
-
 
 	@Test
 	void map_noMatch_fallbackAllowed_otherPresent_returnsOtherEnumValue() {
@@ -214,7 +207,6 @@ class CustomizableEnumPatchMapperTest extends AbstractUnitTest {
 			assertEquals(DataPatchFailureCause.NOT_PRESENT_IN_REFERENCE_DATA_LIST, victim.map(request).getDataPatchFailureCause());
 		}
 	}
-
 
 	private static OccupationType occupationType(String value, String caption) {
 		OccupationType occupationType = new OccupationType();
