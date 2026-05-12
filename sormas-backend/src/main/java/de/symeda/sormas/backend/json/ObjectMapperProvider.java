@@ -50,6 +50,13 @@ public final class ObjectMapperProvider {
 		return instance;
 	}
 
+	/**
+	 * Produces JSON or swallows error and return null, meant for logging purposes, were null as fallback is not business-critical.
+	 * 
+	 * @param object
+	 *            to be serialized as JSON
+	 * @return JSON representation or null if exception.
+	 */
 	@Nullable
 	public static String writeValueAsStringFailSafe(Object object) {
 		try {

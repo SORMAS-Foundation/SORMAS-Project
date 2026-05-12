@@ -2,15 +2,17 @@ package de.symeda.sormas.backend.patch.mapping.impl.equalitychecker;
 
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.Objects;
 import java.util.Set;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import de.symeda.sormas.backend.patch.mapping.EqualityChecker;
+import de.symeda.sormas.backend.patch.mapping.PatchingEqualityChecker;
 
+/**
+ * Dates are stored as {@link Date} but only the day is relevant, not time therefore using this approach.
+ */
 @ApplicationScoped
-public class DateEqualityChecker implements EqualityChecker {
+public class DatePatchingEqualityChecker implements PatchingEqualityChecker {
 
 	public static final Set<Class<?>> SUPPORTED_TYPES = Set.of(Date.class);
 

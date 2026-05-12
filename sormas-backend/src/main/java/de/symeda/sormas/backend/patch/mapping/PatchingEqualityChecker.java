@@ -5,7 +5,7 @@ import de.symeda.sormas.api.utils.OrderedRegisterable;
 /**
  * Contract to specify how two values of a supported type should be compared for equality.
  */
-public interface EqualityChecker extends OrderedRegisterable<EqualityChecker> {
+public interface PatchingEqualityChecker extends OrderedRegisterable<PatchingEqualityChecker> {
 
 	/**
 	 * @param a

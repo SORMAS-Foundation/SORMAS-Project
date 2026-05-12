@@ -54,8 +54,6 @@ public class CustomizableEnumPatchMapper implements ValuePatchMapper {
 			throw new IllegalArgumentException(String.format("No CustomizableEnumType could be found for [%s]", targetType.getName()));
 		}
 
-		logger.warn("For now only disease-agnostic enum values are retrieved");
-
 		return ((Optional<T>) findCustomizableEnum(captionCandidate, enumType, request)).map(ValueMappingResult::withData).orElseGet(() -> {
 			logger.warn("Could not match value: [{}] to customizableEnumType: [{}]", captionCandidate, enumType);
 

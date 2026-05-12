@@ -16,10 +16,10 @@ import org.mockito.InjectMocks;
 import de.symeda.sormas.api.utils.OrderedRegisterable;
 import de.symeda.sormas.backend.AbstractUnitTest;
 
-class DateEqualityCheckerTest extends AbstractUnitTest {
+class DatePatchingEqualityCheckerTest extends AbstractUnitTest {
 
 	@InjectMocks
-	private DateEqualityChecker victim;
+	private DatePatchingEqualityChecker victim;
 
 	@Test
 	void getSupportedTypes_containsDateClass() {

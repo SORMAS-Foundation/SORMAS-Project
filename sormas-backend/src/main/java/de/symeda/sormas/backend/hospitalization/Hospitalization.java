@@ -23,7 +23,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -140,7 +147,7 @@ public class Hospitalization extends AbstractDomainObject {
 
 	/**
 	 * This change date has to be set whenever one of the embedded lists is modified: !oldList.equals(newList)
-	 * 
+	 *
 	 * @return
 	 */
 	public Date getChangeDateOfEmbeddedLists() {

@@ -29,7 +29,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.json.ObjectMapperProvider;
-import de.symeda.sormas.backend.patch.mapping.EqualityCheckerRegistry;
+import de.symeda.sormas.backend.patch.mapping.PatchEqualityCheckersRegistry;
 import de.symeda.sormas.backend.patch.mapping.FieldCustomMapperRegistry;
 import de.symeda.sormas.backend.patch.mapping.ValueMapperRegistry;
 import de.symeda.sormas.backend.util.CollectorUtils;
@@ -49,7 +49,7 @@ public class DataPatcherImpl implements DataPatcher {
 	private FieldCustomMapperRegistry fieldCustomMapperRegistry;
 
 	@Inject
-	private EqualityCheckerRegistry equalityCheckerRegistry;
+	private PatchEqualityCheckersRegistry patchEqualityCheckersRegistry;
 
 	@Inject
 	private BusinessDtoFacade businessDtoFacade;
@@ -67,14 +67,14 @@ public class DataPatcherImpl implements DataPatcher {
 		PatchFieldHelper patchFieldHelper,
 		ValueMapperRegistry valueMapperRegistry,
 		FieldCustomMapperRegistry fieldCustomMapperRegistry,
-		EqualityCheckerRegistry equalityCheckerRegistry,
+		PatchEqualityCheckersRegistry patchEqualityCheckersRegistry,
 		BusinessDtoFacade businessDtoFacade,
 		FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade,
 		ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade) {
 		this.patchFieldHelper = patchFieldHelper;
 		this.valueMapperRegistry = valueMapperRegistry;
 		this.fieldCustomMapperRegistry = fieldCustomMapperRegistry;
-		this.equalityCheckerRegistry = equalityCheckerRegistry;
+		this.patchEqualityCheckersRegistry = patchEqualityCheckersRegistry;
 		this.businessDtoFacade = businessDtoFacade;
 		this.featureConfigurationFacade = featureConfigurationFacade;
 		this.configFacade = configFacade;
@@ -218,7 +218,7 @@ public class DataPatcherImpl implements DataPatcher {
 			if (nestedPropertyValue.isPresent()) {
 				Object currentValue = nestedPropertyValue.orElseThrow();
 
-				if (!equalityCheckerRegistry.areEqual(currentValue, typedValue)) {
+				if (!patchEqualityCheckersRegistry.areEqual(currentValue, typedValue)) {
 					return singlePatchResult.setFailure(
 						new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.FORBIDDEN_VALUE_OVERRIDE)
 							.setExistingFieldValue(currentValue)

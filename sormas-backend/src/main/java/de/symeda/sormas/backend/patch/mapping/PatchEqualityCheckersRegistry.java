@@ -12,19 +12,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
-public class EqualityCheckerRegistry {
+public class PatchEqualityCheckersRegistry {
 
-	private final static Logger logger = LoggerFactory.getLogger(EqualityCheckerRegistry.class);
+	private final static Logger logger = LoggerFactory.getLogger(PatchEqualityCheckersRegistry.class);
 
-	private List<EqualityChecker> orderedInstances;
+	private List<PatchingEqualityChecker> orderedInstances;
 
 	@Inject
-	private Instance<EqualityChecker> instances;
+	private Instance<PatchingEqualityChecker> instances;
 
-	public EqualityCheckerRegistry() {
+	public PatchEqualityCheckersRegistry() {
 	}
 
-	public EqualityCheckerRegistry(Instance<EqualityChecker> instances) {
+	public PatchEqualityCheckersRegistry(Instance<PatchingEqualityChecker> instances) {
 		this.instances = instances;
 	}
 
@@ -35,14 +35,16 @@ public class EqualityCheckerRegistry {
 
 	public boolean areEqual(Object a, Object b) {
 		if (a == null && b == null) {
+			logger.debug("Both values were null, returning true");
 			return true;
 		}
 		if (a == null || b == null) {
+			logger.debug("One of both value was null, returning false.");
 			return false;
 		}
 
 		Class<?> type = a.getClass();
-		EqualityChecker checker = orderedInstances.stream()
+		PatchingEqualityChecker checker = orderedInstances.stream()
 			.filter(c -> c.supports(type))
 			.findFirst()
 			.orElseThrow(
@@ -53,6 +55,10 @@ public class EqualityCheckerRegistry {
 						orderedInstances)));
 
 		logger.debug("Values [{}] and [{}] will be compared with checker: [{}]", a, b, checker);
-		return checker.areEqual(a, b);
+		boolean areEqual = checker.areEqual(a, b);
+
+		logger.debug("areEqual: [{}]", areEqual);
+
+		return areEqual;
 	}
 }

@@ -1968,6 +1968,7 @@ public interface Captions {
 	String externalEmailSentBy = "externalEmailSentBy";
 	String externalEmailSentTo = "externalEmailSentTo";
 	String externalEmailUsedTemplate = "externalEmailUsedTemplate";
+	String externalId = "externalId";
 	String ExternalMessage = "ExternalMessage";
 	String ExternalMessage_assignee = "ExternalMessage.assignee";
 	String ExternalMessage_caseReportDate = "ExternalMessage.caseReportDate";
@@ -2940,9 +2941,9 @@ public interface Captions {
 	String surveyResponseExcludedFieldsDictionary = "surveyResponseExcludedFieldsDictionary";
 	String surveyResponseFailureCause = "surveyResponseFailureCause";
 	String surveyResponseField = "surveyResponseField";
+	String surveyResponseGeneralInfo = "surveyResponseGeneralInfo";
 	String surveyResponseIgnoreField = "surveyResponseIgnoreField";
 	String surveyResponseKeyName = "surveyResponseKeyName";
-	String surveyResponseGeneralInfo = "surveyResponseGeneralInfo";
 	String surveyResponseMetadata = "surveyResponseMetadata";
 	String surveyResponsePatchDictionary = "surveyResponsePatchDictionary";
 	String surveyResponseProcessingResult = "surveyResponseProcessingResult";

@@ -5,10 +5,10 @@ import java.util.Set;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import de.symeda.sormas.backend.patch.mapping.EqualityChecker;
+import de.symeda.sormas.backend.patch.mapping.PatchingEqualityChecker;
 
 @ApplicationScoped
-public class ObjectEqualityChecker implements EqualityChecker {
+public class ObjectPatchingEqualityChecker implements PatchingEqualityChecker {
 
 	public static final Set<Class<?>> SUPPORTED_TYPES = Set.of(Object.class);
 

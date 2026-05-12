@@ -114,8 +114,9 @@ import de.symeda.sormas.backend.util.*;
 	UserRight._EXTERNAL_MESSAGE_DOCTOR_DECLARATION_VIEW })
 public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
-	public static final String SURVEY_PERIOD_INTERVAL_DAYS = "SURVEY_PERIOD_INTERVAL_DAYS";
-	private static final String SURVEY_AS_EXTERNAL_MESSAGE_ADAPTER_JNDI_KEY = "SURVEY_AS_EXTERNAL_MESSAGE_ADAPTER_JNDI_KEY";
+	private static final String SURVEY_PERIOD_INTERVAL_DAYS_CONFIG_KEY = "SURVEY_PERIOD_INTERVAL_DAYS";
+	private static final String SURVEY_AS_EXTERNAL_MESSAGE_ADAPTER_JNDI_CONFIG_KEY = "SURVEY_AS_EXTERNAL_MESSAGE_ADAPTER_JNDI_KEY";
+	public static final String DEFAULT_SURVEY_PERIOD_INTERVAL_DAYS = "5";
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -317,13 +318,15 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	@RightsAllowed(UserRight._EXTERNAL_MESSAGE_SURVEY_RESPONSE_VIEW)
 	public List<ExternalMessageDto> saveAndProcessSurveyResponses(Date since) {
 
-		if (since == null) { // TODO: use shorter default range
-			int dateRange = Integer.parseInt(Optional.ofNullable(systemConfigurationValueFacade.getValue(SURVEY_PERIOD_INTERVAL_DAYS)).orElse("350"));
+		if (since == null) {
+			int dateRange = Integer.parseInt(
+				Optional.ofNullable(systemConfigurationValueFacade.getValue(SURVEY_PERIOD_INTERVAL_DAYS_CONFIG_KEY))
+					.orElse(DEFAULT_SURVEY_PERIOD_INTERVAL_DAYS));
 
 			since = DateHelper.addDays(new Date(), -dateRange);
 		}
 
-		logger.error("Since date: [{}]", since);
+		logger.debug("Since date: [{}] to fetch external survey responses", since);
 
 		ExternalMessageAdapterFacade externalLabResultsFacade = getExternalSurveyProviderFacade();
 		ExternalMessageResult<List<ExternalMessageDto>> externalMessagesResult = externalLabResultsFacade.getExternalMessages(since);
@@ -332,6 +335,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		List<String> reportIds = surveyResponses.stream().map(ExternalMessageDto::getReportId).filter(Objects::nonNull).collect(toList());
 
 		if (!reportIds.isEmpty()) {
+			logger.debug("ReportIds that will be processed: [{}]", reportIds);
 			Map<String, de.symeda.sormas.api.utils.Tuple<ExternalMessageStatus, String>> statusUuidTuplesByReportId =
 				externalMessageService.getUuidsByReportIds(reportIds);
 
@@ -355,6 +359,10 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 					externalMessage -> !alreadyPresentReportIds.contains(externalMessage.getReportId())
 						|| unProcessedMessagesReportIds.contains(externalMessage.getReportId()))
 				.collect(toList());
+
+			if (logger.isTraceEnabled()) {
+				logger.trace("Computed survey responses: \n{}", ObjectMapperProvider.writeValueAsStringFailSafe(surveyResponses));
+			}
 		}
 
 		List<ExternalMessageDto> savedDtos;
@@ -374,6 +382,10 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 			logger.error("Could not process survey responses with UUID [{}]", extractUuids(surveyResponses), e);
 		} finally {
 			savedDtos = surveyResponses.stream().map(this::save).collect(toList());
+		}
+
+		if (logger.isTraceEnabled()) {
+			logger.trace("Saved survey responses external messages: \n{}", ObjectMapperProvider.writeValueAsStringFailSafe(savedDtos));
 		}
 
 		return savedDtos;
@@ -567,7 +579,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 							additionalDataInstance.getClass().getName()));
 				}
 			} catch (JsonProcessingException e) {
-				throw new RuntimeException(e);
+				throw new RuntimeException("Couldn't read additionalData into: ExternalSurveyResponseData", e);
 			}
 		}
 
@@ -886,10 +898,12 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	}
 
 	private SurveyAsExternalMessageAdapterFacade getExternalSurveyProviderFacade() {
-		String jndiName = Optional.ofNullable(systemConfigurationValueFacade.getValue(SURVEY_AS_EXTERNAL_MESSAGE_ADAPTER_JNDI_KEY)).orElseGet(() -> {
-			logger.info("External Survey Provider JNDI Key not found, using default");
-			return "java:global/sormas-esante-adapter/SurveyExternalMessageAdapterFacadeEjb";
-		});
+		String jndiName =
+			Optional.ofNullable(systemConfigurationValueFacade.getValue(SURVEY_AS_EXTERNAL_MESSAGE_ADAPTER_JNDI_CONFIG_KEY)).orElseGet(() -> {
+				String defaultName = "java:global/sormas-esante-adapter/SurveyExternalMessageAdapterFacadeEjb";
+				logger.info("External Survey Provider JNDI Key not found, using default: [{}]", defaultName);
+				return defaultName;
+			});
 		try {
 			return (SurveyAsExternalMessageAdapterFacade) new InitialContext().lookup(jndiName);
 		} catch (NamingException e) {
@@ -976,10 +990,13 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	@Override
 	@RightsAllowed(UserRight._EXTERNAL_MESSAGE_SURVEY_RESPONSE_PROCESS)
 	public ExternalMessageDto overwriteSurveyResponse(String uuid, java.util.Map<String, Object> correctedDictionary) {
+		logger.debug("overwriteSurveyResponse: [{}],[{}]", uuid, correctedDictionary);
 		ExternalMessageDto externalMessage = getByUuid(uuid);
 		ExternalMessageSurveyResponseRequest latestRequest = externalMessage.getSurveyResponseData().getLatest().getRequest();
 
-		logger.info("On reprocessing replacement strategy is set to ALWAYS to allow override values");
+		logger.info("On reprocessing replacement strategy is set to ALWAYS to allow override values, enable debug to see request");
+		logger.debug("Request before transformation: [{}]", latestRequest);
+
 		ExternalMessageSurveyResponseRequest correctedRequest = new ExternalMessageSurveyResponseRequest().setToken(latestRequest.getToken())
 			.setExternalSurveyId(latestRequest.getExternalSurveyId())
 			.setExternalRespondentId(latestRequest.getExternalRespondentId())
@@ -992,6 +1009,8 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 			.setSkipIfAlreadyProcessed(latestRequest.isSkipIfAlreadyProcessed())
 			.setPatchedInCaseOfFailures(latestRequest.isPatchedInCaseOfFailures())
 			.setPatchDictionary(correctedDictionary);
+
+		logger.debug("Request after transformation: [{}]", correctedRequest);
 
 		ExternalMessageSurveyResponseWrapper updatedWrapper = new ExternalMessageSurveyResponseWrapper().setRequest(correctedRequest);
 		externalMessage.getSurveyResponseData().setUpdated(updatedWrapper);
@@ -1018,11 +1037,13 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseResult result = latest.getResult();
 
 		if (result == null || result.getCaseUuid() == null) {
+			logger.warn("Result was null or not link to a caseUuid, this should not occur. [{}],[{}]", externalMessage, latest);
 			return new de.symeda.sormas.api.patch.partial_retrieval.DisplayablePartialRetrievalResponse();
 		}
 
 		java.util.Map<String, Object> patchDictionary = latest.getRequest().getPatchDictionary();
 		if (patchDictionary == null || patchDictionary.isEmpty()) {
+			logger.warn("patchDictionary was null or emtpy, this should not occur. [{}],[{}]", externalMessage, latest);
 			return new de.symeda.sormas.api.patch.partial_retrieval.DisplayablePartialRetrievalResponse();
 		}
 
@@ -1033,7 +1054,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 				.setFieldsToRetrieve(fieldPaths);
 
 		DisplayablePartialRetrievalResponse response = partialRetriever.retrievePartialForDisplay(request);
-		logger.error("retrieveSurveyResponseFieldsForDisplay: [{}]", response);
+		logger.debug("retrieveSurveyResponseFieldsForDisplay: [{}]", response);
 
 		return response;
 	}

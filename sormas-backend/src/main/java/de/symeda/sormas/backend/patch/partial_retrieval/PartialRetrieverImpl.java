@@ -56,6 +56,7 @@ public class PartialRetrieverImpl implements PartialRetriever {
 
 	@Override
 	public PartialRetrievalResponse retrievePartial(PartialRetrievalRequest request) {
+		logger.debug("retrievePartial: [{}]", request);
 
 		CaseDataDto caseData = businessDtoFacade.getCaseDataDto(request.getCaseUuid());
 
@@ -81,7 +82,11 @@ public class PartialRetrieverImpl implements PartialRetriever {
 			.filter(tuple -> tuple.getSecond().getSecond() != null)
 			.collect(Collectors.toMap(Tuple::getFirst, tuple -> tuple.getSecond().getSecond()));
 
-		return new PartialRetrievalResponse().setFailuresDictionary(failures).setFieldInfoDictionary(successes);
+		PartialRetrievalResponse result = new PartialRetrievalResponse().setFailuresDictionary(failures).setFieldInfoDictionary(successes);
+
+		logger.debug("result: [{}]", result);
+
+		return result;
 	}
 
 	private Tuple<String, Tuple<FieldInfo, PartialRetrievalFailureCause>> buildTupleImpl(
@@ -119,7 +124,8 @@ public class PartialRetrieverImpl implements PartialRetriever {
 			return Tuple.of(originalFieldName, new Tuple<>(specificFieldInfo.get(), null));
 		}
 
-		@NotNull Tuple<Tuple<Class<?>, Object>, PropertyAccessFailure> propertyType =
+		@NotNull
+		Tuple<Tuple<Class<?>, Object>, PropertyAccessFailure> propertyType =
 			PropertyAccessor.getPropertyTypeAndValue(adequateBean, physicalPathName, getFieldVisibilityCheckers(caseData.getDisease()));
 
 		PropertyAccessFailure propertyAccessFailure = propertyType.getSecond();
@@ -130,8 +136,8 @@ public class PartialRetrieverImpl implements PartialRetriever {
 		Tuple<Class<?>, Object> fieldInfo = propertyType.getFirst();
 
 		// Some fields are translated only by there "physical-path" from root level
-		// example: Person.firstName has translation key "firstName"
-		// example: CaseData.disease has translation key "firstName"
+		// example: Person.firstName has translation key "firstName", CaseData.disease has translation key "Disease"
+		// best effort: UI falls-back to 
 		String translatedFieldName = Optional.ofNullable(I18nProperties.getCaption(aliasPath, null))
 			.or(() -> Optional.ofNullable(I18nProperties.getCaption(physicalPathName, null)))
 			.orElseGet(() -> I18nProperties.getDescription(aliasPath, aliasPath));
@@ -140,7 +146,7 @@ public class PartialRetrieverImpl implements PartialRetriever {
 			originalFieldName,
 			new Tuple<>(
 				new FieldInfo().setFieldType(fieldInfo.getFirst()).setFieldValue(fieldInfo.getSecond()).setTranslatedFieldName(translatedFieldName),
-                    null));
+				null));
 	}
 
 	@Override

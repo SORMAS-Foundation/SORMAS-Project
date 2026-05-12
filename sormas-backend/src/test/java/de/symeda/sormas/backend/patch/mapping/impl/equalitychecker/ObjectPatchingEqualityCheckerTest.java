@@ -12,10 +12,10 @@ import org.mockito.InjectMocks;
 
 import de.symeda.sormas.backend.AbstractUnitTest;
 
-class ObjectEqualityCheckerTest extends AbstractUnitTest {
+class ObjectPatchingEqualityCheckerTest extends AbstractUnitTest {
 
 	@InjectMocks
-	private ObjectEqualityChecker victim;
+	private ObjectPatchingEqualityChecker victim;
 
 	@Test
 	void getSupportedTypes_containsObjectClass() {
