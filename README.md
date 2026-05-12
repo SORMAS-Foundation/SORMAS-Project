@@ -15,118 +15,66 @@
 
 # SORMAS
 
-**SORMAS** (Surveillance Outbreak Response Management and Analysis System) is an open source eHealth system - consisting
-of separate web and mobile apps - that is geared towards optimizing the processes used in monitoring the spread of
-infectious diseases and responding to outbreak situations.
+**SORMAS** (Surveillance Outbreak Response Management and Analysis System) is an open source eHealth system - consisting of separate web and mobile apps - that is geared towards optimizing the processes used in monitoring the spread of infectious diseases and responding to outbreak situations.
 
 ## FAQ (Frequently Asked Questions)
 
 ### Where can I find the documentation?
-
-We provide an extensive documentation of SORMAS for users, system administrators, Developers and DevOps in
-our <a href="https://wiki.sorm.as" target="_blank">Wiki</a>.
+We provide an extensive documentation of SORMAS for users, system administrators, Developers and DevOps in our <a href="https://wiki.sorm.as" target="_blank">Wiki</a>.
 
 ### How Does it Work?
-
 You can give SORMAS a try on our demo server at <https://demo.sormas.org>!
 
 ### How Can I Get Involved?
-
-Read through our [*Contributing Readme*](docs/CONTRIBUTING.md) and contact us at info@sormas.org to learn how you can
-help to drive the development of SORMAS forward,
-or check out our [Discussions](https://github.com/sormas-foundation/SORMAS-Project/discussions) to get development
-support from the core developers and other community members.
+Read through our [*Contributing Readme*](docs/CONTRIBUTING.md) and contact us at info@sormas.org to learn how you can help to drive the development of SORMAS forward,
+or check out our [Discussions](https://github.com/sormas-foundation/SORMAS-Project/discussions) to get development support from the core developers and other community members.
 SORMAS is a community-driven project, and we'd love to have you on board!
 
-If you want to contribute to the code, please strictly adhere to the [*Development
-Environment*](docs/DEVELOPMENT_ENVIRONMENT.md) guide to ensure that everything is set up correctly.
-Please also make sure that you've read the [*Development Contributing
-Guidelines*](docs/CONTRIBUTING.md#development-contributing-guidelines) before you start to develop.
+If you want to contribute to the code, please strictly adhere to the [*Development Environment*](docs/DEVELOPMENT_ENVIRONMENT.md) guide to ensure that everything is set up correctly.
+Please also make sure that you've read the [*Development Contributing Guidelines*](docs/CONTRIBUTING.md#development-contributing-guidelines) before you start to develop.
 
 ### How Can I Report a Bug or Request a Feature?
-
-If you want to report a **security issue**, please read and follow our [*Security Policies*](docs/SECURITY.md). For bugs
-without security implications, change and feature requests,
-please [create a new issue](https://github.com/sormas-foundation/SORMAS-Project/issues/new/choose) and
-read the [*Submitting an Issue*](docs/CONTRIBUTING.md#submitting-an-issue) guide for more detailed instructions. We
-appreciate your help!
+If you want to report a **security issue**, please read and follow our [*Security Policies*](docs/SECURITY.md). For bugs without security implications, change and feature requests, please [create a new issue](https://github.com/sormas-foundation/SORMAS-Project/issues/new/choose) and
+read the [*Submitting an Issue*](docs/CONTRIBUTING.md#submitting-an-issue) guide for more detailed instructions. We appreciate your help!
 
 ### Which Browsers and Android Versions are Supported?
+SORMAS officially supports and is tested on **Chromium-based browsers** (like Google Chrome) and **Mozilla Firefox**, and all Android versions starting from **Android 7.0** (Nougat). In principle, SORMAS should be usable with all web browsers that are supported by Vaadin 8 (Chrome, Firefox, Safari, Edge, Internet Explorer 11; see <https://vaadin.com/faq>).
 
-SORMAS officially supports and is tested on **Chromium-based browsers** (like Google Chrome) and **Mozilla Firefox**,
-and all Android versions starting from **Android 7.0** (Nougat). In principle, SORMAS should be usable with all web
-browsers that are supported by Vaadin 8 (Chrome, Firefox, Safari, Edge, Internet Explorer 11;
-see <https://vaadin.com/faq>).
-
-Making use of the SORMAS web application through a mobile device web browser is possible and acceptable also in
-countries that are subject to the General Data Protection Regulation (GDPR) as enforced by the European Union. However,
-in such countries that are subject to the GDPR, the Android application (.apk file) for SORMAS should not be used on
-mobile devices until further notice.
+Making use of the SORMAS web application through a mobile device web browser is possible and acceptable also in countries that are subject to the General Data Protection Regulation (GDPR) as enforced by the European Union. However, in such countries that are subject to the GDPR, the Android application (.apk file) for SORMAS should not be used on mobile devices until further notice.
 
 ### Is there a ReST API documentation?
-
-Yes! Please download the [latest release](https://github.com/sormas-foundation/SORMAS-Project/releases/latest) and copy
-the content of /deploy/openapi/sormas-rest.yaml to an editor that generates a visual API documentation(
-e.g. <https://editor.swagger.io/>).
-A runtime Swagger documentation of the External Visits Resource (used by external symptom journals such as CLIMEDO or
-PIA) is available at ``<<host>>/sormas-rest/openapi.json`` or ``<<host>>/sormas-rest/openapi.yaml``
+Yes! Please download the [latest release](https://github.com/sormas-foundation/SORMAS-Project/releases/latest) and copy the content of /deploy/openapi/sormas-rest.yaml to an editor that generates a visual API documentation(e.g. <https://editor.swagger.io/>).
+A runtime Swagger documentation of the External Visits Resource (used by external symptom journals such as CLIMEDO or PIA) is available at ``<<host>>/sormas-rest/openapi.json`` or ``<<host>>/sormas-rest/openapi.yaml``
 
 ### Who is responsible for Data Protection and Data Security?
-
-We herewith explicitly would like to draw your attention to the fact, that the respective public health agency running
-SORMAS is in charge of data security and data protection and has to ensure compliance with national data protection and
-data security regulations in their respective jurisdiction.
-It has to ensure that state-of-the art requirements for data protection and data security are fulfilled. All those
-prerequisites and examinations have to be done in the context of the country and its respective legal framework.
-For these reasons, HZI cannot take the responsibility from the respective public health agency running the SORMAS
-systems and is not liable for any violation of data protection of the agency as the data generated by SORMAS belong to
-that very agency.
+We herewith explicitly would like to draw your attention to the fact, that the respective public health agency running SORMAS is in charge of data security and data protection and has to ensure compliance with national data protection and data security regulations in their respective jurisdiction.
+It has to ensure that state-of-the art requirements for data protection and data security are fulfilled. All those prerequisites and examinations have to be done in the context of the country and its respective legal framework.
+For these reasons, HZI cannot take the responsibility from the respective public health agency running the SORMAS systems and is not liable for any violation of data protection of the agency as the data generated by SORMAS belong to that very agency.
 
 <p align="center"><img src="https://user-images.githubusercontent.com/23701005/74659600-ebb8fc00-5194-11ea-836b-a7ca9d682301.png"/></p>
 
 ## Guidelines and Resources
+If you want to learn more about the development and contribution process, setting up or customizing your own system, or technical details, please consider the following guides and resources available in this repository. You can also view this readme and all guides outside the Wiki with a full table of content and search functionality here: <https://sormas-foundation.github.io/SORMAS-Project/>
 
-If you want to learn more about the development and contribution process, setting up or customizing your own system, or
-technical details, please consider the following guides and resources available in this repository. You can also view
-this readme and all guides outside the Wiki with a full table of content and search functionality
-here: <https://sormas-foundation.github.io/SORMAS-Project/>
-
-* **[GitHub Wiki](https://github.com/sormas-foundation/SORMAS-Project/wiki) - Our wiki contains additional guides for
-  server customization and development instructions. Please have a look at it if you need information on anything that
-  this readme does not contain.**
-* [Contributing Guidelines](docs/CONTRIBUTING.md) - These are mandatory literature if you want to contribute to this
-  repository in any way (e.g. by submitting issues, developing code, or translating SORMAS into new languages).
-* [Development Environment Setup Instructions](docs/DEVELOPMENT_ENVIRONMENT.md) - If you want to get involved with
-  development, this guide tells you how to correctly set up your system in order to contribute to the code in adherence
-  with codestyle guidelines, development practices, etc.
-* [Troubleshooting](docs/TROUBLESHOOTING.md) - A collection of solutions to common (mostly development) problems. Please
-  consult this readme when encountering issues before issuing a support request.
-* [Server Customization](docs/SERVER_CUSTOMIZATION.md) - If you are maintaining a SORMAS server or are a developer, this
-  guide explains core concepts such as turning features on or off, importing infrastructure data or adjusting the
-  configuration file.
-* [Internationalization](docs/I18N.md) - SORMAS can be translated in any language by using the open source
-  tool [Crowdin](https://crowdin.com/project/sormas); this resource explains how this process is working.
-* [Disease Definition Instructions](docs/SOP_DISEASES.md) - We already support a large number of diseases, but not all
-  of them are fully configured for case-based surveillance, and some might not be part of SORMAS at all yet; if you need
-  SORMAS to support a specific disease, please use these instructions to give us all the information we need in order to
-  extend the software with your requested disease.
+* **[GitHub Wiki](https://github.com/sormas-foundation/SORMAS-Project/wiki) - Our wiki contains additional guides for server customization and development instructions. Please have a look at it if you need information on anything that this readme does not contain.**
+* [Contributing Guidelines](docs/CONTRIBUTING.md) - These are mandatory literature if you want to contribute to this repository in any way (e.g. by submitting issues, developing code, or translating SORMAS into new languages).
+* [Development Environment Setup Instructions](docs/DEVELOPMENT_ENVIRONMENT.md) - If you want to get involved with development, this guide tells you how to correctly set up your system in order to contribute to the code in adherence with codestyle guidelines, development practices, etc.
+* [Troubleshooting](docs/TROUBLESHOOTING.md) - A collection of solutions to common (mostly development) problems. Please consult this readme when encountering issues before issuing a support request.
+* [Server Customization](docs/SERVER_CUSTOMIZATION.md) - If you are maintaining a SORMAS server or are a developer, this guide explains core concepts such as turning features on or off, importing infrastructure data or adjusting the configuration file.
+* [Internationalization](docs/I18N.md) - SORMAS can be translated in any language by using the open source tool [Crowdin](https://crowdin.com/project/sormas); this resource explains how this process is working.
+* [Disease Definition Instructions](docs/SOP_DISEASES.md) - We already support a large number of diseases, but not all of them are fully configured for case-based surveillance, and some might not be part of SORMAS at all yet; if you need SORMAS to support a specific disease, please use these instructions to give us all the information we need in order to extend the software with your requested disease.
 * [Sormas2Sormas](docs/SORMAS2SORMAS.md) - The Sormas2Sormas API is used to share entities between SORMAS instances.
 
-* [Security Policies](docs/SECURITY.md) - These contain important information about how to report security problems and
-  the processes we are using to take care of them.
-* [Third-Party License Acknowledgement](docs/3RD_PARTY_ACK.md) - This resource contains the names and license copies of
-  external resources that SORMAS is using.
+* [Security Policies](docs/SECURITY.md) - These contain important information about how to report security problems and the processes we are using to take care of them.
+* [Third-Party License Acknowledgement](docs/3RD_PARTY_ACK.md) - This resource contains the names and license copies of external resources that SORMAS is using.
 
-If you want to set up a SORMAS instance for production, testing or development purposes, please refer to the following
-guides:
-
+If you want to set up a SORMAS instance for production, testing or development purposes, please refer to the following guides:
 * [Installing a SORMAS Server](docs/SERVER_SETUP.md)
 * [Updating a SORMAS Server](docs/SERVER_UPDATE.md)
 * [Setup Development environment](docs/DEVELOPMENT_ENVIRONMENT.md)
 * [Creating a Demo Android App](docs/DEMO_APP.md)
 
 ## Project Structure
-
 The project consists of the following modules:
 
 - [**sormas-api:**](/sormas-api) General business logic and definitions for data exchange between app and server
@@ -134,10 +82,8 @@ The project consists of the following modules:
 - [**sormas-backend:**](/sormas-backend) Server entity services, facades, etc.
 - [**sormas-base:**](/sormas-base) Base project that also contains build scripts
 - [**sormas-cargoserver:**](/sormas-cargoserver) Setup for a local dev server using maven-cargo
-- [**sormas-e2e-performance-tests:**](/sormas-e2e-performance-tests) Automated performance tests addressing the ReST
-  interface (sormas-rest)
-- [**sormas-e2e-tests:**](/sormas-e2e-tests) Automated frontend tests addressing sormas-ui **and** API tests against
-  sormas-rest. The API steps are partly used to prepare data for UI tests.
+- [**sormas-e2e-performance-tests:**](/sormas-e2e-performance-tests) Automated performance tests addressing the ReST interface (sormas-rest)
+- [**sormas-e2e-tests:**](/sormas-e2e-tests) Automated frontend tests addressing sormas-ui **and** API tests against sormas-rest. The API steps are partly used to prepare data for UI tests.
 - [**sormas-ear:**](/sormas-ear) The ear needed to build the application
 - [**sormas-keycloak-service-provider:**](/sormas-keycloak-service-provider) Custom Keycloak SPI for SORMAS
 - [**sormas-rest:**](/sormas-rest) The REST interface; see [`sormas-rest/README.md`](sormas-rest/README.md)
