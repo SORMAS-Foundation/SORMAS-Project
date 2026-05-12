@@ -29,8 +29,8 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.json.ObjectMapperProvider;
-import de.symeda.sormas.backend.patch.mapping.PatchEqualityCheckersRegistry;
 import de.symeda.sormas.backend.patch.mapping.FieldCustomMapperRegistry;
+import de.symeda.sormas.backend.patch.mapping.PatchEqualityCheckersRegistry;
 import de.symeda.sormas.backend.patch.mapping.ValueMapperRegistry;
 import de.symeda.sormas.backend.util.CollectorUtils;
 
@@ -71,6 +71,7 @@ public class DataPatcherImpl implements DataPatcher {
 		BusinessDtoFacade businessDtoFacade,
 		FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade,
 		ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade) {
+
 		this.patchFieldHelper = patchFieldHelper;
 		this.valueMapperRegistry = valueMapperRegistry;
 		this.fieldCustomMapperRegistry = fieldCustomMapperRegistry;
@@ -102,9 +103,8 @@ public class DataPatcherImpl implements DataPatcher {
 			try {
 				return produceSinglePatchResult(request, singleFieldPatchResult, disease, target);
 			} catch (RuntimeException e) {
-				logger.error("Failure during patch operation", e);
-				return singlePatchResult
-					.setFailure(new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.TECHNICAL).setDescription(e.getMessage()));
+				logger.error("Failure during patch operation for request: [{}], [{}]", request, singleFieldPatchResult, e);
+				return singlePatchResult.setFailure(new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.TECHNICAL));
 			}
 
 		}).collect(Collectors.toList());
@@ -230,11 +230,9 @@ public class DataPatcherImpl implements DataPatcher {
 		Optional<Exception> exception = PropertyAccessor.setNestedProperty(target, relativeFieldName, typedValue);
 		if (exception.isPresent()) {
 			Exception e = exception.orElseThrow();
-			logger.error("Setting nested property failed", e);
+			logger.error("Setting nested property failed for: field [{}] on [{}] with value: [{}]", relativeFieldName, target, typedValue, e);
 			return singlePatchResult.setFailure(
-				new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.TECHNICAL)
-					.setDescription(e.getMessage())
-					.setProvidedFieldValue(untypedTargetValue));
+				new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.TECHNICAL).setProvidedFieldValue(untypedTargetValue));
 		} else {
 			return singlePatchResult.setValue(untypedTargetValue);
 		}
@@ -328,15 +326,8 @@ public class DataPatcherImpl implements DataPatcher {
 
 	@NotNull
 	private Stream<SingleFieldPatchResult> splitMultipleFieldsPath(Map.Entry<String, Object> entry) {
-		String path = entry.getKey();
-		int openingParenthesisIndex = path.indexOf("(");
-		String prefix = path.substring(0, openingParenthesisIndex);
-
-		int closeParen = path.indexOf(')');
-
-		String restPath = path.substring(openingParenthesisIndex + 1, closeParen);
-
-		return Arrays.stream(restPath.split("\\|")).map(suffix -> new SingleFieldPatchResult(prefix + suffix, null, entry.getValue()));
+		return patchFieldHelper.splitMultipleFieldsPath(entry.getKey())
+			.map(singlePath -> new SingleFieldPatchResult(singlePath, null, entry.getValue()));
 	}
 
 	private @NotNull Predicate<Map.Entry<String, Object>> buildAdequateDictionaryValuePredicate(CaseDataPatchRequest request) {
@@ -350,6 +341,7 @@ public class DataPatcherImpl implements DataPatcher {
 		if (caseData == null) {
 			throw new IllegalStateException(String.format("No case found for uuid: [%s]", caseUuid));
 		}
+
 		return caseData;
 	}
 

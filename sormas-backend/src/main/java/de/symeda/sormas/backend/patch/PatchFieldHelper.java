@@ -67,7 +67,7 @@ public class PatchFieldHelper {
 	}
 
 	@NotNull
-	private Stream<String> splitMultipleFieldsPath(String path) {
+	public Stream<String> splitMultipleFieldsPath(String path) {
 		int openingParenthesisIndex = path.indexOf("(");
 		String prefix = path.substring(0, openingParenthesisIndex);
 

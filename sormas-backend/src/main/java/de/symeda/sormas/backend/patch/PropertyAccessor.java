@@ -89,7 +89,7 @@ public class PropertyAccessor {
 				})
 				.orElseGet(() -> Tuple.of(null, PropertyAccessFailure.FIELD_DOES_NOT_EXIST));
 		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-			logger.info("Could not get property type for [{}], [{}]", fieldName, bean.getClass().getSimpleName(), e);
+			logger.info("Could not get property type for [{}], [{}]", fieldName, bean, e);
 			return null;
 		}
 	}
@@ -109,7 +109,7 @@ public class PropertyAccessor {
 				return new Tuple<>(propertyType, null);
 			}).orElse(FIELD_DOES_NOT_EXIST);
 		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-			logger.info("Could not get property type for [{}], [{}]", fieldName, bean.getClass().getSimpleName(), e);
+			logger.info("Could not get property type for [{}], [{}]", fieldName, bean, e);
 			return FIELD_DOES_NOT_EXIST;
 		}
 	}

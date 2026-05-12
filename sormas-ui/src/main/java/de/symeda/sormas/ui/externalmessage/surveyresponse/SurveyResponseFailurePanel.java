@@ -70,11 +70,6 @@ public class SurveyResponseFailurePanel extends VerticalLayout {
 			.setId("currentValue")
 			.setExpandRatio(2);
 
-		grid.addColumn(entry -> entry.getValue().getDescription() != null ? entry.getValue().getDescription() : "")
-			.setCaption(I18nProperties.getCaption(Captions.surveyResponseDescription))
-			.setId("description")
-			.setExpandRatio(3);
-
 		grid.setHeightByRows(Math.max(failureEntries.size(), 1));
 
 		addComponent(grid);

@@ -22,9 +22,6 @@ public class DataPatchFailure implements Serializable {
 	@Nullable
 	private Object providedFieldValue;
 
-	@Nullable
-	private String description;
-
 	public DataPatchFailureCause getDataPatchFailureCause() {
 		return dataPatchFailureCause;
 	}
@@ -52,19 +49,10 @@ public class DataPatchFailure implements Serializable {
 		return this;
 	}
 
-	public String getDescription() {
-		return description;
-	}
-
-	public DataPatchFailure setDescription(String description) {
-		this.description = description;
-		return this;
-	}
-
 	@Override
 	public String toString() {
 		return "DataPatchFailure{" + "dataPatchFailureCause=" + dataPatchFailureCause + ", existingFieldValue=" + existingFieldValue
-			+ ", providedFieldValue=" + providedFieldValue + ", description='" + description + '\'' + '}';
+			+ ", providedFieldValue=" + providedFieldValue + "\"" + '\'' + '}';
 	}
 
 	@Override
@@ -74,12 +62,11 @@ public class DataPatchFailure implements Serializable {
 		DataPatchFailure that = (DataPatchFailure) o;
 		return dataPatchFailureCause == that.dataPatchFailureCause
 			&& Objects.equals(existingFieldValue, that.existingFieldValue)
-			&& Objects.equals(providedFieldValue, that.providedFieldValue)
-			&& Objects.equals(description, that.description);
+			&& Objects.equals(providedFieldValue, that.providedFieldValue);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(dataPatchFailureCause, existingFieldValue, providedFieldValue, description);
+		return Objects.hash(dataPatchFailureCause, existingFieldValue, providedFieldValue);
 	}
 }
