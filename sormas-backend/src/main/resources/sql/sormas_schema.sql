@@ -15949,7 +15949,7 @@ INSERT INTO systemconfigurationvalue(config_key, config_value, value_description
                                      value_encrypt, data_provider, validation_message, changedate, creationdate, id,
                                      uuid)
 VALUES ('NG_SUVEY_FIELD_PREFIX', '_so', 'i18n/infoSystemConfigurationValueDescriptionNgSurveyFieldPrefix', general_category_id, true,
-        '', true, null,
+        '', false, null,
         'i18n/systemConfigurationValueInvalidValue', now(), now(), nextval('entity_seq'), generate_base32_uuid());
 
 
