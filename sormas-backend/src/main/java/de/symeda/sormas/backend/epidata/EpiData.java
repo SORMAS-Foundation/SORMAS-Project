@@ -29,6 +29,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import de.symeda.sormas.api.epidata.CaseImportedStatus;
 import de.symeda.sormas.api.epidata.ClusterType;
@@ -80,6 +82,16 @@ public class EpiData extends AbstractDomainObject {
 	private Date changeDateOfEmbeddedLists;
 
 	private String otherDetails;
+
+	private YesNoUnknown airportWorker;
+	private YesNoUnknown healthcareProfessional;
+	private String placeOfInfection;
+	private String residenceAtOnset;
+
+	private Date exposureInvestigationFromDate;
+	private Date exposureInvestigationToDate;
+	private Date activityAsCaseFromDate;
+	private Date activityAsCaseToDate;
 
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getExposureDetailsKnown() {
@@ -259,4 +271,77 @@ public class EpiData extends AbstractDomainObject {
 	public void setOtherDetails(String otherDetails) {
 		this.otherDetails = otherDetails;
 	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getAirportWorker() {
+		return airportWorker;
+	}
+
+	public void setAirportWorker(YesNoUnknown airportWorker) {
+		this.airportWorker = airportWorker;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getHealthcareProfessional() {
+		return healthcareProfessional;
+	}
+
+	public void setHealthcareProfessional(YesNoUnknown healthcareProfessional) {
+		this.healthcareProfessional = healthcareProfessional;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getPlaceOfInfection() {
+		return placeOfInfection;
+	}
+
+	public void setPlaceOfInfection(String placeOfInfection) {
+		this.placeOfInfection = placeOfInfection;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getResidenceAtOnset() {
+		return residenceAtOnset;
+	}
+
+	public void setResidenceAtOnset(String residenceAtOnset) {
+		this.residenceAtOnset = residenceAtOnset;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getExposureInvestigationFromDate() {
+		return exposureInvestigationFromDate;
+	}
+
+	public void setExposureInvestigationFromDate(Date exposureInvestigationFromDate) {
+		this.exposureInvestigationFromDate = exposureInvestigationFromDate;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getExposureInvestigationToDate() {
+		return exposureInvestigationToDate;
+	}
+
+	public void setExposureInvestigationToDate(Date exposureInvestigationToDate) {
+		this.exposureInvestigationToDate = exposureInvestigationToDate;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getActivityAsCaseFromDate() {
+		return activityAsCaseFromDate;
+	}
+
+	public void setActivityAsCaseFromDate(Date activityAsCaseFromDate) {
+		this.activityAsCaseFromDate = activityAsCaseFromDate;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getActivityAsCaseToDate() {
+		return activityAsCaseToDate;
+	}
+
+	public void setActivityAsCaseToDate(Date activityAsCaseToDate) {
+		this.activityAsCaseToDate = activityAsCaseToDate;
+	}
+
 }

@@ -22,6 +22,7 @@ import java.util.Set;
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.epidata.AnimalCondition;
@@ -135,6 +136,13 @@ public class ExposureDto extends PseudonymizableDto {
 	public static final String SUB_SETTINGS = "subSettings";
 	public static final String CONTACT_FACTORS = "contactFactors";
 	public static final String PROTECTIVE_MEASURES = "protectiveMeasures";
+	public static final String PROPHYLAXIS_ADHERENCE = "prophylaxisAdherence";
+	public static final String PROPHYLAXIS_ADHERENCE_DETAILS = "prophylaxisAdherenceDetails";
+	public static final String TRAVEL_PURPOSE = "travelPurpose";
+	public static final String TRAVEL_PURPOSE_DETAILS = "travelPurposeDetails";
+	public static final String EATING_OUT_VENUES = "eatingOutVenues";
+	public static final String EATING_OUT_VENUE_OTHER = "eatingOutVenueOther";
+	public static final String SHOPPING_FOR_FOOD_DETAILS = "shoppingForFoodDetails";
 
 	@SensitiveData
 	private UserReferenceDto reportingUser;
@@ -432,6 +440,42 @@ public class ExposureDto extends PseudonymizableDto {
 	private Set<ExposureSubSetting> subSettings;
 	private Set<ExposureContactFactor> contactFactors;
 	private Set<ExposureProtectiveMeasure> protectiveMeasures;
+	@Diseases({
+		Disease.MALARIA,
+		Disease.DENGUE })
+	private ProphylaxisAdherence prophylaxisAdherence;
+	@Diseases({
+		Disease.MALARIA,
+		Disease.DENGUE })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String prophylaxisAdherenceDetails;
+	@Diseases({
+		Disease.MALARIA,
+		Disease.DENGUE })
+	private TravelPurpose travelPurpose;
+	@Diseases({
+		Disease.MALARIA,
+		Disease.DENGUE })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String travelPurposeDetails;
+
+	@Diseases({
+		Disease.SALMONELLOSIS })
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	private Set<EatingOutVenue> eatingOutVenues;
+	@Diseases({
+		Disease.SALMONELLOSIS })
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String eatingOutVenueOther;
+	@Diseases({
+		Disease.SALMONELLOSIS })
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String shoppingForFoodDetails;
 
 	public static ExposureDto build(ExposureType exposureType) {
 
@@ -444,6 +488,7 @@ public class ExposureDto extends PseudonymizableDto {
 		exposure.setSubSettings(new HashSet<>());
 		exposure.setContactFactors(new HashSet<>());
 		exposure.setProtectiveMeasures(new HashSet<>());
+		exposure.setEatingOutVenues(new HashSet<>());
 
 		return exposure;
 	}
@@ -1094,6 +1139,62 @@ public class ExposureDto extends PseudonymizableDto {
 
 	public void setProtectiveMeasures(Set<ExposureProtectiveMeasure> protectiveMeasures) {
 		this.protectiveMeasures = protectiveMeasures;
+	}
+
+	public TravelPurpose getTravelPurpose() {
+		return travelPurpose;
+	}
+
+	public void setTravelPurpose(TravelPurpose travelPurpose) {
+		this.travelPurpose = travelPurpose;
+	}
+
+	public String getTravelPurposeDetails() {
+		return travelPurposeDetails;
+	}
+
+	public void setTravelPurposeDetails(String travelPurposeDetails) {
+		this.travelPurposeDetails = travelPurposeDetails;
+	}
+
+	public ProphylaxisAdherence getProphylaxisAdherence() {
+		return prophylaxisAdherence;
+	}
+
+	public void setProphylaxisAdherence(ProphylaxisAdherence prophylaxisAdherence) {
+		this.prophylaxisAdherence = prophylaxisAdherence;
+	}
+
+	public String getProphylaxisAdherenceDetails() {
+		return prophylaxisAdherenceDetails;
+	}
+
+	public void setProphylaxisAdherenceDetails(String prophylaxisAdherenceDetails) {
+		this.prophylaxisAdherenceDetails = prophylaxisAdherenceDetails;
+	}
+
+	public Set<EatingOutVenue> getEatingOutVenues() {
+		return eatingOutVenues;
+	}
+
+	public void setEatingOutVenues(Set<EatingOutVenue> eatingOutVenues) {
+		this.eatingOutVenues = eatingOutVenues;
+	}
+
+	public String getEatingOutVenueOther() {
+		return eatingOutVenueOther;
+	}
+
+	public void setEatingOutVenueOther(String eatingOutVenueOther) {
+		this.eatingOutVenueOther = eatingOutVenueOther;
+	}
+
+	public String getShoppingForFoodDetails() {
+		return shoppingForFoodDetails;
+	}
+
+	public void setShoppingForFoodDetails(String shoppingForFoodDetails) {
+		this.shoppingForFoodDetails = shoppingForFoodDetails;
 	}
 
 	@Override

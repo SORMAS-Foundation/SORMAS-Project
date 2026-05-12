@@ -280,6 +280,10 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setOtherNeurolocalSymptom(source.getOtherNeurolocalSymptom());
 		target.setOtherNeurolocalSymptomText(source.getOtherNeurolocalSymptomText());
 		target.setDisseminatedIntraVascularCoagulation(source.getDisseminatedIntraVascularCoagulation());
+		target.setFatalRisk(source.getFatalRisk());
+		target.setConstipation(source.getConstipation());
+		target.setDysuria(source.getDysuria());
+		target.setEyeIrritation(source.getEyeIrritation());
 		return target;
 	}
 
@@ -536,12 +540,17 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setOtherNeurolocalSymptom(source.getOtherNeurolocalSymptom());
 		target.setOtherNeurolocalSymptomText(source.getOtherNeurolocalSymptomText());
 		target.setDisseminatedIntraVascularCoagulation(source.getDisseminatedIntraVascularCoagulation());
+		target.setFatalRisk(source.getFatalRisk());
+		target.setConstipation(source.getConstipation());
+		target.setDysuria(source.getDysuria());
+		target.setEyeIrritation(source.getEyeIrritation());
 		target.setLossOfAppetite(source.getLossOfAppetite());
 		target.setFlatulence(source.getFlatulence());
 		target.setSmellyBurps(source.getSmellyBurps());
 		target.setCoughingAttacks(source.getCoughingAttacks());
 		target.setCoughingAtNight(source.getCoughingAtNight());
 		target.setAbdominalCramps(source.getAbdominalCramps());
+
 		return target;
 	}
 

@@ -15513,11 +15513,11 @@ ALTER TABLE testreport ADD COLUMN IF NOT EXISTS serotypetext varchar(255);
 UPDATE testreport  SET serotypetext = serotype, serotype = 'OTHER' WHERE serotype IS NOT null   and serotypetext is null;
 DO $$
 BEGIN
-    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport' AND column_name = 'genotyperesult') 
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport' AND column_name = 'genotyperesult')
         AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport' AND column_name = 'genotype') THEN
         ALTER TABLE testreport RENAME COLUMN genotyperesult TO genotype;
     END IF;
-    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport' AND column_name = 'genotyperesulttext') 
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport' AND column_name = 'genotyperesulttext')
         AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport' AND column_name = 'genotypetext') THEN
         ALTER TABLE testreport RENAME COLUMN genotyperesulttext TO genotypetext;
     END IF;
@@ -15527,11 +15527,11 @@ ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS serotypetext varchar(255
 UPDATE testreport_history  SET serotypetext = serotype, serotype = 'OTHER' WHERE serotype IS NOT null   and serotypetext is null;
 DO $$
 BEGIN
-    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport_history' AND column_name = 'genotyperesult') 
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport_history' AND column_name = 'genotyperesult')
         AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport_history' AND column_name = 'genotype') THEN
         ALTER TABLE testreport_history RENAME COLUMN genotyperesult TO genotype;
     END IF;
-    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport_history' AND column_name = 'genotyperesulttext') 
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport_history' AND column_name = 'genotyperesulttext')
         AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'testreport_history' AND column_name = 'genotypetext') THEN
         ALTER TABLE testreport_history RENAME COLUMN genotyperesulttext TO genotypetext;
     END IF;
@@ -15550,7 +15550,7 @@ alter table exposures_contactfactors add constraint exposures_contactfactors_pk 
 DROP TRIGGER IF EXISTS delete_history_trigger ON exposures_contactfactors;
 
 alter table exposures_protectivemeasures drop constraint unq_exposures_protectivemeasures_0;
-alter table exposures_protectivemeasures add constraint exposures_protectivemeasures_pk primary key (exposure_id, protectivemeasure);	
+alter table exposures_protectivemeasures add constraint exposures_protectivemeasures_pk primary key (exposure_id, protectivemeasure);
 DROP TRIGGER IF EXISTS delete_history_trigger ON exposures_protectivemeasures;
 
 INSERT INTO schema_version (version_number, comment) VALUES (617, '#13887 update keys and drop delete history triggers for new exposures tables');
@@ -15598,20 +15598,20 @@ CREATE TABLE IF NOT EXISTS customizablefieldmetadata (
 
     change_user_id     bigint,
     sys_period tstzrange NOT NULL,
-    
+
     PRIMARY KEY (id),
     UNIQUE(name, contextClass)
 );
 
-CREATE INDEX idx_customizablefieldmetadata_uuid 
+CREATE INDEX idx_customizablefieldmetadata_uuid
     ON customizablefieldmetadata (uuid);
-CREATE INDEX idx_customizablefieldmetadata_contextClass 
+CREATE INDEX idx_customizablefieldmetadata_contextClass
     ON customizablefieldmetadata (contextClass);
-CREATE INDEX idx_customizablefieldmetadata_uiGroup 
+CREATE INDEX idx_customizablefieldmetadata_uiGroup
     ON customizablefieldmetadata (uiGroup);
-CREATE INDEX idx_customizablefieldmetadata_active 
+CREATE INDEX idx_customizablefieldmetadata_active
     ON customizablefieldmetadata (active);
-CREATE INDEX idx_customizablefieldmetadata_deleted 
+CREATE INDEX idx_customizablefieldmetadata_deleted
     ON customizablefieldmetadata (deleted);
 
 ALTER TABLE customizablefieldmetadata OWNER TO sormas_user;
@@ -15662,20 +15662,20 @@ CREATE TABLE IF NOT EXISTS customizablefieldvalue (
 
     change_user_id     bigint,
     sys_period tstzrange NOT NULL,
-    
+
     PRIMARY KEY (id),
     UNIQUE(customizablefieldmetadata_id, entityUuid, contextClass)
 );
 
-CREATE INDEX idx_customizablefieldvalue_uuid 
+CREATE INDEX idx_customizablefieldvalue_uuid
     ON customizablefieldvalue (uuid);
-CREATE INDEX idx_customizablefieldvalue_entityUuid 
+CREATE INDEX idx_customizablefieldvalue_entityUuid
     ON customizablefieldvalue (entityUuid);
-CREATE INDEX idx_customizablefieldvalue_contextEntity 
+CREATE INDEX idx_customizablefieldvalue_contextEntity
     ON customizablefieldvalue (contextClass, entityUuid);
-CREATE INDEX idx_customizablefieldvalue_fieldMetadata 
+CREATE INDEX idx_customizablefieldvalue_fieldMetadata
     ON customizablefieldvalue (customizablefieldmetadata_id);
-CREATE INDEX idx_customizablefieldvalue_deleted 
+CREATE INDEX idx_customizablefieldvalue_deleted
     ON customizablefieldvalue (deleted);
 
 ALTER TABLE customizablefieldvalue ADD CONSTRAINT fk_change_user_id FOREIGN KEY (change_user_id) REFERENCES users (id);
@@ -15783,4 +15783,107 @@ WHERE config_key = 'MENU_SUBTITLE';
 
 INSERT INTO schema_version (version_number, comment) VALUES (623, '#13552 - FIX menu regexes');
 
+
+-- 22-04-2026 Malaria and Dengue Doctors declaration and lab messages changes #13838, 13837, 13835, 13836
+ALTER TABLE epidata  ADD COLUMN airportworker varchar(255);
+ALTER TABLE epidata  ADD COLUMN healthcareprofessional varchar(255);
+ALTER TABLE epidata  ADD COLUMN placeofinfection varchar(255);
+ALTER TABLE epidata  ADD COLUMN residenceatonset varchar(255);
+
+ALTER TABLE exposures ADD COLUMN prophylaxisadherence varchar(255);
+ALTER TABLE exposures ADD COLUMN prophylaxisadherencedetails varchar(512);
+ALTER TABLE exposures ADD COLUMN travelpurpose varchar(255);
+ALTER TABLE exposures ADD COLUMN travelpurposedetails varchar(512);
+
+ALTER TABLE symptoms ADD COLUMN fatalrisk varchar(255);
+ALTER TABLE externalmessage ADD COLUMN malaria varchar(255);
+ALTER TABLE externalmessage ADD COLUMN malariainfectedyear integer;
+ALTER TABLE externalmessage ADD COLUMN airportworker varchar(255);
+ALTER TABLE externalmessage ADD COLUMN healthcareprofessional varchar(255);
+ALTER TABLE externalmessage ADD COLUMN modeoftransmission varchar(255);
+ALTER TABLE externalmessage ADD column modeoftransmissiontype varchar(255);
+
+ALTER TABLE epidata_history ADD COLUMN airportworker varchar(255);
+ALTER TABLE epidata_history ADD COLUMN healthcareprofessional varchar(255);
+ALTER TABLE epidata_history ADD COLUMN placeofinfection varchar(255);
+ALTER TABLE epidata_history ADD COLUMN residenceatonset varchar(255);
+
+ALTER TABLE exposures_history ADD COLUMN prophylaxisadherence varchar(255);
+ALTER TABLE exposures_history ADD COLUMN prophylaxisadherencedetails varchar(512);
+ALTER TABLE exposures_history ADD COLUMN travelpurpose varchar(255);
+ALTER TABLE exposures_history ADD COLUMN travelpurposedetails varchar(512);
+
+ALTER TABLE symptoms_history ADD COLUMN fatalrisk character varying(255);
+
+ALTER TABLE externalmessage_history ADD COLUMN malaria varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN malariainfectedyear integer;
+ALTER TABLE externalmessage_history ADD COLUMN airportworker varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN healthcareprofessional varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN modeoftransmission varchar(255);
+ALTER TABLE externalmessage_history ADD column modeoftransmissiontype varchar(255);
+INSERT INTO schema_version (version_number, comment) VALUES (624, '#13838, #13837, #13835, #13836  - Malaria and Dengue Doctors declaration and lab messages changes');
+
+-- 2026-04-27 Salmonellosis disease configuration (Luxembourg) #13915
+-- The diseaseconfiguration row for SALMONELLOSIS is created by createMissingDiseaseConfigurations() at startup,
+-- which runs after this migration. Insert a row up-front so the UPDATE applies on the first deployment.
+INSERT INTO diseaseconfiguration (id, uuid, changedate, creationdate, disease)
+SELECT nextval('entity_seq'),
+       upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)),
+       now(), now(), 'SALMONELLOSIS'
+WHERE NOT EXISTS (SELECT 1 FROM diseaseconfiguration WHERE disease = 'SALMONELLOSIS');
+
+UPDATE diseaseconfiguration
+   SET exposurecategories = 'FOOD_BORNE,WATER_BORNE,ANIMAL_CONTACT,DIRECT_CONTACT'
+ WHERE disease = 'SALMONELLOSIS';
+
+INSERT INTO schema_version (version_number, comment) VALUES (625, '#13915 - Salmonellosis disease configuration');
+
+-- 2026-04-29 Salmonellosis EpiData investigation/activity windows #13915
+ALTER TABLE epidata         ADD COLUMN IF NOT EXISTS exposureinvestigationfromdate timestamp;
+ALTER TABLE epidata         ADD COLUMN IF NOT EXISTS exposureinvestigationtodate   timestamp;
+ALTER TABLE epidata         ADD COLUMN IF NOT EXISTS activityascasefromdate        timestamp;
+ALTER TABLE epidata         ADD COLUMN IF NOT EXISTS activityascasetodate          timestamp;
+
+ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS exposureinvestigationfromdate timestamp;
+ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS exposureinvestigationtodate   timestamp;
+ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS activityascasefromdate        timestamp;
+ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS activityascasetodate          timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (626, '#13916 - Salmonellosis EpiData investigation/activity windows');
+
+-- 2026-04-29 Salmonellosis Exposure eating-out venues + shopping details #13915
+ALTER TABLE exposures         ADD COLUMN IF NOT EXISTS eatingoutvenueother    varchar(512);
+ALTER TABLE exposures         ADD COLUMN IF NOT EXISTS shoppingforfooddetails varchar(512);
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS eatingoutvenueother    varchar(512);
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS shoppingforfooddetails varchar(512);
+
+-- exposures_eatingoutvenues join table (matches exposures_subsettings precedent)
+CREATE TABLE IF NOT EXISTS exposures_eatingoutvenues (
+       exposure_id      BIGINT NOT NULL,
+       eatingoutvenue   VARCHAR(255) NOT NULL,
+       sys_period       TSTZRANGE NOT NULL
+);
+
+ALTER TABLE exposures_eatingoutvenues OWNER TO sormas_user;
+ALTER TABLE exposures_eatingoutvenues ADD CONSTRAINT fk_exposures_eatingoutvenues_exposure_id FOREIGN KEY (exposure_id) REFERENCES exposures;
+ALTER TABLE exposures_eatingoutvenues ADD CONSTRAINT exposures_eatingoutvenues_pk PRIMARY KEY (exposure_id, eatingoutvenue);
+
+CREATE TABLE IF NOT EXISTS exposures_eatingoutvenues_history (LIKE exposures_eatingoutvenues);
+DROP TRIGGER IF EXISTS versioning_trigger ON exposures_eatingoutvenues;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE OR DELETE ON exposures_eatingoutvenues
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'exposures_eatingoutvenues_history', true);
+ALTER TABLE exposures_eatingoutvenues_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (627, '#13917 - Salmonellosis Exposure eating-out venues + shopping details');
+
+-- 2026-04-29 Salmonellosis Symptoms: constipation, dysuria, eye irritation #13915
+ALTER TABLE symptoms         ADD COLUMN IF NOT EXISTS constipation   varchar(255);
+ALTER TABLE symptoms         ADD COLUMN IF NOT EXISTS dysuria        varchar(255);
+ALTER TABLE symptoms         ADD COLUMN IF NOT EXISTS eyeirritation  varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS constipation   varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS dysuria        varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS eyeirritation  varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (628, '#13917 - Salmonellosis Symptoms: constipation, dysuria, eye irritation');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

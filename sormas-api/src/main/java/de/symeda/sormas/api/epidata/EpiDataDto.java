@@ -70,6 +70,14 @@ public class EpiDataDto extends PseudonymizableDto {
 	public static final String IMPORTED_CASE = "importedCase";
 	public static final String COUNTRY = "country";
 	public static final String OTHER_DETAILS = "otherDetails";
+	public static final String AIRPORT_WORKER = "airportWorker";
+	public static final String HEALTHCARE_PROFESSIONAL = "healthcareProfessional";
+	public static final String PLACE_OF_INFECTION = "placeOfInfection";
+	public static final String RESIDENCE_AT_ONSET = "residenceAtOnset";
+	public static final String EXPOSURE_INVESTIGATION_FROM_DATE = "exposureInvestigationFromDate";
+	public static final String EXPOSURE_INVESTIGATION_TO_DATE = "exposureInvestigationToDate";
+	public static final String ACTIVITY_AS_CASE_FROM_DATE = "activityAsCaseFromDate";
+	public static final String ACTIVITY_AS_CASE_TO_DATE = "activityAsCaseToDate";
 
 	private YesNoUnknown exposureDetailsKnown;
 	private YesNoUnknown activityAsCaseDetailsKnown;
@@ -81,7 +89,8 @@ public class EpiDataDto extends PseudonymizableDto {
 	private CaseImportedStatus caseImportedStatus;
 
 	@Diseases({
-		Disease.GIARDIASIS })
+		Disease.GIARDIASIS,
+		Disease.SALMONELLOSIS })
 	private YesNoUnknown importedCase;
 
 	@HideForCountriesExcept(countries = {
@@ -114,12 +123,14 @@ public class EpiDataDto extends PseudonymizableDto {
 
 	@Diseases({
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS })
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MALARIA })
 	private ModeOfTransmission modeOfTransmission;
 
 	@Diseases({
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS })
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MALARIA })
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String modeOfTransmissionType;
 
@@ -133,7 +144,8 @@ public class EpiDataDto extends PseudonymizableDto {
 	private String infectionSourceText;
 
 	@Diseases({
-		Disease.GIARDIASIS })
+		Disease.GIARDIASIS,
+		Disease.SALMONELLOSIS })
 	private CountryReferenceDto country;
 
 	@Valid
@@ -143,6 +155,50 @@ public class EpiDataDto extends PseudonymizableDto {
 	private List<ActivityAsCaseDto> activitiesAsCase = new ArrayList<>();
 
 	private String otherDetails;
+	// airport worker should be applicable for all countries and diseases.
+	@Diseases
+	@HideForCountriesExcept
+	private YesNoUnknown airportWorker;
+	@Diseases({
+		Disease.MALARIA })
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	private YesNoUnknown healthcareProfessional;
+
+	@Diseases({
+		Disease.DENGUE })
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	@Size(max = 255, message = Validations.textTooLong)
+	private String placeOfInfection;
+
+	@Diseases({
+		Disease.DENGUE })
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	@Size(max = 255, message = Validations.textTooLong)
+	private String residenceAtOnset;
+
+	@Diseases({
+		Disease.SALMONELLOSIS })
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	private Date exposureInvestigationFromDate;
+	@Diseases({
+		Disease.SALMONELLOSIS })
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	private Date exposureInvestigationToDate;
+	@Diseases({
+		Disease.SALMONELLOSIS })
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	private Date activityAsCaseFromDate;
+	@Diseases({
+		Disease.SALMONELLOSIS })
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	private Date activityAsCaseToDate;
 
 	public YesNoUnknown getExposureDetailsKnown() {
 		return exposureDetailsKnown;
@@ -303,6 +359,88 @@ public class EpiDataDto extends PseudonymizableDto {
 
 	public void setOtherDetails(String otherDetails) {
 		this.otherDetails = otherDetails;
+	}
+
+	public YesNoUnknown getAirportWorker() {
+		return airportWorker;
+	}
+
+	public void setAirportWorker(YesNoUnknown airportWorker) {
+		this.airportWorker = airportWorker;
+	}
+
+	public YesNoUnknown getHealthcareProfessional() {
+		return healthcareProfessional;
+	}
+
+	public void setHealthcareProfessional(YesNoUnknown healthcareProfessional) {
+		this.healthcareProfessional = healthcareProfessional;
+	}
+
+	public String getPlaceOfInfection() {
+		return placeOfInfection;
+	}
+
+	public void setPlaceOfInfection(String placeOfInfection) {
+		this.placeOfInfection = placeOfInfection;
+	}
+
+	public String getResidenceAtOnset() {
+		return residenceAtOnset;
+	}
+
+	public void setResidenceAtOnset(String residenceAtOnset) {
+		this.residenceAtOnset = residenceAtOnset;
+	}
+
+	public Date getExposureInvestigationFromDate() {
+		return exposureInvestigationFromDate;
+	}
+
+	public void setExposureInvestigationFromDate(Date exposureInvestigationFromDate) {
+		validateDateRange(
+			exposureInvestigationFromDate,
+			this.exposureInvestigationToDate,
+			"exposureInvestigationFromDate",
+			"exposureInvestigationToDate");
+		this.exposureInvestigationFromDate = exposureInvestigationFromDate;
+	}
+
+	public Date getExposureInvestigationToDate() {
+		return exposureInvestigationToDate;
+	}
+
+	public void setExposureInvestigationToDate(Date exposureInvestigationToDate) {
+		validateDateRange(
+			this.exposureInvestigationFromDate,
+			exposureInvestigationToDate,
+			"exposureInvestigationFromDate",
+			"exposureInvestigationToDate");
+		this.exposureInvestigationToDate = exposureInvestigationToDate;
+	}
+
+	public Date getActivityAsCaseFromDate() {
+		return activityAsCaseFromDate;
+	}
+
+	public void setActivityAsCaseFromDate(Date activityAsCaseFromDate) {
+		validateDateRange(activityAsCaseFromDate, this.activityAsCaseToDate, "activityAsCaseFromDate", "activityAsCaseToDate");
+		this.activityAsCaseFromDate = activityAsCaseFromDate;
+	}
+
+	public Date getActivityAsCaseToDate() {
+		return activityAsCaseToDate;
+	}
+
+	public void setActivityAsCaseToDate(Date activityAsCaseToDate) {
+		validateDateRange(this.activityAsCaseFromDate, activityAsCaseToDate, "activityAsCaseFromDate", "activityAsCaseToDate");
+		this.activityAsCaseToDate = activityAsCaseToDate;
+	}
+
+	private static void validateDateRange(Date from, Date to, String fromName, String toName) {
+		if (from != null && to != null && from.after(to)) {
+			throw new IllegalArgumentException(fromName + " must be before or equal to " + toName);
+		}
 	}
 
 	@Override

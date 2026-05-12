@@ -74,6 +74,7 @@ import static de.symeda.sormas.api.Disease.RABIES;
 import static de.symeda.sormas.api.Disease.RESPIRATORY_SYNCYTIAL_VIRUS;
 import static de.symeda.sormas.api.Disease.RHINOVIRUS;
 import static de.symeda.sormas.api.Disease.RUBELLA;
+import static de.symeda.sormas.api.Disease.SALMONELLOSIS;
 import static de.symeda.sormas.api.Disease.SCHISTOSOMIASIS;
 import static de.symeda.sormas.api.Disease.SNAKE_BITE;
 import static de.symeda.sormas.api.Disease.SOIL_TRANSMITTED_HELMINTHS;
@@ -151,6 +152,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String CONGENITAL_HEART_DISEASE_TYPE = "congenitalHeartDiseaseType";
 	public static final String CONJUNCTIVAL_INJECTION = "conjunctivalInjection";
 	public static final String CONJUNCTIVITIS = "conjunctivitis";
+	public static final String CONSTIPATION = "constipation";
 	public static final String CONVULSION = "convulsion";
 	public static final String COUGH = "cough";
 	public static final String COUGHING_BLOOD = "coughingBlood";
@@ -166,10 +168,12 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String DIFFICULTY_BREATHING = "difficultyBreathing";
 	public static final String DIGESTED_BLOOD_VOMIT = "digestedBloodVomit";
 	public static final String DYSPHAGIA = "dysphagia";
+	public static final String DYSURIA = "dysuria";
 	public static final String ERRATIC_BEHAVIOUR = "erraticBehaviour";
 	public static final String EXCESS_SALIVATION = "excessSalivation";
 	public static final String EXCITATION = "excitation";
 	public static final String EYES_BLEEDING = "eyesBleeding";
+	public static final String EYE_IRRITATION = "eyeIrritation";
 	public static final String EYE_PAIN_LIGHT_SENSITIVE = "eyePainLightSensitive";
 	public static final String FATIGUE_WEAKNESS = "fatigueWeakness";
 	public static final String FEVER = "fever";
@@ -340,6 +344,14 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String WEIGHT_LOSS = "weightLoss";
 	public static final String WEIGHT_LOSS_AMOUNT = "weightLossAmount";
 	public static final String BLOATING = "bloating";
+
+	public static final String LOSS_OF_APPETITE = "lossOfAppetite";
+	public static final String FLATULENCE = "flatulence";
+	public static final String SMELLY_BURPS = "smellyBurps";
+	public static final String COUGHING_ATTACKS = "coughingAttacks";
+	public static final String COUGHING_AT_NIGHT = "coughingAtNight";
+	public static final String ABDOMINAL_CRAMPS = "abdominalCramps";
+
 	public static final String REOCCURRENCE = "reoccurrence";
 	public static final String OVERNIGHT_STAY_REQUIRED = "overnightStayRequired";
 	public static final String SYMPTOM_CURRENT_STATUS = "symptomCurrentStatus";
@@ -372,6 +384,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String SCANT_HEMORRHAGE = "scantHemorrhage";
 	public static final String OTHER_NEUROLOCAL_SYMPTOM = "otherNeurolocalSymptom";
 	public static final String OTHER_NEUROLOCAL_SYMPTOM_TEXT = "otherNeurolocalSymptomText";
+	public static final String FATAL_RISK = "fatalRisk";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -397,6 +410,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		UNSPECIFIED_VHF,
 		GIARDIASIS,
 		CRYPTOSPORIDIOSIS,
+		SALMONELLOSIS,
 		UNDEFINED,
 		DENGUE,
 		OTHER })
@@ -420,6 +434,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		GIARDIASIS,
 		CRYPTOSPORIDIOSIS,
 		MALARIA,
+		SALMONELLOSIS,
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
@@ -484,6 +499,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		ANTHRAX,
 		DENGUE,
 		UNSPECIFIED_VHF,
+		SALMONELLOSIS,
 		UNDEFINED,
 		OTHER })
 	@Complication(value = {
@@ -602,6 +618,13 @@ public class SymptomsDto extends PseudonymizableDto {
 	private SymptomState conjunctivitis;
 
 	@Diseases({
+		SALMONELLOSIS })
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
+	private SymptomState constipation;
+
+	@Diseases({
 		AFP,
 		EVD,
 		GUINEA_WORM,
@@ -675,6 +698,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		UNSPECIFIED_VHF,
 		GIARDIASIS,
 		CRYPTOSPORIDIOSIS,
+		SALMONELLOSIS,
 		UNDEFINED,
 		OTHER })
 	@HideForCountries
@@ -698,6 +722,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		GIARDIASIS,
 		CRYPTOSPORIDIOSIS,
 		MALARIA,
+		SALMONELLOSIS,
 		UNDEFINED,
 		OTHER })
 	@Complication({
@@ -771,6 +796,13 @@ public class SymptomsDto extends PseudonymizableDto {
 	private SymptomState eyesBleeding;
 
 	@Diseases({
+		SALMONELLOSIS })
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	@SymptomGrouping(SymptomGroup.OTHER)
+	private SymptomState eyeIrritation;
+
+	@Diseases({
 		AFP,
 		EVD,
 		GUINEA_WORM,
@@ -821,6 +853,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		GIARDIASIS,
 		CRYPTOSPORIDIOSIS,
 		MALARIA,
+		SALMONELLOSIS,
 		DENGUE,
 		OTHER })
 	@Outbreaks
@@ -879,6 +912,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		ANTHRAX,
 		CORONAVIRUS,
 		MALARIA,
+		SALMONELLOSIS,
 		DENGUE,
 		UNDEFINED,
 		OTHER })
@@ -967,6 +1001,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CORONAVIRUS,
 		UNSPECIFIED_VHF,
 		MALARIA,
+		SALMONELLOSIS,
 		DENGUE,
 		UNDEFINED,
 		OTHER })
@@ -1270,6 +1305,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CORONAVIRUS,
 		UNSPECIFIED_VHF,
 		MALARIA,
+		SALMONELLOSIS,
 		DENGUE,
 		UNDEFINED,
 		OTHER })
@@ -1297,6 +1333,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CRYPTOSPORIDIOSIS,
 		GIARDIASIS,
 		MALARIA,
+		SALMONELLOSIS,
 		DENGUE,
 		UNDEFINED,
 		OTHER })
@@ -1563,6 +1600,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		RABIES,
 		CORONAVIRUS,
 		PERTUSSIS,
+		SALMONELLOSIS,
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
@@ -1586,6 +1624,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CONGENITAL_RUBELLA,
 		CORONAVIRUS,
 		PERTUSSIS,
+		SALMONELLOSIS,
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
@@ -1792,6 +1831,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		DENGUE,
 		POLIO,
 		UNSPECIFIED_VHF,
+		SALMONELLOSIS,
 		UNDEFINED,
 		OTHER,
 		CORONAVIRUS })
@@ -2075,6 +2115,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CRYPTOSPORIDIOSIS,
 		GIARDIASIS,
 		MALARIA,
+		SALMONELLOSIS,
 		DENGUE,
 		OTHER })
 	@Outbreaks
@@ -2149,6 +2190,13 @@ public class SymptomsDto extends PseudonymizableDto {
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
 	private SymptomState dysphagia;
+
+	@Diseases({
+		SALMONELLOSIS })
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	@SymptomGrouping(SymptomGroup.URINARY)
+	private SymptomState dysuria;
 
 	@Diseases({
 		RABIES })
@@ -3101,6 +3149,14 @@ public class SymptomsDto extends PseudonymizableDto {
 	@DependantOn(OTHER_NEUROLOCAL_SYMPTOM)
 	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
 	private String otherNeurolocalSymptomText;
+
+	@Diseases({
+		DENGUE })
+	@SymptomGrouping(SymptomGroup.GENERAL)
+	@Complication({
+		DENGUE })
+	// mCComplicationsPotentiellementMortelles to map the life threatening complications of dengue
+	private SymptomState fatalRisk;
 
 	@Order(0)
 	public Float getTemperature() {
@@ -5205,6 +5261,38 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	public void setOtherNeurolocalSymptomText(String otherNeurolocalSymptomText) {
 		this.otherNeurolocalSymptomText = otherNeurolocalSymptomText;
+	}
+
+	public SymptomState getFatalRisk() {
+		return fatalRisk;
+	}
+
+	public void setFatalRisk(SymptomState fatalRisk) {
+		this.fatalRisk = fatalRisk;
+	}
+
+	public SymptomState getConstipation() {
+		return constipation;
+	}
+
+	public void setConstipation(SymptomState constipation) {
+		this.constipation = constipation;
+	}
+
+	public SymptomState getDysuria() {
+		return dysuria;
+	}
+
+	public void setDysuria(SymptomState dysuria) {
+		this.dysuria = dysuria;
+	}
+
+	public SymptomState getEyeIrritation() {
+		return eyeIrritation;
+	}
+
+	public void setEyeIrritation(SymptomState eyeIrritation) {
+		this.eyeIrritation = eyeIrritation;
 	}
 
 	public SymptomState getCoughingAtNight() {

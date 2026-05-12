@@ -322,8 +322,7 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 			malInfectedYearCB.addItems(DateHelper.getYearsToNow());
 			malInfectedYearCB.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ID_TOSTRING);
 			malariaInfectedYearLayout.addComponent(malInfectedYearCB, MALARIA_INFECTED_YEAR);
-
-			FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(MALARIA_INFECTED_YEAR), MALARIA, Arrays.asList(YesNoUnknown.YES), true);
+			fieldVisibilityCheck(getField(MALARIA), malInfectedYearCB, lblInfectedYear);
 		}
 	}
 
@@ -350,13 +349,8 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 	 * @param label
 	 */
 	private void fieldVisibilityCheck(NullableOptionGroup input, Field field, Label label) {
-		input.addValueChangeListener(event -> {
-			Set<Object> set = (Set<Object>) event.getProperty().getValue();
-			boolean visible = set.contains(YesNoUnknown.YES) ? true : false;
-			field.setVisible(visible);
-			label.setVisible(visible);
-			field.clear();
-		});
+		input.addValueChangeListener(event -> updateFieldVisibility(input, field, label));
+		updateFieldVisibility(input, field, label);
 	}
 
 	@Override

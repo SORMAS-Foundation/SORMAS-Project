@@ -442,12 +442,14 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 	@SensitiveData
 	@Diseases(value = {
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS })
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.SALMONELLOSIS })
 	private WorkPlace workPlace;
 	@SensitiveData
 	@Diseases(value = {
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS })
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.SALMONELLOSIS })
 	@DependantOn(WORK_PLACE)
 	private String workPlaceText;
 
@@ -731,7 +733,7 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return the PRIMARY email address. Email addresses set with the {@link #setEmailAddress(String)} method automatically become primary.
 	 *         An email address entered in the personEditForm is not, and thus does not become primary email address unless the user
 	 *         specifically sets it.
@@ -742,7 +744,7 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param onlyPrimary
 	 *            if true, the return value is same as in {@link #getEmailAddress()}. Otherwise, this method tries to return the only email
 	 *            address for this person, no matter if primary or not. Results in an SeveralNonPrimaryContactDetailsException when there
@@ -780,7 +782,7 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param email
 	 *            is automatically set as primary email address, removing the primary status from another email address if necessary.
 	 */

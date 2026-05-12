@@ -31,6 +31,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
@@ -39,7 +40,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
@@ -59,6 +59,7 @@ import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.AnimalCategory;
+import de.symeda.sormas.api.exposure.EatingOutVenue;
 import de.symeda.sormas.api.exposure.ExposureCategory;
 import de.symeda.sormas.api.exposure.ExposureContactFactor;
 import de.symeda.sormas.api.exposure.ExposureDto;
@@ -66,6 +67,9 @@ import de.symeda.sormas.api.exposure.ExposureProtectiveMeasure;
 import de.symeda.sormas.api.exposure.ExposureSetting;
 import de.symeda.sormas.api.exposure.ExposureSubSetting;
 import de.symeda.sormas.api.exposure.FomiteTransmissionLocation;
+import de.symeda.sormas.api.exposure.ProphylaxisAdherence;
+import de.symeda.sormas.api.exposure.TravelPurpose;
+import de.symeda.sormas.api.exposure.TypeOfAnimal;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -107,8 +111,12 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 					fluidRow(
 							fluidColumn(4, 0, locs(
 									ExposureDto.SUB_SETTINGS,
+									ExposureDto.EATING_OUT_VENUES,
+									ExposureDto.EATING_OUT_VENUE_OTHER,
+									ExposureDto.SHOPPING_FOR_FOOD_DETAILS,
 									ExposureDto.CONDITION_OF_ANIMAL,
 									ExposureDto.ANIMAL_CATEGORY,
+									ExposureDto.TYPE_OF_ANIMAL,
 									ExposureDto.FOMITE_TRANSMISSION_LOCATION
 							)),
 							fluidColumn(4, 0, locs(
@@ -118,6 +126,10 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 									ExposureDto.PROTECTIVE_MEASURES
 							))
 					) +
+					fluidRow(fluidColumn(4, 0, locs(ExposureDto.PROPHYLAXIS_ADHERENCE))) +
+					fluidRow(fluidColumn(4, 0, locs(ExposureDto.PROPHYLAXIS_ADHERENCE_DETAILS))) +
+					fluidRow(fluidColumn(4, 0, locs(ExposureDto.TRAVEL_PURPOSE))) +
+					fluidRow(fluidColumn(4, 0, locs(ExposureDto.TRAVEL_PURPOSE_DETAILS))) +
 					fluidRow(
 							fluidColumn(4, 0, locs(
 									ExposureDto.EXPOSURE_SUB_SETTING_DETAILS,
@@ -133,7 +145,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 					loc(LOC_CUSTOMIZABLE_FIELDS_EXPOSURES_GENERAL) +
 					loc(ExposureDto.DESCRIPTION);
 
-	private static final String LOCATION_DETAILS_LAYOUT = 
+	private static final String LOCATION_DETAILS_LAYOUT =
 			loc(LOC_LOCATION_HEADING) +
 			fluidRow(
 					fluidColumn(6, 0, locs(ExposureDto.TYPE_OF_PLACE)),
@@ -173,8 +185,13 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	private TextField protectiveMeasureDetailsField;
 	private NullableOptionGroup conditionOfAnimalField;
 	private NullableOptionGroup animalCategoryField;
+	private ComboBox typeOfAnimalField;
 	private TextField animalCategoryDetailsField;
 	private NullableOptionGroup fomiteTransmissionLocationField;
+	private ComboBox prophylaxisAdherenceField;
+	private ComboBox travelPurposeField;
+	private TextField prophylaxisAdherenceDetailsField;
+	private TextField travelPurposeDetailsField;
 
 	private CustomizableFieldsGroup exposureDetailsPanel;
 	private CustomizableFieldsGroup exposuresGeneralPanel;
@@ -308,11 +325,26 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		subSettingsDetailsField = addField(exposureDetailsLayout, ExposureDto.EXPOSURE_SUB_SETTING_DETAILS, TextField.class);
 		subSettingsDetailsField.setVisible(false);
 
+		OptionGroup eatingOutVenuesField = addField(exposureDetailsLayout, ExposureDto.EATING_OUT_VENUES, OptionGroup.class);
+		eatingOutVenuesField.setMultiSelect(true);
+		CssStyles.style(eatingOutVenuesField, CssStyles.CAPTION_ON_TOP);
+		FieldHelper.updateItems(eatingOutVenuesField, Arrays.asList(EatingOutVenue.values()));
+		eatingOutVenuesField.setVisible(false);
+
+		TextField eatingOutVenueOtherField = addField(exposureDetailsLayout, ExposureDto.EATING_OUT_VENUE_OTHER, TextField.class);
+		eatingOutVenueOtherField.setVisible(false);
+
+		TextField shoppingForFoodDetailsField = addField(exposureDetailsLayout, ExposureDto.SHOPPING_FOR_FOOD_DETAILS, TextField.class);
+		shoppingForFoodDetailsField.setVisible(false);
+
 		conditionOfAnimalField = addField(exposureDetailsLayout, ExposureDto.CONDITION_OF_ANIMAL, NullableOptionGroup.class);
 		conditionOfAnimalField.setVisible(false);
 
 		animalCategoryField = addField(exposureDetailsLayout, ExposureDto.ANIMAL_CATEGORY, NullableOptionGroup.class);
 		animalCategoryField.setVisible(false);
+
+		typeOfAnimalField = addField(exposureDetailsLayout, ExposureDto.TYPE_OF_ANIMAL, ComboBox.class);
+		typeOfAnimalField.setVisible(false);
 
 		animalCategoryDetailsField = addField(exposureDetailsLayout, ExposureDto.ANIMAL_CATEGORY_DETAILS, TextField.class);
 		animalCategoryDetailsField.setVisible(false);
@@ -333,6 +365,13 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 
 		protectiveMeasureDetailsField = addField(exposureDetailsLayout, ExposureDto.PROTECTIVE_MEASURE_DETAILS, TextField.class);
 		protectiveMeasureDetailsField.setVisible(false);
+
+		prophylaxisAdherenceField = addField(exposureDetailsLayout, ExposureDto.PROPHYLAXIS_ADHERENCE, ComboBox.class);
+		prophylaxisAdherenceField.setVisible(false);
+		prophylaxisAdherenceDetailsField = addField(exposureDetailsLayout, ExposureDto.PROPHYLAXIS_ADHERENCE_DETAILS, TextField.class);
+		travelPurposeField = addField(exposureDetailsLayout, ExposureDto.TRAVEL_PURPOSE, ComboBox.class);
+		travelPurposeField.setVisible(false);
+		travelPurposeDetailsField = addField(exposureDetailsLayout, ExposureDto.TRAVEL_PURPOSE_DETAILS, TextField.class);
 
 		categoryField.addValueChangeListener(e -> {
 			ExposureCategory selectedCategory = (ExposureCategory) e.getProperty().getValue();
@@ -373,6 +412,32 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			Set<ExposureSubSetting> selectedSubSettings = (Set<ExposureSubSetting>) e.getProperty().getValue();
 			boolean containsOther = selectedSubSettings != null && selectedSubSettings.contains(ExposureSubSetting.OTHER);
 			subSettingsDetailsField.setVisible(containsOther);
+			boolean isProphylaxis = selectedSubSettings != null && selectedSubSettings.contains(ExposureSubSetting.TRAVELED_ABROAD);
+			setVisibleClear(isProphylaxis, ExposureDto.PROPHYLAXIS_ADHERENCE, ExposureDto.TRAVEL_PURPOSE);
+
+			// Salmonellosis Lu: Eating out venues + shopping-for-food details follow sub-setting selection
+			boolean showEatingOutVenues = selectedSubSettings != null && selectedSubSettings.contains(ExposureSubSetting.EATING_OUTSIDE);
+			eatingOutVenuesField.setVisible(showEatingOutVenues);
+			if (!showEatingOutVenues) {
+				eatingOutVenuesField.setValue(null);
+				eatingOutVenueOtherField.setVisible(false);
+				eatingOutVenueOtherField.setValue(null);
+			}
+			boolean showShoppingForFood = selectedSubSettings != null && selectedSubSettings.contains(ExposureSubSetting.SHOPPING_FOR_FOOD);
+			shoppingForFoodDetailsField.setVisible(showShoppingForFood);
+			if (!showShoppingForFood) {
+				shoppingForFoodDetailsField.setValue(null);
+			}
+		});
+
+		eatingOutVenuesField.addValueChangeListener(e -> {
+			@SuppressWarnings("unchecked")
+			Set<EatingOutVenue> selectedVenues = (Set<EatingOutVenue>) e.getProperty().getValue();
+			boolean containsOther = selectedVenues != null && selectedVenues.contains(EatingOutVenue.OTHER);
+			eatingOutVenueOtherField.setVisible(eatingOutVenuesField.isVisible() && containsOther);
+			if (!containsOther) {
+				eatingOutVenueOtherField.setValue(null);
+			}
 		});
 
 		contactFactorsField.addValueChangeListener(e -> {
@@ -400,6 +465,9 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			// Clear dependent fields when conditionOfAnimal becomes null
 			if (!hasValue) {
 				animalCategoryField.setValue(null);
+
+				typeOfAnimalField.setValue(null);
+				typeOfAnimalField.setVisible(false);
 				animalCategoryDetailsField.setValue(null);
 				animalCategoryDetailsField.setVisible(false);
 			}
@@ -409,11 +477,13 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			Object value = e.getProperty().getValue();
 			boolean hasValue = value != null;
 
-			// Show/hide animalCategoryDetailsField
+			// Show/hide typeOfAnimal, animalCategoryDetailsField
+			typeOfAnimalField.setVisible(hasValue);
 			animalCategoryDetailsField.setVisible(hasValue);
 
 			// Clear details field when animalCategory becomes null
 			if (!hasValue) {
+				typeOfAnimalField.setValue(null);
 				animalCategoryDetailsField.setValue(null);
 			}
 		});
@@ -452,7 +522,13 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			locationForm.getFacilityTypeGroup(),
 			Collections.singletonList(FacilityTypeGroup.WORKING_PLACE),
 			true);
-
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			ExposureDto.PROPHYLAXIS_ADHERENCE_DETAILS,
+			ExposureDto.PROPHYLAXIS_ADHERENCE,
+			ProphylaxisAdherence.OTHER,
+			true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.TRAVEL_PURPOSE_DETAILS, ExposureDto.TRAVEL_PURPOSE, TravelPurpose.OTHER, true);
 		conclusionHeading.setVisible(List.of(Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS).contains(disease));
 		locationForm.setFacilityFieldsVisible(getField(ExposureDto.TYPE_OF_PLACE).getValue() == TypeOfPlace.FACILITY, true);
 		getField(ExposureDto.TYPE_OF_PLACE)
@@ -465,7 +541,12 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		FieldHelper.updateItems(settingField, settings);
 
 		// Clear the field and its dependent details field
-		settingField.setValue(null);
+		// if the disease is Malaria or Dengue and the category is VECTOR_BORNE, preselect MOSQUITO_BORNE as setting (since it's the only valid option in this case)
+		ExposureSetting defaultSetting =
+			Stream.of(Disease.MALARIA, Disease.DENGUE).anyMatch(d -> d == disease) && category == ExposureCategory.VECTOR_BORNE
+				? ExposureSetting.MOSQUITO_BORNE
+				: null;
+		settingField.setValue(defaultSetting);
 		settingDetailsField.setValue(null);
 		settingDetailsField.setVisible(false);
 
@@ -541,6 +622,9 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			animalCategoryField.setValue(null);
 			animalCategoryField.setVisible(false);
 			animalCategoryField.setRequired(false);
+
+			typeOfAnimalField.setValue(null);
+			typeOfAnimalField.setVisible(false);
 			animalCategoryDetailsField.setValue(null);
 			animalCategoryDetailsField.setVisible(false);
 		}
@@ -579,8 +663,13 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			String protectiveMeasureDetails = newFieldValue.getProtectiveMeasureDetails();
 			AnimalCondition conditionOfAnimal = newFieldValue.getConditionOfAnimal();
 			AnimalCategory animalCategory = newFieldValue.getAnimalCategory();
+			TypeOfAnimal typeOfAnimal = newFieldValue.getTypeOfAnimal();
 			String animalCategoryDetails = newFieldValue.getAnimalCategoryDetails();
 			FomiteTransmissionLocation fomiteTransmissionLocation = newFieldValue.getFomiteTransmissionLocation();
+			ProphylaxisAdherence prophylaxisAdherence = newFieldValue.getProphylaxisAdherence();
+			String prophylaxisAdherenceDetails = newFieldValue.getProphylaxisAdherenceDetails();
+			TravelPurpose travelPurpose = newFieldValue.getTravelPurpose();
+			String travelPurposeDetails = newFieldValue.getTravelPurposeDetails();
 
 			// Update field items (these methods clear the field values)
 			updateSettingFieldItems(category);
@@ -604,6 +693,35 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			subSettingsDetailsField.setVisible(subSettings != null && subSettings.contains(ExposureSubSetting.OTHER));
 			if (subSettingDetails != null) {
 				subSettingsDetailsField.setValue(subSettingDetails);
+			}
+
+			boolean hasTraveledAbroad = subSettings != null && subSettings.contains(ExposureSubSetting.TRAVELED_ABROAD);
+			prophylaxisAdherenceField.setVisible(hasTraveledAbroad);
+			travelPurposeField.setVisible(hasTraveledAbroad);
+			// If the person has traveled abroad, show the prophylaxis adherence and travel purpose fields
+			if (hasTraveledAbroad) {
+				if (prophylaxisAdherence != null) {
+					prophylaxisAdherenceField.setValue(prophylaxisAdherence);
+				}
+				prophylaxisAdherenceDetailsField.setVisible(prophylaxisAdherence == ProphylaxisAdherence.OTHER);
+				if (prophylaxisAdherenceDetails != null) {
+					prophylaxisAdherenceDetailsField.setValue(prophylaxisAdherenceDetails);
+				}
+
+				if (travelPurpose != null) {
+					travelPurposeField.setValue(travelPurpose);
+				}
+				travelPurposeDetailsField.setVisible(travelPurpose == TravelPurpose.OTHER);
+				if (travelPurposeDetails != null) {
+					travelPurposeDetailsField.setValue(travelPurposeDetails);
+				}
+			} else {
+				prophylaxisAdherenceField.setValue(null);
+				prophylaxisAdherenceDetailsField.setValue(null);
+				prophylaxisAdherenceDetailsField.setVisible(false);
+				travelPurposeField.setValue(null);
+				travelPurposeDetailsField.setValue(null);
+				travelPurposeDetailsField.setVisible(false);
 			}
 
 			// Restore contactFactors field value and visibility
@@ -640,6 +758,12 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			}
 
 			boolean hasAnimalCategory = animalCategory != null;
+
+			typeOfAnimalField.setVisible(isAnimalContact && hasConditionOfAnimal && hasAnimalCategory);
+			if (isAnimalContact && hasConditionOfAnimal && hasAnimalCategory && typeOfAnimal != null) {
+				typeOfAnimalField.setValue(typeOfAnimal);
+			}
+
 			animalCategoryDetailsField.setVisible(isAnimalContact && hasConditionOfAnimal && hasAnimalCategory);
 			if (isAnimalContact && hasConditionOfAnimal && hasAnimalCategory && animalCategoryDetails != null) {
 				animalCategoryDetailsField.setValue(animalCategoryDetails);
@@ -687,20 +811,6 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 
 		// Update the category field items
 		FieldHelper.updateItems(categoryField, new ArrayList<>(categories));
-	}
-
-	private void addFieldsToLayout(CustomLayout layout, String... propertyIds) {
-		for (String propertyId : propertyIds) {
-			addField(layout, propertyId);
-		}
-	}
-
-	private void addFieldsWithCssToLayout(CustomLayout layout, Class<? extends Field> fieldType, List<String> propertyIds, String... styles) {
-
-		for (String propertyId : propertyIds) {
-			Field<?> field = addField(layout, propertyId, fieldType);
-			CssStyles.style(field, styles);
-		}
 	}
 
 	public Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> collectCurrentFieldValues() {

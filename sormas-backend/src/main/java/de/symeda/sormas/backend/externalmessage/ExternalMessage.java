@@ -49,6 +49,7 @@ import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.clinicalcourse.ComplianceWithTreatment;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.disease.DiseaseVariantConverter;
+import de.symeda.sormas.api.exposure.ModeOfTransmission;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.ExternalMessageType;
 import de.symeda.sormas.api.person.PhoneNumberType;
@@ -136,6 +137,8 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public static final String RADIOGRAPHY_COMPATIBILITY = "radiographyCompatibility";
 	public static final String OTHER_DIAGNOSTIC_CRITERIA = "otherDiagnosticCriteria";
+	public static final String AIRPORT_WORKER = "airportWorker";
+	public static final String HEALTHCARE_PROFESSIONAL = "healthcareProfessional";
 
 	private ExternalMessageType type;
 	private Disease disease;
@@ -230,6 +233,14 @@ public class ExternalMessage extends AbstractDomainObject {
 	private Boolean tuberculosisDirectlyObservedTreatment;
 	private Boolean tuberculosisMdrXdrTuberculosis;
 	private Boolean tuberculosisBeijingLineage;
+
+	// Malaria and Dengue changes
+	private YesNoUnknown malaria;
+	private Integer malariaInfectedYear;
+	private YesNoUnknown airportWorker;
+	private YesNoUnknown healthcareProfessional;
+	private ModeOfTransmission modeOfTransmission;
+	private String modeOfTransmissionType;
 
 	private ExternalMessageAdditionalDataType additionalDataType;
 
@@ -959,6 +970,59 @@ public class ExternalMessage extends AbstractDomainObject {
 	public void setTuberculosisBeijingLineage(Boolean tuberculosisBeijingLineage) {
 		this.tuberculosisBeijingLineage = tuberculosisBeijingLineage;
 	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getMalaria() {
+		return malaria;
+	}
+
+	public void setMalaria(YesNoUnknown malaria) {
+		this.malaria = malaria;
+	}
+
+	public Integer getMalariaInfectedYear() {
+		return malariaInfectedYear;
+	}
+
+	public void setMalariaInfectedYear(Integer malariaInfectedYear) {
+		this.malariaInfectedYear = malariaInfectedYear;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getAirportWorker() {
+		return airportWorker;
+	}
+
+	public void setAirportWorker(YesNoUnknown airportWorker) {
+		this.airportWorker = airportWorker;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getHealthcareProfessional() {
+		return healthcareProfessional;
+	}
+
+	public void setHealthcareProfessional(YesNoUnknown healthcareProfessional) {
+		this.healthcareProfessional = healthcareProfessional;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ModeOfTransmission getModeOfTransmission() {
+		return modeOfTransmission;
+	}
+
+	public void setModeOfTransmission(ModeOfTransmission modeOfTransmission) {
+		this.modeOfTransmission = modeOfTransmission;
+	}
+
+	public String getModeOfTransmissionType() {
+		return modeOfTransmissionType;
+	}
+
+	public void setModeOfTransmissionType(String modeOfTransmissionType) {
+		this.modeOfTransmissionType = modeOfTransmissionType;
+	}
+
 
 	@Enumerated(EnumType.STRING)
 	public ExternalMessageAdditionalDataType getAdditionalDataType() {

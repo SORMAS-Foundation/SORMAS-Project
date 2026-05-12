@@ -1614,6 +1614,9 @@ public interface Captions {
 	String EpiData = "EpiData";
 	String EpiData_activitiesAsCase = "EpiData.activitiesAsCase";
 	String EpiData_activityAsCaseDetailsKnown = "EpiData.activityAsCaseDetailsKnown";
+	String EpiData_activityAsCaseFromDate = "EpiData.activityAsCaseFromDate";
+	String EpiData_activityAsCaseToDate = "EpiData.activityAsCaseToDate";
+	String EpiData_airportWorker = "EpiData.airportWorker";
 	String EpiData_areaInfectedAnimals = "EpiData.areaInfectedAnimals";
 	String EpiData_caseImportedStatus = "EpiData.caseImportedStatus";
 	String EpiData_clusterRelated = "EpiData.clusterRelated";
@@ -1622,7 +1625,10 @@ public interface Captions {
 	String EpiData_contactWithSourceCaseKnown = "EpiData.contactWithSourceCaseKnown";
 	String EpiData_country = "EpiData.country";
 	String EpiData_exposureDetailsKnown = "EpiData.exposureDetailsKnown";
+	String EpiData_exposureInvestigationFromDate = "EpiData.exposureInvestigationFromDate";
+	String EpiData_exposureInvestigationToDate = "EpiData.exposureInvestigationToDate";
 	String EpiData_exposures = "EpiData.exposures";
+	String EpiData_healthcareProfessional = "EpiData.healthcareProfessional";
 	String EpiData_highTransmissionRiskArea = "EpiData.highTransmissionRiskArea";
 	String EpiData_importedCase = "EpiData.importedCase";
 	String EpiData_infectionSource = "EpiData.infectionSource";
@@ -1631,6 +1637,8 @@ public interface Captions {
 	String EpiData_modeOfTransmission = "EpiData.modeOfTransmission";
 	String EpiData_modeOfTransmissionType = "EpiData.modeOfTransmissionType";
 	String EpiData_otherDetails = "EpiData.otherDetails";
+	String EpiData_placeOfInfection = "EpiData.placeOfInfection";
+	String EpiData_residenceAtOnset = "EpiData.residenceAtOnset";
 	String epiDataNoSourceContacts = "epiDataNoSourceContacts";
 	String epipulseActiveExports = "epipulseActiveExports";
 	String epipulseAllExports = "epipulseAllExports";
@@ -1895,6 +1903,8 @@ public interface Captions {
 	String Exposure_deceasedPersonName = "Exposure.deceasedPersonName";
 	String Exposure_deceasedPersonRelation = "Exposure.deceasedPersonRelation";
 	String Exposure_domesticSwimming = "Exposure.domesticSwimming";
+	String Exposure_eatingOutVenueOther = "Exposure.eatingOutVenueOther";
+	String Exposure_eatingOutVenues = "Exposure.eatingOutVenues";
 	String Exposure_eatingRawAnimalProducts = "Exposure.eatingRawAnimalProducts";
 	String Exposure_endDate = "Exposure.endDate";
 	String Exposure_exposureCategory = "Exposure.exposureCategory";
@@ -1929,6 +1939,8 @@ public interface Captions {
 	String Exposure_physicalContactWithBody = "Exposure.physicalContactWithBody";
 	String Exposure_probableInfectionEnvironment = "Exposure.probableInfectionEnvironment";
 	String Exposure_prophylaxis = "Exposure.prophylaxis";
+	String Exposure_prophylaxisAdherence = "Exposure.prophylaxisAdherence";
+	String Exposure_prophylaxisAdherenceDetails = "Exposure.prophylaxisAdherenceDetails";
 	String Exposure_prophylaxisDate = "Exposure.prophylaxisDate";
 	String Exposure_protectiveMeasureDetails = "Exposure.protectiveMeasureDetails";
 	String Exposure_protectiveMeasures = "Exposure.protectiveMeasures";
@@ -1938,6 +1950,7 @@ public interface Captions {
 	String Exposure_riskArea = "Exposure.riskArea";
 	String Exposure_seatNumber = "Exposure.seatNumber";
 	String Exposure_sexualExposureText = "Exposure.sexualExposureText";
+	String Exposure_shoppingForFoodDetails = "Exposure.shoppingForFoodDetails";
 	String Exposure_shortDistance = "Exposure.shortDistance";
 	String Exposure_startDate = "Exposure.startDate";
 	String Exposure_subSettings = "Exposure.subSettings";
@@ -1946,6 +1959,8 @@ public interface Captions {
 	String Exposure_symptomaticIndividualText = "Exposure.symptomaticIndividualText";
 	String Exposure_travelAccommodation = "Exposure.travelAccommodation";
 	String Exposure_travelAccommodationType = "Exposure.travelAccommodationType";
+	String Exposure_travelPurpose = "Exposure.travelPurpose";
+	String Exposure_travelPurposeDetails = "Exposure.travelPurposeDetails";
 	String Exposure_typeOfAnimal = "Exposure.typeOfAnimal";
 	String Exposure_typeOfAnimalDetails = "Exposure.typeOfAnimalDetails";
 	String Exposure_typeOfChildcareFacility = "Exposure.typeOfChildcareFacility";
@@ -1975,6 +1990,7 @@ public interface Captions {
 	String externalMessage_deleteNewlyCreatedCase = "externalMessage.deleteNewlyCreatedCase";
 	String externalMessage_deleteNewlyCreatedContact = "externalMessage.deleteNewlyCreatedContact";
 	String externalMessage_deleteNewlyCreatedEventParticipant = "externalMessage.deleteNewlyCreatedEventParticipant";
+	String externalMessage_detailedView = "externalMessage.detailedView";
 	String ExternalMessage_disease = "ExternalMessage.disease";
 	String ExternalMessage_diseaseVariant = "ExternalMessage.diseaseVariant";
 	String ExternalMessage_diseaseVariantDetails = "ExternalMessage.diseaseVariantDetails";
@@ -2008,6 +2024,7 @@ public interface Captions {
 	String ExternalMessage_sampleReceivedDate = "ExternalMessage.sampleReceivedDate";
 	String ExternalMessage_specimenCondition = "ExternalMessage.specimenCondition";
 	String ExternalMessage_status = "ExternalMessage.status";
+	String externalMessage_structuredView = "externalMessage.structuredView";
 	String ExternalMessage_surveillanceReport = "ExternalMessage.surveillanceReport";
 	String ExternalMessage_type = "ExternalMessage.type";
 	String ExternalMessageCriteria_birthDateFrom = "ExternalMessageCriteria.birthDateFrom";
@@ -3020,6 +3037,7 @@ public interface Captions {
 	String Symptoms_congenitalHeartDiseaseType = "Symptoms.congenitalHeartDiseaseType";
 	String Symptoms_conjunctivalInjection = "Symptoms.conjunctivalInjection";
 	String Symptoms_conjunctivitis = "Symptoms.conjunctivitis";
+	String Symptoms_constipation = "Symptoms.constipation";
 	String Symptoms_convulsion = "Symptoms.convulsion";
 	String Symptoms_cough = "Symptoms.cough";
 	String Symptoms_coughingBlood = "Symptoms.coughingBlood";
@@ -3043,14 +3061,17 @@ public interface Captions {
 	String Symptoms_dizzinessStandingUp = "Symptoms.dizzinessStandingUp";
 	String Symptoms_durationOfSymptoms = "Symptoms.durationOfSymptoms";
 	String Symptoms_dysphagia = "Symptoms.dysphagia";
+	String Symptoms_dysuria = "Symptoms.dysuria";
 	String Symptoms_eggyBurps = "Symptoms.eggyBurps";
 	String Symptoms_encephalitis = "Symptoms.encephalitis";
 	String Symptoms_erraticBehaviour = "Symptoms.erraticBehaviour";
 	String Symptoms_excessSalivation = "Symptoms.excessSalivation";
 	String Symptoms_excitation = "Symptoms.excitation";
+	String Symptoms_eyeIrritation = "Symptoms.eyeIrritation";
 	String Symptoms_eyePainLightSensitive = "Symptoms.eyePainLightSensitive";
 	String Symptoms_eyesBleeding = "Symptoms.eyesBleeding";
 	String Symptoms_fastHeartRate = "Symptoms.fastHeartRate";
+	String Symptoms_fatalRisk = "Symptoms.fatalRisk";
 	String Symptoms_fatigue = "Symptoms.fatigue";
 	String Symptoms_fatigueWeakness = "Symptoms.fatigueWeakness";
 	String Symptoms_feelingIll = "Symptoms.feelingIll";

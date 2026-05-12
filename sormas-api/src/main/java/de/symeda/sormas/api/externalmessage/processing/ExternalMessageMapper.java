@@ -717,11 +717,12 @@ public final class ExternalMessageMapper {
 							pathogenTest.getSeroGroupSpecificationText(),
 							sourceTestReport.getSeroGroupSpecificationText(),
 							PathogenTestDto.SERO_GROUP_SPECIFICATION),
+						Mapping.of(pathogenTest::setSerotype, pathogenTest.getSerotype(), sourceTestReport.getSerotype(), PathogenTestDto.SEROTYPE),
 						Mapping.of(
-							pathogenTest::setSerotype,
-							pathogenTest.getSerotype(),
-							Serotype.fromString(sourceTestReport.getSerotype()),
-							PathogenTestDto.SEROTYPE),
+							pathogenTest::setSerotypeText,
+							pathogenTest.getSerotypeText(),
+							sourceTestReport.getSerotypeText(),
+							PathogenTestDto.SEROTYPE_TEXT),
 						Mapping.of(
 							pathogenTest::setSeroTypingMethod,
 							pathogenTest.getSeroTypingMethod(),

@@ -131,7 +131,14 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setCountry(countryService.getByReferenceDto(source.getCountry()));
 		target.setImportedCase(source.getImportedCase());
 		target.setOtherDetails(source.getOtherDetails());
-
+		target.setAirportWorker(source.getAirportWorker());
+		target.setHealthcareProfessional(source.getHealthcareProfessional());
+		target.setPlaceOfInfection(source.getPlaceOfInfection());
+		target.setResidenceAtOnset(source.getResidenceAtOnset());
+		target.setExposureInvestigationFromDate(source.getExposureInvestigationFromDate());
+		target.setExposureInvestigationToDate(source.getExposureInvestigationToDate());
+		target.setActivityAsCaseFromDate(source.getActivityAsCaseFromDate());
+		target.setActivityAsCaseToDate(source.getActivityAsCaseToDate());
 		return target;
 	}
 
@@ -232,7 +239,13 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setSubSettings(source.getSubSettings() != null ? source.getSubSettings() : new HashSet<>());
 		target.setContactFactors(source.getContactFactors() != null ? source.getContactFactors() : new HashSet<>());
 		target.setProtectiveMeasures(source.getProtectiveMeasures() != null ? source.getProtectiveMeasures() : new HashSet<>());
-
+		target.setProphylaxisAdherence(source.getProphylaxisAdherence());
+		target.setProphylaxisAdherenceDetails(source.getProphylaxisAdherenceDetails());
+		target.setTravelPurpose(source.getTravelPurpose());
+		target.setTravelPurposeDetails(source.getTravelPurposeDetails());
+		target.setEatingOutVenues(source.getEatingOutVenues() != null ? source.getEatingOutVenues() : new HashSet<>());
+		target.setEatingOutVenueOther(source.getEatingOutVenueOther());
+		target.setShoppingForFoodDetails(source.getShoppingForFoodDetails());
 		return target;
 	}
 
@@ -315,6 +328,14 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setCountry(CountryFacadeEjb.toReferenceDto(source.getCountry()));
 		target.setImportedCase(source.getImportedCase());
 		target.setOtherDetails(source.getOtherDetails());
+		target.setAirportWorker(source.getAirportWorker());
+		target.setHealthcareProfessional(source.getHealthcareProfessional());
+		target.setPlaceOfInfection(source.getPlaceOfInfection());
+		target.setResidenceAtOnset(source.getResidenceAtOnset());
+		target.setExposureInvestigationFromDate(source.getExposureInvestigationFromDate());
+		target.setExposureInvestigationToDate(source.getExposureInvestigationToDate());
+		target.setActivityAsCaseFromDate(source.getActivityAsCaseFromDate());
+		target.setActivityAsCaseToDate(source.getActivityAsCaseToDate());
 		return target;
 	}
 
@@ -411,7 +432,13 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setSubSettings(new HashSet<>(source.getSubSettings()));
 		target.setContactFactors(new HashSet<>(source.getContactFactors()));
 		target.setProtectiveMeasures(new HashSet<>(source.getProtectiveMeasures()));
-
+		target.setProphylaxisAdherence(source.getProphylaxisAdherence());
+		target.setProphylaxisAdherenceDetails(source.getProphylaxisAdherenceDetails());
+		target.setTravelPurpose(source.getTravelPurpose());
+		target.setTravelPurposeDetails(source.getTravelPurposeDetails());
+		target.setEatingOutVenues(new HashSet<>(source.getEatingOutVenues()));
+		target.setEatingOutVenueOther(source.getEatingOutVenueOther());
+		target.setShoppingForFoodDetails(source.getShoppingForFoodDetails());
 		return target;
 	}
 

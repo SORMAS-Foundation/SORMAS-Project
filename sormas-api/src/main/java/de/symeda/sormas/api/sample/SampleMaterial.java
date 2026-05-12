@@ -236,7 +236,8 @@ public enum SampleMaterial {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
-		Disease.DENGUE }, hide = true)
+		Disease.DENGUE,
+		Disease.SHIGELLOSIS }, hide = true)
 	BRAIN_TISSUE,
 
 	@Diseases(value = {
@@ -247,7 +248,8 @@ public enum SampleMaterial {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
-		Disease.DENGUE }, hide = true)
+		Disease.DENGUE,
+		Disease.SHIGELLOSIS }, hide = true)
 	ANTERIOR_NARES_SWAB,
 
 	@Diseases(value = {
@@ -258,7 +260,8 @@ public enum SampleMaterial {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
-		Disease.DENGUE }, hide = true)
+		Disease.DENGUE,
+		Disease.SHIGELLOSIS }, hide = true)
 	OP_ASPIRATE,
 
 	@Diseases(value = {
@@ -267,7 +270,8 @@ public enum SampleMaterial {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
-		Disease.DENGUE }, hide = true)
+		Disease.DENGUE,
+		Disease.SHIGELLOSIS }, hide = true)
 	NP_ASPIRATE,
 
 	@Diseases(value = {
@@ -277,7 +281,8 @@ public enum SampleMaterial {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
-		Disease.DENGUE }, hide = true)
+		Disease.DENGUE,
+		Disease.SHIGELLOSIS }, hide = true)
 	PLEURAL_FLUID,
 
 	@Diseases(value = {
@@ -294,7 +299,8 @@ public enum SampleMaterial {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
-		Disease.DENGUE }, hide = true)
+		Disease.DENGUE,
+		Disease.SHIGELLOSIS }, hide = true)
 	AMNIOTIC_FLUID,
 
 	@Diseases(value = {
@@ -309,7 +315,8 @@ public enum SampleMaterial {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
-		Disease.DENGUE }, hide = true)
+		Disease.DENGUE,
+		Disease.SHIGELLOSIS }, hide = true)
 	PERITONEAL_FLUID,
 
 	@Diseases(value = {
@@ -318,13 +325,15 @@ public enum SampleMaterial {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
-		Disease.DENGUE }, hide = true)
+		Disease.DENGUE,
+		Disease.SHIGELLOSIS }, hide = true)
 	SYNOVIAL_FLUID,
 
 	@Diseases(value = {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.SHIGELLOSIS }, hide = true)
 	EDTA_WHOLE_BLOOD,
 
 	@Diseases(value = {
@@ -334,6 +343,10 @@ public enum SampleMaterial {
 	@Diseases(value = {
 		Disease.GIARDIASIS })
 	DUODENUM_FLUID,
+
+	@Diseases(value = {
+		Disease.SHIGELLOSIS })
+	PUS,
 
 	OTHER;
 

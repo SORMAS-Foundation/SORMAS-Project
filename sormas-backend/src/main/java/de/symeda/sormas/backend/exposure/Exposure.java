@@ -42,6 +42,7 @@ import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.AnimalCategory;
 import de.symeda.sormas.api.exposure.AnimalContactType;
 import de.symeda.sormas.api.exposure.AnimalLocation;
+import de.symeda.sormas.api.exposure.EatingOutVenue;
 import de.symeda.sormas.api.exposure.ExposureCategory;
 import de.symeda.sormas.api.exposure.ExposureContactFactor;
 import de.symeda.sormas.api.exposure.ExposureProtectiveMeasure;
@@ -52,8 +53,10 @@ import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.FomiteTransmissionLocation;
 import de.symeda.sormas.api.exposure.GatheringType;
 import de.symeda.sormas.api.exposure.HabitationType;
+import de.symeda.sormas.api.exposure.ProphylaxisAdherence;
 import de.symeda.sormas.api.exposure.SwimmingLocation;
 import de.symeda.sormas.api.exposure.TravelAccommodation;
+import de.symeda.sormas.api.exposure.TravelPurpose;
 import de.symeda.sormas.api.exposure.TypeOfAnimal;
 import de.symeda.sormas.api.exposure.TypeOfChildcareFacility;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
@@ -89,6 +92,9 @@ public class Exposure extends AbstractDomainObject {
 	public static final String SUB_SETTINGS = "subSettings";
 	public static final String CONTACT_FACTORS = "contactFactors";
 	public static final String PROTECTIVE_MEASURES = "protectiveMeasures";
+	public static final String EATING_OUT_VENUES = "eatingOutVenues";
+	public static final String EATING_OUT_VENUE_OTHER = "eatingOutVenueOther";
+	public static final String SHOPPING_FOR_FOOD_DETAILS = "shoppingForFoodDetails";
 
 	private EpiData epiData;
 	private User reportingUser;
@@ -184,11 +190,20 @@ public class Exposure extends AbstractDomainObject {
 	private AnimalCategory animalCategory;
 	private String animalCategoryDetails;
 
+	private ProphylaxisAdherence prophylaxisAdherence;
+	private String prophylaxisAdherenceDetails;
+	private TravelPurpose travelPurpose;
+	private String travelPurposeDetails;
+
 	private FomiteTransmissionLocation fomiteTransmissionLocation;
 
 	private Set<ExposureSubSetting> subSettings = new HashSet<>();
 	private Set<ExposureContactFactor> contactFactors = new HashSet<>();
 	private Set<ExposureProtectiveMeasure> protectiveMeasures = new HashSet<>();
+
+	private Set<EatingOutVenue> eatingOutVenues = new HashSet<>();
+	private String eatingOutVenueOther;
+	private String shoppingForFoodDetails;
 
 	@ManyToOne
 	@JoinColumn(nullable = false)
@@ -940,4 +955,72 @@ public class Exposure extends AbstractDomainObject {
 	public void setProtectiveMeasures(Set<ExposureProtectiveMeasure> protectiveMeasures) {
 		this.protectiveMeasures = protectiveMeasures;
 	}
+
+	@ElementCollection(fetch = FetchType.EAGER)
+	@Enumerated(EnumType.STRING)
+	@CollectionTable(name = "exposures_eatingoutvenues",
+		joinColumns = @JoinColumn(name = "exposure_id", referencedColumnName = Exposure.ID, nullable = false))
+	@Column(name = "eatingoutvenue", nullable = false)
+	public Set<EatingOutVenue> getEatingOutVenues() {
+		return eatingOutVenues;
+	}
+
+	public void setEatingOutVenues(Set<EatingOutVenue> eatingOutVenues) {
+		this.eatingOutVenues = eatingOutVenues;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getEatingOutVenueOther() {
+		return eatingOutVenueOther;
+	}
+
+	public void setEatingOutVenueOther(String eatingOutVenueOther) {
+		this.eatingOutVenueOther = eatingOutVenueOther;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getShoppingForFoodDetails() {
+		return shoppingForFoodDetails;
+	}
+
+	public void setShoppingForFoodDetails(String shoppingForFoodDetails) {
+		this.shoppingForFoodDetails = shoppingForFoodDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public TravelPurpose getTravelPurpose() {
+		return travelPurpose;
+	}
+
+	public void setTravelPurpose(TravelPurpose travelPurpose) {
+		this.travelPurpose = travelPurpose;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getTravelPurposeDetails() {
+		return travelPurposeDetails;
+	}
+
+	public void setTravelPurposeDetails(String travelPurposeDetails) {
+		this.travelPurposeDetails = travelPurposeDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ProphylaxisAdherence getProphylaxisAdherence() {
+		return prophylaxisAdherence;
+	}
+
+	public void setProphylaxisAdherence(ProphylaxisAdherence prophylaxisAdherence) {
+		this.prophylaxisAdherence = prophylaxisAdherence;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getProphylaxisAdherenceDetails() {
+		return prophylaxisAdherenceDetails;
+	}
+
+	public void setProphylaxisAdherenceDetails(String prophylaxisAdherenceDetails) {
+		this.prophylaxisAdherenceDetails = prophylaxisAdherenceDetails;
+	}
+
 }

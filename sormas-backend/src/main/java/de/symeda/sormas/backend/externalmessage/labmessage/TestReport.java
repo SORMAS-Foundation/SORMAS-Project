@@ -44,6 +44,7 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.RsvSubtype;
 import de.symeda.sormas.api.sample.SeroGroupSpecification;
+import de.symeda.sormas.api.sample.Serotype;
 import de.symeda.sormas.api.sample.SerotypingMethod;
 import de.symeda.sormas.api.therapy.DrugSusceptibilityType;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -178,7 +179,8 @@ public class TestReport extends AbstractDomainObject {
 	private String seroGroupSpecificationText;
 	private SerotypingMethod seroTypingMethod;
 	private String seroTypingMethodText;
-	private String serotype;
+	private Serotype serotype;
+	private String serotypeText;
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getTestLabName() {
@@ -916,12 +918,21 @@ public class TestReport extends AbstractDomainObject {
 		this.seroTypingMethodText = seroTypingMethodText;
 	}
 
-	public String getSerotype() {
+	@Enumerated(EnumType.STRING)
+	public Serotype getSerotype() {
 		return serotype;
 	}
 
-	public void setSerotype(String serotype) {
+	public void setSerotype(Serotype serotype) {
 		this.serotype = serotype;
+	}
+
+	public String getSerotypeText() {
+		return serotypeText;
+	}
+
+	public void setSerotypeText(String serotypeText) {
+		this.serotypeText = serotypeText;
 	}
 
 }

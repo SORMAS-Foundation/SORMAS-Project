@@ -254,6 +254,12 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setTuberculosisDirectlyObservedTreatment(source.getTuberculosisDirectlyObservedTreatment());
 		target.setTuberculosisMdrXdrTuberculosis(source.getTuberculosisMdrXdrTuberculosis());
 		target.setTuberculosisBeijingLineage(source.getTuberculosisBeijingLineage());
+		target.setMalaria(source.getMalaria());
+		target.setMalariaInfectedYear(source.getMalariaInfectedYear());
+		target.setAirportWorker(source.getAirportWorker());
+		target.setHealthcareProfessional(source.getHealthcareProfessional());
+		target.setModeOfTransmission(source.getModeOfTransmission());
+		target.setModeOfTransmissionType(source.getModeOfTransmissionType());
 
 		ExternalSurveyResponseData surveyResponseData = source.getSurveyResponseData();
 
@@ -564,6 +570,12 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setTuberculosisDirectlyObservedTreatment(source.getTuberculosisDirectlyObservedTreatment());
 		target.setTuberculosisMdrXdrTuberculosis(source.getTuberculosisMdrXdrTuberculosis());
 		target.setTuberculosisBeijingLineage(source.getTuberculosisBeijingLineage());
+		target.setMalaria(source.getMalaria());
+		target.setMalariaInfectedYear(source.getMalariaInfectedYear());
+		target.setAirportWorker(source.getAirportWorker());
+		target.setHealthcareProfessional(source.getHealthcareProfessional());
+		target.setModeOfTransmission(source.getModeOfTransmission());
+		target.setModeOfTransmissionType(source.getModeOfTransmissionType());
 
 		ExternalMessageAdditionalDataType additionalDataType = source.getAdditionalDataType();
 		String additionalDataJson = source.getAdditionalDataJson();
@@ -850,7 +862,6 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	}
 
 	protected ExternalMessageFetchResult fetchAndSaveExternalMessages(SystemEventDto currentSync, Date since) throws NamingException {
-		// TODO: survey responses should be added here.
 		if (since == null) {
 			since = syncFacadeEjb.findLastSyncDateFor(SystemEventType.FETCH_EXTERNAL_MESSAGES);
 		}

@@ -12,25 +12,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package de.symeda.sormas.api.epidata;
+package de.symeda.sormas.api.exposure;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 
-public enum DiseaseTransmission {
+/**
+ * Enumeration of Prophylaxis Adherence.
+ * To be used for prophylaxis drug and its adherence to treatment.
+ */
+public enum ProphylaxisAdherence {
 
-	TRANSMITTED_WITH_MOSQUITOES_FROM_ENDEMIC_COUNTRY,
-	TRANSMITTED_WITH_MOSQUITOES_BY_AIR,
-	TRANSMITTED_THROUGH_MEDICAL_CARE,
-	TRANSMITTED_WITH_STRONG_EPI_EVIDENCE,
-	TRANSMITTED_WITHOUT_EVIDENCE,
-	TRANSMITTED_FROM_MOTHER_TO_CHILD,
-	TRANSMITTED_BY_LAB,
-	TRANSFUSION_TRANSPLANT_RECIPIENT,
-	OTHER,
-	UNKNOWN;
+    PROPHYLAXIS_COMPLETED,
+    PROPHYLAXIS_PARTIAL,
+    PROPHYLAXIS_NOT_STARTED,
+    PROPHYLAXIS_NOT_PRESCRIBED,
+    OTHER,
+    UNKNOWN;
 
-	@Override
-	public String toString() {
-		return I18nProperties.getEnumCaption(this);
-	}
+    @Override
+    public String toString() {
+        return I18nProperties.getEnumCaption(this);
+    }
+
 }

@@ -144,6 +144,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		Arrays.asList(Disease.MALARIA, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, Disease.PERTUSSIS);
 	final boolean isLuxDengue;
 	final boolean isParasiticInfectiousDiseases;
+	final boolean isFoodborneGastrointestinal;
 
 	//@formatter:off
 	private static final String HTML_LAYOUT =
@@ -259,6 +260,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		}
 		isLuxDengue = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && disease == Disease.DENGUE;
 		isParasiticInfectiousDiseases = ImmutableList.of(Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS).contains(disease);
+		isFoodborneGastrointestinal = disease == Disease.SALMONELLOSIS;
 
 		addFields();
 		hideValidationUntilNextCommit();
@@ -365,6 +367,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			BLOOD_IN_STOOL,
 			NAUSEA,
 			ABDOMINAL_PAIN,
+			CONSTIPATION,
+			DYSURIA,
+			EYE_IRRITATION,
 			HEADACHE,
 			MUSCLE_PAIN,
 			FATIGUE_WEAKNESS,
@@ -548,7 +553,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			CEREBRAL_MALARIA,
 			SCANT_HEMORRHAGE,
 			OTHER_NEUROLOCAL_SYMPTOM,
-			OTHER_NEUROLOCAL_SYMPTOM_TEXT);
+			OTHER_NEUROLOCAL_SYMPTOM_TEXT,
+			FATAL_RISK);
 
 		addField(SYMPTOMS_COMMENTS, TextField.class).setDescription(
 			I18nProperties.getPrefixDescription(I18N_PREFIX, SYMPTOMS_COMMENTS, "") + "\n" + I18nProperties.getDescription(Descriptions.descGdpr));
@@ -667,9 +673,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		clinicalMeasurementsHeadingLabel.setVisible(
 			(Set.of(TEMPERATURE_SOURCE, BLOOD_PRESSURE_SYSTOLIC, BLOOD_PRESSURE_DIASTOLIC, HEART_RATE, RESPIRATORY_RATE, WEIGHT, GLASGOW_COMA_SCALE)
 				.stream()
-				.anyMatch(e -> getFieldGroup().getField(e).isVisible())) || !(isParasiticInfectiousDiseases || isLuxDengue));
-		// clinical Measurements HeadingLabel should be hidden for LUX Dengue and  Crypto & Giardiasis
-		if ((isParasiticInfectiousDiseases || isLuxDengue)) {
+				.anyMatch(e -> getFieldGroup().getField(e).isVisible())) || !(isParasiticInfectiousDiseases || isLuxDengue || isFoodborneGastrointestinal));
+		// clinical Measurements HeadingLabel should be hidden for LUX Dengue, Crypto & Giardiasis, and Salmonellosis
+		if ((isParasiticInfectiousDiseases || isLuxDengue || isFoodborneGastrointestinal)) {
 			clinicalMeasurementsHeadingLabel.setVisible(false);
 		}
 
@@ -714,6 +720,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			BLOOD_IN_STOOL,
 			NAUSEA,
 			ABDOMINAL_PAIN,
+			CONSTIPATION,
+			DYSURIA,
+			EYE_IRRITATION,
 			HEADACHE,
 			MUSCLE_PAIN,
 			FATIGUE_WEAKNESS,
@@ -877,7 +886,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			METABOLIC_ACIDOSIS,
 			DISSEMINATED_INTRA_VASCULAR_COAGULATION,
 			CEREBRAL_MALARIA,
-			SCANT_HEMORRHAGE);
+			SCANT_HEMORRHAGE,
+			FATAL_RISK);
 
 		// Set visibilities
 

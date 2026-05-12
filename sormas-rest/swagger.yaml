@@ -2854,6 +2854,8 @@ paths:
                   - INVASIVE_MENINGOCOCCAL_INFECTION
                   - GIARDIASIS
                   - CRYPTOSPORIDIOSIS
+                  - SHIGELLOSIS
+                  - SALMONELLOSIS
                   - OTHER
                   - UNDEFINED
           description: default response
@@ -4532,6 +4534,8 @@ paths:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
       requestBody:
@@ -4863,6 +4867,8 @@ paths:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
       responses:
@@ -8526,6 +8532,8 @@ components:
           - PERSONAL_SERVICES
           - CARED_FOR
           - OTHER
+          - BLOOD_DONATION
+          - BONE_MARROW_DONATION
           - UNKNOWN
         activityAsCaseTypeDetails:
           type: string
@@ -8853,6 +8861,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         districtId:
@@ -8981,6 +8991,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         district:
@@ -9083,6 +9095,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         district:
@@ -9495,6 +9509,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -9939,6 +9955,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -10590,6 +10608,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -10924,6 +10944,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         firstName:
@@ -11066,6 +11088,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -11343,6 +11367,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -11875,6 +11901,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         inJurisdiction:
@@ -12137,6 +12165,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -12490,6 +12520,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -12927,6 +12959,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -13210,6 +13244,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -14027,6 +14063,8 @@ components:
             - INVASIVE_MENINGOCOCCAL_INFECTION
             - GIARDIASIS
             - CRYPTOSPORIDIOSIS
+            - SHIGELLOSIS
+            - SALMONELLOSIS
             - OTHER
             - UNDEFINED
           uniqueItems: true
@@ -14284,6 +14322,8 @@ components:
             - INVASIVE_MENINGOCOCCAL_INFECTION
             - GIARDIASIS
             - CRYPTOSPORIDIOSIS
+            - SHIGELLOSIS
+            - SALMONELLOSIS
             - OTHER
             - UNDEFINED
     DashboardCaseMeasureDto:
@@ -14578,6 +14618,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         district:
@@ -14673,6 +14715,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -14813,6 +14857,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         eventCount:
@@ -14909,6 +14955,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         notACaseCriteria:
@@ -15017,6 +15065,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         eventParticipantFollowUpDuration:
@@ -15035,6 +15085,9 @@ components:
             - VECTOR_BORNE
             - VERTICAL_TRANSMISSION
             - WATER_BORNE
+            - MEDICAL_CARE
+            - LAB
+            - OTHER
           uniqueItems: true
         extendedClassification:
           type: boolean
@@ -15735,6 +15788,18 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        activityAsCaseFromDate:
+          type: string
+          format: date-time
+        activityAsCaseToDate:
+          type: string
+          format: date-time
+        airportWorker:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         areaInfectedAnimals:
           type: string
           enum:
@@ -15783,10 +15848,22 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        exposureInvestigationFromDate:
+          type: string
+          format: date-time
+        exposureInvestigationToDate:
+          type: string
+          format: date-time
         exposures:
           type: array
           items:
             $ref: '#/components/schemas/ExposureDto'
+        healthcareProfessional:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         highTransmissionRiskArea:
           type: string
           enum:
@@ -15830,16 +15907,32 @@ components:
           - SEXUAL
           - TRANSFUSION_RECIPIENT
           - ORGAN_RECIPIENT
-          - UNKNOWN
+          - MOSQUITOES_FROM_ENDEMIC_COUNTRY
+          - MOSQUITOES_BY_AIR
+          - MEDICAL_CARE
+          - MOSQUITOES_WITH_STRONG_EPI_EVIDENCE
+          - MOSQUITOES_WITHOUT_EVIDENCE
+          - FROM_MOTHER_TO_CHILD
+          - BY_LAB
+          - TRANSFUSION_TRANSPLANT_RECIPIENT
           - OTHER
+          - UNKNOWN
         modeOfTransmissionType:
           type: string
           maxLength: 512
           minLength: 0
         otherDetails:
           type: string
+        placeOfInfection:
+          type: string
+          maxLength: 255
+          minLength: 0
         pseudonymized:
           type: boolean
+        residenceAtOnset:
+          type: string
+          maxLength: 255
+          minLength: 0
         uuid:
           type: string
           maxLength: 36
@@ -15961,6 +16054,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         eventDiseaseDetails:
@@ -16131,6 +16226,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -16418,6 +16515,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -16918,6 +17017,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -17134,6 +17235,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         event:
@@ -17495,6 +17598,34 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        eatingOutVenueOther:
+          type: string
+          maxLength: 512
+          minLength: 0
+        eatingOutVenues:
+          type: array
+          items:
+            type: string
+            enum:
+            - CANTEENS
+            - FOOD_SERVED_ON_BOARD
+            - GAS_STATIONS
+            - STREET_VENDORS
+            - FOOD_COURTS
+            - CAFES_OR_TEA_ROOMS
+            - SANDWICH_SHOPS_BAKERIES_DELICATESSENS
+            - CAFETERIAS_OR_BARS
+            - KEBAB_FALAFEL_SNACK_SHOPS
+            - BURGER_RESTAURANTS
+            - FAST_FOOD_SNACK_BARS
+            - PIZZERIAS
+            - ASIAN_RESTAURANTS
+            - HOTELS
+            - TAKEAWAY_FOOD
+            - BUFFET_STYLE_RESTAURANTS
+            - FOOD_AT_EVENTS
+            - OTHER
+          uniqueItems: true
         eatingRawAnimalProducts:
           type: string
           enum:
@@ -17515,6 +17646,9 @@ components:
           - VECTOR_BORNE
           - VERTICAL_TRANSMISSION
           - WATER_BORNE
+          - MEDICAL_CARE
+          - LAB
+          - OTHER
         exposureComment:
           type: string
         exposureRole:
@@ -17543,6 +17677,7 @@ components:
           - INDOOR
           - OUTDOOR
           - PERSON_TO_PERSON
+          - OTHER_DIRECT_CONTACT
           - MOSQUITO_BORNE
           - TICK_BORNE
           - DRINKING_WATER
@@ -17699,6 +17834,19 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        prophylaxisAdherence:
+          type: string
+          enum:
+          - PROPHYLAXIS_COMPLETED
+          - PROPHYLAXIS_PARTIAL
+          - PROPHYLAXIS_NOT_STARTED
+          - PROPHYLAXIS_NOT_PRESCRIBED
+          - OTHER
+          - UNKNOWN
+        prophylaxisAdherenceDetails:
+          type: string
+          maxLength: 1000000
+          minLength: 0
         prophylaxisDate:
           type: string
           format: date-time
@@ -17776,6 +17924,10 @@ components:
           type: string
           maxLength: 1000000
           minLength: 0
+        shoppingForFoodDetails:
+          type: string
+          maxLength: 512
+          minLength: 0
         shortDistance:
           type: string
           enum:
@@ -17800,12 +17952,16 @@ components:
             - CLOSE_PHYSICAL_CONTACT
             - HIGH_TOUCH_ENVIRONMENTS
             - SEXUAL_ACTIVITY
+            - BLOOD_TRANSFUSION_RECIPIENT
+            - BONE_MARROW_TRANSPLANT_RECIPIENT
             - STANDING_WATER_AREAS
             - HIGH_MOSQUITO_ACTIVITY_REGIONS
+            - TRAVELED_ABROAD
             - FORESTED_GRASSY_RURAL
             - WILDLIFE_RESERVOIR_AREAS
             - EATING_AT_HOME
             - EATING_OUTSIDE
+            - SHOPPING_FOR_FOOD
             - UNKNOWN
             - OTHER
           uniqueItems: true
@@ -17838,6 +17994,23 @@ components:
         travelAccommodationType:
           type: string
           maxLength: 512
+          minLength: 0
+        travelPurpose:
+          type: string
+          enum:
+          - BUSINESS
+          - VISITING_FAMILY_FRIENDS
+          - MIGRATION
+          - MILITARY
+          - HUMANITARIAN_MISSION
+          - TRAVELER_FROM_ENDEMIC_COUNTRY
+          - STUDENT
+          - TOURISM
+          - OTHER
+          - UNKNOWN
+        travelPurposeDetails:
+          type: string
+          maxLength: 1000000
           minLength: 0
         typeOfAnimal:
           type: string
@@ -18027,6 +18200,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -18069,6 +18244,12 @@ components:
         additionalPersonContactDetails:
           type: string
         admittedToHealthFacility:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        airportWorker:
           type: string
           enum:
           - "YES"
@@ -18186,6 +18367,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -18200,6 +18383,12 @@ components:
           type: string
           maxLength: 1000000
           minLength: 0
+        healthcareProfessional:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         hiv:
           type: string
           enum:
@@ -18232,9 +18421,44 @@ components:
           minLength: 0
         inJurisdiction:
           type: boolean
+        malaria:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        malariaInfectedYear:
+          type: integer
+          format: int32
         messageDateTime:
           type: string
           format: date-time
+        modeOfTransmission:
+          type: string
+          enum:
+          - ANIMAL_TO_HUMAN
+          - FOOD_OR_WATER
+          - PERSON_TO_PERSON
+          - RECREATIONAL_WATER
+          - HEALTHCARE_ASSOCIATED
+          - INJECTING_DRUG_USERS
+          - LAB_OCCUPATIONAL_EXPOSURE
+          - MOTHER_TO_CHILD
+          - SEXUAL
+          - TRANSFUSION_RECIPIENT
+          - ORGAN_RECIPIENT
+          - MOSQUITOES_FROM_ENDEMIC_COUNTRY
+          - MOSQUITOES_BY_AIR
+          - MEDICAL_CARE
+          - MOSQUITOES_WITH_STRONG_EPI_EVIDENCE
+          - MOSQUITOES_WITHOUT_EVIDENCE
+          - FROM_MOTHER_TO_CHILD
+          - BY_LAB
+          - TRANSFUSION_TRANSPLANT_RECIPIENT
+          - OTHER
+          - UNKNOWN
+        modeOfTransmissionType:
+          type: string
         notifierAddress:
           type: string
           maxLength: 1000000
@@ -18544,6 +18768,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -18662,6 +18888,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         personUuid:
@@ -19128,6 +19356,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         district:
@@ -19288,6 +19518,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         district:
@@ -19450,6 +19682,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         districtName:
@@ -19868,6 +20102,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         district:
@@ -20100,6 +20336,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -20371,6 +20609,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         district:
@@ -20865,6 +21105,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         healthFacilityLat:
@@ -21171,6 +21413,8 @@ components:
             - INVASIVE_MENINGOCOCCAL_INFECTION
             - GIARDIASIS
             - CRYPTOSPORIDIOSIS
+            - SHIGELLOSIS
+            - SALMONELLOSIS
             - OTHER
             - UNDEFINED
           uniqueItems: true
@@ -21261,6 +21505,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         district:
@@ -22094,6 +22340,7 @@ components:
           - DENV_2
           - DENV_3
           - DENV_4
+          - UNKNOWN
           - OTHER
         serotypeText:
           type: string
@@ -22271,6 +22518,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         testedDiseaseDetails:
@@ -22583,6 +22832,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         changeDate:
@@ -23655,6 +23906,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         district:
@@ -23925,6 +24178,7 @@ components:
           - EDTA_WHOLE_BLOOD
           - INTESTINAL_FLUID
           - DUODENUM_FLUID
+          - PUS
           - OTHER
         sampleMaterialText:
           type: string
@@ -24082,6 +24336,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -24165,6 +24421,7 @@ components:
           - EDTA_WHOLE_BLOOD
           - INTESTINAL_FLUID
           - DUODENUM_FLUID
+          - PUS
           - OTHER
         samplePurpose:
           type: string
@@ -24334,6 +24591,7 @@ components:
           - EDTA_WHOLE_BLOOD
           - INTESTINAL_FLUID
           - DUODENUM_FLUID
+          - PUS
           - OTHER
         sampleMaterialText:
           type: string
@@ -24565,6 +24823,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -24783,6 +25043,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -24921,6 +25183,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -25279,6 +25543,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         district:
@@ -25769,6 +26035,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        constipation:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         convulsion:
           type: string
           enum:
@@ -25900,6 +26172,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        dysuria:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         eggyBurps:
           type: string
           enum:
@@ -25930,6 +26208,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        eyeIrritation:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         eyePainLightSensitive:
           type: string
           enum:
@@ -25943,6 +26227,12 @@ components:
           - "NO"
           - UNKNOWN
         fastHeartRate:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        fatalRisk:
           type: string
           enum:
           - "YES"
@@ -27186,6 +27476,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         district:
@@ -27611,6 +27903,17 @@ components:
           type: string
         serotype:
           type: string
+          enum:
+          - DENV_1
+          - DENV_2
+          - DENV_3
+          - DENV_4
+          - UNKNOWN
+          - OTHER
+        serotypeText:
+          type: string
+          maxLength: 255
+          minLength: 0
         specie:
           type: string
           enum:
@@ -27949,6 +28252,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -28430,6 +28735,8 @@ components:
             - INVASIVE_MENINGOCOCCAL_INFECTION
             - GIARDIASIS
             - CRYPTOSPORIDIOSIS
+            - SHIGELLOSIS
+            - SALMONELLOSIS
             - OTHER
             - UNDEFINED
           uniqueItems: true
@@ -29092,6 +29399,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         inJurisdiction:
@@ -29216,6 +29525,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         id:
@@ -29393,6 +29704,8 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
           - OTHER
           - UNDEFINED
         numberOfCases:

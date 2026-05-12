@@ -111,6 +111,9 @@ jobs:
         with:
           api-level: ${{ matrix.api-level }}
           arch: x86_64
+          # Could be decreased to 2048M
+          ram-size: 4096M
+          heap-size: 512M
           force-avd-creation: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
@@ -121,6 +124,9 @@ jobs:
         with:
           api-level: ${{ matrix.api-level }}
           arch: x86_64
+          # Could be decreased to 2048M
+          ram-size: 4096M
+          heap-size: 512M
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true

@@ -41,6 +41,8 @@ public enum ActivityAsCaseType {
 	@HideForCountriesExcept
 	CARED_FOR,
 	OTHER,
+	BLOOD_DONATION,
+	BONE_MARROW_DONATION,
 	UNKNOWN;
 
 	@Override
