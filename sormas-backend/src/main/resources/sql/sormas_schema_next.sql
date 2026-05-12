@@ -6,7 +6,7 @@ ALTER TABLE surveys
 
 -- Survey tokens
 ALTER TABLE surveytokens
-    ADD COLUMN external_respondent_id TEXT;
+    ADD COLUMN externalrespondentid TEXT;
 
 -- Surveys
 ALTER TABLE symptoms
@@ -65,19 +65,12 @@ VALUES ('NG_SUVEY_FIELD_PREFIX', '_so', 'i18n/infoSystemConfigurationValueDescri
         '', true, null,
         'i18n/systemConfigurationValueInvalidValue', now(), now(), nextval('entity_seq'), generate_base32_uuid());
 
-INSERT INTO systemconfigurationvalue(config_key, config_value, value_description, category_id, value_optional, value_pattern,
-                                     value_encrypt, data_provider, validation_message, changedate, creationdate, id,
-                                     uuid)
-VALUES ('SURVEY_AS_EXTERNAL_MESSAGE_ADAPTER_JNDI_KEY', 'java:global/sormas-esante-adapter/SurveyExternalMessageAdapterFacadeEjb', 'i18n/infoSystemConfigurationValueDescriptionSurveyJDNI', general_category_id, true,
-        '', true, null,
-        'i18n/systemConfigurationValueInvalidValue', now(), now(), nextval('entity_seq'), generate_base32_uuid());
-
 
 
 INSERT INTO systemconfigurationvalue(config_key, config_value, value_description, category_id, value_optional, value_pattern,
                                      value_encrypt, data_provider, validation_message, changedate, creationdate, id,
                                      uuid)
-VALUES ('SURVEY_PERIOD_INTERVAL_DAYS', '4', 'i18n/infoSystemConfigurationValueDescriptionSurveyPeriodIntervalDays', general_category_id, true,
+VALUES ('SURVEY_PERIOD_INTERVAL_DAYS', '5', 'i18n/infoSystemConfigurationValueDescriptionSurveyPeriodIntervalDays', general_category_id, true,
         '', true, null,
         'i18n/systemConfigurationValueInvalidValue', now(), now(), nextval('entity_seq'), generate_base32_uuid());
 

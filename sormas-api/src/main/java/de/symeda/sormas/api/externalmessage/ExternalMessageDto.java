@@ -18,7 +18,6 @@ package de.symeda.sormas.api.externalmessage;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.Size;
@@ -1032,5 +1031,15 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	public void setModeOfTransmissionType(String modeOfTransmissionType) {
 		this.modeOfTransmissionType = modeOfTransmissionType;
+	}
+
+	@Nullable
+	public ExternalSurveyResponseData getSurveyResponseData() {
+		return surveyResponseData;
+	}
+
+	public ExternalMessageDto setSurveyResponseData(@Nullable ExternalSurveyResponseData surveyResponseData) {
+		this.surveyResponseData = surveyResponseData;
+		return this;
 	}
 }

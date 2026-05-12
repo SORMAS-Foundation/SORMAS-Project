@@ -686,7 +686,6 @@ public interface Captions {
 	String CaseData_department = "CaseData.department";
 	String CaseData_differentPlaceOfStayJurisdiction = "CaseData.differentPlaceOfStayJurisdiction";
 	String CaseData_differentPointOfEntryJurisdiction = "CaseData.differentPointOfEntryJurisdiction";
-	String CaseData_disease = "CaseData.disease";
 	String CaseData_diseaseDetails = "CaseData.diseaseDetails";
 	String CaseData_diseaseVariant = "CaseData.diseaseVariant";
 	String CaseData_district = "CaseData.district";
@@ -2965,6 +2964,7 @@ public interface Captions {
 	String surveyResponsePatchDictionary = "surveyResponsePatchDictionary";
 	String surveyResponseProcessingResult = "surveyResponseProcessingResult";
 	String surveyResponseSubmittedValue = "surveyResponseSubmittedValue";
+	String surveyResponseUuid = "surveyResponseUuid";
 	String surveyResponseValidFields = "surveyResponseValidFields";
 	String surveySend = "surveySend";
 	String surveySurveyList = "surveySurveyList";
