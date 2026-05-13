@@ -2854,7 +2854,6 @@ paths:
                   - INVASIVE_MENINGOCOCCAL_INFECTION
                   - GIARDIASIS
                   - CRYPTOSPORIDIOSIS
-                  - SHIGELLOSIS
                   - SALMONELLOSIS
                   - OTHER
                   - UNDEFINED
@@ -4534,7 +4533,6 @@ paths:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -4867,7 +4865,6 @@ paths:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -8861,7 +8858,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -8991,7 +8987,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -9095,7 +9090,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -9509,7 +9503,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -9955,7 +9948,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -10608,7 +10600,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -10944,7 +10935,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -11088,7 +11078,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -11367,7 +11356,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -11901,7 +11889,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -12165,7 +12152,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -12520,7 +12506,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -12959,7 +12944,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -13244,7 +13228,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -14063,7 +14046,6 @@ components:
             - INVASIVE_MENINGOCOCCAL_INFECTION
             - GIARDIASIS
             - CRYPTOSPORIDIOSIS
-            - SHIGELLOSIS
             - SALMONELLOSIS
             - OTHER
             - UNDEFINED
@@ -14322,7 +14304,6 @@ components:
             - INVASIVE_MENINGOCOCCAL_INFECTION
             - GIARDIASIS
             - CRYPTOSPORIDIOSIS
-            - SHIGELLOSIS
             - SALMONELLOSIS
             - OTHER
             - UNDEFINED
@@ -14618,7 +14599,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -14715,7 +14695,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -14857,7 +14836,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -14955,7 +14933,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -15065,7 +15042,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -16054,7 +16030,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -16226,7 +16201,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -16515,7 +16489,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -17017,7 +16990,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -17235,7 +17207,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -18200,7 +18171,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -18367,7 +18337,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -18768,7 +18737,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -18888,7 +18856,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -19356,7 +19323,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -19518,7 +19484,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -19682,7 +19647,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -20102,7 +20066,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -20336,7 +20299,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -20609,7 +20571,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -21105,7 +21066,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -21413,7 +21373,6 @@ components:
             - INVASIVE_MENINGOCOCCAL_INFECTION
             - GIARDIASIS
             - CRYPTOSPORIDIOSIS
-            - SHIGELLOSIS
             - SALMONELLOSIS
             - OTHER
             - UNDEFINED
@@ -21505,7 +21464,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -22518,7 +22476,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -22832,7 +22789,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -23906,7 +23862,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -24178,7 +24133,6 @@ components:
           - EDTA_WHOLE_BLOOD
           - INTESTINAL_FLUID
           - DUODENUM_FLUID
-          - PUS
           - OTHER
         sampleMaterialText:
           type: string
@@ -24336,7 +24290,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -24421,7 +24374,6 @@ components:
           - EDTA_WHOLE_BLOOD
           - INTESTINAL_FLUID
           - DUODENUM_FLUID
-          - PUS
           - OTHER
         samplePurpose:
           type: string
@@ -24591,7 +24543,6 @@ components:
           - EDTA_WHOLE_BLOOD
           - INTESTINAL_FLUID
           - DUODENUM_FLUID
-          - PUS
           - OTHER
         sampleMaterialText:
           type: string
@@ -24823,7 +24774,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -25043,7 +24993,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -25183,7 +25132,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -25543,7 +25491,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -27476,7 +27423,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -28252,7 +28198,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -28735,7 +28680,6 @@ components:
             - INVASIVE_MENINGOCOCCAL_INFECTION
             - GIARDIASIS
             - CRYPTOSPORIDIOSIS
-            - SHIGELLOSIS
             - SALMONELLOSIS
             - OTHER
             - UNDEFINED
@@ -29399,7 +29343,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -29525,7 +29468,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -29704,7 +29646,6 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
-          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
