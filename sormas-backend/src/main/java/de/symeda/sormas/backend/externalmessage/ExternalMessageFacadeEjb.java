@@ -111,7 +111,8 @@ import de.symeda.sormas.backend.util.*;
 @RightsAllowed({
 	UserRight._EXTERNAL_MESSAGE_ACCESS,
 	UserRight._EXTERNAL_MESSAGE_LABORATORY_VIEW,
-	UserRight._EXTERNAL_MESSAGE_DOCTOR_DECLARATION_VIEW })
+	UserRight._EXTERNAL_MESSAGE_DOCTOR_DECLARATION_VIEW,
+	UserRight._EXTERNAL_MESSAGE_SURVEY_RESPONSE_VIEW })
 public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 	private static final String SURVEY_PERIOD_INTERVAL_DAYS_CONFIG_KEY = "SURVEY_PERIOD_INTERVAL_DAYS";
@@ -292,36 +293,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	}
 
 	@Override
-	public ExternalMessageDto save(@Valid ExternalMessageDto dto) {
-		return save(dto, true, false);
-	}
-
-	@Override
-	public ExternalMessageDto saveAndProcessLabmessage(@Valid ExternalMessageDto labMessage) {
-		if (!labMessage.isAutomaticProcessingPossible() || !checkAutomaticProcessingAllowed()) {
-			return save(labMessage);
-		}
-
-		try {
-			ProcessingResult<ExternalMessageProcessingResult> result = automaticLabMessageProcessor.processLabMessage(labMessage);
-
-			if (result.getStatus().isCanceled()) {
-				logger.error("Processing of lab message with UUID {} has been canceled", labMessage.getUuid());
-			}
-		} catch (ExecutionException e) {
-			logger.error("Could not process lab message with UUID " + labMessage.getUuid(), e);
-		} catch (InterruptedException e) {
-			logger.error("Could not process lab message with UUID " + labMessage.getUuid(), e);
-			Thread.currentThread().interrupt();
-		} finally {
-			save(labMessage);
-		}
-
-		return getByUuid(labMessage.getUuid());
-	}
-
-	@Override
-	@RightsAllowed(UserRight._EXTERNAL_MESSAGE_SURVEY_RESPONSE_VIEW)
+	@RightsAllowed(UserRight._EXTERNAL_MESSAGE_SURVEY_RESPONSE_PROCESS)
 	public List<ExternalMessageDto> saveAndProcessSurveyResponses(Date since) {
 
 		if (since == null) {
@@ -395,6 +367,35 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		}
 
 		return savedDtos;
+	}
+
+	@Override
+	public ExternalMessageDto save(@Valid ExternalMessageDto dto) {
+		return save(dto, true, false);
+	}
+
+	@Override
+	public ExternalMessageDto saveAndProcessLabmessage(@Valid ExternalMessageDto labMessage) {
+		if (!labMessage.isAutomaticProcessingPossible() || !checkAutomaticProcessingAllowed()) {
+			return save(labMessage);
+		}
+
+		try {
+			ProcessingResult<ExternalMessageProcessingResult> result = automaticLabMessageProcessor.processLabMessage(labMessage);
+
+			if (result.getStatus().isCanceled()) {
+				logger.error("Processing of lab message with UUID {} has been canceled", labMessage.getUuid());
+			}
+		} catch (ExecutionException e) {
+			logger.error("Could not process lab message with UUID " + labMessage.getUuid(), e);
+		} catch (InterruptedException e) {
+			logger.error("Could not process lab message with UUID " + labMessage.getUuid(), e);
+			Thread.currentThread().interrupt();
+		} finally {
+			save(labMessage);
+		}
+
+		return getByUuid(labMessage.getUuid());
 	}
 
 	private List<String> extractUuids(List<ExternalMessageDto> dtos) {
@@ -607,7 +608,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	@RightsAllowed({
 		UserRight._EXTERNAL_MESSAGE_LABORATORY_DELETE,
 		UserRight._EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE,
-		UserRight._EXTERNAL_MESSAGE_SURVEY_RESPONSE_DELETE, })
+		UserRight._EXTERNAL_MESSAGE_SURVEY_RESPONSE_DELETE })
 	public void delete(String uuid) {
 		externalMessageService.deletePermanent(externalMessageService.getByUuid(uuid));
 	}
@@ -1039,7 +1040,6 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	}
 
 	@Override
-	@RightsAllowed(UserRight._EXTERNAL_MESSAGE_SURVEY_RESPONSE_VIEW)
 	public de.symeda.sormas.api.patch.partial_retrieval.DisplayablePartialRetrievalResponse fetchSurveyResponseFieldsForDisplay(
 		String externalMessageUuid) {
 

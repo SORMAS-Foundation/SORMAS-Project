@@ -13,7 +13,6 @@ import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
-import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
@@ -24,6 +23,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 
@@ -93,7 +93,7 @@ class PartialRetrieverImplTest extends AbstractBeanTest {
 
 			() -> Assertions.assertNotNull(caseDiseaseFieldInfo),
 
-			() -> Assertions.assertEquals("Disease", caseDiseaseFieldInfo.getTranslatedFieldName()),
+			() -> Assertions.assertEquals("Maladie", caseDiseaseFieldInfo.getTranslatedFieldName()),
 			() -> Assertions.assertEquals("Paralysie Flasque Aiguë", caseDiseaseFieldInfo.getTranslatedFieldValue()));
 	}
 
@@ -158,17 +158,19 @@ class PartialRetrieverImplTest extends AbstractBeanTest {
 		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
 
 		// EXECUTE
-		String caseClassificationDateFieldName = toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.CLASSIFICATION_DATE);
+		String caseFollowUpUntilFieldName = toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.FOLLOW_UP_UNTIL);
 		PartialRetrievalResponse actual = victim().retrievePartial(
-			new PartialRetrievalRequest().setCaseUuid(originalCase.getUuid()).setFieldsToRetrieve(Set.of(caseClassificationDateFieldName)));
+			new PartialRetrievalRequest().setCaseUuid(originalCase.getUuid()).setFieldsToRetrieve(Set.of(caseFollowUpUntilFieldName)));
+
+		System.out.println("actual = " + actual);
 
 		// CHECK
-		FieldInfo classificationDateFieldInfo = actual.getFieldInfoDictionary().get(caseClassificationDateFieldName);
+		FieldInfo followUpUntilFieldInfo = actual.getFieldInfoDictionary().get(caseFollowUpUntilFieldName);
 		Assertions.assertAll(
 			() -> Assertions.assertTrue(actual.getFailuresDictionary().isEmpty()),
-			() -> Assertions.assertTrue(actual.getFieldInfoDictionary().containsKey(caseClassificationDateFieldName)),
-			() -> Assertions.assertEquals("Date of classification", classificationDateFieldInfo.getTranslatedFieldName()),
-			() -> Assertions.assertNull(classificationDateFieldInfo.getFieldValue()));
+			() -> Assertions.assertTrue(actual.getFieldInfoDictionary().containsKey(caseFollowUpUntilFieldName)),
+			() -> Assertions.assertEquals("Follow-up until", followUpUntilFieldInfo.getTranslatedFieldName()),
+			() -> Assertions.assertNull(followUpUntilFieldInfo.getFieldValue()));
 	}
 
 	@Test

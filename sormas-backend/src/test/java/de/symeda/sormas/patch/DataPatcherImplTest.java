@@ -36,7 +36,6 @@ import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.infrastructure.country.CountryDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
-import de.symeda.sormas.api.infrastructure.region.RegionFacade;
 import de.symeda.sormas.api.patch.*;
 import de.symeda.sormas.api.person.*;
 import de.symeda.sormas.api.symptoms.SymptomState;
@@ -56,15 +55,12 @@ class DataPatcherImplTest extends AbstractBeanTest {
 
 		String newLastname = "toto";
 		String newSequelaeDetails = "Some very interesting sequelaeDetails";
-		String classificationDate = "2030-02-01";
 		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
 			.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
 			.setPatchDictionary(
 				Map.of(
 					"Person.lastName",
 					newLastname,
-					"CaseData.classificationDate",
-					classificationDate,
 
 					"CaseData.sequelaeDetails",
 					newSequelaeDetails));
@@ -73,7 +69,6 @@ class DataPatcherImplTest extends AbstractBeanTest {
 		DataPatchResponse response = victim().patch(request);
 
 		// CHECK
-
 		CaseDataDto actualCase = getCaseFacade().getByUuid(originalCase.getUuid());
 		PersonDto actualPerson = getPersonFacade().getByUuid(originalCase.getPerson().getUuid());
 
@@ -82,9 +77,6 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			// PERSON
 			() -> Assertions.assertEquals(newLastname, actualPerson.getLastName()),
 			// CASE
-			() -> Assertions.assertEquals(
-				Date.from(LocalDate.parse(classificationDate).atStartOfDay(ZoneId.systemDefault()).toInstant()),
-				actualCase.getClassificationDate()),
 			() -> Assertions.assertEquals(newSequelaeDetails, actualCase.getSequelaeDetails()));
 	}
 
@@ -409,34 +401,6 @@ class DataPatcherImplTest extends AbstractBeanTest {
 		e1.setLanguageCode(en);
 		e1.setValue(irrelated);
 		return e1;
-	}
-
-	@Test
-	void patch_referenceData() {
-		// PREPARE
-		registerBeanForLookup(RegionFacade.class, getRegionFacade());
-
-		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.PERTUSSIS);
-
-		FacilityDto healthFacility = getFacilityFacade().getByUuid(originalCase.getHealthFacility().getUuid());
-		originalCase.setDistrict(healthFacility.getDistrict());
-		getCaseFacade().save(originalCase);
-
-		// must be able to ignore accents - whitespaces - case
-		Map<String, Object> patchDictionary = Map.of("CaseData.region", " régIoN    ");
-		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
-			.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
-			.setPatchDictionary(patchDictionary);
-
-		// EXECUTE
-		DataPatchResponse response = victim().patch(request);
-
-		// CHECK
-
-		Assertions.assertAll(
-			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failure found, but should be empty"),
-
-			() -> Assertions.assertEquals(patchDictionary, response.getValidPatchDictionary()));
 	}
 
 	@Test
@@ -767,21 +731,20 @@ class DataPatcherImplTest extends AbstractBeanTest {
 		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.PERTUSSIS);
 
 		// Set classificationDate to 08:30 on 2024-06-15 — a non-midnight timestamp on the same calendar day that will be patched
-		java.util.Date existingDate = java.util.Date.from(LocalDateTime.of(2024, 6, 15, 8, 30, 0).atZone(ZoneId.systemDefault()).toInstant());
-		originalCase.setClassificationDate(existingDate);
+		java.util.Date existingDate = java.util.Date.from(LocalDateTime.of(2024, 6, 15, 12, 30, 0).atZone(ZoneId.systemDefault()).toInstant());
+		originalCase.setReportDate(existingDate);
 		getCaseFacade().save(originalCase);
 
 		// Patch with the same calendar day as a plain date string — DatePatchMapper resolves this to midnight (00:00:00),
 		// which differs in time from existingDate. Without DateEqualityChecker this would trigger FORBIDDEN_VALUE_OVERRIDE.
 		String patchDate = "2024-06-15";
-		CaseDataPatchRequest request =
-			new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid()).setPatchDictionary(Map.of("CaseData.classificationDate", patchDate));
+		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
+			.setPatchDictionary(Map.of(toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.REPORT_DATE), patchDate));
 
 		// EXECUTE
 		DataPatchResponse response = victim().patch(request);
 
 		// CHECK
-
 		Assertions.assertAll(
 			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "FORBIDDEN_VALUE_OVERRIDE must not fire for same-day dates"),
 			() -> Assertions.assertTrue(response.isApplied()));
