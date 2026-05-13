@@ -15974,13 +15974,29 @@ UPDATE featureconfiguration
 SET properties = '{"FETCH_MODE":false,"FORCE_AUTOMATIC_PROCESSING":true,"SURVEY_FETCH_ENABLED":true}'
 where featuretype = 'EXTERNAL_MESSAGES';
 
+-- user rights
 
 INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'EXTERNAL_MESSAGE_SURVEY_RESPONSE_VIEW' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN');
 INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'EXTERNAL_MESSAGE_SURVEY_RESPONSE_PROCESS' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN');
 INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'EXTERNAL_MESSAGE_SURVEY_RESPONSE_DELETE' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN');
 
 
+-- history tables
+ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS additionaldatajson jsonb;
+ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS additionaldatatype text;
+
+ALTER TABLE surveys_history ADD COLUMN IF NOT EXISTS externalid text;
+
+ALTER TABLE surveytokens_history ADD COLUMN IF NOT EXISTS externalrespondentid text;
+
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS abdominalcramps text;
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS coughingatnight text;
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS coughingattacks text;
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS flatulence text;
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS lossofappetite text;
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS smellyburps text;
+
 INSERT INTO schema_version (version_number, comment)
-VALUES (629, '#13832 - External Survey facade');
+VALUES (629, '#13832 - External Survey integration');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
