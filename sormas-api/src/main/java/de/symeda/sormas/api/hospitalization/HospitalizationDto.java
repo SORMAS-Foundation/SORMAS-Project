@@ -29,12 +29,7 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DependingOnFeatureType;
-import de.symeda.sormas.api.utils.Diseases;
-import de.symeda.sormas.api.utils.FieldConstraints;
-import de.symeda.sormas.api.utils.Outbreaks;
-import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.*;
 
 @DependingOnFeatureType(featureType = FeatureType.CASE_SURVEILANCE)
 public class HospitalizationDto extends EntityDto {

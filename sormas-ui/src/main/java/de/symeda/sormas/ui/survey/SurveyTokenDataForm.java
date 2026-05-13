@@ -28,7 +28,8 @@ public class SurveyTokenDataForm extends AbstractEditForm<SurveyTokenDto> {
 	private static final String HTML_LAYOUT = fluidRowLocs(SurveyTokenDto.UUID, SurveyTokenDto.TOKEN)
 		+ fluidRowLocs(SurveyTokenDto.SURVEY, "")
 		+ fluidRowLocs(SurveyTokenDto.ASSIGNMENT_DATE, SurveyTokenDto.RECIPIENT_EMAIL)
-		+ fluidRowLocs(SurveyTokenDto.RESPONSE_RECEIVED, SurveyTokenDto.RESPONSE_RECEIVED_DATE);
+		+ fluidRowLocs(SurveyTokenDto.RESPONSE_RECEIVED, SurveyTokenDto.RESPONSE_RECEIVED_DATE)
+		+ fluidRowLocs(SurveyTokenDto.EXTERNAL_RESPONDENT_ID);
 
 	private SurveyTokenReferenceDto surveyTokenReference;
 
@@ -55,6 +56,7 @@ public class SurveyTokenDataForm extends AbstractEditForm<SurveyTokenDto> {
 		addField(SurveyTokenDto.RECIPIENT_EMAIL).setReadOnly(true);
 		addField(SurveyTokenDto.RESPONSE_RECEIVED).addStyleName(CssStyles.FORCE_CAPTION);
 		addField(SurveyTokenDto.RESPONSE_RECEIVED_DATE);
+		addField(SurveyTokenDto.EXTERNAL_RESPONDENT_ID).setReadOnly(true);
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), SurveyTokenDto.RESPONSE_RECEIVED_DATE, SurveyTokenDto.RESPONSE_RECEIVED, true, true);
 	}

@@ -242,6 +242,10 @@ public class ExternalMessage extends AbstractDomainObject {
 	private ModeOfTransmission modeOfTransmission;
 	private String modeOfTransmissionType;
 
+	private ExternalMessageAdditionalDataType additionalDataType;
+
+	private String additionalDataJson;
+
 	@Enumerated(EnumType.STRING)
 	public ExternalMessageType getType() {
 		return type;
@@ -1019,4 +1023,25 @@ public class ExternalMessage extends AbstractDomainObject {
 		this.modeOfTransmissionType = modeOfTransmissionType;
 	}
 
+
+	@Enumerated(EnumType.STRING)
+	public ExternalMessageAdditionalDataType getAdditionalDataType() {
+		return additionalDataType;
+	}
+
+	public ExternalMessage setAdditionalDataType(ExternalMessageAdditionalDataType additionalDataType) {
+		this.additionalDataType = additionalDataType;
+		return this;
+	}
+
+	@Column(columnDefinition = "jsonb")
+	@Type(type = "jsonb")
+	public String getAdditionalDataJson() {
+		return additionalDataJson;
+	}
+
+	public ExternalMessage setAdditionalDataJson(String additionalData) {
+		this.additionalDataJson = additionalData;
+		return this;
+	}
 }

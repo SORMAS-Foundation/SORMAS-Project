@@ -344,6 +344,14 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String WEIGHT_LOSS = "weightLoss";
 	public static final String WEIGHT_LOSS_AMOUNT = "weightLossAmount";
 	public static final String BLOATING = "bloating";
+
+	public static final String LOSS_OF_APPETITE = "lossOfAppetite";
+	public static final String FLATULENCE = "flatulence";
+	public static final String SMELLY_BURPS = "smellyBurps";
+	public static final String COUGHING_ATTACKS = "coughingAttacks";
+	public static final String COUGHING_AT_NIGHT = "coughingAtNight";
+	public static final String ABDOMINAL_CRAMPS = "abdominalCramps";
+
 	public static final String REOCCURRENCE = "reoccurrence";
 	public static final String OVERNIGHT_STAY_REQUIRED = "overnightStayRequired";
 	public static final String SYMPTOM_CURRENT_STATUS = "symptomCurrentStatus";
@@ -629,6 +637,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		ANTHRAX,
 		UNSPECIFIED_VHF,
 		CORONAVIRUS,
+		PERTUSSIS,
 		RESPIRATORY_SYNCYTIAL_VIRUS,
 		UNDEFINED,
 		OTHER })
@@ -1584,6 +1593,9 @@ public class SymptomsDto extends PseudonymizableDto {
 		PLAGUE,
 		UNSPECIFIED_VHF,
 		CONGENITAL_RUBELLA,
+		CRYPTOSPORIDIOSIS,
+		GIARDIASIS,
+		RESPIRATORY_SYNCYTIAL_VIRUS,
 		POLIO,
 		RABIES,
 		CORONAVIRUS,
@@ -2921,6 +2933,33 @@ public class SymptomsDto extends PseudonymizableDto {
 		GIARDIASIS })
 	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
 	private SymptomState bloating;
+
+	@Diseases({
+		CRYPTOSPORIDIOSIS,
+		GIARDIASIS,
+		RESPIRATORY_SYNCYTIAL_VIRUS })
+	private SymptomState lossOfAppetite;
+
+	@Diseases({
+		GIARDIASIS })
+	private SymptomState flatulence;
+
+	@Diseases({
+		GIARDIASIS })
+	private SymptomState smellyBurps;
+
+	@Diseases({
+		PERTUSSIS })
+	private SymptomState coughingAttacks;
+
+	@Diseases({
+		PERTUSSIS })
+	private SymptomState coughingAtNight;
+
+	@Diseases({
+		CRYPTOSPORIDIOSIS,
+		GIARDIASIS })
+	private SymptomState abdominalCramps;
 
 	private DiagnosisType diagnosis;
 	private InfectionSite majorSite;
@@ -5256,4 +5295,51 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.eyeIrritation = eyeIrritation;
 	}
 
+	public SymptomState getCoughingAtNight() {
+		return coughingAtNight;
+	}
+
+	public void setCoughingAtNight(SymptomState coughingAtNight) {
+		this.coughingAtNight = coughingAtNight;
+	}
+
+	public SymptomState getLossOfAppetite() {
+		return lossOfAppetite;
+	}
+
+	public void setLossOfAppetite(SymptomState lossOfAppetite) {
+		this.lossOfAppetite = lossOfAppetite;
+	}
+
+	public SymptomState getFlatulence() {
+		return flatulence;
+	}
+
+	public void setFlatulence(SymptomState flatulence) {
+		this.flatulence = flatulence;
+	}
+
+	public SymptomState getSmellyBurps() {
+		return smellyBurps;
+	}
+
+	public void setSmellyBurps(SymptomState smellyBurps) {
+		this.smellyBurps = smellyBurps;
+	}
+
+	public SymptomState getCoughingAttacks() {
+		return coughingAttacks;
+	}
+
+	public void setCoughingAttacks(SymptomState coughingAttacks) {
+		this.coughingAttacks = coughingAttacks;
+	}
+
+	public SymptomState getAbdominalCramps() {
+		return abdominalCramps;
+	}
+
+	public void setAbdominalCramps(SymptomState abdominalCramps) {
+		this.abdominalCramps = abdominalCramps;
+	}
 }

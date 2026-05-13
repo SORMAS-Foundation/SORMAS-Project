@@ -84,6 +84,8 @@ import de.symeda.sormas.ui.externalmessage.labmessage.LabMessageProcessingFlow;
 import de.symeda.sormas.ui.externalmessage.labmessage.LabMessageSlider;
 import de.symeda.sormas.ui.externalmessage.labmessage.RelatedLabMessageHandler;
 import de.symeda.sormas.ui.externalmessage.physiciansreport.PhysiciansReportProcessingFlow;
+import de.symeda.sormas.ui.externalmessage.surveyresponse.SurveyResponseDetailsWindow;
+import de.symeda.sormas.ui.externalmessage.surveyresponse.SurveyResponseFailureEditor;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DeleteRestoreHandlers;
@@ -129,6 +131,13 @@ public class ExternalMessageController {
 	public void showExternalMessage(String messageUuid, boolean withActions, Runnable onFormActionPerformed) {
 
 		ExternalMessageDto newDto = FacadeProvider.getExternalMessageFacade().getByUuid(messageUuid);
+
+		if (ExternalMessageType.SURVEY_RESPONSE.equals(newDto.getType())) {
+			// Side effect: window will be added to the current window.
+			new SurveyResponseDetailsWindow(newDto, onFormActionPerformed);
+			return;
+		}
+
 		VerticalLayout layout = new VerticalLayout();
 		layout.setMargin(true);
 
@@ -149,6 +158,38 @@ public class ExternalMessageController {
 		}
 
 		form.setValue(newDto);
+	}
+
+	public void processSurveyResponse(String surveyResponseMessageUuid) {
+		ExternalMessageDto externalMessage = FacadeProvider.getExternalMessageFacade().getByUuid(surveyResponseMessageUuid);
+
+		de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseResult result =
+			externalMessage.getSurveyResponseData() != null && externalMessage.getSurveyResponseData().getLatest() != null
+				? externalMessage.getSurveyResponseData().getLatest().getResult()
+				: null;
+
+		if (result == null) {
+			Notification.show(I18nProperties.getString(Strings.messageSurveyResponseNotYetProcessed), Notification.Type.HUMANIZED_MESSAGE);
+			return;
+		}
+
+		if (result.getPatchResponse() != null && result.getPatchResponse().hasFailures()) {
+			de.symeda.sormas.api.patch.partial_retrieval.DisplayablePartialRetrievalResponse displayData;
+			try {
+				displayData = FacadeProvider.getExternalMessageFacade().fetchSurveyResponseFieldsForDisplay(surveyResponseMessageUuid);
+			} catch (Exception e) {
+				logger.error("Error retrieving survey response fields for display", e);
+				displayData = new de.symeda.sormas.api.patch.partial_retrieval.DisplayablePartialRetrievalResponse();
+			}
+
+			final de.symeda.sormas.api.patch.partial_retrieval.DisplayablePartialRetrievalResponse finalDisplayData = displayData;
+			SurveyResponseFailureEditor editor = new SurveyResponseFailureEditor(externalMessage, finalDisplayData, () -> {
+				SormasUI.get().getNavigator().navigateTo(ExternalMessagesView.VIEW_NAME);
+			});
+			UI.getCurrent().addWindow(editor);
+		} else {
+			Notification.show(I18nProperties.getString(Strings.messageSurveyResponseAllFieldsApplied), Notification.Type.HUMANIZED_MESSAGE);
+		}
 	}
 
 	public void processLabMessage(String labMessageUuid) {
@@ -509,6 +550,9 @@ public class ExternalMessageController {
 		}
 		if (UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS)) {
 			types.add(ExternalMessageType.PHYSICIANS_REPORT);
+		}
+		if (UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_SURVEY_RESPONSE_PROCESS)) {
+			types.add(ExternalMessageType.SURVEY_RESPONSE);
 		}
 		components.syncUsersForMessageType(types);
 

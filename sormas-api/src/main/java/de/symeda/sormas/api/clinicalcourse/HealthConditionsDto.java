@@ -84,6 +84,8 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	private YesNoUnknown hivArt;
 	private YesNoUnknown chronicLiverDisease;
 	private YesNoUnknown malignancyChemotherapy;
+
+	//TODO: rename ? general heart issue
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })

@@ -355,12 +355,12 @@ public class SystemConfigurationValueEjb
     @PostConstruct
     public void loadData() {
 
-        LOGGER.info("Loading SystemConfiguration data into cache");
+        LOGGER.debug("Loading SystemConfiguration data into cache");
         configurationValuesByKey.clear();
 
         service.getAll().forEach(value -> configurationValuesByKey.put(value.getKey(), value.getValue()));
 
-        LOGGER.info("SystemConfiguration data loaded into cache successfully");
+        LOGGER.debug("SystemConfiguration data loaded into cache successfully");
     }
 
     /**

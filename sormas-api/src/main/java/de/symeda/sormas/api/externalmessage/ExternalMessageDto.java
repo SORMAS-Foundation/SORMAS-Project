@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.CountryHelper;
@@ -33,6 +34,7 @@ import de.symeda.sormas.api.clinicalcourse.ComplianceWithTreatment;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.exposure.ModeOfTransmission;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
+import de.symeda.sormas.api.externalmessage.survey.ExternalSurveyResponseData;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
@@ -206,6 +208,10 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private String externalMessageDetails;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String caseComments;
+
+	/**
+	 * Used as deduplication key for {@link ExternalMessageType#SURVEY_RESPONSE}.
+	 */
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String reportId;
 
@@ -278,6 +284,12 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private YesNoUnknown healthcareProfessional;
 	private ModeOfTransmission modeOfTransmission;
 	private String modeOfTransmissionType;
+
+	/**
+	 * Will only be present for: {@link ExternalMessageType#SURVEY_RESPONSE} to represent the pair.
+	 */
+	@Nullable
+	private ExternalSurveyResponseData surveyResponseData;
 
 	public ExternalMessageType getType() {
 		return type;
@@ -1019,5 +1031,15 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	public void setModeOfTransmissionType(String modeOfTransmissionType) {
 		this.modeOfTransmissionType = modeOfTransmissionType;
+	}
+
+	@Nullable
+	public ExternalSurveyResponseData getSurveyResponseData() {
+		return surveyResponseData;
+	}
+
+	public ExternalMessageDto setSurveyResponseData(@Nullable ExternalSurveyResponseData surveyResponseData) {
+		this.surveyResponseData = surveyResponseData;
+		return this;
 	}
 }

@@ -878,6 +878,11 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>EXTERNAL_MESSAGE_SURVEY_RESPONSE_VIEW</role-name>
+        <group-name>EXTERNAL_MESSAGE_SURVEY_RESPONSE_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>EXTERNAL_MESSAGE_LABORATORY_PROCESS</role-name>
         <group-name>EXTERNAL_MESSAGE_LABORATORY_PROCESS</group-name>
     </security-role-mapping>
@@ -885,6 +890,12 @@
     <security-role-mapping>
         <role-name>EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS</role-name>
         <group-name>EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS</group-name>
+    </security-role-mapping>
+
+
+    <security-role-mapping>
+        <role-name>EXTERNAL_MESSAGE_SURVEY_RESPONSE_PROCESS</role-name>
+        <group-name>EXTERNAL_MESSAGE_SURVEY_RESPONSE_PROCESS</group-name>
     </security-role-mapping>
 
     <security-role-mapping>
@@ -895,6 +906,11 @@
     <security-role-mapping>
         <role-name>EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE</role-name>
         <group-name>EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EXTERNAL_MESSAGE_SURVEY_RESPONSE_DELETE</role-name>
+        <group-name>EXTERNAL_MESSAGE_SURVEY_RESPONSE_DELETE</group-name>
     </security-role-mapping>
 
     <security-role-mapping>

@@ -43,6 +43,7 @@ public class SurveyToken extends AbstractDomainObject {
 	public static final String RESPONSE_RECEIVED = "responseReceived";
 	public static final String GENERATED_DOCUMENT = "generatedDocument";
 	public static final String RESPONSE_RECEIVED_DATE = "responseReceivedDate";
+	public static final String EXTERNAL_RESPONDENT_ID = "externalRespondentId";
 
 	private String token;
 	private Survey survey;
@@ -52,6 +53,7 @@ public class SurveyToken extends AbstractDomainObject {
 	private Document generatedDocument;
 	private boolean responseReceived;
 	private Date responseReceivedDate;
+	private String externalRespondentId;
 
 	@Column(nullable = false, length = FieldConstraints.CHARACTER_LIMIT_SMALL)
 	public String getToken() {
@@ -123,5 +125,14 @@ public class SurveyToken extends AbstractDomainObject {
 
 	public void setResponseReceivedDate(Date responseReceivedDate) {
 		this.responseReceivedDate = responseReceivedDate;
+	}
+
+	@Column(length = FieldConstraints.CHARACTER_LIMIT_UUID_MAX)
+	public String getExternalRespondentId() {
+		return externalRespondentId;
+	}
+
+	public void setExternalRespondentId(String externalRespondentId) {
+		this.externalRespondentId = externalRespondentId;
 	}
 }
