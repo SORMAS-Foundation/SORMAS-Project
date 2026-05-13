@@ -90,7 +90,6 @@ public enum Disease
 	INVASIVE_MENINGOCOCCAL_INFECTION(true, true, true, false, true, 7, false, false, false, true, 1, 10),
 	GIARDIASIS(true, true, true, false, true, 14, false, false, false, true, 7, 21),
 	CRYPTOSPORIDIOSIS(true, true, true, false, true, 14, false, false, false, true, 2, 12),
-	SHIGELLOSIS(true, true, true, false, true, 14, false, false, false, true, 1, 7),
 	SALMONELLOSIS(true, true, true, false, true, 14, false, false, false, true, 1, 3),
 	OTHER(true, true, true, false, true, 21, false, false, false, false, 0, 0),
 	UNDEFINED(true, true, true, false, true, 0, false, false, false, false, 0, 0);
