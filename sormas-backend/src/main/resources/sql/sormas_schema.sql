@@ -16033,9 +16033,6 @@ CREATE TRIGGER versioning_trigger
     BEFORE INSERT OR UPDATE OR DELETE ON foodhistory_consumeditems
     FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'foodhistory_consumeditems_history', true);
 DROP TRIGGER IF EXISTS delete_history_trigger ON foodhistory_consumeditems;
-CREATE TRIGGER delete_history_trigger
-    AFTER DELETE ON foodhistory_consumeditems
-    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('foodhistory_consumeditems_history', 'foodhistory_id');
 ALTER TABLE foodhistory_consumeditems_history OWNER TO sormas_user;
 
 ALTER TABLE epidata         ADD COLUMN IF NOT EXISTS foodhistory_id bigint REFERENCES foodhistory(id);

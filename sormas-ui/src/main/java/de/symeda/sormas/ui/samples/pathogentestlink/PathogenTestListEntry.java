@@ -73,7 +73,8 @@ public class PathogenTestListEntry extends SideComponentField {
 		topLabelLayout.setMargin(false);
 		topLabelLayout.setWidth(100, Unit.PERCENTAGE);
 		addComponentToField(topLabelLayout);
-		Label labelTopLeft = new Label(PathogenTestType.toString(pathogenTest.getTestType(), pathogenTest.getTestTypeText()));
+		Label labelTopLeft = new Label(
+			PathogenTestType.toString(pathogenTest.getTestType(), pathogenTest.getTestTypeText(), pathogenTest.getTestedDisease()));
 		CssStyles.style(labelTopLeft, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
 		topLabelLayout.addComponent(labelTopLeft);
 

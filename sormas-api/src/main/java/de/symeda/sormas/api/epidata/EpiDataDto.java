@@ -476,6 +476,10 @@ public class EpiDataDto extends PseudonymizableDto {
 		clone.getExposures().clear();
 		clone.getExposures().addAll(exposureDtos);
 
+		if (foodHistory != null) {
+			clone.setFoodHistory(foodHistory.clone());
+		}
+
 		return clone;
 	}
 }

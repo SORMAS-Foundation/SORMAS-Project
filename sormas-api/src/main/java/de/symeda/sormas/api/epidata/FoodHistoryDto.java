@@ -55,7 +55,8 @@ public class FoodHistoryDto extends PseudonymizableDto {
 	}
 
 	public void setConsumedItemsDetails(Map<FoodConsumptionItem, String> consumedItemsDetails) {
-		this.consumedItemsDetails = consumedItemsDetails;
+		this.consumedItemsDetails =
+			consumedItemsDetails == null ? new EnumMap<>(FoodConsumptionItem.class) : new EnumMap<>(consumedItemsDetails);
 	}
 
 	public String getOtherFoodDetails() {
@@ -64,5 +65,12 @@ public class FoodHistoryDto extends PseudonymizableDto {
 
 	public void setOtherFoodDetails(String otherFoodDetails) {
 		this.otherFoodDetails = otherFoodDetails;
+	}
+
+	@Override
+	public FoodHistoryDto clone() throws CloneNotSupportedException {
+		FoodHistoryDto clone = (FoodHistoryDto) super.clone();
+		clone.setConsumedItemsDetails(consumedItemsDetails);
+		return clone;
 	}
 }

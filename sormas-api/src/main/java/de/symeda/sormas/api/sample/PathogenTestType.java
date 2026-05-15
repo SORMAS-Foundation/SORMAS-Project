@@ -342,12 +342,20 @@ public enum PathogenTestType {
 	}
 
 	public static String toString(PathogenTestType value, String details) {
+		return toString(value, details, null);
+	}
+
+	public static String toString(PathogenTestType value, String details, Disease disease) {
 		if (value == null) {
 			return "";
 		}
 
 		if (value == PathogenTestType.OTHER) {
 			return DataHelper.toStringNullable(details);
+		}
+
+		if (revealsTestTypeText(value, disease) && !DataHelper.isNullOrEmpty(details)) {
+			return value + " (" + details + ")";
 		}
 
 		return value.toString();

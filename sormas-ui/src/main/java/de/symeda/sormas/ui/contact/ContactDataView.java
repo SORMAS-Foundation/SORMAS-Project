@@ -258,7 +258,12 @@ public class ContactDataView extends AbstractContactView implements HasName {
 				.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
 				layout.addSidePanelComponent(new SideComponentLayout(new ImmunizationListComponent(() -> {
 					ContactDto refreshedContact = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
-					return new ImmunizationListCriteria.Builder(refreshedContact.getPerson()).withDisease(refreshedContact.getDisease()).build();
+					Disease criteriaDisease = refreshedContact.getDisease();
+					if (criteriaDisease == null && refreshedContact.getCaze() != null) {
+						CaseDataDto refreshedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(refreshedContact.getCaze().getUuid());
+						criteriaDisease = refreshedCase != null ? refreshedCase.getDisease() : null;
+					}
+					return new ImmunizationListCriteria.Builder(refreshedContact.getPerson()).withDisease(criteriaDisease).build();
 				}, null, this::showUnsavedChangesPopup, editAllowed)), IMMUNIZATION_LOC);
 			} else {
 				layout.addSidePanelComponent(new SideComponentLayout(new VaccinationListComponent(() -> {
@@ -267,7 +272,11 @@ public class ContactDataView extends AbstractContactView implements HasName {
 					if (refreshedContact.getCaze() != null) {
 						refreshedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(refreshedContact.getCaze().getUuid());
 					}
-					return new VaccinationCriteria.Builder(refreshedContact.getPerson()).withDisease(refreshedContact.getDisease())
+					Disease criteriaDisease = refreshedContact.getDisease();
+					if (criteriaDisease == null && refreshedCase != null) {
+						criteriaDisease = refreshedCase.getDisease();
+					}
+					return new VaccinationCriteria.Builder(refreshedContact.getPerson()).withDisease(criteriaDisease)
 						.build()
 						.vaccinationAssociationType(VaccinationAssociationType.CONTACT)
 						.contactReference(getContactRef())

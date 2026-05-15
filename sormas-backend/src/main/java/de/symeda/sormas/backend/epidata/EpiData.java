@@ -347,7 +347,7 @@ public class EpiData extends AbstractDomainObject {
 		this.activityAsCaseToDate = activityAsCaseToDate;
 	}
 
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
 	public FoodHistory getFoodHistory() {
 		return foodHistory;
 	}
