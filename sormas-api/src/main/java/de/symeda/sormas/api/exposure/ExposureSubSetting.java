@@ -20,7 +20,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.utils.Diseases;
 
 public enum ExposureSubSetting {
 
@@ -49,6 +51,8 @@ public enum ExposureSubSetting {
 
 	EATING_AT_HOME(ExposureCategory.FOOD_BORNE, null),
 	EATING_OUTSIDE(ExposureCategory.FOOD_BORNE, null),
+	@Diseases({
+		Disease.SALMONELLOSIS })
 	SHOPPING_FOR_FOOD(ExposureCategory.FOOD_BORNE, null),
 
 	UNKNOWN(null, null),
@@ -90,6 +94,15 @@ public enum ExposureSubSetting {
 			.collect(Collectors.toList());
 	}
 
+	/**
+	 * Disease-aware overload: filters the values returned by {@link #getValues(ExposureCategory, ExposureSetting)}
+	 * to those whose {@code @Diseases} annotation matches the given disease (or values with no annotation,
+	 * which apply to every disease).
+	 */
+	public static List<ExposureSubSetting> getValues(ExposureCategory category, ExposureSetting setting, Disease disease) {
+		return getValues(category, setting).stream().filter(s -> isVisibleForDisease(s, disease)).collect(Collectors.toList());
+	}
+
 	public static List<ExposureSubSetting> getValuesForCategoryOnly(ExposureCategory category) {
 		if (category == null) {
 			return Collections.emptyList();
@@ -107,6 +120,19 @@ public enum ExposureSubSetting {
 		}
 
 		return Arrays.stream(values()).filter(s -> (s.category == category && s.setting == null) || s.category == null).collect(Collectors.toList());
+	}
+
+	/**
+	 * Disease-aware overload: filters the values returned by {@link #getValuesForCategoryOnly(ExposureCategory)}
+	 * to those whose {@code @Diseases} annotation matches the given disease (or values with no annotation).
+	 */
+	public static List<ExposureSubSetting> getValuesForCategoryOnly(ExposureCategory category, Disease disease) {
+		return getValuesForCategoryOnly(category).stream().filter(s -> isVisibleForDisease(s, disease)).collect(Collectors.toList());
+	}
+
+	private static boolean isVisibleForDisease(ExposureSubSetting subSetting, Disease disease) {
+		return Diseases.DiseasesConfiguration.isMissing(ExposureSubSetting.class, subSetting.name())
+			|| Diseases.DiseasesConfiguration.isDefined(ExposureSubSetting.class, subSetting.name(), disease);
 	}
 
 	@Override

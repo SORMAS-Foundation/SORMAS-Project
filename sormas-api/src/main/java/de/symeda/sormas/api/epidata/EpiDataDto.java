@@ -78,6 +78,7 @@ public class EpiDataDto extends PseudonymizableDto {
 	public static final String EXPOSURE_INVESTIGATION_TO_DATE = "exposureInvestigationToDate";
 	public static final String ACTIVITY_AS_CASE_FROM_DATE = "activityAsCaseFromDate";
 	public static final String ACTIVITY_AS_CASE_TO_DATE = "activityAsCaseToDate";
+	public static final String FOOD_HISTORY = "foodHistory";
 
 	private YesNoUnknown exposureDetailsKnown;
 	private YesNoUnknown activityAsCaseDetailsKnown;
@@ -199,6 +200,13 @@ public class EpiDataDto extends PseudonymizableDto {
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	private Date activityAsCaseToDate;
+
+	@Valid
+	@Diseases({
+		Disease.SALMONELLOSIS })
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	private FoodHistoryDto foodHistory;
 
 	public YesNoUnknown getExposureDetailsKnown() {
 		return exposureDetailsKnown;
@@ -435,6 +443,14 @@ public class EpiDataDto extends PseudonymizableDto {
 	public void setActivityAsCaseToDate(Date activityAsCaseToDate) {
 		validateDateRange(this.activityAsCaseFromDate, activityAsCaseToDate, "activityAsCaseFromDate", "activityAsCaseToDate");
 		this.activityAsCaseToDate = activityAsCaseToDate;
+	}
+
+	public FoodHistoryDto getFoodHistory() {
+		return foodHistory;
+	}
+
+	public void setFoodHistory(FoodHistoryDto foodHistory) {
+		this.foodHistory = foodHistory;
 	}
 
 	private static void validateDateRange(Date from, Date to, String fromName, String toName) {

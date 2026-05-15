@@ -414,19 +414,18 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			boolean isProphylaxis = selectedSubSettings != null && selectedSubSettings.contains(ExposureSubSetting.TRAVELED_ABROAD);
 			setVisibleClear(isProphylaxis, ExposureDto.PROPHYLAXIS_ADHERENCE, ExposureDto.TRAVEL_PURPOSE);
 
-			// Salmonellosis Lu: Eating out venues + shopping-for-food details follow sub-setting selection
-			boolean showEatingOutVenues = selectedSubSettings != null && selectedSubSettings.contains(ExposureSubSetting.EATING_OUTSIDE);
+			// Salmonellosis: Eating out venues + shopping-for-food details follow sub-setting selection.
+			// Disease-gated so non-SAL exposures with FOOD_BORNE category don't see them.
+			// Toggle visibility only — never clear bound values here,
+			// clearing during the FieldGroup binding cascade would discard freshly-loaded
+			// data because the listener fires multiple times before the real value lands.
+			boolean isSalmonellosis = disease == Disease.SALMONELLOSIS;
+			boolean showEatingOutVenues =
+				isSalmonellosis && selectedSubSettings != null && selectedSubSettings.contains(ExposureSubSetting.EATING_OUTSIDE);
 			eatingOutVenuesField.setVisible(showEatingOutVenues);
-			if (!showEatingOutVenues) {
-				eatingOutVenuesField.setValue(null);
-				eatingOutVenueOtherField.setVisible(false);
-				eatingOutVenueOtherField.setValue(null);
-			}
-			boolean showShoppingForFood = selectedSubSettings != null && selectedSubSettings.contains(ExposureSubSetting.SHOPPING_FOR_FOOD);
+			boolean showShoppingForFood =
+				isSalmonellosis && selectedSubSettings != null && selectedSubSettings.contains(ExposureSubSetting.SHOPPING_FOR_FOOD);
 			shoppingForFoodDetailsField.setVisible(showShoppingForFood);
-			if (!showShoppingForFood) {
-				shoppingForFoodDetailsField.setValue(null);
-			}
 		});
 
 		eatingOutVenuesField.addValueChangeListener(e -> {
@@ -434,9 +433,6 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			Set<EatingOutVenue> selectedVenues = (Set<EatingOutVenue>) e.getProperty().getValue();
 			boolean containsOther = selectedVenues != null && selectedVenues.contains(EatingOutVenue.OTHER);
 			eatingOutVenueOtherField.setVisible(eatingOutVenuesField.isVisible() && containsOther);
-			if (!containsOther) {
-				eatingOutVenueOtherField.setValue(null);
-			}
 		});
 
 		contactFactorsField.addValueChangeListener(e -> {
@@ -559,11 +555,12 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		List<ExposureSubSetting> subSettings;
 
 		// For categories that have no setting but do have subsettings (e.g., FOOD_BORNE),
-		// we need to get subsettings based only on category
+		// we need to get subsettings based only on category. Disease-aware overloads filter values whose
+		// @Diseases annotation excludes the current disease (e.g. SHOPPING_FOR_FOOD is SAL-only).
 		if (category != null && category.hasNoSetting()) {
-			subSettings = ExposureSubSetting.getValuesForCategoryOnly(category);
+			subSettings = ExposureSubSetting.getValuesForCategoryOnly(category, disease);
 		} else {
-			subSettings = ExposureSubSetting.getValues(category, setting);
+			subSettings = ExposureSubSetting.getValues(category, setting, disease);
 		}
 
 		FieldHelper.updateItems(subSettingsField, subSettings);

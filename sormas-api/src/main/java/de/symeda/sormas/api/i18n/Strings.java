@@ -1887,6 +1887,7 @@ public interface Strings {
 	String promptExternalMessagesPersonBirthDateTo = "promptExternalMessagesPersonBirthDateTo";
 	String promptExternalMessagesSearchField = "promptExternalMessagesSearchField";
 	String promptFilterByPeriod = "promptFilterByPeriod";
+	String promptFoodHistoryItemDetails = "promptFoodHistoryItemDetails";
 	String promptImmunizationDateFrom = "promptImmunizationDateFrom";
 	String promptImmunizationDateTo = "promptImmunizationDateTo";
 	String promptImmunizationDateType = "promptImmunizationDateType";

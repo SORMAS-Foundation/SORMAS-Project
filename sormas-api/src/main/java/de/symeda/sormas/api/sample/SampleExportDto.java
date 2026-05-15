@@ -852,6 +852,12 @@ public class SampleExportDto extends AbstractUuidDto implements IsSample {
 		this.sampleReportDate = sampleReportDate;
 	}
 
+	@Order(104)
+	public String getSampleMaterialSnomedCode() {
+		SampleMaterial material = sampleSampleExportMaterial != null ? sampleSampleExportMaterial.sampleMaterial : null;
+		return material != null ? material.getSnomedCode() : null;
+	}
+
 	public SampleExportPathogenTest getPathogenTest1() {
 		return pathogenTest1;
 	}

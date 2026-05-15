@@ -144,6 +144,11 @@ public class ContactDataView extends AbstractContactView implements HasName {
 			layout.addSidePanelComponent(createCaseInfoLayout(caseDto), CASE_LOC);
 		}
 
+		Disease resolvedDisease = contactDto.getDisease();
+		if (resolvedDisease == null && caseDto != null) {
+			resolvedDisease = caseDto.getDisease();
+		}
+
 		final String uuid = contactDto.getUuid();
 		boolean editAllowed = isEditAllowed();
 		if (UiUtil.permitted(UserRight.CONTACT_REASSIGN_CASE) && editAllowed) {
@@ -247,7 +252,8 @@ public class ContactDataView extends AbstractContactView implements HasName {
 			layout.addSidePanelComponent(eventsLayout, EVENTS_LOC);
 		}
 
-		if (UiUtil.permitted(FeatureType.IMMUNIZATION_MANAGEMENT, UserRight.IMMUNIZATION_VIEW)) {
+		// Immunizations are not shown for Salmonellosis contacts
+		if (UiUtil.permitted(FeatureType.IMMUNIZATION_MANAGEMENT, UserRight.IMMUNIZATION_VIEW) && resolvedDisease != Disease.SALMONELLOSIS) {
 			if (!FacadeProvider.getFeatureConfigurationFacade()
 				.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
 				layout.addSidePanelComponent(new SideComponentLayout(new ImmunizationListComponent(() -> {
@@ -300,12 +306,7 @@ public class ContactDataView extends AbstractContactView implements HasName {
 			layout.addSidePanelComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
-		Disease disease = contactDto.getDisease();
-		if (disease == null && caseDto != null) {
-			disease = caseDto.getDisease();
-		}
-
-		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, contactDto, disease, documentList);
+		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, contactDto, resolvedDisease, documentList);
 
 		if (UiUtil.permitted(FeatureType.EXTERNAL_EMAILS, UserRight.EXTERNAL_EMAIL_SEND)) {
 			ExternalEmailSideComponent externalEmailSideComponent =

@@ -1625,6 +1625,7 @@ public interface Captions {
 	String EpiData_exposureInvestigationFromDate = "EpiData.exposureInvestigationFromDate";
 	String EpiData_exposureInvestigationToDate = "EpiData.exposureInvestigationToDate";
 	String EpiData_exposures = "EpiData.exposures";
+	String EpiData_foodHistory = "EpiData.foodHistory";
 	String EpiData_healthcareProfessional = "EpiData.healthcareProfessional";
 	String EpiData_highTransmissionRiskArea = "EpiData.highTransmissionRiskArea";
 	String EpiData_importedCase = "EpiData.importedCase";
@@ -2080,6 +2081,8 @@ public interface Captions {
 	String FollowUp_followUpUntil = "FollowUp.followUpUntil";
 	String FollowUp_person = "FollowUp.person";
 	String FollowUp_reportDate = "FollowUp.reportDate";
+	String FoodHistory_consumedItemsDetails = "FoodHistory.consumedItemsDetails";
+	String FoodHistory_otherFoodDetails = "FoodHistory.otherFoodDetails";
 	String formatNumberOfVisitsFormat = "formatNumberOfVisitsFormat";
 	String formatNumberOfVisitsLongFormat = "formatNumberOfVisitsLongFormat";
 	String formatSimpleNumberFormat = "formatSimpleNumberFormat";

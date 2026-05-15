@@ -68,6 +68,8 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 	private CountryService countryService;
 	@EJB
 	private CustomizableFieldValueService customizableFieldValueService;
+	@EJB
+	private FoodHistoryMapper foodHistoryMapper;
 
 	public void softDeleteCustomizableFieldValues(EpiData epiData, DeletionDetails deletionDetails) {
 		if (epiData == null || epiData.getUuid() == null) {
@@ -139,6 +141,12 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setExposureInvestigationToDate(source.getExposureInvestigationToDate());
 		target.setActivityAsCaseFromDate(source.getActivityAsCaseFromDate());
 		target.setActivityAsCaseToDate(source.getActivityAsCaseToDate());
+
+		if (source.getFoodHistory() != null) {
+			target.setFoodHistory(foodHistoryMapper.fillOrBuildEntity(source.getFoodHistory(), target.getFoodHistory(), checkChangeDate));
+		} else {
+			target.setFoodHistory(null);
+		}
 		return target;
 	}
 
@@ -336,6 +344,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setExposureInvestigationToDate(source.getExposureInvestigationToDate());
 		target.setActivityAsCaseFromDate(source.getActivityAsCaseFromDate());
 		target.setActivityAsCaseToDate(source.getActivityAsCaseToDate());
+		target.setFoodHistory(FoodHistoryMapper.toDto(source.getFoodHistory()));
 		return target;
 	}
 
@@ -436,7 +445,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setProphylaxisAdherenceDetails(source.getProphylaxisAdherenceDetails());
 		target.setTravelPurpose(source.getTravelPurpose());
 		target.setTravelPurposeDetails(source.getTravelPurposeDetails());
-		target.setEatingOutVenues(new HashSet<>(source.getEatingOutVenues()));
+		target.setEatingOutVenues(source.getEatingOutVenues() != null ? new HashSet<>(source.getEatingOutVenues()) : new HashSet<>());
 		target.setEatingOutVenueOther(source.getEatingOutVenueOther());
 		target.setShoppingForFoodDetails(source.getShoppingForFoodDetails());
 		return target;

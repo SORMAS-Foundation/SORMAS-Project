@@ -110,7 +110,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		Collections.unmodifiableList(Arrays.asList(Disease.CRYPTOSPORIDIOSIS, Disease.GIARDIASIS, Disease.MALARIA, Disease.DENGUE));
 
 	//@formatter:off
-	private static final String MAIN_HTML_LAYOUT = 
+	private static final String MAIN_HTML_LAYOUT =
 			loc(LOC_EXPOSURE_PERIOD_CONSIDER_HEADING) +
 			fluidRowLocs("EXP_DATES_LAYOUT") +
 			loc(LOC_EXPOSURE_INVESTIGATION_HEADING) +
@@ -120,6 +120,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			loc(EpiDataDto.EXPOSURE_DETAILS_KNOWN) +
 			loc(EpiDataDto.EXPOSURES) +
 			loc(LOC_CUSTOMIZABLE_FIELDS_EXPOSURE_INVESTIGATION) +
+			loc(EpiDataDto.FOOD_HISTORY) +
 			loc(LOC_CONCLUSION_HEADING) +
 			fluidRowLocs(6,EpiDataDto.CASE_IMPORTED_STATUS,6,"") +
 			fluidRowLocs(6, EpiDataDto.IMPORTED_CASE, 6, EpiDataDto.COUNTRY)+
@@ -135,11 +136,11 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			fluidRowLocs(3, EpiDataDto.CLUSTER_RELATED,5,EpiDataDto.CLUSTER_TYPE,4,EpiDataDto.CLUSTER_TYPE_TEXT) +
 			locCss(VSPACE_TOP_3, LOC_EPI_DATA_FIELDS_HINT) +
 			loc(EpiDataDto.HIGH_TRANSMISSION_RISK_AREA) +
-			loc(EpiDataDto.LARGE_OUTBREAKS_AREA) + 
+			loc(EpiDataDto.LARGE_OUTBREAKS_AREA) +
 			loc(EpiDataDto.AIRPORT_WORKER) +
 			loc(EpiDataDto.HEALTHCARE_PROFESSIONAL) +
 			loc(EpiDataDto.AREA_INFECTED_ANIMALS);
-	
+
 	private static final String SOURCE_CONTACTS_HTML_LAYOUT =
 			locCss(VSPACE_TOP_3, LOC_SOURCE_CASE_CONTACTS_HEADING) +
 			loc(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN) +
@@ -189,6 +190,19 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	}
 
 	@Override
+	public void setValue(EpiDataDto newFieldValue)
+		throws com.vaadin.v7.data.Property.ReadOnlyException, com.vaadin.v7.data.util.converter.Converter.ConversionException {
+		// Salmonellosis (Lu) renders the FoodHistory sub-form; ensure the bean is non-null so the binder can render an empty form for new cases.
+		if (newFieldValue != null
+			&& newFieldValue.getFoodHistory() == null
+			&& disease == Disease.SALMONELLOSIS
+			&& FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+			newFieldValue.setFoodHistory(de.symeda.sormas.api.epidata.FoodHistoryDto.build());
+		}
+		super.setValue(newFieldValue);
+	}
+
+	@Override
 	protected void addFields() {
 		if (disease == null) {
 			return;
@@ -216,6 +230,8 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		exposuresField.setEpiDataParentClass(parentClass);
 		exposuresField.setWidthFull();
 		exposuresField.setPseudonymized(isPseudonymized);
+
+		addFoodHistoryFields();
 
 		if (parentClass == CaseDataDto.class) {
 			addActivityAsCaseFields();
@@ -301,7 +317,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	/**
 	 * Include the exposure start and dates when symptomOnsetDate is present.
 	 * Disease incubation period is enabled with valid values.
-	 * 
+	 *
 	 * @param symptomOnsetDate
 	 * @param disease
 	 */
@@ -373,6 +389,18 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 
 		activityAsCaseField
 			.addValueChangeListener(e -> ogActivityAsCaseDetailsKnown.setEnabled(CollectionUtils.isEmpty(activityAsCaseField.getValue())));
+	}
+
+	// Salmonellosis (Lu) food consumption history sub-form; part of the exposure investigation.
+	private void addFoodHistoryFields() {
+		if (disease != Disease.SALMONELLOSIS || !FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+			return;
+		}
+
+		FoodHistoryForm foodHistoryForm = new FoodHistoryForm(
+			FieldVisibilityCheckers.withDisease(disease).andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
+			UiFieldAccessCheckers.getDefault(false, FacadeProvider.getConfigFacade().getCountryLocale()));
+		addField(EpiDataDto.FOOD_HISTORY, foodHistoryForm).setCaption(null);
 	}
 
 	private void addHeadingsAndInfoTexts() {
