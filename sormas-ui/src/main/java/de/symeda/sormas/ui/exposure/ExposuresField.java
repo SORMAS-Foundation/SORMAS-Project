@@ -74,6 +74,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 	private static final String COLUMN_DATE = Captions.date;
 	private static final String COLUMN_ADDRESS = Captions.address;
 	private static final String COLUMN_DESCRIPTION = ExposureDto.DESCRIPTION;
+	private static final String COLUMN_PROPHYLAXIS_ADHERENCE = ExposureDto.PROPHYLAXIS_ADHERENCE;
 
 	private final FieldVisibilityCheckers fieldVisibilityCheckers;
 	private Supplier<List<ContactReferenceDto>> getSourceContactsCallback;
@@ -106,6 +107,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 				ACTION_COLUMN_ID,
 				COLUMN_EXPOSURE_CATEGORY,
 				COLUMN_EXPOSURE_SETTING,
+				COLUMN_PROPHYLAXIS_ADHERENCE,
 				COLUMN_DATE,
 				COLUMN_ADDRESS,
 				COLUMN_DESCRIPTION);
@@ -165,7 +167,6 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 				if (exposure.getSubSettings() != null && !exposure.getSubSettings().isEmpty()) {
 					return exposure.getSubSettings().stream().map(Object::toString).collect(Collectors.joining(", "));
 				}
-				return "";
 
 			default:
 				return exposure.getExposureSetting() != null ? exposure.getExposureSetting().toString() : "";
@@ -190,6 +191,10 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 			}
 
 			return descriptionLabel;
+		});
+		table.addGeneratedColumn(COLUMN_PROPHYLAXIS_ADHERENCE, (Table.ColumnGenerator) (source, itemId, columnId) -> {
+			ExposureDto exposure = (ExposureDto) itemId;
+			return exposure.getProphylaxisAdherence() != null ? exposure.getProphylaxisAdherence().toString() : "";
 		});
 	}
 

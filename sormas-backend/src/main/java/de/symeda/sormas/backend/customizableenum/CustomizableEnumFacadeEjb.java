@@ -26,6 +26,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -168,6 +169,25 @@ public class CustomizableEnumFacadeEjb
 		validate(dto);
 
 		CustomizableEnumValue existingEntity = service.getByUuid(dto.getUuid());
+		// if existingEntity disease removed and it is mapped to the cases, shouldn't allow to save the entity
+		
+		if (existingEntity != null && CollectionUtils.isNotEmpty(existingEntity.getDiseases())) {
+			Set<Disease> incomingDiseases = dto.getDiseases() != null ? dto.getDiseases() : Collections.emptySet();
+			for (Disease removedDisease : existingEntity.getDiseases()) {
+				if (!incomingDiseases.contains(removedDisease)) {
+					List<String> uuids = service.areCasesUsingCustomizableEnumValue(
+						removedDisease,
+						getEnumValue(dto.getDataType(), removedDisease, existingEntity.getValue()));
+					if (!uuids.isEmpty()) {
+						throw new ValidationRuntimeException(
+							I18nProperties.getValidationError(
+								Validations.customizableEnumValueAlreadyInUse,
+								removedDisease.getName(),
+								uuids.stream().filter(Objects::nonNull).collect(Collectors.joining(", "))));
+					}
+				}
+			}
+		}
 
 		for (Disease disease : dto.getDiseases()) {
 			List<String> dataTypeValues = enumValues.get(dto.getDataType()).getOrDefault(disease, Collections.emptyList());

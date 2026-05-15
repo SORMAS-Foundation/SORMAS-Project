@@ -23,7 +23,6 @@ public class SurveyTokenIndexDto extends PseudonymizableIndexDto {
 
 	public static final String I18N_PREFIX = "SurveyToken";
 	private static final long serialVersionUID = 4358173798026207265L;
-
 	public static final String TOKEN = "token";
 	public static final String ASSIGNED_CASE_UUID = "assignedCaseUuid";
 	public static final String ASSIGNEMENT_DATE = "assignmentDate";
@@ -41,6 +40,7 @@ public class SurveyTokenIndexDto extends PseudonymizableIndexDto {
 	private final String generatedDocumentUuid;
 	private final String generatedDocumentName;
 	private final String generatedDocumentMimeType;
+	private final String externalRespondentId;
 
 	public SurveyTokenIndexDto(
 		String uuid,
@@ -54,7 +54,8 @@ public class SurveyTokenIndexDto extends PseudonymizableIndexDto {
 		String generatedDocumentUuid,
 		String generatedDocumentName,
 		String generatedDocumentMimeType,
-		Date generatedDocumentDate) {
+		Date generatedDocumentDate,
+		String externalRespondentId) {
 		super(uuid);
 		this.surveyUuid = surveyUuid;
 		this.surveyName = surveyName;
@@ -67,6 +68,7 @@ public class SurveyTokenIndexDto extends PseudonymizableIndexDto {
 		this.generatedDocumentName = generatedDocumentName;
 		this.generatedDocumentMimeType = generatedDocumentMimeType;
 		this.responseReceivedDate = generatedDocumentDate;
+		this.externalRespondentId = externalRespondentId;
 	}
 
 	public String getSurveyUuid() {
@@ -115,5 +117,9 @@ public class SurveyTokenIndexDto extends PseudonymizableIndexDto {
 
 	public Date getResponseReceivedDate() {
 		return responseReceivedDate;
+	}
+
+	public String getExternalRespondentId() {
+		return externalRespondentId;
 	}
 }

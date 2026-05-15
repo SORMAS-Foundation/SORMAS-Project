@@ -109,6 +109,7 @@ import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInf
 import de.symeda.sormas.api.specialcaseaccess.SpecialCaseAccessFacade;
 import de.symeda.sormas.api.survey.SurveyFacade;
 import de.symeda.sormas.api.survey.SurveyTokenFacade;
+import de.symeda.sormas.api.survey.alias.PathAliasFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationCategoryFacade;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
@@ -317,6 +318,10 @@ public class FacadeProvider {
 
 	public static PrescriptionFacade getPrescriptionFacade() {
 		return get().lookupEjbRemote(PrescriptionFacade.class);
+	}
+
+	public static PathAliasFacade getPathAliasFacade() {
+		return get().lookupEjbRemote(PathAliasFacade.class);
 	}
 
 	public static TreatmentFacade getTreatmentFacade() {

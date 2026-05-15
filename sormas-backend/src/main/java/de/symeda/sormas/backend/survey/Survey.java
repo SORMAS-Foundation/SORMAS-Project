@@ -36,11 +36,13 @@ public class Survey extends AbstractDomainObject {
 	public static final String DISEASE = "disease";
 	public static final String DOCUMENT_TEMPLATE = "documentTemplate";
 	public static final String EMAIL_TEMPLATE = "emailTemplate";
+	public static final String EXTERNAL_ID = "externalId";
 
 	private String name;
 	private Disease disease;
 	private DocumentTemplate documentTemplate;
 	private DocumentTemplate emailTemplate;
+	private String externalId;
 
 	@Column(nullable = false, length = FieldConstraints.CHARACTER_LIMIT_DEFAULT)
 	public String getName() {
@@ -76,5 +78,14 @@ public class Survey extends AbstractDomainObject {
 
 	public void setEmailTemplate(DocumentTemplate emailTemplate) {
 		this.emailTemplate = emailTemplate;
+	}
+
+	@Column(length = FieldConstraints.CHARACTER_LIMIT_DEFAULT)
+	public String getExternalId() {
+		return externalId;
+	}
+
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
 	}
 }

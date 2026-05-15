@@ -1,9 +1,6 @@
 package de.symeda.sormas.backend;
 
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.fields;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.*;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -288,7 +285,13 @@ public class ArchitectureTest {
 		assertFacadeEjbAnnotated(
 			ExternalMessageFacadeEjb.class,
 			AuthMode.CLASS_ONLY,
-			Arrays.asList("getExternalMessagesAdapterVersion", "fetchAndSaveExternalMessages", "bulkAssignExternalMessages", "delete"),
+			Arrays.asList(
+				"getExternalMessagesAdapterVersion",
+				"fetchAndSaveExternalMessages",
+				"bulkAssignExternalMessages",
+				"delete",
+				"overwriteSurveyResponse",
+				"saveAndProcessSurveyResponses"),
 			classes);
 	}
 

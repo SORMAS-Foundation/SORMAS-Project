@@ -71,6 +71,7 @@ public class ExternalMessageGrid extends FilteredGrid<ExternalMessageIndexDto, E
 	private static final String PLACEHOLDER_SPACE = String.join("", Collections.nCopies(35, "&nbsp"));
 	private static final String PDF_FILENAME_FORMAT = "sormas_lab_message_%s_%s.pdf";
 	private static final String XML_FILENAME_FORMAT = "sormas_lab_message_%s_%s.xml";
+	private static final String SURVEY_FILENAME_FORMAT = "sormas_survey_%s_%s.json";
 
 	private DataProviderListener<ExternalMessageIndexDto> dataProviderListener;
 
@@ -186,7 +187,10 @@ public class ExternalMessageGrid extends FilteredGrid<ExternalMessageIndexDto, E
 		final boolean canAssignDoctorDeclaration = ExternalMessageType.PHYSICIANS_REPORT.equals(externalMessage.getType())
 			&& UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS);
 
-		if (canAssignLabMessage || canAssignDoctorDeclaration) {
+		final boolean canAssignSurveyResponse = ExternalMessageType.SURVEY_RESPONSE.equals(externalMessage.getType())
+			&& UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_SURVEY_RESPONSE_PROCESS);
+
+		if (canAssignLabMessage || canAssignDoctorDeclaration || canAssignSurveyResponse) {
 			Button button = new Button();
 			CssStyles.style(button, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
 			if (externalMessage.getAssignee() == null) {
@@ -210,13 +214,19 @@ public class ExternalMessageGrid extends FilteredGrid<ExternalMessageIndexDto, E
 			&& UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS)
 			&& UiUtil.permitted(UserRight.CASE_CREATE, UserRight.CASE_EDIT);
 
-		if ((canAssignLabMessage || canAssignDoctorDeclaration) && indexDto.getStatus().isProcessable()) {
+		final boolean canAssignSurveyResponse = ExternalMessageType.SURVEY_RESPONSE.equals(indexDto.getType())
+			&& UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_SURVEY_RESPONSE_PROCESS)
+			&& UiUtil.permitted(UserRight.CASE_CREATE, UserRight.CASE_EDIT);
+
+		if ((canAssignLabMessage || canAssignDoctorDeclaration || canAssignSurveyResponse) && indexDto.getStatus().isProcessable()) {
 			// build process button
 			return ButtonHelper.createButton(Captions.externalMessageProcess, e -> {
 				if (ExternalMessageType.LAB_MESSAGE == indexDto.getType()) {
 					ControllerProvider.getExternalMessageController().processLabMessage(indexDto.getUuid());
 				} else if (ExternalMessageType.PHYSICIANS_REPORT == indexDto.getType()) {
 					ControllerProvider.getExternalMessageController().processDoctorDeclarationMessage(indexDto.getUuid());
+				} else if (ExternalMessageType.SURVEY_RESPONSE == indexDto.getType()) {
+					ControllerProvider.getExternalMessageController().processSurveyResponse(indexDto.getUuid());
 				}
 			}, ValoTheme.BUTTON_PRIMARY);
 		} else {
@@ -227,19 +237,30 @@ public class ExternalMessageGrid extends FilteredGrid<ExternalMessageIndexDto, E
 		}
 	}
 
-	private Button buildDownloadButton(ExternalMessageIndexDto labMessage) {
+	private Button buildDownloadButton(ExternalMessageIndexDto externalMessageIndex) {
 		Button downloadButton = new Button(VaadinIcons.DOWNLOAD);
 		downloadButton.setDescription(I18nProperties.getString(Strings.headingExternalMessageDownload));
-		final String fileName =
-			String.format(XML_FILENAME_FORMAT, DataHelper.getShortUuid(labMessage.getUuid()), DateHelper.formatDateForExport(new Date()));
+
+		String fileName;
+		String mimeType;
+		if (externalMessageIndex.getType() == ExternalMessageType.SURVEY_RESPONSE) {
+			fileName = String
+				.format(SURVEY_FILENAME_FORMAT, DataHelper.getShortUuid(externalMessageIndex.getUuid()), DateHelper.formatDateForExport(new Date()));
+
+			mimeType = "application/json";
+		} else {
+			fileName = String
+				.format(XML_FILENAME_FORMAT, DataHelper.getShortUuid(externalMessageIndex.getUuid()), DateHelper.formatDateForExport(new Date()));
+			mimeType = "application/xml";
+		}
 
 		StreamResource streamResource = new StreamResource(
 			() -> ControllerProvider.getExternalMessageController()
-				.downloadExternalMessageAttachment(labMessage.getUuid())
+				.downloadExternalMessageAttachment(externalMessageIndex.getUuid())
 				.map(ByteArrayInputStream::new)
 				.orElse(null),
 			fileName);
-		streamResource.setMIMEType("application/xml");
+		streamResource.setMIMEType(mimeType);
 
 		FileDownloader fileDownloader = new FileDownloader(streamResource);
 		fileDownloader.extend(downloadButton);

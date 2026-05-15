@@ -901,6 +901,9 @@ public interface Strings {
 	String headingStoppedFollowUp = "headingStoppedFollowUp";
 	String headingSurveillanceReports = "headingSurveillanceReports";
 	String headingSurveyGenerateDocument = "headingSurveyGenerateDocument";
+	String headingSurveyResponseCorrectAndReprocess = "headingSurveyResponseCorrectAndReprocess";
+	String headingSurveyResponseDetails = "headingSurveyResponseDetails";
+	String headingSurveyResponseFailures = "headingSurveyResponseFailures";
 	String headingSurveySendDocument = "headingSurveySendDocument";
 	String headingSurveySideComponent = "headingSurveySideComponent";
 	String headingSymptomJournalAccountCreation = "headingSymptomJournalAccountCreation";
@@ -1649,6 +1652,9 @@ public interface Strings {
 	String messageSurveyNoDocumentTemplate = "messageSurveyNoDocumentTemplate";
 	String messageSurveyNoEmailTemplate = "messageSurveyNoEmailTemplate";
 	String messageSurveyNoTokens = "messageSurveyNoTokens";
+	String messageSurveyResponseAllFieldsApplied = "messageSurveyResponseAllFieldsApplied";
+	String messageSurveyResponseNotYetProcessed = "messageSurveyResponseNotYetProcessed";
+	String messageSurveyResponseReprocessed = "messageSurveyResponseReprocessed";
 	String messageSurveySaved = "messageSurveySaved";
 	String messageSurveyTokenDelete = "messageSurveyTokenDelete";
 	String messageSurveyTokenSaved = "messageSurveyTokenSaved";

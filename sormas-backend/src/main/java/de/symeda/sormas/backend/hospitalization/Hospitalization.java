@@ -147,7 +147,7 @@ public class Hospitalization extends AbstractDomainObject {
 
 	/**
 	 * This change date has to be set whenever one of the embedded lists is modified: !oldList.equals(newList)
-	 * 
+	 *
 	 * @return
 	 */
 	public Date getChangeDateOfEmbeddedLists() {

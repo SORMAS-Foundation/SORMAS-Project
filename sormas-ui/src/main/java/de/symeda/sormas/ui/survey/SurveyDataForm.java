@@ -20,6 +20,7 @@ public class SurveyDataForm extends AbstractEditForm<SurveyDto> {
 	//@formatter:off
 	private static final String HTML_LAYOUT =
 			fluidRowLocs(SurveyDto.SURVEY_NAME, "") + fluidRowLocs(SurveyDto.DISEASE, "")
+			+ fluidRowLocs(SurveyDto.EXTERNAL_ID, "")
 			+ fluidRowLocs(SURVEY_DOCUMENT_SECTION, "");
 	//@formatter:on
 
@@ -43,21 +44,21 @@ public class SurveyDataForm extends AbstractEditForm<SurveyDto> {
 
 		addField(SurveyDto.SURVEY_NAME, TextField.class);
 
+		addField(SurveyDto.EXTERNAL_ID, TextField.class);
+
 		DocumentTemplateSection documentTemplateSection = new DocumentTemplateSection(
-				new DocumentTemplateCriteria(DocumentWorkflow.SURVEY_DOCUMENT, null, surveyReference),
-				false,
-				new SurveyDocumentTemplateReceiver(DocumentWorkflow.SURVEY_DOCUMENT, surveyReference));
+			new DocumentTemplateCriteria(DocumentWorkflow.SURVEY_DOCUMENT, null, surveyReference),
+			false,
+			new SurveyDocumentTemplateReceiver(DocumentWorkflow.SURVEY_DOCUMENT, surveyReference));
 		DocumentTemplateSection emailTemplateSection = new DocumentTemplateSection(
-				new DocumentTemplateCriteria(DocumentWorkflow.SURVEY_EMAIL, null, surveyReference),
-				false,
-				new SurveyEmailTemplateReceiver(DocumentWorkflow.SURVEY_EMAIL, surveyReference));
+			new DocumentTemplateCriteria(DocumentWorkflow.SURVEY_EMAIL, null, surveyReference),
+			false,
+			new SurveyEmailTemplateReceiver(DocumentWorkflow.SURVEY_EMAIL, surveyReference));
 
 		documentTemplateSection.setMargin(false);
 		emailTemplateSection.setMargin(false);
 
-		gridLayout = new VerticalLayout(
-				documentTemplateSection,
-				emailTemplateSection);
+		gridLayout = new VerticalLayout(documentTemplateSection, emailTemplateSection);
 
 		gridLayout.setWidth(100, Unit.PERCENTAGE);
 		gridLayout.setMargin(new MarginInfo(true, false, true, false));

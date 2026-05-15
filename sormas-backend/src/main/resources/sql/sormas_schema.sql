@@ -15887,6 +15887,118 @@ ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS eyeirritation  varchar(255
 
 INSERT INTO schema_version (version_number, comment) VALUES (628, '#13917 - Salmonellosis Symptoms: constipation, dysuria, eye irritation');
 
+-- Surveys
+ALTER TABLE surveys
+    ADD COLUMN externalid TEXT;
+
+-- Survey tokens
+ALTER TABLE surveytokens
+    ADD COLUMN externalrespondentid TEXT;
+
+-- Surveys
+ALTER TABLE symptoms
+    ADD COLUMN IF NOT EXISTS lossOfAppetite TEXT;
+ALTER TABLE symptoms
+    ADD COLUMN IF NOT EXISTS flatulence TEXT;
+ALTER TABLE symptoms
+    ADD COLUMN IF NOT EXISTS smellyBurps TEXT;
+ALTER TABLE symptoms
+    ADD COLUMN IF NOT EXISTS coughingAttacks TEXT;
+ALTER TABLE symptoms
+    ADD COLUMN IF NOT EXISTS coughingAtNight TEXT;
+ALTER TABLE symptoms
+    ADD COLUMN IF NOT EXISTS abdominalCramps TEXT;
+
+-- ExternalMessage
+ALTER TABLE externalmessage
+    ADD COLUMN IF NOT EXISTS additionalDataType TEXT;
+ALTER TABLE externalmessage
+    ADD COLUMN IF NOT EXISTS additionalDataJson JSONB;
+
+
+-- system configuration for surveys
+
+DO
+$$ DECLARE
+general_category_id bigint;
+
+BEGIN
+-- Get GENERAL category id
+-- General category should always exist
+SELECT id
+INTO general_category_id
+FROM systemconfigurationcategory
+WHERE name = 'GENERAL_CATEGORY';
+
+INSERT INTO systemconfigurationvalue(config_key, config_value, value_description, category_id, value_optional, value_pattern,
+                                     value_encrypt, data_provider, validation_message, changedate, creationdate, id,
+                                     uuid)
+VALUES ('NG_SUVEY_BASE_URI', null, 'i18n/infoSystemConfigurationValueDescriptionNgSurveyBaseURI', general_category_id, true,
+        '', false, null,
+        'i18n/systemConfigurationValueInvalidValue', now(), now(), nextval('entity_seq'), generate_base32_uuid());
+
+
+INSERT INTO systemconfigurationvalue(config_key, config_value, value_description, category_id, value_optional, value_pattern,
+                                     value_encrypt, data_provider, validation_message, changedate, creationdate, id,
+                                     uuid)
+VALUES ('NG_SUVEY_ENCRYPTED_TOKEN', null, 'i18n/infoSystemConfigurationValueDescriptionNgSurveyEncryptedToken', general_category_id, true,
+        '', true, null,
+        'i18n/systemConfigurationValueInvalidValue', now(), now(), nextval('entity_seq'), generate_base32_uuid());
+
+INSERT INTO systemconfigurationvalue(config_key, config_value, value_description, category_id, value_optional, value_pattern,
+                                     value_encrypt, data_provider, validation_message, changedate, creationdate, id,
+                                     uuid)
+VALUES ('NG_SUVEY_FIELD_PREFIX', '_so', 'i18n/infoSystemConfigurationValueDescriptionNgSurveyFieldPrefix', general_category_id, true,
+        '', false, null,
+        'i18n/systemConfigurationValueInvalidValue', now(), now(), nextval('entity_seq'), generate_base32_uuid());
+
+
+
+INSERT INTO systemconfigurationvalue(config_key, config_value, value_description, category_id, value_optional, value_pattern,
+                                     value_encrypt, data_provider, validation_message, changedate, creationdate, id,
+                                     uuid)
+VALUES ('SURVEY_PERIOD_INTERVAL_DAYS', '5', 'i18n/infoSystemConfigurationValueDescriptionSurveyPeriodIntervalDays', general_category_id, true,
+        '', true, null,
+        'i18n/systemConfigurationValueInvalidValue', now(), now(), nextval('entity_seq'), generate_base32_uuid());
+
+
+
+END $$
+LANGUAGE plpgsql;
+
+-- index to avoid full table scan when checking for survey duplicates
+CREATE INDEX idx_externalmessage_report_id
+    ON externalmessage (reportid);
+
+UPDATE featureconfiguration
+SET properties = '{"FETCH_MODE":false,"FORCE_AUTOMATIC_PROCESSING":true,"SURVEY_FETCH_ENABLED":true}'
+where featuretype = 'EXTERNAL_MESSAGES';
+
+-- user rights
+
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'EXTERNAL_MESSAGE_SURVEY_RESPONSE_VIEW' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN');
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'EXTERNAL_MESSAGE_SURVEY_RESPONSE_PROCESS' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN');
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'EXTERNAL_MESSAGE_SURVEY_RESPONSE_DELETE' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN');
+
+
+-- history tables
+ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS additionaldatajson jsonb;
+ALTER TABLE externalmessage_history ADD COLUMN IF NOT EXISTS additionaldatatype text;
+
+ALTER TABLE surveys_history ADD COLUMN IF NOT EXISTS externalid text;
+
+ALTER TABLE surveytokens_history ADD COLUMN IF NOT EXISTS externalrespondentid text;
+
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS abdominalcramps text;
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS coughingatnight text;
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS coughingattacks text;
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS flatulence text;
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS lossofappetite text;
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS smellyburps text;
+
+INSERT INTO schema_version (version_number, comment)
+VALUES (629, '#13832 - External Survey integration');
+
 -- 2026-04-30 Salmonellosis FoodHistory sub-entity on EpiData #13918
 CREATE TABLE IF NOT EXISTS foodhistory (
     id bigint NOT NULL PRIMARY KEY,
@@ -15929,19 +16041,20 @@ ALTER TABLE foodhistory_consumeditems_history OWNER TO sormas_user;
 ALTER TABLE epidata         ADD COLUMN IF NOT EXISTS foodhistory_id bigint REFERENCES foodhistory(id);
 ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS foodhistory_id bigint;
 
-INSERT INTO schema_version (version_number, comment) VALUES (629, '#13918 - Salmonellosis FoodHistory sub-entity on EpiData');
+INSERT INTO schema_version (version_number, comment) VALUES (630, '#13918 - Salmonellosis FoodHistory sub-entity on EpiData');
 
 -- 2026-05-11 Salmonellosis FoodHistory: add change_user_id column (required for all entities extending AbstractDomainObject) #13918
 ALTER TABLE foodhistory ADD COLUMN IF NOT EXISTS change_user_id BIGINT;
 ALTER TABLE foodhistory ADD CONSTRAINT fk_foodhistory_change_user_id FOREIGN KEY (change_user_id) REFERENCES users (id);
 ALTER TABLE foodhistory_history ADD COLUMN IF NOT EXISTS change_user_id BIGINT;
 
-INSERT INTO schema_version (version_number, comment) VALUES (630, '#13918 - Salmonellosis FoodHistory: add change_user_id column');
+INSERT INTO schema_version (version_number, comment) VALUES (631, '#13918 - Salmonellosis FoodHistory: add change_user_id column');
 
 -- 2026-05-11 Drop broken delete_history_trigger on exposures_eatingoutvenues
 -- (composite-PK join tables don't have an `id` column; mirrors v617 which did the same for
 -- exposures_subsettings / contactfactors / protectivemeasures). #13917
 DROP TRIGGER IF EXISTS delete_history_trigger ON exposures_eatingoutvenues;
 
-INSERT INTO schema_version (version_number, comment) VALUES (631, '#13917 - Drop broken delete_history_trigger on exposures_eatingoutvenues');
+INSERT INTO schema_version (version_number, comment) VALUES (632, '#13917 - Drop broken delete_history_trigger on exposures_eatingoutvenues');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
