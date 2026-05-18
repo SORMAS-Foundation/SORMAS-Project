@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -42,16 +41,15 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldContext;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
-import de.symeda.sormas.api.exposure.ExposureCategory;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.LocationHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UiUtil;
@@ -69,10 +67,10 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 })
 public class ExposuresField extends AbstractTableField<ExposureDto> {
 
+	private static final String COLUMN_EXPOSURE_TYPE = ExposureDto.EXPOSURE_TYPE;
 	private static final String COLUMN_EXPOSURE_CATEGORY = ExposureDto.EXPOSURE_CATEGORY;
-	private static final String COLUMN_EXPOSURE_SETTING = ExposureDto.EXPOSURE_SETTING;
+	private static final String COLUMN_LOCATION_COUNTRY = "locationCountry";
 	private static final String COLUMN_DATE = Captions.date;
-	private static final String COLUMN_ADDRESS = Captions.address;
 	private static final String COLUMN_DESCRIPTION = ExposureDto.DESCRIPTION;
 	private static final String COLUMN_PROPHYLAXIS_ADHERENCE = ExposureDto.PROPHYLAXIS_ADHERENCE;
 
@@ -105,19 +103,19 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 		if (epiDataParentClass == CaseDataDto.class) {
 			table.setVisibleColumns(
 				ACTION_COLUMN_ID,
-				COLUMN_EXPOSURE_CATEGORY,
-				COLUMN_EXPOSURE_SETTING,
-				COLUMN_PROPHYLAXIS_ADHERENCE,
+				COLUMN_EXPOSURE_TYPE,
+				COLUMN_LOCATION_COUNTRY,
 				COLUMN_DATE,
-				COLUMN_ADDRESS,
-				COLUMN_DESCRIPTION);
+				COLUMN_EXPOSURE_CATEGORY,
+				COLUMN_DESCRIPTION,
+				COLUMN_PROPHYLAXIS_ADHERENCE);
 		} else {
 			table.setVisibleColumns(
 				ACTION_COLUMN_ID,
-				COLUMN_EXPOSURE_CATEGORY,
-				COLUMN_EXPOSURE_SETTING,
+				COLUMN_EXPOSURE_TYPE,
+				COLUMN_LOCATION_COUNTRY,
 				COLUMN_DATE,
-				COLUMN_ADDRESS,
+				COLUMN_EXPOSURE_CATEGORY,
 				COLUMN_DESCRIPTION);
 		}
 		table.setCellStyleGenerator(
@@ -128,6 +126,8 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 		for (Object columnId : table.getVisibleColumns()) {
 			if (columnId.equals(ACTION_COLUMN_ID)) {
 				table.setColumnHeader(columnId, "&nbsp");
+			} else if (COLUMN_LOCATION_COUNTRY.equals(columnId)) {
+				table.setColumnHeader(columnId, I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.COUNTRY));
 			} else {
 				table.setColumnHeader(columnId, I18nProperties.getPrefixCaption(ExposureDto.I18N_PREFIX, (String) columnId));
 			}
@@ -138,49 +138,19 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 
 	private void addGeneratedColumns(Table table) {
 
-		table.addGeneratedColumn(COLUMN_EXPOSURE_SETTING, (Table.ColumnGenerator) (source, itemId, columnId) -> {
+		table.addGeneratedColumn(COLUMN_LOCATION_COUNTRY, (Table.ColumnGenerator) (source, itemId, columnId) -> {
 			ExposureDto exposure = (ExposureDto) itemId;
-			ExposureCategory category = exposure.getExposureCategory();
-
-			if (category == null) {
+			LocationDto location = exposure.getLocation();
+			if (location == null || location.getCountry() == null) {
 				return "";
 			}
-
-			switch (category) {
-			case ANIMAL_CONTACT:
-				StringBuilder animalDetails = new StringBuilder();
-				if (exposure.getConditionOfAnimal() != null) {
-					animalDetails.append(exposure.getConditionOfAnimal().toString());
-				}
-				if (exposure.getAnimalCategory() != null) {
-					if (animalDetails.length() > 0) {
-						animalDetails.append(", ");
-					}
-					animalDetails.append(exposure.getAnimalCategory().toString());
-				}
-				return animalDetails.toString();
-
-			case FOMITE_TRANSMISSION:
-				return exposure.getFomiteTransmissionLocation() != null ? exposure.getFomiteTransmissionLocation().toString() : "";
-
-			case FOOD_BORNE:
-				if (exposure.getSubSettings() != null && !exposure.getSubSettings().isEmpty()) {
-					return exposure.getSubSettings().stream().map(Object::toString).collect(Collectors.joining(", "));
-				}
-
-			default:
-				return exposure.getExposureSetting() != null ? exposure.getExposureSetting().toString() : "";
-			}
+			return location.getCountry().getCaption();
 		});
 
 		table.addGeneratedColumn(COLUMN_DATE, (Table.ColumnGenerator) (source, itemId, columnId) -> {
 			ExposureDto exposure = (ExposureDto) itemId;
 			return DateFormatHelper.buildPeriodDateTimeString(exposure.getStartDate(), exposure.getEndDate());
 		});
-
-		table.addGeneratedColumn(
-			COLUMN_ADDRESS,
-			(Table.ColumnGenerator) (source, itemId, columnId) -> LocationHelper.buildLocationString(((ExposureDto) itemId).getLocation()));
 
 		table.addGeneratedColumn(COLUMN_DESCRIPTION, (Table.ColumnGenerator) (source, itemId, columnId) -> {
 			ExposureDto exposure = (ExposureDto) itemId;
