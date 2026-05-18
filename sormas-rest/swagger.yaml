@@ -18123,6 +18123,8 @@ components:
           - BUILDING_SECTOR
           - LOGISTICS_CENTER
           - OTHER
+      required:
+      - exposureType
     ExternalDataDto:
       type: object
       properties:
