@@ -29,7 +29,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -93,8 +92,6 @@ public class EpiData extends AbstractDomainObject {
 	private Date exposureInvestigationToDate;
 	private Date activityAsCaseFromDate;
 	private Date activityAsCaseToDate;
-
-	private FoodHistory foodHistory;
 
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getExposureDetailsKnown() {
@@ -345,15 +342,6 @@ public class EpiData extends AbstractDomainObject {
 
 	public void setActivityAsCaseToDate(Date activityAsCaseToDate) {
 		this.activityAsCaseToDate = activityAsCaseToDate;
-	}
-
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-	public FoodHistory getFoodHistory() {
-		return foodHistory;
-	}
-
-	public void setFoodHistory(FoodHistory foodHistory) {
-		this.foodHistory = foodHistory;
 	}
 
 }

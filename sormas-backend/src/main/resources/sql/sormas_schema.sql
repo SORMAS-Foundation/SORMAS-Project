@@ -15999,59 +15999,11 @@ ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS smellyburps text;
 INSERT INTO schema_version (version_number, comment)
 VALUES (629, '#13832 - External Survey integration');
 
--- 2026-04-30 Salmonellosis FoodHistory sub-entity on EpiData #13918
-CREATE TABLE IF NOT EXISTS foodhistory (
-    id bigint NOT NULL PRIMARY KEY,
-    uuid varchar(36) NOT NULL UNIQUE,
-    changedate timestamp NOT NULL,
-    creationdate timestamp NOT NULL,
-    sys_period tstzrange NOT NULL,
-    otherfooddetails varchar(512)
-);
-ALTER TABLE foodhistory OWNER TO sormas_user;
-
-CREATE TABLE IF NOT EXISTS foodhistory_history (LIKE foodhistory);
-DROP TRIGGER IF EXISTS versioning_trigger ON foodhistory;
-CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON foodhistory
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'foodhistory_history', true);
-ALTER TABLE foodhistory_history OWNER TO sormas_user;
-
-CREATE TABLE IF NOT EXISTS foodhistory_consumeditems (
-    foodhistory_id bigint NOT NULL,
-    item           varchar(64) NOT NULL,
-    details        varchar(512),
-    sys_period     tstzrange NOT NULL,
-    PRIMARY KEY (foodhistory_id, item)
-);
-ALTER TABLE foodhistory_consumeditems OWNER TO sormas_user;
-ALTER TABLE foodhistory_consumeditems ADD CONSTRAINT fk_foodhistory_consumeditems_foodhistory_id FOREIGN KEY (foodhistory_id) REFERENCES foodhistory;
-
-CREATE TABLE IF NOT EXISTS foodhistory_consumeditems_history (LIKE foodhistory_consumeditems);
-DROP TRIGGER IF EXISTS versioning_trigger ON foodhistory_consumeditems;
-CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE ON foodhistory_consumeditems
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'foodhistory_consumeditems_history', true);
-DROP TRIGGER IF EXISTS delete_history_trigger ON foodhistory_consumeditems;
-ALTER TABLE foodhistory_consumeditems_history OWNER TO sormas_user;
-
-ALTER TABLE epidata         ADD COLUMN IF NOT EXISTS foodhistory_id bigint REFERENCES foodhistory(id);
-ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS foodhistory_id bigint;
-
-INSERT INTO schema_version (version_number, comment) VALUES (630, '#13918 - Salmonellosis FoodHistory sub-entity on EpiData');
-
--- 2026-05-11 Salmonellosis FoodHistory: add change_user_id column (required for all entities extending AbstractDomainObject) #13918
-ALTER TABLE foodhistory ADD COLUMN IF NOT EXISTS change_user_id BIGINT;
-ALTER TABLE foodhistory ADD CONSTRAINT fk_foodhistory_change_user_id FOREIGN KEY (change_user_id) REFERENCES users (id);
-ALTER TABLE foodhistory_history ADD COLUMN IF NOT EXISTS change_user_id BIGINT;
-
-INSERT INTO schema_version (version_number, comment) VALUES (631, '#13918 - Salmonellosis FoodHistory: add change_user_id column');
-
 -- 2026-05-11 Drop broken delete_history_trigger on exposures_eatingoutvenues
 -- (composite-PK join tables don't have an `id` column; mirrors v617 which did the same for
 -- exposures_subsettings / contactfactors / protectivemeasures). #13917
 DROP TRIGGER IF EXISTS delete_history_trigger ON exposures_eatingoutvenues;
 
-INSERT INTO schema_version (version_number, comment) VALUES (632, '#13917 - Drop broken delete_history_trigger on exposures_eatingoutvenues');
+INSERT INTO schema_version (version_number, comment) VALUES (630, '#13917 - Drop broken delete_history_trigger on exposures_eatingoutvenues');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

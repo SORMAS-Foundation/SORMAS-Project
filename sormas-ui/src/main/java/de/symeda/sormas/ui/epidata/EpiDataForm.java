@@ -120,7 +120,6 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			loc(EpiDataDto.EXPOSURE_DETAILS_KNOWN) +
 			loc(EpiDataDto.EXPOSURES) +
 			loc(LOC_CUSTOMIZABLE_FIELDS_EXPOSURE_INVESTIGATION) +
-			loc(EpiDataDto.FOOD_HISTORY) +
 			loc(LOC_CONCLUSION_HEADING) +
 			fluidRowLocs(6,EpiDataDto.CASE_IMPORTED_STATUS,6,"") +
 			fluidRowLocs(6, EpiDataDto.IMPORTED_CASE, 6, EpiDataDto.COUNTRY)+
@@ -190,19 +189,6 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	}
 
 	@Override
-	public void setValue(EpiDataDto newFieldValue)
-		throws com.vaadin.v7.data.Property.ReadOnlyException, com.vaadin.v7.data.util.converter.Converter.ConversionException {
-		// Salmonellosis (Lu) renders the FoodHistory sub-form; ensure the bean is non-null so the binder can render an empty form for new cases.
-		if (newFieldValue != null
-			&& newFieldValue.getFoodHistory() == null
-			&& disease == Disease.SALMONELLOSIS
-			&& FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
-			newFieldValue.setFoodHistory(de.symeda.sormas.api.epidata.FoodHistoryDto.build());
-		}
-		super.setValue(newFieldValue);
-	}
-
-	@Override
 	protected void addFields() {
 		if (disease == null) {
 			return;
@@ -230,8 +216,6 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		exposuresField.setEpiDataParentClass(parentClass);
 		exposuresField.setWidthFull();
 		exposuresField.setPseudonymized(isPseudonymized);
-
-		addFoodHistoryFields();
 
 		if (parentClass == CaseDataDto.class) {
 			addActivityAsCaseFields();
@@ -389,18 +373,6 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 
 		activityAsCaseField
 			.addValueChangeListener(e -> ogActivityAsCaseDetailsKnown.setEnabled(CollectionUtils.isEmpty(activityAsCaseField.getValue())));
-	}
-
-	// Salmonellosis (Lu) food consumption history sub-form; part of the exposure investigation.
-	private void addFoodHistoryFields() {
-		if (disease != Disease.SALMONELLOSIS || !FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
-			return;
-		}
-
-		FoodHistoryForm foodHistoryForm = new FoodHistoryForm(
-			FieldVisibilityCheckers.withDisease(disease).andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
-			UiFieldAccessCheckers.getDefault(false, FacadeProvider.getConfigFacade().getCountryLocale()));
-		addField(EpiDataDto.FOOD_HISTORY, foodHistoryForm).setCaption(null);
 	}
 
 	private void addHeadingsAndInfoTexts() {
