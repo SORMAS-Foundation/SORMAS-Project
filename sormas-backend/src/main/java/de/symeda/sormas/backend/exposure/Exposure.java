@@ -262,6 +262,7 @@ public class Exposure extends AbstractDomainObject {
 	}
 
 	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
 	public ExposureType getExposureType() {
 		return exposureType;
 	}
