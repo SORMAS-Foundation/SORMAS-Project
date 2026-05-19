@@ -220,8 +220,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	public static final String DIAGNOSIS_CRITERIA_HEADING_LOC = "diagnosisCriteriaHeadingLoc";
 	public static final String DIAGNOSIS_CRITERIA_SUBHEADING_LOC = "diagnosisCriteriaSubheadingLoc";
 	public static final String DIAGNOSIS_CRITERIA_LAB_TEST_PANEL_LOC = "diagnosisCriteriaLoc";
-	private static final Pattern URL_PATTERN = Pattern.compile("((https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])");
-
+	private static final Pattern RICH_TEXT_OR_URL_PATTERN = Pattern.compile(
+		"(<\\/?[a-zA-Z0-9]+(?:\\s+[a-zA-Z0-9\\-]+(?:\\s*=\\s*(?:\"[^\"]*\"|'[^']*'|[^'\\\">\\s]+))?)*\\s*\\/?>)|(https?://[^<\\s]+)",
+		Pattern.CASE_INSENSITIVE);
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT =
 			loc(CASE_DATA_HEADING_LOC) +
@@ -1647,27 +1648,59 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	 * @return sanitized url
 	 */
 	private String sanitizeAndLinkify(String text) {
-		Matcher matcher = URL_PATTERN.matcher(text);
+		if (text == null || text.isEmpty()) {
+			return "";
+		}
+		String htmlText = unescapeHtml(text);
+		Matcher matcher = RICH_TEXT_OR_URL_PATTERN.matcher(htmlText);
 		StringBuilder result = new StringBuilder();
 		int last = 0;
 
 		while (matcher.find()) {
-			result.append(escapeHtml(text.substring(last, matcher.start())));
+			String plainTextSegment = htmlText.substring(last, matcher.start());
+			result.append(escapeHtml(plainTextSegment).replace("&amp;nbsp;", "&nbsp;"));
 
-			String escapedUrl = escapeHtml(matcher.group(1));
-			result.append("<a href=\"")
-				.append(escapedUrl)
-				.append("\" target=\"_blank\" rel=\"noopener noreferrer\" style=\"color: `#197de1`; text-decoration: underline;\">")
-				.append(escapedUrl)
-				.append("</a>");
-
+			String htmlTag = matcher.group(1);
+			String url = matcher.group(2);
+			if (htmlTag != null) {
+				// It's a rich text tag (like <div> or <br>). Pass it through safely.
+				result.append(htmlTag);
+			} else if (url != null) {
+				// It's a plain-text URL. Wrap it in your custom blue link styling.
+				String escapedUrl = escapeHtml(url);
+				result.append("<a href=\"")
+					.append(escapedUrl)
+					.append("\" target=\"_blank\" rel=\"noopener noreferrer\" style=\"color: #197de1; text-decoration: underline;\">")
+					.append(escapedUrl)
+					.append("</a>");
+			}
 			last = matcher.end();
 		}
-
-		result.append(escapeHtml(text.substring(last)));
+		result.append(escapeHtml(htmlText.substring(last)).replace("&amp;nbsp;", "&nbsp;"));
 		return result.toString();
 	}
 
+	/**
+	 * Replacing any escape sequence with the character that it represents.
+	 * 
+	 * @param value
+	 * @return String
+	 */
+	private String unescapeHtml(String value) {
+		if (value == null)
+			return "";
+		// First, convert any double-escaped amps (e.g., &amp;lt; becomes &lt;)
+		String step1 = value.replace("&amp;", "&");
+		// Now, safely convert standard HTML entities to real brackets
+		return step1.replace("&lt;", "<").replace("&gt;", ">").replace("&quot;", "\"").replace("&#39;", "'");
+	}
+
+	/**
+	 * Converting special characters in a string into their safe HTML entity values
+	 * 
+	 * @param value
+	 * @return
+	 */
 	private static String escapeHtml(String value) {
 		return value.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;").replace("'", "&#39;");
 	}
