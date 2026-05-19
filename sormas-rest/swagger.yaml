@@ -11619,6 +11619,9 @@ components:
               - MIRU_PATTERN_CODE
               - ANTIBIOTIC_SUSCEPTIBILITY
               - MULTILOCUS_SEQUENCE_TYPING
+              - CGMLST
+              - SNP_TYPING
+              - SEROTYPING
               - SLIDE_AGGLUTINATION
               - WHOLE_GENOME_SEQUENCING
               - SEROGROUPING
@@ -11681,6 +11684,9 @@ components:
               - MIRU_PATTERN_CODE
               - ANTIBIOTIC_SUSCEPTIBILITY
               - MULTILOCUS_SEQUENCE_TYPING
+              - CGMLST
+              - SNP_TYPING
+              - SEROTYPING
               - SLIDE_AGGLUTINATION
               - WHOLE_GENOME_SEQUENCING
               - SEROGROUPING
@@ -11729,6 +11735,9 @@ components:
               - MIRU_PATTERN_CODE
               - ANTIBIOTIC_SUSCEPTIBILITY
               - MULTILOCUS_SEQUENCE_TYPING
+              - CGMLST
+              - SNP_TYPING
+              - SEROTYPING
               - SLIDE_AGGLUTINATION
               - WHOLE_GENOME_SEQUENCING
               - SEROGROUPING
@@ -17614,34 +17623,6 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
-        eatingOutVenueOther:
-          type: string
-          maxLength: 512
-          minLength: 0
-        eatingOutVenues:
-          type: array
-          items:
-            type: string
-            enum:
-            - CANTEENS
-            - FOOD_SERVED_ON_BOARD
-            - GAS_STATIONS
-            - STREET_VENDORS
-            - FOOD_COURTS
-            - CAFES_OR_TEA_ROOMS
-            - SANDWICH_SHOPS_BAKERIES_DELICATESSENS
-            - CAFETERIAS_OR_BARS
-            - KEBAB_FALAFEL_SNACK_SHOPS
-            - BURGER_RESTAURANTS
-            - FAST_FOOD_SNACK_BARS
-            - PIZZERIAS
-            - ASIAN_RESTAURANTS
-            - HOTELS
-            - TAKEAWAY_FOOD
-            - BUFFET_STYLE_RESTAURANTS
-            - FOOD_AT_EVENTS
-            - OTHER
-          uniqueItems: true
         eatingRawAnimalProducts:
           type: string
           enum:
@@ -22535,6 +22516,9 @@ components:
           - MIRU_PATTERN_CODE
           - ANTIBIOTIC_SUSCEPTIBILITY
           - MULTILOCUS_SEQUENCE_TYPING
+          - CGMLST
+          - SNP_TYPING
+          - SEROTYPING
           - SLIDE_AGGLUTINATION
           - WHOLE_GENOME_SEQUENCING
           - SEROGROUPING
@@ -24222,6 +24206,9 @@ components:
             - MIRU_PATTERN_CODE
             - ANTIBIOTIC_SUSCEPTIBILITY
             - MULTILOCUS_SEQUENCE_TYPING
+            - CGMLST
+            - SNP_TYPING
+            - SEROTYPING
             - SLIDE_AGGLUTINATION
             - WHOLE_GENOME_SEQUENCING
             - SEROGROUPING
@@ -24277,6 +24264,18 @@ components:
           - EDTA_WHOLE_BLOOD
           - INTESTINAL_FLUID
           - DUODENUM_FLUID
+          - ASPIRATE
+          - BONE_AND_JOINT
+          - CATHETER_EXIT_SITE
+          - EYE
+          - GASTRIC_FLUID
+          - GENITAL_SWAB
+          - LOWER_RESPIRATORY_TRACT
+          - PUS
+          - SEMEN
+          - SKIN
+          - SOFT_TISSUE
+          - WOUND
           - OTHER
         sampleMaterialText:
           type: string
@@ -24518,6 +24517,18 @@ components:
           - EDTA_WHOLE_BLOOD
           - INTESTINAL_FLUID
           - DUODENUM_FLUID
+          - ASPIRATE
+          - BONE_AND_JOINT
+          - CATHETER_EXIT_SITE
+          - EYE
+          - GASTRIC_FLUID
+          - GENITAL_SWAB
+          - LOWER_RESPIRATORY_TRACT
+          - PUS
+          - SEMEN
+          - SKIN
+          - SOFT_TISSUE
+          - WOUND
           - OTHER
         samplePurpose:
           type: string
@@ -24586,6 +24597,9 @@ components:
           - MIRU_PATTERN_CODE
           - ANTIBIOTIC_SUSCEPTIBILITY
           - MULTILOCUS_SEQUENCE_TYPING
+          - CGMLST
+          - SNP_TYPING
+          - SEROTYPING
           - SLIDE_AGGLUTINATION
           - WHOLE_GENOME_SEQUENCING
           - SEROGROUPING
@@ -24687,6 +24701,18 @@ components:
           - EDTA_WHOLE_BLOOD
           - INTESTINAL_FLUID
           - DUODENUM_FLUID
+          - ASPIRATE
+          - BONE_AND_JOINT
+          - CATHETER_EXIT_SITE
+          - EYE
+          - GASTRIC_FLUID
+          - GENITAL_SWAB
+          - LOWER_RESPIRATORY_TRACT
+          - PUS
+          - SEMEN
+          - SKIN
+          - SOFT_TISSUE
+          - WOUND
           - OTHER
         sampleMaterialText:
           type: string
@@ -28149,6 +28175,9 @@ components:
           - MIRU_PATTERN_CODE
           - ANTIBIOTIC_SUSCEPTIBILITY
           - MULTILOCUS_SEQUENCE_TYPING
+          - CGMLST
+          - SNP_TYPING
+          - SEROTYPING
           - SLIDE_AGGLUTINATION
           - WHOLE_GENOME_SEQUENCING
           - SEROGROUPING

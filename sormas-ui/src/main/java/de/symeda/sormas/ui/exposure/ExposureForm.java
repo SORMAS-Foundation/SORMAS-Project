@@ -59,7 +59,6 @@ import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.AnimalCategory;
-import de.symeda.sormas.api.exposure.EatingOutVenue;
 import de.symeda.sormas.api.exposure.ExposureCategory;
 import de.symeda.sormas.api.exposure.ExposureContactFactor;
 import de.symeda.sormas.api.exposure.ExposureDto;
@@ -111,8 +110,6 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 					fluidRow(
 							fluidColumn(4, 0, locs(
 									ExposureDto.SUB_SETTINGS,
-									ExposureDto.EATING_OUT_VENUES,
-									ExposureDto.EATING_OUT_VENUE_OTHER,
 									ExposureDto.SHOPPING_FOR_FOOD_DETAILS,
 									ExposureDto.CONDITION_OF_ANIMAL,
 									ExposureDto.ANIMAL_CATEGORY,
@@ -325,15 +322,6 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		subSettingsDetailsField = addField(exposureDetailsLayout, ExposureDto.EXPOSURE_SUB_SETTING_DETAILS, TextField.class);
 		subSettingsDetailsField.setVisible(false);
 
-		OptionGroup eatingOutVenuesField = addField(exposureDetailsLayout, ExposureDto.EATING_OUT_VENUES, OptionGroup.class);
-		eatingOutVenuesField.setMultiSelect(true);
-		CssStyles.style(eatingOutVenuesField, CssStyles.CAPTION_ON_TOP);
-		FieldHelper.updateItems(eatingOutVenuesField, Arrays.asList(EatingOutVenue.values()));
-		eatingOutVenuesField.setVisible(false);
-
-		TextField eatingOutVenueOtherField = addField(exposureDetailsLayout, ExposureDto.EATING_OUT_VENUE_OTHER, TextField.class);
-		eatingOutVenueOtherField.setVisible(false);
-
 		TextField shoppingForFoodDetailsField = addField(exposureDetailsLayout, ExposureDto.SHOPPING_FOR_FOOD_DETAILS, TextField.class);
 		shoppingForFoodDetailsField.setVisible(false);
 
@@ -415,25 +403,12 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			boolean isProphylaxis = selectedSubSettings != null && selectedSubSettings.contains(ExposureSubSetting.TRAVELED_ABROAD);
 			setVisibleClear(isProphylaxis, ExposureDto.PROPHYLAXIS_ADHERENCE, ExposureDto.TRAVEL_PURPOSE);
 
-			// Salmonellosis: Eating out venues + shopping-for-food details follow sub-setting selection.
-			// Disease-gated so non-SAL exposures with FOOD_BORNE category don't see them.
-			// Toggle visibility only — never clear bound values here,
-			// clearing during the FieldGroup binding cascade would discard freshly-loaded
-			// data because the listener fires multiple times before the real value lands.
+			// Salmonellosis: shopping-for-food details follows sub-setting selection.
+			// Disease-gated so non-SAL exposures with FOOD_BORNE category don't see it.
 			boolean isSalmonellosis = disease == Disease.SALMONELLOSIS;
-			boolean showEatingOutVenues =
-				isSalmonellosis && selectedSubSettings != null && selectedSubSettings.contains(ExposureSubSetting.EATING_OUTSIDE);
-			eatingOutVenuesField.setVisible(showEatingOutVenues);
 			boolean showShoppingForFood =
 				isSalmonellosis && selectedSubSettings != null && selectedSubSettings.contains(ExposureSubSetting.SHOPPING_FOR_FOOD);
 			shoppingForFoodDetailsField.setVisible(showShoppingForFood);
-		});
-
-		eatingOutVenuesField.addValueChangeListener(e -> {
-			@SuppressWarnings("unchecked")
-			Set<EatingOutVenue> selectedVenues = (Set<EatingOutVenue>) e.getProperty().getValue();
-			boolean containsOther = selectedVenues != null && selectedVenues.contains(EatingOutVenue.OTHER);
-			eatingOutVenueOtherField.setVisible(eatingOutVenuesField.isVisible() && containsOther);
 		});
 
 		contactFactorsField.addValueChangeListener(e -> {
