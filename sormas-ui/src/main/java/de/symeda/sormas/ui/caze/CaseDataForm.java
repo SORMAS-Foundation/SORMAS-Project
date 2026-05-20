@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -1656,6 +1657,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		StringBuilder result = new StringBuilder();
 		int last = 0;
 
+		// Expanded the allowed tags to include standard rich text formatting options
+		Set<String> allowedTags = Set
+			.of("div", "span", "p", "br", "b", "i", "u", "strong", "em", "ul", "ol", "li", "table", "tr", "td", "th", "thead", "tbody", "font", "a");
+
 		while (matcher.find()) {
 			String plainTextSegment = htmlText.substring(last, matcher.start());
 			result.append(escapeHtml(plainTextSegment).replace("&amp;nbsp;", "&nbsp;"));
@@ -1663,8 +1668,21 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			String htmlTag = matcher.group(1);
 			String url = matcher.group(2);
 			if (htmlTag != null) {
-				// It's a rich text tag (like <div> or <br>). Pass it through safely.
-				result.append(htmlTag);
+				// Only allow safe formatting tags
+				String cleanTagName = htmlTag.replaceAll("[<>/]", "").trim().split("\\s+")[0].toLowerCase();
+				if (allowedTags.contains(cleanTagName)) {
+					String lowerTag = htmlTag.toLowerCase();
+					if (lowerTag.contains("javascript:")
+						|| lowerTag.contains("onclick")
+						|| lowerTag.contains("onerror")
+						|| lowerTag.contains("onload")) {
+						// Attack vector found! Escape it safely into text instead of executing it
+						result.append(escapeHtml(htmlTag));
+					} else {
+						// It's a completely safe rich text element. Pass it through so styles render perfectly.
+						result.append(htmlTag);
+					}
+				}
 			} else if (url != null) {
 				// It's a plain-text URL. Wrap it in your custom blue link styling.
 				String escapedUrl = escapeHtml(url);
