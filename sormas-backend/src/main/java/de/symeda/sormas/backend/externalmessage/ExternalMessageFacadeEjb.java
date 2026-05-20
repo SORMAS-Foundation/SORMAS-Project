@@ -1020,7 +1020,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 			.setAllowFallbackValues(latestRequest.isAllowFallbackValues())
 			.setSkipIfAlreadyProcessed(latestRequest.isSkipIfAlreadyProcessed())
 			.setPatchedInCaseOfFailures(latestRequest.isPatchedInCaseOfFailures())
-			.setPatchDictionary(correctedDictionary);
+			.setPatchDictionary(new LinkedHashMap<>(correctedDictionary));
 
 		logger.debug("Request after transformation: [{}]", correctedRequest);
 

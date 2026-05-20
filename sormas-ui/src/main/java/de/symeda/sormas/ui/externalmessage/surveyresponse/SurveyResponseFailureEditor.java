@@ -15,6 +15,7 @@
 package de.symeda.sormas.ui.externalmessage.surveyresponse;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -163,7 +164,7 @@ public class SurveyResponseFailureEditor extends Window {
 
 			Button saveAndReprocessButton =
 				ButtonHelper.createButton(Captions.actionSaveAndReprocess, I18nProperties.getCaption(Captions.actionSaveAndReprocess), e -> {
-					Map<String, Object> correctedDictionary = new HashMap<>(validValues);
+					Map<String, Object> correctedDictionary = new LinkedHashMap<>(validValues);
 					for (String fieldPath : valueEditors.keySet()) {
 						CheckBox ignoreCheckbox = ignoreCheckboxes.get(fieldPath);
 						if (ignoreCheckbox != null && Boolean.TRUE.equals(ignoreCheckbox.getValue())) {
