@@ -15996,8 +15996,17 @@ ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS flatulence text;
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS lossofappetite text;
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS smellyburps text;
 
-INSERT INTO schema_version (version_number, comment)
-VALUES (629, '#13832 - External Survey integration');
+INSERT INTO schema_version (version_number, comment) VALUES (629, '#13832 - External Survey integration');
+
+UPDATE featureconfiguration
+SET properties = json_build_object(
+    'FETCH_MODE', false,
+    'FORCE_AUTOMATIC_PROCESSING', true,
+    'SURVEY_FETCH_ENABLED', true
+)
+WHERE featuretype = 'EXTERNAL_MESSAGES';
+
+INSERT INTO schema_version (version_number, comment) VALUES (630, 'Fix corrupt JSON in featureconfiguration.properties for EXTERNAL_MESSAGES from 629');
 
 -- 2026-05-11 Drop broken delete_history_trigger on exposures_eatingoutvenues
 -- (composite-PK join tables don't have an `id` column; mirrors v617 which did the same for

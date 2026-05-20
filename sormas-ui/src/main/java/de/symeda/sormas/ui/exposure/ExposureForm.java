@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -65,6 +66,7 @@ import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureProtectiveMeasure;
 import de.symeda.sormas.api.exposure.ExposureSetting;
 import de.symeda.sormas.api.exposure.ExposureSubSetting;
+import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.FomiteTransmissionLocation;
 import de.symeda.sormas.api.exposure.ProphylaxisAdherence;
 import de.symeda.sormas.api.exposure.TravelPurpose;
@@ -102,9 +104,13 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	private static final String UUID_REPORTING_USER = fluidRowLocs(ExposureDto.UUID, ExposureDto.REPORTING_USER);
 
 	//@formatter:off
-	private static final String EXPOSURE_DETAILS_LAYOUT =
+	private static final String GENERAL_DETAILS_LAYOUT =
 			fluidRowLocs(ExposureDto.START_DATE, ExposureDto.END_DATE) +
-					loc(LOC_CUSTOMIZABLE_FIELDS_EXPOSURE_DETAILS) +
+					fluidRowLocs(ExposureDto.EXPOSURE_TYPE, ExposureDto.EXPOSURE_TYPE_DETAILS) +
+					loc(ExposureDto.DESCRIPTION);
+
+	private static final String EXPOSURE_DETAILS_LAYOUT =
+			loc(LOC_CUSTOMIZABLE_FIELDS_EXPOSURE_DETAILS) +
 					loc(LOC_EXPOSURES_HEADING) +
 					fluidRowLocs(ExposureDto.EXPOSURE_CATEGORY, ExposureDto.EXPOSURE_SETTING, ExposureDto.EXPOSURE_SETTING_DETAILS) +
 					fluidRow(
@@ -139,8 +145,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 									ExposureDto.PROTECTIVE_MEASURE_DETAILS
 							))
 					) +
-					loc(LOC_CUSTOMIZABLE_FIELDS_EXPOSURES_GENERAL) +
-					loc(ExposureDto.DESCRIPTION);
+					loc(LOC_CUSTOMIZABLE_FIELDS_EXPOSURES_GENERAL);
 
 	private static final String LOCATION_DETAILS_LAYOUT =
 			loc(LOC_LOCATION_HEADING) +
@@ -161,6 +166,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	private final Class<? extends EntityDto> epiDataParentClass;
 	private final List<ContactReferenceDto> sourceContacts;
 
+	private CustomLayout generalDetailsLayout;
 	private CustomLayout exposureDetailsLayout;
 	private CustomLayout locationDetailsLayout;
 
@@ -170,6 +176,8 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 
 	private LocationEditForm locationForm;
 	private Disease disease;
+
+	private ComboBox exposureTypeField;
 
 	private ComboBox categoryField;
 	private ComboBox settingField;
@@ -227,6 +235,9 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 
 		FormSectionAccordion accordion = new FormSectionAccordion();
 
+		generalDetailsLayout = new CustomLayout();
+		generalDetailsLayout.setTemplateContents(GENERAL_DETAILS_LAYOUT);
+
 		exposureDetailsLayout = new CustomLayout();
 		exposureDetailsLayout.setTemplateContents(EXPOSURE_DETAILS_LAYOUT);
 
@@ -251,8 +262,6 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		exposuresGeneralPanel.updateFieldsDisplay();
 		exposureDetailsLayout.addComponent(exposuresGeneralPanel, LOC_CUSTOMIZABLE_FIELDS_EXPOSURES_GENERAL);
 
-		addField(exposureDetailsLayout, ExposureDto.DESCRIPTION, TextArea.class).setRows(5);
-
 		locationForm = addField(locationDetailsLayout, ExposureDto.LOCATION, LocationEditForm.class);
 		locationForm.setCaption(null);
 		addField(locationDetailsLayout, ExposureDto.CONNECTION_NUMBER, TextField.class);
@@ -272,7 +281,8 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			}
 		});
 
-		accordion.addFormSectionPanel(Captions.titleExposuresSection, true, exposureDetailsLayout);
+		accordion.addFormSectionPanel(Captions.titleExposuresGeneralSection, true, generalDetailsLayout);
+		accordion.addFormSectionPanel(Captions.titleExposuresSection, false, exposureDetailsLayout);
 		accordion.addFormSectionPanel(Captions.titleExposureLocationSection, false, locationDetailsLayout);
 
 		getContent().addComponent(accordion, MAIN_ACCORDION_LOC);
@@ -281,6 +291,8 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
+
+		setUpRequirements();
 
 		setReadOnly(true, ExposureDto.UUID, ExposureDto.REPORTING_USER);
 	}
@@ -300,14 +312,19 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	private void addBasicFields() {
 		addFields(ExposureDto.UUID, ExposureDto.REPORTING_USER, ExposureDto.PROBABLE_INFECTION_ENVIRONMENT);
 
-		DateTimeField startDate = addField(exposureDetailsLayout, ExposureDto.START_DATE, DateTimeField.class);
-		DateTimeField endDate = addField(exposureDetailsLayout, ExposureDto.END_DATE, DateTimeField.class);
+		DateTimeField startDate = addField(generalDetailsLayout, ExposureDto.START_DATE, DateTimeField.class);
+		DateTimeField endDate = addField(generalDetailsLayout, ExposureDto.END_DATE, DateTimeField.class);
 
 		DateComparisonValidator.addStartEndValidators(startDate, endDate, false);
 
+		exposureTypeField = addField(generalDetailsLayout, ExposureDto.EXPOSURE_TYPE, ComboBox.class);
+		exposureTypeField.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
+
+		addField(generalDetailsLayout, ExposureDto.EXPOSURE_TYPE_DETAILS, TextField.class);
+		addField(generalDetailsLayout, ExposureDto.DESCRIPTION, TextArea.class).setRows(5);
+
 		categoryField = addField(exposureDetailsLayout, ExposureDto.EXPOSURE_CATEGORY, ComboBox.class);
 		categoryField.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
-		categoryField.setRequired(true);
 
 		settingField = addField(exposureDetailsLayout, ExposureDto.EXPOSURE_SETTING, ComboBox.class);
 		settingField.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
@@ -471,6 +488,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	}
 
 	private void setUpVisibilityDependencies() {
+		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.EXPOSURE_TYPE_DETAILS, ExposureDto.EXPOSURE_TYPE, ExposureType.OTHER, true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.TYPE_OF_PLACE_DETAILS, ExposureDto.TYPE_OF_PLACE, TypeOfPlace.OTHER, true);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
@@ -507,6 +525,15 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		locationForm.setContinentFieldsVisibility();
 	}
 
+	private void setUpRequirements() {
+		setRequired(true, ExposureDto.EXPOSURE_TYPE);
+		FieldHelper.setRequiredWhen(
+			getFieldGroup(),
+			ExposureDto.EXPOSURE_TYPE,
+			Collections.singletonList(ExposureDto.EXPOSURE_TYPE_DETAILS),
+			Collections.singletonList(ExposureType.OTHER));
+	}
+
 	private void updateSettingFieldItems(ExposureCategory category) {
 		List<ExposureSetting> settings = ExposureSetting.getValues(category);
 		FieldHelper.updateItems(settingField, settings);
@@ -521,14 +548,12 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		settingDetailsField.setValue(null);
 		settingDetailsField.setVisible(false);
 
-		if (category != null) {
-			if (category.hasNoSetting()) {
-				settingField.setVisible(false);
-				settingField.setRequired(false);
-			} else {
-				settingField.setVisible(true);
-				settingField.setRequired(true);
-			}
+		if (category == null || category.hasNoSetting()) {
+			settingField.setVisible(false);
+			settingField.setRequired(false);
+		} else {
+			settingField.setVisible(true);
+			settingField.setRequired(true);
 		}
 	}
 
@@ -619,6 +644,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	public void setValue(ExposureDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		super.setValue(newFieldValue);
 
+		populateExposureTypes(newFieldValue);
 		populateExposureCategories(newFieldValue);
 
 		if (newFieldValue != null) {
@@ -753,6 +779,29 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
 		// this hopefully resets everything to its correct value
 		locationForm.discard();
+	}
+
+	private void populateExposureTypes(ExposureDto exposure) {
+		// Get disease configuration
+		DiseaseConfigurationDto diseaseConfig = null;
+		if (disease != null) {
+			diseaseConfig = FacadeProvider.getDiseaseConfigurationFacade().getDiseaseConfiguration(disease);
+		}
+
+		Set<ExposureCategory> diseaseCategories = diseaseConfig != null && diseaseConfig.getExposureCategories() != null
+			? new HashSet<>(diseaseConfig.getExposureCategories())
+			: Collections.emptySet();
+
+		// defaults (+ types matching the disease's configured categories, if any)
+		List<ExposureType> filteredTypes = ExposureType.getValues(diseaseCategories);
+
+		// Preserve existing record's value even if it is no longer in the filtered set (legacy data)
+		Set<ExposureType> finalTypes = new LinkedHashSet<>(filteredTypes);
+		if (exposure != null && exposure.getExposureType() != null) {
+			finalTypes.add(exposure.getExposureType());
+		}
+
+		FieldHelper.updateItems(exposureTypeField, new ArrayList<>(finalTypes));
 	}
 
 	private void populateExposureCategories(ExposureDto exposure) {

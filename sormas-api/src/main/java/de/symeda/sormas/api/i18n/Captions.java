@@ -3379,6 +3379,7 @@ public interface Captions {
 	String titleDiseaseConfigurationGeneral = "titleDiseaseConfigurationGeneral";
 	String titleExposureActivitySection = "titleExposureActivitySection";
 	String titleExposureLocationSection = "titleExposureLocationSection";
+	String titleExposuresGeneralSection = "titleExposuresGeneralSection";
 	String titleExposuresSection = "titleExposuresSection";
 	String titleNoComplications = "titleNoComplications";
 	String to = "to";
