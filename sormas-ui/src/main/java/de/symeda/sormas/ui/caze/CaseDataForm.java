@@ -40,13 +40,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.jsoup.safety.Safelist;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ErrorMessage;
@@ -135,6 +135,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ExtendedReduced;
+import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
@@ -1653,36 +1654,31 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			return "";
 		}
 		String htmlText = unescapeHtml(text);
-		Matcher matcher = RICH_TEXT_OR_URL_PATTERN.matcher(htmlText);
+//		Leveraging existing codebase tool to strip ALL unapproved tags,
+		Safelist customizedSafelist = Safelist.relaxed()
+			.addTags("u", "font")
+			.addAttributes("font", "size", "color")
+			.addAttributes("span", "style")
+			.addAttributes("p", "style")
+			.addAttributes("div", "style")
+			.addAttributes("font", "style")
+			.addAttributes("a", "href", "target", "rel", "style")
+			.addEnforcedAttribute("a", "target", "_blank")
+			.addEnforcedAttribute("a", "rel", "noopener noreferrer");
+
+		String sanitizedText = HtmlHelper.cleanHtmlRelaxed(htmlText, customizedSafelist);
+		Matcher matcher = RICH_TEXT_OR_URL_PATTERN.matcher(sanitizedText);
 		StringBuilder result = new StringBuilder();
 		int last = 0;
 
-		// Expanded the allowed tags to include standard rich text formatting options
-		Set<String> allowedTags = Set
-			.of("div", "span", "p", "br", "b", "i", "u", "strong", "em", "ul", "ol", "li", "table", "tr", "td", "th", "thead", "tbody", "font", "a");
-
 		while (matcher.find()) {
-			String plainTextSegment = htmlText.substring(last, matcher.start());
-			result.append(escapeHtml(plainTextSegment).replace("&amp;nbsp;", "&nbsp;"));
+			result.append(sanitizedText, last, matcher.start());
 
 			String htmlTag = matcher.group(1);
 			String url = matcher.group(2);
 			if (htmlTag != null) {
-				// Only allow safe formatting tags
-				String cleanTagName = htmlTag.replaceAll("[<>/]", "").trim().split("\\s+")[0].toLowerCase();
-				if (allowedTags.contains(cleanTagName)) {
-					String lowerTag = htmlTag.toLowerCase();
-					if (lowerTag.contains("javascript:")
-						|| lowerTag.contains("onclick")
-						|| lowerTag.contains("onerror")
-						|| lowerTag.contains("onload")) {
-						// Attack vector found! Escape it safely into text instead of executing it
-						result.append(escapeHtml(htmlTag));
-					} else {
-						// It's a completely safe rich text element. Pass it through so styles render perfectly.
-						result.append(htmlTag);
-					}
-				}
+				// This is a rich text tag verified clean by Jsoup. Pass it through safely.
+				result.append(htmlTag);
 			} else if (url != null) {
 				// It's a plain-text URL. Wrap it in your custom blue link styling.
 				String escapedUrl = escapeHtml(url);
@@ -1694,7 +1690,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			}
 			last = matcher.end();
 		}
-		result.append(escapeHtml(htmlText.substring(last)).replace("&amp;nbsp;", "&nbsp;"));
+		result.append(sanitizedText.substring(last));
 		return result.toString();
 	}
 
