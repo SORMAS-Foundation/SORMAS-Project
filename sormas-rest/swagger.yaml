@@ -7647,10 +7647,13 @@ paths:
                   - EXTERNAL_MESSAGE_ACCESS
                   - EXTERNAL_MESSAGE_LABORATORY_VIEW
                   - EXTERNAL_MESSAGE_DOCTOR_DECLARATION_VIEW
+                  - EXTERNAL_MESSAGE_SURVEY_RESPONSE_VIEW
                   - EXTERNAL_MESSAGE_LABORATORY_PROCESS
                   - EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS
+                  - EXTERNAL_MESSAGE_SURVEY_RESPONSE_PROCESS
                   - EXTERNAL_MESSAGE_LABORATORY_DELETE
                   - EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE
+                  - EXTERNAL_MESSAGE_SURVEY_RESPONSE_DELETE
                   - SURVEY_VIEW
                   - SURVEY_CREATE
                   - SURVEY_EDIT
@@ -7912,10 +7915,13 @@ paths:
                   - EXTERNAL_MESSAGE_ACCESS
                   - EXTERNAL_MESSAGE_LABORATORY_VIEW
                   - EXTERNAL_MESSAGE_DOCTOR_DECLARATION_VIEW
+                  - EXTERNAL_MESSAGE_SURVEY_RESPONSE_VIEW
                   - EXTERNAL_MESSAGE_LABORATORY_PROCESS
                   - EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS
+                  - EXTERNAL_MESSAGE_SURVEY_RESPONSE_PROCESS
                   - EXTERNAL_MESSAGE_LABORATORY_DELETE
                   - EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE
+                  - EXTERNAL_MESSAGE_SURVEY_RESPONSE_DELETE
                   - SURVEY_VIEW
                   - SURVEY_CREATE
                   - SURVEY_EDIT
@@ -14739,6 +14745,45 @@ components:
           maxLength: 36
           minLength: 20
           pattern: "^[0-9a-zA-Z-]*$"
+    DataPatchFailure:
+      type: object
+      properties:
+        dataPatchFailureCause:
+          type: string
+          enum:
+          - INVALID_MULTIPLE_FIELDS_FORMAT
+          - MISSING_MANDATORY_FIELD_FOR_GROUP
+          - FORBIDDEN_NON_UNIQUE_ALIAS
+          - NOT_PRESENT_IN_REFERENCE_DATA_LIST
+          - UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY_OR_FEATURE
+          - UNSUPPORTED_PREFIX
+          - FIELD_DOES_NOT_EXIST
+          - FORBIDDEN_FIELD
+          - FORBIDDEN_VALUE_OVERRIDE
+          - INVALID_VALUE_TYPE
+          - UNSUPPORTED_TARGET_TYPE
+          - INVALID_PATH_FORMAT
+          - DUPLICATE_FIELD
+          - TECHNICAL
+        existingFieldValue:
+          type: object
+        providedFieldValue:
+          type: object
+      required:
+      - dataPatchFailureCause
+    DataPatchResponse:
+      type: object
+      properties:
+        applied:
+          type: boolean
+        failures:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DataPatchFailure'
+        validPatchDictionary:
+          type: object
+          additionalProperties:
+            type: object
     DeaContentEntry:
       type: object
       properties:
@@ -18078,6 +18123,8 @@ components:
           - BUILDING_SECTOR
           - LOGISTICS_CENTER
           - OTHER
+      required:
+      - exposureType
     ExternalDataDto:
       type: object
       properties:
@@ -18202,6 +18249,7 @@ components:
           enum:
           - LAB_MESSAGE
           - PHYSICIANS_REPORT
+          - SURVEY_RESPONSE
         uuid:
           type: string
     ExternalMessageDto:
@@ -18618,6 +18666,8 @@ components:
           - UNCLEAR
         surveillanceReport:
           $ref: '#/components/schemas/SurveillanceReportReferenceDto'
+        surveyResponseData:
+          $ref: '#/components/schemas/ExternalSurveyResponseData'
         treatmentNotApplicable:
           type: boolean
         treatmentStarted:
@@ -18649,6 +18699,7 @@ components:
           enum:
           - LAB_MESSAGE
           - PHYSICIANS_REPORT
+          - SURVEY_RESPONSE
         uuid:
           type: string
           maxLength: 36
@@ -18770,6 +18821,7 @@ components:
           enum:
           - LAB_MESSAGE
           - PHYSICIANS_REPORT
+          - SURVEY_RESPONSE
         uuid:
           type: string
           maxLength: 36
@@ -18785,6 +18837,100 @@ components:
           pattern: "^[0-9a-zA-Z-]*$"
       required:
       - uuid
+    ExternalMessageSurveyResponseRequest:
+      type: object
+      properties:
+        allowFallbackValues:
+          type: boolean
+        emptyValueBehavior:
+          type: string
+          enum:
+          - IGNORE
+          - REPLACE
+        excludedPatchDictionary:
+          type: object
+          additionalProperties:
+            type: object
+        externalRespondentId:
+          type: string
+        externalSurveyId:
+          type: string
+        inputLanguages:
+          type: array
+          items:
+            type: string
+            enum:
+            - EN
+            - EN_NG
+            - EN_GM
+            - EN_LR
+            - EN_GH
+            - EN_KE
+            - EN_AF
+            - FR
+            - FR_CH
+            - FR_TN
+            - DE
+            - DE_CH
+            - PT_CV
+            - ES_BO
+            - ES_EC
+            - ES_CU
+            - IT
+            - IT_CH
+            - FI
+            - PS
+            - FA
+            - CZ
+            - UR_PK
+        origin:
+          type: string
+        patchDictionary:
+          type: object
+          additionalProperties:
+            type: object
+        patchedInCaseOfFailures:
+          type: boolean
+        replacementStrategy:
+          type: string
+          enum:
+          - ALWAYS
+          - IF_NOT_ALREADY_PRESENT
+        responseReceivedDate:
+          type: string
+          format: date-time
+        skipIfAlreadyProcessed:
+          type: boolean
+        token:
+          type: string
+      required:
+      - emptyValueBehavior
+      - excludedPatchDictionary
+      - patchDictionary
+      - replacementStrategy
+    ExternalMessageSurveyResponseResult:
+      type: object
+      properties:
+        caseUuid:
+          type: string
+        patchResponse:
+          $ref: '#/components/schemas/DataPatchResponse'
+    ExternalMessageSurveyResponseWrapper:
+      type: object
+      properties:
+        request:
+          $ref: '#/components/schemas/ExternalMessageSurveyResponseRequest'
+        result:
+          $ref: '#/components/schemas/ExternalMessageSurveyResponseResult'
+    ExternalSurveyResponseData:
+      type: object
+      properties:
+        original:
+          $ref: '#/components/schemas/ExternalMessageSurveyResponseWrapper'
+        updated:
+          $ref: '#/components/schemas/ExternalMessageSurveyResponseWrapper'
+      required:
+      - original
     ExternalVisitDto:
       type: object
       properties:
@@ -25682,6 +25828,12 @@ components:
     SymptomsDto:
       type: object
       properties:
+        abdominalCramps:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         abdominalPain:
           type: string
           enum:
@@ -26018,6 +26170,18 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        coughingAtNight:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        coughingAttacks:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         coughingBlood:
           type: string
           enum:
@@ -26210,6 +26374,12 @@ components:
           - "NO"
           - UNKNOWN
         feverishFeeling:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        flatulence:
           type: string
           enum:
           - "YES"
@@ -26438,6 +26608,12 @@ components:
         lesionsThorax:
           type: boolean
         lethargy:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        lossOfAppetite:
           type: string
           enum:
           - "YES"
@@ -26929,6 +27105,12 @@ components:
           type: string
           format: date-time
         skinUlcers:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        smellyBurps:
           type: string
           enum:
           - "YES"
@@ -29077,10 +29259,13 @@ components:
             - EXTERNAL_MESSAGE_ACCESS
             - EXTERNAL_MESSAGE_LABORATORY_VIEW
             - EXTERNAL_MESSAGE_DOCTOR_DECLARATION_VIEW
+            - EXTERNAL_MESSAGE_SURVEY_RESPONSE_VIEW
             - EXTERNAL_MESSAGE_LABORATORY_PROCESS
             - EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS
+            - EXTERNAL_MESSAGE_SURVEY_RESPONSE_PROCESS
             - EXTERNAL_MESSAGE_LABORATORY_DELETE
             - EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE
+            - EXTERNAL_MESSAGE_SURVEY_RESPONSE_DELETE
             - SURVEY_VIEW
             - SURVEY_CREATE
             - SURVEY_EDIT
