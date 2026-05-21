@@ -109,10 +109,12 @@ public class DataPatcherImpl implements DataPatcher {
 
 		}).collect(Collectors.toList());
 
+		logger.error("SingleFieldPatchResult results: [{}]", results.stream().map(SinglePatchResult::getFieldName).collect(Collectors.toList()));
+
 		Map<String, Object> validPatchDictionary = buildDictionaryFor(results, SinglePatchResult::getValue, true);
 		DataPatchResponse response = new DataPatchResponse().setApplied(false)
-			.setFailures(buildDictionaryFor(results, SinglePatchResult::getFailure, false))
-			.setValidPatchDictionary(validPatchDictionary);
+			.setFailures((LinkedHashMap<String, DataPatchFailure>) buildDictionaryFor(results, SinglePatchResult::getFailure, false))
+			.setValidPatchDictionary((LinkedHashMap<String, Object>) validPatchDictionary);
 
 		if (validPatchDictionary.isEmpty() || (!request.isPatchedInCaseOfFailures() && response.hasFailures())) {
 			logger.info(
@@ -167,7 +169,7 @@ public class DataPatcherImpl implements DataPatcher {
 			.filter(
 				singlePatchResult -> fct.apply(singlePatchResult) != null
 					|| (valueContext && singlePatchResult.getFailure() == null && singlePatchResult.getValue() == null))
-			.collect(CollectorUtils.toNullSafeMap(SinglePatchResult::getFieldName, fct));
+			.collect(CollectorUtils.toOrderedNullSafeMap(SinglePatchResult::getFieldName, fct));
 	}
 
 	private @NotNull SinglePatchResult valueMappingResult(

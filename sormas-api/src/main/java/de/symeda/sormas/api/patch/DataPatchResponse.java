@@ -1,8 +1,7 @@
 package de.symeda.sormas.api.patch;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.Objects;
 
 import org.apache.commons.collections4.MapUtils;
@@ -26,27 +25,27 @@ public class DataPatchResponse implements Serializable {
 	 * Actual patched values for the specified keys.
 	 * Will NOT contain fields that were NOT patched (even though passed in original patchDictionary).
 	 */
-	private Map<String, Object> validPatchDictionary = new HashMap<>();
+	private LinkedHashMap<String, Object> validPatchDictionary = new LinkedHashMap<>();
 
 	/**
 	 * Provides the reason for the failure for the impacted fields.
 	 */
-	private Map<String, DataPatchFailure> failures = new HashMap<>();
+	private LinkedHashMap<String, DataPatchFailure> failures = new LinkedHashMap<>();
 
-	public Map<String, Object> getValidPatchDictionary() {
+	public LinkedHashMap<String, Object> getValidPatchDictionary() {
 		return validPatchDictionary;
 	}
 
-	public DataPatchResponse setValidPatchDictionary(Map<String, Object> validPatchDictionary) {
+	public DataPatchResponse setValidPatchDictionary(LinkedHashMap<String, Object> validPatchDictionary) {
 		this.validPatchDictionary = validPatchDictionary;
 		return this;
 	}
 
-	public Map<String, DataPatchFailure> getFailures() {
+	public LinkedHashMap<String, DataPatchFailure> getFailures() {
 		return failures;
 	}
 
-	public DataPatchResponse setFailures(Map<String, DataPatchFailure> failures) {
+	public DataPatchResponse setFailures(LinkedHashMap<String, DataPatchFailure> failures) {
 		this.failures = failures;
 		return this;
 	}

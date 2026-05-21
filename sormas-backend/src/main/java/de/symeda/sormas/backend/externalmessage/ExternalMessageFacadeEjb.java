@@ -266,7 +266,13 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 		if (surveyResponseData != null) {
 			target.setAdditionalDataType(ExternalMessageAdditionalDataType.SURVEY_RESPONSE_DATA);
-			target.setAdditionalDataJson(ObjectMapperProvider.writeValueAsStringFailSafe(surveyResponseData));
+			logger.error("surveyResponseData java toString: [{}]", surveyResponseData);
+
+			String additionalData = ObjectMapperProvider.writeValueAsStringFailSafe(surveyResponseData);
+
+			logger.error("additionalData JSON str: [{}]", additionalData);
+
+			target.setAdditionalDataJson(additionalData);
 		}
 
 		return target;

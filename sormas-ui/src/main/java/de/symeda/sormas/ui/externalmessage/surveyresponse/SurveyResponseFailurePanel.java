@@ -14,9 +14,9 @@
  */
 package de.symeda.sormas.ui.externalmessage.surveyresponse;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.VerticalLayout;
@@ -41,7 +41,7 @@ public class SurveyResponseFailurePanel extends VerticalLayout {
 		setSpacing(true);
 		setSizeFull();
 
-		List<Map.Entry<String, DataPatchFailure>> failureEntries = failures.entrySet().stream().collect(Collectors.toList());
+		List<Map.Entry<String, DataPatchFailure>> failureEntries = new ArrayList<>(failures.entrySet());
 
 		Grid<Map.Entry<String, DataPatchFailure>> grid = new Grid<>();
 		grid.setSizeFull();

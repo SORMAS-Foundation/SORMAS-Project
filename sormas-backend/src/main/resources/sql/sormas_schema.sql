@@ -16008,4 +16008,17 @@ WHERE featuretype = 'EXTERNAL_MESSAGES';
 
 INSERT INTO schema_version (version_number, comment) VALUES (630, 'Fix corrupt JSON in featureconfiguration.properties for EXTERNAL_MESSAGES from 629');
 
+-- Alter JSONB to JSON to preserve insertion oder for external messages
+
+ALTER TABLE externalmessage_history
+ALTER COLUMN additionaldatajson TYPE json
+USING additionaldatajson::json;
+
+ALTER TABLE externalmessage
+ALTER COLUMN additionaldatajson TYPE json
+USING additionaldatajson::json;
+
+
+INSERT INTO schema_version (version_number, comment) VALUES (631, 'Alter JSONB to JSON to preserve insertion oder for external messages');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

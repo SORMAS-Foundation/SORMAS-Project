@@ -8,7 +8,6 @@ import static org.mockito.Mockito.*;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -328,7 +327,8 @@ class AutomaticSurveyResponseProcessorTest extends AbstractUnitTest {
 		// PREPARE
 		String caseUuid = DataHelper.createUuid();
 		String origin = "NGSurvey";
-		Map<String, Object> patchDict = Map.of("person.firstName", "Alice");
+		LinkedHashMap<String, Object> patchDict = new LinkedHashMap<>();
+		patchDict.put("person.firstName", "Alice");
 
 		ExternalMessageDto message = buildMessage("S1", "T1", null);
 		message.getSurveyResponseData()
@@ -444,4 +444,5 @@ class AutomaticSurveyResponseProcessorTest extends AbstractUnitTest {
 		survey.setExternalId(externalId);
 		return survey;
 	}
+
 }
