@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.externalmessage.survey.PatchDictionary;
 import de.symeda.sormas.api.info.InfoFacade;
 
 /**
@@ -31,7 +32,7 @@ public class CaseDataPatchRequest {
 	 * The accepted fields are those from {@link InfoFacade#generateDataDictionary()}.
 	 */
 	@NotNull
-	private Map<String, Object> patchDictionary;
+	private PatchDictionary patchDictionary;
 
 	/**
 	 * Origin that wants the patch operation.
@@ -70,12 +71,19 @@ public class CaseDataPatchRequest {
 		return this;
 	}
 
-	public Map<String, Object> getPatchDictionary() {
+	public PatchDictionary getPatchDictionary() {
 		return patchDictionary;
 	}
 
-	public CaseDataPatchRequest setPatchDictionary(Map<String, Object> patchDictionary) {
+	public CaseDataPatchRequest setPatchDictionary(PatchDictionary patchDictionary) {
 		this.patchDictionary = patchDictionary;
+		return this;
+	}
+
+	public CaseDataPatchRequest setPatchDictionary(Map<String, Object> patchDictionary) {
+		PatchDictionary patchDictionaryWrapper = new PatchDictionary();
+		patchDictionary.forEach(patchDictionaryWrapper::put);
+		this.patchDictionary = patchDictionaryWrapper;
 		return this;
 	}
 

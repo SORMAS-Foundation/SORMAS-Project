@@ -28,6 +28,8 @@ import de.symeda.sormas.api.customizableenum.CustomizableEnumTranslation;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
+import de.symeda.sormas.api.externalmessage.survey.PatchDictionary;
+import de.symeda.sormas.api.externalmessage.survey.PatchField;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
@@ -168,7 +170,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			victim().patch(new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid()).setPatchDictionary(patchDictionary));
 
 		// CHECK
-		Map<String, DataPatchFailure> expectedFailures = buildDictionaryOfFailureType(patchDictionary, DataPatchFailureCause.UNSUPPORTED_PREFIX);
+		Map<PatchField, DataPatchFailure> expectedFailures = buildDictionaryOfFailureType(patchDictionary, DataPatchFailureCause.UNSUPPORTED_PREFIX);
 
 		Assertions.assertAll(
 			() -> Assertions.assertTrue(response.getValidPatchDictionary().isEmpty(), "Nothing should have been patched, should be empty"),
@@ -198,7 +200,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			victim().patch(new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid()).setPatchDictionary(patchDictionary));
 
 		// CHECK
-		Map<String, DataPatchFailure> expectedFailures = buildDictionaryOfFailureType(patchDictionary, DataPatchFailureCause.FORBIDDEN_FIELD);
+		Map<PatchField, DataPatchFailure> expectedFailures = buildDictionaryOfFailureType(patchDictionary, DataPatchFailureCause.FORBIDDEN_FIELD);
 
 		Assertions.assertAll(
 			() -> Assertions.assertTrue(response.getValidPatchDictionary().isEmpty(), "Nothing should have been patched, should be empty"),
@@ -275,7 +277,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			victim().patch(new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid()).setPatchDictionary(patchDictionary));
 
 		// CHECK
-		Map<String, DataPatchFailure> expectedFailures =
+		Map<PatchField, DataPatchFailure> expectedFailures =
 			buildDictionaryOfFailureType(patchDictionary, DataPatchFailureCause.INVALID_MULTIPLE_FIELDS_FORMAT);
 
 		Assertions.assertAll(
@@ -333,7 +335,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 
 			() -> Assertions.assertEquals(expectedOccupationType, person.getOccupationType()),
 
-			() -> Assertions.assertEquals(patchDictionary, response.getValidPatchDictionary()));
+			() -> Assertions.assertEquals(toPatchDictionary(patchDictionary), response.getValidPatchDictionary()));
 	}
 
 	@Test
@@ -392,7 +394,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			() -> Assertions.assertEquals(input, person.getOccupationDetails()),
 
 			() -> Assertions.assertEquals(
-				Map.of("Person.occupationType", input, "Person.occupationDetails", input, "Person.additionalDetails", input),
+				toPatchDictionary(Map.of("Person.occupationType", input, "Person.occupationDetails", input, "Person.additionalDetails", input)),
 				response.getValidPatchDictionary()));
 	}
 
@@ -451,7 +453,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			victim().patch(new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid()).setPatchDictionary(patchDictionary));
 
 		// CHECK
-		Map<String, DataPatchFailure> expectedFailures =
+		Map<PatchField, DataPatchFailure> expectedFailures =
 			buildDictionaryOfFailureType(patchDictionary, DataPatchFailureCause.UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY_OR_FEATURE);
 
 		Assertions.assertAll(
@@ -474,7 +476,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			victim().patch(new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid()).setPatchDictionary(patchDictionary));
 
 		// CHECK
-		Map<String, DataPatchFailure> expectedFailures =
+		Map<PatchField, DataPatchFailure> expectedFailures =
 			buildDictionaryOfFailureType(patchDictionary, DataPatchFailureCause.UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY_OR_FEATURE);
 
 		Assertions.assertAll(
@@ -497,7 +499,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			victim().patch(new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid()).setPatchDictionary(patchDictionary));
 
 		// CHECK
-		Map<String, DataPatchFailure> expectedFailures =
+		Map<PatchField, DataPatchFailure> expectedFailures =
 			buildDictionaryOfFailureType(patchDictionary, DataPatchFailureCause.UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY_OR_FEATURE);
 
 		Assertions.assertAll(
@@ -506,14 +508,14 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			() -> Assertions.assertEquals(expectedFailures, response.getFailures()));
 	}
 
-	private static @NotNull Map<String, DataPatchFailure> buildDictionaryOfFailureType(
+	private static @NotNull Map<PatchField, DataPatchFailure> buildDictionaryOfFailureType(
 		Map<String, Object> patchDictionary,
 		DataPatchFailureCause unsupportedFieldForDisease) {
 		return patchDictionary.entrySet()
 			.stream()
 			.map(
 				entry -> Map.entry(
-					entry.getKey(),
+					PatchField.of(entry.getKey()),
 					new DataPatchFailure().setDataPatchFailureCause(unsupportedFieldForDisease).setProvidedFieldValue(entry.getValue())))
 			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
@@ -540,14 +542,14 @@ class DataPatcherImplTest extends AbstractBeanTest {
 		CaseDataDto actual = getCaseFacade().getByUuid(originalCase.getUuid());
 
 		// CHECK
-		Map<String, DataPatchFailure> expectedFailures = buildDictionaryOfFailureType(
+		Map<PatchField, DataPatchFailure> expectedFailures = buildDictionaryOfFailureType(
 			Map.of("CaseData.quarantineOrderedOfficialDocumentDate", ignoredValue),
 			DataPatchFailureCause.UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY_OR_FEATURE);
 
 		Assertions.assertAll(
 			() -> Assertions.assertTrue(response.isApplied()),
 
-			() -> Assertions.assertEquals(Map.of("CaseData.symptoms.cough", trueString), response.getValidPatchDictionary()),
+			() -> Assertions.assertEquals(toPatchDictionary(Map.of("CaseData.symptoms.cough", trueString)), response.getValidPatchDictionary()),
 
 			() -> Assertions.assertEquals(SymptomState.YES, actual.getSymptoms().getCough()),
 
@@ -579,14 +581,14 @@ class DataPatcherImplTest extends AbstractBeanTest {
 		CaseDataDto actual = getCaseFacade().getByUuid(originalCase.getUuid());
 
 		// CHECK
-		Map<String, DataPatchFailure> expectedFailures = buildDictionaryOfFailureType(
+		Map<PatchField, DataPatchFailure> expectedFailures = buildDictionaryOfFailureType(
 			Map.of("CaseData.quarantineOrderedOfficialDocumentDate", ignoredValue),
 			DataPatchFailureCause.UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY_OR_FEATURE);
 
 		Assertions.assertAll(
 			() -> Assertions.assertFalse(response.isApplied()),
 
-			() -> Assertions.assertEquals(Map.of("CaseData.symptoms.cough", trueString), response.getValidPatchDictionary()),
+			() -> Assertions.assertEquals(toPatchDictionary(Map.of("CaseData.symptoms.cough", trueString)), response.getValidPatchDictionary()),
 
 			() -> Assertions.assertNull(actual.getSymptoms().getCough()),
 
@@ -625,7 +627,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 		Assertions.assertAll(
 			() -> Assertions.assertTrue(response.isApplied()),
 
-			() -> Assertions.assertEquals(patchDictionary, response.getValidPatchDictionary()),
+			() -> Assertions.assertEquals(toPatchDictionary(patchDictionary), response.getValidPatchDictionary()),
 
 			() -> Assertions.assertNull(actual.getQuarantineChangeComment()),
 
@@ -663,7 +665,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 		Assertions.assertAll(
 			() -> Assertions.assertFalse(response.isApplied()),
 
-			() -> Assertions.assertEquals(Map.of(), response.getValidPatchDictionary()),
+			() -> Assertions.assertEquals(new PatchDictionary(), response.getValidPatchDictionary()),
 
 			() -> Assertions.assertEquals(expectedQuarantineChangeComment, actual.getQuarantineChangeComment()),
 
@@ -686,7 +688,8 @@ class DataPatcherImplTest extends AbstractBeanTest {
 		// EXECUTE
 		DataPatchResponse response = victim().patch(request);
 
-		Map<String, DataPatchFailure> expectedFailures = buildDictionaryOfFailureType(patchDictionary, DataPatchFailureCause.FIELD_DOES_NOT_EXIST);
+		Map<PatchField, DataPatchFailure> expectedFailures =
+			buildDictionaryOfFailureType(patchDictionary, DataPatchFailureCause.FIELD_DOES_NOT_EXIST);
 
 		// CHECK
 		Assertions.assertAll(
@@ -694,7 +697,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 
 			() -> Assertions.assertEquals(expectedFailures, response.getFailures()),
 
-			() -> Assertions.assertEquals(Map.of(), response.getValidPatchDictionary()));
+			() -> Assertions.assertEquals(new PatchDictionary(), response.getValidPatchDictionary()));
 	}
 
 	@Test
@@ -1030,5 +1033,13 @@ class DataPatcherImplTest extends AbstractBeanTest {
 
 	private DataPatcher victim() {
 		return getCaseDataPatcher();
+	}
+
+	private PatchDictionary toPatchDictionary(Map<String, Object> patchDictionary) {
+		PatchDictionary wrapper = new PatchDictionary();
+
+		patchDictionary.forEach(wrapper::put);
+
+		return wrapper;
 	}
 }

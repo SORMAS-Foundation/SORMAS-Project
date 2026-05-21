@@ -27,11 +27,12 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseResult;
 import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseWrapper;
+import de.symeda.sormas.api.externalmessage.survey.PatchDictionary;
+import de.symeda.sormas.api.externalmessage.survey.PatchField;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.patch.DataPatchFailure;
-import de.symeda.sormas.api.patch.partial_retrieval.DisplayableFieldInfo;
 import de.symeda.sormas.api.patch.partial_retrieval.DisplayablePartialRetrievalResponse;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -53,10 +54,11 @@ public class SurveyResponseFailureEditor extends Window {
 		ExternalMessageSurveyResponseWrapper latest = externalMessage.getSurveyResponseData().getLatest();
 
 		ExternalMessageSurveyResponseResult result = latest.getResult();
-		Map<String, DataPatchFailure> failures =
-			result != null && result.getPatchResponse() != null ? result.getPatchResponse().getFailures() : new HashMap<>();
-		Map<String, Object> validValues =
-			result != null && result.getPatchResponse() != null ? result.getPatchResponse().getValidPatchDictionary() : new HashMap<>();
+		LinkedHashMap<PatchField, DataPatchFailure> failures =
+			result != null && result.getPatchResponse() != null ? result.getPatchResponse().getFailures() : new LinkedHashMap<>();
+		LinkedHashMap<PatchField, Object> validValues = result != null && result.getPatchResponse() != null
+			? result.getPatchResponse().getValidPatchDictionary().getDictionary()
+			: new LinkedHashMap<>();
 
 		VerticalLayout mainLayout = new VerticalLayout();
 		mainLayout.setMargin(true);
@@ -71,16 +73,17 @@ public class SurveyResponseFailureEditor extends Window {
 			FormLayout failuresForm = new FormLayout();
 			failuresForm.setMargin(false);
 
-			Map<String, CheckBox> ignoreCheckboxes = new HashMap<>();
-			Map<String, TextField> keyEditors = new HashMap<>();
-			Map<String, TextField> valueEditors = new HashMap<>();
+			Map<PatchField, CheckBox> ignoreCheckboxes = new HashMap<>();
+			Map<PatchField, TextField> pathEditors = new HashMap<>();
+			Map<PatchField, TextField> valueEditors = new HashMap<>();
 
-			for (Map.Entry<String, DataPatchFailure> entry : failures.entrySet()) {
-				String fieldPath = entry.getKey();
+			for (Map.Entry<PatchField, DataPatchFailure> entry : failures.entrySet()) {
+				PatchField patchField = entry.getKey();
 				DataPatchFailure failure = entry.getValue();
 
-				String fieldLabel = resolveFieldName(fieldPath, displayData);
-				String currentValue = resolveCurrentValue(fieldPath, displayData);
+				String fieldPath = patchField.getField();
+				String fieldLabel = SurveyResponseDisplayUtils.resolveFieldName(patchField, displayData);
+				String currentValue = SurveyResponseDisplayUtils.resolveCurrentValue(patchField, displayData);
 				String causeName =
 					failure.getDataPatchFailureCause() != null ? I18nProperties.getEnumCaption(failure.getDataPatchFailureCause()) : "";
 
@@ -90,7 +93,7 @@ public class SurveyResponseFailureEditor extends Window {
 
 				// Ignore checkbox
 				CheckBox ignoreCheckbox = new CheckBox(I18nProperties.getCaption(Captions.surveyResponseIgnoreField));
-				ignoreCheckboxes.put(fieldPath, ignoreCheckbox);
+				ignoreCheckboxes.put(patchField, ignoreCheckbox);
 				fieldContainer.addComponent(ignoreCheckbox);
 
 				Label causeLabel = new Label(I18nProperties.getCaption(Captions.surveyResponseFailureCause) + ": " + causeName);
@@ -106,7 +109,7 @@ public class SurveyResponseFailureEditor extends Window {
 				TextField keyField = new TextField(I18nProperties.getCaption(Captions.surveyResponseKeyName));
 				keyField.setValue(fieldPath);
 				keyField.setWidth(100, Unit.PERCENTAGE);
-				keyEditors.put(fieldPath, keyField);
+				pathEditors.put(patchField, keyField);
 				fieldContainer.addComponent(keyField);
 
 				// Value field
@@ -115,7 +118,7 @@ public class SurveyResponseFailureEditor extends Window {
 				if (failure.getProvidedFieldValue() != null) {
 					valueField.setValue(failure.getProvidedFieldValue().toString());
 				}
-				valueEditors.put(fieldPath, valueField);
+				valueEditors.put(patchField, valueField);
 				fieldContainer.addComponent(valueField);
 
 				// Wire ignore checkbox to disable key/value fields
@@ -136,14 +139,14 @@ public class SurveyResponseFailureEditor extends Window {
 				CssStyles.style(validHeading, CssStyles.H4);
 				mainLayout.addComponent(validHeading);
 
-				List<Map.Entry<String, Object>> validEntries = validValues.entrySet().stream().collect(Collectors.toList());
+				List<Map.Entry<PatchField, Object>> validEntries = validValues.entrySet().stream().collect(Collectors.toList());
 
-				Grid<Map.Entry<String, Object>> validGrid = new Grid<>();
+				Grid<Map.Entry<PatchField, Object>> validGrid = new Grid<>();
 				validGrid.setSizeFull();
 				validGrid.setItems(validEntries);
 				validGrid.setHeightByRows(Math.max(validEntries.size(), 1));
 
-				validGrid.addColumn(entry -> resolveFieldName(entry.getKey(), displayData))
+				validGrid.addColumn(entry -> SurveyResponseDisplayUtils.resolveFieldName(entry.getKey(), displayData))
 					.setCaption(I18nProperties.getCaption(Captions.surveyResponseField))
 					.setExpandRatio(2);
 
@@ -151,7 +154,7 @@ public class SurveyResponseFailureEditor extends Window {
 					.setCaption(I18nProperties.getCaption(Captions.surveyResponseSubmittedValue))
 					.setExpandRatio(2);
 
-				validGrid.addColumn(entry -> resolveCurrentValue(entry.getKey(), displayData))
+				validGrid.addColumn(entry -> SurveyResponseDisplayUtils.resolveCurrentValue(entry.getKey(), displayData))
 					.setCaption(I18nProperties.getCaption(Captions.surveyResponseCurrentCaseValue))
 					.setExpandRatio(2);
 
@@ -164,20 +167,23 @@ public class SurveyResponseFailureEditor extends Window {
 
 			Button saveAndReprocessButton =
 				ButtonHelper.createButton(Captions.actionSaveAndReprocess, I18nProperties.getCaption(Captions.actionSaveAndReprocess), e -> {
-					Map<String, Object> correctedDictionary = new LinkedHashMap<>(validValues);
-					for (String fieldPath : valueEditors.keySet()) {
-						CheckBox ignoreCheckbox = ignoreCheckboxes.get(fieldPath);
+					LinkedHashMap<PatchField, Object> correctedDictionary = new LinkedHashMap<>(validValues);
+					for (PatchField patchField : valueEditors.keySet()) {
+						CheckBox ignoreCheckbox = ignoreCheckboxes.get(patchField);
 						if (ignoreCheckbox != null && Boolean.TRUE.equals(ignoreCheckbox.getValue())) {
 							continue;
 						}
-						String key = keyEditors.get(fieldPath).getValue();
-						if (key == null || key.trim().isEmpty()) {
-							key = fieldPath;
+						String actualPath = pathEditors.get(patchField).getValue();
+						if (actualPath == null || actualPath.trim().isEmpty()) {
+							actualPath = patchField.getField();
 						}
-						correctedDictionary.put(key, valueEditors.get(fieldPath).getValue());
+						correctedDictionary.put(
+							new PatchField().setField(actualPath).setGroupIndex(patchField.getGroupIndex()),
+							valueEditors.get(patchField).getValue());
 					}
 
-					FacadeProvider.getExternalMessageFacade().overwriteSurveyResponse(externalMessage.getUuid(), correctedDictionary);
+					FacadeProvider.getExternalMessageFacade()
+						.overwriteSurveyResponse(externalMessage.getUuid(), new PatchDictionary().setDictionary(correctedDictionary));
 
 					Notification.show(I18nProperties.getString(Strings.messageSurveyResponseReprocessed), Notification.Type.HUMANIZED_MESSAGE);
 					close();
@@ -194,23 +200,4 @@ public class SurveyResponseFailureEditor extends Window {
 		setContent(mainLayout);
 	}
 
-	public String resolveFieldName(String fieldPath, DisplayablePartialRetrievalResponse displayData) {
-		DisplayableFieldInfo info = displayData.getFieldInfoDictionary().get(fieldPath);
-		String aliasPath = FacadeProvider.getPathAliasFacade().fetchAliasPath(fieldPath);
-		if (info != null) {
-			String translatedFieldName = info.getTranslatedFieldName();
-			if (translatedFieldName != null) {
-				return String.format("%s (%s)", translatedFieldName, aliasPath);
-			}
-		}
-		return aliasPath;
-	}
-
-	private String resolveCurrentValue(String fieldPath, DisplayablePartialRetrievalResponse displayData) {
-		DisplayableFieldInfo info = displayData.getFieldInfoDictionary().get(fieldPath);
-		if (info != null) {
-			return info.getTranslatedFieldValue();
-		}
-		return null;
-	}
 }

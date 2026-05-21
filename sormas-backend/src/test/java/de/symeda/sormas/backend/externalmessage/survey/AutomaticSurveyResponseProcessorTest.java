@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -18,10 +17,7 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
-import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseRequest;
-import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseResult;
-import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseWrapper;
-import de.symeda.sormas.api.externalmessage.survey.ExternalSurveyResponseData;
+import de.symeda.sormas.api.externalmessage.survey.*;
 import de.symeda.sormas.api.patch.*;
 import de.symeda.sormas.api.survey.SurveyDto;
 import de.symeda.sormas.api.survey.SurveyTokenDto;
@@ -327,7 +323,7 @@ class AutomaticSurveyResponseProcessorTest extends AbstractUnitTest {
 		// PREPARE
 		String caseUuid = DataHelper.createUuid();
 		String origin = "NGSurvey";
-		LinkedHashMap<String, Object> patchDict = new LinkedHashMap<>();
+		PatchDictionary patchDict = new PatchDictionary();
 		patchDict.put("person.firstName", "Alice");
 
 		ExternalMessageDto message = buildMessage("S1", "T1", null);
@@ -418,8 +414,8 @@ class AutomaticSurveyResponseProcessorTest extends AbstractUnitTest {
 	private static ExternalMessageDto buildMessage(String externalSurveyId, String token, ExternalMessageSurveyResponseResult result) {
 		ExternalMessageSurveyResponseRequest request = new ExternalMessageSurveyResponseRequest().setExternalSurveyId(externalSurveyId)
 			.setToken(token)
-			.setPatchDictionary(new LinkedHashMap<>())
-			.setExcludedPatchDictionary(new LinkedHashMap<>());
+			.setPatchDictionary(new PatchDictionary())
+			.setExcludedPatchDictionary(new PatchDictionary());
 
 		ExternalMessageSurveyResponseWrapper wrapper = new ExternalMessageSurveyResponseWrapper().setRequest(request).setResult(result);
 

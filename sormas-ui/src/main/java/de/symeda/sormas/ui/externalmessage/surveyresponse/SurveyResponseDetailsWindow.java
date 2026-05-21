@@ -14,6 +14,7 @@
  */
 package de.symeda.sormas.ui.externalmessage.surveyresponse;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -27,14 +28,11 @@ import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
-import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseRequest;
-import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseResult;
-import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseWrapper;
+import de.symeda.sormas.api.externalmessage.survey.*;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.patch.DataPatchResponse;
-import de.symeda.sormas.api.patch.partial_retrieval.DisplayableFieldInfo;
 import de.symeda.sormas.api.patch.partial_retrieval.DisplayablePartialRetrievalResponse;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UiUtil;
@@ -91,28 +89,41 @@ public class SurveyResponseDetailsWindow {
 		addReadOnlyField(layout, I18nProperties.getCaption(Captions.surveyResponseExternalSurveyId), request.getExternalSurveyId());
 		addReadOnlyField(layout, I18nProperties.getCaption(Captions.surveyResponseToken), request.getToken());
 		addReadOnlyField(layout, I18nProperties.getCaption(Captions.surveyResponseRespondentId), request.getExternalRespondentId());
-		addReadOnlyField(layout, I18nProperties.getCaption(Captions.surveyResponseResponseReceivedDate), toStringOrEmpty(request.getResponseReceivedDate()));
-		addReadOnlyField(layout, I18nProperties.getCaption(Captions.surveyResponseReplacementStrategy), toStringOrEmpty(request.getReplacementStrategy()));
-		addReadOnlyField(layout, I18nProperties.getCaption(Captions.surveyResponseEmptyValueBehavior), toStringOrEmpty(request.getEmptyValueBehavior()));
-		addReadOnlyField(layout, I18nProperties.getCaption(Captions.surveyResponsePatchedInCaseOfFailures), String.valueOf(request.isPatchedInCaseOfFailures()));
+		addReadOnlyField(
+			layout,
+			I18nProperties.getCaption(Captions.surveyResponseResponseReceivedDate),
+			toStringOrEmpty(request.getResponseReceivedDate()));
+		addReadOnlyField(
+			layout,
+			I18nProperties.getCaption(Captions.surveyResponseReplacementStrategy),
+			toStringOrEmpty(request.getReplacementStrategy()));
+		addReadOnlyField(
+			layout,
+			I18nProperties.getCaption(Captions.surveyResponseEmptyValueBehavior),
+			toStringOrEmpty(request.getEmptyValueBehavior()));
+		addReadOnlyField(
+			layout,
+			I18nProperties.getCaption(Captions.surveyResponsePatchedInCaseOfFailures),
+			String.valueOf(request.isPatchedInCaseOfFailures()));
 
 		// --- Patch Dictionary section ---
 		Label dictionaryHeading = new Label(I18nProperties.getCaption(Captions.surveyResponsePatchDictionary));
 		CssStyles.style(dictionaryHeading, CssStyles.H3);
 		layout.addComponent(dictionaryHeading);
 
-		Map<String, Object> patchDictionary = request.getPatchDictionary();
+		PatchDictionary patchDictionaryWrapper = request.getPatchDictionary();
+		LinkedHashMap<PatchField, Object> patchDictionary = patchDictionaryWrapper.getDictionary();
 		if (patchDictionary != null && !patchDictionary.isEmpty()) {
-			List<Map.Entry<String, Object>> entries = patchDictionary.entrySet().stream().collect(Collectors.toList());
+			List<Map.Entry<PatchField, Object>> entries = patchDictionary.entrySet().stream().collect(Collectors.toList());
 
 			final DisplayablePartialRetrievalResponse finalDisplayData = displayData;
 
-			Grid<Map.Entry<String, Object>> dictionaryGrid = new Grid<>();
+			Grid<Map.Entry<PatchField, Object>> dictionaryGrid = new Grid<>();
 			dictionaryGrid.setSizeFull();
 			dictionaryGrid.setItems(entries);
 			dictionaryGrid.setHeightByRows(Math.max(entries.size(), 1));
 
-			dictionaryGrid.addColumn(entry -> resolveFieldName(entry.getKey(), finalDisplayData))
+			dictionaryGrid.addColumn(entry -> SurveyResponseDisplayUtils.resolveFieldName(entry.getKey(), finalDisplayData))
 				.setCaption(I18nProperties.getCaption(Captions.surveyResponseField))
 				.setExpandRatio(2);
 
@@ -120,30 +131,30 @@ public class SurveyResponseDetailsWindow {
 				.setCaption(I18nProperties.getCaption(Captions.surveyResponseSubmittedValue))
 				.setExpandRatio(2);
 
-			dictionaryGrid.addColumn(entry -> resolveCurrentValue(entry.getKey(), finalDisplayData))
+			dictionaryGrid.addColumn(entry -> SurveyResponseDisplayUtils.resolveCurrentValue(entry.getKey(), finalDisplayData))
 				.setCaption(I18nProperties.getCaption(Captions.surveyResponseCurrentCaseValue))
 				.setExpandRatio(2);
 
 			layout.addComponent(dictionaryGrid);
 		}
 
-		// --- Ignored patch dictionary Patch Dictionary section ---
+		// --- Ignored patch dictionary section ---
 		Label excludedFieldsDictionaryLabel = new Label(I18nProperties.getCaption(Captions.surveyResponseExcludedFieldsDictionary));
 		CssStyles.style(excludedFieldsDictionaryLabel, CssStyles.H3);
 		layout.addComponent(excludedFieldsDictionaryLabel);
 
-		Map<String, Object> excludedFieldsDictionary = request.getExcludedPatchDictionary();
+		LinkedHashMap<PatchField, Object> excludedFieldsDictionary = request.getExcludedPatchDictionary().getDictionary();
 		if (excludedFieldsDictionary != null && !excludedFieldsDictionary.isEmpty()) {
-			List<Map.Entry<String, Object>> entries = excludedFieldsDictionary.entrySet().stream().collect(Collectors.toList());
+			List<Map.Entry<PatchField, Object>> entries = excludedFieldsDictionary.entrySet().stream().collect(Collectors.toList());
 
 			final DisplayablePartialRetrievalResponse finalDisplayData = displayData;
 
-			Grid<Map.Entry<String, Object>> dictionaryGrid = new Grid<>();
+			Grid<Map.Entry<PatchField, Object>> dictionaryGrid = new Grid<>();
 			dictionaryGrid.setSizeFull();
 			dictionaryGrid.setItems(entries);
 			dictionaryGrid.setHeightByRows(Math.max(entries.size(), 1));
 
-			dictionaryGrid.addColumn(entry -> resolveFieldName(entry.getKey(), finalDisplayData))
+			dictionaryGrid.addColumn(entry -> SurveyResponseDisplayUtils.resolveFieldName(entry.getKey(), finalDisplayData))
 				.setCaption(I18nProperties.getCaption(Captions.surveyResponseField))
 				.setExpandRatio(2);
 
@@ -226,28 +237,5 @@ public class SurveyResponseDetailsWindow {
 		Label label = new Label(value != null ? value : "");
 		label.setCaption(caption);
 		layout.addComponent(label);
-	}
-
-	public String resolveFieldName(String fieldPath, DisplayablePartialRetrievalResponse displayData) {
-		DisplayableFieldInfo info = displayData.getFieldInfoDictionary().get(fieldPath);
-		String aliasPath = FacadeProvider.getPathAliasFacade().fetchAliasPath(fieldPath);
-		if (info != null) {
-			String translatedFieldName = info.getTranslatedFieldName();
-			if (translatedFieldName != null) {
-				return String.format("%s (%s)", translatedFieldName, aliasPath);
-			}
-		}
-		return aliasPath;
-	}
-
-	private String resolveCurrentValue(String fieldPath, DisplayablePartialRetrievalResponse displayData) {
-		DisplayableFieldInfo info = displayData.getFieldInfoDictionary().get(fieldPath);
-		if (info != null) {
-			String translatedFieldValue = info.getTranslatedFieldValue();
-			if (translatedFieldValue != null) {
-				return translatedFieldValue;
-			}
-		}
-		return "";
 	}
 }

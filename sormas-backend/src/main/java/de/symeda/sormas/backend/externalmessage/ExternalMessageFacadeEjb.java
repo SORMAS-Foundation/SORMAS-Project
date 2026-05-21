@@ -58,10 +58,7 @@ import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.externalmessage.*;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult;
-import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseRequest;
-import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseWrapper;
-import de.symeda.sormas.api.externalmessage.survey.ExternalSurveyResponseData;
-import de.symeda.sormas.api.externalmessage.survey.SurveyAsExternalMessageAdapterFacade;
+import de.symeda.sormas.api.externalmessage.survey.*;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
@@ -1007,7 +1004,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 	@Override
 	@RightsAllowed(UserRight._EXTERNAL_MESSAGE_SURVEY_RESPONSE_PROCESS)
-	public ExternalMessageDto overwriteSurveyResponse(String uuid, java.util.Map<String, Object> correctedDictionary) {
+	public ExternalMessageDto overwriteSurveyResponse(String uuid, PatchDictionary correctedDictionary) {
 		logger.debug("overwriteSurveyResponse: [{}],[{}]", uuid, correctedDictionary);
 		ExternalMessageDto externalMessage = getByUuid(uuid);
 		ExternalMessageSurveyResponseRequest latestRequest = externalMessage.getSurveyResponseData().getLatest().getRequest();
@@ -1026,7 +1023,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 			.setAllowFallbackValues(latestRequest.isAllowFallbackValues())
 			.setSkipIfAlreadyProcessed(latestRequest.isSkipIfAlreadyProcessed())
 			.setPatchedInCaseOfFailures(latestRequest.isPatchedInCaseOfFailures())
-			.setPatchDictionary(new LinkedHashMap<>(correctedDictionary));
+			.setPatchDictionary(correctedDictionary);
 
 		logger.debug("Request after transformation: [{}]", correctedRequest);
 
@@ -1058,13 +1055,15 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 			return new de.symeda.sormas.api.patch.partial_retrieval.DisplayablePartialRetrievalResponse();
 		}
 
-		java.util.Map<String, Object> patchDictionary = latest.getRequest().getPatchDictionary();
+		PatchDictionary patchDictionaryWrapper = latest.getRequest().getPatchDictionary();
+		LinkedHashMap<PatchField, Object> patchDictionary = patchDictionaryWrapper.getDictionary();
 		if (patchDictionary == null || patchDictionary.isEmpty()) {
 			logger.warn("patchDictionary was null or emtpy, this should not occur. [{}],[{}]", externalMessage, latest);
 			return new de.symeda.sormas.api.patch.partial_retrieval.DisplayablePartialRetrievalResponse();
 		}
 
-		java.util.Set<String> fieldPaths = patchDictionary.keySet();
+		logger.info("For now for retrieval groups are ignored, as they are part of patching but not fetching.");
+		java.util.Set<String> fieldPaths = patchDictionary.keySet().stream().map(PatchField::getField).collect(Collectors.toSet());
 
 		de.symeda.sormas.api.patch.partial_retrieval.PartialRetrievalRequest request =
 			new de.symeda.sormas.api.patch.partial_retrieval.PartialRetrievalRequest().setCaseUuid(result.getCaseUuid())

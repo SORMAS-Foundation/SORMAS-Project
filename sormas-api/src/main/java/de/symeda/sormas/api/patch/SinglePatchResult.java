@@ -3,10 +3,12 @@ package de.symeda.sormas.api.patch;
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.externalmessage.survey.PatchField;
+
 public class SinglePatchResult {
 
 	@NotNull
-	private String fieldName;
+	private PatchField field;
 
 	@Nullable
 	private Object value;
@@ -14,12 +16,12 @@ public class SinglePatchResult {
 	@Nullable
 	private DataPatchFailure failure;
 
-	public String getFieldName() {
-		return fieldName;
+	public PatchField getField() {
+		return field;
 	}
 
-	public SinglePatchResult setFieldName(String fieldName) {
-		this.fieldName = fieldName;
+	public SinglePatchResult setField(PatchField field) {
+		this.field = field;
 		return this;
 	}
 
