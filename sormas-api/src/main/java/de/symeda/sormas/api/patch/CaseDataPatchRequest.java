@@ -80,6 +80,13 @@ public class CaseDataPatchRequest {
 		return this;
 	}
 
+	/**
+	 * Meant for convenience purposes when no grouped fields are present.
+	 * 
+	 * @param patchDictionary
+	 *            that must be patched WITHOUT groups
+	 * @return request
+	 */
 	public CaseDataPatchRequest setPatchDictionary(Map<String, Object> patchDictionary) {
 		PatchDictionary patchDictionaryWrapper = new PatchDictionary();
 		patchDictionary.forEach(patchDictionaryWrapper::put);

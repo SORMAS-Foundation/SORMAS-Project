@@ -111,7 +111,9 @@ public class DataPatcherImpl implements DataPatcher {
 
 		}).collect(Collectors.toList());
 
-		logger.error("SingleFieldPatchResult results: [{}]", results.stream().map(SinglePatchResult::getField).collect(Collectors.toList()));
+		if (logger.isDebugEnabled()) {
+			logger.debug("SingleFieldPatchResult results: [{}]", results.stream().map(SinglePatchResult::getField).collect(Collectors.toList()));
+		}
 
 		Map<PatchField, Object> validPatchDictionary = buildDictionaryFor(results, SinglePatchResult::getValue, true);
 		DataPatchResponse response = new DataPatchResponse().setApplied(false)
