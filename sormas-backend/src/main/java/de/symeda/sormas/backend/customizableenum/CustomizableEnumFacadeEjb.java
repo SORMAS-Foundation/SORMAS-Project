@@ -351,10 +351,12 @@ public class CustomizableEnumFacadeEjb
 
 		Stream<String> diseaseValuesStream;
 		if (innerDisease.isPresent()) {
-			// combine specific and unspecific values
-			diseaseValuesStream = Stream.concat(
-				enumValuesByDisease.get(enumClass).get(innerDisease).stream(),
-				enumValuesByDisease.get(enumClass).get(Optional.empty()).stream());
+			// combine specific and unspecific values, removing duplicates that appear in both sets
+			diseaseValuesStream = Stream
+				.concat(
+					enumValuesByDisease.get(enumClass).get(innerDisease).stream(),
+					enumValuesByDisease.get(enumClass).get(Optional.empty()).stream())
+				.distinct();
 		} else {
 			diseaseValuesStream = enumValuesByDisease.get(enumClass).get(Optional.empty()).stream();
 		}

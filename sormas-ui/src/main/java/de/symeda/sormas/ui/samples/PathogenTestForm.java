@@ -60,6 +60,7 @@ import de.symeda.sormas.ui.samples.diseasesection.AbstractDiseaseSectionComponen
 import de.symeda.sormas.ui.samples.diseasesection.DiseaseSectionFactory;
 import de.symeda.sormas.ui.samples.diseasesection.PathogenTestFormConfig;
 import de.symeda.sormas.ui.samples.events.DiseaseChangedEvent;
+import de.symeda.sormas.ui.samples.events.SetTestResultEvent;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldAccessHelper;
 import de.symeda.sormas.ui.utils.FormComponent;
@@ -243,13 +244,11 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			swapDiseaseSection(newDisease);
 		}));
 
-		// Disease variant → auto-set test result
+		// Disease variant → auto-set test result to positive when a variant is selected.
 		eventRegistrations.add(diseaseVariantComponent.getDiseaseVariantField().addValueChangeListener(e -> {
 			DiseaseVariant variant = e.getValue();
 			if (variant != null) {
-				testResultComponent.getTestResultField().setValue(PathogenTestResultType.POSITIVE);
-			} else {
-				testResultComponent.getTestResultField().clear();
+				eventBus.fire(new SetTestResultEvent(PathogenTestResultType.POSITIVE));
 			}
 		}));
 	}

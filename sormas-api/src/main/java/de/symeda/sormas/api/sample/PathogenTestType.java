@@ -278,7 +278,6 @@ public enum PathogenTestType {
 
 	@Diseases(value = {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.SALMONELLOSIS })
 	@RevealsTestTypeText(diseases = Disease.SALMONELLOSIS)
 	SEROTYPING,
@@ -350,8 +349,8 @@ public enum PathogenTestType {
 			return "";
 		}
 
-		if (value == PathogenTestType.OTHER) {
-			return DataHelper.toStringNullable(details);
+		if (value == PathogenTestType.OTHER && !DataHelper.isNullOrEmpty(details)) {
+			return details;
 		}
 
 		if (revealsTestTypeText(value, disease) && !DataHelper.isNullOrEmpty(details)) {

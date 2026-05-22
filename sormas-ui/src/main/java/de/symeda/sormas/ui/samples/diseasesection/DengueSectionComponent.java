@@ -103,7 +103,8 @@ public class DengueSectionComponent extends AbstractDiseaseSectionComponent {
 	}
 
 	private void updateVisibility() {
-		boolean showSerotype = SEROTYPE_VISIBLE_TYPES.contains(currentTestType);
+		// Serotype is only meaningful for a positive result
+		boolean showSerotype = currentResult == PathogenTestResultType.POSITIVE && SEROTYPE_VISIBLE_TYPES.contains(currentTestType);
 		serotypeField.setVisible(showSerotype);
 		if (!showSerotype) {
 			serotypeField.clear();

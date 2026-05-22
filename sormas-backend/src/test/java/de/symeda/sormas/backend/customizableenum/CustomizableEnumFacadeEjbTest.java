@@ -59,6 +59,36 @@ public class CustomizableEnumFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void getEnumValuesDoesNotReturnDuplicatesWhenValueIsBothDiseaseSpecificAndUnspecific() {
+
+		// Same value defined for a specific disease and for no disease (unspecific)
+		String sharedValue = "TYPE_A_B";
+
+		CustomizableEnumValue specific = new CustomizableEnumValue();
+		specific.setDataType(CustomizableEnumType.DISEASE_VARIANT);
+		specific.setValue(sharedValue);
+		Set<Disease> diseases = new HashSet<>();
+		diseases.add(Disease.NEW_INFLUENZA);
+		specific.setDiseases(diseases);
+		specific.setCaption("Type A+B");
+		specific.setActive(true);
+		getCustomizableEnumValueService().ensurePersisted(specific);
+
+		CustomizableEnumValue unspecific = new CustomizableEnumValue();
+		unspecific.setDataType(CustomizableEnumType.DISEASE_VARIANT);
+		unspecific.setValue(sharedValue);
+		unspecific.setCaption("Type A+B");
+		unspecific.setActive(true);
+		getCustomizableEnumValueService().ensurePersisted(unspecific);
+
+		getCustomizableEnumFacade().loadData();
+
+		List<CustomizableEnum> enumValues = getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, Disease.NEW_INFLUENZA);
+		long occurrences = enumValues.stream().filter(e -> sharedValue.equals(e.getValue())).count();
+		assertEquals(1, occurrences);
+	}
+
+	@Test
 	public void tetGetUnknownDiseaseVariantWithNullDisease() throws CustomEnumNotFoundException {
 		assertThrows(
 			CustomEnumNotFoundException.class,

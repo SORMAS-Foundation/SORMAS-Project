@@ -29,6 +29,7 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.ui.samples.events.SetTestResultEvent;
+import de.symeda.sormas.ui.samples.events.TestResultChangedEvent;
 import de.symeda.sormas.ui.samples.events.TestTypeChangedEvent;
 
 public class MalariaSectionComponent extends AbstractDiseaseSectionComponent {
@@ -68,6 +69,7 @@ public class MalariaSectionComponent extends AbstractDiseaseSectionComponent {
 	private TextField resultDetailsField;
 
 	private PathogenTestType currentTestType;
+	private PathogenTestResultType currentResult;
 
 	@Override
 	protected void buildLayout() {
@@ -113,10 +115,16 @@ public class MalariaSectionComponent extends AbstractDiseaseSectionComponent {
 				eventBus.fire(new SetTestResultEvent(null));
 			}
 		}));
+
+		track(eventBus.on(TestResultChangedEvent.class, event -> {
+			currentResult = event.getTestResult();
+			updateVisibility();
+		}));
 	}
 
 	private void updateVisibility() {
-		boolean showSpecie = SPECIE_VISIBLE_TYPES.contains(currentTestType);
+		// Species is only meaningful for a positive result
+		boolean showSpecie = currentResult == PathogenTestResultType.POSITIVE && SPECIE_VISIBLE_TYPES.contains(currentTestType);
 		specieField.setVisible(showSpecie);
 		if (!showSpecie) {
 			specieField.clear();

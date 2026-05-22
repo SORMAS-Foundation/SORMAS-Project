@@ -96,16 +96,15 @@ public class CtCqValueComponent extends FormComponent<PathogenTestDto> {
 	}
 
 	public void updateCtVisibility(Disease disease, PathogenTestType testType) {
-		if (disease == null || !java.util.Arrays.asList(Disease.TUBERCULOSIS).contains(disease)) {
-			setCtFieldsVisible(PathogenTestType.PCR_RT_PCR == testType);
-		} else {
-			setCtFieldsVisible(false);
-		}
+		// CT-target fields (E, N, RdRp, S, ORF1, RdRp/S) are SARS-CoV-2 specific
+		setCtFieldsVisible(disease == Disease.CORONAVIRUS && PathogenTestType.PCR_RT_PCR == testType);
 	}
 
 	public void updateCqVisibility(Disease disease, PathogenTestType testType, PathogenTestResultType testResult) {
-		if (disease == null || !java.util.Arrays.asList(Disease.TUBERCULOSIS).contains(disease)) {
-			if ((testType == PathogenTestType.PCR_RT_PCR && testResult == PathogenTestResultType.POSITIVE)
+		// CQ value is only meaningful for a positive result, regardless of test type/disease
+		boolean positive = testResult == PathogenTestResultType.POSITIVE;
+		if (positive && (disease == null || !java.util.Arrays.asList(Disease.TUBERCULOSIS).contains(disease))) {
+			if (testType == PathogenTestType.PCR_RT_PCR
 				|| testType == PathogenTestType.CQ_VALUE_DETECTION
 				|| (disease == Disease.MALARIA && testType == PathogenTestType.Q_PCR)) {
 				cqValueField.setVisible(true);

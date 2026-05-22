@@ -98,6 +98,9 @@ public class FourFoldCtCqComponent extends FormComponent<PathogenTestDto> {
 		// Listen for test result changes
 		track(eventBus.on(TestResultChangedEvent.class, event -> {
 			currentTestResult = event.getTestResult();
+			if (currentTestType != null) {
+				updateFourFoldIncrease(currentTestType);
+			}
 			ctCqValueComponent.updateCqVisibility(currentDisease, currentTestType, currentTestResult);
 			syncSelfVisibility();
 		}));
@@ -115,12 +118,15 @@ public class FourFoldCtCqComponent extends FormComponent<PathogenTestDto> {
 	}
 
 	private void updateFourFoldIncrease(PathogenTestType testType) {
-		if (testType == PathogenTestType.IGM_SERUM_ANTIBODY || testType == PathogenTestType.IGG_SERUM_ANTIBODY) {
+		boolean antibodyTest = testType == PathogenTestType.IGM_SERUM_ANTIBODY || testType == PathogenTestType.IGG_SERUM_ANTIBODY;
+		boolean positive = currentTestResult == PathogenTestResultType.POSITIVE;
+		if (antibodyTest && positive) {
 			fourFoldIncrease.setVisible(true);
 			fourFoldIncrease.setEnabled(true);
 		} else {
 			fourFoldIncrease.setVisible(false);
 			fourFoldIncrease.setEnabled(false);
+			fourFoldIncrease.clear();
 		}
 		fourFoldIncrease.setCaption(
 			currentDisease == Disease.DENGUE
