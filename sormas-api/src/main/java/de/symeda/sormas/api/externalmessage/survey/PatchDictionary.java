@@ -7,6 +7,8 @@ import java.util.Objects;
 
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * Wrapper around concrete storage for patch dictionary.
  */
@@ -40,11 +42,13 @@ public class PatchDictionary implements Serializable {
 		return this;
 	}
 
+	@JsonIgnore
 	public PatchDictionary setNonTypedPatchDictionary(Map<PatchField, Object> patchDictionary) {
 		this.dictionary = new LinkedHashMap<>(patchDictionary);
 		return this;
 	}
 
+	@JsonIgnore
 	public boolean isEmpty() {
 		return dictionary.isEmpty();
 	}

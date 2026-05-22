@@ -7,6 +7,10 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  * To be able to repeat some groups and make them belong together, the groupIndex was added.
  */
@@ -22,6 +26,15 @@ public class PatchField implements Serializable {
 	 */
 	@Nullable
 	private Integer groupIndex;
+
+	public PatchField() {
+	}
+
+	@JsonCreator
+	public PatchField(String field, @Nullable Integer groupIndex) {
+		this.field = field;
+		this.groupIndex = groupIndex;
+	}
 
 	public static PatchField of(String field, Integer groupIndex) {
 		return new PatchField().setField(field).setGroupIndex(groupIndex);
@@ -50,8 +63,14 @@ public class PatchField implements Serializable {
 		return this;
 	}
 
+	@JsonIgnore
 	public Optional<Integer> getGroupNumber() {
 		return Optional.ofNullable(groupIndex).map(index -> index + 1);
+	}
+
+	@JsonValue
+	public String toJsonValue() {
+		return groupIndex == null ? field : field + "@" + groupIndex;
 	}
 
 	@Override

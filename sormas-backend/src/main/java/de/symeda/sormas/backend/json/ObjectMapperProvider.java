@@ -22,7 +22,11 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
+import de.symeda.sormas.api.externalmessage.survey.PatchField;
+import de.symeda.sormas.api.externalmessage.survey.PatchFieldKeyDeserializer;
 
 /**
  * Permits unified access to a pre-configured {@link ObjectMapper} instance.
@@ -71,6 +75,10 @@ public final class ObjectMapperProvider {
 		ObjectMapper mapper = new ObjectMapper();
 
 		mapper.registerModule(new JavaTimeModule());
+
+		SimpleModule simpleModule = new SimpleModule();
+		simpleModule.addKeyDeserializer(PatchField.class, new PatchFieldKeyDeserializer());
+		mapper.registerModule(simpleModule);
 
 		mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
