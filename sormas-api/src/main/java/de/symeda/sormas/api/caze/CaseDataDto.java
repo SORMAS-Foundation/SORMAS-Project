@@ -389,6 +389,7 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 		Disease.OTHER })
 	@Outbreaks
 	private VaccinationStatus vaccinationStatus;
+	@Diseases(value = Disease.SALMONELLOSIS, hide = true)
 	@Outbreaks
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String vaccinationStatusDetails;

@@ -169,11 +169,12 @@ public class TestMethodComponent extends FormComponent<PathogenTestDto> {
 	}
 
 	private void wireEvents() {
-		// Self-managed visibility: testTypeText visible for PCR_RT_PCR or OTHER
+		// Self-managed visibility: testTypeText reveals for any value annotated with @RevealsTestTypeText
+		// (PCR_RT_PCR + OTHER for every disease; the four typing tests for Salmonellosis only).
 		track(testTypeField.addValueChangeListener(e -> {
 			PathogenTestType type = e.getValue();
 
-			boolean showTestTypeText = type == PathogenTestType.PCR_RT_PCR || type == PathogenTestType.OTHER;
+			boolean showTestTypeText = PathogenTestType.revealsTestTypeText(type, currentDisease);
 			testTypeTextField.setVisible(showTestTypeText);
 			testTypeTextSpacer.setVisible(!showTestTypeText);
 			if (!showTestTypeText) {

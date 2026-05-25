@@ -141,8 +141,6 @@ public class ExposureDto extends PseudonymizableDto {
 	public static final String PROPHYLAXIS_ADHERENCE_DETAILS = "prophylaxisAdherenceDetails";
 	public static final String TRAVEL_PURPOSE = "travelPurpose";
 	public static final String TRAVEL_PURPOSE_DETAILS = "travelPurposeDetails";
-	public static final String EATING_OUT_VENUES = "eatingOutVenues";
-	public static final String EATING_OUT_VENUE_OTHER = "eatingOutVenueOther";
 	public static final String SHOPPING_FOR_FOOD_DETAILS = "shoppingForFoodDetails";
 
 	@SensitiveData
@@ -465,17 +463,6 @@ public class ExposureDto extends PseudonymizableDto {
 		Disease.SALMONELLOSIS })
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
-	private Set<EatingOutVenue> eatingOutVenues;
-	@Diseases({
-		Disease.SALMONELLOSIS })
-	@HideForCountriesExcept(countries = {
-		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
-	private String eatingOutVenueOther;
-	@Diseases({
-		Disease.SALMONELLOSIS })
-	@HideForCountriesExcept(countries = {
-		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String shoppingForFoodDetails;
 
@@ -490,7 +477,6 @@ public class ExposureDto extends PseudonymizableDto {
 		exposure.setSubSettings(new HashSet<>());
 		exposure.setContactFactors(new HashSet<>());
 		exposure.setProtectiveMeasures(new HashSet<>());
-		exposure.setEatingOutVenues(new HashSet<>());
 
 		return exposure;
 	}
@@ -1173,22 +1159,6 @@ public class ExposureDto extends PseudonymizableDto {
 
 	public void setProphylaxisAdherenceDetails(String prophylaxisAdherenceDetails) {
 		this.prophylaxisAdherenceDetails = prophylaxisAdherenceDetails;
-	}
-
-	public Set<EatingOutVenue> getEatingOutVenues() {
-		return eatingOutVenues;
-	}
-
-	public void setEatingOutVenues(Set<EatingOutVenue> eatingOutVenues) {
-		this.eatingOutVenues = eatingOutVenues;
-	}
-
-	public String getEatingOutVenueOther() {
-		return eatingOutVenueOther;
-	}
-
-	public void setEatingOutVenueOther(String eatingOutVenueOther) {
-		this.eatingOutVenueOther = eatingOutVenueOther;
 	}
 
 	public String getShoppingForFoodDetails() {

@@ -16008,4 +16008,29 @@ WHERE featuretype = 'EXTERNAL_MESSAGES';
 
 INSERT INTO schema_version (version_number, comment) VALUES (630, 'Fix corrupt JSON in featureconfiguration.properties for EXTERNAL_MESSAGES from 629');
 
+-- 2026-05-11 Drop broken delete_history_trigger on exposures_eatingoutvenues
+-- (composite-PK join tables don't have an `id` column; mirrors v617 which did the same for
+-- exposures_subsettings / contactfactors / protectivemeasures). #13917
+DROP TRIGGER IF EXISTS delete_history_trigger ON exposures_eatingoutvenues;
+
+INSERT INTO schema_version (version_number, comment) VALUES (631, '#13917 - Drop broken delete_history_trigger on exposures_eatingoutvenues');
+
+-- 2026-05-19 Remove eating-out venues from Salmonellosis exposure (reverts the v627 join table + eatingoutvenueother columns). #13918
+-- shoppingforfooddetails stays — it lives on the SHOPPING_FOR_FOOD sub-setting and is not part of this removal.
+
+-- Drop versioning triggers on the join table before dropping the table itself.
+-- Guarded with IF EXISTS so the migration is idempotent regardless of whether v630 ran on this DB.
+DROP TRIGGER IF EXISTS versioning_trigger ON exposures_eatingoutvenues;
+DROP TRIGGER IF EXISTS delete_history_trigger ON exposures_eatingoutvenues;
+
+-- Drop join tables (history first to avoid any dangling references).
+DROP TABLE IF EXISTS exposures_eatingoutvenues_history;
+DROP TABLE IF EXISTS exposures_eatingoutvenues;
+
+-- Drop the "other" free-text column from exposures and its history mirror.
+ALTER TABLE exposures         DROP COLUMN IF EXISTS eatingoutvenueother;
+ALTER TABLE exposures_history DROP COLUMN IF EXISTS eatingoutvenueother;
+
+INSERT INTO schema_version (version_number, comment) VALUES (632, '#13918 - Remove eating out venues from Salmonellosis exposure');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

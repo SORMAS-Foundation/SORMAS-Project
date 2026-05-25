@@ -1902,8 +1902,6 @@ public interface Captions {
 	String Exposure_deceasedPersonName = "Exposure.deceasedPersonName";
 	String Exposure_deceasedPersonRelation = "Exposure.deceasedPersonRelation";
 	String Exposure_domesticSwimming = "Exposure.domesticSwimming";
-	String Exposure_eatingOutVenueOther = "Exposure.eatingOutVenueOther";
-	String Exposure_eatingOutVenues = "Exposure.eatingOutVenues";
 	String Exposure_eatingRawAnimalProducts = "Exposure.eatingRawAnimalProducts";
 	String Exposure_endDate = "Exposure.endDate";
 	String Exposure_exposureCategory = "Exposure.exposureCategory";

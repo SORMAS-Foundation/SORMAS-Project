@@ -202,6 +202,7 @@ public final class CssStyles {
 	public static final String CAPTION_HIDDEN = "caption-hidden";
 	public static final String CAPTION_OVERFLOW = "caption-overflow";
 	public static final String CAPTION_FIXED_WIDTH_100 = "caption-fixed-width-100";
+	public static final String CAPTION_NO_UPPERCASE = "no-uppercase";
 
 	public static final String ERROR_COLOR_PRIMARY = "error-color-primary";
 

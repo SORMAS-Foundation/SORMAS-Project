@@ -17,6 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.api.sample;
 
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.Map;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -335,7 +339,102 @@ public enum SampleMaterial {
 		Disease.GIARDIASIS })
 	DUODENUM_FLUID,
 
+	@Diseases({
+		Disease.SALMONELLOSIS })
+	ASPIRATE,
+
+	@Diseases({
+		Disease.SALMONELLOSIS })
+	BONE_AND_JOINT,
+
+	@Diseases({
+		Disease.SALMONELLOSIS })
+	CATHETER_EXIT_SITE,
+
+	@Diseases({
+		Disease.SALMONELLOSIS })
+	EYE,
+
+	@Diseases({
+		Disease.SALMONELLOSIS })
+	GASTRIC_FLUID,
+
+	@Diseases({
+		Disease.SALMONELLOSIS })
+	GENITAL_SWAB,
+
+	@Diseases({
+		Disease.SALMONELLOSIS })
+	LOWER_RESPIRATORY_TRACT,
+
+	@Diseases({
+		Disease.SALMONELLOSIS })
+	PUS,
+
+	@Diseases({
+		Disease.SALMONELLOSIS })
+	SEMEN,
+
+	@Diseases({
+		Disease.SALMONELLOSIS })
+	SKIN,
+
+	@Diseases({
+		Disease.SALMONELLOSIS })
+	SOFT_TISSUE,
+
+	@Diseases({
+		Disease.SALMONELLOSIS })
+	WOUND,
+
 	OTHER;
+
+	/**
+	 * SNOMED-CT codes for sample materials. Reference data per the v1.1 Salmonellosis spec
+	 * (Lux requirement Salmonella v1.1.docx, sample list table). Optional: returns null
+	 * when no canonical code is mapped.
+	 */
+	private static final Map<SampleMaterial, String> SNOMED_CODES;
+	static {
+		EnumMap<SampleMaterial, String> map = new EnumMap<>(SampleMaterial.class);
+		map.put(ASPIRATE, "119295008");
+		map.put(BRONCHOALVEOLAR_LAVAGE, "258607008");
+		map.put(BLOOD, "119297000");
+		map.put(BONE_AND_JOINT, "258539005");
+		map.put(CATHETER_EXIT_SITE, "16227651000119102");
+		map.put(CRUST, "1332490003");
+		map.put(CEREBROSPINAL_FLUID, "258450006");
+		map.put(DRY_BLOOD, "440500007");
+		map.put(EDTA_WHOLE_BLOOD, "57921000052103");
+		map.put(EYE, "119399004");
+		map.put(STOOL, "119339001");
+		map.put(GENITAL_SWAB, "258508008");
+		map.put(GASTRIC_FLUID, "258459007");
+		map.put(LOWER_RESPIRATORY_TRACT, "258606004");
+		map.put(TISSUE, "399492000");
+		map.put(WOUND, "119365002");
+		map.put(NP_SWAB, "258500001");
+		map.put(OROPHARYNGEAL_SWAB, "461911000124106");
+		map.put(PLEURAL_FLUID, "418564007");
+		map.put(PUS, "119323008");
+		map.put(RECTAL_SWAB, "258528007");
+		map.put(SALIVA, "119342007");
+		map.put(SEMEN, "119347001");
+		map.put(SERA, "119364003");
+		map.put(SKIN, "608969007");
+		map.put(SOFT_TISSUE, "309072003");
+		map.put(SPUTUM, "119334006");
+		map.put(SYNOVIAL_FLUID, "119332005");
+		map.put(URINE, "122575003");
+		SNOMED_CODES = Collections.unmodifiableMap(map);
+	}
+
+	/**
+	 * @return SNOMED-CT code for this sample material, or {@code null} if no canonical code is mapped.
+	 */
+	public String getSnomedCode() {
+		return SNOMED_CODES.get(this);
+	}
 
 	@Override
 	public String toString() {

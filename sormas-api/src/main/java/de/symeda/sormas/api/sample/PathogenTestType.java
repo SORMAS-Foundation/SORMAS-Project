@@ -30,7 +30,8 @@ public enum PathogenTestType {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.DENGUE,
-		Disease.MALARIA }, hide = true)
+		Disease.MALARIA,
+		Disease.SALMONELLOSIS }, hide = true)
 	ANTIBODY_DETECTION,
 
 	ANTIGEN_DETECTION,
@@ -55,7 +56,8 @@ public enum PathogenTestType {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.DENGUE,
-		Disease.MALARIA }, hide = true)
+		Disease.MALARIA,
+		Disease.SALMONELLOSIS }, hide = true)
 	HISTOPATHOLOGY,
 
 	@Diseases(value = {
@@ -91,7 +93,8 @@ public enum PathogenTestType {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.DENGUE,
-		Disease.MALARIA }, hide = true)
+		Disease.MALARIA,
+		Disease.SALMONELLOSIS }, hide = true)
 	IGA_SERUM_ANTIBODY,
 
 	@Diseases(value = {
@@ -103,7 +106,8 @@ public enum PathogenTestType {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.DENGUE,
-		Disease.MALARIA }, hide = true)
+		Disease.MALARIA,
+		Disease.SALMONELLOSIS }, hide = true)
 	INCUBATION_TIME,
 
 	@Diseases(value = {
@@ -128,7 +132,8 @@ public enum PathogenTestType {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.MEASLES,
 		Disease.DENGUE,
-		Disease.MALARIA }, hide = true)
+		Disease.MALARIA,
+		Disease.SALMONELLOSIS }, hide = true)
 	MICROSCOPY,
 
 	@Diseases(value = {
@@ -137,7 +142,8 @@ public enum PathogenTestType {
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
-		Disease.MALARIA }, hide = true)
+		Disease.MALARIA,
+		Disease.SALMONELLOSIS }, hide = true)
 	NEUTRALIZING_ANTIBODIES,
 
 	@Diseases(value = {
@@ -145,6 +151,9 @@ public enum PathogenTestType {
 		Disease.MALARIA })
 	ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
 
+	@Diseases(value = {
+		Disease.SALMONELLOSIS }, hide = true)
+	@RevealsTestTypeText
 	PCR_RT_PCR,
 
 	@Diseases(value = {
@@ -154,7 +163,8 @@ public enum PathogenTestType {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.DENGUE,
-		Disease.MALARIA }, hide = true)
+		Disease.MALARIA,
+		Disease.SALMONELLOSIS }, hide = true)
 	GRAM_STAIN,
 
 	@Diseases(value = {
@@ -166,7 +176,8 @@ public enum PathogenTestType {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.DENGUE,
-		Disease.MALARIA }, hide = true)
+		Disease.MALARIA,
+		Disease.SALMONELLOSIS }, hide = true)
 	LATEX_AGGLUTINATION,
 
 	@Diseases(value = {
@@ -177,7 +188,8 @@ public enum PathogenTestType {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.DENGUE,
-		Disease.MALARIA }, hide = true)
+		Disease.MALARIA,
+		Disease.SALMONELLOSIS }, hide = true)
 	CQ_VALUE_DETECTION,
 
 	@Diseases(value = {
@@ -195,7 +207,8 @@ public enum PathogenTestType {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.DENGUE,
-		Disease.MALARIA }, hide = true)
+		Disease.MALARIA,
+		Disease.SALMONELLOSIS }, hide = true)
 	DNA_MICROARRAY,
 
 	@Diseases(value = {
@@ -206,7 +219,8 @@ public enum PathogenTestType {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.DENGUE,
-		Disease.MALARIA }, hide = true)
+		Disease.MALARIA,
+		Disease.SALMONELLOSIS }, hide = true)
 	TMA,
 
 	@Diseases(value = {
@@ -243,8 +257,31 @@ public enum PathogenTestType {
 
 	@Diseases(value = {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.SALMONELLOSIS })
+	@RevealsTestTypeText(diseases = Disease.SALMONELLOSIS)
 	MULTILOCUS_SEQUENCE_TYPING,
+
+	@Diseases(value = {
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.SALMONELLOSIS })
+	@RevealsTestTypeText(diseases = Disease.SALMONELLOSIS)
+	CGMLST,
+
+	@Diseases(value = {
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.SALMONELLOSIS })
+	@RevealsTestTypeText(diseases = Disease.SALMONELLOSIS)
+	SNP_TYPING,
+
+	@Diseases(value = {
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.SALMONELLOSIS })
+	@RevealsTestTypeText(diseases = Disease.SALMONELLOSIS)
+	SEROTYPING,
 
 	@Diseases(value = {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
@@ -296,6 +333,7 @@ public enum PathogenTestType {
 	@Diseases({
 		Disease.MALARIA })
 	OTHER_SEROLOGICAL_TEST,
+	@RevealsTestTypeText
 	OTHER;
 
 	@Override
@@ -304,6 +342,10 @@ public enum PathogenTestType {
 	}
 
 	public static String toString(PathogenTestType value, String details) {
+		return toString(value, details, null);
+	}
+
+	public static String toString(PathogenTestType value, String details, Disease disease) {
 		if (value == null) {
 			return "";
 		}
@@ -312,6 +354,40 @@ public enum PathogenTestType {
 			return DataHelper.toStringNullable(details);
 		}
 
+		if (revealsTestTypeText(value, disease) && !DataHelper.isNullOrEmpty(details)) {
+			return value + " (" + details + ")";
+		}
+
 		return value.toString();
+	}
+
+	/**
+	 * @return true when picking {@code testType} should reveal the {@code PathogenTestDto.testTypeText} free-text
+	 *         companion field. The decision is data-driven via {@link RevealsTestTypeText} on the enum value; values
+	 *         with no annotation never reveal the field, values annotated without a disease list reveal it for every
+	 *         disease, and values with a disease list reveal it only when {@code disease} is one of those listed.
+	 */
+	public static boolean revealsTestTypeText(PathogenTestType testType, Disease disease) {
+		if (testType == null) {
+			return false;
+		}
+		try {
+			RevealsTestTypeText annotation = PathogenTestType.class.getField(testType.name()).getAnnotation(RevealsTestTypeText.class);
+			if (annotation == null) {
+				return false;
+			}
+			Disease[] diseases = annotation.diseases();
+			if (diseases.length == 0) {
+				return true;
+			}
+			for (Disease d : diseases) {
+				if (d == disease) {
+					return true;
+				}
+			}
+			return false;
+		} catch (NoSuchFieldException e) {
+			return false;
+		}
 	}
 }
