@@ -41,6 +41,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
@@ -82,7 +83,6 @@ import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
-import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.components.CustomizableFieldsGroup;
@@ -105,7 +105,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 
 	//@formatter:off
 	private static final String GENERAL_DETAILS_LAYOUT =
-			fluidRowLocs(ExposureDto.START_DATE, ExposureDto.END_DATE) +
+			fluidRowLocs(ExposureDto.START_DATE, ExposureDto.END_DATE, "", "") +
 					fluidRowLocs(ExposureDto.EXPOSURE_TYPE, ExposureDto.EXPOSURE_TYPE_DETAILS) +
 					loc(ExposureDto.DESCRIPTION);
 
@@ -312,8 +312,8 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	private void addBasicFields() {
 		addFields(ExposureDto.UUID, ExposureDto.REPORTING_USER, ExposureDto.PROBABLE_INFECTION_ENVIRONMENT);
 
-		DateTimeField startDate = addField(generalDetailsLayout, ExposureDto.START_DATE, DateTimeField.class);
-		DateTimeField endDate = addField(generalDetailsLayout, ExposureDto.END_DATE, DateTimeField.class);
+		DateField startDate = addField(generalDetailsLayout, ExposureDto.START_DATE, DateField.class);
+		DateField endDate = addField(generalDetailsLayout, ExposureDto.END_DATE, DateField.class);
 
 		DateComparisonValidator.addStartEndValidators(startDate, endDate, false);
 
