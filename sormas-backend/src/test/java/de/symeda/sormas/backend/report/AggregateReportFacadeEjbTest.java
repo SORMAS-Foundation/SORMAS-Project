@@ -247,10 +247,12 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testAggregateReportsSummarize() {
+	public void testAggregateReportsSummarize() throws InterruptedException {
 		loginWith(informant1);
 
 		createAggregateReport(1, 1, 1, rdcf.region, rdcf.district, null, null);
+		// changeDate has millisecond resolution, delay so the later report at the same jurisdiction is unambiguously the most recent
+		Thread.sleep(1);
 		createAggregateReport(2, 2, 2, rdcf.region, rdcf.district, null, null);
 		createAggregateReport(3, 3, 3, rdcf.region, rdcf.district, rdcf.facility, null);
 
@@ -367,12 +369,14 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testAggregateReportGetEditData() {
+	public void testAggregateReportGetEditData() throws InterruptedException {
 		useNationalUserLogin();
 		Disease disease = Disease.ACUTE_VIRAL_HEPATITIS;
 		creator.updateDiseaseConfiguration(disease, false, false, false, true, null, false, 0, 0);
 
 		createAggregateReport(disease, null, 1, 1, 1);
+		// changeDate has millisecond resolution, delay so getSimilarAggregateReports unambiguously picks the most recent report per age group
+		Thread.sleep(1);
 		AggregateReportDto selectedAggregateReport = createAggregateReport(disease, null, 2, 2, 2);
 
 		List<AggregateReportDto> similarAggregateReports = getAggregateReportFacade().getSimilarAggregateReports(selectedAggregateReport);
@@ -388,6 +392,8 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		createAggregateReport(disease, "1Y_5Y", 5, 5, 5);
 		createAggregateReport(disease, "6Y", 6, 6, 6);
 
+		// delay so the second batch (same age groups, higher values) is unambiguously more recent than the first
+		Thread.sleep(1);
 		createAggregateReport(disease, "0D_28D", 31, 31, 31);
 		AggregateReportDto selectedAggregateReport2 = createAggregateReport(disease, "1M_12M", 41, 41, 41);
 		createAggregateReport(disease, "1Y_5Y", 51, 51, 51);
