@@ -56,11 +56,13 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -139,6 +141,18 @@ public class PathogenTestController {
 		PathogenTestForm createForm = new PathogenTestForm(sampleDto, true, caseSampleCount, false, true, associatedEventOrCaseOrContactDisease);
 		pathogenTest.setTestedDisease(associatedEventOrCaseOrContactDisease);
 		createForm.setValue(pathogenTest);
+
+		// Lab is mandatory for non-internal samples (consistent with creating a test alongside a new sample)
+		createForm.setLabRequired(!SamplePurpose.INTERNAL.equals(sampleDto.getSamplePurpose()));
+
+		// Trigger the "test date not before sample date" alarm when saving the test itself,
+		// rather than only later when saving the sample
+		createForm.addTestDateAfterSampleDateValidator(
+			sampleDto::getSampleDateTime,
+			I18nProperties.getValidationError(
+				Validations.afterDate,
+				I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_DATE_TIME),
+				I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_DATE_TIME)));
 
 		final CommitDiscardWrapperComponent<PathogenTestForm> editView =
 			new CommitDiscardWrapperComponent<>(createForm, UiUtil.permitted(UserRight.PATHOGEN_TEST_CREATE), createForm.getFieldGroup());

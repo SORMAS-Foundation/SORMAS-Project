@@ -251,8 +251,8 @@ public class TuberculosisSectionComponent extends AbstractDiseaseSectionComponen
 			isoniazidResistant.clear();
 		}
 
-		// Test scale: MICROSCOPY
-		boolean showTestScale = currentTestType == PathogenTestType.MICROSCOPY;
+		// Test scale: MICROSCOPY + POSITIVE (a negative microscopy has no scale)
+		boolean showTestScale = currentTestType == PathogenTestType.MICROSCOPY && currentResult == PathogenTestResultType.POSITIVE;
 		testScale.setVisible(showTestScale);
 		if (!showTestScale) {
 			testScale.clear();
