@@ -137,6 +137,7 @@ public class DataPatcherImpl implements DataPatcher {
 		}
 
 		saveDTOsIfAppropriate(entityCache);
+		// TODO: once entities are saved, if appropriate save customizable fields.
 
 		logger.debug("dataPatchResponse: [{}]", response);
 
@@ -421,7 +422,11 @@ public class DataPatcherImpl implements DataPatcher {
 		};
 	}
 
-	private static final class SingleFieldPatchResult {
+	/**
+	 * 
+	 */
+	// TODO: Extract & Rename
+	public static final class SingleFieldPatchResult {
 
 		final PatchField field;
 		final DataPatchFailureCause failureCause;

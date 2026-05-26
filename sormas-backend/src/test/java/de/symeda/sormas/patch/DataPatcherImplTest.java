@@ -928,6 +928,40 @@ class DataPatcherImplTest extends AbstractBeanTest {
 	}
 
 	@Test
+	void patch_grouped_twoExposures() {
+		// PREPARE
+		Disease disease = Disease.DENGUE;
+		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
+
+		String exposureType = "WORK";
+		String description = "market visit";
+
+		// Both groups share the same values — the groupIndex drives entity separation, not different content
+		PatchDictionary patchDictionary = new PatchDictionary();
+		patchDictionary.put(PatchField.of(toFieldName(ExposureDto.I18N_PREFIX, ExposureDto.EXPOSURE_TYPE), 0), exposureType);
+		patchDictionary.put(PatchField.of(toFieldName(ExposureDto.I18N_PREFIX, ExposureDto.DESCRIPTION), 0), description);
+		patchDictionary.put(PatchField.of(toFieldName(ExposureDto.I18N_PREFIX, ExposureDto.EXPOSURE_TYPE), 1), exposureType);
+		patchDictionary.put(PatchField.of(toFieldName(ExposureDto.I18N_PREFIX, ExposureDto.DESCRIPTION), 1), description);
+
+		// EXECUTE
+		DataPatchResponse response = victim().patch(
+			new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
+				.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+				.setPatchDictionary(patchDictionary));
+
+		// CHECK
+		CaseDataDto actualCase = getCaseFacade().getByUuid(originalCase.getUuid());
+		List<ExposureDto> exposures = actualCase.getEpiData().getExposures();
+
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failures: " + response.getFailures()),
+			() -> Assertions.assertTrue(response.isApplied()),
+			() -> Assertions.assertEquals(2, exposures.size()),
+			() -> Assertions.assertTrue(exposures.stream().allMatch(e -> ExposureType.WORK.equals(e.getExposureType()))),
+			() -> Assertions.assertTrue(exposures.stream().allMatch(e -> description.equals(e.getDescription()))));
+	}
+
+	@Test
 	void patch_previousHospitalization() {
 		// PREPARE
 		Disease disease = Disease.DENGUE;
