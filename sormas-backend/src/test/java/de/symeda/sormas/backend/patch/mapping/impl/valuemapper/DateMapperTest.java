@@ -3,6 +3,8 @@ package de.symeda.sormas.backend.patch.mapping.impl.valuemapper;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Set;
 
@@ -18,9 +20,9 @@ class DateMapperTest extends AbstractUnitTest {
 	private DatePatchMapper victim;
 
 	@Test
-	void getSupportedTypes_containsDateClass() {
+	void getSupportedTypes_containsDateClasses() {
 		// PREPARE
-		Set<Class<?>> expected = Set.of(Date.class);
+		Set<Class<?>> expected = Set.of(Date.class, LocalDate.class, LocalDateTime.class);
 
 		// EXECUTE
 		Set<Class<?>> actual = victim.getSupportedTypes();
@@ -108,5 +110,63 @@ class DateMapperTest extends AbstractUnitTest {
 	void map_randomString_throwsIllegalArgumentException() {
 		// EXECUTE & CHECK
 		assertEquals(DataPatchFailureCause.INVALID_VALUE_TYPE, victim.map("notADate", Date.class).getDataPatchFailureCause());
+	}
+
+	// --- LocalDate ---
+
+	@Test
+	void map_localDate_validDate() {
+		// EXECUTE & CHECK
+		assertEquals(LocalDate.of(2024, 6, 15), victim.map("2024-06-15", LocalDate.class).getData());
+	}
+
+	@Test
+	void map_localDate_fromDateTimeString_returnsDatePart() {
+		// EXECUTE & CHECK
+		assertEquals(LocalDate.of(2024, 6, 15), victim.map("2024-06-15T14:30:00", LocalDate.class).getData());
+	}
+
+	@Test
+	void map_localDate_invalidFormat() {
+		// EXECUTE & CHECK
+		assertEquals(DataPatchFailureCause.INVALID_VALUE_TYPE, victim.map("15/06/2024", LocalDate.class).getDataPatchFailureCause());
+	}
+
+	@Test
+	void map_localDate_invalidDay() {
+		// EXECUTE & CHECK
+		assertEquals(DataPatchFailureCause.INVALID_VALUE_TYPE, victim.map("2024-02-30", LocalDate.class).getDataPatchFailureCause());
+	}
+
+	// --- LocalDateTime ---
+
+	@Test
+	void map_localDateTime_validDateTime() {
+		// EXECUTE & CHECK
+		assertEquals(LocalDateTime.of(2024, 6, 15, 14, 30, 0), victim.map("2024-06-15T14:30:00", LocalDateTime.class).getData());
+	}
+
+	@Test
+	void map_localDateTime_validDateTimeWithoutSeconds() {
+		// EXECUTE & CHECK
+		assertEquals(LocalDateTime.of(2024, 6, 15, 14, 30, 0), victim.map("2024-06-15T14:30", LocalDateTime.class).getData());
+	}
+
+	@Test
+	void map_localDateTime_fromDateOnlyString_returnsMidnight() {
+		// EXECUTE & CHECK
+		assertEquals(LocalDateTime.of(2024, 6, 15, 0, 0, 0), victim.map("2024-06-15", LocalDateTime.class).getData());
+	}
+
+	@Test
+	void map_localDateTime_invalidFormat() {
+		// EXECUTE & CHECK
+		assertEquals(DataPatchFailureCause.INVALID_VALUE_TYPE, victim.map("15/06/2024", LocalDateTime.class).getDataPatchFailureCause());
+	}
+
+	@Test
+	void map_localDateTime_invalidDay() {
+		// EXECUTE & CHECK
+		assertEquals(DataPatchFailureCause.INVALID_VALUE_TYPE, victim.map("2024-02-30T10:00:00", LocalDateTime.class).getDataPatchFailureCause());
 	}
 }
