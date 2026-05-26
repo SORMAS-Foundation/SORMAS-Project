@@ -99,11 +99,19 @@ public class DataPatcherImpl implements DataPatcher {
 		List<SinglePatchResult> results = patchingTuples.stream().map(singleFieldPatchResult -> {
 			PatchField patchField = singleFieldPatchResult.field;
 			SinglePatchResult singlePatchResult = new SinglePatchResult().setField(patchField);
-
-			Supplier<AttachedEntityWrapper> target = () -> findAppropriateTarget(patchField, caseData, entityCache);
-
 			try {
+				Supplier<AttachedEntityWrapper> target = () -> findAppropriateTarget(patchField, caseData, entityCache);
+
 				return produceSinglePatchResult(request, singleFieldPatchResult, disease, target);
+			} catch (DataPatchingException e) {
+				DataPatchFailureCause failureCause = e.getFailureCause();
+				logger.error(
+					"DataPatching-specific failure during patch operation for request: [{}], [{}], of type [{}]",
+					request,
+					singleFieldPatchResult,
+					failureCause,
+					e);
+				return singlePatchResult.setFailure(new DataPatchFailure().setDataPatchFailureCause(failureCause));
 			} catch (RuntimeException e) {
 				logger.error("Failure during patch operation for request: [{}], [{}]", request, singleFieldPatchResult, e);
 				return singlePatchResult.setFailure(new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.TECHNICAL));
@@ -373,8 +381,18 @@ public class DataPatcherImpl implements DataPatcher {
 
 		Optional<AttachedEntityWrapper> fetched = businessDtoFacade.tryFetchByI18nNameForCreateUpdate(prefix, caseData);
 		if (fetched.isPresent()) {
-			entityCache.put(key, fetched.get());
-			return fetched.get();
+			AttachedEntityWrapper appropriateEntityWrapper = fetched.get();
+
+			if (patchField.getGroupIndex() != null && appropriateEntityWrapper.isAttached()) {
+				throw new DataPatchingException(
+					String.format(
+						"The field [%s] is already attached, this means no new entities can be added as group: only a single instance is valid for the Case-'data-Tree'",
+						prefix),
+					DataPatchFailureCause.FORBIDDEN_MULTI_GROUP_FIELD);
+			}
+
+			entityCache.put(key, appropriateEntityWrapper);
+			return appropriateEntityWrapper;
 		}
 
 		logger.error("Fallbacked to entity for resolved path: [{}]. This should not occur as CaseData is already in entityCache", resolvedPath);

@@ -76,6 +76,11 @@ public enum DataPatchFailureCause {
 	DUPLICATE_FIELD,
 
 	/**
+	 * Means the field does not support being inserted multiple in groups. Most fields are "singulars".
+	 */
+	FORBIDDEN_MULTI_GROUP_FIELD,
+
+	/**
 	 * This means there is a hole in the implementation.
 	 */
 	TECHNICAL

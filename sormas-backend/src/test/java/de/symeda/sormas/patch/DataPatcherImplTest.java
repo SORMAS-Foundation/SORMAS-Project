@@ -1027,6 +1027,40 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			() -> Assertions.assertEquals("office work", activities.get(0).getDescription()));
 	}
 
+	@Test
+	void patch_forbiddenMultiGroupField() {
+		// PREPARE
+		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.PERTUSSIS);
+		PersonDto originalPerson = getPersonFacade().getByUuid(originalCase.getPerson().getUuid());
+		String originalLastName = originalPerson.getLastName();
+
+		String secondPersonLastName = "secondPersonLastName";
+
+		// Use PatchDictionary with groupIndex=1 to simulate inserting a "second person".
+		// Person is a singular entity (always attached), so grouping is forbidden.
+		PatchDictionary patchDictionary = new PatchDictionary();
+		patchDictionary.put(PatchField.of("Person.lastName", 1), secondPersonLastName);
+
+		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
+			.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+			.setPatchDictionary(patchDictionary);
+
+		// EXECUTE
+		DataPatchResponse response = victim().patch(request);
+
+		// CHECK
+		PersonDto actualPerson = getPersonFacade().getByUuid(originalCase.getPerson().getUuid());
+
+		PatchField expectedField = PatchField.of("Person.lastName", 1);
+		DataPatchFailure expectedFailure = new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.FORBIDDEN_MULTI_GROUP_FIELD);
+
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response.getValidPatchDictionary().isEmpty(), "Nothing should have been patched"),
+			() -> Assertions.assertFalse(response.isApplied()),
+			() -> Assertions.assertEquals(Map.of(expectedField, expectedFailure), response.getFailures()),
+			() -> Assertions.assertEquals(originalLastName, actualPerson.getLastName(), "Person lastName must not be altered"));
+	}
+
 	private static String toFieldName(String prefix, String field) {
 		return prefix + '.' + field;
 	}
