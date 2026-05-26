@@ -5,7 +5,10 @@ import java.util.Map;
 
 import javax.ejb.EJB;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
+
+import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldContext;
@@ -16,6 +19,7 @@ import de.symeda.sormas.api.patch.SinglePatchResult;
 import de.symeda.sormas.api.utils.Tuple;
 import de.symeda.sormas.backend.customizablefield.CustomizableFieldValueFacadeEjb;
 import de.symeda.sormas.backend.patch.DataPatcherImpl;
+import de.symeda.sormas.backend.patch.customizablefield.mappers.CustomizableFieldValuePatchMapperRegistry;
 
 /**
  * Wrapper arround {@link de.symeda.sormas.api.customizablefield.CustomizableFieldValueFacade} to be able to patch customizable field
@@ -25,19 +29,28 @@ import de.symeda.sormas.backend.patch.DataPatcherImpl;
 public class CustomizableFieldDataPatcher {
 
 	@EJB
-	private CustomizableFieldValueFacadeEjb.CustomizableFieldValueFacadeEjbLocal customizableFieldValueFacade;
+	private CustomizableFieldValueFacadeEjb.CustomizableFieldValueFacadeEjbLocal facade;
+
+	@Inject
+	private CustomizableFieldValuePatchMapperRegistry registry;
 
 	public List<Tuple<SinglePatchResult, CustomizableFieldValueDto>> patch(Request request) {
+		List<DataPatcherImpl.SingleFieldPatchResult> patchingTuples = request.getPatchingTuples();
+
+		if (CollectionUtils.isEmpty(patchingTuples)) {
+			return List.of();
+		}
+
 		CaseDataPatchRequest caseDataPatchRequest = request.getCaseDataPatchRequest();
 
 		Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> valuesForEntity =
-			customizableFieldValueFacade.getValuesForEntity(caseDataPatchRequest.getCaseUuid(), CustomizableFieldContext.CASE);
+			facade.getValuesForEntity(caseDataPatchRequest.getCaseUuid(), CustomizableFieldContext.CASE);
 
 		return List.of();
 	}
 
 	public void save(List<CustomizableFieldValueDto> values) {
-		values.forEach(customizableFieldValueFacade::save);
+		values.forEach(facade::save);
 	}
 
 	public static final class Request {

@@ -19,12 +19,12 @@ import de.symeda.sormas.backend.patch.mapping.impl.valuemapper.DatePatchMapper;
 @ApplicationScoped
 public class DateCustomizableFieldValuePatchMapper implements CustomizableFieldValuePatchMapper {
 
-	private static final Map<CustomizableFieldType, Tuple<Class<?>, CustomizableFieldSetter<?>>> DICTIONARY = Map.of(
+	private static final Map<CustomizableFieldType, Tuple<Class<Object>, CustomizableFieldSetter<Object>>> DICTIONARY = Map.of(
 		CustomizableFieldType.DATE,
-		CustomizableFieldValuePatchMapper.buildTuple(LocalDate.class, CustomizableFieldValueDto::setValueAsDate),
+		(Tuple) CustomizableFieldValuePatchMapper.buildTuple(LocalDate.class, CustomizableFieldValueDto::setValueAsDate),
 
 		CustomizableFieldType.DATE_TIME,
-		CustomizableFieldValuePatchMapper.buildTuple(LocalDateTime.class, CustomizableFieldValueDto::setValueAsDateTime));
+		(Tuple) CustomizableFieldValuePatchMapper.buildTuple(LocalDateTime.class, CustomizableFieldValueDto::setValueAsDateTime));
 
 	public static final Set<CustomizableFieldType> SUPPORTED_TYPES = DICTIONARY.keySet();
 
@@ -33,10 +33,10 @@ public class DateCustomizableFieldValuePatchMapper implements CustomizableFieldV
 
 	@Override
 	public ValueMappingResult<CustomizableFieldValueDto> map(CustomizableFieldValuePatchRequest request) {
-		Tuple<Class<?>, CustomizableFieldSetter<?>> tuple = DICTIONARY.get(request.getTargetType());
+		Tuple<Class<Object>, CustomizableFieldSetter<Object>> tuple = DICTIONARY.get(request.getTargetType());
 		ValueMappingResult<?> result = datePatchMapper.map(request.getValue(), tuple.getFirst());
 
-		CustomizableFieldSetter<?> second = tuple.getSecond();
+		CustomizableFieldSetter<Object> second = tuple.getSecond();
 
 		CustomizableFieldValueDto customizableFieldValueDto = request.getCustomizableFieldValueDto();
 		Object data = result.getData();

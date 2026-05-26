@@ -86,7 +86,7 @@ public interface CustomizableFieldValuePatchMapper extends Comparable<Customizab
 		return ValueMappingResult.withData(dto);
 	}
 
-	static <T> Tuple<Class<?>, CustomizableFieldSetter<?>> buildTuple(Class<T> clazz, CustomizableFieldSetter<T> setter) {
+	static <T> Tuple<Class<T>, CustomizableFieldSetter<T>> buildTuple(Class<T> clazz, CustomizableFieldSetter<T> setter) {
 		return Tuple.of(clazz, setter);
 	}
 }

@@ -15,7 +15,7 @@ import de.symeda.sormas.backend.patch.customizablefield.CustomizableFieldValuePa
 import de.symeda.sormas.backend.patch.mapping.impl.valuemapper.PrimitivePatchMapper;
 
 @ApplicationScoped
-public class PrivimitiveCustomizableFieldValuePatchMapper implements CustomizableFieldValuePatchMapper {
+public class PrimitiveCustomizableFieldValuePatchMapper implements CustomizableFieldValuePatchMapper {
 
 	private static final Map<CustomizableFieldType, Class<?>> CUSTOM_TYPE_STORAGE_TYPE_DICTIONARY = Map.of(
 		CustomizableFieldType.TEXT,
@@ -53,14 +53,14 @@ public class PrivimitiveCustomizableFieldValuePatchMapper implements Customizabl
 
 		ValueMappingResult<?> result = primitivePatchMapper.map(request.getValue(), targetClass);
 
-		Tuple<Class<?>, CustomizableFieldSetter<?>> tuple;
+		Tuple<Class<Object>, CustomizableFieldSetter<Object>> tuple;
 		if (targetClass == Boolean.class) {
-			tuple = CustomizableFieldValuePatchMapper.buildTuple(Boolean.class, CustomizableFieldValueDto::setValueAsBoolean);
+			tuple = (Tuple) CustomizableFieldValuePatchMapper.buildTuple(Boolean.class, CustomizableFieldValueDto::setValueAsBoolean);
 		} else {
-			tuple = CustomizableFieldValuePatchMapper.buildTuple(String.class, CustomizableFieldValueDto::setValue);
+			tuple = (Tuple) CustomizableFieldValuePatchMapper.buildTuple(String.class, CustomizableFieldValueDto::setValue);
 		}
 
-		CustomizableFieldSetter<?> second = tuple.getSecond();
+		CustomizableFieldSetter<Object> second = tuple.getSecond();
 
 		CustomizableFieldValueDto customizableFieldValueDto = request.getCustomizableFieldValueDto();
 		Object data = result.getData();
