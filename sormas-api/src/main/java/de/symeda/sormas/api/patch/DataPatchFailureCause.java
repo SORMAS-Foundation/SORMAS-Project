@@ -80,6 +80,8 @@ public enum DataPatchFailureCause {
 	 */
 	FORBIDDEN_MULTI_GROUP_FIELD,
 
+	INVALID_CUSTOM_CONTEXT,
+
 	/**
 	 * This means there is a hole in the implementation.
 	 */

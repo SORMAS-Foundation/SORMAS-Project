@@ -1,14 +1,13 @@
 package de.symeda.sormas.backend.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -134,6 +133,57 @@ class CollectorUtilsTest extends AbstractUnitTest {
 		assertEquals(mapOf("key2", null), nullSafeResult);
 
 		assertThrows(NullPointerException.class, () -> items.stream().collect(Collectors.toMap(Item::getKey, Item::getValue)));
+	}
+
+	@Test
+	void toOptionalSingle_whenStreamIsEmpty_thenReturnEmptyOptional() {
+		// EXECUTE
+		Optional<String> result = Stream.<String> empty().collect(CollectorUtils.toOptionalSingle());
+
+		// CHECK
+		assertTrue(result.isEmpty());
+	}
+
+	@Test
+	void toOptionalSingle_whenStreamHasSingleElement_thenReturnOptionalWithThatElement() {
+		// EXECUTE
+		Optional<String> result = Stream.of("only").collect(CollectorUtils.toOptionalSingle());
+
+		// CHECK
+		assertEquals(Optional.of("only"), result);
+	}
+
+	@Test
+	void toOptionalSingle_whenStreamHasMultipleElements_thenThrowIllegalStateException() {
+		// EXECUTE + CHECK
+		IllegalStateException ex =
+			assertThrows(IllegalStateException.class, () -> Stream.of("first", "second").collect(CollectorUtils.toOptionalSingle()));
+		assertTrue(ex.getMessage().contains("first"));
+		assertTrue(ex.getMessage().contains("second"));
+	}
+
+	@Test
+	void toOptionalSingle_whenParallelStreamIsEmpty_thenReturnEmptyOptional() {
+		// EXECUTE
+		Optional<String> result = Stream.<String> of().parallel().collect(CollectorUtils.toOptionalSingle());
+
+		// CHECK
+		assertTrue(result.isEmpty());
+	}
+
+	@Test
+	void toOptionalSingle_whenParallelStreamHasSingleElement_thenReturnOptionalWithThatElement() {
+		// EXECUTE
+		Optional<Integer> result = List.of(42).parallelStream().collect(CollectorUtils.toOptionalSingle());
+
+		// CHECK
+		assertEquals(Optional.of(42), result);
+	}
+
+	@Test
+	void toOptionalSingle_whenParallelStreamHasMultipleElements_thenThrowIllegalStateException() {
+		// EXECUTE + CHECK
+		assertThrows(IllegalStateException.class, () -> List.of("a", "b", "c").parallelStream().collect(CollectorUtils.toOptionalSingle()));
 	}
 
 	// Helper class for tests
