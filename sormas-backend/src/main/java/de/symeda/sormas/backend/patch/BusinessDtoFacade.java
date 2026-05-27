@@ -292,13 +292,16 @@ public class BusinessDtoFacade {
 	public void save(@NotNull List<EntityDto> entityDtos) {
 		ArrayList<EntityDto> dtosToSave = new ArrayList<>(entityDtos);
 
-		leafAttacherRegistry.forEach((leafClass, attacher) -> dtosToSave.stream().filter(leafClass::isInstance).findAny().ifPresent(leaf -> {
-			EntityDto parent = attacher.attachAndReturnParent(leaf, dtosToSave);
-			dtosToSave.remove(leaf);
-			if (!dtosToSave.contains(parent)) {
-				dtosToSave.add(parent);
-			}
-		}));
+		leafAttacherRegistry.forEach((leafClass, attacher) -> {
+			List<EntityDto> leaves = dtosToSave.stream().filter(leafClass::isInstance).collect(Collectors.toList());
+			leaves.forEach(leaf -> {
+				EntityDto parent = attacher.attachAndReturnParent(leaf, dtosToSave);
+				dtosToSave.remove(leaf);
+				if (!dtosToSave.contains(parent)) {
+					dtosToSave.add(parent);
+				}
+			});
+		});
 
 		dtosToSave.forEach(this::saveDirectEntity);
 	}

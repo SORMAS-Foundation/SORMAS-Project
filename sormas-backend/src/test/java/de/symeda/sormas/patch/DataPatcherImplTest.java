@@ -933,15 +933,20 @@ class DataPatcherImplTest extends AbstractBeanTest {
 		Disease disease = Disease.DENGUE;
 		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
 
-		String exposureType = "WORK";
-		String description = "market visit";
+		ExposureType firstExposureType = ExposureType.WORK;
+
+		String firstDescription = "WORK visit";
+
+		ExposureType secondExposureType = ExposureType.TRAVEL;
+		String secondDescription = "Iceland";
 
 		// Both groups share the same values — the groupIndex drives entity separation, not different content
 		PatchDictionary patchDictionary = new PatchDictionary();
-		patchDictionary.put(PatchField.of(toFieldName(ExposureDto.I18N_PREFIX, ExposureDto.EXPOSURE_TYPE), 0), exposureType);
-		patchDictionary.put(PatchField.of(toFieldName(ExposureDto.I18N_PREFIX, ExposureDto.DESCRIPTION), 0), description);
-		patchDictionary.put(PatchField.of(toFieldName(ExposureDto.I18N_PREFIX, ExposureDto.EXPOSURE_TYPE), 1), exposureType);
-		patchDictionary.put(PatchField.of(toFieldName(ExposureDto.I18N_PREFIX, ExposureDto.DESCRIPTION), 1), description);
+		patchDictionary.put(PatchField.of(toFieldName(ExposureDto.I18N_PREFIX, ExposureDto.EXPOSURE_TYPE), 0), firstExposureType.name());
+		patchDictionary.put(PatchField.of(toFieldName(ExposureDto.I18N_PREFIX, ExposureDto.DESCRIPTION), 0), firstDescription);
+
+		patchDictionary.put(PatchField.of(toFieldName(ExposureDto.I18N_PREFIX, ExposureDto.EXPOSURE_TYPE), 1), secondExposureType.name());
+		patchDictionary.put(PatchField.of(toFieldName(ExposureDto.I18N_PREFIX, ExposureDto.DESCRIPTION), 1), secondDescription);
 
 		// EXECUTE
 		DataPatchResponse response = victim().patch(
@@ -956,9 +961,14 @@ class DataPatcherImplTest extends AbstractBeanTest {
 		Assertions.assertAll(
 			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failures: " + response.getFailures()),
 			() -> Assertions.assertTrue(response.isApplied()),
+
 			() -> Assertions.assertEquals(2, exposures.size()),
-			() -> Assertions.assertTrue(exposures.stream().allMatch(e -> ExposureType.WORK.equals(e.getExposureType()))),
-			() -> Assertions.assertTrue(exposures.stream().allMatch(e -> description.equals(e.getDescription()))));
+
+			() -> Assertions.assertEquals(firstExposureType, exposures.get(0).getExposureType()),
+			() -> Assertions.assertEquals(secondExposureType, exposures.get(1).getExposureType()),
+
+			() -> Assertions.assertEquals(firstDescription, exposures.get(0).getDescription()),
+			() -> Assertions.assertEquals(secondDescription, exposures.get(1).getDescription()));
 	}
 
 	@Test
