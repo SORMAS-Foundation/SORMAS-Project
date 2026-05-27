@@ -79,7 +79,6 @@ import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.caze.PreviousCaseDto;
 import de.symeda.sormas.api.caze.SurveyResponseStatus;
-import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
 import de.symeda.sormas.api.common.DeletableEntityType;
@@ -96,7 +95,7 @@ import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRun
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.followup.FollowUpLogic;
-import de.symeda.sormas.api.immunization.ImmunizationFacade;
+import de.symeda.sormas.api.immunization.VaccinationStatusData;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
@@ -2314,18 +2313,8 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 	}
 
 	/**
-	 * Updates the vaccination status of all cases of the specified person and disease.
-	 * 
-	 * <p>
-	 * This method acts as a dispatcher that delegates to either determined or simple vaccination
-	 * status update logic based on the USE_DETERMINED_VACCINATION_STATUS system configuration:
-	 * </p>
-	 * <ul>
-	 * <li><b>Determined mode</b> (feature enabled): Uses {@link #updateDeterminedVaccinationStatuses}
-	 * to derive sophisticated statuses (e.g., VACCINATED_ONE_DOSE, RECOVERED) from immunization data</li>
-	 * <li><b>Simple mode</b> (legacy behavior): Uses {@link #updateSimpleVaccinationStatuses}
-	 * to set generic VACCINATED status based on vaccination date comparisons</li>
-	 * </ul>
+	 * Updates the vaccination status of all cases of the specified person and disease using
+	 * vaccination status data derived from immunization records.
 	 * 
 	 * @param personId
 	 *            The ID of the case person whose cases should be updated
@@ -2333,17 +2322,9 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 	 *            The disease for which to update case vaccination statuses
 	 * @param vaccination
 	 *            The vaccination that triggered this update (can be null for bulk updates)
-	 * @see ImmunizationFacade#isUseDeterminedVaccinationStatus()
-	 * @see #updateDeterminedVaccinationStatuses(Long, Disease, Vaccination)
-	 * @see #updateSimpleVaccinationStatuses(Long, Disease, Vaccination)
 	 */
 	public void updateVaccinationStatuses(Long personId, Disease disease, Vaccination vaccination) {
-		// Check feature flag to determine which update strategy to use
-		if (immunizationFacade.isUseDeterminedVaccinationStatus()) {
-			updateDeterminedVaccinationStatuses(personId, disease, vaccination);
-			return;
-		}
-		updateSimpleVaccinationStatuses(personId, disease, vaccination);
+		updateDeterminedVaccinationStatuses(personId, disease, vaccination);
 	}
 
 	/**
@@ -2396,73 +2377,26 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 		// Update each case with derived vaccination status from immunization data
 		for (Case caze : cases) {
-			VaccinationStatus derivedStatus =
+			VaccinationStatusData data =
 				immunizationService.deriveVaccinationStatus(caze.getPerson().getUuid(), caze.getDisease(), caze.getReportDate());
 
-			if (derivedStatus != null) {
-				String derivedDetails = null;
-				if (derivedStatus == VaccinationStatus.OTHER) {
-					derivedDetails =
-						immunizationService.getMeansOfImmunizationDetails(caze.getPerson().getUuid(), caze.getDisease(), caze.getReportDate());
-				}
+			if (data != null) {
+				// Update if any field changed
+				boolean statusChanged = data.getVaccinationStatus() != caze.getVaccinationStatus();
+				boolean detailsChanged = !java.util.Objects.equals(data.getVaccinationStatusDetails(), caze.getVaccinationStatusDetails());
+				boolean dosesChanged = !java.util.Objects.equals(data.getNumberOfDoses(), caze.getNumberOfDoses());
+				boolean reliabilityChanged = data.getInformationReliability() != caze.getInformationReliability();
 
-				// Update if status changed OR if status is OTHER and details have changed
-				boolean statusChanged = derivedStatus != caze.getVaccinationStatus();
-				boolean detailsChanged =
-					derivedStatus == VaccinationStatus.OTHER && !java.util.Objects.equals(derivedDetails, caze.getVaccinationStatusDetails());
-
-				if (statusChanged || detailsChanged) {
-					caze.setVaccinationStatus(derivedStatus);
-					caze.setVaccinationStatusDetails(derivedDetails);
+				if (statusChanged || detailsChanged || dosesChanged || reliabilityChanged) {
+					caze.setVaccinationStatus(data.getVaccinationStatus());
+					caze.setVaccinationStatusDetails(data.getVaccinationStatusDetails());
+					caze.setNumberOfDoses(data.getNumberOfDoses());
+					caze.setInformationReliability(data.getInformationReliability());
+					caze.setVaccinationStatusLastUpdated(new Date());
 					caze.setChangeDate(new Timestamp(new Date().getTime()));
 				}
 			}
 		}
-	}
-
-	/**
-	 * Updates vaccination statuses using simple date-based logic (legacy mode).
-	 * 
-	 * <p>
-	 * This method provides backward-compatible vaccination status updates without the enhanced
-	 * determination features. It simply sets all relevant cases to VACCINATED status based on whether
-	 * the vaccination date precedes the case start date.
-	 * </p>
-	 * 
-	 * <p>
-	 * Key differences from determined mode:
-	 * </p>
-	 * <ul>
-	 * <li>Always assigns generic VACCINATED status (no disease-specific variants)</li>
-	 * <li>No support for RECOVERED or dose-specific statuses</li>
-	 * <li>No immunization validity date filtering</li>
-	 * <li>Uses bulk update for efficiency (single UPDATE query)</li>
-	 * </ul>
-	 * 
-	 * @param personId
-	 *            The ID of the person whose cases should be updated
-	 * @param disease
-	 *            The disease for which to update case vaccination statuses
-	 * @param vaccination
-	 *            The vaccination that triggered the update; used for date filtering
-	 */
-	public void updateSimpleVaccinationStatuses(Long personId, Disease disease, Vaccination vaccination) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaUpdate<Case> cu = cb.createCriteriaUpdate(Case.class);
-		Root<Case> root = cu.from(Case.class);
-
-		// Set all matching cases to VACCINATED status (no status derivation)
-		cu.set(root.get(Case.VACCINATION_STATUS), VaccinationStatus.VACCINATED);
-		cu.set(root.get(AbstractDomainObject.CHANGE_DATE), new Date());
-
-		Predicate datePredicate = vaccinationService.getRelevantVaccinationPredicate(root, cu, cb, vaccination);
-
-		cu.where(
-			CriteriaBuilderHelper
-				.and(cb, cb.equal(root.get(Case.PERSON).get(Person.ID), personId), cb.equal(root.get(Case.DISEASE), disease), datePredicate));
-
-		em.createQuery(cu).executeUpdate();
 	}
 
 	private float calculateCompleteness(Case caze) {

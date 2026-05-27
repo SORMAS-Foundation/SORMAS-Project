@@ -27,6 +27,7 @@ import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
+import de.symeda.sormas.api.immunization.VaccinationStatusData;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -45,11 +46,8 @@ import de.symeda.sormas.backend.TestDataCreator;
  * <li>Default status is UNVACCINATED</li>
  * <li>Only ACQUIRED immunizations are considered</li>
  * <li>Selects immunization with closest validFrom to reference date (not after)</li>
- * <li>Filters by validUntil (must not be before reference date)</li>
- * <li>Derives status based on meansOfImmunization (VACCINATION → VACCINATED, RECOVERY → RECOVERED, OTHER → OTHER)</li>
- * <li>Determines dose count from numberOfDoses or by counting Vaccination entries</li>
- * <li>Returns disease-specific statuses (ONE_DOSE, TWO_DOSE) when applicable</li>
- * <li>Falls back to generic VACCINATED for diseases without dose-specific statuses</li>
+ * <li>Filters by validUntil (must not be before reference date; null = no match)</li>
+ * <li>Derives status based on meansOfImmunization (VACCINATION → VACCINATED, RECOVERY → HAD_THE_DISEASE, OTHER → OTHER)</li>
  * </ul>
  * </p>
  * 
@@ -76,19 +74,16 @@ class ImmunizationServiceDeriveStatusTest extends AbstractBeanTest {
 		Date referenceDate = new Date();
 
 		// Null person UUID
-		VaccinationStatus status = getImmunizationService().deriveVaccinationStatus(null, Disease.MEASLES, referenceDate);
-		assertEquals(VaccinationStatus.UNVACCINATED, status);
+		VaccinationStatusData data = getImmunizationService().deriveVaccinationStatus(null, Disease.MEASLES, referenceDate);
+		assertEquals(VaccinationStatus.UNVACCINATED, data.getVaccinationStatus());
 
 		// Null disease
-		status = getImmunizationService().deriveVaccinationStatus(person.getUuid(), null, referenceDate);
-		assertEquals(VaccinationStatus.UNVACCINATED, status);
+		data = getImmunizationService().deriveVaccinationStatus(person.getUuid(), null, referenceDate);
+		assertEquals(VaccinationStatus.UNVACCINATED, data.getVaccinationStatus());
 
 		// Null reference date
-		status = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.MEASLES, null);
-		assertEquals(VaccinationStatus.UNVACCINATED, status);
-
-		// TODO: Should we throw an exception instead of returning UNVACCINATED for nulls?
-		// Probably not - better to fail gracefully
+		data = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.MEASLES, null);
+		assertEquals(VaccinationStatus.UNVACCINATED, data.getVaccinationStatus());
 	}
 
 	/**
@@ -99,8 +94,8 @@ class ImmunizationServiceDeriveStatusTest extends AbstractBeanTest {
 		PersonDto person = creator.createPerson("No", "Immunizations");
 		Date referenceDate = new Date();
 
-		VaccinationStatus status = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.MEASLES, referenceDate);
-		assertEquals(VaccinationStatus.UNVACCINATED, status);
+		VaccinationStatusData data = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.MEASLES, referenceDate);
+		assertEquals(VaccinationStatus.UNVACCINATED, data.getVaccinationStatus());
 	}
 
 	/**
@@ -112,7 +107,6 @@ class ImmunizationServiceDeriveStatusTest extends AbstractBeanTest {
 		Date referenceDate = new Date();
 
 		// Create PENDING immunization (should be ignored)
-		// Initially thought PENDING should count, but spec says only ACQUIRED
 		ImmunizationDto pendingImmunization = creator.createImmunization(
 			Disease.MEASLES,
 			person.toReference(),
@@ -122,12 +116,13 @@ class ImmunizationServiceDeriveStatusTest extends AbstractBeanTest {
 			ImmunizationManagementStatus.ONGOING,
 			rdcf);
 		pendingImmunization.setValidFrom(DateHelper.subtractDays(referenceDate, 30));
+		pendingImmunization.setValidUntil(DateHelper.addDays(referenceDate, 365));
 		pendingImmunization.setNumberOfDoses(2);
 		getImmunizationFacade().save(pendingImmunization);
 
 		// Should return UNVACCINATED because PENDING is not ACQUIRED
-		VaccinationStatus status = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.MEASLES, referenceDate);
-		assertEquals(VaccinationStatus.UNVACCINATED, status);
+		VaccinationStatusData data = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.MEASLES, referenceDate);
+		assertEquals(VaccinationStatus.UNVACCINATED, data.getVaccinationStatus());
 	}
 
 	/**
@@ -139,7 +134,6 @@ class ImmunizationServiceDeriveStatusTest extends AbstractBeanTest {
 		Date referenceDate = new Date();
 
 		// Create immunization with validFrom in the future
-		// This was tricky - makes sense you can't be vaccinated in the future!
 		ImmunizationDto futureImmunization = creator.createImmunization(
 			Disease.MEASLES,
 			person.toReference(),
@@ -149,12 +143,13 @@ class ImmunizationServiceDeriveStatusTest extends AbstractBeanTest {
 			ImmunizationManagementStatus.COMPLETED,
 			rdcf);
 		futureImmunization.setValidFrom(DateHelper.addDays(referenceDate, 10));
+		futureImmunization.setValidUntil(DateHelper.addDays(referenceDate, 365));
 		futureImmunization.setNumberOfDoses(2);
 		getImmunizationFacade().save(futureImmunization);
 
 		// Should return UNVACCINATED because validFrom is after reference date
-		VaccinationStatus status = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.MEASLES, referenceDate);
-		assertEquals(VaccinationStatus.UNVACCINATED, status);
+		VaccinationStatusData data = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.MEASLES, referenceDate);
+		assertEquals(VaccinationStatus.UNVACCINATED, data.getVaccinationStatus());
 	}
 
 	/**
@@ -180,13 +175,39 @@ class ImmunizationServiceDeriveStatusTest extends AbstractBeanTest {
 		getImmunizationFacade().save(expiredImmunization);
 
 		// Should return UNVACCINATED because validUntil is before reference date
-		VaccinationStatus status = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.MEASLES, referenceDate);
-		assertEquals(VaccinationStatus.UNVACCINATED, status);
+		VaccinationStatusData data = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.MEASLES, referenceDate);
+		assertEquals(VaccinationStatus.UNVACCINATED, data.getVaccinationStatus());
+	}
+
+	/**
+	 * Tests that null validUntil means no match (BR0012 edge case).
+	 */
+	@Test
+	void testDeriveVaccinationStatus_NullValidUntilIsNoMatch() {
+		PersonDto person = creator.createPerson("Null", "ValidUntil");
+		Date referenceDate = new Date();
+
+		// Create immunization without validUntil
+		ImmunizationDto immunization = creator.createImmunization(
+			Disease.MEASLES,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf);
+		immunization.setValidFrom(DateHelper.subtractDays(referenceDate, 30));
+		// No validUntil set → null
+		immunization.setNumberOfDoses(2);
+		getImmunizationFacade().save(immunization);
+
+		// Should return UNVACCINATED because null validUntil = no match (BR0012)
+		VaccinationStatusData data = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.MEASLES, referenceDate);
+		assertEquals(VaccinationStatus.UNVACCINATED, data.getVaccinationStatus());
 	}
 
 	/**
 	 * Tests that the immunization with closest validFrom to reference date is selected.
-	 * This is important when someone has multiple immunization records over time.
 	 */
 	@Test
 	void testDeriveVaccinationStatus_SelectsClosestValidFrom() {
@@ -203,6 +224,7 @@ class ImmunizationServiceDeriveStatusTest extends AbstractBeanTest {
 			ImmunizationManagementStatus.COMPLETED,
 			rdcf);
 		olderImmunization.setValidFrom(DateHelper.subtractDays(referenceDate, 90));
+		olderImmunization.setValidUntil(DateHelper.addDays(referenceDate, 365));
 		olderImmunization.setRecoveryDate(DateHelper.subtractDays(referenceDate, 90));
 		getImmunizationFacade().save(olderImmunization);
 
@@ -216,23 +238,23 @@ class ImmunizationServiceDeriveStatusTest extends AbstractBeanTest {
 			ImmunizationManagementStatus.COMPLETED,
 			rdcf);
 		newerImmunization.setValidFrom(DateHelper.subtractDays(referenceDate, 30));
+		newerImmunization.setValidUntil(DateHelper.addDays(referenceDate, 365));
 		newerImmunization.setNumberOfDoses(2);
 		getImmunizationFacade().save(newerImmunization);
 
-		// Should select newer immunization and return VACCINATED_TWO_DOSE
-		VaccinationStatus status = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.MEASLES, referenceDate);
-		assertEquals(VaccinationStatus.VACCINATED_TWO_DOSE, status);
+		// Should select newer immunization and return VACCINATED
+		VaccinationStatusData data = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.MEASLES, referenceDate);
+		assertEquals(VaccinationStatus.VACCINATED, data.getVaccinationStatus());
 	}
 
 	/**
-	 * Tests RECOVERED status for RECOVERY means of immunization.
+	 * Tests HAD_THE_DISEASE status for RECOVERY means of immunization.
 	 */
 	@Test
 	void testDeriveVaccinationStatus_Recovery() {
 		PersonDto person = creator.createPerson("Recovered", "Person");
 		Date referenceDate = new Date();
 
-		// Natural immunity from recovering from the disease
 		ImmunizationDto immunization = creator.createImmunization(
 			Disease.CORONAVIRUS,
 			person.toReference(),
@@ -242,12 +264,12 @@ class ImmunizationServiceDeriveStatusTest extends AbstractBeanTest {
 			ImmunizationManagementStatus.COMPLETED,
 			rdcf);
 		immunization.setValidFrom(DateHelper.subtractDays(referenceDate, 60));
+		immunization.setValidUntil(DateHelper.addDays(referenceDate, 365));
 		immunization.setRecoveryDate(DateHelper.subtractDays(referenceDate, 60));
 		getImmunizationFacade().save(immunization);
 
-		VaccinationStatus status = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.CORONAVIRUS, referenceDate);
-		assertEquals(VaccinationStatus.RECOVERED, status);
-		// Note: RECOVERED is different from VACCINATED - important distinction!
+		VaccinationStatusData data = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.CORONAVIRUS, referenceDate);
+		assertEquals(VaccinationStatus.HAD_THE_DISEASE, data.getVaccinationStatus());
 	}
 
 	/**
@@ -267,23 +289,22 @@ class ImmunizationServiceDeriveStatusTest extends AbstractBeanTest {
 			ImmunizationManagementStatus.COMPLETED,
 			rdcf);
 		immunization.setValidFrom(DateHelper.subtractDays(referenceDate, 30));
+		immunization.setValidUntil(DateHelper.addDays(referenceDate, 365));
 		immunization.setMeansOfImmunizationDetails("Experimental monoclonal antibodies");
 		getImmunizationFacade().save(immunization);
 
-		VaccinationStatus status = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.CORONAVIRUS, referenceDate);
-		assertEquals(VaccinationStatus.OTHER, status);
+		VaccinationStatusData data = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.CORONAVIRUS, referenceDate);
+		assertEquals(VaccinationStatus.OTHER, data.getVaccinationStatus());
 	}
 
 	/**
 	 * Tests that getMeansOfImmunizationDetails retrieves the details for OTHER means of immunization.
-	 * This is important for displaying the free text explanation of what "Other" means.
 	 */
 	@Test
 	void testGetMeansOfImmunizationDetails_OtherWithDetails() {
 		PersonDto person = creator.createPerson("Other", "WithDetails");
 		Date referenceDate = new Date();
 
-		// Create immunization with OTHER means and specific details
 		ImmunizationDto immunization = creator.createImmunization(
 			Disease.CORONAVIRUS,
 			person.toReference(),
@@ -293,14 +314,13 @@ class ImmunizationServiceDeriveStatusTest extends AbstractBeanTest {
 			ImmunizationManagementStatus.COMPLETED,
 			rdcf);
 		immunization.setValidFrom(DateHelper.subtractDays(referenceDate, 30));
+		immunization.setValidUntil(DateHelper.addDays(referenceDate, 365));
 		immunization.setMeansOfImmunizationDetails("Experimental monoclonal antibodies - Phase 3 trial");
 		getImmunizationFacade().save(immunization);
 
-		// Verify status is OTHER
-		VaccinationStatus status = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.CORONAVIRUS, referenceDate);
-		assertEquals(VaccinationStatus.OTHER, status);
+		VaccinationStatusData data = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.CORONAVIRUS, referenceDate);
+		assertEquals(VaccinationStatus.OTHER, data.getVaccinationStatus());
 
-		// Verify details are retrieved correctly
 		String details = getImmunizationService().getMeansOfImmunizationDetails(person.getUuid(), Disease.CORONAVIRUS, referenceDate);
 		assertEquals("Experimental monoclonal antibodies - Phase 3 trial", details);
 	}
@@ -314,7 +334,6 @@ class ImmunizationServiceDeriveStatusTest extends AbstractBeanTest {
 		Date referenceDate = new Date();
 
 		String details = getImmunizationService().getMeansOfImmunizationDetails(person.getUuid(), Disease.CORONAVIRUS, referenceDate);
-		// Should return null when no immunization found, not crash
 		assertEquals(null, details);
 	}
 
@@ -335,18 +354,16 @@ class ImmunizationServiceDeriveStatusTest extends AbstractBeanTest {
 			ImmunizationManagementStatus.COMPLETED,
 			rdcf);
 		immunization.setValidFrom(DateHelper.subtractDays(referenceDate, 30));
+		immunization.setValidUntil(DateHelper.addDays(referenceDate, 365));
 		immunization.setNumberOfDoses(2);
 		getImmunizationFacade().save(immunization);
 
-		// Details are only relevant for OTHER means of immunization
 		String details = getImmunizationService().getMeansOfImmunizationDetails(person.getUuid(), Disease.MEASLES, referenceDate);
-		// Should return null for non-OTHER means - details field might not even be set
 		assertEquals(null, details);
 	}
 
 	/**
 	 * Tests that getMeansOfImmunizationDetails selects the same immunization as deriveVaccinationStatus.
-	 * Important: both methods should use the same selection logic (closest validFrom).
 	 */
 	@Test
 	void testGetMeansOfImmunizationDetails_SelectsSameAsStatus() {
@@ -363,6 +380,7 @@ class ImmunizationServiceDeriveStatusTest extends AbstractBeanTest {
 			ImmunizationManagementStatus.COMPLETED,
 			rdcf);
 		olderImmunization.setValidFrom(DateHelper.subtractDays(referenceDate, 90));
+		olderImmunization.setValidUntil(DateHelper.addDays(referenceDate, 365));
 		olderImmunization.setMeansOfImmunizationDetails("Old treatment method");
 		getImmunizationFacade().save(olderImmunization);
 
@@ -376,21 +394,19 @@ class ImmunizationServiceDeriveStatusTest extends AbstractBeanTest {
 			ImmunizationManagementStatus.COMPLETED,
 			rdcf);
 		newerImmunization.setValidFrom(DateHelper.subtractDays(referenceDate, 30));
+		newerImmunization.setValidUntil(DateHelper.addDays(referenceDate, 365));
 		newerImmunization.setMeansOfImmunizationDetails("New experimental protocol");
 		getImmunizationFacade().save(newerImmunization);
 
-		// Both methods should select the newer immunization (closest validFrom)
-		VaccinationStatus status = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.CORONAVIRUS, referenceDate);
-		assertEquals(VaccinationStatus.OTHER, status);
+		VaccinationStatusData data = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.CORONAVIRUS, referenceDate);
+		assertEquals(VaccinationStatus.OTHER, data.getVaccinationStatus());
 
 		String details = getImmunizationService().getMeansOfImmunizationDetails(person.getUuid(), Disease.CORONAVIRUS, referenceDate);
 		assertEquals("New experimental protocol", details);
-		// If this fails, the selection logic is inconsistent between the two methods!
 	}
 
 	/**
-	 * Tests VACCINATED_ONE_DOSE for diseases with dose-specific statuses (MEASLES).
-	 * MEASLES has @Diseases annotation on ONE_DOSE and TWO_DOSE enum values.
+	 * Tests VACCINATED for VACCINATION means of immunization.
 	 */
 	@Test
 	void testDeriveVaccinationStatus_OneDoseMeasles() {
@@ -406,15 +422,16 @@ class ImmunizationServiceDeriveStatusTest extends AbstractBeanTest {
 			ImmunizationManagementStatus.ONGOING,
 			rdcf);
 		immunization.setValidFrom(DateHelper.subtractDays(referenceDate, 20));
+		immunization.setValidUntil(DateHelper.addDays(referenceDate, 365));
 		immunization.setNumberOfDoses(1);
 		getImmunizationFacade().save(immunization);
 
-		VaccinationStatus status = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.MEASLES, referenceDate);
-		assertEquals(VaccinationStatus.VACCINATED_ONE_DOSE, status);
+		VaccinationStatusData data = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.MEASLES, referenceDate);
+		assertEquals(VaccinationStatus.VACCINATED, data.getVaccinationStatus());
 	}
 
 	/**
-	 * Tests VACCINATED_TWO_DOSE for diseases with dose-specific statuses (MEASLES).
+	 * Tests VACCINATED for VACCINATION means of immunization.
 	 */
 	@Test
 	void testDeriveVaccinationStatus_TwoDosesMeasles() {
@@ -430,15 +447,16 @@ class ImmunizationServiceDeriveStatusTest extends AbstractBeanTest {
 			ImmunizationManagementStatus.COMPLETED,
 			rdcf);
 		immunization.setValidFrom(DateHelper.subtractDays(referenceDate, 40));
+		immunization.setValidUntil(DateHelper.addDays(referenceDate, 365));
 		immunization.setNumberOfDoses(2);
 		getImmunizationFacade().save(immunization);
 
-		VaccinationStatus status = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.MEASLES, referenceDate);
-		assertEquals(VaccinationStatus.VACCINATED_TWO_DOSE, status);
+		VaccinationStatusData data = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.MEASLES, referenceDate);
+		assertEquals(VaccinationStatus.VACCINATED, data.getVaccinationStatus());
 	}
 
 	/**
-	 * Tests generic VACCINATED status for diseases without dose-specific statuses (EVD).
+	 * Tests generic VACCINATED status for diseases (EVD).
 	 */
 	@Test
 	void testDeriveVaccinationStatus_GenericVaccinatedForEvd() {
@@ -454,18 +472,17 @@ class ImmunizationServiceDeriveStatusTest extends AbstractBeanTest {
 			ImmunizationManagementStatus.COMPLETED,
 			rdcf);
 		immunization.setValidFrom(DateHelper.subtractDays(referenceDate, 30));
+		immunization.setValidUntil(DateHelper.addDays(referenceDate, 365));
 		immunization.setNumberOfDoses(2);
 		getImmunizationFacade().save(immunization);
 
-		// EVD doesn't have dose-specific statuses, so should return generic VACCINATED
-		// Makes sense - not all diseases track dose counts the same way
-		VaccinationStatus status = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.EVD, referenceDate);
-		assertEquals(VaccinationStatus.VACCINATED, status);
+		VaccinationStatusData data = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.EVD, referenceDate);
+		assertEquals(VaccinationStatus.VACCINATED, data.getVaccinationStatus());
 	}
 
 	/**
-	 * Tests UNVACCINATED when numberOfDoses is explicitly 0.
-	 * TODO: Is 0 doses with ACQUIRED status even valid? Maybe validation needed.
+	 * Tests that VACCINATION means → VACCINATED regardless of number of doses.
+	 * Dose-based logic is removed in Phase 2; meansOfImmunization determines status.
 	 */
 	@Test
 	void testDeriveVaccinationStatus_ZeroDoses() {
@@ -481,18 +498,18 @@ class ImmunizationServiceDeriveStatusTest extends AbstractBeanTest {
 			ImmunizationManagementStatus.SCHEDULED,
 			rdcf);
 		immunization.setValidFrom(DateHelper.subtractDays(referenceDate, 10));
+		immunization.setValidUntil(DateHelper.addDays(referenceDate, 365));
 		immunization.setNumberOfDoses(0);
 		getImmunizationFacade().save(immunization);
 
-		// Explicitly 0 doses should return UNVACCINATED
-		// This might be an edge case that shouldn't happen in practice
-		VaccinationStatus status = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.MEASLES, referenceDate);
-		assertEquals(VaccinationStatus.UNVACCINATED, status);
+		// VACCINATION means → VACCINATED (dose count no longer determines status)
+		VaccinationStatusData data = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.MEASLES, referenceDate);
+		assertEquals(VaccinationStatus.VACCINATED, data.getVaccinationStatus());
 	}
 
 	/**
-	 * Tests that vaccination entries are counted when numberOfDoses is null.
-	 * This is the fallback mechanism
+	 * Tests that VACCINATION means → VACCINATED even without vaccination entries.
+	 * Dose-based logic is removed; meansOfImmunization determines status.
 	 */
 	@Test
 	void testDeriveVaccinationStatus_CountVaccinationEntries() {
@@ -508,8 +525,7 @@ class ImmunizationServiceDeriveStatusTest extends AbstractBeanTest {
 			ImmunizationManagementStatus.ONGOING,
 			rdcf);
 		immunization.setValidFrom(DateHelper.subtractDays(referenceDate, 40));
-		// Don't set numberOfDoses - should count vaccination entries instead
-		// This way we have two sources of truth: explicit count or actual records
+		immunization.setValidUntil(DateHelper.addDays(referenceDate, 365));
 		getImmunizationFacade().save(immunization);
 
 		// Add two vaccination entries
@@ -523,13 +539,14 @@ class ImmunizationServiceDeriveStatusTest extends AbstractBeanTest {
 		vaccination2.setVaccinationDate(DateHelper.subtractDays(referenceDate, 10));
 		getVaccinationFacade().save(vaccination2);
 
-		// Should count 2 vaccination entries and return VACCINATED_TWO_DOSE
-		VaccinationStatus status = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.MEASLES, referenceDate);
-		assertEquals(VaccinationStatus.VACCINATED_TWO_DOSE, status);
+		// VACCINATION means → VACCINATED
+		VaccinationStatusData data = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.MEASLES, referenceDate);
+		assertEquals(VaccinationStatus.VACCINATED, data.getVaccinationStatus());
 	}
 
 	/**
-	 * Tests UNVACCINATED when numberOfDoses is null and no vaccination entries exist.
+	 * Tests that VACCINATION means → VACCINATED even with no vaccination entries.
+	 * Dose-based logic is removed; meansOfImmunization determines status.
 	 */
 	@Test
 	void testDeriveVaccinationStatus_NoVaccinationEntries() {
@@ -545,16 +562,16 @@ class ImmunizationServiceDeriveStatusTest extends AbstractBeanTest {
 			ImmunizationManagementStatus.SCHEDULED,
 			rdcf);
 		immunization.setValidFrom(DateHelper.subtractDays(referenceDate, 10));
-		// Don't set numberOfDoses and don't add vaccination entries
+		immunization.setValidUntil(DateHelper.addDays(referenceDate, 365));
 		getImmunizationFacade().save(immunization);
 
-		// Should return UNVACCINATED because no doses are recorded
-		VaccinationStatus status = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.MEASLES, referenceDate);
-		assertEquals(VaccinationStatus.UNVACCINATED, status);
+		// VACCINATION means → VACCINATED (dose count no longer determines status)
+		VaccinationStatusData data = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.MEASLES, referenceDate);
+		assertEquals(VaccinationStatus.VACCINATED, data.getVaccinationStatus());
 	}
 
 	/**
-	 * Tests that VACCINATION_RECOVERY means returns dose-based status (treated as vaccination).
+	 * Tests that VACCINATION_RECOVERY means returns VACCINATED.
 	 */
 	@Test
 	void testDeriveVaccinationStatus_VaccinationRecovery() {
@@ -570,16 +587,17 @@ class ImmunizationServiceDeriveStatusTest extends AbstractBeanTest {
 			ImmunizationManagementStatus.COMPLETED,
 			rdcf);
 		immunization.setValidFrom(DateHelper.subtractDays(referenceDate, 30));
+		immunization.setValidUntil(DateHelper.addDays(referenceDate, 365));
 		immunization.setNumberOfDoses(1);
 		getImmunizationFacade().save(immunization);
 
-		// VACCINATION_RECOVERY should be treated like VACCINATION
-		VaccinationStatus status = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.MEASLES, referenceDate);
-		assertEquals(VaccinationStatus.VACCINATED_ONE_DOSE, status);
+		// VACCINATION_RECOVERY should be treated like VACCINATION → VACCINATED
+		VaccinationStatusData data = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.MEASLES, referenceDate);
+		assertEquals(VaccinationStatus.VACCINATED, data.getVaccinationStatus());
 	}
 
 	/**
-	 * Tests that MATERNAL_VACCINATION means returns dose-based status.
+	 * Tests that MATERNAL_VACCINATION means returns VACCINATED.
 	 */
 	@Test
 	void testDeriveVaccinationStatus_MaternalVaccination() {
@@ -595,18 +613,17 @@ class ImmunizationServiceDeriveStatusTest extends AbstractBeanTest {
 			ImmunizationManagementStatus.COMPLETED,
 			rdcf);
 		immunization.setValidFrom(DateHelper.subtractDays(referenceDate, 20));
+		immunization.setValidUntil(DateHelper.addDays(referenceDate, 365));
 		immunization.setNumberOfDoses(1);
 		getImmunizationFacade().save(immunization);
 
-		// MATERNAL_VACCINATION should be treated like VACCINATION
-		// RSV doesn't have dose-specific statuses, so should return generic VACCINATED
-		VaccinationStatus status =
+		VaccinationStatusData data =
 			getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.RESPIRATORY_SYNCYTIAL_VIRUS, referenceDate);
-		assertEquals(VaccinationStatus.VACCINATED, status);
+		assertEquals(VaccinationStatus.VACCINATED, data.getVaccinationStatus());
 	}
 
 	/**
-	 * Tests that MONOCLONAL_ANTIBODY means returns dose-based status.
+	 * Tests that MONOCLONAL_ANTIBODY means returns VACCINATED.
 	 */
 	@Test
 	void testDeriveVaccinationStatus_MonoclonalAntibody() {
@@ -622,25 +639,23 @@ class ImmunizationServiceDeriveStatusTest extends AbstractBeanTest {
 			ImmunizationManagementStatus.COMPLETED,
 			rdcf);
 		immunization.setValidFrom(DateHelper.subtractDays(referenceDate, 15));
+		immunization.setValidUntil(DateHelper.addDays(referenceDate, 365));
 		immunization.setNumberOfDoses(1);
 		getImmunizationFacade().save(immunization);
 
-		// MONOCLONAL_ANTIBODY should be treated like VACCINATION
-		VaccinationStatus status =
+		VaccinationStatusData data =
 			getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.RESPIRATORY_SYNCYTIAL_VIRUS, referenceDate);
-		assertEquals(VaccinationStatus.VACCINATED, status);
+		assertEquals(VaccinationStatus.VACCINATED, data.getVaccinationStatus());
 	}
 
 	/**
 	 * Tests that immunization without meansOfImmunization returns UNKNOWN.
-	 * Had to manually set to null because creator requires it.
 	 */
 	@Test
 	void testDeriveVaccinationStatus_NullMeansOfImmunization() {
 		PersonDto person = creator.createPerson("Null", "Means");
 		Date referenceDate = new Date();
 
-		// Create immunization with null meansOfImmunization
 		ImmunizationDto immunization = creator.createImmunization(
 			Disease.CORONAVIRUS,
 			person.toReference(),
@@ -650,13 +665,13 @@ class ImmunizationServiceDeriveStatusTest extends AbstractBeanTest {
 			ImmunizationManagementStatus.COMPLETED,
 			rdcf);
 		immunization.setValidFrom(DateHelper.subtractDays(referenceDate, 30));
+		immunization.setValidUntil(DateHelper.addDays(referenceDate, 365));
 		immunization.setMeansOfImmunization(null); // Explicitly set to null
 		getImmunizationFacade().save(immunization);
 
 		// Should return UNKNOWN when meansOfImmunization is null
-		// This probably shouldn't happen in production, but good to be safe
-		VaccinationStatus status = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.CORONAVIRUS, referenceDate);
-		assertEquals(VaccinationStatus.UNKNOWN, status);
+		VaccinationStatusData data = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.CORONAVIRUS, referenceDate);
+		assertEquals(VaccinationStatus.UNKNOWN, data.getVaccinationStatus());
 	}
 
 	/**
@@ -676,12 +691,13 @@ class ImmunizationServiceDeriveStatusTest extends AbstractBeanTest {
 			ImmunizationManagementStatus.ONGOING,
 			rdcf);
 		immunization.setValidFrom(referenceDate); // Exactly on reference date
+		immunization.setValidUntil(DateHelper.addDays(referenceDate, 365));
 		immunization.setNumberOfDoses(1);
 		getImmunizationFacade().save(immunization);
 
 		// Should include immunization with validFrom = reference date
-		VaccinationStatus status = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.MEASLES, referenceDate);
-		assertEquals(VaccinationStatus.VACCINATED_ONE_DOSE, status);
+		VaccinationStatusData data = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.MEASLES, referenceDate);
+		assertEquals(VaccinationStatus.VACCINATED, data.getVaccinationStatus());
 	}
 
 	/**
@@ -706,13 +722,12 @@ class ImmunizationServiceDeriveStatusTest extends AbstractBeanTest {
 		getImmunizationFacade().save(immunization);
 
 		// Should include immunization with validUntil = reference date
-		VaccinationStatus status = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.MEASLES, referenceDate);
-		assertEquals(VaccinationStatus.VACCINATED_TWO_DOSE, status);
+		VaccinationStatusData data = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.MEASLES, referenceDate);
+		assertEquals(VaccinationStatus.VACCINATED, data.getVaccinationStatus());
 	}
 
 	/**
 	 * Tests that immunizations for different diseases are not mixed.
-	 * Important being vaccinated for COVID doesn't mean you're vaccinated for measles!
 	 */
 	@Test
 	void testDeriveVaccinationStatus_DifferentDisease() {
@@ -729,12 +744,12 @@ class ImmunizationServiceDeriveStatusTest extends AbstractBeanTest {
 			ImmunizationManagementStatus.COMPLETED,
 			rdcf);
 		coronavirusImmunization.setValidFrom(DateHelper.subtractDays(referenceDate, 30));
+		coronavirusImmunization.setValidUntil(DateHelper.addDays(referenceDate, 365));
 		coronavirusImmunization.setNumberOfDoses(2);
 		getImmunizationFacade().save(coronavirusImmunization);
 
 		// Query for MEASLES - should not find CORONAVIRUS immunization
-		// Obvious but good to test anyway
-		VaccinationStatus status = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.MEASLES, referenceDate);
-		assertEquals(VaccinationStatus.UNVACCINATED, status);
+		VaccinationStatusData data = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.MEASLES, referenceDate);
+		assertEquals(VaccinationStatus.UNVACCINATED, data.getVaccinationStatus());
 	}
 }

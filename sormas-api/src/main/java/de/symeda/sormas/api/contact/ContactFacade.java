@@ -147,6 +147,8 @@ public interface ContactFacade extends CoreFacade<ContactDto, ContactIndexDto, C
 
 	void updateCompleteness(String uuid);
 
+	void updateVaccinationStatuses(ContactReferenceDto contactRef);
+
 	void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException;
 
 	List<ProcessedEntity> saveBulkContacts(

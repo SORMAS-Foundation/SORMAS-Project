@@ -78,6 +78,7 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.CoreAndPersonDto;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
@@ -1530,6 +1531,8 @@ public class ContactFacadeEjb
 		}
 
 		boolean targetWasNull = isNull(target);
+		VaccinationStatus previousVaccinationStatus = target != null ? target.getVaccinationStatus() : null;
+		String previousVaccinationStatusDetails = target != null ? target.getVaccinationStatusDetails() : null;
 
 		target = DtoHelper.fillOrBuildEntity(source, target, Contact::build, checkChangeDate);
 
@@ -1637,6 +1640,20 @@ public class ContactFacadeEjb
 
 		target.setReportingDistrict(districtService.getByReferenceDto(source.getReportingDistrict()));
 		target.setVaccinationStatus(source.getVaccinationStatus());
+		target.setVaccinationStatusDetails(source.getVaccinationStatusDetails());
+		boolean vaccinationStatusManuallyUpdated = targetWasNull
+			? source.getVaccinationStatus() != null || source.getVaccinationStatusDetails() != null
+			: !Objects.equals(previousVaccinationStatus, source.getVaccinationStatus())
+				|| !Objects.equals(previousVaccinationStatusDetails, source.getVaccinationStatusDetails());
+		if (vaccinationStatusManuallyUpdated) {
+			target.setVaccinationStatusLastUpdated(null);
+			target.setNumberOfDoses(null);
+			target.setInformationReliability(null);
+		} else {
+			target.setVaccinationStatusLastUpdated(source.getVaccinationStatusLastUpdated());
+			target.setNumberOfDoses(source.getNumberOfDoses());
+			target.setInformationReliability(source.getInformationReliability());
+		}
 
 		if (source.getSormasToSormasOriginInfo() != null) {
 			target.setSormasToSormasOriginInfo(originInfoService.getByUuid(source.getSormasToSormasOriginInfo().getUuid()));
@@ -1988,6 +2005,10 @@ public class ContactFacadeEjb
 		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
 
 		target.setVaccinationStatus(source.getVaccinationStatus());
+		target.setVaccinationStatusDetails(source.getVaccinationStatusDetails());
+		target.setVaccinationStatusLastUpdated(source.getVaccinationStatusLastUpdated());
+		target.setNumberOfDoses(source.getNumberOfDoses());
+		target.setInformationReliability(source.getInformationReliability());
 		target.setFollowUpStatusChangeDate(source.getFollowUpStatusChangeDate());
 		if (source.getFollowUpStatusChangeUser() != null) {
 			target.setFollowUpStatusChangeUser(source.getFollowUpStatusChangeUser().toReference());
@@ -2349,6 +2370,16 @@ public class ContactFacadeEjb
 	public void updateCompleteness(String uuid) {
 		Contact contact = service.getByUuid(uuid);
 		contact.setCompleteness(calculateCompleteness(contact));
+		service.ensurePersisted(contact);
+	}
+
+	@Override
+	@RightsAllowed({
+		UserRight._CONTACT_EDIT,
+		UserRight._IMMUNIZATION_EDIT })
+	public void updateVaccinationStatuses(ContactReferenceDto contactRef) {
+		Contact contact = service.getByReferenceDto(contactRef);
+		vaccinationFacade.updateVaccinationStatuses(contact);
 		service.ensurePersisted(contact);
 	}
 

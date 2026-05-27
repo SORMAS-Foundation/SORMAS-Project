@@ -16,6 +16,7 @@
 package de.symeda.sormas.backend.immunization;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -33,6 +34,7 @@ import org.junit.jupiter.api.Test;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
@@ -108,6 +110,50 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 		covidLimitedDistrictUser.setLimitedDiseases(Collections.singleton(Disease.CORONAVIRUS));
 		getUserFacade().saveUser(covidLimitedDistrictUser, false);
+	}
+
+	@Test
+	public void testSuggestValidFromAndValidUntilUseCountrySpecificCalculator() {
+		loginWith(nationalUser);
+
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+		Date validFrom =
+			getImmunizationFacade().suggestValidFrom(Disease.MEASLES, MeansOfImmunization.VACCINATION, UtilDate.from(LocalDate.of(2026, 1, 1)), 2);
+		assertEquals(UtilDate.from(LocalDate.of(2026, 1, 15)), validFrom);
+		assertEquals(
+			UtilDate.from(LocalDate.of(9999, 12, 31)),
+			getImmunizationFacade().suggestValidUntil(Disease.MEASLES, MeansOfImmunization.VACCINATION, validFrom, 2));
+
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_GERMANY);
+		Date defaultValidFrom =
+			getImmunizationFacade().suggestValidFrom(Disease.MEASLES, MeansOfImmunization.VACCINATION, UtilDate.from(LocalDate.of(2026, 1, 1)), 2);
+		assertEquals(UtilDate.from(LocalDate.of(2026, 1, 1)), defaultValidFrom);
+		assertEquals(
+			UtilDate.from(LocalDate.of(9999, 12, 31)),
+			getImmunizationFacade().suggestValidUntil(Disease.MEASLES, MeansOfImmunization.VACCINATION, defaultValidFrom, 2));
+	}
+
+	@Test
+	public void testSaveQuickImmunizationAutoFillsMissingValidityDates() {
+		loginWith(nationalUser);
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+
+		PersonDto person = creator.createPerson("Quick", "Immunization");
+		ImmunizationDto dto = ImmunizationDto.build(person.toReference());
+		dto.setDisease(Disease.MEASLES);
+		dto.setReportingUser(nationalUser.toReference());
+		dto.setResponsibleRegion(rdcf1.region);
+		dto.setResponsibleDistrict(rdcf1.district);
+		dto.setReportDate(UtilDate.from(LocalDate.of(2026, 1, 1)));
+		dto.setMeansOfImmunization(MeansOfImmunization.VACCINATION);
+		dto.setNumberOfDoses(2);
+
+		ImmunizationDto saved =
+			getImmunizationFacade().saveQuickImmunization(dto, VaccinationInfoSource.VACCINATION_CARD, UtilDate.from(LocalDate.of(2026, 1, 1)));
+
+		assertEquals(UtilDate.from(LocalDate.of(2026, 1, 15)), saved.getValidFrom());
+		assertEquals(UtilDate.from(LocalDate.of(9999, 12, 31)), saved.getValidUntil());
+		assertNotNull(saved.getUuid());
 	}
 
 	@Test

@@ -87,6 +87,7 @@ import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.immunization.VaccinationStatusData;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.task.TaskCriteria;
@@ -98,6 +99,8 @@ import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
+import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
@@ -157,6 +160,10 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 
 	@EJB
 	private CaseService caseService;
+	@EJB
+	private ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal immunizationFacade;
+	@EJB
+	private ImmunizationService immunizationService;
 	@EJB
 	private DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
 	@EJB
@@ -1930,43 +1937,72 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 	}
 
 	/**
-	 * Sets the vaccination status of all contacts of the specified person and disease with vaccination date <= contact start date.
-	 * Vaccinations without a vaccination date are relevant for all contacts.
+	 * Updates vaccination statuses for all contacts of the specified person and disease using
+	 * vaccination status data derived from immunization records.
 	 *
 	 * @param personId
 	 *            The ID of the contact person
 	 * @param disease
-	 *            The disease of the cases
+	 *            The disease for which to update contact vaccination statuses
 	 * @param vaccinationDate
-	 *            The vaccination date of the created or updated vaccination
+	 *            Unused legacy parameter kept for compatibility with existing callers
 	 */
 	public void updateVaccinationStatuses(Long personId, Disease disease, Date vaccinationDate) {
+		updateDeterminedVaccinationStatuses(personId, disease);
+	}
 
-		// Only consider contacts with relevance date at least one day after the vaccination date
-		if (vaccinationDate == null) {
-			return;
-		} else {
-			vaccinationDate = DateHelper.getEndOfDay(vaccinationDate);
-		}
+	/**
+	 * Updates vaccination statuses for all contacts of the specified person and disease using the
+	 * determined vaccination status logic (BR0052–BR0053).
+	 * <p>
+	 * For each contact, derives the vaccination status using the contact's date range
+	 * ({@code firstContactDate} to {@code lastContactDate}) and sets the vaccination status,
+	 * number of doses, and information reliability fields.
+	 * </p>
+	 *
+	 * @param personId
+	 *            The ID of the contact person
+	 * @param disease
+	 *            The disease for which to update contact vaccination statuses
+	 */
+	private void updateDeterminedVaccinationStatuses(Long personId, Disease disease) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaUpdate<Contact> cu = cb.createCriteriaUpdate(Contact.class);
-		Root<Contact> root = cu.from(Contact.class);
+		CriteriaQuery<Contact> cq = cb.createQuery(Contact.class);
+		Root<Contact> root = cq.from(Contact.class);
 
-		cu.set(root.get(Contact.VACCINATION_STATUS), VaccinationStatus.VACCINATED);
-		cu.set(root.get(AbstractDomainObject.CHANGE_DATE), new Date());
-
-		Predicate datePredicate = vaccinationDate != null
-			? cb.or(
-				cb.greaterThan(root.get(Contact.LAST_CONTACT_DATE), vaccinationDate),
-				cb.and(cb.isNull(root.get(Contact.LAST_CONTACT_DATE)), cb.greaterThan(root.get(Contact.REPORT_DATE_TIME), vaccinationDate)))
-			: null;
-
-		cu.where(
+		cq.where(
 			CriteriaBuilderHelper
-				.and(cb, cb.equal(root.get(Contact.PERSON).get(Person.ID), personId), cb.equal(root.get(Contact.DISEASE), disease), datePredicate));
+				.and(cb, cb.equal(root.get(Contact.PERSON).get(Person.ID), personId), cb.equal(root.get(Contact.DISEASE), disease)));
 
-		em.createQuery(cu).executeUpdate();
+		List<Contact> contacts = em.createQuery(cq).getResultList();
+
+		for (Contact contact : contacts) {
+			// BR0052–0053: validFrom ≤ firstContactDate, validUntil ≥ lastContactDate
+			// Fallback: if lastContactDate is null, use firstContactDate for validUntil check
+			Date fromDate = contact.getFirstContactDate();
+			if (fromDate == null) {
+				continue; // Cannot derive without a reference date
+			}
+			Date untilDate = contact.getLastContactDate() != null ? contact.getLastContactDate() : fromDate;
+
+			VaccinationStatusData data =
+				immunizationService.deriveVaccinationStatus(contact.getPerson().getUuid(), contact.getDisease(), fromDate, untilDate);
+
+			if (data != null) {
+				boolean statusChanged = data.getVaccinationStatus() != contact.getVaccinationStatus();
+				boolean dosesChanged = !java.util.Objects.equals(data.getNumberOfDoses(), contact.getNumberOfDoses());
+				boolean reliabilityChanged = data.getInformationReliability() != contact.getInformationReliability();
+
+				if (statusChanged || dosesChanged || reliabilityChanged) {
+					contact.setVaccinationStatus(data.getVaccinationStatus());
+					contact.setNumberOfDoses(data.getNumberOfDoses());
+					contact.setInformationReliability(data.getInformationReliability());
+					contact.setVaccinationStatusLastUpdated(new Date());
+					contact.setChangeDate(new Timestamp(new Date().getTime()));
+				}
+			}
+		}
 	}
 
 	public List<ContactListEntryDto> getEntriesList(Long personId, Integer first, Integer max) {

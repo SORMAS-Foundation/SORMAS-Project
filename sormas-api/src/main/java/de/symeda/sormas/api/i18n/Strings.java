@@ -195,6 +195,7 @@ public interface Strings {
 	String confirmationUnlinkEnvironmentFromEvent = "confirmationUnlinkEnvironmentFromEvent";
 	String confirmationUnlinkEventFromEnvironment = "confirmationUnlinkEventFromEnvironment";
 	String confirmationUpdateCompleteness = "confirmationUpdateCompleteness";
+	String confirmationVaccinationStatusSync = "confirmationVaccinationStatusSync";
 	String confirmationVaccinationStatusUpdate = "confirmationVaccinationStatusUpdate";
 	String confirmExternalMessageCorrectionThrough = "confirmExternalMessageCorrectionThrough";
 	String confirmNetworkDiagramTooManyContacts = "confirmNetworkDiagramTooManyContacts";
@@ -578,6 +579,7 @@ public interface Strings {
 	String headingCreateNewUserRole = "headingCreateNewUserRole";
 	String headingCreateNewVisit = "headingCreateNewVisit";
 	String headingCreatePathogenTestResult = "headingCreatePathogenTestResult";
+	String headingCreateQuickImmunization = "headingCreateQuickImmunization";
 	String headingCreateSpecailCaseAccess = "headingCreateSpecailCaseAccess";
 	String headingCreateSurveillanceReport = "headingCreateSurveillanceReport";
 	String headingCurrentHospitalization = "headingCurrentHospitalization";
@@ -1182,6 +1184,7 @@ public interface Strings {
 	String infoSystemConfigurationValueDescriptionSmsAuthSecret = "infoSystemConfigurationValueDescriptionSmsAuthSecret";
 	String infoSystemConfigurationValueDescriptionSmsSenderName = "infoSystemConfigurationValueDescriptionSmsSenderName";
 	String infoSystemConfigurationValueDescriptionUseDeterminedVaccinationStatus = "infoSystemConfigurationValueDescriptionUseDeterminedVaccinationStatus";
+	String infoSystemConfigurationValueDescriptionUseQuickImmunizationCreation = "infoSystemConfigurationValueDescriptionUseQuickImmunizationCreation";
 	String infoTasksWithMultipleJurisdictionsSelected = "infoTasksWithMultipleJurisdictionsSelected";
 	String infoUploadDocumentTemplate = "infoUploadDocumentTemplate";
 	String infoUsageOfEditableCampaignGrids = "infoUsageOfEditableCampaignGrids";
@@ -1245,6 +1248,7 @@ public interface Strings {
 	String messageAreaDearchived = "messageAreaDearchived";
 	String messageAreasArchived = "messageAreasArchived";
 	String messageAreasDearchived = "messageAreasDearchived";
+	String messageAttachedSymptoms = "messageAttachedSymptoms";
 	String messageAutomaticDeletionStarted = "messageAutomaticDeletionStarted";
 	String messageBulkCasesWithDifferentDiseasesSelected = "messageBulkCasesWithDifferentDiseasesSelected";
 	String messageBulkContactsWithDifferentDiseasesSelected = "messageBulkContactsWithDifferentDiseasesSelected";
@@ -1611,6 +1615,7 @@ public interface Strings {
 	String messagePrescriptionSaved = "messagePrescriptionSaved";
 	String messagePrescriptionsDeleted = "messagePrescriptionsDeleted";
 	String messageQuarantineOrderDocumentCreated = "messageQuarantineOrderDocumentCreated";
+	String messageQuickImmunizationSaved = "messageQuickImmunizationSaved";
 	String messageRegionArchived = "messageRegionArchived";
 	String messageRegionArchivingNotPossible = "messageRegionArchivingNotPossible";
 	String messageRegionDearchived = "messageRegionDearchived";
@@ -1718,6 +1723,8 @@ public interface Strings {
 	String none = "none";
 	String notAnswered = "notAnswered";
 	String notApplicable = "notApplicable";
+	String notificationAttachedEntitiesGeneric = "notificationAttachedEntitiesGeneric";
+	String notificationAttachedEntitiesInfo = "notificationAttachedEntitiesInfo";
 	String notificationCannotCreate = "notificationCannotCreate";
 	String notificationCaseClassificationChanged = "notificationCaseClassificationChanged";
 	String notificationCaseInvestigationDone = "notificationCaseInvestigationDone";

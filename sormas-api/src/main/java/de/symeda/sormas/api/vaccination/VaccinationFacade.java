@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.api.vaccination;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -27,9 +28,11 @@ import de.symeda.sormas.api.BaseFacade;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -96,5 +99,16 @@ public interface VaccinationFacade extends BaseFacade<VaccinationDto, Vaccinatio
 	VaccinationDto postUpdate(String uuid, JsonNode vaccinationDtoJson);
 
 	boolean isVaccinationRelevant(CaseDataDto caze, VaccinationDto vaccination);
+
+	/**
+	 * Creates N VaccinationDto entries linked to the given immunization.
+	 * All entries receive the supplied vaccinationInfoSource.
+	 * Only the last entry receives the dateOfMostRecentDose (BR0074).
+	 */
+	void createDoseEntries(
+		ImmunizationReferenceDto immunizationRef,
+		int numberOfDoses,
+		VaccinationInfoSource vaccinationInfoSource,
+		Date dateOfMostRecentDose);
 
 }

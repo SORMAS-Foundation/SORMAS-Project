@@ -57,7 +57,6 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -469,12 +468,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		addField(ContactDto.DESCRIPTION, TextArea.class).setRows(6);
 		ComboBox vaccinationStatusCB = addField(ContactDto.VACCINATION_STATUS);
-		DateField vaccinationDose1DateDF = addField(ContactDto.VACCINATION_DOSE_ONE_DATE);
-		DateField vaccinationDose2DateDF = addField(ContactDto.VACCINATION_DOSE_TWO_DATE);
-		FieldHelper
-			.setVisibleWhen(vaccinationStatusCB, Arrays.asList(vaccinationDose1DateDF), Arrays.asList(VaccinationStatus.VACCINATED_ONE_DOSE), true);
-		FieldHelper
-			.setVisibleWhen(vaccinationStatusCB, Arrays.asList(vaccinationDose2DateDF), Arrays.asList(VaccinationStatus.VACCINATED_TWO_DOSE), true);
+
 		addField(ContactDto.VACCINATION_PROPOSED, CheckBox.class);
 		addField(ContactDto.IMMUNE_GLOBULIN_PROPOSED, CheckBox.class);
 		addField(ContactDto.RETURNING_TRAVELER, NullableOptionGroup.class);

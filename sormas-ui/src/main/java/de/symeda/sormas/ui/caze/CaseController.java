@@ -141,6 +141,7 @@ import de.symeda.sormas.ui.epidata.EpiDataForm;
 import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceServiceGateway;
 import de.symeda.sormas.ui.hospitalization.HospitalizationForm;
 import de.symeda.sormas.ui.hospitalization.HospitalizationView;
+import de.symeda.sormas.ui.immunization.components.panel.VaccinationStatusPanel;
 import de.symeda.sormas.ui.person.PersonSelectionGrid;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.therapy.TherapyForm;
@@ -971,6 +972,10 @@ public class CaseController {
 		} else {
 			selectedCaseUuidConsumer.accept(null);
 		}
+	}
+
+	public VaccinationStatusPanel createVaccinationStatusPanel(CaseDataDto caze) {
+		return VaccinationStatusPanel.forCase(caze);
 	}
 
 	public CommitDiscardWrapperComponent<CaseDataForm> getCaseDataEditComponent(final String caseUuid, final ViewMode viewMode) {

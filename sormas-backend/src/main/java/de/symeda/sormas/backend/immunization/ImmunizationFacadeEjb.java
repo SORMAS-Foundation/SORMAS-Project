@@ -24,6 +24,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -45,11 +46,14 @@ import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.CountryHelper;
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
@@ -68,14 +72,17 @@ import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
 import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
+import de.symeda.sormas.api.immunization.ImmunizationValidityCalculator;
 import de.symeda.sormas.api.immunization.IsImmunization;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
+import de.symeda.sormas.api.immunization.VaccinationStatusData;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -89,7 +96,9 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.EventParticipant;
+import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityService;
@@ -134,6 +143,9 @@ public class ImmunizationFacadeEjb
 	private final Logger logger = LoggerFactory.getLogger(ImmunizationFacadeEjb.class);
 
 	private static final String USE_DETERMINED_VACCINATION_STATUS_CONFIG_KEY = "USE_DETERMINED_VACCINATION_STATUS";
+	private static final String USE_QUICK_IMMUNIZATION_CREATION_CONFIG_KEY = "USE_QUICK_IMMUNIZATION_CREATION";
+	private static final ImmunizationValidityCalculator DEFAULT_IMMUNIZATION_VALIDITY_CALCULATOR = new DefaultImmunizationValidityCalculator();
+	private static final ImmunizationValidityCalculator LUXEMBOURG_IMMUNIZATION_VALIDITY_CALCULATOR = new LuxembourgImmunizationValidityCalculator();
 
 	@EJB
 	private DirectoryImmunizationService directoryImmunizationService;
@@ -149,6 +161,10 @@ public class ImmunizationFacadeEjb
 	private FacilityService facilityService;
 	@EJB
 	private CaseService caseService;
+	@EJB
+	private ContactService contactService;
+	@EJB
+	private EventParticipantService eventParticipantService;
 	@EJB
 	private CountryService countryService;
 	@EJB
@@ -219,6 +235,7 @@ public class ImmunizationFacadeEjb
 		dto.setMeansOfImmunization(entity.getMeansOfImmunization());
 		dto.setMeansOfImmunizationDetails(entity.getMeansOfImmunizationDetails());
 		dto.setInjectionFacility(entity.getInjectionFacility());
+		dto.setVaccinationInfoSource(entity.getVaccinationInfoSource());
 		dto.setImmunizationManagementStatus(entity.getImmunizationManagementStatus());
 		dto.setExternalId(entity.getExternalId());
 		dto.setResponsibleRegion(RegionFacadeEjb.toReferenceDto(entity.getResponsibleRegion()));
@@ -427,28 +444,13 @@ public class ImmunizationFacadeEjb
 
 		service.updateImmunizationStatusBasedOnVaccinations(immunization);
 
-		immunization.getVaccinations().forEach(vaccination -> {
-			VaccinationDto existingVaccination = null;
-			if (existingDto != null) {
-				existingVaccination = existingDto.getVaccinations()
-					.stream()
-					.filter(vaccinationDto -> vaccination.getUuid().equals(vaccinationDto.getUuid()))
-					.findAny()
-					.orElse(null);
-			}
-
-			vaccinationFacade
-				.updateVaccinationStatuses(vaccination, existingVaccination, immunization.getPerson().getId(), immunization.getDisease());
-		});
-
 		service.ensurePersisted(immunization);
 
-		onImmunizationChanged(immunization, internal);
+		caseService.updateVaccinationStatuses(immunization.getPerson().getId(), immunization.getDisease(), null);
+		contactService.updateVaccinationStatuses(immunization.getPerson().getId(), immunization.getDisease(), null);
+		eventParticipantService.updateVaccinationStatuses(immunization.getPerson().getId(), immunization.getDisease(), null);
 
-		// Update vaccination statuses for all cases of this person and disease if determined vaccination status is enabled
-		if (isUseDeterminedVaccinationStatus()) {
-			caseService.updateVaccinationStatuses(immunization.getPerson().getId(), immunization.getDisease(), null);
-		}
+		onImmunizationChanged(immunization, internal);
 
 		return toPseudonymizedDto(immunization, pseudonymizer);
 	}
@@ -575,6 +577,7 @@ public class ImmunizationFacadeEjb
 		target.setMeansOfImmunization(source.getMeansOfImmunization());
 		target.setMeansOfImmunizationDetails(source.getMeansOfImmunizationDetails());
 		target.setInjectionFacility(source.getInjectionFacility());
+		target.setVaccinationInfoSource(source.getVaccinationInfoSource());
 		if (source.getImmunizationManagementStatus() != null) {
 			target.setImmunizationManagementStatus(source.getImmunizationManagementStatus());
 		}
@@ -609,6 +612,7 @@ public class ImmunizationFacadeEjb
 			}
 			target.getVaccinations().clear();
 			target.getVaccinations().addAll(vaccinationEntities);
+			updateVaccinationInfoSourceFromVaccinations(target);
 		}
 
 		if (source.getSormasToSormasOriginInfo() != null) {
@@ -620,6 +624,36 @@ public class ImmunizationFacadeEjb
 		target.setOtherDeletionReason(source.getOtherDeletionReason());
 
 		return target;
+	}
+
+	public void updateVaccinationInfoSourceFromVaccinations(Immunization immunization) {
+		if (immunization == null
+			|| immunization.getMeansOfImmunization() == MeansOfImmunization.NOT_IMMUNIZED
+			|| immunization.getVaccinationInfoSource() != null
+			|| immunization.getVaccinations() == null
+			|| immunization.getVaccinations().isEmpty()) {
+			return;
+		}
+
+		List<VaccinationInfoSource> vaccinationInfoSources =
+			immunization.getVaccinations().stream().map(Vaccination::getVaccinationInfoSource).collect(Collectors.toList());
+
+		boolean allUnknownOrNull = vaccinationInfoSources.stream().allMatch(source -> source == null || source == VaccinationInfoSource.UNKNOWN);
+		if (allUnknownOrNull) {
+			immunization.setVaccinationInfoSource(VaccinationInfoSource.UNKNOWN);
+			return;
+		}
+
+		Set<VaccinationInfoSource> distinctKnownSources =
+			vaccinationInfoSources.stream().filter(source -> source != null && source != VaccinationInfoSource.UNKNOWN).collect(Collectors.toSet());
+
+		if (distinctKnownSources.size() == 1) {
+			VaccinationInfoSource commonSource = distinctKnownSources.iterator().next();
+			boolean allEntriesHaveSameSource = vaccinationInfoSources.stream().allMatch(commonSource::equals);
+			immunization.setVaccinationInfoSource(allEntriesHaveSameSource ? commonSource : null);
+		} else {
+			immunization.setVaccinationInfoSource(null);
+		}
 	}
 
 	@Override
@@ -816,6 +850,80 @@ public class ImmunizationFacadeEjb
 	@PermitAll
 	public boolean isUseDeterminedVaccinationStatus() {
 		return Boolean.valueOf(systemConfigurationValue.getValue(USE_DETERMINED_VACCINATION_STATUS_CONFIG_KEY));
+	}
+
+	@Override
+	@PermitAll
+	public boolean isUseQuickImmunizationCreation() {
+		return Boolean.valueOf(systemConfigurationValue.getValue(USE_QUICK_IMMUNIZATION_CREATION_CONFIG_KEY));
+	}
+
+	@Override
+	public Date suggestValidFrom(Disease disease, MeansOfImmunization meansOfImmunization, Date immunizationDate, Integer numberOfDoses) {
+		return getImmunizationValidityCalculator().calculateValidFrom(disease, meansOfImmunization, immunizationDate, numberOfDoses);
+	}
+
+	@Override
+	public Date suggestValidUntil(Disease disease, MeansOfImmunization meansOfImmunization, Date validFrom, Integer numberOfDoses) {
+		return getImmunizationValidityCalculator().calculateValidUntil(disease, meansOfImmunization, validFrom, numberOfDoses);
+	}
+
+	private ImmunizationValidityCalculator getImmunizationValidityCalculator() {
+		if (CountryHelper.isCountry(configFacade.getCountryLocale(), CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+			return LUXEMBOURG_IMMUNIZATION_VALIDITY_CALCULATOR;
+		}
+
+		return DEFAULT_IMMUNIZATION_VALIDITY_CALCULATOR;
+	}
+
+	@Override
+	@RightsAllowed({
+		UserRight._IMMUNIZATION_CREATE,
+		UserRight._IMMUNIZATION_EDIT })
+	public ImmunizationDto saveQuickImmunization(ImmunizationDto dto, VaccinationInfoSource vaccinationInfoSource, Date dateOfMostRecentDose) {
+		dto.setVaccinationInfoSource(vaccinationInfoSource);
+
+		if (dto.getValidFrom() == null) {
+			dto.setValidFrom(suggestValidFrom(dto.getDisease(), dto.getMeansOfImmunization(), dateOfMostRecentDose, dto.getNumberOfDoses()));
+		}
+		if (dto.getValidUntil() == null) {
+			dto.setValidUntil(suggestValidUntil(dto.getDisease(), dto.getMeansOfImmunization(), dto.getValidFrom(), dto.getNumberOfDoses()));
+		}
+
+		Integer numberOfDoses = dto.getNumberOfDoses();
+		if (numberOfDoses != null && numberOfDoses > 0) {
+			UserReferenceDto currentUser = userService.getCurrentUser().toReference();
+			for (int i = 1; i <= numberOfDoses; i++) {
+				VaccinationDto vaccination = VaccinationDto.build(currentUser);
+				vaccination.setImmunization(dto.toReference());
+				vaccination.setVaccinationInfoSource(vaccinationInfoSource);
+				if (i == numberOfDoses) {
+					vaccination.setVaccinationDate(dateOfMostRecentDose);
+				}
+				dto.getVaccinations().add(vaccination);
+			}
+		}
+
+		dto.setImmunizationManagementStatus(ImmunizationManagementStatus.ONGOING);
+		dto.setImmunizationStatus(ImmunizationStatus.NOT_ACQUIRED);
+
+		// To be consistent with the old system, we set the immunization status to acquired if the means of immunization is not immunized.
+		// In the existing system the immunization status is set to acquired if the number of doses matches the number of vaccinations.
+		// Because we are pre-filling the vaccinations, we need to set the immunization status to acquired if the number of doses matches the number of vaccinations.
+		// Alternatively we could check the validity based on disease (e.g. if disease requires 2 doses, we need to set the immunization status to acquired only if the number of doses matches).
+		// Special case to be handled in future MATERNAL_VACCINATION, MONOCLONAL_ANTIBODY.
+		if (dto.getMeansOfImmunization() != MeansOfImmunization.NOT_IMMUNIZED) {
+			dto.setImmunizationManagementStatus(ImmunizationManagementStatus.COMPLETED);
+			dto.setImmunizationStatus(ImmunizationStatus.ACQUIRED);
+		}
+
+		return save(dto);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._IMMUNIZATION_VIEW)
+	public VaccinationStatusData getVaccinationStatusData(String personUuid, Disease disease, Date referenceDate) {
+		return service.deriveVaccinationStatus(personUuid, disease, referenceDate);
 	}
 
 	@LocalBean

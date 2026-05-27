@@ -37,7 +37,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.caze.VaccinationStatus;
+import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -47,8 +47,10 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
+import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
+import de.symeda.sormas.api.immunization.VaccinationStatusData;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -139,6 +141,7 @@ public class VaccinationFacadeEjb
 		validate(dto);
 
 		Vaccination vaccination = fillOrBuildEntity(dto, existingVaccination, true);
+		immunizationFacade.updateVaccinationInfoSourceFromVaccinations(vaccination.getImmunization());
 		service.ensurePersisted(vaccination);
 
 		updateVaccinationStatuses(
@@ -195,6 +198,7 @@ public class VaccinationFacadeEjb
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validImmunization));
 		}
 
+		immunizationFacade.updateVaccinationInfoSourceFromVaccinations(vaccination.getImmunization());
 		service.ensurePersisted(vaccination);
 
 		updateVaccinationStatuses(vaccination, null, vaccination.getImmunization().getPerson().getId(), disease);
@@ -309,6 +313,27 @@ public class VaccinationFacadeEjb
 		Case caze = caseService.getByUuid(cazeDto.getUuid());
 		Vaccination vaccination = service.getByUuid(vaccinationDto.getUuid());
 		return service.isVaccinationRelevant(caze, vaccination);
+	}
+
+	@Override
+	@RightsAllowed({
+		UserRight._IMMUNIZATION_CREATE,
+		UserRight._IMMUNIZATION_EDIT })
+	public void createDoseEntries(
+		ImmunizationReferenceDto immunizationRef,
+		int numberOfDoses,
+		VaccinationInfoSource vaccinationInfoSource,
+		Date dateOfMostRecentDose) {
+
+		for (int i = 1; i <= numberOfDoses; i++) {
+			VaccinationDto dto = VaccinationDto.build(userService.getCurrentUser().toReference());
+			dto.setImmunization(immunizationRef);
+			dto.setVaccinationInfoSource(vaccinationInfoSource);
+			if (i == numberOfDoses) {
+				dto.setVaccinationDate(dateOfMostRecentDose); // BR0074: last dose gets the date of most recent dose
+			}
+			save(dto);
+		}
 	}
 
 	@Override
@@ -447,55 +472,25 @@ public class VaccinationFacadeEjb
 	@RightsAllowed(UserRight._IMMUNIZATION_EDIT)
 	public void updateVaccinationStatuses(Vaccination newVaccination, VaccinationDto oldRelevantVaccination, Long personId, Disease disease) {
 
-		Date newRelevantVaccineDate = service.getRelevantVaccineDate(newVaccination);
-		Date oldRelevantVaccineDate = oldRelevantVaccination != null ? service.getRelevantVaccineDate(oldRelevantVaccination) : null;
-
-		if (newRelevantVaccineDate != oldRelevantVaccineDate) {
-			caseService.updateVaccinationStatuses(personId, disease, newVaccination);
-			contactService.updateVaccinationStatuses(personId, disease, newRelevantVaccineDate);
-			eventParticipantService.updateVaccinationStatuses(personId, disease, newRelevantVaccineDate);
-		}
+		caseService.updateVaccinationStatuses(personId, disease, newVaccination);
+		contactService.updateVaccinationStatuses(personId, disease, null);
+		eventParticipantService.updateVaccinationStatuses(personId, disease, null);
 	}
 
 	@RightsAllowed({
 		UserRight._CASE_EDIT,
 		UserRight._CASE_CREATE })
 	public void updateVaccinationStatuses(Case caze) {
-		if (immunizationFacade.isUseDeterminedVaccinationStatus()) {
-			updateDeterminedVaccinationStatuses(caze);
-			return;
-		}
-		updateSimpleVaccinationStatuses(caze);
-	}
 
-	protected void updateDeterminedVaccinationStatuses(Case caze) {
+		// Derive full vaccination status data from immunization service
+		VaccinationStatusData data = immunizationService.deriveVaccinationStatus(caze.getPerson().getUuid(), caze.getDisease(), caze.getReportDate());
 
-		// Derive vaccination status from immunization service
-		VaccinationStatus vaccinationStatus =
-			immunizationService.deriveVaccinationStatus(caze.getPerson().getUuid(), caze.getDisease(), caze.getReportDate());
-
-		if (vaccinationStatus != null) {
-			caze.setVaccinationStatus(vaccinationStatus);
-
-			// If status is OTHER, fetch the meansOfImmunizationDetails from the relevant immunization
-			if (vaccinationStatus == VaccinationStatus.OTHER) {
-				String details =
-					immunizationService.getMeansOfImmunizationDetails(caze.getPerson().getUuid(), caze.getDisease(), caze.getReportDate());
-				caze.setVaccinationStatusDetails(details);
-			}
-		}
-	}
-
-	protected void updateSimpleVaccinationStatuses(Case caze) {
-
-		List<Immunization> casePersonImmunizations = immunizationService.getByPersonAndDisease(caze.getPerson().getUuid(), caze.getDisease(), true);
-
-		boolean hasValidVaccinations = casePersonImmunizations.stream()
-			.anyMatch(
-				immunization -> immunization.getVaccinations().stream().anyMatch(vaccination -> service.isVaccinationRelevant(caze, vaccination)));
-
-		if (hasValidVaccinations) {
-			caze.setVaccinationStatus(VaccinationStatus.VACCINATED);
+		if (data != null) {
+			caze.setVaccinationStatus(data.getVaccinationStatus());
+			caze.setVaccinationStatusDetails(data.getVaccinationStatusDetails());
+			caze.setNumberOfDoses(data.getNumberOfDoses());
+			caze.setInformationReliability(data.getInformationReliability());
+			caze.setVaccinationStatusLastUpdated(new Date());
 		}
 	}
 
@@ -503,15 +498,25 @@ public class VaccinationFacadeEjb
 		UserRight._CONTACT_EDIT,
 		UserRight._CONTACT_CREATE })
 	public void updateVaccinationStatuses(Contact contact) {
-		List<Immunization> contactPersonImmunizations =
-			immunizationService.getByPersonAndDisease(contact.getPerson().getUuid(), contact.getDisease(), true);
 
-		boolean hasValidVaccinations = contactPersonImmunizations.stream()
-			.anyMatch(
-				immunization -> immunization.getVaccinations().stream().anyMatch(vaccination -> service.isVaccinationRelevant(contact, vaccination)));
+		// BR0052–0053: validFrom <= firstContactDate, validUntil >= lastContactDate
+		// Fallback: if no dates are available use report date
+		// Fallback: if lastContactDate is null, use firstContactDate for validUntil check
+		Date fromDate = contact.getFirstContactDate() != null ? contact.getFirstContactDate() : contact.getReportDateTime();
+		if (fromDate == null) {
+			return; // Cannot derive without a reference date
+		}
+		Date untilDate = contact.getLastContactDate() != null ? contact.getLastContactDate() : fromDate;
 
-		if (hasValidVaccinations) {
-			contact.setVaccinationStatus(VaccinationStatus.VACCINATED);
+		VaccinationStatusData data =
+			immunizationService.deriveVaccinationStatus(contact.getPerson().getUuid(), contact.getDisease(), fromDate, untilDate);
+
+		if (data != null) {
+			contact.setVaccinationStatus(data.getVaccinationStatus());
+			contact.setVaccinationStatusDetails(data.getVaccinationStatusDetails());
+			contact.setNumberOfDoses(data.getNumberOfDoses());
+			contact.setInformationReliability(data.getInformationReliability());
+			contact.setVaccinationStatusLastUpdated(new Date());
 		}
 	}
 
@@ -522,16 +527,25 @@ public class VaccinationFacadeEjb
 		if (eventParticipant.getEvent().getDisease() == null) {
 			return;
 		}
-		List<Immunization> eventParticipantImmunizations =
-			immunizationService.getByPersonAndDisease(eventParticipant.getPerson().getUuid(), eventParticipant.getEvent().getDisease(), true);
+
+		// BR0062–0063: validFrom ≤ event.startDate, validUntil ≥ event.endDate
+		// Fallback: if startDate is null use reportDateTime; if endDate is null use startDate (or reportDateTime)
 		Event event = eventParticipant.getEvent();
+		Date startDate = event.getStartDate() != null ? event.getStartDate() : event.getReportDateTime();
+		if (startDate == null) {
+			return; // Cannot derive without a reference date
+		}
+		Date endDate = event.getEndDate() != null ? event.getEndDate() : startDate;
 
-		boolean hasValidVaccinations = eventParticipantImmunizations.stream()
-			.anyMatch(
-				immunization -> immunization.getVaccinations().stream().anyMatch(vaccination -> service.isVaccinationRelevant(event, vaccination)));
+		VaccinationStatusData data =
+			immunizationService.deriveVaccinationStatus(eventParticipant.getPerson().getUuid(), event.getDisease(), startDate, endDate);
 
-		if (hasValidVaccinations) {
-			eventParticipant.setVaccinationStatus(VaccinationStatus.VACCINATED);
+		if (data != null) {
+			eventParticipant.setVaccinationStatus(data.getVaccinationStatus());
+			eventParticipant.setVaccinationStatusDetails(data.getVaccinationStatusDetails());
+			eventParticipant.setNumberOfDoses(data.getNumberOfDoses());
+			eventParticipant.setInformationReliability(data.getInformationReliability());
+			eventParticipant.setVaccinationStatusLastUpdated(new Date());
 		}
 	}
 
@@ -546,6 +560,7 @@ public class VaccinationFacadeEjb
 
 		Immunization immunization = vaccination.getImmunization();
 		immunization.getVaccinations().remove(vaccination);
+		immunizationFacade.updateVaccinationInfoSourceFromVaccinations(immunization);
 		immunizationService.incrementChangeDate(immunization);
 		immunizationService.ensurePersisted(immunization);
 
@@ -662,6 +677,7 @@ public class VaccinationFacadeEjb
 		}
 		newImmunization.getVaccinations().clear();
 		newImmunization.getVaccinations().addAll(vaccinationEntities);
+		immunizationFacade.updateVaccinationInfoSourceFromVaccinations(newImmunization);
 	}
 
 	/**

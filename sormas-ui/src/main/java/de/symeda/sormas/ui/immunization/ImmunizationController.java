@@ -10,6 +10,7 @@ import com.vaadin.ui.Notification;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -18,8 +19,11 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -30,6 +34,7 @@ import de.symeda.sormas.ui.immunization.components.fields.pickorcreate.Immunizat
 import de.symeda.sormas.ui.immunization.components.fields.popup.SimilarImmunizationPopup;
 import de.symeda.sormas.ui.immunization.components.form.ImmunizationCreationForm;
 import de.symeda.sormas.ui.immunization.components.form.ImmunizationDataForm;
+import de.symeda.sormas.ui.immunization.components.form.QuickImmunizationCreationForm;
 import de.symeda.sormas.ui.person.PersonSelectionGrid;
 import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -58,10 +63,146 @@ public class ImmunizationController {
 	}
 
 	public void create(PersonReferenceDto person, Disease disease) {
-		CommitDiscardWrapperComponent<ImmunizationCreationForm> immunizationCreateComponent = getImmunizationCreateComponent(person, disease);
-		if (immunizationCreateComponent != null) {
-			VaadinUiUtil.showModalPopupWindow(immunizationCreateComponent, I18nProperties.getString(Strings.headingCreateNewImmunization));
+		create(person, disease, null);
+	}
+
+	public void create(PersonReferenceDto person, Disease disease, Runnable savedCallback) {
+		CommitDiscardWrapperComponent<?> createComponent = getImmunizationCreateComponent(person, disease, savedCallback);
+		if (createComponent != null) {
+			VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateNewImmunization));
 		}
+	}
+
+	/**
+	 * @deprecated Use {@link #create(PersonReferenceDto, Disease)} instead.
+	 *             Set {@code USE_QUICK_IMMUNIZATION_CREATION = true} to enable the quick form system-wide.
+	 */
+	@Deprecated(forRemoval = true)
+	public void createQuick(PersonReferenceDto person, Disease disease) {
+		createQuick(person, disease, null);
+	}
+
+	/**
+	 * @deprecated Use {@link #create(PersonReferenceDto, Disease, Runnable)} instead.
+	 *             Set {@code USE_QUICK_IMMUNIZATION_CREATION = true} to enable the quick form system-wide.
+	 */
+	@Deprecated(forRemoval = true)
+	public void createQuick(PersonReferenceDto person, Disease disease, Runnable savedCallback) {
+		UserProvider currentUserProvider = UiUtil.getCurrentUserProvider();
+		if (currentUserProvider == null) {
+			return;
+		}
+
+		QuickImmunizationCreationForm createForm = new QuickImmunizationCreationForm();
+
+		ImmunizationDto immunization = ImmunizationDto.build(person);
+		immunization.setDisease(disease);
+		immunization.setReportingUser(currentUserProvider.getUserReference());
+
+		// Pre-fill jurisdiction from the current user's jurisdiction (section 4.8).
+		// Fall back to the default infrastructure references for national-level users
+		// who have no region/district assigned — mirrors ImmunizationCreationForm.hideAndFillJurisdictionFields().
+		UserDto currentUser = currentUserProvider.getUser();
+		RegionReferenceDto userRegion = currentUser.getRegion();
+		DistrictReferenceDto userDistrict = currentUser.getDistrict();
+		immunization.setResponsibleRegion(userRegion != null ? userRegion : FacadeProvider.getRegionFacade().getDefaultInfrastructureReference());
+		immunization
+			.setResponsibleDistrict(userDistrict != null ? userDistrict : FacadeProvider.getDistrictFacade().getDefaultInfrastructureReference());
+
+		createForm.setValue(immunization);
+
+		final CommitDiscardWrapperComponent<QuickImmunizationCreationForm> viewComponent = new CommitDiscardWrapperComponent<>(
+			createForm,
+			currentUserProvider.hasUserRight(UserRight.IMMUNIZATION_CREATE),
+			createForm.getFieldGroup());
+
+		viewComponent.addCommitListener(() -> {
+			if (!createForm.getFieldGroup().isModified()) {
+				final ImmunizationDto dto = createForm.getValue();
+				VaccinationInfoSource vaccinationInfoSource = createForm.getVaccinationInfoSource();
+				Date dateOfMostRecentDose = createForm.getDateOfMostRecentDose();
+
+				ImmunizationDto savedDto =
+					FacadeProvider.getImmunizationFacade().saveQuickImmunization(dto, vaccinationInfoSource, dateOfMostRecentDose);
+
+				// BR0076: information message after save
+				List<ImmunizationDto> similarImmunizations = findSimilarImmunizations(savedDto);
+				if (!similarImmunizations.isEmpty()) {
+					showSimilarImmunizationPopup(savedDto, similarImmunizations.get(0), ignoredDto -> {
+						Notification.show(I18nProperties.getString(Strings.messageQuickImmunizationSaved), Notification.Type.HUMANIZED_MESSAGE);
+						if (savedCallback != null) {
+							savedCallback.run();
+						}
+					});
+				} else {
+					Notification.show(I18nProperties.getString(Strings.messageQuickImmunizationSaved), Notification.Type.HUMANIZED_MESSAGE);
+					if (savedCallback != null) {
+						savedCallback.run();
+					}
+				}
+			}
+		});
+
+		VaadinUiUtil.showModalPopupWindow(viewComponent, I18nProperties.getString(Strings.headingCreateQuickImmunization));
+	}
+
+	private CommitDiscardWrapperComponent<QuickImmunizationCreationForm> buildQuickCreateComponent(
+		PersonReferenceDto person,
+		Disease disease,
+		Runnable savedCallback) {
+
+		UserProvider currentUserProvider = UiUtil.getCurrentUserProvider();
+		if (currentUserProvider == null) {
+			return null;
+		}
+
+		QuickImmunizationCreationForm createForm = new QuickImmunizationCreationForm();
+
+		ImmunizationDto immunization = ImmunizationDto.build(person);
+		immunization.setDisease(disease);
+		immunization.setReportingUser(currentUserProvider.getUserReference());
+
+		UserDto currentUser = currentUserProvider.getUser();
+		RegionReferenceDto userRegion = currentUser.getRegion();
+		DistrictReferenceDto userDistrict = currentUser.getDistrict();
+		immunization.setResponsibleRegion(userRegion != null ? userRegion : FacadeProvider.getRegionFacade().getDefaultInfrastructureReference());
+		immunization
+			.setResponsibleDistrict(userDistrict != null ? userDistrict : FacadeProvider.getDistrictFacade().getDefaultInfrastructureReference());
+
+		createForm.setValue(immunization);
+
+		final CommitDiscardWrapperComponent<QuickImmunizationCreationForm> viewComponent = new CommitDiscardWrapperComponent<>(
+			createForm,
+			currentUserProvider.hasUserRight(UserRight.IMMUNIZATION_CREATE),
+			createForm.getFieldGroup());
+
+		viewComponent.addCommitListener(() -> {
+			if (!createForm.getFieldGroup().isModified()) {
+				final ImmunizationDto dto = createForm.getValue();
+				VaccinationInfoSource vaccinationInfoSource = createForm.getVaccinationInfoSource();
+				Date dateOfMostRecentDose = createForm.getDateOfMostRecentDose();
+
+				ImmunizationDto savedDto =
+					FacadeProvider.getImmunizationFacade().saveQuickImmunization(dto, vaccinationInfoSource, dateOfMostRecentDose);
+
+				List<ImmunizationDto> similarImmunizations = findSimilarImmunizations(savedDto);
+				if (!similarImmunizations.isEmpty()) {
+					showSimilarImmunizationPopup(savedDto, similarImmunizations.get(0), ignoredDto -> {
+						Notification.show(I18nProperties.getString(Strings.messageQuickImmunizationSaved), Notification.Type.HUMANIZED_MESSAGE);
+						if (savedCallback != null) {
+							savedCallback.run();
+						}
+					});
+				} else {
+					Notification.show(I18nProperties.getString(Strings.messageQuickImmunizationSaved), Notification.Type.HUMANIZED_MESSAGE);
+					if (savedCallback != null) {
+						savedCallback.run();
+					}
+				}
+			}
+		});
+
+		return viewComponent;
 	}
 
 	public void navigateToImmunization(String uuid) {
@@ -141,9 +282,15 @@ public class ImmunizationController {
 		return null;
 	}
 
-	private CommitDiscardWrapperComponent<ImmunizationCreationForm> getImmunizationCreateComponent(
+	private CommitDiscardWrapperComponent<?> getImmunizationCreateComponent(
 		PersonReferenceDto personReferenceDto,
-		Disease disease) {
+		Disease disease,
+		Runnable savedCallback) {
+
+		if (FacadeProvider.getImmunizationFacade().isUseQuickImmunizationCreation()) {
+			return buildQuickCreateComponent(personReferenceDto, disease, savedCallback);
+		}
+
 		UserProvider currentUserProvider = UiUtil.getCurrentUserProvider();
 		if (currentUserProvider != null) {
 			ImmunizationCreationForm createForm = new ImmunizationCreationForm(personReferenceDto, disease);
