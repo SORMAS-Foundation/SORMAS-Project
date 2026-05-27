@@ -1456,6 +1456,46 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			() -> Assertions.assertEquals("option_B", values.get(metadata).getValue()));
 	}
 
+	@Test
+	void patch_customizableField_invalidCustomContext() {
+		// PREPARE — "Custom." prefix present but the context segment is not a known I18N prefix
+		CaseDataDto caze = creator.createUnclassifiedCase(Disease.PERTUSSIS);
+		String value = "someValue";
+		Map<String, Object> patchDictionary = Map.of("Custom.UnknownContext.someField", value);
+
+		// EXECUTE
+		DataPatchResponse response = victim().patch(new CaseDataPatchRequest().setCaseUuid(caze.getUuid()).setPatchDictionary(patchDictionary));
+
+		// CHECK
+		Map<PatchField, DataPatchFailure> expectedFailures =
+			buildDictionaryOfFailureType(patchDictionary, DataPatchFailureCause.INVALID_CUSTOM_CONTEXT);
+
+		Assertions.assertAll(
+			() -> Assertions.assertFalse(response.isApplied()),
+			() -> Assertions.assertTrue(response.getValidPatchDictionary().isEmpty()),
+			() -> Assertions.assertEquals(expectedFailures, response.getFailures()));
+	}
+
+	@Test
+	void patch_customizableField_fieldDoesNotExist() {
+		// PREPARE — valid context (CaseData) but no metadata registered for the given field name
+		CaseDataDto caze = creator.createUnclassifiedCase(Disease.PERTUSSIS);
+		String value = "someValue";
+		Map<String, Object> patchDictionary = Map.of("Custom." + CaseDataDto.I18N_PREFIX + ".nonExistentField", value);
+
+		// EXECUTE
+		DataPatchResponse response = victim().patch(new CaseDataPatchRequest().setCaseUuid(caze.getUuid()).setPatchDictionary(patchDictionary));
+
+		// CHECK
+		Map<PatchField, DataPatchFailure> expectedFailures =
+			buildDictionaryOfFailureType(patchDictionary, DataPatchFailureCause.FIELD_DOES_NOT_EXIST);
+
+		Assertions.assertAll(
+			() -> Assertions.assertFalse(response.isApplied()),
+			() -> Assertions.assertTrue(response.getValidPatchDictionary().isEmpty()),
+			() -> Assertions.assertEquals(expectedFailures, response.getFailures()));
+	}
+
 	private CustomizableFieldMetadataDto createCaseCustomField(String name, CustomizableFieldType type) {
 		CustomizableFieldMetadataFacade facade = getBean(CustomizableFieldMetadataFacadeEjb.CustomizableFieldMetadataFacadeEjbLocal.class);
 		CustomizableFieldMetadataDto dto = new CustomizableFieldMetadataDto();

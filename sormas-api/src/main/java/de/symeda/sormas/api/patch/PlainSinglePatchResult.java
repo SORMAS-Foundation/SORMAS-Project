@@ -11,10 +11,19 @@ public class PlainSinglePatchResult implements SinglePatchResult {
 	private PatchField field;
 
 	@Nullable
-	private Object value;
+	private DataPatchFailure failure;
 
 	@Nullable
-	private DataPatchFailure failure;
+	private Object value;
+
+	public PlainSinglePatchResult() {
+	}
+
+	public PlainSinglePatchResult(PatchField field, @Nullable DataPatchFailure failure, @Nullable Object value) {
+		this.field = field;
+		this.failure = failure;
+		this.value = value;
+	}
 
 	@Override
 	public PatchField getField() {

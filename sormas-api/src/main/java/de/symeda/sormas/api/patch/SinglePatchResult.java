@@ -4,6 +4,9 @@ import javax.annotation.Nullable;
 
 import de.symeda.sormas.api.externalmessage.survey.PatchField;
 
+/**
+ * Either {@link #getValue()} or {@link #getFailure()} will be present, but not both at same time.
+ */
 public interface SinglePatchResult {
 
 	PatchField getField();

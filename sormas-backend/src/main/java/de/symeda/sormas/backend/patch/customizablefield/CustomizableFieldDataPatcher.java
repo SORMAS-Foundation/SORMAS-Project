@@ -8,9 +8,9 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,15 +18,13 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldContext;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
-import de.symeda.sormas.api.externalmessage.survey.PatchField;
-import de.symeda.sormas.api.patch.CaseDataPatchRequest;
 import de.symeda.sormas.api.patch.DataPatchFailure;
 import de.symeda.sormas.api.patch.DataPatchFailureCause;
+import de.symeda.sormas.api.patch.PlainSinglePatchResult;
 import de.symeda.sormas.api.patch.mapping.ValueMappingResult;
 import de.symeda.sormas.api.utils.Tuple;
 import de.symeda.sormas.backend.customizablefield.CustomizableFieldMetadataFacadeEjb;
 import de.symeda.sormas.backend.customizablefield.CustomizableFieldValueFacadeEjb;
-import de.symeda.sormas.backend.patch.SingleFieldPatchResult;
 import de.symeda.sormas.backend.patch.customizablefield.mappers.CustomizableFieldValuePatchMapperRegistry;
 import de.symeda.sormas.backend.util.CollectorUtils;
 
@@ -51,35 +49,31 @@ public class CustomizableFieldDataPatcher {
 	@Inject
 	private CustomizableFieldHelper customizableFieldHelper;
 
-	public List<CustomizableFieldSinglePatchingResult> patch(Request request) {
-		List<SingleFieldPatchResult> patchingTuples = request.getPatchingTuples();
+	public List<CustomizableFieldSinglePatchingResult> patch(CustomizableFieldDataPatchRequest request) {
+		List<PlainSinglePatchResult> patchingTuples = request.getPatchingTuples();
 
 		if (CollectionUtils.isEmpty(patchingTuples)) {
+			logger.info("No csutomizable fields patching tuples provided");
 			return List.of();
 		}
 
-		List<HelperClass> tempCollect = patchingTuples.stream()
+		logger.info("Customizable patch will be attempted, enable trace to see request and response");
+		logger.debug("Request: [{}]", request);
+
+		List<CustomizableFieldPatchWrapper> initialWrappers = patchingTuples.stream()
 			.map(
 				singleFieldResult -> customizableFieldHelper.from(singleFieldResult.getField())
-					.map(context -> new HelperClass().setPatchField(context).setSingleFieldPatchResult(singleFieldResult))
-					.orElseGet(
-						() -> new HelperClass().setSingleFieldPatchResult(
-							new SingleFieldPatchResult().setField(singleFieldResult.getField())
-								.setValue(singleFieldResult.getValue())
-								.setFailureCause(DataPatchFailureCause.INVALID_CUSTOM_CONTEXT))))
+					.map(patchField -> new CustomizableFieldPatchWrapper().setPatchField(patchField).setPlainSinglePatchResult(singleFieldResult))
+					.orElseGet(() -> buildInvalidContextErrorWrapper(singleFieldResult)))
 			.collect(Collectors.toList());
 
-		Set<CustomizableFieldContext> contexts = tempCollect.stream()
-			.map(HelperClass::getPatchField)
-			.filter(Objects::nonNull)
-			.map(CustomizablePatchField::getContext)
-			.collect(Collectors.toSet());
+		Set<CustomizableFieldContext> contexts = getContextsToFetch(initialWrappers);
 
 		Map<CustomizableFieldContext, Map<CustomizableFieldMetadataDto, Supplier<CustomizableFieldValueDto>>> customizableByContextDictionary =
 			getDictionary(request, contexts);
 
-		List<CustomizableFieldSinglePatchingResult> results = tempCollect.stream().peek(helperClass -> {
-			CustomizablePatchField patchField = helperClass.getPatchField();
+		List<CustomizableFieldSinglePatchingResult> results = initialWrappers.stream().peek(customizableFieldPatchWrapper -> {
+			CustomizablePatchField patchField = customizableFieldPatchWrapper.getPatchField();
 			if (patchField == null) {
 				return;
 			}
@@ -93,28 +87,32 @@ public class CustomizableFieldDataPatcher {
 
 			if (singleOpt.isEmpty()) {
 				logger.error("For context. [{}] the leaf field does not exist: [{}]", patchField.getContext(), patchField.getLeafFieldName());
-				helperClass.setFailureCause(DataPatchFailureCause.FIELD_DOES_NOT_EXIST);
+				customizableFieldPatchWrapper.setFailureCause(DataPatchFailureCause.FIELD_DOES_NOT_EXIST);
 			} else {
-				helperClass.setCustomizableFieldValue(singleOpt.get().getValue().get());
-				helperClass.setMetadata(singleOpt.get().getKey());
+				customizableFieldPatchWrapper.setCustomizableFieldValue(singleOpt.get().getValue().get());
+				customizableFieldPatchWrapper.setMetadata(singleOpt.get().getKey());
 			}
-		}).map(helperClass -> {
-			SingleFieldPatchResult singleFieldPatchResult = helperClass.getSingleFieldPatchResult();
+		}).map(customizableFieldPatchWrapper -> {
+			PlainSinglePatchResult singleFieldPatchResult = customizableFieldPatchWrapper.getPlainSinglePatchResult();
 
+			DataPatchFailure patchFailure = singleFieldPatchResult.getFailure();
 			DataPatchFailureCause preFailureCause =
-				singleFieldPatchResult.getFailureCause() != null ? singleFieldPatchResult.getFailureCause() : helperClass.getFailureCause();
+				patchFailure != null ? patchFailure.getDataPatchFailureCause() : customizableFieldPatchWrapper.getFailureCause();
 
 			if (preFailureCause != null) {
 				return new CustomizableFieldSinglePatchingResult().setField(singleFieldPatchResult.getField())
 					.setFailure(
-						new DataPatchFailure().setDataPatchFailureCause(preFailureCause).setProvidedFieldValue(singleFieldPatchResult.getValue()))
-					.setValue(singleFieldPatchResult.getValue());
+						new DataPatchFailure().setDataPatchFailureCause(preFailureCause)
+							.setProvidedFieldValue(
+								Optional.ofNullable(patchFailure)
+									.map(DataPatchFailure::getProvidedFieldValue)
+									.orElseGet(singleFieldPatchResult::getValue)));
 			}
 
 			ValueMappingResult<CustomizableFieldValueDto> mapResult = registry.map(
 				new CustomizableFieldValuePatchRequest().setValue(singleFieldPatchResult.getValue())
-					.setTargetType(helperClass.getMetadata().getFieldType())
-					.setCustomizableFieldValueDto(helperClass.getCustomizableFieldValue()));
+					.setTargetType(customizableFieldPatchWrapper.getMetadata().getFieldType())
+					.setCustomizableFieldValueDto(customizableFieldPatchWrapper.getCustomizableFieldValue()));
 
 			DataPatchFailure failure = null;
 			if (mapResult.getDataPatchFailureCause() != null) {
@@ -133,8 +131,24 @@ public class CustomizableFieldDataPatcher {
 		return results;
 	}
 
+	private static @NotNull Set<CustomizableFieldContext> getContextsToFetch(List<CustomizableFieldPatchWrapper> initialWrappers) {
+		return initialWrappers.stream()
+			.map(CustomizableFieldPatchWrapper::getPatchField)
+			.filter(Objects::nonNull)
+			.map(CustomizablePatchField::getContext)
+			.collect(Collectors.toSet());
+	}
+
+	private static @NotNull CustomizableFieldPatchWrapper buildInvalidContextErrorWrapper(PlainSinglePatchResult singleFieldResult) {
+		return new CustomizableFieldPatchWrapper().setPlainSinglePatchResult(
+			new PlainSinglePatchResult().setField(singleFieldResult.getField())
+				.setFailure(
+					new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.INVALID_CUSTOM_CONTEXT)
+						.setProvidedFieldValue(singleFieldResult.getValue())));
+	}
+
 	private Map<CustomizableFieldContext, Map<CustomizableFieldMetadataDto, Supplier<CustomizableFieldValueDto>>> getDictionary(
-		Request request,
+		CustomizableFieldDataPatchRequest request,
 		Set<CustomizableFieldContext> contexts) {
 
 		Map<CustomizableFieldContext, Map<CustomizableFieldMetadataDto, Supplier<CustomizableFieldValueDto>>> customizableByContextDictionary =
@@ -183,57 +197,17 @@ public class CustomizableFieldDataPatcher {
 		}
 	}
 
-	public boolean match(PatchField patchField, CustomizableFieldMetadataDto metadata) {
-		return false;
-	}
-
 	public void save(List<CustomizableFieldValueDto> values) {
-		values.forEach(valueFacade::save);
+		values.forEach(dto -> {
+			logger.info("Saving CustomizableFieldValueDto [{}]", dto);
+			valueFacade.save(dto);
+		});
 	}
 
-	public static final class Request {
-
-		@NotNull
-		private CaseDataPatchRequest caseDataPatchRequest;
-
-		@NotNull
-		private List<SingleFieldPatchResult> patchingTuples;
-
-		@NotNull
-		private CaseDataDto caseDataDto;
-
-		public CaseDataPatchRequest getCaseDataPatchRequest() {
-			return caseDataPatchRequest;
-		}
-
-		public Request setCaseDataPatchRequest(CaseDataPatchRequest caseDataPatchRequest) {
-			this.caseDataPatchRequest = caseDataPatchRequest;
-			return this;
-		}
-
-		public List<SingleFieldPatchResult> getPatchingTuples() {
-			return patchingTuples;
-		}
-
-		public Request setPatchingTuples(List<SingleFieldPatchResult> patchingTuples) {
-			this.patchingTuples = patchingTuples;
-			return this;
-		}
-
-		public CaseDataDto getCaseDataDto() {
-			return caseDataDto;
-		}
-
-		public Request setCaseDataDto(CaseDataDto caseDataDto) {
-			this.caseDataDto = caseDataDto;
-			return this;
-		}
-	}
-
-	public static final class HelperClass {
+	public static final class CustomizableFieldPatchWrapper {
 
 		private CustomizablePatchField patchField;
-		private SingleFieldPatchResult singleFieldPatchResult;
+		private PlainSinglePatchResult singleFieldPatchResult;
 		private DataPatchFailureCause failureCause;
 
 		private CustomizableFieldMetadataDto metadata;
@@ -243,16 +217,16 @@ public class CustomizableFieldDataPatcher {
 			return patchField;
 		}
 
-		public HelperClass setPatchField(CustomizablePatchField patchField) {
+		public CustomizableFieldPatchWrapper setPatchField(CustomizablePatchField patchField) {
 			this.patchField = patchField;
 			return this;
 		}
 
-		public SingleFieldPatchResult getSingleFieldPatchResult() {
+		public PlainSinglePatchResult getPlainSinglePatchResult() {
 			return singleFieldPatchResult;
 		}
 
-		public HelperClass setSingleFieldPatchResult(SingleFieldPatchResult singleFieldPatchResult) {
+		public CustomizableFieldPatchWrapper setPlainSinglePatchResult(PlainSinglePatchResult singleFieldPatchResult) {
 			this.singleFieldPatchResult = singleFieldPatchResult;
 			return this;
 		}
@@ -261,7 +235,7 @@ public class CustomizableFieldDataPatcher {
 			return customizableFieldValue;
 		}
 
-		public HelperClass setCustomizableFieldValue(CustomizableFieldValueDto customizableFieldValue) {
+		public CustomizableFieldPatchWrapper setCustomizableFieldValue(CustomizableFieldValueDto customizableFieldValue) {
 			this.customizableFieldValue = customizableFieldValue;
 			return this;
 		}
@@ -270,7 +244,7 @@ public class CustomizableFieldDataPatcher {
 			return failureCause;
 		}
 
-		public HelperClass setFailureCause(DataPatchFailureCause failureCause) {
+		public CustomizableFieldPatchWrapper setFailureCause(DataPatchFailureCause failureCause) {
 			this.failureCause = failureCause;
 			return this;
 		}
@@ -279,7 +253,7 @@ public class CustomizableFieldDataPatcher {
 			return metadata;
 		}
 
-		public HelperClass setMetadata(CustomizableFieldMetadataDto metadata) {
+		public CustomizableFieldPatchWrapper setMetadata(CustomizableFieldMetadataDto metadata) {
 			this.metadata = metadata;
 			return this;
 		}

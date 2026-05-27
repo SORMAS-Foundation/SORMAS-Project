@@ -32,6 +32,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.json.ObjectMapperProvider;
+import de.symeda.sormas.backend.patch.customizablefield.CustomizableFieldDataPatchRequest;
 import de.symeda.sormas.backend.patch.customizablefield.CustomizableFieldDataPatcher;
 import de.symeda.sormas.backend.patch.customizablefield.CustomizableFieldSinglePatchingResult;
 import de.symeda.sormas.backend.patch.mapping.FieldCustomMapperRegistry;
@@ -100,11 +101,11 @@ public class DataPatcherImpl implements DataPatcher {
 		Map<Tuple<String, Integer>, AttachedEntityWrapper> entityCache = new HashMap<>();
 		entityCache.put(Tuple.firstOnly(CaseDataDto.I18N_PREFIX), AttachedEntityWrapper.attached(caseData));
 
-		List<SingleFieldPatchResult> patchingTuples = computePatchingTuples(request);
+		List<PlainSinglePatchResult> patchingTuples = computePatchingTuples(request);
 
 		logger.trace("Computed patchingTuples: [{}]", patchingTuples);
 
-		Predicate<SingleFieldPatchResult> customizableFieldsPredicate =
+		Predicate<PlainSinglePatchResult> customizableFieldsPredicate =
 			patchResult -> patchResult.getField().getField().contains(PatchFieldHelper.CUSTOM_PREFIX);
 
 		List<PlainSinglePatchResult> plainResults =
@@ -132,7 +133,7 @@ public class DataPatcherImpl implements DataPatcher {
 			}).collect(Collectors.toList());
 
 		List<CustomizableFieldSinglePatchingResult> customizableResults = customizableFieldDataPatcher.patch(
-			new CustomizableFieldDataPatcher.Request().setCaseDataPatchRequest(request)
+			new CustomizableFieldDataPatchRequest().setCaseDataPatchRequest(request)
 				.setPatchingTuples(patchingTuples.stream().filter(customizableFieldsPredicate).collect(Collectors.toList()))
 				.setCaseDataDto(caseData));
 
@@ -182,7 +183,7 @@ public class DataPatcherImpl implements DataPatcher {
 	@NotNull
 	private PlainSinglePatchResult produceSinglePatchResult(
 		CaseDataPatchRequest request,
-		SingleFieldPatchResult singleFieldPatchResult,
+		PlainSinglePatchResult singleFieldPatchResult,
 		Disease disease,
 		Supplier<AttachedEntityWrapper> target) {
 
@@ -221,7 +222,7 @@ public class DataPatcherImpl implements DataPatcher {
 	}
 
 	private @NotNull PlainSinglePatchResult valueMappingResult(
-		SingleFieldPatchResult singleFieldPatchResult,
+		PlainSinglePatchResult singleFieldPatchResult,
 		Disease disease,
 		CaseDataPatchRequest request,
 		Supplier<AttachedEntityWrapper> targetOpt) {
@@ -293,13 +294,16 @@ public class DataPatcherImpl implements DataPatcher {
 		return new DataPatchFailure().setDataPatchFailureCause(fieldDoesNotExist).setProvidedFieldValue(untypedTargetValue);
 	}
 
-	private @NotNull Optional<PlainSinglePatchResult> invalidFieldResult(SingleFieldPatchResult singleFieldPatchResult) {
-		return Optional.ofNullable(singleFieldPatchResult.getFailureCause())
-			.map(invalidFieldFailureCause -> buildFailureFor(singleFieldPatchResult, invalidFieldFailureCause));
+	private @NotNull Optional<PlainSinglePatchResult> invalidFieldResult(PlainSinglePatchResult singleFieldPatchResult) {
+		Optional<PlainSinglePatchResult> plainSinglePatchResult =
+			Optional.ofNullable(singleFieldPatchResult).filter(result -> result.getFailure() != null);
+		// removing value to be able to distinguish between valid and invalid: due to edge-case when patching null-value
+		plainSinglePatchResult.ifPresent(result -> result.setValue(null));
+		return plainSinglePatchResult;
 	}
 
 	private Optional<PlainSinglePatchResult> fieldMappingResult(
-		SingleFieldPatchResult singleFieldPatchResult,
+		PlainSinglePatchResult singleFieldPatchResult,
 		Disease disease,
 		CaseDataPatchRequest request,
 		Supplier<AttachedEntityWrapper> target) {
@@ -327,18 +331,13 @@ public class DataPatcherImpl implements DataPatcher {
 		return Optional.empty();
 	}
 
-	private PlainSinglePatchResult buildFailureFor(SingleFieldPatchResult singleFieldPatchResult, DataPatchFailureCause fieldFailureCause) {
-		return new PlainSinglePatchResult().setField(singleFieldPatchResult.getField())
-			.setFailure(buildFailure(fieldFailureCause, singleFieldPatchResult.getValue()));
-	}
-
 	private FieldVisibilityCheckers getFieldVisibilityCheckers(Disease disease) {
 		return FieldVisibilityCheckers.withCountry(configFacade.getCountryLocale())
 			.andWithDisease(disease)
 			.andWithFeatureType(featureConfigurationFacade.getActiveServerFeatureConfigurations());
 	}
 
-	private List<SingleFieldPatchResult> computePatchingTuples(CaseDataPatchRequest request) {
+	private List<PlainSinglePatchResult> computePatchingTuples(CaseDataPatchRequest request) {
 		Predicate<Map.Entry<PatchField, Object>> filterPredicate = buildAdequateDictionaryValuePredicate(request);
 
 		return request.getPatchDictionary()
@@ -362,11 +361,15 @@ public class DataPatcherImpl implements DataPatcher {
 					.orElse(null);
 
 				if (dataPatchFailureCause != null) {
-					return Stream.of(new SingleFieldPatchResult(entry.getKey(), dataPatchFailureCause, entry.getValue()));
+					return Stream.of(
+						new PlainSinglePatchResult(
+							entry.getKey(),
+							new DataPatchFailure().setDataPatchFailureCause(dataPatchFailureCause).setProvidedFieldValue(entry.getValue()),
+							entry.getValue()));
 				}
 
 				if (!patchFieldHelper.isMultipleFieldFormat(path)) {
-					return Stream.of(new SingleFieldPatchResult(entry.getKey(), null, entry.getValue()));
+					return Stream.of(new PlainSinglePatchResult(entry.getKey(), null, entry.getValue()));
 				}
 
 				return splitMultipleFieldsPath(entry);
@@ -379,11 +382,11 @@ public class DataPatcherImpl implements DataPatcher {
 	}
 
 	@NotNull
-	private Stream<SingleFieldPatchResult> splitMultipleFieldsPath(Map.Entry<PatchField, Object> entry) {
+	private Stream<PlainSinglePatchResult> splitMultipleFieldsPath(Map.Entry<PatchField, Object> entry) {
 		PatchField patchField = entry.getKey();
 		return patchFieldHelper.splitMultipleFieldsPath(patchField.getField())
 			.map(field -> new PatchField().setField(field).setGroupIndex(patchField.getGroupIndex()))
-			.map(singlePath -> new SingleFieldPatchResult(singlePath, null, entry.getValue()));
+			.map(singlePath -> new PlainSinglePatchResult(singlePath, null, entry.getValue()));
 	}
 
 	private @NotNull Predicate<Map.Entry<PatchField, Object>> buildAdequateDictionaryValuePredicate(CaseDataPatchRequest request) {
