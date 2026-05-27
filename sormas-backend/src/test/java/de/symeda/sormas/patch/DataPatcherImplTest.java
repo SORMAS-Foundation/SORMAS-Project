@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -1108,6 +1109,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			() -> Assertions.assertEquals(originalLastName, actualPerson.getLastName(), "Person lastName must not be altered"));
 	}
 
+	@Tag("customizable-fields")
 	@Test
 	void patch_customizableField_text() {
 		// PREPARE
@@ -1142,6 +1144,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			() -> Assertions.assertEquals("world", values2.get(metadata).getValue()));
 	}
 
+	@Tag("customizable-fields")
 	@Test
 	void patch_customizableField_textarea() {
 		// PREPARE
@@ -1176,6 +1179,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			() -> Assertions.assertEquals("second paragraph", values2.get(metadata).getValue()));
 	}
 
+	@Tag("customizable-fields")
 	@Test
 	void patch_customizableField_number() {
 		// PREPARE
@@ -1210,6 +1214,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			() -> Assertions.assertEquals("99", values2.get(metadata).getValue()));
 	}
 
+	@Tag("customizable-fields")
 	@Test
 	void patch_customizableField_decimal() {
 		// PREPARE
@@ -1244,6 +1249,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			() -> Assertions.assertEquals("2.71", values2.get(metadata).getValue()));
 	}
 
+	@Tag("customizable-fields")
 	@Test
 	void patch_customizableField_combobox() {
 		// PREPARE
@@ -1278,6 +1284,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			() -> Assertions.assertEquals("option_b", values2.get(metadata).getValue()));
 	}
 
+	@Tag("customizable-fields")
 	@Test
 	void patch_customizableField_checkbox() {
 		// PREPARE
@@ -1312,6 +1319,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			() -> Assertions.assertEquals(Boolean.FALSE, values2.get(metadata).getValueAsBoolean()));
 	}
 
+	@Tag("customizable-fields")
 	@Test
 	void patch_customizableField_radioButtonList() {
 		// PREPARE
@@ -1346,6 +1354,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			() -> Assertions.assertEquals("choice_2", values2.get(metadata).getValue()));
 	}
 
+	@Tag("customizable-fields")
 	@Test
 	void patch_customizableField_date() {
 		// PREPARE
@@ -1380,6 +1389,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			() -> Assertions.assertEquals(LocalDate.of(2025, 3, 21), values2.get(metadata).getValueAsDate()));
 	}
 
+	@Tag("customizable-fields")
 	@Test
 	void patch_customizableField_dateTime() {
 		// PREPARE
@@ -1430,6 +1440,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 		return wrapper;
 	}
 
+	@Tag("customizable-fields")
 	@Test
 	void patch_customizableField_combobox_overridesExistingValue() {
 		// PREPARE — seed value A directly via the facade (not through the patcher)
@@ -1456,6 +1467,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			() -> Assertions.assertEquals("option_B", values.get(metadata).getValue()));
 	}
 
+	@Tag("customizable-fields")
 	@Test
 	void patch_customizableField_invalidCustomContext() {
 		// PREPARE — "Custom." prefix present but the context segment is not a known I18N prefix
@@ -1476,6 +1488,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			() -> Assertions.assertEquals(expectedFailures, response.getFailures()));
 	}
 
+	@Tag("customizable-fields")
 	@Test
 	void patch_customizableField_fieldDoesNotExist() {
 		// PREPARE — valid context (CaseData) but no metadata registered for the given field name
@@ -1507,8 +1520,67 @@ class DataPatcherImplTest extends AbstractBeanTest {
 		return facade.save(dto);
 	}
 
+	@Tag("customizable-fields")
+	@Test
+	void patch_twoExposures_normalAndCustomizableFields() {
+		// PREPARE
+		CustomizableFieldMetadataDto metadata = createExposureCustomField("cfExposureNote", CustomizableFieldType.TEXT);
+		CaseDataDto caze = creator.createUnclassifiedCase(Disease.DENGUE);
+		String customFieldKey = "Custom." + ExposureDto.I18N_PREFIX + ".cfExposureNote";
+
+		PatchDictionary patchDictionary = new PatchDictionary();
+		// Exposure group 0 — normal + customizable
+		patchDictionary.put(PatchField.of(toFieldName(ExposureDto.I18N_PREFIX, ExposureDto.EXPOSURE_TYPE), 0), "WORK");
+		patchDictionary.put(PatchField.of(toFieldName(ExposureDto.I18N_PREFIX, ExposureDto.DESCRIPTION), 0), "office");
+		patchDictionary.put(PatchField.of(customFieldKey, 0), "note for work");
+		// Exposure group 1 — normal + customizable
+		patchDictionary.put(PatchField.of(toFieldName(ExposureDto.I18N_PREFIX, ExposureDto.EXPOSURE_TYPE), 1), "TRAVEL");
+		patchDictionary.put(PatchField.of(toFieldName(ExposureDto.I18N_PREFIX, ExposureDto.DESCRIPTION), 1), "market");
+		patchDictionary.put(PatchField.of(customFieldKey, 1), "note for travel");
+
+		// EXECUTE
+		DataPatchResponse response = victim().patch(
+			new CaseDataPatchRequest().setCaseUuid(caze.getUuid())
+				.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+				.setPatchDictionary(patchDictionary));
+
+		// CHECK — normal fields
+		CaseDataDto actualCase = getCaseFacade().getByUuid(caze.getUuid());
+		List<ExposureDto> exposures = actualCase.getEpiData().getExposures();
+
+		ExposureDto workExposure = exposures.stream().filter(e -> ExposureType.WORK.equals(e.getExposureType())).findFirst().orElseThrow();
+		ExposureDto travelExposure = exposures.stream().filter(e -> ExposureType.TRAVEL.equals(e.getExposureType())).findFirst().orElseThrow();
+
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failures: " + response.getFailures()),
+			() -> Assertions.assertTrue(response.isApplied()),
+			() -> Assertions.assertEquals(2, exposures.size()),
+			// Normal fields on each exposure
+			() -> Assertions.assertEquals("office", workExposure.getDescription()),
+			() -> Assertions.assertEquals("market", travelExposure.getDescription()),
+			// Customizable field — each exposure carries its own value
+			() -> Assertions.assertEquals("note for work", customizableValuesForExposure(workExposure.getUuid()).get(metadata).getValue()),
+			() -> Assertions.assertEquals("note for travel", customizableValuesForExposure(travelExposure.getUuid()).get(metadata).getValue()));
+	}
+
 	private Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> customizableValuesForCase(String caseUuid) {
 		return getBean(CustomizableFieldValueFacadeEjb.CustomizableFieldValueFacadeEjbLocal.class)
 			.getValuesForEntity(caseUuid, CustomizableFieldContext.CASE);
+	}
+
+	private Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> customizableValuesForExposure(String exposureUuid) {
+		return getBean(CustomizableFieldValueFacadeEjb.CustomizableFieldValueFacadeEjbLocal.class)
+			.getValuesForEntity(exposureUuid, CustomizableFieldContext.EXPOSURE);
+	}
+
+	private CustomizableFieldMetadataDto createExposureCustomField(String name, CustomizableFieldType type) {
+		CustomizableFieldMetadataFacade facade = getBean(CustomizableFieldMetadataFacadeEjb.CustomizableFieldMetadataFacadeEjbLocal.class);
+		CustomizableFieldMetadataDto dto = new CustomizableFieldMetadataDto();
+		dto.setName(name);
+		dto.setFieldType(type);
+		dto.setContextClass(CustomizableFieldContext.EXPOSURE);
+		dto.setUiGroup(CustomizableFieldGroup.getGroupsForContext(CustomizableFieldContext.EXPOSURE).stream().findFirst().orElseThrow());
+		dto.setUiLinePosition(1);
+		return facade.save(dto);
 	}
 }

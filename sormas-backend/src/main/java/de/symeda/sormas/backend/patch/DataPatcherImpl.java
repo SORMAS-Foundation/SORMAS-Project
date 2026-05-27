@@ -32,9 +32,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.json.ObjectMapperProvider;
-import de.symeda.sormas.backend.patch.customizablefield.CustomizableFieldDataPatchRequest;
-import de.symeda.sormas.backend.patch.customizablefield.CustomizableFieldDataPatcher;
-import de.symeda.sormas.backend.patch.customizablefield.CustomizableFieldSinglePatchingResult;
+import de.symeda.sormas.backend.patch.customizablefield.*;
 import de.symeda.sormas.backend.patch.mapping.FieldCustomMapperRegistry;
 import de.symeda.sormas.backend.patch.mapping.PatchEqualityCheckersRegistry;
 import de.symeda.sormas.backend.patch.mapping.ValueMapperRegistry;
@@ -135,6 +133,7 @@ public class DataPatcherImpl implements DataPatcher {
 		List<CustomizableFieldSinglePatchingResult> customizableResults = customizableFieldDataPatcher.patch(
 			new CustomizableFieldDataPatchRequest().setCaseDataPatchRequest(request)
 				.setPatchingTuples(patchingTuples.stream().filter(customizableFieldsPredicate).collect(Collectors.toList()))
+				.setEntityUuidDictionary(buildEntityUuidDictionaryFrom(entityCache))
 				.setCaseDataDto(caseData));
 
 		List<SinglePatchResult> aggregatedResults = Stream.concat(plainResults.stream(), customizableResults.stream()).collect(Collectors.toList());
@@ -163,6 +162,20 @@ public class DataPatcherImpl implements DataPatcher {
 		logger.debug("dataPatchResponse: [{}]", response);
 
 		return response.setApplied(true);
+	}
+
+	private static @NotNull Map<CustomizableContextIndexKey, String> buildEntityUuidDictionaryFrom(
+		Map<Tuple<String, Integer>, AttachedEntityWrapper> entityCache) {
+		return entityCache.entrySet()
+			.stream()
+			.map(
+				entry -> CustomizableFieldContextPatchMapping.fromI18nName(entry.getKey().getFirst())
+					.map(
+						context -> Tuple.of(
+							new CustomizableContextIndexKey().setContext(context).setGroupIndex(entry.getKey().getSecond()),
+							entry.getValue().getEntityDto().getUuid())))
+			.flatMap(Optional::stream)
+			.collect(Collectors.toMap(Tuple::getFirst, Tuple::getSecond));
 	}
 
 	private void saveCustomizableFieldsIfAppropriate(List<CustomizableFieldSinglePatchingResult> customizableResults) {

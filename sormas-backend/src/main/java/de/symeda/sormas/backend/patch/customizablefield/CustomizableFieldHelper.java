@@ -26,6 +26,9 @@ public class CustomizableFieldHelper {
 		}
 
 		return Optional.ofNullable(I18N_DICTIONARY.get(splittedField[1]))
-			.map(context -> new CustomizablePatchField().setContext(context).setLeafFieldName(splittedField[2]));
+			.map(
+				context -> new CustomizablePatchField().setContext(context)
+					.setLeafFieldName(splittedField[2])
+					.setGroupIndex(patchField.getGroupIndex()));
 	}
 }

@@ -2,7 +2,6 @@ package de.symeda.sormas.backend.patch.customizablefield;
 
 import java.util.*;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -14,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldContext;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
@@ -69,8 +67,8 @@ public class CustomizableFieldDataPatcher {
 
 		Set<CustomizableFieldContext> contexts = getContextsToFetch(initialWrappers);
 
-		Map<CustomizableFieldContext, Map<CustomizableFieldMetadataDto, Supplier<CustomizableFieldValueDto>>> customizableByContextDictionary =
-			getDictionary(request, contexts);
+		Map<CustomizableFieldContext, Map<CustomizableFieldMetadataDto, Function<CustomizablePatchField, CustomizableFieldValueDto>>> customizableByContextDictionary =
+			buildDictionary(request, contexts);
 
 		List<CustomizableFieldSinglePatchingResult> results = initialWrappers.stream()
 			.peek(customizableFieldPatchWrapper -> enrichWrapper(customizableFieldPatchWrapper, customizableByContextDictionary))
@@ -130,24 +128,27 @@ public class CustomizableFieldDataPatcher {
 
 	private static void enrichWrapper(
 		CustomizableFieldPatchWrapper customizableFieldPatchWrapper,
-		Map<CustomizableFieldContext, Map<CustomizableFieldMetadataDto, Supplier<CustomizableFieldValueDto>>> customizableByContextDictionary) {
+		Map<CustomizableFieldContext, Map<CustomizableFieldMetadataDto, Function<CustomizablePatchField, CustomizableFieldValueDto>>> customizableByContextDictionary) {
 		CustomizablePatchField patchField = customizableFieldPatchWrapper.getPatchField();
 		if (patchField == null) {
 			return;
 		}
 
-		Map<CustomizableFieldMetadataDto, Supplier<CustomizableFieldValueDto>> map = customizableByContextDictionary.get(patchField.getContext());
+		Map<CustomizableFieldMetadataDto, Function<CustomizablePatchField, CustomizableFieldValueDto>> dictionary =
+			customizableByContextDictionary.get(patchField.getContext());
 
-		Optional<Map.Entry<CustomizableFieldMetadataDto, Supplier<CustomizableFieldValueDto>>> singleOpt = map.entrySet()
-			.stream()
-			.filter(entry -> entry.getKey().getName().equals(patchField.getLeafFieldName()))
-			.collect(CollectorUtils.toOptionalSingle());
+		Optional<Map.Entry<CustomizableFieldMetadataDto, Function<CustomizablePatchField, CustomizableFieldValueDto>>> singleOpt =
+			dictionary.entrySet()
+				.stream()
+				.filter(entry -> entry.getKey().getName().equals(patchField.getLeafFieldName()))
+				.collect(CollectorUtils.toOptionalSingle());
 
 		if (singleOpt.isEmpty()) {
 			logger.error("For context. [{}] the leaf field does not exist: [{}]", patchField.getContext(), patchField.getLeafFieldName());
 			customizableFieldPatchWrapper.setFailureCause(DataPatchFailureCause.FIELD_DOES_NOT_EXIST);
 		} else {
-			customizableFieldPatchWrapper.setCustomizableFieldValue(singleOpt.get().getValue().get());
+			Function<CustomizablePatchField, CustomizableFieldValueDto> value = singleOpt.get().getValue();
+			customizableFieldPatchWrapper.setCustomizableFieldValue(value.apply(patchField));
 			customizableFieldPatchWrapper.setMetadata(singleOpt.get().getKey());
 		}
 	}
@@ -168,54 +169,48 @@ public class CustomizableFieldDataPatcher {
 						.setProvidedFieldValue(singleFieldResult.getValue())));
 	}
 
-	private Map<CustomizableFieldContext, Map<CustomizableFieldMetadataDto, Supplier<CustomizableFieldValueDto>>> getDictionary(
+	private Map<CustomizableFieldContext, Map<CustomizableFieldMetadataDto, Function<CustomizablePatchField, CustomizableFieldValueDto>>> buildDictionary(
 		CustomizableFieldDataPatchRequest request,
 		Set<CustomizableFieldContext> contexts) {
 
-		Map<CustomizableFieldContext, Map<CustomizableFieldMetadataDto, Supplier<CustomizableFieldValueDto>>> customizableByContextDictionary =
+		Map<CustomizableFieldContext, Map<CustomizableFieldMetadataDto, Function<CustomizablePatchField, CustomizableFieldValueDto>>> customizableByContextDictionary =
 			contexts.stream().map(context -> {
 				List<CustomizableFieldMetadataDto> activeFieldsForContext = metaDataFacade.getActiveFieldsForContext(context);
 
-				String entityUuid = extractEntityId(request.getCaseDataDto(), context);
-				Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> alreadyExistingValuesForEntity =
-					valueFacade.getValuesForEntity(entityUuid, context);
+				Map<CustomizableContextIndexKey, String> entityUuidDictionary = request.getEntityUuidDictionary();
 
-				Map<CustomizableFieldMetadataDto, Supplier<CustomizableFieldValueDto>> collect =
-					activeFieldsForContext.stream().collect(Collectors.toMap(Function.identity(), metaData -> {
+				Map<CustomizableFieldMetadataDto, Function<CustomizablePatchField, CustomizableFieldValueDto>> valueProviderDictionary =
+					activeFieldsForContext.stream().collect(Collectors.toMap(Function.identity(), metaData -> (customizablePatchField) -> {
+
+						String entityUuid = entityUuidDictionary.get(
+							new CustomizableContextIndexKey().setContext(customizablePatchField.getContext())
+								.setGroupIndex(customizablePatchField.getGroupIndex()));
+
+						// TODO: this call should be cached: when multiple fields on same element will be called again each time.
+						logger.warn(
+							"Call should be cached: when multiple fields on same element will be called again each time: valueFacade.getValuesForEntity");
+						Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> alreadyExistingValuesForEntity =
+							valueFacade.getValuesForEntity(entityUuid, context);
 
 						CustomizableFieldValueDto alreadyStoredValue = alreadyExistingValuesForEntity.get(metaData);
 
 						if (alreadyStoredValue != null) {
-							return () -> alreadyStoredValue;
+							return alreadyStoredValue;
 						}
 
-						return () -> {
-							CustomizableFieldValueDto newValueDto = new CustomizableFieldValueDto();
+						CustomizableFieldValueDto newValueDto = new CustomizableFieldValueDto();
 
-							newValueDto.setContextClass(context);
-							newValueDto.setCustomizableFieldMetadataUuid(metaData.getUuid());
-							newValueDto.setEntityUuid(entityUuid);
+						newValueDto.setContextClass(context);
+						newValueDto.setCustomizableFieldMetadataUuid(metaData.getUuid());
+						newValueDto.setEntityUuid(entityUuid);
 
-							return newValueDto;
-						};
+						return newValueDto;
 
 					}));
 
-				return Tuple.of(context, collect);
+				return Tuple.of(context, valueProviderDictionary);
 			}).collect(Collectors.toMap(Tuple::getFirst, Tuple::getSecond));
 		return customizableByContextDictionary;
-	}
-
-	public String extractEntityId(CaseDataDto caseDataDto, CustomizableFieldContext context) {
-		// TODO: add PatchField + Entities from request as param.
-		if (context == CustomizableFieldContext.CASE) {
-			return caseDataDto.getUuid();
-		} else if (context == CustomizableFieldContext.EPIDATA) {
-			return caseDataDto.getEpiData().getUuid();
-		} else {
-			logger.error("Context is unsupported for now: [{}]", context);
-			return null;
-		}
 	}
 
 	public void save(List<CustomizableFieldValueDto> values) {

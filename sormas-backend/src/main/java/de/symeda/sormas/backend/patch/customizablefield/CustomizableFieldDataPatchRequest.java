@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.patch.customizablefield;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.validation.constraints.NotNull;
@@ -19,6 +20,9 @@ public final class CustomizableFieldDataPatchRequest {
 
 	@NotNull
 	private CaseDataDto caseDataDto;
+
+	@NotNull
+	private Map<CustomizableContextIndexKey, String> entityUuidDictionary;
 
 	public CaseDataPatchRequest getCaseDataPatchRequest() {
 		return caseDataPatchRequest;
@@ -47,24 +51,34 @@ public final class CustomizableFieldDataPatchRequest {
 		return this;
 	}
 
+	public Map<CustomizableContextIndexKey, String> getEntityUuidDictionary() {
+		return entityUuidDictionary;
+	}
+
+	public CustomizableFieldDataPatchRequest setEntityUuidDictionary(Map<CustomizableContextIndexKey, String> entityUuidDictionary) {
+		this.entityUuidDictionary = entityUuidDictionary;
+		return this;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (o == null || getClass() != o.getClass())
 			return false;
-		CustomizableFieldDataPatchRequest request = (CustomizableFieldDataPatchRequest) o;
-		return Objects.equals(caseDataPatchRequest, request.caseDataPatchRequest)
-			&& Objects.equals(patchingTuples, request.patchingTuples)
-			&& Objects.equals(caseDataDto, request.caseDataDto);
+		CustomizableFieldDataPatchRequest that = (CustomizableFieldDataPatchRequest) o;
+		return Objects.equals(caseDataPatchRequest, that.caseDataPatchRequest)
+			&& Objects.equals(patchingTuples, that.patchingTuples)
+			&& Objects.equals(caseDataDto, that.caseDataDto)
+			&& Objects.equals(entityUuidDictionary, that.entityUuidDictionary);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(caseDataPatchRequest, patchingTuples, caseDataDto);
+		return Objects.hash(caseDataPatchRequest, patchingTuples, caseDataDto, entityUuidDictionary);
 	}
 
 	@Override
 	public String toString() {
-		return "Request{" + "caseDataPatchRequest=" + caseDataPatchRequest + ", patchingTuples=" + patchingTuples + ", caseDataDto=" + caseDataDto
-			+ '}';
+		return "CustomizableFieldDataPatchRequest{" + "caseDataPatchRequest=" + caseDataPatchRequest + ", patchingTuples=" + patchingTuples
+			+ ", caseDataDto=" + caseDataDto + ", entityUuidDictionary=" + entityUuidDictionary + '}';
 	}
 }
