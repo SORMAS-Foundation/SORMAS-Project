@@ -131,8 +131,12 @@ public class DataPatcherImpl implements DataPatcher {
 
 			}).collect(Collectors.toList());
 
-		List<CustomizableFieldSinglePatchingResult> customizableResults =
-			customizableFieldDataPatcher.patch(new CustomizableFieldDataPatcher.Request());
+		List<SingleFieldPatchResult> customizablePatchingTuples =
+			patchingTuples.stream().filter(customizableFieldsPredicate).collect(Collectors.toList());
+		List<CustomizableFieldSinglePatchingResult> customizableResults = customizableFieldDataPatcher.patch(
+			new CustomizableFieldDataPatcher.Request().setCaseDataPatchRequest(request)
+				.setPatchingTuples(customizablePatchingTuples)
+				.setCaseDataDto(caseData));
 
 		List<SinglePatchResult> aggregatedResults = Stream.concat(plainResults.stream(), customizableResults.stream()).collect(Collectors.toList());
 

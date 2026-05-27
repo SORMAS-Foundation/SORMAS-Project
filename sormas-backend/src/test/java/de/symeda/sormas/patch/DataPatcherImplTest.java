@@ -26,6 +26,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumTranslation;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
+import de.symeda.sormas.api.customizablefield.*;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.externalmessage.survey.PatchDictionary;
@@ -47,6 +48,8 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumValue;
+import de.symeda.sormas.backend.customizablefield.CustomizableFieldMetadataFacadeEjb;
+import de.symeda.sormas.backend.customizablefield.CustomizableFieldValueFacadeEjb;
 
 class DataPatcherImplTest extends AbstractBeanTest {
 
@@ -1105,6 +1108,312 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			() -> Assertions.assertEquals(originalLastName, actualPerson.getLastName(), "Person lastName must not be altered"));
 	}
 
+	@Test
+	void patch_customizableField_text() {
+		// PREPARE
+		CustomizableFieldMetadataDto metadata = createCaseCustomField("cfText", CustomizableFieldType.TEXT);
+		CaseDataDto caze = creator.createUnclassifiedCase(Disease.PERTUSSIS);
+		String fieldKey = "Custom." + CaseDataDto.I18N_PREFIX + ".cfText";
+
+		// EXECUTE — value does not yet exist
+		DataPatchResponse response1 = victim().patch(
+			new CaseDataPatchRequest().setCaseUuid(caze.getUuid())
+				.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+				.setPatchDictionary(Map.of(fieldKey, "hello")));
+
+		// CHECK
+		Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> values1 = customizableValuesForCase(caze.getUuid());
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response1.getFailures().isEmpty(), "Failures: " + response1.getFailures()),
+			() -> Assertions.assertTrue(response1.isApplied()),
+			() -> Assertions.assertEquals("hello", values1.get(metadata).getValue()));
+
+		// EXECUTE — value was updated
+		DataPatchResponse response2 = victim().patch(
+			new CaseDataPatchRequest().setCaseUuid(caze.getUuid())
+				.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+				.setPatchDictionary(Map.of(fieldKey, "world")));
+
+		// CHECK
+		Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> values2 = customizableValuesForCase(caze.getUuid());
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response2.getFailures().isEmpty(), "Failures: " + response2.getFailures()),
+			() -> Assertions.assertTrue(response2.isApplied()),
+			() -> Assertions.assertEquals("world", values2.get(metadata).getValue()));
+	}
+
+	@Test
+	void patch_customizableField_textarea() {
+		// PREPARE
+		CustomizableFieldMetadataDto metadata = createCaseCustomField("cfTextarea", CustomizableFieldType.TEXTAREA);
+		CaseDataDto caze = creator.createUnclassifiedCase(Disease.PERTUSSIS);
+		String fieldKey = "Custom." + CaseDataDto.I18N_PREFIX + ".cfTextarea";
+
+		// EXECUTE — value does not yet exist
+		DataPatchResponse response1 = victim().patch(
+			new CaseDataPatchRequest().setCaseUuid(caze.getUuid())
+				.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+				.setPatchDictionary(Map.of(fieldKey, "first paragraph")));
+
+		// CHECK
+		Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> values1 = customizableValuesForCase(caze.getUuid());
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response1.getFailures().isEmpty(), "Failures: " + response1.getFailures()),
+			() -> Assertions.assertTrue(response1.isApplied()),
+			() -> Assertions.assertEquals("first paragraph", values1.get(metadata).getValue()));
+
+		// EXECUTE — value was updated
+		DataPatchResponse response2 = victim().patch(
+			new CaseDataPatchRequest().setCaseUuid(caze.getUuid())
+				.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+				.setPatchDictionary(Map.of(fieldKey, "second paragraph")));
+
+		// CHECK
+		Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> values2 = customizableValuesForCase(caze.getUuid());
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response2.getFailures().isEmpty(), "Failures: " + response2.getFailures()),
+			() -> Assertions.assertTrue(response2.isApplied()),
+			() -> Assertions.assertEquals("second paragraph", values2.get(metadata).getValue()));
+	}
+
+	@Test
+	void patch_customizableField_number() {
+		// PREPARE
+		CustomizableFieldMetadataDto metadata = createCaseCustomField("cfNumber", CustomizableFieldType.NUMBER);
+		CaseDataDto caze = creator.createUnclassifiedCase(Disease.PERTUSSIS);
+		String fieldKey = "Custom." + CaseDataDto.I18N_PREFIX + ".cfNumber";
+
+		// EXECUTE — value does not yet exist
+		DataPatchResponse response1 = victim().patch(
+			new CaseDataPatchRequest().setCaseUuid(caze.getUuid())
+				.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+				.setPatchDictionary(Map.of(fieldKey, "42")));
+
+		// CHECK
+		Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> values1 = customizableValuesForCase(caze.getUuid());
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response1.getFailures().isEmpty(), "Failures: " + response1.getFailures()),
+			() -> Assertions.assertTrue(response1.isApplied()),
+			() -> Assertions.assertEquals("42", values1.get(metadata).getValue()));
+
+		// EXECUTE — value was updated
+		DataPatchResponse response2 = victim().patch(
+			new CaseDataPatchRequest().setCaseUuid(caze.getUuid())
+				.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+				.setPatchDictionary(Map.of(fieldKey, "99")));
+
+		// CHECK
+		Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> values2 = customizableValuesForCase(caze.getUuid());
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response2.getFailures().isEmpty(), "Failures: " + response2.getFailures()),
+			() -> Assertions.assertTrue(response2.isApplied()),
+			() -> Assertions.assertEquals("99", values2.get(metadata).getValue()));
+	}
+
+	@Test
+	void patch_customizableField_decimal() {
+		// PREPARE
+		CustomizableFieldMetadataDto metadata = createCaseCustomField("cfDecimal", CustomizableFieldType.DECIMAL);
+		CaseDataDto caze = creator.createUnclassifiedCase(Disease.PERTUSSIS);
+		String fieldKey = "Custom." + CaseDataDto.I18N_PREFIX + ".cfDecimal";
+
+		// EXECUTE — value does not yet exist
+		DataPatchResponse response1 = victim().patch(
+			new CaseDataPatchRequest().setCaseUuid(caze.getUuid())
+				.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+				.setPatchDictionary(Map.of(fieldKey, "3.14")));
+
+		// CHECK
+		Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> values1 = customizableValuesForCase(caze.getUuid());
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response1.getFailures().isEmpty(), "Failures: " + response1.getFailures()),
+			() -> Assertions.assertTrue(response1.isApplied()),
+			() -> Assertions.assertEquals("3.14", values1.get(metadata).getValue()));
+
+		// EXECUTE — value was updated
+		DataPatchResponse response2 = victim().patch(
+			new CaseDataPatchRequest().setCaseUuid(caze.getUuid())
+				.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+				.setPatchDictionary(Map.of(fieldKey, "2.71")));
+
+		// CHECK
+		Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> values2 = customizableValuesForCase(caze.getUuid());
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response2.getFailures().isEmpty(), "Failures: " + response2.getFailures()),
+			() -> Assertions.assertTrue(response2.isApplied()),
+			() -> Assertions.assertEquals("2.71", values2.get(metadata).getValue()));
+	}
+
+	@Test
+	void patch_customizableField_combobox() {
+		// PREPARE
+		CustomizableFieldMetadataDto metadata = createCaseCustomField("cfCombobox", CustomizableFieldType.COMBOBOX);
+		CaseDataDto caze = creator.createUnclassifiedCase(Disease.PERTUSSIS);
+		String fieldKey = "Custom." + CaseDataDto.I18N_PREFIX + ".cfCombobox";
+
+		// EXECUTE — value does not yet exist
+		DataPatchResponse response1 = victim().patch(
+			new CaseDataPatchRequest().setCaseUuid(caze.getUuid())
+				.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+				.setPatchDictionary(Map.of(fieldKey, "option_a")));
+
+		// CHECK
+		Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> values1 = customizableValuesForCase(caze.getUuid());
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response1.getFailures().isEmpty(), "Failures: " + response1.getFailures()),
+			() -> Assertions.assertTrue(response1.isApplied()),
+			() -> Assertions.assertEquals("option_a", values1.get(metadata).getValue()));
+
+		// EXECUTE — value was updated
+		DataPatchResponse response2 = victim().patch(
+			new CaseDataPatchRequest().setCaseUuid(caze.getUuid())
+				.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+				.setPatchDictionary(Map.of(fieldKey, "option_b")));
+
+		// CHECK
+		Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> values2 = customizableValuesForCase(caze.getUuid());
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response2.getFailures().isEmpty(), "Failures: " + response2.getFailures()),
+			() -> Assertions.assertTrue(response2.isApplied()),
+			() -> Assertions.assertEquals("option_b", values2.get(metadata).getValue()));
+	}
+
+	@Test
+	void patch_customizableField_checkbox() {
+		// PREPARE
+		CustomizableFieldMetadataDto metadata = createCaseCustomField("cfCheckbox", CustomizableFieldType.CHECKBOX);
+		CaseDataDto caze = creator.createUnclassifiedCase(Disease.PERTUSSIS);
+		String fieldKey = "Custom." + CaseDataDto.I18N_PREFIX + ".cfCheckbox";
+
+		// EXECUTE — value does not yet exist
+		DataPatchResponse response1 = victim().patch(
+			new CaseDataPatchRequest().setCaseUuid(caze.getUuid())
+				.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+				.setPatchDictionary(Map.of(fieldKey, "true")));
+
+		// CHECK
+		Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> values1 = customizableValuesForCase(caze.getUuid());
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response1.getFailures().isEmpty(), "Failures: " + response1.getFailures()),
+			() -> Assertions.assertTrue(response1.isApplied()),
+			() -> Assertions.assertEquals(Boolean.TRUE, values1.get(metadata).getValueAsBoolean()));
+
+		// EXECUTE — value was updated
+		DataPatchResponse response2 = victim().patch(
+			new CaseDataPatchRequest().setCaseUuid(caze.getUuid())
+				.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+				.setPatchDictionary(Map.of(fieldKey, "false")));
+
+		// CHECK
+		Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> values2 = customizableValuesForCase(caze.getUuid());
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response2.getFailures().isEmpty(), "Failures: " + response2.getFailures()),
+			() -> Assertions.assertTrue(response2.isApplied()),
+			() -> Assertions.assertEquals(Boolean.FALSE, values2.get(metadata).getValueAsBoolean()));
+	}
+
+	@Test
+	void patch_customizableField_radioButtonList() {
+		// PREPARE
+		CustomizableFieldMetadataDto metadata = createCaseCustomField("cfRadio", CustomizableFieldType.RADIO_BUTTON_LIST);
+		CaseDataDto caze = creator.createUnclassifiedCase(Disease.PERTUSSIS);
+		String fieldKey = "Custom." + CaseDataDto.I18N_PREFIX + ".cfRadio";
+
+		// EXECUTE — value does not yet exist
+		DataPatchResponse response1 = victim().patch(
+			new CaseDataPatchRequest().setCaseUuid(caze.getUuid())
+				.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+				.setPatchDictionary(Map.of(fieldKey, "choice_1")));
+
+		// CHECK
+		Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> values1 = customizableValuesForCase(caze.getUuid());
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response1.getFailures().isEmpty(), "Failures: " + response1.getFailures()),
+			() -> Assertions.assertTrue(response1.isApplied()),
+			() -> Assertions.assertEquals("choice_1", values1.get(metadata).getValue()));
+
+		// EXECUTE — value was updated
+		DataPatchResponse response2 = victim().patch(
+			new CaseDataPatchRequest().setCaseUuid(caze.getUuid())
+				.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+				.setPatchDictionary(Map.of(fieldKey, "choice_2")));
+
+		// CHECK
+		Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> values2 = customizableValuesForCase(caze.getUuid());
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response2.getFailures().isEmpty(), "Failures: " + response2.getFailures()),
+			() -> Assertions.assertTrue(response2.isApplied()),
+			() -> Assertions.assertEquals("choice_2", values2.get(metadata).getValue()));
+	}
+
+	@Test
+	void patch_customizableField_date() {
+		// PREPARE
+		CustomizableFieldMetadataDto metadata = createCaseCustomField("cfDate", CustomizableFieldType.DATE);
+		CaseDataDto caze = creator.createUnclassifiedCase(Disease.PERTUSSIS);
+		String fieldKey = "Custom." + CaseDataDto.I18N_PREFIX + ".cfDate";
+
+		// EXECUTE — value does not yet exist
+		DataPatchResponse response1 = victim().patch(
+			new CaseDataPatchRequest().setCaseUuid(caze.getUuid())
+				.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+				.setPatchDictionary(Map.of(fieldKey, "2024-06-15")));
+
+		// CHECK
+		Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> values1 = customizableValuesForCase(caze.getUuid());
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response1.getFailures().isEmpty(), "Failures: " + response1.getFailures()),
+			() -> Assertions.assertTrue(response1.isApplied()),
+			() -> Assertions.assertEquals(LocalDate.of(2024, 6, 15), values1.get(metadata).getValueAsDate()));
+
+		// EXECUTE — value was updated
+		DataPatchResponse response2 = victim().patch(
+			new CaseDataPatchRequest().setCaseUuid(caze.getUuid())
+				.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+				.setPatchDictionary(Map.of(fieldKey, "2025-03-21")));
+
+		// CHECK
+		Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> values2 = customizableValuesForCase(caze.getUuid());
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response2.getFailures().isEmpty(), "Failures: " + response2.getFailures()),
+			() -> Assertions.assertTrue(response2.isApplied()),
+			() -> Assertions.assertEquals(LocalDate.of(2025, 3, 21), values2.get(metadata).getValueAsDate()));
+	}
+
+	@Test
+	void patch_customizableField_dateTime() {
+		// PREPARE
+		CustomizableFieldMetadataDto metadata = createCaseCustomField("cfDateTime", CustomizableFieldType.DATE_TIME);
+		CaseDataDto caze = creator.createUnclassifiedCase(Disease.PERTUSSIS);
+		String fieldKey = "Custom." + CaseDataDto.I18N_PREFIX + ".cfDateTime";
+
+		// EXECUTE — value does not yet exist
+		DataPatchResponse response1 = victim().patch(
+			new CaseDataPatchRequest().setCaseUuid(caze.getUuid())
+				.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+				.setPatchDictionary(Map.of(fieldKey, "2024-06-15T10:30")));
+
+		// CHECK
+		Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> values1 = customizableValuesForCase(caze.getUuid());
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response1.getFailures().isEmpty(), "Failures: " + response1.getFailures()),
+			() -> Assertions.assertTrue(response1.isApplied()),
+			() -> Assertions.assertEquals(LocalDateTime.of(2024, 6, 15, 10, 30), values1.get(metadata).getValueAsDateTime()));
+
+		// EXECUTE — value was updated
+		DataPatchResponse response2 = victim().patch(
+			new CaseDataPatchRequest().setCaseUuid(caze.getUuid())
+				.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+				.setPatchDictionary(Map.of(fieldKey, "2025-01-01T08:00")));
+
+		// CHECK
+		Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> values2 = customizableValuesForCase(caze.getUuid());
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response2.getFailures().isEmpty(), "Failures: " + response2.getFailures()),
+			() -> Assertions.assertTrue(response2.isApplied()),
+			() -> Assertions.assertEquals(LocalDateTime.of(2025, 1, 1, 8, 0), values2.get(metadata).getValueAsDateTime()));
+	}
+
 	private static String toFieldName(String prefix, String field) {
 		return prefix + '.' + field;
 	}
@@ -1119,5 +1428,47 @@ class DataPatcherImplTest extends AbstractBeanTest {
 		patchDictionary.forEach(wrapper::put);
 
 		return wrapper;
+	}
+
+	@Test
+	void patch_customizableField_combobox_overridesExistingValue() {
+		// PREPARE — seed value A directly via the facade (not through the patcher)
+		CustomizableFieldMetadataDto metadata = createCaseCustomField("cfComboboxOverride", CustomizableFieldType.COMBOBOX);
+		CaseDataDto caze = creator.createUnclassifiedCase(Disease.PERTUSSIS);
+		String fieldKey = "Custom." + CaseDataDto.I18N_PREFIX + ".cfComboboxOverride";
+
+		CustomizableFieldValueDto seedValue = new CustomizableFieldValueDto();
+		seedValue.setValue("option_A");
+		getBean(CustomizableFieldValueFacadeEjb.CustomizableFieldValueFacadeEjbLocal.class)
+			.saveEntityCustomFields(caze.getUuid(), CustomizableFieldContext.CASE, Map.of(metadata, seedValue));
+
+		// EXECUTE — patch overrides with value B
+		DataPatchResponse response = victim().patch(
+			new CaseDataPatchRequest().setCaseUuid(caze.getUuid())
+				.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+				.setPatchDictionary(Map.of(fieldKey, "option_B")));
+
+		// CHECK — option_A was replaced by option_B
+		Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> values = customizableValuesForCase(caze.getUuid());
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failures: " + response.getFailures()),
+			() -> Assertions.assertTrue(response.isApplied()),
+			() -> Assertions.assertEquals("option_B", values.get(metadata).getValue()));
+	}
+
+	private CustomizableFieldMetadataDto createCaseCustomField(String name, CustomizableFieldType type) {
+		CustomizableFieldMetadataFacade facade = getBean(CustomizableFieldMetadataFacadeEjb.CustomizableFieldMetadataFacadeEjbLocal.class);
+		CustomizableFieldMetadataDto dto = new CustomizableFieldMetadataDto();
+		dto.setName(name);
+		dto.setFieldType(type);
+		dto.setContextClass(CustomizableFieldContext.CASE);
+		dto.setUiGroup(CustomizableFieldGroup.CASE_DATA_GENERAL);
+		dto.setUiLinePosition(1);
+		return facade.save(dto);
+	}
+
+	private Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> customizableValuesForCase(String caseUuid) {
+		return getBean(CustomizableFieldValueFacadeEjb.CustomizableFieldValueFacadeEjbLocal.class)
+			.getValuesForEntity(caseUuid, CustomizableFieldContext.CASE);
 	}
 }
