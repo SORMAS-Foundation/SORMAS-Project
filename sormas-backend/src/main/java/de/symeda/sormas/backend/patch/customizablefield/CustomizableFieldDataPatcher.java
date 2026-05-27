@@ -26,7 +26,7 @@ import de.symeda.sormas.api.patch.mapping.ValueMappingResult;
 import de.symeda.sormas.api.utils.Tuple;
 import de.symeda.sormas.backend.customizablefield.CustomizableFieldMetadataFacadeEjb;
 import de.symeda.sormas.backend.customizablefield.CustomizableFieldValueFacadeEjb;
-import de.symeda.sormas.backend.patch.DataPatcherImpl;
+import de.symeda.sormas.backend.patch.SingleFieldPatchResult;
 import de.symeda.sormas.backend.patch.customizablefield.mappers.CustomizableFieldValuePatchMapperRegistry;
 import de.symeda.sormas.backend.util.CollectorUtils;
 
@@ -52,7 +52,7 @@ public class CustomizableFieldDataPatcher {
 	private CustomizableFieldHelper customizableFieldHelper;
 
 	public List<CustomizableFieldSinglePatchingResult> patch(Request request) {
-		List<DataPatcherImpl.SingleFieldPatchResult> patchingTuples = request.getPatchingTuples();
+		List<SingleFieldPatchResult> patchingTuples = request.getPatchingTuples();
 
 		if (CollectionUtils.isEmpty(patchingTuples)) {
 			return List.of();
@@ -64,7 +64,7 @@ public class CustomizableFieldDataPatcher {
 					.map(context -> new HelperClass().setPatchField(context).setSingleFieldPatchResult(singleFieldResult))
 					.orElseGet(
 						() -> new HelperClass().setSingleFieldPatchResult(
-							new DataPatcherImpl.SingleFieldPatchResult().setField(singleFieldResult.getField())
+							new SingleFieldPatchResult().setField(singleFieldResult.getField())
 								.setValue(singleFieldResult.getValue())
 								.setFailureCause(DataPatchFailureCause.INVALID_CUSTOM_CONTEXT))))
 			.collect(Collectors.toList());
@@ -99,7 +99,7 @@ public class CustomizableFieldDataPatcher {
 				helperClass.setMetadata(singleOpt.get().getKey());
 			}
 		}).map(helperClass -> {
-			DataPatcherImpl.SingleFieldPatchResult singleFieldPatchResult = helperClass.getSingleFieldPatchResult();
+			SingleFieldPatchResult singleFieldPatchResult = helperClass.getSingleFieldPatchResult();
 
 			DataPatchFailureCause preFailureCause =
 				singleFieldPatchResult.getFailureCause() != null ? singleFieldPatchResult.getFailureCause() : helperClass.getFailureCause();
@@ -197,7 +197,7 @@ public class CustomizableFieldDataPatcher {
 		private CaseDataPatchRequest caseDataPatchRequest;
 
 		@NotNull
-		private List<DataPatcherImpl.SingleFieldPatchResult> patchingTuples;
+		private List<SingleFieldPatchResult> patchingTuples;
 
 		@NotNull
 		private CaseDataDto caseDataDto;
@@ -211,11 +211,11 @@ public class CustomizableFieldDataPatcher {
 			return this;
 		}
 
-		public List<DataPatcherImpl.SingleFieldPatchResult> getPatchingTuples() {
+		public List<SingleFieldPatchResult> getPatchingTuples() {
 			return patchingTuples;
 		}
 
-		public Request setPatchingTuples(List<DataPatcherImpl.SingleFieldPatchResult> patchingTuples) {
+		public Request setPatchingTuples(List<SingleFieldPatchResult> patchingTuples) {
 			this.patchingTuples = patchingTuples;
 			return this;
 		}
@@ -233,7 +233,7 @@ public class CustomizableFieldDataPatcher {
 	public static final class HelperClass {
 
 		private CustomizablePatchField patchField;
-		private DataPatcherImpl.SingleFieldPatchResult singleFieldPatchResult;
+		private SingleFieldPatchResult singleFieldPatchResult;
 		private DataPatchFailureCause failureCause;
 
 		private CustomizableFieldMetadataDto metadata;
@@ -248,11 +248,11 @@ public class CustomizableFieldDataPatcher {
 			return this;
 		}
 
-		public DataPatcherImpl.SingleFieldPatchResult getSingleFieldPatchResult() {
+		public SingleFieldPatchResult getSingleFieldPatchResult() {
 			return singleFieldPatchResult;
 		}
 
-		public HelperClass setSingleFieldPatchResult(DataPatcherImpl.SingleFieldPatchResult singleFieldPatchResult) {
+		public HelperClass setSingleFieldPatchResult(SingleFieldPatchResult singleFieldPatchResult) {
 			this.singleFieldPatchResult = singleFieldPatchResult;
 			return this;
 		}

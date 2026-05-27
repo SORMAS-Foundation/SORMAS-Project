@@ -109,7 +109,7 @@ public class DataPatcherImpl implements DataPatcher {
 
 		List<PlainSinglePatchResult> plainResults =
 			patchingTuples.stream().filter(Predicate.not(customizableFieldsPredicate)).map(singleFieldPatchResult -> {
-				PatchField patchField = singleFieldPatchResult.field;
+				PatchField patchField = singleFieldPatchResult.getField();
 				PlainSinglePatchResult singlePatchResult = new PlainSinglePatchResult().setField(patchField);
 				try {
 					Supplier<AttachedEntityWrapper> target = () -> findAppropriateTarget(patchField, caseData, entityCache);
@@ -131,11 +131,9 @@ public class DataPatcherImpl implements DataPatcher {
 
 			}).collect(Collectors.toList());
 
-		List<SingleFieldPatchResult> customizablePatchingTuples =
-			patchingTuples.stream().filter(customizableFieldsPredicate).collect(Collectors.toList());
 		List<CustomizableFieldSinglePatchingResult> customizableResults = customizableFieldDataPatcher.patch(
 			new CustomizableFieldDataPatcher.Request().setCaseDataPatchRequest(request)
-				.setPatchingTuples(customizablePatchingTuples)
+				.setPatchingTuples(patchingTuples.stream().filter(customizableFieldsPredicate).collect(Collectors.toList()))
 				.setCaseDataDto(caseData));
 
 		List<SinglePatchResult> aggregatedResults = Stream.concat(plainResults.stream(), customizableResults.stream()).collect(Collectors.toList());
@@ -228,7 +226,7 @@ public class DataPatcherImpl implements DataPatcher {
 		CaseDataPatchRequest request,
 		Supplier<AttachedEntityWrapper> targetOpt) {
 
-		PatchField patchField = singleFieldPatchResult.field;
+		PatchField patchField = singleFieldPatchResult.getField();
 		String fullFieldName = patchField.getField();
 
 		PlainSinglePatchResult singlePatchResult = new PlainSinglePatchResult().setField(patchField);
@@ -238,7 +236,7 @@ public class DataPatcherImpl implements DataPatcher {
 		String relativeFieldName = fullFieldName.substring(fullFieldName.indexOf('.') + 1);
 		Tuple<Class<?>, PropertyAccessFailure> nestedPropertyTypeTuple =
 			PropertyAccessor.getNestedPropertyType(target, relativeFieldName, getFieldVisibilityCheckers(disease));
-		Object untypedTargetValue = singleFieldPatchResult.value;
+		Object untypedTargetValue = singleFieldPatchResult.getValue();
 
 		PropertyAccessFailure propertyAccessFailure = nestedPropertyTypeTuple.getSecond();
 		if (propertyAccessFailure != null) {
@@ -296,7 +294,7 @@ public class DataPatcherImpl implements DataPatcher {
 	}
 
 	private @NotNull Optional<PlainSinglePatchResult> invalidFieldResult(SingleFieldPatchResult singleFieldPatchResult) {
-		return Optional.ofNullable(singleFieldPatchResult.failureCause)
+		return Optional.ofNullable(singleFieldPatchResult.getFailureCause())
 			.map(invalidFieldFailureCause -> buildFailureFor(singleFieldPatchResult, invalidFieldFailureCause));
 	}
 
@@ -306,12 +304,12 @@ public class DataPatcherImpl implements DataPatcher {
 		CaseDataPatchRequest request,
 		Supplier<AttachedEntityWrapper> target) {
 
-		PatchField patchField = singleFieldPatchResult.field;
+		PatchField patchField = singleFieldPatchResult.getField();
 		String fullFieldName = patchField.getField();
 
 		Optional<FieldCustomMapper> mapper = fieldCustomMapperRegistry.getMapper(fullFieldName, disease);
 
-		Object untypedTargetValue = singleFieldPatchResult.value;
+		Object untypedTargetValue = singleFieldPatchResult.getValue();
 		if (mapper.isPresent()) {
 			PlainSinglePatchResult singlePatchResult = new PlainSinglePatchResult().setField(patchField);
 
@@ -330,8 +328,8 @@ public class DataPatcherImpl implements DataPatcher {
 	}
 
 	private PlainSinglePatchResult buildFailureFor(SingleFieldPatchResult singleFieldPatchResult, DataPatchFailureCause fieldFailureCause) {
-		return new PlainSinglePatchResult().setField(singleFieldPatchResult.field)
-			.setFailure(buildFailure(fieldFailureCause, singleFieldPatchResult.value));
+		return new PlainSinglePatchResult().setField(singleFieldPatchResult.getField())
+			.setFailure(buildFailure(fieldFailureCause, singleFieldPatchResult.getValue()));
 	}
 
 	private FieldVisibilityCheckers getFieldVisibilityCheckers(Disease disease) {
@@ -457,53 +455,6 @@ public class DataPatcherImpl implements DataPatcher {
 
 			return true;
 		};
-	}
-
-	/**
-	 * 
-	 */
-	// TODO: Extract & Rename
-	public static final class SingleFieldPatchResult {
-
-		private PatchField field;
-		private DataPatchFailureCause failureCause;
-		private Object value;
-
-		SingleFieldPatchResult(PatchField fieldPath, DataPatchFailureCause cause, Object value) {
-			this.field = fieldPath;
-			this.failureCause = cause;
-			this.value = value;
-		}
-
-		public SingleFieldPatchResult() {
-		}
-
-		public SingleFieldPatchResult setField(PatchField field) {
-			this.field = field;
-			return this;
-		}
-
-		public SingleFieldPatchResult setFailureCause(DataPatchFailureCause failureCause) {
-			this.failureCause = failureCause;
-			return this;
-		}
-
-		public SingleFieldPatchResult setValue(Object value) {
-			this.value = value;
-			return this;
-		}
-
-		public PatchField getField() {
-			return field;
-		}
-
-		public DataPatchFailureCause getFailureCause() {
-			return failureCause;
-		}
-
-		public Object getValue() {
-			return value;
-		}
 	}
 
 }
