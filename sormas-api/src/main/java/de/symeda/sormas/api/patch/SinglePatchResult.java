@@ -44,4 +44,9 @@ public class SinglePatchResult {
 		this.failure = failure;
 		return this;
 	}
+
+	@Override
+	public String toString() {
+		return "SinglePatchResult{" + "field=" + field + ", value=" + value + ", failure=" + failure + '}';
+	}
 }

@@ -21,6 +21,7 @@ import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
 import de.symeda.sormas.api.externalmessage.survey.PatchField;
 import de.symeda.sormas.api.patch.CaseDataPatchRequest;
+import de.symeda.sormas.api.patch.DataPatchFailure;
 import de.symeda.sormas.api.patch.DataPatchFailureCause;
 import de.symeda.sormas.api.patch.SinglePatchResult;
 import de.symeda.sormas.api.patch.mapping.ValueMappingResult;
@@ -48,7 +49,7 @@ public class CustomizableFieldDataPatcher {
 	@Inject
 	private CustomizableFieldHelper customizableFieldHelper;
 
-	public List<Tuple<SinglePatchResult, ValueMappingResult<CustomizableFieldValueDto>>> patch(Request request) {
+	public List<CustomizableFieldDataPatchingResult> patch(Request request) {
 		List<DataPatcherImpl.SingleFieldPatchResult> patchingTuples = request.getPatchingTuples();
 
 		if (CollectionUtils.isEmpty(patchingTuples)) {
@@ -73,7 +74,7 @@ public class CustomizableFieldDataPatcher {
 				.map(context -> Tuple.of(context, facade.getValuesForEntity(extractEntityId(request.getCaseDataDto(), context), context)))
 				.collect(Collectors.toMap(Tuple::getFirst, Tuple::getSecond));
 
-		List<ValueMappingResult<CustomizableFieldValueDto>> results = tempCollect.stream().peek(helperClass -> {
+		List<CustomizableFieldDataPatchingResult> results = tempCollect.stream().peek(helperClass -> {
 			CustomizablePatchField patchField = helperClass.getPatchField();
 
 			Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> map = customizableByContextDictionary.get(patchField);
@@ -90,31 +91,36 @@ public class CustomizableFieldDataPatcher {
 				helperClass.setCustomizableFieldValue(singleOpt.get().getValue());
 				helperClass.setMetadata(singleOpt.get().getKey());
 			}
-			// TODO: handle errors: 
-			// - leafFieldName not found 
-			// - other error during mapping.
 		})
 			.map(
-				helperClass -> new CustomizableFieldValuePatchRequest().setValue(helperClass.getSingleFieldPatchResult().getValue())
-					.setTargetType(helperClass.getMetadata().getFieldType())
-					.setCustomizableFieldValueDto(helperClass.getCustomizableFieldValue()))
-			.map(a -> registry.map(a))
+				helperClass -> Tuple.of(
+					new CustomizableFieldValuePatchRequest().setValue(helperClass.getSingleFieldPatchResult().getValue())
+						.setTargetType(helperClass.getMetadata().getFieldType())
+						.setCustomizableFieldValueDto(helperClass.getCustomizableFieldValue()),
+					new SinglePatchResult().setField(helperClass.getSingleFieldPatchResult().getField())
+						.setValue(helperClass.getSingleFieldPatchResult().setFailureCause(helperClass.getFailureCause()))))
+			.map(tuple -> Tuple.of(tuple.getSecond(), registry.map(tuple.getFirst())))
+			.map(tuple -> {
+				SinglePatchResult singlePatchResult = tuple.getFirst();
+
+				DataPatchFailure failureCause = null;
+
+				ValueMappingResult<CustomizableFieldValueDto> second = tuple.getSecond();
+				if (singlePatchResult.getFailure() != null) {
+					failureCause = singlePatchResult.getFailure();
+				} else if (second.getDataPatchFailureCause() != null) {
+					failureCause = new DataPatchFailure().setDataPatchFailureCause(second.getDataPatchFailureCause())
+						.setProvidedFieldValue(singlePatchResult.getValue());
+				}
+
+				return new CustomizableFieldDataPatchingResult().setField(singlePatchResult.getField())
+					.setFailure(failureCause)
+					.setValue(singlePatchResult.getValue())
+					.setValueMappingResult(tuple.getSecond().getData());
+			})
 			.collect(Collectors.toList());
 
 		return results;
-
-//		contextsToLoad.stream().map(a -> facade.getValuesForEntity("", a))
-//				.flatMap(a-> a.entrySet().stream()
-//						.map(b ->Tuple.of(b.getKey(), b.getValue())))
-//				.filter(a -> );
-//
-//
-//
-//		return valuesForEntity.entrySet().stream()
-//				.filter(a -> patchingTuples.stream().anyMatch(b -> b.))
-//				.map(a -> new CustomizableFieldValuePatchRequest())
-//				.map(request1 -> Tuple.of(registry.map(request1)))
-//				.tempCollect(Collectors.toList());
 	}
 
 	public String extractEntityId(CaseDataDto caseDataDto, CustomizableFieldContext context) {
@@ -123,7 +129,7 @@ public class CustomizableFieldDataPatcher {
 		} else if (context == CustomizableFieldContext.EPIDATA) {
 			return caseDataDto.getEpiData().getUuid();
 		} else {
-			logger.error("Unsupported for now.");
+			logger.error("Context is unsupported for now: [{}]", context);
 			return null;
 		}
 	}
