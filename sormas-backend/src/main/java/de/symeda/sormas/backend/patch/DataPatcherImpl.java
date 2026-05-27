@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
 import de.symeda.sormas.api.externalmessage.survey.PatchDictionary;
 import de.symeda.sormas.api.externalmessage.survey.PatchField;
 import de.symeda.sormas.api.patch.*;
@@ -31,6 +32,8 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.json.ObjectMapperProvider;
+import de.symeda.sormas.backend.patch.customizablefield.CustomizableFieldDataPatcher;
+import de.symeda.sormas.backend.patch.customizablefield.CustomizableFieldSinglePatchingResult;
 import de.symeda.sormas.backend.patch.mapping.FieldCustomMapperRegistry;
 import de.symeda.sormas.backend.patch.mapping.PatchEqualityCheckersRegistry;
 import de.symeda.sormas.backend.patch.mapping.ValueMapperRegistry;
@@ -61,6 +64,9 @@ public class DataPatcherImpl implements DataPatcher {
 
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
+
+	@Inject
+	private CustomizableFieldDataPatcher customizableFieldDataPatcher;
 
 	public DataPatcherImpl() {
 	}
@@ -96,36 +102,47 @@ public class DataPatcherImpl implements DataPatcher {
 
 		List<SingleFieldPatchResult> patchingTuples = computePatchingTuples(request);
 
-		List<SinglePatchResult> results = patchingTuples.stream().map(singleFieldPatchResult -> {
-			PatchField patchField = singleFieldPatchResult.field;
-			SinglePatchResult singlePatchResult = new SinglePatchResult().setField(patchField);
-			try {
-				Supplier<AttachedEntityWrapper> target = () -> findAppropriateTarget(patchField, caseData, entityCache);
+		logger.trace("Computed patchingTuples: [{}]", patchingTuples);
 
-				return produceSinglePatchResult(request, singleFieldPatchResult, disease, target);
-			} catch (DataPatchingException e) {
-				DataPatchFailureCause failureCause = e.getFailureCause();
-				logger.error(
-					"DataPatching-specific failure during patch operation for request: [{}], [{}], of type [{}]",
-					request,
-					singleFieldPatchResult,
-					failureCause,
-					e);
-				return singlePatchResult.setFailure(new DataPatchFailure().setDataPatchFailureCause(failureCause));
-			} catch (RuntimeException e) {
-				logger.error("Failure during patch operation for request: [{}], [{}]", request, singleFieldPatchResult, e);
-				return singlePatchResult.setFailure(new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.TECHNICAL));
-			}
+		Predicate<SingleFieldPatchResult> customizableFieldsPredicate =
+			patchResult -> patchResult.getField().getField().contains(PatchFieldHelper.CUSTOM_PREFIX);
 
-		}).collect(Collectors.toList());
+		List<PlainSinglePatchResult> plainResults =
+			patchingTuples.stream().filter(Predicate.not(customizableFieldsPredicate)).map(singleFieldPatchResult -> {
+				PatchField patchField = singleFieldPatchResult.field;
+				PlainSinglePatchResult singlePatchResult = new PlainSinglePatchResult().setField(patchField);
+				try {
+					Supplier<AttachedEntityWrapper> target = () -> findAppropriateTarget(patchField, caseData, entityCache);
+
+					return produceSinglePatchResult(request, singleFieldPatchResult, disease, target);
+				} catch (DataPatchingException e) {
+					DataPatchFailureCause failureCause = e.getFailureCause();
+					logger.error(
+						"DataPatching-specific failure during patch operation for request: [{}], [{}], of type [{}]",
+						request,
+						singleFieldPatchResult,
+						failureCause,
+						e);
+					return singlePatchResult.setFailure(new DataPatchFailure().setDataPatchFailureCause(failureCause));
+				} catch (RuntimeException e) {
+					logger.error("Failure during patch operation for request: [{}], [{}]", request, singleFieldPatchResult, e);
+					return singlePatchResult.setFailure(new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.TECHNICAL));
+				}
+
+			}).collect(Collectors.toList());
+
+		List<CustomizableFieldSinglePatchingResult> customizableResults =
+			customizableFieldDataPatcher.patch(new CustomizableFieldDataPatcher.Request());
+
+		List<SinglePatchResult> aggregatedResults = Stream.concat(plainResults.stream(), customizableResults.stream()).collect(Collectors.toList());
 
 		if (logger.isDebugEnabled()) {
-			logger.debug("SingleFieldPatchResult results: [{}]", results.stream().map(SinglePatchResult::getField).collect(Collectors.toList()));
+			logger.debug("Aggregated patchResults: [{}]", aggregatedResults.stream().map(SinglePatchResult::getField).collect(Collectors.toList()));
 		}
 
-		Map<PatchField, Object> validPatchDictionary = buildDictionaryFor(results, SinglePatchResult::getValue, true);
+		Map<PatchField, Object> validPatchDictionary = buildDictionaryFor(aggregatedResults, SinglePatchResult::getValue, true);
 		DataPatchResponse response = new DataPatchResponse().setApplied(false)
-			.setFailures((LinkedHashMap<PatchField, DataPatchFailure>) buildDictionaryFor(results, SinglePatchResult::getFailure, false))
+			.setFailures((LinkedHashMap<PatchField, DataPatchFailure>) buildDictionaryFor(aggregatedResults, SinglePatchResult::getFailure, false))
 			.setValidPatchDictionary(new PatchDictionary().setNonTypedPatchDictionary(validPatchDictionary));
 
 		if (validPatchDictionary.isEmpty() || (!request.isPatchedInCaseOfFailures() && response.hasFailures())) {
@@ -137,15 +154,31 @@ public class DataPatcherImpl implements DataPatcher {
 		}
 
 		saveDTOsIfAppropriate(entityCache);
-		// TODO: once entities are saved, if appropriate save customizable fields.
+
+		saveCustomizableFieldsIfAppropriate(customizableResults);
 
 		logger.debug("dataPatchResponse: [{}]", response);
 
 		return response.setApplied(true);
 	}
 
+	private void saveCustomizableFieldsIfAppropriate(List<CustomizableFieldSinglePatchingResult> customizableResults) {
+		List<CustomizableFieldValueDto> toSave = customizableResults.stream()
+			.filter(result -> result.getFailure() == null)
+			.map(CustomizableFieldSinglePatchingResult::getCustomizableFieldValue)
+			.filter(Objects::nonNull)
+			.collect(Collectors.toList());
+
+		if (toSave.isEmpty()) {
+			logger.info("No customizable field values were modified / created, nothing to save");
+			return;
+		}
+
+		customizableFieldDataPatcher.save(toSave);
+	}
+
 	@NotNull
-	private SinglePatchResult produceSinglePatchResult(
+	private PlainSinglePatchResult produceSinglePatchResult(
 		CaseDataPatchRequest request,
 		SingleFieldPatchResult singleFieldPatchResult,
 		Disease disease,
@@ -185,7 +218,7 @@ public class DataPatcherImpl implements DataPatcher {
 			.collect(CollectorUtils.toOrderedNullSafeMap(SinglePatchResult::getField, fct));
 	}
 
-	private @NotNull SinglePatchResult valueMappingResult(
+	private @NotNull PlainSinglePatchResult valueMappingResult(
 		SingleFieldPatchResult singleFieldPatchResult,
 		Disease disease,
 		CaseDataPatchRequest request,
@@ -194,7 +227,7 @@ public class DataPatcherImpl implements DataPatcher {
 		PatchField patchField = singleFieldPatchResult.field;
 		String fullFieldName = patchField.getField();
 
-		SinglePatchResult singlePatchResult = new SinglePatchResult().setField(patchField);
+		PlainSinglePatchResult singlePatchResult = new PlainSinglePatchResult().setField(patchField);
 
 		AttachedEntityWrapper attachedEntityWrapper = targetOpt.get();
 		Object target = attachedEntityWrapper.getEntityDto();
@@ -258,12 +291,12 @@ public class DataPatcherImpl implements DataPatcher {
 		return new DataPatchFailure().setDataPatchFailureCause(fieldDoesNotExist).setProvidedFieldValue(untypedTargetValue);
 	}
 
-	private @NotNull Optional<SinglePatchResult> invalidFieldResult(SingleFieldPatchResult singleFieldPatchResult) {
+	private @NotNull Optional<PlainSinglePatchResult> invalidFieldResult(SingleFieldPatchResult singleFieldPatchResult) {
 		return Optional.ofNullable(singleFieldPatchResult.failureCause)
 			.map(invalidFieldFailureCause -> buildFailureFor(singleFieldPatchResult, invalidFieldFailureCause));
 	}
 
-	private Optional<SinglePatchResult> fieldMappingResult(
+	private Optional<PlainSinglePatchResult> fieldMappingResult(
 		SingleFieldPatchResult singleFieldPatchResult,
 		Disease disease,
 		CaseDataPatchRequest request,
@@ -276,7 +309,7 @@ public class DataPatcherImpl implements DataPatcher {
 
 		Object untypedTargetValue = singleFieldPatchResult.value;
 		if (mapper.isPresent()) {
-			SinglePatchResult singlePatchResult = new SinglePatchResult().setField(patchField);
+			PlainSinglePatchResult singlePatchResult = new PlainSinglePatchResult().setField(patchField);
 
 			Optional<DataPatchFailure> dataPatchFailureOpt = mapper.orElseThrow()
 				.map(
@@ -292,8 +325,8 @@ public class DataPatcherImpl implements DataPatcher {
 		return Optional.empty();
 	}
 
-	private SinglePatchResult buildFailureFor(SingleFieldPatchResult singleFieldPatchResult, DataPatchFailureCause fieldFailureCause) {
-		return new SinglePatchResult().setField(singleFieldPatchResult.field)
+	private PlainSinglePatchResult buildFailureFor(SingleFieldPatchResult singleFieldPatchResult, DataPatchFailureCause fieldFailureCause) {
+		return new PlainSinglePatchResult().setField(singleFieldPatchResult.field)
 			.setFailure(buildFailure(fieldFailureCause, singleFieldPatchResult.value));
 	}
 

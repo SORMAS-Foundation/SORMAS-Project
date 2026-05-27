@@ -25,7 +25,7 @@ import de.symeda.sormas.api.externalmessage.survey.PatchField;
 import de.symeda.sormas.api.patch.CaseDataPatchRequest;
 import de.symeda.sormas.api.patch.DataPatchFailure;
 import de.symeda.sormas.api.patch.DataPatchFailureCause;
-import de.symeda.sormas.api.patch.SinglePatchResult;
+import de.symeda.sormas.api.patch.PlainSinglePatchResult;
 import de.symeda.sormas.api.patch.mapping.ValueMappingResult;
 import de.symeda.sormas.api.utils.Tuple;
 import de.symeda.sormas.backend.customizablefield.CustomizableFieldMetadataFacadeEjb;
@@ -55,7 +55,7 @@ public class CustomizableFieldDataPatcher {
 	@Inject
 	private CustomizableFieldHelper customizableFieldHelper;
 
-	public List<CustomizableFieldDataPatchingResult> patch(Request request) {
+	public List<CustomizableFieldSinglePatchingResult> patch(Request request) {
 		List<DataPatcherImpl.SingleFieldPatchResult> patchingTuples = request.getPatchingTuples();
 
 		if (CollectionUtils.isEmpty(patchingTuples)) {
@@ -78,7 +78,7 @@ public class CustomizableFieldDataPatcher {
 		Map<CustomizableFieldContext, Map<CustomizableFieldMetadataDto, Supplier<CustomizableFieldValueDto>>> customizableByContextDictionary =
 			getDictionary(request, contexts);
 
-		List<CustomizableFieldDataPatchingResult> results = tempCollect.stream().peek(helperClass -> {
+		List<CustomizableFieldSinglePatchingResult> results = tempCollect.stream().peek(helperClass -> {
 			CustomizablePatchField patchField = helperClass.getPatchField();
 
 			Map<CustomizableFieldMetadataDto, Supplier<CustomizableFieldValueDto>> map = customizableByContextDictionary.get(patchField.getContext());
@@ -101,11 +101,11 @@ public class CustomizableFieldDataPatcher {
 					new CustomizableFieldValuePatchRequest().setValue(helperClass.getSingleFieldPatchResult().getValue())
 						.setTargetType(helperClass.getMetadata().getFieldType())
 						.setCustomizableFieldValueDto(helperClass.getCustomizableFieldValue()),
-					new SinglePatchResult().setField(helperClass.getSingleFieldPatchResult().getField())
+					new PlainSinglePatchResult().setField(helperClass.getSingleFieldPatchResult().getField())
 						.setValue(helperClass.getSingleFieldPatchResult().setFailureCause(helperClass.getFailureCause()))))
 			.map(tuple -> Tuple.of(tuple.getSecond(), registry.map(tuple.getFirst())))
 			.map(tuple -> {
-				SinglePatchResult singlePatchResult = tuple.getFirst();
+				PlainSinglePatchResult singlePatchResult = tuple.getFirst();
 
 				DataPatchFailure failureCause = null;
 
@@ -117,12 +117,14 @@ public class CustomizableFieldDataPatcher {
 						.setProvidedFieldValue(singlePatchResult.getValue());
 				}
 
-				return new CustomizableFieldDataPatchingResult().setField(singlePatchResult.getField())
+				return new CustomizableFieldSinglePatchingResult().setField(singlePatchResult.getField())
 					.setFailure(failureCause)
 					.setValue(singlePatchResult.getValue())
-					.setValueMappingResult(tuple.getSecond().getData());
+					.setCustomizableFieldValue(tuple.getSecond().getData());
 			})
 			.collect(Collectors.toList());
+
+		logger.trace("Results: [{}]", results);
 
 		return results;
 	}

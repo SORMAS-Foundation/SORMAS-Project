@@ -8,8 +8,9 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
 import de.symeda.sormas.api.externalmessage.survey.PatchField;
 import de.symeda.sormas.api.patch.DataPatchFailure;
+import de.symeda.sormas.api.patch.SinglePatchResult;
 
-public class CustomizableFieldDataPatchingResult {
+public class CustomizableFieldSinglePatchingResult implements SinglePatchResult {
 
 	@NotNull
 	private PatchField field;
@@ -21,13 +22,13 @@ public class CustomizableFieldDataPatchingResult {
 	private DataPatchFailure failure;
 
 	@Nullable
-	private CustomizableFieldValueDto valueMappingResult;
+	private CustomizableFieldValueDto customizableFieldValue;
 
 	public PatchField getField() {
 		return field;
 	}
 
-	public CustomizableFieldDataPatchingResult setField(PatchField field) {
+	public CustomizableFieldSinglePatchingResult setField(PatchField field) {
 		this.field = field;
 		return this;
 	}
@@ -37,7 +38,7 @@ public class CustomizableFieldDataPatchingResult {
 		return value;
 	}
 
-	public CustomizableFieldDataPatchingResult setValue(@Nullable Object value) {
+	public CustomizableFieldSinglePatchingResult setValue(@Nullable Object value) {
 		this.value = value;
 		return this;
 	}
@@ -47,18 +48,18 @@ public class CustomizableFieldDataPatchingResult {
 		return failure;
 	}
 
-	public CustomizableFieldDataPatchingResult setFailure(@Nullable DataPatchFailure failure) {
+	public CustomizableFieldSinglePatchingResult setFailure(@Nullable DataPatchFailure failure) {
 		this.failure = failure;
 		return this;
 	}
 
 	@Nullable
-	public CustomizableFieldValueDto getValueMappingResult() {
-		return valueMappingResult;
+	public CustomizableFieldValueDto getCustomizableFieldValue() {
+		return customizableFieldValue;
 	}
 
-	public CustomizableFieldDataPatchingResult setValueMappingResult(@Nullable CustomizableFieldValueDto valueMappingResult) {
-		this.valueMappingResult = valueMappingResult;
+	public CustomizableFieldSinglePatchingResult setCustomizableFieldValue(@Nullable CustomizableFieldValueDto customizableFieldValue) {
+		this.customizableFieldValue = customizableFieldValue;
 		return this;
 	}
 
@@ -66,21 +67,21 @@ public class CustomizableFieldDataPatchingResult {
 	public boolean equals(Object o) {
 		if (o == null || getClass() != o.getClass())
 			return false;
-		CustomizableFieldDataPatchingResult that = (CustomizableFieldDataPatchingResult) o;
+		CustomizableFieldSinglePatchingResult that = (CustomizableFieldSinglePatchingResult) o;
 		return Objects.equals(field, that.field)
 			&& Objects.equals(value, that.value)
 			&& Objects.equals(failure, that.failure)
-			&& Objects.equals(valueMappingResult, that.valueMappingResult);
+			&& Objects.equals(customizableFieldValue, that.customizableFieldValue);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(field, value, failure, valueMappingResult);
+		return Objects.hash(field, value, failure, customizableFieldValue);
 	}
 
 	@Override
 	public String toString() {
 		return "CustomizableFieldDataPatchingResult{" + "field=" + field + ", value=" + value + ", failure=" + failure + ", valueMappingResult="
-			+ valueMappingResult + '}';
+			+ customizableFieldValue + '}';
 	}
 }
