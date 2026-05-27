@@ -72,63 +72,84 @@ public class CustomizableFieldDataPatcher {
 		Map<CustomizableFieldContext, Map<CustomizableFieldMetadataDto, Supplier<CustomizableFieldValueDto>>> customizableByContextDictionary =
 			getDictionary(request, contexts);
 
-		List<CustomizableFieldSinglePatchingResult> results = initialWrappers.stream().peek(customizableFieldPatchWrapper -> {
-			CustomizablePatchField patchField = customizableFieldPatchWrapper.getPatchField();
-			if (patchField == null) {
-				return;
-			}
+		List<CustomizableFieldSinglePatchingResult> results = initialWrappers.stream()
+			.peek(customizableFieldPatchWrapper -> enrichWrapper(customizableFieldPatchWrapper, customizableByContextDictionary))
+			.map(customizableFieldPatchWrapper -> {
+				try {
+					return buildPatchResult(customizableFieldPatchWrapper);
+				} catch (RuntimeException e) {
+					logger.error("Unhandled patching for wrapper: [{}]", customizableFieldPatchWrapper);
 
-			Map<CustomizableFieldMetadataDto, Supplier<CustomizableFieldValueDto>> map = customizableByContextDictionary.get(patchField.getContext());
-
-			Optional<Map.Entry<CustomizableFieldMetadataDto, Supplier<CustomizableFieldValueDto>>> singleOpt = map.entrySet()
-				.stream()
-				.filter(entry -> entry.getKey().getName().equals(patchField.getLeafFieldName()))
-				.collect(CollectorUtils.toOptionalSingle());
-
-			if (singleOpt.isEmpty()) {
-				logger.error("For context. [{}] the leaf field does not exist: [{}]", patchField.getContext(), patchField.getLeafFieldName());
-				customizableFieldPatchWrapper.setFailureCause(DataPatchFailureCause.FIELD_DOES_NOT_EXIST);
-			} else {
-				customizableFieldPatchWrapper.setCustomizableFieldValue(singleOpt.get().getValue().get());
-				customizableFieldPatchWrapper.setMetadata(singleOpt.get().getKey());
-			}
-		}).map(customizableFieldPatchWrapper -> {
-			PlainSinglePatchResult singleFieldPatchResult = customizableFieldPatchWrapper.getPlainSinglePatchResult();
-
-			DataPatchFailure patchFailure = singleFieldPatchResult.getFailure();
-			DataPatchFailureCause preFailureCause =
-				patchFailure != null ? patchFailure.getDataPatchFailureCause() : customizableFieldPatchWrapper.getFailureCause();
-
-			if (preFailureCause != null) {
-				return new CustomizableFieldSinglePatchingResult().setField(singleFieldPatchResult.getField())
-					.setFailure(
-						new DataPatchFailure().setDataPatchFailureCause(preFailureCause)
-							.setProvidedFieldValue(
-								Optional.ofNullable(patchFailure)
-									.map(DataPatchFailure::getProvidedFieldValue)
-									.orElseGet(singleFieldPatchResult::getValue)));
-			}
-
-			ValueMappingResult<CustomizableFieldValueDto> mapResult = registry.map(
-				new CustomizableFieldValuePatchRequest().setValue(singleFieldPatchResult.getValue())
-					.setTargetType(customizableFieldPatchWrapper.getMetadata().getFieldType())
-					.setCustomizableFieldValueDto(customizableFieldPatchWrapper.getCustomizableFieldValue()));
-
-			DataPatchFailure failure = null;
-			if (mapResult.getDataPatchFailureCause() != null) {
-				failure = new DataPatchFailure().setDataPatchFailureCause(mapResult.getDataPatchFailureCause())
-					.setProvidedFieldValue(singleFieldPatchResult.getValue());
-			}
-
-			return new CustomizableFieldSinglePatchingResult().setField(singleFieldPatchResult.getField())
-				.setFailure(failure)
-				.setValue(singleFieldPatchResult.getValue())
-				.setCustomizableFieldValue(mapResult.getData());
-		}).collect(Collectors.toList());
+					PlainSinglePatchResult plainSinglePatchResult = customizableFieldPatchWrapper.getPlainSinglePatchResult();
+					return new CustomizableFieldSinglePatchingResult().setField(plainSinglePatchResult.getField())
+						.setFailure(
+							new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.TECHNICAL)
+								.setProvidedFieldValue(plainSinglePatchResult.getValue()));
+				}
+			})
+			.collect(Collectors.toList());
 
 		logger.trace("Results: [{}]", results);
 
 		return results;
+	}
+
+	private CustomizableFieldSinglePatchingResult buildPatchResult(CustomizableFieldPatchWrapper customizableFieldPatchWrapper) {
+		PlainSinglePatchResult singleFieldPatchResult = customizableFieldPatchWrapper.getPlainSinglePatchResult();
+
+		DataPatchFailure patchFailure = singleFieldPatchResult.getFailure();
+		DataPatchFailureCause preFailureCause =
+			patchFailure != null ? patchFailure.getDataPatchFailureCause() : customizableFieldPatchWrapper.getFailureCause();
+
+		if (preFailureCause != null) {
+			return new CustomizableFieldSinglePatchingResult().setField(singleFieldPatchResult.getField())
+				.setFailure(
+					new DataPatchFailure().setDataPatchFailureCause(preFailureCause)
+						.setProvidedFieldValue(
+							Optional.ofNullable(patchFailure)
+								.map(DataPatchFailure::getProvidedFieldValue)
+								.orElseGet(singleFieldPatchResult::getValue)));
+		}
+
+		ValueMappingResult<CustomizableFieldValueDto> mapResult = registry.map(
+			new CustomizableFieldValuePatchRequest().setValue(singleFieldPatchResult.getValue())
+				.setTargetType(customizableFieldPatchWrapper.getMetadata().getFieldType())
+				.setCustomizableFieldValueDto(customizableFieldPatchWrapper.getCustomizableFieldValue()));
+
+		DataPatchFailure failure = null;
+		if (mapResult.getDataPatchFailureCause() != null) {
+			failure = new DataPatchFailure().setDataPatchFailureCause(mapResult.getDataPatchFailureCause())
+				.setProvidedFieldValue(singleFieldPatchResult.getValue());
+		}
+
+		return new CustomizableFieldSinglePatchingResult().setField(singleFieldPatchResult.getField())
+			.setFailure(failure)
+			.setValue(singleFieldPatchResult.getValue())
+			.setCustomizableFieldValue(mapResult.getData());
+	}
+
+	private static void enrichWrapper(
+		CustomizableFieldPatchWrapper customizableFieldPatchWrapper,
+		Map<CustomizableFieldContext, Map<CustomizableFieldMetadataDto, Supplier<CustomizableFieldValueDto>>> customizableByContextDictionary) {
+		CustomizablePatchField patchField = customizableFieldPatchWrapper.getPatchField();
+		if (patchField == null) {
+			return;
+		}
+
+		Map<CustomizableFieldMetadataDto, Supplier<CustomizableFieldValueDto>> map = customizableByContextDictionary.get(patchField.getContext());
+
+		Optional<Map.Entry<CustomizableFieldMetadataDto, Supplier<CustomizableFieldValueDto>>> singleOpt = map.entrySet()
+			.stream()
+			.filter(entry -> entry.getKey().getName().equals(patchField.getLeafFieldName()))
+			.collect(CollectorUtils.toOptionalSingle());
+
+		if (singleOpt.isEmpty()) {
+			logger.error("For context. [{}] the leaf field does not exist: [{}]", patchField.getContext(), patchField.getLeafFieldName());
+			customizableFieldPatchWrapper.setFailureCause(DataPatchFailureCause.FIELD_DOES_NOT_EXIST);
+		} else {
+			customizableFieldPatchWrapper.setCustomizableFieldValue(singleOpt.get().getValue().get());
+			customizableFieldPatchWrapper.setMetadata(singleOpt.get().getKey());
+		}
 	}
 
 	private static @NotNull Set<CustomizableFieldContext> getContextsToFetch(List<CustomizableFieldPatchWrapper> initialWrappers) {
@@ -256,6 +277,12 @@ public class CustomizableFieldDataPatcher {
 		public CustomizableFieldPatchWrapper setMetadata(CustomizableFieldMetadataDto metadata) {
 			this.metadata = metadata;
 			return this;
+		}
+
+		@Override
+		public String toString() {
+			return "CustomizableFieldPatchWrapper{" + "patchField=" + patchField + ", singleFieldPatchResult=" + singleFieldPatchResult
+				+ ", failureCause=" + failureCause + ", metadata=" + metadata + ", customizableFieldValue=" + customizableFieldValue + '}';
 		}
 	}
 }
