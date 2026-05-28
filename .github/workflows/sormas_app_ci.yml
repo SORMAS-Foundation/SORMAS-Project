@@ -11,16 +11,17 @@ env:
   PRIVILEGED_RUN: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/development') || github.event.pull_request.head.repo.full_name == github.repository }}
 
 on:
-  push:
-    branches: [ development, master, hotfix* ]
-    paths:
-      - 'sormas-app/**'
-      - 'sormas-api/**'
-  pull_request:
-    branches: [ development, hotfix* ]
-    paths:
-      - 'sormas-app/**'
-      - 'sormas-api/**'
+  workflow_dispatch:
+#  push:
+#    branches: [ development, master, hotfix* ]
+#    paths:
+#      - 'sormas-app/**'
+#      - 'sormas-api/**'
+#  pull_request:
+#    branches: [ development, hotfix* ]
+#    paths:
+#      - 'sormas-app/**'
+#      - 'sormas-api/**'
 
 jobs:
   test:

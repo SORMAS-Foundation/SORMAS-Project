@@ -46,6 +46,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.jsoup.safety.Safelist;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ErrorMessage;
@@ -134,6 +135,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ExtendedReduced;
+import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
@@ -220,8 +222,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	public static final String DIAGNOSIS_CRITERIA_HEADING_LOC = "diagnosisCriteriaHeadingLoc";
 	public static final String DIAGNOSIS_CRITERIA_SUBHEADING_LOC = "diagnosisCriteriaSubheadingLoc";
 	public static final String DIAGNOSIS_CRITERIA_LAB_TEST_PANEL_LOC = "diagnosisCriteriaLoc";
-	private static final Pattern URL_PATTERN = Pattern.compile("((https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])");
-
+	private static final Pattern RICH_TEXT_OR_URL_PATTERN = Pattern.compile(
+		"(<\\/?[a-zA-Z0-9]+(?:\\s+[a-zA-Z0-9\\-]+(?:\\s*=\\s*(?:\"[^\"]*\"|'[^']*'|[^'\\\">\\s]+))?)*\\s*\\/?>)|(https?://[^<\\s]+)",
+		Pattern.CASE_INSENSITIVE);
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT =
 			loc(CASE_DATA_HEADING_LOC) +
@@ -1647,27 +1650,71 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	 * @return sanitized url
 	 */
 	private String sanitizeAndLinkify(String text) {
-		Matcher matcher = URL_PATTERN.matcher(text);
+		if (text == null || text.isEmpty()) {
+			return "";
+		}
+		String htmlText = unescapeHtml(text);
+//		Leveraging existing codebase tool to strip ALL unapproved tags,
+		Safelist customizedSafelist = Safelist.relaxed()
+			.addTags("u", "font")
+			.addAttributes("font", "size", "color")
+			.addAttributes("span", "style")
+			.addAttributes("p", "style")
+			.addAttributes("div", "style")
+			.addAttributes("font", "style")
+			.addAttributes("a", "href", "target", "rel", "style")
+			.addEnforcedAttribute("a", "target", "_blank")
+			.addEnforcedAttribute("a", "rel", "noopener noreferrer");
+
+		String sanitizedText = HtmlHelper.cleanHtmlRelaxed(htmlText, customizedSafelist);
+		Matcher matcher = RICH_TEXT_OR_URL_PATTERN.matcher(sanitizedText);
 		StringBuilder result = new StringBuilder();
 		int last = 0;
 
 		while (matcher.find()) {
-			result.append(escapeHtml(text.substring(last, matcher.start())));
+			result.append(sanitizedText, last, matcher.start());
 
-			String escapedUrl = escapeHtml(matcher.group(1));
-			result.append("<a href=\"")
-				.append(escapedUrl)
-				.append("\" target=\"_blank\" rel=\"noopener noreferrer\" style=\"color: `#197de1`; text-decoration: underline;\">")
-				.append(escapedUrl)
-				.append("</a>");
-
+			String htmlTag = matcher.group(1);
+			String url = matcher.group(2);
+			if (htmlTag != null) {
+				// This is a rich text tag verified clean by Jsoup. Pass it through safely.
+				result.append(htmlTag);
+			} else if (url != null) {
+				// It's a plain-text URL. Wrap it in your custom blue link styling.
+				String escapedUrl = escapeHtml(url);
+				result.append("<a href=\"")
+					.append(escapedUrl)
+					.append("\" target=\"_blank\" rel=\"noopener noreferrer\" style=\"color: #197de1; text-decoration: underline;\">")
+					.append(escapedUrl)
+					.append("</a>");
+			}
 			last = matcher.end();
 		}
-
-		result.append(escapeHtml(text.substring(last)));
+		result.append(sanitizedText.substring(last));
 		return result.toString();
 	}
 
+	/**
+	 * Replacing any escape sequence with the character that it represents.
+	 * 
+	 * @param value
+	 * @return String
+	 */
+	private String unescapeHtml(String value) {
+		if (value == null)
+			return "";
+		// First, convert any double-escaped amps (e.g., &amp;lt; becomes &lt;)
+		String step1 = value.replace("&amp;", "&");
+		// Now, safely convert standard HTML entities to real brackets
+		return step1.replace("&lt;", "<").replace("&gt;", ">").replace("&quot;", "\"").replace("&#39;", "'");
+	}
+
+	/**
+	 * Converting special characters in a string into their safe HTML entity values
+	 * 
+	 * @param value
+	 * @return
+	 */
 	private static String escapeHtml(String value) {
 		return value.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;").replace("'", "&#39;");
 	}

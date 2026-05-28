@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples.pathogentestlink;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -68,6 +69,11 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 			pathogenTests = ControllerProvider.getPathogenTestController().getPathogenTestsBySample(sampleRef);
 		} else if (environmentSampleRef != null) {
 			pathogenTests = ControllerProvider.getPathogenTestController().getPathogenTestsByEnvironmentSample(environmentSampleRef);
+		}
+
+		if (CollectionUtils.isNotEmpty(pathogenTests)) {
+			// Show the most recent test first
+			pathogenTests.sort(Comparator.comparing(PathogenTestDto::getTestDateTime, Comparator.nullsLast(Comparator.reverseOrder())));
 		}
 
 		setEntries(pathogenTests);

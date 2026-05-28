@@ -35,7 +35,9 @@ import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
@@ -95,7 +97,7 @@ public class TestMethodComponent extends FormComponent<PathogenTestDto> {
 		// Test type
 		testTypeField = createComboBox(PathogenTestDto.TEST_TYPE, PathogenTestDto.I18N_PREFIX);
 		updateComboBoxByDisease(testTypeField, PathogenTestType.class, currentDisease);
-		testTypeField.setItemCaptionGenerator(PathogenTestType::toString);
+		testTypeField.setItemCaptionGenerator(this::getTestTypeCaption);
 
 		testTypeTextField = createTextField(PathogenTestDto.TEST_TYPE_TEXT, PathogenTestDto.I18N_PREFIX, ValueChangeMode.BLUR);
 		testTypeTextField.setVisible(false);
@@ -119,6 +121,7 @@ public class TestMethodComponent extends FormComponent<PathogenTestDto> {
 		testDateField = new DateField();
 		testDateField.setId(PathogenTestDto.TEST_DATE_TIME + "_date");
 		testDateField.setCaption(I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_DATE_TIME));
+		testDateField.setRequiredIndicatorVisible(true);
 		CssStyles.style(testDateField, CssStyles.CAPTION_ON_TOP);
 		testDateField.setWidth(100, Unit.PERCENTAGE);
 
@@ -169,11 +172,12 @@ public class TestMethodComponent extends FormComponent<PathogenTestDto> {
 	}
 
 	private void wireEvents() {
-		// Self-managed visibility: testTypeText visible for PCR_RT_PCR or OTHER
+		// Self-managed visibility: testTypeText reveals for any value annotated with @RevealsTestTypeText
+		// (PCR_RT_PCR + OTHER for every disease; the four typing tests for Salmonellosis only).
 		track(testTypeField.addValueChangeListener(e -> {
 			PathogenTestType type = e.getValue();
 
-			boolean showTestTypeText = type == PathogenTestType.PCR_RT_PCR || type == PathogenTestType.OTHER;
+			boolean showTestTypeText = PathogenTestType.revealsTestTypeText(type, currentDisease);
 			testTypeTextField.setVisible(showTestTypeText);
 			testTypeTextSpacer.setVisible(!showTestTypeText);
 			if (!showTestTypeText) {
@@ -258,6 +262,17 @@ public class TestMethodComponent extends FormComponent<PathogenTestDto> {
 		updateComboBoxByDisease(testTypeField, PathogenTestType.class, disease);
 	}
 
+	/**
+	 * Disease-aware caption for a test type. For Invasive Pneumococcal Infection the SEROGROUPING
+	 * test type is presented as "Serotyping" without affecting other diseases.
+	 */
+	private String getTestTypeCaption(PathogenTestType testType) {
+		if (currentDisease == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION && testType == PathogenTestType.SEROGROUPING) {
+			return I18nProperties.getCaption(Captions.PathogenTest_seroGrouping_INVASIVE_PNEUMOCOCCAL_INFECTION);
+		}
+		return PathogenTestType.toString(testType, null);
+	}
+
 	private void updatePcrTestSpecVisibility(PathogenTestType testType) {
 		boolean visible = currentDisease == Disease.CORONAVIRUS && testType == PathogenTestType.PCR_RT_PCR;
 		pcrTestSpecField.setVisible(visible);
@@ -287,6 +302,13 @@ public class TestMethodComponent extends FormComponent<PathogenTestDto> {
 	@Override
 	public void validate() {
 		super.validate();
+		// Test date is mandatory whenever the field is shown
+		if (testDateField.isVisible() && testDateField.getValue() == null) {
+			throw new com.vaadin.v7.data.Validator.InvalidValueException(
+				I18nProperties.getValidationError(
+					Validations.required,
+					I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_DATE_TIME)));
+		}
 		if (testDateSampleDateSupplier != null && testDateField.getValue() != null) {
 			Date sampleDate = testDateSampleDateSupplier.get();
 			if (sampleDate != null) {

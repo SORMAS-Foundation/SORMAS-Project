@@ -110,7 +110,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		Collections.unmodifiableList(Arrays.asList(Disease.CRYPTOSPORIDIOSIS, Disease.GIARDIASIS, Disease.MALARIA, Disease.DENGUE));
 
 	//@formatter:off
-	private static final String MAIN_HTML_LAYOUT = 
+	private static final String MAIN_HTML_LAYOUT =
 			loc(LOC_EXPOSURE_PERIOD_CONSIDER_HEADING) +
 			fluidRowLocs("EXP_DATES_LAYOUT") +
 			loc(LOC_EXPOSURE_INVESTIGATION_HEADING) +
@@ -135,11 +135,11 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			fluidRowLocs(3, EpiDataDto.CLUSTER_RELATED,5,EpiDataDto.CLUSTER_TYPE,4,EpiDataDto.CLUSTER_TYPE_TEXT) +
 			locCss(VSPACE_TOP_3, LOC_EPI_DATA_FIELDS_HINT) +
 			loc(EpiDataDto.HIGH_TRANSMISSION_RISK_AREA) +
-			loc(EpiDataDto.LARGE_OUTBREAKS_AREA) + 
+			loc(EpiDataDto.LARGE_OUTBREAKS_AREA) +
 			loc(EpiDataDto.AIRPORT_WORKER) +
 			loc(EpiDataDto.HEALTHCARE_PROFESSIONAL) +
 			loc(EpiDataDto.AREA_INFECTED_ANIMALS);
-	
+
 	private static final String SOURCE_CONTACTS_HTML_LAYOUT =
 			locCss(VSPACE_TOP_3, LOC_SOURCE_CASE_CONTACTS_HEADING) +
 			loc(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN) +
@@ -301,7 +301,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	/**
 	 * Include the exposure start and dates when symptomOnsetDate is present.
 	 * Disease incubation period is enabled with valid values.
-	 * 
+	 *
 	 * @param symptomOnsetDate
 	 * @param disease
 	 */

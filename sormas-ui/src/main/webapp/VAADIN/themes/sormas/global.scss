@@ -29,6 +29,10 @@
       }
 
     }
+
+    &.v-caption-no-uppercase {
+      text-transform: none;
+    }
   }
 
   .v-caption-multiline {

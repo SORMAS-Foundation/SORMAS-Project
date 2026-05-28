@@ -41,6 +41,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
@@ -60,7 +61,6 @@ import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.AnimalCategory;
-import de.symeda.sormas.api.exposure.EatingOutVenue;
 import de.symeda.sormas.api.exposure.ExposureCategory;
 import de.symeda.sormas.api.exposure.ExposureContactFactor;
 import de.symeda.sormas.api.exposure.ExposureDto;
@@ -83,7 +83,6 @@ import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
-import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.components.CustomizableFieldsGroup;
@@ -106,7 +105,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 
 	//@formatter:off
 	private static final String GENERAL_DETAILS_LAYOUT =
-			fluidRowLocs(ExposureDto.START_DATE, ExposureDto.END_DATE) +
+			fluidRowLocs(ExposureDto.START_DATE, ExposureDto.END_DATE, "", "") +
 					fluidRowLocs(ExposureDto.EXPOSURE_TYPE, ExposureDto.EXPOSURE_TYPE_DETAILS) +
 					loc(ExposureDto.DESCRIPTION);
 
@@ -117,8 +116,6 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 					fluidRow(
 							fluidColumn(4, 0, locs(
 									ExposureDto.SUB_SETTINGS,
-									ExposureDto.EATING_OUT_VENUES,
-									ExposureDto.EATING_OUT_VENUE_OTHER,
 									ExposureDto.SHOPPING_FOR_FOOD_DETAILS,
 									ExposureDto.CONDITION_OF_ANIMAL,
 									ExposureDto.ANIMAL_CATEGORY,
@@ -315,8 +312,8 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	private void addBasicFields() {
 		addFields(ExposureDto.UUID, ExposureDto.REPORTING_USER, ExposureDto.PROBABLE_INFECTION_ENVIRONMENT);
 
-		DateTimeField startDate = addField(generalDetailsLayout, ExposureDto.START_DATE, DateTimeField.class);
-		DateTimeField endDate = addField(generalDetailsLayout, ExposureDto.END_DATE, DateTimeField.class);
+		DateField startDate = addField(generalDetailsLayout, ExposureDto.START_DATE, DateField.class);
+		DateField endDate = addField(generalDetailsLayout, ExposureDto.END_DATE, DateField.class);
 
 		DateComparisonValidator.addStartEndValidators(startDate, endDate, false);
 
@@ -341,15 +338,6 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 
 		subSettingsDetailsField = addField(exposureDetailsLayout, ExposureDto.EXPOSURE_SUB_SETTING_DETAILS, TextField.class);
 		subSettingsDetailsField.setVisible(false);
-
-		OptionGroup eatingOutVenuesField = addField(exposureDetailsLayout, ExposureDto.EATING_OUT_VENUES, OptionGroup.class);
-		eatingOutVenuesField.setMultiSelect(true);
-		CssStyles.style(eatingOutVenuesField, CssStyles.CAPTION_ON_TOP);
-		FieldHelper.updateItems(eatingOutVenuesField, Arrays.asList(EatingOutVenue.values()));
-		eatingOutVenuesField.setVisible(false);
-
-		TextField eatingOutVenueOtherField = addField(exposureDetailsLayout, ExposureDto.EATING_OUT_VENUE_OTHER, TextField.class);
-		eatingOutVenueOtherField.setVisible(false);
 
 		TextField shoppingForFoodDetailsField = addField(exposureDetailsLayout, ExposureDto.SHOPPING_FOR_FOOD_DETAILS, TextField.class);
 		shoppingForFoodDetailsField.setVisible(false);
@@ -432,29 +420,12 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			boolean isProphylaxis = selectedSubSettings != null && selectedSubSettings.contains(ExposureSubSetting.TRAVELED_ABROAD);
 			setVisibleClear(isProphylaxis, ExposureDto.PROPHYLAXIS_ADHERENCE, ExposureDto.TRAVEL_PURPOSE);
 
-			// Salmonellosis Lu: Eating out venues + shopping-for-food details follow sub-setting selection
-			boolean showEatingOutVenues = selectedSubSettings != null && selectedSubSettings.contains(ExposureSubSetting.EATING_OUTSIDE);
-			eatingOutVenuesField.setVisible(showEatingOutVenues);
-			if (!showEatingOutVenues) {
-				eatingOutVenuesField.setValue(null);
-				eatingOutVenueOtherField.setVisible(false);
-				eatingOutVenueOtherField.setValue(null);
-			}
-			boolean showShoppingForFood = selectedSubSettings != null && selectedSubSettings.contains(ExposureSubSetting.SHOPPING_FOR_FOOD);
+			// Salmonellosis: shopping-for-food details follows sub-setting selection.
+			// Disease-gated so non-SAL exposures with FOOD_BORNE category don't see it.
+			boolean isSalmonellosis = disease == Disease.SALMONELLOSIS;
+			boolean showShoppingForFood =
+				isSalmonellosis && selectedSubSettings != null && selectedSubSettings.contains(ExposureSubSetting.SHOPPING_FOR_FOOD);
 			shoppingForFoodDetailsField.setVisible(showShoppingForFood);
-			if (!showShoppingForFood) {
-				shoppingForFoodDetailsField.setValue(null);
-			}
-		});
-
-		eatingOutVenuesField.addValueChangeListener(e -> {
-			@SuppressWarnings("unchecked")
-			Set<EatingOutVenue> selectedVenues = (Set<EatingOutVenue>) e.getProperty().getValue();
-			boolean containsOther = selectedVenues != null && selectedVenues.contains(EatingOutVenue.OTHER);
-			eatingOutVenueOtherField.setVisible(eatingOutVenuesField.isVisible() && containsOther);
-			if (!containsOther) {
-				eatingOutVenueOtherField.setValue(null);
-			}
 		});
 
 		contactFactorsField.addValueChangeListener(e -> {
@@ -590,11 +561,12 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		List<ExposureSubSetting> subSettings;
 
 		// For categories that have no setting but do have subsettings (e.g., FOOD_BORNE),
-		// we need to get subsettings based only on category
+		// we need to get subsettings based only on category. Disease-aware overloads filter values whose
+		// @Diseases annotation excludes the current disease (e.g. SHOPPING_FOR_FOOD is SAL-only).
 		if (category != null && category.hasNoSetting()) {
-			subSettings = ExposureSubSetting.getValuesForCategoryOnly(category);
+			subSettings = ExposureSubSetting.getValuesForCategoryOnly(category, disease);
 		} else {
-			subSettings = ExposureSubSetting.getValues(category, setting);
+			subSettings = ExposureSubSetting.getValues(category, setting, disease);
 		}
 
 		FieldHelper.updateItems(subSettingsField, subSettings);

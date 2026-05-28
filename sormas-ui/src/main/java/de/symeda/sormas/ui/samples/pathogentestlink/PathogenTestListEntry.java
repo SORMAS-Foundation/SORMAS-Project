@@ -73,7 +73,8 @@ public class PathogenTestListEntry extends SideComponentField {
 		topLabelLayout.setMargin(false);
 		topLabelLayout.setWidth(100, Unit.PERCENTAGE);
 		addComponentToField(topLabelLayout);
-		Label labelTopLeft = new Label(PathogenTestType.toString(pathogenTest.getTestType(), pathogenTest.getTestTypeText()));
+		Label labelTopLeft = new Label(
+			PathogenTestType.toString(pathogenTest.getTestType(), pathogenTest.getTestTypeText(), pathogenTest.getTestedDisease()));
 		CssStyles.style(labelTopLeft, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
 		topLabelLayout.addComponent(labelTopLeft);
 
@@ -86,13 +87,11 @@ public class PathogenTestListEntry extends SideComponentField {
 			topLabelLayout.setComponentAlignment(labelTopRight, Alignment.TOP_RIGHT);
 		}
 
-		if (pathogenTest.getTestedDisease() != Disease.TUBERCULOSIS) {
-			if (showTestResultText && !DataHelper.isNullOrEmpty(pathogenTest.getTestResultText())) {
-				Label resultTextLabel = new Label(StringUtils.abbreviate(pathogenTest.getTestResultText(), 125));
-				resultTextLabel.setDescription(pathogenTest.getTestResultText());
-				resultTextLabel.setWidthFull();
-				addComponentToField(resultTextLabel);
-			}
+		if (showTestResultText && !DataHelper.isNullOrEmpty(pathogenTest.getTestResultText())) {
+			Label resultTextLabel = new Label(StringUtils.abbreviate(pathogenTest.getTestResultText(), 125));
+			resultTextLabel.setDescription(pathogenTest.getTestResultText());
+			resultTextLabel.setWidthFull();
+			addComponentToField(resultTextLabel);
 		}
 
 		HorizontalLayout middleLabelLayout = new HorizontalLayout();
@@ -189,7 +188,18 @@ public class PathogenTestListEntry extends SideComponentField {
 				resultText = StringUtils.abbreviate((pathogenTest.getSpecie() != null ? pathogenTest.getSpecie().toString() : ""), 125);
 			}
 
-		} else if ((pathogenTest.getTestedDisease() == Disease.DENGUE || pathogenTest.getTestedDisease() == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION)
+		} else if (pathogenTest.getTestedDisease() == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION
+			&& VARIANT_MAP.get(pathogenTest.getTestedDisease()).stream().anyMatch(testType::equals)) {
+			// IPI serotyping stores the serogroup/serotype in the free-text field; show it instead of the plain result
+			if (!DataHelper.isNullOrEmpty(pathogenTest.getSerotypeText())) {
+				resultText = StringUtils.abbreviate(pathogenTest.getSerotypeText(), 125);
+			} else if (pathogenTest.getSerotype() != null) {
+				resultText = StringUtils.abbreviate(pathogenTest.getSerotype().toString(), 125);
+			} else {
+				resultText = pathogenTest.getTestResult();
+			}
+
+		} else if (pathogenTest.getTestedDisease() == Disease.DENGUE
 			&& VARIANT_MAP.get(pathogenTest.getTestedDisease()).stream().anyMatch(testType::equals)) {
 			// handling other serotypes
 			if (pathogenTest.getSerotype() == Serotype.OTHER) {

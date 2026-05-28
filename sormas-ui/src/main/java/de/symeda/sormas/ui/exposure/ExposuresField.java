@@ -107,8 +107,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 				COLUMN_LOCATION_COUNTRY,
 				COLUMN_DATE,
 				COLUMN_EXPOSURE_CATEGORY,
-				COLUMN_DESCRIPTION,
-				COLUMN_PROPHYLAXIS_ADHERENCE);
+				COLUMN_DESCRIPTION);
 		} else {
 			table.setVisibleColumns(
 				ACTION_COLUMN_ID,
@@ -149,7 +148,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 
 		table.addGeneratedColumn(COLUMN_DATE, (Table.ColumnGenerator) (source, itemId, columnId) -> {
 			ExposureDto exposure = (ExposureDto) itemId;
-			return DateFormatHelper.buildPeriodDateTimeString(exposure.getStartDate(), exposure.getEndDate());
+			return DateFormatHelper.buildPeriodString(exposure.getStartDate(), exposure.getEndDate());
 		});
 
 		table.addGeneratedColumn(COLUMN_DESCRIPTION, (Table.ColumnGenerator) (source, itemId, columnId) -> {

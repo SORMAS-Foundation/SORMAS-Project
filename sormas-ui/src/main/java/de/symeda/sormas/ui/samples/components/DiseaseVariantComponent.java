@@ -38,8 +38,10 @@ import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.ui.samples.events.DiseaseChangedEvent;
+import de.symeda.sormas.ui.samples.events.TestResultChangedEvent;
 import de.symeda.sormas.ui.samples.events.TestTypeChangedEvent;
 import de.symeda.sormas.ui.utils.FormComponent;
 import de.symeda.sormas.ui.utils.FormEventBus;
@@ -63,6 +65,7 @@ public class DiseaseVariantComponent extends FormComponent<PathogenTestDto> {
 	private final FormEventBus eventBus;
 	private Disease currentDisease;
 	private PathogenTestType currentTestType;
+	private PathogenTestResultType currentResult;
 	private List<DiseaseVariant> currentVariants;
 
 	private ComboBox<DiseaseVariant> diseaseVariantField;
@@ -126,6 +129,12 @@ public class DiseaseVariantComponent extends FormComponent<PathogenTestDto> {
 			currentTestType = event.getTestType();
 			updateVisibility();
 		}));
+
+		// Test result change -> the subtype/variant is only relevant for a positive result
+		track(eventBus.on(TestResultChangedEvent.class, event -> {
+			currentResult = event.getTestResult();
+			updateVisibility();
+		}));
 	}
 
 	private void refreshVariantItems() {
@@ -134,7 +143,10 @@ public class DiseaseVariantComponent extends FormComponent<PathogenTestDto> {
 	}
 
 	private void updateVisibility() {
+		// Subtype/variant is only meaningful for a positive result; any other result
+		// (pending, negative, indeterminate, not done, or none) hides and clears it.
 		boolean visible = currentDisease != null
+			&& currentResult == PathogenTestResultType.POSITIVE
 			&& DiseaseHelper.SUBTYPE_ALLOWED_DISEASES.contains(currentDisease)
 			&& VARIANT_ALLOWED_TEST_TYPES.contains(currentTestType)
 			&& CollectionUtils.isNotEmpty(currentVariants);

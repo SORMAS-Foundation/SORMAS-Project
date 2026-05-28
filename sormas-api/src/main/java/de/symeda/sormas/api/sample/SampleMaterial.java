@@ -17,6 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.api.sample;
 
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.EnumSet;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -63,6 +71,7 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE }, hide = true)
+	@Deprecated
 	THROAT_ASPIRATE,
 
 	@Diseases(value = {
@@ -74,6 +83,7 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE }, hide = true)
+	@Deprecated
 	NASAL_SWAB,
 
 	@Diseases(value = {
@@ -156,6 +166,7 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE }, hide = true)
+	@Deprecated
 	CORNEA_PM,
 
 	@Diseases(value = {
@@ -177,6 +188,7 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE }, hide = true)
+	@Deprecated
 	URINE_PM,
 
 	@Diseases(value = {
@@ -194,6 +206,7 @@ public enum SampleMaterial {
 	@Diseases({
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS })
+	@Deprecated
 	BIOPSY,
 
 	@Diseases(value = {
@@ -282,10 +295,12 @@ public enum SampleMaterial {
 
 	@Diseases(value = {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
+	@Deprecated
 	NASOPHARYNGEAL_LAVAGE,
 
 	@Diseases(value = {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
+	@Deprecated
 	OROPHARYNGEAL_SWAB,
 
 	@Diseases(value = {
@@ -329,13 +344,175 @@ public enum SampleMaterial {
 
 	@Diseases(value = {
 		Disease.CRYPTOSPORIDIOSIS })
+	@Deprecated
 	INTESTINAL_FLUID,
 
 	@Diseases(value = {
 		Disease.GIARDIASIS })
+	@Deprecated
 	DUODENUM_FLUID,
 
+	@Diseases({
+		Disease.SALMONELLOSIS })
+	ASPIRATE,
+
+	@Diseases({
+		Disease.SALMONELLOSIS })
+	@Deprecated
+	BONE_AND_JOINT,
+
+	@Diseases({
+		Disease.SALMONELLOSIS })
+	CATHETER_EXIT_SITE,
+
+	@Diseases({
+		Disease.SALMONELLOSIS })
+	EYE,
+
+	@Diseases({
+		Disease.SALMONELLOSIS })
+	GASTRIC_FLUID,
+
+	@Diseases({
+		Disease.SALMONELLOSIS })
+	GENITAL_SWAB,
+
+	@Diseases({
+		Disease.SALMONELLOSIS })
+	@Deprecated
+	LOWER_RESPIRATORY_TRACT,
+
+	@Diseases({
+		Disease.SALMONELLOSIS })
+	PUS,
+
+	@Diseases({
+		Disease.SALMONELLOSIS })
+	SEMEN,
+
+	@Diseases({
+		Disease.SALMONELLOSIS })
+	SKIN,
+
+	@Diseases({
+		Disease.SALMONELLOSIS })
+	@Deprecated
+	SOFT_TISSUE,
+
+	@Diseases({
+		Disease.SALMONELLOSIS })
+	WOUND,
+
+	ABSCESS_SWAB,
+
+	BONE,
+
+	BONE_MARROW,
+
+	CONJUNCTIVAL_SWAB,
+
+	MIDDLE_EAR_FLUID,
+
+	PLASMA,
+
+	SWAB_UNSPECIFIED,
+
+	TEARS,
+
+	UNKNOWN,
+
+	@Deprecated
 	OTHER;
+
+	/**
+	 * SNOMED-CT codes for sample materials, aligned with the upgraded specimen list of
+	 * issue #13560 (SNOMED-CT 2025-07-01 release). Returns null when no canonical code is mapped
+	 * (e.g. UNKNOWN, OTHER, and deprecated values without a current equivalent).
+	 */
+	private static final Map<SampleMaterial, String> SNOMED_CODES;
+	static {
+		EnumMap<SampleMaterial, String> map = new EnumMap<>(SampleMaterial.class);
+		map.put(ABSCESS_SWAB, "258497007");
+		map.put(AMNIOTIC_FLUID, "119373006");
+		map.put(ANTERIOR_NARES_SWAB, "697989009");
+		map.put(ASPIRATE, "119295008");
+		map.put(BLOOD, "119297000");
+		map.put(BONE, "258417006");
+		map.put(BONE_MARROW, "119359002");
+		map.put(BRAIN_TISSUE, "256865009");
+		map.put(BRONCHOALVEOLAR_LAVAGE, "258607008");
+		map.put(CATHETER_EXIT_SITE, "16227651000119100");
+		map.put(CEREBROSPINAL_FLUID, "258450006");
+		map.put(CLINICAL_SAMPLE, "123038009");
+		map.put(CONJUNCTIVAL_SWAB, "258498002");
+		map.put(CRUST, "1332490003");
+		map.put(DRY_BLOOD, "440500007");
+		map.put(EDTA_WHOLE_BLOOD, "258580003");
+		map.put(ENDOTRACHEAL_ASPIRATE, "119307008");
+		map.put(EYE, "119399004");
+		map.put(STOOL, "119339001");
+		map.put(GASTRIC_FLUID, "258459007");
+		map.put(GENITAL_SWAB, "258508008");
+		map.put(MIDDLE_EAR_FLUID, "258466008");
+		map.put(NP_ASPIRATE, "429931000124105");
+		map.put(NP_SWAB, "258500001");
+		map.put(NUCHAL_SKIN_BIOPSY, "309066003");
+		map.put(OP_ASPIRATE, "258412000");
+		map.put(THROAT_SWAB, "258529004");
+		map.put(PERITONEAL_FLUID, "168139001");
+		map.put(PLASMA, "50863008");
+		map.put(PLEURAL_FLUID, "418564007");
+		map.put(PUS, "258502009");
+		map.put(RECTAL_SWAB, "258528007");
+		map.put(SALIVA, "119342007");
+		map.put(SEMEN, "734846002");
+		map.put(SERA, "119364003");
+		map.put(SKIN, "119325001");
+		map.put(SPUTUM, "119334006");
+		map.put(SWAB_UNSPECIFIED, "257261003");
+		map.put(SYNOVIAL_FLUID, "264380007");
+		map.put(TEARS, "122594008");
+		map.put(TISSUE, "119376003");
+		map.put(URINE, "122575003");
+		map.put(WOUND, "119365002");
+		SNOMED_CODES = Collections.unmodifiableMap(map);
+	}
+
+	/**
+	 * Sample materials retired by issue #13560. Kept in the enum (and marked {@link Deprecated}) so
+	 * historical records still de-serialize and render, but hidden from the create-sample dropdown for
+	 * new samples. This set is the runtime index used by {@link #isDeprecated()}; it must stay in sync
+	 * with the {@code @Deprecated} constants above.
+	 */
+	private static final Set<SampleMaterial> DEPRECATED_MATERIALS = Collections.unmodifiableSet(
+		EnumSet.of(
+			URINE_PM,
+			CORNEA_PM,
+			NASAL_SWAB,
+			NASOPHARYNGEAL_LAVAGE,
+			OROPHARYNGEAL_SWAB,
+			THROAT_ASPIRATE,
+			INTESTINAL_FLUID,
+			DUODENUM_FLUID,
+			LOWER_RESPIRATORY_TRACT,
+			SOFT_TISSUE,
+			BONE_AND_JOINT,
+			BIOPSY,
+			OTHER));
+
+	/**
+	 * @return SNOMED-CT code for this sample material, or {@code null} if no canonical code is mapped.
+	 */
+	public String getSnomedCode() {
+		return SNOMED_CODES.get(this);
+	}
+
+	/**
+	 * @return {@code true} if this material is retired and should not be offered for new samples.
+	 */
+	public boolean isDeprecated() {
+		return DEPRECATED_MATERIALS.contains(this);
+	}
 
 	@Override
 	public String toString() {
@@ -350,6 +527,10 @@ public enum SampleMaterial {
 
 		if (value == SampleMaterial.OTHER) {
 			return DataHelper.toStringNullable(details);
+		}
+
+		if (value == SampleMaterial.CLINICAL_SAMPLE && StringUtils.isNotBlank(details)) {
+			return details;
 		}
 
 		return value.toString();

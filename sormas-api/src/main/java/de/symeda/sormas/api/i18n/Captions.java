@@ -1902,8 +1902,6 @@ public interface Captions {
 	String Exposure_deceasedPersonName = "Exposure.deceasedPersonName";
 	String Exposure_deceasedPersonRelation = "Exposure.deceasedPersonRelation";
 	String Exposure_domesticSwimming = "Exposure.domesticSwimming";
-	String Exposure_eatingOutVenueOther = "Exposure.eatingOutVenueOther";
-	String Exposure_eatingOutVenues = "Exposure.eatingOutVenues";
 	String Exposure_eatingRawAnimalProducts = "Exposure.eatingRawAnimalProducts";
 	String Exposure_endDate = "Exposure.endDate";
 	String Exposure_exposureCategory = "Exposure.exposureCategory";
@@ -2391,11 +2389,14 @@ public interface Captions {
 	String PathogenTest_rifampicinResistant = "PathogenTest.rifampicinResistant";
 	String PathogenTest_rsv_testedDiseaseVariant = "PathogenTest.rsv.testedDiseaseVariant";
 	String PathogenTest_rsv_testedDiseaseVariantDetails = "PathogenTest.rsv.testedDiseaseVariantDetails";
+	String PathogenTest_seroGrouping_INVASIVE_PNEUMOCOCCAL_INFECTION = "PathogenTest.seroGrouping.INVASIVE_PNEUMOCOCCAL_INFECTION";
 	String PathogenTest_seroGroupSpecification = "PathogenTest.seroGroupSpecification";
 	String PathogenTest_seroGroupSpecificationText = "PathogenTest.seroGroupSpecificationText";
 	String PathogenTest_serotype = "PathogenTest.serotype";
 	String PathogenTest_serotypeText = "PathogenTest.serotypeText";
+	String PathogenTest_serotypeText_INVASIVE_PNEUMOCOCCAL_INFECTION = "PathogenTest.serotypeText.INVASIVE_PNEUMOCOCCAL_INFECTION";
 	String PathogenTest_seroTypingMethod = "PathogenTest.seroTypingMethod";
+	String PathogenTest_seroTypingMethod_INVASIVE_PNEUMOCOCCAL_INFECTION = "PathogenTest.seroTypingMethod.INVASIVE_PNEUMOCOCCAL_INFECTION";
 	String PathogenTest_seroTypingMethodText = "PathogenTest.seroTypingMethodText";
 	String PathogenTest_specie = "PathogenTest.specie";
 	String PathogenTest_specieText = "PathogenTest.specieText";

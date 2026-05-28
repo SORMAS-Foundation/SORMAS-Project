@@ -41,7 +41,8 @@ public class DefaultSectionComponent extends AbstractDiseaseSectionComponent {
 		Map<Disease, List<PathogenTestType>> map = new HashMap<>();
 		map.put(
 			Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
-			Collections.unmodifiableList(Arrays.asList(PathogenTestType.SEQUENCING, PathogenTestType.WHOLE_GENOME_SEQUENCING)));
+			Collections.unmodifiableList(
+				Arrays.asList(PathogenTestType.PCR_RT_PCR, PathogenTestType.SEQUENCING, PathogenTestType.WHOLE_GENOME_SEQUENCING)));
 		map.put(Disease.INFLUENZA, Collections.singletonList(PathogenTestType.ISOLATION));
 		return Collections.unmodifiableMap(map);
 	}

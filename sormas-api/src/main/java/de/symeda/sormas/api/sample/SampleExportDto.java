@@ -852,6 +852,12 @@ public class SampleExportDto extends AbstractUuidDto implements IsSample {
 		this.sampleReportDate = sampleReportDate;
 	}
 
+	@Order(104)
+	public String getSampleMaterialSnomedCode() {
+		SampleMaterial material = sampleSampleExportMaterial != null ? sampleSampleExportMaterial.sampleMaterial : null;
+		return material != null ? material.getSnomedCode() : null;
+	}
+
 	public SampleExportPathogenTest getPathogenTest1() {
 		return pathogenTest1;
 	}
@@ -998,6 +1004,7 @@ public class SampleExportDto extends AbstractUuidDto implements IsSample {
 		@SensitiveData
 		private String testTypeText;
 		private String disease;
+		private Disease testedDisease;
 		private Date dateTime;
 		private String lab;
 		private PathogenTestResultType testResult;
@@ -1014,9 +1021,22 @@ public class SampleExportDto extends AbstractUuidDto implements IsSample {
 			String lab,
 			PathogenTestResultType testResult,
 			Boolean verified) {
+			this(testType, testTypeText, disease, null, dateTime, lab, testResult, verified);
+		}
+
+		public SampleExportPathogenTest(
+			PathogenTestType testType,
+			String testTypeText,
+			String disease,
+			Disease testedDisease,
+			Date dateTime,
+			String lab,
+			PathogenTestResultType testResult,
+			Boolean verified) {
 			this.testType = testType;
 			this.testTypeText = testTypeText;
 			this.disease = disease;
+			this.testedDisease = testedDisease;
 			this.dateTime = dateTime;
 			this.lab = lab;
 			this.testResult = testResult;
@@ -1024,7 +1044,7 @@ public class SampleExportDto extends AbstractUuidDto implements IsSample {
 		}
 
 		public String formatType() {
-			return PathogenTestType.toString(testType, testTypeText);
+			return PathogenTestType.toString(testType, testTypeText, testedDisease);
 		}
 
 		public String formatString() {
