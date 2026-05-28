@@ -96,7 +96,7 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	void updateVaccinationStatuses(CaseReferenceDto caseRef);
 
-	void clearVaccinationStatuses();
+	void deleteVaccinationStatuses();
 
 	CoreAndPersonDto<CaseDataDto> save(@Valid @NotNull CoreAndPersonDto<CaseDataDto> dto) throws ValidationRuntimeException;
 

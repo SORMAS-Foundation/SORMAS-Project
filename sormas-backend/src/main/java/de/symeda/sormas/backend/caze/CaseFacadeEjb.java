@@ -1741,7 +1741,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	@RightsAllowed(UserRight._CASE_EDIT)
-	public void clearVaccinationStatuses() {
+	public void deleteVaccinationStatuses() {
 		service.clearVaccinationStatuses();
 	}
 

@@ -2383,7 +2383,7 @@ public class ContactFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._CONTACT_EDIT)
-	public void clearVaccinationStatuses() {
+	public void deleteVaccinationStatuses() {
 		service.clearVaccinationStatuses();
 	}
 

@@ -192,19 +192,19 @@ public class DevModeView extends AbstractConfigurationView {
 		Button btnClearCaseVaccinationStatuses = ButtonHelper.createButton(
 			"clearCaseVaccinationStatuses",
 			"Clear case vaccination statuses",
-			e -> FacadeProvider.getCaseFacade().clearVaccinationStatuses());
+			e -> FacadeProvider.getCaseFacade().deleteVaccinationStatuses());
 		horizontalLayout.addComponent(btnClearCaseVaccinationStatuses);
 
 		Button btnClearContactVaccinationStatuses = ButtonHelper.createButton(
 			"clearContactVaccinationStatuses",
 			"Clear contact vaccination statuses",
-			e -> FacadeProvider.getContactFacade().clearVaccinationStatuses());
+			e -> FacadeProvider.getContactFacade().deleteVaccinationStatuses());
 		horizontalLayout.addComponent(btnClearContactVaccinationStatuses);
 
 		Button btnClearEventParticipantVaccinationStatuses = ButtonHelper.createButton(
 			"clearEventParticipantVaccinationStatuses",
 			"Clear event participant vaccination statuses",
-			e -> FacadeProvider.getEventParticipantFacade().clearVaccinationStatuses());
+			e -> FacadeProvider.getEventParticipantFacade().deleteVaccinationStatuses());
 		horizontalLayout.addComponent(btnClearEventParticipantVaccinationStatuses);
 
 		return horizontalLayout;

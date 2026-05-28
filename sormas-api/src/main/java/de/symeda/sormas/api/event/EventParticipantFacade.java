@@ -77,5 +77,5 @@ public interface EventParticipantFacade
 
 	void updateVaccinationStatuses(EventParticipantReferenceDto eventParticipantRef);
 
-	void clearVaccinationStatuses();
+	void deleteVaccinationStatuses();
 }

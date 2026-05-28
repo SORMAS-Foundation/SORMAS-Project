@@ -453,7 +453,7 @@ public class EventParticipantFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._EVENTPARTICIPANT_EDIT)
-	public void clearVaccinationStatuses() {
+	public void deleteVaccinationStatuses() {
 		service.clearVaccinationStatuses();
 	}
 

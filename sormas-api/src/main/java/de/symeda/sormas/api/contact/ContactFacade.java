@@ -149,7 +149,7 @@ public interface ContactFacade extends CoreFacade<ContactDto, ContactIndexDto, C
 
 	void updateVaccinationStatuses(ContactReferenceDto contactRef);
 
-	void clearVaccinationStatuses();
+	void deleteVaccinationStatuses();
 
 	void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException;
 
