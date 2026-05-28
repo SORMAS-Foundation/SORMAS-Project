@@ -24278,6 +24278,15 @@ components:
           - SKIN
           - SOFT_TISSUE
           - WOUND
+          - ABSCESS_SWAB
+          - BONE
+          - BONE_MARROW
+          - CONJUNCTIVAL_SWAB
+          - MIDDLE_EAR_FLUID
+          - PLASMA
+          - SWAB_UNSPECIFIED
+          - TEARS
+          - UNKNOWN
           - OTHER
         sampleMaterialText:
           type: string
@@ -24531,6 +24540,15 @@ components:
           - SKIN
           - SOFT_TISSUE
           - WOUND
+          - ABSCESS_SWAB
+          - BONE
+          - BONE_MARROW
+          - CONJUNCTIVAL_SWAB
+          - MIDDLE_EAR_FLUID
+          - PLASMA
+          - SWAB_UNSPECIFIED
+          - TEARS
+          - UNKNOWN
           - OTHER
         samplePurpose:
           type: string
@@ -24715,6 +24733,15 @@ components:
           - SKIN
           - SOFT_TISSUE
           - WOUND
+          - ABSCESS_SWAB
+          - BONE
+          - BONE_MARROW
+          - CONJUNCTIVAL_SWAB
+          - MIDDLE_EAR_FLUID
+          - PLASMA
+          - SWAB_UNSPECIFIED
+          - TEARS
+          - UNKNOWN
           - OTHER
         sampleMaterialText:
           type: string
