@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.patch.partial_retrieval;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ejb.EJB;
 import javax.enterprise.context.ApplicationScoped;
@@ -42,6 +43,8 @@ public class CustomizableFieldPartialRetriever {
 	@EJB
 	private CustomizableFieldMetadataFacadeEjb.CustomizableFieldMetadataFacadeEjbLocal metaDataFacade;
 
+	public static final Set<CustomizableFieldContext> SUPPORTED_CONTEXTS = CustomizableFieldContextPatchMapping.getAllSingularContexts();
+
 	public List<Tuple<String, Tuple<FieldInfo, PartialRetrievalFailureCause>>> retrieve(
 		List<Tuple<String, PathFailureCause>> customizableFieldTuples,
 		CaseDataDto caseData) {
@@ -52,16 +55,22 @@ public class CustomizableFieldPartialRetriever {
 
 		List<ParsedCustomizableField> parsedFields = customizableFieldTuples.stream().map(this::parse).collect(Collectors.toList());
 
-		Set<CustomizableFieldContext> validContexts =
-			parsedFields.stream().filter(ParsedCustomizableField::isValid).map(ParsedCustomizableField::getContext).collect(Collectors.toSet());
+		Set<CustomizableFieldContext> validContexts = parsedFields.stream()
+			.filter(ParsedCustomizableField::isValid)
+			.map(ParsedCustomizableField::getContext)
+			.filter(SUPPORTED_CONTEXTS::contains)
+			.collect(Collectors.toSet());
 
 		Map<CustomizableFieldContext, List<CustomizableFieldMetadataDto>> metadataByContext = new HashMap<>();
 		Map<CustomizableFieldContext, Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto>> valuesByContext = new HashMap<>();
 
 		for (CustomizableFieldContext context : validContexts) {
-			String entityUuid = getEntityUuid(context, caseData);
-			metadataByContext.put(context, metaDataFacade.getActiveFieldsForContext(context));
-			valuesByContext.put(context, valueFacade.getValuesForEntity(entityUuid, context));
+			Optional<String> entityUuidOpt = getEntityUuid(context, caseData);
+
+			entityUuidOpt.ifPresent(entityUuid -> {
+				metadataByContext.put(context, metaDataFacade.getActiveFieldsForContext(context));
+				valuesByContext.put(context, valueFacade.getValuesForEntity(entityUuid, context));
+			});
 		}
 
 		return parsedFields.stream().map(parsedField -> resolve(parsedField, metadataByContext, valuesByContext)).collect(Collectors.toList());
@@ -110,19 +119,21 @@ public class CustomizableFieldPartialRetriever {
 		String path = parsed.getOriginalPath();
 
 		if (!parsed.isValid()) {
-			return Tuple.of(path, Tuple.of((FieldInfo) null, parsed.getFailureCause()));
+			return Tuple.of(path, Tuple.of(null, parsed.getFailureCause()));
 		}
 
 		CustomizableFieldContext context = parsed.getContext();
 		String leafFieldName = parsed.getLeafFieldName();
 
 		List<CustomizableFieldMetadataDto> activeMetadata = metadataByContext.get(context);
-		Optional<CustomizableFieldMetadataDto> matchedMetadata =
-			activeMetadata.stream().filter(m -> m.getName().equals(leafFieldName)).collect(CollectorUtils.toOptionalSingle());
+		Optional<CustomizableFieldMetadataDto> matchedMetadata = Stream.ofNullable(activeMetadata)
+			.flatMap(Collection::stream)
+			.filter(metaData -> metaData.getName().equals(leafFieldName))
+			.collect(CollectorUtils.toOptionalSingle());
 
 		if (matchedMetadata.isEmpty()) {
 			logger.warn("No active customizable field metadata found for context [{}] and name [{}]", context, leafFieldName);
-			return Tuple.of(path, Tuple.of((FieldInfo) null, PartialRetrievalFailureCause.FIELD_DOES_NOT_EXIST));
+			return Tuple.of(path, Tuple.of(null, PartialRetrievalFailureCause.FIELD_DOES_NOT_EXIST));
 		}
 
 		CustomizableFieldMetadataDto metadataDto = matchedMetadata.get();
@@ -134,14 +145,14 @@ public class CustomizableFieldPartialRetriever {
 			Tuple.of(new FieldInfo().setFieldType(String.class).setFieldValue(rawValue).setTranslatedFieldName(metadataDto.getName()), null));
 	}
 
-	private String getEntityUuid(CustomizableFieldContext context, CaseDataDto caseData) {
+	static Optional<String> getEntityUuid(CustomizableFieldContext context, CaseDataDto caseData) {
 		switch (context) {
 		case CASE:
-			return caseData.getUuid();
+			return Optional.ofNullable(caseData.getUuid());
 		case EPIDATA:
-			return caseData.getEpiData().getUuid();
+			return Optional.ofNullable(caseData.getEpiData().getUuid());
 		default:
-			throw new IllegalArgumentException("Unsupported context for partial retrieval: " + context);
+			return Optional.empty();
 		}
 	}
 

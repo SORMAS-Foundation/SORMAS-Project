@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 
 import de.symeda.sormas.api.patch.DataPatchFailureCause;
+import de.symeda.sormas.api.patch.mapping.ValuePatchRequest;
 import de.symeda.sormas.backend.AbstractUnitTest;
 
 class DateMapperTest extends AbstractUnitTest {
