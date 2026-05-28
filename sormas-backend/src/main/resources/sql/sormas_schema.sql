@@ -16034,7 +16034,6 @@ ALTER TABLE exposures_history DROP COLUMN IF EXISTS eatingoutvenueother;
 INSERT INTO schema_version (version_number, comment) VALUES (632, '#13918 - Remove eating out venues from Salmonellosis exposure');
 
 
-<<<<<<< HEAD
 -- Alter JSONB to JSON to preserve insertion oder for external messages
 
 ALTER TABLE externalmessage_history
