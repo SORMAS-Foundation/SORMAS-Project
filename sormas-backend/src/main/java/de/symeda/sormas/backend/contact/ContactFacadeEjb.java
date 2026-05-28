@@ -1646,13 +1646,10 @@ public class ContactFacadeEjb
 			: !Objects.equals(previousVaccinationStatus, source.getVaccinationStatus())
 				|| !Objects.equals(previousVaccinationStatusDetails, source.getVaccinationStatusDetails());
 		if (vaccinationStatusManuallyUpdated) {
+			// Clear server-derived metadata when client manually updates vaccination status
 			target.setVaccinationStatusLastUpdated(null);
 			target.setNumberOfDoses(null);
 			target.setInformationReliability(null);
-		} else {
-			target.setVaccinationStatusLastUpdated(source.getVaccinationStatusLastUpdated());
-			target.setNumberOfDoses(source.getNumberOfDoses());
-			target.setInformationReliability(source.getInformationReliability());
 		}
 
 		if (source.getSormasToSormasOriginInfo() != null) {
@@ -2381,6 +2378,13 @@ public class ContactFacadeEjb
 		Contact contact = service.getByReferenceDto(contactRef);
 		vaccinationFacade.updateVaccinationStatuses(contact);
 		service.ensurePersisted(contact);
+		onContactChanged(toDto(contact), true);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._CONTACT_EDIT)
+	public void clearVaccinationStatuses() {
+		service.clearVaccinationStatuses();
 	}
 
 	@Override

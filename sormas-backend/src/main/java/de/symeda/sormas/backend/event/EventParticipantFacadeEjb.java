@@ -435,9 +435,9 @@ public class EventParticipantFacadeEjb
 
 		if (existingEventParticipant == null) {
 			vaccinationFacade.updateVaccinationStatuses(newEventParticipant);
+		} else {
+			eventFacade.onEventChange(event, syncShares);
 		}
-
-		eventFacade.onEventChange(event, syncShares);
 	}
 
 	@Override
@@ -448,6 +448,13 @@ public class EventParticipantFacadeEjb
 		EventParticipant eventParticipant = service.getByReferenceDto(eventParticipantRef);
 		vaccinationFacade.updateVaccinationStatuses(eventParticipant);
 		service.ensurePersisted(eventParticipant);
+		eventFacade.onEventChange(eventFacade.toDto(eventParticipant.getEvent()), true);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._EVENTPARTICIPANT_EDIT)
+	public void clearVaccinationStatuses() {
+		service.clearVaccinationStatuses();
 	}
 
 	private void notifyEventResponsibleUsersOfCommonEventParticipant(EventParticipant eventParticipant, Event event) {

@@ -160,7 +160,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
-import de.symeda.sormas.api.immunization.VaccinationStatusData;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
@@ -1738,6 +1737,12 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		Case caze = service.getByReferenceDto(caseRef);
 		vaccinationFacade.updateVaccinationStatuses(caze);
 		service.ensurePersisted(caze);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._CASE_EDIT)
+	public void clearVaccinationStatuses() {
+		service.clearVaccinationStatuses();
 	}
 
 	private CaseDataDto caseSave(

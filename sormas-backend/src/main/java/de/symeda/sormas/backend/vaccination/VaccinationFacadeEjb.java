@@ -141,6 +141,7 @@ public class VaccinationFacadeEjb
 		validate(dto);
 
 		Vaccination vaccination = fillOrBuildEntity(dto, existingVaccination, true);
+		ensureVaccinationInImmunization(vaccination);
 		immunizationFacade.updateVaccinationInfoSourceFromVaccinations(vaccination.getImmunization());
 		service.ensurePersisted(vaccination);
 
@@ -198,6 +199,7 @@ public class VaccinationFacadeEjb
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validImmunization));
 		}
 
+		ensureVaccinationInImmunization(vaccination);
 		immunizationFacade.updateVaccinationInfoSourceFromVaccinations(vaccination.getImmunization());
 		service.ensurePersisted(vaccination);
 
@@ -208,6 +210,26 @@ public class VaccinationFacadeEjb
 		}
 
 		return toPseudonymizedDto(vaccination);
+	}
+
+	private void ensureVaccinationInImmunization(Vaccination vaccination) {
+		Immunization immunization = vaccination.getImmunization();
+		if (immunization == null) {
+			return;
+		}
+
+		boolean alreadyInCollection = immunization.getVaccinations().stream().anyMatch(v -> {
+			if (v == vaccination) {
+				return true;
+			}
+
+			String currentUuid = vaccination.getUuid();
+			return currentUuid != null && currentUuid.equals(v.getUuid());
+		});
+
+		if (!alreadyInCollection) {
+			immunization.getVaccinations().add(vaccination);
+		}
 	}
 
 	@RightsAllowed(UserRight._IMMUNIZATION_EDIT)
@@ -324,6 +346,11 @@ public class VaccinationFacadeEjb
 		int numberOfDoses,
 		VaccinationInfoSource vaccinationInfoSource,
 		Date dateOfMostRecentDose) {
+
+		// Precondition: numberOfDoses must be greater than 0
+		if (numberOfDoses <= 0) {
+			throw new IllegalArgumentException("Invalid numberOfDoses parameter: " + numberOfDoses + ". " + "numberOfDoses must be greater than 0.");
+		}
 
 		for (int i = 1; i <= numberOfDoses; i++) {
 			VaccinationDto dto = VaccinationDto.build(userService.getCurrentUser().toReference());
@@ -502,7 +529,10 @@ public class VaccinationFacadeEjb
 		// BR0052–0053: validFrom <= firstContactDate, validUntil >= lastContactDate
 		// Fallback: if no dates are available use report date
 		// Fallback: if lastContactDate is null, use firstContactDate for validUntil check
-		Date fromDate = contact.getFirstContactDate() != null ? contact.getFirstContactDate() : contact.getReportDateTime();
+		Date fromDate = contact.getFirstContactDate();
+		if (fromDate == null) {
+			fromDate = contact.getLastContactDate() != null ? contact.getLastContactDate() : contact.getReportDateTime();
+		}
 		if (fromDate == null) {
 			return; // Cannot derive without a reference date
 		}

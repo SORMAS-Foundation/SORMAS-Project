@@ -56,9 +56,9 @@ public interface ImmunizationFacade extends CoreFacade<ImmunizationDto, Immuniza
 
 	boolean isUseQuickImmunizationCreation();
 
-	Date suggestValidFrom(Disease disease, MeansOfImmunization meansOfImmunization, Date immunizationDate, Integer numberOfDoses);
+	Date getSuggestedValidFrom(Disease disease, MeansOfImmunization meansOfImmunization, Date immunizationDate, Integer numberOfDoses);
 
-	Date suggestValidUntil(Disease disease, MeansOfImmunization meansOfImmunization, Date validFrom, Integer numberOfDoses);
+	Date getSuggestedValidUntil(Disease disease, MeansOfImmunization meansOfImmunization, Date validFrom, Integer numberOfDoses);
 
 	/**
 	 * Creates an Immunization with the quick form fields and auto-creates N dose entries.

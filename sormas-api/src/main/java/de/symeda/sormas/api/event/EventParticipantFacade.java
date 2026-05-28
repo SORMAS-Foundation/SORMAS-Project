@@ -76,4 +76,6 @@ public interface EventParticipantFacade
 	List<EventParticipantSelectionDto> getEventParticipantsWithSameEvent(String firstPersonUuid, String secondPersonUuid);
 
 	void updateVaccinationStatuses(EventParticipantReferenceDto eventParticipantRef);
+
+	void clearVaccinationStatuses();
 }

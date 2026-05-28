@@ -2253,6 +2253,18 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		em.createQuery(cu).executeUpdate();
 	}
 
+	public void clearVaccinationStatuses() {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaUpdate<Case> cu = cb.createCriteriaUpdate(Case.class);
+		cu.from(Case.class);
+		cu.set(Case.VACCINATION_STATUS, null);
+		cu.set(Case.VACCINATION_STATUS_DETAILS, null);
+		cu.set(Case.VACCINATION_STATUS_LAST_UPDATED, null);
+		cu.set(Case.NUMBER_OF_DOSES, null);
+		cu.set(Case.INFORMATION_RELIABILITY, null);
+		em.createQuery(cu).executeUpdate();
+	}
+
 	public PreviousCaseDto getMostRecentPreviousCase(String personUuid, Disease disease, Date startDate) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();

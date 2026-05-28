@@ -86,16 +86,30 @@ public class LuxembourgImmunizationValidityCalculator implements ImmunizationVal
 
 	@Override
 	public Date calculateValidFrom(Disease disease, MeansOfImmunization meansOfImmunization, Date immunizationDate, Integer numberOfDoses) {
-		if (disease == null || immunizationDate == null || !MeansOfImmunization.isVaccination(meansOfImmunization)) {
+		if (disease == null || immunizationDate == null || meansOfImmunization == null) {
 			return null;
 		}
 
 		DiseaseImmunityProfile profile = DISEASE_IMMUNITY_PROFILES.get(disease);
-		if (profile == null || profile.vaccinationStartOffsetDays == null || !profile.hasRequiredDoses(numberOfDoses)) {
+		if (profile == null) {
 			return null;
 		}
 
-		return UtilDate.from(UtilDate.toLocalDate(immunizationDate).plusDays(profile.vaccinationStartOffsetDays));
+		if (MeansOfImmunization.isVaccination(meansOfImmunization)) {
+			if (!profile.hasRequiredDoses(numberOfDoses)) {
+				return null;
+			}
+
+			long vaccinationStartOffset = profile.vaccinationStartOffsetDays != null ? profile.vaccinationStartOffsetDays : 0L;
+			return UtilDate.from(UtilDate.toLocalDate(immunizationDate).plusDays(vaccinationStartOffset));
+		}
+
+		if (MeansOfImmunization.isRecovery(meansOfImmunization)) {
+			long recoveryStartOffset = profile.recoveryStartOffsetDays != null ? profile.recoveryStartOffsetDays : 0L;
+			return UtilDate.from(UtilDate.toLocalDate(immunizationDate).plusDays(recoveryStartOffset));
+		}
+
+		return null;
 	}
 
 	@Override
@@ -111,7 +125,7 @@ public class LuxembourgImmunizationValidityCalculator implements ImmunizationVal
 
 		Long durationDays = null;
 		if (MeansOfImmunization.isVaccination(meansOfImmunization) && profile.hasRequiredDoses(numberOfDoses)) {
-			durationDays = profile.vaccinationDurationDays;
+			durationDays = profile.vaccinationDurationDays != null ? profile.vaccinationDurationDays : LIFELONG_DURATION_DAYS;
 		}
 		if (durationDays == null && MeansOfImmunization.isRecovery(meansOfImmunization)) {
 			durationDays = profile.recoveryDurationDays;
@@ -153,17 +167,20 @@ public class LuxembourgImmunizationValidityCalculator implements ImmunizationVal
 	private static final class DiseaseImmunityProfile {
 
 		private final Integer vaccinationStartOffsetDays;
+		private final Integer recoveryStartOffsetDays;
 		private final Integer requiredVaccinationDoses;
 		private final Long vaccinationDurationDays;
 		private final Long recoveryDurationDays;
 
 		private DiseaseImmunityProfile(
 			Integer vaccinationStartOffsetDays,
+			Integer recoveryStartOffsetDays,
 			Integer requiredVaccinationDoses,
 			Long vaccinationDurationDays,
 			Long recoveryDurationDays) {
 
 			this.vaccinationStartOffsetDays = vaccinationStartOffsetDays;
+			this.recoveryStartOffsetDays = recoveryStartOffsetDays;
 			this.requiredVaccinationDoses = requiredVaccinationDoses;
 			this.vaccinationDurationDays = vaccinationDurationDays;
 			this.recoveryDurationDays = recoveryDurationDays;
@@ -173,7 +190,7 @@ public class LuxembourgImmunizationValidityCalculator implements ImmunizationVal
 			Integer vaccinationStartOffsetDays,
 			Integer requiredVaccinationDoses,
 			Long vaccinationDurationDays) {
-			return new DiseaseImmunityProfile(vaccinationStartOffsetDays, requiredVaccinationDoses, vaccinationDurationDays, null);
+			return new DiseaseImmunityProfile(vaccinationStartOffsetDays, null, requiredVaccinationDoses, vaccinationDurationDays, null);
 		}
 
 		private static DiseaseImmunityProfile ofVaccinationAndRecovery(
@@ -182,7 +199,12 @@ public class LuxembourgImmunizationValidityCalculator implements ImmunizationVal
 			Long vaccinationDurationDays,
 			Long recoveryDurationDays) {
 
-			return new DiseaseImmunityProfile(vaccinationStartOffsetDays, requiredVaccinationDoses, vaccinationDurationDays, recoveryDurationDays);
+			return new DiseaseImmunityProfile(
+				vaccinationStartOffsetDays,
+				null,
+				requiredVaccinationDoses,
+				vaccinationDurationDays,
+				recoveryDurationDays);
 		}
 
 		private boolean hasRequiredDoses(Integer numberOfDoses) {

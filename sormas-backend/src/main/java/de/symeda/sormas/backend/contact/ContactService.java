@@ -169,6 +169,18 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 	@EJB
 	private TaskService taskService;
 	@EJB
+
+		public void clearVaccinationStatuses() {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaUpdate<Contact> cu = cb.createCriteriaUpdate(Contact.class);
+			cu.from(Contact.class);
+			cu.set(Contact.VACCINATION_STATUS, null);
+			cu.set(Contact.VACCINATION_STATUS_DETAILS, null);
+			cu.set(Contact.VACCINATION_STATUS_LAST_UPDATED, null);
+			cu.set(Contact.NUMBER_OF_DOSES, null);
+			cu.set(Contact.INFORMATION_RELIABILITY, null);
+			em.createQuery(cu).executeUpdate();
+		}
 	private SampleService sampleService;
 	@EJB
 	private EpiDataService epiDataService;

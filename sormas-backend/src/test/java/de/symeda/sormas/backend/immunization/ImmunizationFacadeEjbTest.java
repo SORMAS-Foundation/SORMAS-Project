@@ -116,44 +116,60 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 	public void testSuggestValidFromAndValidUntilUseCountrySpecificCalculator() {
 		loginWith(nationalUser);
 
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
-		Date validFrom =
-			getImmunizationFacade().suggestValidFrom(Disease.MEASLES, MeansOfImmunization.VACCINATION, UtilDate.from(LocalDate.of(2026, 1, 1)), 2);
-		assertEquals(UtilDate.from(LocalDate.of(2026, 1, 15)), validFrom);
-		assertEquals(
-			UtilDate.from(LocalDate.of(9999, 12, 31)),
-			getImmunizationFacade().suggestValidUntil(Disease.MEASLES, MeansOfImmunization.VACCINATION, validFrom, 2));
+		String originalLocale = MockProducer.getProperties().getProperty(ConfigFacadeEjb.COUNTRY_LOCALE);
+		try {
+			MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+			Date validFrom = getImmunizationFacade()
+				.getSuggestedValidFrom(Disease.MEASLES, MeansOfImmunization.VACCINATION, UtilDate.from(LocalDate.of(2026, 1, 1)), 2);
+			assertEquals(UtilDate.from(LocalDate.of(2026, 1, 15)), validFrom);
+			assertEquals(
+				UtilDate.from(LocalDate.of(9999, 12, 31)),
+				getImmunizationFacade().getSuggestedValidUntil(Disease.MEASLES, MeansOfImmunization.VACCINATION, validFrom, 2));
+		} finally {
+			MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, originalLocale);
+		}
 
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_GERMANY);
-		Date defaultValidFrom =
-			getImmunizationFacade().suggestValidFrom(Disease.MEASLES, MeansOfImmunization.VACCINATION, UtilDate.from(LocalDate.of(2026, 1, 1)), 2);
-		assertEquals(UtilDate.from(LocalDate.of(2026, 1, 1)), defaultValidFrom);
-		assertEquals(
-			UtilDate.from(LocalDate.of(9999, 12, 31)),
-			getImmunizationFacade().suggestValidUntil(Disease.MEASLES, MeansOfImmunization.VACCINATION, defaultValidFrom, 2));
+		String originalLocale2 = MockProducer.getProperties().getProperty(ConfigFacadeEjb.COUNTRY_LOCALE);
+		try {
+			MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_GERMANY);
+			Date defaultValidFrom = getImmunizationFacade()
+				.getSuggestedValidFrom(Disease.MEASLES, MeansOfImmunization.VACCINATION, UtilDate.from(LocalDate.of(2026, 1, 1)), 2);
+			assertEquals(UtilDate.from(LocalDate.of(2026, 1, 1)), defaultValidFrom);
+			assertEquals(
+				UtilDate.from(LocalDate.of(9999, 12, 31)),
+				getImmunizationFacade().getSuggestedValidUntil(Disease.MEASLES, MeansOfImmunization.VACCINATION, defaultValidFrom, 2));
+		} finally {
+			MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, originalLocale2);
+		}
 	}
 
 	@Test
 	public void testSaveQuickImmunizationAutoFillsMissingValidityDates() {
 		loginWith(nationalUser);
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 
-		PersonDto person = creator.createPerson("Quick", "Immunization");
-		ImmunizationDto dto = ImmunizationDto.build(person.toReference());
-		dto.setDisease(Disease.MEASLES);
-		dto.setReportingUser(nationalUser.toReference());
-		dto.setResponsibleRegion(rdcf1.region);
-		dto.setResponsibleDistrict(rdcf1.district);
-		dto.setReportDate(UtilDate.from(LocalDate.of(2026, 1, 1)));
-		dto.setMeansOfImmunization(MeansOfImmunization.VACCINATION);
-		dto.setNumberOfDoses(2);
+		String originalLocale = MockProducer.getProperties().getProperty(ConfigFacadeEjb.COUNTRY_LOCALE);
+		try {
+			MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 
-		ImmunizationDto saved =
-			getImmunizationFacade().saveQuickImmunization(dto, VaccinationInfoSource.VACCINATION_CARD, UtilDate.from(LocalDate.of(2026, 1, 1)));
+			PersonDto person = creator.createPerson("Quick", "Immunization");
+			ImmunizationDto dto = ImmunizationDto.build(person.toReference());
+			dto.setDisease(Disease.MEASLES);
+			dto.setReportingUser(nationalUser.toReference());
+			dto.setResponsibleRegion(rdcf1.region);
+			dto.setResponsibleDistrict(rdcf1.district);
+			dto.setReportDate(UtilDate.from(LocalDate.of(2026, 1, 1)));
+			dto.setMeansOfImmunization(MeansOfImmunization.VACCINATION);
+			dto.setNumberOfDoses(2);
 
-		assertEquals(UtilDate.from(LocalDate.of(2026, 1, 15)), saved.getValidFrom());
-		assertEquals(UtilDate.from(LocalDate.of(9999, 12, 31)), saved.getValidUntil());
-		assertNotNull(saved.getUuid());
+			ImmunizationDto saved =
+				getImmunizationFacade().saveQuickImmunization(dto, VaccinationInfoSource.VACCINATION_CARD, UtilDate.from(LocalDate.of(2026, 1, 1)));
+
+			assertEquals(UtilDate.from(LocalDate.of(2026, 1, 15)), saved.getValidFrom());
+			assertEquals(UtilDate.from(LocalDate.of(9999, 12, 31)), saved.getValidUntil());
+			assertNotNull(saved.getUuid());
+		} finally {
+			MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, originalLocale);
+		}
 	}
 
 	@Test
@@ -900,39 +916,45 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetCasesByPersonNationalHealthId() {
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
-		PersonReferenceDto person1 = creator.createPerson().toReference();
-		PersonDto personDto1 = getPersonFacade().getByUuid(person1.getUuid());
-		personDto1.setNationalHealthId("firstNationalId");
-		getPersonFacade().save(personDto1);
-		final ImmunizationDto immunization1 =
-			getImmunizationFacade().save(creator.createImmunization(Disease.CORONAVIRUS, person1, districtUser1.toReference(), rdcf1));
 
-		PersonReferenceDto person2 = creator.createPerson().toReference();
-		PersonDto personDto2 = getPersonFacade().getByUuid(person2.getUuid());
-		personDto2.setNationalHealthId("secondNationalId");
-		getPersonFacade().save(personDto2);
-		getImmunizationFacade().save(creator.createImmunization(Disease.CORONAVIRUS, person2, districtUser1.toReference(), rdcf1));
+		String originalLocale = MockProducer.getProperties().getProperty(ConfigFacadeEjb.COUNTRY_LOCALE);
+		try {
+			MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+			PersonReferenceDto person1 = creator.createPerson().toReference();
+			PersonDto personDto1 = getPersonFacade().getByUuid(person1.getUuid());
+			personDto1.setNationalHealthId("firstNationalId");
+			getPersonFacade().save(personDto1);
+			final ImmunizationDto immunization1 =
+				getImmunizationFacade().save(creator.createImmunization(Disease.CORONAVIRUS, person1, districtUser1.toReference(), rdcf1));
 
-		PersonReferenceDto person3 = creator.createPerson().toReference();
-		PersonDto personDto3 = getPersonFacade().getByUuid(person3.getUuid());
-		personDto3.setNationalHealthId("third");
-		getPersonFacade().save(personDto3);
-		getImmunizationFacade().save(creator.createImmunization(Disease.CORONAVIRUS, person3, districtUser1.toReference(), rdcf1));
+			PersonReferenceDto person2 = creator.createPerson().toReference();
+			PersonDto personDto2 = getPersonFacade().getByUuid(person2.getUuid());
+			personDto2.setNationalHealthId("secondNationalId");
+			getPersonFacade().save(personDto2);
+			getImmunizationFacade().save(creator.createImmunization(Disease.CORONAVIRUS, person2, districtUser1.toReference(), rdcf1));
 
-		ImmunizationCriteria immunizationCriteria = new ImmunizationCriteria();
-		immunizationCriteria.setNameAddressPhoneEmailLike("firstNationalId");
+			PersonReferenceDto person3 = creator.createPerson().toReference();
+			PersonDto personDto3 = getPersonFacade().getByUuid(person3.getUuid());
+			personDto3.setNationalHealthId("third");
+			getPersonFacade().save(personDto3);
+			getImmunizationFacade().save(creator.createImmunization(Disease.CORONAVIRUS, person3, districtUser1.toReference(), rdcf1));
 
-		List<ImmunizationIndexDto> immunizationIndexDtos1 = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null);
-		assertEquals(1, immunizationIndexDtos1.size());
-		assertEquals(immunization1.getUuid(), immunizationIndexDtos1.get(0).getUuid());
+			ImmunizationCriteria immunizationCriteria = new ImmunizationCriteria();
+			immunizationCriteria.setNameAddressPhoneEmailLike("firstNationalId");
 
-		immunizationCriteria.setNameAddressPhoneEmailLike("National");
-		List<ImmunizationIndexDto> immunizationIndexDtosNational = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null);
-		assertEquals(2, immunizationIndexDtosNational.size());
+			List<ImmunizationIndexDto> immunizationIndexDtos1 = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null);
+			assertEquals(1, immunizationIndexDtos1.size());
+			assertEquals(immunization1.getUuid(), immunizationIndexDtos1.get(0).getUuid());
 
-		immunizationCriteria.setNameAddressPhoneEmailLike(null);
-		List<ImmunizationIndexDto> immunizationIndexDtosAll = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null);
-		assertEquals(3, immunizationIndexDtosAll.size());
+			immunizationCriteria.setNameAddressPhoneEmailLike("National");
+			List<ImmunizationIndexDto> immunizationIndexDtosNational = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null);
+			assertEquals(2, immunizationIndexDtosNational.size());
+
+			immunizationCriteria.setNameAddressPhoneEmailLike(null);
+			List<ImmunizationIndexDto> immunizationIndexDtosAll = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null);
+			assertEquals(3, immunizationIndexDtosAll.size());
+		} finally {
+			MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, originalLocale);
+		}
 	}
 }

@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 
 /**
@@ -47,6 +48,7 @@ import de.symeda.sormas.api.caze.VaccinationStatus;
  * <li>During data export to external health reporting systems</li>
  * </ul>
  */
+@AuditedClass
 public class VaccinationStatusData implements Serializable {
 
 	/**
@@ -114,6 +116,10 @@ public class VaccinationStatusData implements Serializable {
 	private final Date vaccinationStatusLastUpdated;
 
 	public static boolean isComparableVaccinationStatusDataEqual(VaccinationStatusData caseData, VaccinationStatusData immunizationData) {
+		// Both parameters must be non-null to proceed with comparison
+		if (caseData == null || immunizationData == null) {
+			return false;
+		}
 		return Objects.equals(caseData.getVaccinationStatus(), immunizationData.getVaccinationStatus())
 			&& Objects.equals(caseData.getVaccinationStatusDetails(), immunizationData.getVaccinationStatusDetails())
 			&& Objects.equals(caseData.getNumberOfDoses(), immunizationData.getNumberOfDoses())
@@ -154,10 +160,10 @@ public class VaccinationStatusData implements Serializable {
 		this.numberOfDoses = numberOfDoses;
 		this.informationReliability = informationReliability;
 		this.vaccinationStatusDetails = vaccinationStatusDetails;
-		this.dateOfLastDose = dateOfLastDose;
-		this.referencePeriodFrom = referencePeriodFrom;
-		this.referencePeriodTo = referencePeriodTo;
-		this.vaccinationStatusLastUpdated = vaccinationStatusLastUpdated;
+		this.dateOfLastDose = dateOfLastDose == null ? null : new Date(dateOfLastDose.getTime());
+		this.referencePeriodFrom = referencePeriodFrom == null ? null : new Date(referencePeriodFrom.getTime());
+		this.referencePeriodTo = referencePeriodTo == null ? null : new Date(referencePeriodTo.getTime());
+		this.vaccinationStatusLastUpdated = vaccinationStatusLastUpdated == null ? null : new Date(vaccinationStatusLastUpdated.getTime());
 	}
 
 	/**
@@ -364,7 +370,7 @@ public class VaccinationStatusData implements Serializable {
 		 * @return This builder instance.
 		 */
 		public Builder dateOfLastDose(Date dateOfLastDose) {
-			this.dateOfLastDose = dateOfLastDose;
+			this.dateOfLastDose = dateOfLastDose == null ? null : new Date(dateOfLastDose.getTime());
 			return this;
 		}
 
@@ -377,7 +383,7 @@ public class VaccinationStatusData implements Serializable {
 		 */
 
 		public Builder referencePeriodFrom(Date referencePeriodFrom) {
-			this.referencePeriodFrom = referencePeriodFrom;
+			this.referencePeriodFrom = referencePeriodFrom == null ? null : new Date(referencePeriodFrom.getTime());
 			return this;
 		}
 
@@ -390,7 +396,7 @@ public class VaccinationStatusData implements Serializable {
 		 */
 
 		public Builder referencePeriodTo(Date referencePeriodTo) {
-			this.referencePeriodTo = referencePeriodTo;
+			this.referencePeriodTo = referencePeriodTo == null ? null : new Date(referencePeriodTo.getTime());
 			return this;
 		}
 
@@ -405,25 +411,6 @@ public class VaccinationStatusData implements Serializable {
 		 * @return A new VaccinationStatusData instance, or null if fields were never set.
 		 */
 		public VaccinationStatusData build() {
-			return new VaccinationStatusData(
-				vaccinationStatus,
-				numberOfDoses,
-				informationReliability,
-				vaccinationStatusDetails,
-				dateOfLastDose,
-				referencePeriodFrom,
-				referencePeriodTo,
-				vaccinationStatusLastUpdated);
-		}
-
-		/**
-		 * Constructs a VaccinationStatusData instance without populating existing fields.
-		 * Useful for clearing a builder after {@link #createFrom(VaccinationStatusData)} or
-		 * when creating a new instance with default values.
-		 *
-		 * @return A new VaccinationStatus
-		 */
-		public VaccinationStatusData buildBlank() {
 			return new VaccinationStatusData(
 				vaccinationStatus,
 				numberOfDoses,

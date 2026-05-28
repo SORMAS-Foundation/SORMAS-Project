@@ -29,6 +29,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
@@ -596,6 +597,18 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	 */
 	public void updateVaccinationStatuses(Long personId, Disease disease, Date vaccinationDate) {
 		updateDeterminedVaccinationStatuses(personId, disease);
+	}
+
+	public void clearVaccinationStatuses() {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaUpdate<EventParticipant> cu = cb.createCriteriaUpdate(EventParticipant.class);
+		cu.from(EventParticipant.class);
+		cu.set(EventParticipant.VACCINATION_STATUS, null);
+		cu.set(EventParticipant.VACCINATION_STATUS_DETAILS, null);
+		cu.set(EventParticipant.VACCINATION_STATUS_LAST_UPDATED, null);
+		cu.set(EventParticipant.NUMBER_OF_DOSES, null);
+		cu.set(EventParticipant.INFORMATION_RELIABILITY, null);
+		em.createQuery(cu).executeUpdate();
 	}
 
 	/**

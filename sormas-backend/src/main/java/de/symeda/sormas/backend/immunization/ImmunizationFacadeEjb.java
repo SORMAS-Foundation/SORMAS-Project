@@ -629,7 +629,6 @@ public class ImmunizationFacadeEjb
 	public void updateVaccinationInfoSourceFromVaccinations(Immunization immunization) {
 		if (immunization == null
 			|| immunization.getMeansOfImmunization() == MeansOfImmunization.NOT_IMMUNIZED
-			|| immunization.getVaccinationInfoSource() != null
 			|| immunization.getVaccinations() == null
 			|| immunization.getVaccinations().isEmpty()) {
 			return;
@@ -859,12 +858,12 @@ public class ImmunizationFacadeEjb
 	}
 
 	@Override
-	public Date suggestValidFrom(Disease disease, MeansOfImmunization meansOfImmunization, Date immunizationDate, Integer numberOfDoses) {
+	public Date getSuggestedValidFrom(Disease disease, MeansOfImmunization meansOfImmunization, Date immunizationDate, Integer numberOfDoses) {
 		return getImmunizationValidityCalculator().calculateValidFrom(disease, meansOfImmunization, immunizationDate, numberOfDoses);
 	}
 
 	@Override
-	public Date suggestValidUntil(Disease disease, MeansOfImmunization meansOfImmunization, Date validFrom, Integer numberOfDoses) {
+	public Date getSuggestedValidUntil(Disease disease, MeansOfImmunization meansOfImmunization, Date validFrom, Integer numberOfDoses) {
 		return getImmunizationValidityCalculator().calculateValidUntil(disease, meansOfImmunization, validFrom, numberOfDoses);
 	}
 
@@ -884,10 +883,10 @@ public class ImmunizationFacadeEjb
 		dto.setVaccinationInfoSource(vaccinationInfoSource);
 
 		if (dto.getValidFrom() == null) {
-			dto.setValidFrom(suggestValidFrom(dto.getDisease(), dto.getMeansOfImmunization(), dateOfMostRecentDose, dto.getNumberOfDoses()));
+			dto.setValidFrom(getSuggestedValidFrom(dto.getDisease(), dto.getMeansOfImmunization(), dateOfMostRecentDose, dto.getNumberOfDoses()));
 		}
 		if (dto.getValidUntil() == null) {
-			dto.setValidUntil(suggestValidUntil(dto.getDisease(), dto.getMeansOfImmunization(), dto.getValidFrom(), dto.getNumberOfDoses()));
+			dto.setValidUntil(getSuggestedValidUntil(dto.getDisease(), dto.getMeansOfImmunization(), dto.getValidFrom(), dto.getNumberOfDoses()));
 		}
 
 		Integer numberOfDoses = dto.getNumberOfDoses();

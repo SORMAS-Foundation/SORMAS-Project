@@ -16181,8 +16181,8 @@ ALTER TABLE cases_history ADD COLUMN IF NOT EXISTS informationreliability varcha
 ALTER TABLE cases ADD COLUMN IF NOT EXISTS vaccinationstatuslastupdated TIMESTAMP;
 ALTER TABLE cases_history ADD COLUMN IF NOT EXISTS vaccinationstatuslastupdated TIMESTAMP;
 
-ALTER TABLE contact ADD COLUMN vaccinationstatusdetails character varying(255);
-ALTER TABLE contact_history ADD COLUMN vaccinationstatusdetails character varying(255);
+ALTER TABLE contact ADD COLUMN IF NOT EXISTS vaccinationstatusdetails character varying(255);
+ALTER TABLE contact_history ADD COLUMN IF NOT EXISTS vaccinationstatusdetails character varying(255);
 
 ALTER TABLE contact ADD COLUMN IF NOT EXISTS numberofdoses integer;
 ALTER TABLE contact_history ADD COLUMN IF NOT EXISTS numberofdoses integer;
@@ -16193,8 +16193,8 @@ ALTER TABLE contact_history ADD COLUMN IF NOT EXISTS informationreliability varc
 ALTER TABLE contact ADD COLUMN IF NOT EXISTS vaccinationstatuslastupdated TIMESTAMP;
 ALTER TABLE contact_history ADD COLUMN IF NOT EXISTS vaccinationstatuslastupdated TIMESTAMP;
 
-ALTER TABLE eventparticipant ADD COLUMN vaccinationstatusdetails character varying(255);
-ALTER TABLE eventparticipant_history ADD COLUMN vaccinationstatusdetails character varying(255);
+ALTER TABLE eventparticipant ADD COLUMN IF NOT EXISTS vaccinationstatusdetails character varying(255);
+ALTER TABLE eventparticipant_history ADD COLUMN IF NOT EXISTS vaccinationstatusdetails character varying(255);
 
 ALTER TABLE eventparticipant ADD COLUMN IF NOT EXISTS numberofdoses integer;
 ALTER TABLE eventparticipant_history ADD COLUMN IF NOT EXISTS numberofdoses integer;

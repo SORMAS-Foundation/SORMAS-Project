@@ -300,7 +300,7 @@ public class QuickImmunizationCreationForm extends AbstractEditForm<Immunization
 
 			if (validFrom.getValue() == null) {
 				Date suggestedValidFrom = FacadeProvider.getImmunizationFacade()
-					.suggestValidFrom(dto.getDisease(), meansOfImmunization.getValue(), getDateOfMostRecentDose(), parseNumberOfDoses());
+					.getSuggestedValidFrom(dto.getDisease(), meansOfImmunization.getValue(), getDateOfMostRecentDose(), parseNumberOfDoses());
 				validFrom.setValue(toLocalDate(suggestedValidFrom));
 			}
 			refreshValidUntilSuggestion();
@@ -314,7 +314,7 @@ public class QuickImmunizationCreationForm extends AbstractEditForm<Immunization
 
 			if (validUntil.getValue() == null) {
 				Date suggestedValidUntil = FacadeProvider.getImmunizationFacade()
-					.suggestValidUntil(dto.getDisease(), meansOfImmunization.getValue(), toDate(validFrom.getValue()), parseNumberOfDoses());
+					.getSuggestedValidUntil(dto.getDisease(), meansOfImmunization.getValue(), toDate(validFrom.getValue()), parseNumberOfDoses());
 				validUntil.setValue(toLocalDate(suggestedValidUntil));
 			}
 			updateValidityWarning();

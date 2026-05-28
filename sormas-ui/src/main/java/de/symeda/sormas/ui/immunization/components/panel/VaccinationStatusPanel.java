@@ -98,7 +98,7 @@ public class VaccinationStatusPanel extends VerticalLayout {
             .numberOfDoses(caze.getNumberOfDoses())
             .informationReliability(caze.getInformationReliability())
             .vaccinationStatusLastUpdated(caze.getVaccinationStatusLastUpdated())
-            .buildBlank();
+            .build();
 
         return createPanel(caseData, caze.getPerson().getUuid(), caze.getDisease(), caze.getReportDate(), caze.getVaccinationStatusLastUpdated());
     }
@@ -110,7 +110,7 @@ public class VaccinationStatusPanel extends VerticalLayout {
             .numberOfDoses(contact.getNumberOfDoses())
             .informationReliability(contact.getInformationReliability())
             .vaccinationStatusLastUpdated(contact.getVaccinationStatusLastUpdated())
-            .buildBlank();
+            .build();
 
         return createPanel(
             contactData,
@@ -127,7 +127,7 @@ public class VaccinationStatusPanel extends VerticalLayout {
             .numberOfDoses(eventParticipant.getNumberOfDoses())
             .informationReliability(eventParticipant.getInformationReliability())
             .vaccinationStatusLastUpdated(eventParticipant.getVaccinationStatusLastUpdated())
-            .buildBlank();
+            .build();
 
         return createPanel(
             eventParticipantData,
