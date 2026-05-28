@@ -8,10 +8,12 @@ import java.util.Objects;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import de.symeda.sormas.api.audit.AuditedClass;
 
 /**
  * Wrapper around concrete storage for patch dictionary.
  */
+@AuditedClass
 public class PatchDictionary implements Serializable {
 
 	@NotNull
