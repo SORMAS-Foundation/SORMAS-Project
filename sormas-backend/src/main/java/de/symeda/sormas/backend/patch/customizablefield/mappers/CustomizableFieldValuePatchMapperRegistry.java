@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.patch.customizablefield.mappers;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -50,5 +51,9 @@ public class CustomizableFieldValuePatchMapperRegistry {
 
 		logger.error("No CustomizableFieldValuePatchMapper mapper found for: [{}]", targetType);
 		return ValueMappingResult.withCause(DataPatchFailureCause.UNSUPPORTED_TARGET_TYPE);
+	}
+
+	Set<CustomizableFieldType> getAllSupportedTypes() {
+		return orderedInstances.stream().flatMap(mapper -> mapper.getSupportedTypes().stream()).collect(Collectors.toSet());
 	}
 }

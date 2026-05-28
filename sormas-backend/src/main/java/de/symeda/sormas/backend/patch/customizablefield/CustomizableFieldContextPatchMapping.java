@@ -14,6 +14,7 @@ import de.symeda.sormas.api.exposure.ExposureDto;
 
 /**
  * To be able to use the same naming convention as for non-customizable fields.
+ * Additionally safety by enforcing that MUST be mapped (see related unit test).
  */
 public enum CustomizableFieldContextPatchMapping {
 

@@ -80,6 +80,10 @@ public enum DataPatchFailureCause {
 	 */
 	FORBIDDEN_MULTI_GROUP_FIELD,
 
+	/**
+	 * Tried to insert in a {@link de.symeda.sormas.api.customizablefield.CustomizableFieldContext} that does not exist.
+	 * You can have a look at the class: CustomizableFieldContextPatchMapping.
+	 */
 	INVALID_CUSTOM_CONTEXT,
 
 	/**

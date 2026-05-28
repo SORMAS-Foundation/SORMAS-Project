@@ -63,9 +63,36 @@ public class DatePatchMapper implements ValuePatchMapper {
 			}
 		}
 
+		if (request.isAllowFallbackValues()) {
+			logger.debug("Edge case to allow years only in lenient manner");
+			ValueMappingResult<T> yearOnlyResult = tryParseYearOnly(str, targetType);
+			if (yearOnlyResult != null) {
+				return yearOnlyResult;
+			}
+		}
+
 		logger.info("DatePatchMapper: cannot parse date value [{}], expected one of formats: [{}]", str, DATE_FORMATS);
 
 		return ValueMappingResult.withCause(DataPatchFailureCause.INVALID_VALUE_TYPE);
+	}
+
+	/**
+	 * Parses a 4-digit year string (e.g. {@code "2024"}) into January 1st of that year.
+	 * Returns {@code null} when the input is not a 4-digit year pattern.
+	 */
+	@SuppressWarnings("unchecked")
+	private <T> ValueMappingResult<T> tryParseYearOnly(String str, Class<?> targetType) {
+		if (!str.matches("\\d{4}")) {
+			return null;
+		}
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			sdf.setLenient(false);
+			Date january1st = sdf.parse(str + "-01-01");
+			return ValueMappingResult.withData((T) toTargetType(january1st, targetType));
+		} catch (ParseException e) {
+			return null;
+		}
 	}
 
 	private Object toTargetType(Date parsed, Class<?> targetType) {

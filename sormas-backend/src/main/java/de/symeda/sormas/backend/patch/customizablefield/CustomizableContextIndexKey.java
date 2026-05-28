@@ -10,7 +10,7 @@ import de.symeda.sormas.api.externalmessage.survey.PatchField;
 
 /**
  * Defines a tuple between {@link CustomizableFieldContext} and the group index.
- * In short customizable fields for some elements, per example: {@link CustomizableFieldContext#EXPOSURE} requires an element to be created
+ * Some customizable fields requires an element to be created, per example: {@link CustomizableFieldContext#EXPOSURE}
  * during patching.
  */
 public class CustomizableContextIndexKey {

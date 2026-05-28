@@ -28,7 +28,8 @@ import de.symeda.sormas.backend.util.CollectorUtils;
  * the main {@link PartialRetrieverImpl} flow.
  * <p>
  * Only {@link CustomizableFieldContext#CASE} and {@link CustomizableFieldContext#EPIDATA} are
- * supported — Exposure is excluded because displaying a single exposure value is not meaningful.
+ * supported — Exposure is excluded because partial retrieval only works for singular fields.
+ * In other words in the UI only the current value will be displayed (there is not curreexisating value)
  */
 @ApplicationScoped
 public class CustomizableFieldPartialRetriever {

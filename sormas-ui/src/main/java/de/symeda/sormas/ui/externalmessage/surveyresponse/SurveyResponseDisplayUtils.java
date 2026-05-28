@@ -6,7 +6,7 @@ import de.symeda.sormas.api.patch.partial_retrieval.DisplayableFieldInfo;
 import de.symeda.sormas.api.patch.partial_retrieval.DisplayablePartialRetrievalResponse;
 
 /**
- * To avoid duplicating logic.
+ * To avoid duplicating display logic for survey response part.
  */
 public class SurveyResponseDisplayUtils {
 

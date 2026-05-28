@@ -16019,6 +16019,11 @@ ALTER COLUMN additionaldatajson TYPE json
 USING additionaldatajson::json;
 
 
+UPDATE systemconfigurationvalue
+SET config_key = 'NG_SURVEY_FIELD_PREFIX'
+WHERE config_key = 'NG_SUVEY_FIELD_PREFIX';
+
+
 INSERT INTO schema_version (version_number, comment) VALUES (631, 'Alter JSONB to JSON to preserve insertion oder for external messages');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

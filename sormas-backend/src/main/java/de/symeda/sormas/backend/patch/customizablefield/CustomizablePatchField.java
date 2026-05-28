@@ -55,4 +55,9 @@ public class CustomizablePatchField {
 	public int hashCode() {
 		return Objects.hash(context, leafFieldName, groupIndex);
 	}
+
+	@Override
+	public String toString() {
+		return "CustomizablePatchField{" + "context=" + context + ", leafFieldName='" + leafFieldName + '\'' + ", groupIndex=" + groupIndex + '}';
+	}
 }

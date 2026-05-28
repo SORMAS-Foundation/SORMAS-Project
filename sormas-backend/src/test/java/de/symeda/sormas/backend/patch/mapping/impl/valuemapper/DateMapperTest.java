@@ -169,4 +169,51 @@ class DateMapperTest extends AbstractUnitTest {
 		// EXECUTE & CHECK
 		assertEquals(DataPatchFailureCause.INVALID_VALUE_TYPE, victim.map("2024-02-30T10:00:00", LocalDateTime.class).getDataPatchFailureCause());
 	}
+
+	// --- Year-only fallback ---
+
+	@Test
+	void map_yearOnly_withFallback_returnsJanuaryFirst() throws Exception {
+		// PREPARE
+		Date expected = new SimpleDateFormat("yyyy-MM-dd").parse("2024-01-01");
+
+		// EXECUTE — allowFallbackValues defaults to true in the shorthand helper
+		Date actual = victim.map("2024", Date.class).getData();
+
+		// CHECK
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	void map_yearOnly_withoutFallback_returnsInvalidValueType() {
+		// PREPARE
+		ValuePatchRequest<Date> request = new ValuePatchRequest<Date>().setValue("2024").setTargetType(Date.class).setAllowFallbackValues(false);
+
+		// EXECUTE & CHECK
+		assertEquals(DataPatchFailureCause.INVALID_VALUE_TYPE, victim.map(request).getDataPatchFailureCause());
+	}
+
+	@Test
+	void map_yearOnly_localDate_withFallback_returnsJanuaryFirst() {
+		// EXECUTE & CHECK
+		assertEquals(LocalDate.of(2024, 1, 1), victim.map("2024", LocalDate.class).getData());
+	}
+
+	@Test
+	void map_yearOnly_localDateTime_withFallback_returnsMidnightJanuaryFirst() {
+		// EXECUTE & CHECK
+		assertEquals(LocalDateTime.of(2024, 1, 1, 0, 0, 0), victim.map("2024", LocalDateTime.class).getData());
+	}
+
+	@Test
+	void map_partialYear_threeDigits_returnsInvalidValueType() {
+		// EXECUTE & CHECK — only 4-digit years are accepted
+		assertEquals(DataPatchFailureCause.INVALID_VALUE_TYPE, victim.map("202", Date.class).getDataPatchFailureCause());
+	}
+
+	@Test
+	void map_partialYear_fiveDigits_returnsInvalidValueType() {
+		// EXECUTE & CHECK — 5-digit strings are not valid year-only input
+		assertEquals(DataPatchFailureCause.INVALID_VALUE_TYPE, victim.map("20241", Date.class).getDataPatchFailureCause());
+	}
 }

@@ -48,6 +48,7 @@ public class CustomizableFieldDataPatcher {
 	private CustomizableFieldHelper customizableFieldHelper;
 
 	public List<CustomizableFieldSinglePatchingResult> patch(CustomizableFieldDataPatchRequest request) {
+		logger.debug("patch: [{}]", request);
 		List<PlainSinglePatchResult> patchingTuples = request.getPatchingTuples();
 
 		if (CollectionUtils.isEmpty(patchingTuples)) {
@@ -55,8 +56,7 @@ public class CustomizableFieldDataPatcher {
 			return List.of();
 		}
 
-		logger.info("Customizable patch will be attempted, enable trace to see request and response");
-		logger.debug("Request: [{}]", request);
+		logger.info("Customizable patch will be attempted, enable debug to see request and response");
 
 		List<CustomizableFieldPatchWrapper> initialWrappers = patchingTuples.stream()
 			.map(
@@ -131,6 +131,7 @@ public class CustomizableFieldDataPatcher {
 		Map<CustomizableFieldContext, Map<CustomizableFieldMetadataDto, Function<CustomizablePatchField, CustomizableFieldValueDto>>> customizableByContextDictionary) {
 		CustomizablePatchField patchField = customizableFieldPatchWrapper.getPatchField();
 		if (patchField == null) {
+			logger.warn("PatchField was null, this should not occur: [{}]", customizableFieldPatchWrapper);
 			return;
 		}
 
@@ -220,6 +221,9 @@ public class CustomizableFieldDataPatcher {
 		});
 	}
 
+	/**
+	 * Helper class to ease processing for customizable fields.
+	 */
 	public static final class CustomizableFieldPatchWrapper {
 
 		private CustomizablePatchField patchField;

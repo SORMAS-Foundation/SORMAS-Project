@@ -13,7 +13,7 @@ import de.symeda.sormas.backend.patch.customizablefield.CustomizableFieldSetter;
 import de.symeda.sormas.backend.patch.customizablefield.CustomizableFieldValuePatchRequest;
 
 /**
- * Contract to specify how a type must be mapped into a value, NOT field specific.
+ * Contract to specify how a {@link CustomizableFieldType} must be mapped into a value, NOT field specific.
  */
 public interface CustomizableFieldValuePatchMapper extends Comparable<CustomizableFieldValuePatchMapper> {
 

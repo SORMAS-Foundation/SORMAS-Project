@@ -263,11 +263,8 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 		if (surveyResponseData != null) {
 			target.setAdditionalDataType(ExternalMessageAdditionalDataType.SURVEY_RESPONSE_DATA);
-			logger.error("surveyResponseData java toString: [{}]", surveyResponseData);
 
 			String additionalData = ObjectMapperProvider.writeValueAsStringFailSafe(surveyResponseData);
-
-			logger.error("additionalData JSON str: [{}]", additionalData);
 
 			target.setAdditionalDataJson(additionalData);
 		}
@@ -1062,7 +1059,6 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 			return new de.symeda.sormas.api.patch.partial_retrieval.DisplayablePartialRetrievalResponse();
 		}
 
-		logger.info("For now for retrieval groups are ignored, as they are part of patching but not fetching.");
 		java.util.Set<String> fieldPaths = patchDictionary.keySet().stream().map(PatchField::getField).collect(Collectors.toSet());
 
 		de.symeda.sormas.api.patch.partial_retrieval.PartialRetrievalRequest request =
