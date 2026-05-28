@@ -10,6 +10,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,6 +27,7 @@ import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -131,7 +133,8 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		addField(SampleDto.LAB_SAMPLE_ID, TextField.class);
 		final DateTimeField sampleDateField = addField(SampleDto.SAMPLE_DATE_TIME, DateTimeField.class);
 		sampleDateField.setInvalidCommitted(false);
-		addField(SampleDto.SAMPLE_MATERIAL, ComboBox.class);
+		final ComboBox sampleMaterial = addField(SampleDto.SAMPLE_MATERIAL, ComboBox.class);
+		updateSampleMaterialItems(sampleMaterial, null);
 		addField(SampleDto.SAMPLE_MATERIAL_TEXT, TextField.class);
 		addField(SampleDto.SAMPLE_SOURCE, ComboBox.class);
 		addField(SampleDto.FIELD_SAMPLE_ID, TextField.class);
@@ -321,10 +324,33 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		}));
 	}
 
+	private void updateSampleMaterialItems(ComboBox sampleMaterial, SampleMaterial selectedMaterial) {
+
+		final boolean luxembourg = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+
+		List<SampleMaterial> items = Arrays.stream(SampleMaterial.values())
+			.filter(material -> material == selectedMaterial || (!material.isDeprecated() && (luxembourg || material != SampleMaterial.UNKNOWN)))
+			.sorted(Comparator.comparing(SampleMaterial::toString, String.CASE_INSENSITIVE_ORDER))
+			.collect(Collectors.toList());
+
+		FieldHelper.updateEnumData(sampleMaterial, items);
+	}
+
+	@Override
+	public void setValue(SampleDto newFieldValue) {
+		// Make sure a persisted (possibly deprecated) material is offered before the field group binds the value
+		updateSampleMaterialItems((ComboBox) getField(SampleDto.SAMPLE_MATERIAL), newFieldValue != null ? newFieldValue.getSampleMaterial() : null);
+		super.setValue(newFieldValue);
+	}
+
 	protected void setVisibilities() {
 
-		FieldHelper
-			.setVisibleWhen(getFieldGroup(), SampleDto.SAMPLE_MATERIAL_TEXT, SampleDto.SAMPLE_MATERIAL, Arrays.asList(SampleMaterial.OTHER), true);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			SampleDto.SAMPLE_MATERIAL_TEXT,
+			SampleDto.SAMPLE_MATERIAL,
+			Arrays.asList(SampleMaterial.OTHER, SampleMaterial.CLINICAL_SAMPLE),
+			true);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
 			SampleDto.NO_TEST_POSSIBLE_REASON,
@@ -460,7 +486,6 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		}
 	}
 
-	
 	public Disease getDisease() {
 		return disease;
 	}
