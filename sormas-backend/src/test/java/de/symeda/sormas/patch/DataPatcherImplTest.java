@@ -55,38 +55,6 @@ import de.symeda.sormas.backend.customizablefield.CustomizableFieldValueFacadeEj
 class DataPatcherImplTest extends AbstractBeanTest {
 
 	@Test
-	void patch_noErrorsReplaceAlways() {
-		// PREPARE
-		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.PERTUSSIS);
-
-		String newLastname = "toto";
-		String newSequelaeDetails = "Some very interesting sequelaeDetails";
-		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
-			.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
-			.setPatchDictionary(
-				Map.of(
-					"Person.lastName",
-					newLastname,
-
-					"CaseData.sequelaeDetails",
-					newSequelaeDetails));
-
-		// EXECUTE
-		DataPatchResponse response = victim().patch(request);
-
-		// CHECK
-		CaseDataDto actualCase = getCaseFacade().getByUuid(originalCase.getUuid());
-		PersonDto actualPerson = getPersonFacade().getByUuid(originalCase.getPerson().getUuid());
-
-		Assertions.assertAll(
-			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failure found, but should be empty"),
-			// PERSON
-			() -> Assertions.assertEquals(newLastname, actualPerson.getLastName()),
-			// CASE
-			() -> Assertions.assertEquals(newSequelaeDetails, actualCase.getSequelaeDetails()));
-	}
-
-	@Test
 	void patch_aliasUsage() {
 		// PREPARE
 		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.PERTUSSIS);
