@@ -180,6 +180,8 @@ public class CustomizableFieldDataPatcher {
 
 				Map<CustomizableContextIndexKey, String> entityUuidDictionary = request.getEntityUuidDictionary();
 
+				Map<String, Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto>> entityValuesCache = new HashMap<>();
+
 				Map<CustomizableFieldMetadataDto, Function<CustomizablePatchField, CustomizableFieldValueDto>> valueProviderDictionary =
 					activeFieldsForContext.stream().collect(Collectors.toMap(Function.identity(), metaData -> (customizablePatchField) -> {
 
@@ -187,11 +189,8 @@ public class CustomizableFieldDataPatcher {
 							new CustomizableContextIndexKey().setContext(customizablePatchField.getContext())
 								.setGroupIndex(customizablePatchField.getGroupIndex()));
 
-						// TODO: this call should be cached: when multiple fields on same element will be called again each time.
-						logger.warn(
-							"Call should be cached: when multiple fields on same element will be called again each time: valueFacade.getValuesForEntity");
 						Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> alreadyExistingValuesForEntity =
-							valueFacade.getValuesForEntity(entityUuid, context);
+							entityValuesCache.computeIfAbsent(entityUuid, uuid -> valueFacade.getValuesForEntity(uuid, context));
 
 						CustomizableFieldValueDto alreadyStoredValue = alreadyExistingValuesForEntity.get(metaData);
 
