@@ -62,7 +62,6 @@ import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.contact.ContactClassification;
@@ -99,8 +98,6 @@ import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
-import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
@@ -120,6 +117,8 @@ import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.exposure.ExposureService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
+import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
+import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -169,18 +168,6 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 	@EJB
 	private TaskService taskService;
 	@EJB
-
-		public void clearVaccinationStatuses() {
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaUpdate<Contact> cu = cb.createCriteriaUpdate(Contact.class);
-			cu.from(Contact.class);
-			cu.set(Contact.VACCINATION_STATUS, null);
-			cu.set(Contact.VACCINATION_STATUS_DETAILS, null);
-			cu.set(Contact.VACCINATION_STATUS_LAST_UPDATED, null);
-			cu.set(Contact.NUMBER_OF_DOSES, null);
-			cu.set(Contact.INFORMATION_RELIABILITY, null);
-			em.createQuery(cu).executeUpdate();
-		}
 	private SampleService sampleService;
 	@EJB
 	private EpiDataService epiDataService;
@@ -961,7 +948,8 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 
 		Set<ContactProximity> contactProximities = contact.getContactProximities();
 		if (!diseaseConfigurationFacade.hasFollowUp(disease)
-			|| (contactProximities != null && !contactProximities.isEmpty()
+			|| (contactProximities != null
+				&& !contactProximities.isEmpty()
 				&& contactProximities.stream().noneMatch(ContactProximity::hasFollowUp))) {
 			contact.setFollowUpUntil(null);
 			contact.setOverwriteFollowUpUntil(false);
@@ -1984,18 +1972,20 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 		Root<Contact> root = cq.from(Contact.class);
 
 		cq.where(
-			CriteriaBuilderHelper
-				.and(cb, cb.equal(root.get(Contact.PERSON).get(Person.ID), personId), cb.equal(root.get(Contact.DISEASE), disease)));
+			CriteriaBuilderHelper.and(cb, cb.equal(root.get(Contact.PERSON).get(Person.ID), personId), cb.equal(root.get(Contact.DISEASE), disease)));
 
 		List<Contact> contacts = em.createQuery(cq).getResultList();
 
 		for (Contact contact : contacts) {
 			// BR0052–0053: validFrom ≤ firstContactDate, validUntil ≥ lastContactDate
 			// Fallback: if lastContactDate is null, use firstContactDate for validUntil check
+			// Fallback: if all dates are null use reportDate
 			Date fromDate = contact.getFirstContactDate();
+
 			if (fromDate == null) {
-				continue; // Cannot derive without a reference date
+				fromDate = contact.getReportDateTime();
 			}
+
 			Date untilDate = contact.getLastContactDate() != null ? contact.getLastContactDate() : fromDate;
 
 			VaccinationStatusData data =
@@ -2015,6 +2005,18 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 				}
 			}
 		}
+	}
+
+	public void clearVaccinationStatuses() {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaUpdate<Contact> cu = cb.createCriteriaUpdate(Contact.class);
+		cu.from(Contact.class);
+		cu.set(Contact.VACCINATION_STATUS, null);
+		cu.set(Contact.VACCINATION_STATUS_DETAILS, null);
+		cu.set(Contact.VACCINATION_STATUS_LAST_UPDATED, null);
+		cu.set(Contact.NUMBER_OF_DOSES, null);
+		cu.set(Contact.INFORMATION_RELIABILITY, null);
+		em.createQuery(cu).executeUpdate();
 	}
 
 	public List<ContactListEntryDto> getEntriesList(Long personId, Integer first, Integer max) {
@@ -2082,7 +2084,8 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 	 * Fetches contactProximities for a list of contact IDs.
 	 * This is needed because @ElementCollection fields cannot be directly selected in Criteria API multiselect queries.
 	 *
-	 * @param contactIds List of contact IDs
+	 * @param contactIds
+	 *            List of contact IDs
 	 * @return Map of contact ID to Set of ContactProximity
 	 */
 	public Map<Long, Set<ContactProximity>> getContactProximitiesByContactIds(List<Long> contactIds) {
@@ -2100,9 +2103,9 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 		List<Contact> contacts = em.createQuery(cq).getResultList();
 
 		return contacts.stream()
-			.collect(Collectors.toMap(
-				Contact::getId,
-				contact -> contact.getContactProximities() != null ? new HashSet<>(contact.getContactProximities()) : new HashSet<>()
-			));
+			.collect(
+				Collectors.toMap(
+					Contact::getId,
+					contact -> contact.getContactProximities() != null ? new HashSet<>(contact.getContactProximities()) : new HashSet<>()));
 	}
 }

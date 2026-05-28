@@ -189,6 +189,24 @@ public class VaccinationFacadeEjb
 			immunizationDto.setMeansOfImmunization(MeansOfImmunization.VACCINATION);
 			immunizationDto.setImmunizationStatus(ImmunizationStatus.ACQUIRED);
 			immunizationDto.setImmunizationManagementStatus(ImmunizationManagementStatus.COMPLETED);
+
+			if (immunizationDto.getValidFrom() == null) {
+				immunizationDto.setValidFrom(
+					immunizationFacade.getSuggestedValidFrom(
+						immunizationDto.getDisease(),
+						immunizationDto.getMeansOfImmunization(),
+						vaccination.getVaccinationDate(),
+						immunizationDto.getNumberOfDoses()));
+			}
+			if (immunizationDto.getValidUntil() == null) {
+				immunizationDto.setValidUntil(
+					immunizationFacade.getSuggestedValidUntil(
+						immunizationDto.getDisease(),
+						immunizationDto.getMeansOfImmunization(),
+						immunizationDto.getValidFrom(),
+						immunizationDto.getNumberOfDoses()));
+			}
+
 			immunizationFacade.save(immunizationDto);
 
 			Immunization immunization = immunizationService.getByUuid(immunizationDto.getUuid());

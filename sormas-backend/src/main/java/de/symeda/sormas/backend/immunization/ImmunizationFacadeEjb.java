@@ -626,6 +626,9 @@ public class ImmunizationFacadeEjb
 		return target;
 	}
 
+	@RightsAllowed({
+		UserRight._IMMUNIZATION_CREATE,
+		UserRight._IMMUNIZATION_EDIT })
 	public void updateVaccinationInfoSourceFromVaccinations(Immunization immunization) {
 		if (immunization == null
 			|| immunization.getMeansOfImmunization() == MeansOfImmunization.NOT_IMMUNIZED

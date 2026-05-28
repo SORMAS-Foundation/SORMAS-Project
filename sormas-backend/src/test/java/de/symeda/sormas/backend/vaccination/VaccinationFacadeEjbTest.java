@@ -301,45 +301,84 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 		vaccination1.setVaccinationDate(UtilDate.from(LocalDate.now().atTime(6, 0)));
 		getVaccinationFacade().createWithImmunization(vaccination1, rdcf.region, rdcf.district, person1.toReference(), Disease.EVD);
 
-		assertNull(getCaseFacade().getByUuid(case11.getUuid()).getVaccinationStatus());
-		assertNull(getCaseFacade().getByUuid(case12.getUuid()).getVaccinationStatus());
-		assertNull(getCaseFacade().getByUuid(case2.getUuid()).getVaccinationStatus());
-		assertNull(getCaseFacade().getByUuid(case3.getUuid()).getVaccinationStatus());
-		assertNull(getContactFacade().getByUuid(contact11.getUuid()).getVaccinationStatus());
-		assertNull(getContactFacade().getByUuid(contact12.getUuid()).getVaccinationStatus());
-		assertNull(getContactFacade().getByUuid(contact2.getUuid()).getVaccinationStatus());
-		assertNull(getContactFacade().getByUuid(contact3.getUuid()).getVaccinationStatus());
-		assertNull(getEventParticipantFacade().getByUuid(ep111.getUuid()).getVaccinationStatus());
-		assertNull(getEventParticipantFacade().getByUuid(ep112.getUuid()).getVaccinationStatus());
-		assertNull(getEventParticipantFacade().getByUuid(ep121.getUuid()).getVaccinationStatus());
-		assertNull(getEventParticipantFacade().getByUuid(ep131.getUuid()).getVaccinationStatus());
-		assertNull(getEventParticipantFacade().getByUuid(ep141.getUuid()).getVaccinationStatus());
-		assertNull(getEventParticipantFacade().getByUuid(ep21.getUuid()).getVaccinationStatus());
+		// Expected after the first EVD vaccination:
+		// - case11: vaccinated because the first vaccination creates the immunization window, case status is derived from case reportDate,
+		//   and this case still reports today even though its onset date is 10 days earlier.
+		// - case12: vaccinated for the same reason; person and disease match and its reportDate is also today.
+		// - case2: unvaccinated because it belongs to CORONAVIRUS instead of EVD.
+		// - case3: unvaccinated because the immunization belongs to person1, not person2.
+		// - contact11: unvaccinated because this single-day contact only has a last-contact date and does not provide a covered
+		//   first-contact reference for the EVD immunization window.
+		// - contact12: unvaccinated because it does not provide a contact interval that can be matched to the new immunization window.
+		// - contact2: unvaccinated because it belongs to CORONAVIRUS instead of EVD.
+		// - contact3: unvaccinated because the immunization belongs to person1, not person2.
+		// - ep111: unvaccinated because event11 starts 12 days ago, before the immunization window that starts with vaccination1.
+		// - ep112: unvaccinated because it is on the same event window as ep111 and also belongs to person2.
+		// - ep121: vaccinated because event12 has no start date, so the event-participant logic falls back to the event report date
+		//   (today), which is inside the immunization window, while the lifelong validUntil also covers the explicit end date.
+		// - ep131: unvaccinated because event13 uses its explicit start date from 8 days ago as the reference date, which is before
+		//   the immunization window.
+		// - ep141: vaccinated because event14 has neither start nor end date, so both checks fall back to the event report date
+		//   (today), which is covered by the immunization.
+		// - ep21: unvaccinated because the event disease is CORONAVIRUS instead of EVD.
+		assertEquals(VaccinationStatus.VACCINATED, getCaseFacade().getByUuid(case11.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.VACCINATED, getCaseFacade().getByUuid(case12.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getCaseFacade().getByUuid(case2.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getCaseFacade().getByUuid(case3.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getContactFacade().getByUuid(contact11.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getContactFacade().getByUuid(contact12.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getContactFacade().getByUuid(contact2.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getContactFacade().getByUuid(contact3.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getEventParticipantFacade().getByUuid(ep111.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getEventParticipantFacade().getByUuid(ep112.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.VACCINATED, getEventParticipantFacade().getByUuid(ep121.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getEventParticipantFacade().getByUuid(ep131.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.VACCINATED, getEventParticipantFacade().getByUuid(ep141.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getEventParticipantFacade().getByUuid(ep21.getUuid()).getVaccinationStatus());
 
 		// Create a vaccination with vaccination date = yesterday
 		VaccinationDto vaccination2 = VaccinationDto.build(nationalUser.toReference());
 		vaccination2.setVaccinationDate(DateHelper.subtractDays(today, 1));
 		getVaccinationFacade().createWithImmunization(vaccination2, rdcf.region, rdcf.district, person1.toReference(), Disease.EVD);
 
-		assertNull(getCaseFacade().getByUuid(case11.getUuid()).getVaccinationStatus());
-		assertThat(getCaseFacade().getByUuid(case12.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
-		assertNull(getContactFacade().getByUuid(contact11.getUuid()).getVaccinationStatus());
-		assertThat(getContactFacade().getByUuid(contact12.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
-		assertNull(getEventParticipantFacade().getByUuid(ep111.getUuid()).getVaccinationStatus());
-		assertNull(getEventParticipantFacade().getByUuid(ep121.getUuid()).getVaccinationStatus());
-		assertNull(getEventParticipantFacade().getByUuid(ep131.getUuid()).getVaccinationStatus());
-		assertThat(getEventParticipantFacade().getByUuid(ep141.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
+		// Expected after adding a second dose dated yesterday:
+		// - vaccination 2 is attached to the existing immunization, but the immunization keeps the validFrom set by vaccination1
+		//   because validFrom is only backfilled from vaccination dates while it is still null.
+		// - case11: still vaccinated because its reportDate is still inside that existing EVD immunization window.
+		// - case12: still vaccinated for the same reason.
+		// - contact11: still unvaccinated because its single-day contact data still does not provide a covered first-contact start date.
+		// - contact12: still unvaccinated because it still has no contact interval that matches the immunization window.
+		// - ep111: still unvaccinated because event11 still starts before the unchanged immunization window.
+		// - ep121: still vaccinated because the fallback start date is still the event report date (today), which is covered.
+		// - ep131: still unvaccinated because its explicit start date is still before the unchanged window start.
+		// - ep141: still vaccinated because its fallback event date is still today and therefore covered.
+		assertEquals(VaccinationStatus.VACCINATED, getCaseFacade().getByUuid(case11.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.VACCINATED, getCaseFacade().getByUuid(case12.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getContactFacade().getByUuid(contact11.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getContactFacade().getByUuid(contact12.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getEventParticipantFacade().getByUuid(ep111.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.VACCINATED, getEventParticipantFacade().getByUuid(ep121.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getEventParticipantFacade().getByUuid(ep131.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.VACCINATED, getEventParticipantFacade().getByUuid(ep141.getUuid()).getVaccinationStatus());
 
 		// Create a vaccination with vaccination date = today - 11 days
 		VaccinationDto vaccination3 = VaccinationDto.build(nationalUser.toReference());
 		vaccination3.setVaccinationDate(DateHelper.subtractDays(today, 11));
 		getVaccinationFacade().createWithImmunization(vaccination3, rdcf.region, rdcf.district, person1.toReference(), Disease.EVD);
 
-		assertThat(getCaseFacade().getByUuid(case11.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
-		assertThat(getContactFacade().getByUuid(contact11.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
-		assertNull(getEventParticipantFacade().getByUuid(ep111.getUuid()).getVaccinationStatus());
-		assertThat(getEventParticipantFacade().getByUuid(ep121.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
-		assertThat(getEventParticipantFacade().getByUuid(ep131.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
+		// Expected after adding an older dose from 11 days ago:
+		// - vaccination 3 still attaches to the same immunization, and the already-initialized validFrom is not moved backwards.
+		// - case11: still vaccinated because the case report date is today and remains inside the unchanged immunization window.
+		// - contact11: still unvaccinated because the contact still lacks a covered first-contact start date.
+		// - ep111: still unvaccinated because event11 starts 12 days ago, which is still before the unchanged window start.
+		// - ep121: still vaccinated because its fallback start date is today and its explicit end date is still covered.
+		// - ep131: still unvaccinated because its only reference date remains the explicit start date from 8 days ago, which is still
+		//   before the unchanged window start.
+		assertEquals(VaccinationStatus.VACCINATED, getCaseFacade().getByUuid(case11.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getContactFacade().getByUuid(contact11.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getEventParticipantFacade().getByUuid(ep111.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.VACCINATED, getEventParticipantFacade().getByUuid(ep121.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getEventParticipantFacade().getByUuid(ep131.getUuid()).getVaccinationStatus());
 
 		// reset entries
 		case11.setVaccinationStatus(null);
@@ -374,37 +413,72 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 		vaccination4.setReportDate(DateHelper.addDays(today, 15));
 		getVaccinationFacade().createWithImmunization(vaccination4, rdcf.region, rdcf.district, person1.toReference(), Disease.EVD);
 
+		// Expected after resetting selected statuses and then adding a vaccination without vaccinationDate and with a reportDate 15 days
+		// in the future:
+		// - vaccination 4 is added to the existing immunization, but for cases its relevant date is reportDate minus 14 days, which is
+		//   still in the future relative to today's cases, so the manually reset case statuses are not recalculated yet.
+		// - case11: stays null because it was manually reset and the future-dated vaccination does not revisit it.
+		// - case12: stays null for the same reason.
+		// - case2: stays unvaccinated because it belongs to CORONAVIRUS instead of EVD.
+		// - case3: stays unvaccinated because the immunization belongs to person1, not person2.
+		// - contact11: stays unvaccinated because its contact data still does not provide a covered first-contact start date.
+		// - contact12: stays unvaccinated because it still has no covered contact interval.
+		// - contact2: stays unvaccinated because it belongs to CORONAVIRUS instead of EVD.
+		// - contact3: stays unvaccinated because the immunization belongs to person1, not person2.
+		// - ep111: stays unvaccinated because event11 still starts before the unchanged immunization window.
+		// - ep112: stays unvaccinated because it belongs to person2 and never matches person1's immunization.
+		// - ep121: becomes vaccinated again because event participants are recalculated from the existing immunization window, and its
+		//   fallback start date is the event report date (today), which is covered.
+		// - ep131: stays unvaccinated because its explicit start date from 8 days ago is still before the unchanged window start.
+		// - ep141: becomes vaccinated again because both event date checks fall back to the event report date (today), which is covered.
+		// - ep21: stays unvaccinated because the event disease is CORONAVIRUS instead of EVD.
 		assertNull(getCaseFacade().getByUuid(case11.getUuid()).getVaccinationStatus());
 		assertNull(getCaseFacade().getByUuid(case12.getUuid()).getVaccinationStatus());
-		assertNull(getCaseFacade().getByUuid(case2.getUuid()).getVaccinationStatus());
-		assertNull(getCaseFacade().getByUuid(case3.getUuid()).getVaccinationStatus());
-		assertNull(getContactFacade().getByUuid(contact11.getUuid()).getVaccinationStatus());
-		assertNull(getContactFacade().getByUuid(contact12.getUuid()).getVaccinationStatus());
-		assertNull(getContactFacade().getByUuid(contact2.getUuid()).getVaccinationStatus());
-		assertNull(getContactFacade().getByUuid(contact3.getUuid()).getVaccinationStatus());
-		assertNull(getEventParticipantFacade().getByUuid(ep111.getUuid()).getVaccinationStatus());
-		assertNull(getEventParticipantFacade().getByUuid(ep112.getUuid()).getVaccinationStatus());
-		assertNull(getEventParticipantFacade().getByUuid(ep121.getUuid()).getVaccinationStatus());
-		assertNull(getEventParticipantFacade().getByUuid(ep131.getUuid()).getVaccinationStatus());
-		assertNull(getEventParticipantFacade().getByUuid(ep141.getUuid()).getVaccinationStatus());
-		assertNull(getEventParticipantFacade().getByUuid(ep21.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getCaseFacade().getByUuid(case2.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getCaseFacade().getByUuid(case3.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getContactFacade().getByUuid(contact11.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getContactFacade().getByUuid(contact12.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getContactFacade().getByUuid(contact2.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getContactFacade().getByUuid(contact3.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getEventParticipantFacade().getByUuid(ep111.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getEventParticipantFacade().getByUuid(ep112.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.VACCINATED, getEventParticipantFacade().getByUuid(ep121.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getEventParticipantFacade().getByUuid(ep131.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.VACCINATED, getEventParticipantFacade().getByUuid(ep141.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getEventParticipantFacade().getByUuid(ep21.getUuid()).getVaccinationStatus());
 
 		// Create a vaccination with no vaccination date, but current report date
 		VaccinationDto vaccination5 = VaccinationDto.build(nationalUser.toReference());
 		getVaccinationFacade().createWithImmunization(vaccination5, rdcf.region, rdcf.district, person1.toReference(), Disease.EVD);
 
-		assertThat(getCaseFacade().getByUuid(case11.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
-		assertThat(getCaseFacade().getByUuid(case12.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
-		assertNull(getCaseFacade().getByUuid(case2.getUuid()).getVaccinationStatus());
-		assertNull(getCaseFacade().getByUuid(case3.getUuid()).getVaccinationStatus());
-		assertThat(getContactFacade().getByUuid(contact11.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
-		assertThat(getContactFacade().getByUuid(contact12.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
-		assertNull(getContactFacade().getByUuid(contact2.getUuid()).getVaccinationStatus());
-		assertNull(getContactFacade().getByUuid(contact3.getUuid()).getVaccinationStatus());
-		assertThat(getEventParticipantFacade().getByUuid(ep111.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
-		assertNull(getEventParticipantFacade().getByUuid(ep112.getUuid()).getVaccinationStatus());
-		assertThat(getEventParticipantFacade().getByUuid(ep131.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
-		assertThat(getEventParticipantFacade().getByUuid(ep141.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
-		assertNull(getEventParticipantFacade().getByUuid(ep21.getUuid()).getVaccinationStatus());
+		// Expected after adding a vaccination without vaccinationDate but with the default current reportDate:
+		// - vaccination 5's relevant date becomes reportDate minus 14 days, so the case-specific update runs again for the current EVD
+		//   cases; the underlying immunization window is still the one created by vaccination1.
+		// - case11: becomes vaccinated again because it is revisited and its reportDate today lies inside that existing window.
+		// - case12: becomes vaccinated again for the same reason.
+		// - case2: stays unvaccinated because it belongs to CORONAVIRUS instead of EVD.
+		// - case3: stays unvaccinated because the immunization belongs to person1, not person2.
+		// - contact11: stays unvaccinated because its contact data still does not provide a covered first-contact start date.
+		// - contact12: stays unvaccinated because it still has no covered contact interval.
+		// - contact2: stays unvaccinated because it belongs to CORONAVIRUS instead of EVD.
+		// - contact3: stays unvaccinated because the immunization belongs to person1, not person2.
+		// - ep111: stays unvaccinated because event11 still starts before the unchanged immunization window.
+		// - ep112: stays unvaccinated because it belongs to person2 and never matches person1's immunization.
+		// - ep131: stays unvaccinated because its explicit start date from 8 days ago is still before the unchanged window start.
+		// - ep141: stays vaccinated because its fallback event date is today and therefore still covered by the immunization.
+		// - ep21: stays unvaccinated because the event disease is CORONAVIRUS instead of EVD.
+		assertEquals(VaccinationStatus.VACCINATED, getCaseFacade().getByUuid(case11.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.VACCINATED, getCaseFacade().getByUuid(case12.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getCaseFacade().getByUuid(case2.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getCaseFacade().getByUuid(case3.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getContactFacade().getByUuid(contact11.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getContactFacade().getByUuid(contact12.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getContactFacade().getByUuid(contact2.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getContactFacade().getByUuid(contact3.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getEventParticipantFacade().getByUuid(ep111.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getEventParticipantFacade().getByUuid(ep112.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getEventParticipantFacade().getByUuid(ep131.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.VACCINATED, getEventParticipantFacade().getByUuid(ep141.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getEventParticipantFacade().getByUuid(ep21.getUuid()).getVaccinationStatus());
 	}
 }

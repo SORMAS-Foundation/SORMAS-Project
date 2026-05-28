@@ -126,7 +126,11 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 				UtilDate.from(LocalDate.of(9999, 12, 31)),
 				getImmunizationFacade().getSuggestedValidUntil(Disease.MEASLES, MeansOfImmunization.VACCINATION, validFrom, 2));
 		} finally {
-			MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, originalLocale);
+			if (originalLocale != null) {
+				MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, originalLocale);
+			} else {
+				MockProducer.getProperties().remove(ConfigFacadeEjb.COUNTRY_LOCALE);
+			}
 		}
 
 		String originalLocale2 = MockProducer.getProperties().getProperty(ConfigFacadeEjb.COUNTRY_LOCALE);
@@ -139,7 +143,11 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 				UtilDate.from(LocalDate.of(9999, 12, 31)),
 				getImmunizationFacade().getSuggestedValidUntil(Disease.MEASLES, MeansOfImmunization.VACCINATION, defaultValidFrom, 2));
 		} finally {
-			MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, originalLocale2);
+			if (originalLocale2 != null) {
+				MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, originalLocale2);
+			} else {
+				MockProducer.getProperties().remove(ConfigFacadeEjb.COUNTRY_LOCALE);
+			}
 		}
 	}
 
@@ -168,7 +176,11 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 			assertEquals(UtilDate.from(LocalDate.of(9999, 12, 31)), saved.getValidUntil());
 			assertNotNull(saved.getUuid());
 		} finally {
-			MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, originalLocale);
+			if (originalLocale != null) {
+				MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, originalLocale);
+			} else {
+				MockProducer.getProperties().remove(ConfigFacadeEjb.COUNTRY_LOCALE);
+			}
 		}
 	}
 
@@ -954,7 +966,11 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 			List<ImmunizationIndexDto> immunizationIndexDtosAll = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null);
 			assertEquals(3, immunizationIndexDtosAll.size());
 		} finally {
-			MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, originalLocale);
+			if (originalLocale != null) {
+				MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, originalLocale);
+			} else {
+				MockProducer.getProperties().remove(ConfigFacadeEjb.COUNTRY_LOCALE);
+			}
 		}
 	}
 }
