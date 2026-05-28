@@ -11,6 +11,7 @@ import javax.inject.Inject;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldType;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
 import de.symeda.sormas.api.patch.mapping.ValueMappingResult;
+import de.symeda.sormas.api.patch.mapping.ValuePatchRequest;
 import de.symeda.sormas.api.utils.Tuple;
 import de.symeda.sormas.backend.patch.customizablefield.CustomizableFieldSetter;
 import de.symeda.sormas.backend.patch.customizablefield.CustomizableFieldValuePatchRequest;
@@ -34,7 +35,12 @@ public class DateCustomizableFieldValuePatchMapper implements CustomizableFieldV
 	@Override
 	public ValueMappingResult<CustomizableFieldValueDto> map(CustomizableFieldValuePatchRequest request) {
 		Tuple<Class<Object>, CustomizableFieldSetter<Object>> tuple = DICTIONARY.get(request.getTargetType());
-		ValueMappingResult<?> result = datePatchMapper.map(request.getValue(), tuple.getFirst());
+
+		ValueMappingResult<?> result = datePatchMapper.map(
+			new ValuePatchRequest().setValue(request.getValue())
+				.setTargetType(tuple.getFirst())
+				.setAllowFallbackValues(request.isAllowFallbackValues())
+				.setInputLanguages(request.getInputLanguages()));
 
 		CustomizableFieldSetter<Object> second = tuple.getSecond();
 

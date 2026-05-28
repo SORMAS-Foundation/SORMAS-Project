@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldType;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
 import de.symeda.sormas.api.patch.mapping.ValueMappingResult;
+import de.symeda.sormas.api.patch.mapping.ValuePatchRequest;
 import de.symeda.sormas.api.utils.Tuple;
 import de.symeda.sormas.backend.patch.customizablefield.CustomizableFieldSetter;
 import de.symeda.sormas.backend.patch.customizablefield.CustomizableFieldValuePatchRequest;
@@ -51,7 +52,11 @@ public class PrimitiveCustomizableFieldValuePatchMapper implements CustomizableF
 
 		Class<?> targetClass = CUSTOM_TYPE_STORAGE_TYPE_DICTIONARY.get(targetType);
 
-		ValueMappingResult<?> result = primitivePatchMapper.map(request.getValue(), targetClass);
+		ValueMappingResult<?> result = primitivePatchMapper.map(
+			new ValuePatchRequest().setValue(request.getValue())
+				.setTargetType(targetClass)
+				.setAllowFallbackValues(request.isAllowFallbackValues())
+				.setInputLanguages(request.getInputLanguages()));
 
 		Tuple<Class<Object>, CustomizableFieldSetter<Object>> tuple;
 		if (targetClass == Boolean.class) {

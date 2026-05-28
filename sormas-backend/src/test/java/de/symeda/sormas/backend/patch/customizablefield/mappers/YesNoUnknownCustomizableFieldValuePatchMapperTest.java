@@ -56,7 +56,12 @@ class YesNoUnknownCustomizableFieldValuePatchMapperTest extends AbstractUnitTest
 
 	@Test
 	void map_unrecognisedValue_returnsFailure() {
-		ValueMappingResult<CustomizableFieldValueDto> result = victim.map(buildRequest("MAYBE", new CustomizableFieldValueDto()));
+		CustomizableFieldValueDto valueDto = new CustomizableFieldValueDto();
+		ValueMappingResult<CustomizableFieldValueDto> result = victim.map(
+			new CustomizableFieldValuePatchRequest().setValue("MAYBE")
+				.setTargetType(CustomizableFieldType.YES_NO_UNKNOWN)
+				.setCustomizableFieldValueDto(valueDto)
+				.setAllowFallbackValues(false));
 		assertEquals(DataPatchFailureCause.NOT_PRESENT_IN_REFERENCE_DATA_LIST, result.getDataPatchFailureCause());
 	}
 

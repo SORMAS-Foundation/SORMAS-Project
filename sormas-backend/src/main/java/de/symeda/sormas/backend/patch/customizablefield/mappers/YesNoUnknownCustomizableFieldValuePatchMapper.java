@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldType;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
 import de.symeda.sormas.api.patch.mapping.ValueMappingResult;
+import de.symeda.sormas.api.patch.mapping.ValuePatchRequest;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.patch.customizablefield.CustomizableFieldValuePatchRequest;
 import de.symeda.sormas.backend.patch.mapping.impl.valuemapper.EnumPatchMapper;
@@ -22,7 +23,11 @@ public class YesNoUnknownCustomizableFieldValuePatchMapper implements Customizab
 
 	@Override
 	public ValueMappingResult<CustomizableFieldValueDto> map(CustomizableFieldValuePatchRequest request) {
-		ValueMappingResult<YesNoUnknown> result = enumPatchMapper.map(request.getValue(), YesNoUnknown.class);
+		ValueMappingResult<YesNoUnknown> result = enumPatchMapper.map(
+			new ValuePatchRequest<YesNoUnknown>().setValue(request.getValue())
+				.setTargetType(YesNoUnknown.class)
+				.setAllowFallbackValues(request.isAllowFallbackValues())
+				.setInputLanguages(request.getInputLanguages()));
 
 		CustomizableFieldValueDto dto = request.getCustomizableFieldValueDto();
 		dto.setValueAsYesNoUnknown(result.getData());
