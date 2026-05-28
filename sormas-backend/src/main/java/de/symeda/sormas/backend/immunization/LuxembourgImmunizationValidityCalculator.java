@@ -100,8 +100,11 @@ public class LuxembourgImmunizationValidityCalculator implements ImmunizationVal
 				return null;
 			}
 
-			long vaccinationStartOffset = profile.vaccinationStartOffsetDays != null ? profile.vaccinationStartOffsetDays : 0L;
-			return UtilDate.from(UtilDate.toLocalDate(immunizationDate).plusDays(vaccinationStartOffset));
+			if (profile.vaccinationStartOffsetDays == null) {
+				return null;
+			}
+
+			return UtilDate.from(UtilDate.toLocalDate(immunizationDate).plusDays(profile.vaccinationStartOffsetDays));
 		}
 
 		if (MeansOfImmunization.isRecovery(meansOfImmunization)) {
@@ -125,7 +128,7 @@ public class LuxembourgImmunizationValidityCalculator implements ImmunizationVal
 
 		Long durationDays = null;
 		if (MeansOfImmunization.isVaccination(meansOfImmunization) && profile.hasRequiredDoses(numberOfDoses)) {
-			durationDays = profile.vaccinationDurationDays != null ? profile.vaccinationDurationDays : LIFELONG_DURATION_DAYS;
+			durationDays = profile.vaccinationDurationDays;
 		}
 		if (durationDays == null && MeansOfImmunization.isRecovery(meansOfImmunization)) {
 			durationDays = profile.recoveryDurationDays;

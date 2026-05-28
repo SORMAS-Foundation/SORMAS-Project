@@ -21,6 +21,7 @@ import java.util.Date;
 
 import org.junit.jupiter.api.Test;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
@@ -33,7 +34,9 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 
 /**
  * Comprehensive unit tests for ImmunizationService.deriveVaccinationStatus() method.
@@ -649,7 +652,7 @@ class ImmunizationServiceDeriveStatusTest extends AbstractBeanTest {
 	}
 
 	/**
-	 * Tests that immunization without meansOfImmunization returns UNKNOWN.
+	 * Tests that immunization without meansOfImmunization returns UNKNOWN in Luxembourg.
 	 */
 	@Test
 	void testDeriveVaccinationStatus_NullMeansOfImmunization() {
@@ -669,9 +672,20 @@ class ImmunizationServiceDeriveStatusTest extends AbstractBeanTest {
 		immunization.setMeansOfImmunization(null); // Explicitly set to null
 		getImmunizationFacade().save(immunization);
 
-		// Should return UNKNOWN when meansOfImmunization is null
-		VaccinationStatusData data = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.CORONAVIRUS, referenceDate);
-		assertEquals(VaccinationStatus.UNKNOWN, data.getVaccinationStatus());
+		String originalLocale = MockProducer.getProperties().getProperty(ConfigFacadeEjb.COUNTRY_LOCALE);
+		try {
+			MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+
+			// Luxembourg-specific fallback should return UNKNOWN when meansOfImmunization is null.
+			VaccinationStatusData data = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.CORONAVIRUS, referenceDate);
+			assertEquals(VaccinationStatus.UNKNOWN, data.getVaccinationStatus());
+		} finally {
+			if (originalLocale != null) {
+				MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, originalLocale);
+			} else {
+				MockProducer.getProperties().remove(ConfigFacadeEjb.COUNTRY_LOCALE);
+			}
+		}
 	}
 
 	/**
