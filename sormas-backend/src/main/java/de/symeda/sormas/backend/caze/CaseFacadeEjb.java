@@ -159,6 +159,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
@@ -1741,8 +1742,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	@RightsAllowed(UserRight._CASE_EDIT)
-	public void deleteVaccinationStatuses() {
-		service.clearVaccinationStatuses();
+	public void deleteVaccinationStatuses(ImmunizationReferenceDto immunizationRef) {
+		service.clearVaccinationStatuses(immunizationRef);
 	}
 
 	private CaseDataDto caseSave(

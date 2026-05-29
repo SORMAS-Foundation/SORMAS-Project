@@ -86,6 +86,7 @@ import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
 import de.symeda.sormas.api.immunization.VaccinationStatusData;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
@@ -119,6 +120,7 @@ import de.symeda.sormas.backend.exposure.ExposureService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
+import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -2007,15 +2009,25 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 		}
 	}
 
-	public void clearVaccinationStatuses() {
+	public void clearVaccinationStatuses(ImmunizationReferenceDto immunizationRef) {
+		Immunization immunization = immunizationService.getByReferenceDto(immunizationRef);
+		if (immunization == null) {
+			return;
+		}
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaUpdate<Contact> cu = cb.createCriteriaUpdate(Contact.class);
-		cu.from(Contact.class);
+		Root<Contact> root = cu.from(Contact.class);
 		cu.set(Contact.VACCINATION_STATUS, null);
 		cu.set(Contact.VACCINATION_STATUS_DETAILS, null);
 		cu.set(Contact.VACCINATION_STATUS_LAST_UPDATED, null);
 		cu.set(Contact.NUMBER_OF_DOSES, null);
 		cu.set(Contact.INFORMATION_RELIABILITY, null);
+		cu.where(
+			CriteriaBuilderHelper.and(
+				cb,
+				cb.equal(root.get(Contact.PERSON).get(Person.ID), immunization.getPerson().getId()),
+				cb.equal(root.get(Contact.DISEASE), immunization.getDisease())));
 		em.createQuery(cu).executeUpdate();
 	}
 

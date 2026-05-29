@@ -95,6 +95,7 @@ import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRun
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.followup.FollowUpLogic;
+import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
 import de.symeda.sormas.api.immunization.VaccinationStatusData;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
@@ -2253,15 +2254,25 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		em.createQuery(cu).executeUpdate();
 	}
 
-	public void clearVaccinationStatuses() {
+	public void clearVaccinationStatuses(ImmunizationReferenceDto immunizationRef) {
+		Immunization immunization = immunizationService.getByReferenceDto(immunizationRef);
+		if (immunization == null) {
+			return;
+		}
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaUpdate<Case> cu = cb.createCriteriaUpdate(Case.class);
-		cu.from(Case.class);
+		Root<Case> root = cu.from(Case.class);
 		cu.set(Case.VACCINATION_STATUS, null);
 		cu.set(Case.VACCINATION_STATUS_DETAILS, null);
 		cu.set(Case.VACCINATION_STATUS_LAST_UPDATED, null);
 		cu.set(Case.NUMBER_OF_DOSES, null);
 		cu.set(Case.INFORMATION_RELIABILITY, null);
+		cu.where(
+			CriteriaBuilderHelper.and(
+				cb,
+				cb.equal(root.get(Case.PERSON).get(Person.ID), immunization.getPerson().getId()),
+				cb.equal(root.get(Case.DISEASE), immunization.getDisease())));
 		em.createQuery(cu).executeUpdate();
 	}
 

@@ -44,6 +44,7 @@ import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
 import de.symeda.sormas.api.immunization.VaccinationStatusData;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -55,6 +56,7 @@ import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
+import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.sample.Sample;
@@ -599,15 +601,25 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		updateDeterminedVaccinationStatuses(personId, disease);
 	}
 
-	public void clearVaccinationStatuses() {
+	public void clearVaccinationStatuses(ImmunizationReferenceDto immunizationRef) {
+		Immunization immunization = immunizationService.getByReferenceDto(immunizationRef);
+		if (immunization == null) {
+			return;
+		}
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaUpdate<EventParticipant> cu = cb.createCriteriaUpdate(EventParticipant.class);
-		cu.from(EventParticipant.class);
+		Root<EventParticipant> root = cu.from(EventParticipant.class);
 		cu.set(EventParticipant.VACCINATION_STATUS, null);
 		cu.set(EventParticipant.VACCINATION_STATUS_DETAILS, null);
 		cu.set(EventParticipant.VACCINATION_STATUS_LAST_UPDATED, null);
 		cu.set(EventParticipant.NUMBER_OF_DOSES, null);
 		cu.set(EventParticipant.INFORMATION_RELIABILITY, null);
+		cu.where(
+			CriteriaBuilderHelper.and(
+				cb,
+				cb.equal(root.get(EventParticipant.PERSON).get(Person.ID), immunization.getPerson().getId()),
+				cb.equal(root.get(EventParticipant.EVENT).get(Event.DISEASE), immunization.getDisease())));
 		em.createQuery(cu).executeUpdate();
 	}
 

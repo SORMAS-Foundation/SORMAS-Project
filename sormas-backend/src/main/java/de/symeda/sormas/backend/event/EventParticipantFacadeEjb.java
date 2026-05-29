@@ -87,6 +87,7 @@ import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRun
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
@@ -453,8 +454,8 @@ public class EventParticipantFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._EVENTPARTICIPANT_EDIT)
-	public void deleteVaccinationStatuses() {
-		service.clearVaccinationStatuses();
+	public void deleteVaccinationStatuses(ImmunizationReferenceDto immunizationRef) {
+		service.clearVaccinationStatuses(immunizationRef);
 	}
 
 	private void notifyEventResponsibleUsersOfCommonEventParticipant(EventParticipant eventParticipant, Event event) {

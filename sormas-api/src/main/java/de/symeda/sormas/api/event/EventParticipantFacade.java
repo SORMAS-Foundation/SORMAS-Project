@@ -20,10 +20,12 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ejb.Remote;
+import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.utils.SortProperty;
 
@@ -77,5 +79,5 @@ public interface EventParticipantFacade
 
 	void updateVaccinationStatuses(EventParticipantReferenceDto eventParticipantRef);
 
-	void deleteVaccinationStatuses();
+	void deleteVaccinationStatuses(@NotNull ImmunizationReferenceDto immunizationRef);
 }

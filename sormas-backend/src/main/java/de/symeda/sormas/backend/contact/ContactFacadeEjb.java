@@ -123,6 +123,7 @@ import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -2383,8 +2384,8 @@ public class ContactFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._CONTACT_EDIT)
-	public void deleteVaccinationStatuses() {
-		service.clearVaccinationStatuses();
+	public void deleteVaccinationStatuses(ImmunizationReferenceDto immunizationRef) {
+		service.clearVaccinationStatuses(immunizationRef);
 	}
 
 	@Override
