@@ -872,6 +872,54 @@ class DataPatcherImplTest extends AbstractBeanTest {
 	}
 
 	@Test
+	void patch_grouped_twoImmunizationsThreeVaccinations_thirdVaccinationCreatesNewImmunization() {
+		// PREPARE
+		Disease disease = Disease.PERTUSSIS;
+		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
+
+		PatchDictionary patchDictionary = new PatchDictionary();
+		patchDictionary.put(PatchField.of(toFieldName(ImmunizationDto.I18N_PREFIX, ImmunizationDto.IMMUNIZATION_STATUS), 0), "ACQUIRED");
+		patchDictionary.put(PatchField.of(toFieldName(VaccinationDto.I18N_PREFIX, VaccinationDto.VACCINE_NAME), 0), "COMIRNATY");
+
+		patchDictionary.put(PatchField.of(toFieldName(ImmunizationDto.I18N_PREFIX, ImmunizationDto.IMMUNIZATION_STATUS), 1), "NOT_ACQUIRED");
+		patchDictionary.put(PatchField.of(toFieldName(VaccinationDto.I18N_PREFIX, VaccinationDto.VACCINE_NAME), 1), "MRNA_1273");
+
+		patchDictionary.put(PatchField.of(toFieldName(VaccinationDto.I18N_PREFIX, VaccinationDto.VACCINE_NAME), 2), "AD26_COV2_S");
+
+		// EXECUTE
+		DataPatchResponse response = victim().patch(
+			new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
+				.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+				.setPatchDictionary(patchDictionary));
+
+		// CHECK
+		List<ImmunizationDto> immunizations = getImmunizationFacade().getByPersonUuids(List.of(originalCase.getPerson().getUuid()));
+		List<VaccinationDto> allVaccinations = immunizations.stream().flatMap(imm -> imm.getVaccinations().stream()).collect(Collectors.toList());
+
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failures: " + response.getFailures()),
+			() -> Assertions.assertTrue(response.isApplied()),
+
+			() -> Assertions.assertEquals(3, immunizations.size()),
+			() -> Assertions.assertEquals(3, allVaccinations.size()),
+			() -> Assertions.assertTrue(immunizations.stream().allMatch(imm -> imm.getVaccinations().size() == 1)),
+
+			() -> Assertions.assertTrue(
+				immunizations.stream()
+					.anyMatch(
+						imm -> ImmunizationStatus.ACQUIRED.equals(imm.getImmunizationStatus())
+							&& imm.getVaccinations().stream().anyMatch(vac -> Vaccine.COMIRNATY.equals(vac.getVaccineName())))),
+
+			() -> Assertions.assertTrue(
+				immunizations.stream()
+					.anyMatch(
+						imm -> ImmunizationStatus.NOT_ACQUIRED.equals(imm.getImmunizationStatus())
+							&& imm.getVaccinations().stream().anyMatch(vac -> Vaccine.MRNA_1273.equals(vac.getVaccineName())))),
+
+			() -> Assertions.assertTrue(allVaccinations.stream().anyMatch(vac -> Vaccine.AD26_COV2_S.equals(vac.getVaccineName()))));
+	}
+
+	@Test
 	void patch_exposure() {
 		// PREPARE
 		Disease disease = Disease.DENGUE;
