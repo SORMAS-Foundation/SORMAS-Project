@@ -996,6 +996,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			trimesterField.setVisible(false);
 		}
 
+		boolean showVaccinationStatusFields = !UiUtil.enabled(FeatureType.IMMUNIZATION_MANAGEMENT)
+			|| FacadeProvider.getFeatureConfigurationFacade().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED);
+
 		ComboBox vaccinationStatusField = addField(CaseDataDto.VACCINATION_STATUS, ComboBox.class);
 
 		// Add field to display means of immunization details when status is OTHER
@@ -1008,12 +1011,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		getContent().addComponent(vaccinationStatusDetailsField, VACCINATION_STATUS_DETAILS_LOC);
 
 		// Show details field only when vaccination status is OTHER
-		FieldHelper.setVisibleWhen(
-			getFieldGroup(),
-			CaseDataDto.VACCINATION_STATUS_DETAILS,
-			CaseDataDto.VACCINATION_STATUS,
-			Collections.singletonList(VaccinationStatus.OTHER),
-			true);
+		if (showVaccinationStatusFields) {
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				CaseDataDto.VACCINATION_STATUS_DETAILS,
+				CaseDataDto.VACCINATION_STATUS,
+				Collections.singletonList(VaccinationStatus.OTHER),
+				true);
+		}
 
 		addFields(CaseDataDto.SMALLPOX_VACCINATION_SCAR, CaseDataDto.SMALLPOX_VACCINATION_RECEIVED);
 		addDateField(CaseDataDto.SMALLPOX_LAST_VACCINATION_DATE, DateField.class, 0);
@@ -1119,6 +1124,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		// Set initial visibilities & accesses
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
+
+		if (!showVaccinationStatusFields) {
+			vaccinationStatusField.setVisible(false);
+			vaccinationStatusDetailsField.setVisible(false);
+		}
 
 		// Set requirements that don't need visibility changes and read only status
 		setRequired(
@@ -1247,8 +1257,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		}
 
 		// Sync visibility of info label with vaccination status field
-		if (vaccinationStatusInfoLabel != null && isVisibleAllowed(CaseDataDto.VACCINATION_STATUS)) {
-			vaccinationStatusInfoLabel.setVisible(true);
+		if (vaccinationStatusInfoLabel != null) {
+			vaccinationStatusInfoLabel.setVisible(showVaccinationStatusFields && isVisibleAllowed(CaseDataDto.VACCINATION_STATUS));
 		}
 
 		if (isVisibleAllowed(CaseDataDto.OUTCOME_DATE)) {

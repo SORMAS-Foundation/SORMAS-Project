@@ -239,6 +239,9 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			return;
 		}
 
+		boolean showVaccinationStatusFields = !UiUtil.enabled(FeatureType.IMMUNIZATION_MANAGEMENT)
+			|| FacadeProvider.getFeatureConfigurationFacade().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED);
+
 		Label contactDataHeadingLabel = new Label(I18nProperties.getString(Strings.headingContactData));
 		contactDataHeadingLabel.addStyleName(H3);
 		getContent().addComponent(contactDataHeadingLabel, CONTACT_DATA_HEADING_LOC);
@@ -469,8 +472,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		addField(ContactDto.DESCRIPTION, TextArea.class).setRows(6);
 		ComboBox vaccinationStatusCB = addField(ContactDto.VACCINATION_STATUS);
 
-		addField(ContactDto.VACCINATION_PROPOSED, CheckBox.class);
-		addField(ContactDto.IMMUNE_GLOBULIN_PROPOSED, CheckBox.class);
+		CheckBox vaccinationProposedField = addField(ContactDto.VACCINATION_PROPOSED, CheckBox.class);
+		CheckBox immuneGlobulinProposedField = addField(ContactDto.IMMUNE_GLOBULIN_PROPOSED, CheckBox.class);
 		addField(ContactDto.RETURNING_TRAVELER, NullableOptionGroup.class);
 		addField(ContactDto.CASE_ID_EXTERNAL_SYSTEM, TextField.class);
 		addField(ContactDto.CASE_OR_EVENT_INFORMATION, TextArea.class).setRows(4);
@@ -570,6 +573,10 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
+
+		if (!showVaccinationStatusFields) {
+			vaccinationStatusCB.setVisible(false);
+		}
 
 		setReadOnly(
 			true,

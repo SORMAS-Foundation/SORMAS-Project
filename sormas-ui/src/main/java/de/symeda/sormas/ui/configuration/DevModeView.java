@@ -35,6 +35,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -73,6 +74,8 @@ import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.immunization.ImmunizationDto;
+import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictCriteria;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictIndexDto;
@@ -192,22 +195,68 @@ public class DevModeView extends AbstractConfigurationView {
 		Button btnClearCaseVaccinationStatuses = ButtonHelper.createButton(
 			"clearCaseVaccinationStatuses",
 			"Clear case vaccination statuses",
-			e -> FacadeProvider.getCaseFacade().deleteVaccinationStatuses());
+			e -> showClearVaccinationStatusesPopup(
+				"Clear case vaccination statuses",
+				FacadeProvider.getCaseFacade()::deleteVaccinationStatuses));
 		horizontalLayout.addComponent(btnClearCaseVaccinationStatuses);
 
 		Button btnClearContactVaccinationStatuses = ButtonHelper.createButton(
 			"clearContactVaccinationStatuses",
 			"Clear contact vaccination statuses",
-			e -> FacadeProvider.getContactFacade().deleteVaccinationStatuses());
+			e -> showClearVaccinationStatusesPopup(
+				"Clear contact vaccination statuses",
+				FacadeProvider.getContactFacade()::deleteVaccinationStatuses));
 		horizontalLayout.addComponent(btnClearContactVaccinationStatuses);
 
 		Button btnClearEventParticipantVaccinationStatuses = ButtonHelper.createButton(
 			"clearEventParticipantVaccinationStatuses",
 			"Clear event participant vaccination statuses",
-			e -> FacadeProvider.getEventParticipantFacade().deleteVaccinationStatuses());
+			e -> showClearVaccinationStatusesPopup(
+				"Clear event participant vaccination statuses",
+				FacadeProvider.getEventParticipantFacade()::deleteVaccinationStatuses));
 		horizontalLayout.addComponent(btnClearEventParticipantVaccinationStatuses);
 
 		return horizontalLayout;
+	}
+
+	private void showClearVaccinationStatusesPopup(String caption, Consumer<ImmunizationReferenceDto> clearAction) {
+
+		VerticalLayout content = new VerticalLayout();
+		content.setMargin(false);
+		content.setSpacing(true);
+
+		Label infoLabel = new Label("Enter the immunization UUID whose derived vaccination statuses should be cleared.");
+		TextField immunizationUuidField = new TextField("Immunization UUID");
+		immunizationUuidField.setWidth(100, Unit.PERCENTAGE);
+		content.addComponents(infoLabel, immunizationUuidField);
+
+		VaadinUiUtil.showConfirmationPopup(caption, content, "Clear", "Cancel", 520, result -> {
+			if (!result) {
+				return true;
+			}
+
+			String immunizationUuid = immunizationUuidField.getValue() != null ? immunizationUuidField.getValue().trim() : "";
+			if (immunizationUuid.isEmpty()) {
+				Notification.show("Please enter an immunization UUID.", Notification.Type.WARNING_MESSAGE);
+				return false;
+			}
+
+			try {
+				ImmunizationDto immunization = FacadeProvider.getImmunizationFacade().getByUuid(immunizationUuid);
+				if (immunization == null) {
+					Notification.show("No immunization found for the provided UUID.", Notification.Type.WARNING_MESSAGE);
+					return false;
+				}
+
+				clearAction.accept(immunization.toReference());
+				Notification.show("Vaccination statuses cleared.", Notification.Type.HUMANIZED_MESSAGE);
+				return true;
+			} catch (RuntimeException ex) {
+				logger.error("Could not clear vaccination statuses for immunization {}", immunizationUuid, ex);
+				Notification.show("Could not clear vaccination statuses.", ex.getMessage(), Notification.Type.ERROR_MESSAGE);
+				return false;
+			}
+		});
 	}
 
 	private HorizontalLayout createSeedSettingsLayout() {
