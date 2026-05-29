@@ -52,7 +52,7 @@ public class CustomizableFieldDataPatcher {
 		List<PlainSinglePatchResult> patchingTuples = request.getPatchingTuples();
 
 		if (CollectionUtils.isEmpty(patchingTuples)) {
-			logger.info("No csutomizable fields patching tuples provided");
+			logger.info("No customizable fields patching tuples provided");
 			return List.of();
 		}
 

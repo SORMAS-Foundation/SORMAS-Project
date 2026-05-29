@@ -24,6 +24,7 @@ import de.symeda.sormas.api.patch.mapping.ValuePatchMapper;
 import de.symeda.sormas.api.patch.mapping.ValuePatchRequest;
 import de.symeda.sormas.api.referencedata.ReferenceDataValueInstanceProvider;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
+import de.symeda.sormas.backend.patch.DataPatchingException;
 import de.symeda.sormas.backend.util.StringNormalizer;
 
 @ApplicationScoped
@@ -59,7 +60,14 @@ public class ReferenceDtoPatchMapper implements ValuePatchMapper {
 	}
 
 	private <T extends ReferenceDto> Optional<T> findByCaptionMatch(String captionCandidate, Class<T> referenceType) {
-		return referenceDataValueInstanceProvider.getOne(captionCandidate, referenceType);
+		try {
+			return referenceDataValueInstanceProvider.getOne(captionCandidate, referenceType);
+		} catch (IllegalStateException e) {
+			logger.error("Configuration issue for referenceType: [{}] for captionCandidate: [{}]", referenceType, captionCandidate);
+			throw new DataPatchingException(
+				String.format("ReferenceType [%s] not supported", referenceType),
+				DataPatchFailureCause.UNSUPPORTED_REFERENCE_DATA);
+		}
 	}
 
 	private <T> Optional<T> findByTranslationKey(Object value, Class<?> referenceType, ValuePatchRequest request) {
