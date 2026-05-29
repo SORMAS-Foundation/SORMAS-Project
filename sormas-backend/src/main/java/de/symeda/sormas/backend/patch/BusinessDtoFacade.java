@@ -162,24 +162,30 @@ public class BusinessDtoFacade {
 	}
 
 	private void registerLeafAttacherOperations() {
-		registerLeafAttacher(VaccinationDto.class, (leaf, groupIndex, map) -> {
-			ImmunizationDto immunization = (ImmunizationDto) map.computeIfAbsent(
-				Tuple.of(ImmunizationDto.I18N_PREFIX, groupIndex),
-				k -> createImmunizationDtoFromCaseFct().apply(requireCaseData(map)));
+		registerLeafAttacher(VaccinationDto.class, (leaf, groupIndex, list) -> {
+			ImmunizationDto immunization = list.stream()
+				.filter(tuple -> tuple.getSecond() instanceof ImmunizationDto && Objects.equals(tuple.getFirst(), groupIndex))
+				.map(tuple -> (ImmunizationDto) tuple.getSecond())
+				.findAny()
+				.orElseGet(() -> {
+					ImmunizationDto newImm = (ImmunizationDto) createImmunizationDtoFromCaseFct().apply(requireCaseData(list));
+					list.add(Tuple.of(groupIndex, newImm));
+					return newImm;
+				});
 
 			if (immunization.getMeansOfImmunization() == null) {
 				immunization.setMeansOfImmunization(MeansOfImmunization.VACCINATION);
 			}
 			immunization.getVaccinations().add((VaccinationDto) leaf);
 		});
-		registerLeafAttacher(ExposureDto.class, (leaf, groupIndex, map) -> {
-			requireCaseData(map).getEpiData().getExposures().add((ExposureDto) leaf);
+		registerLeafAttacher(ExposureDto.class, (leaf, groupIndex, list) -> {
+			requireCaseData(list).getEpiData().getExposures().add((ExposureDto) leaf);
 		});
-		registerLeafAttacher(ActivityAsCaseDto.class, (leaf, groupIndex, map) -> {
-			requireCaseData(map).getEpiData().getActivitiesAsCase().add((ActivityAsCaseDto) leaf);
+		registerLeafAttacher(ActivityAsCaseDto.class, (leaf, groupIndex, list) -> {
+			requireCaseData(list).getEpiData().getActivitiesAsCase().add((ActivityAsCaseDto) leaf);
 		});
-		registerLeafAttacher(PreviousHospitalizationDto.class, (leaf, groupIndex, map) -> {
-			requireCaseData(map).getHospitalization().getPreviousHospitalizations().add((PreviousHospitalizationDto) leaf);
+		registerLeafAttacher(PreviousHospitalizationDto.class, (leaf, groupIndex, list) -> {
+			requireCaseData(list).getHospitalization().getPreviousHospitalizations().add((PreviousHospitalizationDto) leaf);
 		});
 	}
 
@@ -187,9 +193,9 @@ public class BusinessDtoFacade {
 		leafAttacherRegistry.put(leafClass, attacher);
 	}
 
-	private CaseDataDto requireCaseData(Map<Tuple<String, Integer>, EntityDto> dtosInProgress) {
-		return dtosInProgress.values()
-			.stream()
+	private CaseDataDto requireCaseData(List<Tuple<Integer, EntityDto>> dtosInProgress) {
+		return dtosInProgress.stream()
+			.map(Tuple::getSecond)
 			.filter(CaseDataDto.class::isInstance)
 			.map(CaseDataDto.class::cast)
 			.findAny()
@@ -294,29 +300,26 @@ public class BusinessDtoFacade {
 			.apply((T) entityDto);
 	}
 
-	public void save(@NotNull Map<Tuple<String, Integer>, EntityDto> entityDtosByKey) {
-		Map<Tuple<String, Integer>, EntityDto> dtosInProgress = new LinkedHashMap<>(entityDtosByKey);
+	public void save(@NotNull List<Tuple<Integer, EntityDto>> entityDtosByKey) {
+		List<Tuple<Integer, EntityDto>> dtosInProgress = new ArrayList<>(entityDtosByKey);
 
 		leafAttacherRegistry.forEach((leafClass, attacher) -> {
-			List<Tuple<String, Integer>> leafKeys = dtosInProgress.entrySet()
-				.stream()
-				.filter(e -> leafClass.isInstance(e.getValue()))
-				.map(Map.Entry::getKey)
-				.collect(Collectors.toList());
+			List<Tuple<Integer, EntityDto>> leaves =
+				dtosInProgress.stream().filter(t -> leafClass.isInstance(t.getSecond())).collect(Collectors.toList());
 
-			leafKeys.forEach(leafKey -> {
-				EntityDto leaf = dtosInProgress.remove(leafKey);
-				attacher.attachLeaf(leaf, leafKey.getSecond(), dtosInProgress);
+			leaves.forEach(leafTuple -> {
+				dtosInProgress.remove(leafTuple);
+				attacher.attachLeaf(leafTuple.getSecond(), leafTuple.getFirst(), dtosInProgress);
 			});
 		});
 
-		dtosInProgress.values().forEach(this::saveDirectEntity);
+		dtosInProgress.stream().map(Tuple::getSecond).forEach(this::saveDirectEntity);
 	}
 
 	@FunctionalInterface
 	private interface LeafAttacher {
 
-		void attachLeaf(EntityDto leaf, Integer groupIndex, Map<Tuple<String, Integer>, EntityDto> dtosInProgress);
+		void attachLeaf(EntityDto leaf, Integer groupIndex, List<Tuple<Integer, EntityDto>> dtosInProgress);
 	}
 
 }

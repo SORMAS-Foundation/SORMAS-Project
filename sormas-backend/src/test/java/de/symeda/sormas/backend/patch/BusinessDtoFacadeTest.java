@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.lang.reflect.Method;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -124,7 +124,7 @@ class BusinessDtoFacadeTest extends AbstractUnitTest {
 		assertTrue(result.get().getEntityDto() instanceof ImmunizationDto);
 	}
 
-	// — save(Map) —
+	// — save(List) —
 
 	@Test
 	void save_caseData_delegatesToCaseFacade() {
@@ -132,7 +132,7 @@ class BusinessDtoFacadeTest extends AbstractUnitTest {
 		CaseDataDto caseData = new CaseDataDto();
 
 		// EXECUTE
-		victim.save(Map.of(Tuple.firstOnly(CaseDataDto.I18N_PREFIX), caseData));
+		victim.save(List.of(Tuple.<Integer, EntityDto> secondOnly(caseData)));
 
 		// CHECK
 		verify(caseFacade).save(caseData);
@@ -144,7 +144,7 @@ class BusinessDtoFacadeTest extends AbstractUnitTest {
 		PersonDto personDto = new PersonDto();
 
 		// EXECUTE
-		victim.save(Map.of(Tuple.firstOnly(PersonDto.I18N_PREFIX), personDto));
+		victim.save(List.of(Tuple.<Integer, EntityDto> secondOnly(personDto)));
 
 		// CHECK
 		verify(personFacade).save(personDto);
@@ -156,7 +156,7 @@ class BusinessDtoFacadeTest extends AbstractUnitTest {
 		ImmunizationDto immunization = new ImmunizationDto();
 
 		// EXECUTE
-		victim.save(Map.of(Tuple.firstOnly(ImmunizationDto.I18N_PREFIX), immunization));
+		victim.save(List.of(Tuple.<Integer, EntityDto> secondOnly(immunization)));
 
 		// CHECK
 		verify(immunizationFacade).save(immunization);
@@ -169,7 +169,7 @@ class BusinessDtoFacadeTest extends AbstractUnitTest {
 		VaccinationDto vaccination = new VaccinationDto();
 
 		// EXECUTE
-		victim.save(Map.of(Tuple.firstOnly(ImmunizationDto.I18N_PREFIX), immunization, Tuple.firstOnly(VaccinationDto.I18N_PREFIX), vaccination));
+		victim.save(List.of(Tuple.<Integer, EntityDto> secondOnly(immunization), Tuple.<Integer, EntityDto> secondOnly(vaccination)));
 
 		// CHECK
 		verify(immunizationFacade).save(immunization);
@@ -183,7 +183,7 @@ class BusinessDtoFacadeTest extends AbstractUnitTest {
 		VaccinationDto vaccination = new VaccinationDto();
 
 		// EXECUTE
-		victim.save(Map.of(Tuple.firstOnly(CaseDataDto.I18N_PREFIX), caseData, Tuple.firstOnly(VaccinationDto.I18N_PREFIX), vaccination));
+		victim.save(List.of(Tuple.<Integer, EntityDto> secondOnly(caseData), Tuple.<Integer, EntityDto> secondOnly(vaccination)));
 
 		// CHECK
 		ArgumentCaptor<ImmunizationDto> captor = ArgumentCaptor.forClass(ImmunizationDto.class);
@@ -200,7 +200,7 @@ class BusinessDtoFacadeTest extends AbstractUnitTest {
 		VaccinationDto vaccination = new VaccinationDto();
 
 		// EXECUTE & CHECK
-		assertThrows(IllegalStateException.class, () -> victim.save(Map.of(Tuple.firstOnly(VaccinationDto.I18N_PREFIX), vaccination)));
+		assertThrows(IllegalStateException.class, () -> victim.save(List.of(Tuple.<Integer, EntityDto> secondOnly(vaccination))));
 	}
 
 	@Test
@@ -210,7 +210,7 @@ class BusinessDtoFacadeTest extends AbstractUnitTest {
 		VaccinationDto vaccination = new VaccinationDto();
 
 		// EXECUTE
-		victim.save(Map.of(Tuple.firstOnly(ImmunizationDto.I18N_PREFIX), immunization, Tuple.firstOnly(VaccinationDto.I18N_PREFIX), vaccination));
+		victim.save(List.of(Tuple.<Integer, EntityDto> secondOnly(immunization), Tuple.<Integer, EntityDto> secondOnly(vaccination)));
 
 		// CHECK
 		verify(caseFacade, never()).save(ArgumentMatchers.<@Valid @NotNull CaseDataDto> any());
@@ -224,11 +224,11 @@ class BusinessDtoFacadeTest extends AbstractUnitTest {
 		VaccinationDto vaccination0 = new VaccinationDto();
 		VaccinationDto vaccination1 = new VaccinationDto();
 
-		Map<Tuple<String, Integer>, EntityDto> entityDtosByKey = new LinkedHashMap<>();
-		entityDtosByKey.put(Tuple.firstOnly(CaseDataDto.I18N_PREFIX), caseData);
-		entityDtosByKey.put(Tuple.of(ImmunizationDto.I18N_PREFIX, 0), immunization0);
-		entityDtosByKey.put(Tuple.of(VaccinationDto.I18N_PREFIX, 0), vaccination0);
-		entityDtosByKey.put(Tuple.of(VaccinationDto.I18N_PREFIX, 1), vaccination1);
+		List<Tuple<Integer, EntityDto>> entityDtosByKey = new ArrayList<>();
+		entityDtosByKey.add(Tuple.secondOnly((EntityDto) caseData));
+		entityDtosByKey.add(Tuple.of(0, (EntityDto) immunization0));
+		entityDtosByKey.add(Tuple.of(0, (EntityDto) vaccination0));
+		entityDtosByKey.add(Tuple.of(1, (EntityDto) vaccination1));
 
 		// EXECUTE
 		victim.save(entityDtosByKey);
