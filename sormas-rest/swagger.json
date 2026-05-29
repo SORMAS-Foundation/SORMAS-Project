@@ -16498,7 +16498,7 @@
         "properties" : {
           "dataPatchFailureCause" : {
             "type" : "string",
-            "enum" : [ "INVALID_MULTIPLE_FIELDS_FORMAT", "MISSING_MANDATORY_FIELD_FOR_GROUP", "FORBIDDEN_NON_UNIQUE_ALIAS", "NOT_PRESENT_IN_REFERENCE_DATA_LIST", "UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY_OR_FEATURE", "UNSUPPORTED_PREFIX", "FIELD_DOES_NOT_EXIST", "FORBIDDEN_FIELD", "FORBIDDEN_VALUE_OVERRIDE", "INVALID_VALUE_TYPE", "UNSUPPORTED_TARGET_TYPE", "INVALID_PATH_FORMAT", "DUPLICATE_FIELD", "TECHNICAL" ]
+            "enum" : [ "INVALID_MULTIPLE_FIELDS_FORMAT", "MISSING_MANDATORY_FIELD_FOR_GROUP", "FORBIDDEN_NON_UNIQUE_ALIAS", "NOT_PRESENT_IN_REFERENCE_DATA_LIST", "UNSUPPORTED_REFERENCE_DATA", "UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY_OR_FEATURE", "UNSUPPORTED_PREFIX", "FIELD_DOES_NOT_EXIST", "FORBIDDEN_FIELD", "FORBIDDEN_VALUE_OVERRIDE", "INVALID_VALUE_TYPE", "UNSUPPORTED_TARGET_TYPE", "INVALID_PATH_FORMAT", "DUPLICATE_FIELD", "FORBIDDEN_MULTI_GROUP_FIELD", "INVALID_CUSTOM_CONTEXT", "TECHNICAL" ]
           },
           "existingFieldValue" : {
             "type" : "object"
@@ -16522,10 +16522,7 @@
             }
           },
           "validPatchDictionary" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "type" : "object"
-            }
+            "$ref" : "#/components/schemas/PatchDictionary"
           }
         }
       },
@@ -19602,10 +19599,7 @@
             "enum" : [ "IGNORE", "REPLACE" ]
           },
           "excludedPatchDictionary" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "type" : "object"
-            }
+            "$ref" : "#/components/schemas/PatchDictionary"
           },
           "externalRespondentId" : {
             "type" : "string"
@@ -19624,10 +19618,7 @@
             "type" : "string"
           },
           "patchDictionary" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "type" : "object"
-            }
+            "$ref" : "#/components/schemas/PatchDictionary"
           },
           "patchedInCaseOfFailures" : {
             "type" : "boolean"
@@ -22218,6 +22209,18 @@
             "format" : "int64"
           }
         }
+      },
+      "PatchDictionary" : {
+        "type" : "object",
+        "properties" : {
+          "dictionary" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "object"
+            }
+          }
+        },
+        "required" : [ "dictionary" ]
       },
       "Pathogen" : {
         "type" : "object",
