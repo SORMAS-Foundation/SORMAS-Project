@@ -16,6 +16,7 @@
 package de.symeda.sormas.backend.survey;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -24,8 +25,10 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.survey.SurveyReferenceDto;
 import de.symeda.sormas.api.survey.SurveyTokenCriteria;
 import de.symeda.sormas.api.utils.Tuple;
@@ -139,6 +142,10 @@ public class SurveyTokenService extends BaseAdoService<SurveyToken> {
 	}
 
 	public List<SurveyToken> getBySurveyReferenceTokenTuples(List<Tuple<SurveyReferenceDto, String>> surveyReferenceTokenTuples) {
+		if (CollectionUtils.isEmpty(surveyReferenceTokenTuples)) {
+			return List.of();
+		}
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SurveyToken> cq = cb.createQuery(SurveyToken.class);
 		Root<SurveyToken> root = cq.from(SurveyToken.class);
@@ -153,7 +160,9 @@ public class SurveyTokenService extends BaseAdoService<SurveyToken> {
 					.map(
 						tuple -> CriteriaBuilderHelper.and(
 							cb,
-							cb.equal(joins.getSurvey().get(Survey.UUID), tuple.getFirst().getUuid()),
+							cb.equal(
+								joins.getSurvey().get(Survey.UUID),
+								Optional.ofNullable(tuple.getFirst()).map(ReferenceDto::getUuid).orElse(null)),
 							cb.equal(root.get(SurveyToken.TOKEN), tuple.getSecond())))
 					.toArray(Predicate[]::new)));
 

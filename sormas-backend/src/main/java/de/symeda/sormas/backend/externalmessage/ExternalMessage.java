@@ -15,26 +15,12 @@
 
 package de.symeda.sormas.backend.externalmessage;
 
-import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
-import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_SMALL;
-import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_TEXT;
+import static de.symeda.sormas.api.utils.FieldConstraints.*;
 
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
@@ -1023,7 +1009,6 @@ public class ExternalMessage extends AbstractDomainObject {
 		this.modeOfTransmissionType = modeOfTransmissionType;
 	}
 
-
 	@Enumerated(EnumType.STRING)
 	public ExternalMessageAdditionalDataType getAdditionalDataType() {
 		return additionalDataType;
@@ -1034,8 +1019,8 @@ public class ExternalMessage extends AbstractDomainObject {
 		return this;
 	}
 
-	@Column(columnDefinition = "jsonb")
-	@Type(type = "jsonb")
+	@Column(columnDefinition = "json")
+	@Type(type = "json")
 	public String getAdditionalDataJson() {
 		return additionalDataJson;
 	}

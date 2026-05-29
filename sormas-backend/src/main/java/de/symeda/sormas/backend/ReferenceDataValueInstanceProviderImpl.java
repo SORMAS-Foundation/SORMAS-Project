@@ -1,11 +1,17 @@
 package de.symeda.sormas.backend;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.InfrastructureDataReferenceDto;
 import de.symeda.sormas.api.ReferenceDto;
@@ -25,11 +31,14 @@ import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto
 import de.symeda.sormas.api.infrastructure.region.RegionFacade;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.referencedata.ReferenceDataValueInstanceProvider;
+import de.symeda.sormas.backend.json.ObjectMapperProvider;
 import de.symeda.sormas.backend.util.InstanceProvider;
 import de.symeda.sormas.backend.util.StringNormalizer;
 
 @ApplicationScoped
 public class ReferenceDataValueInstanceProviderImpl implements ReferenceDataValueInstanceProvider {
+
+	private static final Logger logger = LoggerFactory.getLogger(ReferenceDataValueInstanceProviderImpl.class);
 
 	public static final Date DATE_ALL_VALUES = new Date(0);
 	private Map<Class<? extends ReferenceDto>, Supplier<List<? extends ReferenceDto>>> dictionary;
@@ -66,15 +75,23 @@ public class ReferenceDataValueInstanceProviderImpl implements ReferenceDataValu
 
 	@Override
 	public <T extends ReferenceDto> List<T> getAll(Class<T> referenceType) {
-		return (List<T>) Optional.ofNullable(dictionary.get(referenceType).get()).orElse(Collections.emptyList());
+		return (List<T>) Optional.ofNullable(dictionary.get(referenceType))
+			.map(Supplier::get)
+			.orElseThrow(() -> new IllegalStateException(String.format("ReferenceType was not configured: [%s]", referenceType.getName())));
 	}
 
 	@Override
 	public <T extends ReferenceDto> Optional<T> getOne(String caption, Class<T> referenceType) {
-		return getAll(referenceType).stream().filter(referenceDto -> {
+		List<T> all = getAll(referenceType);
+
+		if (logger.isDebugEnabled()) {
+			logger.debug("All reference data for: [{}]:\n{}", referenceType, ObjectMapperProvider.writeValueAsStringFailSafe(all));
+		}
+
+		return all.stream().filter(referenceDto -> {
 			String normalizedCaptionCandidate = StringNormalizer.normalize(caption);
-			return StringNormalizer.normalize(referenceDto.getCaption()).equals(normalizedCaptionCandidate)
-				&& (referenceDto instanceof InfrastructureDataReferenceDto
+			return normalizedCaptionCandidate.equals(StringNormalizer.normalize(referenceDto.getCaption()))
+				|| (referenceDto instanceof InfrastructureDataReferenceDto
 					&& normalizedCaptionCandidate
 						.equals(StringNormalizer.normalize(((InfrastructureDataReferenceDto) referenceDto).getExternalId())));
 		}).findAny();

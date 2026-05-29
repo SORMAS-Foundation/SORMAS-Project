@@ -1,7 +1,7 @@
 package de.symeda.sormas.backend.patch;
 
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -27,12 +27,13 @@ public class PatchFieldHelper {
 
 	public static final String PATH_SEPARATOR = ".";
 	public static final String DUPLICATE_MARKER = "_duplicate_";
+	public static final String PATCH_FORBIDDEN_FIELDS_CONFIG_KEY = "PATCH_FORBIDDEN_FIELDS";
+	public static final String CUSTOM_PREFIX = "Custom";
+	private static final Collection<String> CUSTOM_PREFIX_COLLECTION = Set.of(CUSTOM_PREFIX);
 
 	private static final String OPENING_PARENTHESIS = "(";
 	private static final String CLOSING_PARENTHESIS = ")";
 	private static final String PIPE = "|";
-
-	public static final String PATCH_FORBIDDEN_FIELDS_CONFIG_KEY = "PATCH_FORBIDDEN_FIELDS";
 
 	@Inject
 	private PathAliasHelper pathAliasHelper;
@@ -122,10 +123,11 @@ public class PatchFieldHelper {
 
 	private boolean startsWithAllowedPrefix(String path) {
 		return pathStartsWithAllowedPrefix(path, pathAliasHelper.supportedPrefixes())
-			|| pathStartsWithAllowedPrefix(path, businessDtoFacade.fetchablePrefixes());
+			|| pathStartsWithAllowedPrefix(path, businessDtoFacade.fetchablePrefixes())
+			|| pathStartsWithAllowedPrefix(path, CUSTOM_PREFIX_COLLECTION);
 	}
 
-	private static boolean pathStartsWithAllowedPrefix(String path, Set<String> prefixes) {
+	private static boolean pathStartsWithAllowedPrefix(String path, Collection<String> prefixes) {
 		return prefixes.stream().anyMatch(path::startsWith);
 	}
 

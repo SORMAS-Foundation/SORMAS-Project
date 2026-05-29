@@ -3,7 +3,6 @@ package de.symeda.sormas.api.externalmessage.survey;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import javax.annotation.Nullable;
@@ -43,14 +42,14 @@ public class ExternalMessageSurveyResponseRequest implements Serializable, Compa
 	 * The accepted fields are those from {@link InfoFacade#generateDataDictionary()}.
 	 */
 	@NotNull
-	private Map<String, Object> patchDictionary;
+	private PatchDictionary patchDictionary = new PatchDictionary();
 
 	/**
 	 * Contains fields that were excluded from the patch dictionary, meant for fields that may not start with the prefix.
 	 * The prefix allows to safely exclude fields that are not meant to be mapped into SORMAS.
 	 */
 	@NotNull
-	private Map<String, Object> excludedPatchDictionary;
+	private PatchDictionary excludedPatchDictionary = new PatchDictionary();
 
 	/**
 	 * Origin that wants the patch operation.
@@ -140,11 +139,11 @@ public class ExternalMessageSurveyResponseRequest implements Serializable, Compa
 		return this;
 	}
 
-	public Map<String, Object> getPatchDictionary() {
+	public PatchDictionary getPatchDictionary() {
 		return patchDictionary;
 	}
 
-	public ExternalMessageSurveyResponseRequest setPatchDictionary(Map<String, Object> patchDictionary) {
+	public ExternalMessageSurveyResponseRequest setPatchDictionary(PatchDictionary patchDictionary) {
 		this.patchDictionary = patchDictionary;
 		return this;
 	}
@@ -187,11 +186,11 @@ public class ExternalMessageSurveyResponseRequest implements Serializable, Compa
 		return this;
 	}
 
-	public Map<String, Object> getExcludedPatchDictionary() {
+	public PatchDictionary getExcludedPatchDictionary() {
 		return excludedPatchDictionary;
 	}
 
-	public ExternalMessageSurveyResponseRequest setExcludedPatchDictionary(Map<String, Object> excludedPatchDictionary) {
+	public ExternalMessageSurveyResponseRequest setExcludedPatchDictionary(PatchDictionary excludedPatchDictionary) {
 		this.excludedPatchDictionary = excludedPatchDictionary;
 		return this;
 	}

@@ -7,12 +7,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
-import de.symeda.sormas.backend.survey.SurveyFacadeEjb;
-import de.symeda.sormas.backend.survey.SurveyTokenFacadeEjb;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
@@ -22,18 +17,15 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
-import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseRequest;
-import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseResult;
-import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseWrapper;
-import de.symeda.sormas.api.externalmessage.survey.ExternalSurveyResponseData;
+import de.symeda.sormas.api.externalmessage.survey.*;
 import de.symeda.sormas.api.patch.*;
 import de.symeda.sormas.api.survey.SurveyDto;
-import de.symeda.sormas.api.survey.SurveyFacade;
 import de.symeda.sormas.api.survey.SurveyTokenDto;
-import de.symeda.sormas.api.survey.SurveyTokenFacade;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResultStatus;
 import de.symeda.sormas.backend.AbstractUnitTest;
+import de.symeda.sormas.backend.survey.SurveyFacadeEjb;
+import de.symeda.sormas.backend.survey.SurveyTokenFacadeEjb;
 
 class AutomaticSurveyResponseProcessorTest extends AbstractUnitTest {
 
@@ -331,7 +323,8 @@ class AutomaticSurveyResponseProcessorTest extends AbstractUnitTest {
 		// PREPARE
 		String caseUuid = DataHelper.createUuid();
 		String origin = "NGSurvey";
-		Map<String, Object> patchDict = Map.of("person.firstName", "Alice");
+		PatchDictionary patchDict = new PatchDictionary();
+		patchDict.put("person.firstName", "Alice");
 
 		ExternalMessageDto message = buildMessage("S1", "T1", null);
 		message.getSurveyResponseData()
@@ -421,8 +414,8 @@ class AutomaticSurveyResponseProcessorTest extends AbstractUnitTest {
 	private static ExternalMessageDto buildMessage(String externalSurveyId, String token, ExternalMessageSurveyResponseResult result) {
 		ExternalMessageSurveyResponseRequest request = new ExternalMessageSurveyResponseRequest().setExternalSurveyId(externalSurveyId)
 			.setToken(token)
-			.setPatchDictionary(Map.of())
-			.setExcludedPatchDictionary(Map.of());
+			.setPatchDictionary(new PatchDictionary())
+			.setExcludedPatchDictionary(new PatchDictionary());
 
 		ExternalMessageSurveyResponseWrapper wrapper = new ExternalMessageSurveyResponseWrapper().setRequest(request).setResult(result);
 
@@ -447,4 +440,5 @@ class AutomaticSurveyResponseProcessorTest extends AbstractUnitTest {
 		survey.setExternalId(externalId);
 		return survey;
 	}
+
 }

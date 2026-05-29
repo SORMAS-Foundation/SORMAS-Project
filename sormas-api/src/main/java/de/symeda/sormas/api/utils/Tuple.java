@@ -11,6 +11,14 @@ public class Tuple<F, S> {
 		return new Tuple<>(first, second);
 	}
 
+	public static <F, S> Tuple<F, S> firstOnly(final F first) {
+		return new Tuple<>(first, null);
+	}
+
+	public static <F, S> Tuple<F, S> secondOnly(final S second) {
+		return new Tuple<>(null, second);
+	}
+
 	public Tuple(final F first, final S second) {
 		this.first = first;
 		this.second = second;

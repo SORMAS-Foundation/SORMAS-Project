@@ -1,11 +1,13 @@
 package de.symeda.sormas.api.patch;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.Objects;
 
 import org.apache.commons.collections4.MapUtils;
+
+import de.symeda.sormas.api.externalmessage.survey.PatchDictionary;
+import de.symeda.sormas.api.externalmessage.survey.PatchField;
 
 /**
  * Response to a patch request.
@@ -26,30 +28,12 @@ public class DataPatchResponse implements Serializable {
 	 * Actual patched values for the specified keys.
 	 * Will NOT contain fields that were NOT patched (even though passed in original patchDictionary).
 	 */
-	private Map<String, Object> validPatchDictionary = new HashMap<>();
+	private PatchDictionary validPatchDictionary = new PatchDictionary();
 
 	/**
 	 * Provides the reason for the failure for the impacted fields.
 	 */
-	private Map<String, DataPatchFailure> failures = new HashMap<>();
-
-	public Map<String, Object> getValidPatchDictionary() {
-		return validPatchDictionary;
-	}
-
-	public DataPatchResponse setValidPatchDictionary(Map<String, Object> validPatchDictionary) {
-		this.validPatchDictionary = validPatchDictionary;
-		return this;
-	}
-
-	public Map<String, DataPatchFailure> getFailures() {
-		return failures;
-	}
-
-	public DataPatchResponse setFailures(Map<String, DataPatchFailure> failures) {
-		this.failures = failures;
-		return this;
-	}
+	private LinkedHashMap<PatchField, DataPatchFailure> failures = new LinkedHashMap<>();
 
 	public boolean isApplied() {
 		return applied;
@@ -57,6 +41,24 @@ public class DataPatchResponse implements Serializable {
 
 	public DataPatchResponse setApplied(boolean applied) {
 		this.applied = applied;
+		return this;
+	}
+
+	public PatchDictionary getValidPatchDictionary() {
+		return validPatchDictionary;
+	}
+
+	public DataPatchResponse setValidPatchDictionary(PatchDictionary validPatchDictionary) {
+		this.validPatchDictionary = validPatchDictionary;
+		return this;
+	}
+
+	public LinkedHashMap<PatchField, DataPatchFailure> getFailures() {
+		return failures;
+	}
+
+	public DataPatchResponse setFailures(LinkedHashMap<PatchField, DataPatchFailure> failures) {
+		this.failures = failures;
 		return this;
 	}
 

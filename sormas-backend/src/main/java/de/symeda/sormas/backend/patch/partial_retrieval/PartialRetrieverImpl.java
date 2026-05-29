@@ -4,7 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ejb.EJB;
 import javax.enterprise.context.ApplicationScoped;
@@ -48,6 +50,9 @@ public class PartialRetrieverImpl implements PartialRetriever {
 	@Inject
 	private SpecificFieldValueRetrieverRegistry specificFieldValueRetrieverRegistry;
 
+	@Inject
+	private CustomizableFieldPartialRetriever customizableFieldPartialRetriever;
+
 	@EJB
 	private FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
@@ -62,23 +67,34 @@ public class PartialRetrieverImpl implements PartialRetriever {
 
 		Map<String, Optional<EntityDto>> beanCache = new HashMap<>();
 
-		List<Tuple<String, Tuple<FieldInfo, PartialRetrievalFailureCause>>> results =
-			patchFieldHelper.extractFieldTuples(request.getFieldsToRetrieve(), businessDtoFacade.fetchablePrefixes()).stream().map(tuple -> {
+		Predicate<Tuple<String, PathFailureCause>> isCustomizableField = tuple -> tuple.getFirst().startsWith(PatchFieldHelper.CUSTOM_PREFIX + ".");
 
+		List<Tuple<String, PathFailureCause>> allTuples =
+			patchFieldHelper.extractFieldTuples(request.getFieldsToRetrieve(), businessDtoFacade.fetchablePrefixes())
+				.stream()
+				.collect(Collectors.toList());
+
+		List<Tuple<String, Tuple<FieldInfo, PartialRetrievalFailureCause>>> regularResults =
+			allTuples.stream().filter(Predicate.not(isCustomizableField)).map(tuple -> {
 				try {
 					return buildTupleImpl(tuple, caseData, beanCache);
 				} catch (RuntimeException e) {
 					logger.warn("Failure during retrieval for [{}]", tuple, e);
 					return Tuple.of(tuple.getFirst(), new Tuple<>((FieldInfo) null, PartialRetrievalFailureCause.TECHNICAL));
 				}
-
 			}).collect(Collectors.toList());
 
-		Map<String, FieldInfo> successes = results.stream()
+		List<Tuple<String, Tuple<FieldInfo, PartialRetrievalFailureCause>>> customizableResults =
+			customizableFieldPartialRetriever.retrieve(allTuples.stream().filter(isCustomizableField).collect(Collectors.toList()), caseData);
+
+		List<Tuple<String, Tuple<FieldInfo, PartialRetrievalFailureCause>>> allResults =
+			Stream.concat(regularResults.stream(), customizableResults.stream()).collect(Collectors.toList());
+
+		Map<String, FieldInfo> successes = allResults.stream()
 			.filter(tuple -> tuple.getSecond().getSecond() == null)
 			.collect(Collectors.toMap(Tuple::getFirst, tuple -> tuple.getSecond().getFirst()));
 
-		Map<String, PartialRetrievalFailureCause> failures = results.stream()
+		Map<String, PartialRetrievalFailureCause> failures = allResults.stream()
 			.filter(tuple -> tuple.getSecond().getSecond() != null)
 			.collect(Collectors.toMap(Tuple::getFirst, tuple -> tuple.getSecond().getSecond()));
 

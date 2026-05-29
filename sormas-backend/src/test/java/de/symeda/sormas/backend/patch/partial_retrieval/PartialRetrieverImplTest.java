@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.patch.partial_retrieval;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.Assertions;
@@ -10,6 +11,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.Vaccine;
+import de.symeda.sormas.api.customizablefield.*;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
@@ -26,6 +28,8 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.customizablefield.CustomizableFieldMetadataFacadeEjb;
+import de.symeda.sormas.backend.customizablefield.CustomizableFieldValueFacadeEjb;
 
 class PartialRetrieverImplTest extends AbstractBeanTest {
 
@@ -326,6 +330,150 @@ class PartialRetrieverImplTest extends AbstractBeanTest {
 		"myUntranslatedField,   My untranslated field" })
 	void humanizeCamelCase_variousInputs_returnsHumanReadableLabel(String input, String expected) {
 		Assertions.assertEquals(expected.strip(), PartialRetrieverImpl.humanizeCamelCase(input));
+	}
+
+	@Test
+	void retrievePartial_caseCustomizableField_success() {
+		// PREPARE
+		Disease disease = Disease.AFP;
+		CaseDataDto caseData = creator.createUnclassifiedCase(disease);
+
+		CustomizableFieldMetadataFacadeEjb.CustomizableFieldMetadataFacadeEjbLocal metaDataFacade =
+			getBean(CustomizableFieldMetadataFacadeEjb.CustomizableFieldMetadataFacadeEjbLocal.class);
+		CustomizableFieldValueFacadeEjb.CustomizableFieldValueFacadeEjbLocal valueFacade =
+			getBean(CustomizableFieldValueFacadeEjb.CustomizableFieldValueFacadeEjbLocal.class);
+
+		CustomizableFieldMetadataDto metadata = new CustomizableFieldMetadataDto();
+		metadata.setName("myCaseCustomField");
+		metadata.setFieldType(CustomizableFieldType.TEXT);
+		metadata.setContextClass(CustomizableFieldContext.CASE);
+		metadata.setUiGroup(CustomizableFieldGroup.getGroupsForContext(CustomizableFieldContext.CASE).stream().findFirst().orElse(null));
+		metadata.setUiLinePosition(1);
+		CustomizableFieldMetadataDto savedMetadata = metaDataFacade.save(metadata);
+
+		CustomizableFieldValueDto valueDto = new CustomizableFieldValueDto();
+		valueDto.setValue("case custom value");
+		valueFacade.saveEntityCustomFields(caseData.getUuid(), CustomizableFieldContext.CASE, Map.of(savedMetadata, valueDto));
+
+		String fieldPath = toFieldName(toFieldName("Custom", CaseDataDto.I18N_PREFIX), "myCaseCustomField");
+
+		// EXECUTE
+		PartialRetrievalResponse actual =
+			victim().retrievePartial(new PartialRetrievalRequest().setCaseUuid(caseData.getUuid()).setFieldsToRetrieve(Set.of(fieldPath)));
+
+		// CHECK
+		FieldInfo fieldInfo = actual.getFieldInfoDictionary().get(fieldPath);
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(actual.getFailuresDictionary().isEmpty()),
+			() -> Assertions.assertNotNull(fieldInfo),
+			() -> Assertions.assertEquals("myCaseCustomField", fieldInfo.getTranslatedFieldName()),
+			() -> Assertions.assertEquals("case custom value", fieldInfo.getFieldValue()));
+	}
+
+	@Test
+	void retrievePartial_epiDataCustomizableField_success() {
+		// PREPARE
+		Disease disease = Disease.PERTUSSIS;
+		CaseDataDto caseData = creator.createUnclassifiedCase(disease);
+
+		CustomizableFieldMetadataFacadeEjb.CustomizableFieldMetadataFacadeEjbLocal metaDataFacade =
+			getBean(CustomizableFieldMetadataFacadeEjb.CustomizableFieldMetadataFacadeEjbLocal.class);
+		CustomizableFieldValueFacadeEjb.CustomizableFieldValueFacadeEjbLocal valueFacade =
+			getBean(CustomizableFieldValueFacadeEjb.CustomizableFieldValueFacadeEjbLocal.class);
+
+		CustomizableFieldMetadataDto metadata = new CustomizableFieldMetadataDto();
+		metadata.setName("myEpiDataCustomField");
+		metadata.setFieldType(CustomizableFieldType.TEXT);
+		metadata.setContextClass(CustomizableFieldContext.EPIDATA);
+		metadata.setUiGroup(CustomizableFieldGroup.getGroupsForContext(CustomizableFieldContext.EPIDATA).stream().findFirst().orElse(null));
+		metadata.setUiLinePosition(1);
+		CustomizableFieldMetadataDto savedMetadata = metaDataFacade.save(metadata);
+
+		CustomizableFieldValueDto valueDto = new CustomizableFieldValueDto();
+		valueDto.setValue("epi data custom value");
+		valueFacade.saveEntityCustomFields(caseData.getEpiData().getUuid(), CustomizableFieldContext.EPIDATA, Map.of(savedMetadata, valueDto));
+
+		String fieldPath = toFieldName(toFieldName("Custom", EpiDataDto.I18N_PREFIX), "myEpiDataCustomField");
+
+		// EXECUTE
+		PartialRetrievalResponse actual =
+			victim().retrievePartial(new PartialRetrievalRequest().setCaseUuid(caseData.getUuid()).setFieldsToRetrieve(Set.of(fieldPath)));
+
+		// CHECK
+		FieldInfo fieldInfo = actual.getFieldInfoDictionary().get(fieldPath);
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(actual.getFailuresDictionary().isEmpty()),
+			() -> Assertions.assertNotNull(fieldInfo),
+			() -> Assertions.assertEquals("myEpiDataCustomField", fieldInfo.getTranslatedFieldName()),
+			() -> Assertions.assertEquals("epi data custom value", fieldInfo.getFieldValue()));
+	}
+
+	@Test
+	void retrievePartial_exposureCustomizableField_returnsUnsupportedPrefix() {
+		// PREPARE
+		Disease disease = Disease.DENGUE;
+		CaseDataDto caseData = creator.createUnclassifiedCase(disease);
+
+		String fieldPath = toFieldName(toFieldName("Custom", ExposureDto.I18N_PREFIX), "someField");
+
+		// EXECUTE
+		PartialRetrievalResponse actual =
+			victim().retrievePartial(new PartialRetrievalRequest().setCaseUuid(caseData.getUuid()).setFieldsToRetrieve(Set.of(fieldPath)));
+
+		// CHECK
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(actual.getFieldInfoDictionary().isEmpty()),
+			() -> Assertions.assertEquals(PartialRetrievalFailureCause.UNSUPPORTED_PREFIX, actual.getFailuresDictionary().get(fieldPath)));
+	}
+
+	@Test
+	void retrievePartial_unknownCustomizableFieldName_returnsFieldDoesNotExist() {
+		// PREPARE
+		Disease disease = Disease.RUBELLA;
+		CaseDataDto caseData = creator.createUnclassifiedCase(disease);
+
+		String fieldPath = toFieldName(toFieldName("Custom", CaseDataDto.I18N_PREFIX), "nonExistentField");
+
+		// EXECUTE
+		PartialRetrievalResponse actual =
+			victim().retrievePartial(new PartialRetrievalRequest().setCaseUuid(caseData.getUuid()).setFieldsToRetrieve(Set.of(fieldPath)));
+
+		// CHECK
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(actual.getFieldInfoDictionary().isEmpty()),
+			() -> Assertions.assertEquals(PartialRetrievalFailureCause.FIELD_DOES_NOT_EXIST, actual.getFailuresDictionary().get(fieldPath)));
+	}
+
+	@Test
+	void retrievePartial_customizableFieldWithNoSavedValue_returnsNullValue() {
+		// PREPARE
+		Disease disease = Disease.AFP;
+		CaseDataDto caseData = creator.createUnclassifiedCase(disease);
+
+		CustomizableFieldMetadataFacadeEjb.CustomizableFieldMetadataFacadeEjbLocal metaDataFacade =
+			getBean(CustomizableFieldMetadataFacadeEjb.CustomizableFieldMetadataFacadeEjbLocal.class);
+
+		CustomizableFieldMetadataDto metadata = new CustomizableFieldMetadataDto();
+		metadata.setName("emptyField");
+		metadata.setFieldType(CustomizableFieldType.TEXT);
+		metadata.setContextClass(CustomizableFieldContext.CASE);
+		metadata.setUiGroup(CustomizableFieldGroup.getGroupsForContext(CustomizableFieldContext.CASE).stream().findFirst().orElse(null));
+		metadata.setUiLinePosition(1);
+		metaDataFacade.save(metadata);
+
+		String fieldPath = toFieldName(toFieldName("Custom", CaseDataDto.I18N_PREFIX), "emptyField");
+
+		// EXECUTE
+		PartialRetrievalResponse actual =
+			victim().retrievePartial(new PartialRetrievalRequest().setCaseUuid(caseData.getUuid()).setFieldsToRetrieve(Set.of(fieldPath)));
+
+		// CHECK
+		FieldInfo fieldInfo = actual.getFieldInfoDictionary().get(fieldPath);
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(actual.getFailuresDictionary().isEmpty()),
+			() -> Assertions.assertNotNull(fieldInfo),
+			() -> Assertions.assertEquals("emptyField", fieldInfo.getTranslatedFieldName()),
+			() -> Assertions.assertNull(fieldInfo.getFieldValue()));
 	}
 
 	private static String toFieldName(String prefix, String fieldName) {

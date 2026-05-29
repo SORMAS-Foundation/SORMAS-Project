@@ -18,6 +18,7 @@ import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
+import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
@@ -163,6 +164,10 @@ public class BusinessDtoFacade {
 		registerLeafAttacher(VaccinationDto.class, (leaf, list) -> {
 			ImmunizationDto immunization = fetchType(list, ImmunizationDto.class)
 				.orElseGet(() -> (ImmunizationDto) createImmunizationDtoFromCaseFct().apply(requireCaseData(list)));
+
+			if (immunization.getMeansOfImmunization() == null) {
+				immunization.setMeansOfImmunization(MeansOfImmunization.VACCINATION);
+			}
 			immunization.getVaccinations().add((VaccinationDto) leaf);
 			return immunization;
 		});
@@ -292,13 +297,16 @@ public class BusinessDtoFacade {
 	public void save(@NotNull List<EntityDto> entityDtos) {
 		ArrayList<EntityDto> dtosToSave = new ArrayList<>(entityDtos);
 
-		leafAttacherRegistry.forEach((leafClass, attacher) -> dtosToSave.stream().filter(leafClass::isInstance).findAny().ifPresent(leaf -> {
-			EntityDto parent = attacher.attachAndReturnParent(leaf, dtosToSave);
-			dtosToSave.remove(leaf);
-			if (!dtosToSave.contains(parent)) {
-				dtosToSave.add(parent);
-			}
-		}));
+		leafAttacherRegistry.forEach((leafClass, attacher) -> {
+			List<EntityDto> leaves = dtosToSave.stream().filter(leafClass::isInstance).collect(Collectors.toList());
+			leaves.forEach(leaf -> {
+				EntityDto parent = attacher.attachAndReturnParent(leaf, dtosToSave);
+				dtosToSave.remove(leaf);
+				if (!dtosToSave.contains(parent)) {
+					dtosToSave.add(parent);
+				}
+			});
+		});
 
 		dtosToSave.forEach(this::saveDirectEntity);
 	}

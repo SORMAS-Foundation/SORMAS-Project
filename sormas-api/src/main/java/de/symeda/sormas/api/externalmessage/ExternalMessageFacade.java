@@ -2,7 +2,6 @@ package de.symeda.sormas.api.externalmessage;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Nullable;
 import javax.ejb.Remote;
@@ -13,6 +12,7 @@ import de.symeda.sormas.api.PermanentlyDeletableFacade;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.externalmessage.survey.PatchDictionary;
 import de.symeda.sormas.api.patch.partial_retrieval.DisplayablePartialRetrievalResponse;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -96,7 +96,7 @@ public interface ExternalMessageFacade extends PermanentlyDeletableFacade {
 	 *            the corrected field path -> value map to apply
 	 * @return updated ExternalMessageDto after reprocessing
 	 */
-	ExternalMessageDto overwriteSurveyResponse(String uuid, Map<String, Object> correctedDictionary);
+	ExternalMessageDto overwriteSurveyResponse(String uuid, PatchDictionary correctedDictionary);
 
 	/**
 	 * Retrieves display-ready field information (translated names and current case values) for all fields

@@ -30,6 +30,11 @@ public enum DataPatchFailureCause {
 	NOT_PRESENT_IN_REFERENCE_DATA_LIST,
 
 	/**
+	 * Means this reference data requires some configuration / implementation to work.
+	 */
+	UNSUPPORTED_REFERENCE_DATA,
+
+	/**
 	 * Occurs the field is not supported by the disease / country / feature.
 	 * Error message must be somewhat generic to specify the Data Dictionary should be checked.
 	 */
@@ -74,6 +79,17 @@ public enum DataPatchFailureCause {
 	 * Duplicate entries cannot be processed because their intended target is ambiguous.
 	 */
 	DUPLICATE_FIELD,
+
+	/**
+	 * Means the field does not support being inserted multiple in groups. Most fields are "singulars".
+	 */
+	FORBIDDEN_MULTI_GROUP_FIELD,
+
+	/**
+	 * Tried to insert in a {@link de.symeda.sormas.api.customizablefield.CustomizableFieldContext} that does not exist.
+	 * You can have a look at the class: CustomizableFieldContextPatchMapping.
+	 */
+	INVALID_CUSTOM_CONTEXT,
 
 	/**
 	 * This means there is a hole in the implementation.

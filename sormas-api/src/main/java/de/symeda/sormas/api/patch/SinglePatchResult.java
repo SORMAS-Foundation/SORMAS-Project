@@ -1,45 +1,30 @@
 package de.symeda.sormas.api.patch;
 
 import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
 
-public class SinglePatchResult {
+import de.symeda.sormas.api.externalmessage.survey.PatchField;
 
-	@NotNull
-	private String fieldName;
+/**
+ * Represents an attempt to a patch a single field.
+ * Either {@link #getValue()} or {@link #getFailure()} will be present, but not both at same time.
+ */
+public interface SinglePatchResult {
 
+	PatchField getField();
+
+	/**
+	 * Will be null if {@link #getFailure()} is present
+	 * 
+	 * @return value that will be patched.
+	 */
 	@Nullable
-	private Object value;
+	Object getValue();
 
+	/**
+	 * Will be null if {@link #getValue()} ()} is present.
+	 * 
+	 * @return failure reason when attempt to patch field.
+	 */
 	@Nullable
-	private DataPatchFailure failure;
-
-	public String getFieldName() {
-		return fieldName;
-	}
-
-	public SinglePatchResult setFieldName(String fieldName) {
-		this.fieldName = fieldName;
-		return this;
-	}
-
-	@Nullable
-	public Object getValue() {
-		return value;
-	}
-
-	public SinglePatchResult setValue(@Nullable Object value) {
-		this.value = value;
-		return this;
-	}
-
-	@Nullable
-	public DataPatchFailure getFailure() {
-		return failure;
-	}
-
-	public SinglePatchResult setFailure(@Nullable DataPatchFailure failure) {
-		this.failure = failure;
-		return this;
-	}
+	DataPatchFailure getFailure();
 }

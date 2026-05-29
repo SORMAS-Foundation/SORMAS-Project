@@ -14,18 +14,17 @@
  */
 package de.symeda.sormas.ui.externalmessage.surveyresponse;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.VerticalLayout;
 
-import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.externalmessage.survey.PatchField;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.patch.DataPatchFailure;
-import de.symeda.sormas.api.patch.partial_retrieval.DisplayableFieldInfo;
 import de.symeda.sormas.api.patch.partial_retrieval.DisplayablePartialRetrievalResponse;
 
 /**
@@ -36,18 +35,18 @@ public class SurveyResponseFailurePanel extends VerticalLayout {
 
 	private static final long serialVersionUID = -2309124756823178543L;
 
-	public SurveyResponseFailurePanel(Map<String, DataPatchFailure> failures, DisplayablePartialRetrievalResponse displayData) {
+	public SurveyResponseFailurePanel(Map<PatchField, DataPatchFailure> failures, DisplayablePartialRetrievalResponse displayData) {
 		setMargin(false);
 		setSpacing(true);
 		setSizeFull();
 
-		List<Map.Entry<String, DataPatchFailure>> failureEntries = failures.entrySet().stream().collect(Collectors.toList());
+		List<Map.Entry<PatchField, DataPatchFailure>> failureEntries = new ArrayList<>(failures.entrySet());
 
-		Grid<Map.Entry<String, DataPatchFailure>> grid = new Grid<>();
+		Grid<Map.Entry<PatchField, DataPatchFailure>> grid = new Grid<>();
 		grid.setSizeFull();
 		grid.setItems(failureEntries);
 
-		grid.addColumn(entry -> resolveFieldName(entry.getKey(), displayData))
+		grid.addColumn(entry -> SurveyResponseDisplayUtils.resolveFieldName(entry.getKey(), displayData))
 			.setCaption(I18nProperties.getCaption(Captions.surveyResponseField))
 			.setId("field")
 			.setExpandRatio(2);
@@ -65,7 +64,7 @@ public class SurveyResponseFailurePanel extends VerticalLayout {
 			.setId("submittedValue")
 			.setExpandRatio(2);
 
-		grid.addColumn(entry -> resolveCurrentValue(entry.getKey(), displayData))
+		grid.addColumn(entry -> SurveyResponseDisplayUtils.resolveCurrentValue(entry.getKey(), displayData))
 			.setCaption(I18nProperties.getCaption(Captions.surveyResponseCurrentCaseValue))
 			.setId("currentValue")
 			.setExpandRatio(2);
@@ -75,23 +74,4 @@ public class SurveyResponseFailurePanel extends VerticalLayout {
 		addComponent(grid);
 	}
 
-	public String resolveFieldName(String fieldPath, DisplayablePartialRetrievalResponse displayData) {
-		DisplayableFieldInfo info = displayData.getFieldInfoDictionary().get(fieldPath);
-		String aliasPath = FacadeProvider.getPathAliasFacade().fetchAliasPath(fieldPath);
-		if (info != null) {
-			String translatedFieldName = info.getTranslatedFieldName();
-			if (translatedFieldName != null) {
-				return String.format("%s (%s)", translatedFieldName, aliasPath);
-			}
-		}
-		return aliasPath;
-	}
-
-	private String resolveCurrentValue(String fieldPath, DisplayablePartialRetrievalResponse displayData) {
-		DisplayableFieldInfo info = displayData.getFieldInfoDictionary().get(fieldPath);
-		if (info != null && info.getTranslatedFieldValue() != null) {
-			return info.getTranslatedFieldValue();
-		}
-		return "";
-	}
 }
