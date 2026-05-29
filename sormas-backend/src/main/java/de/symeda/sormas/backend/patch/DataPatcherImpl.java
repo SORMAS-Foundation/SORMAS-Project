@@ -205,14 +205,15 @@ public class DataPatcherImpl implements DataPatcher {
 	}
 
 	private void saveDTOsIfAppropriate(Map<Tuple<String, Integer>, AttachedEntityWrapper> entityCache) {
-		List<EntityDto> toSave = entityCache.values().stream().map(AttachedEntityWrapper::getEntityDto).collect(Collectors.toList());
+		Map<Tuple<String, Integer>, EntityDto> toSave =
+			entityCache.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getEntityDto()));
 
 		if (toSave.isEmpty()) {
 			logger.warn("Nothing to save in entity cache");
 			return;
 		}
 
-		toSave.forEach(entity -> {
+		toSave.values().forEach(entity -> {
 			logger.info("{} was modified, will be saved. Enable debug to see fully patched object", entity.getClass().getSimpleName());
 			if (logger.isDebugEnabled()) {
 				logger.debug("{}: \n{}", entity.getClass().getSimpleName(), ObjectMapperProvider.writeValueAsStringFailSafe(entity));

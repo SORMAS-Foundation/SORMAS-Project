@@ -4,7 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.lang.reflect.Method;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -23,6 +24,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.utils.Tuple;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.AbstractUnitTest;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
@@ -122,53 +124,68 @@ class BusinessDtoFacadeTest extends AbstractUnitTest {
 		assertTrue(result.get().getEntityDto() instanceof ImmunizationDto);
 	}
 
-	// — save(List) —
+	// — save(Map) —
 
 	@Test
-	void save_list_caseData_delegatesToCaseFacade() {
+	void save_caseData_delegatesToCaseFacade() {
+		// PREPARE
 		CaseDataDto caseData = new CaseDataDto();
 
-		victim.save(List.of(caseData));
+		// EXECUTE
+		victim.save(Map.of(Tuple.firstOnly(CaseDataDto.I18N_PREFIX), caseData));
 
+		// CHECK
 		verify(caseFacade).save(caseData);
 	}
 
 	@Test
-	void save_list_personDto_delegatesToPersonFacade() {
+	void save_personDto_delegatesToPersonFacade() {
+		// PREPARE
 		PersonDto personDto = new PersonDto();
 
-		victim.save(List.of(personDto));
+		// EXECUTE
+		victim.save(Map.of(Tuple.firstOnly(PersonDto.I18N_PREFIX), personDto));
 
+		// CHECK
 		verify(personFacade).save(personDto);
 	}
 
 	@Test
-	void save_list_immunizationDto_delegatesToImmunizationFacade() {
+	void save_immunizationDto_delegatesToImmunizationFacade() {
+		// PREPARE
 		ImmunizationDto immunization = new ImmunizationDto();
 
-		victim.save(List.of(immunization));
+		// EXECUTE
+		victim.save(Map.of(Tuple.firstOnly(ImmunizationDto.I18N_PREFIX), immunization));
 
+		// CHECK
 		verify(immunizationFacade).save(immunization);
 	}
 
 	@Test
-	void save_list_vaccinationWithExistingImmunization_attachesVaccinationThenSavesImmunization() {
+	void save_vaccinationWithExistingImmunization_attachesVaccinationThenSavesImmunization() {
+		// PREPARE
 		ImmunizationDto immunization = new ImmunizationDto();
 		VaccinationDto vaccination = new VaccinationDto();
 
-		victim.save(List.of(immunization, vaccination));
+		// EXECUTE
+		victim.save(Map.of(Tuple.firstOnly(ImmunizationDto.I18N_PREFIX), immunization, Tuple.firstOnly(VaccinationDto.I18N_PREFIX), vaccination));
 
+		// CHECK
 		verify(immunizationFacade).save(immunization);
 		assertAll(() -> assertEquals(1, immunization.getVaccinations().size()), () -> assertSame(vaccination, immunization.getVaccinations().get(0)));
 	}
 
 	@Test
-	void save_list_vaccinationWithoutImmunization_autoCreatesImmunizationAttachesAndSaves() {
+	void save_vaccinationWithoutImmunization_autoCreatesImmunizationAttachesAndSaves() {
+		// PREPARE
 		CaseDataDto caseData = buildCaseDataWithPerson("person-uuid");
 		VaccinationDto vaccination = new VaccinationDto();
 
-		victim.save(List.of(caseData, vaccination));
+		// EXECUTE
+		victim.save(Map.of(Tuple.firstOnly(CaseDataDto.I18N_PREFIX), caseData, Tuple.firstOnly(VaccinationDto.I18N_PREFIX), vaccination));
 
+		// CHECK
 		ArgumentCaptor<ImmunizationDto> captor = ArgumentCaptor.forClass(ImmunizationDto.class);
 		verify(immunizationFacade).save(captor.capture());
 		ImmunizationDto savedImmunization = captor.getValue();
@@ -178,20 +195,58 @@ class BusinessDtoFacadeTest extends AbstractUnitTest {
 	}
 
 	@Test
-	void save_list_vaccinationWithoutImmunizationOrCaseData_throwsIllegalState() {
+	void save_vaccinationWithoutImmunizationOrCaseData_throwsIllegalState() {
+		// PREPARE
 		VaccinationDto vaccination = new VaccinationDto();
 
-		assertThrows(IllegalStateException.class, () -> victim.save(List.of(vaccination)));
+		// EXECUTE & CHECK
+		assertThrows(IllegalStateException.class, () -> victim.save(Map.of(Tuple.firstOnly(VaccinationDto.I18N_PREFIX), vaccination)));
 	}
 
 	@Test
-	void save_list_vaccinationWithImmunization_doesNotCallCaseFacadeSave() {
+	void save_vaccinationWithImmunization_doesNotCallCaseFacadeSave() {
+		// PREPARE
 		ImmunizationDto immunization = new ImmunizationDto();
 		VaccinationDto vaccination = new VaccinationDto();
 
-		victim.save(List.of(immunization, vaccination));
+		// EXECUTE
+		victim.save(Map.of(Tuple.firstOnly(ImmunizationDto.I18N_PREFIX), immunization, Tuple.firstOnly(VaccinationDto.I18N_PREFIX), vaccination));
 
+		// CHECK
 		verify(caseFacade, never()).save(ArgumentMatchers.<@Valid @NotNull CaseDataDto> any());
+	}
+
+	@Test
+	void save_groupedVaccinations_eachGroupIndexAttachesToItsOwnImmunization() {
+		// PREPARE
+		CaseDataDto caseData = buildCaseDataWithPerson("person-uuid");
+		ImmunizationDto immunization0 = new ImmunizationDto();
+		VaccinationDto vaccination0 = new VaccinationDto();
+		VaccinationDto vaccination1 = new VaccinationDto();
+
+		Map<Tuple<String, Integer>, EntityDto> entityDtosByKey = new LinkedHashMap<>();
+		entityDtosByKey.put(Tuple.firstOnly(CaseDataDto.I18N_PREFIX), caseData);
+		entityDtosByKey.put(Tuple.of(ImmunizationDto.I18N_PREFIX, 0), immunization0);
+		entityDtosByKey.put(Tuple.of(VaccinationDto.I18N_PREFIX, 0), vaccination0);
+		entityDtosByKey.put(Tuple.of(VaccinationDto.I18N_PREFIX, 1), vaccination1);
+
+		// EXECUTE
+		victim.save(entityDtosByKey);
+
+		// CHECK
+		ArgumentCaptor<ImmunizationDto> captor = ArgumentCaptor.forClass(ImmunizationDto.class);
+		verify(immunizationFacade, times(2)).save(captor.capture());
+		ImmunizationDto savedImmunization0 = captor.getAllValues().get(0);
+		ImmunizationDto savedImmunization1 = captor.getAllValues().get(1);
+
+		assertAll(
+			() -> assertSame(immunization0, savedImmunization0),
+			() -> assertEquals(1, savedImmunization0.getVaccinations().size()),
+			() -> assertSame(vaccination0, savedImmunization0.getVaccinations().get(0)),
+
+			() -> assertNotSame(immunization0, savedImmunization1),
+			() -> assertEquals(1, savedImmunization1.getVaccinations().size()),
+			() -> assertSame(vaccination1, savedImmunization1.getVaccinations().get(0)));
 	}
 
 	private static CaseDataDto buildCaseDataWithPerson(String personUuid) {
