@@ -75,7 +75,8 @@ public class ReferenceDataValueInstanceProviderImpl implements ReferenceDataValu
 
 	@Override
 	public <T extends ReferenceDto> List<T> getAll(Class<T> referenceType) {
-		return (List<T>) Optional.ofNullable(dictionary.get(referenceType).get())
+		return (List<T>) Optional.ofNullable(dictionary.get(referenceType))
+			.map(Supplier::get)
 			.orElseThrow(() -> new IllegalStateException(String.format("ReferenceType was not configured: [%s]", referenceType.getName())));
 	}
 
