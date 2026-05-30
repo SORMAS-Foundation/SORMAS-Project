@@ -23,8 +23,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -97,64 +95,54 @@ public class VaccinationStatusPanel extends VerticalLayout {
             .vaccinationStatusDetails(caze.getVaccinationStatusDetails())
             .numberOfDoses(caze.getNumberOfDoses())
             .informationReliability(caze.getInformationReliability())
+            .referencePeriodFrom(caze.getReportDate())
+            .referencePeriodTo(caze.getReportDate())
             .vaccinationStatusLastUpdated(caze.getVaccinationStatusLastUpdated())
             .build();
 
-        return createPanel(caseData, caze.getPerson().getUuid(), caze.getDisease(), caze.getReportDate(), caze.getVaccinationStatusLastUpdated());
+        return createPanel(caseData);
     }
 
     public static VaccinationStatusPanel forContact(ContactDto contact) {
+        Date referencePeriodFrom = contact.getFirstContactDate();
+        if (referencePeriodFrom == null) {
+            referencePeriodFrom = contact.getLastContactDate() != null ? contact.getLastContactDate() : contact.getReportDateTime();
+        }
+        Date referencePeriodTo = contact.getLastContactDate() != null ? contact.getLastContactDate() : referencePeriodFrom;
+
         VaccinationStatusData contactData = VaccinationStatusData.Builder.createBlank()
             .vaccinationStatus(contact.getVaccinationStatus())
             .vaccinationStatusDetails(contact.getVaccinationStatusDetails())
             .numberOfDoses(contact.getNumberOfDoses())
             .informationReliability(contact.getInformationReliability())
+            .referencePeriodFrom(referencePeriodFrom)
+            .referencePeriodTo(referencePeriodTo)
             .vaccinationStatusLastUpdated(contact.getVaccinationStatusLastUpdated())
             .build();
 
-        return createPanel(
-            contactData,
-            contact.getPerson().getUuid(),
-            contact.getDisease(),
-            contact.getReportDateTime(),
-            contact.getVaccinationStatusLastUpdated());
+        return createPanel(contactData);
     }
 
     public static VaccinationStatusPanel forEventParticipant(EventParticipantDto eventParticipant, EventDto event) {
+        Date referencePeriodFrom = event.getStartDate() != null ? event.getStartDate() : event.getReportDateTime();
+        Date referencePeriodTo = event.getEndDate() != null ? event.getEndDate() : referencePeriodFrom;
+
         VaccinationStatusData eventParticipantData = VaccinationStatusData.Builder.createBlank()
             .vaccinationStatus(eventParticipant.getVaccinationStatus())
             .vaccinationStatusDetails(eventParticipant.getVaccinationStatusDetails())
             .numberOfDoses(eventParticipant.getNumberOfDoses())
             .informationReliability(eventParticipant.getInformationReliability())
+            .referencePeriodFrom(referencePeriodFrom)
+            .referencePeriodTo(referencePeriodTo)
             .vaccinationStatusLastUpdated(eventParticipant.getVaccinationStatusLastUpdated())
             .build();
 
-        return createPanel(
-            eventParticipantData,
-            eventParticipant.getPerson().getUuid(),
-            event.getDisease(),
-            event.getStartDate(),
-            eventParticipant.getVaccinationStatusLastUpdated());
+        return createPanel(eventParticipantData);
     }
 
-    private static VaccinationStatusPanel createPanel(
-        VaccinationStatusData entityData,
-        String personUuid,
-        Disease disease,
-        Date referenceDate,
-        Date statusLastUpdated) {
-
+    private static VaccinationStatusPanel createPanel(VaccinationStatusData entityData) {
         VaccinationStatusPanel panel = new VaccinationStatusPanel();
-        VaccinationStatusData immunizationData = FacadeProvider.getImmunizationFacade().getVaccinationStatusData(personUuid, disease, referenceDate);
-
-        boolean useImmunizationData = entityData.getVaccinationStatus() == null;
-        boolean differsFromEntity =
-            immunizationData != null && !VaccinationStatusData.isComparableVaccinationStatusDataEqual(entityData, immunizationData);
-        VaccinationStatusData data = immunizationData != null && (useImmunizationData || !differsFromEntity)
-            ? VaccinationStatusData.Builder.createFrom(immunizationData).vaccinationStatusLastUpdated(statusLastUpdated).build()
-            : entityData;
-
-        panel.setValue(data);
+        panel.setValue(entityData);
         return panel;
     }
 

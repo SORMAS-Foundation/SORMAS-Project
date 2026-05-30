@@ -25,6 +25,7 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -256,6 +257,212 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 		assertThat(vaccinations, hasSize(0));
 	}
 
+	@Test
+	public void testExistingCaseSaveRecalculatesVaccinationStatusWhenReportDateChanges() {
+		Date beforeWindow = DateHelper.subtractDays(new Date(), 10);
+		Date matchingDate = new Date();
+
+		PersonDto person = creator.createPerson("Case", "VaccinationRecalc");
+		CaseDataDto caze = creator.createCase(nationalUser.toReference(), person.toReference(), rdcf, c -> {
+			c.setDisease(Disease.EVD);
+			c.setReportDate(beforeWindow);
+		});
+		createVaccinatingImmunization(person, Disease.EVD, matchingDate);
+
+		assertEquals(VaccinationStatus.UNVACCINATED, getCaseFacade().getByUuid(caze.getUuid()).getVaccinationStatus());
+
+		caze = getCaseFacade().getByUuid(caze.getUuid());
+		caze.setReportDate(matchingDate);
+		caze = getCaseFacade().save(caze);
+
+		assertEquals(VaccinationStatus.VACCINATED, caze.getVaccinationStatus());
+	}
+
+	@Test
+	public void testExistingContactSaveRecalculatesVaccinationStatusWhenReferenceDatesChange() {
+		Date beforeWindow = DateHelper.subtractDays(new Date(), 10);
+		Date matchingDate = new Date();
+
+		PersonDto person = creator.createPerson("Contact", "VaccinationRecalc");
+		ContactDto contact = creator.createContact(nationalUser.toReference(), person.toReference(), Disease.EVD, c -> {
+			c.setFirstContactDate(beforeWindow);
+			c.setLastContactDate(beforeWindow);
+			c.setReportDateTime(beforeWindow);
+		});
+		createVaccinatingImmunization(person, Disease.EVD, matchingDate);
+
+		assertEquals(VaccinationStatus.UNVACCINATED, getContactFacade().getByUuid(contact.getUuid()).getVaccinationStatus());
+
+		contact = getContactFacade().getByUuid(contact.getUuid());
+		contact.setFirstContactDate(matchingDate);
+		contact.setLastContactDate(matchingDate);
+		contact.setReportDateTime(matchingDate);
+		contact = getContactFacade().save(contact);
+
+		assertEquals(VaccinationStatus.VACCINATED, contact.getVaccinationStatus());
+	}
+
+	@Test
+	public void testImmunizationSavePersistsContactVaccinationStatusDetailsDuringBatchRecalculation() {
+		Date matchingDate = new Date();
+
+		PersonDto person = creator.createPerson("Contact", "VaccinationDetails");
+		ContactDto contact = creator.createContact(nationalUser.toReference(), person.toReference(), Disease.EVD, c -> {
+			c.setFirstContactDate(matchingDate);
+			c.setLastContactDate(matchingDate);
+			c.setReportDateTime(matchingDate);
+		});
+
+		ImmunizationDto immunization = creator.createImmunization(
+			Disease.EVD,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.OTHER,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf);
+		immunization.setValidFrom(DateHelper.subtractDays(matchingDate, 2));
+		immunization.setValidUntil(DateHelper.addDays(matchingDate, 30));
+		immunization.setMeansOfImmunizationDetails("Initial other details");
+		immunization = getImmunizationFacade().save(immunization);
+
+		contact = getContactFacade().getByUuid(contact.getUuid());
+		assertEquals(VaccinationStatus.OTHER, contact.getVaccinationStatus());
+		assertEquals("Initial other details", contact.getVaccinationStatusDetails());
+
+		immunization = getImmunizationFacade().getByUuid(immunization.getUuid());
+		immunization.setMeansOfImmunizationDetails("Updated other details");
+		getImmunizationFacade().save(immunization);
+
+		contact = getContactFacade().getByUuid(contact.getUuid());
+		assertEquals(VaccinationStatus.OTHER, contact.getVaccinationStatus());
+		assertEquals("Updated other details", contact.getVaccinationStatusDetails());
+	}
+
+	@Test
+	public void testExistingEventParticipantSaveRecalculatesVaccinationStatusWhenEventChanges() {
+		Date beforeWindow = DateHelper.subtractDays(new Date(), 10);
+		Date matchingDate = new Date();
+
+		PersonDto person = creator.createPerson("EventParticipant", "VaccinationRecalc");
+		EventDto nonMatchingEvent = creator.createEvent(nationalUser.toReference(), Disease.EVD, e -> {
+			e.setStartDate(beforeWindow);
+			e.setEndDate(beforeWindow);
+		});
+		EventDto matchingEvent = creator.createEvent(nationalUser.toReference(), Disease.EVD, e -> {
+			e.setStartDate(matchingDate);
+			e.setEndDate(matchingDate);
+		});
+		createVaccinatingImmunization(person, Disease.EVD, matchingDate);
+
+		EventParticipantDto eventParticipant = creator.createEventParticipant(nonMatchingEvent.toReference(), person, nationalUser.toReference());
+		assertEquals(VaccinationStatus.UNVACCINATED, getEventParticipantFacade().getByUuid(eventParticipant.getUuid()).getVaccinationStatus());
+
+		eventParticipant = getEventParticipantFacade().getByUuid(eventParticipant.getUuid());
+		eventParticipant.setEvent(matchingEvent.toReference());
+		eventParticipant = getEventParticipantFacade().save(eventParticipant);
+
+		assertEquals(VaccinationStatus.VACCINATED, eventParticipant.getVaccinationStatus());
+	}
+
+	@Test
+	public void testImmunizationSavePersistsEventParticipantVaccinationStatusDetailsDuringBatchRecalculation() {
+		Date matchingDate = new Date();
+
+		PersonDto person = creator.createPerson("EventParticipant", "VaccinationDetails");
+		EventDto event = creator.createEvent(nationalUser.toReference(), Disease.EVD, e -> {
+			e.setStartDate(matchingDate);
+			e.setEndDate(matchingDate);
+		});
+		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, nationalUser.toReference());
+
+		ImmunizationDto immunization = creator.createImmunization(
+			Disease.EVD,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.OTHER,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf);
+		immunization.setValidFrom(DateHelper.subtractDays(matchingDate, 2));
+		immunization.setValidUntil(DateHelper.addDays(matchingDate, 30));
+		immunization.setMeansOfImmunizationDetails("Initial event participant details");
+		immunization = getImmunizationFacade().save(immunization);
+
+		eventParticipant = getEventParticipantFacade().getByUuid(eventParticipant.getUuid());
+		assertEquals(VaccinationStatus.OTHER, eventParticipant.getVaccinationStatus());
+		assertEquals("Initial event participant details", eventParticipant.getVaccinationStatusDetails());
+
+		immunization = getImmunizationFacade().getByUuid(immunization.getUuid());
+		immunization.setMeansOfImmunizationDetails("Updated event participant details");
+		getImmunizationFacade().save(immunization);
+
+		eventParticipant = getEventParticipantFacade().getByUuid(eventParticipant.getUuid());
+		assertEquals(VaccinationStatus.OTHER, eventParticipant.getVaccinationStatus());
+		assertEquals("Updated event participant details", eventParticipant.getVaccinationStatusDetails());
+	}
+
+	@Test
+	public void testEventSaveRecalculatesParticipantVaccinationStatusWhenDatesChange() {
+		Date beforeWindow = DateHelper.subtractDays(new Date(), 10);
+		Date matchingDate = new Date();
+
+		PersonDto person = creator.createPerson("Event", "VaccinationRecalc");
+		createVaccinatingImmunization(person, Disease.EVD, matchingDate);
+
+		EventDto event = creator.createEvent(nationalUser.toReference(), Disease.EVD, e -> {
+			e.setStartDate(beforeWindow);
+			e.setEndDate(beforeWindow);
+		});
+		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, nationalUser.toReference());
+		assertEquals(VaccinationStatus.UNVACCINATED, getEventParticipantFacade().getByUuid(eventParticipant.getUuid()).getVaccinationStatus());
+
+		event = getEventFacade().getEventByUuid(event.getUuid(), false);
+		event.setStartDate(matchingDate);
+		event.setEndDate(matchingDate);
+		getEventFacade().save(event);
+
+		assertEquals(VaccinationStatus.VACCINATED, getEventParticipantFacade().getByUuid(eventParticipant.getUuid()).getVaccinationStatus());
+	}
+
+	@Test
+	public void testDeleteVaccinationRecalculatesDependentVaccinationStatuses() {
+		Date matchingDate = new Date();
+
+		PersonDto person = creator.createPerson("Delete", "Vaccination");
+		CaseDataDto caze = creator.createCase(nationalUser.toReference(), person.toReference(), rdcf, c -> {
+			c.setDisease(Disease.EVD);
+			c.setReportDate(matchingDate);
+		});
+		ContactDto contact = creator.createContact(nationalUser.toReference(), person.toReference(), Disease.EVD, c -> {
+			c.setFirstContactDate(matchingDate);
+			c.setLastContactDate(matchingDate);
+			c.setReportDateTime(matchingDate);
+		});
+		EventDto event = creator.createEvent(nationalUser.toReference(), Disease.EVD, e -> {
+			e.setStartDate(matchingDate);
+			e.setEndDate(matchingDate);
+		});
+		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, nationalUser.toReference());
+
+		ImmunizationDto immunization = createVaccinatingImmunization(person, Disease.EVD, matchingDate);
+		immunization.setNumberOfDoses(2);
+		immunization = getImmunizationFacade().save(immunization);
+		VaccinationDto vaccination1 = creator.createVaccination(nationalUser.toReference(), immunization.toReference());
+		creator.createVaccination(nationalUser.toReference(), immunization.toReference());
+
+		assertEquals(VaccinationStatus.VACCINATED, getCaseFacade().getByUuid(caze.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.VACCINATED, getContactFacade().getByUuid(contact.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.VACCINATED, getEventParticipantFacade().getByUuid(eventParticipant.getUuid()).getVaccinationStatus());
+
+		getVaccinationFacade().deleteWithImmunization(vaccination1.getUuid(), new DeletionDetails());
+
+		assertEquals(ImmunizationStatus.PENDING, getImmunizationFacade().getByUuid(immunization.getUuid()).getImmunizationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getCaseFacade().getByUuid(caze.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getContactFacade().getByUuid(contact.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getEventParticipantFacade().getByUuid(eventParticipant.getUuid()).getVaccinationStatus());
+	}
+
 	// This is currently not executed because modifying immunizations leads to the entity not being attached to the persistence context anymore.
 	// This problem does not seem to occur on an actual server. See #6694
 	@Test
@@ -480,5 +687,19 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(VaccinationStatus.UNVACCINATED, getEventParticipantFacade().getByUuid(ep131.getUuid()).getVaccinationStatus());
 		assertEquals(VaccinationStatus.VACCINATED, getEventParticipantFacade().getByUuid(ep141.getUuid()).getVaccinationStatus());
 		assertEquals(VaccinationStatus.UNVACCINATED, getEventParticipantFacade().getByUuid(ep21.getUuid()).getVaccinationStatus());
+	}
+
+	private ImmunizationDto createVaccinatingImmunization(PersonDto person, Disease disease, Date referenceDate) {
+		ImmunizationDto immunization = creator.createImmunization(
+			disease,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf);
+		immunization.setValidFrom(DateHelper.subtractDays(referenceDate, 2));
+		immunization.setValidUntil(DateHelper.addDays(referenceDate, 30));
+		return getImmunizationFacade().save(immunization);
 	}
 }

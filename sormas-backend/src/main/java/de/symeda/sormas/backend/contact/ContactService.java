@@ -28,6 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -1995,11 +1996,13 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 
 			if (data != null) {
 				boolean statusChanged = data.getVaccinationStatus() != contact.getVaccinationStatus();
-				boolean dosesChanged = !java.util.Objects.equals(data.getNumberOfDoses(), contact.getNumberOfDoses());
+				boolean detailsChanged = !Objects.equals(data.getVaccinationStatusDetails(), contact.getVaccinationStatusDetails());
+				boolean dosesChanged = !Objects.equals(data.getNumberOfDoses(), contact.getNumberOfDoses());
 				boolean reliabilityChanged = data.getInformationReliability() != contact.getInformationReliability();
 
-				if (statusChanged || dosesChanged || reliabilityChanged) {
+				if (statusChanged || detailsChanged || dosesChanged || reliabilityChanged) {
 					contact.setVaccinationStatus(data.getVaccinationStatus());
+					contact.setVaccinationStatusDetails(data.getVaccinationStatusDetails());
 					contact.setNumberOfDoses(data.getNumberOfDoses());
 					contact.setInformationReliability(data.getInformationReliability());
 					contact.setVaccinationStatusLastUpdated(new Date());

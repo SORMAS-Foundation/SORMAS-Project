@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import javax.ejb.EJB;
@@ -665,10 +666,11 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 
 			if (data != null) {
 				boolean statusChanged = data.getVaccinationStatus() != eventParticipant.getVaccinationStatus();
-				boolean dosesChanged = !java.util.Objects.equals(data.getNumberOfDoses(), eventParticipant.getNumberOfDoses());
+				boolean detailsChanged = !Objects.equals(data.getVaccinationStatusDetails(), eventParticipant.getVaccinationStatusDetails());
+				boolean dosesChanged = !Objects.equals(data.getNumberOfDoses(), eventParticipant.getNumberOfDoses());
 				boolean reliabilityChanged = data.getInformationReliability() != eventParticipant.getInformationReliability();
 
-				if (statusChanged || dosesChanged || reliabilityChanged) {
+				if (statusChanged || detailsChanged || dosesChanged || reliabilityChanged) {
 					eventParticipant.setVaccinationStatus(data.getVaccinationStatus());
 					eventParticipant.setVaccinationStatusDetails(data.getVaccinationStatusDetails());
 					eventParticipant.setNumberOfDoses(data.getNumberOfDoses());

@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.vaccination;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -517,7 +518,15 @@ public class VaccinationFacadeEjb
 	@RightsAllowed(UserRight._IMMUNIZATION_EDIT)
 	public void updateVaccinationStatuses(Vaccination newVaccination, VaccinationDto oldRelevantVaccination, Long personId, Disease disease) {
 
-		caseService.updateVaccinationStatuses(personId, disease, newVaccination);
+		updateDependentVaccinationStatuses(personId, disease, newVaccination);
+	}
+
+	private void updateDependentVaccinationStatuses(Long personId, Disease disease, Vaccination vaccination) {
+		if (personId == null || disease == null) {
+			return;
+		}
+
+		caseService.updateVaccinationStatuses(personId, disease, vaccination);
 		contactService.updateVaccinationStatuses(personId, disease, null);
 		eventParticipantService.updateVaccinationStatuses(personId, disease, null);
 	}
@@ -607,14 +616,20 @@ public class VaccinationFacadeEjb
 		}
 
 		Immunization immunization = vaccination.getImmunization();
+		Long personId = immunization.getPerson() != null ? immunization.getPerson().getId() : null;
+		Disease disease = immunization.getDisease();
 		immunization.getVaccinations().remove(vaccination);
 		immunizationFacade.updateVaccinationInfoSourceFromVaccinations(immunization);
-		immunizationService.incrementChangeDate(immunization);
-		immunizationService.ensurePersisted(immunization);
 
 		if (immunization.getVaccinations().isEmpty()) {
 			immunizationService.delete(immunization, deletionDetails);
+		} else {
+			immunizationService.updateImmunizationStatusBasedOnVaccinations(immunization);
+			immunization.setChangeDate(new Timestamp(new Date().getTime()));
+			immunizationService.ensurePersisted(immunization);
 		}
+
+		updateDependentVaccinationStatuses(personId, disease, null);
 	}
 
 	@RightsAllowed(UserRight._IMMUNIZATION_EDIT)

@@ -102,6 +102,99 @@ class ImmunizationServiceDeriveStatusTest extends AbstractBeanTest {
 	}
 
 	/**
+	 * Tests that Luxembourg returns UNKNOWN when no immunization records exist.
+	 */
+	@Test
+	void testDeriveVaccinationStatus_NoImmunizationsLuxembourg() {
+		PersonDto person = creator.createPerson("No", "LuxembourgImmunizations");
+		Date referenceDate = new Date();
+
+		String originalLocale = MockProducer.getProperties().getProperty(ConfigFacadeEjb.COUNTRY_LOCALE);
+		try {
+			MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+
+			VaccinationStatusData data = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.MEASLES, referenceDate);
+			assertEquals(VaccinationStatus.UNKNOWN, data.getVaccinationStatus());
+		} finally {
+			if (originalLocale != null) {
+				MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, originalLocale);
+			} else {
+				MockProducer.getProperties().remove(ConfigFacadeEjb.COUNTRY_LOCALE);
+			}
+		}
+	}
+
+	/**
+	 * Tests that Luxembourg returns UNVACCINATED when immunization records exist but none are ACQUIRED.
+	 */
+	@Test
+	void testDeriveVaccinationStatus_NoAcquiredImmunizationsLuxembourg() {
+		PersonDto person = creator.createPerson("NoAcquired", "LuxembourgImmunizations");
+		Date referenceDate = new Date();
+
+		ImmunizationDto pendingImmunization = creator.createImmunization(
+			Disease.MEASLES,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.PENDING,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.ONGOING,
+			rdcf);
+		pendingImmunization.setValidFrom(DateHelper.subtractDays(referenceDate, 30));
+		pendingImmunization.setValidUntil(DateHelper.addDays(referenceDate, 365));
+		getImmunizationFacade().save(pendingImmunization);
+
+		String originalLocale = MockProducer.getProperties().getProperty(ConfigFacadeEjb.COUNTRY_LOCALE);
+		try {
+			MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+
+			VaccinationStatusData data = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.MEASLES, referenceDate);
+			assertEquals(VaccinationStatus.UNVACCINATED, data.getVaccinationStatus());
+		} finally {
+			if (originalLocale != null) {
+				MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, originalLocale);
+			} else {
+				MockProducer.getProperties().remove(ConfigFacadeEjb.COUNTRY_LOCALE);
+			}
+		}
+	}
+
+	/**
+	 * Tests that Luxembourg returns UNVACCINATED when immunization records exist but none cover the reference date.
+	 */
+	@Test
+	void testDeriveVaccinationStatus_NoMatchingImmunizationLuxembourg() {
+		PersonDto person = creator.createPerson("NoMatch", "LuxembourgImmunizations");
+		Date referenceDate = new Date();
+
+		ImmunizationDto futureImmunization = creator.createImmunization(
+			Disease.MEASLES,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf);
+		futureImmunization.setValidFrom(DateHelper.addDays(referenceDate, 10));
+		futureImmunization.setValidUntil(DateHelper.addDays(referenceDate, 365));
+		getImmunizationFacade().save(futureImmunization);
+
+		String originalLocale = MockProducer.getProperties().getProperty(ConfigFacadeEjb.COUNTRY_LOCALE);
+		try {
+			MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+
+			VaccinationStatusData data = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.MEASLES, referenceDate);
+			assertEquals(VaccinationStatus.UNVACCINATED, data.getVaccinationStatus());
+		} finally {
+			if (originalLocale != null) {
+				MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, originalLocale);
+			} else {
+				MockProducer.getProperties().remove(ConfigFacadeEjb.COUNTRY_LOCALE);
+			}
+		}
+	}
+
+	/**
 	 * Tests that only ACQUIRED immunizations are considered; other statuses are ignored.
 	 */
 	@Test
@@ -652,7 +745,8 @@ class ImmunizationServiceDeriveStatusTest extends AbstractBeanTest {
 	}
 
 	/**
-	 * Tests that immunization without meansOfImmunization returns UNKNOWN in Luxembourg.
+	 * Tests that immunization without meansOfImmunization returns UNVACCINATED in Luxembourg
+	 * because an immunization entry exists.
 	 */
 	@Test
 	void testDeriveVaccinationStatus_NullMeansOfImmunization() {
@@ -676,9 +770,9 @@ class ImmunizationServiceDeriveStatusTest extends AbstractBeanTest {
 		try {
 			MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 
-			// Luxembourg-specific fallback should return UNKNOWN when meansOfImmunization is null.
+			// Luxembourg-specific fallback only returns UNKNOWN when no immunization entries exist.
 			VaccinationStatusData data = getImmunizationService().deriveVaccinationStatus(person.getUuid(), Disease.CORONAVIRUS, referenceDate);
-			assertEquals(VaccinationStatus.UNKNOWN, data.getVaccinationStatus());
+			assertEquals(VaccinationStatus.UNVACCINATED, data.getVaccinationStatus());
 		} finally {
 			if (originalLocale != null) {
 				MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, originalLocale);

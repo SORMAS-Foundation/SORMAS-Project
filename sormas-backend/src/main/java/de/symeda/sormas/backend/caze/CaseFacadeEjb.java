@@ -2310,7 +2310,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			newCase.setPreviousQuarantineTo(existingCase.getQuarantineTo());
 		}
 
-		if (existingCase == null) {
+		if (existingCase == null || hasVaccinationReferenceChanged(existingCase, newCase)) {
 			vaccinationFacade.updateVaccinationStatuses(newCase);
 		}
 
@@ -2324,6 +2324,15 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		if (existingCase != null && syncShares && sormasToSormasFacade.isFeatureConfigured()) {
 			syncSharesAsync(new ShareTreeCriteria(existingCase.getUuid()));
 		}
+	}
+
+	private boolean hasVaccinationReferenceChanged(CaseDataDto existingCase, Case newCase) {
+		return existingCase != null
+			&& (existingCase.getDisease() != newCase.getDisease()
+				|| !DateHelper.isSameDay(existingCase.getReportDate(), newCase.getReportDate())
+				|| !Objects.equals(
+					existingCase.getPerson() != null ? existingCase.getPerson().getUuid() : null,
+					newCase.getPerson() != null ? newCase.getPerson().getUuid() : null));
 	}
 
 	private void handleClassificationOnCaseChange(CaseDataDto existingDto, Case savedCase) {

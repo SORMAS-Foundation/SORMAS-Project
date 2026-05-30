@@ -66,10 +66,10 @@ import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
@@ -793,12 +793,8 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 		List<Immunization> immunizations = getByPersonAndDisease(personUuid, disease, false);
 
 		if (immunizations.isEmpty()) {
-			// BR0080LU: Luxembourg uses UNKNOWN when no immunization records exist
-			VaccinationStatus vaccinationStatus = CountryHelper.isCountry(configFacade.getCountryLocale(), CountryHelper.COUNTRY_CODE_LUXEMBOURG)
-				? VaccinationStatus.UNKNOWN
-				: VaccinationStatus.UNVACCINATED;
 			return VaccinationStatusData.Builder.createBlank()
-				.vaccinationStatus(vaccinationStatus)
+				.vaccinationStatus(getFallbackVaccinationStatus(true))
 				.informationReliability(InformationReliability.UNKNOWN)
 				.referencePeriodFrom(fromDate)
 				.referencePeriodTo(effectiveUntilDate)
@@ -810,12 +806,8 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 			immunizations.stream().filter(i -> ImmunizationStatus.ACQUIRED.equals(i.getImmunizationStatus())).collect(Collectors.toList());
 
 		if (acquiredImmunizations.isEmpty()) {
-			// BR0080LU: Luxembourg uses UNKNOWN when no ACQUIRED immunizations exist
-			VaccinationStatus vaccinationStatus = CountryHelper.isCountry(configFacade.getCountryLocale(), CountryHelper.COUNTRY_CODE_LUXEMBOURG)
-				? VaccinationStatus.UNKNOWN
-				: VaccinationStatus.UNVACCINATED;
 			return VaccinationStatusData.Builder.createBlank()
-				.vaccinationStatus(vaccinationStatus)
+				.vaccinationStatus(getFallbackVaccinationStatus(false))
 				.informationReliability(InformationReliability.UNKNOWN)
 				.referencePeriodFrom(fromDate)
 				.referencePeriodTo(effectiveUntilDate)
@@ -831,12 +823,8 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 			.orElse(null);
 
 		if (relevantImmunization == null) {
-			// BR0080LU: Luxembourg uses UNKNOWN when no matching immunization covers the reference period
-			VaccinationStatus vaccinationStatus = CountryHelper.isCountry(configFacade.getCountryLocale(), CountryHelper.COUNTRY_CODE_LUXEMBOURG)
-				? VaccinationStatus.UNKNOWN
-				: VaccinationStatus.UNVACCINATED;
 			return VaccinationStatusData.Builder.createBlank()
-				.vaccinationStatus(vaccinationStatus)
+				.vaccinationStatus(getFallbackVaccinationStatus(false))
 				.informationReliability(InformationReliability.UNKNOWN)
 				.referencePeriodFrom(fromDate)
 				.referencePeriodTo(effectiveUntilDate)
@@ -857,12 +845,8 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 		MeansOfImmunization meansOfImmunization = immunization.getMeansOfImmunization();
 
 		if (meansOfImmunization == null) {
-			// BR0080LU: Luxembourg uses UNKNOWN when means of immunization is not set
-			VaccinationStatus vaccinationStatus = CountryHelper.isCountry(configFacade.getCountryLocale(), CountryHelper.COUNTRY_CODE_LUXEMBOURG)
-				? VaccinationStatus.UNKNOWN
-				: VaccinationStatus.UNVACCINATED;
 			return VaccinationStatusData.Builder.createBlank()
-				.vaccinationStatus(vaccinationStatus)
+				.vaccinationStatus(getFallbackVaccinationStatus(false))
 				.informationReliability(InformationReliability.UNKNOWN)
 				.build();
 		}
@@ -888,10 +872,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 			status = VaccinationStatus.UNVACCINATED;
 			break;
 		default:
-			// BR0080LU: Luxembourg uses UNKNOWN for unrecognised means of immunization
-			status = CountryHelper.isCountry(configFacade.getCountryLocale(), CountryHelper.COUNTRY_CODE_LUXEMBOURG)
-				? VaccinationStatus.UNKNOWN
-				: VaccinationStatus.UNVACCINATED;
+			status = getFallbackVaccinationStatus(false);
 		}
 
 		Integer numberOfDoses = immunization.getNumberOfDoses();
@@ -905,6 +886,13 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 			.vaccinationStatusDetails(details)
 			.dateOfLastDose(dateOfLastDose)
 			.build();
+	}
+
+	private VaccinationStatus getFallbackVaccinationStatus(boolean noImmunizationEntries) {
+		// BR0080LU: Luxembourg uses UNKNOWN when no immunization records exist
+		return noImmunizationEntries && CountryHelper.isCountry(configFacade.getCountryLocale(), CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+			? VaccinationStatus.UNKNOWN
+			: VaccinationStatus.UNVACCINATED;
 	}
 
 	/**

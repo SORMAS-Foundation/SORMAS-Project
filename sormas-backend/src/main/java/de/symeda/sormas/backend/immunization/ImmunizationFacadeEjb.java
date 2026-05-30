@@ -344,7 +344,11 @@ public class ImmunizationFacadeEjb
 			throw new AccessDeniedException(I18nProperties.getString(Strings.messageImmunizationOutsideJurisdictionDeletionDenied));
 		}
 
+		Long personId = immunization.getPerson() != null ? immunization.getPerson().getId() : null;
+		Disease disease = immunization.getDisease();
+
 		service.delete(immunization, deletionDetails);
+		updateDependentVaccinationStatuses(personId, disease);
 	}
 
 	@Override
@@ -446,13 +450,21 @@ public class ImmunizationFacadeEjb
 
 		service.ensurePersisted(immunization);
 
-		caseService.updateVaccinationStatuses(immunization.getPerson().getId(), immunization.getDisease(), null);
-		contactService.updateVaccinationStatuses(immunization.getPerson().getId(), immunization.getDisease(), null);
-		eventParticipantService.updateVaccinationStatuses(immunization.getPerson().getId(), immunization.getDisease(), null);
+		updateDependentVaccinationStatuses(immunization.getPerson().getId(), immunization.getDisease());
 
 		onImmunizationChanged(immunization, internal);
 
 		return toPseudonymizedDto(immunization, pseudonymizer);
+	}
+
+	private void updateDependentVaccinationStatuses(Long personId, Disease disease) {
+		if (personId == null || disease == null) {
+			return;
+		}
+
+		caseService.updateVaccinationStatuses(personId, disease, null);
+		contactService.updateVaccinationStatuses(personId, disease, null);
+		eventParticipantService.updateVaccinationStatuses(personId, disease, null);
 	}
 
 	@Override

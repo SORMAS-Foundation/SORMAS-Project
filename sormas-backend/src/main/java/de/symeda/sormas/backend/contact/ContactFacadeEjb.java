@@ -467,7 +467,7 @@ public class ContactFacadeEjb
 	@PermitAll
 	public void onContactChanged(ContactDto existingContact, Contact contact, boolean syncShares) {
 
-		if (existingContact == null) {
+		if (existingContact == null || hasVaccinationReferenceChanged(existingContact, contact)) {
 			vaccinationFacade.updateVaccinationStatuses(contact);
 		}
 
@@ -479,6 +479,17 @@ public class ContactFacadeEjb
 			&& !existingContact.getQuarantineTo().equals(contact.getQuarantineTo())) {
 			contact.setPreviousQuarantineTo(existingContact.getQuarantineTo());
 		}
+	}
+
+	private boolean hasVaccinationReferenceChanged(ContactDto existingContact, Contact contact) {
+		return existingContact != null
+			&& (existingContact.getDisease() != contact.getDisease()
+				|| !Objects.equals(existingContact.getFirstContactDate(), contact.getFirstContactDate())
+				|| !Objects.equals(existingContact.getLastContactDate(), contact.getLastContactDate())
+				|| !Objects.equals(existingContact.getReportDateTime(), contact.getReportDateTime())
+				|| !Objects.equals(
+					existingContact.getPerson() != null ? existingContact.getPerson().getUuid() : null,
+					contact.getPerson() != null ? contact.getPerson().getUuid() : null));
 	}
 
 	@RightsAllowed(UserRight._CONTACT_EDIT)

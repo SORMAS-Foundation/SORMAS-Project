@@ -34,8 +34,14 @@ import org.junit.jupiter.api.Test;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationIndexDto;
@@ -182,6 +188,50 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 				MockProducer.getProperties().remove(ConfigFacadeEjb.COUNTRY_LOCALE);
 			}
 		}
+	}
+
+	@Test
+	public void testDeleteImmunizationRecalculatesDependentVaccinationStatuses() {
+		loginWith(nationalUser);
+
+		Date matchingDate = new Date();
+		PersonDto person = creator.createPerson("Delete", "Immunization");
+		CaseDataDto caze = creator.createCase(nationalUser.toReference(), person.toReference(), rdcf1, c -> {
+			c.setDisease(Disease.EVD);
+			c.setReportDate(matchingDate);
+		});
+		ContactDto contact = creator.createContact(nationalUser.toReference(), person.toReference(), Disease.EVD, c -> {
+			c.setFirstContactDate(matchingDate);
+			c.setLastContactDate(matchingDate);
+			c.setReportDateTime(matchingDate);
+		});
+		EventDto event = creator.createEvent(nationalUser.toReference(), Disease.EVD, e -> {
+			e.setStartDate(matchingDate);
+			e.setEndDate(matchingDate);
+		});
+		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, nationalUser.toReference());
+
+		ImmunizationDto immunization = creator.createImmunization(
+			Disease.EVD,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf1);
+		immunization.setValidFrom(DateHelper.subtractDays(matchingDate, 2));
+		immunization.setValidUntil(DateHelper.addDays(matchingDate, 30));
+		immunization = getImmunizationFacade().save(immunization);
+
+		assertEquals(VaccinationStatus.VACCINATED, getCaseFacade().getByUuid(caze.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.VACCINATED, getContactFacade().getByUuid(contact.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.VACCINATED, getEventParticipantFacade().getByUuid(eventParticipant.getUuid()).getVaccinationStatus());
+
+		getImmunizationFacade().delete(immunization.getUuid(), new DeletionDetails());
+
+		assertEquals(VaccinationStatus.UNVACCINATED, getCaseFacade().getByUuid(caze.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getContactFacade().getByUuid(contact.getUuid()).getVaccinationStatus());
+		assertEquals(VaccinationStatus.UNVACCINATED, getEventParticipantFacade().getByUuid(eventParticipant.getUuid()).getVaccinationStatus());
 	}
 
 	@Test

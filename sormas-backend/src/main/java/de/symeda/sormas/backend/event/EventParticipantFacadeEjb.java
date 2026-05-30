@@ -434,11 +434,21 @@ public class EventParticipantFacadeEjb
 		EventParticipant newEventParticipant,
 		boolean syncShares) {
 
-		if (existingEventParticipant == null) {
+		if (existingEventParticipant == null || hasVaccinationReferenceChanged(existingEventParticipant, newEventParticipant)) {
 			vaccinationFacade.updateVaccinationStatuses(newEventParticipant);
-		} else {
-			eventFacade.onEventChange(event, syncShares);
 		}
+
+		eventFacade.onEventChange(event, syncShares);
+	}
+
+	private boolean hasVaccinationReferenceChanged(EventParticipantDto existingEventParticipant, EventParticipant newEventParticipant) {
+		return existingEventParticipant != null
+			&& (!Objects.equals(
+				existingEventParticipant.getEvent() != null ? existingEventParticipant.getEvent().getUuid() : null,
+				newEventParticipant.getEvent() != null ? newEventParticipant.getEvent().getUuid() : null)
+				|| !Objects.equals(
+					existingEventParticipant.getPerson() != null ? existingEventParticipant.getPerson().getUuid() : null,
+					newEventParticipant.getPerson() != null ? newEventParticipant.getPerson().getUuid() : null));
 	}
 
 	@Override
