@@ -69,6 +69,57 @@ public class DrugSusceptibilityMapper {
 		target.setPenicillinSusceptibility(source.getPenicillinSusceptibility());
 		target.setErythromycinMic(source.getErythromycinMic());
 		target.setErythromycinSusceptibility(source.getErythromycinSusceptibility());
+		target.setAmikacinMethod(source.getAmikacinMethod());
+		target.setAmikacinZoneDiameter(source.getAmikacinZoneDiameter());
+		target.setAmikacinSurveillance(source.getAmikacinSurveillance());
+		target.setBedaquilineMethod(source.getBedaquilineMethod());
+		target.setBedaquilineZoneDiameter(source.getBedaquilineZoneDiameter());
+		target.setBedaquilineSurveillance(source.getBedaquilineSurveillance());
+		target.setCapreomycinMethod(source.getCapreomycinMethod());
+		target.setCapreomycinZoneDiameter(source.getCapreomycinZoneDiameter());
+		target.setCapreomycinSurveillance(source.getCapreomycinSurveillance());
+		target.setCiprofloxacinMethod(source.getCiprofloxacinMethod());
+		target.setCiprofloxacinZoneDiameter(source.getCiprofloxacinZoneDiameter());
+		target.setCiprofloxacinSurveillance(source.getCiprofloxacinSurveillance());
+		target.setDelamanidMethod(source.getDelamanidMethod());
+		target.setDelamanidZoneDiameter(source.getDelamanidZoneDiameter());
+		target.setDelamanidSurveillance(source.getDelamanidSurveillance());
+		target.setEthambutolMethod(source.getEthambutolMethod());
+		target.setEthambutolZoneDiameter(source.getEthambutolZoneDiameter());
+		target.setEthambutolSurveillance(source.getEthambutolSurveillance());
+		target.setGatifloxacinMethod(source.getGatifloxacinMethod());
+		target.setGatifloxacinZoneDiameter(source.getGatifloxacinZoneDiameter());
+		target.setGatifloxacinSurveillance(source.getGatifloxacinSurveillance());
+		target.setIsoniazidMethod(source.getIsoniazidMethod());
+		target.setIsoniazidZoneDiameter(source.getIsoniazidZoneDiameter());
+		target.setIsoniazidSurveillance(source.getIsoniazidSurveillance());
+		target.setKanamycinMethod(source.getKanamycinMethod());
+		target.setKanamycinZoneDiameter(source.getKanamycinZoneDiameter());
+		target.setKanamycinSurveillance(source.getKanamycinSurveillance());
+		target.setLevofloxacinMethod(source.getLevofloxacinMethod());
+		target.setLevofloxacinZoneDiameter(source.getLevofloxacinZoneDiameter());
+		target.setLevofloxacinSurveillance(source.getLevofloxacinSurveillance());
+		target.setMoxifloxacinMethod(source.getMoxifloxacinMethod());
+		target.setMoxifloxacinZoneDiameter(source.getMoxifloxacinZoneDiameter());
+		target.setMoxifloxacinSurveillance(source.getMoxifloxacinSurveillance());
+		target.setOfloxacinMethod(source.getOfloxacinMethod());
+		target.setOfloxacinZoneDiameter(source.getOfloxacinZoneDiameter());
+		target.setOfloxacinSurveillance(source.getOfloxacinSurveillance());
+		target.setRifampicinMethod(source.getRifampicinMethod());
+		target.setRifampicinZoneDiameter(source.getRifampicinZoneDiameter());
+		target.setRifampicinSurveillance(source.getRifampicinSurveillance());
+		target.setStreptomycinMethod(source.getStreptomycinMethod());
+		target.setStreptomycinZoneDiameter(source.getStreptomycinZoneDiameter());
+		target.setStreptomycinSurveillance(source.getStreptomycinSurveillance());
+		target.setCeftriaxoneMethod(source.getCeftriaxoneMethod());
+		target.setCeftriaxoneZoneDiameter(source.getCeftriaxoneZoneDiameter());
+		target.setCeftriaxoneSurveillance(source.getCeftriaxoneSurveillance());
+		target.setPenicillinMethod(source.getPenicillinMethod());
+		target.setPenicillinZoneDiameter(source.getPenicillinZoneDiameter());
+		target.setPenicillinSurveillance(source.getPenicillinSurveillance());
+		target.setErythromycinMethod(source.getErythromycinMethod());
+		target.setErythromycinZoneDiameter(source.getErythromycinZoneDiameter());
+		target.setErythromycinSurveillance(source.getErythromycinSurveillance());
 		return target;
 	}
 
@@ -113,6 +164,57 @@ public class DrugSusceptibilityMapper {
 		target.setPenicillinSusceptibility(source.getPenicillinSusceptibility());
 		target.setErythromycinMic(source.getErythromycinMic());
 		target.setErythromycinSusceptibility(source.getErythromycinSusceptibility());
+		target.setAmikacinMethod(source.getAmikacinMethod());
+		target.setAmikacinZoneDiameter(source.getAmikacinZoneDiameter());
+		target.setAmikacinSurveillance(source.getAmikacinSurveillance());
+		target.setBedaquilineMethod(source.getBedaquilineMethod());
+		target.setBedaquilineZoneDiameter(source.getBedaquilineZoneDiameter());
+		target.setBedaquilineSurveillance(source.getBedaquilineSurveillance());
+		target.setCapreomycinMethod(source.getCapreomycinMethod());
+		target.setCapreomycinZoneDiameter(source.getCapreomycinZoneDiameter());
+		target.setCapreomycinSurveillance(source.getCapreomycinSurveillance());
+		target.setCiprofloxacinMethod(source.getCiprofloxacinMethod());
+		target.setCiprofloxacinZoneDiameter(source.getCiprofloxacinZoneDiameter());
+		target.setCiprofloxacinSurveillance(source.getCiprofloxacinSurveillance());
+		target.setDelamanidMethod(source.getDelamanidMethod());
+		target.setDelamanidZoneDiameter(source.getDelamanidZoneDiameter());
+		target.setDelamanidSurveillance(source.getDelamanidSurveillance());
+		target.setEthambutolMethod(source.getEthambutolMethod());
+		target.setEthambutolZoneDiameter(source.getEthambutolZoneDiameter());
+		target.setEthambutolSurveillance(source.getEthambutolSurveillance());
+		target.setGatifloxacinMethod(source.getGatifloxacinMethod());
+		target.setGatifloxacinZoneDiameter(source.getGatifloxacinZoneDiameter());
+		target.setGatifloxacinSurveillance(source.getGatifloxacinSurveillance());
+		target.setIsoniazidMethod(source.getIsoniazidMethod());
+		target.setIsoniazidZoneDiameter(source.getIsoniazidZoneDiameter());
+		target.setIsoniazidSurveillance(source.getIsoniazidSurveillance());
+		target.setKanamycinMethod(source.getKanamycinMethod());
+		target.setKanamycinZoneDiameter(source.getKanamycinZoneDiameter());
+		target.setKanamycinSurveillance(source.getKanamycinSurveillance());
+		target.setLevofloxacinMethod(source.getLevofloxacinMethod());
+		target.setLevofloxacinZoneDiameter(source.getLevofloxacinZoneDiameter());
+		target.setLevofloxacinSurveillance(source.getLevofloxacinSurveillance());
+		target.setMoxifloxacinMethod(source.getMoxifloxacinMethod());
+		target.setMoxifloxacinZoneDiameter(source.getMoxifloxacinZoneDiameter());
+		target.setMoxifloxacinSurveillance(source.getMoxifloxacinSurveillance());
+		target.setOfloxacinMethod(source.getOfloxacinMethod());
+		target.setOfloxacinZoneDiameter(source.getOfloxacinZoneDiameter());
+		target.setOfloxacinSurveillance(source.getOfloxacinSurveillance());
+		target.setRifampicinMethod(source.getRifampicinMethod());
+		target.setRifampicinZoneDiameter(source.getRifampicinZoneDiameter());
+		target.setRifampicinSurveillance(source.getRifampicinSurveillance());
+		target.setStreptomycinMethod(source.getStreptomycinMethod());
+		target.setStreptomycinZoneDiameter(source.getStreptomycinZoneDiameter());
+		target.setStreptomycinSurveillance(source.getStreptomycinSurveillance());
+		target.setCeftriaxoneMethod(source.getCeftriaxoneMethod());
+		target.setCeftriaxoneZoneDiameter(source.getCeftriaxoneZoneDiameter());
+		target.setCeftriaxoneSurveillance(source.getCeftriaxoneSurveillance());
+		target.setPenicillinMethod(source.getPenicillinMethod());
+		target.setPenicillinZoneDiameter(source.getPenicillinZoneDiameter());
+		target.setPenicillinSurveillance(source.getPenicillinSurveillance());
+		target.setErythromycinMethod(source.getErythromycinMethod());
+		target.setErythromycinZoneDiameter(source.getErythromycinZoneDiameter());
+		target.setErythromycinSurveillance(source.getErythromycinSurveillance());
 
 		return target;
 	}
@@ -155,6 +257,57 @@ public class DrugSusceptibilityMapper {
 			|| dto.getPenicillinMic() != null
 			|| dto.getPenicillinSusceptibility() != null
 			|| dto.getErythromycinMic() != null
-			|| dto.getErythromycinSusceptibility() != null;
+			|| dto.getErythromycinSusceptibility() != null
+			|| dto.getAmikacinMethod() != null
+			|| dto.getAmikacinZoneDiameter() != null
+			|| dto.getAmikacinSurveillance() != null
+			|| dto.getBedaquilineMethod() != null
+			|| dto.getBedaquilineZoneDiameter() != null
+			|| dto.getBedaquilineSurveillance() != null
+			|| dto.getCapreomycinMethod() != null
+			|| dto.getCapreomycinZoneDiameter() != null
+			|| dto.getCapreomycinSurveillance() != null
+			|| dto.getCiprofloxacinMethod() != null
+			|| dto.getCiprofloxacinZoneDiameter() != null
+			|| dto.getCiprofloxacinSurveillance() != null
+			|| dto.getDelamanidMethod() != null
+			|| dto.getDelamanidZoneDiameter() != null
+			|| dto.getDelamanidSurveillance() != null
+			|| dto.getEthambutolMethod() != null
+			|| dto.getEthambutolZoneDiameter() != null
+			|| dto.getEthambutolSurveillance() != null
+			|| dto.getGatifloxacinMethod() != null
+			|| dto.getGatifloxacinZoneDiameter() != null
+			|| dto.getGatifloxacinSurveillance() != null
+			|| dto.getIsoniazidMethod() != null
+			|| dto.getIsoniazidZoneDiameter() != null
+			|| dto.getIsoniazidSurveillance() != null
+			|| dto.getKanamycinMethod() != null
+			|| dto.getKanamycinZoneDiameter() != null
+			|| dto.getKanamycinSurveillance() != null
+			|| dto.getLevofloxacinMethod() != null
+			|| dto.getLevofloxacinZoneDiameter() != null
+			|| dto.getLevofloxacinSurveillance() != null
+			|| dto.getMoxifloxacinMethod() != null
+			|| dto.getMoxifloxacinZoneDiameter() != null
+			|| dto.getMoxifloxacinSurveillance() != null
+			|| dto.getOfloxacinMethod() != null
+			|| dto.getOfloxacinZoneDiameter() != null
+			|| dto.getOfloxacinSurveillance() != null
+			|| dto.getRifampicinMethod() != null
+			|| dto.getRifampicinZoneDiameter() != null
+			|| dto.getRifampicinSurveillance() != null
+			|| dto.getStreptomycinMethod() != null
+			|| dto.getStreptomycinZoneDiameter() != null
+			|| dto.getStreptomycinSurveillance() != null
+			|| dto.getCeftriaxoneMethod() != null
+			|| dto.getCeftriaxoneZoneDiameter() != null
+			|| dto.getCeftriaxoneSurveillance() != null
+			|| dto.getPenicillinMethod() != null
+			|| dto.getPenicillinZoneDiameter() != null
+			|| dto.getPenicillinSurveillance() != null
+			|| dto.getErythromycinMethod() != null
+			|| dto.getErythromycinZoneDiameter() != null
+			|| dto.getErythromycinSurveillance() != null;
 	}
 }

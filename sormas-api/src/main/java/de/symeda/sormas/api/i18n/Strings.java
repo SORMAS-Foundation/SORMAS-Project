@@ -1912,6 +1912,9 @@ public interface Strings {
 	String promptRelatedPersonLikeField = "promptRelatedPersonLikeField";
 	String promptRemarks = "promptRemarks";
 	String promptResistanceResult = "promptResistanceResult";
+	String promptSusceptibilityMethod = "promptSusceptibilityMethod";
+	String promptZoneDiameter = "promptZoneDiameter";
+	String promptSurveillanceInterpretation = "promptSurveillanceInterpretation";
 	String promptSampleDashboardFilterDateType = "promptSampleDashboardFilterDateType";
 	String promptSampleDateFrom = "promptSampleDateFrom";
 	String promptSampleDateTo = "promptSampleDateTo";
