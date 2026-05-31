@@ -20,6 +20,7 @@ import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.utils.Tuple;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
@@ -161,30 +162,30 @@ public class BusinessDtoFacade {
 	}
 
 	private void registerLeafAttacherOperations() {
-		registerLeafAttacher(VaccinationDto.class, (leaf, list) -> {
-			ImmunizationDto immunization = fetchType(list, ImmunizationDto.class)
-				.orElseGet(() -> (ImmunizationDto) createImmunizationDtoFromCaseFct().apply(requireCaseData(list)));
+		registerLeafAttacher(VaccinationDto.class, (leaf, groupIndex, list) -> {
+			ImmunizationDto immunization = list.stream()
+				.filter(tuple -> tuple.getSecond() instanceof ImmunizationDto && Objects.equals(tuple.getFirst(), groupIndex))
+				.map(tuple -> (ImmunizationDto) tuple.getSecond())
+				.findAny()
+				.orElseGet(() -> {
+					ImmunizationDto newImm = (ImmunizationDto) createImmunizationDtoFromCaseFct().apply(requireCaseData(list));
+					list.add(Tuple.of(groupIndex, newImm));
+					return newImm;
+				});
 
 			if (immunization.getMeansOfImmunization() == null) {
 				immunization.setMeansOfImmunization(MeansOfImmunization.VACCINATION);
 			}
 			immunization.getVaccinations().add((VaccinationDto) leaf);
-			return immunization;
 		});
-		registerLeafAttacher(ExposureDto.class, (leaf, list) -> {
-			CaseDataDto caseData = requireCaseData(list);
-			caseData.getEpiData().getExposures().add((ExposureDto) leaf);
-			return caseData;
+		registerLeafAttacher(ExposureDto.class, (leaf, groupIndex, list) -> {
+			requireCaseData(list).getEpiData().getExposures().add((ExposureDto) leaf);
 		});
-		registerLeafAttacher(ActivityAsCaseDto.class, (leaf, list) -> {
-			CaseDataDto caseData = requireCaseData(list);
-			caseData.getEpiData().getActivitiesAsCase().add((ActivityAsCaseDto) leaf);
-			return caseData;
+		registerLeafAttacher(ActivityAsCaseDto.class, (leaf, groupIndex, list) -> {
+			requireCaseData(list).getEpiData().getActivitiesAsCase().add((ActivityAsCaseDto) leaf);
 		});
-		registerLeafAttacher(PreviousHospitalizationDto.class, (leaf, list) -> {
-			CaseDataDto caseData = requireCaseData(list);
-			caseData.getHospitalization().getPreviousHospitalizations().add((PreviousHospitalizationDto) leaf);
-			return caseData;
+		registerLeafAttacher(PreviousHospitalizationDto.class, (leaf, groupIndex, list) -> {
+			requireCaseData(list).getHospitalization().getPreviousHospitalizations().add((PreviousHospitalizationDto) leaf);
 		});
 	}
 
@@ -192,10 +193,15 @@ public class BusinessDtoFacade {
 		leafAttacherRegistry.put(leafClass, attacher);
 	}
 
-	private CaseDataDto requireCaseData(List<EntityDto> dtosInProgress) {
-		return fetchType(dtosInProgress, CaseDataDto.class).orElseThrow(
-			() -> new IllegalStateException(
-				String.format("When saving child leaf entities the caseData must be present, but was not: [%s]", dtosInProgress)));
+	private CaseDataDto requireCaseData(List<Tuple<Integer, EntityDto>> dtosInProgress) {
+		return dtosInProgress.stream()
+			.map(Tuple::getSecond)
+			.filter(CaseDataDto.class::isInstance)
+			.map(CaseDataDto.class::cast)
+			.findAny()
+			.orElseThrow(
+				() -> new IllegalStateException(
+					String.format("When saving child leaf entities the caseData must be present, but was not: [%s]", dtosInProgress)));
 	}
 
 	@Nullable
@@ -294,31 +300,26 @@ public class BusinessDtoFacade {
 			.apply((T) entityDto);
 	}
 
-	public void save(@NotNull List<EntityDto> entityDtos) {
-		ArrayList<EntityDto> dtosToSave = new ArrayList<>(entityDtos);
+	public void save(@NotNull List<Tuple<Integer, EntityDto>> entityDtosByKey) {
+		List<Tuple<Integer, EntityDto>> dtosInProgress = new ArrayList<>(entityDtosByKey);
 
 		leafAttacherRegistry.forEach((leafClass, attacher) -> {
-			List<EntityDto> leaves = dtosToSave.stream().filter(leafClass::isInstance).collect(Collectors.toList());
-			leaves.forEach(leaf -> {
-				EntityDto parent = attacher.attachAndReturnParent(leaf, dtosToSave);
-				dtosToSave.remove(leaf);
-				if (!dtosToSave.contains(parent)) {
-					dtosToSave.add(parent);
-				}
+			List<Tuple<Integer, EntityDto>> leaves =
+				dtosInProgress.stream().filter(t -> leafClass.isInstance(t.getSecond())).collect(Collectors.toList());
+
+			leaves.forEach(leafTuple -> {
+				dtosInProgress.remove(leafTuple);
+				attacher.attachLeaf(leafTuple.getSecond(), leafTuple.getFirst(), dtosInProgress);
 			});
 		});
 
-		dtosToSave.forEach(this::saveDirectEntity);
-	}
-
-	private static @NotNull <T> Optional<T> fetchType(List<EntityDto> entityDtos, Class<T> targetClass) {
-		return entityDtos.stream().filter(targetClass::isInstance).map(targetClass::cast).findAny();
+		dtosInProgress.stream().map(Tuple::getSecond).forEach(this::saveDirectEntity);
 	}
 
 	@FunctionalInterface
 	private interface LeafAttacher {
 
-		EntityDto attachAndReturnParent(EntityDto leaf, List<EntityDto> dtosInProgress);
+		void attachLeaf(EntityDto leaf, Integer groupIndex, List<Tuple<Integer, EntityDto>> dtosInProgress);
 	}
 
 }
