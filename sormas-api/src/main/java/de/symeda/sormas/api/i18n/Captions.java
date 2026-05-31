@@ -2401,6 +2401,7 @@ public interface Captions {
 	String PathogenTest_specie = "PathogenTest.specie";
 	String PathogenTest_specieText = "PathogenTest.specieText";
 	String PathogenTest_strainCallStatus = "PathogenTest.strainCallStatus";
+	String PathogenTest_testCategory = "PathogenTest.testCategory";
 	String PathogenTest_testDateTime = "PathogenTest.testDateTime";
 	String PathogenTest_testedDisease = "PathogenTest.testedDisease";
 	String PathogenTest_testedDiseaseDetails = "PathogenTest.testedDiseaseDetails";
@@ -2412,7 +2413,6 @@ public interface Captions {
 	String PathogenTest_testResultText = "PathogenTest.testResultText";
 	String PathogenTest_testResultVerified = "PathogenTest.testResultVerified";
 	String PathogenTest_testScale = "PathogenTest.testScale";
-	String PathogenTest_testCategory = "PathogenTest.testCategory";
 	String PathogenTest_testType = "PathogenTest.testType";
 	String PathogenTest_testTypeText = "PathogenTest.testTypeText";
 	String PathogenTest_tubeAgTb1 = "PathogenTest.tubeAgTb1";
