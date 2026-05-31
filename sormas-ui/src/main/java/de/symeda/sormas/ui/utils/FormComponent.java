@@ -27,6 +27,7 @@ import com.vaadin.v7.data.Validator.InvalidValueException;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.sample.PathogenTestCategory;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.utils.ApplicableToPathogenTests;
 import de.symeda.sormas.api.utils.Diseases;
@@ -289,6 +290,60 @@ public abstract class FormComponent<T> extends VerticalLayout {
 		if (currentValue != null && filtered.contains(currentValue)) {
 			comboBox.setValue(currentValue);
 		}
+	}
+
+	/**
+	 * Scopes the pathogen-test method combo to the methods that are visible for the given disease
+	 * (via {@link Diseases}), selectable for new tests (via
+	 * {@link PathogenTestType#isSelectableForNewTests}) and — when a category is selected — belong to
+	 * that {@link PathogenTestCategory}. With no category selected the combo shows all
+	 * selectable, disease-visible methods. The currently saved value is always kept selectable so an
+	 * existing test recorded with a now-hidden method can still be edited. Sorted alphabetically.
+	 */
+	protected static void updateTestTypeItemsByCategory(
+		ComboBox<PathogenTestType> comboBox,
+		Disease disease,
+		PathogenTestCategory category) {
+		updateTestTypeItemsByCategory(comboBox, disease, category, comboBox.getValue());
+	}
+
+	/**
+	 * As {@link #updateTestTypeItemsByCategory(ComboBox, Disease, PathogenTestCategory)} but with an
+	 * explicit {@code retainType} that is always kept in the list (and its category honoured) even if it
+	 * is hidden or not selectable — used when loading an existing test whose method may be legacy.
+	 */
+	protected static void updateTestTypeItemsByCategory(
+		ComboBox<PathogenTestType> comboBox,
+		Disease disease,
+		PathogenTestCategory category,
+		PathogenTestType retainType) {
+
+		List<PathogenTestType> filtered = Diseases.DiseasesConfiguration.getVisibleValues(PathogenTestType.class, disease)
+			.stream()
+			.filter(type -> type == retainType || PathogenTestType.isSelectableForNewTests(type))
+			.filter(type -> type == retainType || category == null || PathogenTestType.getCategory(type) == category)
+			.sorted(Comparator.comparing(Object::toString))
+			.collect(Collectors.toList());
+		comboBox.setItems(filtered);
+		if (retainType != null && filtered.contains(retainType)) {
+			comboBox.setValue(retainType);
+		}
+	}
+
+	/**
+	 * Lists the {@link PathogenTestCategory} values that have at least one selectable method visible
+	 * for the given disease, so empty categories are not offered. Sorted alphabetically.
+	 */
+	protected static List<PathogenTestCategory> getVisibleTestCategories(Disease disease) {
+		List<PathogenTestCategory> categories = Diseases.DiseasesConfiguration.getVisibleValues(PathogenTestType.class, disease)
+			.stream()
+			.filter(PathogenTestType::isSelectableForNewTests)
+			.map(PathogenTestType::getCategory)
+			.filter(java.util.Objects::nonNull)
+			.distinct()
+			.sorted(Comparator.comparing(Object::toString))
+			.collect(Collectors.toList());
+		return categories;
 	}
 
 	protected Label createSpacer() {

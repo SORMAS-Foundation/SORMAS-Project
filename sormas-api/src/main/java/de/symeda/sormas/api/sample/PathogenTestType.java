@@ -24,6 +24,12 @@ import de.symeda.sormas.api.utils.Diseases;
 
 public enum PathogenTestType {
 
+	// ----------------------------------------------------------------------------------------------
+	// Legacy / merged methods: kept for case classification, external-message mapping, exports and so
+	// existing records still render, but @NotSelectableForNewTests removes them from the new-test
+	// method picker. Their category is still declared so a saved record can be grouped when displayed.
+	// ----------------------------------------------------------------------------------------------
+
 	@Diseases(value = {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.MEASLES,
@@ -32,39 +38,29 @@ public enum PathogenTestType {
 		Disease.DENGUE,
 		Disease.MALARIA,
 		Disease.SALMONELLOSIS }, hide = true)
+	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
+	@NotSelectableForNewTests
 	ANTIBODY_DETECTION,
 
+	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
+	@NotSelectableForNewTests
 	ANTIGEN_DETECTION,
-
-	@Diseases(value = {
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
-	RAPID_ANTIGEN_DETECTION,
-
-	RAPID_TEST,
 
 	@Diseases(value = {
 		Disease.GIARDIASIS,
 		Disease.DENGUE,
 		Disease.MALARIA }, hide = true)
+	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
+	@NotSelectableForNewTests
 	CULTURE,
 
 	@Diseases(value = {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-		Disease.MEASLES,
-		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS,
-		Disease.DENGUE,
-		Disease.MALARIA,
-		Disease.SALMONELLOSIS }, hide = true)
-	HISTOPATHOLOGY,
-
-	@Diseases(value = {
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA }, hide = true)
+	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
+	@NotSelectableForNewTests
 	ISOLATION,
 
 	@Diseases(value = {
@@ -74,6 +70,8 @@ public enum PathogenTestType {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA }, hide = true)
+	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
+	@NotSelectableForNewTests
 	IGM_SERUM_ANTIBODY,
 
 	@Diseases(value = {
@@ -83,6 +81,8 @@ public enum PathogenTestType {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA }, hide = true)
+	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
+	@NotSelectableForNewTests
 	IGG_SERUM_ANTIBODY,
 
 	@Diseases(value = {
@@ -95,6 +95,8 @@ public enum PathogenTestType {
 		Disease.DENGUE,
 		Disease.MALARIA,
 		Disease.SALMONELLOSIS }, hide = true)
+	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
+	@NotSelectableForNewTests
 	IGA_SERUM_ANTIBODY,
 
 	@Diseases(value = {
@@ -108,67 +110,21 @@ public enum PathogenTestType {
 		Disease.DENGUE,
 		Disease.MALARIA,
 		Disease.SALMONELLOSIS }, hide = true)
+	@NotSelectableForNewTests
 	INCUBATION_TIME,
 
 	@Diseases(value = {
 		Disease.CORONAVIRUS,
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-		Disease.MEASLES,
-		Disease.MALARIA })
-	INDIRECT_FLUORESCENT_ANTIBODY,
-
-	@Diseases(value = {
-		Disease.CORONAVIRUS,
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-		Disease.MEASLES })
-	DIRECT_FLUORESCENT_ANTIBODY,
-
-	@Diseases(value = {
-		Disease.CORONAVIRUS,
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.MEASLES,
 		Disease.DENGUE,
 		Disease.MALARIA,
 		Disease.SALMONELLOSIS }, hide = true)
+	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
+	@NotSelectableForNewTests
 	MICROSCOPY,
 
 	@Diseases(value = {
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-		Disease.MEASLES,
-		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS,
-		Disease.MALARIA,
-		Disease.SALMONELLOSIS }, hide = true)
-	NEUTRALIZING_ANTIBODIES,
-
-	@Diseases(value = {
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
-		Disease.MALARIA })
-	ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
-
-	@Diseases(value = {
-		Disease.SALMONELLOSIS }, hide = true)
-	@RevealsTestTypeText
-	PCR_RT_PCR,
-
-	@Diseases(value = {
-		Disease.CORONAVIRUS,
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
-		Disease.MEASLES,
-		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS,
-		Disease.DENGUE,
-		Disease.MALARIA,
-		Disease.SALMONELLOSIS }, hide = true)
-	GRAM_STAIN,
-
-	@Diseases(value = {
-		Disease.CORONAVIRUS,
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
@@ -178,6 +134,8 @@ public enum PathogenTestType {
 		Disease.DENGUE,
 		Disease.MALARIA,
 		Disease.SALMONELLOSIS }, hide = true)
+	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
+	@NotSelectableForNewTests
 	LATEX_AGGLUTINATION,
 
 	@Diseases(value = {
@@ -190,6 +148,7 @@ public enum PathogenTestType {
 		Disease.DENGUE,
 		Disease.MALARIA,
 		Disease.SALMONELLOSIS }, hide = true)
+	@NotSelectableForNewTests
 	CQ_VALUE_DETECTION,
 
 	@Diseases(value = {
@@ -197,7 +156,59 @@ public enum PathogenTestType {
 		Disease.MEASLES,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION })
+	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
+	@NotSelectableForNewTests
 	SEQUENCING,
+
+	// Legacy "Other <category>" placeholders introduced for Malaria/Dengue (#13801/#13814). Superseded
+	// by the specific methods below, but kept (hidden from new tests) because they shipped and may be
+	// stored on existing records (@Enumerated(STRING)). Records using them must still load and render.
+	@Diseases({
+		Disease.MALARIA })
+	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
+	@NotSelectableForNewTests
+	OTHER_ANTIGEN_DETECTION_TEST,
+
+	@Diseases({
+		Disease.MALARIA })
+	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
+	@NotSelectableForNewTests
+	OTHER_MOLECULAR_ASSAY,
+
+	@Diseases({
+		Disease.MALARIA })
+	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
+	@NotSelectableForNewTests
+	OTHER_SEROLOGICAL_TEST,
+
+	// ----------------------------------------------------------------------------------------------
+	// Molecular Assays
+	// ----------------------------------------------------------------------------------------------
+
+	@Diseases(value = {
+		Disease.SALMONELLOSIS }, hide = true)
+	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
+	@RevealsTestTypeText
+	PCR_RT_PCR,
+
+	@Diseases({
+		Disease.MALARIA })
+	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
+	Q_PCR,
+
+	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
+	MULTIPLEX_PCR,
+
+	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
+	DIGITAL_PCR,
+
+	@Diseases({
+		Disease.MALARIA })
+	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
+	LAMP,
+
+	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
+	NASBA,
 
 	@Diseases(value = {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
@@ -209,56 +220,48 @@ public enum PathogenTestType {
 		Disease.DENGUE,
 		Disease.MALARIA,
 		Disease.SALMONELLOSIS }, hide = true)
+	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
+	TMA,
+
+	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
+	CRISPR_DIAGNOSTICS,
+
+	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
+	LINE_PROBE_ASSAY,
+
+	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
+	SANGER_SEQUENCING,
+
+	@Diseases(value = {
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
+	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
+	WHOLE_GENOME_SEQUENCING,
+
+	@Diseases(value = {
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.MEASLES,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.DENGUE,
+		Disease.MALARIA,
+		Disease.SALMONELLOSIS }, hide = true)
+	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	DNA_MICROARRAY,
 
 	@Diseases(value = {
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-		Disease.MEASLES,
-		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS,
-		Disease.DENGUE,
-		Disease.MALARIA,
-		Disease.SALMONELLOSIS }, hide = true)
-	TMA,
-
-	@Diseases(value = {
-		Disease.TUBERCULOSIS,
-		Disease.LATENT_TUBERCULOSIS })
-	IGRA,
-
-	@Diseases(value = {
-		Disease.TUBERCULOSIS,
-		Disease.LATENT_TUBERCULOSIS })
-	TST,
-
-	@Diseases(value = {
-		Disease.TUBERCULOSIS,
-		Disease.LATENT_TUBERCULOSIS })
-	BEIJINGGENOTYPING,
-
-	@Diseases(value = {
-		Disease.TUBERCULOSIS,
-		Disease.LATENT_TUBERCULOSIS })
-	SPOLIGOTYPING,
-
-	@Diseases(value = {
-		Disease.TUBERCULOSIS,
-		Disease.LATENT_TUBERCULOSIS })
-	MIRU_PATTERN_CODE,
-
-	@Diseases(value = {
-		Disease.TUBERCULOSIS,
-		Disease.LATENT_TUBERCULOSIS,
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
-	ANTIBIOTIC_SUSCEPTIBILITY,
+		Disease.DENGUE })
+	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
+	NAAT,
 
 	@Diseases(value = {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.SALMONELLOSIS })
+	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@RevealsTestTypeText(diseases = Disease.SALMONELLOSIS)
 	MULTILOCUS_SEQUENCE_TYPING,
 
@@ -266,6 +269,7 @@ public enum PathogenTestType {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.SALMONELLOSIS })
+	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@RevealsTestTypeText(diseases = Disease.SALMONELLOSIS)
 	CGMLST,
 
@@ -273,65 +277,240 @@ public enum PathogenTestType {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.SALMONELLOSIS })
+	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@RevealsTestTypeText(diseases = Disease.SALMONELLOSIS)
 	SNP_TYPING,
 
 	@Diseases(value = {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.SALMONELLOSIS })
+	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@RevealsTestTypeText(diseases = Disease.SALMONELLOSIS)
 	SEROTYPING,
 
 	@Diseases(value = {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
-	SLIDE_AGGLUTINATION,
-
-	@Diseases(value = {
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
-	WHOLE_GENOME_SEQUENCING,
-
-	@Diseases(value = {
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
+	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	SEROGROUPING,
 
 	@Diseases(value = {
 		Disease.MEASLES,
 		Disease.CRYPTOSPORIDIOSIS })
+	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	GENOTYPING,
 
 	@Diseases(value = {
-		Disease.DENGUE })
-	NAAT,
-	@Diseases({
-		Disease.MALARIA })
-	THICK_BLOOD_SMEAR,
-	@Diseases({
-		Disease.MALARIA })
-	THIN_BLOOD_SMEAR,
-	@Diseases({
-		Disease.MALARIA })
-	Q_PCR,
-	@Diseases({
-		Disease.MALARIA })
-	LAMP,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
+	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
+	BEIJINGGENOTYPING,
 
-	// @Herold need to refactor this as part of the test categories.
-	// Antigen detection test is a test category. To create tests for the below categories, decided to use as OTHER_<<category>>
+	@Diseases(value = {
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
+	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
+	SPOLIGOTYPING,
+
+	@Diseases(value = {
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
+	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
+	MIRU_PATTERN_CODE,
+
+	// ----------------------------------------------------------------------------------------------
+	// Serological Tests
+	// ----------------------------------------------------------------------------------------------
+
+	@Diseases(value = {
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.MALARIA })
+	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
+	ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
+
+	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
+	WESTERN_BLOT,
+
+	@Diseases(value = {
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.MEASLES,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MALARIA,
+		Disease.SALMONELLOSIS }, hide = true)
+	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
+	NEUTRALIZING_ANTIBODIES,
+
+	@Diseases(value = {
+		Disease.CORONAVIRUS,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.MEASLES,
+		Disease.MALARIA })
+	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
+	INDIRECT_FLUORESCENT_ANTIBODY,
+
+	@Diseases(value = {
+		Disease.CORONAVIRUS,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.MEASLES })
+	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
+	DIRECT_FLUORESCENT_ANTIBODY,
+
+	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
+	RAPID_ANTIBODY_TEST,
+
+	// ----------------------------------------------------------------------------------------------
+	// Antigen Detection
+	// ----------------------------------------------------------------------------------------------
+
+	@Diseases(value = {
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
+	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
+	RAPID_ANTIGEN_DETECTION,
+
+	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
+	RAPID_TEST,
+
+	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
+	LATERAL_FLOW_ASSAY,
+
+	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
+	IMMUNOFLUORESCENCE_ASSAY,
+
+	@Diseases(value = {
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
+	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
+	SLIDE_AGGLUTINATION,
+
+	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
+	QUELLUNG_REACTION,
+
+	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
+	HEMAGGLUTINATION_INHIBITION,
+
+	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
+	RDT,
+
+	// ----------------------------------------------------------------------------------------------
+	// Culture & Isolation
+	// ----------------------------------------------------------------------------------------------
+
+	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
+	BACTERIAL_CULTURE,
+
+	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
+	VIRAL_ISOLATION,
+
+	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
+	FUNGAL_CULTURE,
+
+	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
+	MALDI_TOF,
+
+	// ----------------------------------------------------------------------------------------------
+	// Microscopy & Staining
+	// ----------------------------------------------------------------------------------------------
+
+	@Diseases(value = {
+		Disease.CORONAVIRUS,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.MEASLES,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.DENGUE,
+		Disease.MALARIA,
+		Disease.SALMONELLOSIS }, hide = true)
+	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
+	GRAM_STAIN,
+
+	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
+	ACID_FAST_STAIN,
+
+	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
+	DARK_FIELD_MICROSCOPY,
+
+	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
+	GIEMSA_STAIN,
+
+	@Diseases(value = {
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.MEASLES,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.DENGUE,
+		Disease.MALARIA,
+		Disease.SALMONELLOSIS }, hide = true)
+	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
+	HISTOPATHOLOGY,
+
+	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
+	FISH,
+
+	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
+	IMMUNOHISTOCHEMISTRY,
+
+	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
+	ELECTRON_MICROSCOPY,
+
+	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
+	QUANTITATIVE_BUFFY_COAT,
+
 	@Diseases({
 		Disease.MALARIA })
-	OTHER_ANTIGEN_DETECTION_TEST,
-	// Test for category
+	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
+	THICK_BLOOD_SMEAR,
+
 	@Diseases({
 		Disease.MALARIA })
-	OTHER_MOLECULAR_ASSAY,
-	// Test for category
-	@Diseases({
-		Disease.MALARIA })
-	OTHER_SEROLOGICAL_TEST,
+	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
+	THIN_BLOOD_SMEAR,
+
+	// ----------------------------------------------------------------------------------------------
+	// Antimicrobial Susceptibility Testing
+	// ----------------------------------------------------------------------------------------------
+
+	@Diseases(value = {
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
+	@PathogenTestCategoryRel(PathogenTestCategory.ANTIMICROBIAL_SUSCEPTIBILITY_TESTING)
+	ANTIBIOTIC_SUSCEPTIBILITY,
+
+	@PathogenTestCategoryRel(PathogenTestCategory.ANTIMICROBIAL_SUSCEPTIBILITY_TESTING)
+	GENOTYPIC_RESISTANCE_TEST,
+
+	// ----------------------------------------------------------------------------------------------
+	// Functional Immune Assays
+	// ----------------------------------------------------------------------------------------------
+
+	@Diseases(value = {
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
+	@PathogenTestCategoryRel(PathogenTestCategory.FUNCTIONAL_IMMUNE_ASSAYS)
+	IGRA,
+
+	@Diseases(value = {
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
+	@PathogenTestCategoryRel(PathogenTestCategory.FUNCTIONAL_IMMUNE_ASSAYS)
+	TST,
+
+	@PathogenTestCategoryRel(PathogenTestCategory.FUNCTIONAL_IMMUNE_ASSAYS)
+	FLOW_CYTOMETRY,
+
+	// ----------------------------------------------------------------------------------------------
+	// No category: reveals a free-text companion field
+	// ----------------------------------------------------------------------------------------------
+
 	@RevealsTestTypeText
 	OTHER;
 
@@ -387,6 +566,41 @@ public enum PathogenTestType {
 			return false;
 		} catch (NoSuchFieldException e) {
 			return false;
+		}
+	}
+
+	/**
+	 * @return the {@link PathogenTestCategory} this method belongs to, declared via
+	 *         {@link PathogenTestCategoryRel}, or {@code null} for values with no category (e.g. the
+	 *         free-text {@code OTHER}). The category is derived from the method so it can be
+	 *         re-selected when editing an existing test without persisting a separate column.
+	 */
+	public static PathogenTestCategory getCategory(PathogenTestType testType) {
+		if (testType == null) {
+			return null;
+		}
+		try {
+			PathogenTestCategoryRel annotation = PathogenTestType.class.getField(testType.name()).getAnnotation(PathogenTestCategoryRel.class);
+			return annotation == null ? null : annotation.value();
+		} catch (NoSuchFieldException e) {
+			return null;
+		}
+	}
+
+	/**
+	 * @return false when {@code testType} is a legacy or merged method that must not be offered when
+	 *         adding a new pathogen test (marked with {@link NotSelectableForNewTests}). Such values
+	 *         are kept for classification, mapping and so existing records still render; they are only
+	 *         filtered out of the new-test method picker.
+	 */
+	public static boolean isSelectableForNewTests(PathogenTestType testType) {
+		if (testType == null) {
+			return false;
+		}
+		try {
+			return PathogenTestType.class.getField(testType.name()).getAnnotation(NotSelectableForNewTests.class) == null;
+		} catch (NoSuchFieldException e) {
+			return true;
 		}
 	}
 }
