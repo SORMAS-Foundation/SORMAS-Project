@@ -24292,6 +24292,10 @@ components:
           - PLASMA
           - SWAB_UNSPECIFIED
           - TEARS
+          - CORD_BLOOD
+          - LUNG_TISSUE
+          - PLACENTA
+          - ULCER_SWAB
           - UNKNOWN
           - OTHER
         sampleMaterialText:
@@ -24554,6 +24558,10 @@ components:
           - PLASMA
           - SWAB_UNSPECIFIED
           - TEARS
+          - CORD_BLOOD
+          - LUNG_TISSUE
+          - PLACENTA
+          - ULCER_SWAB
           - UNKNOWN
           - OTHER
         samplePurpose:
@@ -24747,6 +24755,10 @@ components:
           - PLASMA
           - SWAB_UNSPECIFIED
           - TEARS
+          - CORD_BLOOD
+          - LUNG_TISSUE
+          - PLACENTA
+          - ULCER_SWAB
           - UNKNOWN
           - OTHER
         sampleMaterialText:
