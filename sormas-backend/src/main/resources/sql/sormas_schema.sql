@@ -16218,6 +16218,7 @@ INTO general_category_id
 FROM systemconfigurationcategory
 WHERE name = 'GENERAL_CATEGORY';
 
+DELETE FROM systemconfigurationvalue WHERE category_id = general_category_id AND config_key = 'USE_QUICK_IMMUNIZATION_CREATION';
 INSERT INTO systemconfigurationvalue(config_key, config_value, value_description, category_id, value_optional, value_pattern,
                                      value_encrypt, data_provider, validation_message, changedate, creationdate, id,
                                      uuid)
