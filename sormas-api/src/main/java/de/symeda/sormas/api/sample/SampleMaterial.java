@@ -25,10 +25,12 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.HideForCountries;
 
 public enum SampleMaterial {
 
@@ -94,6 +96,7 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE }, hide = true)
+	@Deprecated
 	THROAT_SWAB,
 
 	@Diseases(value = {
@@ -201,12 +204,15 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE }, hide = true)
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	NUCHAL_SKIN_BIOPSY,
 
 	@Diseases({
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS })
-	@Deprecated
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	BIOPSY,
 
 	@Diseases(value = {
@@ -228,6 +234,8 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE }, hide = true)
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	ENDOTRACHEAL_ASPIRATE,
 
 	@Diseases(value = {
@@ -250,6 +258,8 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE }, hide = true)
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	BRAIN_TISSUE,
 
 	@Diseases(value = {
@@ -261,6 +271,8 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE }, hide = true)
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	ANTERIOR_NARES_SWAB,
 
 	@Diseases(value = {
@@ -272,6 +284,8 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE }, hide = true)
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	OP_ASPIRATE,
 
 	@Diseases(value = {
@@ -281,6 +295,8 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE }, hide = true)
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	NP_ASPIRATE,
 
 	@Diseases(value = {
@@ -299,8 +315,13 @@ public enum SampleMaterial {
 	NASOPHARYNGEAL_LAVAGE,
 
 	@Diseases(value = {
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
-	@Deprecated
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MALARIA,
+		Disease.DENGUE }, hide = true)
 	OROPHARYNGEAL_SWAB,
 
 	@Diseases(value = {
@@ -310,6 +331,8 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE }, hide = true)
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	AMNIOTIC_FLUID,
 
 	@Diseases(value = {
@@ -325,6 +348,8 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE }, hide = true)
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	PERITONEAL_FLUID,
 
 	@Diseases(value = {
@@ -344,12 +369,14 @@ public enum SampleMaterial {
 
 	@Diseases(value = {
 		Disease.CRYPTOSPORIDIOSIS })
-	@Deprecated
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	INTESTINAL_FLUID,
 
 	@Diseases(value = {
 		Disease.GIARDIASIS })
-	@Deprecated
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	DUODENUM_FLUID,
 
 	@Diseases({
@@ -379,7 +406,6 @@ public enum SampleMaterial {
 
 	@Diseases({
 		Disease.SALMONELLOSIS })
-	@Deprecated
 	LOWER_RESPIRATORY_TRACT,
 
 	@Diseases({
@@ -403,21 +429,47 @@ public enum SampleMaterial {
 		Disease.SALMONELLOSIS })
 	WOUND,
 
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	ABSCESS_SWAB,
 
 	BONE,
 
 	BONE_MARROW,
 
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	CONJUNCTIVAL_SWAB,
 
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	MIDDLE_EAR_FLUID,
 
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	PLASMA,
 
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	SWAB_UNSPECIFIED,
 
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	TEARS,
+
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	CORD_BLOOD,
+
+	LUNG_TISSUE,
+
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	PLACENTA,
+
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	ULCER_SWAB,
 
 	UNKNOWN,
 
@@ -436,6 +488,7 @@ public enum SampleMaterial {
 		map.put(AMNIOTIC_FLUID, "119373006");
 		map.put(ANTERIOR_NARES_SWAB, "697989009");
 		map.put(ASPIRATE, "119295008");
+		map.put(BIOPSY, "86273004");
 		map.put(BLOOD, "119297000");
 		map.put(BONE, "258417006");
 		map.put(BONE_MARROW, "119359002");
@@ -445,21 +498,29 @@ public enum SampleMaterial {
 		map.put(CEREBROSPINAL_FLUID, "258450006");
 		map.put(CLINICAL_SAMPLE, "123038009");
 		map.put(CONJUNCTIVAL_SWAB, "258498002");
+		map.put(CORD_BLOOD, "122556008");
 		map.put(CRUST, "1332490003");
 		map.put(DRY_BLOOD, "440500007");
+		map.put(DUODENUM_FLUID, "20779001");
 		map.put(EDTA_WHOLE_BLOOD, "258580003");
 		map.put(ENDOTRACHEAL_ASPIRATE, "119307008");
 		map.put(EYE, "119399004");
 		map.put(STOOL, "119339001");
 		map.put(GASTRIC_FLUID, "258459007");
 		map.put(GENITAL_SWAB, "258508008");
+		map.put(LOWER_RESPIRATORY_TRACT, "258606004");
+		map.put(LUNG_TISSUE, "399492000");
 		map.put(MIDDLE_EAR_FLUID, "258466008");
 		map.put(NP_ASPIRATE, "429931000124105");
 		map.put(NP_SWAB, "258500001");
 		map.put(NUCHAL_SKIN_BIOPSY, "309066003");
 		map.put(OP_ASPIRATE, "258412000");
+		map.put(OROPHARYNGEAL_SWAB, "258529004");
+		// THROAT_SWAB deprecated and merged into OROPHARYNGEAL_SWAB; its code is kept so existing
+		// THROAT_SWAB records still export their SNOMED-CT identifier.
 		map.put(THROAT_SWAB, "258529004");
 		map.put(PERITONEAL_FLUID, "168139001");
+		map.put(PLACENTA, "122736005");
 		map.put(PLASMA, "50863008");
 		map.put(PLEURAL_FLUID, "418564007");
 		map.put(PUS, "258502009");
@@ -473,8 +534,10 @@ public enum SampleMaterial {
 		map.put(SYNOVIAL_FLUID, "264380007");
 		map.put(TEARS, "122594008");
 		map.put(TISSUE, "119376003");
+		map.put(ULCER_SWAB, "472871003");
 		map.put(URINE, "122575003");
 		map.put(WOUND, "119365002");
+		// INTESTINAL_FLUID has no canonical SNOMED-CT code on the master specimen list — left unmapped.
 		SNOMED_CODES = Collections.unmodifiableMap(map);
 	}
 
@@ -490,14 +553,10 @@ public enum SampleMaterial {
 			CORNEA_PM,
 			NASAL_SWAB,
 			NASOPHARYNGEAL_LAVAGE,
-			OROPHARYNGEAL_SWAB,
+			THROAT_SWAB,
 			THROAT_ASPIRATE,
-			INTESTINAL_FLUID,
-			DUODENUM_FLUID,
-			LOWER_RESPIRATORY_TRACT,
 			SOFT_TISSUE,
 			BONE_AND_JOINT,
-			BIOPSY,
 			OTHER));
 
 	/**
