@@ -801,6 +801,26 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 				.build();
 		}
 
+		List<Immunization> notImmunized =
+			immunizations.stream().filter(i -> MeansOfImmunization.NOT_IMMUNIZED.equals(i.getMeansOfImmunization())).collect(Collectors.toList());
+
+		// We only have not immunized entries
+		if (!notImmunized.isEmpty() && notImmunized.size() == immunizations.size()) {
+			// Multiple not immunized entries could exist, 
+			// If so we just pick closest not immunized based on report date relative to fromDate.
+			// Not Immunized entries do not need to be subject to valid from / valid to because we only do this if there are no other immunizations
+			Immunization relevantNotImmunized = notImmunized.stream()
+				.filter(i -> i.getReportDate() != null)
+				.min(Comparator.comparingLong(i -> Math.abs(i.getReportDate().getTime() - fromDate.getTime())))
+				.orElse(null);
+			if (relevantNotImmunized != null) {
+				return VaccinationStatusData.Builder.createFrom(buildVaccinationStatusData(relevantNotImmunized))
+					.referencePeriodFrom(fromDate)
+					.referencePeriodTo(effectiveUntilDate)
+					.build();
+			}
+		}
+
 		// BR0010: only ACQUIRED immunizations are considered
 		List<Immunization> acquiredImmunizations =
 			immunizations.stream().filter(i -> ImmunizationStatus.ACQUIRED.equals(i.getImmunizationStatus())).collect(Collectors.toList());
