@@ -17,7 +17,15 @@ package de.symeda.sormas.backend.externalmessage;
 
 import static java.util.stream.Collectors.toList;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -33,7 +41,15 @@ import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Tuple;
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -55,10 +71,25 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.customizableenum.CustomEnumNotFoundException;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
-import de.symeda.sormas.api.externalmessage.*;
+import de.symeda.sormas.api.externalmessage.ExternalMessageAdapterFacade;
+import de.symeda.sormas.api.externalmessage.ExternalMessageCriteria;
+import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.externalmessage.ExternalMessageFacade;
+import de.symeda.sormas.api.externalmessage.ExternalMessageFetchResult;
+import de.symeda.sormas.api.externalmessage.ExternalMessageIndexDto;
+import de.symeda.sormas.api.externalmessage.ExternalMessageReferenceDto;
+import de.symeda.sormas.api.externalmessage.ExternalMessageResult;
+import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
+import de.symeda.sormas.api.externalmessage.ExternalMessageType;
+import de.symeda.sormas.api.externalmessage.NewMessagesState;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult;
-import de.symeda.sormas.api.externalmessage.survey.*;
+import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseRequest;
+import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseWrapper;
+import de.symeda.sormas.api.externalmessage.survey.ExternalSurveyResponseData;
+import de.symeda.sormas.api.externalmessage.survey.PatchDictionary;
+import de.symeda.sormas.api.externalmessage.survey.PatchField;
+import de.symeda.sormas.api.externalmessage.survey.SurveyAsExternalMessageAdapterFacade;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
@@ -102,7 +133,11 @@ import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
-import de.symeda.sormas.backend.util.*;
+import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "ExternalMessageFacade")
 @RightsAllowed({
@@ -688,7 +723,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 			cq.where(filter);
 		}
 
-		cq.select(cb.countDistinct(externalMessage));
+		cq.select(cb.countDistinct(externalMessage.get(ExternalMessage.ID)));
 		return em.createQuery(cq).getSingleResult();
 	}
 
