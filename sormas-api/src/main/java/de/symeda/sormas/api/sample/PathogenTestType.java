@@ -189,25 +189,37 @@ public enum PathogenTestType {
 		Disease.SALMONELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@RevealsTestTypeText
+	@ResultValueTypeRel({
+		ResultValueType.QUALITATIVE,
+		ResultValueType.NUMERIC })
 	PCR_RT_PCR,
 
 	@Diseases({
 		Disease.MALARIA })
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
+	@ResultValueTypeRel({
+		ResultValueType.QUALITATIVE,
+		ResultValueType.NUMERIC })
 	Q_PCR,
 
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	MULTIPLEX_PCR,
 
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
+	@ResultValueTypeRel({
+		ResultValueType.QUALITATIVE,
+		ResultValueType.NUMERIC })
 	DIGITAL_PCR,
 
 	@Diseases({
 		Disease.MALARIA })
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	LAMP,
 
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	NASBA,
 
 	@Diseases(value = {
@@ -221,15 +233,19 @@ public enum PathogenTestType {
 		Disease.MALARIA,
 		Disease.SALMONELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	TMA,
 
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	CRISPR_DIAGNOSTICS,
 
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
+	@ResultValueTypeRel(ResultValueType.BOOLEAN)
 	LINE_PROBE_ASSAY,
 
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
+	@ResultValueTypeRel(ResultValueType.TEXT)
 	SANGER_SEQUENCING,
 
 	@Diseases(value = {
@@ -237,6 +253,7 @@ public enum PathogenTestType {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
+	@ResultValueTypeRel(ResultValueType.TEXT)
 	WHOLE_GENOME_SEQUENCING,
 
 	@Diseases(value = {
@@ -250,11 +267,15 @@ public enum PathogenTestType {
 		Disease.MALARIA,
 		Disease.SALMONELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	DNA_MICROARRAY,
 
 	@Diseases(value = {
 		Disease.DENGUE })
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
+	@ResultValueTypeRel({
+		ResultValueType.QUALITATIVE,
+		ResultValueType.NUMERIC })
 	NAAT,
 
 	@Diseases(value = {
@@ -263,6 +284,7 @@ public enum PathogenTestType {
 		Disease.SALMONELLOSIS })
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@RevealsTestTypeText(diseases = Disease.SALMONELLOSIS)
+	@ResultValueTypeRel(ResultValueType.TEXT)
 	MULTILOCUS_SEQUENCE_TYPING,
 
 	@Diseases(value = {
@@ -271,6 +293,7 @@ public enum PathogenTestType {
 		Disease.SALMONELLOSIS })
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@RevealsTestTypeText(diseases = Disease.SALMONELLOSIS)
+	@ResultValueTypeRel(ResultValueType.TEXT)
 	CGMLST,
 
 	@Diseases(value = {
@@ -279,6 +302,7 @@ public enum PathogenTestType {
 		Disease.SALMONELLOSIS })
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@RevealsTestTypeText(diseases = Disease.SALMONELLOSIS)
+	@ResultValueTypeRel(ResultValueType.TEXT)
 	SNP_TYPING,
 
 	@Diseases(value = {
@@ -286,36 +310,42 @@ public enum PathogenTestType {
 		Disease.SALMONELLOSIS })
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@RevealsTestTypeText(diseases = Disease.SALMONELLOSIS)
+	@ResultValueTypeRel(ResultValueType.TEXT)
 	SEROTYPING,
 
 	@Diseases(value = {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
+	@ResultValueTypeRel(ResultValueType.TEXT)
 	SEROGROUPING,
 
 	@Diseases(value = {
 		Disease.MEASLES,
 		Disease.CRYPTOSPORIDIOSIS })
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
+	@ResultValueTypeRel(ResultValueType.TEXT)
 	GENOTYPING,
 
 	@Diseases(value = {
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS })
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
+	@ResultValueTypeRel(ResultValueType.TEXT)
 	BEIJINGGENOTYPING,
 
 	@Diseases(value = {
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS })
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
+	@ResultValueTypeRel(ResultValueType.TEXT)
 	SPOLIGOTYPING,
 
 	@Diseases(value = {
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS })
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
+	@ResultValueTypeRel(ResultValueType.TEXT)
 	MIRU_PATTERN_CODE,
 
 	// ----------------------------------------------------------------------------------------------
@@ -326,9 +356,15 @@ public enum PathogenTestType {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.MALARIA })
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
+	@ResultValueTypeRel({
+		ResultValueType.QUALITATIVE,
+		ResultValueType.NUMERIC })
 	ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
 
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
+	@ResultValueTypeRel({
+		ResultValueType.TEXT,
+		ResultValueType.WESTERN_BLOT })
 	WESTERN_BLOT,
 
 	@Diseases(value = {
@@ -340,6 +376,7 @@ public enum PathogenTestType {
 		Disease.MALARIA,
 		Disease.SALMONELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
+	@ResultValueTypeRel(ResultValueType.NUMERIC)
 	NEUTRALIZING_ANTIBODIES,
 
 	@Diseases(value = {
@@ -350,6 +387,7 @@ public enum PathogenTestType {
 		Disease.MEASLES,
 		Disease.MALARIA })
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	INDIRECT_FLUORESCENT_ANTIBODY,
 
 	@Diseases(value = {
@@ -359,9 +397,11 @@ public enum PathogenTestType {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.MEASLES })
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	DIRECT_FLUORESCENT_ANTIBODY,
 
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	RAPID_ANTIBODY_TEST,
 
 	// ----------------------------------------------------------------------------------------------
@@ -371,30 +411,38 @@ public enum PathogenTestType {
 	@Diseases(value = {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	RAPID_ANTIGEN_DETECTION,
 
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	RAPID_TEST,
 
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	LATERAL_FLOW_ASSAY,
 
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	IMMUNOFLUORESCENCE_ASSAY,
 
 	@Diseases(value = {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	SLIDE_AGGLUTINATION,
 
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	QUELLUNG_REACTION,
 
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
+	@ResultValueTypeRel(ResultValueType.NUMERIC)
 	HEMAGGLUTINATION_INHIBITION,
 
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	RDT,
 
 	// ----------------------------------------------------------------------------------------------
@@ -402,15 +450,21 @@ public enum PathogenTestType {
 	// ----------------------------------------------------------------------------------------------
 
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
+	@ResultValueTypeRel({
+		ResultValueType.TEXT,
+		ResultValueType.NUMERIC })
 	BACTERIAL_CULTURE,
 
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	VIRAL_ISOLATION,
 
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
+	@ResultValueTypeRel(ResultValueType.TEXT)
 	FUNGAL_CULTURE,
 
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
+	@ResultValueTypeRel(ResultValueType.TEXT)
 	MALDI_TOF,
 
 	// ----------------------------------------------------------------------------------------------
@@ -427,15 +481,21 @@ public enum PathogenTestType {
 		Disease.MALARIA,
 		Disease.SALMONELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
+	@ResultValueTypeRel(ResultValueType.TEXT)
 	GRAM_STAIN,
 
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
+	@ResultValueTypeRel(ResultValueType.SMEAR_GRADE)
 	ACID_FAST_STAIN,
 
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	DARK_FIELD_MICROSCOPY,
 
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
+	@ResultValueTypeRel({
+		ResultValueType.QUALITATIVE,
+		ResultValueType.NUMERIC })
 	GIEMSA_STAIN,
 
 	@Diseases(value = {
@@ -449,28 +509,44 @@ public enum PathogenTestType {
 		Disease.MALARIA,
 		Disease.SALMONELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
+	@ResultValueTypeRel(ResultValueType.TEXT)
 	HISTOPATHOLOGY,
 
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
+	@ResultValueTypeRel({
+		ResultValueType.QUALITATIVE,
+		ResultValueType.TEXT })
 	FISH,
 
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	IMMUNOHISTOCHEMISTRY,
 
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	ELECTRON_MICROSCOPY,
 
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
+	@ResultValueTypeRel({
+		ResultValueType.QUALITATIVE,
+		ResultValueType.TEXT,
+		ResultValueType.NUMERIC })
 	QUANTITATIVE_BUFFY_COAT,
 
 	@Diseases({
 		Disease.MALARIA })
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
+	@ResultValueTypeRel({
+		ResultValueType.QUALITATIVE,
+		ResultValueType.TEXT })
 	THICK_BLOOD_SMEAR,
 
 	@Diseases({
 		Disease.MALARIA })
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
+	@ResultValueTypeRel({
+		ResultValueType.NUMERIC,
+		ResultValueType.TEXT })
 	THIN_BLOOD_SMEAR,
 
 	// ----------------------------------------------------------------------------------------------
@@ -486,6 +562,7 @@ public enum PathogenTestType {
 	ANTIBIOTIC_SUSCEPTIBILITY,
 
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIMICROBIAL_SUSCEPTIBILITY_TESTING)
+	@ResultValueTypeRel(ResultValueType.BOOLEAN)
 	GENOTYPIC_RESISTANCE_TEST,
 
 	// ----------------------------------------------------------------------------------------------
@@ -496,15 +573,18 @@ public enum PathogenTestType {
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS })
 	@PathogenTestCategoryRel(PathogenTestCategory.FUNCTIONAL_IMMUNE_ASSAYS)
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	IGRA,
 
 	@Diseases(value = {
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS })
 	@PathogenTestCategoryRel(PathogenTestCategory.FUNCTIONAL_IMMUNE_ASSAYS)
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	TST,
 
 	@PathogenTestCategoryRel(PathogenTestCategory.FUNCTIONAL_IMMUNE_ASSAYS)
+	@ResultValueTypeRel(ResultValueType.NUMERIC)
 	FLOW_CYTOMETRY,
 
 	// ----------------------------------------------------------------------------------------------
@@ -585,6 +665,26 @@ public enum PathogenTestType {
 		} catch (NoSuchFieldException e) {
 			return null;
 		}
+	}
+
+	/**
+	 * @return the {@link ResultValueType}(s) this method produces, declared via
+	 *         {@link ResultValueTypeRel}; drives which result fields the pathogen-test form shows.
+	 *         A method without the annotation (e.g. legacy/hidden values and {@code OTHER}) is treated
+	 *         as {@link ResultValueType#QUALITATIVE} only, preserving the long-standing behaviour.
+	 */
+	public static java.util.Set<ResultValueType> getResultValueTypes(PathogenTestType testType) {
+		if (testType != null) {
+			try {
+				ResultValueTypeRel annotation = PathogenTestType.class.getField(testType.name()).getAnnotation(ResultValueTypeRel.class);
+				if (annotation != null) {
+					return java.util.EnumSet.copyOf(java.util.Arrays.asList(annotation.value()));
+				}
+			} catch (NoSuchFieldException e) {
+				// fall through to the default
+			}
+		}
+		return java.util.EnumSet.of(ResultValueType.QUALITATIVE);
 	}
 
 	/**

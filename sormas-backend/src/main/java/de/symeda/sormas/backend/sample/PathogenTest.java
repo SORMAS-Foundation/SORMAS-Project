@@ -52,6 +52,8 @@ import de.symeda.sormas.api.sample.RsvSubtype;
 import de.symeda.sormas.api.sample.SeroGroupSpecification;
 import de.symeda.sormas.api.sample.Serotype;
 import de.symeda.sormas.api.sample.SerotypingMethod;
+import de.symeda.sormas.api.sample.SmearGrade;
+import de.symeda.sormas.api.sample.WesternBlotInterpretation;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSample;
@@ -187,6 +189,12 @@ public class PathogenTest extends DeletableAdo {
 	private Boolean performedByReferenceLaboratory;
 	private Boolean retestRequested;
 	private String resultDetails;
+	private Float quantitativeValue;
+	private String quantitativeUnit;
+	private String quantitativeText;
+	private YesNoUnknown quantitativeBoolean;
+	private SmearGrade smearGrade;
+	private WesternBlotInterpretation westernBlotInterpretation;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	public Sample getSample() {
@@ -820,6 +828,58 @@ public class PathogenTest extends DeletableAdo {
 
 	public void setSpecieText(String specieText) {
 		this.specieText = specieText;
+	}
+
+	public Float getQuantitativeValue() {
+		return quantitativeValue;
+	}
+
+	public void setQuantitativeValue(Float quantitativeValue) {
+		this.quantitativeValue = quantitativeValue;
+	}
+
+	public String getQuantitativeUnit() {
+		return quantitativeUnit;
+	}
+
+	public void setQuantitativeUnit(String quantitativeUnit) {
+		this.quantitativeUnit = quantitativeUnit;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getQuantitativeText() {
+		return quantitativeText;
+	}
+
+	public void setQuantitativeText(String quantitativeText) {
+		this.quantitativeText = quantitativeText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getQuantitativeBoolean() {
+		return quantitativeBoolean;
+	}
+
+	public void setQuantitativeBoolean(YesNoUnknown quantitativeBoolean) {
+		this.quantitativeBoolean = quantitativeBoolean;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SmearGrade getSmearGrade() {
+		return smearGrade;
+	}
+
+	public void setSmearGrade(SmearGrade smearGrade) {
+		this.smearGrade = smearGrade;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public WesternBlotInterpretation getWesternBlotInterpretation() {
+		return westernBlotInterpretation;
+	}
+
+	public void setWesternBlotInterpretation(WesternBlotInterpretation westernBlotInterpretation) {
+		this.westernBlotInterpretation = westernBlotInterpretation;
 	}
 
 }

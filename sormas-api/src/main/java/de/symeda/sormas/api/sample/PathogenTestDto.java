@@ -129,6 +129,12 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String PERFORMED_BY_REFERENCE_LABORATORY = "performedByReferenceLaboratory";
 	public static final String RETEST_REQUESTED = "retestRequested";
 	public static final String RESULT_DETAILS = "resultDetails";
+	public static final String QUANTITATIVE_VALUE = "quantitativeValue";
+	public static final String QUANTITATIVE_UNIT = "quantitativeUnit";
+	public static final String QUANTITATIVE_TEXT = "quantitativeText";
+	public static final String QUANTITATIVE_BOOLEAN = "quantitativeBoolean";
+	public static final String SMEAR_GRADE = "smearGrade";
+	public static final String WESTERN_BLOT_INTERPRETATION = "westernBlotInterpretation";
 
 	private SampleReferenceDto sample;
 	private EnvironmentSampleReferenceDto environmentSample;
@@ -333,6 +339,16 @@ public class PathogenTestDto extends PseudonymizableDto {
 		Disease.MALARIA })
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String resultDetails;
+
+	// Generic quantitative result fields, shown per the test method's ResultValueType (issue #4).
+	private Float quantitativeValue;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	private String quantitativeUnit;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String quantitativeText;
+	private YesNoUnknown quantitativeBoolean;
+	private SmearGrade smearGrade;
+	private WesternBlotInterpretation westernBlotInterpretation;
 
 	public static PathogenTestDto build(SampleDto sample, UserDto currentUser) {
 
@@ -977,6 +993,54 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	public void setSpecieText(String specieText) {
 		this.specieText = specieText;
+	}
+
+	public Float getQuantitativeValue() {
+		return quantitativeValue;
+	}
+
+	public void setQuantitativeValue(Float quantitativeValue) {
+		this.quantitativeValue = quantitativeValue;
+	}
+
+	public String getQuantitativeUnit() {
+		return quantitativeUnit;
+	}
+
+	public void setQuantitativeUnit(String quantitativeUnit) {
+		this.quantitativeUnit = quantitativeUnit;
+	}
+
+	public String getQuantitativeText() {
+		return quantitativeText;
+	}
+
+	public void setQuantitativeText(String quantitativeText) {
+		this.quantitativeText = quantitativeText;
+	}
+
+	public YesNoUnknown getQuantitativeBoolean() {
+		return quantitativeBoolean;
+	}
+
+	public void setQuantitativeBoolean(YesNoUnknown quantitativeBoolean) {
+		this.quantitativeBoolean = quantitativeBoolean;
+	}
+
+	public SmearGrade getSmearGrade() {
+		return smearGrade;
+	}
+
+	public void setSmearGrade(SmearGrade smearGrade) {
+		this.smearGrade = smearGrade;
+	}
+
+	public WesternBlotInterpretation getWesternBlotInterpretation() {
+		return westernBlotInterpretation;
+	}
+
+	public void setWesternBlotInterpretation(WesternBlotInterpretation westernBlotInterpretation) {
+		this.westernBlotInterpretation = westernBlotInterpretation;
 	}
 
 	@Override
