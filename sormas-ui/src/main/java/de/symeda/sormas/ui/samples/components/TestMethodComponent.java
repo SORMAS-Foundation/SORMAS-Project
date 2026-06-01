@@ -390,6 +390,9 @@ public class TestMethodComponent extends FormComponent<PathogenTestDto> {
 		// test recorded with a now-hidden/legacy method still loads and displays its method + category.
 		PathogenTestType savedType = dto != null ? dto.getTestType() : null;
 		PathogenTestCategory savedCategory = PathogenTestType.getCategory(savedType);
+		// A legacy/hidden saved method's category may not be among the scoped categories; include it so
+		// the selection is a member of the combo's items (Vaadin 8 won't display a value outside them).
+		testCategoryField.setItems(getVisibleTestCategories(currentDisease, savedCategory));
 		testCategoryField.setValue(savedCategory);
 		updateTestTypeItemsByCategory(testTypeField, currentDisease, savedCategory, savedType);
 		super.setDto(dto);

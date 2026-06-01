@@ -322,8 +322,14 @@ public abstract class FormComponent<T> extends VerticalLayout {
 			.stream()
 			.filter(type -> type == retainType || PathogenTestType.isSelectableForNewTests(type))
 			.filter(type -> type == retainType || category == null || PathogenTestType.getCategory(type) == category)
-			.sorted(Comparator.comparing(Object::toString))
 			.collect(Collectors.toList());
+		// getVisibleValues drops values marked @Diseases(hide = true) for this disease, so the
+		// type == retainType guards above cannot re-add a saved legacy method that is hidden here.
+		// Add it explicitly so an existing test recorded with such a method still loads and displays.
+		if (retainType != null && !filtered.contains(retainType)) {
+			filtered.add(retainType);
+		}
+		filtered.sort(Comparator.comparing(Object::toString));
 		comboBox.setItems(filtered);
 		if (retainType != null && filtered.contains(retainType)) {
 			comboBox.setValue(retainType);
@@ -335,14 +341,26 @@ public abstract class FormComponent<T> extends VerticalLayout {
 	 * for the given disease, so empty categories are not offered. Sorted alphabetically.
 	 */
 	protected static List<PathogenTestCategory> getVisibleTestCategories(Disease disease) {
+		return getVisibleTestCategories(disease, null);
+	}
+
+	/**
+	 * As {@link #getVisibleTestCategories(Disease)} but additionally includes {@code retainCategory}
+	 * even when no selectable, disease-visible method maps to it — used when loading an existing test
+	 * whose (possibly legacy/hidden) method's category would otherwise be absent from the selector.
+	 */
+	protected static List<PathogenTestCategory> getVisibleTestCategories(Disease disease, PathogenTestCategory retainCategory) {
 		List<PathogenTestCategory> categories = Diseases.DiseasesConfiguration.getVisibleValues(PathogenTestType.class, disease)
 			.stream()
 			.filter(PathogenTestType::isSelectableForNewTests)
 			.map(PathogenTestType::getCategory)
 			.filter(java.util.Objects::nonNull)
 			.distinct()
-			.sorted(Comparator.comparing(Object::toString))
 			.collect(Collectors.toList());
+		if (retainCategory != null && !categories.contains(retainCategory)) {
+			categories.add(retainCategory);
+		}
+		categories.sort(Comparator.comparing(Object::toString));
 		return categories;
 	}
 

@@ -130,4 +130,19 @@ public class PathogenTestTypeTest {
 			.getVisibleValues(PathogenTestType.class, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION);
 		assertThat(visibleForIpi, hasItem(PathogenTestType.SEQUENCING));
 	}
+
+	@Test
+	public void diseaseHiddenLegacyMethodIsDroppedByVisibleValues() {
+		// Guards the scenario behind the retainType re-add in FormComponent#updateTestTypeItemsByCategory
+		// and the retainCategory re-add in #getVisibleTestCategories: a legacy method that is
+		// @Diseases(hide = true) for a disease is excluded by getVisibleValues for that disease, so a
+		// saved test recorded with it can only be kept selectable by adding it back explicitly.
+		List<PathogenTestType> visibleForDengue =
+			de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration.getVisibleValues(PathogenTestType.class, Disease.DENGUE);
+		assertFalse(
+			visibleForDengue.contains(PathogenTestType.ANTIBODY_DETECTION),
+			"ANTIBODY_DETECTION is hidden for DENGUE, so it must not be among the disease-visible values");
+		// Its category is still resolvable from the method itself, independent of disease visibility.
+		assertThat(PathogenTestType.getCategory(PathogenTestType.ANTIBODY_DETECTION), is(PathogenTestCategory.SEROLOGICAL_TESTS));
+	}
 }
