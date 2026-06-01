@@ -138,10 +138,6 @@ public class ExternalMessageController {
 			return;
 		}
 
-		// Check if the external message has attached entities (symptoms, etc.)
-		// and show a notification dialog if so
-		checkAndNotifyAboutAttachedEntities(newDto);
-
 		VerticalLayout layout = new VerticalLayout();
 		layout.setMargin(true);
 
@@ -162,52 +158,6 @@ public class ExternalMessageController {
 		}
 
 		form.setValue(newDto);
-	}
-
-	/**
-	 * Checks if the external message has attached entities (symptoms, etc.)
-	 * and shows a notification dialog if so.
-	 * 
-	 * The purpose is to notify users that new information exists in the
-	 * message but will not be processed automatically, requiring manual intervention.
-	 */
-	private void checkAndNotifyAboutAttachedEntities(ExternalMessageDto externalMessage) {
-		boolean hasAttachedEntities = false;
-
-		// Check for symptoms attached to the message
-		if (externalMessage.getCaseSymptoms() != null) {
-			hasAttachedEntities = true;
-		}
-
-		// Check for other potential attached entities
-		// (In future, can be extended to check for contacts, events, etc.)
-
-		if (hasAttachedEntities) {
-			// Show notification dialog
-			VerticalLayout notificationLayout = VaadinUiUtil.createWarningLayout();
-			Window notificationWindow = VaadinUiUtil.showPopupWindow(notificationLayout);
-
-			Label notificationLabel = new Label(
-				externalMessage.getCaseSymptoms() != null
-					? String.format(I18nProperties.getString(Strings.notificationAttachedEntitiesInfo), externalMessage.getCaseSymptoms().toString())
-					: I18nProperties.getString(Strings.notificationAttachedEntitiesGeneric));
-
-			notificationLabel.addStyleName(CssStyles.LABEL_LARGE);
-			notificationLabel.setWidth(400, Sizeable.Unit.PIXELS);
-			CssStyles.style(notificationLabel, CssStyles.LABEL_WHITE_SPACE_NORMAL);
-			notificationLayout.addComponent(notificationLabel);
-
-			// Add close listener
-			notificationWindow.addCloseListener(e -> {
-				// Optionally store flag that user has acknowledged the notification
-				// For now, just close the window
-			});
-
-			// Center and size the notification window
-			notificationWindow.center();
-			notificationWindow.setWidth(500, Sizeable.Unit.PIXELS);
-			notificationWindow.setHeight(250, Sizeable.Unit.PIXELS);
-		}
 	}
 
 	public void processSurveyResponse(String surveyResponseMessageUuid) {
@@ -428,9 +378,8 @@ public class ExternalMessageController {
 		buttonsPanel.setMargin(false);
 		buttonsPanel.setSpacing(true);
 
-		if ((ExternalMessageType.LAB_MESSAGE == externalMessage.getType()) && UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_LABORATORY_DELETE)
-			|| (ExternalMessageType.PHYSICIANS_REPORT == externalMessage.getType())
-				&& UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE)) {
+		if ((ReportingType.LABORATORY.equals(externalMessage.getType()) && UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_LABORATORY_DELETE)
+			|| ReportingType.DOCTOR.equals(externalMessage.getType()) && UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE))) {
 			Button deleteButton = ButtonHelper.createButton(
 				Captions.actionDelete,
 				I18nProperties.getCaption(Captions.actionDelete),
