@@ -50,8 +50,11 @@ import de.symeda.sormas.api.sample.SamplingReason;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -324,16 +327,38 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		}));
 	}
 
+	/**
+	 * Populates the sample-material dropdown with the specimens that are valid for new samples in the
+	 * current context: not deprecated, allowed for the configured country (via {@link HideForCountries},
+	 * e.g. the Luxembourg subset) and relevant to the sample's disease (via {@link Diseases}). The
+	 * currently saved material is always offered so an existing sample can still be edited even if its
+	 * specimen would no longer be shown for a new sample. Sorted alphabetically (English).
+	 */
 	private void updateSampleMaterialItems(ComboBox sampleMaterial, SampleMaterial selectedMaterial) {
 
 		final boolean luxembourg = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+		final CountryFieldVisibilityChecker countryChecker = new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale());
+		final List<SampleMaterial> diseaseVisible = Diseases.DiseasesConfiguration.getVisibleValues(SampleMaterial.class, disease);
 
 		List<SampleMaterial> items = Arrays.stream(SampleMaterial.values())
-			.filter(material -> material == selectedMaterial || (!material.isDeprecated() && (luxembourg || material != SampleMaterial.UNKNOWN)))
+			.filter(
+				material -> material == selectedMaterial
+					|| (!material.isDeprecated()
+						&& isVisibleForCountry(material, countryChecker)
+						&& diseaseVisible.contains(material)
+						&& (luxembourg || material != SampleMaterial.UNKNOWN)))
 			.sorted(Comparator.comparing(SampleMaterial::toString, String.CASE_INSENSITIVE_ORDER))
 			.collect(Collectors.toList());
 
 		FieldHelper.updateEnumData(sampleMaterial, items);
+	}
+
+	private static boolean isVisibleForCountry(SampleMaterial material, CountryFieldVisibilityChecker countryChecker) {
+		try {
+			return countryChecker.isVisible(SampleMaterial.class.getField(material.name()));
+		} catch (NoSuchFieldException e) {
+			return true;
+		}
 	}
 
 	@Override
