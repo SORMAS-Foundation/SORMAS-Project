@@ -16159,7 +16159,7 @@ alter table drugsusceptibility_history add column IF NOT EXISTS erythromycinsurv
 
 INSERT INTO schema_version (version_number, comment) VALUES (634, 'Enhanced AST structure: per-drug method, zone diameter, surveillance interpretation #13948');
 
--- 2026-06-01 Quantitative pathogen test results: generic value/unit/text/boolean + smear grade + Western Blot interpretation #13948 (issue #4)
+-- 2026-06-01 Quantitative pathogen test results: generic value/unit/text/boolean + smear grade + Western Blot interpretation #13948 (issue #13952)
 alter table pathogentest add column IF NOT EXISTS quantitativevalue numeric;
 alter table pathogentest add column IF NOT EXISTS quantitativeunit varchar(255);
 alter table pathogentest add column IF NOT EXISTS quantitativetext text;
