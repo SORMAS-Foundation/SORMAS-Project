@@ -2401,6 +2401,7 @@ public interface Captions {
 	String PathogenTest_specie = "PathogenTest.specie";
 	String PathogenTest_specieText = "PathogenTest.specieText";
 	String PathogenTest_strainCallStatus = "PathogenTest.strainCallStatus";
+	String PathogenTest_testCategory = "PathogenTest.testCategory";
 	String PathogenTest_testDateTime = "PathogenTest.testDateTime";
 	String PathogenTest_testedDisease = "PathogenTest.testedDisease";
 	String PathogenTest_testedDiseaseDetails = "PathogenTest.testedDiseaseDetails";

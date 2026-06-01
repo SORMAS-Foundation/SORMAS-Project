@@ -1925,12 +1925,14 @@ public interface Strings {
 	String promptSelfReportEpiWeekFrom = "promptSelfReportEpiWeekFrom";
 	String promptSelfReportEpiWeekTo = "promptSelfReportEpiWeekTo";
 	String promptSelfReportFreeTextSearch = "promptSelfReportFreeTextSearch";
+	String promptSurveillanceInterpretation = "promptSurveillanceInterpretation";
 	String promptSurvey = "promptSurvey";
 	String promptSurveyAssignedFrom = "promptSurveyAssignedFrom";
 	String promptSurveyAssignedTo = "promptSurveyAssignedTo";
 	String promptSurveyFreeTextSearch = "promptSurveyFreeTextSearch";
 	String promptSurveyResponseStatus = "promptSurveyResponseStatus";
 	String promptSurveyTokenFreeTextSearch = "promptSurveyTokenFreeTextSearch";
+	String promptSusceptibilityMethod = "promptSusceptibilityMethod";
 	String promptSystemConfigurationSearchField = "promptSystemConfigurationSearchField";
 	String promptTaskDateFrom = "promptTaskDateFrom";
 	String promptTaskDateTo = "promptTaskDateTo";
@@ -1947,6 +1949,7 @@ public interface Strings {
 	String promptTreatmentTextFilter = "promptTreatmentTextFilter";
 	String promptTypeToAdd = "promptTypeToAdd";
 	String promptUserSearch = "promptUserSearch";
+	String promptZoneDiameter = "promptZoneDiameter";
 	String promtSampleDataType = "promtSampleDataType";
 	String pseudonymizedCasesSelectedWarning = "pseudonymizedCasesSelectedWarning";
 	String pseudonymizedEntitiesSelectedWarning = "pseudonymizedEntitiesSelectedWarning";
