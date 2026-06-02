@@ -394,7 +394,10 @@ public class TestMethodComponent extends FormComponent<PathogenTestDto> {
 		// the selection is a member of the combo's items (Vaadin 8 won't display a value outside them).
 		testCategoryField.setItems(getVisibleTestCategories(currentDisease, savedCategory));
 		testCategoryField.setValue(savedCategory);
-		updateTestTypeItemsByCategory(testTypeField, currentDisease, savedCategory, savedType);
+		// Make the saved method selectable but DON'T pre-select it — let binder.setBean set the value so
+		// the value-change fires TestTypeChangedEvent, which the disease sections rely on to show their
+		// fields when an existing test is opened.
+		updateTestTypeItemsByCategory(testTypeField, currentDisease, savedCategory, savedType, false);
 		super.setDto(dto);
 	}
 
