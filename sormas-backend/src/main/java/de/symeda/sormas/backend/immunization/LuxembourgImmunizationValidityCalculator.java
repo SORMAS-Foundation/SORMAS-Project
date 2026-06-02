@@ -12,30 +12,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-
-/**
- * Calculates immunization validity periods for Luxembourg.
- * <p>
- * This calculator implements Luxembourg-specific rules for determining when immunization
- * provides protection (validFrom) and how long that protection lasts (validUntil).
- * The rules vary by disease, vaccination schedule, and number of administered doses.
- * </p>
- * <h3>Basic Concepts</h3>
- * <ul>
- * <li><strong>validFrom:</strong> The date when immunization becomes protective</li>
- * <li><strong>validUntil:</strong> The date when protection expires (or is lifelong)</li>
- * </ul>
- * <h3>Calculation Rules</h3>
- * <ul>
- * <li><strong>vaccinationStartOffsetDays:</strong> Days after vaccination until protection begins</li>
- * <li><strong>requiredVaccinationDoses:</strong> Minimum number of doses for full protection</li>
- * <li><strong>vaccinationDurationDays:</strong> How long protection lasts from vaccination</li>
- * <li><strong>recoveryDurationDays:</strong> How long protection lasts from natural infection/recovery</li>
- * </ul>
- * <p>
- * A profile with null values means: protection date unknown (null) or lifelong protection (forever).
- * </p>
- */
 package de.symeda.sormas.backend.immunization;
 
 import java.util.Date;
