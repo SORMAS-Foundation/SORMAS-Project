@@ -18,7 +18,7 @@
 package de.symeda.sormas.ui.epidata;
 
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
-import static de.symeda.sormas.ui.utils.CssStyles.H4;
+import static de.symeda.sormas.ui.utils.CssStyles.H5;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.divsCss;
@@ -106,6 +106,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	private static final String LOC_EPI_DATA_FIELDS_HINT = "locEpiDataFieldsHint";
 	private static final String LOC_EXP_PERIOD_HEADING = "locExpPeriodHeading";
 	private static final String LOC_TRANSMISSIBILITY_PERIOD_HEADING = "locTransmissibilityPeriodHeading";
+	private static final String LOC_PROPHYLAXIS_STATUS = "locProphylaxisStatus";
 
 	private static final String LOC_CUSTOMIZABLE_FIELDS_EXPOSURE_INVESTIGATION = CustomizableFieldGroup.EPIDATA_EXPOSURE_INVESTIGATION.getKey();
 	private static final String LOC_CUSTOMIZABLE_FIELDS_ACTIVITY_AS_CASE = CustomizableFieldGroup.EPIDATA_ACTIVITY_AS_CASE.getKey();
@@ -136,6 +137,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			fluidRowLocs(EpiDataDto.MODE_OF_TRANSMISSION, EpiDataDto.MODE_OF_TRANSMISSION_TYPE) +
 			fluidRowLocs(EpiDataDto.INFECTION_SOURCE, EpiDataDto.INFECTION_SOURCE_TEXT) +
 			fluidRowLocs(EpiDataDto.PLACE_OF_INFECTION, EpiDataDto.RESIDENCE_AT_ONSET) +
+			loc(LOC_PROPHYLAXIS_STATUS)+
 			fluidRowLocs("PROPHYLAXIS_LAYOUT")+
 			loc(LOC_ACTIVITY_AS_CASE_INVESTIGATION_HEADING) +
 			loc(LOC_TRANSMISSIBILITY_PERIOD_HEADING) +
@@ -353,10 +355,26 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	 * Displays prophylaxis adherence information in the form layout.
 	 * 
 	 * @param value
-	 *            The prophylaxis adherence status to display.
+	 * @param hideProphylaxisComponent
 	 */
-	private void prophylaxisLayout(String value) {
-		if (value == null) {
+	private void renderProphylaxisInfo(String value, boolean hideProphylaxisComponent) {
+		// validate the layout presence before adding or removing the prophylaxis information to avoid unnecessary component creation and manipulation.
+		Component prophylaxisComponent = getContent().getComponent("PROPHYLAXIS_LAYOUT");
+		// if the prophylaxis component is not visible, hide the heading along with its component and return without doing anything.
+		if (hideProphylaxisComponent) {
+			if (prophylaxisComponent != null) {
+				getContent().getComponent(LOC_PROPHYLAXIS_STATUS).setVisible(false);
+				prophylaxisComponent.setVisible(false);
+				getContent().removeComponent("PROPHYLAXIS_LAYOUT");
+				return;
+			} else {
+				getContent().getComponent(LOC_PROPHYLAXIS_STATUS).setVisible(false);
+				return;
+			}
+		}
+
+		// if the prophylaxis is visible but the value is null, return without doing anything.
+		if (!hideProphylaxisComponent && value == null) {
 			return;
 		}
 		CustomLayout prophylaxisLayout = new CustomLayout();
@@ -365,7 +383,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		prophylaxisLayout.addComponent(createInfoLabel(value), "PROPHYLAXIS_VALUE");
 
 		getContent().addComponent(prophylaxisLayout, "PROPHYLAXIS_LAYOUT");
-		getContent().getComponent(LOC_EXPOSURE_PERIOD_CONSIDER_HEADING).setVisible(true);
+		getContent().getComponent(LOC_PROPHYLAXIS_STATUS).setVisible(true);
 	}
 
 	/**
@@ -428,7 +446,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	 */
 	private Label createInfoLabel(String value) {
 		Label label = new Label(value);
-		CssStyles.style(label, CssStyles.LABEL_BOLD, H4);
+		CssStyles.style(label, CssStyles.LABEL_BOLD, H5);
 		label.setContentMode(ContentMode.HTML);
 		return label;
 	}
@@ -492,6 +510,11 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			new MultilineLabel(h3(I18nProperties.getString(Strings.headingEpiConclusion)) + divsCss(VSPACE_3), ContentMode.HTML),
 			LOC_CONCLUSION_HEADING);
 		getContent().getComponent(LOC_CONCLUSION_HEADING).setVisible(CONCLUSION_ALLOWED_DISEASES.contains(disease));
+
+		// Prophylaxis status heading should be visible for Lux malaria case, as the prophylaxis adherence status is displayed in the conclusion section for malaria.
+		getContent().addComponent(
+			new MultilineLabel(h3(I18nProperties.getString(Strings.headingProphylaxisLoc)) + divsCss(VSPACE_3), ContentMode.HTML),
+			LOC_PROPHYLAXIS_STATUS);
 
 		getContent().addComponent(
 			new MultilineLabel(
@@ -587,16 +610,10 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			.map(ExposureDto::getProphylaxisAdherence)
 			.filter(Objects::nonNull)
 			.findFirst();
-		if (adherence != null && adherence.isPresent() && adherence.get() != null) {
-			prophylaxisLayout(I18nProperties.getEnumCaption(adherence.get()));
+		if (adherence.isPresent() && isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && Disease.MALARIA == disease) {
+			renderProphylaxisInfo(I18nProperties.getEnumCaption(adherence.get()), false);
 		} else {
-			// delete the prophylaxis layout if the latest prophylaxis adherence status is null.
-			Component prophylaxisComponent = getContent().getComponent("PROPHYLAXIS_LAYOUT");
-			if (prophylaxisComponent != null) {
-				getContent().getComponent("PROPHYLAXIS_LAYOUT").setVisible(false);
-				getContent().removeComponent("PROPHYLAXIS_LAYOUT");
-			}
-
+			renderProphylaxisInfo(null, true);
 		}
 	}
 

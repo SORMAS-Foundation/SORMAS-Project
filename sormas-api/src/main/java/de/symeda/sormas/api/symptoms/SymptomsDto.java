@@ -388,7 +388,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String FATAL_RISK = "fatalRisk";
 	public static final String TENESMUS = "tenesmus";
 	public static final String BLOODY_DIARRHEA = "bloodyDiarrhea";
-	public static final String HAEMOLYTIC_UREMIC_SYNDROME = "haemolyticuremicsyndrome";
+	public static final String HAEMOLYTIC_UREMIC_SYNDROME = "haemolyticUremicSyndrome";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -3193,9 +3193,9 @@ public class SymptomsDto extends PseudonymizableDto {
 		SHIGELLOSIS })
 	private SymptomState haemolyticUremicSyndrome;
 
-	@Diseases({
-		SHIGELLOSIS })
 	@Complication({
+		SHIGELLOSIS })
+	@Diseases({
 		SHIGELLOSIS })
 	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
 	private SymptomState bloodyDiarrhea;

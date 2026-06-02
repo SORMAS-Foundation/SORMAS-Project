@@ -195,7 +195,11 @@ public enum PathogenSpecie {
 		PathogenTestType.SEROGROUPING })
 	SHIGELLA_SPP,
 	// OTHER and UNKNOWN are mostly applicable for all diseases and pathogen tests, so we don't specify them as applicable to specific diseases or tests
+	@Diseases
+	@ApplicableToPathogenTests
 	OTHER,
+	@Diseases
+	@ApplicableToPathogenTests
 	UNKNOWN,
 	@Diseases({
 		Disease.TUBERCULOSIS,
