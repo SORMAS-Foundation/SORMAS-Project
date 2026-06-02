@@ -18,6 +18,7 @@
 package de.symeda.sormas.ui.epidata;
 
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
+import static de.symeda.sormas.ui.utils.CssStyles.H4;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.divsCss;
@@ -28,10 +29,13 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -39,6 +43,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.ComboBox;
@@ -61,8 +66,10 @@ import de.symeda.sormas.api.customizablefield.CustomizableFieldVisibilityContext
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.epidata.ClusterType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.InfectionSource;
 import de.symeda.sormas.api.exposure.ModeOfTransmission;
+import de.symeda.sormas.api.exposure.ProphylaxisAdherence;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -98,16 +105,20 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	private static final String LOC_SOURCE_CASE_CONTACTS_HEADING = "locSourceCaseContactsHeading";
 	private static final String LOC_EPI_DATA_FIELDS_HINT = "locEpiDataFieldsHint";
 	private static final String LOC_EXP_PERIOD_HEADING = "locExpPeriodHeading";
+	private static final String LOC_TRANSMISSIBILITY_PERIOD_HEADING = "locTransmissibilityPeriodHeading";
 
 	private static final String LOC_CUSTOMIZABLE_FIELDS_EXPOSURE_INVESTIGATION = CustomizableFieldGroup.EPIDATA_EXPOSURE_INVESTIGATION.getKey();
 	private static final String LOC_CUSTOMIZABLE_FIELDS_ACTIVITY_AS_CASE = CustomizableFieldGroup.EPIDATA_ACTIVITY_AS_CASE.getKey();
 	private static final String LOC_CUSTOMIZABLE_FIELDS_CONTACT_WITH_SOURCE_CASE = CustomizableFieldGroup.EPIDATA_CONTACT_WITH_SOURCE_CASE.getKey();
 	private static final String EXPOSURE_DATES_LAYOUT =
 		fluidRowLocs(3, "EXPOSURE_START_DATE_LABEL", 3, "EXPOSURE_START_DATE_VALUE", 3, "EXPOSURE_END_DATE_LABEL", 3, "EXPOSURE_END_DATE_VALUE");
+	private static final String ACTIVITY_AS_CASE_DATES_LAYOUT =
+		fluidRowLocs(3, "ACTIVITY_START_DATE_LABEL", 3, "ACTIVITY_START_DATE_VALUE", 3, "ACTIVITY_END_DATE_LABEL", 3, "ACTIVITY_END_DATE_VALUE");
+	private static final String PROPHYLAXIS_LAYOUT = fluidRowLocs(3, "PROPHYLAXIS_LABEL", 3, "PROPHYLAXIS_VALUE", 6, "");
 	private static final String LOC_OTHER_INFORMATION_HEADING = "locOtherInformationHeading";
 
-	private static final List<Disease> CONCLUSION_ALLOWED_DISEASES =
-		Collections.unmodifiableList(Arrays.asList(Disease.CRYPTOSPORIDIOSIS, Disease.GIARDIASIS, Disease.MALARIA, Disease.DENGUE));
+	private static final List<Disease> CONCLUSION_ALLOWED_DISEASES = Collections
+		.unmodifiableList(Arrays.asList(Disease.CRYPTOSPORIDIOSIS, Disease.GIARDIASIS, Disease.MALARIA, Disease.DENGUE, Disease.SHIGELLOSIS));
 
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT =
@@ -115,7 +126,6 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			fluidRowLocs("EXP_DATES_LAYOUT") +
 			loc(LOC_EXPOSURE_INVESTIGATION_HEADING) +
 			fluidRowLocs(6,EpiDataDto.CASE_IMPORTED_STATUS,6,"") +
-			fluidRowLocs(6, EpiDataDto.EXPOSURE_INVESTIGATION_FROM_DATE, 6, EpiDataDto.EXPOSURE_INVESTIGATION_TO_DATE) +
 			loc(LOC_EXP_PERIOD_HEADING) +
 			loc(EpiDataDto.EXPOSURE_DETAILS_KNOWN) +
 			loc(EpiDataDto.EXPOSURES) +
@@ -126,8 +136,10 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			fluidRowLocs(EpiDataDto.MODE_OF_TRANSMISSION, EpiDataDto.MODE_OF_TRANSMISSION_TYPE) +
 			fluidRowLocs(EpiDataDto.INFECTION_SOURCE, EpiDataDto.INFECTION_SOURCE_TEXT) +
 			fluidRowLocs(EpiDataDto.PLACE_OF_INFECTION, EpiDataDto.RESIDENCE_AT_ONSET) +
+			fluidRowLocs("PROPHYLAXIS_LAYOUT")+
 			loc(LOC_ACTIVITY_AS_CASE_INVESTIGATION_HEADING) +
-			fluidRowLocs(6, EpiDataDto.ACTIVITY_AS_CASE_FROM_DATE, 6, EpiDataDto.ACTIVITY_AS_CASE_TO_DATE) +
+			loc(LOC_TRANSMISSIBILITY_PERIOD_HEADING) +
+			fluidRowLocs("TRANSMISSIBILITY_DATES_LAYOUT") +
 			loc(EpiDataDto.ACTIVITY_AS_CASE_DETAILS_KNOWN)+
 			loc(EpiDataDto.ACTIVITIES_AS_CASE) +
 			loc(LOC_CUSTOMIZABLE_FIELDS_ACTIVITY_AS_CASE) +
@@ -217,11 +229,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		exposuresField.setWidthFull();
 		exposuresField.setPseudonymized(isPseudonymized);
 
-		if (parentClass == CaseDataDto.class) {
-			addActivityAsCaseFields();
-			addField(EpiDataDto.ACTIVITY_AS_CASE_FROM_DATE, DateField.class);
-			addField(EpiDataDto.ACTIVITY_AS_CASE_TO_DATE, DateField.class);
-		}
+		addActivityAsCaseFields();
 
 		activityAsCasePanel = new CustomizableFieldsGroup(CustomizableFieldGroup.EPIDATA_ACTIVITY_AS_CASE);
 		activityAsCasePanel.setVisibilityContext(new CustomizableFieldVisibilityContext().withDisease(disease));
@@ -255,14 +263,12 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		ComboBox country = addInfrastructureField(EpiDataDto.COUNTRY);
 		country.addItems(countries);
 
-		addField(EpiDataDto.EXPOSURE_INVESTIGATION_FROM_DATE, DateField.class);
-		addField(EpiDataDto.EXPOSURE_INVESTIGATION_TO_DATE, DateField.class);
-
 		includeExposureDates(symptomOnsetDate, disease);
 		addField(EpiDataDto.AIRPORT_WORKER, NullableOptionGroup.class);
 		addField(EpiDataDto.HEALTHCARE_PROFESSIONAL, NullableOptionGroup.class);
 		addField(EpiDataDto.PLACE_OF_INFECTION);
 		addField(EpiDataDto.RESIDENCE_AT_ONSET);
+		includeContagiousDates(symptomOnsetDate, disease);
 
 		TextField clusterTypeTF = addField(EpiDataDto.CLUSTER_TYPE_TEXT);
 		FieldHelper
@@ -278,6 +284,13 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			.setVisibleWhen(getFieldGroup(), EpiDataDto.MODE_OF_TRANSMISSION_TYPE, EpiDataDto.MODE_OF_TRANSMISSION, ModeOfTransmission.OTHER, true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.INFECTION_SOURCE_TEXT, EpiDataDto.INFECTION_SOURCE, InfectionSource.OTHER, true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.COUNTRY, EpiDataDto.IMPORTED_CASE, YesNoUnknown.YES, true);
+		// For Cryptosporidiosis and Giardiasis, and Shigellosis, the infection source field should be displayed based on transmission mode selection.
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			EpiDataDto.INFECTION_SOURCE,
+			EpiDataDto.MODE_OF_TRANSMISSION,
+			Arrays.asList(ModeOfTransmission.FOOD_OR_WATER, ModeOfTransmission.ANIMAL_TO_HUMAN),
+			true);
 
 		contactWithSourceCasePanel = new CustomizableFieldsGroup(CustomizableFieldGroup.EPIDATA_CONTACT_WITH_SOURCE_CASE);
 		contactWithSourceCasePanel.setVisibilityContext(new CustomizableFieldVisibilityContext().withDisease(disease));
@@ -314,40 +327,110 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			return;
 		}
 		DiseaseConfigurationDto diseaseConfigurationDto = FacadeProvider.getDiseaseConfigurationFacade().getDiseaseConfiguration(disease);
-		if (diseaseConfigurationDto == null) {
-			return;
-		}
-		if (diseaseConfigurationDto.getIncubationPeriodEnabled() == null || !diseaseConfigurationDto.getIncubationPeriodEnabled()) {
-			return;
-		}
-		if (diseaseConfigurationDto.getMaxIncubationPeriod() == null || diseaseConfigurationDto.getMaxIncubationPeriod() == 0) {
-			return;
-		}
-		if (diseaseConfigurationDto.getMinIncubationPeriod() == null) {
+		if (diseaseConfigurationDto == null
+			|| diseaseConfigurationDto.getIncubationPeriodEnabled() == null
+			|| !diseaseConfigurationDto.getIncubationPeriodEnabled()
+			|| diseaseConfigurationDto.getMaxIncubationPeriod() == null
+			|| diseaseConfigurationDto.getMaxIncubationPeriod() == 0
+			|| diseaseConfigurationDto.getMinIncubationPeriod() == null) {
 			return;
 		}
 
 		CustomLayout exposureDatesLayout = new CustomLayout();
 		exposureDatesLayout.setTemplateContents(EXPOSURE_DATES_LAYOUT);
-		Label exposureStartLabel = new Label(I18nProperties.getString(Strings.exposureStartDate));
-		exposureStartLabel.addStyleNames(CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
-		exposureDatesLayout.addComponent(exposureStartLabel, "EXPOSURE_START_DATE_LABEL");
+		exposureDatesLayout.addComponent(createInfoLabel(I18nProperties.getString(Strings.exposureStartDate)), "EXPOSURE_START_DATE_LABEL");
 
-		DateField exposureStartDateValue = new DateField();
-		exposureStartDateValue.setValue(DateHelper.subtractDays(symptomOnsetDate, diseaseConfigurationDto.getMaxIncubationPeriod()));
-		exposureStartDateValue.setReadOnly(true);
-		exposureDatesLayout.addComponent(exposureStartDateValue, "EXPOSURE_START_DATE_VALUE");
+		exposureDatesLayout.addComponent(addDateFieldToCustomLayout(diseaseConfigurationDto.getMaxIncubationPeriod()), "EXPOSURE_START_DATE_VALUE");
 
-		Label exposureEndLabel = new Label(I18nProperties.getString(Strings.exposureEndDate));
-		exposureEndLabel.addStyleNames(CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
-		exposureDatesLayout.addComponent(exposureEndLabel, "EXPOSURE_END_DATE_LABEL");
-		DateField exposureEndDateValue = new DateField();
-		exposureEndDateValue.setValue(DateHelper.subtractDays(symptomOnsetDate, diseaseConfigurationDto.getMinIncubationPeriod()));
-		exposureEndDateValue.setReadOnly(true);
-		exposureDatesLayout.addComponent(exposureEndDateValue, "EXPOSURE_END_DATE_VALUE");
+		exposureDatesLayout.addComponent(createInfoLabel(I18nProperties.getString(Strings.exposureEndDate)), "EXPOSURE_END_DATE_LABEL");
+		exposureDatesLayout.addComponent(addDateFieldToCustomLayout(diseaseConfigurationDto.getMinIncubationPeriod()), "EXPOSURE_END_DATE_VALUE");
 
 		getContent().addComponent(exposureDatesLayout, "EXP_DATES_LAYOUT");
 		getContent().getComponent(LOC_EXPOSURE_PERIOD_CONSIDER_HEADING).setVisible(true);
+	}
+
+	/**
+	 * Displays prophylaxis adherence information in the form layout.
+	 * 
+	 * @param value
+	 *            The prophylaxis adherence status to display.
+	 */
+	private void prophylaxisLayout(String value) {
+		if (value == null) {
+			return;
+		}
+		CustomLayout prophylaxisLayout = new CustomLayout();
+		prophylaxisLayout.setTemplateContents(PROPHYLAXIS_LAYOUT);
+		prophylaxisLayout.addComponent(createInfoLabel("Prophylaxis status"), "PROPHYLAXIS_LABEL");
+		prophylaxisLayout.addComponent(createInfoLabel(value), "PROPHYLAXIS_VALUE");
+
+		getContent().addComponent(prophylaxisLayout, "PROPHYLAXIS_LAYOUT");
+		getContent().getComponent(LOC_EXPOSURE_PERIOD_CONSIDER_HEADING).setVisible(true);
+	}
+
+	/**
+	 * calculates the Activity as Case from and to dates based on the symptom onset date and disease
+	 * configuration for contagious-period.
+	 * 
+	 * @param symptomOnsetDate
+	 * @param disease
+	 */
+	private void includeContagiousDates(Date symptomOnsetDate, Disease disease) {
+		// By default, hiding the transmissibility period to consider heading,
+		// it will be visible only when all the conditions are met to show the activity as case from and to dates.
+		getContent().getComponent(LOC_TRANSMISSIBILITY_PERIOD_HEADING).setVisible(false);
+		//  if symptomOnsetDate is null, return;
+		if (symptomOnsetDate == null) {
+			return;
+		}
+		DiseaseConfigurationDto diseaseConfigurationDto = FacadeProvider.getDiseaseConfigurationFacade().getDiseaseConfiguration(disease);
+
+		if (diseaseConfigurationDto == null
+			|| diseaseConfigurationDto.getIsContagious() == null
+			|| !diseaseConfigurationDto.getIsContagious()
+			|| diseaseConfigurationDto.getMaxContagiousPeriod() == null
+			|| diseaseConfigurationDto.getMinContagiousPeriod() == null) {
+			return;
+		}
+
+		CustomLayout activityDatesLayout = new CustomLayout();
+		activityDatesLayout.setTemplateContents(ACTIVITY_AS_CASE_DATES_LAYOUT);
+		activityDatesLayout.addComponent(createInfoLabel(I18nProperties.getString(Strings.transmissionStartDate)), "ACTIVITY_START_DATE_LABEL");
+
+		activityDatesLayout.addComponent(addDateFieldToCustomLayout(diseaseConfigurationDto.getMaxContagiousPeriod()), "ACTIVITY_START_DATE_VALUE");
+
+		activityDatesLayout.addComponent(createInfoLabel(I18nProperties.getString(Strings.transmissionEndDate)), "ACTIVITY_END_DATE_LABEL");
+		activityDatesLayout.addComponent(addDateFieldToCustomLayout(diseaseConfigurationDto.getMinContagiousPeriod()), "ACTIVITY_END_DATE_VALUE");
+
+		getContent().addComponent(activityDatesLayout, "TRANSMISSIBILITY_DATES_LAYOUT");
+		getContent().getComponent(LOC_TRANSMISSIBILITY_PERIOD_HEADING).setVisible(true);
+
+	}
+
+	/**
+	 * Calculate the custom dateField value based on the symptom onset date and the given period, and add it to the custom layout.
+	 * 
+	 * @param period
+	 * @return customPeriodDate
+	 */
+	private DateField addDateFieldToCustomLayout(Integer period) {
+		DateField customPeriodDate = new DateField();
+		customPeriodDate.setValue(DateHelper.subtractDays(symptomOnsetDate, period));
+		customPeriodDate.setReadOnly(true);
+		return customPeriodDate;
+	}
+
+	/**
+	 * Create a label with HTML content mode.
+	 * 
+	 * @param value
+	 * @return label
+	 */
+	private Label createInfoLabel(String value) {
+		Label label = new Label(value);
+		CssStyles.style(label, CssStyles.LABEL_BOLD, H4);
+		label.setContentMode(ContentMode.HTML);
+		return label;
 	}
 
 	private void addActivityAsCaseFields() {
@@ -400,6 +483,9 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		getContent().addComponent(
 			new MultilineLabel(h3(I18nProperties.getString(Strings.headingExposurePeriodConsider)) + divsCss(VSPACE_3), ContentMode.HTML),
 			LOC_EXPOSURE_PERIOD_CONSIDER_HEADING);
+		getContent().addComponent(
+			new MultilineLabel(h3(I18nProperties.getString(Strings.headingTransmissibilityPeriod)) + divsCss(VSPACE_3), ContentMode.HTML),
+			LOC_TRANSMISSIBILITY_PERIOD_HEADING);
 
 		// Conclusion heading should be visible for all countries Giardiasis & Cryptosporidiosis specific fields
 		getContent().addComponent(
@@ -489,6 +575,29 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 
 	public Map<String, Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto>> collectExposureCustomizableFieldValues() {
 		return ((ExposuresField) getField(EpiDataDto.EXPOSURES)).collectCustomizableFieldValues();
+	}
+
+	@Override
+	public void setValue(EpiDataDto newFieldValue) {
+		super.setValue(newFieldValue);
+		// In the Conclusion section, for Malaria, prophylaxis details are mandatory to display. so displaying the latest prophylaxis adherence status.
+		Optional<ProphylaxisAdherence> adherence = newFieldValue.getExposures()
+			.stream()
+			.sorted(Comparator.comparing(ExposureDto::getStartDate, Comparator.nullsLast(Comparator.reverseOrder())))
+			.map(ExposureDto::getProphylaxisAdherence)
+			.filter(Objects::nonNull)
+			.findFirst();
+		if (adherence != null && adherence.isPresent() && adherence.get() != null) {
+			prophylaxisLayout(I18nProperties.getEnumCaption(adherence.get()));
+		} else {
+			// delete the prophylaxis layout if the latest prophylaxis adherence status is null.
+			Component prophylaxisComponent = getContent().getComponent("PROPHYLAXIS_LAYOUT");
+			if (prophylaxisComponent != null) {
+				getContent().getComponent("PROPHYLAXIS_LAYOUT").setVisible(false);
+				getContent().removeComponent("PROPHYLAXIS_LAYOUT");
+			}
+
+		}
 	}
 
 	@Override

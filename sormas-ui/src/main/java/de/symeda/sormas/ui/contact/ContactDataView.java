@@ -14,6 +14,7 @@
  */
 package de.symeda.sormas.ui.contact;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.vaadin.server.Page;
@@ -96,6 +97,8 @@ public class ContactDataView extends AbstractContactView implements HasName {
 	public static final String SELF_REPORT_LOC = "selfReport";
 
 	private CommitDiscardWrapperComponent<ContactDataForm> editComponent;
+
+	private final static List<Disease> IMMUNIZATION_EXCLUDED_DISEASES = Arrays.asList(Disease.SALMONELLOSIS, Disease.SHIGELLOSIS);
 
 	public ContactDataView() {
 		super(VIEW_NAME);
@@ -252,8 +255,9 @@ public class ContactDataView extends AbstractContactView implements HasName {
 			layout.addSidePanelComponent(eventsLayout, EVENTS_LOC);
 		}
 
-		// Immunizations are not shown for Salmonellosis contacts
-		if (UiUtil.permitted(FeatureType.IMMUNIZATION_MANAGEMENT, UserRight.IMMUNIZATION_VIEW) && resolvedDisease != Disease.SALMONELLOSIS) {
+		// Immunizations are not shown for Salmonellosis & SHIGELLOSIS contacts
+		if (UiUtil.permitted(FeatureType.IMMUNIZATION_MANAGEMENT, UserRight.IMMUNIZATION_VIEW)
+			&& !IMMUNIZATION_EXCLUDED_DISEASES.contains(resolvedDisease)) {
 			if (!FacadeProvider.getFeatureConfigurationFacade()
 				.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
 				layout.addSidePanelComponent(new SideComponentLayout(new ImmunizationListComponent(() -> {

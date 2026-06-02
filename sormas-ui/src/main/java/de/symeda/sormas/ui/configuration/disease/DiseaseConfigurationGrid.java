@@ -53,8 +53,7 @@ public class DiseaseConfigurationGrid extends FilteredGrid<DiseaseConfigurationI
 			DiseaseConfigurationIndexDto.AGGREGATE_REPORTING_ENABLED,
 			DiseaseConfigurationIndexDto.CASE_FOLLOW_UP_DURATION,
 			DiseaseConfigurationIndexDto.INCUBATION_PERIOD_ENABLED,
-			DiseaseConfigurationIndexDto.MAX_INCUBATION_PERIOD,
-			DiseaseConfigurationIndexDto.MIN_INCUBATION_PERIOD,
+			DiseaseConfigurationIndexDto.IS_CONTAGIOUS,
 			DiseaseConfigurationIndexDto.AGE_GROUPS,
 			DiseaseConfigurationIndexDto.EVENT_PARTICIPANT_FOLLOW_UP_DURATION,
 			DiseaseConfigurationIndexDto.EXTENDED_CLASSIFICATION,
@@ -75,6 +74,7 @@ public class DiseaseConfigurationGrid extends FilteredGrid<DiseaseConfigurationI
 		getColumn(DiseaseConfigurationIndexDto.PRIMARY_DISEASE).setRenderer(new BooleanRenderer());
 		getColumn(DiseaseConfigurationIndexDto.FOLLOW_UP_ENABLED).setRenderer(new BooleanRenderer());
 		getColumn(DiseaseConfigurationIndexDto.INCUBATION_PERIOD_ENABLED).setRenderer(new BooleanRenderer());
+		getColumn(DiseaseConfigurationIndexDto.IS_CONTAGIOUS).setRenderer(new BooleanRenderer());
 		getColumn(DiseaseConfigurationIndexDto.CASE_SURVEILLANCE_ENABLED).setRenderer(new BooleanRenderer());
 		getColumn(DiseaseConfigurationIndexDto.EXTENDED_CLASSIFICATION).setRenderer(new BooleanRenderer());
 		getColumn(DiseaseConfigurationIndexDto.EXTENDED_CLASSIFICATION_MULTI).setRenderer(new BooleanRenderer());

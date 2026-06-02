@@ -96,6 +96,7 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	private static final List<Disease> aggregateReportingDiseases = new ArrayList<>();
 	private static final List<Disease> followUpEnabledDiseases = new ArrayList<>();
 	private static final List<Disease> incubationEnabledDiseases = new ArrayList<>();
+	private static final List<Disease> contagiousEnabledDiseases = new ArrayList<>();
 
 	private static final Map<Disease, Boolean> extendedClassificationDiseases = new EnumMap<>(Disease.class);
 	private static final Map<Disease, Boolean> extendedClassificationMultiDiseases = new EnumMap<>(Disease.class);
@@ -105,6 +106,8 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	private static final Map<Disease, Integer> eventParticipantFollowUpDurations = new EnumMap<>(Disease.class);
 	private static final Map<Disease, Integer> maxIncubationPeriod = new EnumMap<>(Disease.class);
 	private static final Map<Disease, Integer> minIncubationPeriod = new EnumMap<>(Disease.class);
+	private static final Map<Disease, Integer> minContagiousPeriod = new EnumMap<>(Disease.class);
+	private static final Map<Disease, Integer> maxContagiousPeriod = new EnumMap<>(Disease.class);
 	private static final Map<Disease, Integer> automaticSampleAssignmentThresholds = new EnumMap<>(Disease.class);
 
 	@Override
@@ -237,6 +240,9 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		dto.setMaxIncubationPeriod(entity.getMaxIncubationPeriod());
 		dto.setMinIncubationPeriod(entity.getMinIncubationPeriod());
 		dto.setCaseDefinitionText(entity.getCaseDefinitionText());
+		dto.setIsContagious(entity.getIsContagious());
+		dto.setMaxContagiousPeriod(entity.getMaxContagiousPeriod());
+		dto.setMinContagiousPeriod(entity.getMinContagiousPeriod());
 
 		if (entity.getExtendedClassification() != null) {
 			dto.setExtendedClassification(entity.getExtendedClassification());
@@ -420,6 +426,9 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		target.setMaxIncubationPeriod(source.getMaxIncubationPeriod());
 		target.setMinIncubationPeriod(source.getMinIncubationPeriod());
 		target.setCaseDefinitionText(source.getCaseDefinitionText());
+		target.setMaxContagiousPeriod(source.getMaxContagiousPeriod());
+		target.setMinContagiousPeriod(source.getMinContagiousPeriod());
+		target.setIsContagious(source.getIsContagious());
 		target.setExtendedClassification(source.getExtendedClassification());
 		target.setExtendedClassificationMulti(source.getExtendedClassificationMulti());
 		target.setAgeGroups(source.getAgeGroups());
@@ -516,6 +525,9 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		target.setIncubationPeriodEnabled(source.getIncubationPeriodEnabled());
 		target.setCaseDefinitionText(source.getCaseDefinitionText());
 		target.setExposureCategories(source.getExposureCategories());
+		target.setIsContagious(source.getIsContagious());
+		target.setMaxContagiousPeriod(source.getMaxContagiousPeriod());
+		target.setMinContagiousPeriod(source.getMinContagiousPeriod());
 
 		//update changedate: required for mobile app to be aware of changes
 		target.setChangeDate(new Timestamp((new Date()).getTime()));
@@ -540,6 +552,9 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		incubationEnabledDiseases.clear();
 		maxIncubationPeriod.clear();
 		minIncubationPeriod.clear();
+		contagiousEnabledDiseases.clear();
+		minContagiousPeriod.clear();
+		maxContagiousPeriod.clear();
 		automaticSampleAssignmentThresholds.clear();
 
 		for (DiseaseConfiguration configuration : service.getAll()) {
@@ -607,6 +622,21 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 				minIncubationPeriod.put(disease, configuration.getMinIncubationPeriod());
 			} else {
 				minIncubationPeriod.put(disease, disease.getDefaultMinIncubationPeriod());
+			}
+
+			if (enabled(configuration.getIsContagious(), disease.isContagious())) {
+				contagiousEnabledDiseases.add(disease);
+			}
+
+			if (configuration.getMaxContagiousPeriod() != null) {
+				maxContagiousPeriod.put(disease, configuration.getMaxContagiousPeriod());
+			} else {
+				maxContagiousPeriod.put(disease, disease.getDefaultMaxContagiousPeriod());
+			}
+			if (configuration.getMinContagiousPeriod() != null) {
+				minContagiousPeriod.put(disease, configuration.getMinContagiousPeriod());
+			} else {
+				minContagiousPeriod.put(disease, disease.getDefaultMinContagiousPeriod());
 			}
 
 			if (configuration.getAutomaticSampleAssignmentThreshold() != null) {

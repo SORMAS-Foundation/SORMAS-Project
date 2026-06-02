@@ -120,6 +120,17 @@ public class DrugSusceptibilityMapper {
 		target.setErythromycinMethod(source.getErythromycinMethod());
 		target.setErythromycinZoneDiameter(source.getErythromycinZoneDiameter());
 		target.setErythromycinSurveillance(source.getErythromycinSurveillance());
+		target.setAzithromycinMic(source.getAzithromycinMic());
+		target.setAzithromycinSusceptibility(source.getAzithromycinSusceptibility());
+		target.setCeftazidimeMic(source.getCeftazidimeMic());
+		target.setCeftazidimeSusceptibility(source.getCeftazidimeSusceptibility());
+		target.setCefotaximeMic(source.getCefotaximeMic());
+		target.setCefotaximeSusceptibility(source.getCefotaximeSusceptibility());
+		target.setAmpicillinMic(source.getAmpicillinMic());
+		target.setAmpicillinSusceptibility(source.getAmpicillinSusceptibility());
+		target.setTrimethoprimSulfamethoxazoleMic(source.getTrimethoprimSulfamethoxazoleMic());
+		target.setTrimethoprimSulfamethoxazoleSusceptibility(source.getTrimethoprimSulfamethoxazoleSusceptibility());
+
 		return target;
 	}
 
@@ -215,6 +226,16 @@ public class DrugSusceptibilityMapper {
 		target.setErythromycinMethod(source.getErythromycinMethod());
 		target.setErythromycinZoneDiameter(source.getErythromycinZoneDiameter());
 		target.setErythromycinSurveillance(source.getErythromycinSurveillance());
+		target.setAzithromycinMic(source.getAzithromycinMic());
+		target.setAzithromycinSusceptibility(source.getAzithromycinSusceptibility());
+		target.setCeftazidimeMic(source.getCeftazidimeMic());
+		target.setCeftazidimeSusceptibility(source.getCeftazidimeSusceptibility());
+		target.setCefotaximeMic(source.getCefotaximeMic());
+		target.setCefotaximeSusceptibility(source.getCefotaximeSusceptibility());
+		target.setAmpicillinMic(source.getAmpicillinMic());
+		target.setAmpicillinSusceptibility(source.getAmpicillinSusceptibility());
+		target.setTrimethoprimSulfamethoxazoleMic(source.getTrimethoprimSulfamethoxazoleMic());
+		target.setTrimethoprimSulfamethoxazoleSusceptibility(source.getTrimethoprimSulfamethoxazoleSusceptibility());
 
 		return target;
 	}
@@ -308,6 +329,17 @@ public class DrugSusceptibilityMapper {
 			|| dto.getPenicillinSurveillance() != null
 			|| dto.getErythromycinMethod() != null
 			|| dto.getErythromycinZoneDiameter() != null
-			|| dto.getErythromycinSurveillance() != null;
+			|| dto.getErythromycinSurveillance() != null
+			|| dto.getErythromycinSusceptibility() != null
+			|| dto.getAzithromycinMic() != null
+			|| dto.getAzithromycinSusceptibility() != null
+			|| dto.getCeftazidimeMic() != null
+			|| dto.getCeftazidimeSusceptibility() != null
+			|| dto.getCefotaximeMic() != null
+			|| dto.getCefotaximeSusceptibility() != null
+			|| dto.getAmpicillinMic() != null
+			|| dto.getAmpicillinSusceptibility() != null
+			|| dto.getTrimethoprimSulfamethoxazoleMic() != null
+			|| dto.getTrimethoprimSulfamethoxazoleSusceptibility() != null;
 	}
 }

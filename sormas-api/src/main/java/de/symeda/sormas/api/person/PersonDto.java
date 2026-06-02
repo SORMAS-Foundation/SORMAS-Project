@@ -424,7 +424,8 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
-		Disease.DENGUE })
+		Disease.DENGUE,
+		Disease.SHIGELLOSIS })
 	private Date entryDate;
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
@@ -437,7 +438,8 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
-		Disease.DENGUE })
+		Disease.DENGUE,
+		Disease.SHIGELLOSIS })
 	private LivingStatus livingStatus;
 	@SensitiveData
 	@Diseases(value = {

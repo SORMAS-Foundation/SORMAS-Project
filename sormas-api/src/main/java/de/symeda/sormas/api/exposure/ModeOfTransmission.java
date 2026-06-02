@@ -22,27 +22,34 @@ public enum ModeOfTransmission {
 
 	@Diseases({
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS })
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.SHIGELLOSIS })
 	ANIMAL_TO_HUMAN,
 	@Diseases({
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS })
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.SHIGELLOSIS })
 	FOOD_OR_WATER,
 	@Diseases({
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS })
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.SHIGELLOSIS })
 	PERSON_TO_PERSON,
 	@Diseases({
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS })
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.SHIGELLOSIS })
 	RECREATIONAL_WATER,
 	@Diseases({
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS })
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.SHIGELLOSIS,
+		Disease.SHIGELLOSIS })
 	HEALTHCARE_ASSOCIATED,
 	@Diseases({
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS })
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.SHIGELLOSIS })
 	INJECTING_DRUG_USERS,
 	@Diseases({
 		Disease.GIARDIASIS,
@@ -54,15 +61,18 @@ public enum ModeOfTransmission {
 	MOTHER_TO_CHILD,
 	@Diseases({
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS })
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.SHIGELLOSIS })
 	SEXUAL,
 	@Diseases({
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS })
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.SHIGELLOSIS })
 	TRANSFUSION_RECIPIENT,
 	@Diseases({
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS })
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.SHIGELLOSIS })
 	ORGAN_RECIPIENT,
 
 	@Diseases(value = {
@@ -81,10 +91,12 @@ public enum ModeOfTransmission {
 		Disease.MALARIA })
 	MOSQUITOES_WITHOUT_EVIDENCE,
 	@Diseases(value = {
-		Disease.MALARIA })
+		Disease.MALARIA,
+		Disease.SHIGELLOSIS })
 	FROM_MOTHER_TO_CHILD,
 	@Diseases(value = {
-		Disease.MALARIA })
+		Disease.MALARIA,
+		Disease.SHIGELLOSIS })
 	BY_LAB,
 	@Diseases(value = {
 		Disease.MALARIA })

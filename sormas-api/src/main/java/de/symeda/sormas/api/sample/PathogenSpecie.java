@@ -168,34 +168,35 @@ public enum PathogenSpecie {
 		PathogenTestType.OTHER_MOLECULAR_ASSAY,
 		PathogenTestType.OTHER_SEROLOGICAL_TEST })
 	COINFECTION,
-	@Diseases({
-		Disease.MALARIA })
+
+	@Diseases(value = {
+		Disease.SHIGELLOSIS })
 	@ApplicableToPathogenTests(value = {
-		PathogenTestType.THIN_BLOOD_SMEAR,
-		PathogenTestType.RAPID_TEST,
-		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
-		PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
-		PathogenTestType.PCR_RT_PCR,
-		PathogenTestType.Q_PCR,
-		PathogenTestType.LAMP,
-		PathogenTestType.OTHER_MOLECULAR_ASSAY,
-		PathogenTestType.OTHER_SEROLOGICAL_TEST })
+		PathogenTestType.SEROGROUPING })
+	BOYDII,
+	@Diseases(value = {
+		Disease.SHIGELLOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.SEROGROUPING })
+	DYSENTERIAE,
+	@Diseases(value = {
+		Disease.SHIGELLOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.SEROGROUPING })
+	FLEXNERI,
+	@Diseases(value = {
+		Disease.SHIGELLOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.SEROGROUPING })
+	SONNEI,
+	@Diseases(value = {
+		Disease.SHIGELLOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.SEROGROUPING })
+	SHIGELLA_SPP,
+
 	OTHER,
-	@Diseases({
-		Disease.TUBERCULOSIS,
-		Disease.LATENT_TUBERCULOSIS,
-		Disease.MALARIA })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.SPOLIGOTYPING,
-		PathogenTestType.THIN_BLOOD_SMEAR,
-		PathogenTestType.RAPID_TEST,
-		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
-		PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
-		PathogenTestType.PCR_RT_PCR,
-		PathogenTestType.Q_PCR,
-		PathogenTestType.LAMP,
-		PathogenTestType.OTHER_MOLECULAR_ASSAY,
-		PathogenTestType.OTHER_SEROLOGICAL_TEST })
+
 	UNKNOWN,
 	@Diseases({
 		Disease.TUBERCULOSIS,

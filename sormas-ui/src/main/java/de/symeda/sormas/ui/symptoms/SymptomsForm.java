@@ -140,8 +140,12 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 	private static Map<String, List<String>> symptomGroupMap = new HashMap<>();
 	public static final String SKIN_RASH_ONSET_DATE_LAYOUT = fluidRowLocs(6, "LBL_SKIN_RASH_ONSET_DATE", 1, "", 5, SKIN_RASH_ONSET_DATE);
-	private static final List<Disease> CLINICAL_SIGNS_AND_SYMPTOMS_HIDE_DISEASES =
-		Arrays.asList(Disease.MALARIA, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, Disease.PERTUSSIS);
+	private static final List<Disease> CLINICAL_SIGNS_AND_SYMPTOMS_HIDE_DISEASES = Arrays.asList(
+		Disease.MALARIA,
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.PERTUSSIS,
+		Disease.SHIGELLOSIS);
 	final boolean isLuxDengue;
 	final boolean isParasiticInfectiousDiseases;
 	final boolean isFoodborneGastrointestinal;
@@ -554,7 +558,10 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			SCANT_HEMORRHAGE,
 			OTHER_NEUROLOCAL_SYMPTOM,
 			OTHER_NEUROLOCAL_SYMPTOM_TEXT,
-			FATAL_RISK);
+			FATAL_RISK,
+			TENESMUS,
+			BLOODY_DIARRHEA,
+			HAEMOLYTIC_UREMIC_SYNDROME);
 
 		addField(SYMPTOMS_COMMENTS, TextField.class).setDescription(
 			I18nProperties.getPrefixDescription(I18N_PREFIX, SYMPTOMS_COMMENTS, "") + "\n" + I18nProperties.getDescription(Descriptions.descGdpr));
@@ -673,7 +680,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		clinicalMeasurementsHeadingLabel.setVisible(
 			(Set.of(TEMPERATURE_SOURCE, BLOOD_PRESSURE_SYSTOLIC, BLOOD_PRESSURE_DIASTOLIC, HEART_RATE, RESPIRATORY_RATE, WEIGHT, GLASGOW_COMA_SCALE)
 				.stream()
-				.anyMatch(e -> getFieldGroup().getField(e).isVisible())) || !(isParasiticInfectiousDiseases || isLuxDengue || isFoodborneGastrointestinal));
+				.anyMatch(e -> getFieldGroup().getField(e).isVisible()))
+				|| !(isParasiticInfectiousDiseases || isLuxDengue || isFoodborneGastrointestinal));
 		// clinical Measurements HeadingLabel should be hidden for LUX Dengue, Crypto & Giardiasis, and Salmonellosis
 		if ((isParasiticInfectiousDiseases || isLuxDengue || isFoodborneGastrointestinal)) {
 			clinicalMeasurementsHeadingLabel.setVisible(false);
@@ -887,7 +895,10 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			DISSEMINATED_INTRA_VASCULAR_COAGULATION,
 			CEREBRAL_MALARIA,
 			SCANT_HEMORRHAGE,
-			FATAL_RISK);
+			FATAL_RISK,
+			TENESMUS,
+			BLOODY_DIARRHEA,
+			HAEMOLYTIC_UREMIC_SYNDROME);
 
 		// Set visibilities
 

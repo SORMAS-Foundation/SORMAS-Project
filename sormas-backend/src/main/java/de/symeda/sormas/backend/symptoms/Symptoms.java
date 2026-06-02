@@ -319,6 +319,9 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState constipation;
 	private SymptomState dysuria;
 	private SymptomState eyeIrritation;
+	private SymptomState tenesmus;
+	private SymptomState haemolyticuremicsyndrome;
+	private SymptomState bloodyDiarrhea;
 
 	// when adding new fields make sure to extend toHumanString
 
@@ -2494,7 +2497,6 @@ public class Symptoms extends AbstractDomainObject {
 		this.fatalRisk = fatalRisk;
 	}
 
-
 	@Enumerated(EnumType.STRING)
 	public SymptomState getLossOfAppetite() {
 		return lossOfAppetite;
@@ -2548,4 +2550,32 @@ public class Symptoms extends AbstractDomainObject {
 	public void setAbdominalCramps(SymptomState abdominalCramps) {
 		this.abdominalCramps = abdominalCramps;
 	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getTenesmus() {
+		return tenesmus;
+	}
+
+	public void setTenesmus(SymptomState tenesmus) {
+		this.tenesmus = tenesmus;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getHaemolyticuremicsyndrome() {
+		return haemolyticuremicsyndrome;
+	}
+
+	public void setHaemolyticuremicsyndrome(SymptomState haemolyticuremicsyndrome) {
+		this.haemolyticuremicsyndrome = haemolyticuremicsyndrome;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getBloodyDiarrhea() {
+		return bloodyDiarrhea;
+	}
+
+	public void setBloodyDiarrhea(SymptomState bloodyDiarrhea) {
+		this.bloodyDiarrhea = bloodyDiarrhea;
+	}
+
 }

@@ -20,7 +20,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.CountryHelper;
@@ -152,7 +151,7 @@ public class ExposureDto extends PseudonymizableDto {
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String description;
-	@NotNull(message = Validations.requiredField)
+//	@NotNull(message = Validations.requiredField)
 	private ExposureType exposureType;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)

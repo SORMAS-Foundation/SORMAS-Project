@@ -603,4 +603,13 @@
       fill: #a04000;
     }
   }
+   .background-disease-shigellosis {
+    background-color: #bd1307;
+    fill: #bd1307;
+
+    &.background-darker {
+      background-color: #DAAA69;
+      fill: #DAAA69;
+    }
+  }
 }

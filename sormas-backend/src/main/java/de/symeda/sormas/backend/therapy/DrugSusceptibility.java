@@ -207,6 +207,17 @@ public class DrugSusceptibility extends AbstractDomainObject {
 	private Float erythromycinZoneDiameter;
 	private SusceptibilitySurveillanceType erythromycinSurveillance;
 
+	private Float azithromycinMic;
+	private DrugSusceptibilityType azithromycinSusceptibility;
+	private Float ceftazidimeMic;
+	private DrugSusceptibilityType ceftazidimeSusceptibility;
+	private Float cefotaximeMic;
+	private DrugSusceptibilityType cefotaximeSusceptibility;
+	private Float ampicillinMic;
+	private DrugSusceptibilityType ampicillinSusceptibility;
+	private Float trimethoprimSulfamethoxazoleMic;
+	private DrugSusceptibilityType trimethoprimSulfamethoxazoleSusceptibility;
+
 	public Float getAmikacinMic() {
 		return amikacinMic;
 	}
@@ -937,4 +948,90 @@ public class DrugSusceptibility extends AbstractDomainObject {
 	public void setErythromycinSurveillance(SusceptibilitySurveillanceType erythromycinSurveillance) {
 		this.erythromycinSurveillance = erythromycinSurveillance;
 	}
+
+	public Float getAzithromycinMic() {
+		return azithromycinMic;
+	}
+
+	public void setAzithromycinMic(Float azithromycinMic) {
+		this.azithromycinMic = azithromycinMic;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getAzithromycinSusceptibility() {
+		return azithromycinSusceptibility;
+	}
+
+	public void setAzithromycinSusceptibility(DrugSusceptibilityType azithromycinSusceptibility) {
+		this.azithromycinSusceptibility = azithromycinSusceptibility;
+	}
+
+	public Float getCeftazidimeMic() {
+		return ceftazidimeMic;
+	}
+
+	public void setCeftazidimeMic(Float ceftazidimeMic) {
+		this.ceftazidimeMic = ceftazidimeMic;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getCeftazidimeSusceptibility() {
+		return ceftazidimeSusceptibility;
+	}
+
+	public void setCeftazidimeSusceptibility(DrugSusceptibilityType ceftazidimeSusceptibility) {
+		this.ceftazidimeSusceptibility = ceftazidimeSusceptibility;
+	}
+
+	public Float getCefotaximeMic() {
+		return cefotaximeMic;
+	}
+
+	public void setCefotaximeMic(Float cefotaximeMic) {
+		this.cefotaximeMic = cefotaximeMic;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getCefotaximeSusceptibility() {
+		return cefotaximeSusceptibility;
+	}
+
+	public void setCefotaximeSusceptibility(DrugSusceptibilityType cefotaximeSusceptibility) {
+		this.cefotaximeSusceptibility = cefotaximeSusceptibility;
+	}
+
+	public Float getAmpicillinMic() {
+		return ampicillinMic;
+	}
+
+	public void setAmpicillinMic(Float ampicillinMic) {
+		this.ampicillinMic = ampicillinMic;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getAmpicillinSusceptibility() {
+		return ampicillinSusceptibility;
+	}
+
+	public void setAmpicillinSusceptibility(DrugSusceptibilityType ampicillinSusceptibility) {
+		this.ampicillinSusceptibility = ampicillinSusceptibility;
+	}
+
+	public Float getTrimethoprimSulfamethoxazoleMic() {
+		return trimethoprimSulfamethoxazoleMic;
+	}
+
+	public void setTrimethoprimSulfamethoxazoleMic(Float trimethoprimSulfamethoxazoleMic) {
+		this.trimethoprimSulfamethoxazoleMic = trimethoprimSulfamethoxazoleMic;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getTrimethoprimSulfamethoxazoleSusceptibility() {
+		return trimethoprimSulfamethoxazoleSusceptibility;
+	}
+
+	public void setTrimethoprimSulfamethoxazoleSusceptibility(DrugSusceptibilityType trimethoprimSulfamethoxazoleSusceptibility) {
+		this.trimethoprimSulfamethoxazoleSusceptibility = trimethoprimSulfamethoxazoleSusceptibility;
+	}
+
 }
