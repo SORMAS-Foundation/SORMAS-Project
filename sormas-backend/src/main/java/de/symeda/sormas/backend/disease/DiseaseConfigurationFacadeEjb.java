@@ -240,7 +240,11 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		dto.setMaxIncubationPeriod(entity.getMaxIncubationPeriod());
 		dto.setMinIncubationPeriod(entity.getMinIncubationPeriod());
 		dto.setCaseDefinitionText(entity.getCaseDefinitionText());
-		dto.setIsContagious(entity.getIsContagious());
+		if (entity.getIsContagious() != null) {
+			dto.setIsContagious(entity.getIsContagious());
+		} else {
+			dto.setIsContagious(dto.getDisease().isContagious());
+		}
 		dto.setMaxContagiousPeriod(entity.getMaxContagiousPeriod());
 		dto.setMinContagiousPeriod(entity.getMinContagiousPeriod());
 

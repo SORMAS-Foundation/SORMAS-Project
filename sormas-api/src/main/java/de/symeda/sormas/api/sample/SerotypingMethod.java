@@ -79,6 +79,7 @@ public enum SerotypingMethod {
 		PathogenTestType.SEROGROUPING,
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	WGS_PREDICTION,
+	// OTHER is mostly applicable for all diseases and pathogen tests, so we don't specify them as applicable to specific diseases or tests
 	OTHER;
 
 	@Override

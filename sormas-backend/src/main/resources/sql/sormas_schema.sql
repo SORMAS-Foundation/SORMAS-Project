@@ -16160,12 +16160,11 @@ alter table drugsusceptibility_history add column IF NOT EXISTS erythromycinsurv
 INSERT INTO schema_version (version_number, comment) VALUES (634, 'Enhanced AST structure: per-drug method, zone diameter, surveillance interpretation #13948');
 
 
--- 2026-05-20 Shigellosis  disease configuration (Luxembourg) #13915
+-- 2026-05-20 Shigellosis disease configuration (Luxembourg) #13926
 ALTER TABLE diseaseconfiguration    ADD COLUMN IF NOT EXISTS iscontagious boolean default false;
 ALTER TABLE diseaseconfiguration    ADD COLUMN IF NOT EXISTS mincontagiousperiod integer;
 ALTER TABLE diseaseconfiguration    ADD COLUMN IF NOT EXISTS maxcontagiousperiod integer;
 ALTER TABLE healthconditions        ADD COLUMN IF NOT EXISTS undermedication varchar(255);
-ALTER TABLE healthconditions        ADD COLUMN IF NOT EXISTS medicationdetails varchar(255);
 ALTER TABLE healthconditions        ADD COLUMN IF NOT EXISTS medicationdetails varchar(255);
 ALTER TABLE symptoms                ADD COLUMN IF NOT EXISTS haemolyticuremicsyndrome varchar(255);
 ALTER TABLE symptoms                ADD COLUMN IF NOT EXISTS tenesmus varchar(255);
@@ -16212,5 +16211,5 @@ ALTER TABLE symptoms_history                ADD COLUMN IF NOT EXISTS bloodydiarr
 ALTER TABLE healthconditions_history        ADD COLUMN IF NOT EXISTS chronicdisease varchar(255);
 ALTER TABLE healthconditions_history        ADD COLUMN IF NOT EXISTS chronicdiseasedetails varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (635, '#13926 - Shigellosis incorporation into SORMAS');
+INSERT INTO schema_version (version_number, comment) VALUES (635, '#13926 - Shigellosis incorporation to SORMAS');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

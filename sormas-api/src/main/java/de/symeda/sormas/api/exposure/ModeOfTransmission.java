@@ -43,7 +43,6 @@ public enum ModeOfTransmission {
 	@Diseases({
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
-		Disease.SHIGELLOSIS,
 		Disease.SHIGELLOSIS })
 	HEALTHCARE_ASSOCIATED,
 	@Diseases({

@@ -3191,8 +3191,10 @@ public class SymptomsDto extends PseudonymizableDto {
 	@SymptomGrouping(SymptomGroup.GENERAL)
 	@Complication({
 		SHIGELLOSIS })
-	private SymptomState haemolyticuremicsyndrome;
+	private SymptomState haemolyticUremicSyndrome;
 
+	@Diseases({
+		SHIGELLOSIS })
 	@Complication({
 		SHIGELLOSIS })
 	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
@@ -5391,12 +5393,12 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.tenesmus = tenesmus;
 	}
 
-	public SymptomState getHaemolyticuremicsyndrome() {
-		return haemolyticuremicsyndrome;
+	public SymptomState getHaemolyticUremicSyndrome() {
+		return haemolyticUremicSyndrome;
 	}
 
-	public void setHaemolyticuremicsyndrome(SymptomState haemolyticuremicsyndrome) {
-		this.haemolyticuremicsyndrome = haemolyticuremicsyndrome;
+	public void setHaemolyticUremicSyndrome(SymptomState haemolyticUremicSyndrome) {
+		this.haemolyticUremicSyndrome = haemolyticUremicSyndrome;
 	}
 
 	public SymptomState getBloodyDiarrhea() {

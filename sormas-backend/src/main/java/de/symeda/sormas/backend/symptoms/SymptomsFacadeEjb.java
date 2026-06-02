@@ -285,7 +285,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setDysuria(source.getDysuria());
 		target.setEyeIrritation(source.getEyeIrritation());
 		target.setTenesmus(source.getTenesmus());
-		target.setHaemolyticuremicsyndrome(source.getHaemolyticuremicsyndrome());
+		target.setHaemolyticUremicSyndrome(source.getHaemolyticUremicSyndrome());
 		target.setBloodyDiarrhea(source.getBloodyDiarrhea());
 		return target;
 	}
@@ -554,7 +554,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setCoughingAtNight(source.getCoughingAtNight());
 		target.setAbdominalCramps(source.getAbdominalCramps());
 		target.setTenesmus(source.getTenesmus());
-		target.setHaemolyticuremicsyndrome(source.getHaemolyticuremicsyndrome());
+		target.setHaemolyticUremicSyndrome(source.getHaemolyticUremicSyndrome());
 		target.setBloodyDiarrhea(source.getBloodyDiarrhea());
 		return target;
 	}

@@ -361,7 +361,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		}
 		CustomLayout prophylaxisLayout = new CustomLayout();
 		prophylaxisLayout.setTemplateContents(PROPHYLAXIS_LAYOUT);
-		prophylaxisLayout.addComponent(createInfoLabel("Prophylaxis status"), "PROPHYLAXIS_LABEL");
+		prophylaxisLayout.addComponent(createInfoLabel(I18nProperties.getString(Strings.prophylaxisStatus)), "PROPHYLAXIS_LABEL");
 		prophylaxisLayout.addComponent(createInfoLabel(value), "PROPHYLAXIS_VALUE");
 
 		getContent().addComponent(prophylaxisLayout, "PROPHYLAXIS_LAYOUT");
