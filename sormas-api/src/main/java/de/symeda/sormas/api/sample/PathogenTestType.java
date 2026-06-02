@@ -376,7 +376,7 @@ public enum PathogenTestType {
 		Disease.MALARIA,
 		Disease.SALMONELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
-	@ResultValueTypeRel(ResultValueType.NUMERIC)
+	@ResultValueTypeRel(ResultValueType.TEXT)
 	NEUTRALIZING_ANTIBODIES,
 
 	@Diseases(value = {
@@ -438,7 +438,7 @@ public enum PathogenTestType {
 	QUELLUNG_REACTION,
 
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
-	@ResultValueTypeRel(ResultValueType.NUMERIC)
+	@ResultValueTypeRel(ResultValueType.TEXT)
 	HEMAGGLUTINATION_INHIBITION,
 
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
