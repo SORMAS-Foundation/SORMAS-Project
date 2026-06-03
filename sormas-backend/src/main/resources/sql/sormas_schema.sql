@@ -16159,4 +16159,76 @@ alter table drugsusceptibility_history add column IF NOT EXISTS erythromycinsurv
 
 INSERT INTO schema_version (version_number, comment) VALUES (634, 'Enhanced AST structure: per-drug method, zone diameter, surveillance interpretation #13948');
 
+
+-- #13377 Immunization Luxembourg: vaccinationStatus cleanup, numberOfDoses, informationReliability
+
+-- Rename RECOVERED → HAD_THE_DISEASE
+UPDATE cases SET vaccinationstatus = 'HAD_THE_DISEASE' WHERE vaccinationstatus = 'RECOVERED';
+UPDATE contact SET vaccinationstatus = 'HAD_THE_DISEASE' WHERE vaccinationstatus = 'RECOVERED';
+UPDATE eventparticipant SET vaccinationstatus = 'HAD_THE_DISEASE' WHERE vaccinationstatus = 'RECOVERED';
+
+-- Collapse VACCINATED_ONE_DOSE / VACCINATED_TWO_DOSE → VACCINATED
+UPDATE cases SET vaccinationstatus = 'VACCINATED' WHERE vaccinationstatus IN ('VACCINATED_ONE_DOSE', 'VACCINATED_TWO_DOSE');
+UPDATE contact SET vaccinationstatus = 'VACCINATED' WHERE vaccinationstatus IN ('VACCINATED_ONE_DOSE', 'VACCINATED_TWO_DOSE');
+UPDATE eventparticipant SET vaccinationstatus = 'VACCINATED' WHERE vaccinationstatus IN ('VACCINATED_ONE_DOSE', 'VACCINATED_TWO_DOSE');
+
+ALTER TABLE cases ADD COLUMN IF NOT EXISTS numberofdoses integer;
+ALTER TABLE cases_history ADD COLUMN IF NOT EXISTS numberofdoses integer;
+
+ALTER TABLE cases ADD COLUMN IF NOT EXISTS informationreliability varchar(255);
+ALTER TABLE cases_history ADD COLUMN IF NOT EXISTS informationreliability varchar(255);
+
+ALTER TABLE cases ADD COLUMN IF NOT EXISTS vaccinationstatuslastupdated TIMESTAMP;
+ALTER TABLE cases_history ADD COLUMN IF NOT EXISTS vaccinationstatuslastupdated TIMESTAMP;
+
+ALTER TABLE contact ADD COLUMN IF NOT EXISTS vaccinationstatusdetails character varying(255);
+ALTER TABLE contact_history ADD COLUMN IF NOT EXISTS vaccinationstatusdetails character varying(255);
+
+ALTER TABLE contact ADD COLUMN IF NOT EXISTS numberofdoses integer;
+ALTER TABLE contact_history ADD COLUMN IF NOT EXISTS numberofdoses integer;
+
+ALTER TABLE contact ADD COLUMN IF NOT EXISTS informationreliability varchar(255);
+ALTER TABLE contact_history ADD COLUMN IF NOT EXISTS informationreliability varchar(255);
+
+ALTER TABLE contact ADD COLUMN IF NOT EXISTS vaccinationstatuslastupdated TIMESTAMP;
+ALTER TABLE contact_history ADD COLUMN IF NOT EXISTS vaccinationstatuslastupdated TIMESTAMP;
+
+ALTER TABLE eventparticipant ADD COLUMN IF NOT EXISTS vaccinationstatusdetails character varying(255);
+ALTER TABLE eventparticipant_history ADD COLUMN IF NOT EXISTS vaccinationstatusdetails character varying(255);
+
+ALTER TABLE eventparticipant ADD COLUMN IF NOT EXISTS numberofdoses integer;
+ALTER TABLE eventparticipant_history ADD COLUMN IF NOT EXISTS numberofdoses integer;
+
+ALTER TABLE eventparticipant ADD COLUMN IF NOT EXISTS informationreliability varchar(255);
+ALTER TABLE eventparticipant_history ADD COLUMN IF NOT EXISTS informationreliability varchar(255);
+
+ALTER TABLE eventparticipant ADD COLUMN IF NOT EXISTS vaccinationstatuslastupdated TIMESTAMP;
+ALTER TABLE eventparticipant_history ADD COLUMN IF NOT EXISTS vaccinationstatuslastupdated TIMESTAMP;
+
+ALTER TABLE immunization ADD COLUMN IF NOT EXISTS vaccinationinfosource character varying(255);
+ALTER TABLE immunization_history ADD COLUMN IF NOT EXISTS vaccinationinfosource character varying(255);
+
+DO $$
+DECLARE
+    general_category_id integer;
+BEGIN
+
+SELECT id
+INTO general_category_id
+FROM systemconfigurationcategory
+WHERE name = 'GENERAL_CATEGORY';
+
+DELETE FROM systemconfigurationvalue WHERE category_id = general_category_id AND config_key = 'USE_QUICK_IMMUNIZATION_CREATION';
+INSERT INTO systemconfigurationvalue(config_key, config_value, value_description, category_id, value_optional, value_pattern,
+                                     value_encrypt, data_provider, validation_message, changedate, creationdate, id,
+                                     uuid)
+VALUES ('USE_QUICK_IMMUNIZATION_CREATION', 'false', 'i18n/infoSystemConfigurationValueDescriptionUseQuickImmunizationCreation', general_category_id, true,
+        '', false, 'de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueBooleanProvider',
+        'i18n/systemConfigurationValueInvalidValue', now(), now(), nextval('entity_seq'), generate_base32_uuid());
+
+END $$
+LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (635, '#13377 Immunization Luxembourg: status cleanup, numberOfDoses, informationReliability');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

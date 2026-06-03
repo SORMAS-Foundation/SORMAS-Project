@@ -65,6 +65,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -105,6 +106,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		+ fluidRowLocs(OVERWRITE_IMMUNIZATION_MANAGEMENT_STATUS)
 		+ fluidRowLocs(ImmunizationDto.IMMUNIZATION_MANAGEMENT_STATUS, ImmunizationDto.IMMUNIZATION_STATUS)
 		+ fluidRowLocs(ImmunizationDto.PREVIOUS_INFECTION, ImmunizationDto.LAST_INFECTION_DATE)
+		+ fluidRowLocs(ImmunizationDto.VACCINATION_INFO_SOURCE)
 		+ fluidRow(fluidColumnLoc(6, 0, ImmunizationDto.COUNTRY))
 		+ fluidRowLocs(ImmunizationDto.ADDITIONAL_DETAILS)
 		+ fluidRowLocs(RESPONSIBLE_JURISDICTION_HEADING_LOC)
@@ -184,6 +186,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 
 		addField(ImmunizationDto.PREVIOUS_INFECTION, NullableOptionGroup.class);
 		addField(ImmunizationDto.LAST_INFECTION_DATE, DateField.class);
+		addField(ImmunizationDto.VACCINATION_INFO_SOURCE, ComboBox.class);
 
 		ComboBox country = addInfrastructureField(ImmunizationDto.COUNTRY);
 		country.addItems(FacadeProvider.getCountryFacade().getAllActiveAsReference());

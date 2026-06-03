@@ -66,7 +66,7 @@ import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationValue;
  * status determination based on immunization data, including:
  * </p>
  * <ul>
- * <li>Disease-specific statuses (e.g., VACCINATED_ONE_DOSE, VACCINATED_TWO_DOSE for MEASLES)</li>
+ * <li>Disease-specific statuses (e.g., VACCINATED, VACCINATED for MEASLES)</li>
  * <li>Recovery-based statuses (RECOVERED for diseases like CORONAVIRUS)</li>
  * <li>Generic VACCINATED status for diseases without specific dose annotations</li>
  * <li>Validity date-based filtering of immunizations</li>
@@ -133,11 +133,11 @@ class VaccinationFacadeEjbDeterminedStatusTest extends AbstractBeanTest {
     }
 
     /**
-     * Tests that a case is assigned VACCINATED_ONE_DOSE status when the person has one measles vaccination.
+     * Tests that a case is assigned VACCINATED status when the person has one measles vaccination.
      * 
      * <p>
-     * MEASLES is annotated with @Diseases on the VACCINATED_ONE_DOSE enum value, which enables
-     * disease-specific status determination. With one dose, the status should be VACCINATED_ONE_DOSE
+     * MEASLES is annotated with @Diseases on the VACCINATED enum value, which enables
+     * disease-specific status determination. With one dose, the status should be VACCINATED
      * rather than the generic VACCINATED status.
      * </p>
      */
@@ -157,6 +157,7 @@ class VaccinationFacadeEjbDeterminedStatusTest extends AbstractBeanTest {
             ImmunizationManagementStatus.ONGOING,
             rdcf);
         immunization.setValidFrom(DateHelper.subtractDays(new Date(), 10));
+        immunization.setValidUntil(DateHelper.addDays(new Date(), 365));
         immunization.setNumberOfDoses(1);
         getImmunizationFacade().save(immunization);
         // Important: save() here triggers the vaccination status update
@@ -167,18 +168,18 @@ class VaccinationFacadeEjbDeterminedStatusTest extends AbstractBeanTest {
         vaccination.setVaccinationDate(DateHelper.subtractDays(new Date(), 10));
         getVaccinationFacade().save(vaccination);
 
-        // Verify case has VACCINATED_ONE_DOSE status for measles
+        // Verify case has VACCINATED status for measles
         // Note: initially thought this would be VACCINATED but measles has specific enum values
         CaseDataDto updatedCase = getCaseFacade().getByUuid(caze.getUuid());
-        assertEquals(VaccinationStatus.VACCINATED_ONE_DOSE, updatedCase.getVaccinationStatus());
+        assertEquals(VaccinationStatus.VACCINATED, updatedCase.getVaccinationStatus());
         assertTrue(updatedCase.getVaccinationStatus().isVaccinated());
     }
 
     /**
-     * Tests that a case is assigned VACCINATED_TWO_DOSE status when the person has two measles vaccinations.
+     * Tests that a case is assigned VACCINATED status when the person has two measles vaccinations.
      * 
      * <p>
-     * With two doses recorded in the immunization, the derived status should be VACCINATED_TWO_DOSE,
+     * With two doses recorded in the immunization, the derived status should be VACCINATED,
      * which is specific to diseases like MEASLES that have dose-based status variants.
      * </p>
      */
@@ -199,6 +200,7 @@ class VaccinationFacadeEjbDeterminedStatusTest extends AbstractBeanTest {
             ImmunizationManagementStatus.COMPLETED,
             rdcf);
         immunization.setValidFrom(DateHelper.subtractDays(new Date(), 60));
+        immunization.setValidUntil(DateHelper.addDays(new Date(), 365));
         immunization.setNumberOfDoses(2);
         getImmunizationFacade().save(immunization);
 
@@ -213,9 +215,9 @@ class VaccinationFacadeEjbDeterminedStatusTest extends AbstractBeanTest {
         vaccination2.setVaccinationDate(DateHelper.subtractDays(new Date(), 30));
         getVaccinationFacade().save(vaccination2);
 
-        // Verify case has VACCINATED_TWO_DOSE status for measles
+        // Verify case has VACCINATED status for measles
         CaseDataDto updatedCase = getCaseFacade().getByUuid(caze.getUuid());
-        assertEquals(VaccinationStatus.VACCINATED_TWO_DOSE, updatedCase.getVaccinationStatus());
+        assertEquals(VaccinationStatus.VACCINATED, updatedCase.getVaccinationStatus());
         assertTrue(updatedCase.getVaccinationStatus().isVaccinated());
     }
 
@@ -245,12 +247,13 @@ class VaccinationFacadeEjbDeterminedStatusTest extends AbstractBeanTest {
             ImmunizationManagementStatus.COMPLETED,
             rdcf);
         immunization.setValidFrom(DateHelper.subtractDays(new Date(), 90));
+        immunization.setValidUntil(DateHelper.addDays(new Date(), 365));
         immunization.setRecoveryDate(DateHelper.subtractDays(new Date(), 90));
         getImmunizationFacade().save(immunization);
 
         // Verify case has RECOVERED status
         CaseDataDto updatedCase = getCaseFacade().getByUuid(caze.getUuid());
-        assertEquals(VaccinationStatus.RECOVERED, updatedCase.getVaccinationStatus());
+        assertEquals(VaccinationStatus.HAD_THE_DISEASE, updatedCase.getVaccinationStatus());
         assertFalse(updatedCase.getVaccinationStatus().isVaccinated());
     }
 
@@ -266,7 +269,7 @@ class VaccinationFacadeEjbDeterminedStatusTest extends AbstractBeanTest {
     @Test
     void testVaccinationStatusGenericForNonMeasles() {
         // Create person and case for a disease without dose-specific annotations (e.g., EVD)
-        // EVD doesn't have VACCINATED_ONE_DOSE etc., so it should fall back to generic VACCINATED
+        // EVD doesn't have VACCINATED etc., so it should fall back to generic VACCINATED
         PersonDto person = creator.createPerson("Alice", "Williams");
         CaseDataDto caze = creator.createCase(nationalUser.toReference(), person.toReference(), Disease.EVD, null, null, null, rdcf);
 
@@ -280,6 +283,7 @@ class VaccinationFacadeEjbDeterminedStatusTest extends AbstractBeanTest {
             ImmunizationManagementStatus.ONGOING,
             rdcf);
         immunization.setValidFrom(DateHelper.subtractDays(new Date(), 10));
+        immunization.setValidUntil(DateHelper.addDays(new Date(), 365));
         immunization.setNumberOfDoses(1);
         getImmunizationFacade().save(immunization);
         // Important: save() here triggers the vaccination status update
@@ -290,7 +294,7 @@ class VaccinationFacadeEjbDeterminedStatusTest extends AbstractBeanTest {
         vaccination.setVaccinationDate(DateHelper.subtractDays(new Date(), 10));
         getVaccinationFacade().save(vaccination);
 
-        // Verify case has generic VACCINATED status (not VACCINATED_ONE_DOSE) for non-measles disease
+        // Verify case has generic VACCINATED status (not VACCINATED) for non-measles disease
         CaseDataDto updatedCase = getCaseFacade().getByUuid(caze.getUuid());
         assertEquals(VaccinationStatus.VACCINATED, updatedCase.getVaccinationStatus());
         assertTrue(updatedCase.getVaccinationStatus().isVaccinated());
@@ -322,6 +326,7 @@ class VaccinationFacadeEjbDeterminedStatusTest extends AbstractBeanTest {
             ImmunizationManagementStatus.COMPLETED,
             rdcf);
         immunization.setValidFrom(DateHelper.subtractDays(new Date(), 30));
+        immunization.setValidUntil(DateHelper.addDays(new Date(), 365));
         immunization.setMeansOfImmunizationDetails("Experimental treatment");
         getImmunizationFacade().save(immunization);
 
@@ -363,6 +368,7 @@ class VaccinationFacadeEjbDeterminedStatusTest extends AbstractBeanTest {
             ImmunizationManagementStatus.COMPLETED,
             rdcf);
         immunization.setValidFrom(DateHelper.subtractDays(new Date(), 45));
+        immunization.setValidUntil(DateHelper.addDays(new Date(), 365));
         immunization.setMeansOfImmunizationDetails("Convalescent plasma therapy - Phase 3 clinical trial");
         getImmunizationFacade().save(immunization);
 
@@ -381,7 +387,7 @@ class VaccinationFacadeEjbDeterminedStatusTest extends AbstractBeanTest {
      * 
      * <p>
      * The vaccinationStatusDetails field should only be populated when the status is OTHER.
-     * For regular vaccination-based statuses (VACCINATED, VACCINATED_ONE_DOSE, etc.) or
+     * For regular vaccination-based statuses (VACCINATED, VACCINATED, etc.) or
      * RECOVERED status, the details field should remain null since the status itself is
      * self-explanatory.
      * </p>
@@ -402,6 +408,7 @@ class VaccinationFacadeEjbDeterminedStatusTest extends AbstractBeanTest {
             ImmunizationManagementStatus.COMPLETED,
             rdcf);
         immunization.setValidFrom(DateHelper.subtractDays(new Date(), 30));
+        immunization.setValidUntil(DateHelper.addDays(new Date(), 365));
         immunization.setNumberOfDoses(2);
         // Even if we set meansOfImmunizationDetails, it shouldn't be copied to the case
         // because this isn't an OTHER means of immunization
@@ -410,7 +417,7 @@ class VaccinationFacadeEjbDeterminedStatusTest extends AbstractBeanTest {
 
         // Verify case has vaccination status but NO details (details are only for OTHER)
         CaseDataDto updatedCase = getCaseFacade().getByUuid(caze.getUuid());
-        assertEquals(VaccinationStatus.VACCINATED_TWO_DOSE, updatedCase.getVaccinationStatus());
+        assertEquals(VaccinationStatus.VACCINATED, updatedCase.getVaccinationStatus());
         assertEquals(null, updatedCase.getVaccinationStatusDetails());
         assertTrue(updatedCase.getVaccinationStatus().isVaccinated());
 
@@ -442,6 +449,7 @@ class VaccinationFacadeEjbDeterminedStatusTest extends AbstractBeanTest {
             ImmunizationManagementStatus.COMPLETED,
             rdcf);
         olderImmunization.setValidFrom(DateHelper.subtractDays(new Date(), 90));
+        olderImmunization.setValidUntil(DateHelper.addDays(new Date(), 365));
         olderImmunization.setMeansOfImmunizationDetails("Old experimental protocol");
         getImmunizationFacade().save(olderImmunization);
 
@@ -460,6 +468,7 @@ class VaccinationFacadeEjbDeterminedStatusTest extends AbstractBeanTest {
             ImmunizationManagementStatus.COMPLETED,
             rdcf);
         newerImmunization.setValidFrom(DateHelper.subtractDays(new Date(), 30));
+        newerImmunization.setValidUntil(DateHelper.addDays(new Date(), 365));
         newerImmunization.setMeansOfImmunizationDetails("New monoclonal antibody treatment");
         getImmunizationFacade().save(newerImmunization);
 

@@ -58,8 +58,10 @@ import de.symeda.sormas.api.contact.IsContact;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.contact.TracingApp;
 import de.symeda.sormas.api.externaldata.HasExternalData;
+import de.symeda.sormas.api.immunization.InformationReliability;
 import de.symeda.sormas.api.therapy.Drug;
 import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.Case;
@@ -168,6 +170,10 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 	public static final String TRACING_APP = "tracingApp";
 	public static final String TRACING_APP_DETAILS = "tracingAppDetails";
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
+	public static final String VACCINATION_STATUS_DETAILS = "vaccinationStatusDetails";
+	public static final String VACCINATION_STATUS_LAST_UPDATED = "vaccinationStatusLastUpdated";
+	public static final String NUMBER_OF_DOSES = "numberOfDoses";
+	public static final String INFORMATION_RELIABILITY = "informationReliability";
 	public static final String VISITS = "visits";
 	public static final String DUPLICATE_OF = "duplicateOf";
 	public static final String SELF_REPORT = "selfReport";
@@ -295,7 +301,12 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 		Disease.CORONAVIRUS,
 		Disease.OTHER })
 	@Outbreaks
+
 	private VaccinationStatus vaccinationStatus;
+	private String vaccinationStatusDetails;
+	private Date vaccinationStatusLastUpdated;
+	private Integer numberOfDoses;
+	private InformationReliability informationReliability;
 
 	private Date vaccinationDoseOneDate;
 	private Date vaccinationDoseTwoDate;
@@ -1100,6 +1111,41 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 
 	public void setVaccinationStatus(VaccinationStatus vaccinationStatus) {
 		this.vaccinationStatus = vaccinationStatus;
+	}
+
+	@Column(length = FieldConstraints.CHARACTER_LIMIT_DEFAULT)
+	public String getVaccinationStatusDetails() {
+		return vaccinationStatusDetails;
+	}
+
+	public void setVaccinationStatusDetails(String vaccinationStatusDetails) {
+		this.vaccinationStatusDetails = vaccinationStatusDetails;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getVaccinationStatusLastUpdated() {
+		return vaccinationStatusLastUpdated;
+	}
+
+	public void setVaccinationStatusLastUpdated(Date vaccinationStatusLastUpdated) {
+		this.vaccinationStatusLastUpdated = vaccinationStatusLastUpdated;
+	}
+
+	public Integer getNumberOfDoses() {
+		return numberOfDoses;
+	}
+
+	public void setNumberOfDoses(Integer numberOfDoses) {
+		this.numberOfDoses = numberOfDoses;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public InformationReliability getInformationReliability() {
+		return informationReliability;
+	}
+
+	public void setInformationReliability(InformationReliability informationReliability) {
+		this.informationReliability = informationReliability;
 	}
 
 	@Temporal(TemporalType.DATE)

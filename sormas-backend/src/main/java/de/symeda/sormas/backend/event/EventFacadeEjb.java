@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -141,6 +142,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.util.RightsAllowed;
+import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
 
 @Stateless(name = "EventFacade")
 @RightsAllowed(UserRight._EVENT_VIEW)
@@ -181,6 +183,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	private EventService eventService;
 	@EJB
 	private EventParticipantService eventParticipantService;
+	@EJB
+	private VaccinationFacadeEjb.VaccinationFacadeEjbLocal vaccinationFacade;
 	@EJB
 	private ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolGatewayFacade;
 	@Resource
@@ -312,9 +316,31 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		Event event = fillOrBuildEntity(dto, existingEvent, checkChangeDate);
 		service.ensurePersisted(event);
 
+		if (existingDto != null && hasVaccinationReferenceChanged(existingDto, event)) {
+			updateEventParticipantVaccinationStatuses(event);
+		}
+
 		onEventChange(toDto(event), internal);
 
 		return toPseudonymizedDto(event, pseudonymizer);
+	}
+
+	private boolean hasVaccinationReferenceChanged(EventDto existingEvent, Event newEvent) {
+		return existingEvent != null
+			&& (existingEvent.getDisease() != newEvent.getDisease()
+				|| !Objects.equals(existingEvent.getStartDate(), newEvent.getStartDate())
+				|| !Objects.equals(existingEvent.getEndDate(), newEvent.getEndDate())
+				|| !Objects.equals(existingEvent.getReportDateTime(), newEvent.getReportDateTime()));
+	}
+
+	private void updateEventParticipantVaccinationStatuses(Event event) {
+		if (event.getDisease() == null) {
+			return;
+		}
+
+		for (EventParticipant eventParticipant : eventParticipantService.getByEventUuids(Collections.singletonList(event.getUuid()))) {
+			vaccinationFacade.updateVaccinationStatuses(eventParticipant);
+		}
 	}
 
 	@PermitAll
