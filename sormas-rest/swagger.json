@@ -12228,7 +12228,7 @@
           },
           "vaccinationStatus" : {
             "type" : "string",
-            "enum" : [ "VACCINATED", "UNVACCINATED", "VACCINATED_ONE_DOSE", "VACCINATED_TWO_DOSE", "RECOVERED", "OTHER", "UNKNOWN" ]
+            "enum" : [ "VACCINATED", "UNVACCINATED", "RECOVERED", "HAD_THE_DISEASE", "OTHER", "UNKNOWN" ]
           },
           "withExtendedQuarantine" : {
             "type" : "boolean"
@@ -12465,6 +12465,10 @@
             "type" : "string",
             "enum" : [ "UNKNOWN", "AMBULATORY", "MEDICAL_PRACTICE", "OPERATIVE_1200", "HOSPITAL_1300", "OTHER_OUTPATIENT_FACILITY", "STATIONARY", "HOSPITAL_2100", "NORMAL_WARD", "OPERATIVE_2111", "NOT_OPERATIVE", "HEMATOLOGICAL_ONCOLOGY", "CHILDREN_WARD", "NEONATOLOGY", "INTENSIVE_CARE_UNIT", "OTHER_STATION", "NURSING_HOME", "REHAB_FACILITY", "OTHER_STATIONARY_FACILITY" ]
           },
+          "informationReliability" : {
+            "type" : "string",
+            "enum" : [ "TRUSTED", "UNRELIABLE", "UNKNOWN" ]
+          },
           "internalToken" : {
             "type" : "string",
             "maxLength" : 1000000,
@@ -12520,6 +12524,10 @@
             "type" : "string",
             "maxLength" : 512,
             "minLength" : 0
+          },
+          "numberOfDoses" : {
+            "type" : "integer",
+            "format" : "int32"
           },
           "otherDeletionReason" : {
             "type" : "string",
@@ -12800,12 +12808,16 @@
           },
           "vaccinationStatus" : {
             "type" : "string",
-            "enum" : [ "VACCINATED", "UNVACCINATED", "VACCINATED_ONE_DOSE", "VACCINATED_TWO_DOSE", "RECOVERED", "OTHER", "UNKNOWN" ]
+            "enum" : [ "VACCINATED", "UNVACCINATED", "RECOVERED", "HAD_THE_DISEASE", "OTHER", "UNKNOWN" ]
           },
           "vaccinationStatusDetails" : {
             "type" : "string",
             "maxLength" : 512,
             "minLength" : 0
+          },
+          "vaccinationStatusLastUpdated" : {
+            "type" : "string",
+            "format" : "date-time"
           },
           "wasInQuarantineBeforeIsolation" : {
             "type" : "string",
@@ -13063,7 +13075,7 @@
           },
           "vaccinationStatus" : {
             "type" : "string",
-            "enum" : [ "VACCINATED", "UNVACCINATED", "VACCINATED_ONE_DOSE", "VACCINATED_TWO_DOSE", "RECOVERED", "OTHER", "UNKNOWN" ]
+            "enum" : [ "VACCINATED", "UNVACCINATED", "RECOVERED", "HAD_THE_DISEASE", "OTHER", "UNKNOWN" ]
           },
           "withExtendedQuarantine" : {
             "type" : "boolean"
@@ -13347,7 +13359,7 @@
           },
           "vaccinationStatus" : {
             "type" : "string",
-            "enum" : [ "VACCINATED", "UNVACCINATED", "VACCINATED_ONE_DOSE", "VACCINATED_TWO_DOSE", "RECOVERED", "OTHER", "UNKNOWN" ]
+            "enum" : [ "VACCINATED", "UNVACCINATED", "RECOVERED", "HAD_THE_DISEASE", "OTHER", "UNKNOWN" ]
           },
           "visitCount" : {
             "type" : "integer",
@@ -13514,7 +13526,7 @@
           },
           "vaccinationStatus" : {
             "type" : "string",
-            "enum" : [ "VACCINATED", "UNVACCINATED", "VACCINATED_ONE_DOSE", "VACCINATED_TWO_DOSE", "RECOVERED", "OTHER", "UNKNOWN" ]
+            "enum" : [ "VACCINATED", "UNVACCINATED", "RECOVERED", "HAD_THE_DISEASE", "OTHER", "UNKNOWN" ]
           },
           "visitCount" : {
             "type" : "integer",
@@ -14222,7 +14234,7 @@
           },
           "vaccinationStatus" : {
             "type" : "string",
-            "enum" : [ "VACCINATED", "UNVACCINATED", "VACCINATED_ONE_DOSE", "VACCINATED_TWO_DOSE", "RECOVERED", "OTHER", "UNKNOWN" ]
+            "enum" : [ "VACCINATED", "UNVACCINATED", "RECOVERED", "HAD_THE_DISEASE", "OTHER", "UNKNOWN" ]
           },
           "withCase" : {
             "type" : "boolean"
@@ -14410,6 +14422,10 @@
           "inJurisdiction" : {
             "type" : "boolean"
           },
+          "informationReliability" : {
+            "type" : "string",
+            "enum" : [ "TRUSTED", "UNRELIABLE", "UNKNOWN" ]
+          },
           "internalToken" : {
             "type" : "string",
             "maxLength" : 1000000,
@@ -14421,6 +14437,10 @@
           },
           "multiDayContact" : {
             "type" : "boolean"
+          },
+          "numberOfDoses" : {
+            "type" : "integer",
+            "format" : "int32"
           },
           "otherDeletionReason" : {
             "type" : "string",
@@ -14616,7 +14636,16 @@
           },
           "vaccinationStatus" : {
             "type" : "string",
-            "enum" : [ "VACCINATED", "UNVACCINATED", "VACCINATED_ONE_DOSE", "VACCINATED_TWO_DOSE", "RECOVERED", "OTHER", "UNKNOWN" ]
+            "enum" : [ "VACCINATED", "UNVACCINATED", "RECOVERED", "HAD_THE_DISEASE", "OTHER", "UNKNOWN" ]
+          },
+          "vaccinationStatusDetails" : {
+            "type" : "string",
+            "maxLength" : 512,
+            "minLength" : 0
+          },
+          "vaccinationStatusLastUpdated" : {
+            "type" : "string",
+            "format" : "date-time"
           }
         },
         "required" : [ "disease", "person", "reportDateTime" ]
@@ -14811,7 +14840,7 @@
           },
           "vaccinationStatus" : {
             "type" : "string",
-            "enum" : [ "VACCINATED", "UNVACCINATED", "VACCINATED_ONE_DOSE", "VACCINATED_TWO_DOSE", "RECOVERED", "OTHER", "UNKNOWN" ]
+            "enum" : [ "VACCINATED", "UNVACCINATED", "RECOVERED", "HAD_THE_DISEASE", "OTHER", "UNKNOWN" ]
           },
           "visitCount" : {
             "type" : "integer",
@@ -14967,7 +14996,7 @@
           },
           "vaccinationStatus" : {
             "type" : "string",
-            "enum" : [ "VACCINATED", "UNVACCINATED", "VACCINATED_ONE_DOSE", "VACCINATED_TWO_DOSE", "RECOVERED", "OTHER", "UNKNOWN" ]
+            "enum" : [ "VACCINATED", "UNVACCINATED", "RECOVERED", "HAD_THE_DISEASE", "OTHER", "UNKNOWN" ]
           },
           "visitCount" : {
             "type" : "integer",
@@ -18673,7 +18702,7 @@
           },
           "vaccinationStatus" : {
             "type" : "string",
-            "enum" : [ "VACCINATED", "UNVACCINATED", "VACCINATED_ONE_DOSE", "VACCINATED_TWO_DOSE", "RECOVERED", "OTHER", "UNKNOWN" ]
+            "enum" : [ "VACCINATED", "UNVACCINATED", "RECOVERED", "HAD_THE_DISEASE", "OTHER", "UNKNOWN" ]
           }
         }
       },
@@ -18704,10 +18733,18 @@
           "inJurisdiction" : {
             "type" : "boolean"
           },
+          "informationReliability" : {
+            "type" : "string",
+            "enum" : [ "TRUSTED", "UNRELIABLE", "UNKNOWN" ]
+          },
           "involvementDescription" : {
             "type" : "string",
             "maxLength" : 255,
             "minLength" : 0
+          },
+          "numberOfDoses" : {
+            "type" : "integer",
+            "format" : "int32"
           },
           "otherDeletionReason" : {
             "type" : "string",
@@ -18743,7 +18780,16 @@
           },
           "vaccinationStatus" : {
             "type" : "string",
-            "enum" : [ "VACCINATED", "UNVACCINATED", "VACCINATED_ONE_DOSE", "VACCINATED_TWO_DOSE", "RECOVERED", "OTHER", "UNKNOWN" ]
+            "enum" : [ "VACCINATED", "UNVACCINATED", "RECOVERED", "HAD_THE_DISEASE", "OTHER", "UNKNOWN" ]
+          },
+          "vaccinationStatusDetails" : {
+            "type" : "string",
+            "maxLength" : 512,
+            "minLength" : 0
+          },
+          "vaccinationStatusLastUpdated" : {
+            "type" : "string",
+            "format" : "date-time"
           }
         },
         "required" : [ "event", "person" ]
@@ -18816,7 +18862,7 @@
           },
           "vaccinationStatus" : {
             "type" : "string",
-            "enum" : [ "VACCINATED", "UNVACCINATED", "VACCINATED_ONE_DOSE", "VACCINATED_TWO_DOSE", "RECOVERED", "OTHER", "UNKNOWN" ]
+            "enum" : [ "VACCINATED", "UNVACCINATED", "RECOVERED", "HAD_THE_DISEASE", "OTHER", "UNKNOWN" ]
           }
         }
       },
@@ -19723,7 +19769,7 @@
           },
           "vaccinationStatus" : {
             "type" : "string",
-            "enum" : [ "VACCINATED", "UNVACCINATED", "VACCINATED_ONE_DOSE", "VACCINATED_TWO_DOSE", "RECOVERED", "OTHER", "UNKNOWN" ]
+            "enum" : [ "VACCINATED", "UNVACCINATED", "RECOVERED", "HAD_THE_DISEASE", "OTHER", "UNKNOWN" ]
           }
         }
       },
@@ -20569,7 +20615,7 @@
           },
           "meansOfImmunization" : {
             "type" : "string",
-            "enum" : [ "VACCINATION", "RECOVERY", "VACCINATION_RECOVERY", "MATERNAL_VACCINATION", "MONOCLONAL_ANTIBODY", "OTHER" ]
+            "enum" : [ "VACCINATION", "RECOVERY", "VACCINATION_RECOVERY", "MATERNAL_VACCINATION", "MONOCLONAL_ANTIBODY", "OTHER", "NOT_IMMUNIZED" ]
           },
           "nameAddressPhoneEmailLike" : {
             "type" : "string"
@@ -20676,7 +20722,7 @@
           },
           "meansOfImmunization" : {
             "type" : "string",
-            "enum" : [ "VACCINATION", "RECOVERY", "VACCINATION_RECOVERY", "MATERNAL_VACCINATION", "MONOCLONAL_ANTIBODY", "OTHER" ]
+            "enum" : [ "VACCINATION", "RECOVERY", "VACCINATION_RECOVERY", "MATERNAL_VACCINATION", "MONOCLONAL_ANTIBODY", "OTHER", "NOT_IMMUNIZED" ]
           },
           "meansOfImmunizationDetails" : {
             "type" : "string",
@@ -20748,6 +20794,10 @@
             "minLength" : 20,
             "pattern" : "^[0-9a-zA-Z-]*$"
           },
+          "vaccinationInfoSource" : {
+            "type" : "string",
+            "enum" : [ "VACCINATION_REGISTRY", "VACCINATION_CARD", "ORAL_COMMUNICATION", "NO_EVIDENCE", "UNKNOWN" ]
+          },
           "vaccinations" : {
             "type" : "array",
             "items" : {
@@ -20805,7 +20855,7 @@
           },
           "meansOfImmunization" : {
             "type" : "string",
-            "enum" : [ "VACCINATION", "RECOVERY", "VACCINATION_RECOVERY", "MATERNAL_VACCINATION", "MONOCLONAL_ANTIBODY", "OTHER" ]
+            "enum" : [ "VACCINATION", "RECOVERY", "VACCINATION_RECOVERY", "MATERNAL_VACCINATION", "MONOCLONAL_ANTIBODY", "OTHER", "NOT_IMMUNIZED" ]
           },
           "otherDeletionReason" : {
             "type" : "string"
@@ -27965,7 +28015,7 @@
           },
           "vaccinationInfoSource" : {
             "type" : "string",
-            "enum" : [ "VACCINATION_CARD", "ORAL_COMMUNICATION", "NO_EVIDENCE", "UNKNOWN" ]
+            "enum" : [ "VACCINATION_REGISTRY", "VACCINATION_CARD", "ORAL_COMMUNICATION", "NO_EVIDENCE", "UNKNOWN" ]
           },
           "vaccineAtcCode" : {
             "type" : "string",

@@ -9752,9 +9752,8 @@ components:
           enum:
           - VACCINATED
           - UNVACCINATED
-          - VACCINATED_ONE_DOSE
-          - VACCINATED_TWO_DOSE
           - RECOVERED
+          - HAD_THE_DISEASE
           - OTHER
           - UNKNOWN
         withExtendedQuarantine:
@@ -10126,6 +10125,12 @@ components:
           - NURSING_HOME
           - REHAB_FACILITY
           - OTHER_STATIONARY_FACILITY
+        informationReliability:
+          type: string
+          enum:
+          - TRUSTED
+          - UNRELIABLE
+          - UNKNOWN
         internalToken:
           type: string
           maxLength: 1000000
@@ -10182,6 +10187,9 @@ components:
           type: string
           maxLength: 512
           minLength: 0
+        numberOfDoses:
+          type: integer
+          format: int32
         otherDeletionReason:
           type: string
           maxLength: 1000000
@@ -10462,15 +10470,17 @@ components:
           enum:
           - VACCINATED
           - UNVACCINATED
-          - VACCINATED_ONE_DOSE
-          - VACCINATED_TWO_DOSE
           - RECOVERED
+          - HAD_THE_DISEASE
           - OTHER
           - UNKNOWN
         vaccinationStatusDetails:
           type: string
           maxLength: 512
           minLength: 0
+        vaccinationStatusLastUpdated:
+          type: string
+          format: date-time
         wasInQuarantineBeforeIsolation:
           type: string
           enum:
@@ -10855,9 +10865,8 @@ components:
           enum:
           - VACCINATED
           - UNVACCINATED
-          - VACCINATED_ONE_DOSE
-          - VACCINATED_TWO_DOSE
           - RECOVERED
+          - HAD_THE_DISEASE
           - OTHER
           - UNKNOWN
         withExtendedQuarantine:
@@ -11252,9 +11261,8 @@ components:
           enum:
           - VACCINATED
           - UNVACCINATED
-          - VACCINATED_ONE_DOSE
-          - VACCINATED_TWO_DOSE
           - RECOVERED
+          - HAD_THE_DISEASE
           - OTHER
           - UNKNOWN
         visitCount:
@@ -11486,9 +11494,8 @@ components:
           enum:
           - VACCINATED
           - UNVACCINATED
-          - VACCINATED_ONE_DOSE
-          - VACCINATED_TWO_DOSE
           - RECOVERED
+          - HAD_THE_DISEASE
           - OTHER
           - UNKNOWN
         visitCount:
@@ -12410,9 +12417,8 @@ components:
           enum:
           - VACCINATED
           - UNVACCINATED
-          - VACCINATED_ONE_DOSE
-          - VACCINATED_TWO_DOSE
           - RECOVERED
+          - HAD_THE_DISEASE
           - OTHER
           - UNKNOWN
         withCase:
@@ -12672,6 +12678,12 @@ components:
           minLength: 0
         inJurisdiction:
           type: boolean
+        informationReliability:
+          type: string
+          enum:
+          - TRUSTED
+          - UNRELIABLE
+          - UNKNOWN
         internalToken:
           type: string
           maxLength: 1000000
@@ -12681,6 +12693,9 @@ components:
           format: date-time
         multiDayContact:
           type: boolean
+        numberOfDoses:
+          type: integer
+          format: int32
         otherDeletionReason:
           type: string
           maxLength: 1000000
@@ -12875,11 +12890,17 @@ components:
           enum:
           - VACCINATED
           - UNVACCINATED
-          - VACCINATED_ONE_DOSE
-          - VACCINATED_TWO_DOSE
           - RECOVERED
+          - HAD_THE_DISEASE
           - OTHER
           - UNKNOWN
+        vaccinationStatusDetails:
+          type: string
+          maxLength: 512
+          minLength: 0
+        vaccinationStatusLastUpdated:
+          type: string
+          format: date-time
       required:
       - disease
       - person
@@ -13166,9 +13187,8 @@ components:
           enum:
           - VACCINATED
           - UNVACCINATED
-          - VACCINATED_ONE_DOSE
-          - VACCINATED_TWO_DOSE
           - RECOVERED
+          - HAD_THE_DISEASE
           - OTHER
           - UNKNOWN
         visitCount:
@@ -13418,9 +13438,8 @@ components:
           enum:
           - VACCINATED
           - UNVACCINATED
-          - VACCINATED_ONE_DOSE
-          - VACCINATED_TWO_DOSE
           - RECOVERED
+          - HAD_THE_DISEASE
           - OTHER
           - UNKNOWN
         visitCount:
@@ -17702,9 +17721,8 @@ components:
           enum:
           - VACCINATED
           - UNVACCINATED
-          - VACCINATED_ONE_DOSE
-          - VACCINATED_TWO_DOSE
           - RECOVERED
+          - HAD_THE_DISEASE
           - OTHER
           - UNKNOWN
     EventParticipantDto:
@@ -17733,10 +17751,19 @@ components:
           $ref: '#/components/schemas/EventReferenceDto'
         inJurisdiction:
           type: boolean
+        informationReliability:
+          type: string
+          enum:
+          - TRUSTED
+          - UNRELIABLE
+          - UNKNOWN
         involvementDescription:
           type: string
           maxLength: 255
           minLength: 0
+        numberOfDoses:
+          type: integer
+          format: int32
         otherDeletionReason:
           type: string
           maxLength: 1000000
@@ -17765,11 +17792,17 @@ components:
           enum:
           - VACCINATED
           - UNVACCINATED
-          - VACCINATED_ONE_DOSE
-          - VACCINATED_TWO_DOSE
           - RECOVERED
+          - HAD_THE_DISEASE
           - OTHER
           - UNKNOWN
+        vaccinationStatusDetails:
+          type: string
+          maxLength: 512
+          minLength: 0
+        vaccinationStatusLastUpdated:
+          type: string
+          format: date-time
       required:
       - event
       - person
@@ -17842,9 +17875,8 @@ components:
           enum:
           - VACCINATED
           - UNVACCINATED
-          - VACCINATED_ONE_DOSE
-          - VACCINATED_TWO_DOSE
           - RECOVERED
+          - HAD_THE_DISEASE
           - OTHER
           - UNKNOWN
     EventParticipantReferenceDto:
@@ -19093,9 +19125,8 @@ components:
           enum:
           - VACCINATED
           - UNVACCINATED
-          - VACCINATED_ONE_DOSE
-          - VACCINATED_TWO_DOSE
           - RECOVERED
+          - HAD_THE_DISEASE
           - OTHER
           - UNKNOWN
     ExternalMessageIndexDto:
@@ -20708,6 +20739,7 @@ components:
           - MATERNAL_VACCINATION
           - MONOCLONAL_ANTIBODY
           - OTHER
+          - NOT_IMMUNIZED
         nameAddressPhoneEmailLike:
           type: string
         onlyPersonsWithOverdueImmunization:
@@ -20941,6 +20973,7 @@ components:
           - MATERNAL_VACCINATION
           - MONOCLONAL_ANTIBODY
           - OTHER
+          - NOT_IMMUNIZED
         meansOfImmunizationDetails:
           type: string
           maxLength: 1000000
@@ -20995,6 +21028,14 @@ components:
           maxLength: 36
           minLength: 20
           pattern: "^[0-9a-zA-Z-]*$"
+        vaccinationInfoSource:
+          type: string
+          enum:
+          - VACCINATION_REGISTRY
+          - VACCINATION_CARD
+          - ORAL_COMMUNICATION
+          - NO_EVIDENCE
+          - UNKNOWN
         vaccinations:
           type: array
           items:
@@ -21131,6 +21172,7 @@ components:
           - MATERNAL_VACCINATION
           - MONOCLONAL_ANTIBODY
           - OTHER
+          - NOT_IMMUNIZED
         otherDeletionReason:
           type: string
         personFirstName:
@@ -29941,6 +29983,7 @@ components:
         vaccinationInfoSource:
           type: string
           enum:
+          - VACCINATION_REGISTRY
           - VACCINATION_CARD
           - ORAL_COMMUNICATION
           - NO_EVIDENCE
