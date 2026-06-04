@@ -3193,11 +3193,11 @@ public class SymptomsDto extends PseudonymizableDto {
 		SHIGELLOSIS })
 	private SymptomState haemolyticUremicSyndrome;
 
+	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
+	@Diseases(value = {
+		SHIGELLOSIS })
 	@Complication({
 		SHIGELLOSIS })
-	@Diseases({
-		SHIGELLOSIS })
-	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
 	private SymptomState bloodyDiarrhea;
 
 	@Order(0)

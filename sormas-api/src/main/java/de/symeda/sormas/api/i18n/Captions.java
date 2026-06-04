@@ -3116,7 +3116,7 @@ public interface Captions {
 	String Symptoms_glasgowComaScale = "Symptoms.glasgowComaScale";
 	String Symptoms_guillainBarreSyndrome = "Symptoms.guillainBarreSyndrome";
 	String Symptoms_gumsBleeding = "Symptoms.gumsBleeding";
-	String Symptoms_haemolyticuremicsyndrome = "Symptoms.haemolyticuremicsyndrome";
+	String Symptoms_haemolyticUremicSyndrome = "Symptoms.haemolyticUremicSyndrome";
 	String Symptoms_headache = "Symptoms.headache";
 	String Symptoms_hearingloss = "Symptoms.hearingloss";
 	String Symptoms_heartRate = "Symptoms.heartRate";
