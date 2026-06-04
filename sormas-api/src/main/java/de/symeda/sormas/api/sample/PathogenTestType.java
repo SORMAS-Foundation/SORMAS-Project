@@ -37,7 +37,8 @@ public enum PathogenTestType {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.DENGUE,
 		Disease.MALARIA,
-		Disease.SALMONELLOSIS }, hide = true)
+		Disease.SALMONELLOSIS,
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@NotSelectableForNewTests
 	ANTIBODY_DETECTION,
@@ -69,7 +70,8 @@ public enum PathogenTestType {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
-		Disease.MALARIA }, hide = true)
+		Disease.MALARIA,
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@NotSelectableForNewTests
 	IGM_SERUM_ANTIBODY,
@@ -80,7 +82,8 @@ public enum PathogenTestType {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
-		Disease.MALARIA }, hide = true)
+		Disease.MALARIA,
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@NotSelectableForNewTests
 	IGG_SERUM_ANTIBODY,
@@ -94,7 +97,8 @@ public enum PathogenTestType {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.DENGUE,
 		Disease.MALARIA,
-		Disease.SALMONELLOSIS }, hide = true)
+		Disease.SALMONELLOSIS,
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@NotSelectableForNewTests
 	IGA_SERUM_ANTIBODY,
@@ -109,7 +113,8 @@ public enum PathogenTestType {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.DENGUE,
 		Disease.MALARIA,
-		Disease.SALMONELLOSIS }, hide = true)
+		Disease.SALMONELLOSIS,
+		Disease.SHIGELLOSIS }, hide = true)
 	@NotSelectableForNewTests
 	INCUBATION_TIME,
 
@@ -119,7 +124,8 @@ public enum PathogenTestType {
 		Disease.MEASLES,
 		Disease.DENGUE,
 		Disease.MALARIA,
-		Disease.SALMONELLOSIS }, hide = true)
+		Disease.SALMONELLOSIS,
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@NotSelectableForNewTests
 	MICROSCOPY,
@@ -133,7 +139,8 @@ public enum PathogenTestType {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.DENGUE,
 		Disease.MALARIA,
-		Disease.SALMONELLOSIS }, hide = true)
+		Disease.SALMONELLOSIS,
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
 	@NotSelectableForNewTests
 	LATEX_AGGLUTINATION,
@@ -147,7 +154,8 @@ public enum PathogenTestType {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.DENGUE,
 		Disease.MALARIA,
-		Disease.SALMONELLOSIS }, hide = true)
+		Disease.SALMONELLOSIS,
+		Disease.SHIGELLOSIS }, hide = true)
 	@NotSelectableForNewTests
 	CQ_VALUE_DETECTION,
 
@@ -231,7 +239,8 @@ public enum PathogenTestType {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.DENGUE,
 		Disease.MALARIA,
-		Disease.SALMONELLOSIS }, hide = true)
+		Disease.SALMONELLOSIS,
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	TMA,
@@ -251,7 +260,8 @@ public enum PathogenTestType {
 	@Diseases(value = {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.SHIGELLOSIS })
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	WHOLE_GENOME_SEQUENCING,
@@ -265,13 +275,15 @@ public enum PathogenTestType {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.DENGUE,
 		Disease.MALARIA,
-		Disease.SALMONELLOSIS }, hide = true)
+		Disease.SALMONELLOSIS,
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	DNA_MICROARRAY,
 
 	@Diseases(value = {
-		Disease.DENGUE })
+		Disease.DENGUE,
+		Disease.SHIGELLOSIS })
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -315,7 +327,8 @@ public enum PathogenTestType {
 
 	@Diseases(value = {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.SHIGELLOSIS })
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	SEROGROUPING,
@@ -373,7 +386,8 @@ public enum PathogenTestType {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
-		Disease.SALMONELLOSIS }, hide = true)
+		Disease.SALMONELLOSIS,
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	NEUTRALIZING_ANTIBODIES,
@@ -427,7 +441,8 @@ public enum PathogenTestType {
 
 	@Diseases(value = {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.SHIGELLOSIS })
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	SLIDE_AGGLUTINATION,
@@ -478,7 +493,8 @@ public enum PathogenTestType {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.DENGUE,
 		Disease.MALARIA,
-		Disease.SALMONELLOSIS }, hide = true)
+		Disease.SALMONELLOSIS,
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	GRAM_STAIN,
@@ -506,7 +522,8 @@ public enum PathogenTestType {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.DENGUE,
 		Disease.MALARIA,
-		Disease.SALMONELLOSIS }, hide = true)
+		Disease.SALMONELLOSIS,
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	HISTOPATHOLOGY,
@@ -556,7 +573,8 @@ public enum PathogenTestType {
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.SHIGELLOSIS })
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIMICROBIAL_SUSCEPTIBILITY_TESTING)
 	ANTIBIOTIC_SUSCEPTIBILITY,
 

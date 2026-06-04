@@ -16231,6 +16231,60 @@ LANGUAGE plpgsql;
 
 INSERT INTO schema_version (version_number, comment) VALUES (635, '#13377 Immunization Luxembourg: status cleanup, numberOfDoses, informationReliability');
 
+
+-- 2026-05-20 Shigellosis disease configuration (Luxembourg) #13926
+ALTER TABLE diseaseconfiguration    ADD COLUMN IF NOT EXISTS iscontagious boolean default false;
+ALTER TABLE diseaseconfiguration    ADD COLUMN IF NOT EXISTS mincontagiousperiod integer;
+ALTER TABLE diseaseconfiguration    ADD COLUMN IF NOT EXISTS maxcontagiousperiod integer;
+ALTER TABLE healthconditions        ADD COLUMN IF NOT EXISTS undermedication varchar(255);
+ALTER TABLE healthconditions        ADD COLUMN IF NOT EXISTS medicationdetails varchar(255);
+ALTER TABLE symptoms                ADD COLUMN IF NOT EXISTS haemolyticuremicsyndrome varchar(255);
+ALTER TABLE symptoms                ADD COLUMN IF NOT EXISTS tenesmus varchar(255);
+ALTER TABLE drugsusceptibility      ADD COLUMN IF NOT EXISTS azithromycinmic numeric;
+ALTER TABLE drugsusceptibility      ADD COLUMN IF NOT EXISTS azithromycinsusceptibility varchar(255);
+ALTER TABLE drugsusceptibility      ADD COLUMN IF NOT EXISTS ceftazidimemic numeric;
+ALTER TABLE drugsusceptibility      ADD COLUMN IF NOT EXISTS ceftazidimesusceptibility varchar(255);
+ALTER TABLE drugsusceptibility      ADD COLUMN IF NOT EXISTS cefotaximemic numeric;
+ALTER TABLE drugsusceptibility      ADD COLUMN IF NOT EXISTS cefotaximesusceptibility varchar(255);
+ALTER TABLE drugsusceptibility      ADD COLUMN IF NOT EXISTS ampicillinmic numeric;
+ALTER TABLE drugsusceptibility      ADD COLUMN IF NOT EXISTS ampicillinsusceptibility varchar(255);
+ALTER TABLE drugsusceptibility      ADD COLUMN IF NOT EXISTS trimethoprimsulfamethoxazolemic numeric;
+ALTER TABLE drugsusceptibility      ADD COLUMN IF NOT EXISTS trimethoprimsulfamethoxazolesusceptibility varchar(255);
+ALTER TABLE epidata                 DROP COLUMN IF EXISTS activityascasefromdate;
+ALTER TABLE epidata                 DROP COLUMN IF EXISTS activityascasetodate;
+ALTER TABLE epidata                 DROP COLUMN IF EXISTS exposureinvestigationtodate;
+ALTER TABLE epidata                 DROP COLUMN IF EXISTS exposureinvestigationfromdate;
+ALTER TABLE symptoms                ADD COLUMN IF NOT EXISTS bloodydiarrhea varchar(255);
+ALTER TABLE healthconditions        ADD COLUMN IF NOT EXISTS chronicdisease varchar(255);
+ALTER TABLE healthconditions        ADD COLUMN IF NOT EXISTS chronicdiseasedetails varchar(255);
+
+ALTER TABLE diseaseconfiguration_history    ADD COLUMN IF NOT EXISTS iscontagious boolean default false;
+ALTER TABLE diseaseconfiguration_history    ADD COLUMN IF NOT EXISTS mincontagiousperiod integer;
+ALTER TABLE diseaseconfiguration_history    ADD COLUMN IF NOT EXISTS maxcontagiousperiod integer;
+ALTER TABLE healthconditions_history        ADD COLUMN IF NOT EXISTS undermedication varchar(255);
+ALTER TABLE healthconditions_history        ADD COLUMN IF NOT EXISTS medicationdetails varchar(255);
+ALTER TABLE symptoms_history                ADD COLUMN IF NOT EXISTS haemolyticuremicsyndrome varchar(255);
+ALTER TABLE symptoms_history                ADD COLUMN IF NOT EXISTS tenesmus varchar(255);
+ALTER TABLE drugsusceptibility_history      ADD COLUMN IF NOT EXISTS azithromycinmic numeric;
+ALTER TABLE drugsusceptibility_history      ADD COLUMN IF NOT EXISTS azithromycinsusceptibility varchar(255);
+ALTER TABLE drugsusceptibility_history      ADD COLUMN IF NOT EXISTS ceftazidimemic numeric;
+ALTER TABLE drugsusceptibility_history      ADD COLUMN IF NOT EXISTS ceftazidimesusceptibility varchar(255);
+ALTER TABLE drugsusceptibility_history      ADD COLUMN IF NOT EXISTS cefotaximemic numeric;
+ALTER TABLE drugsusceptibility_history      ADD COLUMN IF NOT EXISTS cefotaximesusceptibility varchar(255);
+ALTER TABLE drugsusceptibility_history      ADD COLUMN IF NOT EXISTS ampicillinmic numeric;
+ALTER TABLE drugsusceptibility_history      ADD COLUMN IF NOT EXISTS ampicillinsusceptibility varchar(255);
+ALTER TABLE drugsusceptibility_history      ADD COLUMN IF NOT EXISTS trimethoprimsulfamethoxazolemic numeric;
+ALTER TABLE drugsusceptibility_history      ADD COLUMN IF NOT EXISTS trimethoprimsulfamethoxazolesusceptibility varchar(255);
+ALTER TABLE epidata_history                 DROP COLUMN IF EXISTS activityascasefromdate;
+ALTER TABLE epidata_history                 DROP COLUMN IF EXISTS activityascasetodate;
+ALTER TABLE epidata_history                 DROP COLUMN IF EXISTS exposureinvestigationtodate;
+ALTER TABLE epidata_history                 DROP COLUMN IF EXISTS exposureinvestigationfromdate;
+ALTER TABLE symptoms_history                ADD COLUMN IF NOT EXISTS bloodydiarrhea varchar(255);
+ALTER TABLE healthconditions_history        ADD COLUMN IF NOT EXISTS chronicdisease varchar(255);
+ALTER TABLE healthconditions_history        ADD COLUMN IF NOT EXISTS chronicdiseasedetails varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (636, '#13926 - Shigellosis incorporation to SORMAS');
+
 -- 2026-06-01 Quantitative pathogen test results: generic value/unit/text/boolean + smear grade + Western Blot interpretation #13948 (issue #13952)
 alter table pathogentest add column IF NOT EXISTS quantitativevalue real;
 alter table pathogentest add column IF NOT EXISTS quantitativeunit varchar(255);
@@ -16246,6 +16300,6 @@ alter table pathogentest_history add column IF NOT EXISTS quantitativeboolean va
 alter table pathogentest_history add column IF NOT EXISTS smeargrade varchar(255);
 alter table pathogentest_history add column IF NOT EXISTS westernblotinterpretation varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (636, 'Quantitative pathogen test results: value/unit/text/boolean, smear grade, Western Blot interpretation #13948');
+INSERT INTO schema_version (version_number, comment) VALUES (637, 'Quantitative pathogen test results: value/unit/text/boolean, smear grade, Western Blot interpretation #13948');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

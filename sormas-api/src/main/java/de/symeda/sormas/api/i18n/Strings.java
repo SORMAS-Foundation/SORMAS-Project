@@ -915,6 +915,7 @@ public interface Strings {
 	String headingTemplateNotAvailable = "headingTemplateNotAvailable";
 	String headingTests = "headingTests";
 	String headingTransferCase = "headingTransferCase";
+	String headingTransmissibilityPeriod = "headingTransmissibilityPeriod";
 	String headingTravelEntriesDeleted = "headingTravelEntriesDeleted";
 	String headingTravelEntriesNotDeleted = "headingTravelEntriesNotDeleted";
 	String headingTravelEntriesNotRestored = "headingTravelEntriesNotRestored";
@@ -1958,6 +1959,7 @@ public interface Strings {
 	String promptUserSearch = "promptUserSearch";
 	String promptZoneDiameter = "promptZoneDiameter";
 	String promtSampleDataType = "promtSampleDataType";
+	String prophylaxisStatus = "prophylaxisStatus";
 	String pseudonymizedCasesSelectedWarning = "pseudonymizedCasesSelectedWarning";
 	String pseudonymizedEntitiesSelectedWarning = "pseudonymizedEntitiesSelectedWarning";
 	String quarantineEnd = "quarantineEnd";
@@ -1973,6 +1975,8 @@ public interface Strings {
 	String text = "text";
 	String toCase = "toCase";
 	String total = "total";
+	String transmissionEndDate = "transmissionEndDate";
+	String transmissionStartDate = "transmissionStartDate";
 	String unexpectedErrorSormasToSormasAccept = "unexpectedErrorSormasToSormasAccept";
 	String unsavedChanges_cancel = "unsavedChanges.cancel";
 	String unsavedChanges_discard = "unsavedChanges.discard";

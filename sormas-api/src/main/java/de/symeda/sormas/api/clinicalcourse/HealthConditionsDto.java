@@ -60,6 +60,10 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	public static final String VACCINATED_AGAINST_MOSQUITO_BORNE_VIRUSES = "vaccinatedAgainstMosquitoBorneViruses";
 	public static final String MALARIA = "malaria";
 	public static final String MALARIA_INFECTED_YEAR = "malariaInfectedYear";
+	public static final String UNDER_MEDICATION = "underMedication";
+	public static final String MEDICATION_DETAILS = "medicationDetails";
+	public static final String CHRONIC_DISEASE = "chronicDisease";
+	public static final String CHRONIC_DISEASE_DETAILS = "chronicDiseaseDetails";
 
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
@@ -68,6 +72,8 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	private YesNoUnknown asplenia;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
@@ -82,6 +88,8 @@ public class HealthConditionsDto extends PseudonymizableDto {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
 	private YesNoUnknown hivArt;
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	private YesNoUnknown chronicLiverDisease;
 	private YesNoUnknown malignancyChemotherapy;
 
@@ -89,13 +97,23 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	private YesNoUnknown chronicHeartFailure;
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	private YesNoUnknown chronicPulmonaryDisease;
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	private YesNoUnknown chronicKidneyDisease;
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	private YesNoUnknown chronicNeurologicCondition;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	private YesNoUnknown downSyndrome;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
@@ -181,6 +199,18 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	@Diseases(value = {
 		Disease.MALARIA })
 	private Integer malariaInfectedYear;
+	@Diseases(value = {
+		Disease.SHIGELLOSIS })
+	private YesNoUnknown underMedication;
+	@Diseases(value = {
+		Disease.SHIGELLOSIS })
+	private String medicationDetails;
+	@Diseases(value = {
+		Disease.SHIGELLOSIS })
+	private YesNoUnknown chronicDisease;
+	@Diseases(value = {
+		Disease.SHIGELLOSIS })
+	private String chronicDiseaseDetails;
 
 	public static HealthConditionsDto build() {
 		HealthConditionsDto healthConditions = new HealthConditionsDto();
@@ -475,4 +505,37 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	public void setMalariaInfectedYear(Integer malariaInfectedYear) {
 		this.malariaInfectedYear = malariaInfectedYear;
 	}
+
+	public YesNoUnknown getUnderMedication() {
+		return underMedication;
+	}
+
+	public void setUnderMedication(YesNoUnknown underMedication) {
+		this.underMedication = underMedication;
+	}
+
+	public String getMedicationDetails() {
+		return medicationDetails;
+	}
+
+	public void setMedicationDetails(String medicationDetails) {
+		this.medicationDetails = medicationDetails;
+	}
+
+	public YesNoUnknown getChronicDisease() {
+		return chronicDisease;
+	}
+
+	public void setChronicDisease(YesNoUnknown chronicDisease) {
+		this.chronicDisease = chronicDisease;
+	}
+
+	public String getChronicDiseaseDetails() {
+		return chronicDiseaseDetails;
+	}
+
+	public void setChronicDiseaseDetails(String chronicDiseaseDetails) {
+		this.chronicDiseaseDetails = chronicDiseaseDetails;
+	}
+
 }

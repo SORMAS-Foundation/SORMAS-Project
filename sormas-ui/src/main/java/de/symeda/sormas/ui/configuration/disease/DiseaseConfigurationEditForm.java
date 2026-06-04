@@ -54,8 +54,8 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 			+ fluidRowLocs(DiseaseConfigurationDto.EXTENDED_CLASSIFICATION, DiseaseConfigurationDto.EXTENDED_CLASSIFICATION_MULTI, DiseaseConfigurationDto.AUTOMATIC_SAMPLE_ASSIGNMENT_THRESHOLD)
 			+ fluidRowLocsCss(CssStyles.VSPACE_3, DiseaseConfigurationDto.FOLLOW_UP_ENABLED)
 			+ fluidRowLocsCss(CssStyles.VSPACE_3,DiseaseConfigurationDto.FOLLOW_UP_DURATION,DiseaseConfigurationDto.CASE_FOLLOW_UP_DURATION,DiseaseConfigurationDto.EVENT_PARTICIPANT_FOLLOW_UP_DURATION)
-			+ fluidRowLocsCss(CssStyles.VSPACE_3, DiseaseConfigurationDto.INCUBATION_PERIOD_ENABLED)
-			+ fluidRowLocsCss(CssStyles.VSPACE_3, DiseaseConfigurationDto.MIN_INCUBATION_PERIOD, DiseaseConfigurationDto.MAX_INCUBATION_PERIOD,"")
+			+ fluidRowLocsCss(CssStyles.VSPACE_5, DiseaseConfigurationDto.INCUBATION_PERIOD_ENABLED,DiseaseConfigurationDto.IS_CONTAGIOUS)
+			+ fluidRowLocsCss(CssStyles.VSPACE_1, DiseaseConfigurationDto.MIN_INCUBATION_PERIOD, DiseaseConfigurationDto.MAX_INCUBATION_PERIOD,DiseaseConfigurationDto.MIN_CONTAGIOUS_PERIOD, DiseaseConfigurationDto.MAX_CONTAGIOUS_PERIOD)
 			+ fluidRowLocs(DiseaseConfigurationDto.EXPOSURE_CATEGORIES);
 	//@formatter:on
 	public static final String MAIN_ACCORDION_LOC = "mainAccordionLoc";
@@ -74,6 +74,9 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 	private CheckBox cbExtendedClassification;
 	private CheckBox cbExtendedClassificationMulti;
 	private TextField tfAutomaticSampleAssignmentThreshold;
+	private CheckBox cbIsContagious;
+	private TextField tfMinContagiousPeriod;
+	private TextField tfMaxContagiousPeriod;
 
 	private CheckboxSet<ExposureCategory> exposureCategoriesField;
 
@@ -121,6 +124,10 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 		cbExtendedClassification = addField(generalLayout, DiseaseConfigurationDto.EXTENDED_CLASSIFICATION, CheckBox.class);
 		cbExtendedClassificationMulti = addField(generalLayout, DiseaseConfigurationDto.EXTENDED_CLASSIFICATION_MULTI, CheckBox.class);
 
+		cbIsContagious = addField(generalLayout, DiseaseConfigurationDto.IS_CONTAGIOUS, CheckBox.class);
+		tfMinContagiousPeriod = addField(generalLayout, DiseaseConfigurationDto.MIN_CONTAGIOUS_PERIOD, TextField.class);
+		tfMaxContagiousPeriod = addField(generalLayout, DiseaseConfigurationDto.MAX_CONTAGIOUS_PERIOD, TextField.class);
+
 		exposureCategoriesField = addField(generalLayout, DiseaseConfigurationDto.EXPOSURE_CATEGORIES, CheckboxSet.class);
 		exposureCategoriesField.setColumnCount(3);
 		exposureCategoriesField.setItems(Arrays.asList(ExposureCategory.values()), null, null);
@@ -157,6 +164,7 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 			Arrays.asList(tfMaxIncubationPeriod, tfMinIncubationPeriod),
 			Arrays.asList(Boolean.TRUE),
 			true);
+		FieldHelper.setVisibleWhen(cbIsContagious, Arrays.asList(tfMaxContagiousPeriod, tfMinContagiousPeriod), Arrays.asList(Boolean.TRUE), true);
 		FieldHelper.setVisibleWhen(
 			cbCaseSurveillance,
 			Arrays.asList(
@@ -164,7 +172,8 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 				cbIncubationPeriodEnabled,
 				cbExtendedClassification,
 				cbExtendedClassificationMulti,
-				tfAutomaticSampleAssignmentThreshold),
+				tfAutomaticSampleAssignmentThreshold,
+				cbIsContagious),
 			Arrays.asList(Boolean.TRUE),
 			true);
 	}

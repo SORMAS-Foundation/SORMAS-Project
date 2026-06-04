@@ -68,6 +68,10 @@ public class HealthConditionsMapper {
 		target.setImmunodeficiencyOtherThanHivText(source.getImmunodeficiencyOtherThanHivText());
 		target.setMalaria(source.getMalaria());
 		target.setMalariaInfectedYear(source.getMalariaInfectedYear());
+		target.setUnderMedication(source.getUnderMedication());
+		target.setMedicationDetails(source.getMedicationDetails());
+		target.setChronicDisease(source.getChronicDisease());
+		target.setChronicDiseaseDetails(source.getChronicDiseaseDetails());
 		return target;
 	}
 
@@ -111,6 +115,10 @@ public class HealthConditionsMapper {
 		target.setImmunodeficiencyOtherThanHivText(source.getImmunodeficiencyOtherThanHivText());
 		target.setMalaria(source.getMalaria());
 		target.setMalariaInfectedYear(source.getMalariaInfectedYear());
+		target.setUnderMedication(source.getUnderMedication());
+		target.setMedicationDetails(source.getMedicationDetails());
+		target.setChronicDisease(source.getChronicDisease());
+		target.setChronicDiseaseDetails(source.getChronicDiseaseDetails());
 		return target;
 	}
 }

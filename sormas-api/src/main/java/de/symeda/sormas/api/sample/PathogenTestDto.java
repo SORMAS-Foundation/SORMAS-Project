@@ -245,12 +245,14 @@ public class PathogenTestDto extends PseudonymizableDto {
 	@SensitiveData
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	@Diseases(value = {
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.SHIGELLOSIS })
 	private String seroTypingMethodText;
 	@SensitiveData
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	@Diseases(value = {
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.SHIGELLOSIS })
 	private SerotypingMethod seroTypingMethod;
 
 	@SensitiveData

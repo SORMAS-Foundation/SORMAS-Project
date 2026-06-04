@@ -120,6 +120,17 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 	public static final String ERYTHROMYCIN_ZONE_DIAMETER = "erythromycinZoneDiameter";
 	public static final String ERYTHROMYCIN_SURVEILLANCE = "erythromycinSurveillance";
 
+	public static final String AZITHROMYCIN_MIC = "azithromycinMic";
+	public static final String AZITHROMYCIN_SUSCEPTIBILITY = "azithromycinSusceptibility";
+	public static final String CEFTAZIDIME_MIC = "ceftazidimeMic";
+	public static final String CEFTAZIDIME_SUSCEPTIBILITY = "ceftazidimeSusceptibility";
+	public static final String CEFOTAXIME_MIC = "cefotaximeMic";
+	public static final String CEFOTAXIME_SUSCEPTIBILITY = "cefotaximeSusceptibility";
+	public static final String AMPICILLIN_MIC = "ampicillinMic";
+	public static final String AMPICILLIN_SUSCEPTIBILITY = "ampicillinSusceptibility";
+	public static final String TRIMETHOPRIM_SULFAMETHOXAZOLE_MIC = "trimethoprimSulfamethoxazoleMic";
+	public static final String TRIMETHOPRIM_SULFAMETHOXAZOLE_SUSCEPTIBILITY = "trimethoprimSulfamethoxazoleSusceptibility";
+
 	@Diseases(value = {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
@@ -152,13 +163,15 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 	private DrugSusceptibilityType capreomycinSusceptibility;
 	@Diseases(value = {
 		Disease.TUBERCULOSIS,
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION })
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.SHIGELLOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private Float ciprofloxacinMic;
 	@Diseases(value = {
 		Disease.TUBERCULOSIS,
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION })
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.SHIGELLOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private DrugSusceptibilityType ciprofloxacinSusceptibility;
@@ -267,13 +280,15 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 
 	@Diseases(value = {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.SHIGELLOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private Float ceftriaxoneMic;
 	@Diseases(value = {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.SHIGELLOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private DrugSusceptibilityType ceftriaxoneSusceptibility;
@@ -569,6 +584,58 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private SusceptibilitySurveillanceType erythromycinSurveillance;
+
+	@Diseases(value = {
+		Disease.SHIGELLOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+	private Float azithromycinMic;
+	@Diseases(value = {
+		Disease.SHIGELLOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+	private DrugSusceptibilityType azithromycinSusceptibility;
+	@Diseases(value = {
+		Disease.SHIGELLOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+	private Float ceftazidimeMic;
+	@Diseases(value = {
+		Disease.SHIGELLOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+	private DrugSusceptibilityType ceftazidimeSusceptibility;
+
+	@Diseases(value = {
+		Disease.SHIGELLOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+	private Float cefotaximeMic;
+	@Diseases(value = {
+		Disease.SHIGELLOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+	private DrugSusceptibilityType cefotaximeSusceptibility;
+	@Diseases(value = {
+		Disease.SHIGELLOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+	private Float ampicillinMic;
+	@Diseases(value = {
+		Disease.SHIGELLOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+	private DrugSusceptibilityType ampicillinSusceptibility;
+	@Diseases(value = {
+		Disease.SHIGELLOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+	private Float trimethoprimSulfamethoxazoleMic;
+	@Diseases(value = {
+		Disease.SHIGELLOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+	private DrugSusceptibilityType trimethoprimSulfamethoxazoleSusceptibility;
 
 	public static DrugSusceptibilityDto build() {
 		DrugSusceptibilityDto drugSusceptibility = new DrugSusceptibilityDto();
@@ -1255,4 +1322,85 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 	public void setErythromycinSurveillance(SusceptibilitySurveillanceType erythromycinSurveillance) {
 		this.erythromycinSurveillance = erythromycinSurveillance;
 	}
+
+	public Float getAzithromycinMic() {
+		return azithromycinMic;
+	}
+
+	public void setAzithromycinMic(Float azithromycinMic) {
+		this.azithromycinMic = azithromycinMic;
+	}
+
+	public DrugSusceptibilityType getAzithromycinSusceptibility() {
+		return azithromycinSusceptibility;
+	}
+
+	public void setAzithromycinSusceptibility(DrugSusceptibilityType azithromycinSusceptibility) {
+		this.azithromycinSusceptibility = azithromycinSusceptibility;
+	}
+
+	public Float getCeftazidimeMic() {
+		return ceftazidimeMic;
+	}
+
+	public void setCeftazidimeMic(Float ceftazidimeMic) {
+		this.ceftazidimeMic = ceftazidimeMic;
+	}
+
+	public DrugSusceptibilityType getCeftazidimeSusceptibility() {
+		return ceftazidimeSusceptibility;
+	}
+
+	public void setCeftazidimeSusceptibility(DrugSusceptibilityType ceftazidimeSusceptibility) {
+		this.ceftazidimeSusceptibility = ceftazidimeSusceptibility;
+	}
+
+	public Float getCefotaximeMic() {
+		return cefotaximeMic;
+	}
+
+	public void setCefotaximeMic(Float cefotaximeMic) {
+		this.cefotaximeMic = cefotaximeMic;
+	}
+
+	public DrugSusceptibilityType getCefotaximeSusceptibility() {
+		return cefotaximeSusceptibility;
+	}
+
+	public void setCefotaximeSusceptibility(DrugSusceptibilityType cefotaximeSusceptibility) {
+		this.cefotaximeSusceptibility = cefotaximeSusceptibility;
+	}
+
+	public Float getAmpicillinMic() {
+		return ampicillinMic;
+	}
+
+	public void setAmpicillinMic(Float ampicillinMic) {
+		this.ampicillinMic = ampicillinMic;
+	}
+
+	public DrugSusceptibilityType getAmpicillinSusceptibility() {
+		return ampicillinSusceptibility;
+	}
+
+	public void setAmpicillinSusceptibility(DrugSusceptibilityType ampicillinSusceptibility) {
+		this.ampicillinSusceptibility = ampicillinSusceptibility;
+	}
+
+	public Float getTrimethoprimSulfamethoxazoleMic() {
+		return trimethoprimSulfamethoxazoleMic;
+	}
+
+	public void setTrimethoprimSulfamethoxazoleMic(Float trimethoprimSulfamethoxazoleMic) {
+		this.trimethoprimSulfamethoxazoleMic = trimethoprimSulfamethoxazoleMic;
+	}
+
+	public DrugSusceptibilityType getTrimethoprimSulfamethoxazoleSusceptibility() {
+		return trimethoprimSulfamethoxazoleSusceptibility;
+	}
+
+	public void setTrimethoprimSulfamethoxazoleSusceptibility(DrugSusceptibilityType trimethoprimSulfamethoxazoleSusceptibility) {
+		this.trimethoprimSulfamethoxazoleSusceptibility = trimethoprimSulfamethoxazoleSusceptibility;
+	}
+
 }

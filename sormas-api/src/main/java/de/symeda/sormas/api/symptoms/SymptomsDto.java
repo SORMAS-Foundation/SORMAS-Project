@@ -76,6 +76,7 @@ import static de.symeda.sormas.api.Disease.RHINOVIRUS;
 import static de.symeda.sormas.api.Disease.RUBELLA;
 import static de.symeda.sormas.api.Disease.SALMONELLOSIS;
 import static de.symeda.sormas.api.Disease.SCHISTOSOMIASIS;
+import static de.symeda.sormas.api.Disease.SHIGELLOSIS;
 import static de.symeda.sormas.api.Disease.SNAKE_BITE;
 import static de.symeda.sormas.api.Disease.SOIL_TRANSMITTED_HELMINTHS;
 import static de.symeda.sormas.api.Disease.TRACHOMA;
@@ -385,6 +386,9 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String OTHER_NEUROLOCAL_SYMPTOM = "otherNeurolocalSymptom";
 	public static final String OTHER_NEUROLOCAL_SYMPTOM_TEXT = "otherNeurolocalSymptomText";
 	public static final String FATAL_RISK = "fatalRisk";
+	public static final String TENESMUS = "tenesmus";
+	public static final String BLOODY_DIARRHEA = "bloodyDiarrhea";
+	public static final String HAEMOLYTIC_UREMIC_SYNDROME = "haemolyticUremicSyndrome";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -413,6 +417,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		SALMONELLOSIS,
 		UNDEFINED,
 		DENGUE,
+		SHIGELLOSIS,
 		OTHER })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
@@ -699,10 +704,13 @@ public class SymptomsDto extends PseudonymizableDto {
 		GIARDIASIS,
 		CRYPTOSPORIDIOSIS,
 		SALMONELLOSIS,
+		SHIGELLOSIS,
 		UNDEFINED,
 		OTHER })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.GENERAL)
+	@Complication({
+		SHIGELLOSIS, })
 	private SymptomState dehydration;
 
 	@Diseases({
@@ -723,6 +731,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CRYPTOSPORIDIOSIS,
 		MALARIA,
 		SALMONELLOSIS,
+		SHIGELLOSIS,
 		UNDEFINED,
 		OTHER })
 	@Complication({
@@ -855,6 +864,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		MALARIA,
 		SALMONELLOSIS,
 		DENGUE,
+		SHIGELLOSIS,
 		OTHER })
 	@Outbreaks
 	@SymptomGrouping(SymptomGroup.GENERAL)
@@ -1462,7 +1472,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		INVASIVE_PNEUMOCOCCAL_INFECTION,
 		PERTUSSIS,
 		GIARDIASIS,
-		CRYPTOSPORIDIOSIS })
+		CRYPTOSPORIDIOSIS,
+		SHIGELLOSIS })
 	@HideForCountries
 	@Outbreaks
 	private Date onsetDate;
@@ -1527,7 +1538,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		INVASIVE_MENINGOCOCCAL_INFECTION,
 		INVASIVE_PNEUMOCOCCAL_INFECTION,
 		FHA,
-		PERTUSSIS })
+		PERTUSSIS,
+		SHIGELLOSIS })
 	@HideForCountries
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String onsetSymptom;
@@ -1922,6 +1934,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		GIARDIASIS,
 		CRYPTOSPORIDIOSIS,
 		MALARIA,
+		SHIGELLOSIS,
 		UNDEFINED,
 		OTHER })
 	@SensitiveData
@@ -2633,11 +2646,14 @@ public class SymptomsDto extends PseudonymizableDto {
 		RABIES,
 		CORONAVIRUS,
 		MALARIA,
+		SHIGELLOSIS,
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
+	@Complication({
+		SHIGELLOSIS })
 	private SymptomState seizures;
 
 	@Diseases({
@@ -2650,11 +2666,14 @@ public class SymptomsDto extends PseudonymizableDto {
 		CHOLERA,
 		MEASLES,
 		POLIO,
+		SHIGELLOSIS,
 		UNSPECIFIED_VHF,
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
-
+	@Complication({
+		SHIGELLOSIS })
+	@SymptomGrouping(SymptomGroup.GENERAL)
 	@HideForCountries
 	private SymptomState sepsis;
 
@@ -2795,7 +2814,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		CRYPTOSPORIDIOSIS,
 		RESPIRATORY_SYNCYTIAL_VIRUS,
 		MALARIA,
-		DENGUE })
+		DENGUE,
+		SHIGELLOSIS })
 	private SymptomState asymptomatic;
 	@Diseases({
 		INVASIVE_MENINGOCOCCAL_INFECTION })
@@ -2824,7 +2844,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		GIARDIASIS,
 		CRYPTOSPORIDIOSIS,
 		MALARIA,
-		DENGUE })
+		DENGUE,
+		SHIGELLOSIS })
 	@SymptomGrouping(SymptomGroup.OTHER)
 	private SymptomState otherClinicalPresentation;
 
@@ -2835,7 +2856,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		GIARDIASIS,
 		CRYPTOSPORIDIOSIS,
 		MALARIA,
-		DENGUE })
+		DENGUE,
+		SHIGELLOSIS })
 	@SymptomGrouping(SymptomGroup.OTHER)
 	private String otherClinicalPresentationText;
 
@@ -2906,7 +2928,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		GIARDIASIS,
 		CRYPTOSPORIDIOSIS,
 		MALARIA,
-		DENGUE })
+		DENGUE,
+		SHIGELLOSIS })
 	private SymptomState symptomCurrentStatus;
 
 	@Diseases({
@@ -3106,7 +3129,8 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	@Diseases({
 		MALARIA,
-		DENGUE })
+		DENGUE,
+		SHIGELLOSIS })
 	@Outbreaks
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
@@ -3157,6 +3181,24 @@ public class SymptomsDto extends PseudonymizableDto {
 		DENGUE })
 	// mCComplicationsPotentiellementMortelles to map the life threatening complications of dengue
 	private SymptomState fatalRisk;
+
+	@Diseases({
+		SHIGELLOSIS })
+	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
+	private SymptomState tenesmus;
+	@Diseases({
+		SHIGELLOSIS })
+	@SymptomGrouping(SymptomGroup.GENERAL)
+	@Complication({
+		SHIGELLOSIS })
+	private SymptomState haemolyticUremicSyndrome;
+
+	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
+	@Diseases(value = {
+		SHIGELLOSIS })
+	@Complication({
+		SHIGELLOSIS })
+	private SymptomState bloodyDiarrhea;
 
 	@Order(0)
 	public Float getTemperature() {
@@ -5342,4 +5384,29 @@ public class SymptomsDto extends PseudonymizableDto {
 	public void setAbdominalCramps(SymptomState abdominalCramps) {
 		this.abdominalCramps = abdominalCramps;
 	}
+
+	public SymptomState getTenesmus() {
+		return tenesmus;
+	}
+
+	public void setTenesmus(SymptomState tenesmus) {
+		this.tenesmus = tenesmus;
+	}
+
+	public SymptomState getHaemolyticUremicSyndrome() {
+		return haemolyticUremicSyndrome;
+	}
+
+	public void setHaemolyticUremicSyndrome(SymptomState haemolyticUremicSyndrome) {
+		this.haemolyticUremicSyndrome = haemolyticUremicSyndrome;
+	}
+
+	public SymptomState getBloodyDiarrhea() {
+		return bloodyDiarrhea;
+	}
+
+	public void setBloodyDiarrhea(SymptomState bloodyDiarrhea) {
+		this.bloodyDiarrhea = bloodyDiarrhea;
+	}
+
 }

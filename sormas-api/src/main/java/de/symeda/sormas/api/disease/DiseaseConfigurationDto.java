@@ -26,6 +26,9 @@ public class DiseaseConfigurationDto extends EntityDto {
 	public static final String MAX_INCUBATION_PERIOD = "maxIncubationPeriod";
 	public static final String MIN_INCUBATION_PERIOD = "minIncubationPeriod";
 	public static final String CASE_DEFINITION_TEXT = "caseDefinitionText";
+	public static final String IS_CONTAGIOUS = "isContagious";
+	public static final String MIN_CONTAGIOUS_PERIOD = "minContagiousPeriod";
+	public static final String MAX_CONTAGIOUS_PERIOD = "maxContagiousPeriod";
 	public static final String EXTENDED_CLASSIFICATION = "extendedClassification";
 	public static final String EXTENDED_CLASSIFICATION_MULTI = "extendedClassificationMulti";
 	public static final String AGE_GROUPS = "ageGroups";
@@ -45,6 +48,9 @@ public class DiseaseConfigurationDto extends EntityDto {
 	private Integer maxIncubationPeriod;
 	private Integer minIncubationPeriod;
 	private String caseDefinitionText;
+	private Boolean isContagious;
+	private Integer minContagiousPeriod;
+	private Integer maxContagiousPeriod;
 	private Boolean extendedClassification;
 	private Boolean extendedClassificationMulti;
 	private List<String> ageGroups;
@@ -195,4 +201,29 @@ public class DiseaseConfigurationDto extends EntityDto {
 	public void setExposureCategories(Set<ExposureCategory> exposureCategories) {
 		this.exposureCategories = exposureCategories;
 	}
+
+	public Boolean getIsContagious() {
+		return isContagious;
+	}
+
+	public void setIsContagious(Boolean isContagious) {
+		this.isContagious = isContagious;
+	}
+
+	public Integer getMinContagiousPeriod() {
+		return minContagiousPeriod;
+	}
+
+	public void setMinContagiousPeriod(Integer minContagiousPeriod) {
+		this.minContagiousPeriod = minContagiousPeriod;
+	}
+
+	public Integer getMaxContagiousPeriod() {
+		return maxContagiousPeriod;
+	}
+
+	public void setMaxContagiousPeriod(Integer maxContagiousPeriod) {
+		this.maxContagiousPeriod = maxContagiousPeriod;
+	}
+
 }

@@ -18,11 +18,7 @@
 package de.symeda.sormas.ui.samples.pathogentestlink;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
@@ -36,11 +32,9 @@ import com.vaadin.ui.Label;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.sample.PathogenSpecie;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
-import de.symeda.sormas.api.sample.Serotype;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
@@ -50,21 +44,7 @@ import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentField;
 public class PathogenTestListEntry extends SideComponentField {
 
 	private final PathogenTestDto pathogenTest;
-	//@formatter:off
-	public static final Map<Disease, List<PathogenTestType>> VARIANT_MAP = Collections.unmodifiableMap(new HashMap<>() {
-		{
-			put(Disease.MALARIA, Collections.unmodifiableList(Arrays.asList(PathogenTestType.THIN_BLOOD_SMEAR, PathogenTestType.RAPID_TEST, PathogenTestType.PCR_RT_PCR,
-					PathogenTestType.Q_PCR, PathogenTestType.LAMP, PathogenTestType.INDIRECT_FLUORESCENT_ANTIBODY, PathogenTestType.OTHER_MOLECULAR_ASSAY,
-					PathogenTestType.OTHER_SEROLOGICAL_TEST, PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST, PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY, PathogenTestType.ANTIGEN_DETECTION)));
-			put(Disease.DENGUE, Collections.unmodifiableList(Arrays.asList(PathogenTestType.NAAT, PathogenTestType.NEUTRALIZING_ANTIBODIES, PathogenTestType.PCR_RT_PCR)));
-			put(Disease.MEASLES, Collections.unmodifiableList(Arrays.asList(PathogenTestType.GENOTYPING)));
-			put(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, Collections.unmodifiableList(Arrays.asList(PathogenTestType.SEROGROUPING, PathogenTestType.MULTILOCUS_SEQUENCE_TYPING,
-					PathogenTestType.SLIDE_AGGLUTINATION,PathogenTestType.WHOLE_GENOME_SEQUENCING, PathogenTestType.SEQUENCING)));
-			put(Disease.TUBERCULOSIS, Collections.unmodifiableList(Arrays.asList(PathogenTestType.MICROSCOPY, PathogenTestType.BEIJINGGENOTYPING,
-							PathogenTestType.SPOLIGOTYPING, PathogenTestType.MIRU_PATTERN_CODE)));
-		}
-	});
-	//@formatter:on
+
 	public PathogenTestListEntry(PathogenTestDto pathogenTest, boolean showTestResultText) {
 
 		this.pathogenTest = pathogenTest;
@@ -140,8 +120,8 @@ public class PathogenTestListEntry extends SideComponentField {
 		boolean suppressResultLabel =
 			pathogenTest.getTestResult() == PathogenTestResultType.NOT_APPLICABLE && (quantitativeResult != null || astWithoutQualitativeResult);
 		if (!suppressResultLabel) {
-			Object resultText = getResultText(pathogenTest, testType);
-			Label labelResult = new Label(DataHelper.toStringNullable(resultText));
+			Object resultText = determineSideComponentVariant(pathogenTest);
+			Label labelResult = new Label(DataHelper.toStringNullable(resultText == null ? pathogenTest.getTestResult() : resultText));
 			CssStyles.style(labelResult, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
 			if (pathogenTest.getTestResult() == PathogenTestResultType.POSITIVE) {
 				CssStyles.style(labelResult, CssStyles.LABEL_CRITICAL);
@@ -174,59 +154,6 @@ public class PathogenTestListEntry extends SideComponentField {
 				addComponentToField(pcrIsoniazidTextLabel);
 			}
 		}
-	}
-
-	private Object getResultText(PathogenTestDto pathogenTest, PathogenTestType testType) {
-		if (testType == null) {
-			return "";
-		}
-		Object resultText = "";
-		if (pathogenTest.getTestedDisease() == Disease.TUBERCULOSIS && VARIANT_MAP.get(pathogenTest.getTestedDisease()).contains(testType)) {
-			if (testType == PathogenTestType.MICROSCOPY) {
-				resultText = StringUtils.abbreviate((pathogenTest.getTestScale() != null ? pathogenTest.getTestScale().toString() : ""), 125);
-			} else if (testType == PathogenTestType.BEIJINGGENOTYPING) {
-				resultText =
-					StringUtils.abbreviate((pathogenTest.getStrainCallStatus() != null ? pathogenTest.getStrainCallStatus().toString() : ""), 125);
-			} else if (testType == PathogenTestType.SPOLIGOTYPING) {
-				resultText = StringUtils.abbreviate((pathogenTest.getSpecie() != null ? pathogenTest.getSpecie().toString() : ""), 125);
-			} else if (testType == PathogenTestType.MIRU_PATTERN_CODE) {
-				resultText = StringUtils.abbreviate(pathogenTest.getPatternProfile(), 125);
-			}
-		} else if (testType == PathogenTestType.GENOTYPING) {
-			resultText = StringUtils.abbreviate((pathogenTest.getGenoType() != null ? pathogenTest.getGenoType().toString() : ""), 125);
-		} else if (pathogenTest.getTestedDisease() == Disease.MALARIA
-			&& VARIANT_MAP.get(pathogenTest.getTestedDisease()).stream().anyMatch(testType::equals)) {
-			// handling other specie
-			if (pathogenTest.getSpecie() == PathogenSpecie.OTHER) {
-				resultText = StringUtils.abbreviate((pathogenTest.getSpecieText() != null ? pathogenTest.getSpecieText().toString() : ""), 125);
-			} else {
-				resultText = StringUtils.abbreviate((pathogenTest.getSpecie() != null ? pathogenTest.getSpecie().toString() : ""), 125);
-			}
-
-		} else if (pathogenTest.getTestedDisease() == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION
-			&& VARIANT_MAP.get(pathogenTest.getTestedDisease()).stream().anyMatch(testType::equals)) {
-			// IPI serotyping stores the serogroup/serotype in the free-text field; show it instead of the plain result
-			if (!DataHelper.isNullOrEmpty(pathogenTest.getSerotypeText())) {
-				resultText = StringUtils.abbreviate(pathogenTest.getSerotypeText(), 125);
-			} else if (pathogenTest.getSerotype() != null) {
-				resultText = StringUtils.abbreviate(pathogenTest.getSerotype().toString(), 125);
-			} else {
-				resultText = pathogenTest.getTestResult();
-			}
-
-		} else if (pathogenTest.getTestedDisease() == Disease.DENGUE
-			&& VARIANT_MAP.get(pathogenTest.getTestedDisease()).stream().anyMatch(testType::equals)) {
-			// handling other serotypes
-			if (pathogenTest.getSerotype() == Serotype.OTHER) {
-				resultText = StringUtils.abbreviate((pathogenTest.getSerotypeText() != null ? pathogenTest.getSerotypeText().toString() : ""), 125);
-			} else {
-				resultText = StringUtils.abbreviate((pathogenTest.getSerotype() != null ? pathogenTest.getSerotype().toString() : ""), 125);
-			}
-
-		} else {
-			resultText = pathogenTest.getTestResult();
-		}
-		return resultText;
 	}
 
 	/**

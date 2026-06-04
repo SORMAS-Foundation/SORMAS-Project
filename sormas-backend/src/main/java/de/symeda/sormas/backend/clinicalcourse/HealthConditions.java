@@ -54,6 +54,11 @@ public class HealthConditions extends AbstractDomainObject {
 
 	private YesNoUnknown recurrentBronchiolitis;
 
+	private YesNoUnknown underMedication;
+	private String medicationDetails;
+	private YesNoUnknown chronicDisease;
+	private String chronicDiseaseDetails;
+
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getTuberculosis() {
 		return tuberculosis;
@@ -338,6 +343,7 @@ public class HealthConditions extends AbstractDomainObject {
 		this.malariaInfectedYear = malariaInfectedYear;
 	}
 
+	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getMalaria() {
 		return malaria;
 	}
@@ -345,4 +351,39 @@ public class HealthConditions extends AbstractDomainObject {
 	public void setMalaria(YesNoUnknown malaria) {
 		this.malaria = malaria;
 	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getUnderMedication() {
+		return underMedication;
+	}
+
+	public void setUnderMedication(YesNoUnknown underMedication) {
+		this.underMedication = underMedication;
+	}
+
+	public String getMedicationDetails() {
+		return medicationDetails;
+	}
+
+	public void setMedicationDetails(String medicationDetails) {
+		this.medicationDetails = medicationDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getChronicDisease() {
+		return chronicDisease;
+	}
+
+	public void setChronicDisease(YesNoUnknown chronicDisease) {
+		this.chronicDisease = chronicDisease;
+	}
+
+	public String getChronicDiseaseDetails() {
+		return chronicDiseaseDetails;
+	}
+
+	public void setChronicDiseaseDetails(String chronicDiseaseDetails) {
+		this.chronicDiseaseDetails = chronicDiseaseDetails;
+	}
+
 }

@@ -38,6 +38,7 @@ public class DiseaseConfigurationFacadeEjbTest extends AbstractBeanTest {
 		assertFalse(diseases.contains(Disease.MALARIA));
 		assertTrue(diseases.contains(Disease.INVASIVE_MENINGOCOCCAL_INFECTION));
 		assertTrue(diseases.contains(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
+		assertTrue(diseases.contains(Disease.SHIGELLOSIS));
 
 		diseases = getDiseaseConfigurationFacade().getAllDiseases(true, false, true);
 		assertFalse(diseases.contains(Disease.EVD));
