@@ -68,6 +68,8 @@ public class TestResultComponent extends FormComponent<PathogenTestDto> {
 	private HorizontalLayout quantitativeEnumRow;
 	private HorizontalLayout quantitativeTextRow;
 
+	private List<PathogenTestResultType> resultTypes;
+
 	private Disease currentDisease;
 	private PathogenTestType currentTestType;
 
@@ -83,7 +85,7 @@ public class TestResultComponent extends FormComponent<PathogenTestDto> {
 
 	private void buildLayout() {
 		testResultField = createComboBox(PathogenTestDto.TEST_RESULT, PathogenTestDto.I18N_PREFIX);
-		List<PathogenTestResultType> resultTypes = new ArrayList<>(java.util.Arrays.asList(PathogenTestResultType.values()));
+		resultTypes = new ArrayList<>(java.util.Arrays.asList(PathogenTestResultType.values()));
 		resultTypes.remove(PathogenTestResultType.NOT_DONE);
 		if (!isLuxembourg) {
 			resultTypes.remove(PathogenTestResultType.NOT_APPLICABLE);
@@ -178,10 +180,15 @@ public class TestResultComponent extends FormComponent<PathogenTestDto> {
 			updateQuantitativeFieldsVisibility(currentTestType);
 		}));
 
-		// Disease sections fire this to request a specific test result value
+		// Disease sections fire this (last in the test-type cascade) to request a specific result value.
 		track(eventBus.on(SetTestResultEvent.class, event -> {
 			if (event.getTestResult() != null) {
 				testResultField.setValue(event.getTestResult());
+			} else if (!hasQualitativeResult(currentTestType)) {
+				// The method has no Positive/Negative result and the selector is hidden, but testResult is
+				// mandatory — default it to Not applicable rather than clearing it to an unsaveable null.
+				ensureNotApplicableSelectable();
+				testResultField.setValue(PathogenTestResultType.NOT_APPLICABLE);
 			} else {
 				testResultField.clear();
 			}
@@ -244,6 +251,23 @@ public class TestResultComponent extends FormComponent<PathogenTestDto> {
 		updateRowVisibility(quantitativeValueRow);
 		updateRowVisibility(quantitativeEnumRow);
 		updateRowVisibility(quantitativeTextRow);
+	}
+
+	/**
+	 * Adds {@link PathogenTestResultType#NOT_APPLICABLE} to the result combo's items if it was filtered
+	 * out (it is hidden for non-Luxembourg in {@link #buildLayout}), so the field can hold it as the
+	 * default for a method whose result is not Positive/Negative. Vaadin 8 only accepts a value that is
+	 * among the combo's items.
+	 */
+	private void ensureNotApplicableSelectable() {
+		if (!resultTypes.contains(PathogenTestResultType.NOT_APPLICABLE)) {
+			resultTypes.add(PathogenTestResultType.NOT_APPLICABLE);
+			testResultField.setItems(resultTypes);
+		}
+	}
+
+	private static boolean hasQualitativeResult(PathogenTestType testType) {
+		return testType == null || PathogenTestType.getResultValueTypes(testType).contains(ResultValueType.QUALITATIVE);
 	}
 
 	private void setQuantitativeFieldVisible(com.vaadin.data.HasValue<?> field, boolean visible) {

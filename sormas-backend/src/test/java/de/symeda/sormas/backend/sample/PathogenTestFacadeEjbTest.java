@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
@@ -75,6 +76,48 @@ public class PathogenTestFacadeEjbTest extends AbstractBeanTest {
 		final PathogenTestDto newPathogenTest = creator.buildPathogenTestDto(rdcf, user, sample, caze.getDisease(), testDateTime);
 
 		testSaveAndUpdatePathogenTest(newPathogenTest);
+	}
+
+	@Test
+	public void testQuantitativeResultFieldsRoundTrip() {
+
+		final RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		final UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		final PersonDto person = creator.createPerson();
+		final CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
+		final SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+
+		final PathogenTestDto test = creator.buildPathogenTestDto(rdcf, user, sample, caze.getDisease(), testDateTime);
+		test.setTestType(PathogenTestType.GENOTYPING);
+		test.setQuantitativeValue(24.0f);
+		test.setQuantitativeUnit("copies/mL");
+		test.setQuantitativeText("M. tuberculosis L4 Euro-American");
+		test.setQuantitativeBoolean(de.symeda.sormas.api.utils.YesNoUnknown.YES);
+		test.setSmearGrade(de.symeda.sormas.api.sample.SmearGrade.THREE_PLUS);
+		test.setWesternBlotInterpretation(de.symeda.sormas.api.sample.WesternBlotInterpretation.POSITIVE);
+
+		final PathogenTestDto reloaded = getPathogenTestFacade().savePathogenTest(test);
+
+		assertEquals(24.0f, reloaded.getQuantitativeValue());
+		assertEquals("copies/mL", reloaded.getQuantitativeUnit());
+		assertEquals("M. tuberculosis L4 Euro-American", reloaded.getQuantitativeText());
+		assertEquals(de.symeda.sormas.api.utils.YesNoUnknown.YES, reloaded.getQuantitativeBoolean());
+		assertEquals(de.symeda.sormas.api.sample.SmearGrade.THREE_PLUS, reloaded.getSmearGrade());
+		assertEquals(de.symeda.sormas.api.sample.WesternBlotInterpretation.POSITIVE, reloaded.getWesternBlotInterpretation());
+
+		// Partially-populated test (only a text result, as for Sanger/WGS) round-trips with the rest null.
+		final PathogenTestDto textOnly = creator.buildPathogenTestDto(rdcf, user, sample, caze.getDisease(), testDateTime);
+		textOnly.setTestType(PathogenTestType.SANGER_SEQUENCING);
+		textOnly.setTestResult(PathogenTestResultType.NOT_APPLICABLE);
+		textOnly.setQuantitativeText("Measles genotype B3");
+
+		final PathogenTestDto reloadedTextOnly = getPathogenTestFacade().savePathogenTest(textOnly);
+		assertEquals("Measles genotype B3", reloadedTextOnly.getQuantitativeText());
+		assertNull(reloadedTextOnly.getQuantitativeValue());
+		assertNull(reloadedTextOnly.getQuantitativeUnit());
+		assertNull(reloadedTextOnly.getQuantitativeBoolean());
+		assertNull(reloadedTextOnly.getSmearGrade());
+		assertNull(reloadedTextOnly.getWesternBlotInterpretation());
 	}
 
 	@Test
@@ -184,6 +227,7 @@ public class PathogenTestFacadeEjbTest extends AbstractBeanTest {
 		getPathogenTestFacade().deletePathogenTest(test.getUuid(), new DeletionDetails());
 		assertThat(getCaseFacade().getCaseDataByUuid(caze.getUuid()).getCaseClassification(), is(CaseClassification.SUSPECT));
 	}
+
 	private void testSaveAndUpdatePathogenTest(PathogenTestDto newPathogenTest) {
 
 		final PathogenTestDto savedPathogenTest = getPathogenTestFacade().savePathogenTest(newPathogenTest);

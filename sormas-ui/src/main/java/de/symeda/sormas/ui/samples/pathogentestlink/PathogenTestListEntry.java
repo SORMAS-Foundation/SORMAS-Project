@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples.pathogentestlink;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -73,8 +74,8 @@ public class PathogenTestListEntry extends SideComponentField {
 		topLabelLayout.setMargin(false);
 		topLabelLayout.setWidth(100, Unit.PERCENTAGE);
 		addComponentToField(topLabelLayout);
-		Label labelTopLeft = new Label(
-			PathogenTestType.toString(pathogenTest.getTestType(), pathogenTest.getTestTypeText(), pathogenTest.getTestedDisease()));
+		Label labelTopLeft =
+			new Label(PathogenTestType.toString(pathogenTest.getTestType(), pathogenTest.getTestTypeText(), pathogenTest.getTestedDisease()));
 		CssStyles.style(labelTopLeft, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
 		topLabelLayout.addComponent(labelTopLeft);
 
@@ -131,16 +132,32 @@ public class PathogenTestListEntry extends SideComponentField {
 		}
 
 		PathogenTestType testType = pathogenTest.getTestType();
-		Object resultText = getResultText(pathogenTest, testType);
 
-		Label labelResult = new Label(DataHelper.toStringNullable(resultText));
-		CssStyles.style(labelResult, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
-		if (pathogenTest.getTestResult() == PathogenTestResultType.POSITIVE) {
-			CssStyles.style(labelResult, CssStyles.LABEL_CRITICAL);
-		} else {
-			CssStyles.style(labelResult, CssStyles.LABEL_WARNING);
+		// Quantitative result (issue #13952): combine whichever value-type fields the method populated.
+		String quantitativeResult = formatQuantitativeResult(pathogenTest);
+		boolean astWithoutQualitativeResult =
+			pathogenTest.getTestedDisease() == Disease.TUBERCULOSIS && testType == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY;
+		boolean suppressResultLabel =
+			pathogenTest.getTestResult() == PathogenTestResultType.NOT_APPLICABLE && (quantitativeResult != null || astWithoutQualitativeResult);
+		if (!suppressResultLabel) {
+			Object resultText = getResultText(pathogenTest, testType);
+			Label labelResult = new Label(DataHelper.toStringNullable(resultText));
+			CssStyles.style(labelResult, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
+			if (pathogenTest.getTestResult() == PathogenTestResultType.POSITIVE) {
+				CssStyles.style(labelResult, CssStyles.LABEL_CRITICAL);
+			} else {
+				CssStyles.style(labelResult, CssStyles.LABEL_WARNING);
+			}
+			addComponentToField(labelResult);
 		}
-		addComponentToField(labelResult);
+
+		if (quantitativeResult != null) {
+			Label quantitativeLabel = new Label(StringUtils.abbreviate(quantitativeResult, 125));
+			quantitativeLabel.setDescription(quantitativeResult);
+			CssStyles.style(quantitativeLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE, CssStyles.LABEL_WARNING);
+			quantitativeLabel.setWidthFull();
+			addComponentToField(quantitativeLabel);
+		}
 
 		if (pathogenTest.getTestedDisease() == Disease.TUBERCULOSIS) {
 			if (testType == PathogenTestType.PCR_RT_PCR) {
@@ -155,8 +172,6 @@ public class PathogenTestListEntry extends SideComponentField {
 						.abbreviate((pathogenTest.getIsoniazidResistant() != null ? pathogenTest.getIsoniazidResistant().toString() : ""), 125));
 				pcrIsoniazidTextLabel.setWidthFull();
 				addComponentToField(pcrIsoniazidTextLabel);
-			} else if (testType == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY) {
-				labelResult.setVisible(false);
 			}
 		}
 	}
@@ -212,6 +227,34 @@ public class PathogenTestListEntry extends SideComponentField {
 			resultText = pathogenTest.getTestResult();
 		}
 		return resultText;
+	}
+
+	/**
+	 * @return a short label combining every quantitative result field the test recorded (Western Blot
+	 *         interpretation, detected flag, smear grade, numeric value with optional unit, free text), or
+	 *         {@code null} when none is set. A method can populate several of these at once (e.g. Western
+	 *         Blot stores both an interpretation and a band-pattern text), so all are shown.
+	 */
+	@Nullable
+	static String formatQuantitativeResult(PathogenTestDto test) {
+		List<String> parts = new ArrayList<>();
+		if (test.getWesternBlotInterpretation() != null) {
+			parts.add(test.getWesternBlotInterpretation().toString());
+		}
+		if (test.getSmearGrade() != null) {
+			parts.add(test.getSmearGrade().toString());
+		}
+		if (test.getQuantitativeBoolean() != null) {
+			parts.add(test.getQuantitativeBoolean().toString());
+		}
+		if (test.getQuantitativeValue() != null) {
+			String unit = test.getQuantitativeUnit();
+			parts.add(DataHelper.isNullOrEmpty(unit) ? test.getQuantitativeValue().toString() : test.getQuantitativeValue() + " " + unit);
+		}
+		if (StringUtils.isNotBlank(test.getQuantitativeText())) {
+			parts.add(test.getQuantitativeText());
+		}
+		return parts.isEmpty() ? null : String.join(": ", parts);
 	}
 
 	@Nullable

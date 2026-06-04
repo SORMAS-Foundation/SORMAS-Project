@@ -344,6 +344,12 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setPerformedByReferenceLaboratory(source.getPerformedByReferenceLaboratory());
 		target.setRetestRequested(source.getRetestRequested());
 		target.setResultDetails(source.getResultDetails());
+		target.setQuantitativeValue(source.getQuantitativeValue());
+		target.setQuantitativeUnit(source.getQuantitativeUnit());
+		target.setQuantitativeText(source.getQuantitativeText());
+		target.setQuantitativeBoolean(source.getQuantitativeBoolean());
+		target.setSmearGrade(source.getSmearGrade());
+		target.setWesternBlotInterpretation(source.getWesternBlotInterpretation());
 
 		// IGRA tube values
 		target.setTubeNil(source.getTubeNil());
@@ -662,6 +668,12 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setPerformedByReferenceLaboratory(source.getPerformedByReferenceLaboratory());
 		target.setRetestRequested(source.getRetestRequested());
 		target.setResultDetails(source.getResultDetails());
+		target.setQuantitativeValue(source.getQuantitativeValue());
+		target.setQuantitativeUnit(source.getQuantitativeUnit());
+		target.setQuantitativeText(source.getQuantitativeText());
+		target.setQuantitativeBoolean(source.getQuantitativeBoolean());
+		target.setSmearGrade(source.getSmearGrade());
+		target.setWesternBlotInterpretation(source.getWesternBlotInterpretation());
 
 		// IGRA tube values
 		if (target.getTestType() != PathogenTestType.IGRA) {
