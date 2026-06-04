@@ -2854,6 +2854,7 @@ paths:
                   - INVASIVE_MENINGOCOCCAL_INFECTION
                   - GIARDIASIS
                   - CRYPTOSPORIDIOSIS
+                  - SHIGELLOSIS
                   - SALMONELLOSIS
                   - OTHER
                   - UNDEFINED
@@ -4533,6 +4534,7 @@ paths:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -4865,6 +4867,7 @@ paths:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -8864,6 +8867,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -8993,6 +8997,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -9096,6 +9101,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -9509,6 +9515,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -9953,6 +9960,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -10616,6 +10624,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -10950,6 +10959,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -11093,6 +11103,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -11370,6 +11381,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -11989,6 +12001,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -12252,6 +12265,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -12336,6 +12350,11 @@ components:
           - CEFTRIAXONE
           - PENICILLIN
           - ERYTHROMYCIN
+          - AZITHROMYCIN
+          - CEFTAZIDIME
+          - CEFOTAXIME
+          - AMPICILLIN
+          - TRIMETHOPRIM_SULFAMETHOXAZOLE
           - OTHER
         prescribedDrugText:
           type: string
@@ -12605,6 +12624,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -12726,6 +12746,11 @@ components:
           - CEFTRIAXONE
           - PENICILLIN
           - ERYTHROMYCIN
+          - AZITHROMYCIN
+          - CEFTAZIDIME
+          - CEFOTAXIME
+          - AMPICILLIN
+          - TRIMETHOPRIM_SULFAMETHOXAZOLE
           - OTHER
         prescribedDrugText:
           type: string
@@ -13058,6 +13083,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -13138,6 +13164,11 @@ components:
           - CEFTRIAXONE
           - PENICILLIN
           - ERYTHROMYCIN
+          - AZITHROMYCIN
+          - CEFTAZIDIME
+          - CEFOTAXIME
+          - AMPICILLIN
+          - TRIMETHOPRIM_SULFAMETHOXAZOLE
           - OTHER
         prescribedDrugText:
           type: string
@@ -13341,6 +13372,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -13408,6 +13440,11 @@ components:
           - CEFTRIAXONE
           - PENICILLIN
           - ERYTHROMYCIN
+          - AZITHROMYCIN
+          - CEFTAZIDIME
+          - CEFOTAXIME
+          - AMPICILLIN
+          - TRIMETHOPRIM_SULFAMETHOXAZOLE
           - OTHER
         prescribedDrugText:
           type: string
@@ -14158,6 +14195,7 @@ components:
             - INVASIVE_MENINGOCOCCAL_INFECTION
             - GIARDIASIS
             - CRYPTOSPORIDIOSIS
+            - SHIGELLOSIS
             - SALMONELLOSIS
             - OTHER
             - UNDEFINED
@@ -14416,6 +14454,7 @@ components:
             - INVASIVE_MENINGOCOCCAL_INFECTION
             - GIARDIASIS
             - CRYPTOSPORIDIOSIS
+            - SHIGELLOSIS
             - SALMONELLOSIS
             - OTHER
             - UNDEFINED
@@ -14711,6 +14750,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -14807,6 +14847,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -14988,6 +15029,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -15085,6 +15127,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -15194,6 +15237,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -15228,7 +15272,15 @@ components:
           type: boolean
         incubationPeriodEnabled:
           type: boolean
+        isContagious:
+          type: boolean
+        maxContagiousPeriod:
+          type: integer
+          format: int32
         maxIncubationPeriod:
+          type: integer
+          format: int32
+        minContagiousPeriod:
           type: integer
           format: int32
         minIncubationPeriod:
@@ -15444,6 +15496,28 @@ components:
         amikacinZoneDiameter:
           type: number
           format: float
+        ampicillinMic:
+          type: number
+          format: float
+        ampicillinSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
+        azithromycinMic:
+          type: number
+          format: float
+        azithromycinSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
         bedaquilineMethod:
           type: string
           enum:
@@ -15504,6 +15578,28 @@ components:
         capreomycinZoneDiameter:
           type: number
           format: float
+        cefotaximeMic:
+          type: number
+          format: float
+        cefotaximeSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
+        ceftazidimeMic:
+          type: number
+          format: float
+        ceftazidimeSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
         ceftriaxoneMethod:
           type: string
           enum:
@@ -15934,6 +16030,17 @@ components:
         streptomycinZoneDiameter:
           type: number
           format: float
+        trimethoprimSulfamethoxazoleMic:
+          type: number
+          format: float
+        trimethoprimSulfamethoxazoleSusceptibility:
+          type: string
+          enum:
+          - NOT_APPLICABLE
+          - RESISTANT
+          - SUSCEPTIBLE
+          - INTERMEDIATE
+          - UNKNOWN
         uuid:
           type: string
           maxLength: 36
@@ -16239,12 +16346,6 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
-        activityAsCaseFromDate:
-          type: string
-          format: date-time
-        activityAsCaseToDate:
-          type: string
-          format: date-time
         airportWorker:
           type: string
           enum:
@@ -16299,12 +16400,6 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
-        exposureInvestigationFromDate:
-          type: string
-          format: date-time
-        exposureInvestigationToDate:
-          type: string
-          format: date-time
         exposures:
           type: array
           items:
@@ -16334,6 +16429,43 @@ components:
           enum:
           - FOOD
           - ANIMAL
+          - BAKERY_PRODUCTS
+          - BATS_CONTACT
+          - BOVINE_MEAT_PRODUCTS
+          - BROILER_MEAT_PRODUCTS
+          - CANNED_FOOD_PRODUCTS
+          - CATS_CONTACT
+          - CEREAL_PRODUCTS
+          - CHEESE
+          - NON_CHEESES_DAIRY_PRODUCTS
+          - DOGS_CONTACT
+          - DRINKS_BOTTLED_WATER
+          - EGG_PRODUCTS
+          - EXOTIC_PET_CONTACT
+          - FARM_ANIMAL_CONTACT
+          - FISH_PRODUCTS
+          - FOX_CONTACT
+          - FRUITS_AND_JUICES
+          - GAME_MEAT_NOT_WILD_BOAR
+          - HERBS_AND_SPICES
+          - MILK
+          - BUFFET_MEALS
+          - MIXED_MEAT_PRODUCTS
+          - OTHER_FOODS
+          - OTHER_MEAT_PRODUCTS
+          - OTHER_PET_CONTACT
+          - UNSPECIFIED_POULTRY
+          - OTHER_WILD_ANIMAL_CONTACT
+          - PORK_PRODUCTS
+          - SHEEP_MEAT_PRODUCTS
+          - SHELLFISH_PRODUCTS
+          - Sprouts
+          - confectionery
+          - TAP_AND_WELL_WATER
+          - TURKEY_MEAT_PRODUCTS
+          - JUICE_AND_VEGETABLE_PRODUCTS
+          - WILD_BOAR_MEAT_PRODUCTS
+          - UNKNOWN
           - NOT_APPLICABLE
           - OTHER
         infectionSourceText:
@@ -16505,6 +16637,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -16676,6 +16809,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -16964,6 +17098,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -17465,6 +17600,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -17682,6 +17818,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -18633,6 +18770,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -18800,6 +18938,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -19202,6 +19341,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -19412,6 +19552,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -19879,6 +20020,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -20040,6 +20182,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -20203,6 +20346,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -20254,6 +20398,14 @@ components:
         changeDate:
           type: string
           format: date-time
+        chronicDisease:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        chronicDiseaseDetails:
+          type: string
         chronicHeartFailure:
           type: string
           enum:
@@ -20383,6 +20535,8 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        medicationDetails:
+          type: string
         obesity:
           type: string
           enum:
@@ -20422,6 +20576,12 @@ components:
         tuberculosisInfectionYear:
           type: integer
           format: int32
+        underMedication:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         uuid:
           type: string
           maxLength: 36
@@ -20622,6 +20782,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -20856,6 +21017,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -21137,6 +21299,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -21633,6 +21796,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -21940,6 +22104,7 @@ components:
             - INVASIVE_MENINGOCOCCAL_INFECTION
             - GIARDIASIS
             - CRYPTOSPORIDIOSIS
+            - SHIGELLOSIS
             - SALMONELLOSIS
             - OTHER
             - UNDEFINED
@@ -22031,6 +22196,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -22861,9 +23027,13 @@ components:
           - MULTIPLEX_PCR
           - QUELLUNG_REACTION
           - COAGGLUTINATION
+          - AGGLUTINATION
           - GEL_DIFFUSION
           - PNEUMOTEST
           - SLIDE_AGGLUTINATION
+          - DISK_DIFFUSION
+          - MIC_DETERMINATION
+          - WGS_PREDICTION
           - OTHER
         seroTypingMethodText:
           type: string
@@ -22896,6 +23066,11 @@ components:
           - CYNOMOLGI
           - NOT_SPECIFIED
           - COINFECTION
+          - BOYDII
+          - DYSENTERIAE
+          - FLEXNERI
+          - SONNEI
+          - SHIGELLA_SPP
           - OTHER
           - UNKNOWN
           - NOT_APPLICABLE
@@ -23081,6 +23256,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -23394,6 +23570,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -24467,6 +24644,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -24949,6 +25127,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -25512,6 +25691,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -25731,6 +25911,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -25870,6 +26051,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -26229,6 +26411,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -26589,6 +26772,12 @@ components:
           - "NO"
           - UNKNOWN
         bloodyBlackStool:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        bloodyDiarrhea:
           type: string
           enum:
           - "YES"
@@ -27005,6 +27194,12 @@ components:
           - "NO"
           - UNKNOWN
         gumsBleeding:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        haemolyticUremicSyndrome:
           type: string
           enum:
           - "YES"
@@ -27766,6 +27961,12 @@ components:
           - ORAL
           - RECTAL
           - NON_CONTACT
+        tenesmus:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         throbocytopenia:
           type: string
           enum:
@@ -28197,6 +28398,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -28615,9 +28817,13 @@ components:
           - MULTIPLEX_PCR
           - QUELLUNG_REACTION
           - COAGGLUTINATION
+          - AGGLUTINATION
           - GEL_DIFFUSION
           - PNEUMOTEST
           - SLIDE_AGGLUTINATION
+          - DISK_DIFFUSION
+          - MIC_DETERMINATION
+          - WGS_PREDICTION
           - OTHER
         seroTypingMethodText:
           type: string
@@ -28650,6 +28856,11 @@ components:
           - CYNOMOLGI
           - NOT_SPECIFIED
           - COINFECTION
+          - BOYDII
+          - DYSENTERIAE
+          - FLEXNERI
+          - SONNEI
+          - SHIGELLA_SPP
           - OTHER
           - UNKNOWN
           - NOT_APPLICABLE
@@ -29001,6 +29212,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -29483,6 +29695,7 @@ components:
             - INVASIVE_MENINGOCOCCAL_INFECTION
             - GIARDIASIS
             - CRYPTOSPORIDIOSIS
+            - SHIGELLOSIS
             - SALMONELLOSIS
             - OTHER
             - UNDEFINED
@@ -30150,6 +30363,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -30275,6 +30489,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
@@ -30453,6 +30668,7 @@ components:
           - INVASIVE_MENINGOCOCCAL_INFECTION
           - GIARDIASIS
           - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
           - SALMONELLOSIS
           - OTHER
           - UNDEFINED
