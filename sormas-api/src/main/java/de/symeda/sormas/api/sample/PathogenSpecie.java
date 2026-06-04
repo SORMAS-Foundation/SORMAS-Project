@@ -194,13 +194,36 @@ public enum PathogenSpecie {
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.SEROGROUPING })
 	SHIGELLA_SPP,
-	// OTHER is mostly applicable for all diseases and pathogen tests.
-	@Diseases
-	@ApplicableToPathogenTests
+	@Diseases({
+		Disease.MALARIA,
+		Disease.SHIGELLOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.THIN_BLOOD_SMEAR,
+		PathogenTestType.RAPID_TEST,
+		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
+		PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
+		PathogenTestType.PCR_RT_PCR,
+		PathogenTestType.Q_PCR,
+		PathogenTestType.LAMP,
+		PathogenTestType.OTHER_MOLECULAR_ASSAY,
+		PathogenTestType.OTHER_SEROLOGICAL_TEST })
 	OTHER,
-	@Diseases
-	@ApplicableToPathogenTests
-	// UNKNOWN is used when the pathogen specie is not known, so it can be applicable to all diseases and tests as well
+	@Diseases({
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS,
+		Disease.MALARIA,
+		Disease.SHIGELLOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.SPOLIGOTYPING,
+		PathogenTestType.THIN_BLOOD_SMEAR,
+		PathogenTestType.RAPID_TEST,
+		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
+		PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
+		PathogenTestType.PCR_RT_PCR,
+		PathogenTestType.Q_PCR,
+		PathogenTestType.LAMP,
+		PathogenTestType.OTHER_MOLECULAR_ASSAY,
+		PathogenTestType.OTHER_SEROLOGICAL_TEST })
 	UNKNOWN,
 	@Diseases({
 		Disease.TUBERCULOSIS,
