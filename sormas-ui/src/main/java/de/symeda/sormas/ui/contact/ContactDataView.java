@@ -14,6 +14,7 @@
  */
 package de.symeda.sormas.ui.contact;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.vaadin.server.Page;
@@ -97,6 +98,8 @@ public class ContactDataView extends AbstractContactView implements HasName {
 	public static final String SELF_REPORT_LOC = "selfReport";
 
 	private CommitDiscardWrapperComponent<ContactDataForm> editComponent;
+
+	private final static List<Disease> IMMUNIZATION_EXCLUDED_DISEASES = Arrays.asList(Disease.SALMONELLOSIS, Disease.SHIGELLOSIS);
 
 	public ContactDataView() {
 		super(VIEW_NAME);
@@ -254,7 +257,7 @@ public class ContactDataView extends AbstractContactView implements HasName {
 		}
 
 		// Immunizations are not shown for Salmonellosis contacts
-		if (UiUtil.permitted(FeatureType.IMMUNIZATION_MANAGEMENT, UserRight.IMMUNIZATION_VIEW) && resolvedDisease != Disease.SALMONELLOSIS) {
+		if (UiUtil.permitted(FeatureType.IMMUNIZATION_MANAGEMENT, UserRight.IMMUNIZATION_VIEW) && !IMMUNIZATION_EXCLUDED_DISEASES.contains(resolvedDisease)) {
 			final VaccinationStatusPanel vaccinationStatusPanel = VaccinationStatusPanel.forContact(contactDto);
 			if (contactDto.getVaccinationStatusLastUpdated() == null && UiUtil.permitted(UserRight.IMMUNIZATION_EDIT)) {
 				showVaccinationStatusUpdateDialog(contactDto);

@@ -131,7 +131,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				Disease.GIARDIASIS,
 				Disease.CRYPTOSPORIDIOSIS,
 				Disease.MALARIA,
-				Disease.DENGUE)));
+				Disease.DENGUE,
+				Disease.SHIGELLOSIS)));
 	//@formatter:off
     private static final String HTML_LAYOUT =
             loc(PERSON_INFORMATION_HEADING_LOC) +

@@ -1478,7 +1478,10 @@ public interface Captions {
 	String DiseaseConfiguration_followUpDuration = "DiseaseConfiguration.followUpDuration";
 	String DiseaseConfiguration_followUpEnabled = "DiseaseConfiguration.followUpEnabled";
 	String DiseaseConfiguration_incubationPeriodEnabled = "DiseaseConfiguration.incubationPeriodEnabled";
+	String DiseaseConfiguration_isContagious = "DiseaseConfiguration.isContagious";
+	String DiseaseConfiguration_maxContagiousPeriod = "DiseaseConfiguration.maxContagiousPeriod";
 	String DiseaseConfiguration_maxIncubationPeriod = "DiseaseConfiguration.maxIncubationPeriod";
+	String DiseaseConfiguration_minContagiousPeriod = "DiseaseConfiguration.minContagiousPeriod";
 	String DiseaseConfiguration_minIncubationPeriod = "DiseaseConfiguration.minIncubationPeriod";
 	String DiseaseConfiguration_primaryDisease = "DiseaseConfiguration.primaryDisease";
 	String diseaseConfigurationReportingTypeFilter = "diseaseConfigurationReportingTypeFilter";
@@ -2090,6 +2093,8 @@ public interface Captions {
 	String HealthConditions_asplenia = "HealthConditions.asplenia";
 	String HealthConditions_asthma = "HealthConditions.asthma";
 	String HealthConditions_cardiovascularDiseaseIncludingHypertension = "HealthConditions.cardiovascularDiseaseIncludingHypertension";
+	String HealthConditions_chronicDisease = "HealthConditions.chronicDisease";
+	String HealthConditions_chronicDiseaseDetails = "HealthConditions.chronicDiseaseDetails";
 	String HealthConditions_chronicHeartFailure = "HealthConditions.chronicHeartFailure";
 	String HealthConditions_chronicKidneyDisease = "HealthConditions.chronicKidneyDisease";
 	String HealthConditions_chronicLiverDisease = "HealthConditions.chronicLiverDisease";
@@ -2113,6 +2118,7 @@ public interface Captions {
 	String HealthConditions_malaria = "HealthConditions.malaria";
 	String HealthConditions_malariaInfectedYear = "HealthConditions.malariaInfectedYear";
 	String HealthConditions_malignancyChemotherapy = "HealthConditions.malignancyChemotherapy";
+	String HealthConditions_medicationDetails = "HealthConditions.medicationDetails";
 	String HealthConditions_obesity = "HealthConditions.obesity";
 	String HealthConditions_otherConditions = "HealthConditions.otherConditions";
 	String HealthConditions_previousTuberculosisTreatment = "HealthConditions.previousTuberculosisTreatment";
@@ -2120,6 +2126,7 @@ public interface Captions {
 	String HealthConditions_sickleCellDisease = "HealthConditions.sickleCellDisease";
 	String HealthConditions_tuberculosis = "HealthConditions.tuberculosis";
 	String HealthConditions_tuberculosisInfectionYear = "HealthConditions.tuberculosisInfectionYear";
+	String HealthConditions_underMedication = "HealthConditions.underMedication";
 	String HealthConditions_vaccinatedAgainstMosquitoBorneViruses = "HealthConditions.vaccinatedAgainstMosquitoBorneViruses";
 	String humanSampleViewType = "humanSampleViewType";
 	String Immunization = "Immunization";
@@ -3038,6 +3045,7 @@ public interface Captions {
 	String Symptoms_bloodPressureSystolic = "Symptoms.bloodPressureSystolic";
 	String Symptoms_bloodUrine = "Symptoms.bloodUrine";
 	String Symptoms_bloodyBlackStool = "Symptoms.bloodyBlackStool";
+	String Symptoms_bloodyDiarrhea = "Symptoms.bloodyDiarrhea";
 	String Symptoms_blueLips = "Symptoms.blueLips";
 	String Symptoms_breathlessness = "Symptoms.breathlessness";
 	String Symptoms_buboesGroinArmpitNeck = "Symptoms.buboesGroinArmpitNeck";
@@ -3108,6 +3116,7 @@ public interface Captions {
 	String Symptoms_glasgowComaScale = "Symptoms.glasgowComaScale";
 	String Symptoms_guillainBarreSyndrome = "Symptoms.guillainBarreSyndrome";
 	String Symptoms_gumsBleeding = "Symptoms.gumsBleeding";
+	String Symptoms_haemolyticUremicSyndrome = "Symptoms.haemolyticUremicSyndrome";
 	String Symptoms_headache = "Symptoms.headache";
 	String Symptoms_hearingloss = "Symptoms.hearingloss";
 	String Symptoms_heartRate = "Symptoms.heartRate";
@@ -3254,6 +3263,7 @@ public interface Captions {
 	String Symptoms_syndromicFlu = "Symptoms.syndromicFlu";
 	String Symptoms_temperature = "Symptoms.temperature";
 	String Symptoms_temperatureSource = "Symptoms.temperatureSource";
+	String Symptoms_tenesmus = "Symptoms.tenesmus";
 	String Symptoms_throbocytopenia = "Symptoms.throbocytopenia";
 	String Symptoms_timeOffWorkDays = "Symptoms.timeOffWorkDays";
 	String Symptoms_timeOffWorkDays_giardiasis = "Symptoms.timeOffWorkDays.giardiasis";

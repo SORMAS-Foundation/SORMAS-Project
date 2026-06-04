@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.samples;
 
 import static com.vaadin.ui.Notification.Type.TRAY_NOTIFICATION;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -37,7 +38,6 @@ import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -75,6 +75,10 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 public class PathogenTestController {
 
 	private final PathogenTestFacade facade = FacadeProvider.getPathogenTestFacade();
+
+	// Antibiotic susceptibility test is applicable for TB(Lux), IMI, IPI and Shigellosis. For others it should be null.
+	private static final List<Disease> AST_ALLOWED_DISEASES =
+		Arrays.asList(Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, Disease.SHIGELLOSIS);
 
 	public PathogenTestController() {
 	}
@@ -341,9 +345,8 @@ public class PathogenTestController {
 			p.setSample(sampleRef);
 			boolean luxTB = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 				&& Disease.TUBERCULOSIS == p.getTestedDisease();
-			boolean invasiveDisease = DiseaseHelper.checkDiseaseIsInvasiveBacterialDiseases(p.getTestedDisease());
 			//the susceptibility test is applicable only for LUX TB and all-countries invasive disease
-			if (PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY == p.getTestType() && !luxTB && !invasiveDisease) {
+			if (PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY == p.getTestType() && !luxTB && !AST_ALLOWED_DISEASES.contains(p.getTestedDisease())) {
 				p.setDrugSusceptibility(null);
 			}
 			facade.savePathogenTest(p);

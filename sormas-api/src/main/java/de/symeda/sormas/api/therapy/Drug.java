@@ -29,71 +29,110 @@ public enum Drug {
 
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
-			@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
+	@Diseases(value = {
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION }, hide = true)
 	AMIKACIN,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
-	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
+	@Diseases(value = {
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION }, hide = true)
 	BEDAQUILINE,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
-	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
+	@Diseases(value = {
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION }, hide = true)
 	CAPREOMYCIN,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
 	CIPROFLOXACIN,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
-	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
+	@Diseases(value = {
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION }, hide = true)
 	DELAMANID,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
-	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
+	@Diseases(value = {
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION }, hide = true)
 	ETHAMBUTOL,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
-	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
+	@Diseases(value = {
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION }, hide = true)
 	GATIFLOXACIN,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
-	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
+	@Diseases(value = {
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION }, hide = true)
 	ISONIAZID,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
-	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
+	@Diseases(value = {
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION }, hide = true)
 	KANAMYCIN,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
-	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
+	@Diseases(value = {
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION }, hide = true)
 	LEVOFLOXACIN,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
-	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
+	@Diseases(value = {
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION }, hide = true)
 	MOXIFLOXACIN,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
-	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
+	@Diseases(value = {
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION }, hide = true)
 	OFLOXACIN,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
 	RIFAMPICIN,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
-	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
+	@Diseases(value = {
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION }, hide = true)
 	STREPTOMYCIN,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
 	CEFTRIAXONE,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
-	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
+	@Diseases(value = {
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION }, hide = true)
 	PENICILLIN,
 	@DrugTypes(value = {
 		TypeOfDrug.ANTIBIOTIC })
-	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
+	@Diseases(value = {
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION }, hide = true)
 	ERYTHROMYCIN,
 	@DrugTypes(value = {
-			TypeOfDrug.ANTIBIOTIC })
+		TypeOfDrug.ANTIBIOTIC })
+	@Diseases(value = {
+		Disease.SHIGELLOSIS })
+	AZITHROMYCIN,
+	@DrugTypes(value = {
+		TypeOfDrug.ANTIBIOTIC })
+	@Diseases(value = {
+		Disease.SHIGELLOSIS })
+	CEFTAZIDIME,
+	@DrugTypes(value = {
+		TypeOfDrug.ANTIBIOTIC })
+	@Diseases(value = {
+		Disease.SHIGELLOSIS })
+	CEFOTAXIME,
+	@DrugTypes(value = {
+		TypeOfDrug.ANTIBIOTIC })
+	@Diseases(value = {
+		Disease.SHIGELLOSIS })
+	AMPICILLIN,
+	@DrugTypes(value = {
+		TypeOfDrug.ANTIBIOTIC })
+	@Diseases(value = {
+		Disease.SHIGELLOSIS })
+	TRIMETHOPRIM_SULFAMETHOXAZOLE,
+	@DrugTypes(value = {
+		TypeOfDrug.ANTIBIOTIC })
 	OTHER;
 
 	@Override

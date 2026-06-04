@@ -49,6 +49,8 @@ public final class DiseaseSectionFactory {
 			return new DengueSectionComponent();
 		case MALARIA:
 			return new MalariaSectionComponent();
+		case SHIGELLOSIS:
+			return new ShigellosisSectionComponent();
 		default:
 			return new DefaultSectionComponent();
 		}

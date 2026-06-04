@@ -51,6 +51,9 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 	private Integer maxIncubationPeriod;
 	private Integer minIncubationPeriod;
 	private String caseDefinitionText;
+	private Boolean isContagious;
+	private Integer minContagiousPeriod;
+	private Integer maxContagiousPeriod;
 	private Boolean extendedClassification;
 	private Boolean extendedClassificationMulti;
 	private List<String> ageGroups;
@@ -181,6 +184,33 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 
 	public void setCaseDefinitionText(String caseDefinitionText) {
 		this.caseDefinitionText = caseDefinitionText;
+	}
+
+	@Column
+	public Boolean getIsContagious() {
+		return isContagious;
+	}
+
+	public void setIsContagious(Boolean isContagious) {
+		this.isContagious = isContagious;
+	}
+
+	@Column
+	public Integer getMinContagiousPeriod() {
+		return minContagiousPeriod;
+	}
+
+	public void setMinContagiousPeriod(Integer minContagiousPeriod) {
+		this.minContagiousPeriod = minContagiousPeriod;
+	}
+
+	@Column
+	public Integer getMaxContagiousPeriod() {
+		return maxContagiousPeriod;
+	}
+
+	public void setMaxContagiousPeriod(Integer maxContagiousPeriod) {
+		this.maxContagiousPeriod = maxContagiousPeriod;
 	}
 
 	@Column
