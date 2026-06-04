@@ -87,23 +87,19 @@ public class PathogenTestFacadeEjbTest extends AbstractBeanTest {
 		final CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
 		final SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
 
+		// QUANTITATIVE_BUFFY_COAT produces QUALITATIVE + NUMERIC + TEXT, so those fields must round-trip.
 		final PathogenTestDto test = creator.buildPathogenTestDto(rdcf, user, sample, caze.getDisease(), testDateTime);
-		test.setTestType(PathogenTestType.GENOTYPING);
+		test.setTestType(PathogenTestType.QUANTITATIVE_BUFFY_COAT);
+		test.setTestResult(PathogenTestResultType.POSITIVE);
 		test.setQuantitativeValue(24.0f);
 		test.setQuantitativeUnit("copies/mL");
-		test.setQuantitativeText("M. tuberculosis L4 Euro-American");
-		test.setQuantitativeBoolean(de.symeda.sormas.api.utils.YesNoUnknown.YES);
-		test.setSmearGrade(de.symeda.sormas.api.sample.SmearGrade.THREE_PLUS);
-		test.setWesternBlotInterpretation(de.symeda.sormas.api.sample.WesternBlotInterpretation.POSITIVE);
+		test.setQuantitativeText("Trophozoites seen");
 
 		final PathogenTestDto reloaded = getPathogenTestFacade().savePathogenTest(test);
 
 		assertEquals(24.0f, reloaded.getQuantitativeValue());
 		assertEquals("copies/mL", reloaded.getQuantitativeUnit());
-		assertEquals("M. tuberculosis L4 Euro-American", reloaded.getQuantitativeText());
-		assertEquals(de.symeda.sormas.api.utils.YesNoUnknown.YES, reloaded.getQuantitativeBoolean());
-		assertEquals(de.symeda.sormas.api.sample.SmearGrade.THREE_PLUS, reloaded.getSmearGrade());
-		assertEquals(de.symeda.sormas.api.sample.WesternBlotInterpretation.POSITIVE, reloaded.getWesternBlotInterpretation());
+		assertEquals("Trophozoites seen", reloaded.getQuantitativeText());
 
 		// Partially-populated test (only a text result, as for Sanger/WGS) round-trips with the rest null.
 		final PathogenTestDto textOnly = creator.buildPathogenTestDto(rdcf, user, sample, caze.getDisease(), testDateTime);
@@ -118,6 +114,51 @@ public class PathogenTestFacadeEjbTest extends AbstractBeanTest {
 		assertNull(reloadedTextOnly.getQuantitativeBoolean());
 		assertNull(reloadedTextOnly.getSmearGrade());
 		assertNull(reloadedTextOnly.getWesternBlotInterpretation());
+	}
+
+	@Test
+	public void testQuantitativeResultFieldsClearedOnSaveForMismatchedTestType() {
+
+		final RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		final UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		final PersonDto person = creator.createPerson();
+		final CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
+		final SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+
+		// A method declaring only TEXT (Genotyping) must not persist numeric/boolean/smear/Western-Blot
+		// values, even when the DTO carries them - e.g. left over after changing the test type.
+		final PathogenTestDto textType = creator.buildPathogenTestDto(rdcf, user, sample, caze.getDisease(), testDateTime);
+		textType.setTestType(PathogenTestType.GENOTYPING);
+		textType.setTestResult(PathogenTestResultType.NOT_APPLICABLE);
+		textType.setQuantitativeText("M. tuberculosis L4 Euro-American");
+		textType.setQuantitativeValue(24.0f);
+		textType.setQuantitativeUnit("copies/mL");
+		textType.setQuantitativeBoolean(de.symeda.sormas.api.utils.YesNoUnknown.YES);
+		textType.setSmearGrade(de.symeda.sormas.api.sample.SmearGrade.THREE_PLUS);
+		textType.setWesternBlotInterpretation(de.symeda.sormas.api.sample.WesternBlotInterpretation.POSITIVE);
+
+		final PathogenTestDto reloaded = getPathogenTestFacade().savePathogenTest(textType);
+
+		assertEquals("M. tuberculosis L4 Euro-American", reloaded.getQuantitativeText());
+		assertNull(reloaded.getQuantitativeValue());
+		assertNull(reloaded.getQuantitativeUnit());
+		assertNull(reloaded.getQuantitativeBoolean());
+		assertNull(reloaded.getSmearGrade());
+		assertNull(reloaded.getWesternBlotInterpretation());
+
+		// Changing the test type to one that no longer produces TEXT clears the previously stored text too.
+		reloaded.setTestType(PathogenTestType.ACID_FAST_STAIN);
+		reloaded.setTestResult(PathogenTestResultType.NOT_APPLICABLE);
+		reloaded.setSmearGrade(de.symeda.sormas.api.sample.SmearGrade.TWO_PLUS);
+
+		final PathogenTestDto retyped = getPathogenTestFacade().savePathogenTest(reloaded);
+
+		assertEquals(de.symeda.sormas.api.sample.SmearGrade.TWO_PLUS, retyped.getSmearGrade());
+		assertNull(retyped.getQuantitativeText());
+		assertNull(retyped.getQuantitativeValue());
+		assertNull(retyped.getQuantitativeUnit());
+		assertNull(retyped.getQuantitativeBoolean());
+		assertNull(retyped.getWesternBlotInterpretation());
 	}
 
 	@Test

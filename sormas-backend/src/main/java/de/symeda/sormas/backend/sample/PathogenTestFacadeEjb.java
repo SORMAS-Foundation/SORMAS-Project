@@ -52,6 +52,7 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.sample.ResultValueType;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.Serotype;
 import de.symeda.sormas.api.therapy.DrugSusceptibilityType;
@@ -674,6 +675,26 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setQuantitativeBoolean(source.getQuantitativeBoolean());
 		target.setSmearGrade(source.getSmearGrade());
 		target.setWesternBlotInterpretation(source.getWesternBlotInterpretation());
+
+		// Clear quantitative result fields that the selected method does not produce, so a value left over
+		// from a previous test type cannot survive and violate the method/result-type contract.
+		Set<ResultValueType> resultValueTypes = PathogenTestType.getResultValueTypes(target.getTestType());
+		if (!resultValueTypes.contains(ResultValueType.NUMERIC)) {
+			target.setQuantitativeValue(null);
+			target.setQuantitativeUnit(null);
+		}
+		if (!resultValueTypes.contains(ResultValueType.TEXT)) {
+			target.setQuantitativeText(null);
+		}
+		if (!resultValueTypes.contains(ResultValueType.BOOLEAN)) {
+			target.setQuantitativeBoolean(null);
+		}
+		if (!resultValueTypes.contains(ResultValueType.SMEAR_GRADE)) {
+			target.setSmearGrade(null);
+		}
+		if (!resultValueTypes.contains(ResultValueType.WESTERN_BLOT)) {
+			target.setWesternBlotInterpretation(null);
+		}
 
 		// IGRA tube values
 		if (target.getTestType() != PathogenTestType.IGRA) {

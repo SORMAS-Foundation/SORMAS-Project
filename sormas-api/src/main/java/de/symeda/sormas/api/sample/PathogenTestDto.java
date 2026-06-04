@@ -340,11 +340,12 @@ public class PathogenTestDto extends PseudonymizableDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String resultDetails;
 
-	// Generic quantitative result fields, shown per the test method's ResultValueType (issue #4).
+	// Generic quantitative result fields, shown per the test method's ResultValueType (issue #13952).
 	private Float quantitativeValue;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String quantitativeUnit;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@SensitiveData
 	private String quantitativeText;
 	private YesNoUnknown quantitativeBoolean;
 	private SmearGrade smearGrade;
