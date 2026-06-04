@@ -16246,6 +16246,6 @@ alter table pathogentest_history add column IF NOT EXISTS quantitativeboolean va
 alter table pathogentest_history add column IF NOT EXISTS smeargrade varchar(255);
 alter table pathogentest_history add column IF NOT EXISTS westernblotinterpretation varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (635, 'Quantitative pathogen test results: value/unit/text/boolean, smear grade, Western Blot interpretation #13948');
+INSERT INTO schema_version (version_number, comment) VALUES (636, 'Quantitative pathogen test results: value/unit/text/boolean, smear grade, Western Blot interpretation #13948');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
