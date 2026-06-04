@@ -319,6 +319,21 @@ public abstract class FormComponent<T> extends VerticalLayout {
 		Disease disease,
 		PathogenTestCategory category,
 		PathogenTestType retainType) {
+		updateTestTypeItemsByCategory(comboBox, disease, category, retainType, true);
+	}
+
+	/**
+	 * @param selectRetainType
+	 *            when {@code true} the {@code retainType} is also selected; pass {@code false} to only
+	 *            make it a selectable item and leave the value untouched (e.g. when the binder is about
+	 *            to set the value itself, so the value-change event still fires for listeners).
+	 */
+	protected static void updateTestTypeItemsByCategory(
+		ComboBox<PathogenTestType> comboBox,
+		Disease disease,
+		PathogenTestCategory category,
+		PathogenTestType retainType,
+		boolean selectRetainType) {
 
 		List<PathogenTestType> filtered = Diseases.DiseasesConfiguration.getVisibleValues(PathogenTestType.class, disease)
 			.stream()
@@ -333,7 +348,7 @@ public abstract class FormComponent<T> extends VerticalLayout {
 		}
 		filtered.sort(Comparator.comparing(Object::toString));
 		comboBox.setItems(filtered);
-		if (retainType != null && filtered.contains(retainType)) {
+		if (selectRetainType && retainType != null && filtered.contains(retainType)) {
 			comboBox.setValue(retainType);
 		}
 	}

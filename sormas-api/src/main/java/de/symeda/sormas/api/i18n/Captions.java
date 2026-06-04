@@ -2403,6 +2403,10 @@ public interface Captions {
 	String PathogenTest_prescriberPhoneNumber = "PathogenTest.prescriberPhoneNumber";
 	String PathogenTest_prescriberPhysicianCode = "PathogenTest.prescriberPhysicianCode";
 	String PathogenTest_prescriberPostalCode = "PathogenTest.prescriberPostalCode";
+	String PathogenTest_quantitativeBoolean = "PathogenTest.quantitativeBoolean";
+	String PathogenTest_quantitativeText = "PathogenTest.quantitativeText";
+	String PathogenTest_quantitativeUnit = "PathogenTest.quantitativeUnit";
+	String PathogenTest_quantitativeValue = "PathogenTest.quantitativeValue";
 	String PathogenTest_reportDate = "PathogenTest.reportDate";
 	String PathogenTest_resultDetails = "PathogenTest.resultDetails";
 	String PathogenTest_retestRequested = "PathogenTest.retestRequested";
@@ -2418,6 +2422,7 @@ public interface Captions {
 	String PathogenTest_seroTypingMethod = "PathogenTest.seroTypingMethod";
 	String PathogenTest_seroTypingMethod_INVASIVE_PNEUMOCOCCAL_INFECTION = "PathogenTest.seroTypingMethod.INVASIVE_PNEUMOCOCCAL_INFECTION";
 	String PathogenTest_seroTypingMethodText = "PathogenTest.seroTypingMethodText";
+	String PathogenTest_smearGrade = "PathogenTest.smearGrade";
 	String PathogenTest_specie = "PathogenTest.specie";
 	String PathogenTest_specieText = "PathogenTest.specieText";
 	String PathogenTest_strainCallStatus = "PathogenTest.strainCallStatus";
@@ -2445,6 +2450,7 @@ public interface Captions {
 	String PathogenTest_tubeNilGT10 = "PathogenTest.tubeNilGT10";
 	String PathogenTest_typingId = "PathogenTest.typingId";
 	String PathogenTest_viaLims = "PathogenTest.viaLims";
+	String PathogenTest_westernBlotInterpretation = "PathogenTest.westernBlotInterpretation";
 	String pathogenTestAdd = "pathogenTestAdd";
 	String pathogenTestCreateNew = "pathogenTestCreateNew";
 	String pathogenTestNewResult = "pathogenTestNewResult";

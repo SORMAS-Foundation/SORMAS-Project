@@ -5,13 +5,16 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -61,9 +64,8 @@ public class PathogenTestTypeTest {
 
 	@Test
 	public void legacyMethodsAreNotSelectableButAreKept() {
-		List<PathogenTestType> actualLegacy = Arrays.stream(PathogenTestType.values())
-			.filter(t -> !PathogenTestType.isSelectableForNewTests(t))
-			.collect(Collectors.toList());
+		List<PathogenTestType> actualLegacy =
+			Arrays.stream(PathogenTestType.values()).filter(t -> !PathogenTestType.isSelectableForNewTests(t)).collect(Collectors.toList());
 		assertThat(actualLegacy, containsInAnyOrder(EXPECTED_LEGACY.toArray(new PathogenTestType[0])));
 	}
 
@@ -110,9 +112,7 @@ public class PathogenTestTypeTest {
 	@Test
 	public void categoryMatchesAcrossKnownAnchors() {
 		assertThat(PathogenTestType.getCategory(PathogenTestType.PCR_RT_PCR), is(PathogenTestCategory.MOLECULAR_ASSAYS));
-		assertThat(
-			PathogenTestType.getCategory(PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY),
-			is(PathogenTestCategory.SEROLOGICAL_TESTS));
+		assertThat(PathogenTestType.getCategory(PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY), is(PathogenTestCategory.SEROLOGICAL_TESTS));
 		assertThat(PathogenTestType.getCategory(PathogenTestType.RDT), is(PathogenTestCategory.ANTIGEN_DETECTION));
 		assertThat(PathogenTestType.getCategory(PathogenTestType.BACTERIAL_CULTURE), is(PathogenTestCategory.CULTURE_AND_ISOLATION));
 		assertThat(PathogenTestType.getCategory(PathogenTestType.ACID_FAST_STAIN), is(PathogenTestCategory.MICROSCOPY_AND_STAINING));
@@ -120,6 +120,141 @@ public class PathogenTestTypeTest {
 			PathogenTestType.getCategory(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY),
 			is(PathogenTestCategory.ANTIMICROBIAL_SUSCEPTIBILITY_TESTING));
 		assertThat(PathogenTestType.getCategory(PathogenTestType.IGRA), is(PathogenTestCategory.FUNCTIONAL_IMMUNE_ASSAYS));
+	}
+
+	@Test
+	public void everyMethodResolvesToAtLeastOneResultValueType() {
+		// getResultValueTypes never returns null/empty: an unannotated value defaults to QUALITATIVE.
+		for (PathogenTestType type : PathogenTestType.values()) {
+			Set<ResultValueType> valueTypes = PathogenTestType.getResultValueTypes(type);
+			assertFalse(valueTypes.isEmpty(), "no result value type for " + type.name());
+		}
+		assertThat(PathogenTestType.getResultValueTypes(null), is(EnumSet.of(ResultValueType.QUALITATIVE)));
+		// A value with no annotation (e.g. OTHER) falls back to qualitative.
+		assertThat(PathogenTestType.getResultValueTypes(PathogenTestType.OTHER), is(EnumSet.of(ResultValueType.QUALITATIVE)));
+	}
+
+	@Test
+	public void resultValueTypesMatchKnownAnchors() {
+		assertThat(
+			PathogenTestType.getResultValueTypes(PathogenTestType.PCR_RT_PCR),
+			is(EnumSet.of(ResultValueType.QUALITATIVE, ResultValueType.NUMERIC)));
+		assertThat(PathogenTestType.getResultValueTypes(PathogenTestType.SANGER_SEQUENCING), is(EnumSet.of(ResultValueType.TEXT)));
+		assertThat(PathogenTestType.getResultValueTypes(PathogenTestType.ACID_FAST_STAIN), is(EnumSet.of(ResultValueType.SMEAR_GRADE)));
+		assertThat(PathogenTestType.getResultValueTypes(PathogenTestType.LINE_PROBE_ASSAY), is(EnumSet.of(ResultValueType.BOOLEAN)));
+		assertThat(
+			PathogenTestType.getResultValueTypes(PathogenTestType.WESTERN_BLOT),
+			is(EnumSet.of(ResultValueType.TEXT, ResultValueType.WESTERN_BLOT)));
+		assertThat(PathogenTestType.getResultValueTypes(PathogenTestType.FLOW_CYTOMETRY), is(EnumSet.of(ResultValueType.NUMERIC)));
+		// Reciprocal titres ('1:160') are recorded as text, not a Float numeric value.
+		assertThat(PathogenTestType.getResultValueTypes(PathogenTestType.NEUTRALIZING_ANTIBODIES), is(EnumSet.of(ResultValueType.TEXT)));
+		assertThat(PathogenTestType.getResultValueTypes(PathogenTestType.HEMAGGLUTINATION_INHIBITION), is(EnumSet.of(ResultValueType.TEXT)));
+	}
+
+	@Test
+	public void everyMethodMapsToItsExpectedResultValueTypes() {
+		// Exhaustive map of method -> result value type(s). Any method missing here, or whose annotation
+		// drifts from this expectation, fails the test — so a new/changed @ResultValueTypeRel is noticed.
+		Map<PathogenTestType, Set<ResultValueType>> expected = new EnumMap<>(PathogenTestType.class);
+
+		// Qualitative only (Positive/Negative)
+		for (PathogenTestType t : new PathogenTestType[] {
+			PathogenTestType.MULTIPLEX_PCR,
+			PathogenTestType.LAMP,
+			PathogenTestType.NASBA,
+			PathogenTestType.TMA,
+			PathogenTestType.CRISPR_DIAGNOSTICS,
+			PathogenTestType.DNA_MICROARRAY,
+			PathogenTestType.RAPID_ANTIBODY_TEST,
+			PathogenTestType.INDIRECT_FLUORESCENT_ANTIBODY,
+			PathogenTestType.DIRECT_FLUORESCENT_ANTIBODY,
+			PathogenTestType.RAPID_ANTIGEN_DETECTION,
+			PathogenTestType.RAPID_TEST,
+			PathogenTestType.LATERAL_FLOW_ASSAY,
+			PathogenTestType.IMMUNOFLUORESCENCE_ASSAY,
+			PathogenTestType.SLIDE_AGGLUTINATION,
+			PathogenTestType.QUELLUNG_REACTION,
+			PathogenTestType.RDT,
+			PathogenTestType.VIRAL_ISOLATION,
+			PathogenTestType.DARK_FIELD_MICROSCOPY,
+			PathogenTestType.IMMUNOHISTOCHEMISTRY,
+			PathogenTestType.ELECTRON_MICROSCOPY,
+			PathogenTestType.IGRA,
+			PathogenTestType.TST }) {
+			expected.put(t, EnumSet.of(ResultValueType.QUALITATIVE));
+		}
+
+		// Text only (sequence / variant / organism / morphology / reciprocal titre)
+		for (PathogenTestType t : new PathogenTestType[] {
+			PathogenTestType.SANGER_SEQUENCING,
+			PathogenTestType.WHOLE_GENOME_SEQUENCING,
+			PathogenTestType.MULTILOCUS_SEQUENCE_TYPING,
+			PathogenTestType.CGMLST,
+			PathogenTestType.SNP_TYPING,
+			PathogenTestType.SEROTYPING,
+			PathogenTestType.SEROGROUPING,
+			PathogenTestType.GENOTYPING,
+			PathogenTestType.BEIJINGGENOTYPING,
+			PathogenTestType.SPOLIGOTYPING,
+			PathogenTestType.MIRU_PATTERN_CODE,
+			PathogenTestType.NEUTRALIZING_ANTIBODIES,
+			PathogenTestType.HEMAGGLUTINATION_INHIBITION,
+			PathogenTestType.FUNGAL_CULTURE,
+			PathogenTestType.MALDI_TOF,
+			PathogenTestType.GRAM_STAIN,
+			PathogenTestType.HISTOPATHOLOGY }) {
+			expected.put(t, EnumSet.of(ResultValueType.TEXT));
+		}
+
+		// Qualitative + Numeric (Positive/Negative plus a Ct / titre / count)
+		for (PathogenTestType t : new PathogenTestType[] {
+			PathogenTestType.PCR_RT_PCR,
+			PathogenTestType.Q_PCR,
+			PathogenTestType.DIGITAL_PCR,
+			PathogenTestType.NAAT,
+			PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
+			PathogenTestType.GIEMSA_STAIN }) {
+			expected.put(t, EnumSet.of(ResultValueType.QUALITATIVE, ResultValueType.NUMERIC));
+		}
+
+		expected.put(PathogenTestType.LINE_PROBE_ASSAY, EnumSet.of(ResultValueType.BOOLEAN));
+		expected.put(PathogenTestType.GENOTYPIC_RESISTANCE_TEST, EnumSet.of(ResultValueType.BOOLEAN));
+		expected.put(PathogenTestType.FISH, EnumSet.of(ResultValueType.QUALITATIVE, ResultValueType.TEXT));
+		expected.put(PathogenTestType.THICK_BLOOD_SMEAR, EnumSet.of(ResultValueType.QUALITATIVE, ResultValueType.TEXT));
+		expected.put(PathogenTestType.WESTERN_BLOT, EnumSet.of(ResultValueType.TEXT, ResultValueType.WESTERN_BLOT));
+		expected.put(PathogenTestType.BACTERIAL_CULTURE, EnumSet.of(ResultValueType.TEXT, ResultValueType.NUMERIC));
+		expected.put(PathogenTestType.ACID_FAST_STAIN, EnumSet.of(ResultValueType.SMEAR_GRADE));
+		expected
+			.put(PathogenTestType.QUANTITATIVE_BUFFY_COAT, EnumSet.of(ResultValueType.QUALITATIVE, ResultValueType.TEXT, ResultValueType.NUMERIC));
+		expected.put(PathogenTestType.THIN_BLOOD_SMEAR, EnumSet.of(ResultValueType.NUMERIC, ResultValueType.TEXT));
+		expected.put(PathogenTestType.FLOW_CYTOMETRY, EnumSet.of(ResultValueType.NUMERIC));
+
+		expected.forEach(
+			(type, valueTypes) -> assertThat("result value types for " + type.name(), PathogenTestType.getResultValueTypes(type), is(valueTypes)));
+
+		// Every other method (legacy/hidden, the OTHER_* placeholders, OTHER) defaults to QUALITATIVE.
+		for (PathogenTestType type : PathogenTestType.values()) {
+			if (!expected.containsKey(type)) {
+				assertThat(
+					"unmapped method " + type.name() + " should default to QUALITATIVE",
+					PathogenTestType.getResultValueTypes(type),
+					is(EnumSet.of(ResultValueType.QUALITATIVE)));
+			}
+		}
+	}
+
+	@Test
+	public void numericValueTypeIsAlwaysCombinedOrTextForTitres() {
+		// A method that produces a numeric value either also has a qualitative component (Ct on a positive
+		// PCR), is purely numeric (a true count like Flow Cytometry), or pairs with text (Bacterial
+		// Culture organism + CFU). Reciprocal titres ('1:160') must NOT be NUMERIC — they are TEXT.
+		assertThat(PathogenTestType.getResultValueTypes(PathogenTestType.NEUTRALIZING_ANTIBODIES), not(hasItem(ResultValueType.NUMERIC)));
+		assertThat(PathogenTestType.getResultValueTypes(PathogenTestType.HEMAGGLUTINATION_INHIBITION), not(hasItem(ResultValueType.NUMERIC)));
+		// The only purely-numeric method (no qualitative/text) is Flow Cytometry.
+		List<PathogenTestType> pureNumeric = Arrays.stream(PathogenTestType.values())
+			.filter(t -> PathogenTestType.getResultValueTypes(t).equals(EnumSet.of(ResultValueType.NUMERIC)))
+			.collect(Collectors.toList());
+		assertThat(pureNumeric, containsInAnyOrder(PathogenTestType.FLOW_CYTOMETRY));
 	}
 
 	@Test
