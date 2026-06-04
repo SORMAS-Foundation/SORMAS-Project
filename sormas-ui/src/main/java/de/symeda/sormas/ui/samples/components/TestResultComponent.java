@@ -229,6 +229,13 @@ public class TestResultComponent extends FormComponent<PathogenTestDto> {
 		boolean resultNotApplicable = testResultField.getValue() == PathogenTestResultType.NOT_APPLICABLE;
 		boolean showQualitative = hasQualitative && !resultNotApplicable;
 
+		// Not applicable is only added on demand for methods without a qualitative result (see
+		// ensureNotApplicableSelectable). Once the method has a qualitative result again, drop it back out of
+		// the non-Luxembourg combo so it cannot be picked as a stray option, unless it is the current value.
+		if (!isLuxembourg && hasQualitative && !resultNotApplicable) {
+			removeNotApplicableSelectable();
+		}
+
 		// A numeric value only makes sense for a positive result: for a qualitative+numeric method (e.g.
 		// RT-PCR) the Ct/value appears only once Positive is selected - for a purely numeric method (no
 		// qualitative component) it always applies.
@@ -262,6 +269,17 @@ public class TestResultComponent extends FormComponent<PathogenTestDto> {
 	private void ensureNotApplicableSelectable() {
 		if (!resultTypes.contains(PathogenTestResultType.NOT_APPLICABLE)) {
 			resultTypes.add(PathogenTestResultType.NOT_APPLICABLE);
+			testResultField.setItems(resultTypes);
+		}
+	}
+
+	/**
+	 * Inverse of {@link #ensureNotApplicableSelectable()}: removes {@link PathogenTestResultType#NOT_APPLICABLE}
+	 * from the result combo's items again so it does not linger as a stray option in non-Luxembourg workflows
+	 * once a method with a qualitative result is selected. The caller must ensure it is not the current value.
+	 */
+	private void removeNotApplicableSelectable() {
+		if (resultTypes.remove(PathogenTestResultType.NOT_APPLICABLE)) {
 			testResultField.setItems(resultTypes);
 		}
 	}
