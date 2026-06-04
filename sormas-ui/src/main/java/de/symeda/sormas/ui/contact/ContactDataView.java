@@ -59,6 +59,7 @@ import de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent;
 import de.symeda.sormas.ui.document.DocumentListComponent;
 import de.symeda.sormas.ui.email.ExternalEmailSideComponent;
 import de.symeda.sormas.ui.events.eventLink.EventListComponent;
+import de.symeda.sormas.ui.immunization.components.panel.VaccinationStatusPanel;
 import de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListComponent;
 import de.symeda.sormas.ui.samples.HasName;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
@@ -255,9 +256,12 @@ public class ContactDataView extends AbstractContactView implements HasName {
 			layout.addSidePanelComponent(eventsLayout, EVENTS_LOC);
 		}
 
-		// Immunizations are not shown for Salmonellosis & SHIGELLOSIS contacts
-		if (UiUtil.permitted(FeatureType.IMMUNIZATION_MANAGEMENT, UserRight.IMMUNIZATION_VIEW)
-			&& !IMMUNIZATION_EXCLUDED_DISEASES.contains(resolvedDisease)) {
+		// Immunizations are not shown for Salmonellosis contacts
+		if (UiUtil.permitted(FeatureType.IMMUNIZATION_MANAGEMENT, UserRight.IMMUNIZATION_VIEW) && !IMMUNIZATION_EXCLUDED_DISEASES.contains(resolvedDisease)) {
+			final VaccinationStatusPanel vaccinationStatusPanel = VaccinationStatusPanel.forContact(contactDto);
+			if (contactDto.getVaccinationStatusLastUpdated() == null && UiUtil.permitted(UserRight.IMMUNIZATION_EDIT)) {
+				showVaccinationStatusUpdateDialog(contactDto);
+			}
 			if (!FacadeProvider.getFeatureConfigurationFacade()
 				.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
 				layout.addSidePanelComponent(new SideComponentLayout(new ImmunizationListComponent(() -> {
@@ -268,7 +272,7 @@ public class ContactDataView extends AbstractContactView implements HasName {
 						criteriaDisease = refreshedCase != null ? refreshedCase.getDisease() : null;
 					}
 					return new ImmunizationListCriteria.Builder(refreshedContact.getPerson()).withDisease(criteriaDisease).build();
-				}, null, this::showUnsavedChangesPopup, editAllowed)), IMMUNIZATION_LOC);
+				}, null, this::showUnsavedChangesPopup, editAllowed, vaccinationStatusPanel)), IMMUNIZATION_LOC);
 			} else {
 				layout.addSidePanelComponent(new SideComponentLayout(new VaccinationListComponent(() -> {
 					ContactDto refreshedContact = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
@@ -398,6 +402,21 @@ public class ContactDataView extends AbstractContactView implements HasName {
 		} else {
 			ControllerProvider.getCaseController().createFromContact(contactDataForm.getValue());
 		}
+	}
+
+	private void showVaccinationStatusUpdateDialog(ContactDto contactDto) {
+		VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getCaption(Captions.CaseData_vaccinationStatusUpdate),
+			new Label(I18nProperties.getString(Strings.confirmationVaccinationStatusSync)),
+			I18nProperties.getString(Strings.yes),
+			I18nProperties.getString(Strings.no),
+			600,
+			confirmed -> {
+				if (Boolean.TRUE == confirmed) {
+					FacadeProvider.getContactFacade().updateVaccinationStatuses(contactDto.toReference());
+					ControllerProvider.getContactController().navigateToData(contactDto.getUuid());
+				}
+			});
 	}
 
 	private CaseInfoLayout createCaseInfoLayout(String caseUuid) {

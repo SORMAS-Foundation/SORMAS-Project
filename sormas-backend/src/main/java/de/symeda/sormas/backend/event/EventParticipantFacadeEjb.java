@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -64,6 +65,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.EmbeddedSampleExportDto;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
@@ -85,6 +87,7 @@ import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRun
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
@@ -431,11 +434,38 @@ public class EventParticipantFacadeEjb
 		EventParticipant newEventParticipant,
 		boolean syncShares) {
 
-		if (existingEventParticipant == null) {
+		if (existingEventParticipant == null || hasVaccinationReferenceChanged(existingEventParticipant, newEventParticipant)) {
 			vaccinationFacade.updateVaccinationStatuses(newEventParticipant);
 		}
 
 		eventFacade.onEventChange(event, syncShares);
+	}
+
+	private boolean hasVaccinationReferenceChanged(EventParticipantDto existingEventParticipant, EventParticipant newEventParticipant) {
+		return existingEventParticipant != null
+			&& (!Objects.equals(
+				existingEventParticipant.getEvent() != null ? existingEventParticipant.getEvent().getUuid() : null,
+				newEventParticipant.getEvent() != null ? newEventParticipant.getEvent().getUuid() : null)
+				|| !Objects.equals(
+					existingEventParticipant.getPerson() != null ? existingEventParticipant.getPerson().getUuid() : null,
+					newEventParticipant.getPerson() != null ? newEventParticipant.getPerson().getUuid() : null));
+	}
+
+	@Override
+	@RightsAllowed({
+		UserRight._EVENTPARTICIPANT_EDIT,
+		UserRight._IMMUNIZATION_EDIT })
+	public void updateVaccinationStatuses(EventParticipantReferenceDto eventParticipantRef) {
+		EventParticipant eventParticipant = service.getByReferenceDto(eventParticipantRef);
+		vaccinationFacade.updateVaccinationStatuses(eventParticipant);
+		service.ensurePersisted(eventParticipant);
+		eventFacade.onEventChange(eventFacade.toDto(eventParticipant.getEvent()), true);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._EVENTPARTICIPANT_EDIT)
+	public void deleteVaccinationStatuses(ImmunizationReferenceDto immunizationRef) {
+		service.clearVaccinationStatuses(immunizationRef);
 	}
 
 	private void notifyEventResponsibleUsersOfCommonEventParticipant(EventParticipant eventParticipant, Event event) {
@@ -1134,6 +1164,9 @@ public class EventParticipantFacadeEjb
 	}
 
 	public EventParticipant fillOrBuildEntity(@NotNull EventParticipantDto source, EventParticipant target, boolean checkChangeDate) {
+		boolean targetWasNull = target == null;
+		VaccinationStatus previousVaccinationStatus = target != null ? target.getVaccinationStatus() : null;
+		String previousVaccinationStatusDetails = target != null ? target.getVaccinationStatusDetails() : null;
 
 		target = DtoHelper.fillOrBuildEntity(source, target, EventParticipant::new, checkChangeDate);
 
@@ -1146,6 +1179,20 @@ public class EventParticipantFacadeEjb
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 
 		target.setVaccinationStatus(source.getVaccinationStatus());
+		target.setVaccinationStatusDetails(source.getVaccinationStatusDetails());
+		boolean vaccinationStatusManuallyUpdated = targetWasNull
+			? source.getVaccinationStatus() != null || source.getVaccinationStatusDetails() != null
+			: !Objects.equals(previousVaccinationStatus, source.getVaccinationStatus())
+				|| !Objects.equals(previousVaccinationStatusDetails, source.getVaccinationStatusDetails());
+		if (vaccinationStatusManuallyUpdated) {
+			target.setVaccinationStatusLastUpdated(null);
+			target.setNumberOfDoses(null);
+			target.setInformationReliability(null);
+		} else {
+			target.setVaccinationStatusLastUpdated(source.getVaccinationStatusLastUpdated());
+			target.setNumberOfDoses(source.getNumberOfDoses());
+			target.setInformationReliability(source.getInformationReliability());
+		}
 
 		if (source.getSormasToSormasOriginInfo() != null) {
 			target.setSormasToSormasOriginInfo(originInfoService.getByUuid(source.getSormasToSormasOriginInfo().getUuid()));
@@ -1220,6 +1267,10 @@ public class EventParticipantFacadeEjb
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
 		target.setVaccinationStatus(source.getVaccinationStatus());
+		target.setVaccinationStatusDetails(source.getVaccinationStatusDetails());
+		target.setVaccinationStatusLastUpdated(source.getVaccinationStatusLastUpdated());
+		target.setNumberOfDoses(source.getNumberOfDoses());
+		target.setInformationReliability(source.getInformationReliability());
 
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
 		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));

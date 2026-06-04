@@ -87,6 +87,8 @@ public abstract class FormComponent<T> extends VerticalLayout {
 		field.setCaption(I18nProperties.getPrefixCaption(i18nPrefix, propertyId));
 		CssStyles.style(field, CssStyles.CAPTION_ON_TOP);
 		field.setWidth(100, Unit.PERCENTAGE);
+		field.setLocale(I18nProperties.getUserLanguage().getLocale());
+		field.setDateFormat(DateFormatHelper.getDateFormatPattern());
 		trackField(field);
 		return field;
 	}

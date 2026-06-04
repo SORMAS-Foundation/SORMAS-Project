@@ -19,8 +19,11 @@ import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.CoreFacade;
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.utils.SortProperty;
 
@@ -50,4 +53,29 @@ public interface ImmunizationFacade extends CoreFacade<ImmunizationDto, Immuniza
 	List<ImmunizationDto> getByPersonUuids(List<String> uuids);
 
 	boolean isUseDeterminedVaccinationStatus();
+
+	boolean isUseQuickImmunizationCreation();
+
+	Date getSuggestedValidFrom(Disease disease, MeansOfImmunization meansOfImmunization, Date immunizationDate, Integer numberOfDoses);
+
+	Date getSuggestedValidUntil(Disease disease, MeansOfImmunization meansOfImmunization, Date validFrom, Integer numberOfDoses);
+
+	/**
+	 * Creates an Immunization with the quick form fields and auto-creates N dose entries.
+	 * Sets ImmunizationManagementStatus = COMPLETED, ImmunizationStatus = ACQUIRED (BR0071, BR0073).
+	 */
+	ImmunizationDto saveQuickImmunization(@Valid ImmunizationDto dto, VaccinationInfoSource vaccinationInfoSource, Date dateOfMostRecentDose);
+
+	/**
+	 * Derives the vaccination status data for the given person, disease and reference date.
+	 *
+	 * @param personUuid
+	 *            UUID of the person
+	 * @param disease
+	 *            disease to match immunizations against
+	 * @param referenceDate
+	 *            the reference date (e.g. case report date)
+	 * @return derived {@link VaccinationStatusData}; never {@code null}
+	 */
+	VaccinationStatusData getVaccinationStatusData(String personUuid, Disease disease, Date referenceDate);
 }

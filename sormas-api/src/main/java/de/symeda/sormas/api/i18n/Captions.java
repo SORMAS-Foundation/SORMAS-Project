@@ -109,6 +109,7 @@ public interface Captions {
 	String actionOverwrite = "actionOverwrite";
 	String actionPick = "actionPick";
 	String actionProceed = "actionProceed";
+	String actionQuickAddVaccination = "actionQuickAddVaccination";
 	String actionReject = "actionReject";
 	String actionRemindMeLater = "actionRemindMeLater";
 	String actionReset = "actionReset";
@@ -2172,6 +2173,7 @@ public interface Captions {
 	String Immunization_responsibleRegion = "Immunization.responsibleRegion";
 	String Immunization_startDate = "Immunization.startDate";
 	String Immunization_uuid = "Immunization.uuid";
+	String Immunization_vaccinationInfoSource = "Immunization.vaccinationInfoSource";
 	String Immunization_vaccinations = "Immunization.vaccinations";
 	String Immunization_validFrom = "Immunization.validFrom";
 	String Immunization_validUntil = "Immunization.validUntil";
@@ -2186,6 +2188,17 @@ public interface Captions {
 	String immunizationNoImmunizationsForPerson = "immunizationNoImmunizationsForPerson";
 	String immunizationOnlyPersonsWithOverdueImmunization = "immunizationOnlyPersonsWithOverdueImmunization";
 	String immunizationOverwriteImmunization = "immunizationOverwriteImmunization";
+	String immunizationQuickNewImmunization = "immunizationQuickNewImmunization";
+	String ImmunizationSidePanel_dateOfLastDose = "ImmunizationSidePanel.dateOfLastDose";
+	String ImmunizationSidePanel_informationReliability = "ImmunizationSidePanel.informationReliability";
+	String ImmunizationSidePanel_numberOfDoses = "ImmunizationSidePanel.numberOfDoses";
+	String ImmunizationSidePanel_referencePeriod = "ImmunizationSidePanel.referencePeriod";
+	String ImmunizationSidePanel_title = "ImmunizationSidePanel.title";
+	String ImmunizationSidePanel_vaccinationStatus = "ImmunizationSidePanel.vaccinationStatus";
+	String ImmunizationSidePanel_vaccinationStatusDetails = "ImmunizationSidePanel.vaccinationStatusDetails";
+	String ImmunizationSidePanel_vaccinationStatusLastUpdated = "ImmunizationSidePanel.vaccinationStatusLastUpdated";
+	String ImmunizationSidePanel_quickEntry = "ImmunizationSidePanel_quickEntry";
+	String ImmunizationSidePanel_viewAll = "ImmunizationSidePanel_viewAll";
 	String importCancelImport = "importCancelImport";
 	String importDetailed = "importDetailed";
 	String importDownloadCaseImportTemplate = "importDownloadCaseImportTemplate";
@@ -2628,6 +2641,8 @@ public interface Captions {
 	String prescriptionWithTreatmentTitleDelete = "prescriptionWithTreatmentTitleDelete";
 	String primarySuffix = "primarySuffix";
 	String QueryDetails_resultLimit = "QueryDetails.resultLimit";
+	String quickImmunizationDateOfMostRecentDose = "quickImmunizationDateOfMostRecentDose";
+	String quickImmunizationValidityDatesCannotBeCalculated = "quickImmunizationValidityDatesCannotBeCalculated";
 	String Region = "Region";
 	String Region_archived = "Region.archived";
 	String Region_country = "Region.country";

@@ -996,6 +996,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			trimesterField.setVisible(false);
 		}
 
+		boolean showVaccinationStatusFields = !UiUtil.enabled(FeatureType.IMMUNIZATION_MANAGEMENT)
+			|| FacadeProvider.getFeatureConfigurationFacade().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED);
+
 		ComboBox vaccinationStatusField = addField(CaseDataDto.VACCINATION_STATUS, ComboBox.class);
 
 		// Add field to display means of immunization details when status is OTHER
@@ -1008,48 +1011,15 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		getContent().addComponent(vaccinationStatusDetailsField, VACCINATION_STATUS_DETAILS_LOC);
 
 		// Show details field only when vaccination status is OTHER
-		FieldHelper.setVisibleWhen(
-			getFieldGroup(),
-			CaseDataDto.VACCINATION_STATUS_DETAILS,
-			CaseDataDto.VACCINATION_STATUS,
-			Collections.singletonList(VaccinationStatus.OTHER),
-			true);
-
-		// Make vaccination status read-only when determined vaccination status feature is enabled
-		// In that mode, the status is automatically computed from immunization data and no longer needed to be edited by the user
-		if (FacadeProvider.getImmunizationFacade().isUseDeterminedVaccinationStatus()) {
-			vaccinationStatusField.setReadOnly(true);
-			vaccinationStatusField.setDescription(I18nProperties.getString(Strings.infoDeterminedVaccinationStatusReadOnly));
-
-			// Add info icon with explanation of automatic computation
-			vaccinationStatusInfoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
-			CssStyles.style(vaccinationStatusInfoLabel, CssStyles.LABEL_XLARGE, CssStyles.VSPACE_TOP_3);
-
-			// Build detailed explanation based on the outline document
-			String infoText = String.format(
-				"<b>%s</b><br/><br/>" + "%s<br/><br/>" + "<b>%s:</b><br/>" + "• %s<br/>" + "• %s<br/>" + "• %s<br/><br/>" + "<b>%s:</b><br/>"
-					+ "• <i>Vaccination</i>: %s<br/>" + "• <i>Recovery</i>: %s<br/>" + "• <i>Other</i>: %s<br/><br/>" + "<b>%s:</b><br/>"
-					+ "• %s<br/>" + "• %s",
-				I18nProperties.getString(Strings.headingAutomaticVaccinationStatusDetermination),
-				I18nProperties.getString(Strings.infoDeterminedVaccinationStatusExplanation),
-				I18nProperties.getString(Strings.headingImmunizationSelection),
-				I18nProperties.getString(Strings.infoImmunizationStatusAcquired),
-				I18nProperties.getString(Strings.infoImmunizationValidFromClosest),
-				I18nProperties.getString(Strings.infoImmunizationValidUntilNotBefore),
-				I18nProperties.getString(Strings.headingStatusDetermination),
-				I18nProperties.getString(Strings.infoVaccinationDoseCount),
-				I18nProperties.getString(Strings.infoRecoveryNaturalImmunity),
-				I18nProperties.getString(Strings.infoOtherImmunization),
-				I18nProperties.getString(Strings.headingDoseCount),
-				I18nProperties.getString(Strings.infoDoseCountFromNumberOfDoses),
-				I18nProperties.getString(Strings.infoDoseCountFromVaccinationEntries));
-
-			vaccinationStatusInfoLabel.setDescription(infoText, ContentMode.HTML);
-			// Set the initial visibility of the info label to false it will be set to true in the medical information section
-			vaccinationStatusInfoLabel.setVisible(false);
-			getContent().addComponent(vaccinationStatusInfoLabel, VACCINATION_STATUS_INFO_LOC);
-
+		if (showVaccinationStatusFields) {
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				CaseDataDto.VACCINATION_STATUS_DETAILS,
+				CaseDataDto.VACCINATION_STATUS,
+				Collections.singletonList(VaccinationStatus.OTHER),
+				true);
 		}
+
 		addFields(CaseDataDto.SMALLPOX_VACCINATION_SCAR, CaseDataDto.SMALLPOX_VACCINATION_RECEIVED);
 		addDateField(CaseDataDto.SMALLPOX_LAST_VACCINATION_DATE, DateField.class, 0);
 
@@ -1123,8 +1093,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				FieldVisibilityCheckers.withDisease(disease)
 					.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
 				FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized),
-				new PersonReferenceDto(person.getUuid())))
-			.setCaption(null);
+				new PersonReferenceDto(person.getUuid()))).setCaption(null);
 
 		//diagnosis criteria
 		if ((FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) && disease == Disease.TUBERCULOSIS) {
@@ -1155,6 +1124,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		// Set initial visibilities & accesses
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
+
+		if (!showVaccinationStatusFields) {
+			vaccinationStatusField.setVisible(false);
+			vaccinationStatusDetailsField.setVisible(false);
+		}
 
 		// Set requirements that don't need visibility changes and read only status
 		setRequired(
@@ -1283,8 +1257,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		}
 
 		// Sync visibility of info label with vaccination status field
-		if (vaccinationStatusInfoLabel != null && isVisibleAllowed(CaseDataDto.VACCINATION_STATUS)) {
-			vaccinationStatusInfoLabel.setVisible(true);
+		if (vaccinationStatusInfoLabel != null) {
+			vaccinationStatusInfoLabel.setVisible(showVaccinationStatusFields && isVisibleAllowed(CaseDataDto.VACCINATION_STATUS));
 		}
 
 		if (isVisibleAllowed(CaseDataDto.OUTCOME_DATE)) {

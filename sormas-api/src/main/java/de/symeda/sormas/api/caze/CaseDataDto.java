@@ -53,6 +53,7 @@ import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.immunization.InformationReliability;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
@@ -142,6 +143,9 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	public static final String PREGNANT = "pregnant";
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
 	public static final String VACCINATION_STATUS_DETAILS = "vaccinationStatusDetails";
+	public static final String VACCINATION_STATUS_LAST_UPDATED = "vaccinationStatusLastUpdated";
+	public static final String NUMBER_OF_DOSES = "numberOfDoses";
+	public static final String INFORMATION_RELIABILITY = "informationReliability";
 	public static final String SMALLPOX_VACCINATION_SCAR = "smallpoxVaccinationScar";
 	public static final String SMALLPOX_VACCINATION_RECEIVED = "smallpoxVaccinationReceived";
 	public static final String SMALLPOX_LAST_VACCINATION_DATE = "smallpoxLastVaccinationDate";
@@ -393,6 +397,11 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	@Outbreaks
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String vaccinationStatusDetails;
+	private Date vaccinationStatusLastUpdated;
+	@Outbreaks
+	private Integer numberOfDoses;
+	@Outbreaks
+	private InformationReliability informationReliability;
 	@Diseases({
 		Disease.MONKEYPOX })
 	private YesNoUnknown smallpoxVaccinationScar;
@@ -1203,6 +1212,30 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 
 	public void setVaccinationStatusDetails(String vaccinationStatusDetails) {
 		this.vaccinationStatusDetails = vaccinationStatusDetails;
+	}
+
+	public Date getVaccinationStatusLastUpdated() {
+		return vaccinationStatusLastUpdated;
+	}
+
+	public void setVaccinationStatusLastUpdated(Date vaccinationStatusLastUpdated) {
+		this.vaccinationStatusLastUpdated = vaccinationStatusLastUpdated;
+	}
+
+	public Integer getNumberOfDoses() {
+		return numberOfDoses;
+	}
+
+	public void setNumberOfDoses(Integer numberOfDoses) {
+		this.numberOfDoses = numberOfDoses;
+	}
+
+	public InformationReliability getInformationReliability() {
+		return informationReliability;
+	}
+
+	public void setInformationReliability(InformationReliability informationReliability) {
+		this.informationReliability = informationReliability;
 	}
 
 	public YesNoUnknown getSmallpoxVaccinationScar() {
