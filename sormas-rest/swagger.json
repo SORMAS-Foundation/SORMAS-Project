@@ -12228,7 +12228,7 @@
           },
           "vaccinationStatus" : {
             "type" : "string",
-            "enum" : [ "VACCINATED", "UNVACCINATED", "VACCINATED_ONE_DOSE", "VACCINATED_TWO_DOSE", "RECOVERED", "OTHER", "UNKNOWN" ]
+            "enum" : [ "VACCINATED", "UNVACCINATED", "RECOVERED", "HAD_THE_DISEASE", "OTHER", "UNKNOWN" ]
           },
           "withExtendedQuarantine" : {
             "type" : "boolean"
@@ -12465,6 +12465,10 @@
             "type" : "string",
             "enum" : [ "UNKNOWN", "AMBULATORY", "MEDICAL_PRACTICE", "OPERATIVE_1200", "HOSPITAL_1300", "OTHER_OUTPATIENT_FACILITY", "STATIONARY", "HOSPITAL_2100", "NORMAL_WARD", "OPERATIVE_2111", "NOT_OPERATIVE", "HEMATOLOGICAL_ONCOLOGY", "CHILDREN_WARD", "NEONATOLOGY", "INTENSIVE_CARE_UNIT", "OTHER_STATION", "NURSING_HOME", "REHAB_FACILITY", "OTHER_STATIONARY_FACILITY" ]
           },
+          "informationReliability" : {
+            "type" : "string",
+            "enum" : [ "TRUSTED", "UNRELIABLE", "UNKNOWN" ]
+          },
           "internalToken" : {
             "type" : "string",
             "maxLength" : 1000000,
@@ -12520,6 +12524,10 @@
             "type" : "string",
             "maxLength" : 512,
             "minLength" : 0
+          },
+          "numberOfDoses" : {
+            "type" : "integer",
+            "format" : "int32"
           },
           "otherDeletionReason" : {
             "type" : "string",
@@ -12800,12 +12808,16 @@
           },
           "vaccinationStatus" : {
             "type" : "string",
-            "enum" : [ "VACCINATED", "UNVACCINATED", "VACCINATED_ONE_DOSE", "VACCINATED_TWO_DOSE", "RECOVERED", "OTHER", "UNKNOWN" ]
+            "enum" : [ "VACCINATED", "UNVACCINATED", "RECOVERED", "HAD_THE_DISEASE", "OTHER", "UNKNOWN" ]
           },
           "vaccinationStatusDetails" : {
             "type" : "string",
             "maxLength" : 512,
             "minLength" : 0
+          },
+          "vaccinationStatusLastUpdated" : {
+            "type" : "string",
+            "format" : "date-time"
           },
           "wasInQuarantineBeforeIsolation" : {
             "type" : "string",
@@ -13063,7 +13075,7 @@
           },
           "vaccinationStatus" : {
             "type" : "string",
-            "enum" : [ "VACCINATED", "UNVACCINATED", "VACCINATED_ONE_DOSE", "VACCINATED_TWO_DOSE", "RECOVERED", "OTHER", "UNKNOWN" ]
+            "enum" : [ "VACCINATED", "UNVACCINATED", "RECOVERED", "HAD_THE_DISEASE", "OTHER", "UNKNOWN" ]
           },
           "withExtendedQuarantine" : {
             "type" : "boolean"
@@ -13347,7 +13359,7 @@
           },
           "vaccinationStatus" : {
             "type" : "string",
-            "enum" : [ "VACCINATED", "UNVACCINATED", "VACCINATED_ONE_DOSE", "VACCINATED_TWO_DOSE", "RECOVERED", "OTHER", "UNKNOWN" ]
+            "enum" : [ "VACCINATED", "UNVACCINATED", "RECOVERED", "HAD_THE_DISEASE", "OTHER", "UNKNOWN" ]
           },
           "visitCount" : {
             "type" : "integer",
@@ -13514,7 +13526,7 @@
           },
           "vaccinationStatus" : {
             "type" : "string",
-            "enum" : [ "VACCINATED", "UNVACCINATED", "VACCINATED_ONE_DOSE", "VACCINATED_TWO_DOSE", "RECOVERED", "OTHER", "UNKNOWN" ]
+            "enum" : [ "VACCINATED", "UNVACCINATED", "RECOVERED", "HAD_THE_DISEASE", "OTHER", "UNKNOWN" ]
           },
           "visitCount" : {
             "type" : "integer",
@@ -13661,7 +13673,7 @@
               "type" : "array",
               "items" : {
                 "type" : "string",
-                "enum" : [ "ANTIBODY_DETECTION", "ANTIGEN_DETECTION", "RAPID_ANTIGEN_DETECTION", "RAPID_TEST", "CULTURE", "HISTOPATHOLOGY", "ISOLATION", "IGM_SERUM_ANTIBODY", "IGG_SERUM_ANTIBODY", "IGA_SERUM_ANTIBODY", "INCUBATION_TIME", "INDIRECT_FLUORESCENT_ANTIBODY", "DIRECT_FLUORESCENT_ANTIBODY", "MICROSCOPY", "NEUTRALIZING_ANTIBODIES", "ENZYME_LINKED_IMMUNOSORBENT_ASSAY", "PCR_RT_PCR", "GRAM_STAIN", "LATEX_AGGLUTINATION", "CQ_VALUE_DETECTION", "SEQUENCING", "DNA_MICROARRAY", "TMA", "IGRA", "TST", "BEIJINGGENOTYPING", "SPOLIGOTYPING", "MIRU_PATTERN_CODE", "ANTIBIOTIC_SUSCEPTIBILITY", "MULTILOCUS_SEQUENCE_TYPING", "CGMLST", "SNP_TYPING", "SEROTYPING", "SLIDE_AGGLUTINATION", "WHOLE_GENOME_SEQUENCING", "SEROGROUPING", "GENOTYPING", "NAAT", "THICK_BLOOD_SMEAR", "THIN_BLOOD_SMEAR", "Q_PCR", "LAMP", "OTHER_ANTIGEN_DETECTION_TEST", "OTHER_MOLECULAR_ASSAY", "OTHER_SEROLOGICAL_TEST", "OTHER" ]
+                "enum" : [ "ANTIBODY_DETECTION", "ANTIGEN_DETECTION", "CULTURE", "ISOLATION", "IGM_SERUM_ANTIBODY", "IGG_SERUM_ANTIBODY", "IGA_SERUM_ANTIBODY", "INCUBATION_TIME", "MICROSCOPY", "LATEX_AGGLUTINATION", "CQ_VALUE_DETECTION", "SEQUENCING", "OTHER_ANTIGEN_DETECTION_TEST", "OTHER_MOLECULAR_ASSAY", "OTHER_SEROLOGICAL_TEST", "PCR_RT_PCR", "Q_PCR", "MULTIPLEX_PCR", "DIGITAL_PCR", "LAMP", "NASBA", "TMA", "CRISPR_DIAGNOSTICS", "LINE_PROBE_ASSAY", "SANGER_SEQUENCING", "WHOLE_GENOME_SEQUENCING", "DNA_MICROARRAY", "NAAT", "MULTILOCUS_SEQUENCE_TYPING", "CGMLST", "SNP_TYPING", "SEROTYPING", "SEROGROUPING", "GENOTYPING", "BEIJINGGENOTYPING", "SPOLIGOTYPING", "MIRU_PATTERN_CODE", "ENZYME_LINKED_IMMUNOSORBENT_ASSAY", "WESTERN_BLOT", "NEUTRALIZING_ANTIBODIES", "INDIRECT_FLUORESCENT_ANTIBODY", "DIRECT_FLUORESCENT_ANTIBODY", "RAPID_ANTIBODY_TEST", "RAPID_ANTIGEN_DETECTION", "RAPID_TEST", "LATERAL_FLOW_ASSAY", "IMMUNOFLUORESCENCE_ASSAY", "SLIDE_AGGLUTINATION", "QUELLUNG_REACTION", "HEMAGGLUTINATION_INHIBITION", "RDT", "BACTERIAL_CULTURE", "VIRAL_ISOLATION", "FUNGAL_CULTURE", "MALDI_TOF", "GRAM_STAIN", "ACID_FAST_STAIN", "DARK_FIELD_MICROSCOPY", "GIEMSA_STAIN", "HISTOPATHOLOGY", "FISH", "IMMUNOHISTOCHEMISTRY", "ELECTRON_MICROSCOPY", "QUANTITATIVE_BUFFY_COAT", "THICK_BLOOD_SMEAR", "THIN_BLOOD_SMEAR", "ANTIBIOTIC_SUSCEPTIBILITY", "GENOTYPIC_RESISTANCE_TEST", "IGRA", "TST", "FLOW_CYTOMETRY", "OTHER" ]
               }
             }
           }
@@ -13690,14 +13702,14 @@
               "type" : "array",
               "items" : {
                 "type" : "string",
-                "enum" : [ "ANTIBODY_DETECTION", "ANTIGEN_DETECTION", "RAPID_ANTIGEN_DETECTION", "RAPID_TEST", "CULTURE", "HISTOPATHOLOGY", "ISOLATION", "IGM_SERUM_ANTIBODY", "IGG_SERUM_ANTIBODY", "IGA_SERUM_ANTIBODY", "INCUBATION_TIME", "INDIRECT_FLUORESCENT_ANTIBODY", "DIRECT_FLUORESCENT_ANTIBODY", "MICROSCOPY", "NEUTRALIZING_ANTIBODIES", "ENZYME_LINKED_IMMUNOSORBENT_ASSAY", "PCR_RT_PCR", "GRAM_STAIN", "LATEX_AGGLUTINATION", "CQ_VALUE_DETECTION", "SEQUENCING", "DNA_MICROARRAY", "TMA", "IGRA", "TST", "BEIJINGGENOTYPING", "SPOLIGOTYPING", "MIRU_PATTERN_CODE", "ANTIBIOTIC_SUSCEPTIBILITY", "MULTILOCUS_SEQUENCE_TYPING", "CGMLST", "SNP_TYPING", "SEROTYPING", "SLIDE_AGGLUTINATION", "WHOLE_GENOME_SEQUENCING", "SEROGROUPING", "GENOTYPING", "NAAT", "THICK_BLOOD_SMEAR", "THIN_BLOOD_SMEAR", "Q_PCR", "LAMP", "OTHER_ANTIGEN_DETECTION_TEST", "OTHER_MOLECULAR_ASSAY", "OTHER_SEROLOGICAL_TEST", "OTHER" ]
+                "enum" : [ "ANTIBODY_DETECTION", "ANTIGEN_DETECTION", "CULTURE", "ISOLATION", "IGM_SERUM_ANTIBODY", "IGG_SERUM_ANTIBODY", "IGA_SERUM_ANTIBODY", "INCUBATION_TIME", "MICROSCOPY", "LATEX_AGGLUTINATION", "CQ_VALUE_DETECTION", "SEQUENCING", "OTHER_ANTIGEN_DETECTION_TEST", "OTHER_MOLECULAR_ASSAY", "OTHER_SEROLOGICAL_TEST", "PCR_RT_PCR", "Q_PCR", "MULTIPLEX_PCR", "DIGITAL_PCR", "LAMP", "NASBA", "TMA", "CRISPR_DIAGNOSTICS", "LINE_PROBE_ASSAY", "SANGER_SEQUENCING", "WHOLE_GENOME_SEQUENCING", "DNA_MICROARRAY", "NAAT", "MULTILOCUS_SEQUENCE_TYPING", "CGMLST", "SNP_TYPING", "SEROTYPING", "SEROGROUPING", "GENOTYPING", "BEIJINGGENOTYPING", "SPOLIGOTYPING", "MIRU_PATTERN_CODE", "ENZYME_LINKED_IMMUNOSORBENT_ASSAY", "WESTERN_BLOT", "NEUTRALIZING_ANTIBODIES", "INDIRECT_FLUORESCENT_ANTIBODY", "DIRECT_FLUORESCENT_ANTIBODY", "RAPID_ANTIBODY_TEST", "RAPID_ANTIGEN_DETECTION", "RAPID_TEST", "LATERAL_FLOW_ASSAY", "IMMUNOFLUORESCENCE_ASSAY", "SLIDE_AGGLUTINATION", "QUELLUNG_REACTION", "HEMAGGLUTINATION_INHIBITION", "RDT", "BACTERIAL_CULTURE", "VIRAL_ISOLATION", "FUNGAL_CULTURE", "MALDI_TOF", "GRAM_STAIN", "ACID_FAST_STAIN", "DARK_FIELD_MICROSCOPY", "GIEMSA_STAIN", "HISTOPATHOLOGY", "FISH", "IMMUNOHISTOCHEMISTRY", "ELECTRON_MICROSCOPY", "QUANTITATIVE_BUFFY_COAT", "THICK_BLOOD_SMEAR", "THIN_BLOOD_SMEAR", "ANTIBIOTIC_SUSCEPTIBILITY", "GENOTYPIC_RESISTANCE_TEST", "IGRA", "TST", "FLOW_CYTOMETRY", "OTHER" ]
               }
             },
             "sampleTestTypes" : {
               "type" : "array",
               "items" : {
                 "type" : "string",
-                "enum" : [ "ANTIBODY_DETECTION", "ANTIGEN_DETECTION", "RAPID_ANTIGEN_DETECTION", "RAPID_TEST", "CULTURE", "HISTOPATHOLOGY", "ISOLATION", "IGM_SERUM_ANTIBODY", "IGG_SERUM_ANTIBODY", "IGA_SERUM_ANTIBODY", "INCUBATION_TIME", "INDIRECT_FLUORESCENT_ANTIBODY", "DIRECT_FLUORESCENT_ANTIBODY", "MICROSCOPY", "NEUTRALIZING_ANTIBODIES", "ENZYME_LINKED_IMMUNOSORBENT_ASSAY", "PCR_RT_PCR", "GRAM_STAIN", "LATEX_AGGLUTINATION", "CQ_VALUE_DETECTION", "SEQUENCING", "DNA_MICROARRAY", "TMA", "IGRA", "TST", "BEIJINGGENOTYPING", "SPOLIGOTYPING", "MIRU_PATTERN_CODE", "ANTIBIOTIC_SUSCEPTIBILITY", "MULTILOCUS_SEQUENCE_TYPING", "CGMLST", "SNP_TYPING", "SEROTYPING", "SLIDE_AGGLUTINATION", "WHOLE_GENOME_SEQUENCING", "SEROGROUPING", "GENOTYPING", "NAAT", "THICK_BLOOD_SMEAR", "THIN_BLOOD_SMEAR", "Q_PCR", "LAMP", "OTHER_ANTIGEN_DETECTION_TEST", "OTHER_MOLECULAR_ASSAY", "OTHER_SEROLOGICAL_TEST", "OTHER" ]
+                "enum" : [ "ANTIBODY_DETECTION", "ANTIGEN_DETECTION", "CULTURE", "ISOLATION", "IGM_SERUM_ANTIBODY", "IGG_SERUM_ANTIBODY", "IGA_SERUM_ANTIBODY", "INCUBATION_TIME", "MICROSCOPY", "LATEX_AGGLUTINATION", "CQ_VALUE_DETECTION", "SEQUENCING", "OTHER_ANTIGEN_DETECTION_TEST", "OTHER_MOLECULAR_ASSAY", "OTHER_SEROLOGICAL_TEST", "PCR_RT_PCR", "Q_PCR", "MULTIPLEX_PCR", "DIGITAL_PCR", "LAMP", "NASBA", "TMA", "CRISPR_DIAGNOSTICS", "LINE_PROBE_ASSAY", "SANGER_SEQUENCING", "WHOLE_GENOME_SEQUENCING", "DNA_MICROARRAY", "NAAT", "MULTILOCUS_SEQUENCE_TYPING", "CGMLST", "SNP_TYPING", "SEROTYPING", "SEROGROUPING", "GENOTYPING", "BEIJINGGENOTYPING", "SPOLIGOTYPING", "MIRU_PATTERN_CODE", "ENZYME_LINKED_IMMUNOSORBENT_ASSAY", "WESTERN_BLOT", "NEUTRALIZING_ANTIBODIES", "INDIRECT_FLUORESCENT_ANTIBODY", "DIRECT_FLUORESCENT_ANTIBODY", "RAPID_ANTIBODY_TEST", "RAPID_ANTIGEN_DETECTION", "RAPID_TEST", "LATERAL_FLOW_ASSAY", "IMMUNOFLUORESCENCE_ASSAY", "SLIDE_AGGLUTINATION", "QUELLUNG_REACTION", "HEMAGGLUTINATION_INHIBITION", "RDT", "BACTERIAL_CULTURE", "VIRAL_ISOLATION", "FUNGAL_CULTURE", "MALDI_TOF", "GRAM_STAIN", "ACID_FAST_STAIN", "DARK_FIELD_MICROSCOPY", "GIEMSA_STAIN", "HISTOPATHOLOGY", "FISH", "IMMUNOHISTOCHEMISTRY", "ELECTRON_MICROSCOPY", "QUANTITATIVE_BUFFY_COAT", "THICK_BLOOD_SMEAR", "THIN_BLOOD_SMEAR", "ANTIBIOTIC_SUSCEPTIBILITY", "GENOTYPIC_RESISTANCE_TEST", "IGRA", "TST", "FLOW_CYTOMETRY", "OTHER" ]
               },
               "writeOnly" : true
             }
@@ -14222,7 +14234,7 @@
           },
           "vaccinationStatus" : {
             "type" : "string",
-            "enum" : [ "VACCINATED", "UNVACCINATED", "VACCINATED_ONE_DOSE", "VACCINATED_TWO_DOSE", "RECOVERED", "OTHER", "UNKNOWN" ]
+            "enum" : [ "VACCINATED", "UNVACCINATED", "RECOVERED", "HAD_THE_DISEASE", "OTHER", "UNKNOWN" ]
           },
           "withCase" : {
             "type" : "boolean"
@@ -14410,6 +14422,10 @@
           "inJurisdiction" : {
             "type" : "boolean"
           },
+          "informationReliability" : {
+            "type" : "string",
+            "enum" : [ "TRUSTED", "UNRELIABLE", "UNKNOWN" ]
+          },
           "internalToken" : {
             "type" : "string",
             "maxLength" : 1000000,
@@ -14421,6 +14437,10 @@
           },
           "multiDayContact" : {
             "type" : "boolean"
+          },
+          "numberOfDoses" : {
+            "type" : "integer",
+            "format" : "int32"
           },
           "otherDeletionReason" : {
             "type" : "string",
@@ -14616,7 +14636,16 @@
           },
           "vaccinationStatus" : {
             "type" : "string",
-            "enum" : [ "VACCINATED", "UNVACCINATED", "VACCINATED_ONE_DOSE", "VACCINATED_TWO_DOSE", "RECOVERED", "OTHER", "UNKNOWN" ]
+            "enum" : [ "VACCINATED", "UNVACCINATED", "RECOVERED", "HAD_THE_DISEASE", "OTHER", "UNKNOWN" ]
+          },
+          "vaccinationStatusDetails" : {
+            "type" : "string",
+            "maxLength" : 512,
+            "minLength" : 0
+          },
+          "vaccinationStatusLastUpdated" : {
+            "type" : "string",
+            "format" : "date-time"
           }
         },
         "required" : [ "disease", "person", "reportDateTime" ]
@@ -14811,7 +14840,7 @@
           },
           "vaccinationStatus" : {
             "type" : "string",
-            "enum" : [ "VACCINATED", "UNVACCINATED", "VACCINATED_ONE_DOSE", "VACCINATED_TWO_DOSE", "RECOVERED", "OTHER", "UNKNOWN" ]
+            "enum" : [ "VACCINATED", "UNVACCINATED", "RECOVERED", "HAD_THE_DISEASE", "OTHER", "UNKNOWN" ]
           },
           "visitCount" : {
             "type" : "integer",
@@ -14967,7 +14996,7 @@
           },
           "vaccinationStatus" : {
             "type" : "string",
-            "enum" : [ "VACCINATED", "UNVACCINATED", "VACCINATED_ONE_DOSE", "VACCINATED_TWO_DOSE", "RECOVERED", "OTHER", "UNKNOWN" ]
+            "enum" : [ "VACCINATED", "UNVACCINATED", "RECOVERED", "HAD_THE_DISEASE", "OTHER", "UNKNOWN" ]
           },
           "visitCount" : {
             "type" : "integer",
@@ -16932,155 +16961,359 @@
       "DrugSusceptibilityDto" : {
         "type" : "object",
         "properties" : {
+          "amikacinMethod" : {
+            "type" : "string",
+            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
+          },
           "amikacinMic" : {
             "type" : "number",
             "format" : "float"
+          },
+          "amikacinSurveillance" : {
+            "type" : "string",
+            "enum" : [ "WILD_TYPE", "NON_WILD_TYPE", "NOT_APPLICABLE", "UNKNOWN" ]
           },
           "amikacinSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
+          "amikacinZoneDiameter" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "bedaquilineMethod" : {
+            "type" : "string",
+            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
+          },
           "bedaquilineMic" : {
             "type" : "number",
             "format" : "float"
+          },
+          "bedaquilineSurveillance" : {
+            "type" : "string",
+            "enum" : [ "WILD_TYPE", "NON_WILD_TYPE", "NOT_APPLICABLE", "UNKNOWN" ]
           },
           "bedaquilineSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
+          "bedaquilineZoneDiameter" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "capreomycinMethod" : {
+            "type" : "string",
+            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
+          },
           "capreomycinMic" : {
             "type" : "number",
             "format" : "float"
+          },
+          "capreomycinSurveillance" : {
+            "type" : "string",
+            "enum" : [ "WILD_TYPE", "NON_WILD_TYPE", "NOT_APPLICABLE", "UNKNOWN" ]
           },
           "capreomycinSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
+          "capreomycinZoneDiameter" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "ceftriaxoneMethod" : {
+            "type" : "string",
+            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
+          },
           "ceftriaxoneMic" : {
             "type" : "number",
             "format" : "float"
+          },
+          "ceftriaxoneSurveillance" : {
+            "type" : "string",
+            "enum" : [ "WILD_TYPE", "NON_WILD_TYPE", "NOT_APPLICABLE", "UNKNOWN" ]
           },
           "ceftriaxoneSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
+          "ceftriaxoneZoneDiameter" : {
+            "type" : "number",
+            "format" : "float"
+          },
           "changeDate" : {
             "type" : "string",
             "format" : "date-time"
+          },
+          "ciprofloxacinMethod" : {
+            "type" : "string",
+            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
           },
           "ciprofloxacinMic" : {
             "type" : "number",
             "format" : "float"
           },
+          "ciprofloxacinSurveillance" : {
+            "type" : "string",
+            "enum" : [ "WILD_TYPE", "NON_WILD_TYPE", "NOT_APPLICABLE", "UNKNOWN" ]
+          },
           "ciprofloxacinSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
+          },
+          "ciprofloxacinZoneDiameter" : {
+            "type" : "number",
+            "format" : "float"
           },
           "creationDate" : {
             "type" : "string",
             "format" : "date-time"
           },
+          "delamanidMethod" : {
+            "type" : "string",
+            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
+          },
           "delamanidMic" : {
             "type" : "number",
             "format" : "float"
+          },
+          "delamanidSurveillance" : {
+            "type" : "string",
+            "enum" : [ "WILD_TYPE", "NON_WILD_TYPE", "NOT_APPLICABLE", "UNKNOWN" ]
           },
           "delamanidSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
+          "delamanidZoneDiameter" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "erythromycinMethod" : {
+            "type" : "string",
+            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
+          },
           "erythromycinMic" : {
             "type" : "number",
             "format" : "float"
+          },
+          "erythromycinSurveillance" : {
+            "type" : "string",
+            "enum" : [ "WILD_TYPE", "NON_WILD_TYPE", "NOT_APPLICABLE", "UNKNOWN" ]
           },
           "erythromycinSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
+          "erythromycinZoneDiameter" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "ethambutolMethod" : {
+            "type" : "string",
+            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
+          },
           "ethambutolMic" : {
             "type" : "number",
             "format" : "float"
+          },
+          "ethambutolSurveillance" : {
+            "type" : "string",
+            "enum" : [ "WILD_TYPE", "NON_WILD_TYPE", "NOT_APPLICABLE", "UNKNOWN" ]
           },
           "ethambutolSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
+          "ethambutolZoneDiameter" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "gatifloxacinMethod" : {
+            "type" : "string",
+            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
+          },
           "gatifloxacinMic" : {
             "type" : "number",
             "format" : "float"
+          },
+          "gatifloxacinSurveillance" : {
+            "type" : "string",
+            "enum" : [ "WILD_TYPE", "NON_WILD_TYPE", "NOT_APPLICABLE", "UNKNOWN" ]
           },
           "gatifloxacinSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
+          "gatifloxacinZoneDiameter" : {
+            "type" : "number",
+            "format" : "float"
+          },
           "inJurisdiction" : {
             "type" : "boolean"
+          },
+          "isoniazidMethod" : {
+            "type" : "string",
+            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
           },
           "isoniazidMic" : {
             "type" : "number",
             "format" : "float"
           },
+          "isoniazidSurveillance" : {
+            "type" : "string",
+            "enum" : [ "WILD_TYPE", "NON_WILD_TYPE", "NOT_APPLICABLE", "UNKNOWN" ]
+          },
           "isoniazidSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
+          },
+          "isoniazidZoneDiameter" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "kanamycinMethod" : {
+            "type" : "string",
+            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
           },
           "kanamycinMic" : {
             "type" : "number",
             "format" : "float"
           },
+          "kanamycinSurveillance" : {
+            "type" : "string",
+            "enum" : [ "WILD_TYPE", "NON_WILD_TYPE", "NOT_APPLICABLE", "UNKNOWN" ]
+          },
           "kanamycinSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
+          },
+          "kanamycinZoneDiameter" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "levofloxacinMethod" : {
+            "type" : "string",
+            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
           },
           "levofloxacinMic" : {
             "type" : "number",
             "format" : "float"
           },
+          "levofloxacinSurveillance" : {
+            "type" : "string",
+            "enum" : [ "WILD_TYPE", "NON_WILD_TYPE", "NOT_APPLICABLE", "UNKNOWN" ]
+          },
           "levofloxacinSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
+          },
+          "levofloxacinZoneDiameter" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "moxifloxacinMethod" : {
+            "type" : "string",
+            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
           },
           "moxifloxacinMic" : {
             "type" : "number",
             "format" : "float"
           },
+          "moxifloxacinSurveillance" : {
+            "type" : "string",
+            "enum" : [ "WILD_TYPE", "NON_WILD_TYPE", "NOT_APPLICABLE", "UNKNOWN" ]
+          },
           "moxifloxacinSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
+          },
+          "moxifloxacinZoneDiameter" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "ofloxacinMethod" : {
+            "type" : "string",
+            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
           },
           "ofloxacinMic" : {
             "type" : "number",
             "format" : "float"
           },
+          "ofloxacinSurveillance" : {
+            "type" : "string",
+            "enum" : [ "WILD_TYPE", "NON_WILD_TYPE", "NOT_APPLICABLE", "UNKNOWN" ]
+          },
           "ofloxacinSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
+          },
+          "ofloxacinZoneDiameter" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "penicillinMethod" : {
+            "type" : "string",
+            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
           },
           "penicillinMic" : {
             "type" : "number",
             "format" : "float"
           },
+          "penicillinSurveillance" : {
+            "type" : "string",
+            "enum" : [ "WILD_TYPE", "NON_WILD_TYPE", "NOT_APPLICABLE", "UNKNOWN" ]
+          },
           "penicillinSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
+          "penicillinZoneDiameter" : {
+            "type" : "number",
+            "format" : "float"
+          },
           "pseudonymized" : {
             "type" : "boolean"
+          },
+          "rifampicinMethod" : {
+            "type" : "string",
+            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
           },
           "rifampicinMic" : {
             "type" : "number",
             "format" : "float"
           },
+          "rifampicinSurveillance" : {
+            "type" : "string",
+            "enum" : [ "WILD_TYPE", "NON_WILD_TYPE", "NOT_APPLICABLE", "UNKNOWN" ]
+          },
           "rifampicinSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
+          },
+          "rifampicinZoneDiameter" : {
+            "type" : "number",
+            "format" : "float"
+          },
+          "streptomycinMethod" : {
+            "type" : "string",
+            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
           },
           "streptomycinMic" : {
             "type" : "number",
             "format" : "float"
           },
+          "streptomycinSurveillance" : {
+            "type" : "string",
+            "enum" : [ "WILD_TYPE", "NON_WILD_TYPE", "NOT_APPLICABLE", "UNKNOWN" ]
+          },
           "streptomycinSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
+          },
+          "streptomycinZoneDiameter" : {
+            "type" : "number",
+            "format" : "float"
           },
           "uuid" : {
             "type" : "string",
@@ -18469,7 +18702,7 @@
           },
           "vaccinationStatus" : {
             "type" : "string",
-            "enum" : [ "VACCINATED", "UNVACCINATED", "VACCINATED_ONE_DOSE", "VACCINATED_TWO_DOSE", "RECOVERED", "OTHER", "UNKNOWN" ]
+            "enum" : [ "VACCINATED", "UNVACCINATED", "RECOVERED", "HAD_THE_DISEASE", "OTHER", "UNKNOWN" ]
           }
         }
       },
@@ -18500,10 +18733,18 @@
           "inJurisdiction" : {
             "type" : "boolean"
           },
+          "informationReliability" : {
+            "type" : "string",
+            "enum" : [ "TRUSTED", "UNRELIABLE", "UNKNOWN" ]
+          },
           "involvementDescription" : {
             "type" : "string",
             "maxLength" : 255,
             "minLength" : 0
+          },
+          "numberOfDoses" : {
+            "type" : "integer",
+            "format" : "int32"
           },
           "otherDeletionReason" : {
             "type" : "string",
@@ -18539,7 +18780,16 @@
           },
           "vaccinationStatus" : {
             "type" : "string",
-            "enum" : [ "VACCINATED", "UNVACCINATED", "VACCINATED_ONE_DOSE", "VACCINATED_TWO_DOSE", "RECOVERED", "OTHER", "UNKNOWN" ]
+            "enum" : [ "VACCINATED", "UNVACCINATED", "RECOVERED", "HAD_THE_DISEASE", "OTHER", "UNKNOWN" ]
+          },
+          "vaccinationStatusDetails" : {
+            "type" : "string",
+            "maxLength" : 512,
+            "minLength" : 0
+          },
+          "vaccinationStatusLastUpdated" : {
+            "type" : "string",
+            "format" : "date-time"
           }
         },
         "required" : [ "event", "person" ]
@@ -18612,7 +18862,7 @@
           },
           "vaccinationStatus" : {
             "type" : "string",
-            "enum" : [ "VACCINATED", "UNVACCINATED", "VACCINATED_ONE_DOSE", "VACCINATED_TWO_DOSE", "RECOVERED", "OTHER", "UNKNOWN" ]
+            "enum" : [ "VACCINATED", "UNVACCINATED", "RECOVERED", "HAD_THE_DISEASE", "OTHER", "UNKNOWN" ]
           }
         }
       },
@@ -19519,7 +19769,7 @@
           },
           "vaccinationStatus" : {
             "type" : "string",
-            "enum" : [ "VACCINATED", "UNVACCINATED", "VACCINATED_ONE_DOSE", "VACCINATED_TWO_DOSE", "RECOVERED", "OTHER", "UNKNOWN" ]
+            "enum" : [ "VACCINATED", "UNVACCINATED", "RECOVERED", "HAD_THE_DISEASE", "OTHER", "UNKNOWN" ]
           }
         }
       },
@@ -20365,7 +20615,7 @@
           },
           "meansOfImmunization" : {
             "type" : "string",
-            "enum" : [ "VACCINATION", "RECOVERY", "VACCINATION_RECOVERY", "MATERNAL_VACCINATION", "MONOCLONAL_ANTIBODY", "OTHER" ]
+            "enum" : [ "VACCINATION", "RECOVERY", "VACCINATION_RECOVERY", "MATERNAL_VACCINATION", "MONOCLONAL_ANTIBODY", "OTHER", "NOT_IMMUNIZED" ]
           },
           "nameAddressPhoneEmailLike" : {
             "type" : "string"
@@ -20472,7 +20722,7 @@
           },
           "meansOfImmunization" : {
             "type" : "string",
-            "enum" : [ "VACCINATION", "RECOVERY", "VACCINATION_RECOVERY", "MATERNAL_VACCINATION", "MONOCLONAL_ANTIBODY", "OTHER" ]
+            "enum" : [ "VACCINATION", "RECOVERY", "VACCINATION_RECOVERY", "MATERNAL_VACCINATION", "MONOCLONAL_ANTIBODY", "OTHER", "NOT_IMMUNIZED" ]
           },
           "meansOfImmunizationDetails" : {
             "type" : "string",
@@ -20544,6 +20794,10 @@
             "minLength" : 20,
             "pattern" : "^[0-9a-zA-Z-]*$"
           },
+          "vaccinationInfoSource" : {
+            "type" : "string",
+            "enum" : [ "VACCINATION_REGISTRY", "VACCINATION_CARD", "ORAL_COMMUNICATION", "NO_EVIDENCE", "UNKNOWN" ]
+          },
           "vaccinations" : {
             "type" : "array",
             "items" : {
@@ -20601,7 +20855,7 @@
           },
           "meansOfImmunization" : {
             "type" : "string",
-            "enum" : [ "VACCINATION", "RECOVERY", "VACCINATION_RECOVERY", "MATERNAL_VACCINATION", "MONOCLONAL_ANTIBODY", "OTHER" ]
+            "enum" : [ "VACCINATION", "RECOVERY", "VACCINATION_RECOVERY", "MATERNAL_VACCINATION", "MONOCLONAL_ANTIBODY", "OTHER", "NOT_IMMUNIZED" ]
           },
           "otherDeletionReason" : {
             "type" : "string"
@@ -22489,7 +22743,7 @@
           },
           "testType" : {
             "type" : "string",
-            "enum" : [ "ANTIBODY_DETECTION", "ANTIGEN_DETECTION", "RAPID_ANTIGEN_DETECTION", "RAPID_TEST", "CULTURE", "HISTOPATHOLOGY", "ISOLATION", "IGM_SERUM_ANTIBODY", "IGG_SERUM_ANTIBODY", "IGA_SERUM_ANTIBODY", "INCUBATION_TIME", "INDIRECT_FLUORESCENT_ANTIBODY", "DIRECT_FLUORESCENT_ANTIBODY", "MICROSCOPY", "NEUTRALIZING_ANTIBODIES", "ENZYME_LINKED_IMMUNOSORBENT_ASSAY", "PCR_RT_PCR", "GRAM_STAIN", "LATEX_AGGLUTINATION", "CQ_VALUE_DETECTION", "SEQUENCING", "DNA_MICROARRAY", "TMA", "IGRA", "TST", "BEIJINGGENOTYPING", "SPOLIGOTYPING", "MIRU_PATTERN_CODE", "ANTIBIOTIC_SUSCEPTIBILITY", "MULTILOCUS_SEQUENCE_TYPING", "CGMLST", "SNP_TYPING", "SEROTYPING", "SLIDE_AGGLUTINATION", "WHOLE_GENOME_SEQUENCING", "SEROGROUPING", "GENOTYPING", "NAAT", "THICK_BLOOD_SMEAR", "THIN_BLOOD_SMEAR", "Q_PCR", "LAMP", "OTHER_ANTIGEN_DETECTION_TEST", "OTHER_MOLECULAR_ASSAY", "OTHER_SEROLOGICAL_TEST", "OTHER" ]
+            "enum" : [ "ANTIBODY_DETECTION", "ANTIGEN_DETECTION", "CULTURE", "ISOLATION", "IGM_SERUM_ANTIBODY", "IGG_SERUM_ANTIBODY", "IGA_SERUM_ANTIBODY", "INCUBATION_TIME", "MICROSCOPY", "LATEX_AGGLUTINATION", "CQ_VALUE_DETECTION", "SEQUENCING", "OTHER_ANTIGEN_DETECTION_TEST", "OTHER_MOLECULAR_ASSAY", "OTHER_SEROLOGICAL_TEST", "PCR_RT_PCR", "Q_PCR", "MULTIPLEX_PCR", "DIGITAL_PCR", "LAMP", "NASBA", "TMA", "CRISPR_DIAGNOSTICS", "LINE_PROBE_ASSAY", "SANGER_SEQUENCING", "WHOLE_GENOME_SEQUENCING", "DNA_MICROARRAY", "NAAT", "MULTILOCUS_SEQUENCE_TYPING", "CGMLST", "SNP_TYPING", "SEROTYPING", "SEROGROUPING", "GENOTYPING", "BEIJINGGENOTYPING", "SPOLIGOTYPING", "MIRU_PATTERN_CODE", "ENZYME_LINKED_IMMUNOSORBENT_ASSAY", "WESTERN_BLOT", "NEUTRALIZING_ANTIBODIES", "INDIRECT_FLUORESCENT_ANTIBODY", "DIRECT_FLUORESCENT_ANTIBODY", "RAPID_ANTIBODY_TEST", "RAPID_ANTIGEN_DETECTION", "RAPID_TEST", "LATERAL_FLOW_ASSAY", "IMMUNOFLUORESCENCE_ASSAY", "SLIDE_AGGLUTINATION", "QUELLUNG_REACTION", "HEMAGGLUTINATION_INHIBITION", "RDT", "BACTERIAL_CULTURE", "VIRAL_ISOLATION", "FUNGAL_CULTURE", "MALDI_TOF", "GRAM_STAIN", "ACID_FAST_STAIN", "DARK_FIELD_MICROSCOPY", "GIEMSA_STAIN", "HISTOPATHOLOGY", "FISH", "IMMUNOHISTOCHEMISTRY", "ELECTRON_MICROSCOPY", "QUANTITATIVE_BUFFY_COAT", "THICK_BLOOD_SMEAR", "THIN_BLOOD_SMEAR", "ANTIBIOTIC_SUSCEPTIBILITY", "GENOTYPIC_RESISTANCE_TEST", "IGRA", "TST", "FLOW_CYTOMETRY", "OTHER" ]
           },
           "testTypeText" : {
             "type" : "string",
@@ -24062,7 +24316,7 @@
             "type" : "array",
             "items" : {
               "type" : "string",
-              "enum" : [ "ANTIBODY_DETECTION", "ANTIGEN_DETECTION", "RAPID_ANTIGEN_DETECTION", "RAPID_TEST", "CULTURE", "HISTOPATHOLOGY", "ISOLATION", "IGM_SERUM_ANTIBODY", "IGG_SERUM_ANTIBODY", "IGA_SERUM_ANTIBODY", "INCUBATION_TIME", "INDIRECT_FLUORESCENT_ANTIBODY", "DIRECT_FLUORESCENT_ANTIBODY", "MICROSCOPY", "NEUTRALIZING_ANTIBODIES", "ENZYME_LINKED_IMMUNOSORBENT_ASSAY", "PCR_RT_PCR", "GRAM_STAIN", "LATEX_AGGLUTINATION", "CQ_VALUE_DETECTION", "SEQUENCING", "DNA_MICROARRAY", "TMA", "IGRA", "TST", "BEIJINGGENOTYPING", "SPOLIGOTYPING", "MIRU_PATTERN_CODE", "ANTIBIOTIC_SUSCEPTIBILITY", "MULTILOCUS_SEQUENCE_TYPING", "CGMLST", "SNP_TYPING", "SEROTYPING", "SLIDE_AGGLUTINATION", "WHOLE_GENOME_SEQUENCING", "SEROGROUPING", "GENOTYPING", "NAAT", "THICK_BLOOD_SMEAR", "THIN_BLOOD_SMEAR", "Q_PCR", "LAMP", "OTHER_ANTIGEN_DETECTION_TEST", "OTHER_MOLECULAR_ASSAY", "OTHER_SEROLOGICAL_TEST", "OTHER" ]
+              "enum" : [ "ANTIBODY_DETECTION", "ANTIGEN_DETECTION", "CULTURE", "ISOLATION", "IGM_SERUM_ANTIBODY", "IGG_SERUM_ANTIBODY", "IGA_SERUM_ANTIBODY", "INCUBATION_TIME", "MICROSCOPY", "LATEX_AGGLUTINATION", "CQ_VALUE_DETECTION", "SEQUENCING", "OTHER_ANTIGEN_DETECTION_TEST", "OTHER_MOLECULAR_ASSAY", "OTHER_SEROLOGICAL_TEST", "PCR_RT_PCR", "Q_PCR", "MULTIPLEX_PCR", "DIGITAL_PCR", "LAMP", "NASBA", "TMA", "CRISPR_DIAGNOSTICS", "LINE_PROBE_ASSAY", "SANGER_SEQUENCING", "WHOLE_GENOME_SEQUENCING", "DNA_MICROARRAY", "NAAT", "MULTILOCUS_SEQUENCE_TYPING", "CGMLST", "SNP_TYPING", "SEROTYPING", "SEROGROUPING", "GENOTYPING", "BEIJINGGENOTYPING", "SPOLIGOTYPING", "MIRU_PATTERN_CODE", "ENZYME_LINKED_IMMUNOSORBENT_ASSAY", "WESTERN_BLOT", "NEUTRALIZING_ANTIBODIES", "INDIRECT_FLUORESCENT_ANTIBODY", "DIRECT_FLUORESCENT_ANTIBODY", "RAPID_ANTIBODY_TEST", "RAPID_ANTIGEN_DETECTION", "RAPID_TEST", "LATERAL_FLOW_ASSAY", "IMMUNOFLUORESCENCE_ASSAY", "SLIDE_AGGLUTINATION", "QUELLUNG_REACTION", "HEMAGGLUTINATION_INHIBITION", "RDT", "BACTERIAL_CULTURE", "VIRAL_ISOLATION", "FUNGAL_CULTURE", "MALDI_TOF", "GRAM_STAIN", "ACID_FAST_STAIN", "DARK_FIELD_MICROSCOPY", "GIEMSA_STAIN", "HISTOPATHOLOGY", "FISH", "IMMUNOHISTOCHEMISTRY", "ELECTRON_MICROSCOPY", "QUANTITATIVE_BUFFY_COAT", "THICK_BLOOD_SMEAR", "THIN_BLOOD_SMEAR", "ANTIBIOTIC_SUSCEPTIBILITY", "GENOTYPIC_RESISTANCE_TEST", "IGRA", "TST", "FLOW_CYTOMETRY", "OTHER" ]
             },
             "uniqueItems" : true
           },
@@ -24232,7 +24486,7 @@
           },
           "typeOfLastTest" : {
             "type" : "string",
-            "enum" : [ "ANTIBODY_DETECTION", "ANTIGEN_DETECTION", "RAPID_ANTIGEN_DETECTION", "RAPID_TEST", "CULTURE", "HISTOPATHOLOGY", "ISOLATION", "IGM_SERUM_ANTIBODY", "IGG_SERUM_ANTIBODY", "IGA_SERUM_ANTIBODY", "INCUBATION_TIME", "INDIRECT_FLUORESCENT_ANTIBODY", "DIRECT_FLUORESCENT_ANTIBODY", "MICROSCOPY", "NEUTRALIZING_ANTIBODIES", "ENZYME_LINKED_IMMUNOSORBENT_ASSAY", "PCR_RT_PCR", "GRAM_STAIN", "LATEX_AGGLUTINATION", "CQ_VALUE_DETECTION", "SEQUENCING", "DNA_MICROARRAY", "TMA", "IGRA", "TST", "BEIJINGGENOTYPING", "SPOLIGOTYPING", "MIRU_PATTERN_CODE", "ANTIBIOTIC_SUSCEPTIBILITY", "MULTILOCUS_SEQUENCE_TYPING", "CGMLST", "SNP_TYPING", "SEROTYPING", "SLIDE_AGGLUTINATION", "WHOLE_GENOME_SEQUENCING", "SEROGROUPING", "GENOTYPING", "NAAT", "THICK_BLOOD_SMEAR", "THIN_BLOOD_SMEAR", "Q_PCR", "LAMP", "OTHER_ANTIGEN_DETECTION_TEST", "OTHER_MOLECULAR_ASSAY", "OTHER_SEROLOGICAL_TEST", "OTHER" ]
+            "enum" : [ "ANTIBODY_DETECTION", "ANTIGEN_DETECTION", "CULTURE", "ISOLATION", "IGM_SERUM_ANTIBODY", "IGG_SERUM_ANTIBODY", "IGA_SERUM_ANTIBODY", "INCUBATION_TIME", "MICROSCOPY", "LATEX_AGGLUTINATION", "CQ_VALUE_DETECTION", "SEQUENCING", "OTHER_ANTIGEN_DETECTION_TEST", "OTHER_MOLECULAR_ASSAY", "OTHER_SEROLOGICAL_TEST", "PCR_RT_PCR", "Q_PCR", "MULTIPLEX_PCR", "DIGITAL_PCR", "LAMP", "NASBA", "TMA", "CRISPR_DIAGNOSTICS", "LINE_PROBE_ASSAY", "SANGER_SEQUENCING", "WHOLE_GENOME_SEQUENCING", "DNA_MICROARRAY", "NAAT", "MULTILOCUS_SEQUENCE_TYPING", "CGMLST", "SNP_TYPING", "SEROTYPING", "SEROGROUPING", "GENOTYPING", "BEIJINGGENOTYPING", "SPOLIGOTYPING", "MIRU_PATTERN_CODE", "ENZYME_LINKED_IMMUNOSORBENT_ASSAY", "WESTERN_BLOT", "NEUTRALIZING_ANTIBODIES", "INDIRECT_FLUORESCENT_ANTIBODY", "DIRECT_FLUORESCENT_ANTIBODY", "RAPID_ANTIBODY_TEST", "RAPID_ANTIGEN_DETECTION", "RAPID_TEST", "LATERAL_FLOW_ASSAY", "IMMUNOFLUORESCENCE_ASSAY", "SLIDE_AGGLUTINATION", "QUELLUNG_REACTION", "HEMAGGLUTINATION_INHIBITION", "RDT", "BACTERIAL_CULTURE", "VIRAL_ISOLATION", "FUNGAL_CULTURE", "MALDI_TOF", "GRAM_STAIN", "ACID_FAST_STAIN", "DARK_FIELD_MICROSCOPY", "GIEMSA_STAIN", "HISTOPATHOLOGY", "FISH", "IMMUNOHISTOCHEMISTRY", "ELECTRON_MICROSCOPY", "QUANTITATIVE_BUFFY_COAT", "THICK_BLOOD_SMEAR", "THIN_BLOOD_SMEAR", "ANTIBIOTIC_SUSCEPTIBILITY", "GENOTYPIC_RESISTANCE_TEST", "IGRA", "TST", "FLOW_CYTOMETRY", "OTHER" ]
           },
           "uuid" : {
             "type" : "string",
@@ -26884,7 +27138,7 @@
           },
           "testType" : {
             "type" : "string",
-            "enum" : [ "ANTIBODY_DETECTION", "ANTIGEN_DETECTION", "RAPID_ANTIGEN_DETECTION", "RAPID_TEST", "CULTURE", "HISTOPATHOLOGY", "ISOLATION", "IGM_SERUM_ANTIBODY", "IGG_SERUM_ANTIBODY", "IGA_SERUM_ANTIBODY", "INCUBATION_TIME", "INDIRECT_FLUORESCENT_ANTIBODY", "DIRECT_FLUORESCENT_ANTIBODY", "MICROSCOPY", "NEUTRALIZING_ANTIBODIES", "ENZYME_LINKED_IMMUNOSORBENT_ASSAY", "PCR_RT_PCR", "GRAM_STAIN", "LATEX_AGGLUTINATION", "CQ_VALUE_DETECTION", "SEQUENCING", "DNA_MICROARRAY", "TMA", "IGRA", "TST", "BEIJINGGENOTYPING", "SPOLIGOTYPING", "MIRU_PATTERN_CODE", "ANTIBIOTIC_SUSCEPTIBILITY", "MULTILOCUS_SEQUENCE_TYPING", "CGMLST", "SNP_TYPING", "SEROTYPING", "SLIDE_AGGLUTINATION", "WHOLE_GENOME_SEQUENCING", "SEROGROUPING", "GENOTYPING", "NAAT", "THICK_BLOOD_SMEAR", "THIN_BLOOD_SMEAR", "Q_PCR", "LAMP", "OTHER_ANTIGEN_DETECTION_TEST", "OTHER_MOLECULAR_ASSAY", "OTHER_SEROLOGICAL_TEST", "OTHER" ]
+            "enum" : [ "ANTIBODY_DETECTION", "ANTIGEN_DETECTION", "CULTURE", "ISOLATION", "IGM_SERUM_ANTIBODY", "IGG_SERUM_ANTIBODY", "IGA_SERUM_ANTIBODY", "INCUBATION_TIME", "MICROSCOPY", "LATEX_AGGLUTINATION", "CQ_VALUE_DETECTION", "SEQUENCING", "OTHER_ANTIGEN_DETECTION_TEST", "OTHER_MOLECULAR_ASSAY", "OTHER_SEROLOGICAL_TEST", "PCR_RT_PCR", "Q_PCR", "MULTIPLEX_PCR", "DIGITAL_PCR", "LAMP", "NASBA", "TMA", "CRISPR_DIAGNOSTICS", "LINE_PROBE_ASSAY", "SANGER_SEQUENCING", "WHOLE_GENOME_SEQUENCING", "DNA_MICROARRAY", "NAAT", "MULTILOCUS_SEQUENCE_TYPING", "CGMLST", "SNP_TYPING", "SEROTYPING", "SEROGROUPING", "GENOTYPING", "BEIJINGGENOTYPING", "SPOLIGOTYPING", "MIRU_PATTERN_CODE", "ENZYME_LINKED_IMMUNOSORBENT_ASSAY", "WESTERN_BLOT", "NEUTRALIZING_ANTIBODIES", "INDIRECT_FLUORESCENT_ANTIBODY", "DIRECT_FLUORESCENT_ANTIBODY", "RAPID_ANTIBODY_TEST", "RAPID_ANTIGEN_DETECTION", "RAPID_TEST", "LATERAL_FLOW_ASSAY", "IMMUNOFLUORESCENCE_ASSAY", "SLIDE_AGGLUTINATION", "QUELLUNG_REACTION", "HEMAGGLUTINATION_INHIBITION", "RDT", "BACTERIAL_CULTURE", "VIRAL_ISOLATION", "FUNGAL_CULTURE", "MALDI_TOF", "GRAM_STAIN", "ACID_FAST_STAIN", "DARK_FIELD_MICROSCOPY", "GIEMSA_STAIN", "HISTOPATHOLOGY", "FISH", "IMMUNOHISTOCHEMISTRY", "ELECTRON_MICROSCOPY", "QUANTITATIVE_BUFFY_COAT", "THICK_BLOOD_SMEAR", "THIN_BLOOD_SMEAR", "ANTIBIOTIC_SUSCEPTIBILITY", "GENOTYPIC_RESISTANCE_TEST", "IGRA", "TST", "FLOW_CYTOMETRY", "OTHER" ]
           },
           "testTypeDetails" : {
             "type" : "string",
@@ -27761,7 +28015,7 @@
           },
           "vaccinationInfoSource" : {
             "type" : "string",
-            "enum" : [ "VACCINATION_CARD", "ORAL_COMMUNICATION", "NO_EVIDENCE", "UNKNOWN" ]
+            "enum" : [ "VACCINATION_REGISTRY", "VACCINATION_CARD", "ORAL_COMMUNICATION", "NO_EVIDENCE", "UNKNOWN" ]
           },
           "vaccineAtcCode" : {
             "type" : "string",

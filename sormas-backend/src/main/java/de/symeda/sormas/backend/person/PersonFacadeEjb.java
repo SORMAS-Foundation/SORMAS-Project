@@ -1999,6 +1999,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 							}
 							if (leadEventParticipant.getVaccinationStatus() == null && otherEventParticipant.getVaccinationStatus() != null) {
 								leadEventParticipant.setVaccinationStatus(otherEventParticipant.getVaccinationStatus());
+								leadEventParticipant.setVaccinationStatusDetails(otherEventParticipant.getVaccinationStatusDetails());
 							}
 
 							otherEventParticipant.getSamples().forEach(sample -> {

@@ -14,6 +14,8 @@
  */
 package de.symeda.sormas.api.event;
 
+import java.util.Date;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -24,6 +26,7 @@ import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.immunization.InformationReliability;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
@@ -54,6 +57,10 @@ public class EventParticipantDto extends SormasToSormasShareableDto implements I
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
+	public static final String VACCINATION_STATUS_DETAILS = "vaccinationStatusDetails";
+	public static final String VACCINATION_STATUS_LAST_UPDATED = "vaccinationStatusLastUpdated";
+	public static final String NUMBER_OF_DOSES = "numberOfDoses";
+	public static final String INFORMATION_RELIABILITY = "informationReliability";
 	public static final String DELETION_REASON = "deletionReason";
 	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
 
@@ -85,6 +92,18 @@ public class EventParticipantDto extends SormasToSormasShareableDto implements I
 		Disease.OTHER })
 	@Outbreaks
 	private VaccinationStatus vaccinationStatus;
+
+	@Outbreaks
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String vaccinationStatusDetails;
+
+	private Date vaccinationStatusLastUpdated;
+
+	@Outbreaks
+	private Integer numberOfDoses;
+
+	@Outbreaks
+	private InformationReliability informationReliability;
 
 	private boolean deleted;
 	private DeletionReason deletionReason;
@@ -191,6 +210,38 @@ public class EventParticipantDto extends SormasToSormasShareableDto implements I
 
 	public void setVaccinationStatus(VaccinationStatus vaccinationStatus) {
 		this.vaccinationStatus = vaccinationStatus;
+	}
+
+	public String getVaccinationStatusDetails() {
+		return vaccinationStatusDetails;
+	}
+
+	public void setVaccinationStatusDetails(String vaccinationStatusDetails) {
+		this.vaccinationStatusDetails = vaccinationStatusDetails;
+	}
+
+	public Date getVaccinationStatusLastUpdated() {
+		return vaccinationStatusLastUpdated;
+	}
+
+	public void setVaccinationStatusLastUpdated(Date vaccinationStatusLastUpdated) {
+		this.vaccinationStatusLastUpdated = vaccinationStatusLastUpdated;
+	}
+
+	public Integer getNumberOfDoses() {
+		return numberOfDoses;
+	}
+
+	public void setNumberOfDoses(Integer numberOfDoses) {
+		this.numberOfDoses = numberOfDoses;
+	}
+
+	public InformationReliability getInformationReliability() {
+		return informationReliability;
+	}
+
+	public void setInformationReliability(InformationReliability informationReliability) {
+		this.informationReliability = informationReliability;
 	}
 
 	public boolean isDeleted() {

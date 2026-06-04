@@ -192,7 +192,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 			DateHelper.subtractDays(new Date(), 10),
 			DateHelper.subtractDays(new Date(), 5),
 			DateHelper.subtractDays(new Date(), 1),
-			null);
+			DateHelper.addDays(new Date(), 1));
 		creator.createImmunization(
 			event.getDisease(),
 			eventPerson.toReference(),

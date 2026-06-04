@@ -159,6 +159,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
@@ -1729,6 +1730,22 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		service.ensurePersisted(caze);
 	}
 
+	@Override
+	@RightsAllowed({
+		UserRight._CASE_EDIT,
+		UserRight._IMMUNIZATION_EDIT })
+	public void updateVaccinationStatuses(CaseReferenceDto caseRef) {
+		Case caze = service.getByReferenceDto(caseRef);
+		vaccinationFacade.updateVaccinationStatuses(caze);
+		service.ensurePersisted(caze);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._CASE_EDIT)
+	public void deleteVaccinationStatuses(ImmunizationReferenceDto immunizationRef) {
+		service.clearVaccinationStatuses(immunizationRef);
+	}
+
 	private CaseDataDto caseSave(
 		@Valid CaseDataDto dto,
 		boolean handleChanges,
@@ -2293,7 +2310,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			newCase.setPreviousQuarantineTo(existingCase.getQuarantineTo());
 		}
 
-		if (existingCase == null) {
+		if (existingCase == null || hasVaccinationReferenceChanged(existingCase, newCase)) {
 			vaccinationFacade.updateVaccinationStatuses(newCase);
 		}
 
@@ -2307,6 +2324,15 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		if (existingCase != null && syncShares && sormasToSormasFacade.isFeatureConfigured()) {
 			syncSharesAsync(new ShareTreeCriteria(existingCase.getUuid()));
 		}
+	}
+
+	private boolean hasVaccinationReferenceChanged(CaseDataDto existingCase, Case newCase) {
+		return existingCase != null
+			&& (existingCase.getDisease() != newCase.getDisease()
+				|| !DateHelper.isSameDay(existingCase.getReportDate(), newCase.getReportDate())
+				|| !Objects.equals(
+					existingCase.getPerson() != null ? existingCase.getPerson().getUuid() : null,
+					newCase.getPerson() != null ? newCase.getPerson().getUuid() : null));
 	}
 
 	private void handleClassificationOnCaseChange(CaseDataDto existingDto, Case savedCase) {
@@ -3065,60 +3091,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		UserRight._CASE_VIEW,
 		UserRight._EXTERNAL_VISITS })
 	public CaseDataDto toDto(Case source) {
-		CaseDataDto target = toCaseDto(source);
-		updateDeterminedVaccinationStatus(source, target);
-		return target;
-	}
-
-	/**
-	 * Updates the vaccination status and details for a case DTO based on immunization data.
-	 * 
-	 * <p>
-	 * This method is called during case entity to DTO conversion to ensure the vaccination status
-	 * is correctly derived from immunization records when the determined vaccination status feature is enabled.
-	 * </p>
-	 * 
-	 * <p>
-	 * This is needed because the determined vaccination status can be enabled/disabled at runtime.
-	 * If the system was not configured with the feature, the determined vaccination status will not be set for older entities.
-	 * </p>
-	 * 
-	 * <p>
-	 * Note: Ideally a update should be triggered when the config value is changed, but this is not possible at the moment.
-	 * </p>
-	 * 
-	 * @param source
-	 *            the case entity
-	 * @param target
-	 *            the case DTO to update
-	 */
-	private void updateDeterminedVaccinationStatus(Case source, CaseDataDto target) {
-		if (source == null || target == null) {
-			return;
-		}
-		if (!immunizationFacade.isUseDeterminedVaccinationStatus()) {
-			return;
-		}
-
-		// Derive vaccination status from immunizations if status is null (ie. it was not populated by updates)
-		// Ideally a update should be triggered when the config value is changed, but this is not possible at the moment
-		if (source.getVaccinationStatus() == null) {
-			VaccinationStatus vaccinationStatus =
-				immunizationService.deriveVaccinationStatus(source.getPerson().getUuid(), source.getDisease(), source.getReportDate());
-			// Default to UNVACCINATED if no immunization data found
-			if (vaccinationStatus == null) {
-				vaccinationStatus = VaccinationStatus.UNVACCINATED;
-			}
-			target.setVaccinationStatus(vaccinationStatus);
-		}
-
-		// If we have older vaccination statuses with OTHER but the detail status null,
-		// fetch the meansOfImmunizationDetails from the relevant immunization
-		if (source.getVaccinationStatus() == VaccinationStatus.OTHER && source.getVaccinationStatusDetails() == null) {
-			String details =
-				immunizationService.getMeansOfImmunizationDetails(source.getPerson().getUuid(), source.getDisease(), source.getReportDate());
-			target.setVaccinationStatusDetails(details);
-		}
+		return toCaseDto(source);
 	}
 
 	public static CaseDataDto toCaseDto(Case source) {
@@ -3191,6 +3164,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setPregnant(source.getPregnant());
 		target.setVaccinationStatus(source.getVaccinationStatus());
 		target.setVaccinationStatusDetails(source.getVaccinationStatusDetails());
+		target.setVaccinationStatusLastUpdated(source.getVaccinationStatusLastUpdated());
+		target.setNumberOfDoses(source.getNumberOfDoses());
+		target.setInformationReliability(source.getInformationReliability());
 		target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
 		target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
 		target.setSmallpoxLastVaccinationDate(source.getSmallpoxLastVaccinationDate());
@@ -3315,6 +3291,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	public Case fillOrBuildEntity(@NotNull CaseDataDto source, Case target, boolean checkChangeDate) {
 		boolean targetWasNull = isNull(target);
+		VaccinationStatus previousVaccinationStatus = target != null ? target.getVaccinationStatus() : null;
+		String previousVaccinationStatusDetails = target != null ? target.getVaccinationStatusDetails() : null;
 
 		target = DtoHelper.fillOrBuildEntity(source, target, Case::build, checkChangeDate);
 
@@ -3401,6 +3379,19 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setPregnant(source.getPregnant());
 		target.setVaccinationStatus(source.getVaccinationStatus());
 		target.setVaccinationStatusDetails(source.getVaccinationStatusDetails());
+		boolean vaccinationStatusManuallyUpdated = targetWasNull
+			? source.getVaccinationStatus() != null || source.getVaccinationStatusDetails() != null
+			: !Objects.equals(previousVaccinationStatus, source.getVaccinationStatus())
+				|| !Objects.equals(previousVaccinationStatusDetails, source.getVaccinationStatusDetails());
+		if (vaccinationStatusManuallyUpdated) {
+			target.setVaccinationStatusLastUpdated(null);
+			target.setNumberOfDoses(null);
+			target.setInformationReliability(null);
+		} else {
+			target.setVaccinationStatusLastUpdated(source.getVaccinationStatusLastUpdated());
+			target.setNumberOfDoses(source.getNumberOfDoses());
+			target.setInformationReliability(source.getInformationReliability());
+		}
 		target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
 		target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
 		target.setSmallpoxLastVaccinationDate(source.getSmallpoxLastVaccinationDate());

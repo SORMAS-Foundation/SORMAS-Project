@@ -41,6 +41,7 @@ import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.immunization.InformationReliability;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
@@ -147,6 +148,10 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 	public static final String TRACING_APP = "tracingApp";
 	public static final String TRACING_APP_DETAILS = "tracingAppDetails";
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
+	public static final String VACCINATION_STATUS_DETAILS = "vaccinationStatusDetails";
+	public static final String VACCINATION_STATUS_LAST_UPDATED = "vaccinationStatusLastUpdated";
+	public static final String NUMBER_OF_DOSES = "numberOfDoses";
+	public static final String INFORMATION_RELIABILITY = "informationReliability";
 	public static final String VISITS = "visits";
 	public static final String VACCINATION_INFO = "vaccinationInfo";
 	public static final String PREVIOUS_QUARANTINE_TO = "previousQuarantineTo";
@@ -375,6 +380,18 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 		Disease.OTHER })
 	@Outbreaks
 	private VaccinationStatus vaccinationStatus;
+
+	@Outbreaks
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String vaccinationStatusDetails;
+
+	private Date vaccinationStatusLastUpdated;
+
+	@Outbreaks
+	private Integer numberOfDoses;
+
+	@Outbreaks
+	private InformationReliability informationReliability;
 
 	@Diseases(value = {
 		Disease.MEASLES })
@@ -1081,6 +1098,38 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 
 	public void setVaccinationStatus(VaccinationStatus vaccinationStatus) {
 		this.vaccinationStatus = vaccinationStatus;
+	}
+
+	public String getVaccinationStatusDetails() {
+		return vaccinationStatusDetails;
+	}
+
+	public void setVaccinationStatusDetails(String vaccinationStatusDetails) {
+		this.vaccinationStatusDetails = vaccinationStatusDetails;
+	}
+
+	public Date getVaccinationStatusLastUpdated() {
+		return vaccinationStatusLastUpdated;
+	}
+
+	public void setVaccinationStatusLastUpdated(Date vaccinationStatusLastUpdated) {
+		this.vaccinationStatusLastUpdated = vaccinationStatusLastUpdated;
+	}
+
+	public Integer getNumberOfDoses() {
+		return numberOfDoses;
+	}
+
+	public void setNumberOfDoses(Integer numberOfDoses) {
+		this.numberOfDoses = numberOfDoses;
+	}
+
+	public InformationReliability getInformationReliability() {
+		return informationReliability;
+	}
+
+	public void setInformationReliability(InformationReliability informationReliability) {
+		this.informationReliability = informationReliability;
 	}
 
 	public Date getPreviousQuarantineTo() {

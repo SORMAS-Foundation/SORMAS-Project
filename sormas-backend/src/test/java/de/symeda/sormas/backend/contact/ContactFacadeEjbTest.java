@@ -1374,7 +1374,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			DateHelper.subtractDays(new Date(), 10),
 			DateHelper.subtractDays(new Date(), 5),
 			DateHelper.subtractDays(new Date(), 1),
-			null);
+			DateHelper.addDays(new Date(), 1));
 		creator.createImmunization(
 			contact.getDisease(),
 			contact.getPerson(),
@@ -2362,14 +2362,8 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			rdcf);
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
 
-		ContactDto contact = creator.createContact(
-			user.toReference(),
-			user.toReference(),
-			contactPerson.toReference(),
-			caze,
-			new Date(),
-			new Date(),
-			null);
+		ContactDto contact =
+			creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
 
 		Set<de.symeda.sormas.api.contact.ContactProximity> proximities = new HashSet<>();
 		proximities.add(de.symeda.sormas.api.contact.ContactProximity.TOUCHED_FLUID);
@@ -2402,14 +2396,8 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			rdcf);
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
 
-		ContactDto contact = creator.createContact(
-			user.toReference(),
-			user.toReference(),
-			contactPerson.toReference(),
-			caze,
-			new Date(),
-			new Date(),
-			null);
+		ContactDto contact =
+			creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
 
 		contact.setContactProximities(new HashSet<>());
 		contact = getContactFacade().save(contact);
@@ -2434,14 +2422,8 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			rdcf);
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
 
-		ContactDto contact = creator.createContact(
-			user.toReference(),
-			user.toReference(),
-			contactPerson.toReference(),
-			caze,
-			new Date(),
-			new Date(),
-			null);
+		ContactDto contact =
+			creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
 
 		Set<de.symeda.sormas.api.contact.ContactProximity> proximities = new HashSet<>();
 		proximities.add(de.symeda.sormas.api.contact.ContactProximity.CLOSE_CONTACT);
@@ -2470,14 +2452,8 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			rdcf);
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
 
-		ContactDto contact = creator.createContact(
-			user.toReference(),
-			user.toReference(),
-			contactPerson.toReference(),
-			caze,
-			new Date(),
-			new Date(),
-			null);
+		ContactDto contact =
+			creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
 
 		Set<de.symeda.sormas.api.contact.ContactProximity> proximities = new HashSet<>();
 		proximities.add(de.symeda.sormas.api.contact.ContactProximity.TOUCHED_FLUID);
@@ -2513,14 +2489,8 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			rdcf);
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
 
-		ContactDto contact = creator.createContact(
-			user.toReference(),
-			user.toReference(),
-			contactPerson.toReference(),
-			caze,
-			new Date(),
-			new Date(),
-			null);
+		ContactDto contact =
+			creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
 
 		Set<de.symeda.sormas.api.contact.ContactProximity> proximities = new HashSet<>();
 		proximities.add(de.symeda.sormas.api.contact.ContactProximity.AEROSOL);
@@ -2556,14 +2526,8 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			rdcf);
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
 
-		ContactDto contact = creator.createContact(
-			user.toReference(),
-			user.toReference(),
-			contactPerson.toReference(),
-			caze,
-			new Date(),
-			new Date(),
-			null);
+		ContactDto contact =
+			creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
 
 		Set<de.symeda.sormas.api.contact.ContactProximity> proximities = new HashSet<>();
 		proximities.add(de.symeda.sormas.api.contact.ContactProximity.TOUCHED_FLUID);
