@@ -702,6 +702,7 @@ public interface Strings {
 	String headingExternalMessagesDeleted = "headingExternalMessagesDeleted";
 	String headingExternalMessagesNotDeleted = "headingExternalMessagesNotDeleted";
 	String headingFatalities = "headingFatalities";
+	String headingFeatureConfiguration = "headingFeatureConfiguration";
 	String headingFetchExternalMessages = "headingFetchExternalMessages";
 	String headingFileExists = "headingFileExists";
 	String headingFilters = "headingFilters";
@@ -1069,6 +1070,7 @@ public interface Strings {
 	String infoExternalMessageHospitalizationMissingHospital = "infoExternalMessageHospitalizationMissingHospital";
 	String infoFacilityCsvImport = "infoFacilityCsvImport";
 	String infoFacilityNeedsDistrict = "infoFacilityNeedsDistrict";
+	String infoFeatureConfiguration = "infoFeatureConfiguration";
 	String infoHeadingAefiDashboardMap = "infoHeadingAefiDashboardMap";
 	String infoHeadingEnvironmentSampleDashboardMap = "infoHeadingEnvironmentSampleDashboardMap";
 	String infoHeadingSampleDashboardMap = "infoHeadingSampleDashboardMap";
@@ -1510,6 +1512,7 @@ public interface Strings {
 	String messageFacilityDearchived = "messageFacilityDearchived";
 	String messageFacilityDearchivingNotPossible = "messageFacilityDearchivingNotPossible";
 	String messageFacilityMulitChanged = "messageFacilityMulitChanged";
+	String messageFeatureConfigurationSaved = "messageFeatureConfigurationSaved";
 	String messageFollowUpCanceled = "messageFollowUpCanceled";
 	String messageFollowUpStatusChanged = "messageFollowUpStatusChanged";
 	String messageForwardedExternalMessageFound = "messageForwardedExternalMessageFound";

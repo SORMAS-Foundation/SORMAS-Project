@@ -88,6 +88,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
                     fluidRowLocs(SampleDto.SAMPLE_SOURCE, "") +
                     fluidRowLocs(SampleDto.FIELD_SAMPLE_ID, REFERRED_FROM_BUTTON_LOC) +
                     fluidRowLocs(SampleDto.LAB, SampleDto.LAB_DETAILS) +
+                    fluidRowLocs(SampleDto.PERFORMED_BY_REFERENCE_LABORATORY, SampleDto.RETEST_REQUESTED) +
 
                     locCss(VSPACE_TOP_3, SampleDto.PATHOGEN_TESTING_REQUESTED) +
                     loc(PATHOGEN_TESTING_READ_HEADLINE_LOC) +
@@ -160,6 +161,9 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		addField(SampleDto.SHIPPED, CheckBox.class);
 		addField(SampleDto.RECEIVED, CheckBox.class);
 
+		addField(SampleDto.PERFORMED_BY_REFERENCE_LABORATORY, CheckBox.class).setWidthUndefined();
+		addField(SampleDto.RETEST_REQUESTED, CheckBox.class).setWidthUndefined();
+
 		ComboBox testResultField = addField(SampleDto.PATHOGEN_TEST_RESULT, ComboBox.class);
 		testResultField.removeItem(PathogenTestResultType.NOT_DONE);
 
@@ -209,9 +213,9 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 			Arrays.asList(SampleDto.RECEIVED_DATE, SampleDto.LAB_SAMPLE_ID, SampleDto.SPECIMEN_CONDITION),
 			true);
 
-		if (disease != Disease.NEW_INFLUENZA) {
-			getField(SampleDto.SAMPLE_SOURCE).setVisible(false);
-		}
+		// The sample source dropdown is no longer shown for any disease (#13948 issue #13959); the field is
+		// kept bound so existing values still round-trip and appear in exports.
+		getField(SampleDto.SAMPLE_SOURCE).setVisible(false);
 
 		UserReferenceDto reportingUser = getValue().getReportingUser();
 		if (UiUtil.permitted(UserRight.SAMPLE_EDIT_NOT_OWNED) || (reportingUser != null && UiUtil.getUserUuid().equals(reportingUser.getUuid()))) {
@@ -241,7 +245,6 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 			shippedField.setEnabled(false);
 			getField(SampleDto.SHIPMENT_DATE).setEnabled(false);
 			getField(SampleDto.SHIPMENT_DETAILS).setEnabled(false);
-			getField(SampleDto.SAMPLE_SOURCE).setEnabled(false);
 		}
 
 		StringBuilder reportInfoText = new StringBuilder().append(I18nProperties.getString(Strings.reportedOn))
@@ -459,8 +462,12 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		boolean canOnlyReadRequests = !canEditRequest && showRequestFields;
 		boolean canUseAdditionalTests = UiUtil.permitted(FeatureType.ADDITIONAL_TESTS, UserRight.ADDITIONAL_TEST_VIEW);
 
+		// The "Request pathogen tests to be performed?" section is always hidden (epic #13948, issue #13953). The
+		// underlying fields are kept bound so existing values still round-trip and appear in exports.
+		boolean showPathogenRequest = false;
+
 		Field<?> pathogenTestingField = getField(SampleDto.PATHOGEN_TESTING_REQUESTED);
-		pathogenTestingField.setVisible(canEditRequest);
+		pathogenTestingField.setVisible(showPathogenRequest && canEditRequest);
 		if (!showRequestFields) {
 			pathogenTestingField.clear();
 		}
@@ -471,7 +478,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 			additionalTestingField.clear();
 		}
 
-		boolean pathogenTestsRequested = Boolean.TRUE.equals(pathogenTestingField.getValue());
+		boolean pathogenTestsRequested = showPathogenRequest && Boolean.TRUE.equals(pathogenTestingField.getValue());
 		setVisible(pathogenTestsRequested, SampleDto.REQUESTED_PATHOGEN_TESTS, SampleDto.REQUESTED_OTHER_PATHOGEN_TESTS);
 		getContent().getComponent(PATHOGEN_TESTING_INFO_LOC).setVisible(pathogenTestsRequested);
 
@@ -479,10 +486,10 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		setVisible(additionalTestsRequested, SampleDto.REQUESTED_ADDITIONAL_TESTS, SampleDto.REQUESTED_OTHER_ADDITIONAL_TESTS);
 		getContent().getComponent(ADDITIONAL_TESTING_INFO_LOC).setVisible(additionalTestsRequested);
 
-		getContent().getComponent(PATHOGEN_TESTING_READ_HEADLINE_LOC).setVisible(canOnlyReadRequests);
+		getContent().getComponent(PATHOGEN_TESTING_READ_HEADLINE_LOC).setVisible(showPathogenRequest && canOnlyReadRequests);
 		getContent().getComponent(ADDITIONAL_TESTING_READ_HEADLINE_LOC).setVisible(canOnlyReadRequests && canUseAdditionalTests);
 
-		if (getValue() != null && canOnlyReadRequests) {
+		if (getValue() != null && showPathogenRequest && canOnlyReadRequests) {
 			CssLayout requestedPathogenTestsLayout = new CssLayout();
 			CssStyles.style(requestedPathogenTestsLayout, VSPACE_3);
 			for (PathogenTestType testType : getValue().getRequestedPathogenTests()) {

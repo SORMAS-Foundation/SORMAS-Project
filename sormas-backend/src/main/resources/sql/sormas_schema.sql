@@ -16302,4 +16302,13 @@ alter table pathogentest_history add column IF NOT EXISTS westernblotinterpretat
 
 INSERT INTO schema_version (version_number, comment) VALUES (637, 'Quantitative pathogen test results: value/unit/text/boolean, smear grade, Western Blot interpretation #13948');
 
+-- 2026-06-04 Reference-laboratory + retest indicators on sample #13954 (#13948)
+alter table samples add column IF NOT EXISTS performedbyreferencelaboratory boolean;
+alter table samples add column IF NOT EXISTS retestrequested boolean;
+
+alter table samples_history add column IF NOT EXISTS performedbyreferencelaboratory boolean;
+alter table samples_history add column IF NOT EXISTS retestrequested boolean;
+
+INSERT INTO schema_version (version_number, comment) VALUES (638, 'Reference laboratory + retest indicators on sample #13954 (#13948)');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
