@@ -135,7 +135,7 @@ public class SampleController {
 	private void createSample(SampleDto sampleDto, Disease disease, Runnable callback) {
 		this.disease = disease;
 		final CommitDiscardWrapperComponent<SampleCreateForm> editView = getSampleCreateComponent(sampleDto, disease, callback);
-		// add option to create additional pathogen tests (admin-configurable, default off; #13948 issue #5)
+		// add option to create additional pathogen tests (admin-configurable, default on epic #13948 issue #13953)
 		SampleEditPathogenTestListHandler pathogenTestHandler = new SampleEditPathogenTestListHandler();
 		if (UiUtil.enabled(FeatureType.SAMPLE_ADD_PATHOGEN_TEST)) {
 			addPathogenTestButton(editView, false, null, null, pathogenTestHandler::addPathogenTest);
