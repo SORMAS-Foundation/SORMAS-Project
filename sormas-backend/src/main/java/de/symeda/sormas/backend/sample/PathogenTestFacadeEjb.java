@@ -45,6 +45,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.PathogenTestCriteria;
@@ -78,6 +79,7 @@ import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSampleS
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.country.CountryService;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
@@ -132,6 +134,8 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	private ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private DrugSusceptibilityMapper drugSusceptibilityMapper;
+	@EJB
+	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -434,6 +438,13 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		PathogenTestDto existingSampleTestDto = toDto(existingSampleTest);
 
 		restorePseudonymizedDto(dto, existingSampleTest, existingSampleTestDto);
+
+		// When the administrator has not made the result mandatory (#13948 issue #13958), an empty result is
+		// allowed; default it to PENDING so the non-null DB constraint holds. This covers every save path
+		// (UI, environment samples, external-message processing, REST), not just the human-sample UI flow.
+		if (dto.getTestResult() == null && !featureConfigurationFacade.isFeatureEnabled(FeatureType.PATHOGEN_TEST_RESULT_REQUIRED)) {
+			dto.setTestResult(PathogenTestResultType.PENDING);
+		}
 
 		validate(dto);
 

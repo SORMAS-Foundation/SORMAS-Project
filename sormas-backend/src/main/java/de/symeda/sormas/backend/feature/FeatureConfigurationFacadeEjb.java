@@ -353,14 +353,17 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 			throw new IllegalArgumentException("FeatureType " + featureType + " is not a server feature and cannot be toggled here.");
 		}
 
-		FeatureConfiguration configuration = service.getServerFeatureConfiguration(featureType);
-		if (configuration == null) {
-			configuration = FeatureConfiguration.build(featureType, enabled);
+		List<FeatureConfiguration> configurations = service.getServerFeatureConfigurationsByType(featureType);
+		if (configurations.isEmpty()) {
+			FeatureConfiguration configuration = FeatureConfiguration.build(featureType, enabled);
 			configuration.setProperties(featureType.getSupportedPropertyDefaults());
+			service.ensurePersisted(configuration);
 		} else {
-			configuration.setEnabled(enabled);
+			for (FeatureConfiguration configuration : configurations) {
+				configuration.setEnabled(enabled);
+				service.ensurePersisted(configuration);
+			}
 		}
-		service.ensurePersisted(configuration);
 	}
 
 	@Override

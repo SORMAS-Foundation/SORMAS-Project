@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
@@ -21,6 +22,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
@@ -293,5 +295,28 @@ public class PathogenTestFacadeEjbTest extends AbstractBeanTest {
 		assertEquals("all good!", updatedPathogen.getTestResultText());
 		assertEquals(testDateTime, updatedPathogen.getTestDateTime());
 		assertTrue(updatedPathogen.getTestResultVerified());
+	}
+
+	@Test
+	public void testEmptyResultDefaultsToPendingWhenResultNotRequired() {
+		final RDCF rdcf = creator.createRDCF();
+		final UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		final CaseDataDto caze = creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
+		final SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+
+		// Result is required by default (#13948 issue #13958): an empty result must be rejected.
+		final PathogenTestDto requiredTest = creator.buildPathogenTestDto(rdcf, user, sample, caze.getDisease(), testDateTime);
+		requiredTest.setTestResult(null);
+		assertThrows(
+			de.symeda.sormas.api.utils.ValidationRuntimeException.class,
+			() -> getPathogenTestFacade().savePathogenTest(requiredTest));
+
+		// Once the administrator turns the requirement off, an empty result is allowed and defaults to PENDING.
+		getFeatureConfigurationFacade().setServerFeatureEnabled(FeatureType.PATHOGEN_TEST_RESULT_REQUIRED, false);
+
+		final PathogenTestDto optionalTest = creator.buildPathogenTestDto(rdcf, user, sample, caze.getDisease(), testDateTime);
+		optionalTest.setTestResult(null);
+		final PathogenTestDto saved = getPathogenTestFacade().savePathogenTest(optionalTest);
+		assertEquals(PathogenTestResultType.PENDING, saved.getTestResult());
 	}
 }

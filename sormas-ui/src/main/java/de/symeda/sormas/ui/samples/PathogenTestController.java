@@ -349,11 +349,7 @@ public class PathogenTestController {
 			if (PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY == p.getTestType() && !luxTB && !AST_ALLOWED_DISEASES.contains(p.getTestedDisease())) {
 				p.setDrugSusceptibility(null);
 			}
-			// The result is optional unless the administrator requires it (#13948 issue #13958). Default an
-			// empty result to PENDING so the non-null DB constraint always holds.
-			if (p.getTestResult() == null) {
-				p.setTestResult(PathogenTestResultType.PENDING);
-			}
+
 			facade.savePathogenTest(p);
 		});
 		if (associatedContact != null) {

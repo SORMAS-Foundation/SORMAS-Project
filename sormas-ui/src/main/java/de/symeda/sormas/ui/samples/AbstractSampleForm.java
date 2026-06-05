@@ -245,6 +245,8 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 			shippedField.setEnabled(false);
 			getField(SampleDto.SHIPMENT_DATE).setEnabled(false);
 			getField(SampleDto.SHIPMENT_DETAILS).setEnabled(false);
+			getField(SampleDto.PERFORMED_BY_REFERENCE_LABORATORY).setEnabled(false);
+			getField(SampleDto.RETEST_REQUESTED).setEnabled(false);
 		}
 
 		StringBuilder reportInfoText = new StringBuilder().append(I18nProperties.getString(Strings.reportedOn))
