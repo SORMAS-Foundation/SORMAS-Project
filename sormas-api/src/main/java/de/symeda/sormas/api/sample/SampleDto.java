@@ -509,6 +509,8 @@ public class SampleDto extends SormasToSormasShareableDto implements IsSample {
 		target.setSampleSource(source.getSampleSource());
 		target.setPathogenTestingRequested(source.getPathogenTestingRequested());
 		target.setAdditionalTestingRequested(source.getAdditionalTestingRequested());
+		target.setPerformedByReferenceLaboratory(source.getPerformedByReferenceLaboratory());
+		target.setRetestRequested(source.getRetestRequested());
 		target.setRequestedPathogenTests(source.getRequestedPathogenTests());
 		target.setRequestedAdditionalTests(source.getRequestedAdditionalTests());
 		target.setFieldSampleID(source.getFieldSampleID());
