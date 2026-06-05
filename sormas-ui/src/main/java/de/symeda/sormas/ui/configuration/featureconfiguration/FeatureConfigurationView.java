@@ -73,7 +73,6 @@ public class FeatureConfigurationView extends AbstractConfigurationView {
 
 		for (FeatureType featureType : CONFIGURABLE_FEATURES) {
 			CheckBox checkBox = new CheckBox(featureType.toString());
-			checkBox.setValue(FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(featureType));
 			checkBoxes.put(featureType, checkBox);
 			layout.addComponent(checkBox);
 		}
@@ -88,16 +87,22 @@ public class FeatureConfigurationView extends AbstractConfigurationView {
 		checkBoxes.forEach(
 			(featureType, checkBox) -> FacadeProvider.getFeatureConfigurationFacade().setServerFeatureEnabled(featureType, checkBox.getValue()));
 
+		loadFeatureStates();
+
 		VaadinUiUtil.showSimplePopupWindow(
 			I18nProperties.getString(Strings.headingFeatureConfiguration),
 			I18nProperties.getString(Strings.messageFeatureConfigurationSaved));
+	}
+
+	private void loadFeatureStates() {
+		checkBoxes
+			.forEach((featureType, checkBox) -> checkBox.setValue(FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(featureType)));
 	}
 
 	@Override
 	public void enter(ViewChangeListener.ViewChangeEvent event) {
 
 		super.enter(event);
-		checkBoxes
-			.forEach((featureType, checkBox) -> checkBox.setValue(FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(featureType)));
+		loadFeatureStates();
 	}
 }

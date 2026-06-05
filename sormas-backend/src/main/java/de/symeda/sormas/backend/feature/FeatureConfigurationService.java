@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.feature;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -16,6 +17,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -206,7 +208,14 @@ public class FeatureConfigurationService extends AdoServiceWithUserFilterAndJuri
 	}
 
 	public List<FeatureConfiguration> getServerFeatureConfigurationsByType(FeatureType featureType) {
-		return getAll().stream().filter(e -> e.getFeatureType().isServerFeature() && e.getFeatureType() == featureType).collect(Collectors.toList());
+		if (!featureType.isServerFeature()) {
+			return new ArrayList<>();
+		}
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<FeatureConfiguration> cq = cb.createQuery(FeatureConfiguration.class);
+		Root<FeatureConfiguration> root = cq.from(FeatureConfiguration.class);
+		cq.where(cb.equal(root.get(FeatureConfiguration.FEATURE_TYPE), featureType));
+		return em.createQuery(cq).getResultList();
 	}
 
 	private boolean hasEnabledDependentFeature(FeatureType featureType, Map<FeatureType, FeatureConfiguration> featureConfigurationMap) {

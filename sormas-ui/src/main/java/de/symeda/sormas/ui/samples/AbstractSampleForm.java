@@ -464,15 +464,15 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		boolean canOnlyReadRequests = !canEditRequest && showRequestFields;
 		boolean canUseAdditionalTests = UiUtil.permitted(FeatureType.ADDITIONAL_TESTS, UserRight.ADDITIONAL_TEST_VIEW);
 
-		// The "Request pathogen tests to be performed?" section is always hidden (epic #13948, issue #13953). The
-		// underlying fields are kept bound so existing values still round-trip and appear in exports.
-		boolean showPathogenRequest = false;
-
+		// The "Request pathogen tests to be performed?" section is always hidden (epic #13948, issue #13953).
+		// Its fields stay bound (added in initializeRequestedTestFields) so existing values still round-trip
+		// and appear in exports. Only the additional-tests request section below remains visible.
 		Field<?> pathogenTestingField = getField(SampleDto.PATHOGEN_TESTING_REQUESTED);
-		pathogenTestingField.setVisible(showPathogenRequest && canEditRequest);
-		if (!showRequestFields) {
-			pathogenTestingField.clear();
-		}
+		pathogenTestingField.setVisible(false);
+		setVisible(false, SampleDto.REQUESTED_PATHOGEN_TESTS, SampleDto.REQUESTED_OTHER_PATHOGEN_TESTS);
+		getContent().getComponent(PATHOGEN_TESTING_INFO_LOC).setVisible(false);
+		getContent().getComponent(PATHOGEN_TESTING_READ_HEADLINE_LOC).setVisible(false);
+		getContent().removeComponent(REQUESTED_PATHOGEN_TESTS_READ_LOC);
 
 		Field<?> additionalTestingField = getField(SampleDto.ADDITIONAL_TESTING_REQUESTED);
 		additionalTestingField.setVisible(canEditRequest && canUseAdditionalTests);
@@ -480,30 +480,11 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 			additionalTestingField.clear();
 		}
 
-		boolean pathogenTestsRequested = showPathogenRequest && Boolean.TRUE.equals(pathogenTestingField.getValue());
-		setVisible(pathogenTestsRequested, SampleDto.REQUESTED_PATHOGEN_TESTS, SampleDto.REQUESTED_OTHER_PATHOGEN_TESTS);
-		getContent().getComponent(PATHOGEN_TESTING_INFO_LOC).setVisible(pathogenTestsRequested);
-
 		boolean additionalTestsRequested = Boolean.TRUE.equals(additionalTestingField.getValue());
 		setVisible(additionalTestsRequested, SampleDto.REQUESTED_ADDITIONAL_TESTS, SampleDto.REQUESTED_OTHER_ADDITIONAL_TESTS);
 		getContent().getComponent(ADDITIONAL_TESTING_INFO_LOC).setVisible(additionalTestsRequested);
 
-		getContent().getComponent(PATHOGEN_TESTING_READ_HEADLINE_LOC).setVisible(showPathogenRequest && canOnlyReadRequests);
 		getContent().getComponent(ADDITIONAL_TESTING_READ_HEADLINE_LOC).setVisible(canOnlyReadRequests && canUseAdditionalTests);
-
-		if (getValue() != null && showPathogenRequest && canOnlyReadRequests) {
-			CssLayout requestedPathogenTestsLayout = new CssLayout();
-			CssStyles.style(requestedPathogenTestsLayout, VSPACE_3);
-			for (PathogenTestType testType : getValue().getRequestedPathogenTests()) {
-				Label testLabel = new Label(testType.toString());
-				testLabel.setWidthUndefined();
-				CssStyles.style(testLabel, CssStyles.LABEL_ROUNDED_CORNERS, CssStyles.LABEL_BACKGROUND_FOCUS_LIGHT, VSPACE_4, HSPACE_RIGHT_4);
-				requestedPathogenTestsLayout.addComponent(testLabel);
-			}
-			getContent().addComponent(requestedPathogenTestsLayout, REQUESTED_PATHOGEN_TESTS_READ_LOC);
-		} else {
-			getContent().removeComponent(REQUESTED_PATHOGEN_TESTS_READ_LOC);
-		}
 
 		if (getValue() != null && canOnlyReadRequests && canUseAdditionalTests) {
 			CssLayout requestedAdditionalTestsLayout = new CssLayout();
