@@ -201,6 +201,10 @@ public class FeatureConfigurationService extends AdoServiceWithUserFilterAndJuri
 			.collect(Collectors.toMap(FeatureConfiguration::getFeatureType, Function.identity(), (e1, e2) -> e2));
 	}
 
+	public FeatureConfiguration getServerFeatureConfiguration(FeatureType featureType) {
+		return getServerFeatureConfigurations().get(featureType);
+	}
+
 	private boolean hasEnabledDependentFeature(FeatureType featureType, Map<FeatureType, FeatureConfiguration> featureConfigurationMap) {
 
 		for (FeatureType dependentFeatureType : featureType.getDependentFeatures()) {

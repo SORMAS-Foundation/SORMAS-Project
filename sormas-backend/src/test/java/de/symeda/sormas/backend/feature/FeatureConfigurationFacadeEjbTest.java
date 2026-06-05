@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.feature;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
@@ -77,5 +78,31 @@ public class FeatureConfigurationFacadeEjbTest extends AbstractBeanTest {
 			IllegalArgumentException.class,
 			() -> getFeatureConfigurationFacade()
 				.getProperty(FeatureType.CASE_SURVEILANCE, DeletableEntityType.CASE, FeatureTypeProperty.THRESHOLD_IN_DAYS, Boolean.class));
+	}
+
+	@Test
+	public void testSampleLabFeaturesDefaultEnabled() {
+		// #13948 issues #13953 and #13958: both features are on by default so existing users are not surprised;
+		// an administrator can turn them off in the feature-configuration view.
+		FeatureConfigurationService featureConfigurationService = getBean(FeatureConfigurationService.class);
+		featureConfigurationService.createMissingFeatureConfigurations();
+
+		assertTrue(getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SAMPLE_ADD_PATHOGEN_TEST));
+		assertTrue(getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.PATHOGEN_TEST_RESULT_REQUIRED));
+	}
+
+	@Test
+	public void testSetServerFeatureEnabledTogglesServerFeature() {
+		// Backs the administrator feature-configuration view (#13948).
+		FeatureConfigurationService featureConfigurationService = getBean(FeatureConfigurationService.class);
+		featureConfigurationService.createMissingFeatureConfigurations();
+
+		assertTrue(getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SAMPLE_ADD_PATHOGEN_TEST));
+
+		getFeatureConfigurationFacade().setServerFeatureEnabled(FeatureType.SAMPLE_ADD_PATHOGEN_TEST, false);
+		assertFalse(getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SAMPLE_ADD_PATHOGEN_TEST));
+
+		getFeatureConfigurationFacade().setServerFeatureEnabled(FeatureType.SAMPLE_ADD_PATHOGEN_TEST, true);
+		assertTrue(getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SAMPLE_ADD_PATHOGEN_TEST));
 	}
 }
