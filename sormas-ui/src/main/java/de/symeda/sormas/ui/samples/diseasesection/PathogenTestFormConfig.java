@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.samples.diseasesection;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.feature.FeatureType;
 
 /**
  * Immutable snapshot of country-specific feature flags for PathogenTestForm.
@@ -28,13 +29,16 @@ import de.symeda.sormas.api.FacadeProvider;
 public class PathogenTestFormConfig {
 
 	public final boolean isLuxembourg;
+	public final boolean resultRequired;
 
-	private PathogenTestFormConfig(boolean isLuxembourg) {
+	private PathogenTestFormConfig(boolean isLuxembourg, boolean resultRequired) {
 		this.isLuxembourg = isLuxembourg;
+		this.resultRequired = resultRequired;
 	}
 
 	public static PathogenTestFormConfig fromCurrentConfig() {
 		return new PathogenTestFormConfig(
-			FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG));
+			FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG),
+			FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.PATHOGEN_TEST_RESULT_REQUIRED));
 	}
 }
