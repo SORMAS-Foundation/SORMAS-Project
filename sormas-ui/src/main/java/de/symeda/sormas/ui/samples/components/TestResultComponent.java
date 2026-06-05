@@ -54,6 +54,7 @@ public class TestResultComponent extends FormComponent<PathogenTestDto> {
 
 	private final FormEventBus eventBus;
 	private final boolean isLuxembourg;
+	private final boolean resultRequired;
 
 	private ComboBox<PathogenTestResultType> testResultField;
 	private RadioButtonGroup<Boolean> testResultVerifiedField;
@@ -73,10 +74,11 @@ public class TestResultComponent extends FormComponent<PathogenTestDto> {
 	private Disease currentDisease;
 	private PathogenTestType currentTestType;
 
-	public TestResultComponent(FormEventBus eventBus, boolean isLuxembourg, Disease initialDisease) {
+	public TestResultComponent(FormEventBus eventBus, boolean isLuxembourg, Disease initialDisease, boolean resultRequired) {
 		super(PathogenTestDto.class);
 		this.eventBus = eventBus;
 		this.isLuxembourg = isLuxembourg;
+		this.resultRequired = resultRequired;
 		this.currentDisease = initialDisease;
 		buildLayout();
 		bindFields();
@@ -92,7 +94,7 @@ public class TestResultComponent extends FormComponent<PathogenTestDto> {
 		}
 		testResultField.setItems(resultTypes);
 		testResultField.setItemCaptionGenerator(PathogenTestResultType::toString);
-		testResultField.setRequiredIndicatorVisible(true);
+		testResultField.setRequiredIndicatorVisible(resultRequired);
 
 		testResultVerifiedField = createBooleanRadioGroup(PathogenTestDto.TEST_RESULT_VERIFIED, PathogenTestDto.I18N_PREFIX);
 
@@ -120,9 +122,11 @@ public class TestResultComponent extends FormComponent<PathogenTestDto> {
 		westernBlotInterpretationField.setItems(WesternBlotInterpretation.values());
 		westernBlotInterpretationField.setItemCaptionGenerator(WesternBlotInterpretation::toString);
 
-		quantitativeBooleanField.setRequiredIndicatorVisible(true);
-		smearGradeField.setRequiredIndicatorVisible(true);
-		westernBlotInterpretationField.setRequiredIndicatorVisible(true);
+		// All result-bearing fields are mandatory only when the administrator requires a result (#13948
+		// issue #13958). The same flag that gates the Pos/Neg selector gates the quantitative result fields.
+		quantitativeBooleanField.setRequiredIndicatorVisible(resultRequired);
+		smearGradeField.setRequiredIndicatorVisible(resultRequired);
+		westernBlotInterpretationField.setRequiredIndicatorVisible(resultRequired);
 
 		quantitativeValueRow = addRow(
 			new float[] {
@@ -253,7 +257,7 @@ public class TestResultComponent extends FormComponent<PathogenTestDto> {
 		setQuantitativeFieldVisible(smearGradeField, showSmearGrade);
 		setQuantitativeFieldVisible(westernBlotInterpretationField, showWesternBlot);
 
-		quantitativeTextField.setRequiredIndicatorVisible(showText && !showWesternBlot);
+		quantitativeTextField.setRequiredIndicatorVisible(resultRequired && showText && !showWesternBlot);
 
 		updateRowVisibility(quantitativeValueRow);
 		updateRowVisibility(quantitativeEnumRow);
@@ -299,12 +303,17 @@ public class TestResultComponent extends FormComponent<PathogenTestDto> {
 	public void validate() {
 		super.validate();
 
-		requireIfVisible(testResultField, PathogenTestDto.TEST_RESULT);
-		requireIfVisible(quantitativeBooleanField, PathogenTestDto.QUANTITATIVE_BOOLEAN);
-		requireIfVisible(smearGradeField, PathogenTestDto.SMEAR_GRADE);
-		requireIfVisible(westernBlotInterpretationField, PathogenTestDto.WESTERN_BLOT_INTERPRETATION);
-		if (!westernBlotInterpretationField.isVisible()) {
-			requireIfVisible(quantitativeTextField, PathogenTestDto.QUANTITATIVE_TEXT);
+		// A result is only mandatory when the administrator has enabled it (#13948 issue #13958) - otherwise
+		// every result-bearing field may be left empty (the Pos/Neg result then defaults to PENDING on
+		// save). The flag gates the qualitative selector and the quantitative result fields alike.
+		if (resultRequired) {
+			requireIfVisible(testResultField, PathogenTestDto.TEST_RESULT);
+			requireIfVisible(quantitativeBooleanField, PathogenTestDto.QUANTITATIVE_BOOLEAN);
+			requireIfVisible(smearGradeField, PathogenTestDto.SMEAR_GRADE);
+			requireIfVisible(westernBlotInterpretationField, PathogenTestDto.WESTERN_BLOT_INTERPRETATION);
+			if (!westernBlotInterpretationField.isVisible()) {
+				requireIfVisible(quantitativeTextField, PathogenTestDto.QUANTITATIVE_TEXT);
+			}
 		}
 	}
 
