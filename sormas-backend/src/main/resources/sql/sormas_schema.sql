@@ -16033,25 +16033,6 @@ ALTER TABLE exposures_history DROP COLUMN IF EXISTS eatingoutvenueother;
 
 INSERT INTO schema_version (version_number, comment) VALUES (632, '#13918 - Remove eating out venues from Salmonellosis exposure');
 
-
--- Alter JSONB to JSON to preserve insertion oder for external messages
-
-ALTER TABLE externalmessage_history
-ALTER COLUMN additionaldatajson TYPE json
-USING additionaldatajson::json;
-
-ALTER TABLE externalmessage
-ALTER COLUMN additionaldatajson TYPE json
-USING additionaldatajson::json;
-
-
-UPDATE systemconfigurationvalue
-SET config_key = 'NG_SURVEY_FIELD_PREFIX'
-WHERE config_key = 'NG_SUVEY_FIELD_PREFIX';
-
-
-INSERT INTO schema_version (version_number, comment) VALUES (633, 'Alter JSONB to JSON to preserve insertion oder for external messages');
-
 -- 2026-05-31 Enhanced AST structure: per-drug method, zone diameter, surveillance interpretation #13948 (issue #8)
 alter table drugsusceptibility add column IF NOT EXISTS amikacinmethod varchar(255);
 alter table drugsusceptibility add column IF NOT EXISTS amikacinzonediameter numeric;
@@ -16157,7 +16138,7 @@ alter table drugsusceptibility_history add column IF NOT EXISTS erythromycinmeth
 alter table drugsusceptibility_history add column IF NOT EXISTS erythromycinzonediameter numeric;
 alter table drugsusceptibility_history add column IF NOT EXISTS erythromycinsurveillance varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (634, 'Enhanced AST structure: per-drug method, zone diameter, surveillance interpretation #13948');
+INSERT INTO schema_version (version_number, comment) VALUES (633, 'Enhanced AST structure: per-drug method, zone diameter, surveillance interpretation #13948');
 
 
 -- #13377 Immunization Luxembourg: vaccinationStatus cleanup, numberOfDoses, informationReliability
@@ -16229,8 +16210,7 @@ VALUES ('USE_QUICK_IMMUNIZATION_CREATION', 'false', 'i18n/infoSystemConfiguratio
 END $$
 LANGUAGE plpgsql;
 
-INSERT INTO schema_version (version_number, comment) VALUES (635, '#13377 Immunization Luxembourg: status cleanup, numberOfDoses, informationReliability');
-
+INSERT INTO schema_version (version_number, comment) VALUES (634, '#13377 Immunization Luxembourg: status cleanup, numberOfDoses, informationReliability');
 
 -- 2026-05-20 Shigellosis disease configuration (Luxembourg) #13926
 ALTER TABLE diseaseconfiguration    ADD COLUMN IF NOT EXISTS iscontagious boolean default false;
@@ -16283,7 +16263,7 @@ ALTER TABLE symptoms_history                ADD COLUMN IF NOT EXISTS bloodydiarr
 ALTER TABLE healthconditions_history        ADD COLUMN IF NOT EXISTS chronicdisease varchar(255);
 ALTER TABLE healthconditions_history        ADD COLUMN IF NOT EXISTS chronicdiseasedetails varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (636, '#13926 - Shigellosis incorporation to SORMAS');
+INSERT INTO schema_version (version_number, comment) VALUES (635, '#13926 - Shigellosis incorporation to SORMAS');
 
 -- 2026-06-01 Quantitative pathogen test results: generic value/unit/text/boolean + smear grade + Western Blot interpretation #13948 (issue #13952)
 alter table pathogentest add column IF NOT EXISTS quantitativevalue real;
@@ -16300,6 +16280,6 @@ alter table pathogentest_history add column IF NOT EXISTS quantitativeboolean va
 alter table pathogentest_history add column IF NOT EXISTS smeargrade varchar(255);
 alter table pathogentest_history add column IF NOT EXISTS westernblotinterpretation varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (637, 'Quantitative pathogen test results: value/unit/text/boolean, smear grade, Western Blot interpretation #13948');
+INSERT INTO schema_version (version_number, comment) VALUES (636, 'Quantitative pathogen test results: value/unit/text/boolean, smear grade, Western Blot interpretation #13948');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
