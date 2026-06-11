@@ -228,9 +228,9 @@ public class ContactDataView extends AbstractContactView implements HasName {
 			taskList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addSidePanelComponent(taskList, TASKS_LOC);
 		}
-
+		// Allowing the samples component for LUX Measles.
 		if (!(FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
-			&& List.of(Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.MEASLES).contains(contactDto.getDisease()))) {
+			&& List.of(Disease.INVASIVE_MENINGOCOCCAL_INFECTION).contains(contactDto.getDisease()))) {
 			if (UiUtil.permitted(UserRight.SAMPLE_VIEW)) {
 				SampleListComponent sampleList = new SampleListComponent(
 					new SampleCriteria().contact(getContactRef())
@@ -257,7 +257,8 @@ public class ContactDataView extends AbstractContactView implements HasName {
 		}
 
 		// Immunizations are not shown for Salmonellosis contacts
-		if (UiUtil.permitted(FeatureType.IMMUNIZATION_MANAGEMENT, UserRight.IMMUNIZATION_VIEW) && !IMMUNIZATION_EXCLUDED_DISEASES.contains(resolvedDisease)) {
+		if (UiUtil.permitted(FeatureType.IMMUNIZATION_MANAGEMENT, UserRight.IMMUNIZATION_VIEW)
+			&& !IMMUNIZATION_EXCLUDED_DISEASES.contains(resolvedDisease)) {
 			final VaccinationStatusPanel vaccinationStatusPanel = VaccinationStatusPanel.forContact(contactDto);
 			if (contactDto.getVaccinationStatusLastUpdated() == null && UiUtil.permitted(UserRight.IMMUNIZATION_EDIT)) {
 				showVaccinationStatusUpdateDialog(contactDto);
