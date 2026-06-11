@@ -122,7 +122,8 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			loc(ExposureDto.EATING_RAW_ANIMAL_PRODUCTS) +
 			loc(ExposureDto.HANDLING_ANIMALS) +
 			fluidRowLocs(ExposureDto.TRAVEL_ACCOMMODATION, ExposureDto.TRAVEL_ACCOMMODATION_TYPE) +
-			fluidRowLocs(ExposureDto.DOMESTIC_SWIMMING, ExposureDto.INTERNATIONAL_SWIMMING) +
+			fluidRowLocs(ExposureDto.DOMESTIC_SWIMMING,"") +
+			fluidRowLocs(ExposureDto.INTERNATIONAL_SWIMMING,"") +
 			fluidRowLocs(ExposureDto.RAW_FOOD_CONTACT, ExposureDto.RAW_FOOD_CONTACT_TEXT) +
 			fluidRowLocs(ExposureDto.SWIMMING_LOCATION, ExposureDto.SWIMMING_LOCATION_TYPE) +
 			fluidRow(fluidColumnLoc(6,0,ExposureDto.SEXUAL_EXPOSURE_TEXT)) +
@@ -311,12 +312,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.GATHERING_TYPE, ExposureDto.EXPOSURE_TYPE, ExposureType.GATHERING, true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.HABITATION_TYPE, ExposureDto.EXPOSURE_TYPE, ExposureType.HABITATION, true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.TYPE_OF_ANIMAL, ExposureDto.EXPOSURE_TYPE, ExposureType.ANIMAL_CONTACT, true);
-		FieldHelper.setVisibleWhen(
-			getFieldGroup(),
-			List.of(ExposureDto.DOMESTIC_SWIMMING, ExposureDto.INTERNATIONAL_SWIMMING),
-			ExposureDto.EXPOSURE_TYPE,
-			ExposureType.RECREATIONAL_WATER,
-			true);
+
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
 			ExposureDto.TYPE_OF_CHILDCARE_FACILITY,
@@ -399,6 +395,22 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 				ExposureDto.SYMPTOMATIC_INDIVIDUAL_TEXT,
 				ExposureDto.EXPOSURE_TYPE,
 				ExposureType.SYMPTOMATIC_CONTACT,
+				true);
+		}
+
+		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				List.of(ExposureDto.DOMESTIC_SWIMMING, ExposureDto.INTERNATIONAL_SWIMMING),
+				ExposureDto.EXPOSURE_TYPE,
+				ExposureType.RECREATIONAL_WATER,
+				true);
+		} else {
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				List.of(ExposureDto.INTERNATIONAL_SWIMMING),
+				ExposureDto.EXPOSURE_TYPE,
+				ExposureType.RECREATIONAL_WATER,
 				true);
 		}
 

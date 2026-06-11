@@ -916,6 +916,7 @@ public interface Captions {
 	String caseLinkToSamples = "caseLinkToSamples";
 	String caseMergeDuplicates = "caseMergeDuplicates";
 	String caseMinusDays = "caseMinusDays";
+	String caseNegativeCase = "caseNegativeCase";
 	String caseNewCase = "caseNewCase";
 	String caseNewCaseDate = "caseNewCaseDate";
 	String caseNoDiseaseVariant = "caseNoDiseaseVariant";

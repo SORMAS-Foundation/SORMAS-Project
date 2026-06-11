@@ -380,19 +380,16 @@ public class PathogenTestController {
 			.filter(t -> t.getTestResult() == PathogenTestResultType.NEGATIVE && t.getTestResultVerified())
 			.findFirst();
 
-		PathogenTestDto resultedPathogenTest;
 		if (positiveWithSameDisease.isPresent()) {
-			resultedPathogenTest = positiveWithSameDisease.get();
-		} else if (negativeWithSameDisease.isPresent()) {
-			resultedPathogenTest = negativeWithSameDisease.get();
-		} else {
-			resultedPathogenTest = null;
-		}
-
-		if (resultedPathogenTest != null) {
-			showChangeAssociatedSampleResultDialog(resultedPathogenTest, (accepted) -> {
+			showChangeAssociatedSampleResultDialog(positiveWithSameDisease.get(), (accepted) -> {
 				if (accepted) {
-					checkForDiseaseVariantUpdate(resultedPathogenTest, caze, suppressNavigateToCase, this::showConfirmCaseDialog);
+					checkForDiseaseVariantUpdate(positiveWithSameDisease.get(), caze, suppressNavigateToCase, this::showConfirmCaseDialog);
+				}
+			});
+		} else if (negativeWithSameDisease.isPresent()) {
+			showChangeAssociatedSampleResultDialog(negativeWithSameDisease.get(), (accepted) -> {
+				if (accepted) {
+					showNegativeCaseDialog(caze);
 				}
 			});
 		}
@@ -705,6 +702,32 @@ public class PathogenTestController {
 				if (confirmed) {
 					CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(caze.getUuid());
 					caseDataByUuid.setCaseClassification(CaseClassification.CONFIRMED);
+					FacadeProvider.getCaseFacade().save(caseDataByUuid);
+					ControllerProvider.getCaseController().navigateToCase(caseDataByUuid.getUuid());
+				}
+			});
+	}
+
+	/**
+	 * When the test result is negative, the case is not "confirmed" anymore, but the user might want to update the case classification to
+	 * confirmed or not a case for the negative test result. This dialog offers this option to the user.
+	 * If the user accepts the case classification change, then it'll be updated with not a case, otherwise
+	 * no change to the existing classification
+	 *
+	 * @param caze
+	 */
+	public void showNegativeCaseDialog(CaseDataDto caze) {
+
+		VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getCaption(Captions.caseNegativeCase),
+			new Label(I18nProperties.getString(Strings.messageNegativeCaseAfterPathogenTest)),
+			I18nProperties.getString(Strings.yes),
+			I18nProperties.getString(Strings.no),
+			800,
+			confirmed -> {
+				if (confirmed) {
+					CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(caze.getUuid());
+					caseDataByUuid.setCaseClassification(CaseClassification.NO_CASE);
 					FacadeProvider.getCaseFacade().save(caseDataByUuid);
 					ControllerProvider.getCaseController().navigateToCase(caseDataByUuid.getUuid());
 				}

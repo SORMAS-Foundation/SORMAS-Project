@@ -496,7 +496,13 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 					PathogenTestType.MICROSCOPY,
 					PathogenTestType.PCR_RT_PCR,
 					PathogenTestType.ANTIGEN_DETECTION))));
-		addCriteria(Disease.INVASIVE_MENINGOCOCCAL_INFECTION, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, null);
+		addCriteria(
+			Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+			DateHelper.getDateZero(2020, 11, 6),
+			suspect,
+			probable,
+			confirmed,
+			notACase(Disease.INVASIVE_MENINGOCOCCAL_INFECTION));
 
 		//Invasive Pneumococcal Infection
 		suspect = null;
@@ -508,7 +514,13 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 				PathogenTestType.CULTURE,
 				PathogenTestType.PCR_RT_PCR,
 				PathogenTestType.SEQUENCING));
-		addCriteria(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, null);
+		addCriteria(
+			Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+			DateHelper.getDateZero(2020, 11, 6),
+			suspect,
+			probable,
+			confirmed,
+			notACase(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
 
 		// Pertusis
 		suspect = xOf(
@@ -554,7 +566,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 				symptom(SymptomsDto.ABDOMINAL_PAIN),
 				symptom(SymptomsDto.WEIGHT_LOSS)),
 			xOf(1, (positiveTestResult(Disease.GIARDIASIS, PathogenTestType.MICROSCOPY, PathogenTestType.PCR_RT_PCR, PathogenTestType.CULTURE))));
-		addCriteria(Disease.GIARDIASIS, DateHelper.getDateZero(2020, 11, 6), null, probable, confirmed, null);
+		addCriteria(Disease.GIARDIASIS, DateHelper.getDateZero(2020, 11, 6), null, probable, confirmed, notACase(Disease.GIARDIASIS));
 
 		// Cryptosporidiosis
 		probable = allOf(
@@ -572,7 +584,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 			xOf(
 				1,
 				(positiveTestResult(Disease.CRYPTOSPORIDIOSIS, PathogenTestType.MICROSCOPY, PathogenTestType.PCR_RT_PCR, PathogenTestType.CULTURE))));
-		addCriteria(Disease.CRYPTOSPORIDIOSIS, DateHelper.getDateZero(2020, 11, 6), null, probable, confirmed, null);
+		addCriteria(Disease.CRYPTOSPORIDIOSIS, DateHelper.getDateZero(2020, 11, 6), null, probable, confirmed, notACase(Disease.CRYPTOSPORIDIOSIS));
 
 		// CORONAVIRUS
 		suspect = xOf(
