@@ -1,27 +1,11 @@
 package de.symeda.sormas.backend.externalmessage;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
+import javax.ejb.*;
 import javax.persistence.Tuple;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -256,23 +240,17 @@ public class ExternalMessageService extends AdoServiceWithUserFilterAndJurisdict
 
 	public List<ExternalMessage> getForSample(SampleReferenceDto sample) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ExternalMessage> cq = cb.createQuery(ExternalMessage.class);
+		Root<ExternalMessage> labMessageRoot = cq.from(ExternalMessage.class);
 
 		ExternalMessageCriteria criteria = new ExternalMessageCriteria();
 		criteria.setSample(sample);
 
-		CriteriaQuery<Long> idQuery = cb.createQuery(Long.class);
-		Root<ExternalMessage> idRoot = idQuery.from(ExternalMessage.class);
-		idQuery.select(idRoot.get(AbstractDomainObject.ID)).distinct(true);
-		idQuery.where(buildCriteriaFilter(cb, idRoot, criteria));
-		List<Long> ids = em.createQuery(idQuery).getResultList();
+		Predicate filter = buildCriteriaFilter(cb, labMessageRoot, criteria);
 
-		if (ids.isEmpty()) {
-			return Collections.emptyList();
-		}
+		cq.where(filter);
+		cq.distinct(true);
 
-		CriteriaQuery<ExternalMessage> cq = cb.createQuery(ExternalMessage.class);
-		Root<ExternalMessage> labMessageRoot = cq.from(ExternalMessage.class);
-		cq.where(labMessageRoot.get(AbstractDomainObject.ID).in(ids));
 		cq.orderBy(cb.desc(labMessageRoot.get(ExternalMessage.CREATION_DATE)));
 
 		return em.createQuery(cq).getResultList();
@@ -287,7 +265,7 @@ public class ExternalMessageService extends AdoServiceWithUserFilterAndJurisdict
 		Join<SurveillanceReport, Case> caseJoin = surveillanceReportJoin.join(SurveillanceReport.CAZE, JoinType.LEFT);
 
 		cq.where(caseJoin.get(AbstractDomainObject.UUID).in(Collections.singleton(caseUuid)));
-		cq.select(cb.countDistinct(externalMessageRoot.get(AbstractDomainObject.ID)));
+		cq.select(cb.countDistinct(externalMessageRoot));
 
 		return em.createQuery(cq).getSingleResult();
 	}
@@ -301,7 +279,7 @@ public class ExternalMessageService extends AdoServiceWithUserFilterAndJurisdict
 		Join<Sample, Contact> contactJoin = sampleJoin.join(Sample.ASSOCIATED_CONTACT, JoinType.LEFT);
 
 		cq.where(contactJoin.get(AbstractDomainObject.UUID).in(Collections.singleton(contactUuid)));
-		cq.select(cb.countDistinct(labMessageRoot.get(AbstractDomainObject.ID)));
+		cq.select(cb.countDistinct(labMessageRoot));
 
 		return em.createQuery(cq).getSingleResult();
 	}
@@ -315,7 +293,7 @@ public class ExternalMessageService extends AdoServiceWithUserFilterAndJurisdict
 		Join<Sample, EventParticipant> eventParticipantJoin = sampleJoin.join(Sample.ASSOCIATED_EVENT_PARTICIPANT, JoinType.LEFT);
 
 		cq.where(eventParticipantJoin.get(AbstractDomainObject.UUID).in(Collections.singleton(eventParticipantUuid)));
-		cq.select(cb.countDistinct(labMessageRoot.get(AbstractDomainObject.ID)));
+		cq.select(cb.countDistinct(labMessageRoot));
 
 		return em.createQuery(cq).getSingleResult();
 	}
@@ -338,7 +316,7 @@ public class ExternalMessageService extends AdoServiceWithUserFilterAndJurisdict
 	/**
 	 * Allows to only update (refresh with latest survey data) for messages that are not yet processed:
 	 * {@link ExternalMessageStatus#UNPROCESSED}.
-	 *
+	 * 
 	 * @param reportIds
 	 *            dedup / idempotency key composed of the survey id and response id.
 	 * @return UUIds that must be updated / refreshed.

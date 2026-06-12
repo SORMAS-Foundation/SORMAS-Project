@@ -22711,6 +22711,24 @@
           "pseudonymized" : {
             "type" : "boolean"
           },
+          "quantitativeBoolean" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
+          "quantitativeText" : {
+            "type" : "string",
+            "maxLength" : 512,
+            "minLength" : 0
+          },
+          "quantitativeUnit" : {
+            "type" : "string",
+            "maxLength" : 255,
+            "minLength" : 0
+          },
+          "quantitativeValue" : {
+            "type" : "number",
+            "format" : "float"
+          },
           "reportDate" : {
             "type" : "string",
             "format" : "date-time"
@@ -22756,6 +22774,10 @@
             "type" : "string",
             "maxLength" : 512,
             "minLength" : 0
+          },
+          "smearGrade" : {
+            "type" : "string",
+            "enum" : [ "NEGATIVE", "SCANTY", "ONE_PLUS", "TWO_PLUS", "THREE_PLUS" ]
           },
           "specie" : {
             "type" : "string",
@@ -22865,6 +22887,10 @@
           },
           "viaLims" : {
             "type" : "boolean"
+          },
+          "westernBlotInterpretation" : {
+            "type" : "string",
+            "enum" : [ "POSITIVE", "NEGATIVE", "INDETERMINATE" ]
           }
         },
         "required" : [ "lab", "testResult", "testType" ]

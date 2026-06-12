@@ -15,7 +15,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Root;
 
 import org.junit.jupiter.api.Test;
@@ -84,8 +83,6 @@ public class ExternalMessageFacadeEjbUnitTest {
 	@Mock
 	private TypedQuery<Long> longTypedQuery;
 	@Mock
-	private Path<Object> idPath;
-	@Mock
 	private Expression<Long> longExpression;
 	@Captor
 	private ArgumentCaptor<List<Order>> orderListArgumentCaptor;
@@ -96,8 +93,7 @@ public class ExternalMessageFacadeEjbUnitTest {
 		when(em.getCriteriaBuilder()).thenReturn(criteriaBuilder);
 		when(criteriaBuilder.createQuery(Long.class)).thenReturn(longCriteriaQuery);
 		when(longCriteriaQuery.from(ExternalMessage.class)).thenReturn(labMessageRoot);
-		when(labMessageRoot.get(ExternalMessage.ID)).thenReturn(idPath);
-		when(criteriaBuilder.countDistinct(idPath)).thenReturn(longExpression);
+		when(criteriaBuilder.countDistinct(labMessageRoot)).thenReturn(longExpression);
 		when(em.createQuery(longCriteriaQuery)).thenReturn(longTypedQuery);
 		long expected = 1L;
 		when(longTypedQuery.getSingleResult()).thenReturn(expected);
@@ -117,7 +113,7 @@ public class ExternalMessageFacadeEjbUnitTest {
 		when(externalMessageService.getByUuid(testUuid)).thenReturn(externalMessage);
 		when(countryService.getByReferenceDto(null)).thenReturn(null);
 		when(facilityService.getByReferenceDto(null)).thenReturn(null);
-
+		
 		final SymptomsDto symptomsDto = new SymptomsDto();
 		externalMessageDto.setCaseSymptoms(symptomsDto);
 
