@@ -51,6 +51,7 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -134,9 +135,11 @@ public class SampleController {
 	private void createSample(SampleDto sampleDto, Disease disease, Runnable callback) {
 		this.disease = disease;
 		final CommitDiscardWrapperComponent<SampleCreateForm> editView = getSampleCreateComponent(sampleDto, disease, callback);
-		// add option to create additional pathogen tests
+		// add option to create additional pathogen tests (admin-configurable, default on epic #13948 issue #13953)
 		SampleEditPathogenTestListHandler pathogenTestHandler = new SampleEditPathogenTestListHandler();
-		addPathogenTestButton(editView, false, null, null, pathogenTestHandler::addPathogenTest);
+		if (UiUtil.enabled(FeatureType.SAMPLE_ADD_PATHOGEN_TEST)) {
+			addPathogenTestButton(editView, false, null, null, pathogenTestHandler::addPathogenTest);
+		}
 
 		editView.setPostCommitListener(() -> {
 			pathogenTestHandler.saveAll(sampleDto.toReference());

@@ -349,6 +349,7 @@ public class PathogenTestController {
 			if (PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY == p.getTestType() && !luxTB && !AST_ALLOWED_DISEASES.contains(p.getTestedDisease())) {
 				p.setDrugSusceptibility(null);
 			}
+
 			facade.savePathogenTest(p);
 		});
 		if (associatedContact != null) {

@@ -2078,6 +2078,7 @@ public interface Captions {
 	String facilityArchivedFacilities = "facilityArchivedFacilities";
 	String facilityType = "facilityType";
 	String facilityTypeGroup = "facilityTypeGroup";
+	String featureConfiguration = "featureConfiguration";
 	String FeatureConfiguration_districtName = "FeatureConfiguration.districtName";
 	String FeatureConfiguration_enabled = "FeatureConfiguration.enabled";
 	String FeatureConfiguration_endDate = "FeatureConfiguration.endDate";
@@ -2691,6 +2692,7 @@ public interface Captions {
 	String Sample_pathogenTestCount = "Sample.pathogenTestCount";
 	String Sample_pathogenTestingRequested = "Sample.pathogenTestingRequested";
 	String Sample_pathogenTestResult = "Sample.pathogenTestResult";
+	String Sample_performedByReferenceLaboratory = "Sample.performedByReferenceLaboratory";
 	String Sample_received = "Sample.received";
 	String Sample_receivedDate = "Sample.receivedDate";
 	String Sample_referredToUuid = "Sample.referredToUuid";
@@ -2704,6 +2706,7 @@ public interface Captions {
 	String Sample_requestedOtherPathogenTests = "Sample.requestedOtherPathogenTests";
 	String Sample_requestedPathogenTests = "Sample.requestedPathogenTests";
 	String Sample_requestedPathogenTestsTags = "Sample.requestedPathogenTestsTags";
+	String Sample_retestRequested = "Sample.retestRequested";
 	String Sample_sampleCode = "Sample.sampleCode";
 	String Sample_sampleDateTime = "Sample.sampleDateTime";
 	String Sample_sampleMaterial = "Sample.sampleMaterial";
@@ -3628,6 +3631,8 @@ public interface Captions {
 	String View_configuration_emailTemplates_short = "View.configuration.emailTemplates.short";
 	String View_configuration_facilities = "View.configuration.facilities";
 	String View_configuration_facilities_short = "View.configuration.facilities.short";
+	String View_configuration_featureConfiguration = "View.configuration.featureConfiguration";
+	String View_configuration_featureConfiguration_short = "View.configuration.featureConfiguration.short";
 	String View_configuration_laboratories = "View.configuration.laboratories";
 	String View_configuration_laboratories_short = "View.configuration.laboratories.short";
 	String View_configuration_linelisting = "View.configuration.linelisting";

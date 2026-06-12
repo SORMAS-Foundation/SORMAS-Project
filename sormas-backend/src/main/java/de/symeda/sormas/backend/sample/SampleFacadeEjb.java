@@ -631,7 +631,9 @@ public class SampleFacadeEjb implements SampleFacade {
 			joins.getCaseFacility().get(AbstractDomainObject.UUID),
 			joins.getCaseResponsibleRegion().get(Region.NAME),
 			joins.getCaseResponsibleDistrict().get(District.NAME),
-			joins.getCaseResponsibleCommunity().get(Community.NAME) };
+			joins.getCaseResponsibleCommunity().get(Community.NAME),
+			sampleRoot.get(Sample.PERFORMED_BY_REFERENCE_LABORATORY),
+			sampleRoot.get(Sample.RETEST_REQUESTED) };
 
 		Collections.addAll(selections, tmp);
 		selections.addAll(sampleService.getJurisdictionSelections(sampleQueryContext));
@@ -858,6 +860,8 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setReceived(source.isReceived());
 		target.setPathogenTestingRequested(source.getPathogenTestingRequested());
 		target.setAdditionalTestingRequested(source.getAdditionalTestingRequested());
+		target.setPerformedByReferenceLaboratory(source.getPerformedByReferenceLaboratory());
+		target.setRetestRequested(source.getRetestRequested());
 		target.setRequestedPathogenTests(source.getRequestedPathogenTests());
 		target.setRequestedAdditionalTests(source.getRequestedAdditionalTests());
 		target.setPathogenTestResult(source.getPathogenTestResult());
@@ -1011,6 +1015,8 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setReceived(source.isReceived());
 		target.setPathogenTestingRequested(source.getPathogenTestingRequested());
 		target.setAdditionalTestingRequested(source.getAdditionalTestingRequested());
+		target.setPerformedByReferenceLaboratory(source.getPerformedByReferenceLaboratory());
+		target.setRetestRequested(source.getRetestRequested());
 		target.setRequestedPathogenTests(source.getRequestedPathogenTests());
 		target.setRequestedAdditionalTests(source.getRequestedAdditionalTests());
 		target.setPathogenTestResult(source.getPathogenTestResult());

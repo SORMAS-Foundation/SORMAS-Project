@@ -189,7 +189,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		formComponents.add(testMethodComponent);
 		container.addComponent(testMethodComponent);
 
-		testResultComponent = new TestResultComponent(eventBus, formConfig.isLuxembourg, disease);
+		testResultComponent = new TestResultComponent(eventBus, formConfig.isLuxembourg, disease, formConfig.resultRequired);
 		formComponents.add(testResultComponent);
 		container.addComponent(testResultComponent);
 

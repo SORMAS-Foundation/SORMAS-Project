@@ -34,6 +34,7 @@ import de.symeda.sormas.ui.configuration.customizablefield.CustomizableFieldsVie
 import de.symeda.sormas.ui.configuration.disease.DiseaseConfigurationView;
 import de.symeda.sormas.ui.configuration.docgeneration.DocumentTemplatesView;
 import de.symeda.sormas.ui.configuration.docgeneration.emailtemplate.EmailTemplatesView;
+import de.symeda.sormas.ui.configuration.featureconfiguration.FeatureConfigurationView;
 import de.symeda.sormas.ui.configuration.infrastructure.AreasView;
 import de.symeda.sormas.ui.configuration.infrastructure.CommunitiesView;
 import de.symeda.sormas.ui.configuration.infrastructure.ContinentsView;
@@ -138,6 +139,9 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 		if (UiUtil.permitted(UserRight.SYSTEM_CONFIGURATION)) {
 			navigator.addView(SystemConfigurationView.VIEW_NAME, SystemConfigurationView.class);
 			firstAccessibleView = firstAccessibleView != null ? firstAccessibleView : SystemConfigurationView.class;
+
+			navigator.addView(FeatureConfigurationView.VIEW_NAME, FeatureConfigurationView.class);
+			firstAccessibleView = firstAccessibleView != null ? firstAccessibleView : FeatureConfigurationView.class;
 		}
 
 		if (FacadeProvider.getConfigFacade().isDevMode() && UiUtil.permitted(UserRight.DEV_MODE)) {
@@ -283,6 +287,11 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 			menu.addView(
 				SystemConfigurationView.VIEW_NAME,
 				I18nProperties.getPrefixCaption("View", SystemConfigurationView.VIEW_NAME.replace("/", ".") + ".short", ""),
+				null,
+				false);
+			menu.addView(
+				FeatureConfigurationView.VIEW_NAME,
+				I18nProperties.getPrefixCaption("View", FeatureConfigurationView.VIEW_NAME.replace("/", ".") + ".short", ""),
 				null,
 				false);
 		}
