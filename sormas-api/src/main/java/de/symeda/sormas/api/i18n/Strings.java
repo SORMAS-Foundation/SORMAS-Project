@@ -1102,6 +1102,8 @@ public interface Strings {
 	String infoNoAccessToPersonEntities = "infoNoAccessToPersonEntities";
 	String infoNoAdditionalTests = "infoNoAdditionalTests";
 	String infoNoAefiInvestigations = "infoNoAefiInvestigations";
+	String infoNoCaseLabResultsSamples = "infoNoCaseLabResultsSamples";
+	String infoNoCaseLabResultsTests = "infoNoCaseLabResultsTests";
 	String infoNoCasesFoundStatistics = "infoNoCasesFoundStatistics";
 	String infoNoCustomizableEnumTranslations = "infoNoCustomizableEnumTranslations";
 	String infoNoCustomizableFieldOptions = "infoNoCustomizableFieldOptions";

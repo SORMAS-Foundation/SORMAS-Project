@@ -137,6 +137,7 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	public static final String EPI_DATA = "epiData";
 	public static final String THERAPY = "therapy";
 	public static final String CLINICAL_COURSE = "clinicalCourse";
+	public static final String LAB_RESULTS = "labResults";
 	public static final String MATERNAL_HISTORY = "maternalHistory";
 	public static final String PORT_HEALTH_INFO = "portHealthInfo";
 	public static final String HEALTH_CONDITIONS = "healthConditions";
@@ -166,6 +167,9 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	public static final String POINT_OF_ENTRY = "pointOfEntry";
 	public static final String POINT_OF_ENTRY_DETAILS = "pointOfEntryDetails";
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
+	public static final String DATE_OTHER = "dateOther";
+	public static final String DATE_OTHER_DETAILS = "dateOtherDetails";
+	public static final String EXTERNAL_COMMENTS = "externalComments";
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String EXTERNAL_TOKEN = "externalToken";
 	public static final String INTERNAL_TOKEN = "internalToken";
@@ -484,6 +488,15 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String additionalDetails;
+	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS)
+	private Date dateOther;
+	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String dateOtherDetails;
+	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS)
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String externalComments;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
@@ -1381,6 +1394,30 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 
 	public void setAdditionalDetails(String additionalDetails) {
 		this.additionalDetails = additionalDetails;
+	}
+
+	public Date getDateOther() {
+		return dateOther;
+	}
+
+	public void setDateOther(Date dateOther) {
+		this.dateOther = dateOther;
+	}
+
+	public String getDateOtherDetails() {
+		return dateOtherDetails;
+	}
+
+	public void setDateOtherDetails(String dateOtherDetails) {
+		this.dateOtherDetails = dateOtherDetails;
+	}
+
+	public String getExternalComments() {
+		return externalComments;
+	}
+
+	public void setExternalComments(String externalComments) {
+		this.externalComments = externalComments;
 	}
 
 	public String getExternalID() {

@@ -3443,6 +3443,30 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertThat(caze.getDiseaseVariantDetails(), is(nullValue()));
 	}
 
+	@Test
+	public void testLabResultsFieldsRoundTrip() {
+		// Guards the hand-written CaseFacadeEjb mapper for the lab-results tab header fields (#13948).
+		CaseDataDto caze = creator.createCase(
+			surveillanceSupervisor.toReference(),
+			creator.createPerson("Lab", "Case").toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		Date dateOther = new Date();
+		caze.setDateOther(dateOther);
+		caze.setDateOtherDetails("Sampling visit");
+		caze.setExternalComments("Lab sent confirmation");
+		getCaseFacade().save(caze);
+
+		CaseDataDto reloaded = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(dateOther, reloaded.getDateOther());
+		assertEquals("Sampling visit", reloaded.getDateOtherDetails());
+		assertEquals("Lab sent confirmation", reloaded.getExternalComments());
+	}
+
 	private static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ";
 	private static final SecureRandom rnd = new SecureRandom();
 

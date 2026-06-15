@@ -235,6 +235,10 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CLINICAL_COURSE),
 					params);
 			}
+
+			if (UiUtil.permitted(FeatureType.SAMPLES_LAB, UserRight.SAMPLE_VIEW) && !caze.checkIsUnreferredPortHealthCase()) {
+				menu.addView(CaseLabResultsView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.LAB_RESULTS), params);
+			}
 		}
 		if (FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(caze.getDisease())
 			&& UiUtil.permitted(UserRight.CONTACT_VIEW)

@@ -16295,4 +16295,15 @@ alter table samples_history alter column retestrequested set not null;
 
 INSERT INTO schema_version (version_number, comment) VALUES (637, 'Reference laboratory + retest indicators on sample #13954 (#13948)');
 
+-- 2026-06-08 Laboratory results tab: date other + external comments on case #13948
+alter table cases add column IF NOT EXISTS dateother timestamp;
+alter table cases add column IF NOT EXISTS dateotherdetails varchar(255);
+alter table cases add column IF NOT EXISTS externalcomments text;
+
+alter table cases_history add column IF NOT EXISTS dateother timestamp;
+alter table cases_history add column IF NOT EXISTS dateotherdetails varchar(255);
+alter table cases_history add column IF NOT EXISTS externalcomments text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (638, 'Laboratory results tab: dateOther, dateOtherDetails, externalComments on case #13948');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
