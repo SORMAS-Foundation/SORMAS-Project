@@ -70,6 +70,7 @@ import de.symeda.sormas.api.exposure.ExposureSubSetting;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.FomiteTransmissionLocation;
 import de.symeda.sormas.api.exposure.ProphylaxisAdherence;
+import de.symeda.sormas.api.exposure.SexualContact;
 import de.symeda.sormas.api.exposure.TravelPurpose;
 import de.symeda.sormas.api.exposure.TypeOfAnimal;
 import de.symeda.sormas.api.i18n.Captions;
@@ -133,6 +134,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 					fluidRow(fluidColumn(4, 0, locs(ExposureDto.PROPHYLAXIS_ADHERENCE_DETAILS))) +
 					fluidRow(fluidColumn(4, 0, locs(ExposureDto.TRAVEL_PURPOSE))) +
 					fluidRow(fluidColumn(4, 0, locs(ExposureDto.TRAVEL_PURPOSE_DETAILS))) +
+					fluidRow(fluidColumn(4, 0, locs(ExposureDto.SEXUAL_CONTACT))) +
 					fluidRow(
 							fluidColumn(4, 0, locs(
 									ExposureDto.EXPOSURE_SUB_SETTING_DETAILS,
@@ -197,6 +199,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	private ComboBox travelPurposeField;
 	private TextField prophylaxisAdherenceDetailsField;
 	private TextField travelPurposeDetailsField;
+	private ComboBox sexualContactField;
 
 	private CustomizableFieldsGroup exposureDetailsPanel;
 	private CustomizableFieldsGroup exposuresGeneralPanel;
@@ -377,6 +380,8 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		travelPurposeField = addField(exposureDetailsLayout, ExposureDto.TRAVEL_PURPOSE, ComboBox.class);
 		travelPurposeField.setVisible(false);
 		travelPurposeDetailsField = addField(exposureDetailsLayout, ExposureDto.TRAVEL_PURPOSE_DETAILS, TextField.class);
+		sexualContactField = addField(exposureDetailsLayout, ExposureDto.SEXUAL_CONTACT, ComboBox.class);
+		sexualContactField.setVisible(false);
 
 		categoryField.addValueChangeListener(e -> {
 			ExposureCategory selectedCategory = (ExposureCategory) e.getProperty().getValue();
@@ -419,6 +424,8 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			subSettingsDetailsField.setVisible(containsOther);
 			boolean isProphylaxis = selectedSubSettings != null && selectedSubSettings.contains(ExposureSubSetting.TRAVELED_ABROAD);
 			setVisibleClear(isProphylaxis, ExposureDto.PROPHYLAXIS_ADHERENCE, ExposureDto.TRAVEL_PURPOSE);
+			boolean isSexualActivity = selectedSubSettings != null && selectedSubSettings.contains(ExposureSubSetting.SEXUAL_ACTIVITY);
+			setVisibleClear(isSexualActivity, ExposureDto.SEXUAL_CONTACT);
 
 			// Salmonellosis: shopping-for-food details follows sub-setting selection.
 			// Disease-gated so non-SAL exposures with FOOD_BORNE category don't see it.
@@ -668,6 +675,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			String prophylaxisAdherenceDetails = newFieldValue.getProphylaxisAdherenceDetails();
 			TravelPurpose travelPurpose = newFieldValue.getTravelPurpose();
 			String travelPurposeDetails = newFieldValue.getTravelPurposeDetails();
+			SexualContact sexualContact = newFieldValue.getSexualContact();
 
 			// Update field items (these methods clear the field values)
 			updateSettingFieldItems(category);
@@ -720,6 +728,14 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 				travelPurposeField.setValue(null);
 				travelPurposeDetailsField.setValue(null);
 				travelPurposeDetailsField.setVisible(false);
+			}
+
+			boolean isSexualActivity = subSettings != null && subSettings.contains(ExposureSubSetting.SEXUAL_ACTIVITY);
+			sexualContactField.setVisible(isSexualActivity);
+			if (isSexualActivity) {
+				sexualContactField.setValue(sexualContact);
+			} else {
+				sexualContactField.setValue(null);
 			}
 
 			// Restore contactFactors field value and visibility

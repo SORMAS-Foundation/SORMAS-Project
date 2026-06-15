@@ -29,7 +29,7 @@ public enum SerotypingMethod {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.SHIGELLOSIS })
 	@ApplicableToPathogenTests(value = {
-		PathogenTestType.SEROGROUPING })
+		PathogenTestType.SEROTYPING })
 	MULTIPLEX_PCR,
 	@Diseases(value = {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
@@ -44,7 +44,7 @@ public enum SerotypingMethod {
 	@Diseases(value = {
 		Disease.SHIGELLOSIS })
 	@ApplicableToPathogenTests(value = {
-		PathogenTestType.SEROGROUPING })
+		PathogenTestType.SEROTYPING })
 	AGGLUTINATION,
 	@Diseases(value = {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
@@ -65,7 +65,6 @@ public enum SerotypingMethod {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.SHIGELLOSIS })
 	@ApplicableToPathogenTests(value = {
-		PathogenTestType.SEROGROUPING,
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	DISK_DIFFUSION,
 	@Diseases(value = {
@@ -76,7 +75,7 @@ public enum SerotypingMethod {
 	@Diseases(value = {
 		Disease.SHIGELLOSIS })
 	@ApplicableToPathogenTests(value = {
-		PathogenTestType.SEROGROUPING,
+		PathogenTestType.SEROTYPING,
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	WGS_PREDICTION,
 	// OTHER is mostly applicable for all diseases and pathogen tests, so we don't specify them as applicable to specific diseases or tests

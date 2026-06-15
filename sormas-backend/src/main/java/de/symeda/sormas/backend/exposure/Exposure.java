@@ -53,6 +53,7 @@ import de.symeda.sormas.api.exposure.FomiteTransmissionLocation;
 import de.symeda.sormas.api.exposure.GatheringType;
 import de.symeda.sormas.api.exposure.HabitationType;
 import de.symeda.sormas.api.exposure.ProphylaxisAdherence;
+import de.symeda.sormas.api.exposure.SexualContact;
 import de.symeda.sormas.api.exposure.SwimmingLocation;
 import de.symeda.sormas.api.exposure.TravelAccommodation;
 import de.symeda.sormas.api.exposure.TravelPurpose;
@@ -199,6 +200,7 @@ public class Exposure extends AbstractDomainObject {
 	private Set<ExposureProtectiveMeasure> protectiveMeasures = new HashSet<>();
 
 	private String shoppingForFoodDetails;
+	private SexualContact sexualContact;
 
 	@ManyToOne
 	@JoinColumn(nullable = false)
@@ -997,4 +999,12 @@ public class Exposure extends AbstractDomainObject {
 		this.prophylaxisAdherenceDetails = prophylaxisAdherenceDetails;
 	}
 
+	@Enumerated(EnumType.STRING)
+	public SexualContact getSexualContact() {
+		return sexualContact;
+	}
+
+	public void setSexualContact(SexualContact sexualContact) {
+		this.sexualContact = sexualContact;
+	}
 }

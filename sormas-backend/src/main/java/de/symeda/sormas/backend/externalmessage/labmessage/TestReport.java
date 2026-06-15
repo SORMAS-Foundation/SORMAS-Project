@@ -40,6 +40,7 @@ import de.symeda.sormas.api.sample.GenoType;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenSpecie;
 import de.symeda.sormas.api.sample.PathogenStrainCallStatus;
+import de.symeda.sormas.api.sample.PathogenTestCategory;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.RsvSubtype;
@@ -181,6 +182,7 @@ public class TestReport extends AbstractDomainObject {
 	private String seroTypingMethodText;
 	private Serotype serotype;
 	private String serotypeText;
+	private PathogenTestCategory pathogenTestCategory;
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getTestLabName() {
@@ -935,4 +937,12 @@ public class TestReport extends AbstractDomainObject {
 		this.serotypeText = serotypeText;
 	}
 
+	@Enumerated(EnumType.STRING)
+	public PathogenTestCategory getPathogenTestCategory() {
+		return pathogenTestCategory;
+	}
+
+	public void setPathogenTestCategory(PathogenTestCategory pathogenTestCategory) {
+		this.pathogenTestCategory = pathogenTestCategory;
+	}
 }

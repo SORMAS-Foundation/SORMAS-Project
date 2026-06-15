@@ -16295,4 +16295,37 @@ alter table samples_history alter column retestrequested set not null;
 
 INSERT INTO schema_version (version_number, comment) VALUES (637, 'Reference laboratory + retest indicators on sample #13954 (#13948)');
 
+-- 04-06-2026 Shigellosis lab message processing. #13965
+ALTER TABLE testreport                  ADD COLUMN IF NOT EXISTS pathogentestcategory varchar(255);
+ALTER TABLE exposures                   ADD COLUMN IF NOT EXISTS sexualcontact varchar(255);
+
+
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'healthconditions' AND column_name = 'undermedication')
+        AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'healthconditions' AND column_name = 'undermedication') THEN
+        ALTER TABLE healthconditions RENAME COLUMN undermedication TO onmedication;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'healthconditions' AND column_name = 'undermedication')
+        AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'healthconditions' AND column_name = 'undermedication') THEN
+        ALTER TABLE healthconditions RENAME COLUMN undermedication TO onmedication;
+    END IF;
+END $$;
+
+ALTER TABLE testreport_history          ADD COLUMN IF NOT EXISTS pathogentestcategory varchar(255);
+ALTER TABLE exposures_history           ADD COLUMN IF NOT EXISTS sexualcontact varchar(255);
+
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'healthconditions_history' AND column_name = 'undermedication')
+        AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'healthconditions_history' AND column_name = 'undermedication') THEN
+        ALTER TABLE healthconditions_history RENAME COLUMN undermedication TO onmedication;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'healthconditions_history' AND column_name = 'undermedication')
+        AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'healthconditions_history' AND column_name = 'undermedication') THEN
+        ALTER TABLE healthconditions_history RENAME COLUMN undermedication TO onmedication;
+    END IF;
+END $$;
+INSERT INTO schema_version (version_number, comment) VALUES (638, '#13965 - Shigellosis Lab messages');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

@@ -172,28 +172,38 @@ public enum PathogenSpecie {
 	@Diseases(value = {
 		Disease.SHIGELLOSIS })
 	@ApplicableToPathogenTests(value = {
-		PathogenTestType.SEROGROUPING })
+		PathogenTestType.SEROGROUPING,
+		PathogenTestType.SEROTYPING,
+		PathogenTestType.BACTERIAL_CULTURE })
 	BOYDII,
 	@Diseases(value = {
 		Disease.SHIGELLOSIS })
 	@ApplicableToPathogenTests(value = {
-		PathogenTestType.SEROGROUPING })
+		PathogenTestType.SEROGROUPING,
+		PathogenTestType.SEROTYPING,
+		PathogenTestType.BACTERIAL_CULTURE })
 	DYSENTERIAE,
 	@Diseases(value = {
 		Disease.SHIGELLOSIS })
 	@ApplicableToPathogenTests(value = {
-		PathogenTestType.SEROGROUPING })
+		PathogenTestType.SEROGROUPING,
+		PathogenTestType.SEROTYPING,
+		PathogenTestType.BACTERIAL_CULTURE })
 	FLEXNERI,
 	@Diseases(value = {
 		Disease.SHIGELLOSIS })
 	@ApplicableToPathogenTests(value = {
-		PathogenTestType.SEROGROUPING })
+		PathogenTestType.SEROGROUPING,
+		PathogenTestType.SEROTYPING,
+		PathogenTestType.BACTERIAL_CULTURE })
 	SONNEI,
 	@Diseases(value = {
 		Disease.SHIGELLOSIS })
 	@ApplicableToPathogenTests(value = {
-		PathogenTestType.SEROGROUPING })
-	SHIGELLA_SPP,
+		PathogenTestType.SEROGROUPING,
+		PathogenTestType.SEROTYPING,
+		PathogenTestType.BACTERIAL_CULTURE })
+	SHISPP,
 	@Diseases({
 		Disease.MALARIA,
 		Disease.SHIGELLOSIS })
@@ -206,7 +216,10 @@ public enum PathogenSpecie {
 		PathogenTestType.Q_PCR,
 		PathogenTestType.LAMP,
 		PathogenTestType.OTHER_MOLECULAR_ASSAY,
-		PathogenTestType.OTHER_SEROLOGICAL_TEST })
+		PathogenTestType.OTHER_SEROLOGICAL_TEST,
+		PathogenTestType.BACTERIAL_CULTURE,
+		PathogenTestType.SEROGROUPING,
+		PathogenTestType.SEROTYPING })
 	OTHER,
 	@Diseases({
 		Disease.TUBERCULOSIS,
@@ -223,7 +236,10 @@ public enum PathogenSpecie {
 		PathogenTestType.Q_PCR,
 		PathogenTestType.LAMP,
 		PathogenTestType.OTHER_MOLECULAR_ASSAY,
-		PathogenTestType.OTHER_SEROLOGICAL_TEST })
+		PathogenTestType.OTHER_SEROLOGICAL_TEST,
+		PathogenTestType.BACTERIAL_CULTURE,
+		PathogenTestType.SEROGROUPING,
+		PathogenTestType.SEROTYPING })
 	UNKNOWN,
 	@Diseases({
 		Disease.TUBERCULOSIS,

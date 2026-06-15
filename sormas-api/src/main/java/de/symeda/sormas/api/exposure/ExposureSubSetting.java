@@ -52,6 +52,9 @@ public enum ExposureSubSetting {
 	EATING_AT_HOME(ExposureCategory.FOOD_BORNE, null),
 	EATING_OUTSIDE(ExposureCategory.FOOD_BORNE, null),
 	@Diseases({
+		Disease.SHIGELLOSIS })
+	HOUSEHOLD_CONTACT(ExposureCategory.DIRECT_CONTACT, ExposureSetting.PERSON_TO_PERSON),
+	@Diseases({
 		Disease.SALMONELLOSIS })
 	SHOPPING_FOR_FOOD(ExposureCategory.FOOD_BORNE, null),
 

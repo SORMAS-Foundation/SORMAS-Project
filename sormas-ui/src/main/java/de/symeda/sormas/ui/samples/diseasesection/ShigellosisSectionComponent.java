@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples.diseasesection;
 
+import java.util.Arrays;
+
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.TextField;
 
@@ -40,15 +42,28 @@ public class ShigellosisSectionComponent extends AbstractDiseaseSectionComponent
 	private DrugSusceptibilityForm drugSusceptibilityField;
 	private ComboBox<PathogenSpecie> specie;
 	private TextField specieTextField;
-	private ComboBox<SerotypingMethod> serotypingMethodField;
-	private TextField serotypingMethodTextField;
+	private ComboBox<SerotypingMethod> serotypingMethodCBF;
+	private TextField serotypingMethodTF;
+	private TextField serotypeTF;
 
 	private PathogenTestType currentTestType;
 	private PathogenTestResultType currentResult;
-	private TextField serotypeField;
 
 	@Override
 	protected void buildLayout() {
+
+		serotypeTF = createTextField(PathogenTestDto.SEROTYPE);
+		serotypeTF.setVisible(false);
+		addRow(serotypeTF);
+
+		serotypingMethodCBF = createComboBox(PathogenTestDto.SEROTYPING_METHOD);
+		serotypingMethodCBF.setItems(SerotypingMethod.values());
+		serotypingMethodCBF.setItemCaptionGenerator(SerotypingMethod::toString);
+		serotypingMethodCBF.setVisible(false);
+
+		serotypingMethodTF = createTextField(PathogenTestDto.SERO_TYPING_METHOD_TEXT);
+		serotypingMethodTF.setVisible(false);
+		addRow(serotypingMethodCBF, serotypingMethodTF);
 
 		// Shigellosis species
 		specie = createComboBox(PathogenTestDto.SPECIE);
@@ -61,23 +76,11 @@ public class ShigellosisSectionComponent extends AbstractDiseaseSectionComponent
 
 		addRow(specie, specieTextField);
 
-		serotypeField = createTextField(PathogenTestDto.SEROTYPE_TEXT);
-		serotypeField.setVisible(false);
-		addRow(serotypeField);
-
-		serotypingMethodField = createComboBox(PathogenTestDto.SEROTYPING_METHOD);
-		serotypingMethodField.setItems(SerotypingMethod.values());
-		serotypingMethodField.setItemCaptionGenerator(SerotypingMethod::toString);
-		serotypingMethodField.setVisible(false);
-
-		serotypingMethodTextField = createTextField(PathogenTestDto.SERO_TYPING_METHOD_TEXT);
-		serotypingMethodTextField.setVisible(false);
-		addRow(serotypingMethodField, serotypingMethodTextField);
-
 		binder.forField(specie).bind(PathogenTestDto::getSpecie, PathogenTestDto::setSpecie);
-		binder.forField(serotypingMethodField).bind(PathogenTestDto::getSeroTypingMethod, PathogenTestDto::setSeroTypingMethod);
-		binder.forField(serotypingMethodTextField).bind(PathogenTestDto::getSeroTypingMethodText, PathogenTestDto::setSeroTypingMethodText);
+		binder.forField(serotypingMethodCBF).bind(PathogenTestDto::getSeroTypingMethod, PathogenTestDto::setSeroTypingMethod);
+		binder.forField(serotypingMethodTF).bind(PathogenTestDto::getSeroTypingMethodText, PathogenTestDto::setSeroTypingMethodText);
 		binder.forField(specieTextField).bind(PathogenTestDto::getSpecieText, PathogenTestDto::setSpecieText);
+		binder.forField(serotypeTF).bind(PathogenTestDto::getSerotypeText, PathogenTestDto::setSerotypeText);
 
 		// DrugSusceptibilityForm
 		drugSusceptibilityField = new DrugSusceptibilityForm(
@@ -94,11 +97,11 @@ public class ShigellosisSectionComponent extends AbstractDiseaseSectionComponent
 	protected void wireVisibility() {
 
 		// serotypingMethodText visible only when OTHER
-		track(serotypingMethodField.addValueChangeListener(e -> {
+		track(serotypingMethodCBF.addValueChangeListener(e -> {
 			boolean showText = e.getValue() == SerotypingMethod.OTHER;
-			serotypingMethodTextField.setVisible(showText);
+			serotypingMethodTF.setVisible(showText);
 			if (!showText) {
-				serotypingMethodTextField.clear();
+				serotypingMethodTF.clear();
 			}
 		}));
 
@@ -112,13 +115,16 @@ public class ShigellosisSectionComponent extends AbstractDiseaseSectionComponent
 		}));
 
 		track(eventBus.on(TestTypeChangedEvent.class, event -> {
+			// Resetting the current result so that the next time the event is fired,
+			eventBus.fire(new SetTestResultEvent(null));
 			currentTestType = event.getTestType();
 			updateDrugSusceptibility(currentTestType);
 			updateComboBoxByDiseaseAndTestType(specie, PathogenSpecie.class, disease, currentTestType);
-			updateComboBoxByDiseaseAndTestType(serotypingMethodField, SerotypingMethod.class, disease, currentTestType);
+			updateComboBoxByDiseaseAndTestType(serotypingMethodCBF, SerotypingMethod.class, disease, currentTestType);
 			if (currentTestType != null && currentTestType == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY) {
 				eventBus.fire(new SetTestResultEvent(PathogenTestResultType.NOT_APPLICABLE));
-			} else if (currentTestType != null && currentTestType == PathogenTestType.SEROGROUPING) {
+			} else if (currentTestType != null
+				&& Arrays.asList(PathogenTestType.SEROGROUPING, PathogenTestType.SEROTYPING).contains(currentTestType)) {
 				eventBus.fire(new SetTestResultEvent(PathogenTestResultType.POSITIVE));
 			} else {
 				eventBus.fire(new SetTestResultEvent(null));
@@ -143,27 +149,25 @@ public class ShigellosisSectionComponent extends AbstractDiseaseSectionComponent
 	private void updateFieldVisibility() {
 		boolean isPositive = currentResult == PathogenTestResultType.POSITIVE;
 		// Serogrouping test: only show specie, hide drug susceptibility and serotyping method
-		boolean isSerogroupingTest = isPositive && currentTestType == PathogenTestType.SEROGROUPING;
-		specie.setVisible(isSerogroupingTest);
-		serotypeField.setVisible(isSerogroupingTest);
-		if (!isSerogroupingTest) {
-			serotypingMethodField.clear();
-			serotypingMethodTextField.setVisible(false);
-			serotypingMethodTextField.clear();
-			specie.clear();
-			specieTextField.setVisible(false);
-			specieTextField.clear();
-			serotypeField.clear();
-			serotypeField.setVisible(false);
-		}
-
+		boolean isSerogrouping = isPositive && currentTestType == PathogenTestType.SEROGROUPING;
+		// SEROGroup : species only
+		// boolean isCultureTest = isPositive && currentTestType == PathogenTestType.BACTERIAL_CULTURE;
+		boolean isSerotype = isPositive && currentTestType == PathogenTestType.SEROTYPING;
+		//  SEROtype : test method + species + serotype:
 		boolean showDrugSusceptibilityForm = currentTestType != null && currentTestType == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY;
-		if (!showDrugSusceptibilityForm) {
-			serotypingMethodField.clear();
-			serotypingMethodTextField.clear();
-			serotypingMethodTextField.setVisible(false);
+
+		if (!isSerogrouping) {
+			setVisibleClear(specie, serotypeTF, serotypingMethodCBF);
 		}
-		serotypingMethodField.setVisible(isSerogroupingTest || showDrugSusceptibilityForm);
+		if (!isSerotype) {
+			setVisibleClear(specieTextField, specie, serotypingMethodCBF, serotypeTF);
+		}
+		if (!showDrugSusceptibilityForm) {
+			setVisibleClear(serotypingMethodCBF);
+		}
+		serotypingMethodCBF.setVisible(isSerotype || showDrugSusceptibilityForm);
+		specie.setVisible(isSerotype || isSerogrouping);
+		serotypeTF.setVisible(isSerotype);
 		updateRowAndSelfVisibility();
 	}
 

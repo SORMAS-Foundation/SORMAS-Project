@@ -35,7 +35,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -121,18 +120,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	public static final String HAS_GUARDIAN = "hasGuardian";
 	public static final Set<Disease> PERINATAL_DISEASES =
 		Collections.unmodifiableSet(new HashSet<>(Arrays.asList(Disease.CONGENITAL_RUBELLA, Disease.RESPIRATORY_SYNCYTIAL_VIRUS)));
-	public static final Set<Disease> ENTRY_DATE_DISEASE = Collections.unmodifiableSet(
-		new HashSet<>(
-			Arrays.asList(
-				Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-				Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-				Disease.TUBERCULOSIS,
-				Disease.MEASLES,
-				Disease.GIARDIASIS,
-				Disease.CRYPTOSPORIDIOSIS,
-				Disease.MALARIA,
-				Disease.DENGUE,
-				Disease.SHIGELLOSIS)));
 	//@formatter:off
     private static final String HTML_LAYOUT =
             loc(PERSON_INFORMATION_HEADING_LOC) +
@@ -434,25 +421,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		birthCountryCB.addItems(countries);
 
 		addField(PersonDto.LIVING_STATUS, ComboBox.class);
-		DateField entryDateDF = addField(PersonDto.ENTRY_DATE, DateField.class);
-		entryDateDF.setVisible(false);
-		// Entry date is only required for foreigners in Luxembourg with the TB+IMI+IPI diseases only.
-		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
-			boolean isEntryDateAllowedDisease = ENTRY_DATE_DISEASE.contains(disease);
-			birthCountryCB.addValueChangeListener(e -> {
-				CountryReferenceDto countryRef = (CountryReferenceDto) e.getProperty().getValue();
-				boolean isForeigner = false;
-				if (countryRef != null) {
-					isForeigner = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
-						&& Arrays.asList(CountryHelper.COUNTRY_CODE_LUXEMBOURG, "LUX")
-							.stream()
-							.filter(Objects::nonNull)
-							.noneMatch(country -> StringUtils.equalsIgnoreCase(country, countryRef.getIsoCode()));
-				}
-				setVisibleClear(isEntryDateAllowedDisease && isForeigner, PersonDto.ENTRY_DATE);
-				setRequired(isEntryDateAllowedDisease && isForeigner, PersonDto.ENTRY_DATE);
-			});
-		}
+		// Entry date is not a mandatory field.
+		addField(PersonDto.ENTRY_DATE, DateField.class);
+
 		nationalHealthIdField = addField(PersonDto.NATIONAL_HEALTH_ID, SormasTextField.class);
 		nationalHealthIdField.setNullRepresentation("");
 		Label nationalHealthIdWarningLabel = new Label(I18nProperties.getString(Strings.messagePersonNationalHealthIdInvalid));
