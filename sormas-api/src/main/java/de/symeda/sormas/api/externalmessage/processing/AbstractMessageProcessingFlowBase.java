@@ -296,11 +296,38 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
             (sampleReportIndex, previousSampleResult) -> createOneSampleAndPathogenTests(caze, sampleReportIndex, false, previousSampleResult);
 
         FlowThen<ExternalMessageProcessingResult> caseFlow = flow.then(previousResult -> {
-            ExternalMessageProcessingResult withCase = previousResult.getData().withSelectedCase(caze);
+            CompletionStage<Void> mismatchInformationStage = CompletableFuture.completedFuture(null);
 
-            logger.debug("[MESSAGE PROCESSING] Continue processing with case: {}", withCase);
+            // Check and inform about symptoms mismatch
+            if (hasCaseSymptomsMismatch(caze, getExternalMessage())) {
+                mismatchInformationStage = informCaseSymptomsMismatch(caze, getExternalMessage());
+            }
 
-            return ProcessingResult.continueWith(withCase).asCompletedFuture();
+            // Chain hospitalization mismatch check
+            mismatchInformationStage = mismatchInformationStage.thenCompose(
+                ignored -> hasCaseHospitalizationMismatch(caze, getExternalMessage())
+                    ? informCaseHospitalizationMismatch(caze, getExternalMessage())
+                    : CompletableFuture.completedFuture(null));
+
+            // Chain exposures mismatch check
+            mismatchInformationStage = mismatchInformationStage.thenCompose(
+                ignored -> hasCaseExposuresMismatch(caze, getExternalMessage())
+                    ? informCaseExposuresMismatch(caze, getExternalMessage())
+                    : CompletableFuture.completedFuture(null));
+
+            // Chain activities as case mismatch check
+            mismatchInformationStage = mismatchInformationStage.thenCompose(
+                ignored -> hasCaseActivitiesAsCaseMismatch(caze, getExternalMessage())
+                    ? informCaseActivitiesAsCaseMismatch(caze, getExternalMessage())
+                    : CompletableFuture.completedFuture(null));
+
+            return mismatchInformationStage.thenCompose(ignored -> {
+                ExternalMessageProcessingResult withCase = previousResult.getData().withSelectedCase(caze);
+
+                logger.debug("[MESSAGE PROCESSING] Continue processing with case: {}", withCase);
+
+                return ProcessingResult.continueWith(withCase).asCompletedFuture();
+            });
         });
         return caseFlow.then(
             previousResult -> doPickOrCreateSamplesFlow(
@@ -912,6 +939,38 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
         HandlerCallback<SampleAndPathogenTests> callback);
 
     public abstract CompletionStage<Boolean> handleMultipleSampleConfirmation();
+
+    protected boolean hasCaseSymptomsMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+        return false;
+    }
+
+    protected CompletionStage<Void> informCaseSymptomsMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+        return CompletableFuture.completedFuture(null);
+    }
+
+    protected boolean hasCaseHospitalizationMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+        return false;
+    }
+
+    protected CompletionStage<Void> informCaseHospitalizationMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+        return CompletableFuture.completedFuture(null);
+    }
+
+    protected boolean hasCaseExposuresMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+        return false;
+    }
+
+    protected CompletionStage<Void> informCaseExposuresMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+        return CompletableFuture.completedFuture(null);
+    }
+
+    protected boolean hasCaseActivitiesAsCaseMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+        return false;
+    }
+
+    protected CompletionStage<Void> informCaseActivitiesAsCaseMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+        return CompletableFuture.completedFuture(null);
+    }
 
     protected abstract void handleCreateSampleAndPathogenTests(
         SampleDto sample,

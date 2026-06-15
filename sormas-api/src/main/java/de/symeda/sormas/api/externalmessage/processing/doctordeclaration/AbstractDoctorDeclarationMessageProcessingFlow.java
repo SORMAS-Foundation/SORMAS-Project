@@ -18,6 +18,7 @@ package de.symeda.sormas.api.externalmessage.processing.doctordeclaration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletionStage;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -55,6 +56,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
+import de.symeda.sormas.api.symptoms.SymptomsComparisonHelper;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -283,6 +285,100 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 
 			logger.debug("[POST BUILD CASE] Symptoms set for case with UUID: {}", caseDto.getUuid());
 		}
+	}
+
+	@Override
+	protected boolean hasCaseSymptomsMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+		boolean symptomsMismatch = SymptomsComparisonHelper.hasCaseSymptomsMismatch(caze.getSymptoms(), externalMessage.getCaseSymptoms());
+
+		if (symptomsMismatch) {
+			logger.debug("[MESSAGE PROCESSING] Symptoms mismatch detected for existing case with UUID: {}", caze.getUuid());
+		}
+
+		return symptomsMismatch;
+	}
+
+	@Override
+	protected boolean hasCaseHospitalizationMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+		// Check if there is hospitalization data in the external message
+		if (externalMessage.getHospitalizationAdmissionDate() == null
+			&& externalMessage.getHospitalizationDischargeDate() == null
+			&& externalMessage.getAdmittedToHealthFacility() == null
+			&& externalMessage.getHospitalizationFacilityName() == null
+			&& externalMessage.getHospitalizationFacilityExternalId() == null) {
+			return false;
+		}
+
+		// Compare with existing hospitalization data
+		HospitalizationDto existingHospitalization = caze.getHospitalization();
+		if (existingHospitalization == null) {
+			// If there's external hospitalization data but no existing hospitalization, it's a mismatch
+			return true;
+		}
+
+		// Check for differences in key hospitalization fields
+		boolean admissionDateMismatch =
+			!Objects.equals(existingHospitalization.getAdmissionDate(), externalMessage.getHospitalizationAdmissionDate());
+		boolean dischargeDateMismatch =
+			!Objects.equals(existingHospitalization.getDischargeDate(), externalMessage.getHospitalizationDischargeDate());
+		boolean admittedMismatch =
+			!Objects.equals(existingHospitalization.getAdmittedToHealthFacility(), externalMessage.getAdmittedToHealthFacility());
+
+		boolean mismatch = admissionDateMismatch || dischargeDateMismatch || admittedMismatch;
+
+		if (mismatch) {
+			logger.debug("[MESSAGE PROCESSING] Hospitalization mismatch detected for existing case with UUID: {}", caze.getUuid());
+		}
+
+		return mismatch;
+	}
+
+	@Override
+	protected boolean hasCaseExposuresMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+		// Check if there are exposures in the external message
+		if (externalMessage.getExposures() == null || externalMessage.getExposures().isEmpty()) {
+			return false;
+		}
+
+		// Check if the case already has exposures
+		EpiDataDto epiData = caze.getEpiData();
+		if (epiData == null || epiData.getExposures() == null || epiData.getExposures().isEmpty()) {
+			// If there are external exposures but no existing exposures, it's a mismatch
+			return true;
+		}
+
+		// If both have exposures, consider it a mismatch (user should be informed to review)
+		boolean mismatch = true;
+
+		if (mismatch) {
+			logger.debug("[MESSAGE PROCESSING] Exposures mismatch detected for existing case with UUID: {}", caze.getUuid());
+		}
+
+		return mismatch;
+	}
+
+	@Override
+	protected boolean hasCaseActivitiesAsCaseMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+		// Check if there are activities as case in the external message
+		if (externalMessage.getActivitiesAsCase() == null || externalMessage.getActivitiesAsCase().isEmpty()) {
+			return false;
+		}
+
+		// Check if the case already has activities as case
+		EpiDataDto epiData = caze.getEpiData();
+		if (epiData == null || epiData.getActivitiesAsCase() == null || epiData.getActivitiesAsCase().isEmpty()) {
+			// If there are external activities but no existing activities, it's a mismatch
+			return true;
+		}
+
+		// If both have activities, consider it a mismatch (user should be informed to review)
+		boolean mismatch = true;
+
+		if (mismatch) {
+			logger.debug("[MESSAGE PROCESSING] Activities as case mismatch detected for existing case with UUID: {}", caze.getUuid());
+		}
+
+		return mismatch;
 	}
 
 	/**

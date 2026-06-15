@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.Registration;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
@@ -203,6 +204,29 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 	protected CompletionStage<Boolean> handleRelatedForwardedMessages() {
 		LOGGER.debug("Handling related forwarded messages for externalMessage: {}", getExternalMessage());
 		return ExternalMessageProcessingUIHelper.showRelatedForwardedMessageConfirmation();
+	}
+
+	@Override
+	protected CompletionStage<Void> informCaseSymptomsMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+		LOGGER.debug("Informing about symptoms mismatch for case: {}, externalMessage: {}", caze, externalMessage);
+
+		CompletableFuture<Void> ret = new CompletableFuture<>();
+
+		VerticalLayout content = new VerticalLayout();
+		content.setSpacing(true);
+
+		Label message = new Label(I18nProperties.getString(Strings.infoExternalMessageCaseSymptomsMismatch));
+		message.setContentMode(ContentMode.HTML);
+
+		content.addComponents(message);
+
+		CommitDiscardWrapperComponent<VerticalLayout> commitDiscardWrapperComponent = new CommitDiscardWrapperComponent<>(content);
+		commitDiscardWrapperComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionContinue));
+		commitDiscardWrapperComponent.addCommitListener(() -> ret.complete(null));
+
+		VaadinUiUtil.showModalPopupWindow(commitDiscardWrapperComponent, I18nProperties.getCaption(Captions.info), true);
+
+		return ret;
 	}
 
 	/**
@@ -770,6 +794,75 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 		commitDiscardWrapperComponent.addDiscardListener(() -> ret.complete(false)); // User chose to go back
 
 		// Display the confirmation dialog
+		VaadinUiUtil.showModalPopupWindow(commitDiscardWrapperComponent, I18nProperties.getCaption(Captions.info), true);
+
+		return ret;
+	}
+
+	@Override
+	protected CompletionStage<Void> informCaseHospitalizationMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+		LOGGER.debug("Informing about hospitalization mismatch for case: {}, externalMessage: {}", caze, externalMessage);
+
+		CompletableFuture<Void> ret = new CompletableFuture<>();
+
+		VerticalLayout content = new VerticalLayout();
+		content.setSpacing(true);
+
+		Label message = new Label(I18nProperties.getString(Strings.infoExternalMessageCaseHospitalizationMismatch));
+		message.setContentMode(ContentMode.HTML);
+
+		content.addComponents(message);
+
+		CommitDiscardWrapperComponent<VerticalLayout> commitDiscardWrapperComponent = new CommitDiscardWrapperComponent<>(content);
+		commitDiscardWrapperComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionContinue));
+		commitDiscardWrapperComponent.addCommitListener(() -> ret.complete(null));
+
+		VaadinUiUtil.showModalPopupWindow(commitDiscardWrapperComponent, I18nProperties.getCaption(Captions.info), true);
+
+		return ret;
+	}
+
+	@Override
+	protected CompletionStage<Void> informCaseExposuresMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+		LOGGER.debug("Informing about exposures mismatch for case: {}, externalMessage: {}", caze, externalMessage);
+
+		CompletableFuture<Void> ret = new CompletableFuture<>();
+
+		VerticalLayout content = new VerticalLayout();
+		content.setSpacing(true);
+
+		Label message = new Label(I18nProperties.getString(Strings.infoExternalMessageCaseExposuresMismatch));
+		message.setContentMode(ContentMode.HTML);
+
+		content.addComponents(message);
+
+		CommitDiscardWrapperComponent<VerticalLayout> commitDiscardWrapperComponent = new CommitDiscardWrapperComponent<>(content);
+		commitDiscardWrapperComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionContinue));
+		commitDiscardWrapperComponent.addCommitListener(() -> ret.complete(null));
+
+		VaadinUiUtil.showModalPopupWindow(commitDiscardWrapperComponent, I18nProperties.getCaption(Captions.info), true);
+
+		return ret;
+	}
+
+	@Override
+	protected CompletionStage<Void> informCaseActivitiesAsCaseMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+		LOGGER.debug("Informing about activities as case mismatch for case: {}, externalMessage: {}", caze, externalMessage);
+
+		CompletableFuture<Void> ret = new CompletableFuture<>();
+
+		VerticalLayout content = new VerticalLayout();
+		content.setSpacing(true);
+
+		Label message = new Label(I18nProperties.getString(Strings.infoExternalMessageCaseActivitiesAsCaseMismatch));
+		message.setContentMode(ContentMode.HTML);
+
+		content.addComponents(message);
+
+		CommitDiscardWrapperComponent<VerticalLayout> commitDiscardWrapperComponent = new CommitDiscardWrapperComponent<>(content);
+		commitDiscardWrapperComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionContinue));
+		commitDiscardWrapperComponent.addCommitListener(() -> ret.complete(null));
+
 		VaadinUiUtil.showModalPopupWindow(commitDiscardWrapperComponent, I18nProperties.getCaption(Captions.info), true);
 
 		return ret;
