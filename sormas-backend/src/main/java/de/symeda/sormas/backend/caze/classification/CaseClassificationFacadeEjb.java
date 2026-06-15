@@ -554,7 +554,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 				symptom(SymptomsDto.ABDOMINAL_PAIN),
 				symptom(SymptomsDto.WEIGHT_LOSS)),
 			xOf(1, (positiveTestResult(Disease.GIARDIASIS, PathogenTestType.MICROSCOPY, PathogenTestType.PCR_RT_PCR, PathogenTestType.CULTURE))));
-		addCriteria(Disease.GIARDIASIS, DateHelper.getDateZero(2020, 11, 6), null, probable, confirmed, null);
+		addCriteria(Disease.GIARDIASIS, DateHelper.getDateZero(2020, 11, 6), null, probable, confirmed, notACase(Disease.GIARDIASIS));
 
 		// Cryptosporidiosis
 		probable = allOf(
@@ -572,7 +572,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 			xOf(
 				1,
 				(positiveTestResult(Disease.CRYPTOSPORIDIOSIS, PathogenTestType.MICROSCOPY, PathogenTestType.PCR_RT_PCR, PathogenTestType.CULTURE))));
-		addCriteria(Disease.CRYPTOSPORIDIOSIS, DateHelper.getDateZero(2020, 11, 6), null, probable, confirmed, null);
+		addCriteria(Disease.CRYPTOSPORIDIOSIS, DateHelper.getDateZero(2020, 11, 6), null, probable, confirmed, notACase(Disease.CRYPTOSPORIDIOSIS));
 
 		// CORONAVIRUS
 		suspect = xOf(
