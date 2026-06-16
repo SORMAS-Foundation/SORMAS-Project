@@ -43,20 +43,26 @@ public final class SymptomsComparisonHelper {
     /**
      * Checks if there is a mismatch between two SymptomsDto objects.
      *
-     * @param caseSymptoms
+     * @param symptomsA
      *            The symptoms from the case
-     * @param externalMessageSymptoms
+     * @param symptomsB
      *            The symptoms from the external message
      * @return true if there is a mismatch between the two symptom objects, false otherwise
      */
-    public static boolean hasCaseSymptomsMismatch(SymptomsDto caseSymptoms, SymptomsDto externalMessageSymptoms) {
-        Map<String, Object> externalMessageSymptomsMap = getComparableSymptomsValues(externalMessageSymptoms);
+    public static boolean hasCaseSymptomsMismatch(SymptomsDto symptomsA, SymptomsDto symptomsB) {
+        Map<String, Object> externalMessageSymptomsMap = getComparableSymptomsValues(symptomsB);
         if (externalMessageSymptomsMap.isEmpty()) {
             return false;
         }
 
-        Map<String, Object> caseSymptomsMap = getComparableSymptomsValues(caseSymptoms);
-        return !caseSymptomsMap.equals(externalMessageSymptomsMap);
+        Map<String, Object> caseSymptomsMap = getComparableSymptomsValues(symptomsA);
+        for (Map.Entry<String, Object> entry : externalMessageSymptomsMap.entrySet()) {
+            Object caseValue = caseSymptomsMap.get(entry.getKey());
+            if (caseValue == null || !caseValue.equals(entry.getValue())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
