@@ -3455,7 +3455,9 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			new Date(),
 			rdcf);
 
-		Date dateOther = new Date();
+		// Truncate to day granularity so the round-trip assertion is not brittle to sub-second precision
+		// differences in DB/JPA timestamp handling.
+		Date dateOther = DateHelper.getStartOfDay(new Date());
 		caze.setDateOther(dateOther);
 		caze.setDateOtherDetails("Sampling visit");
 		caze.setExternalComments("Lab sent confirmation");

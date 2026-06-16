@@ -125,11 +125,10 @@ public class CaseLabResultsView extends AbstractCaseView {
 		List<PathogenTestDto> displayTests =
 			tests.stream().filter(t -> t.getTestType() != PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY).collect(Collectors.toList());
 
-		// "Tests performed" reflects the tests visible in the Tests table (AST results are shown in their own
-		// table below, not the Tests table, so they are not counted here).
-		Map<String, Long> testCountBySampleUuid = displayTests.stream()
-			.filter(t -> t.getSample() != null)
-			.collect(Collectors.groupingBy(t -> t.getSample().getUuid(), Collectors.counting()));
+		// "Tests performed" counts ALL pathogen tests of the sample, including AST tests (whose results are
+		// shown in the separate drug-susceptibility table).
+		Map<String, Long> testCountBySampleUuid =
+			tests.stream().filter(t -> t.getSample() != null).collect(Collectors.groupingBy(t -> t.getSample().getUuid(), Collectors.counting()));
 
 		tablesLayout.addComponent(buildSectionHeader(Captions.caseLabResultsTestsHeading));
 		tablesLayout.addComponent(
