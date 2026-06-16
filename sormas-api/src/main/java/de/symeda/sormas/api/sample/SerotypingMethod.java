@@ -62,21 +62,15 @@ public enum SerotypingMethod {
 		PathogenTestType.SEROGROUPING })
 	SLIDE_AGGLUTINATION,
 	@Diseases(value = {
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-		Disease.SHIGELLOSIS })
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	DISK_DIFFUSION,
+
 	@Diseases(value = {
 		Disease.SHIGELLOSIS })
 	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	MIC_DETERMINATION,
-	@Diseases(value = {
-		Disease.SHIGELLOSIS })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.SEROTYPING,
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+		PathogenTestType.SEROTYPING })
 	WGS_PREDICTION,
 	// OTHER is mostly applicable for all diseases and pathogen tests, so we don't specify them as applicable to specific diseases or tests
 	@Diseases

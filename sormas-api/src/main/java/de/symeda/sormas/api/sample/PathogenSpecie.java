@@ -203,7 +203,7 @@ public enum PathogenSpecie {
 		PathogenTestType.SEROGROUPING,
 		PathogenTestType.SEROTYPING,
 		PathogenTestType.BACTERIAL_CULTURE })
-	SHISPP,
+	SHIGELLA_SPP,
 	@Diseases({
 		Disease.MALARIA,
 		Disease.SHIGELLOSIS })

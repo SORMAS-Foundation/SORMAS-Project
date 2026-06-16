@@ -469,6 +469,7 @@ public class ExposureDto extends PseudonymizableDto {
 
 	@Diseases({
 		Disease.SHIGELLOSIS })
+	@SensitiveData
 	private SexualContact sexualContact;
 
 	public static ExposureDto build(ExposureType exposureType) {

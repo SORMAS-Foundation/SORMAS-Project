@@ -156,16 +156,17 @@ public class ShigellosisSectionComponent extends AbstractDiseaseSectionComponent
 		//  SEROtype : test method + species + serotype:
 		boolean showDrugSusceptibilityForm = currentTestType != null && currentTestType == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY;
 
-		if (!isSerogrouping) {
-			setVisibleClear(specie, serotypeTF, serotypingMethodCBF);
+		if (!isSerogrouping && !isSerotype) {
+			setVisibleClear(specie, specieTextField);
 		}
 		if (!isSerotype) {
-			setVisibleClear(specieTextField, specie, serotypingMethodCBF, serotypeTF);
+			setVisibleClear(serotypeTF);
 		}
-		if (!showDrugSusceptibilityForm) {
-			setVisibleClear(serotypingMethodCBF);
+		if (!isSerotype && !showDrugSusceptibilityForm) {
+			setVisibleClear(serotypingMethodCBF, serotypingMethodTF);
 		}
-		serotypingMethodCBF.setVisible(isSerotype || showDrugSusceptibilityForm);
+
+		serotypingMethodCBF.setVisible(isSerotype);
 		specie.setVisible(isSerotype || isSerogrouping);
 		serotypeTF.setVisible(isSerotype);
 		updateRowAndSelfVisibility();

@@ -130,6 +130,11 @@ public class DrugSusceptibilityMapper {
 		target.setAmpicillinSusceptibility(source.getAmpicillinSusceptibility());
 		target.setTrimethoprimSulfamethoxazoleMic(source.getTrimethoprimSulfamethoxazoleMic());
 		target.setTrimethoprimSulfamethoxazoleSusceptibility(source.getTrimethoprimSulfamethoxazoleSusceptibility());
+		target.setAzithromycinMethod(source.getAzithromycinMethod());
+		target.setAmpicillinMethod(source.getAmpicillinMethod());
+		target.setCeftazidimeMethod(source.getCeftazidimeMethod());
+		target.setCefotaximeMethod(source.getCefotaximeMethod());
+		target.setTrimethoprimSulfamethoxazoleMethod(source.getTrimethoprimSulfamethoxazoleMethod());
 
 		return target;
 	}
@@ -236,6 +241,11 @@ public class DrugSusceptibilityMapper {
 		target.setAmpicillinSusceptibility(source.getAmpicillinSusceptibility());
 		target.setTrimethoprimSulfamethoxazoleMic(source.getTrimethoprimSulfamethoxazoleMic());
 		target.setTrimethoprimSulfamethoxazoleSusceptibility(source.getTrimethoprimSulfamethoxazoleSusceptibility());
+		target.setAzithromycinMethod(source.getAzithromycinMethod());
+		target.setAmpicillinMethod(source.getAmpicillinMethod());
+		target.setCeftazidimeMethod(source.getCeftazidimeMethod());
+		target.setCefotaximeMethod(source.getCefotaximeMethod());
+		target.setTrimethoprimSulfamethoxazoleMethod(source.getTrimethoprimSulfamethoxazoleMethod());
 
 		return target;
 	}
