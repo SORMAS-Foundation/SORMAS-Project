@@ -223,6 +223,7 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 		CommitDiscardWrapperComponent<VerticalLayout> commitDiscardWrapperComponent = new CommitDiscardWrapperComponent<>(content);
 		commitDiscardWrapperComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionContinue));
 		commitDiscardWrapperComponent.addCommitListener(() -> ret.complete(null));
+		commitDiscardWrapperComponent.addDiscardListener(() -> ret.complete(null));
 
 		VaadinUiUtil.showModalPopupWindow(commitDiscardWrapperComponent, I18nProperties.getCaption(Captions.info), true);
 
@@ -816,6 +817,7 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 		CommitDiscardWrapperComponent<VerticalLayout> commitDiscardWrapperComponent = new CommitDiscardWrapperComponent<>(content);
 		commitDiscardWrapperComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionContinue));
 		commitDiscardWrapperComponent.addCommitListener(() -> ret.complete(null));
+		commitDiscardWrapperComponent.addDiscardListener(() -> ret.complete(null));
 
 		VaadinUiUtil.showModalPopupWindow(commitDiscardWrapperComponent, I18nProperties.getCaption(Captions.info), true);
 
@@ -839,6 +841,7 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 		CommitDiscardWrapperComponent<VerticalLayout> commitDiscardWrapperComponent = new CommitDiscardWrapperComponent<>(content);
 		commitDiscardWrapperComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionContinue));
 		commitDiscardWrapperComponent.addCommitListener(() -> ret.complete(null));
+		commitDiscardWrapperComponent.addDiscardListener(() -> ret.complete(null));
 
 		VaadinUiUtil.showModalPopupWindow(commitDiscardWrapperComponent, I18nProperties.getCaption(Captions.info), true);
 
@@ -862,6 +865,7 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 		CommitDiscardWrapperComponent<VerticalLayout> commitDiscardWrapperComponent = new CommitDiscardWrapperComponent<>(content);
 		commitDiscardWrapperComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionContinue));
 		commitDiscardWrapperComponent.addCommitListener(() -> ret.complete(null));
+		commitDiscardWrapperComponent.addDiscardListener(() -> ret.complete(null));
 
 		VaadinUiUtil.showModalPopupWindow(commitDiscardWrapperComponent, I18nProperties.getCaption(Captions.info), true);
 

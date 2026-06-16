@@ -324,7 +324,17 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 		boolean admittedMismatch =
 			!Objects.equals(existingHospitalization.getAdmittedToHealthFacility(), externalMessage.getAdmittedToHealthFacility());
 
-		boolean mismatch = admissionDateMismatch || dischargeDateMismatch || admittedMismatch;
+		boolean hospitalizationFacilityNameMismatch =
+			!Objects.equals(
+				caze.getHealthFacility() != null ? caze.getHealthFacility().getCaption() : null,
+				externalMessage.getHospitalizationFacilityName());
+		boolean hospitalizationFacilityExternalIdMismatch =
+			!Objects.equals(
+				caze.getHealthFacility() != null ? caze.getHealthFacility().getExternalId() : null,
+				externalMessage.getHospitalizationFacilityExternalId());
+
+		boolean mismatch = admissionDateMismatch || dischargeDateMismatch || admittedMismatch
+			|| hospitalizationFacilityNameMismatch || hospitalizationFacilityExternalIdMismatch;
 
 		if (mismatch) {
 			logger.debug("[MESSAGE PROCESSING] Hospitalization mismatch detected for existing case with UUID: {}", caze.getUuid());
