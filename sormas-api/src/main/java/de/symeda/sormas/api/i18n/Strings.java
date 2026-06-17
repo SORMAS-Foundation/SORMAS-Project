@@ -1066,6 +1066,12 @@ public interface Strings {
 	String infoExposurePeriodHeading = "infoExposurePeriodHeading";
 	String infoExposuresInfectionEnvironmentHint = "infoExposuresInfectionEnvironmentHint";
 	String infoExposuresRiskAreaHint = "infoExposuresRiskAreaHint";
+	String infoExternalMessageCaseActivitiesAsCaseMismatch = "infoExternalMessageCaseActivitiesAsCaseMismatch";
+	String infoExternalMessageCaseExposuresMismatch = "infoExternalMessageCaseExposuresMismatch";
+	String infoExternalMessageCaseHospitalizationMismatch = "infoExternalMessageCaseHospitalizationMismatch";
+	String infoExternalMessageCaseSymptomsMismatch = "infoExternalMessageCaseSymptomsMismatch";
+	String infoExternalMessageCaseSymptomsMismatchExistingCaseSymptoms = "infoExternalMessageCaseSymptomsMismatchExistingCaseSymptoms";
+	String infoExternalMessageCaseSymptomsMismatchExternalMessageSymptoms = "infoExternalMessageCaseSymptomsMismatchExternalMessageSymptoms";
 	String infoExternalMessageHospitalizationFacilityMissing = "infoExternalMessageHospitalizationFacilityMissing";
 	String infoExternalMessageHospitalizationMissingHospital = "infoExternalMessageHospitalizationMissingHospital";
 	String infoFacilityCsvImport = "infoFacilityCsvImport";
