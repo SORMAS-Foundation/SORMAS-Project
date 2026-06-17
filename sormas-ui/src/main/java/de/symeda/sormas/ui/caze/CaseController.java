@@ -195,6 +195,9 @@ public class CaseController {
 		if (UiUtil.permitted(FeatureType.VIEW_TAB_CASES_CLINICAL_COURSE, UserRight.CLINICAL_COURSE_VIEW)) {
 			navigator.addView(ClinicalCourseView.VIEW_NAME, ClinicalCourseView.class);
 		}
+		if (UiUtil.permitted(FeatureType.SAMPLES_LAB, UserRight.SAMPLE_VIEW)) {
+			navigator.addView(CaseLabResultsView.VIEW_NAME, CaseLabResultsView.class);
+		}
 		if (UiUtil.enabled(FeatureType.CASE_FOLLOWUP)) {
 			navigator.addView(CaseVisitsView.VIEW_NAME, CaseVisitsView.class);
 		}
@@ -1473,6 +1476,33 @@ public class CaseController {
 		editView.addCommitListener(() -> {
 			CaseDataDto cazeDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
 			cazeDto.setTherapy(therapyForm.getValue());
+			saveCase(cazeDto);
+		});
+
+		return editView;
+	}
+
+	public CommitDiscardWrapperComponent<CaseLabResultsForm> getLabResultsEditComponent(final String caseUuid, boolean isEditAllowed) {
+
+		CaseDataDto caseDataDto = findCase(caseUuid);
+
+		CaseLabResultsForm form = new CaseLabResultsForm(caseDataDto.isPseudonymized(), caseDataDto.isInJurisdiction(), isEditAllowed);
+		form.setValue(caseDataDto);
+		// The onset date is shown read-only and sourced from the case's symptoms; it is not bound to the form.
+		if (caseDataDto.getSymptoms() != null) {
+			form.setOnsetDate(caseDataDto.getSymptoms().getOnsetDate());
+		}
+
+		CommitDiscardWrapperComponent<CaseLabResultsForm> editView =
+			new CommitDiscardWrapperComponent<>(form, UiUtil.permitted(isEditAllowed, UserRight.CASE_EDIT), form.getFieldGroup());
+
+		editView.addCommitListener(() -> {
+			// Re-fetch and copy back only the lab-results fields so concurrent edits to other tabs are not lost.
+			CaseDataDto cazeDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
+			CaseDataDto edited = form.getValue();
+			cazeDto.setDateOther(edited.getDateOther());
+			cazeDto.setDateOtherDetails(edited.getDateOtherDetails());
+			cazeDto.setExternalComments(edited.getExternalComments());
 			saveCase(cazeDto);
 		});
 
