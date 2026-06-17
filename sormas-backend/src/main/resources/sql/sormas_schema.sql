@@ -16295,6 +16295,17 @@ alter table samples_history alter column retestrequested set not null;
 
 INSERT INTO schema_version (version_number, comment) VALUES (637, 'Reference laboratory + retest indicators on sample #13954 (#13948)');
 
+-- 2026-06-08 Laboratory results tab: date other + external comments on case #13948 (#13955)
+alter table cases add column IF NOT EXISTS dateother timestamp;
+alter table cases add column IF NOT EXISTS dateotherdetails varchar(255);
+alter table cases add column IF NOT EXISTS externalcomments text;
+
+alter table cases_history add column IF NOT EXISTS dateother timestamp;
+alter table cases_history add column IF NOT EXISTS dateotherdetails varchar(255);
+alter table cases_history add column IF NOT EXISTS externalcomments text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (638, 'Laboratory results tab: dateOther, dateOtherDetails, externalComments on case #13955');
+
 -- 04-06-2026 Shigellosis lab message processing. #13965
 ALTER TABLE testreport                  ADD COLUMN IF NOT EXISTS pathogentestcategory varchar(255);
 ALTER TABLE exposures                   ADD COLUMN IF NOT EXISTS sexualcontact varchar(255);
@@ -16336,6 +16347,6 @@ BEGIN
         ALTER TABLE healthconditions_history RENAME COLUMN undermedication TO onmedication;
     END IF;
 END $$;
-INSERT INTO schema_version (version_number, comment) VALUES (638, '#13965 - Shigellosis Lab messages');
+INSERT INTO schema_version (version_number, comment) VALUES (639, '#13965 - Shigellosis Lab messages');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

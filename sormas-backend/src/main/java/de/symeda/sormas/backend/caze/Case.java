@@ -181,6 +181,9 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	public static final String POINT_OF_ENTRY_DETAILS = "pointOfEntryDetails";
 	public static final String COMPLETENESS = "completeness";
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
+	public static final String DATE_OTHER = "dateOther";
+	public static final String DATE_OTHER_DETAILS = "dateOtherDetails";
+	public static final String EXTERNAL_COMMENTS = "externalComments";
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String EXTERNAL_TOKEN = "externalToken";
 	public static final String INTERNAL_TOKEN = "internalToken";
@@ -364,6 +367,9 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 
 	private Float completeness;
 	private String additionalDetails;
+	private Date dateOther;
+	private String dateOtherDetails;
+	private String externalComments;
 	private String externalID;
 	private String externalToken;
 	private String internalToken;
@@ -1258,6 +1264,33 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 		this.additionalDetails = additionalDetails;
 	}
 
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getDateOther() {
+		return dateOther;
+	}
+
+	public void setDateOther(Date dateOther) {
+		this.dateOther = dateOther;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getDateOtherDetails() {
+		return dateOtherDetails;
+	}
+
+	public void setDateOtherDetails(String dateOtherDetails) {
+		this.dateOtherDetails = dateOtherDetails;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getExternalComments() {
+		return externalComments;
+	}
+
+	public void setExternalComments(String externalComments) {
+		this.externalComments = externalComments;
+	}
+
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getExternalID() {
 		return externalID;
@@ -1279,7 +1312,7 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 
 	/**
 	 * Extra setter for externalID needed to comply with the HasExternalData interface
-	 * 
+	 *
 	 * @param externalId
 	 *            the value to be set for externalID
 	 */

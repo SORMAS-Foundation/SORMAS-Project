@@ -458,6 +458,14 @@ public class PathogenTestController {
 							// However, the case cannot be automatically classified as a confirmed case because it is missing some information.
 							// Do you want to set the case classification to confirmed anyway?
 							this.showConfirmCaseDialog(c); // Case classification
+						} else if (hasVerifiedNegativeTest) {
+							// Show the confirmation dialog if there are verified negative tests.
+							// The final laboratory result of the sample the saved pathogen test belongs to is negative. <-- sample overall result
+							// However, the case cannot be automatically classified as not a case because it is missing some information.
+							// Do you want to set the case classification to not a case anyway?
+							this.showNegativeCaseDialog(caze);
+						} else {
+							// for other cases, no information is required.
 						}
 					});
 				}
@@ -775,6 +783,37 @@ public class PathogenTestController {
 				if (Boolean.TRUE.equals(confirmed)) {
 					CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(caze.getUuid());
 					caseDataByUuid.setCaseClassification(CaseClassification.CONFIRMED);
+					FacadeProvider.getCaseFacade().save(caseDataByUuid);
+					ControllerProvider.getCaseController().navigateToCase(caseDataByUuid.getUuid());
+				}
+			});
+	}
+
+	/**
+	 * When the test result is negative, the case is not "confirmed" anymore, but the user might want to update the case classification to
+	 * confirmed or not a case for the negative test result. This dialog offers this option to the user.
+	 * If the user accepts the case classification change, then it'll be updated with not a case, otherwise
+	 * no change to the existing classification.
+	 * 
+	 * @param caze
+	 */
+	public void showNegativeCaseDialog(CaseDataDto caze) {
+		//  This is applicable for all countries.
+		// if the case is already not a case, then no need to show the dialog
+		if (caze.getCaseClassification() == CaseClassification.NO_CASE) {
+			return;
+		}
+
+		VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getCaption(Captions.caseNegativeCase),
+			new Label(I18nProperties.getString(Strings.messageNegativeCaseAfterPathogenTest)),
+			I18nProperties.getString(Strings.yes),
+			I18nProperties.getString(Strings.no),
+			800,
+			confirmed -> {
+				if (Boolean.TRUE.equals(confirmed)) {
+					CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(caze.getUuid());
+					caseDataByUuid.setCaseClassification(CaseClassification.NO_CASE);
 					FacadeProvider.getCaseFacade().save(caseDataByUuid);
 					ControllerProvider.getCaseController().navigateToCase(caseDataByUuid.getUuid());
 				}
