@@ -18,7 +18,9 @@
 package de.symeda.sormas.ui.samples.pathogentestlink;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -132,5 +134,37 @@ public class PathogenTestListEntryTest {
 			"12.0 IU/mL",
 			"free text");
 		assertEquals(expected, PathogenTestListEntry.formatQuantitativeResult(t));
+	}
+
+	@Test
+	public void refLabIcon_shownOnlyWhenTrue() {
+		assertFalse(PathogenTestListEntry.shouldShowRefLabIcon(test()));
+		PathogenTestDto t = test();
+		t.setPerformedByReferenceLaboratory(false);
+		assertFalse(PathogenTestListEntry.shouldShowRefLabIcon(t));
+		t.setPerformedByReferenceLaboratory(true);
+		assertTrue(PathogenTestListEntry.shouldShowRefLabIcon(t));
+	}
+
+	@Test
+	public void retestIcon_shownOnlyWhenTrue() {
+		assertFalse(PathogenTestListEntry.shouldShowRetestIcon(test()));
+		PathogenTestDto t = test();
+		t.setRetestRequested(false);
+		assertFalse(PathogenTestListEntry.shouldShowRetestIcon(t));
+		t.setRetestRequested(true);
+		assertTrue(PathogenTestListEntry.shouldShowRetestIcon(t));
+	}
+
+	@Test
+	public void resultDetailsIcon_shownOnlyInCompactViewWhenTextPresent() {
+		PathogenTestDto t = test();
+		t.setTestResultText("Details");
+		// Compact view (full text not shown) → icon surfaces the cue.
+		assertTrue(PathogenTestListEntry.shouldShowResultDetailsIcon(t, false));
+		// Full-text view → icon would be redundant.
+		assertFalse(PathogenTestListEntry.shouldShowResultDetailsIcon(t, true));
+		// No details → no icon.
+		assertFalse(PathogenTestListEntry.shouldShowResultDetailsIcon(test(), false));
 	}
 }
