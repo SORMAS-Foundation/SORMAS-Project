@@ -12342,6 +12342,15 @@
             "maxLength" : 32,
             "minLength" : 0
           },
+          "dateOther" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "dateOtherDetails" : {
+            "type" : "string",
+            "maxLength" : 512,
+            "minLength" : 0
+          },
           "deleted" : {
             "type" : "boolean"
           },
@@ -12403,6 +12412,11 @@
           "epidemiologicalConfirmation" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
+          "externalComments" : {
+            "type" : "string",
+            "maxLength" : 1000000,
+            "minLength" : 0
           },
           "externalData" : {
             "type" : "object",
