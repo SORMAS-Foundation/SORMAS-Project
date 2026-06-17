@@ -207,10 +207,10 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 	}
 
 	@Override
-	protected CompletionStage<Void> informCaseSymptomsMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+	protected CompletionStage<Boolean> confirmCaseSymptomsMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
 		LOGGER.debug("Informing about symptoms mismatch for case: {}, externalMessage: {}", caze, externalMessage);
 
-		CompletableFuture<Void> ret = new CompletableFuture<>();
+		CompletableFuture<Boolean> ret = new CompletableFuture<>();
 
 		VerticalLayout content = new VerticalLayout();
 		content.setSpacing(true);
@@ -222,8 +222,8 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 
 		CommitDiscardWrapperComponent<VerticalLayout> commitDiscardWrapperComponent = new CommitDiscardWrapperComponent<>(content);
 		commitDiscardWrapperComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionContinue));
-		commitDiscardWrapperComponent.addCommitListener(() -> ret.complete(null));
-		commitDiscardWrapperComponent.addDiscardListener(() -> ret.complete(null));
+		commitDiscardWrapperComponent.addCommitListener(() -> ret.complete(true));
+		commitDiscardWrapperComponent.addDiscardListener(() -> ret.complete(false));
 
 		VaadinUiUtil.showModalPopupWindow(commitDiscardWrapperComponent, I18nProperties.getCaption(Captions.info), true);
 
@@ -801,10 +801,10 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 	}
 
 	@Override
-	protected CompletionStage<Void> informCaseHospitalizationMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+	protected CompletionStage<Boolean> confirmCaseHospitalizationMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
 		LOGGER.debug("Informing about hospitalization mismatch for case: {}, externalMessage: {}", caze, externalMessage);
 
-		CompletableFuture<Void> ret = new CompletableFuture<>();
+		CompletableFuture<Boolean> ret = new CompletableFuture<>();
 
 		VerticalLayout content = new VerticalLayout();
 		content.setSpacing(true);
@@ -816,8 +816,8 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 
 		CommitDiscardWrapperComponent<VerticalLayout> commitDiscardWrapperComponent = new CommitDiscardWrapperComponent<>(content);
 		commitDiscardWrapperComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionContinue));
-		commitDiscardWrapperComponent.addCommitListener(() -> ret.complete(null));
-		commitDiscardWrapperComponent.addDiscardListener(() -> ret.complete(null));
+		commitDiscardWrapperComponent.addCommitListener(() -> ret.complete(true));
+		commitDiscardWrapperComponent.addDiscardListener(() -> ret.complete(false));
 
 		VaadinUiUtil.showModalPopupWindow(commitDiscardWrapperComponent, I18nProperties.getCaption(Captions.info), true);
 
@@ -825,10 +825,10 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 	}
 
 	@Override
-	protected CompletionStage<Void> informCaseExposuresMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+	protected CompletionStage<Boolean> confirmCaseExposuresMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
 		LOGGER.debug("Informing about exposures mismatch for case: {}, externalMessage: {}", caze, externalMessage);
 
-		CompletableFuture<Void> ret = new CompletableFuture<>();
+		CompletableFuture<Boolean> ret = new CompletableFuture<>();
 
 		VerticalLayout content = new VerticalLayout();
 		content.setSpacing(true);
@@ -840,8 +840,8 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 
 		CommitDiscardWrapperComponent<VerticalLayout> commitDiscardWrapperComponent = new CommitDiscardWrapperComponent<>(content);
 		commitDiscardWrapperComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionContinue));
-		commitDiscardWrapperComponent.addCommitListener(() -> ret.complete(null));
-		commitDiscardWrapperComponent.addDiscardListener(() -> ret.complete(null));
+		commitDiscardWrapperComponent.addCommitListener(() -> ret.complete(true));
+		commitDiscardWrapperComponent.addDiscardListener(() -> ret.complete(false));
 
 		VaadinUiUtil.showModalPopupWindow(commitDiscardWrapperComponent, I18nProperties.getCaption(Captions.info), true);
 
@@ -849,10 +849,10 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 	}
 
 	@Override
-	protected CompletionStage<Void> informCaseActivitiesAsCaseMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+	protected CompletionStage<Boolean> confirmCaseActivitiesAsCaseMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
 		LOGGER.debug("Informing about activities as case mismatch for case: {}, externalMessage: {}", caze, externalMessage);
 
-		CompletableFuture<Void> ret = new CompletableFuture<>();
+		CompletableFuture<Boolean> ret = new CompletableFuture<>();
 
 		VerticalLayout content = new VerticalLayout();
 		content.setSpacing(true);
@@ -864,8 +864,8 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 
 		CommitDiscardWrapperComponent<VerticalLayout> commitDiscardWrapperComponent = new CommitDiscardWrapperComponent<>(content);
 		commitDiscardWrapperComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionContinue));
-		commitDiscardWrapperComponent.addCommitListener(() -> ret.complete(null));
-		commitDiscardWrapperComponent.addDiscardListener(() -> ret.complete(null));
+		commitDiscardWrapperComponent.addCommitListener(() -> ret.complete(true));
+		commitDiscardWrapperComponent.addDiscardListener(() -> ret.complete(false));
 
 		VaadinUiUtil.showModalPopupWindow(commitDiscardWrapperComponent, I18nProperties.getCaption(Captions.info), true);
 

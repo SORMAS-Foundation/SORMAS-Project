@@ -296,37 +296,50 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
             (sampleReportIndex, previousSampleResult) -> createOneSampleAndPathogenTests(caze, sampleReportIndex, false, previousSampleResult);
 
         FlowThen<ExternalMessageProcessingResult> caseFlow = flow.then(previousResult -> {
-            CompletionStage<Void> mismatchInformationStage = CompletableFuture.completedFuture(null);
+            CompletionStage<Boolean> mismatchInformationStage = CompletableFuture.completedFuture(true);
 
             // Check and inform about symptoms mismatch
             if (hasCaseSymptomsMismatch(caze, getExternalMessage())) {
-                mismatchInformationStage = informCaseSymptomsMismatch(caze, getExternalMessage());
+                mismatchInformationStage = confirmCaseSymptomsMismatch(caze, getExternalMessage());
             }
 
             // Chain hospitalization mismatch check
-            mismatchInformationStage = mismatchInformationStage.thenCompose(
-                ignored -> hasCaseHospitalizationMismatch(caze, getExternalMessage())
-                    ? informCaseHospitalizationMismatch(caze, getExternalMessage())
-                    : CompletableFuture.completedFuture(null));
+            mismatchInformationStage = mismatchInformationStage.thenCompose(confirmed -> {
+                if (Boolean.TRUE.equals(confirmed) && hasCaseHospitalizationMismatch(caze, getExternalMessage())) {
+                    return confirmCaseHospitalizationMismatch(caze, getExternalMessage());
+                } else {
+                    return CompletableFuture.completedFuture(confirmed);
+                }
+            });
 
             // Chain exposures mismatch check
-            mismatchInformationStage = mismatchInformationStage.thenCompose(
-                ignored -> hasCaseExposuresMismatch(caze, getExternalMessage())
-                    ? informCaseExposuresMismatch(caze, getExternalMessage())
-                    : CompletableFuture.completedFuture(null));
+            mismatchInformationStage = mismatchInformationStage.thenCompose(confirmed -> {
+                if (Boolean.TRUE.equals(confirmed) && hasCaseExposuresMismatch(caze, getExternalMessage())) {
+                    return confirmCaseExposuresMismatch(caze, getExternalMessage());
+                } else {
+                    return CompletableFuture.completedFuture(confirmed);
+                }
+            });
 
             // Chain activities as case mismatch check
-            mismatchInformationStage = mismatchInformationStage.thenCompose(
-                ignored -> hasCaseActivitiesAsCaseMismatch(caze, getExternalMessage())
-                    ? informCaseActivitiesAsCaseMismatch(caze, getExternalMessage())
-                    : CompletableFuture.completedFuture(null));
+            mismatchInformationStage = mismatchInformationStage.thenCompose(confirmed -> {
+                if (Boolean.TRUE.equals(confirmed) && hasCaseActivitiesAsCaseMismatch(caze, getExternalMessage())) {
+                    return confirmCaseActivitiesAsCaseMismatch(caze, getExternalMessage());
+                } else {
+                    return CompletableFuture.completedFuture(confirmed);
+                }
+            });
 
-            return mismatchInformationStage.thenCompose(ignored -> {
+            return mismatchInformationStage.thenCompose(confirmed -> {
                 ExternalMessageProcessingResult withCase = previousResult.getData().withSelectedCase(caze);
 
-                logger.debug("[MESSAGE PROCESSING] Continue processing with case: {}", withCase);
-
-                return ProcessingResult.continueWith(withCase).asCompletedFuture();
+                if (Boolean.TRUE.equals(confirmed)) {
+                    logger.debug("[MESSAGE PROCESSING] Continue processing with case: {}", withCase);
+                    return ProcessingResult.continueWith(withCase).asCompletedFuture();
+                } else {
+                    logger.debug("[MESSAGE PROCESSING] Canceled processing with case: {} information mismatch aborted.", withCase);
+                    return ProcessingResult.withStatus(ProcessingResultStatus.CANCELED, previousResult.getData()).asCompletedFuture();
+                }
             });
         });
         return caseFlow.then(
@@ -944,32 +957,32 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
         return false;
     }
 
-    protected CompletionStage<Void> informCaseSymptomsMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
-        return CompletableFuture.completedFuture(null);
+    protected CompletionStage<Boolean> confirmCaseSymptomsMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+        return CompletableFuture.completedFuture(true);
     }
 
     protected boolean hasCaseHospitalizationMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
         return false;
     }
 
-    protected CompletionStage<Void> informCaseHospitalizationMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
-        return CompletableFuture.completedFuture(null);
+    protected CompletionStage<Boolean> confirmCaseHospitalizationMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+        return CompletableFuture.completedFuture(true);
     }
 
     protected boolean hasCaseExposuresMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
         return false;
     }
 
-    protected CompletionStage<Void> informCaseExposuresMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
-        return CompletableFuture.completedFuture(null);
+    protected CompletionStage<Boolean> confirmCaseExposuresMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+        return CompletableFuture.completedFuture(true);
     }
 
     protected boolean hasCaseActivitiesAsCaseMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
         return false;
     }
 
-    protected CompletionStage<Void> informCaseActivitiesAsCaseMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
-        return CompletableFuture.completedFuture(null);
+    protected CompletionStage<Boolean> confirmCaseActivitiesAsCaseMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+        return CompletableFuture.completedFuture(true);
     }
 
     protected abstract void handleCreateSampleAndPathogenTests(
