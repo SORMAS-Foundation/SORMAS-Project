@@ -350,6 +350,11 @@ public class DrugSusceptibilityMapper {
 			|| dto.getAmpicillinMic() != null
 			|| dto.getAmpicillinSusceptibility() != null
 			|| dto.getTrimethoprimSulfamethoxazoleMic() != null
-			|| dto.getTrimethoprimSulfamethoxazoleSusceptibility() != null;
+			|| dto.getTrimethoprimSulfamethoxazoleSusceptibility() != null
+			|| dto.getAmikacinMethod() != null
+			|| dto.getAmpicillinMethod() != null
+			|| dto.getCeftazidimeMethod() != null
+			|| dto.getCefotaximeMethod() != null
+			|| dto.getTrimethoprimSulfamethoxazoleMethod() != null;
 	}
 }

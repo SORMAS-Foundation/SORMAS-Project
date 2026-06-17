@@ -16328,11 +16328,11 @@ ALTER TABLE drugsusceptibility_history  ADD COLUMN IF NOT EXISTS cefotaximeMetho
 DO $$
 BEGIN
     IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'healthconditions_history' AND column_name = 'undermedication')
-        AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'healthconditions_history' AND column_name = 'undermedication') THEN
+        AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'healthconditions_history' AND column_name = 'onmedication') THEN
         ALTER TABLE healthconditions_history RENAME COLUMN undermedication TO onmedication;
     END IF;
     IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'healthconditions_history' AND column_name = 'undermedication')
-        AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'healthconditions_history' AND column_name = 'undermedication') THEN
+        AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'healthconditions_history' AND column_name = 'onmedication') THEN
         ALTER TABLE healthconditions_history RENAME COLUMN undermedication TO onmedication;
     END IF;
 END $$;
