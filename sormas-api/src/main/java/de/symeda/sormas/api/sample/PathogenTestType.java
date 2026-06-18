@@ -210,10 +210,14 @@ public enum PathogenTestType {
 		ResultValueType.NUMERIC })
 	Q_PCR,
 
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	MULTIPLEX_PCR,
 
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -226,6 +230,8 @@ public enum PathogenTestType {
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	LAMP,
 
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	NASBA,
@@ -245,14 +251,20 @@ public enum PathogenTestType {
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	TMA,
 
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	CRISPR_DIAGNOSTICS,
 
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.BOOLEAN)
 	LINE_PROBE_ASSAY,
 
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	SANGER_SEQUENCING,
@@ -319,9 +331,12 @@ public enum PathogenTestType {
 
 	@Diseases(value = {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.SALMONELLOSIS })
+		Disease.SALMONELLOSIS,
+		Disease.SHIGELLOSIS })
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
-	@RevealsTestTypeText(diseases = Disease.SALMONELLOSIS)
+	@RevealsTestTypeText(diseases = {
+		Disease.SALMONELLOSIS,
+		Disease.SHIGELLOSIS })
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	SEROTYPING,
 
@@ -374,6 +389,8 @@ public enum PathogenTestType {
 		ResultValueType.NUMERIC })
 	ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
 
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel({
 		ResultValueType.TEXT,
@@ -413,6 +430,8 @@ public enum PathogenTestType {
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	DIRECT_FLUORESCENT_ANTIBODY,
 
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	RAPID_ANTIBODY_TEST,
@@ -427,34 +446,45 @@ public enum PathogenTestType {
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	RAPID_ANTIGEN_DETECTION,
 
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	RAPID_TEST,
 
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	LATERAL_FLOW_ASSAY,
 
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	IMMUNOFLUORESCENCE_ASSAY,
 
 	@Diseases(value = {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-		Disease.SHIGELLOSIS })
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	SLIDE_AGGLUTINATION,
 
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	QUELLUNG_REACTION,
 
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	HEMAGGLUTINATION_INHIBITION,
 
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	RDT,
@@ -469,14 +499,20 @@ public enum PathogenTestType {
 		ResultValueType.NUMERIC })
 	BACTERIAL_CULTURE,
 
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	VIRAL_ISOLATION,
 
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	FUNGAL_CULTURE,
 
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	MALDI_TOF,
@@ -499,14 +535,20 @@ public enum PathogenTestType {
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	GRAM_STAIN,
 
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.SMEAR_GRADE)
 	ACID_FAST_STAIN,
 
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	DARK_FIELD_MICROSCOPY,
 
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -528,20 +570,28 @@ public enum PathogenTestType {
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	HISTOPATHOLOGY,
 
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
 		ResultValueType.TEXT })
 	FISH,
 
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	IMMUNOHISTOCHEMISTRY,
 
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	ELECTRON_MICROSCOPY,
 
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -578,6 +628,8 @@ public enum PathogenTestType {
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIMICROBIAL_SUSCEPTIBILITY_TESTING)
 	ANTIBIOTIC_SUSCEPTIBILITY,
 
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIMICROBIAL_SUSCEPTIBILITY_TESTING)
 	@ResultValueTypeRel(ResultValueType.BOOLEAN)
 	GENOTYPIC_RESISTANCE_TEST,
@@ -602,6 +654,8 @@ public enum PathogenTestType {
 
 	@PathogenTestCategoryRel(PathogenTestCategory.FUNCTIONAL_IMMUNE_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.NUMERIC)
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	FLOW_CYTOMETRY,
 
 	// ----------------------------------------------------------------------------------------------

@@ -16306,4 +16306,47 @@ alter table cases_history add column IF NOT EXISTS externalcomments text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (638, 'Laboratory results tab: dateOther, dateOtherDetails, externalComments on case #13955');
 
+-- 04-06-2026 Shigellosis lab message processing. #13965
+ALTER TABLE testreport                  ADD COLUMN IF NOT EXISTS pathogentestcategory varchar(255);
+ALTER TABLE exposures                   ADD COLUMN IF NOT EXISTS sexualcontact varchar(255);
+ALTER TABLE drugsusceptibility          ADD COLUMN IF NOT EXISTS trimethoprimSulfamethoxazoleMethod varchar(255);
+ALTER TABLE drugsusceptibility          ADD COLUMN IF NOT EXISTS azithromycinMethod varchar(255);
+ALTER TABLE drugsusceptibility          ADD COLUMN IF NOT EXISTS ampicillinMethod varchar(255);
+ALTER TABLE drugsusceptibility          ADD COLUMN IF NOT EXISTS ceftazidimeMethod varchar(255);
+ALTER TABLE drugsusceptibility          ADD COLUMN IF NOT EXISTS cefotaximeMethod varchar(255);
+
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'healthconditions' AND column_name = 'undermedication')
+        AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'healthconditions' AND column_name = 'onmedication') THEN
+        ALTER TABLE healthconditions RENAME COLUMN undermedication TO onmedication;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'healthconditions' AND column_name = 'undermedication')
+        AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'healthconditions' AND column_name = 'onmedication') THEN
+        ALTER TABLE healthconditions RENAME COLUMN undermedication TO onmedication;
+    END IF;
+END $$;
+
+ALTER TABLE testreport_history          ADD COLUMN IF NOT EXISTS pathogentestcategory varchar(255);
+ALTER TABLE exposures_history           ADD COLUMN IF NOT EXISTS sexualcontact varchar(255);
+ALTER TABLE drugsusceptibility_history  ADD COLUMN IF NOT EXISTS trimethoprimSulfamethoxazoleMethod varchar(255);
+ALTER TABLE drugsusceptibility_history  ADD COLUMN IF NOT EXISTS azithromycinMethod varchar(255);
+ALTER TABLE drugsusceptibility_history  ADD COLUMN IF NOT EXISTS ampicillinMethod varchar(255);
+ALTER TABLE drugsusceptibility_history  ADD COLUMN IF NOT EXISTS ceftazidimeMethod varchar(255);
+ALTER TABLE drugsusceptibility_history  ADD COLUMN IF NOT EXISTS cefotaximeMethod varchar(255);
+
+
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'healthconditions_history' AND column_name = 'undermedication')
+        AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'healthconditions_history' AND column_name = 'onmedication') THEN
+        ALTER TABLE healthconditions_history RENAME COLUMN undermedication TO onmedication;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'healthconditions_history' AND column_name = 'undermedication')
+        AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'healthconditions_history' AND column_name = 'onmedication') THEN
+        ALTER TABLE healthconditions_history RENAME COLUMN undermedication TO onmedication;
+    END IF;
+END $$;
+INSERT INTO schema_version (version_number, comment) VALUES (639, '#13965 - Shigellosis Lab messages');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

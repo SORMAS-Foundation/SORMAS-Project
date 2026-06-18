@@ -1968,6 +1968,7 @@ public interface Captions {
 	String Exposure_rawFoodContactText = "Exposure.rawFoodContactText";
 	String Exposure_riskArea = "Exposure.riskArea";
 	String Exposure_seatNumber = "Exposure.seatNumber";
+	String Exposure_sexualContact = "Exposure.sexualContact";
 	String Exposure_sexualExposureText = "Exposure.sexualExposureText";
 	String Exposure_shoppingForFoodDetails = "Exposure.shoppingForFoodDetails";
 	String Exposure_shortDistance = "Exposure.shortDistance";
@@ -2139,13 +2140,13 @@ public interface Captions {
 	String HealthConditions_malignancyChemotherapy = "HealthConditions.malignancyChemotherapy";
 	String HealthConditions_medicationDetails = "HealthConditions.medicationDetails";
 	String HealthConditions_obesity = "HealthConditions.obesity";
+	String HealthConditions_onMedication = "HealthConditions.onMedication";
 	String HealthConditions_otherConditions = "HealthConditions.otherConditions";
 	String HealthConditions_previousTuberculosisTreatment = "HealthConditions.previousTuberculosisTreatment";
 	String HealthConditions_recurrentBronchiolitis = "HealthConditions.recurrentBronchiolitis";
 	String HealthConditions_sickleCellDisease = "HealthConditions.sickleCellDisease";
 	String HealthConditions_tuberculosis = "HealthConditions.tuberculosis";
 	String HealthConditions_tuberculosisInfectionYear = "HealthConditions.tuberculosisInfectionYear";
-	String HealthConditions_underMedication = "HealthConditions.underMedication";
 	String HealthConditions_vaccinatedAgainstMosquitoBorneViruses = "HealthConditions.vaccinatedAgainstMosquitoBorneViruses";
 	String humanSampleViewType = "humanSampleViewType";
 	String Immunization = "Immunization";

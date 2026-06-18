@@ -189,6 +189,10 @@ public class TestMethodComponent extends FormComponent<PathogenTestDto> {
 		// (updateTestTypeItemsByCategory keeps a still-valid selection).
 		track(testCategoryField.addValueChangeListener(e -> {
 			PathogenTestType selectedType = testTypeField.getValue();
+			// If the selected category is null, clear the test type field and update the test type list
+			if (testCategoryField.getValue() == null) {
+				testTypeField.clear();
+			}
 			if (selectedType != null && e.getValue() != null && PathogenTestType.getCategory(selectedType) != e.getValue()) {
 				testTypeField.clear();
 			}
