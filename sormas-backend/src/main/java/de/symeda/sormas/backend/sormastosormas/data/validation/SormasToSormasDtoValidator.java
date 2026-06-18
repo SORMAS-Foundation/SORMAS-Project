@@ -10,8 +10,8 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
-import de.symeda.sormas.api.sormastosormas.entities.SormasToSormasEntityDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
+import de.symeda.sormas.api.sormastosormas.entities.SormasToSormasEntityDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasPersonPreview;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
@@ -124,6 +124,7 @@ public abstract class SormasToSormasDtoValidator<DTO extends SormasToSormasShare
 
 	public void validateEpiData(EpiDataDto epiData, ValidationErrors validationErrors, ValidationDirection direction) {
 		if (epiData != null) {
+			infraValidator.validateCountry(epiData.getCountry(), Captions.EpiData_country, validationErrors, epiData::setCountry, direction);
 			epiData.getExposures().forEach(exposure -> {
 				LocationDto exposureLocation = exposure.getLocation();
 				if (exposureLocation != null) {

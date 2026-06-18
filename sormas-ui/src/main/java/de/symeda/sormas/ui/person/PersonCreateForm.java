@@ -196,7 +196,6 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 
 		ComboBox presentCondition = addField(PersonDto.PRESENT_CONDITION, ComboBox.class);
 		presentCondition.setVisible(showPresentCondition);
-		FieldHelper.addSoftRequiredStyle(presentCondition, sex);
 
 		if (showSymptomsOnsetDate) {
 			addCustomField(
@@ -370,6 +369,7 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 		person.setPresentCondition(personCreated.getPresentCondition());
 		person.setNationalHealthId(personCreated.getNationalHealthId());
 		person.setPassportNumber(personCreated.getPassportNumber());
+		person.setDeathDate(personCreated.getDeathDate());
 
 		if (StringUtils.isNotEmpty(getPhone())) {
 			person.setPhone(getPhone());

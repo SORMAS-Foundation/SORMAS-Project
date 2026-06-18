@@ -18,7 +18,6 @@ package de.symeda.sormas.ui.immunization.components.form;
 import static de.symeda.sormas.ui.utils.CssStyles.ERROR_COLOR_PRIMARY;
 import static de.symeda.sormas.ui.utils.CssStyles.FORCE_CAPTION;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
-import static de.symeda.sormas.ui.utils.CssStyles.SOFT_REQUIRED;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.CssStyles.style;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
@@ -27,6 +26,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -65,6 +65,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -105,6 +106,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		+ fluidRowLocs(OVERWRITE_IMMUNIZATION_MANAGEMENT_STATUS)
 		+ fluidRowLocs(ImmunizationDto.IMMUNIZATION_MANAGEMENT_STATUS, ImmunizationDto.IMMUNIZATION_STATUS)
 		+ fluidRowLocs(ImmunizationDto.PREVIOUS_INFECTION, ImmunizationDto.LAST_INFECTION_DATE)
+		+ fluidRowLocs(ImmunizationDto.VACCINATION_INFO_SOURCE)
 		+ fluidRow(fluidColumnLoc(6, 0, ImmunizationDto.COUNTRY))
 		+ fluidRowLocs(ImmunizationDto.ADDITIONAL_DETAILS)
 		+ fluidRowLocs(RESPONSIBLE_JURISDICTION_HEADING_LOC)
@@ -116,6 +118,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		+ fluidRowLocs(VACCINATION_HEADING_LOC)
 		+ fluidRowLocs(ImmunizationDto.NUMBER_OF_DOSES, ImmunizationDto.NUMBER_OF_DOSES_DETAILS)
 		+ fluidRowLocs(ImmunizationDto.VACCINATIONS)
+		+ fluidRowLocs(ImmunizationDto.INJECTION_FACILITY)
 		+ fluidRowLocs(RECOVERY_HEADING_LOC)
 		+ fluidRowLocs(ImmunizationDto.POSITIVE_TEST_RESULT_DATE, ImmunizationDto.RECOVERY_DATE, LINK_IMMUNIZATION_TO_CASE_BTN_LOC)
 		+ fluidRow(fluidColumnLoc(6, 0, ImmunizationDto.COUNTRY))
@@ -127,6 +130,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 	private boolean ignoreMeansOfImmunizationChange = false;
 	private MeansOfImmunization previousMeansOfImmunization;
 	private CheckBox overwriteImmunizationManagementStatus;
+	private ComboBox meansOfImmunizationField;
 	private ComboBoxWithPlaceholder facilityTypeGroup;
 	private final Consumer<Runnable> actionCallback;
 	private ComboBox responsibleRegion;
@@ -167,7 +171,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		ComboBox cbDisease = addDiseaseField(ImmunizationDto.DISEASE, false, false);
 		addField(ImmunizationDto.DISEASE_DETAILS, TextField.class);
 
-		ComboBox meansOfImmunizationField = addField(ImmunizationDto.MEANS_OF_IMMUNIZATION, ComboBox.class);
+		meansOfImmunizationField = addField(ImmunizationDto.MEANS_OF_IMMUNIZATION, ComboBox.class);
 		addField(ImmunizationDto.MEANS_OF_IMMUNIZATION_DETAILS, TextField.class);
 
 		overwriteImmunizationManagementStatus = addCustomField(OVERWRITE_IMMUNIZATION_MANAGEMENT_STATUS, Boolean.class, CheckBox.class);
@@ -182,6 +186,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 
 		addField(ImmunizationDto.PREVIOUS_INFECTION, NullableOptionGroup.class);
 		addField(ImmunizationDto.LAST_INFECTION_DATE, DateField.class);
+		addField(ImmunizationDto.VACCINATION_INFO_SOURCE, ComboBox.class);
 
 		ComboBox country = addInfrastructureField(ImmunizationDto.COUNTRY);
 		country.addItems(FacadeProvider.getCountryFacade().getAllActiveAsReference());
@@ -202,7 +207,6 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		responsibleDistrict.setRequired(true);
 		responsibleCommunity = addInfrastructureField(ImmunizationDto.RESPONSIBLE_COMMUNITY);
 		responsibleCommunity.setNullSelectionAllowed(true);
-		responsibleCommunity.addStyleName(SOFT_REQUIRED);
 
 		InfrastructureFieldsHelper.initInfrastructureFields(responsibleRegion, responsibleDistrict, responsibleCommunity);
 
@@ -250,9 +254,27 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 			getFieldGroup(),
 			ImmunizationDto.VACCINATIONS,
 			ImmunizationDto.MEANS_OF_IMMUNIZATION,
-			Arrays.asList(MeansOfImmunization.VACCINATION, MeansOfImmunization.VACCINATION_RECOVERY),
+			Arrays.asList(
+				MeansOfImmunization.VACCINATION,
+				MeansOfImmunization.VACCINATION_RECOVERY,
+				MeansOfImmunization.MATERNAL_VACCINATION,
+				MeansOfImmunization.MONOCLONAL_ANTIBODY),
 			false);
-		cbDisease.addValueChangeListener(e -> vaccinationsField.setDisease((Disease) cbDisease.getValue()));
+		cbDisease.addValueChangeListener(e -> {
+			Disease selectedDisease = (Disease) cbDisease.getValue();
+			vaccinationsField.setDisease(selectedDisease);
+
+			// Update means of immunization field based on selected disease using filtered enum data
+			updateMeansOfImmunizationField(selectedDisease);
+		});
+		ComboBox injectionFacilityField = addField(ImmunizationDto.INJECTION_FACILITY, ComboBox.class);
+		// Set conditional visibility for RSV cases only
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			ImmunizationDto.INJECTION_FACILITY,
+			ImmunizationDto.DISEASE,
+			Arrays.asList(Disease.RESPIRATORY_SYNCYTIAL_VIRUS),
+			true);
 
 		Label recoveryHeadingLabel = new Label(I18nProperties.getString(Strings.headingRecovery));
 		recoveryHeadingLabel.addStyleName(H3);
@@ -555,7 +577,9 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 	}
 
 	private boolean shouldShowVaccinationFields(MeansOfImmunization meansOfImmunization) {
-		return MeansOfImmunization.VACCINATION.equals(meansOfImmunization) || MeansOfImmunization.VACCINATION_RECOVERY.equals(meansOfImmunization);
+		// Use the isVaccination method from the enum to determine vaccination visibility
+		// This includes VACCINATION, VACCINATION_RECOVERY, MATERNAL_VACCINATION, and MONOCLONAL_ANTIBODY
+		return MeansOfImmunization.isVaccination(meansOfImmunization);
 	}
 
 	private boolean shouldShowRecoveryFields(MeansOfImmunization meansOfImmunization) {
@@ -600,8 +624,16 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 	public void setValue(ImmunizationDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		ignoreMeansOfImmunizationChange = true;
 		super.setValue(newFieldValue);
+
+		// Initialize means of immunization field based on disease using filtered enum data
+		if (newFieldValue != null && newFieldValue.getDisease() != null) {
+			updateMeansOfImmunizationField(newFieldValue.getDisease());
+		}
+
 		ignoreMeansOfImmunizationChange = false;
-		previousMeansOfImmunization = newFieldValue.getMeansOfImmunization();
+		if (newFieldValue != null) {
+			previousMeansOfImmunization = newFieldValue.getMeansOfImmunization();
+		}
 
 		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
 			hideJurisdictionFields();
@@ -622,5 +654,26 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 			facilityTypeGroup.setValue(facilityTypeValue.getFacilityTypeGroup());
 		}
 		overwriteImmunizationManagementStatus.setValue(false);
+	}
+
+	/**
+	 * Updates the means of immunization field with disease-specific filtering.
+	 * Uses {@link Diseases} annotations on enum values to determine visibility.
+	 *
+	 * @param disease
+	 *            The selected disease to filter means of immunization options.
+	 */
+	private void updateMeansOfImmunizationField(Disease disease) {
+		List<MeansOfImmunization> filteredValues = Arrays.stream(MeansOfImmunization.values()).filter(value -> {
+			try {
+				java.lang.reflect.Field enumField = MeansOfImmunization.class.getField(value.name());
+				return FieldVisibilityCheckers.withDisease(disease).isVisible(MeansOfImmunization.class, enumField);
+			} catch (NoSuchFieldException e) {
+				// If field doesn't exist, include it by default
+				return true;
+			}
+		}).collect(Collectors.toList());
+
+		FieldHelper.updateEnumData(meansOfImmunizationField, filteredValues);
 	}
 }

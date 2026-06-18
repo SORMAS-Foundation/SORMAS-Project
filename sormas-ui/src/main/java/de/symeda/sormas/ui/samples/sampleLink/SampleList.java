@@ -19,8 +19,8 @@ package de.symeda.sormas.ui.samples.sampleLink;
 
 import java.util.List;
 
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Button.ClickListener;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
@@ -66,11 +66,27 @@ public class SampleList extends PaginationList<SampleListEntryDto> {
 
 	@Override
 	protected void drawDisplayedEntries() {
+		// Don't do anyting if the user doesn't have the permission to view external messages
+		if (!UiUtil.getUserRights().contains(UserRight.EXTERNAL_MESSAGE_ACCESS)) {
+			return;
+		}
+
+		// Don't do anyting if the user doesn't have the permission to view laboratory messages
+		if (!UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_LABORATORY_VIEW)) {
+			return;
+		}
+
+		final boolean userHasSampleEdit = UiUtil.permitted(isEditAllowed, UserRight.SAMPLE_EDIT);
+		final boolean userHasLaboratoryProcessing = UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_LABORATORY_PROCESS);
+
 		for (SampleListEntryDto sample : getDisplayedEntries()) {
 			SampleListEntry listEntry = new SampleListEntry(sample);
 
+			final List<ExternalMessageDto> labMessages =
+				FacadeProvider.getExternalMessageFacade().getForSample(listEntry.getSampleListEntryDto().toReference());
+
 			String sampleUuid = sample.getUuid();
-			if (UiUtil.permitted(isEditAllowed, UserRight.SAMPLE_EDIT)) {
+			if (userHasSampleEdit && userHasLaboratoryProcessing) {
 				listEntry.addEditButton(
 					"edit-sample-" + sampleUuid,
 					(ClickListener) event -> ControllerProvider.getSampleController().navigateToData(sampleUuid));
@@ -82,21 +98,12 @@ public class SampleList extends PaginationList<SampleListEntryDto> {
 
 			listEntry.setEnabled(isEditAllowed);
 
-			if (UiUtil.getUserRights().contains(UserRight.EXTERNAL_MESSAGE_VIEW)) {
-				addViewLabMessageButton(listEntry);
-			}
-			listLayout.addComponent(listEntry);
-		}
-	}
-
-	private void addViewLabMessageButton(SampleListEntry listEntry) {
-		if (UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_VIEW)) {
-			List<ExternalMessageDto> labMessages =
-				FacadeProvider.getExternalMessageFacade().getForSample(listEntry.getSampleListEntryDto().toReference());
 			if (!labMessages.isEmpty()) {
 				listEntry.addAssociatedLabMessagesListener(
 					clickEvent -> ControllerProvider.getExternalMessageController().showLabMessagesSlider(labMessages));
 			}
+
+			listLayout.addComponent(listEntry);
 		}
 	}
 

@@ -161,6 +161,7 @@ public class RegionFacadeEjb
 				case Region.NAME:
 				case Region.EPID_CODE:
 				case Region.EXTERNAL_ID:
+				case Region.NUTS_CODE:
 					expression = cb.lower(region.get(sortProperty.propertyName));
 					break;
 				case Region.GROWTH_RATE:
@@ -243,6 +244,7 @@ public class RegionFacadeEjb
 		dto.setCountry(CountryFacadeEjb.toReferenceDto(entity.getCountry()));
 		dto.setCentrallyManaged(entity.isCentrallyManaged());
 		dto.setDefaultInfrastructure(entity.isDefaultInfrastructure());
+		dto.setNutsCode(entity.getNutsCode());
 
 		return dto;
 	}
@@ -267,6 +269,7 @@ public class RegionFacadeEjb
 		dto.setArea(AreaFacadeEjb.toReferenceDto(entity.getArea()));
 		dto.setCountry(CountryFacadeEjb.toReferenceDto(entity.getCountry()));
 		dto.setDefaultInfrastructure(entity.isDefaultInfrastructure());
+		dto.setNutsCode(entity.getNutsCode());
 
 		return dto;
 	}
@@ -319,6 +322,7 @@ public class RegionFacadeEjb
 		target.setCountry(countryService.getByReferenceDto(source.getCountry()));
 		target.setCentrallyManaged(source.isCentrallyManaged());
 		target.setDefaultInfrastructure(source.isDefaultInfrastructure());
+		target.setNutsCode(source.getNutsCode());
 
 		return target;
 	}

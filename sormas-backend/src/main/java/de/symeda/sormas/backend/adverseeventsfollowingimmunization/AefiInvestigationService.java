@@ -88,6 +88,8 @@ public class AefiInvestigationService extends AbstractCoreAdoService<AefiInvesti
 	@EJB
 	private FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
+	private static final String PRIMARY_VACCINE_COLUMN = "primaryVaccineColumn";
+
 	public AefiInvestigationService() {
 		super(AefiInvestigation.class, DeletableEntityType.ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION);
 	}
@@ -264,12 +266,18 @@ public class AefiInvestigationService extends AbstractCoreAdoService<AefiInvesti
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
 				case AefiInvestigationIndexDto.UUID:
-				case AefiInvestigationIndexDto.DISEASE:
+				case AefiInvestigationIndexDto.INVESTIGATION_CASE_ID:
 				case AefiInvestigationIndexDto.INVESTIGATION_DATE:
+				case AefiInvestigationIndexDto.INVESTIGATION_STATUS:
+				case AefiInvestigationIndexDto.INVESTIGATION_STAGE:
 				case AefiInvestigationIndexDto.STATUS_ON_DATE_OF_INVESTIGATION:
 				case AefiInvestigationIndexDto.AEFI_CLASSIFICATION:
+				case AefiInvestigationIndexDto.REPORT_DATE:
 					expression = queryContext.getRoot().get(sortProperty.propertyName);
 					break;
+				case AefiInvestigationIndexDto.DISEASE:
+					expression = queryContext.getJoins().getAefiJoins().getImmunizationJoins().getRoot().get(Immunization.DISEASE);
+					break;					
 				case AefiInvestigationIndexDto.AEFI_REPORT_UUID:
 					expression = queryContext.getJoins().getAefi().get(Aefi.UUID);
 					break;
@@ -284,6 +292,9 @@ public class AefiInvestigationService extends AbstractCoreAdoService<AefiInvesti
 					break;
 				case AefiInvestigationIndexDto.SEX:
 					expression = queryContext.getJoins().getAefiJoins().getImmunizationJoins().getPerson().get(Person.SEX);
+					break;
+				case PRIMARY_VACCINE_COLUMN:
+					expression = queryContext.getJoins().getAefiJoins().getPrimarySuspectVaccination().get(Vaccination.VACCINE_NAME);
 					break;
 				case AefiInvestigationIndexDto.REGION:
 					expression = cb.lower(

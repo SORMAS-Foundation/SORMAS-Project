@@ -16,11 +16,14 @@
 package de.symeda.sormas.api.exposure;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.epidata.AnimalCondition;
@@ -32,6 +35,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DependantOn;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
@@ -98,6 +102,8 @@ public class ExposureDto extends PseudonymizableDto {
 	public static final String HABITATION_DETAILS = "habitationDetails";
 	public static final String TYPE_OF_ANIMAL = "typeOfAnimal";
 	public static final String TYPE_OF_ANIMAL_DETAILS = "typeOfAnimalDetails";
+	public static final String TYPE_OF_CHILDCARE_FACILITY = "typeOfChildcareFacility";
+	public static final String CHILDCARE_FACILITY_DETAILS = "childcareFacilityDetails";
 	public static final String PHYSICAL_CONTACT_DURING_PREPARATION = "physicalContactDuringPreparation";
 	public static final String PHYSICAL_CONTACT_WITH_BODY = "physicalContactWithBody";
 	public static final String DECEASED_PERSON_ILL = "deceasedPersonIll";
@@ -105,6 +111,38 @@ public class ExposureDto extends PseudonymizableDto {
 	public static final String DECEASED_PERSON_RELATION = "deceasedPersonRelation";
 	public static final String EXPOSURE_ROLE = "exposureRole";
 	public static final String LARGE_ATTENDANCE_NUMBER = "largeAttendanceNumber";
+	public static final String TRAVEL_ACCOMMODATION = "travelAccommodation";
+	public static final String TRAVEL_ACCOMMODATION_TYPE = "travelAccommodationType";
+	public static final String SWIMMING_LOCATION = "swimmingLocation";
+	public static final String SWIMMING_LOCATION_TYPE = "swimmingLocationType";
+	public static final String ANIMAL_LOCATION = "animalLocation";
+	public static final String ANIMAL_LOCATION_TEXT = "animalLocationText";
+	public static final String DOMESTIC_SWIMMING = "domesticSwimming";
+	public static final String INTERNATIONAL_SWIMMING = "internationalSwimming";
+	public static final String SEXUAL_EXPOSURE_TEXT = "sexualExposureText";
+	public static final String RAW_FOOD_CONTACT = "rawFoodContact";
+	public static final String RAW_FOOD_CONTACT_TEXT = "rawFoodContactText";
+	public static final String SYMPTOMATIC_INDIVIDUAL_TEXT = "symptomaticIndividualText";
+	public static final String EXPOSURE_CATEGORY = "exposureCategory";
+	public static final String EXPOSURE_SETTING = "exposureSetting";
+	public static final String EXPOSURE_SETTING_DETAILS = "exposureSettingDetails";
+	public static final String EXPOSURE_SUB_SETTING_DETAILS = "exposureSubSettingDetails";
+	public static final String CONTACT_FACTOR_DETAILS = "contactFactorDetails";
+	public static final String PROTECTIVE_MEASURE_DETAILS = "protectiveMeasureDetails";
+	public static final String EXPOSURE_COMMENT = "exposureComment";
+	public static final String CONDITION_OF_ANIMAL = "conditionOfAnimal";
+	public static final String ANIMAL_CATEGORY = "animalCategory";
+	public static final String ANIMAL_CATEGORY_DETAILS = "animalCategoryDetails";
+	public static final String FOMITE_TRANSMISSION_LOCATION = "fomiteTransmissionLocation";
+	public static final String SUB_SETTINGS = "subSettings";
+	public static final String CONTACT_FACTORS = "contactFactors";
+	public static final String PROTECTIVE_MEASURES = "protectiveMeasures";
+	public static final String PROPHYLAXIS_ADHERENCE = "prophylaxisAdherence";
+	public static final String PROPHYLAXIS_ADHERENCE_DETAILS = "prophylaxisAdherenceDetails";
+	public static final String TRAVEL_PURPOSE = "travelPurpose";
+	public static final String TRAVEL_PURPOSE_DETAILS = "travelPurposeDetails";
+	public static final String SHOPPING_FOR_FOOD_DETAILS = "shoppingForFoodDetails";
+	public static final String SEXUAL_CONTACT = "sexualContact";
 
 	@SensitiveData
 	private UserReferenceDto reportingUser;
@@ -124,6 +162,9 @@ public class ExposureDto extends PseudonymizableDto {
 	@EmbeddedPersonalData
 	@EmbeddedSensitiveData
 	private LocationDto location;
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private ExposureRole exposureRole;
 
 	// Type of Place
@@ -145,15 +186,39 @@ public class ExposureDto extends PseudonymizableDto {
 	private WorkEnvironment workEnvironment;
 
 	// Details
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private YesNoUnknown indoors;
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private YesNoUnknown outdoors;
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private YesNoUnknown wearingMask;
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private YesNoUnknown wearingPpe;
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private YesNoUnknown otherProtectiveMeasures;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private String protectiveMeasuresDetails;
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private YesNoUnknown shortDistance;
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private YesNoUnknown longFaceToFaceContact;
 	@Diseases({
 		Disease.UNDEFINED,
@@ -211,12 +276,30 @@ public class ExposureDto extends PseudonymizableDto {
 		Disease.UNDEFINED,
 		Disease.OTHER })
 	private YesNoUnknown handlingAnimals;
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private AnimalCondition animalCondition;
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private YesNoUnknown animalVaccinated;
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private AnimalContactType animalContactType;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String animalContactTypeDetails;
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
+	private AnimalLocation animalLocation;
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String animalLocationText;
 	@Diseases({
 		Disease.AFP,
 		Disease.CHOLERA,
@@ -243,10 +326,16 @@ public class ExposureDto extends PseudonymizableDto {
 		Disease.OTHER })
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String waterSourceDetails;
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	@PersonalData
 	private ContactReferenceDto contactToCase;
 	private YesNoUnknown prophylaxis;
 	private Date prophylaxisDate;
+	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS }, hide = true)
 	private YesNoUnknown riskArea;
 
 	// Exposure sub-types
@@ -262,6 +351,14 @@ public class ExposureDto extends PseudonymizableDto {
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String typeOfAnimalDetails;
+	@Diseases({
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
+	private TypeOfChildcareFacility typeOfChildcareFacility;
+	@SensitiveData
+	@Diseases({
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String childcareFacilityDetails;
 
 	// Fields specific to ExposureType.BURIAL
 	private YesNoUnknown physicalContactDuringPreparation;
@@ -275,6 +372,106 @@ public class ExposureDto extends PseudonymizableDto {
 	private String deceasedPersonRelation;
 	private YesNoUnknown largeAttendanceNumber;
 
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
+	@SensitiveData
+	private TravelAccommodation travelAccommodation;
+
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String travelAccommodationType;
+
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
+	@DependantOn(INTERNATIONAL_SWIMMING)
+	private SwimmingLocation swimmingLocation;
+
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String swimmingLocationType;
+
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
+	private YesNoUnknown domesticSwimming;
+	@Diseases({
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS })
+	private YesNoUnknown internationalSwimming;
+
+	@Diseases(Disease.GIARDIASIS)
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String sexualExposureText;
+	@Diseases({
+		Disease.CRYPTOSPORIDIOSIS })
+	@SensitiveData
+	private YesNoUnknown rawFoodContact;
+	@Diseases({
+		Disease.CRYPTOSPORIDIOSIS })
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String rawFoodContactText;
+	@Diseases({
+		Disease.CRYPTOSPORIDIOSIS })
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String symptomaticIndividualText;
+
+	private ExposureCategory exposureCategory;
+	private ExposureSetting exposureSetting;
+	private String exposureSettingDetails;
+	private String exposureSubSettingDetails;
+	private String contactFactorDetails;
+	private String protectiveMeasureDetails;
+	private String exposureComment;
+
+	private AnimalCondition conditionOfAnimal;
+	private AnimalCategory animalCategory;
+	private String animalCategoryDetails;
+
+	private FomiteTransmissionLocation fomiteTransmissionLocation;
+
+	private Set<ExposureSubSetting> subSettings;
+	private Set<ExposureContactFactor> contactFactors;
+	private Set<ExposureProtectiveMeasure> protectiveMeasures;
+	@Diseases({
+		Disease.MALARIA,
+		Disease.DENGUE })
+	private ProphylaxisAdherence prophylaxisAdherence;
+	@Diseases({
+		Disease.MALARIA,
+		Disease.DENGUE })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String prophylaxisAdherenceDetails;
+	@Diseases({
+		Disease.MALARIA,
+		Disease.DENGUE })
+	private TravelPurpose travelPurpose;
+	@Diseases({
+		Disease.MALARIA,
+		Disease.DENGUE })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String travelPurposeDetails;
+
+	@Diseases({
+		Disease.SALMONELLOSIS })
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String shoppingForFoodDetails;
+
+	@Diseases({
+		Disease.SHIGELLOSIS })
+	@SensitiveData
+	private SexualContact sexualContact;
+
 	public static ExposureDto build(ExposureType exposureType) {
 
 		ExposureDto exposure = new ExposureDto();
@@ -282,6 +479,11 @@ public class ExposureDto extends PseudonymizableDto {
 		exposure.setExposureType(exposureType);
 		LocationDto location = LocationDto.build();
 		exposure.setLocation(location);
+
+		exposure.setSubSettings(new HashSet<>());
+		exposure.setContactFactors(new HashSet<>());
+		exposure.setProtectiveMeasures(new HashSet<>());
+
 		return exposure;
 	}
 
@@ -581,6 +783,22 @@ public class ExposureDto extends PseudonymizableDto {
 		this.typeOfAnimalDetails = typeOfAnimalDetails;
 	}
 
+	public TypeOfChildcareFacility getTypeOfChildcareFacility() {
+		return typeOfChildcareFacility;
+	}
+
+	public void setTypeOfChildcareFacility(TypeOfChildcareFacility typeOfChildcareFacility) {
+		this.typeOfChildcareFacility = typeOfChildcareFacility;
+	}
+
+	public String getChildcareFacilityDetails() {
+		return childcareFacilityDetails;
+	}
+
+	public void setChildcareFacilityDetails(String childcareFacilityDetails) {
+		this.childcareFacilityDetails = childcareFacilityDetails;
+	}
+
 	public YesNoUnknown getPhysicalContactDuringPreparation() {
 		return physicalContactDuringPreparation;
 	}
@@ -707,6 +925,262 @@ public class ExposureDto extends PseudonymizableDto {
 
 	public void setLargeAttendanceNumber(YesNoUnknown largeAttendanceNumber) {
 		this.largeAttendanceNumber = largeAttendanceNumber;
+	}
+
+	public AnimalLocation getAnimalLocation() {
+		return animalLocation;
+	}
+
+	public void setAnimalLocation(AnimalLocation animalLocation) {
+		this.animalLocation = animalLocation;
+	}
+
+	public String getAnimalLocationText() {
+		return animalLocationText;
+	}
+
+	public void setAnimalLocationText(String animalLocationText) {
+		this.animalLocationText = animalLocationText;
+	}
+
+	public TravelAccommodation getTravelAccommodation() {
+		return travelAccommodation;
+	}
+
+	public void setTravelAccommodation(TravelAccommodation travelAccommodation) {
+		this.travelAccommodation = travelAccommodation;
+	}
+
+	public String getTravelAccommodationType() {
+		return travelAccommodationType;
+	}
+
+	public void setTravelAccommodationType(String travelAccommodationType) {
+		this.travelAccommodationType = travelAccommodationType;
+	}
+
+	public SwimmingLocation getSwimmingLocation() {
+		return swimmingLocation;
+	}
+
+	public void setSwimmingLocation(SwimmingLocation swimmingLocation) {
+		this.swimmingLocation = swimmingLocation;
+	}
+
+	public String getSwimmingLocationType() {
+		return swimmingLocationType;
+	}
+
+	public void setSwimmingLocationType(String swimmingLocationType) {
+		this.swimmingLocationType = swimmingLocationType;
+	}
+
+	public YesNoUnknown getDomesticSwimming() {
+		return domesticSwimming;
+	}
+
+	public void setDomesticSwimming(YesNoUnknown domesticSwimming) {
+		this.domesticSwimming = domesticSwimming;
+	}
+
+	public YesNoUnknown getInternationalSwimming() {
+		return internationalSwimming;
+	}
+
+	public void setInternationalSwimming(YesNoUnknown internationalSwimming) {
+		this.internationalSwimming = internationalSwimming;
+	}
+
+	public String getSexualExposureText() {
+		return sexualExposureText;
+	}
+
+	public void setSexualExposureText(String sexualExposureText) {
+		this.sexualExposureText = sexualExposureText;
+	}
+
+	public YesNoUnknown getRawFoodContact() {
+		return rawFoodContact;
+	}
+
+	public void setRawFoodContact(YesNoUnknown rawFoodContact) {
+		this.rawFoodContact = rawFoodContact;
+	}
+
+	public String getRawFoodContactText() {
+		return rawFoodContactText;
+	}
+
+	public void setRawFoodContactText(String rawFoodContactText) {
+		this.rawFoodContactText = rawFoodContactText;
+	}
+
+	public String getSymptomaticIndividualText() {
+		return symptomaticIndividualText;
+	}
+
+	public void setSymptomaticIndividualText(String symptomaticIndividualText) {
+		this.symptomaticIndividualText = symptomaticIndividualText;
+	}
+
+	public ExposureCategory getExposureCategory() {
+		return exposureCategory;
+	}
+
+	public void setExposureCategory(ExposureCategory exposureCategory) {
+		this.exposureCategory = exposureCategory;
+	}
+
+	public ExposureSetting getExposureSetting() {
+		return exposureSetting;
+	}
+
+	public void setExposureSetting(ExposureSetting exposureSetting) {
+		this.exposureSetting = exposureSetting;
+	}
+
+	public String getExposureSettingDetails() {
+		return exposureSettingDetails;
+	}
+
+	public void setExposureSettingDetails(String exposureSettingDetails) {
+		this.exposureSettingDetails = exposureSettingDetails;
+	}
+
+	public String getExposureSubSettingDetails() {
+		return exposureSubSettingDetails;
+	}
+
+	public void setExposureSubSettingDetails(String exposureSubSettingDetails) {
+		this.exposureSubSettingDetails = exposureSubSettingDetails;
+	}
+
+	public String getContactFactorDetails() {
+		return contactFactorDetails;
+	}
+
+	public void setContactFactorDetails(String contactFactorDetails) {
+		this.contactFactorDetails = contactFactorDetails;
+	}
+
+	public String getProtectiveMeasureDetails() {
+		return protectiveMeasureDetails;
+	}
+
+	public void setProtectiveMeasureDetails(String protectiveMeasureDetails) {
+		this.protectiveMeasureDetails = protectiveMeasureDetails;
+	}
+
+	public String getExposureComment() {
+		return exposureComment;
+	}
+
+	public void setExposureComment(String exposureComment) {
+		this.exposureComment = exposureComment;
+	}
+
+	public AnimalCondition getConditionOfAnimal() {
+		return conditionOfAnimal;
+	}
+
+	public void setConditionOfAnimal(AnimalCondition conditionOfAnimal) {
+		this.conditionOfAnimal = conditionOfAnimal;
+	}
+
+	public AnimalCategory getAnimalCategory() {
+		return animalCategory;
+	}
+
+	public void setAnimalCategory(AnimalCategory animalCategory) {
+		this.animalCategory = animalCategory;
+	}
+
+	public String getAnimalCategoryDetails() {
+		return animalCategoryDetails;
+	}
+
+	public void setAnimalCategoryDetails(String animalCategoryDetails) {
+		this.animalCategoryDetails = animalCategoryDetails;
+	}
+
+	public FomiteTransmissionLocation getFomiteTransmissionLocation() {
+		return fomiteTransmissionLocation;
+	}
+
+	public void setFomiteTransmissionLocation(FomiteTransmissionLocation fomiteTransmissionLocation) {
+		this.fomiteTransmissionLocation = fomiteTransmissionLocation;
+	}
+
+	public Set<ExposureSubSetting> getSubSettings() {
+		return subSettings;
+	}
+
+	public void setSubSettings(Set<ExposureSubSetting> subSettings) {
+		this.subSettings = subSettings;
+	}
+
+	public Set<ExposureContactFactor> getContactFactors() {
+		return contactFactors;
+	}
+
+	public void setContactFactors(Set<ExposureContactFactor> contactFactors) {
+		this.contactFactors = contactFactors;
+	}
+
+	public Set<ExposureProtectiveMeasure> getProtectiveMeasures() {
+		return protectiveMeasures;
+	}
+
+	public void setProtectiveMeasures(Set<ExposureProtectiveMeasure> protectiveMeasures) {
+		this.protectiveMeasures = protectiveMeasures;
+	}
+
+	public TravelPurpose getTravelPurpose() {
+		return travelPurpose;
+	}
+
+	public void setTravelPurpose(TravelPurpose travelPurpose) {
+		this.travelPurpose = travelPurpose;
+	}
+
+	public String getTravelPurposeDetails() {
+		return travelPurposeDetails;
+	}
+
+	public void setTravelPurposeDetails(String travelPurposeDetails) {
+		this.travelPurposeDetails = travelPurposeDetails;
+	}
+
+	public ProphylaxisAdherence getProphylaxisAdherence() {
+		return prophylaxisAdherence;
+	}
+
+	public void setProphylaxisAdherence(ProphylaxisAdherence prophylaxisAdherence) {
+		this.prophylaxisAdherence = prophylaxisAdherence;
+	}
+
+	public String getProphylaxisAdherenceDetails() {
+		return prophylaxisAdherenceDetails;
+	}
+
+	public void setProphylaxisAdherenceDetails(String prophylaxisAdherenceDetails) {
+		this.prophylaxisAdherenceDetails = prophylaxisAdherenceDetails;
+	}
+
+	public String getShoppingForFoodDetails() {
+		return shoppingForFoodDetails;
+	}
+
+	public void setShoppingForFoodDetails(String shoppingForFoodDetails) {
+		this.shoppingForFoodDetails = shoppingForFoodDetails;
+	}
+
+	public SexualContact getSexualContact() {
+		return sexualContact;
+	}
+
+	public void setSexualContact(SexualContact sexualContact) {
+		this.sexualContact = sexualContact;
 	}
 
 	@Override

@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.api.externalmessage.processing;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 
@@ -40,10 +41,10 @@ public abstract class AbstractProcessingFlow {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	protected final UserDto user;
+	private final UserDto user;
 
-	protected final ExternalMessageMapper mapper;
-	protected final ExternalMessageProcessingFacade processingFacade;
+	private final ExternalMessageMapper mapper;
+	private final ExternalMessageProcessingFacade processingFacade;
 
 	public AbstractProcessingFlow(UserDto user, ExternalMessageMapper mapper, ExternalMessageProcessingFacade processingFacade) {
 		this.user = user;
@@ -55,6 +56,7 @@ public abstract class AbstractProcessingFlow {
 		ExternalMessageDto externalMessage,
 		ExternalMessageProcessingResult defaultResult) {
 		return new FlowThen<ExternalMessageProcessingResult>().then(ignored -> checkDisease(externalMessage, defaultResult))
+			.then(ignored -> checkInfraData(externalMessage, defaultResult))
 			.then(ignored -> checkRelatedForwardedMessages(externalMessage, defaultResult));
 	}
 
@@ -76,6 +78,43 @@ public abstract class AbstractProcessingFlow {
 		} else {
 			return ProcessingResult.continueWith(defaultResult).asCompletedFuture();
 		}
+	}
+
+	/**
+	 * This method is called to check the infrastructure data of the external message.
+	 * It can be overridden to implement specific checks.
+	 *
+	 * @param externalMessageDto
+	 *            The external message to check.
+	 * @param defaultResult
+	 *            The default result to return if the checks pass.
+	 * @return A CompletableFuture containing the processing result.
+	 */
+	private CompletionStage<ProcessingResult<ExternalMessageProcessingResult>> checkInfraData(
+		ExternalMessageDto externalMessageDto,
+		ExternalMessageProcessingResult defaultResult) {
+
+		return handleInfraDataChecks().thenCompose(next -> {
+			if (Boolean.TRUE.equals(next)) {
+				logger.debug("[MESSAGE PROCESSING] The infrastructure data checks passed, continuing processing");
+				return ProcessingResult.continueWith(defaultResult).asCompletedFuture();
+			} else {
+				logger.debug("[MESSAGE PROCESSING] The infrastructure data checks failed, canceling processing");
+				return ProcessingResult.withStatus(ProcessingResultStatus.CANCELED, defaultResult).asCompletedFuture();
+			}
+		});
+	}
+
+	/**
+	 * This method is called to perform infrastructure data checks.
+	 * It can be overridden to implement specific checks.
+	 * By default, no checks are performed, and it returns a completed future with true.
+	 *
+	 * @return A CompletableFuture containing a boolean indicating whether the checks passed.
+	 */
+	protected CompletionStage<Boolean> handleInfraDataChecks() {
+		// No specific infrastructure data checks are performed by default,
+		return CompletableFuture.completedFuture(Boolean.TRUE);
 	}
 
 	protected abstract CompletionStage<Boolean> handleMissingDisease();
@@ -138,6 +177,8 @@ public abstract class AbstractProcessingFlow {
 
 		mapper.mapToPerson(personDto);
 		mapper.mapToLocation(personDto.getAddress());
+		mapper.mapAdditionalPersonContactDetails(personDto);
+		mapper.mapAdditionalPersonAddresses(personDto);
 
 		return personDto;
 	}
@@ -165,7 +206,7 @@ public abstract class AbstractProcessingFlow {
 			caseDto.setResponsibleRegion(facility.getRegion());
 			caseDto.setResponsibleDistrict(facility.getDistrict());
 
-			if (facilityType.isAccommodation()) {
+			if (facilityType != null && facilityType.isAccommodation()) {
 				caseDto.setFacilityType(facilityType);
 				caseDto.setHealthFacility(personFacility);
 			} else {
@@ -178,7 +219,43 @@ public abstract class AbstractProcessingFlow {
 		caseDto.setVaccinationStatus(externalMessageDto.getVaccinationStatus());
 		caseDto.getHospitalization().setAdmittedToHealthFacility(externalMessageDto.getAdmittedToHealthFacility());
 
+		caseDto.setAdditionalDetails(externalMessageDto.getCaseComments());
+
+		postBuildCase(caseDto, externalMessageDto);
+
 		return caseDto;
+	}
+
+	/**
+	 * This method is called after the case data has been built and allows for additional processing or modifications
+	 * to the case data based on the external message.
+	 *
+	 * @param caseDto
+	 *            The case data that has been built.
+	 * @param externalMessageDto
+	 *            The external message that contains additional information.
+	 */
+	protected abstract void postBuildCase(CaseDataDto caseDto, ExternalMessageDto externalMessageDto);
+
+	/**
+	 * This method is called after the person data has been built
+	 * and allows for additional processing or modifications.
+	 *
+	 * @param personDto
+	 * @param externalMessageDto
+	 */
+	protected abstract void postBuildPerson(PersonDto personDto, ExternalMessageDto externalMessageDto);
+
+	public ExternalMessageProcessingFacade getExternalMessageProcessingFacade() {
+		return processingFacade;
+	}
+
+	public UserDto getUser() {
+		return user;
+	}
+
+	public ExternalMessageMapper getMapper() {
+		return mapper;
 	}
 
 }

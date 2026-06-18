@@ -17,7 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
-import java.util.stream.Stream;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Strings;
@@ -74,18 +75,19 @@ public class ResizableTextAreaWrapper<T extends AbstractTextField> implements Fi
 		textField.setNullRepresentation("");
 		textField.setTextChangeTimeout(200);
 
-		Stream<Validator> maxLengthValidatorStream = textField.getValidators().stream().filter(v -> v instanceof MaxLengthValidator);
+		// Collect validators first to avoid ConcurrentModificationException
+		List<Validator> maxLengthValidators =
+			textField.getValidators().stream().filter(v -> v instanceof MaxLengthValidator).collect(Collectors.toList());
 
 		if (withMaxLength) {
-			maxLengthValidatorStream.findFirst().map(v -> ((MaxLengthValidator) v).getMaxLength()).ifPresent(textField::setMaxLength);
+			maxLengthValidators.stream().findFirst().map(v -> ((MaxLengthValidator) v).getMaxLength()).ifPresent(textField::setMaxLength);
 
 			labelField = new Label(buildLabelMessage(textField.getValue(), textField, caption));
 			labelField.setId(textField.getId() + "_label");
 			labelField.setWidth(100, Sizeable.Unit.PERCENTAGE);
 			labelField.addStyleNames(CssStyles.ALIGN_RIGHT, CssStyles.FIELD_EXTRA_INFO, CssStyles.LABEL_ITALIC);
-			layout.addComponents(labelField);
 		} else {
-			maxLengthValidatorStream.iterator().forEachRemaining(v -> textField.removeValidator(v));
+			maxLengthValidators.forEach(textField::removeValidator);
 		}
 
 		textField.addTextChangeListener(e -> {

@@ -46,7 +46,7 @@ public class RegionEditForm extends AbstractEditForm<RegionDto> {
 			fluidRowLocs(RegionDto.NAME, RegionDto.EPID_CODE) + 
 					fluidRowLocs(RegionDto.COUNTRY) + 
 					fluidRowLocs(RegionDto.AREA) +
-					fluidRowLocs(RegionDto.EXTERNAL_ID) +
+					fluidRowLocs(RegionDto.EXTERNAL_ID, RegionDto.NUTS_CODE) +
 					fluidRowLocs(InfrastructureDtoWithDefault.DEFAULT_INFRASTRUCTURE);
 			//+ fluidRowLocs(RegionDto.GROWTH_RATE);
 	//@formatter:on
@@ -83,6 +83,7 @@ public class RegionEditForm extends AbstractEditForm<RegionDto> {
 		ComboBox country = addInfrastructureField(RegionDto.COUNTRY);
 		ComboBox area = addInfrastructureField(RegionDto.AREA);
 		addField(RegionDto.EXTERNAL_ID, TextField.class);
+		addField(RegionDto.NUTS_CODE, TextField.class);
 
 		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
 			addField(InfrastructureDtoWithDefault.DEFAULT_INFRASTRUCTURE, CheckBox.class);

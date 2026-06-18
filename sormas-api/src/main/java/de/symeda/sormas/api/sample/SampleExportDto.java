@@ -89,6 +89,8 @@ public class SampleExportDto extends AbstractUuidDto implements IsSample {
 	private Boolean additionalTestingRequested;
 	private Set<AdditionalTestType> requestedAdditionalTests;
 	private String requestedOtherAdditionalTests;
+	private Boolean performedByReferenceLaboratory;
+	private Boolean retestRequested;
 	private boolean shipped;
 	private Date shipmentDate;
 	@SensitiveData
@@ -159,6 +161,7 @@ public class SampleExportDto extends AbstractUuidDto implements IsSample {
 						   String contactRegion, String contactDistrict, String contactCommunity, String contactCaseRegion, String contactCaseDistrict, String contactCaseCommunity,
 						   Date contactReportDate, Date lastContactDate, ContactClassification contactClassification, ContactStatus contactStatus, String eventParticipantRegion, String eventParticipantDistrict,
                            String labUuid, String caseHealthFacilityUuid, String caseResponsibleRegion, String caseResponsibleDistrict, String caseResponsibleCommunity,
+						   Boolean performedByReferenceLaboratory, Boolean retestRequested,
 						   boolean isInJurisdiction, boolean isCaseInJurisdiction, boolean isContactInJurisdiction,  boolean isContactCaseInJurisdiction, boolean isEventParticipantInJurisdiction) {
 	//@formatter:on
 		super(uuid);
@@ -231,6 +234,8 @@ public class SampleExportDto extends AbstractUuidDto implements IsSample {
 			}
 		}
 		this.requestedOtherAdditionalTests = requestedOtherAdditionalTests;
+		this.performedByReferenceLaboratory = performedByReferenceLaboratory;
+		this.retestRequested = retestRequested;
 		this.shipped = shipped;
 		this.shipmentDate = shipmentDate;
 		this.shipmentDetails = shipmentDetails;
@@ -852,6 +857,30 @@ public class SampleExportDto extends AbstractUuidDto implements IsSample {
 		this.sampleReportDate = sampleReportDate;
 	}
 
+	@Order(104)
+	public String getSampleMaterialSnomedCode() {
+		SampleMaterial material = sampleSampleExportMaterial != null ? sampleSampleExportMaterial.sampleMaterial : null;
+		return material != null ? material.getSnomedCode() : null;
+	}
+
+	@Order(105)
+	public Boolean getPerformedByReferenceLaboratory() {
+		return performedByReferenceLaboratory;
+	}
+
+	public void setPerformedByReferenceLaboratory(Boolean performedByReferenceLaboratory) {
+		this.performedByReferenceLaboratory = performedByReferenceLaboratory;
+	}
+
+	@Order(106)
+	public Boolean getRetestRequested() {
+		return retestRequested;
+	}
+
+	public void setRetestRequested(Boolean retestRequested) {
+		this.retestRequested = retestRequested;
+	}
+
 	public SampleExportPathogenTest getPathogenTest1() {
 		return pathogenTest1;
 	}
@@ -998,6 +1027,7 @@ public class SampleExportDto extends AbstractUuidDto implements IsSample {
 		@SensitiveData
 		private String testTypeText;
 		private String disease;
+		private Disease testedDisease;
 		private Date dateTime;
 		private String lab;
 		private PathogenTestResultType testResult;
@@ -1014,9 +1044,22 @@ public class SampleExportDto extends AbstractUuidDto implements IsSample {
 			String lab,
 			PathogenTestResultType testResult,
 			Boolean verified) {
+			this(testType, testTypeText, disease, null, dateTime, lab, testResult, verified);
+		}
+
+		public SampleExportPathogenTest(
+			PathogenTestType testType,
+			String testTypeText,
+			String disease,
+			Disease testedDisease,
+			Date dateTime,
+			String lab,
+			PathogenTestResultType testResult,
+			Boolean verified) {
 			this.testType = testType;
 			this.testTypeText = testTypeText;
 			this.disease = disease;
+			this.testedDisease = testedDisease;
 			this.dateTime = dateTime;
 			this.lab = lab;
 			this.testResult = testResult;
@@ -1024,7 +1067,7 @@ public class SampleExportDto extends AbstractUuidDto implements IsSample {
 		}
 
 		public String formatType() {
-			return PathogenTestType.toString(testType, testTypeText);
+			return PathogenTestType.toString(testType, testTypeText, testedDisease);
 		}
 
 		public String formatString() {

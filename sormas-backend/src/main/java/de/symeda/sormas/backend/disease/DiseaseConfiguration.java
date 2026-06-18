@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.disease;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_TEXT;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -12,7 +13,9 @@ import javax.persistence.Enumerated;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.audit.AuditIgnore;
+import de.symeda.sormas.api.exposure.ExposureCategory;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.exposure.ExposureCategorySetConverter;
 
 @Entity(name = DiseaseConfiguration.TABLE_NAME)
 @AuditIgnore(retainWrites = true)
@@ -23,8 +26,17 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 	public static final String TABLE_NAME = "diseaseconfiguration";
 
 	public static final String DISEASE = "disease";
+	public static final String ACTIVE = "active";
 	public static final String PRIMARY_DISEASE = "primaryDisease";
 	public static final String CASE_SURVEILLANCE_ENABLED = "caseSurveillanceEnabled";
+	public static final String AGGREGATE_REPORTING_ENABLED = "aggregateReportingEnabled";
+	public static final String FOLLOW_UP_ENABLED = "followUpEnabled";
+	public static final String FOLLOW_UP_DURATION = "followUpDuration";
+	public static final String CASE_FOLLOW_UP_DURATION = "caseFollowUpDuration";
+	public static final String EVENT_PARTICIPANT_FOLLOW_UP_DURATION = "eventParticipantFollowUpDuration";
+	public static final String EXTENDED_CLASSIFICATION = "extendedClassification";
+	public static final String EXTENDED_CLASSIFICATION_MULTI = "extendedClassificationMulti";
+	public static final String AUTOMATIC_SAMPLE_ASSIGNMENT_THRESHOLD = "automaticSampleAssignmentThreshold";
 
 	private Disease disease;
 	private Boolean active;
@@ -34,12 +46,21 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 	private Boolean followUpEnabled;
 	private Integer followUpDuration;
 	private Integer caseFollowUpDuration;
+	private Boolean incubationPeriodEnabled;
 	private Integer eventParticipantFollowUpDuration;
+	private Integer maxIncubationPeriod;
+	private Integer minIncubationPeriod;
+	private String caseDefinitionText;
+	private Boolean isContagious;
+	private Integer minContagiousPeriod;
+	private Integer maxContagiousPeriod;
 	private Boolean extendedClassification;
 	private Boolean extendedClassificationMulti;
 	private List<String> ageGroups;
 
 	private Integer automaticSampleAssignmentThreshold;
+
+	private Set<ExposureCategory> exposureCategories;
 
 	public static DiseaseConfiguration build(Disease disease) {
 		DiseaseConfiguration configuration = new DiseaseConfiguration();
@@ -130,6 +151,69 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 	}
 
 	@Column
+	public Boolean getIncubationPeriodEnabled() {
+		return incubationPeriodEnabled;
+	}
+
+	public void setIncubationPeriodEnabled(Boolean incubationPeriodEnabled) {
+		this.incubationPeriodEnabled = incubationPeriodEnabled;
+	}
+
+	@Column
+	public Integer getMaxIncubationPeriod() {
+		return maxIncubationPeriod;
+	}
+
+	public void setMaxIncubationPeriod(Integer maxIncubationPeriod) {
+		this.maxIncubationPeriod = maxIncubationPeriod;
+	}
+
+	@Column
+	public Integer getMinIncubationPeriod() {
+		return minIncubationPeriod;
+	}
+
+	public void setMinIncubationPeriod(Integer minIncubationPeriod) {
+		this.minIncubationPeriod = minIncubationPeriod;
+	}
+
+	@Column(length = CHARACTER_LIMIT_TEXT)
+	public String getCaseDefinitionText() {
+		return caseDefinitionText;
+	}
+
+	public void setCaseDefinitionText(String caseDefinitionText) {
+		this.caseDefinitionText = caseDefinitionText;
+	}
+
+	@Column
+	public Boolean getIsContagious() {
+		return isContagious;
+	}
+
+	public void setIsContagious(Boolean isContagious) {
+		this.isContagious = isContagious;
+	}
+
+	@Column
+	public Integer getMinContagiousPeriod() {
+		return minContagiousPeriod;
+	}
+
+	public void setMinContagiousPeriod(Integer minContagiousPeriod) {
+		this.minContagiousPeriod = minContagiousPeriod;
+	}
+
+	@Column
+	public Integer getMaxContagiousPeriod() {
+		return maxContagiousPeriod;
+	}
+
+	public void setMaxContagiousPeriod(Integer maxContagiousPeriod) {
+		this.maxContagiousPeriod = maxContagiousPeriod;
+	}
+
+	@Column
 	public Boolean getExtendedClassification() {
 		return extendedClassification;
 	}
@@ -164,5 +248,15 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 
 	public void setAutomaticSampleAssignmentThreshold(Integer automaticSampleAssignmentThreshold) {
 		this.automaticSampleAssignmentThreshold = automaticSampleAssignmentThreshold;
+	}
+
+	@Column
+	@Convert(converter = ExposureCategorySetConverter.class)
+	public Set<ExposureCategory> getExposureCategories() {
+		return exposureCategories;
+	}
+
+	public void setExposureCategories(Set<ExposureCategory> exposureCategories) {
+		this.exposureCategories = exposureCategories;
 	}
 }

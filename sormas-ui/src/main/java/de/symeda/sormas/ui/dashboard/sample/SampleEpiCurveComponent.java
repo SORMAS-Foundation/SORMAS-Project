@@ -26,6 +26,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.dashboard.EpiCurveGrouping;
 import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -39,7 +40,7 @@ public class SampleEpiCurveComponent extends AbstractEpiCurveComponent<SampleDas
 	private static final long serialVersionUID = 3759194459077992333L;
 
 	public SampleEpiCurveComponent(SampleDashboardDataProvider dashboardDataProvider) {
-		super(dashboardDataProvider);
+		super(dashboardDataProvider, Descriptions.sampleDashboardHumans);
 		epiCurveLabel.setValue(I18nProperties.getString(Strings.headingSampleDashboardEpiCurve));
 	}
 
@@ -66,32 +67,34 @@ public class SampleEpiCurveComponent extends AbstractEpiCurveComponent<SampleDas
 			int[] negativeNumbers = new int[datesGroupedBy.size()];
 			int[] indeterminateNumbers = new int[datesGroupedBy.size()];
 			int[] notDoneNumbers = new int[datesGroupedBy.size()];
+			if (dashboardDataProvider.getEnvironmentSampleMaterial() == null) {
+				// EPI Curve is only for Human samples
+				for (int i = 0; i < datesGroupedBy.size(); i++) {
+					Date date = datesGroupedBy.get(i);
 
-			for (int i = 0; i < datesGroupedBy.size(); i++) {
-				Date date = datesGroupedBy.get(i);
+					SampleDashboardCriteria criteria = dashboardDataProvider.buildDashboardCriteria().sampleDateType(dashboardDataProvider.getDateType());
+					if (epiCurveGrouping == EpiCurveGrouping.DAY) {
+						criteria.dateBetween(DateHelper.getStartOfDay(date), DateHelper.getEndOfDay(date));
+					} else if (epiCurveGrouping == EpiCurveGrouping.WEEK) {
+						criteria.dateBetween(DateHelper.getStartOfWeek(date), DateHelper.getEndOfWeek(date));
+					} else {
+						criteria.dateBetween(DateHelper.getStartOfMonth(date), DateHelper.getEndOfMonth(date));
+					}
 
-				SampleDashboardCriteria criteria = dashboardDataProvider.buildDashboardCriteria().sampleDateType(dashboardDataProvider.getDateType());
-				if (epiCurveGrouping == EpiCurveGrouping.DAY) {
-					criteria.dateBetween(DateHelper.getStartOfDay(date), DateHelper.getEndOfDay(date));
-				} else if (epiCurveGrouping == EpiCurveGrouping.WEEK) {
-					criteria.dateBetween(DateHelper.getStartOfWeek(date), DateHelper.getEndOfWeek(date));
-				} else {
-					criteria.dateBetween(DateHelper.getStartOfMonth(date), DateHelper.getEndOfMonth(date));
+					Map<PathogenTestResultType, Long> sampleCounts = FacadeProvider.getSampleDashboardFacade().getSampleCountsByResultType(criteria);
+
+					Long positiveCount = sampleCounts.get(PathogenTestResultType.POSITIVE);
+					Long negativeCount = sampleCounts.get(PathogenTestResultType.NEGATIVE);
+					Long pendingCount = sampleCounts.get(PathogenTestResultType.PENDING);
+					Long indeterminateCount = sampleCounts.get((PathogenTestResultType.INDETERMINATE));
+					Long notDoneCount = sampleCounts.get(PathogenTestResultType.NOT_DONE);
+
+					positiveNumbers[i] = positiveCount != null ? positiveCount.intValue() : 0;
+					negativeNumbers[i] = negativeCount != null ? negativeCount.intValue() : 0;
+					pendingUpNumbers[i] = pendingCount != null ? pendingCount.intValue() : 0;
+					indeterminateNumbers[i] = indeterminateCount != null ? indeterminateCount.intValue() : 0;
+					notDoneNumbers[i] = notDoneCount != null ? notDoneCount.intValue() : 0;
 				}
-
-				Map<PathogenTestResultType, Long> sampleCounts = FacadeProvider.getSampleDashboardFacade().getSampleCountsByResultType(criteria);
-
-				Long positiveCount = sampleCounts.get(PathogenTestResultType.POSITIVE);
-				Long negativeCount = sampleCounts.get(PathogenTestResultType.NEGATIVE);
-				Long pendingCount = sampleCounts.get(PathogenTestResultType.PENDING);
-				Long indeterminateCount = sampleCounts.get((PathogenTestResultType.INDETERMINATE));
-				Long notDoneCount = sampleCounts.get(PathogenTestResultType.NOT_DONE);
-
-				positiveNumbers[i] = positiveCount != null ? positiveCount.intValue() : 0;
-				negativeNumbers[i] = negativeCount != null ? negativeCount.intValue() : 0;
-				pendingUpNumbers[i] = pendingCount != null ? pendingCount.intValue() : 0;
-				indeterminateNumbers[i] = indeterminateCount != null ? indeterminateCount.intValue() : 0;
-				notDoneNumbers[i] = notDoneCount != null ? notDoneCount.intValue() : 0;
 			}
 
 			return Arrays.asList(

@@ -19,7 +19,7 @@ $contact_returningTraveler
 
 
 Empty Properties:
-$contact_contactProximity
+$contact_contactProximities
 $contact_person_address_additionalInformation
 $!contact_person_address_addressTypeDetails
 $!contact_additionalDetails

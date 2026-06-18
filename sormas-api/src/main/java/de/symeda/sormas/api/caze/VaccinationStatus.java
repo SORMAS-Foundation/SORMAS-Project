@@ -18,15 +18,50 @@
 package de.symeda.sormas.api.caze;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.utils.Diseases;
 
 public enum VaccinationStatus {
 
 	VACCINATED,
+
 	UNVACCINATED,
+
+	// Legacy alias kept for backward compatibility with existing data and integrations.
+	@Diseases()
+	RECOVERED,
+
+	HAD_THE_DISEASE,
+
+	OTHER,
+
 	UNKNOWN;
 
 	@Override
 	public String toString() {
-		return I18nProperties.getEnumCaption(this);
+		// Keep RECOVERED and HAD_THE_DISEASE visually aligned in the UI.
+		return this == RECOVERED ? I18nProperties.getEnumCaption(HAD_THE_DISEASE) : I18nProperties.getEnumCaption(this);
+	}
+
+	/**
+	 * Checks if this vaccination status indicates the person is vaccinated.
+	 *
+	 * @return true if the status is VACCINATED; false otherwise
+	 */
+	public boolean isVaccinated() {
+		return this == VACCINATED;
+	}
+
+	/**
+	 * Checks whether this status represents immunity through prior disease.
+	 */
+	public boolean isHadTheDisease() {
+		return this == HAD_THE_DISEASE || this == RECOVERED;
+	}
+
+	/**
+	 * Normalizes legacy RECOVERED to HAD_THE_DISEASE.
+	 */
+	public VaccinationStatus normalize() {
+		return this == RECOVERED ? HAD_THE_DISEASE : this;
 	}
 }

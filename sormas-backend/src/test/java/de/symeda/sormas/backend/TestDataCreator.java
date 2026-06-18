@@ -113,6 +113,7 @@ import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.person.notifier.NotifierDto;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -126,6 +127,8 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.specialcaseaccess.SpecialCaseAccessDto;
+import de.symeda.sormas.api.survey.SurveyDto;
+import de.symeda.sormas.api.survey.SurveyTokenDto;
 import de.symeda.sormas.api.systemevents.SystemEventDto;
 import de.symeda.sormas.api.systemevents.SystemEventStatus;
 import de.symeda.sormas.api.systemevents.SystemEventType;
@@ -2070,8 +2073,21 @@ public class TestDataCreator {
 		Boolean primary,
 		Boolean caseSurveillance,
 		Boolean aggregateReporting,
-		List<String> ageGroups) {
-		updateDiseaseConfiguration(disease, active, primary, caseSurveillance, aggregateReporting, ageGroups, null);
+		List<String> ageGroups,
+		Boolean incubationPeriodEnabled,
+		int minIncubationPeriod,
+		int maxIncubationPeriod) {
+		updateDiseaseConfiguration(
+			disease,
+			active,
+			primary,
+			caseSurveillance,
+			aggregateReporting,
+			ageGroups,
+			null,
+			incubationPeriodEnabled,
+			minIncubationPeriod,
+			maxIncubationPeriod);
 	}
 
 	public void updateDiseaseConfiguration(
@@ -2081,7 +2097,10 @@ public class TestDataCreator {
 		Boolean caseSurveillance,
 		Boolean aggregateReporting,
 		List<String> ageGroups,
-		Integer automaticSampleAssignmentThreshold) {
+		Integer automaticSampleAssignmentThreshold,
+		Boolean incubationPeriodEnabled,
+		int minIncubationPeriod,
+		int maxIncubationPeriod) {
 		DiseaseConfigurationDto config =
 			DiseaseConfigurationFacadeEjbLocal.toDto(beanTest.getDiseaseConfigurationService().getDiseaseConfiguration(disease));
 		config.setActive(active);
@@ -2089,6 +2108,9 @@ public class TestDataCreator {
 		config.setCaseSurveillanceEnabled(caseSurveillance);
 		config.setAggregateReportingEnabled(aggregateReporting);
 		config.setAgeGroups(ageGroups);
+		config.setMaxIncubationPeriod(maxIncubationPeriod);
+		config.setMinIncubationPeriod(minIncubationPeriod);
+		config.setIncubationPeriodEnabled(incubationPeriodEnabled);
 		config.setAutomaticSampleAssignmentThreshold(automaticSampleAssignmentThreshold);
 		beanTest.getDiseaseConfigurationFacade().saveDiseaseConfiguration(config);
 	}
@@ -2464,6 +2486,38 @@ public class TestDataCreator {
 		specialCaseAccess.setEndDateTime(endDateTime);
 
 		return beanTest.getSpecialCaseAccessFacade().save(specialCaseAccess);
+	}
+
+	public SurveyDto createSurvey(String name, Disease disease) {
+		SurveyDto survey = SurveyDto.build();
+		survey.setName(name);
+		survey.setDisease(disease);
+
+		return beanTest.getSurveyFacade().save(survey);
+	}
+
+	/**
+	 * 
+	 * @param caze
+	 * @return
+	 */
+	public SurveyTokenDto createSurveyToken(CaseReferenceDto caze) {
+		SurveyDto survey = this.createSurvey("Malaria-Survey", Disease.MALARIA);
+		SurveyTokenDto token = SurveyTokenDto.build(survey.toReference());
+		token.setToken("MALA01");
+		token.setCaseAssignedTo(caze);
+		return beanTest.getSurveyTokenFacade().save(token);
+	}
+
+	public NotifierDto createNotifier(String firstName, String lastName, String email, String phone, String address, String registrationNumber) {
+		NotifierDto notifier = new NotifierDto();
+		notifier.setFirstName(firstName);
+		notifier.setLastName(lastName);
+		notifier.setEmail(email);
+		notifier.setPhone(phone);
+		notifier.setAddress(address);
+		notifier.setRegistrationNumber(registrationNumber);
+		return notifier;
 	}
 
 	/**

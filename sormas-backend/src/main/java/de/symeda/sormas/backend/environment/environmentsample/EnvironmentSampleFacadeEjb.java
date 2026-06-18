@@ -43,6 +43,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.disease.PathogenConverter;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleMaterial;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -569,6 +570,7 @@ public class EnvironmentSampleFacadeEjb
 		target.setDeleted(source.isDeleted());
 		target.setDeletionReason(source.getDeletionReason());
 		target.setOtherDeletionReason(source.getOtherDeletionReason());
+		target.setVectorType(EnvironmentSampleMaterial.VECTORS.equals(source.getSampleMaterial()) ? source.getVectorType() : null);
 
 		return target;
 	}
@@ -611,6 +613,7 @@ public class EnvironmentSampleFacadeEjb
 		target.setDeleted(source.isDeleted());
 		target.setDeletionReason(source.getDeletionReason());
 		target.setOtherDeletionReason(source.getOtherDeletionReason());
+		target.setVectorType(source.getVectorType());
 
 		return target;
 	}

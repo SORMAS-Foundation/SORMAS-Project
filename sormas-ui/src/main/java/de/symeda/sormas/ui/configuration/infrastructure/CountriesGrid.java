@@ -64,7 +64,8 @@ public class CountriesGrid extends FilteredGrid<CountryIndexDto, CountryCriteria
 			CountryIndexDto.SUBCONTINENT,
 			CountryIndexDto.EXTERNAL_ID,
 			CountryIndexDto.UNO_CODE,
-			CountryIndexDto.DEFAULT_NAME);
+			CountryIndexDto.DEFAULT_NAME,
+			CountryIndexDto.NUTS_CODE);
 		getColumn(CountryIndexDto.DEFAULT_NAME).setHidden(true);
 
 		if (UiUtil.permitted(FeatureType.EDIT_INFRASTRUCTURE_DATA, UserRight.INFRASTRUCTURE_EDIT)) {

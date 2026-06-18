@@ -37,6 +37,7 @@ public class DistrictIndexDto extends EntityDto {
 	public static final String REGION = "region";
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String DEFAULT_INFRASTRUCTURE = "defaultInfrastructure";
+	public static final String NUTS_CODE = "nutsCode";
 
 	private String name;
 	private String epidCode;
@@ -45,6 +46,7 @@ public class DistrictIndexDto extends EntityDto {
 	private RegionReferenceDto region;
 	private String externalID;
 	private boolean defaultInfrastructure;
+	private String nutsCode;
 
 	public DistrictIndexDto() {
 		super();
@@ -114,6 +116,14 @@ public class DistrictIndexDto extends EntityDto {
 
 	public void setDefaultInfrastructure(boolean defaultInfrastructure) {
 		this.defaultInfrastructure = defaultInfrastructure;
+	}
+
+	public String getNutsCode() {
+		return nutsCode;
+	}
+
+	public void setNutsCode(String nutsCode) {
+		this.nutsCode = nutsCode;
 	}
 
 	public DistrictReferenceDto toReference() {

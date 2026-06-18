@@ -45,10 +45,11 @@ public enum UserRightGroup {
 	INFRASTRUCTURE,
 	DOCUMENT,
 	EXTERNAL_EMAILS,
-
+	SURVEY,
 	EXPORT,
 	CONFIGURATION,
-	EXTERNAL;
+	EXTERNAL,
+	EPIPULSE;
 
 	@Override
 	public String toString() {

@@ -17,18 +17,20 @@
  *******************************************************************************/
 package de.symeda.sormas.api.contact;
 
-import java.io.Serializable;
-import java.util.Date;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
+import de.symeda.sormas.api.therapy.Drug;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.api.uuid.HasUuid;
+
+import java.io.Serializable;
+import java.util.Date;
+import java.util.Set;
 
 public class ContactIndexDto extends PseudonymizableIndexDto implements IsContact, HasUuid, Serializable, Cloneable {
 
@@ -39,12 +41,13 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 	public static final String UUID = "uuid";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String PERSON_UUID = "personUuid";
+	public static final String PERSON_NATIONAL_HEALTH_ID = "nationalHealthId";
 	public static final String PERSON_FIRST_NAME = "firstName";
 	public static final String PERSON_LAST_NAME = "lastName";
 	public static final String CAZE = "caze";
 	public static final String DISEASE = "disease";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
-	public static final String CONTACT_PROXIMITY = "contactProximity";
+	public static final String CONTACT_PROXIMITIES = "contactProximities";
 	public static final String CONTACT_CLASSIFICATION = "contactClassification";
 	public static final String CONTACT_STATUS = "contactStatus";
 	public static final String FOLLOW_UP_STATUS = "followUpStatus";
@@ -62,8 +65,12 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 	public static final String REGION_UUID = "regionUuid";
 	public static final String DISTRICT_UUID = "districtUuid";
 	public static final String COMMUNITY_UUID = "communityUuid";
+	public static final String PROPHYLAXIS_PRESCRIBED = "prophylaxisPrescribed";
+	public static final String PRESCRIBED_DRUG = "prescribedDrug";
+	public static final String PRESCRIBED_DRUG_TEXT = "prescribedDrugText";
 
 	private String personUuid;
+	private String nationalHealthId;
 	@PersonalData
 	private String firstName;
 	@PersonalData
@@ -72,7 +79,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 	private Disease disease;
 	private String diseaseDetails;
 	private Date lastContactDate;
-	private ContactProximity contactProximity;
+	private Set<ContactProximity> contactProximities;
 	private ContactClassification contactClassification;
 	private ContactStatus contactStatus;
 	private Float completeness;
@@ -98,25 +105,34 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 
 	private DeletionReason deletionReason;
 	private String otherDeletionReason;
+	private Boolean prophylaxisPrescribed;
+	private Drug prescribedDrug;
+	private String prescribedDrugText;
 
 	private ContactJurisdictionFlagsDto contactJurisdictionFlagsDto;
+	private Long id;
 
 	//@formatter:off
-	public ContactIndexDto(String uuid, String personUuid, String personFirstName, String personLastName, String cazeUuid,
+	/**
+	 * Constructor for JPA queries where contactProximities cannot be directly selected (ElementCollection limitation).
+	 * ContactProximities should be populated separately after query execution using the id field.
+	 */
+	public ContactIndexDto(String uuid, String personUuid, String nationalHealthId, String personFirstName, String personLastName, String cazeUuid,
 						   Disease disease, String diseaseDetails, String caseFirstName, String caseLastName, String regionName,
 						   String districtName, Date lastContactDate, ContactCategory contactCategory,
-						   ContactProximity contactProximity, ContactClassification contactClassification, ContactStatus contactStatus, Float completeness,
+						   Long id, ContactClassification contactClassification, ContactStatus contactStatus, Float completeness,
 						   FollowUpStatus followUpStatus, Date followUpUntil, SymptomJournalStatus symptomJournalStatus, VaccinationStatus vaccinationStatus, String contactOfficerUuid,
 						   String reportingUserUuid, Date reportDateTime,
 						   CaseClassification caseClassification, String caseRegionName, String caseDistrictName,
 						   Date changeDate, // XXX: unused, only here for TypedQuery mapping
 						   String externalID, String externalToken, String internalToken,String caseReferenceNumber, DeletionReason deletionReason, String otherDeletionReason, boolean isInJurisdiction, boolean isCaseInJurisdiction,
-						   int visitCount
+						   int visitCount, Boolean prophylaxisPrescribed, Drug prescribedDrug, String prescribedDrugText
 	) {
 	//@formatter:on
 
 		super(uuid);
 		this.personUuid = personUuid;
+		this.nationalHealthId = nationalHealthId;
 		this.firstName = personFirstName;
 		this.lastName = personLastName;
 
@@ -128,7 +144,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 		this.diseaseDetails = diseaseDetails;
 		this.lastContactDate = lastContactDate;
 		this.contactCategory = contactCategory;
-		this.contactProximity = contactProximity;
+		this.id = id;
 		this.contactClassification = contactClassification;
 		this.contactStatus = contactStatus;
 		this.completeness = completeness;
@@ -153,6 +169,9 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 		this.otherDeletionReason = otherDeletionReason;
 
 		this.contactJurisdictionFlagsDto = new ContactJurisdictionFlagsDto(isInJurisdiction, isCaseInJurisdiction);
+		this.prophylaxisPrescribed = prophylaxisPrescribed;
+		this.prescribedDrug = prescribedDrug;
+		this.prescribedDrugText = prescribedDrugText;
 	}
 
 	public String getPersonUuid() {
@@ -161,6 +180,14 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 
 	public void setPersonUuid(String personUuid) {
 		this.personUuid = personUuid;
+	}
+
+	public String getNationalHealthId() {
+		return nationalHealthId;
+	}
+
+	public void setNationalHealthId(String nationalHealthId) {
+		this.nationalHealthId = nationalHealthId;
 	}
 
 	public String getFirstName() {
@@ -211,12 +238,12 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 		this.lastContactDate = lastContactDate;
 	}
 
-	public ContactProximity getContactProximity() {
-		return contactProximity;
+	public Set<ContactProximity> getContactProximities() {
+		return contactProximities;
 	}
 
-	public void setContactProximity(ContactProximity contactProximity) {
-		this.contactProximity = contactProximity;
+	public void setContactProximities(Set<ContactProximity> contactProximities) {
+		this.contactProximities = contactProximities;
 	}
 
 	public ContactClassification getContactClassification() {
@@ -417,6 +444,38 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 
 	public void setOtherDeletionReason(String otherDeletionReason) {
 		this.otherDeletionReason = otherDeletionReason;
+	}
+
+	public Boolean getProphylaxisPrescribed() {
+		return prophylaxisPrescribed;
+	}
+
+	public void setProphylaxisPrescribed(Boolean prophylaxisPrescribed) {
+		this.prophylaxisPrescribed = prophylaxisPrescribed;
+	}
+
+	public Drug getPrescribedDrug() {
+		return prescribedDrug;
+	}
+
+	public void setPrescribedDrug(Drug prescribedDrug) {
+		this.prescribedDrug = prescribedDrug;
+	}
+
+	public String getPrescribedDrugText() {
+		return prescribedDrugText;
+	}
+
+	public void setPrescribedDrugText(String prescribedDrugText) {
+		this.prescribedDrugText = prescribedDrugText;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	@Override

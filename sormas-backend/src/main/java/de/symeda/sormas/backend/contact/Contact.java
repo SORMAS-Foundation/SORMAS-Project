@@ -27,7 +27,9 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -56,7 +58,10 @@ import de.symeda.sormas.api.contact.IsContact;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.contact.TracingApp;
 import de.symeda.sormas.api.externaldata.HasExternalData;
+import de.symeda.sormas.api.immunization.InformationReliability;
+import de.symeda.sormas.api.therapy.Drug;
 import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.Case;
@@ -72,7 +77,6 @@ import de.symeda.sormas.backend.selfreport.SelfReport;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
-import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccess;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.visit.Visit;
@@ -96,7 +100,7 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 	public static final String CONTACT_IDENTIFICATION_SOURCE = "contactIdentificationSource";
 	public static final String CONTACT_IDENTIFICATION_SOURCE_DETAILS = "contactIdentificationSourceDetails";
 	public static final String CONTACT_OFFICER = "contactOfficer";
-	public static final String CONTACT_PROXIMITY = "contactProximity";
+	public static final String CONTACT_PROXIMITIES = "contactProximities";
 	public static final String CONTACT_PROXIMITY_DETAILS = "contactProximityDetails";
 	public static final String CONTACT_STATUS = "contactStatus";
 	public static final String DESCRIPTION = "description";
@@ -166,9 +170,18 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 	public static final String TRACING_APP = "tracingApp";
 	public static final String TRACING_APP_DETAILS = "tracingAppDetails";
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
+	public static final String VACCINATION_STATUS_DETAILS = "vaccinationStatusDetails";
+	public static final String VACCINATION_STATUS_LAST_UPDATED = "vaccinationStatusLastUpdated";
+	public static final String NUMBER_OF_DOSES = "numberOfDoses";
+	public static final String INFORMATION_RELIABILITY = "informationReliability";
 	public static final String VISITS = "visits";
 	public static final String DUPLICATE_OF = "duplicateOf";
-	public static final String SELF_REPORT ="selfReport";
+	public static final String SELF_REPORT = "selfReport";
+	public static final String PROPHYLAXIS_PRESCRIBED = "prophylaxisPrescribed";
+	public static final String PRESCRIBED_DRUG = "prescribedDrug";
+	public static final String PRESCRIBED_DRUG_TEXT = "prescribedDrugText";
+	public static final String VACCINATION_DOSE_ONE_DATE = "vaccinationDoseOneDate";
+	public static final String VACCINATION_DOSE_TWO_DATE = "vaccinationDoseTwoDate";
 
 	private Date reportDateTime;
 	private User reportingUser;
@@ -193,7 +206,7 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 	private String contactIdentificationSourceDetails;
 	private TracingApp tracingApp;
 	private String tracingAppDetails;
-	private ContactProximity contactProximity;
+	private Set<ContactProximity> contactProximities;
 	private ContactClassification contactClassification;
 	private ContactStatus contactStatus;
 	private FollowUpStatus followUpStatus;
@@ -271,6 +284,10 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 
 	private List<SelfReport> selfReport;
 
+	private Drug prescribedDrug;
+	private String prescribedDrugText;
+	private Boolean prophylaxisPrescribed;
+
 	@Diseases({
 		Disease.AFP,
 		Disease.GUINEA_WORM,
@@ -284,7 +301,18 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 		Disease.CORONAVIRUS,
 		Disease.OTHER })
 	@Outbreaks
+
 	private VaccinationStatus vaccinationStatus;
+	private String vaccinationStatusDetails;
+	private Date vaccinationStatusLastUpdated;
+	private Integer numberOfDoses;
+	private InformationReliability informationReliability;
+
+	private Date vaccinationDoseOneDate;
+	private Date vaccinationDoseTwoDate;
+
+	private boolean vaccinationProposed;
+	private boolean immuneGlobulinProposed;
 
 	private Long personId;
 
@@ -425,13 +453,20 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 		this.tracingAppDetails = tracingAppDetails;
 	}
 
+	@ElementCollection(fetch = FetchType.LAZY)
 	@Enumerated(EnumType.STRING)
-	public ContactProximity getContactProximity() {
-		return contactProximity;
+	@CollectionTable(name = "contact_contactproximities",
+		joinColumns = @JoinColumn(name = "contact_id", referencedColumnName = Contact.ID, nullable = false))
+	@Column(name = "contactproximity", nullable = false)
+	public Set<ContactProximity> getContactProximities() {
+		if (contactProximities == null) {
+			contactProximities = new HashSet<>();
+		}
+		return contactProximities;
 	}
 
-	public void setContactProximity(ContactProximity contactProximity) {
-		this.contactProximity = contactProximity;
+	public void setContactProximities(Set<ContactProximity> contactProximities) {
+		this.contactProximities = contactProximities;
 	}
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
@@ -1078,6 +1113,41 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 		this.vaccinationStatus = vaccinationStatus;
 	}
 
+	@Column(length = FieldConstraints.CHARACTER_LIMIT_DEFAULT)
+	public String getVaccinationStatusDetails() {
+		return vaccinationStatusDetails;
+	}
+
+	public void setVaccinationStatusDetails(String vaccinationStatusDetails) {
+		this.vaccinationStatusDetails = vaccinationStatusDetails;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getVaccinationStatusLastUpdated() {
+		return vaccinationStatusLastUpdated;
+	}
+
+	public void setVaccinationStatusLastUpdated(Date vaccinationStatusLastUpdated) {
+		this.vaccinationStatusLastUpdated = vaccinationStatusLastUpdated;
+	}
+
+	public Integer getNumberOfDoses() {
+		return numberOfDoses;
+	}
+
+	public void setNumberOfDoses(Integer numberOfDoses) {
+		this.numberOfDoses = numberOfDoses;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public InformationReliability getInformationReliability() {
+		return informationReliability;
+	}
+
+	public void setInformationReliability(InformationReliability informationReliability) {
+		this.informationReliability = informationReliability;
+	}
+
 	@Temporal(TemporalType.DATE)
 	public Date getPreviousQuarantineTo() {
 		return previousQuarantineTo;
@@ -1103,5 +1173,63 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 
 	public void setSelfReport(List<SelfReport> selfReport) {
 		this.selfReport = selfReport;
+	}
+
+	public Boolean getProphylaxisPrescribed() {
+		return prophylaxisPrescribed;
+	}
+
+	public void setProphylaxisPrescribed(Boolean prophylaxisPrescribed) {
+		this.prophylaxisPrescribed = prophylaxisPrescribed;
+	}
+
+	public Drug getPrescribedDrug() {
+		return prescribedDrug;
+	}
+
+	public void setPrescribedDrug(Drug prescribedDrug) {
+		this.prescribedDrug = prescribedDrug;
+	}
+
+	public String getPrescribedDrugText() {
+		return prescribedDrugText;
+	}
+
+	public void setPrescribedDrugText(String prescribedDrugText) {
+		this.prescribedDrugText = prescribedDrugText;
+	}
+
+	@Column(name = "vaccination_dose1_date")
+	public Date getVaccinationDoseOneDate() {
+		return vaccinationDoseOneDate;
+	}
+
+	public void setVaccinationDoseOneDate(Date vaccinationDoseOneDate) {
+		this.vaccinationDoseOneDate = vaccinationDoseOneDate;
+	}
+
+	@Column(name = "vaccination_dose2_date")
+	public Date getVaccinationDoseTwoDate() {
+		return vaccinationDoseTwoDate;
+	}
+
+	public void setVaccinationDoseTwoDate(Date vaccinationDoseTwoDate) {
+		this.vaccinationDoseTwoDate = vaccinationDoseTwoDate;
+	}
+
+	public boolean isVaccinationProposed() {
+		return vaccinationProposed;
+	}
+
+	public void setVaccinationProposed(boolean vaccinationProposed) {
+		this.vaccinationProposed = vaccinationProposed;
+	}
+
+	public boolean isImmuneGlobulinProposed() {
+		return immuneGlobulinProposed;
+	}
+
+	public void setImmuneGlobulinProposed(boolean immuneGlobulinProposed) {
+		this.immuneGlobulinProposed = immuneGlobulinProposed;
 	}
 }

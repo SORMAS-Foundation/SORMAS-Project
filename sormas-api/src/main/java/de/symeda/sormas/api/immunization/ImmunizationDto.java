@@ -25,6 +25,7 @@ import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
@@ -91,6 +92,8 @@ public class ImmunizationDto extends SormasToSormasShareableDto implements IsImm
 	public static final String VACCINATIONS = "vaccinations";
 	public static final String DELETION_REASON = "deletionReason";
 	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
+	public static final String INJECTION_FACILITY = "injectionFacility";
+	public static final String VACCINATION_INFO_SOURCE = "vaccinationInfoSource";
 
 	@Outbreaks
 	@NotNull(message = Validations.validDisease)
@@ -111,6 +114,8 @@ public class ImmunizationDto extends SormasToSormasShareableDto implements IsImm
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	@SensitiveData
 	private String meansOfImmunizationDetails;
+	private InjectionFacility injectionFacility;
+	private VaccinationInfoSource vaccinationInfoSource;
 	private ImmunizationManagementStatus immunizationManagementStatus;
 	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
@@ -412,6 +417,22 @@ public class ImmunizationDto extends SormasToSormasShareableDto implements IsImm
 
 	public void setMeansOfImmunizationDetails(String meansOfImmunizationDetails) {
 		this.meansOfImmunizationDetails = meansOfImmunizationDetails;
+	}
+
+	public InjectionFacility getInjectionFacility() {
+		return injectionFacility;
+	}
+
+	public void setInjectionFacility(InjectionFacility injectionFacility) {
+		this.injectionFacility = injectionFacility;
+	}
+
+	public VaccinationInfoSource getVaccinationInfoSource() {
+		return vaccinationInfoSource;
+	}
+
+	public void setVaccinationInfoSource(VaccinationInfoSource vaccinationInfoSource) {
+		this.vaccinationInfoSource = vaccinationInfoSource;
 	}
 
 	public CountryReferenceDto getCountry() {

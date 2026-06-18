@@ -37,7 +37,7 @@ public class DistrictEditForm extends AbstractEditForm<DistrictDto> {
 
 	private static final String HTML_LAYOUT = fluidRowLocs(DistrictDto.NAME, DistrictDto.EPID_CODE)
 		+ fluidRowLocs(DistrictDto.REGION)
-		+ fluidRowLocs(RegionDto.EXTERNAL_ID)
+		+ fluidRowLocs(RegionDto.EXTERNAL_ID, RegionDto.NUTS_CODE)
 		+ fluidRowLocs(InfrastructureDtoWithDefault.DEFAULT_INFRASTRUCTURE); // ,DistrictDto.GROWTH_RATE);
 
 	private final boolean create;
@@ -62,6 +62,7 @@ public class DistrictEditForm extends AbstractEditForm<DistrictDto> {
 		addField(DistrictDto.EPID_CODE, TextField.class);
 		ComboBox region = addInfrastructureField(DistrictDto.REGION);
 		addField(RegionDto.EXTERNAL_ID, TextField.class);
+		addField(RegionDto.NUTS_CODE, TextField.class);
 
 		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
 			addField(InfrastructureDtoWithDefault.DEFAULT_INFRASTRUCTURE, CheckBox.class);

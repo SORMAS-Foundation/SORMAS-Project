@@ -1,7 +1,11 @@
 package de.symeda.sormas.backend.disease;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
@@ -11,14 +15,37 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.disease.DiseaseConfigurationCriteria;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 
 @Stateless
 @LocalBean
 public class DiseaseConfigurationService extends AdoServiceWithUserFilterAndJurisdiction<DiseaseConfiguration> {
 
+	private List<Disease> defaultActiveDiseases = new ArrayList<>();
+	private List<Disease> defaultInactiveDiseases = new ArrayList<>();
+	private List<Disease> defaultCaseSurveillanceDiseases = new ArrayList<>();
+	private List<Disease> defaultAggregateReportingDiseases = new ArrayList<>();
+
 	public DiseaseConfigurationService() {
 		super(DiseaseConfiguration.class);
+
+		for (Disease disease : Disease.values()) {
+			if (disease.isDefaultActive()) {
+				defaultActiveDiseases.add(disease);
+			} else {
+				defaultInactiveDiseases.add(disease);
+			}
+
+			if (disease.isDefaultCaseSurveillanceEnabled()) {
+				defaultCaseSurveillanceDiseases.add(disease);
+			}
+
+			if (disease.isDefaultAggregateReportingEnabled()) {
+				defaultAggregateReportingDiseases.add(disease);
+			}
+		}
 	}
 
 	public DiseaseConfiguration getDiseaseConfiguration(Disease disease) {
@@ -57,4 +84,65 @@ public class DiseaseConfigurationService extends AdoServiceWithUserFilterAndJuri
 		return null;
 	}
 
+	public Predicate buildCriteriaFilter(DiseaseConfigurationCriteria criteria, CriteriaBuilder cb, Root<DiseaseConfiguration> from) {
+
+		Predicate filter = null;
+
+		if (criteria.getRelevanceStatus() != null) {
+			switch (criteria.getRelevanceStatus()) {
+			case ALL:
+				filter = cb.isNotNull(from.get(DiseaseConfiguration.ID));
+				break;
+			case ACTIVE:
+				filter = cb.or(
+					cb.equal(from.get(DiseaseConfiguration.ACTIVE), true),
+					cb.and(
+						cb.isNull(from.get(DiseaseConfiguration.ACTIVE)),
+						cb.in(from.get(DiseaseConfiguration.DISEASE)).value(defaultActiveDiseases)));
+				break;
+			case INACTIVE:
+				filter = cb.or(
+					cb.equal(from.get(DiseaseConfiguration.ACTIVE), false),
+					cb.and(
+						cb.isNull(from.get(DiseaseConfiguration.ACTIVE)),
+						cb.in(from.get(DiseaseConfiguration.DISEASE)).value(defaultInactiveDiseases)));
+				break;
+			}
+		}
+
+		if (criteria.getDisease() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(DiseaseConfiguration.DISEASE), criteria.getDisease()));
+		}
+
+		if (criteria.getReportingType() != null) {
+			switch (criteria.getReportingType()) {
+			case CASE_BASED_SURVEILLANCE:
+				filter = CriteriaBuilderHelper.and(
+					cb,
+					filter,
+					cb.or(
+						cb.equal(from.get(DiseaseConfiguration.CASE_SURVEILLANCE_ENABLED), true),
+						cb.and(
+							cb.isNull(from.get(DiseaseConfiguration.CASE_SURVEILLANCE_ENABLED)),
+							cb.in(from.get(DiseaseConfiguration.DISEASE)).value(defaultCaseSurveillanceDiseases))));
+				break;
+			case AGGREGATE_REPORTING:
+				filter = CriteriaBuilderHelper.and(
+					cb,
+					filter,
+					cb.or(
+						cb.equal(from.get(DiseaseConfiguration.AGGREGATE_REPORTING_ENABLED), true),
+						cb.and(
+							cb.isNull(from.get(DiseaseConfiguration.AGGREGATE_REPORTING_ENABLED)),
+							cb.in(from.get(DiseaseConfiguration.DISEASE)).value(defaultAggregateReportingDiseases))));
+				break;
+			}
+		}
+
+		return filter;
+	}
+
+	public EntityManager getEntityManager() {
+		return em;
+	}
 }

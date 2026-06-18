@@ -28,6 +28,8 @@ public class SurveillanceReportCriteria extends BaseCriteria {
 
 	private List<String> caseUuids;
 
+	private ReportingType reportingType;
+
 	public CaseReferenceDto getCaze() {
 		return caze;
 	}
@@ -45,5 +47,24 @@ public class SurveillanceReportCriteria extends BaseCriteria {
 	public SurveillanceReportCriteria caseUuids(List<String> caseUuids) {
 		this.caseUuids = caseUuids;
 		return this;
+	}
+
+	/**
+	 * Gets the type of reporting for the criteria.
+	 *
+	 * @return the reporting type
+	 */
+	public ReportingType getReportingType() {
+		return reportingType;
+	}
+
+	/**
+	 * Sets the type of reporting for the criteria.
+	 *
+	 * @param reportingType
+	 *            the reporting type to set
+	 */
+	public void setReportingType(ReportingType reportingType) {
+		this.reportingType = reportingType;
 	}
 }

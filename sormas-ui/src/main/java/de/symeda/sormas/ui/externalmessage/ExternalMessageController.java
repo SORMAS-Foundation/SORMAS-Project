@@ -16,9 +16,12 @@ package de.symeda.sormas.ui.externalmessage;
 
 import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showAlreadyProcessedPopup;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -76,10 +79,13 @@ import de.symeda.sormas.api.utils.dataprocessing.ProcessingResultStatus;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
+import de.symeda.sormas.ui.externalmessage.doctordeclaration.DoctorDeclarationMessageProcessingFlow;
 import de.symeda.sormas.ui.externalmessage.labmessage.LabMessageProcessingFlow;
 import de.symeda.sormas.ui.externalmessage.labmessage.LabMessageSlider;
 import de.symeda.sormas.ui.externalmessage.labmessage.RelatedLabMessageHandler;
 import de.symeda.sormas.ui.externalmessage.physiciansreport.PhysiciansReportProcessingFlow;
+import de.symeda.sormas.ui.externalmessage.surveyresponse.SurveyResponseDetailsWindow;
+import de.symeda.sormas.ui.externalmessage.surveyresponse.SurveyResponseFailureEditor;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DeleteRestoreHandlers;
@@ -108,7 +114,8 @@ public class ExternalMessageController {
 			FacadeProvider.getFacilityFacade(),
 			FacadeProvider.getCustomizableEnumFacade(),
 			FacadeProvider.getCountryFacade(),
-			FacadeProvider.getSurveillanceReportFacade()) {
+			FacadeProvider.getSurveillanceReportFacade(),
+			FacadeProvider.getNotifierFacade()) {
 
 			@Override
 			public boolean hasAllUserRights(UserRight... userRights) {
@@ -124,6 +131,13 @@ public class ExternalMessageController {
 	public void showExternalMessage(String messageUuid, boolean withActions, Runnable onFormActionPerformed) {
 
 		ExternalMessageDto newDto = FacadeProvider.getExternalMessageFacade().getByUuid(messageUuid);
+
+		if (ExternalMessageType.SURVEY_RESPONSE.equals(newDto.getType())) {
+			// Side effect: window will be added to the current window.
+			new SurveyResponseDetailsWindow(newDto, onFormActionPerformed);
+			return;
+		}
+
 		VerticalLayout layout = new VerticalLayout();
 		layout.setMargin(true);
 
@@ -144,6 +158,38 @@ public class ExternalMessageController {
 		}
 
 		form.setValue(newDto);
+	}
+
+	public void processSurveyResponse(String surveyResponseMessageUuid) {
+		ExternalMessageDto externalMessage = FacadeProvider.getExternalMessageFacade().getByUuid(surveyResponseMessageUuid);
+
+		de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseResult result =
+			externalMessage.getSurveyResponseData() != null && externalMessage.getSurveyResponseData().getLatest() != null
+				? externalMessage.getSurveyResponseData().getLatest().getResult()
+				: null;
+
+		if (result == null) {
+			Notification.show(I18nProperties.getString(Strings.messageSurveyResponseNotYetProcessed), Notification.Type.HUMANIZED_MESSAGE);
+			return;
+		}
+
+		if (result.getPatchResponse() != null && result.getPatchResponse().hasFailures()) {
+			de.symeda.sormas.api.patch.partial_retrieval.DisplayablePartialRetrievalResponse displayData;
+			try {
+				displayData = FacadeProvider.getExternalMessageFacade().fetchSurveyResponseFieldsForDisplay(surveyResponseMessageUuid);
+			} catch (Exception e) {
+				logger.error("Error retrieving survey response fields for display", e);
+				displayData = new de.symeda.sormas.api.patch.partial_retrieval.DisplayablePartialRetrievalResponse();
+			}
+
+			final de.symeda.sormas.api.patch.partial_retrieval.DisplayablePartialRetrievalResponse finalDisplayData = displayData;
+			SurveyResponseFailureEditor editor = new SurveyResponseFailureEditor(externalMessage, finalDisplayData, () -> {
+				SormasUI.get().getNavigator().navigateTo(ExternalMessagesView.VIEW_NAME);
+			});
+			UI.getCurrent().addWindow(editor);
+		} else {
+			Notification.show(I18nProperties.getString(Strings.messageSurveyResponseAllFieldsApplied), Notification.Type.HUMANIZED_MESSAGE);
+		}
 	}
 
 	public void processLabMessage(String labMessageUuid) {
@@ -176,6 +222,36 @@ public class ExternalMessageController {
 		});
 	}
 
+	public void processDoctorDeclarationMessage(String messageUuid) {
+		ExternalMessageDto externalMessageDto = FacadeProvider.getExternalMessageFacade().getByUuid(messageUuid);
+		ExternalMessageProcessingFacade processingFacade = getExternalMessageProcessingFacade();
+		ExternalMessageMapper mapper = new ExternalMessageMapper(externalMessageDto, processingFacade);
+		DoctorDeclarationMessageProcessingFlow flow = new DoctorDeclarationMessageProcessingFlow(externalMessageDto, mapper, processingFacade);
+
+		flow.run().handle((BiFunction<? super ProcessingResult<ExternalMessageProcessingResult>, Throwable, Void>) (result, exception) -> {
+			if (exception != null) {
+				logger.error("Unexpected exception while processing doctor declaration message", exception);
+
+				Notification.show(
+					I18nProperties.getString(Strings.errorOccurred, I18nProperties.getString(Strings.errorOccurred)),
+					I18nProperties.getString(Strings.errorWasReported),
+					Notification.Type.ERROR_MESSAGE);
+
+				return null;
+			}
+
+			ProcessingResultStatus status = result.getStatus();
+			if (status == ProcessingResultStatus.CANCELED_WITH_CORRECTIONS) {
+				showCorrectionsSavedPopup();
+			} else if (status == ProcessingResultStatus.DONE) {
+				SormasUI.get().getNavigator().navigateTo(ExternalMessagesView.VIEW_NAME);
+			}
+
+			return null;
+		});
+	}
+
+	@Deprecated
 	public void processPhysiciansReport(String uuid) {
 		ExternalMessageDto physicianReport = FacadeProvider.getExternalMessageFacade().getByUuid(uuid);
 		ExternalMessageProcessingFacade processingFacade = getExternalMessageProcessingFacade();
@@ -302,7 +378,8 @@ public class ExternalMessageController {
 		buttonsPanel.setMargin(false);
 		buttonsPanel.setSpacing(true);
 
-		if (UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_DELETE)) {
+		if ((ReportingType.LABORATORY.equals(externalMessage.getType()) && UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_LABORATORY_DELETE)
+			|| ReportingType.DOCTOR.equals(externalMessage.getType()) && UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE))) {
 			Button deleteButton = ButtonHelper.createButton(
 				Captions.actionDelete,
 				I18nProperties.getCaption(Captions.actionDelete),
@@ -382,6 +459,28 @@ public class ExternalMessageController {
 		return buttonsPanel;
 	}
 
+	/**
+	 * Downloads the attachment of an external message as byte array.
+	 * 
+	 * @param externalMessageUuid
+	 *            the UUID of the external message
+	 * @return the attachment as byte array wrapped in an Optional
+	 */
+	public Optional<byte[]> downloadExternalMessageAttachment(String externalMessageUuid) {
+
+		if (StringUtils.isBlank(externalMessageUuid)) {
+			return Optional.empty();
+		}
+
+		ExternalMessageDto externalMessageDto = FacadeProvider.getExternalMessageFacade().getByUuid(externalMessageUuid);
+
+		return Optional.ofNullable(externalMessageDto.getExternalMessageDetails()).map(details -> details.getBytes(StandardCharsets.UTF_8));
+	}
+
+	/**
+	 * Converts the external message to PDF format.
+	 * Keeping this method for future use cases.
+	 */
 	public Optional<byte[]> convertToPDF(String externalMessageUuid) {
 
 		ExternalMessageDto externalMessageDto = FacadeProvider.getExternalMessageFacade().getByUuid(externalMessageUuid);
@@ -427,6 +526,8 @@ public class ExternalMessageController {
 		// get fresh data
 		ExternalMessageDto externalMessageDto = FacadeProvider.getExternalMessageFacade().getByUuid(labMessageUuid);
 
+		components.syncUsersForMessageType(Set.of(externalMessageDto.getType()));
+
 		if (externalMessageDto.getAssignee() != null) {
 			components.getAssigneeComboBox().setValue(externalMessageDto.getAssignee());
 		}
@@ -442,6 +543,18 @@ public class ExternalMessageController {
 	private void bulkEditAssignee(Collection<ExternalMessageIndexDto> selectedRows, Runnable callback) {
 
 		EditAssigneeComponentContainer components = new EditAssigneeComponentContainer();
+
+		final HashSet<ExternalMessageType> types = new HashSet<>();
+		if (UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_LABORATORY_PROCESS)) {
+			types.add(ExternalMessageType.LAB_MESSAGE);
+		}
+		if (UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS)) {
+			types.add(ExternalMessageType.PHYSICIANS_REPORT);
+		}
+		if (UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_SURVEY_RESPONSE_PROCESS)) {
+			types.add(ExternalMessageType.SURVEY_RESPONSE);
+		}
+		components.syncUsersForMessageType(types);
 
 		components.getAssignMeButton().addClickListener(e -> {
 			FacadeProvider.getExternalMessageFacade()

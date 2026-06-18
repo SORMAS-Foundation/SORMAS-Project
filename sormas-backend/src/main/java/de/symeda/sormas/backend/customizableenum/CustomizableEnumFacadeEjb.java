@@ -26,6 +26,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -134,7 +135,11 @@ public class CustomizableEnumFacadeEjb
 		target.setValue(source.getValue());
 		target.setCaption(source.getCaption());
 		target.setTranslations(source.getTranslations());
-		target.setDiseases(source.getDiseases());
+		if (!source.getDiseases().isEmpty()) {
+			target.setDiseases(source.getDiseases());
+		} else {
+			target.setDiseases(null);
+		}
 		target.setDescription(source.getDescription());
 		target.setDescriptionTranslations(source.getDescriptionTranslations());
 		target.setProperties(source.getProperties());
@@ -164,6 +169,25 @@ public class CustomizableEnumFacadeEjb
 		validate(dto);
 
 		CustomizableEnumValue existingEntity = service.getByUuid(dto.getUuid());
+		// if existingEntity disease removed and it is mapped to the cases, shouldn't allow to save the entity
+		
+		if (existingEntity != null && CollectionUtils.isNotEmpty(existingEntity.getDiseases())) {
+			Set<Disease> incomingDiseases = dto.getDiseases() != null ? dto.getDiseases() : Collections.emptySet();
+			for (Disease removedDisease : existingEntity.getDiseases()) {
+				if (!incomingDiseases.contains(removedDisease)) {
+					List<String> uuids = service.areCasesUsingCustomizableEnumValue(
+						removedDisease,
+						getEnumValue(dto.getDataType(), removedDisease, existingEntity.getValue()));
+					if (!uuids.isEmpty()) {
+						throw new ValidationRuntimeException(
+							I18nProperties.getValidationError(
+								Validations.customizableEnumValueAlreadyInUse,
+								removedDisease.getName(),
+								uuids.stream().filter(Objects::nonNull).collect(Collectors.joining(", "))));
+					}
+				}
+			}
+		}
 
 		for (Disease disease : dto.getDiseases()) {
 			List<String> dataTypeValues = enumValues.get(dto.getDataType()).getOrDefault(disease, Collections.emptyList());
@@ -273,7 +297,8 @@ public class CustomizableEnumFacadeEjb
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T extends CustomizableEnum> T getEnumValue(CustomizableEnumType type, Disease disease, String value) {
-		if (!enumValues.get(type).getOrDefault(disease, Collections.emptyList()).contains(value)) {
+		//As of today diseases are not applicable for environment.
+		if (disease != null && !enumValues.get(type).getOrDefault(disease, Collections.emptyList()).contains(value)) {
 			throw new IllegalArgumentException(String.format("Invalid enum value %s for customizable enum type %s", value, type.toString()));
 		}
 
@@ -326,10 +351,12 @@ public class CustomizableEnumFacadeEjb
 
 		Stream<String> diseaseValuesStream;
 		if (innerDisease.isPresent()) {
-			// combine specific and unspecific values
-			diseaseValuesStream = Stream.concat(
-				enumValuesByDisease.get(enumClass).get(innerDisease).stream(),
-				enumValuesByDisease.get(enumClass).get(Optional.empty()).stream());
+			// combine specific and unspecific values, removing duplicates that appear in both sets
+			diseaseValuesStream = Stream
+				.concat(
+					enumValuesByDisease.get(enumClass).get(innerDisease).stream(),
+					enumValuesByDisease.get(enumClass).get(Optional.empty()).stream())
+				.distinct();
 		} else {
 			diseaseValuesStream = enumValuesByDisease.get(enumClass).get(Optional.empty()).stream();
 		}
@@ -356,7 +383,8 @@ public class CustomizableEnumFacadeEjb
 			T enumValue = enumClass.getDeclaredConstructor().newInstance();
 			enumValue.setValue(value);
 			enumValue.setCaption(enumValuesByLanguage.get(enumClass).get(language).get(value));
-			enumValue.setProperties(getEnumInfo(type, disease, value).getProperties());
+			// set the properties if the disease is not null, this disease check is happening in the getEnumInfo method
+			enumValue.setProperties(getEnumInfo(type, disease, value) != null ? getEnumInfo(type, disease, value).getProperties() : null);
 			return enumValue;
 		} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
 			throw new RuntimeException(e);
@@ -378,7 +406,17 @@ public class CustomizableEnumFacadeEjb
 			String caption;
 			if (customizableEnumValue.isDefaultValue()) {
 				// Default values use translations provided in the properties files
-				caption = I18nProperties.getEnumCaption(language, customizableEnumValue.getDataType().toString(), customizableEnumValue.getValue());
+
+				// get the translated enum value
+				final String dataTypeValue =
+					I18nProperties.getEnumCaption(language, customizableEnumValue.getDataType().toString(), customizableEnumValue.getValue());
+
+				// try props with EnumClassName.value
+				final String enumClassValue = I18nProperties
+					.getEnumCaption(language, customizableEnumValue.getDataType().getEnumClass().getSimpleName(), customizableEnumValue.getValue());
+
+				// if the EnumClassName.value translation is not available, use the value translation
+				caption = enumClassValue.equals(customizableEnumValue.getValue()) ? dataTypeValue : enumClassValue;
 
 				if (StringUtils.isBlank(caption)) {
 					caption = customizableEnumValue.getCaption();
@@ -496,7 +534,9 @@ public class CustomizableEnumFacadeEjb
 		target.setValue(source.getValue());
 		target.setCaption(source.getCaption());
 		target.setTranslations(source.getTranslations());
-		target.setDiseases(source.getDiseases());
+		if (source.getDiseases() != null) {
+			target.setDiseases(source.getDiseases());
+		}
 		target.setDescription(source.getDescription());
 		target.setDescriptionTranslations(source.getDescriptionTranslations());
 		target.setProperties(source.getProperties());

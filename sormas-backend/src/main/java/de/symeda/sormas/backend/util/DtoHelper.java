@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.util;
 
 import java.sql.Timestamp;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import de.symeda.sormas.api.EntityDto;
@@ -50,6 +51,39 @@ public final class DtoHelper {
 		dto.setCreationDate(entity.getCreationDate());
 		dto.setChangeDate(entity.getChangeDate());
 		dto.setUuid(entity.getUuid());
+	}
+
+	/**
+	 * Creates a new DTO using the provided supplier and fills it with data from the given entity.
+	 *
+	 * @param dtoSupplier A supplier to create a new instance of the DTO.
+	 * @param entity The entity from which data will be copied to the DTO.
+	 * @param <T> The type of the DTO.
+	 * @return The newly created and filled DTO.
+	 */
+	public static <T extends EntityDto> T createAndFillDto(Supplier<T> dtoSupplier, AbstractDomainObject entity) {
+		T dto = dtoSupplier.get();
+		fillDto(dto, entity);
+		return dto;
+	}
+
+	/**
+	 * Creates a new DTO using the provided supplier, fills it with data from the given entity, 
+	 * and applies additional custom logic using the provided consumer.
+	 *
+	 * @param dtoSupplier A supplier to create a new instance of the DTO.
+	 * @param entity The entity from which data will be copied to the DTO.
+	 * @param additionalFiller A consumer to apply additional custom logic to the DTO.
+	 * @param <T> The type of the DTO.
+	 * @return The newly created and filled DTO with additional custom logic applied.
+	 */
+	public static <T extends EntityDto> T createAndFillDto(Supplier<T> dtoSupplier, AbstractDomainObject entity, Consumer<T> additionalFiller) {
+		T dto = dtoSupplier.get();
+		fillDto(dto, entity);
+		if (additionalFiller != null) {
+			additionalFiller.accept(dto);
+		}
+		return dto;
 	}
 
 	public static <T extends AbstractDomainObject> T fillOrBuildEntity(EntityDto source, T target, Supplier<T> newEntity, boolean checkChangeDate) {

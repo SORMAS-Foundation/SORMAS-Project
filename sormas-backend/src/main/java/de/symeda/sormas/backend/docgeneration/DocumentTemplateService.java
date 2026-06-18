@@ -40,6 +40,8 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.survey.Survey;
+import de.symeda.sormas.backend.survey.SurveyService;
 
 @Stateless
 @LocalBean
@@ -47,15 +49,34 @@ public class DocumentTemplateService extends BaseAdoService<DocumentTemplate> {
 
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
+	@EJB
+	private SurveyService surveyService;
 
 	public DocumentTemplateService() {
 		super(DocumentTemplate.class);
 	}
 
-	@Override
 	public boolean deletePermanent(DocumentTemplate documentTemplate) {
 		boolean fileDeleted = deleteTemplateFile(documentTemplate);
 		if (fileDeleted) {
+			DocumentWorkflow documentTemplateWorkflow = documentTemplate.getWorkflow();
+			if (documentTemplateWorkflow != null) {
+				Survey survey;
+				if (documentTemplateWorkflow.equals(DocumentWorkflow.SURVEY_DOCUMENT)) {
+					survey = documentTemplate.getSurveyDocTemplate();
+					if (survey != null) {
+						survey.setDocumentTemplate(null);
+						surveyService.ensurePersisted(survey);
+					}
+				}
+				if (documentTemplateWorkflow.equals(DocumentWorkflow.SURVEY_EMAIL)) {
+					survey = documentTemplate.getSurveyEmailTemplate();
+					if (survey != null) {
+						survey.setEmailTemplate(null);
+						surveyService.ensurePersisted(survey);
+					}
+				}
+			}
 			super.deletePermanent(documentTemplate);
 		}
 

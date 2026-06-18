@@ -41,6 +41,9 @@ import de.symeda.sormas.ui.utils.CssStyles;
 
 public class AefiDashboardMapComponent extends BaseDashboardMapComponent<AefiDashboardCriteria, AefiDashboardDataProvider> {
 
+	private CheckBox showSeriousAefiCheckBox;
+	private CheckBox showNonSeriousAefiCheckBox;
+
 	public AefiDashboardMapComponent(AefiDashboardDataProvider dashboardDataProvider) {
 		super(Strings.headingAefiDashboardMap, dashboardDataProvider, Strings.infoHeadingAefiDashboardMap);
 	}
@@ -61,7 +64,22 @@ public class AefiDashboardMapComponent extends BaseDashboardMapComponent<AefiDas
 		map.removeGroup(markerGroup);
 
 		AefiDashboardCriteria criteria = dashboardDataProvider.buildDashboardCriteriaWithDates();
-		List<MapAefiDto> aefiMapData = FacadeProvider.getAefiDashboardFacade().getAefiForMap(criteria);
+		List<MapAefiDto> seriousAefiMapData = new ArrayList<>();
+		List<MapAefiDto> nonSeriousAefiMapData = new ArrayList<>();
+
+		if (showSeriousAefiCheckBox.getValue()) {
+			criteria = criteria.aefiType(AefiType.SERIOUS);
+			seriousAefiMapData = FacadeProvider.getAefiDashboardFacade().getAefiForMap(criteria);
+		}
+
+		if (showNonSeriousAefiCheckBox.getValue()) {
+			criteria = criteria.aefiType(AefiType.NON_SERIOUS);
+			nonSeriousAefiMapData = FacadeProvider.getAefiDashboardFacade().getAefiForMap(criteria);
+		}
+
+		List<MapAefiDto> aefiMapData = new ArrayList<>();
+		aefiMapData.addAll(seriousAefiMapData);
+		aefiMapData.addAll(nonSeriousAefiMapData);
 
 		//temporary fix: remove data without coordinates
 		//ideally do this in the backend code
@@ -78,13 +96,14 @@ public class AefiDashboardMapComponent extends BaseDashboardMapComponent<AefiDas
 			LeafletMarker marker = new LeafletMarker();
 			switch (mapAefiDto.getAefiType()) {
 			case SERIOUS:
-				marker.setIcon(MarkerIcon.SAMPLE_CASE);
+				marker.setIcon(MarkerIcon.AEFI_SERIOUS);
 				break;
 			case NON_SERIOUS:
-				marker.setIcon(MarkerIcon.SAMPLE_CONTACT);
+				marker.setIcon(MarkerIcon.AEFI_NON_SERIOUS);
 				break;
 			default:
-				marker.setIcon(MarkerIcon.SAMPLE_EVENT_PARTICIPANT);
+				marker.setIcon(MarkerIcon.AEFI_UNCLASSIFIED);
+				break;
 			}
 			marker.setLatLon(mapAefiDto.getLatitude(), mapAefiDto.getLongitude());
 
@@ -97,25 +116,21 @@ public class AefiDashboardMapComponent extends BaseDashboardMapComponent<AefiDas
 	@Override
 	protected void addLayerOptions(VerticalLayout layersLayout) {
 
-		CheckBox showSeriousAefiCheckBox = new CheckBox();
+		showSeriousAefiCheckBox = new CheckBox();
 		showSeriousAefiCheckBox.setId(Captions.aefiDashboardShowSeriousAefi);
 		showSeriousAefiCheckBox.setCaption(I18nProperties.getCaption(Captions.aefiDashboardShowSeriousAefi));
-		showSeriousAefiCheckBox.setValue(shouldShowSeriousAefi());
+		showSeriousAefiCheckBox.setValue(true);
 		showSeriousAefiCheckBox.addValueChangeListener(e -> {
-			dashboardDataProvider.buildDashboardCriteriaWithDates().aefiType(AefiType.SERIOUS);
-
 			refreshMap(true);
 		});
 
 		layersLayout.addComponent(showSeriousAefiCheckBox);
 
-		CheckBox showNonSeriousAefiCheckBox = new CheckBox();
+		showNonSeriousAefiCheckBox = new CheckBox();
 		showNonSeriousAefiCheckBox.setId(Captions.aefiDashboardShowNonSeriousAefi);
 		showNonSeriousAefiCheckBox.setCaption(I18nProperties.getCaption(Captions.aefiDashboardShowNonSeriousAefi));
-		showNonSeriousAefiCheckBox.setValue(shouldShowNonSeriousAefi());
+		showNonSeriousAefiCheckBox.setValue(true);
 		showNonSeriousAefiCheckBox.addValueChangeListener(e -> {
-			dashboardDataProvider.buildDashboardCriteriaWithDates().aefiType(AefiType.NON_SERIOUS);
-
 			refreshMap(true);
 		});
 
@@ -129,29 +144,17 @@ public class AefiDashboardMapComponent extends BaseDashboardMapComponent<AefiDas
 		samplesLegendLayout.setSpacing(false);
 		samplesLegendLayout.setMargin(false);
 
-		//if (shouldShowSeriousAefi()) {
 		HorizontalLayout seriousLegendEntry =
-			buildMarkerLegendEntry(MarkerIcon.SAMPLE_CASE, I18nProperties.getCaption(Captions.aefiDashboardSeriousAefi));
+			buildMarkerLegendEntry(MarkerIcon.AEFI_SERIOUS, I18nProperties.getCaption(Captions.aefiDashboardSeriousAefi));
 		CssStyles.style(seriousLegendEntry, CssStyles.HSPACE_RIGHT_3);
 		samplesLegendLayout.addComponent(seriousLegendEntry);
-		//}
 
-		//if (shouldShowNonSeriousAefi()) {
 		HorizontalLayout nonSeriousLegendEntry =
-			buildMarkerLegendEntry(MarkerIcon.SAMPLE_CONTACT, I18nProperties.getCaption(Captions.aefiDashboardNonSeriousAefi));
+			buildMarkerLegendEntry(MarkerIcon.AEFI_NON_SERIOUS, I18nProperties.getCaption(Captions.aefiDashboardNonSeriousAefi));
 		CssStyles.style(nonSeriousLegendEntry, CssStyles.HSPACE_RIGHT_3);
 		samplesLegendLayout.addComponent(nonSeriousLegendEntry);
-		//}
 
 		return Collections.singletonList(samplesLegendLayout);
-	}
-
-	private boolean shouldShowSeriousAefi() {
-		return dashboardDataProvider.buildDashboardCriteriaWithDates().getAefiType() == AefiType.SERIOUS;
-	}
-
-	private boolean shouldShowNonSeriousAefi() {
-		return dashboardDataProvider.buildDashboardCriteriaWithDates().getAefiType() == AefiType.NON_SERIOUS;
 	}
 
 	@Override

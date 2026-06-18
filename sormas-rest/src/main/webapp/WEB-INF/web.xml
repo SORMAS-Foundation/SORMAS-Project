@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app id="sormas-ui-app"
- 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- 	xmlns="http://xmlns.jcp.org/xml/ns/javaee"
- 	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
- 	version="3.1">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+	version="3.1">
 
 	<display-name>SORMAS Web Interface</display-name>
 	<context-param>
@@ -20,9 +20,9 @@
 		<role-name>CASE_VIEW</role-name>
 	</security-role>
 
-    <security-role>
-        <role-name>CASE_VIEW_ARCHIVED</role-name>
-    </security-role>
+	<security-role>
+		<role-name>CASE_VIEW_ARCHIVED</role-name>
+	</security-role>
 
 	<security-role>
 		<role-name>CASE_EDIT</role-name>
@@ -46,6 +46,10 @@
 
 	<security-role>
 		<role-name>CASE_CHANGE_DISEASE</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>DISEASE_MANAGEMENT</role-name>
 	</security-role>
 
 	<security-role>
@@ -80,9 +84,9 @@
 		<role-name>IMMUNIZATION_VIEW</role-name>
 	</security-role>
 
-    <security-role>
-        <role-name>IMMUNIZATION_VIEW_ARCHIVED</role-name>
-    </security-role>
+	<security-role>
+		<role-name>IMMUNIZATION_VIEW_ARCHIVED</role-name>
+	</security-role>
 
 	<security-role>
 		<role-name>IMMUNIZATION_CREATE</role-name>
@@ -216,11 +220,11 @@
 		<role-name>CONTACT_VIEW</role-name>
 	</security-role>
 
-    <security-role>
-        <role-name>CONTACT_VIEW_ARCHIVED</role-name>
-    </security-role>
+	<security-role>
+		<role-name>CONTACT_VIEW_ARCHIVED</role-name>
+	</security-role>
 
-    <security-role>
+	<security-role>
 		<role-name>CONTACT_ARCHIVE</role-name>
 	</security-role>
 
@@ -296,9 +300,9 @@
 		<role-name>TASK_ARCHIVE</role-name>
 	</security-role>
 
-    <security-role>
-        <role-name>TASK_VIEW_ARCHIVED</role-name>
-    </security-role>
+	<security-role>
+		<role-name>TASK_VIEW_ARCHIVED</role-name>
+	</security-role>
 
 	<security-role>
 		<role-name>ACTION_CREATE</role-name>
@@ -320,11 +324,11 @@
 		<role-name>EVENT_VIEW</role-name>
 	</security-role>
 
-    <security-role>
-        <role-name>EVENT_VIEW_ARCHIVED</role-name>
-    </security-role>
+	<security-role>
+		<role-name>EVENT_VIEW_ARCHIVED</role-name>
+	</security-role>
 
-    <security-role>
+	<security-role>
 		<role-name>EVENT_EDIT</role-name>
 	</security-role>
 
@@ -368,9 +372,9 @@
 		<role-name>EVENTPARTICIPANT_VIEW</role-name>
 	</security-role>
 
-    <security-role>
-        <role-name>EVENTPARTICIPANT_VIEW_ARCHIVED</role-name>
-    </security-role>
+	<security-role>
+		<role-name>EVENTPARTICIPANT_VIEW_ARCHIVED</role-name>
+	</security-role>
 
 	<security-role>
 		<role-name>EVENTGROUP_CREATE</role-name>
@@ -392,9 +396,9 @@
 		<role-name>EVENTGROUP_DELETE</role-name>
 	</security-role>
 
-    <security-role>
-        <role-name>EVENTGROUP_VIEW_ARCHIVED</role-name>
-    </security-role>
+	<security-role>
+		<role-name>EVENTGROUP_VIEW_ARCHIVED</role-name>
+	</security-role>
 
 	<security-role>
 		<role-name>WEEKLYREPORT_CREATE</role-name>
@@ -424,11 +428,11 @@
 		<role-name>USER_ROLE_DELETE</role-name>
 	</security-role>
 
-    <security-role>
-        <role-name>USER_ROLE_VIEW</role-name>
-    </security-role>
+	<security-role>
+		<role-name>USER_ROLE_VIEW</role-name>
+	</security-role>
 
-    <security-role>
+	<security-role>
 		<role-name>SEND_MANUAL_EXTERNAL_MESSAGES</role-name>
 	</security-role>
 
@@ -468,9 +472,9 @@
 		<role-name>INFRASTRUCTURE_VIEW</role-name>
 	</security-role>
 
-    <security-role>
-        <role-name>INFRASTRUCTURE_VIEW_ARCHIVED</role-name>
-    </security-role>
+	<security-role>
+		<role-name>INFRASTRUCTURE_VIEW_ARCHIVED</role-name>
+	</security-role>
 
 	<security-role>
 		<role-name>INFRASTRUCTURE_EXPORT</role-name>
@@ -616,11 +620,11 @@
 		<role-name>CAMPAIGN_VIEW</role-name>
 	</security-role>
 
-    <security-role>
-        <role-name>CAMPAIGN_VIEW_ARCHIVED</role-name>
-    </security-role>
+	<security-role>
+		<role-name>CAMPAIGN_VIEW_ARCHIVED</role-name>
+	</security-role>
 
-    <security-role>
+	<security-role>
 		<role-name>CAMPAIGN_EDIT</role-name>
 	</security-role>
 
@@ -636,9 +640,9 @@
 		<role-name>CAMPAIGN_FORM_DATA_VIEW</role-name>
 	</security-role>
 
-    <security-role>
-        <role-name>CAMPAIGN_FORM_DATA_VIEW_ARCHIVED</role-name>
-    </security-role>
+	<security-role>
+		<role-name>CAMPAIGN_FORM_DATA_VIEW_ARCHIVED</role-name>
+	</security-role>
 
 	<security-role>
 		<role-name>CAMPAIGN_FORM_DATA_EDIT</role-name>
@@ -677,19 +681,47 @@
 	</security-role>
 
 	<security-role>
-		<role-name>EXTERNAL_MESSAGE_VIEW</role-name>
-	</security-role>
-
-	<security-role>
-		<role-name>EXTERNAL_MESSAGE_PROCESS</role-name>
-	</security-role>
-
-	<security-role>
 		<role-name>EXTERNAL_MESSAGE_PUSH</role-name>
 	</security-role>
 
 	<security-role>
-		<role-name>EXTERNAL_MESSAGE_DELETE</role-name>
+		<role-name>EXTERNAL_MESSAGE_ACCESS</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EXTERNAL_MESSAGE_LABORATORY_VIEW</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EXTERNAL_MESSAGE_DOCTOR_DECLARATION_VIEW</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EXTERNAL_MESSAGE_SURVEY_RESPONSE_VIEW</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EXTERNAL_MESSAGE_LABORATORY_PROCESS</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EXTERNAL_MESSAGE_SURVEY_RESPONSE_PROCESS</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EXTERNAL_MESSAGE_LABORATORY_DELETE</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EXTERNAL_MESSAGE_SURVEY_RESPONSE_DELETE</role-name>
 	</security-role>
 
 	<security-role>
@@ -700,11 +732,11 @@
 		<role-name>TRAVEL_ENTRY_VIEW</role-name>
 	</security-role>
 
-    <security-role>
-        <role-name>TRAVEL_ENTRY_VIEW_ARCHIVED</role-name>
-    </security-role>
+	<security-role>
+		<role-name>TRAVEL_ENTRY_VIEW_ARCHIVED</role-name>
+	</security-role>
 
-    <security-role>
+	<security-role>
 		<role-name>TRAVEL_ENTRY_CREATE</role-name>
 	</security-role>
 
@@ -732,9 +764,9 @@
 		<role-name>ENVIRONMENT_ARCHIVE</role-name>
 	</security-role>
 
-    <security-role>
-        <role-name>ENVIRONMENT_VIEW_ARCHIVED</role-name>
-    </security-role>
+	<security-role>
+		<role-name>ENVIRONMENT_VIEW_ARCHIVED</role-name>
+	</security-role>
 
 	<security-role>
 		<role-name>ENVIRONMENT_DELETE</role-name>
@@ -746,6 +778,10 @@
 
 	<security-role>
 		<role-name>ENVIRONMENT_EXPORT</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>ENVIRONMENT_LINK</role-name>
 	</security-role>
 
 	<security-role>
@@ -808,13 +844,13 @@
 		<role-name>SELF_REPORT_DELETE</role-name>
 	</security-role>
 
-    <security-role>
-        <role-name>SELF_REPORT_EXPORT</role-name>
-    </security-role>
+	<security-role>
+		<role-name>SELF_REPORT_EXPORT</role-name>
+	</security-role>
 
-    <security-role>
-        <role-name>SELF_REPORT_IMPORT</role-name>
-    </security-role>
+	<security-role>
+		<role-name>SELF_REPORT_IMPORT</role-name>
+	</security-role>
 
 	<security-role>
 		<role-name>SELF_REPORT_ARCHIVE</role-name>
@@ -834,6 +870,42 @@
 
 	<security-role>
 		<role-name>DOCUMENT_DELETE</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>SURVEY_VIEW</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>SURVEY_CREATE</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>SURVEY_EDIT</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>SURVEY_DELETE</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>SURVEY_TOKEN_VIEW</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>SURVEY_TOKEN_CREATE</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>SURVEY_TOKEN_EDIT</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>SURVEY_TOKEN_DELETE</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>SURVEY_TOKEN_IMPORT</role-name>
 	</security-role>
 
 	<security-role>
@@ -902,6 +974,30 @@
 
 	<security-role>
 		<role-name>CUSTOMIZABLE_ENUM_MANAGEMENT</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>SYSTEM_CONFIGURATION</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EPIPULSE_EXPORT_VIEW</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EPIPULSE_EXPORT_CREATE</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EPIPULSE_EXPORT_DOWNLOAD</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EPIPULSE_EXPORT_DELETE</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>CUSTOMIZABLE_FIELD_MANAGEMENT</role-name>
 	</security-role>
 
 </web-app>

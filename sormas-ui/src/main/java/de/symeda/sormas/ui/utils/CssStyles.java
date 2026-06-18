@@ -116,6 +116,7 @@ public final class CssStyles {
 	public static final String LABEL_BOLD = "bold";
 	public static final String LABEL_UPPERCASE = "uppercase";
 	public static final String LABEL_ITALIC = "italic";
+	public static final String LABEL_UNDERLINE = "underline";
 
 	// Label styles
 	public static final String LABEL_BOTTOM_LINE = "bottom-line";
@@ -168,6 +169,9 @@ public final class CssStyles {
 	public static final String BUTTON_CAPTION_OVERFLOW = "caption-overflow-label";
 	public static final String GEOCODE_BUTTON_HIGHLIGHT = "geocode-button-highlight";
 
+	public static final String YES_NO_UNKNOWN_GROUP = "yes-no-unknown-group";
+	public static final String YES_NO_UNKNOWN_OPTION_SELECTED = "yes-no-unknown-selected";
+
 	// Link styles
 	public static final String LINK_BUTTON = "button";
 	public static final String LINK_BUTTON_PRIMARY = "button-primary";
@@ -198,8 +202,8 @@ public final class CssStyles {
 	public static final String CAPTION_HIDDEN = "caption-hidden";
 	public static final String CAPTION_OVERFLOW = "caption-overflow";
 	public static final String CAPTION_FIXED_WIDTH_100 = "caption-fixed-width-100";
+	public static final String CAPTION_NO_UPPERCASE = "no-uppercase";
 
-	public static final String SOFT_REQUIRED = "soft-required";
 	public static final String ERROR_COLOR_PRIMARY = "error-color-primary";
 
 	public static final String ALIGN_CENTER = "align-center";
@@ -327,6 +331,17 @@ public final class CssStyles {
 	public static final String OPTIONGROUP_CAPTION_FLEX = "optiongroup-caption-flex";
 	public static final String VIEW_SECTION_MARGIN_X_4 = VIEW_SECTION + " " + MARGIN_X_4;
 	public static final String VIEW_SECTION_MARGIN_TOP_4_MARGIN_X_4 = VIEW_SECTION + " " + MARGIN_X_4 + " " + MARGIN_TOP_4;
+	public static final String GRID_ROW_GAP_1 = "grid-row-gap-1";
+	public static final String GIS_DASHBOARD_MAP_HEADER = "gis-dashboard-map-header";
+	public static final String GIS_DASHBOARD_MAP_FOOTER = "gis-dashboard-map-footer";
+	public static final String VIEW_SECTION_WIDTH_AUTO = "view-section-width-auto";
+
+	public static final String GRID_CELL_STATUS_PENDING = "status-pending";
+	public static final String GRID_CELL_STATUS_IN_PROGRESS = "status-in-progress";
+	public static final String GRID_CELL_STATUS_COMPLETED = "status-completed";
+	public static final String GRID_CELL_STATUS_FAILED = "status-failed";
+	public static final String GRID_CELL_STATUS_CANCELLED = "status-cancelled";
+	public static final String GRID_CELL_LINK_DISABLED = "link-disabled";
 
 	public static String buildVaadinStyle(String primaryStyle, String... styles) {
 		StringBuilder styleBuilder = new StringBuilder();
@@ -437,6 +452,100 @@ public final class CssStyles {
 			return "background-disease-rabies";
 		case CORONAVIRUS:
 			return "background-disease-coronavirus";
+		case PNEUMONIA:
+			return "background-disease-pneumonia";
+		case MALARIA:
+			return "background-disease-malaria";
+		case TYPHOID_FEVER:
+			return "background-disease-typhoid-fever";
+		case ACUTE_VIRAL_HEPATITIS:
+			return "background-disease-acute-viral-hepatitis";
+		case NON_NEONATAL_TETANUS:
+			return "background-disease-non-neonatal-tetanus";
+		case HIV:
+			return "background-disease-hiv";
+		case SCHISTOSOMIASIS:
+			return "background-disease-schistosomiasis";
+		case SOIL_TRANSMITTED_HELMINTHS:
+			return "background-disease-soil-transmitted-helminths";
+		case TRYPANOSOMIASIS:
+			return "background-disease-trypanosomiasis";
+		case DIARRHEA_DEHYDRATION:
+			return "background-disease-diarrhea-dehydration";
+		case DIARRHEA_BLOOD:
+			return "background-disease-diarrhea-blood";
+		case SNAKE_BITE:
+			return "background-disease-snake-bite";
+		case RUBELLA:
+			return "background-disease-rubella";
+		case TUBERCULOSIS:
+			return "background-disease-tuberculosis";
+		case LEPROSY:
+			return "background-disease-leprosy";
+		case LYMPHATIC_FILARIASIS:
+			return "background-disease-lymphatic-filariasis";
+		case BURULI_ULCER:
+			return "background-disease-buruli-ulcer";
+		case PERTUSSIS:
+			return "background-disease-pertussis";
+		case NEONATAL_TETANUS:
+			return "background-disease-neonatal-tetanus";
+		case ONCHOCERCIASIS:
+			return "background-disease-onchocerciasis";
+		case DIPHTERIA:
+			return "background-disease-diphteria";
+		case TRACHOMA:
+			return "background-disease-trachoma";
+		case YAWS_ENDEMIC_SYPHILIS:
+			return "background-disease-yaws-endemic-syphilis";
+		case MATERNAL_DEATHS:
+			return "background-disease-maternal-deaths";
+		case PERINATAL_DEATHS:
+			return "background-disease-perinatal-deaths";
+		case INFLUENZA:
+			return "background-disease-influenza";
+		case INFLUENZA_A:
+			return "background-disease-influenza-a";
+		case INFLUENZA_B:
+			return "background-disease-influenza-b";
+		case H_METAPNEUMOVIRUS:
+			return "background-disease-h-metapneumovirus";
+		case RESPIRATORY_SYNCYTIAL_VIRUS:
+			return "background-disease-respiratory-syncytial-virus";
+		case PARAINFLUENZA_1_4:
+			return "background-disease-parainfluenza-1-4";
+		case ADENOVIRUS:
+			return "background-disease-adenovirus";
+		case RHINOVIRUS:
+			return "background-disease-rhinovirus";
+		case ENTEROVIRUS:
+			return "background-disease-enterovirus";
+		case M_PNEUMONIAE:
+			return "background-disease-m-pneumoniae";
+		case C_PNEUMONIAE:
+			return "background-disease-c-pneumoniae";
+		case ARI:
+			return "background-disease-ari";
+		case CHIKUNGUNYA:
+			return "background-disease-chikungunya";
+		case POST_IMMUNIZATION_ADVERSE_EVENTS_MILD:
+			return "background-disease-post-immunization-adverse-events-mild";
+		case POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE:
+			return "background-disease-post-immunization-adverse-events-severe";
+		case FHA:
+			return "background-disease-fha";
+		case INVASIVE_MENINGOCOCCAL_INFECTION:
+			return "background-disease-invasive-meningococcal-infection";
+		case INVASIVE_PNEUMOCOCCAL_INFECTION:
+			return "background-disease-invasive-pneumococcal-infection";
+		case GIARDIASIS:
+			return "background-disease-giardiasis";
+		case CRYPTOSPORIDIOSIS:
+			return "background-disease-cryptosporidiosis";
+		case SALMONELLOSIS:
+			return "background-disease-salmonellosis";
+		case SHIGELLOSIS:
+			return "background-disease-shigellosis";
 		case UNDEFINED:
 		default:
 			return "background-disease-undefined";

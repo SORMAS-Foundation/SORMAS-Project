@@ -156,7 +156,7 @@ public class PathogenTestNewActivity extends BaseEditActivity<PathogenTest> {
 				DiseaseVariant caseDiseaseVariant = associatedCase.getDiseaseVariant();
 				DiseaseVariant newDiseaseVariant = pathogenTestToSave.getTestedDiseaseVariant();
 				if (pathogenTestToSave.getTestResult() == PathogenTestResultType.POSITIVE
-					&& pathogenTestToSave.getTestResultVerified()
+					&& Boolean.TRUE.equals(pathogenTestToSave.getTestResultVerified())
 					&& !DataHelper.equal(newDiseaseVariant, caseDiseaseVariant)) {
 
 					String heading = I18nProperties.getString(Strings.headingUpdateCaseWithNewDiseaseVariant);

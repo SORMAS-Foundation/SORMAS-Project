@@ -71,6 +71,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.DashboardType;
+import de.symeda.sormas.ui.dashboard.HasDashboardCasePopupGrid;
 import de.symeda.sormas.ui.map.LeafletMapUtil;
 import de.symeda.sormas.ui.map.LeafletMarker;
 import de.symeda.sormas.ui.map.LeafletPolygon;
@@ -79,7 +80,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
-public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCriteria, DashboardDataProvider> {
+public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCriteria, DashboardDataProvider> implements HasDashboardCasePopupGrid {
 
 	private static final String CASES_GROUP_ID = "cases";
 	private static final String CONTACTS_GROUP_ID = "contacts";
@@ -188,7 +189,8 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 					disease,
 					fromDate,
 					toDate,
-					showCurrentEpiSituation ? null : dashboardDataProvider.getNewCaseDateType());
+					showCurrentEpiSituation ? null : dashboardDataProvider.getNewCaseDateType(),
+					null);
 		}
 
 		if (count < maxCount && showContacts) {
@@ -217,7 +219,8 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 						disease,
 						fromDate,
 						toDate,
-						showCurrentEpiSituation ? null : dashboardDataProvider.getNewCaseDateType()));
+						showCurrentEpiSituation ? null : dashboardDataProvider.getNewCaseDateType(),
+						null));
 		}
 		if (showContacts) {
 			showContactMarkers(FacadeProvider.getContactFacade().getContactsForMap(region, district, disease, fromDate, toDate));

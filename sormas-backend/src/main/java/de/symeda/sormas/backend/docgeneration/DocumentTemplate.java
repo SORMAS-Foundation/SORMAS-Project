@@ -19,11 +19,13 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.OneToOne;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.survey.Survey;
 
 @Entity(name = "documenttemplates")
 public class DocumentTemplate extends AbstractDomainObject {
@@ -33,10 +35,14 @@ public class DocumentTemplate extends AbstractDomainObject {
 	public static final String WORKFLOW = "workflow";
 	public static final String DISEASE = "disease";
 	public static final String DOCUMENT_PATH = "documentPath";
+	public static final String SURVEY_DOC_TEMPLATE = "surveyDocTemplate";
+	public static final String SURVEY_EMAIL_TEMPLATE = "surveyEmailTemplate";
 
 	private DocumentWorkflow workflow;
 	private Disease disease;
 	private String fileName;
+	private Survey surveyDocTemplate;
+	private Survey surveyEmailTemplate;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
@@ -64,5 +70,23 @@ public class DocumentTemplate extends AbstractDomainObject {
 
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
+	}
+
+	@OneToOne(mappedBy = Survey.DOCUMENT_TEMPLATE)
+	public Survey getSurveyDocTemplate() {
+		return surveyDocTemplate;
+	}
+
+	public void setSurveyDocTemplate(Survey surveyDocTemplate) {
+		this.surveyDocTemplate = surveyDocTemplate;
+	}
+
+	@OneToOne(mappedBy = Survey.EMAIL_TEMPLATE)
+	public Survey getSurveyEmailTemplate() {
+		return surveyEmailTemplate;
+	}
+
+	public void setSurveyEmailTemplate(Survey surveyEmailTemplate) {
+		this.surveyEmailTemplate = surveyEmailTemplate;
 	}
 }

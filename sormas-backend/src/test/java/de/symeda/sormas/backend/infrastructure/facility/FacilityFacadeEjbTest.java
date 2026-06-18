@@ -228,29 +228,34 @@ class FacilityFacadeEjbTest extends AbstractBeanTest {
 		RDCF rdcf = creator.createRDCF();
 		FacilityDto fac1 = creator.createFacility("Fac1", rdcf.region, rdcf.district, facility -> {
 			facility.setStreet("Street1");
+			facility.setHouseNumber("1");
 			facility.setPostalCode("PostalCode1");
 			facility.setCity("City1");
 		});
-		FacilityDto fac2 = creator.createFacility("Fac2", rdcf.region, rdcf.district, facility -> {
+		creator.createFacility("Fac2", rdcf.region, rdcf.district, facility -> {
 			facility.setStreet("Street2");
+			facility.setHouseNumber("2");
 			facility.setPostalCode("PostalCode2");
 			facility.setCity("City2");
 		});
 		FacilityDto fac3 = creator.createFacility("Fac3", rdcf.region, rdcf.district, facility -> {
 			facility.setStreet("Street3");
+			facility.setHouseNumber("3");
 			facility.setPostalCode("PostalCode2");
 			facility.setCity("City2");
 		});
-		FacilityDto fac4 = creator.createFacility("Fac4", rdcf.region, rdcf.district, facility -> {
+		creator.createFacility("Fac4", rdcf.region, rdcf.district, facility -> {
 			facility.setStreet("Street2");
+			facility.setHouseNumber("4");
 			facility.setPostalCode("PostalCode2");
 			facility.setCity("City2");
 		});
 
 		FacilityFacade facade = getFacilityFacade();
-		assertEquals(fac1.getUuid(), facade.getByAddress("Street1", "PostalCode1", "City1").getUuid());
-		assertEquals(fac3.getUuid(), facade.getByAddress("Street3", "PostalCode2", "City2").getUuid());
-		assertNull(facade.getByAddress("Street5", "PostalCode5", "City5"));
-		assertNull(facade.getByAddress("Street2", "PostalCode2", "City2"));
+		assertEquals(fac1.getUuid(), facade.getByAddress("Street1", "1", "PostalCode1", "City1").getUuid());
+		assertEquals(fac3.getUuid(), facade.getByAddress("Street3", "3", "PostalCode2", "City2").getUuid());
+		assertNull(facade.getByAddress("Street5", "", "PostalCode5", "City5"));
+		assertNull(facade.getByAddress("Street2", null, "PostalCode2", "City2"));
+		assertNull(facade.getByAddress("Street2", "1", "PostalCode2", "City2"));
 	}
 }

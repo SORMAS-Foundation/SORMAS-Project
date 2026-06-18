@@ -24,6 +24,7 @@ import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
@@ -249,6 +250,7 @@ public abstract class AbstractSelfReportProcessingFlow {
 		CaseDataDto caze = CaseDataDto.build(previousResult.getPerson().getEntity().toReference(), selfReport.getDisease());
 		caze.setReportingUser(user.toReference());
 		caze.setReportDate(new Date());
+		caze.setCaseClassification(CaseClassification.CONFIRMED);
 		caze.setCaseReferenceNumber(selfReport.getCaseReference());
 		caze.setDiseaseDetails(selfReport.getDiseaseDetails());
 		caze.setDiseaseVariant(selfReport.getDiseaseVariant());

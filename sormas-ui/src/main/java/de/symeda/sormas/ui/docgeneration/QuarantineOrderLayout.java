@@ -264,7 +264,7 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 		if (pathogenTestSelector != null) {
 			options.setPathogenTest(new PathogenTestReferenceDto(pathogenTestSelector.getValue().getUuid()));
 		}
-		if (templateSelector != null) {
+		if (templateSelector != null && templateSelector.getValue() != null) {
 			options.setTemplate(templateSelector.getValue().toReference());
 		}
 		options.setShouldUploadGeneratedDoc(shouldUploadGeneratedDocument());

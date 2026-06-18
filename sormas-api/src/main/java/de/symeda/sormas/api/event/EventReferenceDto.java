@@ -17,17 +17,17 @@
  *******************************************************************************/
 package de.symeda.sormas.api.event;
 
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 
 @DependingOnFeatureType(featureType = FeatureType.EVENT_SURVEILLANCE)
 public class EventReferenceDto extends ReferenceDto {

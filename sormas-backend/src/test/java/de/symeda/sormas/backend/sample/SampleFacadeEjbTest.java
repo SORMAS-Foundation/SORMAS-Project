@@ -83,6 +83,7 @@ import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SampleExportDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
@@ -1221,5 +1222,30 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 			new HashSet<>(Arrays.asList(SampleAssociationType.CASE, SampleAssociationType.CONTACT, SampleAssociationType.EVENT_PARTICIPANT)));
 		assertEquals(6, count);
 		assertEquals(6, samples.size());
+	}
+
+	@Test
+	public void testReferenceLaboratoryAndRetestRoundTrip() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		CaseDataDto caze = creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
+
+		SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		// New samples default retestRequested to false and leave performedByReferenceLaboratory unset.
+		assertEquals(Boolean.FALSE, getSampleFacade().getSampleByUuid(sample.getUuid()).getRetestRequested());
+
+		sample.setPerformedByReferenceLaboratory(true);
+		sample.setRetestRequested(true);
+		getSampleFacade().saveSample(sample);
+
+		SampleDto reloaded = getSampleFacade().getSampleByUuid(sample.getUuid());
+		assertEquals(Boolean.TRUE, reloaded.getPerformedByReferenceLaboratory());
+		assertEquals(Boolean.TRUE, reloaded.getRetestRequested());
+
+		// Exercises the positional selection-to-constructor mapping in getExportList for the new fields.
+		List<SampleExportDto> exportList = getSampleFacade().getExportList(new SampleCriteria(), null, 0, 100);
+		assertEquals(1, exportList.size());
+		assertEquals(Boolean.TRUE, exportList.get(0).getPerformedByReferenceLaboratory());
+		assertEquals(Boolean.TRUE, exportList.get(0).getRetestRequested());
 	}
 }

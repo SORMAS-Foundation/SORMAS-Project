@@ -161,6 +161,10 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 		return moreFiltersLayout;
 	}
 
+	protected FormActionButtonsComponent getFormActionButtonsComponent() {
+		return formActionButtonsComponent;
+	}
+
 	@Override
 	@SuppressWarnings({
 		"rawtypes",

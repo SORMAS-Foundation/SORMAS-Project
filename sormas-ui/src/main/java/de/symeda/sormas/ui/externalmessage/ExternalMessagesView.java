@@ -1,10 +1,6 @@
 package de.symeda.sormas.ui.externalmessage;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
@@ -12,14 +8,7 @@ import javax.annotation.Nullable;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Page;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
+import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Validator;
 
@@ -40,17 +29,12 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.ViewModelProviders;
-import de.symeda.sormas.ui.utils.AbstractView;
-import de.symeda.sormas.ui.utils.ButtonHelper;
-import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.*;
 import de.symeda.sormas.ui.utils.DateTimeField;
-import de.symeda.sormas.ui.utils.FutureDateValidator;
-import de.symeda.sormas.ui.utils.LayoutUtil;
-import de.symeda.sormas.ui.utils.MenuBarHelper;
-import de.symeda.sormas.ui.utils.VaadinUiUtil;
-import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 public class ExternalMessagesView extends AbstractView {
+
+	private static final String SURVEY_FETCH_BUTTON_ENABLED = "SURVEY_FETCH_BUTTON_ENABLED";
 
 	public static final String VIEW_NAME = "messages";
 
@@ -82,8 +66,18 @@ public class ExternalMessagesView extends AbstractView {
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isPropertyValueTrue(FeatureType.EXTERNAL_MESSAGES, FeatureTypeProperty.FETCH_MODE)) {
 			addHeaderComponent(ButtonHelper.createIconButton(Captions.externalMessageFetch, VaadinIcons.REFRESH, e -> {
-				checkForConcurrentEventsAndFetch();
+				checkForConcurrentEventsAndFetch(false);
 			}, ValoTheme.BUTTON_PRIMARY));
+		}
+
+		if (FacadeProvider.getFeatureConfigurationFacade()
+			.isPropertyValueTrue(FeatureType.EXTERNAL_MESSAGES, FeatureTypeProperty.SURVEY_FETCH_ENABLED)) {
+			addHeaderComponent(
+				ButtonHelper.createIconButton(
+					Captions.surveyFetch,
+					VaadinIcons.REFRESH,
+					e -> checkForConcurrentEventsAndFetch(true),
+					ValoTheme.BUTTON_PRIMARY));
 		}
 
 		if (isBulkEditAllowed()) {
@@ -187,19 +181,24 @@ public class ExternalMessagesView extends AbstractView {
 	private MenuBar createBulkOperationsDropdown() {
 		final List<MenuBarHelper.MenuBarItem> menuBarItems = new ArrayList<>();
 
-		if (UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_DELETE)) {
+		if (UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_LABORATORY_DELETE)
+			|| UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE)) {
 			menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, mi -> {
 				ControllerProvider.getExternalMessageController()
 					.deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), grid, () -> navigateTo(criteria));
 			}, true));
 		}
-		menuBarItems.add(
-			new MenuBarHelper.MenuBarItem(
-				I18nProperties.getCaption(Captions.bulkEditAssignee),
-				VaadinIcons.ELLIPSIS_H,
-				mi -> ControllerProvider.getExternalMessageController()
-					.assignAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria)),
-				true));
+
+		if (UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_LABORATORY_PROCESS)
+			|| UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS)) {
+			menuBarItems.add(
+				new MenuBarHelper.MenuBarItem(
+					I18nProperties.getCaption(Captions.bulkEditAssignee),
+					VaadinIcons.ELLIPSIS_H,
+					mi -> ControllerProvider.getExternalMessageController()
+						.assignAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria)),
+					true));
+		}
 
 		MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, menuBarItems);
 		bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());
@@ -261,7 +260,7 @@ public class ExternalMessagesView extends AbstractView {
 		return button;
 	}
 
-	private void checkForConcurrentEventsAndFetch() {
+	private void checkForConcurrentEventsAndFetch(boolean surveyMode) {
 		boolean fetchAlreadyStarted = FacadeProvider.getSystemEventFacade().existsStartedEvent(SystemEventType.FETCH_EXTERNAL_MESSAGES);
 		if (fetchAlreadyStarted) {
 			VaadinUiUtil.showConfirmationPopup(
@@ -272,20 +271,30 @@ public class ExternalMessagesView extends AbstractView {
 				480,
 				confirmed -> {
 					if (confirmed) {
-						askForSinceDateAndFetch();
+						askForSinceDateAndFetch(surveyMode);
 					}
 				});
 		} else {
-			askForSinceDateAndFetch();
+			askForSinceDateAndFetch(surveyMode);
 		}
 	}
 
-	private void askForSinceDateAndFetch() {
+	private void askForSinceDateAndFetch(boolean surveyMode) {
 		boolean atLeastOneFetchExecuted = FacadeProvider.getSyncFacade().hasAtLeastOneSuccessfullSyncOf(SystemEventType.FETCH_EXTERNAL_MESSAGES);
 		if (atLeastOneFetchExecuted) {
-			fetchExternalMessages(null);
+			if (surveyMode) {
+				fetchSurveyMessages(null);
+			} else {
+				fetchExternalMessages(null);
+			}
 		} else {
-			showSinceDateSelectionWindow(this::fetchExternalMessages);
+			showSinceDateSelectionWindow(since -> {
+				if (surveyMode) {
+					fetchSurveyMessages(since);
+				} else {
+					fetchExternalMessages(since);
+				}
+			});
 		}
 	}
 
@@ -298,6 +307,11 @@ public class ExternalMessagesView extends AbstractView {
 		} else {
 			grid.reload();
 		}
+	}
+
+	private void fetchSurveyMessages(Date since) {
+		FacadeProvider.getExternalMessageFacade().saveAndProcessSurveyResponses(since);
+		grid.reload();
 	}
 
 	private void showSinceDateSelectionWindow(Consumer<Date> dateConsumer) {

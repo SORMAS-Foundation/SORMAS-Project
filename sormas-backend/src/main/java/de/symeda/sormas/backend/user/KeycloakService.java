@@ -252,6 +252,7 @@ public class KeycloakService {
 				sormasUser =
 					existingUsers.stream().filter(u -> u.getUserName().equals(userRepresentation.getUsername())).findFirst().orElse(new User());
 			}
+			logger.error("{}", userRepresentation);
 			updateUser(sormasUser, userRepresentation);
 
 			return sormasUser;

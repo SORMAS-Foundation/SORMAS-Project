@@ -25,6 +25,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -76,7 +77,12 @@ public class SourceContactListComponent extends VerticalLayout {
 			Button createButton = ButtonHelper.createIconButton(
 				Captions.contactNewContact,
 				VaadinIcons.PLUS_CIRCLE,
-				e -> view.showUnsavedChangesPopup(() -> ControllerProvider.getContactController().create(caseReference, true, SormasUI::refreshView)),
+					e -> view.showUnsavedChangesPopup(() -> ControllerProvider.getContactController().create(caseReference, true, () -> {
+						// For case classification effectiveness, extra save is needed.
+						// Ideally, we should mark the epi case data form as dirty when a contact is created, but we couldn't find a way to do that.
+						FacadeProvider.getCaseFacade().save(FacadeProvider.getCaseFacade().getByUuid(caseReference.getUuid()));
+						SormasUI.refreshView();
+					})),
 				ValoTheme.BUTTON_PRIMARY);
 			componentHeader.addComponent(createButton);
 			componentHeader.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);

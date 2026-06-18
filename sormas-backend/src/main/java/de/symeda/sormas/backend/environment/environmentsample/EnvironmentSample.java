@@ -34,6 +34,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import de.symeda.sormas.api.environment.VectorType;
 import org.hibernate.annotations.Type;
 
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleMaterial;
@@ -68,6 +69,7 @@ public class EnvironmentSample extends DeletableAdo {
 	public static final String OTHER_SAMPLE_MATERIAL = "otherSampleMaterial";
 	public static final String FIELD_SAMPLE_ID = "fieldSampleId";
 	public static final String PATHOGEN_TESTS = "pathogenTests";
+	public static final String VECTOR_TYPE = "vectorType";
 
 	private static final long serialVersionUID = 7237701234186874155L;
 
@@ -99,6 +101,7 @@ public class EnvironmentSample extends DeletableAdo {
 	private SpecimenCondition specimenCondition;
 	private Location location;
 	private String generalComment;
+	private VectorType vectorType;
 
 	private List<PathogenTest> pathogenTests;
 
@@ -371,5 +374,14 @@ public class EnvironmentSample extends DeletableAdo {
 
 	public void setPathogenTests(List<PathogenTest> pathogenTests) {
 		this.pathogenTests = pathogenTests;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public VectorType getVectorType() {
+		return vectorType;
+	}
+
+	public void setVectorType(VectorType vectorType) {
+		this.vectorType = vectorType;
 	}
 }

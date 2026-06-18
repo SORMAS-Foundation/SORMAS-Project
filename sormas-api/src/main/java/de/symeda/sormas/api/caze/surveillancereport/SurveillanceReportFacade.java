@@ -28,4 +28,5 @@ public interface SurveillanceReportFacade
 	void delete(String surveillanceReportUuid);
 
 	List<SurveillanceReportDto> getByCaseUuids(List<String> caseUuids);
+
 }

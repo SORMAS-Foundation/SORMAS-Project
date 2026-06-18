@@ -16,7 +16,6 @@
 package de.symeda.sormas.ui.configuration.docgeneration;
 
 import java.util.Map;
-import java.util.function.Supplier;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ClassResource;
@@ -47,6 +46,7 @@ public class DocumentTemplateUploadLayout extends VerticalLayout {
 	private ImportLayoutComponent importGuideComponent;
 	private final DocumentWorkflow documentWorkflow;
 	private final boolean hasDisease;
+	private DocumentTemplateReceiver documentTemplateReceiver;
 
 	private static final Map<DocumentWorkflow, DocumentTemplateInfoData> templateInfoData = Map.ofEntries(
 		Map.entry(
@@ -82,12 +82,19 @@ public class DocumentTemplateUploadLayout extends VerticalLayout {
 		Map.entry(
 			DocumentWorkflow.TRAVEL_ENTRY_EMAIL,
 			DocumentTemplateInfoData
-				.forEmailTemplate(Captions.DocumentTemplate_exampleTemplateTravelEntryEmail, "ExampleDocumentTemplateTravelEntryEmail.txt")));
+				.forEmailTemplate(Captions.DocumentTemplate_exampleTemplateTravelEntryEmail, "ExampleDocumentTemplateTravelEntryEmail.txt")),
+		Map.entry(
+			DocumentWorkflow.SURVEY_DOCUMENT,
+			DocumentTemplateInfoData.forDocumentTemplate(Captions.DocumentTemplate_exampleTemplateSurveyDocument, "ExampleDocumentTemplateSurveys.docx")),
+		Map.entry(
+			DocumentWorkflow.SURVEY_EMAIL,
+			DocumentTemplateInfoData.forDocumentTemplate(Captions.DocumentTemplate_exampleTemplateSurveyEmail, "ExampleDocumentTemplateSurveyEmail.txt")));
 
-	public DocumentTemplateUploadLayout(DocumentWorkflow documentWorkflow, boolean hasDisease) {
+	public DocumentTemplateUploadLayout(DocumentWorkflow documentWorkflow, boolean hasDisease, DocumentTemplateReceiver documentTemplateReceiver) {
 		super();
 		this.documentWorkflow = documentWorkflow;
 		this.hasDisease = hasDisease;
+		this.documentTemplateReceiver = documentTemplateReceiver;
 		addDownloadResourcesComponent();
 		addUploadResourceComponent();
 	}
@@ -128,7 +135,6 @@ public class DocumentTemplateUploadLayout extends VerticalLayout {
 		uploadLatout.setSizeFull();
 		addComponent(uploadLatout);
 
-		Supplier<Disease> diseaseSupplier = () -> null;
 		if (hasDisease) {
 			ComboBox<Disease> diseaseComboBox = new ComboBox<>();
 			diseaseComboBox.setCaption(I18nProperties.getCaption(Captions.disease));
@@ -136,15 +142,14 @@ public class DocumentTemplateUploadLayout extends VerticalLayout {
 			diseaseComboBox.setPlaceholder(I18nProperties.getString(Strings.all));
 			diseaseComboBox.setEmptySelectionAllowed(true);
 			uploadLatout.addComponent(diseaseComboBox);
-			diseaseSupplier = diseaseComboBox::getValue;
+			documentTemplateReceiver.setDiseaseSupplier(diseaseComboBox::getValue);
 		}
 
-		DocumentTemplateReceiver receiver = new DocumentTemplateReceiver(documentWorkflow, diseaseSupplier);
-		upload = new Upload("", receiver);
+		upload = new Upload("", documentTemplateReceiver);
 		upload.setButtonCaption(I18nProperties.getCaption(Captions.DocumentTemplate_buttonUploadTemplate));
 		CssStyles.style(upload, CssStyles.VSPACE_2);
-		upload.addStartedListener(receiver);
-		upload.addSucceededListener(receiver);
+		upload.addStartedListener(documentTemplateReceiver);
+		upload.addSucceededListener(documentTemplateReceiver);
 		uploadLatout.addComponent(upload);
 	}
 
@@ -168,17 +173,21 @@ public class DocumentTemplateUploadLayout extends VerticalLayout {
 		private final String infoTextKey;
 
 		public static DocumentTemplateInfoData forDocumentTemplate(String caption, String fileName) {
-			return new DocumentTemplateInfoData(caption, fileName, "SORMAS_Document_Template_Guide.pdf",
-					Strings.headingDownloadDocumentTemplateGuide,
-					Strings.infoDownloadDocumentTemplateImportGuide
-					);
+			return new DocumentTemplateInfoData(
+				caption,
+				fileName,
+				"SORMAS_Document_Template_Guide.pdf",
+				Strings.headingDownloadDocumentTemplateGuide,
+				Strings.infoDownloadDocumentTemplateImportGuide);
 		}
 
 		public static DocumentTemplateInfoData forEmailTemplate(String caption, String fileName) {
-			return new DocumentTemplateInfoData(caption, fileName, "SORMAS_Email_Template_Guide.pdf",
-					Strings.headingDownloadEmailTemplateGuide,
-					Strings.infoDownloadEmailTemplateImportGuide
-			);
+			return new DocumentTemplateInfoData(
+				caption,
+				fileName,
+				"SORMAS_Email_Template_Guide.pdf",
+				Strings.headingDownloadEmailTemplateGuide,
+				Strings.infoDownloadEmailTemplateImportGuide);
 		}
 
 		public static DocumentTemplateInfoData of(String caption, String fileName, String guideFileName, String headingTextKey, String infoTextKey) {

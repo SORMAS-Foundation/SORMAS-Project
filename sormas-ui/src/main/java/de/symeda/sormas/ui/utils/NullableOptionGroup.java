@@ -71,6 +71,14 @@ public class NullableOptionGroup extends OptionGroup {
 		return ObjectUtils.isNotEmpty(value) ? getFirstValue((Set) value) : null;
 	}
 
+	public void setNullableValue(Object value) {
+		if (value != null) {
+			super.setValue(java.util.Collections.singleton(value));
+		} else {
+			super.setValue(null);
+		}
+	}
+
 	@Override
 	public void setRequired(boolean required) {
 		boolean readOnly = isReadOnly();
@@ -84,9 +92,20 @@ public class NullableOptionGroup extends OptionGroup {
 		return value.stream().findFirst().orElse(null);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setInaccessible() {
 		this.removeAllItems();
 		Item item = this.addItem(1);
+
+		if(item == null) {
+			return;
+		}
+
+		if (item.getItemPropertyIds().isEmpty()) {
+			return;
+		}
+		
 		item.getItemProperty(item.getItemPropertyIds().stream().findFirst().get()).setValue(I18nProperties.getCaption(Captions.inaccessibleValue));
+
 	}
 }

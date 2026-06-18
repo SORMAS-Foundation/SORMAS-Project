@@ -6,11 +6,14 @@ import java.util.List;
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
 public interface DiseaseConfigurationFacade {
 
 	List<DiseaseConfigurationDto> getAllAfter(Date date);
+
+	DiseaseConfigurationDto getByUuid(String uuid);
 
 	List<DiseaseConfigurationDto> getByUuids(List<String> uuids);
 
@@ -45,6 +48,16 @@ public interface DiseaseConfigurationFacade {
 
 	int getEventParticipantFollowUpDuration(Disease disease);
 
+	boolean isIncubationPeriodEnabled(Disease disease);
+
+	int getMaxIncubationPeriod(Disease disease);
+
+	int getMinIncubationPeriod(Disease disease);
+
+	DiseaseConfigurationDto getDiseaseConfiguration(Disease disease);
+
+	String getCaseDefinitionText(Disease disease);
+
 	Integer getAutomaticSampleAssignmentThreshold(Disease disease);
 
 	void saveDiseaseConfiguration(DiseaseConfigurationDto configuration);
@@ -57,4 +70,13 @@ public interface DiseaseConfigurationFacade {
 
 	boolean usesExtendedClassificationMulti(Disease disease);
 
+	long count(DiseaseConfigurationCriteria criteria);
+
+	List<DiseaseConfigurationIndexDto> getIndexList(
+		DiseaseConfigurationCriteria criteria,
+		Integer first,
+		Integer max,
+		List<SortProperty> sortProperties);
+
+	void loadData();
 }

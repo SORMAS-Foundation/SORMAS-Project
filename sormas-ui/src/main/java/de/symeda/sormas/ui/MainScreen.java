@@ -73,6 +73,7 @@ import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
 import de.symeda.sormas.ui.dashboard.adverseeventsfollowingimmunization.AefiDashboardView;
 import de.symeda.sormas.ui.dashboard.campaigns.CampaignDashboardView;
 import de.symeda.sormas.ui.dashboard.contacts.ContactsDashboardView;
+import de.symeda.sormas.ui.dashboard.gis.GisDashboardView;
 import de.symeda.sormas.ui.dashboard.sample.SampleDashboardView;
 import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
 import de.symeda.sormas.ui.environment.EnvironmentsView;
@@ -89,6 +90,7 @@ import de.symeda.sormas.ui.selfreport.SelfReportsView;
 import de.symeda.sormas.ui.sormastosormas.ShareRequestsView;
 import de.symeda.sormas.ui.statistics.AbstractStatisticsView;
 import de.symeda.sormas.ui.statistics.StatisticsView;
+import de.symeda.sormas.ui.survey.SurveysView;
 import de.symeda.sormas.ui.task.TasksView;
 import de.symeda.sormas.ui.travelentry.TravelEntriesView;
 import de.symeda.sormas.ui.user.AbstractUserView;
@@ -239,13 +241,19 @@ public class MainScreen extends HorizontalLayout {
 				AbstractDashboardView.ROOT_VIEW_NAME,
 				I18nProperties.getCaption(Captions.mainMenuDashboard),
 				VaadinIcons.DASHBOARD);
+		} else if (gisDashboardPermitted()) {
+			menu.addView(
+				GisDashboardView.class,
+				AbstractDashboardView.ROOT_VIEW_NAME,
+				I18nProperties.getCaption(Captions.mainMenuDashboard),
+				VaadinIcons.DASHBOARD);
 		}
 
 		if (permitted(FeatureType.TASK_MANAGEMENT, UserRight.TASK_VIEW)) {
 			menu.addView(TasksView.class, TasksView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuTasks), VaadinIcons.TASKS);
 		}
 
-		if (permitted(FeatureType.EXTERNAL_MESSAGES, UserRight.EXTERNAL_MESSAGE_VIEW)) {
+		if (permitted(FeatureType.EXTERNAL_MESSAGES, UserRight.EXTERNAL_MESSAGE_ACCESS)) {
 			ControllerProvider.getExternalMessageController().registerViews(navigator);
 			menu.addView(
 				ExternalMessagesView.class,
@@ -350,6 +358,14 @@ public class MainScreen extends HorizontalLayout {
 				SelfReportsView.VIEW_NAME,
 				I18nProperties.getCaption(Captions.mainMenuSelfReports),
 				VaadinIcons.USER_CHECK);
+		}
+
+		if (permitted(FeatureType.SURVEYS, UserRight.SURVEY_VIEW)) {
+			ControllerProvider.getSurveyController().registeredViews(navigator);
+			if (permitted(UserRight.SURVEY_TOKEN_VIEW)) {
+				ControllerProvider.getSurveyTokenController().registeredViews(navigator);
+			}
+			menu.addView(SurveysView.class, SurveysView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuSurveys), VaadinIcons.BULLETS);
 		}
 
 		if (permitted(FeatureType.WEEKLY_REPORTING, UserRight.WEEKLYREPORT_VIEW)) {
@@ -460,6 +476,20 @@ public class MainScreen extends HorizontalLayout {
 			UserRight.DASHBOARD_ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW);
 	}
 
+	private static boolean gisDashboardPermitted() {
+		return permitted(
+			EnumSet.of(
+				FeatureType.CASE_SURVEILANCE,
+				FeatureType.CONTACT_TRACING,
+				FeatureType.SAMPLES_LAB,
+				FeatureType.ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_MANAGEMENT),
+			new UserRight[] {
+				UserRight.DASHBOARD_SURVEILLANCE_VIEW,
+				UserRight.DASHBOARD_CONTACT_VIEW,
+				UserRight.DASHBOARD_SAMPLES_VIEW,
+				UserRight.DASHBOARD_ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW });
+	}
+
 	private static Set<String> initKnownViews() {
 		final Set<String> views = new HashSet<>(
 			Arrays.asList(
@@ -490,6 +520,7 @@ public class MainScreen extends HorizontalLayout {
 				ExternalMessagesView.VIEW_NAME,
 				TravelEntriesView.VIEW_NAME,
 				ImmunizationsView.VIEW_NAME,
+				SurveysView.VIEW_NAME,
 				AefiView.VIEW_NAME));
 
 		if (surveillanceDashboardPermitted()) {

@@ -17,16 +17,28 @@ package de.symeda.sormas.ui.dashboard.sample;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections4.CollectionUtils;
+
 import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
+import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleMaterial;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDashboardFilterDateType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
@@ -39,13 +51,23 @@ public class SampleDashboardFilterLayout extends DashboardFilterLayout<SampleDas
 	public static final String DATE_TYPE_FILTER = "dateTypeFilter";
 	public static final String SAMPLE_MATERIAL_FILTER = "sampleMaterialFilter";
 	public static final String DISEASE_FILTER = "diseaseFilter";
+	public static final String PATHOGEN_TEST_RESULT_FILTER = "pathogenTestResultFilter";
+	public static final String SEROGROUP_FILTER = "serogroupFilter";
+	public static final String DISEASE_VARIANT_FILTER = "diseaseVariantFilter";
 
 	private final static String[] FILTERS = new String[] {
 		DATE_TYPE_FILTER,
 		REGION_FILTER,
 		DISTRICT_FILTER,
 		SAMPLE_MATERIAL_FILTER,
-		DISEASE_FILTER };
+		DISEASE_FILTER,
+		PATHOGEN_TEST_RESULT_FILTER,
+		SEROGROUP_FILTER,
+		DISEASE_VARIANT_FILTER };
+
+	private ComboBox pathogenTestResultFilter;
+	private TextField serogroupFilter;
+	private ComboBox diseaseVariantFilter;
 
 	public SampleDashboardFilterLayout(SampleDashboardView dashboardView, SampleDashboardDataProvider dashboardDataProvider) {
 		super(dashboardView, dashboardDataProvider, FILTERS);
@@ -58,6 +80,9 @@ public class SampleDashboardFilterLayout extends DashboardFilterLayout<SampleDas
 		createDateTypeSelector();
 		createRegionFilter(I18nProperties.getDescription(Descriptions.sampleDashboardRegionFilter));
 		createDistrictFilter(I18nProperties.getDescription(Descriptions.sampleDashboardDistrictFilter));
+		createPathogenTestResultFilter();
+		createSerogroupFilter();
+		createDiseaseVariantFilter();
 		createSampleMaterialFilter();
 		createDiseaseFilter();
 	}
@@ -89,8 +114,10 @@ public class SampleDashboardFilterLayout extends DashboardFilterLayout<SampleDas
 
 		diseaseFilter.addValueChangeListener(e -> {
 			Object filterValue = diseaseFilter.getValue();
+			Disease selectedDisease = null;
 			if (filterValue instanceof Disease) {
-				dashboardDataProvider.setDisease((Disease) filterValue);
+				selectedDisease = (Disease) filterValue;
+				dashboardDataProvider.setDisease(selectedDisease);
 				dashboardDataProvider.setWithNoDisease(null);
 			} else if (filterValue == SampleDashboardCustomDiseaseFilter.NO_DISEASE) {
 				dashboardDataProvider.setDisease(null);
@@ -101,21 +128,124 @@ public class SampleDashboardFilterLayout extends DashboardFilterLayout<SampleDas
 			} else {
 				throw new RuntimeException("Disease filter [" + filterValue + "] not handled!");
 			}
+			// The disease variant is only meaningful for a selected disease; repopulate (and clear) it.
+			repopulateDiseaseVariantFilter(selectedDisease);
 		});
 
 		addCustomComponent(diseaseFilter, DISEASE_FILTER);
+	}
+
+	private void createPathogenTestResultFilter() {
+		pathogenTestResultFilter = ComboBoxHelper.createComboBoxV7();
+		pathogenTestResultFilter.setWidth(200, Unit.PIXELS);
+		pathogenTestResultFilter.setInputPrompt(I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_RESULT));
+		pathogenTestResultFilter.addItems((Object[]) PathogenTestResultType.values());
+		pathogenTestResultFilter.setValue(dashboardDataProvider.getPathogenTestResult());
+		pathogenTestResultFilter
+			.addValueChangeListener(e -> dashboardDataProvider.setPathogenTestResult((PathogenTestResultType) pathogenTestResultFilter.getValue()));
+		addCustomComponent(pathogenTestResultFilter, PATHOGEN_TEST_RESULT_FILTER);
+	}
+
+	private void createSerogroupFilter() {
+		serogroupFilter = new TextField();
+		serogroupFilter.setWidth(200, Unit.PIXELS);
+		serogroupFilter.setNullRepresentation("");
+		serogroupFilter.setInputPrompt(I18nProperties.getCaption(Captions.serogroup));
+		serogroupFilter.setValue(dashboardDataProvider.getSerogroup());
+		serogroupFilter.addValueChangeListener(e -> dashboardDataProvider.setSerogroup(serogroupFilter.getValue()));
+		addCustomComponent(serogroupFilter, SEROGROUP_FILTER);
+	}
+
+	private void setLabFiltersEnabled(boolean enabled) {
+		if (pathogenTestResultFilter != null) {
+			pathogenTestResultFilter.setEnabled(enabled);
+			if (!enabled) {
+				pathogenTestResultFilter.setValue(null);
+			}
+		}
+		if (serogroupFilter != null) {
+			serogroupFilter.setEnabled(enabled);
+			if (!enabled) {
+				serogroupFilter.setValue(null);
+			}
+		}
+		if (diseaseVariantFilter != null) {
+			// When re-enabling, the variant combo's own per-disease logic governs its enabled state.
+			if (enabled) {
+				repopulateDiseaseVariantFilter(dashboardDataProvider.getDisease());
+			} else {
+				diseaseVariantFilter.setValue(null);
+				diseaseVariantFilter.setEnabled(false);
+			}
+		}
+	}
+
+	private void createDiseaseVariantFilter() {
+		diseaseVariantFilter = ComboBoxHelper.createComboBoxV7();
+		diseaseVariantFilter.setWidth(200, Unit.PIXELS);
+		diseaseVariantFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE_VARIANT));
+		diseaseVariantFilter.addValueChangeListener(e -> dashboardDataProvider.setDiseaseVariant((DiseaseVariant) diseaseVariantFilter.getValue()));
+		repopulateDiseaseVariantFilter(dashboardDataProvider.getDisease());
+		addCustomComponent(diseaseVariantFilter, DISEASE_VARIANT_FILTER);
+	}
+
+	private void repopulateDiseaseVariantFilter(Disease disease) {
+		if (diseaseVariantFilter == null) {
+			return;
+		}
+
+		DiseaseVariant previousVariant = dashboardDataProvider.getDiseaseVariant();
+		diseaseVariantFilter.removeAllItems();
+		diseaseVariantFilter.setValue(null);
+		dashboardDataProvider.setDiseaseVariant(null);
+
+		List<DiseaseVariant> diseaseVariants =
+			disease != null ? FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease) : null;
+		if (CollectionUtils.isNotEmpty(diseaseVariants)) {
+			diseaseVariantFilter.addItems(diseaseVariants);
+			diseaseVariantFilter.setEnabled(true);
+			if (diseaseVariants.contains(previousVariant)) {
+				diseaseVariantFilter.setValue(previousVariant);
+			}
+		} else {
+			// No disease (or no variants) → the variant filter is meaningless; keep it cleared and disabled.
+			diseaseVariantFilter.setEnabled(false);
+		}
 	}
 
 	private void createSampleMaterialFilter() {
 		ComboBox sampleMaterialFilter = ComboBoxHelper.createComboBoxV7();
 		sampleMaterialFilter.setWidth(200, Unit.PIXELS);
 		sampleMaterialFilter.setInputPrompt(I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_MATERIAL));
-		sampleMaterialFilter
-			.addItems(Stream.of(SampleMaterial.values()).sorted(Comparator.comparing(SampleMaterial::toString)).collect(Collectors.toList()));
+		// sorting both the environment and human samples.
+		Set<Enum<?>> combinedSampleMaterials = Stream.concat(Stream.of(SampleMaterial.values()), Stream.of(EnvironmentSampleMaterial.values()))
+			.sorted(Comparator.comparing(Enum::toString))
+			.collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(Enum::toString))));
+
+		sampleMaterialFilter.addItems(combinedSampleMaterials);
+
 		sampleMaterialFilter.setValue(dashboardDataProvider.getSampleMaterial());
 
 		sampleMaterialFilter.addValueChangeListener(e -> {
-			dashboardDataProvider.setSampleMaterial((SampleMaterial) sampleMaterialFilter.getValue());
+			// In Other as the selected sample, all samples should select.
+			boolean environmentOnly = false;
+			if (e.getProperty().getValue() == SampleMaterial.OTHER || e.getProperty().getValue() == EnvironmentSampleMaterial.OTHER) {
+				dashboardDataProvider.setEnvironmentSampleMaterial(EnvironmentSampleMaterial.OTHER);
+				dashboardDataProvider.setSampleMaterial(SampleMaterial.OTHER);
+			} else if (e.getProperty().getValue() instanceof EnvironmentSampleMaterial) {
+				dashboardDataProvider.setEnvironmentSampleMaterial((EnvironmentSampleMaterial) e.getProperty().getValue());
+				dashboardDataProvider.setSampleMaterial(null);
+				environmentOnly = true;
+			} else if (e.getProperty().getValue() instanceof SampleMaterial) {
+				dashboardDataProvider.setEnvironmentSampleMaterial(null);
+				dashboardDataProvider.setSampleMaterial((SampleMaterial) e.getProperty().getValue());
+			} else {
+				dashboardDataProvider.setEnvironmentSampleMaterial(null);
+				dashboardDataProvider.setSampleMaterial(null);
+			}
+			// The lab filters don't apply to environment samples. Disable + clear them when only an
+			// environment material is selected.
+			setLabFiltersEnabled(!environmentOnly);
 		});
 
 		addCustomComponent(sampleMaterialFilter, SAMPLE_MATERIAL_FILTER);

@@ -78,6 +78,8 @@ public class SampleDto extends SormasToSormasShareableDto implements IsSample {
 	public static final String SAMPLING_REASON_DETAILS = "samplingReasonDetails";
 	public static final String DELETION_REASON = "deletionReason";
 	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
+	public static final String PERFORMED_BY_REFERENCE_LABORATORY = "performedByReferenceLaboratory";
+	public static final String RETEST_REQUESTED = "retestRequested";
 
 	private CaseReferenceDto associatedCase;
 	private ContactReferenceDto associatedContact;
@@ -135,6 +137,8 @@ public class SampleDto extends SormasToSormasShareableDto implements IsSample {
 
 	private Boolean pathogenTestingRequested;
 	private Boolean additionalTestingRequested;
+	private Boolean performedByReferenceLaboratory;
+	private Boolean retestRequested = Boolean.FALSE;
 	private Set<PathogenTestType> requestedPathogenTests;
 	private Set<AdditionalTestType> requestedAdditionalTests;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
@@ -368,6 +372,22 @@ public class SampleDto extends SormasToSormasShareableDto implements IsSample {
 		this.additionalTestingRequested = additionalTestingRequested;
 	}
 
+	public Boolean getPerformedByReferenceLaboratory() {
+		return performedByReferenceLaboratory;
+	}
+
+	public void setPerformedByReferenceLaboratory(Boolean performedByReferenceLaboratory) {
+		this.performedByReferenceLaboratory = performedByReferenceLaboratory;
+	}
+
+	public Boolean getRetestRequested() {
+		return retestRequested;
+	}
+
+	public void setRetestRequested(Boolean retestRequested) {
+		this.retestRequested = retestRequested;
+	}
+
 	@ImportIgnore
 	public Set<PathogenTestType> getRequestedPathogenTests() {
 		return requestedPathogenTests;
@@ -489,6 +509,8 @@ public class SampleDto extends SormasToSormasShareableDto implements IsSample {
 		target.setSampleSource(source.getSampleSource());
 		target.setPathogenTestingRequested(source.getPathogenTestingRequested());
 		target.setAdditionalTestingRequested(source.getAdditionalTestingRequested());
+		target.setPerformedByReferenceLaboratory(source.getPerformedByReferenceLaboratory());
+		target.setRetestRequested(source.getRetestRequested());
 		target.setRequestedPathogenTests(source.getRequestedPathogenTests());
 		target.setRequestedAdditionalTests(source.getRequestedAdditionalTests());
 		target.setFieldSampleID(source.getFieldSampleID());

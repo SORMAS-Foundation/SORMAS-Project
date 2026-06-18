@@ -31,6 +31,7 @@ public interface Descriptions {
 	String CaseHospitalization_isolated = "CaseHospitalization.isolated";
 	String CasePreviousHospitalization_admissionDate = "CasePreviousHospitalization.admissionDate";
 	String Contact_community = "Contact.community";
+	String Contact_contactProximities = "Contact.contactProximities";
 	String Contact_contactProximity = "Contact.contactProximity";
 	String Contact_district = "Contact.district";
 	String Contact_followUpStatus = "Contact.followUpStatus";
@@ -141,6 +142,7 @@ public interface Descriptions {
 	String sampleDashboardCountsBySpecimenCondition = "sampleDashboardCountsBySpecimenCondition";
 	String sampleDashboardDiseaseFilter = "sampleDashboardDiseaseFilter";
 	String sampleDashboardDistrictFilter = "sampleDashboardDistrictFilter";
+	String sampleDashboardHumans = "sampleDashboardHumans";
 	String sampleDashboardRegionFilter = "sampleDashboardRegionFilter";
 	String SormasToSormasOptions_comment = "SormasToSormasOptions.comment";
 	String SurveillanceReport_associatedMessage = "SurveillanceReport.associatedMessage";

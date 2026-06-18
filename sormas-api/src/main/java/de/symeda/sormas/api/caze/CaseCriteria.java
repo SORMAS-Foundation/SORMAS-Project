@@ -35,7 +35,9 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.share.ExternalShareCriteria;
+import de.symeda.sormas.api.survey.SurveyReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.DateFilterOption;
@@ -87,10 +89,18 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	public static final String PERSON_LIKE = "personLike";
 	public static final String JURISDICTION_TYPE = "jurisdictionType";
 	public static final String ENTITY_RELEVANCE_STATUS = "relevanceStatus";
+	public static final String SURVEY_ASSIGNED_FROM = "surveyAssignedFrom";
+	public static final String SURVEY_ASSIGNED_TO = "surveyAssignedTo";
+	public static final String SURVEY_RESPONSE_STATUS = "surveyResponseStatus";
+	public static final String SURVEY = "survey";
+	public static final String PATHOGEN_TEST_RESULT = "pathogenTestResult";
+	public static final String SEROGROUP = "serogroup";
 
 	private UserRoleReferenceDto reportingUserRole;
 	private Disease disease;
 	private DiseaseVariant diseaseVariant;
+	private PathogenTestResultType pathogenTestResult;
+	private String serogroup;
 	private CaseOutcome outcome;
 	private CaseClassification caseClassification;
 	private InvestigationStatus investigationStatus;
@@ -154,6 +164,11 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	private Boolean onlyShowCasesWithFulfilledReferenceDefinition;
 	private String personLike;
 	private Boolean withOwnership;
+	private Date surveyAssignedFrom;
+	private Date surveyAssignedTo;
+	private SurveyResponseStatus surveyResponseStatus;
+	private SurveyReferenceDto survey;
+
 	/**
 	 * Used for filtering merge-able cases to filter both lead and similar cases.
 	 */
@@ -223,6 +238,33 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 
 	public DiseaseVariant getDiseaseVariant() {
 		return diseaseVariant;
+	}
+
+	public void setPathogenTestResult(PathogenTestResultType pathogenTestResult) {
+		this.pathogenTestResult = pathogenTestResult;
+	}
+
+	public CaseCriteria pathogenTestResult(PathogenTestResultType pathogenTestResult) {
+		setPathogenTestResult(pathogenTestResult);
+		return this;
+	}
+
+	public PathogenTestResultType getPathogenTestResult() {
+		return pathogenTestResult;
+	}
+
+	public void setSerogroup(String serogroup) {
+		this.serogroup = serogroup;
+	}
+
+	public CaseCriteria serogroup(String serogroup) {
+		setSerogroup(serogroup);
+		return this;
+	}
+
+	@IgnoreForUrl
+	public String getSerogroup() {
+		return serogroup;
 	}
 
 	public void setJurisdictionType(CaseJurisdictionType jurisdictionType) {
@@ -832,5 +874,37 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	public CaseCriteria caseReferenceNumber(String caseReferenceNumber) {
 		this.caseReferenceNumber = caseReferenceNumber;
 		return this;
+	}
+
+	public Date getSurveyAssignedFrom() {
+		return surveyAssignedFrom;
+	}
+
+	public void setSurveyAssignedFrom(Date surveyAssignedFrom) {
+		this.surveyAssignedFrom = surveyAssignedFrom;
+	}
+
+	public Date getSurveyAssignedTo() {
+		return surveyAssignedTo;
+	}
+
+	public void setSurveyAssignedTo(Date surveyAssignedTo) {
+		this.surveyAssignedTo = surveyAssignedTo;
+	}
+
+	public SurveyResponseStatus getSurveyResponseStatus() {
+		return surveyResponseStatus;
+	}
+
+	public void setSurveyResponseStatus(SurveyResponseStatus surveyResponseStatus) {
+		this.surveyResponseStatus = surveyResponseStatus;
+	}
+
+	public SurveyReferenceDto getSurvey() {
+		return survey;
+	}
+
+	public void setSurvey(SurveyReferenceDto survey) {
+		this.survey = survey;
 	}
 }

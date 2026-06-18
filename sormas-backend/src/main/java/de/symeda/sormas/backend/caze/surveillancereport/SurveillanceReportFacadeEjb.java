@@ -184,6 +184,9 @@ public class SurveillanceReportFacadeEjb
 		target.setFacility(facilityService.getByReferenceDto(source.getFacility()));
 		target.setFacilityDetails(source.getFacilityDetails());
 		target.setNotificationDetails(source.getNotificationDetails());
+		target.setTreatmentStarted(source.getTreatmentStarted());
+		target.setTreatmentNotApplicable(source.isTreatmentNotApplicable());
+		target.setTreatmentStartDate(source.getTreatmentStartDate());
 		target.setCaze(caseService.getByReferenceDto(source.getCaze()));
 
 		if (source.getSormasToSormasOriginInfo() != null) {
@@ -268,6 +271,9 @@ public class SurveillanceReportFacadeEjb
 		target.setFacility(FacilityFacadeEjb.toReferenceDto(source.getFacility()));
 		target.setFacilityDetails(source.getFacilityDetails());
 		target.setNotificationDetails(source.getNotificationDetails());
+		target.setTreatmentStarted(source.getTreatmentStarted());
+		target.setTreatmentNotApplicable(source.isTreatmentNotApplicable());
+		target.setTreatmentStartDate(source.getTreatmentStartDate());
 		target.setCaze(CaseFacadeEjb.toReferenceDto(source.getCaze()));
 
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));

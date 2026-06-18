@@ -21,6 +21,7 @@ import static de.symeda.sormas.api.docgeneneration.RootEntityType.ROOT_EVENT;
 import static de.symeda.sormas.api.docgeneneration.RootEntityType.ROOT_EVENT_ACTIONS;
 import static de.symeda.sormas.api.docgeneneration.RootEntityType.ROOT_EVENT_PARTICIPANT;
 import static de.symeda.sormas.api.docgeneneration.RootEntityType.ROOT_EVENT_PARTICIPANTS;
+import static de.symeda.sormas.api.docgeneneration.RootEntityType.ROOT_GENERAL;
 import static de.symeda.sormas.api.docgeneneration.RootEntityType.ROOT_PATHOGEN_TEST;
 import static de.symeda.sormas.api.docgeneneration.RootEntityType.ROOT_PERSON;
 import static de.symeda.sormas.api.docgeneneration.RootEntityType.ROOT_SAMPLE;
@@ -54,7 +55,8 @@ public enum DocumentWorkflow {
 		ROOT_USER,
 		ROOT_SAMPLE,
 		ROOT_PATHOGEN_TEST,
-		ROOT_VACCINATION),
+		ROOT_VACCINATION,
+		ROOT_GENERAL),
 	QUARANTINE_ORDER_CONTACT(DocumentWorkflowType.DOCUMENT,
 		"quarantineContact",
 		DOCX,
@@ -64,7 +66,8 @@ public enum DocumentWorkflow {
 		ROOT_USER,
 		ROOT_SAMPLE,
 		ROOT_PATHOGEN_TEST,
-		ROOT_VACCINATION),
+		ROOT_VACCINATION,
+		ROOT_GENERAL),
 	QUARANTINE_ORDER_EVENT_PARTICIPANT(DocumentWorkflowType.DOCUMENT,
 		"quarantineEventParticipant",
 		DOCX,
@@ -74,14 +77,16 @@ public enum DocumentWorkflow {
 		ROOT_USER,
 		ROOT_SAMPLE,
 		ROOT_PATHOGEN_TEST,
-		ROOT_VACCINATION),
+		ROOT_VACCINATION,
+		ROOT_GENERAL),
 	QUARANTINE_ORDER_TRAVEL_ENTRY(DocumentWorkflowType.DOCUMENT,
 		"quarantineTravelEntry",
 		DOCX,
 		UserRight.DOCUMENT_TEMPLATE_MANAGEMENT,
 		ROOT_TRAVEL_ENTRY,
 		ROOT_PERSON,
-		ROOT_USER),
+		ROOT_USER,
+		ROOT_GENERAL),
 	EVENT_HANDOUT(DocumentWorkflowType.DOCUMENT,
 		"eventHandout",
 		HTML,
@@ -126,7 +131,16 @@ public enum DocumentWorkflow {
 		UserRight.EMAIL_TEMPLATE_MANAGEMENT,
 		ROOT_TRAVEL_ENTRY,
 		ROOT_PERSON,
-		ROOT_USER);
+		ROOT_USER),
+	SURVEY_DOCUMENT(DocumentWorkflowType.DOCUMENT, "survey", DOCX, UserRight.SURVEY_EDIT, ROOT_CASE, ROOT_PERSON, ROOT_USER, ROOT_SAMPLE),
+	SURVEY_EMAIL(DocumentWorkflowType.EMAIL,
+		Constants.EMAIL_TEMPLATES_FOLDER + "/surveys",
+		TXT,
+		UserRight.SURVEY_EDIT,
+		ROOT_CASE,
+		ROOT_PERSON,
+		ROOT_USER,
+		ROOT_SAMPLE),;
 
 	private final DocumentWorkflowType type;
 	private final String templateDirectory;

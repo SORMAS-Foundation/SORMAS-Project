@@ -2,19 +2,14 @@ package de.symeda.sormas.backend.therapy;
 
 import java.sql.Timestamp;
 
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.therapy.TherapyFacade;
 import de.symeda.sormas.api.therapy.TherapyReferenceDto;
-import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
-import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless(name = "TherapyFacade")
 public class TherapyFacadeEjb implements TherapyFacade {
@@ -36,11 +31,15 @@ public class TherapyFacadeEjb implements TherapyFacade {
 		TherapyDto target = new TherapyDto();
 		DtoHelper.fillDto(target, source);
 
+		target.setDirectlyObservedTreatment(source.isDirectlyObservedTreatment());
+		target.setMdrXdrTuberculosis(source.isMdrXdrTuberculosis());
+		target.setBeijingLineage(source.isBeijingLineage());
+
 		return target;
 	}
 
 	public Therapy fillOrBuildEntity(@NotNull TherapyDto source, Therapy entity, boolean checkChangeDate) {
-		return DtoHelper.fillOrBuildEntity(source, entity, () -> {
+		entity = DtoHelper.fillOrBuildEntity(source, entity, () -> {
 			Therapy newTherapy = new Therapy();
 			if (source.getChangeDate() != null) {
 				newTherapy.setChangeDate(new Timestamp(source.getChangeDate().getTime()));
@@ -48,6 +47,12 @@ public class TherapyFacadeEjb implements TherapyFacade {
 
 			return newTherapy;
 		}, checkChangeDate);
+
+		entity.setDirectlyObservedTreatment(source.isDirectlyObservedTreatment());
+		entity.setMdrXdrTuberculosis(source.isMdrXdrTuberculosis());
+		entity.setBeijingLineage(source.isBeijingLineage());
+
+		return entity;
 	}
 
 	@LocalBean

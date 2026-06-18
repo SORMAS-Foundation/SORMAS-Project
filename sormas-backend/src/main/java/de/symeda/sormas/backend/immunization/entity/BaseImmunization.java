@@ -20,8 +20,10 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
+import de.symeda.sormas.api.immunization.InjectionFacility;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -50,6 +52,8 @@ public class BaseImmunization extends CoreAdo implements SormasToSormasShareable
 	private ImmunizationStatus immunizationStatus;
 	private MeansOfImmunization meansOfImmunization;
 	private String meansOfImmunizationDetails;
+	private InjectionFacility injectionFacility;
+	private VaccinationInfoSource vaccinationInfoSource;
 	private ImmunizationManagementStatus immunizationManagementStatus;
 	private String externalId;
 
@@ -351,6 +355,24 @@ public class BaseImmunization extends CoreAdo implements SormasToSormasShareable
 		this.meansOfImmunizationDetails = meansOfImmunizationDetails;
 	}
 
+	@Enumerated(EnumType.STRING)
+	public InjectionFacility getInjectionFacility() {
+		return injectionFacility;
+	}
+
+	public void setInjectionFacility(InjectionFacility injectionFacility) {
+		this.injectionFacility = injectionFacility;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public VaccinationInfoSource getVaccinationInfoSource() {
+		return vaccinationInfoSource;
+	}
+
+	public void setVaccinationInfoSource(VaccinationInfoSource vaccinationInfoSource) {
+		this.vaccinationInfoSource = vaccinationInfoSource;
+	}
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	public Country getCountry() {
 		return country;
@@ -371,10 +393,10 @@ public class BaseImmunization extends CoreAdo implements SormasToSormasShareable
 
 	@Override
 	@ManyToOne(cascade = {
-			CascadeType.PERSIST,
-			CascadeType.MERGE,
-			CascadeType.DETACH,
-			CascadeType.REFRESH })
+		CascadeType.PERSIST,
+		CascadeType.MERGE,
+		CascadeType.DETACH,
+		CascadeType.REFRESH })
 	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
 		return sormasToSormasOriginInfo;
 	}

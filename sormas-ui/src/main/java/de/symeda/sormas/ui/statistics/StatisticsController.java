@@ -21,6 +21,7 @@ import com.vaadin.navigator.Navigator;
 
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UiUtil;
+import de.symeda.sormas.ui.epipulse.EpipulseExportView;
 
 public class StatisticsController {
 
@@ -32,6 +33,9 @@ public class StatisticsController {
 		navigator.addView(StatisticsView.VIEW_NAME, StatisticsView.class);
 		if (UiUtil.permitted(UserRight.DATABASE_EXPORT_ACCESS)) {
 			navigator.addView(DatabaseExportView.VIEW_NAME, DatabaseExportView.class);
+		}
+		if (UiUtil.permitted(UserRight.EPIPULSE_EXPORT_VIEW)) {
+			navigator.addView(EpipulseExportView.VIEW_NAME, EpipulseExportView.class);
 		}
 	}
 }

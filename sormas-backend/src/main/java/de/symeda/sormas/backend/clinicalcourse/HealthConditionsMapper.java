@@ -15,13 +15,11 @@
 
 package de.symeda.sormas.backend.clinicalcourse;
 
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
-import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @LocalBean
@@ -60,7 +58,20 @@ public class HealthConditionsMapper {
 		target.setAsthma(source.getAsthma());
 		target.setSickleCellDisease(source.getSickleCellDisease());
 		target.setImmunodeficiencyIncludingHiv(source.getImmunodeficiencyIncludingHiv());
-
+		target.setPreviousTuberculosisTreatment(source.getPreviousTuberculosisTreatment());
+		target.setTuberculosisInfectionYear(source.getTuberculosisInfectionYear());
+		target.setComplianceWithTreatment(source.getComplianceWithTreatment());
+		target.setRecurrentBronchiolitis(source.getRecurrentBronchiolitis());
+		target.setExposedToMosquitoBorneVirusesText(source.getExposedToMosquitoBorneVirusesText());
+		target.setExposedToMosquitoBorneViruses(source.getExposedToMosquitoBorneViruses());
+		target.setVaccinatedAgainstMosquitoBorneViruses(source.getVaccinatedAgainstMosquitoBorneViruses());
+		target.setImmunodeficiencyOtherThanHivText(source.getImmunodeficiencyOtherThanHivText());
+		target.setMalaria(source.getMalaria());
+		target.setMalariaInfectedYear(source.getMalariaInfectedYear());
+		target.setOnMedication(source.getOnMedication());
+		target.setMedicationDetails(source.getMedicationDetails());
+		target.setChronicDisease(source.getChronicDisease());
+		target.setChronicDiseaseDetails(source.getChronicDiseaseDetails());
 		return target;
 	}
 
@@ -94,7 +105,20 @@ public class HealthConditionsMapper {
 		target.setAsthma(source.getAsthma());
 		target.setSickleCellDisease(source.getSickleCellDisease());
 		target.setImmunodeficiencyIncludingHiv(source.getImmunodeficiencyIncludingHiv());
-
+		target.setPreviousTuberculosisTreatment(source.getPreviousTuberculosisTreatment());
+		target.setTuberculosisInfectionYear(source.getTuberculosisInfectionYear());
+		target.setComplianceWithTreatment(source.getComplianceWithTreatment());
+		target.setRecurrentBronchiolitis(source.getRecurrentBronchiolitis());
+		target.setExposedToMosquitoBorneVirusesText(source.getExposedToMosquitoBorneVirusesText());
+		target.setExposedToMosquitoBorneViruses(source.getExposedToMosquitoBorneViruses());
+		target.setVaccinatedAgainstMosquitoBorneViruses(source.getVaccinatedAgainstMosquitoBorneViruses());
+		target.setImmunodeficiencyOtherThanHivText(source.getImmunodeficiencyOtherThanHivText());
+		target.setMalaria(source.getMalaria());
+		target.setMalariaInfectedYear(source.getMalariaInfectedYear());
+		target.setOnMedication(source.getOnMedication());
+		target.setMedicationDetails(source.getMedicationDetails());
+		target.setChronicDisease(source.getChronicDisease());
+		target.setChronicDiseaseDetails(source.getChronicDiseaseDetails());
 		return target;
 	}
 }

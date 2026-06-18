@@ -128,7 +128,7 @@ public class SelfReportProcessingFLow extends AbstractSelfReportProcessingFlow {
 		Window window = VaadinUiUtil.createPopupWindow();
 
 		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent =
-			ControllerProvider.getCaseController().getCaseCreateComponent(null, null, null, null, null, true);
+			ControllerProvider.getCaseController().getCaseCreateComponent(null, null, null, null, null, true, true);
 		CaseCreateForm caseCreateForm = caseCreateComponent.getWrappedComponent();
 
 		caseCreateComponent.addDiscardListener(callback::cancel);

@@ -41,6 +41,7 @@ public class CommunityDto extends InfrastructureDtoWithDefault {
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String EXTERNAL_ID = "externalID";
+	public static final String NUTS_CODE = "nutsCode";
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String name;
@@ -50,6 +51,7 @@ public class CommunityDto extends InfrastructureDtoWithDefault {
 	private DistrictReferenceDto district;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalID;
+	private String nutsCode;
 
 	public CommunityDto(
 		Date creationDate,
@@ -116,6 +118,14 @@ public class CommunityDto extends InfrastructureDtoWithDefault {
 
 	public void setExternalID(String externalID) {
 		this.externalID = externalID;
+	}
+
+	public String getNutsCode() {
+		return nutsCode;
+	}
+
+	public void setNutsCode(String nutsCode) {
+		this.nutsCode = nutsCode;
 	}
 
 	public CommunityReferenceDto toReference() {

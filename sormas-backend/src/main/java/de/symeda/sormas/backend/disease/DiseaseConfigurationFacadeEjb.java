@@ -15,6 +15,9 @@
 
 package de.symeda.sormas.backend.disease;
 
+import static de.symeda.sormas.backend.util.QueryHelper.getResultList;
+
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -22,14 +25,23 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.security.PermitAll;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
+import javax.ejb.Lock;
+import javax.ejb.LockType;
 import javax.ejb.Stateless;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -38,14 +50,36 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.audit.AuditIgnore;
+import de.symeda.sormas.api.disease.DiseaseConfigurationCriteria;
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
+import de.symeda.sormas.api.disease.DiseaseConfigurationIndexDto;
+import de.symeda.sormas.api.exposure.ExposureCategory;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.common.sort.EntitySortUtils;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "DiseaseConfigurationFacade")
 public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade {
+
+	public static final Map<String, BiFunction<CriteriaBuilder, Root<DiseaseConfiguration>, Expression<?>>> SORTABLE_FIELDS_DICTIONARY =
+		EntitySortUtils.defaultSort(
+			DiseaseConfiguration.DISEASE,
+			DiseaseConfiguration.ACTIVE,
+			DiseaseConfiguration.PRIMARY_DISEASE,
+			DiseaseConfiguration.CASE_SURVEILLANCE_ENABLED,
+			DiseaseConfiguration.AGGREGATE_REPORTING_ENABLED,
+			DiseaseConfiguration.FOLLOW_UP_ENABLED,
+			DiseaseConfiguration.FOLLOW_UP_DURATION,
+			DiseaseConfiguration.CASE_FOLLOW_UP_DURATION,
+			DiseaseConfiguration.EVENT_PARTICIPANT_FOLLOW_UP_DURATION,
+			DiseaseConfiguration.EXTENDED_CLASSIFICATION,
+			DiseaseConfiguration.EXTENDED_CLASSIFICATION_MULTI,
+			DiseaseConfiguration.AUTOMATIC_SAMPLE_ASSIGNMENT_THRESHOLD);
 
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -61,6 +95,8 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	private static final List<Disease> caseSurveillanceDiseases = new ArrayList<>();
 	private static final List<Disease> aggregateReportingDiseases = new ArrayList<>();
 	private static final List<Disease> followUpEnabledDiseases = new ArrayList<>();
+	private static final List<Disease> incubationEnabledDiseases = new ArrayList<>();
+	private static final List<Disease> contagiousEnabledDiseases = new ArrayList<>();
 
 	private static final Map<Disease, Boolean> extendedClassificationDiseases = new EnumMap<>(Disease.class);
 	private static final Map<Disease, Boolean> extendedClassificationMultiDiseases = new EnumMap<>(Disease.class);
@@ -68,12 +104,24 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	private static final Map<Disease, Integer> followUpDurations = new EnumMap<>(Disease.class);
 	private static final Map<Disease, Integer> caseFollowUpDurations = new EnumMap<>(Disease.class);
 	private static final Map<Disease, Integer> eventParticipantFollowUpDurations = new EnumMap<>(Disease.class);
+	private static final Map<Disease, Integer> maxIncubationPeriod = new EnumMap<>(Disease.class);
+	private static final Map<Disease, Integer> minIncubationPeriod = new EnumMap<>(Disease.class);
+	private static final Map<Disease, Integer> minContagiousPeriod = new EnumMap<>(Disease.class);
+	private static final Map<Disease, Integer> maxContagiousPeriod = new EnumMap<>(Disease.class);
 	private static final Map<Disease, Integer> automaticSampleAssignmentThresholds = new EnumMap<>(Disease.class);
 
 	@Override
 	@PermitAll
 	public List<DiseaseConfigurationDto> getAllAfter(Date date) {
 		return service.getAllAfter(date).stream().map(d -> toDto(d)).collect(Collectors.toList());
+	}
+
+	@Override
+	@PermitAll
+	public DiseaseConfigurationDto getByUuid(String uuid) {
+		DiseaseConfigurationDto dto = toDto(service.getByUuid(uuid));
+		updateDtoNullPropertiesWithDefaultDiseaseEnumProperties(dto);
+		return dto;
 	}
 
 	@Override
@@ -84,6 +132,181 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	@Override
 	public List<String> getAllUuids() {
 		return service.getAllUuids();
+	}
+
+	@Lock(LockType.READ)
+	@Override
+	public long count(DiseaseConfigurationCriteria criteria) {
+		return service.count((cb, root) -> service.buildCriteriaFilter(criteria, cb, root));
+	}
+
+	@Lock(LockType.READ)
+	@RightsAllowed(UserRight._DISEASE_MANAGEMENT)
+	@Override
+	public List<DiseaseConfigurationIndexDto> getIndexList(
+		DiseaseConfigurationCriteria criteria,
+		Integer first,
+		Integer max,
+		List<SortProperty> sortProperties) {
+
+		CriteriaBuilder cb = service.getEntityManager().getCriteriaBuilder();
+		CriteriaQuery<DiseaseConfiguration> cq = cb.createQuery(DiseaseConfiguration.class);
+		Root<DiseaseConfiguration> root = cq.from(DiseaseConfiguration.class);
+
+		Predicate filter = null;
+		if (criteria != null) {
+			filter = service.buildCriteriaFilter(criteria, cb, root);
+		}
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		if (CollectionUtils.isNotEmpty(sortProperties)) {
+			cq.orderBy(sortProperties.stream().map(sortProperty -> {
+				String sortPropertyName = sortProperty.propertyName;
+				Expression<?> sortExpression = Optional.ofNullable(SORTABLE_FIELDS_DICTIONARY.get(sortPropertyName))
+					.map(fct -> fct.apply(cb, root))
+					.orElseThrow(
+						() -> new IllegalArgumentException(
+							String.format(
+								"Invalid sort property: [%s] for [%s]. If must be sorted, then must be added into SORTABLE_FIELDS_DICTIONARY ",
+								sortPropertyName,
+								DiseaseConfiguration.class.getSimpleName())));
+				return sortProperty.ascending ? cb.asc(sortExpression) : cb.desc(sortExpression);
+			}).collect(Collectors.toList()));
+		} else {
+			cq.orderBy(cb.asc(root.get(DiseaseConfiguration.DISEASE)), cb.asc(root.get(DiseaseConfiguration.ACTIVE)));
+		}
+
+		cq.select(root);
+
+		return getResultList(service.getEntityManager(), cq, first, max, this::toIndexDto);
+	}
+
+	public DiseaseConfigurationDto getDiseaseConfiguration(Disease disease) {
+		return toDto(service.getDiseaseConfiguration(disease));
+	}
+
+	private DiseaseConfigurationIndexDto toIndexDto(DiseaseConfiguration entity) {
+
+		if (entity == null) {
+			return null;
+		}
+
+		DiseaseConfigurationIndexDto dto = new DiseaseConfigurationIndexDto();
+		DtoHelper.fillDto(dto, entity);
+
+		dto.setDisease(entity.getDisease());
+
+		if (entity.getActive() != null) {
+			dto.setActive(entity.getActive());
+		} else {
+			dto.setActive(dto.getDisease().isDefaultActive());
+		}
+
+		if (entity.getPrimaryDisease() != null) {
+			dto.setPrimaryDisease(entity.getPrimaryDisease());
+		} else {
+			dto.setPrimaryDisease(dto.getDisease().isDefaultPrimary());
+		}
+
+		if (entity.getCaseSurveillanceEnabled() != null) {
+			dto.setCaseSurveillanceEnabled(entity.getCaseSurveillanceEnabled());
+		} else {
+			dto.setCaseSurveillanceEnabled(dto.getDisease().isDefaultCaseSurveillanceEnabled());
+		}
+
+		if (entity.getAggregateReportingEnabled() != null) {
+			dto.setAggregateReportingEnabled(entity.getAggregateReportingEnabled());
+		} else {
+			dto.setAggregateReportingEnabled(dto.getDisease().isDefaultAggregateReportingEnabled());
+		}
+
+		if (entity.getFollowUpEnabled() != null) {
+			dto.setFollowUpEnabled(entity.getFollowUpEnabled());
+		} else {
+			dto.setFollowUpEnabled(dto.getDisease().isDefaultFollowUpEnabled());
+		}
+
+		if (entity.getFollowUpDuration() != null) {
+			dto.setFollowUpDuration(entity.getFollowUpDuration());
+		} else {
+			dto.setFollowUpDuration(dto.getDisease().getDefaultFollowUpDuration());
+		}
+
+		dto.setCaseFollowUpDuration(entity.getCaseFollowUpDuration());
+		dto.setEventParticipantFollowUpDuration(entity.getEventParticipantFollowUpDuration());
+		dto.setIncubationPeriodEnabled(entity.getIncubationPeriodEnabled());
+		dto.setMaxIncubationPeriod(entity.getMaxIncubationPeriod());
+		dto.setMinIncubationPeriod(entity.getMinIncubationPeriod());
+		dto.setCaseDefinitionText(entity.getCaseDefinitionText());
+		if (entity.getIsContagious() != null) {
+			dto.setIsContagious(entity.getIsContagious());
+		} else {
+			dto.setIsContagious(dto.getDisease().isContagious());
+		}
+		dto.setMaxContagiousPeriod(entity.getMaxContagiousPeriod());
+		dto.setMinContagiousPeriod(entity.getMinContagiousPeriod());
+
+		if (entity.getExtendedClassification() != null) {
+			dto.setExtendedClassification(entity.getExtendedClassification());
+		} else {
+			dto.setExtendedClassification(dto.getDisease().isDefaultExtendedClassification());
+		}
+
+		if (entity.getExtendedClassificationMulti() != null) {
+			dto.setExtendedClassificationMulti(entity.getExtendedClassificationMulti());
+		} else {
+			dto.setExtendedClassificationMulti(dto.getDisease().isDefaultExtendedClassificationMulti());
+		}
+
+		dto.setAgeGroups(entity.getAgeGroups());
+		dto.setAutomaticSampleAssignmentThreshold(entity.getAutomaticSampleAssignmentThreshold());
+
+		if (entity.getExposureCategories() != null && !entity.getExposureCategories().isEmpty()) {
+			dto.setExposureCategoryNames(entity.getExposureCategories().stream().map(ExposureCategory::toString).collect(Collectors.joining(", ")));
+		}
+
+		return dto;
+	}
+
+	public void updateDtoNullPropertiesWithDefaultDiseaseEnumProperties(DiseaseConfigurationDto dto) {
+
+		if (dto == null) {
+			return;
+		}
+
+		if (dto.getActive() == null) {
+			dto.setActive(dto.getDisease().isDefaultActive());
+		}
+
+		if (dto.getPrimaryDisease() == null) {
+			dto.setPrimaryDisease(dto.getDisease().isDefaultPrimary());
+		}
+
+		if (dto.getCaseSurveillanceEnabled() == null) {
+			dto.setCaseSurveillanceEnabled(dto.getDisease().isDefaultCaseSurveillanceEnabled());
+		}
+
+		if (dto.getAggregateReportingEnabled() == null) {
+			dto.setAggregateReportingEnabled(dto.getDisease().isDefaultAggregateReportingEnabled());
+		}
+
+		if (dto.getFollowUpEnabled() == null) {
+			dto.setFollowUpEnabled(dto.getDisease().isDefaultFollowUpEnabled());
+		}
+
+		if (dto.getFollowUpDuration() == null) {
+			dto.setFollowUpDuration(dto.getDisease().getDefaultFollowUpDuration());
+		}
+
+		if (dto.getExtendedClassification() == null) {
+			dto.setExtendedClassification(dto.getDisease().isDefaultExtendedClassification());
+		}
+
+		if (dto.getExtendedClassificationMulti() == null) {
+			dto.setExtendedClassificationMulti(dto.getDisease().isDefaultExtendedClassificationMulti());
+		}
 	}
 
 	@Override
@@ -203,10 +426,18 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		target.setFollowUpDuration(source.getFollowUpDuration());
 		target.setCaseFollowUpDuration(source.getCaseFollowUpDuration());
 		target.setEventParticipantFollowUpDuration(source.getEventParticipantFollowUpDuration());
+		target.setIncubationPeriodEnabled(source.getIncubationPeriodEnabled());
+		target.setMaxIncubationPeriod(source.getMaxIncubationPeriod());
+		target.setMinIncubationPeriod(source.getMinIncubationPeriod());
+		target.setCaseDefinitionText(source.getCaseDefinitionText());
+		target.setMaxContagiousPeriod(source.getMaxContagiousPeriod());
+		target.setMinContagiousPeriod(source.getMinContagiousPeriod());
+		target.setIsContagious(source.getIsContagious());
 		target.setExtendedClassification(source.getExtendedClassification());
 		target.setExtendedClassificationMulti(source.getExtendedClassificationMulti());
 		target.setAgeGroups(source.getAgeGroups());
 		target.setAutomaticSampleAssignmentThreshold(source.getAutomaticSampleAssignmentThreshold());
+		target.setExposureCategories(source.getExposureCategories());
 
 		return target;
 	}
@@ -219,6 +450,24 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	@Override
 	public int getEventParticipantFollowUpDuration(Disease disease) {
 		return eventParticipantFollowUpDurations.get(disease);
+	}
+
+	public boolean isIncubationPeriodEnabled(Disease disease) {
+		return incubationEnabledDiseases.contains(disease);
+	}
+
+	@Override
+	public int getMaxIncubationPeriod(Disease disease) {
+		return maxIncubationPeriod.get(disease);
+	}
+
+	@Override
+	public int getMinIncubationPeriod(Disease disease) {
+		return minIncubationPeriod.get(disease);
+	}
+
+	public String getCaseDefinitionText(Disease disease) {
+		return service.getDiseaseConfiguration(disease) == null ? null : service.getDiseaseConfiguration(disease).getCaseDefinitionText();
 	}
 
 	@Override
@@ -275,6 +524,17 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		target.setExtendedClassificationMulti(source.getExtendedClassificationMulti());
 		target.setAgeGroups(source.getAgeGroups());
 		target.setAutomaticSampleAssignmentThreshold(source.getAutomaticSampleAssignmentThreshold());
+		target.setMaxIncubationPeriod(source.getMaxIncubationPeriod());
+		target.setMinIncubationPeriod(source.getMinIncubationPeriod());
+		target.setIncubationPeriodEnabled(source.getIncubationPeriodEnabled());
+		target.setCaseDefinitionText(source.getCaseDefinitionText());
+		target.setExposureCategories(source.getExposureCategories());
+		target.setIsContagious(source.getIsContagious());
+		target.setMaxContagiousPeriod(source.getMaxContagiousPeriod());
+		target.setMinContagiousPeriod(source.getMinContagiousPeriod());
+
+		//update changedate: required for mobile app to be aware of changes
+		target.setChangeDate(new Timestamp((new Date()).getTime()));
 
 		return target;
 	}
@@ -293,6 +553,12 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		extendedClassificationMultiDiseases.clear();
 		caseFollowUpDurations.clear();
 		eventParticipantFollowUpDurations.clear();
+		incubationEnabledDiseases.clear();
+		maxIncubationPeriod.clear();
+		minIncubationPeriod.clear();
+		contagiousEnabledDiseases.clear();
+		minContagiousPeriod.clear();
+		maxContagiousPeriod.clear();
 		automaticSampleAssignmentThresholds.clear();
 
 		for (DiseaseConfiguration configuration : service.getAll()) {
@@ -346,6 +612,37 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 			} else {
 				eventParticipantFollowUpDurations.put(disease, followUpDurations.get(disease));
 			}
+
+			if (enabled(configuration.getIncubationPeriodEnabled(), disease.isDefaultIncubationPeriodEnabled())) {
+				incubationEnabledDiseases.add(disease);
+			}
+
+			if (configuration.getMaxIncubationPeriod() != null) {
+				maxIncubationPeriod.put(disease, configuration.getMaxIncubationPeriod());
+			} else {
+				maxIncubationPeriod.put(disease, disease.getDefaultMaxIncubationPeriod());
+			}
+			if (configuration.getMinIncubationPeriod() != null) {
+				minIncubationPeriod.put(disease, configuration.getMinIncubationPeriod());
+			} else {
+				minIncubationPeriod.put(disease, disease.getDefaultMinIncubationPeriod());
+			}
+
+			if (enabled(configuration.getIsContagious(), disease.isContagious())) {
+				contagiousEnabledDiseases.add(disease);
+			}
+
+			if (configuration.getMaxContagiousPeriod() != null) {
+				maxContagiousPeriod.put(disease, configuration.getMaxContagiousPeriod());
+			} else {
+				maxContagiousPeriod.put(disease, disease.getDefaultMaxContagiousPeriod());
+			}
+			if (configuration.getMinContagiousPeriod() != null) {
+				minContagiousPeriod.put(disease, configuration.getMinContagiousPeriod());
+			} else {
+				minContagiousPeriod.put(disease, disease.getDefaultMinContagiousPeriod());
+			}
+
 			if (configuration.getAutomaticSampleAssignmentThreshold() != null) {
 				automaticSampleAssignmentThresholds.put(disease, configuration.getAutomaticSampleAssignmentThreshold());
 			}

@@ -38,6 +38,7 @@ import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.Distri
 import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
+import de.symeda.sormas.backend.person.notifier.NotifierEjb;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
@@ -67,6 +68,7 @@ public class ExternalMessageProcessingFacadeEjbLocal extends ExternalMessageProc
 		CustomizableEnumFacadeEjbLocal customizableEnumFacade,
 		CountryFacadeEjbLocal countryFacade,
 		SurveillanceReportFacadeEjbLocal surveillanceReportFacade,
+		NotifierEjb.NotifierEjbLocal notifierFacade,
 		UserService userService) {
 		super(
 			externalMessageFacade,
@@ -85,7 +87,8 @@ public class ExternalMessageProcessingFacadeEjbLocal extends ExternalMessageProc
 			facilityFacade,
 			customizableEnumFacade,
 			countryFacade,
-			surveillanceReportFacade);
+			surveillanceReportFacade,
+			notifierFacade);
 		this.userService = userService;
 	}
 

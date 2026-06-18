@@ -17,14 +17,16 @@ package de.symeda.sormas.ui.immunization.components.form;
 
 import static de.symeda.sormas.ui.utils.CssStyles.ERROR_COLOR_PRIMARY;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
-import static de.symeda.sormas.ui.utils.CssStyles.SOFT_REQUIRED;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.CssStyles.style;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Window;
@@ -54,6 +56,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
+import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.person.PersonCreateForm;
@@ -88,6 +91,7 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		+ fluidRowLocs(ImmunizationDto.VALID_FROM, ImmunizationDto.VALID_UNTIL)
 		+ fluidRowLocs(VACCINATION_HEADING_LOC)
 		+ fluidRow(fluidColumnLoc(6, 0, ImmunizationDto.NUMBER_OF_DOSES))
+		+ fluidRowLocs(ImmunizationDto.INJECTION_FACILITY)
 		+ fluidRowLocs(ImmunizationDto.PERSON);
 	//@formatter:on
 
@@ -98,6 +102,7 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 	private ComboBox responsibleRegion;
 	private ComboBox responsibleDistrict;
 	private ComboBox responsibleCommunity;
+	private ComboBox meansOfImmunizationField;
 	private Window warningSimilarPersons;
 
 	public ImmunizationCreationForm() {
@@ -132,6 +137,7 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		addField(ImmunizationDto.DISEASE_DETAILS, TextField.class);
 
 		ComboBox meansOfImmunizationField = addField(ImmunizationDto.MEANS_OF_IMMUNIZATION, ComboBox.class);
+		this.meansOfImmunizationField = meansOfImmunizationField;
 		addField(ImmunizationDto.MEANS_OF_IMMUNIZATION_DETAILS, TextField.class);
 
 		CheckBox overwriteImmunizationManagementStatus = addCustomField(OVERWRITE_IMMUNIZATION_MANAGEMENT_STATUS, Boolean.class, CheckBox.class);
@@ -157,7 +163,6 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		responsibleDistrict.setRequired(true);
 		responsibleCommunity = addInfrastructureField(ImmunizationDto.RESPONSIBLE_COMMUNITY);
 		responsibleCommunity.setNullSelectionAllowed(true);
-		responsibleCommunity.addStyleName(SOFT_REQUIRED);
 
 		InfrastructureFieldsHelper.initInfrastructureFields(responsibleRegion, responsibleDistrict, responsibleCommunity);
 
@@ -191,6 +196,15 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		numberOfDosesField.addValidator(new NumberValidator(I18nProperties.getValidationError(Validations.vaccineDosesFormat), 1, 10, false));
 		numberOfDosesField.setVisible(false);
 
+		ComboBox injectionFacilityField = addField(ImmunizationDto.INJECTION_FACILITY, ComboBox.class);
+		// Set conditional visibility for RSV cases only
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			ImmunizationDto.INJECTION_FACILITY,
+			ImmunizationDto.DISEASE,
+			Arrays.asList(Disease.RESPIRATORY_SYNCYTIAL_VIRUS),
+			true);
+
 		personCreateForm = new PersonCreateForm(false, true, false);
 		personCreateForm.setWidth(100, Unit.PERCENTAGE);
 		personCreateForm.setValue(new PersonDto());
@@ -199,9 +213,13 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 				.warningSimilarPersons(personCreateForm.getNationalHealthIdField().getValue(), null, () -> warningSimilarPersons = null);
 		});
 
-		diseaseField.addValueChangeListener(
-			(ValueChangeListener) valueChangeEvent -> personCreateForm
-				.updatePresentConditionEnum((Disease) valueChangeEvent.getProperty().getValue()));
+		diseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> {
+			final Disease selectedDisease = (Disease) valueChangeEvent.getProperty().getValue();
+			personCreateForm.updatePresentConditionEnum(selectedDisease);
+
+			// Update means of immunization field based on selected disease using filtered enum data
+			updateMeansOfImmunizationField(selectedDisease);
+		});
 		getContent().addComponent(personCreateForm, TravelEntryDto.PERSON);
 
 		// Set initial visibilities & accesses
@@ -243,8 +261,9 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 			} else {
 				managementStatusField.setValue(ImmunizationManagementStatus.SCHEDULED);
 			}
-			boolean isVaccinationVisible =
-				MeansOfImmunization.VACCINATION.equals(meansOfImmunization) || MeansOfImmunization.VACCINATION_RECOVERY.equals(meansOfImmunization);
+			// Use the isVaccination method from the enum to determine vaccination visibility
+			// This includes VACCINATION, VACCINATION_RECOVERY, MATERNAL_VACCINATION, and MONOCLONAL_ANTIBODY
+			boolean isVaccinationVisible = MeansOfImmunization.isVaccination(meansOfImmunization);
 			numberOfDosesField.setVisible(isVaccinationVisible);
 			if (!isVaccinationVisible) {
 				numberOfDosesField.setValue(null);
@@ -335,6 +354,16 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		});
 
 		addValueChangeListener(e -> {
+			Disease currentDisease = disease;
+			if (currentDisease == null && diseaseField.getValue() != null) {
+				currentDisease = (Disease) diseaseField.getValue();
+			}
+
+			// Initialize means of immunization field based on current disease
+			if (currentDisease != null) {
+				updateMeansOfImmunizationField(currentDisease);
+			}
+
 			if (disease != null) {
 				setVisible(false, ImmunizationDto.DISEASE, ImmunizationDto.DISEASE_DETAILS);
 				setReadOnly(false, ImmunizationDto.DISEASE, ImmunizationDto.DISEASE_DETAILS);
@@ -348,6 +377,27 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 				personCreateForm.enablePersonFields(true);
 			}
 		});
+	}
+
+	/**
+	 * Updates the means of immunization field with disease-specific filtering.
+	 * Uses {@link Diseases} annotations on enum values to determine visibility.
+	 *
+	 * @param disease
+	 *            The selected disease to filter means of immunization options.
+	 */
+	private void updateMeansOfImmunizationField(Disease disease) {
+		List<MeansOfImmunization> filteredValues = Arrays.stream(MeansOfImmunization.values()).filter(value -> {
+			try {
+				java.lang.reflect.Field enumField = MeansOfImmunization.class.getField(value.name());
+				return FieldVisibilityCheckers.withDisease(disease).isVisible(MeansOfImmunization.class, enumField);
+			} catch (NoSuchFieldException e) {
+				// If field doesn't exist, include it by default
+				return true;
+			}
+		}).collect(Collectors.toList());
+
+		FieldHelper.updateEnumData(meansOfImmunizationField, filteredValues);
 	}
 
 	private void updateFacilityFields(ComboBox cbFacility, TextField tfFacilityDetails) {

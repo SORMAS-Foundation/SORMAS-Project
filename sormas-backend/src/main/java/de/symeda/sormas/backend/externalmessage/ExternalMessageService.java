@@ -1,29 +1,21 @@
 package de.symeda.sormas.backend.externalmessage;
 
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.ejb.*;
+import javax.persistence.Tuple;
+import javax.persistence.criteria.*;
 
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageCriteria;
+import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
+import de.symeda.sormas.api.externalmessage.ExternalMessageType;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect;
 import de.symeda.sormas.backend.caze.Case;
@@ -37,6 +29,7 @@ import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportService;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
 @LocalBean
@@ -44,6 +37,9 @@ public class ExternalMessageService extends AdoServiceWithUserFilterAndJurisdict
 
 	@EJB
 	private SampleReportService sampleReportService;
+
+	@EJB
+	private UserService userService;
 
 	public ExternalMessageService() {
 		super(ExternalMessage.class);
@@ -67,9 +63,20 @@ public class ExternalMessageService extends AdoServiceWithUserFilterAndJurisdict
 	}
 
 	/**
-	 * Creates a default filter that should be used as the basis of queries.
-	 * This essentially removes external messages linked to {@link DeletableAdo#isDeleted()} case/contact/event participants from the
-	 * queries.
+	 * Creates a default {@link Predicate} to be used as the basis for queries on {@link ExternalMessage}.
+	 * <p>
+	 * This filter excludes external messages that are linked to deleted cases or samples by checking the {@code deleted} flag
+	 * on associated {@link Case} and {@link Sample} entities. Additionally, it restricts the result to only include messages
+	 * of types that the current user is allowed to view, based on their {@link UserRight}s (e.g., laboratory or doctor declaration).
+	 * <p>
+	 * If the user does not have permission to view any message types, the filter will always evaluate to {@code false}
+	 * (i.e., return no results).
+	 *
+	 * @param cb
+	 *            the {@link CriteriaBuilder} used to construct the predicate
+	 * @param root
+	 *            the root entity in the criteria query
+	 * @return a predicate representing the default filter for external messages
 	 */
 	public Predicate createDefaultFilter(CriteriaBuilder cb, From<?, ExternalMessage> root) {
 		Path<Boolean> sampleDeleted =
@@ -77,7 +84,29 @@ public class ExternalMessageService extends AdoServiceWithUserFilterAndJurisdict
 		Path<Boolean> caseDeleted =
 			root.join(ExternalMessage.SURVEILLANCE_REPORT, JoinType.LEFT).join(SurveillanceReport.CAZE, JoinType.LEFT).get(Case.DELETED);
 
-		return cb.and(cb.or(cb.isNull(sampleDeleted), cb.isFalse(sampleDeleted)), cb.or(cb.isNull(caseDeleted), cb.isFalse(caseDeleted)));
+		Predicate deletedFilter =
+			cb.and(cb.or(cb.isNull(sampleDeleted), cb.isFalse(sampleDeleted)), cb.or(cb.isNull(caseDeleted), cb.isFalse(caseDeleted)));
+
+		ArrayList<ExternalMessageType> messageTypes = new ArrayList<>();
+
+		if (userService.hasRight(UserRight.EXTERNAL_MESSAGE_LABORATORY_VIEW)) {
+			messageTypes.add(ExternalMessageType.LAB_MESSAGE);
+		}
+
+		if (userService.hasRight(UserRight.EXTERNAL_MESSAGE_DOCTOR_DECLARATION_VIEW)) {
+			messageTypes.add(ExternalMessageType.PHYSICIANS_REPORT);
+		}
+
+		if (userService.hasRight(UserRight.EXTERNAL_MESSAGE_SURVEY_RESPONSE_VIEW)) {
+			messageTypes.add(ExternalMessageType.SURVEY_RESPONSE);
+		}
+
+		if (messageTypes.isEmpty()) {
+			return cb.disjunction();
+		}
+
+		Predicate typeInFilter = root.get(ExternalMessage.TYPE).in(messageTypes);
+		return cb.and(deletedFilter, typeInFilter);
 	}
 
 	public Predicate buildCriteriaFilter(CriteriaBuilder cb, Root<ExternalMessage> labMessage, ExternalMessageCriteria criteria) {
@@ -282,5 +311,32 @@ public class ExternalMessageService extends AdoServiceWithUserFilterAndJurisdict
 		cq.where(filter);
 
 		return em.createQuery(cq).getResultStream().findFirst().orElse(null);
+	}
+
+	/**
+	 * Allows to only update (refresh with latest survey data) for messages that are not yet processed:
+	 * {@link ExternalMessageStatus#UNPROCESSED}.
+	 * 
+	 * @param reportIds
+	 *            dedup / idempotency key composed of the survey id and response id.
+	 * @return UUIds that must be updated / refreshed.
+	 */
+	public Map<String, de.symeda.sormas.api.utils.Tuple<ExternalMessageStatus, String>> getUuidsByReportIds(Collection<String> reportIds) {
+		if (reportIds == null || reportIds.isEmpty()) {
+			return Collections.emptyMap();
+		}
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Tuple> cq = cb.createTupleQuery();
+		Root<ExternalMessage> root = cq.from(ExternalMessage.class);
+		cq.multiselect(root.get(AbstractDomainObject.UUID), root.get(ExternalMessage.REPORT_ID), root.get(ExternalMessage.STATUS));
+		cq.where(root.get(ExternalMessage.REPORT_ID).in(reportIds));
+		return em.createQuery(cq)
+			.getResultList()
+			.stream()
+			.collect(
+				Collectors.toMap(
+					tuple -> tuple.get(1, String.class),
+					tuple -> new de.symeda.sormas.api.utils.Tuple<>(tuple.get(2, ExternalMessageStatus.class), tuple.get(0, String.class)),
+					(a, b) -> a));
 	}
 }

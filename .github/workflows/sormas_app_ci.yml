@@ -8,61 +8,66 @@ name: Java CI with Gradle
 
 env:
   JAVA: 17
-  PRIVILEGED_RUN: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/development') 
-   || github.event.pull_request.head.repo.full_name == github.repository }}
+  PRIVILEGED_RUN: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/development') || github.event.pull_request.head.repo.full_name == github.repository }}
 
 on:
-  push:
-    branches: [ development, master, hotfix* ]
-    paths:
-      - 'sormas-app/**'
-      - 'sormas-api/**'
-  pull_request:
-    branches: [ development, hotfix* ]
-    paths:
-      - 'sormas-app/**'
-      - 'sormas-api/**'
+  workflow_dispatch:
+#  push:
+#    branches: [ development, master, hotfix* ]
+#    paths:
+#      - 'sormas-app/**'
+#      - 'sormas-api/**'
+#  pull_request:
+#    branches: [ development, hotfix* ]
+#    paths:
+#      - 'sormas-app/**'
+#      - 'sormas-api/**'
 
 jobs:
   test:
     name: android app test
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         # Even though we are using macos machines which should be faster thanks to hardware accelerations
         # (explanation here https://github.com/ReactiveCircus/android-emulator-runner/issues/46)
         # The memory footprint of newer android versions (>= 29) and the limitations of the GitHub provided machines
         # is usually resulting in timeout when starting the emulator
-        api-level: [26, 27, 28]
+        api-level: [28]
 
     steps:
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules && sudo udevadm trigger --name-match=kvm
+
       - name: Checkout repository (with token)
         # Check if PR results from the repository: if yes, we have access to the secrets.
         # The token is only needed for privileged actions from within the repo, so no need
         # to make it available on 3rd party PRs
         if: ${{ fromJSON(env.PRIVILEGED_RUN) }}
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
-          token: ${{ secrets.SORMAS_VITAGROUP_CI_TOKEN }}
+          token: ${{ secrets.MAVEN_ACTIONS_TOKEN }}
 
       - name: Checkout repository (without token)
         # Check if PR results from a fork: if yes, we cannot access the token.
         # The token is only needed for privileged actions from within the repo, so no need
         # to make it available on 3rd party PRs
         if: ${{ !fromJSON(env.PRIVILEGED_RUN) }}
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Set up JDK ${{ env.JAVA }}
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v5
         with:
           java-version: ${{ env.JAVA }}
-          distribution: 'zulu'
+          distribution: "zulu"
 
       - name: Cache Maven packages
         # Check if PR results from the repository: if yes, it is safe to cache dependencies.
         # This is to keep us safe from cache poisoning through 3rd party PRs.
         if: ${{ fromJSON(env.PRIVILEGED_RUN) }}
-        uses: actions/cache@v3
+        uses: actions/cache@v5
         with:
           path: ~/.m2
           key: ${{ runner.os }}-java-${{ env.JAVA }}-m2-${{ hashFiles('**/pom.xml') }}
@@ -73,7 +78,7 @@ jobs:
         run: mvn install -pl :sormas-api -am -DskipTests=true
 
       - name: Cache Gradle packages
-        uses: actions/cache@v3
+        uses: actions/cache@v5
         # Check if PR results from the repository: if yes, it is safe to cache dependencies.
         # This is to keep us safe from cache poisoning through 3rd party PRs.
         if: ${{ fromJSON(env.PRIVILEGED_RUN) }}
@@ -93,21 +98,24 @@ jobs:
         # Check if PR results from the repository: if yes, it is safe to cache dependencies.
         # This is to keep us safe from cache poisoning through 3rd party PRs.
         if: ${{ fromJSON(env.PRIVILEGED_RUN) }}
-        uses: actions/cache@v3
+        uses: actions/cache@v5
         id: avd-cache
         with:
           path: |
             ~/.android/avd/*
             ~/.android/adb*
-          key: avd-${{ matrix.api-level }}
-      
+          key: avd-${{ matrix.api-level }}-x86_64
+
       - name: Create AVD and generate snapshot for caching
         if: steps.avd-cache.outputs.cache-hit != 'true'
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
+          arch: x86_64
+          ram-size: 2048M
+          heap-size: 512M
           force-avd-creation: false
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -memory 2048
           disable-animations: false
           script: echo "Generated AVD snapshot for caching."
 
@@ -115,20 +123,22 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
+          arch: x86_64
+          ram-size: 2048M
+          heap-size: 512M
           force-avd-creation: false
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -memory 2048
           disable-animations: true
           working-directory: ./sormas-app
           script: ./gradlew connectedAndroidTest
-
       - name: mobsfscan
-        uses: MobSF/mobsfscan@0.2.0
+        uses: MobSF/mobsfscan@main
         with:
-          args: '. --sarif --output mobsf-results.sarif || true'
+          args: ". --sarif --output mobsf-results.sarif || true"
 
       - name: Upload mobsfscan report
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v4
         with:
-          sarif_file: 'mobsf-results.sarif'
+          sarif_file: "mobsf-results.sarif"
           # needed as codeQL also performs an upload, and they clash otherwise
-          category: 'code-scanning/mobsfscan'
+          category: "code-scanning/mobsfscan"

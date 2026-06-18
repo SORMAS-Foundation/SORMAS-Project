@@ -15,6 +15,24 @@
 
 package de.symeda.sormas.api.externalmessage.processing;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.customizableenum.CustomEnumNotFoundException;
 import de.symeda.sormas.api.disease.DiseaseVariant;
@@ -22,30 +40,29 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
+import de.symeda.sormas.api.person.OccupationType;
+import de.symeda.sormas.api.person.PersonContactDetailDto;
+import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.Serotype;
+import de.symeda.sormas.api.therapy.DrugSusceptibilityDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public final class ExternalMessageMapper {
+
+	private static final Logger logger = LoggerFactory.getLogger(ExternalMessageMapper.class);
 
 	private final ExternalMessageDto externalMessage;
 
@@ -54,6 +71,10 @@ public final class ExternalMessageMapper {
 	public ExternalMessageMapper(ExternalMessageDto externalMessage, ExternalMessageProcessingFacade processingFacade) {
 		this.externalMessage = externalMessage;
 		this.processingFacade = processingFacade;
+	}
+
+	public ExternalMessageDto getExternalMessage() {
+		return externalMessage;
 	}
 
 	public List<String[]> mapToPerson(PersonDto person) {
@@ -70,6 +91,7 @@ public final class ExternalMessageMapper {
 					person.getPresentCondition(),
 					externalMessage.getPersonPresentCondition(),
 					PersonDto.PRESENT_CONDITION),
+				Mapping.of(person::setDeathDate, person.getDeathDate(), externalMessage.getDeceasedDate(), PersonDto.DEATH_DATE),
 				Mapping.of(person::setPhone, person.getPhone(), externalMessage.getPersonPhone(), PersonDto.PERSON_CONTACT_DETAILS),
 				Mapping.of(
 					person::setPhoneNumberType,
@@ -149,6 +171,356 @@ public final class ExternalMessageMapper {
 					externalMessage.getPersonFacility(),
 					PersonDto.ADDRESS,
 					LocationDto.FACILITY)));
+	}
+
+	/**
+	 * Deserializes {@link ExternalMessageDto#getAdditionalPersonContactDetails()} from JSON and merges
+	 * the entries into the person. Entries already present by type + contactInformation are skipped.
+	 */
+	public List<String[]> mapAdditionalPersonContactDetails(PersonDto person) {
+		if (externalMessage.getAdditionalPersonContactDetails() == null || externalMessage.getAdditionalPersonContactDetails().isEmpty()) {
+			return Collections.emptyList();
+		}
+		try {
+			List<PersonContactDetailDto> additionalDetails =
+				new ObjectMapper().readValue(externalMessage.getAdditionalPersonContactDetails(), new TypeReference<List<PersonContactDetailDto>>() {
+				});
+			return mapAdditionalPersonContactDetails(person, additionalDetails);
+		} catch (Exception e) {
+			logger.error("[MAPPER] Error while deserializing additional person contact details", e);
+			return Collections.emptyList();
+		}
+	}
+
+	/**
+	 * Deserializes {@link ExternalMessageDto#getAdditionalPersonAddresses()} from JSON and appends
+	 * the entries into the person's address list. No deduplication is performed.
+	 */
+	public List<String[]> mapAdditionalPersonAddresses(PersonDto person) {
+		if (externalMessage.getAdditionalPersonAddresses() == null || externalMessage.getAdditionalPersonAddresses().isEmpty()) {
+			return Collections.emptyList();
+		}
+		try {
+			List<LocationDto> additionalAddresses =
+				new ObjectMapper().readValue(externalMessage.getAdditionalPersonAddresses(), new TypeReference<List<LocationDto>>() {
+				});
+			return mapAdditionalPersonAddresses(person, additionalAddresses);
+		} catch (Exception e) {
+			logger.error("[MAPPER] Error while deserializing additional person addresses", e);
+			return Collections.emptyList();
+		}
+	}
+
+	/**
+	 * Applies guardian name, incapacitated/emancipated flags, and guardian contact details (email, phone)
+	 * from the external message onto the given person.
+	 * These fields are not covered by the regular person-creation form and must be persisted in a separate step.
+	 *
+	 * @param person
+	 *            The person to update.
+	 * @return A list of changed UI field paths; empty if nothing was changed.
+	 */
+	public List<String[]> mapGuardianData(PersonDto person) {
+		List<String[]> changedFields = new ArrayList<>();
+
+		final String nameOfGuardian =
+			String
+				.format(
+					"%s %s",
+					externalMessage.getPersonGuardianFirstName() != null ? externalMessage.getPersonGuardianFirstName() : "",
+					externalMessage.getPersonGuardianLastName() != null ? externalMessage.getPersonGuardianLastName() : "")
+				.trim();
+
+		if (!nameOfGuardian.isBlank()) {
+			person.setNamesOfGuardians(nameOfGuardian);
+			// Both incapacitated and emancipated must be set together, otherwise the person is not shown correctly in the UI
+			person.setIncapacitated(true);
+			person.setEmancipated(false);
+			changedFields.add(
+				new String[] {
+					PersonDto.NAMES_OF_GUARDIANS });
+		}
+
+		if (externalMessage.getPersonGuardianEmail() != null && !externalMessage.getPersonGuardianEmail().isBlank()) {
+			List<PersonContactDetailDto> contactDetails = person.getPersonContactDetails();
+			if (contactDetails.stream().noneMatch(pc -> externalMessage.getPersonGuardianEmail().equals(pc.getContactInformation()))) {
+				final PersonContactDetailDto pcd = new PersonContactDetailDto();
+				pcd.setUuid(DataHelper.createUuid());
+				pcd.setPerson(person.toReference());
+				pcd.setPrimaryContact(false);
+				pcd.setPersonContactDetailType(PersonContactDetailType.EMAIL);
+				pcd.setContactInformation(externalMessage.getPersonGuardianEmail());
+				pcd.setThirdParty(true);
+				pcd.setThirdPartyRole(externalMessage.getPersonGuardianRelationship());
+				pcd.setThirdPartyName(nameOfGuardian);
+				contactDetails.add(pcd);
+				changedFields.add(
+					new String[] {
+						PersonDto.PERSON_CONTACT_DETAILS });
+			}
+		}
+
+		if (externalMessage.getPersonGuardianPhone() != null && !externalMessage.getPersonGuardianPhone().isBlank()) {
+			List<PersonContactDetailDto> contactDetails = person.getPersonContactDetails();
+			if (contactDetails.stream().noneMatch(pc -> externalMessage.getPersonGuardianPhone().equals(pc.getContactInformation()))) {
+				final PersonContactDetailDto pcd = new PersonContactDetailDto();
+				pcd.setUuid(DataHelper.createUuid());
+				pcd.setPerson(person.toReference());
+				pcd.setPrimaryContact(false);
+				pcd.setPersonContactDetailType(PersonContactDetailType.PHONE);
+				pcd.setContactInformation(externalMessage.getPersonGuardianPhone());
+				pcd.setThirdParty(true);
+				pcd.setThirdPartyRole(externalMessage.getPersonGuardianRelationship());
+				pcd.setThirdPartyName(nameOfGuardian);
+				contactDetails.add(pcd);
+				changedFields.add(
+					new String[] {
+						PersonDto.PERSON_CONTACT_DETAILS });
+			}
+		}
+
+		return changedFields;
+	}
+
+	/**
+	 * Applies occupation type and details from the external message onto the given person.
+	 * The occupation type is resolved to the customizable enum value for "OTHER".
+	 * If the enum value cannot be found, no changes are applied.
+	 *
+	 * @param person
+	 *            The person to update.
+	 * @return A list of changed UI field paths; empty if nothing was changed.
+	 */
+	public List<String[]> mapOccupationData(PersonDto person) {
+		if (externalMessage.getPersonOccupation() == null || externalMessage.getPersonOccupation().isBlank()) {
+			return Collections.emptyList();
+		}
+
+		try {
+			final OccupationType occupationTypeOther = processingFacade.getOccupationTypeOther();
+			person.setOccupationType(occupationTypeOther);
+			person.setOccupationDetails(externalMessage.getPersonOccupation());
+			return Collections.singletonList(
+				new String[] {
+					PersonDto.OCCUPATION_TYPE });
+		} catch (CustomEnumNotFoundException e) {
+			// do nothing if OccupationType OTHER custom enum is not found
+			return Collections.emptyList();
+		}
+	}
+
+	/**
+	 * Merges address fields from the external message onto the given person's primary address.
+	 * Only non-null values from the external message overwrite the existing address fields.
+	 *
+	 * @param person
+	 *            The existing person to update.
+	 * @return A list of changed UI field paths; empty if the person has no address.
+	 */
+	public List<String[]> mergePersonAddress(PersonDto person) {
+
+		if (person == null) {
+			return Collections.emptyList();
+		}
+
+		final LocationDto personAddress = person.getAddress();
+		if (personAddress == null) {
+			// just to be safe for whatever reason if address is null, create a new one
+			final LocationDto location = LocationDto.build();
+			// in this case we no longer need to merge the address, so we can just return the new location
+			person.setAddress(location);
+			return mapToLocation(location);
+		}
+
+		final String houseNumber = externalMessage.getPersonHouseNumber();
+		if (houseNumber != null) {
+			personAddress.setHouseNumber(houseNumber);
+		}
+		final String street = externalMessage.getPersonStreet();
+		if (street != null) {
+			personAddress.setStreet(street);
+		}
+		final String city = externalMessage.getPersonCity();
+		if (city != null) {
+			personAddress.setCity(city);
+		}
+		final String postalCode = externalMessage.getPersonPostalCode();
+		if (postalCode != null) {
+			personAddress.setPostalCode(postalCode);
+		}
+		final CountryReferenceDto country = externalMessage.getPersonCountry();
+		if (country != null) {
+			personAddress.setCountry(country);
+		}
+
+		return Collections.singletonList(
+			new String[] {
+				PersonDto.ADDRESS });
+	}
+
+	/**
+	 * Merges primary phone and email contact details from the external message onto the given person.
+	 * If the incoming value already exists in the list it is promoted to primary and the old primary is demoted;
+	 * otherwise a new primary entry is created and the old primary is demoted.
+	 *
+	 * @param person
+	 *            The existing person to update.
+	 * @return A list of changed UI field paths; empty if nothing was changed.
+	 */
+	public List<String[]> mergePersonContactDetails(PersonDto person) {
+
+		if (person == null) {
+			return Collections.emptyList();
+		}
+
+		List<String[]> changedFields = new ArrayList<>();
+
+		final List<PersonContactDetailDto> personContactDetails = person.getPersonContactDetails();
+
+		final String phoneNumber = externalMessage.getPersonPhone();
+		final PhoneNumberType phoneNumberType = externalMessage.getPersonPhoneNumberType();
+
+		if (phoneNumber != null && !phoneNumber.isBlank()) {
+			final PersonContactDetailDto primaryPhone = personContactDetails.stream()
+				.filter(pdc -> pdc.getPersonContactDetailType() == PersonContactDetailType.PHONE && !pdc.isThirdParty() && pdc.isPrimaryContact())
+				.findFirst()
+				.orElse(null);
+			final PersonContactDetailDto existingPhone = personContactDetails.stream()
+				.filter(
+					pdc -> pdc.getPersonContactDetailType() == PersonContactDetailType.PHONE
+						&& !pdc.isThirdParty()
+						&& phoneNumber.equals(pdc.getContactInformation()))
+				.findFirst()
+				.orElse(null);
+
+			if (existingPhone != null) {
+				// Promote the existing entry to primary, demote the old primary
+				if (primaryPhone != null) {
+					primaryPhone.setPrimaryContact(false);
+				}
+				existingPhone.setPrimaryContact(true);
+			} else {
+				// Create a new primary entry and demote the old primary
+				final PersonContactDetailDto personContactDetail = new PersonContactDetailDto();
+				personContactDetail.setUuid(DataHelper.createUuid());
+				personContactDetail.setPerson(person.toReference());
+				personContactDetail.setPrimaryContact(true);
+				personContactDetail.setPersonContactDetailType(PersonContactDetailType.PHONE);
+				personContactDetail.setPhoneNumberType(phoneNumberType);
+				personContactDetail.setContactInformation(phoneNumber);
+				personContactDetail.setThirdParty(false);
+				personContactDetails.add(personContactDetail);
+				if (primaryPhone != null) {
+					primaryPhone.setPrimaryContact(false);
+				}
+			}
+			changedFields.add(
+				new String[] {
+					PersonDto.PERSON_CONTACT_DETAILS });
+		}
+
+		final String emailAddress = externalMessage.getPersonEmail();
+
+		if (emailAddress != null && !emailAddress.isBlank()) {
+			final PersonContactDetailDto primaryEmail = personContactDetails.stream()
+				.filter(pdc -> pdc.getPersonContactDetailType() == PersonContactDetailType.EMAIL && !pdc.isThirdParty() && pdc.isPrimaryContact())
+				.findFirst()
+				.orElse(null);
+			final PersonContactDetailDto existingEmail = personContactDetails.stream()
+				.filter(
+					pdc -> pdc.getPersonContactDetailType() == PersonContactDetailType.EMAIL
+						&& !pdc.isThirdParty()
+						&& emailAddress.equals(pdc.getContactInformation()))
+				.findFirst()
+				.orElse(null);
+
+			if (existingEmail != null) {
+				// Promote the existing entry to primary, demote the old primary
+				if (primaryEmail != null) {
+					primaryEmail.setPrimaryContact(false);
+				}
+				existingEmail.setPrimaryContact(true);
+			} else {
+				// Create a new primary entry and demote the old primary
+				final PersonContactDetailDto personContactDetail = new PersonContactDetailDto();
+				personContactDetail.setUuid(DataHelper.createUuid());
+				personContactDetail.setPerson(person.toReference());
+				personContactDetail.setPrimaryContact(true);
+				personContactDetail.setPersonContactDetailType(PersonContactDetailType.EMAIL);
+				personContactDetail.setContactInformation(emailAddress);
+				personContactDetail.setThirdParty(false);
+				personContactDetails.add(personContactDetail);
+				if (primaryEmail != null) {
+					primaryEmail.setPrimaryContact(false);
+				}
+			}
+			changedFields.add(
+				new String[] {
+					PersonDto.PERSON_CONTACT_DETAILS });
+		}
+
+		changedFields.addAll(mapAdditionalPersonContactDetails(person));
+
+		return changedFields;
+	}
+
+	private List<String[]> mapAdditionalPersonContactDetails(PersonDto person, List<PersonContactDetailDto> additionalDetails) {
+		if (person == null) {
+			return Collections.emptyList();
+		}
+
+		if (additionalDetails == null || additionalDetails.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		List<PersonContactDetailDto> existing = person.getPersonContactDetails();
+		boolean changed = false;
+
+		for (PersonContactDetailDto incoming : additionalDetails) {
+			final boolean alreadyPresent = existing.stream()
+				.anyMatch(
+					e -> e.getPersonContactDetailType() == incoming.getPersonContactDetailType()
+						&& Objects.equals(e.getContactInformation(), incoming.getContactInformation()));
+
+			if (alreadyPresent) {
+				continue;
+			}
+
+			if (incoming.getUuid() == null) {
+				incoming.setUuid(DataHelper.createUuid());
+			}
+			incoming.setPerson(person.toReference());
+			existing.add(incoming);
+			changed = true;
+		}
+
+		return changed
+			? Collections.singletonList(
+				new String[] {
+					PersonDto.PERSON_CONTACT_DETAILS })
+			: Collections.emptyList();
+	}
+
+	private List<String[]> mapAdditionalPersonAddresses(PersonDto person, List<LocationDto> additionalAddresses) {
+
+		if (person == null) {
+			return Collections.emptyList();
+		}
+
+		if (additionalAddresses == null || additionalAddresses.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		for (LocationDto incoming : additionalAddresses) {
+			if (incoming.getUuid() == null) {
+				incoming.setUuid(DataHelper.createUuid());
+			}
+			person.getAddresses().add(incoming);
+		}
+
+		return Collections.singletonList(
+			new String[] {
+				PersonDto.ADDRESSES });
 	}
 
 	public List<String[]> mapToSample(SampleDto sample, SampleReportDto sampleReport) {
@@ -333,7 +705,290 @@ public final class ExternalMessageMapper {
 							pathogenTest::setPrescriberCountry,
 							pathogenTest.getPrescriberCountry(),
 							sourceTestReport.getPrescriberCountry(),
-							PathogenTestDto.PRESCRIBER_COUNTRY))));
+							PathogenTestDto.PRESCRIBER_COUNTRY),
+						Mapping.of(pathogenTest::setGenoType, pathogenTest.getGenoType(), sourceTestReport.getGenoType(), PathogenTestDto.GENOTYPE),
+						Mapping.of(
+							pathogenTest::setSeroGroupSpecification,
+							pathogenTest.getSeroGroupSpecification(),
+							sourceTestReport.getSeroGroupSpecification(),
+							PathogenTestDto.SERO_GROUP_SPECIFICATION),
+						Mapping.of(
+							pathogenTest::setSeroGroupSpecificationText,
+							pathogenTest.getSeroGroupSpecificationText(),
+							sourceTestReport.getSeroGroupSpecificationText(),
+							PathogenTestDto.SERO_GROUP_SPECIFICATION),
+						Mapping.of(pathogenTest::setSerotype, pathogenTest.getSerotype(), sourceTestReport.getSerotype(), PathogenTestDto.SEROTYPE),
+						Mapping.of(
+							pathogenTest::setSerotypeText,
+							pathogenTest.getSerotypeText(),
+							sourceTestReport.getSerotypeText(),
+							PathogenTestDto.SEROTYPE_TEXT),
+						Mapping.of(
+							pathogenTest::setSeroTypingMethod,
+							pathogenTest.getSeroTypingMethod(),
+							sourceTestReport.getSeroTypingMethod(),
+							PathogenTestDto.SEROTYPING_METHOD),
+						Mapping.of(
+							pathogenTest::setSeroTypingMethodText,
+							pathogenTest.getSeroTypingMethodText(),
+							sourceTestReport.getSeroTypingMethodText(),
+							PathogenTestDto.SERO_TYPING_METHOD_TEXT),
+						Mapping.of(
+							pathogenTest::setRsvSubtype,
+							pathogenTest.getRsvSubtype(),
+							sourceTestReport.getRsvSubtype(),
+							PathogenTestDto.RSV_SUBTYPE),
+						Mapping.of(
+							pathogenTest::setTubeNil, // Tube nil flag
+							pathogenTest.getTubeNil(),
+							sourceTestReport.getTubeNil(),
+							PathogenTestDto.TUBE_NIL),
+						Mapping.of(
+							pathogenTest::setTubeNilGT10, // Nil >10 flag
+							pathogenTest.getTubeNilGT10(),
+							sourceTestReport.getTubeNilGT10(),
+							PathogenTestDto.TUBE_NIL_GT10),
+						Mapping.of(
+							pathogenTest::setTubeAgTb1,
+							pathogenTest.getTubeAgTb1(),
+							sourceTestReport.getTubeAgTb1(),
+							PathogenTestDto.TUBE_AG_TB1),
+						Mapping.of(
+							pathogenTest::setTubeAgTb1GT10,
+							pathogenTest.getTubeAgTb1GT10(),
+							sourceTestReport.getTubeAgTb1GT10(),
+							PathogenTestDto.TUBE_AG_TB1_GT10),
+						Mapping.of(
+							pathogenTest::setTubeAgTb2,
+							pathogenTest.getTubeAgTb2(),
+							sourceTestReport.getTubeAgTb2(),
+							PathogenTestDto.TUBE_AG_TB2),
+						Mapping.of(
+							pathogenTest::setTubeAgTb2GT10,
+							pathogenTest.getTubeAgTb2GT10(),
+							sourceTestReport.getTubeAgTb2GT10(),
+							PathogenTestDto.TUBE_AG_TB2_GT10),
+						Mapping.of(
+							pathogenTest::setTubeMitogene,
+							pathogenTest.getTubeMitogene(),
+							sourceTestReport.getTubeMitogene(),
+							PathogenTestDto.TUBE_MITOGENE),
+						Mapping.of(
+							pathogenTest::setTubeMitogeneGT10,
+							pathogenTest.getTubeMitogeneGT10(),
+							sourceTestReport.getTubeMitogeneGT10(),
+							PathogenTestDto.TUBE_MITOGENE_GT10),
+						Mapping.of(
+							pathogenTest::setStrainCallStatus,
+							pathogenTest.getStrainCallStatus(),
+							sourceTestReport.getStrainCallStatus(),
+							PathogenTestDto.STRAIN_CALL_STATUS),
+						Mapping.of(pathogenTest::setSpecie, pathogenTest.getSpecie(), sourceTestReport.getSpecie(), PathogenTestDto.SPECIE),
+						// Drug susceptibility mappings
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setAmikacinMic,
+							pathogenTest.getDrugSusceptibility().getAmikacinMic(),
+							sourceTestReport.getAmikacinMic(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.AMIKACIN_MIC),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setAmikacinSusceptibility,
+							pathogenTest.getDrugSusceptibility().getAmikacinSusceptibility(),
+							sourceTestReport.getAmikacinSusceptibility(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.AMIKACIN_SUSCEPTIBILITY),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setBedaquilineMic,
+							pathogenTest.getDrugSusceptibility().getBedaquilineMic(),
+							sourceTestReport.getBedaquilineMic(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.BEDAQUILINE_MIC),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setBedaquilineSusceptibility,
+							pathogenTest.getDrugSusceptibility().getBedaquilineSusceptibility(),
+							sourceTestReport.getBedaquilineSusceptibility(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.BEDAQUILINE_SUSCEPTIBILITY),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setCapreomycinMic,
+							pathogenTest.getDrugSusceptibility().getCapreomycinMic(),
+							sourceTestReport.getCapreomycinMic(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.CAPREOMYCIN_MIC),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setCapreomycinSusceptibility,
+							pathogenTest.getDrugSusceptibility().getCapreomycinSusceptibility(),
+							sourceTestReport.getCapreomycinSusceptibility(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.CAPREOMYCIN_SUSCEPTIBILITY),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setCiprofloxacinMic,
+							pathogenTest.getDrugSusceptibility().getCiprofloxacinMic(),
+							sourceTestReport.getCiprofloxacinMic(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.CIPROFLOXACIN_MIC),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setCiprofloxacinSusceptibility,
+							pathogenTest.getDrugSusceptibility().getCiprofloxacinSusceptibility(),
+							sourceTestReport.getCiprofloxacinSusceptibility(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.CIPROFLOXACIN_SUSCEPTIBILITY),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setDelamanidMic,
+							pathogenTest.getDrugSusceptibility().getDelamanidMic(),
+							sourceTestReport.getDelamanidMic(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.DELAMANID_MIC),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setDelamanidSusceptibility,
+							pathogenTest.getDrugSusceptibility().getDelamanidSusceptibility(),
+							sourceTestReport.getDelamanidSusceptibility(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.DELAMANID_SUSCEPTIBILITY),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setEthambutolMic,
+							pathogenTest.getDrugSusceptibility().getEthambutolMic(),
+							sourceTestReport.getEthambutolMic(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.ETHAMBUTOL_MIC),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setEthambutolSusceptibility,
+							pathogenTest.getDrugSusceptibility().getEthambutolSusceptibility(),
+							sourceTestReport.getEthambutolSusceptibility(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.ETHAMBUTOL_SUSCEPTIBILITY),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setGatifloxacinMic,
+							pathogenTest.getDrugSusceptibility().getGatifloxacinMic(),
+							sourceTestReport.getGatifloxacinMic(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.GATIFLOXACIN_MIC),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setGatifloxacinSusceptibility,
+							pathogenTest.getDrugSusceptibility().getGatifloxacinSusceptibility(),
+							sourceTestReport.getGatifloxacinSusceptibility(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.GATIFLOXACIN_SUSCEPTIBILITY),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setIsoniazidMic,
+							pathogenTest.getDrugSusceptibility().getIsoniazidMic(),
+							sourceTestReport.getIsoniazidMic(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.ISONIAZID_MIC),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setIsoniazidSusceptibility,
+							pathogenTest.getDrugSusceptibility().getIsoniazidSusceptibility(),
+							sourceTestReport.getIsoniazidSusceptibility(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.ISONIAZID_SUSCEPTIBILITY),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setKanamycinMic,
+							pathogenTest.getDrugSusceptibility().getKanamycinMic(),
+							sourceTestReport.getKanamycinMic(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.KANAMYCIN_MIC),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setKanamycinSusceptibility,
+							pathogenTest.getDrugSusceptibility().getKanamycinSusceptibility(),
+							sourceTestReport.getKanamycinSusceptibility(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.KANAMYCIN_SUSCEPTIBILITY),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setLevofloxacinMic,
+							pathogenTest.getDrugSusceptibility().getLevofloxacinMic(),
+							sourceTestReport.getLevofloxacinMic(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.LEVOFLOXACIN_MIC),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setLevofloxacinSusceptibility,
+							pathogenTest.getDrugSusceptibility().getLevofloxacinSusceptibility(),
+							sourceTestReport.getLevofloxacinSusceptibility(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.LEVOFLOXACIN_SUSCEPTIBILITY),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setMoxifloxacinMic,
+							pathogenTest.getDrugSusceptibility().getMoxifloxacinMic(),
+							sourceTestReport.getMoxifloxacinMic(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.MOXIFLOXACIN_MIC),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setMoxifloxacinSusceptibility,
+							pathogenTest.getDrugSusceptibility().getMoxifloxacinSusceptibility(),
+							sourceTestReport.getMoxifloxacinSusceptibility(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.MOXIFLOXACIN_SUSCEPTIBILITY),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setOfloxacinMic,
+							pathogenTest.getDrugSusceptibility().getOfloxacinMic(),
+							sourceTestReport.getOfloxacinMic(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.OFLOXACIN_MIC),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setOfloxacinSusceptibility,
+							pathogenTest.getDrugSusceptibility().getOfloxacinSusceptibility(),
+							sourceTestReport.getOfloxacinSusceptibility(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.OFLOXACIN_SUSCEPTIBILITY),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setRifampicinMic,
+							pathogenTest.getDrugSusceptibility().getRifampicinMic(),
+							sourceTestReport.getRifampicinMic(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.RIFAMPICIN_MIC),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setRifampicinSusceptibility,
+							pathogenTest.getDrugSusceptibility().getRifampicinSusceptibility(),
+							sourceTestReport.getRifampicinSusceptibility(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.RIFAMPICIN_SUSCEPTIBILITY),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setStreptomycinMic,
+							pathogenTest.getDrugSusceptibility().getStreptomycinMic(),
+							sourceTestReport.getStreptomycinMic(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.STREPTOMYCIN_MIC),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setStreptomycinSusceptibility,
+							pathogenTest.getDrugSusceptibility().getStreptomycinSusceptibility(),
+							sourceTestReport.getStreptomycinSusceptibility(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.STREPTOMYCIN_SUSCEPTIBILITY),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setCeftriaxoneMic,
+							pathogenTest.getDrugSusceptibility().getCeftriaxoneMic(),
+							sourceTestReport.getCeftriaxoneMic(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.CEFTRIAXONE_MIC),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setCeftriaxoneSusceptibility,
+							pathogenTest.getDrugSusceptibility().getCeftriaxoneSusceptibility(),
+							sourceTestReport.getCeftriaxoneSusceptibility(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.CEFTRIAXONE_SUSCEPTIBILITY),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setPenicillinMic,
+							pathogenTest.getDrugSusceptibility().getPenicillinMic(),
+							sourceTestReport.getPenicillinMic(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.PENICILLIN_MIC),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setPenicillinSusceptibility,
+							pathogenTest.getDrugSusceptibility().getPenicillinSusceptibility(),
+							sourceTestReport.getPenicillinSusceptibility(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.PENICILLIN_SUSCEPTIBILITY),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setErythromycinMic,
+							pathogenTest.getDrugSusceptibility().getErythromycinMic(),
+							sourceTestReport.getErythromycinMic(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.ERYTHROMYCIN_MIC),
+						Mapping.of(
+							pathogenTest.getDrugSusceptibility()::setErythromycinSusceptibility,
+							pathogenTest.getDrugSusceptibility().getErythromycinSusceptibility(),
+							sourceTestReport.getErythromycinSusceptibility(),
+							PathogenTestDto.DRUG_SUSCEPTIBILITY,
+							DrugSusceptibilityDto.ERYTHROMYCIN_SUSCEPTIBILITY))));
 		}
 
 		changedFields.addAll(

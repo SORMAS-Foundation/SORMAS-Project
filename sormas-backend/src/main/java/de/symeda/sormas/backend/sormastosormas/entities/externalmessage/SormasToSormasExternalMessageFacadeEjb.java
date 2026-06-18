@@ -78,7 +78,7 @@ public class SormasToSormasExternalMessageFacadeEjb implements SormasToSormasExt
 	@Override
 	@RightsAllowed(UserRight._SORMAS_TO_SORMAS_SHARE)
 	public void sendExternalMessages(List<String> uuids, @Valid SormasToSormasOptionsDto options) throws SormasToSormasException {
-		if (!userService.hasRight(UserRight.EXTERNAL_MESSAGE_PROCESS)) {
+		if (!(userService.hasRight(UserRight.EXTERNAL_MESSAGE_LABORATORY_PROCESS) || userService.hasRight(UserRight.EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS))) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorForbidden));
 		}
 

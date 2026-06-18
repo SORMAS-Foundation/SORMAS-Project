@@ -8,7 +8,6 @@ import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
-import javax.enterprise.context.RequestScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -23,15 +22,20 @@ import javax.transaction.Transactional;
 
 import org.hibernate.Hibernate;
 import org.hibernate.proxy.HibernateProxy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless
 @LocalBean
 @AuditIgnore
 public class CurrentUserService {
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Resource
 	private SessionContext context;
@@ -50,7 +54,8 @@ public class CurrentUserService {
 	 *
 	 * @TransactionScoped would be better for performance, but is not supported by the CDI based testing framework
 	 */
-	@RequestScoped
+	//@RequestScoped
+	@Transactional(Transactional.TxType.REQUIRED)
 	public User getCurrentUser() {
 		final String currentUsername = context.getCallerPrincipal().getName();
 
@@ -60,6 +65,8 @@ public class CurrentUserService {
 
 		User cachedUser = userCache.get(currentUsername);
 		if (cachedUser != null) {
+			unProxyUserAddress(cachedUser);
+
 			return cachedUser;
 		}
 
@@ -73,6 +80,7 @@ public class CurrentUserService {
 		if (currentUser == null) {
 			return null;
 		} else {
+
 			userCache.put(currentUsername, currentUser);
 			return currentUser;
 		}
@@ -134,9 +142,26 @@ public class CurrentUserService {
 			unproxy(currentUser.getPointOfEntry());
 			unproxy(currentUser.getLaboratory());
 			unproxy(currentUser.getAssociatedOfficer());
+
+			unProxyUserAddress(currentUser);
+
 		}
 
 		return currentUser;
+	}
+
+	private void unProxyUserAddress(User currentUser) {
+		if (currentUser.getAddress() != null) {
+			Location deProxiedAddress = unproxy(currentUser.getAddress());
+			deProxiedAddress.setContinent(unproxy(deProxiedAddress.getContinent()));
+			deProxiedAddress.setSubcontinent(unproxy(deProxiedAddress.getSubcontinent()));
+			deProxiedAddress.setCountry(unproxy(deProxiedAddress.getCountry()));
+			deProxiedAddress.setRegion(unproxy(deProxiedAddress.getRegion()));
+			deProxiedAddress.setDistrict(unproxy(deProxiedAddress.getDistrict()));
+			deProxiedAddress.setCommunity(unproxy(deProxiedAddress.getCommunity()));
+			deProxiedAddress.setFacility(unproxy(deProxiedAddress.getFacility()));
+			currentUser.setAddress(deProxiedAddress);
+		}
 	}
 
 	public static <T> T unproxy(T proxied) {

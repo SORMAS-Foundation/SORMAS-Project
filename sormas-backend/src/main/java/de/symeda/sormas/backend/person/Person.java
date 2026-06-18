@@ -46,11 +46,15 @@ import de.symeda.sormas.api.externaldata.HasExternalData;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ArmedForcesRelationType;
+import de.symeda.sormas.api.person.BirthWeightCategory;
 import de.symeda.sormas.api.person.BurialConductor;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.DeathPlaceType;
 import de.symeda.sormas.api.person.EducationType;
+import de.symeda.sormas.api.person.GestationalAgeCategory;
 import de.symeda.sormas.api.person.IsPerson;
+import de.symeda.sormas.api.person.LivingStatus;
+import de.symeda.sormas.api.person.MultipleBirth;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.OccupationTypeConverter;
 import de.symeda.sormas.api.person.PersonContactDetailType;
@@ -59,6 +63,7 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
+import de.symeda.sormas.api.person.WorkPlace;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
@@ -121,6 +126,9 @@ public class Person extends AbstractDomainObject implements IsPerson, HasExterna
 	public static final String PLACE_OF_BIRTH_FACILITY_DETAILS = "placeOfBirthFacilityDetails";
 	public static final String GESTATION_AGE_AT_BIRTH = "gestationAgeAtBirth";
 	public static final String BIRTH_WEIGHT = "birthWeight";
+	public static final String GESTATIONAL_AGE_CATEGORY = "gestationalAgeCategory";
+	public static final String BIRTH_WEIGHT_CATEGORY = "birthWeightCategory";
+	public static final String MULTIPLE_BIRTH = "multipleBirth";
 	public static final String PASSPORT_NUMBER = "passportNumber";
 	public static final String NATIONAL_HEALTH_ID = "nationalHealthId";
 	public static final String PLACE_OF_BIRTH_FACILITY_TYPE = "placeOfBirthFacilityType";
@@ -142,6 +150,8 @@ public class Person extends AbstractDomainObject implements IsPerson, HasExterna
 	public static final String IMMUNIZATIONS = "immunizations";
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	public static final String TRAVEL_ENTRIES = "travelEntries";
+	public static final String IS_INCAPACITATED = "isIncapacitated";
+	public static final String IS_EMANCIPATED = "emancipated";
 
 	private String firstName;
 	private String lastName;
@@ -183,6 +193,9 @@ public class Person extends AbstractDomainObject implements IsPerson, HasExterna
 	private String placeOfBirthFacilityDetails;
 	private Integer gestationAgeAtBirth;
 	private Integer birthWeight;
+	private GestationalAgeCategory gestationalAgeCategory;
+	private BirthWeightCategory birthWeightCategory;
+	private MultipleBirth multipleBirth;
 	private Date deathDate;
 
 	private EducationType educationType;
@@ -210,6 +223,17 @@ public class Person extends AbstractDomainObject implements IsPerson, HasExterna
 	private Country birthCountry;
 	private Country citizenship;
 	private String additionalDetails;
+
+	private boolean isIncapacitated;
+	private boolean emancipated;
+
+	private Date entryDate;
+
+	private LivingStatus livingStatus;
+
+	// Cryptosporidiosis & Giardiasis specific
+	private WorkPlace workPlace;
+	private String workPlaceText;
 
 	private List<Case> cases = new ArrayList<>();
 	private List<Contact> contacts = new ArrayList<>();
@@ -581,6 +605,33 @@ public class Person extends AbstractDomainObject implements IsPerson, HasExterna
 		this.birthWeight = birthWeight;
 	}
 
+	@Enumerated(EnumType.STRING)
+	public GestationalAgeCategory getGestationalAgeCategory() {
+		return gestationalAgeCategory;
+	}
+
+	public void setGestationalAgeCategory(GestationalAgeCategory gestationalAgeCategory) {
+		this.gestationalAgeCategory = gestationalAgeCategory;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public BirthWeightCategory getBirthWeightCategory() {
+		return birthWeightCategory;
+	}
+
+	public void setBirthWeightCategory(BirthWeightCategory birthWeightCategory) {
+		this.birthWeightCategory = birthWeightCategory;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public MultipleBirth getMultipleBirth() {
+		return multipleBirth;
+	}
+
+	public void setMultipleBirth(MultipleBirth multipleBirth) {
+		this.multipleBirth = multipleBirth;
+	}
+
 	@Column
 	public String getPassportNumber() {
 		return passportNumber;
@@ -658,6 +709,24 @@ public class Person extends AbstractDomainObject implements IsPerson, HasExterna
 
 	public void setHasCovidApp(boolean hasCovidApp) {
 		this.hasCovidApp = hasCovidApp;
+	}
+
+	@Column
+	public boolean isIncapacitated() {
+		return isIncapacitated;
+	}
+
+	public void setIncapacitated(boolean incapacitated) {
+		isIncapacitated = incapacitated;
+	}
+
+	@Column
+	public boolean isEmancipated() {
+		return emancipated;
+	}
+
+	public void setEmancipated(boolean emancipated) {
+		this.emancipated = emancipated;
 	}
 
 	@Column
@@ -799,6 +868,40 @@ public class Person extends AbstractDomainObject implements IsPerson, HasExterna
 		final PersonContactDetail pcd =
 			new PersonContactDetail(this, true, personContactDetailType, null, null, contactInfo, null, false, null, null);
 		getPersonContactDetails().add(pcd);
+	}
+
+	public Date getEntryDate() {
+		return entryDate;
+	}
+
+	public void setEntryDate(Date entryDate) {
+		this.entryDate = entryDate;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public LivingStatus getLivingStatus() {
+		return livingStatus;
+	}
+
+	public void setLivingStatus(LivingStatus livingStatus) {
+		this.livingStatus = livingStatus;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public WorkPlace getWorkPlace() {
+		return workPlace;
+	}
+
+	public void setWorkPlace(WorkPlace workPlace) {
+		this.workPlace = workPlace;
+	}
+
+	public String getWorkPlaceText() {
+		return workPlaceText;
+	}
+
+	public void setWorkPlaceText(String workPlaceText) {
+		this.workPlaceText = workPlaceText;
 	}
 
 	@Transient

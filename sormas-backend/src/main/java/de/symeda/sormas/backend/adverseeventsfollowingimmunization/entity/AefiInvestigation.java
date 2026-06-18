@@ -71,7 +71,7 @@ public class AefiInvestigation extends CoreAdo {
 	private static final long serialVersionUID = 6128204752074963848L;
 
 	public static final String TABLE_NAME = "adverseeventsfollowingimmunizationinvestigation";
-	public static final String AEFI_INVESTIGATION_VACCINATIONS_TABLE_NAME = "adverseeventsfollowingimmunizationinvestigation_vaccinations";
+	public static final String AEFI_INVESTIGATION_VACCINATIONS_TABLE_NAME = "aefiinvestigation_vaccinations";
 
 	public static final String AEFI_REPORT = "aefiReport";
 	public static final String AEFI_REPORT_ID = "aefiReportId";

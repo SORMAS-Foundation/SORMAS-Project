@@ -63,6 +63,9 @@ public enum DatabaseTable {
 	EVENTPARTICIPANTS(DatabaseTableType.SORMAS, EVENTS, "event_participants"),
 	ACTIONS(DatabaseTableType.SORMAS, EVENTS, "actions"),
 
+	ENVIRONMENTS(DatabaseTableType.SORMAS, "environments", dependingOnFeature(FeatureType.ENVIRONMENT_MANAGEMENT)),
+	EVENT_ENVIRONMENTS(DatabaseTableType.SORMAS, ENVIRONMENTS, "events_environments"),
+
 	TRAVEL_ENTRIES(DatabaseTableType.SORMAS, "travel_entries", dependingOnFeature(FeatureType.TRAVEL_ENTRIES)),
 
 	IMMUNIZATIONS(DatabaseTableType.SORMAS, "immunizations", dependingOnFeature(FeatureType.IMMUNIZATION_MANAGEMENT)),
@@ -102,6 +105,8 @@ public enum DatabaseTable {
 	FACILITIES(DatabaseTableType.INFRASTRUCTURE, "facilities", null),
 	POINTS_OF_ENTRY(DatabaseTableType.INFRASTRUCTURE, "points_of_entry", null),
 	CUSTOMIZABLE_ENUM_VALUES(DatabaseTableType.CONFIGURATION, "customizable_enum_values", null),
+	CUSTOMIZABLE_FIELD_METADATA(DatabaseTableType.CONFIGURATION, "customizable_field_metadata", null),
+	CUSTOMIZABLE_FIELD_VALUE(DatabaseTableType.CONFIGURATION, CUSTOMIZABLE_FIELD_METADATA, "customizable_field_value"),
 
 	CAMPAIGNS(DatabaseTableType.SORMAS, "campaigns", dependingOnFeature(FeatureType.CAMPAIGNS)),
 	CAMPAIGN_CAMPAIGNFORMMETA(DatabaseTableType.SORMAS, CAMPAIGNS, "campaign_campaignformmeta"),
@@ -150,7 +155,14 @@ public enum DatabaseTable {
 			FeatureType.CASE_FOLLOWUP)),
 	FEATURE_CONFIGURATIONS(DatabaseTableType.CONFIGURATION, "feature_configurations", null),
 	DISEASE_CONFIGURATIONS(DatabaseTableType.CONFIGURATION, "disease_configurations", null),
-	DELETION_CONFIGURATIONS(DatabaseTableType.CONFIGURATION, "deletion_configurations", null);
+	DELETION_CONFIGURATIONS(DatabaseTableType.CONFIGURATION, "deletion_configurations", null),
+
+	SYSTEM_CONFIGURATION_VALUES(DatabaseTableType.CONFIGURATION, "system_configuration_values", null),
+	SYSTEM_CONFIGURATION_CATEGORIES(DatabaseTableType.CONFIGURATION, "system_configuration_categories", null),
+
+	NOTIFIER(DatabaseTableType.SORMAS, "notifier", null),
+
+	DRUG_SUSCEPTIBILITY(DatabaseTableType.SORMAS, "drug_susceptibility", null);
 
 	private static BiFunction<List<FeatureConfigurationDto>, ConfigFacade, Boolean> dependingOnFeature(FeatureType... featureTypes) {
 		return (featureConfigurations, configFacade) -> featureConfigurations.stream()

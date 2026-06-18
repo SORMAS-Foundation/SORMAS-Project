@@ -185,9 +185,13 @@ public abstract class AbstractForm<T> extends CustomField<T> implements WithChil
 			CssStyles.style(field, configuration.getStyle());
 		}
 
-		if (configuration.getValidationMessageProperty() != null) {
+		if (configuration.getValidationMessageProperty() != null && field instanceof com.vaadin.v7.ui.TextField) {
 			((com.vaadin.v7.ui.TextField) field)
 				.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, field.getCaption()));
+		}
+
+		if (configuration.getValueChangeListener() != null && field instanceof AbstractField) {
+			((AbstractField<?>) field).addValueChangeListener(configuration.getValueChangeListener());
 		}
 	}
 

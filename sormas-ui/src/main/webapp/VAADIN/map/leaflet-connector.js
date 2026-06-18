@@ -40,6 +40,9 @@ window.de_symeda_sormas_ui_map_LeafletMap = function () {
 		"sample contact",
 		"sample event-participant",
 		"sample environment",
+		"aefi serious",
+		"aefi non-serious",
+		"aefi unclassified"
 		];
 	
 	var connector = this;

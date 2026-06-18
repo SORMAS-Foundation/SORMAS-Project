@@ -60,6 +60,7 @@ import de.symeda.sormas.api.caze.IsCase;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.QuarantineReason;
 import de.symeda.sormas.api.caze.RabiesType;
+import de.symeda.sormas.api.caze.RadiographyCompatibility;
 import de.symeda.sormas.api.caze.ReinfectionDetail;
 import de.symeda.sormas.api.caze.ReinfectionStatus;
 import de.symeda.sormas.api.caze.ScreeningType;
@@ -70,7 +71,9 @@ import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.disease.DiseaseVariantConverter;
 import de.symeda.sormas.api.externaldata.HasExternalData;
+import de.symeda.sormas.api.immunization.InformationReliability;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistory;
@@ -89,6 +92,7 @@ import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.person.notifier.Notifier;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.selfreport.SelfReport;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
@@ -96,6 +100,7 @@ import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccess;
+import de.symeda.sormas.backend.survey.SurveyToken;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.therapy.Therapy;
@@ -156,6 +161,10 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 
 	public static final String PREGNANT = "pregnant";
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
+	public static final String VACCINATION_STATUS_DETAILS = "vaccinationStatusDetails";
+	public static final String VACCINATION_STATUS_LAST_UPDATED = "vaccinationStatusLastUpdated";
+	public static final String NUMBER_OF_DOSES = "numberOfDoses";
+	public static final String INFORMATION_RELIABILITY = "informationReliability";
 	public static final String EPID_NUMBER = "epidNumber";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
@@ -172,6 +181,9 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	public static final String POINT_OF_ENTRY_DETAILS = "pointOfEntryDetails";
 	public static final String COMPLETENESS = "completeness";
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
+	public static final String DATE_OTHER = "dateOther";
+	public static final String DATE_OTHER_DETAILS = "dateOtherDetails";
+	public static final String EXTERNAL_COMMENTS = "externalComments";
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String EXTERNAL_TOKEN = "externalToken";
 	public static final String INTERNAL_TOKEN = "internalToken";
@@ -245,6 +257,16 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	public static final String CREATION_VERSION = "creationVersion";
 	public static final String SPECIAL_CASE_ACCESSES = "specialCaseAccesses";
 	public static final String SELF_REPORT = "selfReport";
+	public static final String SURVEY_TOKENS = "surveyTokens";
+
+	public static final String NOTIFIER = "notifier";
+	public static final String NOTIFIER_DATE = "notifierDate";
+	public static final String RADIOGRAPHY_COMPATIBILITY = "radiographyCompatibility";
+	public static final String OTHER_DIAGNOSTIC_CRITERIA = "otherDiagnosticCriteria";
+
+	public static final String TREATMENT_STARTED = "treatmentStarted";
+	public static final String TREATMENT_NOT_APPLICABLE = "treatmentNotApplicable";
+	public static final String TREATMENT_START_DATE = "treatmentStartDate";
 
 	private Person person;
 	private String description;
@@ -273,6 +295,9 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	private Hospitalization hospitalization;
 	private EpiData epiData;
 	private Therapy therapy;
+	private YesNoUnknown treatmentStarted;
+	private boolean treatmentNotApplicable;
+	private Date treatmentStartDate;
 	private ClinicalCourse clinicalCourse;
 	private MaternalHistory maternalHistory;
 	private PortHealthInfo portHealthInfo;
@@ -315,6 +340,10 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	private YesNoUnknown pregnant;
 
 	private VaccinationStatus vaccinationStatus;
+	private String vaccinationStatusDetails;
+	private Date vaccinationStatusLastUpdated;
+	private Integer numberOfDoses;
+	private InformationReliability informationReliability;
 	private YesNoUnknown smallpoxVaccinationScar;
 	private YesNoUnknown smallpoxVaccinationReceived;
 	private Date smallpoxLastVaccinationDate;
@@ -338,6 +367,9 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 
 	private Float completeness;
 	private String additionalDetails;
+	private Date dateOther;
+	private String dateOtherDetails;
+	private String externalComments;
 	private String externalID;
 	private String externalToken;
 	private String internalToken;
@@ -429,6 +461,17 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	private List<SpecialCaseAccess> specialCaseAccesses = new ArrayList<>(0);
 
 	private List<SelfReport> selfReport;
+
+	private List<SurveyToken> surveyTokens;
+
+	private Notifier notifier;
+	private Date notifierDate;
+
+	private boolean postMortem;
+
+	private String healthFacilityDepartment;
+	private RadiographyCompatibility radiographyCompatibility;
+	private String otherDiagnosticCriteria;
 
 	public static Case build() {
 		Case caze = new Case();
@@ -933,6 +976,41 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 		this.vaccinationStatus = vaccination;
 	}
 
+	@Column(length = FieldConstraints.CHARACTER_LIMIT_DEFAULT)
+	public String getVaccinationStatusDetails() {
+		return vaccinationStatusDetails;
+	}
+
+	public void setVaccinationStatusDetails(String vaccinationStatusDetails) {
+		this.vaccinationStatusDetails = vaccinationStatusDetails;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getVaccinationStatusLastUpdated() {
+		return vaccinationStatusLastUpdated;
+	}
+
+	public void setVaccinationStatusLastUpdated(Date vaccinationStatusLastUpdated) {
+		this.vaccinationStatusLastUpdated = vaccinationStatusLastUpdated;
+	}
+
+	public Integer getNumberOfDoses() {
+		return numberOfDoses;
+	}
+
+	public void setNumberOfDoses(Integer numberOfDoses) {
+		this.numberOfDoses = numberOfDoses;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public InformationReliability getInformationReliability() {
+		return informationReliability;
+	}
+
+	public void setInformationReliability(InformationReliability informationReliability) {
+		this.informationReliability = informationReliability;
+	}
+
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getSmallpoxVaccinationScar() {
 		return smallpoxVaccinationScar;
@@ -1186,6 +1264,33 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 		this.additionalDetails = additionalDetails;
 	}
 
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getDateOther() {
+		return dateOther;
+	}
+
+	public void setDateOther(Date dateOther) {
+		this.dateOther = dateOther;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getDateOtherDetails() {
+		return dateOtherDetails;
+	}
+
+	public void setDateOtherDetails(String dateOtherDetails) {
+		this.dateOtherDetails = dateOtherDetails;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getExternalComments() {
+		return externalComments;
+	}
+
+	public void setExternalComments(String externalComments) {
+		this.externalComments = externalComments;
+	}
+
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getExternalID() {
 		return externalID;
@@ -1207,7 +1312,7 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 
 	/**
 	 * Extra setter for externalID needed to comply with the HasExternalData interface
-	 * 
+	 *
 	 * @param externalId
 	 *            the value to be set for externalID
 	 */
@@ -1787,5 +1892,93 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 
 	public void setSelfReport(List<SelfReport> selfReport) {
 		this.selfReport = selfReport;
+	}
+
+	@OneToMany(mappedBy = SurveyToken.CASE_ASSIGNED_TO, fetch = FetchType.LAZY)
+	public List<SurveyToken> getSurveyTokens() {
+		return surveyTokens;
+	}
+
+	public void setSurveyTokens(List<SurveyToken> surveyTokens) {
+		this.surveyTokens = surveyTokens;
+	}
+
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+	public Notifier getNotifier() {
+		return notifier;
+	}
+
+	public void setNotifier(Notifier notifier) {
+		this.notifier = notifier;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getNotifierDate() {
+		return notifierDate;
+	}
+
+	public void setNotifierDate(Date notifierDate) {
+		this.notifierDate = notifierDate;
+	}
+
+	public boolean isPostMortem() {
+		return postMortem;
+	}
+
+	public void setPostMortem(boolean postMortem) {
+		this.postMortem = postMortem;
+	}
+
+	public String getHealthFacilityDepartment() {
+		return healthFacilityDepartment;
+	}
+
+	public void setHealthFacilityDepartment(String healthFacilityDepartment) {
+		this.healthFacilityDepartment = healthFacilityDepartment;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public RadiographyCompatibility getRadiographyCompatibility() {
+		return radiographyCompatibility;
+	}
+
+	public void setRadiographyCompatibility(RadiographyCompatibility radiographyCompatibility) {
+		this.radiographyCompatibility = radiographyCompatibility;
+	}
+
+	public String getOtherDiagnosticCriteria() {
+		return otherDiagnosticCriteria;
+	}
+
+	public void setOtherDiagnosticCriteria(String otherDiagnosticCriteria) {
+		this.otherDiagnosticCriteria = otherDiagnosticCriteria;
+	}
+
+	@Column
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getTreatmentStarted() {
+		return treatmentStarted;
+	}
+
+	public void setTreatmentStarted(YesNoUnknown treatmentStarted) {
+		this.treatmentStarted = treatmentStarted;
+	}
+
+	@Column
+	public boolean isTreatmentNotApplicable() {
+		return treatmentNotApplicable;
+	}
+
+	public void setTreatmentNotApplicable(boolean treatmentNotApplicable) {
+		this.treatmentNotApplicable = treatmentNotApplicable;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getTreatmentStartDate() {
+		return treatmentStartDate;
+	}
+
+	public void setTreatmentStartDate(Date treatmentStartDate) {
+		this.treatmentStartDate = treatmentStartDate;
 	}
 }

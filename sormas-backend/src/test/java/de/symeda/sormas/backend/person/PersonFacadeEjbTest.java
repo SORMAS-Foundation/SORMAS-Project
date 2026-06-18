@@ -2350,4 +2350,9 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		assertTrue(getPersonFacade().isSharedOrReceived(person.getUuid()));
 	}
+
+	@Test
+	public void testGetByUnknownUuid() {
+		assertNull(getPersonFacade().getByUuid("UNKNOWN_UUID"));
+	}
 }

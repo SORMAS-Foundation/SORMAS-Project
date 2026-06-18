@@ -19,6 +19,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -91,7 +92,15 @@ public class TemplateEngine {
 
 	public DocumentVariables extractTemplateVariablesDocx(File templateFile) throws DocumentTemplateException {
 		try {
-			FileInputStream templateInputStream = new FileInputStream(templateFile);
+			return extractTemplateVariablesDocx(new FileInputStream(templateFile), templateFile.getName());
+		} catch (FileNotFoundException e) {
+			throw new DocumentTemplateException(String.format(I18nProperties.getString(Strings.errorReadingTemplate), templateFile.getName()));
+		}
+	}
+
+	public DocumentVariables extractTemplateVariablesDocx(InputStream templateInputStream, String fileName) throws DocumentTemplateException {
+		try {
+
 			IXDocReport report = readXDocReport(templateInputStream);
 
 			FieldsExtractor<FieldExtractor> extractor = FieldsExtractor.create();
@@ -99,7 +108,7 @@ public class TemplateEngine {
 
 			return filterExtractedVariables(extractor);
 		} catch (XDocReportException | IOException e) {
-			throw new DocumentTemplateException(String.format(I18nProperties.getString(Strings.errorReadingTemplate), templateFile.getName()));
+			throw new DocumentTemplateException(String.format(I18nProperties.getString(Strings.errorReadingTemplate), fileName));
 		}
 	}
 
@@ -194,7 +203,7 @@ public class TemplateEngine {
 		}
 	}
 
-	protected IXDocReport readXDocReport(InputStream templateInputStream) throws DocumentTemplateException {
+	public IXDocReport readXDocReport(InputStream templateInputStream) throws DocumentTemplateException {
 		ByteArrayOutputStream outStream;
 
 		try {
@@ -235,7 +244,7 @@ public class TemplateEngine {
 		}
 	}
 
-	private DocumentVariables filterExtractedVariables(FieldsExtractor<FieldExtractor> extractor) {
+	public DocumentVariables filterExtractedVariables(FieldsExtractor<FieldExtractor> extractor) {
 		Set<String> variables = new HashSet<>();
 		Set<String> nullableVariables = new HashSet<>();
 		for (FieldExtractor field : extractor.getFields()) {

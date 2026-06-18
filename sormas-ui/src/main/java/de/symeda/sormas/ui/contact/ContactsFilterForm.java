@@ -475,6 +475,13 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			weekAndDateFilter.getDateToFilter().setValue(dateTo);
 		}
 
+		//Birthdate Filter
+		HorizontalLayout birthdateFilterForm = (HorizontalLayout) getMoreFiltersContainer().getComponent(BIRTHDATE_RANGE_FILTER);
+		BirthdateRangeFilterComponent birtdateFilter = (BirthdateRangeFilterComponent) birthdateFilterForm.getComponent(0);
+		birtdateFilter.getDateFromFilter().setValue(newValue.getBirthdateFrom());
+		birtdateFilter.getDateToFilter().setValue(newValue.getBirthdateTo());
+		birtdateFilter.getIncludePartialMatch().setValue(newValue.isIncludePartialMatch());
+
 		if (StringUtils.isBlank(newValue.getEventLike())) {
 			clearAndDisableFields(ContactCriteria.ONLY_CONTACTS_SHARING_EVENT_WITH_SOURCE_CASE);
 		} else {

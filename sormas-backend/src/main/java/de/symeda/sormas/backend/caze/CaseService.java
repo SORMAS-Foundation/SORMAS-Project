@@ -78,7 +78,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.caze.PreviousCaseDto;
-import de.symeda.sormas.api.caze.VaccinationStatus;
+import de.symeda.sormas.api.caze.SurveyResponseStatus;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
 import de.symeda.sormas.api.common.DeletableEntityType;
@@ -95,6 +95,8 @@ import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRun
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.followup.FollowUpLogic;
+import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
+import de.symeda.sormas.api.immunization.VaccinationStatusData;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
@@ -141,6 +143,7 @@ import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageService;
 import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
+import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -155,6 +158,7 @@ import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonQueryContext;
+import de.symeda.sormas.backend.sample.PathogenTest;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
@@ -168,6 +172,8 @@ import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShar
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
+import de.symeda.sormas.backend.survey.Survey;
+import de.symeda.sormas.backend.survey.SurveyToken;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.therapy.Prescription;
@@ -251,6 +257,8 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 	private DistrictService districtService;
 	@EJB
 	private SpecialCaseAccessService specialCaseAccessService;
+	@EJB
+	private ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal immunizationFacade;
 
 	public CaseService() {
 		super(Case.class, DeletableEntityType.CASE);
@@ -333,7 +341,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public Long countCasesForMap(Region region, District district, Disease disease, Date from, Date to, NewCaseDateType dateType) {
+	public Long countCasesForMap(Region region, District district, Disease disease, Date from, Date to, NewCaseDateType dateType, Sex sex) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
@@ -341,7 +349,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
 
-		Predicate filter = createMapCasesFilter(caseQueryContext, region, district, disease, from, to, dateType);
+		Predicate filter = createMapCasesFilter(caseQueryContext, region, district, disease, from, to, dateType, sex);
 
 		if (filter != null) {
 			cq.where(filter);
@@ -353,7 +361,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		return 0L;
 	}
 
-	public List<MapCaseDto> getCasesForMap(Region region, District district, Disease disease, Date from, Date to, NewCaseDateType dateType) {
+	public List<MapCaseDto> getCasesForMap(Region region, District district, Disease disease, Date from, Date to, NewCaseDateType dateType, Sex sex) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<MapCaseDto> cq = cb.createQuery(MapCaseDto.class);
@@ -362,7 +370,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
 		CaseJoins joins = caseQueryContext.getJoins();
 
-		Predicate filter = createMapCasesFilter(caseQueryContext, region, district, disease, from, to, dateType);
+		Predicate filter = createMapCasesFilter(caseQueryContext, region, district, disease, from, to, dateType, sex);
 
 		List<MapCaseDto> result;
 		if (filter != null) {
@@ -399,7 +407,8 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		Disease disease,
 		Date from,
 		Date to,
-		NewCaseDateType dateType) {
+		NewCaseDateType dateType,
+		Sex sex) {
 
 		final CriteriaBuilder cb = caseQueryContext.getCriteriaBuilder();
 		final From<?, Case> root = caseQueryContext.getRoot();
@@ -453,6 +462,15 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 				filter = cb.and(filter, diseaseFilter);
 			} else {
 				filter = diseaseFilter;
+			}
+		}
+
+		if (sex != null) {
+			Predicate sexFilter = cb.equal(joins.getPerson().get(Person.SEX), sex);
+			if (filter != null) {
+				filter = cb.and(filter, sexFilter);
+			} else {
+				filter = sexFilter;
 			}
 		}
 
@@ -686,7 +704,30 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.DISEASE), caseCriteria.getDisease()));
 		}
 		if (caseCriteria.getDiseaseVariant() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.DISEASE_VARIANT_VALUE), caseCriteria.getDiseaseVariant().getValue()));
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.DISEASE_VARIANT_VALUE), caseCriteria.getDiseaseVariant().getValue()));
+		}
+		if (caseCriteria.getPathogenTestResult() != null) {
+			Subquery<Long> resultSubquery = cq.subquery(Long.class);
+			Root<Sample> sampleRoot = resultSubquery.from(Sample.class);
+			resultSubquery.select(sampleRoot.get(AbstractDomainObject.ID));
+			resultSubquery.where(
+				cb.equal(sampleRoot.get(Sample.ASSOCIATED_CASE), from),
+				cb.equal(sampleRoot.get(Sample.PATHOGEN_TEST_RESULT), caseCriteria.getPathogenTestResult()),
+				cb.isFalse(sampleRoot.get(DeletableAdo.DELETED)));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.exists(resultSubquery));
+		}
+		if (StringUtils.isNotBlank(caseCriteria.getSerogroup())) {
+			Subquery<Long> serogroupSubquery = cq.subquery(Long.class);
+			Root<Sample> sampleRoot = serogroupSubquery.from(Sample.class);
+			Join<Sample, PathogenTest> pathogenTestJoin = sampleRoot.join(Sample.PATHOGENTESTS, JoinType.INNER);
+			serogroupSubquery.select(sampleRoot.get(AbstractDomainObject.ID));
+			serogroupSubquery.where(
+				cb.equal(sampleRoot.get(Sample.ASSOCIATED_CASE), from),
+				CriteriaBuilderHelper.unaccentedIlike(cb, pathogenTestJoin.get(PathogenTest.SEROTYPE_TEXT), caseCriteria.getSerogroup().trim()),
+				cb.isFalse(sampleRoot.get(DeletableAdo.DELETED)),
+				cb.isFalse(pathogenTestJoin.get(DeletableAdo.DELETED)));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.exists(serogroupSubquery));
 		}
 		if (caseCriteria.getOutcome() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.OUTCOME), caseCriteria.getOutcome()));
@@ -967,6 +1008,38 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 				from,
 				ExternalShareInfo.CAZE,
 				(latestShareDate) -> createChangeDateFilter(cq, cb, joins, latestShareDate, true, true)));
+
+		if (caseCriteria.getSurveyAssignedFrom() != null && caseCriteria.getSurveyAssignedTo() != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.between(
+					joins.getSurveyTokens().get(SurveyToken.ASSIGNMENT_DATE),
+					caseCriteria.getSurveyAssignedFrom(),
+					caseCriteria.getSurveyAssignedTo()));
+		} else if (caseCriteria.getSurveyAssignedFrom() != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.greaterThanOrEqualTo(joins.getSurveyTokens().get(SurveyToken.ASSIGNMENT_DATE), caseCriteria.getSurveyAssignedFrom()));
+		} else if (caseCriteria.getSurveyAssignedTo() != null) {
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.lessThanOrEqualTo(joins.getSurveyTokens().get(SurveyToken.ASSIGNMENT_DATE), caseCriteria.getSurveyAssignedTo()));
+		}
+
+		if (caseCriteria.getSurvey() != null) {
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(joins.getSurveyTokenJoins().getSurvey().get(Survey.UUID), caseCriteria.getSurvey().getUuid()));
+		}
+
+		if (caseCriteria.getSurveyResponseStatus() != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.equal(
+					joins.getSurveyTokens().get(SurveyToken.RESPONSE_RECEIVED),
+					caseCriteria.getSurveyResponseStatus() == SurveyResponseStatus.RECEIVED));
+		}
 
 		return filter;
 	}
@@ -1995,7 +2068,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 	/**
 	 * Performance: May be slow when there are 10000s of cases with similar report date in the same region.
-	 * 
+	 *
 	 * @param limit
 	 *            null: no limit
 	 */
@@ -2204,6 +2277,28 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		em.createQuery(cu).executeUpdate();
 	}
 
+	public void clearVaccinationStatuses(ImmunizationReferenceDto immunizationRef) {
+		Immunization immunization = immunizationService.getByReferenceDto(immunizationRef);
+		if (immunization == null) {
+			return;
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaUpdate<Case> cu = cb.createCriteriaUpdate(Case.class);
+		Root<Case> root = cu.from(Case.class);
+		cu.set(Case.VACCINATION_STATUS, null);
+		cu.set(Case.VACCINATION_STATUS_DETAILS, null);
+		cu.set(Case.VACCINATION_STATUS_LAST_UPDATED, null);
+		cu.set(Case.NUMBER_OF_DOSES, null);
+		cu.set(Case.INFORMATION_RELIABILITY, null);
+		cu.where(
+			CriteriaBuilderHelper.and(
+				cb,
+				cb.equal(root.get(Case.PERSON).get(Person.ID), immunization.getPerson().getId()),
+				cb.equal(root.get(Case.DISEASE), immunization.getDisease())));
+		em.createQuery(cu).executeUpdate();
+	}
+
 	public PreviousCaseDto getMostRecentPreviousCase(String personUuid, Disease disease, Date startDate) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -2264,32 +2359,90 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 	}
 
 	/**
-	 * Sets the vaccination status of all cases of the specified person and disease with vaccination date <= case start date.
-	 * Vaccinations without a vaccination date are relevant for all cases.
-	 * 
+	 * Updates the vaccination status of all cases of the specified person and disease using
+	 * vaccination status data derived from immunization records.
+	 *
 	 * @param personId
-	 *            The ID of the case person
+	 *            The ID of the case person whose cases should be updated
 	 * @param disease
-	 *            The disease of the cases
+	 *            The disease for which to update case vaccination statuses
 	 * @param vaccination
-	 *            The created or updated vaccination
+	 *            The vaccination that triggered this update (can be null for bulk updates)
 	 */
 	public void updateVaccinationStatuses(Long personId, Disease disease, Vaccination vaccination) {
+		updateDeterminedVaccinationStatuses(personId, disease, vaccination);
+	}
+
+	/**
+	 * Updates vaccination statuses using the enhanced determination logic (determined mode).
+	 *
+	 * <p>
+	 * This method updates cases with sophisticated vaccination statuses derived from immunization data.
+	 * It uses {@link ImmunizationService#deriveVaccinationStatus} to compute statuses that reflect:
+	 * </p>
+	 * <ul>
+	 * <li>Disease-specific dose counts (e.g., VACCINATED_ONE_DOSE, VACCINATED_TWO_DOSE for MEASLES)</li>
+	 * <li>Recovery-based immunity (RECOVERED status)</li>
+	 * <li>Other immunity sources (OTHER status)</li>
+	 * <li>Immunization validity periods (validFrom/validUntil dates)</li>
+	 * </ul>
+	 *
+	 * <p>
+	 * The method only updates cases where the derived status differs from the current status,
+	 * and automatically updates the change date timestamp.
+	 * </p>
+	 *
+	 * @param personId
+	 *            The ID of the person whose cases should be updated
+	 * @param disease
+	 *            The disease for which to update vaccination statuses
+	 * @param vaccination
+	 *            The vaccination that triggered the update; if provided, additional date filtering is applied
+	 *            to only update cases relevant to this vaccination's date
+	 * @see ImmunizationService#deriveVaccinationStatus(String, Disease, Date)
+	 */
+	public void updateDeterminedVaccinationStatuses(Long personId, Disease disease, Vaccination vaccination) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaUpdate<Case> cu = cb.createCriteriaUpdate(Case.class);
-		Root<Case> root = cu.from(Case.class);
+		CriteriaQuery<Case> cq = cb.createQuery(Case.class);
+		Root<Case> root = cq.from(Case.class);
 
-		cu.set(root.get(Case.VACCINATION_STATUS), VaccinationStatus.VACCINATED);
-		cu.set(root.get(AbstractDomainObject.CHANGE_DATE), new Date());
+		// Build base filter: person and disease must match
+		Predicate filter =
+			CriteriaBuilderHelper.and(cb, cb.equal(root.get(Case.PERSON).get(Person.ID), personId), cb.equal(root.get(Case.DISEASE), disease));
 
-		Predicate datePredicate = vaccinationService.getRelevantVaccinationPredicate(root, cu, cb, vaccination);
+		// If vaccination is provided, add additional date filtering to only update relevant cases
+		if (vaccination != null) {
+			Predicate datePredicate = vaccinationService.getRelevantVaccinationPredicate(root, cq, cb, vaccination);
+			filter = CriteriaBuilderHelper.and(cb, filter, datePredicate);
+		}
 
-		cu.where(
-			CriteriaBuilderHelper
-				.and(cb, cb.equal(root.get(Case.PERSON).get(Person.ID), personId), cb.equal(root.get(Case.DISEASE), disease), datePredicate));
+		cq.where(filter);
 
-		em.createQuery(cu).executeUpdate();
+		List<Case> cases = em.createQuery(cq).getResultList();
+
+		// Update each case with derived vaccination status from immunization data
+		for (Case caze : cases) {
+			VaccinationStatusData data =
+				immunizationService.deriveVaccinationStatus(caze.getPerson().getUuid(), caze.getDisease(), caze.getReportDate());
+
+			if (data != null) {
+				// Update if any field changed
+				boolean statusChanged = data.getVaccinationStatus() != caze.getVaccinationStatus();
+				boolean detailsChanged = !java.util.Objects.equals(data.getVaccinationStatusDetails(), caze.getVaccinationStatusDetails());
+				boolean dosesChanged = !java.util.Objects.equals(data.getNumberOfDoses(), caze.getNumberOfDoses());
+				boolean reliabilityChanged = data.getInformationReliability() != caze.getInformationReliability();
+
+				if (statusChanged || detailsChanged || dosesChanged || reliabilityChanged) {
+					caze.setVaccinationStatus(data.getVaccinationStatus());
+					caze.setVaccinationStatusDetails(data.getVaccinationStatusDetails());
+					caze.setNumberOfDoses(data.getNumberOfDoses());
+					caze.setInformationReliability(data.getInformationReliability());
+					caze.setVaccinationStatusLastUpdated(new Date());
+					caze.setChangeDate(new Timestamp(new Date().getTime()));
+				}
+			}
+		}
 	}
 
 	private float calculateCompleteness(Case caze) {
@@ -2361,20 +2514,58 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 		cq.select(caseRoot.get(Case.UUID));
 		cq.where(
-			caseRoot.get(Case.UUID).in(uuids),
-			cb.equal(caseRoot.get(Case.DISEASE), disease),
-			cb.lessThanOrEqualTo(
-				CriteriaBuilderHelper.dateDiff(
-					cb,
-					cb.function(
-						ExtendedPostgreSQL94Dialect.DATE,
-						Date.class,
-						CriteriaBuilderHelper.coalesce(cb, Date.class, earliestSampleSq, caseRoot.get(Case.REPORT_DATE))),
-					cb.function(ExtendedPostgreSQL94Dialect.DATE, Date.class, cb.literal(dateToCompareTo))),
-				Long.valueOf(TimeUnit.DAYS.toSeconds(threshold)).doubleValue()));
+			cb.and(
+				caseRoot.get(Case.UUID).in(uuids),
+				cb.equal(caseRoot.get(Case.DISEASE), disease),
+				cb.lessThanOrEqualTo(
+					CriteriaBuilderHelper.dateDiff(
+						cb,
+						cb.function(
+							ExtendedPostgreSQL94Dialect.DATE,
+							Date.class,
+							CriteriaBuilderHelper.coalesce(cb, Date.class, earliestSampleSq, caseRoot.get(Case.REPORT_DATE))),
+						cb.function(ExtendedPostgreSQL94Dialect.DATE, Date.class, cb.literal(dateToCompareTo))),
+					Long.valueOf(TimeUnit.DAYS.toSeconds(threshold)).doubleValue())));
 		cq.orderBy(cb.desc(caseRoot.get(Case.REPORT_DATE)));
 
 		List<String> caseUuids = em.createQuery(cq).getResultList();
 		return caseUuids.isEmpty() ? null : caseUuids.get(0);
+	}
+
+	public List<String> getCaseUuidsForAutomaticSampleAssignment(
+		Set<String> uuids,
+		Set<Disease> diseases,
+		@Nullable Date sampleDateTime,
+		int threshold) {
+		Date dateToCompareTo = sampleDateTime != null ? sampleDateTime : new Date();
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Case> caseRoot = cq.from(Case.class);
+
+		Subquery<Date> earliestSampleSq = cq.subquery(Date.class);
+		Root<Sample> sampleRoot = earliestSampleSq.from(Sample.class);
+		earliestSampleSq.select(cb.least(sampleRoot.<Date> get(Sample.SAMPLE_DATE_TIME)));
+		earliestSampleSq.where(cb.equal(sampleRoot.get(Sample.ASSOCIATED_CASE), caseRoot));
+
+		Predicate diseasePredicate = cb.or(diseases.stream().map(d -> cb.equal(caseRoot.get(Case.DISEASE), d)).toArray(Predicate[]::new));
+
+		cq.select(caseRoot.get(Case.UUID));
+		cq.where(
+			cb.and(
+				caseRoot.get(Case.UUID).in(uuids),
+				diseasePredicate,
+				cb.lessThanOrEqualTo(
+					CriteriaBuilderHelper.dateDiff(
+						cb,
+						cb.function(
+							ExtendedPostgreSQL94Dialect.DATE,
+							Date.class,
+							CriteriaBuilderHelper.coalesce(cb, Date.class, earliestSampleSq, caseRoot.get(Case.REPORT_DATE))),
+						cb.function(ExtendedPostgreSQL94Dialect.DATE, Date.class, cb.literal(dateToCompareTo))),
+					Long.valueOf(TimeUnit.DAYS.toSeconds(threshold)).doubleValue())));
+		cq.orderBy(cb.desc(caseRoot.get(Case.REPORT_DATE)));
+
+		return em.createQuery(cq).getResultList();
 	}
 }

@@ -216,6 +216,7 @@ public class CaseListCriteriaBuilder {
 			root.get(Case.INTERNAL_TOKEN),
 			root.get(Case.CASE_REFERENCE_NUMBER),
 			joins.getPerson().get(Person.UUID),
+			joins.getPerson().get(Person.NATIONAL_HEALTH_ID),
 			joins.getPerson().get(Person.FIRST_NAME),
 			joins.getPerson().get(Person.LAST_NAME),
 			root.get(Case.DISEASE),
@@ -279,13 +280,15 @@ public class CaseListCriteriaBuilder {
 		case CaseIndexDto.FOLLOW_UP_UNTIL:
 		case CaseIndexDto.VACCINATION_STATUS:
 		case CaseIndexDto.DISEASE_VARIANT:
-			return Collections.singletonList(caze.get(sortProperty.propertyName));
+			return Collections.singletonList(caze.get(Case.DISEASE_VARIANT_VALUE));
 		case CaseIndexDto.EXTERNAL_ID:
 		case CaseIndexDto.EXTERNAL_TOKEN:
 		case CaseIndexDto.INTERNAL_TOKEN:
 		case CaseIndexDto.CASE_REFERENCE_NUMBER:
 		case CaseIndexDto.DISEASE_DETAILS:
 			return Collections.singletonList(cb.lower(caze.get(sortProperty.propertyName)));
+		case CaseIndexDto.PERSON_NATIONAL_HEALTH_ID:
+			return Collections.singletonList(cb.lower(joins.getPerson().get(Person.NATIONAL_HEALTH_ID)));
 		case CaseIndexDto.PERSON_FIRST_NAME:
 			return Collections.singletonList(cb.lower(joins.getPerson().get(Person.FIRST_NAME)));
 		case CaseIndexDto.PERSON_LAST_NAME:

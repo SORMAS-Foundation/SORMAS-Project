@@ -697,6 +697,8 @@ public class StartupShutdownService {
 			databaseVersion = null;
 		}
 
+		logger.info("Current databaseVersion: [{}]", databaseVersion);
+
 		try (InputStream schemaStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(schemaFileName);
 			Scanner scanner = new Scanner(schemaStream, StandardCharsets.UTF_8.name())) {
 			StringBuilder nextUpdateBuilder = new StringBuilder();
@@ -1017,6 +1019,18 @@ public class StartupShutdownService {
 			importFacade.generateSelfReportImportTemplateFile(featureConfigurations);
 		} catch (IOException | NoSuchFieldException e) {
 			logger.error("Could not create self report import template .csv file.");
+		}
+
+		try {
+			importFacade.generateSurveyTokenImportTemplateFile(featureConfigurations);
+		} catch (IOException | NoSuchFieldException e) {
+			logger.error("Could not create survey token import template .csv file.");
+		}
+
+		try {
+			importFacade.generateSurveyTokenResponsesImportTemplateFile(featureConfigurations);
+		} catch (IOException | NoSuchFieldException e) {
+			logger.error("Could not create survey token responses import template .csv file.");
 		}
 	}
 

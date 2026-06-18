@@ -41,6 +41,7 @@ import de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingU
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.processing.EntrySelectionField;
 
+@Deprecated
 public class PhysiciansReportProcessingFlow extends AbstractPhysiciansReportProcessingFlow {
 
 	public PhysiciansReportProcessingFlow(ExternalMessageMapper mapper, ExternalMessageProcessingFacade processingFacade) {
@@ -84,7 +85,7 @@ public class PhysiciansReportProcessingFlow extends AbstractPhysiciansReportProc
 
 	@Override
 	protected void handleCreateCase(CaseDataDto caze, PersonDto person, ExternalMessageDto externalMessage, HandlerCallback<CaseDataDto> callback) {
-		ExternalMessageProcessingUIHelper.showCreateCaseWindow(caze, person, externalMessage, mapper, callback);
+		ExternalMessageProcessingUIHelper.showCreateCaseWindow(caze, person, externalMessage, getMapper(), callback);
 	}
 
 	@Override

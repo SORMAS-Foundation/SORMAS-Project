@@ -26,8 +26,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle.Control;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
@@ -53,6 +56,11 @@ public final class I18nProperties {
 	private final ResourceBundle countryProperties;
 	private final ResourceBundle continentProperties;
 	private final ResourceBundle subcontinentProperties;
+
+	/**
+	 * Used internally when bundle type is specified so extract the value from the adequate properties file.
+	 */
+	private final Map<I18nPropertiesRequest.ResourceBundleType, ResourceBundle> resourceBundlesDictionary;
 
 	private static I18nProperties getInstance(Language language) {
 
@@ -372,6 +380,24 @@ public final class I18nProperties {
 		this.countryProperties = loadProperties("countries", language.getLocale());
 		this.continentProperties = loadProperties("continents", language.getLocale());
 		this.subcontinentProperties = loadProperties("subcontinents", language.getLocale());
+
+		resourceBundlesDictionary = Map.of(
+			I18nPropertiesRequest.ResourceBundleType.CAPTION,
+			captionProperties,
+			I18nPropertiesRequest.ResourceBundleType.DESCRIPTION,
+			descriptionProperties,
+			I18nPropertiesRequest.ResourceBundleType.ENUMS,
+			enumProperties,
+			I18nPropertiesRequest.ResourceBundleType.VALIDATION,
+			validationProperties,
+			I18nPropertiesRequest.ResourceBundleType.STRING,
+			stringProperties,
+			I18nPropertiesRequest.ResourceBundleType.COUNTRY,
+			countryProperties,
+			I18nPropertiesRequest.ResourceBundleType.CONTINENT,
+			continentProperties,
+			I18nPropertiesRequest.ResourceBundleType.SUBCONTINENT,
+			subcontinentProperties);
 	}
 
 	private I18nProperties() {
@@ -407,6 +433,43 @@ public final class I18nProperties {
 		return new ResourceBundle(java.util.ResourceBundle.getBundle(propertiesGroup, locale, new UTF8Control()));
 	}
 
+	/**
+	 * Meant to be used for "matching purposes", you have a value, but you don't know which ResourceBundle / translationType it belongs to.
+	 * Implemented on a best-effort basis.
+	 * 
+	 * @param request
+	 *            to return the adequate dictionary.
+	 * @return dictionary with key being the "physical value" of the property key and value the
+	 *         translated value in the specified language.
+	 *         Example: (key: value) continent.AUSTRALIA.name: Australia (Continent) -> AUSTRALIA: Australia (Continent)
+	 */
+	public static Map<String, String> buildKeyValueDictionary(I18nPropertiesRequest request) {
+
+		Language language = request.getLanguage() != null ? request.getLanguage() : Language.EN;
+		I18nProperties instance = getInstance(language);
+
+		I18nPropertiesRequest.ResourceBundleType resourceBundleType = request.getResourceBundleType();
+		ResourceBundle resourceBundle = Optional.of(instance.resourceBundlesDictionary.get(resourceBundleType))
+			.orElseThrow(() -> new IllegalStateException(String.format("Resource bundle type [%s] not found", resourceBundleType)));
+
+		Class<?> targetType = request.getTargetType();
+
+		return StreamSupport.stream(((Iterable<String>) () -> resourceBundle.getResourceBundle().getKeys().asIterator()).spliterator(), false)
+			.filter(key -> StringUtils.startsWith(key, buildEnumPrefix(targetType, resourceBundleType)))
+			.collect(
+				Collectors.toMap(
+					key -> key.replace(I18nProperties.buildEnumPrefix(targetType, resourceBundleType), "").replace(".name", ""),
+					resourceBundle::getString));
+	}
+
+	private static String buildEnumPrefix(Class<?> targetType, I18nPropertiesRequest.ResourceBundleType resourceBundleType) {
+		if (resourceBundleType == I18nPropertiesRequest.ResourceBundleType.COUNTRY) {
+			return "country.";
+		}
+
+		return targetType.getSimpleName() + ".";
+	}
+
 	public static class UTF8Control extends Control {
 
 		private static final char LOCALE_SEP = '-';
@@ -431,8 +494,8 @@ public final class I18nProperties {
 		 * Converts the given <code>baseName</code> and <code>locale</code>
 		 * to the bundle name. This method is called from the default
 		 * implementation of the {@link #newBundle(String, Locale, String,
-		 * ClassLoader, boolean) newBundle} and {@link #needsReload(String,
-		 * Locale, String, ClassLoader, ResourceBundle, long) needsReload}
+		 * ClassLoader, boolean) newBundle} and {@link java.util.ResourceBundle}#needsReload(String, Locale, String, ClassLoader,
+		 * ResourceBundle, long) needsReload}
 		 * methods.
 		 *
 		 * <p>

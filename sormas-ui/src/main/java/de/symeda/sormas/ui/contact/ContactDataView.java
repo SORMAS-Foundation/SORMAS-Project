@@ -14,6 +14,9 @@
  */
 package de.symeda.sormas.ui.contact;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Button;
@@ -24,6 +27,7 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
@@ -55,6 +59,7 @@ import de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent;
 import de.symeda.sormas.ui.document.DocumentListComponent;
 import de.symeda.sormas.ui.email.ExternalEmailSideComponent;
 import de.symeda.sormas.ui.events.eventLink.EventListComponent;
+import de.symeda.sormas.ui.immunization.components.panel.VaccinationStatusPanel;
 import de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListComponent;
 import de.symeda.sormas.ui.samples.HasName;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
@@ -93,6 +98,8 @@ public class ContactDataView extends AbstractContactView implements HasName {
 	public static final String SELF_REPORT_LOC = "selfReport";
 
 	private CommitDiscardWrapperComponent<ContactDataForm> editComponent;
+
+	private final static List<Disease> IMMUNIZATION_EXCLUDED_DISEASES = Arrays.asList(Disease.SALMONELLOSIS, Disease.SHIGELLOSIS);
 
 	public ContactDataView() {
 		super(VIEW_NAME);
@@ -139,6 +146,11 @@ public class ContactDataView extends AbstractContactView implements HasName {
 		if (contactDto.getCaze() != null) {
 			caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(contactDto.getCaze().getUuid());
 			layout.addSidePanelComponent(createCaseInfoLayout(caseDto), CASE_LOC);
+		}
+
+		Disease resolvedDisease = contactDto.getDisease();
+		if (resolvedDisease == null && caseDto != null) {
+			resolvedDisease = caseDto.getDisease();
 		}
 
 		final String uuid = contactDto.getUuid();
@@ -216,15 +228,20 @@ public class ContactDataView extends AbstractContactView implements HasName {
 			taskList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addSidePanelComponent(taskList, TASKS_LOC);
 		}
-
-		if (UiUtil.permitted(UserRight.SAMPLE_VIEW)) {
-			SampleListComponent sampleList = new SampleListComponent(
-				new SampleCriteria().contact(getContactRef()).disease(contactDto.getDisease()).sampleAssociationType(SampleAssociationType.CONTACT),
-				this::showUnsavedChangesPopup,
-				editAllowed,
-				SampleAssociationType.CONTACT);
-			SampleListComponentLayout sampleListComponentLayout = new SampleListComponentLayout(sampleList, null);
-			layout.addSidePanelComponent(sampleListComponentLayout, SAMPLES_LOC);
+		// Allowing the samples component for LUX Measles.
+		if (!(FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+			&& List.of(Disease.INVASIVE_MENINGOCOCCAL_INFECTION).contains(contactDto.getDisease()))) {
+			if (UiUtil.permitted(UserRight.SAMPLE_VIEW)) {
+				SampleListComponent sampleList = new SampleListComponent(
+					new SampleCriteria().contact(getContactRef())
+						.disease(contactDto.getDisease())
+						.sampleAssociationType(SampleAssociationType.CONTACT),
+					this::showUnsavedChangesPopup,
+					editAllowed,
+					SampleAssociationType.CONTACT);
+				SampleListComponentLayout sampleListComponentLayout = new SampleListComponentLayout(sampleList, null);
+				layout.addSidePanelComponent(sampleListComponentLayout, SAMPLES_LOC);
+			}
 		}
 
 		if (UiUtil.permitted(FeatureType.EVENT_SURVEILLANCE, UserRight.EVENT_VIEW)) {
@@ -239,13 +256,24 @@ public class ContactDataView extends AbstractContactView implements HasName {
 			layout.addSidePanelComponent(eventsLayout, EVENTS_LOC);
 		}
 
-		if (UiUtil.permitted(FeatureType.IMMUNIZATION_MANAGEMENT, UserRight.IMMUNIZATION_VIEW)) {
+		// Immunizations are not shown for Salmonellosis contacts
+		if (UiUtil.permitted(FeatureType.IMMUNIZATION_MANAGEMENT, UserRight.IMMUNIZATION_VIEW)
+			&& !IMMUNIZATION_EXCLUDED_DISEASES.contains(resolvedDisease)) {
+			final VaccinationStatusPanel vaccinationStatusPanel = VaccinationStatusPanel.forContact(contactDto);
+			if (contactDto.getVaccinationStatusLastUpdated() == null && UiUtil.permitted(UserRight.IMMUNIZATION_EDIT)) {
+				showVaccinationStatusUpdateDialog(contactDto);
+			}
 			if (!FacadeProvider.getFeatureConfigurationFacade()
 				.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
 				layout.addSidePanelComponent(new SideComponentLayout(new ImmunizationListComponent(() -> {
 					ContactDto refreshedContact = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
-					return new ImmunizationListCriteria.Builder(refreshedContact.getPerson()).withDisease(refreshedContact.getDisease()).build();
-				}, null, this::showUnsavedChangesPopup, editAllowed)), IMMUNIZATION_LOC);
+					Disease criteriaDisease = refreshedContact.getDisease();
+					if (criteriaDisease == null && refreshedContact.getCaze() != null) {
+						CaseDataDto refreshedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(refreshedContact.getCaze().getUuid());
+						criteriaDisease = refreshedCase != null ? refreshedCase.getDisease() : null;
+					}
+					return new ImmunizationListCriteria.Builder(refreshedContact.getPerson()).withDisease(criteriaDisease).build();
+				}, null, this::showUnsavedChangesPopup, editAllowed, vaccinationStatusPanel)), IMMUNIZATION_LOC);
 			} else {
 				layout.addSidePanelComponent(new SideComponentLayout(new VaccinationListComponent(() -> {
 					ContactDto refreshedContact = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
@@ -253,7 +281,11 @@ public class ContactDataView extends AbstractContactView implements HasName {
 					if (refreshedContact.getCaze() != null) {
 						refreshedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(refreshedContact.getCaze().getUuid());
 					}
-					return new VaccinationCriteria.Builder(refreshedContact.getPerson()).withDisease(refreshedContact.getDisease())
+					Disease criteriaDisease = refreshedContact.getDisease();
+					if (criteriaDisease == null && refreshedCase != null) {
+						criteriaDisease = refreshedCase.getDisease();
+					}
+					return new VaccinationCriteria.Builder(refreshedContact.getPerson()).withDisease(criteriaDisease)
 						.build()
 						.vaccinationAssociationType(VaccinationAssociationType.CONTACT)
 						.contactReference(getContactRef())
@@ -292,12 +324,7 @@ public class ContactDataView extends AbstractContactView implements HasName {
 			layout.addSidePanelComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
-		Disease disease = contactDto.getDisease();
-		if (disease == null && caseDto != null) {
-			disease = caseDto.getDisease();
-		}
-
-		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, contactDto, disease, documentList);
+		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, contactDto, resolvedDisease, documentList);
 
 		if (UiUtil.permitted(FeatureType.EXTERNAL_EMAILS, UserRight.EXTERNAL_EMAIL_SEND)) {
 			ExternalEmailSideComponent externalEmailSideComponent =
@@ -305,10 +332,13 @@ public class ContactDataView extends AbstractContactView implements HasName {
 			layout.addSidePanelComponent(new SideComponentLayout(externalEmailSideComponent), EXTERNAL_EMAILS_LOC);
 		}
 
-		SelfReportListComponent selfReportListComponent =
-			new SelfReportListComponent(SelfReportType.CONTACT, new SelfReportCriteria().setContact(new ContactReferenceDto(contactDto.getUuid())));
-		SelfReportListComponentLayout selfReportListComponentLayout = new SelfReportListComponentLayout(selfReportListComponent);
-		layout.addSidePanelComponent(selfReportListComponentLayout, SELF_REPORT_LOC);
+		if (UiUtil.permitted(FeatureType.SELF_REPORTING, UserRight.SELF_REPORT_VIEW)) {
+			SelfReportListComponent selfReportListComponent = new SelfReportListComponent(
+				SelfReportType.CONTACT,
+				new SelfReportCriteria().setContact(new ContactReferenceDto(contactDto.getUuid())));
+			SelfReportListComponentLayout selfReportListComponentLayout = new SelfReportListComponentLayout(selfReportListComponent);
+			layout.addSidePanelComponent(selfReportListComponentLayout, SELF_REPORT_LOC);
+		}
 
 		final boolean deleted = FacadeProvider.getContactFacade().isDeleted(uuid);
 		layout.disableIfNecessary(deleted, contactEditAllowed);
@@ -373,6 +403,21 @@ public class ContactDataView extends AbstractContactView implements HasName {
 		} else {
 			ControllerProvider.getCaseController().createFromContact(contactDataForm.getValue());
 		}
+	}
+
+	private void showVaccinationStatusUpdateDialog(ContactDto contactDto) {
+		VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getCaption(Captions.CaseData_vaccinationStatusUpdate),
+			new Label(I18nProperties.getString(Strings.confirmationVaccinationStatusSync)),
+			I18nProperties.getString(Strings.yes),
+			I18nProperties.getString(Strings.no),
+			600,
+			confirmed -> {
+				if (Boolean.TRUE == confirmed) {
+					FacadeProvider.getContactFacade().updateVaccinationStatuses(contactDto.toReference());
+					ControllerProvider.getContactController().navigateToData(contactDto.getUuid());
+				}
+			});
 	}
 
 	private CaseInfoLayout createCaseInfoLayout(String caseUuid) {

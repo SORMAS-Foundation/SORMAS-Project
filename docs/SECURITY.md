@@ -18,14 +18,13 @@ responsible disclosure and will make every effort to acknowledge your
 contributions.
 Unfortunately, SORMAS does not offer a paid bug bounty programme or other forms of compensation.
 
-Report security bugs by emailing at **security@sormas.org**.
+Report security bugs by emailing at **info@sormas.org**.
 
 We will acknowledge your email and follow up with a response within 10 business days, or explain why a reply may take longer. The response will indicate the next steps in handling your report.
 After the initial reply to your report, the security team will endeavor to keep you informed of the progress towards a fix and full announcement, and may ask for additional information or guidance.
 
 Report security bugs in third-party modules to the person or team maintaining
 the module.
-
 
 ## Disclosure Policy
 

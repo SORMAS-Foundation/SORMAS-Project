@@ -22,16 +22,16 @@ public interface DocumentTemplateFacade {
 		Properties extraProperties)
 		throws DocumentTemplateException;
 
-	List<DocumentTemplateDto> getAvailableTemplates(DocumentWorkflow documentWorkflow, Disease disease);
+	List<DocumentTemplateDto> getAvailableTemplates(DocumentTemplateCriteria documentTemplateCriteria);
 
 	boolean isExistingTemplateFile(DocumentWorkflow documentWorkflow, Disease disease, String templateName);
 
 	DocumentVariables getDocumentVariables(DocumentTemplateReferenceDto templateReference) throws DocumentTemplateException;
 
-	DocumentTemplateDto saveDocumentTemplate(DocumentTemplateDto template, byte[] document)
-		throws DocumentTemplateException;
+	DocumentTemplateDto saveDocumentTemplate(DocumentTemplateDto template, byte[] document) throws DocumentTemplateException;
 
-	boolean deleteDocumentTemplate(DocumentTemplateReferenceDto templateReference) throws DocumentTemplateException;
+	boolean deleteDocumentTemplate(DocumentTemplateReferenceDto templateReference, DocumentWorkflow documentWorkflow)
+		throws DocumentTemplateException;
 
 	byte[] getDocumentTemplateContent(DocumentTemplateReferenceDto templateReference) throws DocumentTemplateException;
 }

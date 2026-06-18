@@ -19,12 +19,12 @@ public class ApplyResetButtonsComponent extends HorizontalLayout {
 	public ApplyResetButtonsComponent(String applyCaptionTag, String resetCaptionTag) {
 		setSpacing(false);
 
-		resetButton = ButtonHelper.createButton(resetCaptionTag, null, FILTER_ITEM_STYLE);
-		addComponent(resetButton);
-
 		applyButton = ButtonHelper.createButton(applyCaptionTag, null, FILTER_ITEM_STYLE);
 		applyButton.setClickShortcut(ShortcutAction.KeyCode.ENTER);
 		addComponent(applyButton);
+
+		resetButton = ButtonHelper.createButton(resetCaptionTag, null, FILTER_ITEM_STYLE);
+		addComponent(resetButton);
 	}
 
 	public void addApplyHandler(Button.ClickListener applyHandler) {
@@ -37,5 +37,9 @@ public class ApplyResetButtonsComponent extends HorizontalLayout {
 
 	public void style(String style) {
 		CssStyles.style(style, applyButton, resetButton);
+	}
+
+	public Button getApplyButton() {
+		return applyButton;
 	}
 }

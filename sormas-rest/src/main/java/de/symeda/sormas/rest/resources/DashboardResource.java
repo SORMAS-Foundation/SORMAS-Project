@@ -128,7 +128,8 @@ public class DashboardResource {
 				dashboardCriteria.getDisease(),
 				dashboardCriteria.getDateFrom(),
 				dashboardCriteria.getDateTo(),
-				dashboardCriteria.getNewCaseDateType());
+				dashboardCriteria.getNewCaseDateType(),
+				null);
 	}
 
 	@POST

@@ -31,13 +31,14 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
-import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.dashboard.HasDashboardCasePopupGrid;
 import de.symeda.sormas.ui.utils.V7UuidRenderer;
 
 @SuppressWarnings("serial")
@@ -48,9 +49,9 @@ public class CasePopupGrid extends Grid {
 	public static final String LAST_NAME = PersonDto.LAST_NAME;
 
 	private final FacilityReferenceDto facility;
-	private final DashboardMapComponent dashboardMapComponent;
+	private final HasDashboardCasePopupGrid dashboardMapComponent;
 
-	public CasePopupGrid(Window window, FacilityReferenceDto facility, DashboardMapComponent dashboardMapComponent) {
+	public CasePopupGrid(Window window, FacilityReferenceDto facility, HasDashboardCasePopupGrid dashboardMapComponent) {
 
 		this.facility = facility;
 		this.dashboardMapComponent = dashboardMapComponent;

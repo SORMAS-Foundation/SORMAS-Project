@@ -18,9 +18,13 @@ package de.symeda.sormas.backend.exposure;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -35,12 +39,26 @@ import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.exposure.AnimalCategory;
 import de.symeda.sormas.api.exposure.AnimalContactType;
+import de.symeda.sormas.api.exposure.AnimalLocation;
+import de.symeda.sormas.api.exposure.ExposureCategory;
+import de.symeda.sormas.api.exposure.ExposureContactFactor;
+import de.symeda.sormas.api.exposure.ExposureProtectiveMeasure;
 import de.symeda.sormas.api.exposure.ExposureRole;
+import de.symeda.sormas.api.exposure.ExposureSetting;
+import de.symeda.sormas.api.exposure.ExposureSubSetting;
 import de.symeda.sormas.api.exposure.ExposureType;
+import de.symeda.sormas.api.exposure.FomiteTransmissionLocation;
 import de.symeda.sormas.api.exposure.GatheringType;
 import de.symeda.sormas.api.exposure.HabitationType;
+import de.symeda.sormas.api.exposure.ProphylaxisAdherence;
+import de.symeda.sormas.api.exposure.SexualContact;
+import de.symeda.sormas.api.exposure.SwimmingLocation;
+import de.symeda.sormas.api.exposure.TravelAccommodation;
+import de.symeda.sormas.api.exposure.TravelPurpose;
 import de.symeda.sormas.api.exposure.TypeOfAnimal;
+import de.symeda.sormas.api.exposure.TypeOfChildcareFacility;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -60,6 +78,21 @@ public class Exposure extends AbstractDomainObject {
 	public static final String LOCATION = "location";
 	public static final String EXPOSURE_TYPE = "exposureType";
 	public static final String CONTACT_TO_CASE = "contactToCase";
+	public static final String EXPOSURE_CATEGORY = "exposureCategory";
+	public static final String EXPOSURE_SETTING = "exposureSetting";
+	public static final String EXPOSURE_SETTING_DETAILS = "exposureSettingDetails";
+	public static final String EXPOSURE_SUB_SETTING_DETAILS = "exposureSubSettingDetails";
+	public static final String CONTACT_FACTOR_DETAILS = "contactFactorDetails";
+	public static final String PROTECTIVE_MEASURE_DETAILS = "protectiveMeasureDetails";
+	public static final String EXPOSURE_COMMENT = "exposureComment";
+	public static final String CONDITION_OF_ANIMAL = "conditionOfAnimal";
+	public static final String ANIMAL_CATEGORY = "animalCategory";
+	public static final String ANIMAL_CATEGORY_DETAILS = "animalCategoryDetails";
+	public static final String FOMITE_TRANSMISSION_LOCATION = "fomiteTransmissionLocation";
+	public static final String SUB_SETTINGS = "subSettings";
+	public static final String CONTACT_FACTORS = "contactFactors";
+	public static final String PROTECTIVE_MEASURES = "protectiveMeasures";
+	public static final String SHOPPING_FOR_FOOD_DETAILS = "shoppingForFoodDetails";
 
 	private EpiData epiData;
 	private User reportingUser;
@@ -116,6 +149,8 @@ public class Exposure extends AbstractDomainObject {
 	private String habitationDetails;
 	private TypeOfAnimal typeOfAnimal;
 	private String typeOfAnimalDetails;
+	private TypeOfChildcareFacility typeOfChildcareFacility;
+	private String childcareFacilityDetails;
 
 	// Fields specific to ExposureType.BURIAL
 	private YesNoUnknown physicalContactDuringPreparation;
@@ -126,6 +161,46 @@ public class Exposure extends AbstractDomainObject {
 
 	// Fields specific to ExposureType.GATHERING
 	private YesNoUnknown largeAttendanceNumber;
+
+	// Fields specific to Giardiasis and Cryptosporidiosis
+	private TravelAccommodation travelAccommodation;
+	private String travelAccommodationType;
+	private SwimmingLocation swimmingLocation;
+	private String swimmingLocationType;
+	private AnimalLocation animalLocation;
+	private String animalLocationText;
+	private YesNoUnknown internationalSwimming;
+	private YesNoUnknown domesticSwimming;
+	private String sexualExposureText;
+	private YesNoUnknown rawFoodContact;
+	private String rawFoodContactText;
+	private String symptomaticIndividualText;
+
+	private ExposureCategory exposureCategory;
+	private ExposureSetting exposureSetting;
+	private String exposureSettingDetails;
+	private String exposureSubSettingDetails;
+	private String contactFactorDetails;
+	private String protectiveMeasureDetails;
+	private String exposureComment;
+
+	private AnimalCondition conditionOfAnimal;
+	private AnimalCategory animalCategory;
+	private String animalCategoryDetails;
+
+	private ProphylaxisAdherence prophylaxisAdherence;
+	private String prophylaxisAdherenceDetails;
+	private TravelPurpose travelPurpose;
+	private String travelPurposeDetails;
+
+	private FomiteTransmissionLocation fomiteTransmissionLocation;
+
+	private Set<ExposureSubSetting> subSettings = new HashSet<>();
+	private Set<ExposureContactFactor> contactFactors = new HashSet<>();
+	private Set<ExposureProtectiveMeasure> protectiveMeasures = new HashSet<>();
+
+	private String shoppingForFoodDetails;
+	private SexualContact sexualContact;
 
 	@ManyToOne
 	@JoinColumn(nullable = false)
@@ -478,6 +553,24 @@ public class Exposure extends AbstractDomainObject {
 	}
 
 	@Enumerated(EnumType.STRING)
+	public TypeOfChildcareFacility getTypeOfChildcareFacility() {
+		return typeOfChildcareFacility;
+	}
+
+	public void setTypeOfChildcareFacility(TypeOfChildcareFacility typeOfChildcareFacility) {
+		this.typeOfChildcareFacility = typeOfChildcareFacility;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getChildcareFacilityDetails() {
+		return childcareFacilityDetails;
+	}
+
+	public void setChildcareFacilityDetails(String childcareFacilityDetails) {
+		this.childcareFacilityDetails = childcareFacilityDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getPhysicalContactDuringPreparation() {
 		return physicalContactDuringPreparation;
 	}
@@ -619,5 +712,299 @@ public class Exposure extends AbstractDomainObject {
 
 	public void setLargeAttendanceNumber(YesNoUnknown largeAttendanceNumber) {
 		this.largeAttendanceNumber = largeAttendanceNumber;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public TravelAccommodation getTravelAccommodation() {
+		return travelAccommodation;
+	}
+
+	public void setTravelAccommodation(TravelAccommodation travelAccommodation) {
+		this.travelAccommodation = travelAccommodation;
+	}
+
+	public String getTravelAccommodationType() {
+		return travelAccommodationType;
+	}
+
+	public void setTravelAccommodationType(String travelAccommodationType) {
+		this.travelAccommodationType = travelAccommodationType;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SwimmingLocation getSwimmingLocation() {
+		return swimmingLocation;
+	}
+
+	public void setSwimmingLocation(SwimmingLocation swimmingLocation) {
+		this.swimmingLocation = swimmingLocation;
+	}
+
+	public String getSwimmingLocationType() {
+		return swimmingLocationType;
+	}
+
+	public void setSwimmingLocationType(String swimmingLocationType) {
+		this.swimmingLocationType = swimmingLocationType;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public AnimalLocation getAnimalLocation() {
+		return animalLocation;
+	}
+
+	public void setAnimalLocation(AnimalLocation animalLocation) {
+		this.animalLocation = animalLocation;
+	}
+
+	public String getAnimalLocationText() {
+		return animalLocationText;
+	}
+
+	public void setAnimalLocationText(String animalLocationText) {
+		this.animalLocationText = animalLocationText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getInternationalSwimming() {
+		return internationalSwimming;
+	}
+
+	public void setInternationalSwimming(YesNoUnknown internationalSwimming) {
+		this.internationalSwimming = internationalSwimming;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getDomesticSwimming() {
+		return domesticSwimming;
+	}
+
+	public void setDomesticSwimming(YesNoUnknown domesticSwimming) {
+		this.domesticSwimming = domesticSwimming;
+	}
+
+	public String getSexualExposureText() {
+		return sexualExposureText;
+	}
+
+	public void setSexualExposureText(String sexualExposureText) {
+		this.sexualExposureText = sexualExposureText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getRawFoodContact() {
+		return rawFoodContact;
+	}
+
+	public void setRawFoodContact(YesNoUnknown rawFoodContact) {
+		this.rawFoodContact = rawFoodContact;
+	}
+
+	public String getRawFoodContactText() {
+		return rawFoodContactText;
+	}
+
+	public void setRawFoodContactText(String rawFoodContactText) {
+		this.rawFoodContactText = rawFoodContactText;
+	}
+
+	public String getSymptomaticIndividualText() {
+		return symptomaticIndividualText;
+	}
+
+	public void setSymptomaticIndividualText(String symptomaticIndividualText) {
+		this.symptomaticIndividualText = symptomaticIndividualText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ExposureCategory getExposureCategory() {
+		return exposureCategory;
+	}
+
+	public void setExposureCategory(ExposureCategory exposureCategory) {
+		this.exposureCategory = exposureCategory;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ExposureSetting getExposureSetting() {
+		return exposureSetting;
+	}
+
+	public void setExposureSetting(ExposureSetting exposureSetting) {
+		this.exposureSetting = exposureSetting;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getExposureSettingDetails() {
+		return exposureSettingDetails;
+	}
+
+	public void setExposureSettingDetails(String exposureSettingDetails) {
+		this.exposureSettingDetails = exposureSettingDetails;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getExposureSubSettingDetails() {
+		return exposureSubSettingDetails;
+	}
+
+	public void setExposureSubSettingDetails(String exposureSubSettingDetails) {
+		this.exposureSubSettingDetails = exposureSubSettingDetails;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getContactFactorDetails() {
+		return contactFactorDetails;
+	}
+
+	public void setContactFactorDetails(String contactFactorDetails) {
+		this.contactFactorDetails = contactFactorDetails;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getProtectiveMeasureDetails() {
+		return protectiveMeasureDetails;
+	}
+
+	public void setProtectiveMeasureDetails(String protectiveMeasureDetails) {
+		this.protectiveMeasureDetails = protectiveMeasureDetails;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getExposureComment() {
+		return exposureComment;
+	}
+
+	public void setExposureComment(String exposureComment) {
+		this.exposureComment = exposureComment;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public AnimalCondition getConditionOfAnimal() {
+		return conditionOfAnimal;
+	}
+
+	public void setConditionOfAnimal(AnimalCondition conditionOfAnimal) {
+		this.conditionOfAnimal = conditionOfAnimal;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public AnimalCategory getAnimalCategory() {
+		return animalCategory;
+	}
+
+	public void setAnimalCategory(AnimalCategory animalCategory) {
+		this.animalCategory = animalCategory;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getAnimalCategoryDetails() {
+		return animalCategoryDetails;
+	}
+
+	public void setAnimalCategoryDetails(String animalCategoryDetails) {
+		this.animalCategoryDetails = animalCategoryDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public FomiteTransmissionLocation getFomiteTransmissionLocation() {
+		return fomiteTransmissionLocation;
+	}
+
+	public void setFomiteTransmissionLocation(FomiteTransmissionLocation fomiteTransmissionLocation) {
+		this.fomiteTransmissionLocation = fomiteTransmissionLocation;
+	}
+
+	@ElementCollection(fetch = FetchType.EAGER)
+	@Enumerated(EnumType.STRING)
+	@CollectionTable(name = "exposures_subsettings",
+		joinColumns = @JoinColumn(name = "exposure_id", referencedColumnName = Exposure.ID, nullable = false))
+	@Column(name = "subsetting", nullable = false)
+	public Set<ExposureSubSetting> getSubSettings() {
+		return subSettings;
+	}
+
+	public void setSubSettings(Set<ExposureSubSetting> subSettings) {
+		this.subSettings = subSettings;
+	}
+
+	@ElementCollection(fetch = FetchType.EAGER)
+	@Enumerated(EnumType.STRING)
+	@CollectionTable(name = "exposures_contactfactors",
+		joinColumns = @JoinColumn(name = "exposure_id", referencedColumnName = Exposure.ID, nullable = false))
+	@Column(name = "contactfactor", nullable = false)
+	public Set<ExposureContactFactor> getContactFactors() {
+		return contactFactors;
+	}
+
+	public void setContactFactors(Set<ExposureContactFactor> contactFactors) {
+		this.contactFactors = contactFactors;
+	}
+
+	@ElementCollection(fetch = FetchType.EAGER)
+	@Enumerated(EnumType.STRING)
+	@CollectionTable(name = "exposures_protectivemeasures",
+		joinColumns = @JoinColumn(name = "exposure_id", referencedColumnName = Exposure.ID, nullable = false))
+	@Column(name = "protectivemeasure", nullable = false)
+	public Set<ExposureProtectiveMeasure> getProtectiveMeasures() {
+		return protectiveMeasures;
+	}
+
+	public void setProtectiveMeasures(Set<ExposureProtectiveMeasure> protectiveMeasures) {
+		this.protectiveMeasures = protectiveMeasures;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getShoppingForFoodDetails() {
+		return shoppingForFoodDetails;
+	}
+
+	public void setShoppingForFoodDetails(String shoppingForFoodDetails) {
+		this.shoppingForFoodDetails = shoppingForFoodDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public TravelPurpose getTravelPurpose() {
+		return travelPurpose;
+	}
+
+	public void setTravelPurpose(TravelPurpose travelPurpose) {
+		this.travelPurpose = travelPurpose;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getTravelPurposeDetails() {
+		return travelPurposeDetails;
+	}
+
+	public void setTravelPurposeDetails(String travelPurposeDetails) {
+		this.travelPurposeDetails = travelPurposeDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ProphylaxisAdherence getProphylaxisAdherence() {
+		return prophylaxisAdherence;
+	}
+
+	public void setProphylaxisAdherence(ProphylaxisAdherence prophylaxisAdherence) {
+		this.prophylaxisAdherence = prophylaxisAdherence;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getProphylaxisAdherenceDetails() {
+		return prophylaxisAdherenceDetails;
+	}
+
+	public void setProphylaxisAdherenceDetails(String prophylaxisAdherenceDetails) {
+		this.prophylaxisAdherenceDetails = prophylaxisAdherenceDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SexualContact getSexualContact() {
+		return sexualContact;
+	}
+
+	public void setSexualContact(SexualContact sexualContact) {
+		this.sexualContact = sexualContact;
 	}
 }

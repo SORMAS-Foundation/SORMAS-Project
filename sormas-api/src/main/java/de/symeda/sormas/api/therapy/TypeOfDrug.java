@@ -6,6 +6,7 @@ public enum TypeOfDrug {
 
 	ANTIMICROBIAL,
 	ANTIVIRAL,
+	ANTIBIOTIC,
 	OTHER;
 
 	@Override

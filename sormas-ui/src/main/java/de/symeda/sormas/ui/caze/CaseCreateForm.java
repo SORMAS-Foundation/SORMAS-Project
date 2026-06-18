@@ -17,7 +17,6 @@ package de.symeda.sormas.ui.caze;
 
 import static de.symeda.sormas.ui.utils.CssStyles.ERROR_COLOR_PRIMARY;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
-import static de.symeda.sormas.ui.utils.CssStyles.SOFT_REQUIRED;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.CssStyles.style;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
@@ -31,7 +30,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.caze.CaseClassification;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.google.common.collect.Sets;
@@ -47,6 +45,7 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
@@ -127,12 +126,12 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	//@formatter:off
     private static final String HTML_LAYOUT = fluidRowLocs(CaseDataDto.CASE_ORIGIN, "")
         + fluidRowLocs(CaseDataDto.REPORT_DATE, CaseDataDto.EPID_NUMBER)
+		+ fluidRowLocs(CaseDataDto.CASE_CLASSIFICATION)
         + fluidRowLocs(CaseDataDto.CASE_REFERENCE_NUMBER, CaseDataDto.EXTERNAL_ID)
         + fluidRow(
         fluidColumnLoc(6, 0, CaseDataDto.DISEASE),
         fluidColumn(6, 0,
-            locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE, CaseDataDto.DENGUE_FEVER_TYPE,
-                CaseDataDto.RABIES_TYPE)))
+            locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE, CaseDataDto.RABIES_TYPE)))
         + fluidRowLocs(CaseDataDto.DISEASE_VARIANT, CaseDataDto.DISEASE_VARIANT_DETAILS)
 		+ fluidRowLocs(CaseDataDto.RE_INFECTION)
         + fluidRowLocs(RESPONSIBLE_JURISDICTION_HEADING_LOC)
@@ -141,10 +140,10 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
         + fluidRowLocs(DONT_SHARE_WARNING_LOC)
         + fluidRowLocs(DIFFERENT_PLACE_OF_STAY_JURISDICTION)
         + fluidRowLocs(PLACE_OF_STAY_HEADING_LOC)
-        + fluidRowLocs(FACILITY_OR_HOME_LOC)
+        + fluidRow(fluidColumnLoc(6,0,FACILITY_OR_HOME_LOC))
         + fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY)
         + fluidRowLocs(FACILITY_TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE)
-        + fluidRowLocs(CaseDataDto.HEALTH_FACILITY, CaseDataDto.HEALTH_FACILITY_DETAILS)
+        + fluidRowLocs(CaseDataDto.HEALTH_FACILITY, CaseDataDto.HEALTH_FACILITY_DETAILS, CaseDataDto.DEPARTMENT)
         + fluidRowLocs(DIFFERENT_POINT_OF_ENTRY_JURISDICTION)
         + fluidRowLocs(POINT_OF_ENTRY_REGION, POINT_OF_ENTRY_DISTRICT)
         + fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS)
@@ -170,6 +169,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		this.convertedTravelEntry = convertedTravelEntry;
 		this.showHomeAddressForm = showHomeAddressForm;
 		this.showPersonSearchButton = showPersonSearchButton;
+
 		addFields();
 		setWidth(720, Unit.PIXELS);
 		hideValidationUntilNextCommit();
@@ -196,6 +196,11 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.CASE_REFERENCE_NUMBER, TextField.class);
 
 		addField(CaseDataDto.REPORT_DATE, DateField.class);
+
+		final NullableOptionGroup caseClassificationGroup = addField(CaseDataDto.CASE_CLASSIFICATION, NullableOptionGroup.class);
+		caseClassificationGroup.removeItem(CaseClassification.CONFIRMED_NO_SYMPTOMS);
+		caseClassificationGroup.removeItem(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS);
+
 		ComboBox diseaseField = addDiseaseField(CaseDataDto.DISEASE, false, true, false);
 		diseaseVariantField = addField(CaseDataDto.DISEASE_VARIANT, ComboBox.class);
 		diseaseVariantDetailsField = addField(CaseDataDto.DISEASE_VARIANT_DETAILS, TextField.class);
@@ -229,7 +234,6 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		responsibleDistrictCombo.setRequired(true);
 		responsibleCommunityCombo = addInfrastructureField(CaseDataDto.RESPONSIBLE_COMMUNITY);
 		responsibleCommunityCombo.setNullSelectionAllowed(true);
-		responsibleCommunityCombo.addStyleName(SOFT_REQUIRED);
 
 		InfrastructureFieldsHelper.initInfrastructureFields(responsibleRegionCombo, responsibleDistrictCombo, responsibleCommunityCombo);
 
@@ -301,6 +305,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		facilityType.setWidth(100, Unit.PERCENTAGE);
 		facilityCombo = addInfrastructureField(CaseDataDto.HEALTH_FACILITY);
 		facilityCombo.setImmediate(true);
+
 		TextField facilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
 		facilityDetails.setVisible(false);
 		ComboBox cbPointOfEntry = addInfrastructureField(CaseDataDto.POINT_OF_ENTRY);
@@ -308,6 +313,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		TextField tfPointOfEntryDetails = addField(CaseDataDto.POINT_OF_ENTRY_DETAILS, TextField.class);
 		tfPointOfEntryDetails.setVisible(false);
 
+		TextField tfDepartment = addField(CaseDataDto.DEPARTMENT, TextField.class);
+		tfDepartment.setVisible(false);
 		if (convertedTravelEntry != null) {
 			differentPointOfEntryJurisdiction.setValue(true);
 			RegionReferenceDto regionReferenceDto = convertedTravelEntry.getPointOfEntryRegion() != null
@@ -381,9 +388,12 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 						facilityCombo.setRequired(true);
 					}
 					updateFacilityFields(facilityCombo, facilityDetails);
+					tfDepartment.setVisible(true);
 				} else if (TypeOfPlace.HOME.equals(facilityOrHome.getValue())
 					|| ((facilityOrHome.getValue() instanceof java.util.Set) && TypeOfPlace.HOME.equals(facilityOrHome.getNullableValue()))) {
 					setNoneFacility();
+					tfDepartment.setVisible(false);
+					tfDepartment.clear();
 				} else {
 					facilityCombo.removeAllItems();
 					facilityCombo.setValue(null);
@@ -471,7 +481,6 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		initializeVisibilitiesAndAllowedVisibilities();
 
 		setRequired(true, CaseDataDto.REPORT_DATE, CaseDataDto.DISEASE, FACILITY_TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE);
-		FieldHelper.addSoftRequiredStyle(plagueType, communityCombo, facilityDetails);
 
 		FieldHelper
 			.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.DISEASE_DETAILS), CaseDataDto.DISEASE, Arrays.asList(Disease.OTHER), true);
@@ -517,7 +526,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			}
 		});
 		diseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> {
-			updateDiseaseVariant((Disease) valueChangeEvent.getProperty().getValue());
+			handleDiseaseChanged((Disease) valueChangeEvent.getProperty().getValue());
 			personCreateForm.updatePresentConditionEnum((Disease) valueChangeEvent.getProperty().getValue());
 		});
 
@@ -528,7 +537,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 		if (diseaseField.getValue() != null) {
 			Disease disease = (Disease) diseaseField.getValue();
-			updateDiseaseVariant(disease);
+			handleDiseaseChanged(disease);
 			personCreateForm.updatePresentConditionEnum(disease);
 		}
 	}
@@ -540,27 +549,33 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		getContent().getComponent(PLACE_OF_STAY_HEADING_LOC).setVisible(false);
 		differentPlaceOfStayJurisdiction.setVisible(false);
 		responsibleRegionCombo.setVisible(false);
+		responsibleRegionCombo.setRequired(false);
 		responsibleRegionCombo.setValue(FacadeProvider.getRegionFacade().getDefaultInfrastructureReference());
 		responsibleDistrictCombo.setVisible(false);
+		responsibleDistrictCombo.setRequired(false);
 		responsibleDistrictCombo.setValue(FacadeProvider.getDistrictFacade().getDefaultInfrastructureReference());
 		responsibleCommunityCombo.setVisible(false);
 		responsibleCommunityCombo.setValue(FacadeProvider.getCommunityFacade().getDefaultInfrastructureReference());
 	}
 
-	private void updateDiseaseVariant(Disease disease) {
+	private void handleDiseaseChanged(Disease newDisease) {
 		List<DiseaseVariant> diseaseVariants =
-			FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
+			FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, newDisease);
 		FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
 		diseaseVariantField
-			.setVisible(disease != null && isVisibleAllowed(CaseDataDto.DISEASE_VARIANT) && CollectionUtils.isNotEmpty(diseaseVariants));
-		if (disease == Disease.INFLUENZA) {
+			.setVisible(newDisease != null && isVisibleAllowed(CaseDataDto.DISEASE_VARIANT) && CollectionUtils.isNotEmpty(diseaseVariants));
+
+		NullableOptionGroup classificationField = getField(CaseDataDto.CASE_CLASSIFICATION);
+		if (newDisease == Disease.INFLUENZA) {
 			facilityOrHome.setValue(Sets.newHashSet(TypeOfPlace.HOME));
 			facilityOrHome.select(TypeOfPlace.HOME);
-			getValue().setCaseClassification(CaseClassification.CONFIRMED);
+			classificationField.setValue(Sets.newHashSet(CaseClassification.CONFIRMED));
+			classificationField.select(CaseClassification.CONFIRMED);
 		} else {
 			facilityOrHome.setValue(null);
 			facilityOrHome.unselect(TypeOfPlace.HOME);
-			getValue().setCaseClassification(CaseClassification.NOT_CLASSIFIED);
+			classificationField.setValue(Sets.newHashSet(getValue().getCaseClassification()));
+			classificationField.select(getValue().getCaseClassification());
 		}
 	}
 
@@ -739,6 +754,10 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		String personUuid = casePersonReference == null ? null : casePersonReference.getUuid();
 		PersonDto personByUuid = personUuid == null ? null : FacadeProvider.getPersonFacade().getByUuid(personUuid);
 		personCreateForm.setPerson(personByUuid);
+
+		if (caseDataDto.getSymptoms() != null) {
+			personCreateForm.setSymptoms(caseDataDto.getSymptoms());
+		}
 
 		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
 			hideAndFillJurisdictionFields();

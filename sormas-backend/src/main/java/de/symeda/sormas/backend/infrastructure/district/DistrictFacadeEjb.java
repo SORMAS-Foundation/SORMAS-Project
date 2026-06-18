@@ -150,6 +150,7 @@ public class DistrictFacadeEjb
 				case District.NAME:
 				case District.EPID_CODE:
 				case District.EXTERNAL_ID:
+				case District.NUTS_CODE:
 					expression = cb.lower(district.get(sortProperty.propertyName));
 					break;
 				case District.GROWTH_RATE:
@@ -296,6 +297,7 @@ public class DistrictFacadeEjb
 		dto.setGrowthRate(entity.getGrowthRate());
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
 		dto.setExternalID(entity.getExternalID());
+		dto.setNutsCode(entity.getNutsCode());
 		applyToDtoInheritance(dto, entity);
 
 		return dto;
@@ -322,6 +324,7 @@ public class DistrictFacadeEjb
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
 		dto.setExternalID(entity.getExternalID());
 		dto.setDefaultInfrastructure(entity.isDefaultInfrastructure());
+		dto.setNutsCode(entity.getNutsCode());
 
 		return dto;
 	}
@@ -336,6 +339,7 @@ public class DistrictFacadeEjb
 		target.setGrowthRate(source.getGrowthRate());
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setExternalID(source.getExternalID());
+		target.setNutsCode(source.getNutsCode());
 		applyFillOrBuildEntityInheritance(target, source);
 
 		return target;

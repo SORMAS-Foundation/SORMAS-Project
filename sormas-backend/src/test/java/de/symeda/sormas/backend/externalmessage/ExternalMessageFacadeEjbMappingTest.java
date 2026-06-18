@@ -1,6 +1,22 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.backend.externalmessage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -28,6 +44,8 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportService;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportFacadeEjb;
@@ -36,6 +54,8 @@ import de.symeda.sormas.backend.infrastructure.country.CountryService;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.symptoms.Symptoms;
+import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 
@@ -44,6 +64,8 @@ public class ExternalMessageFacadeEjbMappingTest {
 
 	@Mock
 	private SampleReportFacadeEjb.SampleReportFacadeEjbLocal sampleReportFacade;
+	@Mock
+	private SymptomsFacadeEjb.SymptomsFacadeEjbLocal symptomsFacadeEjb;
 	@Mock
 	private UserService userservice;
 	@Mock
@@ -80,6 +102,7 @@ public class ExternalMessageFacadeEjbMappingTest {
 		source.setChangeDate(new Date());
 		source.setUuid("UUID");
 		source.setMessageDateTime(new Date());
+		source.setCaseComments("Test Case Comments");
 		source.setReporterName("Test Lab Name");
 		source.setReporterExternalIds(Arrays.asList("Test Lab External Id 1", "Test Lab External Id 2"));
 		source.setReporterPostalCode("Test Lab Postal Code");
@@ -107,9 +130,29 @@ public class ExternalMessageFacadeEjbMappingTest {
 		source.setCaseReportDate(new Date());
 		source.setPersonCountry(new CountryReferenceDto(country.getUuid(), country.getIsoCode()));
 		source.setPersonFacility(new FacilityReferenceDto(facility.getUuid()));
+		source.setPersonGuardianFirstName("Guardian First Name");
+		source.setPersonGuardianLastName("Guardian Last Name");
+		source.setPersonGuardianPhone("9876543210");
+		source.setPersonGuardianEmail("guardian@domain.com");
+		source.setPersonGuardianRelationship("Guardian Relationship");
+		source.setCaseSymptoms(new SymptomsDto());
+		source.setNotifierFirstName("Notifier First Name");
+		source.setNotifierLastName("Notifier Last Name");
+		source.setNotifierRegistrationNumber("Notifier Registration Number");
+		source.setNotifierAddress("Notifier Address");
+		source.setNotifierEmail("notifier@domain.com");
+		source.setNotifierPhone("1234567890");
+		source.setTreatmentStarted(YesNoUnknown.YES);
+		source.setTreatmentNotApplicable(true);
+		source.setTreatmentStartedDate(new Date());
+		source.setDiagnosticDate(new Date());
 
 		when(countryService.getByReferenceDto(source.getPersonCountry())).thenReturn(country);
 		when(facilityService.getByReferenceDto(source.getPersonFacility())).thenReturn(facility);
+
+		final SymptomsDto symptomsDto = new SymptomsDto();
+		source.setCaseSymptoms(symptomsDto);
+		when(symptomsFacadeEjb.fillOrBuildEntity(symptomsDto, null, true)).thenReturn(new Symptoms());
 
 		ExternalMessage result = sut.fillOrBuildEntity(source, null, true);
 
@@ -118,6 +161,7 @@ public class ExternalMessageFacadeEjbMappingTest {
 		assertNotSame(source.getChangeDate(), result.getChangeDate());
 		assertEquals(source.getUuid(), result.getUuid());
 		assertEquals(source.getMessageDateTime(), result.getMessageDateTime());
+		assertEquals(source.getCaseComments(), result.getCaseComments());
 		assertEquals(source.getReporterName(), result.getReporterName());
 		assertEquals(source.getReporterExternalIds(), result.getReporterExternalIds());
 		assertEquals(source.getReporterPostalCode(), result.getReporterPostalCode());
@@ -143,6 +187,22 @@ public class ExternalMessageFacadeEjbMappingTest {
 		assertEquals(source.getCaseReportDate(), result.getCaseReportDate());
 		assertEquals(source.getPersonCountry().getUuid(), result.getPersonCountry().getUuid());
 		assertEquals(source.getPersonFacility().getUuid(), result.getPersonFacility().getUuid());
+		assertEquals(source.getPersonGuardianFirstName(), result.getPersonGuardianFirstName());
+		assertEquals(source.getPersonGuardianLastName(), result.getPersonGuardianLastName());
+		assertEquals(source.getPersonGuardianPhone(), result.getPersonGuardianPhone());
+		assertEquals(source.getPersonGuardianEmail(), result.getPersonGuardianEmail());
+		assertEquals(source.getPersonGuardianRelationship(), result.getPersonGuardianRelationship());
+		assertNotNull(result.getCaseSymptoms());
+		assertEquals(source.getNotifierFirstName(), result.getNotifierFirstName());
+		assertEquals(source.getNotifierLastName(), result.getNotifierLastName());
+		assertEquals(source.getNotifierRegistrationNumber(), result.getNotifierRegistrationNumber());
+		assertEquals(source.getNotifierAddress(), result.getNotifierAddress());
+		assertEquals(source.getNotifierEmail(), result.getNotifierEmail());
+		assertEquals(source.getNotifierPhone(), result.getNotifierPhone());
+		assertEquals(source.getTreatmentStarted(), result.getTreatmentStarted());
+		assertEquals(source.getTreatmentNotApplicable(), result.getTreatmentNotApplicable());
+		assertEquals(source.getTreatmentStartedDate(), result.getTreatmentStartedDate());
+		assertEquals(source.getDiagnosticDate(), result.getDiagnosticDate());
 	}
 
 	@Test
@@ -165,6 +225,7 @@ public class ExternalMessageFacadeEjbMappingTest {
 		source.setCreationDate(new Timestamp(new Date().getTime()));
 		source.setChangeDate(new Timestamp(new Date().getTime()));
 		source.setUuid("UUID");
+		source.setCaseComments("Test Case Comments");
 		source.setMessageDateTime(new Date());
 		source.setReporterName("Test Lab Name");
 		source.setReporterExternalIds(Arrays.asList("Test Lab External Id 1", "Test Lab External Id 2"));
@@ -192,6 +253,21 @@ public class ExternalMessageFacadeEjbMappingTest {
 		source.setPersonExternalId("11111");
 		source.setPersonNationalHealthId("22222");
 		source.setCaseReportDate(new Date());
+		source.setPersonGuardianFirstName("Guardian First Name");
+		source.setPersonGuardianLastName("Guardian Last Name");
+		source.setPersonGuardianPhone("9876543210");
+		source.setPersonGuardianEmail("guardian@domain.com");
+		source.setPersonGuardianRelationship("Guardian Relationship");
+		source.setCaseSymptoms(new Symptoms());
+		source.setNotifierFirstName("Notifier First Name");
+		source.setNotifierLastName("Notifier Last Name");
+		source.setNotifierRegistrationNumber("Notifier Registration Number");
+		source.setNotifierAddress("Notifier Address");
+		source.setNotifierEmail("notifier@domain.com");
+		source.setNotifierPhone("1234567890");
+		source.setTreatmentStarted(YesNoUnknown.YES);
+		source.setTreatmentStartedDate(new Date());
+		source.setDiagnosticDate(new Date());
 
 		ExternalMessageDto result = sut.toDto(source);
 
@@ -199,6 +275,7 @@ public class ExternalMessageFacadeEjbMappingTest {
 		assertNotSame(source.getCreationDate().getTime(), result.getCreationDate().getTime());
 		assertEquals(source.getChangeDate(), result.getChangeDate());
 		assertEquals(source.getUuid(), result.getUuid());
+		assertEquals(source.getCaseComments(), result.getCaseComments());
 		assertEquals(source.getMessageDateTime(), result.getMessageDateTime());
 		assertEquals(source.getReporterName(), result.getReporterName());
 		assertEquals(source.getReporterExternalIds(), result.getReporterExternalIds());
@@ -223,5 +300,20 @@ public class ExternalMessageFacadeEjbMappingTest {
 		assertEquals(source.getPersonExternalId(), result.getPersonExternalId());
 		assertEquals(source.getPersonNationalHealthId(), result.getPersonNationalHealthId());
 		assertEquals(source.getCaseReportDate(), result.getCaseReportDate());
+		assertEquals(source.getPersonGuardianFirstName(), result.getPersonGuardianFirstName());
+		assertEquals(source.getPersonGuardianLastName(), result.getPersonGuardianLastName());
+		assertEquals(source.getPersonGuardianPhone(), result.getPersonGuardianPhone());
+		assertEquals(source.getPersonGuardianEmail(), result.getPersonGuardianEmail());
+		assertEquals(source.getPersonGuardianRelationship(), result.getPersonGuardianRelationship());
+		assertNotNull(result.getCaseSymptoms());
+		assertEquals(source.getNotifierFirstName(), result.getNotifierFirstName());
+		assertEquals(source.getNotifierLastName(), result.getNotifierLastName());
+		assertEquals(source.getNotifierRegistrationNumber(), result.getNotifierRegistrationNumber());
+		assertEquals(source.getNotifierAddress(), result.getNotifierAddress());
+		assertEquals(source.getNotifierEmail(), result.getNotifierEmail());
+		assertEquals(source.getNotifierPhone(), result.getNotifierPhone());
+		assertEquals(source.getTreatmentStarted(), result.getTreatmentStarted());
+		assertEquals(source.getTreatmentStartedDate(), result.getTreatmentStartedDate());
+		assertEquals(source.getDiagnosticDate(), result.getDiagnosticDate());
 	}
 }

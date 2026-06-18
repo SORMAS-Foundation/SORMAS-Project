@@ -16,8 +16,8 @@
 package de.symeda.sormas.backend.hospitalization;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.nullValue;
 
 import org.junit.jupiter.api.Test;
@@ -88,6 +88,7 @@ public class HospitalizationFacadeEjbPseudonymizationTest extends AbstractBeanTe
 			prevHospitalization.setCommunity(rdcf.community);
 			prevHospitalization.setHealthFacility(rdcf.facility);
 			prevHospitalization.setHealthFacilityDetails("Test facility details");
+			prevHospitalization.setHealthFacilityDepartment("Test department");
 			prevHospitalization.setDescription("Test description");
 			c.getHospitalization().getPreviousHospitalizations().add(prevHospitalization);
 		});
@@ -99,6 +100,7 @@ public class HospitalizationFacadeEjbPseudonymizationTest extends AbstractBeanTe
 		assertThat(prevHospitalization.getCommunity(), is(rdcf2.community));
 		assertThat(prevHospitalization.getHealthFacility(), is(rdcf2.facility));
 		assertThat(prevHospitalization.getHealthFacilityDetails(), is("Test facility details"));
+		assertThat(prevHospitalization.getHealthFacilityDepartment(), is("Test department"));
 		assertThat(prevHospitalization.getDescription(), is("Test description"));
 	}
 
@@ -107,7 +109,8 @@ public class HospitalizationFacadeEjbPseudonymizationTest extends AbstractBeanTe
 
 		assertThat(prevHospitalization.getCommunity(), is(nullValue()));
 		assertThat(prevHospitalization.getHealthFacility(), is(nullValue()));
-		assertThat(prevHospitalization.getHealthFacilityDetails(), isEmptyString());
-		assertThat(prevHospitalization.getDescription(), isEmptyString());
+		assertThat(prevHospitalization.getHealthFacilityDetails(), is(emptyString()));
+		assertThat(prevHospitalization.getHealthFacilityDepartment(), is(emptyString()));
+		assertThat(prevHospitalization.getDescription(), is(emptyString()));
 	}
 }

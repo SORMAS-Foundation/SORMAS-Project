@@ -44,6 +44,9 @@ import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import de.symeda.sormas.api.importexport.DatabaseTable;
 import de.symeda.sormas.backend.action.Action;
 import de.symeda.sormas.backend.activityascase.ActivityAsCase;
+import de.symeda.sormas.backend.adverseeventsfollowingimmunization.entity.AdverseEvents;
+import de.symeda.sormas.backend.adverseeventsfollowingimmunization.entity.Aefi;
+import de.symeda.sormas.backend.adverseeventsfollowingimmunization.entity.AefiInvestigation;
 import de.symeda.sormas.backend.campaign.Campaign;
 import de.symeda.sormas.backend.campaign.data.CampaignFormData;
 import de.symeda.sormas.backend.campaign.diagram.CampaignDiagramDefinition;
@@ -58,6 +61,8 @@ import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumValue;
+import de.symeda.sormas.backend.customizablefield.CustomizableFieldMetadata;
+import de.symeda.sormas.backend.customizablefield.CustomizableFieldValue;
 import de.symeda.sormas.backend.deletionconfiguration.DeletionConfiguration;
 import de.symeda.sormas.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.backend.document.Document;
@@ -89,6 +94,7 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.outbreak.Outbreak;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonContactDetail;
+import de.symeda.sormas.backend.person.notifier.Notifier;
 import de.symeda.sormas.backend.report.AggregateReport;
 import de.symeda.sormas.backend.report.WeeklyReport;
 import de.symeda.sormas.backend.report.WeeklyReportEntry;
@@ -102,7 +108,10 @@ import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccess;
 import de.symeda.sormas.backend.symptoms.Symptoms;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategory;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationValue;
 import de.symeda.sormas.backend.task.Task;
+import de.symeda.sormas.backend.therapy.DrugSusceptibility;
 import de.symeda.sormas.backend.therapy.Prescription;
 import de.symeda.sormas.backend.therapy.Therapy;
 import de.symeda.sormas.backend.therapy.Treatment;
@@ -114,7 +123,7 @@ import de.symeda.sormas.backend.visit.Visit;
 
 /**
  * Exporting data directly from the PostgreSQL database with COPY commands as .csv files.
- * 
+ *
  * @author Stefan Kock
  */
 @Stateless
@@ -122,7 +131,8 @@ import de.symeda.sormas.backend.visit.Visit;
 public class DatabaseExportService {
 
 	private static final String COPY_SINGLE_TABLE = "COPY (SELECT * FROM %s) TO STDOUT WITH (FORMAT CSV, DELIMITER '%s', HEADER)";
-	public static final String COUNT_TABLE_COLUMNS = "SELECT COUNT(column_name) FROM information_schema.columns WHERE table_name=:tableName";
+	public static final String COUNT_TABLE_COLUMNS =
+		"SELECT COUNT(column_name) FROM information_schema.columns WHERE table_name=CAST(:tableName AS text)";
 
 	static final Map<DatabaseTable, String> EXPORT_CONFIGS = new LinkedHashMap<>();
 
@@ -148,11 +158,15 @@ public class DatabaseExportService {
 		EXPORT_CONFIGS.put(DatabaseTable.EVENTS, Event.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.EVENTS_EVENTGROUPS, Event.EVENTS_EVENT_GROUPS_TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.EVENTGROUPS, EventGroup.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.EVENT_ENVIRONMENTS, EventGroup.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.EVENTPARTICIPANTS, EventParticipant.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.ACTIONS, Action.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.TRAVEL_ENTRIES, TravelEntry.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.IMMUNIZATIONS, Immunization.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.VACCINATIONS, Vaccination.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.ADVERSE_EVENTS_FOLLOWING_IMMUNIZATIONS, Aefi.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_INVESTIGATIONS, AefiInvestigation.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.ADVERSE_EVENTS, AdverseEvents.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.SAMPLES, Sample.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.PATHOGEN_TESTS, PathogenTest.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.ADDITIONAL_TESTS, AdditionalTest.TABLE_NAME);
@@ -173,6 +187,8 @@ public class DatabaseExportService {
 		EXPORT_CONFIGS.put(DatabaseTable.POINTS_OF_ENTRY, PointOfEntry.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.OUTBREAKS, Outbreak.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.CUSTOMIZABLE_ENUM_VALUES, CustomizableEnumValue.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.CUSTOMIZABLE_FIELD_METADATA, CustomizableFieldMetadata.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.CUSTOMIZABLE_FIELD_VALUE, CustomizableFieldValue.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.SYMPTOMS, Symptoms.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.CAMPAIGNS, Campaign.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.CAMPAIGN_CAMPAIGNFORMMETA, Campaign.CAMPAIGN_CAMPAIGNFORMMETA_TABLE_NAME);
@@ -205,6 +221,10 @@ public class DatabaseExportService {
 		EXPORT_CONFIGS.put(DatabaseTable.FEATURE_CONFIGURATIONS, FeatureConfiguration.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.DISEASE_CONFIGURATIONS, DiseaseConfiguration.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.DELETION_CONFIGURATIONS, DeletionConfiguration.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.SYSTEM_CONFIGURATION_VALUES, SystemConfigurationValue.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.SYSTEM_CONFIGURATION_CATEGORIES, SystemConfigurationCategory.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.NOTIFIER, Notifier.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.DRUG_SUSCEPTIBILITY, DrugSusceptibility.TABLE_NAME);
 	}
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -270,7 +290,7 @@ public class DatabaseExportService {
 
 	/**
 	 * Run an export command and write the result directly into a Writer
-	 * 
+	 *
 	 * @param writer
 	 * @param sql
 	 *            Actual native sql command to copy data to CSV.

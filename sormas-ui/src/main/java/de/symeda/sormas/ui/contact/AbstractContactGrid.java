@@ -20,6 +20,8 @@ package de.symeda.sormas.ui.contact;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.vaadin.navigator.View;
@@ -27,11 +29,13 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.CountryHelper;
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactIndexDto;
+import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
@@ -167,7 +171,13 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 			getColumn(CaseIndexDto.EXTERNAL_ID).setHidden(true);
 			getColumn(CaseIndexDto.EXTERNAL_TOKEN).setHidden(true);
 		}
-		getColumn(ContactIndexDto.CONTACT_PROXIMITY).setWidth(200);
+		getColumn(ContactIndexDto.CONTACT_PROXIMITIES).setWidth(200);
+		((Column<ContactIndexDto, Set<ContactProximity>>) getColumn(ContactIndexDto.CONTACT_PROXIMITIES)).setRenderer(proximities -> {
+			if (proximities == null || proximities.isEmpty()) {
+				return "";
+			}
+			return proximities.stream().map(I18nProperties::getEnumCaption).collect(Collectors.joining(", "));
+		}, new com.vaadin.ui.renderers.TextRenderer());
 		((Column<ContactIndexDto, String>) getColumn(ContactIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<ContactIndexDto, String>) getColumn(ContactIndexDto.PERSON_UUID)).setRenderer(new UuidRenderer());
 		((Column<ContactIndexDto, Date>) getColumn(ContactIndexDto.FOLLOW_UP_UNTIL)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
@@ -214,12 +224,14 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 				getEventColumns(),
 				Stream.of(
 					ContactIndexDto.CONTACT_CATEGORY,
-					ContactIndexDto.CONTACT_PROXIMITY,
+					ContactIndexDto.CONTACT_PROXIMITIES,
 					ContactIndexDto.FOLLOW_UP_STATUS,
 					ContactIndexDto.FOLLOW_UP_UNTIL,
 					ContactIndexDto.SYMPTOM_JOURNAL_STATUS,
 					ContactIndexDto.VACCINATION_STATUS,
-					NUMBER_OF_VISITS),
+					NUMBER_OF_VISITS,
+					ContactIndexDto.PROPHYLAXIS_PRESCRIBED,
+					ContactIndexDto.PRESCRIBED_DRUG),
 				Stream.of(NUMBER_OF_PENDING_TASKS).filter(column -> UiUtil.permitted(FeatureType.TASK_MANAGEMENT, UserRight.TASK_VIEW)),
 				Stream.of(COLUMN_COMPLETENESS),
 				Stream.of(DELETE_REASON_COLUMN))
@@ -227,7 +239,11 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 	}
 
 	protected Stream<String> getPersonColumns() {
-		return Stream.of(ContactIndexDto.PERSON_UUID, ContactIndexDto.PERSON_FIRST_NAME, ContactIndexDto.PERSON_LAST_NAME);
+		return Stream.of(
+			ContactIndexDto.PERSON_UUID,
+			ContactIndexDto.PERSON_NATIONAL_HEALTH_ID,
+			ContactIndexDto.PERSON_FIRST_NAME,
+			ContactIndexDto.PERSON_LAST_NAME);
 	}
 
 	protected Stream<String> getEventColumns() {
@@ -240,11 +256,9 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 			deselectAll();
 		}
 
-		if (getCriteria().getFollowUpStatus() == FollowUpStatus.NO_FOLLOW_UP) {
-			this.getColumn(NUMBER_OF_VISITS).setHidden(true);
-		} else {
-			this.getColumn(NUMBER_OF_VISITS).setHidden(false);
-		}
+		// Hide visits column when follow-up is not relevant: filter excludes follow-up, or disease is Salmonellosis (Lu-driven, no contact follow-up)
+		boolean hideVisits = getCriteria().getFollowUpStatus() == FollowUpStatus.NO_FOLLOW_UP || getCriteria().getDisease() == Disease.SALMONELLOSIS;
+		this.getColumn(NUMBER_OF_VISITS).setHidden(hideVisits);
 
 		if (ViewModelProviders.of(viewClass).get(viewConfigurationClass).isInEagerMode()) {
 			setEagerDataProvider();
