@@ -9680,6 +9680,15 @@ components:
           - DECEASED
           - RECOVERED
           - UNKNOWN
+        pathogenTestResult:
+          type: string
+          enum:
+          - INDETERMINATE
+          - PENDING
+          - NEGATIVE
+          - POSITIVE
+          - NOT_DONE
+          - NOT_APPLICABLE
         person:
           $ref: '#/components/schemas/PersonReferenceDto'
         personLike:
@@ -9729,6 +9738,8 @@ components:
           type: string
         reportingUserRole:
           $ref: '#/components/schemas/UserRoleReferenceDto'
+        serogroup:
+          type: string
         sourceCaseInfoLike:
           type: string
         surveillanceOfficer:
@@ -10803,6 +10814,15 @@ components:
           - DECEASED
           - RECOVERED
           - UNKNOWN
+        pathogenTestResult:
+          type: string
+          enum:
+          - INDETERMINATE
+          - PENDING
+          - NEGATIVE
+          - POSITIVE
+          - NOT_DONE
+          - NOT_APPLICABLE
         person:
           $ref: '#/components/schemas/PersonReferenceDto'
         personLike:
@@ -10855,6 +10875,8 @@ components:
           type: string
         reportingUserRole:
           $ref: '#/components/schemas/UserRoleReferenceDto'
+        serogroup:
+          type: string
         sourceCaseInfoLike:
           type: string
         surveillanceOfficer:

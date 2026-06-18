@@ -12159,6 +12159,10 @@
             "type" : "string",
             "enum" : [ "NO_OUTCOME", "DECEASED", "RECOVERED", "UNKNOWN" ]
           },
+          "pathogenTestResult" : {
+            "type" : "string",
+            "enum" : [ "INDETERMINATE", "PENDING", "NEGATIVE", "POSITIVE", "NOT_DONE", "NOT_APPLICABLE" ]
+          },
           "person" : {
             "$ref" : "#/components/schemas/PersonReferenceDto"
           },
@@ -12200,6 +12204,9 @@
           },
           "reportingUserRole" : {
             "$ref" : "#/components/schemas/UserRoleReferenceDto"
+          },
+          "serogroup" : {
+            "type" : "string"
           },
           "sourceCaseInfoLike" : {
             "type" : "string"
@@ -13016,6 +13023,10 @@
             "type" : "string",
             "enum" : [ "NO_OUTCOME", "DECEASED", "RECOVERED", "UNKNOWN" ]
           },
+          "pathogenTestResult" : {
+            "type" : "string",
+            "enum" : [ "INDETERMINATE", "PENDING", "NEGATIVE", "POSITIVE", "NOT_DONE", "NOT_APPLICABLE" ]
+          },
           "person" : {
             "$ref" : "#/components/schemas/PersonReferenceDto"
           },
@@ -13061,6 +13072,9 @@
           },
           "reportingUserRole" : {
             "$ref" : "#/components/schemas/UserRoleReferenceDto"
+          },
+          "serogroup" : {
+            "type" : "string"
           },
           "sourceCaseInfoLike" : {
             "type" : "string"
