@@ -15507,6 +15507,15 @@ components:
         amikacinZoneDiameter:
           type: number
           format: float
+        ampicillinMethod:
+          type: string
+          enum:
+          - BROTH_MICRODILUTION
+          - ETEST
+          - DISK_DIFFUSION
+          - AUTOMATED_MIC
+          - GENOTYPIC_WGS
+          - BREAKPOINT_CATEGORICAL
         ampicillinMic:
           type: number
           format: float
@@ -15518,6 +15527,15 @@ components:
           - SUSCEPTIBLE
           - INTERMEDIATE
           - UNKNOWN
+        azithromycinMethod:
+          type: string
+          enum:
+          - BROTH_MICRODILUTION
+          - ETEST
+          - DISK_DIFFUSION
+          - AUTOMATED_MIC
+          - GENOTYPIC_WGS
+          - BREAKPOINT_CATEGORICAL
         azithromycinMic:
           type: number
           format: float
@@ -15589,6 +15607,15 @@ components:
         capreomycinZoneDiameter:
           type: number
           format: float
+        cefotaximeMethod:
+          type: string
+          enum:
+          - BROTH_MICRODILUTION
+          - ETEST
+          - DISK_DIFFUSION
+          - AUTOMATED_MIC
+          - GENOTYPIC_WGS
+          - BREAKPOINT_CATEGORICAL
         cefotaximeMic:
           type: number
           format: float
@@ -15600,6 +15627,15 @@ components:
           - SUSCEPTIBLE
           - INTERMEDIATE
           - UNKNOWN
+        ceftazidimeMethod:
+          type: string
+          enum:
+          - BROTH_MICRODILUTION
+          - ETEST
+          - DISK_DIFFUSION
+          - AUTOMATED_MIC
+          - GENOTYPIC_WGS
+          - BREAKPOINT_CATEGORICAL
         ceftazidimeMic:
           type: number
           format: float
@@ -16041,6 +16077,15 @@ components:
         streptomycinZoneDiameter:
           type: number
           format: float
+        trimethoprimSulfamethoxazoleMethod:
+          type: string
+          enum:
+          - BROTH_MICRODILUTION
+          - ETEST
+          - DISK_DIFFUSION
+          - AUTOMATED_MIC
+          - GENOTYPIC_WGS
+          - BREAKPOINT_CATEGORICAL
         trimethoprimSulfamethoxazoleMic:
           type: number
           format: float
@@ -18499,6 +18544,15 @@ components:
           type: string
           maxLength: 512
           minLength: 0
+        sexualContact:
+          type: string
+          enum:
+          - MALE
+          - FEMALE
+          - BOTH
+          - NOT_ANSWERED
+          - UNKNOWN
+          - OTHER
         sexualExposureText:
           type: string
           maxLength: 1000000
@@ -18540,6 +18594,7 @@ components:
             - WILDLIFE_RESERVOIR_AREAS
             - EATING_AT_HOME
             - EATING_OUTSIDE
+            - HOUSEHOLD_CONTACT
             - SHOPPING_FOR_FOOD
             - UNKNOWN
             - OTHER
@@ -20558,6 +20613,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        onMedication:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         otherConditions:
           type: string
           maxLength: 4096
@@ -20591,12 +20652,6 @@ components:
         tuberculosisInfectionYear:
           type: integer
           format: int32
-        underMedication:
-          type: string
-          enum:
-          - "YES"
-          - "NO"
-          - UNKNOWN
         uuid:
           type: string
           maxLength: 36
@@ -23064,7 +23119,6 @@ components:
           - PNEUMOTEST
           - SLIDE_AGGLUTINATION
           - DISK_DIFFUSION
-          - MIC_DETERMINATION
           - WGS_PREDICTION
           - OTHER
         seroTypingMethodText:
@@ -28781,6 +28835,16 @@ components:
           - SUSCEPTIBLE
           - INTERMEDIATE
           - UNKNOWN
+        pathogenTestCategory:
+          type: string
+          enum:
+          - MOLECULAR_ASSAYS
+          - SEROLOGICAL_TESTS
+          - ANTIGEN_DETECTION
+          - CULTURE_AND_ISOLATION
+          - MICROSCOPY_AND_STAINING
+          - ANTIMICROBIAL_SUSCEPTIBILITY_TESTING
+          - FUNCTIONAL_IMMUNE_ASSAYS
         penicillinMic:
           type: number
           format: float
@@ -28872,7 +28936,6 @@ components:
           - PNEUMOTEST
           - SLIDE_AGGLUTINATION
           - DISK_DIFFUSION
-          - MIC_DETERMINATION
           - WGS_PREDICTION
           - OTHER
         seroTypingMethodText:
