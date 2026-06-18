@@ -15,7 +15,9 @@
 
 package de.symeda.sormas.api.dashboard;
 
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleMaterial;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDashboardFilterDateType;
 import de.symeda.sormas.api.sample.SampleMaterial;
 
@@ -24,6 +26,9 @@ public class SampleDashboardCriteria extends BaseDashboardCriteria<SampleDashboa
 	private SampleDashboardFilterDateType sampleDateType;
 	private SampleMaterial sampleMaterial;
 	private EnvironmentSampleMaterial environmentSampleMaterial;
+	private PathogenTestResultType pathogenTestResult;
+	private String serogroup;
+	private DiseaseVariant diseaseVariant;
 
 	private Boolean withNoDisease;
 
@@ -60,11 +65,43 @@ public class SampleDashboardCriteria extends BaseDashboardCriteria<SampleDashboa
 
 		return self;
 	}
+
 	public EnvironmentSampleMaterial getEnvironmentSampleMaterial() {
 		return environmentSampleMaterial;
 	}
+
 	public SampleDashboardCriteria environmentSampleMaterial(EnvironmentSampleMaterial environmentSampleMaterial) {
 		this.environmentSampleMaterial = environmentSampleMaterial;
+
+		return self;
+	}
+
+	public PathogenTestResultType getPathogenTestResult() {
+		return pathogenTestResult;
+	}
+
+	public SampleDashboardCriteria pathogenTestResult(PathogenTestResultType pathogenTestResult) {
+		this.pathogenTestResult = pathogenTestResult;
+
+		return self;
+	}
+
+	public String getSerogroup() {
+		return serogroup;
+	}
+
+	public SampleDashboardCriteria serogroup(String serogroup) {
+		this.serogroup = serogroup;
+
+		return self;
+	}
+
+	public DiseaseVariant getDiseaseVariant() {
+		return diseaseVariant;
+	}
+
+	public SampleDashboardCriteria diseaseVariant(DiseaseVariant diseaseVariant) {
+		this.diseaseVariant = diseaseVariant;
 
 		return self;
 	}

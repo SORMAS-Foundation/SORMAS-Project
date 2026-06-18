@@ -30,6 +30,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
 import de.symeda.sormas.api.dashboard.sample.MapSampleDto;
 import de.symeda.sormas.api.dashboard.sample.SampleShipmentStatus;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.environment.EnvironmentMedia;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleDto;
@@ -385,6 +386,51 @@ public class SampleDashboardFacadeEjbTest extends AbstractBeanTest {
 		criteria.sampleDateType(SampleDashboardFilterDateType.MOST_RELEVANT);
 		assertEquals(1, getSampleDashboardFacade().countEnvironmentalSamplesForMap(criteria));
 		assertEquals(1, getSampleDashboardFacade().getEnvironmentalSamplesForMap(criteria).size());
+	}
+
+	@Test
+	public void getSampleCountsByLabFilters() {
+		DiseaseVariant variant = creator.createDiseaseVariant("BF.1.2", Disease.CORONAVIRUS);
+
+		// Positive sample with serotype "Serogroup B" and the variant.
+		SampleDto positiveSample = createSampleByResultType(caze, reportDate, PathogenTestResultType.POSITIVE, SampleMaterial.BLOOD);
+		creator.createPathogenTest(positiveSample.toReference(), user.toReference(), t -> {
+			t.setTestedDisease(Disease.CORONAVIRUS);
+			t.setLab(rdcf.facility);
+			t.setSerotypeText("Serogroup B");
+			t.setTestedDiseaseVariant(variant);
+		});
+
+		// Negative sample with serotype "Type A" and no variant.
+		SampleDto negativeSample = createSampleByResultType(caze, reportDate, PathogenTestResultType.NEGATIVE, SampleMaterial.CRUST);
+		creator.createPathogenTest(negativeSample.toReference(), user.toReference(), t -> {
+			t.setTestedDisease(Disease.CORONAVIRUS);
+			t.setLab(rdcf.facility);
+			t.setSerotypeText("Type A");
+		});
+
+		// Test result filter: only the positive sample (sample-level final result).
+		Map<PathogenTestResultType, Long> byResult =
+			getSampleDashboardFacade().getSampleCountsByResultType(new SampleDashboardCriteria().pathogenTestResult(PathogenTestResultType.POSITIVE));
+		assertEquals(1L, byResult.getOrDefault(PathogenTestResultType.POSITIVE, 0L));
+		assertNull(byResult.get(PathogenTestResultType.NEGATIVE));
+
+		// Serogroup filter is case-insensitive and partial (matches "Serogroup B" via "serogroup").
+		Map<PathogenTestResultType, Long> bySerogroup =
+			getSampleDashboardFacade().getSampleCountsByResultType(new SampleDashboardCriteria().serogroup("serogroup"));
+		assertEquals(1L, bySerogroup.values().stream().mapToLong(Long::longValue).sum());
+		assertEquals(1L, bySerogroup.getOrDefault(PathogenTestResultType.POSITIVE, 0L));
+
+		// Variant filter matches only the sample whose test carries the variant.
+		Map<PathogenTestResultType, Long> byVariant =
+			getSampleDashboardFacade().getSampleCountsByResultType(new SampleDashboardCriteria().diseaseVariant(variant));
+		assertEquals(1L, byVariant.values().stream().mapToLong(Long::longValue).sum());
+		assertEquals(1L, byVariant.getOrDefault(PathogenTestResultType.POSITIVE, 0L));
+
+		// Mismatched combination returns nothing.
+		Map<PathogenTestResultType, Long> none = getSampleDashboardFacade()
+			.getSampleCountsByResultType(new SampleDashboardCriteria().pathogenTestResult(PathogenTestResultType.POSITIVE).serogroup("type a"));
+		assertEquals(0L, none.values().stream().mapToLong(Long::longValue).sum());
 	}
 
 	public SampleDto createSampleByResultType(

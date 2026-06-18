@@ -158,6 +158,7 @@ import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonQueryContext;
+import de.symeda.sormas.backend.sample.PathogenTest;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
@@ -705,6 +706,28 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		if (caseCriteria.getDiseaseVariant() != null) {
 			filter =
 				CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.DISEASE_VARIANT_VALUE), caseCriteria.getDiseaseVariant().getValue()));
+		}
+		if (caseCriteria.getPathogenTestResult() != null) {
+			Subquery<Long> resultSubquery = cq.subquery(Long.class);
+			Root<Sample> sampleRoot = resultSubquery.from(Sample.class);
+			resultSubquery.select(sampleRoot.get(AbstractDomainObject.ID));
+			resultSubquery.where(
+				cb.equal(sampleRoot.get(Sample.ASSOCIATED_CASE), from),
+				cb.equal(sampleRoot.get(Sample.PATHOGEN_TEST_RESULT), caseCriteria.getPathogenTestResult()),
+				cb.isFalse(sampleRoot.get(DeletableAdo.DELETED)));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.exists(resultSubquery));
+		}
+		if (StringUtils.isNotBlank(caseCriteria.getSerogroup())) {
+			Subquery<Long> serogroupSubquery = cq.subquery(Long.class);
+			Root<Sample> sampleRoot = serogroupSubquery.from(Sample.class);
+			Join<Sample, PathogenTest> pathogenTestJoin = sampleRoot.join(Sample.PATHOGENTESTS, JoinType.INNER);
+			serogroupSubquery.select(sampleRoot.get(AbstractDomainObject.ID));
+			serogroupSubquery.where(
+				cb.equal(sampleRoot.get(Sample.ASSOCIATED_CASE), from),
+				CriteriaBuilderHelper.unaccentedIlike(cb, pathogenTestJoin.get(PathogenTest.SEROTYPE_TEXT), caseCriteria.getSerogroup().trim()),
+				cb.isFalse(sampleRoot.get(DeletableAdo.DELETED)),
+				cb.isFalse(pathogenTestJoin.get(DeletableAdo.DELETED)));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.exists(serogroupSubquery));
 		}
 		if (caseCriteria.getOutcome() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.OUTCOME), caseCriteria.getOutcome()));
@@ -2045,7 +2068,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 	/**
 	 * Performance: May be slow when there are 10000s of cases with similar report date in the same region.
-	 * 
+	 *
 	 * @param limit
 	 *            null: no limit
 	 */
@@ -2338,7 +2361,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 	/**
 	 * Updates the vaccination status of all cases of the specified person and disease using
 	 * vaccination status data derived from immunization records.
-	 * 
+	 *
 	 * @param personId
 	 *            The ID of the case person whose cases should be updated
 	 * @param disease
@@ -2352,7 +2375,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 	/**
 	 * Updates vaccination statuses using the enhanced determination logic (determined mode).
-	 * 
+	 *
 	 * <p>
 	 * This method updates cases with sophisticated vaccination statuses derived from immunization data.
 	 * It uses {@link ImmunizationService#deriveVaccinationStatus} to compute statuses that reflect:
@@ -2363,12 +2386,12 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 	 * <li>Other immunity sources (OTHER status)</li>
 	 * <li>Immunization validity periods (validFrom/validUntil dates)</li>
 	 * </ul>
-	 * 
+	 *
 	 * <p>
 	 * The method only updates cases where the derived status differs from the current status,
 	 * and automatically updates the change date timestamp.
 	 * </p>
-	 * 
+	 *
 	 * @param personId
 	 *            The ID of the person whose cases should be updated
 	 * @param disease

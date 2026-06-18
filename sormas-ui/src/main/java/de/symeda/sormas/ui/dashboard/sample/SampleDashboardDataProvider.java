@@ -23,6 +23,7 @@ import com.vaadin.ui.Notification;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
 import de.symeda.sormas.api.dashboard.sample.SampleShipmentStatus;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleMaterial;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -43,6 +44,12 @@ public class SampleDashboardDataProvider extends AbstractDashboardDataProvider<S
 
 	private Boolean withNoDisease;
 
+	private PathogenTestResultType pathogenTestResult;
+
+	private String serogroup;
+
+	private DiseaseVariant diseaseVariant;
+
 	private Map<PathogenTestResultType, Long> sampleCountsByResultType;
 	private Map<SamplePurpose, Long> sampleCountsByPurpose;
 	private Map<SpecimenCondition, Long> sampleCountsBySpecimenCondition;
@@ -60,10 +67,10 @@ public class SampleDashboardDataProvider extends AbstractDashboardDataProvider<S
 		// Invalid combination disease with environment
 		if (sampleDashboardCriteria.getDisease() != null && sampleDashboardCriteria.getEnvironmentSampleMaterial() != null) {
 			new Notification(
-					I18nProperties.getString(Strings.headingSearchSample),
-					I18nProperties.getString(Strings.messageSampleSearchWithDisease),
-					Notification.Type.ERROR_MESSAGE,
-					false).show(Page.getCurrent());
+				I18nProperties.getString(Strings.headingSearchSample),
+				I18nProperties.getString(Strings.messageSampleSearchWithDisease),
+				Notification.Type.ERROR_MESSAGE,
+				false).show(Page.getCurrent());
 			return;
 		}
 		// If the sampleCriteria is for Humans
@@ -79,9 +86,12 @@ public class SampleDashboardDataProvider extends AbstractDashboardDataProvider<S
 			envSampleCount = Maps.newHashMap();
 		} else if (sampleDashboardCriteria.getSampleMaterial() == null && sampleDashboardCriteria.getEnvironmentSampleMaterial() != null) {
 			// If the sampleCriteria is for Environment
-			envSampleCountsBySpecimenCondition = FacadeProvider.getSampleDashboardFacade().getEnvironmentalSampleCountsBySpecimenCondition(sampleDashboardCriteria);
-			envSampleCountsByShipmentStatus = FacadeProvider.getSampleDashboardFacade().getEnvironmentalSampleCountsByShipmentStatus(sampleDashboardCriteria);
-			envTestResultCountsByResultType = FacadeProvider.getSampleDashboardFacade().getEnvironmentalTestResultCountsByResultType(sampleDashboardCriteria);
+			envSampleCountsBySpecimenCondition =
+				FacadeProvider.getSampleDashboardFacade().getEnvironmentalSampleCountsBySpecimenCondition(sampleDashboardCriteria);
+			envSampleCountsByShipmentStatus =
+				FacadeProvider.getSampleDashboardFacade().getEnvironmentalSampleCountsByShipmentStatus(sampleDashboardCriteria);
+			envTestResultCountsByResultType =
+				FacadeProvider.getSampleDashboardFacade().getEnvironmentalTestResultCountsByResultType(sampleDashboardCriteria);
 			envSampleCount = FacadeProvider.getSampleDashboardFacade().getEnvironmentalSampleCounts(sampleDashboardCriteria);
 			sampleCountsByResultType = Maps.newHashMap();
 			sampleCountsByPurpose = Maps.newHashMap();
@@ -97,9 +107,12 @@ public class SampleDashboardDataProvider extends AbstractDashboardDataProvider<S
 			testResultCountsByResultType = FacadeProvider.getSampleDashboardFacade().getTestResultCountsByResultType(sampleDashboardCriteria);
 			// Environment samples will not have diseases
 			if (sampleDashboardCriteria.getDisease() == null) {
-				envSampleCountsBySpecimenCondition = FacadeProvider.getSampleDashboardFacade().getEnvironmentalSampleCountsBySpecimenCondition(sampleDashboardCriteria);
-				envSampleCountsByShipmentStatus = FacadeProvider.getSampleDashboardFacade().getEnvironmentalSampleCountsByShipmentStatus(sampleDashboardCriteria);
-				envTestResultCountsByResultType = FacadeProvider.getSampleDashboardFacade().getEnvironmentalTestResultCountsByResultType(sampleDashboardCriteria);
+				envSampleCountsBySpecimenCondition =
+					FacadeProvider.getSampleDashboardFacade().getEnvironmentalSampleCountsBySpecimenCondition(sampleDashboardCriteria);
+				envSampleCountsByShipmentStatus =
+					FacadeProvider.getSampleDashboardFacade().getEnvironmentalSampleCountsByShipmentStatus(sampleDashboardCriteria);
+				envTestResultCountsByResultType =
+					FacadeProvider.getSampleDashboardFacade().getEnvironmentalTestResultCountsByResultType(sampleDashboardCriteria);
 				envSampleCount = FacadeProvider.getSampleDashboardFacade().getEnvironmentalSampleCounts(sampleDashboardCriteria);
 			} else {
 				envSampleCountsBySpecimenCondition = Maps.newHashMap();
@@ -117,7 +130,13 @@ public class SampleDashboardDataProvider extends AbstractDashboardDataProvider<S
 
 	@Override
 	protected SampleDashboardCriteria buildDashboardCriteria() {
-		return super.buildDashboardCriteria().sampleDateType(dateType).sampleMaterial(sampleMaterial).environmentSampleMaterial(environmentSampleMaterial).withNoDisease(withNoDisease);
+		return super.buildDashboardCriteria().sampleDateType(dateType)
+			.sampleMaterial(sampleMaterial)
+			.environmentSampleMaterial(environmentSampleMaterial)
+			.withNoDisease(withNoDisease)
+			.pathogenTestResult(pathogenTestResult)
+			.serogroup(serogroup)
+			.diseaseVariant(diseaseVariant);
 	}
 
 	public SampleDashboardFilterDateType getDateType() {
@@ -150,6 +169,30 @@ public class SampleDashboardDataProvider extends AbstractDashboardDataProvider<S
 
 	public void setEnvironmentSampleMaterial(EnvironmentSampleMaterial environmentSampleMaterial) {
 		this.environmentSampleMaterial = environmentSampleMaterial;
+	}
+
+	public PathogenTestResultType getPathogenTestResult() {
+		return pathogenTestResult;
+	}
+
+	public void setPathogenTestResult(PathogenTestResultType pathogenTestResult) {
+		this.pathogenTestResult = pathogenTestResult;
+	}
+
+	public String getSerogroup() {
+		return serogroup;
+	}
+
+	public void setSerogroup(String serogroup) {
+		this.serogroup = serogroup;
+	}
+
+	public DiseaseVariant getDiseaseVariant() {
+		return diseaseVariant;
+	}
+
+	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
+		this.diseaseVariant = diseaseVariant;
 	}
 
 	public Map<PathogenTestResultType, Long> getSampleCountsByResultType() {
