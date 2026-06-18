@@ -2894,6 +2894,7 @@ public interface Captions {
 	String selfReportDeletedEnvironments = "selfReportDeletedEnvironments";
 	String selfReportProcess = "selfReportProcess";
 	String selfReportSelfReportsList = "selfReportSelfReportsList";
+	String serogroup = "serogroup";
 	String sex = "sex";
 	String showPlacesOnMap = "showPlacesOnMap";
 	String singleDayEventDate = "singleDayEventDate";

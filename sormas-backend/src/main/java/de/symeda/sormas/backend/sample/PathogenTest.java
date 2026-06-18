@@ -89,6 +89,7 @@ public class PathogenTest extends DeletableAdo {
 	public static final String TEST_RESULT_VERIFIED = "testResultVerified";
 	public static final String FOUR_FOLD_INCREASE_ANTIBODY_TITER = "fourFoldIncreaseAntibodyTiter";
 	public static final String SEROTYPE = "serotype";
+	public static final String SEROTYPE_TEXT = "serotypeText";
 	public static final String CQ_VALUE = "cqValue";
 	public static final String CT_VALUE_E = "ctValueE";
 	public static final String CT_VALUE_N = "ctValueN";
