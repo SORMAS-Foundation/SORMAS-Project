@@ -165,6 +165,7 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		}
 		target.setSerotypeText(source.getSerotypeText());
 		target.setPathogenTestCategory(source.getPathogenTestCategory());
+		target.setFourFoldIncreaseAntibodyTiter(source.getFourFoldIncreaseAntibodyTiter());
 
 		return target;
 	}
@@ -266,6 +267,7 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		}
 		target.setSerotypeText(source.getSerotypeText());
 		target.setPathogenTestCategory(source.getPathogenTestCategory());
+		target.setFourFoldIncreaseAntibodyTiter(source.getFourFoldIncreaseAntibodyTiter());
 
 		return target;
 	}

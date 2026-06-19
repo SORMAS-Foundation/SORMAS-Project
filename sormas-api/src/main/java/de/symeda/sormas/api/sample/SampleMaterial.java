@@ -460,11 +460,13 @@ public enum SampleMaterial {
 	ABSCESS_SWAB,
 
 	@Diseases(value = {
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.DENGUE }, hide = true)
 	BONE,
 
 	@Diseases(value = {
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.DENGUE }, hide = true)
 	BONE_MARROW,
 
 	@HideForCountries(countries = {
@@ -492,7 +494,8 @@ public enum SampleMaterial {
 	CORD_BLOOD,
 
 	@Diseases(value = {
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.DENGUE }, hide = true)
 	LUNG_TISSUE,
 
 	@HideForCountries(countries = {

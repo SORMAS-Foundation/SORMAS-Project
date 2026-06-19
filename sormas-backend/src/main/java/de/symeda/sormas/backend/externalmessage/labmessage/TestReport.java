@@ -183,6 +183,7 @@ public class TestReport extends AbstractDomainObject {
 	private Serotype serotype;
 	private String serotypeText;
 	private PathogenTestCategory pathogenTestCategory;
+	private boolean fourFoldIncreaseAntibodyTiter;
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getTestLabName() {
@@ -945,4 +946,13 @@ public class TestReport extends AbstractDomainObject {
 	public void setPathogenTestCategory(PathogenTestCategory pathogenTestCategory) {
 		this.pathogenTestCategory = pathogenTestCategory;
 	}
+
+	public boolean getFourFoldIncreaseAntibodyTiter() {
+		return fourFoldIncreaseAntibodyTiter;
+	}
+
+	public void setFourFoldIncreaseAntibodyTiter(boolean fourFoldIncreaseAntibodyTiter) {
+		this.fourFoldIncreaseAntibodyTiter = fourFoldIncreaseAntibodyTiter;
+	}
+
 }

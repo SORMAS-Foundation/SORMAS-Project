@@ -70,6 +70,7 @@ import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.InfectionSource;
 import de.symeda.sormas.api.exposure.ModeOfTransmission;
 import de.symeda.sormas.api.exposure.ProphylaxisAdherence;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -264,9 +265,12 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		List<CountryReferenceDto> countries = FacadeProvider.getCountryFacade().getAllActiveAsReference();
 		ComboBox country = addInfrastructureField(EpiDataDto.COUNTRY);
 		country.addItems(countries);
+		if (Disease.SHIGELLOSIS == disease) {
+			country.setCaption(I18nProperties.getCaption(Captions.EpiData_country_SHIG));
+		}
 
 		includeExposureDates(symptomOnsetDate, disease);
-		addField(EpiDataDto.AIRPORT_WORKER, NullableOptionGroup.class);
+
 		addField(EpiDataDto.HEALTHCARE_PROFESSIONAL, NullableOptionGroup.class);
 		addField(EpiDataDto.PLACE_OF_INFECTION);
 		addField(EpiDataDto.RESIDENCE_AT_ONSET);
@@ -311,6 +315,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		additionalDetails.setDescription(
 			I18nProperties.getPrefixDescription(EpiDataDto.I18N_PREFIX, EpiDataDto.OTHER_DETAILS, "") + "\n"
 				+ I18nProperties.getDescription(Descriptions.descGdpr));
+		addField(EpiDataDto.AIRPORT_WORKER, NullableOptionGroup.class);
 	}
 
 	/**

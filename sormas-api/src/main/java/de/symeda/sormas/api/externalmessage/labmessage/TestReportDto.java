@@ -219,6 +219,7 @@ public class TestReportDto extends EntityDto {
 	private String serotypeText;
 
 	private PathogenTestCategory pathogenTestCategory;
+	private boolean fourFoldIncreaseAntibodyTiter;
 
 	public SampleReportReferenceDto getSampleReport() {
 		return sampleReport;
@@ -922,4 +923,13 @@ public class TestReportDto extends EntityDto {
 	public void setPathogenTestCategory(PathogenTestCategory pathogenTestCategory) {
 		this.pathogenTestCategory = pathogenTestCategory;
 	}
+
+	public boolean getFourFoldIncreaseAntibodyTiter() {
+		return fourFoldIncreaseAntibodyTiter;
+	}
+
+	public void setFourFoldIncreaseAntibodyTiter(boolean fourFoldIncreaseAntibodyTiter) {
+		this.fourFoldIncreaseAntibodyTiter = fourFoldIncreaseAntibodyTiter;
+	}
+
 }
