@@ -27084,6 +27084,9 @@
             "maxLength" : 512,
             "minLength" : 0
           },
+          "fourFoldIncreaseAntibodyTiter" : {
+            "type" : "boolean"
+          },
           "gatifloxacinMic" : {
             "type" : "number",
             "format" : "float"
