@@ -124,10 +124,16 @@ public class PathogenTestTypeTest {
 
 	@Test
 	public void everyMethodResolvesToAtLeastOneResultValueType() {
-		// getResultValueTypes never returns null/empty: an unannotated value defaults to QUALITATIVE.
+		// getResultValueTypes never returns null/empty (an unannotated value defaults to QUALITATIVE), with one
+		// documented exception: Antibiotic Susceptibility Testing has no result value type of its own (its result
+		// is the drug-susceptibility grid), so it is explicitly annotated with an empty set.
 		for (PathogenTestType type : PathogenTestType.values()) {
 			Set<ResultValueType> valueTypes = PathogenTestType.getResultValueTypes(type);
-			assertFalse(valueTypes.isEmpty(), "no result value type for " + type.name());
+			if (type == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY) {
+				assertTrue(valueTypes.isEmpty(), "ANTIBIOTIC_SUSCEPTIBILITY must have no result value type");
+			} else {
+				assertFalse(valueTypes.isEmpty(), "no result value type for " + type.name());
+			}
 		}
 		assertThat(PathogenTestType.getResultValueTypes(null), is(EnumSet.of(ResultValueType.QUALITATIVE)));
 		// A value with no annotation (e.g. OTHER) falls back to qualitative.
@@ -219,6 +225,9 @@ public class PathogenTestTypeTest {
 
 		expected.put(PathogenTestType.LINE_PROBE_ASSAY, EnumSet.of(ResultValueType.BOOLEAN));
 		expected.put(PathogenTestType.GENOTYPIC_RESISTANCE_TEST, EnumSet.of(ResultValueType.BOOLEAN));
+		// Antibiotic Susceptibility Testing has no result value type of its own (its result is the
+		// drug-susceptibility grid), so it maps to an empty set.
+		expected.put(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY, EnumSet.noneOf(ResultValueType.class));
 		expected.put(PathogenTestType.FISH, EnumSet.of(ResultValueType.QUALITATIVE, ResultValueType.TEXT));
 		expected.put(PathogenTestType.THICK_BLOOD_SMEAR, EnumSet.of(ResultValueType.QUALITATIVE, ResultValueType.TEXT));
 		expected.put(PathogenTestType.WESTERN_BLOT, EnumSet.of(ResultValueType.TEXT, ResultValueType.WESTERN_BLOT));

@@ -50,8 +50,7 @@ public class IpiSectionComponent extends AbstractDiseaseSectionComponent {
 		PathogenTestType.MULTILOCUS_SEQUENCE_TYPING,
 		PathogenTestType.SLIDE_AGGLUTINATION,
 		PathogenTestType.WHOLE_GENOME_SEQUENCING,
-		PathogenTestType.SEQUENCING,
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY);
+		PathogenTestType.SEQUENCING);
 
 	private TextField serotypeField;
 	private ComboBox<SerotypingMethod> serotypingMethodField;
@@ -115,7 +114,9 @@ public class IpiSectionComponent extends AbstractDiseaseSectionComponent {
 				setDrugSusceptibilityRowVisible(visible);
 			}
 
-			if (currentTestType != null && AUTO_POSITIVE_TYPES.contains(currentTestType)) {
+			if (currentTestType == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY) {
+				eventBus.fire(new SetTestResultEvent(PathogenTestResultType.NOT_APPLICABLE));
+			} else if (currentTestType != null && AUTO_POSITIVE_TYPES.contains(currentTestType)) {
 				eventBus.fire(new SetTestResultEvent(PathogenTestResultType.POSITIVE));
 			} else if (currentTestType != null) {
 				eventBus.fire(new SetTestResultEvent(null));

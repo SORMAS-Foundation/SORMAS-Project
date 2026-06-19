@@ -626,6 +626,10 @@ public enum PathogenTestType {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.SHIGELLOSIS })
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIMICROBIAL_SUSCEPTIBILITY_TESTING)
+	// AST has no result value type of its own — its result is the drug-susceptibility grid, not a
+	// Positive/Negative/numeric/text value. The empty set hides the Test result selector and all quantitative
+	// result fields; the result is kept as Not applicable.
+	@ResultValueTypeRel({})
 	ANTIBIOTIC_SUSCEPTIBILITY,
 
 	@Diseases(value = {
@@ -739,23 +743,49 @@ public enum PathogenTestType {
 	}
 
 	/**
-	 * @return the {@link ResultValueType}(s) this method produces, declared via
-	 *         {@link ResultValueTypeRel}; drives which result fields the pathogen-test form shows.
-	 *         A method without the annotation (e.g. legacy/hidden values and {@code OTHER}) is treated
-	 *         as {@link ResultValueType#QUALITATIVE} only, preserving the long-standing behaviour.
+	 * Cached, reflection-free map of {@code PathogenTestType -> Set<ResultValueType>}. Built once at class
+	 * initialization from each constant's {@link ResultValueTypeRel} annotation. The returned sets are
+	 * unmodifiable so callers cannot accidentally mutate the shared instance.
 	 */
-	public static java.util.Set<ResultValueType> getResultValueTypes(PathogenTestType testType) {
-		if (testType != null) {
+	private static final java.util.Map<PathogenTestType, java.util.Set<ResultValueType>> RESULT_VALUE_TYPES_BY_METHOD;
+
+	/** Default for {@code null} and unannotated test types (preserves long-standing behaviour). */
+	private static final java.util.Set<ResultValueType> DEFAULT_RESULT_VALUE_TYPES =
+		java.util.Collections.unmodifiableSet(java.util.EnumSet.of(ResultValueType.QUALITATIVE));
+
+	static {
+		java.util.EnumMap<PathogenTestType, java.util.Set<ResultValueType>> map = new java.util.EnumMap<>(PathogenTestType.class);
+		for (PathogenTestType type : values()) {
+			java.util.Set<ResultValueType> valueTypes = DEFAULT_RESULT_VALUE_TYPES;
 			try {
-				ResultValueTypeRel annotation = PathogenTestType.class.getField(testType.name()).getAnnotation(ResultValueTypeRel.class);
+				ResultValueTypeRel annotation = PathogenTestType.class.getField(type.name()).getAnnotation(ResultValueTypeRel.class);
 				if (annotation != null) {
-					return java.util.EnumSet.copyOf(java.util.Arrays.asList(annotation.value()));
+					// An explicit empty set (e.g. Antibiotic Susceptibility, whose result is the drug-susceptibility
+					// grid) means the method has no result value type of its own.
+					java.util.EnumSet<ResultValueType> set = java.util.EnumSet.noneOf(ResultValueType.class);
+					java.util.Collections.addAll(set, annotation.value());
+					valueTypes = java.util.Collections.unmodifiableSet(set);
 				}
 			} catch (NoSuchFieldException e) {
 				// fall through to the default
 			}
+			map.put(type, valueTypes);
 		}
-		return java.util.EnumSet.of(ResultValueType.QUALITATIVE);
+		RESULT_VALUE_TYPES_BY_METHOD = java.util.Collections.unmodifiableMap(map);
+	}
+
+	/**
+	 * @return the {@link ResultValueType}(s) this method produces, declared via
+	 *         {@link ResultValueTypeRel}; drives which result fields the pathogen-test form shows.
+	 *         A method without the annotation (e.g. legacy/hidden values and {@code OTHER}) is treated
+	 *         as {@link ResultValueType#QUALITATIVE} only, preserving the long-standing behaviour. The
+	 *         returned set is unmodifiable.
+	 */
+	public static java.util.Set<ResultValueType> getResultValueTypes(PathogenTestType testType) {
+		if (testType == null) {
+			return DEFAULT_RESULT_VALUE_TYPES;
+		}
+		return RESULT_VALUE_TYPES_BY_METHOD.getOrDefault(testType, DEFAULT_RESULT_VALUE_TYPES);
 	}
 
 	/**
@@ -773,5 +803,26 @@ public enum PathogenTestType {
 		} catch (NoSuchFieldException e) {
 			return true;
 		}
+	}
+
+	/**
+	 * Single source of truth for the disease + method combinations that show the Cq value input (the existing
+	 * {@code CtCqValueComponent}). Used by both that component and by {@code TestResultComponent} to suppress
+	 * the generic numeric value/unit fields when the Cq input applies. Both call sites must use this method so
+	 * the rule cannot drift.
+	 *
+	 * <p>The Cq input applies for {@code PCR_RT_PCR}, {@code CQ_VALUE_DETECTION}, or {@code Q_PCR} on Malaria
+	 * — except for Tuberculosis, which historically does not offer a Cq value.
+	 *
+	 * @param disease  the tested disease (may be {@code null})
+	 * @param testType the test method (may be {@code null})
+	 */
+	public static boolean cqInputApplies(Disease disease, PathogenTestType testType) {
+		if (disease == Disease.TUBERCULOSIS) {
+			return false;
+		}
+		return testType == PCR_RT_PCR
+			|| testType == CQ_VALUE_DETECTION
+			|| (disease == Disease.MALARIA && testType == Q_PCR);
 	}
 }

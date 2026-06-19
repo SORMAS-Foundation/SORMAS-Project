@@ -223,7 +223,9 @@ public enum SampleMaterial {
 
 	@Diseases({
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS })
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	BIOPSY,
@@ -393,19 +395,25 @@ public enum SampleMaterial {
 	EDTA_WHOLE_BLOOD,
 
 	@Diseases(value = {
-		Disease.CRYPTOSPORIDIOSIS })
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	INTESTINAL_FLUID,
 
 	@Diseases(value = {
-		Disease.GIARDIASIS })
+		Disease.GIARDIASIS,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	DUODENUM_FLUID,
 
 	@Diseases({
-		Disease.SALMONELLOSIS })
+		Disease.SALMONELLOSIS,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
 	ASPIRATE,
 
 	@Diseases({
@@ -414,36 +422,52 @@ public enum SampleMaterial {
 	BONE_AND_JOINT,
 
 	@Diseases({
-		Disease.SALMONELLOSIS })
+		Disease.SALMONELLOSIS,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
 	CATHETER_EXIT_SITE,
 
 	@Diseases({
-		Disease.SALMONELLOSIS })
+		Disease.SALMONELLOSIS,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
 	EYE,
 
 	@Diseases({
-		Disease.SALMONELLOSIS })
+		Disease.SALMONELLOSIS,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
 	GASTRIC_FLUID,
 
 	@Diseases({
-		Disease.SALMONELLOSIS })
+		Disease.SALMONELLOSIS,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
 	GENITAL_SWAB,
 
 	@Diseases({
-		Disease.SALMONELLOSIS })
+		Disease.SALMONELLOSIS,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
 	LOWER_RESPIRATORY_TRACT,
 
 	@Diseases({
 		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS })
+		Disease.SHIGELLOSIS,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
 	PUS,
 
 	@Diseases({
-		Disease.SALMONELLOSIS })
+		Disease.SALMONELLOSIS,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
 	SEMEN,
 
 	@Diseases({
-		Disease.SALMONELLOSIS })
+		Disease.SALMONELLOSIS,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
 	SKIN,
 
 	@Diseases({
@@ -452,7 +476,9 @@ public enum SampleMaterial {
 	SOFT_TISSUE,
 
 	@Diseases({
-		Disease.SALMONELLOSIS })
+		Disease.SALMONELLOSIS,
+		Disease.TUBERCULOSIS,
+		Disease.LATENT_TUBERCULOSIS })
 	WOUND,
 
 	@HideForCountries(countries = {

@@ -2424,7 +2424,6 @@ public interface Captions {
 	String PathogenTest_prescriberPhysicianCode = "PathogenTest.prescriberPhysicianCode";
 	String PathogenTest_prescriberPostalCode = "PathogenTest.prescriberPostalCode";
 	String PathogenTest_quantitativeBoolean = "PathogenTest.quantitativeBoolean";
-	String PathogenTest_quantitativeText = "PathogenTest.quantitativeText";
 	String PathogenTest_quantitativeUnit = "PathogenTest.quantitativeUnit";
 	String PathogenTest_quantitativeValue = "PathogenTest.quantitativeValue";
 	String PathogenTest_reportDate = "PathogenTest.reportDate";
