@@ -928,13 +928,11 @@ public interface Captions {
 	String caseLabResultsDateCollected = "caseLabResultsDateCollected";
 	String caseLabResultsDrugSusceptibilityHeading = "caseLabResultsDrugSusceptibilityHeading";
 	String caseLabResultsMethod = "caseLabResultsMethod";
-	String caseLabResultsMicValue = "caseLabResultsMicValue";
 	String caseLabResultsSample = "caseLabResultsSample";
 	String caseLabResultsSamplesHeading = "caseLabResultsSamplesHeading";
-	String caseLabResultsSurveillanceInterpretation = "caseLabResultsSurveillanceInterpretation";
 	String caseLabResultsTestsHeading = "caseLabResultsTestsHeading";
 	String caseLabResultsTestsPerformed = "caseLabResultsTestsPerformed";
-	String caseLabResultsZoneDiameter = "caseLabResultsZoneDiameter";
+	String caseLabResultsValue = "caseLabResultsValue";
 	String caseLinkToSamples = "caseLinkToSamples";
 	String caseMergeDuplicates = "caseMergeDuplicates";
 	String caseMinusDays = "caseMinusDays";
