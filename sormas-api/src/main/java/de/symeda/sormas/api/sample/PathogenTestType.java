@@ -388,19 +388,6 @@ public enum PathogenTestType {
 	@NotSelectableForNewTests
 	ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
 
-    @Diseases(value = {
-            Disease.DENGUE })
-    @PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
-    @ResultValueTypeRel({
-            ResultValueType.QUALITATIVE })
-    IGG_ELISA,
-    @Diseases(value = {
-            Disease.DENGUE })
-    @PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
-    @ResultValueTypeRel({
-            ResultValueType.QUALITATIVE })
-    IGM_ELISA,
-
 	@Diseases(value = {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
@@ -446,7 +433,7 @@ public enum PathogenTestType {
 	@Diseases(value = {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-            Disease.DENGUE}, hide = true)
+		Disease.DENGUE }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	RAPID_ANTIBODY_TEST,
@@ -539,7 +526,7 @@ public enum PathogenTestType {
 
 	@Diseases(value = {
 		Disease.SHIGELLOSIS,
-            Disease.DENGUE }, hide = true)
+		Disease.DENGUE }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	MALDI_TOF,
@@ -573,7 +560,7 @@ public enum PathogenTestType {
 	@Diseases(value = {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-            Disease.DENGUE}, hide = true)
+		Disease.DENGUE }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.SMEAR_GRADE)
 	ACID_FAST_STAIN,
@@ -581,7 +568,7 @@ public enum PathogenTestType {
 	@Diseases(value = {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-            Disease.DENGUE}, hide = true)
+		Disease.DENGUE }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	DARK_FIELD_MICROSCOPY,
@@ -589,7 +576,7 @@ public enum PathogenTestType {
 	@Diseases(value = {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-            Disease.DENGUE}, hide = true)
+		Disease.DENGUE }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -614,7 +601,7 @@ public enum PathogenTestType {
 	@Diseases(value = {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-            Disease.DENGUE}, hide = true)
+		Disease.DENGUE }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -624,7 +611,7 @@ public enum PathogenTestType {
 	@Diseases(value = {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-            Disease.DENGUE}, hide = true)
+		Disease.DENGUE }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	IMMUNOHISTOCHEMISTRY,
@@ -632,7 +619,7 @@ public enum PathogenTestType {
 	@Diseases(value = {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-            Disease.DENGUE}, hide = true)
+		Disease.DENGUE }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	ELECTRON_MICROSCOPY,
@@ -640,7 +627,7 @@ public enum PathogenTestType {
 	@Diseases(value = {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-            Disease.DENGUE}, hide = true)
+		Disease.DENGUE }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -684,7 +671,7 @@ public enum PathogenTestType {
 	@Diseases(value = {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-            Disease.DENGUE}, hide = true)
+		Disease.DENGUE }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIMICROBIAL_SUSCEPTIBILITY_TESTING)
 	@ResultValueTypeRel(ResultValueType.BOOLEAN)
 	GENOTYPIC_RESISTANCE_TEST,
@@ -712,7 +699,7 @@ public enum PathogenTestType {
 	@Diseases(value = {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-            Disease.DENGUE}, hide = true)
+		Disease.DENGUE }, hide = true)
 	FLOW_CYTOMETRY,
 
 	// ----------------------------------------------------------------------------------------------
@@ -864,18 +851,19 @@ public enum PathogenTestType {
 	 * the generic numeric value/unit fields when the Cq input applies. Both call sites must use this method so
 	 * the rule cannot drift.
 	 *
-	 * <p>The Cq input applies for {@code PCR_RT_PCR}, {@code CQ_VALUE_DETECTION}, or {@code Q_PCR} on Malaria
+	 * <p>
+	 * The Cq input applies for {@code PCR_RT_PCR}, {@code CQ_VALUE_DETECTION}, or {@code Q_PCR} on Malaria
 	 * — except for Tuberculosis, which historically does not offer a Cq value.
 	 *
-	 * @param disease  the tested disease (may be {@code null})
-	 * @param testType the test method (may be {@code null})
+	 * @param disease
+	 *            the tested disease (may be {@code null})
+	 * @param testType
+	 *            the test method (may be {@code null})
 	 */
 	public static boolean cqInputApplies(Disease disease, PathogenTestType testType) {
 		if (disease == Disease.TUBERCULOSIS) {
 			return false;
 		}
-		return testType == PCR_RT_PCR
-			|| testType == CQ_VALUE_DETECTION
-			|| (disease == Disease.MALARIA && testType == Q_PCR);
+		return testType == PCR_RT_PCR || testType == CQ_VALUE_DETECTION || (disease == Disease.MALARIA && testType == Q_PCR);
 	}
 }
