@@ -241,6 +241,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setTravelPurpose(source.getTravelPurpose());
 		target.setTravelPurposeDetails(source.getTravelPurposeDetails());
 		target.setShoppingForFoodDetails(source.getShoppingForFoodDetails());
+		target.setSexualContact(source.getSexualContact());
 		return target;
 	}
 
@@ -428,6 +429,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setTravelPurpose(source.getTravelPurpose());
 		target.setTravelPurposeDetails(source.getTravelPurposeDetails());
 		target.setShoppingForFoodDetails(source.getShoppingForFoodDetails());
+		target.setSexualContact(source.getSexualContact());
 		return target;
 	}
 

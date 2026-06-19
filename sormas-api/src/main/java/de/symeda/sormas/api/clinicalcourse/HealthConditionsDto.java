@@ -60,7 +60,7 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	public static final String VACCINATED_AGAINST_MOSQUITO_BORNE_VIRUSES = "vaccinatedAgainstMosquitoBorneViruses";
 	public static final String MALARIA = "malaria";
 	public static final String MALARIA_INFECTED_YEAR = "malariaInfectedYear";
-	public static final String UNDER_MEDICATION = "underMedication";
+	public static final String ON_MEDICATION = "onMedication";
 	public static final String MEDICATION_DETAILS = "medicationDetails";
 	public static final String CHRONIC_DISEASE = "chronicDisease";
 	public static final String CHRONIC_DISEASE_DETAILS = "chronicDiseaseDetails";
@@ -201,7 +201,7 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	private Integer malariaInfectedYear;
 	@Diseases(value = {
 		Disease.SHIGELLOSIS })
-	private YesNoUnknown underMedication;
+	private YesNoUnknown onMedication;
 	@Diseases(value = {
 		Disease.SHIGELLOSIS })
 	private String medicationDetails;
@@ -506,12 +506,12 @@ public class HealthConditionsDto extends PseudonymizableDto {
 		this.malariaInfectedYear = malariaInfectedYear;
 	}
 
-	public YesNoUnknown getUnderMedication() {
-		return underMedication;
+	public YesNoUnknown getOnMedication() {
+		return onMedication;
 	}
 
-	public void setUnderMedication(YesNoUnknown underMedication) {
-		this.underMedication = underMedication;
+	public void setOnMedication(YesNoUnknown onMedication) {
+		this.onMedication = onMedication;
 	}
 
 	public String getMedicationDetails() {

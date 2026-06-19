@@ -57,6 +57,9 @@ public enum PathogenSpecie {
 		PathogenTestType.THIN_BLOOD_SMEAR,
 		PathogenTestType.RAPID_TEST,
 		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
+		PathogenTestType.IGM_SERUM_ANTIBODY,
+		PathogenTestType.IGG_SERUM_ANTIBODY,
+		PathogenTestType.IGA_SERUM_ANTIBODY,
 		PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
 		PathogenTestType.PCR_RT_PCR,
 		PathogenTestType.Q_PCR,
@@ -70,6 +73,9 @@ public enum PathogenSpecie {
 		PathogenTestType.THIN_BLOOD_SMEAR,
 		PathogenTestType.RAPID_TEST,
 		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
+		PathogenTestType.IGM_SERUM_ANTIBODY,
+		PathogenTestType.IGG_SERUM_ANTIBODY,
+		PathogenTestType.IGA_SERUM_ANTIBODY,
 		PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
 		PathogenTestType.PCR_RT_PCR,
 		PathogenTestType.Q_PCR,
@@ -83,6 +89,9 @@ public enum PathogenSpecie {
 		PathogenTestType.THIN_BLOOD_SMEAR,
 		PathogenTestType.RAPID_TEST,
 		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
+		PathogenTestType.IGM_SERUM_ANTIBODY,
+		PathogenTestType.IGG_SERUM_ANTIBODY,
+		PathogenTestType.IGA_SERUM_ANTIBODY,
 		PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
 		PathogenTestType.PCR_RT_PCR,
 		PathogenTestType.Q_PCR,
@@ -96,6 +105,9 @@ public enum PathogenSpecie {
 		PathogenTestType.THIN_BLOOD_SMEAR,
 		PathogenTestType.RAPID_TEST,
 		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
+		PathogenTestType.IGM_SERUM_ANTIBODY,
+		PathogenTestType.IGG_SERUM_ANTIBODY,
+		PathogenTestType.IGA_SERUM_ANTIBODY,
 		PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
 		PathogenTestType.PCR_RT_PCR,
 		PathogenTestType.Q_PCR,
@@ -109,6 +121,9 @@ public enum PathogenSpecie {
 		PathogenTestType.THIN_BLOOD_SMEAR,
 		PathogenTestType.RAPID_TEST,
 		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
+		PathogenTestType.IGM_SERUM_ANTIBODY,
+		PathogenTestType.IGG_SERUM_ANTIBODY,
+		PathogenTestType.IGA_SERUM_ANTIBODY,
 		PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
 		PathogenTestType.PCR_RT_PCR,
 		PathogenTestType.Q_PCR,
@@ -122,6 +137,9 @@ public enum PathogenSpecie {
 		PathogenTestType.THIN_BLOOD_SMEAR,
 		PathogenTestType.RAPID_TEST,
 		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
+		PathogenTestType.IGM_SERUM_ANTIBODY,
+		PathogenTestType.IGG_SERUM_ANTIBODY,
+		PathogenTestType.IGA_SERUM_ANTIBODY,
 		PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
 		PathogenTestType.PCR_RT_PCR,
 		PathogenTestType.Q_PCR,
@@ -135,6 +153,9 @@ public enum PathogenSpecie {
 		PathogenTestType.THIN_BLOOD_SMEAR,
 		PathogenTestType.RAPID_TEST,
 		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
+		PathogenTestType.IGM_SERUM_ANTIBODY,
+		PathogenTestType.IGG_SERUM_ANTIBODY,
+		PathogenTestType.IGA_SERUM_ANTIBODY,
 		PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
 		PathogenTestType.PCR_RT_PCR,
 		PathogenTestType.Q_PCR,
@@ -148,6 +169,9 @@ public enum PathogenSpecie {
 		PathogenTestType.THIN_BLOOD_SMEAR,
 		PathogenTestType.RAPID_TEST,
 		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
+		PathogenTestType.IGM_SERUM_ANTIBODY,
+		PathogenTestType.IGG_SERUM_ANTIBODY,
+		PathogenTestType.IGA_SERUM_ANTIBODY,
 		PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
 		PathogenTestType.PCR_RT_PCR,
 		PathogenTestType.Q_PCR,
@@ -161,6 +185,9 @@ public enum PathogenSpecie {
 		PathogenTestType.THIN_BLOOD_SMEAR,
 		PathogenTestType.RAPID_TEST,
 		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
+		PathogenTestType.IGM_SERUM_ANTIBODY,
+		PathogenTestType.IGG_SERUM_ANTIBODY,
+		PathogenTestType.IGA_SERUM_ANTIBODY,
 		PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
 		PathogenTestType.PCR_RT_PCR,
 		PathogenTestType.Q_PCR,
@@ -172,27 +199,42 @@ public enum PathogenSpecie {
 	@Diseases(value = {
 		Disease.SHIGELLOSIS })
 	@ApplicableToPathogenTests(value = {
-		PathogenTestType.SEROGROUPING })
+		PathogenTestType.SEROGROUPING,
+		PathogenTestType.SEROTYPING,
+		PathogenTestType.BACTERIAL_CULTURE,
+		PathogenTestType.CULTURE })
 	BOYDII,
 	@Diseases(value = {
 		Disease.SHIGELLOSIS })
 	@ApplicableToPathogenTests(value = {
-		PathogenTestType.SEROGROUPING })
+		PathogenTestType.SEROGROUPING,
+		PathogenTestType.SEROTYPING,
+		PathogenTestType.BACTERIAL_CULTURE,
+		PathogenTestType.CULTURE })
 	DYSENTERIAE,
 	@Diseases(value = {
 		Disease.SHIGELLOSIS })
 	@ApplicableToPathogenTests(value = {
-		PathogenTestType.SEROGROUPING })
+		PathogenTestType.SEROGROUPING,
+		PathogenTestType.SEROTYPING,
+		PathogenTestType.BACTERIAL_CULTURE,
+		PathogenTestType.CULTURE })
 	FLEXNERI,
 	@Diseases(value = {
 		Disease.SHIGELLOSIS })
 	@ApplicableToPathogenTests(value = {
-		PathogenTestType.SEROGROUPING })
+		PathogenTestType.SEROGROUPING,
+		PathogenTestType.SEROTYPING,
+		PathogenTestType.BACTERIAL_CULTURE,
+		PathogenTestType.CULTURE })
 	SONNEI,
 	@Diseases(value = {
 		Disease.SHIGELLOSIS })
 	@ApplicableToPathogenTests(value = {
-		PathogenTestType.SEROGROUPING })
+		PathogenTestType.SEROGROUPING,
+		PathogenTestType.SEROTYPING,
+		PathogenTestType.BACTERIAL_CULTURE,
+		PathogenTestType.CULTURE })
 	SHIGELLA_SPP,
 	@Diseases({
 		Disease.MALARIA,
@@ -201,12 +243,19 @@ public enum PathogenSpecie {
 		PathogenTestType.THIN_BLOOD_SMEAR,
 		PathogenTestType.RAPID_TEST,
 		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
+		PathogenTestType.IGM_SERUM_ANTIBODY,
+		PathogenTestType.IGG_SERUM_ANTIBODY,
+		PathogenTestType.IGA_SERUM_ANTIBODY,
 		PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
 		PathogenTestType.PCR_RT_PCR,
 		PathogenTestType.Q_PCR,
 		PathogenTestType.LAMP,
 		PathogenTestType.OTHER_MOLECULAR_ASSAY,
-		PathogenTestType.OTHER_SEROLOGICAL_TEST })
+		PathogenTestType.OTHER_SEROLOGICAL_TEST,
+		PathogenTestType.BACTERIAL_CULTURE,
+		PathogenTestType.CULTURE,
+		PathogenTestType.SEROGROUPING,
+		PathogenTestType.SEROTYPING })
 	OTHER,
 	@Diseases({
 		Disease.TUBERCULOSIS,
@@ -218,12 +267,19 @@ public enum PathogenSpecie {
 		PathogenTestType.THIN_BLOOD_SMEAR,
 		PathogenTestType.RAPID_TEST,
 		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
+		PathogenTestType.IGM_SERUM_ANTIBODY,
+		PathogenTestType.IGG_SERUM_ANTIBODY,
+		PathogenTestType.IGA_SERUM_ANTIBODY,
 		PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
 		PathogenTestType.PCR_RT_PCR,
 		PathogenTestType.Q_PCR,
 		PathogenTestType.LAMP,
 		PathogenTestType.OTHER_MOLECULAR_ASSAY,
-		PathogenTestType.OTHER_SEROLOGICAL_TEST })
+		PathogenTestType.OTHER_SEROLOGICAL_TEST,
+		PathogenTestType.BACTERIAL_CULTURE,
+		PathogenTestType.CULTURE,
+		PathogenTestType.SEROGROUPING,
+		PathogenTestType.SEROTYPING })
 	UNKNOWN,
 	@Diseases({
 		Disease.TUBERCULOSIS,

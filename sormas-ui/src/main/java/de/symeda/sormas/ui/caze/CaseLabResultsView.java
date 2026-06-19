@@ -43,7 +43,6 @@ import de.symeda.sormas.api.therapy.Drug;
 import de.symeda.sormas.api.therapy.DrugSusceptibilityDto;
 import de.symeda.sormas.api.therapy.DrugSusceptibilityType;
 import de.symeda.sormas.api.therapy.SusceptibilityMethod;
-import de.symeda.sormas.api.therapy.SusceptibilitySurveillanceType;
 import de.symeda.sormas.api.utils.AnnotationFieldHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -248,11 +247,10 @@ public class CaseLabResultsView extends AbstractCaseView {
 
 		grid.addColumn(AstRow::getAntibiotic).setCaption(I18nProperties.getCaption(Captions.caseLabResultsAntibiotic));
 		grid.addColumn(AstRow::getMethod).setCaption(I18nProperties.getCaption(Captions.caseLabResultsMethod));
-		grid.addColumn(AstRow::getMic).setCaption(I18nProperties.getCaption(Captions.caseLabResultsMicValue));
-		grid.addColumn(AstRow::getZoneDiameter).setCaption(I18nProperties.getCaption(Captions.caseLabResultsZoneDiameter));
+		// "Value" merges MIC value (mg/l) and zone diameter (mm) into one column — a given antibiotic+method
+		// combination typically reports one or the other (#13955).
+		grid.addColumn(AstRow::getValue).setCaption(I18nProperties.getCaption(Captions.caseLabResultsValue));
 		grid.addColumn(AstRow::getClinicalInterpretation).setCaption(I18nProperties.getCaption(Captions.caseLabResultsClinicalInterpretation));
-		grid.addColumn(AstRow::getSurveillanceInterpretation)
-			.setCaption(I18nProperties.getCaption(Captions.caseLabResultsSurveillanceInterpretation));
 
 		grid.setItems(rows);
 		return grid;
@@ -261,8 +259,8 @@ public class CaseLabResultsView extends AbstractCaseView {
 	/**
 	 * Flattens the single, flat {@link DrugSusceptibilityDto} of an AST test into one row per antibiotic
 	 * that applies to the tested disease (per the {@code @Diseases}/{@code @ApplicableToPathogenTests}
-	 * annotations), reading the MIC, zone diameter, method, clinical (S/I/R) and surveillance (WT/NWT)
-	 * values reflectively.
+	 * annotations), reading the method, MIC, zone diameter and clinical (S/I/R) values reflectively. The
+	 * MIC and zone diameter are combined into a single "Value" cell (#13955).
 	 */
 	private List<AstRow> flattenDrugSusceptibility(PathogenTestDto test) {
 
@@ -291,20 +289,33 @@ public class CaseLabResultsView extends AbstractCaseView {
 			SusceptibilityMethod method = readProperty(ds, capitalized + "Method", SusceptibilityMethod.class);
 			Float mic = readProperty(ds, capitalized + "Mic", Float.class);
 			Float zoneDiameter = readProperty(ds, capitalized + "ZoneDiameter", Float.class);
-			SusceptibilitySurveillanceType surveillance = readProperty(ds, capitalized + "Surveillance", SusceptibilitySurveillanceType.class);
 
 			Drug drug = resolveDrug(base);
 			rows.add(
 				new AstRow(
 					drug != null ? I18nProperties.getEnumCaption(drug) : base,
 					method != null ? I18nProperties.getEnumCaption(method) : null,
-					mic,
-					zoneDiameter,
-					clinical != null ? I18nProperties.getEnumCaption(clinical) : null,
-					surveillance != null ? I18nProperties.getEnumCaption(surveillance) : null));
+					formatAstValue(mic, zoneDiameter),
+					clinical != null ? I18nProperties.getEnumCaption(clinical) : null));
 		}
 
 		return rows;
+	}
+
+	/**
+	 * Builds the merged "Value" cell from the MIC (mg/L) and zone diameter (mm). A given antibiotic+method
+	 * combination typically reports one or the other, but both are surfaced when present so no data is lost.
+	 */
+	private static String formatAstValue(Float mic, Float zoneDiameter) {
+		boolean hasMic = mic != null;
+		boolean hasZone = zoneDiameter != null;
+		if (!hasMic && !hasZone) {
+			return null;
+		}
+		if (hasMic && hasZone) {
+			return String.format("MIC: %s mg/l; Zone: %s mm", mic, zoneDiameter);
+		}
+		return hasMic ? String.format("%s mg/l", mic) : String.format("%s mm", zoneDiameter);
 	}
 
 	/**
@@ -353,24 +364,20 @@ public class CaseLabResultsView extends AbstractCaseView {
 	}
 
 	/**
-	 * View-model for one antibiotic row of the AST table.
+	 * View-model for one antibiotic row of the AST table (#13955).
 	 */
 	public static final class AstRow {
 
 		private final String antibiotic;
 		private final String method;
-		private final Float mic;
-		private final Float zoneDiameter;
+		private final String value;
 		private final String clinicalInterpretation;
-		private final String surveillanceInterpretation;
 
-		AstRow(String antibiotic, String method, Float mic, Float zoneDiameter, String clinicalInterpretation, String surveillanceInterpretation) {
+		AstRow(String antibiotic, String method, String value, String clinicalInterpretation) {
 			this.antibiotic = antibiotic;
 			this.method = method;
-			this.mic = mic;
-			this.zoneDiameter = zoneDiameter;
+			this.value = value;
 			this.clinicalInterpretation = clinicalInterpretation;
-			this.surveillanceInterpretation = surveillanceInterpretation;
 		}
 
 		public String getAntibiotic() {
@@ -381,20 +388,12 @@ public class CaseLabResultsView extends AbstractCaseView {
 			return method;
 		}
 
-		public Float getMic() {
-			return mic;
-		}
-
-		public Float getZoneDiameter() {
-			return zoneDiameter;
+		public String getValue() {
+			return value;
 		}
 
 		public String getClinicalInterpretation() {
 			return clinicalInterpretation;
-		}
-
-		public String getSurveillanceInterpretation() {
-			return surveillanceInterpretation;
 		}
 	}
 }

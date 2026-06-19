@@ -142,6 +142,7 @@ public class ExposureDto extends PseudonymizableDto {
 	public static final String TRAVEL_PURPOSE = "travelPurpose";
 	public static final String TRAVEL_PURPOSE_DETAILS = "travelPurposeDetails";
 	public static final String SHOPPING_FOR_FOOD_DETAILS = "shoppingForFoodDetails";
+	public static final String SEXUAL_CONTACT = "sexualContact";
 
 	@SensitiveData
 	private UserReferenceDto reportingUser;
@@ -465,6 +466,11 @@ public class ExposureDto extends PseudonymizableDto {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String shoppingForFoodDetails;
+
+	@Diseases({
+		Disease.SHIGELLOSIS })
+	@SensitiveData
+	private SexualContact sexualContact;
 
 	public static ExposureDto build(ExposureType exposureType) {
 
@@ -1167,6 +1173,14 @@ public class ExposureDto extends PseudonymizableDto {
 
 	public void setShoppingForFoodDetails(String shoppingForFoodDetails) {
 		this.shoppingForFoodDetails = shoppingForFoodDetails;
+	}
+
+	public SexualContact getSexualContact() {
+		return sexualContact;
+	}
+
+	public void setSexualContact(SexualContact sexualContact) {
+		this.sexualContact = sexualContact;
 	}
 
 	@Override

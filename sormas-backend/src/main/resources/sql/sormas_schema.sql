@@ -16306,4 +16306,112 @@ alter table cases_history add column IF NOT EXISTS externalcomments text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (638, 'Laboratory results tab: dateOther, dateOtherDetails, externalComments on case #13955');
 
+-- 04-06-2026 Shigellosis lab message processing. #13965
+ALTER TABLE testreport                  ADD COLUMN IF NOT EXISTS pathogentestcategory varchar(255);
+ALTER TABLE exposures                   ADD COLUMN IF NOT EXISTS sexualcontact varchar(255);
+ALTER TABLE drugsusceptibility          ADD COLUMN IF NOT EXISTS trimethoprimSulfamethoxazoleMethod varchar(255);
+ALTER TABLE drugsusceptibility          ADD COLUMN IF NOT EXISTS azithromycinMethod varchar(255);
+ALTER TABLE drugsusceptibility          ADD COLUMN IF NOT EXISTS ampicillinMethod varchar(255);
+ALTER TABLE drugsusceptibility          ADD COLUMN IF NOT EXISTS ceftazidimeMethod varchar(255);
+ALTER TABLE drugsusceptibility          ADD COLUMN IF NOT EXISTS cefotaximeMethod varchar(255);
+
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'healthconditions' AND column_name = 'undermedication')
+        AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'healthconditions' AND column_name = 'onmedication') THEN
+        ALTER TABLE healthconditions RENAME COLUMN undermedication TO onmedication;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'healthconditions' AND column_name = 'undermedication')
+        AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'healthconditions' AND column_name = 'onmedication') THEN
+        ALTER TABLE healthconditions RENAME COLUMN undermedication TO onmedication;
+    END IF;
+END $$;
+
+ALTER TABLE testreport_history          ADD COLUMN IF NOT EXISTS pathogentestcategory varchar(255);
+ALTER TABLE exposures_history           ADD COLUMN IF NOT EXISTS sexualcontact varchar(255);
+ALTER TABLE drugsusceptibility_history  ADD COLUMN IF NOT EXISTS trimethoprimSulfamethoxazoleMethod varchar(255);
+ALTER TABLE drugsusceptibility_history  ADD COLUMN IF NOT EXISTS azithromycinMethod varchar(255);
+ALTER TABLE drugsusceptibility_history  ADD COLUMN IF NOT EXISTS ampicillinMethod varchar(255);
+ALTER TABLE drugsusceptibility_history  ADD COLUMN IF NOT EXISTS ceftazidimeMethod varchar(255);
+ALTER TABLE drugsusceptibility_history  ADD COLUMN IF NOT EXISTS cefotaximeMethod varchar(255);
+
+
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'healthconditions_history' AND column_name = 'undermedication')
+        AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'healthconditions_history' AND column_name = 'onmedication') THEN
+        ALTER TABLE healthconditions_history RENAME COLUMN undermedication TO onmedication;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'healthconditions_history' AND column_name = 'undermedication')
+        AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'healthconditions_history' AND column_name = 'onmedication') THEN
+        ALTER TABLE healthconditions_history RENAME COLUMN undermedication TO onmedication;
+    END IF;
+END $$;
+INSERT INTO schema_version (version_number, comment) VALUES (639, '#13965 - Shigellosis Lab messages');
+
+-- Drop the generic quantitative free-text result column: typing methods use their disease-section fields and
+-- everything else falls back to "Test result details" (#13948). Before dropping, copy any existing value into
+-- testresulttext (appending to it when it already holds a value) so no historical free-text result is lost.
+-- Both pathogentest and pathogentest_history are migrated.
+--
+-- versioning_trigger on pathogentest mirrors every UPDATE into pathogentest_history that would inject a
+-- phantom audit row (a copy of the OLD pathogentest, still carrying its quantitativetext) for every preserved
+-- value, in addition to the rows users actually edited. Disable the trigger for the migration window so the
+-- history table only keeps the rows users wrote, and re-enable when done.
+--
+-- testresulttext is varchar(4096) while quantitativetext is unbounded text: LEFT(..., 4096) truncates the
+-- concatenated value so a long quantitativetext (or near-full testresulttext) cannot overflow the column and
+-- abort the migration. Practical impact is minimal because the source feature is unreleased, but the guard
+-- keeps the migration safe for staging/test instances that seeded the field.
+ALTER TABLE pathogentest DISABLE TRIGGER versioning_trigger;
+DO $$
+DECLARE
+    truncated_count integer;
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'pathogentest' AND column_name = 'quantitativetext') THEN
+        SELECT count(*) INTO truncated_count FROM pathogentest
+            WHERE quantitativetext IS NOT NULL AND quantitativetext <> ''
+              AND length(CASE WHEN testresulttext IS NULL OR testresulttext = '' THEN quantitativetext ELSE testresulttext || E'\n' || quantitativetext END) > 4096;
+        IF truncated_count > 0 THEN
+            RAISE NOTICE 'Migration 640: % pathogentest row(s) had their preserved quantitativetext truncated to fit varchar(4096).', truncated_count;
+        END IF;
+        UPDATE pathogentest
+        SET testresulttext = LEFT(CASE
+            WHEN testresulttext IS NULL OR testresulttext = '' THEN quantitativetext
+            ELSE testresulttext || E'\n' || quantitativetext
+        END, 4096)
+        WHERE quantitativetext IS NOT NULL AND quantitativetext <> '';
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'pathogentest_history' AND column_name = 'quantitativetext') THEN
+        SELECT count(*) INTO truncated_count FROM pathogentest_history
+            WHERE quantitativetext IS NOT NULL AND quantitativetext <> ''
+              AND length(CASE WHEN testresulttext IS NULL OR testresulttext = '' THEN quantitativetext ELSE testresulttext || E'\n' || quantitativetext END) > 4096;
+        IF truncated_count > 0 THEN
+            RAISE NOTICE 'Migration 640: % pathogentest_history row(s) had their preserved quantitativetext truncated to fit varchar(4096).', truncated_count;
+        END IF;
+        UPDATE pathogentest_history
+        SET testresulttext = LEFT(CASE
+            WHEN testresulttext IS NULL OR testresulttext = '' THEN quantitativetext
+            ELSE testresulttext || E'\n' || quantitativetext
+        END, 4096)
+        WHERE quantitativetext IS NOT NULL AND quantitativetext <> '';
+    END IF;
+END $$;
+ALTER TABLE pathogentest DROP COLUMN IF EXISTS quantitativetext;
+ALTER TABLE pathogentest_history DROP COLUMN IF EXISTS quantitativetext;
+ALTER TABLE pathogentest ENABLE TRIGGER versioning_trigger;
+INSERT INTO schema_version (version_number, comment) VALUES (640, 'Remove generic quantitative free-text pathogen test result column, preserving values into testresulttext issue #13952 (epic #13948)');
+
+-- 2026-06-19 Add Salmonellosis-specific watery diarrhoea symptom (testing salmo.xlsx)
+ALTER TABLE symptoms         ADD COLUMN IF NOT EXISTS waterydiarrhea varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS waterydiarrhea varchar(255);
+INSERT INTO schema_version (version_number, comment) VALUES (641, 'Add Salmonellosis watery diarrhoea symptom issue #13918');
+
+-- 18-06-2026 Malaria and Dengue DD and Lab message processing fixes
+
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS fourfoldincreaseantibodytiter boolean DEFAULT false;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS fourfoldincreaseantibodytiter boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (642, 'Malaria and Dengue DD and Lab message processing fixes');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

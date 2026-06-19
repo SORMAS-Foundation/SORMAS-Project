@@ -60,12 +60,19 @@ public class PathogenTestListEntry extends SideComponentField {
 		topLabelLayout.addComponent(labelTopLeft);
 
 		if (Boolean.TRUE.equals(pathogenTest.getTestResultVerified())) {
-			Label labelTopRight = new Label(VaadinIcons.CHECK_CIRCLE.getHtml(), ContentMode.HTML);
-			labelTopRight.setSizeUndefined();
-			labelTopRight.addStyleName(CssStyles.LABEL_LARGE);
-			labelTopRight.setDescription(I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_RESULT_VERIFIED));
-			topLabelLayout.addComponent(labelTopRight);
-			topLabelLayout.setComponentAlignment(labelTopRight, Alignment.TOP_RIGHT);
+			addTopRightIcon(topLabelLayout, VaadinIcons.CHECK_CIRCLE, PathogenTestDto.TEST_RESULT_VERIFIED);
+		}
+
+		// At-a-glance lab indicators: reference laboratory, retest, and result details
+		// (the latter only when the full result text is not already shown below).
+		if (shouldShowRefLabIcon(pathogenTest)) {
+			addTopRightIcon(topLabelLayout, VaadinIcons.INSTITUTION, PathogenTestDto.PERFORMED_BY_REFERENCE_LABORATORY);
+		}
+		if (shouldShowRetestIcon(pathogenTest)) {
+			addTopRightIcon(topLabelLayout, VaadinIcons.REFRESH, PathogenTestDto.RETEST_REQUESTED);
+		}
+		if (shouldShowResultDetailsIcon(pathogenTest, showTestResultText)) {
+			addTopRightIcon(topLabelLayout, VaadinIcons.INFO_CIRCLE, PathogenTestDto.TEST_RESULT_TEXT);
 		}
 
 		if (showTestResultText && !DataHelper.isNullOrEmpty(pathogenTest.getTestResultText())) {
@@ -115,10 +122,13 @@ public class PathogenTestListEntry extends SideComponentField {
 
 		// Quantitative result (issue #13952): combine whichever value-type fields the method populated.
 		String quantitativeResult = formatQuantitativeResult(pathogenTest);
-		boolean astWithoutQualitativeResult =
-			pathogenTest.getTestedDisease() == Disease.TUBERCULOSIS && testType == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY;
+		// Antibiotic susceptibility has no qualitative result, so suppress the result label regardless of the stored
+		// value — old records may carry a stale POSITIVE.
+		// Other methods that have no QUALITATIVE in their @ResultValueTypeRel (Western Blot, Bacterial Culture,
+		// typing methods, ...) keep their qualitative cue.
+		boolean astWithoutQualitativeResult = testType == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY;
 		boolean suppressResultLabel =
-			pathogenTest.getTestResult() == PathogenTestResultType.NOT_APPLICABLE && (quantitativeResult != null || astWithoutQualitativeResult);
+			astWithoutQualitativeResult || (pathogenTest.getTestResult() == PathogenTestResultType.NOT_APPLICABLE && quantitativeResult != null);
 		if (!suppressResultLabel) {
 			Object resultText = determineSideComponentVariant(pathogenTest);
 			Label labelResult = new Label(DataHelper.toStringNullable(resultText == null ? pathogenTest.getTestResult() : resultText));
@@ -158,9 +168,8 @@ public class PathogenTestListEntry extends SideComponentField {
 
 	/**
 	 * @return a short label combining every quantitative result field the test recorded (Western Blot
-	 *         interpretation, detected flag, smear grade, numeric value with optional unit, free text), or
-	 *         {@code null} when none is set. A method can populate several of these at once (e.g. Western
-	 *         Blot stores both an interpretation and a band-pattern text), so all are shown.
+	 *         interpretation, detected flag, smear grade, numeric value with optional unit), or {@code null}
+	 *         when none is set. A method can populate several of these at once, so all are shown.
 	 */
 	@Nullable
 	static String formatQuantitativeResult(PathogenTestDto test) {
@@ -178,10 +187,32 @@ public class PathogenTestListEntry extends SideComponentField {
 			String unit = test.getQuantitativeUnit();
 			parts.add(DataHelper.isNullOrEmpty(unit) ? test.getQuantitativeValue().toString() : test.getQuantitativeValue() + " " + unit);
 		}
-		if (StringUtils.isNotBlank(test.getQuantitativeText())) {
-			parts.add(test.getQuantitativeText());
-		}
 		return parts.isEmpty() ? null : String.join(": ", parts);
+	}
+
+	private static void addTopRightIcon(HorizontalLayout topLabelLayout, VaadinIcons icon, String captionProperty) {
+		Label iconLabel = new Label(icon.getHtml(), ContentMode.HTML);
+		iconLabel.setSizeUndefined();
+		iconLabel.addStyleNames(CssStyles.LABEL_LARGE, CssStyles.HSPACE_LEFT_4);
+		iconLabel.setDescription(I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, captionProperty));
+		topLabelLayout.addComponent(iconLabel);
+		topLabelLayout.setComponentAlignment(iconLabel, Alignment.TOP_RIGHT);
+	}
+
+	static boolean shouldShowRefLabIcon(PathogenTestDto test) {
+		return Boolean.TRUE.equals(test.getPerformedByReferenceLaboratory());
+	}
+
+	static boolean shouldShowRetestIcon(PathogenTestDto test) {
+		return Boolean.TRUE.equals(test.getRetestRequested());
+	}
+
+	/**
+	 * The result-details cue is only shown in the compact view (when the full result text is not rendered),
+	 * to avoid a redundant icon next to text that is already visible.
+	 */
+	static boolean shouldShowResultDetailsIcon(PathogenTestDto test, boolean showTestResultText) {
+		return !showTestResultText && !DataHelper.isNullOrEmpty(test.getTestResultText());
 	}
 
 	@Nullable

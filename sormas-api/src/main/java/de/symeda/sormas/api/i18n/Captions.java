@@ -928,13 +928,11 @@ public interface Captions {
 	String caseLabResultsDateCollected = "caseLabResultsDateCollected";
 	String caseLabResultsDrugSusceptibilityHeading = "caseLabResultsDrugSusceptibilityHeading";
 	String caseLabResultsMethod = "caseLabResultsMethod";
-	String caseLabResultsMicValue = "caseLabResultsMicValue";
 	String caseLabResultsSample = "caseLabResultsSample";
 	String caseLabResultsSamplesHeading = "caseLabResultsSamplesHeading";
-	String caseLabResultsSurveillanceInterpretation = "caseLabResultsSurveillanceInterpretation";
 	String caseLabResultsTestsHeading = "caseLabResultsTestsHeading";
 	String caseLabResultsTestsPerformed = "caseLabResultsTestsPerformed";
-	String caseLabResultsZoneDiameter = "caseLabResultsZoneDiameter";
+	String caseLabResultsValue = "caseLabResultsValue";
 	String caseLinkToSamples = "caseLinkToSamples";
 	String caseMergeDuplicates = "caseMergeDuplicates";
 	String caseMinusDays = "caseMinusDays";
@@ -1645,6 +1643,7 @@ public interface Captions {
 	String EpiData_clusterTypeText = "EpiData.clusterTypeText";
 	String EpiData_contactWithSourceCaseKnown = "EpiData.contactWithSourceCaseKnown";
 	String EpiData_country = "EpiData.country";
+	String EpiData_country_SHIG = "EpiData.country.SHIG";
 	String EpiData_exposureDetailsKnown = "EpiData.exposureDetailsKnown";
 	String EpiData_exposureInvestigationFromDate = "EpiData.exposureInvestigationFromDate";
 	String EpiData_exposureInvestigationToDate = "EpiData.exposureInvestigationToDate";
@@ -1968,6 +1967,7 @@ public interface Captions {
 	String Exposure_rawFoodContactText = "Exposure.rawFoodContactText";
 	String Exposure_riskArea = "Exposure.riskArea";
 	String Exposure_seatNumber = "Exposure.seatNumber";
+	String Exposure_sexualContact = "Exposure.sexualContact";
 	String Exposure_sexualExposureText = "Exposure.sexualExposureText";
 	String Exposure_shoppingForFoodDetails = "Exposure.shoppingForFoodDetails";
 	String Exposure_shortDistance = "Exposure.shortDistance";
@@ -2139,13 +2139,13 @@ public interface Captions {
 	String HealthConditions_malignancyChemotherapy = "HealthConditions.malignancyChemotherapy";
 	String HealthConditions_medicationDetails = "HealthConditions.medicationDetails";
 	String HealthConditions_obesity = "HealthConditions.obesity";
+	String HealthConditions_onMedication = "HealthConditions.onMedication";
 	String HealthConditions_otherConditions = "HealthConditions.otherConditions";
 	String HealthConditions_previousTuberculosisTreatment = "HealthConditions.previousTuberculosisTreatment";
 	String HealthConditions_recurrentBronchiolitis = "HealthConditions.recurrentBronchiolitis";
 	String HealthConditions_sickleCellDisease = "HealthConditions.sickleCellDisease";
 	String HealthConditions_tuberculosis = "HealthConditions.tuberculosis";
 	String HealthConditions_tuberculosisInfectionYear = "HealthConditions.tuberculosisInfectionYear";
-	String HealthConditions_underMedication = "HealthConditions.underMedication";
 	String HealthConditions_vaccinatedAgainstMosquitoBorneViruses = "HealthConditions.vaccinatedAgainstMosquitoBorneViruses";
 	String humanSampleViewType = "humanSampleViewType";
 	String Immunization = "Immunization";
@@ -2423,7 +2423,6 @@ public interface Captions {
 	String PathogenTest_prescriberPhysicianCode = "PathogenTest.prescriberPhysicianCode";
 	String PathogenTest_prescriberPostalCode = "PathogenTest.prescriberPostalCode";
 	String PathogenTest_quantitativeBoolean = "PathogenTest.quantitativeBoolean";
-	String PathogenTest_quantitativeText = "PathogenTest.quantitativeText";
 	String PathogenTest_quantitativeUnit = "PathogenTest.quantitativeUnit";
 	String PathogenTest_quantitativeValue = "PathogenTest.quantitativeValue";
 	String PathogenTest_reportDate = "PathogenTest.reportDate";
@@ -2893,6 +2892,7 @@ public interface Captions {
 	String selfReportDeletedEnvironments = "selfReportDeletedEnvironments";
 	String selfReportProcess = "selfReportProcess";
 	String selfReportSelfReportsList = "selfReportSelfReportsList";
+	String serogroup = "serogroup";
 	String sex = "sex";
 	String showPlacesOnMap = "showPlacesOnMap";
 	String singleDayEventDate = "singleDayEventDate";
@@ -3302,6 +3302,7 @@ public interface Captions {
 	String Symptoms_uproariousness = "Symptoms.uproariousness";
 	String Symptoms_urinaryRetention = "Symptoms.urinaryRetention";
 	String Symptoms_vomiting = "Symptoms.vomiting";
+	String Symptoms_wateryDiarrhea = "Symptoms.wateryDiarrhea";
 	String Symptoms_weakness = "Symptoms.weakness";
 	String Symptoms_weight = "Symptoms.weight";
 	String Symptoms_weightLoss = "Symptoms.weightLoss";

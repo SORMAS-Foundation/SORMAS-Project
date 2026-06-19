@@ -54,7 +54,7 @@ public class HealthConditions extends AbstractDomainObject {
 
 	private YesNoUnknown recurrentBronchiolitis;
 
-	private YesNoUnknown underMedication;
+	private YesNoUnknown onMedication;
 	private String medicationDetails;
 	private YesNoUnknown chronicDisease;
 	private String chronicDiseaseDetails;
@@ -353,12 +353,12 @@ public class HealthConditions extends AbstractDomainObject {
 	}
 
 	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getUnderMedication() {
-		return underMedication;
+	public YesNoUnknown getOnMedication() {
+		return onMedication;
 	}
 
-	public void setUnderMedication(YesNoUnknown underMedication) {
-		this.underMedication = underMedication;
+	public void setOnMedication(YesNoUnknown onMedication) {
+		this.onMedication = onMedication;
 	}
 
 	public String getMedicationDetails() {

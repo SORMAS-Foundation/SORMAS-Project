@@ -67,9 +67,11 @@ import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.epidata.ClusterType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.exposure.ExposureDto;
+import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.InfectionSource;
 import de.symeda.sormas.api.exposure.ModeOfTransmission;
 import de.symeda.sormas.api.exposure.ProphylaxisAdherence;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -118,8 +120,14 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	private static final String PROPHYLAXIS_LAYOUT = fluidRowLocs(3, "PROPHYLAXIS_LABEL", 3, "PROPHYLAXIS_VALUE", 6, "");
 	private static final String LOC_OTHER_INFORMATION_HEADING = "locOtherInformationHeading";
 
-	private static final List<Disease> CONCLUSION_ALLOWED_DISEASES = Collections
-		.unmodifiableList(Arrays.asList(Disease.CRYPTOSPORIDIOSIS, Disease.GIARDIASIS, Disease.MALARIA, Disease.DENGUE, Disease.SHIGELLOSIS));
+	private static final List<Disease> CONCLUSION_ALLOWED_DISEASES = Collections.unmodifiableList(
+		Arrays.asList(
+			Disease.CRYPTOSPORIDIOSIS,
+			Disease.GIARDIASIS,
+			Disease.MALARIA,
+			Disease.DENGUE,
+			Disease.SALMONELLOSIS,
+			Disease.SHIGELLOSIS));
 
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT =
@@ -264,9 +272,12 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		List<CountryReferenceDto> countries = FacadeProvider.getCountryFacade().getAllActiveAsReference();
 		ComboBox country = addInfrastructureField(EpiDataDto.COUNTRY);
 		country.addItems(countries);
+		if (Disease.SHIGELLOSIS == disease) {
+			country.setCaption(I18nProperties.getCaption(Captions.EpiData_country_SHIG));
+		}
 
 		includeExposureDates(symptomOnsetDate, disease);
-		addField(EpiDataDto.AIRPORT_WORKER, NullableOptionGroup.class);
+
 		addField(EpiDataDto.HEALTHCARE_PROFESSIONAL, NullableOptionGroup.class);
 		addField(EpiDataDto.PLACE_OF_INFECTION);
 		addField(EpiDataDto.RESIDENCE_AT_ONSET);
@@ -306,11 +317,33 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 
 		exposuresField.addValueChangeListener(e -> ogExposureDetailsKnown.setEnabled(CollectionUtils.isEmpty(exposuresField.getValue())));
 
+		// Salmonellosis: when a Travel exposure carries a country in its location, propose it as the
+		// probable country of infection on the conclusion. Gated on country.isVisible() so we never
+		// write a hidden field (visibility tracks importedCase==YES per setVisibleWhen above) and on
+		// isAttached() so initial bean-binding propagation does not overwrite a saved-null country.
+		if (disease == Disease.SALMONELLOSIS) {
+			exposuresField.addValueChangeListener(e -> {
+				if (!isAttached() || !country.isVisible() || country.getValue() != null) {
+					return;
+				}
+				java.util.Collection<ExposureDto> exposures = exposuresField.getValue();
+				if (CollectionUtils.isEmpty(exposures)) {
+					return;
+				}
+				exposures.stream()
+					.filter(ex -> ex.getExposureType() == ExposureType.TRAVEL && ex.getLocation() != null && ex.getLocation().getCountry() != null)
+					.map(ex -> ex.getLocation().getCountry())
+					.findFirst()
+					.ifPresent(country::setValue);
+			});
+		}
+
 		TextArea additionalDetails = addField(EpiDataDto.OTHER_DETAILS, TextArea.class);
 		additionalDetails.setRows(6);
 		additionalDetails.setDescription(
 			I18nProperties.getPrefixDescription(EpiDataDto.I18N_PREFIX, EpiDataDto.OTHER_DETAILS, "") + "\n"
 				+ I18nProperties.getDescription(Descriptions.descGdpr));
+		addField(EpiDataDto.AIRPORT_WORKER, NullableOptionGroup.class);
 	}
 
 	/**

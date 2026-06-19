@@ -89,6 +89,7 @@ public class PathogenTest extends DeletableAdo {
 	public static final String TEST_RESULT_VERIFIED = "testResultVerified";
 	public static final String FOUR_FOLD_INCREASE_ANTIBODY_TITER = "fourFoldIncreaseAntibodyTiter";
 	public static final String SEROTYPE = "serotype";
+	public static final String SEROTYPE_TEXT = "serotypeText";
 	public static final String CQ_VALUE = "cqValue";
 	public static final String CT_VALUE_E = "ctValueE";
 	public static final String CT_VALUE_N = "ctValueN";
@@ -191,7 +192,6 @@ public class PathogenTest extends DeletableAdo {
 	private String resultDetails;
 	private Float quantitativeValue;
 	private String quantitativeUnit;
-	private String quantitativeText;
 	private YesNoUnknown quantitativeBoolean;
 	private SmearGrade smearGrade;
 	private WesternBlotInterpretation westernBlotInterpretation;
@@ -846,14 +846,6 @@ public class PathogenTest extends DeletableAdo {
 		this.quantitativeUnit = quantitativeUnit;
 	}
 
-	@Column(columnDefinition = "text")
-	public String getQuantitativeText() {
-		return quantitativeText;
-	}
-
-	public void setQuantitativeText(String quantitativeText) {
-		this.quantitativeText = quantitativeText;
-	}
 
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getQuantitativeBoolean() {

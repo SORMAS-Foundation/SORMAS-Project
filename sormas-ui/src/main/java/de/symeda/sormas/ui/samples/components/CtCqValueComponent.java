@@ -101,19 +101,12 @@ public class CtCqValueComponent extends FormComponent<PathogenTestDto> {
 	}
 
 	public void updateCqVisibility(Disease disease, PathogenTestType testType, PathogenTestResultType testResult) {
-		// CQ value is only meaningful for a positive result, regardless of test type/disease
+		// CQ value is only meaningful for a positive result; the disease+method rule lives on PathogenTestType so
+		// it stays in lockstep with TestResultComponent's generic-numeric suppression.
 		boolean positive = testResult == PathogenTestResultType.POSITIVE;
-		if (positive && (disease == null || !java.util.Arrays.asList(Disease.TUBERCULOSIS).contains(disease))) {
-			if (testType == PathogenTestType.PCR_RT_PCR
-				|| testType == PathogenTestType.CQ_VALUE_DETECTION
-				|| (disease == Disease.MALARIA && testType == PathogenTestType.Q_PCR)) {
-				cqValueField.setVisible(true);
-			} else {
-				cqValueField.setVisible(false);
-				cqValueField.clear();
-			}
-		} else {
-			cqValueField.setVisible(false);
+		boolean show = positive && PathogenTestType.cqInputApplies(disease, testType);
+		cqValueField.setVisible(show);
+		if (!show) {
 			cqValueField.clear();
 		}
 		updateRowVisibility(cqRow);

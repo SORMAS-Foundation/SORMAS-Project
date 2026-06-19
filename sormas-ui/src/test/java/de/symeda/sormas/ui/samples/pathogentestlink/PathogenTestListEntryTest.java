@@ -18,7 +18,9 @@
 package de.symeda.sormas.ui.samples.pathogentestlink;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -67,20 +69,6 @@ public class PathogenTestListEntryTest {
 	}
 
 	@Test
-	public void textOnly() {
-		PathogenTestDto t = test();
-		t.setQuantitativeText("M. tuberculosis L4 Euro-American");
-		assertEquals("M. tuberculosis L4 Euro-American", PathogenTestListEntry.formatQuantitativeResult(t));
-	}
-
-	@Test
-	public void blankTextIsIgnored() {
-		PathogenTestDto t = test();
-		t.setQuantitativeText("   ");
-		assertNull(PathogenTestListEntry.formatQuantitativeResult(t));
-	}
-
-	@Test
 	public void booleanOnly() {
 		PathogenTestDto t = test();
 		t.setQuantitativeBoolean(YesNoUnknown.YES);
@@ -95,42 +83,67 @@ public class PathogenTestListEntryTest {
 	}
 
 	@Test
-	public void westernBlotInterpretationAndBandText_combinedInOrder() {
-		// Western Blot stores both an interpretation and a band-pattern text; both are shown, with the
-		// interpretation first.
+	public void westernBlotInterpretationOnly() {
 		PathogenTestDto t = test();
 		t.setWesternBlotInterpretation(WesternBlotInterpretation.POSITIVE);
-		t.setQuantitativeText("OspC+, VlsE+");
-		assertEquals(WesternBlotInterpretation.POSITIVE + ": OspC+, VlsE+", PathogenTestListEntry.formatQuantitativeResult(t));
+		assertEquals(WesternBlotInterpretation.POSITIVE.toString(), PathogenTestListEntry.formatQuantitativeResult(t));
 	}
 
 	@Test
-	public void bacterialCulture_textAndCount_combined() {
-		// Bacterial Culture = organism text + CFU count.
+	public void numericValueWithUnitCount() {
+		// Bacterial Culture = CFU count.
 		PathogenTestDto t = test();
-		t.setQuantitativeText("E. coli");
 		t.setQuantitativeValue(200000.0f);
 		t.setQuantitativeUnit("CFU/mL");
-		// Numeric is appended before free text per the fixed field order.
-		assertEquals("200000.0 CFU/mL: E. coli", PathogenTestListEntry.formatQuantitativeResult(t));
+		assertEquals("200000.0 CFU/mL", PathogenTestListEntry.formatQuantitativeResult(t));
 	}
 
 	@Test
-	public void allFieldsPopulated_orderedInterpretationGradeBooleanNumericText() {
+	public void allFieldsPopulated_orderedInterpretationGradeBooleanNumeric() {
 		PathogenTestDto t = test();
 		t.setWesternBlotInterpretation(WesternBlotInterpretation.NEGATIVE);
 		t.setSmearGrade(SmearGrade.ONE_PLUS);
 		t.setQuantitativeBoolean(YesNoUnknown.NO);
 		t.setQuantitativeValue(12.0f);
 		t.setQuantitativeUnit("IU/mL");
-		t.setQuantitativeText("free text");
 		String expected = String.join(
 			": ",
 			WesternBlotInterpretation.NEGATIVE.toString(),
 			SmearGrade.ONE_PLUS.toString(),
 			YesNoUnknown.NO.toString(),
-			"12.0 IU/mL",
-			"free text");
+			"12.0 IU/mL");
 		assertEquals(expected, PathogenTestListEntry.formatQuantitativeResult(t));
+	}
+
+	@Test
+	public void refLabIcon_shownOnlyWhenTrue() {
+		assertFalse(PathogenTestListEntry.shouldShowRefLabIcon(test()));
+		PathogenTestDto t = test();
+		t.setPerformedByReferenceLaboratory(false);
+		assertFalse(PathogenTestListEntry.shouldShowRefLabIcon(t));
+		t.setPerformedByReferenceLaboratory(true);
+		assertTrue(PathogenTestListEntry.shouldShowRefLabIcon(t));
+	}
+
+	@Test
+	public void retestIcon_shownOnlyWhenTrue() {
+		assertFalse(PathogenTestListEntry.shouldShowRetestIcon(test()));
+		PathogenTestDto t = test();
+		t.setRetestRequested(false);
+		assertFalse(PathogenTestListEntry.shouldShowRetestIcon(t));
+		t.setRetestRequested(true);
+		assertTrue(PathogenTestListEntry.shouldShowRetestIcon(t));
+	}
+
+	@Test
+	public void resultDetailsIcon_shownOnlyInCompactViewWhenTextPresent() {
+		PathogenTestDto t = test();
+		t.setTestResultText("Details");
+		// Compact view (full text not shown) → icon surfaces the cue.
+		assertTrue(PathogenTestListEntry.shouldShowResultDetailsIcon(t, false));
+		// Full-text view → icon would be redundant.
+		assertFalse(PathogenTestListEntry.shouldShowResultDetailsIcon(t, true));
+		// No details → no icon.
+		assertFalse(PathogenTestListEntry.shouldShowResultDetailsIcon(test(), false));
 	}
 }

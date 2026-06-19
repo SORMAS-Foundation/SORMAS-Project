@@ -209,14 +209,23 @@ public class DrugSusceptibility extends AbstractDomainObject {
 
 	private Float azithromycinMic;
 	private DrugSusceptibilityType azithromycinSusceptibility;
+
+	private SusceptibilityMethod azithromycinMethod;
+
 	private Float ceftazidimeMic;
 	private DrugSusceptibilityType ceftazidimeSusceptibility;
+	private SusceptibilityMethod ceftazidimeMethod;
+
 	private Float cefotaximeMic;
 	private DrugSusceptibilityType cefotaximeSusceptibility;
+	private SusceptibilityMethod cefotaximeMethod;
+
 	private Float ampicillinMic;
 	private DrugSusceptibilityType ampicillinSusceptibility;
+	private SusceptibilityMethod ampicillinMethod;
 	private Float trimethoprimSulfamethoxazoleMic;
 	private DrugSusceptibilityType trimethoprimSulfamethoxazoleSusceptibility;
+	private SusceptibilityMethod trimethoprimSulfamethoxazoleMethod;
 
 	public Float getAmikacinMic() {
 		return amikacinMic;
@@ -1034,4 +1043,48 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.trimethoprimSulfamethoxazoleSusceptibility = trimethoprimSulfamethoxazoleSusceptibility;
 	}
 
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getAzithromycinMethod() {
+		return azithromycinMethod;
+	}
+
+	public void setAzithromycinMethod(SusceptibilityMethod azithromycinMethod) {
+		this.azithromycinMethod = azithromycinMethod;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getCeftazidimeMethod() {
+		return ceftazidimeMethod;
+	}
+
+	public void setCeftazidimeMethod(SusceptibilityMethod ceftazidimeMethod) {
+		this.ceftazidimeMethod = ceftazidimeMethod;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getCefotaximeMethod() {
+		return cefotaximeMethod;
+	}
+
+	public void setCefotaximeMethod(SusceptibilityMethod cefotaximeMethod) {
+		this.cefotaximeMethod = cefotaximeMethod;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getAmpicillinMethod() {
+		return ampicillinMethod;
+	}
+
+	public void setAmpicillinMethod(SusceptibilityMethod ampicillinMethod) {
+		this.ampicillinMethod = ampicillinMethod;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getTrimethoprimSulfamethoxazoleMethod() {
+		return trimethoprimSulfamethoxazoleMethod;
+	}
+
+	public void setTrimethoprimSulfamethoxazoleMethod(SusceptibilityMethod trimethoprimSulfamethoxazoleMethod) {
+		this.trimethoprimSulfamethoxazoleMethod = trimethoprimSulfamethoxazoleMethod;
+	}
 }

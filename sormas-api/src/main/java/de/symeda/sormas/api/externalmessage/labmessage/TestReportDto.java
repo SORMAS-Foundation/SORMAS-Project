@@ -15,6 +15,7 @@ import de.symeda.sormas.api.sample.GenoType;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenSpecie;
 import de.symeda.sormas.api.sample.PathogenStrainCallStatus;
+import de.symeda.sormas.api.sample.PathogenTestCategory;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.RsvSubtype;
@@ -216,6 +217,9 @@ public class TestReportDto extends EntityDto {
 	private Serotype serotype;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String serotypeText;
+
+	private PathogenTestCategory pathogenTestCategory;
+	private boolean fourFoldIncreaseAntibodyTiter;
 
 	public SampleReportReferenceDto getSampleReport() {
 		return sampleReport;
@@ -910,6 +914,22 @@ public class TestReportDto extends EntityDto {
 
 	public void setSerotypeText(String serotypeText) {
 		this.serotypeText = serotypeText;
+	}
+
+	public PathogenTestCategory getPathogenTestCategory() {
+		return pathogenTestCategory;
+	}
+
+	public void setPathogenTestCategory(PathogenTestCategory pathogenTestCategory) {
+		this.pathogenTestCategory = pathogenTestCategory;
+	}
+
+	public boolean getFourFoldIncreaseAntibodyTiter() {
+		return fourFoldIncreaseAntibodyTiter;
+	}
+
+	public void setFourFoldIncreaseAntibodyTiter(boolean fourFoldIncreaseAntibodyTiter) {
+		this.fourFoldIncreaseAntibodyTiter = fourFoldIncreaseAntibodyTiter;
 	}
 
 }

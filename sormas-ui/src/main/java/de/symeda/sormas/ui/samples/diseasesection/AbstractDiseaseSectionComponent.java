@@ -19,6 +19,8 @@ package de.symeda.sormas.ui.samples.diseasesection;
 
 import java.util.function.Consumer;
 
+import com.vaadin.data.HasValue;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
@@ -116,6 +118,23 @@ public abstract class AbstractDiseaseSectionComponent extends FormComponent<Path
 		if (drugSusceptibilityField != null) {
 			drugSusceptibilityField.setVisible(visible);
 			updateRowAndSelfVisibility();
+		}
+	}
+
+	/**
+	 * Visible clear
+	 *
+	 * @param components
+	 */
+	public void setVisibleClear(AbstractComponent... components) {
+		if (components == null) {
+			return;
+		}
+		for (AbstractComponent component : components) {
+			component.setVisible(false);
+			if (component instanceof HasValue) {
+				((HasValue<?>) component).clear();
+			}
 		}
 	}
 

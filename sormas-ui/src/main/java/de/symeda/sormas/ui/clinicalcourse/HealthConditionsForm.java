@@ -30,13 +30,13 @@ import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.MALARIA_IN
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.MALIGNANCY_CHEMOTHERAPY;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.MEDICATION_DETAILS;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.OBESITY;
+import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.ON_MEDICATION;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.OTHER_CONDITIONS;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.PREVIOUS_TUBERCULOSIS_TREATMENT;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.RECURRENT_BRONCHIOLITIS;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.SICKLE_CELL_DISEASE;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.TUBERCULOSIS;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.TUBERCULOSIS_INFECTION_YEAR;
-import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.UNDER_MEDICATION;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.VACCINATED_AGAINST_MOSQUITO_BORNE_VIRUSES;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
@@ -100,7 +100,7 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 							fluidColumn(6, 0, locs(
 									TUBERCULOSIS, PREVIOUS_TUBERCULOSIS_TREATMENT, ASPLENIA, HEPATITIS, DIABETES, IMMUNODEFICIENCY_OTHER_THAN_HIV,"IMMUNODEFICIENCY_INCLUDING_HIV_LAYOUT",
 									 HIV, HIV_ART, CONGENITAL_SYPHILIS, DOWN_SYNDROME,
-									CHRONIC_LIVER_DISEASE, MALIGNANCY_CHEMOTHERAPY, RECURRENT_BRONCHIOLITIS, MALARIA, "MALARIA_INFECTED_YEAR_LAYOUT", UNDER_MEDICATION, MEDICATION_DETAILS)),
+									CHRONIC_LIVER_DISEASE, MALIGNANCY_CHEMOTHERAPY, RECURRENT_BRONCHIOLITIS, MALARIA, "MALARIA_INFECTED_YEAR_LAYOUT", ON_MEDICATION, MEDICATION_DETAILS)),
 							fluidColumn(6, 0, locs(
 									"TUBERCULOSIS_INFECTION_YEAR_LAYOUT","COMPLIANCE_WITH_TREATMENT_LAYOUT",CHRONIC_HEART_FAILURE, CHRONIC_PULMONARY_DISEASE, CHRONIC_KIDNEY_DISEASE,
 									CHRONIC_NEUROLOGIC_CONDITION, CARDIOVASCULAR_DISEASE_INCLUDING_HYPERTENSION,
@@ -136,7 +136,7 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 		VACCINATED_AGAINST_MOSQUITO_BORNE_VIRUSES,
 		RECURRENT_BRONCHIOLITIS,
 		MALARIA,
-		UNDER_MEDICATION,
+		ON_MEDICATION,
 		MEDICATION_DETAILS,
 		CHRONIC_DISEASE,
 		CHRONIC_DISEASE_DETAILS);
@@ -309,7 +309,7 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 			}
 		}
 
-		FieldHelper.setVisibleWhen(getFieldGroup(), MEDICATION_DETAILS, UNDER_MEDICATION, Arrays.asList(YesNoUnknown.YES), true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), MEDICATION_DETAILS, ON_MEDICATION, Arrays.asList(YesNoUnknown.YES), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), CHRONIC_DISEASE_DETAILS, CHRONIC_DISEASE, Arrays.asList(YesNoUnknown.YES), true);
 
 		initializeVisibilitiesAndAllowedVisibilities();

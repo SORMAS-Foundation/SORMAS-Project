@@ -90,14 +90,19 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.AdditionalTestType;
+import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.sample.ResultValueType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SimpleTestResultType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -125,6 +130,9 @@ public class DevModeView extends AbstractConfigurationView {
 	private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
 	private static Random randomGenerator;
+
+	private static final List<PathogenTestResultType> PATHOGEN_TEST_RESULT_POOL =
+		Arrays.asList(PathogenTestResultType.POSITIVE, PathogenTestResultType.NEGATIVE, PathogenTestResultType.PENDING);
 
 	private TextField seedField;
 	private CheckBox useManualSeedCheckbox;
@@ -195,9 +203,7 @@ public class DevModeView extends AbstractConfigurationView {
 		Button btnClearCaseVaccinationStatuses = ButtonHelper.createButton(
 			"clearCaseVaccinationStatuses",
 			"Clear case vaccination statuses",
-			e -> showClearVaccinationStatusesPopup(
-				"Clear case vaccination statuses",
-				FacadeProvider.getCaseFacade()::deleteVaccinationStatuses));
+			e -> showClearVaccinationStatusesPopup("Clear case vaccination statuses", FacadeProvider.getCaseFacade()::deleteVaccinationStatuses));
 		horizontalLayout.addComponent(btnClearCaseVaccinationStatuses);
 
 		Button btnClearContactVaccinationStatuses = ButtonHelper.createButton(
@@ -1160,6 +1166,19 @@ public class DevModeView extends AbstractConfigurationView {
 
 		UserReferenceDto user = UiUtil.getUserReference();
 
+		// Resolve the disease once, up front: pick a random one if none was selected and freeze it for the whole
+		// run. This must happen BEFORE the case query so the cases are actually scoped to this disease — otherwise
+		// the generated pathogen tests would carry a testedDisease that contradicts their case.
+		Disease disease = sampleGenerationConfig.getDisease();
+		if (disease == null) {
+			disease = random(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true));
+			sampleGenerationConfig.setDisease(disease);
+		}
+
+		// The pickable test types only depend on the (now fixed) disease, so compute them once instead of per sample.
+		List<PathogenTestType> pickablePathogenTestTypes =
+			sampleGenerationConfig.isRequestPathogenTestsToBePerformed() ? getPickablePathogenTestTypes(disease) : Collections.emptyList();
+
 		List<CaseReferenceDto> cases = FacadeProvider.getCaseFacade()
 			.getRandomCaseReferences(
 				new CaseCriteria().region(sampleGenerationConfig.getRegion())
@@ -1168,17 +1187,10 @@ public class DevModeView extends AbstractConfigurationView {
 				sampleGenerationConfig.getEntityCountAsNumber() * 2,
 				random());
 
-		if (nonNull(cases)) {
+		if (nonNull(cases) && !cases.isEmpty()) {
 			for (int i = 0; i < sampleGenerationConfig.getEntityCountAsNumber(); i++) {
 
 				CaseReferenceDto caseReference = random(cases);
-
-				List<Disease> diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true);
-				Disease disease = sampleGenerationConfig.getDisease();
-				if (disease == null) {
-					disease = random(diseases);
-					sampleGenerationConfig.setDisease(disease);
-				}
 
 				LocalDateTime referenceDateTime = getReferenceDateTime(
 					i,
@@ -1202,16 +1214,6 @@ public class DevModeView extends AbstractConfigurationView {
 				sample.setComment(random(sampleComments));
 
 				sample.setLab(sampleGenerationConfig.getLaboratory());
-
-				if (sampleGenerationConfig.isRequestPathogenTestsToBePerformed()) {
-					Set pathogenTestTypes = new HashSet<PathogenTestType>();
-					int until = randomInt(1, PathogenTestType.values().length);
-					for (int j = 0; j < until; j++) {
-						pathogenTestTypes.add(PathogenTestType.values()[j]);
-					}
-					sample.setPathogenTestingRequested(true);
-					sample.setRequestedPathogenTests(pathogenTestTypes);
-				}
 
 				if (sampleGenerationConfig.isRequestAdditionalTestsToBePerformed()) {
 					Set additionalTestTypes = new HashSet<AdditionalTestType>();
@@ -1238,6 +1240,10 @@ public class DevModeView extends AbstractConfigurationView {
 
 				SampleDto sampleDto = FacadeProvider.getSampleFacade().saveSample(sample);
 
+				if (sampleGenerationConfig.isRequestPathogenTestsToBePerformed()) {
+					createPathogenTests(sampleDto, disease, date, pickablePathogenTestTypes);
+				}
+
 				if (sampleGenerationConfig.isRequestAdditionalTestsToBePerformed()) {
 					createAdditionalTest(sampleDto, date);
 				}
@@ -1254,7 +1260,7 @@ public class DevModeView extends AbstractConfigurationView {
 			logger.info(msg);
 			Notification.show("", msg, Notification.Type.TRAY_NOTIFICATION);
 		} else {
-			String msg = "No Sample has been generated because cases is null ";
+			String msg = "No samples generated: no cases found for the selected region/district/disease.";
 			logger.info(msg);
 			Notification.show("", msg, Notification.Type.TRAY_NOTIFICATION);
 		}
@@ -1292,6 +1298,72 @@ public class DevModeView extends AbstractConfigurationView {
 		additionalTestDto.setSample(sample.toReference());
 
 		FacadeProvider.getAdditionalTestFacade().saveAdditionalTest(additionalTestDto);
+	}
+
+	/**
+	 * The pathogen test types that are valid for the given disease and selectable for new tests. Antibiotic
+	 * susceptibility is excluded because it requires a separate drug-susceptibility result. Mirrors the rules the
+	 * real pathogen test form uses to populate its test-type combo.
+	 */
+	private List<PathogenTestType> getPickablePathogenTestTypes(Disease disease) {
+		return Diseases.DiseasesConfiguration.getVisibleValues(PathogenTestType.class, disease)
+			.stream()
+			.filter(PathogenTestType::isSelectableForNewTests)
+			.filter(type -> type != PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY)
+			.collect(Collectors.toList());
+	}
+
+	private void createPathogenTests(SampleDto sample, Disease disease, Date date, List<PathogenTestType> pickableTypes) {
+
+		if (pickableTypes.isEmpty()) {
+			return;
+		}
+
+		final UserDto currentUser = UiUtil.getUser();
+		if (currentUser == null) {
+			return;
+		}
+
+		int count = randomInt(1, 4);
+		for (int i = 0; i < count; i++) {
+			PathogenTestDto test = PathogenTestDto.build(sample, currentUser);
+			test.setTestedDisease(disease);
+			// build() already resolves the lab from the current user, falling back to the sample's lab. Don't
+			// override it here (that would discard the user lab and re-introduce a null lab when the sample has none).
+			test.setTestType(random(pickableTypes));
+			test.setTestResult(random(PATHOGEN_TEST_RESULT_POOL));
+			test.setTestDateTime(date);
+
+			// Populate a quantitative value for half the numeric-result tests so the inline quantitative display
+			// has data.
+			if (randomPercent(50)) {
+				Set<ResultValueType> valueTypes = PathogenTestType.getResultValueTypes(test.getTestType());
+				if (valueTypes.contains(ResultValueType.NUMERIC)) {
+					test.setQuantitativeValue(random().nextFloat() * 1000);
+					test.setQuantitativeUnit("copies/mL");
+				}
+			}
+
+			// Populate free-text result details for some tests so the result-details indicator has data to surface.
+			if (randomPercent(40)) {
+				test.setTestResultText("Generated result details for testing the lab results view.");
+			}
+			if (randomPercent(30)) {
+				test.setPerformedByReferenceLaboratory(true);
+			}
+			if (randomPercent(20)) {
+				test.setRetestRequested(true);
+			}
+
+			try {
+				// Note: each save triggers the full pathogen-test cascade (sample/case result derivation,
+				// case reclassification, lab-result notifications, and Sormas-to-Sormas share sync when configured).
+				// That is acceptable for a dev-data tool.
+				FacadeProvider.getPathogenTestFacade().savePathogenTest(test);
+			} catch (RuntimeException e) {
+				logger.warn("Failed to generate a pathogen test for sample {}: {}", sample.getUuid(), e.getMessage());
+			}
+		}
 	}
 
 	private void generateContacts() {

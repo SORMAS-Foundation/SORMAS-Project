@@ -114,6 +114,8 @@ public class SideComponentField extends HorizontalLayout {
 	 * @return
 	 */
 	public String determineSideComponentVariant(PathogenTestDto pathogenTest) {
+		if (pathogenTest.getTestType() == null || pathogenTest.getTestedDisease() == null)
+			return null;
 
 		Map<Disease, List<PathogenTestType>> VARIANT_MAP = Collections.unmodifiableMap(new HashMap<>() {
 
@@ -137,7 +139,7 @@ public class SideComponentField extends HorizontalLayout {
 					Disease.DENGUE,
 					Collections.unmodifiableList(
 						Arrays.asList(PathogenTestType.NAAT, PathogenTestType.NEUTRALIZING_ANTIBODIES, PathogenTestType.PCR_RT_PCR)));
-				put(Disease.SHIGELLOSIS, Collections.unmodifiableList(Arrays.asList(PathogenTestType.SEROGROUPING)));
+				put(Disease.SHIGELLOSIS, Collections.unmodifiableList(Arrays.asList(PathogenTestType.SEROGROUPING, PathogenTestType.SEROTYPING)));
 				put(Disease.MEASLES, Collections.unmodifiableList(Arrays.asList(PathogenTestType.GENOTYPING)));
 				put(
 					Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,

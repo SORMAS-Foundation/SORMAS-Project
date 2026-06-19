@@ -351,7 +351,6 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setResultDetails(source.getResultDetails());
 		target.setQuantitativeValue(source.getQuantitativeValue());
 		target.setQuantitativeUnit(source.getQuantitativeUnit());
-		target.setQuantitativeText(source.getQuantitativeText());
 		target.setQuantitativeBoolean(source.getQuantitativeBoolean());
 		target.setSmearGrade(source.getSmearGrade());
 		target.setWesternBlotInterpretation(source.getWesternBlotInterpretation());
@@ -682,7 +681,6 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setResultDetails(source.getResultDetails());
 		target.setQuantitativeValue(source.getQuantitativeValue());
 		target.setQuantitativeUnit(source.getQuantitativeUnit());
-		target.setQuantitativeText(source.getQuantitativeText());
 		target.setQuantitativeBoolean(source.getQuantitativeBoolean());
 		target.setSmearGrade(source.getSmearGrade());
 		target.setWesternBlotInterpretation(source.getWesternBlotInterpretation());
@@ -693,9 +691,6 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		if (!resultValueTypes.contains(ResultValueType.NUMERIC)) {
 			target.setQuantitativeValue(null);
 			target.setQuantitativeUnit(null);
-		}
-		if (!resultValueTypes.contains(ResultValueType.TEXT)) {
-			target.setQuantitativeText(null);
 		}
 		if (!resultValueTypes.contains(ResultValueType.BOOLEAN)) {
 			target.setQuantitativeBoolean(null);
