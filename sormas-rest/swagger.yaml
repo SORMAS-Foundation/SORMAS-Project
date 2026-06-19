@@ -11696,6 +11696,7 @@ components:
               - VIRAL_ISOLATION
               - FUNGAL_CULTURE
               - MALDI_TOF
+              - DIRECT_MICROSCOPY
               - GRAM_STAIN
               - ACID_FAST_STAIN
               - DARK_FIELD_MICROSCOPY
@@ -11787,6 +11788,7 @@ components:
               - VIRAL_ISOLATION
               - FUNGAL_CULTURE
               - MALDI_TOF
+              - DIRECT_MICROSCOPY
               - GRAM_STAIN
               - ACID_FAST_STAIN
               - DARK_FIELD_MICROSCOPY
@@ -11864,6 +11866,7 @@ components:
               - VIRAL_ISOLATION
               - FUNGAL_CULTURE
               - MALDI_TOF
+              - DIRECT_MICROSCOPY
               - GRAM_STAIN
               - ACID_FAST_STAIN
               - DARK_FIELD_MICROSCOPY
@@ -23078,10 +23081,6 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
-        quantitativeText:
-          type: string
-          maxLength: 512
-          minLength: 0
         quantitativeUnit:
           type: string
           maxLength: 255
@@ -23283,6 +23282,7 @@ components:
           - VIRAL_ISOLATION
           - FUNGAL_CULTURE
           - MALDI_TOF
+          - DIRECT_MICROSCOPY
           - GRAM_STAIN
           - ACID_FAST_STAIN
           - DARK_FIELD_MICROSCOPY
@@ -25010,6 +25010,7 @@ components:
             - VIRAL_ISOLATION
             - FUNGAL_CULTURE
             - MALDI_TOF
+            - DIRECT_MICROSCOPY
             - GRAM_STAIN
             - ACID_FAST_STAIN
             - DARK_FIELD_MICROSCOPY
@@ -25456,6 +25457,7 @@ components:
           - VIRAL_ISOLATION
           - FUNGAL_CULTURE
           - MALDI_TOF
+          - DIRECT_MICROSCOPY
           - GRAM_STAIN
           - ACID_FAST_STAIN
           - DARK_FIELD_MICROSCOPY
@@ -28149,6 +28151,12 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
+        wateryDiarrhea:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
         weakness:
           type: string
           enum:
@@ -29114,6 +29122,7 @@ components:
           - VIRAL_ISOLATION
           - FUNGAL_CULTURE
           - MALDI_TOF
+          - DIRECT_MICROSCOPY
           - GRAM_STAIN
           - ACID_FAST_STAIN
           - DARK_FIELD_MICROSCOPY
