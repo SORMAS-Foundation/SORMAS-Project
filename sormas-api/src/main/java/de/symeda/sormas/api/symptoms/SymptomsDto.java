@@ -1540,6 +1540,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		INVASIVE_PNEUMOCOCCAL_INFECTION,
 		FHA,
 		PERTUSSIS,
+		SALMONELLOSIS,
 		SHIGELLOSIS })
 	@HideForCountries
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
