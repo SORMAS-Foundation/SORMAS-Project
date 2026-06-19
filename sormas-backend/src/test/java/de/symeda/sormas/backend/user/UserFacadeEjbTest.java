@@ -51,27 +51,32 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		// given region and right
 		List<UserReferenceDto> result = getUserFacade().getUsersByRegionAndRights(region, null, UserRight.EXTERNAL_MESSAGE_ACCESS);
 
-		assertTrue(result.isEmpty());
+		assertThat(result, hasSize(1));
+
+		creator.getUserRoleReference(NATIONAL_USER);
 
 		UserDto natUser = creator.createUser(rdcf, creator.getUserRoleReference(NATIONAL_USER)); // Has LAB_MASSAGES and TRAVEL_ENTRY_MANAGEMENT_ACCESS rights
 		UserDto poeUser = creator.createUser(rdcf, "Some", "User", creator.getUserRoleReference(POE_INFORMANT)); // Does not have LAB_MASSAGES right, but has TRAVEL_ENTRY_MANAGEMENT_ACCESS.
 		creator.createUser(rdcf, creator.getUserRoleReference(REST_EXTERNAL_VISITS_USER)); // Has neither LAB_MASSAGES nor TRAVEL_ENTRY_MANAGEMENT_ACCESS right
 		result = getUserFacade().getUsersByRegionAndRights(region, null, UserRight.EXTERNAL_MESSAGE_ACCESS);
 
-		assertThat(result, hasSize(1));
-		assertThat(result, contains(equalTo(natUser.toReference())));
+		assertThat(result, hasSize(2));
+
+		UserReferenceDto nationalAdminUser = result.get(0);
+
+		assertThat(result, contains(equalTo(nationalAdminUser), equalTo(natUser.toReference())));
 
 		UserDto natUser2 = creator.createUser(rdcf, "Nat", "User2", creator.getUserRoleReference(NATIONAL_USER)); // Has LAB_MASSAGES right
 		result = getUserFacade().getUsersByRegionAndRights(region, null, UserRight.EXTERNAL_MESSAGE_ACCESS);
 
-		assertThat(result, hasSize(2));
+		assertThat(result, hasSize(3));
 		assertThat(result, hasItems(equalTo(natUser.toReference()), equalTo(natUser2.toReference())));
 
 		// given different region and right
 		Region region2 = creator.createRegion("region2");
 		result = getUserFacade().getUsersByRegionAndRights(RegionFacadeEjb.toReferenceDto(region2), null, UserRight.EXTERNAL_MESSAGE_ACCESS);
 
-		assertTrue(result.isEmpty());
+		assertThat(result, hasSize(3));
 
 		// given no region and right
 		result = getUserFacade().getUsersByRegionAndRights(null, null, UserRight.EXTERNAL_MESSAGE_ACCESS);
@@ -82,7 +87,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		// given region and multiple rights
 		result = getUserFacade().getUsersByRegionAndRights(region, null, UserRight.EXTERNAL_MESSAGE_ACCESS, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS);
 
-		assertThat(result, hasSize(3));
+		assertThat(result, hasSize(4));
 		assertThat(result, hasItems(equalTo(natUser.toReference()), equalTo(natUser2.toReference()), equalTo(poeUser.toReference())));
 
 		// given different region and multiple rights
@@ -92,7 +97,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 			UserRight.EXTERNAL_MESSAGE_ACCESS,
 			UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS);
 
-		assertTrue(result.isEmpty());
+		assertThat(result, hasSize(3));
 
 		// given no region and multiple rights
 		result = getUserFacade().getUsersByRegionAndRights(null, null, UserRight.EXTERNAL_MESSAGE_ACCESS, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS);
@@ -314,7 +319,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 
 		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUserRefsByDistricts(Arrays.asList(rdcf.district), Disease.CORONAVIRUS);
 		assertNotNull(userReferenceDtos);
-		assertEquals(3, userReferenceDtos.size());
+		assertEquals(4, userReferenceDtos.size());
 		List<String> userReferenceUUIDs = userReferenceDtos.stream().map(u -> u.getUuid()).collect(Collectors.toList());
 		assertTrue(userReferenceUUIDs.contains(surveilanceOfficerDefault.getUuid()));
 		assertTrue(userReferenceUUIDs.contains(surveilanceSupervisorDefault.getUuid()));
@@ -370,7 +375,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		// given district and disease
 		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUserRefsByDistrict(rdcf.district, Disease.CORONAVIRUS);
 
-		assertThat(userReferenceDtos, hasSize(1));
+		assertThat(userReferenceDtos, hasSize(2));
 		assertTrue(userReferenceDtos.contains(generalSurveillanceOfficer));
 
 		// given disease
@@ -388,12 +393,12 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		// given district, disease and right
 		userReferenceDtos = getUserFacade().getUserRefsByDistrict(rdcf.district, Disease.CORONAVIRUS, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS);
 
-		assertThat(userReferenceDtos, hasSize(1));
+		assertThat(userReferenceDtos, hasSize(2));
 		assertTrue(userReferenceDtos.contains(generalSurveillanceOfficer));
 
 		userReferenceDtos = getUserFacade().getUserRefsByDistrict(rdcf.district, Disease.CORONAVIRUS, UserRight.EXTERNAL_MESSAGE_ACCESS);
 
-		assertTrue(userReferenceDtos.isEmpty());
+		assertThat(userReferenceDtos, hasSize(1));
 
 		// given disease and right
 		userReferenceDtos = getUserFacade().getUserRefsByDistrict(null, Disease.CORONAVIRUS, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS);
@@ -431,12 +436,12 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		List<UserReferenceDto> userReferenceDtos =
 			getUserFacade().getUserRefsByDistrict(rdcf.district, true, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS);
 
-		assertThat(userReferenceDtos, hasSize(1));
+		assertThat(userReferenceDtos, hasSize(2));
 		assertTrue(userReferenceDtos.contains(generalSurveillanceOfficer));
 
 		userReferenceDtos = getUserFacade().getUserRefsByDistrict(rdcf.district, false, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS);
 
-		assertThat(userReferenceDtos, hasSize(2));
+		assertThat(userReferenceDtos, hasSize(3));
 		assertThat(userReferenceDtos, hasItems(equalTo(generalSurveillanceOfficer.toReference()), equalTo(limitedSurveillanceOfficer.toReference())));
 
 		// given no district and one right
@@ -454,13 +459,13 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		userReferenceDtos =
 			getUserFacade().getUserRefsByDistrict(rdcf.district, true, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS, UserRight.SORMAS_REST);
 
-		assertThat(userReferenceDtos, hasSize(2));
+		assertThat(userReferenceDtos, hasSize(3));
 		assertThat(userReferenceDtos, hasItems(equalTo(generalSurveillanceOfficer.toReference()), equalTo(generalRestUser.toReference())));
 
 		userReferenceDtos =
 			getUserFacade().getUserRefsByDistrict(rdcf.district, false, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS, UserRight.SORMAS_REST);
 
-		assertThat(userReferenceDtos, hasSize(3));
+		assertThat(userReferenceDtos, hasSize(4));
 		assertThat(
 			userReferenceDtos,
 			hasItems(
