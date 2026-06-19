@@ -241,7 +241,7 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 				CriteriaBuilderHelper.or(
 					cb,
 					cb.in(regionJoin.get(AbstractDomainObject.UUID)).value(regionUuids),
-					createCurrentUserHasNationJurisdictionFilter(cb, userRoot)));
+					createUserHasNationJurisdictionFilter(cb, userRoot)));
 			userEntityJoinUsed = true;
 		}
 		if (CollectionUtils.isNotEmpty(districtUuids)) {
@@ -258,7 +258,7 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 					cb.equal(root.get(UserReference.JURISDICTION_LEVEL), JurisdictionLevel.REGION)));
 
 			filter = CriteriaBuilderHelper
-				.and(cb, filter, CriteriaBuilderHelper.or(cb, districtFilter, createCurrentUserHasNationJurisdictionFilter(cb, userRoot)));
+				.and(cb, filter, CriteriaBuilderHelper.or(cb, districtFilter, createUserHasNationJurisdictionFilter(cb, userRoot)));
 			userEntityJoinUsed = true;
 		}
 		if (!hasRight(UserRight.SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION)) {
@@ -267,8 +267,7 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
-				CriteriaBuilderHelper
-					.or(cb, createCurrentUserJurisdictionFilter(cb, userRoot), createCurrentUserHasNationJurisdictionFilter(cb, userRoot)));
+				CriteriaBuilderHelper.or(cb, createCurrentUserJurisdictionFilter(cb, userRoot), createUserHasNationJurisdictionFilter(cb, userRoot)));
 			userEntityJoinUsed = true;
 		}
 
@@ -306,7 +305,7 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 				CriteriaBuilderHelper.or(
 					cb,
 					cb.in(communityJoin.get(AbstractDomainObject.UUID)).value(communityUuids),
-					createCurrentUserHasNationJurisdictionFilter(cb, userRoot)));
+					createUserHasNationJurisdictionFilter(cb, userRoot)));
 		}
 
 		if (filter != null) {
@@ -728,14 +727,7 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 		}
 	}
 
-	public Predicate createCurrentUserHasNationJurisdictionFilter(CriteriaBuilder cb, From<?, User> from) {
-		User currentUser = getCurrentUser();
-
-		if (currentUser.getJurisdictionLevel() == JurisdictionLevel.NATION) {
-			logger.error("getJurisdictionLevel = NATION");
-			return cb.equal(from.get(User.JURISDICTION_LEVEL), JurisdictionLevel.NATION);
-		}
-
+	public Predicate createUserHasNationJurisdictionFilter(CriteriaBuilder cb, From<?, User> from) {
 		return cb.equal(from.get(User.JURISDICTION_LEVEL), JurisdictionLevel.NATION);
 	}
 
