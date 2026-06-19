@@ -47,60 +47,46 @@ public enum PathogenTestType {
 	@NotSelectableForNewTests
 	ANTIGEN_DETECTION,
 
-	@Diseases(value = {
-		Disease.GIARDIASIS,
-		Disease.DENGUE,
-		Disease.MALARIA }, hide = true)
+	// Merged Culture entry (bacterial + fungal) — supersedes BACTERIAL_CULTURE / FUNGAL_CULTURE for new
+	// tests (#13951). The qualitative result is the Pos/Neg outcome; TEXT carries the organism identifier
+	// and NUMERIC carries the CFU/mL count. The legacy constants remain @NotSelectableForNewTests so
+	// historic records and case-classification rules keep working.
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
-	@NotSelectableForNewTests
+	@ResultValueTypeRel({
+		ResultValueType.QUALITATIVE,
+		ResultValueType.TEXT,
+		ResultValueType.NUMERIC })
 	CULTURE,
 
-	@Diseases(value = {
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
-		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS,
-		Disease.MALARIA }, hide = true)
+	// Merged Isolation entry (bacterial + viral) — supersedes VIRAL_ISOLATION for new tests (#13951).
+	// Result is qualitative (Pos/Neg/Indet/Pending). Legacy VIRAL_ISOLATION stays @NotSelectableForNewTests
+	// so historic records still render and case-classification rules (EVD/Lassa/Cholera/…) keep firing.
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
-	@NotSelectableForNewTests
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	ISOLATION,
 
-	@Diseases(value = {
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS,
-		Disease.MALARIA,
-		Disease.SHIGELLOSIS }, hide = true)
+	// Resurrected ELISA Ig-class variants (#13951): split the legacy single ENZYME_LINKED_IMMUNOSORBENT_ASSAY
+	// entry into per-Ig-class methods so the form can offer the IgM/IgG/IgA distinction that serology
+	// workflows already need. Result is qualitative (Pos/Neg) + numeric (titre). No @Diseases — visible
+	// for every disease per #13951. The legacy ENZYME_LINKED_IMMUNOSORBENT_ASSAY is now
+	// @NotSelectableForNewTests so historic records still render and case-classification rules
+	// referencing IGM_/IGG_SERUM_ANTIBODY continue to fire (they bind to the same enum constants).
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
-	@NotSelectableForNewTests
+	@ResultValueTypeRel({
+		ResultValueType.QUALITATIVE,
+		ResultValueType.NUMERIC })
 	IGM_SERUM_ANTIBODY,
 
-	@Diseases(value = {
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS,
-		Disease.MALARIA,
-		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
-	@NotSelectableForNewTests
+	@ResultValueTypeRel({
+		ResultValueType.QUALITATIVE,
+		ResultValueType.NUMERIC })
 	IGG_SERUM_ANTIBODY,
 
-	@Diseases(value = {
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-		Disease.MEASLES,
-		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS,
-		Disease.DENGUE,
-		Disease.MALARIA,
-		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
-	@NotSelectableForNewTests
+	@ResultValueTypeRel({
+		ResultValueType.QUALITATIVE,
+		ResultValueType.NUMERIC })
 	IGA_SERUM_ANTIBODY,
 
 	@Diseases(value = {
@@ -380,6 +366,8 @@ public enum PathogenTestType {
 	// Serological Tests
 	// ----------------------------------------------------------------------------------------------
 
+	// Superseded by IGM_/IGG_/IGA_SERUM_ANTIBODY for new tests (#13951). Kept here so historic records
+	// still render and so case-classification logic (which binds to this constant) keeps working.
 	@Diseases(value = {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.MALARIA })
@@ -387,6 +375,7 @@ public enum PathogenTestType {
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
 		ResultValueType.NUMERIC })
+	@NotSelectableForNewTests
 	ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
 
 	@Diseases(value = {
@@ -493,22 +482,28 @@ public enum PathogenTestType {
 	// Culture & Isolation
 	// ----------------------------------------------------------------------------------------------
 
+	// Superseded by the merged CULTURE entry for new tests (#13951). Kept for historic records.
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
 	@ResultValueTypeRel({
 		ResultValueType.TEXT,
 		ResultValueType.NUMERIC })
+	@NotSelectableForNewTests
 	BACTERIAL_CULTURE,
 
+	// Superseded by the merged ISOLATION entry for new tests (#13951). Kept for historic records.
 	@Diseases(value = {
 		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
+	@NotSelectableForNewTests
 	VIRAL_ISOLATION,
 
+	// Superseded by the merged CULTURE entry for new tests (#13951). Kept for historic records.
 	@Diseases(value = {
 		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
 	@ResultValueTypeRel(ResultValueType.TEXT)
+	@NotSelectableForNewTests
 	FUNGAL_CULTURE,
 
 	@Diseases(value = {
@@ -520,6 +515,12 @@ public enum PathogenTestType {
 	// ----------------------------------------------------------------------------------------------
 	// Microscopy & Staining
 	// ----------------------------------------------------------------------------------------------
+
+	// Direct microscopy (#13951): qualitative-only entry (Pos/Neg/Indeterminate/Pending) for visual
+	// detection of a pathogen without staining or fluorescence. Sibling of MICROSCOPY (legacy generic).
+	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
+	DIRECT_MICROSCOPY,
 
 	@Diseases(value = {
 		Disease.CORONAVIRUS,

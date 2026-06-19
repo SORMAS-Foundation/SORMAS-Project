@@ -45,7 +45,10 @@ public class MalariaSectionComponent extends AbstractDiseaseSectionComponent {
 		PathogenTestType.OTHER_MOLECULAR_ASSAY,
 		PathogenTestType.OTHER_SEROLOGICAL_TEST,
 		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
-		PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY);
+		PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
+		PathogenTestType.IGM_SERUM_ANTIBODY,
+		PathogenTestType.IGG_SERUM_ANTIBODY,
+		PathogenTestType.IGA_SERUM_ANTIBODY);
 
 	private static final List<PathogenTestType> AUTO_POSITIVE_TYPES = Arrays.asList(
 		PathogenTestType.ANTIGEN_DETECTION,
@@ -55,6 +58,9 @@ public class MalariaSectionComponent extends AbstractDiseaseSectionComponent {
 		PathogenTestType.PCR_RT_PCR,
 		PathogenTestType.Q_PCR,
 		PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
+		PathogenTestType.IGM_SERUM_ANTIBODY,
+		PathogenTestType.IGG_SERUM_ANTIBODY,
+		PathogenTestType.IGA_SERUM_ANTIBODY,
 		PathogenTestType.LAMP,
 		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
 		PathogenTestType.OTHER_SEROLOGICAL_TEST,
