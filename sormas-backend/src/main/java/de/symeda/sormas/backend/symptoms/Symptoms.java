@@ -322,6 +322,7 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState tenesmus;
 	private SymptomState haemolyticUremicSyndrome;
 	private SymptomState bloodyDiarrhea;
+	private SymptomState wateryDiarrhea;
 
 	// when adding new fields make sure to extend toHumanString
 
@@ -2576,6 +2577,15 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setBloodyDiarrhea(SymptomState bloodyDiarrhea) {
 		this.bloodyDiarrhea = bloodyDiarrhea;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getWateryDiarrhea() {
+		return wateryDiarrhea;
+	}
+
+	public void setWateryDiarrhea(SymptomState wateryDiarrhea) {
+		this.wateryDiarrhea = wateryDiarrhea;
 	}
 
 }

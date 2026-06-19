@@ -31,16 +31,19 @@ public class PathogenTestTypeTest {
 	private static final Set<PathogenTestType> EXPECTED_LEGACY = EnumSet.of(
 		PathogenTestType.ANTIBODY_DETECTION,
 		PathogenTestType.ANTIGEN_DETECTION,
-		PathogenTestType.CULTURE,
-		PathogenTestType.ISOLATION,
-		PathogenTestType.IGM_SERUM_ANTIBODY,
-		PathogenTestType.IGG_SERUM_ANTIBODY,
-		PathogenTestType.IGA_SERUM_ANTIBODY,
 		PathogenTestType.INCUBATION_TIME,
 		PathogenTestType.MICROSCOPY,
 		PathogenTestType.LATEX_AGGLUTINATION,
 		PathogenTestType.CQ_VALUE_DETECTION,
 		PathogenTestType.SEQUENCING,
+		// Superseded by the per-Ig-class ELISA split (#13951); kept so historic records still render and
+		// case-classification rules referencing this constant keep working.
+		PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
+		// Superseded by the merged CULTURE entry (#13951); kept so historic records still render.
+		PathogenTestType.BACTERIAL_CULTURE,
+		PathogenTestType.FUNGAL_CULTURE,
+		// Superseded by the merged ISOLATION entry (#13951); kept so historic records still render.
+		PathogenTestType.VIRAL_ISOLATION,
 		// "Other <category>" placeholders: superseded but kept hidden so existing records still load
 		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
 		PathogenTestType.OTHER_MOLECULAR_ASSAY,
@@ -88,7 +91,12 @@ public class PathogenTestTypeTest {
 			PathogenTestType.RAPID_ANTIBODY_TEST,
 			PathogenTestType.LATERAL_FLOW_ASSAY,
 			PathogenTestType.RDT,
-			PathogenTestType.BACTERIAL_CULTURE,
+			PathogenTestType.CULTURE,
+			PathogenTestType.ISOLATION,
+			PathogenTestType.DIRECT_MICROSCOPY,
+			PathogenTestType.IGM_SERUM_ANTIBODY,
+			PathogenTestType.IGG_SERUM_ANTIBODY,
+			PathogenTestType.IGA_SERUM_ANTIBODY,
 			PathogenTestType.MALDI_TOF,
 			PathogenTestType.ACID_FAST_STAIN,
 			PathogenTestType.GENOTYPIC_RESISTANCE_TEST,
@@ -113,8 +121,11 @@ public class PathogenTestTypeTest {
 	public void categoryMatchesAcrossKnownAnchors() {
 		assertThat(PathogenTestType.getCategory(PathogenTestType.PCR_RT_PCR), is(PathogenTestCategory.MOLECULAR_ASSAYS));
 		assertThat(PathogenTestType.getCategory(PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY), is(PathogenTestCategory.SEROLOGICAL_TESTS));
+		assertThat(PathogenTestType.getCategory(PathogenTestType.IGG_SERUM_ANTIBODY), is(PathogenTestCategory.SEROLOGICAL_TESTS));
 		assertThat(PathogenTestType.getCategory(PathogenTestType.RDT), is(PathogenTestCategory.ANTIGEN_DETECTION));
-		assertThat(PathogenTestType.getCategory(PathogenTestType.BACTERIAL_CULTURE), is(PathogenTestCategory.CULTURE_AND_ISOLATION));
+		assertThat(PathogenTestType.getCategory(PathogenTestType.CULTURE), is(PathogenTestCategory.CULTURE_AND_ISOLATION));
+		assertThat(PathogenTestType.getCategory(PathogenTestType.ISOLATION), is(PathogenTestCategory.CULTURE_AND_ISOLATION));
+		assertThat(PathogenTestType.getCategory(PathogenTestType.DIRECT_MICROSCOPY), is(PathogenTestCategory.MICROSCOPY_AND_STAINING));
 		assertThat(PathogenTestType.getCategory(PathogenTestType.ACID_FAST_STAIN), is(PathogenTestCategory.MICROSCOPY_AND_STAINING));
 		assertThat(
 			PathogenTestType.getCategory(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY),
@@ -124,10 +135,16 @@ public class PathogenTestTypeTest {
 
 	@Test
 	public void everyMethodResolvesToAtLeastOneResultValueType() {
-		// getResultValueTypes never returns null/empty: an unannotated value defaults to QUALITATIVE.
+		// getResultValueTypes never returns null/empty (an unannotated value defaults to QUALITATIVE), with one
+		// documented exception: Antibiotic Susceptibility Testing has no result value type of its own (its result
+		// is the drug-susceptibility grid), so it is explicitly annotated with an empty set.
 		for (PathogenTestType type : PathogenTestType.values()) {
 			Set<ResultValueType> valueTypes = PathogenTestType.getResultValueTypes(type);
-			assertFalse(valueTypes.isEmpty(), "no result value type for " + type.name());
+			if (type == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY) {
+				assertTrue(valueTypes.isEmpty(), "ANTIBIOTIC_SUSCEPTIBILITY must have no result value type");
+			} else {
+				assertFalse(valueTypes.isEmpty(), "no result value type for " + type.name());
+			}
 		}
 		assertThat(PathogenTestType.getResultValueTypes(null), is(EnumSet.of(ResultValueType.QUALITATIVE)));
 		// A value with no annotation (e.g. OTHER) falls back to qualitative.
@@ -176,6 +193,8 @@ public class PathogenTestTypeTest {
 			PathogenTestType.QUELLUNG_REACTION,
 			PathogenTestType.RDT,
 			PathogenTestType.VIRAL_ISOLATION,
+			PathogenTestType.ISOLATION,
+			PathogenTestType.DIRECT_MICROSCOPY,
 			PathogenTestType.DARK_FIELD_MICROSCOPY,
 			PathogenTestType.IMMUNOHISTOCHEMISTRY,
 			PathogenTestType.ELECTRON_MICROSCOPY,
@@ -213,12 +232,18 @@ public class PathogenTestTypeTest {
 			PathogenTestType.DIGITAL_PCR,
 			PathogenTestType.NAAT,
 			PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
+			PathogenTestType.IGM_SERUM_ANTIBODY,
+			PathogenTestType.IGG_SERUM_ANTIBODY,
+			PathogenTestType.IGA_SERUM_ANTIBODY,
 			PathogenTestType.GIEMSA_STAIN }) {
 			expected.put(t, EnumSet.of(ResultValueType.QUALITATIVE, ResultValueType.NUMERIC));
 		}
 
 		expected.put(PathogenTestType.LINE_PROBE_ASSAY, EnumSet.of(ResultValueType.BOOLEAN));
 		expected.put(PathogenTestType.GENOTYPIC_RESISTANCE_TEST, EnumSet.of(ResultValueType.BOOLEAN));
+		// Antibiotic Susceptibility Testing has no result value type of its own (its result is the
+		// drug-susceptibility grid), so it maps to an empty set.
+		expected.put(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY, EnumSet.noneOf(ResultValueType.class));
 		expected.put(PathogenTestType.FISH, EnumSet.of(ResultValueType.QUALITATIVE, ResultValueType.TEXT));
 		expected.put(PathogenTestType.THICK_BLOOD_SMEAR, EnumSet.of(ResultValueType.QUALITATIVE, ResultValueType.TEXT));
 		expected.put(PathogenTestType.WESTERN_BLOT, EnumSet.of(ResultValueType.TEXT, ResultValueType.WESTERN_BLOT));
@@ -226,6 +251,8 @@ public class PathogenTestTypeTest {
 		expected.put(PathogenTestType.ACID_FAST_STAIN, EnumSet.of(ResultValueType.SMEAR_GRADE));
 		expected
 			.put(PathogenTestType.QUANTITATIVE_BUFFY_COAT, EnumSet.of(ResultValueType.QUALITATIVE, ResultValueType.TEXT, ResultValueType.NUMERIC));
+		// Merged Culture entry: organism text + CFU count + Pos/Neg qualitative result.
+		expected.put(PathogenTestType.CULTURE, EnumSet.of(ResultValueType.QUALITATIVE, ResultValueType.TEXT, ResultValueType.NUMERIC));
 		expected.put(PathogenTestType.THIN_BLOOD_SMEAR, EnumSet.of(ResultValueType.NUMERIC, ResultValueType.TEXT));
 		expected.put(PathogenTestType.FLOW_CYTOMETRY, EnumSet.of(ResultValueType.NUMERIC));
 

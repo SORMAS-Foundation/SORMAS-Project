@@ -131,7 +131,6 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String RESULT_DETAILS = "resultDetails";
 	public static final String QUANTITATIVE_VALUE = "quantitativeValue";
 	public static final String QUANTITATIVE_UNIT = "quantitativeUnit";
-	public static final String QUANTITATIVE_TEXT = "quantitativeText";
 	public static final String QUANTITATIVE_BOOLEAN = "quantitativeBoolean";
 	public static final String SMEAR_GRADE = "smearGrade";
 	public static final String WESTERN_BLOT_INTERPRETATION = "westernBlotInterpretation";
@@ -346,9 +345,6 @@ public class PathogenTestDto extends PseudonymizableDto {
 	private Float quantitativeValue;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String quantitativeUnit;
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
-	@SensitiveData
-	private String quantitativeText;
 	private YesNoUnknown quantitativeBoolean;
 	private SmearGrade smearGrade;
 	private WesternBlotInterpretation westernBlotInterpretation;
@@ -1012,14 +1008,6 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	public void setQuantitativeUnit(String quantitativeUnit) {
 		this.quantitativeUnit = quantitativeUnit;
-	}
-
-	public String getQuantitativeText() {
-		return quantitativeText;
-	}
-
-	public void setQuantitativeText(String quantitativeText) {
-		this.quantitativeText = quantitativeText;
 	}
 
 	public YesNoUnknown getQuantitativeBoolean() {

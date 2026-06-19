@@ -287,6 +287,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setTenesmus(source.getTenesmus());
 		target.setHaemolyticUremicSyndrome(source.getHaemolyticUremicSyndrome());
 		target.setBloodyDiarrhea(source.getBloodyDiarrhea());
+		target.setWateryDiarrhea(source.getWateryDiarrhea());
 		return target;
 	}
 
@@ -556,6 +557,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setTenesmus(source.getTenesmus());
 		target.setHaemolyticUremicSyndrome(source.getHaemolyticUremicSyndrome());
 		target.setBloodyDiarrhea(source.getBloodyDiarrhea());
+		target.setWateryDiarrhea(source.getWateryDiarrhea());
 		return target;
 	}
 

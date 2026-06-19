@@ -368,6 +368,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		addFields(
 			VOMITING,
 			DIARRHEA,
+			WATERY_DIARRHEA,
 			BLOOD_IN_STOOL,
 			NAUSEA,
 			ABDOMINAL_PAIN,
@@ -725,6 +726,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			PNEUMONIA_CLINICAL_OR_RADIOLOGIC,
 			VOMITING,
 			DIARRHEA,
+			WATERY_DIARRHEA,
 			BLOOD_IN_STOOL,
 			NAUSEA,
 			ABDOMINAL_PAIN,
