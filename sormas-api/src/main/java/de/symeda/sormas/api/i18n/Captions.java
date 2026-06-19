@@ -3301,6 +3301,7 @@ public interface Captions {
 	String Symptoms_uproariousness = "Symptoms.uproariousness";
 	String Symptoms_urinaryRetention = "Symptoms.urinaryRetention";
 	String Symptoms_vomiting = "Symptoms.vomiting";
+	String Symptoms_wateryDiarrhea = "Symptoms.wateryDiarrhea";
 	String Symptoms_weakness = "Symptoms.weakness";
 	String Symptoms_weight = "Symptoms.weight";
 	String Symptoms_weightLoss = "Symptoms.weightLoss";

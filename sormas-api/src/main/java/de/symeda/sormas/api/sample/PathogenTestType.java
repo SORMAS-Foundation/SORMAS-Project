@@ -71,18 +71,24 @@ public enum PathogenTestType {
 	// for every disease per #13951. The legacy ENZYME_LINKED_IMMUNOSORBENT_ASSAY is now
 	// @NotSelectableForNewTests so historic records still render and case-classification rules
 	// referencing IGM_/IGG_SERUM_ANTIBODY continue to fire (they bind to the same enum constants).
+	@Diseases(value = {
+		Disease.SALMONELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
 		ResultValueType.NUMERIC })
 	IGM_SERUM_ANTIBODY,
 
+	@Diseases(value = {
+		Disease.SALMONELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
 		ResultValueType.NUMERIC })
 	IGG_SERUM_ANTIBODY,
 
+	@Diseases(value = {
+		Disease.SALMONELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -179,8 +185,6 @@ public enum PathogenTestType {
 	// Molecular Assays
 	// ----------------------------------------------------------------------------------------------
 
-	@Diseases(value = {
-		Disease.SALMONELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@RevealsTestTypeText
 	@ResultValueTypeRel({
@@ -379,6 +383,7 @@ public enum PathogenTestType {
 	ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
 
 	@Diseases(value = {
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel({
@@ -420,6 +425,7 @@ public enum PathogenTestType {
 	DIRECT_FLUORESCENT_ANTIBODY,
 
 	@Diseases(value = {
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
@@ -518,6 +524,8 @@ public enum PathogenTestType {
 
 	// Direct microscopy (#13951): qualitative-only entry (Pos/Neg/Indeterminate/Pending) for visual
 	// detection of a pathogen without staining or fluorescence. Sibling of MICROSCOPY (legacy generic).
+	@Diseases(value = {
+		Disease.SALMONELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	DIRECT_MICROSCOPY,
@@ -537,18 +545,21 @@ public enum PathogenTestType {
 	GRAM_STAIN,
 
 	@Diseases(value = {
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.SMEAR_GRADE)
 	ACID_FAST_STAIN,
 
 	@Diseases(value = {
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	DARK_FIELD_MICROSCOPY,
 
 	@Diseases(value = {
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel({
@@ -572,6 +583,7 @@ public enum PathogenTestType {
 	HISTOPATHOLOGY,
 
 	@Diseases(value = {
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel({
@@ -580,18 +592,21 @@ public enum PathogenTestType {
 	FISH,
 
 	@Diseases(value = {
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	IMMUNOHISTOCHEMISTRY,
 
 	@Diseases(value = {
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	ELECTRON_MICROSCOPY,
 
 	@Diseases(value = {
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel({
@@ -634,6 +649,7 @@ public enum PathogenTestType {
 	ANTIBIOTIC_SUSCEPTIBILITY,
 
 	@Diseases(value = {
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIMICROBIAL_SUSCEPTIBILITY_TESTING)
 	@ResultValueTypeRel(ResultValueType.BOOLEAN)
@@ -660,6 +676,7 @@ public enum PathogenTestType {
 	@PathogenTestCategoryRel(PathogenTestCategory.FUNCTIONAL_IMMUNE_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.NUMERIC)
 	@Diseases(value = {
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
 	FLOW_CYTOMETRY,
 

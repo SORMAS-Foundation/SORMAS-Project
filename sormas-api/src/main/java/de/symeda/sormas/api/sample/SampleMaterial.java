@@ -46,6 +46,7 @@ public enum SampleMaterial {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
 	DRY_BLOOD,
 
@@ -54,6 +55,7 @@ public enum SampleMaterial {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
 	SERA,
 
@@ -111,6 +113,7 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE,
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
 	NP_SWAB,
 
@@ -145,6 +148,7 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE,
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
 	CRUST,
 
@@ -156,6 +160,7 @@ public enum SampleMaterial {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
 	TISSUE,
 
@@ -216,6 +221,7 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE,
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
@@ -238,6 +244,7 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE,
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
 	SPUTUM,
 
@@ -250,6 +257,7 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE,
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
@@ -263,6 +271,7 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE,
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
 	BRONCHOALVEOLAR_LAVAGE,
 
@@ -276,6 +285,7 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE,
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
@@ -290,6 +300,7 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE,
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
@@ -304,6 +315,7 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE,
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
@@ -316,6 +328,7 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE,
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
@@ -329,6 +342,7 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE,
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
 	PLEURAL_FLUID,
 
@@ -345,6 +359,7 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE,
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
 	OROPHARYNGEAL_SWAB,
 
@@ -355,6 +370,7 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE,
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
@@ -372,7 +388,8 @@ public enum SampleMaterial {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
-		Disease.DENGUE }, hide = true)
+		Disease.DENGUE,
+		Disease.SALMONELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	PERITONEAL_FLUID,
@@ -384,6 +401,7 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE,
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
 	SYNOVIAL_FLUID,
 
@@ -391,6 +409,7 @@ public enum SampleMaterial {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
 	EDTA_WHOLE_BLOOD,
 
@@ -411,7 +430,6 @@ public enum SampleMaterial {
 	DUODENUM_FLUID,
 
 	@Diseases({
-		Disease.SALMONELLOSIS,
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS })
 	ASPIRATE,
@@ -422,50 +440,42 @@ public enum SampleMaterial {
 	BONE_AND_JOINT,
 
 	@Diseases({
-		Disease.SALMONELLOSIS,
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS })
 	CATHETER_EXIT_SITE,
 
 	@Diseases({
-		Disease.SALMONELLOSIS,
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS })
 	EYE,
 
 	@Diseases({
-		Disease.SALMONELLOSIS,
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS })
 	GASTRIC_FLUID,
 
 	@Diseases({
-		Disease.SALMONELLOSIS,
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS })
 	GENITAL_SWAB,
 
 	@Diseases({
-		Disease.SALMONELLOSIS,
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS })
 	LOWER_RESPIRATORY_TRACT,
 
 	@Diseases({
-		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS })
 	PUS,
 
 	@Diseases({
-		Disease.SALMONELLOSIS,
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS })
 	SEMEN,
 
 	@Diseases({
-		Disease.SALMONELLOSIS,
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS })
 	SKIN,
@@ -476,16 +486,18 @@ public enum SampleMaterial {
 	SOFT_TISSUE,
 
 	@Diseases({
-		Disease.SALMONELLOSIS,
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS })
 	WOUND,
 
+	@Diseases(value = {
+		Disease.SALMONELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	ABSCESS_SWAB,
 
 	@Diseases(value = {
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
 	BONE,
 
@@ -493,42 +505,61 @@ public enum SampleMaterial {
 		Disease.SHIGELLOSIS }, hide = true)
 	BONE_MARROW,
 
+	@Diseases(value = {
+		Disease.SALMONELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	CONJUNCTIVAL_SWAB,
 
+	@Diseases(value = {
+		Disease.SALMONELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	MIDDLE_EAR_FLUID,
 
+	@Diseases(value = {
+		Disease.SALMONELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	PLASMA,
 
+	@Diseases(value = {
+		Disease.SALMONELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	SWAB_UNSPECIFIED,
 
+	@Diseases(value = {
+		Disease.SALMONELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	TEARS,
 
+	@Diseases(value = {
+		Disease.SALMONELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	CORD_BLOOD,
 
 	@Diseases(value = {
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
 	LUNG_TISSUE,
 
+	@Diseases(value = {
+		Disease.SALMONELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	PLACENTA,
 
+	@Diseases(value = {
+		Disease.SALMONELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	ULCER_SWAB,
 
+	@Diseases(value = {
+		Disease.SALMONELLOSIS }, hide = true)
 	UNKNOWN,
 
 	@Deprecated

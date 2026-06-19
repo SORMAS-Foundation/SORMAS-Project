@@ -67,6 +67,7 @@ import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.epidata.ClusterType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.exposure.ExposureDto;
+import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.InfectionSource;
 import de.symeda.sormas.api.exposure.ModeOfTransmission;
 import de.symeda.sormas.api.exposure.ProphylaxisAdherence;
@@ -118,8 +119,14 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	private static final String PROPHYLAXIS_LAYOUT = fluidRowLocs(3, "PROPHYLAXIS_LABEL", 3, "PROPHYLAXIS_VALUE", 6, "");
 	private static final String LOC_OTHER_INFORMATION_HEADING = "locOtherInformationHeading";
 
-	private static final List<Disease> CONCLUSION_ALLOWED_DISEASES = Collections
-		.unmodifiableList(Arrays.asList(Disease.CRYPTOSPORIDIOSIS, Disease.GIARDIASIS, Disease.MALARIA, Disease.DENGUE, Disease.SHIGELLOSIS));
+	private static final List<Disease> CONCLUSION_ALLOWED_DISEASES = Collections.unmodifiableList(
+		Arrays.asList(
+			Disease.CRYPTOSPORIDIOSIS,
+			Disease.GIARDIASIS,
+			Disease.MALARIA,
+			Disease.DENGUE,
+			Disease.SALMONELLOSIS,
+			Disease.SHIGELLOSIS));
 
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT =
@@ -305,6 +312,27 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		initializeAccessAndAllowedAccesses();
 
 		exposuresField.addValueChangeListener(e -> ogExposureDetailsKnown.setEnabled(CollectionUtils.isEmpty(exposuresField.getValue())));
+
+		// Salmonellosis: when a Travel exposure carries a country in its location, propose it as the
+		// probable country of infection on the conclusion. Gated on country.isVisible() so we never
+		// write a hidden field (visibility tracks importedCase==YES per setVisibleWhen above) and on
+		// isAttached() so initial bean-binding propagation does not overwrite a saved-null country.
+		if (disease == Disease.SALMONELLOSIS) {
+			exposuresField.addValueChangeListener(e -> {
+				if (!isAttached() || !country.isVisible() || country.getValue() != null) {
+					return;
+				}
+				java.util.Collection<ExposureDto> exposures = exposuresField.getValue();
+				if (CollectionUtils.isEmpty(exposures)) {
+					return;
+				}
+				exposures.stream()
+					.filter(ex -> ex.getExposureType() == ExposureType.TRAVEL && ex.getLocation() != null && ex.getLocation().getCountry() != null)
+					.map(ex -> ex.getLocation().getCountry())
+					.findFirst()
+					.ifPresent(country::setValue);
+			});
+		}
 
 		TextArea additionalDetails = addField(EpiDataDto.OTHER_DETAILS, TextArea.class);
 		additionalDetails.setRows(6);

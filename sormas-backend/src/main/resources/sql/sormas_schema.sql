@@ -16402,4 +16402,9 @@ ALTER TABLE pathogentest_history DROP COLUMN IF EXISTS quantitativetext;
 ALTER TABLE pathogentest ENABLE TRIGGER versioning_trigger;
 INSERT INTO schema_version (version_number, comment) VALUES (640, 'Remove generic quantitative free-text pathogen test result column, preserving values into testresulttext issue #13952 (epic #13948)');
 
+-- 2026-06-19 Add Salmonellosis-specific watery diarrhoea symptom (testing salmo.xlsx)
+ALTER TABLE symptoms         ADD COLUMN IF NOT EXISTS waterydiarrhea varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS waterydiarrhea varchar(255);
+INSERT INTO schema_version (version_number, comment) VALUES (641, 'Add Salmonellosis watery diarrhoea symptom issue #13918');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
