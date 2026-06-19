@@ -1334,14 +1334,13 @@ public class DevModeView extends AbstractConfigurationView {
 			test.setTestResult(random(PATHOGEN_TEST_RESULT_POOL));
 			test.setTestDateTime(date);
 
-			// Populate a quantitative value for half the tests so the inline quantitative display has data.
+			// Populate a quantitative value for half the numeric-result tests so the inline quantitative display
+			// has data.
 			if (randomPercent(50)) {
 				Set<ResultValueType> valueTypes = PathogenTestType.getResultValueTypes(test.getTestType());
 				if (valueTypes.contains(ResultValueType.NUMERIC)) {
 					test.setQuantitativeValue(random().nextFloat() * 1000);
 					test.setQuantitativeUnit("copies/mL");
-				} else if (valueTypes.contains(ResultValueType.TEXT)) {
-					test.setQuantitativeText("Generated result");
 				}
 			}
 

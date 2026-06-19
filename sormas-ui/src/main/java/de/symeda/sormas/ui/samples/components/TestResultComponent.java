@@ -61,13 +61,11 @@ public class TestResultComponent extends FormComponent<PathogenTestDto> {
 	private RadioButtonGroup<Boolean> preliminaryField;
 	private TextField quantitativeValueField;
 	private TextField quantitativeUnitField;
-	private TextField quantitativeTextField;
 	private RadioButtonGroup<YesNoUnknown> quantitativeBooleanField;
 	private ComboBox<SmearGrade> smearGradeField;
 	private ComboBox<WesternBlotInterpretation> westernBlotInterpretationField;
 	private HorizontalLayout quantitativeValueRow;
 	private HorizontalLayout quantitativeEnumRow;
-	private HorizontalLayout quantitativeTextRow;
 
 	private List<PathogenTestResultType> resultTypes;
 
@@ -113,7 +111,6 @@ public class TestResultComponent extends FormComponent<PathogenTestDto> {
 
 		quantitativeValueField = createTextField(PathogenTestDto.QUANTITATIVE_VALUE, PathogenTestDto.I18N_PREFIX, ValueChangeMode.BLUR);
 		quantitativeUnitField = createTextField(PathogenTestDto.QUANTITATIVE_UNIT, PathogenTestDto.I18N_PREFIX, ValueChangeMode.BLUR);
-		quantitativeTextField = createTextField(PathogenTestDto.QUANTITATIVE_TEXT, PathogenTestDto.I18N_PREFIX, ValueChangeMode.BLUR);
 		quantitativeBooleanField = createEnumRadioGroup(PathogenTestDto.QUANTITATIVE_BOOLEAN, PathogenTestDto.I18N_PREFIX, YesNoUnknown.class);
 		smearGradeField = createComboBox(PathogenTestDto.SMEAR_GRADE, PathogenTestDto.I18N_PREFIX);
 		smearGradeField.setItems(SmearGrade.values());
@@ -146,7 +143,6 @@ public class TestResultComponent extends FormComponent<PathogenTestDto> {
 			smearGradeField,
 			westernBlotInterpretationField,
 			createSpacer());
-		quantitativeTextRow = addRow(quantitativeTextField, createSpacer());
 
 		updateQuantitativeFieldsVisibility(currentTestType);
 	}
@@ -160,7 +156,6 @@ public class TestResultComponent extends FormComponent<PathogenTestDto> {
 			.withConverter(new de.symeda.sormas.ui.utils.StringToFloatNullableConverter(quantitativeValueField.getCaption()))
 			.bind(PathogenTestDto::getQuantitativeValue, PathogenTestDto::setQuantitativeValue);
 		binder.forField(quantitativeUnitField).bind(PathogenTestDto::getQuantitativeUnit, PathogenTestDto::setQuantitativeUnit);
-		binder.forField(quantitativeTextField).bind(PathogenTestDto::getQuantitativeText, PathogenTestDto::setQuantitativeText);
 		binder.forField(quantitativeBooleanField).bind(PathogenTestDto::getQuantitativeBoolean, PathogenTestDto::setQuantitativeBoolean);
 		binder.forField(smearGradeField).bind(PathogenTestDto::getSmearGrade, PathogenTestDto::setSmearGrade);
 		binder.forField(westernBlotInterpretationField)
@@ -222,46 +217,35 @@ public class TestResultComponent extends FormComponent<PathogenTestDto> {
 
 		boolean hasQualitative = testType == null || valueTypes.contains(ResultValueType.QUALITATIVE);
 		boolean hasNumeric = valueTypes.contains(ResultValueType.NUMERIC);
-		boolean showText = valueTypes.contains(ResultValueType.TEXT);
 		boolean showBoolean = valueTypes.contains(ResultValueType.BOOLEAN);
 		boolean showSmearGrade = valueTypes.contains(ResultValueType.SMEAR_GRADE);
 		boolean showWesternBlot = valueTypes.contains(ResultValueType.WESTERN_BLOT);
 
-		// The qualitative selector is also hidden when a disease section has set the result to "Not
-		// applicable" (e.g. AST, whose real result is the drug-susceptibility grid) — keep the value so
-		// the stored Not-applicable is preserved, just don't show an irrelevant selector.
-		boolean resultNotApplicable = testResultField.getValue() == PathogenTestResultType.NOT_APPLICABLE;
-		boolean showQualitative = hasQualitative && !resultNotApplicable;
+		boolean showQualitative = computeShowQualitative(testType, hasQualitative);
 
-		// Not applicable is only added on demand for methods without a qualitative result (see
-		// ensureNotApplicableSelectable). Once the method has a qualitative result again, drop it back out of
-		// the non-Luxembourg combo so it cannot be picked as a stray option, unless it is the current value.
+		// Once a method with a qualitative result is selected, drop the on-demand "Not applicable" back out of the
+		// non-Luxembourg combo so it cannot be picked as a stray option, unless it is the current value.
+		boolean resultNotApplicable = testResultField.getValue() == PathogenTestResultType.NOT_APPLICABLE;
 		if (!isLuxembourg && hasQualitative && !resultNotApplicable) {
 			removeNotApplicableSelectable();
 		}
 
-		// A numeric value only makes sense for a positive result: for a qualitative+numeric method (e.g.
-		// RT-PCR) the Ct/value appears only once Positive is selected - for a purely numeric method (no
-		// qualitative component) it always applies.
-		boolean showNumeric = hasNumeric && (!hasQualitative || testResultField.getValue() == PathogenTestResultType.POSITIVE);
+		boolean showNumeric = computeShowNumeric(testType, hasQualitative, hasNumeric);
 
 		// Only toggle the selector's visibility — never clear its value here. Typing methods (Genotyping,
-		// Serogrouping, ... are value-type TEXT) hide the selector but rely on a disease section having set
-		// the result to Positive to reveal their own field; clearing it would wipe that and hide them. The
-		// result is managed by the disease sections and the SetTestResultEvent flow, not here.
+		// Serogrouping, ...) hide the selector but rely on a disease section having set the result to Positive to
+		// reveal their own field; clearing it would wipe that and hide them. The result is managed by the disease
+		// sections and the SetTestResultEvent flow, not here. Free-text results are captured via the disease
+		// sections' typing fields, or otherwise the "Test result details" field.
 		testResultField.setVisible(showQualitative);
 		setQuantitativeFieldVisible(quantitativeValueField, showNumeric);
 		setQuantitativeFieldVisible(quantitativeUnitField, showNumeric);
-		setQuantitativeFieldVisible(quantitativeTextField, showText);
 		setQuantitativeFieldVisible(quantitativeBooleanField, showBoolean);
 		setQuantitativeFieldVisible(smearGradeField, showSmearGrade);
 		setQuantitativeFieldVisible(westernBlotInterpretationField, showWesternBlot);
 
-		quantitativeTextField.setRequiredIndicatorVisible(resultRequired && showText && !showWesternBlot);
-
 		updateRowVisibility(quantitativeValueRow);
 		updateRowVisibility(quantitativeEnumRow);
-		updateRowVisibility(quantitativeTextRow);
 	}
 
 	/**
@@ -292,10 +276,77 @@ public class TestResultComponent extends FormComponent<PathogenTestDto> {
 		return testType == null || PathogenTestType.getResultValueTypes(testType).contains(ResultValueType.QUALITATIVE);
 	}
 
+	/**
+	 * @return whether the qualitative Positive/Negative selector should be shown for the selected method.
+	 *         Shown for every method that has a qualitative result, with one explicit exception:
+	 *         {@link PathogenTestType#ANTIBIOTIC_SUSCEPTIBILITY} is always hidden because its real result is
+	 *         captured by the drug-susceptibility grid (the value is kept as "Not applicable"). The visibility
+	 *         is driven purely by the method — never by the current value — so a user can never pick a value
+	 *         that makes the field disappear mid-edit. Methods without QUALITATIVE in their
+	 *         {@code @ResultValueTypeRel} (typing methods such as Genotyping/Serogrouping/...) hide the
+	 *         selector implicitly via {@code hasQualitative == false}; their result is driven by the disease
+	 *         sections' SetTestResultEvent flow.
+	 */
+	private static boolean computeShowQualitative(PathogenTestType testType, boolean hasQualitative) {
+		if (testType == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY) {
+			return false;
+		}
+		return hasQualitative;
+	}
+
+	/**
+	 * @return whether the generic numeric value/unit fields should be shown for the selected method.
+	 *         A numeric value only makes sense for a positive result: for a qualitative+numeric method
+	 *         (e.g. RT-PCR) the value appears only once Positive is selected — for a purely numeric method
+	 *         (no qualitative component) it always applies. Methods covered by the existing Ct/Cq fields
+	 *         ({@link CtCqValueComponent} / {@link FourFoldCtCqComponent}) suppress the generic fields so
+	 *         they are not duplicated; the condition mirrors {@code CtCqValueComponent.updateCqVisibility}
+	 *         exactly — including its Tuberculosis exclusion, so TB/PCR keeps the generic numeric input.
+	 */
+	private boolean computeShowNumeric(PathogenTestType testType, boolean hasQualitative, boolean hasNumeric) {
+		if (!hasNumeric) {
+			return false;
+		}
+		if (hasQualitative && testResultField.getValue() != PathogenTestResultType.POSITIVE) {
+			return false;
+		}
+		return !cqFieldShownInstead(testType);
+	}
+
+	/**
+	 * Delegates to {@link PathogenTestType#cqInputApplies(Disease, PathogenTestType)} — the single source of
+	 * truth for when the Cq input ({@link CtCqValueComponent}) is shown. Suppressing the generic numeric here
+	 * iff the Cq input applies guarantees the two cannot drift (the Tuberculosis exclusion in
+	 * CtCqValueComponent was the source of an earlier gap for TB/PCR_RT_PCR — the shared helper makes that
+	 * class of bug impossible).
+	 */
+	private boolean cqFieldShownInstead(PathogenTestType testType) {
+		return PathogenTestType.cqInputApplies(currentDisease, testType);
+	}
+
 	private void setQuantitativeFieldVisible(com.vaadin.data.HasValue<?> field, boolean visible) {
 		((com.vaadin.ui.Component) field).setVisible(visible);
 		if (!visible && !field.isEmpty()) {
 			field.clear();
+		}
+	}
+
+	@Override
+	public void setDto(PathogenTestDto dto) {
+		super.setDto(dto);
+
+		// Backwards compatibility for Antibiotic Susceptibility Testing only: AST's real result is the
+		// drug-susceptibility grid, never a qualitative selector — but old records may carry a stale
+		// qualitative value (e.g. POSITIVE). Coerce only AST to NOT_APPLICABLE on load. Other methods without
+		// QUALITATIVE in their @ResultValueTypeRel (WESTERN_BLOT, BACTERIAL_CULTURE, typing methods, ...)
+		// keep their stored qualitative result so its historical Positive/Negative information is preserved
+		// and the related disease sections continue to render their typing fields.
+		if (dto != null && dto.getTestType() == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY) {
+			PathogenTestResultType current = testResultField.getValue();
+			if (current != null && current != PathogenTestResultType.NOT_APPLICABLE) {
+				ensureNotApplicableSelectable();
+				testResultField.setValue(PathogenTestResultType.NOT_APPLICABLE);
+			}
 		}
 	}
 
@@ -311,9 +362,6 @@ public class TestResultComponent extends FormComponent<PathogenTestDto> {
 			requireIfVisible(quantitativeBooleanField, PathogenTestDto.QUANTITATIVE_BOOLEAN);
 			requireIfVisible(smearGradeField, PathogenTestDto.SMEAR_GRADE);
 			requireIfVisible(westernBlotInterpretationField, PathogenTestDto.WESTERN_BLOT_INTERPRETATION);
-			if (!westernBlotInterpretationField.isVisible()) {
-				requireIfVisible(quantitativeTextField, PathogenTestDto.QUANTITATIVE_TEXT);
-			}
 		}
 	}
 

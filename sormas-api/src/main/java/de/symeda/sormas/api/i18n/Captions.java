@@ -928,13 +928,11 @@ public interface Captions {
 	String caseLabResultsDateCollected = "caseLabResultsDateCollected";
 	String caseLabResultsDrugSusceptibilityHeading = "caseLabResultsDrugSusceptibilityHeading";
 	String caseLabResultsMethod = "caseLabResultsMethod";
-	String caseLabResultsMicValue = "caseLabResultsMicValue";
 	String caseLabResultsSample = "caseLabResultsSample";
 	String caseLabResultsSamplesHeading = "caseLabResultsSamplesHeading";
-	String caseLabResultsSurveillanceInterpretation = "caseLabResultsSurveillanceInterpretation";
 	String caseLabResultsTestsHeading = "caseLabResultsTestsHeading";
 	String caseLabResultsTestsPerformed = "caseLabResultsTestsPerformed";
-	String caseLabResultsZoneDiameter = "caseLabResultsZoneDiameter";
+	String caseLabResultsValue = "caseLabResultsValue";
 	String caseLinkToSamples = "caseLinkToSamples";
 	String caseMergeDuplicates = "caseMergeDuplicates";
 	String caseMinusDays = "caseMinusDays";
@@ -2425,7 +2423,6 @@ public interface Captions {
 	String PathogenTest_prescriberPhysicianCode = "PathogenTest.prescriberPhysicianCode";
 	String PathogenTest_prescriberPostalCode = "PathogenTest.prescriberPostalCode";
 	String PathogenTest_quantitativeBoolean = "PathogenTest.quantitativeBoolean";
-	String PathogenTest_quantitativeText = "PathogenTest.quantitativeText";
 	String PathogenTest_quantitativeUnit = "PathogenTest.quantitativeUnit";
 	String PathogenTest_quantitativeValue = "PathogenTest.quantitativeValue";
 	String PathogenTest_reportDate = "PathogenTest.reportDate";
@@ -3305,6 +3302,7 @@ public interface Captions {
 	String Symptoms_uproariousness = "Symptoms.uproariousness";
 	String Symptoms_urinaryRetention = "Symptoms.urinaryRetention";
 	String Symptoms_vomiting = "Symptoms.vomiting";
+	String Symptoms_wateryDiarrhea = "Symptoms.wateryDiarrhea";
 	String Symptoms_weakness = "Symptoms.weakness";
 	String Symptoms_weight = "Symptoms.weight";
 	String Symptoms_weightLoss = "Symptoms.weightLoss";

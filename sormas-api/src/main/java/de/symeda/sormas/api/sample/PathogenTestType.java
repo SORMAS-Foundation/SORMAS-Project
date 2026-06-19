@@ -47,60 +47,52 @@ public enum PathogenTestType {
 	@NotSelectableForNewTests
 	ANTIGEN_DETECTION,
 
-	@Diseases(value = {
-		Disease.GIARDIASIS,
-		Disease.DENGUE,
-		Disease.MALARIA }, hide = true)
+	// Merged Culture entry (bacterial + fungal) — supersedes BACTERIAL_CULTURE / FUNGAL_CULTURE for new
+	// tests (#13951). The qualitative result is the Pos/Neg outcome; TEXT carries the organism identifier
+	// and NUMERIC carries the CFU/mL count. The legacy constants remain @NotSelectableForNewTests so
+	// historic records and case-classification rules keep working.
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
-	@NotSelectableForNewTests
+	@ResultValueTypeRel({
+		ResultValueType.QUALITATIVE,
+		ResultValueType.TEXT,
+		ResultValueType.NUMERIC })
 	CULTURE,
 
-	@Diseases(value = {
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
-		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS,
-		Disease.MALARIA }, hide = true)
+	// Merged Isolation entry (bacterial + viral) — supersedes VIRAL_ISOLATION for new tests (#13951).
+	// Result is qualitative (Pos/Neg/Indet/Pending). Legacy VIRAL_ISOLATION stays @NotSelectableForNewTests
+	// so historic records still render and case-classification rules (EVD/Lassa/Cholera/…) keep firing.
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
-	@NotSelectableForNewTests
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	ISOLATION,
 
+	// Resurrected ELISA Ig-class variants (#13951): split the legacy single ENZYME_LINKED_IMMUNOSORBENT_ASSAY
+	// entry into per-Ig-class methods so the form can offer the IgM/IgG/IgA distinction that serology
+	// workflows already need. Result is qualitative (Pos/Neg) + numeric (titre). No @Diseases — visible
+	// for every disease per #13951. The legacy ENZYME_LINKED_IMMUNOSORBENT_ASSAY is now
+	// @NotSelectableForNewTests so historic records still render and case-classification rules
+	// referencing IGM_/IGG_SERUM_ANTIBODY continue to fire (they bind to the same enum constants).
 	@Diseases(value = {
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS,
-		Disease.MALARIA,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SALMONELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
-	@NotSelectableForNewTests
+	@ResultValueTypeRel({
+		ResultValueType.QUALITATIVE,
+		ResultValueType.NUMERIC })
 	IGM_SERUM_ANTIBODY,
 
 	@Diseases(value = {
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS,
-		Disease.MALARIA,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SALMONELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
-	@NotSelectableForNewTests
+	@ResultValueTypeRel({
+		ResultValueType.QUALITATIVE,
+		ResultValueType.NUMERIC })
 	IGG_SERUM_ANTIBODY,
 
 	@Diseases(value = {
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-		Disease.MEASLES,
-		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS,
-		Disease.DENGUE,
-		Disease.MALARIA,
-		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SALMONELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
-	@NotSelectableForNewTests
+	@ResultValueTypeRel({
+		ResultValueType.QUALITATIVE,
+		ResultValueType.NUMERIC })
 	IGA_SERUM_ANTIBODY,
 
 	@Diseases(value = {
@@ -193,8 +185,6 @@ public enum PathogenTestType {
 	// Molecular Assays
 	// ----------------------------------------------------------------------------------------------
 
-	@Diseases(value = {
-		Disease.SALMONELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@RevealsTestTypeText
 	@ResultValueTypeRel({
@@ -386,6 +376,8 @@ public enum PathogenTestType {
 	// Serological Tests
 	// ----------------------------------------------------------------------------------------------
 
+	// Superseded by IGM_/IGG_/IGA_SERUM_ANTIBODY for new tests (#13951). Kept here so historic records
+	// still render and so case-classification logic (which binds to this constant) keeps working.
 	@Diseases(value = {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.MALARIA })
@@ -393,24 +385,25 @@ public enum PathogenTestType {
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
 		ResultValueType.NUMERIC })
+	@NotSelectableForNewTests
 	ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
 
-	@Diseases(value = {
-		Disease.DENGUE })
-	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
-	@ResultValueTypeRel({
-		ResultValueType.QUALITATIVE })
-	IGG_ELISA,
-	@Diseases(value = {
-		Disease.DENGUE })
-	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
-	@ResultValueTypeRel({
-		ResultValueType.QUALITATIVE })
-	IGM_ELISA,
+    @Diseases(value = {
+            Disease.DENGUE })
+    @PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
+    @ResultValueTypeRel({
+            ResultValueType.QUALITATIVE })
+    IGG_ELISA,
+    @Diseases(value = {
+            Disease.DENGUE })
+    @PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
+    @ResultValueTypeRel({
+            ResultValueType.QUALITATIVE })
+    IGM_ELISA,
 
 	@Diseases(value = {
-		Disease.SHIGELLOSIS,
-		Disease.DENGUE }, hide = true)
+		Disease.SALMONELLOSIS,
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel({
 		ResultValueType.TEXT,
@@ -451,8 +444,9 @@ public enum PathogenTestType {
 	DIRECT_FLUORESCENT_ANTIBODY,
 
 	@Diseases(value = {
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-		Disease.DENGUE }, hide = true)
+            Disease.DENGUE}, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	RAPID_ANTIBODY_TEST,
@@ -519,30 +513,33 @@ public enum PathogenTestType {
 	// Culture & Isolation
 	// ----------------------------------------------------------------------------------------------
 
+	// Superseded by the merged CULTURE entry for new tests (#13951). Kept for historic records.
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
 	@ResultValueTypeRel({
 		ResultValueType.TEXT,
 		ResultValueType.NUMERIC })
-	@Diseases(value = {
-		Disease.DENGUE }, hide = true)
+	@NotSelectableForNewTests
 	BACTERIAL_CULTURE,
 
+	// Superseded by the merged ISOLATION entry for new tests (#13951). Kept for historic records.
 	@Diseases(value = {
 		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
+	@NotSelectableForNewTests
 	VIRAL_ISOLATION,
 
+	// Superseded by the merged CULTURE entry for new tests (#13951). Kept for historic records.
 	@Diseases(value = {
-		Disease.SHIGELLOSIS,
-		Disease.DENGUE }, hide = true)
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
 	@ResultValueTypeRel(ResultValueType.TEXT)
+	@NotSelectableForNewTests
 	FUNGAL_CULTURE,
 
 	@Diseases(value = {
 		Disease.SHIGELLOSIS,
-		Disease.DENGUE }, hide = true)
+            Disease.DENGUE }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	MALDI_TOF,
@@ -550,6 +547,14 @@ public enum PathogenTestType {
 	// ----------------------------------------------------------------------------------------------
 	// Microscopy & Staining
 	// ----------------------------------------------------------------------------------------------
+
+	// Direct microscopy (#13951): qualitative-only entry (Pos/Neg/Indeterminate/Pending) for visual
+	// detection of a pathogen without staining or fluorescence. Sibling of MICROSCOPY (legacy generic).
+	@Diseases(value = {
+		Disease.SALMONELLOSIS }, hide = true)
+	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
+	DIRECT_MICROSCOPY,
 
 	@Diseases(value = {
 		Disease.CORONAVIRUS,
@@ -566,22 +571,25 @@ public enum PathogenTestType {
 	GRAM_STAIN,
 
 	@Diseases(value = {
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-		Disease.DENGUE }, hide = true)
+            Disease.DENGUE}, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.SMEAR_GRADE)
 	ACID_FAST_STAIN,
 
 	@Diseases(value = {
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-		Disease.DENGUE }, hide = true)
+            Disease.DENGUE}, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	DARK_FIELD_MICROSCOPY,
 
 	@Diseases(value = {
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-		Disease.DENGUE }, hide = true)
+            Disease.DENGUE}, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -604,8 +612,9 @@ public enum PathogenTestType {
 	HISTOPATHOLOGY,
 
 	@Diseases(value = {
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-		Disease.DENGUE }, hide = true)
+            Disease.DENGUE}, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -613,22 +622,25 @@ public enum PathogenTestType {
 	FISH,
 
 	@Diseases(value = {
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-		Disease.DENGUE }, hide = true)
+            Disease.DENGUE}, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	IMMUNOHISTOCHEMISTRY,
 
 	@Diseases(value = {
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-		Disease.DENGUE }, hide = true)
+            Disease.DENGUE}, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	ELECTRON_MICROSCOPY,
 
 	@Diseases(value = {
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-		Disease.DENGUE }, hide = true)
+            Disease.DENGUE}, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -663,11 +675,16 @@ public enum PathogenTestType {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.SHIGELLOSIS })
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIMICROBIAL_SUSCEPTIBILITY_TESTING)
+	// AST has no result value type of its own — its result is the drug-susceptibility grid, not a
+	// Positive/Negative/numeric/text value. The empty set hides the Test result selector and all quantitative
+	// result fields; the result is kept as Not applicable.
+	@ResultValueTypeRel({})
 	ANTIBIOTIC_SUSCEPTIBILITY,
 
 	@Diseases(value = {
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-		Disease.DENGUE }, hide = true)
+            Disease.DENGUE}, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIMICROBIAL_SUSCEPTIBILITY_TESTING)
 	@ResultValueTypeRel(ResultValueType.BOOLEAN)
 	GENOTYPIC_RESISTANCE_TEST,
@@ -693,8 +710,9 @@ public enum PathogenTestType {
 	@PathogenTestCategoryRel(PathogenTestCategory.FUNCTIONAL_IMMUNE_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.NUMERIC)
 	@Diseases(value = {
+		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-		Disease.DENGUE }, hide = true)
+            Disease.DENGUE}, hide = true)
 	FLOW_CYTOMETRY,
 
 	// ----------------------------------------------------------------------------------------------
@@ -778,23 +796,49 @@ public enum PathogenTestType {
 	}
 
 	/**
-	 * @return the {@link ResultValueType}(s) this method produces, declared via
-	 *         {@link ResultValueTypeRel}; drives which result fields the pathogen-test form shows.
-	 *         A method without the annotation (e.g. legacy/hidden values and {@code OTHER}) is treated
-	 *         as {@link ResultValueType#QUALITATIVE} only, preserving the long-standing behaviour.
+	 * Cached, reflection-free map of {@code PathogenTestType -> Set<ResultValueType>}. Built once at class
+	 * initialization from each constant's {@link ResultValueTypeRel} annotation. The returned sets are
+	 * unmodifiable so callers cannot accidentally mutate the shared instance.
 	 */
-	public static java.util.Set<ResultValueType> getResultValueTypes(PathogenTestType testType) {
-		if (testType != null) {
+	private static final java.util.Map<PathogenTestType, java.util.Set<ResultValueType>> RESULT_VALUE_TYPES_BY_METHOD;
+
+	/** Default for {@code null} and unannotated test types (preserves long-standing behaviour). */
+	private static final java.util.Set<ResultValueType> DEFAULT_RESULT_VALUE_TYPES =
+		java.util.Collections.unmodifiableSet(java.util.EnumSet.of(ResultValueType.QUALITATIVE));
+
+	static {
+		java.util.EnumMap<PathogenTestType, java.util.Set<ResultValueType>> map = new java.util.EnumMap<>(PathogenTestType.class);
+		for (PathogenTestType type : values()) {
+			java.util.Set<ResultValueType> valueTypes = DEFAULT_RESULT_VALUE_TYPES;
 			try {
-				ResultValueTypeRel annotation = PathogenTestType.class.getField(testType.name()).getAnnotation(ResultValueTypeRel.class);
+				ResultValueTypeRel annotation = PathogenTestType.class.getField(type.name()).getAnnotation(ResultValueTypeRel.class);
 				if (annotation != null) {
-					return java.util.EnumSet.copyOf(java.util.Arrays.asList(annotation.value()));
+					// An explicit empty set (e.g. Antibiotic Susceptibility, whose result is the drug-susceptibility
+					// grid) means the method has no result value type of its own.
+					java.util.EnumSet<ResultValueType> set = java.util.EnumSet.noneOf(ResultValueType.class);
+					java.util.Collections.addAll(set, annotation.value());
+					valueTypes = java.util.Collections.unmodifiableSet(set);
 				}
 			} catch (NoSuchFieldException e) {
 				// fall through to the default
 			}
+			map.put(type, valueTypes);
 		}
-		return java.util.EnumSet.of(ResultValueType.QUALITATIVE);
+		RESULT_VALUE_TYPES_BY_METHOD = java.util.Collections.unmodifiableMap(map);
+	}
+
+	/**
+	 * @return the {@link ResultValueType}(s) this method produces, declared via
+	 *         {@link ResultValueTypeRel}; drives which result fields the pathogen-test form shows.
+	 *         A method without the annotation (e.g. legacy/hidden values and {@code OTHER}) is treated
+	 *         as {@link ResultValueType#QUALITATIVE} only, preserving the long-standing behaviour. The
+	 *         returned set is unmodifiable.
+	 */
+	public static java.util.Set<ResultValueType> getResultValueTypes(PathogenTestType testType) {
+		if (testType == null) {
+			return DEFAULT_RESULT_VALUE_TYPES;
+		}
+		return RESULT_VALUE_TYPES_BY_METHOD.getOrDefault(testType, DEFAULT_RESULT_VALUE_TYPES);
 	}
 
 	/**
@@ -812,5 +856,26 @@ public enum PathogenTestType {
 		} catch (NoSuchFieldException e) {
 			return true;
 		}
+	}
+
+	/**
+	 * Single source of truth for the disease + method combinations that show the Cq value input (the existing
+	 * {@code CtCqValueComponent}). Used by both that component and by {@code TestResultComponent} to suppress
+	 * the generic numeric value/unit fields when the Cq input applies. Both call sites must use this method so
+	 * the rule cannot drift.
+	 *
+	 * <p>The Cq input applies for {@code PCR_RT_PCR}, {@code CQ_VALUE_DETECTION}, or {@code Q_PCR} on Malaria
+	 * — except for Tuberculosis, which historically does not offer a Cq value.
+	 *
+	 * @param disease  the tested disease (may be {@code null})
+	 * @param testType the test method (may be {@code null})
+	 */
+	public static boolean cqInputApplies(Disease disease, PathogenTestType testType) {
+		if (disease == Disease.TUBERCULOSIS) {
+			return false;
+		}
+		return testType == PCR_RT_PCR
+			|| testType == CQ_VALUE_DETECTION
+			|| (disease == Disease.MALARIA && testType == Q_PCR);
 	}
 }

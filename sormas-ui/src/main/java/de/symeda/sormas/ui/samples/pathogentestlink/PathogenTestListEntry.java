@@ -122,10 +122,13 @@ public class PathogenTestListEntry extends SideComponentField {
 
 		// Quantitative result (issue #13952): combine whichever value-type fields the method populated.
 		String quantitativeResult = formatQuantitativeResult(pathogenTest);
-		boolean astWithoutQualitativeResult =
-			pathogenTest.getTestedDisease() == Disease.TUBERCULOSIS && testType == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY;
+		// Antibiotic susceptibility has no qualitative result, so suppress the result label regardless of the stored
+		// value — old records may carry a stale POSITIVE.
+		// Other methods that have no QUALITATIVE in their @ResultValueTypeRel (Western Blot, Bacterial Culture,
+		// typing methods, ...) keep their qualitative cue.
+		boolean astWithoutQualitativeResult = testType == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY;
 		boolean suppressResultLabel =
-			pathogenTest.getTestResult() == PathogenTestResultType.NOT_APPLICABLE && (quantitativeResult != null || astWithoutQualitativeResult);
+			astWithoutQualitativeResult || (pathogenTest.getTestResult() == PathogenTestResultType.NOT_APPLICABLE && quantitativeResult != null);
 		if (!suppressResultLabel) {
 			Object resultText = determineSideComponentVariant(pathogenTest);
 			Label labelResult = new Label(DataHelper.toStringNullable(resultText == null ? pathogenTest.getTestResult() : resultText));
@@ -165,9 +168,8 @@ public class PathogenTestListEntry extends SideComponentField {
 
 	/**
 	 * @return a short label combining every quantitative result field the test recorded (Western Blot
-	 *         interpretation, detected flag, smear grade, numeric value with optional unit, free text), or
-	 *         {@code null} when none is set. A method can populate several of these at once (e.g. Western
-	 *         Blot stores both an interpretation and a band-pattern text), so all are shown.
+	 *         interpretation, detected flag, smear grade, numeric value with optional unit), or {@code null}
+	 *         when none is set. A method can populate several of these at once, so all are shown.
 	 */
 	@Nullable
 	static String formatQuantitativeResult(PathogenTestDto test) {
@@ -184,9 +186,6 @@ public class PathogenTestListEntry extends SideComponentField {
 		if (test.getQuantitativeValue() != null) {
 			String unit = test.getQuantitativeUnit();
 			parts.add(DataHelper.isNullOrEmpty(unit) ? test.getQuantitativeValue().toString() : test.getQuantitativeValue() + " " + unit);
-		}
-		if (StringUtils.isNotBlank(test.getQuantitativeText())) {
-			parts.add(test.getQuantitativeText());
 		}
 		return parts.isEmpty() ? null : String.join(": ", parts);
 	}

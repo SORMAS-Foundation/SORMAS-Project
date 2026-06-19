@@ -118,7 +118,9 @@ public class FourFoldCtCqComponent extends FormComponent<PathogenTestDto> {
 	}
 
 	private void updateFourFoldIncrease(PathogenTestType testType) {
-		boolean antibodyTest = testType == PathogenTestType.IGM_SERUM_ANTIBODY || testType == PathogenTestType.IGG_SERUM_ANTIBODY;
+		boolean antibodyTest = testType == PathogenTestType.IGM_SERUM_ANTIBODY
+			|| testType == PathogenTestType.IGG_SERUM_ANTIBODY
+			|| testType == PathogenTestType.IGA_SERUM_ANTIBODY;
 		boolean positive = currentTestResult == PathogenTestResultType.POSITIVE;
 		if (antibodyTest && positive) {
 			fourFoldIncrease.setVisible(true);
