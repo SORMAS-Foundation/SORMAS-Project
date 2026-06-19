@@ -280,6 +280,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String UNILATERAL_CATARACTS = "unilateralCataracts";
 	public static final String UPROARIOUSNESS = "uproariousness";
 	public static final String VOMITING = "vomiting";
+	public static final String WATERY_DIARRHEA = "wateryDiarrhea";
 	public static final String WHEEZING = "wheezing";
 	public static final String WHOOP_SOUND = "whoopSound";
 	public static final String NOCTURNAL_COUGH = "nocturnalCough";
@@ -804,8 +805,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@SymptomGrouping(SymptomGroup.OTHER)
 	private SymptomState eyesBleeding;
 
-	@Diseases({
-		SALMONELLOSIS })
+	@Diseases({})
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@SymptomGrouping(SymptomGroup.OTHER)
@@ -1473,6 +1473,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		PERTUSSIS,
 		GIARDIASIS,
 		CRYPTOSPORIDIOSIS,
+		SALMONELLOSIS,
 		SHIGELLOSIS })
 	@HideForCountries
 	@Outbreaks
@@ -1539,6 +1540,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		INVASIVE_PNEUMOCOCCAL_INFECTION,
 		FHA,
 		PERTUSSIS,
+		SALMONELLOSIS,
 		SHIGELLOSIS })
 	@HideForCountries
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
@@ -3199,6 +3201,16 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Complication({
 		SHIGELLOSIS })
 	private SymptomState bloodyDiarrhea;
+
+	@Diseases({
+		CHOLERA,
+		GIARDIASIS,
+		CRYPTOSPORIDIOSIS,
+		SALMONELLOSIS,
+		SHIGELLOSIS })
+	@Outbreaks
+	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
+	private SymptomState wateryDiarrhea;
 
 	@Order(0)
 	public Float getTemperature() {
@@ -5407,6 +5419,15 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	public void setBloodyDiarrhea(SymptomState bloodyDiarrhea) {
 		this.bloodyDiarrhea = bloodyDiarrhea;
+	}
+
+	@Order(370)
+	public SymptomState getWateryDiarrhea() {
+		return wateryDiarrhea;
+	}
+
+	public void setWateryDiarrhea(SymptomState wateryDiarrhea) {
+		this.wateryDiarrhea = wateryDiarrhea;
 	}
 
 }

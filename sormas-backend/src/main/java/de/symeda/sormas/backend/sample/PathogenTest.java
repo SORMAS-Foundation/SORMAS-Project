@@ -192,7 +192,6 @@ public class PathogenTest extends DeletableAdo {
 	private String resultDetails;
 	private Float quantitativeValue;
 	private String quantitativeUnit;
-	private String quantitativeText;
 	private YesNoUnknown quantitativeBoolean;
 	private SmearGrade smearGrade;
 	private WesternBlotInterpretation westernBlotInterpretation;
@@ -847,14 +846,6 @@ public class PathogenTest extends DeletableAdo {
 		this.quantitativeUnit = quantitativeUnit;
 	}
 
-	@Column(columnDefinition = "text")
-	public String getQuantitativeText() {
-		return quantitativeText;
-	}
-
-	public void setQuantitativeText(String quantitativeText) {
-		this.quantitativeText = quantitativeText;
-	}
 
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getQuantitativeBoolean() {
