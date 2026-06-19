@@ -704,11 +704,12 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 				subSettingsDetailsField.setValue(subSettingDetails);
 			}
 
-			boolean hasTraveledAbroad = subSettings != null && subSettings.contains(ExposureSubSetting.TRAVELED_ABROAD);
-			prophylaxisAdherenceField.setVisible(hasTraveledAbroad);
-			travelPurposeField.setVisible(hasTraveledAbroad);
-			// If the person has traveled abroad, show the prophylaxis adherence and travel purpose fields
-			if (hasTraveledAbroad) {
+			boolean isMalariaCaseTraveled =
+				subSettings != null && disease == Disease.MALARIA && subSettings.contains(ExposureSubSetting.TRAVELED_ABROAD);
+			prophylaxisAdherenceField.setVisible(isMalariaCaseTraveled);
+			travelPurposeField.setVisible(isMalariaCaseTraveled);
+			// If the Malaria-effected person traveled abroad, show the prophylaxis adherence and travel purpose fields
+			if (isMalariaCaseTraveled) {
 				if (prophylaxisAdherence != null) {
 					prophylaxisAdherenceField.setValue(prophylaxisAdherence);
 				}

@@ -399,15 +399,13 @@ public enum PathogenTestType {
 		Disease.DENGUE })
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel({
-		ResultValueType.QUALITATIVE,
-		ResultValueType.NUMERIC })
+		ResultValueType.QUALITATIVE })
 	IGG_ELISA,
 	@Diseases(value = {
 		Disease.DENGUE })
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel({
-		ResultValueType.QUALITATIVE,
-		ResultValueType.NUMERIC })
+		ResultValueType.QUALITATIVE })
 	IGM_ELISA,
 
 	@Diseases(value = {
