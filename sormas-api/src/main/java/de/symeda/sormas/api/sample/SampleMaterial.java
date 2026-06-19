@@ -498,11 +498,13 @@ public enum SampleMaterial {
 
 	@Diseases(value = {
 		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+			Disease.DENGUE}, hide = true)
 	BONE,
 
 	@Diseases(value = {
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+			Disease.DENGUE}, hide = true)
 	BONE_MARROW,
 
 	@Diseases(value = {
@@ -543,7 +545,8 @@ public enum SampleMaterial {
 
 	@Diseases(value = {
 		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+			Disease.DENGUE}, hide = true)
 	LUNG_TISSUE,
 
 	@Diseases(value = {

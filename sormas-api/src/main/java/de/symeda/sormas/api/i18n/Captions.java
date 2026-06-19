@@ -1643,6 +1643,7 @@ public interface Captions {
 	String EpiData_clusterTypeText = "EpiData.clusterTypeText";
 	String EpiData_contactWithSourceCaseKnown = "EpiData.contactWithSourceCaseKnown";
 	String EpiData_country = "EpiData.country";
+	String EpiData_country_SHIG = "EpiData.country.SHIG";
 	String EpiData_exposureDetailsKnown = "EpiData.exposureDetailsKnown";
 	String EpiData_exposureInvestigationFromDate = "EpiData.exposureInvestigationFromDate";
 	String EpiData_exposureInvestigationToDate = "EpiData.exposureInvestigationToDate";

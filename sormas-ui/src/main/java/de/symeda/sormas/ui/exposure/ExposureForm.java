@@ -422,7 +422,9 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			Set<ExposureSubSetting> selectedSubSettings = (Set<ExposureSubSetting>) e.getProperty().getValue();
 			boolean containsOther = selectedSubSettings != null && selectedSubSettings.contains(ExposureSubSetting.OTHER);
 			subSettingsDetailsField.setVisible(containsOther);
-			boolean isProphylaxis = selectedSubSettings != null && selectedSubSettings.contains(ExposureSubSetting.TRAVELED_ABROAD);
+			// prophylaxis is allowed only for Malaria abroad travelers, not all diseases
+			boolean isProphylaxis =
+				selectedSubSettings != null && disease == Disease.MALARIA && selectedSubSettings.contains(ExposureSubSetting.TRAVELED_ABROAD);
 			setVisibleClear(isProphylaxis, ExposureDto.PROPHYLAXIS_ADHERENCE, ExposureDto.TRAVEL_PURPOSE);
 			boolean isSexualActivity = selectedSubSettings != null && selectedSubSettings.contains(ExposureSubSetting.SEXUAL_ACTIVITY);
 			setVisibleClear(isSexualActivity, ExposureDto.SEXUAL_CONTACT);
@@ -552,6 +554,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 				? ExposureSetting.MOSQUITO_BORNE
 				: null;
 		settingField.setValue(defaultSetting);
+		settingField.setEnabled(defaultSetting == null);
 		settingDetailsField.setValue(null);
 		settingDetailsField.setVisible(false);
 
@@ -701,11 +704,12 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 				subSettingsDetailsField.setValue(subSettingDetails);
 			}
 
-			boolean hasTraveledAbroad = subSettings != null && subSettings.contains(ExposureSubSetting.TRAVELED_ABROAD);
-			prophylaxisAdherenceField.setVisible(hasTraveledAbroad);
-			travelPurposeField.setVisible(hasTraveledAbroad);
-			// If the person has traveled abroad, show the prophylaxis adherence and travel purpose fields
-			if (hasTraveledAbroad) {
+			boolean isMalariaCaseTraveled =
+				subSettings != null && disease == Disease.MALARIA && subSettings.contains(ExposureSubSetting.TRAVELED_ABROAD);
+			prophylaxisAdherenceField.setVisible(isMalariaCaseTraveled);
+			travelPurposeField.setVisible(isMalariaCaseTraveled);
+			// If the Malaria-effected person traveled abroad, show the prophylaxis adherence and travel purpose fields
+			if (isMalariaCaseTraveled) {
 				if (prophylaxisAdherence != null) {
 					prophylaxisAdherenceField.setValue(prophylaxisAdherence);
 				}

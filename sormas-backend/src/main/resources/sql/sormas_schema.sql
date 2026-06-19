@@ -16407,4 +16407,11 @@ ALTER TABLE symptoms         ADD COLUMN IF NOT EXISTS waterydiarrhea varchar(255
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS waterydiarrhea varchar(255);
 INSERT INTO schema_version (version_number, comment) VALUES (641, 'Add Salmonellosis watery diarrhoea symptom issue #13918');
 
+-- 18-06-2026 Malaria and Dengue DD and Lab message processing fixes
+
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS fourfoldincreaseantibodytiter boolean DEFAULT false;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS fourfoldincreaseantibodytiter boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (642, 'Malaria and Dengue DD and Lab message processing fixes');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
