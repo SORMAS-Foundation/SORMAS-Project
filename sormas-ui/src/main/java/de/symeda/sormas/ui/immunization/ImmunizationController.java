@@ -109,22 +109,11 @@ public class ImmunizationController {
 				VaccinationInfoSource vaccinationInfoSource = createForm.getVaccinationInfoSource();
 				Date dateOfMostRecentDose = createForm.getDateOfMostRecentDose();
 
-				ImmunizationDto savedDto =
-					FacadeProvider.getImmunizationFacade().saveQuickImmunization(dto, vaccinationInfoSource, dateOfMostRecentDose);
+				FacadeProvider.getImmunizationFacade().saveQuickImmunization(dto, vaccinationInfoSource, dateOfMostRecentDose);
 
-				List<ImmunizationDto> similarImmunizations = findSimilarImmunizations(savedDto);
-				if (!similarImmunizations.isEmpty()) {
-					showSimilarImmunizationPopup(savedDto, similarImmunizations.get(0), ignoredDto -> {
-						Notification.show(I18nProperties.getString(Strings.messageQuickImmunizationSaved), Notification.Type.HUMANIZED_MESSAGE);
-						if (savedCallback != null) {
-							savedCallback.run();
-						}
-					});
-				} else {
-					Notification.show(I18nProperties.getString(Strings.messageQuickImmunizationSaved), Notification.Type.HUMANIZED_MESSAGE);
-					if (savedCallback != null) {
-						savedCallback.run();
-					}
+				Notification.show(I18nProperties.getString(Strings.messageQuickImmunizationSaved), Notification.Type.HUMANIZED_MESSAGE);
+				if (savedCallback != null) {
+					savedCallback.run();
 				}
 			}
 		});
@@ -281,21 +270,17 @@ public class ImmunizationController {
 		editComponent.addCommitListener(() -> {
 			if (!immunizationDataForm.getFieldGroup().isModified()) {
 				ImmunizationDto immunizationDtoValue = immunizationDataForm.getValue();
-				List<ImmunizationDto> similarImmunizations = findSimilarImmunizations(immunizationDtoValue);
-				if (similarImmunizations.isEmpty()) {
-					FacadeProvider.getImmunizationFacade().save(immunizationDtoValue);
-					if (immunizationDtoValue.getImmunizationStatus() == ImmunizationStatus.ACQUIRED) {
-						NotificationHelper.showNotification(
-							I18nProperties.getString(Strings.messageImmunizationSavedVaccinationStatusUpdated),
-							Notification.Type.WARNING_MESSAGE,
-							-1);
-					} else {
-						Notification.show(I18nProperties.getString(Strings.messageImmunizationSaved), Notification.Type.WARNING_MESSAGE);
-					}
-					SormasUI.refreshView();
+
+				FacadeProvider.getImmunizationFacade().save(immunizationDtoValue);
+				if (immunizationDtoValue.getImmunizationStatus() == ImmunizationStatus.ACQUIRED) {
+					NotificationHelper.showNotification(
+						I18nProperties.getString(Strings.messageImmunizationSavedVaccinationStatusUpdated),
+						Notification.Type.WARNING_MESSAGE,
+						-1);
 				} else {
-					showSimilarImmunizationPopup(immunizationDtoValue, similarImmunizations.get(0), this::saveImmunization);
+					Notification.show(I18nProperties.getString(Strings.messageImmunizationSaved), Notification.Type.WARNING_MESSAGE);
 				}
+				SormasUI.refreshView();
 			}
 		});
 
@@ -324,12 +309,6 @@ public class ImmunizationController {
 			immunizationDto.isInJurisdiction());
 
 		return editComponent;
-	}
-
-	private void saveImmunization(ImmunizationDto immunizationDtoValue) {
-		FacadeProvider.getImmunizationFacade().save(immunizationDtoValue);
-		Notification.show(I18nProperties.getString(Strings.messageImmunizationSaved), Notification.Type.WARNING_MESSAGE);
-		SormasUI.refreshView();
 	}
 
 	public TitleLayout getImmunizationViewTitleLayout(String uuid) {
@@ -392,6 +371,14 @@ public class ImmunizationController {
 		}
 	}
 
+	/**
+	 * Finds similar immunizations based on start date and end date.
+	 * 
+	 * @deprecated It has been deprecated, kept for now in case the functionality will be revised and needed again.
+	 * @param immunizationDto
+	 * @return
+	 */
+	@Deprecated(forRemoval = true)
 	private List<ImmunizationDto> findSimilarImmunizations(ImmunizationDto immunizationDto) {
 		ImmunizationSimilarityCriteria criteria = new ImmunizationSimilarityCriteria.Builder().withImmunization(immunizationDto.getUuid())
 			.withDisease(immunizationDto.getDisease())
@@ -404,6 +391,15 @@ public class ImmunizationController {
 		return FacadeProvider.getImmunizationFacade().getSimilarImmunizations(criteria);
 	}
 
+	/**
+	 * Dispays a dialog to notify user of similar immunizations.
+	 * 
+	 * @deprecated It has been deprecated, kept for now in case the functionality will be revised and needed again.
+	 * @param immunizationDto
+	 * @param similarImmunization
+	 * @param callback
+	 */
+	@Deprecated(forRemoval = true)
 	private void showSimilarImmunizationPopup(
 		ImmunizationDto immunizationDto,
 		ImmunizationDto similarImmunization,
