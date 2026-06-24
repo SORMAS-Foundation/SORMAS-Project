@@ -37,15 +37,6 @@ public interface NotifierFacade extends BaseFacade<NotifierDto, NotifierIndexDto
     NotifierDto save(@Valid @NotNull NotifierDto notifierDto);
 
     /**
-     * Get a notifier by its unique identifier.
-     *
-     * @param uuid
-     *            The unique identifier of the notifier.
-     * @return The notifier DTO.
-     */
-    NotifierDto getByUuid(String uuid);
-
-    /**
      * Get a notifier values from history at a specific time.
      * This method should return the notifier values at the specified time or current if no history is found.
      *
