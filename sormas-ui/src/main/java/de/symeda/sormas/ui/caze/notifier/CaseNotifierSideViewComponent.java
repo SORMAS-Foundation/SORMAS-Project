@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.ui.caze.notifier;
 
+import java.util.function.Consumer;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
@@ -43,13 +45,17 @@ public class CaseNotifierSideViewComponent extends SideComponent {
 	/**
 	 * Creates a new notifier side view component for the given case.
 	 *
-	 * @param caze
-	 *            the case data for which the notifier side view is displayed
 	 */
-	public CaseNotifierSideViewComponent(CaseDataDto caze) {
-		super(I18nProperties.getString(Strings.headingCaseNotifiedBy));
+	/**
+	 * Creates a new notifier side view component for the given case.
+	 *
+	 * @param cazeRef
+	 *            the case data reference for which the notifier side view is displayed
+	 */
+	public CaseNotifierSideViewComponent(CaseReferenceDto cazeRef, Consumer<Runnable> actionCallback) {
+		super(I18nProperties.getString(Strings.headingCaseNotifiedBy), actionCallback);
 
-		final CaseReferenceDto cazeRef = caze.toReference();
+		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(cazeRef.getUuid());
 
 		final SurveillanceReportDto oldestDoctorDeclarationReport = controller.getOldestDoctorDeclarationReport(cazeRef);
 		final SurveillanceReportDto phoneNotificationReport = controller.getNewestPhoneNotificationReport(cazeRef);
@@ -66,10 +72,10 @@ public class CaseNotifierSideViewComponent extends SideComponent {
 			addComponent(new Label(I18nProperties.getCaption(Captions.Notification_noNotification)));
 			// Create a new notification button
 			Button newNotificationButton = ButtonHelper.createIconButton(Captions.Notification_createNotification, VaadinIcons.PHONE, e -> {
-				controller.createPhoneNotification(caze, () -> {
+				actionCallback.accept(() -> controller.createPhoneNotification(cazeRef, () -> {
 					// Refresh the view by navigating back to the same case
-					ControllerProvider.getCaseController().navigateToCase(caze.getUuid());
-				});
+					ControllerProvider.getCaseController().navigateToCase(cazeRef.getUuid());
+				}));
 			}, ValoTheme.BUTTON_PRIMARY);
 			addCreateButton(newNotificationButton);
 

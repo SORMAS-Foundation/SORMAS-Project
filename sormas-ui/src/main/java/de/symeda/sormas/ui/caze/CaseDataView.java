@@ -144,7 +144,7 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 		boolean isEditAllowed = isEditAllowed();
 
 		if (UiUtil.enabled(FeatureType.SURVEILLANCE_REPORTS)) {
-			CaseNotifierSideViewComponent notifierSideViewComponent = new CaseNotifierSideViewComponent(caze);
+			CaseNotifierSideViewComponent notifierSideViewComponent = new CaseNotifierSideViewComponent(getCaseRef(), this::showUnsavedChangesPopup);
 			notifierSideViewComponent.addStyleNames(CssStyles.SIDE_COMPONENT);
 			layout.addSidePanelComponent(notifierSideViewComponent, CASE_NOTIFIER_LOC);
 		}
