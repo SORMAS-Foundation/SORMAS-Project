@@ -69,8 +69,8 @@ public class LaboratoryResultsStatisticsComponent extends DiseaseSectionStatisti
 
 			buildCountLayout(labResultPositive, labResultNegative, labResultPending, labResultIndeterminate, labResultNotDone);
 		} else {
-			// TestResult Not applicable should display only in all test results section, 
-			// rather in final laboratory results section.
+			// The status 'Not applicable' should be visible only within the 'All Test Results' section, 
+			// rather than the 'Final Laboratory Results' section
 			buildCountLayout(labResultPositive, labResultNegative, labResultPending, labResultIndeterminate, labResultNA);
 		}
 	}
