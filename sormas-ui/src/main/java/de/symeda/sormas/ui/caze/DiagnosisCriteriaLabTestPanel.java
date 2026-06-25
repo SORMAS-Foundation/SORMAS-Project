@@ -74,6 +74,9 @@ public class DiagnosisCriteriaLabTestPanel extends CustomLayout {
 	private static final String TEST_RESULT_NEG = "NEGATIVE";
 	private static final String TEST_RESULT_ONGOING = "ONGOING";
 
+	private static final String TEST_RESULT_KEY_RESULT = "RESULT";
+	private static final String TEST_RESULT_KEY_DATE = "DATE";
+
 	private Disease disease;
 	private List<PathogenTestDto> pathogenTests;
 
@@ -121,8 +124,8 @@ public class DiagnosisCriteriaLabTestPanel extends CustomLayout {
 				}
 
 				Map<String, String> testResultDetails = new HashMap<>();
-				testResultDetails.put("RESULT", testResult);
-				testResultDetails.put("DATE", testDate);
+				testResultDetails.put(TEST_RESULT_KEY_RESULT, testResult);
+				testResultDetails.put(TEST_RESULT_KEY_DATE, testDate);
 				testResultDetails.put(
 					PathogenTestDto.RIFAMPICIN_RESISTANT,
 					(pathogenTest.getRifampicinResistant() != null ? pathogenTest.getRifampicinResistant().toString().toUpperCase() : null));
@@ -131,6 +134,8 @@ public class DiagnosisCriteriaLabTestPanel extends CustomLayout {
 					(pathogenTest.getIsoniazidResistant() != null ? pathogenTest.getIsoniazidResistant().toString().toUpperCase() : null));
 				testResultDetails
 					.put(PathogenTestDto.TEST_SCALE, (pathogenTest.getTestScale() != null ? pathogenTest.getTestScale().toString() : null));
+				testResultDetails
+					.put(PathogenTestDto.SMEAR_GRADE, (pathogenTest.getSmearGrade() != null ? pathogenTest.getSmearGrade().toString() : null));
 				testDetails.put(pathogenTest.getTestType().name(), testResultDetails);
 			}
 		}
@@ -143,8 +148,8 @@ public class DiagnosisCriteriaLabTestPanel extends CustomLayout {
 			TextField igraTestResultDate = addTextFieldComponent(IGRA_TEST_RESULT_DATE_LOC, "", true);
 			if (testDetails.containsKey(PathogenTestType.IGRA.name())) {
 				igraTest.setValue(TEST_TYPE_YES);
-				igraTestResult.setValue(testDetails.get(PathogenTestType.IGRA.name()).get("RESULT"));
-				igraTestResultDate.setValue(testDetails.get(PathogenTestType.IGRA.name()).get("DATE"));
+				igraTestResult.setValue(testDetails.get(PathogenTestType.IGRA.name()).get(TEST_RESULT_KEY_RESULT));
+				igraTestResultDate.setValue(testDetails.get(PathogenTestType.IGRA.name()).get(TEST_RESULT_KEY_DATE));
 			} else {
 				igraTest.setValue(TEST_TYPE_NO);
 			}
@@ -154,8 +159,8 @@ public class DiagnosisCriteriaLabTestPanel extends CustomLayout {
 			TextField tstTestResultDate = addTextFieldComponent(TST_TEST_RESULT_DATE_LOC, "", true);
 			if (testDetails.containsKey(PathogenTestType.TST.name())) {
 				tstTest.setValue(TEST_TYPE_YES);
-				tstTestResult.setValue(testDetails.get(PathogenTestType.TST.name()).get("RESULT"));
-				tstTestResultDate.setValue(testDetails.get(PathogenTestType.TST.name()).get("DATE"));
+				tstTestResult.setValue(testDetails.get(PathogenTestType.TST.name()).get(TEST_RESULT_KEY_RESULT));
+				tstTestResultDate.setValue(testDetails.get(PathogenTestType.TST.name()).get(TEST_RESULT_KEY_DATE));
 			} else {
 				tstTest.setValue(TEST_TYPE_NO);
 			}
@@ -171,8 +176,8 @@ public class DiagnosisCriteriaLabTestPanel extends CustomLayout {
 				I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.ISONIAZID_RESISTANT));
 			if (testDetails.containsKey(PathogenTestType.PCR_RT_PCR.name())) {
 				pcrTest.setValue(TEST_TYPE_YES);
-				pcrTestResult.setValue(testDetails.get(PathogenTestType.PCR_RT_PCR.name()).get("RESULT"));
-				pcrTestResultDate.setValue(testDetails.get(PathogenTestType.PCR_RT_PCR.name()).get("DATE"));
+				pcrTestResult.setValue(testDetails.get(PathogenTestType.PCR_RT_PCR.name()).get(TEST_RESULT_KEY_RESULT));
+				pcrTestResultDate.setValue(testDetails.get(PathogenTestType.PCR_RT_PCR.name()).get(TEST_RESULT_KEY_DATE));
 
 				String pcrRifampicinStr = testDetails.get(PathogenTestType.PCR_RT_PCR.name()).get(PathogenTestDto.RIFAMPICIN_RESISTANT);
 				if (pcrRifampicinStr != null) {
@@ -194,12 +199,19 @@ public class DiagnosisCriteriaLabTestPanel extends CustomLayout {
 			OptionGroup microscopyTest = addTestTypeComponent(MICROSCOPY_TEST_LOC, I18nProperties.getEnumCaption(PathogenTestType.MICROSCOPY));
 			OptionGroup microscopyTestResult = addTestResultComponent(MICROSCOPY_TEST_RESULT_LOC);
 			TextField microscopyTestResultDate = addTextFieldComponent(MICROSCOPY_TEST_RESULT_DATE_LOC, "", true);
-			TextField microscopyTestScale = addTextFieldComponent(MICROSCOPY_TEST_SCALE_LOC, "Test Scale", false);
+			TextField microscopyTestScale = addTextFieldComponent(MICROSCOPY_TEST_SCALE_LOC, "", false);
 			if (testDetails.containsKey(PathogenTestType.MICROSCOPY.name())) {
 				microscopyTest.setValue(TEST_TYPE_YES);
-				microscopyTestResult.setValue(testDetails.get(PathogenTestType.MICROSCOPY.name()).get("RESULT"));
-				microscopyTestResultDate.setValue(testDetails.get(PathogenTestType.MICROSCOPY.name()).get("DATE"));
+				microscopyTestResult.setValue(testDetails.get(PathogenTestType.MICROSCOPY.name()).get(TEST_RESULT_KEY_RESULT));
+				microscopyTestResultDate.setValue(testDetails.get(PathogenTestType.MICROSCOPY.name()).get(TEST_RESULT_KEY_DATE));
 				microscopyTestScale.setValue(testDetails.get(PathogenTestType.MICROSCOPY.name()).get(PathogenTestDto.TEST_SCALE));
+				microscopyTestScale.setCaption(I18nProperties.getCaption(Captions.PathogenTest_testScale));
+			} else if (testDetails.containsKey(PathogenTestType.ACID_FAST_STAIN.name())) {
+				microscopyTest.setValue(TEST_TYPE_YES);
+				microscopyTestResult.setValue(testDetails.get(PathogenTestType.ACID_FAST_STAIN.name()).get(TEST_RESULT_KEY_RESULT));
+				microscopyTestResultDate.setValue(testDetails.get(PathogenTestType.ACID_FAST_STAIN.name()).get(TEST_RESULT_KEY_DATE));
+				microscopyTestScale.setValue(testDetails.get(PathogenTestType.ACID_FAST_STAIN.name()).get(PathogenTestDto.SMEAR_GRADE));
+				microscopyTestScale.setCaption(I18nProperties.getCaption(Captions.PathogenTest_smearGrade));
 			} else {
 				microscopyTest.setValue(TEST_TYPE_NO);
 				microscopyTestScale.setVisible(false);
@@ -210,8 +222,8 @@ public class DiagnosisCriteriaLabTestPanel extends CustomLayout {
 			TextField cultureTestResultDate = addTextFieldComponent(CULTURE_TEST_RESULT_DATE_LOC, "", true);
 			if (testDetails.containsKey(PathogenTestType.CULTURE.name())) {
 				cultureTest.setValue(TEST_TYPE_YES);
-				cultureTestResult.setValue(testDetails.get(PathogenTestType.CULTURE.name()).get("RESULT"));
-				cultureTestResultDate.setValue(testDetails.get(PathogenTestType.CULTURE.name()).get("DATE"));
+				cultureTestResult.setValue(testDetails.get(PathogenTestType.CULTURE.name()).get(TEST_RESULT_KEY_RESULT));
+				cultureTestResultDate.setValue(testDetails.get(PathogenTestType.CULTURE.name()).get(TEST_RESULT_KEY_DATE));
 			} else {
 				cultureTest.setValue(TEST_TYPE_NO);
 			}
