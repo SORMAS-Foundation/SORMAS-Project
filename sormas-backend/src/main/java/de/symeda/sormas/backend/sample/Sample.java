@@ -97,8 +97,6 @@ public class Sample extends DeletableAdo implements IsSample, SormasToSormasShar
 	public static final String SPECIMEN_CONDITION = "specimenCondition";
 	public static final String PATHOGEN_TESTING_REQUESTED = "pathogenTestingRequested";
 	public static final String ADDITIONAL_TESTING_REQUESTED = "additionalTestingRequested";
-	public static final String PERFORMED_BY_REFERENCE_LABORATORY = "performedByReferenceLaboratory";
-	public static final String RETEST_REQUESTED = "retestRequested";
 	public static final String ADDITIONAL_TESTS = "additionalTests";
 	public static final String PATHOGEN_TEST_RESULT = "pathogenTestResult";
 	public static final String PATHOGEN_TEST_RESULT_CHANGE_DATE = "pathogenTestResultChangeDate";
@@ -145,8 +143,6 @@ public class Sample extends DeletableAdo implements IsSample, SormasToSormasShar
 
 	private Boolean pathogenTestingRequested;
 	private Boolean additionalTestingRequested;
-	private Boolean performedByReferenceLaboratory;
-	private Boolean retestRequested;
 	private Set<PathogenTestType> requestedPathogenTests;
 	private Set<AdditionalTestType> requestedAdditionalTests;
 	private String requestedOtherPathogenTests;
@@ -433,24 +429,6 @@ public class Sample extends DeletableAdo implements IsSample, SormasToSormasShar
 
 	public void setAdditionalTestingRequested(Boolean additionalTestingRequested) {
 		this.additionalTestingRequested = additionalTestingRequested;
-	}
-
-	@Column
-	public Boolean getPerformedByReferenceLaboratory() {
-		return performedByReferenceLaboratory;
-	}
-
-	public void setPerformedByReferenceLaboratory(Boolean performedByReferenceLaboratory) {
-		this.performedByReferenceLaboratory = performedByReferenceLaboratory;
-	}
-
-	@Column
-	public Boolean getRetestRequested() {
-		return retestRequested;
-	}
-
-	public void setRetestRequested(Boolean retestRequested) {
-		this.retestRequested = retestRequested;
 	}
 
 	@Transient
