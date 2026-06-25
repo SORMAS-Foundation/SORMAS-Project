@@ -23,6 +23,7 @@ public class LaboratoryResultsStatisticsComponent extends DiseaseSectionStatisti
 	private final DashboardStatisticsCountElement labResultNegative;
 	private final DashboardStatisticsCountElement labResultPending;
 	private final DashboardStatisticsCountElement labResultIndeterminate;
+	private final DashboardStatisticsCountElement labResultNA;
 	private final boolean showNotDoneCount;
 	private boolean withPercentage;
 	private DashboardStatisticsCountElement labResultNotDone;
@@ -61,13 +62,16 @@ public class LaboratoryResultsStatisticsComponent extends DiseaseSectionStatisti
 		labResultPending = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardPending), CountElementStyle.IMPORTANT);
 		labResultIndeterminate =
 			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardIndeterminate), CountElementStyle.MINOR);
+		labResultNA = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardNA), CountElementStyle.RELEVANT);
 
 		if (showNotDoneCount) {
 			labResultNotDone = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardNotDone), CountElementStyle.NEUTRAL);
 
 			buildCountLayout(labResultPositive, labResultNegative, labResultPending, labResultIndeterminate, labResultNotDone);
 		} else {
-			buildCountLayout(labResultPositive, labResultNegative, labResultPending, labResultIndeterminate);
+			// TestResult Not applicable should display only in all test results section, 
+			// rather in final laboratory results section.
+			buildCountLayout(labResultPositive, labResultNegative, labResultPending, labResultIndeterminate, labResultNA);
 		}
 	}
 
@@ -79,6 +83,7 @@ public class LaboratoryResultsStatisticsComponent extends DiseaseSectionStatisti
 			Long labResultPendingCount = testResults.getOrDefault(PathogenTestResultType.PENDING, 0L);
 			Long labResultIndeterminateCount = testResults.getOrDefault(PathogenTestResultType.INDETERMINATE, 0L);
 			Long labResultNotDoneCount = showNotDoneCount ? testResults.getOrDefault(PathogenTestResultType.NOT_DONE, 0L) : null;
+			Long labResultNACount = testResults.getOrDefault(PathogenTestResultType.NOT_APPLICABLE, 0L);
 
 			updateTotalLabel(((Long) testResults.values().stream().mapToLong(Long::longValue).sum()).toString());
 			if (withPercentage) {
@@ -86,6 +91,7 @@ public class LaboratoryResultsStatisticsComponent extends DiseaseSectionStatisti
 				labResultPositive.updateCountLabel(labResultPositiveCount + " (" + calculatePercentage(totalCount, labResultPositiveCount) + " %)");
 				labResultNegative.updateCountLabel(labResultNegativeCount + " (" + calculatePercentage(totalCount, labResultNegativeCount) + " %)");
 				labResultPending.updateCountLabel(labResultPendingCount + " (" + calculatePercentage(totalCount, labResultPendingCount) + " %)");
+				labResultNA.updateCountLabel(labResultNACount + " (" + calculatePercentage(totalCount, labResultNACount) + " %)");
 				labResultIndeterminate
 					.updateCountLabel(labResultIndeterminateCount + " (" + calculatePercentage(totalCount, labResultIndeterminateCount) + " %)");
 				if (labResultNotDoneCount != null) {
@@ -97,6 +103,7 @@ public class LaboratoryResultsStatisticsComponent extends DiseaseSectionStatisti
 				labResultNegative.updateCountLabel(labResultNegativeCount.toString());
 				labResultPending.updateCountLabel(labResultPendingCount.toString());
 				labResultIndeterminate.updateCountLabel(labResultIndeterminateCount.toString());
+				labResultNA.updateCountLabel(labResultNACount.toString());
 				if (labResultNotDoneCount != null) {
 					labResultNotDone.updateCountLabel(labResultNotDoneCount.toString());
 				}
