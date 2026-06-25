@@ -1673,6 +1673,7 @@ public interface Strings {
 	String messageSurveyResponseAllFieldsApplied = "messageSurveyResponseAllFieldsApplied";
 	String messageSurveyResponseNotYetProcessed = "messageSurveyResponseNotYetProcessed";
 	String messageSurveyResponseReprocessed = "messageSurveyResponseReprocessed";
+	String messageSurveyResponseReprocessedFailure = "messageSurveyResponseReprocessedFailure";
 	String messageSurveySaved = "messageSurveySaved";
 	String messageSurveyTokenDelete = "messageSurveyTokenDelete";
 	String messageSurveyTokenSaved = "messageSurveyTokenSaved";
