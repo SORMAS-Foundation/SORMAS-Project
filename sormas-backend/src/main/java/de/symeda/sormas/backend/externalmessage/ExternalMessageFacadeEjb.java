@@ -310,37 +310,42 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		ExternalMessageResult<List<ExternalMessageDto>> externalMessagesResult = externalLabResultsFacade.getExternalMessages(since);
 		List<ExternalMessageDto> surveyResponses = externalMessagesResult.getValue();
 
-		List<String> reportIds = surveyResponses.stream().map(ExternalMessageDto::getReportId).filter(Objects::nonNull).collect(toList());
+		List<String> reportIds =
+			surveyResponses.stream().filter(Objects::nonNull).map(ExternalMessageDto::getReportId).filter(Objects::nonNull).collect(toList());
 
-		if (!reportIds.isEmpty()) {
-			logger.debug("ReportIds that will be processed: [{}]", reportIds);
-			Map<String, de.symeda.sormas.api.utils.Tuple<ExternalMessageStatus, String>> statusUuidTuplesByReportId =
-				externalMessageService.getUuidsByReportIds(reportIds);
+		if (CollectionUtils.isEmpty(reportIds)) {
+			logger.info("No reportIds found, this means there is no new external survey responses. Stopping processing");
+			return List.of();
+		}
 
-			Set<String> unProcessedMessagesReportIds = statusUuidTuplesByReportId.entrySet()
-				.stream()
-				.filter(tuple -> tuple.getValue().getFirst() == ExternalMessageStatus.UNPROCESSED)
-				.map(Map.Entry::getKey)
-				.collect(Collectors.toSet());
+		logger.debug("ReportIds that will be processed: [{}]", reportIds);
+		Map<String, de.symeda.sormas.api.utils.Tuple<ExternalMessageStatus, String>> statusUuidTuplesByReportId =
+			externalMessageService.getUuidsByReportIds(reportIds);
 
-			Set<String> alreadyPresentReportIds = statusUuidTuplesByReportId.keySet();
+		Set<String> unProcessedMessagesReportIds = statusUuidTuplesByReportId.entrySet()
+			.stream()
+			.filter(tuple -> tuple.getValue().getFirst() == ExternalMessageStatus.UNPROCESSED)
+			.map(Map.Entry::getKey)
+			.collect(Collectors.toSet());
 
-			surveyResponses.forEach(dto -> {
-				de.symeda.sormas.api.utils.Tuple<ExternalMessageStatus, String> tuple = statusUuidTuplesByReportId.get(dto.getReportId());
-				if (tuple != null && tuple.getFirst() == ExternalMessageStatus.UNPROCESSED) {
-					dto.setUuid(tuple.getSecond());
-				}
-			});
+		Set<String> alreadyPresentReportIds = statusUuidTuplesByReportId.keySet();
 
-			surveyResponses = surveyResponses.stream()
-				.filter(
-					externalMessage -> !alreadyPresentReportIds.contains(externalMessage.getReportId())
-						|| unProcessedMessagesReportIds.contains(externalMessage.getReportId()))
-				.collect(toList());
-
-			if (logger.isTraceEnabled()) {
-				logger.trace("Computed survey responses: \n{}", ObjectMapperProvider.writeValueAsStringFailSafe(surveyResponses));
+		// to replace existing messages and NOT creating new ones for same survey responses
+		surveyResponses.forEach(dto -> {
+			de.symeda.sormas.api.utils.Tuple<ExternalMessageStatus, String> tuple = statusUuidTuplesByReportId.get(dto.getReportId());
+			if (tuple != null && tuple.getFirst() == ExternalMessageStatus.UNPROCESSED) {
+				dto.setUuid(tuple.getSecond());
 			}
+		});
+
+		surveyResponses = surveyResponses.stream()
+			.filter(
+				externalMessage -> !alreadyPresentReportIds.contains(externalMessage.getReportId())
+					|| unProcessedMessagesReportIds.contains(externalMessage.getReportId()))
+			.collect(toList());
+
+		if (logger.isTraceEnabled()) {
+			logger.trace("Computed survey responses: \n{}", ObjectMapperProvider.writeValueAsStringFailSafe(surveyResponses));
 		}
 
 		List<ExternalMessageDto> savedDtos;
@@ -913,7 +918,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		String jndiName =
 			Optional.ofNullable(systemConfigurationValueFacade.getValue(SURVEY_AS_EXTERNAL_MESSAGE_ADAPTER_JNDI_CONFIG_KEY)).orElseGet(() -> {
 				String defaultName = "java:global/sormas-esante-adapter/SurveyExternalMessageAdapterFacadeEjb";
-				logger.info("External Survey Provider JNDI Key not found, using default: [{}]", defaultName);
+				logger.debug("External Survey Provider JNDI Key not found, using default: [{}]", defaultName);
 				return defaultName;
 			});
 		try {
@@ -1020,23 +1025,27 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 			.setAllowFallbackValues(latestRequest.isAllowFallbackValues())
 			.setSkipIfAlreadyProcessed(latestRequest.isSkipIfAlreadyProcessed())
 			.setPatchedInCaseOfFailures(latestRequest.isPatchedInCaseOfFailures())
-			.setPatchDictionary(correctedDictionary);
+			.setPatchDictionary(correctedDictionary)
+			.setExcludedPatchDictionary(latestRequest.getExcludedPatchDictionary());
 
 		logger.debug("Request after transformation: [{}]", correctedRequest);
 
 		ExternalMessageSurveyResponseWrapper updatedWrapper = new ExternalMessageSurveyResponseWrapper().setRequest(correctedRequest);
 		externalMessage.getSurveyResponseData().setUpdated(updatedWrapper);
 
+		ExternalMessageDto result;
 		try {
-			automaticSurveyResponseProcessor.processSurveyResponses(java.util.List.of(externalMessage));
+			automaticSurveyResponseProcessor.processSurveyResponses(List.of(externalMessage));
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			throw new RuntimeException("Interrupted while reprocessing survey response", e);
 		} catch (java.util.concurrent.ExecutionException e) {
 			throw new RuntimeException("Error while reprocessing survey response", e);
+		} finally {
+			result = save(externalMessage);
 		}
 
-		return save(externalMessage);
+		return result;
 	}
 
 	@Override

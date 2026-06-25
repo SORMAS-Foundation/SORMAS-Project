@@ -1,22 +1,12 @@
 package de.symeda.sormas.backend.common;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.*;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
@@ -108,6 +98,22 @@ public class CriteriaBuilderHelper {
 	public static Predicate andEquals(CriteriaBuilder cb, Supplier<Join<?, ?>> joinSupplier, Predicate filter, HasUuid hasUuid) {
 
 		return hasUuid == null ? filter : andEquals(cb, joinSupplier.get(), filter, hasUuid.getUuid(), AbstractDomainObject.UUID);
+	}
+
+	/**
+	 * 
+	 * @param cb
+	 *            The builder of the query to filter.
+	 * @param expression
+	 *            string field to check for null and "empty-ness".
+	 * @return Predicate that results to true if field is not null and not empty.
+	 *         Example: "" -> false, null -> false, "SORMAS" -> true.
+	 */
+	public static Predicate notNullAndNotEmpty(CriteriaBuilder cb, Expression<String> expression) {
+		Predicate notNull = cb.isNotNull(expression);
+		Predicate notEmpty = cb.gt(cb.length(expression), 0);
+
+		return cb.and(notNull, notEmpty);
 	}
 
 	public static Predicate andInValues(Collection<?> values, Predicate filter, CriteriaBuilder cb, Path<Object> path) {
@@ -222,8 +228,10 @@ public class CriteriaBuilderHelper {
 	}
 
 	public interface OrderBuilder {
+
 		List<Order> build(Expression<?>... expressions);
 	}
+
 	public static OrderBuilder createOrderBuilder(CriteriaBuilder cb, boolean ascending) {
 		return (Expression<?>... expressions) -> Stream.of(expressions).map(e -> ascending ? cb.asc(e) : cb.desc(e)).collect(Collectors.toList());
 	}
