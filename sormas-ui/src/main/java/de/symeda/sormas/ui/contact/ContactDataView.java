@@ -15,7 +15,9 @@
 package de.symeda.sormas.ui.contact;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.ContentMode;
@@ -100,7 +102,13 @@ public class ContactDataView extends AbstractContactView implements HasName {
 
 	private CommitDiscardWrapperComponent<ContactDataForm> editComponent;
 
-	private final static List<Disease> IMMUNIZATION_EXCLUDED_DISEASES = Arrays.asList(Disease.SALMONELLOSIS, Disease.SHIGELLOSIS);
+	//@formatter:off
+	private static final Set<Disease> IMMUNIZATION_EXCLUDED_DISEASES = new HashSet<>(Arrays.asList(
+		Disease.GIARDIASIS, 
+		Disease.CRYPTOSPORIDIOSIS, 
+		Disease.SALMONELLOSIS, 
+		Disease.SHIGELLOSIS));
+	//@formatter:on
 
 	public ContactDataView() {
 		super(VIEW_NAME);

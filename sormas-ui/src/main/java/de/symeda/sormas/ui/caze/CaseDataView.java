@@ -14,7 +14,9 @@
  */
 package de.symeda.sormas.ui.caze;
 
-import java.util.List;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -98,6 +100,14 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 	public static final String CASE_NOTIFIER_LOC = "caseNotifier";
 	private static final long serialVersionUID = -1L;
 	private CommitDiscardWrapperComponent<CaseDataForm> editComponent;
+
+	//@formatter:off
+	private static final Set<Disease> IMMUNIZATION_EXCLUDED_DISEASES = new HashSet<>(Arrays.asList(
+		Disease.GIARDIASIS, 
+		Disease.CRYPTOSPORIDIOSIS, 
+		Disease.SALMONELLOSIS, 
+		Disease.SHIGELLOSIS));
+	//@formatter:on
 
 	public CaseDataView() {
 		super(VIEW_NAME, false);
@@ -184,30 +194,28 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 			layout.addSidePanelComponent(eventLayout, EVENTS_LOC);
 		}
 
-		if (UiUtil.permitted(FeatureType.IMMUNIZATION_MANAGEMENT, UserRight.IMMUNIZATION_VIEW)) {
-			// Immunizations are not shown for Giardiasis, Cryptosporidiosis, and Salmonellosis
-			if (!List.of(Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS, Disease.SALMONELLOSIS).contains(caze.getDisease())) {
-				final VaccinationStatusPanel vaccinationStatusPanel = ControllerProvider.getCaseController().createVaccinationStatusPanel(caze);
-				if (caze.getVaccinationStatusLastUpdated() == null && UiUtil.permitted(UserRight.IMMUNIZATION_EDIT)) {
-					showVaccinationStatusUpdateDialog(caze);
-				}
-				if (!FacadeProvider.getFeatureConfigurationFacade()
-					.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
-					layout.addSidePanelComponent(new SideComponentLayout(new ImmunizationListComponent(() -> {
-						CaseDataDto refreshedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
-						return new ImmunizationListCriteria.Builder(refreshedCase.getPerson()).withDisease(refreshedCase.getDisease()).build();
-					}, null, this::showUnsavedChangesPopup, isEditAllowed, vaccinationStatusPanel, SormasUI::refreshView)), IMMUNIZATION_LOC);
-				} else {
-					layout.addSidePanelComponent(new SideComponentLayout(new VaccinationListComponent(() -> {
-						CaseDataDto refreshedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
-						return new VaccinationCriteria.Builder(refreshedCase.getPerson()).withDisease(refreshedCase.getDisease())
-							.build()
-							.vaccinationAssociationType(VaccinationAssociationType.CASE)
-							.caseReference(getCaseRef())
-							.region(refreshedCase.getResponsibleRegion())
-							.district(refreshedCase.getResponsibleDistrict());
-					}, null, this::showUnsavedChangesPopup, isEditAllowed)), VACCINATIONS_LOC);
-				}
+		if (!IMMUNIZATION_EXCLUDED_DISEASES.contains(caze.getDisease())
+			&& UiUtil.permitted(FeatureType.IMMUNIZATION_MANAGEMENT, UserRight.IMMUNIZATION_VIEW)) {
+			final VaccinationStatusPanel vaccinationStatusPanel = ControllerProvider.getCaseController().createVaccinationStatusPanel(caze);
+			if (caze.getVaccinationStatusLastUpdated() == null && UiUtil.permitted(UserRight.IMMUNIZATION_EDIT)) {
+				showVaccinationStatusUpdateDialog(caze);
+			}
+			if (!FacadeProvider.getFeatureConfigurationFacade()
+				.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
+				layout.addSidePanelComponent(new SideComponentLayout(new ImmunizationListComponent(() -> {
+					CaseDataDto refreshedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
+					return new ImmunizationListCriteria.Builder(refreshedCase.getPerson()).withDisease(refreshedCase.getDisease()).build();
+				}, null, this::showUnsavedChangesPopup, isEditAllowed, vaccinationStatusPanel, SormasUI::refreshView)), IMMUNIZATION_LOC);
+			} else {
+				layout.addSidePanelComponent(new SideComponentLayout(new VaccinationListComponent(() -> {
+					CaseDataDto refreshedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
+					return new VaccinationCriteria.Builder(refreshedCase.getPerson()).withDisease(refreshedCase.getDisease())
+						.build()
+						.vaccinationAssociationType(VaccinationAssociationType.CASE)
+						.caseReference(getCaseRef())
+						.region(refreshedCase.getResponsibleRegion())
+						.district(refreshedCase.getResponsibleDistrict());
+				}, null, this::showUnsavedChangesPopup, isEditAllowed)), VACCINATIONS_LOC);
 			}
 		}
 
