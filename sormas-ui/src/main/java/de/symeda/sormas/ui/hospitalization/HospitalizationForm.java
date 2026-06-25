@@ -218,38 +218,45 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		final TextField durationOfHospitalization = addField(HospitalizationDto.DURATION_OF_HOSPITALIZATION, TextField.class);
 		durationOfHospitalization.setVisible(false);
 
-		FieldHelper.setEnabledWhen(
-			admittedToHealthFacilityField,
-			Arrays.asList(YesNoUnknown.YES, YesNoUnknown.NO, YesNoUnknown.UNKNOWN),
-			Arrays.asList(
-				facilityField,
-				admissionDateField,
-				dischargeDateField,
-				intensiveCareUnit,
-				intensiveCareUnitStart,
-				intensiveCareUnitEnd,
-				oxygenPrescribedField,
-				stillHospitalizedField,
-				isolationDateField,
-				descriptionField,
-				isolatedField,
-				leftAgainstAdviceField,
-				hospitalizationReason,
-				icuLengthOfStayField,
-				durationOfHospitalization,
-				otherHospitalizationReason),
-			false);
-		FieldHelper.setEnabledWhen(
-			currentlyHospitalizedField,
-			Arrays.asList(YesNoUnknown.YES),
-			Arrays.asList(
-				admissionDateField,
-				dischargeDateField,
-				leftAgainstAdviceField,
-				durationOfHospitalization,
-				hospitalizationReason,
-				otherHospitalizationReason),
-			true);
+		// Fields should be enabled if either "admitted to health facility" is YES or "currently hospitalized" is YES
+		List<Field<?>> fieldsToEnableWhenAdmitted = Arrays.asList(
+			facilityField,
+			admissionDateField,
+			dischargeDateField,
+			intensiveCareUnit,
+			intensiveCareUnitStart,
+			intensiveCareUnitEnd,
+			oxygenPrescribedField,
+			stillHospitalizedField,
+			isolationDateField,
+			descriptionField,
+			isolatedField,
+			leftAgainstAdviceField,
+			hospitalizationReason,
+			icuLengthOfStayField,
+			durationOfHospitalization,
+			otherHospitalizationReason);
+
+		// Helper method to update enabled state based on both fields
+		final Runnable updateEnabledState = () -> {
+			boolean shouldEnable = YesNoUnknown.YES.equals(admittedToHealthFacilityField.getNullableValue())
+				|| YesNoUnknown.YES.equals(currentlyHospitalizedField.getNullableValue());
+
+			for (Field<?> field : fieldsToEnableWhenAdmitted) {
+				boolean isReadOnly = field.isReadOnly();
+				field.setEnabled(shouldEnable);
+				if (!shouldEnable) {
+					field.setReadOnly(false);
+					field.clear();
+					field.setReadOnly(isReadOnly);
+				}
+			}
+		};
+
+		// Initialize and add listeners
+		updateEnabledState.run();
+		admittedToHealthFacilityField.addValueChangeListener(e -> updateEnabledState.run());
+		currentlyHospitalizedField.addValueChangeListener(e -> updateEnabledState.run());
 
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
