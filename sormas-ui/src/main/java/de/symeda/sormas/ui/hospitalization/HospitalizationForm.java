@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BooleanSupplier;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -219,7 +220,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		durationOfHospitalization.setVisible(false);
 
 		// Fields should be enabled if either "admitted to health facility" is YES or "currently hospitalized" is YES
-		List<Field<?>> fieldsToEnableWhenAdmitted = Arrays.asList(
+		final List<Field<?>> fieldsToEnableWhenAdmitted = Arrays.asList(
 			facilityField,
 			admissionDateField,
 			dischargeDateField,
@@ -237,26 +238,63 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 			durationOfHospitalization,
 			otherHospitalizationReason);
 
+		// User-editable fields that should be cleared when disabling (not case-derived like facilityField)
+		final List<Field<?>> userEditableFields = Arrays.asList(
+			admissionDateField,
+			dischargeDateField,
+			intensiveCareUnit,
+			intensiveCareUnitStart,
+			intensiveCareUnitEnd,
+			oxygenPrescribedField,
+			stillHospitalizedField,
+			isolationDateField,
+			descriptionField,
+			isolatedField,
+			leftAgainstAdviceField,
+			hospitalizationReason,
+			icuLengthOfStayField,
+			durationOfHospitalization,
+			otherHospitalizationReason);
+
 		// Helper method to update enabled state based on both fields
-		final Runnable updateEnabledState = () -> {
+		// clearOnUserAction: true when called from a value change listener (user triggered), false for initial setup
+		final BooleanSupplier updateEnabledState = () -> {
 			boolean shouldEnable = YesNoUnknown.YES.equals(admittedToHealthFacilityField.getNullableValue())
 				|| YesNoUnknown.YES.equals(currentlyHospitalizedField.getNullableValue());
 
 			for (Field<?> field : fieldsToEnableWhenAdmitted) {
-				boolean isReadOnly = field.isReadOnly();
 				field.setEnabled(shouldEnable);
-				if (!shouldEnable) {
-					field.setReadOnly(false);
-					field.clear();
-					field.setReadOnly(isReadOnly);
+			}
+			return shouldEnable;
+		};
+
+		// Helper method to clear user-editable fields (called on user-triggered disable)
+		final Runnable clearUserEditableFields = () -> {
+			for (Field<?> field : userEditableFields) {
+				// we do not clear read only
+				if (field.isReadOnly()) {
+					continue;
 				}
+				field.clear();
 			}
 		};
 
-		// Initialize and add listeners
-		updateEnabledState.run();
-		admittedToHealthFacilityField.addValueChangeListener(e -> updateEnabledState.run());
-		currentlyHospitalizedField.addValueChangeListener(e -> updateEnabledState.run());
+		// Initialize enabled state on form load (without clearing data)
+		updateEnabledState.getAsBoolean();
+
+		// Add listeners for user-triggered changes
+		admittedToHealthFacilityField.addValueChangeListener(e -> {
+			boolean shouldEnable = updateEnabledState.getAsBoolean();
+			if (!shouldEnable) {
+				clearUserEditableFields.run();
+			}
+		});
+		currentlyHospitalizedField.addValueChangeListener(e -> {
+			boolean shouldEnable = updateEnabledState.getAsBoolean();
+			if (!shouldEnable) {
+				clearUserEditableFields.run();
+			}
+		});
 
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
