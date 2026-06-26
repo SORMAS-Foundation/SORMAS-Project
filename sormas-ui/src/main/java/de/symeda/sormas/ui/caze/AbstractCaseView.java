@@ -71,13 +71,16 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 				Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 				Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 				Disease.GIARDIASIS,
-				Disease.CRYPTOSPORIDIOSIS)));
+				Disease.CRYPTOSPORIDIOSIS,
+				Disease.LATENT_TUBERCULOSIS)));
 
 	public static final Set<Disease> THERAPY_DISABLED_DISEASES =
 		Collections.unmodifiableSet(new HashSet<>(Arrays.asList(Disease.MEASLES, Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS)));
 
 	public static final Set<Disease> SYMPTOMS_DISABLED_DISEASES =
 		Collections.unmodifiableSet(new HashSet<>(Arrays.asList(Disease.INFLUENZA, Disease.LATENT_TUBERCULOSIS)));
+	public static final Set<Disease> HOSPITALIZATION_DISABLED_DISEASES =
+		Collections.unmodifiableSet(new HashSet<>(Arrays.asList(Disease.LATENT_TUBERCULOSIS)));
 
 	private Boolean hasOutbreak;
 	private boolean caseFollowupEnabled;
@@ -181,7 +184,10 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.MATERNAL_HISTORY),
 					params);
 			}
-			if (UiUtil.enabled(FeatureType.VIEW_TAB_CASES_HOSPITALIZATION) && !caze.checkIsUnreferredPortHealthCase() && !UiUtil.isPortHealthUser()) {
+			if (UiUtil.enabled(FeatureType.VIEW_TAB_CASES_HOSPITALIZATION)
+				&& !caze.checkIsUnreferredPortHealthCase()
+				&& !UiUtil.isPortHealthUser()
+				&& !HOSPITALIZATION_DISABLED_DISEASES.contains(caze.getDisease())) {
 				menu.addView(
 					HospitalizationView.VIEW_NAME,
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HOSPITALIZATION),
