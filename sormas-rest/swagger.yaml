@@ -24892,8 +24892,6 @@ components:
           - NOT_APPLICABLE
         pathogenTestingRequested:
           type: boolean
-        performedByReferenceLaboratory:
-          type: boolean
         pseudonymized:
           type: boolean
         received:
@@ -25029,8 +25027,6 @@ components:
             - FLOW_CYTOMETRY
             - OTHER
           uniqueItems: true
-        retestRequested:
-          type: boolean
         sampleDateTime:
           type: string
           format: date-time
