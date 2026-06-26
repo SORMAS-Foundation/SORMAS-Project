@@ -44,6 +44,7 @@ import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenTestCategory;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.samples.events.DiseaseChangedEvent;
@@ -338,6 +339,9 @@ public class TestMethodComponent extends FormComponent<PathogenTestDto> {
 	/**
 	 * Registers a validator ensuring test date is not before sample date.
 	 * Evaluated during {@link #validate()}.
+	 * <p>
+	 * Note: Future date validation is always applied in {@link #validate()} and does not require
+	 * this method to be called.
 	 */
 	public void addTestDateAfterSampleDateValidator(Supplier<Date> sampleDateSupplier, String errorMessage) {
 		this.testDateSampleDateSupplier = sampleDateSupplier;
@@ -354,15 +358,21 @@ public class TestMethodComponent extends FormComponent<PathogenTestDto> {
 					Validations.required,
 					I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_DATE_TIME)));
 		}
-		if (testDateSampleDateSupplier != null && testDateField.getValue() != null) {
-			Date sampleDate = testDateSampleDateSupplier.get();
-			if (sampleDate != null) {
-				Integer totalMinutes = testTimeField.getValue();
-				LocalDateTime ldt = totalMinutes != null
-					? testDateField.getValue().atTime(totalMinutes / 60, totalMinutes % 60)
-					: testDateField.getValue().atStartOfDay();
-				Date testDate = Date.from(ldt.atZone(ZoneId.systemDefault()).toInstant());
-				if (testDate.before(sampleDate)) {
+		if (testDateField.getValue() != null) {
+			Integer totalMinutes = testTimeField.getValue();
+			LocalDateTime ldt = totalMinutes != null
+				? testDateField.getValue().atTime(totalMinutes / 60, totalMinutes % 60)
+				: testDateField.getValue().atStartOfDay();
+			Date testDate = Date.from(ldt.atZone(ZoneId.systemDefault()).toInstant());
+			// Check that test date is not in the future
+			if (testDate.after(UtilDate.now())) {
+				throw new com.vaadin.v7.data.Validator.InvalidValueException(
+					I18nProperties.getValidationError(Validations.futureDateStrict, I18nProperties.getCaption(Captions.PathogenTest_testDateTime)));
+			}
+			// Check that test date is not before sample date
+			if (testDateSampleDateSupplier != null) {
+				Date sampleDate = testDateSampleDateSupplier.get();
+				if (sampleDate != null && testDate.before(sampleDate)) {
 					throw new com.vaadin.v7.data.Validator.InvalidValueException(testDateValidationError);
 				}
 			}
