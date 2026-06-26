@@ -171,6 +171,8 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		MultiSelect<UserReferenceDto> observerUsers = addField(TaskDto.OBSERVER_USERS, MultiSelect.class);
 		observerUsers.addValueChangeListener(e -> {
 			Collection<UserReferenceDto> userReferences = (Collection<UserReferenceDto>) e.getProperty().getValue();
+			// to avoid NPE
+			userReferences = userReferences == null ? Collections.emptyList() : userReferences;
 			for (UserReferenceDto userReference : userReferences) {
 				checkIfUserEmailOrPhoneIsProvided(
 					userReference,

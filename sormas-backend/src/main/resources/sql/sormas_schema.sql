@@ -16282,19 +16282,6 @@ alter table pathogentest_history add column IF NOT EXISTS westernblotinterpretat
 
 INSERT INTO schema_version (version_number, comment) VALUES (636, 'Quantitative pathogen test results: value/unit/text/boolean, smear grade, Western Blot interpretation #13948');
 
--- 2026-06-04 Reference-laboratory + retest indicators on sample #13954 (#13948)
-alter table samples add column IF NOT EXISTS performedbyreferencelaboratory boolean;
-alter table samples add column IF NOT EXISTS retestrequested boolean;
-
-alter table samples_history add column IF NOT EXISTS performedbyreferencelaboratory boolean;
-alter table samples_history add column IF NOT EXISTS retestrequested boolean;
-update samples set retestrequested = false where retestrequested is null;
-alter table samples alter column retestrequested set not null;
-update samples_history set retestrequested = false where retestrequested is null;
-alter table samples_history alter column retestrequested set not null;
-
-INSERT INTO schema_version (version_number, comment) VALUES (637, 'Reference laboratory + retest indicators on sample #13954 (#13948)');
-
 -- 2026-06-08 Laboratory results tab: date other + external comments on case #13948 (#13955)
 alter table cases add column IF NOT EXISTS dateother timestamp;
 alter table cases add column IF NOT EXISTS dateotherdetails varchar(255);
@@ -16304,7 +16291,7 @@ alter table cases_history add column IF NOT EXISTS dateother timestamp;
 alter table cases_history add column IF NOT EXISTS dateotherdetails varchar(255);
 alter table cases_history add column IF NOT EXISTS externalcomments text;
 
-INSERT INTO schema_version (version_number, comment) VALUES (638, 'Laboratory results tab: dateOther, dateOtherDetails, externalComments on case #13955');
+INSERT INTO schema_version (version_number, comment) VALUES (637, 'Laboratory results tab: dateOther, dateOtherDetails, externalComments on case #13955');
 
 -- 04-06-2026 Shigellosis lab message processing. #13965
 ALTER TABLE testreport                  ADD COLUMN IF NOT EXISTS pathogentestcategory varchar(255);
@@ -16347,7 +16334,7 @@ BEGIN
         ALTER TABLE healthconditions_history RENAME COLUMN undermedication TO onmedication;
     END IF;
 END $$;
-INSERT INTO schema_version (version_number, comment) VALUES (639, '#13965 - Shigellosis Lab messages');
+INSERT INTO schema_version (version_number, comment) VALUES (638, '#13965 - Shigellosis Lab messages');
 
 -- Drop the generic quantitative free-text result column: typing methods use their disease-section fields and
 -- everything else falls back to "Test result details" (#13948). Before dropping, copy any existing value into
@@ -16400,18 +16387,18 @@ END $$;
 ALTER TABLE pathogentest DROP COLUMN IF EXISTS quantitativetext;
 ALTER TABLE pathogentest_history DROP COLUMN IF EXISTS quantitativetext;
 ALTER TABLE pathogentest ENABLE TRIGGER versioning_trigger;
-INSERT INTO schema_version (version_number, comment) VALUES (640, 'Remove generic quantitative free-text pathogen test result column, preserving values into testresulttext issue #13952 (epic #13948)');
+INSERT INTO schema_version (version_number, comment) VALUES (639, 'Remove generic quantitative free-text pathogen test result column, preserving values into testresulttext issue #13952 (epic #13948)');
 
 -- 2026-06-19 Add Salmonellosis-specific watery diarrhoea symptom (testing salmo.xlsx)
 ALTER TABLE symptoms         ADD COLUMN IF NOT EXISTS waterydiarrhea varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS waterydiarrhea varchar(255);
-INSERT INTO schema_version (version_number, comment) VALUES (641, 'Add Salmonellosis watery diarrhoea symptom issue #13918');
+INSERT INTO schema_version (version_number, comment) VALUES (640, 'Add Salmonellosis watery diarrhoea symptom issue #13918');
 
 -- 18-06-2026 Malaria and Dengue DD and Lab message processing fixes
 
 ALTER TABLE testreport ADD COLUMN IF NOT EXISTS fourfoldincreaseantibodytiter boolean DEFAULT false;
 ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS fourfoldincreaseantibodytiter boolean DEFAULT false;
 
-INSERT INTO schema_version (version_number, comment) VALUES (642, 'Malaria and Dengue DD and Lab message processing fixes');
+INSERT INTO schema_version (version_number, comment) VALUES (641, 'Malaria and Dengue DD and Lab message processing fixes');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
