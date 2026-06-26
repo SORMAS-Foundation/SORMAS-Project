@@ -111,10 +111,10 @@ public class DiagnosisCriteriaLabTestPanel extends CustomLayout {
 	}
 
 	private void initTestResultDetails() {
-		String testResult = null;
-		String testDate = null;
 		for (PathogenTestDto pathogenTest : pathogenTests) {
 			if (!testDetails.containsKey(pathogenTest.getTestType().name())) {
+				String testResult = null;
+				String testDate = null;
 				if (positiveNegativeResult.contains(pathogenTest.getTestResult().name())) {
 					testResult = pathogenTest.getTestResult().name();
 				}
