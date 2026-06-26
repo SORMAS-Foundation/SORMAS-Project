@@ -40,6 +40,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.vaccination.VaccinationAssociationType;
 import de.symeda.sormas.api.vaccination.VaccinationCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.contact.ContactListComponent;
 import de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent;
@@ -176,7 +177,8 @@ public class EventParticipantDataView extends AbstractEventParticipantView imple
 							null,
 							this::showUnsavedChangesPopup,
 							editAllowed,
-							vaccinationStatusPanel)),
+							vaccinationStatusPanel,
+							SormasUI::refreshView)),
 					IMMUNIZATION_LOC);
 			} else {
 				layout.addSidePanelComponent(new SideComponentLayout(new VaccinationListComponent(() -> {
