@@ -1334,6 +1334,7 @@ public interface Captions {
 	String dashboardMapLayers = "dashboardMapLayers";
 	String dashboardMapShowEpiSituation = "dashboardMapShowEpiSituation";
 	String dashboardMissed = "dashboardMissed";
+	String dashboardNA = "dashboardNA";
 	String dashboardNegative = "dashboardNegative";
 	String dashboardNeverVisited = "dashboardNeverVisited";
 	String dashboardNew = "dashboardNew";
