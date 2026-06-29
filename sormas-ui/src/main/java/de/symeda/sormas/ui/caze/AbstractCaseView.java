@@ -71,8 +71,10 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 				Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 				Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 				Disease.GIARDIASIS,
-				Disease.CRYPTOSPORIDIOSIS,
-				Disease.LATENT_TUBERCULOSIS)));
+				Disease.CRYPTOSPORIDIOSIS)));
+
+	public static final Set<Disease> NON_LUX_CLINICAL_COURSE_DISABLED_DISEASES =
+		Collections.unmodifiableSet(new HashSet<>(Arrays.asList(Disease.LATENT_TUBERCULOSIS, Disease.INFLUENZA)));
 
 	public static final Set<Disease> THERAPY_DISABLED_DISEASES =
 		Collections.unmodifiableSet(new HashSet<>(Arrays.asList(Disease.MEASLES, Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS)));
@@ -233,9 +235,10 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 				&& !caze.checkIsUnreferredPortHealthCase()
 				&& !(FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 					&& CLINICAL_COURSE_DISABLED_DISEASES.contains(caze.getDisease()))
-				&& Disease.INFLUENZA != caze.getDisease()) {
+				&& !NON_LUX_CLINICAL_COURSE_DISABLED_DISEASES.contains(caze.getDisease())) {
 				// clinical course view is not available for Luxembourg for Measles, IMI, IPI, GIARDIASIS, Cryptosporidiosis cases,
-				// and for all other countries Influenza cases. 13708
+				// and for all other countries Influenza cases. #13708
+				// clinical course view is not available for all countries LTB and Influenza.#14038
 				menu.addView(
 					ClinicalCourseView.VIEW_NAME,
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CLINICAL_COURSE),
