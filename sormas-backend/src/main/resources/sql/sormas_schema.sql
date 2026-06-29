@@ -16419,13 +16419,18 @@ BEGIN
     IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'pathogentest' AND column_name = 'resultdetails') THEN
         SELECT count(*) INTO truncated_count FROM pathogentest
             WHERE resultdetails IS NOT NULL AND resultdetails <> ''
-              AND length(CASE WHEN testresulttext IS NULL OR testresulttext = '' THEN resultdetails ELSE testresulttext || E'\n' || resultdetails END) > 4096;
+              AND length(CASE
+                  WHEN testresulttext IS NULL OR testresulttext = '' THEN resultdetails
+                  WHEN testresulttext = resultdetails THEN testresulttext
+                  ELSE testresulttext || E'\n' || resultdetails
+              END) > 4096;
         IF truncated_count > 0 THEN
             RAISE NOTICE 'Migration 642: % pathogentest row(s) had their preserved resultdetails truncated to fit varchar(4096).', truncated_count;
         END IF;
         UPDATE pathogentest
         SET testresulttext = LEFT(CASE
             WHEN testresulttext IS NULL OR testresulttext = '' THEN resultdetails
+            WHEN testresulttext = resultdetails THEN testresulttext
             ELSE testresulttext || E'\n' || resultdetails
         END, 4096)
         WHERE resultdetails IS NOT NULL AND resultdetails <> '';
@@ -16433,13 +16438,18 @@ BEGIN
     IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'pathogentest_history' AND column_name = 'resultdetails') THEN
         SELECT count(*) INTO truncated_count FROM pathogentest_history
             WHERE resultdetails IS NOT NULL AND resultdetails <> ''
-              AND length(CASE WHEN testresulttext IS NULL OR testresulttext = '' THEN resultdetails ELSE testresulttext || E'\n' || resultdetails END) > 4096;
+              AND length(CASE
+                  WHEN testresulttext IS NULL OR testresulttext = '' THEN resultdetails
+                  WHEN testresulttext = resultdetails THEN testresulttext
+                  ELSE testresulttext || E'\n' || resultdetails
+              END) > 4096;
         IF truncated_count > 0 THEN
             RAISE NOTICE 'Migration 642: % pathogentest_history row(s) had their preserved resultdetails truncated to fit varchar(4096).', truncated_count;
         END IF;
         UPDATE pathogentest_history
         SET testresulttext = LEFT(CASE
             WHEN testresulttext IS NULL OR testresulttext = '' THEN resultdetails
+            WHEN testresulttext = resultdetails THEN testresulttext
             ELSE testresulttext || E'\n' || resultdetails
         END, 4096)
         WHERE resultdetails IS NOT NULL AND resultdetails <> '';
