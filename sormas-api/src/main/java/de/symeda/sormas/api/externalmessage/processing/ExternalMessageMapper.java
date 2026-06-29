@@ -55,7 +55,6 @@ import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sample.Serotype;
 import de.symeda.sormas.api.therapy.DrugSusceptibilityDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -994,7 +993,12 @@ public final class ExternalMessageMapper {
 							pathogenTest::setFourFoldIncreaseAntibodyTiter,
 							pathogenTest.isFourFoldIncreaseAntibodyTiter(),
 							sourceTestReport.getFourFoldIncreaseAntibodyTiter(),
-							PathogenTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER))
+							PathogenTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER),
+						Mapping.of(
+							pathogenTest::setPerformedByReferenceLaboratory,
+							pathogenTest.getPerformedByReferenceLaboratory(),
+							sourceTestReport.getPerformedByReferenceLaboratory(),
+							PathogenTestDto.PERFORMED_BY_REFERENCE_LABORATORY))
 
 				));
 		}

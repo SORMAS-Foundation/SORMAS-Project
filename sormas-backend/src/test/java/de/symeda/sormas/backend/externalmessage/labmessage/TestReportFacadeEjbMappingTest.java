@@ -125,6 +125,7 @@ public class TestReportFacadeEjbMappingTest {
 		source.setSeroGroupSpecificationText("SeroGroup A");
 		source.setSeroTypingMethod(SerotypingMethod.MULTIPLEX_PCR);
 		source.setSeroTypingMethodText("Multiplex PCR Method");
+		source.setPerformedByReferenceLaboratory(true);
 
 		TestReport result = sut.fromDto(source, true);
 
@@ -194,6 +195,7 @@ public class TestReportFacadeEjbMappingTest {
 		assertEquals(source.getSeroGroupSpecificationText(), result.getSeroGroupSpecificationText());
 		assertEquals(source.getSeroTypingMethod(), result.getSeroTypingMethod());
 		assertEquals(source.getSeroTypingMethodText(), result.getSeroTypingMethodText());
+		assertEquals(source.getPerformedByReferenceLaboratory(), result.getPerformedByReferenceLaboratory());
 
 	}
 
@@ -275,6 +277,7 @@ public class TestReportFacadeEjbMappingTest {
 		source.setSeroTypingMethodText("Multiplex PCR Method");
 		source.setSerotype(Serotype.OTHER);
 		source.setSerotypeText("Other Serotype");
+		source.setPerformedByReferenceLaboratory(true);
 
 		TestReportDto result = TestReportFacadeEjb.toDto(source);
 
@@ -347,5 +350,6 @@ public class TestReportFacadeEjbMappingTest {
 		assertEquals(source.getSeroTypingMethodText(), result.getSeroTypingMethodText());
 		assertEquals(source.getSerotype(), result.getSerotype());
 		assertEquals(source.getSerotypeText(), result.getSerotypeText());
+		assertEquals(source.getPerformedByReferenceLaboratory(), result.getPerformedByReferenceLaboratory());
 	}
 }

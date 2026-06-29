@@ -16401,4 +16401,12 @@ ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS fourfoldincreaseantibody
 
 INSERT INTO schema_version (version_number, comment) VALUES (641, 'Malaria and Dengue DD and Lab message processing fixes');
 
+
+-- 2025-06-36 Performed by reference laboratory missing for lab messages
+
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS performedbyreferencelaboratory boolean;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS performedbyreferencelaboratory boolean;
+
+INSERT INTO schema_version (version_number, comment) VALUES (642, '#14058 - Performed by reference laboratory not toggled');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
