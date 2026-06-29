@@ -352,17 +352,19 @@ public class TestResultComponent extends FormComponent<PathogenTestDto> {
 
 	@Override
 	public void validate() {
-		super.validate();
-
 		// A result is only mandatory when the administrator has enabled it (#13948 issue #13958) - otherwise
 		// every result-bearing field may be left empty (the Pos/Neg result then defaults to PENDING on
 		// save). The flag gates the qualitative selector and the quantitative result fields alike.
+		// Accumulate all failures so every missing result field is reported in a single save.
+		List<Runnable> checks = new ArrayList<>();
+		checks.add(this::validateBinderOnly);
 		if (resultRequired) {
-			requireIfVisible(testResultField, PathogenTestDto.TEST_RESULT);
-			requireIfVisible(quantitativeBooleanField, PathogenTestDto.QUANTITATIVE_BOOLEAN);
-			requireIfVisible(smearGradeField, PathogenTestDto.SMEAR_GRADE);
-			requireIfVisible(westernBlotInterpretationField, PathogenTestDto.WESTERN_BLOT_INTERPRETATION);
+			checks.add(() -> requireIfVisible(testResultField, PathogenTestDto.TEST_RESULT));
+			checks.add(() -> requireIfVisible(quantitativeBooleanField, PathogenTestDto.QUANTITATIVE_BOOLEAN));
+			checks.add(() -> requireIfVisible(smearGradeField, PathogenTestDto.SMEAR_GRADE));
+			checks.add(() -> requireIfVisible(westernBlotInterpretationField, PathogenTestDto.WESTERN_BLOT_INTERPRETATION));
 		}
+		validateAll(checks.toArray(new Runnable[0]));
 	}
 
 	private void requireIfVisible(com.vaadin.data.HasValue<?> field, String propertyId) {
