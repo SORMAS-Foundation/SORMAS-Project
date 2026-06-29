@@ -346,7 +346,12 @@ public class TestMethodComponent extends FormComponent<PathogenTestDto> {
 
 	@Override
 	public void validate() {
-		super.validate();
+		// Accumulate all failures (binder asRequired fields + the manual test-date checks) so a single save
+		// surfaces every missing field at once instead of one per save.
+		validateAll(this::validateBinderOnly, this::validateTestDate);
+	}
+
+	private void validateTestDate() {
 		// Test date is mandatory whenever the field is shown
 		if (testDateField.isVisible() && testDateField.getValue() == null) {
 			throw new com.vaadin.v7.data.Validator.InvalidValueException(

@@ -348,7 +348,6 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setAntibodyTitre(source.getAntibodyTitre());
 		target.setPerformedByReferenceLaboratory(source.getPerformedByReferenceLaboratory());
 		target.setRetestRequested(source.getRetestRequested());
-		target.setResultDetails(source.getResultDetails());
 		target.setQuantitativeValue(source.getQuantitativeValue());
 		target.setQuantitativeUnit(source.getQuantitativeUnit());
 		target.setQuantitativeBoolean(source.getQuantitativeBoolean());
@@ -678,7 +677,6 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setAntibodyTitre(source.getAntibodyTitre());
 		target.setPerformedByReferenceLaboratory(source.getPerformedByReferenceLaboratory());
 		target.setRetestRequested(source.getRetestRequested());
-		target.setResultDetails(source.getResultDetails());
 		target.setQuantitativeValue(source.getQuantitativeValue());
 		target.setQuantitativeUnit(source.getQuantitativeUnit());
 		target.setQuantitativeBoolean(source.getQuantitativeBoolean());
