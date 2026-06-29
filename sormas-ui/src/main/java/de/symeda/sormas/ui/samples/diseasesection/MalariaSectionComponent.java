@@ -66,13 +66,9 @@ public class MalariaSectionComponent extends AbstractDiseaseSectionComponent {
 		PathogenTestType.OTHER_SEROLOGICAL_TEST,
 		PathogenTestType.OTHER_MOLECULAR_ASSAY);
 
-	private static final List<PathogenTestType> RESULT_DETAILS_VISIBLE_TYPES =
-		Arrays.asList(PathogenTestType.THIN_BLOOD_SMEAR, PathogenTestType.Q_PCR);
-
 	private ComboBox<PathogenSpecie> specieField;
 	private TextField specieTextField;
 	private Label specieTextSpacer;
-	private TextField resultDetailsField;
 
 	private PathogenTestType currentTestType;
 	private PathogenTestResultType currentResult;
@@ -90,13 +86,8 @@ public class MalariaSectionComponent extends AbstractDiseaseSectionComponent {
 		specieTextSpacer = createSpacer();
 		addToggleRow(specieField, specieTextField, specieTextSpacer);
 
-		resultDetailsField = createTextField(PathogenTestDto.RESULT_DETAILS);
-		resultDetailsField.setVisible(false);
-		addRow(resultDetailsField, createSpacer());
-
 		binder.forField(specieField).bind(PathogenTestDto::getSpecie, PathogenTestDto::setSpecie);
 		binder.forField(specieTextField).bind(PathogenTestDto::getSpecieText, PathogenTestDto::setSpecieText);
-		binder.forField(resultDetailsField).bind(PathogenTestDto::getResultDetails, PathogenTestDto::setResultDetails);
 	}
 
 	@Override
@@ -138,12 +129,6 @@ public class MalariaSectionComponent extends AbstractDiseaseSectionComponent {
 			specieTextField.clear();
 		}
 
-		boolean showResultDetails = RESULT_DETAILS_VISIBLE_TYPES.contains(currentTestType);
-		resultDetailsField.setVisible(showResultDetails);
-		if (!showResultDetails) {
-			resultDetailsField.clear();
-		}
-
 		updateRowAndSelfVisibility();
 	}
 
@@ -155,6 +140,5 @@ public class MalariaSectionComponent extends AbstractDiseaseSectionComponent {
 		}
 		dto.setSpecie(null);
 		dto.setSpecieText(null);
-		dto.setResultDetails(null);
 	}
 }

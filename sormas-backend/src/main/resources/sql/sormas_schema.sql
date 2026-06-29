@@ -16360,7 +16360,7 @@ BEGIN
             WHERE quantitativetext IS NOT NULL AND quantitativetext <> ''
               AND length(CASE WHEN testresulttext IS NULL OR testresulttext = '' THEN quantitativetext ELSE testresulttext || E'\n' || quantitativetext END) > 4096;
         IF truncated_count > 0 THEN
-            RAISE NOTICE 'Migration 640: % pathogentest row(s) had their preserved quantitativetext truncated to fit varchar(4096).', truncated_count;
+            RAISE NOTICE 'Migration 639: % pathogentest row(s) had their preserved quantitativetext truncated to fit varchar(4096).', truncated_count;
         END IF;
         UPDATE pathogentest
         SET testresulttext = LEFT(CASE
@@ -16374,7 +16374,7 @@ BEGIN
             WHERE quantitativetext IS NOT NULL AND quantitativetext <> ''
               AND length(CASE WHEN testresulttext IS NULL OR testresulttext = '' THEN quantitativetext ELSE testresulttext || E'\n' || quantitativetext END) > 4096;
         IF truncated_count > 0 THEN
-            RAISE NOTICE 'Migration 640: % pathogentest_history row(s) had their preserved quantitativetext truncated to fit varchar(4096).', truncated_count;
+            RAISE NOTICE 'Migration 639: % pathogentest_history row(s) had their preserved quantitativetext truncated to fit varchar(4096).', truncated_count;
         END IF;
         UPDATE pathogentest_history
         SET testresulttext = LEFT(CASE
@@ -16400,5 +16400,54 @@ ALTER TABLE testreport ADD COLUMN IF NOT EXISTS fourfoldincreaseantibodytiter bo
 ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS fourfoldincreaseantibodytiter boolean DEFAULT false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (641, 'Malaria and Dengue DD and Lab message processing fixes');
+
+-- 2026-06-29 Remove Malaria-specific "Result details" pathogen test field (issue #14016)
+-- The Malaria resultdetails field duplicated the generic "Test result details" (testresulttext) field on the
+-- pathogen test form. Drop it and fold any captured value into testresulttext so no free-text result is lost.
+-- Both pathogentest and pathogentest_history are migrated.
+--
+-- versioning_trigger on pathogentest mirrors every UPDATE into pathogentest_history & disable it for the
+-- migration window so the backfill does not inject phantom audit rows, and re-enable when done.
+--
+-- testresulttext is varchar(4096) while resultdetails is varchar(255): LEFT(..., 4096) guards against a
+-- near-full testresulttext overflowing the column once resultdetails is appended.
+ALTER TABLE pathogentest DISABLE TRIGGER versioning_trigger;
+DO $$
+DECLARE
+    truncated_count integer;
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'pathogentest' AND column_name = 'resultdetails') THEN
+        SELECT count(*) INTO truncated_count FROM pathogentest
+            WHERE resultdetails IS NOT NULL AND resultdetails <> ''
+              AND length(CASE WHEN testresulttext IS NULL OR testresulttext = '' THEN resultdetails ELSE testresulttext || E'\n' || resultdetails END) > 4096;
+        IF truncated_count > 0 THEN
+            RAISE NOTICE 'Migration 642: % pathogentest row(s) had their preserved resultdetails truncated to fit varchar(4096).', truncated_count;
+        END IF;
+        UPDATE pathogentest
+        SET testresulttext = LEFT(CASE
+            WHEN testresulttext IS NULL OR testresulttext = '' THEN resultdetails
+            ELSE testresulttext || E'\n' || resultdetails
+        END, 4096)
+        WHERE resultdetails IS NOT NULL AND resultdetails <> '';
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'pathogentest_history' AND column_name = 'resultdetails') THEN
+        SELECT count(*) INTO truncated_count FROM pathogentest_history
+            WHERE resultdetails IS NOT NULL AND resultdetails <> ''
+              AND length(CASE WHEN testresulttext IS NULL OR testresulttext = '' THEN resultdetails ELSE testresulttext || E'\n' || resultdetails END) > 4096;
+        IF truncated_count > 0 THEN
+            RAISE NOTICE 'Migration 642: % pathogentest_history row(s) had their preserved resultdetails truncated to fit varchar(4096).', truncated_count;
+        END IF;
+        UPDATE pathogentest_history
+        SET testresulttext = LEFT(CASE
+            WHEN testresulttext IS NULL OR testresulttext = '' THEN resultdetails
+            ELSE testresulttext || E'\n' || resultdetails
+        END, 4096)
+        WHERE resultdetails IS NOT NULL AND resultdetails <> '';
+    END IF;
+END $$;
+ALTER TABLE pathogentest DROP COLUMN IF EXISTS resultdetails;
+ALTER TABLE pathogentest_history DROP COLUMN IF EXISTS resultdetails;
+ALTER TABLE pathogentest ENABLE TRIGGER versioning_trigger;
+INSERT INTO schema_version (version_number, comment) VALUES (642, 'Remove Malaria-specific result details pathogen test column, preserving values into testresulttext issue #14016');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

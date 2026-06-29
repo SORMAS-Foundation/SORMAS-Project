@@ -128,7 +128,6 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String ANTIBODY_TITRE = "antibodyTitre";
 	public static final String PERFORMED_BY_REFERENCE_LABORATORY = "performedByReferenceLaboratory";
 	public static final String RETEST_REQUESTED = "retestRequested";
-	public static final String RESULT_DETAILS = "resultDetails";
 	public static final String QUANTITATIVE_VALUE = "quantitativeValue";
 	public static final String QUANTITATIVE_UNIT = "quantitativeUnit";
 	public static final String QUANTITATIVE_BOOLEAN = "quantitativeBoolean";
@@ -336,10 +335,6 @@ public class PathogenTestDto extends PseudonymizableDto {
 	private Boolean performedByReferenceLaboratory;
 	// defaulting this test to false.
 	private Boolean retestRequested = false;
-	@Diseases({
-		Disease.MALARIA })
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
-	private String resultDetails;
 
 	// Generic quantitative result fields, shown per the test method's ResultValueType (issue #13952).
 	private Float quantitativeValue;
@@ -968,14 +963,6 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	public void setRetestRequested(Boolean retestRequested) {
 		this.retestRequested = retestRequested;
-	}
-
-	public String getResultDetails() {
-		return resultDetails;
-	}
-
-	public void setResultDetails(String resultDetails) {
-		this.resultDetails = resultDetails;
 	}
 
 	public String getSerotypeText() {

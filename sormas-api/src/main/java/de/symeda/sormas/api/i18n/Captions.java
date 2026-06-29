@@ -2427,7 +2427,6 @@ public interface Captions {
 	String PathogenTest_quantitativeUnit = "PathogenTest.quantitativeUnit";
 	String PathogenTest_quantitativeValue = "PathogenTest.quantitativeValue";
 	String PathogenTest_reportDate = "PathogenTest.reportDate";
-	String PathogenTest_resultDetails = "PathogenTest.resultDetails";
 	String PathogenTest_retestRequested = "PathogenTest.retestRequested";
 	String PathogenTest_rifampicinResistant = "PathogenTest.rifampicinResistant";
 	String PathogenTest_rsv_testedDiseaseVariant = "PathogenTest.rsv.testedDiseaseVariant";
