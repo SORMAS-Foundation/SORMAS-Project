@@ -16401,6 +16401,14 @@ ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS fourfoldincreaseantibody
 
 INSERT INTO schema_version (version_number, comment) VALUES (641, 'Malaria and Dengue DD and Lab message processing fixes');
 
+
+-- 2025-06-26 Performed by reference laboratory missing for lab messages
+
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS performedbyreferencelaboratory boolean;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS performedbyreferencelaboratory boolean;
+
+INSERT INTO schema_version (version_number, comment) VALUES (642, '#14058 - Performed by reference laboratory not toggled');
+
 -- 2026-06-29 Remove Malaria-specific "Result details" pathogen test field (issue #14016)
 -- The Malaria resultdetails field duplicated the generic "Test result details" (testresulttext) field on the
 -- pathogen test form. Drop it and fold any captured value into testresulttext so no free-text result is lost.
@@ -16458,6 +16466,6 @@ END $$;
 ALTER TABLE pathogentest DROP COLUMN IF EXISTS resultdetails;
 ALTER TABLE pathogentest_history DROP COLUMN IF EXISTS resultdetails;
 ALTER TABLE pathogentest ENABLE TRIGGER versioning_trigger;
-INSERT INTO schema_version (version_number, comment) VALUES (642, 'Remove Malaria-specific result details pathogen test column, preserving values into testresulttext issue #14016');
+INSERT INTO schema_version (version_number, comment) VALUES (643, 'Remove Malaria-specific result details pathogen test column, preserving values into testresulttext issue #14016');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

@@ -71,6 +71,7 @@ public class TestReportDto extends EntityDto {
 	public static final String PRESCRIBER_POSTAL_CODE = "prescriberPostalCode";
 	public static final String PRESCRIBER_CITY = "prescriberCity";
 	public static final String PRESCRIBER_COUNTRY = "prescriberCountry";
+	public static final String PERFORMED_BY_REFERENCE_LABORATORY = "performedByReferenceLaboratory";
 
 	@NotNull(message = Validations.requiredField)
 	private SampleReportReferenceDto sampleReport;
@@ -220,6 +221,7 @@ public class TestReportDto extends EntityDto {
 
 	private PathogenTestCategory pathogenTestCategory;
 	private boolean fourFoldIncreaseAntibodyTiter;
+	private Boolean performedByReferenceLaboratory;
 
 	public SampleReportReferenceDto getSampleReport() {
 		return sampleReport;
@@ -930,6 +932,14 @@ public class TestReportDto extends EntityDto {
 
 	public void setFourFoldIncreaseAntibodyTiter(boolean fourFoldIncreaseAntibodyTiter) {
 		this.fourFoldIncreaseAntibodyTiter = fourFoldIncreaseAntibodyTiter;
+	}
+
+	public Boolean getPerformedByReferenceLaboratory() {
+		return performedByReferenceLaboratory;
+	}
+
+	public void setPerformedByReferenceLaboratory(Boolean performedByReferenceLaboratory) {
+		this.performedByReferenceLaboratory = performedByReferenceLaboratory;
 	}
 
 }
