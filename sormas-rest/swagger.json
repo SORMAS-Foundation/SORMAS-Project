@@ -27140,6 +27140,9 @@
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
+          "performedByReferenceLaboratory" : {
+            "type" : "boolean"
+          },
           "preliminary" : {
             "type" : "boolean"
           },

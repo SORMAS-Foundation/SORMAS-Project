@@ -28880,6 +28880,8 @@ components:
           - SUSCEPTIBLE
           - INTERMEDIATE
           - UNKNOWN
+        performedByReferenceLaboratory:
+          type: boolean
         preliminary:
           type: boolean
         prescriberAddress:
