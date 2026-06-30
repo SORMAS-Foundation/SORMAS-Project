@@ -204,10 +204,13 @@ public class CustomizableFieldEditForm extends CustomLayout {
 
         groupCombo = new ComboBox<>(caption(CustomizableFieldMetadataDto.UI_GROUP));
         groupCombo.setWidth(100, Unit.PERCENTAGE);
-        groupCombo.setEmptySelectionAllowed(true);
+        groupCombo.setEmptySelectionAllowed(false);
         groupCombo.setItemCaptionGenerator(I18nProperties::getEnumCaption);
+        groupCombo.setRequiredIndicatorVisible(true);
         addComponent(groupCombo, CustomizableFieldMetadataDto.UI_GROUP);
-        binder.forField(groupCombo).bind(CustomizableFieldMetadataDto::getUiGroup, CustomizableFieldMetadataDto::setUiGroup);
+        binder.forField(groupCombo)
+            .asRequired(I18nProperties.getValidationError(Validations.required, caption(CustomizableFieldMetadataDto.UI_GROUP)))
+            .bind(CustomizableFieldMetadataDto::getUiGroup, CustomizableFieldMetadataDto::setUiGroup);
 
         // Repopulate group items when context changes; clear value first, then retain only if still valid
         contextCombo.addValueChangeListener(e -> {
