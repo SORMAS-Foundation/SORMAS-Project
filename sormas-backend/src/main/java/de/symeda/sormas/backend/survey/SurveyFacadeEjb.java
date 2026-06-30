@@ -193,7 +193,7 @@ public class SurveyFacadeEjb implements SurveyFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Survey> cq = cb.createQuery(Survey.class);
 		Root<Survey> from = cq.from(Survey.class);
-		cq.where(cb.isNotNull(from.get(Survey.EXTERNAL_ID)));
+		cq.where(CriteriaBuilderHelper.notNullAndNotEmpty(cb, from.get(Survey.EXTERNAL_ID)));
 		cq.orderBy(cb.desc(from.get(Survey.ID)));
 
 		return getAsStream(cq).map(this::toDto).collect(Collectors.toList());

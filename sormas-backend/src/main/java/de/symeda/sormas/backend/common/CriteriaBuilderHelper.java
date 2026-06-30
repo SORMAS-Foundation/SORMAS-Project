@@ -110,6 +110,22 @@ public class CriteriaBuilderHelper {
 		return hasUuid == null ? filter : andEquals(cb, joinSupplier.get(), filter, hasUuid.getUuid(), AbstractDomainObject.UUID);
 	}
 
+	/**
+	 * 
+	 * @param cb
+	 *            The builder of the query to filter.
+	 * @param expression
+	 *            string field to check for null and "empty-ness".
+	 * @return Predicate that results to true if field is not null and not empty.
+	 *         Example: "" -> false, null -> false, "SORMAS" -> true.
+	 */
+	public static Predicate notNullAndNotEmpty(CriteriaBuilder cb, Expression<String> expression) {
+		Predicate notNull = cb.isNotNull(expression);
+		Predicate notEmpty = cb.gt(cb.length(expression), 0);
+
+		return cb.and(notNull, notEmpty);
+	}
+
 	public static Predicate andInValues(Collection<?> values, Predicate filter, CriteriaBuilder cb, Path<Object> path) {
 		if (CollectionUtils.isEmpty(values)) {
 			return filter;
@@ -222,8 +238,10 @@ public class CriteriaBuilderHelper {
 	}
 
 	public interface OrderBuilder {
+
 		List<Order> build(Expression<?>... expressions);
 	}
+
 	public static OrderBuilder createOrderBuilder(CriteriaBuilder cb, boolean ascending) {
 		return (Expression<?>... expressions) -> Stream.of(expressions).map(e -> ascending ? cb.asc(e) : cb.desc(e)).collect(Collectors.toList());
 	}

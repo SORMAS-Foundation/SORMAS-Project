@@ -16468,4 +16468,17 @@ ALTER TABLE pathogentest_history DROP COLUMN IF EXISTS resultdetails;
 ALTER TABLE pathogentest ENABLE TRIGGER versioning_trigger;
 INSERT INTO schema_version (version_number, comment) VALUES (643, 'Remove Malaria-specific result details pathogen test column, preserving values into testresulttext issue #14016');
 
+DELETE FROM systemconfigurationvalue
+WHERE config_key LIKE 'NG_SUVEY_%' OR config_key LIKE 'NG_SURVEY_%' OR config_key = 'SURVEY_PERIOD_INTERVAL_DAYS';
+
+UPDATE featureconfiguration
+SET properties = json_build_object(
+    'FETCH_MODE', false,
+    'FORCE_AUTOMATIC_PROCESSING', true,
+    'SURVEY_FETCH_ENABLED', false
+)
+WHERE featuretype = 'EXTERNAL_MESSAGES';
+
+INSERT INTO schema_version (version_number, comment) VALUES (643, 'Removal survey configurations');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
