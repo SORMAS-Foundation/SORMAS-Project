@@ -11675,6 +11675,7 @@ components:
               - SEROTYPING
               - SEROGROUPING
               - GENOTYPING
+              - RSV_SUBTYPING
               - BEIJINGGENOTYPING
               - SPOLIGOTYPING
               - MIRU_PATTERN_CODE
@@ -11767,6 +11768,7 @@ components:
               - SEROTYPING
               - SEROGROUPING
               - GENOTYPING
+              - RSV_SUBTYPING
               - BEIJINGGENOTYPING
               - SPOLIGOTYPING
               - MIRU_PATTERN_CODE
@@ -11845,6 +11847,7 @@ components:
               - SEROTYPING
               - SEROGROUPING
               - GENOTYPING
+              - RSV_SUBTYPING
               - BEIJINGGENOTYPING
               - SPOLIGOTYPING
               - MIRU_PATTERN_CODE
@@ -23257,6 +23260,7 @@ components:
           - SEROTYPING
           - SEROGROUPING
           - GENOTYPING
+          - RSV_SUBTYPING
           - BEIJINGGENOTYPING
           - SPOLIGOTYPING
           - MIRU_PATTERN_CODE
@@ -24983,6 +24987,7 @@ components:
             - SEROTYPING
             - SEROGROUPING
             - GENOTYPING
+            - RSV_SUBTYPING
             - BEIJINGGENOTYPING
             - SPOLIGOTYPING
             - MIRU_PATTERN_CODE
@@ -25428,6 +25433,7 @@ components:
           - SEROTYPING
           - SEROGROUPING
           - GENOTYPING
+          - RSV_SUBTYPING
           - BEIJINGGENOTYPING
           - SPOLIGOTYPING
           - MIRU_PATTERN_CODE
@@ -29097,6 +29103,7 @@ components:
           - SEROTYPING
           - SEROGROUPING
           - GENOTYPING
+          - RSV_SUBTYPING
           - BEIJINGGENOTYPING
           - SPOLIGOTYPING
           - MIRU_PATTERN_CODE
