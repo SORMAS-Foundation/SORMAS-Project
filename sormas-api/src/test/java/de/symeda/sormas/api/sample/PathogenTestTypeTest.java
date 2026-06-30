@@ -30,10 +30,8 @@ public class PathogenTestTypeTest {
 	 */
 	private static final Set<PathogenTestType> EXPECTED_LEGACY = EnumSet.of(
 		PathogenTestType.ANTIBODY_DETECTION,
-		PathogenTestType.ANTIGEN_DETECTION,
 		PathogenTestType.INCUBATION_TIME,
 		PathogenTestType.MICROSCOPY,
-		PathogenTestType.LATEX_AGGLUTINATION,
 		PathogenTestType.CQ_VALUE_DETECTION,
 		PathogenTestType.SEQUENCING,
 		// Superseded by the per-Ig-class ELISA split (#13951); kept so historic records still render and
@@ -100,7 +98,10 @@ public class PathogenTestTypeTest {
 			PathogenTestType.MALDI_TOF,
 			PathogenTestType.ACID_FAST_STAIN,
 			PathogenTestType.GENOTYPIC_RESISTANCE_TEST,
-			PathogenTestType.FLOW_CYTOMETRY);
+			PathogenTestType.FLOW_CYTOMETRY,
+			PathogenTestType.ANTIGEN_DETECTION,
+			PathogenTestType.LATEX_AGGLUTINATION,
+			PathogenTestType.RSV_SUBTYPING);
 		for (PathogenTestType type : newlyAdded) {
 			assertTrue(PathogenTestType.isSelectableForNewTests(type), type.name() + " should be selectable for new tests");
 			assertFalse(EXPECTED_LEGACY.contains(type), type.name() + " is a new method, not legacy");
