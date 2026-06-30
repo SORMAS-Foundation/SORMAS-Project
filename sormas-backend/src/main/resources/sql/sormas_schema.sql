@@ -16479,6 +16479,6 @@ SET properties = json_build_object(
 )
 WHERE featuretype = 'EXTERNAL_MESSAGES';
 
-INSERT INTO schema_version (version_number, comment) VALUES (643, 'Removal survey configurations');
+INSERT INTO schema_version (version_number, comment) VALUES (644, 'Removal survey configurations');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
