@@ -2114,6 +2114,13 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		return result;
 	}
 
+	public List<String> validateCustomizableFieldsAndCollectErrors() {
+		return getCustomizableFieldPanels()
+			.stream()
+			.flatMap(panel -> panel.validateAndCollectErrors().stream())
+			.collect(Collectors.toList());
+	}
+
 	public void addCustomizableFieldValueChangeListener(com.vaadin.data.HasValue.ValueChangeListener<?> listener) {
 		getCustomizableFieldPanels().forEach(panel -> panel.addValueChangeListener(listener));
 	}

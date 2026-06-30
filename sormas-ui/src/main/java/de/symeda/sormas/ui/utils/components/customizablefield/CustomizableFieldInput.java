@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.ui.utils.components.customizablefield;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -205,6 +207,21 @@ public abstract class CustomizableFieldInput<T> extends CustomField<T> {
 	 */
 	public CustomizableFieldValueDto getFieldValue() {
 		return binder.getBean();
+	}
+
+	/**
+	 * Validates the current value against all binder rules and returns user-facing error messages.
+	 *
+	 * @return list of validation messages; empty when valid
+	 */
+	public List<String> validateAndGetErrors() {
+		List<String> errors = new ArrayList<>();
+		com.vaadin.data.BinderValidationStatus<CustomizableFieldValueDto> status = binder.validate();
+		status.getFieldValidationErrors().forEach(error -> error.getMessage().ifPresent(errors::add));
+		if (errors.isEmpty() && !status.isOk()) {
+			errors.add("Invalid value");
+		}
+		return errors;
 	}
 
 	/**
