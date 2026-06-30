@@ -32,6 +32,7 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 
 /**
  * Abstract base for editable customizable field input components (Vaadin v8).
@@ -219,7 +220,7 @@ public abstract class CustomizableFieldInput<T> extends CustomField<T> {
 		com.vaadin.data.BinderValidationStatus<CustomizableFieldValueDto> status = binder.validate();
 		status.getFieldValidationErrors().forEach(error -> error.getMessage().ifPresent(errors::add));
 		if (errors.isEmpty() && !status.isOk()) {
-			errors.add("Invalid value");
+			errors.add(I18nProperties.getString(Strings.errorInvalidValue));
 		}
 		return errors;
 	}
