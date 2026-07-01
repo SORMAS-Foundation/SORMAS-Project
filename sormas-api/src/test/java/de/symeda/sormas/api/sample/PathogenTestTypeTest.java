@@ -166,7 +166,6 @@ public class PathogenTestTypeTest {
 		assertThat(PathogenTestType.getResultValueTypes(PathogenTestType.FLOW_CYTOMETRY), is(EnumSet.of(ResultValueType.NUMERIC)));
 		// Reciprocal titres ('1:160') are recorded as text, not a Float numeric value.
 		assertThat(PathogenTestType.getResultValueTypes(PathogenTestType.NEUTRALIZING_ANTIBODIES), is(EnumSet.of(ResultValueType.TEXT)));
-		assertThat(PathogenTestType.getResultValueTypes(PathogenTestType.HEMAGGLUTINATION_INHIBITION), is(EnumSet.of(ResultValueType.TEXT)));
 	}
 
 	@Test
@@ -218,11 +217,9 @@ public class PathogenTestTypeTest {
 			PathogenTestType.SPOLIGOTYPING,
 			PathogenTestType.MIRU_PATTERN_CODE,
 			PathogenTestType.NEUTRALIZING_ANTIBODIES,
-			PathogenTestType.HEMAGGLUTINATION_INHIBITION,
 			PathogenTestType.FUNGAL_CULTURE,
 			PathogenTestType.MALDI_TOF,
-			PathogenTestType.GRAM_STAIN,
-			PathogenTestType.HISTOPATHOLOGY }) {
+			PathogenTestType.GRAM_STAIN }) {
 			expected.put(t, EnumSet.of(ResultValueType.TEXT));
 		}
 
@@ -247,6 +244,10 @@ public class PathogenTestTypeTest {
 		expected.put(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY, EnumSet.noneOf(ResultValueType.class));
 		expected.put(PathogenTestType.FISH, EnumSet.of(ResultValueType.QUALITATIVE, ResultValueType.TEXT));
 		expected.put(PathogenTestType.THICK_BLOOD_SMEAR, EnumSet.of(ResultValueType.QUALITATIVE, ResultValueType.TEXT));
+		// Positive/Negative interpretation plus free-text tissue-pathology description (#14096).
+		expected.put(PathogenTestType.HISTOPATHOLOGY, EnumSet.of(ResultValueType.QUALITATIVE, ResultValueType.TEXT));
+		// Positive/Negative interpretation plus the reciprocal titre as text (#14105).
+		expected.put(PathogenTestType.HEMAGGLUTINATION_INHIBITION, EnumSet.of(ResultValueType.QUALITATIVE, ResultValueType.TEXT));
 		expected.put(PathogenTestType.WESTERN_BLOT, EnumSet.of(ResultValueType.TEXT, ResultValueType.WESTERN_BLOT));
 		expected.put(PathogenTestType.BACTERIAL_CULTURE, EnumSet.of(ResultValueType.TEXT, ResultValueType.NUMERIC));
 		expected.put(PathogenTestType.ACID_FAST_STAIN, EnumSet.of(ResultValueType.SMEAR_GRADE));
@@ -274,8 +275,8 @@ public class PathogenTestTypeTest {
 	@Test
 	public void numericValueTypeIsAlwaysCombinedOrTextForTitres() {
 		// A method that produces a numeric value either also has a qualitative component (Ct on a positive
-		// PCR), is purely numeric (a true count like Flow Cytometry), or pairs with text (Bacterial
-		// Culture organism + CFU). Reciprocal titres ('1:160') must NOT be NUMERIC — they are TEXT.
+		// PCR), is purely numeric (a true count like Flow Cytometry), or pairs with text (Bacterial Culture
+		// organism + CFU). Reciprocal titres ('1:160') must NOT be NUMERIC — they are TEXT.
 		assertThat(PathogenTestType.getResultValueTypes(PathogenTestType.NEUTRALIZING_ANTIBODIES), not(hasItem(ResultValueType.NUMERIC)));
 		assertThat(PathogenTestType.getResultValueTypes(PathogenTestType.HEMAGGLUTINATION_INHIBITION), not(hasItem(ResultValueType.NUMERIC)));
 		// The only purely-numeric method (no qualitative/text) is Flow Cytometry.
