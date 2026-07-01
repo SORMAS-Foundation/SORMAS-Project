@@ -158,7 +158,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 					fluidRowLocs(PersonDto.HAS_COVID_APP, PersonDto.COVID_CODE_DELIVERED) +
 
                     loc(PERINATAL_DETAILS_HEADER) +
-					divsCss(VSPACE_3,fluidRowLocs(PersonDto.GESTATIONAL_AGE_CATEGORY,PersonDto.GESTATION_AGE_AT_BIRTH) +
+					divsCss(VSPACE_3,fluidRowLocs(PersonDto.GESTATIONAL_AGE_CATEGORY,"") +
 					fluidRowLocs(PersonDto.BIRTH_WEIGHT_CATEGORY, PersonDto.BIRTH_WEIGHT) +
                     fluidRowLocs(PersonDto.MULTIPLE_BIRTH,""))+
 					fluidRowLocs(PersonDto.PLACE_OF_BIRTH_REGION, PersonDto.PLACE_OF_BIRTH_DISTRICT, PersonDto.PLACE_OF_BIRTH_COMMUNITY) +
