@@ -51,6 +51,8 @@ public final class DiseaseSectionFactory {
 			return new MalariaSectionComponent();
 		case SHIGELLOSIS:
 			return new ShigellosisSectionComponent();
+		case RESPIRATORY_SYNCYTIAL_VIRUS:
+			return new RsvSectionComponent();
 		default:
 			return new DefaultSectionComponent();
 		}

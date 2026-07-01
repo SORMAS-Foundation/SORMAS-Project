@@ -74,6 +74,9 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 				Disease.CRYPTOSPORIDIOSIS,
 				Disease.LATENT_TUBERCULOSIS)));
 
+	public static final Set<Disease> NON_LUX_CLINICAL_COURSE_DISABLED_DISEASES =
+		Collections.unmodifiableSet(new HashSet<>(Arrays.asList(Disease.LATENT_TUBERCULOSIS, Disease.INFLUENZA)));
+
 	public static final Set<Disease> THERAPY_DISABLED_DISEASES =
 		Collections.unmodifiableSet(new HashSet<>(Arrays.asList(Disease.MEASLES, Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS)));
 
@@ -89,6 +92,7 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 	private final boolean redirectSimpleModeToCaseDataView;
 	private final OptionGroup viewModeToggle;
 	private final Property.ValueChangeListener viewModeToggleListener;
+	boolean isLuxembourg = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 
 	protected AbstractCaseView(String viewName, boolean redirectSimpleModeToCaseDataView) {
 		super(viewName);
@@ -227,15 +231,14 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 		}
 
 		if (showExtraMenuEntries) {
+			// Clinical course is disabled for Luxembourg for Measles, IMI, IPI, GIARDIASIS, Cryptosporidiosis cases,
+			// and for all other countries Influenza cases. #13708 and LTB. #14038
+			boolean isDiseaseDisabled = isLuxembourg
+				? CLINICAL_COURSE_DISABLED_DISEASES.contains(caze.getDisease())
+				: NON_LUX_CLINICAL_COURSE_DISABLED_DISEASES.contains(caze.getDisease());
 			if (UiUtil.permitted(
 				EnumSet.of(FeatureType.VIEW_TAB_CASES_FOLLOW_UP, FeatureType.VIEW_TAB_CASES_CLINICAL_COURSE, FeatureType.CLINICAL_MANAGEMENT),
-				UserRight.CLINICAL_COURSE_VIEW)
-				&& !caze.checkIsUnreferredPortHealthCase()
-				&& !(FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
-					&& CLINICAL_COURSE_DISABLED_DISEASES.contains(caze.getDisease()))
-				&& Disease.INFLUENZA != caze.getDisease()) {
-				// clinical course view is not available for Luxembourg for Measles, IMI, IPI, GIARDIASIS, Cryptosporidiosis cases,
-				// and for all other countries Influenza cases. 13708
+				UserRight.CLINICAL_COURSE_VIEW) && !caze.checkIsUnreferredPortHealthCase() && !isDiseaseDisabled) {
 				menu.addView(
 					ClinicalCourseView.VIEW_NAME,
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CLINICAL_COURSE),

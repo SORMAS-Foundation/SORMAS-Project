@@ -22,8 +22,9 @@ public class SampleMaterialTest {
 
 		// Issue #13948 (#1): 44 from #13560 + 4 new (cord blood, lung tissue, placenta, ulcer swab)
 		// + 4 un-deprecated (biopsy, duodenum/intestinal fluid, lower respiratory tract)
-		// + oropharyngeal swab un-deprecated, throat swab now deprecated = 52 active specimen types
-		assertThat(active, hasSize(52));
+		// + oropharyngeal swab un-deprecated, throat swab now deprecated = 52
+		// + nasopharyngeal lavage re-activated for RSV (#14023) = 53 active specimen types
+		assertThat(active, hasSize(53));
 	}
 
 	@Test
@@ -37,7 +38,6 @@ public class SampleMaterialTest {
 				SampleMaterial.URINE_PM,
 				SampleMaterial.CORNEA_PM,
 				SampleMaterial.NASAL_SWAB,
-				SampleMaterial.NASOPHARYNGEAL_LAVAGE,
 				SampleMaterial.THROAT_SWAB,
 				SampleMaterial.THROAT_ASPIRATE,
 				SampleMaterial.SOFT_TISSUE,

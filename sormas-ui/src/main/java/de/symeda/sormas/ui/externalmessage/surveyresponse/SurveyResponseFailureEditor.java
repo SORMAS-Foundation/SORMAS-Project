@@ -14,17 +14,14 @@
  */
 package de.symeda.sormas.ui.externalmessage.surveyresponse;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseResult;
 import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseWrapper;
 import de.symeda.sormas.api.externalmessage.survey.PatchDictionary;
@@ -139,7 +136,7 @@ public class SurveyResponseFailureEditor extends Window {
 				CssStyles.style(validHeading, CssStyles.H4);
 				mainLayout.addComponent(validHeading);
 
-				List<Map.Entry<PatchField, Object>> validEntries = validValues.entrySet().stream().collect(Collectors.toList());
+				List<Map.Entry<PatchField, Object>> validEntries = new ArrayList<>(validValues.entrySet());
 
 				Grid<Map.Entry<PatchField, Object>> validGrid = new Grid<>();
 				validGrid.setSizeFull();
@@ -182,10 +179,16 @@ public class SurveyResponseFailureEditor extends Window {
 							valueEditors.get(patchField).getValue());
 					}
 
-					FacadeProvider.getExternalMessageFacade()
+					ExternalMessageDto externalMessageDto = FacadeProvider.getExternalMessageFacade()
 						.overwriteSurveyResponse(externalMessage.getUuid(), new PatchDictionary().setDictionary(correctedDictionary));
 
-					Notification.show(I18nProperties.getString(Strings.messageSurveyResponseReprocessed), Notification.Type.HUMANIZED_MESSAGE);
+					if (externalMessageDto.getStatus() == ExternalMessageStatus.PROCESSED) {
+						Notification.show(I18nProperties.getString(Strings.messageSurveyResponseReprocessed), Notification.Type.HUMANIZED_MESSAGE);
+					} else {
+						Notification
+							.show(I18nProperties.getString(Strings.messageSurveyResponseReprocessedFailure), Notification.Type.HUMANIZED_MESSAGE);
+					}
+
 					close();
 					onReprocessed.run();
 				}, ValoTheme.BUTTON_PRIMARY);

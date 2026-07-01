@@ -217,9 +217,9 @@ public class CustomizableFieldMetadataService extends AbstractCoreAdoService<Cus
 			String likePattern = "%" + criteria.getFreeTextFilter().toLowerCase() + "%";
 			predicates.add(
 				cb.or(
-					cb.like(cb.lower(root.get(CustomizableFieldMetadata.NAME)), likePattern),
-					cb.like(cb.lower(root.get(CustomizableFieldMetadata.DESCRIPTION)), likePattern),
-					cb.like(cb.lower(root.get(CustomizableFieldMetadata.UI_GROUP)), likePattern)));
+					cb.like(cb.lower(root.get(CustomizableFieldMetadata.NAME).as(String.class)), likePattern),
+					cb.like(cb.lower(root.get(CustomizableFieldMetadata.DESCRIPTION).as(String.class)), likePattern),
+					cb.like(cb.lower(root.get(CustomizableFieldMetadata.UI_GROUP).as(String.class)), likePattern)));
 		}
 
 		return predicates.isEmpty() ? null : cb.and(predicates.toArray(new Predicate[0]));

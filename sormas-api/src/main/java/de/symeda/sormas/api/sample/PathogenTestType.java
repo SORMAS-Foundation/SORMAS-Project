@@ -43,8 +43,12 @@ public enum PathogenTestType {
 	@NotSelectableForNewTests
 	ANTIBODY_DETECTION,
 
+	// Resurrected for new-test selection (#14026 Measles, #14031 Giardia): scoped to the requesting diseases.
+	@Diseases(value = {
+		Disease.MEASLES,
+		Disease.GIARDIASIS })
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
-	@NotSelectableForNewTests
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	ANTIGEN_DETECTION,
 
 	// Merged Culture entry (bacterial + fungal) — supersedes BACTERIAL_CULTURE / FUNGAL_CULTURE for new
@@ -118,19 +122,11 @@ public enum PathogenTestType {
 	@NotSelectableForNewTests
 	MICROSCOPY,
 
+	// Resurrected for IMI new-test selection (#14034): scoped to Invasive Meningococcal Infection only.
 	@Diseases(value = {
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-		Disease.MEASLES,
-		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS,
-		Disease.DENGUE,
-		Disease.MALARIA,
-		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION })
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
-	@NotSelectableForNewTests
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	LATEX_AGGLUTINATION,
 
 	@Diseases(value = {
@@ -348,6 +344,12 @@ public enum PathogenTestType {
 	GENOTYPING,
 
 	@Diseases(value = {
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
+	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
+	RSV_SUBTYPING,
+
+	@Diseases(value = {
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS })
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
@@ -440,7 +442,8 @@ public enum PathogenTestType {
 
 	@Diseases(value = {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
-		Disease.DENGUE })
+		Disease.DENGUE,
+		Disease.GIARDIASIS })
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	RAPID_ANTIGEN_DETECTION,

@@ -16,9 +16,14 @@ package de.symeda.sormas.ui.events;
 
 import static de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent.QUARANTINE_LOC;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
@@ -74,6 +79,14 @@ public class EventParticipantDataView extends AbstractEventParticipantView imple
 	public static final String EXTERNAL_EMAILS_LOC = "externalEmails";
 
 	private CommitDiscardWrapperComponent<EventParticipantEditForm> editComponent;
+
+	//@formatter:off
+	private static final Set<Disease> IMMUNIZATION_EXCLUDED_DISEASES = new HashSet<>(Arrays.asList(
+		Disease.GIARDIASIS, 
+		Disease.CRYPTOSPORIDIOSIS, 
+		Disease.SALMONELLOSIS, 
+		Disease.SHIGELLOSIS));
+	//@formatter:on
 
 	public EventParticipantDataView() {
 		super(VIEW_NAME);
@@ -162,7 +175,9 @@ public class EventParticipantDataView extends AbstractEventParticipantView imple
 			sampleCriteria,
 			vaccinationCriteria);
 
-		if (UiUtil.permitted(FeatureType.IMMUNIZATION_MANAGEMENT, UserRight.IMMUNIZATION_VIEW) && event.getDisease() != null) {
+		if (UiUtil.permitted(FeatureType.IMMUNIZATION_MANAGEMENT, UserRight.IMMUNIZATION_VIEW)
+			&& event.getDisease() != null
+			&& !IMMUNIZATION_EXCLUDED_DISEASES.contains(event.getDisease())) {
 			final VaccinationStatusPanel vaccinationStatusPanel = VaccinationStatusPanel.forEventParticipant(eventParticipant, event);
 			if (eventParticipant.getVaccinationStatusLastUpdated() == null && UiUtil.permitted(UserRight.IMMUNIZATION_EDIT)) {
 				showVaccinationStatusUpdateDialog(eventParticipant);

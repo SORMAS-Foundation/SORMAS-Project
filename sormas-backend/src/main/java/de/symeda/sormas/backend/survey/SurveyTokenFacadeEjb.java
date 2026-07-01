@@ -32,25 +32,13 @@ import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Tuple;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Selection;
+import javax.persistence.criteria.*;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.survey.SurveyDto;
-import de.symeda.sormas.api.survey.SurveyReferenceDto;
-import de.symeda.sormas.api.survey.SurveyTokenCriteria;
-import de.symeda.sormas.api.survey.SurveyTokenDto;
-import de.symeda.sormas.api.survey.SurveyTokenFacade;
-import de.symeda.sormas.api.survey.SurveyTokenIndexDto;
-import de.symeda.sormas.api.survey.SurveyTokenReferenceDto;
+import de.symeda.sormas.api.survey.*;
 import de.symeda.sormas.api.survey.external.ExternalSurveyProviderFacade;
 import de.symeda.sormas.api.survey.external.views.ExternalSurveyView;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
@@ -365,7 +353,7 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 
 	private ExternalSurveyProviderFacade getExternalSurveyProviderFacade() {
 		String jndiName = Optional.ofNullable(systemConfigurationValueFacade.getValue(EXTERNAL_SURVEY_PROVIDER_JNDI_KEY)).orElseGet(() -> {
-			logger.info("External Survey Provider JNDI Key not found, using default");
+			logger.debug("External Survey Provider JNDI Key not found, using default");
 			return "java:global/sormas-esante-adapter/NgSurveyProviderFacade";
 		});
 		try {
