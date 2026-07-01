@@ -40,7 +40,6 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Component;
@@ -121,13 +120,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	private static final String LOC_OTHER_INFORMATION_HEADING = "locOtherInformationHeading";
 
 	private static final List<Disease> CONCLUSION_ALLOWED_DISEASES = Collections.unmodifiableList(
-		Arrays.asList(
-			Disease.CRYPTOSPORIDIOSIS,
-			Disease.GIARDIASIS,
-			Disease.MALARIA,
-			Disease.DENGUE,
-			Disease.SALMONELLOSIS,
-			Disease.SHIGELLOSIS));
+		Arrays.asList(Disease.CRYPTOSPORIDIOSIS, Disease.GIARDIASIS, Disease.MALARIA, Disease.DENGUE, Disease.SALMONELLOSIS, Disease.SHIGELLOSIS));
 
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT =
@@ -516,8 +509,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 					+ divsCss(
 						VSPACE_3,
 						I18nProperties.getString(
-							parentClass == ContactDto.class ? Strings.infoExposureInvestigationContacts : Strings.infoExposureInvestigation),
-						disease == Disease.GIARDIASIS ? I18nProperties.getString(Strings.giardiaInfoExposureInvestigation) : StringUtils.EMPTY),
+							parentClass == ContactDto.class ? Strings.infoExposureInvestigationContacts : Strings.infoExposureInvestigation)),
 				ContentMode.HTML),
 			LOC_EXPOSURE_INVESTIGATION_HEADING);
 
