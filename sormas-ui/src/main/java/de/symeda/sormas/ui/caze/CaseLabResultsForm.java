@@ -44,7 +44,7 @@ public class CaseLabResultsForm extends AbstractEditForm<CaseDataDto> {
 
 	//@formatter:off
 	private static final String HTML_LAYOUT =
-		fluidRowLocs(ONSET_DATE_LOC, "") +
+		fluidRowLocs(4, ONSET_DATE_LOC) +
 		fluidRowLocs(CaseDataDto.DATE_OTHER, CaseDataDto.DATE_OTHER_DETAILS) +
 		fluidRowLocs(CaseDataDto.EXTERNAL_COMMENTS);
 	//@formatter:on
