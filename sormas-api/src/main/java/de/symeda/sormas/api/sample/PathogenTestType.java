@@ -486,7 +486,11 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
-	@ResultValueTypeRel(ResultValueType.TEXT)
+	// Positive/Negative interpretation plus the reciprocal titre (#14105): TEXT alone rendered no result
+	// field. The titre ('1:160') is kept as text, not a Float numeric value, like NEUTRALIZING_ANTIBODIES.
+	@ResultValueTypeRel({
+		ResultValueType.QUALITATIVE,
+		ResultValueType.TEXT })
 	HEMAGGLUTINATION_INHIBITION,
 
 	@Diseases(value = {
@@ -594,7 +598,9 @@ public enum PathogenTestType {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
-	@ResultValueTypeRel(ResultValueType.TEXT)
+	@ResultValueTypeRel({
+		ResultValueType.QUALITATIVE,
+		ResultValueType.TEXT })
 	HISTOPATHOLOGY,
 
 	@Diseases(value = {
@@ -851,8 +857,8 @@ public enum PathogenTestType {
 	 * the rule cannot drift.
 	 *
 	 * <p>
-	 * The Cq input applies for {@code PCR_RT_PCR}, {@code CQ_VALUE_DETECTION}, or {@code Q_PCR} on Malaria
-	 * — except for Tuberculosis, which historically does not offer a Cq value.
+	 * The Cq input applies for {@code PCR_RT_PCR}, {@code CQ_VALUE_DETECTION}, or {@code Q_PCR} on Malaria.
+	 * Tuberculosis is included as well (#14030): a positive TB PCR shows the Cq value like every other disease.
 	 *
 	 * @param disease
 	 *            the tested disease (may be {@code null})
@@ -860,9 +866,6 @@ public enum PathogenTestType {
 	 *            the test method (may be {@code null})
 	 */
 	public static boolean cqInputApplies(Disease disease, PathogenTestType testType) {
-		if (disease == Disease.TUBERCULOSIS) {
-			return false;
-		}
 		return testType == PCR_RT_PCR || testType == CQ_VALUE_DETECTION || (disease == Disease.MALARIA && testType == Q_PCR);
 	}
 }
