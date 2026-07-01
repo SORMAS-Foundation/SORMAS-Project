@@ -34,6 +34,7 @@ import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.environment.EnvironmentMedia;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleDto;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleMaterial;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
@@ -415,12 +416,6 @@ public class SampleDashboardFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1L, byResult.getOrDefault(PathogenTestResultType.POSITIVE, 0L));
 		assertNull(byResult.get(PathogenTestResultType.NEGATIVE));
 
-		// Serogroup filter is case-insensitive and partial (matches "Serogroup B" via "serogroup").
-		Map<PathogenTestResultType, Long> bySerogroup =
-			getSampleDashboardFacade().getSampleCountsByResultType(new SampleDashboardCriteria().serogroup("serogroup"));
-		assertEquals(1L, bySerogroup.values().stream().mapToLong(Long::longValue).sum());
-		assertEquals(1L, bySerogroup.getOrDefault(PathogenTestResultType.POSITIVE, 0L));
-
 		// Variant filter matches only the sample whose test carries the variant.
 		Map<PathogenTestResultType, Long> byVariant =
 			getSampleDashboardFacade().getSampleCountsByResultType(new SampleDashboardCriteria().diseaseVariant(variant));
@@ -428,8 +423,9 @@ public class SampleDashboardFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1L, byVariant.getOrDefault(PathogenTestResultType.POSITIVE, 0L));
 
 		// Mismatched combination returns nothing.
-		Map<PathogenTestResultType, Long> none = getSampleDashboardFacade()
-			.getSampleCountsByResultType(new SampleDashboardCriteria().pathogenTestResult(PathogenTestResultType.POSITIVE).serogroup("type a"));
+		Map<PathogenTestResultType, Long> none = getSampleDashboardFacade().getSampleCountsByResultType(
+			new SampleDashboardCriteria().pathogenTestResult(PathogenTestResultType.POSITIVE)
+				.environmentSampleMaterial(EnvironmentSampleMaterial.AIR));
 		assertEquals(0L, none.values().stream().mapToLong(Long::longValue).sum());
 	}
 

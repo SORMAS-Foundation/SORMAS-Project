@@ -45,7 +45,6 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
@@ -522,16 +521,6 @@ public class SampleDashboardService {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(sampleRoot.get(Sample.PATHOGEN_TEST_RESULT), criteria.getPathogenTestResult()));
 		}
 
-		if (StringUtils.isNotBlank(criteria.getSerogroup())) {
-			Subquery<Long> serogroupSubquery = cq.subquery(Long.class);
-			Root<PathogenTest> pathogenTestRoot = serogroupSubquery.from(PathogenTest.class);
-			serogroupSubquery.select(pathogenTestRoot.get(PathogenTest.ID));
-			serogroupSubquery.where(
-				cb.equal(pathogenTestRoot.get(PathogenTest.SAMPLE), sampleRoot),
-				CriteriaBuilderHelper.unaccentedIlike(cb, pathogenTestRoot.get(PathogenTest.SEROTYPE_TEXT), criteria.getSerogroup().trim()),
-				cb.isFalse(pathogenTestRoot.get(PathogenTest.DELETED)));
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.exists(serogroupSubquery));
-		}
 		if (criteria.getDiseaseVariant() != null) {
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.equal(joins.getCaze().get(Case.DISEASE_VARIANT_VALUE), criteria.getDiseaseVariant().getValue()));

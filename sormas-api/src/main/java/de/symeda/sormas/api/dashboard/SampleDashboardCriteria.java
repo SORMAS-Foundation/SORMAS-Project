@@ -27,7 +27,6 @@ public class SampleDashboardCriteria extends BaseDashboardCriteria<SampleDashboa
 	private SampleMaterial sampleMaterial;
 	private EnvironmentSampleMaterial environmentSampleMaterial;
 	private PathogenTestResultType pathogenTestResult;
-	private String serogroup;
 	private DiseaseVariant diseaseVariant;
 
 	private Boolean withNoDisease;
@@ -82,16 +81,6 @@ public class SampleDashboardCriteria extends BaseDashboardCriteria<SampleDashboa
 
 	public SampleDashboardCriteria pathogenTestResult(PathogenTestResultType pathogenTestResult) {
 		this.pathogenTestResult = pathogenTestResult;
-
-		return self;
-	}
-
-	public String getSerogroup() {
-		return serogroup;
-	}
-
-	public SampleDashboardCriteria serogroup(String serogroup) {
-		this.serogroup = serogroup;
 
 		return self;
 	}
