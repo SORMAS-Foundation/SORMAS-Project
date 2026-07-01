@@ -232,8 +232,6 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS })
-	@HideForCountries(countries = {
-		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	BIOPSY,
 
 	@Diseases(value = {
@@ -371,7 +369,7 @@ public enum SampleMaterial {
 
 	@Diseases(value = {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.GIARDIASIS }, hide = true)
 	CLINICAL_SAMPLE,
 
 	@Diseases(value = {
@@ -410,16 +408,12 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS })
-	@HideForCountries(countries = {
-		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	INTESTINAL_FLUID,
 
 	@Diseases(value = {
 		Disease.GIARDIASIS,
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS })
-	@HideForCountries(countries = {
-		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	DUODENUM_FLUID,
 
 	@Diseases({
@@ -484,71 +478,95 @@ public enum SampleMaterial {
 	WOUND,
 
 	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SALMONELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	ABSCESS_SWAB,
 
 	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE }, hide = true)
 	BONE,
 
 	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE }, hide = true)
 	BONE_MARROW,
 
 	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SALMONELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	CONJUNCTIVAL_SWAB,
 
 	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SALMONELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	MIDDLE_EAR_FLUID,
 
 	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SALMONELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	PLASMA,
 
 	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SALMONELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	SWAB_UNSPECIFIED,
 
 	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SALMONELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	TEARS,
 
 	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SALMONELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	CORD_BLOOD,
 
 	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE }, hide = true)
 	LUNG_TISSUE,
 
 	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SALMONELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	PLACENTA,
 
 	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SALMONELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
