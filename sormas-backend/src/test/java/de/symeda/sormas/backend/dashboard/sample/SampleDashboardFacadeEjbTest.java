@@ -34,7 +34,6 @@ import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.environment.EnvironmentMedia;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleDto;
-import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleMaterial;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
@@ -424,8 +423,7 @@ public class SampleDashboardFacadeEjbTest extends AbstractBeanTest {
 
 		// Mismatched combination returns nothing.
 		Map<PathogenTestResultType, Long> none = getSampleDashboardFacade().getSampleCountsByResultType(
-			new SampleDashboardCriteria().pathogenTestResult(PathogenTestResultType.POSITIVE)
-				.environmentSampleMaterial(EnvironmentSampleMaterial.AIR));
+			new SampleDashboardCriteria().pathogenTestResult(PathogenTestResultType.POSITIVE).sampleMaterial(SampleMaterial.PUS));
 		assertEquals(0L, none.values().stream().mapToLong(Long::longValue).sum());
 	}
 

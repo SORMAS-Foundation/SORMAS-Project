@@ -522,8 +522,14 @@ public class SampleDashboardService {
 		}
 
 		if (criteria.getDiseaseVariant() != null) {
-			filter = CriteriaBuilderHelper
-				.and(cb, filter, cb.equal(joins.getCaze().get(Case.DISEASE_VARIANT_VALUE), criteria.getDiseaseVariant().getValue()));
+			Subquery<Long> variantSubquery = cq.subquery(Long.class);
+			Root<PathogenTest> pathogenTestRoot = variantSubquery.from(PathogenTest.class);
+			variantSubquery.select(pathogenTestRoot.get(PathogenTest.ID));
+			variantSubquery.where(
+				cb.equal(pathogenTestRoot.get(PathogenTest.SAMPLE), sampleRoot),
+				cb.equal(pathogenTestRoot.get(PathogenTest.TESTED_DISEASE_VARIANT_VALUE), criteria.getDiseaseVariant().getValue()),
+				cb.isFalse(pathogenTestRoot.get(PathogenTest.DELETED)));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.exists(variantSubquery));
 		}
 
 		if (Boolean.TRUE.equals(criteria.getWithNoDisease())) {
