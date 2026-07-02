@@ -247,8 +247,7 @@ public class CaseLabResultsView extends AbstractCaseView {
 
 		grid.addColumn(AstRow::getAntibiotic).setCaption(I18nProperties.getCaption(Captions.caseLabResultsAntibiotic));
 		grid.addColumn(AstRow::getMethod).setCaption(I18nProperties.getCaption(Captions.caseLabResultsMethod));
-		// "Value" merges MIC value (mg/l) and zone diameter (mm) into one column — a given antibiotic+method
-		// combination typically reports one or the other (#13955).
+		// "Value" shows the free-text MIC value (e.g. "≤0.125 mg/L" or a genotypic result like "mecA detected").
 		grid.addColumn(AstRow::getValue).setCaption(I18nProperties.getCaption(Captions.caseLabResultsValue));
 		grid.addColumn(AstRow::getClinicalInterpretation).setCaption(I18nProperties.getCaption(Captions.caseLabResultsClinicalInterpretation));
 
@@ -259,8 +258,8 @@ public class CaseLabResultsView extends AbstractCaseView {
 	/**
 	 * Flattens the single, flat {@link DrugSusceptibilityDto} of an AST test into one row per antibiotic
 	 * that applies to the tested disease (per the {@code @Diseases}/{@code @ApplicableToPathogenTests}
-	 * annotations), reading the method, MIC, zone diameter and clinical (S/I/R) values reflectively. The
-	 * MIC and zone diameter are combined into a single "Value" cell (#13955).
+	 * annotations), reading the method, MIC value and clinical (S/I/R) values reflectively. The MIC value
+	 * is free text (e.g. "≤0.125 mg/L" or "mecA detected") and is shown verbatim in the "Value" cell.
 	 */
 	private List<AstRow> flattenDrugSusceptibility(PathogenTestDto test) {
 
@@ -287,35 +286,18 @@ public class CaseLabResultsView extends AbstractCaseView {
 			// read each value defensively so a missing getter just leaves that cell blank.
 			DrugSusceptibilityType clinical = readProperty(ds, capitalized + SUSCEPTIBILITY_SUFFIX, DrugSusceptibilityType.class);
 			SusceptibilityMethod method = readProperty(ds, capitalized + "Method", SusceptibilityMethod.class);
-			Float mic = readProperty(ds, capitalized + "Mic", Float.class);
-			Float zoneDiameter = readProperty(ds, capitalized + "ZoneDiameter", Float.class);
+			String mic = readProperty(ds, capitalized + "Mic", String.class);
 
 			Drug drug = resolveDrug(base);
 			rows.add(
 				new AstRow(
 					drug != null ? I18nProperties.getEnumCaption(drug) : base,
 					method != null ? I18nProperties.getEnumCaption(method) : null,
-					formatAstValue(mic, zoneDiameter),
+					mic,
 					clinical != null ? I18nProperties.getEnumCaption(clinical) : null));
 		}
 
 		return rows;
-	}
-
-	/**
-	 * Builds the merged "Value" cell from the MIC (mg/L) and zone diameter (mm). A given antibiotic+method
-	 * combination typically reports one or the other, but both are surfaced when present so no data is lost.
-	 */
-	private static String formatAstValue(Float mic, Float zoneDiameter) {
-		boolean hasMic = mic != null;
-		boolean hasZone = zoneDiameter != null;
-		if (!hasMic && !hasZone) {
-			return null;
-		}
-		if (hasMic && hasZone) {
-			return String.format("MIC: %s mg/l; Zone: %s mm", mic, zoneDiameter);
-		}
-		return hasMic ? String.format("%s mg/l", mic) : String.format("%s mm", zoneDiameter);
 	}
 
 	/**

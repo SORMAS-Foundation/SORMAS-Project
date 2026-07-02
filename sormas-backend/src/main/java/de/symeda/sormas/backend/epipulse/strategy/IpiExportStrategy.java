@@ -170,8 +170,8 @@ public class IpiExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 		String astMethod = (String) row[++index];
 		dto.setAstMethod(astMethod);
 
-		// CTX/CFX (Ceftriaxone/Cefotaxime)
-		Float micValueCTX = row[++index] != null ? ((Number) row[index]).floatValue() : null;
+		// CTX/CFX (Ceftriaxone/Cefotaxime) — MIC is free text since #14036; parse its numeric part
+		Float micValueCTX = EpipulseLaboratoryMapper.parseMicValue((String) row[++index]);
 		dto.setMicSign_CTX_CFX(EpipulseLaboratoryMapper.mapMicSign(micValueCTX));
 		dto.setMicValueAST_CTX_CFX(micValueCTX != null ? micValueCTX.doubleValue() : null);
 
@@ -181,7 +181,7 @@ public class IpiExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 		}
 
 		// ERY (Erythromycin)
-		Float micValueERY = row[++index] != null ? ((Number) row[index]).floatValue() : null;
+		Float micValueERY = EpipulseLaboratoryMapper.parseMicValue((String) row[++index]);
 		dto.setMicSign_ERY(EpipulseLaboratoryMapper.mapMicSign(micValueERY));
 		dto.setMicValueAST_ERY(micValueERY != null ? micValueERY.doubleValue() : null);
 
@@ -191,7 +191,7 @@ public class IpiExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 		}
 
 		// PEN (Penicillin)
-		Float micValuePEN = row[++index] != null ? ((Number) row[index]).floatValue() : null;
+		Float micValuePEN = EpipulseLaboratoryMapper.parseMicValue((String) row[++index]);
 		dto.setMicSign_PEN(EpipulseLaboratoryMapper.mapMicSign(micValuePEN));
 		dto.setMicValueAST_PEN(micValuePEN != null ? micValuePEN.doubleValue() : null);
 
