@@ -135,7 +135,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	private static final String TUBERCULOSIS_CLINICAL_PRESENTATION_DETAILS_LOC = "tuberculosisClinicalPresentationDetailsLoc";
 
 	private static final List<String> YES_NO_UNKNOWN_SYMPTOM_FIELD_IDS = Collections
-		.unmodifiableList(Arrays.asList(PARENT_TIME_OFF_WORK, JAUNDICE_WITHIN_24_HOURS_OF_BIRTH, DATE_OF_ONSET_KNOWN, OTHER_NEUROLOCAL_SYMPTOM));
+		.unmodifiableList(Arrays.asList(PARENT_TIME_OFF_WORK, JAUNDICE_WITHIN_24_HOURS_OF_BIRTH, DATE_OF_ONSET_KNOWN, OTHER_NEUROLOGICAL_SYMPTOMS));
 	private static final List<String> COMBO_BOX_FIELDS = Collections.unmodifiableList(Arrays.asList(CLINICAL_MANIFESTATION));
 
 	private static Map<String, List<String>> symptomGroupMap = new HashMap<>();
@@ -557,8 +557,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			CLINICAL_MANIFESTATION_TEXT,
 			CEREBRAL_MALARIA,
 			SCANT_HEMORRHAGE,
-			OTHER_NEUROLOCAL_SYMPTOM,
-			OTHER_NEUROLOCAL_SYMPTOM_TEXT,
+			OTHER_NEUROLOGICAL_SYMPTOMS,
+			OTHER_NEUROLOGICAL_SYMPTOMS_TEXT,
 			FATAL_RISK,
 			TENESMUS,
 			BLOODY_DIARRHEA,
@@ -1174,7 +1174,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), WEIGHT_LOSS_AMOUNT, WEIGHT_LOSS, Arrays.asList(SymptomState.YES), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), DURATION_OF_SYMPTOMS, SYMPTOM_CURRENT_STATUS, Arrays.asList(SymptomState.YES), true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), OTHER_NEUROLOCAL_SYMPTOM_TEXT, OTHER_NEUROLOCAL_SYMPTOM, Arrays.asList(YesNoUnknown.YES), true);
+		FieldHelper
+			.setVisibleWhen(getFieldGroup(), OTHER_NEUROLOGICAL_SYMPTOMS_TEXT, OTHER_NEUROLOGICAL_SYMPTOMS, Arrays.asList(YesNoUnknown.YES), true);
 		FieldHelper
 			.setVisibleWhen(getFieldGroup(), CLINICAL_MANIFESTATION_TEXT, CLINICAL_MANIFESTATION, Arrays.asList(ClinicalManifestation.OTHER), true);
 	}
@@ -1354,6 +1355,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			Stream.concat(unconditionalSymptomFieldIds.stream(), conditionalBleedingSymptomFieldIds.stream()).collect(Collectors.toList());
 		allPropertyIds.add(LESIONS_THAT_ITCH);
 		allPropertyIds.add(OTHER_COMPLICATIONS_TEXT);
+		allPropertyIds.add(OTHER_NEUROLOGICAL_SYMPTOMS_TEXT);
 		for (Object sourcePropertyId : allPropertyIds) {
 			Field sourceField = getFieldGroup().getField(sourcePropertyId);
 			sourceField.addValueChangeListener(event -> {
