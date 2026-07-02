@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -48,13 +49,19 @@ public class CaseSymptomsView extends AbstractCaseView {
 		container.setEnabled(true);
 
 		CaseDataDto caseDataDto = FacadeProvider.getCaseFacade().getByUuid(getCaseRef().getUuid());
-		CaseSymptomSideViewComponent symptomSideViewComponent = new CaseSymptomSideViewComponent(caseDataDto.getDisease());
+
+		// #14029: the Complications side panel is not relevant for Tuberculosis; keep the layout but leave the side empty
+		boolean showComplications = caseDataDto.getDisease() != Disease.TUBERCULOSIS;
+		CaseSymptomSideViewComponent symptomSideViewComponent =
+			showComplications ? new CaseSymptomSideViewComponent(caseDataDto.getDisease()) : null;
 		caseSymptomsComponent =
 			ControllerProvider.getCaseController().getSymptomsEditComponent(getCaseRef().getUuid(), getViewMode(), symptomSideViewComponent);
 		LayoutWithSidePanel layout = new LayoutWithSidePanel(caseSymptomsComponent, COMPLICATIONS_LOC);
 		container.addComponent(layout);
-		layout.addSidePanelComponent(symptomSideViewComponent, COMPLICATIONS_LOC);
-		symptomSideViewComponent.addStyleNames(CssStyles.SIDE_COMPONENT);
+		if (showComplications) {
+			layout.addSidePanelComponent(symptomSideViewComponent, COMPLICATIONS_LOC);
+			symptomSideViewComponent.addStyleNames(CssStyles.SIDE_COMPONENT);
+		}
 
 		setSubComponent(container);
 		setEditPermission(caseSymptomsComponent);
