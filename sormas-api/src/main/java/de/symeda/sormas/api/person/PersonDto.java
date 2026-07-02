@@ -290,6 +290,7 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 		Disease.POLIO,
 		Disease.UNSPECIFIED_VHF,
 		Disease.CORONAVIRUS,
+		Disease.PERTUSSIS,
 		Disease.UNDEFINED,
 		Disease.OTHER })
 	private DeathPlaceType deathPlaceType;
@@ -300,6 +301,7 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 		Disease.POLIO,
 		Disease.UNSPECIFIED_VHF,
 		Disease.CORONAVIRUS,
+		Disease.PERTUSSIS,
 		Disease.UNDEFINED,
 		Disease.OTHER })
 	@SensitiveData
