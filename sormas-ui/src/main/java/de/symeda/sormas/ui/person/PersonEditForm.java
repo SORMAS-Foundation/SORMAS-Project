@@ -130,8 +130,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
                             fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
                             fluidRowLocs(PersonDto.APPROXIMATE_AGE, PersonDto.APPROXIMATE_AGE_TYPE, PersonDto.APPROXIMATE_AGE_REFERENCE_DATE)
                     ) +
-                    fluidRowLocs(PersonDto.PLACE_OF_BIRTH_REGION, PersonDto.PLACE_OF_BIRTH_DISTRICT, PersonDto.PLACE_OF_BIRTH_COMMUNITY) +
-                    fluidRowLocs(PersonDto.PLACE_OF_BIRTH_FACILITY_TYPE, PersonDto.PLACE_OF_BIRTH_FACILITY, PersonDto.PLACE_OF_BIRTH_FACILITY_DETAILS) +
+
                     fluidRowLocs(PersonDto.SEX, PersonDto.PRESENT_CONDITION) +
 					fluidRow(
 							oneOfFourCol(PersonDto.DEATH_DATE),
@@ -159,9 +158,11 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 					fluidRowLocs(PersonDto.HAS_COVID_APP, PersonDto.COVID_CODE_DELIVERED) +
 
                     loc(PERINATAL_DETAILS_HEADER) +
-					divsCss(VSPACE_3,fluidRowLocs(PersonDto.GESTATIONAL_AGE_CATEGORY,PersonDto.GESTATION_AGE_AT_BIRTH) +
+					divsCss(VSPACE_3,fluidRowLocs(PersonDto.GESTATIONAL_AGE_CATEGORY,"") +
 					fluidRowLocs(PersonDto.BIRTH_WEIGHT_CATEGORY, PersonDto.BIRTH_WEIGHT) +
                     fluidRowLocs(PersonDto.MULTIPLE_BIRTH,""))+
+					fluidRowLocs(PersonDto.PLACE_OF_BIRTH_REGION, PersonDto.PLACE_OF_BIRTH_DISTRICT, PersonDto.PLACE_OF_BIRTH_COMMUNITY) +
+					fluidRowLocs(PersonDto.PLACE_OF_BIRTH_FACILITY_TYPE, PersonDto.PLACE_OF_BIRTH_FACILITY, PersonDto.PLACE_OF_BIRTH_FACILITY_DETAILS) +
 
                     loc(OCCUPATION_HEADER) +
                     divsCss(VSPACE_3,
@@ -378,6 +379,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		TextField tfGestationAgeAtBirth = addField(PersonDto.GESTATION_AGE_AT_BIRTH, TextField.class);
 		tfGestationAgeAtBirth
 			.setConversionError(I18nProperties.getValidationError(Validations.onlyIntegerNumbersAllowed, tfGestationAgeAtBirth.getCaption()));
+		// Gestation Age At Birth is not required to showing. Its not in the requirements
+		tfGestationAgeAtBirth.setVisible(false);
 		TextField tfBirthWeight = addField(PersonDto.BIRTH_WEIGHT, TextField.class);
 		tfBirthWeight.setConversionError(I18nProperties.getValidationError(Validations.onlyIntegerNumbersAllowed, tfBirthWeight.getCaption()));
 
