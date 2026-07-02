@@ -1,6 +1,12 @@
 package de.symeda.sormas.backend.patch;
 
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -22,7 +28,15 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
 import de.symeda.sormas.api.externalmessage.survey.PatchDictionary;
 import de.symeda.sormas.api.externalmessage.survey.PatchField;
-import de.symeda.sormas.api.patch.*;
+import de.symeda.sormas.api.patch.CaseDataPatchRequest;
+import de.symeda.sormas.api.patch.DataPatchFailure;
+import de.symeda.sormas.api.patch.DataPatchFailureCause;
+import de.symeda.sormas.api.patch.DataPatchResponse;
+import de.symeda.sormas.api.patch.DataPatcher;
+import de.symeda.sormas.api.patch.DataReplacementStrategy;
+import de.symeda.sormas.api.patch.EmptyValueBehavior;
+import de.symeda.sormas.api.patch.PlainSinglePatchResult;
+import de.symeda.sormas.api.patch.SinglePatchResult;
 import de.symeda.sormas.api.patch.mapping.FieldCustomMapper;
 import de.symeda.sormas.api.patch.mapping.FieldPatchRequest;
 import de.symeda.sormas.api.patch.mapping.ValueMappingResult;
@@ -32,7 +46,11 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.json.ObjectMapperProvider;
-import de.symeda.sormas.backend.patch.customizablefield.*;
+import de.symeda.sormas.backend.patch.customizablefield.CustomizableContextIndexKey;
+import de.symeda.sormas.backend.patch.customizablefield.CustomizableFieldContextPatchMapping;
+import de.symeda.sormas.backend.patch.customizablefield.CustomizableFieldDataPatchRequest;
+import de.symeda.sormas.backend.patch.customizablefield.CustomizableFieldDataPatcher;
+import de.symeda.sormas.backend.patch.customizablefield.CustomizableFieldSinglePatchingResult;
 import de.symeda.sormas.backend.patch.mapping.FieldCustomMapperRegistry;
 import de.symeda.sormas.backend.patch.mapping.PatchEqualityCheckersRegistry;
 import de.symeda.sormas.backend.patch.mapping.ValueMapperRegistry;
@@ -66,6 +84,9 @@ public class DataPatcherImpl implements DataPatcher {
 
 	@Inject
 	private CustomizableFieldDataPatcher customizableFieldDataPatcher;
+
+	@Inject
+	private EqualValueOverrideHelper equalValueOverrideHelper;
 
 	public DataPatcherImpl() {
 	}
@@ -273,7 +294,7 @@ public class DataPatcherImpl implements DataPatcher {
 			return singlePatchResult.setFailure(buildFailure(dataPatchFailureCause, untypedTargetValue));
 		}
 
-		Object typedValue = result.getData();
+		Object newTypedValue = result.getData();
 
 		if (!attachedEntityWrapper.isAttached() && !StringUtils.contains(relativeFieldName, ".")) {
 			logger.debug(
@@ -286,19 +307,25 @@ public class DataPatcherImpl implements DataPatcher {
 			if (nestedPropertyValue.isPresent()) {
 				Object currentValue = nestedPropertyValue.orElseThrow();
 
-				if (!patchEqualityCheckersRegistry.areEqual(currentValue, typedValue)) {
-					return singlePatchResult.setFailure(
-						new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.FORBIDDEN_VALUE_OVERRIDE)
-							.setExistingFieldValue(currentValue)
-							.setProvidedFieldValue(untypedTargetValue));
+				if (!patchEqualityCheckersRegistry.areEqual(currentValue, newTypedValue)) {
+					if (equalValueOverrideHelper.allowedOverride(currentValue)) {
+						logger.info(
+							"Current value to [{}] was different to newValue but override was allowed for this value even if config was: DataReplacementStrategy.IF_NOT_ALREADY_PRESENT",
+							currentValue);
+					} else {
+						return singlePatchResult.setFailure(
+							new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.FORBIDDEN_VALUE_OVERRIDE)
+								.setExistingFieldValue(currentValue)
+								.setProvidedFieldValue(untypedTargetValue));
+					}
 				}
 			}
 		}
 
-		Optional<Exception> exception = PropertyAccessor.setNestedProperty(target, relativeFieldName, typedValue);
+		Optional<Exception> exception = PropertyAccessor.setNestedProperty(target, relativeFieldName, newTypedValue);
 		if (exception.isPresent()) {
 			Exception e = exception.orElseThrow();
-			logger.error("Setting nested property failed for: field [{}] on [{}] with value: [{}]", relativeFieldName, target, typedValue, e);
+			logger.error("Setting nested property failed for: field [{}] on [{}] with value: [{}]", relativeFieldName, target, newTypedValue, e);
 			return singlePatchResult.setFailure(
 				new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.TECHNICAL).setProvidedFieldValue(untypedTargetValue));
 		} else {
