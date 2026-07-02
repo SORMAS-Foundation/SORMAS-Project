@@ -46,8 +46,6 @@ public class SampleDashboardDataProvider extends AbstractDashboardDataProvider<S
 
 	private PathogenTestResultType pathogenTestResult;
 
-	private String serogroup;
-
 	private DiseaseVariant diseaseVariant;
 
 	private Map<PathogenTestResultType, Long> sampleCountsByResultType;
@@ -135,7 +133,6 @@ public class SampleDashboardDataProvider extends AbstractDashboardDataProvider<S
 			.environmentSampleMaterial(environmentSampleMaterial)
 			.withNoDisease(withNoDisease)
 			.pathogenTestResult(pathogenTestResult)
-			.serogroup(serogroup)
 			.diseaseVariant(diseaseVariant);
 	}
 
@@ -177,14 +174,6 @@ public class SampleDashboardDataProvider extends AbstractDashboardDataProvider<S
 
 	public void setPathogenTestResult(PathogenTestResultType pathogenTestResult) {
 		this.pathogenTestResult = pathogenTestResult;
-	}
-
-	public String getSerogroup() {
-		return serogroup;
-	}
-
-	public void setSerogroup(String serogroup) {
-		this.serogroup = serogroup;
 	}
 
 	public DiseaseVariant getDiseaseVariant() {

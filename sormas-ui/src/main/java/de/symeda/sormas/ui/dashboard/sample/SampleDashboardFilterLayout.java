@@ -25,7 +25,6 @@ import java.util.stream.Stream;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -33,7 +32,6 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleMaterial;
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -52,7 +50,6 @@ public class SampleDashboardFilterLayout extends DashboardFilterLayout<SampleDas
 	public static final String SAMPLE_MATERIAL_FILTER = "sampleMaterialFilter";
 	public static final String DISEASE_FILTER = "diseaseFilter";
 	public static final String PATHOGEN_TEST_RESULT_FILTER = "pathogenTestResultFilter";
-	public static final String SEROGROUP_FILTER = "serogroupFilter";
 	public static final String DISEASE_VARIANT_FILTER = "diseaseVariantFilter";
 
 	private final static String[] FILTERS = new String[] {
@@ -60,13 +57,11 @@ public class SampleDashboardFilterLayout extends DashboardFilterLayout<SampleDas
 		REGION_FILTER,
 		DISTRICT_FILTER,
 		SAMPLE_MATERIAL_FILTER,
-		DISEASE_FILTER,
 		PATHOGEN_TEST_RESULT_FILTER,
-		SEROGROUP_FILTER,
+		DISEASE_FILTER,
 		DISEASE_VARIANT_FILTER };
 
 	private ComboBox pathogenTestResultFilter;
-	private TextField serogroupFilter;
 	private ComboBox diseaseVariantFilter;
 
 	public SampleDashboardFilterLayout(SampleDashboardView dashboardView, SampleDashboardDataProvider dashboardDataProvider) {
@@ -81,9 +76,8 @@ public class SampleDashboardFilterLayout extends DashboardFilterLayout<SampleDas
 		createRegionFilter(I18nProperties.getDescription(Descriptions.sampleDashboardRegionFilter));
 		createDistrictFilter(I18nProperties.getDescription(Descriptions.sampleDashboardDistrictFilter));
 		createPathogenTestResultFilter();
-		createSerogroupFilter();
-		createDiseaseVariantFilter();
 		createSampleMaterialFilter();
+		createDiseaseVariantFilter();
 		createDiseaseFilter();
 	}
 
@@ -146,27 +140,11 @@ public class SampleDashboardFilterLayout extends DashboardFilterLayout<SampleDas
 		addCustomComponent(pathogenTestResultFilter, PATHOGEN_TEST_RESULT_FILTER);
 	}
 
-	private void createSerogroupFilter() {
-		serogroupFilter = new TextField();
-		serogroupFilter.setWidth(200, Unit.PIXELS);
-		serogroupFilter.setNullRepresentation("");
-		serogroupFilter.setInputPrompt(I18nProperties.getCaption(Captions.serogroup));
-		serogroupFilter.setValue(dashboardDataProvider.getSerogroup());
-		serogroupFilter.addValueChangeListener(e -> dashboardDataProvider.setSerogroup(serogroupFilter.getValue()));
-		addCustomComponent(serogroupFilter, SEROGROUP_FILTER);
-	}
-
 	private void setLabFiltersEnabled(boolean enabled) {
 		if (pathogenTestResultFilter != null) {
 			pathogenTestResultFilter.setEnabled(enabled);
 			if (!enabled) {
 				pathogenTestResultFilter.setValue(null);
-			}
-		}
-		if (serogroupFilter != null) {
-			serogroupFilter.setEnabled(enabled);
-			if (!enabled) {
-				serogroupFilter.setValue(null);
 			}
 		}
 		if (diseaseVariantFilter != null) {
