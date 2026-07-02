@@ -1,6 +1,12 @@
 package de.symeda.sormas.backend.patch;
 
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -10,6 +16,7 @@ import java.util.stream.Stream;
 import javax.ejb.EJB;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +29,15 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
 import de.symeda.sormas.api.externalmessage.survey.PatchDictionary;
 import de.symeda.sormas.api.externalmessage.survey.PatchField;
-import de.symeda.sormas.api.patch.*;
+import de.symeda.sormas.api.patch.CaseDataPatchRequest;
+import de.symeda.sormas.api.patch.DataPatchFailure;
+import de.symeda.sormas.api.patch.DataPatchFailureCause;
+import de.symeda.sormas.api.patch.DataPatchResponse;
+import de.symeda.sormas.api.patch.DataPatcher;
+import de.symeda.sormas.api.patch.DataReplacementStrategy;
+import de.symeda.sormas.api.patch.EmptyValueBehavior;
+import de.symeda.sormas.api.patch.PlainSinglePatchResult;
+import de.symeda.sormas.api.patch.SinglePatchResult;
 import de.symeda.sormas.api.patch.mapping.FieldCustomMapper;
 import de.symeda.sormas.api.patch.mapping.FieldPatchRequest;
 import de.symeda.sormas.api.patch.mapping.ValueMappingResult;
@@ -32,7 +47,11 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.json.ObjectMapperProvider;
-import de.symeda.sormas.backend.patch.customizablefield.*;
+import de.symeda.sormas.backend.patch.customizablefield.CustomizableContextIndexKey;
+import de.symeda.sormas.backend.patch.customizablefield.CustomizableFieldContextPatchMapping;
+import de.symeda.sormas.backend.patch.customizablefield.CustomizableFieldDataPatchRequest;
+import de.symeda.sormas.backend.patch.customizablefield.CustomizableFieldDataPatcher;
+import de.symeda.sormas.backend.patch.customizablefield.CustomizableFieldSinglePatchingResult;
 import de.symeda.sormas.backend.patch.mapping.FieldCustomMapperRegistry;
 import de.symeda.sormas.backend.patch.mapping.PatchEqualityCheckersRegistry;
 import de.symeda.sormas.backend.patch.mapping.ValueMapperRegistry;
@@ -88,6 +107,9 @@ public class DataPatcherImpl implements DataPatcher {
 		this.configFacade = configFacade;
 	}
 
+	@Transactional(value = Transactional.TxType.REQUIRES_NEW,
+		rollbackOn = {
+			Exception.class })
 	@Override
 	public DataPatchResponse patch(CaseDataPatchRequest request) {
 		logger.debug("patch: [{}]", request);

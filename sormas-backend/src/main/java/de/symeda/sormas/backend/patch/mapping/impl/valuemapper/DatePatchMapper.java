@@ -4,7 +4,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -32,8 +35,13 @@ public class DatePatchMapper implements ValuePatchMapper {
 		"yyyy-MM-dd'T'HH:mm:ssZ",    // 2025-12-17T14:30:00+0100
 		"yyyy-MM-dd'T'HH:mm:ss",     // 2025-12-17T14:30:00
 		"yyyy-MM-dd'T'HH:mm",        // 2025-12-17T14:30
-		"yyyy-MM-dd"                 // 2025-12-17
+		"yyyy-MM-dd",                // 2025-12-17,
+		"dd/MM/yyyy"                 // 17-12-2025,
 	);
+
+	private static final String YEAR_ONLY_REGEX = "\\d{4}";
+
+	private static final String MONTH_YEAR_ONLY_REGEX = "\\d{2}/\\d{4}";
 
 	@Override
 	public Set<Class<?>> getSupportedTypes() {
@@ -44,9 +52,6 @@ public class DatePatchMapper implements ValuePatchMapper {
 	@SuppressWarnings("unchecked")
 	public <T> ValueMappingResult<T> map(ValuePatchRequest<T> request) {
 		Object value = request.getValue();
-		if (value == null) {
-			return ValueMappingResult.withData(null);
-		}
 
 		String str = value.toString().trim();
 
@@ -65,9 +70,9 @@ public class DatePatchMapper implements ValuePatchMapper {
 
 		if (request.isAllowFallbackValues()) {
 			logger.debug("Edge case to allow years only in lenient manner");
-			ValueMappingResult<T> yearOnlyResult = tryParseYearOnly(str, targetType);
-			if (yearOnlyResult != null) {
-				return yearOnlyResult;
+			ValueMappingResult<T> partialDate = tryParsePartialDate(str, targetType);
+			if (partialDate != null) {
+				return partialDate;
 			}
 		}
 
@@ -81,18 +86,31 @@ public class DatePatchMapper implements ValuePatchMapper {
 	 * Returns {@code null} when the input is not a 4-digit year pattern.
 	 */
 	@SuppressWarnings("unchecked")
-	private <T> ValueMappingResult<T> tryParseYearOnly(String str, Class<?> targetType) {
-		if (!str.matches("\\d{4}")) {
+	private <T> ValueMappingResult<T> tryParsePartialDate(String str, Class<?> targetType) {
+		if (str.matches(YEAR_ONLY_REGEX)) {
+			try {
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+				sdf.setLenient(false);
+				Date january1st = sdf.parse(str + "-01-01");
+				return ValueMappingResult.withData((T) toTargetType(january1st, targetType));
+			} catch (ParseException e) {
+				return null;
+			}
+		} else if (str.matches(MONTH_YEAR_ONLY_REGEX)) {
+			try {
+				YearMonth ym = YearMonth.parse(str, DateTimeFormatter.ofPattern("MM/uuuu"));
+				LocalDate ld = ym.atDay(1);
+
+				Date legacyDate = Date.from(ld.atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+				return ValueMappingResult.withData((T) toTargetType(legacyDate, targetType));
+			} catch (DateTimeParseException e) {
+				return null;
+			}
+		} else {
 			return null;
 		}
-		try {
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-			sdf.setLenient(false);
-			Date january1st = sdf.parse(str + "-01-01");
-			return ValueMappingResult.withData((T) toTargetType(january1st, targetType));
-		} catch (ParseException e) {
-			return null;
-		}
+
 	}
 
 	private Object toTargetType(Date parsed, Class<?> targetType) {
