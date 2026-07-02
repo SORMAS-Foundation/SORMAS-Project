@@ -36,6 +36,8 @@ import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldContext;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldVisibilityContext;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldVisibilityRestrictions;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.DeletableAdo;
@@ -107,6 +109,28 @@ public class CustomizableFieldValueService extends AbstractCoreAdoService<Custom
 	}
 
 	public void ensureDefaultValuesForEntity(String entityUuid, CustomizableFieldContext contextClass) {
+		ensureDefaultValuesForEntity(entityUuid, contextClass, null);
+	}
+
+	/**
+	 * Ensures default values for customizable fields for the given entity.
+	 * <p>
+	 * Only fields that are visible for the given visibility context will have their default values
+	 * persisted. Fields with disease-specific visibility restrictions that don't match the context
+	 * will be skipped.
+	 *
+	 * @param entityUuid
+	 *            the UUID of the entity
+	 * @param contextClass
+	 *            the context class for the customizable fields
+	 * @param visibilityContext
+	 *            the visibility context to check against field restrictions; may be null to skip
+	 *            visibility checks
+	 */
+	public void ensureDefaultValuesForEntity(
+		String entityUuid,
+		CustomizableFieldContext contextClass,
+		CustomizableFieldVisibilityContext visibilityContext) {
 		if (StringUtils.isBlank(entityUuid) || contextClass == null) {
 			return;
 		}
@@ -120,6 +144,15 @@ public class CustomizableFieldValueService extends AbstractCoreAdoService<Custom
 		for (CustomizableFieldMetadata metadata : customizableFieldMetadataService.getActiveFieldsForContext(contextClass)) {
 			if (existingMetadataUuids.contains(metadata.getUuid()) || StringUtils.isBlank(metadata.getDefaultValue())) {
 				continue;
+			}
+
+			// Skip fields that are not visible for the given context
+			if (visibilityContext != null && metadata.getVisibilityRestrictions() != null) {
+				CustomizableFieldVisibilityRestrictions metadataVisibilityRestrictions =
+					CustomizableFieldMetadataFacadeEjb.parseVisibilityRestrictions(metadata.getVisibilityRestrictions());
+				if (metadataVisibilityRestrictions.matches(visibilityContext)) {
+					continue;
+				}
 			}
 
 			CustomizableFieldValue value = createNewValue(metadata, entityUuid, contextClass);

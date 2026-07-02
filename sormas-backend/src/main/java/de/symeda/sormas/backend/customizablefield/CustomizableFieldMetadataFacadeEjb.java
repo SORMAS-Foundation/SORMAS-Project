@@ -287,7 +287,7 @@ public class CustomizableFieldMetadataFacadeEjb
 		return target;
 	}
 
-	private static CustomizableFieldVisibilityRestrictions parseVisibilityRestrictions(String json) {
+	public static CustomizableFieldVisibilityRestrictions parseVisibilityRestrictions(String json) {
 		if (StringUtils.isBlank(json)) {
 			return null;
 		}

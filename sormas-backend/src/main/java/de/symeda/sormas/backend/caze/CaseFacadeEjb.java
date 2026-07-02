@@ -1796,7 +1796,10 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			customizableFieldValueService.ensureDefaultValuesForEntity(caze.getUuid(), CustomizableFieldContext.CASE);
 		}
 
-		epiDataFacade.ensureDefaultCustomizableFieldValues(caze.getEpiData(), existingCaseDto != null ? existingCaseDto.getEpiData() : null);
+		epiDataFacade.ensureDefaultCustomizableFieldValues(
+			caze.getEpiData(),
+			existingCaseDto != null ? existingCaseDto.getEpiData() : null,
+			caze.getDisease());
 	}
 
 	private void updateCaseVisitAssociations(CaseDataDto existingCase, Case caze) {
