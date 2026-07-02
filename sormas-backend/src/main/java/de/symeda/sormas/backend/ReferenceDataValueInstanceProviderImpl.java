@@ -57,7 +57,7 @@ public class ReferenceDataValueInstanceProviderImpl implements ReferenceDataValu
 					.collect(Collectors.toList())),
 			Map.entry(
 				FacilityReferenceDto.class,
-				() -> getInstance(FacilityFacade.class).getAllWithoutRegionAfter(DATE_ALL_VALUES)
+				() -> getInstance(FacilityFacade.class).getAllAfter(DATE_ALL_VALUES)
 					.stream()
 					.map(FacilityDto::toReference)
 					.collect(Collectors.toList())),

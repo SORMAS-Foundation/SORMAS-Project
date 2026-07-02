@@ -388,12 +388,12 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 			processingResults.forEach(wrapper -> {
 				ProcessingResultStatus result = wrapper.getResultStatus();
-				if (result.isCanceled()) {
+				if (result == null || result.isCanceled()) {
 					logger.error("Processing of surveyResponse with UUID {} has been canceled", wrapper.getExternalMessage().getUuid());
 				}
 			});
 		} catch (InterruptedException e) {
-			logger.error("Could not process lab message with UUID [{}]", extractUuids(filteredSurveyResponses), e);
+			logger.error("Could not process survey responses with UUID [{}]", extractUuids(filteredSurveyResponses), e);
 			Thread.currentThread().interrupt();
 		} catch (ExecutionException e) {
 			logger.error("Could not process survey responses with UUID [{}]", extractUuids(filteredSurveyResponses), e);

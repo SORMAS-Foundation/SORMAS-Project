@@ -1,6 +1,10 @@
 package de.symeda.sormas.backend.externalmessage.survey;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -9,8 +13,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import de.symeda.sormas.backend.survey.SurveyFacadeEjb;
-import de.symeda.sormas.backend.survey.SurveyTokenFacadeEjb;
 import org.apache.commons.collections4.CollectionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -24,12 +26,12 @@ import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponse
 import de.symeda.sormas.api.patch.CaseDataPatchRequest;
 import de.symeda.sormas.api.patch.DataPatchResponse;
 import de.symeda.sormas.api.patch.DataPatcher;
-import de.symeda.sormas.api.survey.SurveyFacade;
 import de.symeda.sormas.api.survey.SurveyReferenceDto;
 import de.symeda.sormas.api.survey.SurveyTokenDto;
-import de.symeda.sormas.api.survey.SurveyTokenFacade;
 import de.symeda.sormas.api.utils.Tuple;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResultStatus;
+import de.symeda.sormas.backend.survey.SurveyFacadeEjb;
+import de.symeda.sormas.backend.survey.SurveyTokenFacadeEjb;
 import de.symeda.sormas.backend.util.CollectorUtils;
 
 /**
@@ -146,6 +148,10 @@ public class AutomaticSurveyResponseProcessor {
 				"Exception while patching survey response for external message: [{}]. Processing will continue for other messages",
 				externalMessage.getUuid(),
 				e);
+
+			// in case of failure status must be changed to unprocessed
+			externalMessage.setStatus(ExternalMessageStatus.UNPROCESSED);
+
 			surveyResponseProcessingResult.setRuntimeException(e);
 		}
 
