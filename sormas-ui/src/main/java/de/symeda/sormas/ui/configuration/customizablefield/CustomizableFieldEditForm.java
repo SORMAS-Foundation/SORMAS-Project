@@ -19,12 +19,16 @@ import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import javax.annotation.Nullable;
 
 import com.vaadin.data.Binder;
 import com.vaadin.data.BinderValidationStatus;
@@ -36,6 +40,8 @@ import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.DateField;
+import com.vaadin.ui.DateTimeField;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 
@@ -50,6 +56,9 @@ import de.symeda.sormas.api.customizablefield.CustomizableFieldVisibilityRestric
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.utils.DateFormatHelper;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.components.CheckboxSet;
 
@@ -102,6 +111,10 @@ public class CustomizableFieldEditForm extends CustomLayout {
     private final CheckboxSet<Disease> cbsDiseases;
     private final TextField defaultValueField;
     private final ComboBox<String> defaultValueCombo;
+    private final ComboBox<Boolean> defaultValueCheckboxCombo;
+    private final ComboBox<YesNoUnknown> defaultValueYesNoUnknownCombo;
+    private final DateField defaultValueDateField;
+    private final DateTimeField defaultValueDateTimeField;
     private final CustomizableFieldOptionsComponent optionsComponent;
     private final Label optionsHeading;
     private final CustomizableFieldTranslationsComponent translationsComponent;
@@ -168,11 +181,34 @@ public class CustomizableFieldEditForm extends CustomLayout {
         addComponent(defaultValueField, CustomizableFieldMetadataDto.DEFAULT_VALUE);
         binder.forField(defaultValueField)
             .withNullRepresentation("")
+            .withValidator(
+                value -> value == null || value.isEmpty() || isValidDefaultValueForType(value, dto != null ? dto.getFieldType() : null),
+                errorMessage -> getDefaultValueErrorMessage(dto != null ? dto.getFieldType() : null))
             .bind(CustomizableFieldMetadataDto::getDefaultValue, CustomizableFieldMetadataDto::setDefaultValue);
 
         defaultValueCombo = new ComboBox<>(defaultValueCaption);
         defaultValueCombo.setWidth(100, Unit.PERCENTAGE);
         defaultValueCombo.setEmptySelectionAllowed(true);
+
+        defaultValueCheckboxCombo = new ComboBox<>(defaultValueCaption);
+        defaultValueCheckboxCombo.setWidth(100, Unit.PERCENTAGE);
+        defaultValueCheckboxCombo.setEmptySelectionAllowed(true);
+        defaultValueCheckboxCombo.setItems(Boolean.TRUE, Boolean.FALSE);
+        defaultValueCheckboxCombo.setItemCaptionGenerator(value -> Boolean.TRUE.equals(value) ? "True" : "False");
+
+        defaultValueYesNoUnknownCombo = new ComboBox<>(defaultValueCaption);
+        defaultValueYesNoUnknownCombo.setWidth(100, Unit.PERCENTAGE);
+        defaultValueYesNoUnknownCombo.setEmptySelectionAllowed(true);
+        defaultValueYesNoUnknownCombo.setItems(YesNoUnknown.values());
+        defaultValueYesNoUnknownCombo.setItemCaptionGenerator(I18nProperties::getEnumCaption);
+
+        defaultValueDateField = new DateField(defaultValueCaption);
+        defaultValueDateField.setWidth(100, Unit.PERCENTAGE);
+        defaultValueDateField.setDateFormat(DateFormatHelper.getDateFormatPattern());
+
+        defaultValueDateTimeField = new DateTimeField(defaultValueCaption);
+        defaultValueDateTimeField.setWidth(100, Unit.PERCENTAGE);
+        defaultValueDateTimeField.setDateFormat(DateHelper.getLocalDateTimeFormat(I18nProperties.getUserLanguage()).toPattern());
 
         optionsHeading = new Label(I18nProperties.getString(Strings.labelCustomizableFieldOptions));
         optionsHeading.addStyleName(CssStyles.VAADIN_CAPTION);
@@ -284,12 +320,38 @@ public class CustomizableFieldEditForm extends CustomLayout {
         boolean visible = OPTIONS_TYPES.contains(type);
         optionsHeading.setVisible(visible);
         optionsComponent.setVisible(visible);
-        if (visible) {
-            addComponent(defaultValueCombo, CustomizableFieldMetadataDto.DEFAULT_VALUE);
-        } else {
+
+        if (!visible) {
             optionsComponent.setValue(null);
             defaultValueCombo.clear();
+        }
+
+        if (type == null) {
             addComponent(defaultValueField, CustomizableFieldMetadataDto.DEFAULT_VALUE);
+            return;
+        }
+
+        switch (type) {
+        case COMBOBOX:
+        case CHECKBOX_LIST:
+        case RADIO_BUTTON_LIST:
+            addComponent(defaultValueCombo, CustomizableFieldMetadataDto.DEFAULT_VALUE);
+            break;
+        case CHECKBOX:
+            addComponent(defaultValueCheckboxCombo, CustomizableFieldMetadataDto.DEFAULT_VALUE);
+            break;
+        case YES_NO_UNKNOWN:
+            addComponent(defaultValueYesNoUnknownCombo, CustomizableFieldMetadataDto.DEFAULT_VALUE);
+            break;
+        case DATE:
+            addComponent(defaultValueDateField, CustomizableFieldMetadataDto.DEFAULT_VALUE);
+            break;
+        case DATE_TIME:
+            addComponent(defaultValueDateTimeField, CustomizableFieldMetadataDto.DEFAULT_VALUE);
+            break;
+        default:
+            addComponent(defaultValueField, CustomizableFieldMetadataDto.DEFAULT_VALUE);
+            break;
         }
     }
 
@@ -316,6 +378,7 @@ public class CustomizableFieldEditForm extends CustomLayout {
 
         CustomizableFieldType type = newDto != null ? newDto.getFieldType() : null;
         updateOptionsVisibility(type);
+        setTypeSpecificDefaultValue(type, newDto != null ? newDto.getDefaultValue() : null);
         if (newDto != null && OPTIONS_TYPES.contains(type)) {
             List<String> options = newDto.getCustomProperties() != null ? newDto.getCustomProperties().getOptions() : null;
             optionsComponent.setValue(options);
@@ -355,6 +418,14 @@ public class CustomizableFieldEditForm extends CustomLayout {
             } else if (props != null) {
                 props.setOptions(null);
             }
+        } else if (dto.getFieldType() == CustomizableFieldType.CHECKBOX) {
+            dto.setDefaultValue(formatCheckboxDefaultValue(defaultValueCheckboxCombo.getValue()));
+        } else if (dto.getFieldType() == CustomizableFieldType.YES_NO_UNKNOWN) {
+            dto.setDefaultValue(formatYesNoUnknownDefaultValue(defaultValueYesNoUnknownCombo.getValue()));
+        } else if (dto.getFieldType() == CustomizableFieldType.DATE) {
+            dto.setDefaultValue(formatDateDefaultValue(defaultValueDateField.getValue()));
+        } else if (dto.getFieldType() == CustomizableFieldType.DATE_TIME) {
+            dto.setDefaultValue(formatDateTimeDefaultValue(defaultValueDateTimeField.getValue()));
         }
         dto.setTranslations(translationsComponent.getValue());
 
@@ -383,6 +454,107 @@ public class CustomizableFieldEditForm extends CustomLayout {
         return I18nProperties.getPrefixCaption(CustomizableFieldMetadataDto.I18N_PREFIX, propertyId);
     }
 
+    private void setTypeSpecificDefaultValue(CustomizableFieldType type, String defaultValue) {
+        if (type == null) {
+            defaultValueCheckboxCombo.clear();
+            defaultValueYesNoUnknownCombo.clear();
+            defaultValueDateField.clear();
+            defaultValueDateTimeField.clear();
+            return;
+        }
+
+        switch (type) {
+        case CHECKBOX:
+            defaultValueCheckboxCombo.setValue(parseCheckboxDefaultValue(defaultValue));
+            break;
+        case YES_NO_UNKNOWN:
+            defaultValueYesNoUnknownCombo.setValue(parseYesNoUnknownDefaultValue(defaultValue));
+            break;
+        case DATE:
+            defaultValueDateField.setValue(parseDateDefaultValue(defaultValue));
+            break;
+        case DATE_TIME:
+            defaultValueDateTimeField.setValue(parseDateTimeDefaultValue(defaultValue));
+            break;
+        default:
+            defaultValueCheckboxCombo.clear();
+            defaultValueYesNoUnknownCombo.clear();
+            defaultValueDateField.clear();
+            defaultValueDateTimeField.clear();
+            break;
+        }
+    }
+
+    @Nullable
+    private static Boolean parseCheckboxDefaultValue(String defaultValue) {
+        if (defaultValue == null || defaultValue.trim().isEmpty()) {
+            return null;
+        }
+        if (Boolean.TRUE.toString().equalsIgnoreCase(defaultValue.trim())) {
+            return Boolean.TRUE;
+        }
+        if (Boolean.FALSE.toString().equalsIgnoreCase(defaultValue.trim())) {
+            return Boolean.FALSE;
+        }
+        return null;
+    }
+
+    @Nullable
+    private static String formatCheckboxDefaultValue(Boolean value) {
+        return value != null ? value.toString() : null;
+    }
+
+    @Nullable
+    private static YesNoUnknown parseYesNoUnknownDefaultValue(String defaultValue) {
+        if (defaultValue == null || defaultValue.trim().isEmpty()) {
+            return null;
+        }
+        try {
+            return YesNoUnknown.valueOf(defaultValue.trim().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    @Nullable
+    private static String formatYesNoUnknownDefaultValue(YesNoUnknown value) {
+        return value != null ? value.name() : null;
+    }
+
+    @Nullable
+    private static LocalDate parseDateDefaultValue(String defaultValue) {
+        if (defaultValue == null || defaultValue.trim().isEmpty()) {
+            return null;
+        }
+        try {
+            return LocalDate.parse(defaultValue.trim());
+        } catch (RuntimeException e) {
+            return null;
+        }
+    }
+
+    @Nullable
+    private static String formatDateDefaultValue(LocalDate value) {
+        return value != null ? value.toString() : null;
+    }
+
+    @Nullable
+    private static LocalDateTime parseDateTimeDefaultValue(String defaultValue) {
+        if (defaultValue == null || defaultValue.trim().isEmpty()) {
+            return null;
+        }
+        try {
+            return LocalDateTime.parse(defaultValue.trim());
+        } catch (RuntimeException e) {
+            return null;
+        }
+    }
+
+    @Nullable
+    private static String formatDateTimeDefaultValue(LocalDateTime value) {
+        return value != null ? value.withSecond(0).withNano(0).toString() : null;
+    }
+
     private static Converter<String, Float> stringToFloatConverter(String errorMessage) {
         return new Converter<String, Float>() {
 
@@ -403,5 +575,42 @@ public class CustomizableFieldEditForm extends CustomLayout {
                 return value == null ? "" : value.toString();
             }
         };
+    }
+
+    /**
+     * Checks if the given default value is valid for the specified field type.
+     */
+    private boolean isValidDefaultValueForType(String value, CustomizableFieldType type) {
+        if (value == null || value.isEmpty()) {
+            return true;
+        }
+        if (type == CustomizableFieldType.NUMBER) {
+            try {
+                Integer.parseInt(value.trim());
+                return true;
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        } else if (type == CustomizableFieldType.DECIMAL) {
+            try {
+                Float.parseFloat(value.trim());
+                return true;
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Returns the appropriate error message for an invalid default value based on the field type.
+     */
+    private String getDefaultValueErrorMessage(CustomizableFieldType type) {
+        if (type == CustomizableFieldType.NUMBER) {
+            return I18nProperties.getValidationError(Validations.onlyIntegerNumbersAllowed, caption(CustomizableFieldMetadataDto.DEFAULT_VALUE));
+        } else if (type == CustomizableFieldType.DECIMAL) {
+            return I18nProperties.getValidationError(Validations.onlyDecimalNumbersAllowed, caption(CustomizableFieldMetadataDto.DEFAULT_VALUE));
+        }
+        return I18nProperties.getValidationError(Validations.onlyNumbersAllowed, caption(CustomizableFieldMetadataDto.DEFAULT_VALUE));
     }
 }

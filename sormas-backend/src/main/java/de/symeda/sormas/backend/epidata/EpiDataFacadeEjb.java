@@ -79,6 +79,31 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		}
 	}
 
+	public void ensureDefaultCustomizableFieldValues(EpiData epiData, EpiDataDto existingEpiData) {
+		if (epiData == null || epiData.getUuid() == null) {
+			return;
+		}
+
+		if (existingEpiData == null || existingEpiData.getUuid() == null) {
+			customizableFieldValueService.ensureDefaultValuesForEntity(epiData.getUuid(), CustomizableFieldContext.EPIDATA);
+		}
+
+		HashSet<String> existingExposureUuids = new HashSet<>();
+		if (existingEpiData != null && existingEpiData.getExposures() != null) {
+			for (ExposureDto existingExposure : existingEpiData.getExposures()) {
+				if (existingExposure.getUuid() != null) {
+					existingExposureUuids.add(existingExposure.getUuid());
+				}
+			}
+		}
+
+		for (Exposure exposure : epiData.getExposures()) {
+			if (exposure.getUuid() != null && !existingExposureUuids.contains(exposure.getUuid())) {
+				customizableFieldValueService.ensureDefaultValuesForEntity(exposure.getUuid(), CustomizableFieldContext.EXPOSURE);
+			}
+		}
+	}
+
 	public EpiData fillOrBuildEntity(EpiDataDto source, EpiData target, boolean checkChangeDate) {
 		if (source == null) {
 			return null;

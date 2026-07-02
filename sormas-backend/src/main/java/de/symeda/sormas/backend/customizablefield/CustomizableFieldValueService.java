@@ -16,9 +16,12 @@
 package de.symeda.sormas.backend.customizablefield;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -26,6 +29,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+
+import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
@@ -41,6 +46,9 @@ import de.symeda.sormas.backend.common.DeletableAdo;
 @Stateless
 @LocalBean
 public class CustomizableFieldValueService extends AbstractCoreAdoService<CustomizableFieldValue, CustomizableFieldValueJoins> {
+
+	@EJB
+	private CustomizableFieldMetadataService customizableFieldMetadataService;
 
 	public CustomizableFieldValueService() {
 		super(CustomizableFieldValue.class, DeletableEntityType.CUSTOMIZABLE_FIELD_VALUE);
@@ -94,6 +102,28 @@ public class CustomizableFieldValueService extends AbstractCoreAdoService<Custom
 			CustomizableFieldMetadata metadata = entry.getKey();
 			CustomizableFieldValue value = existing.getOrDefault(metadata, createNewValue(metadata, entityUuid, contextClass));
 			value.setValue(entry.getValue().getValue());
+			ensurePersisted(value);
+		}
+	}
+
+	public void ensureDefaultValuesForEntity(String entityUuid, CustomizableFieldContext contextClass) {
+		if (StringUtils.isBlank(entityUuid) || contextClass == null) {
+			return;
+		}
+
+		Map<CustomizableFieldMetadata, CustomizableFieldValue> existing = getValuesForEntity(entityUuid, contextClass);
+		Set<String> existingMetadataUuids = new HashSet<>();
+		for (CustomizableFieldMetadata metadata : existing.keySet()) {
+			existingMetadataUuids.add(metadata.getUuid());
+		}
+
+		for (CustomizableFieldMetadata metadata : customizableFieldMetadataService.getActiveFieldsForContext(contextClass)) {
+			if (existingMetadataUuids.contains(metadata.getUuid()) || StringUtils.isBlank(metadata.getDefaultValue())) {
+				continue;
+			}
+
+			CustomizableFieldValue value = createNewValue(metadata, entityUuid, contextClass);
+			value.setValue(metadata.getDefaultValue());
 			ensurePersisted(value);
 		}
 	}
