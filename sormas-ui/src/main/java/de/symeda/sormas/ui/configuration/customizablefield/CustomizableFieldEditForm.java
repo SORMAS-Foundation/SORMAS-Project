@@ -182,8 +182,8 @@ public class CustomizableFieldEditForm extends CustomLayout {
         binder.forField(defaultValueField)
             .withNullRepresentation("")
             .withValidator(
-                value -> value == null || value.isEmpty() || isValidDefaultValueForType(value, dto != null ? dto.getFieldType() : null),
-                errorMessage -> getDefaultValueErrorMessage(dto != null ? dto.getFieldType() : null))
+                value -> value == null || value.isEmpty() || isValidDefaultValueForType(value, fieldTypeCombo.getValue()),
+                errorMessage -> getDefaultValueErrorMessage(fieldTypeCombo.getValue()))
             .bind(CustomizableFieldMetadataDto::getDefaultValue, CustomizableFieldMetadataDto::setDefaultValue);
 
         defaultValueCombo = new ComboBox<>(defaultValueCaption);
