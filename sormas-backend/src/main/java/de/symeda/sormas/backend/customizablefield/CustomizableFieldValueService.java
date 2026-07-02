@@ -116,8 +116,8 @@ public class CustomizableFieldValueService extends AbstractCoreAdoService<Custom
 	 * Ensures default values for customizable fields for the given entity.
 	 * <p>
 	 * Only fields that are visible for the given visibility context will have their default values
-	 * persisted. Fields with disease-specific visibility restrictions that don't match the context
-	 * will be skipped.
+	 * persisted. Fields with specific visibility restrictions will be skipped
+	 * if the visiblity context is not matched.
 	 *
 	 * @param entityUuid
 	 *            the UUID of the entity
@@ -147,10 +147,10 @@ public class CustomizableFieldValueService extends AbstractCoreAdoService<Custom
 			}
 
 			// Skip fields that are not visible for the given context
-			if (visibilityContext != null && metadata.getVisibilityRestrictions() != null) {
+			if (visibilityContext != null && metadata.getVisibilityRestrictions() != null && !metadata.getVisibilityRestrictions().isBlank()) {
 				CustomizableFieldVisibilityRestrictions metadataVisibilityRestrictions =
 					CustomizableFieldMetadataFacadeEjb.parseVisibilityRestrictions(metadata.getVisibilityRestrictions());
-				if (metadataVisibilityRestrictions.matches(visibilityContext)) {
+				if (!metadataVisibilityRestrictions.matches(visibilityContext)) {
 					continue;
 				}
 			}
