@@ -46,7 +46,11 @@ public class ImmunizationListComponent extends SideComponent {
 			addCreateButton(I18nProperties.getCaption(Captions.immunizationNewImmunization), () -> {
 				ImmunizationListCriteria immunizationListCriteria = criteriaSupplier.get();
 				ControllerProvider.getImmunizationController()
-					.create(immunizationListCriteria.getPerson(), immunizationListCriteria.getDisease(), quickSavedCallback);
+					.create(
+						immunizationListCriteria.getPerson(),
+						immunizationListCriteria.getDisease(),
+						immunizationListCriteria.getDiseaseDetails(),
+						quickSavedCallback);
 			}, UserRight.IMMUNIZATION_CREATE);
 		}
 

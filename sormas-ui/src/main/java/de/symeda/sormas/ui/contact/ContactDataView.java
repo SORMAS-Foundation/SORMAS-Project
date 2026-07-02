@@ -277,11 +277,15 @@ public class ContactDataView extends AbstractContactView implements HasName {
 				layout.addSidePanelComponent(new SideComponentLayout(new ImmunizationListComponent(() -> {
 					ContactDto refreshedContact = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
 					Disease criteriaDisease = refreshedContact.getDisease();
+					String criteriaDiseaseDetails = refreshedContact.getDiseaseDetails();
 					if (criteriaDisease == null && refreshedContact.getCaze() != null) {
 						CaseDataDto refreshedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(refreshedContact.getCaze().getUuid());
 						criteriaDisease = refreshedCase != null ? refreshedCase.getDisease() : null;
+						criteriaDiseaseDetails = refreshedCase != null ? refreshedCase.getDiseaseDetails() : null;
 					}
-					return new ImmunizationListCriteria.Builder(refreshedContact.getPerson()).withDisease(criteriaDisease).build();
+					return new ImmunizationListCriteria.Builder(refreshedContact.getPerson()).withDisease(criteriaDisease)
+						.withDiseaseDetails(criteriaDiseaseDetails)
+						.build();
 				}, null, this::showUnsavedChangesPopup, editAllowed, vaccinationStatusPanel, SormasUI::refreshView)), IMMUNIZATION_LOC);
 			} else {
 				layout.addSidePanelComponent(new SideComponentLayout(new VaccinationListComponent(() -> {
