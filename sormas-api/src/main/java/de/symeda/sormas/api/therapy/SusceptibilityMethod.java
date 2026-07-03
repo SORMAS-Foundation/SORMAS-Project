@@ -24,11 +24,12 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 public enum SusceptibilityMethod {
 
 	BROTH_MICRODILUTION,
-	ETEST,
+	AGAR_DILUTION,
 	DISK_DIFFUSION,
+	ETEST,
 	AUTOMATED_MIC,
 	GENOTYPIC_WGS,
-	BREAKPOINT_CATEGORICAL;
+	OTHER;
 
 	@Override
 	public String toString() {

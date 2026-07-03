@@ -464,6 +464,9 @@ public interface Strings {
 	String headingArchiveImmunization = "headingArchiveImmunization";
 	String headingArchiveSelfReport = "headingArchiveSelfReport";
 	String headingArchiveTravelEntry = "headingArchiveTravelEntry";
+	String headingAstInterpretation = "headingAstInterpretation";
+	String headingAstMethod = "headingAstMethod";
+	String headingAstValue = "headingAstValue";
 	String headingAutomaticDeletionStarted = "headingAutomaticDeletionStarted";
 	String headingAutomaticVaccinationStatusDetermination = "headingAutomaticVaccinationStatusDetermination";
 	String headingBulkEmailMaxAttachedFiles = "headingBulkEmailMaxAttachedFiles";
@@ -1945,7 +1948,6 @@ public interface Strings {
 	String promptSelfReportEpiWeekFrom = "promptSelfReportEpiWeekFrom";
 	String promptSelfReportEpiWeekTo = "promptSelfReportEpiWeekTo";
 	String promptSelfReportFreeTextSearch = "promptSelfReportFreeTextSearch";
-	String promptSurveillanceInterpretation = "promptSurveillanceInterpretation";
 	String promptSurvey = "promptSurvey";
 	String promptSurveyAssignedFrom = "promptSurveyAssignedFrom";
 	String promptSurveyAssignedTo = "promptSurveyAssignedTo";
@@ -1969,7 +1971,6 @@ public interface Strings {
 	String promptTreatmentTextFilter = "promptTreatmentTextFilter";
 	String promptTypeToAdd = "promptTypeToAdd";
 	String promptUserSearch = "promptUserSearch";
-	String promptZoneDiameter = "promptZoneDiameter";
 	String promtSampleDataType = "promtSampleDataType";
 	String prophylaxisStatus = "prophylaxisStatus";
 	String pseudonymizedCasesSelectedWarning = "pseudonymizedCasesSelectedWarning";

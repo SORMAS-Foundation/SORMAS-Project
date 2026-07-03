@@ -69,56 +69,22 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 	public static final String ERYTHROMYCIN_SUSCEPTIBILITY = "erythromycinSusceptibility";
 
 	public static final String AMIKACIN_METHOD = "amikacinMethod";
-	public static final String AMIKACIN_ZONE_DIAMETER = "amikacinZoneDiameter";
-	public static final String AMIKACIN_SURVEILLANCE = "amikacinSurveillance";
 	public static final String BEDAQUILINE_METHOD = "bedaquilineMethod";
-	public static final String BEDAQUILINE_ZONE_DIAMETER = "bedaquilineZoneDiameter";
-	public static final String BEDAQUILINE_SURVEILLANCE = "bedaquilineSurveillance";
 	public static final String CAPREOMYCIN_METHOD = "capreomycinMethod";
-	public static final String CAPREOMYCIN_ZONE_DIAMETER = "capreomycinZoneDiameter";
-	public static final String CAPREOMYCIN_SURVEILLANCE = "capreomycinSurveillance";
 	public static final String CIPROFLOXACIN_METHOD = "ciprofloxacinMethod";
-	public static final String CIPROFLOXACIN_ZONE_DIAMETER = "ciprofloxacinZoneDiameter";
-	public static final String CIPROFLOXACIN_SURVEILLANCE = "ciprofloxacinSurveillance";
 	public static final String DELAMANID_METHOD = "delamanidMethod";
-	public static final String DELAMANID_ZONE_DIAMETER = "delamanidZoneDiameter";
-	public static final String DELAMANID_SURVEILLANCE = "delamanidSurveillance";
 	public static final String ETHAMBUTOL_METHOD = "ethambutolMethod";
-	public static final String ETHAMBUTOL_ZONE_DIAMETER = "ethambutolZoneDiameter";
-	public static final String ETHAMBUTOL_SURVEILLANCE = "ethambutolSurveillance";
 	public static final String GATIFLOXACIN_METHOD = "gatifloxacinMethod";
-	public static final String GATIFLOXACIN_ZONE_DIAMETER = "gatifloxacinZoneDiameter";
-	public static final String GATIFLOXACIN_SURVEILLANCE = "gatifloxacinSurveillance";
 	public static final String ISONIAZID_METHOD = "isoniazidMethod";
-	public static final String ISONIAZID_ZONE_DIAMETER = "isoniazidZoneDiameter";
-	public static final String ISONIAZID_SURVEILLANCE = "isoniazidSurveillance";
 	public static final String KANAMYCIN_METHOD = "kanamycinMethod";
-	public static final String KANAMYCIN_ZONE_DIAMETER = "kanamycinZoneDiameter";
-	public static final String KANAMYCIN_SURVEILLANCE = "kanamycinSurveillance";
 	public static final String LEVOFLOXACIN_METHOD = "levofloxacinMethod";
-	public static final String LEVOFLOXACIN_ZONE_DIAMETER = "levofloxacinZoneDiameter";
-	public static final String LEVOFLOXACIN_SURVEILLANCE = "levofloxacinSurveillance";
 	public static final String MOXIFLOXACIN_METHOD = "moxifloxacinMethod";
-	public static final String MOXIFLOXACIN_ZONE_DIAMETER = "moxifloxacinZoneDiameter";
-	public static final String MOXIFLOXACIN_SURVEILLANCE = "moxifloxacinSurveillance";
 	public static final String OFLOXACIN_METHOD = "ofloxacinMethod";
-	public static final String OFLOXACIN_ZONE_DIAMETER = "ofloxacinZoneDiameter";
-	public static final String OFLOXACIN_SURVEILLANCE = "ofloxacinSurveillance";
 	public static final String RIFAMPICIN_METHOD = "rifampicinMethod";
-	public static final String RIFAMPICIN_ZONE_DIAMETER = "rifampicinZoneDiameter";
-	public static final String RIFAMPICIN_SURVEILLANCE = "rifampicinSurveillance";
 	public static final String STREPTOMYCIN_METHOD = "streptomycinMethod";
-	public static final String STREPTOMYCIN_ZONE_DIAMETER = "streptomycinZoneDiameter";
-	public static final String STREPTOMYCIN_SURVEILLANCE = "streptomycinSurveillance";
 	public static final String CEFTRIAXONE_METHOD = "ceftriaxoneMethod";
-	public static final String CEFTRIAXONE_ZONE_DIAMETER = "ceftriaxoneZoneDiameter";
-	public static final String CEFTRIAXONE_SURVEILLANCE = "ceftriaxoneSurveillance";
 	public static final String PENICILLIN_METHOD = "penicillinMethod";
-	public static final String PENICILLIN_ZONE_DIAMETER = "penicillinZoneDiameter";
-	public static final String PENICILLIN_SURVEILLANCE = "penicillinSurveillance";
 	public static final String ERYTHROMYCIN_METHOD = "erythromycinMethod";
-	public static final String ERYTHROMYCIN_ZONE_DIAMETER = "erythromycinZoneDiameter";
-	public static final String ERYTHROMYCIN_SURVEILLANCE = "erythromycinSurveillance";
 
 	public static final String AZITHROMYCIN_MIC = "azithromycinMic";
 	public static final String AZITHROMYCIN_SUSCEPTIBILITY = "azithromycinSusceptibility";
@@ -140,7 +106,7 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float amikacinMic;
+	private String amikacinMic;
 	@Diseases(value = {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
@@ -150,7 +116,7 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float bedaquilineMic;
+	private String bedaquilineMic;
 	@Diseases(value = {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
@@ -160,7 +126,7 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float capreomycinMic;
+	private String capreomycinMic;
 	@Diseases(value = {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
@@ -172,7 +138,7 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		Disease.SHIGELLOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float ciprofloxacinMic;
+	private String ciprofloxacinMic;
 	@Diseases(value = {
 		Disease.TUBERCULOSIS,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
@@ -184,7 +150,7 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float delamanidMic;
+	private String delamanidMic;
 	@Diseases(value = {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
@@ -194,7 +160,7 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float ethambutolMic;
+	private String ethambutolMic;
 	@Diseases(value = {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
@@ -204,7 +170,7 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float gatifloxacinMic;
+	private String gatifloxacinMic;
 	@Diseases(value = {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
@@ -214,7 +180,7 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float isoniazidMic;
+	private String isoniazidMic;
 	@Diseases(value = {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
@@ -224,7 +190,7 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float kanamycinMic;
+	private String kanamycinMic;
 	@Diseases(value = {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
@@ -234,7 +200,7 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float levofloxacinMic;
+	private String levofloxacinMic;
 	@Diseases(value = {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
@@ -244,7 +210,7 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float moxifloxacinMic;
+	private String moxifloxacinMic;
 	@Diseases(value = {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
@@ -254,7 +220,7 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float ofloxacinMic;
+	private String ofloxacinMic;
 	@Diseases(value = {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
@@ -265,7 +231,7 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float rifampicinMic;
+	private String rifampicinMic;
 	@Diseases(value = {
 		Disease.TUBERCULOSIS,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION })
@@ -276,7 +242,7 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float streptomycinMic;
+	private String streptomycinMic;
 	@Diseases(value = {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
@@ -289,7 +255,7 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		Disease.SHIGELLOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float ceftriaxoneMic;
+	private String ceftriaxoneMic;
 	@Diseases(value = {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
@@ -303,7 +269,7 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float penicillinMic;
+	private String penicillinMic;
 	@Diseases(value = {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
@@ -315,7 +281,7 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float erythromycinMic;
+	private String erythromycinMic;
 	@Diseases(value = {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
@@ -331,42 +297,12 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float amikacinZoneDiameter;
-	@Diseases(value = {
-		Disease.TUBERCULOSIS })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private SusceptibilitySurveillanceType amikacinSurveillance;
-	@Diseases(value = {
-		Disease.TUBERCULOSIS })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private SusceptibilityMethod bedaquilineMethod;
 	@Diseases(value = {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float bedaquilineZoneDiameter;
-	@Diseases(value = {
-		Disease.TUBERCULOSIS })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private SusceptibilitySurveillanceType bedaquilineSurveillance;
-	@Diseases(value = {
-		Disease.TUBERCULOSIS })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private SusceptibilityMethod capreomycinMethod;
-	@Diseases(value = {
-		Disease.TUBERCULOSIS })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float capreomycinZoneDiameter;
-	@Diseases(value = {
-		Disease.TUBERCULOSIS })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private SusceptibilitySurveillanceType capreomycinSurveillance;
 	@Diseases(value = {
 		Disease.TUBERCULOSIS,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
@@ -374,18 +310,6 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private SusceptibilityMethod ciprofloxacinMethod;
-	@Diseases(value = {
-		Disease.TUBERCULOSIS,
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float ciprofloxacinZoneDiameter;
-	@Diseases(value = {
-		Disease.TUBERCULOSIS,
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private SusceptibilitySurveillanceType ciprofloxacinSurveillance;
 	@Diseases(value = {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
@@ -395,27 +319,7 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float delamanidZoneDiameter;
-	@Diseases(value = {
-		Disease.TUBERCULOSIS })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private SusceptibilitySurveillanceType delamanidSurveillance;
-	@Diseases(value = {
-		Disease.TUBERCULOSIS })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private SusceptibilityMethod ethambutolMethod;
-	@Diseases(value = {
-		Disease.TUBERCULOSIS })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float ethambutolZoneDiameter;
-	@Diseases(value = {
-		Disease.TUBERCULOSIS })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private SusceptibilitySurveillanceType ethambutolSurveillance;
 	@Diseases(value = {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
@@ -425,27 +329,7 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float gatifloxacinZoneDiameter;
-	@Diseases(value = {
-		Disease.TUBERCULOSIS })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private SusceptibilitySurveillanceType gatifloxacinSurveillance;
-	@Diseases(value = {
-		Disease.TUBERCULOSIS })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private SusceptibilityMethod isoniazidMethod;
-	@Diseases(value = {
-		Disease.TUBERCULOSIS })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float isoniazidZoneDiameter;
-	@Diseases(value = {
-		Disease.TUBERCULOSIS })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private SusceptibilitySurveillanceType isoniazidSurveillance;
 	@Diseases(value = {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
@@ -455,27 +339,7 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float kanamycinZoneDiameter;
-	@Diseases(value = {
-		Disease.TUBERCULOSIS })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private SusceptibilitySurveillanceType kanamycinSurveillance;
-	@Diseases(value = {
-		Disease.TUBERCULOSIS })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private SusceptibilityMethod levofloxacinMethod;
-	@Diseases(value = {
-		Disease.TUBERCULOSIS })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float levofloxacinZoneDiameter;
-	@Diseases(value = {
-		Disease.TUBERCULOSIS })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private SusceptibilitySurveillanceType levofloxacinSurveillance;
 	@Diseases(value = {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
@@ -485,27 +349,7 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float moxifloxacinZoneDiameter;
-	@Diseases(value = {
-		Disease.TUBERCULOSIS })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private SusceptibilitySurveillanceType moxifloxacinSurveillance;
-	@Diseases(value = {
-		Disease.TUBERCULOSIS })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private SusceptibilityMethod ofloxacinMethod;
-	@Diseases(value = {
-		Disease.TUBERCULOSIS })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float ofloxacinZoneDiameter;
-	@Diseases(value = {
-		Disease.TUBERCULOSIS })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private SusceptibilitySurveillanceType ofloxacinSurveillance;
 	@Diseases(value = {
 		Disease.TUBERCULOSIS,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION })
@@ -513,32 +357,10 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private SusceptibilityMethod rifampicinMethod;
 	@Diseases(value = {
-		Disease.TUBERCULOSIS,
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float rifampicinZoneDiameter;
-	@Diseases(value = {
-		Disease.TUBERCULOSIS,
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private SusceptibilitySurveillanceType rifampicinSurveillance;
-	@Diseases(value = {
 		Disease.TUBERCULOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private SusceptibilityMethod streptomycinMethod;
-	@Diseases(value = {
-		Disease.TUBERCULOSIS })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float streptomycinZoneDiameter;
-	@Diseases(value = {
-		Disease.TUBERCULOSIS })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private SusceptibilitySurveillanceType streptomycinSurveillance;
 	@Diseases(value = {
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
@@ -551,52 +373,18 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float ceftriaxoneZoneDiameter;
-	@Diseases(value = {
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private SusceptibilitySurveillanceType ceftriaxoneSurveillance;
-	@Diseases(value = {
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private SusceptibilityMethod penicillinMethod;
-	@Diseases(value = {
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float penicillinZoneDiameter;
-	@Diseases(value = {
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private SusceptibilitySurveillanceType penicillinSurveillance;
 	@Diseases(value = {
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
 	private SusceptibilityMethod erythromycinMethod;
-	@Diseases(value = {
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float erythromycinZoneDiameter;
-	@Diseases(value = {
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
-	@ApplicableToPathogenTests(value = {
-		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private SusceptibilitySurveillanceType erythromycinSurveillance;
 
 	@Diseases(value = {
 		Disease.SHIGELLOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float azithromycinMic;
+	private String azithromycinMic;
 	@Diseases(value = {
 		Disease.SHIGELLOSIS })
 	@ApplicableToPathogenTests(value = {
@@ -611,7 +399,7 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		Disease.SHIGELLOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float ceftazidimeMic;
+	private String ceftazidimeMic;
 	@Diseases(value = {
 		Disease.SHIGELLOSIS })
 	@ApplicableToPathogenTests(value = {
@@ -628,7 +416,7 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		Disease.SHIGELLOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float cefotaximeMic;
+	private String cefotaximeMic;
 	@Diseases(value = {
 		Disease.SHIGELLOSIS })
 	@ApplicableToPathogenTests(value = {
@@ -643,7 +431,7 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		Disease.SHIGELLOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float ampicillinMic;
+	private String ampicillinMic;
 	@Diseases(value = {
 		Disease.SHIGELLOSIS })
 	@ApplicableToPathogenTests(value = {
@@ -658,7 +446,7 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		Disease.SHIGELLOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
-	private Float trimethoprimSulfamethoxazoleMic;
+	private String trimethoprimSulfamethoxazoleMic;
 	@Diseases(value = {
 		Disease.SHIGELLOSIS })
 	@ApplicableToPathogenTests(value = {
@@ -676,11 +464,11 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		return drugSusceptibility;
 	}
 
-	public Float getAmikacinMic() {
+	public String getAmikacinMic() {
 		return amikacinMic;
 	}
 
-	public void setAmikacinMic(Float amikacinMic) {
+	public void setAmikacinMic(String amikacinMic) {
 		this.amikacinMic = amikacinMic;
 	}
 
@@ -692,11 +480,11 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		this.amikacinSusceptibility = amikacinSusceptibility;
 	}
 
-	public Float getBedaquilineMic() {
+	public String getBedaquilineMic() {
 		return bedaquilineMic;
 	}
 
-	public void setBedaquilineMic(Float bedaquilineMic) {
+	public void setBedaquilineMic(String bedaquilineMic) {
 		this.bedaquilineMic = bedaquilineMic;
 	}
 
@@ -708,11 +496,11 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		this.bedaquilineSusceptibility = bedaquilineSusceptibility;
 	}
 
-	public Float getCapreomycinMic() {
+	public String getCapreomycinMic() {
 		return capreomycinMic;
 	}
 
-	public void setCapreomycinMic(Float capreomycinMic) {
+	public void setCapreomycinMic(String capreomycinMic) {
 		this.capreomycinMic = capreomycinMic;
 	}
 
@@ -724,11 +512,11 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		this.capreomycinSusceptibility = capreomycinSusceptibility;
 	}
 
-	public Float getCiprofloxacinMic() {
+	public String getCiprofloxacinMic() {
 		return ciprofloxacinMic;
 	}
 
-	public void setCiprofloxacinMic(Float ciprofloxacinMic) {
+	public void setCiprofloxacinMic(String ciprofloxacinMic) {
 		this.ciprofloxacinMic = ciprofloxacinMic;
 	}
 
@@ -740,11 +528,11 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		this.ciprofloxacinSusceptibility = ciprofloxacinSusceptibility;
 	}
 
-	public Float getDelamanidMic() {
+	public String getDelamanidMic() {
 		return delamanidMic;
 	}
 
-	public void setDelamanidMic(Float delamanidMic) {
+	public void setDelamanidMic(String delamanidMic) {
 		this.delamanidMic = delamanidMic;
 	}
 
@@ -756,11 +544,11 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		this.delamanidSusceptibility = delamanidSusceptibility;
 	}
 
-	public Float getEthambutolMic() {
+	public String getEthambutolMic() {
 		return ethambutolMic;
 	}
 
-	public void setEthambutolMic(Float ethambutolMic) {
+	public void setEthambutolMic(String ethambutolMic) {
 		this.ethambutolMic = ethambutolMic;
 	}
 
@@ -772,11 +560,11 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		this.ethambutolSusceptibility = ethambutolSusceptibility;
 	}
 
-	public Float getGatifloxacinMic() {
+	public String getGatifloxacinMic() {
 		return gatifloxacinMic;
 	}
 
-	public void setGatifloxacinMic(Float gatifloxacinMic) {
+	public void setGatifloxacinMic(String gatifloxacinMic) {
 		this.gatifloxacinMic = gatifloxacinMic;
 	}
 
@@ -788,11 +576,11 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		this.gatifloxacinSusceptibility = gatifloxacinSusceptibility;
 	}
 
-	public Float getIsoniazidMic() {
+	public String getIsoniazidMic() {
 		return isoniazidMic;
 	}
 
-	public void setIsoniazidMic(Float isoniazidMic) {
+	public void setIsoniazidMic(String isoniazidMic) {
 		this.isoniazidMic = isoniazidMic;
 	}
 
@@ -804,11 +592,11 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		this.isoniazidSusceptibility = isoniazidSusceptibility;
 	}
 
-	public Float getKanamycinMic() {
+	public String getKanamycinMic() {
 		return kanamycinMic;
 	}
 
-	public void setKanamycinMic(Float kanamycinMic) {
+	public void setKanamycinMic(String kanamycinMic) {
 		this.kanamycinMic = kanamycinMic;
 	}
 
@@ -820,11 +608,11 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		this.kanamycinSusceptibility = kanamycinSusceptibility;
 	}
 
-	public Float getLevofloxacinMic() {
+	public String getLevofloxacinMic() {
 		return levofloxacinMic;
 	}
 
-	public void setLevofloxacinMic(Float levofloxacinMic) {
+	public void setLevofloxacinMic(String levofloxacinMic) {
 		this.levofloxacinMic = levofloxacinMic;
 	}
 
@@ -836,11 +624,11 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		this.levofloxacinSusceptibility = levofloxacinSusceptibility;
 	}
 
-	public Float getMoxifloxacinMic() {
+	public String getMoxifloxacinMic() {
 		return moxifloxacinMic;
 	}
 
-	public void setMoxifloxacinMic(Float moxifloxacinMic) {
+	public void setMoxifloxacinMic(String moxifloxacinMic) {
 		this.moxifloxacinMic = moxifloxacinMic;
 	}
 
@@ -852,11 +640,11 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		this.moxifloxacinSusceptibility = moxifloxacinSusceptibility;
 	}
 
-	public Float getOfloxacinMic() {
+	public String getOfloxacinMic() {
 		return ofloxacinMic;
 	}
 
-	public void setOfloxacinMic(Float ofloxacinMic) {
+	public void setOfloxacinMic(String ofloxacinMic) {
 		this.ofloxacinMic = ofloxacinMic;
 	}
 
@@ -868,11 +656,11 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		this.ofloxacinSusceptibility = ofloxacinSusceptibility;
 	}
 
-	public Float getRifampicinMic() {
+	public String getRifampicinMic() {
 		return rifampicinMic;
 	}
 
-	public void setRifampicinMic(Float rifampicinMic) {
+	public void setRifampicinMic(String rifampicinMic) {
 		this.rifampicinMic = rifampicinMic;
 	}
 
@@ -884,11 +672,11 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		this.rifampicinSusceptibility = rifampicinSusceptibility;
 	}
 
-	public Float getStreptomycinMic() {
+	public String getStreptomycinMic() {
 		return streptomycinMic;
 	}
 
-	public void setStreptomycinMic(Float streptomycinMic) {
+	public void setStreptomycinMic(String streptomycinMic) {
 		this.streptomycinMic = streptomycinMic;
 	}
 
@@ -900,11 +688,11 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		this.streptomycinSusceptibility = streptomycinSusceptibility;
 	}
 
-	public Float getCeftriaxoneMic() {
+	public String getCeftriaxoneMic() {
 		return ceftriaxoneMic;
 	}
 
-	public void setCeftriaxoneMic(Float ceftriaxoneMic) {
+	public void setCeftriaxoneMic(String ceftriaxoneMic) {
 		this.ceftriaxoneMic = ceftriaxoneMic;
 	}
 
@@ -916,11 +704,11 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		this.ceftriaxoneSusceptibility = ceftriaxoneSusceptibility;
 	}
 
-	public Float getPenicillinMic() {
+	public String getPenicillinMic() {
 		return penicillinMic;
 	}
 
-	public void setPenicillinMic(Float penicillinMic) {
+	public void setPenicillinMic(String penicillinMic) {
 		this.penicillinMic = penicillinMic;
 	}
 
@@ -932,11 +720,11 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		this.penicillinSusceptibility = penicillinSusceptibility;
 	}
 
-	public Float getErythromycinMic() {
+	public String getErythromycinMic() {
 		return erythromycinMic;
 	}
 
-	public void setErythromycinMic(Float erythromycinMic) {
+	public void setErythromycinMic(String erythromycinMic) {
 		this.erythromycinMic = erythromycinMic;
 	}
 
@@ -956,44 +744,12 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		this.amikacinMethod = amikacinMethod;
 	}
 
-	public Float getAmikacinZoneDiameter() {
-		return amikacinZoneDiameter;
-	}
-
-	public void setAmikacinZoneDiameter(Float amikacinZoneDiameter) {
-		this.amikacinZoneDiameter = amikacinZoneDiameter;
-	}
-
-	public SusceptibilitySurveillanceType getAmikacinSurveillance() {
-		return amikacinSurveillance;
-	}
-
-	public void setAmikacinSurveillance(SusceptibilitySurveillanceType amikacinSurveillance) {
-		this.amikacinSurveillance = amikacinSurveillance;
-	}
-
 	public SusceptibilityMethod getBedaquilineMethod() {
 		return bedaquilineMethod;
 	}
 
 	public void setBedaquilineMethod(SusceptibilityMethod bedaquilineMethod) {
 		this.bedaquilineMethod = bedaquilineMethod;
-	}
-
-	public Float getBedaquilineZoneDiameter() {
-		return bedaquilineZoneDiameter;
-	}
-
-	public void setBedaquilineZoneDiameter(Float bedaquilineZoneDiameter) {
-		this.bedaquilineZoneDiameter = bedaquilineZoneDiameter;
-	}
-
-	public SusceptibilitySurveillanceType getBedaquilineSurveillance() {
-		return bedaquilineSurveillance;
-	}
-
-	public void setBedaquilineSurveillance(SusceptibilitySurveillanceType bedaquilineSurveillance) {
-		this.bedaquilineSurveillance = bedaquilineSurveillance;
 	}
 
 	public SusceptibilityMethod getCapreomycinMethod() {
@@ -1004,44 +760,12 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		this.capreomycinMethod = capreomycinMethod;
 	}
 
-	public Float getCapreomycinZoneDiameter() {
-		return capreomycinZoneDiameter;
-	}
-
-	public void setCapreomycinZoneDiameter(Float capreomycinZoneDiameter) {
-		this.capreomycinZoneDiameter = capreomycinZoneDiameter;
-	}
-
-	public SusceptibilitySurveillanceType getCapreomycinSurveillance() {
-		return capreomycinSurveillance;
-	}
-
-	public void setCapreomycinSurveillance(SusceptibilitySurveillanceType capreomycinSurveillance) {
-		this.capreomycinSurveillance = capreomycinSurveillance;
-	}
-
 	public SusceptibilityMethod getCiprofloxacinMethod() {
 		return ciprofloxacinMethod;
 	}
 
 	public void setCiprofloxacinMethod(SusceptibilityMethod ciprofloxacinMethod) {
 		this.ciprofloxacinMethod = ciprofloxacinMethod;
-	}
-
-	public Float getCiprofloxacinZoneDiameter() {
-		return ciprofloxacinZoneDiameter;
-	}
-
-	public void setCiprofloxacinZoneDiameter(Float ciprofloxacinZoneDiameter) {
-		this.ciprofloxacinZoneDiameter = ciprofloxacinZoneDiameter;
-	}
-
-	public SusceptibilitySurveillanceType getCiprofloxacinSurveillance() {
-		return ciprofloxacinSurveillance;
-	}
-
-	public void setCiprofloxacinSurveillance(SusceptibilitySurveillanceType ciprofloxacinSurveillance) {
-		this.ciprofloxacinSurveillance = ciprofloxacinSurveillance;
 	}
 
 	public SusceptibilityMethod getDelamanidMethod() {
@@ -1052,44 +776,12 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		this.delamanidMethod = delamanidMethod;
 	}
 
-	public Float getDelamanidZoneDiameter() {
-		return delamanidZoneDiameter;
-	}
-
-	public void setDelamanidZoneDiameter(Float delamanidZoneDiameter) {
-		this.delamanidZoneDiameter = delamanidZoneDiameter;
-	}
-
-	public SusceptibilitySurveillanceType getDelamanidSurveillance() {
-		return delamanidSurveillance;
-	}
-
-	public void setDelamanidSurveillance(SusceptibilitySurveillanceType delamanidSurveillance) {
-		this.delamanidSurveillance = delamanidSurveillance;
-	}
-
 	public SusceptibilityMethod getEthambutolMethod() {
 		return ethambutolMethod;
 	}
 
 	public void setEthambutolMethod(SusceptibilityMethod ethambutolMethod) {
 		this.ethambutolMethod = ethambutolMethod;
-	}
-
-	public Float getEthambutolZoneDiameter() {
-		return ethambutolZoneDiameter;
-	}
-
-	public void setEthambutolZoneDiameter(Float ethambutolZoneDiameter) {
-		this.ethambutolZoneDiameter = ethambutolZoneDiameter;
-	}
-
-	public SusceptibilitySurveillanceType getEthambutolSurveillance() {
-		return ethambutolSurveillance;
-	}
-
-	public void setEthambutolSurveillance(SusceptibilitySurveillanceType ethambutolSurveillance) {
-		this.ethambutolSurveillance = ethambutolSurveillance;
 	}
 
 	public SusceptibilityMethod getGatifloxacinMethod() {
@@ -1100,44 +792,12 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		this.gatifloxacinMethod = gatifloxacinMethod;
 	}
 
-	public Float getGatifloxacinZoneDiameter() {
-		return gatifloxacinZoneDiameter;
-	}
-
-	public void setGatifloxacinZoneDiameter(Float gatifloxacinZoneDiameter) {
-		this.gatifloxacinZoneDiameter = gatifloxacinZoneDiameter;
-	}
-
-	public SusceptibilitySurveillanceType getGatifloxacinSurveillance() {
-		return gatifloxacinSurveillance;
-	}
-
-	public void setGatifloxacinSurveillance(SusceptibilitySurveillanceType gatifloxacinSurveillance) {
-		this.gatifloxacinSurveillance = gatifloxacinSurveillance;
-	}
-
 	public SusceptibilityMethod getIsoniazidMethod() {
 		return isoniazidMethod;
 	}
 
 	public void setIsoniazidMethod(SusceptibilityMethod isoniazidMethod) {
 		this.isoniazidMethod = isoniazidMethod;
-	}
-
-	public Float getIsoniazidZoneDiameter() {
-		return isoniazidZoneDiameter;
-	}
-
-	public void setIsoniazidZoneDiameter(Float isoniazidZoneDiameter) {
-		this.isoniazidZoneDiameter = isoniazidZoneDiameter;
-	}
-
-	public SusceptibilitySurveillanceType getIsoniazidSurveillance() {
-		return isoniazidSurveillance;
-	}
-
-	public void setIsoniazidSurveillance(SusceptibilitySurveillanceType isoniazidSurveillance) {
-		this.isoniazidSurveillance = isoniazidSurveillance;
 	}
 
 	public SusceptibilityMethod getKanamycinMethod() {
@@ -1148,44 +808,12 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		this.kanamycinMethod = kanamycinMethod;
 	}
 
-	public Float getKanamycinZoneDiameter() {
-		return kanamycinZoneDiameter;
-	}
-
-	public void setKanamycinZoneDiameter(Float kanamycinZoneDiameter) {
-		this.kanamycinZoneDiameter = kanamycinZoneDiameter;
-	}
-
-	public SusceptibilitySurveillanceType getKanamycinSurveillance() {
-		return kanamycinSurveillance;
-	}
-
-	public void setKanamycinSurveillance(SusceptibilitySurveillanceType kanamycinSurveillance) {
-		this.kanamycinSurveillance = kanamycinSurveillance;
-	}
-
 	public SusceptibilityMethod getLevofloxacinMethod() {
 		return levofloxacinMethod;
 	}
 
 	public void setLevofloxacinMethod(SusceptibilityMethod levofloxacinMethod) {
 		this.levofloxacinMethod = levofloxacinMethod;
-	}
-
-	public Float getLevofloxacinZoneDiameter() {
-		return levofloxacinZoneDiameter;
-	}
-
-	public void setLevofloxacinZoneDiameter(Float levofloxacinZoneDiameter) {
-		this.levofloxacinZoneDiameter = levofloxacinZoneDiameter;
-	}
-
-	public SusceptibilitySurveillanceType getLevofloxacinSurveillance() {
-		return levofloxacinSurveillance;
-	}
-
-	public void setLevofloxacinSurveillance(SusceptibilitySurveillanceType levofloxacinSurveillance) {
-		this.levofloxacinSurveillance = levofloxacinSurveillance;
 	}
 
 	public SusceptibilityMethod getMoxifloxacinMethod() {
@@ -1196,44 +824,12 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		this.moxifloxacinMethod = moxifloxacinMethod;
 	}
 
-	public Float getMoxifloxacinZoneDiameter() {
-		return moxifloxacinZoneDiameter;
-	}
-
-	public void setMoxifloxacinZoneDiameter(Float moxifloxacinZoneDiameter) {
-		this.moxifloxacinZoneDiameter = moxifloxacinZoneDiameter;
-	}
-
-	public SusceptibilitySurveillanceType getMoxifloxacinSurveillance() {
-		return moxifloxacinSurveillance;
-	}
-
-	public void setMoxifloxacinSurveillance(SusceptibilitySurveillanceType moxifloxacinSurveillance) {
-		this.moxifloxacinSurveillance = moxifloxacinSurveillance;
-	}
-
 	public SusceptibilityMethod getOfloxacinMethod() {
 		return ofloxacinMethod;
 	}
 
 	public void setOfloxacinMethod(SusceptibilityMethod ofloxacinMethod) {
 		this.ofloxacinMethod = ofloxacinMethod;
-	}
-
-	public Float getOfloxacinZoneDiameter() {
-		return ofloxacinZoneDiameter;
-	}
-
-	public void setOfloxacinZoneDiameter(Float ofloxacinZoneDiameter) {
-		this.ofloxacinZoneDiameter = ofloxacinZoneDiameter;
-	}
-
-	public SusceptibilitySurveillanceType getOfloxacinSurveillance() {
-		return ofloxacinSurveillance;
-	}
-
-	public void setOfloxacinSurveillance(SusceptibilitySurveillanceType ofloxacinSurveillance) {
-		this.ofloxacinSurveillance = ofloxacinSurveillance;
 	}
 
 	public SusceptibilityMethod getRifampicinMethod() {
@@ -1244,44 +840,12 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		this.rifampicinMethod = rifampicinMethod;
 	}
 
-	public Float getRifampicinZoneDiameter() {
-		return rifampicinZoneDiameter;
-	}
-
-	public void setRifampicinZoneDiameter(Float rifampicinZoneDiameter) {
-		this.rifampicinZoneDiameter = rifampicinZoneDiameter;
-	}
-
-	public SusceptibilitySurveillanceType getRifampicinSurveillance() {
-		return rifampicinSurveillance;
-	}
-
-	public void setRifampicinSurveillance(SusceptibilitySurveillanceType rifampicinSurveillance) {
-		this.rifampicinSurveillance = rifampicinSurveillance;
-	}
-
 	public SusceptibilityMethod getStreptomycinMethod() {
 		return streptomycinMethod;
 	}
 
 	public void setStreptomycinMethod(SusceptibilityMethod streptomycinMethod) {
 		this.streptomycinMethod = streptomycinMethod;
-	}
-
-	public Float getStreptomycinZoneDiameter() {
-		return streptomycinZoneDiameter;
-	}
-
-	public void setStreptomycinZoneDiameter(Float streptomycinZoneDiameter) {
-		this.streptomycinZoneDiameter = streptomycinZoneDiameter;
-	}
-
-	public SusceptibilitySurveillanceType getStreptomycinSurveillance() {
-		return streptomycinSurveillance;
-	}
-
-	public void setStreptomycinSurveillance(SusceptibilitySurveillanceType streptomycinSurveillance) {
-		this.streptomycinSurveillance = streptomycinSurveillance;
 	}
 
 	public SusceptibilityMethod getCeftriaxoneMethod() {
@@ -1292,44 +856,12 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		this.ceftriaxoneMethod = ceftriaxoneMethod;
 	}
 
-	public Float getCeftriaxoneZoneDiameter() {
-		return ceftriaxoneZoneDiameter;
-	}
-
-	public void setCeftriaxoneZoneDiameter(Float ceftriaxoneZoneDiameter) {
-		this.ceftriaxoneZoneDiameter = ceftriaxoneZoneDiameter;
-	}
-
-	public SusceptibilitySurveillanceType getCeftriaxoneSurveillance() {
-		return ceftriaxoneSurveillance;
-	}
-
-	public void setCeftriaxoneSurveillance(SusceptibilitySurveillanceType ceftriaxoneSurveillance) {
-		this.ceftriaxoneSurveillance = ceftriaxoneSurveillance;
-	}
-
 	public SusceptibilityMethod getPenicillinMethod() {
 		return penicillinMethod;
 	}
 
 	public void setPenicillinMethod(SusceptibilityMethod penicillinMethod) {
 		this.penicillinMethod = penicillinMethod;
-	}
-
-	public Float getPenicillinZoneDiameter() {
-		return penicillinZoneDiameter;
-	}
-
-	public void setPenicillinZoneDiameter(Float penicillinZoneDiameter) {
-		this.penicillinZoneDiameter = penicillinZoneDiameter;
-	}
-
-	public SusceptibilitySurveillanceType getPenicillinSurveillance() {
-		return penicillinSurveillance;
-	}
-
-	public void setPenicillinSurveillance(SusceptibilitySurveillanceType penicillinSurveillance) {
-		this.penicillinSurveillance = penicillinSurveillance;
 	}
 
 	public SusceptibilityMethod getErythromycinMethod() {
@@ -1340,27 +872,11 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		this.erythromycinMethod = erythromycinMethod;
 	}
 
-	public Float getErythromycinZoneDiameter() {
-		return erythromycinZoneDiameter;
-	}
-
-	public void setErythromycinZoneDiameter(Float erythromycinZoneDiameter) {
-		this.erythromycinZoneDiameter = erythromycinZoneDiameter;
-	}
-
-	public SusceptibilitySurveillanceType getErythromycinSurveillance() {
-		return erythromycinSurveillance;
-	}
-
-	public void setErythromycinSurveillance(SusceptibilitySurveillanceType erythromycinSurveillance) {
-		this.erythromycinSurveillance = erythromycinSurveillance;
-	}
-
-	public Float getAzithromycinMic() {
+	public String getAzithromycinMic() {
 		return azithromycinMic;
 	}
 
-	public void setAzithromycinMic(Float azithromycinMic) {
+	public void setAzithromycinMic(String azithromycinMic) {
 		this.azithromycinMic = azithromycinMic;
 	}
 
@@ -1372,11 +888,11 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		this.azithromycinSusceptibility = azithromycinSusceptibility;
 	}
 
-	public Float getCeftazidimeMic() {
+	public String getCeftazidimeMic() {
 		return ceftazidimeMic;
 	}
 
-	public void setCeftazidimeMic(Float ceftazidimeMic) {
+	public void setCeftazidimeMic(String ceftazidimeMic) {
 		this.ceftazidimeMic = ceftazidimeMic;
 	}
 
@@ -1388,11 +904,11 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		this.ceftazidimeSusceptibility = ceftazidimeSusceptibility;
 	}
 
-	public Float getCefotaximeMic() {
+	public String getCefotaximeMic() {
 		return cefotaximeMic;
 	}
 
-	public void setCefotaximeMic(Float cefotaximeMic) {
+	public void setCefotaximeMic(String cefotaximeMic) {
 		this.cefotaximeMic = cefotaximeMic;
 	}
 
@@ -1404,11 +920,11 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		this.cefotaximeSusceptibility = cefotaximeSusceptibility;
 	}
 
-	public Float getAmpicillinMic() {
+	public String getAmpicillinMic() {
 		return ampicillinMic;
 	}
 
-	public void setAmpicillinMic(Float ampicillinMic) {
+	public void setAmpicillinMic(String ampicillinMic) {
 		this.ampicillinMic = ampicillinMic;
 	}
 
@@ -1420,11 +936,11 @@ public class DrugSusceptibilityDto extends PseudonymizableDto {
 		this.ampicillinSusceptibility = ampicillinSusceptibility;
 	}
 
-	public Float getTrimethoprimSulfamethoxazoleMic() {
+	public String getTrimethoprimSulfamethoxazoleMic() {
 		return trimethoprimSulfamethoxazoleMic;
 	}
 
-	public void setTrimethoprimSulfamethoxazoleMic(Float trimethoprimSulfamethoxazoleMic) {
+	public void setTrimethoprimSulfamethoxazoleMic(String trimethoprimSulfamethoxazoleMic) {
 		this.trimethoprimSulfamethoxazoleMic = trimethoprimSulfamethoxazoleMic;
 	}
 
