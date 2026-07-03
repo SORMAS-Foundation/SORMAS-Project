@@ -384,8 +384,8 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String CLINICAL_MANIFESTATION_TEXT = "clinicalManifestationText";
 	public static final String CEREBRAL_MALARIA = "cerebralMalaria";
 	public static final String SCANT_HEMORRHAGE = "scantHemorrhage";
-	public static final String OTHER_NEUROLOCAL_SYMPTOM = "otherNeurolocalSymptom";
-	public static final String OTHER_NEUROLOCAL_SYMPTOM_TEXT = "otherNeurolocalSymptomText";
+	public static final String OTHER_NEUROLOGICAL_SYMPTOMS = "otherNeurologicalSymptoms";
+	public static final String OTHER_NEUROLOGICAL_SYMPTOMS_TEXT = "otherNeurologicalSymptomsText";
 	public static final String FATAL_RISK = "fatalRisk";
 	public static final String TENESMUS = "tenesmus";
 	public static final String BLOODY_DIARRHEA = "bloodyDiarrhea";
@@ -1350,8 +1350,6 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@Outbreaks
 	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
-	@Complication({
-		DENGUE })
 	private SymptomState nausea;
 
 	@Diseases({
@@ -3167,23 +3165,26 @@ public class SymptomsDto extends PseudonymizableDto {
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_LUXEMBOURG })
 	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
-	private YesNoUnknown otherNeurolocalSymptom;
+	@Complication({
+		DENGUE })
+	private YesNoUnknown otherNeurologicalSymptoms;
 
 	@Diseases({
 		DENGUE })
 	@Outbreaks
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_LUXEMBOURG })
-	@DependantOn(OTHER_NEUROLOCAL_SYMPTOM)
+	@DependantOn(OTHER_NEUROLOGICAL_SYMPTOMS)
 	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
-	private String otherNeurolocalSymptomText;
+	@Complication({
+		DENGUE })
+	private String otherNeurologicalSymptomsText;
 
 	@Diseases({
 		DENGUE })
 	@SymptomGrouping(SymptomGroup.GENERAL)
-	@Complication({
-		DENGUE })
 	// mCComplicationsPotentiellementMortelles to map the life threatening complications of dengue
+	// but not required to show in the warning signs/complications
 	private SymptomState fatalRisk;
 
 	@Diseases({
@@ -5303,20 +5304,20 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.scantHemorrhage = scantHemorrhage;
 	}
 
-	public YesNoUnknown getOtherNeurolocalSymptom() {
-		return otherNeurolocalSymptom;
+	public YesNoUnknown getOtherNeurologicalSymptoms() {
+		return otherNeurologicalSymptoms;
 	}
 
-	public void setOtherNeurolocalSymptom(YesNoUnknown otherNeurolocalSymptom) {
-		this.otherNeurolocalSymptom = otherNeurolocalSymptom;
+	public void setOtherNeurologicalSymptoms(YesNoUnknown otherNeurologicalSymptoms) {
+		this.otherNeurologicalSymptoms = otherNeurologicalSymptoms;
 	}
 
-	public String getOtherNeurolocalSymptomText() {
-		return otherNeurolocalSymptomText;
+	public String getOtherNeurologicalSymptomsText() {
+		return otherNeurologicalSymptomsText;
 	}
 
-	public void setOtherNeurolocalSymptomText(String otherNeurolocalSymptomText) {
-		this.otherNeurolocalSymptomText = otherNeurolocalSymptomText;
+	public void setOtherNeurologicalSymptomsText(String otherNeurologicalSymptomsText) {
+		this.otherNeurologicalSymptomsText = otherNeurologicalSymptomsText;
 	}
 
 	public SymptomState getFatalRisk() {

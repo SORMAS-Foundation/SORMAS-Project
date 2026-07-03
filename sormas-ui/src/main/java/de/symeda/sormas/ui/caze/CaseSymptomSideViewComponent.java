@@ -15,9 +15,10 @@
 
 package de.symeda.sormas.ui.caze;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -47,16 +48,17 @@ public class CaseSymptomSideViewComponent extends SideComponent {
 	private HorizontalLayout topLayout = new HorizontalLayout();
 	private final Label noComplicationsLabel;
 	private VerticalLayout layout = new VerticalLayout();
-	private Map<String, Component> componentMap = new TreeMap<>();
+	private Map<String, Component> componentMap = new LinkedHashMap<>();
 	private final List<String> complicatedSymptoms;
 
 	public CaseSymptomSideViewComponent(Disease disease) {
-		super(I18nProperties.getCaption(String.format(Captions.titleComplications)));
+		super(I18nProperties.getCaption(String.format(Disease.DENGUE == disease ? Captions.titleComplications_DENG : Captions.titleComplications)));
 		topLayout.setWidth(100, Unit.PERCENTAGE);
 		topLayout.setMargin(false);
 		topLayout.setSpacing(false);
 		addComponent(topLayout);
-		noComplicationsLabel = new Label(I18nProperties.getCaption(Captions.titleNoComplications));
+		noComplicationsLabel =
+			new Label(I18nProperties.getCaption(Disease.DENGUE == disease ? Captions.titleNoComplications_DENG : Captions.titleNoComplications));
 		topLayout.addComponents(noComplicationsLabel, layout);
 		complicatedSymptoms = AnnotationFieldHelper.getComplicatedSymptomsWithDiseases(SymptomsDto.class, disease);
 	}
@@ -118,11 +120,33 @@ public class CaseSymptomSideViewComponent extends SideComponent {
 	}
 
 	/**
+	 * sort the map values, not the keys. With TreeMap, keys were sorted alphabetically, but we want to sort by value.
+	 * 
+	 * @return
+	 */
+	private Map<String, Component> sortMapValues() {
+		return componentMap.entrySet().stream().sorted((entry1, entry2) -> {
+			// Cast Component to Label to get the text string
+			String val1 = ((Label) entry1.getValue()).getValue().toString();
+			String val2 = ((Label) entry2.getValue()).getValue().toString();
+
+			int compareValues = String.CASE_INSENSITIVE_ORDER.compare(val1, val2);
+
+			// duplicates don't overwrite each other
+			if (compareValues == 0) {
+				return entry1.getKey().compareTo(entry2.getKey());
+			}
+			return compareValues;
+		}).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue, LinkedHashMap::new));
+	}
+
+	/**
 	 * Refresh the layout based on the list of symptoms
 	 */
 	public void refreshLayout() {
 		layout.setMargin(false);
 		layout.setSpacing(false);
+		componentMap = sortMapValues();
 		componentMap.keySet().forEach(symptom -> {
 			Component comp = componentMap.get(symptom);
 			comp.addStyleNames(CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD);

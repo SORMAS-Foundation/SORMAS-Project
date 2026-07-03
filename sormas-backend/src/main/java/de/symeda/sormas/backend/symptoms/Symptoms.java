@@ -312,8 +312,8 @@ public class Symptoms extends AbstractDomainObject {
 	private String clinicalManifestationText;
 	private SymptomState cerebralMalaria;
 	private SymptomState scantHemorrhage;
-	private YesNoUnknown otherNeurolocalSymptom;
-	private String otherNeurolocalSymptomText;
+	private YesNoUnknown otherNeurologicalSymptoms;
+	private String otherNeurologicalSymptomsText;
 	private SymptomState disseminatedIntraVascularCoagulation;
 	private SymptomState fatalRisk;
 	private SymptomState constipation;
@@ -2437,20 +2437,20 @@ public class Symptoms extends AbstractDomainObject {
 	}
 
 	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getOtherNeurolocalSymptom() {
-		return otherNeurolocalSymptom;
+	public YesNoUnknown getOtherNeurologicalSymptoms() {
+		return otherNeurologicalSymptoms;
 	}
 
-	public void setOtherNeurolocalSymptom(YesNoUnknown otherNeurolocalSymptom) {
-		this.otherNeurolocalSymptom = otherNeurolocalSymptom;
+	public void setOtherNeurologicalSymptoms(YesNoUnknown otherNeurologicalSymptoms) {
+		this.otherNeurologicalSymptoms = otherNeurologicalSymptoms;
 	}
 
-	public String getOtherNeurolocalSymptomText() {
-		return otherNeurolocalSymptomText;
+	public String getOtherNeurologicalSymptomsText() {
+		return otherNeurologicalSymptomsText;
 	}
 
-	public void setOtherNeurolocalSymptomText(String otherNeurolocalSymptomText) {
-		this.otherNeurolocalSymptomText = otherNeurolocalSymptomText;
+	public void setOtherNeurologicalSymptomsText(String otherNeurologicalSymptomsText) {
+		this.otherNeurologicalSymptomsText = otherNeurologicalSymptomsText;
 	}
 
 	@Enumerated(EnumType.STRING)
