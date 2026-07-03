@@ -15509,21 +15509,14 @@ components:
           type: string
           enum:
           - BROTH_MICRODILUTION
-          - ETEST
+          - AGAR_DILUTION
           - DISK_DIFFUSION
+          - ETEST
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
-          - BREAKPOINT_CATEGORICAL
+          - OTHER
         amikacinMic:
-          type: number
-          format: float
-        amikacinSurveillance:
           type: string
-          enum:
-          - WILD_TYPE
-          - NON_WILD_TYPE
-          - NOT_APPLICABLE
-          - UNKNOWN
         amikacinSusceptibility:
           type: string
           enum:
@@ -15532,21 +15525,18 @@ components:
           - SUSCEPTIBLE
           - INTERMEDIATE
           - UNKNOWN
-        amikacinZoneDiameter:
-          type: number
-          format: float
         ampicillinMethod:
           type: string
           enum:
           - BROTH_MICRODILUTION
-          - ETEST
+          - AGAR_DILUTION
           - DISK_DIFFUSION
+          - ETEST
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
-          - BREAKPOINT_CATEGORICAL
+          - OTHER
         ampicillinMic:
-          type: number
-          format: float
+          type: string
         ampicillinSusceptibility:
           type: string
           enum:
@@ -15559,14 +15549,14 @@ components:
           type: string
           enum:
           - BROTH_MICRODILUTION
-          - ETEST
+          - AGAR_DILUTION
           - DISK_DIFFUSION
+          - ETEST
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
-          - BREAKPOINT_CATEGORICAL
+          - OTHER
         azithromycinMic:
-          type: number
-          format: float
+          type: string
         azithromycinSusceptibility:
           type: string
           enum:
@@ -15579,21 +15569,14 @@ components:
           type: string
           enum:
           - BROTH_MICRODILUTION
-          - ETEST
+          - AGAR_DILUTION
           - DISK_DIFFUSION
+          - ETEST
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
-          - BREAKPOINT_CATEGORICAL
+          - OTHER
         bedaquilineMic:
-          type: number
-          format: float
-        bedaquilineSurveillance:
           type: string
-          enum:
-          - WILD_TYPE
-          - NON_WILD_TYPE
-          - NOT_APPLICABLE
-          - UNKNOWN
         bedaquilineSusceptibility:
           type: string
           enum:
@@ -15602,28 +15585,18 @@ components:
           - SUSCEPTIBLE
           - INTERMEDIATE
           - UNKNOWN
-        bedaquilineZoneDiameter:
-          type: number
-          format: float
         capreomycinMethod:
           type: string
           enum:
           - BROTH_MICRODILUTION
-          - ETEST
+          - AGAR_DILUTION
           - DISK_DIFFUSION
+          - ETEST
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
-          - BREAKPOINT_CATEGORICAL
+          - OTHER
         capreomycinMic:
-          type: number
-          format: float
-        capreomycinSurveillance:
           type: string
-          enum:
-          - WILD_TYPE
-          - NON_WILD_TYPE
-          - NOT_APPLICABLE
-          - UNKNOWN
         capreomycinSusceptibility:
           type: string
           enum:
@@ -15632,21 +15605,18 @@ components:
           - SUSCEPTIBLE
           - INTERMEDIATE
           - UNKNOWN
-        capreomycinZoneDiameter:
-          type: number
-          format: float
         cefotaximeMethod:
           type: string
           enum:
           - BROTH_MICRODILUTION
-          - ETEST
+          - AGAR_DILUTION
           - DISK_DIFFUSION
+          - ETEST
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
-          - BREAKPOINT_CATEGORICAL
+          - OTHER
         cefotaximeMic:
-          type: number
-          format: float
+          type: string
         cefotaximeSusceptibility:
           type: string
           enum:
@@ -15659,14 +15629,14 @@ components:
           type: string
           enum:
           - BROTH_MICRODILUTION
-          - ETEST
+          - AGAR_DILUTION
           - DISK_DIFFUSION
+          - ETEST
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
-          - BREAKPOINT_CATEGORICAL
+          - OTHER
         ceftazidimeMic:
-          type: number
-          format: float
+          type: string
         ceftazidimeSusceptibility:
           type: string
           enum:
@@ -15679,21 +15649,14 @@ components:
           type: string
           enum:
           - BROTH_MICRODILUTION
-          - ETEST
+          - AGAR_DILUTION
           - DISK_DIFFUSION
+          - ETEST
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
-          - BREAKPOINT_CATEGORICAL
+          - OTHER
         ceftriaxoneMic:
-          type: number
-          format: float
-        ceftriaxoneSurveillance:
           type: string
-          enum:
-          - WILD_TYPE
-          - NON_WILD_TYPE
-          - NOT_APPLICABLE
-          - UNKNOWN
         ceftriaxoneSusceptibility:
           type: string
           enum:
@@ -15702,9 +15665,6 @@ components:
           - SUSCEPTIBLE
           - INTERMEDIATE
           - UNKNOWN
-        ceftriaxoneZoneDiameter:
-          type: number
-          format: float
         changeDate:
           type: string
           format: date-time
@@ -15712,21 +15672,14 @@ components:
           type: string
           enum:
           - BROTH_MICRODILUTION
-          - ETEST
+          - AGAR_DILUTION
           - DISK_DIFFUSION
+          - ETEST
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
-          - BREAKPOINT_CATEGORICAL
+          - OTHER
         ciprofloxacinMic:
-          type: number
-          format: float
-        ciprofloxacinSurveillance:
           type: string
-          enum:
-          - WILD_TYPE
-          - NON_WILD_TYPE
-          - NOT_APPLICABLE
-          - UNKNOWN
         ciprofloxacinSusceptibility:
           type: string
           enum:
@@ -15735,9 +15688,6 @@ components:
           - SUSCEPTIBLE
           - INTERMEDIATE
           - UNKNOWN
-        ciprofloxacinZoneDiameter:
-          type: number
-          format: float
         creationDate:
           type: string
           format: date-time
@@ -15745,21 +15695,14 @@ components:
           type: string
           enum:
           - BROTH_MICRODILUTION
-          - ETEST
+          - AGAR_DILUTION
           - DISK_DIFFUSION
+          - ETEST
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
-          - BREAKPOINT_CATEGORICAL
+          - OTHER
         delamanidMic:
-          type: number
-          format: float
-        delamanidSurveillance:
           type: string
-          enum:
-          - WILD_TYPE
-          - NON_WILD_TYPE
-          - NOT_APPLICABLE
-          - UNKNOWN
         delamanidSusceptibility:
           type: string
           enum:
@@ -15768,28 +15711,18 @@ components:
           - SUSCEPTIBLE
           - INTERMEDIATE
           - UNKNOWN
-        delamanidZoneDiameter:
-          type: number
-          format: float
         erythromycinMethod:
           type: string
           enum:
           - BROTH_MICRODILUTION
-          - ETEST
+          - AGAR_DILUTION
           - DISK_DIFFUSION
+          - ETEST
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
-          - BREAKPOINT_CATEGORICAL
+          - OTHER
         erythromycinMic:
-          type: number
-          format: float
-        erythromycinSurveillance:
           type: string
-          enum:
-          - WILD_TYPE
-          - NON_WILD_TYPE
-          - NOT_APPLICABLE
-          - UNKNOWN
         erythromycinSusceptibility:
           type: string
           enum:
@@ -15798,28 +15731,18 @@ components:
           - SUSCEPTIBLE
           - INTERMEDIATE
           - UNKNOWN
-        erythromycinZoneDiameter:
-          type: number
-          format: float
         ethambutolMethod:
           type: string
           enum:
           - BROTH_MICRODILUTION
-          - ETEST
+          - AGAR_DILUTION
           - DISK_DIFFUSION
+          - ETEST
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
-          - BREAKPOINT_CATEGORICAL
+          - OTHER
         ethambutolMic:
-          type: number
-          format: float
-        ethambutolSurveillance:
           type: string
-          enum:
-          - WILD_TYPE
-          - NON_WILD_TYPE
-          - NOT_APPLICABLE
-          - UNKNOWN
         ethambutolSusceptibility:
           type: string
           enum:
@@ -15828,28 +15751,18 @@ components:
           - SUSCEPTIBLE
           - INTERMEDIATE
           - UNKNOWN
-        ethambutolZoneDiameter:
-          type: number
-          format: float
         gatifloxacinMethod:
           type: string
           enum:
           - BROTH_MICRODILUTION
-          - ETEST
+          - AGAR_DILUTION
           - DISK_DIFFUSION
+          - ETEST
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
-          - BREAKPOINT_CATEGORICAL
+          - OTHER
         gatifloxacinMic:
-          type: number
-          format: float
-        gatifloxacinSurveillance:
           type: string
-          enum:
-          - WILD_TYPE
-          - NON_WILD_TYPE
-          - NOT_APPLICABLE
-          - UNKNOWN
         gatifloxacinSusceptibility:
           type: string
           enum:
@@ -15858,30 +15771,20 @@ components:
           - SUSCEPTIBLE
           - INTERMEDIATE
           - UNKNOWN
-        gatifloxacinZoneDiameter:
-          type: number
-          format: float
         inJurisdiction:
           type: boolean
         isoniazidMethod:
           type: string
           enum:
           - BROTH_MICRODILUTION
-          - ETEST
+          - AGAR_DILUTION
           - DISK_DIFFUSION
+          - ETEST
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
-          - BREAKPOINT_CATEGORICAL
+          - OTHER
         isoniazidMic:
-          type: number
-          format: float
-        isoniazidSurveillance:
           type: string
-          enum:
-          - WILD_TYPE
-          - NON_WILD_TYPE
-          - NOT_APPLICABLE
-          - UNKNOWN
         isoniazidSusceptibility:
           type: string
           enum:
@@ -15890,28 +15793,18 @@ components:
           - SUSCEPTIBLE
           - INTERMEDIATE
           - UNKNOWN
-        isoniazidZoneDiameter:
-          type: number
-          format: float
         kanamycinMethod:
           type: string
           enum:
           - BROTH_MICRODILUTION
-          - ETEST
+          - AGAR_DILUTION
           - DISK_DIFFUSION
+          - ETEST
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
-          - BREAKPOINT_CATEGORICAL
+          - OTHER
         kanamycinMic:
-          type: number
-          format: float
-        kanamycinSurveillance:
           type: string
-          enum:
-          - WILD_TYPE
-          - NON_WILD_TYPE
-          - NOT_APPLICABLE
-          - UNKNOWN
         kanamycinSusceptibility:
           type: string
           enum:
@@ -15920,28 +15813,18 @@ components:
           - SUSCEPTIBLE
           - INTERMEDIATE
           - UNKNOWN
-        kanamycinZoneDiameter:
-          type: number
-          format: float
         levofloxacinMethod:
           type: string
           enum:
           - BROTH_MICRODILUTION
-          - ETEST
+          - AGAR_DILUTION
           - DISK_DIFFUSION
+          - ETEST
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
-          - BREAKPOINT_CATEGORICAL
+          - OTHER
         levofloxacinMic:
-          type: number
-          format: float
-        levofloxacinSurveillance:
           type: string
-          enum:
-          - WILD_TYPE
-          - NON_WILD_TYPE
-          - NOT_APPLICABLE
-          - UNKNOWN
         levofloxacinSusceptibility:
           type: string
           enum:
@@ -15950,28 +15833,18 @@ components:
           - SUSCEPTIBLE
           - INTERMEDIATE
           - UNKNOWN
-        levofloxacinZoneDiameter:
-          type: number
-          format: float
         moxifloxacinMethod:
           type: string
           enum:
           - BROTH_MICRODILUTION
-          - ETEST
+          - AGAR_DILUTION
           - DISK_DIFFUSION
+          - ETEST
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
-          - BREAKPOINT_CATEGORICAL
+          - OTHER
         moxifloxacinMic:
-          type: number
-          format: float
-        moxifloxacinSurveillance:
           type: string
-          enum:
-          - WILD_TYPE
-          - NON_WILD_TYPE
-          - NOT_APPLICABLE
-          - UNKNOWN
         moxifloxacinSusceptibility:
           type: string
           enum:
@@ -15980,28 +15853,18 @@ components:
           - SUSCEPTIBLE
           - INTERMEDIATE
           - UNKNOWN
-        moxifloxacinZoneDiameter:
-          type: number
-          format: float
         ofloxacinMethod:
           type: string
           enum:
           - BROTH_MICRODILUTION
-          - ETEST
+          - AGAR_DILUTION
           - DISK_DIFFUSION
+          - ETEST
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
-          - BREAKPOINT_CATEGORICAL
+          - OTHER
         ofloxacinMic:
-          type: number
-          format: float
-        ofloxacinSurveillance:
           type: string
-          enum:
-          - WILD_TYPE
-          - NON_WILD_TYPE
-          - NOT_APPLICABLE
-          - UNKNOWN
         ofloxacinSusceptibility:
           type: string
           enum:
@@ -16010,28 +15873,18 @@ components:
           - SUSCEPTIBLE
           - INTERMEDIATE
           - UNKNOWN
-        ofloxacinZoneDiameter:
-          type: number
-          format: float
         penicillinMethod:
           type: string
           enum:
           - BROTH_MICRODILUTION
-          - ETEST
+          - AGAR_DILUTION
           - DISK_DIFFUSION
+          - ETEST
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
-          - BREAKPOINT_CATEGORICAL
+          - OTHER
         penicillinMic:
-          type: number
-          format: float
-        penicillinSurveillance:
           type: string
-          enum:
-          - WILD_TYPE
-          - NON_WILD_TYPE
-          - NOT_APPLICABLE
-          - UNKNOWN
         penicillinSusceptibility:
           type: string
           enum:
@@ -16040,30 +15893,20 @@ components:
           - SUSCEPTIBLE
           - INTERMEDIATE
           - UNKNOWN
-        penicillinZoneDiameter:
-          type: number
-          format: float
         pseudonymized:
           type: boolean
         rifampicinMethod:
           type: string
           enum:
           - BROTH_MICRODILUTION
-          - ETEST
+          - AGAR_DILUTION
           - DISK_DIFFUSION
+          - ETEST
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
-          - BREAKPOINT_CATEGORICAL
+          - OTHER
         rifampicinMic:
-          type: number
-          format: float
-        rifampicinSurveillance:
           type: string
-          enum:
-          - WILD_TYPE
-          - NON_WILD_TYPE
-          - NOT_APPLICABLE
-          - UNKNOWN
         rifampicinSusceptibility:
           type: string
           enum:
@@ -16072,28 +15915,18 @@ components:
           - SUSCEPTIBLE
           - INTERMEDIATE
           - UNKNOWN
-        rifampicinZoneDiameter:
-          type: number
-          format: float
         streptomycinMethod:
           type: string
           enum:
           - BROTH_MICRODILUTION
-          - ETEST
+          - AGAR_DILUTION
           - DISK_DIFFUSION
+          - ETEST
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
-          - BREAKPOINT_CATEGORICAL
+          - OTHER
         streptomycinMic:
-          type: number
-          format: float
-        streptomycinSurveillance:
           type: string
-          enum:
-          - WILD_TYPE
-          - NON_WILD_TYPE
-          - NOT_APPLICABLE
-          - UNKNOWN
         streptomycinSusceptibility:
           type: string
           enum:
@@ -16102,21 +15935,18 @@ components:
           - SUSCEPTIBLE
           - INTERMEDIATE
           - UNKNOWN
-        streptomycinZoneDiameter:
-          type: number
-          format: float
         trimethoprimSulfamethoxazoleMethod:
           type: string
           enum:
           - BROTH_MICRODILUTION
-          - ETEST
+          - AGAR_DILUTION
           - DISK_DIFFUSION
+          - ETEST
           - AUTOMATED_MIC
           - GENOTYPIC_WGS
-          - BREAKPOINT_CATEGORICAL
+          - OTHER
         trimethoprimSulfamethoxazoleMic:
-          type: number
-          format: float
+          type: string
         trimethoprimSulfamethoxazoleSusceptibility:
           type: string
           enum:
@@ -28640,8 +28470,7 @@ components:
       type: object
       properties:
         amikacinMic:
-          type: number
-          format: float
+          type: string
         amikacinSusceptibility:
           type: string
           enum:
@@ -28651,8 +28480,7 @@ components:
           - INTERMEDIATE
           - UNKNOWN
         bedaquilineMic:
-          type: number
-          format: float
+          type: string
         bedaquilineSusceptibility:
           type: string
           enum:
@@ -28662,8 +28490,7 @@ components:
           - INTERMEDIATE
           - UNKNOWN
         capreomycinMic:
-          type: number
-          format: float
+          type: string
         capreomycinSusceptibility:
           type: string
           enum:
@@ -28673,8 +28500,7 @@ components:
           - INTERMEDIATE
           - UNKNOWN
         ceftriaxoneMic:
-          type: number
-          format: float
+          type: string
         ceftriaxoneSusceptibility:
           type: string
           enum:
@@ -28687,8 +28513,7 @@ components:
           type: string
           format: date-time
         ciprofloxacinMic:
-          type: number
-          format: float
+          type: string
         ciprofloxacinSusceptibility:
           type: string
           enum:
@@ -28725,8 +28550,7 @@ components:
           type: string
           format: date-time
         delamanidMic:
-          type: number
-          format: float
+          type: string
         delamanidSusceptibility:
           type: string
           enum:
@@ -28736,8 +28560,7 @@ components:
           - INTERMEDIATE
           - UNKNOWN
         erythromycinMic:
-          type: number
-          format: float
+          type: string
         erythromycinSusceptibility:
           type: string
           enum:
@@ -28747,8 +28570,7 @@ components:
           - INTERMEDIATE
           - UNKNOWN
         ethambutolMic:
-          type: number
-          format: float
+          type: string
         ethambutolSusceptibility:
           type: string
           enum:
@@ -28768,8 +28590,7 @@ components:
         fourFoldIncreaseAntibodyTiter:
           type: boolean
         gatifloxacinMic:
-          type: number
-          format: float
+          type: string
         gatifloxacinSusceptibility:
           type: string
           enum:
@@ -28811,8 +28632,7 @@ components:
           - OTHER
           - UNKNOWN
         isoniazidMic:
-          type: number
-          format: float
+          type: string
         isoniazidSusceptibility:
           type: string
           enum:
@@ -28822,8 +28642,7 @@ components:
           - INTERMEDIATE
           - UNKNOWN
         kanamycinMic:
-          type: number
-          format: float
+          type: string
         kanamycinSusceptibility:
           type: string
           enum:
@@ -28833,8 +28652,7 @@ components:
           - INTERMEDIATE
           - UNKNOWN
         levofloxacinMic:
-          type: number
-          format: float
+          type: string
         levofloxacinSusceptibility:
           type: string
           enum:
@@ -28844,8 +28662,7 @@ components:
           - INTERMEDIATE
           - UNKNOWN
         moxifloxacinMic:
-          type: number
-          format: float
+          type: string
         moxifloxacinSusceptibility:
           type: string
           enum:
@@ -28855,8 +28672,7 @@ components:
           - INTERMEDIATE
           - UNKNOWN
         ofloxacinMic:
-          type: number
-          format: float
+          type: string
         ofloxacinSusceptibility:
           type: string
           enum:
@@ -28876,8 +28692,7 @@ components:
           - ANTIMICROBIAL_SUSCEPTIBILITY_TESTING
           - FUNCTIONAL_IMMUNE_ASSAYS
         penicillinMic:
-          type: number
-          format: float
+          type: string
         penicillinSusceptibility:
           type: string
           enum:
@@ -28921,8 +28736,7 @@ components:
           maxLength: 1000000
           minLength: 0
         rifampicinMic:
-          type: number
-          format: float
+          type: string
         rifampicinSusceptibility:
           type: string
           enum:
@@ -29017,8 +28831,7 @@ components:
           - POSSBEIJING
           - UNKNOWN
         streptomycinMic:
-          type: number
-          format: float
+          type: string
         streptomycinSusceptibility:
           type: string
           enum:
