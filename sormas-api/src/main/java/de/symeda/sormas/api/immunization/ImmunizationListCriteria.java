@@ -8,11 +8,13 @@ public class ImmunizationListCriteria extends BaseCriteria {
 
 	private final PersonReferenceDto personReferenceDto;
 	private final Disease disease;
+	private final String diseaseDetails;
 
 	public static class Builder {
 
 		private final PersonReferenceDto personReferenceDto;
 		private Disease disease;
+		private String diseaseDetails;
 
 		public Builder(PersonReferenceDto personReferenceDto) {
 			this.personReferenceDto = personReferenceDto;
@@ -20,6 +22,11 @@ public class ImmunizationListCriteria extends BaseCriteria {
 
 		public Builder withDisease(Disease disease) {
 			this.disease = disease;
+			return this;
+		}
+
+		public Builder withDiseaseDetails(String diseaseDetails) {
+			this.diseaseDetails = diseaseDetails;
 			return this;
 		}
 
@@ -31,6 +38,7 @@ public class ImmunizationListCriteria extends BaseCriteria {
 	private ImmunizationListCriteria(Builder builder) {
 		this.personReferenceDto = builder.personReferenceDto;
 		this.disease = builder.disease;
+		this.diseaseDetails = builder.diseaseDetails;
 	}
 
 	public PersonReferenceDto getPerson() {
@@ -39,5 +47,9 @@ public class ImmunizationListCriteria extends BaseCriteria {
 
 	public Disease getDisease() {
 		return disease;
+	}
+
+	public String getDiseaseDetails() {
+		return diseaseDetails;
 	}
 }

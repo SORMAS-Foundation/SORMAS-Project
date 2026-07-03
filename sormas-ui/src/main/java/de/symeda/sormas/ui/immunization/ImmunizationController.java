@@ -63,11 +63,19 @@ public class ImmunizationController {
 	}
 
 	public void create(PersonReferenceDto person, Disease disease) {
-		create(person, disease, null);
+		create(person, disease, null, null);
 	}
 
 	public void create(PersonReferenceDto person, Disease disease, Runnable savedCallback) {
-		CommitDiscardWrapperComponent<?> createComponent = getImmunizationCreateComponent(person, disease, savedCallback);
+		create(person, disease, null, savedCallback);
+	}
+
+	public void create(PersonReferenceDto person, Disease disease, String diseaseDetails) {
+		create(person, disease, diseaseDetails, null);
+	}
+
+	public void create(PersonReferenceDto person, Disease disease, String diseaseDetails, Runnable savedCallback) {
+		CommitDiscardWrapperComponent<?> createComponent = getImmunizationCreateComponent(person, disease, diseaseDetails, savedCallback);
 		if (createComponent != null) {
 			VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateNewImmunization));
 		}
@@ -76,6 +84,7 @@ public class ImmunizationController {
 	private CommitDiscardWrapperComponent<QuickImmunizationCreationForm> buildQuickCreateComponent(
 		PersonReferenceDto person,
 		Disease disease,
+		String diseaseDetails,
 		Runnable savedCallback) {
 
 		UserProvider currentUserProvider = UiUtil.getCurrentUserProvider();
@@ -87,6 +96,7 @@ public class ImmunizationController {
 
 		ImmunizationDto immunization = ImmunizationDto.build(person);
 		immunization.setDisease(disease);
+		immunization.setDiseaseDetails(diseaseDetails);
 		immunization.setReportingUser(currentUserProvider.getUserReference());
 
 		UserDto currentUser = currentUserProvider.getUser();
@@ -201,10 +211,11 @@ public class ImmunizationController {
 	private CommitDiscardWrapperComponent<?> getImmunizationCreateComponent(
 		PersonReferenceDto personReferenceDto,
 		Disease disease,
+		String diseaseDetails,
 		Runnable savedCallback) {
 
 		if (FacadeProvider.getImmunizationFacade().isUseQuickImmunizationCreation()) {
-			return buildQuickCreateComponent(personReferenceDto, disease, savedCallback);
+			return buildQuickCreateComponent(personReferenceDto, disease, diseaseDetails, savedCallback);
 		}
 
 		UserProvider currentUserProvider = UiUtil.getCurrentUserProvider();
@@ -212,6 +223,7 @@ public class ImmunizationController {
 			ImmunizationCreationForm createForm = new ImmunizationCreationForm(personReferenceDto, disease);
 			ImmunizationDto immunization = ImmunizationDto.build(personReferenceDto);
 			immunization.setDisease(disease);
+			immunization.setDiseaseDetails(diseaseDetails);
 			immunization.setReportingUser(currentUserProvider.getUserReference());
 			createForm.setValue(immunization);
 			final CommitDiscardWrapperComponent<ImmunizationCreationForm> viewComponent = new CommitDiscardWrapperComponent<>(

@@ -188,6 +188,7 @@ public class EventParticipantDataView extends AbstractEventParticipantView imple
 					new SideComponentLayout(
 						new ImmunizationListComponent(
 							() -> new ImmunizationListCriteria.Builder(eventParticipant.getPerson().toReference()).withDisease(event.getDisease())
+								.withDiseaseDetails(event.getDiseaseDetails())
 								.build(),
 							null,
 							this::showUnsavedChangesPopup,
