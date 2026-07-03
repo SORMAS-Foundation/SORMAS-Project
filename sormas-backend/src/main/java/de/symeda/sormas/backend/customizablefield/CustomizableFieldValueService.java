@@ -16,9 +16,12 @@
 package de.symeda.sormas.backend.customizablefield;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -27,10 +30,14 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldContext;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldVisibilityContext;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldVisibilityRestrictions;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.DeletableAdo;
@@ -41,6 +48,9 @@ import de.symeda.sormas.backend.common.DeletableAdo;
 @Stateless
 @LocalBean
 public class CustomizableFieldValueService extends AbstractCoreAdoService<CustomizableFieldValue, CustomizableFieldValueJoins> {
+
+	@EJB
+	private CustomizableFieldMetadataService customizableFieldMetadataService;
 
 	public CustomizableFieldValueService() {
 		super(CustomizableFieldValue.class, DeletableEntityType.CUSTOMIZABLE_FIELD_VALUE);
@@ -94,6 +104,59 @@ public class CustomizableFieldValueService extends AbstractCoreAdoService<Custom
 			CustomizableFieldMetadata metadata = entry.getKey();
 			CustomizableFieldValue value = existing.getOrDefault(metadata, createNewValue(metadata, entityUuid, contextClass));
 			value.setValue(entry.getValue().getValue());
+			ensurePersisted(value);
+		}
+	}
+
+	public void ensureDefaultValuesForEntity(String entityUuid, CustomizableFieldContext contextClass) {
+		ensureDefaultValuesForEntity(entityUuid, contextClass, null);
+	}
+
+	/**
+	 * Ensures default values for customizable fields for the given entity.
+	 * <p>
+	 * Only fields that are visible for the given visibility context will have their default values
+	 * persisted. Fields with specific visibility restrictions will be skipped
+	 * if the visiblity context is not matched.
+	 *
+	 * @param entityUuid
+	 *            the UUID of the entity
+	 * @param contextClass
+	 *            the context class for the customizable fields
+	 * @param visibilityContext
+	 *            the visibility context to check against field restrictions; may be null to skip
+	 *            visibility checks
+	 */
+	public void ensureDefaultValuesForEntity(
+		String entityUuid,
+		CustomizableFieldContext contextClass,
+		CustomizableFieldVisibilityContext visibilityContext) {
+		if (StringUtils.isBlank(entityUuid) || contextClass == null) {
+			return;
+		}
+
+		Map<CustomizableFieldMetadata, CustomizableFieldValue> existing = getValuesForEntity(entityUuid, contextClass);
+		Set<String> existingMetadataUuids = new HashSet<>();
+		for (CustomizableFieldMetadata metadata : existing.keySet()) {
+			existingMetadataUuids.add(metadata.getUuid());
+		}
+
+		for (CustomizableFieldMetadata metadata : customizableFieldMetadataService.getActiveFieldsForContext(contextClass)) {
+			if (existingMetadataUuids.contains(metadata.getUuid()) || StringUtils.isBlank(metadata.getDefaultValue())) {
+				continue;
+			}
+
+			// Skip fields that are not visible for the given context
+			if (visibilityContext != null && metadata.getVisibilityRestrictions() != null && !metadata.getVisibilityRestrictions().isBlank()) {
+				CustomizableFieldVisibilityRestrictions metadataVisibilityRestrictions =
+					CustomizableFieldMetadataFacadeEjb.parseVisibilityRestrictions(metadata.getVisibilityRestrictions());
+				if (!metadataVisibilityRestrictions.matches(visibilityContext)) {
+					continue;
+				}
+			}
+
+			CustomizableFieldValue value = createNewValue(metadata, entityUuid, contextClass);
+			value.setValue(metadata.getDefaultValue());
 			ensurePersisted(value);
 		}
 	}

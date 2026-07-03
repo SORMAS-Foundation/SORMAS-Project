@@ -1784,10 +1784,22 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	private void doSave(Case caze, boolean handleChanges, CaseDataDto existingCaseDto, boolean syncShares) {
 		service.ensurePersisted(caze);
+		ensureDefaultCustomizableFieldValues(caze, existingCaseDto);
 		if (handleChanges) {
 			updateCaseVisitAssociations(existingCaseDto, caze);
 			onCaseChanged(existingCaseDto, caze, syncShares);
 		}
+	}
+
+	private void ensureDefaultCustomizableFieldValues(Case caze, CaseDataDto existingCaseDto) {
+		if (existingCaseDto == null || existingCaseDto.getUuid() == null) {
+			customizableFieldValueService.ensureDefaultValuesForEntity(caze.getUuid(), CustomizableFieldContext.CASE);
+		}
+
+		epiDataFacade.ensureDefaultCustomizableFieldValues(
+			caze.getEpiData(),
+			existingCaseDto != null ? existingCaseDto.getEpiData() : null,
+			caze.getDisease());
 	}
 
 	private void updateCaseVisitAssociations(CaseDataDto existingCase, Case caze) {

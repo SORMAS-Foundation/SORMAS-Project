@@ -28,9 +28,11 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldContext;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldVisibilityContext;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.exposure.ExposureDto;
@@ -76,6 +78,35 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		customizableFieldValueService.softDeleteValuesForEntity(epiData.getUuid(), CustomizableFieldContext.EPIDATA, deletionDetails);
 		for (Exposure exposure : epiData.getExposures()) {
 			customizableFieldValueService.softDeleteValuesForEntity(exposure.getUuid(), CustomizableFieldContext.EXPOSURE, deletionDetails);
+		}
+	}
+
+	public void ensureDefaultCustomizableFieldValues(EpiData epiData, EpiDataDto existingEpiData, Disease disease) {
+		if (epiData == null || epiData.getUuid() == null) {
+			return;
+		}
+
+		// Build visibility context from the provided disease
+		CustomizableFieldVisibilityContext visibilityContext = disease != null ? new CustomizableFieldVisibilityContext().withDisease(disease) : null;
+
+		if (existingEpiData == null || existingEpiData.getUuid() == null) {
+			customizableFieldValueService.ensureDefaultValuesForEntity(epiData.getUuid(), CustomizableFieldContext.EPIDATA, visibilityContext);
+		}
+
+		HashSet<String> existingExposureUuids = new HashSet<>();
+		if (existingEpiData != null && existingEpiData.getExposures() != null) {
+			for (ExposureDto existingExposure : existingEpiData.getExposures()) {
+				if (existingExposure.getUuid() != null) {
+					existingExposureUuids.add(existingExposure.getUuid());
+				}
+			}
+		}
+
+		for (Exposure exposure : epiData.getExposures()) {
+			if (exposure.getUuid() != null && !existingExposureUuids.contains(exposure.getUuid())) {
+				// Exposure inherits disease from parent EpiData's disease
+				customizableFieldValueService.ensureDefaultValuesForEntity(exposure.getUuid(), CustomizableFieldContext.EXPOSURE, visibilityContext);
+			}
 		}
 	}
 
