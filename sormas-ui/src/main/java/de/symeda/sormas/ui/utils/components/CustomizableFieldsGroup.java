@@ -304,6 +304,26 @@ public class CustomizableFieldsGroup extends VerticalLayout {
 	}
 
 	/**
+	 * Validates all rendered customizable field inputs and returns collected error messages.
+	 *
+	 * @return list of validation messages prefixed with the field caption when available
+	 */
+	public List<String> validateAndCollectErrors() {
+		List<String> errors = new ArrayList<>();
+		for (CustomizableFieldInput<?> field : fieldComponents.values()) {
+			String caption = field.getCaption();
+			for (String error : field.validateAndGetErrors()) {
+				if (caption != null && !caption.isEmpty()) {
+					errors.add(caption + ": " + error);
+				} else {
+					errors.add(error);
+				}
+			}
+		}
+		return errors;
+	}
+
+	/**
 	 * Clears all field values.
 	 */
 	public void clearAllValues() {
