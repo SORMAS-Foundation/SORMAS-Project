@@ -190,10 +190,10 @@ public class DataPatcherImpl implements DataPatcher {
 		return response.setApplied(true);
 	}
 
-	private static @NotNull Map<CustomizableContextIndexKey, Supplier<String>> buildEntityUuidDictionaryFrom(
+	private static @NotNull Map<CustomizableContextIndexKey, String> buildEntityUuidDictionaryFrom(
 		Map<Tuple<String, Integer>, AttachedEntityWrapper> entityCache,
 		CaseDataDto caseData) {
-		Map<CustomizableContextIndexKey, Supplier<String>> temporaryResult = entityCache.entrySet()
+		Map<CustomizableContextIndexKey, String> temporaryResult = entityCache.entrySet()
 			.stream()
 			.map(
 				entry -> CustomizableFieldContextPatchMapping.fromI18nName(entry.getKey().getFirst())
@@ -202,7 +202,7 @@ public class DataPatcherImpl implements DataPatcher {
 							new CustomizableContextIndexKey().setContext(context).setGroupIndex(entry.getKey().getSecond()),
 							entry.getValue().getEntityDto().getUuid())))
 			.flatMap(Optional::stream)
-			.collect(Collectors.toMap(Tuple::getFirst, t -> t::getSecond));
+			.collect(Collectors.toMap(Tuple::getFirst, Tuple::getSecond));
 
 		if (temporaryResult.keySet().stream().anyMatch(key -> key.getContext() == CustomizableFieldContext.EPIDATA)) {
 			return temporaryResult;
@@ -214,7 +214,7 @@ public class DataPatcherImpl implements DataPatcher {
 			Stream.of(
 				new AbstractMap.SimpleEntry<>(
 					new CustomizableContextIndexKey().setContext(CustomizableFieldContext.EPIDATA),
-					(Supplier<String>) () -> caseData.getEpiData().getUuid())))
+					caseData.getEpiData().getUuid())))
 			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
 

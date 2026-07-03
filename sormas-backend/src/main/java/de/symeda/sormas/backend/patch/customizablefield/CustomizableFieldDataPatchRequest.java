@@ -3,7 +3,6 @@ package de.symeda.sormas.backend.patch.customizablefield;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Supplier;
 
 import javax.validation.constraints.NotNull;
 
@@ -23,7 +22,7 @@ public final class CustomizableFieldDataPatchRequest {
 	private CaseDataDto caseDataDto;
 
 	@NotNull
-	private Map<CustomizableContextIndexKey, Supplier<String>> entityUuidDictionary;
+	private Map<CustomizableContextIndexKey, String> entityUuidDictionary;
 
 	public CaseDataPatchRequest getCaseDataPatchRequest() {
 		return caseDataPatchRequest;
@@ -52,11 +51,11 @@ public final class CustomizableFieldDataPatchRequest {
 		return this;
 	}
 
-	public Map<CustomizableContextIndexKey, Supplier<String>> getEntityUuidDictionary() {
+	public Map<CustomizableContextIndexKey, String> getEntityUuidDictionary() {
 		return entityUuidDictionary;
 	}
 
-	public CustomizableFieldDataPatchRequest setEntityUuidDictionary(Map<CustomizableContextIndexKey, Supplier<String>> entityUuidDictionary) {
+	public CustomizableFieldDataPatchRequest setEntityUuidDictionary(Map<CustomizableContextIndexKey, String> entityUuidDictionary) {
 		this.entityUuidDictionary = entityUuidDictionary;
 		return this;
 	}

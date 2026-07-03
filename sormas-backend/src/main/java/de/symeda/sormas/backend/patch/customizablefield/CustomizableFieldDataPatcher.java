@@ -7,7 +7,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -184,19 +183,16 @@ public class CustomizableFieldDataPatcher {
 			contexts.stream().map(context -> {
 				List<CustomizableFieldMetadataDto> activeFieldsForContext = metaDataFacade.getActiveFieldsForContext(context);
 
-				Map<CustomizableContextIndexKey, Supplier<String>> entityUuidDictionary = request.getEntityUuidDictionary();
+				Map<CustomizableContextIndexKey, String> entityUuidDictionary = request.getEntityUuidDictionary();
 
 				Map<String, Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto>> entityValuesCache = new HashMap<>();
 
 				Map<CustomizableFieldMetadataDto, Function<CustomizablePatchField, CustomizableFieldValueDto>> valueProviderDictionary =
 					activeFieldsForContext.stream().collect(Collectors.toMap(Function.identity(), metaData -> (customizablePatchField) -> {
 
-						String entityUuid =
-							entityUuidDictionary
-								.get(
-									new CustomizableContextIndexKey().setContext(customizablePatchField.getContext())
-										.setGroupIndex(customizablePatchField.getGroupIndex()))
-								.get();
+						String entityUuid = entityUuidDictionary.get(
+							new CustomizableContextIndexKey().setContext(customizablePatchField.getContext())
+								.setGroupIndex(customizablePatchField.getGroupIndex()));
 
 						Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> alreadyExistingValuesForEntity =
 							entityValuesCache.computeIfAbsent(entityUuid, uuid -> valueFacade.getValuesForEntity(uuid, context));
