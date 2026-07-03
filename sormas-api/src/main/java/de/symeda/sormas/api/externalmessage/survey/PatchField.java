@@ -64,8 +64,8 @@ public class PatchField implements Serializable {
 	}
 
 	@JsonIgnore
-	public Optional<Integer> getGroupNumber() {
-		return Optional.ofNullable(groupIndex).map(index -> index + 1);
+	public Optional<Integer> getGroupIndexAsOptional() {
+		return Optional.ofNullable(groupIndex);
 	}
 
 	@JsonValue

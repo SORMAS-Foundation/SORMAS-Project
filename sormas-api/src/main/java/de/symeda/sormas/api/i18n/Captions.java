@@ -3226,8 +3226,8 @@ public interface Captions {
 	String Symptoms_otherHemorrhagicSymptomsText = "Symptoms.otherHemorrhagicSymptomsText";
 	String Symptoms_otherMajorSiteDetails = "Symptoms.otherMajorSiteDetails";
 	String Symptoms_otherMinorSiteDetails = "Symptoms.otherMinorSiteDetails";
-	String Symptoms_otherNeurolocalSymptom = "Symptoms.otherNeurolocalSymptom";
-	String Symptoms_otherNeurolocalSymptomText = "Symptoms.otherNeurolocalSymptomText";
+	String Symptoms_otherNeurologicalSymptoms = "Symptoms.otherNeurologicalSymptoms";
+	String Symptoms_otherNeurologicalSymptomsText = "Symptoms.otherNeurologicalSymptomsText";
 	String Symptoms_otherNonHemorrhagicSymptoms = "Symptoms.otherNonHemorrhagicSymptoms";
 	String Symptoms_otherNonHemorrhagicSymptomsText = "Symptoms.otherNonHemorrhagicSymptomsText";
 	String Symptoms_otitisMedia = "Symptoms.otitisMedia";
@@ -3432,6 +3432,7 @@ public interface Captions {
 	String titleAefiInvestigationRelevantPatientInformation = "titleAefiInvestigationRelevantPatientInformation";
 	String titleAefiInvestigationVaccinesDetails = "titleAefiInvestigationVaccinesDetails";
 	String titleComplications = "titleComplications";
+	String titleComplications_DENG = "titleComplications.DENG";
 	String titleDiseaseConfigurationAgeGroup = "titleDiseaseConfigurationAgeGroup";
 	String titleDiseaseConfigurationCaseDefinition = "titleDiseaseConfigurationCaseDefinition";
 	String titleDiseaseConfigurationGeneral = "titleDiseaseConfigurationGeneral";
@@ -3440,6 +3441,7 @@ public interface Captions {
 	String titleExposuresGeneralSection = "titleExposuresGeneralSection";
 	String titleExposuresSection = "titleExposuresSection";
 	String titleNoComplications = "titleNoComplications";
+	String titleNoComplications_DENG = "titleNoComplications.DENG";
 	String to = "to";
 	String total = "total";
 	String travelEntriesNoTravelEntriesForPerson = "travelEntriesNoTravelEntriesForPerson";

@@ -16,6 +16,7 @@ import java.util.stream.Stream;
 import javax.ejb.EJB;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -25,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldContext;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
 import de.symeda.sormas.api.externalmessage.survey.PatchDictionary;
 import de.symeda.sormas.api.externalmessage.survey.PatchField;
@@ -109,6 +111,9 @@ public class DataPatcherImpl implements DataPatcher {
 		this.configFacade = configFacade;
 	}
 
+	@Transactional(value = Transactional.TxType.REQUIRES_NEW,
+		rollbackOn = {
+			Exception.class })
 	@Override
 	public DataPatchResponse patch(CaseDataPatchRequest request) {
 		logger.debug("patch: [{}]", request);
@@ -154,7 +159,7 @@ public class DataPatcherImpl implements DataPatcher {
 		List<CustomizableFieldSinglePatchingResult> customizableResults = customizableFieldDataPatcher.patch(
 			new CustomizableFieldDataPatchRequest().setCaseDataPatchRequest(request)
 				.setPatchingTuples(patchingTuples.stream().filter(customizableFieldsPredicate).collect(Collectors.toList()))
-				.setEntityUuidDictionary(buildEntityUuidDictionaryFrom(entityCache))
+				.setEntityUuidDictionary(buildEntityUuidDictionaryFrom(entityCache, caseData))
 				.setCaseDataDto(caseData));
 
 		List<SinglePatchResult> aggregatedResults = Stream.concat(plainResults.stream(), customizableResults.stream()).collect(Collectors.toList());
@@ -186,8 +191,9 @@ public class DataPatcherImpl implements DataPatcher {
 	}
 
 	private static @NotNull Map<CustomizableContextIndexKey, String> buildEntityUuidDictionaryFrom(
-		Map<Tuple<String, Integer>, AttachedEntityWrapper> entityCache) {
-		return entityCache.entrySet()
+		Map<Tuple<String, Integer>, AttachedEntityWrapper> entityCache,
+		CaseDataDto caseData) {
+		Map<CustomizableContextIndexKey, String> temporaryResult = entityCache.entrySet()
 			.stream()
 			.map(
 				entry -> CustomizableFieldContextPatchMapping.fromI18nName(entry.getKey().getFirst())
@@ -197,6 +203,19 @@ public class DataPatcherImpl implements DataPatcher {
 							entry.getValue().getEntityDto().getUuid())))
 			.flatMap(Optional::stream)
 			.collect(Collectors.toMap(Tuple::getFirst, Tuple::getSecond));
+
+		if (temporaryResult.keySet().stream().anyMatch(key -> key.getContext() == CustomizableFieldContext.EPIDATA)) {
+			return temporaryResult;
+		}
+
+		// manually adding epiData: covers edge case were only a customizable field in set in epiData.
+		return Stream.concat(
+			temporaryResult.entrySet().stream(),
+			Stream.of(
+				new AbstractMap.SimpleEntry<>(
+					new CustomizableContextIndexKey().setContext(CustomizableFieldContext.EPIDATA),
+					caseData.getEpiData().getUuid())))
+			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
 
 	private void saveCustomizableFieldsIfAppropriate(List<CustomizableFieldSinglePatchingResult> customizableResults) {

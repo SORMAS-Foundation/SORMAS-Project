@@ -16686,4 +16686,41 @@ UPDATE drugsusceptibility_history SET trimethoprimsulfamethoxazolemethod = 'OTHE
 
 INSERT INTO schema_version (version_number, comment) VALUES (645, '#14036 - AST 3-column form: MIC free-text, drop zone/surveillance');
 
+-- 02-07-2026 fixing the typos
+
+DO $$
+BEGIN
+
+    -- Rename the otherneurologicalsymptoms symptom column
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'symptoms' AND column_name = 'otherneurolocalsymptom')
+       AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'symptoms' AND column_name = 'otherneurologicalsymptoms') THEN
+
+        ALTER TABLE symptoms RENAME COLUMN otherneurolocalsymptom TO otherneurologicalsymptoms;
+    END IF;
+
+    -- Rename the otherneurologicalsymptoms text column
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'symptoms' AND column_name = 'otherneurolocalsymptomtext')
+       AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'symptoms' AND column_name = 'otherneurologicalsymptomstext') THEN
+
+        ALTER TABLE symptoms RENAME COLUMN otherneurolocalsymptomtext TO otherneurologicalsymptomstext;
+    END IF;
+
+
+    -- Rename the otherneurologicalsymptoms symptom column in history
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'symptoms_history' AND column_name = 'otherneurolocalsymptom')
+       AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'symptoms_history' AND column_name = 'otherneurologicalsymptoms') THEN
+
+        ALTER TABLE symptoms_history RENAME COLUMN otherneurolocalsymptom TO otherneurologicalsymptoms;
+    END IF;
+
+    -- Rename the otherneurologicalsymptoms text column in history
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'symptoms_history' AND column_name = 'otherneurolocalsymptomtext')
+       AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'symptoms_history' AND column_name = 'otherneurologicalsymptomstext') THEN
+
+        ALTER TABLE symptoms_history RENAME COLUMN otherneurolocalsymptomtext TO otherneurologicalsymptomstext;
+    END IF;
+
+END $$;
+INSERT INTO schema_version (version_number, comment) VALUES (646, 'Correcting the typos of column names');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

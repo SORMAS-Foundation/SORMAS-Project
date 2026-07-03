@@ -50,6 +50,7 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -329,6 +330,9 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 	@Override
 	@RightsAllowed(UserRight._EXTERNAL_MESSAGE_SURVEY_RESPONSE_PROCESS)
+	@Transactional(value = Transactional.TxType.REQUIRES_NEW,
+		rollbackOn = {
+			Exception.class })
 	public List<ExternalMessageDto> saveAndProcessSurveyResponses(Date since) {
 
 		if (since == null) {
@@ -388,12 +392,12 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 			processingResults.forEach(wrapper -> {
 				ProcessingResultStatus result = wrapper.getResultStatus();
-				if (result.isCanceled()) {
+				if (result == null || result.isCanceled()) {
 					logger.error("Processing of surveyResponse with UUID {} has been canceled", wrapper.getExternalMessage().getUuid());
 				}
 			});
 		} catch (InterruptedException e) {
-			logger.error("Could not process lab message with UUID [{}]", extractUuids(filteredSurveyResponses), e);
+			logger.error("Could not process survey responses with UUID [{}]", extractUuids(filteredSurveyResponses), e);
 			Thread.currentThread().interrupt();
 		} catch (ExecutionException e) {
 			logger.error("Could not process survey responses with UUID [{}]", extractUuids(filteredSurveyResponses), e);

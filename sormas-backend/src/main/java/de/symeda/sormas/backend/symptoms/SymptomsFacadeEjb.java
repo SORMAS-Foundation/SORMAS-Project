@@ -277,8 +277,8 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setClinicalManifestationText(source.getClinicalManifestationText());
 		target.setCerebralMalaria(source.getCerebralMalaria());
 		target.setScantHemorrhage(source.getScantHemorrhage());
-		target.setOtherNeurolocalSymptom(source.getOtherNeurolocalSymptom());
-		target.setOtherNeurolocalSymptomText(source.getOtherNeurolocalSymptomText());
+		target.setOtherNeurologicalSymptoms(source.getOtherNeurologicalSymptoms());
+		target.setOtherNeurologicalSymptomsText(source.getOtherNeurologicalSymptomsText());
 		target.setDisseminatedIntraVascularCoagulation(source.getDisseminatedIntraVascularCoagulation());
 		target.setFatalRisk(source.getFatalRisk());
 		target.setConstipation(source.getConstipation());
@@ -541,8 +541,8 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setClinicalManifestationText(source.getClinicalManifestationText());
 		target.setCerebralMalaria(source.getCerebralMalaria());
 		target.setScantHemorrhage(source.getScantHemorrhage());
-		target.setOtherNeurolocalSymptom(source.getOtherNeurolocalSymptom());
-		target.setOtherNeurolocalSymptomText(source.getOtherNeurolocalSymptomText());
+		target.setOtherNeurologicalSymptoms(source.getOtherNeurologicalSymptoms());
+		target.setOtherNeurologicalSymptomsText(source.getOtherNeurologicalSymptomsText());
 		target.setDisseminatedIntraVascularCoagulation(source.getDisseminatedIntraVascularCoagulation());
 		target.setFatalRisk(source.getFatalRisk());
 		target.setConstipation(source.getConstipation());

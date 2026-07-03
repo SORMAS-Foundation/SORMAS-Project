@@ -26135,11 +26135,11 @@
           "otherMinorSiteDetails" : {
             "type" : "string"
           },
-          "otherNeurolocalSymptom" : {
+          "otherNeurologicalSymptoms" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
-          "otherNeurolocalSymptomText" : {
+          "otherNeurologicalSymptomsText" : {
             "type" : "string"
           },
           "otherNonHemorrhagicSymptoms" : {

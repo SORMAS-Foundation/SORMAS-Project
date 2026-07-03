@@ -235,7 +235,7 @@ public class CronService {
 	@Schedule(hour = "*", persistent = false)
 	public void fetchSurveyResponses() {
 		if (!featureConfigurationFacade.isFeatureEnabled(FeatureType.EXTERNAL_MESSAGES)
-			|| featureConfigurationFacade.isPropertyValueTrue(FeatureType.EXTERNAL_MESSAGES, FeatureTypeProperty.SURVEY_FETCH_ENABLED)) {
+			|| !featureConfigurationFacade.isPropertyValueTrue(FeatureType.EXTERNAL_MESSAGES, FeatureTypeProperty.SURVEY_FETCH_ENABLED)) {
 			logger.info("External messages are disabled, survey responses will not be fetched");
 			return;
 		}

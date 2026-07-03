@@ -33,6 +33,7 @@ import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataFacade;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldType;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
+import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.externalmessage.survey.PatchDictionary;
@@ -280,7 +281,6 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			() -> Assertions.assertEquals(expectedFailures, response.getFailures()));
 	}
 
-	// the value is properly resolved and set into the person, but when fetching it again it's not there anymore.
 	@Test
 	void patch_customizableEnu_default_enum() {
 		// PREPARE
@@ -1229,6 +1229,32 @@ class DataPatcherImplTest extends AbstractBeanTest {
 
 	@Tag("customizable-fields")
 	@Test
+	void patch_customizableField_text_epidata() {
+		// PREPARE
+		CustomizableFieldMetadataDto metadata = createEpidataCustomField("cfText", CustomizableFieldType.TEXT);
+		CaseDataDto caze = creator.createUnclassifiedCase(Disease.PERTUSSIS);
+		String fieldKey = "Custom." + EpiDataDto.I18N_PREFIX + ".cfText";
+
+		// EXECUTE — value does not yet exist
+		DataPatchResponse response1 = victim().patch(
+			new CaseDataPatchRequest().setCaseUuid(caze.getUuid())
+				.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+				.setPatchDictionary(Map.of(fieldKey, "hello")));
+
+		// CHECK
+		Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> values1 = customizableValuesForEpiData(caze.getEpiData().getUuid());
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response1.getFailures().isEmpty(), "Failures: " + response1.getFailures()),
+			() -> Assertions.assertTrue(response1.isApplied()),
+			() -> Assertions.assertEquals("hello", values1.get(metadata).getValue()));
+	}
+
+	private CustomizableFieldMetadataDto createEpidataCustomField(String name, CustomizableFieldType type) {
+		return createCustomFieldFor(name, type, CustomizableFieldContext.EPIDATA);
+	}
+
+	@Tag("customizable-fields")
+	@Test
 	void patch_customizableField_textarea() {
 		// PREPARE
 		CustomizableFieldMetadataDto metadata = createCaseCustomField("cfTextarea", CustomizableFieldType.TEXTAREA);
@@ -1593,13 +1619,20 @@ class DataPatcherImplTest extends AbstractBeanTest {
 	}
 
 	private CustomizableFieldMetadataDto createCaseCustomField(String name, CustomizableFieldType type) {
+		return createCustomFieldFor(name, type, CustomizableFieldContext.CASE);
+	}
+
+	private CustomizableFieldMetadataDto createCustomFieldFor(String name, CustomizableFieldType type, CustomizableFieldContext context) {
 		CustomizableFieldMetadataFacade facade = getBean(CustomizableFieldMetadataFacadeEjb.CustomizableFieldMetadataFacadeEjbLocal.class);
+
 		CustomizableFieldMetadataDto dto = new CustomizableFieldMetadataDto();
+
 		dto.setName(name);
 		dto.setFieldType(type);
-		dto.setContextClass(CustomizableFieldContext.CASE);
-		dto.setUiGroup(CustomizableFieldGroup.CASE_DATA_GENERAL);
+		dto.setContextClass(context);
+		dto.setUiGroup(CustomizableFieldGroup.getGroupsForContext(context).stream().findFirst().orElseThrow());
 		dto.setUiLinePosition(1);
+
 		return facade.save(dto);
 	}
 
@@ -1647,23 +1680,24 @@ class DataPatcherImplTest extends AbstractBeanTest {
 	}
 
 	private Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> customizableValuesForCase(String caseUuid) {
-		return getBean(CustomizableFieldValueFacadeEjb.CustomizableFieldValueFacadeEjbLocal.class)
-			.getValuesForEntity(caseUuid, CustomizableFieldContext.CASE);
+		return customizableValuesFor(caseUuid, CustomizableFieldContext.CASE);
 	}
 
 	private Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> customizableValuesForExposure(String exposureUuid) {
-		return getBean(CustomizableFieldValueFacadeEjb.CustomizableFieldValueFacadeEjbLocal.class)
-			.getValuesForEntity(exposureUuid, CustomizableFieldContext.EXPOSURE);
+		return customizableValuesFor(exposureUuid, CustomizableFieldContext.EXPOSURE);
+	}
+
+	private Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> customizableValuesFor(
+		String exposureUuid,
+		CustomizableFieldContext exposure) {
+		return getBean(CustomizableFieldValueFacadeEjb.CustomizableFieldValueFacadeEjbLocal.class).getValuesForEntity(exposureUuid, exposure);
+	}
+
+	private Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> customizableValuesForEpiData(String exposureUuid) {
+		return customizableValuesFor(exposureUuid, CustomizableFieldContext.EPIDATA);
 	}
 
 	private CustomizableFieldMetadataDto createExposureCustomField(String name, CustomizableFieldType type) {
-		CustomizableFieldMetadataFacade facade = getBean(CustomizableFieldMetadataFacadeEjb.CustomizableFieldMetadataFacadeEjbLocal.class);
-		CustomizableFieldMetadataDto dto = new CustomizableFieldMetadataDto();
-		dto.setName(name);
-		dto.setFieldType(type);
-		dto.setContextClass(CustomizableFieldContext.EXPOSURE);
-		dto.setUiGroup(CustomizableFieldGroup.getGroupsForContext(CustomizableFieldContext.EXPOSURE).stream().findFirst().orElseThrow());
-		dto.setUiLinePosition(1);
-		return facade.save(dto);
+		return createCustomFieldFor(name, type, CustomizableFieldContext.EXPOSURE);
 	}
 }
