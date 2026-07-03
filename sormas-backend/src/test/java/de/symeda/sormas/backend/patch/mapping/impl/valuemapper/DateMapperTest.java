@@ -84,12 +84,6 @@ class DateMapperTest extends AbstractUnitTest {
 	}
 
 	@Test
-	void map_invalidFormat_throwsIllegalArgumentException() {
-		// EXECUTE & CHECK
-		assertEquals(DataPatchFailureCause.INVALID_VALUE_TYPE, victim.map("15/06/2024", Date.class).getDataPatchFailureCause());
-	}
-
-	@Test
 	void map_lenientOff_invalidDay_throwsIllegalArgumentException() {
 		// EXECUTE & CHECK
 		assertEquals(DataPatchFailureCause.INVALID_VALUE_TYPE, victim.map("2024-02-30", Date.class).getDataPatchFailureCause());
@@ -128,12 +122,6 @@ class DateMapperTest extends AbstractUnitTest {
 	}
 
 	@Test
-	void map_localDate_invalidFormat() {
-		// EXECUTE & CHECK
-		assertEquals(DataPatchFailureCause.INVALID_VALUE_TYPE, victim.map("15/06/2024", LocalDate.class).getDataPatchFailureCause());
-	}
-
-	@Test
 	void map_localDate_invalidDay() {
 		// EXECUTE & CHECK
 		assertEquals(DataPatchFailureCause.INVALID_VALUE_TYPE, victim.map("2024-02-30", LocalDate.class).getDataPatchFailureCause());
@@ -157,12 +145,6 @@ class DateMapperTest extends AbstractUnitTest {
 	void map_localDateTime_fromDateOnlyString_returnsMidnight() {
 		// EXECUTE & CHECK
 		assertEquals(LocalDateTime.of(2024, 6, 15, 0, 0, 0), victim.map("2024-06-15", LocalDateTime.class).getData());
-	}
-
-	@Test
-	void map_localDateTime_invalidFormat() {
-		// EXECUTE & CHECK
-		assertEquals(DataPatchFailureCause.INVALID_VALUE_TYPE, victim.map("15/06/2024", LocalDateTime.class).getDataPatchFailureCause());
 	}
 
 	@Test
@@ -216,5 +198,48 @@ class DateMapperTest extends AbstractUnitTest {
 	void map_partialYear_fiveDigits_returnsInvalidValueType() {
 		// EXECUTE & CHECK — 5-digit strings are not valid year-only input
 		assertEquals(DataPatchFailureCause.INVALID_VALUE_TYPE, victim.map("20241", Date.class).getDataPatchFailureCause());
+	}
+
+	@Test
+	void map_dayMonthYear_dayWithinJanuary_parsesAsDayOfYear() throws Exception {
+		// PREPARE
+		String input = "15/01/2024";
+		Date expected = new SimpleDateFormat("yyyy-MM-dd").parse("2024-01-15");
+
+		// EXECUTE
+		Date actual = victim.map(input, Date.class).getData();
+
+		// CHECK
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	void map_monthYear_validDate_returnsFirstDayOfMonth() throws Exception {
+		// PREPARE — no day field is set, so Calendar defaults it to the 1st
+		Date expected = new SimpleDateFormat("yyyy-MM-dd").parse("2024-06-01");
+
+		// EXECUTE
+		Date actual = victim.map("06/2024", Date.class).getData();
+
+		// CHECK
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	void map_monthYear_localDate_returnsFirstDayOfMonth() {
+		// EXECUTE & CHECK
+		assertEquals(LocalDate.of(2024, 6, 1), victim.map("06/2024", LocalDate.class).getData());
+	}
+
+	@Test
+	void map_monthYear_localDateTime_returnsMidnightFirstDayOfMonth() {
+		// EXECUTE & CHECK
+		assertEquals(LocalDateTime.of(2024, 6, 1, 0, 0, 0), victim.map("06/2024", LocalDateTime.class).getData());
+	}
+
+	@Test
+	void map_monthYear_invalidMonth_returnsInvalidValueType() {
+		// EXECUTE & CHECK — month 13 does not exist
+		assertEquals(DataPatchFailureCause.INVALID_VALUE_TYPE, victim.map("13/2024", Date.class).getDataPatchFailureCause());
 	}
 }
