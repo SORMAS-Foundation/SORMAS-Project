@@ -161,8 +161,8 @@ public class MeniExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 		// AST Fields - MENI uses CIP, CTX_CFX, PEN, RIF
 		// MIC signs are derived from values based on dilution range boundaries
 
-		// CIP (Ciprofloxacin)
-		Float micValueCIP = row[++index] != null ? ((Number) row[index]).floatValue() : null;
+		// CIP (Ciprofloxacin) — MIC is free text since #14036; parse its numeric part
+		Float micValueCIP = EpipulseLaboratoryMapper.parseMicValue((String) row[++index]);
 		dto.setMicSign_CIP(EpipulseLaboratoryMapper.mapMicSign(micValueCIP));
 		dto.setMicValueAST_CIP(micValueCIP != null ? micValueCIP.doubleValue() : null);
 
@@ -172,7 +172,7 @@ public class MeniExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 		}
 
 		// CTX/CFX (Ceftriaxone/Cefotaxime)
-		Float micValueCTX = row[++index] != null ? ((Number) row[index]).floatValue() : null;
+		Float micValueCTX = EpipulseLaboratoryMapper.parseMicValue((String) row[++index]);
 		dto.setMicSign_CTX_CFX(EpipulseLaboratoryMapper.mapMicSign(micValueCTX));
 		dto.setMicValueAST_CTX_CFX(micValueCTX != null ? micValueCTX.doubleValue() : null);
 
@@ -182,7 +182,7 @@ public class MeniExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 		}
 
 		// PEN (Penicillin)
-		Float micValuePEN = row[++index] != null ? ((Number) row[index]).floatValue() : null;
+		Float micValuePEN = EpipulseLaboratoryMapper.parseMicValue((String) row[++index]);
 		dto.setMicSign_PEN(EpipulseLaboratoryMapper.mapMicSign(micValuePEN));
 		dto.setMicValueAST_PEN(micValuePEN != null ? micValuePEN.doubleValue() : null);
 
@@ -192,7 +192,7 @@ public class MeniExportStrategy extends AbstractEpipulseDiseaseExportStrategy {
 		}
 
 		// RIF (Rifampicin) - MENI-specific
-		Float micValueRIF = row[++index] != null ? ((Number) row[index]).floatValue() : null;
+		Float micValueRIF = EpipulseLaboratoryMapper.parseMicValue((String) row[++index]);
 		dto.setMicSign_RIF(EpipulseLaboratoryMapper.mapMicSign(micValueRIF));
 		dto.setMicValueAST_RIF(micValueRIF != null ? micValueRIF.doubleValue() : null);
 

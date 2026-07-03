@@ -88,7 +88,6 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
                     fluidRowLocs(SampleDto.SAMPLE_SOURCE, "") +
                     fluidRowLocs(SampleDto.FIELD_SAMPLE_ID, REFERRED_FROM_BUTTON_LOC) +
                     fluidRowLocs(SampleDto.LAB, SampleDto.LAB_DETAILS) +
-                    fluidRowLocs(SampleDto.PERFORMED_BY_REFERENCE_LABORATORY, SampleDto.RETEST_REQUESTED) +
 
                     locCss(VSPACE_TOP_3, SampleDto.PATHOGEN_TESTING_REQUESTED) +
                     loc(PATHOGEN_TESTING_READ_HEADLINE_LOC) +
@@ -160,9 +159,6 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 				+ I18nProperties.getDescription(Descriptions.descGdpr));
 		addField(SampleDto.SHIPPED, CheckBox.class);
 		addField(SampleDto.RECEIVED, CheckBox.class);
-
-		addField(SampleDto.PERFORMED_BY_REFERENCE_LABORATORY, CheckBox.class).setWidthUndefined();
-		addField(SampleDto.RETEST_REQUESTED, CheckBox.class).setWidthUndefined();
 
 		ComboBox testResultField = addField(SampleDto.PATHOGEN_TEST_RESULT, ComboBox.class);
 		testResultField.removeItem(PathogenTestResultType.NOT_DONE);
@@ -245,8 +241,6 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 			shippedField.setEnabled(false);
 			getField(SampleDto.SHIPMENT_DATE).setEnabled(false);
 			getField(SampleDto.SHIPMENT_DETAILS).setEnabled(false);
-			getField(SampleDto.PERFORMED_BY_REFERENCE_LABORATORY).setEnabled(false);
-			getField(SampleDto.RETEST_REQUESTED).setEnabled(false);
 		}
 
 		StringBuilder reportInfoText = new StringBuilder().append(I18nProperties.getString(Strings.reportedOn))

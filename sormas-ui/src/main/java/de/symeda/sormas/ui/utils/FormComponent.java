@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.utils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -302,10 +303,7 @@ public abstract class FormComponent<T> extends VerticalLayout {
 	 * selectable, disease-visible methods. The currently saved value is always kept selectable so an
 	 * existing test recorded with a now-hidden method can still be edited. Sorted alphabetically.
 	 */
-	protected static void updateTestTypeItemsByCategory(
-		ComboBox<PathogenTestType> comboBox,
-		Disease disease,
-		PathogenTestCategory category) {
+	protected static void updateTestTypeItemsByCategory(ComboBox<PathogenTestType> comboBox, Disease disease, PathogenTestCategory category) {
 		updateTestTypeItemsByCategory(comboBox, disease, category, comboBox.getValue());
 	}
 
@@ -394,7 +392,50 @@ public abstract class FormComponent<T> extends VerticalLayout {
 
 	/** Validates this component's fields; throws {@link InvalidValueException} on failure. */
 	public void validate() {
+		validateBinderOnly();
+	}
+
+	/**
+	 * Runs only this component's binder validation & throws on failure. Subclasses that override {@link #validate()}
+	 * use this as a check in {@link #validateAll} (they cannot call {@code super.validate()} from a method reference).
+	 */
+	protected void validateBinderOnly() {
 		validateBinder(binder.validate());
+	}
+
+	/**
+	 * Runs every {@code check} and accumulates their failures instead of stopping at the first, then throws a
+	 * single combined {@link InvalidValueException} carrying all of them as causes. Lets a component report all
+	 * of its missing/invalid fields in one pass (binder {@code asRequired} fields plus any manual checks) so the
+	 * parent form's aggregation surfaces them together rather than one save at a time.
+	 */
+	protected void validateAll(Runnable... checks) {
+		List<InvalidValueException> causes = new ArrayList<>();
+		for (Runnable check : checks) {
+			try {
+				check.run();
+			} catch (InvalidValueException e) {
+				collectCauses(e, causes);
+			}
+		}
+		throwCombined(causes);
+	}
+
+	/** Flattens {@code e} into {@code target}: its leaf causes if it is a combined exception, else itself. */
+	public static void collectCauses(InvalidValueException e, List<InvalidValueException> target) {
+		if (e.getCauses().length > 0) {
+			Collections.addAll(target, e.getCauses());
+		} else {
+			target.add(e);
+		}
+	}
+
+	/** Throws a single {@link InvalidValueException} carrying all {@code causes}, or nothing if empty. */
+	public static void throwCombined(List<InvalidValueException> causes) {
+		if (!causes.isEmpty()) {
+			String joinedCaptions = causes.stream().map(InvalidValueException::getMessage).collect(Collectors.joining(", "));
+			throw new InvalidValueException(joinedCaptions, causes.toArray(new InvalidValueException[0]));
+		}
 	}
 
 	/**

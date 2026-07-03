@@ -247,6 +247,7 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 
 				// compliance with treatment combobox
 				ComboBox complianceWithTreatmentCB = addField(complianceTreatmentLayout, COMPLIANCE_WITH_TREATMENT, ComboBox.class);
+				complianceWithTreatmentCB.setCaption(null);
 				complianceWithTreatmentCB.setId(COMPLIANCE_WITH_TREATMENT);
 				complianceWithTreatmentCB.addItems(ComplianceWithTreatment.values());
 				complianceTreatmentLayout.addComponent(complianceWithTreatmentCB, COMPLIANCE_WITH_TREATMENT);

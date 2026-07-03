@@ -15,7 +15,9 @@
 package de.symeda.sormas.ui.contact;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.ContentMode;
@@ -53,6 +55,7 @@ import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.vaccination.VaccinationAssociationType;
 import de.symeda.sormas.api.vaccination.VaccinationCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
 import de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent;
@@ -99,7 +102,13 @@ public class ContactDataView extends AbstractContactView implements HasName {
 
 	private CommitDiscardWrapperComponent<ContactDataForm> editComponent;
 
-	private final static List<Disease> IMMUNIZATION_EXCLUDED_DISEASES = Arrays.asList(Disease.SALMONELLOSIS, Disease.SHIGELLOSIS);
+	//@formatter:off
+	private static final Set<Disease> IMMUNIZATION_EXCLUDED_DISEASES = new HashSet<>(Arrays.asList(
+		Disease.GIARDIASIS, 
+		Disease.CRYPTOSPORIDIOSIS, 
+		Disease.SALMONELLOSIS, 
+		Disease.SHIGELLOSIS));
+	//@formatter:on
 
 	public ContactDataView() {
 		super(VIEW_NAME);
@@ -268,12 +277,16 @@ public class ContactDataView extends AbstractContactView implements HasName {
 				layout.addSidePanelComponent(new SideComponentLayout(new ImmunizationListComponent(() -> {
 					ContactDto refreshedContact = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
 					Disease criteriaDisease = refreshedContact.getDisease();
+					String criteriaDiseaseDetails = refreshedContact.getDiseaseDetails();
 					if (criteriaDisease == null && refreshedContact.getCaze() != null) {
 						CaseDataDto refreshedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(refreshedContact.getCaze().getUuid());
 						criteriaDisease = refreshedCase != null ? refreshedCase.getDisease() : null;
+						criteriaDiseaseDetails = refreshedCase != null ? refreshedCase.getDiseaseDetails() : null;
 					}
-					return new ImmunizationListCriteria.Builder(refreshedContact.getPerson()).withDisease(criteriaDisease).build();
-				}, null, this::showUnsavedChangesPopup, editAllowed, vaccinationStatusPanel)), IMMUNIZATION_LOC);
+					return new ImmunizationListCriteria.Builder(refreshedContact.getPerson()).withDisease(criteriaDisease)
+						.withDiseaseDetails(criteriaDiseaseDetails)
+						.build();
+				}, null, this::showUnsavedChangesPopup, editAllowed, vaccinationStatusPanel, SormasUI::refreshView)), IMMUNIZATION_LOC);
 			} else {
 				layout.addSidePanelComponent(new SideComponentLayout(new VaccinationListComponent(() -> {
 					ContactDto refreshedContact = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());

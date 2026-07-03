@@ -63,92 +63,28 @@ public class ImmunizationController {
 	}
 
 	public void create(PersonReferenceDto person, Disease disease) {
-		create(person, disease, null);
+		create(person, disease, null, null);
 	}
 
 	public void create(PersonReferenceDto person, Disease disease, Runnable savedCallback) {
-		CommitDiscardWrapperComponent<?> createComponent = getImmunizationCreateComponent(person, disease, savedCallback);
+		create(person, disease, null, savedCallback);
+	}
+
+	public void create(PersonReferenceDto person, Disease disease, String diseaseDetails) {
+		create(person, disease, diseaseDetails, null);
+	}
+
+	public void create(PersonReferenceDto person, Disease disease, String diseaseDetails, Runnable savedCallback) {
+		CommitDiscardWrapperComponent<?> createComponent = getImmunizationCreateComponent(person, disease, diseaseDetails, savedCallback);
 		if (createComponent != null) {
 			VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateNewImmunization));
 		}
 	}
 
-	/**
-	 * @deprecated Use {@link #create(PersonReferenceDto, Disease)} instead.
-	 *             Set {@code USE_QUICK_IMMUNIZATION_CREATION = true} to enable the quick form system-wide.
-	 */
-	@Deprecated(forRemoval = true)
-	public void createQuick(PersonReferenceDto person, Disease disease) {
-		createQuick(person, disease, null);
-	}
-
-	/**
-	 * @deprecated Use {@link #create(PersonReferenceDto, Disease, Runnable)} instead.
-	 *             Set {@code USE_QUICK_IMMUNIZATION_CREATION = true} to enable the quick form system-wide.
-	 */
-	@Deprecated(forRemoval = true)
-	public void createQuick(PersonReferenceDto person, Disease disease, Runnable savedCallback) {
-		UserProvider currentUserProvider = UiUtil.getCurrentUserProvider();
-		if (currentUserProvider == null) {
-			return;
-		}
-
-		QuickImmunizationCreationForm createForm = new QuickImmunizationCreationForm();
-
-		ImmunizationDto immunization = ImmunizationDto.build(person);
-		immunization.setDisease(disease);
-		immunization.setReportingUser(currentUserProvider.getUserReference());
-
-		// Pre-fill jurisdiction from the current user's jurisdiction (section 4.8).
-		// Fall back to the default infrastructure references for national-level users
-		// who have no region/district assigned — mirrors ImmunizationCreationForm.hideAndFillJurisdictionFields().
-		UserDto currentUser = currentUserProvider.getUser();
-		RegionReferenceDto userRegion = currentUser.getRegion();
-		DistrictReferenceDto userDistrict = currentUser.getDistrict();
-		immunization.setResponsibleRegion(userRegion != null ? userRegion : FacadeProvider.getRegionFacade().getDefaultInfrastructureReference());
-		immunization
-			.setResponsibleDistrict(userDistrict != null ? userDistrict : FacadeProvider.getDistrictFacade().getDefaultInfrastructureReference());
-
-		createForm.setValue(immunization);
-
-		final CommitDiscardWrapperComponent<QuickImmunizationCreationForm> viewComponent = new CommitDiscardWrapperComponent<>(
-			createForm,
-			currentUserProvider.hasUserRight(UserRight.IMMUNIZATION_CREATE),
-			createForm.getFieldGroup());
-
-		viewComponent.addCommitListener(() -> {
-			if (!createForm.getFieldGroup().isModified()) {
-				final ImmunizationDto dto = createForm.getValue();
-				VaccinationInfoSource vaccinationInfoSource = createForm.getVaccinationInfoSource();
-				Date dateOfMostRecentDose = createForm.getDateOfMostRecentDose();
-
-				ImmunizationDto savedDto =
-					FacadeProvider.getImmunizationFacade().saveQuickImmunization(dto, vaccinationInfoSource, dateOfMostRecentDose);
-
-				// BR0076: information message after save
-				List<ImmunizationDto> similarImmunizations = findSimilarImmunizations(savedDto);
-				if (!similarImmunizations.isEmpty()) {
-					showSimilarImmunizationPopup(savedDto, similarImmunizations.get(0), ignoredDto -> {
-						Notification.show(I18nProperties.getString(Strings.messageQuickImmunizationSaved), Notification.Type.HUMANIZED_MESSAGE);
-						if (savedCallback != null) {
-							savedCallback.run();
-						}
-					});
-				} else {
-					Notification.show(I18nProperties.getString(Strings.messageQuickImmunizationSaved), Notification.Type.HUMANIZED_MESSAGE);
-					if (savedCallback != null) {
-						savedCallback.run();
-					}
-				}
-			}
-		});
-
-		VaadinUiUtil.showModalPopupWindow(viewComponent, I18nProperties.getString(Strings.headingCreateQuickImmunization));
-	}
-
 	private CommitDiscardWrapperComponent<QuickImmunizationCreationForm> buildQuickCreateComponent(
 		PersonReferenceDto person,
 		Disease disease,
+		String diseaseDetails,
 		Runnable savedCallback) {
 
 		UserProvider currentUserProvider = UiUtil.getCurrentUserProvider();
@@ -160,6 +96,7 @@ public class ImmunizationController {
 
 		ImmunizationDto immunization = ImmunizationDto.build(person);
 		immunization.setDisease(disease);
+		immunization.setDiseaseDetails(diseaseDetails);
 		immunization.setReportingUser(currentUserProvider.getUserReference());
 
 		UserDto currentUser = currentUserProvider.getUser();
@@ -182,22 +119,11 @@ public class ImmunizationController {
 				VaccinationInfoSource vaccinationInfoSource = createForm.getVaccinationInfoSource();
 				Date dateOfMostRecentDose = createForm.getDateOfMostRecentDose();
 
-				ImmunizationDto savedDto =
-					FacadeProvider.getImmunizationFacade().saveQuickImmunization(dto, vaccinationInfoSource, dateOfMostRecentDose);
+				FacadeProvider.getImmunizationFacade().saveQuickImmunization(dto, vaccinationInfoSource, dateOfMostRecentDose);
 
-				List<ImmunizationDto> similarImmunizations = findSimilarImmunizations(savedDto);
-				if (!similarImmunizations.isEmpty()) {
-					showSimilarImmunizationPopup(savedDto, similarImmunizations.get(0), ignoredDto -> {
-						Notification.show(I18nProperties.getString(Strings.messageQuickImmunizationSaved), Notification.Type.HUMANIZED_MESSAGE);
-						if (savedCallback != null) {
-							savedCallback.run();
-						}
-					});
-				} else {
-					Notification.show(I18nProperties.getString(Strings.messageQuickImmunizationSaved), Notification.Type.HUMANIZED_MESSAGE);
-					if (savedCallback != null) {
-						savedCallback.run();
-					}
+				Notification.show(I18nProperties.getString(Strings.messageQuickImmunizationSaved), Notification.Type.HUMANIZED_MESSAGE);
+				if (savedCallback != null) {
+					savedCallback.run();
 				}
 			}
 		});
@@ -285,10 +211,11 @@ public class ImmunizationController {
 	private CommitDiscardWrapperComponent<?> getImmunizationCreateComponent(
 		PersonReferenceDto personReferenceDto,
 		Disease disease,
+		String diseaseDetails,
 		Runnable savedCallback) {
 
 		if (FacadeProvider.getImmunizationFacade().isUseQuickImmunizationCreation()) {
-			return buildQuickCreateComponent(personReferenceDto, disease, savedCallback);
+			return buildQuickCreateComponent(personReferenceDto, disease, diseaseDetails, savedCallback);
 		}
 
 		UserProvider currentUserProvider = UiUtil.getCurrentUserProvider();
@@ -296,6 +223,7 @@ public class ImmunizationController {
 			ImmunizationCreationForm createForm = new ImmunizationCreationForm(personReferenceDto, disease);
 			ImmunizationDto immunization = ImmunizationDto.build(personReferenceDto);
 			immunization.setDisease(disease);
+			immunization.setDiseaseDetails(diseaseDetails);
 			immunization.setReportingUser(currentUserProvider.getUserReference());
 			createForm.setValue(immunization);
 			final CommitDiscardWrapperComponent<ImmunizationCreationForm> viewComponent = new CommitDiscardWrapperComponent<>(
@@ -354,21 +282,17 @@ public class ImmunizationController {
 		editComponent.addCommitListener(() -> {
 			if (!immunizationDataForm.getFieldGroup().isModified()) {
 				ImmunizationDto immunizationDtoValue = immunizationDataForm.getValue();
-				List<ImmunizationDto> similarImmunizations = findSimilarImmunizations(immunizationDtoValue);
-				if (similarImmunizations.isEmpty()) {
-					FacadeProvider.getImmunizationFacade().save(immunizationDtoValue);
-					if (immunizationDtoValue.getImmunizationStatus() == ImmunizationStatus.ACQUIRED) {
-						NotificationHelper.showNotification(
-							I18nProperties.getString(Strings.messageImmunizationSavedVaccinationStatusUpdated),
-							Notification.Type.WARNING_MESSAGE,
-							-1);
-					} else {
-						Notification.show(I18nProperties.getString(Strings.messageImmunizationSaved), Notification.Type.WARNING_MESSAGE);
-					}
-					SormasUI.refreshView();
+
+				FacadeProvider.getImmunizationFacade().save(immunizationDtoValue);
+				if (immunizationDtoValue.getImmunizationStatus() == ImmunizationStatus.ACQUIRED) {
+					NotificationHelper.showNotification(
+						I18nProperties.getString(Strings.messageImmunizationSavedVaccinationStatusUpdated),
+						Notification.Type.WARNING_MESSAGE,
+						-1);
 				} else {
-					showSimilarImmunizationPopup(immunizationDtoValue, similarImmunizations.get(0), this::saveImmunization);
+					Notification.show(I18nProperties.getString(Strings.messageImmunizationSaved), Notification.Type.WARNING_MESSAGE);
 				}
+				SormasUI.refreshView();
 			}
 		});
 
@@ -397,12 +321,6 @@ public class ImmunizationController {
 			immunizationDto.isInJurisdiction());
 
 		return editComponent;
-	}
-
-	private void saveImmunization(ImmunizationDto immunizationDtoValue) {
-		FacadeProvider.getImmunizationFacade().save(immunizationDtoValue);
-		Notification.show(I18nProperties.getString(Strings.messageImmunizationSaved), Notification.Type.WARNING_MESSAGE);
-		SormasUI.refreshView();
 	}
 
 	public TitleLayout getImmunizationViewTitleLayout(String uuid) {
@@ -465,6 +383,14 @@ public class ImmunizationController {
 		}
 	}
 
+	/**
+	 * Finds similar immunizations based on start date and end date.
+	 * 
+	 * @deprecated It has been deprecated, kept for now in case the functionality will be revised and needed again.
+	 * @param immunizationDto
+	 * @return
+	 */
+	@Deprecated(forRemoval = true)
 	private List<ImmunizationDto> findSimilarImmunizations(ImmunizationDto immunizationDto) {
 		ImmunizationSimilarityCriteria criteria = new ImmunizationSimilarityCriteria.Builder().withImmunization(immunizationDto.getUuid())
 			.withDisease(immunizationDto.getDisease())
@@ -477,6 +403,15 @@ public class ImmunizationController {
 		return FacadeProvider.getImmunizationFacade().getSimilarImmunizations(criteria);
 	}
 
+	/**
+	 * Dispays a dialog to notify user of similar immunizations.
+	 * 
+	 * @deprecated It has been deprecated, kept for now in case the functionality will be revised and needed again.
+	 * @param immunizationDto
+	 * @param similarImmunization
+	 * @param callback
+	 */
+	@Deprecated(forRemoval = true)
 	private void showSimilarImmunizationPopup(
 		ImmunizationDto immunizationDto,
 		ImmunizationDto similarImmunization,

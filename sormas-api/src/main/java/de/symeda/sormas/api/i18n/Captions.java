@@ -1334,6 +1334,7 @@ public interface Captions {
 	String dashboardMapLayers = "dashboardMapLayers";
 	String dashboardMapShowEpiSituation = "dashboardMapShowEpiSituation";
 	String dashboardMissed = "dashboardMissed";
+	String dashboardNA = "dashboardNA";
 	String dashboardNegative = "dashboardNegative";
 	String dashboardNeverVisited = "dashboardNeverVisited";
 	String dashboardNew = "dashboardNew";
@@ -1643,6 +1644,7 @@ public interface Captions {
 	String EpiData_clusterTypeText = "EpiData.clusterTypeText";
 	String EpiData_contactWithSourceCaseKnown = "EpiData.contactWithSourceCaseKnown";
 	String EpiData_country = "EpiData.country";
+	String EpiData_country_SHIG = "EpiData.country.SHIG";
 	String EpiData_exposureDetailsKnown = "EpiData.exposureDetailsKnown";
 	String EpiData_exposureInvestigationFromDate = "EpiData.exposureInvestigationFromDate";
 	String EpiData_exposureInvestigationToDate = "EpiData.exposureInvestigationToDate";
@@ -2425,11 +2427,11 @@ public interface Captions {
 	String PathogenTest_quantitativeUnit = "PathogenTest.quantitativeUnit";
 	String PathogenTest_quantitativeValue = "PathogenTest.quantitativeValue";
 	String PathogenTest_reportDate = "PathogenTest.reportDate";
-	String PathogenTest_resultDetails = "PathogenTest.resultDetails";
 	String PathogenTest_retestRequested = "PathogenTest.retestRequested";
 	String PathogenTest_rifampicinResistant = "PathogenTest.rifampicinResistant";
 	String PathogenTest_rsv_testedDiseaseVariant = "PathogenTest.rsv.testedDiseaseVariant";
 	String PathogenTest_rsv_testedDiseaseVariantDetails = "PathogenTest.rsv.testedDiseaseVariantDetails";
+	String PathogenTest_rsvSubtype = "PathogenTest.rsvSubtype";
 	String PathogenTest_seroGrouping_INVASIVE_PNEUMOCOCCAL_INFECTION = "PathogenTest.seroGrouping.INVASIVE_PNEUMOCOCCAL_INFECTION";
 	String PathogenTest_seroGroupSpecification = "PathogenTest.seroGroupSpecification";
 	String PathogenTest_seroGroupSpecificationText = "PathogenTest.seroGroupSpecificationText";

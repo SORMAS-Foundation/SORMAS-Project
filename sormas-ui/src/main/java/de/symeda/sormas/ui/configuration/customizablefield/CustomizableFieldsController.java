@@ -98,7 +98,7 @@ public class CustomizableFieldsController {
 
         TextField nameField =
             new TextField(I18nProperties.getPrefixCaption(CustomizableFieldMetadataDto.I18N_PREFIX, CustomizableFieldMetadataDto.NAME));
-        nameField.setWidth(280, com.vaadin.server.Sizeable.Unit.PIXELS);
+        nameField.setWidth(100, com.vaadin.server.Sizeable.Unit.PERCENTAGE);
         nameField.setRequiredIndicatorVisible(true);
 
         VerticalLayout content = new VerticalLayout();
@@ -111,6 +111,7 @@ public class CustomizableFieldsController {
             content,
             I18nProperties.getCaption(Captions.actionClone),
             I18nProperties.getCaption(Captions.actionCancel),
+            480,
             result -> {
                 if (Boolean.TRUE.equals(result)) {
                     String newName = nameField.getValue();

@@ -157,8 +157,8 @@ public class FourFoldCtCqComponent extends FormComponent<PathogenTestDto> {
 
 	@Override
 	public void validate() {
-		super.validate();
-		ctCqValueComponent.validate();
+		// Accumulate binder + Ct/Cq value failures so they surface together in a single save.
+		validateAll(this::validateBinderOnly, ctCqValueComponent::validate);
 	}
 
 	@Override

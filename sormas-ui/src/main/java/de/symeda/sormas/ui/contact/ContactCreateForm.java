@@ -51,7 +51,9 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.therapy.Drug;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
@@ -74,6 +76,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	private static final String CHOOSE_CASE_LOC = "chooseCaseLoc";
 	private static final String REMOVE_CASE_LOC = "removeCaseLoc";
 	private static final String ADOPT_ADDRESS_LOC = "adoptAddressLoc";
+	private static final String PROPHYLAXIS_LOC = "prophylaxisLoc";
 
 	//@formatter:off
 	private static final String HTML_LAYOUT =
@@ -97,7 +100,9 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 					LayoutUtil.fluidRowLocs(ContactDto.RELATION_TO_CASE) +
 					LayoutUtil.fluidRowLocs(ADOPT_ADDRESS_LOC) +
 					LayoutUtil.fluidRowLocs(ContactDto.RELATION_DESCRIPTION) +
-					LayoutUtil.fluidRowLocs(ContactDto.DESCRIPTION);
+					LayoutUtil.fluidRowLocs(ContactDto.DESCRIPTION) +
+						LayoutUtil.loc(PROPHYLAXIS_LOC) +
+						LayoutUtil.fluidRowLocs(4, ContactDto.PROPHYLAXIS_PRESCRIBED, 4, ContactDto.PRESCRIBED_DRUG, 4, ContactDto.PRESCRIBED_DRUG_TEXT);
 	//@formatter:on
 
 	private OptionGroup contactProximities;
@@ -109,6 +114,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	private TextField contactProximityDetails;
 
 	private PersonCreateForm personCreateForm;
+	private Label prophylaxisLabel;
 
 	DateField reportDate;
 	CheckBox multiDayContact;
@@ -234,6 +240,17 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		addField(ContactDto.CASE_ID_EXTERNAL_SYSTEM, TextField.class);
 		addField(ContactDto.CASE_OR_EVENT_INFORMATION, TextArea.class).setRows(4);
 
+		// Prophylaxis details for IMI (Luxembourg only) - mirrors ContactDataForm
+		prophylaxisLabel = new Label(I18nProperties.getString(Strings.headingProphylaxisLoc));
+		prophylaxisLabel.addStyleName(CssStyles.H3);
+		getContent().addComponent(prophylaxisLabel, PROPHYLAXIS_LOC);
+		prophylaxisLabel.setVisible(Disease.INVASIVE_MENINGOCOCCAL_INFECTION == disease);
+
+		CheckBox prophylaxisPrescribed = addField(ContactDto.PROPHYLAXIS_PRESCRIBED, CheckBox.class);
+		prophylaxisPrescribed.setCaption(I18nProperties.getCaption(Captions.Contact_prophylaxisPrescribed));
+		addField(ContactDto.PRESCRIBED_DRUG, ComboBox.class);
+		addField(ContactDto.PRESCRIBED_DRUG_TEXT, TextField.class);
+
 		initializeVisibilitiesAndAllowedVisibilities();
 
 		region.addValueChangeListener(e -> {
@@ -259,6 +276,25 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.DISEASE_DETAILS, ContactDto.DISEASE, Arrays.asList(Disease.OTHER), true);
 		FieldHelper.setRequiredWhen(getFieldGroup(), ContactDto.DISEASE, Arrays.asList(ContactDto.DISEASE_DETAILS), Arrays.asList(Disease.OTHER));
 
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			ContactDto.PRESCRIBED_DRUG,
+			ContactDto.PROPHYLAXIS_PRESCRIBED,
+			Collections.singletonList(Boolean.TRUE),
+			true);
+		FieldHelper.setRequiredWhenNotNull(getFieldGroup(), ContactDto.PROPHYLAXIS_PRESCRIBED, ContactDto.PRESCRIBED_DRUG);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			ContactDto.PRESCRIBED_DRUG_TEXT,
+			ContactDto.PRESCRIBED_DRUG,
+			Collections.singletonList(Drug.OTHER),
+			true);
+		FieldHelper.setRequiredWhen(
+			getFieldGroup(),
+			ContactDto.PRESCRIBED_DRUG,
+			Arrays.asList(ContactDto.PRESCRIBED_DRUG_TEXT),
+			Arrays.asList(Drug.OTHER));
+
 		cbDisease.addValueChangeListener(e -> {
 			disease = (Disease) e.getProperty().getValue();
 			setVisible(disease != null, ContactDto.CONTACT_PROXIMITIES);
@@ -266,7 +302,9 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 				setVisible(disease == Disease.CORONAVIRUS, ContactDto.CONTACT_CATEGORY, ContactDto.CONTACT_PROXIMITY_DETAILS);
 			}
 			updateContactProximity();
+			updateProphylaxisSectionVisibility();
 		});
+		updateProphylaxisSectionVisibility();
 
 		if (!hasCaseRelation) {
 			Label caseInfoLabel = new Label(I18nProperties.getString(Strings.infoNoSourceCaseSelected), ContentMode.HTML);
@@ -377,6 +415,44 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			contactProximities,
 			Arrays.asList(ContactProximity.getValues(disease, FacadeProvider.getConfigFacade().getCountryLocale())));
 		contactProximities.setValue(value);
+	}
+
+	private void updateProphylaxisSectionVisibility() {
+
+		boolean imiVisible = Disease.INVASIVE_MENINGOCOCCAL_INFECTION == disease;
+
+		// Re-check @Diseases(IMI) against the current disease AND @HideForCountriesExcept("lu") against the deployment country.
+		FieldVisibilityCheckers checkers =
+			FieldVisibilityCheckers.withDisease(disease).andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale());
+
+		for (String propertyId : new String[] {
+			ContactDto.PROPHYLAXIS_PRESCRIBED,
+			ContactDto.PRESCRIBED_DRUG,
+			ContactDto.PRESCRIBED_DRUG_TEXT }) {
+			if (checkers.isVisible(ContactDto.class, propertyId)) {
+				// Re-enable fields that were hidden and disallowed at init (e.g. directory flow, disease = null).
+				addToVisibleAllowedFields(getField(propertyId));
+			}
+		}
+
+		if (imiVisible) {
+			// Re-filter the drug options for the selected disease; the field factory populated them at construction time
+			// (disease may have been null then, e.g. directory flow), so the list would otherwise show non-IMI drugs.
+			FieldHelper.updateEnumData(
+				(ComboBox) getField(ContactDto.PRESCRIBED_DRUG),
+				Diseases.DiseasesConfiguration.getVisibleValues(Drug.class, disease));
+		}
+
+		// Only the checkbox is toggled directly; the two dependent fields are driven by the setVisibleWhen rules.
+		setVisible(imiVisible, ContactDto.PROPHYLAXIS_PRESCRIBED);
+		if (!imiVisible) {
+			getField(ContactDto.PROPHYLAXIS_PRESCRIBED).clear();
+			getField(ContactDto.PRESCRIBED_DRUG).clear();
+			getField(ContactDto.PRESCRIBED_DRUG_TEXT).clear();
+			setVisible(false, ContactDto.PRESCRIBED_DRUG, ContactDto.PRESCRIBED_DRUG_TEXT);
+		}
+
+		prophylaxisLabel.setVisible(imiVisible && checkers.isVisible(ContactDto.class, ContactDto.PROPHYLAXIS_PRESCRIBED));
 	}
 
 	private void hideAndFillJurisdictionFields() {

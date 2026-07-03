@@ -32,6 +32,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldContext;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldGroup;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataDto;
@@ -69,12 +70,7 @@ class CustomizableFieldFacadeEjbTest extends AbstractBeanTest {
         CustomizableFieldMetadataFacade metadataFacade = getBean(CustomizableFieldMetadataFacadeEjb.CustomizableFieldMetadataFacadeEjbLocal.class);
         CustomizableFieldValueFacade valueFacade = getBean(CustomizableFieldValueFacadeEjb.CustomizableFieldValueFacadeEjbLocal.class);
 
-        CustomizableFieldMetadataDto metadata = new CustomizableFieldMetadataDto();
-        metadata.setName("customField_" + context.name().toLowerCase());
-        metadata.setFieldType(CustomizableFieldType.TEXT);
-        metadata.setContextClass(context);
-        metadata.setUiGroup(CustomizableFieldGroup.getGroupsForContext(context).stream().findFirst().orElse(null));
-        metadata.setUiLinePosition(1);
+        CustomizableFieldMetadataDto metadata = buildMetadata(context, "customField_" + context.name().toLowerCase());
 
         CustomizableFieldMetadataDto savedMetadata = metadataFacade.save(metadata);
         assertThat(savedMetadata.getUuid(), is(notNullValue()));
@@ -114,6 +110,79 @@ class CustomizableFieldFacadeEjbTest extends AbstractBeanTest {
         assertThat(values.get(savedMetadata).getValue(), is(equalTo("custom-value")));
     }
 
+    @ParameterizedTest
+    @EnumSource(value = CustomizableFieldContext.class,
+        names = {
+            "CASE",
+            "EPIDATA",
+            "EXPOSURE" })
+    void testCaseRelatedDefaultValuesArePersistedOnCreate(CustomizableFieldContext context) {
+        CustomizableFieldMetadataFacade metadataFacade = getBean(CustomizableFieldMetadataFacadeEjb.CustomizableFieldMetadataFacadeEjbLocal.class);
+        CustomizableFieldValueFacade valueFacade = getBean(CustomizableFieldValueFacadeEjb.CustomizableFieldValueFacadeEjbLocal.class);
+
+        CustomizableFieldMetadataDto metadata = buildMetadata(context, "defaultField_" + context.name().toLowerCase());
+        metadata.setDefaultValue("default-" + context.name().toLowerCase());
+        CustomizableFieldMetadataDto savedMetadata = metadataFacade.save(metadata);
+
+        PersonDto person = creator.createPerson("Default", "Case", Sex.MALE, 1981, 2, 2);
+        CaseDataDto caze = creator.createCase(
+            surveillanceSupervisor.toReference(),
+            person.toReference(),
+            Disease.EVD,
+            CaseClassification.PROBABLE,
+            InvestigationStatus.PENDING,
+            new java.util.Date(),
+            rdcf);
+
+        if (context == CustomizableFieldContext.EXPOSURE) {
+            caze.getEpiData().getExposures().add(ExposureDto.build(ExposureType.TRAVEL));
+            caze = getCaseFacade().save(caze);
+        }
+
+        Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> values =
+            valueFacade.getValuesForEntity(getEntityUuidForContext(context, caze), context);
+
+        assertThat(values, hasKey(savedMetadata));
+        assertThat(values.get(savedMetadata).getValue(), is(equalTo(savedMetadata.getDefaultValue())));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = CustomizableFieldContext.class,
+        names = {
+            "EPIDATA",
+            "EXPOSURE" })
+    void testContactRelatedDefaultValuesArePersistedOnCreate(CustomizableFieldContext context) {
+        CustomizableFieldMetadataFacade metadataFacade = getBean(CustomizableFieldMetadataFacadeEjb.CustomizableFieldMetadataFacadeEjbLocal.class);
+        CustomizableFieldValueFacade valueFacade = getBean(CustomizableFieldValueFacadeEjb.CustomizableFieldValueFacadeEjbLocal.class);
+
+        CustomizableFieldMetadataDto metadata = buildMetadata(context, "contactDefaultField_" + context.name().toLowerCase());
+        metadata.setDefaultValue("contact-default-" + context.name().toLowerCase());
+        CustomizableFieldMetadataDto savedMetadata = metadataFacade.save(metadata);
+
+        PersonDto person = creator.createPerson("Default", "Contact", Sex.FEMALE, 1982, 3, 3);
+        ContactDto contact = creator.createContact(surveillanceSupervisor.toReference(), person.toReference(), Disease.EVD, dto -> {
+            if (context == CustomizableFieldContext.EXPOSURE) {
+                dto.getEpiData().getExposures().add(ExposureDto.build(ExposureType.TRAVEL));
+            }
+        });
+
+        Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> values =
+            valueFacade.getValuesForEntity(getEntityUuidForContext(context, contact), context);
+
+        assertThat(values, hasKey(savedMetadata));
+        assertThat(values.get(savedMetadata).getValue(), is(equalTo(savedMetadata.getDefaultValue())));
+    }
+
+    private CustomizableFieldMetadataDto buildMetadata(CustomizableFieldContext context, String name) {
+        CustomizableFieldMetadataDto metadata = new CustomizableFieldMetadataDto();
+        metadata.setName(name);
+        metadata.setFieldType(CustomizableFieldType.TEXT);
+        metadata.setContextClass(context);
+        metadata.setUiGroup(CustomizableFieldGroup.getGroupsForContext(context).stream().findFirst().orElse(null));
+        metadata.setUiLinePosition(1);
+        return metadata;
+    }
+
     private String getEntityUuidForContext(CustomizableFieldContext context, CaseDataDto caze) {
         switch (context) {
         case CASE:
@@ -123,6 +192,19 @@ class CustomizableFieldFacadeEjbTest extends AbstractBeanTest {
         case EXPOSURE:
             return caze.getEpiData().getExposures() != null && !caze.getEpiData().getExposures().isEmpty()
                 ? caze.getEpiData().getExposures().get(0).getUuid()
+                : null;
+        default:
+            throw new IllegalArgumentException("Unhandled context: " + context);
+        }
+    }
+
+    private String getEntityUuidForContext(CustomizableFieldContext context, ContactDto contact) {
+        switch (context) {
+        case EPIDATA:
+            return contact.getEpiData().getUuid();
+        case EXPOSURE:
+            return contact.getEpiData().getExposures() != null && !contact.getEpiData().getExposures().isEmpty()
+                ? contact.getEpiData().getExposures().get(0).getUuid()
                 : null;
         default:
             throw new IllegalArgumentException("Unhandled context: " + context);

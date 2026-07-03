@@ -189,7 +189,6 @@ public class PathogenTest extends DeletableAdo {
 	private String antibodyTitre;
 	private Boolean performedByReferenceLaboratory;
 	private Boolean retestRequested;
-	private String resultDetails;
 	private Float quantitativeValue;
 	private String quantitativeUnit;
 	private YesNoUnknown quantitativeBoolean;
@@ -812,14 +811,6 @@ public class PathogenTest extends DeletableAdo {
 
 	public void setRetestRequested(Boolean retestRequested) {
 		this.retestRequested = retestRequested;
-	}
-
-	public String getResultDetails() {
-		return resultDetails;
-	}
-
-	public void setResultDetails(String resultDetails) {
-		this.resultDetails = resultDetails;
 	}
 
 	public String getSpecieText() {

@@ -419,6 +419,10 @@ public class ContactFacadeEjb
 
 		Contact entity = fillOrBuildEntity(dto, existingContact, checkChangeDate);
 		service.ensurePersisted(entity);
+		epiDataFacade.ensureDefaultCustomizableFieldValues(
+			entity.getEpiData(),
+			existingContactDto != null ? existingContactDto.getEpiData() : null,
+			entity.getDisease());
 
 		if (existingContact == null && featureConfigurationFacade.isTaskGenerationFeatureEnabled(TaskType.CONTACT_INVESTIGATION)) {
 			createInvestigationTask(entity);

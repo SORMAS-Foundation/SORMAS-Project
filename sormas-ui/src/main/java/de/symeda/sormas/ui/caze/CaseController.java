@@ -1018,6 +1018,25 @@ public class CaseController {
 			}
 		}
 
+		editView.setPreCommitListener(successCallback -> {
+			List<String> customizableFieldValidationErrors = caseEditForm.validateCustomizableFieldsAndCollectErrors()
+				.stream()
+				.filter(error -> error != null && !error.trim().isEmpty())
+				.distinct()
+				.collect(Collectors.toList());
+
+			if (customizableFieldValidationErrors.isEmpty()) {
+				successCallback.run();
+				return;
+			}
+
+			String errorMessage = customizableFieldValidationErrors.stream().collect(Collectors.joining("\n"));
+			Notification.show(
+				I18nProperties.getString(Strings.messageCheckInputData),
+				errorMessage,
+				Type.ERROR_MESSAGE);
+		});
+
 		editView.addCommitListener(() -> {
 			CaseDataDto oldCase = findCase(caseUuid);
 			CaseDataDto cazeDto = caseEditForm.getValue();

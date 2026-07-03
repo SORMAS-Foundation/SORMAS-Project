@@ -22,6 +22,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.data.HasValue;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -194,7 +196,7 @@ public class CustomizableFieldsGroup extends VerticalLayout {
 		setVisible(true);
 
 		// Sort: non-null positions first (ascending), null positions last (stable)
-		groupFields.sort(Comparator.comparing(CustomizableFieldMetadataDto::getUiLinePosition, Comparator.nullsLast(Comparator.naturalOrder())));
+		groupFields.sort(Comparator.comparing(metadata -> metadata.getUiLinePosition(), Comparator.nullsLast(Comparator.naturalOrder())));
 
 		// Group by uiLinePosition; null-positioned fields each get their own synthetic key
 		// using a LinkedHashMap to preserve insertion (sorted) order.
@@ -229,8 +231,7 @@ public class CustomizableFieldsGroup extends VerticalLayout {
 		for (CustomizableFieldMetadataDto metadata : lineFields) {
 			CustomizableFieldInput<?> field = CustomizableFieldInputFactory.create(metadata);
 
-			CustomizableFieldValueDto dto =
-				(fieldsValues != null && fieldsValues.containsKey(metadata)) ? fieldsValues.get(metadata) : new CustomizableFieldValueDto();
+			CustomizableFieldValueDto dto = createInitialFieldValue(metadata);
 			field.setFieldValue(dto);
 
 			field.setWidth(100, Unit.PERCENTAGE);
@@ -269,12 +270,12 @@ public class CustomizableFieldsGroup extends VerticalLayout {
 	 */
 	@SuppressWarnings("java:S1452") // wildcard return type is intentional for CustomizableFieldInput<?>
 	public CustomizableFieldInput<?> getFieldByMetadataUuid(String metadataUuid) {
-		return fieldComponents.entrySet()
-			.stream()
-			.filter(e -> metadataUuid.equals(e.getKey().getUuid()))
-			.map(Map.Entry::getValue)
-			.findFirst()
-			.orElse(null);
+		for (Map.Entry<CustomizableFieldMetadataDto, CustomizableFieldInput<?>> entry : fieldComponents.entrySet()) {
+			if (metadataUuid.equals(entry.getKey().getUuid())) {
+				return entry.getValue();
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -296,11 +297,51 @@ public class CustomizableFieldsGroup extends VerticalLayout {
 		Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> result = new HashMap<>();
 		for (Map.Entry<CustomizableFieldMetadataDto, CustomizableFieldInput<?>> entry : fieldComponents.entrySet()) {
 			CustomizableFieldValueDto value = entry.getValue().getFieldValue();
-			if (value != null && value.getValue() != null) {
+			if (shouldIncludeFieldValue(entry.getKey(), value)) {
 				result.put(entry.getKey(), value);
 			}
 		}
 		return result;
+	}
+
+	private CustomizableFieldValueDto createInitialFieldValue(CustomizableFieldMetadataDto metadata) {
+		if (fieldsValues != null && fieldsValues.containsKey(metadata)) {
+			CustomizableFieldValueDto existingValue = fieldsValues.get(metadata);
+			return existingValue != null ? existingValue : new CustomizableFieldValueDto();
+		}
+
+		CustomizableFieldValueDto defaultValue = new CustomizableFieldValueDto();
+		if (StringUtils.isNotBlank(metadata.getDefaultValue())) {
+			defaultValue.setValue(metadata.getDefaultValue());
+		}
+		return defaultValue;
+	}
+
+	private boolean shouldIncludeFieldValue(CustomizableFieldMetadataDto metadata, CustomizableFieldValueDto value) {
+		return value != null
+			&& (value.getValue() != null
+				|| (fieldsValues != null && fieldsValues.containsKey(metadata))
+				|| StringUtils.isNotBlank(metadata.getDefaultValue()));
+	}
+
+	/**
+	 * Validates all rendered customizable field inputs and returns collected error messages.
+	 *
+	 * @return list of validation messages prefixed with the field caption when available
+	 */
+	public List<String> validateAndCollectErrors() {
+		List<String> errors = new ArrayList<>();
+		for (CustomizableFieldInput<?> field : fieldComponents.values()) {
+			String caption = field.getCaption();
+			for (String error : field.validateAndGetErrors()) {
+				if (caption != null && !caption.isEmpty()) {
+					errors.add(caption + ": " + error);
+				} else {
+					errors.add(error);
+				}
+			}
+		}
+		return errors;
 	}
 
 	/**

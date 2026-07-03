@@ -232,8 +232,6 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS })
-	@HideForCountries(countries = {
-		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	BIOPSY,
 
 	@Diseases(value = {
@@ -310,15 +308,12 @@ public enum SampleMaterial {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-		Disease.MEASLES,
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE,
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
-	@HideForCountries(countries = {
-		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	OP_ASPIRATE,
 
 	@Diseases(value = {
@@ -330,8 +325,6 @@ public enum SampleMaterial {
 		Disease.DENGUE,
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
-	@HideForCountries(countries = {
-		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	NP_ASPIRATE,
 
 	@Diseases(value = {
@@ -346,13 +339,13 @@ public enum SampleMaterial {
 		Disease.SHIGELLOSIS }, hide = true)
 	PLEURAL_FLUID,
 
+	// Re-activated for RSV new samples (#14023): the RSV specimen requirements list Nasopharyngeal lavage.
+	// No canonical SNOMED-CT code on the specimen sheet, so its SNOMED export stays null. 
 	@Diseases(value = {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
-	@Deprecated
 	NASOPHARYNGEAL_LAVAGE,
 
 	@Diseases(value = {
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 		Disease.GIARDIASIS,
@@ -372,13 +365,11 @@ public enum SampleMaterial {
 		Disease.DENGUE,
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
-	@HideForCountries(countries = {
-		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	AMNIOTIC_FLUID,
 
 	@Diseases(value = {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.GIARDIASIS }, hide = true)
 	CLINICAL_SAMPLE,
 
 	@Diseases(value = {
@@ -417,16 +408,12 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS })
-	@HideForCountries(countries = {
-		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	INTESTINAL_FLUID,
 
 	@Diseases(value = {
 		Disease.GIARDIASIS,
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS })
-	@HideForCountries(countries = {
-		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	DUODENUM_FLUID,
 
 	@Diseases({
@@ -491,68 +478,95 @@ public enum SampleMaterial {
 	WOUND,
 
 	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SALMONELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	ABSCESS_SWAB,
 
 	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.DENGUE }, hide = true)
 	BONE,
 
 	@Diseases(value = {
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.SHIGELLOSIS,
+		Disease.DENGUE }, hide = true)
 	BONE_MARROW,
 
 	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SALMONELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	CONJUNCTIVAL_SWAB,
 
 	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SALMONELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	MIDDLE_EAR_FLUID,
 
 	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SALMONELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	PLASMA,
 
 	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SALMONELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	SWAB_UNSPECIFIED,
 
 	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SALMONELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	TEARS,
 
 	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SALMONELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	CORD_BLOOD,
 
 	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.DENGUE }, hide = true)
 	LUNG_TISSUE,
 
 	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SALMONELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	PLACENTA,
 
 	@Diseases(value = {
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
 		Disease.SALMONELLOSIS }, hide = true)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
@@ -636,8 +650,8 @@ public enum SampleMaterial {
 	 * new samples. This set is the runtime index used by {@link #isDeprecated()}; it must stay in sync
 	 * with the {@code @Deprecated} constants above.
 	 */
-	private static final Set<SampleMaterial> DEPRECATED_MATERIALS = Collections.unmodifiableSet(
-		EnumSet.of(URINE_PM, CORNEA_PM, NASAL_SWAB, NASOPHARYNGEAL_LAVAGE, THROAT_SWAB, THROAT_ASPIRATE, SOFT_TISSUE, BONE_AND_JOINT, OTHER));
+	private static final Set<SampleMaterial> DEPRECATED_MATERIALS =
+		Collections.unmodifiableSet(EnumSet.of(URINE_PM, CORNEA_PM, NASAL_SWAB, THROAT_SWAB, THROAT_ASPIRATE, SOFT_TISSUE, BONE_AND_JOINT, OTHER));
 
 	/**
 	 * @return SNOMED-CT code for this sample material, or {@code null} if no canonical code is mapped.

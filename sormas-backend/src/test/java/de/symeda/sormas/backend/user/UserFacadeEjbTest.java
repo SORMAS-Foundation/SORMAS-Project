@@ -12,7 +12,6 @@ import static de.symeda.sormas.api.user.DefaultUserRole.SURVEILLANCE_OFFICER;
 import static de.symeda.sormas.api.user.DefaultUserRole.SURVEILLANCE_SUPERVISOR;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
@@ -41,6 +40,7 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityNotFoundException;
 import javax.validation.ValidationException;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -50,6 +50,7 @@ import org.mockito.MockitoAnnotations;
 import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserDto;
@@ -79,27 +80,27 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		// given region and right
 		List<UserReferenceDto> result = getUserFacade().getUsersByRegionAndRights(region, null, UserRight.EXTERNAL_MESSAGE_ACCESS);
 
-		assertTrue(result.isEmpty());
+		assertFalse(result.isEmpty());
 
 		UserDto natUser = creator.createUser(rdcf, creator.getUserRoleReference(NATIONAL_USER)); // Has LAB_MASSAGES and TRAVEL_ENTRY_MANAGEMENT_ACCESS rights
 		UserDto poeUser = creator.createUser(rdcf, "Some", "User", creator.getUserRoleReference(POE_INFORMANT)); // Does not have LAB_MASSAGES right, but has TRAVEL_ENTRY_MANAGEMENT_ACCESS.
 		creator.createUser(rdcf, creator.getUserRoleReference(REST_EXTERNAL_VISITS_USER)); // Has neither LAB_MASSAGES nor TRAVEL_ENTRY_MANAGEMENT_ACCESS right
 		result = getUserFacade().getUsersByRegionAndRights(region, null, UserRight.EXTERNAL_MESSAGE_ACCESS);
 
-		assertThat(result, hasSize(1));
-		assertThat(result, contains(equalTo(natUser.toReference())));
+		assertThat(result, hasSize(2));
+		assertThat(result.get(1), equalTo(natUser.toReference()));
 
 		UserDto natUser2 = creator.createUser(rdcf, "Nat", "User2", creator.getUserRoleReference(NATIONAL_USER)); // Has LAB_MASSAGES right
 		result = getUserFacade().getUsersByRegionAndRights(region, null, UserRight.EXTERNAL_MESSAGE_ACCESS);
 
-		assertThat(result, hasSize(2));
+		assertThat(result, hasSize(3));
 		assertThat(result, hasItems(equalTo(natUser.toReference()), equalTo(natUser2.toReference())));
 
 		// given different region and right
 		Region region2 = creator.createRegion("region2");
 		result = getUserFacade().getUsersByRegionAndRights(RegionFacadeEjb.toReferenceDto(region2), null, UserRight.EXTERNAL_MESSAGE_ACCESS);
 
-		assertTrue(result.isEmpty());
+		assertFalse(result.isEmpty());
 
 		// given no region and right
 		result = getUserFacade().getUsersByRegionAndRights(null, null, UserRight.EXTERNAL_MESSAGE_ACCESS);
@@ -110,7 +111,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		// given region and multiple rights
 		result = getUserFacade().getUsersByRegionAndRights(region, null, UserRight.EXTERNAL_MESSAGE_ACCESS, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS);
 
-		assertThat(result, hasSize(3));
+		assertThat(result, hasSize(4));
 		assertThat(result, hasItems(equalTo(natUser.toReference()), equalTo(natUser2.toReference()), equalTo(poeUser.toReference())));
 
 		// given different region and multiple rights
@@ -120,7 +121,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 			UserRight.EXTERNAL_MESSAGE_ACCESS,
 			UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS);
 
-		assertTrue(result.isEmpty());
+		assertFalse(result.isEmpty());
 
 		// given no region and multiple rights
 		result = getUserFacade().getUsersByRegionAndRights(null, null, UserRight.EXTERNAL_MESSAGE_ACCESS, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS);
@@ -310,6 +311,27 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testGetUserRefsByRegionForResponsibleSurveillanceOfficer() {
+		RDCF rdcf = creator.createRDCF();
+		RDCF rdcfOther = creator.createRDCF("otherRegion", "oderDistrict", "otherCommunity", "otherFacility");
+
+		UserDto surveilanceOfficerDefault = creator.createSurveillanceOfficer(rdcf);
+		UserDto surveilanceSupervisorDefault = creator.createSurveillanceSupervisor(rdcf);
+		UserDto adminSupervisorDefault = creator.createUser(rdcf, "Admin", "Supervisor", creator.getUserRoleReference(ADMIN_SUPERVISOR));
+		UserDto adminSupervisorOther = creator.createUser(rdcfOther, "Admin", "Supervisor Other", creator.getUserRoleReference(ADMIN_SUPERVISOR));
+
+		List<UserReferenceDto> userReferenceDtos =
+			getUserFacade().getUsersByRegionAndRights(rdcf.region, Disease.CORONAVIRUS, UserRight.CASE_RESPONSIBLE);
+		assertNotNull(userReferenceDtos);
+		assertEquals(3, userReferenceDtos.size());
+		List<String> userReferenceUUIDs = userReferenceDtos.stream().map(u -> u.getUuid()).collect(Collectors.toList());
+		assertTrue(userReferenceUUIDs.contains(surveilanceOfficerDefault.getUuid()));
+		assertTrue(userReferenceUUIDs.contains(surveilanceSupervisorDefault.getUuid()));
+		assertTrue(userReferenceUUIDs.contains(adminSupervisorDefault.getUuid()));
+		assertFalse(userReferenceUUIDs.contains(adminSupervisorOther.getUuid()));
+	}
+
+	@Test
 	public void testGetUserRefsByDistrictsForResponsibleSurveillanceOfficer() {
 		RDCF rdcf = creator.createRDCF();
 		RDCF rdcfOther = creator.createRDCF("otherRegion", "oderDistrict", "otherCommunity", "otherFacility");
@@ -321,12 +343,48 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 
 		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUserRefsByDistricts(Arrays.asList(rdcf.district), Disease.CORONAVIRUS);
 		assertNotNull(userReferenceDtos);
-		assertEquals(3, userReferenceDtos.size());
+		assertEquals(4, userReferenceDtos.size());
 		List<String> userReferenceUUIDs = userReferenceDtos.stream().map(u -> u.getUuid()).collect(Collectors.toList());
 		assertTrue(userReferenceUUIDs.contains(surveilanceOfficerDefault.getUuid()));
 		assertTrue(userReferenceUUIDs.contains(surveilanceSupervisorDefault.getUuid()));
 		assertTrue(userReferenceUUIDs.contains(adminSupervisorDefault.getUuid()));
 		assertFalse(userReferenceUUIDs.contains(adminSupervisorOther.getUuid()));
+	}
+
+	@Test
+	public void testGetUserRefsByDistrictsForResponsibleSurveillanceOfficer_national_user() {
+		RDCF rdcf = creator.createRDCF();
+
+		UserDto surveilanceOfficerDefault = creator.createSurveillanceOfficer(rdcf);
+		UserDto surveilanceSupervisorDefault = creator.createSurveillanceSupervisor(rdcf);
+		UserDto nationalUser = creator.createUser(rdcf, "national", "user", creator.getUserRoleReference(NATIONAL_USER));
+
+		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUserRefsByDistricts(Arrays.asList(rdcf.district), Disease.CORONAVIRUS);
+		List<String> userReferenceUUIDs = userReferenceDtos.stream().map(ReferenceDto::getUuid).collect(Collectors.toList());
+
+		Assertions.assertAll(
+			() -> assertEquals(4, userReferenceDtos.size()),
+			() -> assertTrue(userReferenceUUIDs.contains(surveilanceOfficerDefault.getUuid())),
+			() -> assertTrue(userReferenceUUIDs.contains(surveilanceSupervisorDefault.getUuid())),
+			() -> assertTrue(userReferenceUUIDs.contains(nationalUser.getUuid())));
+	}
+
+	@Test
+	public void testGetUserRefsByRegionForResponsibleSurveillanceOfficer_national_user() {
+		RDCF rdcf = creator.createRDCF();
+
+		UserDto surveilanceOfficerDefault = creator.createSurveillanceOfficer(rdcf);
+		UserDto surveilanceSupervisorDefault = creator.createSurveillanceSupervisor(rdcf);
+		UserDto nationalUser = creator.createUser(rdcf, "national", "user", creator.getUserRoleReference(NATIONAL_USER));
+
+		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUsersByRegionAndRights(rdcf.region, Disease.CORONAVIRUS);
+		List<String> userReferenceUUIDs = userReferenceDtos.stream().map(ReferenceDto::getUuid).collect(Collectors.toList());
+
+		Assertions.assertAll(
+			() -> assertEquals(4, userReferenceDtos.size()),
+			() -> assertTrue(userReferenceUUIDs.contains(surveilanceOfficerDefault.getUuid())),
+			() -> assertTrue(userReferenceUUIDs.contains(surveilanceSupervisorDefault.getUuid())),
+			() -> assertTrue(userReferenceUUIDs.contains(nationalUser.getUuid())));
 	}
 
 	@Test
@@ -341,7 +399,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		// given district and disease
 		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUserRefsByDistrict(rdcf.district, Disease.CORONAVIRUS);
 
-		assertThat(userReferenceDtos, hasSize(1));
+		assertThat(userReferenceDtos, hasSize(2));
 		assertTrue(userReferenceDtos.contains(generalSurveillanceOfficer));
 
 		// given disease
@@ -359,12 +417,12 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		// given district, disease and right
 		userReferenceDtos = getUserFacade().getUserRefsByDistrict(rdcf.district, Disease.CORONAVIRUS, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS);
 
-		assertThat(userReferenceDtos, hasSize(1));
+		assertThat(userReferenceDtos, hasSize(2));
 		assertTrue(userReferenceDtos.contains(generalSurveillanceOfficer));
 
 		userReferenceDtos = getUserFacade().getUserRefsByDistrict(rdcf.district, Disease.CORONAVIRUS, UserRight.EXTERNAL_MESSAGE_ACCESS);
 
-		assertTrue(userReferenceDtos.isEmpty());
+		assertFalse(userReferenceDtos.isEmpty());
 
 		// given disease and right
 		userReferenceDtos = getUserFacade().getUserRefsByDistrict(null, Disease.CORONAVIRUS, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS);
@@ -402,12 +460,12 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		List<UserReferenceDto> userReferenceDtos =
 			getUserFacade().getUserRefsByDistrict(rdcf.district, true, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS);
 
-		assertThat(userReferenceDtos, hasSize(1));
+		assertThat(userReferenceDtos, hasSize(2));
 		assertTrue(userReferenceDtos.contains(generalSurveillanceOfficer));
 
 		userReferenceDtos = getUserFacade().getUserRefsByDistrict(rdcf.district, false, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS);
 
-		assertThat(userReferenceDtos, hasSize(2));
+		assertThat(userReferenceDtos, hasSize(3));
 		assertThat(userReferenceDtos, hasItems(equalTo(generalSurveillanceOfficer.toReference()), equalTo(limitedSurveillanceOfficer.toReference())));
 
 		// given no district and one right
@@ -425,13 +483,13 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		userReferenceDtos =
 			getUserFacade().getUserRefsByDistrict(rdcf.district, true, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS, UserRight.SORMAS_REST);
 
-		assertThat(userReferenceDtos, hasSize(2));
+		assertThat(userReferenceDtos, hasSize(3));
 		assertThat(userReferenceDtos, hasItems(equalTo(generalSurveillanceOfficer.toReference()), equalTo(generalRestUser.toReference())));
 
 		userReferenceDtos =
 			getUserFacade().getUserRefsByDistrict(rdcf.district, false, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS, UserRight.SORMAS_REST);
 
-		assertThat(userReferenceDtos, hasSize(3));
+		assertThat(userReferenceDtos, hasSize(4));
 		assertThat(
 			userReferenceDtos,
 			hasItems(

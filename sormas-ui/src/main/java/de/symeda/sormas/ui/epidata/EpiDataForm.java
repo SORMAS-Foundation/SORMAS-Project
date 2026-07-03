@@ -40,7 +40,6 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Component;
@@ -71,6 +70,7 @@ import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.InfectionSource;
 import de.symeda.sormas.api.exposure.ModeOfTransmission;
 import de.symeda.sormas.api.exposure.ProphylaxisAdherence;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -120,13 +120,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	private static final String LOC_OTHER_INFORMATION_HEADING = "locOtherInformationHeading";
 
 	private static final List<Disease> CONCLUSION_ALLOWED_DISEASES = Collections.unmodifiableList(
-		Arrays.asList(
-			Disease.CRYPTOSPORIDIOSIS,
-			Disease.GIARDIASIS,
-			Disease.MALARIA,
-			Disease.DENGUE,
-			Disease.SALMONELLOSIS,
-			Disease.SHIGELLOSIS));
+		Arrays.asList(Disease.CRYPTOSPORIDIOSIS, Disease.GIARDIASIS, Disease.MALARIA, Disease.DENGUE, Disease.SALMONELLOSIS, Disease.SHIGELLOSIS));
 
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT =
@@ -271,9 +265,12 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		List<CountryReferenceDto> countries = FacadeProvider.getCountryFacade().getAllActiveAsReference();
 		ComboBox country = addInfrastructureField(EpiDataDto.COUNTRY);
 		country.addItems(countries);
+		if (Disease.SHIGELLOSIS == disease) {
+			country.setCaption(I18nProperties.getCaption(Captions.EpiData_country_SHIG));
+		}
 
 		includeExposureDates(symptomOnsetDate, disease);
-		addField(EpiDataDto.AIRPORT_WORKER, NullableOptionGroup.class);
+
 		addField(EpiDataDto.HEALTHCARE_PROFESSIONAL, NullableOptionGroup.class);
 		addField(EpiDataDto.PLACE_OF_INFECTION);
 		addField(EpiDataDto.RESIDENCE_AT_ONSET);
@@ -339,6 +336,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		additionalDetails.setDescription(
 			I18nProperties.getPrefixDescription(EpiDataDto.I18N_PREFIX, EpiDataDto.OTHER_DETAILS, "") + "\n"
 				+ I18nProperties.getDescription(Descriptions.descGdpr));
+		addField(EpiDataDto.AIRPORT_WORKER, NullableOptionGroup.class);
 	}
 
 	/**
@@ -511,8 +509,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 					+ divsCss(
 						VSPACE_3,
 						I18nProperties.getString(
-							parentClass == ContactDto.class ? Strings.infoExposureInvestigationContacts : Strings.infoExposureInvestigation),
-						disease == Disease.GIARDIASIS ? I18nProperties.getString(Strings.giardiaInfoExposureInvestigation) : StringUtils.EMPTY),
+							parentClass == ContactDto.class ? Strings.infoExposureInvestigationContacts : Strings.infoExposureInvestigation)),
 				ContentMode.HTML),
 			LOC_EXPOSURE_INVESTIGATION_HEADING);
 

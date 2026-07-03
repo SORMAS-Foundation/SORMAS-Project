@@ -89,8 +89,6 @@ public class SampleExportDto extends AbstractUuidDto implements IsSample {
 	private Boolean additionalTestingRequested;
 	private Set<AdditionalTestType> requestedAdditionalTests;
 	private String requestedOtherAdditionalTests;
-	private Boolean performedByReferenceLaboratory;
-	private Boolean retestRequested;
 	private boolean shipped;
 	private Date shipmentDate;
 	@SensitiveData
@@ -161,7 +159,6 @@ public class SampleExportDto extends AbstractUuidDto implements IsSample {
 						   String contactRegion, String contactDistrict, String contactCommunity, String contactCaseRegion, String contactCaseDistrict, String contactCaseCommunity,
 						   Date contactReportDate, Date lastContactDate, ContactClassification contactClassification, ContactStatus contactStatus, String eventParticipantRegion, String eventParticipantDistrict,
                            String labUuid, String caseHealthFacilityUuid, String caseResponsibleRegion, String caseResponsibleDistrict, String caseResponsibleCommunity,
-						   Boolean performedByReferenceLaboratory, Boolean retestRequested,
 						   boolean isInJurisdiction, boolean isCaseInJurisdiction, boolean isContactInJurisdiction,  boolean isContactCaseInJurisdiction, boolean isEventParticipantInJurisdiction) {
 	//@formatter:on
 		super(uuid);
@@ -234,8 +231,6 @@ public class SampleExportDto extends AbstractUuidDto implements IsSample {
 			}
 		}
 		this.requestedOtherAdditionalTests = requestedOtherAdditionalTests;
-		this.performedByReferenceLaboratory = performedByReferenceLaboratory;
-		this.retestRequested = retestRequested;
 		this.shipped = shipped;
 		this.shipmentDate = shipmentDate;
 		this.shipmentDetails = shipmentDetails;
@@ -861,24 +856,6 @@ public class SampleExportDto extends AbstractUuidDto implements IsSample {
 	public String getSampleMaterialSnomedCode() {
 		SampleMaterial material = sampleSampleExportMaterial != null ? sampleSampleExportMaterial.sampleMaterial : null;
 		return material != null ? material.getSnomedCode() : null;
-	}
-
-	@Order(105)
-	public Boolean getPerformedByReferenceLaboratory() {
-		return performedByReferenceLaboratory;
-	}
-
-	public void setPerformedByReferenceLaboratory(Boolean performedByReferenceLaboratory) {
-		this.performedByReferenceLaboratory = performedByReferenceLaboratory;
-	}
-
-	@Order(106)
-	public Boolean getRetestRequested() {
-		return retestRequested;
-	}
-
-	public void setRetestRequested(Boolean retestRequested) {
-		this.retestRequested = retestRequested;
 	}
 
 	public SampleExportPathogenTest getPathogenTest1() {

@@ -16282,19 +16282,6 @@ alter table pathogentest_history add column IF NOT EXISTS westernblotinterpretat
 
 INSERT INTO schema_version (version_number, comment) VALUES (636, 'Quantitative pathogen test results: value/unit/text/boolean, smear grade, Western Blot interpretation #13948');
 
--- 2026-06-04 Reference-laboratory + retest indicators on sample #13954 (#13948)
-alter table samples add column IF NOT EXISTS performedbyreferencelaboratory boolean;
-alter table samples add column IF NOT EXISTS retestrequested boolean;
-
-alter table samples_history add column IF NOT EXISTS performedbyreferencelaboratory boolean;
-alter table samples_history add column IF NOT EXISTS retestrequested boolean;
-update samples set retestrequested = false where retestrequested is null;
-alter table samples alter column retestrequested set not null;
-update samples_history set retestrequested = false where retestrequested is null;
-alter table samples_history alter column retestrequested set not null;
-
-INSERT INTO schema_version (version_number, comment) VALUES (637, 'Reference laboratory + retest indicators on sample #13954 (#13948)');
-
 -- 2026-06-08 Laboratory results tab: date other + external comments on case #13948 (#13955)
 alter table cases add column IF NOT EXISTS dateother timestamp;
 alter table cases add column IF NOT EXISTS dateotherdetails varchar(255);
@@ -16304,7 +16291,7 @@ alter table cases_history add column IF NOT EXISTS dateother timestamp;
 alter table cases_history add column IF NOT EXISTS dateotherdetails varchar(255);
 alter table cases_history add column IF NOT EXISTS externalcomments text;
 
-INSERT INTO schema_version (version_number, comment) VALUES (638, 'Laboratory results tab: dateOther, dateOtherDetails, externalComments on case #13955');
+INSERT INTO schema_version (version_number, comment) VALUES (637, 'Laboratory results tab: dateOther, dateOtherDetails, externalComments on case #13955');
 
 -- 04-06-2026 Shigellosis lab message processing. #13965
 ALTER TABLE testreport                  ADD COLUMN IF NOT EXISTS pathogentestcategory varchar(255);
@@ -16347,7 +16334,7 @@ BEGIN
         ALTER TABLE healthconditions_history RENAME COLUMN undermedication TO onmedication;
     END IF;
 END $$;
-INSERT INTO schema_version (version_number, comment) VALUES (639, '#13965 - Shigellosis Lab messages');
+INSERT INTO schema_version (version_number, comment) VALUES (638, '#13965 - Shigellosis Lab messages');
 
 -- Drop the generic quantitative free-text result column: typing methods use their disease-section fields and
 -- everything else falls back to "Test result details" (#13948). Before dropping, copy any existing value into
@@ -16373,7 +16360,7 @@ BEGIN
             WHERE quantitativetext IS NOT NULL AND quantitativetext <> ''
               AND length(CASE WHEN testresulttext IS NULL OR testresulttext = '' THEN quantitativetext ELSE testresulttext || E'\n' || quantitativetext END) > 4096;
         IF truncated_count > 0 THEN
-            RAISE NOTICE 'Migration 640: % pathogentest row(s) had their preserved quantitativetext truncated to fit varchar(4096).', truncated_count;
+            RAISE NOTICE 'Migration 639: % pathogentest row(s) had their preserved quantitativetext truncated to fit varchar(4096).', truncated_count;
         END IF;
         UPDATE pathogentest
         SET testresulttext = LEFT(CASE
@@ -16387,7 +16374,7 @@ BEGIN
             WHERE quantitativetext IS NOT NULL AND quantitativetext <> ''
               AND length(CASE WHEN testresulttext IS NULL OR testresulttext = '' THEN quantitativetext ELSE testresulttext || E'\n' || quantitativetext END) > 4096;
         IF truncated_count > 0 THEN
-            RAISE NOTICE 'Migration 640: % pathogentest_history row(s) had their preserved quantitativetext truncated to fit varchar(4096).', truncated_count;
+            RAISE NOTICE 'Migration 639: % pathogentest_history row(s) had their preserved quantitativetext truncated to fit varchar(4096).', truncated_count;
         END IF;
         UPDATE pathogentest_history
         SET testresulttext = LEFT(CASE
@@ -16400,11 +16387,303 @@ END $$;
 ALTER TABLE pathogentest DROP COLUMN IF EXISTS quantitativetext;
 ALTER TABLE pathogentest_history DROP COLUMN IF EXISTS quantitativetext;
 ALTER TABLE pathogentest ENABLE TRIGGER versioning_trigger;
-INSERT INTO schema_version (version_number, comment) VALUES (640, 'Remove generic quantitative free-text pathogen test result column, preserving values into testresulttext issue #13952 (epic #13948)');
+INSERT INTO schema_version (version_number, comment) VALUES (639, 'Remove generic quantitative free-text pathogen test result column, preserving values into testresulttext issue #13952 (epic #13948)');
 
 -- 2026-06-19 Add Salmonellosis-specific watery diarrhoea symptom (testing salmo.xlsx)
 ALTER TABLE symptoms         ADD COLUMN IF NOT EXISTS waterydiarrhea varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS waterydiarrhea varchar(255);
-INSERT INTO schema_version (version_number, comment) VALUES (641, 'Add Salmonellosis watery diarrhoea symptom issue #13918');
+INSERT INTO schema_version (version_number, comment) VALUES (640, 'Add Salmonellosis watery diarrhoea symptom issue #13918');
+
+-- 18-06-2026 Malaria and Dengue DD and Lab message processing fixes
+
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS fourfoldincreaseantibodytiter boolean DEFAULT false;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS fourfoldincreaseantibodytiter boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (641, 'Malaria and Dengue DD and Lab message processing fixes');
+
+
+-- 2025-06-26 Performed by reference laboratory missing for lab messages
+
+ALTER TABLE testreport ADD COLUMN IF NOT EXISTS performedbyreferencelaboratory boolean;
+ALTER TABLE testreport_history ADD COLUMN IF NOT EXISTS performedbyreferencelaboratory boolean;
+
+INSERT INTO schema_version (version_number, comment) VALUES (642, '#14058 - Performed by reference laboratory not toggled');
+
+-- 2026-06-29 Remove Malaria-specific "Result details" pathogen test field (issue #14016)
+-- The Malaria resultdetails field duplicated the generic "Test result details" (testresulttext) field on the
+-- pathogen test form. Drop it and fold any captured value into testresulttext so no free-text result is lost.
+-- Both pathogentest and pathogentest_history are migrated.
+--
+-- versioning_trigger on pathogentest mirrors every UPDATE into pathogentest_history & disable it for the
+-- migration window so the backfill does not inject phantom audit rows, and re-enable when done.
+--
+-- testresulttext is varchar(4096) while resultdetails is varchar(255): LEFT(..., 4096) guards against a
+-- near-full testresulttext overflowing the column once resultdetails is appended.
+ALTER TABLE pathogentest DISABLE TRIGGER versioning_trigger;
+DO $$
+DECLARE
+    truncated_count integer;
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'pathogentest' AND column_name = 'resultdetails') THEN
+        SELECT count(*) INTO truncated_count FROM pathogentest
+            WHERE resultdetails IS NOT NULL AND resultdetails <> ''
+              AND length(CASE
+                  WHEN testresulttext IS NULL OR testresulttext = '' THEN resultdetails
+                  WHEN testresulttext = resultdetails THEN testresulttext
+                  ELSE testresulttext || E'\n' || resultdetails
+              END) > 4096;
+        IF truncated_count > 0 THEN
+            RAISE NOTICE 'Migration 642: % pathogentest row(s) had their preserved resultdetails truncated to fit varchar(4096).', truncated_count;
+        END IF;
+        UPDATE pathogentest
+        SET testresulttext = LEFT(CASE
+            WHEN testresulttext IS NULL OR testresulttext = '' THEN resultdetails
+            WHEN testresulttext = resultdetails THEN testresulttext
+            ELSE testresulttext || E'\n' || resultdetails
+        END, 4096)
+        WHERE resultdetails IS NOT NULL AND resultdetails <> '';
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'pathogentest_history' AND column_name = 'resultdetails') THEN
+        SELECT count(*) INTO truncated_count FROM pathogentest_history
+            WHERE resultdetails IS NOT NULL AND resultdetails <> ''
+              AND length(CASE
+                  WHEN testresulttext IS NULL OR testresulttext = '' THEN resultdetails
+                  WHEN testresulttext = resultdetails THEN testresulttext
+                  ELSE testresulttext || E'\n' || resultdetails
+              END) > 4096;
+        IF truncated_count > 0 THEN
+            RAISE NOTICE 'Migration 642: % pathogentest_history row(s) had their preserved resultdetails truncated to fit varchar(4096).', truncated_count;
+        END IF;
+        UPDATE pathogentest_history
+        SET testresulttext = LEFT(CASE
+            WHEN testresulttext IS NULL OR testresulttext = '' THEN resultdetails
+            WHEN testresulttext = resultdetails THEN testresulttext
+            ELSE testresulttext || E'\n' || resultdetails
+        END, 4096)
+        WHERE resultdetails IS NOT NULL AND resultdetails <> '';
+    END IF;
+END $$;
+ALTER TABLE pathogentest DROP COLUMN IF EXISTS resultdetails;
+ALTER TABLE pathogentest_history DROP COLUMN IF EXISTS resultdetails;
+ALTER TABLE pathogentest ENABLE TRIGGER versioning_trigger;
+INSERT INTO schema_version (version_number, comment) VALUES (643, 'Remove Malaria-specific result details pathogen test column, preserving values into testresulttext issue #14016');
+
+DELETE FROM systemconfigurationvalue
+WHERE config_key LIKE 'NG_SUVEY_%' OR config_key LIKE 'NG_SURVEY_%' OR config_key = 'SURVEY_PERIOD_INTERVAL_DAYS';
+
+UPDATE featureconfiguration
+SET properties = json_build_object(
+    'FETCH_MODE', false,
+    'FORCE_AUTOMATIC_PROCESSING', true,
+    'SURVEY_FETCH_ENABLED', false
+)
+WHERE featuretype = 'EXTERNAL_MESSAGES';
+
+INSERT INTO schema_version (version_number, comment) VALUES (644, 'Removal survey configurations');
+
+
+-- #14036 AST: MIC value becomes free text (numeric -> varchar) + drop zone diameter & surveillance columns
+
+ALTER TABLE drugsusceptibility ALTER COLUMN amikacinmic TYPE varchar(512) USING amikacinmic::text;
+ALTER TABLE drugsusceptibility ALTER COLUMN bedaquilinemic TYPE varchar(512) USING bedaquilinemic::text;
+ALTER TABLE drugsusceptibility ALTER COLUMN capreomycinmic TYPE varchar(512) USING capreomycinmic::text;
+ALTER TABLE drugsusceptibility ALTER COLUMN ciprofloxacinmic TYPE varchar(512) USING ciprofloxacinmic::text;
+ALTER TABLE drugsusceptibility ALTER COLUMN delamanidmic TYPE varchar(512) USING delamanidmic::text;
+ALTER TABLE drugsusceptibility ALTER COLUMN ethambutolmic TYPE varchar(512) USING ethambutolmic::text;
+ALTER TABLE drugsusceptibility ALTER COLUMN gatifloxacinmic TYPE varchar(512) USING gatifloxacinmic::text;
+ALTER TABLE drugsusceptibility ALTER COLUMN isoniazidmic TYPE varchar(512) USING isoniazidmic::text;
+ALTER TABLE drugsusceptibility ALTER COLUMN kanamycinmic TYPE varchar(512) USING kanamycinmic::text;
+ALTER TABLE drugsusceptibility ALTER COLUMN levofloxacinmic TYPE varchar(512) USING levofloxacinmic::text;
+ALTER TABLE drugsusceptibility ALTER COLUMN moxifloxacinmic TYPE varchar(512) USING moxifloxacinmic::text;
+ALTER TABLE drugsusceptibility ALTER COLUMN ofloxacinmic TYPE varchar(512) USING ofloxacinmic::text;
+ALTER TABLE drugsusceptibility ALTER COLUMN rifampicinmic TYPE varchar(512) USING rifampicinmic::text;
+ALTER TABLE drugsusceptibility ALTER COLUMN streptomycinmic TYPE varchar(512) USING streptomycinmic::text;
+ALTER TABLE drugsusceptibility ALTER COLUMN ceftriaxonemic TYPE varchar(512) USING ceftriaxonemic::text;
+ALTER TABLE drugsusceptibility ALTER COLUMN penicillinmic TYPE varchar(512) USING penicillinmic::text;
+ALTER TABLE drugsusceptibility ALTER COLUMN erythromycinmic TYPE varchar(512) USING erythromycinmic::text;
+ALTER TABLE drugsusceptibility ALTER COLUMN azithromycinmic TYPE varchar(512) USING azithromycinmic::text;
+ALTER TABLE drugsusceptibility ALTER COLUMN ceftazidimemic TYPE varchar(512) USING ceftazidimemic::text;
+ALTER TABLE drugsusceptibility ALTER COLUMN cefotaximemic TYPE varchar(512) USING cefotaximemic::text;
+ALTER TABLE drugsusceptibility ALTER COLUMN ampicillinmic TYPE varchar(512) USING ampicillinmic::text;
+ALTER TABLE drugsusceptibility ALTER COLUMN trimethoprimsulfamethoxazolemic TYPE varchar(512) USING trimethoprimsulfamethoxazolemic::text;
+
+ALTER TABLE drugsusceptibility_history ALTER COLUMN amikacinmic TYPE varchar(512) USING amikacinmic::text;
+ALTER TABLE drugsusceptibility_history ALTER COLUMN bedaquilinemic TYPE varchar(512) USING bedaquilinemic::text;
+ALTER TABLE drugsusceptibility_history ALTER COLUMN capreomycinmic TYPE varchar(512) USING capreomycinmic::text;
+ALTER TABLE drugsusceptibility_history ALTER COLUMN ciprofloxacinmic TYPE varchar(512) USING ciprofloxacinmic::text;
+ALTER TABLE drugsusceptibility_history ALTER COLUMN delamanidmic TYPE varchar(512) USING delamanidmic::text;
+ALTER TABLE drugsusceptibility_history ALTER COLUMN ethambutolmic TYPE varchar(512) USING ethambutolmic::text;
+ALTER TABLE drugsusceptibility_history ALTER COLUMN gatifloxacinmic TYPE varchar(512) USING gatifloxacinmic::text;
+ALTER TABLE drugsusceptibility_history ALTER COLUMN isoniazidmic TYPE varchar(512) USING isoniazidmic::text;
+ALTER TABLE drugsusceptibility_history ALTER COLUMN kanamycinmic TYPE varchar(512) USING kanamycinmic::text;
+ALTER TABLE drugsusceptibility_history ALTER COLUMN levofloxacinmic TYPE varchar(512) USING levofloxacinmic::text;
+ALTER TABLE drugsusceptibility_history ALTER COLUMN moxifloxacinmic TYPE varchar(512) USING moxifloxacinmic::text;
+ALTER TABLE drugsusceptibility_history ALTER COLUMN ofloxacinmic TYPE varchar(512) USING ofloxacinmic::text;
+ALTER TABLE drugsusceptibility_history ALTER COLUMN rifampicinmic TYPE varchar(512) USING rifampicinmic::text;
+ALTER TABLE drugsusceptibility_history ALTER COLUMN streptomycinmic TYPE varchar(512) USING streptomycinmic::text;
+ALTER TABLE drugsusceptibility_history ALTER COLUMN ceftriaxonemic TYPE varchar(512) USING ceftriaxonemic::text;
+ALTER TABLE drugsusceptibility_history ALTER COLUMN penicillinmic TYPE varchar(512) USING penicillinmic::text;
+ALTER TABLE drugsusceptibility_history ALTER COLUMN erythromycinmic TYPE varchar(512) USING erythromycinmic::text;
+ALTER TABLE drugsusceptibility_history ALTER COLUMN azithromycinmic TYPE varchar(512) USING azithromycinmic::text;
+ALTER TABLE drugsusceptibility_history ALTER COLUMN ceftazidimemic TYPE varchar(512) USING ceftazidimemic::text;
+ALTER TABLE drugsusceptibility_history ALTER COLUMN cefotaximemic TYPE varchar(512) USING cefotaximemic::text;
+ALTER TABLE drugsusceptibility_history ALTER COLUMN ampicillinmic TYPE varchar(512) USING ampicillinmic::text;
+ALTER TABLE drugsusceptibility_history ALTER COLUMN trimethoprimsulfamethoxazolemic TYPE varchar(512) USING trimethoprimsulfamethoxazolemic::text;
+
+ALTER TABLE testreport ALTER COLUMN amikacinmic TYPE varchar(512) USING amikacinmic::text;
+ALTER TABLE testreport ALTER COLUMN bedaquilinemic TYPE varchar(512) USING bedaquilinemic::text;
+ALTER TABLE testreport ALTER COLUMN capreomycinmic TYPE varchar(512) USING capreomycinmic::text;
+ALTER TABLE testreport ALTER COLUMN ciprofloxacinmic TYPE varchar(512) USING ciprofloxacinmic::text;
+ALTER TABLE testreport ALTER COLUMN delamanidmic TYPE varchar(512) USING delamanidmic::text;
+ALTER TABLE testreport ALTER COLUMN ethambutolmic TYPE varchar(512) USING ethambutolmic::text;
+ALTER TABLE testreport ALTER COLUMN gatifloxacinmic TYPE varchar(512) USING gatifloxacinmic::text;
+ALTER TABLE testreport ALTER COLUMN isoniazidmic TYPE varchar(512) USING isoniazidmic::text;
+ALTER TABLE testreport ALTER COLUMN kanamycinmic TYPE varchar(512) USING kanamycinmic::text;
+ALTER TABLE testreport ALTER COLUMN levofloxacinmic TYPE varchar(512) USING levofloxacinmic::text;
+ALTER TABLE testreport ALTER COLUMN moxifloxacinmic TYPE varchar(512) USING moxifloxacinmic::text;
+ALTER TABLE testreport ALTER COLUMN ofloxacinmic TYPE varchar(512) USING ofloxacinmic::text;
+ALTER TABLE testreport ALTER COLUMN rifampicinmic TYPE varchar(512) USING rifampicinmic::text;
+ALTER TABLE testreport ALTER COLUMN streptomycinmic TYPE varchar(512) USING streptomycinmic::text;
+ALTER TABLE testreport ALTER COLUMN ceftriaxonemic TYPE varchar(512) USING ceftriaxonemic::text;
+ALTER TABLE testreport ALTER COLUMN penicillinmic TYPE varchar(512) USING penicillinmic::text;
+ALTER TABLE testreport ALTER COLUMN erythromycinmic TYPE varchar(512) USING erythromycinmic::text;
+
+ALTER TABLE testreport_history ALTER COLUMN amikacinmic TYPE varchar(512) USING amikacinmic::text;
+ALTER TABLE testreport_history ALTER COLUMN bedaquilinemic TYPE varchar(512) USING bedaquilinemic::text;
+ALTER TABLE testreport_history ALTER COLUMN capreomycinmic TYPE varchar(512) USING capreomycinmic::text;
+ALTER TABLE testreport_history ALTER COLUMN ciprofloxacinmic TYPE varchar(512) USING ciprofloxacinmic::text;
+ALTER TABLE testreport_history ALTER COLUMN delamanidmic TYPE varchar(512) USING delamanidmic::text;
+ALTER TABLE testreport_history ALTER COLUMN ethambutolmic TYPE varchar(512) USING ethambutolmic::text;
+ALTER TABLE testreport_history ALTER COLUMN gatifloxacinmic TYPE varchar(512) USING gatifloxacinmic::text;
+ALTER TABLE testreport_history ALTER COLUMN isoniazidmic TYPE varchar(512) USING isoniazidmic::text;
+ALTER TABLE testreport_history ALTER COLUMN kanamycinmic TYPE varchar(512) USING kanamycinmic::text;
+ALTER TABLE testreport_history ALTER COLUMN levofloxacinmic TYPE varchar(512) USING levofloxacinmic::text;
+ALTER TABLE testreport_history ALTER COLUMN moxifloxacinmic TYPE varchar(512) USING moxifloxacinmic::text;
+ALTER TABLE testreport_history ALTER COLUMN ofloxacinmic TYPE varchar(512) USING ofloxacinmic::text;
+ALTER TABLE testreport_history ALTER COLUMN rifampicinmic TYPE varchar(512) USING rifampicinmic::text;
+ALTER TABLE testreport_history ALTER COLUMN streptomycinmic TYPE varchar(512) USING streptomycinmic::text;
+ALTER TABLE testreport_history ALTER COLUMN ceftriaxonemic TYPE varchar(512) USING ceftriaxonemic::text;
+ALTER TABLE testreport_history ALTER COLUMN penicillinmic TYPE varchar(512) USING penicillinmic::text;
+ALTER TABLE testreport_history ALTER COLUMN erythromycinmic TYPE varchar(512) USING erythromycinmic::text;
+
+ALTER TABLE drugsusceptibility DROP COLUMN IF EXISTS amikacinzonediameter;
+ALTER TABLE drugsusceptibility DROP COLUMN IF EXISTS bedaquilinezonediameter;
+ALTER TABLE drugsusceptibility DROP COLUMN IF EXISTS capreomycinzonediameter;
+ALTER TABLE drugsusceptibility DROP COLUMN IF EXISTS ciprofloxacinzonediameter;
+ALTER TABLE drugsusceptibility DROP COLUMN IF EXISTS delamanidzonediameter;
+ALTER TABLE drugsusceptibility DROP COLUMN IF EXISTS ethambutolzonediameter;
+ALTER TABLE drugsusceptibility DROP COLUMN IF EXISTS gatifloxacinzonediameter;
+ALTER TABLE drugsusceptibility DROP COLUMN IF EXISTS isoniazidzonediameter;
+ALTER TABLE drugsusceptibility DROP COLUMN IF EXISTS kanamycinzonediameter;
+ALTER TABLE drugsusceptibility DROP COLUMN IF EXISTS levofloxacinzonediameter;
+ALTER TABLE drugsusceptibility DROP COLUMN IF EXISTS moxifloxacinzonediameter;
+ALTER TABLE drugsusceptibility DROP COLUMN IF EXISTS ofloxacinzonediameter;
+ALTER TABLE drugsusceptibility DROP COLUMN IF EXISTS rifampicinzonediameter;
+ALTER TABLE drugsusceptibility DROP COLUMN IF EXISTS streptomycinzonediameter;
+ALTER TABLE drugsusceptibility DROP COLUMN IF EXISTS ceftriaxonezonediameter;
+ALTER TABLE drugsusceptibility DROP COLUMN IF EXISTS penicillinzonediameter;
+ALTER TABLE drugsusceptibility DROP COLUMN IF EXISTS erythromycinzonediameter;
+ALTER TABLE drugsusceptibility DROP COLUMN IF EXISTS amikacinsurveillance;
+ALTER TABLE drugsusceptibility DROP COLUMN IF EXISTS bedaquilinesurveillance;
+ALTER TABLE drugsusceptibility DROP COLUMN IF EXISTS capreomycinsurveillance;
+ALTER TABLE drugsusceptibility DROP COLUMN IF EXISTS ciprofloxacinsurveillance;
+ALTER TABLE drugsusceptibility DROP COLUMN IF EXISTS delamanidsurveillance;
+ALTER TABLE drugsusceptibility DROP COLUMN IF EXISTS ethambutolsurveillance;
+ALTER TABLE drugsusceptibility DROP COLUMN IF EXISTS gatifloxacinsurveillance;
+ALTER TABLE drugsusceptibility DROP COLUMN IF EXISTS isoniazidsurveillance;
+ALTER TABLE drugsusceptibility DROP COLUMN IF EXISTS kanamycinsurveillance;
+ALTER TABLE drugsusceptibility DROP COLUMN IF EXISTS levofloxacinsurveillance;
+ALTER TABLE drugsusceptibility DROP COLUMN IF EXISTS moxifloxacinsurveillance;
+ALTER TABLE drugsusceptibility DROP COLUMN IF EXISTS ofloxacinsurveillance;
+ALTER TABLE drugsusceptibility DROP COLUMN IF EXISTS rifampicinsurveillance;
+ALTER TABLE drugsusceptibility DROP COLUMN IF EXISTS streptomycinsurveillance;
+ALTER TABLE drugsusceptibility DROP COLUMN IF EXISTS ceftriaxonesurveillance;
+ALTER TABLE drugsusceptibility DROP COLUMN IF EXISTS penicillinsurveillance;
+ALTER TABLE drugsusceptibility DROP COLUMN IF EXISTS erythromycinsurveillance;
+
+ALTER TABLE drugsusceptibility_history DROP COLUMN IF EXISTS amikacinzonediameter;
+ALTER TABLE drugsusceptibility_history DROP COLUMN IF EXISTS bedaquilinezonediameter;
+ALTER TABLE drugsusceptibility_history DROP COLUMN IF EXISTS capreomycinzonediameter;
+ALTER TABLE drugsusceptibility_history DROP COLUMN IF EXISTS ciprofloxacinzonediameter;
+ALTER TABLE drugsusceptibility_history DROP COLUMN IF EXISTS delamanidzonediameter;
+ALTER TABLE drugsusceptibility_history DROP COLUMN IF EXISTS ethambutolzonediameter;
+ALTER TABLE drugsusceptibility_history DROP COLUMN IF EXISTS gatifloxacinzonediameter;
+ALTER TABLE drugsusceptibility_history DROP COLUMN IF EXISTS isoniazidzonediameter;
+ALTER TABLE drugsusceptibility_history DROP COLUMN IF EXISTS kanamycinzonediameter;
+ALTER TABLE drugsusceptibility_history DROP COLUMN IF EXISTS levofloxacinzonediameter;
+ALTER TABLE drugsusceptibility_history DROP COLUMN IF EXISTS moxifloxacinzonediameter;
+ALTER TABLE drugsusceptibility_history DROP COLUMN IF EXISTS ofloxacinzonediameter;
+ALTER TABLE drugsusceptibility_history DROP COLUMN IF EXISTS rifampicinzonediameter;
+ALTER TABLE drugsusceptibility_history DROP COLUMN IF EXISTS streptomycinzonediameter;
+ALTER TABLE drugsusceptibility_history DROP COLUMN IF EXISTS ceftriaxonezonediameter;
+ALTER TABLE drugsusceptibility_history DROP COLUMN IF EXISTS penicillinzonediameter;
+ALTER TABLE drugsusceptibility_history DROP COLUMN IF EXISTS erythromycinzonediameter;
+ALTER TABLE drugsusceptibility_history DROP COLUMN IF EXISTS amikacinsurveillance;
+ALTER TABLE drugsusceptibility_history DROP COLUMN IF EXISTS bedaquilinesurveillance;
+ALTER TABLE drugsusceptibility_history DROP COLUMN IF EXISTS capreomycinsurveillance;
+ALTER TABLE drugsusceptibility_history DROP COLUMN IF EXISTS ciprofloxacinsurveillance;
+ALTER TABLE drugsusceptibility_history DROP COLUMN IF EXISTS delamanidsurveillance;
+ALTER TABLE drugsusceptibility_history DROP COLUMN IF EXISTS ethambutolsurveillance;
+ALTER TABLE drugsusceptibility_history DROP COLUMN IF EXISTS gatifloxacinsurveillance;
+ALTER TABLE drugsusceptibility_history DROP COLUMN IF EXISTS isoniazidsurveillance;
+ALTER TABLE drugsusceptibility_history DROP COLUMN IF EXISTS kanamycinsurveillance;
+ALTER TABLE drugsusceptibility_history DROP COLUMN IF EXISTS levofloxacinsurveillance;
+ALTER TABLE drugsusceptibility_history DROP COLUMN IF EXISTS moxifloxacinsurveillance;
+ALTER TABLE drugsusceptibility_history DROP COLUMN IF EXISTS ofloxacinsurveillance;
+ALTER TABLE drugsusceptibility_history DROP COLUMN IF EXISTS rifampicinsurveillance;
+ALTER TABLE drugsusceptibility_history DROP COLUMN IF EXISTS streptomycinsurveillance;
+ALTER TABLE drugsusceptibility_history DROP COLUMN IF EXISTS ceftriaxonesurveillance;
+ALTER TABLE drugsusceptibility_history DROP COLUMN IF EXISTS penicillinsurveillance;
+ALTER TABLE drugsusceptibility_history DROP COLUMN IF EXISTS erythromycinsurveillance;
+
+-- #14036: BREAKPOINT_CATEGORICAL was removed from SusceptibilityMethod, remap any stored value to OTHER
+-- so strict @Enumerated(STRING) hydration does not fail on existing rows.
+UPDATE drugsusceptibility SET amikacinmethod = 'OTHER' WHERE amikacinmethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility SET bedaquilinemethod = 'OTHER' WHERE bedaquilinemethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility SET capreomycinmethod = 'OTHER' WHERE capreomycinmethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility SET ciprofloxacinmethod = 'OTHER' WHERE ciprofloxacinmethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility SET delamanidmethod = 'OTHER' WHERE delamanidmethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility SET ethambutolmethod = 'OTHER' WHERE ethambutolmethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility SET gatifloxacinmethod = 'OTHER' WHERE gatifloxacinmethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility SET isoniazidmethod = 'OTHER' WHERE isoniazidmethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility SET kanamycinmethod = 'OTHER' WHERE kanamycinmethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility SET levofloxacinmethod = 'OTHER' WHERE levofloxacinmethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility SET moxifloxacinmethod = 'OTHER' WHERE moxifloxacinmethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility SET ofloxacinmethod = 'OTHER' WHERE ofloxacinmethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility SET rifampicinmethod = 'OTHER' WHERE rifampicinmethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility SET streptomycinmethod = 'OTHER' WHERE streptomycinmethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility SET ceftriaxonemethod = 'OTHER' WHERE ceftriaxonemethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility SET penicillinmethod = 'OTHER' WHERE penicillinmethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility SET erythromycinmethod = 'OTHER' WHERE erythromycinmethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility SET azithromycinmethod = 'OTHER' WHERE azithromycinmethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility SET ceftazidimemethod = 'OTHER' WHERE ceftazidimemethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility SET cefotaximemethod = 'OTHER' WHERE cefotaximemethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility SET ampicillinmethod = 'OTHER' WHERE ampicillinmethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility SET trimethoprimsulfamethoxazolemethod = 'OTHER' WHERE trimethoprimsulfamethoxazolemethod = 'BREAKPOINT_CATEGORICAL';
+
+UPDATE drugsusceptibility_history SET amikacinmethod = 'OTHER' WHERE amikacinmethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility_history SET bedaquilinemethod = 'OTHER' WHERE bedaquilinemethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility_history SET capreomycinmethod = 'OTHER' WHERE capreomycinmethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility_history SET ciprofloxacinmethod = 'OTHER' WHERE ciprofloxacinmethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility_history SET delamanidmethod = 'OTHER' WHERE delamanidmethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility_history SET ethambutolmethod = 'OTHER' WHERE ethambutolmethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility_history SET gatifloxacinmethod = 'OTHER' WHERE gatifloxacinmethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility_history SET isoniazidmethod = 'OTHER' WHERE isoniazidmethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility_history SET kanamycinmethod = 'OTHER' WHERE kanamycinmethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility_history SET levofloxacinmethod = 'OTHER' WHERE levofloxacinmethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility_history SET moxifloxacinmethod = 'OTHER' WHERE moxifloxacinmethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility_history SET ofloxacinmethod = 'OTHER' WHERE ofloxacinmethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility_history SET rifampicinmethod = 'OTHER' WHERE rifampicinmethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility_history SET streptomycinmethod = 'OTHER' WHERE streptomycinmethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility_history SET ceftriaxonemethod = 'OTHER' WHERE ceftriaxonemethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility_history SET penicillinmethod = 'OTHER' WHERE penicillinmethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility_history SET erythromycinmethod = 'OTHER' WHERE erythromycinmethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility_history SET azithromycinmethod = 'OTHER' WHERE azithromycinmethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility_history SET ceftazidimemethod = 'OTHER' WHERE ceftazidimemethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility_history SET cefotaximemethod = 'OTHER' WHERE cefotaximemethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility_history SET ampicillinmethod = 'OTHER' WHERE ampicillinmethod = 'BREAKPOINT_CATEGORICAL';
+UPDATE drugsusceptibility_history SET trimethoprimsulfamethoxazolemethod = 'OTHER' WHERE trimethoprimsulfamethoxazolemethod = 'BREAKPOINT_CATEGORICAL';
+
+INSERT INTO schema_version (version_number, comment) VALUES (645, '#14036 - AST 3-column form: MIC free-text, drop zone/surveillance');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

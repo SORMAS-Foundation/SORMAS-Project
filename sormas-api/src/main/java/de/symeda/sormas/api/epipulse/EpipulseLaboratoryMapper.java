@@ -17,6 +17,8 @@ package de.symeda.sormas.api.epipulse;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.symeda.sormas.api.epidata.CaseImportedStatus;
 import de.symeda.sormas.api.epidata.ClusterType;
@@ -996,5 +998,21 @@ public class EpipulseLaboratoryMapper {
 	 */
 	public static String mapMicSign(Float micValue) {
 		return mapMicSign(micValue, MIC_DILUTION_LOWER_BOUND, MIC_DILUTION_UPPER_BOUND);
+	}
+
+	/** Leading (optionally sign-prefixed) decimal at the start of a free-text MIC value; accepts "0.5", "5" and ".5". */
+	private static final Pattern MIC_NUMBER = Pattern.compile("^\\s*[<>=≤≥]*\\s*(\\d+(?:\\.\\d+)?|\\.\\d+)");
+
+	/**
+	 * Extracts the numeric MIC from a free-text MIC value for EpiPulse export. Since #14036 the MIC is
+	 * stored as free text (e.g. {@code "≤0.125 mg/L"} or a genotypic result like {@code "mecA detected"}),
+	 * so this reads the leading number and ignores any sign/unit; returns {@code null} when no number is present.
+	 */
+	public static Float parseMicValue(String micText) {
+		if (micText == null) {
+			return null;
+		}
+		Matcher matcher = MIC_NUMBER.matcher(micText);
+		return matcher.find() ? Float.valueOf(matcher.group(1)) : null;
 	}
 }

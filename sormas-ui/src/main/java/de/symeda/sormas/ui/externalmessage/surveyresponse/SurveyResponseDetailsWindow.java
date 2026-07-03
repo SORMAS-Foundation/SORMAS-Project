@@ -210,7 +210,9 @@ public class SurveyResponseDetailsWindow {
 			&& result.getPatchResponse().hasFailures()
 			&& !result.getPatchResponse().getFailures().isEmpty();
 
-		if (canProcess && hasFailures) {
+		boolean responseReceivedButNotApplied = result != null && result.getPatchResponse() != null && !result.getPatchResponse().isApplied();
+
+		if (canProcess && (hasFailures || (responseReceivedButNotApplied))) {
 			final DisplayablePartialRetrievalResponse finalDisplayDataForEditor = displayData;
 			Button correctButton =
 				ButtonHelper.createButton(Captions.actionCorrectAndReprocess, I18nProperties.getCaption(Captions.actionCorrectAndReprocess), e -> {

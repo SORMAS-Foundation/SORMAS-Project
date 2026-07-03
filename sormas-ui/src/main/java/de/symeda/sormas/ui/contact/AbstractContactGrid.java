@@ -171,13 +171,16 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 			getColumn(CaseIndexDto.EXTERNAL_ID).setHidden(true);
 			getColumn(CaseIndexDto.EXTERNAL_TOKEN).setHidden(true);
 		}
-		getColumn(ContactIndexDto.CONTACT_PROXIMITIES).setWidth(200);
-		((Column<ContactIndexDto, Set<ContactProximity>>) getColumn(ContactIndexDto.CONTACT_PROXIMITIES)).setRenderer(proximities -> {
+		Column<ContactIndexDto, Set<ContactProximity>> contactProximityColumn =
+			(Column<ContactIndexDto, Set<ContactProximity>>) getColumn(ContactIndexDto.CONTACT_PROXIMITIES);
+		contactProximityColumn.setWidth(200);
+		contactProximityColumn.setRenderer(proximities -> {
 			if (proximities == null || proximities.isEmpty()) {
 				return "";
 			}
 			return proximities.stream().map(I18nProperties::getEnumCaption).collect(Collectors.joining(", "));
 		}, new com.vaadin.ui.renderers.TextRenderer());
+		contactProximityColumn.setSortable(false);
 		((Column<ContactIndexDto, String>) getColumn(ContactIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<ContactIndexDto, String>) getColumn(ContactIndexDto.PERSON_UUID)).setRenderer(new UuidRenderer());
 		((Column<ContactIndexDto, Date>) getColumn(ContactIndexDto.FOLLOW_UP_UNTIL)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));

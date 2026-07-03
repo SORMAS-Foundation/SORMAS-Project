@@ -43,8 +43,12 @@ public enum PathogenTestType {
 	@NotSelectableForNewTests
 	ANTIBODY_DETECTION,
 
+	// Resurrected for new-test selection (#14026 Measles, #14031 Giardia): scoped to the requesting diseases.
+	@Diseases(value = {
+		Disease.MEASLES,
+		Disease.GIARDIASIS })
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
-	@NotSelectableForNewTests
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	ANTIGEN_DETECTION,
 
 	// Merged Culture entry (bacterial + fungal) — supersedes BACTERIAL_CULTURE / FUNGAL_CULTURE for new
@@ -71,16 +75,12 @@ public enum PathogenTestType {
 	// for every disease per #13951. The legacy ENZYME_LINKED_IMMUNOSORBENT_ASSAY is now
 	// @NotSelectableForNewTests so historic records still render and case-classification rules
 	// referencing IGM_/IGG_SERUM_ANTIBODY continue to fire (they bind to the same enum constants).
-	@Diseases(value = {
-		Disease.SALMONELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
 		ResultValueType.NUMERIC })
 	IGM_SERUM_ANTIBODY,
 
-	@Diseases(value = {
-		Disease.SALMONELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -122,19 +122,11 @@ public enum PathogenTestType {
 	@NotSelectableForNewTests
 	MICROSCOPY,
 
+	// Resurrected for IMI new-test selection (#14034): scoped to Invasive Meningococcal Infection only.
 	@Diseases(value = {
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-		Disease.MEASLES,
-		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS,
-		Disease.DENGUE,
-		Disease.MALARIA,
-		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION })
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
-	@NotSelectableForNewTests
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	LATEX_AGGLUTINATION,
 
 	@Diseases(value = {
@@ -201,13 +193,15 @@ public enum PathogenTestType {
 	Q_PCR,
 
 	@Diseases(value = {
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.DENGUE }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	MULTIPLEX_PCR,
 
 	@Diseases(value = {
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.DENGUE }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -221,7 +215,8 @@ public enum PathogenTestType {
 	LAMP,
 
 	@Diseases(value = {
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.DENGUE }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	NASBA,
@@ -242,19 +237,22 @@ public enum PathogenTestType {
 	TMA,
 
 	@Diseases(value = {
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.DENGUE }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	CRISPR_DIAGNOSTICS,
 
 	@Diseases(value = {
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.DENGUE }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.BOOLEAN)
 	LINE_PROBE_ASSAY,
 
 	@Diseases(value = {
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.DENGUE }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	SANGER_SEQUENCING,
@@ -346,6 +344,12 @@ public enum PathogenTestType {
 	GENOTYPING,
 
 	@Diseases(value = {
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
+	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
+	RSV_SUBTYPING,
+
+	@Diseases(value = {
 		Disease.TUBERCULOSIS,
 		Disease.LATENT_TUBERCULOSIS })
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
@@ -426,7 +430,8 @@ public enum PathogenTestType {
 
 	@Diseases(value = {
 		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.DENGUE }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	RAPID_ANTIBODY_TEST,
@@ -436,7 +441,9 @@ public enum PathogenTestType {
 	// ----------------------------------------------------------------------------------------------
 
 	@Diseases(value = {
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.DENGUE,
+		Disease.GIARDIASIS })
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	RAPID_ANTIGEN_DETECTION,
@@ -448,13 +455,15 @@ public enum PathogenTestType {
 	RAPID_TEST,
 
 	@Diseases(value = {
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.DENGUE }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	LATERAL_FLOW_ASSAY,
 
 	@Diseases(value = {
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.DENGUE }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	IMMUNOFLUORESCENCE_ASSAY,
@@ -467,15 +476,21 @@ public enum PathogenTestType {
 	SLIDE_AGGLUTINATION,
 
 	@Diseases(value = {
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.DENGUE }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	QUELLUNG_REACTION,
 
 	@Diseases(value = {
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.DENGUE }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
-	@ResultValueTypeRel(ResultValueType.TEXT)
+	// Positive/Negative interpretation plus the reciprocal titre (#14105): TEXT alone rendered no result
+	// field. The titre ('1:160') is kept as text, not a Float numeric value, like NEUTRALIZING_ANTIBODIES.
+	@ResultValueTypeRel({
+		ResultValueType.QUALITATIVE,
+		ResultValueType.TEXT })
 	HEMAGGLUTINATION_INHIBITION,
 
 	@Diseases(value = {
@@ -513,7 +528,8 @@ public enum PathogenTestType {
 	FUNGAL_CULTURE,
 
 	@Diseases(value = {
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.DENGUE }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.CULTURE_AND_ISOLATION)
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	MALDI_TOF,
@@ -546,21 +562,24 @@ public enum PathogenTestType {
 
 	@Diseases(value = {
 		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.DENGUE }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.SMEAR_GRADE)
 	ACID_FAST_STAIN,
 
 	@Diseases(value = {
 		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.DENGUE }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	DARK_FIELD_MICROSCOPY,
 
 	@Diseases(value = {
 		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.DENGUE }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -579,12 +598,15 @@ public enum PathogenTestType {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
-	@ResultValueTypeRel(ResultValueType.TEXT)
+	@ResultValueTypeRel({
+		ResultValueType.QUALITATIVE,
+		ResultValueType.TEXT })
 	HISTOPATHOLOGY,
 
 	@Diseases(value = {
 		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.DENGUE }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -593,21 +615,24 @@ public enum PathogenTestType {
 
 	@Diseases(value = {
 		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.DENGUE }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	IMMUNOHISTOCHEMISTRY,
 
 	@Diseases(value = {
 		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.DENGUE }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	ELECTRON_MICROSCOPY,
 
 	@Diseases(value = {
 		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.DENGUE }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -650,7 +675,8 @@ public enum PathogenTestType {
 
 	@Diseases(value = {
 		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.DENGUE }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIMICROBIAL_SUSCEPTIBILITY_TESTING)
 	@ResultValueTypeRel(ResultValueType.BOOLEAN)
 	GENOTYPIC_RESISTANCE_TEST,
@@ -677,7 +703,8 @@ public enum PathogenTestType {
 	@ResultValueTypeRel(ResultValueType.NUMERIC)
 	@Diseases(value = {
 		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.DENGUE }, hide = true)
 	FLOW_CYTOMETRY,
 
 	// ----------------------------------------------------------------------------------------------
@@ -829,18 +856,16 @@ public enum PathogenTestType {
 	 * the generic numeric value/unit fields when the Cq input applies. Both call sites must use this method so
 	 * the rule cannot drift.
 	 *
-	 * <p>The Cq input applies for {@code PCR_RT_PCR}, {@code CQ_VALUE_DETECTION}, or {@code Q_PCR} on Malaria
-	 * — except for Tuberculosis, which historically does not offer a Cq value.
+	 * <p>
+	 * The Cq input applies for {@code PCR_RT_PCR}, {@code CQ_VALUE_DETECTION}, or {@code Q_PCR} on Malaria.
+	 * Tuberculosis is included as well (#14030): a positive TB PCR shows the Cq value like every other disease.
 	 *
-	 * @param disease  the tested disease (may be {@code null})
-	 * @param testType the test method (may be {@code null})
+	 * @param disease
+	 *            the tested disease (may be {@code null})
+	 * @param testType
+	 *            the test method (may be {@code null})
 	 */
 	public static boolean cqInputApplies(Disease disease, PathogenTestType testType) {
-		if (disease == Disease.TUBERCULOSIS) {
-			return false;
-		}
-		return testType == PCR_RT_PCR
-			|| testType == CQ_VALUE_DETECTION
-			|| (disease == Disease.MALARIA && testType == Q_PCR);
+		return testType == PCR_RT_PCR || testType == CQ_VALUE_DETECTION || (disease == Disease.MALARIA && testType == Q_PCR);
 	}
 }

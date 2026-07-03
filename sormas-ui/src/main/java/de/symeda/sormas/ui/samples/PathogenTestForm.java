@@ -21,11 +21,9 @@ import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import com.vaadin.shared.Registration;
 import com.vaadin.ui.Component;
@@ -339,7 +337,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			try {
 				comp.validate();
 			} catch (InvalidValueException e) {
-				collectCauses(e, allCauses);
+				FormComponent.collectCauses(e, allCauses);
 			}
 		}
 
@@ -347,22 +345,11 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			try {
 				activeSection.validate();
 			} catch (InvalidValueException e) {
-				collectCauses(e, allCauses);
+				FormComponent.collectCauses(e, allCauses);
 			}
 		}
 
-		if (!allCauses.isEmpty()) {
-			String joinedCaptions = allCauses.stream().map(InvalidValueException::getMessage).collect(Collectors.joining(", "));
-			throw new InvalidValueException(joinedCaptions, allCauses.toArray(new InvalidValueException[0]));
-		}
-	}
-
-	private static void collectCauses(InvalidValueException e, List<InvalidValueException> target) {
-		if (e.getCauses().length > 0) {
-			Collections.addAll(target, e.getCauses());
-		} else {
-			target.add(e);
-		}
+		FormComponent.throwCombined(allCauses);
 	}
 
 	@Override
