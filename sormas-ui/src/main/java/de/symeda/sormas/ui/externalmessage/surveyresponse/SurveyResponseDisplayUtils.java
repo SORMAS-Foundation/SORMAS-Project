@@ -14,7 +14,7 @@ public class SurveyResponseDisplayUtils {
 	}
 
 	public static String resolveFieldName(PatchField patchField, DisplayablePartialRetrievalResponse displayData) {
-		String groupNumberPrefix = patchField.getGroupNumber().map(integer -> integer + ": ").orElse("");
+		String groupNumberPrefix = patchField.getGroupIndexAsOptional().map(integer -> integer + ": ").orElse("");
 		String fieldPath = patchField.getField();
 
 		DisplayableFieldInfo info = displayData.getFieldInfoDictionary().get(fieldPath);
