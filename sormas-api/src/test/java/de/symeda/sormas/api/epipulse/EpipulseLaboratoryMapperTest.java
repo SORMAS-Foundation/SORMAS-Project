@@ -74,4 +74,31 @@ public class EpipulseLaboratoryMapperTest {
 	public void testMapSampleMaterialToEpipulseCode_Null() {
 		assertNull(EpipulseLaboratoryMapper.mapSampleMaterialToEpipulseCode(null));
 	}
+
+	@Test
+	public void testParseMicValue_PlainNumber() {
+		assertEquals(0.125f, EpipulseLaboratoryMapper.parseMicValue("0.125"));
+	}
+
+	@Test
+	public void testParseMicValue_WithSignAndUnit() {
+		assertEquals(0.125f, EpipulseLaboratoryMapper.parseMicValue("≤0.125 mg/L"));
+		assertEquals(32f, EpipulseLaboratoryMapper.parseMicValue(">32 mg/l"));
+	}
+
+	@Test
+	public void testParseMicValue_LeadingDotDecimal() {
+		assertEquals(0.5f, EpipulseLaboratoryMapper.parseMicValue("≤.5 mg/L"));
+	}
+
+	@Test
+	public void testParseMicValue_GenotypicText() {
+		assertNull(EpipulseLaboratoryMapper.parseMicValue("mecA detected"));
+	}
+
+	@Test
+	public void testParseMicValue_NullOrBlank() {
+		assertNull(EpipulseLaboratoryMapper.parseMicValue(null));
+		assertNull(EpipulseLaboratoryMapper.parseMicValue("   "));
+	}
 }

@@ -805,7 +805,8 @@ public class SymptomsDto extends PseudonymizableDto {
 	@SymptomGrouping(SymptomGroup.OTHER)
 	private SymptomState eyesBleeding;
 
-	@Diseases({})
+	@Diseases({
+		SALMONELLOSIS })
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@SymptomGrouping(SymptomGroup.OTHER)
@@ -1934,6 +1935,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		GIARDIASIS,
 		CRYPTOSPORIDIOSIS,
 		MALARIA,
+		SALMONELLOSIS,
 		SHIGELLOSIS,
 		UNDEFINED,
 		OTHER })

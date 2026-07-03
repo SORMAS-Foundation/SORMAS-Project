@@ -1135,6 +1135,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			clinicalPresentationStatusField
 				.setItemCaption(ClinicalPresentationStatus.COMPATIBLE, ClinicalPresentationStatus.COMPATIBLE.buildCaption(disease.toShortString()));
 			getFieldGroup().getField(OTHER_CLINICAL_PRESENTATION_TEXT).setVisible(true);
+
+			// #14029: Complications is not relevant for TB
+			complicationsHeading.setVisible(false);
 		}
 
 		parentTimeOffWorkField.addValueChangeListener(e -> {
@@ -1154,9 +1157,10 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			getField(OTHER_COMPLICATIONS_TEXT).setCaption(I18nProperties.getCaption(Captions.Symptoms_otherComplicationsText_CryptoGiardia));
 		}
 
-		// temparature and its source should hide for LUX's Dengue
-		temperature.setVisible(!isLuxDengue);
-		getField(TEMPERATURE_SOURCE).setVisible(!isLuxDengue);
+		// temperature and its source hide for LUX's Dengue and for Tuberculosis (#14029)
+		boolean hideTemperature = isLuxDengue || disease == Disease.TUBERCULOSIS;
+		temperature.setVisible(!hideTemperature);
+		getField(TEMPERATURE_SOURCE).setVisible(!hideTemperature);
 
 		DateComparisonValidator.addStartEndValidators(onsetDateField, getField(OFFSET_DATE));
 
@@ -1181,8 +1185,17 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	}
 
 	private void symptomGroupVisibility() {
+		// #14029: The TB custom layout renders its @SymptomGrouping(OTHER) fields elsewhere
+		// (glasgowComaScale under Clinical Measurements, otherClinicalPresentationText under Clinical
+		// Presentation), so the OTHER section is always empty for TB - keep its heading hidden.
+		boolean isLuxTuberculosis =
+			FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && disease == Disease.TUBERCULOSIS;
 		symptomGroupMap.forEach((location, strings) -> {
 			final Component groupLabel = getContent().getComponent(location);
+			if (isLuxTuberculosis && OTHER_SIGNS_AND_SYMPTOMS_HEADING_LOC.equals(location)) {
+				groupLabel.setVisible(false);
+				return;
+			}
 			final Optional<String> groupHasVisibleSymptom =
 				strings.stream().filter(s -> getFieldGroup().getField(s) != null && getFieldGroup().getField(s).isVisible()).findAny();
 			if (!groupHasVisibleSymptom.isPresent()) {

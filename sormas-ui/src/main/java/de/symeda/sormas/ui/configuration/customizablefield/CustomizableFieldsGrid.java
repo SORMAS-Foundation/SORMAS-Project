@@ -77,11 +77,12 @@ public class CustomizableFieldsGrid extends FilteredGrid<CustomizableFieldMetada
             .setSortable(false)
             .setWidth(40);
 
-        addItemClickListener(new ShowDetailsListener<>(CLONE_COLUMN_ID, e -> ControllerProvider.getCustomizableFieldsController().cloneField(e)));
         addItemClickListener(
-            new ShowDetailsListener<>(TOGGLE_ACTIVE_COLUMN_ID, e -> ControllerProvider.getCustomizableFieldsController().toggleActive(e)));
+            new ShowDetailsListener<>(CLONE_COLUMN_ID, false, e -> ControllerProvider.getCustomizableFieldsController().cloneField(e)));
         addItemClickListener(
-            new ShowDetailsListener<>(DELETE_COLUMN_ID, e -> ControllerProvider.getCustomizableFieldsController().deleteField(e.getUuid(), this)));
+            new ShowDetailsListener<>(TOGGLE_ACTIVE_COLUMN_ID, false, e -> ControllerProvider.getCustomizableFieldsController().toggleActive(e)));
+        addItemClickListener(
+            new ShowDetailsListener<>(DELETE_COLUMN_ID, false, e -> ControllerProvider.getCustomizableFieldsController().deleteField(e.getUuid(), this)));
 
         for (Column<?, ?> column : getColumns()) {
             column.setCaption(I18nProperties.getPrefixCaption(CustomizableFieldMetadataDto.I18N_PREFIX, column.getId(), column.getCaption()));
