@@ -60,6 +60,9 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.symptoms.SymptomState;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationCategoryReferenceDto;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -68,6 +71,9 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumValue;
 import de.symeda.sormas.backend.customizablefield.CustomizableFieldMetadataFacadeEjb;
 import de.symeda.sormas.backend.customizablefield.CustomizableFieldValueFacadeEjb;
+import de.symeda.sormas.backend.patch.EqualValueOverrideHelper;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategory;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategoryService;
 
 class DataPatcherImplTest extends AbstractBeanTest {
 
@@ -739,6 +745,51 @@ class DataPatcherImplTest extends AbstractBeanTest {
 		Assertions.assertAll(
 			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "FORBIDDEN_VALUE_OVERRIDE must not fire for same-day dates"),
 			() -> Assertions.assertTrue(response.isApplied()));
+	}
+
+	@Test
+	void patch_ifNotAlreadyPresent_equalValueOverrideConfiguredForType_realSystemConfigurationAllowsOverride() {
+		// PREPARE
+		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.PERTUSSIS);
+		originalCase.getEpiData().setExposureDetailsKnown(YesNoUnknown.UNKNOWN);
+		getCaseFacade().save(originalCase);
+
+		setAllowedEqualityValueOverride("YesNoUnknown___UNKNOWN");
+
+		CaseDataPatchRequest request =
+			new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid()).setPatchDictionary(Map.of("EpiData.exposureDetailsKnown", "YES"));
+
+		// EXECUTE
+		DataPatchResponse response = victim().patch(request);
+
+		// CHECK
+		CaseDataDto actualCase = getCaseFacade().getByUuid(originalCase.getUuid());
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failures: " + response.getFailures()),
+			() -> Assertions.assertTrue(response.isApplied()),
+			() -> Assertions.assertEquals(YesNoUnknown.YES, actualCase.getEpiData().getExposureDetailsKnown()));
+	}
+
+	private void setAllowedEqualityValueOverride(String overridableValue) {
+		SystemConfigurationCategory category;
+		try {
+			category = getSystemConfigurationCategoryService().getDefaultCategory();
+		} catch (IllegalStateException e) {
+			category = new SystemConfigurationCategory();
+			category.setUuid(DataHelper.createUuid());
+			category.setName(SystemConfigurationCategoryService.DEFAULT_CATEGORY_NAME);
+			getSystemConfigurationCategoryService().ensurePersisted(category);
+		}
+
+		SystemConfigurationValueDto configValue = new SystemConfigurationValueDto();
+
+		configValue.setUuid(DataHelper.createUuid());
+		configValue.setKey(EqualValueOverrideHelper.ALLOWED_EQUALITY_VALUE_OVERRIDE_KEY);
+		configValue.setValue(overridableValue);
+		configValue.setEncrypt(false);
+		configValue.setCategory(new SystemConfigurationCategoryReferenceDto(category.getUuid()));
+
+		getSystemConfigurationValueFacade().save(configValue);
 	}
 
 	@Test

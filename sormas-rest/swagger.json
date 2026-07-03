@@ -17002,31 +17002,21 @@
         "properties" : {
           "amikacinMethod" : {
             "type" : "string",
-            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
+            "enum" : [ "BROTH_MICRODILUTION", "AGAR_DILUTION", "DISK_DIFFUSION", "ETEST", "AUTOMATED_MIC", "GENOTYPIC_WGS", "OTHER" ]
           },
           "amikacinMic" : {
-            "type" : "number",
-            "format" : "float"
-          },
-          "amikacinSurveillance" : {
-            "type" : "string",
-            "enum" : [ "WILD_TYPE", "NON_WILD_TYPE", "NOT_APPLICABLE", "UNKNOWN" ]
+            "type" : "string"
           },
           "amikacinSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
-          "amikacinZoneDiameter" : {
-            "type" : "number",
-            "format" : "float"
-          },
           "ampicillinMethod" : {
             "type" : "string",
-            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
+            "enum" : [ "BROTH_MICRODILUTION", "AGAR_DILUTION", "DISK_DIFFUSION", "ETEST", "AUTOMATED_MIC", "GENOTYPIC_WGS", "OTHER" ]
           },
           "ampicillinMic" : {
-            "type" : "number",
-            "format" : "float"
+            "type" : "string"
           },
           "ampicillinSusceptibility" : {
             "type" : "string",
@@ -17034,11 +17024,10 @@
           },
           "azithromycinMethod" : {
             "type" : "string",
-            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
+            "enum" : [ "BROTH_MICRODILUTION", "AGAR_DILUTION", "DISK_DIFFUSION", "ETEST", "AUTOMATED_MIC", "GENOTYPIC_WGS", "OTHER" ]
           },
           "azithromycinMic" : {
-            "type" : "number",
-            "format" : "float"
+            "type" : "string"
           },
           "azithromycinSusceptibility" : {
             "type" : "string",
@@ -17046,51 +17035,32 @@
           },
           "bedaquilineMethod" : {
             "type" : "string",
-            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
+            "enum" : [ "BROTH_MICRODILUTION", "AGAR_DILUTION", "DISK_DIFFUSION", "ETEST", "AUTOMATED_MIC", "GENOTYPIC_WGS", "OTHER" ]
           },
           "bedaquilineMic" : {
-            "type" : "number",
-            "format" : "float"
-          },
-          "bedaquilineSurveillance" : {
-            "type" : "string",
-            "enum" : [ "WILD_TYPE", "NON_WILD_TYPE", "NOT_APPLICABLE", "UNKNOWN" ]
+            "type" : "string"
           },
           "bedaquilineSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
-          "bedaquilineZoneDiameter" : {
-            "type" : "number",
-            "format" : "float"
-          },
           "capreomycinMethod" : {
             "type" : "string",
-            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
+            "enum" : [ "BROTH_MICRODILUTION", "AGAR_DILUTION", "DISK_DIFFUSION", "ETEST", "AUTOMATED_MIC", "GENOTYPIC_WGS", "OTHER" ]
           },
           "capreomycinMic" : {
-            "type" : "number",
-            "format" : "float"
-          },
-          "capreomycinSurveillance" : {
-            "type" : "string",
-            "enum" : [ "WILD_TYPE", "NON_WILD_TYPE", "NOT_APPLICABLE", "UNKNOWN" ]
+            "type" : "string"
           },
           "capreomycinSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
-          "capreomycinZoneDiameter" : {
-            "type" : "number",
-            "format" : "float"
-          },
           "cefotaximeMethod" : {
             "type" : "string",
-            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
+            "enum" : [ "BROTH_MICRODILUTION", "AGAR_DILUTION", "DISK_DIFFUSION", "ETEST", "AUTOMATED_MIC", "GENOTYPIC_WGS", "OTHER" ]
           },
           "cefotaximeMic" : {
-            "type" : "number",
-            "format" : "float"
+            "type" : "string"
           },
           "cefotaximeSusceptibility" : {
             "type" : "string",
@@ -17098,11 +17068,10 @@
           },
           "ceftazidimeMethod" : {
             "type" : "string",
-            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
+            "enum" : [ "BROTH_MICRODILUTION", "AGAR_DILUTION", "DISK_DIFFUSION", "ETEST", "AUTOMATED_MIC", "GENOTYPIC_WGS", "OTHER" ]
           },
           "ceftazidimeMic" : {
-            "type" : "number",
-            "format" : "float"
+            "type" : "string"
           },
           "ceftazidimeSusceptibility" : {
             "type" : "string",
@@ -17110,23 +17079,14 @@
           },
           "ceftriaxoneMethod" : {
             "type" : "string",
-            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
+            "enum" : [ "BROTH_MICRODILUTION", "AGAR_DILUTION", "DISK_DIFFUSION", "ETEST", "AUTOMATED_MIC", "GENOTYPIC_WGS", "OTHER" ]
           },
           "ceftriaxoneMic" : {
-            "type" : "number",
-            "format" : "float"
-          },
-          "ceftriaxoneSurveillance" : {
-            "type" : "string",
-            "enum" : [ "WILD_TYPE", "NON_WILD_TYPE", "NOT_APPLICABLE", "UNKNOWN" ]
+            "type" : "string"
           },
           "ceftriaxoneSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
-          },
-          "ceftriaxoneZoneDiameter" : {
-            "type" : "number",
-            "format" : "float"
           },
           "changeDate" : {
             "type" : "string",
@@ -17134,23 +17094,14 @@
           },
           "ciprofloxacinMethod" : {
             "type" : "string",
-            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
+            "enum" : [ "BROTH_MICRODILUTION", "AGAR_DILUTION", "DISK_DIFFUSION", "ETEST", "AUTOMATED_MIC", "GENOTYPIC_WGS", "OTHER" ]
           },
           "ciprofloxacinMic" : {
-            "type" : "number",
-            "format" : "float"
-          },
-          "ciprofloxacinSurveillance" : {
-            "type" : "string",
-            "enum" : [ "WILD_TYPE", "NON_WILD_TYPE", "NOT_APPLICABLE", "UNKNOWN" ]
+            "type" : "string"
           },
           "ciprofloxacinSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
-          },
-          "ciprofloxacinZoneDiameter" : {
-            "type" : "number",
-            "format" : "float"
           },
           "creationDate" : {
             "type" : "string",
@@ -17158,257 +17109,148 @@
           },
           "delamanidMethod" : {
             "type" : "string",
-            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
+            "enum" : [ "BROTH_MICRODILUTION", "AGAR_DILUTION", "DISK_DIFFUSION", "ETEST", "AUTOMATED_MIC", "GENOTYPIC_WGS", "OTHER" ]
           },
           "delamanidMic" : {
-            "type" : "number",
-            "format" : "float"
-          },
-          "delamanidSurveillance" : {
-            "type" : "string",
-            "enum" : [ "WILD_TYPE", "NON_WILD_TYPE", "NOT_APPLICABLE", "UNKNOWN" ]
+            "type" : "string"
           },
           "delamanidSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
-          "delamanidZoneDiameter" : {
-            "type" : "number",
-            "format" : "float"
-          },
           "erythromycinMethod" : {
             "type" : "string",
-            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
+            "enum" : [ "BROTH_MICRODILUTION", "AGAR_DILUTION", "DISK_DIFFUSION", "ETEST", "AUTOMATED_MIC", "GENOTYPIC_WGS", "OTHER" ]
           },
           "erythromycinMic" : {
-            "type" : "number",
-            "format" : "float"
-          },
-          "erythromycinSurveillance" : {
-            "type" : "string",
-            "enum" : [ "WILD_TYPE", "NON_WILD_TYPE", "NOT_APPLICABLE", "UNKNOWN" ]
+            "type" : "string"
           },
           "erythromycinSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
-          "erythromycinZoneDiameter" : {
-            "type" : "number",
-            "format" : "float"
-          },
           "ethambutolMethod" : {
             "type" : "string",
-            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
+            "enum" : [ "BROTH_MICRODILUTION", "AGAR_DILUTION", "DISK_DIFFUSION", "ETEST", "AUTOMATED_MIC", "GENOTYPIC_WGS", "OTHER" ]
           },
           "ethambutolMic" : {
-            "type" : "number",
-            "format" : "float"
-          },
-          "ethambutolSurveillance" : {
-            "type" : "string",
-            "enum" : [ "WILD_TYPE", "NON_WILD_TYPE", "NOT_APPLICABLE", "UNKNOWN" ]
+            "type" : "string"
           },
           "ethambutolSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
-          "ethambutolZoneDiameter" : {
-            "type" : "number",
-            "format" : "float"
-          },
           "gatifloxacinMethod" : {
             "type" : "string",
-            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
+            "enum" : [ "BROTH_MICRODILUTION", "AGAR_DILUTION", "DISK_DIFFUSION", "ETEST", "AUTOMATED_MIC", "GENOTYPIC_WGS", "OTHER" ]
           },
           "gatifloxacinMic" : {
-            "type" : "number",
-            "format" : "float"
-          },
-          "gatifloxacinSurveillance" : {
-            "type" : "string",
-            "enum" : [ "WILD_TYPE", "NON_WILD_TYPE", "NOT_APPLICABLE", "UNKNOWN" ]
+            "type" : "string"
           },
           "gatifloxacinSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
-          },
-          "gatifloxacinZoneDiameter" : {
-            "type" : "number",
-            "format" : "float"
           },
           "inJurisdiction" : {
             "type" : "boolean"
           },
           "isoniazidMethod" : {
             "type" : "string",
-            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
+            "enum" : [ "BROTH_MICRODILUTION", "AGAR_DILUTION", "DISK_DIFFUSION", "ETEST", "AUTOMATED_MIC", "GENOTYPIC_WGS", "OTHER" ]
           },
           "isoniazidMic" : {
-            "type" : "number",
-            "format" : "float"
-          },
-          "isoniazidSurveillance" : {
-            "type" : "string",
-            "enum" : [ "WILD_TYPE", "NON_WILD_TYPE", "NOT_APPLICABLE", "UNKNOWN" ]
+            "type" : "string"
           },
           "isoniazidSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
-          "isoniazidZoneDiameter" : {
-            "type" : "number",
-            "format" : "float"
-          },
           "kanamycinMethod" : {
             "type" : "string",
-            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
+            "enum" : [ "BROTH_MICRODILUTION", "AGAR_DILUTION", "DISK_DIFFUSION", "ETEST", "AUTOMATED_MIC", "GENOTYPIC_WGS", "OTHER" ]
           },
           "kanamycinMic" : {
-            "type" : "number",
-            "format" : "float"
-          },
-          "kanamycinSurveillance" : {
-            "type" : "string",
-            "enum" : [ "WILD_TYPE", "NON_WILD_TYPE", "NOT_APPLICABLE", "UNKNOWN" ]
+            "type" : "string"
           },
           "kanamycinSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
-          "kanamycinZoneDiameter" : {
-            "type" : "number",
-            "format" : "float"
-          },
           "levofloxacinMethod" : {
             "type" : "string",
-            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
+            "enum" : [ "BROTH_MICRODILUTION", "AGAR_DILUTION", "DISK_DIFFUSION", "ETEST", "AUTOMATED_MIC", "GENOTYPIC_WGS", "OTHER" ]
           },
           "levofloxacinMic" : {
-            "type" : "number",
-            "format" : "float"
-          },
-          "levofloxacinSurveillance" : {
-            "type" : "string",
-            "enum" : [ "WILD_TYPE", "NON_WILD_TYPE", "NOT_APPLICABLE", "UNKNOWN" ]
+            "type" : "string"
           },
           "levofloxacinSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
-          "levofloxacinZoneDiameter" : {
-            "type" : "number",
-            "format" : "float"
-          },
           "moxifloxacinMethod" : {
             "type" : "string",
-            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
+            "enum" : [ "BROTH_MICRODILUTION", "AGAR_DILUTION", "DISK_DIFFUSION", "ETEST", "AUTOMATED_MIC", "GENOTYPIC_WGS", "OTHER" ]
           },
           "moxifloxacinMic" : {
-            "type" : "number",
-            "format" : "float"
-          },
-          "moxifloxacinSurveillance" : {
-            "type" : "string",
-            "enum" : [ "WILD_TYPE", "NON_WILD_TYPE", "NOT_APPLICABLE", "UNKNOWN" ]
+            "type" : "string"
           },
           "moxifloxacinSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
-          "moxifloxacinZoneDiameter" : {
-            "type" : "number",
-            "format" : "float"
-          },
           "ofloxacinMethod" : {
             "type" : "string",
-            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
+            "enum" : [ "BROTH_MICRODILUTION", "AGAR_DILUTION", "DISK_DIFFUSION", "ETEST", "AUTOMATED_MIC", "GENOTYPIC_WGS", "OTHER" ]
           },
           "ofloxacinMic" : {
-            "type" : "number",
-            "format" : "float"
-          },
-          "ofloxacinSurveillance" : {
-            "type" : "string",
-            "enum" : [ "WILD_TYPE", "NON_WILD_TYPE", "NOT_APPLICABLE", "UNKNOWN" ]
+            "type" : "string"
           },
           "ofloxacinSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
-          "ofloxacinZoneDiameter" : {
-            "type" : "number",
-            "format" : "float"
-          },
           "penicillinMethod" : {
             "type" : "string",
-            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
+            "enum" : [ "BROTH_MICRODILUTION", "AGAR_DILUTION", "DISK_DIFFUSION", "ETEST", "AUTOMATED_MIC", "GENOTYPIC_WGS", "OTHER" ]
           },
           "penicillinMic" : {
-            "type" : "number",
-            "format" : "float"
-          },
-          "penicillinSurveillance" : {
-            "type" : "string",
-            "enum" : [ "WILD_TYPE", "NON_WILD_TYPE", "NOT_APPLICABLE", "UNKNOWN" ]
+            "type" : "string"
           },
           "penicillinSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
-          },
-          "penicillinZoneDiameter" : {
-            "type" : "number",
-            "format" : "float"
           },
           "pseudonymized" : {
             "type" : "boolean"
           },
           "rifampicinMethod" : {
             "type" : "string",
-            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
+            "enum" : [ "BROTH_MICRODILUTION", "AGAR_DILUTION", "DISK_DIFFUSION", "ETEST", "AUTOMATED_MIC", "GENOTYPIC_WGS", "OTHER" ]
           },
           "rifampicinMic" : {
-            "type" : "number",
-            "format" : "float"
-          },
-          "rifampicinSurveillance" : {
-            "type" : "string",
-            "enum" : [ "WILD_TYPE", "NON_WILD_TYPE", "NOT_APPLICABLE", "UNKNOWN" ]
+            "type" : "string"
           },
           "rifampicinSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
-          "rifampicinZoneDiameter" : {
-            "type" : "number",
-            "format" : "float"
-          },
           "streptomycinMethod" : {
             "type" : "string",
-            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
+            "enum" : [ "BROTH_MICRODILUTION", "AGAR_DILUTION", "DISK_DIFFUSION", "ETEST", "AUTOMATED_MIC", "GENOTYPIC_WGS", "OTHER" ]
           },
           "streptomycinMic" : {
-            "type" : "number",
-            "format" : "float"
-          },
-          "streptomycinSurveillance" : {
-            "type" : "string",
-            "enum" : [ "WILD_TYPE", "NON_WILD_TYPE", "NOT_APPLICABLE", "UNKNOWN" ]
+            "type" : "string"
           },
           "streptomycinSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
-          "streptomycinZoneDiameter" : {
-            "type" : "number",
-            "format" : "float"
-          },
           "trimethoprimSulfamethoxazoleMethod" : {
             "type" : "string",
-            "enum" : [ "BROTH_MICRODILUTION", "ETEST", "DISK_DIFFUSION", "AUTOMATED_MIC", "GENOTYPIC_WGS", "BREAKPOINT_CATEGORICAL" ]
+            "enum" : [ "BROTH_MICRODILUTION", "AGAR_DILUTION", "DISK_DIFFUSION", "ETEST", "AUTOMATED_MIC", "GENOTYPIC_WGS", "OTHER" ]
           },
           "trimethoprimSulfamethoxazoleMic" : {
-            "type" : "number",
-            "format" : "float"
+            "type" : "string"
           },
           "trimethoprimSulfamethoxazoleSusceptibility" : {
             "type" : "string",
@@ -26960,32 +26802,28 @@
         "type" : "object",
         "properties" : {
           "amikacinMic" : {
-            "type" : "number",
-            "format" : "float"
+            "type" : "string"
           },
           "amikacinSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
           "bedaquilineMic" : {
-            "type" : "number",
-            "format" : "float"
+            "type" : "string"
           },
           "bedaquilineSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
           "capreomycinMic" : {
-            "type" : "number",
-            "format" : "float"
+            "type" : "string"
           },
           "capreomycinSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
           "ceftriaxoneMic" : {
-            "type" : "number",
-            "format" : "float"
+            "type" : "string"
           },
           "ceftriaxoneSusceptibility" : {
             "type" : "string",
@@ -26996,8 +26834,7 @@
             "format" : "date-time"
           },
           "ciprofloxacinMic" : {
-            "type" : "number",
-            "format" : "float"
+            "type" : "string"
           },
           "ciprofloxacinSusceptibility" : {
             "type" : "string",
@@ -27040,24 +26877,21 @@
             "format" : "date-time"
           },
           "delamanidMic" : {
-            "type" : "number",
-            "format" : "float"
+            "type" : "string"
           },
           "delamanidSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
           "erythromycinMic" : {
-            "type" : "number",
-            "format" : "float"
+            "type" : "string"
           },
           "erythromycinSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
           "ethambutolMic" : {
-            "type" : "number",
-            "format" : "float"
+            "type" : "string"
           },
           "ethambutolSusceptibility" : {
             "type" : "string",
@@ -27077,8 +26911,7 @@
             "type" : "boolean"
           },
           "gatifloxacinMic" : {
-            "type" : "number",
-            "format" : "float"
+            "type" : "string"
           },
           "gatifloxacinSusceptibility" : {
             "type" : "string",
@@ -27089,40 +26922,35 @@
             "enum" : [ "GENOTYPE_A", "GENOTYPE_B", "GENOTYPE_B2", "GENOTYPE_B3", "GENOTYPE_C1", "GENOTYPE_C2", "GENOTYPE_D1", "GENOTYPE_D10", "GENOTYPE_D11", "GENOTYPE_D2", "GENOTYPE_D3", "GENOTYPE_D4", "GENOTYPE_D5", "GENOTYPE_D6", "GENOTYPE_D7", "GENOTYPE_D8", "GENOTYPE_D9", "GENOTYPE_E", "GENOTYPE_F", "GENOTYPE_G1", "GENOTYPE_G2", "GENOTYPE_G3", "GENOTYPE_H1", "GENOTYPE_H2", "CRYPTOSPORIDIUM_HOMINIS", "CRYPTOSPORIDIUM_PARVUM", "CRYPTOSPORIDIUM_SPECIES", "OTHER", "UNKNOWN" ]
           },
           "isoniazidMic" : {
-            "type" : "number",
-            "format" : "float"
+            "type" : "string"
           },
           "isoniazidSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
           "kanamycinMic" : {
-            "type" : "number",
-            "format" : "float"
+            "type" : "string"
           },
           "kanamycinSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
           "levofloxacinMic" : {
-            "type" : "number",
-            "format" : "float"
+            "type" : "string"
           },
           "levofloxacinSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
           "moxifloxacinMic" : {
-            "type" : "number",
-            "format" : "float"
+            "type" : "string"
           },
           "moxifloxacinSusceptibility" : {
             "type" : "string",
             "enum" : [ "NOT_APPLICABLE", "RESISTANT", "SUSCEPTIBLE", "INTERMEDIATE", "UNKNOWN" ]
           },
           "ofloxacinMic" : {
-            "type" : "number",
-            "format" : "float"
+            "type" : "string"
           },
           "ofloxacinSusceptibility" : {
             "type" : "string",
@@ -27133,8 +26961,7 @@
             "enum" : [ "MOLECULAR_ASSAYS", "SEROLOGICAL_TESTS", "ANTIGEN_DETECTION", "CULTURE_AND_ISOLATION", "MICROSCOPY_AND_STAINING", "ANTIMICROBIAL_SUSCEPTIBILITY_TESTING", "FUNCTIONAL_IMMUNE_ASSAYS" ]
           },
           "penicillinMic" : {
-            "type" : "number",
-            "format" : "float"
+            "type" : "string"
           },
           "penicillinSusceptibility" : {
             "type" : "string",
@@ -27185,8 +27012,7 @@
             "minLength" : 0
           },
           "rifampicinMic" : {
-            "type" : "number",
-            "format" : "float"
+            "type" : "string"
           },
           "rifampicinSusceptibility" : {
             "type" : "string",
@@ -27231,8 +27057,7 @@
             "enum" : [ "BEIJING", "NOBEIJING", "POSSBEIJING", "UNKNOWN" ]
           },
           "streptomycinMic" : {
-            "type" : "number",
-            "format" : "float"
+            "type" : "string"
           },
           "streptomycinSusceptibility" : {
             "type" : "string",

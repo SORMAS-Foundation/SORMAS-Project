@@ -87,6 +87,9 @@ public class DataPatcherImpl implements DataPatcher {
 	@Inject
 	private CustomizableFieldDataPatcher customizableFieldDataPatcher;
 
+	@Inject
+	private EqualValueOverrideHelper equalValueOverrideHelper;
+
 	public DataPatcherImpl() {
 	}
 
@@ -205,7 +208,7 @@ public class DataPatcherImpl implements DataPatcher {
 			return temporaryResult;
 		}
 
-		// manually adding epiData 
+		// manually adding epiData: covers edge case were only a customizable field in set in epiData.
 		return Stream.concat(
 			temporaryResult.entrySet().stream(),
 			Stream.of(
@@ -310,7 +313,7 @@ public class DataPatcherImpl implements DataPatcher {
 			return singlePatchResult.setFailure(buildFailure(dataPatchFailureCause, untypedTargetValue));
 		}
 
-		Object typedValue = result.getData();
+		Object newTypedValue = result.getData();
 
 		if (!attachedEntityWrapper.isAttached() && !StringUtils.contains(relativeFieldName, ".")) {
 			logger.debug(
@@ -323,19 +326,25 @@ public class DataPatcherImpl implements DataPatcher {
 			if (nestedPropertyValue.isPresent()) {
 				Object currentValue = nestedPropertyValue.orElseThrow();
 
-				if (!patchEqualityCheckersRegistry.areEqual(currentValue, typedValue)) {
-					return singlePatchResult.setFailure(
-						new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.FORBIDDEN_VALUE_OVERRIDE)
-							.setExistingFieldValue(currentValue)
-							.setProvidedFieldValue(untypedTargetValue));
+				if (!patchEqualityCheckersRegistry.areEqual(currentValue, newTypedValue)) {
+					if (equalValueOverrideHelper.allowedOverride(currentValue)) {
+						logger.info(
+							"Current value to [{}] was different to newValue but override was allowed for this value even if config was: DataReplacementStrategy.IF_NOT_ALREADY_PRESENT",
+							currentValue);
+					} else {
+						return singlePatchResult.setFailure(
+							new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.FORBIDDEN_VALUE_OVERRIDE)
+								.setExistingFieldValue(currentValue)
+								.setProvidedFieldValue(untypedTargetValue));
+					}
 				}
 			}
 		}
 
-		Optional<Exception> exception = PropertyAccessor.setNestedProperty(target, relativeFieldName, typedValue);
+		Optional<Exception> exception = PropertyAccessor.setNestedProperty(target, relativeFieldName, newTypedValue);
 		if (exception.isPresent()) {
 			Exception e = exception.orElseThrow();
-			logger.error("Setting nested property failed for: field [{}] on [{}] with value: [{}]", relativeFieldName, target, typedValue, e);
+			logger.error("Setting nested property failed for: field [{}] on [{}] with value: [{}]", relativeFieldName, target, newTypedValue, e);
 			return singlePatchResult.setFailure(
 				new DataPatchFailure().setDataPatchFailureCause(DataPatchFailureCause.TECHNICAL).setProvidedFieldValue(untypedTargetValue));
 		} else {
