@@ -16,7 +16,6 @@ import java.util.stream.Stream;
 import javax.ejb.EJB;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -111,9 +110,6 @@ public class DataPatcherImpl implements DataPatcher {
 		this.configFacade = configFacade;
 	}
 
-	@Transactional(value = Transactional.TxType.REQUIRES_NEW,
-		rollbackOn = {
-			Exception.class })
 	@Override
 	public DataPatchResponse patch(CaseDataPatchRequest request) {
 		logger.debug("patch: [{}]", request);
@@ -127,7 +123,7 @@ public class DataPatcherImpl implements DataPatcher {
 
 		List<PlainSinglePatchResult> patchingTuples = computePatchingTuples(request);
 
-		logger.trace("Computed patchingTuples: [{}]", patchingTuples);
+		logger.debug("Computed patchingTuples: [{}]", patchingTuples);
 
 		Predicate<PlainSinglePatchResult> customizableFieldsPredicate =
 			patchResult -> patchResult.getField().getField().contains(PatchFieldHelper.CUSTOM_PREFIX);

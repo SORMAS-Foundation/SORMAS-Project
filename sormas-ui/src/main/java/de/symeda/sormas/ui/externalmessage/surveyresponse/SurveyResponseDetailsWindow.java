@@ -21,14 +21,24 @@ import java.util.stream.Collectors;
 
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Sizeable;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Grid;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Link;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
-import de.symeda.sormas.api.externalmessage.survey.*;
+import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseRequest;
+import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseResult;
+import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseWrapper;
+import de.symeda.sormas.api.externalmessage.survey.PatchDictionary;
+import de.symeda.sormas.api.externalmessage.survey.PatchField;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -165,6 +175,13 @@ public class SurveyResponseDetailsWindow {
 			layout.addComponent(dictionaryGrid);
 		}
 
+		if (result == null) {
+			try {
+				result = FacadeProvider.getExternalMessageFacade().reAttemptSurveyProcessing(uuid).getSurveyResponseData().getLatest().getResult();
+			} catch (RuntimeException e) {
+			}
+		}
+
 		// --- Processing Result section ---
 		if (result != null) {
 			Label resultHeading = new Label(I18nProperties.getCaption(Captions.surveyResponseProcessingResult));
@@ -186,7 +203,7 @@ public class SurveyResponseDetailsWindow {
 					I18nProperties.getCaption(Captions.surveyResponseApplied),
 					patchResponse.isApplied() ? I18nProperties.getCaption(Captions.actionYes) : I18nProperties.getCaption(Captions.actionNo));
 
-				if (patchResponse.hasFailures()) {
+				if (patchResponse.hasFailures() || externalMessage.getStatus() == ExternalMessageStatus.UNPROCESSED) {
 					Label failuresHeading = new Label(I18nProperties.getString(Strings.headingSurveyResponseFailures));
 					CssStyles.style(failuresHeading, CssStyles.H4);
 					layout.addComponent(failuresHeading);

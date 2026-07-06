@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.externalmessage.survey;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -11,7 +12,8 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.jetbrains.annotations.NotNull;
@@ -33,6 +35,7 @@ import de.symeda.sormas.api.utils.dataprocessing.ProcessingResultStatus;
 import de.symeda.sormas.backend.survey.SurveyFacadeEjb;
 import de.symeda.sormas.backend.survey.SurveyTokenFacadeEjb;
 import de.symeda.sormas.backend.util.CollectorUtils;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 /**
  * Performs the coordinating for patch operations out of Survey-responses.
@@ -51,6 +54,9 @@ public class AutomaticSurveyResponseProcessor {
 	@EJB
 	private SurveyTokenFacadeEjb.SurveyTokenFacadeEjbLocal surveyTokenFacade;
 
+	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+	private EntityManager em;
+
 	public AutomaticSurveyResponseProcessor() {
 	}
 
@@ -63,7 +69,6 @@ public class AutomaticSurveyResponseProcessor {
 		this.surveyTokenFacade = surveyTokenFacade;
 	}
 
-	@Transactional(Transactional.TxType.REQUIRES_NEW)
 	public List<SurveyResponseProcessingResult> processSurveyResponses(List<ExternalMessageDto> externalMessages)
 		throws InterruptedException, ExecutionException {
 
@@ -120,6 +125,7 @@ public class AutomaticSurveyResponseProcessor {
 			surveyTokenDto.setResponseReceived(true);
 			surveyTokenDto.setResponseReceivedDate(request.getResponseReceivedDate());
 			surveyTokenDto.setExternalRespondentId(request.getExternalRespondentId());
+			surveyTokenDto.setChangeDate(new Date());
 
 			surveyTokenFacade.save(surveyTokenDto);
 
@@ -148,6 +154,8 @@ public class AutomaticSurveyResponseProcessor {
 				"Exception while patching survey response for external message: [{}]. Processing will continue for other messages",
 				externalMessage.getUuid(),
 				e);
+
+			em.getTransaction().rollback();
 
 			// in case of failure status must be changed to unprocessed
 			externalMessage.setStatus(ExternalMessageStatus.UNPROCESSED);

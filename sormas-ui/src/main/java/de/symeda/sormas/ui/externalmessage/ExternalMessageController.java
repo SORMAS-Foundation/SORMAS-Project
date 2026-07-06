@@ -168,9 +168,17 @@ public class ExternalMessageController {
 				? externalMessage.getSurveyResponseData().getLatest().getResult()
 				: null;
 
+		// when button click:
 		if (result == null) {
-			Notification.show(I18nProperties.getString(Strings.messageSurveyResponseNotYetProcessed), Notification.Type.HUMANIZED_MESSAGE);
-			return;
+			try {
+				result = FacadeProvider.getExternalMessageFacade()
+					.reAttemptSurveyProcessing(surveyResponseMessageUuid)
+					.getSurveyResponseData()
+					.getLatest()
+					.getResult();
+			} catch (RuntimeException e) {
+				Notification.show(I18nProperties.getString(Strings.messageSurveyResponseNotYetProcessed), Notification.Type.HUMANIZED_MESSAGE);
+			}
 		}
 
 		if (result.getPatchResponse() != null && result.getPatchResponse().hasFailures()) {
