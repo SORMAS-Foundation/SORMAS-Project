@@ -1,6 +1,15 @@
 package de.symeda.sormas.backend.patch;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -56,7 +65,7 @@ public class BusinessDtoFacade {
 	/**
 	 * Some {@link EntityDto} must be attached to a "parent" to be saved.
 	 */
-	private final Map<Class<? extends EntityDto>, LeafAttacher> leafAttacherRegistry = new LinkedHashMap<>();
+	private final Map<Class<? extends EntityDto>, LeafAttacher> leafAttacherDictionary = new LinkedHashMap<>();
 
 	@PostConstruct
 	private void init() {
@@ -190,7 +199,7 @@ public class BusinessDtoFacade {
 	}
 
 	private <T extends EntityDto> void registerLeafAttacher(Class<T> leafClass, LeafAttacher attacher) {
-		leafAttacherRegistry.put(leafClass, attacher);
+		leafAttacherDictionary.put(leafClass, attacher);
 	}
 
 	private CaseDataDto requireCaseData(List<Tuple<Integer, EntityDto>> dtosInProgress) {
@@ -303,7 +312,15 @@ public class BusinessDtoFacade {
 	public void save(@NotNull List<Tuple<Integer, EntityDto>> entityDtosByKey) {
 		List<Tuple<Integer, EntityDto>> dtosInProgress = new ArrayList<>(entityDtosByKey);
 
-		leafAttacherRegistry.forEach((leafClass, attacher) -> {
+		List<Tuple<Integer, EntityDto>> orderedRootEntities = entityDtosByKey.stream()
+			.filter(tuple -> leafAttacherDictionary.keySet().stream().noneMatch(leafClass -> leafClass.isInstance(tuple.getSecond())))
+			.sorted(Comparator.comparing(Tuple::getSecond, new EntityDtoTypeComparator()))
+			.collect(Collectors.toList());
+
+		orderedRootEntities.stream().map(Tuple::getSecond).forEach(this::saveDirectEntity);
+
+		// once it's done, leaf entities can be saved.
+		leafAttacherDictionary.forEach((leafClass, attacher) -> {
 			List<Tuple<Integer, EntityDto>> leaves =
 				dtosInProgress.stream().filter(t -> leafClass.isInstance(t.getSecond())).collect(Collectors.toList());
 
@@ -312,8 +329,6 @@ public class BusinessDtoFacade {
 				attacher.attachLeaf(leafTuple.getSecond(), leafTuple.getFirst(), dtosInProgress);
 			});
 		});
-
-		dtosInProgress.stream().map(Tuple::getSecond).forEach(this::saveDirectEntity);
 	}
 
 	@FunctionalInterface

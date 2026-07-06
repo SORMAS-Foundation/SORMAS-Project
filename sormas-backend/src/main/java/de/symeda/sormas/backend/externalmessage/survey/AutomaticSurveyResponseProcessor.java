@@ -14,6 +14,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.jetbrains.annotations.NotNull;
@@ -69,6 +70,9 @@ public class AutomaticSurveyResponseProcessor {
 		this.surveyTokenFacade = surveyTokenFacade;
 	}
 
+	@Transactional(value = Transactional.TxType.REQUIRES_NEW,
+		rollbackOn = {
+			Exception.class })
 	public List<SurveyResponseProcessingResult> processSurveyResponses(List<ExternalMessageDto> externalMessages)
 		throws InterruptedException, ExecutionException {
 
@@ -154,8 +158,6 @@ public class AutomaticSurveyResponseProcessor {
 				"Exception while patching survey response for external message: [{}]. Processing will continue for other messages",
 				externalMessage.getUuid(),
 				e);
-
-			em.getTransaction().rollback();
 
 			// in case of failure status must be changed to unprocessed
 			externalMessage.setStatus(ExternalMessageStatus.UNPROCESSED);

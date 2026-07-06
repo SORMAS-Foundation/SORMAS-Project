@@ -160,7 +160,7 @@ public class ExternalMessageController {
 		form.setValue(newDto);
 	}
 
-	public void processSurveyResponse(String surveyResponseMessageUuid) {
+	public void processSurveyResponse(String surveyResponseMessageUuid, Runnable successRunnable) {
 		ExternalMessageDto externalMessage = FacadeProvider.getExternalMessageFacade().getByUuid(surveyResponseMessageUuid);
 
 		de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseResult result =
@@ -181,6 +181,11 @@ public class ExternalMessageController {
 			}
 		}
 
+		if (result == null) {
+			Notification.show(I18nProperties.getString(Strings.messageSurveyResponseNotYetProcessed), Notification.Type.HUMANIZED_MESSAGE);
+			return;
+		}
+
 		if (result.getPatchResponse() != null && result.getPatchResponse().hasFailures()) {
 			de.symeda.sormas.api.patch.partial_retrieval.DisplayablePartialRetrievalResponse displayData;
 			try {
@@ -197,6 +202,8 @@ public class ExternalMessageController {
 			UI.getCurrent().addWindow(editor);
 		} else {
 			Notification.show(I18nProperties.getString(Strings.messageSurveyResponseAllFieldsApplied), Notification.Type.HUMANIZED_MESSAGE);
+
+			successRunnable.run();
 		}
 	}
 
