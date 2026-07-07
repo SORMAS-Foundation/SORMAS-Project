@@ -348,6 +348,14 @@ public class DrugSusceptibilityForm extends AbstractEditForm<DrugSusceptibilityD
 		super.markAsDirty();
 	}
 
+	@Override
+	public void commit() {
+		if (getValue() == null) {
+			return;
+		}
+		super.commit();
+	}
+
 	public void forceUpdateDrugSusceptibilityFields() {
 		final DrugSusceptibilityDto drugSusceptibilityDto = getValue();
 		if (drugSusceptibilityDto == null) {
