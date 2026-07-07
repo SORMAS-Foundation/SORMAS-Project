@@ -1047,7 +1047,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 	@Override
 	@RightsAllowed(UserRight._EXTERNAL_MESSAGE_SURVEY_RESPONSE_PROCESS)
-	public ExternalMessageDto reAttemptSurveyProcessing(String uuid) {
+	public ExternalMessageDto executeSurveyProcessing(String uuid) {
 		logger.debug("reAttemptSurveyProcessing: [{}]", uuid);
 		return overwriteSurveyResponse(uuid, null);
 	}

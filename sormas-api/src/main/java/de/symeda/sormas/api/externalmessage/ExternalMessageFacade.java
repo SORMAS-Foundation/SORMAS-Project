@@ -94,7 +94,7 @@ public interface ExternalMessageFacade extends PermanentlyDeletableFacade {
 	 *            UUID of the external message (must be of type SURVEY_RESPONSE)
 	 * @return updated ExternalMessageDto after reprocessing
 	 */
-	ExternalMessageDto reAttemptSurveyProcessing(String uuid);
+	ExternalMessageDto executeSurveyProcessing(String uuid);
 
 	/**
 	 * Re-submits a survey response with a corrected patch dictionary after previous processing failures.

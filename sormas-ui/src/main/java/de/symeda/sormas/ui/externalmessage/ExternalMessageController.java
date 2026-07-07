@@ -172,7 +172,7 @@ public class ExternalMessageController {
 		if (result == null) {
 			try {
 				result = FacadeProvider.getExternalMessageFacade()
-					.reAttemptSurveyProcessing(surveyResponseMessageUuid)
+					.executeSurveyProcessing(surveyResponseMessageUuid)
 					.getSurveyResponseData()
 					.getLatest()
 					.getResult();
