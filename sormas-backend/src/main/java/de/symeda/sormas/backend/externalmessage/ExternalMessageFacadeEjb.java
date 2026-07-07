@@ -390,7 +390,10 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 			processingResults.forEach(wrapper -> {
 				ProcessingResultStatus result = wrapper.getResultStatus();
 				if (result == null || result.isCanceled()) {
-					logger.error("Processing of surveyResponse with UUID {} has been canceled", wrapper.getExternalMessage().getUuid());
+					logger.error(
+						"Processing of surveyResponse with UUID {} has been canceled, result: [{}]",
+						wrapper.getExternalMessage().getUuid(),
+						wrapper);
 				}
 			});
 		} catch (InterruptedException e) {
