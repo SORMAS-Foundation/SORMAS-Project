@@ -261,6 +261,7 @@ public class CaseListCriteriaBuilder {
 
 	private List<Expression<?>> getIndexOrders(SortProperty sortProperty, Root<Case> caze, CaseJoins joins, CriteriaBuilder cb) {
 
+		// TODO: this is super weird.
 		switch (sortProperty.propertyName) {
 		case CaseIndexDto.PERSON_UUID:
 			return Collections.singletonList(joins.getPerson().get(Person.UUID));
