@@ -12,8 +12,6 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -35,7 +33,6 @@ import de.symeda.sormas.api.utils.Tuple;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResultStatus;
 import de.symeda.sormas.backend.survey.SurveyFacadeEjb;
 import de.symeda.sormas.backend.survey.SurveyTokenFacadeEjb;
-import de.symeda.sormas.backend.util.ModelConstants;
 
 /**
  * Performs the coordinating for patch operations out of Survey-responses.
@@ -53,9 +50,6 @@ public class AutomaticSurveyResponseProcessor {
 
 	@EJB
 	private SurveyTokenFacadeEjb.SurveyTokenFacadeEjbLocal surveyTokenFacade;
-
-	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	private EntityManager em;
 
 	public AutomaticSurveyResponseProcessor() {
 	}

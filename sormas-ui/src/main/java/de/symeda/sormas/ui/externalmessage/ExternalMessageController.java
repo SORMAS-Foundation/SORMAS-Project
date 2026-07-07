@@ -168,7 +168,7 @@ public class ExternalMessageController {
 				? externalMessage.getSurveyResponseData().getLatest().getResult()
 				: null;
 
-		// when button click:
+		// In case of failure during operation, attempt to process the message again.
 		if (result == null) {
 			try {
 				result = FacadeProvider.getExternalMessageFacade()

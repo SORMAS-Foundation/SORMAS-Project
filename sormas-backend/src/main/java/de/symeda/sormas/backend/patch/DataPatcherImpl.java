@@ -125,7 +125,7 @@ public class DataPatcherImpl implements DataPatcher {
 
 		List<PlainSinglePatchResult> patchingTuples = computePatchingTuples(request);
 
-		logger.debug("Computed patchingTuples: [{}]", patchingTuples);
+		logger.trace("Computed patchingTuples: [{}]", patchingTuples);
 
 		Predicate<PlainSinglePatchResult> customizableFieldsPredicate =
 			patchResult -> patchResult.getField().getField().contains(PatchFieldHelper.CUSTOM_PREFIX);

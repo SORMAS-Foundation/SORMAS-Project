@@ -11,8 +11,9 @@ import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.person.PersonDto;
 
 /**
- * Orders {@link AttachedEntityWrapper}s so that {@link CaseDataDto} comes first, {@link PersonDto} second,
- * and any other DTO type last.
+ * Orders {@link EntityDto}s so that root entities come first.
+ * Needed to properly store the "root-est" entity is persisted first, to avoid {@link de.symeda.sormas.api.utils.OutdatedEntityException} in
+ * case a leaf modifies the parent.
  */
 public class EntityDtoTypeComparator implements Comparator<EntityDto> {
 

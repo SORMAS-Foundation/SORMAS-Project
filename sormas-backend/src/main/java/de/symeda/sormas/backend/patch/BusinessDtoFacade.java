@@ -312,6 +312,7 @@ public class BusinessDtoFacade {
 	public void save(@NotNull List<Tuple<Integer, EntityDto>> entityDtosByKey) {
 		List<Tuple<Integer, EntityDto>> dtosInProgress = new ArrayList<>(entityDtosByKey);
 
+		// ordering is important: root entities must be saved first to avoid OutdatedEntityException as leaf entities seem to update the case.
 		List<Tuple<Integer, EntityDto>> orderedRootEntities = entityDtosByKey.stream()
 			.filter(tuple -> leafAttacherDictionary.keySet().stream().noneMatch(leafClass -> leafClass.isInstance(tuple.getSecond())))
 			.sorted(Comparator.comparing(Tuple::getSecond, new EntityDtoTypeComparator()))
@@ -319,7 +320,7 @@ public class BusinessDtoFacade {
 
 		orderedRootEntities.stream().map(Tuple::getSecond).forEach(this::saveDirectEntity);
 
-		// once it's done, leaf entities can be saved.
+		// once it's done, leaf entities can be saved, as updating root entities will not break
 		leafAttacherDictionary.forEach((leafClass, attacher) -> {
 			List<Tuple<Integer, EntityDto>> leaves =
 				dtosInProgress.stream().filter(t -> leafClass.isInstance(t.getSecond())).collect(Collectors.toList());
