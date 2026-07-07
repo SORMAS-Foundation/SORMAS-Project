@@ -25,6 +25,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -179,6 +180,7 @@ public class SurveyResponseDetailsWindow {
 			try {
 				result = FacadeProvider.getExternalMessageFacade().reAttemptSurveyProcessing(uuid).getSurveyResponseData().getLatest().getResult();
 			} catch (RuntimeException e) {
+				Notification.show(I18nProperties.getString(Strings.messageSurveyResponseNotYetProcessed), Notification.Type.HUMANIZED_MESSAGE);
 			}
 		}
 
