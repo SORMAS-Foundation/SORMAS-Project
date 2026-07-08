@@ -11,7 +11,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import de.symeda.sormas.api.contact.FollowUpStatus;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
@@ -25,8 +24,9 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
 import de.symeda.sormas.api.activityascase.ActivityAsCaseType;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.caze.VaccinationStatus;
+import de.symeda.sormas.api.caze.Vaccine;
+import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumTranslation;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldContext;
@@ -467,6 +467,27 @@ class DataPatcherImplTest extends AbstractBeanTest {
 		String ignoredValue = "ignoredValue";
 
 		Map<String, Object> patchDictionary = Map.of("CaseData.quarantineOrderedOfficialDocumentDate", ignoredValue);
+
+		// EXECUTE
+		DataPatchResponse response =
+			victim().patch(new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid()).setPatchDictionary(patchDictionary));
+
+		// CHECK
+		Map<PatchField, DataPatchFailure> expectedFailures =
+			buildDictionaryOfFailureType(patchDictionary, DataPatchFailureCause.UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY_OR_FEATURE);
+
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response.getValidPatchDictionary().isEmpty(), "Nothing should have been patched, should be empty"),
+			// FAILURES
+			() -> Assertions.assertEquals(expectedFailures, response.getFailures()));
+	}
+
+	@Test
+	void patch_notSupportedForDisease_symptoms_offset() {
+		// PREPARE
+		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.GIARDIASIS);
+
+		Map<String, Object> patchDictionary = Map.of("Symptoms.offsetDate", new java.util.Date());
 
 		// EXECUTE
 		DataPatchResponse response =

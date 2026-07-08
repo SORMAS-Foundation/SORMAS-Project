@@ -528,7 +528,6 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			BLOATING,
 			LOSS_OF_APPETITE,
 			FLATULENCE,
-			SMELLY_BURPS,
 			COUGHING_ATTACKS,
 			COUGHING_AT_NIGHT,
 			ABDOMINAL_CRAMPS,

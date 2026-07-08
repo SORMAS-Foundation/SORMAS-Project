@@ -2963,27 +2963,39 @@ public class SymptomsDto extends PseudonymizableDto {
 		CRYPTOSPORIDIOSIS,
 		GIARDIASIS,
 		RESPIRATORY_SYNCYTIAL_VIRUS })
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	private SymptomState lossOfAppetite;
 
 	@Diseases({
 		GIARDIASIS })
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	private SymptomState flatulence;
 
 	@Diseases({
 		GIARDIASIS })
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	private SymptomState smellyBurps;
 
 	@Diseases({
 		PERTUSSIS })
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	private SymptomState coughingAttacks;
 
 	@Diseases({
 		PERTUSSIS })
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	private SymptomState coughingAtNight;
 
 	@Diseases({
 		CRYPTOSPORIDIOSIS,
 		GIARDIASIS })
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	private SymptomState abdominalCramps;
 
 	private DiagnosisType diagnosis;
