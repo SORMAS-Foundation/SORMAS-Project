@@ -753,7 +753,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			showGeocodingNotification(Strings.messageGeocodingNoResult, e.getMessage(), Notification.Type.WARNING_MESSAGE);
 		} catch (GeocodingConfigurationException e) {
 			// special handling as configuration has parameter
-			final String message = I18nProperties.getString(Strings.errorGeocodingConfiguration, e.getMessage());
+			final String message = I18nProperties.getString(Strings.errorGeocodingConfigurationInvalidParameter, e.getMessage());
 			showGeocodingNotification(null, String.format(message, e.getParameterName()), Notification.Type.ERROR_MESSAGE);
 		} catch (GeocodingConnectionException | GeocodingResponseException e) {
 			showGeocodingNotification(Strings.errorGeocodingUnavailable, e.getMessage(), Notification.Type.ERROR_MESSAGE);
