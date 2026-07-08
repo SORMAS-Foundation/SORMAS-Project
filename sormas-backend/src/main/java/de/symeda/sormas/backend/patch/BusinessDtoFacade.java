@@ -310,10 +310,15 @@ public class BusinessDtoFacade {
 	}
 
 	public void save(@NotNull List<Tuple<Integer, EntityDto>> entityDtosByKey) {
+		// Be careful about "leaf-entities" that can change the case data:
+		// Person ; Immunization and VaccinationDto
+		/*
 		List<Tuple<Integer, EntityDto>> dtosInProgress = new ArrayList<>(entityDtosByKey);
 
+		//entityDtosByKey.stream()	.filter(dto -> dto.)
+
 		// ordering is important: root entities must be saved first to avoid OutdatedEntityException as leaf entities seem to update the case.
-		List<Tuple<Integer, EntityDto>> orderedRootEntities = entityDtosByKey.stream()
+		List<Tuple<Integer, EntityDto>>	 orderedRootEntities = entityDtosByKey.stream()
 			.filter(tuple -> leafAttacherDictionary.keySet().stream().noneMatch(leafClass -> leafClass.isInstance(tuple.getSecond())))
 			.sorted(Comparator.comparing(Tuple::getSecond, new EntityDtoTypeComparator()))
 			.collect(Collectors.toList());
@@ -330,6 +335,22 @@ public class BusinessDtoFacade {
 				attacher.attachLeaf(leafTuple.getSecond(), leafTuple.getFirst(), dtosInProgress);
 			});
 		});
+		*/
+		List<Tuple<Integer, EntityDto>> dtosInProgress = new ArrayList<>(entityDtosByKey);
+
+		leafAttacherDictionary.forEach((leafClass, attacher) -> {
+			List<Tuple<Integer, EntityDto>> leaves =
+					dtosInProgress.stream().filter(t -> leafClass.isInstance(t.getSecond())).collect(Collectors.toList());
+
+			leaves.forEach(leafTuple -> {
+				dtosInProgress.remove(leafTuple);
+				attacher.attachLeaf(leafTuple.getSecond(), leafTuple.getFirst(), dtosInProgress);
+			});
+		});
+
+		dtosInProgress.stream().map(Tuple::getSecond).forEach(this::saveDirectEntity);
+
+
 	}
 
 	@FunctionalInterface

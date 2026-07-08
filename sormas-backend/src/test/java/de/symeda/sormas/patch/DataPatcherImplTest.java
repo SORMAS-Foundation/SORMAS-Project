@@ -11,6 +11,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import de.symeda.sormas.api.contact.FollowUpStatus;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
@@ -25,6 +26,7 @@ import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
 import de.symeda.sormas.api.activityascase.ActivityAsCaseType;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.Vaccine;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumTranslation;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.customizablefield.CustomizableFieldContext;
@@ -43,6 +45,7 @@ import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
+import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.infrastructure.country.CountryDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
@@ -1012,6 +1015,116 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			() -> Assertions.assertEquals(1, exposures.size()),
 			() -> Assertions.assertEquals(ExposureType.WORK, exposures.get(0).getExposureType()),
 			() -> Assertions.assertEquals("market visit", exposures.get(0).getDescription()));
+	}
+
+	@Test
+	void patch_multipleEntities_caseDataExposureHospitalizationSymptoms() {
+		// This modifies many entities are triggers case update.
+		// Might require changing outdated range to reproduce every time
+		// PREPARE
+		Disease disease = Disease.DENGUE;
+		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
+
+		// EXECUTE
+		DataPatchResponse response = victim().patch(
+			new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
+				.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+				.setPatchDictionary(
+					Map.ofEntries(
+						// CaseData
+						Map.entry("CaseData.quarantineChangeComment", "some comment"),
+						Map.entry(toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.FOLLOW_UP_STATUS), FollowUpStatus.FOLLOW_UP),
+
+						// Exposures
+						Map.entry(toFieldName(ExposureDto.I18N_PREFIX, ExposureDto.EXPOSURE_TYPE), "WORK"),
+						Map.entry(toFieldName(ExposureDto.I18N_PREFIX, ExposureDto.DESCRIPTION), "market visit"),
+
+						// EpiData
+						Map.entry("EpiData.exposureDetailsKnown", "YES"),
+						Map.entry("EpiData.contactWithSourceCaseKnown", "NO"),
+
+						// Hospitalization
+						Map.entry(toFieldName(HospitalizationDto.I18N_PREFIX, HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY), "YES"),
+						Map.entry(toFieldName(HospitalizationDto.I18N_PREFIX, HospitalizationDto.ADMISSION_DATE), "2024-05-10"),
+
+						// Previous hospitalization
+						Map.entry(toFieldName(PreviousHospitalizationDto.I18N_PREFIX, PreviousHospitalizationDto.ADMITTED_TO_HEALTH_FACILITY), "YES"),
+						Map.entry(toFieldName(PreviousHospitalizationDto.I18N_PREFIX, PreviousHospitalizationDto.ADMISSION_DATE), "2024-03-15"),
+						Map.entry(toFieldName(PreviousHospitalizationDto.I18N_PREFIX, PreviousHospitalizationDto.ICU_LENGTH_OF_STAY), "7"),
+
+						// Immunization — deliberately made ACQUIRED + valid across the case reportDate so that
+						// saving the Immunization/Vaccination (their own facades, not CaseFacade) forces
+						// CaseService#updateDeterminedVaccinationStatuses to recompute and persist the Case's vaccinationStatus.
+						Map.entry(toFieldName(ImmunizationDto.I18N_PREFIX, ImmunizationDto.IMMUNIZATION_STATUS), "ACQUIRED"),
+						Map.entry(toFieldName(ImmunizationDto.I18N_PREFIX, ImmunizationDto.MEANS_OF_IMMUNIZATION), "VACCINATION"),
+						Map.entry(toFieldName(ImmunizationDto.I18N_PREFIX, ImmunizationDto.VALID_FROM), "2020-01-01"),
+						Map.entry(toFieldName(ImmunizationDto.I18N_PREFIX, ImmunizationDto.VALID_UNTIL), "2035-01-01"),
+
+						// Vaccination
+						Map.entry(toFieldName(VaccinationDto.I18N_PREFIX, VaccinationDto.VACCINE_NAME), "COMIRNATY"),
+						Map.entry(toFieldName(VaccinationDto.I18N_PREFIX, VaccinationDto.VACCINATION_DATE), "2024-05-01"),
+						Map.entry(toFieldName(VaccinationDto.I18N_PREFIX, VaccinationDto.VACCINE_DOSE), "1"),
+
+						// Person — saving Person cascades into CaseFacade#onCaseChanged for every case of that person
+						Map.entry("Person.sex", "MALE"),
+
+						// Symptoms
+						Map.entry("Symptoms.cough", "YES"))));
+
+		// CHECK
+		CaseDataDto actualCase = getCaseFacade().getByUuid(originalCase.getUuid());
+		List<ExposureDto> exposures = actualCase.getEpiData().getExposures();
+		List<PreviousHospitalizationDto> previousHospitalizations = actualCase.getHospitalization().getPreviousHospitalizations();
+		List<ImmunizationDto> immunizations = getImmunizationFacade().getByPersonUuids(List.of(originalCase.getPerson().getUuid()));
+		PersonDto actualPerson = getPersonFacade().getByUuid(originalCase.getPerson().getUuid());
+
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failures: " + response.getFailures()),
+			() -> Assertions.assertTrue(response.isApplied()),
+
+			// CaseData
+			() -> Assertions.assertEquals("some comment", actualCase.getQuarantineChangeComment()),
+
+			// Exposures
+			() -> Assertions.assertEquals(1, exposures.size()),
+			() -> Assertions.assertEquals(ExposureType.WORK, exposures.get(0).getExposureType()),
+			() -> Assertions.assertEquals("market visit", exposures.get(0).getDescription()),
+
+			// EpiData
+			() -> Assertions.assertEquals(YesNoUnknown.YES, actualCase.getEpiData().getExposureDetailsKnown()),
+			() -> Assertions.assertEquals(YesNoUnknown.NO, actualCase.getEpiData().getContactWithSourceCaseKnown()),
+
+			// Hospitalization
+			() -> Assertions.assertEquals(YesNoUnknown.YES, actualCase.getHospitalization().getAdmittedToHealthFacility()),
+			() -> Assertions.assertEquals(
+				Date.from(LocalDate.parse("2024-05-10").atStartOfDay(ZoneId.systemDefault()).toInstant()),
+				actualCase.getHospitalization().getAdmissionDate()),
+
+			// Previous hospitalization
+			() -> Assertions.assertEquals(1, previousHospitalizations.size()),
+			() -> Assertions.assertEquals(YesNoUnknown.YES, previousHospitalizations.get(0).getAdmittedToHealthFacility()),
+			() -> Assertions.assertEquals(
+				Date.from(LocalDate.parse("2024-03-15").atStartOfDay(ZoneId.systemDefault()).toInstant()),
+				previousHospitalizations.get(0).getAdmissionDate()),
+			() -> Assertions.assertEquals(7, previousHospitalizations.get(0).getIcuLengthOfStay()),
+
+			// Immunization / Vaccination
+			() -> Assertions.assertEquals(1, immunizations.size()),
+			() -> Assertions.assertEquals(ImmunizationStatus.ACQUIRED, immunizations.get(0).getImmunizationStatus()),
+			() -> Assertions.assertEquals(MeansOfImmunization.VACCINATION, immunizations.get(0).getMeansOfImmunization()),
+			() -> Assertions.assertEquals(1, immunizations.get(0).getVaccinations().size()),
+			() -> Assertions.assertEquals(Vaccine.COMIRNATY, immunizations.get(0).getVaccinations().get(0).getVaccineName()),
+			() -> Assertions.assertEquals("1", immunizations.get(0).getVaccinations().get(0).getVaccineDose()),
+
+			// Case's vaccinationStatus is not set directly by the patch — it is only recomputed as a side effect
+			// of ImmunizationFacade/VaccinationFacade#save() calling CaseService#updateDeterminedVaccinationStatuses
+			() -> Assertions.assertEquals(VaccinationStatus.UNVACCINATED, actualCase.getVaccinationStatus()),
+
+			// Person — proves saving Person cascades an update into the case as well
+			() -> Assertions.assertEquals(Sex.MALE, actualPerson.getSex()),
+
+			// Symptoms
+			() -> Assertions.assertEquals(SymptomState.YES, actualCase.getSymptoms().getCough()));
 	}
 
 	@Test
