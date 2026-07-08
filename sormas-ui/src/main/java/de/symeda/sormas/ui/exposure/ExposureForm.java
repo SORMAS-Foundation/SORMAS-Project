@@ -710,10 +710,6 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 
 			boolean isMalariaCaseTraveled = subSettings != null && disease == Disease.MALARIA && hasTravelledAbroad;
 			prophylaxisAdherenceField.setVisible(isMalariaCaseTraveled);
-			travelPurposeField.setVisible(hasTravelledAbroad && (disease == Disease.MALARIA || disease == Disease.DENGUE));
-			travelPurposeField.setValue(travelPurpose);
-			travelPurposeDetailsField.setVisible(travelPurpose == TravelPurpose.OTHER);
-			travelPurposeDetailsField.setValue(travelPurposeDetails);
 			// If the Malaria-effected person traveled abroad, show the prophylaxis adherence and travel purpose fields
 			if (isMalariaCaseTraveled) {
 				if (prophylaxisAdherence != null) {
@@ -727,6 +723,20 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 				prophylaxisAdherenceField.setValue(null);
 				prophylaxisAdherenceDetailsField.setValue(null);
 				prophylaxisAdherenceDetailsField.setVisible(false);
+			}
+			// Travel purpose is visible to abroad travelers of Malaria and Dengue
+			boolean isTravelPurposeVisible = hasTravelledAbroad && (disease == Disease.MALARIA || disease == Disease.DENGUE);
+			travelPurposeField.setVisible(isTravelPurposeVisible);
+			if (isTravelPurposeVisible) {
+				travelPurposeField.setValue(travelPurpose);
+				travelPurposeDetailsField.setVisible(travelPurpose == TravelPurpose.OTHER);
+				if (travelPurposeDetails != null) {
+					travelPurposeDetailsField.setValue(travelPurposeDetails);
+				}
+			} else {
+				travelPurposeField.setValue(null);
+				travelPurposeDetailsField.setValue(null);
+				travelPurposeDetailsField.setVisible(false);
 			}
 
 			boolean isSexualActivity = subSettings != null && subSettings.contains(ExposureSubSetting.SEXUAL_ACTIVITY);
