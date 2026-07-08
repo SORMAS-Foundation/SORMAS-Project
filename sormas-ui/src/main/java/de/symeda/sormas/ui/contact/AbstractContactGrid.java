@@ -47,6 +47,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.utils.BooleanRenderer;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
@@ -184,6 +185,7 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 		((Column<ContactIndexDto, String>) getColumn(ContactIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<ContactIndexDto, String>) getColumn(ContactIndexDto.PERSON_UUID)).setRenderer(new UuidRenderer());
 		((Column<ContactIndexDto, Date>) getColumn(ContactIndexDto.FOLLOW_UP_UNTIL)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
+		((Column<ContactIndexDto, Boolean>) getColumn(ContactIndexDto.PROPHYLAXIS_PRESCRIBED)).setRenderer(new BooleanRenderer());
 
 		if (!FacadeProvider.getConfigFacade().isExternalJournalActive()) {
 			getColumn(ContactIndexDto.SYMPTOM_JOURNAL_STATUS).setHidden(true);

@@ -340,7 +340,7 @@ public enum SampleMaterial {
 	PLEURAL_FLUID,
 
 	// Re-activated for RSV new samples (#14023): the RSV specimen requirements list Nasopharyngeal lavage.
-	// No canonical SNOMED-CT code on the specimen sheet, so its SNOMED export stays null. 
+	// No canonical SNOMED-CT code on the specimen sheet, so its SNOMED export stays null.
 	@Diseases(value = {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	NASOPHARYNGEAL_LAVAGE,
@@ -367,11 +367,10 @@ public enum SampleMaterial {
 		Disease.SHIGELLOSIS }, hide = true)
 	AMNIOTIC_FLUID,
 
-	@Diseases(value = {
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
-		Disease.GIARDIASIS }, hide = true)
+	// Clinical Sample (Other) is offered for every disease (#14018) — no @Diseases means "visible for all".
 	CLINICAL_SAMPLE,
 
+	// Lux hide lifted so Peritoneal fluid shows for IPI on Luxembourg servers (#14156).
 	@Diseases(value = {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
@@ -381,8 +380,6 @@ public enum SampleMaterial {
 		Disease.MALARIA,
 		Disease.DENGUE,
 		Disease.SALMONELLOSIS }, hide = true)
-	@HideForCountries(countries = {
-		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	PERITONEAL_FLUID,
 
 	@Diseases(value = {
