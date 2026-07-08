@@ -890,6 +890,7 @@ public class ExternalMessage extends AbstractDomainObject {
 		this.causeOfDeath = causeOfDeath;
 	}
 
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getCauseOfDeathDetails() {
 		return causeOfDeathDetails;
 	}
