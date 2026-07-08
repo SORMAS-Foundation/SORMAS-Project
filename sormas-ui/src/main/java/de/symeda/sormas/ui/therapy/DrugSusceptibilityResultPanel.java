@@ -86,8 +86,8 @@ public class DrugSusceptibilityResultPanel extends CustomLayout {
                     + fluidRowLocs(CIPROFLOXACIN_SUSCEPTIBILITY, OFLOXACIN_SUSCEPTIBILITY, "", "")
                     + fluidRowLocs(GATIFLOXACIN_SUSCEPTIBILITY, "", "", "")
                     + fluidRowLocs(AMIKACIN_SUSCEPTIBILITY, "", "", "")
-                    + fluidRowLocs("LAYOUT_CEFTRIAXONE", "LAYOUT_RIFAMPICIN", "", "")
-                    + fluidRowLocs("LAYOUT_CIPROFLOXACIN", "LAYOUT_PENICILLIN", "", "")
+                    + fluidRowLocs("LAYOUT_CEFTRIAXONE", "LAYOUT_PENICILLIN", "", "")
+                    + fluidRowLocs("LAYOUT_CIPROFLOXACIN", "LAYOUT_RIFAMPICIN", "", "")
                     + fluidRowLocs("LAYOUT_ERYTHROMYCIN", "", "", "");
     //@formatter:on
 
