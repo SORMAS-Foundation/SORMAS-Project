@@ -1057,7 +1057,13 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	public ExternalMessageDto overwriteSurveyResponse(String uuid, @Nullable PatchDictionary correctedDictionary) {
 		logger.debug("overwriteSurveyResponse: [{}],[{}]", uuid, correctedDictionary);
 		ExternalMessageDto externalMessage = getByUuid(uuid);
-		ExternalMessageSurveyResponseRequest latestRequest = externalMessage.getSurveyResponseData().getLatest().getRequest();
+		ExternalSurveyResponseData surveyResponseData = externalMessage.getSurveyResponseData();
+
+		if (surveyResponseData == null) {
+			throw new IllegalStateException(String.format("Missing surveyResponseData for external message: [%s]", uuid));
+		}
+
+		ExternalMessageSurveyResponseRequest latestRequest = surveyResponseData.getLatest().getRequest();
 
 		logger.info("On reprocessing replacement strategy is set to ALWAYS to allow override values, enable debug to see request");
 		logger.debug("Request before transformation: [{}]", latestRequest);
@@ -1079,7 +1085,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		logger.debug("Request after transformation: [{}]", correctedRequest);
 
 		ExternalMessageSurveyResponseWrapper updatedWrapper = new ExternalMessageSurveyResponseWrapper().setRequest(correctedRequest);
-		externalMessage.getSurveyResponseData().setUpdated(updatedWrapper);
+		surveyResponseData.setUpdated(updatedWrapper);
 		externalMessage.setChangeDate(new Date());
 
 		ExternalMessageDto result;

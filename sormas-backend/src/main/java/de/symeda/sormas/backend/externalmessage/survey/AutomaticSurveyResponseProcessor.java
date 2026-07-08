@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -85,7 +86,11 @@ public class AutomaticSurveyResponseProcessor {
 
 		List<Tuple<SurveyReferenceDto, String>> tokenBySurveyReferenceTuples = surveyFacade.getByExternalIds(externalSurveyIds)
 			.stream()
-			.flatMap(survey -> tokensByExternalIds.get(survey.getExternalId()).stream().map(token -> new Tuple<>(survey.toReference(), token)))
+			.flatMap(
+				survey -> tokensByExternalIds.get(survey.getExternalId())
+					.stream()
+					.filter(Objects::nonNull)
+					.map(token -> new Tuple<>(survey.toReference(), token)))
 			.collect(Collectors.toList());
 
 		List<SurveyTokenDto> surveyTokens = surveyTokenFacade.getBySurveyReferenceTokenTuples(tokenBySurveyReferenceTuples);

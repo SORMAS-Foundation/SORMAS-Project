@@ -178,7 +178,8 @@ public class SurveyResponseDetailsWindow {
 
 		if (result == null) {
 			try {
-				result = FacadeProvider.getExternalMessageFacade().executeSurveyProcessing(uuid).getSurveyResponseData().getLatest().getResult();
+				externalMessage = FacadeProvider.getExternalMessageFacade().executeSurveyProcessing(uuid);
+				result = externalMessage.getSurveyResponseData().getLatest().getResult();
 			} catch (RuntimeException e) {
 				Notification.show(I18nProperties.getString(Strings.messageSurveyResponseNotYetProcessed), Notification.Type.HUMANIZED_MESSAGE);
 			}
