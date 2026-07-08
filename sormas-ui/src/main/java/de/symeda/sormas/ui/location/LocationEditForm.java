@@ -41,6 +41,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.PopupView;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.util.converter.Converter;
@@ -55,6 +56,13 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.geo.GeoLatLon;
+import de.symeda.sormas.api.geocoding.GeocodingConfigurationException;
+import de.symeda.sormas.api.geocoding.GeocodingConnectionException;
+import de.symeda.sormas.api.geocoding.GeocodingException;
+import de.symeda.sormas.api.geocoding.GeocodingInsufficientAddressException;
+import de.symeda.sormas.api.geocoding.GeocodingNoResultException;
+import de.symeda.sormas.api.geocoding.GeocodingResponseException;
+import de.symeda.sormas.api.geocoding.GeocodingResultFormatException;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -734,12 +742,36 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		String postalCode = getConvertedValue(LocationDto.POSTAL_CODE);
 		String city = getConvertedValue(LocationDto.CITY);
 
-		GeoLatLon latLon = FacadeProvider.getGeocodingFacade().getLatLon(street, houseNumber, postalCode, city);
+		try {
+			GeoLatLon latLon = FacadeProvider.getGeocodingFacade().getLatLon(street, houseNumber, postalCode, city);
 
-		if (latLon != null) {
 			setConvertedValue(LocationDto.LATITUDE, latLon.getLat());
 			setConvertedValue(LocationDto.LONGITUDE, latLon.getLon());
+		} catch (GeocodingInsufficientAddressException e) {
+			showGeocodingNotification(Strings.messageGeocodingInsufficientAddress, e.getMessage(), Notification.Type.WARNING_MESSAGE);
+		} catch (GeocodingNoResultException e) {
+			showGeocodingNotification(Strings.messageGeocodingNoResult, e.getMessage(), Notification.Type.WARNING_MESSAGE);
+		} catch (GeocodingConfigurationException e) {
+			// special handling as configuration has parameter
+			final String message = I18nProperties.getString(Strings.errorGeocodingConfiguration, e.getMessage());
+			showGeocodingNotification(null, String.format(message, e.getParameterName()), Notification.Type.ERROR_MESSAGE);
+		} catch (GeocodingConnectionException | GeocodingResponseException e) {
+			showGeocodingNotification(Strings.errorGeocodingUnavailable, e.getMessage(), Notification.Type.ERROR_MESSAGE);
+		} catch (GeocodingResultFormatException e) {
+			showGeocodingNotification(Strings.errorGeocodingInvalidResponse, e.getMessage(), Notification.Type.ERROR_MESSAGE);
+		} catch (GeocodingException e) {
+			showGeocodingNotification(Strings.errorGeocodingFailed, "Geocoding failed. Please try again later.", Notification.Type.ERROR_MESSAGE);
 		}
+	}
+
+	private void showGeocodingNotification(String key, String defaultMessage, Notification.Type notificationType) {
+
+		if (key == null || key.isBlank()) {
+			Notification.show(defaultMessage, notificationType);
+			return;
+		}
+
+		Notification.show(I18nProperties.getString(key, defaultMessage), notificationType);
 	}
 
 	public void showAddressType() {

@@ -138,6 +138,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String DAYS_AFTER_SYSTEM_EVENT_GETS_DELETED = "daysAfterSystemEventGetsDeleted";
 
 	public static final String GEOCODING_SERVICE_URL_TEMPLATE = "geocodingServiceUrlTemplate";
+	private static final String GEOCODING_SERVICE_USER_AGENT = "geocodingServiceUserAgent";
 	private static final String GEOCODING_LONGITUDE_JSON_PATH = "geocodingLongitudeJsonPath";
 	private static final String GEOCODING_LATITUDE_JSON_PATH = "geocodingLatitudeJsonPath";
 	private static final String GEOCODING_EPSG4326_WKT = "geocodingEPSG4326_WKT";
@@ -489,6 +490,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getGeocodingServiceUrlTemplate() {
 		return getProperty(GEOCODING_SERVICE_URL_TEMPLATE, null);
+	}
+
+	@Override
+	public String getGeocodingServiceUserAgent() {
+		return getProperty(GEOCODING_SERVICE_USER_AGENT, null);
 	}
 
 	@Override

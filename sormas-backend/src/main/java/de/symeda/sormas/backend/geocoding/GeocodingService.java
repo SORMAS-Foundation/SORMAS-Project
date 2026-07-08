@@ -47,6 +47,13 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 
 import de.symeda.sormas.api.geo.GeoLatLon;
+import de.symeda.sormas.api.geocoding.GeocodingConfigurationException;
+import de.symeda.sormas.api.geocoding.GeocodingConnectionException;
+import de.symeda.sormas.api.geocoding.GeocodingException;
+import de.symeda.sormas.api.geocoding.GeocodingInsufficientAddressException;
+import de.symeda.sormas.api.geocoding.GeocodingNoResultException;
+import de.symeda.sormas.api.geocoding.GeocodingResponseException;
+import de.symeda.sormas.api.geocoding.GeocodingResultFormatException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.location.Location;
@@ -70,31 +77,43 @@ public class GeocodingService {
 		return configFacade.getGeocodingServiceUrlTemplate() != null;
 	}
 
-	public GeoLatLon getLatLon(Location location) {
+	public GeoLatLon getLatLon(Location location) throws GeocodingException {
 
 		String street = Objects.toString(location.getStreet(), "");
 		String houseNumber = Objects.toString(location.getHouseNumber(), "");
 		String city = Objects.toString(location.getCity(), "");
 		String postalCode = Objects.toString(location.getPostalCode(), "");
-		if (StringUtils.isNotBlank(street) && (StringUtils.isNotBlank(city) || StringUtils.isNotBlank(postalCode))) {
-			return getLatLon(new LocationQuery(houseNumber, street, postalCode, city));
-		}
-		return null;
+		return getLatLon(new LocationQuery(houseNumber, street, postalCode, city));
 	}
 
-	public GeoLatLon getLatLon(LocationQuery query) {
+	public GeoLatLon getLatLon(LocationQuery query) throws GeocodingException {
+
+		validateQuery(query);
 
 		String urlTemplate = configFacade.getGeocodingServiceUrlTemplate();
-		if (DataHelper.isNullOrEmpty(urlTemplate)
-			|| DataHelper.isNullOrEmpty(configFacade.getGeocodingLatitudeJsonPath())
-			|| DataHelper.isNullOrEmpty(configFacade.getGeocodingLongitudeJsonPath())) {
-			return null;
-		}
+		String userAgent = configFacade.getGeocodingServiceUserAgent();
+		String latitudeJsonPath = configFacade.getGeocodingLatitudeJsonPath();
+		String longitudeJsonPath = configFacade.getGeocodingLongitudeJsonPath();
+		validateConfiguration(urlTemplate, userAgent, latitudeJsonPath, longitudeJsonPath);
 
-		return getLatLon(query, urlTemplate);
+		return getLatLon(query, urlTemplate, userAgent, latitudeJsonPath, longitudeJsonPath);
 	}
 
-	private GeoLatLon getLatLon(LocationQuery query, String urlTemplate) {
+	public boolean isConfigurationValid() {
+		String urlTemplate = configFacade.getGeocodingServiceUrlTemplate();
+		String userAgent = configFacade.getGeocodingServiceUserAgent();
+		String latitudeJsonPath = configFacade.getGeocodingLatitudeJsonPath();
+		String longitudeJsonPath = configFacade.getGeocodingLongitudeJsonPath();
+		try {
+			validateConfiguration(urlTemplate, userAgent, latitudeJsonPath, longitudeJsonPath);
+			return true;
+		} catch (GeocodingConfigurationException e) {
+			return false;
+		}
+	}
+
+	private GeoLatLon getLatLon(LocationQuery query, String urlTemplate, String userAgent, String latitudeJsonPath, String longitudeJsonPath)
+		throws GeocodingException {
 
 		StringSubstitutor substitutor = new StringSubstitutor(buildQuerySubstitutions(query));
 		String url = substitutor.replace(urlTemplate);
@@ -103,54 +122,92 @@ public class GeocodingService {
 		try {
 			targetUrl = new URIBuilder(url).build();
 		} catch (URISyntaxException e) {
-			throw new IllegalArgumentException(e);
+			throw new GeocodingConfigurationException("Geocoding URL template produces an invalid URI", e);
 		}
 
 		Client client = ClientHelper.newBuilderWithProxy().connectTimeout(10, TimeUnit.SECONDS).readTimeout(10, TimeUnit.SECONDS).build();
-		WebTarget target = client.target(targetUrl);
-		Response response = null;
-
-		// prevent timeouts on invalid addresses from causing errors
 		try {
-			response = target.request(MediaType.APPLICATION_JSON_TYPE).get();
+			WebTarget target = client.target(targetUrl);
+
+			// prevent timeouts on invalid addresses from causing errors
+			try (Response response = target.request(MediaType.APPLICATION_JSON_TYPE).header("User-Agent", userAgent).get()) {
+				String responseText = readResponseAsText(response);
+				if (response.getStatusInfo().getFamily() != Family.SUCCESSFUL) {
+					if (logger.isErrorEnabled()) {
+						logger
+							.error("geosearch query '{}' returned {} - {}:\n{}", query, response.getStatus(), response.getStatusInfo(), responseText);
+					}
+					throw new GeocodingResponseException(
+						String.format("Geocoding service returned %d %s", response.getStatus(), response.getStatusInfo()));
+				}
+
+				Object jsonLatitude = null;
+				Object jsonLongitude = null;
+				// read values as object, than parse to double
+				// JsonPath.read sometimes returns Integer that can't be casted to double, @see #6506
+				try {
+					jsonLatitude = JsonPath.read(responseText, latitudeJsonPath);
+					Double latitude = jsonLatitude != null ? Double.parseDouble(jsonLatitude.toString()) : null;
+					jsonLongitude = JsonPath.read(responseText, longitudeJsonPath);
+					Double longitude = jsonLongitude != null ? Double.parseDouble(jsonLongitude.toString()) : null;
+
+					if (latitude == null || longitude == null) {
+						throw new GeocodingNoResultException("Geocoding service did not return both latitude and longitude");
+					}
+
+					return new GeoLatLon(latitude, longitude);
+				} catch (PathNotFoundException e) {
+					if (logger.isDebugEnabled()) {
+						logger.debug("geosearch coordinates not found in '{}'", responseText);
+					}
+
+					throw new GeocodingNoResultException("Geocoding service returned no coordinates for the provided address", e);
+				} catch (NumberFormatException e) {
+					if (logger.isDebugEnabled()) {
+						logger.debug("geosearch coordinates can't be parsed: lat: {}, lon: {}", jsonLatitude, jsonLongitude);
+					}
+
+					throw new GeocodingResultFormatException("Geocoding service returned invalid coordinate values", e);
+				} catch (RuntimeException e) {
+					if (logger.isDebugEnabled()) {
+						logger.debug("geosearch response could not be parsed", e);
+					}
+
+					throw new GeocodingResultFormatException("Geocoding service returned an invalid response body", e);
+				}
+			}
 		} catch (ProcessingException exception) {
+			String causeMessage = exception.getCause() != null ? exception.getCause().toString() : exception.toString();
 			if (logger.isWarnEnabled()) {
-				logger.warn("geosearch query '{}' threw Exception with cause {}", query, exception.getCause().toString());
+				logger.warn("geosearch query '{}' threw Exception with cause {}", query, causeMessage);
 			}
-			return null;
+			throw new GeocodingConnectionException("Geocoding service could not be reached", exception);
+		} finally {
+			if (client != null) {
+				client.close();
+			}
 		}
+	}
 
-		String responseText = readResponseAsText(response);
-		if (response.getStatusInfo().getFamily() != Family.SUCCESSFUL) {
-			if (logger.isErrorEnabled()) {
-				logger.error("geosearch query '{}' returned {} - {}:\n{}", query, response.getStatus(), response.getStatusInfo(), responseText);
-			}
-			return null;
+	private void validateConfiguration(String urlTemplate, String userAgent, String latitudeJsonPath, String longitudeJsonPath)
+		throws GeocodingConfigurationException {
+		if (DataHelper.isNullOrEmpty(urlTemplate)) {
+			throw new GeocodingConfigurationException("URL Template");
 		}
+		if (DataHelper.isNullOrEmpty(userAgent)) {
+			throw new GeocodingConfigurationException("User agent");
+		}
+		if (DataHelper.isNullOrEmpty(latitudeJsonPath)) {
+			throw new GeocodingConfigurationException("Latitude JSON path");
+		}
+		if (DataHelper.isNullOrEmpty(longitudeJsonPath)) {
+			throw new GeocodingConfigurationException("Longitude JSON path");
+		}
+	}
 
-		Object jsonLatitude = null;
-		Object jsonLongitude = null;
-		// read values as object, than parse to double
-		// JsonPath.read sometimes returns Integer that can't be casted to double, @see #6506
-		try {
-			jsonLatitude = JsonPath.read(responseText, configFacade.getGeocodingLatitudeJsonPath());
-			Double latitude = jsonLatitude != null ? Double.parseDouble(jsonLatitude.toString()) : null;
-			jsonLongitude = JsonPath.read(responseText, configFacade.getGeocodingLongitudeJsonPath());
-			Double longitude = jsonLongitude != null ? Double.parseDouble(jsonLongitude.toString()) : null;
-
-			return new GeoLatLon(latitude, longitude);
-		} catch (PathNotFoundException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug("geosearch coordinates not found in '{}'" + responseText);
-			}
-
-			return null;
-		} catch (NumberFormatException e) {
-			if (logger.isDebugEnabled()) {
-				logger.debug("geosearch coordinates can't be parsed: lat: {}, lon: {}", jsonLatitude, jsonLongitude);
-			}
-
-			return null;
+	private void validateQuery(LocationQuery query) throws GeocodingInsufficientAddressException {
+		if (StringUtils.isBlank(query.getStreet()) || (StringUtils.isBlank(query.getCity()) && StringUtils.isBlank(query.getPostalCode()))) {
+			throw new GeocodingInsufficientAddressException("Geocoding requires a street and either a city or postal code");
 		}
 	}
 
