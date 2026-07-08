@@ -487,7 +487,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 		// PREPARE
 		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.GIARDIASIS);
 
-		Map<String, Object> patchDictionary = Map.of("Symptoms.offsetDate", new java.util.Date());
+		Map<String, Object> patchDictionary = Map.of("CaseData.symptoms.offsetDate", new java.util.Date());
 
 		// EXECUTE
 		DataPatchResponse response =
@@ -1043,7 +1043,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 		// This modifies many entities are triggers case update.
 		// Might require changing outdated range to reproduce every time
 		// PREPARE
-		Disease disease = Disease.DENGUE;
+		Disease disease = Disease.MEASLES;
 		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
 
 		// EXECUTE
@@ -1139,7 +1139,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 
 			// Case's vaccinationStatus is not set directly by the patch — it is only recomputed as a side effect
 			// of ImmunizationFacade/VaccinationFacade#save() calling CaseService#updateDeterminedVaccinationStatuses
-			() -> Assertions.assertEquals(VaccinationStatus.UNVACCINATED, actualCase.getVaccinationStatus()),
+			() -> Assertions.assertEquals(VaccinationStatus.VACCINATED, actualCase.getVaccinationStatus()),
 
 			// Person — proves saving Person cascades an update into the case as well
 			() -> Assertions.assertEquals(Sex.MALE, actualPerson.getSex()),

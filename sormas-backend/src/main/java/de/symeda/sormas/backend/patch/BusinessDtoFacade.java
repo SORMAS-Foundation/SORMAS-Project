@@ -2,7 +2,6 @@ package de.symeda.sormas.backend.patch;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -11,6 +10,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -66,6 +66,12 @@ public class BusinessDtoFacade {
 	 * Some {@link EntityDto} must be attached to a "parent" to be saved.
 	 */
 	private final Map<Class<? extends EntityDto>, LeafAttacher> leafAttacherDictionary = new LinkedHashMap<>();
+
+	/**
+	 * Attached directly to case data.
+	 * Will be saved in one shot with the case.
+	 */
+	private final Map<Class<? extends EntityDto>, LeafAttacher> caseDataLeafAttacherDictionary = new LinkedHashMap<>();
 
 	@PostConstruct
 	private void init() {
@@ -187,19 +193,25 @@ public class BusinessDtoFacade {
 			}
 			immunization.getVaccinations().add((VaccinationDto) leaf);
 		});
-		registerLeafAttacher(ExposureDto.class, (leaf, groupIndex, list) -> {
+
+		// directly linked to the case
+		registerCaseDataLeafAttacher(ExposureDto.class, (leaf, groupIndex, list) -> {
 			requireCaseData(list).getEpiData().getExposures().add((ExposureDto) leaf);
 		});
-		registerLeafAttacher(ActivityAsCaseDto.class, (leaf, groupIndex, list) -> {
+		registerCaseDataLeafAttacher(ActivityAsCaseDto.class, (leaf, groupIndex, list) -> {
 			requireCaseData(list).getEpiData().getActivitiesAsCase().add((ActivityAsCaseDto) leaf);
 		});
-		registerLeafAttacher(PreviousHospitalizationDto.class, (leaf, groupIndex, list) -> {
+		registerCaseDataLeafAttacher(PreviousHospitalizationDto.class, (leaf, groupIndex, list) -> {
 			requireCaseData(list).getHospitalization().getPreviousHospitalizations().add((PreviousHospitalizationDto) leaf);
 		});
 	}
 
 	private <T extends EntityDto> void registerLeafAttacher(Class<T> leafClass, LeafAttacher attacher) {
 		leafAttacherDictionary.put(leafClass, attacher);
+	}
+
+	private <T extends EntityDto> void registerCaseDataLeafAttacher(Class<T> leafClass, LeafAttacher attacher) {
+		caseDataLeafAttacherDictionary.put(leafClass, attacher);
 	}
 
 	private CaseDataDto requireCaseData(List<Tuple<Integer, EntityDto>> dtosInProgress) {
@@ -310,22 +322,25 @@ public class BusinessDtoFacade {
 	}
 
 	public void save(@NotNull List<Tuple<Integer, EntityDto>> entityDtosByKey) {
-		// Be careful about "leaf-entities" that can change the case data:
-		// Person ; Immunization and VaccinationDto
-		/*
+		Predicate<Tuple<Integer, EntityDto>> allButCaseDataDto = tuple -> tuple.getSecond() instanceof CaseDataDto;
+		Optional<EntityDto> caseDataOpt = entityDtosByKey.stream().filter(allButCaseDataDto).map(Tuple::getSecond).findAny();
+
 		List<Tuple<Integer, EntityDto>> dtosInProgress = new ArrayList<>(entityDtosByKey);
 
-		//entityDtosByKey.stream()	.filter(dto -> dto.)
+		// must be attached to case data before being stored, otherwise those entities are lost.
+		caseDataLeafAttacherDictionary.forEach((leafClass, attacher) -> {
+			List<Tuple<Integer, EntityDto>> leaves =
+				dtosInProgress.stream().filter(t -> leafClass.isInstance(t.getSecond())).collect(Collectors.toList());
 
-		// ordering is important: root entities must be saved first to avoid OutdatedEntityException as leaf entities seem to update the case.
-		List<Tuple<Integer, EntityDto>>	 orderedRootEntities = entityDtosByKey.stream()
-			.filter(tuple -> leafAttacherDictionary.keySet().stream().noneMatch(leafClass -> leafClass.isInstance(tuple.getSecond())))
-			.sorted(Comparator.comparing(Tuple::getSecond, new EntityDtoTypeComparator()))
-			.collect(Collectors.toList());
+			leaves.forEach(leafTuple -> {
+				dtosInProgress.remove(leafTuple);
+				attacher.attachLeaf(leafTuple.getSecond(), leafTuple.getFirst(), dtosInProgress);
+			});
+		});
 
-		orderedRootEntities.stream().map(Tuple::getSecond).forEach(this::saveDirectEntity);
+		// case data must be stored up-front because "logically-attached" entities might update it again: immunization etc. 
+		caseDataOpt.ifPresent(this::saveDirectEntity);
 
-		// once it's done, leaf entities can be saved, as updating root entities will not break
 		leafAttacherDictionary.forEach((leafClass, attacher) -> {
 			List<Tuple<Integer, EntityDto>> leaves =
 				dtosInProgress.stream().filter(t -> leafClass.isInstance(t.getSecond())).collect(Collectors.toList());
@@ -335,22 +350,8 @@ public class BusinessDtoFacade {
 				attacher.attachLeaf(leafTuple.getSecond(), leafTuple.getFirst(), dtosInProgress);
 			});
 		});
-		*/
-		List<Tuple<Integer, EntityDto>> dtosInProgress = new ArrayList<>(entityDtosByKey);
 
-		leafAttacherDictionary.forEach((leafClass, attacher) -> {
-			List<Tuple<Integer, EntityDto>> leaves =
-					dtosInProgress.stream().filter(t -> leafClass.isInstance(t.getSecond())).collect(Collectors.toList());
-
-			leaves.forEach(leafTuple -> {
-				dtosInProgress.remove(leafTuple);
-				attacher.attachLeaf(leafTuple.getSecond(), leafTuple.getFirst(), dtosInProgress);
-			});
-		});
-
-		dtosInProgress.stream().map(Tuple::getSecond).forEach(this::saveDirectEntity);
-
-
+		dtosInProgress.stream().filter(Predicate.not(allButCaseDataDto)).map(Tuple::getSecond).forEach(this::saveDirectEntity);
 	}
 
 	@FunctionalInterface

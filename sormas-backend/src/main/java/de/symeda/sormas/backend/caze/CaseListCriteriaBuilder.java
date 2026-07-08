@@ -264,6 +264,8 @@ public class CaseListCriteriaBuilder {
 		switch (sortProperty.propertyName) {
 		case CaseIndexDto.PERSON_UUID:
 			return Collections.singletonList(joins.getPerson().get(Person.UUID));
+		case CaseIndexDto.DISEASE_VARIANT:
+			return Collections.singletonList(caze.get(Case.DISEASE_VARIANT_VALUE));
 		case CaseIndexDto.ID:
 		case CaseIndexDto.UUID:
 		case CaseIndexDto.EPID_NUMBER:
@@ -279,8 +281,6 @@ public class CaseListCriteriaBuilder {
 		case CaseIndexDto.FOLLOW_UP_STATUS:
 		case CaseIndexDto.FOLLOW_UP_UNTIL:
 		case CaseIndexDto.VACCINATION_STATUS:
-		case CaseIndexDto.DISEASE_VARIANT:
-			return Collections.singletonList(caze.get(Case.DISEASE_VARIANT_VALUE));
 		case CaseIndexDto.EXTERNAL_ID:
 		case CaseIndexDto.EXTERNAL_TOKEN:
 		case CaseIndexDto.INTERNAL_TOKEN:
