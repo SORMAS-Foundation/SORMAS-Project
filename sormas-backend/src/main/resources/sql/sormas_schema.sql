@@ -16723,15 +16723,4 @@ BEGIN
 END $$;
 INSERT INTO schema_version (version_number, comment) VALUES (646, 'Correcting the typos of column names');
 
--- #14144 - External message cause of death
-
-ALTER TABLE externalmessage ADD COLUMN causeofdeath varchar(255);
-ALTER TABLE externalmessage ADD COLUMN causeofdeathdetails varchar(512);
-ALTER TABLE externalmessage ADD COLUMN causeofdeathdisease varchar(255);
-ALTER TABLE externalmessage_history ADD COLUMN causeofdeath varchar(255);
-ALTER TABLE externalmessage_history ADD COLUMN causeofdeathdetails varchar(512);
-ALTER TABLE externalmessage_history ADD COLUMN causeofdeathdisease varchar(255);
-
-INSERT INTO schema_version (version_number, comment) VALUES (647, '#14144 - External message missing cause of death');
-
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

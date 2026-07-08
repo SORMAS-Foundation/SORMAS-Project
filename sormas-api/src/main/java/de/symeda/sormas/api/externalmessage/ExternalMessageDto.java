@@ -39,7 +39,6 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
@@ -50,7 +49,6 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
-import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
 @AuditedClass
@@ -200,11 +198,6 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private Date treatmentStartedDate;
 	private Date diagnosticDate;
 	private Date deceasedDate;
-	private CauseOfDeath causeOfDeath;
-	private Disease causeOfDeathDisease;
-	@SensitiveData
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
-	private String causeOfDeathDetails;
 
 	@AuditIncludeProperty
 	private List<SampleReportDto> sampleReports;
@@ -902,30 +895,6 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	public void setDeceasedDate(Date deceasedDate) {
 		this.deceasedDate = deceasedDate;
-	}
-
-	public CauseOfDeath getCauseOfDeath() {
-		return causeOfDeath;
-	}
-
-	public void setCauseOfDeath(CauseOfDeath causeOfDeath) {
-		this.causeOfDeath = causeOfDeath;
-	}
-
-	public String getCauseOfDeathDetails() {
-		return causeOfDeathDetails;
-	}
-
-	public void setCauseOfDeathDetails(String causeOfDeathDetails) {
-		this.causeOfDeathDetails = causeOfDeathDetails;
-	}
-
-	public Disease getCauseOfDeathDisease() {
-		return causeOfDeathDisease;
-	}
-
-	public void setCauseOfDeathDisease(Disease causeOfDeathDisease) {
-		this.causeOfDeathDisease = causeOfDeathDisease;
 	}
 
 	public RadiographyCompatibility getRadiographyCompatibility() {

@@ -252,9 +252,6 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setAdditionalPersonContactDetails(source.getAdditionalPersonContactDetails());
 		target.setAdditionalPersonAddresses(source.getAdditionalPersonAddresses());
 		target.setDeceasedDate(source.getDeceasedDate());
-		target.setCauseOfDeath(source.getCauseOfDeath());
-		target.setCauseOfDeathDetails(source.getCauseOfDeathDetails());
-		target.setCauseOfDeathDisease(source.getCauseOfDeathDisease());
 
 		target.setReportId(source.getReportId());
 		if (source.getAssignee() != null) {
@@ -585,9 +582,6 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setAdditionalPersonContactDetails(source.getAdditionalPersonContactDetails());
 		target.setAdditionalPersonAddresses(source.getAdditionalPersonAddresses());
 		target.setDeceasedDate(source.getDeceasedDate());
-		target.setCauseOfDeath(source.getCauseOfDeath());
-		target.setCauseOfDeathDetails(source.getCauseOfDeathDetails());
-		target.setCauseOfDeathDisease(source.getCauseOfDeathDisease());
 
 		target.setReportId(source.getReportId());
 		if (source.getSampleReports() != null) {

@@ -91,17 +91,6 @@ public final class ExternalMessageMapper {
 					externalMessage.getPersonPresentCondition(),
 					PersonDto.PRESENT_CONDITION),
 				Mapping.of(person::setDeathDate, person.getDeathDate(), externalMessage.getDeceasedDate(), PersonDto.DEATH_DATE),
-				Mapping.of(person::setCauseOfDeath, person.getCauseOfDeath(), externalMessage.getCauseOfDeath(), PersonDto.CAUSE_OF_DEATH),
-				Mapping.of(
-					person::setCauseOfDeathDetails,
-					person.getCauseOfDeathDetails(),
-					externalMessage.getCauseOfDeathDetails(),
-					PersonDto.CAUSE_OF_DEATH_DETAILS),
-				Mapping.of(
-					person::setCauseOfDeathDisease,
-					person.getCauseOfDeathDisease(),
-					externalMessage.getCauseOfDeathDisease(),
-					PersonDto.CAUSE_OF_DEATH_DISEASE),
 				Mapping.of(person::setPhone, person.getPhone(), externalMessage.getPersonPhone(), PersonDto.PERSON_CONTACT_DETAILS),
 				Mapping.of(
 					person::setPhoneNumberType,
