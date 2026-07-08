@@ -100,10 +100,9 @@ public class SampleDashboardFilterLayout extends DashboardFilterLayout<SampleDas
 		diseaseFilter.setWidth(200, Unit.PIXELS);
 		diseaseFilter.setInputPrompt(I18nProperties.getString(Strings.promptDisease));
 		diseaseFilter.setDescription(I18nProperties.getDescription(Descriptions.sampleDashboardDiseaseFilter));
-		List<?> availableDisease = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true);
+		List<Disease> availableDisease = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true);
 
-		diseaseFilter
-			.addItems(Stream.concat(availableDisease.stream(), Stream.of(SampleDashboardCustomDiseaseFilter.values())).collect(Collectors.toList()));
+		diseaseFilter.addItems(availableDisease);
 		diseaseFilter.setValue(dashboardDataProvider.getDisease());
 
 		diseaseFilter.addValueChangeListener(e -> {
@@ -113,9 +112,6 @@ public class SampleDashboardFilterLayout extends DashboardFilterLayout<SampleDas
 				selectedDisease = (Disease) filterValue;
 				dashboardDataProvider.setDisease(selectedDisease);
 				dashboardDataProvider.setWithNoDisease(null);
-			} else if (filterValue == SampleDashboardCustomDiseaseFilter.NO_DISEASE) {
-				dashboardDataProvider.setDisease(null);
-				dashboardDataProvider.setWithNoDisease(true);
 			} else if (filterValue == null) {
 				dashboardDataProvider.setDisease(null);
 				dashboardDataProvider.setWithNoDisease(null);
@@ -229,13 +225,4 @@ public class SampleDashboardFilterLayout extends DashboardFilterLayout<SampleDas
 		addCustomComponent(sampleMaterialFilter, SAMPLE_MATERIAL_FILTER);
 	}
 
-	enum SampleDashboardCustomDiseaseFilter {
-
-		NO_DISEASE;
-
-		@Override
-		public String toString() {
-			return I18nProperties.getEnumCaptionShort(this);
-		}
-	}
 }
