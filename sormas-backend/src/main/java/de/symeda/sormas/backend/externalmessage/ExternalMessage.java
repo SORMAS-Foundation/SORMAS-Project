@@ -15,12 +15,26 @@
 
 package de.symeda.sormas.backend.externalmessage;
 
-import static de.symeda.sormas.api.utils.FieldConstraints.*;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_SMALL;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_TEXT;
 
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
@@ -38,6 +52,7 @@ import de.symeda.sormas.api.disease.DiseaseVariantConverter;
 import de.symeda.sormas.api.exposure.ModeOfTransmission;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.ExternalMessageType;
+import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
@@ -169,6 +184,9 @@ public class ExternalMessage extends AbstractDomainObject {
 	private Date treatmentStartedDate;
 	private Date diagnosticDate;
 	private Date deceasedDate;
+	private CauseOfDeath causeOfDeath;
+	private String causeOfDeathDetails;
+	private Disease causeOfDeathDisease;
 
 	private String externalMessageDetails;
 	private String caseComments;
@@ -861,6 +879,33 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public void setDeceasedDate(Date deceasedDate) {
 		this.deceasedDate = deceasedDate;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public CauseOfDeath getCauseOfDeath() {
+		return causeOfDeath;
+	}
+
+	public void setCauseOfDeath(CauseOfDeath causeOfDeath) {
+		this.causeOfDeath = causeOfDeath;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getCauseOfDeathDetails() {
+		return causeOfDeathDetails;
+	}
+
+	public void setCauseOfDeathDetails(String causeOfDeathDetails) {
+		this.causeOfDeathDetails = causeOfDeathDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public Disease getCauseOfDeathDisease() {
+		return causeOfDeathDisease;
+	}
+
+	public void setCauseOfDeathDisease(Disease causeOfDeathDisease) {
+		this.causeOfDeathDisease = causeOfDeathDisease;
 	}
 
 	@Enumerated(EnumType.STRING)

@@ -61,8 +61,6 @@ import de.symeda.sormas.backend.util.ModelConstants;
 public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 
 	@EJB
-	private UserRoleFacadeEjb.UserRoleFacadeEjbLocal userRoleFacade;
-	@EJB
 	private RegionService regionService;
 	@EJB
 	private DistrictService districtService;
@@ -932,9 +930,7 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 
 	@Transactional(Transactional.TxType.REQUIRED)
 	public boolean isPortHealthUser() {
-		User user = getCurrentUser();
-		Set<UserRoleDto> userRoleDtos = user.getUserRoles().stream().map(UserRoleFacadeEjb::toDto).collect(Collectors.toSet());
-		return userRoleFacade.isPortHealthUser(userRoleDtos);
+		return UserRole.isPortHealthUser(getCurrentUser().getUserRoles());
 	}
 
 	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, UserJoins joins) {

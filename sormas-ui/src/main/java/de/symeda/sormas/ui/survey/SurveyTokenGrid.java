@@ -6,6 +6,7 @@ import de.symeda.sormas.api.survey.SurveyIndexDto;
 import de.symeda.sormas.api.survey.SurveyTokenCriteria;
 import de.symeda.sormas.api.survey.SurveyTokenIndexDto;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.utils.BooleanRenderer;
 import de.symeda.sormas.ui.utils.CaseUuidRenderer;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
 import de.symeda.sormas.ui.utils.FilteredGrid;
@@ -59,6 +60,9 @@ public class SurveyTokenGrid extends FilteredGrid<SurveyTokenIndexDto, SurveyTok
 		((Column<SurveyTokenIndexDto, String>) getColumn(SurveyTokenIndexDto.ASSIGNED_CASE_UUID)).setRenderer(new CaseUuidRenderer(uuid -> false));
 
 		((Column<SurveyTokenIndexDto, String>) getColumn(SurveyTokenIndexDto.UUID)).setRenderer(new UuidRenderer());
+
+		getColumn(SurveyTokenIndexDto.RESPONSE_RECEIVED).setRenderer(new BooleanRenderer());
+
 	}
 
 	public void reload() {

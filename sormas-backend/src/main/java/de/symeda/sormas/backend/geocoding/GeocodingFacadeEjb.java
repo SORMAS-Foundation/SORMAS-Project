@@ -20,9 +20,8 @@ package de.symeda.sormas.backend.geocoding;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-import org.apache.commons.lang3.StringUtils;
-
 import de.symeda.sormas.api.geo.GeoLatLon;
+import de.symeda.sormas.api.geocoding.GeocodingException;
 import de.symeda.sormas.api.geocoding.GeocodingFacade;
 
 @Stateless(name = "GeocodingFacade")
@@ -37,12 +36,12 @@ public class GeocodingFacadeEjb implements GeocodingFacade {
 	}
 
 	@Override
-	public GeoLatLon getLatLon(String street, String houseNumber, String postalCode, String city) {
+	public boolean isConfigurationValid() {
+		return geocodingService.isConfigurationValid();
+	}
 
-		if (StringUtils.isNotBlank(street) && (StringUtils.isNotBlank(city) || StringUtils.isNotBlank(postalCode))) {
-			return geocodingService.getLatLon(new LocationQuery(houseNumber, street, postalCode, city));
-		}
-
-		return null;
+	@Override
+	public GeoLatLon getLatLon(String street, String houseNumber, String postalCode, String city) throws GeocodingException {
+		return geocodingService.getLatLon(new LocationQuery(houseNumber, street, postalCode, city));
 	}
 }

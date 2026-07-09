@@ -31,6 +31,7 @@ import com.vaadin.data.ValueContext;
 import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.v7.data.fieldgroup.FieldGroup.CommitEvent;
@@ -43,6 +44,8 @@ import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.utils.Diseases;
@@ -51,12 +54,14 @@ import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.FormComponent;
 
 /**
  * Simplified "Quick Immunization Entry" form showing only the 7 core fields (BR0070).
- * Jurisdiction fields (responsibleRegion, responsibleDistrict) are not shown; they must be
- * pre-set on the DTO before calling {@link #setValue(ImmunizationDto)}.
+ * Jurisdiction fields (responsibleRegion, responsibleDistrict) stay hidden when they are already
+ * pre-set on the DTO before calling {@link #setValue(ImmunizationDto)}. If either value is missing,
+ * Vaadin 8 jurisdiction inputs are shown so the immunization can still be created.
  * <p>
  * Extends {@link AbstractEditForm} for compatibility with
  * {@link de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent}.
@@ -131,6 +136,9 @@ public class QuickImmunizationCreationForm extends AbstractEditForm<Immunization
 
 		private DateField reportDate;
 		private ComboBox<MeansOfImmunization> meansOfImmunization;
+		private ComboBox<RegionReferenceDto> responsibleRegion;
+		private ComboBox<DistrictReferenceDto> responsibleDistrict;
+		private HorizontalLayout jurisdictionRow;
 		private TextField numberOfDoses;
 		private DateField dateOfMostRecentDose;
 		private ComboBox<VaccinationInfoSource> vaccinationInfoSource;
@@ -150,8 +158,12 @@ public class QuickImmunizationCreationForm extends AbstractEditForm<Immunization
 
 		@Override
 		public void setDto(ImmunizationDto dto) {
-			super.setDto(dto);
 			refreshMeansOfImmunizationOptions(dto != null ? dto.getDisease() : null);
+			// Populate district options before binding so a pre-set district can be displayed immediately.
+			refreshDistrictOptions(dto != null ? dto.getResponsibleRegion() : null);
+			super.setDto(dto);
+			refreshDistrictOptions(responsibleRegion.getValue());
+			updateJurisdictionFieldsVisibility(dto);
 			// binder.setBean() only fires value-change events when the value actually
 			// changes. If meansOfImmunization was already null (typical for a new DTO),
 			// no event fires and the listener never runs. Re-apply visibility and
@@ -170,6 +182,14 @@ public class QuickImmunizationCreationForm extends AbstractEditForm<Immunization
 			refreshMeansOfImmunizationOptions(null);
 			meansOfImmunization.setItemCaptionGenerator(I18nProperties::getEnumCaption);
 			addRow(reportDate, meansOfImmunization);
+
+			responsibleRegion = createComboBox(ImmunizationDto.RESPONSIBLE_REGION, ImmunizationDto.I18N_PREFIX);
+			responsibleRegion.setItemCaptionGenerator(item -> item != null ? item.buildCaption() : "");
+			responsibleRegion.setItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
+
+			responsibleDistrict = createComboBox(ImmunizationDto.RESPONSIBLE_DISTRICT, ImmunizationDto.I18N_PREFIX);
+			responsibleDistrict.setItemCaptionGenerator(item -> item != null ? item.buildCaption() : "");
+			jurisdictionRow = addRow(responsibleRegion, responsibleDistrict);
 
 			numberOfDoses = createTextField(ImmunizationDto.NUMBER_OF_DOSES, ImmunizationDto.I18N_PREFIX);
 			addRow(numberOfDoses, null);
@@ -213,6 +233,14 @@ public class QuickImmunizationCreationForm extends AbstractEditForm<Immunization
 				.asRequired(I18nProperties.getValidationError(Validations.required, meansOfImmunization.getCaption()))
 				.bind(ImmunizationDto::getMeansOfImmunization, ImmunizationDto::setMeansOfImmunization);
 
+			binder.forField(responsibleRegion)
+				.asRequired(I18nProperties.getValidationError(Validations.required, responsibleRegion.getCaption()))
+				.bind(ImmunizationDto.RESPONSIBLE_REGION);
+
+			binder.forField(responsibleDistrict)
+				.asRequired(I18nProperties.getValidationError(Validations.required, responsibleDistrict.getCaption()))
+				.bind(ImmunizationDto.RESPONSIBLE_DISTRICT);
+
 			binder.forField(numberOfDoses)
 				.withNullRepresentation("")
 				.withConverter(new StringToIntegerConverter(I18nProperties.getValidationError(Validations.vaccineDosesFormat)))
@@ -243,6 +271,7 @@ public class QuickImmunizationCreationForm extends AbstractEditForm<Immunization
 		}
 
 		private void wireEvents() {
+			track(responsibleRegion.addValueChangeListener(e -> refreshDistrictOptions(e.getValue())));
 			track(meansOfImmunization.addValueChangeListener(e -> {
 				updateVaccinationFieldsVisibility(e.getValue());
 				if (e.getValue() != MeansOfImmunization.MATERNAL_VACCINATION) {
@@ -264,6 +293,19 @@ public class QuickImmunizationCreationForm extends AbstractEditForm<Immunization
 			} else if (currentValue != null) {
 				meansOfImmunization.clear();
 			}
+		}
+
+		private void refreshDistrictOptions(RegionReferenceDto region) {
+			FieldHelper.updateItems(
+				responsibleDistrict,
+				region != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()) : null);
+		}
+
+		private void updateJurisdictionFieldsVisibility(ImmunizationDto dto) {
+			boolean showJurisdictionFields = dto == null || dto.getResponsibleRegion() == null || dto.getResponsibleDistrict() == null;
+			responsibleRegion.setVisible(showJurisdictionFields);
+			responsibleDistrict.setVisible(showJurisdictionFields);
+			jurisdictionRow.setVisible(showJurisdictionFields);
 		}
 
 		private void updateVaccinationFieldsVisibility(MeansOfImmunization meansOfImmunization) {

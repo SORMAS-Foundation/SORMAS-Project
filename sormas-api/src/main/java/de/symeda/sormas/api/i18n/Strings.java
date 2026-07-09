@@ -353,6 +353,11 @@ public interface Strings {
 	String errorFileNotFound = "errorFileNotFound";
 	String errorForbidden = "errorForbidden";
 	String errorFormIdPopulationAgeGroup = "errorFormIdPopulationAgeGroup";
+	String errorGeocodingConfiguration = "errorGeocodingConfiguration";
+	String errorGeocodingConfigurationInvalidParameter = "errorGeocodingConfigurationInvalidParameter";
+	String errorGeocodingFailed = "errorGeocodingFailed";
+	String errorGeocodingInvalidResponse = "errorGeocodingInvalidResponse";
+	String errorGeocodingUnavailable = "errorGeocodingUnavailable";
 	String errorIllegalFilename = "errorIllegalFilename";
 	String errorImmunizationNotEditable = "errorImmunizationNotEditable";
 	String errorIntegerFieldValidationFailed = "errorIntegerFieldValidationFailed";
@@ -993,6 +998,7 @@ public interface Strings {
 	String infoBulkProcessFinishedWithSkipsOutsideJurisdictionOrNotEligible = "infoBulkProcessFinishedWithSkipsOutsideJurisdictionOrNotEligible";
 	String infoBulkProcessNoEligibleEntries = "infoBulkProcessNoEligibleEntries";
 	String infoBulkUnresponsiveWindowHint = "infoBulkUnresponsiveWindowHint";
+	String infoCrowdinLocalization = "infoCrowdinLocalization";
 	String infoCalculateCompleteness = "infoCalculateCompleteness";
 	String infoCampaignsDashboard = "infoCampaignsDashboard";
 	String infoCanceledBy = "infoCanceledBy";
@@ -1528,6 +1534,8 @@ public interface Strings {
 	String messageForwardedExternalMessageFound = "messageForwardedExternalMessageFound";
 	String messageGdpr = "messageGdpr";
 	String messageGdprCheck = "messageGdprCheck";
+	String messageGeocodingInsufficientAddress = "messageGeocodingInsufficientAddress";
+	String messageGeocodingNoResult = "messageGeocodingNoResult";
 	String messageImmunizationArchived = "messageImmunizationArchived";
 	String messageImmunizationDearchived = "messageImmunizationDearchived";
 	String messageImmunizationOutsideJurisdictionDeletionDenied = "messageImmunizationOutsideJurisdictionDeletionDenied";

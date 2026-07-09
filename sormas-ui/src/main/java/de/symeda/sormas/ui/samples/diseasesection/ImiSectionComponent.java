@@ -152,5 +152,4 @@ public class ImiSectionComponent extends AbstractDiseaseSectionComponent {
 			drugSusceptibilityField = null;
 		}
 	}
-
 }

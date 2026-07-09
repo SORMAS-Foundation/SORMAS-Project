@@ -348,6 +348,17 @@ public class DrugSusceptibilityForm extends AbstractEditForm<DrugSusceptibilityD
 		super.markAsDirty();
 	}
 
+	@Override
+	public void commit() {
+		// When no DrugSusceptibilityDto is bound (e.g. after a disease-section swap nulls it), the internal
+		// field group has no item datasource, so committing its always-bound drug fields would throw
+		// "Property amikacinMic not bound to datasource" (#14124). Nothing to write, so skip the commit.
+		if (getValue() == null) {
+			return;
+		}
+		super.commit();
+	}
+
 	public void forceUpdateDrugSusceptibilityFields() {
 		final DrugSusceptibilityDto drugSusceptibilityDto = getValue();
 		if (drugSusceptibilityDto == null) {
