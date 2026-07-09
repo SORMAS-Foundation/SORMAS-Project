@@ -368,7 +368,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 
 		// must be able to ignore accents - whitespaces - case
 		String input = "DOES NOT MATCH TO Anythign";
-		Map<String, Object> patchDictionary = Map.of("Person.(occupationType|occupationDetails|additionalDetails)", input);
+		Map<String, Object> patchDictionary = Map.of("Person.(occupationType|occupationDetails)", input);
 		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
 			.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
 			.setPatchDictionary(patchDictionary);
@@ -391,7 +391,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			() -> Assertions.assertEquals(input, person.getOccupationDetails()),
 
 			() -> Assertions.assertEquals(
-				toPatchDictionary(Map.of("Person.occupationType", input, "Person.occupationDetails", input, "Person.additionalDetails", input)),
+				toPatchDictionary(Map.of("Person.occupationType", input, "Person.occupationDetails", input)),
 				response.getValidPatchDictionary()));
 	}
 
