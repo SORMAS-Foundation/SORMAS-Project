@@ -16723,4 +16723,21 @@ BEGIN
 END $$;
 INSERT INTO schema_version (version_number, comment) VALUES (646, 'Correcting the typos of column names');
 
+
+ALTER TABLE symptoms DROP COLUMN IF EXISTS abdominalcramps text;
+ALTER TABLE symptoms DROP COLUMN IF EXISTS coughingatnight text;
+ALTER TABLE symptoms DROP COLUMN IF EXISTS coughingattacks text;
+ALTER TABLE symptoms DROP COLUMN IF EXISTS flatulence text;
+ALTER TABLE symptoms DROP COLUMN IF EXISTS lossofappetite text;
+ALTER TABLE symptoms DROP COLUMN IF EXISTS smellyburps text;
+
+ALTER TABLE symptoms_history DROP COLUMN IF EXISTS abdominalcramps text;
+ALTER TABLE symptoms_history DROP COLUMN IF EXISTS coughingatnight text;
+ALTER TABLE symptoms_history DROP COLUMN IF EXISTS coughingattacks text;
+ALTER TABLE symptoms_history DROP COLUMN IF EXISTS flatulence text;
+ALTER TABLE symptoms_history DROP COLUMN IF EXISTS lossofappetite text;
+ALTER TABLE symptoms_history DROP COLUMN IF EXISTS smellyburps text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (647, 'Removing unused symptoms');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

@@ -395,6 +395,61 @@ class DataPatcherImplTest extends AbstractBeanTest {
 				response.getValidPatchDictionary()));
 	}
 
+	@Test
+	void patch_customizableEnu_default_enum_other_fermier() {
+		// PREPARE
+		OccupationType.getDefaultValues().forEach((k, v) -> {
+			CustomizableEnumValue entry = new CustomizableEnumValue();
+			entry.setDataType(CustomizableEnumType.OCCUPATION_TYPE);
+			entry.setValue(k);
+			entry.setCaption(k);
+			entry.setProperties(v);
+			entry.setDefaultValue(true);
+			getCustomizableEnumValueService().ensurePersisted(entry);
+		});
+
+		getCustomizableEnumFacade().loadData();
+
+		String otherOccupationType = "OTHER";
+		OccupationType expectedOccupationType =
+			getCustomizableEnumFacade().getEnumValue(CustomizableEnumType.OCCUPATION_TYPE, null, otherOccupationType);
+
+		CaseDataDto originalCase = creator.createUnclassifiedCase(Disease.PERTUSSIS);
+
+		FacilityDto healthFacility = getFacilityFacade().getByUuid(originalCase.getHealthFacility().getUuid());
+		originalCase.setDistrict(healthFacility.getDistrict());
+		getCaseFacade().save(originalCase);
+
+		// "fermier" (French for "farmer") does not match any default occupation type caption/translation, so it must fall back to OTHER
+		String input = "fermier";
+		Map<String, Object> patchDictionary = Map.of("Person.(occupationType|occupationDetails)", input);
+		CaseDataPatchRequest request = new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
+			.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+			.setInputLanguages(List.of(Language.FR, Language.DE, Language.EN))
+			.setPatchDictionary(patchDictionary);
+
+		Mockito
+			.when(MockProducer.getCustomizableEnumFacadeForConverter().getEnumValue(CustomizableEnumType.OCCUPATION_TYPE, null, otherOccupationType))
+			.thenReturn(expectedOccupationType);
+
+		// EXECUTE
+		DataPatchResponse response = victim().patch(request);
+
+		PersonDto person = getPersonFacade().getByUuid(originalCase.getPerson().getUuid());
+
+		// CHECK
+
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failure found, but should be empty"),
+
+			() -> Assertions.assertEquals(expectedOccupationType, person.getOccupationType()),
+			() -> Assertions.assertEquals(input, person.getOccupationDetails()),
+
+			() -> Assertions.assertEquals(
+				toPatchDictionary(Map.of("Person.occupationType", input, "Person.occupationDetails", input)),
+				response.getValidPatchDictionary()));
+	}
+
 	private static @NotNull CustomizableEnumTranslation buildTranslation(String en, String irrelated) {
 		CustomizableEnumTranslation e1 = new CustomizableEnumTranslation();
 		e1.setLanguageCode(en);
