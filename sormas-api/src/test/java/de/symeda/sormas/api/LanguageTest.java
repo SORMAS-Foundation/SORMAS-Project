@@ -40,6 +40,12 @@ public class LanguageTest {
 		assertThat(Language.fromLocaleString("it-CH"), is(Language.IT_CH));
 		assertThat(Language.fromLocaleString("IT_ch"), is(Language.IT_CH));
 
+		assertThat(Language.fromLocaleString("ru-RU"), is(Language.RU));
+		assertThat(Language.fromLocaleString("RU_ru"), is(Language.RU));
+
+		assertThat(Language.fromLocaleString("ka-GE"), is(Language.KA));
+		assertThat(Language.fromLocaleString("KA_ge"), is(Language.KA));
+
 		// at the moment only defined fallbacks are supported
 		assertThat(Language.fromLocaleString("de"), is(Language.DE));
 		assertThat(Language.fromLocaleString("DE"), is(Language.DE));
