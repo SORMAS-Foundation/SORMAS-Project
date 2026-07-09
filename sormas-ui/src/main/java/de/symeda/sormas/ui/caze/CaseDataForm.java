@@ -976,7 +976,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		Label generalCommentLabel = new Label(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.ADDITIONAL_DETAILS));
 		generalCommentLabel.addStyleName(H3);
 		getContent().addComponent(generalCommentLabel, GENERAL_COMMENT_LOC);
-		generalCommentLabel.setVisible(disease != Disease.TUBERCULOSIS);
+		// Enabling the general comments for all diseases.
+		generalCommentLabel.setVisible(true);
 
 		TextArea additionalDetails = addField(CaseDataDto.ADDITIONAL_DETAILS, TextArea.class);
 		additionalDetails.setRows(6);
@@ -1093,7 +1094,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				FieldVisibilityCheckers.withDisease(disease)
 					.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
 				FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized),
-				new PersonReferenceDto(person.getUuid()))).setCaption(null);
+				new PersonReferenceDto(person.getUuid())))
+			.setCaption(null);
 
 		//diagnosis criteria
 		if ((FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) && disease == Disease.TUBERCULOSIS) {
@@ -1516,8 +1518,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			CaseDataDto.SURVEILLANCE_OFFICER,
 			CaseDataDto.CLINICIAN_NAME,
 			CaseDataDto.CLINICIAN_PHONE,
-			CaseDataDto.CLINICIAN_EMAIL,
-			CaseDataDto.ADDITIONAL_DETAILS);
+			CaseDataDto.CLINICIAN_EMAIL);
 
 		// Customizable fields group panels
 		initializeCustomizableFieldPanels();
@@ -2115,10 +2116,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	}
 
 	public List<String> validateCustomizableFieldsAndCollectErrors() {
-		return getCustomizableFieldPanels()
-			.stream()
-			.flatMap(panel -> panel.validateAndCollectErrors().stream())
-			.collect(Collectors.toList());
+		return getCustomizableFieldPanels().stream().flatMap(panel -> panel.validateAndCollectErrors().stream()).collect(Collectors.toList());
 	}
 
 	public void addCustomizableFieldValueChangeListener(com.vaadin.data.HasValue.ValueChangeListener<?> listener) {
