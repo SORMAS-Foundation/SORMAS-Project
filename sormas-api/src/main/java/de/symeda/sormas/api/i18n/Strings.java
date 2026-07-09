@@ -998,6 +998,7 @@ public interface Strings {
 	String infoBulkProcessFinishedWithSkipsOutsideJurisdictionOrNotEligible = "infoBulkProcessFinishedWithSkipsOutsideJurisdictionOrNotEligible";
 	String infoBulkProcessNoEligibleEntries = "infoBulkProcessNoEligibleEntries";
 	String infoBulkUnresponsiveWindowHint = "infoBulkUnresponsiveWindowHint";
+	String infoCrowdinLocalization = "infoCrowdinLocalization";
 	String infoCalculateCompleteness = "infoCalculateCompleteness";
 	String infoCampaignsDashboard = "infoCampaignsDashboard";
 	String infoCanceledBy = "infoCanceledBy";
