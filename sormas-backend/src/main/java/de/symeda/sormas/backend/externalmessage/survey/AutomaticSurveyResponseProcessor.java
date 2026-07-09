@@ -167,6 +167,7 @@ public class AutomaticSurveyResponseProcessor {
 			externalMessage.setStatus(ExternalMessageStatus.UNPROCESSED);
 
 			surveyResponseProcessingResult.setRuntimeException(e);
+			surveyResponseProcessingResult.setResultStatus(ProcessingResultStatus.CANCELED);
 		}
 
 		logger.trace("result: [{}]", surveyResponseProcessingResult);
