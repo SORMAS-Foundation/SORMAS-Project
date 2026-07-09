@@ -261,44 +261,26 @@ public class CaseListCriteriaBuilder {
 
 	private List<Expression<?>> getIndexOrders(SortProperty sortProperty, Root<Case> caze, CaseJoins joins, CriteriaBuilder cb) {
 
+		// be careful to not put in the wrong place with the "leaky" switch case usage.
+
 		switch (sortProperty.propertyName) {
+		// person fields
 		case CaseIndexDto.PERSON_UUID:
 			return Collections.singletonList(joins.getPerson().get(Person.UUID));
-		case CaseIndexDto.DISEASE_VARIANT:
-			return Collections.singletonList(caze.get(Case.DISEASE_VARIANT_VALUE));
-		case CaseIndexDto.ID:
-		case CaseIndexDto.UUID:
-		case CaseIndexDto.EPID_NUMBER:
-		case CaseIndexDto.DISEASE:
-		case CaseIndexDto.CASE_CLASSIFICATION:
-		case CaseIndexDto.INVESTIGATION_STATUS:
-		case CaseIndexDto.REPORT_DATE:
-		case CaseIndexDto.CREATION_DATE:
-		case CaseIndexDto.OUTCOME:
-		case CaseIndexDetailedDto.RE_INFECTION:
-		case CaseIndexDto.QUARANTINE_TO:
-		case CaseIndexDto.COMPLETENESS:
-		case CaseIndexDto.FOLLOW_UP_STATUS:
-		case CaseIndexDto.FOLLOW_UP_UNTIL:
-		case CaseIndexDto.VACCINATION_STATUS:
-		case CaseIndexDto.EXTERNAL_ID:
-		case CaseIndexDto.EXTERNAL_TOKEN:
-		case CaseIndexDto.INTERNAL_TOKEN:
-		case CaseIndexDto.CASE_REFERENCE_NUMBER:
-		case CaseIndexDto.DISEASE_DETAILS:
-			return Collections.singletonList(cb.lower(caze.get(sortProperty.propertyName)));
+		case CaseIndexDto.PRESENT_CONDITION:
+		case CaseIndexDto.SEX:
+		case ContactIndexDto.SYMPTOM_JOURNAL_STATUS:
+			return Collections.singletonList(joins.getPerson().get(sortProperty.propertyName));
 		case CaseIndexDto.PERSON_NATIONAL_HEALTH_ID:
 			return Collections.singletonList(cb.lower(joins.getPerson().get(Person.NATIONAL_HEALTH_ID)));
 		case CaseIndexDto.PERSON_FIRST_NAME:
 			return Collections.singletonList(cb.lower(joins.getPerson().get(Person.FIRST_NAME)));
 		case CaseIndexDto.PERSON_LAST_NAME:
 			return Collections.singletonList(cb.lower(joins.getPerson().get(Person.LAST_NAME)));
-		case CaseIndexDto.PRESENT_CONDITION:
-		case CaseIndexDto.SEX:
-		case ContactIndexDto.SYMPTOM_JOURNAL_STATUS:
-			return Collections.singletonList(joins.getPerson().get(sortProperty.propertyName));
 		case CaseIndexDto.AGE_AND_BIRTH_DATE:
 			return Collections.singletonList(joins.getPerson().get(Person.APPROXIMATE_AGE));
+
+		// other
 		case CaseIndexDto.REGION_UUID:
 			return Collections.singletonList(joins.getRegion().get(Region.UUID));
 		case CaseIndexDto.DISTRICT_UUID:
@@ -313,6 +295,33 @@ public class CaseListCriteriaBuilder {
 			return Collections.singletonList(cb.lower(joins.getPointOfEntry().get(PointOfEntry.NAME)));
 		case CaseIndexDto.SURVEILLANCE_OFFICER_UUID:
 			return Collections.singletonList(joins.getSurveillanceOfficer().get(User.UUID));
+
+		// case fields
+		case CaseIndexDto.DISEASE_VARIANT:
+			return Collections.singletonList(caze.get(Case.DISEASE_VARIANT_VALUE));
+		// 		case normal fields
+		case CaseIndexDto.REPORT_DATE:
+		case CaseIndexDto.CREATION_DATE:
+		case CaseIndexDto.ID:
+		case CaseIndexDto.UUID:
+		case CaseIndexDto.EPID_NUMBER:
+		case CaseIndexDto.DISEASE:
+		case CaseIndexDto.CASE_CLASSIFICATION:
+		case CaseIndexDto.INVESTIGATION_STATUS:
+		case CaseIndexDto.OUTCOME:
+		case CaseIndexDetailedDto.RE_INFECTION:
+		case CaseIndexDto.QUARANTINE_TO:
+		case CaseIndexDto.COMPLETENESS:
+		case CaseIndexDto.FOLLOW_UP_STATUS:
+		case CaseIndexDto.FOLLOW_UP_UNTIL:
+		case CaseIndexDto.VACCINATION_STATUS:
+		case CaseIndexDto.DISEASE_DETAILS:
+			return Collections.singletonList(caze.get(sortProperty.propertyName));
+		case CaseIndexDto.EXTERNAL_ID:
+		case CaseIndexDto.EXTERNAL_TOKEN:
+		case CaseIndexDto.INTERNAL_TOKEN:
+		case CaseIndexDto.CASE_REFERENCE_NUMBER:
+			return Collections.singletonList(cb.lower(caze.get(sortProperty.propertyName)));
 		default:
 			throw new IllegalArgumentException(sortProperty.propertyName);
 		}

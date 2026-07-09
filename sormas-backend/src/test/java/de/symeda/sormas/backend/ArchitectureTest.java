@@ -293,6 +293,7 @@ public class ArchitectureTest {
 				"fetchAndSaveExternalMessages",
 				"bulkAssignExternalMessages",
 				"delete",
+				"executeSurveyProcessing",
 				"overwriteSurveyResponse",
 				"reAttemptSurveyProcessing",
 				"saveAndProcessSurveyResponses"),
