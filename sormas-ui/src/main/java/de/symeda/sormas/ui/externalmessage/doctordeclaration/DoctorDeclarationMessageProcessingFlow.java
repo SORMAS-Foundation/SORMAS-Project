@@ -411,6 +411,7 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 
 		getMapper().mergePersonAddress(person);
 		getMapper().mergePersonContactDetails(person);
+		getMapper().mergePersonAdditionalInformation(person);
 		getMapper().mapGuardianData(person);
 		getMapper().mapOccupationData(person);
 

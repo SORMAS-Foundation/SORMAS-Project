@@ -369,6 +369,58 @@ public final class ExternalMessageMapper {
 	}
 
 	/**
+	 * Merges additional person data.
+	 * Only non-null values from the external message overwrite existing fields.
+	 * 
+	 * @param person
+	 *            The existing person to update.
+	 * @return A list of changed UI field paths; empty if the person has no address.
+	 */
+	public List<String[]> mergePersonAdditionalInformation(PersonDto person) {
+		if (person == null) {
+			return Collections.emptyList();
+		}
+
+		List<String[]> changedFields = new ArrayList<>();
+
+		if (externalMessage.getPersonPresentCondition() != null) {
+			person.setPresentCondition(externalMessage.getPersonPresentCondition());
+			changedFields.add(
+				new String[] {
+					PersonDto.PRESENT_CONDITION });
+		}
+
+		if (externalMessage.getDeceasedDate() != null) {
+			person.setDeathDate(externalMessage.getDeceasedDate());
+			changedFields.add(
+				new String[] {
+					PersonDto.DEATH_DATE });
+		}
+
+		if (externalMessage.getCauseOfDeath() != null) {
+			person.setCauseOfDeath(externalMessage.getCauseOfDeath());
+			changedFields.add(
+				new String[] {
+					PersonDto.CAUSE_OF_DEATH });
+		}
+
+		if (externalMessage.getCauseOfDeathDisease() != null) {
+			person.setCauseOfDeathDisease(externalMessage.getCauseOfDeathDisease());
+			changedFields.add(
+				new String[] {
+					PersonDto.CAUSE_OF_DEATH_DISEASE });
+		}
+
+		if (externalMessage.getCauseOfDeathDetails() != null) {
+			person.setCauseOfDeathDetails(externalMessage.getCauseOfDeathDetails());
+			changedFields.add(
+				new String[] {
+					PersonDto.CAUSE_OF_DEATH_DETAILS });
+		}
+		return changedFields;
+	}
+
+	/**
 	 * Merges primary phone and email contact details from the external message onto the given person.
 	 * If the incoming value already exists in the list it is promoted to primary and the old primary is demoted;
 	 * otherwise a new primary entry is created and the old primary is demoted.
