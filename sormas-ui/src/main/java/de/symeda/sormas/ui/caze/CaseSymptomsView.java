@@ -17,9 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.utils.AnnotationFieldHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -50,8 +51,10 @@ public class CaseSymptomsView extends AbstractCaseView {
 
 		CaseDataDto caseDataDto = FacadeProvider.getCaseFacade().getByUuid(getCaseRef().getUuid());
 
-		// #14029: the Complications side panel is not relevant for Tuberculosis; keep the layout but leave the side empty
-		boolean showComplications = caseDataDto.getDisease() != Disease.TUBERCULOSIS;
+		// #14119: only show the Complications side panel for diseases that actually have complications configured
+		// (symptom fields annotated with @Complication). This also covers #14029 (Tuberculosis has none, so it stays empty).
+		boolean showComplications =
+			!AnnotationFieldHelper.getComplicatedSymptomsWithDiseases(SymptomsDto.class, caseDataDto.getDisease()).isEmpty();
 		CaseSymptomSideViewComponent symptomSideViewComponent =
 			showComplications ? new CaseSymptomSideViewComponent(caseDataDto.getDisease()) : null;
 		caseSymptomsComponent =

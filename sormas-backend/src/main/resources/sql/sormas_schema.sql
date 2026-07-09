@@ -16724,6 +16724,18 @@ END $$;
 INSERT INTO schema_version (version_number, comment) VALUES (646, 'Correcting the typos of column names');
 
 
+-- #14144 - External message cause of death
+
+ALTER TABLE externalmessage ADD COLUMN causeofdeath varchar(255);
+ALTER TABLE externalmessage ADD COLUMN causeofdeathdetails varchar(512);
+ALTER TABLE externalmessage ADD COLUMN causeofdeathdisease varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN causeofdeath varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN causeofdeathdetails varchar(512);
+ALTER TABLE externalmessage_history ADD COLUMN causeofdeathdisease varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (647, '#14144 - External message missing cause of death');
+
+-- removal unused symptoms
 ALTER TABLE symptoms DROP COLUMN IF EXISTS abdominalcramps;
 ALTER TABLE symptoms DROP COLUMN IF EXISTS coughingatnight;
 ALTER TABLE symptoms DROP COLUMN IF EXISTS coughingattacks;
@@ -16738,6 +16750,6 @@ ALTER TABLE symptoms_history DROP COLUMN IF EXISTS flatulence;
 ALTER TABLE symptoms_history DROP COLUMN IF EXISTS lossofappetite;
 ALTER TABLE symptoms_history DROP COLUMN IF EXISTS smellyburps;
 
-INSERT INTO schema_version (version_number, comment) VALUES (647, 'Removing unused symptoms');
+INSERT INTO schema_version (version_number, comment) VALUES (648, 'Removing unused symptoms');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

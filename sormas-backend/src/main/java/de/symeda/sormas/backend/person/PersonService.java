@@ -66,6 +66,9 @@ import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.geo.GeoLatLon;
+import de.symeda.sormas.api.geocoding.GeocodingConfigurationException;
+import de.symeda.sormas.api.geocoding.GeocodingConnectionException;
+import de.symeda.sormas.api.geocoding.GeocodingException;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.api.person.PersonCriteria;
@@ -959,7 +962,7 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public long updateGeoLocation(List<String> personUuids, boolean overwriteExistingCoordinates) {
+	public long updateGeoLocation(List<String> personUuids, boolean overwriteExistingCoordinates) throws GeocodingConfigurationException {
 
 		long updatedCount = 0;
 		List<Person> persons = getByUuids(personUuids);
@@ -971,20 +974,31 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 		return updatedCount;
 	}
 
-	public boolean updateGeoLocation(Person person, boolean overwriteExistingCoordinates) {
+	public boolean updateGeoLocation(Person person, boolean overwriteExistingCoordinates) throws GeocodingConfigurationException {
 
-		boolean geoLocationUpdated = false;
 		if (person.getAddress() != null
 			&& (overwriteExistingCoordinates || (person.getAddress().getLatitude() == null || person.getAddress().getLongitude() == null))) {
-			GeoLatLon latLon = geocodingService.getLatLon(person.getAddress());
-			if (latLon != null) {
-				person.getAddress().setLatitude(latLon.getLat());
-				person.getAddress().setLongitude(latLon.getLon());
-				ensurePersisted(person);
-				geoLocationUpdated = true;
+			try {
+				GeoLatLon latLon = geocodingService.getLatLon(person.getAddress());
+				if (latLon != null) {
+					person.getAddress().setLatitude(latLon.getLat());
+					person.getAddress().setLongitude(latLon.getLon());
+					ensurePersisted(person);
+					return true;
+				}
+			} catch (GeocodingConnectionException e) {
+				// if there is a connection problem we signal
+				logger.warn("Geocoding connection issue.", e);
+				return false;
+			} catch (GeocodingConfigurationException e) {
+				// we rethrow this to allow the chain upstairs to break
+				throw e;
+			} catch (GeocodingException e) {
+				// for other errors (i.e. incomplete address) we do not care
+				return false;
 			}
 		}
-		return geoLocationUpdated;
+		return false;
 	}
 
 	@Transactional(rollbackOn = Exception.class)
