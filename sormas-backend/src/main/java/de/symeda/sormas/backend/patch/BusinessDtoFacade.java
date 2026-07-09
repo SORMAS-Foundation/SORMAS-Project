@@ -150,7 +150,17 @@ public class BusinessDtoFacade {
 
 		registerFetchByI18nCreateUpdate(
 			PreviousHospitalizationDto.I18N_PREFIX,
-			caze -> AttachedEntityWrapper.notYetAttached(PreviousHospitalizationDto.build(caze)));
+			caze -> AttachedEntityWrapper.notYetAttached(buildPreviousHospitalization(caze)));
+	}
+
+	private static PreviousHospitalizationDto buildPreviousHospitalization(CaseDataDto caze) {
+		PreviousHospitalizationDto build = PreviousHospitalizationDto.build(caze);
+
+		// dates do not make when creating a new element in case of automatic patching.
+		build.setAdmissionDate(null);
+		build.setDischargeDate(null);
+
+		return build;
 	}
 
 	private Function<CaseDataDto, EntityDto> createImmunizationDtoFromCaseFct() {

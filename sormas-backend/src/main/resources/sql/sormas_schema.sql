@@ -16724,19 +16724,19 @@ END $$;
 INSERT INTO schema_version (version_number, comment) VALUES (646, 'Correcting the typos of column names');
 
 
-ALTER TABLE symptoms DROP COLUMN IF EXISTS abdominalcramps text;
-ALTER TABLE symptoms DROP COLUMN IF EXISTS coughingatnight text;
-ALTER TABLE symptoms DROP COLUMN IF EXISTS coughingattacks text;
-ALTER TABLE symptoms DROP COLUMN IF EXISTS flatulence text;
-ALTER TABLE symptoms DROP COLUMN IF EXISTS lossofappetite text;
-ALTER TABLE symptoms DROP COLUMN IF EXISTS smellyburps text;
+ALTER TABLE symptoms DROP COLUMN IF EXISTS abdominalcramps;
+ALTER TABLE symptoms DROP COLUMN IF EXISTS coughingatnight;
+ALTER TABLE symptoms DROP COLUMN IF EXISTS coughingattacks;
+ALTER TABLE symptoms DROP COLUMN IF EXISTS flatulence;
+ALTER TABLE symptoms DROP COLUMN IF EXISTS lossofappetite;
+ALTER TABLE symptoms DROP COLUMN IF EXISTS smellyburps;
 
-ALTER TABLE symptoms_history DROP COLUMN IF EXISTS abdominalcramps text;
-ALTER TABLE symptoms_history DROP COLUMN IF EXISTS coughingatnight text;
-ALTER TABLE symptoms_history DROP COLUMN IF EXISTS coughingattacks text;
-ALTER TABLE symptoms_history DROP COLUMN IF EXISTS flatulence text;
-ALTER TABLE symptoms_history DROP COLUMN IF EXISTS lossofappetite text;
-ALTER TABLE symptoms_history DROP COLUMN IF EXISTS smellyburps text;
+ALTER TABLE symptoms_history DROP COLUMN IF EXISTS abdominalcramps;
+ALTER TABLE symptoms_history DROP COLUMN IF EXISTS coughingatnight;
+ALTER TABLE symptoms_history DROP COLUMN IF EXISTS coughingattacks;
+ALTER TABLE symptoms_history DROP COLUMN IF EXISTS flatulence;
+ALTER TABLE symptoms_history DROP COLUMN IF EXISTS lossofappetite;
+ALTER TABLE symptoms_history DROP COLUMN IF EXISTS smellyburps;
 
 INSERT INTO schema_version (version_number, comment) VALUES (647, 'Removing unused symptoms');
 

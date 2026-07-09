@@ -1102,50 +1102,50 @@ class DataPatcherImplTest extends AbstractBeanTest {
 		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
 
 		// EXECUTE
+		Map<String, Object> patchDictionary = Map.ofEntries(
+			// CaseData
+			Map.entry("CaseData.quarantineChangeComment", "some comment"),
+			Map.entry(toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.FOLLOW_UP_STATUS), FollowUpStatus.FOLLOW_UP),
+
+			// Exposures
+			Map.entry(toFieldName(ExposureDto.I18N_PREFIX, ExposureDto.EXPOSURE_TYPE), "WORK"),
+			Map.entry(toFieldName(ExposureDto.I18N_PREFIX, ExposureDto.DESCRIPTION), "market visit"),
+
+			// EpiData
+			Map.entry("EpiData.exposureDetailsKnown", "YES"),
+			Map.entry("EpiData.contactWithSourceCaseKnown", "NO"),
+
+			// Hospitalization
+			Map.entry(toFieldName(HospitalizationDto.I18N_PREFIX, HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY), "YES"),
+			Map.entry(toFieldName(HospitalizationDto.I18N_PREFIX, HospitalizationDto.ADMISSION_DATE), "2024-05-10"),
+
+			// Previous hospitalization
+			Map.entry(toFieldName(PreviousHospitalizationDto.I18N_PREFIX, PreviousHospitalizationDto.ADMITTED_TO_HEALTH_FACILITY), "YES"),
+			Map.entry(toFieldName(PreviousHospitalizationDto.I18N_PREFIX, PreviousHospitalizationDto.ADMISSION_DATE), "2024-03-15"),
+			Map.entry(toFieldName(PreviousHospitalizationDto.I18N_PREFIX, PreviousHospitalizationDto.ICU_LENGTH_OF_STAY), "7"),
+
+			// Immunization — deliberately made ACQUIRED + valid across the case reportDate so that
+			// saving the Immunization/Vaccination (their own facades, not CaseFacade) forces
+			// CaseService#updateDeterminedVaccinationStatuses to recompute and persist the Case's vaccinationStatus.
+			Map.entry(toFieldName(ImmunizationDto.I18N_PREFIX, ImmunizationDto.IMMUNIZATION_STATUS), "ACQUIRED"),
+			Map.entry(toFieldName(ImmunizationDto.I18N_PREFIX, ImmunizationDto.MEANS_OF_IMMUNIZATION), "VACCINATION"),
+			Map.entry(toFieldName(ImmunizationDto.I18N_PREFIX, ImmunizationDto.VALID_FROM), "2020-01-01"),
+			Map.entry(toFieldName(ImmunizationDto.I18N_PREFIX, ImmunizationDto.VALID_UNTIL), "2035-01-01"),
+
+			// Vaccination
+			Map.entry(toFieldName(VaccinationDto.I18N_PREFIX, VaccinationDto.VACCINE_NAME), "COMIRNATY"),
+			Map.entry(toFieldName(VaccinationDto.I18N_PREFIX, VaccinationDto.VACCINATION_DATE), "2024-05-01"),
+			Map.entry(toFieldName(VaccinationDto.I18N_PREFIX, VaccinationDto.VACCINE_DOSE), "1"),
+
+			// Person — saving Person cascades into CaseFacade#onCaseChanged for every case of that person
+			Map.entry("Person.sex", "MALE"),
+
+			// Symptoms
+			Map.entry("Symptoms.cough", "YES"));
 		DataPatchResponse response = victim().patch(
 			new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
 				.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
-				.setPatchDictionary(
-					Map.ofEntries(
-						// CaseData
-						Map.entry("CaseData.quarantineChangeComment", "some comment"),
-						Map.entry(toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.FOLLOW_UP_STATUS), FollowUpStatus.FOLLOW_UP),
-
-						// Exposures
-						Map.entry(toFieldName(ExposureDto.I18N_PREFIX, ExposureDto.EXPOSURE_TYPE), "WORK"),
-						Map.entry(toFieldName(ExposureDto.I18N_PREFIX, ExposureDto.DESCRIPTION), "market visit"),
-
-						// EpiData
-						Map.entry("EpiData.exposureDetailsKnown", "YES"),
-						Map.entry("EpiData.contactWithSourceCaseKnown", "NO"),
-
-						// Hospitalization
-						Map.entry(toFieldName(HospitalizationDto.I18N_PREFIX, HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY), "YES"),
-						Map.entry(toFieldName(HospitalizationDto.I18N_PREFIX, HospitalizationDto.ADMISSION_DATE), "2024-05-10"),
-
-						// Previous hospitalization
-						Map.entry(toFieldName(PreviousHospitalizationDto.I18N_PREFIX, PreviousHospitalizationDto.ADMITTED_TO_HEALTH_FACILITY), "YES"),
-						Map.entry(toFieldName(PreviousHospitalizationDto.I18N_PREFIX, PreviousHospitalizationDto.ADMISSION_DATE), "2024-03-15"),
-						Map.entry(toFieldName(PreviousHospitalizationDto.I18N_PREFIX, PreviousHospitalizationDto.ICU_LENGTH_OF_STAY), "7"),
-
-						// Immunization — deliberately made ACQUIRED + valid across the case reportDate so that
-						// saving the Immunization/Vaccination (their own facades, not CaseFacade) forces
-						// CaseService#updateDeterminedVaccinationStatuses to recompute and persist the Case's vaccinationStatus.
-						Map.entry(toFieldName(ImmunizationDto.I18N_PREFIX, ImmunizationDto.IMMUNIZATION_STATUS), "ACQUIRED"),
-						Map.entry(toFieldName(ImmunizationDto.I18N_PREFIX, ImmunizationDto.MEANS_OF_IMMUNIZATION), "VACCINATION"),
-						Map.entry(toFieldName(ImmunizationDto.I18N_PREFIX, ImmunizationDto.VALID_FROM), "2020-01-01"),
-						Map.entry(toFieldName(ImmunizationDto.I18N_PREFIX, ImmunizationDto.VALID_UNTIL), "2035-01-01"),
-
-						// Vaccination
-						Map.entry(toFieldName(VaccinationDto.I18N_PREFIX, VaccinationDto.VACCINE_NAME), "COMIRNATY"),
-						Map.entry(toFieldName(VaccinationDto.I18N_PREFIX, VaccinationDto.VACCINATION_DATE), "2024-05-01"),
-						Map.entry(toFieldName(VaccinationDto.I18N_PREFIX, VaccinationDto.VACCINE_DOSE), "1"),
-
-						// Person — saving Person cascades into CaseFacade#onCaseChanged for every case of that person
-						Map.entry("Person.sex", "MALE"),
-
-						// Symptoms
-						Map.entry("Symptoms.cough", "YES"))));
+				.setPatchDictionary(patchDictionary));
 
 		// CHECK
 		CaseDataDto actualCase = getCaseFacade().getByUuid(originalCase.getUuid());
@@ -1179,6 +1179,7 @@ class DataPatcherImplTest extends AbstractBeanTest {
 			// Previous hospitalization
 			() -> Assertions.assertEquals(1, previousHospitalizations.size()),
 			() -> Assertions.assertEquals(YesNoUnknown.YES, previousHospitalizations.get(0).getAdmittedToHealthFacility()),
+			() -> Assertions.assertNull(previousHospitalizations.get(0).getDischargeDate()),
 			() -> Assertions.assertEquals(
 				Date.from(LocalDate.parse("2024-03-15").atStartOfDay(ZoneId.systemDefault()).toInstant()),
 				previousHospitalizations.get(0).getAdmissionDate()),
