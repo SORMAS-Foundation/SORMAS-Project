@@ -54,7 +54,8 @@ public class UserSettingsForm extends AbstractEditForm<UserDto> {
 		tfUuid.setCaption(I18nProperties.getCaption(Captions.userMyUserId));
 
 		Label crowdinInfoLabel = new Label(I18nProperties.getString(Strings.infoCrowdinLocalization), ContentMode.HTML);
-		CssStyles.style(crowdinInfoLabel, CssStyles.VSPACE_TOP_3);
+		crowdinInfoLabel.setWidth(100, Unit.PERCENTAGE);
+		CssStyles.style(crowdinInfoLabel, CssStyles.VSPACE_TOP_3, CssStyles.VSPACE_3);
 		getContent().addComponent(crowdinInfoLabel, CROWDIN_INFO_LOC);
 	}
 
