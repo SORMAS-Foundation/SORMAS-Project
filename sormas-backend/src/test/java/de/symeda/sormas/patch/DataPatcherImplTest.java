@@ -1205,6 +1205,69 @@ class DataPatcherImplTest extends AbstractBeanTest {
 	}
 
 	@Test
+	void patch_immunization_vaccines_not_acquired_different_immuno_groups() {
+		// This modifies many entities are triggers case update.
+		// Might require changing outdated range to reproduce every time
+		// PREPARE
+		Disease disease = Disease.RESPIRATORY_SYNCYTIAL_VIRUS;
+		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
+
+		PatchDictionary patchDictionary = new PatchDictionary();
+		// EXECUTE
+		// CaseData
+
+		// Immunization — deliberately made ACQUIRED + valid across the case reportDate so that
+		// saving the Immunization/Vaccination (their own facades, not CaseFacade) forces
+		// CaseService#updateDeterminedVaccinationStatuses to recompute and persist the Case's vaccinationStatus.
+		patchDictionary.put(PatchField.of(toFieldName(ImmunizationDto.I18N_PREFIX, ImmunizationDto.IMMUNIZATION_STATUS), 0), "ACQUIRED");
+		patchDictionary.put(PatchField.of(toFieldName(ImmunizationDto.I18N_PREFIX, ImmunizationDto.MEANS_OF_IMMUNIZATION), 0), "VACCINATION");
+		patchDictionary.put(PatchField.of(toFieldName(ImmunizationDto.I18N_PREFIX, ImmunizationDto.VALID_FROM), 0), "2020-01-01");
+		patchDictionary.put(PatchField.of(toFieldName(ImmunizationDto.I18N_PREFIX, ImmunizationDto.VALID_UNTIL), 0), "2035-01-01");
+		patchDictionary.put(PatchField.of(toFieldName(ImmunizationDto.I18N_PREFIX, ImmunizationDto.NUMBER_OF_DOSES), 0), 2);
+
+		// Vaccination
+		patchDictionary.put(PatchField.of(toFieldName(VaccinationDto.I18N_PREFIX, VaccinationDto.VACCINE_NAME), 0), "COMIRNATY");
+		patchDictionary.put(PatchField.of(toFieldName(VaccinationDto.I18N_PREFIX, VaccinationDto.VACCINATION_DATE), 0), "2024-05-01");
+		patchDictionary.put(PatchField.of(toFieldName(VaccinationDto.I18N_PREFIX, VaccinationDto.VACCINE_DOSE), 0), "1");
+
+		// Vaccination
+		patchDictionary
+			.put(PatchField.of(toFieldName(VaccinationDto.I18N_PREFIX, VaccinationDto.VACCINE_NAME), 1), "MRNA_BIVALENT_BA_1_BIONTECH_PFIZER");
+		patchDictionary.put(PatchField.of(toFieldName(VaccinationDto.I18N_PREFIX, VaccinationDto.VACCINATION_DATE), 1), "2026-06-01");
+		patchDictionary.put(PatchField.of(toFieldName(VaccinationDto.I18N_PREFIX, VaccinationDto.VACCINE_DOSE), 1), "2");
+
+		DataPatchResponse response = victim().patch(
+			new CaseDataPatchRequest().setCaseUuid(originalCase.getUuid())
+				.setReplacementStrategy(DataReplacementStrategy.ALWAYS)
+				.setPatchDictionary(patchDictionary));
+
+		// CHECK
+		CaseDataDto actualCase = getCaseFacade().getByUuid(originalCase.getUuid());
+		List<ImmunizationDto> immunizations = getImmunizationFacade().getByPersonUuids(List.of(originalCase.getPerson().getUuid()));
+
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(response.getFailures().isEmpty(), "Failures: " + response.getFailures()),
+			() -> Assertions.assertTrue(response.isApplied()),
+
+			// First Immunization / Vaccination
+			() -> Assertions.assertEquals(2, immunizations.size()),
+			() -> Assertions.assertEquals(ImmunizationStatus.PENDING, immunizations.get(0).getImmunizationStatus()),
+			() -> Assertions.assertEquals(MeansOfImmunization.VACCINATION, immunizations.get(0).getMeansOfImmunization()),
+			() -> Assertions.assertEquals(1, immunizations.get(0).getVaccinations().size()),
+			() -> Assertions.assertEquals(Vaccine.COMIRNATY, immunizations.get(0).getVaccinations().get(0).getVaccineName()),
+			() -> Assertions.assertEquals("1", immunizations.get(0).getVaccinations().get(0).getVaccineDose()),
+
+			// First Immunization / Vaccination
+			() -> Assertions.assertEquals(1, immunizations.get(1).getVaccinations().size()),
+			() -> Assertions.assertEquals(Vaccine.MRNA_BIVALENT_BA_1_BIONTECH_PFIZER, immunizations.get(1).getVaccinations().get(0).getVaccineName()),
+			() -> Assertions.assertEquals("2", immunizations.get(1).getVaccinations().get(0).getVaccineDose()),
+
+			// Case's vaccinationStatus is not set directly by the patch — it is only recomputed as a side effect
+			// of ImmunizationFacade/VaccinationFacade#save() calling CaseService#updateDeterminedVaccinationStatuses
+			() -> Assertions.assertEquals(VaccinationStatus.UNVACCINATED, actualCase.getVaccinationStatus()));
+	}
+
+	@Test
 	void patch_grouped_twoExposures() {
 		// PREPARE
 		Disease disease = Disease.DENGUE;
