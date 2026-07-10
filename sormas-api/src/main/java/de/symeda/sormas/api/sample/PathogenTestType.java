@@ -17,10 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.api.sample;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.LegacyEnumHelper;
+import de.symeda.sormas.api.utils.LegacyEnumNames;
 
 public enum PathogenTestType {
 
@@ -29,27 +33,6 @@ public enum PathogenTestType {
 	// existing records still render, but @NotSelectableForNewTests removes them from the new-test
 	// method picker. Their category is still declared so a saved record can be grouped when displayed.
 	// ----------------------------------------------------------------------------------------------
-
-	@Diseases(value = {
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
-		Disease.MEASLES,
-		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS,
-		Disease.DENGUE,
-		Disease.MALARIA,
-		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS }, hide = true)
-	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
-	@NotSelectableForNewTests
-	ANTIBODY_DETECTION,
-
-	// Resurrected for new-test selection (#14026 Measles, #14031 Giardia): scoped to the requesting diseases.
-	@Diseases(value = {
-		Disease.MEASLES,
-		Disease.GIARDIASIS })
-	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
-	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
-	ANTIGEN_DETECTION,
 
 	// Merged Culture entry (bacterial + fungal) — supersedes BACTERIAL_CULTURE / FUNGAL_CULTURE for new
 	// tests (#13951). The qualitative result is the Pos/Neg outcome; TEXT carries the organism identifier
@@ -109,18 +92,6 @@ public enum PathogenTestType {
 		Disease.SHIGELLOSIS }, hide = true)
 	@NotSelectableForNewTests
 	INCUBATION_TIME,
-
-	@Diseases(value = {
-		Disease.CORONAVIRUS,
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
-		Disease.MEASLES,
-		Disease.DENGUE,
-		Disease.MALARIA,
-		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS }, hide = true)
-	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
-	@NotSelectableForNewTests
-	MICROSCOPY,
 
 	// Resurrected for IMI new-test selection (#14034): scoped to Invasive Meningococcal Infection only.
 	@Diseases(value = {
@@ -374,6 +345,19 @@ public enum PathogenTestType {
 	// Serological Tests
 	// ----------------------------------------------------------------------------------------------
 
+	@Diseases(value = {
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.MEASLES,
+		Disease.GIARDIASIS,
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.DENGUE,
+		Disease.MALARIA,
+		Disease.SALMONELLOSIS,
+		Disease.SHIGELLOSIS }, hide = true)
+	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
+	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
+	ANTIBODY_DETECTION,
+
 	// Superseded by IGM_/IGG_/IGA_SERUM_ANTIBODY for new tests (#13951). Kept here so historic records
 	// still render and so case-classification logic (which binds to this constant) keeps working.
 	@Diseases(value = {
@@ -428,35 +412,19 @@ public enum PathogenTestType {
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	DIRECT_FLUORESCENT_ANTIBODY,
 
-	@Diseases(value = {
-		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS,
-		Disease.DENGUE }, hide = true)
-	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
-	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
-	RAPID_ANTIBODY_TEST,
-
 	// ----------------------------------------------------------------------------------------------
 	// Antigen Detection
 	// ----------------------------------------------------------------------------------------------
 
-	@Diseases(value = {
-		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
-		Disease.DENGUE,
-		Disease.GIARDIASIS })
-	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
-	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
-	RAPID_ANTIGEN_DETECTION,
-
+	// Single antigen-detection entry: the four merged methods are translated on read (see LegacyEnumNames)
+	// and rewritten onto this constant by schema migration 649.
+	@LegacyEnumNames({
+		"ANTIGEN_DETECTION",
+		"RAPID_TEST",
+		"RAPID_ANTIGEN_DETECTION",
+		"RDT" })
 	@Diseases(value = {
 		Disease.SHIGELLOSIS }, hide = true)
-	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
-	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
-	RAPID_TEST,
-
-	@Diseases(value = {
-		Disease.SHIGELLOSIS,
-		Disease.DENGUE }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	LATERAL_FLOW_ASSAY,
@@ -492,12 +460,6 @@ public enum PathogenTestType {
 		ResultValueType.QUALITATIVE,
 		ResultValueType.TEXT })
 	HEMAGGLUTINATION_INHIBITION,
-
-	@Diseases(value = {
-		Disease.SHIGELLOSIS }, hide = true)
-	@PathogenTestCategoryRel(PathogenTestCategory.ANTIGEN_DETECTION)
-	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
-	RDT,
 
 	// ----------------------------------------------------------------------------------------------
 	// Culture & Isolation
@@ -538,13 +500,20 @@ public enum PathogenTestType {
 	// Microscopy & Staining
 	// ----------------------------------------------------------------------------------------------
 
-	// Direct microscopy (#13951): qualitative-only entry (Pos/Neg/Indeterminate/Pending) for visual
-	// detection of a pathogen without staining or fluorescence. Sibling of MICROSCOPY (legacy generic).
+	// Single microscopy entry: qualitative-only (Pos/Neg/Indeterminate/Pending). DIRECT_MICROSCOPY is NOT merged
+	// into this constant: it is hidden for six diseases where DIRECT_MICROSCOPY was visible, and it is a
+	// confirmation trigger for several classification rules that DIRECT_MICROSCOPY never satisfied.
 	@Diseases(value = {
-		Disease.SALMONELLOSIS }, hide = true)
+		Disease.CORONAVIRUS,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+		Disease.MEASLES,
+		Disease.DENGUE,
+		Disease.MALARIA,
+		Disease.SALMONELLOSIS,
+		Disease.SHIGELLOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
-	DIRECT_MICROSCOPY,
+	MICROSCOPY,
 
 	@Diseases(value = {
 		Disease.CORONAVIRUS,
@@ -711,8 +680,23 @@ public enum PathogenTestType {
 	// No category: reveals a free-text companion field
 	// ----------------------------------------------------------------------------------------------
 
+	// DIRECT_MICROSCOPY and RAPID_ANTIBODY_TEST had no successor, so their records land here with the former
+	// caption preserved in the free-text companion field.
+	@LegacyEnumNames({
+		"DIRECT_MICROSCOPY",
+		"RAPID_ANTIBODY_TEST" })
 	@RevealsTestTypeText
 	OTHER;
+
+	/**
+	 * Deserialization entry point. Retired names still arrive from an un-upgraded sormas-to-sormas peer, an
+	 * external lab message, or a REST client — none of which a database migration can reach — so they are
+	 * translated here via {@link LegacyEnumNames}. A genuinely unknown name still fails.
+	 */
+	@JsonCreator
+	public static PathogenTestType fromLegacyName(String name) {
+		return LegacyEnumHelper.resolve(PathogenTestType.class, name);
+	}
 
 	@Override
 	public String toString() {

@@ -474,7 +474,7 @@ public class SampleDashboardFacadeEjbTest extends AbstractBeanTest {
 		PathogenTestResultType pathogenTestResultType) {
 		return creator.createPathogenTest(
 			sample.toReference(),
-			PathogenTestType.RAPID_TEST,
+			PathogenTestType.LATERAL_FLOW_ASSAY,
 			disease,
 			reportDate,
 			rdcf.facility,

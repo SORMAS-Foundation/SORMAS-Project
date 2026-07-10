@@ -504,7 +504,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 			creator.createSample(secondCaze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
 		PathogenTestDto secondSamplePathogenTest = creator.createPathogenTest(
 			thirdSample.toReference(),
-			PathogenTestType.RAPID_TEST,
+			PathogenTestType.LATERAL_FLOW_ASSAY,
 			secondCaze.getDisease(),
 			new Date(),
 			rdcf.facility,

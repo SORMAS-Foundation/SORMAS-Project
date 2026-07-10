@@ -3,8 +3,12 @@ package de.symeda.sormas.api.epipulse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import java.util.EnumMap;
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleMaterial;
 
 public class EpipulseLaboratoryMapperTest {
@@ -100,5 +104,26 @@ public class EpipulseLaboratoryMapperTest {
 	public void testParseMicValue_NullOrBlank() {
 		assertNull(EpipulseLaboratoryMapper.parseMicValue(null));
 		assertNull(EpipulseLaboratoryMapper.parseMicValue("   "));
+	}
+
+	@Test
+	public void testMapToMeniDetectionMethod_MethodsMustNotDegradeToOther() {
+		// "OTH" is the mapper's catch-all, so asserting "the result is one of the known codes" would always
+		// pass. These methods each have a real MENI code and must never fall through to OTH.
+		Map<PathogenTestType, String> expected = new EnumMap<>(PathogenTestType.class);
+		expected.put(PathogenTestType.LATERAL_FLOW_ASSAY, "ANTIGEN");
+		expected.put(PathogenTestType.MICROSCOPY, "MICRO");
+		expected.put(PathogenTestType.GRAM_STAIN, "MICRO");
+		expected.put(PathogenTestType.CULTURE, "CULT");
+		expected.put(PathogenTestType.PCR_RT_PCR, "NUCLACID");
+		expected.put(PathogenTestType.CQ_VALUE_DETECTION, "NUCLACID");
+		expected.put(PathogenTestType.WHOLE_GENOME_SEQUENCING, "GENOSEQ");
+		expected.put(PathogenTestType.MULTILOCUS_SEQUENCE_TYPING, "GENOSEQ");
+
+		expected.forEach(
+			(type, code) -> assertEquals(code, EpipulseLaboratoryMapper.mapToMeniDetectionMethod(type.name()), "MENI code for " + type.name()));
+
+		// The catch-all still applies to a method with no MENI equivalent.
+		assertEquals("OTH", EpipulseLaboratoryMapper.mapToMeniDetectionMethod(PathogenTestType.OTHER.name()));
 	}
 }

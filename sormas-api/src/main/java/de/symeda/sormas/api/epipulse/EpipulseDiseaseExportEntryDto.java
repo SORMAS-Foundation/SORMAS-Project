@@ -1783,7 +1783,7 @@ public class EpipulseDiseaseExportEntryDto {
 
 			PathogenTestType testType = null;
 			if (!StringUtils.isBlank(testTypeStr)) {
-				testType = PathogenTestType.valueOf(testTypeStr);
+				testType = PathogenTestType.fromLegacyName(testTypeStr);
 			}
 
 			PathogenTestResultType testResultType = null;

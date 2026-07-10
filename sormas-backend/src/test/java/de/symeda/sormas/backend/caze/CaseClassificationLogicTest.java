@@ -452,7 +452,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
 
 		caze = getCaseFacade().save(buildConfirmedCaseBasis(Disease.YELLOW_FEVER));
-		creator.createPathogenTest(caze, Disease.YELLOW_FEVER, PathogenTestType.ANTIGEN_DETECTION, PathogenTestResultType.POSITIVE);
+		creator.createPathogenTest(caze, Disease.YELLOW_FEVER, PathogenTestType.LATERAL_FLOW_ASSAY, PathogenTestResultType.POSITIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
 
@@ -524,7 +524,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 			PathogenTestType.IGM_SERUM_ANTIBODY,
 			PathogenTestType.NEUTRALIZING_ANTIBODIES,
 			PathogenTestType.PCR_RT_PCR,
-			PathogenTestType.ANTIGEN_DETECTION,
+			PathogenTestType.LATERAL_FLOW_ASSAY,
 			PathogenTestType.ISOLATION,
 			PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
@@ -991,7 +991,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 
 		// Probable
 		caze = getCaseFacade().save(buildSuspectCase(Disease.PLAGUE));
-		creator.createPathogenTest(caze, Disease.PLAGUE, PathogenTestType.ANTIGEN_DETECTION, PathogenTestResultType.POSITIVE);
+		creator.createPathogenTest(caze, Disease.PLAGUE, PathogenTestType.LATERAL_FLOW_ASSAY, PathogenTestResultType.POSITIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.PROBABLE, caze.getCaseClassification());
 
@@ -1052,7 +1052,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 		createSampleTestsForAllTestTypesExcept(
 			caze,
 			Disease.PLAGUE,
-			PathogenTestType.ANTIGEN_DETECTION,
+			PathogenTestType.LATERAL_FLOW_ASSAY,
 			PathogenTestType.ISOLATION,
 			PathogenTestType.PCR_RT_PCR,
 			PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY);
@@ -1104,7 +1104,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 
 		caze = getCaseFacade().save(buildSuspectCase(Disease.INVASIVE_MENINGOCOCCAL_INFECTION));
 		creator
-			.createPathogenTest(caze, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, PathogenTestType.ANTIGEN_DETECTION, PathogenTestResultType.POSITIVE);
+			.createPathogenTest(caze, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, PathogenTestType.LATERAL_FLOW_ASSAY, PathogenTestResultType.POSITIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
 	}
@@ -1133,7 +1133,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 			Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 			PathogenTestType.MICROSCOPY,
 			PathogenTestType.PCR_RT_PCR,
-			PathogenTestType.ANTIGEN_DETECTION,
+			PathogenTestType.LATERAL_FLOW_ASSAY,
 			PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
@@ -1147,7 +1147,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 			Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 			PathogenTestType.MICROSCOPY,
 			PathogenTestType.PCR_RT_PCR,
-			PathogenTestType.ANTIGEN_DETECTION,
+			PathogenTestType.LATERAL_FLOW_ASSAY,
 			PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());

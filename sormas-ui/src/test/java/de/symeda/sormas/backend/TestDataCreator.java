@@ -1527,7 +1527,7 @@ public class TestDataCreator {
 		Consumer<PathogenTestDto> extraConfig) {
 		return createPathogenTest(
 			sample,
-			PathogenTestType.ANTIGEN_DETECTION,
+			PathogenTestType.LATERAL_FLOW_ASSAY,
 			Disease.CORONAVIRUS,
 			new Date(),
 			lab,
@@ -1620,7 +1620,7 @@ public class TestDataCreator {
 
 		return createPathogenTest(
 			sample,
-			PathogenTestType.ANTIGEN_DETECTION,
+			PathogenTestType.LATERAL_FLOW_ASSAY,
 			associatedCase.getDisease(),
 			new Date(),
 			rdcf.facility,

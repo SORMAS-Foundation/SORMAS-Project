@@ -55,7 +55,7 @@ public enum PathogenSpecie {
 		Disease.MALARIA })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.THIN_BLOOD_SMEAR,
-		PathogenTestType.RAPID_TEST,
+		PathogenTestType.LATERAL_FLOW_ASSAY,
 		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
 		PathogenTestType.IGM_SERUM_ANTIBODY,
 		PathogenTestType.IGG_SERUM_ANTIBODY,
@@ -64,6 +64,7 @@ public enum PathogenSpecie {
 		PathogenTestType.PCR_RT_PCR,
 		PathogenTestType.Q_PCR,
 		PathogenTestType.LAMP,
+		PathogenTestType.INDIRECT_FLUORESCENT_ANTIBODY,
 		PathogenTestType.OTHER_MOLECULAR_ASSAY,
 		PathogenTestType.OTHER_SEROLOGICAL_TEST })
 	SPP,
@@ -71,7 +72,7 @@ public enum PathogenSpecie {
 		Disease.MALARIA })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.THIN_BLOOD_SMEAR,
-		PathogenTestType.RAPID_TEST,
+		PathogenTestType.LATERAL_FLOW_ASSAY,
 		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
 		PathogenTestType.IGM_SERUM_ANTIBODY,
 		PathogenTestType.IGG_SERUM_ANTIBODY,
@@ -80,6 +81,7 @@ public enum PathogenSpecie {
 		PathogenTestType.PCR_RT_PCR,
 		PathogenTestType.Q_PCR,
 		PathogenTestType.LAMP,
+		PathogenTestType.INDIRECT_FLUORESCENT_ANTIBODY,
 		PathogenTestType.OTHER_MOLECULAR_ASSAY,
 		PathogenTestType.OTHER_SEROLOGICAL_TEST })
 	FALCIPARUM,
@@ -87,7 +89,7 @@ public enum PathogenSpecie {
 		Disease.MALARIA })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.THIN_BLOOD_SMEAR,
-		PathogenTestType.RAPID_TEST,
+		PathogenTestType.LATERAL_FLOW_ASSAY,
 		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
 		PathogenTestType.IGM_SERUM_ANTIBODY,
 		PathogenTestType.IGG_SERUM_ANTIBODY,
@@ -96,6 +98,7 @@ public enum PathogenSpecie {
 		PathogenTestType.PCR_RT_PCR,
 		PathogenTestType.Q_PCR,
 		PathogenTestType.LAMP,
+		PathogenTestType.INDIRECT_FLUORESCENT_ANTIBODY,
 		PathogenTestType.OTHER_MOLECULAR_ASSAY,
 		PathogenTestType.OTHER_SEROLOGICAL_TEST })
 	VIVAX,
@@ -103,7 +106,7 @@ public enum PathogenSpecie {
 		Disease.MALARIA })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.THIN_BLOOD_SMEAR,
-		PathogenTestType.RAPID_TEST,
+		PathogenTestType.LATERAL_FLOW_ASSAY,
 		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
 		PathogenTestType.IGM_SERUM_ANTIBODY,
 		PathogenTestType.IGG_SERUM_ANTIBODY,
@@ -112,6 +115,7 @@ public enum PathogenSpecie {
 		PathogenTestType.PCR_RT_PCR,
 		PathogenTestType.Q_PCR,
 		PathogenTestType.LAMP,
+		PathogenTestType.INDIRECT_FLUORESCENT_ANTIBODY,
 		PathogenTestType.OTHER_MOLECULAR_ASSAY,
 		PathogenTestType.OTHER_SEROLOGICAL_TEST })
 	MALARIAE,
@@ -119,7 +123,7 @@ public enum PathogenSpecie {
 		Disease.MALARIA })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.THIN_BLOOD_SMEAR,
-		PathogenTestType.RAPID_TEST,
+		PathogenTestType.LATERAL_FLOW_ASSAY,
 		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
 		PathogenTestType.IGM_SERUM_ANTIBODY,
 		PathogenTestType.IGG_SERUM_ANTIBODY,
@@ -128,6 +132,7 @@ public enum PathogenSpecie {
 		PathogenTestType.PCR_RT_PCR,
 		PathogenTestType.Q_PCR,
 		PathogenTestType.LAMP,
+		PathogenTestType.INDIRECT_FLUORESCENT_ANTIBODY,
 		PathogenTestType.OTHER_MOLECULAR_ASSAY,
 		PathogenTestType.OTHER_SEROLOGICAL_TEST })
 	OVALE,
@@ -135,7 +140,7 @@ public enum PathogenSpecie {
 		Disease.MALARIA })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.THIN_BLOOD_SMEAR,
-		PathogenTestType.RAPID_TEST,
+		PathogenTestType.LATERAL_FLOW_ASSAY,
 		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
 		PathogenTestType.IGM_SERUM_ANTIBODY,
 		PathogenTestType.IGG_SERUM_ANTIBODY,
@@ -144,6 +149,7 @@ public enum PathogenSpecie {
 		PathogenTestType.PCR_RT_PCR,
 		PathogenTestType.Q_PCR,
 		PathogenTestType.LAMP,
+		PathogenTestType.INDIRECT_FLUORESCENT_ANTIBODY,
 		PathogenTestType.OTHER_MOLECULAR_ASSAY,
 		PathogenTestType.OTHER_SEROLOGICAL_TEST })
 	KNOWLESI,
@@ -151,7 +157,7 @@ public enum PathogenSpecie {
 		Disease.MALARIA })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.THIN_BLOOD_SMEAR,
-		PathogenTestType.RAPID_TEST,
+		PathogenTestType.LATERAL_FLOW_ASSAY,
 		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
 		PathogenTestType.IGM_SERUM_ANTIBODY,
 		PathogenTestType.IGG_SERUM_ANTIBODY,
@@ -160,6 +166,7 @@ public enum PathogenSpecie {
 		PathogenTestType.PCR_RT_PCR,
 		PathogenTestType.Q_PCR,
 		PathogenTestType.LAMP,
+		PathogenTestType.INDIRECT_FLUORESCENT_ANTIBODY,
 		PathogenTestType.OTHER_MOLECULAR_ASSAY,
 		PathogenTestType.OTHER_SEROLOGICAL_TEST })
 	CYNOMOLGI,
@@ -167,7 +174,7 @@ public enum PathogenSpecie {
 		Disease.MALARIA })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.THIN_BLOOD_SMEAR,
-		PathogenTestType.RAPID_TEST,
+		PathogenTestType.LATERAL_FLOW_ASSAY,
 		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
 		PathogenTestType.IGM_SERUM_ANTIBODY,
 		PathogenTestType.IGG_SERUM_ANTIBODY,
@@ -176,6 +183,7 @@ public enum PathogenSpecie {
 		PathogenTestType.PCR_RT_PCR,
 		PathogenTestType.Q_PCR,
 		PathogenTestType.LAMP,
+		PathogenTestType.INDIRECT_FLUORESCENT_ANTIBODY,
 		PathogenTestType.OTHER_MOLECULAR_ASSAY,
 		PathogenTestType.OTHER_SEROLOGICAL_TEST })
 	NOT_SPECIFIED,
@@ -183,7 +191,7 @@ public enum PathogenSpecie {
 		Disease.MALARIA })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.THIN_BLOOD_SMEAR,
-		PathogenTestType.RAPID_TEST,
+		PathogenTestType.LATERAL_FLOW_ASSAY,
 		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
 		PathogenTestType.IGM_SERUM_ANTIBODY,
 		PathogenTestType.IGG_SERUM_ANTIBODY,
@@ -192,6 +200,7 @@ public enum PathogenSpecie {
 		PathogenTestType.PCR_RT_PCR,
 		PathogenTestType.Q_PCR,
 		PathogenTestType.LAMP,
+		PathogenTestType.INDIRECT_FLUORESCENT_ANTIBODY,
 		PathogenTestType.OTHER_MOLECULAR_ASSAY,
 		PathogenTestType.OTHER_SEROLOGICAL_TEST })
 	COINFECTION,
@@ -241,7 +250,7 @@ public enum PathogenSpecie {
 		Disease.SHIGELLOSIS })
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.THIN_BLOOD_SMEAR,
-		PathogenTestType.RAPID_TEST,
+		PathogenTestType.LATERAL_FLOW_ASSAY,
 		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
 		PathogenTestType.IGM_SERUM_ANTIBODY,
 		PathogenTestType.IGG_SERUM_ANTIBODY,
@@ -250,6 +259,7 @@ public enum PathogenSpecie {
 		PathogenTestType.PCR_RT_PCR,
 		PathogenTestType.Q_PCR,
 		PathogenTestType.LAMP,
+		PathogenTestType.INDIRECT_FLUORESCENT_ANTIBODY,
 		PathogenTestType.OTHER_MOLECULAR_ASSAY,
 		PathogenTestType.OTHER_SEROLOGICAL_TEST,
 		PathogenTestType.BACTERIAL_CULTURE,
@@ -265,7 +275,7 @@ public enum PathogenSpecie {
 	@ApplicableToPathogenTests(value = {
 		PathogenTestType.SPOLIGOTYPING,
 		PathogenTestType.THIN_BLOOD_SMEAR,
-		PathogenTestType.RAPID_TEST,
+		PathogenTestType.LATERAL_FLOW_ASSAY,
 		PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
 		PathogenTestType.IGM_SERUM_ANTIBODY,
 		PathogenTestType.IGG_SERUM_ANTIBODY,
@@ -274,6 +284,7 @@ public enum PathogenSpecie {
 		PathogenTestType.PCR_RT_PCR,
 		PathogenTestType.Q_PCR,
 		PathogenTestType.LAMP,
+		PathogenTestType.INDIRECT_FLUORESCENT_ANTIBODY,
 		PathogenTestType.OTHER_MOLECULAR_ASSAY,
 		PathogenTestType.OTHER_SEROLOGICAL_TEST,
 		PathogenTestType.BACTERIAL_CULTURE,

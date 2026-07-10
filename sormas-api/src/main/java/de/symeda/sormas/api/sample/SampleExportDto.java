@@ -219,7 +219,8 @@ public class SampleExportDto extends AbstractUuidDto implements IsSample {
 		this.requestedPathogenTests = new HashSet<>();
 		if (!StringUtils.isEmpty(requestedPathogenTests)) {
 			for (String s : requestedPathogenTests.split(",")) {
-				this.requestedPathogenTests.add(PathogenTestType.valueOf(s));
+				// fromLegacyName translates names retired by an enum merge and rejects a blank (i.e. corrupt) type
+				this.requestedPathogenTests.add(PathogenTestType.fromLegacyName(s));
 			}
 		}
 		this.requestedOtherPathogenTests = requestedOtherPathogenTests;
