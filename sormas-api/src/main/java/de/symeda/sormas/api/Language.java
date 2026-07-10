@@ -33,8 +33,9 @@ public enum Language {
 	FA(new Locale("fa", "AF"), "dd/MM/yyyy", "dd/MM/yyyy HH:mm", "dd/MM"),
 	CZ(new Locale("cs", "CZ"), "dd.MM.yyyy", "dd.MM.yyyy HH:mm", "dd.MM."),
 	UR_PK(new Locale("ur", "PK"), "dd/MM/yyyy", "dd/MM/yyyy HH:mm", "dd/MM"),
-	RU(new Locale("ru", "RU"), "dd.MM.yyyy", "dd.MM.yyyy HH:mm", "dd.MM"),
-	KA(new Locale("ka", "GE"), "dd.MM.yyyy", "dd.MM.yyyy HH:mm", "dd.MM");
+	AR(new Locale("ar", "EG"), "dd/MM/yyyy", "dd/MM/yyyy HH:mm", "dd/MM"),
+	KA(new Locale("ka", "GE"), "dd.MM.yyyy", "dd.MM.yyyy HH:mm", "dd.MM"),
+	RU(new Locale("ru", "RU"), "dd.MM.yyyy", "dd.MM.yyyy HH:mm", "dd.MM");
 
 	/**
 	 * Links locale strings to Languages

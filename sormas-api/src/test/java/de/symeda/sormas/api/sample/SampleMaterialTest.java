@@ -2,6 +2,7 @@ package de.symeda.sormas.api.sample;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
@@ -12,6 +13,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
+
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.utils.Diseases;
 
 public class SampleMaterialTest {
 
@@ -43,6 +47,16 @@ public class SampleMaterialTest {
 				SampleMaterial.SOFT_TISSUE,
 				SampleMaterial.BONE_AND_JOINT,
 				SampleMaterial.OTHER));
+	}
+
+	@Test
+	public void testSalmonellosisSpecimenTypes() {
+
+		List<SampleMaterial> visibleForSalmonellosis = Diseases.DiseasesConfiguration.getVisibleValues(SampleMaterial.class, Disease.SALMONELLOSIS);
+
+		assertThat(
+			visibleForSalmonellosis,
+			hasItems(SampleMaterial.BONE, SampleMaterial.NP_SWAB, SampleMaterial.OROPHARYNGEAL_SWAB, SampleMaterial.TISSUE));
 	}
 
 	@Test

@@ -1,9 +1,13 @@
 package de.symeda.sormas.backend.externalmessage.survey;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.Date;
 import java.util.List;
@@ -17,8 +21,16 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
-import de.symeda.sormas.api.externalmessage.survey.*;
-import de.symeda.sormas.api.patch.*;
+import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseRequest;
+import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseResult;
+import de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseWrapper;
+import de.symeda.sormas.api.externalmessage.survey.ExternalSurveyResponseData;
+import de.symeda.sormas.api.externalmessage.survey.PatchDictionary;
+import de.symeda.sormas.api.patch.CaseDataPatchRequest;
+import de.symeda.sormas.api.patch.DataPatchResponse;
+import de.symeda.sormas.api.patch.DataPatcher;
+import de.symeda.sormas.api.patch.DataReplacementStrategy;
+import de.symeda.sormas.api.patch.EmptyValueBehavior;
 import de.symeda.sormas.api.survey.SurveyDto;
 import de.symeda.sormas.api.survey.SurveyTokenDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -243,7 +255,7 @@ class AutomaticSurveyResponseProcessorTest extends AbstractUnitTest {
 		SurveyResponseProcessingResult result = results.get(0);
 		assertEquals(thrown, result.getRuntimeException());
 		// BUG: resultStatus is never set in the catch block — it remains null
-		assertNull(result.getResultStatus());
+		assertEquals(ProcessingResultStatus.CANCELED, result.getResultStatus());
 	}
 
 	@Test

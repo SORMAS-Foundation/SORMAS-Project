@@ -113,7 +113,6 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE,
-		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
 	NP_SWAB,
 
@@ -160,7 +159,6 @@ public enum SampleMaterial {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
-		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
 	TISSUE,
 
@@ -352,7 +350,6 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE,
-		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS }, hide = true)
 	OROPHARYNGEAL_SWAB,
 
@@ -485,7 +482,6 @@ public enum SampleMaterial {
 	@Diseases(value = {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
-		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
 		Disease.DENGUE }, hide = true)
 	BONE,

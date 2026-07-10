@@ -178,6 +178,7 @@ public abstract class AbstractProcessingFlow {
 		mapper.mapToPerson(personDto);
 		mapper.mapToLocation(personDto.getAddress());
 		mapper.mapAdditionalPersonContactDetails(personDto);
+		mapper.mergePersonAdditionalInformation(personDto);
 		mapper.mapAdditionalPersonAddresses(personDto);
 
 		return personDto;

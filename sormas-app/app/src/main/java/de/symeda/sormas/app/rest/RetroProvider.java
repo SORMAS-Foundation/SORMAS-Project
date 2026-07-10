@@ -239,6 +239,7 @@ public final class RetroProvider {
 			.registerTypeAdapter(WaterUse.class, new EnumMapKeySerializer<>(WaterUse.class))
 			.registerTypeAdapter(WeatherCondition.class, new EnumMapKeySerializer<>(WeatherCondition.class))
 			.registerTypeAdapterFactory(classificationCriteriaFactory)
+			.registerTypeAdapterFactory(new LegacyEnumTypeAdapterFactory())
 			.create();
 	}
 

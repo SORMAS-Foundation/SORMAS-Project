@@ -77,6 +77,7 @@ import de.symeda.sormas.api.utils.CharsetHelper;
 import de.symeda.sormas.api.utils.ConstraintValidationHelper;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.LegacyEnumHelper;
 import de.symeda.sormas.ui.person.PersonSelectionField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.DownloadUtil;
@@ -85,7 +86,7 @@ import de.symeda.sormas.ui.utils.components.progress.ProgressResult;
 
 /**
  * Base class for all importers that are used to get data from CSV files into SORMAS.
- * 
+ *
  * These are the steps performed by the data importer (sub classes might add additional logic):
  * 1) Read the CSV file from the passed file path and open an error report file
  * 2) Read the header row(s) from the CSV and build a list of properties based on its columns
@@ -141,7 +142,8 @@ public abstract class DataImporter {
 		this(inputFile, hasEntityClassRow, currentUser, csvSeparator, false);
 	}
 
-	public DataImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser, ValueSeparator csvSeparator, boolean singleColumnImport) throws IOException {
+	public DataImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser, ValueSeparator csvSeparator, boolean singleColumnImport)
+		throws IOException {
 		this.inputFile = inputFile;
 		this.hasEntityClassRow = hasEntityClassRow;
 		this.currentUser = currentUser;
@@ -154,8 +156,8 @@ public abstract class DataImporter {
 			throw new FileNotFoundException("Temp directory doesn't exist or cannot be accessed");
 		}
 		Path errorReportFilePath = exportDirectory.resolve(
-				ImportExportUtils.TEMP_FILE_PREFIX + "_error_report_" + DataHelper.getShortUuid(currentUser.getUuid()) + "_"
-						+ DateHelper.formatDateForExport(new Date()) + ".csv");
+			ImportExportUtils.TEMP_FILE_PREFIX + "_error_report_" + DataHelper.getShortUuid(currentUser.getUuid()) + "_"
+				+ DateHelper.formatDateForExport(new Date()) + ".csv");
 		this.errorReportFilePath = errorReportFilePath.toString();
 
 		this.csvSeparator = ValueSeparator.getSeparator(csvSeparator, FacadeProvider.getConfigFacade().getCsvSeparator());
@@ -406,7 +408,7 @@ public abstract class DataImporter {
 
 	/**
 	 * Import the data from a line in the import file into new objects of the associated entities.
-	 * 
+	 *
 	 * @param values
 	 *            The contents of the line
 	 * @param entityClasses
@@ -439,13 +441,9 @@ public abstract class DataImporter {
 		Class<?> propertyType = pd.getPropertyType();
 
 		if (propertyType.isEnum()) {
-			Enum enumValue = null;
 			Class<Enum> enumType = (Class<Enum>) propertyType;
-			try {
-				enumValue = Enum.valueOf(enumType, entry.toUpperCase());
-			} catch (IllegalArgumentException e) {
-				// ignore
-			}
+			// also accepts names retired via @LegacyEnumNames, so a CSV exported before an enum merge still imports
+			Enum enumValue = LegacyEnumHelper.resolveOrNull(enumType, entry.toUpperCase());
 
 			if (enumValue == null) {
 				enumValue = enumCaptionCache.getEnumByCaption(enumType, entry);
@@ -594,12 +592,12 @@ public abstract class DataImporter {
 	/**
 	 * Provides the structure to insert a whole line into the object entity. The actual inserting has to take
 	 * place in a callback.
-	 * 
+	 *
 	 * @param ignoreEmptyEntries
 	 *            If true, invokes won't be performed for empty values
 	 * @param insertCallback
 	 *            The callback that is used to actually do the inserting
-	 * 
+	 *
 	 * @return True if the import succeeded without errors, false if not
 	 */
 	protected boolean insertRowIntoData(

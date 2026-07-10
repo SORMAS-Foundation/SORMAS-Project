@@ -773,7 +773,7 @@ public class EpipulseLaboratoryMapper {
 	 * SORMAS PathogenTestType mappings:
 	 * - CULTURE -> CULT
 	 * - PCR_RT_PCR, CQ_VALUE_DETECTION, DNA_MICROARRAY, TMA -> NUCLACID
-	 * - ANTIGEN_DETECTION, RAPID_ANTIGEN_DETECTION, RAPID_TEST -> ANTIGEN
+	 * - LATERAL_FLOW_ASSAY -> ANTIGEN
 	 * - MICROSCOPY, GRAM_STAIN -> MICRO
 	 * - WHOLE_GENOME_SEQUENCING, SEQUENCING, MULTILOCUS_SEQUENCE_TYPING, GENOTYPING -> GENOSEQ
 	 *
@@ -799,9 +799,9 @@ public class EpipulseLaboratoryMapper {
 		case "TMA":
 			return "NUCLACID";
 
-		case "ANTIGEN_DETECTION":
-		case "RAPID_ANTIGEN_DETECTION":
-		case "RAPID_TEST":
+		// Absorbed the retired ANTIGEN_DETECTION / RAPID_ANTIGEN_DETECTION / RAPID_TEST / RDT methods.
+		// The name carries no "ANTIGEN" substring, so the fallback below would misclassify it as OTH.
+		case "LATERAL_FLOW_ASSAY":
 			return "ANTIGEN";
 
 		case "MICROSCOPY":

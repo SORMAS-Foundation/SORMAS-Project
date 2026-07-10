@@ -50,6 +50,8 @@ public class EventParticipantPersonView extends AbstractEventParticipantView imp
 			DeletableEntityType.EVENT_PARTICIPANT,
 			eventParticipant.getUuid(),
 			person.toReference(),
+			event.getDisease(),
+			event.getDiseaseDetails(),
 			this::showUnsavedChangesPopup,
 			isEditAllowed());
 		setEditPermission(editComponent, UiUtil.permitted(UserRight.PERSON_EDIT), PersonDto.ADDRESSES, PersonDto.PERSON_CONTACT_DETAILS);

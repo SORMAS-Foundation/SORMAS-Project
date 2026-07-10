@@ -9,9 +9,12 @@ import java.util.stream.Collectors;
 import com.vaadin.data.Binder;
 import com.vaadin.data.BinderValidationStatus;
 import com.vaadin.data.BindingValidationStatus;
+import com.vaadin.data.HasValue;
 import com.vaadin.data.ValidationResult;
+import com.vaadin.server.UserError;
 import com.vaadin.shared.Registration;
 import com.vaadin.shared.ui.ValueChangeMode;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
@@ -28,6 +31,7 @@ import com.vaadin.v7.data.Validator.InvalidValueException;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.PathogenTestCategory;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.utils.ApplicableToPathogenTests;
@@ -55,7 +59,9 @@ public abstract class FormComponent<T> extends VerticalLayout {
 
 	private final List<Registration> registrations = new ArrayList<>();
 	private final List<Component> trackedFields = new ArrayList<>();
+	private final List<Component> validationFields = new ArrayList<>();
 	private final List<HorizontalLayout> trackedRows = new ArrayList<>();
+	private boolean validationRevealed;
 
 	protected FormComponent(Class<T> dtoClass) {
 		binder = new Binder<>(dtoClass);
@@ -80,6 +86,12 @@ public abstract class FormComponent<T> extends VerticalLayout {
 	/** Tracks a field for automatic visibility/access application. */
 	protected void trackField(Component field) {
 		trackedFields.add(field);
+		trackValidationField(field);
+	}
+
+	/** Tracks a field so validation can be revealed on save attempts. */
+	protected void trackValidationField(Component field) {
+		validationFields.add(field);
 	}
 
 	protected DateField createDateField(String propertyId, String i18nPrefix) {
@@ -388,6 +400,15 @@ public abstract class FormComponent<T> extends VerticalLayout {
 	/** Called when the parent form receives a new DTO value. */
 	public void setDto(T dto) {
 		binder.setBean(dto);
+		revealValidation();
+		if (dto != null) {
+			binder.validate();
+		}
+	}
+
+	/** Enables component-managed validation styling. */
+	public void revealValidation() {
+		validationRevealed = true;
 	}
 
 	/** Validates this component's fields; throws {@link InvalidValueException} on failure. */
@@ -400,6 +421,7 @@ public abstract class FormComponent<T> extends VerticalLayout {
 	 * use this as a check in {@link #validateAll} (they cannot call {@code super.validate()} from a method reference).
 	 */
 	protected void validateBinderOnly() {
+		revealValidation();
 		validateBinder(binder.validate());
 	}
 
@@ -410,6 +432,7 @@ public abstract class FormComponent<T> extends VerticalLayout {
 	 * parent form's aggregation surfaces them together rather than one save at a time.
 	 */
 	protected void validateAll(Runnable... checks) {
+		revealValidation();
 		List<InvalidValueException> causes = new ArrayList<>();
 		for (Runnable check : checks) {
 			try {
@@ -435,6 +458,64 @@ public abstract class FormComponent<T> extends VerticalLayout {
 		if (!causes.isEmpty()) {
 			String joinedCaptions = causes.stream().map(InvalidValueException::getMessage).collect(Collectors.joining(", "));
 			throw new InvalidValueException(joinedCaptions, causes.toArray(new InvalidValueException[0]));
+		}
+	}
+
+	protected void updateRequiredValidation(HasValue<?> field) {
+		Component component = (Component) field;
+		if (!component.isVisible() || !field.isEmpty()) {
+			clearValidationError(component);
+			return;
+		}
+		applyValidationError(component, requiredErrorMessage(component));
+	}
+
+	protected void validateRequiredVisible(HasValue<?> field) {
+		Component component = (Component) field;
+		if (!component.isVisible()) {
+			clearValidationError(component);
+			return;
+		}
+		if (field.isEmpty()) {
+			String errorMessage = requiredErrorMessage(component);
+			applyValidationError(component, errorMessage);
+			throw new InvalidValueException(errorMessage);
+		}
+		clearValidationError(component);
+	}
+
+	protected void updateValidationError(Component field, String errorMessage) {
+		if (errorMessage == null) {
+			clearValidationError(field);
+		} else {
+			applyValidationError(field, errorMessage);
+		}
+	}
+
+	protected void validateField(Component field, String errorMessage) {
+		updateValidationError(field, errorMessage);
+		if (errorMessage != null) {
+			throw new InvalidValueException(errorMessage);
+		}
+	}
+
+	private String requiredErrorMessage(Component field) {
+		return I18nProperties.getValidationError(Validations.required, field.getCaption());
+	}
+
+	private void applyValidationError(Component field, String errorMessage) {
+		if (!validationRevealed) {
+			clearValidationError(field);
+			return;
+		}
+		if (field instanceof AbstractComponent) {
+			((AbstractComponent) field).setComponentError(new UserError(errorMessage));
+		}
+	}
+
+	protected void clearValidationError(Component field) {
+		if (field instanceof AbstractComponent) {
+			((AbstractComponent) field).setComponentError(null);
 		}
 	}
 

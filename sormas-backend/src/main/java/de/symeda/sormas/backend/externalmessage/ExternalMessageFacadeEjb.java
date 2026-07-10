@@ -30,6 +30,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
 import javax.annotation.security.PermitAll;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -50,7 +51,6 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
-import javax.transaction.Transactional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -333,9 +333,6 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 	@Override
 	@RightsAllowed(UserRight._EXTERNAL_MESSAGE_SURVEY_RESPONSE_PROCESS)
-	@Transactional(value = Transactional.TxType.REQUIRES_NEW,
-		rollbackOn = {
-			Exception.class })
 	public List<ExternalMessageDto> saveAndProcessSurveyResponses(Date since) {
 
 		if (since == null) {
@@ -396,7 +393,10 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 			processingResults.forEach(wrapper -> {
 				ProcessingResultStatus result = wrapper.getResultStatus();
 				if (result == null || result.isCanceled()) {
-					logger.error("Processing of surveyResponse with UUID {} has been canceled", wrapper.getExternalMessage().getUuid());
+					logger.error(
+						"Processing of surveyResponse with UUID {} has been canceled, result: [{}]",
+						wrapper.getExternalMessage().getUuid(),
+						wrapper);
 				}
 			});
 		} catch (InterruptedException e) {
@@ -405,7 +405,10 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		} catch (ExecutionException e) {
 			logger.error("Could not process survey responses with UUID [{}]", extractUuids(filteredSurveyResponses), e);
 		} finally {
-			savedDtos = filteredSurveyResponses.stream().map(this::save).collect(toList());
+			savedDtos = filteredSurveyResponses.stream()
+				.peek(externalMessageDto -> externalMessageDto.setChangeDate(new Date()))
+				.map(this::save)
+				.collect(toList());
 		}
 
 		if (logger.isTraceEnabled()) {
@@ -1050,10 +1053,23 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 	@Override
 	@RightsAllowed(UserRight._EXTERNAL_MESSAGE_SURVEY_RESPONSE_PROCESS)
-	public ExternalMessageDto overwriteSurveyResponse(String uuid, PatchDictionary correctedDictionary) {
+	public ExternalMessageDto executeSurveyProcessing(String uuid) {
+		logger.debug("reAttemptSurveyProcessing: [{}]", uuid);
+		return overwriteSurveyResponse(uuid, null);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._EXTERNAL_MESSAGE_SURVEY_RESPONSE_PROCESS)
+	public ExternalMessageDto overwriteSurveyResponse(String uuid, @Nullable PatchDictionary correctedDictionary) {
 		logger.debug("overwriteSurveyResponse: [{}],[{}]", uuid, correctedDictionary);
 		ExternalMessageDto externalMessage = getByUuid(uuid);
-		ExternalMessageSurveyResponseRequest latestRequest = externalMessage.getSurveyResponseData().getLatest().getRequest();
+		ExternalSurveyResponseData surveyResponseData = externalMessage.getSurveyResponseData();
+
+		if (surveyResponseData == null) {
+			throw new IllegalStateException(String.format("Missing surveyResponseData for external message: [%s]", uuid));
+		}
+
+		ExternalMessageSurveyResponseRequest latestRequest = surveyResponseData.getLatest().getRequest();
 
 		logger.info("On reprocessing replacement strategy is set to ALWAYS to allow override values, enable debug to see request");
 		logger.debug("Request before transformation: [{}]", latestRequest);
@@ -1069,13 +1085,14 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 			.setAllowFallbackValues(latestRequest.isAllowFallbackValues())
 			.setSkipIfAlreadyProcessed(latestRequest.isSkipIfAlreadyProcessed())
 			.setPatchedInCaseOfFailures(latestRequest.isPatchedInCaseOfFailures())
-			.setPatchDictionary(correctedDictionary)
+			.setPatchDictionary(correctedDictionary != null ? correctedDictionary : latestRequest.getPatchDictionary())
 			.setExcludedPatchDictionary(latestRequest.getExcludedPatchDictionary());
 
 		logger.debug("Request after transformation: [{}]", correctedRequest);
 
 		ExternalMessageSurveyResponseWrapper updatedWrapper = new ExternalMessageSurveyResponseWrapper().setRequest(correctedRequest);
-		externalMessage.getSurveyResponseData().setUpdated(updatedWrapper);
+		surveyResponseData.setUpdated(updatedWrapper);
+		externalMessage.setChangeDate(new Date());
 
 		ExternalMessageDto result;
 		try {

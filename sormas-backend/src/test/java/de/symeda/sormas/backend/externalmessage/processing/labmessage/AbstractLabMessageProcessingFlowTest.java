@@ -43,9 +43,6 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import de.symeda.sormas.api.caze.CaseOutcome;
-import de.symeda.sormas.backend.MockProducer;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
@@ -57,6 +54,7 @@ import org.mockito.stubbing.Answer;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
@@ -74,12 +72,12 @@ import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult;
+import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEventResult;
+import de.symeda.sormas.api.externalmessage.processing.PickOrCreateSampleResult;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractLabMessageProcessingFlow;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractRelatedLabMessageHandler;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractRelatedLabMessageHandler.HandlerResult;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractRelatedLabMessageHandler.HandlerResultStatus;
-import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEventResult;
-import de.symeda.sormas.api.externalmessage.processing.PickOrCreateSampleResult;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.SampleAndPathogenTests;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
@@ -99,7 +97,9 @@ import de.symeda.sormas.api.utils.dataprocessing.HandlerCallback;
 import de.symeda.sormas.api.utils.dataprocessing.PickOrCreateEntryResult;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResult;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 
 public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 
@@ -294,8 +294,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		when(relatedForwardedMessagesHandler.get()).thenReturn(CompletableFuture.completedFuture(true));
 
 		ExternalMessageDto labMessage = createLabMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED);
-		ProcessingResult<ExternalMessageProcessingResult> result =
-			runFlow(labMessage);
+		ProcessingResult<ExternalMessageProcessingResult> result = runFlow(labMessage);
 
 		assertThat(result.getStatus(), is(DONE));
 		assertThat(getExternalMessageFacade().getByUuid(labMessage.getUuid()).getStatus(), is(ExternalMessageStatus.PROCESSED));
@@ -332,7 +331,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
 		creator.createPathogenTest(
 			sample.toReference(),
-			PathogenTestType.RAPID_TEST,
+			PathogenTestType.LATERAL_FLOW_ASSAY,
 			Disease.CORONAVIRUS,
 			new Date(),
 			rdcf.facility,
@@ -373,8 +372,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 			.thenReturn(CompletableFuture.completedFuture(new HandlerResult(HandlerResultStatus.CANCELED, null, null)));
 
 		ExternalMessageDto labMessage = createLabMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED);
-		ProcessingResult<ExternalMessageProcessingResult> result =
-			runFlow(labMessage);
+		ProcessingResult<ExternalMessageProcessingResult> result = runFlow(labMessage);
 
 		assertThat(result.getStatus(), is(CANCELED));
 		assertThat(getExternalMessageFacade().getByUuid(labMessage.getUuid()).getStatus(), is(ExternalMessageStatus.UNPROCESSED));
@@ -2966,7 +2964,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		sampleReport.setSampleMaterial(SampleMaterial.BLOOD);
 
 		TestReportDto testReport1 = TestReportDto.build();
-		testReport1.setTestType(PathogenTestType.RAPID_TEST);
+		testReport1.setTestType(PathogenTestType.LATERAL_FLOW_ASSAY);
 		testReport1.setTestResult(PathogenTestResultType.POSITIVE);
 		sampleReport.addTestReport(testReport1);
 

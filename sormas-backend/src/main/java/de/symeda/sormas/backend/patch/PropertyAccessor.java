@@ -39,7 +39,7 @@ public class PropertyAccessor {
 			return new Tuple<>(null, PropertyAccessFailure.INVALID_INPUT);
 		}
 
-		boolean notNestedPath = fieldName.indexOf(PATH_SEPARATOR) == fieldName.lastIndexOf(PATH_SEPARATOR);
+		boolean notNestedPath = fieldName.indexOf(PATH_SEPARATOR) == -1;
 
 		if (notNestedPath) {
 			return getPropertyTypeAndValue(bean, fieldName, fieldVisibilityCheckers);
@@ -47,7 +47,8 @@ public class PropertyAccessor {
 
 		String leafPath = fieldName.substring(fieldName.lastIndexOf(PATH_SEPARATOR) + 1);
 
-		return getNestedProperty(bean, fieldName).map(leafParent -> getPropertyTypeAndValue(leafParent, leafPath, fieldVisibilityCheckers))
+		return getNestedProperty(bean, fieldName.substring(0, fieldName.lastIndexOf(PATH_SEPARATOR)))
+			.map(leafParent -> getPropertyTypeAndValue(leafParent, leafPath, fieldVisibilityCheckers))
 			.orElseGet(() -> new Tuple<>(null, PropertyAccessFailure.FIELD_DOES_NOT_EXIST));
 	}
 
@@ -59,7 +60,7 @@ public class PropertyAccessor {
 			return INVALID_INPUT;
 		}
 
-		boolean notNestedPath = fieldName.indexOf(PATH_SEPARATOR) == fieldName.lastIndexOf(PATH_SEPARATOR);
+		boolean notNestedPath = fieldName.indexOf(PATH_SEPARATOR) == -1;
 
 		if (notNestedPath) {
 			return getPropertyType(bean, fieldName, fieldVisibilityCheckers);
@@ -67,7 +68,8 @@ public class PropertyAccessor {
 
 		String leafPath = fieldName.substring(fieldName.lastIndexOf(PATH_SEPARATOR) + 1);
 
-		return getNestedProperty(bean, fieldName).map(leafParent -> getPropertyType(leafParent, leafPath, fieldVisibilityCheckers))
+		return getNestedProperty(bean, fieldName.substring(0, fieldName.lastIndexOf(PATH_SEPARATOR)))
+			.map(leafParent -> getPropertyType(leafParent, leafPath, fieldVisibilityCheckers))
 			.orElse(FIELD_DOES_NOT_EXIST);
 	}
 

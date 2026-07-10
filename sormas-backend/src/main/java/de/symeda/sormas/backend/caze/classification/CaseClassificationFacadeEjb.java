@@ -84,7 +84,7 @@ import de.symeda.sormas.backend.sample.PathogenTestService;
 /**
  * Stateless instead of Singleton. It's ok to have multiple instances with an
  * individual cache.
- * 
+ *
  * @author Martin Wahnschaffe
  */
 @Stateless(name = "CaseClassificationFacade")
@@ -276,7 +276,11 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 					noneOf(
 						positiveTestResult(Disease.WEST_NILE_FEVER, PathogenTestType.NEUTRALIZING_ANTIBODIES),
 						positiveTestResult(Disease.DENGUE, PathogenTestType.NEUTRALIZING_ANTIBODIES))),
-				positiveTestResult(Disease.YELLOW_FEVER, PathogenTestType.PCR_RT_PCR, PathogenTestType.ANTIGEN_DETECTION, PathogenTestType.ISOLATION),
+				positiveTestResult(
+					Disease.YELLOW_FEVER,
+					PathogenTestType.PCR_RT_PCR,
+					PathogenTestType.LATERAL_FLOW_ASSAY,
+					PathogenTestType.ISOLATION),
 				sampleTest(
 					PathogenTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER,
 					Arrays.asList(
@@ -410,7 +414,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 					symptom(SymptomsDto.CHILLS_SWEATS))));
 		probable = allOf(
 			suspect,
-			xOf(1, exposure(ExposureDto.RISK_AREA, ExposureType.TRAVEL), positiveTestResult(Disease.PLAGUE, PathogenTestType.ANTIGEN_DETECTION)));
+			xOf(1, exposure(ExposureDto.RISK_AREA, ExposureType.TRAVEL), positiveTestResult(Disease.PLAGUE, PathogenTestType.LATERAL_FLOW_ASSAY)));
 		confirmed = allOf(suspect, positiveTestResult(Disease.PLAGUE, PathogenTestType.ISOLATION, PathogenTestType.PCR_RT_PCR));
 		addCriteria(Disease.PLAGUE, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, notACase(Disease.PLAGUE));
 
@@ -495,7 +499,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 					Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
 					PathogenTestType.MICROSCOPY,
 					PathogenTestType.PCR_RT_PCR,
-					PathogenTestType.ANTIGEN_DETECTION))));
+					PathogenTestType.LATERAL_FLOW_ASSAY))));
 		addCriteria(Disease.INVASIVE_MENINGOCOCCAL_INFECTION, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, null);
 
 		//Invasive Pneumococcal Infection
@@ -595,10 +599,9 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 				positiveTestResult(
 					Disease.CORONAVIRUS,
 					PathogenTestType.PCR_RT_PCR,
-					PathogenTestType.ANTIGEN_DETECTION,
+					PathogenTestType.LATERAL_FLOW_ASSAY,
 					PathogenTestType.ISOLATION,
-					PathogenTestType.SEQUENCING,
-					PathogenTestType.RAPID_TEST),
+					PathogenTestType.SEQUENCING),
 				suspect);
 
 		// confirmed_no_symptoms = positive test AND at least one symptom set to no AND all covid-relevant symptoms are anything but yes
@@ -606,10 +609,9 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 			positiveTestResult(
 				Disease.CORONAVIRUS,
 				PathogenTestType.PCR_RT_PCR,
-				PathogenTestType.ANTIGEN_DETECTION,
+				PathogenTestType.LATERAL_FLOW_ASSAY,
 				PathogenTestType.ISOLATION,
-				PathogenTestType.SEQUENCING,
-				PathogenTestType.RAPID_TEST),
+				PathogenTestType.SEQUENCING),
 			anyOfSymptoms(SymptomState.NO, Disease.CORONAVIRUS),
 			noneOf(suspect));
 
@@ -618,10 +620,9 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 			positiveTestResult(
 				Disease.CORONAVIRUS,
 				PathogenTestType.PCR_RT_PCR,
-				PathogenTestType.ANTIGEN_DETECTION,
+				PathogenTestType.LATERAL_FLOW_ASSAY,
 				PathogenTestType.ISOLATION,
-				PathogenTestType.SEQUENCING,
-				PathogenTestType.RAPID_TEST),
+				PathogenTestType.SEQUENCING),
 			xOf(1, anyOfSymptoms(SymptomState.UNKNOWN, Disease.CORONAVIRUS), anyOfSymptoms(null, Disease.CORONAVIRUS)),
 			noneOf(anyOfSymptoms(SymptomState.NO, Disease.CORONAVIRUS)),
 			noneOf(suspect));

@@ -8,14 +8,13 @@ import java.util.Set;
 import javax.ejb.EJB;
 import javax.enterprise.context.ApplicationScoped;
 
-import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.customizableenum.CustomizableEnum;
-import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.I18nPropertiesRequest;
@@ -23,6 +22,7 @@ import de.symeda.sormas.api.patch.DataPatchFailureCause;
 import de.symeda.sormas.api.patch.mapping.ValueMappingResult;
 import de.symeda.sormas.api.patch.mapping.ValuePatchMapper;
 import de.symeda.sormas.api.patch.mapping.ValuePatchRequest;
+import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb;
 import de.symeda.sormas.backend.util.StringNormalizer;
 
 /**
@@ -101,7 +101,7 @@ public class CustomizableEnumPatchMapper implements ValuePatchMapper {
 				.map(Map.Entry::getKey)
 				.map(key -> customizableEnumFacade.getEnumValue(type, null, key));
 
-			if (customizableEnumOpt.isPresent()) {
+			if (customizableEnumOpt.filter(candidate -> StringUtils.isNotBlank(candidate.getCaption())).isPresent()) {
 				return customizableEnumOpt;
 			}
 		}

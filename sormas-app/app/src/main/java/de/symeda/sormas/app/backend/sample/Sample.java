@@ -18,12 +18,6 @@ package de.symeda.sormas.app.backend.sample;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
-
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -33,6 +27,12 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Transient;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.sample.AdditionalTestType;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -154,7 +154,8 @@ public class Sample extends PseudonymizableAdo {
 	@DatabaseField
 	private Boolean additionalTestingRequested;
 
-	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	// widened alongside the server column in schema migration 649: varchar(512) cannot hold a full selection
+	@Column(length = CHARACTER_LIMIT_BIG)
 	private String requestedPathogenTestsString;
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
@@ -415,7 +416,8 @@ public class Sample extends PseudonymizableAdo {
 			if (!StringUtils.isEmpty(requestedPathogenTestsString)) {
 				String[] testTypes = requestedPathogenTestsString.split(",");
 				for (String testType : testTypes) {
-					requestedPathogenTests.add(PathogenTestType.valueOf(testType));
+					// fromLegacyName translates names retired by an enum merge and rejects a blank (i.e. corrupt) type
+					requestedPathogenTests.add(PathogenTestType.fromLegacyName(testType));
 				}
 			}
 		}
@@ -431,6 +433,10 @@ public class Sample extends PseudonymizableAdo {
 
 		StringBuilder sb = new StringBuilder();
 		for (PathogenTestType test : requestedPathogenTests) {
+			// a name only a newer server knows deserializes to null, drop it rather than fail the whole sync
+			if (test == null) {
+				continue;
+			}
 			sb.append(test.name());
 			sb.append(",");
 		}

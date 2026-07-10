@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.patch.partial_retrieval;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -52,6 +53,6 @@ public class TypeToDisplayRegistry {
 
 		logger.debug("Value [{}] will be mapped with mapper: [{}]", value, matchingMapper);
 
-		return matchingMapper.toDisplayValue(value);
+		return Optional.ofNullable(matchingMapper.toDisplayValue(value)).orElse(EMPTY_STRING);
 	}
 }
