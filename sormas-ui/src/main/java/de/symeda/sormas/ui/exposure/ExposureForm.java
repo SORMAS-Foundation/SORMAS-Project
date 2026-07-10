@@ -423,9 +423,11 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			boolean containsOther = selectedSubSettings != null && selectedSubSettings.contains(ExposureSubSetting.OTHER);
 			subSettingsDetailsField.setVisible(containsOther);
 			// prophylaxis is allowed only for Malaria abroad travelers, not all diseases
-			boolean isProphylaxis =
-				selectedSubSettings != null && disease == Disease.MALARIA && selectedSubSettings.contains(ExposureSubSetting.TRAVELED_ABROAD);
-			setVisibleClear(isProphylaxis, ExposureDto.PROPHYLAXIS_ADHERENCE, ExposureDto.TRAVEL_PURPOSE);
+			boolean hasTravelledAbroad = selectedSubSettings != null && selectedSubSettings.contains(ExposureSubSetting.TRAVELED_ABROAD);
+			setVisibleClear(hasTravelledAbroad && disease == Disease.MALARIA, ExposureDto.PROPHYLAXIS_ADHERENCE);
+
+			// Travel purpose is visible to aboard travelers of Malaria and Dengue
+			setVisibleClear(hasTravelledAbroad && (disease == Disease.MALARIA || disease == Disease.DENGUE), ExposureDto.TRAVEL_PURPOSE);
 			boolean isSexualActivity = selectedSubSettings != null && selectedSubSettings.contains(ExposureSubSetting.SEXUAL_ACTIVITY);
 			setVisibleClear(isSexualActivity, ExposureDto.SEXUAL_CONTACT);
 
@@ -704,10 +706,10 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 				subSettingsDetailsField.setValue(subSettingDetails);
 			}
 
-			boolean isMalariaCaseTraveled =
-				subSettings != null && disease == Disease.MALARIA && subSettings.contains(ExposureSubSetting.TRAVELED_ABROAD);
+			boolean hasTravelledAbroad = subSettings != null && subSettings.contains(ExposureSubSetting.TRAVELED_ABROAD);
+
+			boolean isMalariaCaseTraveled = subSettings != null && disease == Disease.MALARIA && hasTravelledAbroad;
 			prophylaxisAdherenceField.setVisible(isMalariaCaseTraveled);
-			travelPurposeField.setVisible(isMalariaCaseTraveled);
 			// If the Malaria-effected person traveled abroad, show the prophylaxis adherence and travel purpose fields
 			if (isMalariaCaseTraveled) {
 				if (prophylaxisAdherence != null) {
@@ -717,18 +719,21 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 				if (prophylaxisAdherenceDetails != null) {
 					prophylaxisAdherenceDetailsField.setValue(prophylaxisAdherenceDetails);
 				}
-
-				if (travelPurpose != null) {
-					travelPurposeField.setValue(travelPurpose);
-				}
+			} else {
+				prophylaxisAdherenceField.setValue(null);
+				prophylaxisAdherenceDetailsField.setValue(null);
+				prophylaxisAdherenceDetailsField.setVisible(false);
+			}
+			// Travel purpose is visible to abroad travelers of Malaria and Dengue
+			boolean isTravelPurposeVisible = hasTravelledAbroad && (disease == Disease.MALARIA || disease == Disease.DENGUE);
+			travelPurposeField.setVisible(isTravelPurposeVisible);
+			if (isTravelPurposeVisible) {
+				travelPurposeField.setValue(travelPurpose);
 				travelPurposeDetailsField.setVisible(travelPurpose == TravelPurpose.OTHER);
 				if (travelPurposeDetails != null) {
 					travelPurposeDetailsField.setValue(travelPurposeDetails);
 				}
 			} else {
-				prophylaxisAdherenceField.setValue(null);
-				prophylaxisAdherenceDetailsField.setValue(null);
-				prophylaxisAdherenceDetailsField.setVisible(false);
 				travelPurposeField.setValue(null);
 				travelPurposeDetailsField.setValue(null);
 				travelPurposeDetailsField.setVisible(false);
