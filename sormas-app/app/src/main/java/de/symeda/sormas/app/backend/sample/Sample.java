@@ -154,7 +154,7 @@ public class Sample extends PseudonymizableAdo {
 	@DatabaseField
 	private Boolean additionalTestingRequested;
 
-	// widened alongside the server column in schema migration 648: varchar(512) cannot hold a full selection
+	// widened alongside the server column in schema migration 649: varchar(512) cannot hold a full selection
 	@Column(length = CHARACTER_LIMIT_BIG)
 	private String requestedPathogenTestsString;
 

@@ -160,13 +160,26 @@ public class ExternalMessageController {
 		form.setValue(newDto);
 	}
 
-	public void processSurveyResponse(String surveyResponseMessageUuid) {
+	public void processSurveyResponse(String surveyResponseMessageUuid, Runnable successRunnable) {
 		ExternalMessageDto externalMessage = FacadeProvider.getExternalMessageFacade().getByUuid(surveyResponseMessageUuid);
 
 		de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseResult result =
 			externalMessage.getSurveyResponseData() != null && externalMessage.getSurveyResponseData().getLatest() != null
 				? externalMessage.getSurveyResponseData().getLatest().getResult()
 				: null;
+
+		// In case of failure during operation, attempt to process the message again.
+		if (result == null) {
+			try {
+				result = FacadeProvider.getExternalMessageFacade()
+					.executeSurveyProcessing(surveyResponseMessageUuid)
+					.getSurveyResponseData()
+					.getLatest()
+					.getResult();
+			} catch (RuntimeException e) {
+				Notification.show(I18nProperties.getString(Strings.messageSurveyResponseNotYetProcessed), Notification.Type.HUMANIZED_MESSAGE);
+			}
+		}
 
 		if (result == null) {
 			Notification.show(I18nProperties.getString(Strings.messageSurveyResponseNotYetProcessed), Notification.Type.HUMANIZED_MESSAGE);
@@ -189,6 +202,8 @@ public class ExternalMessageController {
 			UI.getCurrent().addWindow(editor);
 		} else {
 			Notification.show(I18nProperties.getString(Strings.messageSurveyResponseAllFieldsApplied), Notification.Type.HUMANIZED_MESSAGE);
+
+			successRunnable.run();
 		}
 	}
 

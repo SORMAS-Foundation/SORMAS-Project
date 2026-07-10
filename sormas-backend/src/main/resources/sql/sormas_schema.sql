@@ -16723,6 +16723,7 @@ BEGIN
 END $$;
 INSERT INTO schema_version (version_number, comment) VALUES (646, 'Correcting the typos of column names');
 
+
 -- #14144 - External message cause of death
 
 ALTER TABLE externalmessage ADD COLUMN causeofdeath varchar(255);
@@ -16733,6 +16734,23 @@ ALTER TABLE externalmessage_history ADD COLUMN causeofdeathdetails varchar(512);
 ALTER TABLE externalmessage_history ADD COLUMN causeofdeathdisease varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (647, '#14144 - External message missing cause of death');
+
+-- removal unused symptoms
+ALTER TABLE symptoms DROP COLUMN IF EXISTS abdominalcramps;
+ALTER TABLE symptoms DROP COLUMN IF EXISTS coughingatnight;
+ALTER TABLE symptoms DROP COLUMN IF EXISTS coughingattacks;
+ALTER TABLE symptoms DROP COLUMN IF EXISTS flatulence;
+ALTER TABLE symptoms DROP COLUMN IF EXISTS lossofappetite;
+ALTER TABLE symptoms DROP COLUMN IF EXISTS smellyburps;
+
+ALTER TABLE symptoms_history DROP COLUMN IF EXISTS abdominalcramps;
+ALTER TABLE symptoms_history DROP COLUMN IF EXISTS coughingatnight;
+ALTER TABLE symptoms_history DROP COLUMN IF EXISTS coughingattacks;
+ALTER TABLE symptoms_history DROP COLUMN IF EXISTS flatulence;
+ALTER TABLE symptoms_history DROP COLUMN IF EXISTS lossofappetite;
+ALTER TABLE symptoms_history DROP COLUMN IF EXISTS smellyburps;
+
+INSERT INTO schema_version (version_number, comment) VALUES (648, 'Removing unused symptoms');
 
 -- Retire six pathogen test types. ANTIGEN_DETECTION, RAPID_TEST, RAPID_ANTIGEN_DETECTION and RDT merge into
 -- LATERAL_FLOW_ASSAY. DIRECT_MICROSCOPY and RAPID_ANTIBODY_TEST have no successor and become OTHER, with their
@@ -16834,6 +16852,6 @@ UPDATE samples_history SET
                      ~ ',(ANTIGEN_DETECTION|RAPID_TEST|RAPID_ANTIGEN_DETECTION|RDT|LATERAL_FLOW_ASSAY),'
                 THEN ',LATERAL_FLOW_ASSAY' ELSE '' END)
     WHERE requestedpathogentestsstring ~ '(^|,)(ANTIGEN_DETECTION|RAPID_TEST|RAPID_ANTIGEN_DETECTION|RDT|DIRECT_MICROSCOPY|RAPID_ANTIBODY_TEST)(,|$)';
-INSERT INTO schema_version (version_number, comment) VALUES (648, 'Merge retired pathogen test types into Lateral Flow Assay / Other');
+INSERT INTO schema_version (version_number, comment) VALUES (649, 'Merge retired pathogen test types into Lateral Flow Assay / Other');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

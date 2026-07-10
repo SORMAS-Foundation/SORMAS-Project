@@ -417,7 +417,7 @@ public enum PathogenTestType {
 	// ----------------------------------------------------------------------------------------------
 
 	// Single antigen-detection entry: the four merged methods are translated on read (see LegacyEnumNames)
-	// and rewritten onto this constant by schema migration 648.
+	// and rewritten onto this constant by schema migration 649.
 	@LegacyEnumNames({
 		"ANTIGEN_DETECTION",
 		"RAPID_TEST",

@@ -3229,7 +3229,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				// still needs its migration, and re-running it on a device from 361 is a no-op.
 				migrateContactProximities();
 
-				// Mirrors server schema migration 648. A device that skipped releases may predate these columns
+				// Mirrors server schema migration 649. A device that skipped releases may predate these columns
 				// (case 165 rebuilt pathogenTest, case 143 added requestedOtherPathogenTests). Skip rather than
 				// abort the upgrade, as case 361 does -- only the newest case ever runs, so it must be self-sufficient.
 				if (!columnDoesNotExist("pathogenTest", "testTypeText")) {

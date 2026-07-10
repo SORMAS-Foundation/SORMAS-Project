@@ -111,9 +111,7 @@ public class DataPatcherImpl implements DataPatcher {
 		this.configFacade = configFacade;
 	}
 
-	@Transactional(value = Transactional.TxType.REQUIRES_NEW,
-		rollbackOn = {
-			Exception.class })
+	@Transactional(rollbackOn = Exception.class)
 	@Override
 	public DataPatchResponse patch(CaseDataPatchRequest request) {
 		logger.debug("patch: [{}]", request);
@@ -247,7 +245,7 @@ public class DataPatcherImpl implements DataPatcher {
 	private void saveDTOsIfAppropriate(Map<Tuple<String, Integer>, AttachedEntityWrapper> entityCache) {
 		List<Tuple<Integer, EntityDto>> toSave = entityCache.entrySet()
 			.stream()
-			.map(entry -> Tuple.<Integer, EntityDto> of(entry.getKey().getSecond(), entry.getValue().getEntityDto()))
+			.map(entry -> Tuple.of(entry.getKey().getSecond(), entry.getValue().getEntityDto()))
 			.collect(Collectors.toList());
 
 		if (toSave.isEmpty()) {

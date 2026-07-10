@@ -1,6 +1,9 @@
 package de.symeda.sormas.backend;
 
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.*;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.fields;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -290,7 +293,9 @@ public class ArchitectureTest {
 				"fetchAndSaveExternalMessages",
 				"bulkAssignExternalMessages",
 				"delete",
+				"executeSurveyProcessing",
 				"overwriteSurveyResponse",
+				"reAttemptSurveyProcessing",
 				"saveAndProcessSurveyResponses"),
 			classes);
 	}

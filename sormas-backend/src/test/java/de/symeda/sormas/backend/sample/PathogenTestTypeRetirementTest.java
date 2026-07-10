@@ -38,7 +38,7 @@ import de.symeda.sormas.api.utils.LegacyEnumNames;
 
 /**
  * The set of retired {@link PathogenTestType} names lives in three artifacts that no compiler ties together: the
- * {@link LegacyEnumNames} annotations, Postgres migration 648 and the sormas-app SQLite mirror. A name added to one
+ * {@link LegacyEnumNames} annotations, Postgres migration 649 and the sormas-app SQLite mirror. A name added to one
  * and forgotten in another leaves stored values un-migrated on that platform, silently.
  */
 public class PathogenTestTypeRetirementTest {
@@ -51,10 +51,10 @@ public class PathogenTestTypeRetirementTest {
 	private static final Pattern RETIRED_IN_LIST = Pattern.compile("testtype IN \\(([^)]*)\\)", Pattern.CASE_INSENSITIVE);
 
 	@Test
-	public void migration648RetiresExactlyTheNamesTheEnumDeclares() throws IOException {
-		String sql = migration648();
+	public void migration649RetiresExactlyTheNamesTheEnumDeclares() throws IOException {
+		String sql = migration649();
 		assertThat(retiredNamesIn(sql), equalTo(declaredRetiredNames()));
-		assertEveryRetiredNameIsRewrittenInTheRequestedTestsSet(sql, "migration 648");
+		assertEveryRetiredNameIsRewrittenInTheRequestedTestsSet(sql, "migration 649");
 	}
 
 	@Test
@@ -110,8 +110,8 @@ public class PathogenTestTypeRetirementTest {
 		return names;
 	}
 
-	private static String migration648() throws IOException {
-		return slice(read(SCHEMA), "VALUES (647,", "VALUES (648,");
+	private static String migration649() throws IOException {
+		return slice(read(SCHEMA), "VALUES (648,", "VALUES (649,");
 	}
 
 	private static String androidCase362() throws IOException {
