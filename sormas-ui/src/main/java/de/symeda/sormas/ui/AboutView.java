@@ -70,6 +70,8 @@ public class AboutView extends VerticalLayout implements View {
 
 	public static final String VIEW_NAME = "about";
 
+	private static final String SORMAS_GITHUB_URL = "https://github.com/SORMAS-Foundation/SORMAS-Project";
+
 	public AboutView() {
 
 		// Info section
@@ -135,7 +137,7 @@ public class AboutView extends VerticalLayout implements View {
 		if (InfoProvider.get().isSnapshotVersion()) {
 			Link commitLink = new Link(
 				String.format("%s (%s)", versionLabel.getValue(), InfoProvider.get().getLastCommitShortId()),
-				new ExternalResource(InfoProvider.get().getLastCommitHistoryUrl()));
+				new ExternalResource(SORMAS_GITHUB_URL));
 			commitLink.setTargetName("_blank");
 			CssStyles.style(commitLink, CssStyles.VSPACE_3);
 			infoLayout.replaceComponent(versionLabel, commitLink);
@@ -157,7 +159,7 @@ public class AboutView extends VerticalLayout implements View {
 
 		Link whatsNewLink = new Link(
 			I18nProperties.getCaption(Captions.aboutWhatsNew),
-			new ExternalResource("https://github.com/sormas-foundation/SORMAS-Project/releases/tag/v" + InfoProvider.get().getBaseVersion()));
+			new ExternalResource(SORMAS_GITHUB_URL + "/releases/tag/v" + InfoProvider.get().getBaseVersion()));
 		whatsNewLink.setTargetName("_blank");
 		infoLayout.addComponent(whatsNewLink);
 
@@ -165,13 +167,13 @@ public class AboutView extends VerticalLayout implements View {
 		sormasWebsiteLink.setTargetName("_blank");
 		infoLayout.addComponent(sormasWebsiteLink);
 
-		Link sormasGithubLink = new Link("SORMAS Github", new ExternalResource("https://github.com/sormas-foundation/SORMAS-Project"));
+		Link sormasGithubLink = new Link("SORMAS Github", new ExternalResource(SORMAS_GITHUB_URL));
 		sormasGithubLink.setTargetName("_blank");
 		infoLayout.addComponent(sormasGithubLink);
 
 		Link changelogLink = new Link(
 			I18nProperties.getCaption(Captions.aboutChangelog),
-			new ExternalResource("https://github.com/sormas-foundation/SORMAS-Project/releases"));
+			new ExternalResource(SORMAS_GITHUB_URL + "/releases"));
 		changelogLink.setTargetName("_blank");
 		infoLayout.addComponent(changelogLink);
 

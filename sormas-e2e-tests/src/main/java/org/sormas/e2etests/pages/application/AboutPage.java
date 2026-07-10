@@ -10,7 +10,7 @@ public class AboutPage {
       By.id("aboutCaseClassificationRules");
   public static final By SORMAS_VERSION_LINK =
       By.xpath(
-          "(//*[@class='v-label v-widget vspace-3 v-label-vspace-3 v-label-undef-w' or starts-with(@href, 'https://github.com/sormas-foundation/SORMAS-Project/commits/')])[1]");
+          "(//*[@class='v-label v-widget vspace-3 v-label-vspace-3 v-label-undef-w' or starts-with(@href, 'https://github.com/SORMAS-Foundation/SORMAS-Project')])[1]");
   public static final By SORMAS_VERSION_HYPERLINK_TARGET =
       By.cssSelector("[class='v-link v-widget vspace-3 v-link-vspace-3'] a");
   public static final By WHATS_NEW_HYPERLINK =
