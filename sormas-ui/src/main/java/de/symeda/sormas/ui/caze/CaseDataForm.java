@@ -2176,13 +2176,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					@Override
 					protected void onConfirm() {
 						diseaseField.removeValueChangeListener(DiseaseChangeListener.this);
-						fields.stream().forEach(field -> {
-							if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
-								final boolean isTuberculosisPostMortem =
-									diseaseField.getValue().equals(Disease.TUBERCULOSIS) && field.getId().equals(CaseDataDto.POST_MORTEM);
-								field.setVisible(isTuberculosisPostMortem);
-							}
-						});
 					}
 
 					@Override
