@@ -30,7 +30,13 @@ public class ImmunizationPersonView extends AbstractImmunizationView implements 
 		ImmunizationDto immunzation = FacadeProvider.getImmunizationFacade().getByUuid(getReference().getUuid());
 		person = FacadeProvider.getPersonFacade().getByUuid(immunzation.getPerson().getUuid());
 		CommitDiscardWrapperComponent<PersonEditForm> editComponent = ControllerProvider.getPersonController()
-			.getPersonEditComponent(PersonContext.IMMUNIZATION, person, immunzation.getDisease(), null, UserRight.PERSON_EDIT, null);
+			.getPersonEditComponent(
+				PersonContext.IMMUNIZATION,
+				person,
+				immunzation.getDisease(),
+				immunzation.getDiseaseDetails(),
+				UserRight.PERSON_EDIT,
+				null);
 		DetailSubComponentWrapper componentWrapper = addComponentWrapper(editComponent);
 		CustomLayout layout = addPageLayout(componentWrapper, editComponent);
 		setSubComponent(componentWrapper);
@@ -39,6 +45,8 @@ public class ImmunizationPersonView extends AbstractImmunizationView implements 
 			DeletableEntityType.IMMUNIZATION,
 			immunzation.getUuid(),
 			person.toReference(),
+			immunzation.getDisease(),
+			immunzation.getDiseaseDetails(),
 			this::showUnsavedChangesPopup,
 			isEditAllowed());
 		setEditPermission(editComponent);

@@ -19,6 +19,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
@@ -29,6 +30,7 @@ import com.vaadin.data.Result;
 import com.vaadin.data.ValidationResult;
 import com.vaadin.data.ValueContext;
 import com.vaadin.data.converter.StringToIntegerConverter;
+import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
@@ -44,10 +46,10 @@ import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
-import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
@@ -58,10 +60,10 @@ import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.FormComponent;
 
 /**
- * Simplified "Quick Immunization Entry" form showing only the 7 core fields (BR0070).
- * Jurisdiction fields (responsibleRegion, responsibleDistrict) stay hidden when they are already
- * pre-set on the DTO before calling {@link #setValue(ImmunizationDto)}. If either value is missing,
- * Vaadin 8 jurisdiction inputs are shown so the immunization can still be created.
+ * Simplified "Quick Immunization Entry" form showing the core fields for quick creation (BR0070).
+ * Disease and jurisdiction fields stay hidden when they are already pre-set on the DTO before
+ * calling {@link #setValue(ImmunizationDto)}. If either value is missing, Vaadin 8 inputs are shown
+ * so the immunization can still be created.
  * <p>
  * Extends {@link AbstractEditForm} for compatibility with
  * {@link de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent}.
@@ -134,6 +136,10 @@ public class QuickImmunizationCreationForm extends AbstractEditForm<Immunization
 
 		private static final long serialVersionUID = 1L;
 
+		private ComboBox<Disease> disease;
+		private TextField diseaseDetails;
+		private Label diseaseDetailsSpacer;
+		private HorizontalLayout diseaseRow;
 		private DateField reportDate;
 		private ComboBox<MeansOfImmunization> meansOfImmunization;
 		private ComboBox<RegionReferenceDto> responsibleRegion;
@@ -145,12 +151,15 @@ public class QuickImmunizationCreationForm extends AbstractEditForm<Immunization
 		private DateField validFrom;
 		private DateField validUntil;
 		private Label validityWarningLabel;
+		private boolean diseaseSelectionVisible;
 
 		FieldsComponent() {
 			super(ImmunizationDto.class);
 			buildLayout();
 			bindFields();
 			wireEvents();
+			diseaseSelectionVisible = true;
+			updateDiseaseFieldsVisibility();
 			// Vaccination-specific fields (including validity dates) are hidden until the
 			// user selects a vaccination means of immunization.
 			updateVaccinationFieldsVisibility(null);
@@ -158,11 +167,16 @@ public class QuickImmunizationCreationForm extends AbstractEditForm<Immunization
 
 		@Override
 		public void setDto(ImmunizationDto dto) {
+			refreshDiseaseOptions(dto != null ? dto.getDisease() : null);
+			diseaseSelectionVisible = dto == null || dto.getDisease() == null;
 			refreshMeansOfImmunizationOptions(dto != null ? dto.getDisease() : null);
 			// Populate district options before binding so a pre-set district can be displayed immediately.
 			refreshDistrictOptions(dto != null ? dto.getResponsibleRegion() : null);
 			super.setDto(dto);
+			selectDefaultDiseaseIfConfigured();
 			refreshDistrictOptions(responsibleRegion.getValue());
+			updateDiseaseFieldsVisibility();
+			updateDiseaseDetailsValidation();
 			updateJurisdictionFieldsVisibility(dto);
 			// binder.setBean() only fires value-change events when the value actually
 			// changes. If meansOfImmunization was already null (typical for a new DTO),
@@ -176,6 +190,16 @@ public class QuickImmunizationCreationForm extends AbstractEditForm<Immunization
 		}
 
 		private void buildLayout() {
+			disease = createComboBox(ImmunizationDto.DISEASE, ImmunizationDto.I18N_PREFIX);
+			disease.setItemCaptionGenerator(Disease::toString);
+			refreshDiseaseOptions(null);
+
+			diseaseDetails = createTextField(ImmunizationDto.DISEASE_DETAILS, ImmunizationDto.I18N_PREFIX, ValueChangeMode.BLUR);
+			diseaseDetails.setVisible(false);
+
+			diseaseDetailsSpacer = createSpacer();
+			diseaseRow = addToggleRow(disease, diseaseDetails, diseaseDetailsSpacer);
+
 			reportDate = createDateField(ImmunizationDto.REPORT_DATE, ImmunizationDto.I18N_PREFIX);
 
 			meansOfImmunization = createComboBox(ImmunizationDto.MEANS_OF_IMMUNIZATION, ImmunizationDto.I18N_PREFIX);
@@ -224,6 +248,12 @@ public class QuickImmunizationCreationForm extends AbstractEditForm<Immunization
 		}
 
 		private void bindFields() {
+			binder.forField(disease)
+				.asRequired(I18nProperties.getValidationError(Validations.required, disease.getCaption()))
+				.bind(ImmunizationDto::getDisease, ImmunizationDto::setDisease);
+
+			binder.forField(diseaseDetails).withNullRepresentation("").bind(ImmunizationDto::getDiseaseDetails, ImmunizationDto::setDiseaseDetails);
+
 			binder.forField(reportDate)
 				.asRequired(I18nProperties.getValidationError(Validations.required, reportDate.getCaption()))
 				.withConverter(new LocalDateToDateConverter())
@@ -271,6 +301,12 @@ public class QuickImmunizationCreationForm extends AbstractEditForm<Immunization
 		}
 
 		private void wireEvents() {
+			track(disease.addValueChangeListener(e -> {
+				refreshMeansOfImmunizationOptions(e.getValue());
+				updateDiseaseFieldsVisibility();
+				updateDiseaseDetailsValidation();
+			}));
+			track(diseaseDetails.addValueChangeListener(e -> updateDiseaseDetailsValidation()));
 			track(responsibleRegion.addValueChangeListener(e -> refreshDistrictOptions(e.getValue())));
 			track(meansOfImmunization.addValueChangeListener(e -> {
 				updateVaccinationFieldsVisibility(e.getValue());
@@ -281,6 +317,68 @@ public class QuickImmunizationCreationForm extends AbstractEditForm<Immunization
 			track(numberOfDoses.addValueChangeListener(e -> refreshValiditySuggestions()));
 			track(dateOfMostRecentDose.addValueChangeListener(e -> refreshValiditySuggestions()));
 			track(validFrom.addValueChangeListener(e -> refreshValidUntilSuggestion()));
+		}
+
+		@Override
+		public void validate() {
+			validateAll(this::validateBinderOnly, this::validateDiseaseDetails);
+		}
+
+		private void validateDiseaseDetails() {
+			if (disease.getValue() == Disease.OTHER) {
+				validateRequiredVisible(diseaseDetails);
+			} else {
+				clearValidationError(diseaseDetails);
+			}
+		}
+
+		private void refreshDiseaseOptions(Disease selectedDisease) {
+			List<Disease> visibleDiseases = new ArrayList<>(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true));
+			if (selectedDisease != null && !visibleDiseases.contains(selectedDisease)) {
+				visibleDiseases.add(selectedDisease);
+			}
+			disease.setItems(visibleDiseases);
+		}
+
+		private void selectDefaultDiseaseIfConfigured() {
+			if (!diseaseSelectionVisible || binder.getBean() == null || disease.getValue() != null) {
+				return;
+			}
+
+			Disease defaultDisease = FacadeProvider.getDiseaseConfigurationFacade().getDefaultDisease();
+			if (defaultDisease != null) {
+				disease.setValue(defaultDisease);
+			}
+		}
+
+		private void updateDiseaseFieldsVisibility() {
+			ImmunizationDto dto = binder.getBean();
+			Disease selectedDisease = disease.getValue();
+			boolean hasPresetDiseaseDetails =
+				!diseaseSelectionVisible && selectedDisease == Disease.OTHER && dto != null && !isBlank(dto.getDiseaseDetails());
+			boolean showDiseaseDetails = selectedDisease == Disease.OTHER && (diseaseSelectionVisible || !hasPresetDiseaseDetails);
+
+			disease.setVisible(diseaseSelectionVisible);
+			diseaseDetails.setVisible(showDiseaseDetails);
+			diseaseDetails.setRequiredIndicatorVisible(showDiseaseDetails);
+			diseaseDetailsSpacer.setVisible(diseaseSelectionVisible && !showDiseaseDetails);
+			diseaseRow.setVisible(diseaseSelectionVisible || showDiseaseDetails);
+
+			if (!showDiseaseDetails && selectedDisease != Disease.OTHER) {
+				diseaseDetails.clear();
+			}
+		}
+
+		private void updateDiseaseDetailsValidation() {
+			if (disease.getValue() == Disease.OTHER) {
+				updateRequiredValidation(diseaseDetails);
+			} else {
+				clearValidationError(diseaseDetails);
+			}
+		}
+
+		private boolean isBlank(String value) {
+			return value == null || value.trim().isEmpty();
 		}
 
 		private void refreshMeansOfImmunizationOptions(Disease disease) {
@@ -296,9 +394,8 @@ public class QuickImmunizationCreationForm extends AbstractEditForm<Immunization
 		}
 
 		private void refreshDistrictOptions(RegionReferenceDto region) {
-			FieldHelper.updateItems(
-				responsibleDistrict,
-				region != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()) : null);
+			FieldHelper
+				.updateItems(responsibleDistrict, region != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()) : null);
 		}
 
 		private void updateJurisdictionFieldsVisibility(ImmunizationDto dto) {

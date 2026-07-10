@@ -45,6 +45,8 @@ public class TravelEntryPersonView extends AbstractTravelEntryView implements Pe
 			DeletableEntityType.TRAVEL_ENTRY,
 			travelEntry.getUuid(),
 			person.toReference(),
+			travelEntry.getDisease(),
+			travelEntry.getDiseaseDetails(),
 			this::showUnsavedChangesPopup,
 			isEditAllowed());
 		setEditPermission(editComponent);
