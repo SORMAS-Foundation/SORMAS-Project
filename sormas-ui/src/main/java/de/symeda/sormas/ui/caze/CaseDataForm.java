@@ -1303,7 +1303,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			null);
 
 		/// CLINICIAN FIELDS
-		if (!isLuxTuberculosisDisease() && isVisibleAllowed(CaseDataDto.CLINICIAN_NAME)) {
+		if (isVisibleAllowed(CaseDataDto.CLINICIAN_NAME)) {
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),
 				Arrays.asList(CaseDataDto.CLINICIAN_NAME, CaseDataDto.CLINICIAN_PHONE, CaseDataDto.CLINICIAN_EMAIL),
@@ -1332,7 +1332,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			Arrays.asList(CaseDataDto.PREGNANT, CaseDataDto.VACCINATION_STATUS, CaseDataDto.SMALLPOX_VACCINATION_RECEIVED);
 
 		for (String medicalInformationField : medicalInformationFields) {
-			if (!isLuxTuberculosisDisease() && getFieldGroup().getField(medicalInformationField).isVisible()) {
+			if (getFieldGroup().getField(medicalInformationField).isVisible()) {
 				Label medicalInformationCaptionLabel = new Label(I18nProperties.getString(Strings.headingMedicalInformation));
 				medicalInformationCaptionLabel.addStyleName(H3);
 				getContent().addComponent(medicalInformationCaptionLabel, MEDICAL_INFORMATION_LOC);
@@ -1512,13 +1512,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		});
 
 		boolean isNotMale = Objects.isNull(person.getSex()) || !Sex.MALE.equals(person.getSex());
-		setVisible(!isLuxTuberculosisDisease() && isNotMale, CaseDataDto.POSTPARTUM, CaseDataDto.PREGNANT, CaseDataDto.TRIMESTER);
-		setVisible(
-			!isLuxTuberculosisDisease(),
-			CaseDataDto.SURVEILLANCE_OFFICER,
-			CaseDataDto.CLINICIAN_NAME,
-			CaseDataDto.CLINICIAN_PHONE,
-			CaseDataDto.CLINICIAN_EMAIL);
+		setVisible(isNotMale, CaseDataDto.POSTPARTUM, CaseDataDto.PREGNANT, CaseDataDto.TRIMESTER);
 
 		// Customizable fields group panels
 		initializeCustomizableFieldPanels();
@@ -1629,7 +1623,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			return "";
 		}
 		String htmlText = unescapeHtml(text);
-//		Leveraging existing codebase tool to strip ALL unapproved tags,
+		//		Leveraging existing codebase tool to strip ALL unapproved tags,
 		Safelist customizedSafelist = Safelist.relaxed()
 			.addTags("u", "font")
 			.addAttributes("font", "size", "color")
@@ -1707,11 +1701,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		regionCombo.setVisible(false);
 		districtCombo.setVisible(false);
 		communityCombo.setVisible(false);
-	}
-
-	// This method is used to hide the not relevant fields of LUX+TB
-	private boolean isLuxTuberculosisDisease() {
-		return isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && disease == Disease.TUBERCULOSIS;
 	}
 
 	private void updateFacilityOrHome() {
@@ -1990,8 +1979,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		facilityDetails.setValue(healthFacilityDetails);
 		facilityCombo.setReadOnly(readOnlyFacility);
 		facilityDetails.setReadOnly(readOnlyFacilityDetails);
-		boolean postmortemVisibility = isLuxTuberculosisDisease();
-		postMortemCB.setVisible(postmortemVisibility);
 	}
 
 	private void updateVisibilityDifferentPlaceOfStayJurisdiction(CaseDataDto newFieldValue) {
