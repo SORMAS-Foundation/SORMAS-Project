@@ -1065,7 +1065,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			surveillanceSupervisor.toReference(),
 			SampleMaterial.CRUST,
 			rdcf.facility);
-		creator.createPathogenTest(caze, PathogenTestType.ANTIGEN_DETECTION, PathogenTestResultType.POSITIVE);
+		creator.createPathogenTest(caze, PathogenTestType.LATERAL_FLOW_ASSAY, PathogenTestResultType.POSITIVE);
 		creator.createPrescription(caze);
 		ImmunizationDto immunization = creator.createImmunization(
 			caze.getDisease(),

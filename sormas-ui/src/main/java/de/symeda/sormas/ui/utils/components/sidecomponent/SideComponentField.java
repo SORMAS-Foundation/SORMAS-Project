@@ -2,7 +2,7 @@ package de.symeda.sormas.ui.utils.components.sidecomponent;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
@@ -106,60 +106,55 @@ public class SideComponentField extends HorizontalLayout {
 		mainLayout.addStyleName(CssStyles.ACTIVE_SIDE_COMPONENT_ELEMENT);
 	}
 
+	/** Disease -> the test methods whose variant field the side component can show. Invariant, so built once. */
+	private static final Map<Disease, List<PathogenTestType>> VARIANT_MAP;
+	static {
+		Map<Disease, List<PathogenTestType>> map = new EnumMap<>(Disease.class);
+		map.put(
+			Disease.MALARIA,
+			Arrays.asList(
+				PathogenTestType.THIN_BLOOD_SMEAR,
+				PathogenTestType.LATERAL_FLOW_ASSAY,
+				PathogenTestType.PCR_RT_PCR,
+				PathogenTestType.Q_PCR,
+				PathogenTestType.LAMP,
+				PathogenTestType.INDIRECT_FLUORESCENT_ANTIBODY,
+				PathogenTestType.OTHER_MOLECULAR_ASSAY,
+				PathogenTestType.OTHER_SEROLOGICAL_TEST,
+				PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
+				PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY));
+		map.put(Disease.DENGUE, Arrays.asList(PathogenTestType.NAAT, PathogenTestType.NEUTRALIZING_ANTIBODIES, PathogenTestType.PCR_RT_PCR));
+		map.put(Disease.SHIGELLOSIS, Arrays.asList(PathogenTestType.SEROGROUPING, PathogenTestType.SEROTYPING));
+		map.put(Disease.MEASLES, Arrays.asList(PathogenTestType.GENOTYPING));
+		map.put(
+			Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+			Arrays.asList(
+				PathogenTestType.SEROGROUPING,
+				PathogenTestType.MULTILOCUS_SEQUENCE_TYPING,
+				PathogenTestType.SLIDE_AGGLUTINATION,
+				PathogenTestType.WHOLE_GENOME_SEQUENCING,
+				PathogenTestType.SEQUENCING));
+		map.put(
+			Disease.TUBERCULOSIS,
+			Arrays.asList(
+				PathogenTestType.MICROSCOPY,
+				PathogenTestType.BEIJINGGENOTYPING,
+				PathogenTestType.SPOLIGOTYPING,
+				PathogenTestType.MIRU_PATTERN_CODE));
+		map.replaceAll((disease, testTypes) -> Collections.unmodifiableList(testTypes));
+		VARIANT_MAP = Collections.unmodifiableMap(map);
+	}
+
 	/**
 	 * To display the variant of the pathogen test in the side component, we need to check the disease and test type to determine which
 	 * field contains the variant information, and if there are any "other" options that require us to show the free-text field instead.
-	 * 
+	 *
 	 * @param pathogenTest
 	 * @return
 	 */
 	public String determineSideComponentVariant(PathogenTestDto pathogenTest) {
 		if (pathogenTest.getTestType() == null || pathogenTest.getTestedDisease() == null)
 			return null;
-
-		Map<Disease, List<PathogenTestType>> VARIANT_MAP = Collections.unmodifiableMap(new HashMap<>() {
-
-			{
-				put(
-					Disease.MALARIA,
-					Collections.unmodifiableList(
-						Arrays.asList(
-							PathogenTestType.THIN_BLOOD_SMEAR,
-							PathogenTestType.RAPID_TEST,
-							PathogenTestType.PCR_RT_PCR,
-							PathogenTestType.Q_PCR,
-							PathogenTestType.LAMP,
-							PathogenTestType.INDIRECT_FLUORESCENT_ANTIBODY,
-							PathogenTestType.OTHER_MOLECULAR_ASSAY,
-							PathogenTestType.OTHER_SEROLOGICAL_TEST,
-							PathogenTestType.OTHER_ANTIGEN_DETECTION_TEST,
-							PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY,
-							PathogenTestType.ANTIGEN_DETECTION)));
-				put(
-					Disease.DENGUE,
-					Collections.unmodifiableList(
-						Arrays.asList(PathogenTestType.NAAT, PathogenTestType.NEUTRALIZING_ANTIBODIES, PathogenTestType.PCR_RT_PCR)));
-				put(Disease.SHIGELLOSIS, Collections.unmodifiableList(Arrays.asList(PathogenTestType.SEROGROUPING, PathogenTestType.SEROTYPING)));
-				put(Disease.MEASLES, Collections.unmodifiableList(Arrays.asList(PathogenTestType.GENOTYPING)));
-				put(
-					Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-					Collections.unmodifiableList(
-						Arrays.asList(
-							PathogenTestType.SEROGROUPING,
-							PathogenTestType.MULTILOCUS_SEQUENCE_TYPING,
-							PathogenTestType.SLIDE_AGGLUTINATION,
-							PathogenTestType.WHOLE_GENOME_SEQUENCING,
-							PathogenTestType.SEQUENCING)));
-				put(
-					Disease.TUBERCULOSIS,
-					Collections.unmodifiableList(
-						Arrays.asList(
-							PathogenTestType.MICROSCOPY,
-							PathogenTestType.BEIJINGGENOTYPING,
-							PathogenTestType.SPOLIGOTYPING,
-							PathogenTestType.MIRU_PATTERN_CODE)));
-			}
-		});
 
 		String variant = null;
 		if (pathogenTest.getTestedDisease() == Disease.TUBERCULOSIS

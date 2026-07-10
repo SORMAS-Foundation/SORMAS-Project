@@ -1496,7 +1496,7 @@ public class TestDataCreator {
 	public PathogenTestDto createPathogenTest(SampleReferenceDto sample, UserReferenceDto labUser, Consumer<PathogenTestDto> extraConfig) {
 		return createPathogenTest(
 			sample,
-			PathogenTestType.ANTIGEN_DETECTION,
+			PathogenTestType.LATERAL_FLOW_ASSAY,
 			null,
 			new Date(),
 			(FacilityReferenceDto) null,
@@ -1599,7 +1599,7 @@ public class TestDataCreator {
 
 		return createPathogenTest(
 			sample,
-			PathogenTestType.ANTIGEN_DETECTION,
+			PathogenTestType.LATERAL_FLOW_ASSAY,
 			associatedCase.getDisease(),
 			new Date(),
 			rdcf.facility,

@@ -16734,4 +16734,106 @@ ALTER TABLE externalmessage_history ADD COLUMN causeofdeathdisease varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (647, '#14144 - External message missing cause of death');
 
+-- Retire six pathogen test types. ANTIGEN_DETECTION, RAPID_TEST, RAPID_ANTIGEN_DETECTION and RDT merge into
+-- LATERAL_FLOW_ASSAY. DIRECT_MICROSCOPY and RAPID_ANTIBODY_TEST have no successor and become OTHER, with their
+-- caption prepended to the free-text companion field so the operator's note is what truncates.
+--
+-- A requested test is different: OTHER is excluded from the requested-tests picker, so the retired token is
+-- dropped from the set and only its caption is kept, in the separate requestedotherpathogentests field.
+--
+-- The captions are the English enum.properties values this migration deletes. A migration cannot resolve a
+-- per-user locale, and free text is never re-localized, so a non-English deployment keeps them in English.
+--
+-- varchar(512) is already too small for a full selection (68 constants serialize to 1107 chars) and the token
+-- rewrite only lengthens it further.
+ALTER TABLE samples ALTER COLUMN requestedpathogentestsstring TYPE varchar(4096);
+ALTER TABLE samples_history ALTER COLUMN requestedpathogentestsstring TYPE varchar(4096);
+
+ALTER TABLE pathogentest DISABLE TRIGGER versioning_trigger;
+ALTER TABLE testreport DISABLE TRIGGER versioning_trigger;
+ALTER TABLE samples DISABLE TRIGGER versioning_trigger;
+
+UPDATE pathogentest SET
+    testtypetext = CASE
+        WHEN testtype = 'DIRECT_MICROSCOPY'   THEN left(concat_ws(', ', 'Direct microscopy',   NULLIF(testtypetext, '')), 512)
+        WHEN testtype = 'RAPID_ANTIBODY_TEST' THEN left(concat_ws(', ', 'Rapid Antibody Test', NULLIF(testtypetext, '')), 512)
+        ELSE testtypetext END,
+    testtype = CASE WHEN testtype IN ('DIRECT_MICROSCOPY', 'RAPID_ANTIBODY_TEST') THEN 'OTHER' ELSE 'LATERAL_FLOW_ASSAY' END
+    WHERE testtype IN ('ANTIGEN_DETECTION', 'RAPID_TEST', 'RAPID_ANTIGEN_DETECTION', 'RDT', 'DIRECT_MICROSCOPY', 'RAPID_ANTIBODY_TEST');
+
+UPDATE testreport SET
+    testtypedetails = CASE
+        WHEN testtype = 'DIRECT_MICROSCOPY'   THEN left(concat_ws(', ', 'Direct microscopy',   NULLIF(testtypedetails, '')), 255)
+        WHEN testtype = 'RAPID_ANTIBODY_TEST' THEN left(concat_ws(', ', 'Rapid Antibody Test', NULLIF(testtypedetails, '')), 255)
+        ELSE testtypedetails END,
+    testtype = CASE WHEN testtype IN ('DIRECT_MICROSCOPY', 'RAPID_ANTIBODY_TEST') THEN 'OTHER' ELSE 'LATERAL_FLOW_ASSAY' END
+    WHERE testtype IN ('ANTIGEN_DETECTION', 'RAPID_TEST', 'RAPID_ANTIGEN_DETECTION', 'RDT', 'DIRECT_MICROSCOPY', 'RAPID_ANTIBODY_TEST');
+
+-- All four merged tokens map to one name, so they are stripped and LATERAL_FLOW_ASSAY re-appended exactly once.
+UPDATE samples SET
+    requestedotherpathogentests = CASE
+        WHEN ',' || requestedpathogentestsstring || ',' ~ ',(DIRECT_MICROSCOPY|RAPID_ANTIBODY_TEST),' THEN left(concat_ws(', ',
+            CASE WHEN ',' || requestedpathogentestsstring || ',' LIKE '%,DIRECT_MICROSCOPY,%'   THEN 'Direct microscopy' END,
+            CASE WHEN ',' || requestedpathogentestsstring || ',' LIKE '%,RAPID_ANTIBODY_TEST,%' THEN 'Rapid Antibody Test' END,
+            NULLIF(requestedotherpathogentests, '')), 512)
+        ELSE requestedotherpathogentests END,
+    requestedpathogentestsstring = trim(BOTH ',' FROM
+        trim(BOTH ',' FROM replace(replace(replace(replace(replace(replace(replace(
+            ',' || requestedpathogentestsstring || ',',
+            ',ANTIGEN_DETECTION,',       ','),
+            ',RAPID_ANTIGEN_DETECTION,', ','),
+            ',RAPID_TEST,',              ','),
+            ',RDT,',                     ','),
+            ',LATERAL_FLOW_ASSAY,',      ','),
+            ',DIRECT_MICROSCOPY,',       ','),
+            ',RAPID_ANTIBODY_TEST,',     ','))
+        || CASE WHEN ',' || requestedpathogentestsstring || ','
+                     ~ ',(ANTIGEN_DETECTION|RAPID_TEST|RAPID_ANTIGEN_DETECTION|RDT|LATERAL_FLOW_ASSAY),'
+                THEN ',LATERAL_FLOW_ASSAY' ELSE '' END)
+    WHERE requestedpathogentestsstring ~ '(^|,)(ANTIGEN_DETECTION|RAPID_TEST|RAPID_ANTIGEN_DETECTION|RDT|DIRECT_MICROSCOPY|RAPID_ANTIBODY_TEST)(,|$)';
+
+ALTER TABLE pathogentest ENABLE TRIGGER versioning_trigger;
+ALTER TABLE testreport ENABLE TRIGGER versioning_trigger;
+ALTER TABLE samples ENABLE TRIGGER versioning_trigger;
+
+-- History tables carry no trigger of their own, rewrite the versions recorded before this migration.
+UPDATE pathogentest_history SET
+    testtypetext = CASE
+        WHEN testtype = 'DIRECT_MICROSCOPY'   THEN left(concat_ws(', ', 'Direct microscopy',   NULLIF(testtypetext, '')), 512)
+        WHEN testtype = 'RAPID_ANTIBODY_TEST' THEN left(concat_ws(', ', 'Rapid Antibody Test', NULLIF(testtypetext, '')), 512)
+        ELSE testtypetext END,
+    testtype = CASE WHEN testtype IN ('DIRECT_MICROSCOPY', 'RAPID_ANTIBODY_TEST') THEN 'OTHER' ELSE 'LATERAL_FLOW_ASSAY' END
+    WHERE testtype IN ('ANTIGEN_DETECTION', 'RAPID_TEST', 'RAPID_ANTIGEN_DETECTION', 'RDT', 'DIRECT_MICROSCOPY', 'RAPID_ANTIBODY_TEST');
+
+UPDATE testreport_history SET
+    testtypedetails = CASE
+        WHEN testtype = 'DIRECT_MICROSCOPY'   THEN left(concat_ws(', ', 'Direct microscopy',   NULLIF(testtypedetails, '')), 255)
+        WHEN testtype = 'RAPID_ANTIBODY_TEST' THEN left(concat_ws(', ', 'Rapid Antibody Test', NULLIF(testtypedetails, '')), 255)
+        ELSE testtypedetails END,
+    testtype = CASE WHEN testtype IN ('DIRECT_MICROSCOPY', 'RAPID_ANTIBODY_TEST') THEN 'OTHER' ELSE 'LATERAL_FLOW_ASSAY' END
+    WHERE testtype IN ('ANTIGEN_DETECTION', 'RAPID_TEST', 'RAPID_ANTIGEN_DETECTION', 'RDT', 'DIRECT_MICROSCOPY', 'RAPID_ANTIBODY_TEST');
+
+UPDATE samples_history SET
+    requestedotherpathogentests = CASE
+        WHEN ',' || requestedpathogentestsstring || ',' ~ ',(DIRECT_MICROSCOPY|RAPID_ANTIBODY_TEST),' THEN left(concat_ws(', ',
+            CASE WHEN ',' || requestedpathogentestsstring || ',' LIKE '%,DIRECT_MICROSCOPY,%'   THEN 'Direct microscopy' END,
+            CASE WHEN ',' || requestedpathogentestsstring || ',' LIKE '%,RAPID_ANTIBODY_TEST,%' THEN 'Rapid Antibody Test' END,
+            NULLIF(requestedotherpathogentests, '')), 512)
+        ELSE requestedotherpathogentests END,
+    requestedpathogentestsstring = trim(BOTH ',' FROM
+        trim(BOTH ',' FROM replace(replace(replace(replace(replace(replace(replace(
+            ',' || requestedpathogentestsstring || ',',
+            ',ANTIGEN_DETECTION,',       ','),
+            ',RAPID_ANTIGEN_DETECTION,', ','),
+            ',RAPID_TEST,',              ','),
+            ',RDT,',                     ','),
+            ',LATERAL_FLOW_ASSAY,',      ','),
+            ',DIRECT_MICROSCOPY,',       ','),
+            ',RAPID_ANTIBODY_TEST,',     ','))
+        || CASE WHEN ',' || requestedpathogentestsstring || ','
+                     ~ ',(ANTIGEN_DETECTION|RAPID_TEST|RAPID_ANTIGEN_DETECTION|RDT|LATERAL_FLOW_ASSAY),'
+                THEN ',LATERAL_FLOW_ASSAY' ELSE '' END)
+    WHERE requestedpathogentestsstring ~ '(^|,)(ANTIGEN_DETECTION|RAPID_TEST|RAPID_ANTIGEN_DETECTION|RDT|DIRECT_MICROSCOPY|RAPID_ANTIBODY_TEST)(,|$)';
+INSERT INTO schema_version (version_number, comment) VALUES (648, 'Merge retired pathogen test types into Lateral Flow Assay / Other');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

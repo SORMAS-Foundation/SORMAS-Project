@@ -263,7 +263,7 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 	/**
 	 * External message with sample date in the threshold period should generate a
 	 * new sample to the existing case
-	 * 
+	 *
 	 * @throws ExecutionException
 	 * @throws InterruptedException
 	 */
@@ -647,7 +647,7 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 	public void testProcessPertussisOtherTestType() throws ExecutionException, InterruptedException {
 		ExternalMessageDto rapidTestMessage = createExternalMessage((messageDto) -> {
 			messageDto.setDisease(Disease.PERTUSSIS);
-			messageDto.getSampleReports().get(0).getTestReports().get(0).setTestType(PathogenTestType.RAPID_TEST);
+			messageDto.getSampleReports().get(0).getTestReports().get(0).setTestType(PathogenTestType.LATERAL_FLOW_ASSAY);
 			messageDto.getSampleReports().get(0).getTestReports().get(0).setTestResult(PathogenTestResultType.POSITIVE);
 		});
 		runFlow(rapidTestMessage);

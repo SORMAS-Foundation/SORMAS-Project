@@ -36,8 +36,7 @@ public class MalariaSectionComponent extends AbstractDiseaseSectionComponent {
 
 	private static final List<PathogenTestType> SPECIE_VISIBLE_TYPES = Arrays.asList(
 		PathogenTestType.THIN_BLOOD_SMEAR,
-		PathogenTestType.ANTIGEN_DETECTION,
-		PathogenTestType.RAPID_TEST,
+		PathogenTestType.LATERAL_FLOW_ASSAY,
 		PathogenTestType.PCR_RT_PCR,
 		PathogenTestType.Q_PCR,
 		PathogenTestType.LAMP,
@@ -51,9 +50,8 @@ public class MalariaSectionComponent extends AbstractDiseaseSectionComponent {
 		PathogenTestType.IGA_SERUM_ANTIBODY);
 
 	private static final List<PathogenTestType> AUTO_POSITIVE_TYPES = Arrays.asList(
-		PathogenTestType.ANTIGEN_DETECTION,
+		PathogenTestType.LATERAL_FLOW_ASSAY,
 		PathogenTestType.THIN_BLOOD_SMEAR,
-		PathogenTestType.RAPID_TEST,
 		PathogenTestType.INDIRECT_FLUORESCENT_ANTIBODY,
 		PathogenTestType.PCR_RT_PCR,
 		PathogenTestType.Q_PCR,

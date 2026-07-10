@@ -8,6 +8,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
@@ -20,7 +21,11 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.ValueInstantiationException;
+
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.utils.LegacyEnumNames;
 
 public class PathogenTestTypeTest {
 
@@ -29,9 +34,7 @@ public class PathogenTestTypeTest {
 	 * and existing records) but must no longer be offered when adding a new test.
 	 */
 	private static final Set<PathogenTestType> EXPECTED_LEGACY = EnumSet.of(
-		PathogenTestType.ANTIBODY_DETECTION,
 		PathogenTestType.INCUBATION_TIME,
-		PathogenTestType.MICROSCOPY,
 		PathogenTestType.CQ_VALUE_DETECTION,
 		PathogenTestType.SEQUENCING,
 		// Superseded by the per-Ig-class ELISA split (#13951); kept so historic records still render and
@@ -86,12 +89,9 @@ public class PathogenTestTypeTest {
 			PathogenTestType.DIGITAL_PCR,
 			PathogenTestType.SANGER_SEQUENCING,
 			PathogenTestType.WESTERN_BLOT,
-			PathogenTestType.RAPID_ANTIBODY_TEST,
 			PathogenTestType.LATERAL_FLOW_ASSAY,
-			PathogenTestType.RDT,
 			PathogenTestType.CULTURE,
 			PathogenTestType.ISOLATION,
-			PathogenTestType.DIRECT_MICROSCOPY,
 			PathogenTestType.IGM_SERUM_ANTIBODY,
 			PathogenTestType.IGG_SERUM_ANTIBODY,
 			PathogenTestType.IGA_SERUM_ANTIBODY,
@@ -99,9 +99,11 @@ public class PathogenTestTypeTest {
 			PathogenTestType.ACID_FAST_STAIN,
 			PathogenTestType.GENOTYPIC_RESISTANCE_TEST,
 			PathogenTestType.FLOW_CYTOMETRY,
-			PathogenTestType.ANTIGEN_DETECTION,
 			PathogenTestType.LATEX_AGGLUTINATION,
-			PathogenTestType.RSV_SUBTYPING);
+			PathogenTestType.RSV_SUBTYPING,
+			// Legacy flag lifted: both are offered for new tests again.
+			PathogenTestType.ANTIBODY_DETECTION,
+			PathogenTestType.MICROSCOPY);
 		for (PathogenTestType type : newlyAdded) {
 			assertTrue(PathogenTestType.isSelectableForNewTests(type), type.name() + " should be selectable for new tests");
 			assertFalse(EXPECTED_LEGACY.contains(type), type.name() + " is a new method, not legacy");
@@ -123,10 +125,10 @@ public class PathogenTestTypeTest {
 		assertThat(PathogenTestType.getCategory(PathogenTestType.PCR_RT_PCR), is(PathogenTestCategory.MOLECULAR_ASSAYS));
 		assertThat(PathogenTestType.getCategory(PathogenTestType.ENZYME_LINKED_IMMUNOSORBENT_ASSAY), is(PathogenTestCategory.SEROLOGICAL_TESTS));
 		assertThat(PathogenTestType.getCategory(PathogenTestType.IGG_SERUM_ANTIBODY), is(PathogenTestCategory.SEROLOGICAL_TESTS));
-		assertThat(PathogenTestType.getCategory(PathogenTestType.RDT), is(PathogenTestCategory.ANTIGEN_DETECTION));
+		assertThat(PathogenTestType.getCategory(PathogenTestType.LATERAL_FLOW_ASSAY), is(PathogenTestCategory.ANTIGEN_DETECTION));
 		assertThat(PathogenTestType.getCategory(PathogenTestType.CULTURE), is(PathogenTestCategory.CULTURE_AND_ISOLATION));
 		assertThat(PathogenTestType.getCategory(PathogenTestType.ISOLATION), is(PathogenTestCategory.CULTURE_AND_ISOLATION));
-		assertThat(PathogenTestType.getCategory(PathogenTestType.DIRECT_MICROSCOPY), is(PathogenTestCategory.MICROSCOPY_AND_STAINING));
+		assertThat(PathogenTestType.getCategory(PathogenTestType.MICROSCOPY), is(PathogenTestCategory.MICROSCOPY_AND_STAINING));
 		assertThat(PathogenTestType.getCategory(PathogenTestType.ACID_FAST_STAIN), is(PathogenTestCategory.MICROSCOPY_AND_STAINING));
 		assertThat(
 			PathogenTestType.getCategory(PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY),
@@ -182,19 +184,16 @@ public class PathogenTestTypeTest {
 			PathogenTestType.TMA,
 			PathogenTestType.CRISPR_DIAGNOSTICS,
 			PathogenTestType.DNA_MICROARRAY,
-			PathogenTestType.RAPID_ANTIBODY_TEST,
+			PathogenTestType.ANTIBODY_DETECTION,
 			PathogenTestType.INDIRECT_FLUORESCENT_ANTIBODY,
 			PathogenTestType.DIRECT_FLUORESCENT_ANTIBODY,
-			PathogenTestType.RAPID_ANTIGEN_DETECTION,
-			PathogenTestType.RAPID_TEST,
 			PathogenTestType.LATERAL_FLOW_ASSAY,
 			PathogenTestType.IMMUNOFLUORESCENCE_ASSAY,
 			PathogenTestType.SLIDE_AGGLUTINATION,
 			PathogenTestType.QUELLUNG_REACTION,
-			PathogenTestType.RDT,
 			PathogenTestType.VIRAL_ISOLATION,
 			PathogenTestType.ISOLATION,
-			PathogenTestType.DIRECT_MICROSCOPY,
+			PathogenTestType.MICROSCOPY,
 			PathogenTestType.DARK_FIELD_MICROSCOPY,
 			PathogenTestType.IMMUNOHISTOCHEMISTRY,
 			PathogenTestType.ELECTRON_MICROSCOPY,
@@ -296,17 +295,115 @@ public class PathogenTestTypeTest {
 	}
 
 	@Test
-	public void diseaseHiddenLegacyMethodIsDroppedByVisibleValues() {
+	public void diseaseHiddenMethodIsDroppedByVisibleValues() {
 		// Guards the scenario behind the retainType re-add in FormComponent#updateTestTypeItemsByCategory
-		// and the retainCategory re-add in #getVisibleTestCategories: a legacy method that is
-		// @Diseases(hide = true) for a disease is excluded by getVisibleValues for that disease, so a
-		// saved test recorded with it can only be kept selectable by adding it back explicitly.
+		// and the retainCategory re-add in #getVisibleTestCategories: a method that is @Diseases(hide = true)
+		// for a disease is excluded by getVisibleValues for that disease, so a saved test recorded with it can
+		// only be kept selectable by adding it back explicitly. ANTIBODY_DETECTION carries such a hide-list
+		// covering DENGUE. INCUBATION_TIME is the same case for a method that is also legacy.
 		List<PathogenTestType> visibleForDengue =
 			de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration.getVisibleValues(PathogenTestType.class, Disease.DENGUE);
 		assertFalse(
 			visibleForDengue.contains(PathogenTestType.ANTIBODY_DETECTION),
-			"ANTIBODY_DETECTION is hidden for DENGUE, so it must not be among the disease-visible values");
+			"ANTIBODY_DETECTION is @Diseases(hide = true) for DENGUE, so it must not be among the disease-visible values");
+		assertFalse(
+			visibleForDengue.contains(PathogenTestType.INCUBATION_TIME),
+			"INCUBATION_TIME is a legacy method hidden for DENGUE, so it must not be among the disease-visible values");
 		// Its category is still resolvable from the method itself, independent of disease visibility.
 		assertThat(PathogenTestType.getCategory(PathogenTestType.ANTIBODY_DETECTION), is(PathogenTestCategory.SEROLOGICAL_TESTS));
+	}
+
+	@Test
+	public void lateralFlowAssayCoversTheDiseasesOfTheMethodsMergedIntoIt() {
+		// ANTIGEN_DETECTION, RAPID_TEST, RAPID_ANTIGEN_DETECTION and RDT were merged into LATERAL_FLOW_ASSAY
+		// and their records migrated onto it, so it must be visible everywhere they collectively were.
+		for (Disease disease : new Disease[] {
+			Disease.CORONAVIRUS,
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
+			Disease.MEASLES,
+			Disease.GIARDIASIS,
+			Disease.SALMONELLOSIS,
+			Disease.MALARIA,
+			Disease.DENGUE }) {
+			assertThat(
+				"LATERAL_FLOW_ASSAY must be visible for " + disease.name(),
+				de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration.getVisibleValues(PathogenTestType.class, disease),
+				hasItem(PathogenTestType.LATERAL_FLOW_ASSAY));
+		}
+		// SHIGELLOSIS is the one disease all four merged methods excluded, and the only entry in the new hide-list.
+		assertThat(
+			de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration.getVisibleValues(PathogenTestType.class, Disease.SHIGELLOSIS),
+			not(hasItem(PathogenTestType.LATERAL_FLOW_ASSAY)));
+	}
+
+	@Test
+	public void retiredMethodNamesStillResolveToTheMethodThatAbsorbedThem() {
+		// The retired names still arrive from un-upgraded peers, external messages and old CSVs, which no
+		// database migration can reach. They must translate rather than throw.
+		assertThat(PathogenTestType.fromLegacyName("ANTIGEN_DETECTION"), is(PathogenTestType.LATERAL_FLOW_ASSAY));
+		assertThat(PathogenTestType.fromLegacyName("RAPID_TEST"), is(PathogenTestType.LATERAL_FLOW_ASSAY));
+		assertThat(PathogenTestType.fromLegacyName("RAPID_ANTIGEN_DETECTION"), is(PathogenTestType.LATERAL_FLOW_ASSAY));
+		assertThat(PathogenTestType.fromLegacyName("RDT"), is(PathogenTestType.LATERAL_FLOW_ASSAY));
+		// No successor: these keep their caption in the free-text field rather than adopting a method that is
+		// scoped differently and drives classification rules they never satisfied.
+		assertThat(PathogenTestType.fromLegacyName("DIRECT_MICROSCOPY"), is(PathogenTestType.OTHER));
+		assertThat(PathogenTestType.fromLegacyName("RAPID_ANTIBODY_TEST"), is(PathogenTestType.OTHER));
+		// Current names are unaffected; a blank or unknown name fails loudly rather than deserializing to null.
+		assertThat(PathogenTestType.fromLegacyName("PCR_RT_PCR"), is(PathogenTestType.PCR_RT_PCR));
+		assertThrows(IllegalArgumentException.class, () -> PathogenTestType.fromLegacyName(" "));
+		assertThrows(IllegalArgumentException.class, () -> PathogenTestType.fromLegacyName("NOT_A_REAL_TYPE"));
+	}
+
+	@Test
+	public void everyRetiredNameIsDeclaredOnTheConstantThatAbsorbedIt() throws NoSuchFieldException {
+		// @LegacyEnumNames is the Java source of truth for the retired names. That it agrees with the two SQL
+		// migrations is asserted by PathogenTestTypeRetirementTest, which reads them.
+		Set<String> declared = new java.util.HashSet<>();
+		for (PathogenTestType type : PathogenTestType.values()) {
+			LegacyEnumNames annotation = PathogenTestType.class.getField(type.name()).getAnnotation(LegacyEnumNames.class);
+			if (annotation != null) {
+				declared.addAll(Arrays.asList(annotation.value()));
+			}
+		}
+		assertThat(
+			declared,
+			containsInAnyOrder("ANTIGEN_DETECTION", "RAPID_TEST", "RAPID_ANTIGEN_DETECTION", "RDT", "DIRECT_MICROSCOPY", "RAPID_ANTIBODY_TEST"));
+
+		// and none of them is a live constant again
+		Set<String> live = Arrays.stream(PathogenTestType.values()).map(Enum::name).collect(Collectors.toSet());
+		for (String retired : declared) {
+			assertFalse(live.contains(retired), retired + " was retired and must not be re-added without a migration");
+		}
+	}
+
+	@Test
+	public void jacksonTranslatesRetiredNamesAndRejectsBadOnes() throws Exception {
+		// This is the production path: an un-upgraded sormas-to-sormas peer, an external lab message or a REST
+		// client sends a retired name, and no database migration can reach it. Exercising fromLegacyName directly
+		// would not prove @JsonCreator is bound.
+		ObjectMapper mapper = new ObjectMapper();
+		assertThat(mapper.readValue("\"RAPID_TEST\"", PathogenTestType.class), is(PathogenTestType.LATERAL_FLOW_ASSAY));
+		assertThat(mapper.readValue("\"DIRECT_MICROSCOPY\"", PathogenTestType.class), is(PathogenTestType.OTHER));
+		assertThat(mapper.readValue("\"PCR_RT_PCR\"", PathogenTestType.class), is(PathogenTestType.PCR_RT_PCR));
+		assertNull(mapper.readValue("null", PathogenTestType.class));
+
+		// a blank or unknown value must still be rejected, not coerced to null
+		assertThrows(ValueInstantiationException.class, () -> mapper.readValue("\"\"", PathogenTestType.class));
+		assertThrows(ValueInstantiationException.class, () -> mapper.readValue("\"NOT_A_REAL_TYPE\"", PathogenTestType.class));
+
+		// serialization is still by name()
+		assertThat(mapper.writeValueAsString(PathogenTestType.LATERAL_FLOW_ASSAY), is("\"LATERAL_FLOW_ASSAY\""));
+	}
+
+	@Test
+	public void otherAbsorbedTheSuccessorlessMethodsAndStaysVisibleEverywhere() {
+		// DIRECT_MICROSCOPY and RAPID_ANTIBODY_TEST migrate onto OTHER, which carries no @Diseases, so a migrated
+		// record renders for every disease. The LATERAL_FLOW_ASSAY merge has the same guard above.
+		for (Disease disease : Disease.values()) {
+			assertThat(
+				"OTHER must be visible for " + disease.name(),
+				de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration.getVisibleValues(PathogenTestType.class, disease),
+				hasItem(PathogenTestType.OTHER));
+		}
 	}
 }

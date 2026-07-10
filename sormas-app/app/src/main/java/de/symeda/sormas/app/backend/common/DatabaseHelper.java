@@ -190,7 +190,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 361;
+	public static final int DATABASE_VERSION = 362;
 
 	private static DatabaseHelper instance = null;
 
@@ -388,7 +388,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 */
 	@Override
 	public void onUpgrade(SQLiteDatabase db, ConnectionSource connectionSource, int oldVersion, int newVersion) {
-
 		if (oldVersion < 91) {
 			upgradeFromUnupgradableVersion(db, connectionSource, oldVersion);
 			return;
@@ -3222,23 +3221,64 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 361:
 				currentVersion = 361;
-				if (columnDoesNotExist("contacts", "contactProximities")) {
-					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN contactProximities varchar(512);");
-				}
-				getDao(Contact.class).executeRaw(
-					"UPDATE contacts SET contactProximities = '[\"' || contactProximity || '\"]' "
-						+ "WHERE (contactProximities IS NULL OR contactProximities = '') "
-						+ "AND contactProximity IS NOT NULL AND contactProximity != '';");
-
+				migrateContactProximities();
 
 			case 362:
 				currentVersion = 362;
-				getDao(PathogenTest.class).executeRaw("ALTER TABLE pathogentest ADD COLUMN IF NOT EXISTS serotypetext varchar(255);");
-				getDao(PathogenTest.class).executeRaw("UPDATE pathogentest  SET serotypetext = serotype, serotype = \"'OTHER\"' WHERE serotype IS NOT null   and serotypetext is null;");
+				// The switch matches newVersion, so case 361 can never be selected again. A device coming from 360
+				// still needs its migration, and re-running it on a device from 361 is a no-op.
+				migrateContactProximities();
+
+				// Mirrors server schema migration 648. A device that skipped releases may predate these columns
+				// (case 165 rebuilt pathogenTest, case 143 added requestedOtherPathogenTests). Skip rather than
+				// abort the upgrade, as case 361 does -- only the newest case ever runs, so it must be self-sufficient.
+				if (!columnDoesNotExist("pathogenTest", "testTypeText")) {
+					getDao(PathogenTest.class).executeRaw(
+						"UPDATE pathogenTest SET testTypeText = CASE "
+							+ "WHEN testType = 'DIRECT_MICROSCOPY' THEN substr(CASE WHEN testTypeText IS NULL OR testTypeText = '' "
+							+ "THEN 'Direct microscopy' ELSE 'Direct microscopy, ' || testTypeText END, 1, 512) "
+							+ "WHEN testType = 'RAPID_ANTIBODY_TEST' THEN substr(CASE WHEN testTypeText IS NULL OR testTypeText = '' "
+							+ "THEN 'Rapid Antibody Test' ELSE 'Rapid Antibody Test, ' || testTypeText END, 1, 512) " + "ELSE testTypeText END, "
+							+ "testType = CASE WHEN testType IN ('DIRECT_MICROSCOPY', 'RAPID_ANTIBODY_TEST') THEN 'OTHER' ELSE 'LATERAL_FLOW_ASSAY' END "
+							+ "WHERE testType IN ('ANTIGEN_DETECTION', 'RAPID_TEST', 'RAPID_ANTIGEN_DETECTION', 'RDT', "
+							+ "'DIRECT_MICROSCOPY', 'RAPID_ANTIBODY_TEST');");
+				}
+
+				if (!columnDoesNotExist("samples", "requestedOtherPathogenTests")) {
+					getDao(Sample.class).executeRaw(
+						"UPDATE samples SET requestedOtherPathogenTests = CASE "
+							+ "WHEN ',' || requestedPathogenTestsString || ',' LIKE '%,DIRECT_MICROSCOPY,%' "
+							+ "OR ',' || requestedPathogenTestsString || ',' LIKE '%,RAPID_ANTIBODY_TEST,%' THEN substr(CASE "
+							+ "WHEN coalesce(requestedOtherPathogenTests, '') = '' THEN rtrim("
+							+ "(CASE WHEN ',' || requestedPathogenTestsString || ',' LIKE '%,DIRECT_MICROSCOPY,%' THEN 'Direct microscopy, ' ELSE '' END) || "
+							+ "(CASE WHEN ',' || requestedPathogenTestsString || ',' LIKE '%,RAPID_ANTIBODY_TEST,%' THEN 'Rapid Antibody Test, ' ELSE '' END), ', ') "
+							+ "ELSE "
+							+ "(CASE WHEN ',' || requestedPathogenTestsString || ',' LIKE '%,DIRECT_MICROSCOPY,%' THEN 'Direct microscopy, ' ELSE '' END) || "
+							+ "(CASE WHEN ',' || requestedPathogenTestsString || ',' LIKE '%,RAPID_ANTIBODY_TEST,%' THEN 'Rapid Antibody Test, ' ELSE '' END) || "
+							+ "requestedOtherPathogenTests END, 1, 512) " + "ELSE requestedOtherPathogenTests END, "
+							+ "requestedPathogenTestsString = trim(trim(replace(replace(replace(replace(replace(replace(replace("
+							+ "',' || requestedPathogenTestsString || ',', " + "',ANTIGEN_DETECTION,', ','), " + "',RAPID_ANTIGEN_DETECTION,', ','), "
+							+ "',RAPID_TEST,', ','), " + "',RDT,', ','), " + "',LATERAL_FLOW_ASSAY,', ','), " + "',DIRECT_MICROSCOPY,', ','), "
+							+ "',RAPID_ANTIBODY_TEST,', ','), ',') "
+							+ "|| CASE WHEN ',' || requestedPathogenTestsString || ',' LIKE '%,ANTIGEN_DETECTION,%' "
+							+ "OR ',' || requestedPathogenTestsString || ',' LIKE '%,RAPID_ANTIGEN_DETECTION,%' "
+							+ "OR ',' || requestedPathogenTestsString || ',' LIKE '%,RAPID_TEST,%' "
+							+ "OR ',' || requestedPathogenTestsString || ',' LIKE '%,RDT,%' "
+							+ "OR ',' || requestedPathogenTestsString || ',' LIKE '%,LATERAL_FLOW_ASSAY,%' "
+							+ "THEN ',LATERAL_FLOW_ASSAY' ELSE '' END, ',') "
+							+ "WHERE ',' || requestedPathogenTestsString || ',' LIKE '%,ANTIGEN_DETECTION,%' "
+							+ "OR ',' || requestedPathogenTestsString || ',' LIKE '%,RAPID_ANTIGEN_DETECTION,%' "
+							+ "OR ',' || requestedPathogenTestsString || ',' LIKE '%,RAPID_TEST,%' "
+							+ "OR ',' || requestedPathogenTestsString || ',' LIKE '%,RDT,%' "
+							+ "OR ',' || requestedPathogenTestsString || ',' LIKE '%,DIRECT_MICROSCOPY,%' "
+							+ "OR ',' || requestedPathogenTestsString || ',' LIKE '%,RAPID_ANTIBODY_TEST,%';");
+				}
+
 				// ATTENTION: break should only be done after last version
 				break;
 			default:
-				throw new IllegalStateException("onUpgrade() with unknown oldVersion " + oldVersion);
+				// The switch matches newVersion, so this fires when a release bumped DATABASE_VERSION without a case.
+				throw new IllegalStateException("onUpgrade() has no case for newVersion " + newVersion + " (from oldVersion " + oldVersion + ")");
 			}
 		} catch (
 
@@ -3276,6 +3316,17 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 
 		return laboratoryJurisdictionPresent ? JurisdictionLevel.LABORATORY : JurisdictionLevel.NONE;
+	}
+
+	/** Idempotent, so the newest onUpgrade case can re-apply it for a device that never reached case 361. */
+	private void migrateContactProximities() throws SQLException {
+
+		if (columnDoesNotExist("contacts", "contactProximities")) {
+			getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN contactProximities varchar(512);");
+		}
+		getDao(Contact.class).executeRaw(
+			"UPDATE contacts SET contactProximities = '[\"' || contactProximity || '\"]' "
+				+ "WHERE (contactProximities IS NULL OR contactProximities = '') " + "AND contactProximity IS NOT NULL AND contactProximity != '';");
 	}
 
 	private boolean columnDoesNotExist(String tableName, String columnName) throws SQLException {
@@ -4042,6 +4093,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, LbdsSync.class, true);
 			TableUtils.dropTable(connectionSource, Environment.class, true);
 			TableUtils.dropTable(connectionSource, EnvironmentSample.class, true);
+			// Introduced after this method was written (cases 234 and 335) but re-created by onCreate, which uses the
+			// strict createTable. Without dropping them the rebuild fails with "table userRoles already exists".
+			TableUtils.dropTable(connectionSource, SormasToSormasOriginInfo.class, true);
+			TableUtils.dropTable(connectionSource, UserUserRole.class, true);
+			TableUtils.dropTable(connectionSource, UserRole.class, true);
 
 			if (oldVersion < 30) {
 				TableUtils.dropTable(connectionSource, Config.class, true);

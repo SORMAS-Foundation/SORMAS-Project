@@ -130,7 +130,7 @@ public class SampleDashboardDataProviderTest extends AbstractUiBeanTest {
 
 		dataProvider.setDisease(null);
 		Pathogen pathogen = creator.createPathogen("TEST_PATHOGEN", "Test pathogen");
-		creator.createPathogenTest(environmentSample.toReference(), PathogenTestType.RAPID_TEST, pathogen, lab1.toReference(), user.toReference(), PathogenTestResultType.POSITIVE, null);
+		creator.createPathogenTest(environmentSample.toReference(), PathogenTestType.LATERAL_FLOW_ASSAY, pathogen, lab1.toReference(), user.toReference(), PathogenTestResultType.POSITIVE, null);
 		dataProvider.refreshData();
 		Assertions.assertEquals(1, dataProvider.getEnvironmentTestResultCountsByResultType().size());
 		Assertions.assertEquals(1, dataProvider.getEnvSampleCountsBySpecimenCondition().size());
