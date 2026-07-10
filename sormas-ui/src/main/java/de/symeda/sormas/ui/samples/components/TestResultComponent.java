@@ -168,6 +168,9 @@ public class TestResultComponent extends FormComponent<PathogenTestDto> {
 			eventBus.fire(new TestResultChangedEvent(e.getValue()));
 			updateQuantitativeFieldsVisibility(currentTestType);
 		}));
+		track(quantitativeBooleanField.addValueChangeListener(e -> updateResultFieldValidationStates()));
+		track(smearGradeField.addValueChangeListener(e -> updateResultFieldValidationStates()));
+		track(westernBlotInterpretationField.addValueChangeListener(e -> updateResultFieldValidationStates()));
 
 		// Listen for test type changes -> clear result when type is cleared, update quantitative fields
 		track(eventBus.on(TestTypeChangedEvent.class, event -> {
@@ -246,6 +249,7 @@ public class TestResultComponent extends FormComponent<PathogenTestDto> {
 
 		updateRowVisibility(quantitativeValueRow);
 		updateRowVisibility(quantitativeEnumRow);
+		updateResultFieldValidationStates();
 	}
 
 	/**
@@ -326,6 +330,9 @@ public class TestResultComponent extends FormComponent<PathogenTestDto> {
 
 	private void setQuantitativeFieldVisible(com.vaadin.data.HasValue<?> field, boolean visible) {
 		((com.vaadin.ui.Component) field).setVisible(visible);
+		if (!visible) {
+			clearValidationError((com.vaadin.ui.Component) field);
+		}
 		if (!visible && !field.isEmpty()) {
 			field.clear();
 		}
@@ -348,6 +355,7 @@ public class TestResultComponent extends FormComponent<PathogenTestDto> {
 				testResultField.setValue(PathogenTestResultType.NOT_APPLICABLE);
 			}
 		}
+		updateResultFieldValidationStates();
 	}
 
 	@Override
@@ -359,21 +367,22 @@ public class TestResultComponent extends FormComponent<PathogenTestDto> {
 		List<Runnable> checks = new ArrayList<>();
 		checks.add(this::validateBinderOnly);
 		if (resultRequired) {
-			checks.add(() -> requireIfVisible(testResultField, PathogenTestDto.TEST_RESULT));
-			checks.add(() -> requireIfVisible(quantitativeBooleanField, PathogenTestDto.QUANTITATIVE_BOOLEAN));
-			checks.add(() -> requireIfVisible(smearGradeField, PathogenTestDto.SMEAR_GRADE));
-			checks.add(() -> requireIfVisible(westernBlotInterpretationField, PathogenTestDto.WESTERN_BLOT_INTERPRETATION));
+			checks.add(() -> validateRequiredVisible(testResultField));
+			checks.add(() -> validateRequiredVisible(quantitativeBooleanField));
+			checks.add(() -> validateRequiredVisible(smearGradeField));
+			checks.add(() -> validateRequiredVisible(westernBlotInterpretationField));
 		}
 		validateAll(checks.toArray(new Runnable[0]));
 	}
 
-	private void requireIfVisible(com.vaadin.data.HasValue<?> field, String propertyId) {
-		if (((com.vaadin.ui.Component) field).isVisible() && field.isEmpty()) {
-			throw new com.vaadin.v7.data.Validator.InvalidValueException(
-				de.symeda.sormas.api.i18n.I18nProperties.getValidationError(
-					de.symeda.sormas.api.i18n.Validations.required,
-					de.symeda.sormas.api.i18n.I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, propertyId)));
+	private void updateResultFieldValidationStates() {
+		if (!resultRequired) {
+			return;
 		}
+		updateRequiredValidation(testResultField);
+		updateRequiredValidation(quantitativeBooleanField);
+		updateRequiredValidation(smearGradeField);
+		updateRequiredValidation(westernBlotInterpretationField);
 	}
 
 	public ComboBox<PathogenTestResultType> getTestResultField() {

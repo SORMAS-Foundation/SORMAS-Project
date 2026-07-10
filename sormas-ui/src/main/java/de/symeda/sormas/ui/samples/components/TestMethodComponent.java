@@ -106,6 +106,7 @@ public class TestMethodComponent extends FormComponent<PathogenTestDto> {
 		testCategoryField.setWidth(100, Unit.PERCENTAGE);
 		testCategoryField.setItems(getVisibleTestCategories(currentDisease));
 		testCategoryField.setItemCaptionGenerator(PathogenTestCategory::toString);
+		trackValidationField(testCategoryField);
 		addRow(testCategoryField);
 
 		// Test type
@@ -138,6 +139,7 @@ public class TestMethodComponent extends FormComponent<PathogenTestDto> {
 		testDateField.setRequiredIndicatorVisible(true);
 		CssStyles.style(testDateField, CssStyles.CAPTION_ON_TOP);
 		testDateField.setWidth(100, Unit.PERCENTAGE);
+		trackValidationField(testDateField);
 
 		testTimeField = new ComboBox<>();
 		testTimeField.setId(PathogenTestDto.TEST_DATE_TIME + "_time");
@@ -198,6 +200,7 @@ public class TestMethodComponent extends FormComponent<PathogenTestDto> {
 				testTypeField.clear();
 			}
 			updateTestTypeItemsByCategory(testTypeField, currentDisease, e.getValue());
+			updateTestCategoryValidationState();
 		}));
 
 		// Self-managed visibility: testTypeText reveals for any value annotated with @RevealsTestTypeText
@@ -245,8 +248,14 @@ public class TestMethodComponent extends FormComponent<PathogenTestDto> {
 		}));
 
 		// Sync date/time fields back to DTO on value change
-		track(testDateField.addValueChangeListener(e -> syncTestDateTimeToDto()));
-		track(testTimeField.addValueChangeListener(e -> syncTestDateTimeToDto()));
+		track(testDateField.addValueChangeListener(e -> {
+			syncTestDateTimeToDto();
+			updateTestDateValidationState();
+		}));
+		track(testTimeField.addValueChangeListener(e -> {
+			syncTestDateTimeToDto();
+			updateTestDateValidationState();
+		}));
 
 		// Listen for disease changes to update test type items and PCR spec visibility. Only reset the
 		// category/method picker when the disease actually changes (an existing test is restored via
@@ -352,36 +361,47 @@ public class TestMethodComponent extends FormComponent<PathogenTestDto> {
 	public void validate() {
 		// Accumulate all failures (binder asRequired fields + the manual test-date checks) so a single save
 		// surfaces every missing field at once instead of one per save.
-		validateAll(this::validateBinderOnly, this::validateTestDate);
+		validateAll(this::validateBinderOnly, this::validateTestCategory, this::validateTestDate);
+	}
+
+	private void validateTestCategory() {
+		validateRequiredVisible(testCategoryField);
 	}
 
 	private void validateTestDate() {
-		// Test date is mandatory whenever the field is shown
-		if (testDateField.isVisible() && testDateField.getValue() == null) {
-			throw new com.vaadin.v7.data.Validator.InvalidValueException(
-				I18nProperties.getValidationError(
-					Validations.required,
-					I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_DATE_TIME)));
+		validateField(testDateField, getTestDateValidationError());
+	}
+
+	private void updateTestCategoryValidationState() {
+		updateRequiredValidation(testCategoryField);
+	}
+
+	private void updateTestDateValidationState() {
+		updateValidationError(testDateField, getTestDateValidationError());
+	}
+
+	private String getTestDateValidationError() {
+		if (!testDateField.isVisible()) {
+			return null;
 		}
-		if (testDateField.getValue() != null) {
-			Integer totalMinutes = testTimeField.getValue();
-			LocalDateTime ldt = totalMinutes != null
-				? testDateField.getValue().atTime(totalMinutes / 60, totalMinutes % 60)
-				: testDateField.getValue().atStartOfDay();
-			Date testDate = Date.from(ldt.atZone(ZoneId.systemDefault()).toInstant());
-			// Check that test date is not in the future
-			if (testDate.after(UtilDate.now())) {
-				throw new com.vaadin.v7.data.Validator.InvalidValueException(
-					I18nProperties.getValidationError(Validations.futureDateStrict, I18nProperties.getCaption(Captions.PathogenTest_testDateTime)));
-			}
-			// Check that test date is not before sample date
-			if (testDateSampleDateSupplier != null) {
-				Date sampleDate = testDateSampleDateSupplier.get();
-				if (sampleDate != null && testDate.before(sampleDate)) {
-					throw new com.vaadin.v7.data.Validator.InvalidValueException(testDateValidationError);
-				}
+		if (testDateField.getValue() == null) {
+			return I18nProperties.getValidationError(Validations.required, testDateField.getCaption());
+		}
+		Integer totalMinutes = testTimeField.getValue();
+		LocalDateTime ldt = totalMinutes != null
+			? testDateField.getValue().atTime(totalMinutes / 60, totalMinutes % 60)
+			: testDateField.getValue().atStartOfDay();
+		Date testDate = Date.from(ldt.atZone(ZoneId.systemDefault()).toInstant());
+		if (testDate.after(UtilDate.now())) {
+			return I18nProperties.getValidationError(Validations.futureDateStrict, I18nProperties.getCaption(Captions.PathogenTest_testDateTime));
+		}
+		if (testDateSampleDateSupplier != null) {
+			Date sampleDate = testDateSampleDateSupplier.get();
+			if (sampleDate != null && testDate.before(sampleDate)) {
+				return testDateValidationError;
 			}
 		}
+		return null;
 	}
 
 	public ComboBox<PathogenTestType> getTestTypeField() {
@@ -418,6 +438,8 @@ public class TestMethodComponent extends FormComponent<PathogenTestDto> {
 		// fields when an existing test is opened.
 		updateTestTypeItemsByCategory(testTypeField, currentDisease, savedCategory, savedType, false);
 		super.setDto(dto);
+		updateTestCategoryValidationState();
+		updateTestDateValidationState();
 	}
 
 	@Override
@@ -432,6 +454,8 @@ public class TestMethodComponent extends FormComponent<PathogenTestDto> {
 		if (!checkers.isVisible(dtoClass, PathogenTestDto.TEST_TYPE)) {
 			testCategoryField.setVisible(false);
 		}
+		updateTestCategoryValidationState();
+		updateTestDateValidationState();
 		updateRowAndSelfVisibility();
 	}
 
