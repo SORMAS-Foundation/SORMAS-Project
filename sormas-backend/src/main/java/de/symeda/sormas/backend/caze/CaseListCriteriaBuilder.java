@@ -272,7 +272,8 @@ public class CaseListCriteriaBuilder {
 		case ContactIndexDto.SYMPTOM_JOURNAL_STATUS:
 			return Collections.singletonList(joins.getPerson().get(sortProperty.propertyName));
 		case CaseIndexDto.PERSON_NATIONAL_HEALTH_ID:
-			return Collections.singletonList(cb.lower(joins.getPerson().get(Person.NATIONAL_HEALTH_ID)));
+			return Collections.singletonList(
+				cb.lower(cb.function(ExtendedPostgreSQL94Dialect.EMPTY_TO_NULL, String.class, joins.getPerson().get(Person.NATIONAL_HEALTH_ID))));
 		case CaseIndexDto.PERSON_FIRST_NAME:
 			return Collections.singletonList(cb.lower(joins.getPerson().get(Person.FIRST_NAME)));
 		case CaseIndexDto.PERSON_LAST_NAME:
