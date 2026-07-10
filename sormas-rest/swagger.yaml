@@ -11641,15 +11641,12 @@ components:
             items:
               type: string
               enum:
-              - ANTIBODY_DETECTION
-              - ANTIGEN_DETECTION
               - CULTURE
               - ISOLATION
               - IGM_SERUM_ANTIBODY
               - IGG_SERUM_ANTIBODY
               - IGA_SERUM_ANTIBODY
               - INCUBATION_TIME
-              - MICROSCOPY
               - LATEX_AGGLUTINATION
               - CQ_VALUE_DETECTION
               - SEQUENCING
@@ -11679,25 +11676,22 @@ components:
               - BEIJINGGENOTYPING
               - SPOLIGOTYPING
               - MIRU_PATTERN_CODE
+              - ANTIBODY_DETECTION
               - ENZYME_LINKED_IMMUNOSORBENT_ASSAY
               - WESTERN_BLOT
               - NEUTRALIZING_ANTIBODIES
               - INDIRECT_FLUORESCENT_ANTIBODY
               - DIRECT_FLUORESCENT_ANTIBODY
-              - RAPID_ANTIBODY_TEST
-              - RAPID_ANTIGEN_DETECTION
-              - RAPID_TEST
               - LATERAL_FLOW_ASSAY
               - IMMUNOFLUORESCENCE_ASSAY
               - SLIDE_AGGLUTINATION
               - QUELLUNG_REACTION
               - HEMAGGLUTINATION_INHIBITION
-              - RDT
               - BACTERIAL_CULTURE
               - VIRAL_ISOLATION
               - FUNGAL_CULTURE
               - MALDI_TOF
-              - DIRECT_MICROSCOPY
+              - MICROSCOPY
               - GRAM_STAIN
               - ACID_FAST_STAIN
               - DARK_FIELD_MICROSCOPY
@@ -11734,15 +11728,12 @@ components:
             items:
               type: string
               enum:
-              - ANTIBODY_DETECTION
-              - ANTIGEN_DETECTION
               - CULTURE
               - ISOLATION
               - IGM_SERUM_ANTIBODY
               - IGG_SERUM_ANTIBODY
               - IGA_SERUM_ANTIBODY
               - INCUBATION_TIME
-              - MICROSCOPY
               - LATEX_AGGLUTINATION
               - CQ_VALUE_DETECTION
               - SEQUENCING
@@ -11772,25 +11763,22 @@ components:
               - BEIJINGGENOTYPING
               - SPOLIGOTYPING
               - MIRU_PATTERN_CODE
+              - ANTIBODY_DETECTION
               - ENZYME_LINKED_IMMUNOSORBENT_ASSAY
               - WESTERN_BLOT
               - NEUTRALIZING_ANTIBODIES
               - INDIRECT_FLUORESCENT_ANTIBODY
               - DIRECT_FLUORESCENT_ANTIBODY
-              - RAPID_ANTIBODY_TEST
-              - RAPID_ANTIGEN_DETECTION
-              - RAPID_TEST
               - LATERAL_FLOW_ASSAY
               - IMMUNOFLUORESCENCE_ASSAY
               - SLIDE_AGGLUTINATION
               - QUELLUNG_REACTION
               - HEMAGGLUTINATION_INHIBITION
-              - RDT
               - BACTERIAL_CULTURE
               - VIRAL_ISOLATION
               - FUNGAL_CULTURE
               - MALDI_TOF
-              - DIRECT_MICROSCOPY
+              - MICROSCOPY
               - GRAM_STAIN
               - ACID_FAST_STAIN
               - DARK_FIELD_MICROSCOPY
@@ -11813,15 +11801,12 @@ components:
             items:
               type: string
               enum:
-              - ANTIBODY_DETECTION
-              - ANTIGEN_DETECTION
               - CULTURE
               - ISOLATION
               - IGM_SERUM_ANTIBODY
               - IGG_SERUM_ANTIBODY
               - IGA_SERUM_ANTIBODY
               - INCUBATION_TIME
-              - MICROSCOPY
               - LATEX_AGGLUTINATION
               - CQ_VALUE_DETECTION
               - SEQUENCING
@@ -11851,25 +11836,22 @@ components:
               - BEIJINGGENOTYPING
               - SPOLIGOTYPING
               - MIRU_PATTERN_CODE
+              - ANTIBODY_DETECTION
               - ENZYME_LINKED_IMMUNOSORBENT_ASSAY
               - WESTERN_BLOT
               - NEUTRALIZING_ANTIBODIES
               - INDIRECT_FLUORESCENT_ANTIBODY
               - DIRECT_FLUORESCENT_ANTIBODY
-              - RAPID_ANTIBODY_TEST
-              - RAPID_ANTIGEN_DETECTION
-              - RAPID_TEST
               - LATERAL_FLOW_ASSAY
               - IMMUNOFLUORESCENCE_ASSAY
               - SLIDE_AGGLUTINATION
               - QUELLUNG_REACTION
               - HEMAGGLUTINATION_INHIBITION
-              - RDT
               - BACTERIAL_CULTURE
               - VIRAL_ISOLATION
               - FUNGAL_CULTURE
               - MALDI_TOF
-              - DIRECT_MICROSCOPY
+              - MICROSCOPY
               - GRAM_STAIN
               - ACID_FAST_STAIN
               - DARK_FIELD_MICROSCOPY
@@ -23140,15 +23122,12 @@ components:
         testType:
           type: string
           enum:
-          - ANTIBODY_DETECTION
-          - ANTIGEN_DETECTION
           - CULTURE
           - ISOLATION
           - IGM_SERUM_ANTIBODY
           - IGG_SERUM_ANTIBODY
           - IGA_SERUM_ANTIBODY
           - INCUBATION_TIME
-          - MICROSCOPY
           - LATEX_AGGLUTINATION
           - CQ_VALUE_DETECTION
           - SEQUENCING
@@ -23178,25 +23157,22 @@ components:
           - BEIJINGGENOTYPING
           - SPOLIGOTYPING
           - MIRU_PATTERN_CODE
+          - ANTIBODY_DETECTION
           - ENZYME_LINKED_IMMUNOSORBENT_ASSAY
           - WESTERN_BLOT
           - NEUTRALIZING_ANTIBODIES
           - INDIRECT_FLUORESCENT_ANTIBODY
           - DIRECT_FLUORESCENT_ANTIBODY
-          - RAPID_ANTIBODY_TEST
-          - RAPID_ANTIGEN_DETECTION
-          - RAPID_TEST
           - LATERAL_FLOW_ASSAY
           - IMMUNOFLUORESCENCE_ASSAY
           - SLIDE_AGGLUTINATION
           - QUELLUNG_REACTION
           - HEMAGGLUTINATION_INHIBITION
-          - RDT
           - BACTERIAL_CULTURE
           - VIRAL_ISOLATION
           - FUNGAL_CULTURE
           - MALDI_TOF
-          - DIRECT_MICROSCOPY
+          - MICROSCOPY
           - GRAM_STAIN
           - ACID_FAST_STAIN
           - DARK_FIELD_MICROSCOPY
@@ -24867,15 +24843,12 @@ components:
           items:
             type: string
             enum:
-            - ANTIBODY_DETECTION
-            - ANTIGEN_DETECTION
             - CULTURE
             - ISOLATION
             - IGM_SERUM_ANTIBODY
             - IGG_SERUM_ANTIBODY
             - IGA_SERUM_ANTIBODY
             - INCUBATION_TIME
-            - MICROSCOPY
             - LATEX_AGGLUTINATION
             - CQ_VALUE_DETECTION
             - SEQUENCING
@@ -24905,25 +24878,22 @@ components:
             - BEIJINGGENOTYPING
             - SPOLIGOTYPING
             - MIRU_PATTERN_CODE
+            - ANTIBODY_DETECTION
             - ENZYME_LINKED_IMMUNOSORBENT_ASSAY
             - WESTERN_BLOT
             - NEUTRALIZING_ANTIBODIES
             - INDIRECT_FLUORESCENT_ANTIBODY
             - DIRECT_FLUORESCENT_ANTIBODY
-            - RAPID_ANTIBODY_TEST
-            - RAPID_ANTIGEN_DETECTION
-            - RAPID_TEST
             - LATERAL_FLOW_ASSAY
             - IMMUNOFLUORESCENCE_ASSAY
             - SLIDE_AGGLUTINATION
             - QUELLUNG_REACTION
             - HEMAGGLUTINATION_INHIBITION
-            - RDT
             - BACTERIAL_CULTURE
             - VIRAL_ISOLATION
             - FUNGAL_CULTURE
             - MALDI_TOF
-            - DIRECT_MICROSCOPY
+            - MICROSCOPY
             - GRAM_STAIN
             - ACID_FAST_STAIN
             - DARK_FIELD_MICROSCOPY
@@ -25313,15 +25283,12 @@ components:
         typeOfLastTest:
           type: string
           enum:
-          - ANTIBODY_DETECTION
-          - ANTIGEN_DETECTION
           - CULTURE
           - ISOLATION
           - IGM_SERUM_ANTIBODY
           - IGG_SERUM_ANTIBODY
           - IGA_SERUM_ANTIBODY
           - INCUBATION_TIME
-          - MICROSCOPY
           - LATEX_AGGLUTINATION
           - CQ_VALUE_DETECTION
           - SEQUENCING
@@ -25351,25 +25318,22 @@ components:
           - BEIJINGGENOTYPING
           - SPOLIGOTYPING
           - MIRU_PATTERN_CODE
+          - ANTIBODY_DETECTION
           - ENZYME_LINKED_IMMUNOSORBENT_ASSAY
           - WESTERN_BLOT
           - NEUTRALIZING_ANTIBODIES
           - INDIRECT_FLUORESCENT_ANTIBODY
           - DIRECT_FLUORESCENT_ANTIBODY
-          - RAPID_ANTIBODY_TEST
-          - RAPID_ANTIGEN_DETECTION
-          - RAPID_TEST
           - LATERAL_FLOW_ASSAY
           - IMMUNOFLUORESCENCE_ASSAY
           - SLIDE_AGGLUTINATION
           - QUELLUNG_REACTION
           - HEMAGGLUTINATION_INHIBITION
-          - RDT
           - BACTERIAL_CULTURE
           - VIRAL_ISOLATION
           - FUNGAL_CULTURE
           - MALDI_TOF
-          - DIRECT_MICROSCOPY
+          - MICROSCOPY
           - GRAM_STAIN
           - ACID_FAST_STAIN
           - DARK_FIELD_MICROSCOPY
@@ -28930,15 +28894,12 @@ components:
         testType:
           type: string
           enum:
-          - ANTIBODY_DETECTION
-          - ANTIGEN_DETECTION
           - CULTURE
           - ISOLATION
           - IGM_SERUM_ANTIBODY
           - IGG_SERUM_ANTIBODY
           - IGA_SERUM_ANTIBODY
           - INCUBATION_TIME
-          - MICROSCOPY
           - LATEX_AGGLUTINATION
           - CQ_VALUE_DETECTION
           - SEQUENCING
@@ -28968,25 +28929,22 @@ components:
           - BEIJINGGENOTYPING
           - SPOLIGOTYPING
           - MIRU_PATTERN_CODE
+          - ANTIBODY_DETECTION
           - ENZYME_LINKED_IMMUNOSORBENT_ASSAY
           - WESTERN_BLOT
           - NEUTRALIZING_ANTIBODIES
           - INDIRECT_FLUORESCENT_ANTIBODY
           - DIRECT_FLUORESCENT_ANTIBODY
-          - RAPID_ANTIBODY_TEST
-          - RAPID_ANTIGEN_DETECTION
-          - RAPID_TEST
           - LATERAL_FLOW_ASSAY
           - IMMUNOFLUORESCENCE_ASSAY
           - SLIDE_AGGLUTINATION
           - QUELLUNG_REACTION
           - HEMAGGLUTINATION_INHIBITION
-          - RDT
           - BACTERIAL_CULTURE
           - VIRAL_ISOLATION
           - FUNGAL_CULTURE
           - MALDI_TOF
-          - DIRECT_MICROSCOPY
+          - MICROSCOPY
           - GRAM_STAIN
           - ACID_FAST_STAIN
           - DARK_FIELD_MICROSCOPY
