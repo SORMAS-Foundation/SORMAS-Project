@@ -26643,12 +26643,6 @@ components:
     SymptomsDto:
       type: object
       properties:
-        abdominalCramps:
-          type: string
-          enum:
-          - "YES"
-          - "NO"
-          - UNKNOWN
         abdominalPain:
           type: string
           enum:
@@ -26991,18 +26985,6 @@ components:
           - "YES"
           - "NO"
           - UNKNOWN
-        coughingAtNight:
-          type: string
-          enum:
-          - "YES"
-          - "NO"
-          - UNKNOWN
-        coughingAttacks:
-          type: string
-          enum:
-          - "YES"
-          - "NO"
-          - UNKNOWN
         coughingBlood:
           type: string
           enum:
@@ -27195,12 +27177,6 @@ components:
           - "NO"
           - UNKNOWN
         feverishFeeling:
-          type: string
-          enum:
-          - "YES"
-          - "NO"
-          - UNKNOWN
-        flatulence:
           type: string
           enum:
           - "YES"
@@ -27435,12 +27411,6 @@ components:
         lesionsThorax:
           type: boolean
         lethargy:
-          type: string
-          enum:
-          - "YES"
-          - "NO"
-          - UNKNOWN
-        lossOfAppetite:
           type: string
           enum:
           - "YES"
@@ -27932,12 +27902,6 @@ components:
           type: string
           format: date-time
         skinUlcers:
-          type: string
-          enum:
-          - "YES"
-          - "NO"
-          - UNKNOWN
-        smellyBurps:
           type: string
           enum:
           - "YES"
