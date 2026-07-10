@@ -998,7 +998,6 @@ public interface Strings {
 	String infoBulkProcessFinishedWithSkipsOutsideJurisdictionOrNotEligible = "infoBulkProcessFinishedWithSkipsOutsideJurisdictionOrNotEligible";
 	String infoBulkProcessNoEligibleEntries = "infoBulkProcessNoEligibleEntries";
 	String infoBulkUnresponsiveWindowHint = "infoBulkUnresponsiveWindowHint";
-	String infoCrowdinLocalization = "infoCrowdinLocalization";
 	String infoCalculateCompleteness = "infoCalculateCompleteness";
 	String infoCampaignsDashboard = "infoCampaignsDashboard";
 	String infoCanceledBy = "infoCanceledBy";
@@ -1034,6 +1033,7 @@ public interface Strings {
 	String infoCreateNewSampleDiscardsChangesCase = "infoCreateNewSampleDiscardsChangesCase";
 	String infoCreateNewSampleDiscardsChangesContact = "infoCreateNewSampleDiscardsChangesContact";
 	String infoCreateNewSampleDiscardsChangesEventParticipant = "infoCreateNewSampleDiscardsChangesEventParticipant";
+	String infoCrowdinLocalization = "infoCrowdinLocalization";
 	String infoCustomExport = "infoCustomExport";
 	String infoCustomizableEnumConfigurationInfo = "infoCustomizableEnumConfigurationInfo";
 	String infoDashboardFinalLaboratoryResult = "infoDashboardFinalLaboratoryResult";
