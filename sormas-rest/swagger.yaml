@@ -18773,6 +18773,87 @@ components:
           format: date-time
         caseSymptoms:
           $ref: '#/components/schemas/SymptomsDto'
+        causeOfDeath:
+          type: string
+          enum:
+          - EPIDEMIC_DISEASE
+          - OTHER_CAUSE
+        causeOfDeathDetails:
+          type: string
+          maxLength: 512
+          minLength: 0
+        causeOfDeathDisease:
+          type: string
+          enum:
+          - AFP
+          - CHOLERA
+          - CONGENITAL_RUBELLA
+          - CSM
+          - DENGUE
+          - EVD
+          - GUINEA_WORM
+          - LASSA
+          - MEASLES
+          - MONKEYPOX
+          - NEW_INFLUENZA
+          - PLAGUE
+          - POLIO
+          - UNSPECIFIED_VHF
+          - WEST_NILE_FEVER
+          - YELLOW_FEVER
+          - RABIES
+          - ANTHRAX
+          - CORONAVIRUS
+          - PNEUMONIA
+          - MALARIA
+          - TYPHOID_FEVER
+          - ACUTE_VIRAL_HEPATITIS
+          - NON_NEONATAL_TETANUS
+          - HIV
+          - SCHISTOSOMIASIS
+          - SOIL_TRANSMITTED_HELMINTHS
+          - TRYPANOSOMIASIS
+          - DIARRHEA_DEHYDRATION
+          - DIARRHEA_BLOOD
+          - SNAKE_BITE
+          - RUBELLA
+          - TUBERCULOSIS
+          - LATENT_TUBERCULOSIS
+          - LEPROSY
+          - LYMPHATIC_FILARIASIS
+          - BURULI_ULCER
+          - PERTUSSIS
+          - NEONATAL_TETANUS
+          - ONCHOCERCIASIS
+          - DIPHTERIA
+          - TRACHOMA
+          - YAWS_ENDEMIC_SYPHILIS
+          - MATERNAL_DEATHS
+          - PERINATAL_DEATHS
+          - INFLUENZA
+          - INFLUENZA_A
+          - INFLUENZA_B
+          - H_METAPNEUMOVIRUS
+          - RESPIRATORY_SYNCYTIAL_VIRUS
+          - PARAINFLUENZA_1_4
+          - ADENOVIRUS
+          - RHINOVIRUS
+          - ENTEROVIRUS
+          - M_PNEUMONIAE
+          - C_PNEUMONIAE
+          - ARI
+          - CHIKUNGUNYA
+          - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
+          - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
+          - FHA
+          - INVASIVE_PNEUMOCOCCAL_INFECTION
+          - INVASIVE_MENINGOCOCCAL_INFECTION
+          - GIARDIASIS
+          - CRYPTOSPORIDIOSIS
+          - SHIGELLOSIS
+          - SALMONELLOSIS
+          - OTHER
+          - UNDEFINED
         changeDate:
           type: string
           format: date-time
@@ -19359,6 +19440,9 @@ components:
             - FA
             - CZ
             - UR_PK
+            - AR
+            - KA
+            - RU
         origin:
           type: string
         patchDictionary:
@@ -29581,6 +29665,9 @@ components:
           - FA
           - CZ
           - UR_PK
+          - AR
+          - KA
+          - RU
         lastName:
           type: string
           maxLength: 512
