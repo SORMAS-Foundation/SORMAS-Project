@@ -2,8 +2,10 @@ package de.symeda.sormas.backend.externalmessage.survey;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -32,7 +34,6 @@ import de.symeda.sormas.api.utils.Tuple;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResultStatus;
 import de.symeda.sormas.backend.survey.SurveyFacadeEjb;
 import de.symeda.sormas.backend.survey.SurveyTokenFacadeEjb;
-import de.symeda.sormas.backend.util.CollectorUtils;
 
 /**
  * Performs the coordinating for patch operations out of Survey-responses.
@@ -63,7 +64,9 @@ public class AutomaticSurveyResponseProcessor {
 		this.surveyTokenFacade = surveyTokenFacade;
 	}
 
-	@Transactional(Transactional.TxType.REQUIRES_NEW)
+	@Transactional(value = Transactional.TxType.REQUIRES_NEW,
+		rollbackOn = {
+			Exception.class })
 	public List<SurveyResponseProcessingResult> processSurveyResponses(List<ExternalMessageDto> externalMessages)
 		throws InterruptedException, ExecutionException {
 
@@ -72,17 +75,22 @@ public class AutomaticSurveyResponseProcessor {
 			return Collections.emptyList();
 		}
 
-		Map<String, String> tokenByExternalSurveyIdDictionary =
-			externalMessages.stream().map(ExternalMessageDto::getSurveyResponseData).map(responseData -> {
-				ExternalMessageSurveyResponseRequest request = responseData.getLatest().getRequest();
-				return new Tuple<>(request.getExternalSurveyId(), request.getToken());
-			}).collect(CollectorUtils.toOrderedNullSafeMap(Tuple::getFirst, Tuple::getSecond));
+		Map<String, List<String>> tokensByExternalIds = externalMessages.stream().map(ExternalMessageDto::getSurveyResponseData).map(responseData -> {
+			ExternalMessageSurveyResponseRequest request = responseData.getLatest().getRequest();
+			return new Tuple<>(request.getExternalSurveyId(), request.getToken());
+		}).collect(Collectors.groupingBy(Tuple::getFirst, Collectors.mapping(Tuple::getSecond, Collectors.toList())));
 
-		List<String> externalSurveyIds = new ArrayList<>(tokenByExternalSurveyIdDictionary.keySet());
+		logger.debug("tokensByExternalIds: [{}]", tokensByExternalIds);
+
+		List<String> externalSurveyIds = new ArrayList<>(tokensByExternalIds.keySet());
 
 		List<Tuple<SurveyReferenceDto, String>> tokenBySurveyReferenceTuples = surveyFacade.getByExternalIds(externalSurveyIds)
 			.stream()
-			.map(survey -> new Tuple<>(survey.toReference(), tokenByExternalSurveyIdDictionary.get(survey.getExternalId())))
+			.flatMap(
+				survey -> tokensByExternalIds.get(survey.getExternalId())
+					.stream()
+					.filter(Objects::nonNull)
+					.map(token -> new Tuple<>(survey.toReference(), token)))
 			.collect(Collectors.toList());
 
 		List<SurveyTokenDto> surveyTokens = surveyTokenFacade.getBySurveyReferenceTokenTuples(tokenBySurveyReferenceTuples);
@@ -94,15 +102,15 @@ public class AutomaticSurveyResponseProcessor {
 
 	private @NotNull SurveyResponseProcessingResult tryProcessExternalMessage(ExternalMessageDto externalMessage, List<SurveyTokenDto> surveyTokens) {
 		logger.trace("tryProcessExternalMessage: [{}], [{}]", externalMessage, surveyTokens);
-		SurveyResponseProcessingResult surveyResponseProcessingResult = new SurveyResponseProcessingResult().setExternalMessage(externalMessage);
+		SurveyResponseProcessingResult surveyResponseProcessingResult =
+			new SurveyResponseProcessingResult().setExternalMessage(externalMessage).setResultStatus(ProcessingResultStatus.DONE);
 
 		ExternalMessageSurveyResponseWrapper latestResponseWrapper = externalMessage.getSurveyResponseData().getLatest();
 		ExternalMessageSurveyResponseRequest request = latestResponseWrapper.getRequest();
 
+		String externalMessageUuid = externalMessage.getUuid();
 		if (latestResponseWrapper.getResult() != null && request.isSkipIfAlreadyProcessed()) {
-			logger.info(
-				"Skipping survey response for external message [{}]: already processed and skipIfAlreadyProcessed=true",
-				externalMessage.getUuid());
+			logger.info("Skipping survey response for external message [{}]: already processed and skipIfAlreadyProcessed=true", externalMessageUuid);
 			return surveyResponseProcessingResult.setResultStatus(ProcessingResultStatus.CANCELED);
 		}
 
@@ -111,7 +119,10 @@ public class AutomaticSurveyResponseProcessor {
 			surveyTokens.stream().filter(tokenCandidate -> tokenCandidate.getToken().equals(requestToken)).findAny();
 
 		if (surveyToken.isEmpty()) {
-			logger.error("Token could not be found within available survey token DTOs: [{}]. Survey response processing is cancelled.", requestToken);
+			logger.error(
+				"Token could not be found within available survey token DTOs: [{}]. Survey response processing for: [{}] is cancelled.",
+				requestToken,
+				externalMessageUuid);
 			return surveyResponseProcessingResult.setResultStatus(ProcessingResultStatus.CANCELED);
 		}
 
@@ -120,6 +131,7 @@ public class AutomaticSurveyResponseProcessor {
 			surveyTokenDto.setResponseReceived(true);
 			surveyTokenDto.setResponseReceivedDate(request.getResponseReceivedDate());
 			surveyTokenDto.setExternalRespondentId(request.getExternalRespondentId());
+			surveyTokenDto.setChangeDate(new Date());
 
 			surveyTokenFacade.save(surveyTokenDto);
 
@@ -132,6 +144,8 @@ public class AutomaticSurveyResponseProcessor {
 				.setResult(new ExternalMessageSurveyResponseResult().setPatchResponse(response).setCaseUuid(dataPatchRequest.getCaseUuid()));
 
 			if (!response.isApplied()) {
+				logger.debug("Response considered not applied: for: [{}]", response);
+
 				return surveyResponseProcessingResult.setResultStatus(ProcessingResultStatus.CANCELED);
 			}
 
@@ -146,13 +160,14 @@ public class AutomaticSurveyResponseProcessor {
 		} catch (RuntimeException e) {
 			logger.error(
 				"Exception while patching survey response for external message: [{}]. Processing will continue for other messages",
-				externalMessage.getUuid(),
+				externalMessageUuid,
 				e);
 
 			// in case of failure status must be changed to unprocessed
 			externalMessage.setStatus(ExternalMessageStatus.UNPROCESSED);
 
 			surveyResponseProcessingResult.setRuntimeException(e);
+			surveyResponseProcessingResult.setResultStatus(ProcessingResultStatus.CANCELED);
 		}
 
 		logger.trace("result: [{}]", surveyResponseProcessingResult);

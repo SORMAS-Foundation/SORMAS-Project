@@ -141,12 +141,10 @@ public class PropertyAccessorTest extends AbstractUnitTest {
 		AddressBean address = new AddressBean();
 		PersonBean person = new PersonBean();
 		person.setAddress(address);
-		FieldVisibilityCheckers hideAll =
-			FieldVisibilityCheckers.withCheckers((FieldVisibilityCheckers.FieldNameBaseChecker) (type, id) -> false);
+		FieldVisibilityCheckers hideAll = FieldVisibilityCheckers.withCheckers((FieldVisibilityCheckers.FieldNameBaseChecker) (type, id) -> false);
 
 		// EXECUTE
-		Tuple<Class<?>, PropertyAccessFailure> result =
-			PropertyAccessor.getNestedPropertyType(person, "address.street", hideAll);
+		Tuple<Class<?>, PropertyAccessFailure> result = PropertyAccessor.getNestedPropertyType(person, "address.street", hideAll);
 
 		// CHECK
 		assertEquals(PropertyAccessFailure.UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY_OR_FEATURE, result.getSecond());
@@ -183,9 +181,7 @@ public class PropertyAccessorTest extends AbstractUnitTest {
 	@Test
 	void getNestedPropertyAndType_threeSegmentPath_returnsTypeAndValue() {
 		// PREPARE
-		AddressBean level4 = new AddressBean();
 		AddressBean level3 = new AddressBean();
-		level3.setAddress(level4);
 		AddressBean level2 = new AddressBean();
 		level2.setAddress(level3);
 		AddressBean level1 = new AddressBean();
@@ -200,7 +196,7 @@ public class PropertyAccessorTest extends AbstractUnitTest {
 		// CHECK
 		assertNull(result.getSecond());
 		assertEquals(AddressBean.class, result.getFirst().getFirst());
-		assertEquals(level4, result.getFirst().getSecond());
+		assertEquals(level3, result.getFirst().getSecond());
 	}
 
 	@Test
@@ -254,12 +250,10 @@ public class PropertyAccessorTest extends AbstractUnitTest {
 	void getPropertyTypeAndValue_invisibleField_returnsUnsupportedField() {
 		// PREPARE
 		AddressBean address = new AddressBean();
-		FieldVisibilityCheckers hideAll =
-			FieldVisibilityCheckers.withCheckers((FieldVisibilityCheckers.FieldNameBaseChecker) (type, id) -> false);
+		FieldVisibilityCheckers hideAll = FieldVisibilityCheckers.withCheckers((FieldVisibilityCheckers.FieldNameBaseChecker) (type, id) -> false);
 
 		// EXECUTE
-		Tuple<Tuple<Class<?>, Object>, PropertyAccessFailure> result =
-			PropertyAccessor.getPropertyTypeAndValue(address, "street", hideAll);
+		Tuple<Tuple<Class<?>, Object>, PropertyAccessFailure> result = PropertyAccessor.getPropertyTypeAndValue(address, "street", hideAll);
 
 		// CHECK
 		assertEquals(PropertyAccessFailure.UNSUPPORTED_FIELD_FOR_DISEASE_OR_COUNTRY_OR_FEATURE, result.getSecond());

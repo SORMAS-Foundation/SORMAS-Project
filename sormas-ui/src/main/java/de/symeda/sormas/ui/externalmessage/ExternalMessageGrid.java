@@ -226,7 +226,7 @@ public class ExternalMessageGrid extends FilteredGrid<ExternalMessageIndexDto, E
 				} else if (ExternalMessageType.PHYSICIANS_REPORT == indexDto.getType()) {
 					ControllerProvider.getExternalMessageController().processDoctorDeclarationMessage(indexDto.getUuid());
 				} else if (ExternalMessageType.SURVEY_RESPONSE == indexDto.getType()) {
-					ControllerProvider.getExternalMessageController().processSurveyResponse(indexDto.getUuid());
+					ControllerProvider.getExternalMessageController().processSurveyResponse(indexDto.getUuid(), this::reload);
 				}
 			}, ValoTheme.BUTTON_PRIMARY);
 		} else {
