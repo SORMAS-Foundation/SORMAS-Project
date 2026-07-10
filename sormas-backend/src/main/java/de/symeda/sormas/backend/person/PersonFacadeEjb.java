@@ -127,7 +127,6 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.AnnotationBasedFieldAccessChecker.SpecialAccessCheck;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
-import de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect;
 import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
@@ -1518,8 +1517,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 				case PersonIndexDto.POSTAL_CODE:
 				case PersonIndexDto.CITY:
 					Join<Person, Location> location = personQueryContext.getJoins().getAddress();
-					expression =
-						cb.lower(cb.function(ExtendedPostgreSQL94Dialect.EMPTY_TO_NULL, String.class, location.get(sortProperty.propertyName)));
+					expression = CriteriaBuilderHelper.lowerAndEmptyToNull(cb, location.get(sortProperty.propertyName));
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
