@@ -1517,7 +1517,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 				case PersonIndexDto.POSTAL_CODE:
 				case PersonIndexDto.CITY:
 					Join<Person, Location> location = personQueryContext.getJoins().getAddress();
-					expression = cb.lower(location.get(sortProperty.propertyName));
+					expression = CriteriaBuilderHelper.lowerAndEmptyToNull(cb, location.get(sortProperty.propertyName));
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);

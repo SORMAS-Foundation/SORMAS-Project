@@ -233,6 +233,19 @@ public class CriteriaBuilderHelper {
 				cb.function("date_part", Double.class, cb.literal("epoch"), date2)));
 	}
 
+	/**
+	 * Useful for sorting purposes: to lower case and replace '' (empty string) by NULL.
+	 * 
+	 * @param cb
+	 *            CriteriaBuilder that used to create the expression.
+	 * @param expression
+	 *            field on which the expression will be applied.
+	 * @return changes expression to lower case and replace '' by null.
+	 */
+	public static Expression<String> lowerAndEmptyToNull(CriteriaBuilder cb, Expression<String> expression) {
+		return cb.lower(cb.function(ExtendedPostgreSQL94Dialect.EMPTY_TO_NULL, String.class, expression));
+	}
+
 	public static List<Order> orders(CriteriaBuilder cb, boolean ascending, Expression<?>... expressions) {
 		return Stream.of(expressions).map(e -> ascending ? cb.asc(e) : cb.desc(e)).collect(Collectors.toList());
 	}

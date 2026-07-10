@@ -272,7 +272,7 @@ public class CaseListCriteriaBuilder {
 		case ContactIndexDto.SYMPTOM_JOURNAL_STATUS:
 			return Collections.singletonList(joins.getPerson().get(sortProperty.propertyName));
 		case CaseIndexDto.PERSON_NATIONAL_HEALTH_ID:
-			return Collections.singletonList(cb.lower(joins.getPerson().get(Person.NATIONAL_HEALTH_ID)));
+			return Collections.singletonList(CriteriaBuilderHelper.lowerAndEmptyToNull(cb, joins.getPerson().get(Person.NATIONAL_HEALTH_ID)));
 		case CaseIndexDto.PERSON_FIRST_NAME:
 			return Collections.singletonList(cb.lower(joins.getPerson().get(Person.FIRST_NAME)));
 		case CaseIndexDto.PERSON_LAST_NAME:
@@ -321,7 +321,7 @@ public class CaseListCriteriaBuilder {
 		case CaseIndexDto.EXTERNAL_TOKEN:
 		case CaseIndexDto.INTERNAL_TOKEN:
 		case CaseIndexDto.CASE_REFERENCE_NUMBER:
-			return Collections.singletonList(cb.lower(caze.get(sortProperty.propertyName)));
+			return Collections.singletonList(CriteriaBuilderHelper.lowerAndEmptyToNull(cb, caze.get(sortProperty.propertyName)));
 		default:
 			throw new IllegalArgumentException(sortProperty.propertyName);
 		}
