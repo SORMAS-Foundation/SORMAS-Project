@@ -511,7 +511,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		// Set initial visibilities
 
 		initializeVisibilitiesAndAllowedVisibilities();
-		enableLuxembourgLivingStatusFields();
 		initializeAccessAndAllowedAccesses();
 
 		if (isEditableAllowed(PersonDto.BIRTH_DATE_MM)) {
@@ -706,16 +705,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		if (disease != null && !PERINATAL_DISEASES.contains(disease)) {
 			perinatalDetailsHeader.setVisible(false);
 		}
-	}
-
-	private void enableLuxembourgLivingStatusFields() {
-		if (!isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
-			return;
-		}
-
-		addToVisibleAllowedFields(getField(PersonDto.LIVING_STATUS));
-		addToVisibleAllowedFields(getField(PersonDto.ENTRY_DATE));
-		setVisible(true, PersonDto.LIVING_STATUS, PersonDto.ENTRY_DATE);
 	}
 
 	private int getApproximateAgeInYears() {
