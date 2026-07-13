@@ -15,14 +15,17 @@
 
 package de.symeda.sormas.ui.vaccination;
 
+import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.oneOfTwoCol;
 
 import java.util.Collections;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.Field;
 
 import de.symeda.sormas.api.Disease;
@@ -39,9 +42,12 @@ import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.UserField;
 
 public class VaccinationEditForm extends AbstractEditForm<VaccinationDto> {
+
+	private static final String MEDICAL_INFORMATION_LOC = "medicalInformationLoc";
 
 	private static final String HTML_LAYOUT = fluidRowLocs(6, VaccinationDto.REPORT_DATE, 3, VaccinationDto.REPORTING_USER, 3, "")
 		+ fluidRow(oneOfTwoCol(VaccinationDto.VACCINATION_DATE))
@@ -51,8 +57,9 @@ public class VaccinationEditForm extends AbstractEditForm<VaccinationDto> {
 		+ fluidRow(oneOfTwoCol(VaccinationDto.VACCINE_DOSE))
 		+ fluidRowLocs(VaccinationDto.VACCINE_INN, VaccinationDto.VACCINE_UNII_CODE)
 		+ fluidRowLocs(VaccinationDto.VACCINE_BATCH_NUMBER, VaccinationDto.VACCINE_ATC_CODE)
-		+ fluidRowLocs(VaccinationDto.PREGNANT, VaccinationDto.TRIMESTER)
-		+ fluidRowLocs(VaccinationDto.HEALTH_CONDITIONS);
+		+ fluidRowLocs(VaccinationDto.HEALTH_CONDITIONS)
+		+ loc(MEDICAL_INFORMATION_LOC)
+		+ fluidRowLocs(VaccinationDto.PREGNANT, VaccinationDto.TRIMESTER);
 
 	private final Sex personSex;
 
@@ -168,8 +175,8 @@ public class VaccinationEditForm extends AbstractEditForm<VaccinationDto> {
 			Collections.singletonList(VaccineManufacturer.OTHER),
 			true);
 
-		Field<?> pregnantField = addField(VaccinationDto.PREGNANT);
-		Field<?> trimesterField = addField(VaccinationDto.TRIMESTER);
+		Field<?> pregnantField = addField(VaccinationDto.PREGNANT, NullableOptionGroup.class);
+		Field<?> trimesterField = addField(VaccinationDto.TRIMESTER, NullableOptionGroup.class);
 		addField(VaccinationDto.HEALTH_CONDITIONS, HealthConditionsForm.class).setCaption(null);
 
 		initializeVisibilitiesAndAllowedVisibilities();
@@ -186,6 +193,12 @@ public class VaccinationEditForm extends AbstractEditForm<VaccinationDto> {
 				VaccinationDto.PREGNANT,
 				Collections.singletonList(YesNoUnknown.YES),
 				true);
+		}
+
+		if (pregnantField.isVisible()) {
+			Label medicalInformationCaptionLabel = new Label(I18nProperties.getString(Strings.headingMedicalInformation));
+			medicalInformationCaptionLabel.addStyleName(H3);
+			getContent().addComponent(medicalInformationCaptionLabel, MEDICAL_INFORMATION_LOC);
 		}
 	}
 }
