@@ -15,12 +15,14 @@
 
 package de.symeda.sormas.backend.therapy;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
 import de.symeda.sormas.api.therapy.DrugSusceptibilityType;
+import de.symeda.sormas.api.therapy.SusceptibilityMethod;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 @Entity
@@ -66,46 +68,103 @@ public class DrugSusceptibility extends AbstractDomainObject {
 	public static final String ERYTHROMYCIN_MIC = "erythromycinMic";
 	public static final String ERYTHROMYCIN_SUSCEPTIBILITY = "erythromycinSusceptibility";
 
-	private Float amikacinMic;
+	public static final String AMIKACIN_METHOD = "amikacinMethod";
+	public static final String BEDAQUILINE_METHOD = "bedaquilineMethod";
+	public static final String CAPREOMYCIN_METHOD = "capreomycinMethod";
+	public static final String CIPROFLOXACIN_METHOD = "ciprofloxacinMethod";
+	public static final String DELAMANID_METHOD = "delamanidMethod";
+	public static final String ETHAMBUTOL_METHOD = "ethambutolMethod";
+	public static final String GATIFLOXACIN_METHOD = "gatifloxacinMethod";
+	public static final String ISONIAZID_METHOD = "isoniazidMethod";
+	public static final String KANAMYCIN_METHOD = "kanamycinMethod";
+	public static final String LEVOFLOXACIN_METHOD = "levofloxacinMethod";
+	public static final String MOXIFLOXACIN_METHOD = "moxifloxacinMethod";
+	public static final String OFLOXACIN_METHOD = "ofloxacinMethod";
+	public static final String RIFAMPICIN_METHOD = "rifampicinMethod";
+	public static final String STREPTOMYCIN_METHOD = "streptomycinMethod";
+	public static final String CEFTRIAXONE_METHOD = "ceftriaxoneMethod";
+	public static final String PENICILLIN_METHOD = "penicillinMethod";
+	public static final String ERYTHROMYCIN_METHOD = "erythromycinMethod";
+
+	private String amikacinMic;
 	private DrugSusceptibilityType amikacinSusceptibility;
-	private Float bedaquilineMic;
+	private String bedaquilineMic;
 	private DrugSusceptibilityType bedaquilineSusceptibility;
-	private Float capreomycinMic;
+	private String capreomycinMic;
 	private DrugSusceptibilityType capreomycinSusceptibility;
-	private Float ciprofloxacinMic;
+	private String ciprofloxacinMic;
 	private DrugSusceptibilityType ciprofloxacinSusceptibility;
-	private Float delamanidMic;
+	private String delamanidMic;
 	private DrugSusceptibilityType delamanidSusceptibility;
-	private Float ethambutolMic;
+	private String ethambutolMic;
 	private DrugSusceptibilityType ethambutolSusceptibility;
-	private Float gatifloxacinMic;
+	private String gatifloxacinMic;
 	private DrugSusceptibilityType gatifloxacinSusceptibility;
-	private Float isoniazidMic;
+	private String isoniazidMic;
 	private DrugSusceptibilityType isoniazidSusceptibility;
-	private Float kanamycinMic;
+	private String kanamycinMic;
 	private DrugSusceptibilityType kanamycinSusceptibility;
-	private Float levofloxacinMic;
+	private String levofloxacinMic;
 	private DrugSusceptibilityType levofloxacinSusceptibility;
-	private Float moxifloxacinMic;
+	private String moxifloxacinMic;
 	private DrugSusceptibilityType moxifloxacinSusceptibility;
-	private Float ofloxacinMic;
+	private String ofloxacinMic;
 	private DrugSusceptibilityType ofloxacinSusceptibility;
-	private Float rifampicinMic;
+	private String rifampicinMic;
 	private DrugSusceptibilityType rifampicinSusceptibility;
-	private Float streptomycinMic;
+	private String streptomycinMic;
 	private DrugSusceptibilityType streptomycinSusceptibility;
-	private Float ceftriaxoneMic;
+	private String ceftriaxoneMic;
 	private DrugSusceptibilityType ceftriaxoneSusceptibility;
-	private Float penicillinMic;
+	private String penicillinMic;
 	private DrugSusceptibilityType penicillinSusceptibility;
-	private Float erythromycinMic;
+	private String erythromycinMic;
 	private DrugSusceptibilityType erythromycinSusceptibility;
 
-	public Float getAmikacinMic() {
+	private SusceptibilityMethod amikacinMethod;
+	private SusceptibilityMethod bedaquilineMethod;
+	private SusceptibilityMethod capreomycinMethod;
+	private SusceptibilityMethod ciprofloxacinMethod;
+	private SusceptibilityMethod delamanidMethod;
+	private SusceptibilityMethod ethambutolMethod;
+	private SusceptibilityMethod gatifloxacinMethod;
+	private SusceptibilityMethod isoniazidMethod;
+	private SusceptibilityMethod kanamycinMethod;
+	private SusceptibilityMethod levofloxacinMethod;
+	private SusceptibilityMethod moxifloxacinMethod;
+	private SusceptibilityMethod ofloxacinMethod;
+	private SusceptibilityMethod rifampicinMethod;
+	private SusceptibilityMethod streptomycinMethod;
+	private SusceptibilityMethod ceftriaxoneMethod;
+	private SusceptibilityMethod penicillinMethod;
+	private SusceptibilityMethod erythromycinMethod;
+
+	private String azithromycinMic;
+	private DrugSusceptibilityType azithromycinSusceptibility;
+
+	private SusceptibilityMethod azithromycinMethod;
+
+	private String ceftazidimeMic;
+	private DrugSusceptibilityType ceftazidimeSusceptibility;
+	private SusceptibilityMethod ceftazidimeMethod;
+
+	private String cefotaximeMic;
+	private DrugSusceptibilityType cefotaximeSusceptibility;
+	private SusceptibilityMethod cefotaximeMethod;
+
+	private String ampicillinMic;
+	private DrugSusceptibilityType ampicillinSusceptibility;
+	private SusceptibilityMethod ampicillinMethod;
+	private String trimethoprimSulfamethoxazoleMic;
+	private DrugSusceptibilityType trimethoprimSulfamethoxazoleSusceptibility;
+	private SusceptibilityMethod trimethoprimSulfamethoxazoleMethod;
+
+	@Column(length = 512)
+	public String getAmikacinMic() {
 		return amikacinMic;
 	}
 
-	public void setAmikacinMic(Float amikacinMic) {
+	public void setAmikacinMic(String amikacinMic) {
 		this.amikacinMic = amikacinMic;
 	}
 
@@ -118,11 +177,12 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.amikacinSusceptibility = amikacinSusceptibility;
 	}
 
-	public Float getBedaquilineMic() {
+	@Column(length = 512)
+	public String getBedaquilineMic() {
 		return bedaquilineMic;
 	}
 
-	public void setBedaquilineMic(Float bedaquilineMic) {
+	public void setBedaquilineMic(String bedaquilineMic) {
 		this.bedaquilineMic = bedaquilineMic;
 	}
 
@@ -135,11 +195,12 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.bedaquilineSusceptibility = bedaquilineSusceptibility;
 	}
 
-	public Float getCapreomycinMic() {
+	@Column(length = 512)
+	public String getCapreomycinMic() {
 		return capreomycinMic;
 	}
 
-	public void setCapreomycinMic(Float capreomycinMic) {
+	public void setCapreomycinMic(String capreomycinMic) {
 		this.capreomycinMic = capreomycinMic;
 	}
 
@@ -152,11 +213,12 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.capreomycinSusceptibility = capreomycinSusceptibility;
 	}
 
-	public Float getCiprofloxacinMic() {
+	@Column(length = 512)
+	public String getCiprofloxacinMic() {
 		return ciprofloxacinMic;
 	}
 
-	public void setCiprofloxacinMic(Float ciprofloxacinMic) {
+	public void setCiprofloxacinMic(String ciprofloxacinMic) {
 		this.ciprofloxacinMic = ciprofloxacinMic;
 	}
 
@@ -169,11 +231,12 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.ciprofloxacinSusceptibility = ciprofloxacinSusceptibility;
 	}
 
-	public Float getDelamanidMic() {
+	@Column(length = 512)
+	public String getDelamanidMic() {
 		return delamanidMic;
 	}
 
-	public void setDelamanidMic(Float delamanidMic) {
+	public void setDelamanidMic(String delamanidMic) {
 		this.delamanidMic = delamanidMic;
 	}
 
@@ -186,11 +249,12 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.delamanidSusceptibility = delamanidSusceptibility;
 	}
 
-	public Float getEthambutolMic() {
+	@Column(length = 512)
+	public String getEthambutolMic() {
 		return ethambutolMic;
 	}
 
-	public void setEthambutolMic(Float ethambutolMic) {
+	public void setEthambutolMic(String ethambutolMic) {
 		this.ethambutolMic = ethambutolMic;
 	}
 
@@ -203,11 +267,12 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.ethambutolSusceptibility = ethambutolSusceptibility;
 	}
 
-	public Float getGatifloxacinMic() {
+	@Column(length = 512)
+	public String getGatifloxacinMic() {
 		return gatifloxacinMic;
 	}
 
-	public void setGatifloxacinMic(Float gatifloxacinMic) {
+	public void setGatifloxacinMic(String gatifloxacinMic) {
 		this.gatifloxacinMic = gatifloxacinMic;
 	}
 
@@ -220,11 +285,12 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.gatifloxacinSusceptibility = gatifloxacinSusceptibility;
 	}
 
-	public Float getIsoniazidMic() {
+	@Column(length = 512)
+	public String getIsoniazidMic() {
 		return isoniazidMic;
 	}
 
-	public void setIsoniazidMic(Float isoniazidMic) {
+	public void setIsoniazidMic(String isoniazidMic) {
 		this.isoniazidMic = isoniazidMic;
 	}
 
@@ -237,11 +303,12 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.isoniazidSusceptibility = isoniazidSusceptibility;
 	}
 
-	public Float getKanamycinMic() {
+	@Column(length = 512)
+	public String getKanamycinMic() {
 		return kanamycinMic;
 	}
 
-	public void setKanamycinMic(Float kanamycinMic) {
+	public void setKanamycinMic(String kanamycinMic) {
 		this.kanamycinMic = kanamycinMic;
 	}
 
@@ -254,11 +321,12 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.kanamycinSusceptibility = kanamycinSusceptibility;
 	}
 
-	public Float getLevofloxacinMic() {
+	@Column(length = 512)
+	public String getLevofloxacinMic() {
 		return levofloxacinMic;
 	}
 
-	public void setLevofloxacinMic(Float levofloxacinMic) {
+	public void setLevofloxacinMic(String levofloxacinMic) {
 		this.levofloxacinMic = levofloxacinMic;
 	}
 
@@ -271,11 +339,12 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.levofloxacinSusceptibility = levofloxacinSusceptibility;
 	}
 
-	public Float getMoxifloxacinMic() {
+	@Column(length = 512)
+	public String getMoxifloxacinMic() {
 		return moxifloxacinMic;
 	}
 
-	public void setMoxifloxacinMic(Float moxifloxacinMic) {
+	public void setMoxifloxacinMic(String moxifloxacinMic) {
 		this.moxifloxacinMic = moxifloxacinMic;
 	}
 
@@ -288,11 +357,12 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.moxifloxacinSusceptibility = moxifloxacinSusceptibility;
 	}
 
-	public Float getOfloxacinMic() {
+	@Column(length = 512)
+	public String getOfloxacinMic() {
 		return ofloxacinMic;
 	}
 
-	public void setOfloxacinMic(Float ofloxacinMic) {
+	public void setOfloxacinMic(String ofloxacinMic) {
 		this.ofloxacinMic = ofloxacinMic;
 	}
 
@@ -305,11 +375,12 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.ofloxacinSusceptibility = ofloxacinSusceptibility;
 	}
 
-	public Float getRifampicinMic() {
+	@Column(length = 512)
+	public String getRifampicinMic() {
 		return rifampicinMic;
 	}
 
-	public void setRifampicinMic(Float rifampicinMic) {
+	public void setRifampicinMic(String rifampicinMic) {
 		this.rifampicinMic = rifampicinMic;
 	}
 
@@ -322,11 +393,12 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.rifampicinSusceptibility = rifampicinSusceptibility;
 	}
 
-	public Float getStreptomycinMic() {
+	@Column(length = 512)
+	public String getStreptomycinMic() {
 		return streptomycinMic;
 	}
 
-	public void setStreptomycinMic(Float streptomycinMic) {
+	public void setStreptomycinMic(String streptomycinMic) {
 		this.streptomycinMic = streptomycinMic;
 	}
 
@@ -339,11 +411,12 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.streptomycinSusceptibility = streptomycinSusceptibility;
 	}
 
-	public Float getCeftriaxoneMic() {
+	@Column(length = 512)
+	public String getCeftriaxoneMic() {
 		return ceftriaxoneMic;
 	}
 
-	public void setCeftriaxoneMic(Float ceftriaxoneMic) {
+	public void setCeftriaxoneMic(String ceftriaxoneMic) {
 		this.ceftriaxoneMic = ceftriaxoneMic;
 	}
 
@@ -356,11 +429,12 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.ceftriaxoneSusceptibility = ceftriaxoneSusceptibility;
 	}
 
-	public Float getPenicillinMic() {
+	@Column(length = 512)
+	public String getPenicillinMic() {
 		return penicillinMic;
 	}
 
-	public void setPenicillinMic(Float penicillinMic) {
+	public void setPenicillinMic(String penicillinMic) {
 		this.penicillinMic = penicillinMic;
 	}
 
@@ -373,11 +447,12 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.penicillinSusceptibility = penicillinSusceptibility;
 	}
 
-	public Float getErythromycinMic() {
+	@Column(length = 512)
+	public String getErythromycinMic() {
 		return erythromycinMic;
 	}
 
-	public void setErythromycinMic(Float erythromycinMic) {
+	public void setErythromycinMic(String erythromycinMic) {
 		this.erythromycinMic = erythromycinMic;
 	}
 
@@ -388,5 +463,293 @@ public class DrugSusceptibility extends AbstractDomainObject {
 
 	public void setErythromycinSusceptibility(DrugSusceptibilityType erythromycinSusceptibility) {
 		this.erythromycinSusceptibility = erythromycinSusceptibility;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getAmikacinMethod() {
+		return amikacinMethod;
+	}
+
+	public void setAmikacinMethod(SusceptibilityMethod amikacinMethod) {
+		this.amikacinMethod = amikacinMethod;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getBedaquilineMethod() {
+		return bedaquilineMethod;
+	}
+
+	public void setBedaquilineMethod(SusceptibilityMethod bedaquilineMethod) {
+		this.bedaquilineMethod = bedaquilineMethod;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getCapreomycinMethod() {
+		return capreomycinMethod;
+	}
+
+	public void setCapreomycinMethod(SusceptibilityMethod capreomycinMethod) {
+		this.capreomycinMethod = capreomycinMethod;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getCiprofloxacinMethod() {
+		return ciprofloxacinMethod;
+	}
+
+	public void setCiprofloxacinMethod(SusceptibilityMethod ciprofloxacinMethod) {
+		this.ciprofloxacinMethod = ciprofloxacinMethod;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getDelamanidMethod() {
+		return delamanidMethod;
+	}
+
+	public void setDelamanidMethod(SusceptibilityMethod delamanidMethod) {
+		this.delamanidMethod = delamanidMethod;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getEthambutolMethod() {
+		return ethambutolMethod;
+	}
+
+	public void setEthambutolMethod(SusceptibilityMethod ethambutolMethod) {
+		this.ethambutolMethod = ethambutolMethod;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getGatifloxacinMethod() {
+		return gatifloxacinMethod;
+	}
+
+	public void setGatifloxacinMethod(SusceptibilityMethod gatifloxacinMethod) {
+		this.gatifloxacinMethod = gatifloxacinMethod;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getIsoniazidMethod() {
+		return isoniazidMethod;
+	}
+
+	public void setIsoniazidMethod(SusceptibilityMethod isoniazidMethod) {
+		this.isoniazidMethod = isoniazidMethod;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getKanamycinMethod() {
+		return kanamycinMethod;
+	}
+
+	public void setKanamycinMethod(SusceptibilityMethod kanamycinMethod) {
+		this.kanamycinMethod = kanamycinMethod;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getLevofloxacinMethod() {
+		return levofloxacinMethod;
+	}
+
+	public void setLevofloxacinMethod(SusceptibilityMethod levofloxacinMethod) {
+		this.levofloxacinMethod = levofloxacinMethod;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getMoxifloxacinMethod() {
+		return moxifloxacinMethod;
+	}
+
+	public void setMoxifloxacinMethod(SusceptibilityMethod moxifloxacinMethod) {
+		this.moxifloxacinMethod = moxifloxacinMethod;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getOfloxacinMethod() {
+		return ofloxacinMethod;
+	}
+
+	public void setOfloxacinMethod(SusceptibilityMethod ofloxacinMethod) {
+		this.ofloxacinMethod = ofloxacinMethod;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getRifampicinMethod() {
+		return rifampicinMethod;
+	}
+
+	public void setRifampicinMethod(SusceptibilityMethod rifampicinMethod) {
+		this.rifampicinMethod = rifampicinMethod;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getStreptomycinMethod() {
+		return streptomycinMethod;
+	}
+
+	public void setStreptomycinMethod(SusceptibilityMethod streptomycinMethod) {
+		this.streptomycinMethod = streptomycinMethod;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getCeftriaxoneMethod() {
+		return ceftriaxoneMethod;
+	}
+
+	public void setCeftriaxoneMethod(SusceptibilityMethod ceftriaxoneMethod) {
+		this.ceftriaxoneMethod = ceftriaxoneMethod;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getPenicillinMethod() {
+		return penicillinMethod;
+	}
+
+	public void setPenicillinMethod(SusceptibilityMethod penicillinMethod) {
+		this.penicillinMethod = penicillinMethod;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getErythromycinMethod() {
+		return erythromycinMethod;
+	}
+
+	public void setErythromycinMethod(SusceptibilityMethod erythromycinMethod) {
+		this.erythromycinMethod = erythromycinMethod;
+	}
+
+	@Column(length = 512)
+	public String getAzithromycinMic() {
+		return azithromycinMic;
+	}
+
+	public void setAzithromycinMic(String azithromycinMic) {
+		this.azithromycinMic = azithromycinMic;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getAzithromycinSusceptibility() {
+		return azithromycinSusceptibility;
+	}
+
+	public void setAzithromycinSusceptibility(DrugSusceptibilityType azithromycinSusceptibility) {
+		this.azithromycinSusceptibility = azithromycinSusceptibility;
+	}
+
+	@Column(length = 512)
+	public String getCeftazidimeMic() {
+		return ceftazidimeMic;
+	}
+
+	public void setCeftazidimeMic(String ceftazidimeMic) {
+		this.ceftazidimeMic = ceftazidimeMic;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getCeftazidimeSusceptibility() {
+		return ceftazidimeSusceptibility;
+	}
+
+	public void setCeftazidimeSusceptibility(DrugSusceptibilityType ceftazidimeSusceptibility) {
+		this.ceftazidimeSusceptibility = ceftazidimeSusceptibility;
+	}
+
+	@Column(length = 512)
+	public String getCefotaximeMic() {
+		return cefotaximeMic;
+	}
+
+	public void setCefotaximeMic(String cefotaximeMic) {
+		this.cefotaximeMic = cefotaximeMic;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getCefotaximeSusceptibility() {
+		return cefotaximeSusceptibility;
+	}
+
+	public void setCefotaximeSusceptibility(DrugSusceptibilityType cefotaximeSusceptibility) {
+		this.cefotaximeSusceptibility = cefotaximeSusceptibility;
+	}
+
+	@Column(length = 512)
+	public String getAmpicillinMic() {
+		return ampicillinMic;
+	}
+
+	public void setAmpicillinMic(String ampicillinMic) {
+		this.ampicillinMic = ampicillinMic;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getAmpicillinSusceptibility() {
+		return ampicillinSusceptibility;
+	}
+
+	public void setAmpicillinSusceptibility(DrugSusceptibilityType ampicillinSusceptibility) {
+		this.ampicillinSusceptibility = ampicillinSusceptibility;
+	}
+
+	@Column(length = 512)
+	public String getTrimethoprimSulfamethoxazoleMic() {
+		return trimethoprimSulfamethoxazoleMic;
+	}
+
+	public void setTrimethoprimSulfamethoxazoleMic(String trimethoprimSulfamethoxazoleMic) {
+		this.trimethoprimSulfamethoxazoleMic = trimethoprimSulfamethoxazoleMic;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public DrugSusceptibilityType getTrimethoprimSulfamethoxazoleSusceptibility() {
+		return trimethoprimSulfamethoxazoleSusceptibility;
+	}
+
+	public void setTrimethoprimSulfamethoxazoleSusceptibility(DrugSusceptibilityType trimethoprimSulfamethoxazoleSusceptibility) {
+		this.trimethoprimSulfamethoxazoleSusceptibility = trimethoprimSulfamethoxazoleSusceptibility;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getAzithromycinMethod() {
+		return azithromycinMethod;
+	}
+
+	public void setAzithromycinMethod(SusceptibilityMethod azithromycinMethod) {
+		this.azithromycinMethod = azithromycinMethod;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getCeftazidimeMethod() {
+		return ceftazidimeMethod;
+	}
+
+	public void setCeftazidimeMethod(SusceptibilityMethod ceftazidimeMethod) {
+		this.ceftazidimeMethod = ceftazidimeMethod;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getCefotaximeMethod() {
+		return cefotaximeMethod;
+	}
+
+	public void setCefotaximeMethod(SusceptibilityMethod cefotaximeMethod) {
+		this.cefotaximeMethod = cefotaximeMethod;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getAmpicillinMethod() {
+		return ampicillinMethod;
+	}
+
+	public void setAmpicillinMethod(SusceptibilityMethod ampicillinMethod) {
+		this.ampicillinMethod = ampicillinMethod;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SusceptibilityMethod getTrimethoprimSulfamethoxazoleMethod() {
+		return trimethoprimSulfamethoxazoleMethod;
+	}
+
+	public void setTrimethoprimSulfamethoxazoleMethod(SusceptibilityMethod trimethoprimSulfamethoxazoleMethod) {
+		this.trimethoprimSulfamethoxazoleMethod = trimethoprimSulfamethoxazoleMethod;
 	}
 }

@@ -55,6 +55,12 @@ public interface FeatureConfigurationFacade {
 
 	void saveFeatureConfiguration(@Valid FeatureConfigurationIndexDto configuration, FeatureType featureType);
 
+	/**
+	 * Enables or disables a server-level feature (one with no region/district/disease scope), seeding the
+	 * configuration row if it does not exist yet. Intended for the administrator feature-configuration view.
+	 */
+	void setServerFeatureEnabled(FeatureType featureType, boolean enabled);
+
 	void deleteAllFeatureConfigurations(FeatureConfigurationCriteria criteria);
 
 	void deleteAllExpiredFeatureConfigurations(Date date);

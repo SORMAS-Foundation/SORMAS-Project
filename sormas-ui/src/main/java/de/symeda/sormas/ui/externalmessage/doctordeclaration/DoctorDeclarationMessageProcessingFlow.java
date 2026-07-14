@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.Registration;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
@@ -171,7 +172,6 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 				commitDiscardWrapperComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionDone));
 				commitDiscardWrapperComponent.getDiscardButton().setVisible(false); // No discard button
 
-				//commitDiscardWrapperComponent.addCommitListener(() -> ret.complete(true));
 				commitDiscardWrapperComponent.addDiscardListener(() -> ret.complete(false));
 
 				VaadinUiUtil.showModalPopupWindow(commitDiscardWrapperComponent, I18nProperties.getCaption(Captions.info), true);
@@ -204,6 +204,30 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 	protected CompletionStage<Boolean> handleRelatedForwardedMessages() {
 		LOGGER.debug("Handling related forwarded messages for externalMessage: {}", getExternalMessage());
 		return ExternalMessageProcessingUIHelper.showRelatedForwardedMessageConfirmation();
+	}
+
+	@Override
+	protected CompletionStage<Boolean> confirmCaseSymptomsMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+		LOGGER.debug("Informing about symptoms mismatch for case: {}, externalMessage: {}", caze, externalMessage);
+
+		CompletableFuture<Boolean> ret = new CompletableFuture<>();
+
+		VerticalLayout content = new VerticalLayout();
+		content.setSpacing(true);
+
+		Label message = new Label(I18nProperties.getString(Strings.infoExternalMessageCaseSymptomsMismatch));
+		message.setContentMode(ContentMode.HTML);
+
+		content.addComponents(message);
+
+		CommitDiscardWrapperComponent<VerticalLayout> commitDiscardWrapperComponent = new CommitDiscardWrapperComponent<>(content);
+		commitDiscardWrapperComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionContinue));
+		commitDiscardWrapperComponent.addCommitListener(() -> ret.complete(true));
+		commitDiscardWrapperComponent.addDiscardListener(() -> ret.complete(false));
+
+		VaadinUiUtil.showModalPopupWindow(commitDiscardWrapperComponent, I18nProperties.getCaption(Captions.info), true);
+
+		return ret;
 	}
 
 	/**
@@ -293,8 +317,40 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 
 		// If multiple options are available, show a selection window
 		if (optionsBuilder.size() > 1) {
-			ProcessingUiHelper
-				.showPickOrCreateEntryWindow(new EntrySelectionComponentForExternalMessage(externalMessage, optionsBuilder.build()), callback);
+			HandlerCallback<PickOrCreateEntryResult> postUpdateCallback = new HandlerCallback<>() {
+
+				@Override
+				public void done(PickOrCreateEntryResult result) {
+					if (result.getCaze() != null) {
+						CaseDataDto caze = FacadeProvider.getCaseFacade().getByUuid(result.getCaze().getUuid());
+						if (caze != null && caze.getPerson() != null) {
+							applyPersonUpdates(caze.getPerson().getUuid());
+							applyNotifierUpdate(caze, externalMessage);
+						}
+					} else if (result.getContact() != null) {
+						ContactDto contact = FacadeProvider.getContactFacade().getByUuid(result.getContact().getUuid());
+						if (contact != null && contact.getPerson() != null) {
+							applyPersonUpdates(contact.getPerson().getUuid());
+						}
+					} else if (result.getEventParticipant() != null) {
+						EventParticipantDto ep = FacadeProvider.getEventParticipantFacade().getByUuid(result.getEventParticipant().getUuid());
+						if (ep != null && ep.getPerson() != null) {
+							applyPersonUpdates(ep.getPerson().getUuid());
+						}
+					}
+
+					callback.done(result);
+				}
+
+				@Override
+				public void cancel() {
+					callback.cancel();
+				}
+			};
+
+			ProcessingUiHelper.showPickOrCreateEntryWindow(
+				new EntrySelectionComponentForExternalMessage(externalMessage, optionsBuilder.build()),
+				postUpdateCallback);
 		} else {
 			// If only one option is available, directly proceed with it
 			callback.done(optionsBuilder.getSingleAvailableCreateResult());
@@ -317,44 +373,84 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 	protected void handleCreateCase(CaseDataDto caze, PersonDto person, ExternalMessageDto externalMessage, HandlerCallback<CaseDataDto> callback) {
 		LOGGER.debug("Handling create case for case: {}, person: {}, externalMessage: {}", caze, person, externalMessage);
 
-		HandlerCallback<CaseDataDto> updateNotifierCallback = new HandlerCallback<CaseDataDto>() {
+		ExternalMessageProcessingUIHelper.showCreateCaseWindow(caze, person, externalMessage, getMapper(), new HandlerCallback<CaseDataDto>() {
 
 			@Override
 			public void done(CaseDataDto result) {
-				// If the external message contains notifier information, update the case with notifier details
-				if (externalMessage.getNotifierRegistrationNumber() != null) {
-					NotifierDto notifierDto = new NotifierDto();
-					notifierDto.setRegistrationNumber(externalMessage.getNotifierRegistrationNumber());
-					notifierDto.setFirstName(externalMessage.getNotifierFirstName());
-					notifierDto.setLastName(externalMessage.getNotifierLastName());
-					notifierDto.setAddress(externalMessage.getNotifierAddress());
-					notifierDto.setPhone(externalMessage.getNotifierPhone());
-					notifierDto.setEmail(externalMessage.getNotifierEmail());
-					if (externalMessage.getReporterName() != null && externalMessage.getReporterName().contains("-")) {
-						// Split the reporter name into first and last names if it contains a hyphen
-						// Some names may already contain hyphens, assume first parts are the first name and last parts are the last name
-						final String[] nameParts = externalMessage.getReporterName().split("-");
-						notifierDto.setAgentFirstName(
-							Arrays.stream(nameParts).limit(nameParts.length - 1).map(String::trim).collect(Collectors.joining(" ")));
-						notifierDto.setAgentLastName(nameParts.length > 0 ? nameParts[nameParts.length - 1].trim() : "");
-					}
-					// Update the case with notifier details and complete the callback
-					callback.done(getExternalMessageProcessingFacade().updateAndSetCaseNotifier(result.getUuid(), notifierDto));
-					return;
+				if (result.getPerson() != null) {
+					applyPersonUpdates(result.getPerson().getUuid());
 				}
-				// If no notifier information is present, complete the callback with the result
-				callback.done(result);
+				callback.done(applyNotifierUpdate(result, externalMessage));
 			}
 
 			@Override
 			public void cancel() {
-				// Handle cancellation of the operation
 				callback.cancel();
 			}
-		};
+		});
+	}
 
-		// Show the create case window with the provided data and callback
-		ExternalMessageProcessingUIHelper.showCreateCaseWindow(caze, person, externalMessage, getMapper(), updateNotifierCallback);
+	/**
+	 * Fetches the person by UUID, applies all relevant external message data
+	 * (address, contact details, guardian, occupation), then persists the person in a single save.
+	 *
+	 * @param personUuid
+	 *            The UUID of the person to update.
+	 */
+	private void applyPersonUpdates(String personUuid) {
+
+		if (personUuid == null) {
+			return;
+		}
+
+		final PersonDto person = FacadeProvider.getPersonFacade().getByUuid(personUuid);
+
+		if (person == null) {
+			return;
+		}
+
+		getMapper().mergePersonAddress(person);
+		getMapper().mergePersonContactDetails(person);
+		getMapper().mergePersonAdditionalInformation(person);
+		getMapper().mapGuardianData(person);
+		getMapper().mapOccupationData(person);
+
+		getExternalMessageProcessingFacade().updatePerson(person);
+	}
+
+	/**
+	 * Applies notifier information from the external message to the case.
+	 * If no notifier registration number is present, the original case is returned unchanged.
+	 *
+	 * @param result
+	 *            The case to update.
+	 * @param externalMessage
+	 *            The external message carrying the notifier data.
+	 * @return The updated case, or {@code result} as-is when no notifier data is present.
+	 */
+	private CaseDataDto applyNotifierUpdate(CaseDataDto result, ExternalMessageDto externalMessage) {
+
+		if (externalMessage.getNotifierRegistrationNumber() == null) {
+			return result;
+		}
+
+		NotifierDto notifierDto = new NotifierDto();
+		notifierDto.setRegistrationNumber(externalMessage.getNotifierRegistrationNumber());
+		notifierDto.setFirstName(externalMessage.getNotifierFirstName());
+		notifierDto.setLastName(externalMessage.getNotifierLastName());
+		notifierDto.setAddress(externalMessage.getNotifierAddress());
+		notifierDto.setPhone(externalMessage.getNotifierPhone());
+		notifierDto.setEmail(externalMessage.getNotifierEmail());
+
+		if (externalMessage.getReporterName() != null && externalMessage.getReporterName().contains("-")) {
+			// Split the reporter name into first and last names if it contains a hyphen
+			// Some names may already contain hyphens, assume first parts are the first name and last parts are the last name
+			final String[] nameParts = externalMessage.getReporterName().split("-");
+			notifierDto.setAgentFirstName(Arrays.stream(nameParts).limit(nameParts.length - 1).map(String::trim).collect(Collectors.joining(" ")));
+			notifierDto.setAgentLastName(nameParts.length > 0 ? nameParts[nameParts.length - 1].trim() : "");
+		}
+
+		return getExternalMessageProcessingFacade().updateAndSetCaseNotifier(result.getUuid(), notifierDto);
 	}
 
 	/**
@@ -383,11 +479,11 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 			ControllerProvider.getContactController().getContactCreateComponent(null, false, null, true);
 
 		contactCreateComponent.addCommitListener(() -> {
-			ExternalMessageProcessingUIHelper.updateAddressAndSavePerson(
-				FacadeProvider.getPersonFacade().getByUuid(contactCreateComponent.getWrappedComponent().getValue().getPerson().getUuid()),
-				getMapper());
-
-			callback.done(contactCreateComponent.getWrappedComponent().getValue());
+			ContactDto createdContact = contactCreateComponent.getWrappedComponent().getValue();
+			if (createdContact.getPerson() != null) {
+				applyPersonUpdates(createdContact.getPerson().getUuid());
+			}
+			callback.done(createdContact);
 		});
 		contactCreateComponent.addDiscardListener(callback::cancel);
 
@@ -527,6 +623,10 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 				FacadeProvider.getPersonFacade().save(dto.getPerson());
 				EventParticipantDto savedDto = FacadeProvider.getEventParticipantFacade().save(dto);
 				Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Notification.Type.ASSISTIVE_NOTIFICATION);
+
+				if (savedDto.getPerson() != null) {
+					applyPersonUpdates(savedDto.getPerson().getUuid());
+				}
 
 				callback.done(savedDto);
 			}
@@ -696,6 +796,78 @@ public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclar
 		commitDiscardWrapperComponent.addDiscardListener(() -> ret.complete(false)); // User chose to go back
 
 		// Display the confirmation dialog
+		VaadinUiUtil.showModalPopupWindow(commitDiscardWrapperComponent, I18nProperties.getCaption(Captions.info), true);
+
+		return ret;
+	}
+
+	@Override
+	protected CompletionStage<Boolean> confirmCaseHospitalizationMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+		LOGGER.debug("Informing about hospitalization mismatch for case: {}, externalMessage: {}", caze, externalMessage);
+
+		CompletableFuture<Boolean> ret = new CompletableFuture<>();
+
+		VerticalLayout content = new VerticalLayout();
+		content.setSpacing(true);
+
+		Label message = new Label(I18nProperties.getString(Strings.infoExternalMessageCaseHospitalizationMismatch));
+		message.setContentMode(ContentMode.HTML);
+
+		content.addComponents(message);
+
+		CommitDiscardWrapperComponent<VerticalLayout> commitDiscardWrapperComponent = new CommitDiscardWrapperComponent<>(content);
+		commitDiscardWrapperComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionContinue));
+		commitDiscardWrapperComponent.addCommitListener(() -> ret.complete(true));
+		commitDiscardWrapperComponent.addDiscardListener(() -> ret.complete(false));
+
+		VaadinUiUtil.showModalPopupWindow(commitDiscardWrapperComponent, I18nProperties.getCaption(Captions.info), true);
+
+		return ret;
+	}
+
+	@Override
+	protected CompletionStage<Boolean> confirmCaseExposuresMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+		LOGGER.debug("Informing about exposures mismatch for case: {}, externalMessage: {}", caze, externalMessage);
+
+		CompletableFuture<Boolean> ret = new CompletableFuture<>();
+
+		VerticalLayout content = new VerticalLayout();
+		content.setSpacing(true);
+
+		Label message = new Label(I18nProperties.getString(Strings.infoExternalMessageCaseExposuresMismatch));
+		message.setContentMode(ContentMode.HTML);
+
+		content.addComponents(message);
+
+		CommitDiscardWrapperComponent<VerticalLayout> commitDiscardWrapperComponent = new CommitDiscardWrapperComponent<>(content);
+		commitDiscardWrapperComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionContinue));
+		commitDiscardWrapperComponent.addCommitListener(() -> ret.complete(true));
+		commitDiscardWrapperComponent.addDiscardListener(() -> ret.complete(false));
+
+		VaadinUiUtil.showModalPopupWindow(commitDiscardWrapperComponent, I18nProperties.getCaption(Captions.info), true);
+
+		return ret;
+	}
+
+	@Override
+	protected CompletionStage<Boolean> confirmCaseActivitiesAsCaseMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+		LOGGER.debug("Informing about activities as case mismatch for case: {}, externalMessage: {}", caze, externalMessage);
+
+		CompletableFuture<Boolean> ret = new CompletableFuture<>();
+
+		VerticalLayout content = new VerticalLayout();
+		content.setSpacing(true);
+
+		Label message = new Label(I18nProperties.getString(Strings.infoExternalMessageCaseActivitiesAsCaseMismatch));
+		message.setContentMode(ContentMode.HTML);
+
+		content.addComponents(message);
+
+		CommitDiscardWrapperComponent<VerticalLayout> commitDiscardWrapperComponent = new CommitDiscardWrapperComponent<>(content);
+		commitDiscardWrapperComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionContinue));
+		commitDiscardWrapperComponent.addCommitListener(() -> ret.complete(true));
+		commitDiscardWrapperComponent.addDiscardListener(() -> ret.complete(false));
+
 		VaadinUiUtil.showModalPopupWindow(commitDiscardWrapperComponent, I18nProperties.getCaption(Captions.info), true);
 
 		return ret;

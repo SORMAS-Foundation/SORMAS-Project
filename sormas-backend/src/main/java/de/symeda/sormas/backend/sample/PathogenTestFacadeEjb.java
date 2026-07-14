@@ -37,6 +37,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +45,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.PathogenTestCriteria;
@@ -51,7 +53,9 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.sample.ResultValueType;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.api.sample.Serotype;
 import de.symeda.sormas.api.therapy.DrugSusceptibilityType;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserRight;
@@ -75,6 +79,7 @@ import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSampleS
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.country.CountryService;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
@@ -129,6 +134,8 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	private ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private DrugSusceptibilityMapper drugSusceptibilityMapper;
+	@EJB
+	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -289,7 +296,13 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setTestResultText(source.getTestResultText());
 		target.setTestResultVerified(source.getTestResultVerified());
 		target.setFourFoldIncreaseAntibodyTiter(source.isFourFoldIncreaseAntibodyTiter());
-		target.setSerotype(source.getSerotype());
+		// If serotypetext is not null, then serotype is Other, otherwise it'd be normal serotype
+		if (StringUtils.isNotBlank(source.getSerotypeText())) {
+			target.setSerotype(Serotype.fromString(source.getSerotypeText() == null ? null : source.getSerotypeText().toString()));
+		} else {
+			target.setSerotype(source.getSerotype());
+		}
+		target.setSerotypeText(source.getSerotypeText());
 		target.setCqValue(source.getCqValue());
 		target.setCtValueE(source.getCtValueE());
 		target.setCtValueN(source.getCtValueN());
@@ -319,6 +332,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setRifampicinResistant(source.getRifampicinResistant());
 		target.setIsoniazidResistant(source.getIsoniazidResistant());
 		target.setSpecie(source.getSpecie());
+		target.setSpecieText(source.getSpecieText());
 		target.setPatternProfile(source.getPatternProfile());
 		target.setStrainCallStatus(source.getStrainCallStatus());
 		target.setTestScale(source.getTestScale());
@@ -328,9 +342,17 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setSeroTypingMethodText(source.getSeroTypingMethodText());
 		target.setSeroGroupSpecification(source.getSeroGroupSpecification());
 		target.setSeroGroupSpecificationText(source.getSeroGroupSpecificationText());
-		target.setGenoTypeResult(source.getGenoTypeResult());
-		target.setGenoTypeResultText(source.getGenoTypeResultText());
+		target.setGenoType(source.getGenoType());
+		target.setGenoTypeText(source.getGenoTypeText());
 		target.setRsvSubtype(source.getRsvSubtype());
+		target.setAntibodyTitre(source.getAntibodyTitre());
+		target.setPerformedByReferenceLaboratory(source.getPerformedByReferenceLaboratory());
+		target.setRetestRequested(source.getRetestRequested());
+		target.setQuantitativeValue(source.getQuantitativeValue());
+		target.setQuantitativeUnit(source.getQuantitativeUnit());
+		target.setQuantitativeBoolean(source.getQuantitativeBoolean());
+		target.setSmearGrade(source.getSmearGrade());
+		target.setWesternBlotInterpretation(source.getWesternBlotInterpretation());
 
 		// IGRA tube values
 		target.setTubeNil(source.getTubeNil());
@@ -415,6 +437,13 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
 		restorePseudonymizedDto(dto, existingSampleTest, existingSampleTestDto);
 
+		// When the administrator has not made the result mandatory (#13948 issue #13958), an empty result is
+		// allowed; default it to PENDING so the non-null DB constraint holds. This covers every save path
+		// (UI, environment samples, external-message processing, REST), not just the human-sample UI flow.
+		if (dto.getTestResult() == null && !featureConfigurationFacade.isFeatureEnabled(FeatureType.PATHOGEN_TEST_RESULT_REQUIRED)) {
+			dto.setTestResult(PathogenTestResultType.PENDING);
+		}
+
 		validate(dto);
 
 		PathogenTest pathogenTest = fillOrBuildEntity(dto, existingSampleTest, checkChangeDate);
@@ -490,7 +519,8 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 					Validations.required,
 					I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_RESULT)));
 		}
-		if (pathogenTest.getTestResultVerified() == null) {
+		// Validate testResultVerified is required when test comes via LIMS (laboratory is directly connected)
+		if (pathogenTest.isViaLims() && pathogenTest.getTestResultVerified() == null) {
 			throw new ValidationRuntimeException(
 				I18nProperties.getValidationError(
 					Validations.required,
@@ -597,7 +627,8 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setTestResultText(source.getTestResultText());
 		target.setTestResultVerified(source.getTestResultVerified());
 		target.setFourFoldIncreaseAntibodyTiter(source.isFourFoldIncreaseAntibodyTiter());
-		target.setSerotype(source.getSerotype());
+		target.setSerotype(Serotype.fromString(source.getSerotype() == null ? null : source.getSerotype().toString()));
+		target.setSerotypeText(source.getSerotypeText());
 		target.setCqValue(source.getCqValue());
 		target.setCtValueE(source.getCtValueE());
 		target.setCtValueN(source.getCtValueN());
@@ -627,6 +658,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setRifampicinResistant(source.getRifampicinResistant());
 		target.setIsoniazidResistant(source.getIsoniazidResistant());
 		target.setSpecie(source.getSpecie());
+		target.setSpecieText(source.getSpecieText());
 		target.setPatternProfile(source.getPatternProfile());
 		target.setStrainCallStatus(source.getStrainCallStatus());
 		target.setTestScale(source.getTestScale());
@@ -639,9 +671,34 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setSeroTypingMethodText(source.getSeroTypingMethodText());
 		target.setSeroGroupSpecification(source.getSeroGroupSpecification());
 		target.setSeroGroupSpecificationText(source.getSeroGroupSpecificationText());
-		target.setGenoTypeResult(source.getGenoTypeResult());
-		target.setGenoTypeResultText(source.getGenoTypeResultText());
+		target.setGenoType(source.getGenoType());
+		target.setGenoTypeText(source.getGenoTypeText());
 		target.setRsvSubtype(source.getRsvSubtype());
+		target.setAntibodyTitre(source.getAntibodyTitre());
+		target.setPerformedByReferenceLaboratory(source.getPerformedByReferenceLaboratory());
+		target.setRetestRequested(source.getRetestRequested());
+		target.setQuantitativeValue(source.getQuantitativeValue());
+		target.setQuantitativeUnit(source.getQuantitativeUnit());
+		target.setQuantitativeBoolean(source.getQuantitativeBoolean());
+		target.setSmearGrade(source.getSmearGrade());
+		target.setWesternBlotInterpretation(source.getWesternBlotInterpretation());
+
+		// Clear quantitative result fields that the selected method does not produce, so a value left over
+		// from a previous test type cannot survive and violate the method/result-type contract.
+		Set<ResultValueType> resultValueTypes = PathogenTestType.getResultValueTypes(target.getTestType());
+		if (!resultValueTypes.contains(ResultValueType.NUMERIC)) {
+			target.setQuantitativeValue(null);
+			target.setQuantitativeUnit(null);
+		}
+		if (!resultValueTypes.contains(ResultValueType.BOOLEAN)) {
+			target.setQuantitativeBoolean(null);
+		}
+		if (!resultValueTypes.contains(ResultValueType.SMEAR_GRADE)) {
+			target.setSmearGrade(null);
+		}
+		if (!resultValueTypes.contains(ResultValueType.WESTERN_BLOT)) {
+			target.setWesternBlotInterpretation(null);
+		}
 
 		// IGRA tube values
 		if (target.getTestType() != PathogenTestType.IGRA) {

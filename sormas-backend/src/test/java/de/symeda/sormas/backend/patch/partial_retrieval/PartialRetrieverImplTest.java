@@ -1,0 +1,486 @@
+package de.symeda.sormas.backend.patch.partial_retrieval;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.Vaccine;
+import de.symeda.sormas.api.customizablefield.*;
+import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.exposure.ExposureDto;
+import de.symeda.sormas.api.exposure.ExposureType;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.immunization.ImmunizationDto;
+import de.symeda.sormas.api.immunization.ImmunizationStatus;
+import de.symeda.sormas.api.patch.partial_retrieval.*;
+import de.symeda.sormas.api.person.PersonContactDetailDto;
+import de.symeda.sormas.api.person.PersonContactDetailType;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
+import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.customizablefield.CustomizableFieldMetadataFacadeEjb;
+import de.symeda.sormas.backend.customizablefield.CustomizableFieldValueFacadeEjb;
+
+class PartialRetrieverImplTest extends AbstractBeanTest {
+
+	@Test
+	void retrievePartialForDisplay_immunization_and_vaccine() {
+		// PREPARE
+		Disease disease = Disease.RESPIRATORY_SYNCYTIAL_VIRUS;
+		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
+		UserReferenceDto reportingUser = originalCase.getReportingUser();
+
+		ImmunizationDto immunizationDto = ImmunizationDto.build(originalCase.getPerson());
+		immunizationDto.setRelatedCase(originalCase.toReference());
+		immunizationDto.setImmunizationStatus(ImmunizationStatus.ACQUIRED);
+		immunizationDto.setReportingUser(reportingUser);
+		VaccinationDto vaccination = VaccinationDto.build(reportingUser);
+		vaccination.setVaccineName(Vaccine.COMIRNATY);
+		vaccination.setOtherVaccineName("actual vaccine name");
+		immunizationDto.setVaccinations(List.of(vaccination));
+		getImmunizationFacade().save(immunizationDto);
+
+		String immunizationStatusFieldName = toFieldName(ImmunizationDto.I18N_PREFIX, ImmunizationDto.IMMUNIZATION_STATUS);
+		String vaccineCombinedFieldName =
+			toFieldName(VaccinationDto.I18N_PREFIX, String.format("(%s|%s)", VaccinationDto.VACCINE_NAME, VaccinationDto.OTHER_VACCINE_NAME));
+
+		// EXECUTE
+		DisplayablePartialRetrievalResponse actual = victim().retrievePartialForDisplay(
+			new PartialRetrievalRequest().setCaseUuid(originalCase.getUuid())
+				.setFieldsToRetrieve(Set.of(immunizationStatusFieldName, vaccineCombinedFieldName)));
+
+		// CHECK
+		DisplayableFieldInfo immunizationStatusFieldInfo = actual.getFieldInfoDictionary().get(immunizationStatusFieldName);
+		DisplayableFieldInfo vaccineNameFieldInfo = actual.getFieldInfoDictionary().get("Vaccination.vaccineName");
+		DisplayableFieldInfo otherVaccineNameFieldInfo = actual.getFieldInfoDictionary().get("Vaccination.otherVaccineName");
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(actual.getFailuresDescriptions().isEmpty()),
+
+			() -> Assertions.assertNotNull(immunizationStatusFieldInfo),
+
+			() -> Assertions.assertEquals("Immunization status", immunizationStatusFieldInfo.getTranslatedFieldName()),
+			() -> Assertions.assertEquals("Acquired", immunizationStatusFieldInfo.getTranslatedFieldValue()),
+
+			() -> Assertions.assertEquals("COMIRNATY", vaccineNameFieldInfo.getTranslatedFieldValue()),
+			() -> Assertions.assertEquals("actual vaccine name", otherVaccineNameFieldInfo.getTranslatedFieldValue()),
+
+			() -> Assertions.assertEquals(3, actual.getFieldInfoDictionary().size()));
+	}
+
+	@Test
+	void retrievePartialForDisplay() {
+		// PREPARE
+		I18nProperties.setUserLanguage(Language.FR);
+		Disease disease = Disease.AFP;
+		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
+
+		String caseDiseaseFieldName = toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE);
+
+		// EXECUTE
+		DisplayablePartialRetrievalResponse actual = victim().retrievePartialForDisplay(
+			new PartialRetrievalRequest().setCaseUuid(originalCase.getUuid()).setFieldsToRetrieve(Set.of(caseDiseaseFieldName)));
+
+		// CHECK
+		DisplayableFieldInfo caseDiseaseFieldInfo = actual.getFieldInfoDictionary().get(caseDiseaseFieldName);
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(actual.getFailuresDescriptions().isEmpty()),
+
+			() -> Assertions.assertNotNull(caseDiseaseFieldInfo),
+
+			() -> Assertions.assertEquals("Maladie", caseDiseaseFieldInfo.getTranslatedFieldName()),
+			() -> Assertions.assertEquals("Paralysie Flasque Aiguë", caseDiseaseFieldInfo.getTranslatedFieldValue()));
+	}
+
+	@Test
+	void retrievePartial_german() {
+		// PREPARE
+		I18nProperties.setUserLanguage(Language.DE);
+
+		Disease disease = Disease.PERTUSSIS;
+		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
+
+		// EXECUTE
+		String clinicalConfirmation = toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.CLINICAL_CONFIRMATION);
+		String symptomsAbdominalPain = toFieldName(SymptomsDto.I18N_PREFIX, SymptomsDto.ABDOMINAL_PAIN);
+		PartialRetrievalResponse actual = victim().retrievePartial(
+			new PartialRetrievalRequest().setCaseUuid(originalCase.getUuid())
+				.setFieldsToRetrieve(Set.of(clinicalConfirmation, symptomsAbdominalPain)));
+
+		// CHECK
+		FieldInfo caseDiseaseFieldInfo = actual.getFieldInfoDictionary().get(clinicalConfirmation);
+		FieldInfo symptomsAbdominalPainFieldInfo = actual.getFieldInfoDictionary().get(symptomsAbdominalPain);
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(actual.getFailuresDictionary().isEmpty()),
+
+			() -> Assertions.assertTrue(actual.getFieldInfoDictionary().containsKey(clinicalConfirmation)),
+			() -> Assertions.assertEquals("Klinische Bestätigung", caseDiseaseFieldInfo.getTranslatedFieldName()),
+			() -> Assertions.assertEquals(originalCase.getClinicalConfirmation(), caseDiseaseFieldInfo.getFieldValue()),
+
+			() -> Assertions.assertTrue(actual.getFieldInfoDictionary().containsKey(symptomsAbdominalPain)),
+			() -> Assertions.assertEquals("Abdominalschmerzen", symptomsAbdominalPainFieldInfo.getTranslatedFieldName()),
+			() -> Assertions.assertEquals(originalCase.getSymptoms().getAbdominalPain(), symptomsAbdominalPainFieldInfo.getFieldValue()));
+	}
+
+	@Test
+	void retrievePartial_person() {
+		// PREPARE
+		Disease disease = Disease.PERTUSSIS;
+		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
+
+		PersonReferenceDto personRef = originalCase.getPerson();
+
+		PersonDto person = getPersonFacade().getByUuid(personRef.getUuid());
+
+		// EXECUTE
+		String personFirstNameFieldName = toFieldName(PersonDto.I18N_PREFIX, PersonDto.FIRST_NAME);
+		PartialRetrievalResponse actual = victim()
+			.retrievePartial(new PartialRetrievalRequest().setCaseUuid(originalCase.getUuid()).setFieldsToRetrieve(Set.of(personFirstNameFieldName)));
+
+		// CHECK
+		FieldInfo personFirstNameFieldInfo = actual.getFieldInfoDictionary().get(personFirstNameFieldName);
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(actual.getFailuresDictionary().isEmpty()),
+			() -> Assertions.assertTrue(actual.getFieldInfoDictionary().containsKey(personFirstNameFieldName)),
+			() -> Assertions.assertEquals("First name", personFirstNameFieldInfo.getTranslatedFieldName()),
+			() -> Assertions.assertEquals(person.getFirstName(), personFirstNameFieldInfo.getFieldValue()));
+	}
+
+	@Test
+	void retrievePartial_null_value() {
+		// PREPARE
+		Disease disease = Disease.DENGUE;
+		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
+
+		// EXECUTE
+		String caseFollowUpUntilFieldName = toFieldName(CaseDataDto.I18N_PREFIX, CaseDataDto.FOLLOW_UP_UNTIL);
+		PartialRetrievalResponse actual = victim().retrievePartial(
+			new PartialRetrievalRequest().setCaseUuid(originalCase.getUuid()).setFieldsToRetrieve(Set.of(caseFollowUpUntilFieldName)));
+
+		System.out.println("actual = " + actual);
+
+		// CHECK
+		FieldInfo followUpUntilFieldInfo = actual.getFieldInfoDictionary().get(caseFollowUpUntilFieldName);
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(actual.getFailuresDictionary().isEmpty()),
+			() -> Assertions.assertTrue(actual.getFieldInfoDictionary().containsKey(caseFollowUpUntilFieldName)),
+			() -> Assertions.assertEquals("Follow-up until", followUpUntilFieldInfo.getTranslatedFieldName()),
+			() -> Assertions.assertNull(followUpUntilFieldInfo.getFieldValue()));
+	}
+
+	@Test
+	void retrieve_contact_details_phone() {
+		// PREPARE
+		Disease disease = Disease.PERTUSSIS;
+		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
+
+		PersonReferenceDto personRef = originalCase.getPerson();
+
+		PersonDto person = getPersonFacade().getByUuid(personRef.getUuid());
+		List<PersonContactDetailDto> contactDetails = person.getPersonContactDetails();
+
+		PersonContactDetailDto primaryPhoneNumber = new PersonContactDetailDto();
+		primaryPhoneNumber.setContactInformation("09876543");
+		primaryPhoneNumber.setPersonContactDetailType(PersonContactDetailType.PHONE);
+		primaryPhoneNumber.setPrimaryContact(true);
+		contactDetails.add(primaryPhoneNumber);
+
+		PersonContactDetailDto secondaryPhoneNumber = new PersonContactDetailDto();
+		secondaryPhoneNumber.setContactInformation("12345678");
+		secondaryPhoneNumber.setPersonContactDetailType(PersonContactDetailType.PHONE);
+		contactDetails.add(secondaryPhoneNumber);
+
+		PersonContactDetailDto emptyPhone = new PersonContactDetailDto();
+		emptyPhone.setContactInformation(" ");
+		emptyPhone.setPersonContactDetailType(PersonContactDetailType.PHONE);
+		contactDetails.add(emptyPhone);
+
+		PersonContactDetailDto nullPhone = new PersonContactDetailDto();
+		nullPhone.setContactInformation(null);
+		nullPhone.setPersonContactDetailType(PersonContactDetailType.PHONE);
+		contactDetails.add(nullPhone);
+
+		getPersonFacade().save(person);
+
+		// EXECUTE
+		String personContactDetails =
+			toFieldName(toFieldName(PersonDto.I18N_PREFIX, PersonDto.PERSON_CONTACT_DETAILS), PersonContactDetailDto.PHONE_NUMBER_TYPE);
+		PartialRetrievalResponse actual = victim()
+			.retrievePartial(new PartialRetrievalRequest().setCaseUuid(originalCase.getUuid()).setFieldsToRetrieve(Set.of(personContactDetails)));
+
+		// CHECK
+		FieldInfo personFirstNameFieldInfo = actual.getFieldInfoDictionary().get(personContactDetails);
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(actual.getFailuresDictionary().isEmpty()),
+			() -> Assertions.assertTrue(actual.getFieldInfoDictionary().containsKey(personContactDetails)),
+			() -> Assertions.assertEquals("Phone number type", personFirstNameFieldInfo.getTranslatedFieldName()),
+			() -> Assertions.assertEquals("09876543; 12345678", personFirstNameFieldInfo.getFieldValue()));
+	}
+
+	@Test
+	void retrieve_contact_details_email() {
+		// PREPARE
+		Disease disease = Disease.RUBELLA;
+		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
+
+		PersonReferenceDto personRef = originalCase.getPerson();
+
+		PersonDto person = getPersonFacade().getByUuid(personRef.getUuid());
+		List<PersonContactDetailDto> contactDetails = person.getPersonContactDetails();
+
+		PersonContactDetailDto emailContactDetail = new PersonContactDetailDto();
+		emailContactDetail.setContactInformation("mail@mail.ch");
+		emailContactDetail.setPersonContactDetailType(PersonContactDetailType.EMAIL);
+		contactDetails.add(emailContactDetail);
+
+		PersonContactDetailDto phoneContactDetail = new PersonContactDetailDto();
+		phoneContactDetail.setContactInformation("MUST_NOT_BE_RETRIEVED");
+		phoneContactDetail.setPersonContactDetailType(PersonContactDetailType.PHONE);
+		contactDetails.add(phoneContactDetail);
+
+		getPersonFacade().save(person);
+
+		// EXECUTE
+		String personContactDetails = toFieldName(PersonContactDetailDto.I18N_PREFIX, PersonContactDetailDto.CONTACT_INFORMATION);
+		PartialRetrievalResponse actual = victim()
+			.retrievePartial(new PartialRetrievalRequest().setCaseUuid(originalCase.getUuid()).setFieldsToRetrieve(Set.of(personContactDetails)));
+
+		// CHECK
+		FieldInfo personFirstNameFieldInfo = actual.getFieldInfoDictionary().get(personContactDetails);
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(actual.getFailuresDictionary().isEmpty()),
+			() -> Assertions.assertTrue(actual.getFieldInfoDictionary().containsKey(personContactDetails)),
+			() -> Assertions.assertEquals("Contact information", personFirstNameFieldInfo.getTranslatedFieldName()),
+			() -> Assertions.assertEquals("mail@mail.ch", personFirstNameFieldInfo.getFieldValue()));
+	}
+
+	@Test
+	void retrievePartial_epiData_twoFields() {
+		// PREPARE
+		Disease disease = Disease.PERTUSSIS;
+		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
+
+		originalCase.getEpiData().setExposureDetailsKnown(YesNoUnknown.YES);
+		originalCase.getEpiData().setContactWithSourceCaseKnown(YesNoUnknown.NO);
+		getCaseFacade().save(originalCase);
+
+		String exposureDetailsKnownFieldName = toFieldName(EpiDataDto.I18N_PREFIX, EpiDataDto.EXPOSURE_DETAILS_KNOWN);
+		String contactWithSourceCaseKnownFieldName = toFieldName(EpiDataDto.I18N_PREFIX, EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN);
+
+		// EXECUTE
+		PartialRetrievalResponse actual = victim().retrievePartial(
+			new PartialRetrievalRequest().setCaseUuid(originalCase.getUuid())
+				.setFieldsToRetrieve(Set.of(exposureDetailsKnownFieldName, contactWithSourceCaseKnownFieldName)));
+
+		// CHECK
+		FieldInfo exposureDetailsKnownFieldInfo = actual.getFieldInfoDictionary().get(exposureDetailsKnownFieldName);
+		FieldInfo contactWithSourceCaseKnownFieldInfo = actual.getFieldInfoDictionary().get(contactWithSourceCaseKnownFieldName);
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(actual.getFailuresDictionary().isEmpty()),
+
+			() -> Assertions.assertTrue(actual.getFieldInfoDictionary().containsKey(exposureDetailsKnownFieldName)),
+			() -> Assertions.assertEquals("Exposure details known", exposureDetailsKnownFieldInfo.getTranslatedFieldName()),
+			() -> Assertions.assertEquals(YesNoUnknown.YES, exposureDetailsKnownFieldInfo.getFieldValue()),
+
+			() -> Assertions.assertTrue(actual.getFieldInfoDictionary().containsKey(contactWithSourceCaseKnownFieldName)),
+			() -> Assertions.assertEquals("Contacts with source case known", contactWithSourceCaseKnownFieldInfo.getTranslatedFieldName()),
+			() -> Assertions.assertEquals(YesNoUnknown.NO, contactWithSourceCaseKnownFieldInfo.getFieldValue()));
+	}
+
+	@Test
+	void retrievePartial_epiData_exposureType() {
+		// PREPARE
+		Disease disease = Disease.PERTUSSIS;
+		CaseDataDto originalCase = creator.createUnclassifiedCase(disease);
+
+		ExposureDto exposure = ExposureDto.build(ExposureType.WORK);
+		originalCase.getEpiData().getExposures().add(exposure);
+		getCaseFacade().save(originalCase);
+
+		String exposureTypeFieldName = toFieldName(ExposureDto.I18N_PREFIX, ExposureDto.EXPOSURE_TYPE);
+
+		// EXECUTE
+		PartialRetrievalResponse actual = victim()
+			.retrievePartial(new PartialRetrievalRequest().setCaseUuid(originalCase.getUuid()).setFieldsToRetrieve(Set.of(exposureTypeFieldName)));
+
+		// CHECK
+		FieldInfo exposureTypeFieldInfo = actual.getFieldInfoDictionary().get(exposureTypeFieldName);
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(actual.getFailuresDictionary().isEmpty()),
+			() -> Assertions.assertTrue(actual.getFieldInfoDictionary().containsKey(exposureTypeFieldName)),
+			() -> Assertions.assertEquals("Type of activity", exposureTypeFieldInfo.getTranslatedFieldName()),
+			() -> Assertions.assertEquals(ExposureType.WORK, exposureTypeFieldInfo.getFieldValue()));
+	}
+
+	@org.junit.jupiter.params.ParameterizedTest
+	@org.junit.jupiter.params.provider.CsvSource({
+		"bats,                  Bats",
+		"exposureDetailsKnown,  Exposure details known",
+		"admissionDate,         Admission date",
+		"firstName,             First name",
+		"myUntranslatedField,   My untranslated field" })
+	void humanizeCamelCase_variousInputs_returnsHumanReadableLabel(String input, String expected) {
+		Assertions.assertEquals(expected.strip(), PartialRetrieverImpl.humanizeCamelCase(input));
+	}
+
+	@Test
+	void retrievePartial_caseCustomizableField_success() {
+		// PREPARE
+		Disease disease = Disease.AFP;
+		CaseDataDto caseData = creator.createUnclassifiedCase(disease);
+
+		CustomizableFieldMetadataFacadeEjb.CustomizableFieldMetadataFacadeEjbLocal metaDataFacade =
+			getBean(CustomizableFieldMetadataFacadeEjb.CustomizableFieldMetadataFacadeEjbLocal.class);
+		CustomizableFieldValueFacadeEjb.CustomizableFieldValueFacadeEjbLocal valueFacade =
+			getBean(CustomizableFieldValueFacadeEjb.CustomizableFieldValueFacadeEjbLocal.class);
+
+		CustomizableFieldMetadataDto metadata = new CustomizableFieldMetadataDto();
+		metadata.setName("myCaseCustomField");
+		metadata.setFieldType(CustomizableFieldType.TEXT);
+		metadata.setContextClass(CustomizableFieldContext.CASE);
+		metadata.setUiGroup(CustomizableFieldGroup.getGroupsForContext(CustomizableFieldContext.CASE).stream().findFirst().orElse(null));
+		metadata.setUiLinePosition(1);
+		CustomizableFieldMetadataDto savedMetadata = metaDataFacade.save(metadata);
+
+		CustomizableFieldValueDto valueDto = new CustomizableFieldValueDto();
+		valueDto.setValue("case custom value");
+		valueFacade.saveEntityCustomFields(caseData.getUuid(), CustomizableFieldContext.CASE, Map.of(savedMetadata, valueDto));
+
+		String fieldPath = toFieldName(toFieldName("Custom", CaseDataDto.I18N_PREFIX), "myCaseCustomField");
+
+		// EXECUTE
+		PartialRetrievalResponse actual =
+			victim().retrievePartial(new PartialRetrievalRequest().setCaseUuid(caseData.getUuid()).setFieldsToRetrieve(Set.of(fieldPath)));
+
+		// CHECK
+		FieldInfo fieldInfo = actual.getFieldInfoDictionary().get(fieldPath);
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(actual.getFailuresDictionary().isEmpty()),
+			() -> Assertions.assertNotNull(fieldInfo),
+			() -> Assertions.assertEquals("myCaseCustomField", fieldInfo.getTranslatedFieldName()),
+			() -> Assertions.assertEquals("case custom value", fieldInfo.getFieldValue()));
+	}
+
+	@Test
+	void retrievePartial_epiDataCustomizableField_success() {
+		// PREPARE
+		Disease disease = Disease.PERTUSSIS;
+		CaseDataDto caseData = creator.createUnclassifiedCase(disease);
+
+		CustomizableFieldMetadataFacadeEjb.CustomizableFieldMetadataFacadeEjbLocal metaDataFacade =
+			getBean(CustomizableFieldMetadataFacadeEjb.CustomizableFieldMetadataFacadeEjbLocal.class);
+		CustomizableFieldValueFacadeEjb.CustomizableFieldValueFacadeEjbLocal valueFacade =
+			getBean(CustomizableFieldValueFacadeEjb.CustomizableFieldValueFacadeEjbLocal.class);
+
+		CustomizableFieldMetadataDto metadata = new CustomizableFieldMetadataDto();
+		metadata.setName("myEpiDataCustomField");
+		metadata.setFieldType(CustomizableFieldType.TEXT);
+		metadata.setContextClass(CustomizableFieldContext.EPIDATA);
+		metadata.setUiGroup(CustomizableFieldGroup.getGroupsForContext(CustomizableFieldContext.EPIDATA).stream().findFirst().orElse(null));
+		metadata.setUiLinePosition(1);
+		CustomizableFieldMetadataDto savedMetadata = metaDataFacade.save(metadata);
+
+		CustomizableFieldValueDto valueDto = new CustomizableFieldValueDto();
+		valueDto.setValue("epi data custom value");
+		valueFacade.saveEntityCustomFields(caseData.getEpiData().getUuid(), CustomizableFieldContext.EPIDATA, Map.of(savedMetadata, valueDto));
+
+		String fieldPath = toFieldName(toFieldName("Custom", EpiDataDto.I18N_PREFIX), "myEpiDataCustomField");
+
+		// EXECUTE
+		PartialRetrievalResponse actual =
+			victim().retrievePartial(new PartialRetrievalRequest().setCaseUuid(caseData.getUuid()).setFieldsToRetrieve(Set.of(fieldPath)));
+
+		// CHECK
+		FieldInfo fieldInfo = actual.getFieldInfoDictionary().get(fieldPath);
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(actual.getFailuresDictionary().isEmpty()),
+			() -> Assertions.assertNotNull(fieldInfo),
+			() -> Assertions.assertEquals("myEpiDataCustomField", fieldInfo.getTranslatedFieldName()),
+			() -> Assertions.assertEquals("epi data custom value", fieldInfo.getFieldValue()));
+	}
+
+	@Test
+	void retrievePartial_exposureCustomizableField_returnsUnsupportedPrefix() {
+		// PREPARE
+		Disease disease = Disease.DENGUE;
+		CaseDataDto caseData = creator.createUnclassifiedCase(disease);
+
+		String fieldPath = toFieldName(toFieldName("Custom", ExposureDto.I18N_PREFIX), "someField");
+
+		// EXECUTE
+		PartialRetrievalResponse actual =
+			victim().retrievePartial(new PartialRetrievalRequest().setCaseUuid(caseData.getUuid()).setFieldsToRetrieve(Set.of(fieldPath)));
+
+		// CHECK
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(actual.getFieldInfoDictionary().isEmpty()),
+			() -> Assertions.assertEquals(PartialRetrievalFailureCause.UNSUPPORTED_PREFIX, actual.getFailuresDictionary().get(fieldPath)));
+	}
+
+	@Test
+	void retrievePartial_unknownCustomizableFieldName_returnsFieldDoesNotExist() {
+		// PREPARE
+		Disease disease = Disease.RUBELLA;
+		CaseDataDto caseData = creator.createUnclassifiedCase(disease);
+
+		String fieldPath = toFieldName(toFieldName("Custom", CaseDataDto.I18N_PREFIX), "nonExistentField");
+
+		// EXECUTE
+		PartialRetrievalResponse actual =
+			victim().retrievePartial(new PartialRetrievalRequest().setCaseUuid(caseData.getUuid()).setFieldsToRetrieve(Set.of(fieldPath)));
+
+		// CHECK
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(actual.getFieldInfoDictionary().isEmpty()),
+			() -> Assertions.assertEquals(PartialRetrievalFailureCause.FIELD_DOES_NOT_EXIST, actual.getFailuresDictionary().get(fieldPath)));
+	}
+
+	@Test
+	void retrievePartial_customizableFieldWithNoSavedValue_returnsNullValue() {
+		// PREPARE
+		Disease disease = Disease.AFP;
+		CaseDataDto caseData = creator.createUnclassifiedCase(disease);
+
+		CustomizableFieldMetadataFacadeEjb.CustomizableFieldMetadataFacadeEjbLocal metaDataFacade =
+			getBean(CustomizableFieldMetadataFacadeEjb.CustomizableFieldMetadataFacadeEjbLocal.class);
+
+		CustomizableFieldMetadataDto metadata = new CustomizableFieldMetadataDto();
+		metadata.setName("emptyField");
+		metadata.setFieldType(CustomizableFieldType.TEXT);
+		metadata.setContextClass(CustomizableFieldContext.CASE);
+		metadata.setUiGroup(CustomizableFieldGroup.getGroupsForContext(CustomizableFieldContext.CASE).stream().findFirst().orElse(null));
+		metadata.setUiLinePosition(1);
+		metaDataFacade.save(metadata);
+
+		String fieldPath = toFieldName(toFieldName("Custom", CaseDataDto.I18N_PREFIX), "emptyField");
+
+		// EXECUTE
+		PartialRetrievalResponse actual =
+			victim().retrievePartial(new PartialRetrievalRequest().setCaseUuid(caseData.getUuid()).setFieldsToRetrieve(Set.of(fieldPath)));
+
+		// CHECK
+		FieldInfo fieldInfo = actual.getFieldInfoDictionary().get(fieldPath);
+		Assertions.assertAll(
+			() -> Assertions.assertTrue(actual.getFailuresDictionary().isEmpty()),
+			() -> Assertions.assertNotNull(fieldInfo),
+			() -> Assertions.assertEquals("emptyField", fieldInfo.getTranslatedFieldName()),
+			() -> Assertions.assertNull(fieldInfo.getFieldValue()));
+	}
+
+	private static String toFieldName(String prefix, String fieldName) {
+		return prefix + '.' + fieldName;
+	}
+
+	private PartialRetriever victim() {
+		return getPartialRetriever();
+	}
+}

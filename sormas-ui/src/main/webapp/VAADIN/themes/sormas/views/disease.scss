@@ -594,4 +594,22 @@
       fill: #4b066a;
     }
   }
+  .background-disease-salmonellosis {
+    background-color: #d35400;
+    fill: #d35400;
+
+    &.background-darker {
+      background-color: #a04000;
+      fill: #a04000;
+    }
+  }
+   .background-disease-shigellosis {
+    background-color: #bd1307;
+    fill: #bd1307;
+
+    &.background-darker {
+      background-color: #DAAA69;
+      fill: #DAAA69;
+    }
+  }
 }

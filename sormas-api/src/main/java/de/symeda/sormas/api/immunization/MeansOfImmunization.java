@@ -33,7 +33,9 @@ public enum MeansOfImmunization {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	MONOCLONAL_ANTIBODY,
 
-	OTHER;
+	OTHER,
+
+	NOT_IMMUNIZED;
 
 	public static boolean isVaccination(MeansOfImmunization meansOfImmunization) {
 		return meansOfImmunization == VACCINATION

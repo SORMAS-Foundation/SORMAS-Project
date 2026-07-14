@@ -15,6 +15,10 @@
 
 package de.symeda.sormas.ui.configuration.disease;
 
+import static de.symeda.sormas.ui.EnumSortUtils.comparingOnEnumField;
+
+import java.util.List;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.disease.DiseaseConfigurationCriteria;
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
@@ -33,8 +37,11 @@ public class DiseaseConfigurationGrid extends FilteredGrid<DiseaseConfigurationI
 		super(DiseaseConfigurationIndexDto.class);
 		setSizeFull();
 
-		setLazyDataProvider(FacadeProvider.getDiseaseConfigurationFacade()::getIndexList, FacadeProvider.getDiseaseConfigurationFacade()::count);
+		setInEagerMode(true);
+
 		setCriteria(criteria);
+
+		setEagerDataProvider();
 
 		setColumns(
 			DiseaseConfigurationIndexDto.DISEASE,
@@ -45,11 +52,17 @@ public class DiseaseConfigurationGrid extends FilteredGrid<DiseaseConfigurationI
 			DiseaseConfigurationIndexDto.CASE_SURVEILLANCE_ENABLED,
 			DiseaseConfigurationIndexDto.AGGREGATE_REPORTING_ENABLED,
 			DiseaseConfigurationIndexDto.CASE_FOLLOW_UP_DURATION,
+			DiseaseConfigurationIndexDto.INCUBATION_PERIOD_ENABLED,
+			DiseaseConfigurationIndexDto.IS_CONTAGIOUS,
 			DiseaseConfigurationIndexDto.AGE_GROUPS,
 			DiseaseConfigurationIndexDto.EVENT_PARTICIPANT_FOLLOW_UP_DURATION,
 			DiseaseConfigurationIndexDto.EXTENDED_CLASSIFICATION,
 			DiseaseConfigurationIndexDto.EXTENDED_CLASSIFICATION_MULTI,
-			DiseaseConfigurationIndexDto.AUTOMATIC_SAMPLE_ASSIGNMENT_THRESHOLD);
+			DiseaseConfigurationIndexDto.AUTOMATIC_SAMPLE_ASSIGNMENT_THRESHOLD,
+			DiseaseConfigurationIndexDto.EXPOSURE_CATEGORY_NAMES);
+
+		getColumn(DiseaseConfigurationIndexDto.AGE_GROUPS).setSortable(false);
+		getColumn(DiseaseConfigurationIndexDto.EXPOSURE_CATEGORY_NAMES).setSortable(false);
 
 		addEditColumn(e -> ControllerProvider.getDiseaseConfirgurationController().editDiseaseConfiguration(e.getUuid()));
 
@@ -60,13 +73,23 @@ public class DiseaseConfigurationGrid extends FilteredGrid<DiseaseConfigurationI
 		getColumn(DiseaseConfigurationIndexDto.ACTIVE).setRenderer(new BooleanRenderer());
 		getColumn(DiseaseConfigurationIndexDto.PRIMARY_DISEASE).setRenderer(new BooleanRenderer());
 		getColumn(DiseaseConfigurationIndexDto.FOLLOW_UP_ENABLED).setRenderer(new BooleanRenderer());
+		getColumn(DiseaseConfigurationIndexDto.INCUBATION_PERIOD_ENABLED).setRenderer(new BooleanRenderer());
+		getColumn(DiseaseConfigurationIndexDto.IS_CONTAGIOUS).setRenderer(new BooleanRenderer());
 		getColumn(DiseaseConfigurationIndexDto.CASE_SURVEILLANCE_ENABLED).setRenderer(new BooleanRenderer());
 		getColumn(DiseaseConfigurationIndexDto.EXTENDED_CLASSIFICATION).setRenderer(new BooleanRenderer());
 		getColumn(DiseaseConfigurationIndexDto.EXTENDED_CLASSIFICATION_MULTI).setRenderer(new BooleanRenderer());
 		getColumn(DiseaseConfigurationIndexDto.AGGREGATE_REPORTING_ENABLED).setRenderer(new BooleanRenderer());
+
+		getColumn(DiseaseConfigurationIndexDto.DISEASE)
+			.setComparator((o1, o2) -> comparingOnEnumField(DiseaseConfigurationIndexDto::getDisease).compare(o1, o2));
+
+	}
+
+	private void setEagerDataProvider() {
+		setDataProvider(FacadeProvider.getDiseaseConfigurationFacade().getIndexList(getCriteria(), null, null, List.of()).stream());
 	}
 
 	public void reload() {
-		getDataProvider().refreshAll();
+		setEagerDataProvider();
 	}
 }

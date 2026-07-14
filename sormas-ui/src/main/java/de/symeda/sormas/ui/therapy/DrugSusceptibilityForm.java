@@ -17,8 +17,6 @@ package de.symeda.sormas.ui.therapy;
 
 import static de.symeda.sormas.api.adverseeventsfollowingimmunization.AdverseEventsDto.I18N_PREFIX;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
@@ -52,33 +50,75 @@ public class DrugSusceptibilityForm extends AbstractEditForm<DrugSusceptibilityD
 	private static final long serialVersionUID = -8824484702333610347L;
 
 	private static final String FORM_HEADING_LOC = "formHeadingLoc";
+	private static final String HEADER_DRUG_LOC = "headerDrugLoc";
+	private static final String HEADER_METHOD_LOC = "headerMethodLoc";
+	private static final String HEADER_VALUE_LOC = "headerValueLoc";
+	private static final String HEADER_INTERPRETATION_LOC = "headerInterpretationLoc";
+	private static final String AMIKACIN_LABEL_LOC = "amikacinLabelLoc";
+	private static final String BEDAQUILINE_LABEL_LOC = "bedaquilineLabelLoc";
+	private static final String CAPREOMYCIN_LABEL_LOC = "capreomycinLabelLoc";
+	private static final String CIPROFLOXACIN_LABEL_LOC = "ciprofloxacinLabelLoc";
+	private static final String DELAMANID_LABEL_LOC = "delamanidLabelLoc";
+	private static final String ETHAMBUTOL_LABEL_LOC = "ethambutolLabelLoc";
+	private static final String GATIFLOXACIN_LABEL_LOC = "gatifloxacinLabelLoc";
+	private static final String ISONIAZID_LABEL_LOC = "isoniazidLabelLoc";
+	private static final String KANAMYCIN_LABEL_LOC = "kanamycinLabelLoc";
+	private static final String LEVOFLOXACIN_LABEL_LOC = "levofloxacinLabelLoc";
+	private static final String MOXIFLOXACIN_LABEL_LOC = "moxifloxacinLabelLoc";
+	private static final String OFLOXACIN_LABEL_LOC = "ofloxacinLabelLoc";
+	private static final String RIFAMPICIN_LABEL_LOC = "rifampicinLabelLoc";
+	private static final String STREPTOMYCIN_LABEL_LOC = "streptomycinLabelLoc";
+	private static final String CEFTRIAXONE_LABEL_LOC = "ceftriaxoneLabelLoc";
+	private static final String PENICILLIN_LABEL_LOC = "penicillinLabelLoc";
+	private static final String ERYTHROMYCIN_LABEL_LOC = "erythromycinLabelLoc";
+	private static final String AZITHROMYCIN_LABEL_LOC = "azithromycinLabelLoc";
+	private static final String AMPICILLIN_LABEL_LOC = "ampicillinLabelLoc";
+	private static final String CEFTAZIDIME_LABEL_LOC = "ceftazidimeLabelLoc";
+	private static final String CEFOTAXIME_LABEL_LOC = "cefotaximeLabelLoc";
+	private static final String TRIMETHOPRIM_SULFAMETHOXAZOLE_LABEL_LOC = "trimethoprimSulfamethoxazoleLabelLoc";
 
 	private Label formHeadingLabel;
+
+	/**
+	 * Column-header labels (Method / Value / Interpretation), shown/hidden together with the form heading.
+	 * Lazily initialised because {@link AbstractEditForm}'s constructor calls {@code addFields()} before
+	 * subclass field initialisers run, so an inline initialiser would still be null at that point.
+	 */
+	private List<Label> columnHeaderLabels;
+
+	/**
+	 * Drug-name labels keyed by the drug's MIC field id, so their visibility tracks the drug's fields.
+	 * Lazily initialised because {@link AbstractEditForm}'s constructor calls {@code addFields()} before
+	 * subclass field initialisers run, so an inline initialiser would still be null at that point.
+	 */
+	private Map<String, Label> drugLabelsByMicFieldId;
 
 	//@formatter:off
     private static final String HTML_LAYOUT =
 		loc(FORM_HEADING_LOC) +
-			fluidRow(
-				fluidColumn(6, 0,
-			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, DrugSusceptibilityDto.AMIKACIN_MIC, DrugSusceptibilityDto.AMIKACIN_SUSCEPTIBILITY)
-					+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, DrugSusceptibilityDto.BEDAQUILINE_MIC, DrugSusceptibilityDto.BEDAQUILINE_SUSCEPTIBILITY)
-					+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, DrugSusceptibilityDto.CAPREOMYCIN_MIC, DrugSusceptibilityDto.CAPREOMYCIN_SUSCEPTIBILITY)
-					+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, DrugSusceptibilityDto.CIPROFLOXACIN_MIC, DrugSusceptibilityDto.CIPROFLOXACIN_SUSCEPTIBILITY)
-					+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, DrugSusceptibilityDto.DELAMANID_MIC, DrugSusceptibilityDto.DELAMANID_SUSCEPTIBILITY)
-					+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, DrugSusceptibilityDto.ETHAMBUTOL_MIC, DrugSusceptibilityDto.ETHAMBUTOL_SUSCEPTIBILITY)
-					+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, DrugSusceptibilityDto.GATIFLOXACIN_MIC, DrugSusceptibilityDto.GATIFLOXACIN_SUSCEPTIBILITY)
-					+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, DrugSusceptibilityDto.CEFTRIAXONE_MIC, DrugSusceptibilityDto.CEFTRIAXONE_SUSCEPTIBILITY)
-					+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, DrugSusceptibilityDto.ERYTHROMYCIN_MIC, DrugSusceptibilityDto.ERYTHROMYCIN_SUSCEPTIBILITY)),
-				fluidColumn(6, 0,
-			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, DrugSusceptibilityDto.ISONIAZID_MIC, DrugSusceptibilityDto.ISONIAZID_SUSCEPTIBILITY)
-					+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, DrugSusceptibilityDto.KANAMYCIN_MIC, DrugSusceptibilityDto.KANAMYCIN_SUSCEPTIBILITY)
-					+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, DrugSusceptibilityDto.LEVOFLOXACIN_MIC, DrugSusceptibilityDto.LEVOFLOXACIN_SUSCEPTIBILITY)
-					+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, DrugSusceptibilityDto.MOXIFLOXACIN_MIC, DrugSusceptibilityDto.MOXIFLOXACIN_SUSCEPTIBILITY)
-					+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, DrugSusceptibilityDto.OFLOXACIN_MIC, DrugSusceptibilityDto.OFLOXACIN_SUSCEPTIBILITY)
-					+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, DrugSusceptibilityDto.RIFAMPICIN_MIC, DrugSusceptibilityDto.RIFAMPICIN_SUSCEPTIBILITY)
-					+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, DrugSusceptibilityDto.STREPTOMYCIN_MIC, DrugSusceptibilityDto.STREPTOMYCIN_SUSCEPTIBILITY)
-					+ fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, DrugSusceptibilityDto.PENICILLIN_MIC, DrugSusceptibilityDto.PENICILLIN_SUSCEPTIBILITY))
-			);
+			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, HEADER_DRUG_LOC, HEADER_METHOD_LOC, HEADER_VALUE_LOC, HEADER_INTERPRETATION_LOC)
+			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, AMIKACIN_LABEL_LOC, DrugSusceptibilityDto.AMIKACIN_METHOD, DrugSusceptibilityDto.AMIKACIN_MIC, DrugSusceptibilityDto.AMIKACIN_SUSCEPTIBILITY)
+			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, BEDAQUILINE_LABEL_LOC, DrugSusceptibilityDto.BEDAQUILINE_METHOD, DrugSusceptibilityDto.BEDAQUILINE_MIC, DrugSusceptibilityDto.BEDAQUILINE_SUSCEPTIBILITY)
+			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, CAPREOMYCIN_LABEL_LOC, DrugSusceptibilityDto.CAPREOMYCIN_METHOD, DrugSusceptibilityDto.CAPREOMYCIN_MIC, DrugSusceptibilityDto.CAPREOMYCIN_SUSCEPTIBILITY)
+			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, CIPROFLOXACIN_LABEL_LOC, DrugSusceptibilityDto.CIPROFLOXACIN_METHOD, DrugSusceptibilityDto.CIPROFLOXACIN_MIC, DrugSusceptibilityDto.CIPROFLOXACIN_SUSCEPTIBILITY)
+			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, DELAMANID_LABEL_LOC, DrugSusceptibilityDto.DELAMANID_METHOD, DrugSusceptibilityDto.DELAMANID_MIC, DrugSusceptibilityDto.DELAMANID_SUSCEPTIBILITY)
+			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, ETHAMBUTOL_LABEL_LOC, DrugSusceptibilityDto.ETHAMBUTOL_METHOD, DrugSusceptibilityDto.ETHAMBUTOL_MIC, DrugSusceptibilityDto.ETHAMBUTOL_SUSCEPTIBILITY)
+			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, GATIFLOXACIN_LABEL_LOC, DrugSusceptibilityDto.GATIFLOXACIN_METHOD, DrugSusceptibilityDto.GATIFLOXACIN_MIC, DrugSusceptibilityDto.GATIFLOXACIN_SUSCEPTIBILITY)
+			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, AZITHROMYCIN_LABEL_LOC, DrugSusceptibilityDto.AZITHROMYCIN_METHOD, DrugSusceptibilityDto.AZITHROMYCIN_MIC, DrugSusceptibilityDto.AZITHROMYCIN_SUSCEPTIBILITY)
+			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, AMPICILLIN_LABEL_LOC, DrugSusceptibilityDto.AMPICILLIN_METHOD, DrugSusceptibilityDto.AMPICILLIN_MIC, DrugSusceptibilityDto.AMPICILLIN_SUSCEPTIBILITY)
+			+			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, ISONIAZID_LABEL_LOC, DrugSusceptibilityDto.ISONIAZID_METHOD, DrugSusceptibilityDto.ISONIAZID_MIC, DrugSusceptibilityDto.ISONIAZID_SUSCEPTIBILITY)
+			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, KANAMYCIN_LABEL_LOC, DrugSusceptibilityDto.KANAMYCIN_METHOD, DrugSusceptibilityDto.KANAMYCIN_MIC, DrugSusceptibilityDto.KANAMYCIN_SUSCEPTIBILITY)
+			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, LEVOFLOXACIN_LABEL_LOC, DrugSusceptibilityDto.LEVOFLOXACIN_METHOD, DrugSusceptibilityDto.LEVOFLOXACIN_MIC, DrugSusceptibilityDto.LEVOFLOXACIN_SUSCEPTIBILITY)
+			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, MOXIFLOXACIN_LABEL_LOC, DrugSusceptibilityDto.MOXIFLOXACIN_METHOD, DrugSusceptibilityDto.MOXIFLOXACIN_MIC, DrugSusceptibilityDto.MOXIFLOXACIN_SUSCEPTIBILITY)
+			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, OFLOXACIN_LABEL_LOC, DrugSusceptibilityDto.OFLOXACIN_METHOD, DrugSusceptibilityDto.OFLOXACIN_MIC, DrugSusceptibilityDto.OFLOXACIN_SUSCEPTIBILITY)
+			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, RIFAMPICIN_LABEL_LOC, DrugSusceptibilityDto.RIFAMPICIN_METHOD, DrugSusceptibilityDto.RIFAMPICIN_MIC, DrugSusceptibilityDto.RIFAMPICIN_SUSCEPTIBILITY)
+			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, STREPTOMYCIN_LABEL_LOC, DrugSusceptibilityDto.STREPTOMYCIN_METHOD, DrugSusceptibilityDto.STREPTOMYCIN_MIC, DrugSusceptibilityDto.STREPTOMYCIN_SUSCEPTIBILITY)
+			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, CEFTRIAXONE_LABEL_LOC, DrugSusceptibilityDto.CEFTRIAXONE_METHOD, DrugSusceptibilityDto.CEFTRIAXONE_MIC, DrugSusceptibilityDto.CEFTRIAXONE_SUSCEPTIBILITY)
+			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, PENICILLIN_LABEL_LOC, DrugSusceptibilityDto.PENICILLIN_METHOD, DrugSusceptibilityDto.PENICILLIN_MIC, DrugSusceptibilityDto.PENICILLIN_SUSCEPTIBILITY)
+			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, CEFTAZIDIME_LABEL_LOC, DrugSusceptibilityDto.CEFTAZIDIME_METHOD, DrugSusceptibilityDto.CEFTAZIDIME_MIC, DrugSusceptibilityDto.CEFTAZIDIME_SUSCEPTIBILITY)
+			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, CEFOTAXIME_LABEL_LOC, DrugSusceptibilityDto.CEFOTAXIME_METHOD, DrugSusceptibilityDto.CEFOTAXIME_MIC, DrugSusceptibilityDto.CEFOTAXIME_SUSCEPTIBILITY)
+			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, ERYTHROMYCIN_LABEL_LOC, DrugSusceptibilityDto.ERYTHROMYCIN_METHOD, DrugSusceptibilityDto.ERYTHROMYCIN_MIC, DrugSusceptibilityDto.ERYTHROMYCIN_SUSCEPTIBILITY)
+			+ 			fluidRowLocsCss(CssStyles.GRID_ROW_GAP_1, TRIMETHOPRIM_SULFAMETHOXAZOLE_LABEL_LOC, DrugSusceptibilityDto.TRIMETHOPRIM_SULFAMETHOXAZOLE_METHOD, DrugSusceptibilityDto.TRIMETHOPRIM_SULFAMETHOXAZOLE_MIC, DrugSusceptibilityDto.TRIMETHOPRIM_SULFAMETHOXAZOLE_SUSCEPTIBILITY);
     //@formatter:on
 
 	public DrugSusceptibilityForm(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
@@ -98,95 +138,225 @@ public class DrugSusceptibilityForm extends AbstractEditForm<DrugSusceptibilityD
 		getContent().addComponent(formHeadingLabel, FORM_HEADING_LOC);
 		formHeadingLabel.setVisible(false);
 
-		addMicField(DrugSusceptibilityDto.AMIKACIN_MIC, Drug.AMIKACIN).setInputPrompt(I18nProperties.getString(Strings.promptMicValue));
+		// Column headers over the Method | Value | Interpretation columns (drug-name column left blank).
+		addColumnHeader(HEADER_METHOD_LOC, I18nProperties.getString(Strings.headingAstMethod));
+		addColumnHeader(HEADER_VALUE_LOC, I18nProperties.getString(Strings.headingAstValue));
+		addColumnHeader(HEADER_INTERPRETATION_LOC, I18nProperties.getString(Strings.headingAstInterpretation));
+
+		addDrugLabel(AMIKACIN_LABEL_LOC, Drug.AMIKACIN, DrugSusceptibilityDto.AMIKACIN_MIC);
+		addMicField(DrugSusceptibilityDto.AMIKACIN_MIC);
 		addResistanceResultField(DrugSusceptibilityDto.AMIKACIN_SUSCEPTIBILITY)
 			.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
+		addMethodField(DrugSusceptibilityDto.AMIKACIN_METHOD);
 
-		addMicField(DrugSusceptibilityDto.BEDAQUILINE_MIC, Drug.BEDAQUILINE).setInputPrompt(I18nProperties.getString(Strings.promptMicValue));
+		addDrugLabel(BEDAQUILINE_LABEL_LOC, Drug.BEDAQUILINE, DrugSusceptibilityDto.BEDAQUILINE_MIC);
+		addMicField(DrugSusceptibilityDto.BEDAQUILINE_MIC);
 		addResistanceResultField(DrugSusceptibilityDto.BEDAQUILINE_SUSCEPTIBILITY)
 			.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
+		addMethodField(DrugSusceptibilityDto.BEDAQUILINE_METHOD);
 
-		addMicField(DrugSusceptibilityDto.CAPREOMYCIN_MIC, Drug.CAPREOMYCIN).setInputPrompt(I18nProperties.getString(Strings.promptMicValue));
+		addDrugLabel(CAPREOMYCIN_LABEL_LOC, Drug.CAPREOMYCIN, DrugSusceptibilityDto.CAPREOMYCIN_MIC);
+		addMicField(DrugSusceptibilityDto.CAPREOMYCIN_MIC);
 		addResistanceResultField(DrugSusceptibilityDto.CAPREOMYCIN_SUSCEPTIBILITY)
 			.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
+		addMethodField(DrugSusceptibilityDto.CAPREOMYCIN_METHOD);
 
-		addMicField(DrugSusceptibilityDto.CIPROFLOXACIN_MIC, Drug.CIPROFLOXACIN).setInputPrompt(I18nProperties.getString(Strings.promptMicValue));
+		addDrugLabel(CIPROFLOXACIN_LABEL_LOC, Drug.CIPROFLOXACIN, DrugSusceptibilityDto.CIPROFLOXACIN_MIC);
+		addMicField(DrugSusceptibilityDto.CIPROFLOXACIN_MIC);
 		addResistanceResultField(DrugSusceptibilityDto.CIPROFLOXACIN_SUSCEPTIBILITY)
 			.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
+		addMethodField(DrugSusceptibilityDto.CIPROFLOXACIN_METHOD);
 
-		addMicField(DrugSusceptibilityDto.DELAMANID_MIC, Drug.DELAMANID).setInputPrompt(I18nProperties.getString(Strings.promptMicValue));
+		addDrugLabel(DELAMANID_LABEL_LOC, Drug.DELAMANID, DrugSusceptibilityDto.DELAMANID_MIC);
+		addMicField(DrugSusceptibilityDto.DELAMANID_MIC);
 		addResistanceResultField(DrugSusceptibilityDto.DELAMANID_SUSCEPTIBILITY)
 			.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
+		addMethodField(DrugSusceptibilityDto.DELAMANID_METHOD);
 
-		addMicField(DrugSusceptibilityDto.ETHAMBUTOL_MIC, Drug.ETHAMBUTOL).setInputPrompt(I18nProperties.getString(Strings.promptMicValue));
+		addDrugLabel(ETHAMBUTOL_LABEL_LOC, Drug.ETHAMBUTOL, DrugSusceptibilityDto.ETHAMBUTOL_MIC);
+		addMicField(DrugSusceptibilityDto.ETHAMBUTOL_MIC);
 		addResistanceResultField(DrugSusceptibilityDto.ETHAMBUTOL_SUSCEPTIBILITY)
 			.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
+		addMethodField(DrugSusceptibilityDto.ETHAMBUTOL_METHOD);
 
-		addMicField(DrugSusceptibilityDto.GATIFLOXACIN_MIC, Drug.GATIFLOXACIN).setInputPrompt(I18nProperties.getString(Strings.promptMicValue));
+		addDrugLabel(GATIFLOXACIN_LABEL_LOC, Drug.GATIFLOXACIN, DrugSusceptibilityDto.GATIFLOXACIN_MIC);
+		addMicField(DrugSusceptibilityDto.GATIFLOXACIN_MIC);
 		addResistanceResultField(DrugSusceptibilityDto.GATIFLOXACIN_SUSCEPTIBILITY)
 			.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
+		addMethodField(DrugSusceptibilityDto.GATIFLOXACIN_METHOD);
 
-		addMicField(DrugSusceptibilityDto.ISONIAZID_MIC, Drug.ISONIAZID).setInputPrompt(I18nProperties.getString(Strings.promptMicValue));
+		addDrugLabel(ISONIAZID_LABEL_LOC, Drug.ISONIAZID, DrugSusceptibilityDto.ISONIAZID_MIC);
+		addMicField(DrugSusceptibilityDto.ISONIAZID_MIC);
 		addResistanceResultField(DrugSusceptibilityDto.ISONIAZID_SUSCEPTIBILITY)
 			.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
+		addMethodField(DrugSusceptibilityDto.ISONIAZID_METHOD);
 
-		addMicField(DrugSusceptibilityDto.KANAMYCIN_MIC, Drug.KANAMYCIN).setInputPrompt(I18nProperties.getString(Strings.promptMicValue));
+		addDrugLabel(KANAMYCIN_LABEL_LOC, Drug.KANAMYCIN, DrugSusceptibilityDto.KANAMYCIN_MIC);
+		addMicField(DrugSusceptibilityDto.KANAMYCIN_MIC);
 		addResistanceResultField(DrugSusceptibilityDto.KANAMYCIN_SUSCEPTIBILITY)
 			.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
+		addMethodField(DrugSusceptibilityDto.KANAMYCIN_METHOD);
 
-		addMicField(DrugSusceptibilityDto.LEVOFLOXACIN_MIC, Drug.LEVOFLOXACIN).setInputPrompt(I18nProperties.getString(Strings.promptMicValue));
+		addDrugLabel(LEVOFLOXACIN_LABEL_LOC, Drug.LEVOFLOXACIN, DrugSusceptibilityDto.LEVOFLOXACIN_MIC);
+		addMicField(DrugSusceptibilityDto.LEVOFLOXACIN_MIC);
 		addResistanceResultField(DrugSusceptibilityDto.LEVOFLOXACIN_SUSCEPTIBILITY)
 			.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
+		addMethodField(DrugSusceptibilityDto.LEVOFLOXACIN_METHOD);
 
-		addMicField(DrugSusceptibilityDto.MOXIFLOXACIN_MIC, Drug.MOXIFLOXACIN).setInputPrompt(I18nProperties.getString(Strings.promptMicValue));
+		addDrugLabel(MOXIFLOXACIN_LABEL_LOC, Drug.MOXIFLOXACIN, DrugSusceptibilityDto.MOXIFLOXACIN_MIC);
+		addMicField(DrugSusceptibilityDto.MOXIFLOXACIN_MIC);
 		addResistanceResultField(DrugSusceptibilityDto.MOXIFLOXACIN_SUSCEPTIBILITY)
 			.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
+		addMethodField(DrugSusceptibilityDto.MOXIFLOXACIN_METHOD);
 
-		addMicField(DrugSusceptibilityDto.OFLOXACIN_MIC, Drug.OFLOXACIN).setInputPrompt(I18nProperties.getString(Strings.promptMicValue));
+		addDrugLabel(OFLOXACIN_LABEL_LOC, Drug.OFLOXACIN, DrugSusceptibilityDto.OFLOXACIN_MIC);
+		addMicField(DrugSusceptibilityDto.OFLOXACIN_MIC);
 		addResistanceResultField(DrugSusceptibilityDto.OFLOXACIN_SUSCEPTIBILITY)
 			.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
+		addMethodField(DrugSusceptibilityDto.OFLOXACIN_METHOD);
 
-		addMicField(DrugSusceptibilityDto.RIFAMPICIN_MIC, Drug.RIFAMPICIN).setInputPrompt(I18nProperties.getString(Strings.promptMicValue));
+		addDrugLabel(RIFAMPICIN_LABEL_LOC, Drug.RIFAMPICIN, DrugSusceptibilityDto.RIFAMPICIN_MIC);
+		addMicField(DrugSusceptibilityDto.RIFAMPICIN_MIC);
 		addResistanceResultField(DrugSusceptibilityDto.RIFAMPICIN_SUSCEPTIBILITY)
 			.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
+		addMethodField(DrugSusceptibilityDto.RIFAMPICIN_METHOD);
 
-		addMicField(DrugSusceptibilityDto.STREPTOMYCIN_MIC, Drug.STREPTOMYCIN).setInputPrompt(I18nProperties.getString(Strings.promptMicValue));
+		addDrugLabel(STREPTOMYCIN_LABEL_LOC, Drug.STREPTOMYCIN, DrugSusceptibilityDto.STREPTOMYCIN_MIC);
+		addMicField(DrugSusceptibilityDto.STREPTOMYCIN_MIC);
 		addResistanceResultField(DrugSusceptibilityDto.STREPTOMYCIN_SUSCEPTIBILITY)
 			.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
+		addMethodField(DrugSusceptibilityDto.STREPTOMYCIN_METHOD);
 
-		addMicField(DrugSusceptibilityDto.CEFTRIAXONE_MIC, Drug.CEFTRIAXONE).setInputPrompt(I18nProperties.getString(Strings.promptMicValue));
+		addDrugLabel(CEFTRIAXONE_LABEL_LOC, Drug.CEFTRIAXONE, DrugSusceptibilityDto.CEFTRIAXONE_MIC);
+		addMicField(DrugSusceptibilityDto.CEFTRIAXONE_MIC);
 		addResistanceResultField(DrugSusceptibilityDto.CEFTRIAXONE_SUSCEPTIBILITY)
 			.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
-		addMicField(DrugSusceptibilityDto.PENICILLIN_MIC, Drug.PENICILLIN).setInputPrompt(I18nProperties.getString(Strings.promptMicValue));
+		addMethodField(DrugSusceptibilityDto.CEFTRIAXONE_METHOD);
+		addDrugLabel(PENICILLIN_LABEL_LOC, Drug.PENICILLIN, DrugSusceptibilityDto.PENICILLIN_MIC);
+		addMicField(DrugSusceptibilityDto.PENICILLIN_MIC);
 		addResistanceResultField(DrugSusceptibilityDto.PENICILLIN_SUSCEPTIBILITY)
 			.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
+		addMethodField(DrugSusceptibilityDto.PENICILLIN_METHOD);
 
-		addMicField(DrugSusceptibilityDto.ERYTHROMYCIN_MIC, Drug.ERYTHROMYCIN).setInputPrompt(I18nProperties.getString(Strings.promptMicValue));
+		addDrugLabel(ERYTHROMYCIN_LABEL_LOC, Drug.ERYTHROMYCIN, DrugSusceptibilityDto.ERYTHROMYCIN_MIC);
+		addMicField(DrugSusceptibilityDto.ERYTHROMYCIN_MIC);
 		addResistanceResultField(DrugSusceptibilityDto.ERYTHROMYCIN_SUSCEPTIBILITY)
 			.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
+		addMethodField(DrugSusceptibilityDto.ERYTHROMYCIN_METHOD);
+
+		addDrugLabel(AZITHROMYCIN_LABEL_LOC, Drug.AZITHROMYCIN, DrugSusceptibilityDto.AZITHROMYCIN_MIC);
+		addMicField(DrugSusceptibilityDto.AZITHROMYCIN_MIC);
+		addResistanceResultField(DrugSusceptibilityDto.AZITHROMYCIN_SUSCEPTIBILITY)
+			.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
+		addMethodField(DrugSusceptibilityDto.AZITHROMYCIN_METHOD);
+
+		addDrugLabel(CEFTAZIDIME_LABEL_LOC, Drug.CEFTAZIDIME, DrugSusceptibilityDto.CEFTAZIDIME_MIC);
+		addMicField(DrugSusceptibilityDto.CEFTAZIDIME_MIC);
+		addResistanceResultField(DrugSusceptibilityDto.CEFTAZIDIME_SUSCEPTIBILITY)
+			.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
+		addMethodField(DrugSusceptibilityDto.CEFTAZIDIME_METHOD);
+
+		addDrugLabel(CEFOTAXIME_LABEL_LOC, Drug.CEFOTAXIME, DrugSusceptibilityDto.CEFOTAXIME_MIC);
+		addMicField(DrugSusceptibilityDto.CEFOTAXIME_MIC);
+		addResistanceResultField(DrugSusceptibilityDto.CEFOTAXIME_SUSCEPTIBILITY)
+			.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
+		addMethodField(DrugSusceptibilityDto.CEFOTAXIME_METHOD);
+
+		addDrugLabel(AMPICILLIN_LABEL_LOC, Drug.AMPICILLIN, DrugSusceptibilityDto.AMPICILLIN_MIC);
+		addMicField(DrugSusceptibilityDto.AMPICILLIN_MIC);
+		addResistanceResultField(DrugSusceptibilityDto.AMPICILLIN_SUSCEPTIBILITY)
+			.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
+		addMethodField(DrugSusceptibilityDto.AMPICILLIN_METHOD);
+
+		addDrugLabel(
+			TRIMETHOPRIM_SULFAMETHOXAZOLE_LABEL_LOC,
+			Drug.TRIMETHOPRIM_SULFAMETHOXAZOLE,
+			DrugSusceptibilityDto.TRIMETHOPRIM_SULFAMETHOXAZOLE_MIC);
+		addMicField(DrugSusceptibilityDto.TRIMETHOPRIM_SULFAMETHOXAZOLE_MIC);
+		addResistanceResultField(DrugSusceptibilityDto.TRIMETHOPRIM_SULFAMETHOXAZOLE_SUSCEPTIBILITY)
+			.setInputPrompt(I18nProperties.getString(Strings.promptResistanceResult));
+		addMethodField(DrugSusceptibilityDto.TRIMETHOPRIM_SULFAMETHOXAZOLE_METHOD);
 
 		FieldHelper.hideFieldsNotInList(getFieldGroup(), List.of(), true);
 	}
 
-	private TextField addMicField(String fieldId, Drug drug) {
+	private TextField addMicField(String fieldId) {
+		// The drug name is rendered as a dedicated label column (addDrugLabel), so the value field itself
+		// carries no inline caption — keeping the row aligned without the theme's fixed inline-caption
+		// margin clipping longer drug names. Holds free text (e.g. "≤0.125 mg/L" or "mecA detected").
 		TextField field = addField(fieldId, TextField.class);
-		field.setCaption(I18nProperties.getEnumCaption(drug));
+		field.setCaption(null);
 		field.setDescription(I18nProperties.getString(Strings.promptMicValue));
-		field.addStyleNames(CssStyles.TEXTFIELD_ROW, CssStyles.TEXTFIELD_CAPTION_INLINE);
-		field.setWidth(80, Unit.PIXELS);
+		field.setInputPrompt(I18nProperties.getString(Strings.promptMicValue));
+		field.setWidth(100, Unit.PERCENTAGE);
 		return field;
+	}
+
+	/** Adds an uppercase column header, tracked so it can be shown/hidden with the form heading. */
+	private void addColumnHeader(String headerLoc, String caption) {
+		if (columnHeaderLabels == null) {
+			columnHeaderLabels = new java.util.ArrayList<>();
+		}
+		Label label = new Label(caption);
+		label.addStyleName(CssStyles.LABEL_BOLD);
+		label.setVisible(false);
+		getContent().addComponent(label, headerLoc);
+		columnHeaderLabels.add(label);
+	}
+
+	/**
+	 * Adds the drug name as a standalone label at the row's leading column, registered against the
+	 * drug's MIC field id so {@link #updateFieldsVisibility} can hide it together with the drug's fields.
+	 */
+	private void addDrugLabel(String labelLoc, Drug drug, String micFieldId) {
+		if (drugLabelsByMicFieldId == null) {
+			drugLabelsByMicFieldId = new java.util.HashMap<>();
+		}
+		Label label = new Label(I18nProperties.getEnumCaption(drug));
+		label.addStyleName(CssStyles.LABEL_BOLD);
+		getContent().addComponent(label, labelLoc);
+		drugLabelsByMicFieldId.put(micFieldId, label);
+	}
+
+	/** Shows a drug's label iff its fields are applicable (its MIC field id is in {@code visibleFieldIds}). */
+	private void updateDrugLabelsVisibility(List<String> visibleFieldIds) {
+		if (drugLabelsByMicFieldId == null) {
+			return;
+		}
+		drugLabelsByMicFieldId.forEach((micFieldId, label) -> label.setVisible(visibleFieldIds != null && visibleFieldIds.contains(micFieldId)));
 	}
 
 	private ComboBox addResistanceResultField(String fieldId) {
 		ComboBox field = addField(fieldId, ComboBox.class);
 		field.setCaption(null);
 		field.setDescription(I18nProperties.getString(Strings.promptResistanceResult));
-		field.setWidth(150, Unit.PIXELS);
+		field.setWidth(100, Unit.PERCENTAGE);
 		return field;
 	}
 
-	public void markAsDirty() {
+	private ComboBox addMethodField(String fieldId) {
+		ComboBox field = addField(fieldId, ComboBox.class);
+		field.setCaption(null);
+		field.setInputPrompt(I18nProperties.getString(Strings.promptSusceptibilityMethod));
+		field.setDescription(I18nProperties.getString(Strings.promptSusceptibilityMethod));
+		field.setWidth(100, Unit.PERCENTAGE);
+		return field;
+	}
 
+	@Override
+	public void markAsDirty() {
+		super.markAsDirty();
+	}
+
+	@Override
+	public void commit() {
+		// When no DrugSusceptibilityDto is bound (e.g. after a disease-section swap nulls it), the internal
+		// field group has no item datasource, so committing its always-bound drug fields would throw
+		// "Property amikacinMic not bound to datasource" (#14124). Nothing to write, so skip the commit.
+		if (getValue() == null) {
+			return;
+		}
+		super.commit();
 	}
 
 	public void forceUpdateDrugSusceptibilityFields() {
@@ -231,13 +401,22 @@ public class DrugSusceptibilityForm extends AbstractEditForm<DrugSusceptibilityD
 				Map.entry(
 					DrugSusceptibilityDto.STREPTOMYCIN_SUSCEPTIBILITY,
 					Optional.ofNullable(drugSusceptibilityDto.getStreptomycinSusceptibility())),
+				Map.entry(DrugSusceptibilityDto.PENICILLIN_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getPenicillinSusceptibility())),
 				Map.entry(
-					DrugSusceptibilityDto.PENICILLIN_SUSCEPTIBILITY,
-					Optional.ofNullable(drugSusceptibilityDto.getPenicillinSusceptibility()))));
+					DrugSusceptibilityDto.AZITHROMYCIN_SUSCEPTIBILITY,
+					Optional.ofNullable(drugSusceptibilityDto.getAzithromycinSusceptibility())),
+				Map.entry(
+					DrugSusceptibilityDto.CEFTAZIDIME_SUSCEPTIBILITY,
+					Optional.ofNullable(drugSusceptibilityDto.getCeftazidimeSusceptibility())),
+				Map.entry(DrugSusceptibilityDto.CEFOTAXIME_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getCefotaximeSusceptibility())),
+				Map.entry(DrugSusceptibilityDto.AMPICILLIN_SUSCEPTIBILITY, Optional.ofNullable(drugSusceptibilityDto.getAmpicillinSusceptibility())),
+				Map.entry(
+					DrugSusceptibilityDto.TRIMETHOPRIM_SULFAMETHOXAZOLE_SUSCEPTIBILITY,
+					Optional.ofNullable(drugSusceptibilityDto.getTrimethoprimSulfamethoxazoleSusceptibility()))));
 
 		applicableFieldIds.forEach(this::forceUpdateDrugSusceptibilityField);
 
-		final Map<String, Optional<Float>> drugSusceptibilityMic = Collections.unmodifiableMap(
+		final Map<String, Optional<String>> drugSusceptibilityMic = Collections.unmodifiableMap(
 			Map.ofEntries(
 				Map.entry(DrugSusceptibilityDto.AMIKACIN_MIC, Optional.ofNullable(drugSusceptibilityDto.getAmikacinMic())),
 				Map.entry(DrugSusceptibilityDto.BEDAQUILINE_MIC, Optional.ofNullable(drugSusceptibilityDto.getBedaquilineMic())),
@@ -255,7 +434,14 @@ public class DrugSusceptibilityForm extends AbstractEditForm<DrugSusceptibilityD
 				Map.entry(DrugSusceptibilityDto.OFLOXACIN_MIC, Optional.ofNullable(drugSusceptibilityDto.getOfloxacinMic())),
 				Map.entry(DrugSusceptibilityDto.RIFAMPICIN_MIC, Optional.ofNullable(drugSusceptibilityDto.getRifampicinMic())),
 				Map.entry(DrugSusceptibilityDto.STREPTOMYCIN_MIC, Optional.ofNullable(drugSusceptibilityDto.getStreptomycinMic())),
-				Map.entry(DrugSusceptibilityDto.PENICILLIN_MIC, Optional.ofNullable(drugSusceptibilityDto.getPenicillinMic()))));
+				Map.entry(DrugSusceptibilityDto.PENICILLIN_MIC, Optional.ofNullable(drugSusceptibilityDto.getPenicillinMic())),
+				Map.entry(DrugSusceptibilityDto.AZITHROMYCIN_MIC, Optional.ofNullable(drugSusceptibilityDto.getAzithromycinMic())),
+				Map.entry(DrugSusceptibilityDto.CEFTAZIDIME_MIC, Optional.ofNullable(drugSusceptibilityDto.getCeftazidimeMic())),
+				Map.entry(DrugSusceptibilityDto.CEFOTAXIME_MIC, Optional.ofNullable(drugSusceptibilityDto.getCefotaximeMic())),
+				Map.entry(DrugSusceptibilityDto.AMPICILLIN_MIC, Optional.ofNullable(drugSusceptibilityDto.getAmpicillinMic())),
+				Map.entry(
+					DrugSusceptibilityDto.TRIMETHOPRIM_SULFAMETHOXAZOLE_MIC,
+					Optional.ofNullable(drugSusceptibilityDto.getTrimethoprimSulfamethoxazoleMic()))));
 
 		drugSusceptibilityMic.forEach(this::forceUpdateDrugSusceptibilityMicField);
 
@@ -280,7 +466,7 @@ public class DrugSusceptibilityForm extends AbstractEditForm<DrugSusceptibilityD
 		field.setValue(drugSusceptibilityType.get());
 	}
 
-	private void forceUpdateDrugSusceptibilityMicField(String fieldId, Optional<Float> drugSusceptibilityMic) {
+	private void forceUpdateDrugSusceptibilityMicField(String fieldId, Optional<String> drugSusceptibilityMic) {
 		final TextField field = getField(fieldId);
 		if (field == null) {
 			return;
@@ -293,42 +479,59 @@ public class DrugSusceptibilityForm extends AbstractEditForm<DrugSusceptibilityD
 			return;
 		}
 
-		// TODO: check if Float.toString() is the correct way to format the value
-		field.setValue(drugSusceptibilityMic.get().toString());
+		field.setValue(drugSusceptibilityMic.get());
 	}
 
-	public void updateFieldsVisibility(Disease disease, PathogenTestType pathogenTestType) {
-		FieldHelper.hideFieldsNotInList(getFieldGroup(), List.of(), true);
-		formHeadingLabel.setVisible(false);
+	/**
+	 * @return true if the form has visible fields after the update
+	 */
+	public boolean updateFieldsVisibility(Disease disease, PathogenTestType pathogenTestType) {
+		setHeaderVisible(false);
 
-		// we hide if we don't have a disease
-		if (disease == null) {
-			return;
+		// Null disease or test type means we don't know yet (e.g. during init before
+		// all fields are populated). Hide fields but preserve values.
+		if (disease == null || pathogenTestType == null) {
+			FieldHelper.hideFieldsNotInList(getFieldGroup(), List.of(), false);
+			updateDrugLabelsVisibility(List.of());
+			return false;
 		}
 
-		// we hide if we have another test type than antibiotic susceptibility
+		// Actively switching to a non-applicable test type — clear stale values
 		if (pathogenTestType != PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY) {
-			return;
+			FieldHelper.hideFieldsNotInList(getFieldGroup(), List.of(), true);
+			updateDrugLabelsVisibility(List.of());
+			return false;
 		}
 
-		// we have a disease and a ANTIBIOTIC_SUSCEPTIBILITY test type, so we can proceed
-
-		// TODO: this is kind of temporary as it should be consolidated with the logic in the PathogenTestForm
-		// For other countries if the disease is Tuberculosis/Latent Tuberculosis, drug susceptibility fields should remain hidden
+		// Non-Luxembourg TB/Latent TB exclusion — clear stale values
 		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 			&& (disease == Disease.TUBERCULOSIS || disease == Disease.LATENT_TUBERCULOSIS)) {
-			//quit, we do not want to show the fields if TUBERCULOSIS/LATENT_TUBERCULOSIS and we are not in Luxembourg
-			return;
+			FieldHelper.hideFieldsNotInList(getFieldGroup(), List.of(), true);
+			updateDrugLabelsVisibility(List.of());
+			return false;
 		}
 
-		// if we passed the exclusions, we show or hide the fields based on annotations
+		// Show applicable fields, hide non-applicable without clearing
 		List<String> applicableFieldIds =
 			AnnotationFieldHelper.getFieldNamesWithMatchingDiseaseAndTestAnnotations(DrugSusceptibilityDto.class, disease, pathogenTestType);
 
-		formHeadingLabel.setVisible(!applicableFieldIds.isEmpty());
+		boolean hasVisibleFields = !applicableFieldIds.isEmpty();
+		setHeaderVisible(hasVisibleFields);
 
-		if (!applicableFieldIds.isEmpty()) {
-			FieldHelper.showOnlyFields(getFieldGroup(), applicableFieldIds, true);
+		if (hasVisibleFields) {
+			FieldHelper.showOnlyFields(getFieldGroup(), applicableFieldIds, false);
+		}
+		// A drug's label shows only when its own fields are applicable for this disease/test type.
+		updateDrugLabelsVisibility(applicableFieldIds);
+
+		return hasVisibleFields;
+	}
+
+	/** Toggles the form heading and the column headers together. */
+	private void setHeaderVisible(boolean visible) {
+		formHeadingLabel.setVisible(visible);
+		if (columnHeaderLabels != null) {
+			columnHeaderLabels.forEach(label -> label.setVisible(visible));
 		}
 	}
 }

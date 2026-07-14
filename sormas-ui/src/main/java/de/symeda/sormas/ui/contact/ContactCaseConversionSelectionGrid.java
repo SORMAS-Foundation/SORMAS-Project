@@ -36,7 +36,7 @@ public class ContactCaseConversionSelectionGrid extends ContactSelectionGrid {
 			SimilarContactDto.CAZE,
 			SimilarContactDto.CASE_ID_EXTERNAL_SYSTEM,
 			SimilarContactDto.LAST_CONTACT_DATE,
-			SimilarContactDto.CONTACT_PROXIMITY,
+			SimilarContactDto.CONTACT_PROXIMITIES,
 			SimilarContactDto.CONTACT_CLASSIFICATION,
 			SimilarContactDto.CONTACT_STATUS,
 			SimilarContactDto.FOLLOW_UP_STATUS);

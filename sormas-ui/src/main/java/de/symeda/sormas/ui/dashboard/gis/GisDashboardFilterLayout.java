@@ -16,8 +16,6 @@
 package de.symeda.sormas.ui.dashboard.gis;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.vaadin.v7.ui.ComboBox;
 
@@ -55,19 +53,15 @@ public class GisDashboardFilterLayout extends DashboardFilterLayout<GisDashboard
 		diseaseFilter.setWidth(200, Unit.PIXELS);
 		diseaseFilter.setInputPrompt(I18nProperties.getString(Strings.promptDisease));
 		diseaseFilter.setDescription(I18nProperties.getDescription(Descriptions.aefiDashboardDiseaseFilter));
-		List<?> availableDisease = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true);
+		List<Disease> availableDisease = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true);
 
-		diseaseFilter.addItems(
-			Stream.concat(availableDisease.stream(), Stream.of(GisDashboardFilterLayout.GisDashboardCustomDiseaseFilter.values()))
-				.collect(Collectors.toList()));
+		diseaseFilter.addItems(availableDisease);
 		diseaseFilter.setValue(dashboardDataProvider.getDisease());
 
 		diseaseFilter.addValueChangeListener(e -> {
 			Object filterValue = diseaseFilter.getValue();
 			if (filterValue instanceof Disease) {
 				dashboardDataProvider.setDisease((Disease) filterValue);
-			} else if (filterValue == GisDashboardFilterLayout.GisDashboardCustomDiseaseFilter.NO_DISEASE) {
-				dashboardDataProvider.setDisease(null);
 			} else if (filterValue == null) {
 				dashboardDataProvider.setDisease(null);
 			} else {
@@ -76,15 +70,5 @@ public class GisDashboardFilterLayout extends DashboardFilterLayout<GisDashboard
 		});
 
 		addCustomComponent(diseaseFilter, DISEASE_FILTER);
-	}
-
-	enum GisDashboardCustomDiseaseFilter {
-
-		NO_DISEASE;
-
-		@Override
-		public String toString() {
-			return I18nProperties.getEnumCaptionShort(this);
-		}
 	}
 }

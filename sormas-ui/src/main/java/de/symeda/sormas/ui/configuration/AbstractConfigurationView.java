@@ -30,9 +30,11 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.configuration.customizableenum.CustomizableEnumValuesView;
+import de.symeda.sormas.ui.configuration.customizablefield.CustomizableFieldsView;
 import de.symeda.sormas.ui.configuration.disease.DiseaseConfigurationView;
 import de.symeda.sormas.ui.configuration.docgeneration.DocumentTemplatesView;
 import de.symeda.sormas.ui.configuration.docgeneration.emailtemplate.EmailTemplatesView;
+import de.symeda.sormas.ui.configuration.featureconfiguration.FeatureConfigurationView;
 import de.symeda.sormas.ui.configuration.infrastructure.AreasView;
 import de.symeda.sormas.ui.configuration.infrastructure.CommunitiesView;
 import de.symeda.sormas.ui.configuration.infrastructure.ContinentsView;
@@ -52,6 +54,7 @@ import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.DirtyStateComponent;
 import de.symeda.sormas.ui.utils.FieldHelper;
 
+@SuppressWarnings("java:S110") // suppress sonar too many parents warning
 public abstract class AbstractConfigurationView extends AbstractSubNavigationView<DirtyStateComponent> {
 
 	private static final long serialVersionUID = 3193505016439327054L;
@@ -123,14 +126,22 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 			firstAccessibleView = firstAccessibleView != null ? firstAccessibleView : CustomizableEnumValuesView.class;
 		}
 
+		if (UiUtil.permitted(UserRight.CUSTOMIZABLE_FIELD_MANAGEMENT)) {
+			navigator.addView(CustomizableFieldsView.VIEW_NAME, CustomizableFieldsView.class);
+			firstAccessibleView = firstAccessibleView != null ? firstAccessibleView : CustomizableFieldsView.class;
+		}
+
 		if (UiUtil.permitted(UserRight.DISEASE_MANAGEMENT)) {
 			navigator.addView(DiseaseConfigurationView.VIEW_NAME, DiseaseConfigurationView.class);
 			firstAccessibleView = firstAccessibleView != null ? firstAccessibleView : DiseaseConfigurationView.class;
 		}
 
-		if(UiUtil.permitted(UserRight.SYSTEM_CONFIGURATION)) {
+		if (UiUtil.permitted(UserRight.SYSTEM_CONFIGURATION)) {
 			navigator.addView(SystemConfigurationView.VIEW_NAME, SystemConfigurationView.class);
 			firstAccessibleView = firstAccessibleView != null ? firstAccessibleView : SystemConfigurationView.class;
+
+			navigator.addView(FeatureConfigurationView.VIEW_NAME, FeatureConfigurationView.class);
+			firstAccessibleView = firstAccessibleView != null ? firstAccessibleView : FeatureConfigurationView.class;
 		}
 
 		if (FacadeProvider.getConfigFacade().isDevMode() && UiUtil.permitted(UserRight.DEV_MODE)) {
@@ -256,6 +267,14 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 				false);
 		}
 
+		if (UiUtil.permitted(UserRight.CUSTOMIZABLE_FIELD_MANAGEMENT)) {
+			menu.addView(
+				CustomizableFieldsView.VIEW_NAME,
+				I18nProperties.getPrefixCaption("View", CustomizableFieldsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+				null,
+				false);
+		}
+
 		if (UiUtil.permitted(UserRight.DISEASE_MANAGEMENT)) {
 			menu.addView(
 				DiseaseConfigurationView.VIEW_NAME,
@@ -268,6 +287,11 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 			menu.addView(
 				SystemConfigurationView.VIEW_NAME,
 				I18nProperties.getPrefixCaption("View", SystemConfigurationView.VIEW_NAME.replace("/", ".") + ".short", ""),
+				null,
+				false);
+			menu.addView(
+				FeatureConfigurationView.VIEW_NAME,
+				I18nProperties.getPrefixCaption("View", FeatureConfigurationView.VIEW_NAME.replace("/", ".") + ".short", ""),
 				null,
 				false);
 		}
@@ -288,7 +312,7 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 				changeHandler.accept(country);
 
 				if (regionFilter != null) {
-					if (isServerCountry) {
+					if (Boolean.TRUE.equals(isServerCountry)) {
 						FieldHelper.updateItems(regionFilter, FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 					} else {
 						FieldHelper.updateItems(regionFilter, FacadeProvider.getRegionFacade().getAllActiveByCountry(country.getUuid()));

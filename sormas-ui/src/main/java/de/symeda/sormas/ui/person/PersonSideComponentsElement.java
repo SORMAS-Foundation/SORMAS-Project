@@ -8,6 +8,7 @@ import com.vaadin.server.Sizeable;
 import com.vaadin.ui.CustomLayout;
 
 import de.symeda.sormas.api.CountryHelper;
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseListEntryDto;
 import de.symeda.sormas.api.common.DeletableEntityType;
@@ -22,6 +23,7 @@ import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryListCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.vaccination.VaccinationCriteria;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.caselink.CaseListComponent;
@@ -90,6 +92,8 @@ public interface PersonSideComponentsElement {
 		DeletableEntityType entityType,
 		String entityUuid,
 		PersonReferenceDto person,
+		Disease disease,
+		String diseaseDetails,
 		Consumer<Runnable> showUnsavedChangesPopup,
 		boolean isEditAllowed) {
 
@@ -163,17 +167,18 @@ public interface PersonSideComponentsElement {
 				TRAVEL_ENTRIES_LOC);
 		}
 
-		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
-			&& UiUtil.permitted(FeatureType.IMMUNIZATION_MANAGEMENT, UserRight.IMMUNIZATION_VIEW)) {
+		if (UiUtil.permitted(FeatureType.IMMUNIZATION_MANAGEMENT, UserRight.IMMUNIZATION_VIEW)) {
 			if (!FacadeProvider.getFeatureConfigurationFacade()
 				.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
 				layout.addComponent(
 					new SideComponentLayout(
 						new ImmunizationListComponent(
-							() -> new ImmunizationListCriteria.Builder(person).build(),
+							() -> new ImmunizationListCriteria.Builder(person).withDisease(disease).withDiseaseDetails(diseaseDetails).build(),
 							entityType == DeletableEntityType.IMMUNIZATION ? entityUuid : null,
 							showUnsavedChangesPopup,
-							isEditAllowed)),
+							isEditAllowed,
+							null,
+							SormasUI::refreshView)),
 					IMMUNIZATION_LOC);
 			} else {
 				layout.addComponent(

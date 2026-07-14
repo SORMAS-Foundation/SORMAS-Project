@@ -18,6 +18,7 @@ package de.symeda.sormas.api.externalmessage.processing.doctordeclaration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletionStage;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -55,8 +56,8 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
+import de.symeda.sormas.api.symptoms.SymptomsComparisonHelper;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
-import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DtoCopyHelper;
@@ -75,7 +76,7 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	public AbstractDoctorDeclarationMessageProcessingFlow(
+	protected AbstractDoctorDeclarationMessageProcessingFlow(
 		ExternalMessageDto externalMessage,
 		UserDto user,
 		ExternalMessageMapper mapper,
@@ -131,6 +132,33 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 	}
 
 	/**
+	 * Additional logic for updating the surveillance report in case of a doctor declaration.
+	 * Updates the date of diagnosis and treatment fields.
+	 * 
+	 * @param surveillanceReport
+	 *            The surveillance report to update.
+	 * @param externalMessage
+	 *            The external message containing the additional data.
+	 * @param caze
+	 *            The case containing the additional data.
+	 */
+	@Override
+	protected void updateSurveillanceReportAdditionalData(
+		SurveillanceReportDto surveillanceReport,
+		ExternalMessageDto externalMessage,
+		CaseDataDto caze) {
+		super.updateSurveillanceReportAdditionalData(surveillanceReport, externalMessage, caze);
+
+		// Make sure we update the date of diagnosis which is relevant for doctor declarations
+		surveillanceReport.setDateOfDiagnosis(externalMessage.getDiagnosticDate());
+
+		// Make sure we update the treatment fields which is relevant for doctor declarations
+		surveillanceReport.setTreatmentStarted(externalMessage.getTreatmentStarted());
+		surveillanceReport.setTreatmentStartDate(externalMessage.getTreatmentStartedDate());
+		surveillanceReport.setTreatmentNotApplicable(Boolean.TRUE.equals(externalMessage.getTreatmentNotApplicable()));
+	}
+
+	/**
 	 * Custom logic to execute after building a case.
 	 *
 	 * @param caseDto
@@ -146,7 +174,6 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 		postBuildCaseData(caseDto, externalMessageDto);
 		postBuildHealthConditions(caseDto, externalMessageDto);
 		postBuildCaseSymptoms(caseDto, externalMessageDto);
-		postBuildCaseTherapy(caseDto, externalMessageDto);
 		postBuildActivitiesAsCase(caseDto, externalMessageDto);
 		postBuildExposure(caseDto, externalMessageDto);
 		postBuildHospitalization(caseDto, externalMessageDto);
@@ -169,6 +196,11 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 			externalMessageDto.getCaseClassification() != null ? externalMessageDto.getCaseClassification() : caseDto.getCaseClassification());
 		caseDto.setRadiographyCompatibility(externalMessageDto.getRadiographyCompatibility());
 		caseDto.setOtherDiagnosticCriteria(externalMessageDto.getOtherDiagnosticCriteria());
+
+		caseDto.setTreatmentStarted(externalMessageDto.getTreatmentStarted());
+		caseDto.setTreatmentStartDate(externalMessageDto.getTreatmentStartedDate());
+		caseDto.setTreatmentNotApplicable(Boolean.TRUE.equals(externalMessageDto.getTreatmentNotApplicable()));
+
 	}
 
 	/**
@@ -185,10 +217,30 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 
 		if (Disease.TUBERCULOSIS.equals(externalMessageDto.getDisease())) {
 			postBuildTuberculosisHealthConditions(healthConditionsDto, externalMessageDto);
+		} else if (Disease.MALARIA.equals(externalMessageDto.getDisease())) {
+			postBuildMalariaHealthConditions(healthConditionsDto, externalMessageDto);
+		} else {
+			logger.debug("[POST BUILD HEALTH CONDITIONS] Health conditions not set for case. Disease: {}", externalMessageDto.getDisease());
 		}
 
 		// we need to set it in case it is newly created
 		caseDto.setHealthConditions(healthConditionsDto);
+	}
+
+	/**
+	 * Sets malaria-specific health conditions for the case from the external message.
+	 * 
+	 * @param healthConditionsDto
+	 * 
+	 * @param externalMessageDto
+	 */
+	private void postBuildMalariaHealthConditions(HealthConditionsDto healthConditionsDto, ExternalMessageDto externalMessageDto) {
+		healthConditionsDto.setMalaria(externalMessageDto.getMalaria());
+		healthConditionsDto.setMalariaInfectedYear(externalMessageDto.getMalariaInfectedYear());
+		logger.debug(
+			"[POST BUILD HEALTH CONDITIONS] Malaria health conditions set for case. Malaria: {}, Malaria Infected Year: {}",
+			externalMessageDto.getMalaria(),
+			externalMessageDto.getMalariaInfectedYear());
 	}
 
 	/**
@@ -235,24 +287,108 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 		}
 	}
 
-	/**
-	 * Sets the therapy information for the case from the external message, if present.
-	 *
-	 * @param caseDto
-	 *            The case data transfer object to update.
-	 * @param externalMessageDto
-	 *            The external message containing therapy data.
-	 */
-	protected void postBuildCaseTherapy(CaseDataDto caseDto, ExternalMessageDto externalMessageDto) {
+	@Override
+	protected boolean hasCaseSymptomsMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+		boolean symptomsMismatch = SymptomsComparisonHelper.hasCaseSymptomsMismatch(caze.getSymptoms(), externalMessage.getCaseSymptoms());
 
-		TherapyDto therapyDto = caseDto.getTherapy();
+		if (symptomsMismatch) {
+			logger.debug("[MESSAGE PROCESSING] Symptoms mismatch detected for existing case with UUID: {}", caze.getUuid());
+		}
 
-		therapyDto.setTreatmentStarted(externalMessageDto.getTreatmentStarted());
-		therapyDto.setTreatmentStartDate(externalMessageDto.getTreatmentStartedDate());
-		therapyDto.setTreatmentNotApplicable(Boolean.TRUE.equals(externalMessageDto.getTreatmentNotApplicable()));
+		return symptomsMismatch;
+	}
 
-		logger.debug("[POST BUILD CASE] Therapy set for case with UUID: {}", caseDto.getUuid());
+	@Override
+	protected boolean hasCaseHospitalizationMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+		// Check if there is hospitalization data in the external message
+		if (externalMessage.getHospitalizationAdmissionDate() == null
+			&& externalMessage.getHospitalizationDischargeDate() == null
+			&& externalMessage.getAdmittedToHealthFacility() == null
+			&& externalMessage.getHospitalizationFacilityName() == null
+			&& externalMessage.getHospitalizationFacilityExternalId() == null) {
+			return false;
+		}
 
+		// Compare with existing hospitalization data
+		HospitalizationDto existingHospitalization = caze.getHospitalization();
+		if (existingHospitalization == null) {
+			// If there's external hospitalization data but no existing hospitalization, it's a mismatch
+			return true;
+		}
+
+		// Check for differences in key hospitalization fields
+		boolean admissionDateMismatch =
+			!Objects.equals(existingHospitalization.getAdmissionDate(), externalMessage.getHospitalizationAdmissionDate());
+		boolean dischargeDateMismatch =
+			!Objects.equals(existingHospitalization.getDischargeDate(), externalMessage.getHospitalizationDischargeDate());
+		boolean admittedMismatch =
+			!Objects.equals(existingHospitalization.getAdmittedToHealthFacility(), externalMessage.getAdmittedToHealthFacility());
+
+		boolean hospitalizationFacilityNameMismatch =
+			!Objects.equals(
+				caze.getHealthFacility() != null ? caze.getHealthFacility().getCaption() : null,
+				externalMessage.getHospitalizationFacilityName());
+		boolean hospitalizationFacilityExternalIdMismatch =
+			!Objects.equals(
+				caze.getHealthFacility() != null ? caze.getHealthFacility().getExternalId() : null,
+				externalMessage.getHospitalizationFacilityExternalId());
+
+		boolean mismatch = admissionDateMismatch || dischargeDateMismatch || admittedMismatch
+			|| hospitalizationFacilityNameMismatch || hospitalizationFacilityExternalIdMismatch;
+
+		if (mismatch) {
+			logger.debug("[MESSAGE PROCESSING] Hospitalization mismatch detected for existing case with UUID: {}", caze.getUuid());
+		}
+
+		return mismatch;
+	}
+
+	@Override
+	protected boolean hasCaseExposuresMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+		// Check if there are exposures in the external message
+		if (externalMessage.getExposures() == null || externalMessage.getExposures().isEmpty()) {
+			return false;
+		}
+
+		// Check if the case already has exposures
+		EpiDataDto epiData = caze.getEpiData();
+		if (epiData == null || epiData.getExposures() == null || epiData.getExposures().isEmpty()) {
+			// If there are external exposures but no existing exposures, it's a mismatch
+			return true;
+		}
+
+		// If both have exposures, consider it a mismatch (user should be informed to review)
+		boolean mismatch = true;
+
+		if (mismatch) {
+			logger.debug("[MESSAGE PROCESSING] Exposures mismatch detected for existing case with UUID: {}", caze.getUuid());
+		}
+
+		return mismatch;
+	}
+
+	@Override
+	protected boolean hasCaseActivitiesAsCaseMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+		// Check if there are activities as case in the external message
+		if (externalMessage.getActivitiesAsCase() == null || externalMessage.getActivitiesAsCase().isEmpty()) {
+			return false;
+		}
+
+		// Check if the case already has activities as case
+		EpiDataDto epiData = caze.getEpiData();
+		if (epiData == null || epiData.getActivitiesAsCase() == null || epiData.getActivitiesAsCase().isEmpty()) {
+			// If there are external activities but no existing activities, it's a mismatch
+			return true;
+		}
+
+		// If both have activities, consider it a mismatch (user should be informed to review)
+		boolean mismatch = true;
+
+		if (mismatch) {
+			logger.debug("[MESSAGE PROCESSING] Activities as case mismatch detected for existing case with UUID: {}", caze.getUuid());
+		}
+
+		return mismatch;
 	}
 
 	/**
@@ -354,6 +490,10 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 
 				epiData.setExposureDetailsKnown(YesNoUnknown.YES);
 				epiData.setExposures(exposures);
+				epiData.setAirportWorker(externalMessageDto.getAirportWorker());
+				epiData.setHealthcareProfessional(externalMessageDto.getHealthcareProfessional());
+				epiData.setModeOfTransmission(externalMessageDto.getModeOfTransmission());
+				epiData.setModeOfTransmissionType(externalMessageDto.getModeOfTransmissionType());
 			}
 
 		} else {
@@ -415,7 +555,7 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 					caseDto.getUuid());
 				return;
 			}
-			
+
 			// we have a facility, so we set the responsible region, district and community
 			caseDto.setResponsibleRegion(hospitalFacility.getRegion());
 			caseDto.setResponsibleDistrict(hospitalFacility.getDistrict());

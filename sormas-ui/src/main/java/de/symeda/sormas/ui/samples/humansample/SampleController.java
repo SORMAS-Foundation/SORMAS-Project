@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Sizeable.Unit;
@@ -40,9 +39,6 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Buffered.SourceException;
 import com.vaadin.v7.data.Validator.InvalidValueException;
-import com.vaadin.v7.ui.CheckBox;
-import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.Field;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -55,6 +51,7 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -89,7 +86,6 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.DeleteRestoreHandlers;
@@ -139,9 +135,11 @@ public class SampleController {
 	private void createSample(SampleDto sampleDto, Disease disease, Runnable callback) {
 		this.disease = disease;
 		final CommitDiscardWrapperComponent<SampleCreateForm> editView = getSampleCreateComponent(sampleDto, disease, callback);
-		// add option to create additional pathogen tests
+		// add option to create additional pathogen tests (admin-configurable, default on epic #13948 issue #13953)
 		SampleEditPathogenTestListHandler pathogenTestHandler = new SampleEditPathogenTestListHandler();
-		addPathogenTestButton(editView, false, null, null, pathogenTestHandler::addPathogenTest);
+		if (UiUtil.enabled(FeatureType.SAMPLE_ADD_PATHOGEN_TEST)) {
+			addPathogenTestButton(editView, false, null, null, pathogenTestHandler::addPathogenTest);
+		}
 
 		editView.setPostCommitListener(() -> {
 			pathogenTestHandler.saveAll(sampleDto.toReference());
@@ -221,39 +219,29 @@ public class SampleController {
 		if (pathogenTest != null) {
 			pathogenTestForm.setValue(pathogenTest);
 			// show typingId field when it has a preset value
-			if (StringUtils.isNotBlank(pathogenTest.getTypingId())) {
-				pathogenTestForm.getField(PathogenTestDto.TYPING_ID).setVisible(true);
-			}
+			pathogenTestForm.showTypingIdIfPreset(pathogenTest.getTypingId());
 		} else {
 			pathogenTestForm.setValue(PathogenTestDto.build(sampleComponent.getWrappedComponent().getValue(), UiUtil.getUser()));
-			// remove value invalid for newly created pathogen tests
-			ComboBox pathogenTestResultField = pathogenTestForm.getField(PathogenTestDto.TEST_RESULT);
-			pathogenTestResultField.removeItem(PathogenTestResultType.NOT_DONE);
-			pathogenTestResultField.setValue(PathogenTestResultType.PENDING);
-			ComboBox testDiseaseField = pathogenTestForm.getField(PathogenTestDto.TESTED_DISEASE);
-			// setting the disease field value is only necessary if the disease is not null
-			testDiseaseField.setValue(pathogenTestFormDisease);
+			// set initial result and disease for newly created pathogen tests
+			pathogenTestForm.initializeForNewTest(pathogenTestFormDisease);
 		}
 		// setup field updates
-		Field testLabField = pathogenTestForm.getField(PathogenTestDto.LAB);
 		NullableOptionGroup samplePurposeField = sampleComponent.getWrappedComponent().getField(SampleDto.SAMPLE_PURPOSE);
-		Runnable updateTestLabFieldRequired = () -> testLabField.setRequired(!SamplePurpose.INTERNAL.equals(samplePurposeField.getValue()));
-		updateTestLabFieldRequired.run();
-		samplePurposeField.addValueChangeListener(e -> updateTestLabFieldRequired.run());
+		Runnable updateLabRequired = () -> pathogenTestForm.setLabRequired(!SamplePurpose.INTERNAL.equals(samplePurposeField.getValue()));
+		updateLabRequired.run();
+		samplePurposeField.addValueChangeListener(e -> updateLabRequired.run());
 
 		// validate pathogen test create component before saving the sample
 		sampleComponent.addFieldGroups(pathogenTestForm.getFieldGroup());
 
-		// Sample creation specific configuration
+		// Sample creation specific configuration: test date must not be before sample date
 		final DateTimeField sampleDateField = sampleComponent.getWrappedComponent().getField(SampleDto.SAMPLE_DATE_TIME);
-		final DateTimeField testDateField = pathogenTestForm.getField(PathogenTestDto.TEST_DATE_TIME);
-		testDateField.addValidator(
-			new DateComparisonValidator(
-				testDateField,
-				sampleDateField,
-				false,
-				false,
-				I18nProperties.getValidationError(Validations.afterDate, testDateField.getCaption(), sampleDateField.getCaption())));
+		pathogenTestForm.addTestDateAfterSampleDateValidator(
+			sampleDateField::getValue,
+			I18nProperties.getValidationError(
+				Validations.afterDate,
+				I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_DATE_TIME),
+				sampleDateField.getCaption()));
 
 		if (viaLims) {
 			setViaLimsFieldChecked(pathogenTestForm);
@@ -345,8 +333,7 @@ public class SampleController {
 	}
 
 	public void setViaLimsFieldChecked(PathogenTestForm pathogenTestForm) {
-		CheckBox viaLimsCheckbox = pathogenTestForm.getField(PathogenTestDto.VIA_LIMS);
-		viaLimsCheckbox.setValue(Boolean.TRUE);
+		pathogenTestForm.setViaLims(true);
 	}
 
 	public void createReferral(SampleDto existingSample, Disease disease) {

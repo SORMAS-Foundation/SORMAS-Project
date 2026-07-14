@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BooleanSupplier;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -83,9 +84,9 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 			fluidRowLocs(HEALTH_FACILITY, HEALTH_FACILITY_DEPARTMENT) +
 			fluidRowLocs(HospitalizationDto.ADMISSION_DATE, HospitalizationDto.DISCHARGE_DATE, HospitalizationDto.LEFT_AGAINST_ADVICE, "") +
 			fluidRowLocs( HospitalizationDto.DURATION_OF_HOSPITALIZATION,  HospitalizationDto.HOSPITALIZATION_REASON,  HospitalizationDto.OTHER_HOSPITALIZATION_REASON, "") +
-			fluidRowLocs(3, HospitalizationDto.INTENSIVE_CARE_UNIT, 
-						3, HospitalizationDto.INTENSIVE_CARE_UNIT_START, 
-						3, HospitalizationDto.INTENSIVE_CARE_UNIT_END, 
+			fluidRowLocs(3, HospitalizationDto.INTENSIVE_CARE_UNIT,
+						3, HospitalizationDto.INTENSIVE_CARE_UNIT_START,
+						3, HospitalizationDto.INTENSIVE_CARE_UNIT_END,
 						3, HospitalizationDto.ICU_LENGTH_OF_STAY) +
 			fluidRowLocs(HospitalizationDto.OXYGEN_PRESCRIBED, HospitalizationDto.STILL_HOSPITALIZED) +
 			fluidRowLocs(HospitalizationDto.ISOLATED, HospitalizationDto.ISOLATION_DATE, "") +
@@ -173,10 +174,18 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		final NullableOptionGroup oxygenPrescribedField = addField(HospitalizationDto.OXYGEN_PRESCRIBED, NullableOptionGroup.class);
 		final NullableOptionGroup stillHospitalizedField = addField(HospitalizationDto.STILL_HOSPITALIZED, NullableOptionGroup.class);
 
-		if (!List.of(Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS).contains(caze.getDisease())) {
+		if (!List.of(Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS, Disease.SALMONELLOSIS)
+			.contains(caze.getDisease())) {
 			icuLengthOfStayField.setVisible(false);
 			oxygenPrescribedField.setVisible(false);
 			stillHospitalizedField.setVisible(false);
+		} else if (caze.getDisease() == Disease.SALMONELLOSIS) {
+			// SAL renders only stillHospitalized from the RSV-family block; ICU length-of-stay, oxygen, and ICU dates are not relevant.
+			icuLengthOfStayField.setVisible(false);
+			oxygenPrescribedField.setVisible(false);
+			intensiveCareUnit.setVisible(false);
+			intensiveCareUnitStart.setVisible(false);
+			intensiveCareUnitEnd.setVisible(false);
 		}
 
 		final Field isolationDateField = addField(HospitalizationDto.ISOLATION_DATE);
@@ -210,38 +219,82 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		final TextField durationOfHospitalization = addField(HospitalizationDto.DURATION_OF_HOSPITALIZATION, TextField.class);
 		durationOfHospitalization.setVisible(false);
 
-		FieldHelper.setEnabledWhen(
-			admittedToHealthFacilityField,
-			Arrays.asList(YesNoUnknown.YES, YesNoUnknown.NO, YesNoUnknown.UNKNOWN),
-			Arrays.asList(
-				facilityField,
-				admissionDateField,
-				dischargeDateField,
-				intensiveCareUnit,
-				intensiveCareUnitStart,
-				intensiveCareUnitEnd,
-				oxygenPrescribedField,
-				stillHospitalizedField,
-				isolationDateField,
-				descriptionField,
-				isolatedField,
-				leftAgainstAdviceField,
-				hospitalizationReason,
-				icuLengthOfStayField,
-				durationOfHospitalization,
-				otherHospitalizationReason),
-			false);
-		FieldHelper.setEnabledWhen(
-			currentlyHospitalizedField,
-			Arrays.asList(YesNoUnknown.YES),
-			Arrays.asList(
-				admissionDateField,
-				dischargeDateField,
-				leftAgainstAdviceField,
-				durationOfHospitalization,
-				hospitalizationReason,
-				otherHospitalizationReason),
-			true);
+		// Fields should be enabled if either "admitted to health facility" is YES or "currently hospitalized" is YES
+		final List<Field<?>> fieldsToEnableWhenAdmitted = Arrays.asList(
+			facilityField,
+			admissionDateField,
+			dischargeDateField,
+			intensiveCareUnit,
+			intensiveCareUnitStart,
+			intensiveCareUnitEnd,
+			oxygenPrescribedField,
+			stillHospitalizedField,
+			isolationDateField,
+			descriptionField,
+			isolatedField,
+			leftAgainstAdviceField,
+			hospitalizationReason,
+			icuLengthOfStayField,
+			durationOfHospitalization,
+			otherHospitalizationReason);
+
+		// User-editable fields that should be cleared when disabling (not case-derived like facilityField)
+		final List<Field<?>> userEditableFields = Arrays.asList(
+			admissionDateField,
+			dischargeDateField,
+			intensiveCareUnit,
+			intensiveCareUnitStart,
+			intensiveCareUnitEnd,
+			oxygenPrescribedField,
+			stillHospitalizedField,
+			isolationDateField,
+			descriptionField,
+			isolatedField,
+			leftAgainstAdviceField,
+			hospitalizationReason,
+			icuLengthOfStayField,
+			durationOfHospitalization,
+			otherHospitalizationReason);
+
+		// Helper method to update enabled state based on both fields
+		// clearOnUserAction: true when called from a value change listener (user triggered), false for initial setup
+		final BooleanSupplier updateEnabledState = () -> {
+			boolean shouldEnable = YesNoUnknown.YES.equals(admittedToHealthFacilityField.getNullableValue())
+				|| YesNoUnknown.YES.equals(currentlyHospitalizedField.getNullableValue());
+
+			for (Field<?> field : fieldsToEnableWhenAdmitted) {
+				field.setEnabled(shouldEnable);
+			}
+			return shouldEnable;
+		};
+
+		// Helper method to clear user-editable fields (called on user-triggered disable)
+		final Runnable clearUserEditableFields = () -> {
+			for (Field<?> field : userEditableFields) {
+				// we do not clear read only
+				if (field.isReadOnly()) {
+					continue;
+				}
+				field.clear();
+			}
+		};
+
+		// Initialize enabled state on form load (without clearing data)
+		updateEnabledState.getAsBoolean();
+
+		// Add listeners for user-triggered changes
+		admittedToHealthFacilityField.addValueChangeListener(e -> {
+			boolean shouldEnable = updateEnabledState.getAsBoolean();
+			if (!shouldEnable) {
+				clearUserEditableFields.run();
+			}
+		});
+		currentlyHospitalizedField.addValueChangeListener(e -> {
+			boolean shouldEnable = updateEnabledState.getAsBoolean();
+			if (!shouldEnable) {
+				clearUserEditableFields.run();
+			}
+		});
 
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
@@ -327,7 +380,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 				I18nProperties.getValidationError(Validations.afterDate, dischargeDateField.getCaption(), admissionDateField.getCaption())));
 		dischargeDateField.addValueChangeListener(event -> admissionDateField.markAsDirty()); // re-evaluate admission date for consistent validation of all fields
 
-		// RSV specific logic
+		// ICU validators + length-of-stay derivation: only diseases that actually render the ICU fields
 		if (List.of(Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.CRYPTOSPORIDIOSIS, Disease.GIARDIASIS).contains(caze.getDisease())) {
 			intensiveCareUnitStart.addValidator(
 				new DateComparisonValidator(
@@ -373,9 +426,14 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 					icuLengthOfStayField.setValue("" + DateHelper.getDaysBetween(intensiveCareUnitStart.getValue(), intensiveCareUnitEnd.getValue()));
 				}
 			});
-			// RSV-specific conditional visibility logic
-			// stillHospitalized should not be visible/writable if discharge date is filled
+			// Show icuLengthOfStay when ICU dates are not available but survey has length information
+			FieldHelper.setVisibleWhen(intensiveCareUnit, Collections.singletonList(icuLengthOfStayField), Arrays.asList(YesNoUnknown.YES), true);
+		}
 
+		// stillHospitalized should not be visible/writable if discharge date is filled.
+		// Applies to every disease that renders the stillHospitalized field (RSV, Giardiasis, Cryptosporidiosis, Salmonellosis).
+		if (List.of(Disease.RESPIRATORY_SYNCYTIAL_VIRUS, Disease.CRYPTOSPORIDIOSIS, Disease.GIARDIASIS, Disease.SALMONELLOSIS)
+			.contains(caze.getDisease())) {
 			dischargeDateField.addValueChangeListener(event -> {
 				boolean hasDischargeDate = dischargeDateField.getValue() != null;
 				stillHospitalizedField.setVisible(!hasDischargeDate);
@@ -388,8 +446,6 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 					durationOfHospitalization.setValue("" + DateHelper.getDaysBetween(admissionDateField.getValue(), dischargeDateField.getValue()));
 				}
 			});
-			// Show icuLengthOfStay when ICU dates are not available but survey has length information
-			FieldHelper.setVisibleWhen(intensiveCareUnit, Collections.singletonList(icuLengthOfStayField), Arrays.asList(YesNoUnknown.YES), true);
 		}
 
 		hospitalizedPreviouslyField.addValueChangeListener(e -> updatePrevHospHint(hospitalizedPreviouslyField, previousHospitalizationsField));

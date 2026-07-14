@@ -18,6 +18,7 @@
 package de.symeda.sormas.api.epidata;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -68,6 +69,11 @@ public class EpiDataDto extends PseudonymizableDto {
 	public static final String INFECTION_SOURCE_TEXT = "infectionSourceText";
 	public static final String IMPORTED_CASE = "importedCase";
 	public static final String COUNTRY = "country";
+	public static final String OTHER_DETAILS = "otherDetails";
+	public static final String AIRPORT_WORKER = "airportWorker";
+	public static final String HEALTHCARE_PROFESSIONAL = "healthcareProfessional";
+	public static final String PLACE_OF_INFECTION = "placeOfInfection";
+	public static final String RESIDENCE_AT_ONSET = "residenceAtOnset";
 
 	private YesNoUnknown exposureDetailsKnown;
 	private YesNoUnknown activityAsCaseDetailsKnown;
@@ -79,7 +85,9 @@ public class EpiDataDto extends PseudonymizableDto {
 	private CaseImportedStatus caseImportedStatus;
 
 	@Diseases({
-		Disease.GIARDIASIS })
+		Disease.GIARDIASIS,
+		Disease.SALMONELLOSIS,
+		Disease.SHIGELLOSIS })
 	private YesNoUnknown importedCase;
 
 	@HideForCountriesExcept(countries = {
@@ -112,26 +120,34 @@ public class EpiDataDto extends PseudonymizableDto {
 
 	@Diseases({
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS })
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MALARIA,
+		Disease.SHIGELLOSIS })
 	private ModeOfTransmission modeOfTransmission;
 
 	@Diseases({
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS })
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.MALARIA,
+		Disease.SHIGELLOSIS })
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String modeOfTransmissionType;
 
 	@Diseases({
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS })
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.SHIGELLOSIS })
 	private InfectionSource infectionSource;
 	@Diseases({
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS })
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.SHIGELLOSIS })
 	private String infectionSourceText;
 
 	@Diseases({
-		Disease.GIARDIASIS })
+		Disease.GIARDIASIS,
+		Disease.SALMONELLOSIS,
+		Disease.SHIGELLOSIS })
 	private CountryReferenceDto country;
 
 	@Valid
@@ -139,6 +155,31 @@ public class EpiDataDto extends PseudonymizableDto {
 
 	@Valid
 	private List<ActivityAsCaseDto> activitiesAsCase = new ArrayList<>();
+
+	private String otherDetails;
+	// airport worker should be applicable for all countries and diseases.
+	@Diseases
+	@HideForCountriesExcept
+	private YesNoUnknown airportWorker;
+	@Diseases({
+		Disease.MALARIA })
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	private YesNoUnknown healthcareProfessional;
+
+	@Diseases({
+		Disease.DENGUE })
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	@Size(max = 255, message = Validations.textTooLong)
+	private String placeOfInfection;
+
+	@Diseases({
+		Disease.DENGUE })
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	@Size(max = 255, message = Validations.textTooLong)
+	private String residenceAtOnset;
 
 	public YesNoUnknown getExposureDetailsKnown() {
 		return exposureDetailsKnown;
@@ -291,6 +332,52 @@ public class EpiDataDto extends PseudonymizableDto {
 
 	public void setCountry(CountryReferenceDto country) {
 		this.country = country;
+	}
+
+	public String getOtherDetails() {
+		return otherDetails;
+	}
+
+	public void setOtherDetails(String otherDetails) {
+		this.otherDetails = otherDetails;
+	}
+
+	public YesNoUnknown getAirportWorker() {
+		return airportWorker;
+	}
+
+	public void setAirportWorker(YesNoUnknown airportWorker) {
+		this.airportWorker = airportWorker;
+	}
+
+	public YesNoUnknown getHealthcareProfessional() {
+		return healthcareProfessional;
+	}
+
+	public void setHealthcareProfessional(YesNoUnknown healthcareProfessional) {
+		this.healthcareProfessional = healthcareProfessional;
+	}
+
+	public String getPlaceOfInfection() {
+		return placeOfInfection;
+	}
+
+	public void setPlaceOfInfection(String placeOfInfection) {
+		this.placeOfInfection = placeOfInfection;
+	}
+
+	public String getResidenceAtOnset() {
+		return residenceAtOnset;
+	}
+
+	public void setResidenceAtOnset(String residenceAtOnset) {
+		this.residenceAtOnset = residenceAtOnset;
+	}
+
+	private static void validateDateRange(Date from, Date to, String fromName, String toName) {
+		if (from != null && to != null && from.after(to)) {
+			throw new IllegalArgumentException(fromName + " must be before or equal to " + toName);
+		}
 	}
 
 	@Override

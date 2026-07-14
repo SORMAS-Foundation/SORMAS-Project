@@ -53,6 +53,7 @@ import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.immunization.InformationReliability;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
@@ -136,11 +137,16 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	public static final String EPI_DATA = "epiData";
 	public static final String THERAPY = "therapy";
 	public static final String CLINICAL_COURSE = "clinicalCourse";
+	public static final String LAB_RESULTS = "labResults";
 	public static final String MATERNAL_HISTORY = "maternalHistory";
 	public static final String PORT_HEALTH_INFO = "portHealthInfo";
 	public static final String HEALTH_CONDITIONS = "healthConditions";
 	public static final String PREGNANT = "pregnant";
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
+	public static final String VACCINATION_STATUS_DETAILS = "vaccinationStatusDetails";
+	public static final String VACCINATION_STATUS_LAST_UPDATED = "vaccinationStatusLastUpdated";
+	public static final String NUMBER_OF_DOSES = "numberOfDoses";
+	public static final String INFORMATION_RELIABILITY = "informationReliability";
 	public static final String SMALLPOX_VACCINATION_SCAR = "smallpoxVaccinationScar";
 	public static final String SMALLPOX_VACCINATION_RECEIVED = "smallpoxVaccinationReceived";
 	public static final String SMALLPOX_LAST_VACCINATION_DATE = "smallpoxLastVaccinationDate";
@@ -161,6 +167,9 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	public static final String POINT_OF_ENTRY = "pointOfEntry";
 	public static final String POINT_OF_ENTRY_DETAILS = "pointOfEntryDetails";
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
+	public static final String DATE_OTHER = "dateOther";
+	public static final String DATE_OTHER_DETAILS = "dateOtherDetails";
+	public static final String EXTERNAL_COMMENTS = "externalComments";
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String EXTERNAL_TOKEN = "externalToken";
 	public static final String INTERNAL_TOKEN = "internalToken";
@@ -235,6 +244,10 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	public static final String NOTIFIER = "notifier";
 	public static final String RADIOGRAPHY_COMPATIBILITY = "radiographyCompatibility";
 	public static final String OTHER_DIAGNOSTIC_CRITERIA = "otherDiagnosticCriteria";
+
+	public static final String TREATMENT_STARTED = "treatmentStarted";
+	public static final String TREATMENT_NOT_APPLICABLE = "treatmentNotApplicable";
+	public static final String TREATMENT_START_DATE = "treatmentStartDate";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -384,6 +397,15 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 		Disease.OTHER })
 	@Outbreaks
 	private VaccinationStatus vaccinationStatus;
+	@Diseases(value = Disease.SALMONELLOSIS, hide = true)
+	@Outbreaks
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String vaccinationStatusDetails;
+	private Date vaccinationStatusLastUpdated;
+	@Outbreaks
+	private Integer numberOfDoses;
+	@Outbreaks
+	private InformationReliability informationReliability;
 	@Diseases({
 		Disease.MONKEYPOX })
 	private YesNoUnknown smallpoxVaccinationScar;
@@ -440,6 +462,9 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	private EpiDataDto epiData;
 	@Valid
 	private TherapyDto therapy;
+	private YesNoUnknown treatmentStarted;
+	private boolean treatmentNotApplicable;
+	private Date treatmentStartDate;
 	@Valid
 	private ClinicalCourseDto clinicalCourse;
 	@Valid
@@ -463,6 +488,15 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String additionalDetails;
+	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS)
+	private Date dateOther;
+	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String dateOtherDetails;
+	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS)
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String externalComments;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
@@ -483,52 +517,86 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	private boolean nosocomialOutbreak;
 	@HideForCountriesExcept
 	private InfectionSetting infectionSetting;
+	@Diseases(value = {
+		Disease.MALARIA }, hide = true)
 	private QuarantineType quarantine;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Diseases(value = {
+		Disease.MALARIA }, hide = true)
 	private String quarantineTypeDetails;
+	@Diseases(value = {
+		Disease.MALARIA }, hide = true)
 	private Date quarantineFrom;
+	@Diseases(value = {
+		Disease.MALARIA }, hide = true)
 	private Date quarantineTo;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Diseases(value = {
+		Disease.MALARIA }, hide = true)
 	private String quarantineHelpNeeded;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
+	@Diseases(value = {
+		Disease.MALARIA }, hide = true)
 	private boolean quarantineOrderedVerbally;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
+	@Diseases(value = {
+		Disease.MALARIA }, hide = true)
 	private boolean quarantineOrderedOfficialDocument;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
+	@Diseases(value = {
+		Disease.MALARIA }, hide = true)
 	private Date quarantineOrderedVerballyDate;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
+	@Diseases(value = {
+		Disease.MALARIA }, hide = true)
 	private Date quarantineOrderedOfficialDocumentDate;
 	@HideForCountriesExcept
+	@Diseases(value = {
+		Disease.MALARIA }, hide = true)
 	private YesNoUnknown quarantineHomePossible;
 	@HideForCountriesExcept
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Diseases(value = {
+		Disease.MALARIA }, hide = true)
 	private String quarantineHomePossibleComment;
 	@HideForCountriesExcept
+	@Diseases(value = {
+		Disease.MALARIA }, hide = true)
 	private YesNoUnknown quarantineHomeSupplyEnsured;
 	@HideForCountriesExcept
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Diseases(value = {
+		Disease.MALARIA }, hide = true)
 	private String quarantineHomeSupplyEnsuredComment;
+	@Diseases(value = {
+		Disease.MALARIA }, hide = true)
 	private boolean quarantineExtended;
+	@Diseases(value = {
+		Disease.MALARIA }, hide = true)
 	private boolean quarantineReduced;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
+	@Diseases(value = {
+		Disease.MALARIA }, hide = true)
 	private boolean quarantineOfficialOrderSent;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
+	@Diseases(value = {
+		Disease.MALARIA }, hide = true)
 	private Date quarantineOfficialOrderSentDate;
 	@SensitiveData
 	private YesNoUnknown postpartum;
@@ -627,6 +695,8 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	private Date previousQuarantineTo;
 	@SensitiveData
 	@Size(max = CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	@Diseases(value = {
+		Disease.MALARIA }, hide = true)
 	private String quarantineChangeComment;
 
 	private Map<String, String> externalData;
@@ -1149,6 +1219,38 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 		this.vaccinationStatus = vaccinationStatus;
 	}
 
+	public String getVaccinationStatusDetails() {
+		return vaccinationStatusDetails;
+	}
+
+	public void setVaccinationStatusDetails(String vaccinationStatusDetails) {
+		this.vaccinationStatusDetails = vaccinationStatusDetails;
+	}
+
+	public Date getVaccinationStatusLastUpdated() {
+		return vaccinationStatusLastUpdated;
+	}
+
+	public void setVaccinationStatusLastUpdated(Date vaccinationStatusLastUpdated) {
+		this.vaccinationStatusLastUpdated = vaccinationStatusLastUpdated;
+	}
+
+	public Integer getNumberOfDoses() {
+		return numberOfDoses;
+	}
+
+	public void setNumberOfDoses(Integer numberOfDoses) {
+		this.numberOfDoses = numberOfDoses;
+	}
+
+	public InformationReliability getInformationReliability() {
+		return informationReliability;
+	}
+
+	public void setInformationReliability(InformationReliability informationReliability) {
+		this.informationReliability = informationReliability;
+	}
+
 	public YesNoUnknown getSmallpoxVaccinationScar() {
 		return smallpoxVaccinationScar;
 	}
@@ -1292,6 +1394,30 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 
 	public void setAdditionalDetails(String additionalDetails) {
 		this.additionalDetails = additionalDetails;
+	}
+
+	public Date getDateOther() {
+		return dateOther;
+	}
+
+	public void setDateOther(Date dateOther) {
+		this.dateOther = dateOther;
+	}
+
+	public String getDateOtherDetails() {
+		return dateOtherDetails;
+	}
+
+	public void setDateOtherDetails(String dateOtherDetails) {
+		this.dateOtherDetails = dateOtherDetails;
+	}
+
+	public String getExternalComments() {
+		return externalComments;
+	}
+
+	public void setExternalComments(String externalComments) {
+		this.externalComments = externalComments;
 	}
 
 	public String getExternalID() {
@@ -1842,6 +1968,30 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 
 	public void setOtherDiagnosticCriteria(String otherDiagnosticCriteria) {
 		this.otherDiagnosticCriteria = otherDiagnosticCriteria;
+	}
+
+	public YesNoUnknown getTreatmentStarted() {
+		return treatmentStarted;
+	}
+
+	public void setTreatmentStarted(YesNoUnknown treatmentStarted) {
+		this.treatmentStarted = treatmentStarted;
+	}
+
+	public boolean isTreatmentNotApplicable() {
+		return treatmentNotApplicable;
+	}
+
+	public void setTreatmentNotApplicable(boolean treatmentNotApplicable) {
+		this.treatmentNotApplicable = treatmentNotApplicable;
+	}
+
+	public Date getTreatmentStartDate() {
+		return treatmentStartDate;
+	}
+
+	public void setTreatmentStartDate(Date treatmentStartDate) {
+		this.treatmentStartDate = treatmentStartDate;
 	}
 
 	@JsonIgnore

@@ -16,8 +16,14 @@ package de.symeda.sormas.ui.events;
 
 import static de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent.QUARANTINE_LOC;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
@@ -27,6 +33,9 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
@@ -36,10 +45,12 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.vaccination.VaccinationAssociationType;
 import de.symeda.sormas.api.vaccination.VaccinationCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.contact.ContactListComponent;
 import de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent;
 import de.symeda.sormas.ui.email.ExternalEmailSideComponent;
+import de.symeda.sormas.ui.immunization.components.panel.VaccinationStatusPanel;
 import de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListComponent;
 import de.symeda.sormas.ui.samples.HasName;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
@@ -49,6 +60,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.LayoutWithSidePanel;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
 import de.symeda.sormas.ui.vaccination.list.VaccinationListComponent;
 
@@ -67,6 +79,14 @@ public class EventParticipantDataView extends AbstractEventParticipantView imple
 	public static final String EXTERNAL_EMAILS_LOC = "externalEmails";
 
 	private CommitDiscardWrapperComponent<EventParticipantEditForm> editComponent;
+
+	//@formatter:off
+	private static final Set<Disease> IMMUNIZATION_EXCLUDED_DISEASES = new HashSet<>(Arrays.asList(
+		Disease.GIARDIASIS, 
+		Disease.CRYPTOSPORIDIOSIS, 
+		Disease.SALMONELLOSIS, 
+		Disease.SHIGELLOSIS));
+	//@formatter:on
 
 	public EventParticipantDataView() {
 		super(VIEW_NAME);
@@ -155,17 +175,26 @@ public class EventParticipantDataView extends AbstractEventParticipantView imple
 			sampleCriteria,
 			vaccinationCriteria);
 
-		if (UiUtil.permitted(FeatureType.IMMUNIZATION_MANAGEMENT, UserRight.IMMUNIZATION_VIEW) && event.getDisease() != null) {
+		if (UiUtil.permitted(FeatureType.IMMUNIZATION_MANAGEMENT, UserRight.IMMUNIZATION_VIEW)
+			&& event.getDisease() != null
+			&& !IMMUNIZATION_EXCLUDED_DISEASES.contains(event.getDisease())) {
+			final VaccinationStatusPanel vaccinationStatusPanel = VaccinationStatusPanel.forEventParticipant(eventParticipant, event);
+			if (eventParticipant.getVaccinationStatusLastUpdated() == null && UiUtil.permitted(UserRight.IMMUNIZATION_EDIT)) {
+				showVaccinationStatusUpdateDialog(eventParticipant);
+			}
 			if (!FacadeProvider.getFeatureConfigurationFacade()
 				.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
 				layout.addSidePanelComponent(
 					new SideComponentLayout(
 						new ImmunizationListComponent(
 							() -> new ImmunizationListCriteria.Builder(eventParticipant.getPerson().toReference()).withDisease(event.getDisease())
+								.withDiseaseDetails(event.getDiseaseDetails())
 								.build(),
 							null,
 							this::showUnsavedChangesPopup,
-							editAllowed)),
+							editAllowed,
+							vaccinationStatusPanel,
+							SormasUI::refreshView)),
 					IMMUNIZATION_LOC);
 			} else {
 				layout.addSidePanelComponent(new SideComponentLayout(new VaccinationListComponent(() -> {
@@ -192,6 +221,21 @@ public class EventParticipantDataView extends AbstractEventParticipantView imple
 
 		final boolean deleted = FacadeProvider.getEventParticipantFacade().isDeleted(uuid);
 		layout.disableIfNecessary(deleted, eventParticipantEditAllowed);
+	}
+
+	private void showVaccinationStatusUpdateDialog(EventParticipantDto eventParticipant) {
+		VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getCaption(Captions.CaseData_vaccinationStatusUpdate),
+			new Label(I18nProperties.getString(Strings.confirmationVaccinationStatusSync)),
+			I18nProperties.getString(Strings.yes),
+			I18nProperties.getString(Strings.no),
+			600,
+			confirmed -> {
+				if (Boolean.TRUE == confirmed) {
+					FacadeProvider.getEventParticipantFacade().updateVaccinationStatuses(eventParticipant.toReference());
+					ControllerProvider.getEventParticipantController().navigateToData(eventParticipant.getUuid());
+				}
+			});
 	}
 
 	@Override

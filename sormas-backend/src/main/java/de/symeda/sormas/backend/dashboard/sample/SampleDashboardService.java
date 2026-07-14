@@ -45,7 +45,6 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 
-import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleMaterial;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
@@ -53,6 +52,7 @@ import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
 import de.symeda.sormas.api.dashboard.sample.MapSampleDto;
 import de.symeda.sormas.api.dashboard.sample.SampleShipmentStatus;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleCriteria;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleMaterial;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
@@ -150,15 +150,17 @@ public class SampleDashboardService {
 
 	public Map<SpecimenCondition, Long> getEnvironmentalSampleCountsBySpecimenCondition(SampleDashboardCriteria dashboardCriteria) {
 		return getEnvironmentalSampleCountsBySpecimenCondition(
-				EnvironmentSample.SPECIMEN_CONDITION,
-				SpecimenCondition.class,
-				dashboardCriteria,
-				null);
+			EnvironmentSample.SPECIMEN_CONDITION,
+			SpecimenCondition.class,
+			dashboardCriteria,
+			null);
 	}
 
-	private Map<SpecimenCondition, Long> getEnvironmentalSampleCountsBySpecimenCondition(String property, Class<SpecimenCondition> propertyType,
-																					   SampleDashboardCriteria dashboardCriteria,
-																					   BiFunction<CriteriaBuilder, Root<EnvironmentSample>, Predicate> additionalFilters) {
+	private Map<SpecimenCondition, Long> getEnvironmentalSampleCountsBySpecimenCondition(
+		String property,
+		Class<SpecimenCondition> propertyType,
+		SampleDashboardCriteria dashboardCriteria,
+		BiFunction<CriteriaBuilder, Root<EnvironmentSample>, Predicate> additionalFilters) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Tuple> cq = cb.createTupleQuery();
 		final Root<EnvironmentSample> sample = cq.from(EnvironmentSample.class);
@@ -173,9 +175,9 @@ public class SampleDashboardService {
 		cq.groupBy(groupingProperty);
 
 		return QueryHelper.getResultList(em, cq, null, null, Function.identity())
-				.stream()
-				.filter(t -> t.get(0) != null)
-				.collect(Collectors.toMap(t -> propertyType.cast(t.get(0)), t -> (Long) t.get(1)));
+			.stream()
+			.filter(t -> t.get(0) != null)
+			.collect(Collectors.toMap(t -> propertyType.cast(t.get(0)), t -> (Long) t.get(1)));
 	}
 
 	private <T extends Enum<?>> Map<T, Long> getSampleCountsByEnumProperty(
@@ -219,8 +221,8 @@ public class SampleDashboardService {
 		cq.groupBy(shipped, received);
 
 		return QueryHelper.getResultList(em, cq, null, null, Function.identity())
-				.stream()
-				.collect(Collectors.toMap(t -> getSampleShipmentStatusByFlags((Boolean) t.get(0), (Boolean) t.get(1)), t -> (Long) t.get(2), Long::sum));
+			.stream()
+			.collect(Collectors.toMap(t -> getSampleShipmentStatusByFlags((Boolean) t.get(0), (Boolean) t.get(1)), t -> (Long) t.get(2), Long::sum));
 	}
 
 	public Map<SampleShipmentStatus, Long> getEnvironmentalSampleCountsByShipmentStatus(SampleDashboardCriteria dashboardCriteria) {
@@ -238,8 +240,8 @@ public class SampleDashboardService {
 		cq.groupBy(shipped, received);
 
 		return QueryHelper.getResultList(em, cq, null, null, Function.identity())
-				.stream()
-				.collect(Collectors.toMap(t -> getSampleShipmentStatusByFlags((Boolean) t.get(0), (Boolean) t.get(1)), t -> (Long) t.get(2), Long::sum));
+			.stream()
+			.collect(Collectors.toMap(t -> getSampleShipmentStatusByFlags((Boolean) t.get(0), (Boolean) t.get(1)), t -> (Long) t.get(2), Long::sum));
 	}
 
 	private SampleShipmentStatus getSampleShipmentStatusByFlags(Boolean shipped, Boolean received) {
@@ -255,7 +257,10 @@ public class SampleDashboardService {
 
 		cq.multiselect(pathogenTestResult, cb.count(pathogenTestJoin));
 
-		final Predicate criteriaFilter = createSampleFilter(new SampleQueryContext(cb, cq, sample), dashboardCriteria);
+		Predicate criteriaFilter = createSampleFilter(new SampleQueryContext(cb, cq, sample), dashboardCriteria);
+		if (dashboardCriteria.getPathogenTestResult() != null) {
+			criteriaFilter = CriteriaBuilderHelper.and(cb, criteriaFilter, cb.equal(pathogenTestResult, dashboardCriteria.getPathogenTestResult()));
+		}
 		cq.where(criteriaFilter);
 
 		cq.groupBy(pathogenTestResult);
@@ -286,9 +291,9 @@ public class SampleDashboardService {
 		cq.groupBy(pathogenTestResult);
 
 		return QueryHelper.getResultList(em, cq, null, null, Function.identity())
-				.stream()
-				.filter(t -> t.get(0) != null)
-				.collect(Collectors.toMap(t -> (PathogenTestResultType) t.get(0), t -> (Long) t.get(1)));
+			.stream()
+			.filter(t -> t.get(0) != null)
+			.collect(Collectors.toMap(t -> (PathogenTestResultType) t.get(0), t -> (Long) t.get(1)));
 	}
 
 	/**
@@ -304,13 +309,14 @@ public class SampleDashboardService {
 		final Root<EnvironmentSample> sample = cq.from(EnvironmentSample.class);
 		final Path<Object> groupingProperty = sample.get(EnvironmentSample.SAMPLE_MATERIAL);
 		cq.multiselect(groupingProperty, cb.count(sample));
-		final Predicate criteriaFilter = createEnvironmentSampleFilter(new EnvironmentSampleQueryContext(cb, cq, sample, new EnvironmentSampleJoins(sample)), dashboardCriteria);
+		final Predicate criteriaFilter =
+			createEnvironmentSampleFilter(new EnvironmentSampleQueryContext(cb, cq, sample, new EnvironmentSampleJoins(sample)), dashboardCriteria);
 		cq.where(criteriaFilter);
 		cq.groupBy(groupingProperty);
 		return QueryHelper.getResultList(em, cq, null, null, Function.identity())
-				.stream()
-				.filter(t -> t.get(0) != null)
-				.collect(Collectors.toMap(t -> (EnvironmentSampleMaterial) t.get(0), t -> (Long) t.get(1)));
+			.stream()
+			.filter(t -> t.get(0) != null)
+			.collect(Collectors.toMap(t -> (EnvironmentSampleMaterial) t.get(0), t -> (Long) t.get(1)));
 	}
 
 	private static <J extends ISampleJoins> List<Selection<?>> getCoordinatesSelection(
@@ -510,6 +516,22 @@ public class SampleDashboardService {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(sampleRoot.get(Sample.SAMPLE_MATERIAL), criteria.getSampleMaterial()));
 		}
 
+		// Test result is denormalized on the sample (final lab result) → direct equality, no join.
+		if (criteria.getPathogenTestResult() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(sampleRoot.get(Sample.PATHOGEN_TEST_RESULT), criteria.getPathogenTestResult()));
+		}
+
+		if (criteria.getDiseaseVariant() != null) {
+			Subquery<Long> variantSubquery = cq.subquery(Long.class);
+			Root<PathogenTest> pathogenTestRoot = variantSubquery.from(PathogenTest.class);
+			variantSubquery.select(pathogenTestRoot.get(PathogenTest.ID));
+			variantSubquery.where(
+				cb.equal(pathogenTestRoot.get(PathogenTest.SAMPLE), sampleRoot),
+				cb.equal(pathogenTestRoot.get(PathogenTest.TESTED_DISEASE_VARIANT_VALUE), criteria.getDiseaseVariant().getValue()),
+				cb.isFalse(pathogenTestRoot.get(PathogenTest.DELETED)));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.exists(variantSubquery));
+		}
+
 		if (Boolean.TRUE.equals(criteria.getWithNoDisease())) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNotNull(joins.getEventParticipant()), cb.isNull(joins.getEvent().get(Event.DISEASE)));
 		} else if (Boolean.FALSE.equals(criteria.getWithNoDisease())) {
@@ -573,7 +595,8 @@ public class SampleDashboardService {
 		}
 
 		if (criteria.getEnvironmentSampleMaterial() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(sampleRoot.get(EnvironmentSample.SAMPLE_MATERIAL), criteria.getEnvironmentSampleMaterial()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(sampleRoot.get(EnvironmentSample.SAMPLE_MATERIAL), criteria.getEnvironmentSampleMaterial()));
 		}
 
 		return CriteriaBuilderHelper.and(

@@ -20,7 +20,9 @@ import java.util.List;
 import javax.ejb.Remote;
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.survey.external.views.ExternalSurveyView;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.Tuple;
 
 @Remote
 public interface SurveyTokenFacade {
@@ -45,7 +47,17 @@ public interface SurveyTokenFacade {
 
 	SurveyTokenDto getBySurveyAndToken(SurveyReferenceDto survey, String token);
 
+	SurveyTokenDto getBySurveyExternalIdAndToken(String externalSurveyId, String token);
+
+	List<SurveyTokenDto> getBySurveyReferenceTokenTuples(List<Tuple<SurveyReferenceDto, String>> surveyReferenceTokenTuples);
+
 	boolean exists(String uuid);
 
 	SurveyTokenReferenceDto getReferenceByUuid(String uuid);
+
+	/**
+	 * Fetches the questionnaire view for a survey token from the external survey provider.
+	 * Returns null if the provider is unavailable or the token has no external respondent ID.
+	 */
+	ExternalSurveyView getExternalSurveyView(String surveyTokenUuid);
 }

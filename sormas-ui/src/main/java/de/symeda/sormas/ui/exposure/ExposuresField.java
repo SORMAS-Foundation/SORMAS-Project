@@ -15,45 +15,41 @@
 
 package de.symeda.sormas.ui.exposure;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import de.symeda.sormas.api.Disease;
 import org.apache.commons.lang3.StringUtils;
 
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.v7.data.Property;
-import com.vaadin.v7.shared.ui.label.ContentMode;
 import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.Table;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.event.MeansOfTransport;
-import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldContext;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataDto;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
 import de.symeda.sormas.api.exposure.ExposureDto;
-import de.symeda.sormas.api.exposure.ExposureType;
-import de.symeda.sormas.api.exposure.GatheringType;
-import de.symeda.sormas.api.exposure.HabitationType;
-import de.symeda.sormas.api.exposure.TypeOfAnimal;
-import de.symeda.sormas.api.exposure.TypeOfChildcareFacility;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.LocationHelper;
-import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UiUtil;
@@ -65,15 +61,18 @@ import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FieldAccessCellStyleGenerator;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
-@SuppressWarnings("serial")
+@SuppressWarnings({
+	"java:S110", // suppress sonar too many parents warning
+	"java:S2160" // suppress missing equals not relevant for Vaadin components
+})
 public class ExposuresField extends AbstractTableField<ExposureDto> {
 
 	private static final String COLUMN_EXPOSURE_TYPE = ExposureDto.EXPOSURE_TYPE;
-	private static final String COLUMN_TYPE_OF_PLACE = ExposureDto.TYPE_OF_PLACE;
+	private static final String COLUMN_EXPOSURE_CATEGORY = ExposureDto.EXPOSURE_CATEGORY;
+	private static final String COLUMN_LOCATION_COUNTRY = "locationCountry";
 	private static final String COLUMN_DATE = Captions.date;
-	private static final String COLUMN_ADDRESS = Captions.address;
 	private static final String COLUMN_DESCRIPTION = ExposureDto.DESCRIPTION;
-	private static final String COLUMN_SOURCE_CASE_NAME = Captions.exposureSourceCaseName;
+	private static final String COLUMN_PROPHYLAXIS_ADHERENCE = ExposureDto.PROPHYLAXIS_ADHERENCE;
 
 	private final FieldVisibilityCheckers fieldVisibilityCheckers;
 	private Supplier<List<ContactReferenceDto>> getSourceContactsCallback;
@@ -81,8 +80,13 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 	private boolean isPseudonymized;
 	private boolean isEditAllowed;
 	private Disease disease;
+	private final Map<String, Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto>> pendingCustomizableFieldValues = new HashMap<>();
 
-	public ExposuresField(Disease disease, FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers, boolean isEditAllowed) {
+	public ExposuresField(
+		Disease disease,
+		FieldVisibilityCheckers fieldVisibilityCheckers,
+		UiFieldAccessCheckers<?> fieldAccessCheckers,
+		boolean isEditAllowed) {
 
 		super(fieldAccessCheckers, isEditAllowed);
 		this.fieldVisibilityCheckers = fieldVisibilityCheckers;
@@ -100,20 +104,17 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 			table.setVisibleColumns(
 				ACTION_COLUMN_ID,
 				COLUMN_EXPOSURE_TYPE,
-				ExposureDto.EXPOSURE_ROLE,
-				COLUMN_TYPE_OF_PLACE,
+				COLUMN_LOCATION_COUNTRY,
 				COLUMN_DATE,
-				COLUMN_ADDRESS,
-				COLUMN_DESCRIPTION,
-				COLUMN_SOURCE_CASE_NAME);
+				COLUMN_EXPOSURE_CATEGORY,
+				COLUMN_DESCRIPTION);
 		} else {
 			table.setVisibleColumns(
 				ACTION_COLUMN_ID,
 				COLUMN_EXPOSURE_TYPE,
-				ExposureDto.EXPOSURE_ROLE,
-				COLUMN_TYPE_OF_PLACE,
+				COLUMN_LOCATION_COUNTRY,
 				COLUMN_DATE,
-				COLUMN_ADDRESS,
+				COLUMN_EXPOSURE_CATEGORY,
 				COLUMN_DESCRIPTION);
 		}
 		table.setCellStyleGenerator(
@@ -124,107 +125,31 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 		for (Object columnId : table.getVisibleColumns()) {
 			if (columnId.equals(ACTION_COLUMN_ID)) {
 				table.setColumnHeader(columnId, "&nbsp");
+			} else if (COLUMN_LOCATION_COUNTRY.equals(columnId)) {
+				table.setColumnHeader(columnId, I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.COUNTRY));
 			} else {
 				table.setColumnHeader(columnId, I18nProperties.getPrefixCaption(ExposureDto.I18N_PREFIX, (String) columnId));
 			}
 		}
+
+		table.setColumnWidth(COLUMN_DATE, 150);
 	}
 
 	private void addGeneratedColumns(Table table) {
-		table.addGeneratedColumn(COLUMN_EXPOSURE_TYPE, (Table.ColumnGenerator) (source, itemId, columnId) -> {
+
+		table.addGeneratedColumn(COLUMN_LOCATION_COUNTRY, (Table.ColumnGenerator) (source, itemId, columnId) -> {
 			ExposureDto exposure = (ExposureDto) itemId;
-			String exposureString =
-				ExposureType.OTHER != exposure.getExposureType() ? exposure.getExposureType().toString() : exposure.getExposureTypeDetails();
-
-			// if possible, always display "lowest-level" activity type (e.g. show type of gathering instead of just "gathering")
-			if (exposure.getExposureType() == ExposureType.GATHERING && exposure.getGatheringType() != null) {
-				exposureString += " - " + (exposure.getGatheringType() != GatheringType.OTHER
-					? exposure.getGatheringType().toString()
-					: (StringUtils.isNotEmpty(exposure.getGatheringDetails()) ? exposure.getGatheringDetails() : GatheringType.OTHER.toString()));
-			}
-
-			if (exposure.getExposureType() == ExposureType.HABITATION && exposure.getHabitationType() != null) {
-				exposureString += " - " + (exposure.getHabitationType() != HabitationType.OTHER
-					? exposure.getHabitationType().toString()
-					: (StringUtils.isNotEmpty(exposure.getHabitationDetails()) ? exposure.getHabitationDetails() : HabitationType.OTHER.toString()));
-			}
-
-			if (exposure.getExposureType() == ExposureType.ANIMAL_CONTACT && exposure.getTypeOfAnimal() != null) {
-				exposureString += " (" + (exposure.getTypeOfAnimal() != TypeOfAnimal.OTHER
-					? exposure.getTypeOfAnimal().toString()
-					: (exposure.getTypeOfAnimalDetails() != null ? exposure.getTypeOfAnimalDetails() : TypeOfAnimal.OTHER.toString())) + ")";
-			}
-
-			if (exposure.getExposureType() == ExposureType.CHILDCARE_FACILITY && exposure.getTypeOfChildcareFacility() != null) {
-				exposureString += " (" + (exposure.getTypeOfChildcareFacility() != TypeOfChildcareFacility.OTHER
-					? exposure.getTypeOfChildcareFacility().toString()
-					: (exposure.getChildcareFacilityDetails() != null ? exposure.getChildcareFacilityDetails() : TypeOfChildcareFacility.OTHER.toString())) + ")";
-			}
-
-			if (exposure.getRiskArea() == YesNoUnknown.YES || exposure.isProbableInfectionEnvironment())
-				exposureString = "<b>" + exposureString + "</b>";
-
-			if (exposure.getRiskArea() == YesNoUnknown.YES) {
-				exposureString = VaadinIcons.INFO_CIRCLE.getHtml() + " " + exposureString;
-			}
-
-			if (exposure.isProbableInfectionEnvironment()) {
-				exposureString = VaadinIcons.CHECK_CIRCLE.getHtml() + " " + exposureString;
-			}
-
-			Label exposureTypeLabel = new Label(exposureString, ContentMode.HTML);
-
-			if (exposure.getRiskArea() == YesNoUnknown.YES) {
-				exposureTypeLabel.setDescription(I18nProperties.getString(Strings.infoExposuresRiskAreaHint) + " ");
-			}
-
-			if (exposure.isProbableInfectionEnvironment()) {
-				exposureTypeLabel
-					.setDescription(exposureTypeLabel.getDescription() + I18nProperties.getString(Strings.infoExposuresInfectionEnvironmentHint));
-			}
-
-			return exposureTypeLabel;
-		});
-
-		table.addGeneratedColumn(COLUMN_TYPE_OF_PLACE, (Table.ColumnGenerator) (source, itemId, columnId) -> {
-			ExposureDto exposure = (ExposureDto) itemId;
-			String typeOfPlaceString;
-
-			if (exposure.getTypeOfPlace() == null) {
+			LocationDto location = exposure.getLocation();
+			if (location == null || location.getCountry() == null) {
 				return "";
-			} else if (exposure.getTypeOfPlace() == TypeOfPlace.FACILITY && exposure.getLocation().getFacilityType() != null) {
-				typeOfPlaceString = exposure.getLocation().getFacilityType().toString();
-
-				if (StringUtils.isNotEmpty(exposure.getLocation().getFacilityDetails())) {
-					typeOfPlaceString += " - " + exposure.getLocation().getFacilityDetails();
-				} else if (exposure.getLocation().getFacility() != null) {
-					typeOfPlaceString += " - " + exposure.getLocation().getFacility().buildCaption();
-				}
-			} else if (exposure.getTypeOfPlace() == TypeOfPlace.MEANS_OF_TRANSPORT) {
-				typeOfPlaceString = exposure.getMeansOfTransport() == null
-					? TypeOfPlace.MEANS_OF_TRANSPORT.toString()
-					: (exposure.getMeansOfTransport() != MeansOfTransport.OTHER
-						? exposure.getMeansOfTransport().toString()
-						: ((StringUtils.isNotEmpty(exposure.getMeansOfTransportDetails()))
-							? exposure.getMeansOfTransportDetails()
-							: TypeOfPlace.MEANS_OF_TRANSPORT.toString()));
-			} else {
-				typeOfPlaceString = exposure.getTypeOfPlace() != TypeOfPlace.OTHER
-					? exposure.getTypeOfPlace().toString()
-					: (StringUtils.isNotEmpty(exposure.getTypeOfPlaceDetails()) ? exposure.getTypeOfPlaceDetails() : TypeOfPlace.OTHER.toString());
 			}
-
-			return typeOfPlaceString;
+			return location.getCountry().getCaption();
 		});
 
 		table.addGeneratedColumn(COLUMN_DATE, (Table.ColumnGenerator) (source, itemId, columnId) -> {
 			ExposureDto exposure = (ExposureDto) itemId;
-			return DateFormatHelper.buildPeriodDateTimeString(exposure.getStartDate(), exposure.getEndDate());
+			return DateFormatHelper.buildPeriodString(exposure.getStartDate(), exposure.getEndDate());
 		});
-
-		table.addGeneratedColumn(
-			COLUMN_ADDRESS,
-			(Table.ColumnGenerator) (source, itemId, columnId) -> LocationHelper.buildLocationString(((ExposureDto) itemId).getLocation()));
 
 		table.addGeneratedColumn(COLUMN_DESCRIPTION, (Table.ColumnGenerator) (source, itemId, columnId) -> {
 			ExposureDto exposure = (ExposureDto) itemId;
@@ -236,18 +161,10 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 
 			return descriptionLabel;
 		});
-
-		table.addGeneratedColumn(COLUMN_SOURCE_CASE_NAME, (Table.ColumnGenerator) (source, itemId, columnId) -> {
+		table.addGeneratedColumn(COLUMN_PROPHYLAXIS_ADHERENCE, (Table.ColumnGenerator) (source, itemId, columnId) -> {
 			ExposureDto exposure = (ExposureDto) itemId;
-			ContactReferenceDto contactToCase = exposure.getContactToCase();
-			return !isPseudonymized
-				? DataHelper.toStringNullable(contactToCase != null ? getContactCaseName(contactToCase) : null)
-				: I18nProperties.getCaption(Captions.inaccessibleValue);
+			return exposure.getProphylaxisAdherence() != null ? exposure.getProphylaxisAdherence().toString() : "";
 		});
-	}
-
-	private static String getContactCaseName(ContactReferenceDto contactToCase) {
-		return contactToCase.getCaze() != null ? contactToCase.getCaze().buildNameCaption() : null;
 	}
 
 	@Override
@@ -282,12 +199,21 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 			entry.setUuid(DataHelper.createUuid());
 		}
 
+		List<CustomizableFieldMetadataDto> exposureMetadata =
+			FacadeProvider.getCustomizableFieldMetadataFacade().getActiveFieldsForContext(CustomizableFieldContext.EXPOSURE);
+		Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> exposureFieldValues = pendingCustomizableFieldValues.containsKey(entry.getUuid())
+			? pendingCustomizableFieldValues.get(entry.getUuid())
+			: FacadeProvider.getCustomizableFieldValueFacade().getValuesForEntity(entry.getUuid(), CustomizableFieldContext.EXPOSURE);
+
 		ExposureForm exposureForm = new ExposureForm(
 			create,
 			epiDataParentClass,
 			getSourceContactsCallback != null ? getSourceContactsCallback.get() : null,
 			fieldVisibilityCheckers,
-			fieldAccessCheckers, disease);
+			fieldAccessCheckers,
+			disease,
+			exposureMetadata,
+			exposureFieldValues);
 		exposureForm.setValue(entry);
 
 		final CommitDiscardWrapperComponent<ExposureForm> component =
@@ -311,6 +237,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 
 			component.addCommitListener(() -> {
 				if (!exposureForm.getFieldGroup().isModified()) {
+					pendingCustomizableFieldValues.put(entry.getUuid(), exposureForm.collectCurrentFieldValues());
 					commitCallback.accept(exposureForm.getValue());
 
 					updateAddButtonVisibility(getValue().size());
@@ -321,6 +248,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 				component.addDeleteListener(() -> {
 					popupWindow.close();
 					ExposuresField.this.removeEntry(entry);
+					pendingCustomizableFieldValues.remove(entry.getUuid());
 
 					updateAddButtonVisibility(getValue().size());
 				}, I18nProperties.getCaption(ExposureDto.I18N_PREFIX));
@@ -349,6 +277,10 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 		if (getValue() != null) {
 			updateAddButtonVisibility(getValue().size());
 		}
+	}
+
+	public Map<String, Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto>> collectCustomizableFieldValues() {
+		return Collections.unmodifiableMap(pendingCustomizableFieldValues);
 	}
 
 	public void setGetSourceContactsCallback(Supplier<List<ContactReferenceDto>> callback) {

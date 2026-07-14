@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -58,6 +59,9 @@ import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.SimilarContactDto;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldContext;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataDto;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
 import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.RootEntityType;
@@ -159,7 +163,7 @@ public class ContactController {
 		}
 
 		AdoptAddressLayout adoptAddressLayout = lineListingForm.getSharedInfoField().getCaseSelector().getAdoptAddressLayout();
-		boolean adoptHomeAddress = adoptAddressLayout != null ? adoptAddressLayout.isAdoptAddress() : false;
+		boolean adoptHomeAddress = adoptAddressLayout != null && adoptAddressLayout.isAdoptAddress();
 
 		while (!contacts.isEmpty()) {
 			LineDto<ContactDto> contactLineDto = contacts.pop();
@@ -194,7 +198,7 @@ public class ContactController {
 	}
 
 	public void openLineListingWindow(EventDto eventDto, Set<EventParticipantIndexDto> eventParticipantIndexDtos) {
-		if (eventParticipantIndexDtos.size() == 0) {
+		if (eventParticipantIndexDtos.isEmpty()) {
 			new Notification(
 				I18nProperties.getString(Strings.headingNoEventParticipantsSelected),
 				I18nProperties.getString(Strings.messageNoEventParticipantsSelected),
@@ -452,7 +456,7 @@ public class ContactController {
 			createForm.setPerson(casePerson);
 		}
 		final CommitDiscardWrapperComponent<ContactCreateForm> createComponent =
-			new CommitDiscardWrapperComponent<ContactCreateForm>(createForm, UiUtil.permitted(UserRight.CONTACT_CREATE), createForm.getFieldGroup());
+			new CommitDiscardWrapperComponent<>(createForm, UiUtil.permitted(UserRight.CONTACT_CREATE), createForm.getFieldGroup());
 
 		contactSaveTriggered = false;
 		createComponent.addCommitListener(() -> {
@@ -677,9 +681,7 @@ public class ContactController {
 				}
 			});
 
-			contactSelect.setSelectionChangeCallback((commitAllowed) -> {
-				component.getCommitButton().setEnabled(commitAllowed);
-			});
+			contactSelect.setSelectionChangeCallback(commitAllowed -> component.getCommitButton().setEnabled(commitAllowed));
 
 			VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateContact));
 			contactSelect.selectBestMatch();
@@ -707,7 +709,7 @@ public class ContactController {
 		ContactDataForm editForm = new ContactDataForm(contact.getDisease(), viewMode, isPsuedonymized, contact.isInJurisdiction());
 		editForm.setValue(contact);
 		final CommitDiscardWrapperComponent<ContactDataForm> editComponent =
-			new CommitDiscardWrapperComponent<ContactDataForm>(editForm, true, editForm.getFieldGroup());
+			new CommitDiscardWrapperComponent<>(editForm, true, editForm.getFieldGroup());
 
 		editComponent.getButtonsPanel()
 			.addComponentAsFirst(new DeletionLabel(automaticDeletionInfoDto, manuallyDeletionInfoDto, contact.isDeleted(), ContactDto.I18N_PREFIX));
@@ -773,7 +775,7 @@ public class ContactController {
 		Collection<T> selectedContacts,
 		String caseUuid,
 		AbstractContactGrid<?> contactGrid) {
-		if (selectedContacts.size() == 0) {
+		if (selectedContacts.isEmpty()) {
 			new Notification(
 				I18nProperties.getString(Strings.headingNoContactsSelected),
 				I18nProperties.getString(Strings.messageNoContactsSelected),
@@ -809,7 +811,7 @@ public class ContactController {
 			ContactFacade contactFacade = FacadeProvider.getContactFacade();
 
 			boolean classificationChange = form.getClassificationCheckBox().getValue();
-			boolean contactOfficerChange = district != null ? form.getContactOfficerCheckBox().getValue() : false;
+			boolean contactOfficerChange = district != null && form.getContactOfficerCheckBox().getValue();
 
 			List<ContactIndexDto> selectedContactsCpy = new ArrayList<>(selectedContacts);
 
@@ -853,7 +855,7 @@ public class ContactController {
 	}
 
 	public void sendEmailsToAllSelectedItems(Collection<? extends ContactIndexDto> selectedRows, AbstractContactGrid<?> contactGrid) {
-		if (selectedRows.size() == 0) {
+		if (selectedRows.isEmpty()) {
 			new Notification(
 				I18nProperties.getString(Strings.headingNoContactsSelected),
 				I18nProperties.getString(Strings.messageNoContactsSelected),
@@ -1012,13 +1014,9 @@ public class ContactController {
 		final CommitDiscardWrapperComponent<CaseSelectionField> component = new CommitDiscardWrapperComponent<>(selectionField);
 		component.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
 		component.getCommitButton().setEnabled(false);
-		component.addCommitListener(() -> {
-			selectedCaseCallback.accept(selectionField.getValue());
-		});
+		component.addCommitListener(() -> selectedCaseCallback.accept(selectionField.getValue()));
 
-		selectionField.setSelectionChangeCallback((commitAllowed) -> {
-			component.getCommitButton().setEnabled(commitAllowed);
-		});
+		selectionField.setSelectionChangeCallback(commitAllowed -> component.getCommitButton().setEnabled(commitAllowed));
 
 		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingSelectSourceCase));
 	}
@@ -1027,17 +1025,39 @@ public class ContactController {
 
 		ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactUuid);
 		EpiDataDto epiData = contact.getEpiData();
-		EpiDataForm epiDataForm =
-			new EpiDataForm(contact.getDisease(), ContactDto.class, epiData.isPseudonymized(), epiData.isInJurisdiction(), null, isEditAllowed);
+
+		List<CustomizableFieldMetadataDto> epiDataMetadata =
+			FacadeProvider.getCustomizableFieldMetadataFacade().getActiveFieldsForContext(CustomizableFieldContext.EPIDATA);
+		Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> epiDataFieldValues =
+			FacadeProvider.getCustomizableFieldValueFacade().getValuesForEntity(epiData.getUuid(), CustomizableFieldContext.EPIDATA);
+
+		EpiDataForm epiDataForm = new EpiDataForm(
+			contact.getDisease(),
+			ContactDto.class,
+			epiData.isPseudonymized(),
+			epiData.isInJurisdiction(),
+			null,
+			isEditAllowed,
+			null,
+			epiDataMetadata,
+			epiDataFieldValues);
 		epiDataForm.setValue(epiData);
 
-		final CommitDiscardWrapperComponent<EpiDataForm> editView =
-			new CommitDiscardWrapperComponent<EpiDataForm>(epiDataForm, epiDataForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EpiDataForm> editView = new CommitDiscardWrapperComponent<>(epiDataForm, epiDataForm.getFieldGroup());
+
+		epiDataForm.addCustomizableFieldValueChangeListener(e -> editView.setDirty(true));
+		editView.addDiscardListener(epiDataForm::resetCustomizableFieldValues);
 
 		editView.addCommitListener(() -> {
 			ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(contactUuid);
 			contactDto.setEpiData(epiDataForm.getValue());
 			FacadeProvider.getContactFacade().save(contactDto);
+			FacadeProvider.getCustomizableFieldValueFacade()
+				.saveEntityCustomFields(contactDto.getEpiData().getUuid(), CustomizableFieldContext.EPIDATA, epiDataForm.collectCurrentFieldValues());
+			epiDataForm.collectExposureCustomizableFieldValues()
+				.forEach(
+					(exposureUuid, fields) -> FacadeProvider.getCustomizableFieldValueFacade()
+						.saveEntityCustomFields(exposureUuid, CustomizableFieldContext.EXPOSURE, fields));
 			Notification.show(I18nProperties.getString(Strings.messageContactSaved), Type.WARNING_MESSAGE);
 			SormasUI.refreshView();
 		});
@@ -1048,7 +1068,7 @@ public class ContactController {
 	public void deleteContact(ContactIndexDto contact, Runnable callback) {
 		DeletableUtils.showDeleteWithReasonPopup(
 			String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), I18nProperties.getString(Strings.entityContact)),
-			(deleteDetails) -> {
+			deleteDetails -> {
 				FacadeProvider.getContactFacade().delete(contact.getUuid(), deleteDetails);
 				callback.run();
 			});
@@ -1118,11 +1138,11 @@ public class ContactController {
 		}
 
 		ControllerProvider.getEventController()
-			.selectOrCreateEventForContactList(selectedRows.stream().map(ContactIndexDto::toReference).collect(Collectors.toList()), remaining -> {
-				bulkOperationCallback(null, contactGrid, null).accept(
+			.selectOrCreateEventForContactList(
+				selectedRows.stream().map(ContactIndexDto::toReference).collect(Collectors.toList()),
+				remaining -> bulkOperationCallback(null, contactGrid, null).accept(
 					selectedRows.stream()
 						.filter(s -> remaining.stream().anyMatch(r -> r.getUuid().equals(s.getUuid())))
-						.collect(Collectors.toList()));
-			});
+						.collect(Collectors.toList())));
 	}
 }

@@ -62,6 +62,7 @@ public class Constants {
 				"cancel",
 				"end",
 				"accept",
+				"execute",
 				"sync",
 				"request",
 				"revoke",

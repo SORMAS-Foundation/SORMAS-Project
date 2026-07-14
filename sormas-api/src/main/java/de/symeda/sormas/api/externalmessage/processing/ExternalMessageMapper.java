@@ -16,8 +16,10 @@
 package de.symeda.sormas.api.externalmessage.processing;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -25,6 +27,11 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.customizableenum.CustomEnumNotFoundException;
@@ -33,13 +40,18 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
+import de.symeda.sormas.api.person.OccupationType;
+import de.symeda.sormas.api.person.PersonContactDetailDto;
+import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
@@ -49,6 +61,8 @@ import de.symeda.sormas.api.utils.DateHelper;
 
 public final class ExternalMessageMapper {
 
+	private static final Logger logger = LoggerFactory.getLogger(ExternalMessageMapper.class);
+
 	private final ExternalMessageDto externalMessage;
 
 	private final ExternalMessageProcessingFacade processingFacade;
@@ -56,6 +70,10 @@ public final class ExternalMessageMapper {
 	public ExternalMessageMapper(ExternalMessageDto externalMessage, ExternalMessageProcessingFacade processingFacade) {
 		this.externalMessage = externalMessage;
 		this.processingFacade = processingFacade;
+	}
+
+	public ExternalMessageDto getExternalMessage() {
+		return externalMessage;
 	}
 
 	public List<String[]> mapToPerson(PersonDto person) {
@@ -73,6 +91,17 @@ public final class ExternalMessageMapper {
 					externalMessage.getPersonPresentCondition(),
 					PersonDto.PRESENT_CONDITION),
 				Mapping.of(person::setDeathDate, person.getDeathDate(), externalMessage.getDeceasedDate(), PersonDto.DEATH_DATE),
+				Mapping.of(person::setCauseOfDeath, person.getCauseOfDeath(), externalMessage.getCauseOfDeath(), PersonDto.CAUSE_OF_DEATH),
+				Mapping.of(
+					person::setCauseOfDeathDetails,
+					person.getCauseOfDeathDetails(),
+					externalMessage.getCauseOfDeathDetails(),
+					PersonDto.CAUSE_OF_DEATH_DETAILS),
+				Mapping.of(
+					person::setCauseOfDeathDisease,
+					person.getCauseOfDeathDisease(),
+					externalMessage.getCauseOfDeathDisease(),
+					PersonDto.CAUSE_OF_DEATH_DISEASE),
 				Mapping.of(person::setPhone, person.getPhone(), externalMessage.getPersonPhone(), PersonDto.PERSON_CONTACT_DETAILS),
 				Mapping.of(
 					person::setPhoneNumberType,
@@ -152,6 +181,408 @@ public final class ExternalMessageMapper {
 					externalMessage.getPersonFacility(),
 					PersonDto.ADDRESS,
 					LocationDto.FACILITY)));
+	}
+
+	/**
+	 * Deserializes {@link ExternalMessageDto#getAdditionalPersonContactDetails()} from JSON and merges
+	 * the entries into the person. Entries already present by type + contactInformation are skipped.
+	 */
+	public List<String[]> mapAdditionalPersonContactDetails(PersonDto person) {
+		if (externalMessage.getAdditionalPersonContactDetails() == null || externalMessage.getAdditionalPersonContactDetails().isEmpty()) {
+			return Collections.emptyList();
+		}
+		try {
+			List<PersonContactDetailDto> additionalDetails =
+				new ObjectMapper().readValue(externalMessage.getAdditionalPersonContactDetails(), new TypeReference<List<PersonContactDetailDto>>() {
+				});
+			return mapAdditionalPersonContactDetails(person, additionalDetails);
+		} catch (Exception e) {
+			logger.error("[MAPPER] Error while deserializing additional person contact details", e);
+			return Collections.emptyList();
+		}
+	}
+
+	/**
+	 * Deserializes {@link ExternalMessageDto#getAdditionalPersonAddresses()} from JSON and appends
+	 * the entries into the person's address list. No deduplication is performed.
+	 */
+	public List<String[]> mapAdditionalPersonAddresses(PersonDto person) {
+		if (externalMessage.getAdditionalPersonAddresses() == null || externalMessage.getAdditionalPersonAddresses().isEmpty()) {
+			return Collections.emptyList();
+		}
+		try {
+			List<LocationDto> additionalAddresses =
+				new ObjectMapper().readValue(externalMessage.getAdditionalPersonAddresses(), new TypeReference<List<LocationDto>>() {
+				});
+			return mapAdditionalPersonAddresses(person, additionalAddresses);
+		} catch (Exception e) {
+			logger.error("[MAPPER] Error while deserializing additional person addresses", e);
+			return Collections.emptyList();
+		}
+	}
+
+	/**
+	 * Applies guardian name, incapacitated/emancipated flags, and guardian contact details (email, phone)
+	 * from the external message onto the given person.
+	 * These fields are not covered by the regular person-creation form and must be persisted in a separate step.
+	 *
+	 * @param person
+	 *            The person to update.
+	 * @return A list of changed UI field paths; empty if nothing was changed.
+	 */
+	public List<String[]> mapGuardianData(PersonDto person) {
+		List<String[]> changedFields = new ArrayList<>();
+
+		final String nameOfGuardian =
+			String
+				.format(
+					"%s %s",
+					externalMessage.getPersonGuardianFirstName() != null ? externalMessage.getPersonGuardianFirstName() : "",
+					externalMessage.getPersonGuardianLastName() != null ? externalMessage.getPersonGuardianLastName() : "")
+				.trim();
+
+		if (!nameOfGuardian.isBlank()) {
+			person.setNamesOfGuardians(nameOfGuardian);
+			// Both incapacitated and emancipated must be set together, otherwise the person is not shown correctly in the UI
+			person.setIncapacitated(true);
+			person.setEmancipated(false);
+			changedFields.add(
+				new String[] {
+					PersonDto.NAMES_OF_GUARDIANS });
+		}
+
+		if (externalMessage.getPersonGuardianEmail() != null && !externalMessage.getPersonGuardianEmail().isBlank()) {
+			List<PersonContactDetailDto> contactDetails = person.getPersonContactDetails();
+			if (contactDetails.stream().noneMatch(pc -> externalMessage.getPersonGuardianEmail().equals(pc.getContactInformation()))) {
+				final PersonContactDetailDto pcd = new PersonContactDetailDto();
+				pcd.setUuid(DataHelper.createUuid());
+				pcd.setPerson(person.toReference());
+				pcd.setPrimaryContact(false);
+				pcd.setPersonContactDetailType(PersonContactDetailType.EMAIL);
+				pcd.setContactInformation(externalMessage.getPersonGuardianEmail());
+				pcd.setThirdParty(true);
+				pcd.setThirdPartyRole(externalMessage.getPersonGuardianRelationship());
+				pcd.setThirdPartyName(nameOfGuardian);
+				contactDetails.add(pcd);
+				changedFields.add(
+					new String[] {
+						PersonDto.PERSON_CONTACT_DETAILS });
+			}
+		}
+
+		if (externalMessage.getPersonGuardianPhone() != null && !externalMessage.getPersonGuardianPhone().isBlank()) {
+			List<PersonContactDetailDto> contactDetails = person.getPersonContactDetails();
+			if (contactDetails.stream().noneMatch(pc -> externalMessage.getPersonGuardianPhone().equals(pc.getContactInformation()))) {
+				final PersonContactDetailDto pcd = new PersonContactDetailDto();
+				pcd.setUuid(DataHelper.createUuid());
+				pcd.setPerson(person.toReference());
+				pcd.setPrimaryContact(false);
+				pcd.setPersonContactDetailType(PersonContactDetailType.PHONE);
+				pcd.setContactInformation(externalMessage.getPersonGuardianPhone());
+				pcd.setThirdParty(true);
+				pcd.setThirdPartyRole(externalMessage.getPersonGuardianRelationship());
+				pcd.setThirdPartyName(nameOfGuardian);
+				contactDetails.add(pcd);
+				changedFields.add(
+					new String[] {
+						PersonDto.PERSON_CONTACT_DETAILS });
+			}
+		}
+
+		return changedFields;
+	}
+
+	/**
+	 * Applies occupation type and details from the external message onto the given person.
+	 * The occupation type is resolved to the customizable enum value for "OTHER".
+	 * If the enum value cannot be found, no changes are applied.
+	 *
+	 * @param person
+	 *            The person to update.
+	 * @return A list of changed UI field paths; empty if nothing was changed.
+	 */
+	public List<String[]> mapOccupationData(PersonDto person) {
+		if (externalMessage.getPersonOccupation() == null || externalMessage.getPersonOccupation().isBlank()) {
+			return Collections.emptyList();
+		}
+
+		try {
+			final OccupationType occupationTypeOther = processingFacade.getOccupationTypeOther();
+			person.setOccupationType(occupationTypeOther);
+			person.setOccupationDetails(externalMessage.getPersonOccupation());
+			return Collections.singletonList(
+				new String[] {
+					PersonDto.OCCUPATION_TYPE });
+		} catch (CustomEnumNotFoundException e) {
+			// do nothing if OccupationType OTHER custom enum is not found
+			return Collections.emptyList();
+		}
+	}
+
+	/**
+	 * Merges address fields from the external message onto the given person's primary address.
+	 * Only non-null values from the external message overwrite the existing address fields.
+	 *
+	 * @param person
+	 *            The existing person to update.
+	 * @return A list of changed UI field paths; empty if the person has no address.
+	 */
+	public List<String[]> mergePersonAddress(PersonDto person) {
+
+		if (person == null) {
+			return Collections.emptyList();
+		}
+
+		final LocationDto personAddress = person.getAddress();
+		if (personAddress == null) {
+			// just to be safe for whatever reason if address is null, create a new one
+			final LocationDto location = LocationDto.build();
+			// in this case we no longer need to merge the address, so we can just return the new location
+			person.setAddress(location);
+			return mapToLocation(location);
+		}
+
+		final String houseNumber = externalMessage.getPersonHouseNumber();
+		if (houseNumber != null) {
+			personAddress.setHouseNumber(houseNumber);
+		}
+		final String street = externalMessage.getPersonStreet();
+		if (street != null) {
+			personAddress.setStreet(street);
+		}
+		final String city = externalMessage.getPersonCity();
+		if (city != null) {
+			personAddress.setCity(city);
+		}
+		final String postalCode = externalMessage.getPersonPostalCode();
+		if (postalCode != null) {
+			personAddress.setPostalCode(postalCode);
+		}
+		final CountryReferenceDto country = externalMessage.getPersonCountry();
+		if (country != null) {
+			personAddress.setCountry(country);
+		}
+
+		return Collections.singletonList(
+			new String[] {
+				PersonDto.ADDRESS });
+	}
+
+	/**
+	 * Merges additional person data.
+	 * Only non-null values from the external message overwrite existing fields.
+	 * 
+	 * @param person
+	 *            The existing person to update.
+	 * @return A list of changed UI field paths; empty if the person has no address.
+	 */
+	public List<String[]> mergePersonAdditionalInformation(PersonDto person) {
+		if (person == null) {
+			return Collections.emptyList();
+		}
+
+		List<String[]> changedFields = new ArrayList<>();
+
+		if (externalMessage.getPersonPresentCondition() != null) {
+			person.setPresentCondition(externalMessage.getPersonPresentCondition());
+			changedFields.add(
+				new String[] {
+					PersonDto.PRESENT_CONDITION });
+		}
+
+		if (externalMessage.getDeceasedDate() != null) {
+			person.setDeathDate(externalMessage.getDeceasedDate());
+			changedFields.add(
+				new String[] {
+					PersonDto.DEATH_DATE });
+		}
+
+		if (externalMessage.getCauseOfDeath() != null) {
+			person.setCauseOfDeath(externalMessage.getCauseOfDeath());
+			changedFields.add(
+				new String[] {
+					PersonDto.CAUSE_OF_DEATH });
+		}
+
+		if (externalMessage.getCauseOfDeathDisease() != null) {
+			person.setCauseOfDeathDisease(externalMessage.getCauseOfDeathDisease());
+			changedFields.add(
+				new String[] {
+					PersonDto.CAUSE_OF_DEATH_DISEASE });
+		}
+
+		if (externalMessage.getCauseOfDeathDetails() != null) {
+			person.setCauseOfDeathDetails(externalMessage.getCauseOfDeathDetails());
+			changedFields.add(
+				new String[] {
+					PersonDto.CAUSE_OF_DEATH_DETAILS });
+		}
+		return changedFields;
+	}
+
+	/**
+	 * Merges primary phone and email contact details from the external message onto the given person.
+	 * If the incoming value already exists in the list it is promoted to primary and the old primary is demoted;
+	 * otherwise a new primary entry is created and the old primary is demoted.
+	 *
+	 * @param person
+	 *            The existing person to update.
+	 * @return A list of changed UI field paths; empty if nothing was changed.
+	 */
+	public List<String[]> mergePersonContactDetails(PersonDto person) {
+
+		if (person == null) {
+			return Collections.emptyList();
+		}
+
+		List<String[]> changedFields = new ArrayList<>();
+
+		final List<PersonContactDetailDto> personContactDetails = person.getPersonContactDetails();
+
+		final String phoneNumber = externalMessage.getPersonPhone();
+		final PhoneNumberType phoneNumberType = externalMessage.getPersonPhoneNumberType();
+
+		if (phoneNumber != null && !phoneNumber.isBlank()) {
+			final PersonContactDetailDto primaryPhone = personContactDetails.stream()
+				.filter(pdc -> pdc.getPersonContactDetailType() == PersonContactDetailType.PHONE && !pdc.isThirdParty() && pdc.isPrimaryContact())
+				.findFirst()
+				.orElse(null);
+			final PersonContactDetailDto existingPhone = personContactDetails.stream()
+				.filter(
+					pdc -> pdc.getPersonContactDetailType() == PersonContactDetailType.PHONE
+						&& !pdc.isThirdParty()
+						&& phoneNumber.equals(pdc.getContactInformation()))
+				.findFirst()
+				.orElse(null);
+
+			if (existingPhone != null) {
+				// Promote the existing entry to primary, demote the old primary
+				if (primaryPhone != null) {
+					primaryPhone.setPrimaryContact(false);
+				}
+				existingPhone.setPrimaryContact(true);
+			} else {
+				// Create a new primary entry and demote the old primary
+				final PersonContactDetailDto personContactDetail = new PersonContactDetailDto();
+				personContactDetail.setUuid(DataHelper.createUuid());
+				personContactDetail.setPerson(person.toReference());
+				personContactDetail.setPrimaryContact(true);
+				personContactDetail.setPersonContactDetailType(PersonContactDetailType.PHONE);
+				personContactDetail.setPhoneNumberType(phoneNumberType);
+				personContactDetail.setContactInformation(phoneNumber);
+				personContactDetail.setThirdParty(false);
+				personContactDetails.add(personContactDetail);
+				if (primaryPhone != null) {
+					primaryPhone.setPrimaryContact(false);
+				}
+			}
+			changedFields.add(
+				new String[] {
+					PersonDto.PERSON_CONTACT_DETAILS });
+		}
+
+		final String emailAddress = externalMessage.getPersonEmail();
+
+		if (emailAddress != null && !emailAddress.isBlank()) {
+			final PersonContactDetailDto primaryEmail = personContactDetails.stream()
+				.filter(pdc -> pdc.getPersonContactDetailType() == PersonContactDetailType.EMAIL && !pdc.isThirdParty() && pdc.isPrimaryContact())
+				.findFirst()
+				.orElse(null);
+			final PersonContactDetailDto existingEmail = personContactDetails.stream()
+				.filter(
+					pdc -> pdc.getPersonContactDetailType() == PersonContactDetailType.EMAIL
+						&& !pdc.isThirdParty()
+						&& emailAddress.equals(pdc.getContactInformation()))
+				.findFirst()
+				.orElse(null);
+
+			if (existingEmail != null) {
+				// Promote the existing entry to primary, demote the old primary
+				if (primaryEmail != null) {
+					primaryEmail.setPrimaryContact(false);
+				}
+				existingEmail.setPrimaryContact(true);
+			} else {
+				// Create a new primary entry and demote the old primary
+				final PersonContactDetailDto personContactDetail = new PersonContactDetailDto();
+				personContactDetail.setUuid(DataHelper.createUuid());
+				personContactDetail.setPerson(person.toReference());
+				personContactDetail.setPrimaryContact(true);
+				personContactDetail.setPersonContactDetailType(PersonContactDetailType.EMAIL);
+				personContactDetail.setContactInformation(emailAddress);
+				personContactDetail.setThirdParty(false);
+				personContactDetails.add(personContactDetail);
+				if (primaryEmail != null) {
+					primaryEmail.setPrimaryContact(false);
+				}
+			}
+			changedFields.add(
+				new String[] {
+					PersonDto.PERSON_CONTACT_DETAILS });
+		}
+
+		changedFields.addAll(mapAdditionalPersonContactDetails(person));
+
+		return changedFields;
+	}
+
+	private List<String[]> mapAdditionalPersonContactDetails(PersonDto person, List<PersonContactDetailDto> additionalDetails) {
+		if (person == null) {
+			return Collections.emptyList();
+		}
+
+		if (additionalDetails == null || additionalDetails.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		List<PersonContactDetailDto> existing = person.getPersonContactDetails();
+		boolean changed = false;
+
+		for (PersonContactDetailDto incoming : additionalDetails) {
+			final boolean alreadyPresent = existing.stream()
+				.anyMatch(
+					e -> e.getPersonContactDetailType() == incoming.getPersonContactDetailType()
+						&& Objects.equals(e.getContactInformation(), incoming.getContactInformation()));
+
+			if (alreadyPresent) {
+				continue;
+			}
+
+			if (incoming.getUuid() == null) {
+				incoming.setUuid(DataHelper.createUuid());
+			}
+			incoming.setPerson(person.toReference());
+			existing.add(incoming);
+			changed = true;
+		}
+
+		return changed
+			? Collections.singletonList(
+				new String[] {
+					PersonDto.PERSON_CONTACT_DETAILS })
+			: Collections.emptyList();
+	}
+
+	private List<String[]> mapAdditionalPersonAddresses(PersonDto person, List<LocationDto> additionalAddresses) {
+
+		if (person == null) {
+			return Collections.emptyList();
+		}
+
+		if (additionalAddresses == null || additionalAddresses.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		for (LocationDto incoming : additionalAddresses) {
+			if (incoming.getUuid() == null) {
+				incoming.setUuid(DataHelper.createUuid());
+			}
+			person.getAddresses().add(incoming);
+		}
+
+		return Collections.singletonList(
+			new String[] {
+				PersonDto.ADDRESSES });
 	}
 
 	public List<String[]> mapToSample(SampleDto sample, SampleReportDto sampleReport) {
@@ -337,11 +768,7 @@ public final class ExternalMessageMapper {
 							pathogenTest.getPrescriberCountry(),
 							sourceTestReport.getPrescriberCountry(),
 							PathogenTestDto.PRESCRIBER_COUNTRY),
-						Mapping.of(
-							pathogenTest::setGenoTypeResult,
-							pathogenTest.getGenoTypeResult(),
-							sourceTestReport.getGenoTypeResult(),
-							PathogenTestDto.GENOTYPE_RESULT),
+						Mapping.of(pathogenTest::setGenoType, pathogenTest.getGenoType(), sourceTestReport.getGenoType(), PathogenTestDto.GENOTYPE),
 						Mapping.of(
 							pathogenTest::setSeroGroupSpecification,
 							pathogenTest.getSeroGroupSpecification(),
@@ -353,6 +780,11 @@ public final class ExternalMessageMapper {
 							sourceTestReport.getSeroGroupSpecificationText(),
 							PathogenTestDto.SERO_GROUP_SPECIFICATION),
 						Mapping.of(pathogenTest::setSerotype, pathogenTest.getSerotype(), sourceTestReport.getSerotype(), PathogenTestDto.SEROTYPE),
+						Mapping.of(
+							pathogenTest::setSerotypeText,
+							pathogenTest.getSerotypeText(),
+							sourceTestReport.getSerotypeText(),
+							PathogenTestDto.SEROTYPE_TEXT),
 						Mapping.of(
 							pathogenTest::setSeroTypingMethod,
 							pathogenTest.getSeroTypingMethod(),
@@ -618,7 +1050,20 @@ public final class ExternalMessageMapper {
 							pathogenTest.getDrugSusceptibility().getErythromycinSusceptibility(),
 							sourceTestReport.getErythromycinSusceptibility(),
 							PathogenTestDto.DRUG_SUSCEPTIBILITY,
-							DrugSusceptibilityDto.ERYTHROMYCIN_SUSCEPTIBILITY))));
+							DrugSusceptibilityDto.ERYTHROMYCIN_SUSCEPTIBILITY),
+
+						Mapping.of(
+							pathogenTest::setFourFoldIncreaseAntibodyTiter,
+							pathogenTest.isFourFoldIncreaseAntibodyTiter(),
+							sourceTestReport.getFourFoldIncreaseAntibodyTiter(),
+							PathogenTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER),
+						Mapping.of(
+							pathogenTest::setPerformedByReferenceLaboratory,
+							pathogenTest.getPerformedByReferenceLaboratory(),
+							sourceTestReport.getPerformedByReferenceLaboratory(),
+							PathogenTestDto.PERFORMED_BY_REFERENCE_LABORATORY))
+
+				));
 		}
 
 		changedFields.addAll(

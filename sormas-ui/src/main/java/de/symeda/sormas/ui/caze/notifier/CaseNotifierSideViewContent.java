@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.ui.caze.notifier;
 
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Locale;
 
@@ -27,12 +28,11 @@ import com.vaadin.ui.RadioButtonGroup;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.surveillancereport.ReportingType;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.notifier.NotifierDto;
-import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -44,33 +44,24 @@ public class CaseNotifierSideViewContent extends VerticalLayout {
 
     private static final long serialVersionUID = 1L;
 
-    /** The case data associated with the notifier. */
-    private CaseDataDto caze;
+    /** The surveillance report with treatment data. */
+    private SurveillanceReportDto surveillanceReport;
 
     /** The notifier details. */
     private NotifierDto notifier;
 
-    /** The oldest surveillance report associated with the case. */
-    private SurveillanceReportDto oldestReport;
-
-    private TherapyDto therapy;
-
     /**
      * Creates a new case notifier side view content.
      * 
-     * @param caze
-     *            the case data
+     * @param surveillanceReport
+     *            the surveillance report with treatment data and dates
      * @param notifier
      *            the notifier details
-     * @param oldestReport
-     *            the oldest surveillance report for the case
      */
-    public CaseNotifierSideViewContent(CaseDataDto caze, NotifierDto notifier, SurveillanceReportDto oldestReport) {
+    public CaseNotifierSideViewContent(SurveillanceReportDto surveillanceReport, NotifierDto notifier) {
 
-        this.caze = caze;
-        this.therapy = caze.getTherapy();
+        this.surveillanceReport = surveillanceReport;
         this.notifier = notifier;
-        this.oldestReport = oldestReport;
 
         setStyleName("case-notifier-side-view");
         setMargin(false);
@@ -118,20 +109,21 @@ public class CaseNotifierSideViewContent extends VerticalLayout {
 
         // Date of notification
         DateField notificationDateField = new DateField(I18nProperties.getCaption(Captions.Notification_dateOfNotification));
-        notificationDateField.setValue(
-            oldestReport == null
-                ? notifier.getChangeDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-                : oldestReport.getReportDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+        if (surveillanceReport != null && surveillanceReport.getReportDate() != null) {
+            notificationDateField.setValue(surveillanceReport.getReportDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+        } else {
+            notificationDateField.setValue(
+                notifier.getChangeDate() != null
+                    ? notifier.getChangeDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                    : LocalDate.now());
+        }
         notificationDateField.setReadOnly(true);
 
         // Date of diagnostic
         DateField diagnosticDateField = new DateField(I18nProperties.getCaption(Captions.SurveillanceReport_dateOfDiagnosis));
-        diagnosticDateField.setValue(
-            oldestReport == null
-                ? null
-                : oldestReport.getDateOfDiagnosis() == null
-                    ? null
-                    : oldestReport.getDateOfDiagnosis().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+        if (surveillanceReport != null && surveillanceReport.getDateOfDiagnosis() != null) {
+            diagnosticDateField.setValue(surveillanceReport.getDateOfDiagnosis().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+        }
         diagnosticDateField.setReadOnly(true);
 
         // Horizontal layout for date fields
@@ -163,7 +155,7 @@ public class CaseNotifierSideViewContent extends VerticalLayout {
         addComponent(spacerNotificationType);
         // Notification type
         Label notificationTypeLabel = new Label(
-            oldestReport == null
+            (surveillanceReport != null && surveillanceReport.getReportingType() == ReportingType.PHONE_NOTIFICATION)
                 ? I18nProperties.getCaption(Captions.Notification_notificationTypePhone)
                 : I18nProperties.getCaption(Captions.Notification_notificationTypeExternal));
         CssStyles.style(notificationTypeLabel, CssStyles.BADGE);
@@ -188,16 +180,16 @@ public class CaseNotifierSideViewContent extends VerticalLayout {
         treatmentGroup.setReadOnly(true);
         treatmentGroup.clear();
 
-        if (therapy == null) {
+        if (surveillanceReport == null) {
             return treatmentGroup;
         }
 
-        if (therapy.isTreatmentNotApplicable()) {
+        if (surveillanceReport.isTreatmentNotApplicable()) {
             treatmentGroup.setValue(TreatmentOption.NOT_APPLICABLE);
             return treatmentGroup;
         }
 
-        final YesNoUnknown treatmentStarted = therapy.getTreatmentStarted();
+        final YesNoUnknown treatmentStarted = surveillanceReport.getTreatmentStarted();
 
         if (treatmentStarted == null) {
             return treatmentGroup;

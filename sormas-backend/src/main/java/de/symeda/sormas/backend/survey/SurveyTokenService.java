@@ -15,6 +15,9 @@
 
 package de.symeda.sormas.backend.survey;
 
+import java.util.List;
+import java.util.Optional;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -22,10 +25,13 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.survey.SurveyReferenceDto;
 import de.symeda.sormas.api.survey.SurveyTokenCriteria;
+import de.symeda.sormas.api.utils.Tuple;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -34,6 +40,8 @@ import de.symeda.sormas.backend.util.QueryHelper;
 @Stateless
 @LocalBean
 public class SurveyTokenService extends BaseAdoService<SurveyToken> {
+
+	public static final int MAX_SURVEY_TOKEN_RESULTS_SIZE = 1000;
 
 	public SurveyTokenService() {
 		super(SurveyToken.class);
@@ -101,6 +109,26 @@ public class SurveyTokenService extends BaseAdoService<SurveyToken> {
 		return QueryHelper.getFirstResult(em, cq);
 	}
 
+	/**
+	 * Finds survey tokens based on the provided criteria. The results are ordered by assignment date in descending order.
+	 *
+	 * @param criteria
+	 * @return List<SurveyToken>
+	 */
+	public List<SurveyToken> findBy(SurveyTokenCriteria criteria) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<SurveyToken> cq = cb.createQuery(SurveyToken.class);
+		Root<SurveyToken> root = cq.from(SurveyToken.class);
+		cq.select(root);
+		Predicate filter = CriteriaBuilderHelper.and(cb, this.buildCriteriaFilter(criteria, cb, root, new SurveyTokenJoins(root)));
+		if (filter != null) {
+			cq.where(filter);
+		}
+		cq.orderBy(cb.desc(root.get(SurveyToken.ASSIGNMENT_DATE)));
+
+		return em.createQuery(cq).getResultList();
+	}
+
 	public SurveyToken getBySurveyAndToken(SurveyReferenceDto survey, String token) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SurveyToken> cq = cb.createQuery(SurveyToken.class);
@@ -113,4 +141,31 @@ public class SurveyTokenService extends BaseAdoService<SurveyToken> {
 		return QueryHelper.getFirstResult(em, cq);
 	}
 
+	public List<SurveyToken> getBySurveyReferenceTokenTuples(List<Tuple<SurveyReferenceDto, String>> surveyReferenceTokenTuples) {
+		if (CollectionUtils.isEmpty(surveyReferenceTokenTuples)) {
+			return List.of();
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<SurveyToken> cq = cb.createQuery(SurveyToken.class);
+		Root<SurveyToken> root = cq.from(SurveyToken.class);
+		SurveyTokenJoins joins = new SurveyTokenJoins(root);
+
+		cq.select(root);
+
+		cq.where(
+			CriteriaBuilderHelper.or(
+				cb,
+				surveyReferenceTokenTuples.stream()
+					.map(
+						tuple -> CriteriaBuilderHelper.and(
+							cb,
+							cb.equal(
+								joins.getSurvey().get(Survey.UUID),
+								Optional.ofNullable(tuple.getFirst()).map(ReferenceDto::getUuid).orElse(null)),
+							cb.equal(root.get(SurveyToken.TOKEN), tuple.getSecond())))
+					.toArray(Predicate[]::new)));
+
+		return QueryHelper.getResultList(em, cq, 0, MAX_SURVEY_TOKEN_RESULTS_SIZE);
+	}
 }

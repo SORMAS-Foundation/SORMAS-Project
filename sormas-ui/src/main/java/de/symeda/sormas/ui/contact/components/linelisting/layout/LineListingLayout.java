@@ -2,6 +2,7 @@ package de.symeda.sormas.ui.contact.components.linelisting.layout;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -21,6 +22,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -194,7 +196,10 @@ public class LineListingLayout extends VerticalLayout {
 			contact.setMultiDayContact(layoutBean.getLineField().getMultiDaySelector().isMultiDay());
 			contact.setFirstContactDate(UtilDate.from(layoutBean.getLineField().getMultiDaySelector().getStartDate()));
 			contact.setLastContactDate(UtilDate.from(layoutBean.getLineField().getMultiDaySelector().getEndDate()));
-			contact.setContactProximity(layoutBean.getLineField().getTypeOfContact());
+			ContactProximity typeOfContact = layoutBean.getLineField().getTypeOfContact();
+			if (typeOfContact != null) {
+				contact.setContactProximities(Collections.singleton(typeOfContact));
+			}
 			contact.setRelationToCase(layoutBean.getLineField().getRelationToCase());
 			if (UserProvider.getCurrent() != null) {
 				contact.setReportingUser(UiUtil.getUserReference());

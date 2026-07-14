@@ -147,30 +147,36 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 	@SensitiveData(mandatoryField = true)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String firstName;
+	
 	@Outbreaks
 	@NotBlank(message = Validations.specifyLastName)
 	@PersonalData(mandatoryField = true)
 	@SensitiveData(mandatoryField = true)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String lastName;
+	
 	@HideForCountriesExcept
 	@PersonalData
 	@SensitiveData
 	private Salutation salutation;
+	
 	@PersonalData
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherSalutation;
+	
 	@PersonalData
 	@SensitiveData
 	@HideForCountriesExcept
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String birthName;
+	
 	@PersonalData
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	@HideForCountries
 	private String nickname;
+	
 	@PersonalData
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
@@ -178,6 +184,7 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_FRANCE })
 	private String mothersName;
+	
 	@PersonalData
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
@@ -185,6 +192,7 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_FRANCE })
 	private String mothersMaidenName;
+	
 	@PersonalData
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
@@ -192,57 +200,71 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_FRANCE })
 	private String fathersName;
+	
 	@PersonalData
 	@SensitiveData
 	@HideForCountriesExcept
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String namesOfGuardians;
+	
 	@Outbreaks
 	@NotNull(message = Validations.specifySex)
 	private Sex sex;
+	
 	@Outbreaks
 	@PersonalData
 	@SensitiveData
 	private Integer birthdateDD;
+	
 	@Outbreaks
 	@PersonalData
 	@SensitiveData
 	private Integer birthdateMM;
+	
 	@Outbreaks
 	private Integer birthdateYYYY;
+	
 	@Outbreaks
 	private Integer approximateAge;
+	
 	@Outbreaks
 	private ApproximateAgeType approximateAgeType;
+	
 	@Outbreaks
 	private Date approximateAgeReferenceDate;
+	
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA,
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	@HideForCountries
 	private RegionReferenceDto placeOfBirthRegion;
+	
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA,
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	@HideForCountries
 	private DistrictReferenceDto placeOfBirthDistrict;
+	
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA,
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	@HideForCountries
 	@SensitiveData
 	private CommunityReferenceDto placeOfBirthCommunity;
+	
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA,
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	@HideForCountries
 	private FacilityType placeOfBirthFacilityType;
+	
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA,
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	@HideForCountries
 	@SensitiveData
 	private FacilityReferenceDto placeOfBirthFacility;
+	
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA,
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
@@ -250,11 +272,13 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String placeOfBirthFacilityDetails;
+	
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA,
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	@HideForCountries
 	private Integer gestationAgeAtBirth;
+	
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA,
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
@@ -266,10 +290,12 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.CONGENITAL_RUBELLA })
 	private GestationalAgeCategory gestationalAgeCategory;
+	
 	@Diseases({
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.CONGENITAL_RUBELLA })
 	private BirthWeightCategory birthWeightCategory;
+	
 	@Diseases({
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.CONGENITAL_RUBELLA })
@@ -277,12 +303,15 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 
 	@Outbreaks
 	private PresentCondition presentCondition;
+	
 	private Date deathDate;
 	private CauseOfDeath causeOfDeath;
 	private Disease causeOfDeathDisease;
+	
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String causeOfDeathDetails;
+	
 	@Diseases({
 		Disease.AFP,
 		Disease.EVD,
@@ -290,9 +319,11 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 		Disease.POLIO,
 		Disease.UNSPECIFIED_VHF,
 		Disease.CORONAVIRUS,
+		Disease.PERTUSSIS,
 		Disease.UNDEFINED,
 		Disease.OTHER })
 	private DeathPlaceType deathPlaceType;
+	
 	@Diseases({
 		Disease.AFP,
 		Disease.EVD,
@@ -300,11 +331,13 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 		Disease.POLIO,
 		Disease.UNSPECIFIED_VHF,
 		Disease.CORONAVIRUS,
+		Disease.PERTUSSIS,
 		Disease.UNDEFINED,
 		Disease.OTHER })
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String deathPlaceDescription;
+	
 	@Diseases({
 		Disease.AFP,
 		Disease.EVD,
@@ -316,6 +349,7 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 		Disease.OTHER })
 	@HideForCountries
 	private Date burialDate;
+	
 	@Diseases({
 		Disease.AFP,
 		Disease.EVD,
@@ -329,6 +363,7 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	@HideForCountries
 	private String burialPlaceDescription;
+	
 	@Diseases({
 		Disease.AFP,
 		Disease.EVD,
@@ -340,6 +375,7 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 		Disease.OTHER })
 	@HideForCountries
 	private BurialConductor burialConductor;
+	
 	@EmbeddedPersonalData
 	@EmbeddedSensitiveData
 	@Valid
@@ -349,6 +385,7 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_FRANCE })
 	private EducationType educationType;
+	
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	@HideForCountries(countries = {
@@ -357,55 +394,68 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 	private String educationDetails;
 
 	private OccupationType occupationType;
+	
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String occupationDetails;
+	
 	@SensitiveData
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
 	private ArmedForcesRelationType armedForcesRelationType;
+	
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_FRANCE })
 	private String passportNumber;
+
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	@HideForCountries
 	private String nationalHealthId;
+
 	@Valid
 	private List<LocationDto> addresses = new ArrayList<>();
+
 	@Valid
 	private List<PersonContactDetailDto> personContactDetails = new ArrayList<>();
 
 	@Diseases(Disease.CORONAVIRUS)
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
 	private boolean hasCovidApp;
+
 	@Diseases(Disease.CORONAVIRUS)
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
 	private boolean covidCodeDelivered;
 
 	private SymptomJournalStatus symptomJournalStatus;
+
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
 	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalId;
+
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
 	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalToken;
+
 	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String internalToken;
 
+	@SensitiveData
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
-	@SensitiveData
+
 	private CountryReferenceDto birthCountry;
+
+	@SensitiveData
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
-	@SensitiveData
 	private CountryReferenceDto citizenship;
+
 	@SensitiveData
 	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
@@ -413,37 +463,29 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 
 	private boolean emancipated;
 	private boolean incapacitated;
+
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@SensitiveData
-	@Diseases(value = {
-		Disease.TUBERCULOSIS,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.MEASLES,
-		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS })
 	private Date entryDate;
+
+	@SensitiveData
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
-	@SensitiveData
-	@Diseases(value = {
-		Disease.TUBERCULOSIS,
-		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-		Disease.MEASLES,
-		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS })
 	private LivingStatus livingStatus;
+
 	@SensitiveData
 	@Diseases(value = {
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS })
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.SALMONELLOSIS })
 	private WorkPlace workPlace;
+
 	@SensitiveData
 	@Diseases(value = {
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS })
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.SALMONELLOSIS })
 	@DependantOn(WORK_PLACE)
 	private String workPlaceText;
 
@@ -727,7 +769,7 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return the PRIMARY email address. Email addresses set with the {@link #setEmailAddress(String)} method automatically become primary.
 	 *         An email address entered in the personEditForm is not, and thus does not become primary email address unless the user
 	 *         specifically sets it.
@@ -738,7 +780,7 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param onlyPrimary
 	 *            if true, the return value is same as in {@link #getEmailAddress()}. Otherwise, this method tries to return the only email
 	 *            address for this person, no matter if primary or not. Results in an SeveralNonPrimaryContactDetailsException when there
@@ -776,7 +818,7 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param email
 	 *            is automatically set as primary email address, removing the primary status from another email address if necessary.
 	 */

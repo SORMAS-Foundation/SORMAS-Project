@@ -39,6 +39,8 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalCourseFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitFacade;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataFacade;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldValueFacade;
 import de.symeda.sormas.api.dashboard.DashboardFacade;
 import de.symeda.sormas.api.dashboard.adverseeventsfollowingimmunization.AefiDashboardFacade;
 import de.symeda.sormas.api.dashboard.sample.SampleDashboardFacade;
@@ -107,6 +109,7 @@ import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInf
 import de.symeda.sormas.api.specialcaseaccess.SpecialCaseAccessFacade;
 import de.symeda.sormas.api.survey.SurveyFacade;
 import de.symeda.sormas.api.survey.SurveyTokenFacade;
+import de.symeda.sormas.api.survey.alias.PathAliasFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationCategoryFacade;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
@@ -317,6 +320,10 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(PrescriptionFacade.class);
 	}
 
+	public static PathAliasFacade getPathAliasFacade() {
+		return get().lookupEjbRemote(PathAliasFacade.class);
+	}
+
 	public static TreatmentFacade getTreatmentFacade() {
 		return get().lookupEjbRemote(TreatmentFacade.class);
 	}
@@ -506,6 +513,14 @@ public class FacadeProvider {
 
 	public static CustomizableEnumFacade getCustomizableEnumFacade() {
 		return get().lookupEjbRemote(CustomizableEnumFacade.class);
+	}
+
+	public static CustomizableFieldMetadataFacade getCustomizableFieldMetadataFacade() {
+		return get().lookupEjbRemote(CustomizableFieldMetadataFacade.class);
+	}
+
+	public static CustomizableFieldValueFacade getCustomizableFieldValueFacade() {
+		return get().lookupEjbRemote(CustomizableFieldValueFacade.class);
 	}
 
 	public static InfoFacade getInfoFacade() {

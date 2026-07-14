@@ -11,14 +11,16 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
-import de.symeda.sormas.api.sample.GenoTypeResult;
+import de.symeda.sormas.api.sample.GenoType;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenSpecie;
 import de.symeda.sormas.api.sample.PathogenStrainCallStatus;
+import de.symeda.sormas.api.sample.PathogenTestCategory;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.RsvSubtype;
 import de.symeda.sormas.api.sample.SeroGroupSpecification;
+import de.symeda.sormas.api.sample.Serotype;
 import de.symeda.sormas.api.sample.SerotypingMethod;
 import de.symeda.sormas.api.therapy.DrugSusceptibilityType;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -69,6 +71,7 @@ public class TestReportDto extends EntityDto {
 	public static final String PRESCRIBER_POSTAL_CODE = "prescriberPostalCode";
 	public static final String PRESCRIBER_CITY = "prescriberCity";
 	public static final String PRESCRIBER_COUNTRY = "prescriberCountry";
+	public static final String PERFORMED_BY_REFERENCE_LABORATORY = "performedByReferenceLaboratory";
 
 	@NotNull(message = Validations.requiredField)
 	private SampleReportReferenceDto sampleReport;
@@ -168,51 +171,57 @@ public class TestReportDto extends EntityDto {
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	private CountryReferenceDto prescriberCountry;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
-	private GenoTypeResult genoTypeResult;
+	private GenoType genoType;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	private RsvSubtype rsvSubtype;
 
 	// Drug susceptibility fields
-	private Float amikacinMic;
+	private String amikacinMic;
 	private DrugSusceptibilityType amikacinSusceptibility;
-	private Float bedaquilineMic;
+	private String bedaquilineMic;
 	private DrugSusceptibilityType bedaquilineSusceptibility;
-	private Float capreomycinMic;
+	private String capreomycinMic;
 	private DrugSusceptibilityType capreomycinSusceptibility;
-	private Float ciprofloxacinMic;
+	private String ciprofloxacinMic;
 	private DrugSusceptibilityType ciprofloxacinSusceptibility;
-	private Float delamanidMic;
+	private String delamanidMic;
 	private DrugSusceptibilityType delamanidSusceptibility;
-	private Float ethambutolMic;
+	private String ethambutolMic;
 	private DrugSusceptibilityType ethambutolSusceptibility;
-	private Float gatifloxacinMic;
+	private String gatifloxacinMic;
 	private DrugSusceptibilityType gatifloxacinSusceptibility;
-	private Float isoniazidMic;
+	private String isoniazidMic;
 	private DrugSusceptibilityType isoniazidSusceptibility;
-	private Float kanamycinMic;
+	private String kanamycinMic;
 	private DrugSusceptibilityType kanamycinSusceptibility;
-	private Float levofloxacinMic;
+	private String levofloxacinMic;
 	private DrugSusceptibilityType levofloxacinSusceptibility;
-	private Float moxifloxacinMic;
+	private String moxifloxacinMic;
 	private DrugSusceptibilityType moxifloxacinSusceptibility;
-	private Float ofloxacinMic;
+	private String ofloxacinMic;
 	private DrugSusceptibilityType ofloxacinSusceptibility;
-	private Float rifampicinMic;
+	private String rifampicinMic;
 	private DrugSusceptibilityType rifampicinSusceptibility;
-	private Float streptomycinMic;
+	private String streptomycinMic;
 	private DrugSusceptibilityType streptomycinSusceptibility;
-	private Float ceftriaxoneMic;
+	private String ceftriaxoneMic;
 	private DrugSusceptibilityType ceftriaxoneSusceptibility;
-	private Float penicillinMic;
+	private String penicillinMic;
 	private DrugSusceptibilityType penicillinSusceptibility;
-	private Float erythromycinMic;
+	private String erythromycinMic;
 	private DrugSusceptibilityType erythromycinSusceptibility;
 
 	private SeroGroupSpecification seroGroupSpecification;
 	private String seroGroupSpecificationText;
 	private SerotypingMethod seroTypingMethod;
 	private String seroTypingMethodText;
-	private String serotype;
+	private Serotype serotype;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	private String serotypeText;
+
+	private PathogenTestCategory pathogenTestCategory;
+	private boolean fourFoldIncreaseAntibodyTiter;
+	private Boolean performedByReferenceLaboratory;
 
 	public SampleReportReferenceDto getSampleReport() {
 		return sampleReport;
@@ -572,12 +581,12 @@ public class TestReportDto extends EntityDto {
 		this.prescriberCountry = prescriberCountry;
 	}
 
-	public GenoTypeResult getGenoTypeResult() {
-		return genoTypeResult;
+	public GenoType getGenoType() {
+		return genoType;
 	}
 
-	public void setGenoTypeResult(GenoTypeResult genoTypeResult) {
-		this.genoTypeResult = genoTypeResult;
+	public void setGenoType(GenoType genoType) {
+		this.genoType = genoType;
 	}
 
 	public RsvSubtype getRsvSubtype() {
@@ -589,11 +598,11 @@ public class TestReportDto extends EntityDto {
 	}
 
 	// Drug susceptibility getters and setters
-	public Float getAmikacinMic() {
+	public String getAmikacinMic() {
 		return amikacinMic;
 	}
 
-	public void setAmikacinMic(Float amikacinMic) {
+	public void setAmikacinMic(String amikacinMic) {
 		this.amikacinMic = amikacinMic;
 	}
 
@@ -605,11 +614,11 @@ public class TestReportDto extends EntityDto {
 		this.amikacinSusceptibility = amikacinSusceptibility;
 	}
 
-	public Float getBedaquilineMic() {
+	public String getBedaquilineMic() {
 		return bedaquilineMic;
 	}
 
-	public void setBedaquilineMic(Float bedaquilineMic) {
+	public void setBedaquilineMic(String bedaquilineMic) {
 		this.bedaquilineMic = bedaquilineMic;
 	}
 
@@ -621,11 +630,11 @@ public class TestReportDto extends EntityDto {
 		this.bedaquilineSusceptibility = bedaquilineSusceptibility;
 	}
 
-	public Float getCapreomycinMic() {
+	public String getCapreomycinMic() {
 		return capreomycinMic;
 	}
 
-	public void setCapreomycinMic(Float capreomycinMic) {
+	public void setCapreomycinMic(String capreomycinMic) {
 		this.capreomycinMic = capreomycinMic;
 	}
 
@@ -637,11 +646,11 @@ public class TestReportDto extends EntityDto {
 		this.capreomycinSusceptibility = capreomycinSusceptibility;
 	}
 
-	public Float getCiprofloxacinMic() {
+	public String getCiprofloxacinMic() {
 		return ciprofloxacinMic;
 	}
 
-	public void setCiprofloxacinMic(Float ciprofloxacinMic) {
+	public void setCiprofloxacinMic(String ciprofloxacinMic) {
 		this.ciprofloxacinMic = ciprofloxacinMic;
 	}
 
@@ -653,11 +662,11 @@ public class TestReportDto extends EntityDto {
 		this.ciprofloxacinSusceptibility = ciprofloxacinSusceptibility;
 	}
 
-	public Float getDelamanidMic() {
+	public String getDelamanidMic() {
 		return delamanidMic;
 	}
 
-	public void setDelamanidMic(Float delamanidMic) {
+	public void setDelamanidMic(String delamanidMic) {
 		this.delamanidMic = delamanidMic;
 	}
 
@@ -669,11 +678,11 @@ public class TestReportDto extends EntityDto {
 		this.delamanidSusceptibility = delamanidSusceptibility;
 	}
 
-	public Float getEthambutolMic() {
+	public String getEthambutolMic() {
 		return ethambutolMic;
 	}
 
-	public void setEthambutolMic(Float ethambutolMic) {
+	public void setEthambutolMic(String ethambutolMic) {
 		this.ethambutolMic = ethambutolMic;
 	}
 
@@ -685,11 +694,11 @@ public class TestReportDto extends EntityDto {
 		this.ethambutolSusceptibility = ethambutolSusceptibility;
 	}
 
-	public Float getGatifloxacinMic() {
+	public String getGatifloxacinMic() {
 		return gatifloxacinMic;
 	}
 
-	public void setGatifloxacinMic(Float gatifloxacinMic) {
+	public void setGatifloxacinMic(String gatifloxacinMic) {
 		this.gatifloxacinMic = gatifloxacinMic;
 	}
 
@@ -701,11 +710,11 @@ public class TestReportDto extends EntityDto {
 		this.gatifloxacinSusceptibility = gatifloxacinSusceptibility;
 	}
 
-	public Float getIsoniazidMic() {
+	public String getIsoniazidMic() {
 		return isoniazidMic;
 	}
 
-	public void setIsoniazidMic(Float isoniazidMic) {
+	public void setIsoniazidMic(String isoniazidMic) {
 		this.isoniazidMic = isoniazidMic;
 	}
 
@@ -717,11 +726,11 @@ public class TestReportDto extends EntityDto {
 		this.isoniazidSusceptibility = isoniazidSusceptibility;
 	}
 
-	public Float getKanamycinMic() {
+	public String getKanamycinMic() {
 		return kanamycinMic;
 	}
 
-	public void setKanamycinMic(Float kanamycinMic) {
+	public void setKanamycinMic(String kanamycinMic) {
 		this.kanamycinMic = kanamycinMic;
 	}
 
@@ -733,11 +742,11 @@ public class TestReportDto extends EntityDto {
 		this.kanamycinSusceptibility = kanamycinSusceptibility;
 	}
 
-	public Float getLevofloxacinMic() {
+	public String getLevofloxacinMic() {
 		return levofloxacinMic;
 	}
 
-	public void setLevofloxacinMic(Float levofloxacinMic) {
+	public void setLevofloxacinMic(String levofloxacinMic) {
 		this.levofloxacinMic = levofloxacinMic;
 	}
 
@@ -749,11 +758,11 @@ public class TestReportDto extends EntityDto {
 		this.levofloxacinSusceptibility = levofloxacinSusceptibility;
 	}
 
-	public Float getMoxifloxacinMic() {
+	public String getMoxifloxacinMic() {
 		return moxifloxacinMic;
 	}
 
-	public void setMoxifloxacinMic(Float moxifloxacinMic) {
+	public void setMoxifloxacinMic(String moxifloxacinMic) {
 		this.moxifloxacinMic = moxifloxacinMic;
 	}
 
@@ -765,11 +774,11 @@ public class TestReportDto extends EntityDto {
 		this.moxifloxacinSusceptibility = moxifloxacinSusceptibility;
 	}
 
-	public Float getOfloxacinMic() {
+	public String getOfloxacinMic() {
 		return ofloxacinMic;
 	}
 
-	public void setOfloxacinMic(Float ofloxacinMic) {
+	public void setOfloxacinMic(String ofloxacinMic) {
 		this.ofloxacinMic = ofloxacinMic;
 	}
 
@@ -781,11 +790,11 @@ public class TestReportDto extends EntityDto {
 		this.ofloxacinSusceptibility = ofloxacinSusceptibility;
 	}
 
-	public Float getRifampicinMic() {
+	public String getRifampicinMic() {
 		return rifampicinMic;
 	}
 
-	public void setRifampicinMic(Float rifampicinMic) {
+	public void setRifampicinMic(String rifampicinMic) {
 		this.rifampicinMic = rifampicinMic;
 	}
 
@@ -797,11 +806,11 @@ public class TestReportDto extends EntityDto {
 		this.rifampicinSusceptibility = rifampicinSusceptibility;
 	}
 
-	public Float getStreptomycinMic() {
+	public String getStreptomycinMic() {
 		return streptomycinMic;
 	}
 
-	public void setStreptomycinMic(Float streptomycinMic) {
+	public void setStreptomycinMic(String streptomycinMic) {
 		this.streptomycinMic = streptomycinMic;
 	}
 
@@ -813,11 +822,11 @@ public class TestReportDto extends EntityDto {
 		this.streptomycinSusceptibility = streptomycinSusceptibility;
 	}
 
-	public Float getCeftriaxoneMic() {
+	public String getCeftriaxoneMic() {
 		return ceftriaxoneMic;
 	}
 
-	public void setCeftriaxoneMic(Float ceftriaxoneMic) {
+	public void setCeftriaxoneMic(String ceftriaxoneMic) {
 		this.ceftriaxoneMic = ceftriaxoneMic;
 	}
 
@@ -829,11 +838,11 @@ public class TestReportDto extends EntityDto {
 		this.ceftriaxoneSusceptibility = ceftriaxoneSusceptibility;
 	}
 
-	public Float getPenicillinMic() {
+	public String getPenicillinMic() {
 		return penicillinMic;
 	}
 
-	public void setPenicillinMic(Float penicillinMic) {
+	public void setPenicillinMic(String penicillinMic) {
 		this.penicillinMic = penicillinMic;
 	}
 
@@ -845,11 +854,11 @@ public class TestReportDto extends EntityDto {
 		this.penicillinSusceptibility = penicillinSusceptibility;
 	}
 
-	public Float getErythromycinMic() {
+	public String getErythromycinMic() {
 		return erythromycinMic;
 	}
 
-	public void setErythromycinMic(Float erythromycinMic) {
+	public void setErythromycinMic(String erythromycinMic) {
 		this.erythromycinMic = erythromycinMic;
 	}
 
@@ -893,11 +902,44 @@ public class TestReportDto extends EntityDto {
 		this.seroTypingMethodText = seroTypingMethodText;
 	}
 
-	public String getSerotype() {
+	public Serotype getSerotype() {
 		return serotype;
 	}
 
-	public void setSerotype(String serotype) {
+	public void setSerotype(Serotype serotype) {
 		this.serotype = serotype;
 	}
+
+	public String getSerotypeText() {
+		return serotypeText;
+	}
+
+	public void setSerotypeText(String serotypeText) {
+		this.serotypeText = serotypeText;
+	}
+
+	public PathogenTestCategory getPathogenTestCategory() {
+		return pathogenTestCategory;
+	}
+
+	public void setPathogenTestCategory(PathogenTestCategory pathogenTestCategory) {
+		this.pathogenTestCategory = pathogenTestCategory;
+	}
+
+	public boolean getFourFoldIncreaseAntibodyTiter() {
+		return fourFoldIncreaseAntibodyTiter;
+	}
+
+	public void setFourFoldIncreaseAntibodyTiter(boolean fourFoldIncreaseAntibodyTiter) {
+		this.fourFoldIncreaseAntibodyTiter = fourFoldIncreaseAntibodyTiter;
+	}
+
+	public Boolean getPerformedByReferenceLaboratory() {
+		return performedByReferenceLaboratory;
+	}
+
+	public void setPerformedByReferenceLaboratory(Boolean performedByReferenceLaboratory) {
+		this.performedByReferenceLaboratory = performedByReferenceLaboratory;
+	}
+
 }

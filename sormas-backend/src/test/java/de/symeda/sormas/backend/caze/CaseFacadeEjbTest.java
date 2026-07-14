@@ -1065,7 +1065,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			surveillanceSupervisor.toReference(),
 			SampleMaterial.CRUST,
 			rdcf.facility);
-		creator.createPathogenTest(caze, PathogenTestType.ANTIGEN_DETECTION, PathogenTestResultType.POSITIVE);
+		creator.createPathogenTest(caze, PathogenTestType.LATERAL_FLOW_ASSAY, PathogenTestResultType.POSITIVE);
 		creator.createPrescription(caze);
 		ImmunizationDto immunization = creator.createImmunization(
 			caze.getDisease(),
@@ -1078,7 +1078,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			DateHelper.subtractDays(new Date(), 10),
 			DateHelper.subtractDays(new Date(), 5),
 			DateHelper.subtractDays(new Date(), 1),
-			null);
+			DateHelper.addDays(new Date(), 1));
 		creator.createImmunization(
 			caze.getDisease(),
 			caze.getPerson(),
@@ -3441,6 +3441,128 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertThat(caze.getDisease(), is(Disease.ANTHRAX));
 		assertThat(caze.getDiseaseVariant(), is(nullValue()));
 		assertThat(caze.getDiseaseVariantDetails(), is(nullValue()));
+	}
+
+	@Test
+	public void testLabResultsFieldsRoundTrip() {
+		// Guards the hand-written CaseFacadeEjb mapper for the lab-results tab header fields (#13948).
+		CaseDataDto caze = creator.createCase(
+			surveillanceSupervisor.toReference(),
+			creator.createPerson("Lab", "Case").toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		// Truncate to day granularity so the round-trip assertion is not brittle to sub-second precision
+		// differences in DB/JPA timestamp handling.
+		Date dateOther = DateHelper.getStartOfDay(new Date());
+		caze.setDateOther(dateOther);
+		caze.setDateOtherDetails("Sampling visit");
+		caze.setExternalComments("Lab sent confirmation");
+		getCaseFacade().save(caze);
+
+		CaseDataDto reloaded = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(dateOther, reloaded.getDateOther());
+		assertEquals("Sampling visit", reloaded.getDateOtherDetails());
+		assertEquals("Lab sent confirmation", reloaded.getExternalComments());
+	}
+
+	@Test
+	public void testFilterCasesByTestResultAndSerogroup() {
+		// Case A: a POSITIVE sample whose pathogen test has serotype "Serogroup B".
+		CaseDataDto caseA = creator.createCase(
+			surveillanceSupervisor.toReference(),
+			creator.createPerson("Filter", "CaseA").toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		SampleDto sampleA = creator.createSample(
+			caseA.toReference(),
+			surveillanceSupervisor.toReference(),
+			rdcf.facility,
+			s -> s.setPathogenTestResult(PathogenTestResultType.POSITIVE));
+		creator.createPathogenTest(sampleA.toReference(), surveillanceSupervisor.toReference(), t -> {
+			t.setTestedDisease(Disease.EVD);
+			t.setLab(rdcf.facility);
+			t.setSerotypeText("Serogroup B");
+		});
+
+		// Case B: a NEGATIVE sample whose pathogen test has serotype "Type A".
+		CaseDataDto caseB = creator.createCase(
+			surveillanceSupervisor.toReference(),
+			creator.createPerson("Filter", "CaseB").toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		SampleDto sampleB = creator.createSample(
+			caseB.toReference(),
+			surveillanceSupervisor.toReference(),
+			rdcf.facility,
+			s -> s.setPathogenTestResult(PathogenTestResultType.NEGATIVE));
+		creator.createPathogenTest(sampleB.toReference(), surveillanceSupervisor.toReference(), t -> {
+			t.setTestedDisease(Disease.EVD);
+			t.setLab(rdcf.facility);
+			t.setSerotypeText("Type A");
+		});
+
+		// Test-result filter narrows to the matching case only.
+		List<CaseIndexDto> positives = getCaseFacade().getIndexList(new CaseCriteria().pathogenTestResult(PathogenTestResultType.POSITIVE), 0, 100, null);
+		assertEquals(1, positives.size());
+		assertEquals(caseA.getUuid(), positives.get(0).getUuid());
+
+		// Serogroup filter is case-insensitive and partial (matches "Serogroup B" via "serogroup").
+		List<CaseIndexDto> serogroupMatches = getCaseFacade().getIndexList(new CaseCriteria().serogroup("serogroup"), 0, 100, null);
+		assertEquals(1, serogroupMatches.size());
+		assertEquals(caseA.getUuid(), serogroupMatches.get(0).getUuid());
+
+		List<CaseIndexDto> typeAMatches = getCaseFacade().getIndexList(new CaseCriteria().serogroup("type a"), 0, 100, null);
+		assertEquals(1, typeAMatches.size());
+		assertEquals(caseB.getUuid(), typeAMatches.get(0).getUuid());
+
+		// Mismatched combination returns nothing.
+		assertEquals(
+			0,
+			getCaseFacade().getIndexList(new CaseCriteria().pathogenTestResult(PathogenTestResultType.POSITIVE).serogroup("type a"), 0, 100, null)
+				.size());
+
+		// Case C: the result and the serotype live on DIFFERENT samples. The two filters are independent
+		// EXISTS subqueries (result on any sample, serogroup on any sample's test), so a case matches when
+		// each condition is satisfied by a different sample. This documents that intended cross-sample
+		// semantics.
+		CaseDataDto caseC = creator.createCase(
+			surveillanceSupervisor.toReference(),
+			creator.createPerson("Filter", "CaseC").toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		creator.createSample(
+			caseC.toReference(),
+			surveillanceSupervisor.toReference(),
+			rdcf.facility,
+			s -> s.setPathogenTestResult(PathogenTestResultType.POSITIVE));
+		SampleDto caseCSecondSample = creator.createSample(
+			caseC.toReference(),
+			surveillanceSupervisor.toReference(),
+			rdcf.facility,
+			s -> s.setPathogenTestResult(PathogenTestResultType.NEGATIVE));
+		creator.createPathogenTest(caseCSecondSample.toReference(), surveillanceSupervisor.toReference(), t -> {
+			t.setTestedDisease(Disease.EVD);
+			t.setLab(rdcf.facility);
+			t.setSerotypeText("Cross C");
+		});
+
+		List<CaseIndexDto> crossSampleMatches = getCaseFacade()
+			.getIndexList(new CaseCriteria().pathogenTestResult(PathogenTestResultType.POSITIVE).serogroup("cross c"), 0, 100, null);
+		assertEquals(1, crossSampleMatches.size());
+		assertEquals(caseC.getUuid(), crossSampleMatches.get(0).getUuid());
 	}
 
 	private static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ";

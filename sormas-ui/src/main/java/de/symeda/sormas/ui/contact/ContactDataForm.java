@@ -32,8 +32,8 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.oneOfTwoCol;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Set;
 
-import com.google.common.collect.Sets;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.shared.ui.ErrorLevel;
 import com.vaadin.ui.Button;
@@ -48,6 +48,7 @@ import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
@@ -56,7 +57,6 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -86,7 +86,6 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.api.utils.ExtendedReduced;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -140,7 +139,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
                     loc(ContactDto.CASE_OR_EVENT_INFORMATION) +
 					fluidRowLocs(6, ContactDto.CONTACT_IDENTIFICATION_SOURCE, 6, ContactDto.TRACING_APP) +
 					fluidRowLocs(6, ContactDto.CONTACT_IDENTIFICATION_SOURCE_DETAILS, 6, ContactDto.TRACING_APP_DETAILS) +
-					fluidRowLocs(ContactDto.CONTACT_PROXIMITY) +
+					fluidRowLocs(ContactDto.CONTACT_PROXIMITIES) +
                     fluidRowLocs(ContactDto.CONTACT_PROXIMITY_DETAILS) +
                     fluidRowLocs(ContactDto.CONTACT_CATEGORY) +
                     fluidRowLocs(ContactDto.RELATION_TO_CASE) +
@@ -181,8 +180,9 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private final ViewMode viewMode;
 	private final Disease disease;
 	private final boolean diseaseHasFollowUp;
-	private final boolean luxMeasles;
-	private NullableOptionGroup contactProximity;
+	private final boolean isPseudonymized;
+	private final boolean inJurisdiction;
+	private OptionGroup contactProximities;
 	private ComboBox region;
 	private ComboBox district;
 	private ComboBox community;
@@ -222,7 +222,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		this.viewMode = viewMode;
 		this.disease = disease;
 		this.diseaseHasFollowUp = FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(disease);
-		this.luxMeasles = Disease.MEASLES == disease && FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+		this.isPseudonymized = isPseudonymized;
+		this.inJurisdiction = inJurisdiction;
 		addFields();
 	}
 
@@ -237,6 +238,9 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		if (viewMode == null) {
 			return;
 		}
+
+		boolean showVaccinationStatusFields = !UiUtil.enabled(FeatureType.IMMUNIZATION_MANAGEMENT)
+			|| FacadeProvider.getFeatureConfigurationFacade().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED);
 
 		Label contactDataHeadingLabel = new Label(I18nProperties.getString(Strings.headingContactData));
 		contactDataHeadingLabel.addStyleName(H3);
@@ -305,16 +309,18 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			FieldHelper
 				.setVisibleWhen(getFieldGroup(), ContactDto.TRACING_APP_DETAILS, ContactDto.TRACING_APP, Arrays.asList(TracingApp.OTHER), true);
 		}
-		contactProximity = addField(ContactDto.CONTACT_PROXIMITY, NullableOptionGroup.class);
-		contactProximity.setCaption(I18nProperties.getCaption(Captions.Contact_contactProximityLongForm));
-		contactProximity.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
+		contactProximities = addField(ContactDto.CONTACT_PROXIMITIES, OptionGroup.class);
+		contactProximities.setCaption(I18nProperties.getCaption(Captions.Contact_contactProximityLongForm));
+		contactProximities.setMultiSelect(true);
+		contactProximities.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
 		addField(ContactDto.CONTACT_PROXIMITY_DETAILS, TextField.class);
 		contactCategory = addField(ContactDto.CONTACT_CATEGORY, NullableOptionGroup.class);
 
 		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
-			contactProximity.addValueChangeListener(e -> {
-				if (getInternalValue().getContactProximity() != e.getProperty().getValue() || contactCategory.isModified()) {
-					updateContactCategory((ContactProximity) contactProximity.getNullableValue());
+			contactProximities.addValueChangeListener(e -> {
+				if (getInternalValue() != null
+					&& (!getInternalValue().getContactProximities().equals(e.getProperty().getValue()) || contactCategory.isModified())) {
+					updateContactCategory((Set<ContactProximity>) contactProximities.getValue());
 				}
 			});
 		}
@@ -465,14 +471,9 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		addField(ContactDto.DESCRIPTION, TextArea.class).setRows(6);
 		ComboBox vaccinationStatusCB = addField(ContactDto.VACCINATION_STATUS);
-		DateField vaccinationDose1DateDF = addField(ContactDto.VACCINATION_DOSE_ONE_DATE);
-		DateField vaccinationDose2DateDF = addField(ContactDto.VACCINATION_DOSE_TWO_DATE);
-		FieldHelper
-			.setVisibleWhen(vaccinationStatusCB, Arrays.asList(vaccinationDose1DateDF), Arrays.asList(VaccinationStatus.VACCINATED_ONE_DOSE), true);
-		FieldHelper
-			.setVisibleWhen(vaccinationStatusCB, Arrays.asList(vaccinationDose2DateDF), Arrays.asList(VaccinationStatus.VACCINATED_TWO_DOSE), true);
-		addField(ContactDto.VACCINATION_PROPOSED, CheckBox.class);
-		addField(ContactDto.IMMUNE_GLOBULIN_PROPOSED, CheckBox.class);
+
+		CheckBox vaccinationProposedField = addField(ContactDto.VACCINATION_PROPOSED, CheckBox.class);
+		CheckBox immuneGlobulinProposedField = addField(ContactDto.IMMUNE_GLOBULIN_PROPOSED, CheckBox.class);
 		addField(ContactDto.RETURNING_TRAVELER, NullableOptionGroup.class);
 		addField(ContactDto.CASE_ID_EXTERNAL_SYSTEM, TextField.class);
 		addField(ContactDto.CASE_OR_EVENT_INFORMATION, TextArea.class).setRows(4);
@@ -544,7 +545,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				disease,
 				FieldVisibilityCheckers.withDisease(disease)
 					.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
-				UiFieldAccessCheckers.getDefault(true, FacadeProvider.getConfigFacade().getCountryLocale())));
+				FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized)));
 		clinicalCourseForm.setCaption(null);
 
 		Label generalCommentLabel = new Label(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.ADDITIONAL_DETAILS));
@@ -572,6 +573,10 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
+
+		if (!showVaccinationStatusFields) {
+			vaccinationStatusCB.setVisible(false);
+		}
 
 		setReadOnly(
 			true,
@@ -734,7 +739,6 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		});
 
 		setRequired(true, ContactDto.CONTACT_CLASSIFICATION, ContactDto.CONTACT_STATUS, ContactDto.REPORT_DATE_TIME);
-		FieldHelper.addSoftRequiredStyle(firstContactDate, lastContactDate, contactProximity, relationToCase);
 		// Prophylaxis details for IMI
 		CheckBox prophylaxisPrescribed = addField(ContactDto.PROPHYLAXIS_PRESCRIBED, CheckBox.class);
 		prophylaxisPrescribed.setCaption(I18nProperties.getCaption(Captions.Contact_prophylaxisPrescribed));
@@ -787,30 +791,41 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	/*
 	 * Only used for Systems in Germany. Follows specific rules for german systems.
 	 */
-	private void updateContactCategory(ContactProximity proximity) {
-		if (proximity != null) {
-			switch (proximity) {
-			case FACE_TO_FACE_LONG:
-			case TOUCHED_FLUID:
-			case AEROSOL:
-				contactCategory.setValue(Sets.newHashSet(ContactCategory.HIGH_RISK));
-				break;
-			case MEDICAL_UNSAFE:
-				contactCategory.setValue(Sets.newHashSet(ContactCategory.HIGH_RISK_MED));
-				break;
-			case MEDICAL_LIMITED:
-				contactCategory.setValue(Sets.newHashSet(ContactCategory.MEDIUM_RISK_MED));
-				break;
-			case SAME_ROOM:
-			case FACE_TO_FACE_SHORT:
-			case MEDICAL_SAME_ROOM:
-				contactCategory.setValue(Sets.newHashSet(ContactCategory.LOW_RISK));
-				break;
-			case MEDICAL_DISTANT:
-			case MEDICAL_SAFE:
-				contactCategory.setValue(Sets.newHashSet(ContactCategory.NO_RISK));
-				break;
-			default:
+	private void updateContactCategory(Set<ContactProximity> proximities) {
+		deduceContactCategory(proximities, contactCategory);
+	}
+
+	static void deduceContactCategory(Set<ContactProximity> proximities, NullableOptionGroup contactCategory) {
+		if (proximities != null && !proximities.isEmpty()) {
+			ContactCategory highestRiskCategory = null;
+
+			// Check for highest risk first (HIGH_RISK)
+			if (proximities.contains(ContactProximity.FACE_TO_FACE_LONG)
+				|| proximities.contains(ContactProximity.TOUCHED_FLUID)
+				|| proximities.contains(ContactProximity.AEROSOL)) {
+				highestRiskCategory = ContactCategory.HIGH_RISK;
+			}
+			// HIGH_RISK_MED
+			else if (proximities.contains(ContactProximity.MEDICAL_UNSAFE)) {
+				highestRiskCategory = ContactCategory.HIGH_RISK_MED;
+			}
+			// MEDIUM_RISK_MED
+			else if (proximities.contains(ContactProximity.MEDICAL_LIMITED)) {
+				highestRiskCategory = ContactCategory.MEDIUM_RISK_MED;
+			}
+			// LOW_RISK
+			else if (proximities.contains(ContactProximity.SAME_ROOM)
+				|| proximities.contains(ContactProximity.FACE_TO_FACE_SHORT)
+				|| proximities.contains(ContactProximity.MEDICAL_SAME_ROOM)) {
+				highestRiskCategory = ContactCategory.LOW_RISK;
+			}
+			// NO_RISK
+			else if (proximities.contains(ContactProximity.MEDICAL_DISTANT) || proximities.contains(ContactProximity.MEDICAL_SAFE)) {
+				highestRiskCategory = ContactCategory.NO_RISK;
+			}
+
+			if (highestRiskCategory != null) {
+				contactCategory.setNullableValue(highestRiskCategory);
 			}
 		}
 	}
@@ -913,7 +928,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			field -> false);
 
 		FieldHelper.updateEnumData(
-			contactProximity,
+			contactProximities,
 			Arrays.asList(ContactProximity.getValues(disease, FacadeProvider.getConfigFacade().getCountryLocale())));
 	}
 

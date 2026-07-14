@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.ui.caze.notifier;
 
+import java.util.function.Consumer;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
@@ -22,6 +24,8 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -36,57 +40,84 @@ import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 @SuppressWarnings("serial")
 public class CaseNotifierSideViewComponent extends SideComponent {
 
+	private final transient CaseNotifierSideViewController controller = ControllerProvider.getCaseNotifierSideViewController();
+
 	/**
 	 * Creates a new notifier side view component for the given case.
 	 *
-	 * @param caze the case data for which the notifier side view is displayed
 	 */
-	public CaseNotifierSideViewComponent(CaseDataDto caze) {
+	/**
+	 * Creates a new notifier side view component for the given case.
+	 *
+	 * @param cazeRef
+	 *            the case data reference for which the notifier side view is displayed
+	 */
+	public CaseNotifierSideViewComponent(CaseReferenceDto cazeRef, Consumer<Runnable> actionCallback) {
+		super(I18nProperties.getString(Strings.headingCaseNotifiedBy), actionCallback);
 
-		super(I18nProperties.getString(Strings.headingCaseNotifiedBy));
+		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(cazeRef.getUuid());
+
+		final SurveillanceReportDto oldestDoctorDeclarationReport = controller.getOldestDoctorDeclarationReport(cazeRef);
+		final SurveillanceReportDto phoneNotificationReport = controller.getNewestPhoneNotificationReport(cazeRef);
+
+		final boolean hasNotifier = caze.getNotifier() != null;
+		final boolean hasPhoneNotification = phoneNotificationReport != null;
+		final boolean hasNoNotificationReports = oldestDoctorDeclarationReport == null && !hasPhoneNotification;
+
 		setWidth(100, Unit.PERCENTAGE);
 		setMargin(false);
 		setSpacing(false);
 
-		if (caze.getNotifier() != null) {
-			final var component = ControllerProvider.getCaseNotifierSideViewController().getNotifierComponent(caze);
-			addComponent(component);
+		if (hasNoNotificationReports || (!hasNotifier && !hasPhoneNotification)) { // if we do not have any relevant notifications or no notifier add the create button
+			addComponent(new Label(I18nProperties.getCaption(Captions.Notification_noNotification)));
+			// Create a new notification button
+			Button newNotificationButton = ButtonHelper.createIconButton(Captions.Notification_createNotification, VaadinIcons.PHONE, e -> {
+				actionCallback.accept(() -> controller.createPhoneNotification(cazeRef, () -> {
+					// Refresh the view by navigating back to the same case
+					ControllerProvider.getCaseController().navigateToCase(cazeRef.getUuid());
+				}));
+			}, ValoTheme.BUTTON_PRIMARY);
+			addCreateButton(newNotificationButton);
 
-			final boolean hasReport = ControllerProvider.getCaseNotifierSideViewController().getOldestReport(caze) != null;
+		} else { // we have either a phone notification or a doctor declaration report
+			if (hasPhoneNotification) { // in case we have a phone notification add the component and a button to allow the user to edit it
 
-			if (hasReport) {
-				Button notificationButton = ButtonHelper.createIconButton(Captions.Notifier_notification, VaadinIcons.BOOK, e -> {
-					final var oldestReport = ControllerProvider.getCaseNotifierSideViewController().getOldestReport(caze);
-					if (oldestReport == null) {
-						return;
-					}
-					final var externalMessage = FacadeProvider.getExternalMessageFacade().getForSurveillanceReport(oldestReport.toReference());
-					if (externalMessage == null) {
-						return;
-					}
-					ControllerProvider.getExternalMessageController().showExternalMessage(externalMessage.getUuid(), false, null);
-				}, ValoTheme.BUTTON_PRIMARY);
+				// Add the component
+				final var component = controller.getNotifierComponent(caze, phoneNotificationReport);
+				addComponent(component);
 
-				addCreateButton(notificationButton);
-			} else {
+				// Show edit button when only PHONE_NOTIFICATION exists
 				Button editNotifierButton = ButtonHelper.createIconButton(Captions.edit, VaadinIcons.EDIT, e -> {
-					ControllerProvider.getCaseNotifierSideViewController().editNotifier(caze, () -> {
+					controller.editPhoneNotification(caze, () -> {
 						// Refresh the view by navigating back to the same case
 						ControllerProvider.getCaseController().navigateToCase(caze.getUuid());
 					}, true); // true = allow editing
 				}, ValoTheme.BUTTON_PRIMARY);
 
 				addCreateButton(editNotifierButton);
+			} else {
+				if (oldestDoctorDeclarationReport != null) { // in case we have a doctor declaration the component and a button to display the external message (no edit allowed in this case)
+
+					// Add the component
+					final var component = controller.getNotifierComponent(caze, oldestDoctorDeclarationReport);
+					addComponent(component);
+
+					// Show notification button for DOCTOR reports
+					Button notificationButton = ButtonHelper.createIconButton(Captions.Notifier_notification, VaadinIcons.BOOK, e -> {
+						final var oldestReport = controller.getOldestDoctorDeclarationReport(caze);
+						if (oldestReport == null) {
+							return;
+						}
+						final var externalMessage = FacadeProvider.getExternalMessageFacade().getForSurveillanceReport(oldestReport.toReference());
+						if (externalMessage == null) {
+							return;
+						}
+						ControllerProvider.getExternalMessageController().showExternalMessage(externalMessage.getUuid(), false, null);
+					}, ValoTheme.BUTTON_PRIMARY);
+
+					addCreateButton(notificationButton);
+				}
 			}
-		} else {
-			addComponent(new Label(I18nProperties.getCaption(Captions.Notification_noNotification)));
-			Button newNotificationButton = ButtonHelper.createIconButton(Captions.Notification_createNotification, VaadinIcons.PHONE, e -> {
-				ControllerProvider.getCaseNotifierSideViewController().createNotifier(caze, () -> {
-					// Refresh the view by navigating back to the same case
-					ControllerProvider.getCaseController().navigateToCase(caze.getUuid());
-				});
-			}, ValoTheme.BUTTON_PRIMARY);
-			addCreateButton(newNotificationButton);
 		}
 	}
 

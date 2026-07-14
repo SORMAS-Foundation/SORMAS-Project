@@ -116,6 +116,7 @@ public final class CssStyles {
 	public static final String LABEL_BOLD = "bold";
 	public static final String LABEL_UPPERCASE = "uppercase";
 	public static final String LABEL_ITALIC = "italic";
+	public static final String LABEL_UNDERLINE = "underline";
 
 	// Label styles
 	public static final String LABEL_BOTTOM_LINE = "bottom-line";
@@ -168,6 +169,9 @@ public final class CssStyles {
 	public static final String BUTTON_CAPTION_OVERFLOW = "caption-overflow-label";
 	public static final String GEOCODE_BUTTON_HIGHLIGHT = "geocode-button-highlight";
 
+	public static final String YES_NO_UNKNOWN_GROUP = "yes-no-unknown-group";
+	public static final String YES_NO_UNKNOWN_OPTION_SELECTED = "yes-no-unknown-selected";
+
 	// Link styles
 	public static final String LINK_BUTTON = "button";
 	public static final String LINK_BUTTON_PRIMARY = "button-primary";
@@ -198,8 +202,8 @@ public final class CssStyles {
 	public static final String CAPTION_HIDDEN = "caption-hidden";
 	public static final String CAPTION_OVERFLOW = "caption-overflow";
 	public static final String CAPTION_FIXED_WIDTH_100 = "caption-fixed-width-100";
+	public static final String CAPTION_NO_UPPERCASE = "no-uppercase";
 
-	public static final String SOFT_REQUIRED = "soft-required";
 	public static final String ERROR_COLOR_PRIMARY = "error-color-primary";
 
 	public static final String ALIGN_CENTER = "align-center";
@@ -538,6 +542,10 @@ public final class CssStyles {
 			return "background-disease-giardiasis";
 		case CRYPTOSPORIDIOSIS:
 			return "background-disease-cryptosporidiosis";
+		case SALMONELLOSIS:
+			return "background-disease-salmonellosis";
+		case SHIGELLOSIS:
+			return "background-disease-shigellosis";
 		case UNDEFINED:
 		default:
 			return "background-disease-undefined";

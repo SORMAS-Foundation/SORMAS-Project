@@ -26,11 +26,15 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ElementKind;
 import javax.validation.Path;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 public class ConstraintValidationHelper {
 
-	private ConstraintValidationHelper() { }
+	private ConstraintValidationHelper() {
+	}
 
 	public static Map<List<String>, String> getPropertyErrors(Set<? extends ConstraintViolation> constraintViolations) {
 		Map<List<String>, String> errors = new HashMap<>();
@@ -58,12 +62,15 @@ public class ConstraintValidationHelper {
 	}
 
 	public static String formatPropertyErrors(Map<List<String>, String> propertyErrors) {
-		if (propertyErrors == null) {
+		if (MapUtils.isEmpty(propertyErrors)) {
 			return "";
 		}
-		return propertyErrors.entrySet()
-			.stream()
-			.map(e -> String.join(".", e.getKey().get(e.getKey().size() - 1)) + ": " + e.getValue())
-			.collect(Collectors.joining("; "));
+		return propertyErrors.entrySet().stream().map(e -> {
+			List<String> keys = e.getKey();
+			if (CollectionUtils.isEmpty(keys)) {
+				return ": " + e.getValue();
+			}
+			return String.join(".", keys.get(keys.size() - 1)) + ": " + e.getValue();
+		}).collect(Collectors.joining("; "));
 	}
 }

@@ -46,11 +46,9 @@ import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.LabMessageProcessingHelper;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.SampleAndPathogenTests;
 import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
-import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -298,11 +296,51 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
             (sampleReportIndex, previousSampleResult) -> createOneSampleAndPathogenTests(caze, sampleReportIndex, false, previousSampleResult);
 
         FlowThen<ExternalMessageProcessingResult> caseFlow = flow.then(previousResult -> {
-            ExternalMessageProcessingResult withCase = previousResult.getData().withSelectedCase(caze);
+            CompletionStage<Boolean> mismatchInformationStage = CompletableFuture.completedFuture(true);
 
-            logger.debug("[MESSAGE PROCESSING] Continue processing with case: {}", withCase);
+            // Check and inform about symptoms mismatch
+            if (hasCaseSymptomsMismatch(caze, getExternalMessage())) {
+                mismatchInformationStage = confirmCaseSymptomsMismatch(caze, getExternalMessage());
+            }
 
-            return ProcessingResult.continueWith(withCase).asCompletedFuture();
+            // Chain hospitalization mismatch check
+            mismatchInformationStage = mismatchInformationStage.thenCompose(confirmed -> {
+                if (Boolean.TRUE.equals(confirmed) && hasCaseHospitalizationMismatch(caze, getExternalMessage())) {
+                    return confirmCaseHospitalizationMismatch(caze, getExternalMessage());
+                } else {
+                    return CompletableFuture.completedFuture(confirmed);
+                }
+            });
+
+            // Chain exposures mismatch check
+            mismatchInformationStage = mismatchInformationStage.thenCompose(confirmed -> {
+                if (Boolean.TRUE.equals(confirmed) && hasCaseExposuresMismatch(caze, getExternalMessage())) {
+                    return confirmCaseExposuresMismatch(caze, getExternalMessage());
+                } else {
+                    return CompletableFuture.completedFuture(confirmed);
+                }
+            });
+
+            // Chain activities as case mismatch check
+            mismatchInformationStage = mismatchInformationStage.thenCompose(confirmed -> {
+                if (Boolean.TRUE.equals(confirmed) && hasCaseActivitiesAsCaseMismatch(caze, getExternalMessage())) {
+                    return confirmCaseActivitiesAsCaseMismatch(caze, getExternalMessage());
+                } else {
+                    return CompletableFuture.completedFuture(confirmed);
+                }
+            });
+
+            return mismatchInformationStage.thenCompose(confirmed -> {
+                ExternalMessageProcessingResult withCase = previousResult.getData().withSelectedCase(caze);
+
+                if (Boolean.TRUE.equals(confirmed)) {
+                    logger.debug("[MESSAGE PROCESSING] Continue processing with case: {}", withCase);
+                    return ProcessingResult.continueWith(withCase).asCompletedFuture();
+                } else {
+                    logger.debug("[MESSAGE PROCESSING] Canceled processing with case: {} information mismatch aborted.", withCase);
+                    return ProcessingResult.withStatus(ProcessingResultStatus.CANCELED, previousResult.getData()).asCompletedFuture();
+                }
+            });
         });
         return caseFlow.then(
             previousResult -> doPickOrCreateSamplesFlow(
@@ -662,6 +700,7 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
             CaseDataDto caze = result.getData().getCase();
             if (caze != null) {
                 surveillanceReport = createSurveillanceReport(externalMessage, caze);
+                updateSurveillanceReportAdditionalData(surveillanceReport, externalMessage, caze);
                 getExternalMessageProcessingFacade().saveSurveillanceReport(surveillanceReport);
             }
             markExternalMessageAsProcessed(externalMessage, result, surveillanceReport);
@@ -688,6 +727,23 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
         surveillanceReport.setExternalId(externalMessage.getReportMessageId());
         setSurvReportingType(surveillanceReport, externalMessage);
         return surveillanceReport;
+    }
+
+    /**
+     * Updates the additional data of the surveillance report.
+     * 
+     * @param surveillanceReport
+     *            the surveillance report
+     * @param externalMessage
+     *            the external message
+     * @param caze
+     *            the case
+     */
+    protected void updateSurveillanceReportAdditionalData(
+        SurveillanceReportDto surveillanceReport,
+        ExternalMessageDto externalMessage,
+        CaseDataDto caze) {
+        // no additional data to update for default implementation
     }
 
     /**
@@ -897,6 +953,38 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
 
     public abstract CompletionStage<Boolean> handleMultipleSampleConfirmation();
 
+    protected boolean hasCaseSymptomsMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+        return false;
+    }
+
+    protected CompletionStage<Boolean> confirmCaseSymptomsMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+        return CompletableFuture.completedFuture(true);
+    }
+
+    protected boolean hasCaseHospitalizationMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+        return false;
+    }
+
+    protected CompletionStage<Boolean> confirmCaseHospitalizationMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+        return CompletableFuture.completedFuture(true);
+    }
+
+    protected boolean hasCaseExposuresMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+        return false;
+    }
+
+    protected CompletionStage<Boolean> confirmCaseExposuresMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+        return CompletableFuture.completedFuture(true);
+    }
+
+    protected boolean hasCaseActivitiesAsCaseMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+        return false;
+    }
+
+    protected CompletionStage<Boolean> confirmCaseActivitiesAsCaseMismatch(CaseDataDto caze, ExternalMessageDto externalMessage) {
+        return CompletableFuture.completedFuture(true);
+    }
+
     protected abstract void handleCreateSampleAndPathogenTests(
         SampleDto sample,
         List<PathogenTestDto> pathogenTests,
@@ -1030,12 +1118,18 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
         ProcessingResult<ExternalMessageProcessingResult> result,
         SurveillanceReportDto surveillanceReport);
 
-    protected void doPersonUpdates(EntitySelection<PersonDto> personSelection) {
-        // requested for #13589
-        // TODO: we need to find a better way to handle this
+    @Override
+    protected CompletionStage<ProcessingResult<ExternalMessageProcessingResult>> pickOrCreatePerson(ExternalMessageProcessingResult previousResult) {
+        return super.pickOrCreatePerson(previousResult).thenCompose(result -> {
+            if (!result.getStatus().isCanceled() && result.getData() != null) {
+                mergePerson(result.getData().getSelectedPerson());
+            }
+            return result.asCompletedFuture();
+        });
+    }
 
-        if (personSelection.isNew()) {
-            // no updates for new persons
+    protected void mergePerson(EntitySelection<PersonDto> personSelection) {
+        if (personSelection == null) {
             return;
         }
 
@@ -1044,32 +1138,14 @@ public abstract class AbstractMessageProcessingFlowBase extends AbstractProcessi
             return;
         }
 
-        final LocationDto personAddress = person.getAddress();
-
-        if (personAddress != null) {
-            final String houseNumber = getExternalMessage().getPersonHouseNumber();
-            if (houseNumber != null) {
-                personAddress.setHouseNumber(houseNumber);
-            }
-            final String street = getExternalMessage().getPersonStreet();
-            if (street != null) {
-                personAddress.setStreet(street);
-            }
-            final String city = getExternalMessage().getPersonCity();
-            if (city != null) {
-                personAddress.setCity(city);
-            }
-            final String postalCode = getExternalMessage().getPersonPostalCode();
-            if (postalCode != null) {
-                personAddress.setPostalCode(postalCode);
-            }
-            final CountryReferenceDto country = getExternalMessage().getPersonCountry();
-            if (country != null) {
-                personAddress.setCountry(country);
-            }
-
-            getExternalMessageProcessingFacade().updatePerson(person);
+        if (personSelection.isNew()) {
+            // no merges for new person
+            // additional contacts will be handled by {@link AbstractProcessingFlow#buildPerson()}
+            return;
         }
+
+        getMapper().mergePersonAddress(person);
+        getMapper().mergePersonContactDetails(person);
     }
 
     /**

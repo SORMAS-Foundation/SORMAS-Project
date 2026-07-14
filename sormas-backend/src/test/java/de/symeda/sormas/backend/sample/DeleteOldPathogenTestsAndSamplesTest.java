@@ -72,7 +72,7 @@ public class DeleteOldPathogenTestsAndSamplesTest extends AbstractBeanTest {
 		PathogenTestDto newTest = creator.createPathogenTest(sample.toReference(), user, s -> {
 			s.setLab(rdcf.facility);
 			s.setTestedDisease(Disease.CORONAVIRUS);
-			s.setTestType(PathogenTestType.RAPID_TEST);
+			s.setTestType(PathogenTestType.LATERAL_FLOW_ASSAY);
 			s.setTestDateTime(new Date());
 			s.setTestResult(PathogenTestResultType.NEGATIVE);
 		});

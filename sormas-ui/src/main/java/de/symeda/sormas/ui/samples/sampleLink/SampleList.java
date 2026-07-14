@@ -66,24 +66,16 @@ public class SampleList extends PaginationList<SampleListEntryDto> {
 
 	@Override
 	protected void drawDisplayedEntries() {
-		// Don't do anyting if the user doesn't have the permission to view external messages
-		if (!UiUtil.getUserRights().contains(UserRight.EXTERNAL_MESSAGE_ACCESS)) {
-			return;
-		}
-
-		// Don't do anyting if the user doesn't have the permission to view laboratory messages
-		if (!UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_LABORATORY_VIEW)) {
-			return;
-		}
+		// External message rights are only required for the associated lab messages lookup and button,
+		// not for displaying the samples themselves.
+		final boolean userHasExternalMessageAccess = UiUtil.getUserRights().contains(UserRight.EXTERNAL_MESSAGE_ACCESS)
+			&& UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_LABORATORY_VIEW);
 
 		final boolean userHasSampleEdit = UiUtil.permitted(isEditAllowed, UserRight.SAMPLE_EDIT);
 		final boolean userHasLaboratoryProcessing = UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_LABORATORY_PROCESS);
 
 		for (SampleListEntryDto sample : getDisplayedEntries()) {
 			SampleListEntry listEntry = new SampleListEntry(sample);
-
-			final List<ExternalMessageDto> labMessages =
-				FacadeProvider.getExternalMessageFacade().getForSample(listEntry.getSampleListEntryDto().toReference());
 
 			String sampleUuid = sample.getUuid();
 			if (userHasSampleEdit && userHasLaboratoryProcessing) {
@@ -98,9 +90,13 @@ public class SampleList extends PaginationList<SampleListEntryDto> {
 
 			listEntry.setEnabled(isEditAllowed);
 
-			if (!labMessages.isEmpty()) {
-				listEntry.addAssociatedLabMessagesListener(
-					clickEvent -> ControllerProvider.getExternalMessageController().showLabMessagesSlider(labMessages));
+			if (userHasExternalMessageAccess) {
+				final List<ExternalMessageDto> labMessages =
+					FacadeProvider.getExternalMessageFacade().getForSample(listEntry.getSampleListEntryDto().toReference());
+				if (!labMessages.isEmpty()) {
+					listEntry.addAssociatedLabMessagesListener(
+						clickEvent -> ControllerProvider.getExternalMessageController().showLabMessagesSlider(labMessages));
+				}
 			}
 
 			listLayout.addComponent(listEntry);

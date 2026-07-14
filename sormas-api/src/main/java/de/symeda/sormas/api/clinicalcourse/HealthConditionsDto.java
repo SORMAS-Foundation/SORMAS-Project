@@ -54,6 +54,16 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	public static final String PREVIOUS_TUBERCULOSIS_TREATMENT = "previousTuberculosisTreatment";
 	public static final String COMPLIANCE_WITH_TREATMENT = "complianceWithTreatment";
 	public static final String RECURRENT_BRONCHIOLITIS = "recurrentBronchiolitis";
+	public static final String IMMUNODEFICIENCY_OTHER_THAN_HIV_TEXT = "immunodeficiencyOtherThanHivText";
+	public static final String EXPOSED_TO_MOSQUITO_BORNE_VIRUSES = "exposedToMosquitoBorneViruses";
+	public static final String EXPOSED_TO_MOSQUITO_BORNE_VIRUSES_TEXT = "exposedToMosquitoBorneVirusesText";
+	public static final String VACCINATED_AGAINST_MOSQUITO_BORNE_VIRUSES = "vaccinatedAgainstMosquitoBorneViruses";
+	public static final String MALARIA = "malaria";
+	public static final String MALARIA_INFECTED_YEAR = "malariaInfectedYear";
+	public static final String ON_MEDICATION = "onMedication";
+	public static final String MEDICATION_DETAILS = "medicationDetails";
+	public static final String CHRONIC_DISEASE = "chronicDisease";
+	public static final String CHRONIC_DISEASE_DETAILS = "chronicDiseaseDetails";
 
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
@@ -62,6 +72,8 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	private YesNoUnknown asplenia;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
@@ -76,18 +88,32 @@ public class HealthConditionsDto extends PseudonymizableDto {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
 	private YesNoUnknown hivArt;
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	private YesNoUnknown chronicLiverDisease;
 	private YesNoUnknown malignancyChemotherapy;
+
+	//TODO: rename ? general heart issue
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	private YesNoUnknown chronicHeartFailure;
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	private YesNoUnknown chronicPulmonaryDisease;
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	private YesNoUnknown chronicKidneyDisease;
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	private YesNoUnknown chronicNeurologicCondition;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+	@Diseases(value = {
+		Disease.SHIGELLOSIS }, hide = true)
 	private YesNoUnknown downSyndrome;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
@@ -97,6 +123,11 @@ public class HealthConditionsDto extends PseudonymizableDto {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
 	private YesNoUnknown immunodeficiencyOtherThanHiv;
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	@Diseases(value = {
+		Disease.DENGUE })
+	private String immunodeficiencyOtherThanHivText;
 	private YesNoUnknown cardiovascularDiseaseIncludingHypertension;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
@@ -144,6 +175,42 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	@Diseases(value = {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
 	private YesNoUnknown recurrentBronchiolitis;
+
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	@Diseases(value = {
+		Disease.DENGUE })
+	private YesNoUnknown exposedToMosquitoBorneViruses;
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	@Diseases(value = {
+		Disease.DENGUE })
+	private String exposedToMosquitoBorneVirusesText;
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	@Diseases(value = {
+		Disease.DENGUE })
+	private YesNoUnknown vaccinatedAgainstMosquitoBorneViruses;
+
+	@Diseases(value = {
+		Disease.MALARIA })
+	private YesNoUnknown malaria;
+
+	@Diseases(value = {
+		Disease.MALARIA })
+	private Integer malariaInfectedYear;
+	@Diseases(value = {
+		Disease.SHIGELLOSIS })
+	private YesNoUnknown onMedication;
+	@Diseases(value = {
+		Disease.SHIGELLOSIS })
+	private String medicationDetails;
+	@Diseases(value = {
+		Disease.SHIGELLOSIS })
+	private YesNoUnknown chronicDisease;
+	@Diseases(value = {
+		Disease.SHIGELLOSIS })
+	private String chronicDiseaseDetails;
 
 	public static HealthConditionsDto build() {
 		HealthConditionsDto healthConditions = new HealthConditionsDto();
@@ -390,4 +457,85 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	public void setRecurrentBronchiolitis(YesNoUnknown recurrentBronchiolitis) {
 		this.recurrentBronchiolitis = recurrentBronchiolitis;
 	}
+
+	public String getImmunodeficiencyOtherThanHivText() {
+		return immunodeficiencyOtherThanHivText;
+	}
+
+	public void setImmunodeficiencyOtherThanHivText(String immunodeficiencyOtherThanHivText) {
+		this.immunodeficiencyOtherThanHivText = immunodeficiencyOtherThanHivText;
+	}
+
+	public YesNoUnknown getExposedToMosquitoBorneViruses() {
+		return exposedToMosquitoBorneViruses;
+	}
+
+	public void setExposedToMosquitoBorneViruses(YesNoUnknown exposedToMosquitoBorneViruses) {
+		this.exposedToMosquitoBorneViruses = exposedToMosquitoBorneViruses;
+	}
+
+	public String getExposedToMosquitoBorneVirusesText() {
+		return exposedToMosquitoBorneVirusesText;
+	}
+
+	public void setExposedToMosquitoBorneVirusesText(String exposedToMosquitoBorneVirusesText) {
+		this.exposedToMosquitoBorneVirusesText = exposedToMosquitoBorneVirusesText;
+	}
+
+	public YesNoUnknown getVaccinatedAgainstMosquitoBorneViruses() {
+		return vaccinatedAgainstMosquitoBorneViruses;
+	}
+
+	public void setVaccinatedAgainstMosquitoBorneViruses(YesNoUnknown vaccinatedAgainstMosquitoBorneViruses) {
+		this.vaccinatedAgainstMosquitoBorneViruses = vaccinatedAgainstMosquitoBorneViruses;
+	}
+
+	public YesNoUnknown getMalaria() {
+		return malaria;
+	}
+
+	public void setMalaria(YesNoUnknown malaria) {
+		this.malaria = malaria;
+	}
+
+	public Integer getMalariaInfectedYear() {
+		return malariaInfectedYear;
+	}
+
+	public void setMalariaInfectedYear(Integer malariaInfectedYear) {
+		this.malariaInfectedYear = malariaInfectedYear;
+	}
+
+	public YesNoUnknown getOnMedication() {
+		return onMedication;
+	}
+
+	public void setOnMedication(YesNoUnknown onMedication) {
+		this.onMedication = onMedication;
+	}
+
+	public String getMedicationDetails() {
+		return medicationDetails;
+	}
+
+	public void setMedicationDetails(String medicationDetails) {
+		this.medicationDetails = medicationDetails;
+	}
+
+	public YesNoUnknown getChronicDisease() {
+		return chronicDisease;
+	}
+
+	public void setChronicDisease(YesNoUnknown chronicDisease) {
+		this.chronicDisease = chronicDisease;
+	}
+
+	public String getChronicDiseaseDetails() {
+		return chronicDiseaseDetails;
+	}
+
+	public void setChronicDiseaseDetails(String chronicDiseaseDetails) {
+		this.chronicDiseaseDetails = chronicDiseaseDetails;
+	}
+
 }

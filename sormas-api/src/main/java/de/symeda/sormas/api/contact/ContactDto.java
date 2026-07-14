@@ -20,6 +20,8 @@ import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_SWITZERLAND;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
@@ -39,6 +41,7 @@ import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.immunization.InformationReliability;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
@@ -82,7 +85,7 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 	public static final String CONTACT_IDENTIFICATION_SOURCE = "contactIdentificationSource";
 	public static final String CONTACT_IDENTIFICATION_SOURCE_DETAILS = "contactIdentificationSourceDetails";
 	public static final String CONTACT_OFFICER = "contactOfficer";
-	public static final String CONTACT_PROXIMITY = "contactProximity";
+	public static final String CONTACT_PROXIMITIES = "contactProximities";
 	public static final String CONTACT_PROXIMITY_DETAILS = "contactProximityDetails";
 	public static final String CONTACT_STATUS = "contactStatus";
 	public static final String DESCRIPTION = "description";
@@ -145,6 +148,10 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 	public static final String TRACING_APP = "tracingApp";
 	public static final String TRACING_APP_DETAILS = "tracingAppDetails";
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
+	public static final String VACCINATION_STATUS_DETAILS = "vaccinationStatusDetails";
+	public static final String VACCINATION_STATUS_LAST_UPDATED = "vaccinationStatusLastUpdated";
+	public static final String NUMBER_OF_DOSES = "numberOfDoses";
+	public static final String INFORMATION_RELIABILITY = "informationReliability";
 	public static final String VISITS = "visits";
 	public static final String VACCINATION_INFO = "vaccinationInfo";
 	public static final String PREVIOUS_QUARANTINE_TO = "previousQuarantineTo";
@@ -208,7 +215,7 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String tracingAppDetails;
-	private ContactProximity contactProximity;
+	private Set<ContactProximity> contactProximities;
 	@HideForCountriesExcept
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
@@ -219,15 +226,19 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 	private ContactCategory contactCategory;
 	private ContactClassification contactClassification;
 	private ContactStatus contactStatus;
-	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
+	@Diseases(value = {
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION }, hide = true)
 	private FollowUpStatus followUpStatus;
 	@SensitiveData
 	@Size(max = CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
-	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
+	@Diseases(value = {
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION }, hide = true)
 	private String followUpComment;
-	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
+	@Diseases(value = {
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION }, hide = true)
 	private Date followUpUntil;
-	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
+	@Diseases(value = {
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION }, hide = true)
 	private boolean overwriteFollowUpUntil;
 	@SensitiveData
 	@Size(max = CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
@@ -370,11 +381,27 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 	@Outbreaks
 	private VaccinationStatus vaccinationStatus;
 
-	@Diseases(value = {Disease.MEASLES})
-	@HideForCountriesExcept(countries = {COUNTRY_CODE_LUXEMBOURG})
+	@Outbreaks
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String vaccinationStatusDetails;
+
+	private Date vaccinationStatusLastUpdated;
+
+	@Outbreaks
+	private Integer numberOfDoses;
+
+	@Outbreaks
+	private InformationReliability informationReliability;
+
+	@Diseases(value = {
+		Disease.MEASLES })
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_LUXEMBOURG })
 	private Date vaccinationDoseOneDate;
-	@Diseases(value = {Disease.MEASLES})
-	@HideForCountriesExcept(countries = {COUNTRY_CODE_LUXEMBOURG})
+	@Diseases(value = {
+		Disease.MEASLES })
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_LUXEMBOURG })
 	private Date vaccinationDoseTwoDate;
 
 	private Date previousQuarantineTo;
@@ -385,23 +412,30 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 	private DeletionReason deletionReason;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherDeletionReason;
-	@HideForCountriesExcept(countries = {COUNTRY_CODE_LUXEMBOURG})
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_LUXEMBOURG })
 	@SensitiveData
 	@Diseases(Disease.INVASIVE_MENINGOCOCCAL_INFECTION)
 	private Boolean prophylaxisPrescribed;
-	@HideForCountriesExcept(countries = {COUNTRY_CODE_LUXEMBOURG})
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_LUXEMBOURG })
 	@SensitiveData
 	@Diseases(Disease.INVASIVE_MENINGOCOCCAL_INFECTION)
 	private Drug prescribedDrug;
-	@HideForCountriesExcept(countries = {COUNTRY_CODE_LUXEMBOURG})
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_LUXEMBOURG })
 	@SensitiveData
 	@Diseases(Disease.INVASIVE_MENINGOCOCCAL_INFECTION)
 	private String prescribedDrugText;
-	@Diseases(value = {Disease.MEASLES})
-	@HideForCountriesExcept(countries = {COUNTRY_CODE_LUXEMBOURG})
+	@Diseases(value = {
+		Disease.MEASLES })
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_LUXEMBOURG })
 	private boolean vaccinationProposed;
-	@Diseases(value = {Disease.MEASLES})
-	@HideForCountriesExcept(countries = {COUNTRY_CODE_LUXEMBOURG})
+	@Diseases(value = {
+		Disease.MEASLES })
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_LUXEMBOURG })
 	private boolean immuneGlobulinProposed;
 
 	public static ContactDto build() {
@@ -543,12 +577,15 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 		this.tracingAppDetails = tracingAppDetails;
 	}
 
-	public ContactProximity getContactProximity() {
-		return contactProximity;
+	public Set<ContactProximity> getContactProximities() {
+		if (contactProximities == null) {
+			contactProximities = new HashSet<>();
+		}
+		return contactProximities;
 	}
 
-	public void setContactProximity(ContactProximity contactProximity) {
-		this.contactProximity = contactProximity;
+	public void setContactProximities(Set<ContactProximity> contactProximities) {
+		this.contactProximities = contactProximities;
 	}
 
 	public String getDescription() {
@@ -1061,6 +1098,38 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 
 	public void setVaccinationStatus(VaccinationStatus vaccinationStatus) {
 		this.vaccinationStatus = vaccinationStatus;
+	}
+
+	public String getVaccinationStatusDetails() {
+		return vaccinationStatusDetails;
+	}
+
+	public void setVaccinationStatusDetails(String vaccinationStatusDetails) {
+		this.vaccinationStatusDetails = vaccinationStatusDetails;
+	}
+
+	public Date getVaccinationStatusLastUpdated() {
+		return vaccinationStatusLastUpdated;
+	}
+
+	public void setVaccinationStatusLastUpdated(Date vaccinationStatusLastUpdated) {
+		this.vaccinationStatusLastUpdated = vaccinationStatusLastUpdated;
+	}
+
+	public Integer getNumberOfDoses() {
+		return numberOfDoses;
+	}
+
+	public void setNumberOfDoses(Integer numberOfDoses) {
+		this.numberOfDoses = numberOfDoses;
+	}
+
+	public InformationReliability getInformationReliability() {
+		return informationReliability;
+	}
+
+	public void setInformationReliability(InformationReliability informationReliability) {
+		this.informationReliability = informationReliability;
 	}
 
 	public Date getPreviousQuarantineTo() {

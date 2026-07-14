@@ -1,5 +1,4 @@
 /*
- * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2024 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,6 +68,39 @@ public class DrugSusceptibilityMapper {
 		target.setPenicillinSusceptibility(source.getPenicillinSusceptibility());
 		target.setErythromycinMic(source.getErythromycinMic());
 		target.setErythromycinSusceptibility(source.getErythromycinSusceptibility());
+		target.setAmikacinMethod(source.getAmikacinMethod());
+		target.setBedaquilineMethod(source.getBedaquilineMethod());
+		target.setCapreomycinMethod(source.getCapreomycinMethod());
+		target.setCiprofloxacinMethod(source.getCiprofloxacinMethod());
+		target.setDelamanidMethod(source.getDelamanidMethod());
+		target.setEthambutolMethod(source.getEthambutolMethod());
+		target.setGatifloxacinMethod(source.getGatifloxacinMethod());
+		target.setIsoniazidMethod(source.getIsoniazidMethod());
+		target.setKanamycinMethod(source.getKanamycinMethod());
+		target.setLevofloxacinMethod(source.getLevofloxacinMethod());
+		target.setMoxifloxacinMethod(source.getMoxifloxacinMethod());
+		target.setOfloxacinMethod(source.getOfloxacinMethod());
+		target.setRifampicinMethod(source.getRifampicinMethod());
+		target.setStreptomycinMethod(source.getStreptomycinMethod());
+		target.setCeftriaxoneMethod(source.getCeftriaxoneMethod());
+		target.setPenicillinMethod(source.getPenicillinMethod());
+		target.setErythromycinMethod(source.getErythromycinMethod());
+		target.setAzithromycinMic(source.getAzithromycinMic());
+		target.setAzithromycinSusceptibility(source.getAzithromycinSusceptibility());
+		target.setCeftazidimeMic(source.getCeftazidimeMic());
+		target.setCeftazidimeSusceptibility(source.getCeftazidimeSusceptibility());
+		target.setCefotaximeMic(source.getCefotaximeMic());
+		target.setCefotaximeSusceptibility(source.getCefotaximeSusceptibility());
+		target.setAmpicillinMic(source.getAmpicillinMic());
+		target.setAmpicillinSusceptibility(source.getAmpicillinSusceptibility());
+		target.setTrimethoprimSulfamethoxazoleMic(source.getTrimethoprimSulfamethoxazoleMic());
+		target.setTrimethoprimSulfamethoxazoleSusceptibility(source.getTrimethoprimSulfamethoxazoleSusceptibility());
+		target.setAzithromycinMethod(source.getAzithromycinMethod());
+		target.setAmpicillinMethod(source.getAmpicillinMethod());
+		target.setCeftazidimeMethod(source.getCeftazidimeMethod());
+		target.setCefotaximeMethod(source.getCefotaximeMethod());
+		target.setTrimethoprimSulfamethoxazoleMethod(source.getTrimethoprimSulfamethoxazoleMethod());
+
 		return target;
 	}
 
@@ -113,6 +145,38 @@ public class DrugSusceptibilityMapper {
 		target.setPenicillinSusceptibility(source.getPenicillinSusceptibility());
 		target.setErythromycinMic(source.getErythromycinMic());
 		target.setErythromycinSusceptibility(source.getErythromycinSusceptibility());
+		target.setAmikacinMethod(source.getAmikacinMethod());
+		target.setBedaquilineMethod(source.getBedaquilineMethod());
+		target.setCapreomycinMethod(source.getCapreomycinMethod());
+		target.setCiprofloxacinMethod(source.getCiprofloxacinMethod());
+		target.setDelamanidMethod(source.getDelamanidMethod());
+		target.setEthambutolMethod(source.getEthambutolMethod());
+		target.setGatifloxacinMethod(source.getGatifloxacinMethod());
+		target.setIsoniazidMethod(source.getIsoniazidMethod());
+		target.setKanamycinMethod(source.getKanamycinMethod());
+		target.setLevofloxacinMethod(source.getLevofloxacinMethod());
+		target.setMoxifloxacinMethod(source.getMoxifloxacinMethod());
+		target.setOfloxacinMethod(source.getOfloxacinMethod());
+		target.setRifampicinMethod(source.getRifampicinMethod());
+		target.setStreptomycinMethod(source.getStreptomycinMethod());
+		target.setCeftriaxoneMethod(source.getCeftriaxoneMethod());
+		target.setPenicillinMethod(source.getPenicillinMethod());
+		target.setErythromycinMethod(source.getErythromycinMethod());
+		target.setAzithromycinMic(source.getAzithromycinMic());
+		target.setAzithromycinSusceptibility(source.getAzithromycinSusceptibility());
+		target.setCeftazidimeMic(source.getCeftazidimeMic());
+		target.setCeftazidimeSusceptibility(source.getCeftazidimeSusceptibility());
+		target.setCefotaximeMic(source.getCefotaximeMic());
+		target.setCefotaximeSusceptibility(source.getCefotaximeSusceptibility());
+		target.setAmpicillinMic(source.getAmpicillinMic());
+		target.setAmpicillinSusceptibility(source.getAmpicillinSusceptibility());
+		target.setTrimethoprimSulfamethoxazoleMic(source.getTrimethoprimSulfamethoxazoleMic());
+		target.setTrimethoprimSulfamethoxazoleSusceptibility(source.getTrimethoprimSulfamethoxazoleSusceptibility());
+		target.setAzithromycinMethod(source.getAzithromycinMethod());
+		target.setAmpicillinMethod(source.getAmpicillinMethod());
+		target.setCeftazidimeMethod(source.getCeftazidimeMethod());
+		target.setCefotaximeMethod(source.getCefotaximeMethod());
+		target.setTrimethoprimSulfamethoxazoleMethod(source.getTrimethoprimSulfamethoxazoleMethod());
 
 		return target;
 	}
@@ -155,6 +219,39 @@ public class DrugSusceptibilityMapper {
 			|| dto.getPenicillinMic() != null
 			|| dto.getPenicillinSusceptibility() != null
 			|| dto.getErythromycinMic() != null
-			|| dto.getErythromycinSusceptibility() != null;
+			|| dto.getErythromycinSusceptibility() != null
+			|| dto.getAmikacinMethod() != null
+			|| dto.getBedaquilineMethod() != null
+			|| dto.getCapreomycinMethod() != null
+			|| dto.getCiprofloxacinMethod() != null
+			|| dto.getDelamanidMethod() != null
+			|| dto.getEthambutolMethod() != null
+			|| dto.getGatifloxacinMethod() != null
+			|| dto.getIsoniazidMethod() != null
+			|| dto.getKanamycinMethod() != null
+			|| dto.getLevofloxacinMethod() != null
+			|| dto.getMoxifloxacinMethod() != null
+			|| dto.getOfloxacinMethod() != null
+			|| dto.getRifampicinMethod() != null
+			|| dto.getStreptomycinMethod() != null
+			|| dto.getCeftriaxoneMethod() != null
+			|| dto.getPenicillinMethod() != null
+			|| dto.getErythromycinMethod() != null
+			|| dto.getErythromycinSusceptibility() != null
+			|| dto.getAzithromycinMic() != null
+			|| dto.getAzithromycinSusceptibility() != null
+			|| dto.getAzithromycinMethod() != null
+			|| dto.getCeftazidimeMic() != null
+			|| dto.getCeftazidimeSusceptibility() != null
+			|| dto.getCeftazidimeMethod() != null
+			|| dto.getCefotaximeMic() != null
+			|| dto.getCefotaximeSusceptibility() != null
+			|| dto.getCefotaximeMethod() != null
+			|| dto.getAmpicillinMic() != null
+			|| dto.getAmpicillinSusceptibility() != null
+			|| dto.getAmpicillinMethod() != null
+			|| dto.getTrimethoprimSulfamethoxazoleMic() != null
+			|| dto.getTrimethoprimSulfamethoxazoleSusceptibility() != null
+			|| dto.getTrimethoprimSulfamethoxazoleMethod() != null;
 	}
 }

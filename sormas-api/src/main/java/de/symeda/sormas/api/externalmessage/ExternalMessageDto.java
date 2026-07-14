@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.CountryHelper;
@@ -31,11 +32,14 @@ import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ComplianceWithTreatment;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.exposure.ModeOfTransmission;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
+import de.symeda.sormas.api.externalmessage.survey.ExternalSurveyResponseData;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
@@ -46,6 +50,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
+import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
 @AuditedClass
@@ -88,6 +93,7 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	public static final String PERSON_GUARDIAN_RELATIONSHIP = "personGuardianRelationship";
 	public static final String PERSON_GUARDIAN_PHONE = "personGuardianPhone";
 	public static final String PERSON_GUARDIAN_EMAIL = "personGuardianEmail";
+	public static final String PERSON_OCCUPATION = "personOccupation";
 	public static final String EXTERNAL_MESSAGE_DETAILS = "externalMessageDetails";
 	public static final String PROCESSED = "processed";
 	public static final String REPORT_ID = "reportId";
@@ -108,6 +114,8 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	public static final String DIAGNOSTIC_DATE = "diagnosticDate";
 	public static final String ACTIVITIES_AS_CASE = "activitiesAsCase";
 	public static final String EXPOSURES = "exposures";
+	public static final String ADDITIONAL_PERSON_CONTACT_DETAILS = "additionalPersonContactDetails";
+	public static final String ADDITIONAL_PERSON_ADDRESSES = "additionalPersonAddresses";
 	public static final String RADIOGRAPHY_COMPATIBILITY = "radiographyCompatibility";
 	public static final String OTHER_DIAGNOSTIC_CRITERIA = "otherDiagnosticCriteria";
 	public static final String TUBERCULOSIS = "tuberculosis";
@@ -116,6 +124,10 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	public static final String TUBERCULOSIS_INFECTION_YEAR = "tuberculosisInfectionYear";
 	public static final String PREVIOUS_TUBERCULOSIS_TREATMENT = "previousTuberculosisTreatment";
 	public static final String COMPLIANCE_WITH_TREATMENT = "complianceWithTreatment";
+	public static final String MALARIA = "malaria";
+	public static final String MALARIA_INFECTED_YEAR = "malariaInfectedYear";
+	public static final String AIRPORT_WORKER = "airportWorker";
+	public static final String HEALTHCARE_PROFESSIONAL = "healthcareProfessional";
 
 	@AuditIncludeProperty
 	private ExternalMessageType type;
@@ -181,11 +193,18 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private String personGuardianPhone;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String personGuardianEmail;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String personOccupation;
 	private YesNoUnknown treatmentStarted;
 	private Boolean treatmentNotApplicable;
 	private Date treatmentStartedDate;
 	private Date diagnosticDate;
 	private Date deceasedDate;
+	private CauseOfDeath causeOfDeath;
+	private Disease causeOfDeathDisease;
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String causeOfDeathDetails;
 
 	@AuditIncludeProperty
 	private List<SampleReportDto> sampleReports;
@@ -196,6 +215,10 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private String externalMessageDetails;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String caseComments;
+
+	/**
+	 * Used as deduplication key for {@link ExternalMessageType#SURVEY_RESPONSE}.
+	 */
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String reportId;
 
@@ -243,6 +266,8 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	private String activitiesAsCase;
 	private String exposures;
+	private String additionalPersonContactDetails;
+	private String additionalPersonAddresses;
 
 	private RadiographyCompatibility radiographyCompatibility;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
@@ -258,6 +283,20 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private Boolean tuberculosisDirectlyObservedTreatment;
 	private Boolean tuberculosisMdrXdrTuberculosis;
 	private Boolean tuberculosisBeijingLineage;
+
+	// Malaria and Dengue changes
+	private YesNoUnknown malaria;
+	private Integer malariaInfectedYear;
+	private YesNoUnknown airportWorker;
+	private YesNoUnknown healthcareProfessional;
+	private ModeOfTransmission modeOfTransmission;
+	private String modeOfTransmissionType;
+
+	/**
+	 * Will only be present for: {@link ExternalMessageType#SURVEY_RESPONSE} to represent the pair.
+	 */
+	@Nullable
+	private ExternalSurveyResponseData surveyResponseData;
 
 	public ExternalMessageType getType() {
 		return type;
@@ -537,6 +576,14 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	public void setPersonGuardianEmail(String personGuardianEmail) {
 		this.personGuardianEmail = personGuardianEmail;
+	}
+
+	public String getPersonOccupation() {
+		return personOccupation;
+	}
+
+	public void setPersonOccupation(String personOccupation) {
+		this.personOccupation = personOccupation;
 	}
 
 	public String getExternalMessageDetails() {
@@ -825,6 +872,22 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 		this.activitiesAsCase = activitiesAsCase;
 	}
 
+	public String getAdditionalPersonContactDetails() {
+		return additionalPersonContactDetails;
+	}
+
+	public void setAdditionalPersonContactDetails(String additionalPersonContactDetails) {
+		this.additionalPersonContactDetails = additionalPersonContactDetails;
+	}
+
+	public String getAdditionalPersonAddresses() {
+		return additionalPersonAddresses;
+	}
+
+	public void setAdditionalPersonAddresses(String additionalPersonAddresses) {
+		this.additionalPersonAddresses = additionalPersonAddresses;
+	}
+
 	public String getExposures() {
 		return exposures;
 	}
@@ -839,6 +902,30 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	public void setDeceasedDate(Date deceasedDate) {
 		this.deceasedDate = deceasedDate;
+	}
+
+	public CauseOfDeath getCauseOfDeath() {
+		return causeOfDeath;
+	}
+
+	public void setCauseOfDeath(CauseOfDeath causeOfDeath) {
+		this.causeOfDeath = causeOfDeath;
+	}
+
+	public String getCauseOfDeathDetails() {
+		return causeOfDeathDetails;
+	}
+
+	public void setCauseOfDeathDetails(String causeOfDeathDetails) {
+		this.causeOfDeathDetails = causeOfDeathDetails;
+	}
+
+	public Disease getCauseOfDeathDisease() {
+		return causeOfDeathDisease;
+	}
+
+	public void setCauseOfDeathDisease(Disease causeOfDeathDisease) {
+		this.causeOfDeathDisease = causeOfDeathDisease;
 	}
 
 	public RadiographyCompatibility getRadiographyCompatibility() {
@@ -927,5 +1014,63 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	public void setTuberculosisBeijingLineage(Boolean tuberculosisBeijingLineage) {
 		this.tuberculosisBeijingLineage = tuberculosisBeijingLineage;
+	}
+
+	public YesNoUnknown getMalaria() {
+		return malaria;
+	}
+
+	public void setMalaria(YesNoUnknown malaria) {
+		this.malaria = malaria;
+	}
+
+	public Integer getMalariaInfectedYear() {
+		return malariaInfectedYear;
+	}
+
+	public void setMalariaInfectedYear(Integer malariaInfectedYear) {
+		this.malariaInfectedYear = malariaInfectedYear;
+	}
+
+	public YesNoUnknown getAirportWorker() {
+		return airportWorker;
+	}
+
+	public void setAirportWorker(YesNoUnknown airportWorker) {
+		this.airportWorker = airportWorker;
+	}
+
+	public YesNoUnknown getHealthcareProfessional() {
+		return healthcareProfessional;
+	}
+
+	public void setHealthcareProfessional(YesNoUnknown healthcareProfessional) {
+		this.healthcareProfessional = healthcareProfessional;
+	}
+
+	public ModeOfTransmission getModeOfTransmission() {
+		return modeOfTransmission;
+	}
+
+	public void setModeOfTransmission(ModeOfTransmission modeOfTransmission) {
+		this.modeOfTransmission = modeOfTransmission;
+	}
+
+	public String getModeOfTransmissionType() {
+		return modeOfTransmissionType;
+	}
+
+	public void setModeOfTransmissionType(String modeOfTransmissionType) {
+		this.modeOfTransmissionType = modeOfTransmissionType;
+	}
+
+	@Nullable
+	public ExternalSurveyResponseData getSurveyResponseData() {
+		return surveyResponseData;
+	}
+
+	public ExternalMessageDto setSurveyResponseData(@Nullable ExternalSurveyResponseData surveyResponseData) {
+		this.surveyResponseData = surveyResponseData;
+		return this;
 	}
 }

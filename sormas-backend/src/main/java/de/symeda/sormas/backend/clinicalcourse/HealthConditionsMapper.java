@@ -62,6 +62,16 @@ public class HealthConditionsMapper {
 		target.setTuberculosisInfectionYear(source.getTuberculosisInfectionYear());
 		target.setComplianceWithTreatment(source.getComplianceWithTreatment());
 		target.setRecurrentBronchiolitis(source.getRecurrentBronchiolitis());
+		target.setExposedToMosquitoBorneVirusesText(source.getExposedToMosquitoBorneVirusesText());
+		target.setExposedToMosquitoBorneViruses(source.getExposedToMosquitoBorneViruses());
+		target.setVaccinatedAgainstMosquitoBorneViruses(source.getVaccinatedAgainstMosquitoBorneViruses());
+		target.setImmunodeficiencyOtherThanHivText(source.getImmunodeficiencyOtherThanHivText());
+		target.setMalaria(source.getMalaria());
+		target.setMalariaInfectedYear(source.getMalariaInfectedYear());
+		target.setOnMedication(source.getOnMedication());
+		target.setMedicationDetails(source.getMedicationDetails());
+		target.setChronicDisease(source.getChronicDisease());
+		target.setChronicDiseaseDetails(source.getChronicDiseaseDetails());
 		return target;
 	}
 
@@ -99,7 +109,16 @@ public class HealthConditionsMapper {
 		target.setTuberculosisInfectionYear(source.getTuberculosisInfectionYear());
 		target.setComplianceWithTreatment(source.getComplianceWithTreatment());
 		target.setRecurrentBronchiolitis(source.getRecurrentBronchiolitis());
-
+		target.setExposedToMosquitoBorneVirusesText(source.getExposedToMosquitoBorneVirusesText());
+		target.setExposedToMosquitoBorneViruses(source.getExposedToMosquitoBorneViruses());
+		target.setVaccinatedAgainstMosquitoBorneViruses(source.getVaccinatedAgainstMosquitoBorneViruses());
+		target.setImmunodeficiencyOtherThanHivText(source.getImmunodeficiencyOtherThanHivText());
+		target.setMalaria(source.getMalaria());
+		target.setMalariaInfectedYear(source.getMalariaInfectedYear());
+		target.setOnMedication(source.getOnMedication());
+		target.setMedicationDetails(source.getMedicationDetails());
+		target.setChronicDisease(source.getChronicDisease());
+		target.setChronicDiseaseDetails(source.getChronicDiseaseDetails());
 		return target;
 	}
 }

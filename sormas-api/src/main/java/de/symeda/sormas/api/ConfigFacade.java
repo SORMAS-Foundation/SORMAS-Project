@@ -92,6 +92,8 @@ public interface ConfigFacade {
 
 	String getGeocodingServiceUrlTemplate();
 
+	String getGeocodingServiceUserAgent();
+
 	String getGeocodingLongitudeJsonPath();
 
 	String getGeocodingLatitudeJsonPath();

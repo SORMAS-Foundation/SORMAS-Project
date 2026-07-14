@@ -18,19 +18,67 @@
 
 package de.symeda.sormas.api.sample;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.utils.ApplicableToPathogenTests;
+import de.symeda.sormas.api.utils.Diseases;
 
 public enum SerotypingMethod {
-    MULTIPLEX_PCR,
-    QUELLUNG_REACTION,
-    COAGGLUTINATION,
-    GEL_DIFFUSION,
-    PNEUMOTEST,
-    SLIDE_AGGLUTINATION,
-    OTHER;
 
-    @Override
-    public String toString() {
-        return I18nProperties.getEnumCaption(this);
-    }
+	@Diseases(value = {
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+		Disease.SHIGELLOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.SEROTYPING })
+	MULTIPLEX_PCR,
+	@Diseases(value = {
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.SEROGROUPING })
+	QUELLUNG_REACTION,
+	@Diseases(value = {
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.SEROGROUPING })
+	COAGGLUTINATION,
+	@Diseases(value = {
+		Disease.SHIGELLOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.SEROTYPING })
+	AGGLUTINATION,
+	@Diseases(value = {
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.SEROGROUPING })
+	GEL_DIFFUSION,
+	@Diseases(value = {
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.SEROGROUPING })
+	PNEUMOTEST,
+	@Diseases(value = {
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.SEROGROUPING })
+	SLIDE_AGGLUTINATION,
+	@Diseases(value = {
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY })
+	DISK_DIFFUSION,
+
+	@Diseases(value = {
+		Disease.SHIGELLOSIS })
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.SEROTYPING })
+	WGS_PREDICTION,
+	// OTHER is mostly applicable for all diseases and pathogen tests, so we don't specify them as applicable to specific diseases or tests
+	@Diseases
+	@ApplicableToPathogenTests
+	OTHER;
+
+	@Override
+	public String toString() {
+		return I18nProperties.getEnumCaption(this);
+	}
 }

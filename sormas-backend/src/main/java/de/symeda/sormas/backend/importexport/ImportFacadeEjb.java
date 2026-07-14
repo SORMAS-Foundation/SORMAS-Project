@@ -569,13 +569,15 @@ public class ImportFacadeEjb implements ImportFacade {
 			SurveyTokenDto.GENERATED_DOCUMENT,
 			SurveyTokenDto.RECIPIENT_EMAIL,
 			SurveyTokenDto.RESPONSE_RECEIVED,
+			SurveyTokenDto.EXTERNAL_RESPONDENT_ID,
 			SurveyTokenDto.RESPONSE_RECEIVED_DATE);
 
 		writeTemplate(Paths.get(getSurveyTokenImportTemplateFilePath()), importColumns, false);
 	}
 
 	@Override
-	public void generateSurveyTokenResponsesImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException, NoSuchFieldException {
+	public void generateSurveyTokenResponsesImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations)
+		throws IOException, NoSuchFieldException {
 
 		createExportDirectoryIfNecessary();
 
@@ -583,16 +585,16 @@ public class ImportFacadeEjb implements ImportFacade {
 		List<ImportColumn> importColumns = new ArrayList<>();
 
 		appendListOfFields(
-				importColumns,
-				SurveyTokenDto.class,
-				"",
-				separator,
-				featureConfigurations,
-				SurveyTokenDto.SURVEY,
-				SurveyTokenDto.ASSIGNMENT_DATE,
-				SurveyTokenDto.CASE_ASSIGNED_TO,
-				SurveyTokenDto.GENERATED_DOCUMENT,
-				SurveyTokenDto.RECIPIENT_EMAIL);
+			importColumns,
+			SurveyTokenDto.class,
+			"",
+			separator,
+			featureConfigurations,
+			SurveyTokenDto.SURVEY,
+			SurveyTokenDto.ASSIGNMENT_DATE,
+			SurveyTokenDto.CASE_ASSIGNED_TO,
+			SurveyTokenDto.GENERATED_DOCUMENT,
+			SurveyTokenDto.RECIPIENT_EMAIL);
 
 		writeTemplate(Paths.get(getSurveyTokenResponsesImportTemplateFilePath()), importColumns, false);
 

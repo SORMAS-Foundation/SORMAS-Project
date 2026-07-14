@@ -17,7 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples.pathogentestlink;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -44,12 +44,6 @@ import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentField;
 public class PathogenTestListEntry extends SideComponentField {
 
 	private final PathogenTestDto pathogenTest;
-	List<PathogenTestType> seroGrpTests = Arrays.asList(
-		PathogenTestType.SEROGROUPING,
-		PathogenTestType.MULTILOCUS_SEQUENCE_TYPING,
-		PathogenTestType.SLIDE_AGGLUTINATION,
-		PathogenTestType.WHOLE_GENOME_SEQUENCING,
-		PathogenTestType.SEQUENCING);
 
 	public PathogenTestListEntry(PathogenTestDto pathogenTest, boolean showTestResultText) {
 
@@ -60,26 +54,32 @@ public class PathogenTestListEntry extends SideComponentField {
 		topLabelLayout.setMargin(false);
 		topLabelLayout.setWidth(100, Unit.PERCENTAGE);
 		addComponentToField(topLabelLayout);
-		Label labelTopLeft = new Label(PathogenTestType.toString(pathogenTest.getTestType(), pathogenTest.getTestTypeText()));
+		Label labelTopLeft =
+			new Label(PathogenTestType.toString(pathogenTest.getTestType(), pathogenTest.getTestTypeText(), pathogenTest.getTestedDisease()));
 		CssStyles.style(labelTopLeft, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
 		topLabelLayout.addComponent(labelTopLeft);
 
 		if (Boolean.TRUE.equals(pathogenTest.getTestResultVerified())) {
-			Label labelTopRight = new Label(VaadinIcons.CHECK_CIRCLE.getHtml(), ContentMode.HTML);
-			labelTopRight.setSizeUndefined();
-			labelTopRight.addStyleName(CssStyles.LABEL_LARGE);
-			labelTopRight.setDescription(I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_RESULT_VERIFIED));
-			topLabelLayout.addComponent(labelTopRight);
-			topLabelLayout.setComponentAlignment(labelTopRight, Alignment.TOP_RIGHT);
+			addTopRightIcon(topLabelLayout, VaadinIcons.CHECK_CIRCLE, PathogenTestDto.TEST_RESULT_VERIFIED);
 		}
 
-		if (pathogenTest.getTestedDisease() != Disease.TUBERCULOSIS) {
-			if (showTestResultText && !DataHelper.isNullOrEmpty(pathogenTest.getTestResultText())) {
-				Label resultTextLabel = new Label(StringUtils.abbreviate(pathogenTest.getTestResultText(), 125));
-				resultTextLabel.setDescription(pathogenTest.getTestResultText());
-				resultTextLabel.setWidthFull();
-				addComponentToField(resultTextLabel);
-			}
+		// At-a-glance lab indicators: reference laboratory, retest, and result details
+		// (the latter only when the full result text is not already shown below).
+		if (shouldShowRefLabIcon(pathogenTest)) {
+			addTopRightIcon(topLabelLayout, VaadinIcons.INSTITUTION, PathogenTestDto.PERFORMED_BY_REFERENCE_LABORATORY);
+		}
+		if (shouldShowRetestIcon(pathogenTest)) {
+			addTopRightIcon(topLabelLayout, VaadinIcons.REFRESH, PathogenTestDto.RETEST_REQUESTED);
+		}
+		if (shouldShowResultDetailsIcon(pathogenTest, showTestResultText)) {
+			addTopRightIcon(topLabelLayout, VaadinIcons.INFO_CIRCLE, PathogenTestDto.TEST_RESULT_TEXT);
+		}
+
+		if (showTestResultText && !DataHelper.isNullOrEmpty(pathogenTest.getTestResultText())) {
+			Label resultTextLabel = new Label(StringUtils.abbreviate(pathogenTest.getTestResultText(), 125));
+			resultTextLabel.setDescription(pathogenTest.getTestResultText());
+			resultTextLabel.setWidthFull();
+			addComponentToField(resultTextLabel);
 		}
 
 		HorizontalLayout middleLabelLayout = new HorizontalLayout();
@@ -118,42 +118,36 @@ public class PathogenTestListEntry extends SideComponentField {
 			}
 		}
 
-		Object resultText = "";
 		PathogenTestType testType = pathogenTest.getTestType();
-		if (seroGrpTests.contains(pathogenTest.getTestType())) {
-			resultText = pathogenTest.getSeroGroupSpecification() != null ? pathogenTest.getSeroGroupSpecification() : pathogenTest.getSerotype();
-		} else if (pathogenTest.getTestedDisease() == Disease.TUBERCULOSIS
-			&& Arrays
-				.asList(
-					PathogenTestType.MICROSCOPY,
-					PathogenTestType.BEIJINGGENOTYPING,
-					PathogenTestType.SPOLIGOTYPING,
-					PathogenTestType.MIRU_PATTERN_CODE)
-				.contains(testType)) {
-			if (testType == PathogenTestType.MICROSCOPY) {
-				resultText = StringUtils.abbreviate((pathogenTest.getTestScale() != null ? pathogenTest.getTestScale().toString() : ""), 125);
-			} else if (testType == PathogenTestType.BEIJINGGENOTYPING) {
-				resultText =
-					StringUtils.abbreviate((pathogenTest.getStrainCallStatus() != null ? pathogenTest.getStrainCallStatus().toString() : ""), 125);
-			} else if (testType == PathogenTestType.SPOLIGOTYPING) {
-				resultText = StringUtils.abbreviate((pathogenTest.getSpecie() != null ? pathogenTest.getSpecie().toString() : ""), 125);
-			} else if (testType == PathogenTestType.MIRU_PATTERN_CODE) {
-				resultText = StringUtils.abbreviate(pathogenTest.getPatternProfile(), 125);
+
+		// Quantitative result (issue #13952): combine whichever value-type fields the method populated.
+		String quantitativeResult = formatQuantitativeResult(pathogenTest);
+		// Antibiotic susceptibility has no qualitative result, so suppress the result label regardless of the stored
+		// value — old records may carry a stale POSITIVE.
+		// Other methods that have no QUALITATIVE in their @ResultValueTypeRel (Western Blot, Bacterial Culture,
+		// typing methods, ...) keep their qualitative cue.
+		boolean astWithoutQualitativeResult = testType == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY;
+		boolean suppressResultLabel =
+			astWithoutQualitativeResult || (pathogenTest.getTestResult() == PathogenTestResultType.NOT_APPLICABLE && quantitativeResult != null);
+		if (!suppressResultLabel) {
+			Object resultText = determineSideComponentVariant(pathogenTest);
+			Label labelResult = new Label(DataHelper.toStringNullable(resultText == null ? pathogenTest.getTestResult() : resultText));
+			CssStyles.style(labelResult, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
+			if (pathogenTest.getTestResult() == PathogenTestResultType.POSITIVE) {
+				CssStyles.style(labelResult, CssStyles.LABEL_CRITICAL);
+			} else {
+				CssStyles.style(labelResult, CssStyles.LABEL_WARNING);
 			}
-		} else if (testType == PathogenTestType.GENOTYPING) {
-			resultText = StringUtils.abbreviate((pathogenTest.getGenoTypeResult() != null ? pathogenTest.getGenoTypeResult().toString() : ""), 125);
-		} else {
-			resultText = pathogenTest.getTestResult();
+			addComponentToField(labelResult);
 		}
 
-		Label labelResult = new Label(DataHelper.toStringNullable(resultText));
-		CssStyles.style(labelResult, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
-		if (pathogenTest.getTestResult() == PathogenTestResultType.POSITIVE) {
-			CssStyles.style(labelResult, CssStyles.LABEL_CRITICAL);
-		} else {
-			CssStyles.style(labelResult, CssStyles.LABEL_WARNING);
+		if (quantitativeResult != null) {
+			Label quantitativeLabel = new Label(StringUtils.abbreviate(quantitativeResult, 125));
+			quantitativeLabel.setDescription(quantitativeResult);
+			CssStyles.style(quantitativeLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE, CssStyles.LABEL_WARNING);
+			quantitativeLabel.setWidthFull();
+			addComponentToField(quantitativeLabel);
 		}
-		addComponentToField(labelResult);
 
 		if (pathogenTest.getTestedDisease() == Disease.TUBERCULOSIS) {
 			if (testType == PathogenTestType.PCR_RT_PCR) {
@@ -168,10 +162,57 @@ public class PathogenTestListEntry extends SideComponentField {
 						.abbreviate((pathogenTest.getIsoniazidResistant() != null ? pathogenTest.getIsoniazidResistant().toString() : ""), 125));
 				pcrIsoniazidTextLabel.setWidthFull();
 				addComponentToField(pcrIsoniazidTextLabel);
-			} else if (testType == PathogenTestType.ANTIBIOTIC_SUSCEPTIBILITY) {
-				labelResult.setVisible(false);
 			}
 		}
+	}
+
+	/**
+	 * @return a short label combining every quantitative result field the test recorded (Western Blot
+	 *         interpretation, detected flag, smear grade, numeric value with optional unit), or {@code null}
+	 *         when none is set. A method can populate several of these at once, so all are shown.
+	 */
+	@Nullable
+	static String formatQuantitativeResult(PathogenTestDto test) {
+		List<String> parts = new ArrayList<>();
+		if (test.getWesternBlotInterpretation() != null) {
+			parts.add(test.getWesternBlotInterpretation().toString());
+		}
+		if (test.getSmearGrade() != null) {
+			parts.add(test.getSmearGrade().toString());
+		}
+		if (test.getQuantitativeBoolean() != null) {
+			parts.add(test.getQuantitativeBoolean().toString());
+		}
+		if (test.getQuantitativeValue() != null) {
+			String unit = test.getQuantitativeUnit();
+			parts.add(DataHelper.isNullOrEmpty(unit) ? test.getQuantitativeValue().toString() : test.getQuantitativeValue() + " " + unit);
+		}
+		return parts.isEmpty() ? null : String.join(": ", parts);
+	}
+
+	private static void addTopRightIcon(HorizontalLayout topLabelLayout, VaadinIcons icon, String captionProperty) {
+		Label iconLabel = new Label(icon.getHtml(), ContentMode.HTML);
+		iconLabel.setSizeUndefined();
+		iconLabel.addStyleNames(CssStyles.LABEL_LARGE, CssStyles.HSPACE_LEFT_4);
+		iconLabel.setDescription(I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, captionProperty));
+		topLabelLayout.addComponent(iconLabel);
+		topLabelLayout.setComponentAlignment(iconLabel, Alignment.TOP_RIGHT);
+	}
+
+	static boolean shouldShowRefLabIcon(PathogenTestDto test) {
+		return Boolean.TRUE.equals(test.getPerformedByReferenceLaboratory());
+	}
+
+	static boolean shouldShowRetestIcon(PathogenTestDto test) {
+		return Boolean.TRUE.equals(test.getRetestRequested());
+	}
+
+	/**
+	 * The result-details cue is only shown in the compact view (when the full result text is not rendered),
+	 * to avoid a redundant icon next to text that is already visible.
+	 */
+	static boolean shouldShowResultDetailsIcon(PathogenTestDto test, boolean showTestResultText) {
+		return !showTestResultText && !DataHelper.isNullOrEmpty(test.getTestResultText());
 	}
 
 	@Nullable

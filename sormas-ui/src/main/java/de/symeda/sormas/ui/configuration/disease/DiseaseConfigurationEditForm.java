@@ -21,37 +21,46 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
 import java.util.Arrays;
 import java.util.Collections;
 
+import com.vaadin.ui.CustomLayout;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.RichTextArea;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
+import de.symeda.sormas.api.exposure.ExposureCategory;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.adverseeventsfollowingimmunization.components.form.FormSectionAccordion;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.components.CheckboxSet;
 import de.symeda.sormas.ui.utils.components.DiseaseConfigurationAgeGroupComponent;
 
 public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfigurationDto> {
 
 	private DiseaseConfigurationAgeGroupComponent ageGroupsComponent;
+	//@formatter:off
+	public static final String CASE_DEFINITION_HTML_LAYOUT = fluidRowLocs(DiseaseConfigurationDto.CASE_DEFINITION_TEXT);
 
-	private static final String HTML_LAYOUT = fluidRowLocs(DiseaseConfigurationDto.DISEASE, DiseaseConfigurationDto.UUID)
-		+ fluidRowLocsCss(CssStyles.VSPACE_3, DiseaseConfigurationDto.ACTIVE, DiseaseConfigurationDto.PRIMARY_DISEASE)
-		+ fluidRowLocsCss(CssStyles.VSPACE_3, DiseaseConfigurationDto.CASE_SURVEILLANCE_ENABLED, DiseaseConfigurationDto.AGGREGATE_REPORTING_ENABLED)
-		+ fluidRowLocsCss(CssStyles.VSPACE_3, DiseaseConfigurationDto.FOLLOW_UP_ENABLED)
-		+ fluidRowLocsCss(
-			CssStyles.VSPACE_3,
-			DiseaseConfigurationDto.FOLLOW_UP_DURATION,
-			DiseaseConfigurationDto.CASE_FOLLOW_UP_DURATION,
-			DiseaseConfigurationDto.EVENT_PARTICIPANT_FOLLOW_UP_DURATION)
-		+ fluidRowLocs(
-			DiseaseConfigurationDto.EXTENDED_CLASSIFICATION,
-			DiseaseConfigurationDto.EXTENDED_CLASSIFICATION_MULTI,
-			DiseaseConfigurationDto.AUTOMATIC_SAMPLE_ASSIGNMENT_THRESHOLD)
-		+ fluidRowLocsCss(CssStyles.VSPACE_3, DiseaseConfigurationDto.AGE_GROUPS);
+	public static final String AGE_GROUP_HTML_LAYOUT = fluidRowLocs(DiseaseConfigurationDto.AGE_GROUPS);
+
+	public static final String GENERAL_HTML_LAYOUT = fluidRowLocsCss(CssStyles.VSPACE_3,DiseaseConfigurationDto.UUID)
+			+ fluidRowLocsCss(CssStyles.VSPACE_3, DiseaseConfigurationDto.ACTIVE, DiseaseConfigurationDto.PRIMARY_DISEASE, DiseaseConfigurationDto.AGGREGATE_REPORTING_ENABLED)
+			+ fluidRowLocsCss(CssStyles.VSPACE_3, DiseaseConfigurationDto.CASE_SURVEILLANCE_ENABLED)
+			+ fluidRowLocs(DiseaseConfigurationDto.EXTENDED_CLASSIFICATION, DiseaseConfigurationDto.EXTENDED_CLASSIFICATION_MULTI, DiseaseConfigurationDto.AUTOMATIC_SAMPLE_ASSIGNMENT_THRESHOLD)
+			+ fluidRowLocsCss(CssStyles.VSPACE_3, DiseaseConfigurationDto.FOLLOW_UP_ENABLED)
+			+ fluidRowLocsCss(CssStyles.VSPACE_3,DiseaseConfigurationDto.FOLLOW_UP_DURATION,DiseaseConfigurationDto.CASE_FOLLOW_UP_DURATION,DiseaseConfigurationDto.EVENT_PARTICIPANT_FOLLOW_UP_DURATION)
+			+ fluidRowLocsCss(CssStyles.VSPACE_5, DiseaseConfigurationDto.INCUBATION_PERIOD_ENABLED,DiseaseConfigurationDto.IS_CONTAGIOUS)
+			+ fluidRowLocsCss(CssStyles.VSPACE_1, DiseaseConfigurationDto.MIN_INCUBATION_PERIOD, DiseaseConfigurationDto.MAX_INCUBATION_PERIOD,DiseaseConfigurationDto.MIN_CONTAGIOUS_PERIOD, DiseaseConfigurationDto.MAX_CONTAGIOUS_PERIOD)
+			+ fluidRowLocs(DiseaseConfigurationDto.EXPOSURE_CATEGORIES);
+	//@formatter:on
+	public static final String MAIN_ACCORDION_LOC = "mainAccordionLoc";
+
+	private static final String HTML_LAYOUT = fluidRowLocs(DiseaseConfigurationDto.DISEASE) + fluidRowLocs(MAIN_ACCORDION_LOC);
 
 	private ComboBox cbDisease;
 	private CheckBox cbCaseSurveillance;
@@ -59,9 +68,17 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 	private TextField tfFollowUpDuration;
 	private TextField tfCaseFollowUpDuration;
 	private TextField tfEventParticipantFollowUpDuration;
+	private CheckBox cbIncubationPeriodEnabled;
+	private TextField tfMaxIncubationPeriod;
+	private TextField tfMinIncubationPeriod;
 	private CheckBox cbExtendedClassification;
 	private CheckBox cbExtendedClassificationMulti;
 	private TextField tfAutomaticSampleAssignmentThreshold;
+	private CheckBox cbIsContagious;
+	private TextField tfMinContagiousPeriod;
+	private TextField tfMaxContagiousPeriod;
+
+	private CheckboxSet<ExposureCategory> exposureCategoriesField;
 
 	public DiseaseConfigurationEditForm() {
 
@@ -78,24 +95,58 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 	@Override
 	protected void addFields() {
 
+		FormSectionAccordion accordion = new FormSectionAccordion();
+
+		CustomLayout caseDefinitionLayout = new CustomLayout();
+		caseDefinitionLayout.setTemplateContents(CASE_DEFINITION_HTML_LAYOUT);
+
+		CustomLayout ageGroupLayout = new CustomLayout();
+		ageGroupLayout.setTemplateContents(AGE_GROUP_HTML_LAYOUT);
+
+		CustomLayout generalLayout = new CustomLayout();
+		generalLayout.setTemplateContents(GENERAL_HTML_LAYOUT);
+
 		cbDisease = addDiseaseField(DiseaseConfigurationDto.DISEASE, true, false);
-		addField(DiseaseConfigurationDto.UUID);
-		addField(DiseaseConfigurationDto.ACTIVE, CheckBox.class);
-		addField(DiseaseConfigurationDto.PRIMARY_DISEASE, CheckBox.class);
-		cbCaseSurveillance = addField(DiseaseConfigurationDto.CASE_SURVEILLANCE_ENABLED, CheckBox.class);
-		addField(DiseaseConfigurationDto.AGGREGATE_REPORTING_ENABLED, CheckBox.class);
+		cbDisease.setStyleName(CssStyles.H3);
+		addField(generalLayout, DiseaseConfigurationDto.UUID);
+		addField(generalLayout, DiseaseConfigurationDto.ACTIVE, CheckBox.class);
+		addField(generalLayout, DiseaseConfigurationDto.PRIMARY_DISEASE, CheckBox.class);
+		cbCaseSurveillance = addField(generalLayout, DiseaseConfigurationDto.CASE_SURVEILLANCE_ENABLED, CheckBox.class);
+		addField(generalLayout, DiseaseConfigurationDto.AGGREGATE_REPORTING_ENABLED, CheckBox.class);
 
-		cbFollowUpEnabled = addField(DiseaseConfigurationDto.FOLLOW_UP_ENABLED, CheckBox.class);
-		tfFollowUpDuration = addField(DiseaseConfigurationDto.FOLLOW_UP_DURATION);
-		tfCaseFollowUpDuration = addField(DiseaseConfigurationDto.CASE_FOLLOW_UP_DURATION);
-		tfEventParticipantFollowUpDuration = addField(DiseaseConfigurationDto.EVENT_PARTICIPANT_FOLLOW_UP_DURATION);
-		cbExtendedClassification = addField(DiseaseConfigurationDto.EXTENDED_CLASSIFICATION, CheckBox.class);
-		cbExtendedClassificationMulti = addField(DiseaseConfigurationDto.EXTENDED_CLASSIFICATION_MULTI, CheckBox.class);
+		cbFollowUpEnabled = addField(generalLayout, DiseaseConfigurationDto.FOLLOW_UP_ENABLED, CheckBox.class);
+		tfFollowUpDuration = addField(generalLayout, DiseaseConfigurationDto.FOLLOW_UP_DURATION);
+		tfCaseFollowUpDuration = addField(generalLayout, DiseaseConfigurationDto.CASE_FOLLOW_UP_DURATION);
+		tfEventParticipantFollowUpDuration = addField(generalLayout, DiseaseConfigurationDto.EVENT_PARTICIPANT_FOLLOW_UP_DURATION);
+		cbIncubationPeriodEnabled = addField(generalLayout, DiseaseConfigurationDto.INCUBATION_PERIOD_ENABLED, CheckBox.class);
+		tfMaxIncubationPeriod = addField(generalLayout, DiseaseConfigurationDto.MAX_INCUBATION_PERIOD, TextField.class);
+		tfMinIncubationPeriod = addField(generalLayout, DiseaseConfigurationDto.MIN_INCUBATION_PERIOD, TextField.class);
+		cbExtendedClassification = addField(generalLayout, DiseaseConfigurationDto.EXTENDED_CLASSIFICATION, CheckBox.class);
+		cbExtendedClassificationMulti = addField(generalLayout, DiseaseConfigurationDto.EXTENDED_CLASSIFICATION_MULTI, CheckBox.class);
 
-		ageGroupsComponent = addField(DiseaseConfigurationDto.AGE_GROUPS, DiseaseConfigurationAgeGroupComponent.class);
+		cbIsContagious = addField(generalLayout, DiseaseConfigurationDto.IS_CONTAGIOUS, CheckBox.class);
+		tfMinContagiousPeriod = addField(generalLayout, DiseaseConfigurationDto.MIN_CONTAGIOUS_PERIOD, TextField.class);
+		tfMaxContagiousPeriod = addField(generalLayout, DiseaseConfigurationDto.MAX_CONTAGIOUS_PERIOD, TextField.class);
+
+		exposureCategoriesField = addField(generalLayout, DiseaseConfigurationDto.EXPOSURE_CATEGORIES, CheckboxSet.class);
+		exposureCategoriesField.setColumnCount(3);
+		exposureCategoriesField.setItems(Arrays.asList(ExposureCategory.values()), null, null);
+
+		ageGroupsComponent = addField(ageGroupLayout, DiseaseConfigurationDto.AGE_GROUPS, DiseaseConfigurationAgeGroupComponent.class);
 		ageGroupsComponent.setCaption(I18nProperties.getPrefixCaption(DiseaseConfigurationDto.I18N_PREFIX, DiseaseConfigurationDto.AGE_GROUPS));
 
-		tfAutomaticSampleAssignmentThreshold = addField(DiseaseConfigurationDto.AUTOMATIC_SAMPLE_ASSIGNMENT_THRESHOLD);
+		tfAutomaticSampleAssignmentThreshold = addField(generalLayout, DiseaseConfigurationDto.AUTOMATIC_SAMPLE_ASSIGNMENT_THRESHOLD);
+
+		RichTextArea caseDefinitionText = addField(caseDefinitionLayout, DiseaseConfigurationDto.CASE_DEFINITION_TEXT, RichTextArea.class);
+		caseDefinitionText.setNullRepresentation("");
+		caseDefinitionText.setImmediate(true);
+
+		accordion.addFormSectionPanel(I18nProperties.getCaption(Captions.titleDiseaseConfigurationGeneral), true, generalLayout);
+
+		accordion.addFormSectionPanel(I18nProperties.getCaption(Captions.titleDiseaseConfigurationCaseDefinition), false, caseDefinitionLayout);
+		accordion.addFormSectionPanel(I18nProperties.getCaption(Captions.titleDiseaseConfigurationAgeGroup), false, ageGroupLayout);
+
+		getContent().addComponent(accordion, MAIN_ACCORDION_LOC);
 
 		setReadOnly(true, DiseaseConfigurationDto.DISEASE, DiseaseConfigurationDto.UUID);
 		FieldHelper.setEnabledWhen(
@@ -103,11 +154,28 @@ public class DiseaseConfigurationEditForm extends AbstractEditForm<DiseaseConfig
 			Collections.singletonList(Boolean.TRUE),
 			Arrays.asList(cbFollowUpEnabled, cbExtendedClassification, cbExtendedClassificationMulti, tfAutomaticSampleAssignmentThreshold),
 			false);
-		FieldHelper.setEnabledWhen(
+		FieldHelper.setVisibleWhen(
 			cbFollowUpEnabled,
-			Collections.singletonList(Boolean.TRUE),
 			Arrays.asList(tfFollowUpDuration, tfCaseFollowUpDuration, tfEventParticipantFollowUpDuration),
-			false);
+			Arrays.asList(Boolean.TRUE),
+			true);
+		FieldHelper.setVisibleWhen(
+			cbIncubationPeriodEnabled,
+			Arrays.asList(tfMaxIncubationPeriod, tfMinIncubationPeriod),
+			Arrays.asList(Boolean.TRUE),
+			true);
+		FieldHelper.setVisibleWhen(cbIsContagious, Arrays.asList(tfMaxContagiousPeriod, tfMinContagiousPeriod), Arrays.asList(Boolean.TRUE), true);
+		FieldHelper.setVisibleWhen(
+			cbCaseSurveillance,
+			Arrays.asList(
+				cbFollowUpEnabled,
+				cbIncubationPeriodEnabled,
+				cbExtendedClassification,
+				cbExtendedClassificationMulti,
+				tfAutomaticSampleAssignmentThreshold,
+				cbIsContagious),
+			Arrays.asList(Boolean.TRUE),
+			true);
 	}
 
 	@Override

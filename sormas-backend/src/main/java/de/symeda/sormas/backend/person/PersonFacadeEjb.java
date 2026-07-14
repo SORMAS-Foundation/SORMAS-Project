@@ -84,6 +84,8 @@ import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.geocoding.GeocodingConfigurationException;
+import de.symeda.sormas.api.geocoding.GeocodingFacade;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -261,6 +263,8 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	private SpecialCaseAccessService specialCaseAccessService;
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
+	@EJB
+	private GeocodingFacade geoCodingFacade;
 
 	public PersonFacadeEjb() {
 	}
@@ -1105,13 +1109,23 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	@RightsAllowed(UserRight._PERSON_EDIT)
 	public long setMissingGeoCoordinates(boolean overwriteExistingCoordinates) {
 
+		// Quit early without configuration
+		if (!geoCodingFacade.isConfigurationValid()) {
+			logger.warn("Geocoding is not configured.");
+			return 0L;
+		}
+
 		// The uuid-list is filtered by the users jurisdiction and retrieved in batches to avoid timeouts
 		List<String> personUuidList = getAllUuidsBatched(2500, overwriteExistingCoordinates);
 
 		// Run updates in batches to avoid large JPA cache
 		List<Long> batchResults = new ArrayList<>();
 		IterableHelper.executeBatched(personUuidList, 100, batchedUuids -> {
-			batchResults.add(service.updateGeoLocation(batchedUuids, overwriteExistingCoordinates));
+			try {
+				batchResults.add(service.updateGeoLocation(batchedUuids, overwriteExistingCoordinates));
+			} catch (GeocodingConfigurationException e) {
+				logger.warn("Geocoding is not configured.", e);
+			}
 		});
 		return batchResults.stream().reduce(0L, Long::sum);
 	}
@@ -1503,7 +1517,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 				case PersonIndexDto.POSTAL_CODE:
 				case PersonIndexDto.CITY:
 					Join<Person, Location> location = personQueryContext.getJoins().getAddress();
-					expression = cb.lower(location.get(sortProperty.propertyName));
+					expression = CriteriaBuilderHelper.lowerAndEmptyToNull(cb, location.get(sortProperty.propertyName));
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
@@ -1999,6 +2013,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 							}
 							if (leadEventParticipant.getVaccinationStatus() == null && otherEventParticipant.getVaccinationStatus() != null) {
 								leadEventParticipant.setVaccinationStatus(otherEventParticipant.getVaccinationStatus());
+								leadEventParticipant.setVaccinationStatusDetails(otherEventParticipant.getVaccinationStatusDetails());
 							}
 
 							otherEventParticipant.getSamples().forEach(sample -> {

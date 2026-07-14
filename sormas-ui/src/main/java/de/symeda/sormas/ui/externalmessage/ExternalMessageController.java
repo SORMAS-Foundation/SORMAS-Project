@@ -16,6 +16,7 @@ package de.symeda.sormas.ui.externalmessage;
 
 import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showAlreadyProcessedPopup;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -83,6 +84,8 @@ import de.symeda.sormas.ui.externalmessage.labmessage.LabMessageProcessingFlow;
 import de.symeda.sormas.ui.externalmessage.labmessage.LabMessageSlider;
 import de.symeda.sormas.ui.externalmessage.labmessage.RelatedLabMessageHandler;
 import de.symeda.sormas.ui.externalmessage.physiciansreport.PhysiciansReportProcessingFlow;
+import de.symeda.sormas.ui.externalmessage.surveyresponse.SurveyResponseDetailsWindow;
+import de.symeda.sormas.ui.externalmessage.surveyresponse.SurveyResponseFailureEditor;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DeleteRestoreHandlers;
@@ -128,6 +131,13 @@ public class ExternalMessageController {
 	public void showExternalMessage(String messageUuid, boolean withActions, Runnable onFormActionPerformed) {
 
 		ExternalMessageDto newDto = FacadeProvider.getExternalMessageFacade().getByUuid(messageUuid);
+
+		if (ExternalMessageType.SURVEY_RESPONSE.equals(newDto.getType())) {
+			// Side effect: window will be added to the current window.
+			new SurveyResponseDetailsWindow(newDto, onFormActionPerformed);
+			return;
+		}
+
 		VerticalLayout layout = new VerticalLayout();
 		layout.setMargin(true);
 
@@ -148,6 +158,53 @@ public class ExternalMessageController {
 		}
 
 		form.setValue(newDto);
+	}
+
+	public void processSurveyResponse(String surveyResponseMessageUuid, Runnable successRunnable) {
+		ExternalMessageDto externalMessage = FacadeProvider.getExternalMessageFacade().getByUuid(surveyResponseMessageUuid);
+
+		de.symeda.sormas.api.externalmessage.survey.ExternalMessageSurveyResponseResult result =
+			externalMessage.getSurveyResponseData() != null && externalMessage.getSurveyResponseData().getLatest() != null
+				? externalMessage.getSurveyResponseData().getLatest().getResult()
+				: null;
+
+		// In case of failure during operation, attempt to process the message again.
+		if (result == null) {
+			try {
+				result = FacadeProvider.getExternalMessageFacade()
+					.executeSurveyProcessing(surveyResponseMessageUuid)
+					.getSurveyResponseData()
+					.getLatest()
+					.getResult();
+			} catch (RuntimeException e) {
+				Notification.show(I18nProperties.getString(Strings.messageSurveyResponseNotYetProcessed), Notification.Type.HUMANIZED_MESSAGE);
+			}
+		}
+
+		if (result == null) {
+			Notification.show(I18nProperties.getString(Strings.messageSurveyResponseNotYetProcessed), Notification.Type.HUMANIZED_MESSAGE);
+			return;
+		}
+
+		if (result.getPatchResponse() != null && result.getPatchResponse().hasFailures()) {
+			de.symeda.sormas.api.patch.partial_retrieval.DisplayablePartialRetrievalResponse displayData;
+			try {
+				displayData = FacadeProvider.getExternalMessageFacade().fetchSurveyResponseFieldsForDisplay(surveyResponseMessageUuid);
+			} catch (Exception e) {
+				logger.error("Error retrieving survey response fields for display", e);
+				displayData = new de.symeda.sormas.api.patch.partial_retrieval.DisplayablePartialRetrievalResponse();
+			}
+
+			final de.symeda.sormas.api.patch.partial_retrieval.DisplayablePartialRetrievalResponse finalDisplayData = displayData;
+			SurveyResponseFailureEditor editor = new SurveyResponseFailureEditor(externalMessage, finalDisplayData, () -> {
+				SormasUI.get().getNavigator().navigateTo(ExternalMessagesView.VIEW_NAME);
+			});
+			UI.getCurrent().addWindow(editor);
+		} else {
+			Notification.show(I18nProperties.getString(Strings.messageSurveyResponseAllFieldsApplied), Notification.Type.HUMANIZED_MESSAGE);
+
+			successRunnable.run();
+		}
 	}
 
 	public void processLabMessage(String labMessageUuid) {
@@ -417,6 +474,28 @@ public class ExternalMessageController {
 		return buttonsPanel;
 	}
 
+	/**
+	 * Downloads the attachment of an external message as byte array.
+	 * 
+	 * @param externalMessageUuid
+	 *            the UUID of the external message
+	 * @return the attachment as byte array wrapped in an Optional
+	 */
+	public Optional<byte[]> downloadExternalMessageAttachment(String externalMessageUuid) {
+
+		if (StringUtils.isBlank(externalMessageUuid)) {
+			return Optional.empty();
+		}
+
+		ExternalMessageDto externalMessageDto = FacadeProvider.getExternalMessageFacade().getByUuid(externalMessageUuid);
+
+		return Optional.ofNullable(externalMessageDto.getExternalMessageDetails()).map(details -> details.getBytes(StandardCharsets.UTF_8));
+	}
+
+	/**
+	 * Converts the external message to PDF format.
+	 * Keeping this method for future use cases.
+	 */
 	public Optional<byte[]> convertToPDF(String externalMessageUuid) {
 
 		ExternalMessageDto externalMessageDto = FacadeProvider.getExternalMessageFacade().getByUuid(externalMessageUuid);
@@ -486,6 +565,9 @@ public class ExternalMessageController {
 		}
 		if (UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS)) {
 			types.add(ExternalMessageType.PHYSICIANS_REPORT);
+		}
+		if (UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_SURVEY_RESPONSE_PROCESS)) {
+			types.add(ExternalMessageType.SURVEY_RESPONSE);
 		}
 		components.syncUsersForMessageType(types);
 

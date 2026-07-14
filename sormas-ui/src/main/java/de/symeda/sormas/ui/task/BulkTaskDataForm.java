@@ -118,8 +118,6 @@ public class BulkTaskDataForm extends AbstractEditForm<TaskDto> {
 		getContent().addComponent(assigneeCheckbox, ASSIGNEE_CHECKBOX);
 		ComboBox assignee = addField(TaskBulkEditData.ASSIGNEE_USER, ComboBox.class);
 		assignee.setEnabled(false);
-		FieldHelper
-			.addSoftRequiredStyleWhen(getFieldGroup(), assigneeCheckbox, Arrays.asList(TaskBulkEditData.ASSIGNEE_USER), Arrays.asList(true), null);
 
 		Label assigneeHint = new Label();
 		getContent().addComponent(assigneeHint, ASSIGNEE_HINT);

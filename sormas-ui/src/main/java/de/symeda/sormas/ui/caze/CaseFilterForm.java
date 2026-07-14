@@ -50,6 +50,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -94,6 +95,8 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		ContactCriteria.SYMPTOM_JOURNAL_STATUS,
 		CaseCriteria.VACCINATION_STATUS,
 		CaseCriteria.REINFECTION_STATUS,
+		CaseCriteria.PATHOGEN_TEST_RESULT,
+		CaseCriteria.SEROGROUP,
 		CaseCriteria.BIRTHDATE_YYYY,
 		CaseCriteria.BIRTHDATE_MM,
 		CaseCriteria.BIRTHDATE_DD)
@@ -269,6 +272,18 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseCriteria.REINFECTION_STATUS, 140));
 		}
+
+		// Lab filters: test result (combo over PathogenTestResultType) + serogroup (free-text serotype match).
+		addField(
+			moreFiltersContainer,
+			FieldConfiguration.withCaptionAndPixelSized(
+				CaseCriteria.PATHOGEN_TEST_RESULT,
+				I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_RESULT),
+				140));
+		addField(
+			moreFiltersContainer,
+			TextField.class,
+			FieldConfiguration.withCaptionAndPixelSized(CaseCriteria.SEROGROUP, I18nProperties.getCaption(Captions.serogroup), 200));
 
 		ComboBox reportedByField = addField(
 			moreFiltersContainer,
@@ -455,7 +470,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(isExternalShareEnabled), WEEK_AND_DATE_FILTER);
 
 		moreFiltersContainer.addComponent(buildBirthdayRangeFilter(), BIRTHDATE_RANGE_FILTER);
-		if (UiUtil.enabled(FeatureType.SURVEYS)) {
+		if (UiUtil.enabled(FeatureType.SURVEYS) && UiUtil.permitted(UserRight.SURVEY_VIEW)) {
 			buildSurveyFilters(moreFiltersContainer);
 		}
 	}
@@ -862,15 +877,19 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 	private void buildSurveyFilters(CustomLayout layout) {
 
-		ComboBox surveyCombo = addField(layout, FieldConfiguration.withCaptionAndPixelSized(CaseCriteria.SURVEY, I18nProperties.getString(Strings.promptSurvey), 200));
+		ComboBox surveyCombo =
+			addField(layout, FieldConfiguration.withCaptionAndPixelSized(CaseCriteria.SURVEY, I18nProperties.getString(Strings.promptSurvey), 200));
 		FieldHelper.updateItems(surveyCombo, FacadeProvider.getSurveyFacade().getAllAsReference());
-		addField(layout,
+		addField(
+			layout,
 			FieldConfiguration
 				.withCaptionAndPixelSized(CaseCriteria.SURVEY_RESPONSE_STATUS, I18nProperties.getString(Strings.promptSurveyResponseStatus), 200));
-		addField(layout,
+		addField(
+			layout,
 			FieldConfiguration
 				.withCaptionAndPixelSized(CaseCriteria.SURVEY_ASSIGNED_FROM, I18nProperties.getString(Strings.promptSurveyAssignedFrom), 200));
-		addField(layout,
+		addField(
+			layout,
 			FieldConfiguration
 				.withCaptionAndPixelSized(CaseCriteria.SURVEY_ASSIGNED_TO, I18nProperties.getString(Strings.promptSurveyAssignedTo), 200));
 

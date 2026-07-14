@@ -18,7 +18,6 @@ package de.symeda.sormas.ui.immunization.components.form;
 import static de.symeda.sormas.ui.utils.CssStyles.ERROR_COLOR_PRIMARY;
 import static de.symeda.sormas.ui.utils.CssStyles.FORCE_CAPTION;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
-import static de.symeda.sormas.ui.utils.CssStyles.SOFT_REQUIRED;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.CssStyles.style;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
@@ -66,6 +65,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -106,6 +106,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		+ fluidRowLocs(OVERWRITE_IMMUNIZATION_MANAGEMENT_STATUS)
 		+ fluidRowLocs(ImmunizationDto.IMMUNIZATION_MANAGEMENT_STATUS, ImmunizationDto.IMMUNIZATION_STATUS)
 		+ fluidRowLocs(ImmunizationDto.PREVIOUS_INFECTION, ImmunizationDto.LAST_INFECTION_DATE)
+		+ fluidRowLocs(ImmunizationDto.VACCINATION_INFO_SOURCE)
 		+ fluidRow(fluidColumnLoc(6, 0, ImmunizationDto.COUNTRY))
 		+ fluidRowLocs(ImmunizationDto.ADDITIONAL_DETAILS)
 		+ fluidRowLocs(RESPONSIBLE_JURISDICTION_HEADING_LOC)
@@ -185,6 +186,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 
 		addField(ImmunizationDto.PREVIOUS_INFECTION, NullableOptionGroup.class);
 		addField(ImmunizationDto.LAST_INFECTION_DATE, DateField.class);
+		addField(ImmunizationDto.VACCINATION_INFO_SOURCE, ComboBox.class);
 
 		ComboBox country = addInfrastructureField(ImmunizationDto.COUNTRY);
 		country.addItems(FacadeProvider.getCountryFacade().getAllActiveAsReference());
@@ -205,7 +207,6 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		responsibleDistrict.setRequired(true);
 		responsibleCommunity = addInfrastructureField(ImmunizationDto.RESPONSIBLE_COMMUNITY);
 		responsibleCommunity.setNullSelectionAllowed(true);
-		responsibleCommunity.addStyleName(SOFT_REQUIRED);
 
 		InfrastructureFieldsHelper.initInfrastructureFields(responsibleRegion, responsibleDistrict, responsibleCommunity);
 
@@ -659,7 +660,8 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 	 * Updates the means of immunization field with disease-specific filtering.
 	 * Uses {@link Diseases} annotations on enum values to determine visibility.
 	 *
-	 * @param disease The selected disease to filter means of immunization options.
+	 * @param disease
+	 *            The selected disease to filter means of immunization options.
 	 */
 	private void updateMeansOfImmunizationField(Disease disease) {
 		List<MeansOfImmunization> filteredValues = Arrays.stream(MeansOfImmunization.values()).filter(value -> {

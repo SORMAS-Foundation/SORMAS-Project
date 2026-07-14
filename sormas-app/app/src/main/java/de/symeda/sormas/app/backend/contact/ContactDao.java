@@ -19,6 +19,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -160,15 +161,16 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 
 	/**
 	 * This is only the status. On the server we also update the follow up unitl field
-	 * 
+	 *
 	 * @param contact
 	 */
 	private void updateFollowUpStatus(Contact contact) {
 		Disease disease = contact.getDisease();
 		boolean changeStatus = contact.getFollowUpStatus() != FollowUpStatus.CANCELED && contact.getFollowUpStatus() != FollowUpStatus.LOST;
 
-		ContactProximity contactProximity = contact.getContactProximity();
-		if (!DiseaseConfigurationCache.getInstance().hasFollowUp(disease) || (contactProximity != null && !contactProximity.hasFollowUp())) {
+		Set<ContactProximity> contactProximities = contact.getContactProximities();
+		boolean noFollowUpProximity = !contactProximities.isEmpty() && contactProximities.stream().noneMatch(ContactProximity::hasFollowUp);
+		if (!DiseaseConfigurationCache.getInstance().hasFollowUp(disease) || noFollowUpProximity) {
 			contact.setFollowUpUntil(null);
 			if (changeStatus) {
 				contact.setFollowUpStatus(FollowUpStatus.NO_FOLLOW_UP);
@@ -220,18 +222,18 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 		// Only use user filter if no restricting case is specified
 		if (contactCriteria.getIncludeContactsFromOtherJurisdictions().equals(false)) {
 //			whereStatements.add(where.or(createJurisdictionFilterForCase(where), createJurisdictionFilter(where)));
-            Where<Contact, Long> caseJurisdictionWhere = createJurisdictionFilterForCase(where);
-            Where<Contact, Long> jurisdictionWhere = createJurisdictionFilter(where);
-            if (caseJurisdictionWhere != null && jurisdictionWhere != null) {
-                whereStatements.add(where.or(caseJurisdictionWhere, jurisdictionWhere));
-            } else {
-                if (caseJurisdictionWhere != null) {
-                    whereStatements.add(caseJurisdictionWhere);
-                }
-                if (jurisdictionWhere != null) {
-                    whereStatements.add(jurisdictionWhere);
-                }
-            }
+			Where<Contact, Long> caseJurisdictionWhere = createJurisdictionFilterForCase(where);
+			Where<Contact, Long> jurisdictionWhere = createJurisdictionFilter(where);
+			if (caseJurisdictionWhere != null && jurisdictionWhere != null) {
+				whereStatements.add(where.or(caseJurisdictionWhere, jurisdictionWhere));
+			} else {
+				if (caseJurisdictionWhere != null) {
+					whereStatements.add(caseJurisdictionWhere);
+				}
+				if (jurisdictionWhere != null) {
+					whereStatements.add(jurisdictionWhere);
+				}
+			}
 		}
 
 		if (contactCriteria != null) {
@@ -295,7 +297,7 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 
 		if (!whereJurisdictionFilterStatements.isEmpty()) {
 			where.or(whereJurisdictionFilterStatements.size());
-            return where;
+			return where;
 		}
 		return null;
 	}
@@ -329,7 +331,7 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 
 		if (!whereUserFilterStatements.isEmpty()) {
 			where.or(whereUserFilterStatements.size());
-            return where;
+			return where;
 		}
 
 		return null;

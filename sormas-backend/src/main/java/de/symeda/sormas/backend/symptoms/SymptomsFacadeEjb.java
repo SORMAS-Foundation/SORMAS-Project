@@ -67,6 +67,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setNoseBleeding(source.getNoseBleeding());
 		target.setOnsetDate(source.getOnsetDate());
 		target.setOnsetSymptom(source.getOnsetSymptom());
+		target.setOffsetDate(source.getOffsetDate());
 		target.setOtherHemorrhagicSymptoms(source.getOtherHemorrhagicSymptoms());
 		target.setOtherHemorrhagicSymptomsText(source.getOtherHemorrhagicSymptomsText());
 		target.setOtherNonHemorrhagicSymptoms(source.getOtherNonHemorrhagicSymptoms());
@@ -247,7 +248,39 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setWeightLossAmount(source.getWeightLossAmount());
 		target.setBloating(source.getBloating());
 		target.setOvernightStayRequired(source.getOvernightStayRequired());
-
+		target.setClammySkin(source.getClammySkin());
+		target.setColdSkin(source.getColdSkin());
+		target.setEncephalitis(source.getEncephalitis());
+		target.setGuillainBarreSyndrome(source.getGuillainBarreSyndrome());
+		target.setLethargy(source.getLethargy());
+		target.setConfusion(source.getConfusion());
+		target.setPersistentVomiting(source.getPersistentVomiting());
+		target.setRestlessness(source.getRestlessness());
+		target.setAcuteBleeding(source.getAcuteBleeding());
+		target.setSevereOrganImpairment(source.getSevereOrganImpairment());
+		target.setPlasmaLeakageSign(source.getPlasmaLeakageSign());
+		target.setPolydipsia(source.getPolydipsia());
+		target.setSyndromicFlu(source.getSyndromicFlu());
+		target.setAnemia(source.getAnemia());
+		target.setAlteredLevelOfConsciousness(source.getAlteredLevelOfConsciousness());
+		target.setSevereAnemia(source.getSevereAnemia());
+		target.setMetabolicAcidosis(source.getMetabolicAcidosis());
+		target.setAcuteKidneyFailure(source.getAcuteKidneyFailure());
+		target.setClinicalManifestation(source.getClinicalManifestation());
+		target.setClinicalManifestationText(source.getClinicalManifestationText());
+		target.setCerebralMalaria(source.getCerebralMalaria());
+		target.setScantHemorrhage(source.getScantHemorrhage());
+		target.setOtherNeurologicalSymptoms(source.getOtherNeurologicalSymptoms());
+		target.setOtherNeurologicalSymptomsText(source.getOtherNeurologicalSymptomsText());
+		target.setDisseminatedIntraVascularCoagulation(source.getDisseminatedIntraVascularCoagulation());
+		target.setFatalRisk(source.getFatalRisk());
+		target.setConstipation(source.getConstipation());
+		target.setDysuria(source.getDysuria());
+		target.setEyeIrritation(source.getEyeIrritation());
+		target.setTenesmus(source.getTenesmus());
+		target.setHaemolyticUremicSyndrome(source.getHaemolyticUremicSyndrome());
+		target.setBloodyDiarrhea(source.getBloodyDiarrhea());
+		target.setWateryDiarrhea(source.getWateryDiarrhea());
 		return target;
 	}
 
@@ -297,6 +330,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setNoseBleeding(source.getNoseBleeding());
 		target.setOnsetDate(source.getOnsetDate());
 		target.setOnsetSymptom(source.getOnsetSymptom());
+		target.setOffsetDate(source.getOffsetDate());
 		target.setOtherHemorrhagicSymptoms(source.getOtherHemorrhagicSymptoms());
 		target.setOtherHemorrhagicSymptomsText(source.getOtherHemorrhagicSymptomsText());
 		target.setOtherNonHemorrhagicSymptoms(source.getOtherNonHemorrhagicSymptoms());
@@ -478,6 +512,39 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setDurationOfSymptoms(source.getDurationOfSymptoms());
 		target.setWeightLoss(source.getWeightLoss());
 		target.setWeightLossAmount(source.getWeightLossAmount());
+		target.setClammySkin(source.getClammySkin());
+		target.setColdSkin(source.getColdSkin());
+		target.setEncephalitis(source.getEncephalitis());
+		target.setGuillainBarreSyndrome(source.getGuillainBarreSyndrome());
+		target.setLethargy(source.getLethargy());
+		target.setConfusion(source.getConfusion());
+		target.setPersistentVomiting(source.getPersistentVomiting());
+		target.setRestlessness(source.getRestlessness());
+		target.setAcuteBleeding(source.getAcuteBleeding());
+		target.setSevereOrganImpairment(source.getSevereOrganImpairment());
+		target.setPlasmaLeakageSign(source.getPlasmaLeakageSign());
+		target.setPolydipsia(source.getPolydipsia());
+		target.setSyndromicFlu(source.getSyndromicFlu());
+		target.setAnemia(source.getAnemia());
+		target.setAlteredLevelOfConsciousness(source.getAlteredLevelOfConsciousness());
+		target.setSevereAnemia(source.getSevereAnemia());
+		target.setMetabolicAcidosis(source.getMetabolicAcidosis());
+		target.setAcuteKidneyFailure(source.getAcuteKidneyFailure());
+		target.setClinicalManifestation(source.getClinicalManifestation());
+		target.setClinicalManifestationText(source.getClinicalManifestationText());
+		target.setCerebralMalaria(source.getCerebralMalaria());
+		target.setScantHemorrhage(source.getScantHemorrhage());
+		target.setOtherNeurologicalSymptoms(source.getOtherNeurologicalSymptoms());
+		target.setOtherNeurologicalSymptomsText(source.getOtherNeurologicalSymptomsText());
+		target.setDisseminatedIntraVascularCoagulation(source.getDisseminatedIntraVascularCoagulation());
+		target.setFatalRisk(source.getFatalRisk());
+		target.setConstipation(source.getConstipation());
+		target.setDysuria(source.getDysuria());
+		target.setEyeIrritation(source.getEyeIrritation());
+		target.setTenesmus(source.getTenesmus());
+		target.setHaemolyticUremicSyndrome(source.getHaemolyticUremicSyndrome());
+		target.setBloodyDiarrhea(source.getBloodyDiarrhea());
+		target.setWateryDiarrhea(source.getWateryDiarrhea());
 		return target;
 	}
 

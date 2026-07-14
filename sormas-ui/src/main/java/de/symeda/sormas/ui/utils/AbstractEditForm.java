@@ -18,13 +18,19 @@ package de.symeda.sormas.ui.utils;
 import static com.vaadin.v7.data.fieldgroup.DefaultFieldGroupFieldFactory.CAPTION_PROPERTY_ID;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.Validator;
@@ -43,9 +49,12 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.InfrastructureDataReferenceDto;
 import de.symeda.sormas.api.customizableenum.CustomizableEnum;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldMetadataDto;
+import de.symeda.sormas.api.customizablefield.CustomizableFieldValueDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
@@ -66,6 +75,9 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 
 	private ComboBox diseaseField;
 	private boolean setServerDiseaseAsDefault;
+
+	private List<CustomizableFieldMetadataDto> customizableFieldsMetadata;
+	private Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> customizableFieldsValues;
 
 	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix) {
 		this(type, propertyI18nPrefix, true, null, null);
@@ -129,6 +141,48 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 		if (diseaseField != null && diseaseField.getValue() == null && setServerDiseaseAsDefault) {
 			setDefaultDiseaseValue();
 		}
+	}
+
+	/**
+	 * Set customizable field metadata for this form.
+	 * This data should be pre-loaded by the controller and passed to the form.
+	 * The form will use this metadata to create and configure customizable field components.
+	 * 
+	 * @param metadata
+	 *            List of customizable field metadata DTOs pre-loaded by the controller
+	 */
+	public void setCustomizableFieldsMetadata(List<CustomizableFieldMetadataDto> metadata) {
+		this.customizableFieldsMetadata = metadata;
+	}
+
+	/**
+	 * Get customizable field metadata.
+	 * 
+	 * @return List of customizable field metadata, or null if not set
+	 */
+	protected List<CustomizableFieldMetadataDto> getCustomizableFieldsMetadata() {
+		return customizableFieldsMetadata;
+	}
+
+	/**
+	 * Set customizable field values for this form.
+	 * This data should be pre-loaded by the controller and passed to the form.
+	 * The form will use this data to populate customizable field components.
+	 * 
+	 * @param values
+	 *            Map of customizable field values keyed by field metadata DTO, pre-loaded by the controller
+	 */
+	public void setCustomizableFieldsValues(Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> values) {
+		this.customizableFieldsValues = values;
+	}
+
+	/**
+	 * Get customizable field values.
+	 * 
+	 * @return Map of customizable field values, or empty map if not set
+	 */
+	protected Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> getCustomizableFieldsValues() {
+		return customizableFieldsValues != null ? customizableFieldsValues : new HashMap<>();
 	}
 
 	@Override
@@ -209,7 +263,7 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 	 * that makes sure the value that is about to be selected is added to the list of allowed values. This is intended
 	 * to be used for Disease fields that might contain a disease that is no longer active in the system and thus will
 	 * not be returned by DiseaseHelper.isActivePrimaryDisease(disease).
-	 * 
+	 *
 	 * @param showNonPrimaryDiseases
 	 *            Whether or not diseases that have been configured as non-primary should be included
 	 * @param setServerDiseaseAsDefault
@@ -444,18 +498,6 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 		}
 	}
 
-	protected void setSoftRequired(boolean required, String... fieldOrPropertyIds) {
-
-		for (String propertyId : fieldOrPropertyIds) {
-			Field<?> field = getField(propertyId);
-			if (required) {
-				FieldHelper.addSoftRequiredStyle(field);
-			} else {
-				FieldHelper.removeSoftRequiredStyle(field);
-			}
-		}
-	}
-
 	protected void addFieldListeners(String fieldOrPropertyId, ValueChangeListener... listeners) {
 
 		for (ValueChangeListener listener : listeners) {
@@ -621,7 +663,7 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 
 	/**
 	 * List of editable allowed fields,
-	 * 
+	 *
 	 * @return
 	 */
 	public List<Field<?>> editableAllowedFields() {
@@ -685,4 +727,48 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 		}
 		return safeSetFieldValue(field, value);
 	}
+
+	/**
+	 * Sets up mutually exclusive behavior between two YesNoUnknown fields.
+	 * When one field is set to YES, the other is automatically set to NO.
+	 *
+	 * @param field1
+	 *            First field
+	 * @param field2
+	 *            Second field (mutually exclusive with field1)
+	 */
+	@SuppressWarnings("unchecked")
+	protected void setupMutuallyExclusiveFields(NullableOptionGroup field1, NullableOptionGroup field2) {
+		field1.addValueChangeListener(e -> {
+			Set<Object> value = (Set<Object>) e.getProperty().getValue();
+			if (value != null && value.contains(de.symeda.sormas.api.utils.YesNoUnknown.YES)) {
+				field2.setValue(new HashSet<>(Arrays.asList(de.symeda.sormas.api.utils.YesNoUnknown.NO)));
+			}
+		});
+		field2.addValueChangeListener(e -> {
+			Set<Object> value = (Set<Object>) e.getProperty().getValue();
+			if (value != null && value.contains(de.symeda.sormas.api.utils.YesNoUnknown.YES)) {
+				field1.setValue(new HashSet<>(Arrays.asList(de.symeda.sormas.api.utils.YesNoUnknown.NO)));
+			}
+		});
+	}
+
+	/**
+	 * To hide the field and its custom label when the input is set to NO or UNKNOWN.
+	 * NullableOptionGroup input
+	 * 
+	 * @param field
+	 *            input field
+	 * @param label
+	 *            custom label
+	 */
+	protected void updateFieldVisibility(NullableOptionGroup input, Field field, Label label) {
+		boolean visible = YesNoUnknown.YES.equals(FieldHelper.getNullableSourceFieldValue(input));
+		field.setVisible(visible);
+		label.setVisible(visible);
+		if (!visible) {
+			field.clear();
+		}
+	}
+
 }

@@ -225,7 +225,7 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 		assertThat(externalMessage.getStatus(), is(ExternalMessageStatus.UNPROCESSED));
 
 		// set the threshold
-		creator.updateDiseaseConfiguration(externalMessage.getDisease(), true, true, true, true, null, 10);
+		creator.updateDiseaseConfiguration(externalMessage.getDisease(), true, true, true, true, null, 10, false, 0, 0);
 		getBean(DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal.class).loadData();
 
 		// set the case report date back before the threshold
@@ -263,7 +263,7 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 	/**
 	 * External message with sample date in the threshold period should generate a
 	 * new sample to the existing case
-	 * 
+	 *
 	 * @throws ExecutionException
 	 * @throws InterruptedException
 	 */
@@ -287,7 +287,7 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 		});
 
 		// set the threshold
-		creator.updateDiseaseConfiguration(externalMessage.getDisease(), true, true, true, true, null, 10);
+		creator.updateDiseaseConfiguration(externalMessage.getDisease(), true, true, true, true, null, 10, false, 0, 0);
 		getBean(DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal.class).loadData();
 
 		ProcessingResult<ExternalMessageProcessingResult> result = runFlow(externalMessage);
@@ -337,7 +337,7 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 		assertThat("Sample count should have remained the same.", sampleCountAfterStep1, is(sampleCountBeforeStep1));
 
 		// set the threshold
-		creator.updateDiseaseConfiguration(externalMessage.getDisease(), true, true, true, true, null, 10);
+		creator.updateDiseaseConfiguration(externalMessage.getDisease(), true, true, true, true, null, 10, false, 0, 0);
 		getBean(DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal.class).loadData();
 
 		// set the sample date time back before the threshold
@@ -647,7 +647,7 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 	public void testProcessPertussisOtherTestType() throws ExecutionException, InterruptedException {
 		ExternalMessageDto rapidTestMessage = createExternalMessage((messageDto) -> {
 			messageDto.setDisease(Disease.PERTUSSIS);
-			messageDto.getSampleReports().get(0).getTestReports().get(0).setTestType(PathogenTestType.RAPID_TEST);
+			messageDto.getSampleReports().get(0).getTestReports().get(0).setTestType(PathogenTestType.LATERAL_FLOW_ASSAY);
 			messageDto.getSampleReports().get(0).getTestReports().get(0).setTestResult(PathogenTestResultType.POSITIVE);
 		});
 		runFlow(rapidTestMessage);

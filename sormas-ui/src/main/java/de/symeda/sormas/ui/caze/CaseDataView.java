@@ -14,10 +14,13 @@
  */
 package de.symeda.sormas.ui.caze;
 
-import java.util.List;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.Disease;
@@ -28,6 +31,9 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleAssociationType;
@@ -49,6 +55,7 @@ import de.symeda.sormas.ui.document.DocumentListComponent;
 import de.symeda.sormas.ui.email.ExternalEmailSideComponent;
 import de.symeda.sormas.ui.events.eventLink.EventListComponent;
 import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceServiceGateway;
+import de.symeda.sormas.ui.immunization.components.panel.VaccinationStatusPanel;
 import de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListComponent;
 import de.symeda.sormas.ui.samples.HasName;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
@@ -63,6 +70,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.LayoutWithSidePanel;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
 import de.symeda.sormas.ui.vaccination.list.VaccinationListComponent;
@@ -92,6 +100,14 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 	public static final String CASE_NOTIFIER_LOC = "caseNotifier";
 	private static final long serialVersionUID = -1L;
 	private CommitDiscardWrapperComponent<CaseDataForm> editComponent;
+
+	//@formatter:off
+	private static final Set<Disease> IMMUNIZATION_EXCLUDED_DISEASES = new HashSet<>(Arrays.asList(
+		Disease.GIARDIASIS, 
+		Disease.CRYPTOSPORIDIOSIS, 
+		Disease.SALMONELLOSIS, 
+		Disease.SHIGELLOSIS));
+	//@formatter:on
 
 	public CaseDataView() {
 		super(VIEW_NAME, false);
@@ -138,7 +154,7 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 		boolean isEditAllowed = isEditAllowed();
 
 		if (UiUtil.enabled(FeatureType.SURVEILLANCE_REPORTS)) {
-			CaseNotifierSideViewComponent notifierSideViewComponent = new CaseNotifierSideViewComponent(caze);
+			CaseNotifierSideViewComponent notifierSideViewComponent = new CaseNotifierSideViewComponent(getCaseRef(), this::showUnsavedChangesPopup);
 			notifierSideViewComponent.addStyleNames(CssStyles.SIDE_COMPONENT);
 			layout.addSidePanelComponent(notifierSideViewComponent, CASE_NOTIFIER_LOC);
 		}
@@ -178,26 +194,30 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 			layout.addSidePanelComponent(eventLayout, EVENTS_LOC);
 		}
 
-		if (UiUtil.permitted(FeatureType.IMMUNIZATION_MANAGEMENT, UserRight.IMMUNIZATION_VIEW)) {
-			// Immunizations are not shown for Giardiasis and Cryptosporidiosis
-			if (!List.of(Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS).contains(caze.getDisease())) {
-				if (!FacadeProvider.getFeatureConfigurationFacade()
-					.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
-					layout.addSidePanelComponent(new SideComponentLayout(new ImmunizationListComponent(() -> {
-						CaseDataDto refreshedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
-						return new ImmunizationListCriteria.Builder(refreshedCase.getPerson()).withDisease(refreshedCase.getDisease()).build();
-					}, null, this::showUnsavedChangesPopup, isEditAllowed)), IMMUNIZATION_LOC);
-				} else {
-					layout.addSidePanelComponent(new SideComponentLayout(new VaccinationListComponent(() -> {
-						CaseDataDto refreshedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
-						return new VaccinationCriteria.Builder(refreshedCase.getPerson()).withDisease(refreshedCase.getDisease())
-							.build()
-							.vaccinationAssociationType(VaccinationAssociationType.CASE)
-							.caseReference(getCaseRef())
-							.region(refreshedCase.getResponsibleRegion())
-							.district(refreshedCase.getResponsibleDistrict());
-					}, null, this::showUnsavedChangesPopup, isEditAllowed)), VACCINATIONS_LOC);
-				}
+		if (!IMMUNIZATION_EXCLUDED_DISEASES.contains(caze.getDisease())
+			&& UiUtil.permitted(FeatureType.IMMUNIZATION_MANAGEMENT, UserRight.IMMUNIZATION_VIEW)) {
+			final VaccinationStatusPanel vaccinationStatusPanel = ControllerProvider.getCaseController().createVaccinationStatusPanel(caze);
+			if (caze.getVaccinationStatusLastUpdated() == null && UiUtil.permitted(UserRight.IMMUNIZATION_EDIT)) {
+				showVaccinationStatusUpdateDialog(caze);
+			}
+			if (!FacadeProvider.getFeatureConfigurationFacade()
+				.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
+				layout.addSidePanelComponent(new SideComponentLayout(new ImmunizationListComponent(() -> {
+					CaseDataDto refreshedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
+					return new ImmunizationListCriteria.Builder(refreshedCase.getPerson()).withDisease(refreshedCase.getDisease())
+						.withDiseaseDetails(refreshedCase.getDiseaseDetails())
+						.build();
+				}, null, this::showUnsavedChangesPopup, isEditAllowed, vaccinationStatusPanel, SormasUI::refreshView)), IMMUNIZATION_LOC);
+			} else {
+				layout.addSidePanelComponent(new SideComponentLayout(new VaccinationListComponent(() -> {
+					CaseDataDto refreshedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
+					return new VaccinationCriteria.Builder(refreshedCase.getPerson()).withDisease(refreshedCase.getDisease())
+						.build()
+						.vaccinationAssociationType(VaccinationAssociationType.CASE)
+						.caseReference(getCaseRef())
+						.region(refreshedCase.getResponsibleRegion())
+						.district(refreshedCase.getResponsibleDistrict());
+				}, null, this::showUnsavedChangesPopup, isEditAllowed)), VACCINATIONS_LOC);
 			}
 		}
 
@@ -259,13 +279,13 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 			layout.addSidePanelComponent(new SideComponentLayout(specialAccessListComponent), SPECIAL_ACCESSES_LOC);
 		}
 
-		if (UiUtil.permitted(FeatureType.SELF_REPORTING)) {
+		if (UiUtil.permitted(FeatureType.SELF_REPORTING, UserRight.SELF_REPORT_VIEW)) {
 			SelfReportListComponent selfReportListComponent =
 				new SelfReportListComponent(SelfReportType.CASE, new SelfReportCriteria().setCaze(new CaseReferenceDto(caze.getUuid())));
 			SelfReportListComponentLayout selfReportListComponentLayout = new SelfReportListComponentLayout(selfReportListComponent);
 			layout.addSidePanelComponent(selfReportListComponentLayout, SELF_REPORT_LOC);
 		}
-		if (UiUtil.permitted(FeatureType.SURVEYS)) {
+		if (UiUtil.permitted(FeatureType.SURVEYS, UserRight.SURVEY_VIEW)) {
 			SurveyListComponentLayout surveyList = new SurveyListComponentLayout(
 				caze.toReference(),
 				caze.getDisease(),
@@ -279,6 +299,21 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 
 		final boolean deleted = FacadeProvider.getCaseFacade().isDeleted(uuid);
 		layout.disableIfNecessary(deleted, caseEditAllowed);
+	}
+
+	private void showVaccinationStatusUpdateDialog(CaseDataDto caze) {
+		VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getCaption(Captions.CaseData_vaccinationStatusUpdate),
+			new Label(I18nProperties.getString(Strings.confirmationVaccinationStatusSync)),
+			I18nProperties.getString(Strings.yes),
+			I18nProperties.getString(Strings.no),
+			600,
+			confirmed -> {
+				if (Boolean.TRUE == confirmed) {
+					FacadeProvider.getCaseFacade().updateVaccinationStatuses(caze.toReference());
+					SormasUI.refreshView();
+				}
+			});
 	}
 
 	@Override

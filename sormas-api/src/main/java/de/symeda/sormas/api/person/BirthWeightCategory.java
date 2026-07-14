@@ -23,18 +23,18 @@ import de.symeda.sormas.api.i18n.I18nProperties;
  */
 public enum BirthWeightCategory {
 
-    /**
-     * Normal birth weight
-     */
-    NORMAL,
+	/**
+	 * Normal birth weight
+	 */
+	NORMAL,
 
-    /**
-     * Low birth weight (stunted growth)
-     */
-    LOW_BIRTH_WEIGHT;
+	/**
+	 * Low birth weight (stunted growth)
+	 */
+	LOW_BIRTH_WEIGHT;
 
-    @Override
-    public String toString() {
-        return I18nProperties.getEnumCaption(this);
-    }
+	@Override
+	public String toString() {
+		return I18nProperties.getEnumCaption(this);
+	}
 }

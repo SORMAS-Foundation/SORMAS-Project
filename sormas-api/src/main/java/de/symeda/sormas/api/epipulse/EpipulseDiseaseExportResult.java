@@ -23,6 +23,19 @@ public class EpipulseDiseaseExportResult {
 	private int maxImmunizations;
 	private List<EpipulseDiseaseExportEntryDto> exportEntryList;
 
+	// MEAS repeatable field max counts
+	private int maxComplicationDiagnosis;
+	private int maxClusterSettings;
+	private int maxPlaceOfInfection;
+	private int maxSpecimenVirDetect;
+	private int maxSpecimenSero;
+
+	// MENI repeatable field max counts
+	private int maxIsolateIds;
+	private int maxMainPathogenDetectionMethods;
+	private int maxSecondPathogenDetectionMethods;
+	private int maxResultMlst;
+
 	public int getMaxPathogenTests() {
 		return maxPathogenTests;
 	}
@@ -45,5 +58,78 @@ public class EpipulseDiseaseExportResult {
 
 	public void setExportEntryList(List<EpipulseDiseaseExportEntryDto> exportEntryList) {
 		this.exportEntryList = exportEntryList;
+	}
+
+	public int getMaxComplicationDiagnosis() {
+		return maxComplicationDiagnosis;
+	}
+
+	public void setMaxComplicationDiagnosis(int maxComplicationDiagnosis) {
+		this.maxComplicationDiagnosis = maxComplicationDiagnosis;
+	}
+
+	public int getMaxClusterSettings() {
+		return maxClusterSettings;
+	}
+
+	public void setMaxClusterSettings(int maxClusterSettings) {
+		this.maxClusterSettings = maxClusterSettings;
+	}
+
+	public int getMaxPlaceOfInfection() {
+		return maxPlaceOfInfection;
+	}
+
+	public void setMaxPlaceOfInfection(int maxPlaceOfInfection) {
+		this.maxPlaceOfInfection = maxPlaceOfInfection;
+	}
+
+	public int getMaxSpecimenVirDetect() {
+		return maxSpecimenVirDetect;
+	}
+
+	public void setMaxSpecimenVirDetect(int maxSpecimenVirDetect) {
+		this.maxSpecimenVirDetect = maxSpecimenVirDetect;
+	}
+
+	public int getMaxSpecimenSero() {
+		return maxSpecimenSero;
+	}
+
+	public void setMaxSpecimenSero(int maxSpecimenSero) {
+		this.maxSpecimenSero = maxSpecimenSero;
+	}
+
+	// MENI max count getters/setters
+	public int getMaxIsolateIds() {
+		return maxIsolateIds;
+	}
+
+	public void setMaxIsolateIds(int maxIsolateIds) {
+		this.maxIsolateIds = maxIsolateIds;
+	}
+
+	public int getMaxMainPathogenDetectionMethods() {
+		return maxMainPathogenDetectionMethods;
+	}
+
+	public void setMaxMainPathogenDetectionMethods(int maxMainPathogenDetectionMethods) {
+		this.maxMainPathogenDetectionMethods = maxMainPathogenDetectionMethods;
+	}
+
+	public int getMaxSecondPathogenDetectionMethods() {
+		return maxSecondPathogenDetectionMethods;
+	}
+
+	public void setMaxSecondPathogenDetectionMethods(int maxSecondPathogenDetectionMethods) {
+		this.maxSecondPathogenDetectionMethods = maxSecondPathogenDetectionMethods;
+	}
+
+	public int getMaxResultMlst() {
+		return maxResultMlst;
+	}
+
+	public void setMaxResultMlst(int maxResultMlst) {
+		this.maxResultMlst = maxResultMlst;
 	}
 }

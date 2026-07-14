@@ -49,8 +49,10 @@ import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.clinicalcourse.ComplianceWithTreatment;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.disease.DiseaseVariantConverter;
+import de.symeda.sormas.api.exposure.ModeOfTransmission;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.ExternalMessageType;
+import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
@@ -108,6 +110,7 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String PERSON_GUARDIAN_RELATIONSHIP = "personGuardianRelationship";
 	public static final String PERSON_GUARDIAN_PHONE = "personGuardianPhone";
 	public static final String PERSON_GUARDIAN_EMAIL = "personGuardianEmail";
+	public static final String PERSON_OCCUPATION = "personOccupation";
 	public static final String EXTERNAL_MESSAGE_DETAILS = "externalMessageDetails";
 	public static final String STATUS = "status";
 	public static final String REPORT_ID = "reportId";
@@ -130,9 +133,13 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public static final String ACTIVITIES_AS_CASE = "activitiesAsCase";
 	public static final String EXPOSURES = "exposures";
+	public static final String ADDITIONAL_PERSON_CONTACT_DETAILS = "additionalPersonContactDetails";
+	public static final String ADDITIONAL_PERSON_ADDRESSES = "additionalPersonAddresses";
 
 	public static final String RADIOGRAPHY_COMPATIBILITY = "radiographyCompatibility";
 	public static final String OTHER_DIAGNOSTIC_CRITERIA = "otherDiagnosticCriteria";
+	public static final String AIRPORT_WORKER = "airportWorker";
+	public static final String HEALTHCARE_PROFESSIONAL = "healthcareProfessional";
 
 	private ExternalMessageType type;
 	private Disease disease;
@@ -171,11 +178,15 @@ public class ExternalMessage extends AbstractDomainObject {
 	private String personGuardianRelationship;
 	private String personGuardianPhone;
 	private String personGuardianEmail;
+	private String personOccupation;
 	private YesNoUnknown treatmentStarted;
 	private Boolean treatmentNotApplicable;
 	private Date treatmentStartedDate;
 	private Date diagnosticDate;
 	private Date deceasedDate;
+	private CauseOfDeath causeOfDeath;
+	private String causeOfDeathDetails;
+	private Disease causeOfDeathDisease;
 
 	private String externalMessageDetails;
 	private String caseComments;
@@ -210,6 +221,8 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	private String activitiesAsCase;
 	private String exposures;
+	private String additionalPersonContactDetails;
+	private String additionalPersonAddresses;
 
 	private RadiographyCompatibility radiographyCompatibility;
 	private String otherDiagnosticCriteria;
@@ -224,6 +237,18 @@ public class ExternalMessage extends AbstractDomainObject {
 	private Boolean tuberculosisDirectlyObservedTreatment;
 	private Boolean tuberculosisMdrXdrTuberculosis;
 	private Boolean tuberculosisBeijingLineage;
+
+	// Malaria and Dengue changes
+	private YesNoUnknown malaria;
+	private Integer malariaInfectedYear;
+	private YesNoUnknown airportWorker;
+	private YesNoUnknown healthcareProfessional;
+	private ModeOfTransmission modeOfTransmission;
+	private String modeOfTransmissionType;
+
+	private ExternalMessageAdditionalDataType additionalDataType;
+
+	private String additionalDataJson;
 
 	@Enumerated(EnumType.STRING)
 	public ExternalMessageType getType() {
@@ -552,6 +577,15 @@ public class ExternalMessage extends AbstractDomainObject {
 		this.personGuardianEmail = personGuardianEmail;
 	}
 
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getPersonOccupation() {
+		return personOccupation;
+	}
+
+	public void setPersonOccupation(String personOccupation) {
+		this.personOccupation = personOccupation;
+	}
+
 	@Column
 	public String getExternalMessageDetails() {
 		return externalMessageDetails;
@@ -811,6 +845,26 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	@Column(columnDefinition = "jsonb")
 	@Type(type = "jsonb")
+	public String getAdditionalPersonContactDetails() {
+		return additionalPersonContactDetails;
+	}
+
+	public void setAdditionalPersonContactDetails(String additionalPersonContactDetails) {
+		this.additionalPersonContactDetails = additionalPersonContactDetails;
+	}
+
+	@Column(columnDefinition = "jsonb")
+	@Type(type = "jsonb")
+	public String getAdditionalPersonAddresses() {
+		return additionalPersonAddresses;
+	}
+
+	public void setAdditionalPersonAddresses(String additionalPersonAddresses) {
+		this.additionalPersonAddresses = additionalPersonAddresses;
+	}
+
+	@Column(columnDefinition = "jsonb")
+	@Type(type = "jsonb")
 	public String getExposures() {
 		return exposures;
 	}
@@ -825,6 +879,33 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public void setDeceasedDate(Date deceasedDate) {
 		this.deceasedDate = deceasedDate;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public CauseOfDeath getCauseOfDeath() {
+		return causeOfDeath;
+	}
+
+	public void setCauseOfDeath(CauseOfDeath causeOfDeath) {
+		this.causeOfDeath = causeOfDeath;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getCauseOfDeathDetails() {
+		return causeOfDeathDetails;
+	}
+
+	public void setCauseOfDeathDetails(String causeOfDeathDetails) {
+		this.causeOfDeathDetails = causeOfDeathDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public Disease getCauseOfDeathDisease() {
+		return causeOfDeathDisease;
+	}
+
+	public void setCauseOfDeathDisease(Disease causeOfDeathDisease) {
+		this.causeOfDeathDisease = causeOfDeathDisease;
 	}
 
 	@Enumerated(EnumType.STRING)
@@ -919,5 +1000,78 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public void setTuberculosisBeijingLineage(Boolean tuberculosisBeijingLineage) {
 		this.tuberculosisBeijingLineage = tuberculosisBeijingLineage;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getMalaria() {
+		return malaria;
+	}
+
+	public void setMalaria(YesNoUnknown malaria) {
+		this.malaria = malaria;
+	}
+
+	public Integer getMalariaInfectedYear() {
+		return malariaInfectedYear;
+	}
+
+	public void setMalariaInfectedYear(Integer malariaInfectedYear) {
+		this.malariaInfectedYear = malariaInfectedYear;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getAirportWorker() {
+		return airportWorker;
+	}
+
+	public void setAirportWorker(YesNoUnknown airportWorker) {
+		this.airportWorker = airportWorker;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getHealthcareProfessional() {
+		return healthcareProfessional;
+	}
+
+	public void setHealthcareProfessional(YesNoUnknown healthcareProfessional) {
+		this.healthcareProfessional = healthcareProfessional;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ModeOfTransmission getModeOfTransmission() {
+		return modeOfTransmission;
+	}
+
+	public void setModeOfTransmission(ModeOfTransmission modeOfTransmission) {
+		this.modeOfTransmission = modeOfTransmission;
+	}
+
+	public String getModeOfTransmissionType() {
+		return modeOfTransmissionType;
+	}
+
+	public void setModeOfTransmissionType(String modeOfTransmissionType) {
+		this.modeOfTransmissionType = modeOfTransmissionType;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ExternalMessageAdditionalDataType getAdditionalDataType() {
+		return additionalDataType;
+	}
+
+	public ExternalMessage setAdditionalDataType(ExternalMessageAdditionalDataType additionalDataType) {
+		this.additionalDataType = additionalDataType;
+		return this;
+	}
+
+	@Column(columnDefinition = "json")
+	@Type(type = "json")
+	public String getAdditionalDataJson() {
+		return additionalDataJson;
+	}
+
+	public ExternalMessage setAdditionalDataJson(String additionalData) {
+		this.additionalDataJson = additionalData;
+		return this;
 	}
 }

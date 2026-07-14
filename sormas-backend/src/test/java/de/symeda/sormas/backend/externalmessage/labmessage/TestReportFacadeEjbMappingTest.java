@@ -22,6 +22,7 @@ import de.symeda.sormas.api.sample.PathogenStrainCallStatus;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SeroGroupSpecification;
+import de.symeda.sormas.api.sample.Serotype;
 import de.symeda.sormas.api.sample.SerotypingMethod;
 import de.symeda.sormas.api.therapy.DrugSusceptibilityType;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -84,39 +85,39 @@ public class TestReportFacadeEjbMappingTest {
 		source.setTubeMitogeneGT10(false);
 
 		// Drug susceptibility test data
-		source.setAmikacinMic(1.5f);
+		source.setAmikacinMic("1.5");
 		source.setAmikacinSusceptibility(DrugSusceptibilityType.SUSCEPTIBLE);
-		source.setBedaquilineMic(2.0f);
+		source.setBedaquilineMic("2.0");
 		source.setBedaquilineSusceptibility(DrugSusceptibilityType.RESISTANT);
-		source.setCapreomycinMic(0.8f);
+		source.setCapreomycinMic("0.8");
 		source.setCapreomycinSusceptibility(DrugSusceptibilityType.INTERMEDIATE);
-		source.setCiprofloxacinMic(1.2f);
+		source.setCiprofloxacinMic("1.2");
 		source.setCiprofloxacinSusceptibility(DrugSusceptibilityType.SUSCEPTIBLE);
-		source.setDelamanidMic(0.3f);
+		source.setDelamanidMic("0.3");
 		source.setDelamanidSusceptibility(DrugSusceptibilityType.RESISTANT);
-		source.setEthambutolMic(2.5f);
+		source.setEthambutolMic("2.5");
 		source.setEthambutolSusceptibility(DrugSusceptibilityType.INTERMEDIATE);
-		source.setGatifloxacinMic(1.8f);
+		source.setGatifloxacinMic("1.8");
 		source.setGatifloxacinSusceptibility(DrugSusceptibilityType.SUSCEPTIBLE);
-		source.setIsoniazidMic(0.5f);
+		source.setIsoniazidMic("0.5");
 		source.setIsoniazidSusceptibility(DrugSusceptibilityType.INTERMEDIATE);
-		source.setKanamycinMic(3.0f);
+		source.setKanamycinMic("3.0");
 		source.setKanamycinSusceptibility(DrugSusceptibilityType.RESISTANT);
-		source.setLevofloxacinMic(1.1f);
+		source.setLevofloxacinMic("1.1");
 		source.setLevofloxacinSusceptibility(DrugSusceptibilityType.SUSCEPTIBLE);
-		source.setMoxifloxacinMic(0.9f);
+		source.setMoxifloxacinMic("0.9");
 		source.setMoxifloxacinSusceptibility(DrugSusceptibilityType.INTERMEDIATE);
-		source.setOfloxacinMic(2.2f);
+		source.setOfloxacinMic("2.2");
 		source.setOfloxacinSusceptibility(DrugSusceptibilityType.RESISTANT);
-		source.setRifampicinMic(1.0f);
+		source.setRifampicinMic("1.0");
 		source.setRifampicinSusceptibility(DrugSusceptibilityType.SUSCEPTIBLE);
-		source.setStreptomycinMic(4.0f);
+		source.setStreptomycinMic("4.0");
 		source.setStreptomycinSusceptibility(DrugSusceptibilityType.RESISTANT);
-		source.setCeftriaxoneMic(0.7f);
+		source.setCeftriaxoneMic("0.7");
 		source.setCeftriaxoneSusceptibility(DrugSusceptibilityType.INTERMEDIATE);
-		source.setPenicillinMic(1.6f);
+		source.setPenicillinMic("1.6");
 		source.setPenicillinSusceptibility(DrugSusceptibilityType.SUSCEPTIBLE);
-		source.setErythromycinMic(2.8f);
+		source.setErythromycinMic("2.8");
 		source.setErythromycinSusceptibility(DrugSusceptibilityType.RESISTANT);
 
 		// Sero group
@@ -124,6 +125,7 @@ public class TestReportFacadeEjbMappingTest {
 		source.setSeroGroupSpecificationText("SeroGroup A");
 		source.setSeroTypingMethod(SerotypingMethod.MULTIPLEX_PCR);
 		source.setSeroTypingMethodText("Multiplex PCR Method");
+		source.setPerformedByReferenceLaboratory(true);
 
 		TestReport result = sut.fromDto(source, true);
 
@@ -193,6 +195,7 @@ public class TestReportFacadeEjbMappingTest {
 		assertEquals(source.getSeroGroupSpecificationText(), result.getSeroGroupSpecificationText());
 		assertEquals(source.getSeroTypingMethod(), result.getSeroTypingMethod());
 		assertEquals(source.getSeroTypingMethodText(), result.getSeroTypingMethodText());
+		assertEquals(source.getPerformedByReferenceLaboratory(), result.getPerformedByReferenceLaboratory());
 
 	}
 
@@ -232,39 +235,39 @@ public class TestReportFacadeEjbMappingTest {
 		source.setStrainCallStatus(PathogenStrainCallStatus.BEIJING);
 
 		// Drug susceptibility test data
-		source.setAmikacinMic(1.5f);
+		source.setAmikacinMic("1.5");
 		source.setAmikacinSusceptibility(DrugSusceptibilityType.SUSCEPTIBLE);
-		source.setBedaquilineMic(2.0f);
+		source.setBedaquilineMic("2.0");
 		source.setBedaquilineSusceptibility(DrugSusceptibilityType.RESISTANT);
-		source.setCapreomycinMic(0.8f);
+		source.setCapreomycinMic("0.8");
 		source.setCapreomycinSusceptibility(DrugSusceptibilityType.INTERMEDIATE);
-		source.setCiprofloxacinMic(1.2f);
+		source.setCiprofloxacinMic("1.2");
 		source.setCiprofloxacinSusceptibility(DrugSusceptibilityType.SUSCEPTIBLE);
-		source.setDelamanidMic(0.3f);
+		source.setDelamanidMic("0.3");
 		source.setDelamanidSusceptibility(DrugSusceptibilityType.RESISTANT);
-		source.setEthambutolMic(2.5f);
+		source.setEthambutolMic("2.5");
 		source.setEthambutolSusceptibility(DrugSusceptibilityType.INTERMEDIATE);
-		source.setGatifloxacinMic(1.8f);
+		source.setGatifloxacinMic("1.8");
 		source.setGatifloxacinSusceptibility(DrugSusceptibilityType.SUSCEPTIBLE);
-		source.setIsoniazidMic(0.5f);
+		source.setIsoniazidMic("0.5");
 		source.setIsoniazidSusceptibility(DrugSusceptibilityType.INTERMEDIATE);
-		source.setKanamycinMic(3.0f);
+		source.setKanamycinMic("3.0");
 		source.setKanamycinSusceptibility(DrugSusceptibilityType.RESISTANT);
-		source.setLevofloxacinMic(1.1f);
+		source.setLevofloxacinMic("1.1");
 		source.setLevofloxacinSusceptibility(DrugSusceptibilityType.SUSCEPTIBLE);
-		source.setMoxifloxacinMic(0.9f);
+		source.setMoxifloxacinMic("0.9");
 		source.setMoxifloxacinSusceptibility(DrugSusceptibilityType.INTERMEDIATE);
-		source.setOfloxacinMic(2.2f);
+		source.setOfloxacinMic("2.2");
 		source.setOfloxacinSusceptibility(DrugSusceptibilityType.RESISTANT);
-		source.setRifampicinMic(1.0f);
+		source.setRifampicinMic("1.0");
 		source.setRifampicinSusceptibility(DrugSusceptibilityType.SUSCEPTIBLE);
-		source.setStreptomycinMic(4.0f);
+		source.setStreptomycinMic("4.0");
 		source.setStreptomycinSusceptibility(DrugSusceptibilityType.RESISTANT);
-		source.setCeftriaxoneMic(0.7f);
+		source.setCeftriaxoneMic("0.7");
 		source.setCeftriaxoneSusceptibility(DrugSusceptibilityType.INTERMEDIATE);
-		source.setPenicillinMic(1.6f);
+		source.setPenicillinMic("1.6");
 		source.setPenicillinSusceptibility(DrugSusceptibilityType.SUSCEPTIBLE);
-		source.setErythromycinMic(2.8f);
+		source.setErythromycinMic("2.8");
 		source.setErythromycinSusceptibility(DrugSusceptibilityType.RESISTANT);
 
 		// Sero group
@@ -272,7 +275,9 @@ public class TestReportFacadeEjbMappingTest {
 		source.setSeroGroupSpecificationText("SeroGroup A");
 		source.setSeroTypingMethod(SerotypingMethod.MULTIPLEX_PCR);
 		source.setSeroTypingMethodText("Multiplex PCR Method");
-		source.setSerotype("Test serotype");
+		source.setSerotype(Serotype.OTHER);
+		source.setSerotypeText("Other Serotype");
+		source.setPerformedByReferenceLaboratory(true);
 
 		TestReportDto result = TestReportFacadeEjb.toDto(source);
 
@@ -343,6 +348,8 @@ public class TestReportFacadeEjbMappingTest {
 		assertEquals(source.getSeroGroupSpecificationText(), result.getSeroGroupSpecificationText());
 		assertEquals(source.getSeroTypingMethod(), result.getSeroTypingMethod());
 		assertEquals(source.getSeroTypingMethodText(), result.getSeroTypingMethodText());
-
+		assertEquals(source.getSerotype(), result.getSerotype());
+		assertEquals(source.getSerotypeText(), result.getSerotypeText());
+		assertEquals(source.getPerformedByReferenceLaboratory(), result.getPerformedByReferenceLaboratory());
 	}
 }

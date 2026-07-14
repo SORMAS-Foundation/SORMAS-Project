@@ -71,7 +71,9 @@ import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.disease.DiseaseVariantConverter;
 import de.symeda.sormas.api.externaldata.HasExternalData;
+import de.symeda.sormas.api.immunization.InformationReliability;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistory;
@@ -159,6 +161,10 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 
 	public static final String PREGNANT = "pregnant";
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
+	public static final String VACCINATION_STATUS_DETAILS = "vaccinationStatusDetails";
+	public static final String VACCINATION_STATUS_LAST_UPDATED = "vaccinationStatusLastUpdated";
+	public static final String NUMBER_OF_DOSES = "numberOfDoses";
+	public static final String INFORMATION_RELIABILITY = "informationReliability";
 	public static final String EPID_NUMBER = "epidNumber";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
@@ -175,6 +181,9 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	public static final String POINT_OF_ENTRY_DETAILS = "pointOfEntryDetails";
 	public static final String COMPLETENESS = "completeness";
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
+	public static final String DATE_OTHER = "dateOther";
+	public static final String DATE_OTHER_DETAILS = "dateOtherDetails";
+	public static final String EXTERNAL_COMMENTS = "externalComments";
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String EXTERNAL_TOKEN = "externalToken";
 	public static final String INTERNAL_TOKEN = "internalToken";
@@ -255,6 +264,10 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	public static final String RADIOGRAPHY_COMPATIBILITY = "radiographyCompatibility";
 	public static final String OTHER_DIAGNOSTIC_CRITERIA = "otherDiagnosticCriteria";
 
+	public static final String TREATMENT_STARTED = "treatmentStarted";
+	public static final String TREATMENT_NOT_APPLICABLE = "treatmentNotApplicable";
+	public static final String TREATMENT_START_DATE = "treatmentStartDate";
+
 	private Person person;
 	private String description;
 	private Disease disease;
@@ -282,6 +295,9 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	private Hospitalization hospitalization;
 	private EpiData epiData;
 	private Therapy therapy;
+	private YesNoUnknown treatmentStarted;
+	private boolean treatmentNotApplicable;
+	private Date treatmentStartDate;
 	private ClinicalCourse clinicalCourse;
 	private MaternalHistory maternalHistory;
 	private PortHealthInfo portHealthInfo;
@@ -324,6 +340,10 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	private YesNoUnknown pregnant;
 
 	private VaccinationStatus vaccinationStatus;
+	private String vaccinationStatusDetails;
+	private Date vaccinationStatusLastUpdated;
+	private Integer numberOfDoses;
+	private InformationReliability informationReliability;
 	private YesNoUnknown smallpoxVaccinationScar;
 	private YesNoUnknown smallpoxVaccinationReceived;
 	private Date smallpoxLastVaccinationDate;
@@ -347,6 +367,9 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 
 	private Float completeness;
 	private String additionalDetails;
+	private Date dateOther;
+	private String dateOtherDetails;
+	private String externalComments;
 	private String externalID;
 	private String externalToken;
 	private String internalToken;
@@ -953,6 +976,41 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 		this.vaccinationStatus = vaccination;
 	}
 
+	@Column(length = FieldConstraints.CHARACTER_LIMIT_DEFAULT)
+	public String getVaccinationStatusDetails() {
+		return vaccinationStatusDetails;
+	}
+
+	public void setVaccinationStatusDetails(String vaccinationStatusDetails) {
+		this.vaccinationStatusDetails = vaccinationStatusDetails;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getVaccinationStatusLastUpdated() {
+		return vaccinationStatusLastUpdated;
+	}
+
+	public void setVaccinationStatusLastUpdated(Date vaccinationStatusLastUpdated) {
+		this.vaccinationStatusLastUpdated = vaccinationStatusLastUpdated;
+	}
+
+	public Integer getNumberOfDoses() {
+		return numberOfDoses;
+	}
+
+	public void setNumberOfDoses(Integer numberOfDoses) {
+		this.numberOfDoses = numberOfDoses;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public InformationReliability getInformationReliability() {
+		return informationReliability;
+	}
+
+	public void setInformationReliability(InformationReliability informationReliability) {
+		this.informationReliability = informationReliability;
+	}
+
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getSmallpoxVaccinationScar() {
 		return smallpoxVaccinationScar;
@@ -1206,6 +1264,33 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 		this.additionalDetails = additionalDetails;
 	}
 
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getDateOther() {
+		return dateOther;
+	}
+
+	public void setDateOther(Date dateOther) {
+		this.dateOther = dateOther;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getDateOtherDetails() {
+		return dateOtherDetails;
+	}
+
+	public void setDateOtherDetails(String dateOtherDetails) {
+		this.dateOtherDetails = dateOtherDetails;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getExternalComments() {
+		return externalComments;
+	}
+
+	public void setExternalComments(String externalComments) {
+		this.externalComments = externalComments;
+	}
+
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getExternalID() {
 		return externalID;
@@ -1227,7 +1312,7 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 
 	/**
 	 * Extra setter for externalID needed to comply with the HasExternalData interface
-	 * 
+	 *
 	 * @param externalId
 	 *            the value to be set for externalID
 	 */
@@ -1867,5 +1952,33 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 
 	public void setOtherDiagnosticCriteria(String otherDiagnosticCriteria) {
 		this.otherDiagnosticCriteria = otherDiagnosticCriteria;
+	}
+
+	@Column
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getTreatmentStarted() {
+		return treatmentStarted;
+	}
+
+	public void setTreatmentStarted(YesNoUnknown treatmentStarted) {
+		this.treatmentStarted = treatmentStarted;
+	}
+
+	@Column
+	public boolean isTreatmentNotApplicable() {
+		return treatmentNotApplicable;
+	}
+
+	public void setTreatmentNotApplicable(boolean treatmentNotApplicable) {
+		this.treatmentNotApplicable = treatmentNotApplicable;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getTreatmentStartDate() {
+		return treatmentStartDate;
+	}
+
+	public void setTreatmentStartDate(Date treatmentStartDate) {
+		this.treatmentStartDate = treatmentStartDate;
 	}
 }

@@ -17,9 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.api.contact;
 
-import java.io.Serializable;
-import java.util.Date;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -30,6 +27,10 @@ import de.symeda.sormas.api.therapy.Drug;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.api.uuid.HasUuid;
+
+import java.io.Serializable;
+import java.util.Date;
+import java.util.Set;
 
 public class ContactIndexDto extends PseudonymizableIndexDto implements IsContact, HasUuid, Serializable, Cloneable {
 
@@ -46,7 +47,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 	public static final String CAZE = "caze";
 	public static final String DISEASE = "disease";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
-	public static final String CONTACT_PROXIMITY = "contactProximity";
+	public static final String CONTACT_PROXIMITIES = "contactProximities";
 	public static final String CONTACT_CLASSIFICATION = "contactClassification";
 	public static final String CONTACT_STATUS = "contactStatus";
 	public static final String FOLLOW_UP_STATUS = "followUpStatus";
@@ -78,7 +79,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 	private Disease disease;
 	private String diseaseDetails;
 	private Date lastContactDate;
-	private ContactProximity contactProximity;
+	private Set<ContactProximity> contactProximities;
 	private ContactClassification contactClassification;
 	private ContactStatus contactStatus;
 	private Float completeness;
@@ -109,12 +110,17 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 	private String prescribedDrugText;
 
 	private ContactJurisdictionFlagsDto contactJurisdictionFlagsDto;
+	private Long id;
 
 	//@formatter:off
+	/**
+	 * Constructor for JPA queries where contactProximities cannot be directly selected (ElementCollection limitation).
+	 * ContactProximities should be populated separately after query execution using the id field.
+	 */
 	public ContactIndexDto(String uuid, String personUuid, String nationalHealthId, String personFirstName, String personLastName, String cazeUuid,
 						   Disease disease, String diseaseDetails, String caseFirstName, String caseLastName, String regionName,
 						   String districtName, Date lastContactDate, ContactCategory contactCategory,
-						   ContactProximity contactProximity, ContactClassification contactClassification, ContactStatus contactStatus, Float completeness,
+						   Long id, ContactClassification contactClassification, ContactStatus contactStatus, Float completeness,
 						   FollowUpStatus followUpStatus, Date followUpUntil, SymptomJournalStatus symptomJournalStatus, VaccinationStatus vaccinationStatus, String contactOfficerUuid,
 						   String reportingUserUuid, Date reportDateTime,
 						   CaseClassification caseClassification, String caseRegionName, String caseDistrictName,
@@ -138,7 +144,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 		this.diseaseDetails = diseaseDetails;
 		this.lastContactDate = lastContactDate;
 		this.contactCategory = contactCategory;
-		this.contactProximity = contactProximity;
+		this.id = id;
 		this.contactClassification = contactClassification;
 		this.contactStatus = contactStatus;
 		this.completeness = completeness;
@@ -232,12 +238,12 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 		this.lastContactDate = lastContactDate;
 	}
 
-	public ContactProximity getContactProximity() {
-		return contactProximity;
+	public Set<ContactProximity> getContactProximities() {
+		return contactProximities;
 	}
 
-	public void setContactProximity(ContactProximity contactProximity) {
-		this.contactProximity = contactProximity;
+	public void setContactProximities(Set<ContactProximity> contactProximities) {
+		this.contactProximities = contactProximities;
 	}
 
 	public ContactClassification getContactClassification() {
@@ -462,6 +468,14 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 
 	public void setPrescribedDrugText(String prescribedDrugText) {
 		this.prescribedDrugText = prescribedDrugText;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	@Override

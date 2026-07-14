@@ -288,7 +288,15 @@ public class ArchitectureTest {
 		assertFacadeEjbAnnotated(
 			ExternalMessageFacadeEjb.class,
 			AuthMode.CLASS_ONLY,
-			Arrays.asList("getExternalMessagesAdapterVersion", "fetchAndSaveExternalMessages", "bulkAssignExternalMessages", "delete"),
+			Arrays.asList(
+				"getExternalMessagesAdapterVersion",
+				"fetchAndSaveExternalMessages",
+				"bulkAssignExternalMessages",
+				"delete",
+				"executeSurveyProcessing",
+				"overwriteSurveyResponse",
+				"reAttemptSurveyProcessing",
+				"saveAndProcessSurveyResponses"),
 			classes);
 	}
 

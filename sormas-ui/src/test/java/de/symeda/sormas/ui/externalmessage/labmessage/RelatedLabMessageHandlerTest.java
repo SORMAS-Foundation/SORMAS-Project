@@ -489,7 +489,7 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		testReport.setTestResult(pathogenTest.getTestResult());
 		testReport.setTestResultVerified(pathogenTest.getTestResultVerified());
 		testReport.setTestDateTime(pathogenTest.getTestDateTime());
-		testReport.setTestType(PathogenTestType.RAPID_TEST);
+		testReport.setTestType(PathogenTestType.LATERAL_FLOW_ASSAY);
 		labMessageToProcess.getSampleReports().get(0).setTestReports(Collections.singletonList(testReport));
 
 		RelatedLabMessageTestHandler handler = getHandler(labMessageToProcess);
@@ -561,7 +561,7 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		testReport1.setTestResult(pathogenTest1.getTestResult());
 		testReport1.setTestResultVerified(pathogenTest1.getTestResultVerified());
 		testReport1.setTestDateTime(pathogenTest1.getTestDateTime());
-		testReport1.setTestType(PathogenTestType.RAPID_TEST);
+		testReport1.setTestType(PathogenTestType.LATERAL_FLOW_ASSAY);
 
 		TestReportDto testReport2 = TestReportDto.build();
 		testReport2.setExternalId("test-external-id-2");
@@ -651,7 +651,7 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		testReport2.setTestResultVerified(true);
 		Date newTestDateTime = new Date();
 		testReport2.setTestDateTime(newTestDateTime);
-		testReport2.setTestType(PathogenTestType.RAPID_TEST);
+		testReport2.setTestType(PathogenTestType.LATERAL_FLOW_ASSAY);
 
 		labMessageToProcess.getSampleReports().get(0).setTestReports(Arrays.asList(testReport1, testReport2));
 
@@ -706,7 +706,7 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		testReport1.setTestResult(pathogenTest.getTestResult());
 		testReport1.setTestResultVerified(pathogenTest.getTestResultVerified());
 		testReport1.setTestDateTime(pathogenTest.getTestDateTime());
-		testReport1.setTestType(PathogenTestType.RAPID_TEST);
+		testReport1.setTestType(PathogenTestType.LATERAL_FLOW_ASSAY);
 
 		TestReportDto testReport2 = TestReportDto.build();
 		testReport2.setExternalId("test-external-id-2");

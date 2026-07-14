@@ -120,7 +120,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 	private TracingApp tracingApp;
 	@SensitiveData
 	private String tracingAppDetails;
-	private ContactProximity contactProximity;
+	private Set<ContactProximity> contactProximities;
 	private ContactStatus contactStatus;
 	private Float completeness;
 	private FollowUpStatus followUpStatus;
@@ -247,13 +247,17 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 	private Boolean isInJurisdiction;
 
 	//@formatter:off
+	/**
+	 * Constructor for JPA queries where contactProximities cannot be directly selected (ElementCollection limitation).
+	 * ContactProximities should be populated separately after query execution.
+	 */
 	public ContactExportDto(long id, long personId, String uuid, String sourceCaseUuid, CaseClassification caseClassification, Disease disease, String diseaseDetails,
 							ContactClassification contactClassification, Boolean multiDayContact, Date firstContactDate, Date lastContactDate, Date creationDate,
 							String personUuid, String firstName, String lastName, String nationalHealthId,
 							Salutation salutation, String otherSalutation, Sex sex,
 							Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY,
 							Integer approximateAge, ApproximateAgeType approximateAgeType, Date reportDate, ContactIdentificationSource contactIdentificationSource,
-							String contactIdentificationSourceDetails, TracingApp tracingApp, String tracingAppDetails, ContactProximity contactProximity,
+							String contactIdentificationSourceDetails, TracingApp tracingApp, String tracingAppDetails, Long contactIdPlaceholder,
 							ContactStatus contactStatus, Float completeness, FollowUpStatus followUpStatus, Date followUpUntil,
 							QuarantineType quarantine, String quarantineTypeDetails, Date quarantineFrom, Date quarantineTo, String quarantineHelpNeeded,
 							boolean quarantineOrderedVerbally, boolean quarantineOrderedOfficialDocument, Date quarantineOrderedVerballyDate, Date quarantineOrderedOfficialDocumentDate,
@@ -301,7 +305,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		this.contactIdentificationSourceDetails = contactIdentificationSourceDetails;
 		this.tracingApp = tracingApp;
 		this.tracingAppDetails = tracingAppDetails;
-		this.contactProximity = contactProximity;
+		// contactProximities intentionally not set here - populated separately after query
 		this.contactStatus = contactStatus;
 		this.completeness = completeness;
 		this.followUpStatus = followUpStatus;
@@ -603,10 +607,10 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 	}
 
 	@Order(28)
-	@ExportProperty(ContactDto.CONTACT_PROXIMITY)
+	@ExportProperty(ContactDto.CONTACT_PROXIMITIES)
 	@ExportGroup(ExportGroupType.CORE)
-	public ContactProximity getContactProximity() {
-		return contactProximity;
+	public Set<ContactProximity> getContactProximities() {
+		return contactProximities;
 	}
 
 	@Order(29)
@@ -1368,8 +1372,8 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		this.tracingAppDetails = tracingAppDetails;
 	}
 
-	public void setContactProximity(ContactProximity contactProximity) {
-		this.contactProximity = contactProximity;
+	public void setContactProximities(Set<ContactProximity> contactProximities) {
+		this.contactProximities = contactProximities;
 	}
 
 	public void setContactStatus(ContactStatus contactStatus) {

@@ -15,14 +15,7 @@
 package de.symeda.sormas.backend.user;
 
 import java.text.MessageFormat;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -30,16 +23,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
+import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -48,13 +32,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
-import de.symeda.sormas.api.user.JurisdictionLevel;
-import de.symeda.sormas.api.user.NotificationProtocol;
-import de.symeda.sormas.api.user.NotificationType;
-import de.symeda.sormas.api.user.UserCriteria;
-import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRoleDto;
-import de.symeda.sormas.api.user.UserRoleReferenceDto;
+import de.symeda.sormas.api.user.*;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DefaultEntityHelper;
 import de.symeda.sormas.api.utils.PasswordHelper;
@@ -82,8 +60,6 @@ import de.symeda.sormas.backend.util.ModelConstants;
 @LocalBean
 public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 
-	@EJB
-	private UserRoleFacadeEjb.UserRoleFacadeEjbLocal userRoleFacade;
 	@EJB
 	private RegionService regionService;
 	@EJB
@@ -254,11 +230,21 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 		boolean userEntityJoinUsed = false;
 
 		if (CollectionUtils.isNotEmpty(regionUuids)) {
+			logger.debug("regionUuids: [{}]", regionUuids);
 			Join<User, Region> regionJoin = userRoot.join(User.REGION, JoinType.LEFT);
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.in(regionJoin.get(AbstractDomainObject.UUID)).value(regionUuids));
+
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				CriteriaBuilderHelper.or(
+					cb,
+					cb.in(regionJoin.get(AbstractDomainObject.UUID)).value(regionUuids),
+					createUserHasNationJurisdictionFilter(cb, userRoot)));
 			userEntityJoinUsed = true;
 		}
 		if (CollectionUtils.isNotEmpty(districtUuids)) {
+			logger.debug("districtUuids: [{}]", districtUuids);
+
 			Join<User, District> districtJoin = userRoot.join(User.DISTRICT, JoinType.LEFT);
 			Join<User, Region> userRegionJoin = userRoot.join(User.REGION, JoinType.LEFT);
 			Join<Region, District> districtRegionJoin = userRegionJoin.join(Region.DISTRICTS, JoinType.LEFT);
@@ -269,11 +255,17 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 					cb.in(districtRegionJoin.get(AbstractDomainObject.UUID)).value(districtUuids),
 					cb.equal(root.get(UserReference.JURISDICTION_LEVEL), JurisdictionLevel.REGION)));
 
-			filter = CriteriaBuilderHelper.and(cb, filter, districtFilter);
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, CriteriaBuilderHelper.or(cb, districtFilter, createUserHasNationJurisdictionFilter(cb, userRoot)));
 			userEntityJoinUsed = true;
 		}
 		if (!hasRight(UserRight.SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION)) {
-			filter = CriteriaBuilderHelper.and(cb, filter, createCurrentUserJurisdictionFilter(cb, userRoot));
+			logger.debug("Not looking for user right [SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION]");
+
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				CriteriaBuilderHelper.or(cb, createCurrentUserJurisdictionFilter(cb, userRoot), createUserHasNationJurisdictionFilter(cb, userRoot)));
 			userEntityJoinUsed = true;
 		}
 
@@ -298,12 +290,20 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 
 		//exlude users with limited diseases
 		if (excludeLimitedDiseaseUsers) {
+			logger.debug("Search will be limited to diseases of the user");
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNull(userRoot.get(User.LIMITED_DISEASES)));
 		}
 
 		if (CollectionUtils.isNotEmpty(communityUuids)) {
+			logger.debug("communityUuids: [{}]", communityUuids);
 			Join<User, Community> communityJoin = userRoot.join(User.COMMUNITY, JoinType.LEFT);
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.in(communityJoin.get(AbstractDomainObject.UUID)).value(communityUuids));
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				CriteriaBuilderHelper.or(
+					cb,
+					cb.in(communityJoin.get(AbstractDomainObject.UUID)).value(communityUuids),
+					createUserHasNationJurisdictionFilter(cb, userRoot)));
 		}
 
 		if (filter != null) {
@@ -725,9 +725,14 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 		}
 	}
 
+	public Predicate createUserHasNationJurisdictionFilter(CriteriaBuilder cb, From<?, User> from) {
+		return cb.equal(from.get(User.JURISDICTION_LEVEL), JurisdictionLevel.NATION);
+	}
+
 	public Predicate buildUserRightsFilter(Root<User> from, Collection<UserRight> userRights) {
 
 		if (userRights != null && !userRights.isEmpty()) {
+			logger.debug("Requested user rights: [{}]", userRights);
 			Join<User, UserRole> rolesJoin = from.join(User.USER_ROLES, JoinType.LEFT);
 			Join<UserRole, UserRight> rightsJoin = rolesJoin.join(UserRole.USER_RIGHTS, JoinType.LEFT);
 			return rightsJoin.in(Collections.singletonList(userRights));
@@ -925,9 +930,7 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 
 	@Transactional(Transactional.TxType.REQUIRED)
 	public boolean isPortHealthUser() {
-		User user = getCurrentUser();
-		Set<UserRoleDto> userRoleDtos = user.getUserRoles().stream().map(UserRoleFacadeEjb::toDto).collect(Collectors.toSet());
-		return userRoleFacade.isPortHealthUser(userRoleDtos);
+		return UserRole.isPortHealthUser(getCurrentUser().getUserRoles());
 	}
 
 	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, UserJoins joins) {

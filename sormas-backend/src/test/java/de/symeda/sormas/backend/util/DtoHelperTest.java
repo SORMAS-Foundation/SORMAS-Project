@@ -181,7 +181,7 @@ public class DtoHelperTest extends AbstractBeanTest {
 
 			SampleDto sourceDto = creator.createSample(sourceCaseDto.toReference(), user.toReference(), rdcf2.facility);
 			sourceDto.setPathogenTestingRequested(true);
-			sourceDto.getRequestedPathogenTests().add(PathogenTestType.ANTIGEN_DETECTION);
+			sourceDto.getRequestedPathogenTests().add(PathogenTestType.LATERAL_FLOW_ASSAY);
 			sourceDto.getRequestedPathogenTests().add(PathogenTestType.NEUTRALIZING_ANTIBODIES);
 
 			SampleDto targetDto = SampleDto.build(user.toReference(), targetCaseDto.toReference());

@@ -23,6 +23,7 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportFacade;
+import de.symeda.sormas.api.sample.Serotype;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.country.CountryService;
@@ -104,7 +105,7 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setPrescriberPostalCode(source.getPrescriberPostalCode());
 		target.setPrescriberCity(source.getPrescriberCity());
 		target.setPrescriberCountry(CountryFacadeEjb.toReferenceDto(source.getPrescriberCountry()));
-		target.setGenoTypeResult(source.getGenoTypeResult());
+		target.setGenoType(source.getGenoType());
 		target.setRsvSubtype(source.getRsvSubtype());
 		target.setSpecie(source.getSpecie());
 		target.setTubeNil(source.getTubeNil());
@@ -157,7 +158,15 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setSeroGroupSpecificationText(source.getSeroGroupSpecificationText());
 		target.setSeroTypingMethod(source.getSeroTypingMethod());
 		target.setSeroTypingMethodText(source.getSeroTypingMethodText());
-		target.setSerotype(source.getSerotype());
+		if (source.getSerotypeText() != null && !source.getSerotypeText().trim().isEmpty()) {
+			target.setSerotype(Serotype.fromString(source.getSerotypeText()));
+		} else {
+			target.setSerotype(source.getSerotype());
+		}
+		target.setSerotypeText(source.getSerotypeText());
+		target.setPathogenTestCategory(source.getPathogenTestCategory());
+		target.setFourFoldIncreaseAntibodyTiter(source.getFourFoldIncreaseAntibodyTiter());
+		target.setPerformedByReferenceLaboratory(source.getPerformedByReferenceLaboratory());
 
 		return target;
 	}
@@ -199,7 +208,7 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setPrescriberPostalCode(source.getPrescriberPostalCode());
 		target.setPrescriberCity(source.getPrescriberCity());
 		target.setPrescriberCountry(countryService.getByReferenceDto(source.getPrescriberCountry()));
-		target.setGenoTypeResult(source.getGenoTypeResult());
+		target.setGenoType(source.getGenoType());
 		target.setRsvSubtype(source.getRsvSubtype());
 		target.setSpecie(source.getSpecie());
 		target.setTubeNil(source.getTubeNil());
@@ -211,6 +220,7 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setTubeMitogene(source.getTubeMitogene());
 		target.setTubeMitogeneGT10(source.getTubeMitogeneGT10());
 		target.setStrainCallStatus(source.getStrainCallStatus());
+		target.setPerformedByReferenceLaboratory(source.getPerformedByReferenceLaboratory());
 
 		// Drug susceptibility mappings
 		target.setAmikacinMic(source.getAmikacinMic());
@@ -252,7 +262,15 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setSeroGroupSpecificationText(source.getSeroGroupSpecificationText());
 		target.setSeroTypingMethod(source.getSeroTypingMethod());
 		target.setSeroTypingMethodText(source.getSeroTypingMethodText());
-		target.setSerotype(source.getSerotype());
+		if (source.getSerotypeText() != null && !source.getSerotypeText().trim().isEmpty()) {
+			target.setSerotype(Serotype.fromString(source.getSerotypeText()));
+		} else {
+			target.setSerotype(source.getSerotype());
+		}
+		target.setSerotypeText(source.getSerotypeText());
+		target.setPathogenTestCategory(source.getPathogenTestCategory());
+		target.setFourFoldIncreaseAntibodyTiter(source.getFourFoldIncreaseAntibodyTiter());
+		target.setPerformedByReferenceLaboratory(source.getPerformedByReferenceLaboratory());
 
 		return target;
 	}

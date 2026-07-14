@@ -35,7 +35,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -121,7 +120,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	public static final String HAS_GUARDIAN = "hasGuardian";
 	public static final Set<Disease> PERINATAL_DISEASES =
 		Collections.unmodifiableSet(new HashSet<>(Arrays.asList(Disease.CONGENITAL_RUBELLA, Disease.RESPIRATORY_SYNCYTIAL_VIRUS)));
-
 	//@formatter:off
     private static final String HTML_LAYOUT =
             loc(PERSON_INFORMATION_HEADING_LOC) +
@@ -132,8 +130,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
                             fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
                             fluidRowLocs(PersonDto.APPROXIMATE_AGE, PersonDto.APPROXIMATE_AGE_TYPE, PersonDto.APPROXIMATE_AGE_REFERENCE_DATE)
                     ) +
-                    fluidRowLocs(PersonDto.PLACE_OF_BIRTH_REGION, PersonDto.PLACE_OF_BIRTH_DISTRICT, PersonDto.PLACE_OF_BIRTH_COMMUNITY) +
-                    fluidRowLocs(PersonDto.PLACE_OF_BIRTH_FACILITY_TYPE, PersonDto.PLACE_OF_BIRTH_FACILITY, PersonDto.PLACE_OF_BIRTH_FACILITY_DETAILS) +
+
                     fluidRowLocs(PersonDto.SEX, PersonDto.PRESENT_CONDITION) +
 					fluidRow(
 							oneOfFourCol(PersonDto.DEATH_DATE),
@@ -161,9 +158,11 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 					fluidRowLocs(PersonDto.HAS_COVID_APP, PersonDto.COVID_CODE_DELIVERED) +
 
                     loc(PERINATAL_DETAILS_HEADER) +
-					divsCss(VSPACE_3,fluidRowLocs(PersonDto.GESTATIONAL_AGE_CATEGORY,PersonDto.GESTATION_AGE_AT_BIRTH) +
+					divsCss(VSPACE_3,fluidRowLocs(PersonDto.GESTATIONAL_AGE_CATEGORY,"") +
 					fluidRowLocs(PersonDto.BIRTH_WEIGHT_CATEGORY, PersonDto.BIRTH_WEIGHT) +
                     fluidRowLocs(PersonDto.MULTIPLE_BIRTH,""))+
+					fluidRowLocs(PersonDto.PLACE_OF_BIRTH_REGION, PersonDto.PLACE_OF_BIRTH_DISTRICT, PersonDto.PLACE_OF_BIRTH_COMMUNITY) +
+					fluidRowLocs(PersonDto.PLACE_OF_BIRTH_FACILITY_TYPE, PersonDto.PLACE_OF_BIRTH_FACILITY, PersonDto.PLACE_OF_BIRTH_FACILITY_DETAILS) +
 
                     loc(OCCUPATION_HEADER) +
                     divsCss(VSPACE_3,
@@ -380,6 +379,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		TextField tfGestationAgeAtBirth = addField(PersonDto.GESTATION_AGE_AT_BIRTH, TextField.class);
 		tfGestationAgeAtBirth
 			.setConversionError(I18nProperties.getValidationError(Validations.onlyIntegerNumbersAllowed, tfGestationAgeAtBirth.getCaption()));
+		// Gestation Age At Birth is not required to showing. Its not in the requirements
+		tfGestationAgeAtBirth.setVisible(false);
 		TextField tfBirthWeight = addField(PersonDto.BIRTH_WEIGHT, TextField.class);
 		tfBirthWeight.setConversionError(I18nProperties.getValidationError(Validations.onlyIntegerNumbersAllowed, tfBirthWeight.getCaption()));
 
@@ -406,8 +407,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		ComboBox occupationTypeField = addCustomizableEnumField(PersonDto.OCCUPATION_TYPE);
 		TextField occupationTypeDetailsField = addField(PersonDto.OCCUPATION_DETAILS, TextField.class);
 		occupationTypeDetailsField.setVisible(false);
-		FieldHelper
-			.updateItems(occupationTypeField, FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.OCCUPATION_TYPE, null));
+		FieldHelper.updateItems(
+			occupationTypeField,
+			FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.OCCUPATION_TYPE, disease));
 		occupationTypeField.addValueChangeListener(e -> {
 			OccupationType occupationType = (OccupationType) e.getProperty().getValue();
 			occupationTypeDetailsField.setVisible(occupationType != null && occupationType.matchPropertyValue(OccupationType.HAS_DETAILS, true));
@@ -422,34 +424,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		birthCountryCB.addItems(countries);
 
 		addField(PersonDto.LIVING_STATUS, ComboBox.class);
-		DateField entryDateDF = addField(PersonDto.ENTRY_DATE, DateField.class);
-		entryDateDF.setVisible(false);
-		// Entry date is only required for foreigners in Luxembourg with the TB+IMI+IPI diseases only.
-		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
-			boolean isEntryDateAllowedDisease =
-				Arrays
-					.asList(
-						Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
-						Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
-						Disease.TUBERCULOSIS,
-						Disease.MEASLES,
-						Disease.GIARDIASIS,
-						Disease.CRYPTOSPORIDIOSIS)
-					.contains(disease);
-			birthCountryCB.addValueChangeListener(e -> {
-				CountryReferenceDto countryRef = (CountryReferenceDto) e.getProperty().getValue();
-				boolean isForeigner = false;
-				if (countryRef != null) {
-					isForeigner = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
-						&& Arrays.asList(CountryHelper.COUNTRY_CODE_LUXEMBOURG, "LUX")
-							.stream()
-							.filter(Objects::nonNull)
-							.noneMatch(country -> StringUtils.equalsIgnoreCase(country, countryRef.getIsoCode()));
-				}
-				setVisibleClear(isEntryDateAllowedDisease && isForeigner, PersonDto.ENTRY_DATE);
-				setRequired(isEntryDateAllowedDisease && isForeigner, PersonDto.ENTRY_DATE);
-			});
-		}
+		// Entry date is not a mandatory field.
+		addField(PersonDto.ENTRY_DATE, DateField.class);
+
 		nationalHealthIdField = addField(PersonDto.NATIONAL_HEALTH_ID, SormasTextField.class);
 		nationalHealthIdField.setNullRepresentation("");
 		Label nationalHealthIdWarningLabel = new Label(I18nProperties.getString(Strings.messagePersonNationalHealthIdInvalid));
@@ -521,19 +498,15 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), PersonDto.EDUCATION_DETAILS, PersonDto.EDUCATION_TYPE, Arrays.asList(EducationType.OTHER), true);
 
-		FieldHelper.addSoftRequiredStyle(
-			presentCondition,
-			sex,
-			deathDate,
-			deathPlaceDesc,
-			deathPlaceType,
-			causeOfDeathField,
-			causeOfDeathDiseaseField,
-			causeOfDeathDetailsField,
-			burialDate,
-			burialPlaceDesc,
-			burialConductor);
-		FieldHelper.setVisibleWhen(getFieldGroup(), PersonDto.WORK_PLACE_TEXT, PersonDto.WORK_PLACE, WorkPlace.OTHER, true);
+		// Lu Salmonellosis renders the place-of-work text field unconditionally and hides the WorkPlace enum;
+		// other diseases keep the existing dependent-visibility binding.
+		boolean isLuxSalmonellosis = disease == Disease.SALMONELLOSIS && isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+		if (isLuxSalmonellosis) {
+			setVisibleClear(false, PersonDto.WORK_PLACE);
+			getField(PersonDto.WORK_PLACE_TEXT).setVisible(true);
+		} else {
+			FieldHelper.setVisibleWhen(getFieldGroup(), PersonDto.WORK_PLACE_TEXT, PersonDto.WORK_PLACE, WorkPlace.OTHER, true);
+		}
 
 		// Set initial visibilities
 
