@@ -295,6 +295,19 @@ public class PathogenTestTypeTest {
 	}
 
 	@Test
+	public void serogroupingIsSelectableForInvasivePneumococcalInfectionUnderItsOwnName() {
+		List<PathogenTestType> visibleForIpi = de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration
+			.getVisibleValues(PathogenTestType.class, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION);
+
+		assertThat(visibleForIpi, hasItem(PathogenTestType.SEROGROUPING));
+		assertTrue(PathogenTestType.isSelectableForNewTests(PathogenTestType.SEROGROUPING));
+		assertThat(PathogenTestType.getCategory(PathogenTestType.SEROGROUPING), is(PathogenTestCategory.MOLECULAR_ASSAYS));
+		assertThat(PathogenTestType.SEROGROUPING.toString(), is("Serogrouping"));
+
+		assertThat(visibleForIpi, not(hasItem(PathogenTestType.SEROTYPING)));
+	}
+
+	@Test
 	public void diseaseHiddenMethodIsDroppedByVisibleValues() {
 		// Guards the scenario behind the retainType re-add in FormComponent#updateTestTypeItemsByCategory
 		// and the retainCategory re-add in #getVisibleTestCategories: a method that is @Diseases(hide = true)
