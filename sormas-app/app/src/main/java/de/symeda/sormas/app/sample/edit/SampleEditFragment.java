@@ -33,7 +33,6 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
-import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
@@ -207,7 +206,6 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 
 	private List<Item> buildSampleMaterialList() {
 
-		final boolean luxembourg = ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 		final SampleMaterial currentMaterial = record.getSampleMaterial();
 
 		return DataUtils.getEnumItems(SampleMaterial.class, true, getFieldVisibilityCheckers())
@@ -217,7 +215,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 				if (material == null || material == currentMaterial) {
 					return true;
 				}
-				return !material.isDeprecated() && (luxembourg || material != SampleMaterial.UNKNOWN);
+				return !material.isDeprecated();
 			})
 			.sorted(Comparator.comparing(Item::getKey, String.CASE_INSENSITIVE_ORDER))
 			.collect(Collectors.toList());
