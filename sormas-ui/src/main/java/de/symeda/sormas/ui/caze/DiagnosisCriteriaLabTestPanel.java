@@ -76,13 +76,7 @@ public class DiagnosisCriteriaLabTestPanel extends CustomLayout {
 	private static final String TEST_RESULT_KEY_RESULT = "RESULT";
 	private static final String TEST_RESULT_KEY_DATE = "DATE";
 
-	private static final Map<String, String> PATHOGEN_TEST_RESULT_TO_CONTROLS_VALUES = Map.of(
-		PathogenTestResultType.POSITIVE.name(),
-		TEST_RESULT_POS,
-		PathogenTestResultType.NEGATIVE.name(),
-		TEST_RESULT_NEG,
-		PathogenTestResultType.PENDING.name(),
-		TEST_RESULT_ONGOING);
+	private static final Map<String, String> PATHOGEN_TEST_RESULT_TO_CONTROLS_VALUES;
 
 	private Disease disease;
 	private List<PathogenTestDto> pathogenTests;
@@ -103,6 +97,14 @@ public class DiagnosisCriteriaLabTestPanel extends CustomLayout {
                 + fluidRowLocs(6, BIOPSY_TEST_LOC, 4, BIOPSY_TEST_RESULT_LOC, 2, BIOPSY_TEST_RESULT_DATE_LOC)
                 + fluidRowLocs(6, CULTURE_TEST_LOC, 4, CULTURE_TEST_RESULT_LOC, 2, CULTURE_TEST_RESULT_DATE_LOC);
     //@formatter:on
+
+	static {
+		Map<String, String> map = new HashMap<>();
+		map.put(PathogenTestResultType.POSITIVE.name(), TEST_RESULT_POS);
+		map.put(PathogenTestResultType.NEGATIVE.name(), TEST_RESULT_NEG);
+		map.put(PathogenTestResultType.PENDING.name(), TEST_RESULT_ONGOING);
+		PATHOGEN_TEST_RESULT_TO_CONTROLS_VALUES = map;
+	}
 
 	public DiagnosisCriteriaLabTestPanel(Disease disease, List<PathogenTestDto> pathogenTests) {
 		setWidth(100, Sizeable.Unit.PERCENTAGE);
@@ -126,7 +128,7 @@ public class DiagnosisCriteriaLabTestPanel extends CustomLayout {
 				}
 
 				Map<String, String> testResultDetails = new HashMap<>();
-				testResultDetails.put(TEST_RESULT_KEY_RESULT, pathogenTest.getTestResult().name());
+				testResultDetails.put(TEST_RESULT_KEY_RESULT, pathogenTest.getTestResult() != null ? pathogenTest.getTestResult().name() : "");
 				testResultDetails.put(TEST_RESULT_KEY_DATE, testDate);
 				testResultDetails.put(
 					PathogenTestDto.RIFAMPICIN_RESISTANT,
@@ -163,7 +165,6 @@ public class DiagnosisCriteriaLabTestPanel extends CustomLayout {
 			TextField tstTestResultDate = addTextFieldComponent(TST_TEST_RESULT_DATE_LOC, "", true);
 			if (testDetails.containsKey(PathogenTestType.TST.name())) {
 				tstTest.setValue(TEST_TYPE_YES);
-				tstTestResult.setValue(testDetails.get(PathogenTestType.TST.name()).get(TEST_RESULT_KEY_RESULT));
 				final String resultValue =
 					PATHOGEN_TEST_RESULT_TO_CONTROLS_VALUES.get(testDetails.get(PathogenTestType.TST.name()).get(TEST_RESULT_KEY_RESULT));
 				tstTestResult.setValue(resultValue);
