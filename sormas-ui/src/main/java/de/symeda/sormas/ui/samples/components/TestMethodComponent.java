@@ -112,7 +112,7 @@ public class TestMethodComponent extends FormComponent<PathogenTestDto> {
 		// Test type
 		testTypeField = createComboBox(PathogenTestDto.TEST_TYPE, PathogenTestDto.I18N_PREFIX);
 		updateTestTypeItemsByCategory(testTypeField, currentDisease, null);
-		testTypeField.setItemCaptionGenerator(this::getTestTypeCaption);
+		testTypeField.setItemCaptionGenerator(PathogenTestType::toString);
 
 		testTypeTextField = createTextField(PathogenTestDto.TEST_TYPE_TEXT, PathogenTestDto.I18N_PREFIX, ValueChangeMode.BLUR);
 		testTypeTextField.setVisible(false);
@@ -315,17 +315,6 @@ public class TestMethodComponent extends FormComponent<PathogenTestDto> {
 		testCategoryField.clear();
 		testTypeField.clear();
 		updateTestTypeItemsByCategory(testTypeField, disease, null);
-	}
-
-	/**
-	 * Disease-aware caption for a test type. For Invasive Pneumococcal Infection the SEROGROUPING
-	 * test type is presented as "Serotyping" without affecting other diseases.
-	 */
-	private String getTestTypeCaption(PathogenTestType testType) {
-		if (currentDisease == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION && testType == PathogenTestType.SEROGROUPING) {
-			return I18nProperties.getCaption(Captions.PathogenTest_seroGrouping_INVASIVE_PNEUMOCOCCAL_INFECTION);
-		}
-		return PathogenTestType.toString(testType, null);
 	}
 
 	private void updatePcrTestSpecVisibility(PathogenTestType testType) {
