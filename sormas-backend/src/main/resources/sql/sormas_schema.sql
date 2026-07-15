@@ -16854,4 +16854,37 @@ UPDATE samples_history SET
     WHERE requestedpathogentestsstring ~ '(^|,)(ANTIGEN_DETECTION|RAPID_TEST|RAPID_ANTIGEN_DETECTION|RDT|DIRECT_MICROSCOPY|RAPID_ANTIBODY_TEST)(,|$)';
 INSERT INTO schema_version (version_number, comment) VALUES (649, 'Merge retired pathogen test types into Lateral Flow Assay / Other');
 
--- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
+-- Add syphilis-specific symptoms to Symptoms entity
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS patchyalopecia varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS chancre varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS condylomavenereum varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS mucouspatches varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS generalizedlymphadenopathy varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS ocularmanifestations varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS neurologicalmanifestations varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS bonyabnormalities varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS pseudoparalysis varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS refractoryrhinitis varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS condylomalata varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS centralnervoussystemdamage varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS malnutrition varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS nephroticsyndrome varchar(255);
+
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS patchyalopecia varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS chancre varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS condylomavenereum varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS mucouspatches varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS generalizedlymphadenopathy varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS ocularmanifestations varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS neurologicalmanifestations varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS bonyabnormalities varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS pseudoparalysis varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS refractoryrhinitis varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS condylomalata varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS centralnervoussystemdamage varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS malnutrition varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS nephroticsyndrome varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (650, 'Add syphilis-specific symptoms to Symptoms for SORMAS-14209');
+  
+-- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. *** 

@@ -507,7 +507,6 @@ public class Symptoms extends PseudonymizableAdo {
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date skinRashOnsetDate;
 
-	// Syphilis-specific symptoms
 	@Enumerated(EnumType.STRING)
 	private SymptomState patchyAlopecia;
 	@Enumerated(EnumType.STRING)
@@ -523,7 +522,6 @@ public class Symptoms extends PseudonymizableAdo {
 	@Enumerated(EnumType.STRING)
 	private SymptomState neurologicalManifestations;
 
-	// Congenital syphilis-specific symptoms
 	@Enumerated(EnumType.STRING)
 	private SymptomState bonyAbnormalities;
 	@Enumerated(EnumType.STRING)
@@ -2244,7 +2242,6 @@ public class Symptoms extends PseudonymizableAdo {
 		this.unknownSymptom = unknownSymptom;
 	}
 
-	// Syphilis-specific symptoms getters and setters
 	public SymptomState getPatchyAlopecia() {
 		return patchyAlopecia;
 	}
@@ -2301,7 +2298,6 @@ public class Symptoms extends PseudonymizableAdo {
 		this.neurologicalManifestations = neurologicalManifestations;
 	}
 
-	// Congenital syphilis-specific symptoms getters and setters
 	public SymptomState getBonyAbnormalities() {
 		return bonyAbnormalities;
 	}
@@ -2358,7 +2354,6 @@ public class Symptoms extends PseudonymizableAdo {
 		this.nephroticSyndrome = nephroticSyndrome;
 	}
 
-	// Syphilis-specific fields getters and setters
 	public SyphilisStage getSyphilisStage() {
 		return syphilisStage;
 	}

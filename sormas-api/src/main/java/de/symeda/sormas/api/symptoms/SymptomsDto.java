@@ -3213,7 +3213,6 @@ public class SymptomsDto extends PseudonymizableDto {
 	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
 	private SymptomState wateryDiarrhea;
 
-	// Syphilis-specific symptoms
 	@Diseases({
 		SYPHILIS })
 	@SymptomGrouping(SymptomGroup.SKIN)
@@ -3249,7 +3248,6 @@ public class SymptomsDto extends PseudonymizableDto {
 	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
 	private SymptomState neurologicalManifestations;
 
-	// Congenital syphilis-specific symptoms
 	@Diseases({
 		SYPHILIS })
 	@SymptomGrouping(SymptomGroup.GENERAL)
@@ -5455,7 +5453,6 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.wateryDiarrhea = wateryDiarrhea;
 	}
 
-	// Syphilis-specific symptoms getters and setters
 	public SymptomState getPatchyAlopecia() {
 		return patchyAlopecia;
 	}
@@ -5512,7 +5509,6 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.neurologicalManifestations = neurologicalManifestations;
 	}
 
-	// Congenital syphilis-specific symptoms getters and setters
 	public SymptomState getBonyAbnormalities() {
 		return bonyAbnormalities;
 	}
