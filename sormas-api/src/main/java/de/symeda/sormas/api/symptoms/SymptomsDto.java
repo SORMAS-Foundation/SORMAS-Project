@@ -79,6 +79,7 @@ import static de.symeda.sormas.api.Disease.SCHISTOSOMIASIS;
 import static de.symeda.sormas.api.Disease.SHIGELLOSIS;
 import static de.symeda.sormas.api.Disease.SNAKE_BITE;
 import static de.symeda.sormas.api.Disease.SOIL_TRANSMITTED_HELMINTHS;
+import static de.symeda.sormas.api.Disease.SYPHILIS;
 import static de.symeda.sormas.api.Disease.TRACHOMA;
 import static de.symeda.sormas.api.Disease.TRYPANOSOMIASIS;
 import static de.symeda.sormas.api.Disease.TUBERCULOSIS;
@@ -382,6 +383,27 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String TENESMUS = "tenesmus";
 	public static final String BLOODY_DIARRHEA = "bloodyDiarrhea";
 	public static final String HAEMOLYTIC_UREMIC_SYNDROME = "haemolyticUremicSyndrome";
+
+	// Syphilis-specific symptoms
+	public static final String PATCHY_ALOPECIA = "patchyAlopecia";
+	public static final String CHANCRE = "chancre";
+	public static final String CONDYLOMA_VENEREUM = "condylomaVenereum";
+	public static final String MUCOUS_PATCHES = "mucousPatches";
+	public static final String GENERALIZED_LYMPHADENOPATHY = "generalizedLymphadenopathy";
+	public static final String OCULAR_MANIFESTATIONS = "ocularManifestations";
+	public static final String NEUROLOGICAL_MANIFESTATIONS = "neurologicalManifestations";
+	public static final String CONDYLOMA_LATA = "condylomaLata";
+	public static final String BONY_ABNORMALITIES = "bonyAbnormalities";
+	public static final String PSEUDOPARALYSIS = "pseudoparalysis";
+	public static final String REFRACTORY_RHINITIS = "refractoryRhinitis";
+	public static final String CENTRAL_NERVOUS_SYSTEM_DAMAGE = "centralNervousSystemDamage";
+	public static final String MALNUTRITION = "malnutrition";
+	public static final String NEPHROTIC_SYNDROME = "nephroticSyndrome";
+
+	// Syphilis-specific fields
+	public static final String SYPHILIS_STAGE = "syphilisStage";
+	public static final String SYPHILIS_INFECTION_SITE = "syphilisInfectionSite";
+	public static final String CLINICAL_CRITERIA_MET = "clinicalCriteriaMet";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -858,6 +880,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		SALMONELLOSIS,
 		DENGUE,
 		SHIGELLOSIS,
+		SYPHILIS,
 		OTHER })
 	@Outbreaks
 	@SymptomGrouping(SymptomGroup.GENERAL)
@@ -977,6 +1000,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CONGENITAL_RUBELLA,
 		MALARIA,
 		DENGUE,
+		SYPHILIS,
 		UNDEFINED,
 		OTHER })
 	@HideForCountries
@@ -1237,6 +1261,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		UNDEFINED,
 		MEASLES,
 		DENGUE,
+		SYPHILIS,
 		OTHER })
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
@@ -1284,6 +1309,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		POLIO,
 		UNSPECIFIED_VHF,
 		UNDEFINED,
+		SYPHILIS,
 		OTHER })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.GENERAL)
@@ -1311,6 +1337,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		SALMONELLOSIS,
 		DENGUE,
 		UNDEFINED,
+		SYPHILIS,
 		OTHER })
 	@Outbreaks
 	@SymptomGrouping(SymptomGroup.GENERAL)
@@ -1465,6 +1492,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		GIARDIASIS,
 		CRYPTOSPORIDIOSIS,
 		SALMONELLOSIS,
+		SYPHILIS,
 		SHIGELLOSIS })
 	@HideForCountries
 	@Outbreaks
@@ -1866,6 +1894,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CORONAVIRUS,
 		UNSPECIFIED_VHF,
 		UNDEFINED,
+		SYPHILIS,
 		OTHER })
 	@SymptomGrouping(SymptomGroup.RESPIRATORY)
 	private SymptomState soreThroat;
@@ -2808,6 +2837,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CRYPTOSPORIDIOSIS,
 		RESPIRATORY_SYNCYTIAL_VIRUS,
 		MALARIA,
+		SYPHILIS,
 		DENGUE,
 		SHIGELLOSIS })
 	private SymptomState asymptomatic;
@@ -2851,6 +2881,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CRYPTOSPORIDIOSIS,
 		MALARIA,
 		DENGUE,
+		SYPHILIS,
 		SHIGELLOSIS })
 	@SymptomGrouping(SymptomGroup.OTHER)
 	private String otherClinicalPresentationText;
@@ -2861,6 +2892,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		INVASIVE_MENINGOCOCCAL_INFECTION,
 		MEASLES,
 		DENGUE,
+		SYPHILIS,
 		MALARIA })
 	@Complication({
 		MEASLES })
@@ -2908,7 +2940,8 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	@Diseases({
 		GIARDIASIS,
-		CRYPTOSPORIDIOSIS })
+		CRYPTOSPORIDIOSIS,
+		SYPHILIS })
 	@SymptomGrouping(SymptomGroup.GENERAL)
 	private SymptomState weightLoss;
 	@Diseases({
@@ -3054,7 +3087,8 @@ public class SymptomsDto extends PseudonymizableDto {
 	private SymptomState syndromicFlu;
 
 	@Diseases({
-		MALARIA })
+		MALARIA,
+		SYPHILIS })
 	@SymptomGrouping(SymptomGroup.GENERAL)
 	private SymptomState anemia;
 
@@ -3178,6 +3212,78 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Outbreaks
 	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
 	private SymptomState wateryDiarrhea;
+
+	// Syphilis-specific symptoms
+	@Diseases({
+		SYPHILIS })
+	@SymptomGrouping(SymptomGroup.SKIN)
+	private SymptomState patchyAlopecia;
+
+	@Diseases({
+		SYPHILIS })
+	@SymptomGrouping(SymptomGroup.SKIN)
+	private SymptomState chancre;
+
+	@Diseases({
+		SYPHILIS })
+	@SymptomGrouping(SymptomGroup.SKIN)
+	private SymptomState condylomaVenereum;
+
+	@Diseases({
+		SYPHILIS })
+	@SymptomGrouping(SymptomGroup.SKIN)
+	private SymptomState mucousPatches;
+
+	@Diseases({
+		SYPHILIS })
+	@SymptomGrouping(SymptomGroup.OTHER)
+	private SymptomState generalizedLymphadenopathy;
+
+	@Diseases({
+		SYPHILIS })
+	@SymptomGrouping(SymptomGroup.OTHER)
+	private SymptomState ocularManifestations;
+
+	@Diseases({
+		SYPHILIS })
+	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
+	private SymptomState neurologicalManifestations;
+
+	// Congenital syphilis-specific symptoms
+	@Diseases({
+		SYPHILIS })
+	@SymptomGrouping(SymptomGroup.GENERAL)
+	private SymptomState bonyAbnormalities;
+
+	@Diseases({
+		SYPHILIS })
+	@SymptomGrouping(SymptomGroup.GENERAL)
+	private SymptomState pseudoparalysis;
+
+	@Diseases({
+		SYPHILIS })
+	@SymptomGrouping(SymptomGroup.GENERAL)
+	private SymptomState refractoryRhinitis;
+
+	@Diseases({
+		SYPHILIS })
+	@SymptomGrouping(SymptomGroup.SKIN)
+	private SymptomState condylomaLata;
+
+	@Diseases({
+		SYPHILIS })
+	@SymptomGrouping(SymptomGroup.NERVOUS_SYSTEM)
+	private SymptomState centralNervousSystemDamage;
+
+	@Diseases({
+		SYPHILIS })
+	@SymptomGrouping(SymptomGroup.OTHER)
+	private SymptomState malnutrition;
+
+	@Diseases({
+		SYPHILIS })
+	@SymptomGrouping(SymptomGroup.GENERAL)
+	private SymptomState nephroticSyndrome;
 
 	@Order(0)
 	public Float getTemperature() {
@@ -5349,4 +5455,117 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.wateryDiarrhea = wateryDiarrhea;
 	}
 
+	// Syphilis-specific symptoms getters and setters
+	public SymptomState getPatchyAlopecia() {
+		return patchyAlopecia;
+	}
+
+	public void setPatchyAlopecia(SymptomState patchyAlopecia) {
+		this.patchyAlopecia = patchyAlopecia;
+	}
+
+	public SymptomState getChancre() {
+		return chancre;
+	}
+
+	public void setChancre(SymptomState chancre) {
+		this.chancre = chancre;
+	}
+
+	public SymptomState getCondylomaVenereum() {
+		return condylomaVenereum;
+	}
+
+	public void setCondylomaVenereum(SymptomState condylomaVenereum) {
+		this.condylomaVenereum = condylomaVenereum;
+	}
+
+	public SymptomState getMucousPatches() {
+		return mucousPatches;
+	}
+
+	public void setMucousPatches(SymptomState mucousPatches) {
+		this.mucousPatches = mucousPatches;
+	}
+
+	public SymptomState getGeneralizedLymphadenopathy() {
+		return generalizedLymphadenopathy;
+	}
+
+	public void setGeneralizedLymphadenopathy(SymptomState generalizedLymphadenopathy) {
+		this.generalizedLymphadenopathy = generalizedLymphadenopathy;
+	}
+
+	public SymptomState getOcularManifestations() {
+		return ocularManifestations;
+	}
+
+	public void setOcularManifestations(SymptomState ocularManifestations) {
+		this.ocularManifestations = ocularManifestations;
+	}
+
+	public SymptomState getNeurologicalManifestations() {
+		return neurologicalManifestations;
+	}
+
+	public void setNeurologicalManifestations(SymptomState neurologicalManifestations) {
+		this.neurologicalManifestations = neurologicalManifestations;
+	}
+
+	// Congenital syphilis-specific symptoms getters and setters
+	public SymptomState getBonyAbnormalities() {
+		return bonyAbnormalities;
+	}
+
+	public void setBonyAbnormalities(SymptomState bonyAbnormalities) {
+		this.bonyAbnormalities = bonyAbnormalities;
+	}
+
+	public SymptomState getPseudoparalysis() {
+		return pseudoparalysis;
+	}
+
+	public void setPseudoparalysis(SymptomState pseudoparalysis) {
+		this.pseudoparalysis = pseudoparalysis;
+	}
+
+	public SymptomState getRefractoryRhinitis() {
+		return refractoryRhinitis;
+	}
+
+	public void setRefractoryRhinitis(SymptomState refractoryRhinitis) {
+		this.refractoryRhinitis = refractoryRhinitis;
+	}
+
+	public SymptomState getCondylomaLata() {
+		return condylomaLata;
+	}
+
+	public void setCondylomaLata(SymptomState condylomaLata) {
+		this.condylomaLata = condylomaLata;
+	}
+
+	public SymptomState getCentralNervousSystemDamage() {
+		return centralNervousSystemDamage;
+	}
+
+	public void setCentralNervousSystemDamage(SymptomState centralNervousSystemDamage) {
+		this.centralNervousSystemDamage = centralNervousSystemDamage;
+	}
+
+	public SymptomState getMalnutrition() {
+		return malnutrition;
+	}
+
+	public void setMalnutrition(SymptomState malnutrition) {
+		this.malnutrition = malnutrition;
+	}
+
+	public SymptomState getNephroticSyndrome() {
+		return nephroticSyndrome;
+	}
+
+	public void setNephroticSyndrome(SymptomState nephroticSyndrome) {
+		this.nephroticSyndrome = nephroticSyndrome;
+	}
 }

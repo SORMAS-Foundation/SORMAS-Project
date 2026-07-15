@@ -32,6 +32,8 @@ import de.symeda.sormas.api.symptoms.ClinicalPresentationStatus;
 import de.symeda.sormas.api.symptoms.CongenitalHeartDiseaseType;
 import de.symeda.sormas.api.symptoms.DiagnosisType;
 import de.symeda.sormas.api.symptoms.InfectionSite;
+import de.symeda.sormas.api.symptoms.SyphilisInfectionSite;
+import de.symeda.sormas.api.symptoms.SyphilisStage;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -130,8 +132,6 @@ public class Symptoms extends PseudonymizableAdo {
 
 	@Column
 	private String otherMinorSiteDetails;
-
-
 
 	@Enumerated(EnumType.STRING)
 	private SymptomState fever;
@@ -473,41 +473,71 @@ public class Symptoms extends PseudonymizableAdo {
 	private SymptomState shivering;
 	@Enumerated(EnumType.STRING)
 	private ClinicalPresentationStatus clinicalPresentationStatus;
-    @Enumerated(EnumType.STRING)
-    private SymptomState acuteEncephalitis;
-    @Enumerated(EnumType.STRING)
-    private SymptomState eggyBurps;
-    @Enumerated(EnumType.STRING)
-    private SymptomState weightLoss;
-    @Column
-    private Float weightLossAmount;
-    @Enumerated(EnumType.STRING)
-    private SymptomState reoccurrence;
-    @Enumerated(EnumType.STRING)
-    private SymptomState symptomCurrentStatus;
-    @Column
-    private Integer durationOfSymptoms;
-    @Enumerated(EnumType.STRING)
-    private SymptomState overnightStayRequired;
-    @Enumerated(EnumType.STRING)
-    private SymptomState bloating;
+	@Enumerated(EnumType.STRING)
+	private SymptomState acuteEncephalitis;
+	@Enumerated(EnumType.STRING)
+	private SymptomState eggyBurps;
+	@Enumerated(EnumType.STRING)
+	private SymptomState weightLoss;
+	@Column
+	private Float weightLossAmount;
+	@Enumerated(EnumType.STRING)
+	private SymptomState reoccurrence;
+	@Enumerated(EnumType.STRING)
+	private SymptomState symptomCurrentStatus;
+	@Column
+	private Integer durationOfSymptoms;
+	@Enumerated(EnumType.STRING)
+	private SymptomState overnightStayRequired;
+	@Enumerated(EnumType.STRING)
+	private SymptomState bloating;
 
-    @Enumerated(EnumType.STRING)
-    private SymptomState difficultyBreathingDuringMeals;
-    @Enumerated(EnumType.STRING)
-    private SymptomState paradoxicalBreathing;
-    @Enumerated(EnumType.STRING)
-    private SymptomState respiratoryFatigue;
-    @Enumerated(EnumType.STRING)
-    private YesNoUnknown parentTimeOffWork;
-    @Column
-    private Float timeOffWorkDays;
-    @Enumerated(EnumType.STRING)
-    private SymptomState unknownSymptom;
-    @DatabaseField(dataType = DataType.DATE_LONG)
-    private Date skinRashOnsetDate;
+	@Enumerated(EnumType.STRING)
+	private SymptomState difficultyBreathingDuringMeals;
+	@Enumerated(EnumType.STRING)
+	private SymptomState paradoxicalBreathing;
+	@Enumerated(EnumType.STRING)
+	private SymptomState respiratoryFatigue;
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown parentTimeOffWork;
+	@Column
+	private Float timeOffWorkDays;
+	@Enumerated(EnumType.STRING)
+	private SymptomState unknownSymptom;
+	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date skinRashOnsetDate;
 
+	// Syphilis-specific symptoms
+	@Enumerated(EnumType.STRING)
+	private SymptomState patchyAlopecia;
+	@Enumerated(EnumType.STRING)
+	private SymptomState chancre;
+	@Enumerated(EnumType.STRING)
+	private SymptomState condylomaVenereum;
+	@Enumerated(EnumType.STRING)
+	private SymptomState mucousPatches;
+	@Enumerated(EnumType.STRING)
+	private SymptomState generalizedLymphadenopathy;
+	@Enumerated(EnumType.STRING)
+	private SymptomState ocularManifestations;
+	@Enumerated(EnumType.STRING)
+	private SymptomState neurologicalManifestations;
 
+	// Congenital syphilis-specific symptoms
+	@Enumerated(EnumType.STRING)
+	private SymptomState bonyAbnormalities;
+	@Enumerated(EnumType.STRING)
+	private SymptomState pseudoparalysis;
+	@Enumerated(EnumType.STRING)
+	private SymptomState refractoryRhinitis;
+	@Enumerated(EnumType.STRING)
+	private SymptomState condylomaLata;
+	@Enumerated(EnumType.STRING)
+	private SymptomState centralNervousSystemDamage;
+	@Enumerated(EnumType.STRING)
+	private SymptomState malnutrition;
+	@Enumerated(EnumType.STRING)
+	private SymptomState nephroticSyndrome;
 
 	@Override
 	public String getI18nPrefix() {
@@ -562,33 +592,34 @@ public class Symptoms extends PseudonymizableAdo {
 		this.heartRate = heartRate;
 	}
 
-	public SymptomState getApnoea() { 
-		return apnoea; 
-	}
-	
-	public void setApnoea(SymptomState apnoea) { 
-		this.apnoea = apnoea; 
+	public SymptomState getApnoea() {
+		return apnoea;
 	}
 
-	public SymptomState getArthritis() { 
-		return arthritis; 
+	public void setApnoea(SymptomState apnoea) {
+		this.apnoea = apnoea;
 	}
 
-	public void setArthritis(SymptomState arthritis) { 
-		this.arthritis = arthritis; 
+	public SymptomState getArthritis() {
+		return arthritis;
 	}
 
-	public SymptomState getAsymptomatic() { 
-		return asymptomatic; 
+	public void setArthritis(SymptomState arthritis) {
+		this.arthritis = arthritis;
 	}
 
-	public void setAsymptomatic(SymptomState asymptomatic) { 
-		this.asymptomatic = asymptomatic; 
+	public SymptomState getAsymptomatic() {
+		return asymptomatic;
+	}
+
+	public void setAsymptomatic(SymptomState asymptomatic) {
+		this.asymptomatic = asymptomatic;
 	}
 
 	public SymptomState getCoughingBouts() {
 		return coughingBouts;
 	}
+
 	public void setCoughingBouts(SymptomState coughingBouts) {
 		this.coughingBouts = coughingBouts;
 	}
@@ -2081,135 +2112,274 @@ public class Symptoms extends PseudonymizableAdo {
 		this.clinicalPresentationStatus = clinicalPresentationStatus;
 	}
 
-    public SymptomState getBloating() {
-        return bloating;
-    }
+	public SymptomState getBloating() {
+		return bloating;
+	}
 
-    public void setBloating(SymptomState bloating) {
-        this.bloating = bloating;
-    }
+	public void setBloating(SymptomState bloating) {
+		this.bloating = bloating;
+	}
 
-    public SymptomState getOvernightStayRequired() {
-        return overnightStayRequired;
-    }
+	public SymptomState getOvernightStayRequired() {
+		return overnightStayRequired;
+	}
 
-    public void setOvernightStayRequired(SymptomState overnightStayRequired) {
-        this.overnightStayRequired = overnightStayRequired;
-    }
+	public void setOvernightStayRequired(SymptomState overnightStayRequired) {
+		this.overnightStayRequired = overnightStayRequired;
+	}
 
-    public Integer getDurationOfSymptoms() {
-        return durationOfSymptoms;
-    }
+	public Integer getDurationOfSymptoms() {
+		return durationOfSymptoms;
+	}
 
-    public void setDurationOfSymptoms(Integer durationOfSymptoms) {
-        this.durationOfSymptoms = durationOfSymptoms;
-    }
+	public void setDurationOfSymptoms(Integer durationOfSymptoms) {
+		this.durationOfSymptoms = durationOfSymptoms;
+	}
 
-    public SymptomState getSymptomCurrentStatus() {
-        return symptomCurrentStatus;
-    }
+	public SymptomState getSymptomCurrentStatus() {
+		return symptomCurrentStatus;
+	}
 
-    public void setSymptomCurrentStatus(SymptomState symptomCurrentStatus) {
-        this.symptomCurrentStatus = symptomCurrentStatus;
-    }
+	public void setSymptomCurrentStatus(SymptomState symptomCurrentStatus) {
+		this.symptomCurrentStatus = symptomCurrentStatus;
+	}
 
-    public SymptomState getReoccurrence() {
-        return reoccurrence;
-    }
+	public SymptomState getReoccurrence() {
+		return reoccurrence;
+	}
 
-    public void setReoccurrence(SymptomState reoccurrence) {
-        this.reoccurrence = reoccurrence;
-    }
+	public void setReoccurrence(SymptomState reoccurrence) {
+		this.reoccurrence = reoccurrence;
+	}
 
-    public Float getWeightLossAmount() {
-        return weightLossAmount;
-    }
+	public Float getWeightLossAmount() {
+		return weightLossAmount;
+	}
 
-    public void setWeightLossAmount(Float weightLossAmount) {
-        this.weightLossAmount = weightLossAmount;
-    }
+	public void setWeightLossAmount(Float weightLossAmount) {
+		this.weightLossAmount = weightLossAmount;
+	}
 
-    public SymptomState getWeightLoss() {
-        return weightLoss;
-    }
+	public SymptomState getWeightLoss() {
+		return weightLoss;
+	}
 
-    public void setWeightLoss(SymptomState weightLoss) {
-        this.weightLoss = weightLoss;
-    }
+	public void setWeightLoss(SymptomState weightLoss) {
+		this.weightLoss = weightLoss;
+	}
 
-    public SymptomState getEggyBurps() {
-        return eggyBurps;
-    }
+	public SymptomState getEggyBurps() {
+		return eggyBurps;
+	}
 
-    public void setEggyBurps(SymptomState eggyBurps) {
-        this.eggyBurps = eggyBurps;
-    }
+	public void setEggyBurps(SymptomState eggyBurps) {
+		this.eggyBurps = eggyBurps;
+	}
 
-    public SymptomState getAcuteEncephalitis() {
-        return acuteEncephalitis;
-    }
+	public SymptomState getAcuteEncephalitis() {
+		return acuteEncephalitis;
+	}
 
-    public void setAcuteEncephalitis(SymptomState acuteEncephalitis) {
-        this.acuteEncephalitis = acuteEncephalitis;
-    }
+	public void setAcuteEncephalitis(SymptomState acuteEncephalitis) {
+		this.acuteEncephalitis = acuteEncephalitis;
+	}
 
-    public Float getTimeOffWorkDays() {
-        return timeOffWorkDays;
-    }
+	public Float getTimeOffWorkDays() {
+		return timeOffWorkDays;
+	}
 
-    public void setTimeOffWorkDays(Float timeOffWorkDays) {
-        this.timeOffWorkDays = timeOffWorkDays;
-    }
+	public void setTimeOffWorkDays(Float timeOffWorkDays) {
+		this.timeOffWorkDays = timeOffWorkDays;
+	}
 
-    public YesNoUnknown getParentTimeOffWork() {
-        return parentTimeOffWork;
-    }
+	public YesNoUnknown getParentTimeOffWork() {
+		return parentTimeOffWork;
+	}
 
-    public void setParentTimeOffWork(YesNoUnknown parentTimeOffWork) {
-        this.parentTimeOffWork = parentTimeOffWork;
-    }
+	public void setParentTimeOffWork(YesNoUnknown parentTimeOffWork) {
+		this.parentTimeOffWork = parentTimeOffWork;
+	}
 
-    public SymptomState getRespiratoryFatigue() {
-        return respiratoryFatigue;
-    }
+	public SymptomState getRespiratoryFatigue() {
+		return respiratoryFatigue;
+	}
 
-    public void setRespiratoryFatigue(SymptomState respiratoryFatigue) {
-        this.respiratoryFatigue = respiratoryFatigue;
-    }
+	public void setRespiratoryFatigue(SymptomState respiratoryFatigue) {
+		this.respiratoryFatigue = respiratoryFatigue;
+	}
 
-    public SymptomState getParadoxicalBreathing() {
-        return paradoxicalBreathing;
-    }
+	public SymptomState getParadoxicalBreathing() {
+		return paradoxicalBreathing;
+	}
 
-    public void setParadoxicalBreathing(SymptomState paradoxicalBreathing) {
-        this.paradoxicalBreathing = paradoxicalBreathing;
-    }
+	public void setParadoxicalBreathing(SymptomState paradoxicalBreathing) {
+		this.paradoxicalBreathing = paradoxicalBreathing;
+	}
 
-    public SymptomState getDifficultyBreathingDuringMeals() {
-        return difficultyBreathingDuringMeals;
-    }
+	public SymptomState getDifficultyBreathingDuringMeals() {
+		return difficultyBreathingDuringMeals;
+	}
 
-    public void setDifficultyBreathingDuringMeals(SymptomState difficultyBreathingDuringMeals) {
-        this.difficultyBreathingDuringMeals = difficultyBreathingDuringMeals;
-    }
+	public void setDifficultyBreathingDuringMeals(SymptomState difficultyBreathingDuringMeals) {
+		this.difficultyBreathingDuringMeals = difficultyBreathingDuringMeals;
+	}
 
-    public void setNocturnalCough(SymptomState nocturnalCough) {
-        this.nocturnalCough = nocturnalCough;
-    }
+	public void setNocturnalCough(SymptomState nocturnalCough) {
+		this.nocturnalCough = nocturnalCough;
+	}
 
-    public Date getSkinRashOnsetDate() {
-        return skinRashOnsetDate;
-    }
+	public Date getSkinRashOnsetDate() {
+		return skinRashOnsetDate;
+	}
 
-    public void setSkinRashOnsetDate(Date skinRashOnsetDate) {
-        this.skinRashOnsetDate = skinRashOnsetDate;
-    }
+	public void setSkinRashOnsetDate(Date skinRashOnsetDate) {
+		this.skinRashOnsetDate = skinRashOnsetDate;
+	}
 
-    public SymptomState getUnknownSymptom() {
-        return unknownSymptom;
-    }
+	public SymptomState getUnknownSymptom() {
+		return unknownSymptom;
+	}
 
-    public void setUnknownSymptom(SymptomState unknownSymptom) {
-        this.unknownSymptom = unknownSymptom;
-    }
+	public void setUnknownSymptom(SymptomState unknownSymptom) {
+		this.unknownSymptom = unknownSymptom;
+	}
+
+	// Syphilis-specific symptoms getters and setters
+	public SymptomState getPatchyAlopecia() {
+		return patchyAlopecia;
+	}
+
+	public void setPatchyAlopecia(SymptomState patchyAlopecia) {
+		this.patchyAlopecia = patchyAlopecia;
+	}
+
+	public SymptomState getChancre() {
+		return chancre;
+	}
+
+	public void setChancre(SymptomState chancre) {
+		this.chancre = chancre;
+	}
+
+	public SymptomState getCondylomaVenereum() {
+		return condylomaVenereum;
+	}
+
+	public void setCondylomaVenereum(SymptomState condylomaVenereum) {
+		this.condylomaVenereum = condylomaVenereum;
+	}
+
+	public SymptomState getMucousPatches() {
+		return mucousPatches;
+	}
+
+	public void setMucousPatches(SymptomState mucousPatches) {
+		this.mucousPatches = mucousPatches;
+	}
+
+	public SymptomState getGeneralizedLymphadenopathy() {
+		return generalizedLymphadenopathy;
+	}
+
+	public void setGeneralizedLymphadenopathy(SymptomState generalizedLymphadenopathy) {
+		this.generalizedLymphadenopathy = generalizedLymphadenopathy;
+	}
+
+	public SymptomState getOcularManifestations() {
+		return ocularManifestations;
+	}
+
+	public void setOcularManifestations(SymptomState ocularManifestations) {
+		this.ocularManifestations = ocularManifestations;
+	}
+
+	public SymptomState getNeurologicalManifestations() {
+		return neurologicalManifestations;
+	}
+
+	public void setNeurologicalManifestations(SymptomState neurologicalManifestations) {
+		this.neurologicalManifestations = neurologicalManifestations;
+	}
+
+	// Congenital syphilis-specific symptoms getters and setters
+	public SymptomState getBonyAbnormalities() {
+		return bonyAbnormalities;
+	}
+
+	public void setBonyAbnormalities(SymptomState bonyAbnormalities) {
+		this.bonyAbnormalities = bonyAbnormalities;
+	}
+
+	public SymptomState getPseudoparalysis() {
+		return pseudoparalysis;
+	}
+
+	public void setPseudoparalysis(SymptomState pseudoparalysis) {
+		this.pseudoparalysis = pseudoparalysis;
+	}
+
+	public SymptomState getRefractoryRhinitis() {
+		return refractoryRhinitis;
+	}
+
+	public void setRefractoryRhinitis(SymptomState refractoryRhinitis) {
+		this.refractoryRhinitis = refractoryRhinitis;
+	}
+
+	public SymptomState getCondylomaLata() {
+		return condylomaLata;
+	}
+
+	public void setCondylomaLata(SymptomState condylomaLata) {
+		this.condylomaLata = condylomaLata;
+	}
+
+	public SymptomState getCentralNervousSystemDamage() {
+		return centralNervousSystemDamage;
+	}
+
+	public void setCentralNervousSystemDamage(SymptomState centralNervousSystemDamage) {
+		this.centralNervousSystemDamage = centralNervousSystemDamage;
+	}
+
+	public SymptomState getMalnutrition() {
+		return malnutrition;
+	}
+
+	public void setMalnutrition(SymptomState malnutrition) {
+		this.malnutrition = malnutrition;
+	}
+
+	public SymptomState getNephroticSyndrome() {
+		return nephroticSyndrome;
+	}
+
+	public void setNephroticSyndrome(SymptomState nephroticSyndrome) {
+		this.nephroticSyndrome = nephroticSyndrome;
+	}
+
+	// Syphilis-specific fields getters and setters
+	public SyphilisStage getSyphilisStage() {
+		return syphilisStage;
+	}
+
+	public void setSyphilisStage(SyphilisStage syphilisStage) {
+		this.syphilisStage = syphilisStage;
+	}
+
+	public SyphilisInfectionSite getSyphilisInfectionSite() {
+		return syphilisInfectionSite;
+	}
+
+	public void setSyphilisInfectionSite(SyphilisInfectionSite syphilisInfectionSite) {
+		this.syphilisInfectionSite = syphilisInfectionSite;
+	}
+
+	public YesNoUnknown getClinicalCriteriaMet() {
+		return clinicalCriteriaMet;
+	}
+
+	public void setClinicalCriteriaMet(YesNoUnknown clinicalCriteriaMet) {
+		this.clinicalCriteriaMet = clinicalCriteriaMet;
+	}
 }
