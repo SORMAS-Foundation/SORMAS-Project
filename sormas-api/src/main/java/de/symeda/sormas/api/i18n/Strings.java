@@ -907,6 +907,7 @@ public interface Strings {
 	String headingSormasToSormasDuplicateDetection = "headingSormasToSormasDuplicateDetection";
 	String headingSormasToSormasShareRequestNotFound = "headingSormasToSormasShareRequestNotFound";
 	String headingSpecailCaseAccess = "headingSpecailCaseAccess";
+	String headingStage = "headingStage";
 	String headingStatusDetermination = "headingStatusDetermination";
 	String headingStoppedFollowUp = "headingStoppedFollowUp";
 	String headingSurveillanceReports = "headingSurveillanceReports";
@@ -1159,7 +1160,8 @@ public interface Strings {
 	String infoPickOrCreatePathogenTest = "infoPickOrCreatePathogenTest";
 	String infoPickOrCreateSample = "infoPickOrCreateSample";
 	String infoPickOrCreateSuperordinateEventForEvent = "infoPickOrCreateSuperordinateEventForEvent";
-	String infoPickorMergeEventParticipantDuplicateEventParticipantByPersonByEvent = "infoPickorMergeEventParticipantDuplicateEventParticipantByPersonByEvent";
+	String infoPickorMergeEventParticipantDuplicateEventParticipantByPersonByEvent =
+		"infoPickorMergeEventParticipantDuplicateEventParticipantByPersonByEvent";
 	String infoPlaceOfStayInHospital = "infoPlaceOfStayInHospital";
 	String infoPopulationCollectionDate = "infoPopulationCollectionDate";
 	String infoPopulationDataView = "infoPopulationDataView";
@@ -1202,8 +1204,10 @@ public interface Strings {
 	String infoSystemConfigurationValueDescriptionSmsAuthKey = "infoSystemConfigurationValueDescriptionSmsAuthKey";
 	String infoSystemConfigurationValueDescriptionSmsAuthSecret = "infoSystemConfigurationValueDescriptionSmsAuthSecret";
 	String infoSystemConfigurationValueDescriptionSmsSenderName = "infoSystemConfigurationValueDescriptionSmsSenderName";
-	String infoSystemConfigurationValueDescriptionUseDeterminedVaccinationStatus = "infoSystemConfigurationValueDescriptionUseDeterminedVaccinationStatus";
-	String infoSystemConfigurationValueDescriptionUseQuickImmunizationCreation = "infoSystemConfigurationValueDescriptionUseQuickImmunizationCreation";
+	String infoSystemConfigurationValueDescriptionUseDeterminedVaccinationStatus =
+		"infoSystemConfigurationValueDescriptionUseDeterminedVaccinationStatus";
+	String infoSystemConfigurationValueDescriptionUseQuickImmunizationCreation =
+		"infoSystemConfigurationValueDescriptionUseQuickImmunizationCreation";
 	String infoTasksWithMultipleJurisdictionsSelected = "infoTasksWithMultipleJurisdictionsSelected";
 	String infoUploadDocumentTemplate = "infoUploadDocumentTemplate";
 	String infoUsageOfEditableCampaignGrids = "infoUsageOfEditableCampaignGrids";

@@ -89,6 +89,8 @@ import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
+import de.symeda.sormas.api.symptoms.syphilis.SyphilisInfectiousness;
+import de.symeda.sormas.api.symptoms.syphilis.SyphilisStage;
 import de.symeda.sormas.api.utils.DateComparator;
 import de.symeda.sormas.api.utils.SymptomGroup;
 import de.symeda.sormas.api.utils.SymptomGrouping;
@@ -133,6 +135,34 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	private static final String CLINICAL_PRESENTATION_HEADING = "clinicalPresentationHeading";
 	private static final String TUBERCULOSIS_ONSET_DATE_LOC = "tuberculosisOnsetDateLoc";
 	private static final String TUBERCULOSIS_CLINICAL_PRESENTATION_DETAILS_LOC = "tuberculosisClinicalPresentationDetailsLoc";
+	private static final String STAGE_HEADING_LOC = "stageHeadingLoc";
+
+	// Fields only relevant for acquired syphilis, hidden when the case presentation is congenital syphilis
+	private static final List<String> SYPHILIS_ACQUIRED_ONLY_FIELD_IDS = Collections.unmodifiableList(
+		Arrays.asList(
+			PATCHY_ALOPECIA,
+			CHANCRE,
+			CONDYLOMA_VENEREUM,
+			MUCOUS_PATCHES,
+			GENERALIZED_LYMPHADENOPATHY,
+			OCULAR_MANIFESTATIONS,
+			NEUROLOGICAL_MANIFESTATIONS,
+			SKIN_RASH));
+	// Fields only relevant for congenital syphilis, hidden when the case presentation is acquired syphilis
+	private static final List<String> SYPHILIS_CONGENITAL_ONLY_FIELD_IDS = Collections.unmodifiableList(
+		Arrays.asList(
+			ANEMIA,
+			BONY_ABNORMALITIES,
+			PSEUDOPARALYSIS,
+			JAUNDICE,
+			REFRACTORY_RHINITIS,
+			CONDYLOMA_LATA,
+			CENTRAL_NERVOUS_SYSTEM_DAMAGE,
+			MALNUTRITION,
+			NEPHROTIC_SYNDROME));
+	// Symptoms whose selection pre-fills the Stage dropdown with Secondary syphilis
+	private static final List<String> SYPHILIS_SECONDARY_STAGE_TRIGGER_FIELD_IDS =
+		Collections.unmodifiableList(Arrays.asList(SKIN_RASH, CONDYLOMA_VENEREUM, MUCOUS_PATCHES, GENERALIZED_LYMPHADENOPATHY, PATCHY_ALOPECIA));
 
 	private static final List<String> YES_NO_UNKNOWN_SYMPTOM_FIELD_IDS = Collections
 		.unmodifiableList(Arrays.asList(PARENT_TIME_OFF_WORK, JAUNDICE_WITHIN_24_HOURS_OF_BIRTH, DATE_OF_ONSET_KNOWN, OTHER_NEUROLOGICAL_SYMPTOMS));
@@ -149,6 +179,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	final boolean isLuxDengue;
 	final boolean isParasiticInfectiousDiseases;
 	final boolean isFoodborneGastrointestinal;
+	final boolean isSyphilis;
 
 	//@formatter:off
 	private static final String HTML_LAYOUT =
@@ -183,6 +214,10 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 					createSymptomGroupLayout(SymptomGroup.SKIN, SKIN_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
                     fluidRow(fluidColumn(6, 0, loc("LAYOUT_SKIN_RASH_ONSET_DATE"))) +
 					createSymptomGroupLayout(SymptomGroup.OTHER, OTHER_SIGNS_AND_SYMPTOMS_HEADING_LOC) +
+					fluidRowLocsCss(VSPACE_3, SYPHILIS_INFECTION_SITE, "") +
+					loc(STAGE_HEADING_LOC) +
+					fluidRowLocsCss(VSPACE_3, SYPHILIS_STAGE, SYPHILIS_INFECTIOUSNESS) +
+					fluidRowLocsCss(VSPACE_3, CLINICAL_CRITERIA_MET, "") +
 					fluidRowLocs(PARENT_TIME_OFF_WORK, TIME_OFF_WORK_DAYS) +
 					fluidRowLocsCss(VSPACE_3, SYMPTOM_CURRENT_STATUS, DURATION_OF_SYMPTOMS) +
 					locsCss(VSPACE_3, PATIENT_ILL_LOCATION, SYMPTOMS_COMMENTS) +
@@ -265,6 +300,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		isLuxDengue = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && disease == Disease.DENGUE;
 		isParasiticInfectiousDiseases = ImmutableList.of(Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS).contains(disease);
 		isFoodborneGastrointestinal = disease == Disease.SALMONELLOSIS;
+		isSyphilis = disease == Disease.SYPHILIS;
 
 		addFields();
 		hideValidationUntilNextCommit();
@@ -300,6 +336,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		final Label otherSymptomsHeadingLabel = createLabel(SymptomGroup.OTHER.toString(), H3, OTHER_SIGNS_AND_SYMPTOMS_HEADING_LOC);
 		Label clinicalPresentationHeadingLabel =
 			createLabel(I18nProperties.getString(Strings.headingClinicalPresentation), H3, CLINICAL_PRESENTATION_HEADING);
+
+		Label stageHeadingLabel = createLabel(I18nProperties.getString(Strings.headingStage), H3, STAGE_HEADING_LOC);
+		stageHeadingLabel.setVisible(false);
 
 		DateField onsetDateField = addField(ONSET_DATE, DateField.class);
 		ComboBox onsetSymptom = addField(ONSET_SYMPTOM, ComboBox.class);
@@ -562,7 +601,25 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			FATAL_RISK,
 			TENESMUS,
 			BLOODY_DIARRHEA,
-			HAEMOLYTIC_UREMIC_SYNDROME);
+			HAEMOLYTIC_UREMIC_SYNDROME,
+			PATCHY_ALOPECIA,
+			CHANCRE,
+			CONDYLOMA_VENEREUM,
+			MUCOUS_PATCHES,
+			GENERALIZED_LYMPHADENOPATHY,
+			OCULAR_MANIFESTATIONS,
+			NEUROLOGICAL_MANIFESTATIONS,
+			CONDYLOMA_LATA,
+			BONY_ABNORMALITIES,
+			PSEUDOPARALYSIS,
+			REFRACTORY_RHINITIS,
+			CENTRAL_NERVOUS_SYSTEM_DAMAGE,
+			MALNUTRITION,
+			NEPHROTIC_SYNDROME,
+			SYPHILIS_INFECTION_SITE,
+			SYPHILIS_STAGE,
+			SYPHILIS_INFECTIOUSNESS,
+			CLINICAL_CRITERIA_MET);
 
 		addField(SYMPTOMS_COMMENTS, TextField.class).setDescription(
 			I18nProperties.getPrefixDescription(I18N_PREFIX, SYMPTOMS_COMMENTS, "") + "\n" + I18nProperties.getDescription(Descriptions.descGdpr));
@@ -677,14 +734,30 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			setVisible(false, ONSET_SYMPTOM, ONSET_DATE);
 		}
 
+		if (isSyphilis) {
+			// Clinical measurements are not displayed for Syphilis regardless of context
+			setVisible(
+				false,
+				TEMPERATURE,
+				TEMPERATURE_SOURCE,
+				BLOOD_PRESSURE_SYSTOLIC,
+				BLOOD_PRESSURE_DIASTOLIC,
+				HEART_RATE,
+				RESPIRATORY_RATE,
+				WEIGHT,
+				HEIGHT,
+				MID_UPPER_ARM_CIRCUMFERENCE,
+				GLASGOW_COMA_SCALE);
+		}
+
 		// Hide clinical measurements heading if no clinical measurements are visible
 		clinicalMeasurementsHeadingLabel.setVisible(
 			(Set.of(TEMPERATURE_SOURCE, BLOOD_PRESSURE_SYSTOLIC, BLOOD_PRESSURE_DIASTOLIC, HEART_RATE, RESPIRATORY_RATE, WEIGHT, GLASGOW_COMA_SCALE)
 				.stream()
 				.anyMatch(e -> getFieldGroup().getField(e).isVisible()))
-				|| !(isParasiticInfectiousDiseases || isLuxDengue || isFoodborneGastrointestinal));
-		// clinical Measurements HeadingLabel should be hidden for LUX Dengue, Crypto & Giardiasis, and Salmonellosis
-		if ((isParasiticInfectiousDiseases || isLuxDengue || isFoodborneGastrointestinal)) {
+				|| !(isParasiticInfectiousDiseases || isLuxDengue || isFoodborneGastrointestinal || isSyphilis));
+		// clinical Measurements HeadingLabel should be hidden for LUX Dengue, Crypto & Giardiasis, Salmonellosis, and Syphilis
+		if ((isParasiticInfectiousDiseases || isLuxDengue || isFoodborneGastrointestinal || isSyphilis)) {
 			clinicalMeasurementsHeadingLabel.setVisible(false);
 		}
 
@@ -900,7 +973,21 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			FATAL_RISK,
 			TENESMUS,
 			BLOODY_DIARRHEA,
-			HAEMOLYTIC_UREMIC_SYNDROME);
+			HAEMOLYTIC_UREMIC_SYNDROME,
+			PATCHY_ALOPECIA,
+			CHANCRE,
+			CONDYLOMA_VENEREUM,
+			MUCOUS_PATCHES,
+			GENERALIZED_LYMPHADENOPATHY,
+			OCULAR_MANIFESTATIONS,
+			NEUROLOGICAL_MANIFESTATIONS,
+			CONDYLOMA_LATA,
+			BONY_ABNORMALITIES,
+			PSEUDOPARALYSIS,
+			REFRACTORY_RHINITIS,
+			CENTRAL_NERVOUS_SYSTEM_DAMAGE,
+			MALNUTRITION,
+			NEPHROTIC_SYNDROME);
 
 		// Set visibilities
 
@@ -982,6 +1069,10 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		}
 
 		symptomGroupVisibility();
+
+		if (isSyphilis) {
+			setUpSyphilisVisibilities(stageHeadingLabel);
+		}
 
 		unexpectedBleeding.addValueChangeListener(e -> {
 			// check the group items' visibility
@@ -1157,8 +1248,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			getField(OTHER_COMPLICATIONS_TEXT).setCaption(I18nProperties.getCaption(Captions.Symptoms_otherComplicationsText_CryptoGiardia));
 		}
 
-		// temperature and its source hide for LUX's Dengue and for Tuberculosis (#14029)
-		boolean hideTemperature = isLuxDengue || disease == Disease.TUBERCULOSIS;
+		// temperature and its source hide for LUX's Dengue, Tuberculosis (#14029), and Syphilis
+		boolean hideTemperature = isLuxDengue || disease == Disease.TUBERCULOSIS || isSyphilis;
 		temperature.setVisible(!hideTemperature);
 		getField(TEMPERATURE_SOURCE).setVisible(!hideTemperature);
 
@@ -1413,6 +1504,86 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		// make onsetDate editable for diseases that have no symptoms (a.k. no first symptom)
 		onsetDateField.setEnabled(!onsetSymptom.isVisible());
+	}
+
+	@SuppressWarnings("unchecked")
+	private void setUpSyphilisVisibilities(Label stageHeadingLabel) {
+
+		boolean isCongenital = isCongenitalSyphilis();
+
+		List<String> fieldIdsToHide = isCongenital ? SYPHILIS_ACQUIRED_ONLY_FIELD_IDS : SYPHILIS_CONGENITAL_ONLY_FIELD_IDS;
+		fieldIdsToHide.forEach(fieldId -> getFieldGroup().getField(fieldId).setVisible(false));
+
+		ComboBox stageField = (ComboBox) getFieldGroup().getField(SYPHILIS_STAGE);
+		Field<Object> infectiousnessField = (Field<Object>) getFieldGroup().getField(SYPHILIS_INFECTIOUSNESS);
+		Field<?> infectionSiteField = getFieldGroup().getField(SYPHILIS_INFECTION_SITE);
+
+		if (isCongenital) {
+			stageHeadingLabel.setVisible(false);
+			stageField.setVisible(false);
+			infectiousnessField.setVisible(false);
+			infectionSiteField.setVisible(false);
+		} else {
+			stageHeadingLabel.setVisible(true);
+
+			FieldHelper.setVisibleWhen(getFieldGroup(), SYPHILIS_INFECTION_SITE, CHANCRE, Arrays.asList(SymptomState.YES), true);
+
+			stageField.addValueChangeListener(e -> {
+				SyphilisInfectiousness infectiousness = mapSyphilisStageToInfectiousness((SyphilisStage) stageField.getValue());
+				if (infectiousness != null) {
+					infectiousnessField.setValue(infectiousness);
+				}
+			});
+
+			getFieldGroup().getField(CHANCRE).addValueChangeListener(e -> {
+				if (stageField.getValue() == null && FieldHelper.getNullableSourceFieldValue((Field) e.getProperty()) == SymptomState.YES) {
+					stageField.setValue(SyphilisStage.PRIMARY_SYPHILIS);
+				}
+			});
+
+			for (String secondaryStageTriggerId : SYPHILIS_SECONDARY_STAGE_TRIGGER_FIELD_IDS) {
+				getFieldGroup().getField(secondaryStageTriggerId).addValueChangeListener(e -> {
+					if (stageField.getValue() == null && FieldHelper.getNullableSourceFieldValue((Field) e.getProperty()) == SymptomState.YES) {
+						stageField.setValue(SyphilisStage.SECONDARY_SYPHILIS);
+					}
+				});
+			}
+
+			getFieldGroup().getField(NEUROLOGICAL_MANIFESTATIONS).addValueChangeListener(e -> {
+				if (stageField.getValue() == null && FieldHelper.getNullableSourceFieldValue((Field) e.getProperty()) == SymptomState.YES) {
+					stageField.setValue(SyphilisStage.NEUROLOGICAL_SYPHILIS);
+				}
+			});
+		}
+
+		symptomGroupVisibility();
+	}
+
+	private SyphilisInfectiousness mapSyphilisStageToInfectiousness(SyphilisStage stage) {
+		if (stage == null) {
+			return null;
+		}
+		switch (stage) {
+		case PRIMARY_SYPHILIS:
+		case SECONDARY_SYPHILIS:
+		case EARLY_LATENT_SYPHILIS:
+			return SyphilisInfectiousness.INFECTIOUS;
+		case LATE_LATENT_SYPHILIS:
+		case TERTIARY_SYPHILIS:
+			return SyphilisInfectiousness.NOT_INFECTIOUS;
+		case UNKNOWN:
+			return SyphilisInfectiousness.UNKNOWN;
+		default:
+			return null;
+		}
+	}
+
+	/**
+	 * Congenital vs. acquired syphilis is not yet modeled as an explicit case presentation field.
+	 * TODO replace with a real check once that field exists; for now every syphilis case is treated as acquired.
+	 */
+	private boolean isCongenitalSyphilis() {
+		return false;
 	}
 
 	private void setUpMonkeypoxVisibilities() {

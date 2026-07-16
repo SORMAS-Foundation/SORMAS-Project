@@ -1869,7 +1869,8 @@ public class SymptomsDto extends PseudonymizableDto {
 		SALMONELLOSIS,
 		UNDEFINED,
 		OTHER,
-		CORONAVIRUS })
+		CORONAVIRUS,
+		SYPHILIS })
 	@Outbreaks
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.SKIN)

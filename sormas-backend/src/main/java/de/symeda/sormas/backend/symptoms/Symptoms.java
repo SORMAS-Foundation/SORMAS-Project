@@ -35,6 +35,9 @@ import de.symeda.sormas.api.symptoms.DiagnosisType;
 import de.symeda.sormas.api.symptoms.InfectionSite;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
+import de.symeda.sormas.api.symptoms.syphilis.SyphilisInfectionSite;
+import de.symeda.sormas.api.symptoms.syphilis.SyphilisInfectiousness;
+import de.symeda.sormas.api.symptoms.syphilis.SyphilisStage;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
@@ -317,6 +320,26 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState haemolyticUremicSyndrome;
 	private SymptomState bloodyDiarrhea;
 	private SymptomState wateryDiarrhea;
+
+	// Syphilis-specific symptoms
+	private SymptomState patchyAlopecia;
+	private SymptomState chancre;
+	private SymptomState condylomaVenereum;
+	private SymptomState mucousPatches;
+	private SymptomState generalizedLymphadenopathy;
+	private SymptomState ocularManifestations;
+	private SymptomState neurologicalManifestations;
+	private SymptomState condylomaLata;
+	private SymptomState bonyAbnormalities;
+	private SymptomState pseudoparalysis;
+	private SymptomState refractoryRhinitis;
+	private SymptomState centralNervousSystemDamage;
+	private SymptomState malnutrition;
+	private SymptomState nephroticSyndrome;
+	private SyphilisInfectionSite syphilisInfectionSite;
+	private SyphilisStage syphilisStage;
+	private SyphilisInfectiousness syphilisInfectiousness;
+	private YesNoUnknown clinicalCriteriaMet;
 
 	// when adding new fields make sure to extend toHumanString
 
@@ -2526,6 +2549,168 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setWateryDiarrhea(SymptomState wateryDiarrhea) {
 		this.wateryDiarrhea = wateryDiarrhea;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getPatchyAlopecia() {
+		return patchyAlopecia;
+	}
+
+	public void setPatchyAlopecia(SymptomState patchyAlopecia) {
+		this.patchyAlopecia = patchyAlopecia;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getChancre() {
+		return chancre;
+	}
+
+	public void setChancre(SymptomState chancre) {
+		this.chancre = chancre;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getCondylomaVenereum() {
+		return condylomaVenereum;
+	}
+
+	public void setCondylomaVenereum(SymptomState condylomaVenereum) {
+		this.condylomaVenereum = condylomaVenereum;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getMucousPatches() {
+		return mucousPatches;
+	}
+
+	public void setMucousPatches(SymptomState mucousPatches) {
+		this.mucousPatches = mucousPatches;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getGeneralizedLymphadenopathy() {
+		return generalizedLymphadenopathy;
+	}
+
+	public void setGeneralizedLymphadenopathy(SymptomState generalizedLymphadenopathy) {
+		this.generalizedLymphadenopathy = generalizedLymphadenopathy;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getOcularManifestations() {
+		return ocularManifestations;
+	}
+
+	public void setOcularManifestations(SymptomState ocularManifestations) {
+		this.ocularManifestations = ocularManifestations;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getNeurologicalManifestations() {
+		return neurologicalManifestations;
+	}
+
+	public void setNeurologicalManifestations(SymptomState neurologicalManifestations) {
+		this.neurologicalManifestations = neurologicalManifestations;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getCondylomaLata() {
+		return condylomaLata;
+	}
+
+	public void setCondylomaLata(SymptomState condylomaLata) {
+		this.condylomaLata = condylomaLata;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getBonyAbnormalities() {
+		return bonyAbnormalities;
+	}
+
+	public void setBonyAbnormalities(SymptomState bonyAbnormalities) {
+		this.bonyAbnormalities = bonyAbnormalities;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getPseudoparalysis() {
+		return pseudoparalysis;
+	}
+
+	public void setPseudoparalysis(SymptomState pseudoparalysis) {
+		this.pseudoparalysis = pseudoparalysis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getRefractoryRhinitis() {
+		return refractoryRhinitis;
+	}
+
+	public void setRefractoryRhinitis(SymptomState refractoryRhinitis) {
+		this.refractoryRhinitis = refractoryRhinitis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getCentralNervousSystemDamage() {
+		return centralNervousSystemDamage;
+	}
+
+	public void setCentralNervousSystemDamage(SymptomState centralNervousSystemDamage) {
+		this.centralNervousSystemDamage = centralNervousSystemDamage;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getMalnutrition() {
+		return malnutrition;
+	}
+
+	public void setMalnutrition(SymptomState malnutrition) {
+		this.malnutrition = malnutrition;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getNephroticSyndrome() {
+		return nephroticSyndrome;
+	}
+
+	public void setNephroticSyndrome(SymptomState nephroticSyndrome) {
+		this.nephroticSyndrome = nephroticSyndrome;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SyphilisInfectionSite getSyphilisInfectionSite() {
+		return syphilisInfectionSite;
+	}
+
+	public void setSyphilisInfectionSite(SyphilisInfectionSite syphilisInfectionSite) {
+		this.syphilisInfectionSite = syphilisInfectionSite;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SyphilisStage getSyphilisStage() {
+		return syphilisStage;
+	}
+
+	public void setSyphilisStage(SyphilisStage syphilisStage) {
+		this.syphilisStage = syphilisStage;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SyphilisInfectiousness getSyphilisInfectiousness() {
+		return syphilisInfectiousness;
+	}
+
+	public void setSyphilisInfectiousness(SyphilisInfectiousness syphilisInfectiousness) {
+		this.syphilisInfectiousness = syphilisInfectiousness;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getClinicalCriteriaMet() {
+		return clinicalCriteriaMet;
+	}
+
+	public void setClinicalCriteriaMet(YesNoUnknown clinicalCriteriaMet) {
+		this.clinicalCriteriaMet = clinicalCriteriaMet;
 	}
 
 }
