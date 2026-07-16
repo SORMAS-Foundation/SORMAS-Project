@@ -118,6 +118,7 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	public static final String DENGUE_FEVER_TYPE = "dengueFeverType";
 	public static final String RABIES_TYPE = "rabiesType";
 	public static final String SYPHILIS_PRESENTATION = "syphilisPresentation";
+	public static final String YERSINIOSIS_SPECIES = "yersiniosisSpecies";
 	public static final String RESPONSIBLE_REGION = "responsibleRegion";
 	public static final String RESPONSIBLE_DISTRICT = "responsibleDistrict";
 	public static final String RESPONSIBLE_COMMUNITY = "responsibleCommunity";
@@ -277,6 +278,12 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	@Diseases({
 		Disease.SYPHILIS })
 	private SyphilisPresentation syphilisPresentation;
+	@HideForCountriesExcept(countries = {
+		COUNTRY_CODE_LUXEMBOURG })
+	@Diseases({
+		Disease.YERSINIOSIS })
+	@Outbreaks
+	private YersiniosisSpecies yersiniosisSpecies;
 	@NotNull(message = Validations.validPerson)
 	@EmbeddedPersonalData
 	private PersonReferenceDto person;
@@ -1011,6 +1018,14 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 
 	public void setSyphilisPresentation(SyphilisPresentation syphilisPresentation) {
 		this.syphilisPresentation = syphilisPresentation;
+	}
+
+	public YersiniosisSpecies getYersiniosisSpecies() {
+		return yersiniosisSpecies;
+	}
+
+	public void setYersiniosisSpecies(YersiniosisSpecies yersiniosisSpecies) {
+		this.yersiniosisSpecies = yersiniosisSpecies;
 	}
 
 	public FacilityReferenceDto getHealthFacility() {

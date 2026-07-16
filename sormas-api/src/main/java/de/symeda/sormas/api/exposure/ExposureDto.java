@@ -143,6 +143,9 @@ public class ExposureDto extends PseudonymizableDto {
 	public static final String TRAVEL_PURPOSE_DETAILS = "travelPurposeDetails";
 	public static final String SHOPPING_FOR_FOOD_DETAILS = "shoppingForFoodDetails";
 	public static final String SEXUAL_CONTACT = "sexualContact";
+	public static final String REGULAR_FOOD_SHOPPING_LOCATIONS = "regularFoodShoppingLocations";
+	public static final String USUAL_DIET_RESTRICTIONS = "usualDietRestrictions";
+	public static final String USUAL_DIET_RESTRICTIONS_DETAILS = "usualDietRestrictionsDetails";
 
 	@SensitiveData
 	private UserReferenceDto reportingUser;
@@ -471,6 +474,26 @@ public class ExposureDto extends PseudonymizableDto {
 		Disease.SHIGELLOSIS })
 	@SensitiveData
 	private SexualContact sexualContact;
+
+	@Diseases({
+		Disease.YERSINIOSIS })
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String regularFoodShoppingLocations;
+
+	@Diseases({
+		Disease.YERSINIOSIS })
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	private YesNoUnknown usualDietRestrictions;
+
+	@Diseases({
+		Disease.YERSINIOSIS })
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String usualDietRestrictionsDetails;
 
 	public static ExposureDto build(ExposureType exposureType) {
 
@@ -1181,6 +1204,30 @@ public class ExposureDto extends PseudonymizableDto {
 
 	public void setSexualContact(SexualContact sexualContact) {
 		this.sexualContact = sexualContact;
+	}
+
+	public String getRegularFoodShoppingLocations() {
+		return regularFoodShoppingLocations;
+	}
+
+	public void setRegularFoodShoppingLocations(String regularFoodShoppingLocations) {
+		this.regularFoodShoppingLocations = regularFoodShoppingLocations;
+	}
+
+	public YesNoUnknown getUsualDietRestrictions() {
+		return usualDietRestrictions;
+	}
+
+	public void setUsualDietRestrictions(YesNoUnknown usualDietRestrictions) {
+		this.usualDietRestrictions = usualDietRestrictions;
+	}
+
+	public String getUsualDietRestrictionsDetails() {
+		return usualDietRestrictionsDetails;
+	}
+
+	public void setUsualDietRestrictionsDetails(String usualDietRestrictionsDetails) {
+		this.usualDietRestrictionsDetails = usualDietRestrictionsDetails;
 	}
 
 	@Override

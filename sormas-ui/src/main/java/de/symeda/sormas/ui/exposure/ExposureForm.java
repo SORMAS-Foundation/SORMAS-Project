@@ -77,6 +77,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.adverseeventsfollowingimmunization.components.form.FormSectionAccordion;
@@ -108,6 +109,9 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	private static final String GENERAL_DETAILS_LAYOUT =
 			fluidRowLocs(ExposureDto.START_DATE, ExposureDto.END_DATE, "", "") +
 					fluidRowLocs(ExposureDto.EXPOSURE_TYPE, ExposureDto.EXPOSURE_TYPE_DETAILS) +
+					loc(ExposureDto.REGULAR_FOOD_SHOPPING_LOCATIONS) +
+					loc(ExposureDto.USUAL_DIET_RESTRICTIONS) +
+					loc(ExposureDto.USUAL_DIET_RESTRICTIONS_DETAILS) +
 					loc(ExposureDto.DESCRIPTION);
 
 	private static final String EXPOSURE_DETAILS_LAYOUT =
@@ -200,6 +204,9 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	private TextField prophylaxisAdherenceDetailsField;
 	private TextField travelPurposeDetailsField;
 	private ComboBox sexualContactField;
+	private TextArea regularFoodShoppingLocationsField;
+	private NullableOptionGroup usualDietRestrictionsField;
+	private TextArea usualDietRestrictionsDetailsField;
 
 	private CustomizableFieldsGroup exposureDetailsPanel;
 	private CustomizableFieldsGroup exposuresGeneralPanel;
@@ -326,6 +333,17 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		addField(generalDetailsLayout, ExposureDto.EXPOSURE_TYPE_DETAILS, TextField.class);
 		addField(generalDetailsLayout, ExposureDto.DESCRIPTION, TextArea.class).setRows(5);
 
+		regularFoodShoppingLocationsField = addField(generalDetailsLayout, ExposureDto.REGULAR_FOOD_SHOPPING_LOCATIONS, TextArea.class);
+		regularFoodShoppingLocationsField.setRows(3);
+		regularFoodShoppingLocationsField.setVisible(false);
+
+		usualDietRestrictionsField = addField(generalDetailsLayout, ExposureDto.USUAL_DIET_RESTRICTIONS, NullableOptionGroup.class);
+		usualDietRestrictionsField.setVisible(false);
+
+		usualDietRestrictionsDetailsField = addField(generalDetailsLayout, ExposureDto.USUAL_DIET_RESTRICTIONS_DETAILS, TextArea.class);
+		usualDietRestrictionsDetailsField.setRows(3);
+		usualDietRestrictionsDetailsField.setVisible(false);
+
 		categoryField = addField(exposureDetailsLayout, ExposureDto.EXPOSURE_CATEGORY, ComboBox.class);
 		categoryField.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
 
@@ -383,6 +401,12 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		sexualContactField = addField(exposureDetailsLayout, ExposureDto.SEXUAL_CONTACT, ComboBox.class);
 		sexualContactField.setVisible(false);
 
+		// Add listener to exposureTypeField to update field visibility
+		exposureTypeField.addValueChangeListener(e -> {
+			final ExposureType selectedExposureType = (ExposureType) e.getProperty().getValue();
+			updateExposureTypeDependentFields(selectedExposureType);
+		});
+
 		categoryField.addValueChangeListener(e -> {
 			ExposureCategory selectedCategory = (ExposureCategory) e.getProperty().getValue();
 			updateSettingFieldItems(selectedCategory);
@@ -437,6 +461,16 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			boolean showShoppingForFood =
 				isSalmonellosis && selectedSubSettings != null && selectedSubSettings.contains(ExposureSubSetting.SHOPPING_FOR_FOOD);
 			shoppingForFoodDetailsField.setVisible(showShoppingForFood);
+		});
+
+		usualDietRestrictionsField.addValueChangeListener(e -> {
+			@SuppressWarnings("unchecked")
+			Set<YesNoUnknown> value = (Set<YesNoUnknown>) e.getProperty().getValue();
+			boolean showDetails = value.contains(YesNoUnknown.YES);
+			usualDietRestrictionsDetailsField.setVisible(showDetails);
+			if (!showDetails) {
+				usualDietRestrictionsDetailsField.setValue(null);
+			}
 		});
 
 		contactFactorsField.addValueChangeListener(e -> {
@@ -543,6 +577,21 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			ExposureDto.EXPOSURE_TYPE,
 			Collections.singletonList(ExposureDto.EXPOSURE_TYPE_DETAILS),
 			Collections.singletonList(ExposureType.OTHER));
+	}
+
+	private void updateExposureTypeDependentFields(ExposureType exposureType) {
+		boolean isYersiniosis = disease == Disease.YERSINIOSIS;
+		boolean showYersiniosisFoodFields = isYersiniosis && exposureType == ExposureType.FOOD;
+		regularFoodShoppingLocationsField.setVisible(showYersiniosisFoodFields);
+		usualDietRestrictionsField.setVisible(showYersiniosisFoodFields);
+
+		// Reset fields when hiding them
+		if (!showYersiniosisFoodFields) {
+			regularFoodShoppingLocationsField.setValue(null);
+			usualDietRestrictionsField.setValue(null);
+			usualDietRestrictionsDetailsField.setValue(null);
+			usualDietRestrictionsDetailsField.setVisible(false);
+		}
 	}
 
 	private void updateSettingFieldItems(ExposureCategory category) {

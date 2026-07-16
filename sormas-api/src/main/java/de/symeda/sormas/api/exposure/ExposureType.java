@@ -31,31 +31,38 @@ public enum ExposureType {
 
 	@Diseases(value = {
 		Disease.CRYPTOSPORIDIOSIS,
-		Disease.GIARDIASIS }, hide = true)
+		Disease.GIARDIASIS,
+		Disease.YERSINIOSIS }, hide = true)
 	WORK(true),
 	@Diseases({
 		Disease.CRYPTOSPORIDIOSIS,
-		Disease.GIARDIASIS })
+		Disease.GIARDIASIS,
+		Disease.YERSINIOSIS })
 	TRAVEL(true),
 	@Diseases(value = {
 		Disease.CRYPTOSPORIDIOSIS,
-		Disease.GIARDIASIS }, hide = true)
+		Disease.GIARDIASIS,
+		Disease.YERSINIOSIS }, hide = true)
 	SPORT(false),
 	@Diseases(value = {
 		Disease.CRYPTOSPORIDIOSIS,
-		Disease.GIARDIASIS }, hide = true)
+		Disease.GIARDIASIS,
+		Disease.YERSINIOSIS }, hide = true)
 	VISIT(false),
 	@Diseases(value = {
 		Disease.CRYPTOSPORIDIOSIS,
-		Disease.GIARDIASIS }, hide = true)
+		Disease.GIARDIASIS,
+		Disease.YERSINIOSIS }, hide = true)
 	GATHERING(true),
 	@Diseases(value = {
 		Disease.CRYPTOSPORIDIOSIS,
-		Disease.GIARDIASIS }, hide = true)
+		Disease.GIARDIASIS,
+		Disease.YERSINIOSIS }, hide = true)
 	HABITATION(false),
 	@Diseases(value = {
 		Disease.CRYPTOSPORIDIOSIS,
-		Disease.GIARDIASIS }, hide = true)
+		Disease.GIARDIASIS,
+		Disease.YERSINIOSIS }, hide = true)
 	PERSONAL_SERVICES(false),
 	@Diseases(value = {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS })
@@ -63,29 +70,38 @@ public enum ExposureType {
 	@Diseases(value = {
 		Disease.CORONAVIRUS,
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS }, hide = true)
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.YERSINIOSIS }, hide = true)
 	BURIAL(false),
 	@Diseases(value = {
-		Disease.CORONAVIRUS }, hide = true)
+		Disease.CORONAVIRUS,
+		Disease.YERSINIOSIS })
 	ANIMAL_CONTACT(false),
 	@Diseases({
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS })
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.YERSINIOSIS })
 	RECREATIONAL_WATER(false, ExposureCategory.WATER_BORNE),
 	@Diseases({
 		Disease.GIARDIASIS,
-		Disease.CRYPTOSPORIDIOSIS })
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.YERSINIOSIS })
 	FOOD(false, ExposureCategory.FOOD_BORNE),
+	@Diseases({
+		Disease.YERSINIOSIS })
+	RAW_PET_FOOD(false, ExposureCategory.FOOD_BORNE),
 	@Diseases({
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS })
 	SEXUAL_CONTACT(false, ExposureCategory.DIRECT_CONTACT),
 	@Diseases({
-		Disease.CRYPTOSPORIDIOSIS })
+		Disease.CRYPTOSPORIDIOSIS,
+		Disease.YERSINIOSIS })
 	SYMPTOMATIC_CONTACT(false, ExposureCategory.DIRECT_CONTACT),
 	@Diseases({
 		Disease.CRYPTOSPORIDIOSIS,
-		Disease.GIARDIASIS })
+		Disease.GIARDIASIS,
+		Disease.YERSINIOSIS })
 	FLOOD_EXPOSURE(false, ExposureCategory.WATER_BORNE),
 	OTHER(true),
 	UNKNOWN(true);

@@ -77,7 +77,8 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.YERSINIOSIS }, hide = true)
 	@Deprecated
 	THROAT_ASPIRATE,
 
@@ -90,7 +91,8 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.YERSINIOSIS }, hide = true)
 	@Deprecated
 	NASAL_SWAB,
 
@@ -102,7 +104,8 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.YERSINIOSIS }, hide = true)
 	@Deprecated
 	THROAT_SWAB,
 
@@ -113,7 +116,8 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.YERSINIOSIS }, hide = true)
 	NP_SWAB,
 
 	@Diseases(value = {
@@ -126,7 +130,8 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.YERSINIOSIS }, hide = true)
 	RECTAL_SWAB,
 
 	@Diseases(value = {
@@ -134,7 +139,8 @@ public enum SampleMaterial {
 		Disease.MEASLES,
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
-		Disease.MALARIA }, hide = true)
+		Disease.MALARIA,
+		Disease.YERSINIOSIS }, hide = true)
 	CEREBROSPINAL_FLUID,
 
 	@Diseases(value = {
@@ -159,7 +165,8 @@ public enum SampleMaterial {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.YERSINIOSIS }, hide = true)
 	TISSUE,
 
 	@Diseases(value = {
@@ -181,7 +188,8 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.YERSINIOSIS }, hide = true)
 	@Deprecated
 	CORNEA_PM,
 
@@ -192,7 +200,8 @@ public enum SampleMaterial {
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.YERSINIOSIS }, hide = true)
 	SALIVA,
 
 	@Diseases(value = {
@@ -205,7 +214,8 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.YERSINIOSIS }, hide = true)
 	@Deprecated
 	URINE_PM,
 
@@ -350,7 +360,8 @@ public enum SampleMaterial {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.DENGUE,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.YERSINIOSIS }, hide = true)
 	OROPHARYNGEAL_SWAB,
 
 	@Diseases(value = {

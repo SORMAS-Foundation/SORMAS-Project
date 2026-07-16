@@ -3123,6 +3123,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setDengueFeverType(source.getDengueFeverType());
 		target.setRabiesType(source.getRabiesType());
 		target.setSyphilisPresentation(source.getSyphilisPresentation());
+		target.setYersiniosisSpecies(source.getYersiniosisSpecies());
 		target.setCaseClassification(source.getCaseClassification());
 		target.setCaseIdentificationSource(source.getCaseIdentificationSource());
 		target.setScreeningType(source.getScreeningType());
@@ -3326,6 +3327,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setDengueFeverType(source.getDengueFeverType());
 		target.setRabiesType(source.getRabiesType());
 		target.setSyphilisPresentation(source.getSyphilisPresentation());
+		target.setYersiniosisSpecies(source.getYersiniosisSpecies());
 		if (source.getReportDate() != null) {
 			target.setReportDate(source.getReportDate());
 		} else {

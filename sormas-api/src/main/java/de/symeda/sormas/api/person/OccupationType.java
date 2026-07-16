@@ -74,6 +74,7 @@ public class OccupationType extends CustomizableEnum implements Serializable {
 		defaultValues.put("HEALTHCARE_WORKER", propertiesDetailsTrue);
 		defaultValues.put("LABORATORY_STAFF", propertiesDetailsFalse);
 		defaultValues.put("OTHER", propertiesDetailsTrue);
+		defaultValues.put("STUDENT", propertiesDetailsTrue);
 		defaultValues.put("UNKNOWN", propertiesDetailsFalse);
 		return defaultValues;
 	}

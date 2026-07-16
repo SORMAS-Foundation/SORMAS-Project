@@ -38,6 +38,7 @@ public class HealthConditions extends AbstractDomainObject {
 	private YesNoUnknown chronicKidneyDisease;
 	private YesNoUnknown chronicNeurologicCondition;
 	private YesNoUnknown downSyndrome;
+	private YesNoUnknown highIronLevel;
 	private YesNoUnknown congenitalSyphilis;
 	private YesNoUnknown immunodeficiencyOtherThanHiv;
 	private String immunodeficiencyOtherThanHivText;
@@ -193,6 +194,15 @@ public class HealthConditions extends AbstractDomainObject {
 
 	public void setDownSyndrome(YesNoUnknown downSyndrome) {
 		this.downSyndrome = downSyndrome;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getHighIronLevel() {
+		return highIronLevel;
+	}
+
+	public void setHighIronLevel(YesNoUnknown highIronLevel) {
+		this.highIronLevel = highIronLevel;
 	}
 
 	@Enumerated(EnumType.STRING)

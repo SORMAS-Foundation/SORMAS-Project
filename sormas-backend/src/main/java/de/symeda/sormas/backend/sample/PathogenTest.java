@@ -19,6 +19,7 @@ package de.symeda.sormas.backend.sample;
 
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_TEXT;
 
 import java.util.Date;
 
@@ -54,6 +55,7 @@ import de.symeda.sormas.api.sample.Serotype;
 import de.symeda.sormas.api.sample.SerotypingMethod;
 import de.symeda.sormas.api.sample.SmearGrade;
 import de.symeda.sormas.api.sample.WesternBlotInterpretation;
+import de.symeda.sormas.api.sample.YersiniaBiotype;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSample;
@@ -194,6 +196,13 @@ public class PathogenTest extends DeletableAdo {
 	private YesNoUnknown quantitativeBoolean;
 	private SmearGrade smearGrade;
 	private WesternBlotInterpretation westernBlotInterpretation;
+	// Yersiniosis-specific fields
+	private YersiniaBiotype biotype;
+	private String biotypeText;
+	private YesNoUnknown wgsPerformed;
+	private String wgsClusterId;
+	private YesNoUnknown virulenceGenesDetected;
+	private String virulenceGenesDetails;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	public Sample getSample() {
@@ -863,6 +872,60 @@ public class PathogenTest extends DeletableAdo {
 
 	public void setWesternBlotInterpretation(WesternBlotInterpretation westernBlotInterpretation) {
 		this.westernBlotInterpretation = westernBlotInterpretation;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YersiniaBiotype getBiotype() {
+		return biotype;
+	}
+
+	public void setBiotype(YersiniaBiotype biotype) {
+		this.biotype = biotype;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getBiotypeText() {
+		return biotypeText;
+	}
+
+	public void setBiotypeText(String biotypeText) {
+		this.biotypeText = biotypeText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getWgsPerformed() {
+		return wgsPerformed;
+	}
+
+	public void setWgsPerformed(YesNoUnknown wgsPerformed) {
+		this.wgsPerformed = wgsPerformed;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getWgsClusterId() {
+		return wgsClusterId;
+	}
+
+	public void setWgsClusterId(String wgsClusterId) {
+		this.wgsClusterId = wgsClusterId;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getVirulenceGenesDetected() {
+		return virulenceGenesDetected;
+	}
+
+	public void setVirulenceGenesDetected(YesNoUnknown virulenceGenesDetected) {
+		this.virulenceGenesDetected = virulenceGenesDetected;
+	}
+
+	@Column(length = CHARACTER_LIMIT_TEXT)
+	public String getVirulenceGenesDetails() {
+		return virulenceGenesDetails;
+	}
+
+	public void setVirulenceGenesDetails(String virulenceGenesDetails) {
+		this.virulenceGenesDetails = virulenceGenesDetails;
 	}
 
 }

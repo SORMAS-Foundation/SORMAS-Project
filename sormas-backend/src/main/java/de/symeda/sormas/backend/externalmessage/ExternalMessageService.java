@@ -249,11 +249,16 @@ public class ExternalMessageService extends AdoServiceWithUserFilterAndJurisdict
 		Predicate filter = buildCriteriaFilter(cb, labMessageRoot, criteria);
 
 		cq.where(filter);
-		cq.distinct(true);
 
 		cq.orderBy(cb.desc(labMessageRoot.get(ExternalMessage.CREATION_DATE)));
 
-		return em.createQuery(cq).getResultList();
+		List<ExternalMessage> resultList = em.createQuery(cq).getResultList();
+		Map<String, ExternalMessage> externalMessagesByUuid = new LinkedHashMap<>();
+
+		// PostgreSQL can't apply DISTINCT to the entity row because ExternalMessage contains json columns.
+		resultList.forEach(externalMessage -> externalMessagesByUuid.putIfAbsent(externalMessage.getUuid(), externalMessage));
+
+		return new ArrayList<>(externalMessagesByUuid.values());
 	}
 
 	public long countForCase(String caseUuid) {

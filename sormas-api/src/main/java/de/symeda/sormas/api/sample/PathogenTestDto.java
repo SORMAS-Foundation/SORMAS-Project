@@ -133,6 +133,12 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String QUANTITATIVE_BOOLEAN = "quantitativeBoolean";
 	public static final String SMEAR_GRADE = "smearGrade";
 	public static final String WESTERN_BLOT_INTERPRETATION = "westernBlotInterpretation";
+	public static final String BIOTYPE = "biotype";
+	public static final String BIOTYPE_TEXT = "biotypeText";
+	public static final String WGS_PERFORMED = "wgsPerformed";
+	public static final String WGS_CLUSTER_ID = "wgsClusterId";
+	public static final String VIRULENCE_GENES_DETECTED = "virulenceGenesDetected";
+	public static final String VIRULENCE_GENES_DETAILS = "virulenceGenesDetails";
 
 	private SampleReferenceDto sample;
 	private EnvironmentSampleReferenceDto environmentSample;
@@ -343,6 +349,29 @@ public class PathogenTestDto extends PseudonymizableDto {
 	private YesNoUnknown quantitativeBoolean;
 	private SmearGrade smearGrade;
 	private WesternBlotInterpretation westernBlotInterpretation;
+
+	// Yersiniosis-specific fields
+	@Diseases({
+		Disease.YERSINIOSIS })
+	private YersiniaBiotype biotype;
+	@Diseases({
+		Disease.YERSINIOSIS })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String biotypeText;
+	@Diseases({
+		Disease.YERSINIOSIS })
+	private YesNoUnknown wgsPerformed;
+	@Diseases({
+		Disease.YERSINIOSIS })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String wgsClusterId;
+	@Diseases({
+		Disease.YERSINIOSIS })
+	private YesNoUnknown virulenceGenesDetected;
+	@Diseases({
+		Disease.YERSINIOSIS })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String virulenceGenesDetails;
 
 	public static PathogenTestDto build(SampleDto sample, UserDto currentUser) {
 
@@ -1019,6 +1048,54 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	public void setWesternBlotInterpretation(WesternBlotInterpretation westernBlotInterpretation) {
 		this.westernBlotInterpretation = westernBlotInterpretation;
+	}
+
+	public YersiniaBiotype getBiotype() {
+		return biotype;
+	}
+
+	public void setBiotype(YersiniaBiotype biotype) {
+		this.biotype = biotype;
+	}
+
+	public String getBiotypeText() {
+		return biotypeText;
+	}
+
+	public void setBiotypeText(String biotypeText) {
+		this.biotypeText = biotypeText;
+	}
+
+	public YesNoUnknown getWgsPerformed() {
+		return wgsPerformed;
+	}
+
+	public void setWgsPerformed(YesNoUnknown wgsPerformed) {
+		this.wgsPerformed = wgsPerformed;
+	}
+
+	public String getWgsClusterId() {
+		return wgsClusterId;
+	}
+
+	public void setWgsClusterId(String wgsClusterId) {
+		this.wgsClusterId = wgsClusterId;
+	}
+
+	public YesNoUnknown getVirulenceGenesDetected() {
+		return virulenceGenesDetected;
+	}
+
+	public void setVirulenceGenesDetected(YesNoUnknown virulenceGenesDetected) {
+		this.virulenceGenesDetected = virulenceGenesDetected;
+	}
+
+	public String getVirulenceGenesDetails() {
+		return virulenceGenesDetails;
+	}
+
+	public void setVirulenceGenesDetails(String virulenceGenesDetails) {
+		this.virulenceGenesDetails = virulenceGenesDetails;
 	}
 
 	@Override

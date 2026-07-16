@@ -16959,4 +16959,98 @@ ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS contactwithsexworker varcha
 
 INSERT INTO schema_version (version_number, comment) VALUES (652, 'Syphilis - Epidata #14212');
 
+-- 2026-06-05 Yersiniosis Luxembourg
+ALTER TABLE cases ADD COLUMN IF NOT EXISTS yersiniosisspecies varchar(255);
+ALTER TABLE cases_history ADD COLUMN IF NOT EXISTS yersiniosisspecies varchar(255);
+
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS highironlevel varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS highironlevel varchar(255);
+
+-- The diseaseconfiguration row for YERSINIOSIS is created by createMissingDiseaseConfigurations() at startup,
+-- which runs after this migration. Insert a row up-front so the UPDATE applies on the first deployment.
+INSERT INTO diseaseconfiguration (id, uuid, changedate, creationdate, disease)
+SELECT nextval('entity_seq'),
+       upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)),
+       now(), now(), 'YERSINIOSIS'
+WHERE NOT EXISTS (SELECT 1 FROM diseaseconfiguration WHERE disease = 'YERSINIOSIS');
+
+UPDATE diseaseconfiguration
+   SET exposurecategories = 'FOOD_BORNE,WATER_BORNE,ANIMAL_CONTACT,DIRECT_CONTACT',
+       incubationperiodenabled = true,
+       minincubationperiod = 1,
+       maxincubationperiod = 14,
+       casedefinitiontext =
+           'ENTERITIS DUE TO YERSINIA ENTEROCOLITICA OR YERSINIA PSEUDOTUBERCULOSIS<br><br>'
+           || 'Clinical Criteria<br>'
+           || 'Any person with at least one of the following five.<br>'
+           || '- Fever<br>'
+           || '- Diarrhoea<br>'
+           || '- Vomiting<br>'
+           || '- Abdominal pain (pseudoappendicitis)<br>'
+           || '- Rectal tenesmus<br><br>'
+           || 'Laboratory Criteria<br>'
+           || 'At least one of the following two.<br>'
+           || '- Isolation of human pathogenic Yersinia enterocolitica or Yersinia pseudotuberculosis from a clinical specimen<br>'
+           || '- Detection of Y. enterocolitica or Y. pseudotuberculosis virulence genes in a clinical specimen<br><br>'
+           || 'Epidemiological Criteria<br>'
+           || 'At least one of the following four epidemiological links.<br>'
+           || '- Human to human transmission<br>'
+           || '- Exposure to a common source<br>'
+           || '- Animal to human transmission<br>'
+           || '- Exposure to contaminated food<br><br>'
+           || 'Case Classification<br>'
+           || 'A. Possible case NA<br>'
+           || 'B. Probable case<br>'
+           || 'Any person meeting the clinical criteria with an epidemiological link<br>'
+           || 'C. Confirmed case<br>'
+           || 'Any person meeting the clinical and the laboratory criteria<br><br>'
+           || 'Note - If the national surveillance system is not capturing clinical symptoms, all laboratory-confirmed individuals should be reported as confirmed cases.'
+ WHERE disease = 'YERSINIOSIS';
+
+INSERT INTO customizableenumvalue (id, uuid, changedate, creationdate, datatype, value, caption, diseases, defaultvalue, properties)
+SELECT nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'OCCUPATION_TYPE', 'STUDENT', 'Student', 'YERSINIOSIS', true,
+       jsonb_build_object('hasDetails', true)
+WHERE NOT EXISTS (SELECT 1 FROM customizableenumvalue WHERE datatype = 'OCCUPATION_TYPE' AND value = 'STUDENT');
+
+-- Yersiniosis symptoms, epi-data and exposure updates
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS pseudoappendicularsyndrome varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS pseudoappendicularsyndrome varchar(255);
+
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS necrotizingenterocolitis varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS necrotizingenterocolitis varchar(255);
+
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS reactivearthritis varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS reactivearthritis varchar(255);
+
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS erythemanodosum varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS erythemanodosum varchar(255);
+
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS symptomenddate TIMESTAMP;
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS symptomenddate TIMESTAMP;
+
+-- Yersiniosis Exposure food investigation fields #13377
+ALTER TABLE exposures ADD COLUMN IF NOT EXISTS regularfoodshoppinglocations text;
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS regularfoodshoppinglocations text;
+
+ALTER TABLE exposures ADD COLUMN IF NOT EXISTS usualdietrestrictions varchar(255);
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS usualdietrestrictions varchar(255);
+
+ALTER TABLE exposures ADD COLUMN IF NOT EXISTS usualdietrestrictionsdetails text;
+ALTER TABLE exposures_history ADD COLUMN IF NOT EXISTS usualdietrestrictionsdetails text;
+
+ALTER TABLE pathogentest add column IF NOT EXISTS biotype varchar(255);
+ALTER TABLE pathogentest add column IF NOT EXISTS biotypetext varchar(255);
+ALTER TABLE pathogentest add column IF NOT EXISTS wgsperformed varchar(255);
+ALTER TABLE pathogentest add column IF NOT EXISTS wgsclusterid varchar(512);
+ALTER TABLE pathogentest add column IF NOT EXISTS virulencegenesdetected varchar(255);
+ALTER TABLE pathogentest add column IF NOT EXISTS virulencegenesdetails text;
+ALTER TABLE pathogentest_history add column IF NOT EXISTS biotype varchar(255);
+ALTER TABLE pathogentest_history add column IF NOT EXISTS biotypetext varchar(255);
+ALTER TABLE pathogentest_history add column IF NOT EXISTS wgsperformed varchar(255);
+ALTER TABLE pathogentest_history add column IF NOT EXISTS wgsclusterid varchar(512);
+ALTER TABLE pathogentest_history add column IF NOT EXISTS virulencegenesdetected varchar(255);
+ALTER TABLE pathogentest_history add column IF NOT EXISTS virulencegenesdetails text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (653, 'Yersiniosis specific fields');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

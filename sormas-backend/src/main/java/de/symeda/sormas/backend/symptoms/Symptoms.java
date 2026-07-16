@@ -347,6 +347,13 @@ public class Symptoms extends AbstractDomainObject {
 	private SyphilisInfectiousness syphilisInfectiousness;
 	private YesNoUnknown clinicalCriteriaMet;
 
+	// Yersiniosis-specific symptoms
+	private YesNoUnknown pseudoAppendicularSyndrome;
+	private YesNoUnknown necrotizingEnterocolitis;
+	private YesNoUnknown reactiveArthritis;
+	private YesNoUnknown erythemaNodosum;
+	private Date symptomEndDate;
+
 	// when adding new fields make sure to extend toHumanString
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -2773,4 +2780,49 @@ public class Symptoms extends AbstractDomainObject {
 		this.clinicalCriteriaMet = clinicalCriteriaMet;
 	}
 
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getPseudoAppendicularSyndrome() {
+		return pseudoAppendicularSyndrome;
+	}
+
+	public void setPseudoAppendicularSyndrome(YesNoUnknown pseudoAppendicularSyndrome) {
+		this.pseudoAppendicularSyndrome = pseudoAppendicularSyndrome;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getNecrotizingEnterocolitis() {
+		return necrotizingEnterocolitis;
+	}
+
+	public void setNecrotizingEnterocolitis(YesNoUnknown necrotizingEnterocolitis) {
+		this.necrotizingEnterocolitis = necrotizingEnterocolitis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getReactiveArthritis() {
+		return reactiveArthritis;
+	}
+
+	public void setReactiveArthritis(YesNoUnknown reactiveArthritis) {
+		this.reactiveArthritis = reactiveArthritis;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getErythemaNodosum() {
+		return erythemaNodosum;
+	}
+
+	public void setErythemaNodosum(YesNoUnknown erythemaNodosum) {
+		this.erythemaNodosum = erythemaNodosum;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getSymptomEndDate() {
+		return symptomEndDate;
+	}
+
+	public void setSymptomEndDate(Date symptomEndDate) {
+		this.symptomEndDate = symptomEndDate;
+	}
 }

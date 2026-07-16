@@ -93,6 +93,9 @@ public class Exposure extends AbstractDomainObject {
 	public static final String CONTACT_FACTORS = "contactFactors";
 	public static final String PROTECTIVE_MEASURES = "protectiveMeasures";
 	public static final String SHOPPING_FOR_FOOD_DETAILS = "shoppingForFoodDetails";
+	public static final String REGULAR_FOOD_SHOPPING_LOCATIONS = "regularFoodShoppingLocations";
+	public static final String USUAL_DIET_RESTRICTIONS = "usualDietRestrictions";
+	public static final String USUAL_DIET_RESTRICTIONS_DETAILS = "usualDietRestrictionsDetails";
 
 	private EpiData epiData;
 	private User reportingUser;
@@ -201,6 +204,9 @@ public class Exposure extends AbstractDomainObject {
 
 	private String shoppingForFoodDetails;
 	private SexualContact sexualContact;
+	private String regularFoodShoppingLocations;
+	private YesNoUnknown usualDietRestrictions;
+	private String usualDietRestrictionsDetails;
 
 	@ManyToOne
 	@JoinColumn(nullable = false)
@@ -961,6 +967,33 @@ public class Exposure extends AbstractDomainObject {
 
 	public void setShoppingForFoodDetails(String shoppingForFoodDetails) {
 		this.shoppingForFoodDetails = shoppingForFoodDetails;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getRegularFoodShoppingLocations() {
+		return regularFoodShoppingLocations;
+	}
+
+	public void setRegularFoodShoppingLocations(String regularFoodShoppingLocations) {
+		this.regularFoodShoppingLocations = regularFoodShoppingLocations;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getUsualDietRestrictions() {
+		return usualDietRestrictions;
+	}
+
+	public void setUsualDietRestrictions(YesNoUnknown usualDietRestrictions) {
+		this.usualDietRestrictions = usualDietRestrictions;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getUsualDietRestrictionsDetails() {
+		return usualDietRestrictionsDetails;
+	}
+
+	public void setUsualDietRestrictionsDetails(String usualDietRestrictionsDetails) {
+		this.usualDietRestrictionsDetails = usualDietRestrictionsDetails;
 	}
 
 	@Enumerated(EnumType.STRING)

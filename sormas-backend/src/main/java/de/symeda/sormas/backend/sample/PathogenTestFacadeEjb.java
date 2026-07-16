@@ -407,6 +407,72 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		}
 	}
 
+	/**
+	 * Auto-creates a positive Culture test for Yersiniosis when an Isolation test is created manually.
+	 * This implements the requirement: "When an Isolation test is created manually,
+	 * a positive Culture test for the same sample is created as well if it does not already exist."
+	 *
+	 * @param existingTest the existing test entity (null if this is a new test)
+	 * @param newTest the newly saved test entity
+	 */
+	private void autoCreateCultureTestForYersiniosisIsolation(PathogenTest existingTest, PathogenTest newTest) {
+		// Only process new tests (not edits)
+		if (existingTest != null) {
+			return;
+		}
+
+		// Only process Yersiniosis Isolation tests
+		if (newTest.getTestedDisease() != Disease.YERSINIOSIS || newTest.getTestType() != PathogenTestType.ISOLATION) {
+			return;
+		}
+
+		// Only process tests associated with a sample (not environment samples)
+		Sample sample = newTest.getSample();
+		if (sample == null) {
+			return;
+		}
+
+		// Check if a positive Culture test already exists for this sample
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<PathogenTest> root = cq.from(PathogenTest.class);
+
+		Predicate sampleMatch = cb.equal(root.get(PathogenTest.SAMPLE), sample);
+		Predicate cultureType = cb.equal(root.get(PathogenTest.TEST_TYPE), PathogenTestType.CULTURE);
+		Predicate positiveResult = cb.equal(root.get(PathogenTest.TEST_RESULT), PathogenTestResultType.POSITIVE);
+		Predicate notDeleted = cb.isFalse(root.get(PathogenTest.DELETED));
+
+		cq.select(cb.count(root));
+		cq.where(cb.and(sampleMatch, cultureType, positiveResult, notDeleted));
+
+		Long existingCultureCount = em.createQuery(cq).getSingleResult();
+		if (existingCultureCount > 0) {
+			// Positive Culture test already exists, no need to create a new one
+			return;
+		}
+
+		// Create a new positive Culture test
+		PathogenTest cultureTest = new PathogenTest();
+		cultureTest.setUuid(DataHelper.createUuid());
+		cultureTest.setSample(sample);
+		cultureTest.setTestedDisease(Disease.YERSINIOSIS);
+		cultureTest.setTestType(PathogenTestType.CULTURE);
+		cultureTest.setTestResult(PathogenTestResultType.POSITIVE);
+		
+		// Copy relevant fields from the Isolation test
+		cultureTest.setLab(newTest.getLab());
+		cultureTest.setLabDetails(newTest.getLabDetails());
+		cultureTest.setTestDateTime(newTest.getTestDateTime());
+		cultureTest.setTestedDiseaseDetails(newTest.getTestedDiseaseDetails());
+		cultureTest.setLabUser(newTest.getLabUser());
+		
+		// Persist the new Culture test
+		pathogenTestService.ensurePersisted(cultureTest);
+		
+		// Trigger associated entity changes for the new Culture test
+		handleAssociatedEntityChanges(cultureTest, true);
+	}
+
 	@Override
 	@RightsAllowed({
 		UserRight._PATHOGEN_TEST_DELETE,
@@ -451,6 +517,9 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
 		onPathogenTestChanged(existingSampleTestDto, pathogenTest);
 		handleAssociatedEntityChanges(pathogenTest, syncShares);
+
+		// Auto-create positive Culture test when Yersiniosis Isolation test is created
+		autoCreateCultureTestForYersiniosisIsolation(existingSampleTest, pathogenTest);
 
 		return convertToDto(pathogenTest);
 	}

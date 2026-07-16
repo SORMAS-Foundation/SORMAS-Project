@@ -23,22 +23,26 @@ public enum ModeOfTransmission {
 	@Diseases({
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
-		Disease.SHIGELLOSIS })
+		Disease.SHIGELLOSIS,
+		Disease.YERSINIOSIS })
 	ANIMAL_TO_HUMAN,
 	@Diseases({
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
-		Disease.SHIGELLOSIS })
+		Disease.SHIGELLOSIS,
+		Disease.YERSINIOSIS })
 	FOOD_OR_WATER,
 	@Diseases({
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
-		Disease.SHIGELLOSIS })
+		Disease.SHIGELLOSIS,
+		Disease.YERSINIOSIS })
 	PERSON_TO_PERSON,
 	@Diseases({
 		Disease.GIARDIASIS,
 		Disease.CRYPTOSPORIDIOSIS,
-		Disease.SHIGELLOSIS })
+		Disease.SHIGELLOSIS,
+		Disease.YERSINIOSIS })
 	RECREATIONAL_WATER,
 	@Diseases({
 		Disease.GIARDIASIS,

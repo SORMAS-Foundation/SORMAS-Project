@@ -89,7 +89,8 @@ public enum PathogenTestType {
 		Disease.DENGUE,
 		Disease.MALARIA,
 		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.YERSINIOSIS }, hide = true)
 	@NotSelectableForNewTests
 	INCUBATION_TIME,
 
@@ -110,7 +111,8 @@ public enum PathogenTestType {
 		Disease.DENGUE,
 		Disease.MALARIA,
 		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.YERSINIOSIS }, hide = true)
 	@NotSelectableForNewTests
 	CQ_VALUE_DETECTION,
 
@@ -202,7 +204,8 @@ public enum PathogenTestType {
 		Disease.DENGUE,
 		Disease.MALARIA,
 		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.YERSINIOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	TMA,
@@ -247,14 +250,16 @@ public enum PathogenTestType {
 		Disease.DENGUE,
 		Disease.MALARIA,
 		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.YERSINIOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel(ResultValueType.QUALITATIVE)
 	DNA_MICROARRAY,
 
 	@Diseases(value = {
 		Disease.DENGUE,
-		Disease.SHIGELLOSIS })
+		Disease.SHIGELLOSIS,
+		Disease.YERSINIOSIS })
 	@PathogenTestCategoryRel(PathogenTestCategory.MOLECULAR_ASSAYS)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -386,7 +391,8 @@ public enum PathogenTestType {
 		Disease.CRYPTOSPORIDIOSIS,
 		Disease.MALARIA,
 		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.YERSINIOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.SEROLOGICAL_TESTS)
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	NEUTRALIZING_ANTIBODIES,
@@ -524,7 +530,8 @@ public enum PathogenTestType {
 		Disease.DENGUE,
 		Disease.MALARIA,
 		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.YERSINIOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel(ResultValueType.TEXT)
 	GRAM_STAIN,
@@ -565,7 +572,8 @@ public enum PathogenTestType {
 		Disease.DENGUE,
 		Disease.MALARIA,
 		Disease.SALMONELLOSIS,
-		Disease.SHIGELLOSIS }, hide = true)
+		Disease.SHIGELLOSIS,
+		Disease.YERSINIOSIS }, hide = true)
 	@PathogenTestCategoryRel(PathogenTestCategory.MICROSCOPY_AND_STAINING)
 	@ResultValueTypeRel({
 		ResultValueType.QUALITATIVE,
@@ -673,7 +681,8 @@ public enum PathogenTestType {
 	@Diseases(value = {
 		Disease.SALMONELLOSIS,
 		Disease.SHIGELLOSIS,
-		Disease.DENGUE }, hide = true)
+		Disease.DENGUE,
+		Disease.YERSINIOSIS }, hide = true)
 	FLOW_CYTOMETRY,
 
 	// ----------------------------------------------------------------------------------------------

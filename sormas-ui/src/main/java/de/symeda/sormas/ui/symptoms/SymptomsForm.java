@@ -198,6 +198,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	final boolean isParasiticInfectiousDiseases;
 	final boolean isFoodborneGastrointestinal;
 	final boolean isSyphilis;
+	final boolean isYersiniosis;
 
 	//@formatter:off
 	private static final String HTML_LAYOUT =
@@ -240,8 +241,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 					fluidRowLocsCss(VSPACE_3, SYMPTOM_CURRENT_STATUS, DURATION_OF_SYMPTOMS) +
 					locsCss(VSPACE_3, PATIENT_ILL_LOCATION, SYMPTOMS_COMMENTS) +
 					fluidRowLocsCss(VSPACE_3, ONSET_SYMPTOM, ONSET_DATE) +
-					fluidRowLocsCss(VSPACE_3, OFFSET_DATE,"") +
-					fluidRowLocsCss(VSPACE_3, CLINICAL_MANIFESTATION,CLINICAL_MANIFESTATION_TEXT) ;
+					fluidRowLocsCss(VSPACE_3, OFFSET_DATE, SYMPTOM_END_DATE) +
+					fluidRowLocsCss(VSPACE_3, CLINICAL_MANIFESTATION, CLINICAL_MANIFESTATION_TEXT);
 	//@formatter:on
 
 	private static String createSymptomGroupLayout(SymptomGroup symptomGroup, String loc) {
@@ -320,7 +321,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		}
 		isLuxDengue = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && disease == Disease.DENGUE;
 		isParasiticInfectiousDiseases = ImmutableList.of(Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS).contains(disease);
-		isFoodborneGastrointestinal = disease == Disease.SALMONELLOSIS;
+		isYersiniosis = disease == Disease.YERSINIOSIS;
+		isFoodborneGastrointestinal = disease == Disease.SALMONELLOSIS || isYersiniosis;
 		isSyphilis = disease == Disease.SYPHILIS;
 
 		addFields();
@@ -614,6 +616,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			METABOLIC_ACIDOSIS,
 			DISSEMINATED_INTRA_VASCULAR_COAGULATION,
 			OFFSET_DATE,
+			SYMPTOM_END_DATE,
 			CLINICAL_MANIFESTATION_TEXT,
 			CEREBRAL_MALARIA,
 			SCANT_HEMORRHAGE,
@@ -1277,10 +1280,14 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			timeOffWorkDaysField.setValue(isParentTimeOffWorkYes ? timeOffWorkDaysField.getValue() : null);
 		});
 
-		// Change captions for giardiasis and Cryptosporidiosis
-		if (isParasiticInfectiousDiseases) {
+		// Change captions for giardiasis, Cryptosporidiosis, and Yersiniosis
+		if (isParasiticInfectiousDiseases || isYersiniosis) {
 			parentTimeOffWorkField.setCaption(I18nProperties.getCaption(Captions.Symptoms_timeOffWorkOrSchool));
-			timeOffWorkDaysField.setCaption(I18nProperties.getCaption(Captions.Symptoms_timeOffWorkDays_giardiasis));
+			if (isParasiticInfectiousDiseases) {
+				timeOffWorkDaysField.setCaption(I18nProperties.getCaption(Captions.Symptoms_timeOffWorkDays_giardiasis));
+			} else {
+				timeOffWorkDaysField.setCaption(I18nProperties.getCaption(Captions.Symptoms_timeOffWorkDays_yersiniosis));
+			}
 			getField(OTHER_COMPLICATIONS).setCaption(I18nProperties.getCaption(Captions.Symptoms_otherComplications_CryptoGiardia));
 			getField(OTHER_COMPLICATIONS_TEXT).setCaption(I18nProperties.getCaption(Captions.Symptoms_otherComplicationsText_CryptoGiardia));
 		}
@@ -1291,6 +1298,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		getField(TEMPERATURE_SOURCE).setVisible(!hideTemperature);
 
 		DateComparisonValidator.addStartEndValidators(onsetDateField, getField(OFFSET_DATE));
+		DateComparisonValidator.addStartEndValidators(getField(OFFSET_DATE), getField(SYMPTOM_END_DATE));
 
 		// Navigate to hospitalization view when overnight stay required is set to yes
 		overNightStayRequiredField.addValueChangeListener(e -> {

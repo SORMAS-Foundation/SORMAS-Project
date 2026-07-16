@@ -22,12 +22,14 @@ import de.symeda.sormas.api.sample.RsvSubtype;
 import de.symeda.sormas.api.sample.SeroGroupSpecification;
 import de.symeda.sormas.api.sample.Serotype;
 import de.symeda.sormas.api.sample.SerotypingMethod;
+import de.symeda.sormas.api.sample.YersiniaBiotype;
 import de.symeda.sormas.api.therapy.DrugSusceptibilityType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 
 @DependingOnFeatureType(featureType = FeatureType.EXTERNAL_MESSAGES)
 public class TestReportDto extends EntityDto {
@@ -54,6 +56,11 @@ public class TestReportDto extends EntityDto {
 	public static final String CT_VALUE_ORF_1 = "ctValueOrf1";
 	public static final String CT_VALUE_RDRP_S = "ctValueRdrpS";
 	public static final String SPECIE = "specie";
+	public static final String SPECIE_TEXT = "specieText";
+	public static final String BIOTYPE = "biotype";
+	public static final String BIOTYPE_TEXT = "biotypeText";
+	public static final String VIRULENCE_GENES_DETECTED = "virulenceGenesDetected";
+	public static final String VIRULENCE_GENES_DETAILS = "virulenceGenesDetails";
 	public static final String TUBE_NIL = "tubeNil";
 	public static final String TUBE_NIL_GT10 = "tubeNilGT10";
 	public static final String TUBE_AG_TB1 = "tubeAgTb1";
@@ -121,6 +128,14 @@ public class TestReportDto extends EntityDto {
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	private Float ctValueRdrpS;
 	private PathogenSpecie specie;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String specieText;
+	private YersiniaBiotype biotype;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String biotypeText;
+	private YesNoUnknown virulenceGenesDetected;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String virulenceGenesDetails;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	private Float tubeNil;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
@@ -443,6 +458,46 @@ public class TestReportDto extends EntityDto {
 
 	public void setSpecie(PathogenSpecie specie) {
 		this.specie = specie;
+	}
+
+	public String getSpecieText() {
+		return specieText;
+	}
+
+	public void setSpecieText(String specieText) {
+		this.specieText = specieText;
+	}
+
+	public YersiniaBiotype getBiotype() {
+		return biotype;
+	}
+
+	public void setBiotype(YersiniaBiotype biotype) {
+		this.biotype = biotype;
+	}
+
+	public String getBiotypeText() {
+		return biotypeText;
+	}
+
+	public void setBiotypeText(String biotypeText) {
+		this.biotypeText = biotypeText;
+	}
+
+	public YesNoUnknown getVirulenceGenesDetected() {
+		return virulenceGenesDetected;
+	}
+
+	public void setVirulenceGenesDetected(YesNoUnknown virulenceGenesDetected) {
+		this.virulenceGenesDetected = virulenceGenesDetected;
+	}
+
+	public String getVirulenceGenesDetails() {
+		return virulenceGenesDetails;
+	}
+
+	public void setVirulenceGenesDetails(String virulenceGenesDetails) {
+		this.virulenceGenesDetails = virulenceGenesDetails;
 	}
 
 	public Float getTubeNil() {
