@@ -16854,4 +16854,36 @@ UPDATE samples_history SET
     WHERE requestedpathogentestsstring ~ '(^|,)(ANTIGEN_DETECTION|RAPID_TEST|RAPID_ANTIGEN_DETECTION|RDT|DIRECT_MICROSCOPY|RAPID_ANTIBODY_TEST)(,|$)';
 INSERT INTO schema_version (version_number, comment) VALUES (649, 'Merge retired pathogen test types into Lateral Flow Assay / Other');
 
+-- 2026-07-16 Entries to the LUX+Syphilis specific #14207
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS hivstatus varchar(255);
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS mentalhealthdisorder varchar(255);
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS substanceusedisorder varchar(255);
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS substanceusedisorderdetails varchar(512);
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS stiprophylaxis varchar(255);
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS hivprep varchar(255);
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS treatedforsyphilis varchar(255);
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS syphilisdrugused varchar(512);
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS syphilisnumberofdoses int4;
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS syphilisdateoffirstdose timestamp;
+
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS hivstatus varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS mentalhealthdisorder varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS substanceusedisorder varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS substanceusedisorderdetails varchar(512);
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS stiprophylaxis varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS hivprep varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS treatedforsyphilis varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS syphilisdrugused varchar(512);
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS syphilisnumberofdoses int4;
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS syphilisdateoffirstdose timestamp;
+
+-- Seed Presentation values (reusing the Disease Variant customizable enum, same mechanism as the
+-- 2024-11-18 Influenza/RSV LUX request #13183)
+INSERT INTO customizableenumvalue(id, uuid, changedate, creationdate, datatype, value, caption, diseases)
+VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'DISEASE_VARIANT', 'ACQUIRED', 'Acquired', 'SYPHILIS');
+INSERT INTO customizableenumvalue(id, uuid, changedate, creationdate, datatype, value, caption, diseases)
+VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'DISEASE_VARIANT', 'CONGENITAL', 'Congenital syphilis', 'SYPHILIS');
+
+INSERT INTO schema_version (version_number, comment) VALUES (650, 'SORMAS-Luxembourg Syphilis case data adaptations #14207');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

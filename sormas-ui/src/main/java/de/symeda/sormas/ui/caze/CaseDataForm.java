@@ -565,6 +565,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		if (DiseaseHelper.SUBTYPE_ALLOWED_DISEASES.contains(disease)) {
 			diseaseVariantField.setCaption(I18nProperties.getCaption(Captions.PathogenTest_rsv_testedDiseaseVariant));
 			diseaseVariantDetailsField.setCaption(I18nProperties.getCaption(Captions.PathogenTest_rsv_testedDiseaseVariantDetails));
+		} else if (isLuxSyphilis(disease)) {
+			diseaseVariantField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, "presentation"));
 		}
 		addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
 		addField(CaseDataDto.PLAGUE_TYPE, NullableOptionGroup.class);
@@ -1364,6 +1366,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					FORCE_CAPTION);
 
 				getContent().addComponent(classificationRulesButton, CLASSIFICATION_RULES_LOC);
+			} else if (isLuxSyphilis(disease)) {
+				// LUX+Syphilis: the case definition depends on the selected Presentation (Acquired/Congenital)
+				getSyphilisCaseDefinition(diseaseVariantField);
 			} else {
 				// If Manual classification is enabled for the disease.
 				getManualCaseDefinition();
@@ -1613,6 +1618,37 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	}
 
 	/**
+	 * LUX+Syphilis specific: shows the ECDC-style case definition matching the currently selected
+	 * Presentation (Acquired/Congenital syphilis, the relabeled Disease Variant field).
+	 */
+	@SuppressWarnings("unchecked")
+	private void getSyphilisCaseDefinition(ComboBox diseaseVariantField) {
+
+		Button caseDefinitionButton = ButtonHelper.createIconButton(Captions.info, VaadinIcons.INFO_CIRCLE, e -> {
+			DiseaseVariant presentation = (DiseaseVariant) diseaseVariantField.getValue();
+			boolean isCongenital = presentation != null && "CONGENITAL".equals(presentation.getValue());
+			String caseDefinitionText = I18nProperties.getString(
+				isCongenital ? Strings.caseDefinitionSyphilisCongenital : Strings.caseDefinitionSyphilisAcquired);
+
+			VerticalLayout classificationRulesLayout = new VerticalLayout();
+			classificationRulesLayout.setMargin(true);
+			String processedCaseDefinition = sanitizeAndLinkify(caseDefinitionText);
+			Label caseDefinitionLabel = new Label();
+			caseDefinitionLabel.setContentMode(ContentMode.HTML);
+			caseDefinitionLabel.setWidth(100, Unit.PERCENTAGE);
+			caseDefinitionLabel.setValue(processedCaseDefinition);
+			classificationRulesLayout.addComponent(caseDefinitionLabel);
+			Window popupWindow = VaadinUiUtil.showPopupWindow(classificationRulesLayout);
+			popupWindow.addCloseListener(e1 -> popupWindow.close());
+			popupWindow.setWidth(860, Unit.PIXELS);
+			popupWindow.setHeight(80, Unit.PERCENTAGE);
+			popupWindow.setCaption(I18nProperties.getString(Strings.caseDefinitionForDisease) + " " + disease);
+		}, ValoTheme.BUTTON_PRIMARY, FORCE_CAPTION);
+
+		getContent().addComponent(caseDefinitionButton, CLASSIFICATION_RULES_LOC);
+	}
+
+	/**
 	 * sanitizing the url
 	 * 
 	 * @param text
@@ -1741,6 +1777,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private boolean diseaseClassificationExists() {
 		DiseaseClassificationCriteriaDto diseaseClassificationCriteria = FacadeProvider.getCaseClassificationFacade().getByDisease(disease);
 		return disease != Disease.OTHER && diseaseClassificationCriteria != null;
+	}
+
+	private boolean isLuxSyphilis(Disease disease) {
+		return Disease.SYPHILIS == disease && isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 	}
 
 	private void onFollowUpUntilChanged() {

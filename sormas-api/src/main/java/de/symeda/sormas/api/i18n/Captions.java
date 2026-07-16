@@ -759,6 +759,7 @@ public interface Captions {
 	String CaseData_postMortem = "CaseData.postMortem";
 	String CaseData_postpartum = "CaseData.postpartum";
 	String CaseData_pregnant = "CaseData.pregnant";
+	String CaseData_presentation = "CaseData.presentation";
 	String CaseData_previousInfectionDate = "CaseData.previousInfectionDate";
 	String CaseData_previousQuarantineTo = "CaseData.previousQuarantineTo";
 	String CaseData_prohibitionToWork = "CaseData.prohibitionToWork";
@@ -2122,6 +2123,7 @@ public interface Captions {
 	String HealthConditions_chronicPulmonaryDisease = "HealthConditions.chronicPulmonaryDisease";
 	String HealthConditions_complianceWithTreatment = "HealthConditions.complianceWithTreatment";
 	String HealthConditions_congenitalSyphilis = "HealthConditions.congenitalSyphilis";
+	String HealthConditions_congenitalSyphilisOtherStis = "HealthConditions.congenitalSyphilisOtherStis";
 	String HealthConditions_currentSmoker = "HealthConditions.currentSmoker";
 	String HealthConditions_diabetes = "HealthConditions.diabetes";
 	String HealthConditions_downSyndrome = "HealthConditions.downSyndrome";
@@ -2131,6 +2133,8 @@ public interface Captions {
 	String HealthConditions_hepatitis = "HealthConditions.hepatitis";
 	String HealthConditions_hiv = "HealthConditions.hiv";
 	String HealthConditions_hivArt = "HealthConditions.hivArt";
+	String HealthConditions_hivPrep = "HealthConditions.hivPrep";
+	String HealthConditions_hivStatus = "HealthConditions.hivStatus";
 	String HealthConditions_immunodeficiencyIncludingHiv = "HealthConditions.immunodeficiencyIncludingHiv";
 	String HealthConditions_immunodeficiencyOtherThanHiv = "HealthConditions.immunodeficiencyOtherThanHiv";
 	String HealthConditions_immunodeficiencyOtherThanHivText = "HealthConditions.immunodeficiencyOtherThanHivText";
@@ -2139,12 +2143,20 @@ public interface Captions {
 	String HealthConditions_malariaInfectedYear = "HealthConditions.malariaInfectedYear";
 	String HealthConditions_malignancyChemotherapy = "HealthConditions.malignancyChemotherapy";
 	String HealthConditions_medicationDetails = "HealthConditions.medicationDetails";
+	String HealthConditions_mentalHealthDisorder = "HealthConditions.mentalHealthDisorder";
 	String HealthConditions_obesity = "HealthConditions.obesity";
 	String HealthConditions_onMedication = "HealthConditions.onMedication";
 	String HealthConditions_otherConditions = "HealthConditions.otherConditions";
 	String HealthConditions_previousTuberculosisTreatment = "HealthConditions.previousTuberculosisTreatment";
 	String HealthConditions_recurrentBronchiolitis = "HealthConditions.recurrentBronchiolitis";
 	String HealthConditions_sickleCellDisease = "HealthConditions.sickleCellDisease";
+	String HealthConditions_stiProphylaxis = "HealthConditions.stiProphylaxis";
+	String HealthConditions_substanceUseDisorder = "HealthConditions.substanceUseDisorder";
+	String HealthConditions_substanceUseDisorderDetails = "HealthConditions.substanceUseDisorderDetails";
+	String HealthConditions_syphilisDateOfFirstDose = "HealthConditions.syphilisDateOfFirstDose";
+	String HealthConditions_syphilisDrugUsed = "HealthConditions.syphilisDrugUsed";
+	String HealthConditions_syphilisNumberOfDoses = "HealthConditions.syphilisNumberOfDoses";
+	String HealthConditions_treatedForSyphilis = "HealthConditions.treatedForSyphilis";
 	String HealthConditions_tuberculosis = "HealthConditions.tuberculosis";
 	String HealthConditions_tuberculosisInfectionYear = "HealthConditions.tuberculosisInfectionYear";
 	String HealthConditions_vaccinatedAgainstMosquitoBorneViruses = "HealthConditions.vaccinatedAgainstMosquitoBorneViruses";

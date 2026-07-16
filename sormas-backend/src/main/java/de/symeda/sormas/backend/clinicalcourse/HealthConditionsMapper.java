@@ -72,6 +72,16 @@ public class HealthConditionsMapper {
 		target.setMedicationDetails(source.getMedicationDetails());
 		target.setChronicDisease(source.getChronicDisease());
 		target.setChronicDiseaseDetails(source.getChronicDiseaseDetails());
+		target.setHivStatus(source.getHivStatus());
+		target.setMentalHealthDisorder(source.getMentalHealthDisorder());
+		target.setSubstanceUseDisorder(source.getSubstanceUseDisorder());
+		target.setSubstanceUseDisorderDetails(source.getSubstanceUseDisorderDetails());
+		target.setStiProphylaxis(source.getStiProphylaxis());
+		target.setHivPrep(source.getHivPrep());
+		target.setTreatedForSyphilis(source.getTreatedForSyphilis());
+		target.setSyphilisDrugUsed(source.getSyphilisDrugUsed());
+		target.setSyphilisNumberOfDoses(source.getSyphilisNumberOfDoses());
+		target.setSyphilisDateOfFirstDose(source.getSyphilisDateOfFirstDose());
 		return target;
 	}
 
@@ -119,6 +129,16 @@ public class HealthConditionsMapper {
 		target.setMedicationDetails(source.getMedicationDetails());
 		target.setChronicDisease(source.getChronicDisease());
 		target.setChronicDiseaseDetails(source.getChronicDiseaseDetails());
+		target.setHivStatus(source.getHivStatus());
+		target.setMentalHealthDisorder(source.getMentalHealthDisorder());
+		target.setSubstanceUseDisorder(source.getSubstanceUseDisorder());
+		target.setSubstanceUseDisorderDetails(source.getSubstanceUseDisorderDetails());
+		target.setStiProphylaxis(source.getStiProphylaxis());
+		target.setHivPrep(source.getHivPrep());
+		target.setTreatedForSyphilis(source.getTreatedForSyphilis());
+		target.setSyphilisDrugUsed(source.getSyphilisDrugUsed());
+		target.setSyphilisNumberOfDoses(source.getSyphilisNumberOfDoses());
+		target.setSyphilisDateOfFirstDose(source.getSyphilisDateOfFirstDose());
 		return target;
 	}
 }
