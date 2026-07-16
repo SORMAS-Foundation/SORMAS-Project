@@ -98,6 +98,9 @@ import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.symptoms.syphilis.SyphilisInfectionSite;
+import de.symeda.sormas.api.symptoms.syphilis.SyphilisInfectiousness;
+import de.symeda.sormas.api.symptoms.syphilis.SyphilisStage;
 import de.symeda.sormas.api.utils.Complication;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependantOn;
@@ -399,10 +402,9 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String CENTRAL_NERVOUS_SYSTEM_DAMAGE = "centralNervousSystemDamage";
 	public static final String MALNUTRITION = "malnutrition";
 	public static final String NEPHROTIC_SYNDROME = "nephroticSyndrome";
-
-	// Syphilis-specific fields
-	public static final String SYPHILIS_STAGE = "syphilisStage";
 	public static final String SYPHILIS_INFECTION_SITE = "syphilisInfectionSite";
+	public static final String SYPHILIS_STAGE = "syphilisStage";
+	public static final String SYPHILIS_INFECTIOUSNESS = "syphilisInfectiousness";
 	public static final String CLINICAL_CRITERIA_MET = "clinicalCriteriaMet";
 
 	// Fields are declared in the order they should appear in the import template
@@ -3283,6 +3285,22 @@ public class SymptomsDto extends PseudonymizableDto {
 	@SymptomGrouping(SymptomGroup.GENERAL)
 	private SymptomState nephroticSyndrome;
 
+	@Diseases({
+		SYPHILIS })
+	private SyphilisInfectionSite syphilisInfectionSite;
+
+	@Diseases({
+		SYPHILIS })
+	private SyphilisStage syphilisStage;
+
+	@Diseases({
+		SYPHILIS })
+	private SyphilisInfectiousness syphilisInfectiousness;
+
+	@Diseases({
+		SYPHILIS })
+	private YesNoUnknown clinicalCriteriaMet;
+
 	@Order(0)
 	public Float getTemperature() {
 		return temperature;
@@ -5563,5 +5581,37 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	public void setNephroticSyndrome(SymptomState nephroticSyndrome) {
 		this.nephroticSyndrome = nephroticSyndrome;
+	}
+
+	public SyphilisInfectionSite getSyphilisInfectionSite() {
+		return syphilisInfectionSite;
+	}
+
+	public void setSyphilisInfectionSite(SyphilisInfectionSite syphilisInfectionSite) {
+		this.syphilisInfectionSite = syphilisInfectionSite;
+	}
+
+	public SyphilisStage getSyphilisStage() {
+		return syphilisStage;
+	}
+
+	public void setSyphilisStage(SyphilisStage syphilisStage) {
+		this.syphilisStage = syphilisStage;
+	}
+
+	public SyphilisInfectiousness getSyphilisInfectiousness() {
+		return syphilisInfectiousness;
+	}
+
+	public void setSyphilisInfectiousness(SyphilisInfectiousness syphilisInfectiousness) {
+		this.syphilisInfectiousness = syphilisInfectiousness;
+	}
+
+	public YesNoUnknown getClinicalCriteriaMet() {
+		return clinicalCriteriaMet;
+	}
+
+	public void setClinicalCriteriaMet(YesNoUnknown clinicalCriteriaMet) {
+		this.clinicalCriteriaMet = clinicalCriteriaMet;
 	}
 }

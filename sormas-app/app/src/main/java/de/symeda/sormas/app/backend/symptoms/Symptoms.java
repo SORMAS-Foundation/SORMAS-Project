@@ -32,10 +32,11 @@ import de.symeda.sormas.api.symptoms.ClinicalPresentationStatus;
 import de.symeda.sormas.api.symptoms.CongenitalHeartDiseaseType;
 import de.symeda.sormas.api.symptoms.DiagnosisType;
 import de.symeda.sormas.api.symptoms.InfectionSite;
-import de.symeda.sormas.api.symptoms.SyphilisInfectionSite;
-import de.symeda.sormas.api.symptoms.SyphilisStage;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
+import de.symeda.sormas.api.symptoms.syphilis.SyphilisInfectionSite;
+import de.symeda.sormas.api.symptoms.syphilis.SyphilisInfectiousness;
+import de.symeda.sormas.api.symptoms.syphilis.SyphilisStage;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
@@ -536,6 +537,15 @@ public class Symptoms extends PseudonymizableAdo {
 	private SymptomState malnutrition;
 	@Enumerated(EnumType.STRING)
 	private SymptomState nephroticSyndrome;
+
+	@Enumerated(EnumType.STRING)
+	private SyphilisInfectionSite syphilisInfectionSite;
+	@Enumerated(EnumType.STRING)
+	private SyphilisStage syphilisStage;
+	@Enumerated(EnumType.STRING)
+	private SyphilisInfectiousness syphilisInfectiousness;
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown clinicalCriteriaMet;
 
 	@Override
 	public String getI18nPrefix() {
@@ -2368,6 +2378,14 @@ public class Symptoms extends PseudonymizableAdo {
 
 	public void setSyphilisInfectionSite(SyphilisInfectionSite syphilisInfectionSite) {
 		this.syphilisInfectionSite = syphilisInfectionSite;
+	}
+
+	public SyphilisInfectiousness getSyphilisInfectiousness() {
+		return syphilisInfectiousness;
+	}
+
+	public void setSyphilisInfectiousness(SyphilisInfectiousness syphilisInfectiousness) {
+		this.syphilisInfectiousness = syphilisInfectiousness;
 	}
 
 	public YesNoUnknown getClinicalCriteriaMet() {

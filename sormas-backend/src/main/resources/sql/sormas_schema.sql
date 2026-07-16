@@ -16869,6 +16869,10 @@ ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS condylomalata varchar(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS centralnervoussystemdamage varchar(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS malnutrition varchar(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS nephroticsyndrome varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS syphilisinfectionsite varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS syphilisstage varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS syphilisinfectiousness varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS clinicalcriteriamet varchar(255);
 
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS patchyalopecia varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS chancre varchar(255);
@@ -16885,6 +16889,11 @@ ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS centralnervoussystemdamage
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS malnutrition varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS nephroticsyndrome varchar(255);
 
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS syphilisinfectionsite varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS syphilisstage varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS syphilisinfectiousness varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS clinicalcriteriamet varchar(255);
+
 INSERT INTO schema_version (version_number, comment) VALUES (650, 'Add syphilis-specific symptoms to Symptoms for SORMAS-14209');
-  
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. *** 
