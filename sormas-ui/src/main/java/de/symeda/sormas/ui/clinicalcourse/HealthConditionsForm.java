@@ -38,6 +38,7 @@ import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.OTHER_COND
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.PREVIOUS_TUBERCULOSIS_TREATMENT;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.RECURRENT_BRONCHIOLITIS;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.SICKLE_CELL_DISEASE;
+import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.STIS;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.STI_PROPHYLAXIS;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.SUBSTANCE_USE_DISORDER;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.SUBSTANCE_USE_DISORDER_DETAILS;
@@ -109,7 +110,7 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 					fluidRow(
 							fluidColumn(6, 0, locs(
 									TUBERCULOSIS, PREVIOUS_TUBERCULOSIS_TREATMENT, ASPLENIA, HEPATITIS, DIABETES, IMMUNODEFICIENCY_OTHER_THAN_HIV,"IMMUNODEFICIENCY_INCLUDING_HIV_LAYOUT",
-									 HIV, HIV_ART, CONGENITAL_SYPHILIS, DOWN_SYNDROME,
+									 HIV, HIV_ART, CONGENITAL_SYPHILIS, STIS, DOWN_SYNDROME,
 									CHRONIC_LIVER_DISEASE, MALIGNANCY_CHEMOTHERAPY, RECURRENT_BRONCHIOLITIS, MALARIA, "MALARIA_INFECTED_YEAR_LAYOUT", ON_MEDICATION, MEDICATION_DETAILS)),
 							fluidColumn(6, 0, locs(
 									"TUBERCULOSIS_INFECTION_YEAR_LAYOUT","COMPLIANCE_WITH_TREATMENT_LAYOUT",CHRONIC_HEART_FAILURE, CHRONIC_PULMONARY_DISEASE, CHRONIC_KIDNEY_DISEASE,
@@ -139,6 +140,7 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 		CHRONIC_NEUROLOGIC_CONDITION,
 		DOWN_SYNDROME,
 		CONGENITAL_SYPHILIS,
+		STIS,
 		IMMUNODEFICIENCY_OTHER_THAN_HIV,
 		CARDIOVASCULAR_DISEASE_INCLUDING_HYPERTENSION,
 		OBESITY,
@@ -341,13 +343,6 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 					}
 					vaccinationListener = true;
 				});
-			} else if (Disease.SYPHILIS.equals(disease)) {
-				// Relabel "Congenital syphilis" to "Syphilis or other STIs" for the LUX+Syphilis context only;
-				// all other diseases keep the original label.
-				Field<?> congenitalSyphilisField = getFieldGroup().getField(CONGENITAL_SYPHILIS);
-				if (congenitalSyphilisField != null) {
-					congenitalSyphilisField.setCaption(I18nProperties.getCaption(Captions.HealthConditions_congenitalSyphilisOtherStis));
-				}
 			}
 		}
 

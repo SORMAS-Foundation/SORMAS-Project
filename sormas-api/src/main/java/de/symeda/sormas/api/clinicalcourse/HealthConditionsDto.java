@@ -76,6 +76,7 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	public static final String SYPHILIS_DRUG_USED = "syphilisDrugUsed";
 	public static final String SYPHILIS_NUMBER_OF_DOSES = "syphilisNumberOfDoses";
 	public static final String SYPHILIS_DATE_OF_FIRST_DOSE = "syphilisDateOfFirstDose";
+	public static final String STIS = "stis";
 
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
@@ -136,6 +137,7 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+	@Diseases(value = Disease.SYPHILIS, hide = true)
 	private YesNoUnknown congenitalSyphilis;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
@@ -263,6 +265,9 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	@Diseases(value = {
 		Disease.SYPHILIS })
 	private Date syphilisDateOfFirstDose;
+	@Diseases(value = {
+		Disease.SYPHILIS })
+	private YesNoUnknown stis;
 
 	public static HealthConditionsDto build() {
 		HealthConditionsDto healthConditions = new HealthConditionsDto();
@@ -668,6 +673,14 @@ public class HealthConditionsDto extends PseudonymizableDto {
 
 	public void setSyphilisDateOfFirstDose(Date syphilisDateOfFirstDose) {
 		this.syphilisDateOfFirstDose = syphilisDateOfFirstDose;
+	}
+
+	public YesNoUnknown getStis() {
+		return stis;
+	}
+
+	public void setStis(YesNoUnknown stis) {
+		this.stis = stis;
 	}
 
 }

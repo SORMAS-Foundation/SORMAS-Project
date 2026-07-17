@@ -82,6 +82,7 @@ public class HealthConditionsMapper {
 		target.setSyphilisDrugUsed(source.getSyphilisDrugUsed());
 		target.setSyphilisNumberOfDoses(source.getSyphilisNumberOfDoses());
 		target.setSyphilisDateOfFirstDose(source.getSyphilisDateOfFirstDose());
+		target.setStis(source.getStis());
 		return target;
 	}
 
@@ -139,6 +140,7 @@ public class HealthConditionsMapper {
 		target.setSyphilisDrugUsed(source.getSyphilisDrugUsed());
 		target.setSyphilisNumberOfDoses(source.getSyphilisNumberOfDoses());
 		target.setSyphilisDateOfFirstDose(source.getSyphilisDateOfFirstDose());
+		target.setStis(source.getStis());
 		return target;
 	}
 }
