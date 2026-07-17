@@ -212,7 +212,9 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		NullableOptionGroup plagueType = addField(CaseDataDto.PLAGUE_TYPE, NullableOptionGroup.class);
 		addField(CaseDataDto.DENGUE_FEVER_TYPE, NullableOptionGroup.class);
 		addField(CaseDataDto.RABIES_TYPE, NullableOptionGroup.class);
-		addField(CaseDataDto.SYPHILIS_PRESENTATION, ComboBox.class).setRequired(true);
+		ComboBox syphilisPresentation = addField(CaseDataDto.SYPHILIS_PRESENTATION, ComboBox.class);
+		syphilisPresentation.setRequired(true);
+		syphilisPresentation.setNullSelectionAllowed(false);
 
 		addField(CaseDataDto.RE_INFECTION, NullableOptionGroup.class);
 

@@ -574,8 +574,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.PLAGUE_TYPE, NullableOptionGroup.class);
 		addField(CaseDataDto.DENGUE_FEVER_TYPE, NullableOptionGroup.class);
 		addField(CaseDataDto.RABIES_TYPE, NullableOptionGroup.class);
-		ComboBox presentationField = addField(CaseDataDto.SYPHILIS_PRESENTATION, ComboBox.class);
-		presentationField.setNullSelectionAllowed(true);
+
+        ComboBox presentationField = addField(CaseDataDto.SYPHILIS_PRESENTATION, ComboBox.class);
+        presentationField.setNullSelectionAllowed(false);
+        presentationField.setRequired(true);
+
 
 		addField(CaseDataDto.CASE_ORIGIN, TextField.class);
 
@@ -1631,6 +1634,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	}
 
 	/**
+	 * TODO: needs to be checked with Chris
 	 * LUX+Syphilis specific: shows the ECDC-style case definition matching the currently selected
 	 * Presentation (Acquired/Congenital syphilis).
 	 */
@@ -1663,7 +1667,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 	/**
 	 * sanitizing the url
-	 * 
+	 *
 	 * @param text
 	 * @return sanitized url
 	 */
@@ -1714,7 +1718,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 	/**
 	 * Replacing any escape sequence with the character that it represents.
-	 * 
+	 *
 	 * @param value
 	 * @return String
 	 */
@@ -1729,7 +1733,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 	/**
 	 * Converting special characters in a string into their safe HTML entity values
-	 * 
+	 *
 	 * @param value
 	 * @return
 	 */
