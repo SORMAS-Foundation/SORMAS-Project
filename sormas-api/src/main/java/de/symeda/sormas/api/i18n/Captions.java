@@ -759,7 +759,6 @@ public interface Captions {
 	String CaseData_postMortem = "CaseData.postMortem";
 	String CaseData_postpartum = "CaseData.postpartum";
 	String CaseData_pregnant = "CaseData.pregnant";
-	String CaseData_syphilisPresentation = "CaseData.syphilisPresentation";
 	String CaseData_previousInfectionDate = "CaseData.previousInfectionDate";
 	String CaseData_previousQuarantineTo = "CaseData.previousQuarantineTo";
 	String CaseData_prohibitionToWork = "CaseData.prohibitionToWork";
@@ -815,6 +814,7 @@ public interface Captions {
 	String CaseData_surveillanceToolStatus = "CaseData.surveillanceToolStatus";
 	String CaseData_symptomJournalStatus = "CaseData.symptomJournalStatus";
 	String CaseData_symptoms = "CaseData.symptoms";
+	String CaseData_syphilisPresentation = "CaseData.syphilisPresentation";
 	String CaseData_therapy = "CaseData.therapy";
 	String CaseData_trimester = "CaseData.trimester";
 	String CaseData_uuid = "CaseData.uuid";
@@ -2123,7 +2123,6 @@ public interface Captions {
 	String HealthConditions_chronicPulmonaryDisease = "HealthConditions.chronicPulmonaryDisease";
 	String HealthConditions_complianceWithTreatment = "HealthConditions.complianceWithTreatment";
 	String HealthConditions_congenitalSyphilis = "HealthConditions.congenitalSyphilis";
-	String HealthConditions_congenitalSyphilisOtherStis = "HealthConditions.congenitalSyphilisOtherStis";
 	String HealthConditions_currentSmoker = "HealthConditions.currentSmoker";
 	String HealthConditions_diabetes = "HealthConditions.diabetes";
 	String HealthConditions_downSyndrome = "HealthConditions.downSyndrome";
@@ -2150,6 +2149,7 @@ public interface Captions {
 	String HealthConditions_previousTuberculosisTreatment = "HealthConditions.previousTuberculosisTreatment";
 	String HealthConditions_recurrentBronchiolitis = "HealthConditions.recurrentBronchiolitis";
 	String HealthConditions_sickleCellDisease = "HealthConditions.sickleCellDisease";
+	String HealthConditions_sti = "HealthConditions.sti";
 	String HealthConditions_stiProphylaxis = "HealthConditions.stiProphylaxis";
 	String HealthConditions_substanceUseDisorder = "HealthConditions.substanceUseDisorder";
 	String HealthConditions_substanceUseDisorderDetails = "HealthConditions.substanceUseDisorderDetails";

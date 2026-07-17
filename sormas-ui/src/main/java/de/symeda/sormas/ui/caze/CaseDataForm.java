@@ -258,7 +258,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 									CaseDataDto.PLAGUE_TYPE,
 									CaseDataDto.RABIES_TYPE))) +
 					fluidRowLocs(CaseDataDto.DISEASE_VARIANT, CaseDataDto.DISEASE_VARIANT_DETAILS) +
-					fluidRowLocs(CaseDataDto.SYPHLIS_PRESENTATION, "") +
+					fluidRowLocs(CaseDataDto.SYPHILIS_PRESENTATION, "") +
 					loc(LOC_CUSTOMIZABLE_FIELDS_CASE_DATA_DISEASE) +
 					fluidRow(
 							fluidColumnLoc(4, 0, CaseDataDto.RE_INFECTION),
@@ -349,6 +349,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					loc(GENERAL_COMMENT_LOC) + fluidRowLocs(CaseDataDto.ADDITIONAL_DETAILS) +
 					fluidRowLocs(CaseDataDto.DELETION_REASON) +
 					fluidRowLocs(CaseDataDto.OTHER_DELETION_REASON);
+
+	public static final List<Disease> DISEASES_HIDDEN_VACCINATION_FIELD = List.of(Disease.SYPHILIS);
 	//@formatter:on
 
 	private CustomizableFieldsGroup caseDataGeneralPanel;
@@ -572,7 +574,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.PLAGUE_TYPE, NullableOptionGroup.class);
 		addField(CaseDataDto.DENGUE_FEVER_TYPE, NullableOptionGroup.class);
 		addField(CaseDataDto.RABIES_TYPE, NullableOptionGroup.class);
-		ComboBox presentationField = addField(CaseDataDto.SYPHLIS_PRESENTATION, ComboBox.class);
+		ComboBox presentationField = addField(CaseDataDto.SYPHILIS_PRESENTATION, ComboBox.class);
 		presentationField.setNullSelectionAllowed(true);
 
 		addField(CaseDataDto.CASE_ORIGIN, TextField.class);
@@ -1016,7 +1018,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		getContent().addComponent(vaccinationStatusDetailsField, VACCINATION_STATUS_DETAILS_LOC);
 
 		// Show details field only when vaccination status is OTHER
-		if (showVaccinationStatusFields && disease != Disease.SYPHILIS) {
+		if (showVaccinationStatusFields && !DISEASES_HIDDEN_VACCINATION_FIELD.contains(disease)) {
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),
 				CaseDataDto.VACCINATION_STATUS_DETAILS,
@@ -1244,10 +1246,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			FieldHelper
 				.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.RABIES_TYPE), CaseDataDto.DISEASE, Arrays.asList(Disease.RABIES), true);
 		}
-		if (isVisibleAllowed(CaseDataDto.SYPHLIS_PRESENTATION)) {
+		if (isVisibleAllowed(CaseDataDto.SYPHILIS_PRESENTATION)) {
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),
-				Arrays.asList(CaseDataDto.SYPHLIS_PRESENTATION),
+				Arrays.asList(CaseDataDto.SYPHILIS_PRESENTATION),
 				CaseDataDto.DISEASE,
 				Arrays.asList(Disease.SYPHILIS),
 				true);
@@ -1377,6 +1379,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 				getContent().addComponent(classificationRulesButton, CLASSIFICATION_RULES_LOC);
 			} else if (isLuxSyphilis(disease)) {
+				// TODO: needs to be checked with Chris
 				// LUX+Syphilis: the case definition depends on the selected Presentation (Acquired/Congenital)
 				getSyphilisCaseDefinition(presentationField);
 			} else {

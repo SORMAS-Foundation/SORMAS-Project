@@ -133,6 +133,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
         fluidColumn(6, 0,
             locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE, CaseDataDto.RABIES_TYPE)))
         + fluidRowLocs(CaseDataDto.DISEASE_VARIANT, CaseDataDto.DISEASE_VARIANT_DETAILS)
+        + fluidRowLocs(CaseDataDto.SYPHILIS_PRESENTATION, "")
 		+ fluidRowLocs(CaseDataDto.RE_INFECTION)
         + fluidRowLocs(RESPONSIBLE_JURISDICTION_HEADING_LOC)
         + fluidRowLocs(CaseDataDto.RESPONSIBLE_REGION, CaseDataDto.RESPONSIBLE_DISTRICT, CaseDataDto.RESPONSIBLE_COMMUNITY)
@@ -211,6 +212,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		NullableOptionGroup plagueType = addField(CaseDataDto.PLAGUE_TYPE, NullableOptionGroup.class);
 		addField(CaseDataDto.DENGUE_FEVER_TYPE, NullableOptionGroup.class);
 		addField(CaseDataDto.RABIES_TYPE, NullableOptionGroup.class);
+		addField(CaseDataDto.SYPHILIS_PRESENTATION, ComboBox.class).setRequired(true);
 
 		addField(CaseDataDto.RE_INFECTION, NullableOptionGroup.class);
 
@@ -499,6 +501,14 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		FieldHelper
 			.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.DENGUE_FEVER_TYPE), CaseDataDto.DISEASE, Arrays.asList(Disease.DENGUE), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.RABIES_TYPE), CaseDataDto.DISEASE, Arrays.asList(Disease.RABIES), true);
+		if (isVisibleAllowed(CaseDataDto.SYPHILIS_PRESENTATION)) {
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				Arrays.asList(CaseDataDto.SYPHILIS_PRESENTATION),
+				CaseDataDto.DISEASE,
+				Arrays.asList(Disease.SYPHILIS),
+				true);
+		}
 		FieldHelper.setVisibleWhen(
 			facilityOrHome,
 			Arrays.asList(facilityTypeGroup, facilityType, facilityCombo),

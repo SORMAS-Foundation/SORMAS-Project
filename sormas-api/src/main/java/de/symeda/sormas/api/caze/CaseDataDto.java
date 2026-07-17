@@ -117,7 +117,7 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	public static final String PLAGUE_TYPE = "plagueType";
 	public static final String DENGUE_FEVER_TYPE = "dengueFeverType";
 	public static final String RABIES_TYPE = "rabiesType";
-	public static final String SYPHLIS_PRESENTATION = "presentation";
+	public static final String SYPHILIS_PRESENTATION = "syphilisPresentation";
 	public static final String RESPONSIBLE_REGION = "responsibleRegion";
 	public static final String RESPONSIBLE_DISTRICT = "responsibleDistrict";
 	public static final String RESPONSIBLE_COMMUNITY = "responsibleCommunity";
