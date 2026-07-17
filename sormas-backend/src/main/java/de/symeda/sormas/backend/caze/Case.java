@@ -64,6 +64,7 @@ import de.symeda.sormas.api.caze.RadiographyCompatibility;
 import de.symeda.sormas.api.caze.ReinfectionDetail;
 import de.symeda.sormas.api.caze.ReinfectionStatus;
 import de.symeda.sormas.api.caze.ScreeningType;
+import de.symeda.sormas.api.caze.SyphilisPresentation;
 import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
@@ -132,6 +133,7 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	public static final String DISEASE_VARIANT_DETAILS = "diseaseVariantDetails";
 	public static final String PLAGUE_TYPE = "plagueType";
 	public static final String RABIES_TYPE = "rabiesType";
+	public static final String PRESENTATION = "presentation";
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
 	public static final String REPORTING_USER = "reportingUser";
@@ -278,6 +280,7 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	private PlagueType plagueType;
 	private DengueFeverType dengueFeverType;
 	private RabiesType rabiesType;
+	private SyphilisPresentation presentation;
 
 	private CaseClassification caseClassification;
 	private CaseClassification systemCaseClassification;
@@ -584,6 +587,15 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 
 	public void setRabiesType(RabiesType rabiesType) {
 		this.rabiesType = rabiesType;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SyphilisPresentation getPresentation() {
+		return presentation;
+	}
+
+	public void setPresentation(SyphilisPresentation presentation) {
+		this.presentation = presentation;
 	}
 
 	@Enumerated(EnumType.STRING)

@@ -96,6 +96,7 @@ import de.symeda.sormas.api.caze.PreviousCaseDto;
 import de.symeda.sormas.api.caze.QuarantineReason;
 import de.symeda.sormas.api.caze.ReinfectionDetail;
 import de.symeda.sormas.api.caze.ReinfectionDetailGroup;
+import de.symeda.sormas.api.caze.SyphilisPresentation;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -257,6 +258,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 									CaseDataDto.PLAGUE_TYPE,
 									CaseDataDto.RABIES_TYPE))) +
 					fluidRowLocs(CaseDataDto.DISEASE_VARIANT, CaseDataDto.DISEASE_VARIANT_DETAILS) +
+					fluidRowLocs(CaseDataDto.PRESENTATION, "") +
 					loc(LOC_CUSTOMIZABLE_FIELDS_CASE_DATA_DISEASE) +
 					fluidRow(
 							fluidColumnLoc(4, 0, CaseDataDto.RE_INFECTION),
@@ -565,13 +567,13 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		if (DiseaseHelper.SUBTYPE_ALLOWED_DISEASES.contains(disease)) {
 			diseaseVariantField.setCaption(I18nProperties.getCaption(Captions.PathogenTest_rsv_testedDiseaseVariant));
 			diseaseVariantDetailsField.setCaption(I18nProperties.getCaption(Captions.PathogenTest_rsv_testedDiseaseVariantDetails));
-		} else if (isLuxSyphilis(disease)) {
-			diseaseVariantField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, "presentation"));
 		}
 		addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
 		addField(CaseDataDto.PLAGUE_TYPE, NullableOptionGroup.class);
 		addField(CaseDataDto.DENGUE_FEVER_TYPE, NullableOptionGroup.class);
 		addField(CaseDataDto.RABIES_TYPE, NullableOptionGroup.class);
+		ComboBox presentationField = addField(CaseDataDto.PRESENTATION, ComboBox.class);
+		presentationField.setNullSelectionAllowed(true);
 
 		addField(CaseDataDto.CASE_ORIGIN, TextField.class);
 
@@ -1242,6 +1244,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			FieldHelper
 				.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.RABIES_TYPE), CaseDataDto.DISEASE, Arrays.asList(Disease.RABIES), true);
 		}
+		if (isVisibleAllowed(CaseDataDto.PRESENTATION)) {
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				Arrays.asList(CaseDataDto.PRESENTATION),
+				CaseDataDto.DISEASE,
+				Arrays.asList(Disease.SYPHILIS),
+				true);
+		}
 		if (isVisibleAllowed(CaseDataDto.SMALLPOX_VACCINATION_SCAR)) {
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),
@@ -1368,7 +1378,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				getContent().addComponent(classificationRulesButton, CLASSIFICATION_RULES_LOC);
 			} else if (isLuxSyphilis(disease)) {
 				// LUX+Syphilis: the case definition depends on the selected Presentation (Acquired/Congenital)
-				getSyphilisCaseDefinition(diseaseVariantField);
+				getSyphilisCaseDefinition(presentationField);
 			} else {
 				// If Manual classification is enabled for the disease.
 				getManualCaseDefinition();
@@ -1619,14 +1629,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 	/**
 	 * LUX+Syphilis specific: shows the ECDC-style case definition matching the currently selected
-	 * Presentation (Acquired/Congenital syphilis, the relabeled Disease Variant field).
+	 * Presentation (Acquired/Congenital syphilis).
 	 */
 	@SuppressWarnings("unchecked")
-	private void getSyphilisCaseDefinition(ComboBox diseaseVariantField) {
+	private void getSyphilisCaseDefinition(ComboBox presentationField) {
 
 		Button caseDefinitionButton = ButtonHelper.createIconButton(Captions.info, VaadinIcons.INFO_CIRCLE, e -> {
-			DiseaseVariant presentation = (DiseaseVariant) diseaseVariantField.getValue();
-			boolean isCongenital = presentation != null && "CONGENITAL".equals(presentation.getValue());
+			SyphilisPresentation presentation = (SyphilisPresentation) presentationField.getValue();
+			boolean isCongenital = presentation == SyphilisPresentation.CONGENITAL;
 			String caseDefinitionText = I18nProperties.getString(
 				isCongenital ? Strings.caseDefinitionSyphilisCongenital : Strings.caseDefinitionSyphilisAcquired);
 

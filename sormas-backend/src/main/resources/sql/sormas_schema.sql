@@ -16877,12 +16877,10 @@ ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS syphilisdrugused v
 ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS syphilisnumberofdoses int4;
 ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS syphilisdateoffirstdose timestamp;
 
--- Seed Presentation values (reusing the Disease Variant customizable enum, same mechanism as the
--- 2024-11-18 Influenza/RSV LUX request #13183)
-INSERT INTO customizableenumvalue(id, uuid, changedate, creationdate, datatype, value, caption, diseases)
-VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'DISEASE_VARIANT', 'ACQUIRED', 'Acquired', 'SYPHILIS');
-INSERT INTO customizableenumvalue(id, uuid, changedate, creationdate, datatype, value, caption, diseases)
-VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'DISEASE_VARIANT', 'CONGENITAL', 'Congenital syphilis', 'SYPHILIS');
+-- Case-level Presentation (Acquired/Congenital syphilis), a dedicated fixed enum field - not a
+-- reuse of the Disease Variant customizable enum.
+ALTER TABLE cases ADD COLUMN IF NOT EXISTS presentation varchar(255);
+ALTER TABLE cases_history ADD COLUMN IF NOT EXISTS presentation varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (650, 'SORMAS-Luxembourg Syphilis case data adaptations #14207');
 
