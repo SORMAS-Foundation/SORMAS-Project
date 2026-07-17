@@ -258,7 +258,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 									CaseDataDto.PLAGUE_TYPE,
 									CaseDataDto.RABIES_TYPE))) +
 					fluidRowLocs(CaseDataDto.DISEASE_VARIANT, CaseDataDto.DISEASE_VARIANT_DETAILS) +
-					fluidRowLocs(CaseDataDto.PRESENTATION, "") +
+					fluidRowLocs(CaseDataDto.SYPHLIS_PRESENTATION, "") +
 					loc(LOC_CUSTOMIZABLE_FIELDS_CASE_DATA_DISEASE) +
 					fluidRow(
 							fluidColumnLoc(4, 0, CaseDataDto.RE_INFECTION),
@@ -572,7 +572,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.PLAGUE_TYPE, NullableOptionGroup.class);
 		addField(CaseDataDto.DENGUE_FEVER_TYPE, NullableOptionGroup.class);
 		addField(CaseDataDto.RABIES_TYPE, NullableOptionGroup.class);
-		ComboBox presentationField = addField(CaseDataDto.PRESENTATION, ComboBox.class);
+		ComboBox presentationField = addField(CaseDataDto.SYPHLIS_PRESENTATION, ComboBox.class);
 		presentationField.setNullSelectionAllowed(true);
 
 		addField(CaseDataDto.CASE_ORIGIN, TextField.class);
@@ -1016,7 +1016,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		getContent().addComponent(vaccinationStatusDetailsField, VACCINATION_STATUS_DETAILS_LOC);
 
 		// Show details field only when vaccination status is OTHER
-		if (showVaccinationStatusFields) {
+		if (showVaccinationStatusFields && disease != Disease.SYPHILIS) {
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),
 				CaseDataDto.VACCINATION_STATUS_DETAILS,
@@ -1244,10 +1244,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			FieldHelper
 				.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.RABIES_TYPE), CaseDataDto.DISEASE, Arrays.asList(Disease.RABIES), true);
 		}
-		if (isVisibleAllowed(CaseDataDto.PRESENTATION)) {
+		if (isVisibleAllowed(CaseDataDto.SYPHLIS_PRESENTATION)) {
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),
-				Arrays.asList(CaseDataDto.PRESENTATION),
+				Arrays.asList(CaseDataDto.SYPHLIS_PRESENTATION),
 				CaseDataDto.DISEASE,
 				Arrays.asList(Disease.SYPHILIS),
 				true);

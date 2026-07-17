@@ -230,56 +230,36 @@ public class HealthConditionsDto extends PseudonymizableDto {
 		Disease.SHIGELLOSIS })
 	private String chronicDiseaseDetails;
 
-	@HideForCountriesExcept(countries = {
-		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@Diseases(value = {
 		Disease.SYPHILIS })
 	private HivStatus hivStatus;
-	@HideForCountriesExcept(countries = {
-		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@Diseases(value = {
 		Disease.SYPHILIS })
 	private YesNoUnknown mentalHealthDisorder;
-	@HideForCountriesExcept(countries = {
-		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@Diseases(value = {
 		Disease.SYPHILIS })
 	private YesNoUnknown substanceUseDisorder;
-	@HideForCountriesExcept(countries = {
-		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@Diseases(value = {
 		Disease.SYPHILIS })
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String substanceUseDisorderDetails;
-	@HideForCountriesExcept(countries = {
-		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@Diseases(value = {
 		Disease.SYPHILIS })
 	private YesNoUnknown stiProphylaxis;
-	@HideForCountriesExcept(countries = {
-		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@Diseases(value = {
 		Disease.SYPHILIS })
 	private YesNoUnknown hivPrep;
-	@HideForCountriesExcept(countries = {
-		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@Diseases(value = {
 		Disease.SYPHILIS })
 	private YesNoUnknown treatedForSyphilis;
-	@HideForCountriesExcept(countries = {
-		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@Diseases(value = {
 		Disease.SYPHILIS })
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String syphilisDrugUsed;
-	@HideForCountriesExcept(countries = {
-		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@Diseases(value = {
 		Disease.SYPHILIS })
 	private Integer syphilisNumberOfDoses;
-	@HideForCountriesExcept(countries = {
-		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@Diseases(value = {
 		Disease.SYPHILIS })
 	private Date syphilisDateOfFirstDose;

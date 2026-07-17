@@ -280,7 +280,7 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	private PlagueType plagueType;
 	private DengueFeverType dengueFeverType;
 	private RabiesType rabiesType;
-	private SyphilisPresentation presentation;
+	private SyphilisPresentation syphilisPresentation;
 
 	private CaseClassification caseClassification;
 	private CaseClassification systemCaseClassification;
@@ -590,12 +590,12 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	}
 
 	@Enumerated(EnumType.STRING)
-	public SyphilisPresentation getPresentation() {
-		return presentation;
+	public SyphilisPresentation getSyphilisPresentation() {
+		return syphilisPresentation;
 	}
 
-	public void setPresentation(SyphilisPresentation presentation) {
-		this.presentation = presentation;
+	public void setSyphilisPresentation(SyphilisPresentation presentation) {
+		this.syphilisPresentation = presentation;
 	}
 
 	@Enumerated(EnumType.STRING)

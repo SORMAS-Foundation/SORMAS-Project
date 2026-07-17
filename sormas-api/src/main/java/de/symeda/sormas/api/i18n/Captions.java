@@ -759,7 +759,7 @@ public interface Captions {
 	String CaseData_postMortem = "CaseData.postMortem";
 	String CaseData_postpartum = "CaseData.postpartum";
 	String CaseData_pregnant = "CaseData.pregnant";
-	String CaseData_presentation = "CaseData.presentation";
+	String CaseData_syphilisPresentation = "CaseData.syphilisPresentation";
 	String CaseData_previousInfectionDate = "CaseData.previousInfectionDate";
 	String CaseData_previousQuarantineTo = "CaseData.previousQuarantineTo";
 	String CaseData_prohibitionToWork = "CaseData.prohibitionToWork";

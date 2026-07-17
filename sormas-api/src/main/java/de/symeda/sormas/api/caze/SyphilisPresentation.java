@@ -18,7 +18,7 @@ package de.symeda.sormas.api.caze;
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 /**
- * LUX+Syphilis specific: the case-level clinical presentation of a Syphilis case.
+ * Case-level clinical presentation of a Syphilis case.
  */
 public enum SyphilisPresentation {
 
