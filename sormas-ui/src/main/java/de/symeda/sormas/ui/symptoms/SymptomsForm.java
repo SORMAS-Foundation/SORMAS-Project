@@ -72,6 +72,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.PlagueType;
+import de.symeda.sormas.api.caze.SyphilisPresentation;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
@@ -1578,12 +1579,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		}
 	}
 
-	/**
-	 * Congenital vs. acquired syphilis is not yet modeled as an explicit case presentation field.
-	 * TODO replace with a real check once that field exists; for now every syphilis case is treated as acquired.
-	 */
 	private boolean isCongenitalSyphilis() {
-		return false;
+		return caze.getDisease() == Disease.SYPHILIS && caze.getSyphilisPresentation() == SyphilisPresentation.CONGENITAL;
 	}
 
 	private void setUpMonkeypoxVisibilities() {

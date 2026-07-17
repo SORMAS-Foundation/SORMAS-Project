@@ -21,6 +21,8 @@ public interface Strings {
 	String bpm = "bpm";
 	String by = "by";
 	String caseDefinitionForDisease = "caseDefinitionForDisease";
+	String caseDefinitionSyphilisAcquired = "caseDefinitionSyphilisAcquired";
+	String caseDefinitionSyphilisCongenital = "caseDefinitionSyphilisCongenital";
 	String checkboxSetTickAnAnswerForAll = "checkboxSetTickAnAnswerForAll";
 	String classificationAllOf = "classificationAllOf";
 	String classificationClassificationRules = "classificationClassificationRules";

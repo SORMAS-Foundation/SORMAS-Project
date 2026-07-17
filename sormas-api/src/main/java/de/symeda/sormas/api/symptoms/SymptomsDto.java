@@ -2872,6 +2872,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CRYPTOSPORIDIOSIS,
 		MALARIA,
 		DENGUE,
+		SYPHILIS,
 		SHIGELLOSIS })
 	@SymptomGrouping(SymptomGroup.OTHER)
 	private SymptomState otherClinicalPresentation;

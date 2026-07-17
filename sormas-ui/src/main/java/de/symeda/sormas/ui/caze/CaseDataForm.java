@@ -96,6 +96,7 @@ import de.symeda.sormas.api.caze.PreviousCaseDto;
 import de.symeda.sormas.api.caze.QuarantineReason;
 import de.symeda.sormas.api.caze.ReinfectionDetail;
 import de.symeda.sormas.api.caze.ReinfectionDetailGroup;
+import de.symeda.sormas.api.caze.SyphilisPresentation;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -257,6 +258,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 									CaseDataDto.PLAGUE_TYPE,
 									CaseDataDto.RABIES_TYPE))) +
 					fluidRowLocs(CaseDataDto.DISEASE_VARIANT, CaseDataDto.DISEASE_VARIANT_DETAILS) +
+					fluidRowLocs(CaseDataDto.SYPHILIS_PRESENTATION, "") +
 					loc(LOC_CUSTOMIZABLE_FIELDS_CASE_DATA_DISEASE) +
 					fluidRow(
 							fluidColumnLoc(4, 0, CaseDataDto.RE_INFECTION),
@@ -347,6 +349,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					loc(GENERAL_COMMENT_LOC) + fluidRowLocs(CaseDataDto.ADDITIONAL_DETAILS) +
 					fluidRowLocs(CaseDataDto.DELETION_REASON) +
 					fluidRowLocs(CaseDataDto.OTHER_DELETION_REASON);
+
+	public static final List<Disease> DISEASES_HIDDEN_VACCINATION_FIELD = List.of(Disease.SYPHILIS);
 	//@formatter:on
 
 	private CustomizableFieldsGroup caseDataGeneralPanel;
@@ -570,6 +574,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.PLAGUE_TYPE, NullableOptionGroup.class);
 		addField(CaseDataDto.DENGUE_FEVER_TYPE, NullableOptionGroup.class);
 		addField(CaseDataDto.RABIES_TYPE, NullableOptionGroup.class);
+
+		ComboBox presentationField = addField(CaseDataDto.SYPHILIS_PRESENTATION, ComboBox.class);
+		presentationField.setNullSelectionAllowed(false);
+		presentationField.setRequired(true);
 
 		addField(CaseDataDto.CASE_ORIGIN, TextField.class);
 
@@ -1012,7 +1020,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		getContent().addComponent(vaccinationStatusDetailsField, VACCINATION_STATUS_DETAILS_LOC);
 
 		// Show details field only when vaccination status is OTHER
-		if (showVaccinationStatusFields) {
+		if (showVaccinationStatusFields && !DISEASES_HIDDEN_VACCINATION_FIELD.contains(disease)) {
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),
 				CaseDataDto.VACCINATION_STATUS_DETAILS,
@@ -1240,6 +1248,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			FieldHelper
 				.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.RABIES_TYPE), CaseDataDto.DISEASE, Arrays.asList(Disease.RABIES), true);
 		}
+		if (isVisibleAllowed(CaseDataDto.SYPHILIS_PRESENTATION)) {
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				Arrays.asList(CaseDataDto.SYPHILIS_PRESENTATION),
+				CaseDataDto.DISEASE,
+				Arrays.asList(Disease.SYPHILIS),
+				true);
+		}
 		if (isVisibleAllowed(CaseDataDto.SMALLPOX_VACCINATION_SCAR)) {
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),
@@ -1364,6 +1380,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					FORCE_CAPTION);
 
 				getContent().addComponent(classificationRulesButton, CLASSIFICATION_RULES_LOC);
+			} else if (isLuxSyphilis(disease)) {
+				// TODO: needs to be checked with Chris
+				// LUX+Syphilis: the case definition depends on the selected Presentation (Acquired/Congenital)
+				getSyphilisCaseDefinition(presentationField);
 			} else {
 				// If Manual classification is enabled for the disease.
 				getManualCaseDefinition();
@@ -1613,8 +1633,40 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	}
 
 	/**
+	 * TODO: needs to be checked with Chris
+	 * LUX+Syphilis specific: shows the ECDC-style case definition matching the currently selected
+	 * Presentation (Acquired/Congenital syphilis).
+	 */
+	@SuppressWarnings("unchecked")
+	private void getSyphilisCaseDefinition(ComboBox presentationField) {
+
+		Button caseDefinitionButton = ButtonHelper.createIconButton(Captions.info, VaadinIcons.INFO_CIRCLE, e -> {
+			SyphilisPresentation presentation = (SyphilisPresentation) presentationField.getValue();
+			boolean isCongenital = presentation == SyphilisPresentation.CONGENITAL;
+			String caseDefinitionText =
+				I18nProperties.getString(isCongenital ? Strings.caseDefinitionSyphilisCongenital : Strings.caseDefinitionSyphilisAcquired);
+
+			VerticalLayout classificationRulesLayout = new VerticalLayout();
+			classificationRulesLayout.setMargin(true);
+			String processedCaseDefinition = sanitizeAndLinkify(caseDefinitionText);
+			Label caseDefinitionLabel = new Label();
+			caseDefinitionLabel.setContentMode(ContentMode.HTML);
+			caseDefinitionLabel.setWidth(100, Unit.PERCENTAGE);
+			caseDefinitionLabel.setValue(processedCaseDefinition);
+			classificationRulesLayout.addComponent(caseDefinitionLabel);
+			Window popupWindow = VaadinUiUtil.showPopupWindow(classificationRulesLayout);
+			popupWindow.addCloseListener(e1 -> popupWindow.close());
+			popupWindow.setWidth(860, Unit.PIXELS);
+			popupWindow.setHeight(80, Unit.PERCENTAGE);
+			popupWindow.setCaption(I18nProperties.getString(Strings.caseDefinitionForDisease) + " " + disease);
+		}, ValoTheme.BUTTON_PRIMARY, FORCE_CAPTION);
+
+		getContent().addComponent(caseDefinitionButton, CLASSIFICATION_RULES_LOC);
+	}
+
+	/**
 	 * sanitizing the url
-	 * 
+	 *
 	 * @param text
 	 * @return sanitized url
 	 */
@@ -1665,7 +1717,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 	/**
 	 * Replacing any escape sequence with the character that it represents.
-	 * 
+	 *
 	 * @param value
 	 * @return String
 	 */
@@ -1680,7 +1732,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 	/**
 	 * Converting special characters in a string into their safe HTML entity values
-	 * 
+	 *
 	 * @param value
 	 * @return
 	 */
@@ -1741,6 +1793,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private boolean diseaseClassificationExists() {
 		DiseaseClassificationCriteriaDto diseaseClassificationCriteria = FacadeProvider.getCaseClassificationFacade().getByDisease(disease);
 		return disease != Disease.OTHER && diseaseClassificationCriteria != null;
+	}
+
+	private boolean isLuxSyphilis(Disease disease) {
+		return Disease.SYPHILIS == disease && isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 	}
 
 	private void onFollowUpUntilChanged() {
