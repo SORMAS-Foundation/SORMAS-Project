@@ -16865,6 +16865,7 @@ ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS treatedforsyphilis varchar
 ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS syphilisdrugused varchar(512);
 ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS syphilisnumberofdoses int4;
 ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS syphilisdateoffirstdose timestamp;
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS sti varchar(255);
 
 ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS hivstatus varchar(255);
 ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS mentalhealthdisorder varchar(255);
@@ -16876,11 +16877,10 @@ ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS treatedforsyphilis
 ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS syphilisdrugused varchar(512);
 ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS syphilisnumberofdoses int4;
 ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS syphilisdateoffirstdose timestamp;
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS sti varchar(255);
 
--- Case-level Presentation (Acquired/Congenital syphilis), a dedicated fixed enum field - not a
--- reuse of the Disease Variant customizable enum.
-ALTER TABLE cases ADD COLUMN IF NOT EXISTS presentation varchar(255);
-ALTER TABLE cases_history ADD COLUMN IF NOT EXISTS presentation varchar(255);
+ALTER TABLE cases ADD COLUMN IF NOT EXISTS syphilispresentation varchar(255);
+ALTER TABLE cases_history ADD COLUMN IF NOT EXISTS syphilispresentation varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (650, 'SORMAS-Luxembourg Syphilis case data adaptations #14207');
 
