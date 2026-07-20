@@ -16865,7 +16865,7 @@ ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS treatedforsyphilis varchar
 ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS syphilisdrugused varchar(512);
 ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS syphilisnumberofdoses int4;
 ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS syphilisdateoffirstdose timestamp;
-ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS stis varchar(255);
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS syphilisorotherstis varchar(255);
 
 ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS hivstatus varchar(255);
 ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS mentalhealthdisorder varchar(255);
@@ -16877,7 +16877,7 @@ ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS treatedforsyphilis
 ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS syphilisdrugused varchar(512);
 ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS syphilisnumberofdoses int4;
 ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS syphilisdateoffirstdose timestamp;
-ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS stis varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS syphilisorotherstis varchar(255);
 
 ALTER TABLE cases ADD COLUMN IF NOT EXISTS syphilispresentation varchar(255);
 ALTER TABLE cases_history ADD COLUMN IF NOT EXISTS syphilispresentation varchar(255);
