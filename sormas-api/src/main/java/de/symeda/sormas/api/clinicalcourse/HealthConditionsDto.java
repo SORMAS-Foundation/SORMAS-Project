@@ -244,7 +244,6 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	@Diseases(value = {
 		Disease.SYPHILIS })
 	@SensitiveData
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String substanceUseDisorderDetails;
 	@Diseases(value = {
 		Disease.SYPHILIS })
@@ -257,7 +256,6 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	private YesNoUnknown treatedForSyphilis;
 	@Diseases(value = {
 		Disease.SYPHILIS })
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String syphilisDrugUsed;
 	@Diseases(value = {
 		Disease.SYPHILIS })

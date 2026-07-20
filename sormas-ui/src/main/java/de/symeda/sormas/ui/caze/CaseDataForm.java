@@ -576,7 +576,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		ComboBox presentationField = addField(CaseDataDto.SYPHILIS_PRESENTATION, ComboBox.class);
 		presentationField.setNullSelectionAllowed(false);
-		presentationField.setRequired(true);
 
 		addField(CaseDataDto.CASE_ORIGIN, TextField.class);
 
@@ -1254,6 +1253,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				CaseDataDto.DISEASE,
 				Arrays.asList(Disease.SYPHILIS),
 				true);
+			FieldHelper.setRequiredWhen(
+				getFieldGroup(),
+				CaseDataDto.DISEASE,
+				Arrays.asList(CaseDataDto.SYPHILIS_PRESENTATION),
+				Arrays.asList(Disease.SYPHILIS));
 		}
 		if (isVisibleAllowed(CaseDataDto.SMALLPOX_VACCINATION_SCAR)) {
 			FieldHelper.setVisibleWhen(
