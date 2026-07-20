@@ -2149,13 +2149,13 @@ public interface Captions {
 	String HealthConditions_previousTuberculosisTreatment = "HealthConditions.previousTuberculosisTreatment";
 	String HealthConditions_recurrentBronchiolitis = "HealthConditions.recurrentBronchiolitis";
 	String HealthConditions_sickleCellDisease = "HealthConditions.sickleCellDisease";
-	String HealthConditions_sti = "HealthConditions.sti";
 	String HealthConditions_stiProphylaxis = "HealthConditions.stiProphylaxis";
 	String HealthConditions_substanceUseDisorder = "HealthConditions.substanceUseDisorder";
 	String HealthConditions_substanceUseDisorderDetails = "HealthConditions.substanceUseDisorderDetails";
 	String HealthConditions_syphilisDateOfFirstDose = "HealthConditions.syphilisDateOfFirstDose";
 	String HealthConditions_syphilisDrugUsed = "HealthConditions.syphilisDrugUsed";
 	String HealthConditions_syphilisNumberOfDoses = "HealthConditions.syphilisNumberOfDoses";
+	String HealthConditions_syphilisOrOtherStis = "HealthConditions.syphilisOrOtherStis";
 	String HealthConditions_treatedForSyphilis = "HealthConditions.treatedForSyphilis";
 	String HealthConditions_tuberculosis = "HealthConditions.tuberculosis";
 	String HealthConditions_tuberculosisInfectionYear = "HealthConditions.tuberculosisInfectionYear";

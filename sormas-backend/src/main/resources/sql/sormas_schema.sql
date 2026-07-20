@@ -16854,7 +16854,7 @@ UPDATE samples_history SET
     WHERE requestedpathogentestsstring ~ '(^|,)(ANTIGEN_DETECTION|RAPID_TEST|RAPID_ANTIGEN_DETECTION|RDT|DIRECT_MICROSCOPY|RAPID_ANTIBODY_TEST)(,|$)';
 INSERT INTO schema_version (version_number, comment) VALUES (649, 'Merge retired pathogen test types into Lateral Flow Assay / Other');
 
--- 2026-07-16 Entries to the LUX+Syphilis specific #14207
+-- Syphilis case-data
 ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS hivstatus varchar(255);
 ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS mentalhealthdisorder varchar(255);
 ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS substanceusedisorder varchar(255);

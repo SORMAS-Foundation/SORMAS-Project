@@ -211,7 +211,6 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), HIV_ART, HIV, Arrays.asList(YesNoUnknown.YES), true);
 
-		// LUX+Syphilis specific conditional fields
 		FieldHelper.setVisibleWhen(getFieldGroup(), SUBSTANCE_USE_DISORDER_DETAILS, SUBSTANCE_USE_DISORDER, Arrays.asList(YesNoUnknown.YES), true);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
