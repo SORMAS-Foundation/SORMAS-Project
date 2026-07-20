@@ -96,7 +96,6 @@ import de.symeda.sormas.api.caze.PreviousCaseDto;
 import de.symeda.sormas.api.caze.QuarantineReason;
 import de.symeda.sormas.api.caze.ReinfectionDetail;
 import de.symeda.sormas.api.caze.ReinfectionDetailGroup;
-import de.symeda.sormas.api.caze.SyphilisPresentation;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -1381,10 +1380,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					FORCE_CAPTION);
 
 				getContent().addComponent(classificationRulesButton, CLASSIFICATION_RULES_LOC);
-			} else if (isLuxSyphilis(disease)) {
-				// TODO: needs to be checked with Chris
-				// LUX+Syphilis: the case definition depends on the selected Presentation (Acquired/Congenital)
-				getSyphilisCaseDefinition(presentationField);
 			} else {
 				// If Manual classification is enabled for the disease.
 				getManualCaseDefinition();
@@ -1615,38 +1610,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		}
 
 		Button caseDefinitionButton = ButtonHelper.createIconButton(Captions.info, VaadinIcons.INFO_CIRCLE, e -> {
-			VerticalLayout classificationRulesLayout = new VerticalLayout();
-			classificationRulesLayout.setMargin(true);
-			String processedCaseDefinition = sanitizeAndLinkify(caseDefinitionText);
-			Label caseDefinitionLabel = new Label();
-			caseDefinitionLabel.setContentMode(ContentMode.HTML);
-			caseDefinitionLabel.setWidth(100, Unit.PERCENTAGE);
-			caseDefinitionLabel.setValue(processedCaseDefinition);
-			classificationRulesLayout.addComponent(caseDefinitionLabel);
-			Window popupWindow = VaadinUiUtil.showPopupWindow(classificationRulesLayout);
-			popupWindow.addCloseListener(e1 -> popupWindow.close());
-			popupWindow.setWidth(860, Unit.PIXELS);
-			popupWindow.setHeight(80, Unit.PERCENTAGE);
-			popupWindow.setCaption(I18nProperties.getString(Strings.caseDefinitionForDisease) + " " + disease);
-		}, ValoTheme.BUTTON_PRIMARY, FORCE_CAPTION);
-
-		getContent().addComponent(caseDefinitionButton, CLASSIFICATION_RULES_LOC);
-	}
-
-	/**
-	 * TODO: needs to be checked with Chris
-	 * LUX+Syphilis specific: shows the ECDC-style case definition matching the currently selected
-	 * Presentation (Acquired/Congenital syphilis).
-	 */
-	@SuppressWarnings("unchecked")
-	private void getSyphilisCaseDefinition(ComboBox presentationField) {
-
-		Button caseDefinitionButton = ButtonHelper.createIconButton(Captions.info, VaadinIcons.INFO_CIRCLE, e -> {
-			SyphilisPresentation presentation = (SyphilisPresentation) presentationField.getValue();
-			boolean isCongenital = presentation == SyphilisPresentation.CONGENITAL;
-			String caseDefinitionText = I18nProperties.getString(
-				isCongenital ? Strings.caseDefinitionSyphilisCongenital : Strings.caseDefinitionSyphilisAcquired);
-
 			VerticalLayout classificationRulesLayout = new VerticalLayout();
 			classificationRulesLayout.setMargin(true);
 			String processedCaseDefinition = sanitizeAndLinkify(caseDefinitionText);
