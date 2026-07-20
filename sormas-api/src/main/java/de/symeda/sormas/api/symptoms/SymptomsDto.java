@@ -406,6 +406,12 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String SYPHILIS_STAGE = "syphilisStage";
 	public static final String SYPHILIS_INFECTIOUSNESS = "syphilisInfectiousness";
 	public static final String CLINICAL_CRITERIA_MET = "clinicalCriteriaMet";
+	public static final String ARTHRALGIA = "arthralgia";
+	public static final String HEPATOMEGALY = "hepatomegaly";
+	public static final String HEPATOSPLENOMEGALY = "hepatosplenomegaly";
+	public static final String LOW_GRADE_FEVER = "lowGradeFever";
+	public static final String MUCOCUTANEOUS_LESION = "mucocutaneousLesion";
+	public static final String MACULOPAPULAR_RASH = "maculopapularRash";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -1869,8 +1875,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		SALMONELLOSIS,
 		UNDEFINED,
 		OTHER,
-		CORONAVIRUS,
-		SYPHILIS })
+		CORONAVIRUS })
 	@Outbreaks
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.SKIN)
@@ -3286,6 +3291,36 @@ public class SymptomsDto extends PseudonymizableDto {
 		SYPHILIS })
 	@SymptomGrouping(SymptomGroup.GENERAL)
 	private SymptomState nephroticSyndrome;
+
+	@Diseases({
+		SYPHILIS })
+	@SymptomGrouping(SymptomGroup.GENERAL)
+	private SymptomState arthralgia;
+
+	@Diseases({
+		SYPHILIS })
+	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
+	private SymptomState hepatomegaly;
+
+	@Diseases({
+		SYPHILIS })
+	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
+	private SymptomState hepatosplenomegaly;
+
+	@Diseases({
+		SYPHILIS })
+	@SymptomGrouping(SymptomGroup.GENERAL)
+	private SymptomState lowGradeFever;
+
+	@Diseases({
+		SYPHILIS })
+	@SymptomGrouping(SymptomGroup.SKIN)
+	private SymptomState mucocutaneousLesion;
+
+	@Diseases({
+		SYPHILIS })
+	@SymptomGrouping(SymptomGroup.SKIN)
+	private SymptomState maculopapularRash;
 
 	@Diseases({
 		SYPHILIS })
@@ -5583,6 +5618,54 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	public void setNephroticSyndrome(SymptomState nephroticSyndrome) {
 		this.nephroticSyndrome = nephroticSyndrome;
+	}
+
+	public SymptomState getArthralgia() {
+		return arthralgia;
+	}
+
+	public void setArthralgia(SymptomState arthralgia) {
+		this.arthralgia = arthralgia;
+	}
+
+	public SymptomState getHepatomegaly() {
+		return hepatomegaly;
+	}
+
+	public void setHepatomegaly(SymptomState hepatomegaly) {
+		this.hepatomegaly = hepatomegaly;
+	}
+
+	public SymptomState getHepatosplenomegaly() {
+		return hepatosplenomegaly;
+	}
+
+	public void setHepatosplenomegaly(SymptomState hepatosplenomegaly) {
+		this.hepatosplenomegaly = hepatosplenomegaly;
+	}
+
+	public SymptomState getLowGradeFever() {
+		return lowGradeFever;
+	}
+
+	public void setLowGradeFever(SymptomState lowGradeFever) {
+		this.lowGradeFever = lowGradeFever;
+	}
+
+	public SymptomState getMucocutaneousLesion() {
+		return mucocutaneousLesion;
+	}
+
+	public void setMucocutaneousLesion(SymptomState mucocutaneousLesion) {
+		this.mucocutaneousLesion = mucocutaneousLesion;
+	}
+
+	public SymptomState getMaculopapularRash() {
+		return maculopapularRash;
+	}
+
+	public void setMaculopapularRash(SymptomState maculopapularRash) {
+		this.maculopapularRash = maculopapularRash;
 	}
 
 	public SyphilisInfectionSite getSyphilisInfectionSite() {

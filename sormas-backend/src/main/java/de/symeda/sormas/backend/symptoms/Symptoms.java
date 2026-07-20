@@ -336,6 +336,12 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState centralNervousSystemDamage;
 	private SymptomState malnutrition;
 	private SymptomState nephroticSyndrome;
+	private SymptomState arthralgia;
+	private SymptomState hepatomegaly;
+	private SymptomState hepatosplenomegaly;
+	private SymptomState lowGradeFever;
+	private SymptomState mucocutaneousLesion;
+	private SymptomState maculopapularRash;
 	private SyphilisInfectionSite syphilisInfectionSite;
 	private SyphilisStage syphilisStage;
 	private SyphilisInfectiousness syphilisInfectiousness;
@@ -2675,6 +2681,60 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setNephroticSyndrome(SymptomState nephroticSyndrome) {
 		this.nephroticSyndrome = nephroticSyndrome;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getArthralgia() {
+		return arthralgia;
+	}
+
+	public void setArthralgia(SymptomState arthralgia) {
+		this.arthralgia = arthralgia;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getHepatomegaly() {
+		return hepatomegaly;
+	}
+
+	public void setHepatomegaly(SymptomState hepatomegaly) {
+		this.hepatomegaly = hepatomegaly;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getHepatosplenomegaly() {
+		return hepatosplenomegaly;
+	}
+
+	public void setHepatosplenomegaly(SymptomState hepatosplenomegaly) {
+		this.hepatosplenomegaly = hepatosplenomegaly;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getLowGradeFever() {
+		return lowGradeFever;
+	}
+
+	public void setLowGradeFever(SymptomState lowGradeFever) {
+		this.lowGradeFever = lowGradeFever;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getMucocutaneousLesion() {
+		return mucocutaneousLesion;
+	}
+
+	public void setMucocutaneousLesion(SymptomState mucocutaneousLesion) {
+		this.mucocutaneousLesion = mucocutaneousLesion;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getMaculopapularRash() {
+		return maculopapularRash;
+	}
+
+	public void setMaculopapularRash(SymptomState maculopapularRash) {
+		this.maculopapularRash = maculopapularRash;
 	}
 
 	@Enumerated(EnumType.STRING)

@@ -299,6 +299,12 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setSyphilisStage(source.getSyphilisStage());
 		target.setSyphilisInfectiousness(source.getSyphilisInfectiousness());
 		target.setClinicalCriteriaMet(source.getClinicalCriteriaMet());
+		target.setArthralgia(source.getArthralgia());
+		target.setHepatomegaly(source.getHepatomegaly());
+		target.setHepatosplenomegaly(source.getHepatosplenomegaly());
+		target.setLowGradeFever(source.getLowGradeFever());
+		target.setMucocutaneousLesion(source.getMucocutaneousLesion());
+		target.setMaculopapularRash(source.getMaculopapularRash());
 		return target;
 	}
 
@@ -581,6 +587,12 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setSyphilisStage(source.getSyphilisStage());
 		target.setSyphilisInfectiousness(source.getSyphilisInfectiousness());
 		target.setClinicalCriteriaMet(source.getClinicalCriteriaMet());
+		target.setArthralgia(source.getArthralgia());
+		target.setHepatomegaly(source.getHepatomegaly());
+		target.setHepatosplenomegaly(source.getHepatosplenomegaly());
+		target.setLowGradeFever(source.getLowGradeFever());
+		target.setMucocutaneousLesion(source.getMucocutaneousLesion());
+		target.setMaculopapularRash(source.getMaculopapularRash());
 		return target;
 	}
 

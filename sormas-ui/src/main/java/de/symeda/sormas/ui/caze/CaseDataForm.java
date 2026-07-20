@@ -1628,41 +1628,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	}
 
 	/**
-<<<<<<< HEAD
-	 * TODO: needs to be checked with Chris
-	 * LUX+Syphilis specific: shows the ECDC-style case definition matching the currently selected
-	 * Presentation (Acquired/Congenital syphilis).
-	 */
-	@SuppressWarnings("unchecked")
-	private void getSyphilisCaseDefinition(ComboBox presentationField) {
-
-		Button caseDefinitionButton = ButtonHelper.createIconButton(Captions.info, VaadinIcons.INFO_CIRCLE, e -> {
-			SyphilisPresentation presentation = (SyphilisPresentation) presentationField.getValue();
-			boolean isCongenital = presentation == SyphilisPresentation.CONGENITAL;
-			String caseDefinitionText =
-				I18nProperties.getString(isCongenital ? Strings.caseDefinitionSyphilisCongenital : Strings.caseDefinitionSyphilisAcquired);
-
-			VerticalLayout classificationRulesLayout = new VerticalLayout();
-			classificationRulesLayout.setMargin(true);
-			String processedCaseDefinition = sanitizeAndLinkify(caseDefinitionText);
-			Label caseDefinitionLabel = new Label();
-			caseDefinitionLabel.setContentMode(ContentMode.HTML);
-			caseDefinitionLabel.setWidth(100, Unit.PERCENTAGE);
-			caseDefinitionLabel.setValue(processedCaseDefinition);
-			classificationRulesLayout.addComponent(caseDefinitionLabel);
-			Window popupWindow = VaadinUiUtil.showPopupWindow(classificationRulesLayout);
-			popupWindow.addCloseListener(e1 -> popupWindow.close());
-			popupWindow.setWidth(860, Unit.PIXELS);
-			popupWindow.setHeight(80, Unit.PERCENTAGE);
-			popupWindow.setCaption(I18nProperties.getString(Strings.caseDefinitionForDisease) + " " + disease);
-		}, ValoTheme.BUTTON_PRIMARY, FORCE_CAPTION);
-
-		getContent().addComponent(caseDefinitionButton, CLASSIFICATION_RULES_LOC);
-	}
-
-	/**
-=======
->>>>>>> 155d3ad65652b560b8e942d63d0fcce69ffe6167
 	 * sanitizing the url
 	 *
 	 * @param text

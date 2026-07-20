@@ -16926,4 +16926,25 @@ ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS clinicalcriteriamet varcha
 
 INSERT INTO schema_version (version_number, comment) VALUES (651, 'Add syphilis-specific symptoms to Symptoms for SORMAS-14209');
 
+-- Additional syphilis-specific symptoms
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS arthralgia varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS hepatomegaly varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS hepatosplenomegaly varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS lowgradefever varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS mucocutaneouslesion varchar(255);
+
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS arthralgia varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS hepatomegaly varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS hepatosplenomegaly varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS lowgradefever varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS mucocutaneouslesion varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (652, 'Add additional syphilis-specific symptoms to Symptoms for SORMAS-14209');
+
+-- Dedicated syphilis Maculopapular rash symptom, replacing reuse of the generic skinRash field
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS maculopapularrash varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS maculopapularrash varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (653, 'Add dedicated Maculopapular rash symptom for Syphilis for SORMAS-14209');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

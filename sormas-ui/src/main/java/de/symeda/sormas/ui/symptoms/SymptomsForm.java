@@ -148,7 +148,10 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			GENERALIZED_LYMPHADENOPATHY,
 			OCULAR_MANIFESTATIONS,
 			NEUROLOGICAL_MANIFESTATIONS,
-			SKIN_RASH));
+			MACULOPAPULAR_RASH,
+			ARTHRALGIA,
+			HEPATOMEGALY,
+			LOW_GRADE_FEVER));
 	// Fields only relevant for congenital syphilis, hidden when the case presentation is acquired syphilis
 	private static final List<String> SYPHILIS_CONGENITAL_ONLY_FIELD_IDS = Collections.unmodifiableList(
 		Arrays.asList(
@@ -160,10 +163,12 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			CONDYLOMA_LATA,
 			CENTRAL_NERVOUS_SYSTEM_DAMAGE,
 			MALNUTRITION,
-			NEPHROTIC_SYNDROME));
+			NEPHROTIC_SYNDROME,
+			HEPATOSPLENOMEGALY,
+			MUCOCUTANEOUS_LESION));
 	// Symptoms whose selection pre-fills the Stage dropdown with Secondary syphilis
-	private static final List<String> SYPHILIS_SECONDARY_STAGE_TRIGGER_FIELD_IDS =
-		Collections.unmodifiableList(Arrays.asList(SKIN_RASH, CONDYLOMA_VENEREUM, MUCOUS_PATCHES, GENERALIZED_LYMPHADENOPATHY, PATCHY_ALOPECIA));
+	private static final List<String> SYPHILIS_SECONDARY_STAGE_TRIGGER_FIELD_IDS = Collections
+		.unmodifiableList(Arrays.asList(MACULOPAPULAR_RASH, CONDYLOMA_VENEREUM, MUCOUS_PATCHES, GENERALIZED_LYMPHADENOPATHY, PATCHY_ALOPECIA));
 
 	private static final List<String> YES_NO_UNKNOWN_SYMPTOM_FIELD_IDS = Collections
 		.unmodifiableList(Arrays.asList(PARENT_TIME_OFF_WORK, JAUNDICE_WITHIN_24_HOURS_OF_BIRTH, DATE_OF_ONSET_KNOWN, OTHER_NEUROLOGICAL_SYMPTOMS));
@@ -620,7 +625,13 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			SYPHILIS_INFECTION_SITE,
 			SYPHILIS_STAGE,
 			SYPHILIS_INFECTIOUSNESS,
-			CLINICAL_CRITERIA_MET);
+			CLINICAL_CRITERIA_MET,
+			ARTHRALGIA,
+			HEPATOMEGALY,
+			HEPATOSPLENOMEGALY,
+			LOW_GRADE_FEVER,
+			MUCOCUTANEOUS_LESION,
+			MACULOPAPULAR_RASH);
 
 		addField(SYMPTOMS_COMMENTS, TextField.class).setDescription(
 			I18nProperties.getPrefixDescription(I18N_PREFIX, SYMPTOMS_COMMENTS, "") + "\n" + I18nProperties.getDescription(Descriptions.descGdpr));
@@ -988,7 +999,13 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			REFRACTORY_RHINITIS,
 			CENTRAL_NERVOUS_SYSTEM_DAMAGE,
 			MALNUTRITION,
-			NEPHROTIC_SYNDROME);
+			NEPHROTIC_SYNDROME,
+			ARTHRALGIA,
+			HEPATOMEGALY,
+			HEPATOSPLENOMEGALY,
+			LOW_GRADE_FEVER,
+			MUCOCUTANEOUS_LESION,
+			MACULOPAPULAR_RASH);
 
 		// Set visibilities
 
