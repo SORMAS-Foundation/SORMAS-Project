@@ -213,7 +213,6 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.DENGUE_FEVER_TYPE, NullableOptionGroup.class);
 		addField(CaseDataDto.RABIES_TYPE, NullableOptionGroup.class);
 		ComboBox syphilisPresentation = addField(CaseDataDto.SYPHILIS_PRESENTATION, ComboBox.class);
-		syphilisPresentation.setRequired(true);
 		syphilisPresentation.setNullSelectionAllowed(false);
 
 		addField(CaseDataDto.RE_INFECTION, NullableOptionGroup.class);
@@ -510,6 +509,11 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 				CaseDataDto.DISEASE,
 				Arrays.asList(Disease.SYPHILIS),
 				true);
+			FieldHelper.setRequiredWhen(
+				getFieldGroup(),
+				CaseDataDto.DISEASE,
+				Arrays.asList(CaseDataDto.SYPHILIS_PRESENTATION),
+				Arrays.asList(Disease.SYPHILIS));
 		}
 		FieldHelper.setVisibleWhen(
 			facilityOrHome,

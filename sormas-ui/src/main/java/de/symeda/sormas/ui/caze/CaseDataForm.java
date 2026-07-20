@@ -574,10 +574,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.DENGUE_FEVER_TYPE, NullableOptionGroup.class);
 		addField(CaseDataDto.RABIES_TYPE, NullableOptionGroup.class);
 
-        ComboBox presentationField = addField(CaseDataDto.SYPHILIS_PRESENTATION, ComboBox.class);
-        presentationField.setNullSelectionAllowed(false);
-        presentationField.setRequired(true);
-
+		ComboBox presentationField = addField(CaseDataDto.SYPHILIS_PRESENTATION, ComboBox.class);
+		presentationField.setNullSelectionAllowed(false);
 
 		addField(CaseDataDto.CASE_ORIGIN, TextField.class);
 
@@ -1255,6 +1253,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				CaseDataDto.DISEASE,
 				Arrays.asList(Disease.SYPHILIS),
 				true);
+			FieldHelper.setRequiredWhen(
+				getFieldGroup(),
+				CaseDataDto.DISEASE,
+				Arrays.asList(CaseDataDto.SYPHILIS_PRESENTATION),
+				Arrays.asList(Disease.SYPHILIS));
 		}
 		if (isVisibleAllowed(CaseDataDto.SMALLPOX_VACCINATION_SCAR)) {
 			FieldHelper.setVisibleWhen(
