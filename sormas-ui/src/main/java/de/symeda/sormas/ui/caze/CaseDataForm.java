@@ -96,7 +96,6 @@ import de.symeda.sormas.api.caze.PreviousCaseDto;
 import de.symeda.sormas.api.caze.QuarantineReason;
 import de.symeda.sormas.api.caze.ReinfectionDetail;
 import de.symeda.sormas.api.caze.ReinfectionDetailGroup;
-import de.symeda.sormas.api.caze.SyphilisPresentation;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -1380,10 +1379,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					FORCE_CAPTION);
 
 				getContent().addComponent(classificationRulesButton, CLASSIFICATION_RULES_LOC);
-			} else if (isLuxSyphilis(disease)) {
-				// TODO: needs to be checked with Chris
-				// LUX+Syphilis: the case definition depends on the selected Presentation (Acquired/Congenital)
-				getSyphilisCaseDefinition(presentationField);
 			} else {
 				// If Manual classification is enabled for the disease.
 				getManualCaseDefinition();
@@ -1633,6 +1628,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	}
 
 	/**
+<<<<<<< HEAD
 	 * TODO: needs to be checked with Chris
 	 * LUX+Syphilis specific: shows the ECDC-style case definition matching the currently selected
 	 * Presentation (Acquired/Congenital syphilis).
@@ -1665,6 +1661,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	}
 
 	/**
+=======
+>>>>>>> 155d3ad65652b560b8e942d63d0fcce69ffe6167
 	 * sanitizing the url
 	 *
 	 * @param text

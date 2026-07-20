@@ -2856,6 +2856,7 @@ paths:
                   - CRYPTOSPORIDIOSIS
                   - SHIGELLOSIS
                   - SALMONELLOSIS
+                  - SYPHILIS
                   - OTHER
                   - UNDEFINED
           description: default response
@@ -4536,6 +4537,7 @@ paths:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
       requestBody:
@@ -4869,6 +4871,7 @@ paths:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
       responses:
@@ -8869,6 +8872,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         districtId:
@@ -8999,6 +9003,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         district:
@@ -9103,6 +9108,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         district:
@@ -9517,6 +9523,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -9980,6 +9987,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -10648,6 +10656,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -10994,6 +11003,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         firstName:
@@ -11138,6 +11148,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -11416,6 +11427,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -12024,6 +12036,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         inJurisdiction:
@@ -12288,6 +12301,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -12647,6 +12661,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -13106,6 +13121,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -13395,6 +13411,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -14218,6 +14235,7 @@ components:
             - CRYPTOSPORIDIOSIS
             - SHIGELLOSIS
             - SALMONELLOSIS
+            - SYPHILIS
             - OTHER
             - UNDEFINED
           uniqueItems: true
@@ -14477,6 +14495,7 @@ components:
             - CRYPTOSPORIDIOSIS
             - SHIGELLOSIS
             - SALMONELLOSIS
+            - SYPHILIS
             - OTHER
             - UNDEFINED
     DashboardCaseMeasureDto:
@@ -14773,6 +14792,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         district:
@@ -14870,6 +14890,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -15052,6 +15073,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         eventCount:
@@ -15150,6 +15172,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         notACaseCriteria:
@@ -15260,6 +15283,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         eventParticipantFollowUpDuration:
@@ -16535,6 +16559,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         eventDiseaseDetails:
@@ -16707,6 +16732,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -16996,6 +17022,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -17498,6 +17525,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -17716,6 +17744,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         event:
@@ -18678,6 +18707,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -18834,6 +18864,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         changeDate:
@@ -18927,6 +18958,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -19330,6 +19362,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseVariant:
@@ -19544,6 +19577,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         personUuid:
@@ -20012,6 +20046,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         district:
@@ -20176,6 +20211,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         district:
@@ -20342,6 +20378,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         districtName:
@@ -20778,6 +20815,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         district:
@@ -21013,6 +21051,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -21295,6 +21334,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         district:
@@ -21792,6 +21832,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         healthFacilityLat:
@@ -22100,6 +22141,7 @@ components:
             - CRYPTOSPORIDIOSIS
             - SHIGELLOSIS
             - SALMONELLOSIS
+            - SYPHILIS
             - OTHER
             - UNDEFINED
           uniqueItems: true
@@ -22192,6 +22234,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         district:
@@ -23264,6 +23307,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         testedDiseaseDetails:
@@ -23584,6 +23628,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         changeDate:
@@ -24658,6 +24703,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         district:
@@ -25137,6 +25183,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -25697,6 +25744,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -25917,6 +25965,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -26057,6 +26106,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -26417,6 +26467,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         district:
@@ -28374,6 +28425,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         district:
@@ -29180,6 +29232,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         diseaseDetails:
@@ -29666,6 +29719,7 @@ components:
             - CRYPTOSPORIDIOSIS
             - SHIGELLOSIS
             - SALMONELLOSIS
+            - SYPHILIS
             - OTHER
             - UNDEFINED
           uniqueItems: true
@@ -30334,6 +30388,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         inJurisdiction:
@@ -30460,6 +30515,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         id:
@@ -30639,6 +30695,7 @@ components:
           - CRYPTOSPORIDIOSIS
           - SHIGELLOSIS
           - SALMONELLOSIS
+          - SYPHILIS
           - OTHER
           - UNDEFINED
         numberOfCases:

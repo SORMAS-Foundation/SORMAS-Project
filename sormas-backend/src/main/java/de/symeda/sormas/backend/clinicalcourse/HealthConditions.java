@@ -72,7 +72,7 @@ public class HealthConditions extends AbstractDomainObject {
 	private String syphilisDrugUsed;
 	private Integer syphilisNumberOfDoses;
 	private Date syphilisDateOfFirstDose;
-	private YesNoUnknown stis;
+	private YesNoUnknown syphilisOrOtherStis;
 
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getTuberculosis() {
@@ -488,12 +488,12 @@ public class HealthConditions extends AbstractDomainObject {
 	}
 
 	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getStis() {
-		return stis;
+	public YesNoUnknown getSyphilisOrOtherStis() {
+		return syphilisOrOtherStis;
 	}
 
-	public void setStis(YesNoUnknown stis) {
-		this.stis = stis;
+	public void setSyphilisOrOtherStis(YesNoUnknown syphilisOrOtherStis) {
+		this.syphilisOrOtherStis = syphilisOrOtherStis;
 	}
 
 }
