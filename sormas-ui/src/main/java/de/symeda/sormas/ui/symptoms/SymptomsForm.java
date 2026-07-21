@@ -145,13 +145,19 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			CHANCRE,
 			CONDYLOMA_VENEREUM,
 			MUCOUS_PATCHES,
+			LYMPHADENOPATHY,
 			GENERALIZED_LYMPHADENOPATHY,
 			OCULAR_MANIFESTATIONS,
 			NEUROLOGICAL_MANIFESTATIONS,
 			MACULOPAPULAR_RASH,
 			ARTHRALGIA,
 			HEPATOMEGALY,
-			LOW_GRADE_FEVER));
+			LOW_GRADE_FEVER,
+			SORE_THROAT,
+			WEIGHT_LOSS,
+			FEVER,
+			MALAISE,
+			MUSCLE_PAIN));
 	// Fields only relevant for congenital syphilis, hidden when the case presentation is acquired syphilis
 	private static final List<String> SYPHILIS_CONGENITAL_ONLY_FIELD_IDS = Collections.unmodifiableList(
 		Arrays.asList(
