@@ -157,6 +157,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			WEIGHT_LOSS,
 			FEVER,
 			MALAISE,
+			CLINICAL_CRITERIA_MET,
 			MUSCLE_PAIN));
 	// Fields only relevant for congenital syphilis, hidden when the case presentation is acquired syphilis
 	private static final List<String> SYPHILIS_CONGENITAL_ONLY_FIELD_IDS = Collections.unmodifiableList(
@@ -766,6 +767,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				HEIGHT,
 				MID_UPPER_ARM_CIRCUMFERENCE,
 				GLASGOW_COMA_SCALE);
+
+			setVisible(true, ONSET_SYMPTOM);
 		}
 
 		// Hide clinical measurements heading if no clinical measurements are visible
@@ -1484,6 +1487,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		allPropertyIds.add(LESIONS_THAT_ITCH);
 		allPropertyIds.add(OTHER_COMPLICATIONS_TEXT);
 		allPropertyIds.add(OTHER_NEUROLOGICAL_SYMPTOMS_TEXT);
+		allPropertyIds.addAll(SYPHILIS_ACQUIRED_ONLY_FIELD_IDS);
+		allPropertyIds.addAll(SYPHILIS_CONGENITAL_ONLY_FIELD_IDS);
 		for (Object sourcePropertyId : allPropertyIds) {
 			Field sourceField = getFieldGroup().getField(sourcePropertyId);
 			sourceField.addValueChangeListener(event -> {

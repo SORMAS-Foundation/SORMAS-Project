@@ -1568,6 +1568,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		FHA,
 		PERTUSSIS,
 		SALMONELLOSIS,
+		SYPHILIS,
 		SHIGELLOSIS })
 	@HideForCountries
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
