@@ -30,6 +30,8 @@ import javax.ejb.TimerConfig;
 import javax.ejb.TimerService;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.enterprise.event.Observes;
+import javax.enterprise.event.TransactionPhase;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +39,7 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.common.CronService;
+import de.symeda.sormas.backend.systemconfiguration.event.SystemConfigurationValueChangedEvent;
 
 @Singleton
 @Startup
@@ -93,6 +96,21 @@ public class CronScheduler {
 		synchronized (this) {
 			cancelTimer(job);
 			scheduleJob(job, configured == null ? job.getDefaultExpression() : configured);
+		}
+	}
+
+	public void onSystemConfigurationValueChanged(
+		@Observes(during = TransactionPhase.AFTER_SUCCESS) SystemConfigurationValueChangedEvent event) {
+
+		String key = event.getKey();
+		if (key == null || !key.startsWith(CronJob.CONFIG_KEY_PREFIX)) {
+			return;
+		}
+
+		try {
+			reschedule(CronJob.valueOf(key.substring(CronJob.CONFIG_KEY_PREFIX.length())));
+		} catch (IllegalArgumentException e) {
+			logger.warn("Ignoring a change to the unknown cron configuration key {}", key);
 		}
 	}
 

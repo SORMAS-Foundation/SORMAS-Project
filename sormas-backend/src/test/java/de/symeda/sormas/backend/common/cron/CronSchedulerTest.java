@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -43,6 +44,7 @@ import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueDto;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
+import de.symeda.sormas.backend.systemconfiguration.event.SystemConfigurationValueChangedEvent;
 
 public class CronSchedulerTest extends AbstractBeanTest {
 
@@ -160,5 +162,48 @@ public class CronSchedulerTest extends AbstractBeanTest {
 		org.mockito.Mockito.when(timer.getInfo()).thenReturn(CronJob.ARCHIVE_CASES);
 
 		assertDoesNotThrow(() -> getBean(CronScheduler.class).executeJob(timer));
+	}
+
+	@Test
+	public void savingACronValueReschedulesOnlyThatJob() {
+
+		TimerService timerService = MockProducer.getTimerService();
+		reset(timerService);
+
+		setConfigurationValue(CronJob.ARCHIVE_CASES, "0 45 3 * * *");
+
+		ArgumentCaptor<ScheduleExpression> expressions = ArgumentCaptor.forClass(ScheduleExpression.class);
+		ArgumentCaptor<TimerConfig> configs = ArgumentCaptor.forClass(TimerConfig.class);
+		verify(timerService, times(1)).createCalendarTimer(expressions.capture(), configs.capture());
+
+		assertEquals(CronJob.ARCHIVE_CASES, configs.getValue().getInfo());
+		assertEquals("45", expressions.getValue().getMinute());
+		assertEquals("3", expressions.getValue().getHour());
+
+		setConfigurationValue(CronJob.ARCHIVE_CASES, CronJob.ARCHIVE_CASES.getDefaultExpression());
+	}
+
+	@Test
+	public void savingANonCronValueReschedulesNothing() {
+
+		TimerService timerService = MockProducer.getTimerService();
+		reset(timerService);
+
+		getBean(CronScheduler.class).onSystemConfigurationValueChanged(
+			new SystemConfigurationValueChangedEvent("MENU_SUBTITLE"));
+
+		verify(timerService, never()).createCalendarTimer(any(), any());
+	}
+
+	@Test
+	public void anUnknownCronKeyReschedulesNothing() {
+
+		TimerService timerService = MockProducer.getTimerService();
+		reset(timerService);
+
+		getBean(CronScheduler.class).onSystemConfigurationValueChanged(
+			new SystemConfigurationValueChangedEvent("CRON.NO_SUCH_JOB"));
+
+		verify(timerService, never()).createCalendarTimer(any(), any());
 	}
 }
