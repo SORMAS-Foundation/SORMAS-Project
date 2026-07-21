@@ -841,7 +841,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		EpiWeekAndDateFilterComponent<CriteriaDateType> weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(
 			false,
 			false,
-			I18nProperties.getString(Strings.infoCaseDate),
+			null,
 			CriteriaDateTypeHelper.getTypes(NewCaseDateType.class, isExternalShareEnabled),
 			I18nProperties.getString(Strings.promptNewCaseDateType),
 			null,
@@ -911,7 +911,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			CaseCriteria criteria = getValue();
 			CriteriaDateType newCaseDateType = (CriteriaDateType) weekAndDateFilter.getDateTypeSelector().getValue();
 
-			criteria.newCaseDateBetween(fromDate, toDate, newCaseDateType != null ? newCaseDateType : NewCaseDateType.MOST_RELEVANT);
+			criteria.newCaseDateBetween(fromDate, toDate, newCaseDateType != null ? newCaseDateType : NewCaseDateType.REPORT);
 			criteria.dateFilterOption(dateFilterOption);
 		} else {
 			weekAndDateFilter.setNotificationsForMissingFilters();
