@@ -63,7 +63,11 @@ public class CronScheduler {
 	public void scheduleAllJobs() {
 
 		synchronized (this) {
-			cancelAllTimers();
+			try {
+				cancelAllTimers();
+			} catch (Exception e) {
+				logger.error("Failed to cancel existing timers", e);
+			}
 			for (CronJob job : CronJob.values()) {
 				try {
 					scheduleJob(job, resolveExpression(job));
@@ -78,11 +82,13 @@ public class CronScheduler {
 	@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 	public void executeJob(Timer timer) {
 
+		Object timerInfo = null;
 		try {
-			CronJob job = (CronJob) timer.getInfo();
+			timerInfo = timer.getInfo();
+			CronJob job = (CronJob) timerInfo;
 			job.execute(cronService);
 		} catch (Exception e) {
-			logger.error("Scheduled job execution failed for timer info {}", timer.getInfo(), e);
+			logger.error("Scheduled job execution failed for timer info {}", timerInfo, e);
 		}
 	}
 

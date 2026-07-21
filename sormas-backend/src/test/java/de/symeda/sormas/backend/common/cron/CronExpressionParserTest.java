@@ -67,7 +67,9 @@ public class CronExpressionParserTest {
 		"0 40 2 * * *",
 		"0 0 1,13 * * *",
 		"0 0 1-5 * * *",
-		"0 0 1-5/2 * * *" })
+		"0 0 1-5/2 * * *",
+		"*/10 0 0 * * *",
+		"0 0 */2 * * *" })
 	public void acceptsSupportedSyntax(String expression) {
 		assertTrue(CronExpressionParser.isValid(expression), expression);
 	}
@@ -89,7 +91,10 @@ public class CronExpressionParserTest {
 		"0 */70 * * * *",
 		"0 5/99 * * * *",
 		"0 */0 * * * *",
-		"0 0 */24 * * *" })
+		"0 0 */24 * * *",
+		"0 0 0 */2 * *",
+		"0 0 0 * */2 *",
+		"0 0 0 * * */2" })
 	public void rejectsMalformedOrOutOfRangeExpressions(String expression) {
 		assertFalse(CronExpressionParser.isValid(expression), expression);
 	}

@@ -66,7 +66,7 @@ public final class CronExpressionParser {
 
 		String[] fields = expression.split(" ");
 		for (int field = 0; field < fields.length; field++) {
-			if (!isWithinBounds(fields[field], LOWER_BOUNDS[field], UPPER_BOUNDS[field])) {
+			if (!isWithinBounds(field, fields[field], LOWER_BOUNDS[field], UPPER_BOUNDS[field])) {
 				return null;
 			}
 		}
@@ -79,12 +79,15 @@ public final class CronExpressionParser {
 			.dayOfWeek(fields[DAY_OF_WEEK]);
 	}
 
-	private static boolean isWithinBounds(String field, int lowerBound, int upperBound) {
+	private static boolean isWithinBounds(int fieldIndex, String field, int lowerBound, int upperBound) {
 
 		for (String listEntry : field.split(",")) {
 			String[] baseAndIncrement = listEntry.split("/");
 			String withoutIncrement = baseAndIncrement[0];
 			if (baseAndIncrement.length > 1) {
+				if (!allowsIncrement(fieldIndex)) {
+					return false;
+				}
 				int increment = Integer.parseInt(baseAndIncrement[1]);
 				if (increment < 1 || increment > upperBound) {
 					return false;
@@ -101,5 +104,9 @@ public final class CronExpressionParser {
 			}
 		}
 		return true;
+	}
+
+	private static boolean allowsIncrement(int fieldIndex) {
+		return fieldIndex == SECOND || fieldIndex == MINUTE || fieldIndex == HOUR;
 	}
 }
