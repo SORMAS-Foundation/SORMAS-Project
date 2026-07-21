@@ -61,8 +61,6 @@ import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 @RunAs(UserRight._SYSTEM)
 public class CronService {
 
-	public static final int TASK_UPDATE_INTERVAL = 10;
-
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB

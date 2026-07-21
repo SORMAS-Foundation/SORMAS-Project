@@ -16,7 +16,6 @@ package de.symeda.sormas.backend.task;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -24,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -63,6 +63,8 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.systemevents.SystemEventDto;
+import de.symeda.sormas.api.systemevents.SystemEventType;
 import de.symeda.sormas.api.task.IsTask;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
@@ -91,7 +93,6 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.common.CronService;
 import de.symeda.sormas.backend.common.NotificationService;
 import de.symeda.sormas.backend.common.messaging.MessageContents;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
@@ -116,6 +117,7 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationJoins;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
+import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
 import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
@@ -167,6 +169,8 @@ public class TaskFacadeEjb implements TaskFacade {
 	private NotificationService notificationService;
 	@EJB
 	private SpecialCaseAccessService specialCaseAccessService;
+	@EJB
+	private SyncFacadeEjb.SyncFacadeEjbLocal syncFacade;
 
 	public Task fillOrBuildEntity(TaskDto source, Task target, boolean checkChangeDate) {
 		if (source == null) {
@@ -1015,16 +1019,22 @@ public class TaskFacadeEjb implements TaskFacade {
 		return processedTasks;
 	}
 
+	static final long MAXIMUM_NOTIFICATION_LOOK_BACK_MILLIS = TimeUnit.HOURS.toMillis(24);
+
+	static Date getNotificationWindowStart(Date lastSuccessfulRun, Date now) {
+
+		Date earliestAllowed = new Date(now.getTime() - MAXIMUM_NOTIFICATION_LOOK_BACK_MILLIS);
+		return lastSuccessfulRun == null || lastSuccessfulRun.before(earliestAllowed) ? earliestAllowed : lastSuccessfulRun;
+	}
+
 	@Override
 	@RightsAllowed(UserRight._SYSTEM)
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void sendNewAndDueTaskMessages() {
 
-		final Calendar calendar = Calendar.getInstance();
+		SystemEventDto currentRun = syncFacade.startSyncFor(SystemEventType.SEND_TASK_NOTIFICATIONS);
 		final Date now = new Date();
-		calendar.setTime(now);
-		calendar.add(Calendar.MINUTE, CronService.TASK_UPDATE_INTERVAL * -1);
-		final Date before = calendar.getTime();
+		final Date before = getNotificationWindowStart(syncFacade.findLastSyncDateFor(SystemEventType.SEND_TASK_NOTIFICATIONS), now);
 
 		try {
 			notificationService.sendNotifications(
@@ -1034,19 +1044,18 @@ public class TaskFacadeEjb implements TaskFacade {
 					taskService.findBy(new TaskCriteria().taskStatus(TaskStatus.PENDING).startDateBetween(before, now), true),
 					MessageContents.CONTENT_TASK_START_GENERAL,
 					MessageContents.CONTENT_TASK_START_SPECIFIC));
-		} catch (NotificationDeliveryFailedException e) {
-			logger.error("EmailDeliveryFailedException when trying to notify a user about a starting task.");
-		}
 
-		try {
 			Supplier<Map<User, String>> userMessageSupplier = () -> buildTaskUserMessages(
 				taskService.findBy(new TaskCriteria().taskStatus(TaskStatus.PENDING).dueDateBetween(before, now), true),
 				MessageContents.CONTENT_TASK_DUE_GENERAL,
 				MessageContents.CONTENT_TASK_DUE_SPECIFIC);
 
 			notificationService.sendNotifications(NotificationType.TASK_DUE, MessageSubject.TASK_DUE, userMessageSupplier);
+
+			syncFacade.reportSuccessfulSyncWithTimestamp(currentRun, now);
 		} catch (NotificationDeliveryFailedException e) {
-			logger.error("EmailDeliveryFailedException when trying to notify a user about a due task.");
+			logger.error("Could not notify users about starting or due tasks", e);
+			syncFacade.reportSyncErrorWithTimestamp(currentRun, e.getMessage());
 		}
 	}
 
