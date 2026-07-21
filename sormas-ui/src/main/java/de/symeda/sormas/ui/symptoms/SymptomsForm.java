@@ -173,9 +173,23 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			NEPHROTIC_SYNDROME,
 			HEPATOSPLENOMEGALY,
 			MUCOCUTANEOUS_LESION));
+
 	// Symptoms whose selection pre-fills the Stage dropdown with Secondary syphilis
+
+	private static final List<String> SYPHILIS_PRIMARY_STAGE_TRIGGER_FIELD_IDS = List.of(CHANCRE);
+
 	private static final List<String> SYPHILIS_SECONDARY_STAGE_TRIGGER_FIELD_IDS = Collections
 		.unmodifiableList(Arrays.asList(MACULOPAPULAR_RASH, CONDYLOMA_VENEREUM, MUCOUS_PATCHES, GENERALIZED_LYMPHADENOPATHY, PATCHY_ALOPECIA));
+
+	private static final List<String> SYPHILIS_NEUROLOGICAL_STAGE_TRIGGER_FIELD_IDS = List.of(NEUROLOGICAL_MANIFESTATIONS);
+
+	private static final Map<SyphilisStage, List<String>> SYPHILIS_STAGE_SYMPTOMS_DICTIONARY = Map.of(
+		SyphilisStage.PRIMARY_SYPHILIS,
+		SYPHILIS_PRIMARY_STAGE_TRIGGER_FIELD_IDS,
+		SyphilisStage.SECONDARY_SYPHILIS,
+		SYPHILIS_SECONDARY_STAGE_TRIGGER_FIELD_IDS,
+		SyphilisStage.NEUROLOGICAL_SYPHILIS,
+		SYPHILIS_NEUROLOGICAL_STAGE_TRIGGER_FIELD_IDS);
 
 	private static final List<String> YES_NO_UNKNOWN_SYMPTOM_FIELD_IDS = Collections
 		.unmodifiableList(Arrays.asList(PARENT_TIME_OFF_WORK, JAUNDICE_WITHIN_24_HOURS_OF_BIRTH, DATE_OF_ONSET_KNOWN, OTHER_NEUROLOGICAL_SYMPTOMS));
@@ -1571,25 +1585,13 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				}
 			});
 
-			getFieldGroup().getField(CHANCRE).addValueChangeListener(e -> {
-				if (stageField.getValue() == null && FieldHelper.getNullableSourceFieldValue((Field) e.getProperty()) == SymptomState.YES) {
-					stageField.setValue(SyphilisStage.PRIMARY_SYPHILIS);
-				}
-			});
-
-			for (String secondaryStageTriggerId : SYPHILIS_SECONDARY_STAGE_TRIGGER_FIELD_IDS) {
-				getFieldGroup().getField(secondaryStageTriggerId).addValueChangeListener(e -> {
+			SYPHILIS_STAGE_SYMPTOMS_DICTIONARY
+				.forEach((syphilisStage, fields) -> fields.forEach(field -> getFieldGroup().getField(field).addValueChangeListener(e -> {
 					if (stageField.getValue() == null && FieldHelper.getNullableSourceFieldValue((Field) e.getProperty()) == SymptomState.YES) {
-						stageField.setValue(SyphilisStage.SECONDARY_SYPHILIS);
+						stageField.setValue(syphilisStage);
 					}
-				});
-			}
+				})));
 
-			getFieldGroup().getField(NEUROLOGICAL_MANIFESTATIONS).addValueChangeListener(e -> {
-				if (stageField.getValue() == null && FieldHelper.getNullableSourceFieldValue((Field) e.getProperty()) == SymptomState.YES) {
-					stageField.setValue(SyphilisStage.NEUROLOGICAL_SYPHILIS);
-				}
-			});
 		}
 
 		symptomGroupVisibility();
@@ -1606,6 +1608,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			return SyphilisInfectiousness.INFECTIOUS;
 		case LATE_LATENT_SYPHILIS:
 		case TERTIARY_SYPHILIS:
+		case NEUROLOGICAL_SYPHILIS:
 			return SyphilisInfectiousness.NOT_INFECTIOUS;
 		case UNKNOWN:
 			return SyphilisInfectiousness.UNKNOWN;
