@@ -138,6 +138,7 @@ import de.symeda.sormas.backend.util.RightsAllowed;
 public class TaskFacadeEjb implements TaskFacade {
 
 	private static final int ARCHIVE_BATCH_SIZE = 1000;
+	static final long MAXIMUM_NOTIFICATION_LOOK_BACK_MILLIS = TimeUnit.HOURS.toMillis(24);
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
@@ -1018,8 +1019,6 @@ public class TaskFacadeEjb implements TaskFacade {
 		}
 		return processedTasks;
 	}
-
-	static final long MAXIMUM_NOTIFICATION_LOOK_BACK_MILLIS = TimeUnit.HOURS.toMillis(24);
 
 	static Date getNotificationWindowStart(Date lastSuccessfulRun, Date now) {
 

@@ -1152,14 +1152,14 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 	public void asecondRunStartsFromTheFirstRunsWatermark() {
 
 		getTaskFacade().sendNewAndDueTaskMessages();
-		Date firstSuccess =
-			getBean(SystemEventFacadeEjbLocal.class).getLatestSuccessByType(SystemEventType.SEND_TASK_NOTIFICATIONS).getStartDate();
 
-		Date windowStart = TaskFacadeEjb.getNotificationWindowStart(
-			getBean(SyncFacadeEjb.SyncFacadeEjbLocal.class).findLastSyncDateFor(SystemEventType.SEND_TASK_NOTIFICATIONS),
-			new Date());
+		SystemEventDto latestSuccess =
+			getBean(SystemEventFacadeEjbLocal.class).getLatestSuccessByType(SystemEventType.SEND_TASK_NOTIFICATIONS);
+		long recordedSuccessMillis = Long.parseLong(latestSuccess.getAdditionalInfo().replace("Last synchronization date: ", ""));
 
-		assertTrue(windowStart.getTime() >= firstSuccess.getTime() - TimeUnit.SECONDS.toMillis(1));
+		Date lastSyncDate = getBean(SyncFacadeEjb.SyncFacadeEjbLocal.class).findLastSyncDateFor(SystemEventType.SEND_TASK_NOTIFICATIONS);
+
+		assertEquals(recordedSuccessMillis, lastSyncDate.getTime());
 	}
 
 	@Test
@@ -1168,11 +1168,18 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		Date now = new Date();
 		Date epoch = new Date(0);
 		Date twoHoursAgo = new Date(now.getTime() - TimeUnit.HOURS.toMillis(2));
+		Date exactlyTwentyFourHoursAgo = new Date(now.getTime() - TimeUnit.HOURS.toMillis(24));
 
 		assertEquals(
 			now.getTime() - TimeUnit.HOURS.toMillis(24),
 			TaskFacadeEjb.getNotificationWindowStart(epoch, now).getTime());
 		assertEquals(twoHoursAgo, TaskFacadeEjb.getNotificationWindowStart(twoHoursAgo, now));
+		assertEquals(
+			now.getTime() - TimeUnit.HOURS.toMillis(24),
+			TaskFacadeEjb.getNotificationWindowStart(null, now).getTime());
+		assertEquals(
+			now.getTime() - TimeUnit.HOURS.toMillis(24),
+			TaskFacadeEjb.getNotificationWindowStart(exactlyTwentyFourHoursAgo, now).getTime());
 	}
 
 }
