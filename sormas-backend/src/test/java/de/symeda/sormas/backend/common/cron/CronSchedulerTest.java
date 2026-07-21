@@ -19,8 +19,6 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -36,6 +34,7 @@ import org.mockito.ArgumentCaptor;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationCategoryDto;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationCategoryFacade;
@@ -50,7 +49,7 @@ public class CronSchedulerTest extends AbstractBeanTest {
 	private static final String CRON_CATEGORY_NAME = "CRON";
 
 	@BeforeEach
-	public void resetTimerService() {
+	public void warmUpSchedulerThenResetTimerService() {
 		getBean(CronScheduler.class).scheduleAllJobs();
 		reset(MockProducer.getTimerService());
 	}
@@ -123,6 +122,33 @@ public class CronSchedulerTest extends AbstractBeanTest {
 		ArgumentCaptor<TimerConfig> configs = ArgumentCaptor.forClass(TimerConfig.class);
 		verify(timerService, times(CronJob.values().length - 1)).createCalendarTimer(any(), configs.capture());
 		assertTrue(configs.getAllValues().stream().noneMatch(config -> CronJob.ARCHIVE_CASES.equals(config.getInfo())));
+
+		setConfigurationValue(CronJob.ARCHIVE_CASES, CronJob.ARCHIVE_CASES.getDefaultExpression());
+	}
+
+	@Test
+	public void schedulesTheConfiguredExpressionInsteadOfTheCompiledInDefault() {
+
+		TimerService timerService = MockProducer.getTimerService();
+		setConfigurationValue(CronJob.ARCHIVE_CASES, "0 45 3 * * *");
+		reset(timerService);
+
+		getBean(CronScheduler.class).scheduleAllJobs();
+
+		ArgumentCaptor<ScheduleExpression> expressions = ArgumentCaptor.forClass(ScheduleExpression.class);
+		ArgumentCaptor<TimerConfig> configs = ArgumentCaptor.forClass(TimerConfig.class);
+		verify(timerService, times(CronJob.values().length)).createCalendarTimer(expressions.capture(), configs.capture());
+
+		List<TimerConfig> capturedConfigs = configs.getAllValues();
+		int archiveCasesIndex = IntStream.range(0, capturedConfigs.size())
+			.filter(index -> CronJob.ARCHIVE_CASES.equals(capturedConfigs.get(index).getInfo()))
+			.findFirst()
+			.orElseThrow();
+		ScheduleExpression archiveCasesExpression = expressions.getAllValues().get(archiveCasesIndex);
+
+		assertEquals("0", archiveCasesExpression.getSecond());
+		assertEquals("45", archiveCasesExpression.getMinute());
+		assertEquals("3", archiveCasesExpression.getHour());
 
 		setConfigurationValue(CronJob.ARCHIVE_CASES, CronJob.ARCHIVE_CASES.getDefaultExpression());
 	}
