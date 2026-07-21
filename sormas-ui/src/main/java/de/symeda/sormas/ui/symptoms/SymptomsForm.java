@@ -1553,9 +1553,11 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			FieldHelper.setVisibleWhen(getFieldGroup(), SYPHILIS_INFECTION_SITE, CHANCRE, Arrays.asList(SymptomState.YES), true);
 
 			stageField.addValueChangeListener(e -> {
-				SyphilisInfectiousness infectiousness = mapSyphilisStageToInfectiousness((SyphilisStage) stageField.getValue());
-				if (infectiousness != null) {
-					infectiousnessField.setValue(infectiousness);
+				if (infectiousnessField.getValue() == null) {
+					SyphilisInfectiousness infectiousness = mapSyphilisStageToInfectiousness((SyphilisStage) stageField.getValue());
+					if (infectiousness != null) {
+						infectiousnessField.setValue(infectiousness);
+					}
 				}
 			});
 
