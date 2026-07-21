@@ -3083,6 +3083,7 @@ public interface Captions {
 	String Symptoms_anxietyStates = "Symptoms.anxietyStates";
 	String Symptoms_apnoea = "Symptoms.apnoea";
 	String Symptoms_apnoea_PERTUSSIS = "Symptoms.apnoea.PERTUSSIS";
+	String Symptoms_arthralgia = "Symptoms.arthralgia";
 	String Symptoms_arthritis = "Symptoms.arthritis";
 	String Symptoms_ascendingFlaccidParalysis = "Symptoms.ascendingFlaccidParalysis";
 	String Symptoms_asymptomatic = "Symptoms.asymptomatic";
@@ -3183,6 +3184,8 @@ public interface Captions {
 	String Symptoms_height = "Symptoms.height";
 	String Symptoms_hemorrhagicRash = "Symptoms.hemorrhagicRash";
 	String Symptoms_hemorrhagicSyndrome = "Symptoms.hemorrhagicSyndrome";
+	String Symptoms_hepatomegaly = "Symptoms.hepatomegaly";
+	String Symptoms_hepatosplenomegaly = "Symptoms.hepatosplenomegaly";
 	String Symptoms_hiccups = "Symptoms.hiccups";
 	String Symptoms_highOrLowBloodPressure = "Symptoms.highOrLowBloodPressure";
 	String Symptoms_hydrophobia = "Symptoms.hydrophobia";
@@ -3223,10 +3226,12 @@ public interface Captions {
 	String Symptoms_lossOfSmell = "Symptoms.lossOfSmell";
 	String Symptoms_lossOfTaste = "Symptoms.lossOfTaste";
 	String Symptoms_lossSkinTurgor = "Symptoms.lossSkinTurgor";
+	String Symptoms_lowGradeFever = "Symptoms.lowGradeFever";
 	String Symptoms_lymphadenopathy = "Symptoms.lymphadenopathy";
 	String Symptoms_lymphadenopathyAxillary = "Symptoms.lymphadenopathyAxillary";
 	String Symptoms_lymphadenopathyCervical = "Symptoms.lymphadenopathyCervical";
 	String Symptoms_lymphadenopathyInguinal = "Symptoms.lymphadenopathyInguinal";
+	String Symptoms_maculopapularRash = "Symptoms.maculopapularRash";
 	String Symptoms_majorSite = "Symptoms.majorSite";
 	String Symptoms_malaise = "Symptoms.malaise";
 	String Symptoms_malnutrition = "Symptoms.malnutrition";
@@ -3237,6 +3242,7 @@ public interface Captions {
 	String Symptoms_microcephaly = "Symptoms.microcephaly";
 	String Symptoms_midUpperArmCircumference = "Symptoms.midUpperArmCircumference";
 	String Symptoms_minorSite = "Symptoms.minorSite";
+	String Symptoms_mucocutaneousLesion = "Symptoms.mucocutaneousLesion";
 	String Symptoms_mucousPatches = "Symptoms.mucousPatches";
 	String Symptoms_musclePain = "Symptoms.musclePain";
 	String Symptoms_nausea = "Symptoms.nausea";
