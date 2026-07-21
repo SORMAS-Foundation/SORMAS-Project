@@ -82,7 +82,14 @@ public final class CronExpressionParser {
 	private static boolean isWithinBounds(String field, int lowerBound, int upperBound) {
 
 		for (String listEntry : field.split(",")) {
-			String withoutIncrement = listEntry.split("/")[0];
+			String[] baseAndIncrement = listEntry.split("/");
+			String withoutIncrement = baseAndIncrement[0];
+			if (baseAndIncrement.length > 1) {
+				int increment = Integer.parseInt(baseAndIncrement[1]);
+				if (increment < 1 || increment > upperBound) {
+					return false;
+				}
+			}
 			if ("*".equals(withoutIncrement)) {
 				continue;
 			}

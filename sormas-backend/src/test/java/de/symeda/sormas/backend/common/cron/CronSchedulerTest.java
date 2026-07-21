@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -28,9 +29,11 @@ import javax.ejb.ScheduleExpression;
 import javax.ejb.TimerConfig;
 import javax.ejb.TimerService;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 
 import java.util.Arrays;
 import java.util.List;
@@ -54,6 +57,11 @@ public class CronSchedulerTest extends AbstractBeanTest {
 	public void warmUpSchedulerThenResetTimerService() {
 		getBean(CronScheduler.class).scheduleAllJobs();
 		reset(MockProducer.getTimerService());
+	}
+
+	@AfterEach
+	public void restoreArchiveCasesDefaultExpression() {
+		setConfigurationValue(CronJob.ARCHIVE_CASES, CronJob.ARCHIVE_CASES.getDefaultExpression());
 	}
 
 	private SystemConfigurationValueDto setConfigurationValue(CronJob job, String expression) {
@@ -113,6 +121,23 @@ public class CronSchedulerTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void aJobThatFailsToScheduleDoesNotPreventTheOthersFromScheduling() {
+
+		TimerService timerService = MockProducer.getTimerService();
+		Mockito.doThrow(new IllegalArgumentException())
+			.when(timerService)
+			.createCalendarTimer(any(), argThat(config -> CronJob.ARCHIVE_CASES.equals(config.getInfo())));
+
+		assertDoesNotThrow(() -> getBean(CronScheduler.class).scheduleAllJobs());
+
+		ArgumentCaptor<TimerConfig> configs = ArgumentCaptor.forClass(TimerConfig.class);
+		verify(timerService, times(CronJob.values().length)).createCalendarTimer(any(), configs.capture());
+		assertEquals(
+			Arrays.stream(CronJob.values()).collect(Collectors.toSet()),
+			configs.getAllValues().stream().map(TimerConfig::getInfo).collect(Collectors.toSet()));
+	}
+
+	@Test
 	public void createsNoTimerForAJobDisabledByAnEmptyValue() {
 
 		TimerService timerService = MockProducer.getTimerService();
@@ -124,8 +149,6 @@ public class CronSchedulerTest extends AbstractBeanTest {
 		ArgumentCaptor<TimerConfig> configs = ArgumentCaptor.forClass(TimerConfig.class);
 		verify(timerService, times(CronJob.values().length - 1)).createCalendarTimer(any(), configs.capture());
 		assertTrue(configs.getAllValues().stream().noneMatch(config -> CronJob.ARCHIVE_CASES.equals(config.getInfo())));
-
-		setConfigurationValue(CronJob.ARCHIVE_CASES, CronJob.ARCHIVE_CASES.getDefaultExpression());
 	}
 
 	@Test
@@ -151,15 +174,13 @@ public class CronSchedulerTest extends AbstractBeanTest {
 		assertEquals("0", archiveCasesExpression.getSecond());
 		assertEquals("45", archiveCasesExpression.getMinute());
 		assertEquals("3", archiveCasesExpression.getHour());
-
-		setConfigurationValue(CronJob.ARCHIVE_CASES, CronJob.ARCHIVE_CASES.getDefaultExpression());
 	}
 
 	@Test
 	public void theDispatcherSwallowsJobFailures() {
 
 		javax.ejb.Timer timer = org.mockito.Mockito.mock(javax.ejb.Timer.class);
-		org.mockito.Mockito.when(timer.getInfo()).thenReturn(CronJob.ARCHIVE_CASES);
+		org.mockito.Mockito.when(timer.getInfo()).thenReturn("not-a-cron-job");
 
 		assertDoesNotThrow(() -> getBean(CronScheduler.class).executeJob(timer));
 	}
@@ -179,8 +200,6 @@ public class CronSchedulerTest extends AbstractBeanTest {
 		assertEquals(CronJob.ARCHIVE_CASES, configs.getValue().getInfo());
 		assertEquals("45", expressions.getValue().getMinute());
 		assertEquals("3", expressions.getValue().getHour());
-
-		setConfigurationValue(CronJob.ARCHIVE_CASES, CronJob.ARCHIVE_CASES.getDefaultExpression());
 	}
 
 	@Test

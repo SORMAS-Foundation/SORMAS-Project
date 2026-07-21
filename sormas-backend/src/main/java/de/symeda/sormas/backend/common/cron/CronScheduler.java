@@ -65,7 +65,11 @@ public class CronScheduler {
 		synchronized (this) {
 			cancelAllTimers();
 			for (CronJob job : CronJob.values()) {
-				scheduleJob(job, resolveExpression(job));
+				try {
+					scheduleJob(job, resolveExpression(job));
+				} catch (Exception e) {
+					logger.error("Failed to schedule job {} with configuration key {}", job, job.getConfigKey(), e);
+				}
 			}
 		}
 	}
@@ -74,11 +78,11 @@ public class CronScheduler {
 	@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 	public void executeJob(Timer timer) {
 
-		CronJob job = (CronJob) timer.getInfo();
 		try {
+			CronJob job = (CronJob) timer.getInfo();
 			job.execute(cronService);
 		} catch (Exception e) {
-			logger.error("Scheduled job {} failed", job, e);
+			logger.error("Scheduled job execution failed for timer info {}", timer.getInfo(), e);
 		}
 	}
 
@@ -95,7 +99,11 @@ public class CronScheduler {
 
 		synchronized (this) {
 			cancelTimer(job);
-			scheduleJob(job, configured == null ? job.getDefaultExpression() : configured);
+			try {
+				scheduleJob(job, configured == null ? job.getDefaultExpression() : configured);
+			} catch (Exception e) {
+				logger.error("Failed to schedule job {} with configuration key {}", job, job.getConfigKey(), e);
+			}
 		}
 	}
 

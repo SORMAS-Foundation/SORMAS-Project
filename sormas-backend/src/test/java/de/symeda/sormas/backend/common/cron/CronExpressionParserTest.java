@@ -59,6 +59,9 @@ public class CronExpressionParserTest {
 	@ValueSource(strings = {
 		"0 */10 * * * *",
 		"0 */2 * * * *",
+		"0 */30 * * * *",
+		"0 */59 * * * *",
+		"0 0 */23 * * *",
 		"0 0 1 * * *",
 		"0 0 * * * *",
 		"0 40 2 * * *",
@@ -82,7 +85,11 @@ public class CronExpressionParserTest {
 		"0 0 1 32 * *",
 		"0 0 1 * 13 *",
 		"0 0 1 * * 8",
-		"0 0 1 0 * *" })
+		"0 0 1 0 * *",
+		"0 */70 * * * *",
+		"0 5/99 * * * *",
+		"0 */0 * * * *",
+		"0 0 */24 * * *" })
 	public void rejectsMalformedOrOutOfRangeExpressions(String expression) {
 		assertFalse(CronExpressionParser.isValid(expression), expression);
 	}
@@ -90,10 +97,5 @@ public class CronExpressionParserTest {
 	@Test
 	public void parseThrowsOnInvalidExpression() {
 		assertThrows(IllegalArgumentException.class, () -> CronExpressionParser.parse("15 1 * * *"));
-	}
-
-	@Test
-	public void incrementOperandIsNotRangeChecked() {
-		assertTrue(CronExpressionParser.isValid("0 */30 * * * *"));
 	}
 }

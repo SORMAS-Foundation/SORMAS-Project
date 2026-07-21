@@ -119,7 +119,11 @@ entry named `CRON.<JOB>`.
 A value is six space-separated fields in the order `second minute hour day-of-month month
 day-of-week`. Note that this is **not** the five-field Unix cron format: the first field is
 seconds, and a five-field value is rejected. Each field accepts `*`, a number, a range (`1-5`),
-a list (`1,13`), or an increment (`*/10`, `1-5/2`).
+a list (`1,13`), or an increment (`*/10`, `1-5/2`). Times are interpreted in the server's default
+timezone, unchanged from the previous behaviour.
+
+Only the forms listed above are supported. EJB-specific forms such as `Last`, `1st Fri`, negative
+day-of-month values, and textual names (`Jan`, `Mon`) are not accepted by this parser.
 
 Examples:
 
@@ -137,3 +141,6 @@ the server log at every startup. Take care when disabling data-lifecycle jobs su
 Changes take effect as soon as they are saved; no restart is needed. Rescheduling only affects
 future executions, so moving a job from 03:00 to 01:00 at 02:00 on a given day means it will not
 run again until the following day.
+
+If a value is rejected at load time, the job keeps its previous schedule and an error naming the
+configuration key is written to the server log.
