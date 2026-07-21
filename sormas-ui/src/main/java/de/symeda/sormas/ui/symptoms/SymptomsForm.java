@@ -269,6 +269,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 	private final CaseDataDto caze;
 	private final Disease disease;
+	private final SyphilisPresentation syphilisPresentation;
 	private final PersonDto person;
 	private final SymptomsContext symptomsContext;
 	private final ViewMode viewMode;
@@ -284,6 +285,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	public SymptomsForm(
 		CaseDataDto caze,
 		Disease disease,
+		SyphilisPresentation syphilisPresentation,
 		PersonDto person,
 		SymptomsContext symptomsContext,
 		ViewMode viewMode,
@@ -301,6 +303,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		this.caze = caze;
 		this.disease = disease;
+		this.syphilisPresentation = syphilisPresentation;
 		this.person = person;
 		this.symptomsContext = symptomsContext;
 		this.viewMode = viewMode;
@@ -768,7 +771,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				MID_UPPER_ARM_CIRCUMFERENCE,
 				GLASGOW_COMA_SCALE);
 
-			setVisible(true, ONSET_SYMPTOM);
+			if (onsetDateField.isVisible()) {
+				setVisible(true, ONSET_SYMPTOM);
+			}
 		}
 
 		// Hide clinical measurements heading if no clinical measurements are visible
@@ -1610,7 +1615,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	}
 
 	private boolean isCongenitalSyphilis() {
-		return caze.getDisease() == Disease.SYPHILIS && caze.getSyphilisPresentation() == SyphilisPresentation.CONGENITAL;
+		return disease == Disease.SYPHILIS && syphilisPresentation == SyphilisPresentation.CONGENITAL;
 	}
 
 	private void setUpMonkeypoxVisibilities() {

@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.visit;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -76,7 +77,15 @@ public class VisitController {
 		if (contactRef != null) {
 			ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactRef.getUuid());
 			PersonDto visitPerson = FacadeProvider.getPersonFacade().getByUuid(visit.getPerson().getUuid());
-			editForm = new VisitEditForm(visit.getDisease(), contact, visitPerson, false, contact.isInJurisdiction());
+			CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(contactRef.getCaze().getUuid());
+
+			editForm = new VisitEditForm(
+				visit.getDisease(),
+				Optional.ofNullable(caze).map(CaseDataDto::getSyphilisPresentation).orElse(null),
+				contact,
+				visitPerson,
+				false,
+				contact.isInJurisdiction());
 			startDate = ContactLogic.getStartDate(contact);
 			endDate = ContactLogic.getEndDate(contact);
 			inJurisdiction = contact.isInJurisdiction();
@@ -185,7 +194,14 @@ public class VisitController {
 		VisitDto visit = createNewVisit(contactRef);
 		ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactRef.getUuid());
 		PersonDto contactPerson = FacadeProvider.getPersonFacade().getByUuid(contact.getPerson().getUuid());
-		VisitEditForm createForm = new VisitEditForm(visit.getDisease(), contact, contactPerson, true, true); // Valid because jurisdiction doesn't matter for entities that are about to be created
+		CaseDataDto caseDataDto = FacadeProvider.getCaseFacade().getByUuid(contact.getCaze().getUuid());
+		VisitEditForm createForm = new VisitEditForm(
+			visit.getDisease(),
+			Optional.ofNullable(caseDataDto).map(CaseDataDto::getSyphilisPresentation).orElse(null),
+			contact,
+			contactPerson,
+			true,
+			true); // Valid because jurisdiction doesn't matter for entities that are about to be created
 		createForm.setValue(visit);
 
 		createVisit(
