@@ -481,6 +481,7 @@ public class HealthConditions extends AbstractDomainObject {
 		this.syphilisNumberOfDoses = syphilisNumberOfDoses;
 	}
 
+	@Temporal(TemporalType.TIMESTAMP)
 	public Date getSyphilisDateOfFirstDose() {
 		return syphilisDateOfFirstDose;
 	}

@@ -77,7 +77,7 @@ public class VisitController {
 		if (contactRef != null) {
 			ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactRef.getUuid());
 			PersonDto visitPerson = FacadeProvider.getPersonFacade().getByUuid(visit.getPerson().getUuid());
-			CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(contactRef.getCaze().getUuid());
+			CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(contact.getCaze().getUuid());
 
 			editForm = new VisitEditForm(
 				visit.getDisease(),
@@ -194,7 +194,7 @@ public class VisitController {
 		VisitDto visit = createNewVisit(contactRef);
 		ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactRef.getUuid());
 		PersonDto contactPerson = FacadeProvider.getPersonFacade().getByUuid(contact.getPerson().getUuid());
-		CaseDataDto caseDataDto = FacadeProvider.getCaseFacade().getByUuid(contact.getCaze().getUuid());
+		CaseDataDto caseDataDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(contact.getCaze().getUuid());
 		VisitEditForm createForm = new VisitEditForm(
 			visit.getDisease(),
 			Optional.ofNullable(caseDataDto).map(CaseDataDto::getSyphilisPresentation).orElse(null),
