@@ -12803,6 +12803,10 @@
           "symptoms" : {
             "$ref" : "#/components/schemas/SymptomsDto"
           },
+          "syphilisPresentation" : {
+            "type" : "string",
+            "enum" : [ "ACQUIRED", "CONGENITAL" ]
+          },
           "therapy" : {
             "$ref" : "#/components/schemas/TherapyDto"
           },
@@ -20337,6 +20341,14 @@
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
+          "hivPrep" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
+          "hivStatus" : {
+            "type" : "string",
+            "enum" : [ "NEGATIVE", "POSITIVE", "KNOWN_POSITIVE", "NEW_DIAGNOSIS", "UNKNOWN" ]
+          },
           "immunodeficiencyIncludingHiv" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
@@ -20366,6 +20378,10 @@
           "medicationDetails" : {
             "type" : "string"
           },
+          "mentalHealthDisorder" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
           "obesity" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
@@ -20391,6 +20407,36 @@
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
           "sickleCellDisease" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
+          "stiProphylaxis" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
+          "substanceUseDisorder" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
+          "substanceUseDisorderDetails" : {
+            "type" : "string"
+          },
+          "syphilisDateOfFirstDose" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "syphilisDrugUsed" : {
+            "type" : "string"
+          },
+          "syphilisNumberOfDoses" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "syphilisOrOtherStis" : {
+            "type" : "string",
+            "enum" : [ "YES", "NO", "UNKNOWN" ]
+          },
+          "treatedForSyphilis" : {
             "type" : "string",
             "enum" : [ "YES", "NO", "UNKNOWN" ]
           },
