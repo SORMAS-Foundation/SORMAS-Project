@@ -190,38 +190,26 @@ public class EpiDataDto extends PseudonymizableDto {
 
 	@Diseases({
 		Disease.SYPHILIS })
-	@HideForCountriesExcept(countries = {
-		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	private ProbableRouteOfTransmission probableRouteOfTransmission;
 
 	@Diseases({
 		Disease.SYPHILIS })
-	@HideForCountriesExcept(countries = {
-		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	private CountryReferenceDto motherCountryOfBirth;
 
 	@Diseases({
 		Disease.SYPHILIS })
-	@HideForCountriesExcept(countries = {
-		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	private CountryReferenceDto motherCitizenship;
 
 	@Diseases({
 		Disease.SYPHILIS })
-	@HideForCountriesExcept(countries = {
-		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	private YesNoUnknown sexWorker;
 
 	@Diseases({
 		Disease.SYPHILIS })
-	@HideForCountriesExcept(countries = {
-		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	private YesNoUnknown contactWithSexWorker;
 
 	@Diseases({
 		Disease.SYPHILIS })
-	@HideForCountriesExcept(countries = {
-		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	private TypeOfClinicalService typeOfClinicalService;
 
 	public YesNoUnknown getExposureDetailsKnown() {
