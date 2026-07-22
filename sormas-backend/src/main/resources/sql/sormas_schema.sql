@@ -16886,5 +16886,26 @@ ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS malnutrition varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS nephroticsyndrome varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (650, 'Add syphilis-specific symptoms to Symptoms for SORMAS-14209');
-  
--- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. *** 
+
+-- Syphilis EpiData 
+UPDATE diseaseconfiguration SET exposurecategories = 'DIRECT_CONTACT,VERTICAL_TRANSMISSION,MEDICAL_CARE' WHERE disease = 'SYPHILIS';
+
+ALTER TABLE epidata ADD COLUMN IF NOT EXISTS typeofclinicalservice varchar(255);
+ALTER TABLE epidata ADD COLUMN IF NOT EXISTS probablerouteoftransmission varchar(255);
+ALTER TABLE epidata ADD COLUMN IF NOT EXISTS mothercountryofbirth_id bigint;
+ALTER TABLE epidata ADD COLUMN IF NOT EXISTS mothercitizenship_id bigint;
+ALTER TABLE epidata ADD COLUMN IF NOT EXISTS sexworker varchar(255);
+ALTER TABLE epidata ADD COLUMN IF NOT EXISTS contactwithsexworker varchar(255);
+ALTER TABLE epidata ADD CONSTRAINT fk_epidata_mothercountryofbirth_id FOREIGN KEY (mothercountryofbirth_id) REFERENCES country (id);
+ALTER TABLE epidata ADD CONSTRAINT fk_epidata_mothercitizenship_id FOREIGN KEY (mothercitizenship_id) REFERENCES country (id);
+
+ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS typeofclinicalservice varchar(255);
+ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS probablerouteoftransmission varchar(255);
+ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS mothercountryofbirth_id bigint;
+ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS mothercitizenship_id bigint;
+ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS sexworker varchar(255);
+ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS contactwithsexworker varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (651, 'Syphilis - Epidata #14212');
+
+-- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

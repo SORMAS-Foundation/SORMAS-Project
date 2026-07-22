@@ -32,6 +32,8 @@ import javax.persistence.OneToMany;
 
 import de.symeda.sormas.api.epidata.CaseImportedStatus;
 import de.symeda.sormas.api.epidata.ClusterType;
+import de.symeda.sormas.api.epidata.ProbableRouteOfTransmission;
+import de.symeda.sormas.api.epidata.TypeOfClinicalService;
 import de.symeda.sormas.api.exposure.InfectionSource;
 import de.symeda.sormas.api.exposure.ModeOfTransmission;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -85,6 +87,12 @@ public class EpiData extends AbstractDomainObject {
 	private YesNoUnknown healthcareProfessional;
 	private String placeOfInfection;
 	private String residenceAtOnset;
+	private ProbableRouteOfTransmission probableRouteOfTransmission;
+	private Country motherCountryOfBirth;
+	private Country motherCitizenship;
+	private YesNoUnknown sexWorker;
+	private YesNoUnknown contactWithSexWorker;
+	private TypeOfClinicalService typeOfClinicalService;
 
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getExposureDetailsKnown() {
@@ -299,5 +307,59 @@ public class EpiData extends AbstractDomainObject {
 
 	public void setResidenceAtOnset(String residenceAtOnset) {
 		this.residenceAtOnset = residenceAtOnset;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public TypeOfClinicalService getTypeOfClinicalService() {
+		return typeOfClinicalService;
+	}
+
+	public void setTypeOfClinicalService(TypeOfClinicalService typeOfClinicalService) {
+		this.typeOfClinicalService = typeOfClinicalService;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ProbableRouteOfTransmission getProbableRouteOfTransmission() {
+		return probableRouteOfTransmission;
+	}
+
+	public void setProbableRouteOfTransmission(ProbableRouteOfTransmission probableRouteOfTransmission) {
+		this.probableRouteOfTransmission = probableRouteOfTransmission;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	public Country getMotherCountryOfBirth() {
+		return motherCountryOfBirth;
+	}
+
+	public void setMotherCountryOfBirth(Country motherCountryOfBirth) {
+		this.motherCountryOfBirth = motherCountryOfBirth;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	public Country getMotherCitizenship() {
+		return motherCitizenship;
+	}
+
+	public void setMotherCitizenship(Country motherCitizenship) {
+		this.motherCitizenship = motherCitizenship;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getSexWorker() {
+		return sexWorker;
+	}
+
+	public void setSexWorker(YesNoUnknown sexWorker) {
+		this.sexWorker = sexWorker;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getContactWithSexWorker() {
+		return contactWithSexWorker;
+	}
+
+	public void setContactWithSexWorker(YesNoUnknown contactWithSexWorker) {
+		this.contactWithSexWorker = contactWithSexWorker;
 	}
 }

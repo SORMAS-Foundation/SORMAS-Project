@@ -1660,6 +1660,12 @@ public interface Captions {
 	String EpiData_otherDetails = "EpiData.otherDetails";
 	String EpiData_placeOfInfection = "EpiData.placeOfInfection";
 	String EpiData_residenceAtOnset = "EpiData.residenceAtOnset";
+	String EpiData_probableRouteOfTransmission = "EpiData.probableRouteOfTransmission";
+	String EpiData_motherCountryOfBirth = "EpiData.motherCountryOfBirth";
+	String EpiData_motherCitizenship = "EpiData.motherCitizenship";
+	String EpiData_sexWorker = "EpiData.sexWorker";
+	String EpiData_contactWithSexWorker = "EpiData.contactWithSexWorker";
+	String EpiData_typeOfClinicalService = "EpiData.typeOfClinicalService";
 	String epiDataNoSourceContacts = "epiDataNoSourceContacts";
 	String epipulseActiveExports = "epipulseActiveExports";
 	String epipulseAllExports = "epipulseAllExports";

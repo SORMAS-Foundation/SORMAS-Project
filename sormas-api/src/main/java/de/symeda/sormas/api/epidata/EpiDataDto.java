@@ -74,6 +74,12 @@ public class EpiDataDto extends PseudonymizableDto {
 	public static final String HEALTHCARE_PROFESSIONAL = "healthcareProfessional";
 	public static final String PLACE_OF_INFECTION = "placeOfInfection";
 	public static final String RESIDENCE_AT_ONSET = "residenceAtOnset";
+	public static final String PROBABLE_ROUTE_OF_TRANSMISSION = "probableRouteOfTransmission";
+	public static final String MOTHER_COUNTRY_OF_BIRTH = "motherCountryOfBirth";
+	public static final String MOTHER_CITIZENSHIP = "motherCitizenship";
+	public static final String SEX_WORKER = "sexWorker";
+	public static final String CONTACT_WITH_SEX_WORKER = "contactWithSexWorker";
+	public static final String TYPE_OF_CLINICAL_SERVICE = "typeOfClinicalService";
 
 	private YesNoUnknown exposureDetailsKnown;
 	private YesNoUnknown activityAsCaseDetailsKnown;
@@ -168,7 +174,8 @@ public class EpiDataDto extends PseudonymizableDto {
 	private YesNoUnknown healthcareProfessional;
 
 	@Diseases({
-		Disease.DENGUE })
+		Disease.DENGUE,
+		Disease.SYPHILIS })
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@Size(max = 255, message = Validations.textTooLong)
@@ -180,6 +187,42 @@ public class EpiDataDto extends PseudonymizableDto {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@Size(max = 255, message = Validations.textTooLong)
 	private String residenceAtOnset;
+
+	@Diseases({
+		Disease.SYPHILIS })
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	private ProbableRouteOfTransmission probableRouteOfTransmission;
+
+	@Diseases({
+		Disease.SYPHILIS })
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	private CountryReferenceDto motherCountryOfBirth;
+
+	@Diseases({
+		Disease.SYPHILIS })
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	private CountryReferenceDto motherCitizenship;
+
+	@Diseases({
+		Disease.SYPHILIS })
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	private YesNoUnknown sexWorker;
+
+	@Diseases({
+		Disease.SYPHILIS })
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	private YesNoUnknown contactWithSexWorker;
+
+	@Diseases({
+		Disease.SYPHILIS })
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	private TypeOfClinicalService typeOfClinicalService;
 
 	public YesNoUnknown getExposureDetailsKnown() {
 		return exposureDetailsKnown;
@@ -372,6 +415,54 @@ public class EpiDataDto extends PseudonymizableDto {
 
 	public void setResidenceAtOnset(String residenceAtOnset) {
 		this.residenceAtOnset = residenceAtOnset;
+	}
+
+	public TypeOfClinicalService getTypeOfClinicalService() {
+		return typeOfClinicalService;
+	}
+
+	public void setTypeOfClinicalService(TypeOfClinicalService typeOfClinicalService) {
+		this.typeOfClinicalService = typeOfClinicalService;
+	}
+
+	public ProbableRouteOfTransmission getProbableRouteOfTransmission() {
+		return probableRouteOfTransmission;
+	}
+
+	public void setProbableRouteOfTransmission(ProbableRouteOfTransmission probableRouteOfTransmission) {
+		this.probableRouteOfTransmission = probableRouteOfTransmission;
+	}
+
+	public CountryReferenceDto getMotherCountryOfBirth() {
+		return motherCountryOfBirth;
+	}
+
+	public void setMotherCountryOfBirth(CountryReferenceDto motherCountryOfBirth) {
+		this.motherCountryOfBirth = motherCountryOfBirth;
+	}
+
+	public CountryReferenceDto getMotherCitizenship() {
+		return motherCitizenship;
+	}
+
+	public void setMotherCitizenship(CountryReferenceDto motherCitizenship) {
+		this.motherCitizenship = motherCitizenship;
+	}
+
+	public YesNoUnknown getSexWorker() {
+		return sexWorker;
+	}
+
+	public void setSexWorker(YesNoUnknown sexWorker) {
+		this.sexWorker = sexWorker;
+	}
+
+	public YesNoUnknown getContactWithSexWorker() {
+		return contactWithSexWorker;
+	}
+
+	public void setContactWithSexWorker(YesNoUnknown contactWithSexWorker) {
+		this.contactWithSexWorker = contactWithSexWorker;
 	}
 
 	private static void validateDateRange(Date from, Date to, String fromName, String toName) {

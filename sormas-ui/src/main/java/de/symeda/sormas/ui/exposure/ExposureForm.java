@@ -529,7 +529,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			ProphylaxisAdherence.OTHER,
 			true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.TRAVEL_PURPOSE_DETAILS, ExposureDto.TRAVEL_PURPOSE, TravelPurpose.OTHER, true);
-		conclusionHeading.setVisible(List.of(Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS).contains(disease));
+		conclusionHeading.setVisible(List.of(Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS, Disease.SYPHILIS).contains(disease));
 		locationForm.setFacilityFieldsVisible(getField(ExposureDto.TYPE_OF_PLACE).getValue() == TypeOfPlace.FACILITY, true);
 		getField(ExposureDto.TYPE_OF_PLACE)
 			.addValueChangeListener(e -> locationForm.setFacilityFieldsVisible(e.getProperty().getValue() == TypeOfPlace.FACILITY, true));
@@ -549,14 +549,22 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		List<ExposureSetting> settings = ExposureSetting.getValues(category);
 		FieldHelper.updateItems(settingField, settings);
 
-		// Clear the field and its dependent details field
 		// if the disease is Malaria or Dengue and the category is VECTOR_BORNE, preselect MOSQUITO_BORNE as setting (since it's the only valid option in this case)
-		ExposureSetting defaultSetting =
-			Stream.of(Disease.MALARIA, Disease.DENGUE).anyMatch(d -> d == disease) && category == ExposureCategory.VECTOR_BORNE
-				? ExposureSetting.MOSQUITO_BORNE
-				: null;
+		boolean isVectorBorneAutoSetting =
+			Stream.of(Disease.MALARIA, Disease.DENGUE).anyMatch(d -> d == disease) && category == ExposureCategory.VECTOR_BORNE;
+		// Syphilis: Direct contact defaults to Person to person, but remains editable (other settings are available)
+		boolean isSyphilisDirectContact = disease == Disease.SYPHILIS && category == ExposureCategory.DIRECT_CONTACT;
+
+		ExposureSetting defaultSetting;
+		if (isVectorBorneAutoSetting) {
+			defaultSetting = ExposureSetting.MOSQUITO_BORNE;
+		} else if (isSyphilisDirectContact) {
+			defaultSetting = ExposureSetting.PERSON_TO_PERSON;
+		} else {
+			defaultSetting = null;
+		}
 		settingField.setValue(defaultSetting);
-		settingField.setEnabled(defaultSetting == null);
+		settingField.setEnabled(!isVectorBorneAutoSetting);
 		settingDetailsField.setValue(null);
 		settingDetailsField.setVisible(false);
 

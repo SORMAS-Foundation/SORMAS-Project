@@ -65,6 +65,7 @@ import de.symeda.sormas.api.customizablefield.CustomizableFieldVisibilityContext
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.epidata.ClusterType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.epidata.ProbableRouteOfTransmission;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.InfectionSource;
@@ -120,7 +121,14 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	private static final String LOC_OTHER_INFORMATION_HEADING = "locOtherInformationHeading";
 
 	private static final List<Disease> CONCLUSION_ALLOWED_DISEASES = Collections.unmodifiableList(
-		Arrays.asList(Disease.CRYPTOSPORIDIOSIS, Disease.GIARDIASIS, Disease.MALARIA, Disease.DENGUE, Disease.SALMONELLOSIS, Disease.SHIGELLOSIS));
+		Arrays.asList(
+			Disease.CRYPTOSPORIDIOSIS,
+			Disease.GIARDIASIS,
+			Disease.MALARIA,
+			Disease.DENGUE,
+			Disease.SALMONELLOSIS,
+			Disease.SHIGELLOSIS,
+			Disease.SYPHILIS));
 
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT =
@@ -138,6 +146,10 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			fluidRowLocs(EpiDataDto.MODE_OF_TRANSMISSION, EpiDataDto.MODE_OF_TRANSMISSION_TYPE) +
 			fluidRowLocs(EpiDataDto.INFECTION_SOURCE, EpiDataDto.INFECTION_SOURCE_TEXT) +
 			fluidRowLocs(EpiDataDto.PLACE_OF_INFECTION, EpiDataDto.RESIDENCE_AT_ONSET) +
+			fluidRowLocs(EpiDataDto.PROBABLE_ROUTE_OF_TRANSMISSION, "") +
+			fluidRowLocs(EpiDataDto.MOTHER_COUNTRY_OF_BIRTH, EpiDataDto.MOTHER_CITIZENSHIP) +
+			fluidRowLocs(EpiDataDto.SEX_WORKER, EpiDataDto.CONTACT_WITH_SEX_WORKER) +
+			fluidRowLocs(EpiDataDto.TYPE_OF_CLINICAL_SERVICE, "") +
 			loc(LOC_PROPHYLAXIS_STATUS)+
 			fluidRowLocs("PROPHYLAXIS_LAYOUT")+
 			loc(LOC_ACTIVITY_AS_CASE_INVESTIGATION_HEADING) +
@@ -168,7 +180,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	private final Class<? extends EntityDto> parentClass;
 	private final transient Consumer<Boolean> sourceContactsToggleCallback;
 	private final boolean isPseudonymized;
-	private final Date symptomOnsetDate;
+	private final Date periodReferenceDate;
 	private final boolean caseFollowUpEnabled;
 
 	private CustomizableFieldsGroup exposureInvestigationPanel;
@@ -196,7 +208,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		this.parentClass = parentClass;
 		this.sourceContactsToggleCallback = sourceContactsToggleCallback;
 		this.isPseudonymized = isPseudonymized;
-		this.symptomOnsetDate = date;
+		this.periodReferenceDate = date;
 		this.caseFollowUpEnabled = disease != null && FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(disease);
 		setCustomizableFieldsMetadata(customizableFieldsMetadata);
 		setCustomizableFieldsValues(customizableFieldsValues);
@@ -269,12 +281,27 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			country.setCaption(I18nProperties.getCaption(Captions.EpiData_country_SHIG));
 		}
 
-		includeExposureDates(symptomOnsetDate, disease);
+		includeExposureDates(periodReferenceDate, disease);
 
 		addField(EpiDataDto.HEALTHCARE_PROFESSIONAL, NullableOptionGroup.class);
 		addField(EpiDataDto.PLACE_OF_INFECTION);
 		addField(EpiDataDto.RESIDENCE_AT_ONSET);
-		includeContagiousDates(symptomOnsetDate, disease);
+		addField(EpiDataDto.PROBABLE_ROUTE_OF_TRANSMISSION, ComboBox.class);
+		ComboBox motherCountryOfBirth = addInfrastructureField(EpiDataDto.MOTHER_COUNTRY_OF_BIRTH);
+		motherCountryOfBirth.addItems(countries);
+		ComboBox motherCitizenship = addInfrastructureField(EpiDataDto.MOTHER_CITIZENSHIP);
+		motherCitizenship.addItems(countries);
+		addField(EpiDataDto.SEX_WORKER, NullableOptionGroup.class);
+		addField(EpiDataDto.CONTACT_WITH_SEX_WORKER, NullableOptionGroup.class);
+		addField(EpiDataDto.TYPE_OF_CLINICAL_SERVICE, ComboBox.class);
+		includeContagiousDates(periodReferenceDate, disease);
+
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			Arrays.asList(EpiDataDto.MOTHER_COUNTRY_OF_BIRTH, EpiDataDto.MOTHER_CITIZENSHIP),
+			EpiDataDto.PROBABLE_ROUTE_OF_TRANSMISSION,
+			ProbableRouteOfTransmission.MOTHER_TO_CHILD_TRANSMISSION,
+			true);
 
 		TextField clusterTypeTF = addField(EpiDataDto.CLUSTER_TYPE_TEXT);
 		FieldHelper
@@ -340,18 +367,18 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	}
 
 	/**
-	 * Include the exposure start and dates when symptomOnsetDate is present.
+	 * Include the exposure start and dates when periodReferenceDate is present.
 	 * Disease incubation period is enabled with valid values.
 	 *
-	 * @param symptomOnsetDate
+	 * @param periodReferenceDate
 	 * @param disease
 	 */
-	private void includeExposureDates(Date symptomOnsetDate, Disease disease) {
+	private void includeExposureDates(Date periodReferenceDate, Disease disease) {
 		// By default, hiding the exposure period to consider heading,
 		// it will be visible only when all the conditions are met to show the exposure start and end dates.
 		getContent().getComponent(LOC_EXPOSURE_PERIOD_CONSIDER_HEADING).setVisible(false);
-		//  if symptomOnsetDate is null, return;
-		if (symptomOnsetDate == null) {
+		//  if periodReferenceDate is null, return;
+		if (periodReferenceDate == null) {
 			return;
 		}
 		DiseaseConfigurationDto diseaseConfigurationDto = FacadeProvider.getDiseaseConfigurationFacade().getDiseaseConfiguration(disease);
@@ -416,15 +443,15 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	 * calculates the Activity as Case from and to dates based on the symptom onset date and disease
 	 * configuration for contagious-period.
 	 * 
-	 * @param symptomOnsetDate
+	 * @param periodReferenceDate
 	 * @param disease
 	 */
-	private void includeContagiousDates(Date symptomOnsetDate, Disease disease) {
+	private void includeContagiousDates(Date periodReferenceDate, Disease disease) {
 		// By default, hiding the transmissibility period to consider heading,
 		// it will be visible only when all the conditions are met to show the activity as case from and to dates.
 		getContent().getComponent(LOC_TRANSMISSIBILITY_PERIOD_HEADING).setVisible(false);
-		//  if symptomOnsetDate is null, return;
-		if (symptomOnsetDate == null) {
+		//  if periodReferenceDate is null, return;
+		if (periodReferenceDate == null) {
 			return;
 		}
 		DiseaseConfigurationDto diseaseConfigurationDto = FacadeProvider.getDiseaseConfigurationFacade().getDiseaseConfiguration(disease);
@@ -459,7 +486,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	 */
 	private DateField addDateFieldToCustomLayout(Integer period) {
 		DateField customPeriodDate = new DateField();
-		customPeriodDate.setValue(DateHelper.subtractDays(symptomOnsetDate, period));
+		customPeriodDate.setValue(DateHelper.subtractDays(periodReferenceDate, period));
 		customPeriodDate.setReadOnly(true);
 		return customPeriodDate;
 	}

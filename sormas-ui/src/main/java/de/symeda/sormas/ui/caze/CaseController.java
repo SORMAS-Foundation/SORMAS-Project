@@ -71,6 +71,7 @@ import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
+import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.contact.ContactClassification;
@@ -132,6 +133,7 @@ import de.symeda.sormas.ui.caze.components.linelisting.LineListingLayout;
 import de.symeda.sormas.ui.caze.maternalhistory.MaternalHistoryForm;
 import de.symeda.sormas.ui.caze.maternalhistory.MaternalHistoryView;
 import de.symeda.sormas.ui.caze.messaging.SmsComponent;
+import de.symeda.sormas.ui.caze.notifier.CaseNotifierSideViewController;
 import de.symeda.sormas.ui.caze.porthealthinfo.PortHealthInfoForm;
 import de.symeda.sormas.ui.caze.porthealthinfo.PortHealthInfoView;
 import de.symeda.sormas.ui.clinicalcourse.ClinicalCourseForm;
@@ -1440,8 +1442,16 @@ public class CaseController {
 		Map<CustomizableFieldMetadataDto, CustomizableFieldValueDto> epiDataFieldValues =
 			FacadeProvider.getCustomizableFieldValueFacade().getValuesForEntity(caze.getEpiData().getUuid(), CustomizableFieldContext.EPIDATA);
 		EpiDataDto epiDataDto = caze.getEpiData();
-		// Exposure start date and end date should be calculated based on symptom onsetDate and incubation start periods
-		Date symptomOnsetDate = caze.getSymptoms().getOnsetDate();
+		// Exposure start date and end date should be calculated based on the incubation period.
+		// For most diseases, the incubation period is counted back from the symptom onset date; for Syphilis,
+		// it is counted back from the diagnosis date (the oldest doctor declaration's date of diagnosis) instead.
+		Date exposurePeriodReferenceDate;
+		if (caze.getDisease() == Disease.SYPHILIS) {
+			SurveillanceReportDto oldestDoctorReport = new CaseNotifierSideViewController().getOldestDoctorDeclarationReport(caze);
+			exposurePeriodReferenceDate = oldestDoctorReport != null ? oldestDoctorReport.getDateOfDiagnosis() : null;
+		} else {
+			exposurePeriodReferenceDate = caze.getSymptoms().getOnsetDate();
+		}
 
 		EpiDataForm epiDataForm = new EpiDataForm(
 			caze.getDisease(),
@@ -1450,7 +1460,7 @@ public class CaseController {
 			caze.isInJurisdiction(),
 			sourceContactsToggleCallback,
 			isEditAllowed,
-			symptomOnsetDate,
+			exposurePeriodReferenceDate,
 			epiDataMetadata,
 			epiDataFieldValues);
 		epiDataForm.setValue(epiDataDto);
