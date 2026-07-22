@@ -16854,7 +16854,37 @@ UPDATE samples_history SET
     WHERE requestedpathogentestsstring ~ '(^|,)(ANTIGEN_DETECTION|RAPID_TEST|RAPID_ANTIGEN_DETECTION|RDT|DIRECT_MICROSCOPY|RAPID_ANTIBODY_TEST)(,|$)';
 INSERT INTO schema_version (version_number, comment) VALUES (649, 'Merge retired pathogen test types into Lateral Flow Assay / Other');
 
--- Add syphilis-specific symptoms to Symptoms entity
+-- Syphilis case-data
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS hivstatus varchar(255);
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS mentalhealthdisorder varchar(255);
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS substanceusedisorder varchar(255);
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS substanceusedisorderdetails varchar(512);
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS stiprophylaxis varchar(255);
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS hivprep varchar(255);
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS treatedforsyphilis varchar(255);
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS syphilisdrugused varchar(512);
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS syphilisnumberofdoses int4;
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS syphilisdateoffirstdose timestamp;
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS syphilisorotherstis varchar(255);
+
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS hivstatus varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS mentalhealthdisorder varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS substanceusedisorder varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS substanceusedisorderdetails varchar(512);
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS stiprophylaxis varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS hivprep varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS treatedforsyphilis varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS syphilisdrugused varchar(512);
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS syphilisnumberofdoses int4;
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS syphilisdateoffirstdose timestamp;
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS syphilisorotherstis varchar(255);
+
+ALTER TABLE cases ADD COLUMN IF NOT EXISTS syphilispresentation varchar(255);
+ALTER TABLE cases_history ADD COLUMN IF NOT EXISTS syphilispresentation varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (650, 'SORMAS-Luxembourg Syphilis case data adaptations #14207');
+
+-- Syphilis Symptoms 
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS patchyalopecia varchar(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS chancre varchar(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS condylomavenereum varchar(255);
@@ -16869,6 +16899,16 @@ ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS condylomalata varchar(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS centralnervoussystemdamage varchar(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS malnutrition varchar(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS nephroticsyndrome varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS syphilisinfectionsite varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS syphilisstage varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS syphilisinfectiousness varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS clinicalcriteriamet varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS arthralgia varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS hepatomegaly varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS hepatosplenomegaly varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS lowgradefever varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS mucocutaneouslesion varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS maculopapularrash varchar(255);
 
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS patchyalopecia varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS chancre varchar(255);
@@ -16884,8 +16924,19 @@ ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS condylomalata varchar(255)
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS centralnervoussystemdamage varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS malnutrition varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS nephroticsyndrome varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS syphilisinfectionsite varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS syphilisstage varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS syphilisinfectiousness varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS clinicalcriteriamet varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS arthralgia varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS hepatomegaly varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS hepatosplenomegaly varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS lowgradefever varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS mucocutaneouslesion varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS maculopapularrash varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (650, 'Add syphilis-specific symptoms to Symptoms for SORMAS-14209');
+INSERT INTO schema_version (version_number, comment) VALUES (651, 'Add Syphilis specific symptoms for #14209');
+
 
 -- Syphilis EpiData 
 UPDATE diseaseconfiguration SET exposurecategories = 'DIRECT_CONTACT,VERTICAL_TRANSMISSION,MEDICAL_CARE' WHERE disease = 'SYPHILIS';

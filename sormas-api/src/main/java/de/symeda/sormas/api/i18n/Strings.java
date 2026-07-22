@@ -21,6 +21,8 @@ public interface Strings {
 	String bpm = "bpm";
 	String by = "by";
 	String caseDefinitionForDisease = "caseDefinitionForDisease";
+	String caseDefinitionSyphilisAcquired = "caseDefinitionSyphilisAcquired";
+	String caseDefinitionSyphilisCongenital = "caseDefinitionSyphilisCongenital";
 	String checkboxSetTickAnAnswerForAll = "checkboxSetTickAnAnswerForAll";
 	String classificationAllOf = "classificationAllOf";
 	String classificationClassificationRules = "classificationClassificationRules";
@@ -907,6 +909,7 @@ public interface Strings {
 	String headingSormasToSormasDuplicateDetection = "headingSormasToSormasDuplicateDetection";
 	String headingSormasToSormasShareRequestNotFound = "headingSormasToSormasShareRequestNotFound";
 	String headingSpecailCaseAccess = "headingSpecailCaseAccess";
+	String headingStage = "headingStage";
 	String headingStatusDetermination = "headingStatusDetermination";
 	String headingStoppedFollowUp = "headingStoppedFollowUp";
 	String headingSurveillanceReports = "headingSurveillanceReports";

@@ -98,6 +98,9 @@ import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.symptoms.syphilis.SyphilisInfectionSite;
+import de.symeda.sormas.api.symptoms.syphilis.SyphilisInfectiousness;
+import de.symeda.sormas.api.symptoms.syphilis.SyphilisStage;
 import de.symeda.sormas.api.utils.Complication;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependantOn;
@@ -399,11 +402,16 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String CENTRAL_NERVOUS_SYSTEM_DAMAGE = "centralNervousSystemDamage";
 	public static final String MALNUTRITION = "malnutrition";
 	public static final String NEPHROTIC_SYNDROME = "nephroticSyndrome";
-
-	// Syphilis-specific fields
-	public static final String SYPHILIS_STAGE = "syphilisStage";
 	public static final String SYPHILIS_INFECTION_SITE = "syphilisInfectionSite";
+	public static final String SYPHILIS_STAGE = "syphilisStage";
+	public static final String SYPHILIS_INFECTIOUSNESS = "syphilisInfectiousness";
 	public static final String CLINICAL_CRITERIA_MET = "clinicalCriteriaMet";
+	public static final String ARTHRALGIA = "arthralgia";
+	public static final String HEPATOMEGALY = "hepatomegaly";
+	public static final String HEPATOSPLENOMEGALY = "hepatosplenomegaly";
+	public static final String LOW_GRADE_FEVER = "lowGradeFever";
+	public static final String MUCOCUTANEOUS_LESION = "mucocutaneousLesion";
+	public static final String MACULOPAPULAR_RASH = "maculopapularRash";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -1560,6 +1568,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		FHA,
 		PERTUSSIS,
 		SALMONELLOSIS,
+		SYPHILIS,
 		SHIGELLOSIS })
 	@HideForCountries
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
@@ -2869,6 +2878,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CRYPTOSPORIDIOSIS,
 		MALARIA,
 		DENGUE,
+		SYPHILIS,
 		SHIGELLOSIS })
 	@SymptomGrouping(SymptomGroup.OTHER)
 	private SymptomState otherClinicalPresentation;
@@ -3282,6 +3292,52 @@ public class SymptomsDto extends PseudonymizableDto {
 		SYPHILIS })
 	@SymptomGrouping(SymptomGroup.GENERAL)
 	private SymptomState nephroticSyndrome;
+
+	@Diseases({
+		SYPHILIS })
+	@SymptomGrouping(SymptomGroup.GENERAL)
+	private SymptomState arthralgia;
+
+	@Diseases({
+		SYPHILIS })
+	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
+	private SymptomState hepatomegaly;
+
+	@Diseases({
+		SYPHILIS })
+	@SymptomGrouping(SymptomGroup.GASTROINTESTINAL)
+	private SymptomState hepatosplenomegaly;
+
+	@Diseases({
+		SYPHILIS })
+	@SymptomGrouping(SymptomGroup.GENERAL)
+	private SymptomState lowGradeFever;
+
+	@Diseases({
+		SYPHILIS })
+	@SymptomGrouping(SymptomGroup.SKIN)
+	private SymptomState mucocutaneousLesion;
+
+	@Diseases({
+		SYPHILIS })
+	@SymptomGrouping(SymptomGroup.SKIN)
+	private SymptomState maculopapularRash;
+
+	@Diseases({
+		SYPHILIS })
+	private SyphilisInfectionSite syphilisInfectionSite;
+
+	@Diseases({
+		SYPHILIS })
+	private SyphilisStage syphilisStage;
+
+	@Diseases({
+		SYPHILIS })
+	private SyphilisInfectiousness syphilisInfectiousness;
+
+	@Diseases({
+		SYPHILIS })
+	private YesNoUnknown clinicalCriteriaMet;
 
 	@Order(0)
 	public Float getTemperature() {
@@ -5563,5 +5619,85 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	public void setNephroticSyndrome(SymptomState nephroticSyndrome) {
 		this.nephroticSyndrome = nephroticSyndrome;
+	}
+
+	public SymptomState getArthralgia() {
+		return arthralgia;
+	}
+
+	public void setArthralgia(SymptomState arthralgia) {
+		this.arthralgia = arthralgia;
+	}
+
+	public SymptomState getHepatomegaly() {
+		return hepatomegaly;
+	}
+
+	public void setHepatomegaly(SymptomState hepatomegaly) {
+		this.hepatomegaly = hepatomegaly;
+	}
+
+	public SymptomState getHepatosplenomegaly() {
+		return hepatosplenomegaly;
+	}
+
+	public void setHepatosplenomegaly(SymptomState hepatosplenomegaly) {
+		this.hepatosplenomegaly = hepatosplenomegaly;
+	}
+
+	public SymptomState getLowGradeFever() {
+		return lowGradeFever;
+	}
+
+	public void setLowGradeFever(SymptomState lowGradeFever) {
+		this.lowGradeFever = lowGradeFever;
+	}
+
+	public SymptomState getMucocutaneousLesion() {
+		return mucocutaneousLesion;
+	}
+
+	public void setMucocutaneousLesion(SymptomState mucocutaneousLesion) {
+		this.mucocutaneousLesion = mucocutaneousLesion;
+	}
+
+	public SymptomState getMaculopapularRash() {
+		return maculopapularRash;
+	}
+
+	public void setMaculopapularRash(SymptomState maculopapularRash) {
+		this.maculopapularRash = maculopapularRash;
+	}
+
+	public SyphilisInfectionSite getSyphilisInfectionSite() {
+		return syphilisInfectionSite;
+	}
+
+	public void setSyphilisInfectionSite(SyphilisInfectionSite syphilisInfectionSite) {
+		this.syphilisInfectionSite = syphilisInfectionSite;
+	}
+
+	public SyphilisStage getSyphilisStage() {
+		return syphilisStage;
+	}
+
+	public void setSyphilisStage(SyphilisStage syphilisStage) {
+		this.syphilisStage = syphilisStage;
+	}
+
+	public SyphilisInfectiousness getSyphilisInfectiousness() {
+		return syphilisInfectiousness;
+	}
+
+	public void setSyphilisInfectiousness(SyphilisInfectiousness syphilisInfectiousness) {
+		this.syphilisInfectiousness = syphilisInfectiousness;
+	}
+
+	public YesNoUnknown getClinicalCriteriaMet() {
+		return clinicalCriteriaMet;
+	}
+
+	public void setClinicalCriteriaMet(YesNoUnknown clinicalCriteriaMet) {
+		this.clinicalCriteriaMet = clinicalCriteriaMet;
 	}
 }

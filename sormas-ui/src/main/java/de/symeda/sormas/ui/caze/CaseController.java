@@ -1033,10 +1033,7 @@ public class CaseController {
 			}
 
 			String errorMessage = customizableFieldValidationErrors.stream().collect(Collectors.joining("\n"));
-			Notification.show(
-				I18nProperties.getString(Strings.messageCheckInputData),
-				errorMessage,
-				Type.ERROR_MESSAGE);
+			Notification.show(I18nProperties.getString(Strings.messageCheckInputData), errorMessage, Type.ERROR_MESSAGE);
 		});
 
 		editView.addCommitListener(() -> {
@@ -1404,6 +1401,7 @@ public class CaseController {
 		SymptomsForm symptomsForm = new SymptomsForm(
 			caseDataDto,
 			caseDataDto.getDisease(),
+			caseDataDto.getSyphilisPresentation(),
 			person,
 			SymptomsContext.CASE,
 			viewMode,

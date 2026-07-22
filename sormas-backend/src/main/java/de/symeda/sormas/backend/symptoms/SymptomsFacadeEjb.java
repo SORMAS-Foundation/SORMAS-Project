@@ -281,6 +281,30 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setHaemolyticUremicSyndrome(source.getHaemolyticUremicSyndrome());
 		target.setBloodyDiarrhea(source.getBloodyDiarrhea());
 		target.setWateryDiarrhea(source.getWateryDiarrhea());
+		target.setPatchyAlopecia(source.getPatchyAlopecia());
+		target.setChancre(source.getChancre());
+		target.setCondylomaVenereum(source.getCondylomaVenereum());
+		target.setMucousPatches(source.getMucousPatches());
+		target.setGeneralizedLymphadenopathy(source.getGeneralizedLymphadenopathy());
+		target.setOcularManifestations(source.getOcularManifestations());
+		target.setNeurologicalManifestations(source.getNeurologicalManifestations());
+		target.setCondylomaLata(source.getCondylomaLata());
+		target.setBonyAbnormalities(source.getBonyAbnormalities());
+		target.setPseudoparalysis(source.getPseudoparalysis());
+		target.setRefractoryRhinitis(source.getRefractoryRhinitis());
+		target.setCentralNervousSystemDamage(source.getCentralNervousSystemDamage());
+		target.setMalnutrition(source.getMalnutrition());
+		target.setNephroticSyndrome(source.getNephroticSyndrome());
+		target.setSyphilisInfectionSite(source.getSyphilisInfectionSite());
+		target.setSyphilisStage(source.getSyphilisStage());
+		target.setSyphilisInfectiousness(source.getSyphilisInfectiousness());
+		target.setClinicalCriteriaMet(source.getClinicalCriteriaMet());
+		target.setArthralgia(source.getArthralgia());
+		target.setHepatomegaly(source.getHepatomegaly());
+		target.setHepatosplenomegaly(source.getHepatosplenomegaly());
+		target.setLowGradeFever(source.getLowGradeFever());
+		target.setMucocutaneousLesion(source.getMucocutaneousLesion());
+		target.setMaculopapularRash(source.getMaculopapularRash());
 		return target;
 	}
 
@@ -545,6 +569,30 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setHaemolyticUremicSyndrome(source.getHaemolyticUremicSyndrome());
 		target.setBloodyDiarrhea(source.getBloodyDiarrhea());
 		target.setWateryDiarrhea(source.getWateryDiarrhea());
+		target.setPatchyAlopecia(source.getPatchyAlopecia());
+		target.setChancre(source.getChancre());
+		target.setCondylomaVenereum(source.getCondylomaVenereum());
+		target.setMucousPatches(source.getMucousPatches());
+		target.setGeneralizedLymphadenopathy(source.getGeneralizedLymphadenopathy());
+		target.setOcularManifestations(source.getOcularManifestations());
+		target.setNeurologicalManifestations(source.getNeurologicalManifestations());
+		target.setCondylomaLata(source.getCondylomaLata());
+		target.setBonyAbnormalities(source.getBonyAbnormalities());
+		target.setPseudoparalysis(source.getPseudoparalysis());
+		target.setRefractoryRhinitis(source.getRefractoryRhinitis());
+		target.setCentralNervousSystemDamage(source.getCentralNervousSystemDamage());
+		target.setMalnutrition(source.getMalnutrition());
+		target.setNephroticSyndrome(source.getNephroticSyndrome());
+		target.setSyphilisInfectionSite(source.getSyphilisInfectionSite());
+		target.setSyphilisStage(source.getSyphilisStage());
+		target.setSyphilisInfectiousness(source.getSyphilisInfectiousness());
+		target.setClinicalCriteriaMet(source.getClinicalCriteriaMet());
+		target.setArthralgia(source.getArthralgia());
+		target.setHepatomegaly(source.getHepatomegaly());
+		target.setHepatosplenomegaly(source.getHepatosplenomegaly());
+		target.setLowGradeFever(source.getLowGradeFever());
+		target.setMucocutaneousLesion(source.getMucocutaneousLesion());
+		target.setMaculopapularRash(source.getMaculopapularRash());
 		return target;
 	}
 

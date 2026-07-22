@@ -257,6 +257,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 									CaseDataDto.PLAGUE_TYPE,
 									CaseDataDto.RABIES_TYPE))) +
 					fluidRowLocs(CaseDataDto.DISEASE_VARIANT, CaseDataDto.DISEASE_VARIANT_DETAILS) +
+					fluidRowLocs(CaseDataDto.SYPHILIS_PRESENTATION, "") +
 					loc(LOC_CUSTOMIZABLE_FIELDS_CASE_DATA_DISEASE) +
 					fluidRow(
 							fluidColumnLoc(4, 0, CaseDataDto.RE_INFECTION),
@@ -347,6 +348,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					loc(GENERAL_COMMENT_LOC) + fluidRowLocs(CaseDataDto.ADDITIONAL_DETAILS) +
 					fluidRowLocs(CaseDataDto.DELETION_REASON) +
 					fluidRowLocs(CaseDataDto.OTHER_DELETION_REASON);
+
+	public static final List<Disease> DISEASES_HIDDEN_VACCINATION_FIELD = List.of(Disease.SYPHILIS);
 	//@formatter:on
 
 	private CustomizableFieldsGroup caseDataGeneralPanel;
@@ -570,6 +573,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.PLAGUE_TYPE, NullableOptionGroup.class);
 		addField(CaseDataDto.DENGUE_FEVER_TYPE, NullableOptionGroup.class);
 		addField(CaseDataDto.RABIES_TYPE, NullableOptionGroup.class);
+
+		ComboBox presentationField = addField(CaseDataDto.SYPHILIS_PRESENTATION, ComboBox.class);
+		presentationField.setNullSelectionAllowed(false);
 
 		addField(CaseDataDto.CASE_ORIGIN, TextField.class);
 
@@ -1012,7 +1018,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		getContent().addComponent(vaccinationStatusDetailsField, VACCINATION_STATUS_DETAILS_LOC);
 
 		// Show details field only when vaccination status is OTHER
-		if (showVaccinationStatusFields) {
+		if (showVaccinationStatusFields && !DISEASES_HIDDEN_VACCINATION_FIELD.contains(disease)) {
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),
 				CaseDataDto.VACCINATION_STATUS_DETAILS,
@@ -1239,6 +1245,19 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		if (isVisibleAllowed(CaseDataDto.RABIES_TYPE)) {
 			FieldHelper
 				.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.RABIES_TYPE), CaseDataDto.DISEASE, Arrays.asList(Disease.RABIES), true);
+		}
+		if (isVisibleAllowed(CaseDataDto.SYPHILIS_PRESENTATION)) {
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				Arrays.asList(CaseDataDto.SYPHILIS_PRESENTATION),
+				CaseDataDto.DISEASE,
+				Arrays.asList(Disease.SYPHILIS),
+				true);
+			FieldHelper.setRequiredWhen(
+				getFieldGroup(),
+				CaseDataDto.DISEASE,
+				Arrays.asList(CaseDataDto.SYPHILIS_PRESENTATION),
+				Arrays.asList(Disease.SYPHILIS));
 		}
 		if (isVisibleAllowed(CaseDataDto.SMALLPOX_VACCINATION_SCAR)) {
 			FieldHelper.setVisibleWhen(
@@ -1614,7 +1633,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 	/**
 	 * sanitizing the url
-	 * 
+	 *
 	 * @param text
 	 * @return sanitized url
 	 */
@@ -1665,7 +1684,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 	/**
 	 * Replacing any escape sequence with the character that it represents.
-	 * 
+	 *
 	 * @param value
 	 * @return String
 	 */
@@ -1680,7 +1699,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 	/**
 	 * Converting special characters in a string into their safe HTML entity values
-	 * 
+	 *
 	 * @param value
 	 * @return
 	 */
@@ -1741,6 +1760,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private boolean diseaseClassificationExists() {
 		DiseaseClassificationCriteriaDto diseaseClassificationCriteria = FacadeProvider.getCaseClassificationFacade().getByDisease(disease);
 		return disease != Disease.OTHER && diseaseClassificationCriteria != null;
+	}
+
+	private boolean isLuxSyphilis(Disease disease) {
+		return Disease.SYPHILIS == disease && isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 	}
 
 	private void onFollowUpUntilChanged() {

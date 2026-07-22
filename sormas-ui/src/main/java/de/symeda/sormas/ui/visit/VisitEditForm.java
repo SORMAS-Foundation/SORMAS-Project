@@ -32,6 +32,7 @@ import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseLogic;
+import de.symeda.sormas.api.caze.SyphilisPresentation;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.followup.FollowUpLogic;
@@ -62,6 +63,7 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 		+ fluidRowLocs(VisitDto.SYMPTOMS);
 
 	private final Disease disease;
+	private final SyphilisPresentation syphilisPresentation;
 	private final ContactDto contact;
 	private final CaseDataDto caze;
 	private final PersonDto person;
@@ -69,6 +71,7 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 
 	public VisitEditForm(
 		Disease disease,
+		SyphilisPresentation syphilisPresentation,
 		ContactDto contact,
 		CaseDataDto caze,
 		PersonDto person,
@@ -86,6 +89,7 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 			hideValidationUntilNextCommit();
 		}
 		this.disease = disease;
+		this.syphilisPresentation = syphilisPresentation;
 		this.contact = contact;
 		this.caze = caze;
 		this.person = person;
@@ -100,12 +104,18 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 
 	}
 
-	public VisitEditForm(Disease disease, ContactDto contact, PersonDto person, boolean create, boolean inJurisdiction) {
-		this(disease, contact, null, person, create, contact.isPseudonymized(), contact.isInJurisdiction());
+	public VisitEditForm(
+		Disease disease,
+		SyphilisPresentation syphilisPresentation,
+		ContactDto contact,
+		PersonDto person,
+		boolean create,
+		boolean inJurisdiction) {
+		this(disease, syphilisPresentation, contact, null, person, create, contact.isPseudonymized(), contact.isInJurisdiction());
 	}
 
 	public VisitEditForm(Disease disease, CaseDataDto caze, PersonDto person, boolean create, boolean inJurisdiction) {
-		this(disease, null, caze, person, create, caze.isPseudonymized(), caze.isInJurisdiction());
+		this(disease, caze.getSyphilisPresentation(), null, caze, person, create, caze.isPseudonymized(), caze.isInJurisdiction());
 	}
 
 	@Override
@@ -143,7 +153,7 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 			I18nProperties.getPrefixDescription(VisitDto.I18N_PREFIX, VisitDto.VISIT_REMARKS) + "\n"
 				+ I18nProperties.getDescription(Descriptions.descGdpr));
 
-		symptomsForm = new SymptomsForm(null, disease, person, SymptomsContext.VISIT, null, fieldAccessCheckers);
+		symptomsForm = new SymptomsForm(null, disease, syphilisPresentation, person, SymptomsContext.VISIT, null, fieldAccessCheckers);
 		getFieldGroup().bind(symptomsForm, VisitDto.SYMPTOMS);
 		getContent().addComponent(symptomsForm, VisitDto.SYMPTOMS);
 

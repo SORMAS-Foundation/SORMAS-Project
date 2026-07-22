@@ -814,6 +814,7 @@ public interface Captions {
 	String CaseData_surveillanceToolStatus = "CaseData.surveillanceToolStatus";
 	String CaseData_symptomJournalStatus = "CaseData.symptomJournalStatus";
 	String CaseData_symptoms = "CaseData.symptoms";
+	String CaseData_syphilisPresentation = "CaseData.syphilisPresentation";
 	String CaseData_therapy = "CaseData.therapy";
 	String CaseData_trimester = "CaseData.trimester";
 	String CaseData_uuid = "CaseData.uuid";
@@ -2137,6 +2138,8 @@ public interface Captions {
 	String HealthConditions_hepatitis = "HealthConditions.hepatitis";
 	String HealthConditions_hiv = "HealthConditions.hiv";
 	String HealthConditions_hivArt = "HealthConditions.hivArt";
+	String HealthConditions_hivPrep = "HealthConditions.hivPrep";
+	String HealthConditions_hivStatus = "HealthConditions.hivStatus";
 	String HealthConditions_immunodeficiencyIncludingHiv = "HealthConditions.immunodeficiencyIncludingHiv";
 	String HealthConditions_immunodeficiencyOtherThanHiv = "HealthConditions.immunodeficiencyOtherThanHiv";
 	String HealthConditions_immunodeficiencyOtherThanHivText = "HealthConditions.immunodeficiencyOtherThanHivText";
@@ -2145,12 +2148,21 @@ public interface Captions {
 	String HealthConditions_malariaInfectedYear = "HealthConditions.malariaInfectedYear";
 	String HealthConditions_malignancyChemotherapy = "HealthConditions.malignancyChemotherapy";
 	String HealthConditions_medicationDetails = "HealthConditions.medicationDetails";
+	String HealthConditions_mentalHealthDisorder = "HealthConditions.mentalHealthDisorder";
 	String HealthConditions_obesity = "HealthConditions.obesity";
 	String HealthConditions_onMedication = "HealthConditions.onMedication";
 	String HealthConditions_otherConditions = "HealthConditions.otherConditions";
 	String HealthConditions_previousTuberculosisTreatment = "HealthConditions.previousTuberculosisTreatment";
 	String HealthConditions_recurrentBronchiolitis = "HealthConditions.recurrentBronchiolitis";
 	String HealthConditions_sickleCellDisease = "HealthConditions.sickleCellDisease";
+	String HealthConditions_stiProphylaxis = "HealthConditions.stiProphylaxis";
+	String HealthConditions_substanceUseDisorder = "HealthConditions.substanceUseDisorder";
+	String HealthConditions_substanceUseDisorderDetails = "HealthConditions.substanceUseDisorderDetails";
+	String HealthConditions_syphilisDateOfFirstDose = "HealthConditions.syphilisDateOfFirstDose";
+	String HealthConditions_syphilisDrugUsed = "HealthConditions.syphilisDrugUsed";
+	String HealthConditions_syphilisNumberOfDoses = "HealthConditions.syphilisNumberOfDoses";
+	String HealthConditions_syphilisOrOtherStis = "HealthConditions.syphilisOrOtherStis";
+	String HealthConditions_treatedForSyphilis = "HealthConditions.treatedForSyphilis";
 	String HealthConditions_tuberculosis = "HealthConditions.tuberculosis";
 	String HealthConditions_tuberculosisInfectionYear = "HealthConditions.tuberculosisInfectionYear";
 	String HealthConditions_vaccinatedAgainstMosquitoBorneViruses = "HealthConditions.vaccinatedAgainstMosquitoBorneViruses";
@@ -3063,6 +3075,7 @@ public interface Captions {
 	String Symptoms_anxietyStates = "Symptoms.anxietyStates";
 	String Symptoms_apnoea = "Symptoms.apnoea";
 	String Symptoms_apnoea_PERTUSSIS = "Symptoms.apnoea.PERTUSSIS";
+	String Symptoms_arthralgia = "Symptoms.arthralgia";
 	String Symptoms_arthritis = "Symptoms.arthritis";
 	String Symptoms_ascendingFlaccidParalysis = "Symptoms.ascendingFlaccidParalysis";
 	String Symptoms_asymptomatic = "Symptoms.asymptomatic";
@@ -3091,6 +3104,7 @@ public interface Captions {
 	String Symptoms_chestPressure = "Symptoms.chestPressure";
 	String Symptoms_chillsSweats = "Symptoms.chillsSweats";
 	String Symptoms_clammySkin = "Symptoms.clammySkin";
+	String Symptoms_clinicalCriteriaMet = "Symptoms.clinicalCriteriaMet";
 	String Symptoms_clinicallyEvident = "Symptoms.clinicallyEvident";
 	String Symptoms_clinicalManifestation = "Symptoms.clinicalManifestation";
 	String Symptoms_clinicalManifestationText = "Symptoms.clinicalManifestationText";
@@ -3162,6 +3176,8 @@ public interface Captions {
 	String Symptoms_height = "Symptoms.height";
 	String Symptoms_hemorrhagicRash = "Symptoms.hemorrhagicRash";
 	String Symptoms_hemorrhagicSyndrome = "Symptoms.hemorrhagicSyndrome";
+	String Symptoms_hepatomegaly = "Symptoms.hepatomegaly";
+	String Symptoms_hepatosplenomegaly = "Symptoms.hepatosplenomegaly";
 	String Symptoms_hiccups = "Symptoms.hiccups";
 	String Symptoms_highOrLowBloodPressure = "Symptoms.highOrLowBloodPressure";
 	String Symptoms_hydrophobia = "Symptoms.hydrophobia";
@@ -3202,10 +3218,12 @@ public interface Captions {
 	String Symptoms_lossOfSmell = "Symptoms.lossOfSmell";
 	String Symptoms_lossOfTaste = "Symptoms.lossOfTaste";
 	String Symptoms_lossSkinTurgor = "Symptoms.lossSkinTurgor";
+	String Symptoms_lowGradeFever = "Symptoms.lowGradeFever";
 	String Symptoms_lymphadenopathy = "Symptoms.lymphadenopathy";
 	String Symptoms_lymphadenopathyAxillary = "Symptoms.lymphadenopathyAxillary";
 	String Symptoms_lymphadenopathyCervical = "Symptoms.lymphadenopathyCervical";
 	String Symptoms_lymphadenopathyInguinal = "Symptoms.lymphadenopathyInguinal";
+	String Symptoms_maculopapularRash = "Symptoms.maculopapularRash";
 	String Symptoms_majorSite = "Symptoms.majorSite";
 	String Symptoms_malaise = "Symptoms.malaise";
 	String Symptoms_malnutrition = "Symptoms.malnutrition";
@@ -3216,6 +3234,7 @@ public interface Captions {
 	String Symptoms_microcephaly = "Symptoms.microcephaly";
 	String Symptoms_midUpperArmCircumference = "Symptoms.midUpperArmCircumference";
 	String Symptoms_minorSite = "Symptoms.minorSite";
+	String Symptoms_mucocutaneousLesion = "Symptoms.mucocutaneousLesion";
 	String Symptoms_mucousPatches = "Symptoms.mucousPatches";
 	String Symptoms_musclePain = "Symptoms.musclePain";
 	String Symptoms_nausea = "Symptoms.nausea";
@@ -3308,6 +3327,9 @@ public interface Captions {
 	String Symptoms_symptomStatus = "Symptoms.symptomStatus";
 	String Symptoms_symptomsUnknownOccurred = "Symptoms.symptomsUnknownOccurred";
 	String Symptoms_syndromicFlu = "Symptoms.syndromicFlu";
+	String Symptoms_syphilisInfectionSite = "Symptoms.syphilisInfectionSite";
+	String Symptoms_syphilisInfectiousness = "Symptoms.syphilisInfectiousness";
+	String Symptoms_syphilisStage = "Symptoms.syphilisStage";
 	String Symptoms_temperature = "Symptoms.temperature";
 	String Symptoms_temperatureSource = "Symptoms.temperatureSource";
 	String Symptoms_tenesmus = "Symptoms.tenesmus";
