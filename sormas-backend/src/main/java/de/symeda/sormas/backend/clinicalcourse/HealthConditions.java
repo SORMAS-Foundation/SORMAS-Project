@@ -14,6 +14,8 @@ import de.symeda.sormas.api.clinicalcourse.HivStatus;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
+import java.util.Date;
+
 @Entity
 public class HealthConditions extends AbstractDomainObject {
 
