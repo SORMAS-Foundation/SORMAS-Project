@@ -7,6 +7,7 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.SyphilisPresentation;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -28,10 +29,17 @@ public class ClinicalVisitForm extends AbstractEditForm<ClinicalVisitDto> {
 		+ fluidRowLocs(ClinicalVisitDto.SYMPTOMS);
 
 	private final Disease disease;
+	private final SyphilisPresentation syphilisPresentation;
 	private final PersonDto person;
 	private SymptomsForm symptomsForm;
 
-	public ClinicalVisitForm(boolean create, Disease disease, PersonDto person, boolean isPseudonymized, boolean inJurisdiction) {
+	public ClinicalVisitForm(
+		boolean create,
+		Disease disease,
+		SyphilisPresentation syphilisPresentation,
+		PersonDto person,
+		boolean isPseudonymized,
+		boolean inJurisdiction) {
 		super(
 			ClinicalVisitDto.class,
 			ClinicalVisitDto.I18N_PREFIX,
@@ -47,6 +55,7 @@ public class ClinicalVisitForm extends AbstractEditForm<ClinicalVisitDto> {
 		if (disease == null) {
 			throw new IllegalArgumentException("Disease cannot be null");
 		}
+		this.syphilisPresentation = syphilisPresentation;
 		this.disease = disease;
 		this.person = person;
 		addFields();
@@ -75,7 +84,7 @@ public class ClinicalVisitForm extends AbstractEditForm<ClinicalVisitDto> {
 			I18nProperties.getPrefixDescription(ClinicalVisitDto.I18N_PREFIX, ClinicalVisitDto.VISIT_REMARKS, "") + "\n"
 				+ I18nProperties.getDescription(Descriptions.descGdpr));;
 
-		symptomsForm = new SymptomsForm(null, disease, person, SymptomsContext.CLINICAL_VISIT, null, fieldAccessCheckers);
+		symptomsForm = new SymptomsForm(null, disease, syphilisPresentation, person, SymptomsContext.CLINICAL_VISIT, null, fieldAccessCheckers);
 		getFieldGroup().bind(symptomsForm, ClinicalVisitDto.SYMPTOMS);
 		getContent().addComponent(symptomsForm, ClinicalVisitDto.SYMPTOMS);
 

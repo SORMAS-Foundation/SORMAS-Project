@@ -2,10 +2,14 @@ package de.symeda.sormas.backend.clinicalcourse;
 
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import de.symeda.sormas.api.clinicalcourse.ComplianceWithTreatment;
 import de.symeda.sormas.api.clinicalcourse.HivStatus;
@@ -479,6 +483,7 @@ public class HealthConditions extends AbstractDomainObject {
 		this.syphilisNumberOfDoses = syphilisNumberOfDoses;
 	}
 
+	@Temporal(TemporalType.TIMESTAMP)
 	public Date getSyphilisDateOfFirstDose() {
 		return syphilisDateOfFirstDose;
 	}

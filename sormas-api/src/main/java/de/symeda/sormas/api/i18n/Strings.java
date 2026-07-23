@@ -909,6 +909,7 @@ public interface Strings {
 	String headingSormasToSormasDuplicateDetection = "headingSormasToSormasDuplicateDetection";
 	String headingSormasToSormasShareRequestNotFound = "headingSormasToSormasShareRequestNotFound";
 	String headingSpecailCaseAccess = "headingSpecailCaseAccess";
+	String headingStage = "headingStage";
 	String headingStatusDetermination = "headingStatusDetermination";
 	String headingStoppedFollowUp = "headingStoppedFollowUp";
 	String headingSurveillanceReports = "headingSurveillanceReports";
