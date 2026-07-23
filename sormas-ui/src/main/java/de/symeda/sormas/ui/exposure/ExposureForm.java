@@ -529,7 +529,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			ProphylaxisAdherence.OTHER,
 			true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.TRAVEL_PURPOSE_DETAILS, ExposureDto.TRAVEL_PURPOSE, TravelPurpose.OTHER, true);
-		conclusionHeading.setVisible(List.of(Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS, Disease.SYPHILIS).contains(disease));
+		conclusionHeading.setVisible(List.of(Disease.GIARDIASIS, Disease.CRYPTOSPORIDIOSIS).contains(disease));
 		locationForm.setFacilityFieldsVisible(getField(ExposureDto.TYPE_OF_PLACE).getValue() == TypeOfPlace.FACILITY, true);
 		getField(ExposureDto.TYPE_OF_PLACE)
 			.addValueChangeListener(e -> locationForm.setFacilityFieldsVisible(e.getProperty().getValue() == TypeOfPlace.FACILITY, true));

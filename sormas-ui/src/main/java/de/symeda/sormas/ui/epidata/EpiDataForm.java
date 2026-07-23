@@ -180,7 +180,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	private final Class<? extends EntityDto> parentClass;
 	private final transient Consumer<Boolean> sourceContactsToggleCallback;
 	private final boolean isPseudonymized;
-	private final Date periodReferenceDate;
+	private final Date symptomOnsetDate;
 	private final boolean caseFollowUpEnabled;
 
 	private CustomizableFieldsGroup exposureInvestigationPanel;
@@ -208,7 +208,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		this.parentClass = parentClass;
 		this.sourceContactsToggleCallback = sourceContactsToggleCallback;
 		this.isPseudonymized = isPseudonymized;
-		this.periodReferenceDate = date;
+		this.symptomOnsetDate = date;
 		this.caseFollowUpEnabled = disease != null && FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(disease);
 		setCustomizableFieldsMetadata(customizableFieldsMetadata);
 		setCustomizableFieldsValues(customizableFieldsValues);
@@ -281,7 +281,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			country.setCaption(I18nProperties.getCaption(Captions.EpiData_country_SHIG));
 		}
 
-		includeExposureDates(periodReferenceDate, disease);
+		includeExposureDates(symptomOnsetDate, disease);
 
 		addField(EpiDataDto.HEALTHCARE_PROFESSIONAL, NullableOptionGroup.class);
 		addField(EpiDataDto.PLACE_OF_INFECTION);
@@ -294,7 +294,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		motherCitizenship.addItems(countries);
 		addField(EpiDataDto.SEX_WORKER, NullableOptionGroup.class).setVisible(true);
 		addField(EpiDataDto.CONTACT_WITH_SEX_WORKER, NullableOptionGroup.class).setVisible(true);
-		includeContagiousDates(periodReferenceDate, disease);
+		includeContagiousDates(symptomOnsetDate, disease);
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
@@ -486,7 +486,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	 */
 	private DateField addDateFieldToCustomLayout(Integer period) {
 		DateField customPeriodDate = new DateField();
-		customPeriodDate.setValue(DateHelper.subtractDays(periodReferenceDate, period));
+		customPeriodDate.setValue(DateHelper.subtractDays(symptomOnsetDate, period));
 		customPeriodDate.setReadOnly(true);
 		return customPeriodDate;
 	}
