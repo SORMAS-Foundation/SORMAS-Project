@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.ui.configuration.system;
 
+import java.util.Arrays;
 import java.util.StringJoiner;
 
 import com.vaadin.ui.CheckBox;
@@ -46,6 +47,7 @@ public class CronExpressionField extends CustomField<String> {
 	private final TextField[] fields = new TextField[CronExpressionValidator.FIELD_COUNT];
 	private final CheckBox enabled = new CheckBox();
 	private final Label summary = new Label();
+	private boolean applyingEnabledState;
 
 	public CronExpressionField() {
 
@@ -60,7 +62,11 @@ public class CronExpressionField extends CustomField<String> {
 		}
 
 		enabled.setCaption(I18nProperties.getCaption(Captions.cronJobEnabled));
-		enabled.addValueChangeListener(event -> setJobEnabled(event.getValue()));
+		enabled.addValueChangeListener(event -> {
+			if (!applyingEnabledState) {
+				setJobEnabled(event.getValue());
+			}
+		});
 	}
 
 	@Override
@@ -82,11 +88,19 @@ public class CronExpressionField extends CustomField<String> {
 	@Override
 	protected void doSetValue(String value) {
 
-		String[] parts = CronExpressionValidator.isDisabled(value) ? new String[0] : value.trim().split(" ");
+		boolean disabled = CronExpressionValidator.isDisabled(value);
+		String[] parts = disabled ? new String[0] : value.trim().split(" ");
+		int lastIndex = fields.length - 1;
 		for (int index = 0; index < fields.length; index++) {
-			fields[index].setValue(index < parts.length ? parts[index] : "");
+			if (index >= parts.length) {
+				fields[index].setValue("");
+			} else if (index == lastIndex) {
+				fields[index].setValue(String.join(" ", Arrays.copyOfRange(parts, index, parts.length)));
+			} else {
+				fields[index].setValue(parts[index]);
+			}
 		}
-		enabled.setValue(!CronExpressionValidator.isDisabled(value));
+		enabled.setValue(!disabled);
 		refresh();
 	}
 
@@ -105,8 +119,11 @@ public class CronExpressionField extends CustomField<String> {
 
 	public void setJobEnabled(boolean jobEnabled) {
 
-		if (enabled.getValue() != jobEnabled) {
+		applyingEnabledState = true;
+		try {
 			enabled.setValue(jobEnabled);
+		} finally {
+			applyingEnabledState = false;
 		}
 		if (jobEnabled && CronExpressionValidator.isDisabled(joinFields())) {
 			doSetFields(ENABLED_DEFAULT_EXPRESSION);
@@ -118,7 +135,12 @@ public class CronExpressionField extends CustomField<String> {
 	}
 
 	public boolean isExpressionValid() {
-		return CronExpressionValidator.isValid(getValue());
+
+		String value = getValue();
+		if (enabled.getValue() && CronExpressionValidator.isDisabled(value)) {
+			return false;
+		}
+		return CronExpressionValidator.isValid(value);
 	}
 
 	private void onFieldChanged(int fieldIndex) {
@@ -153,6 +175,8 @@ public class CronExpressionField extends CustomField<String> {
 	private String rangeHint(int fieldIndex) {
 
 		String range = CronExpressionValidator.LOWER_BOUNDS[fieldIndex] + "-" + CronExpressionValidator.UPPER_BOUNDS[fieldIndex];
-		return CronExpressionValidator.allowsIncrement(fieldIndex) ? range + ", * or */n" : range + " or *";
+		String captionKey =
+			CronExpressionValidator.allowsIncrement(fieldIndex) ? Captions.cronFieldRangeHint : Captions.cronFieldRangeHintWithoutIncrement;
+		return String.format(I18nProperties.getCaption(captionKey), range);
 	}
 }

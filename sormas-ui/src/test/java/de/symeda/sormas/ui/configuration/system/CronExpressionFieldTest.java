@@ -17,13 +17,33 @@ package de.symeda.sormas.ui.configuration.system;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.lang.reflect.Field;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.TextField;
+
 public class CronExpressionFieldTest {
+
+	private boolean isJobEnabledChecked(CronExpressionField field) throws ReflectiveOperationException {
+
+		Field enabledField = CronExpressionField.class.getDeclaredField("enabled");
+		enabledField.setAccessible(true);
+		return ((CheckBox) enabledField.get(field)).getValue();
+	}
+
+	private TextField[] fieldBoxesOf(CronExpressionField field) throws ReflectiveOperationException {
+
+		Field fieldsField = CronExpressionField.class.getDeclaredField("fields");
+		fieldsField.setAccessible(true);
+		return (TextField[]) fieldsField.get(field);
+	}
 
 	@ParameterizedTest
 	@ValueSource(strings = {
@@ -79,5 +99,62 @@ public class CronExpressionFieldTest {
 		field.setValue("0 15 1 * * *");
 
 		assertTrue(field.isExpressionValid());
+	}
+
+	@Test
+	public void anOverLongExpressionDoesNotRoundTripToAValidExpression() {
+
+		CronExpressionField field = new CronExpressionField();
+		field.setValue("0 15 1 * * * extra");
+
+		assertNotEquals("0 15 1 * * *", field.getValue());
+		assertFalse(field.isExpressionValid());
+	}
+
+	@Test
+	public void anUnderLengthExpressionIsReportedAsInvalid() {
+
+		CronExpressionField field = new CronExpressionField();
+		field.setValue("0 15 1 * *");
+
+		assertFalse(field.isExpressionValid());
+	}
+
+	@Test
+	public void anEmptyValueIsDisabled() throws ReflectiveOperationException {
+
+		CronExpressionField field = new CronExpressionField();
+		field.setValue("0 15 1 * * *");
+
+		field.setValue("");
+
+		assertEquals("", field.getValue());
+		assertFalse(isJobEnabledChecked(field));
+	}
+
+	@Test
+	public void aWhitespaceOnlyValueIsTreatedAsDisabled() throws ReflectiveOperationException {
+
+		CronExpressionField field = new CronExpressionField();
+		field.setValue("0 15 1 * * *");
+
+		field.setValue("   ");
+
+		assertEquals("", field.getValue());
+		assertFalse(isJobEnabledChecked(field));
+	}
+
+	@Test
+	public void blankFieldsWhileEnabledAreReportedAsInvalid() throws ReflectiveOperationException {
+
+		CronExpressionField field = new CronExpressionField();
+		field.setValue("0 15 1 * * *");
+
+		for (TextField box : fieldBoxesOf(field)) {
+			box.setValue("");
+		}
+
+		assertTrue(isJobEnabledChecked(field));
+		assertFalse(field.isExpressionValid());
 	}
 }

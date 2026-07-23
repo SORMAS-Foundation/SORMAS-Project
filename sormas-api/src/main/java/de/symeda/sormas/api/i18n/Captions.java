@@ -1226,6 +1226,8 @@ public interface Captions {
 	String cronFieldHour = "cronFieldHour";
 	String cronFieldMinute = "cronFieldMinute";
 	String cronFieldMonth = "cronFieldMonth";
+	String cronFieldRangeHint = "cronFieldRangeHint";
+	String cronFieldRangeHintWithoutIncrement = "cronFieldRangeHintWithoutIncrement";
 	String cronFieldSecond = "cronFieldSecond";
 	String cronJobEnabled = "cronJobEnabled";
 	String CustomizableEnum_hasDetails = "CustomizableEnum.hasDetails";
