@@ -33,6 +33,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.util.Arrays;
@@ -50,11 +51,15 @@ import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueDto;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
+import de.symeda.sormas.backend.common.CronService;
 import de.symeda.sormas.backend.systemconfiguration.event.SystemConfigurationValueChangedEvent;
 
 public class CronSchedulerTest extends AbstractBeanTest {
 
 	private static final String CRON_CATEGORY_NAME = "CRON";
+
+	@Mock
+	private CronService cronService;
 
 	@BeforeEach
 	public void warmUpSchedulerThenResetTimerService() {
@@ -237,8 +242,24 @@ public class CronSchedulerTest extends AbstractBeanTest {
 
 		getBean(CronScheduler.class).executeJob(timer);
 
-		Optional<CronJobRun> recorded = getBean(InMemoryCronJobRunRepository.class).findLatest(CronJob.CLEAN_UP_TEMPORARY_FILES);
+		Optional<CronJobRun> recorded = getBean(CronJobRunRepository.class).findLatest(CronJob.CLEAN_UP_TEMPORARY_FILES);
 		assertTrue(recorded.isPresent());
 		assertEquals(CronJobRunOutcome.SUCCESS, recorded.get().getOutcome());
+	}
+
+	@Test
+	public void aFailedDispatchIsRecorded() {
+
+		Mockito.doThrow(new RuntimeException("boom")).when(cronService).archiveCases();
+
+		javax.ejb.Timer timer = org.mockito.Mockito.mock(javax.ejb.Timer.class);
+		org.mockito.Mockito.when(timer.getInfo()).thenReturn(CronJob.ARCHIVE_CASES);
+
+		getBean(CronScheduler.class).executeJob(timer);
+
+		Optional<CronJobRun> recorded = getBean(CronJobRunRepository.class).findLatest(CronJob.ARCHIVE_CASES);
+		assertTrue(recorded.isPresent());
+		assertEquals(CronJobRunOutcome.FAILED, recorded.get().getOutcome());
+		assertEquals("boom", recorded.get().getFailureMessage());
 	}
 }

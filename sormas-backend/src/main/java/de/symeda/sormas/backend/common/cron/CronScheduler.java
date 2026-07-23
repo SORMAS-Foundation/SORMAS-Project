@@ -90,17 +90,22 @@ public class CronScheduler {
 	public void executeJob(Timer timer) {
 
 		Object timerInfo = null;
-		Date start = new Date();
 		try {
 			timerInfo = timer.getInfo();
 			CronJob job = (CronJob) timerInfo;
+			Date start = new Date();
+			CronJobRunOutcome outcome = CronJobRunOutcome.SUCCESS;
+			String failureMessage = null;
+
 			try {
 				job.execute(cronService);
-				cronJobRunRepository.record(job, new CronJobRun(start, new Date(), CronJobRunOutcome.SUCCESS, null));
 			} catch (Exception e) {
-				cronJobRunRepository.record(job, new CronJobRun(start, new Date(), CronJobRunOutcome.FAILED, e.getMessage()));
-				throw e;
+				outcome = CronJobRunOutcome.FAILED;
+				failureMessage = e.getMessage();
+				logger.error("Scheduled job {} failed", job, e);
 			}
+
+			cronJobRunRepository.record(job, new CronJobRun(start, new Date(), outcome, failureMessage));
 		} catch (Exception e) {
 			logger.error("Scheduled job execution failed for timer info {}", timerInfo, e);
 		}
