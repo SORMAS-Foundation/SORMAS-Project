@@ -367,18 +367,18 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	}
 
 	/**
-	 * Include the exposure start and dates when periodReferenceDate is present.
+	 * Include the exposure start and dates when symptomOnsetDate is present.
 	 * Disease incubation period is enabled with valid values.
 	 *
-	 * @param periodReferenceDate
+	 * @param symptomOnsetDate
 	 * @param disease
 	 */
-	private void includeExposureDates(Date periodReferenceDate, Disease disease) {
+	private void includeExposureDates(Date symptomOnsetDate, Disease disease) {
 		// By default, hiding the exposure period to consider heading,
 		// it will be visible only when all the conditions are met to show the exposure start and end dates.
 		getContent().getComponent(LOC_EXPOSURE_PERIOD_CONSIDER_HEADING).setVisible(false);
-		//  if periodReferenceDate is null, return;
-		if (periodReferenceDate == null) {
+		//  if symptomOnsetDate is null, return;
+		if (symptomOnsetDate == null) {
 			return;
 		}
 		DiseaseConfigurationDto diseaseConfigurationDto = FacadeProvider.getDiseaseConfigurationFacade().getDiseaseConfiguration(disease);
@@ -443,15 +443,15 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	 * calculates the Activity as Case from and to dates based on the symptom onset date and disease
 	 * configuration for contagious-period.
 	 * 
-	 * @param periodReferenceDate
+	 * @param symptomOnsetDate
 	 * @param disease
 	 */
-	private void includeContagiousDates(Date periodReferenceDate, Disease disease) {
+	private void includeContagiousDates(Date symptomOnsetDate, Disease disease) {
 		// By default, hiding the transmissibility period to consider heading,
 		// it will be visible only when all the conditions are met to show the activity as case from and to dates.
 		getContent().getComponent(LOC_TRANSMISSIBILITY_PERIOD_HEADING).setVisible(false);
-		//  if periodReferenceDate is null, return;
-		if (periodReferenceDate == null) {
+		//  if symptomOnsetDate is null, return;
+		if (symptomOnsetDate == null) {
 			return;
 		}
 		DiseaseConfigurationDto diseaseConfigurationDto = FacadeProvider.getDiseaseConfigurationFacade().getDiseaseConfiguration(disease);
