@@ -1232,7 +1232,6 @@ public interface Captions {
 	String cronJobDescription = "cronJobDescription";
 	String cronJobDisabled = "cronJobDisabled";
 	String cronJobDuration = "cronJobDuration";
-	String cronJobEditSchedule = "cronJobEditSchedule";
 	String cronJobEnabled = "cronJobEnabled";
 	String cronJobEnabledStatus = "cronJobEnabledStatus";
 	String cronJobInvalid = "cronJobInvalid";

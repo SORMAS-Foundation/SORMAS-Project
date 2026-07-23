@@ -41,7 +41,7 @@ public class ScheduledJobsGrid extends Grid<CronJobStatusDto> {
 		addColumn(this::describeJob).setId("description").setCaption(I18nProperties.getCaption(Captions.cronJobDescription));
 		addColumn(this::describeSchedule).setId("schedule").setCaption(I18nProperties.getCaption(Captions.cronJobSchedule));
 		addColumn(this::describeStatus).setId("status").setCaption(I18nProperties.getCaption(Captions.cronJobEnabledStatus));
-		addColumn(CronJobStatusDto::getNextFireTime, new DateRenderer("%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS", ""))
+		addColumn(CronJobStatusDto::getNextFireTime, new DateRenderer("%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS", "—"))
 			.setId("nextFireTime")
 			.setCaption(I18nProperties.getCaption(Captions.cronJobNextRun));
 		addColumn(this::describeLastRun).setId("lastRun").setCaption(I18nProperties.getCaption(Captions.cronJobLastRun));
