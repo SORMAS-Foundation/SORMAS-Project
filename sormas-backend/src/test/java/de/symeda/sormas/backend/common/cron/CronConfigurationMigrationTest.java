@@ -17,7 +17,9 @@ package de.symeda.sormas.backend.common.cron;
 
 import static org.junit.Assume.assumeNoException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
 import java.util.List;
@@ -79,5 +81,11 @@ public class CronConfigurationMigrationTest {
 			assertEquals(CronExpressionValidator.VALUE_PATTERN, row[2], job.getConfigKey());
 			assertEquals("CRON", row[3], job.getConfigKey());
 		}
+
+		java.util.regex.Pattern stored = java.util.regex.Pattern.compile((String) rowsByKey.values().iterator().next()[2]);
+		assertFalse(stored.matcher("0 */70 * * * *").matches(), "stored pattern must reject an out of range increment");
+		assertFalse(stored.matcher("0 0 0 */2 * *").matches(), "stored pattern must reject an increment on day of month");
+		assertTrue(stored.matcher("0 15 1 * * *").matches());
+		assertTrue(stored.matcher("").matches());
 	}
 }

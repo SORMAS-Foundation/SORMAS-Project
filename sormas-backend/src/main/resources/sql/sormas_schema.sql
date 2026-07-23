@@ -16856,15 +16856,15 @@ INSERT INTO schema_version (version_number, comment) VALUES (649, 'Merge retired
 
 -- 2026-07-21 Make scheduled job intervals configurable #13818
 
+ALTER TABLE systemconfigurationvalue ALTER COLUMN value_pattern TYPE text;
+ALTER TABLE systemconfigurationvalue_history ALTER COLUMN value_pattern TYPE text;
+
 DO $$
 DECLARE
     cron_category_id      BIGINT;
-    cron_field_pattern    TEXT := '(\*|\*/\d{1,2}|\d{1,2}(-\d{1,2})?(/\d{1,2})?(,\d{1,2}(-\d{1,2})?)*)';
-    cron_value_pattern    TEXT;
+    cron_value_pattern    TEXT := '(\s*|(\*(/((0?[1-9])|[1-5][0-9]))?|((0?[0-9])|[1-5][0-9])(-((0?[0-9])|[1-5][0-9]))?(/((0?[1-9])|[1-5][0-9]))?(,((0?[0-9])|[1-5][0-9])(-((0?[0-9])|[1-5][0-9]))?)*) (\*(/((0?[1-9])|[1-5][0-9]))?|((0?[0-9])|[1-5][0-9])(-((0?[0-9])|[1-5][0-9]))?(/((0?[1-9])|[1-5][0-9]))?(,((0?[0-9])|[1-5][0-9])(-((0?[0-9])|[1-5][0-9]))?)*) (\*(/((0?[1-9])|1[0-9]|2[0-3]))?|((0?[0-9])|1[0-9]|2[0-3])(-((0?[0-9])|1[0-9]|2[0-3]))?(/((0?[1-9])|1[0-9]|2[0-3]))?(,((0?[0-9])|1[0-9]|2[0-3])(-((0?[0-9])|1[0-9]|2[0-3]))?)*) (\*|((0?[1-9])|[1-2][0-9]|3[0-1])(-((0?[1-9])|[1-2][0-9]|3[0-1]))?(,((0?[1-9])|[1-2][0-9]|3[0-1])(-((0?[1-9])|[1-2][0-9]|3[0-1]))?)*) (\*|((0?[1-9])|1[0-2])(-((0?[1-9])|1[0-2]))?(,((0?[1-9])|1[0-2])(-((0?[1-9])|1[0-2]))?)*) (\*|(0?[0-7])(-(0?[0-7]))?(,(0?[0-7])(-(0?[0-7]))?)*))';
     job                   RECORD;
 BEGIN
-    cron_value_pattern := '(|' || cron_field_pattern || '( ' || cron_field_pattern || '){5})';
-
     SELECT id INTO cron_category_id FROM systemconfigurationcategory WHERE name = 'CRON';
 
     IF cron_category_id IS NULL THEN
