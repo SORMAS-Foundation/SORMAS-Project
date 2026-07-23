@@ -286,14 +286,14 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		addField(EpiDataDto.HEALTHCARE_PROFESSIONAL, NullableOptionGroup.class);
 		addField(EpiDataDto.PLACE_OF_INFECTION);
 		addField(EpiDataDto.RESIDENCE_AT_ONSET);
-		addField(EpiDataDto.TYPE_OF_CLINICAL_SERVICE, ComboBox.class).setVisible(true);
+		addField(EpiDataDto.TYPE_OF_CLINICAL_SERVICE, ComboBox.class);
 		addField(EpiDataDto.PROBABLE_ROUTE_OF_TRANSMISSION, ComboBox.class);
 		ComboBox motherCountryOfBirth = addInfrastructureField(EpiDataDto.MOTHER_COUNTRY_OF_BIRTH);
 		motherCountryOfBirth.addItems(countries);
 		ComboBox motherCitizenship = addInfrastructureField(EpiDataDto.MOTHER_CITIZENSHIP);
 		motherCitizenship.addItems(countries);
-		addField(EpiDataDto.SEX_WORKER, NullableOptionGroup.class).setVisible(true);
-		addField(EpiDataDto.CONTACT_WITH_SEX_WORKER, NullableOptionGroup.class).setVisible(true);
+		addField(EpiDataDto.SEX_WORKER, NullableOptionGroup.class);
+		addField(EpiDataDto.CONTACT_WITH_SEX_WORKER, NullableOptionGroup.class);
 		includeContagiousDates(symptomOnsetDate, disease);
 
 		FieldHelper.setVisibleWhen(

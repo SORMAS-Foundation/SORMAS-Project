@@ -567,9 +567,6 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		settingField.setValue(defaultSetting);
 		settingField.setEnabled(!isVectorBorneAutoSetting);
 
-		// allows to show all adequate sub settings once a default was selected.
-		updateSubSettingsFieldItems(category, defaultSetting);
-
 		settingDetailsField.setValue(null);
 		settingDetailsField.setVisible(false);
 
