@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
+import de.symeda.sormas.api.systemconfiguration.CronExpressionValidator;
 import de.symeda.sormas.backend.common.CronService;
 
 public class CronJobTest {
@@ -35,14 +36,14 @@ public class CronJobTest {
 	@Test
 	public void everyDefaultExpressionIsValid() {
 		for (CronJob job : CronJob.values()) {
-			assertTrue(CronExpressionParser.isValid(job.getDefaultExpression()), job.name());
+			assertTrue(CronExpressionValidator.isValid(job.getDefaultExpression()), job.name());
 		}
 	}
 
 	@Test
 	public void noDefaultExpressionIsDisabled() {
 		for (CronJob job : CronJob.values()) {
-			assertTrue(!CronExpressionParser.isDisabled(job.getDefaultExpression()), job.name());
+			assertTrue(!CronExpressionValidator.isDisabled(job.getDefaultExpression()), job.name());
 		}
 	}
 

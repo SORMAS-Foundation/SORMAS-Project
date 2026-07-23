@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import de.symeda.sormas.api.systemconfiguration.CronExpressionValidator;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationCategoryDto;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationCategoryFacade;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationCategoryReferenceDto;
@@ -86,7 +87,7 @@ public class CronSchedulerTest extends AbstractBeanTest {
 		value.setCategory(cronCategoryReference());
 		value.setOptional(true);
 		value.setEncrypt(false);
-		value.setPattern(CronExpressionParser.VALUE_PATTERN);
+		value.setPattern(CronExpressionValidator.VALUE_PATTERN);
 		return value;
 	}
 

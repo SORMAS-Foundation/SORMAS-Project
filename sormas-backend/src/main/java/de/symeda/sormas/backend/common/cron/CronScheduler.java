@@ -36,6 +36,7 @@ import javax.enterprise.event.TransactionPhase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.systemconfiguration.CronExpressionValidator;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.common.CronService;
@@ -95,7 +96,7 @@ public class CronScheduler {
 	public void reschedule(CronJob job) {
 
 		String configured = systemConfigurationValueFacade.getValue(job.getConfigKey());
-		if (configured != null && !CronExpressionParser.isValid(configured)) {
+		if (configured != null && !CronExpressionValidator.isValid(configured)) {
 			logger.error(
 				"Configuration key {} holds the invalid cron expression [{}]; the current schedule is kept",
 				job.getConfigKey(),
@@ -135,7 +136,7 @@ public class CronScheduler {
 			logger.warn("Configuration key {} is missing; using the default [{}]", job.getConfigKey(), job.getDefaultExpression());
 			return job.getDefaultExpression();
 		}
-		if (!CronExpressionParser.isValid(configured)) {
+		if (!CronExpressionValidator.isValid(configured)) {
 			logger.error(
 				"Configuration key {} holds the invalid cron expression [{}]; using the default [{}]",
 				job.getConfigKey(),
@@ -148,7 +149,7 @@ public class CronScheduler {
 
 	private void scheduleJob(CronJob job, String expression) {
 
-		if (CronExpressionParser.isDisabled(expression)) {
+		if (CronExpressionValidator.isDisabled(expression)) {
 			logger.warn("Scheduled job {} is disabled by configuration key {}", job, job.getConfigKey());
 			return;
 		}

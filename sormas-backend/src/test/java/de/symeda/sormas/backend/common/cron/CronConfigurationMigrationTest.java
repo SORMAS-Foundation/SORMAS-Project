@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import de.hilling.junit.cdi.CdiTestJunitExtension;
+import de.symeda.sormas.api.systemconfiguration.CronExpressionValidator;
 import de.symeda.sormas.backend.common.HistoryTablesTest.SormasPostgresSQLContainer;
 
 @ExtendWith(CdiTestJunitExtension.class)
@@ -75,7 +76,7 @@ public class CronConfigurationMigrationTest {
 			Object[] row = rowsByKey.get(job.getConfigKey());
 			assertNotNull(row, job.getConfigKey());
 			assertEquals(job.getDefaultExpression(), row[1], job.getConfigKey());
-			assertEquals(CronExpressionParser.VALUE_PATTERN, row[2], job.getConfigKey());
+			assertEquals(CronExpressionValidator.VALUE_PATTERN, row[2], job.getConfigKey());
 			assertEquals("CRON", row[3], job.getConfigKey());
 		}
 	}
