@@ -17,6 +17,7 @@ package de.symeda.sormas.backend.common.cron;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -37,7 +38,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -222,5 +225,22 @@ public class CronSchedulerTest extends AbstractBeanTest {
 		assertTrue(recorded.isPresent());
 		assertEquals(CronJobRunOutcome.FAILED, recorded.get().getOutcome());
 		assertEquals("boom", recorded.get().getFailureMessage());
+	}
+
+	@Test
+	public void anExhaustedTimerDoesNotHideTheNextFireTimeOfAnotherJob() {
+
+		javax.ejb.Timer timer = org.mockito.Mockito.mock(javax.ejb.Timer.class);
+		org.mockito.Mockito.when(timer.getInfo()).thenReturn(CronJob.ARCHIVE_CASES, CronJob.ARCHIVE_EVENTS);
+		Date liveNextTimeout = new Date();
+		org.mockito.Mockito.when(timer.getNextTimeout()).thenThrow(new javax.ejb.NoMoreTimeoutsException()).thenReturn(liveNextTimeout);
+
+		TimerService timerService = MockProducer.getTimerService();
+		org.mockito.Mockito.when(timerService.getTimers()).thenReturn(Arrays.asList(timer, timer));
+
+		Map<CronJob, Date> nextFireTimes = getBean(CronScheduler.class).getNextFireTimes();
+
+		assertEquals(liveNextTimeout, nextFireTimes.get(CronJob.ARCHIVE_EVENTS));
+		assertFalse(nextFireTimes.containsKey(CronJob.ARCHIVE_CASES));
 	}
 }

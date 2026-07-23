@@ -30,6 +30,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.systemconfiguration.CronJobStatusDto;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueDto;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.backend.AbstractBeanTest;
 
@@ -41,8 +42,11 @@ public class CronJobFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	private void setConfigurationValue(CronJob job, String expression) {
-		new CronTestConfigurationHelper(getBean(SystemConfigurationValueFacade.class), getSystemConfigurationCategoryFacade())
-			.setConfigurationValue(job, expression);
+		configurationHelper().setConfigurationValue(job, expression);
+	}
+
+	private CronTestConfigurationHelper configurationHelper() {
+		return new CronTestConfigurationHelper(getBean(SystemConfigurationValueFacade.class), getSystemConfigurationCategoryFacade());
 	}
 
 	private Map<String, CronJobStatusDto> statusesByJobName() {
@@ -88,7 +92,10 @@ public class CronJobFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void aSemanticallyInvalidValueIsReportedAsInvalid() {
 
-		setConfigurationValue(CronJob.ARCHIVE_CASES, "0 */70 * * * *");
+		SystemConfigurationValueDto value = configurationHelper().getOrBuildConfigurationValue(CronJob.ARCHIVE_CASES);
+		value.setPattern(null);
+		value.setValue("0 */70 * * * *");
+		getBean(SystemConfigurationValueFacade.class).save(value);
 
 		CronJobStatusDto status = statusesByJobName().get(CronJob.ARCHIVE_CASES.name());
 		assertFalse(status.isExpressionValid());

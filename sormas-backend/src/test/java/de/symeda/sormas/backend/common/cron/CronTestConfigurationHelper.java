@@ -17,6 +17,7 @@ package de.symeda.sormas.backend.common.cron;
 
 import java.util.List;
 
+import de.symeda.sormas.api.systemconfiguration.CronExpressionValidator;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationCategoryDto;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationCategoryFacade;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationCategoryReferenceDto;
@@ -37,16 +38,21 @@ class CronTestConfigurationHelper {
 
 	SystemConfigurationValueDto setConfigurationValue(CronJob job, String expression) {
 
+		SystemConfigurationValueDto value = getOrBuildConfigurationValue(job);
+		value.setValue(expression);
+		return configurationValueFacade.save(value);
+	}
+
+	SystemConfigurationValueDto getOrBuildConfigurationValue(CronJob job) {
+
 		List<String> existingUuids = configurationValueFacade.getAllUuids();
-		SystemConfigurationValueDto value = existingUuids.isEmpty()
+		return existingUuids.isEmpty()
 			? buildConfigurationValue(job)
 			: configurationValueFacade.getByUuids(existingUuids)
 				.stream()
 				.filter(candidate -> job.getConfigKey().equals(candidate.getKey()))
 				.findFirst()
 				.orElseGet(() -> buildConfigurationValue(job));
-		value.setValue(expression);
-		return configurationValueFacade.save(value);
 	}
 
 	SystemConfigurationValueDto buildConfigurationValue(CronJob job) {
@@ -56,6 +62,7 @@ class CronTestConfigurationHelper {
 		value.setCategory(cronCategoryReference());
 		value.setOptional(true);
 		value.setEncrypt(false);
+		value.setPattern(CronExpressionValidator.VALUE_PATTERN);
 		return value;
 	}
 
