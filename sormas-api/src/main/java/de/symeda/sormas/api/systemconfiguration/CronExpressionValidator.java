@@ -137,8 +137,9 @@ public final class CronExpressionValidator {
 
 		int singleDigitHigh = Math.min(upperBound, 9);
 		if (lowerBound <= singleDigitHigh) {
-			alternatives.add(
-				lowerBound == singleDigitHigh ? String.valueOf(lowerBound) : "[" + lowerBound + "-" + singleDigitHigh + "]");
+			String singleDigit =
+				lowerBound == singleDigitHigh ? String.valueOf(lowerBound) : "[" + lowerBound + "-" + singleDigitHigh + "]";
+			alternatives.add("(0?" + singleDigit + ")");
 		}
 
 		List<Integer> fullTens = new ArrayList<>();

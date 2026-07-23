@@ -61,6 +61,31 @@ public class CronExpressionValidatorEquivalenceTest {
 		}
 	}
 
+	@Test
+	public void patternAcceptsSupportedFormsDirectlyBecauseTheGenerativeTestCannotProveThisDirection() {
+
+		List<String> mustBeAccepted = List.of(
+			"0 15 1 * * *",
+			"0 */10 * * * *",
+			"0 */2 * * * *",
+			"0 0 * * * *",
+			"0 5 1 * * *",
+			"0 40 2 * * *",
+			"0 0 1,13 * * *",
+			"0 0 1-5 * * *",
+			"0 0 1-5/2 * * *",
+			"*/10 0 0 * * *",
+			"0 0 */23 * * *",
+			"0 59 23 31 12 7",
+			"0 05 1 * * *",
+			"0 0 01 * * *",
+			"0 0 1 01 01 0");
+
+		for (String candidate : mustBeAccepted) {
+			assertTrue(PATTERN.matcher(candidate).matches(), candidate);
+		}
+	}
+
 	private String randomField(Random random) {
 
 		int shape = random.nextInt(100);
