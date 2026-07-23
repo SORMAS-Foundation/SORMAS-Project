@@ -16957,6 +16957,6 @@ ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS mothercitizenship_id bigint
 ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS sexworker varchar(255);
 ALTER TABLE epidata_history ADD COLUMN IF NOT EXISTS contactwithsexworker varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (651, 'Syphilis - Epidata #14212');
+INSERT INTO schema_version (version_number, comment) VALUES (652, 'Syphilis - Epidata #14212');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
